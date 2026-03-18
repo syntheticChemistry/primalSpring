@@ -1,0 +1,92 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# biomeOS Continuous Tick — 60Hz tick loop polling health from all NUCLEUS primals.
+# Reports via SensorEventBus.
+#
+# Usage:
+#   biomeos deploy --graph graphs/continuous_tick.toml
+
+[graph]
+name = "continuous_tick"
+description = "Continuous: 60Hz tick loop polling health from all NUCLEUS primals, reporting via SensorEventBus"
+version = "0.1.0"
+coordination = "Continuous"
+
+# ── Node 1: BearDog ───────────────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+capabilities = ["crypto.identity", "crypto.sign"]
+
+# ── Node 2: Songbird ───────────────────────────────────────────────────
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+capabilities = ["net.discovery", "net.http"]
+
+# ── Node 3: rhizoCrypt ─────────────────────────────────────────────────
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt_primal"
+order = 3
+required = false
+depends_on = ["beardog"]
+health_method = "dag.health"
+capabilities = ["dag.create_session", "dag.health"]
+
+# ── Node 4: loamSpine ─────────────────────────────────────────────────
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine_primal"
+order = 4
+required = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "commit.health"
+capabilities = ["commit.session", "commit.health"]
+
+# ── Node 5: sweetGrass ─────────────────────────────────────────────────
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass_primal"
+order = 5
+required = false
+depends_on = ["beardog", "loamspine"]
+health_method = "provenance.health"
+capabilities = ["provenance.health"]
+
+# ── Node 6: NestGate ────────────────────────────────────────────────────
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 6
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+capabilities = ["storage.health"]
+
+# ── Node 7: ToadStool ──────────────────────────────────────────────────
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 7
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "compute.health"
+capabilities = ["compute.health"]
+
+# ── Node 8: Tick aggregator (SensorEventBus reporter) ──────────────────
+[[graph.node]]
+name = "tick_aggregator"
+binary = "primalspring_primal"
+order = 8
+required = true
+depends_on = ["beardog", "songbird", "rhizocrypt", "loamspine", "sweetgrass", "nestgate", "toadstool"]
+health_method = "health.check"
+capabilities = ["sensor.tick", "sensor.event_bus", "nucleus.health_poll"]

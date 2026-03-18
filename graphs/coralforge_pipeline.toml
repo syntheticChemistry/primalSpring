@@ -1,0 +1,83 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# biomeOS CoralForge Pipeline — structure prediction neural object.
+# neuralSpring (evoformer) -> hotSpring (df64 precision) -> wetSpring (bio-shaders) ->
+# toadStool (GPU dispatch) -> NestGate (store results).
+#
+# Usage:
+#   biomeos deploy --graph graphs/coralforge_pipeline.toml
+
+[graph]
+name = "coralforge_pipeline"
+description = "Pipeline: neuralSpring (evoformer) -> hotSpring (df64 precision) -> wetSpring (bio-shaders) -> toadStool (GPU dispatch) -> NestGate (store results). The structure prediction neural object."
+version = "0.1.0"
+coordination = "Pipeline"
+
+# ── Node 1: BearDog (identity) ────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+capabilities = ["crypto.identity"]
+
+# ── Node 2: Songbird (network) ─────────────────────────────────────────
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+capabilities = ["net.discovery"]
+
+# ── Node 3: neuralSpring (evoformer) ────────────────────────────────────
+[[graph.node]]
+name = "neuralspring"
+binary = "neuralspring_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "neural.health"
+capabilities = ["neural.evoformer", "neural.structure_prediction"]
+
+# ── Node 4: hotSpring (df64 precision) ─────────────────────────────────
+[[graph.node]]
+name = "hotspring"
+binary = "hotspring_primal"
+order = 4
+required = true
+depends_on = ["neuralspring"]
+health_method = "compute.health"
+capabilities = ["compute.df64", "compute.precision"]
+
+# ── Node 5: wetSpring (bio-shaders) ────────────────────────────────────
+[[graph.node]]
+name = "wetspring"
+binary = "wetspring_primal"
+order = 5
+required = true
+depends_on = ["hotspring"]
+health_method = "shader.health"
+capabilities = ["shader.bio", "shader.compile"]
+
+# ── Node 6: ToadStool (GPU dispatch) ───────────────────────────────────
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 6
+required = true
+depends_on = ["wetspring"]
+health_method = "compute.health"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+# ── Node 7: NestGate (store results) ───────────────────────────────────
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 7
+required = true
+depends_on = ["toadstool"]
+health_method = "health"
+capabilities = ["storage.store", "storage.retrieve"]

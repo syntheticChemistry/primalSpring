@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# biomeOS Conditional Fallback — attempts GPU dispatch, falls back to CPU if toadstool unavailable.
+# ConditionalDag with condition/skip_if pattern.
+#
+# Usage:
+#   biomeos deploy --graph graphs/conditional_fallback.toml
+
+[graph]
+name = "conditional_fallback"
+description = "ConditionalDag: attempts GPU dispatch, falls back to CPU if toadstool unavailable"
+version = "0.1.0"
+coordination = "ConditionalDag"
+
+# ── Node 1: BearDog (identity) ────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+capabilities = ["crypto.identity"]
+
+# ── Node 2: Songbird (network) ─────────────────────────────────────────
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+capabilities = ["net.discovery"]
+
+# ── Node 3: ToadStool (GPU dispatch — primary path) ────────────────────
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 3
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "compute.health"
+capabilities = ["compute.dispatch.submit"]
+condition = "toadstool_available"
+skip_if = "toadstool_unavailable"
+
+# ── Node 4: CPU fallback (when toadstool unavailable) ──────────────────
+[[graph.node]]
+name = "cpu_fallback"
+binary = "primalspring_primal"
+order = 4
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.check"
+capabilities = ["compute.cpu_fallback"]
+condition = "toadstool_unavailable"

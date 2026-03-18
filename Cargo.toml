@@ -1,0 +1,75 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring workspace — coordination and composition validation.
+# The spring whose domain IS the ecosystem: atomic composition, graph
+# execution, emergent systems, bonding, and cross-spring coordination.
+
+[workspace]
+resolver = "2"
+members = [
+    "ecoPrimal",
+    "experiments/exp001_tower_atomic",
+    "experiments/exp002_node_atomic",
+    "experiments/exp003_nest_atomic",
+    "experiments/exp004_full_nucleus",
+    "experiments/exp005_atomic_subtraction",
+    "experiments/exp006_startup_ordering",
+    "experiments/exp010_sequential_graph",
+    "experiments/exp011_parallel_graph",
+    "experiments/exp012_conditional_dag",
+    "experiments/exp013_pipeline_streaming",
+    "experiments/exp014_continuous_tick",
+    "experiments/exp015_pathway_learner",
+    "experiments/exp020_rootpulse_commit",
+    "experiments/exp021_rootpulse_branch_merge",
+    "experiments/exp022_rootpulse_diff_federate",
+    "experiments/exp023_rpgpt_session",
+    "experiments/exp024_cross_spring_ecology",
+    "experiments/exp025_coralforge_pipeline",
+    "experiments/exp030_covalent_bond",
+    "experiments/exp031_ionic_bond",
+    "experiments/exp032_plasmodium_formation",
+    "experiments/exp033_gate_failure",
+    "experiments/exp034_capability_aggregation",
+    "experiments/exp040_cross_spring_data_flow",
+    "experiments/exp041_provenance_trio_science",
+    "experiments/exp042_fieldmouse_ingestion",
+    "experiments/exp043_petaltongue_viz",
+    "experiments/exp044_squirrel_ai_coordination",
+    "experiments/exp050_compute_triangle",
+    "experiments/exp051_socket_discovery_sweep",
+    "experiments/exp052_protocol_escalation",
+    "experiments/exp053_multi_primal_lifecycle",
+    "experiments/exp054_bearer_token_auth",
+    "experiments/exp055_wait_for_health",
+    "experiments/exp056_cross_tower_federation",
+    "experiments/exp057_supply_chain_provenance",
+    "experiments/exp058_semantic_attribution",
+    "experiments/exp059_weak_force_isolation",
+]
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.87"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/syntheticChemistry/primalSpring"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4", features = ["derive"] }
+neural-api-client-sync = { path = "../phase2/biomeOS/crates/neural-api-client-sync" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+assertions_on_constants = "allow"
+doc_markdown = "allow"
+cast_possible_truncation = "allow"

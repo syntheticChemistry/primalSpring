@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# biomeOS Parallel Capability Burst — fires four capabilities simultaneously.
+# coordination = "Parallel" per the biomeos-graph convention.
+#
+# Usage:
+#   biomeos deploy --graph graphs/parallel_capability_burst.toml
+
+[graph]
+name = "parallel_capability_burst"
+description = "Parallel pattern: fires crypto.sign, net.discovery, storage.health, compute.health simultaneously"
+version = "0.1.0"
+coordination = "Parallel"
+
+# ── Node 1: BearDog (crypto.sign) ─────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+capabilities = ["crypto.sign"]
+
+# ── Node 2: Songbird (net.discovery) ──────────────────────────────────
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+health_method = "health"
+capabilities = ["net.discovery"]
+
+# ── Node 3: NestGate (storage.health) ──────────────────────────────────
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 3
+required = false
+health_method = "health"
+capabilities = ["storage.health"]
+
+# ── Node 4: ToadStool (compute.health) ────────────────────────────────
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 4
+required = false
+health_method = "compute.health"
+capabilities = ["compute.health"]

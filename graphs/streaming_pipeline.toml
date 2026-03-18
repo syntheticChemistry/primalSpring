@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# biomeOS Streaming Pipeline — data flows via bounded mpsc channels.
+# NestGate (fetch) -> primalSpring (transform) -> sweetGrass (attribute).
+#
+# Usage:
+#   biomeos deploy --graph graphs/streaming_pipeline.toml
+
+[graph]
+name = "streaming_pipeline"
+description = "Pipeline: data flows from NestGate (fetch) -> primalSpring (transform) -> sweetGrass (attribute). Uses bounded mpsc channels."
+version = "0.1.0"
+coordination = "Pipeline"
+
+# ── Node 1: BearDog (identity) ────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+capabilities = ["crypto.identity"]
+
+# ── Node 2: NestGate (fetch) ───────────────────────────────────────────
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+capabilities = ["storage.retrieve", "storage.fetch"]
+
+# ── Node 3: primalSpring (transform) ───────────────────────────────────
+[[graph.node]]
+name = "primalspring"
+binary = "primalspring_primal"
+order = 3
+required = true
+depends_on = ["nestgate"]
+health_method = "health.check"
+capabilities = ["coordination.transform", "pipeline.transform"]
+
+# ── Node 4: sweetGrass (attribute) ─────────────────────────────────────
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass_primal"
+order = 4
+required = false
+depends_on = ["primalspring"]
+health_method = "provenance.health"
+capabilities = ["provenance.create_braid", "provenance.attribute"]

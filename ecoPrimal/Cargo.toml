@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+[package]
+name = "primalspring"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+authors = ["ecoPrimals"]
+license.workspace = true
+description = "Coordination and composition validation — primal atomics, graph execution, emergent systems, bonding"
+repository = "https://github.com/syntheticChemistry/primalSpring"
+keywords = ["coordination", "composition", "nucleus", "biomeos", "testing"]
+categories = ["science", "command-line-utilities"]
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+clap = { workspace = true }
+neural-api-client-sync = { workspace = true }
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "primalspring_primal"
+path = "src/bin/primalspring_primal/main.rs"

@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring BYOB niche — coordination and composition validation
+#
+# This niche deploys the full NUCLEUS + primalSpring for coordination testing.
+
+name: primalspring-coordination
+description: "Coordination and composition validation niche"
+version: "0.1.0"
+
+deploy_graph: "graphs/primalspring_deploy.toml"
+
+organisms:
+  - name: beardog
+    role: "Cryptographic identity and signing"
+    required: true
+
+  - name: songbird
+    role: "Network discovery and TLS"
+    required: true
+
+  - name: rhizocrypt
+    role: "Ephemeral DAG sessions"
+    required: false
+
+  - name: loamspine
+    role: "Immutable linear ledger"
+    required: false
+
+  - name: sweetgrass
+    role: "Semantic provenance braids"
+    required: false
+
+  - name: nestgate
+    role: "Content-addressed storage"
+    required: false
+
+  - name: toadstool
+    role: "GPU/CPU compute dispatch"
+    required: false
+
+  - name: squirrel
+    role: "AI coordination"
+    required: false
+
+  - name: primalspring
+    role: "Coordination validator"
+    required: true
+
+interactions:
+  - type: "coordination.deploy_atomic"
+    description: "Deploy and validate atomic compositions"
+
+  - type: "coordination.validate_composition"
+    description: "Run composition health checks"
+
+  - type: "coordination.bonding_test"
+    description: "Test multi-gate bonding patterns"
