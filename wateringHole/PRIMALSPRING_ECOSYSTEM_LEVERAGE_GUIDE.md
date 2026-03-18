@@ -91,9 +91,10 @@ can absorb or compose against.
 
 ### As a biomeOS Graph Node
 
-primalSpring ships 6 deploy graph TOMLs. biomeOS orchestrates the niche
-directly from these graphs. primalSpring participates as a validator node
-that probes other nodes and reports composition health.
+primalSpring ships 11 deploy graph TOMLs (all nodes declare `by_capability`).
+biomeOS orchestrates the niche directly from these graphs. `topological_waves()`
+computes startup ordering. primalSpring participates as a validator node that
+probes other nodes by capability and reports composition health.
 
 ---
 

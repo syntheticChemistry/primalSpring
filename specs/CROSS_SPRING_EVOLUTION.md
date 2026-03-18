@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: March 18, 2026
-**Status**: Phase 2→3 — Deep debt resolution, ecosystem absorption, MCP tools, 195 tests
+**Status**: Phase 3 — Capability-first architecture, topological waves, 236 tests
 
 ---
 
@@ -41,7 +41,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | ValidationSink trait | groundSpring V116, rhizoCrypt v0.13 |
 | check_skip / check_or_skip | Referenced by all spring experiment patterns |
 | 4-format capability parsing | Converged implementation used as reference |
-| Deploy graph structural validation | 6 TOML graphs with parse + structural checks |
+| Deploy graph structural + topological validation | 11 TOML graphs, all `by_capability`, topological waves |
 | Coordination experiment framework | 38 experiments across 7 tracks |
 | MCP coordination tools | Available for Squirrel AI routing |
 
@@ -56,7 +56,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, provenance registry |
 | healthSpring | V37 | 706 | 18 proptest IPC fuzz, MCP tools |
 | ludoSpring | V14 | 187 | with_provenance(), 93.2% coverage |
-| primalSpring | v0.3.0-dev | 195 | MCP tools, 5-tier discovery, provenance |
+| primalSpring | v0.3.0-dev | 236 | Capability-first, topological waves, 17 RPC endpoints |
 
 ## Evolution Path
 
@@ -84,14 +84,22 @@ Phase 2→3 (done): Deep Debt + Cross-Ecosystem (March 18, 2026)
   → Structured Provenance on ValidationResult
   → Capability registry TOML (sync-tested)
   → deny.toml (14-crate ecoBin ban)
-  → TOCTOU fix in deploy.rs, JSONRPC_VERSION const
-  → Resilience constants to tolerances/
-  → Proptest expansion (5 → 15 fuzz tests)
-  → Coverage 86.0% → 89.8%, 195 tests
 
-Phase 3: Live Primals — Tower Atomic (Track 1, exp001–002)
-  → BearDog + Songbird real IPC validation
-Phase 4: Full NUCLEUS (Track 1, exp004)
+Phase 3 (done): Capability-First Architecture (March 18, 2026)
+  → All RPC handlers default to capability-based validation
+  → discover_by_capability() replaces discover_primal() in core experiments
+  → topological_waves() — Kahn's algorithm startup ordering
+  → graph_required_capabilities() — graphs as source of truth
+  → by_capability on all 11 deploy graph nodes (enforced by test)
+  → New RPC: graph.waves, graph.capabilities, coordination.probe_capability
+  → check_capability_health() for capability-based health probing
+  → IpcErrorPhase + PhasedIpcError for phase-aware errors
+  → discover_remote_tools() for cross-spring MCP tool discovery
+  → 236 tests (225 unit + 10 integration + 1 doc-test)
+
+Phase 4: Live Primals — Tower Atomic (Track 1, exp001–002)
+  → Live security + discovery capability providers
+Phase 5: Full NUCLEUS (Track 1, exp004)
   → All primals deployed and validated
 Phase 5: Graph execution (Track 2)
   → All 5 coordination patterns with real primals

@@ -20,6 +20,7 @@ binary = "beardog_primal"
 order = 1
 required = true
 health_method = "health"
+by_capability = "security"
 capabilities = ["crypto.identity"]
 
 # ── Node 2: Songbird (network) ─────────────────────────────────────────
@@ -30,6 +31,7 @@ order = 2
 required = true
 depends_on = ["beardog"]
 health_method = "health"
+by_capability = "discovery"
 capabilities = ["net.discovery"]
 
 # ── Node 3: neuralSpring (evoformer) ────────────────────────────────────
@@ -40,6 +42,7 @@ order = 3
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "neural.health"
+by_capability = "neural"
 capabilities = ["neural.evoformer", "neural.structure_prediction"]
 
 # ── Node 4: hotSpring (df64 precision) ─────────────────────────────────
@@ -50,6 +53,7 @@ order = 4
 required = true
 depends_on = ["neuralspring"]
 health_method = "compute.health"
+by_capability = "precision"
 capabilities = ["compute.df64", "compute.precision"]
 
 # ── Node 5: wetSpring (bio-shaders) ────────────────────────────────────
@@ -60,6 +64,7 @@ order = 5
 required = true
 depends_on = ["hotspring"]
 health_method = "shader.health"
+by_capability = "shader"
 capabilities = ["shader.bio", "shader.compile"]
 
 # ── Node 6: ToadStool (GPU dispatch) ───────────────────────────────────
@@ -70,6 +75,7 @@ order = 6
 required = true
 depends_on = ["wetspring"]
 health_method = "compute.health"
+by_capability = "compute"
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 
 # ── Node 7: NestGate (store results) ───────────────────────────────────
@@ -80,4 +86,5 @@ order = 7
 required = true
 depends_on = ["toadstool"]
 health_method = "health"
+by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve"]

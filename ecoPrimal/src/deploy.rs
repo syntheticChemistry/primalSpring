@@ -136,6 +136,52 @@ pub struct NodeHealth {
     pub capabilities: Vec<String>,
 }
 
+/// Validate a deploy graph's live health using capability-based discovery
+/// for nodes that declare `by_capability`, falling back to identity only
+/// when no capability is declared.
+///
+/// This is the graph-as-source-of-truth path: the graph defines what
+/// capabilities are needed, and this function discovers providers at runtime.
+#[must_use]
+pub fn validate_live_by_capability(path: &Path) -> LiveGraphValidation {
+    let structure = validate_structure(path);
+    if !structure.parsed {
+        return LiveGraphValidation {
+            structure,
+            nodes: Vec::new(),
+            healthy_count: 0,
+            all_required_healthy: false,
+        };
+    }
+
+    let graph = match load_graph(path) {
+        Ok(g) => g,
+        Err(e) => {
+            let mut degraded = structure;
+            degraded
+                .issues
+                .push(format!("graph changed between parse passes: {e}"));
+            return LiveGraphValidation {
+                structure: degraded,
+                nodes: Vec::new(),
+                healthy_count: 0,
+                all_required_healthy: false,
+            };
+        }
+    };
+
+    let nodes: Vec<NodeHealth> = graph.graph.node.iter().map(probe_graph_node).collect();
+    let healthy_count = nodes.iter().filter(|n| n.health_ok).count();
+    let all_required_healthy = nodes.iter().filter(|n| n.required).all(|n| n.health_ok);
+
+    LiveGraphValidation {
+        structure,
+        nodes,
+        healthy_count,
+        all_required_healthy,
+    }
+}
+
 /// Load a deploy graph from a TOML file path.
 ///
 /// # Errors
@@ -281,6 +327,104 @@ fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
     if orders.len() != graph.graph.node.len() {
         issues.push("duplicate order values in graph nodes".to_owned());
     }
+}
+
+/// Compute topological startup waves from a deploy graph.
+///
+/// Uses Kahn's algorithm to group nodes into "waves" — each wave contains
+/// nodes whose dependencies are all satisfied by earlier waves. This is the
+/// biomeOS germination ordering: wave 0 starts first, wave 1 after wave 0 is
+/// healthy, and so on.
+///
+/// # Errors
+///
+/// Returns `Err` if the graph contains a dependency cycle (impossible to
+/// satisfy all `depends_on` constraints) or references a non-existent node.
+///
+/// # Example
+///
+/// Given Tower (`beardog` order=1) → Songbird (order=2, depends_on=`beardog`):
+/// - Wave 0: `["beardog"]`
+/// - Wave 1: `["songbird"]`
+pub fn topological_waves(graph: &DeployGraph) -> Result<Vec<Vec<String>>, String> {
+    use std::collections::{HashMap, VecDeque};
+
+    let nodes = &graph.graph.node;
+    if nodes.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    let name_set: HashMap<&str, usize> = nodes
+        .iter()
+        .enumerate()
+        .map(|(i, n)| (n.name.as_str(), i))
+        .collect();
+
+    let mut in_degree: Vec<usize> = vec![0; nodes.len()];
+    let mut dependents: Vec<Vec<usize>> = vec![Vec::new(); nodes.len()];
+
+    for (i, node) in nodes.iter().enumerate() {
+        for dep in &node.depends_on {
+            let Some(&dep_idx) = name_set.get(dep.as_str()) else {
+                return Err(format!(
+                    "node '{}' depends on '{}' which is not in the graph",
+                    node.name, dep
+                ));
+            };
+            in_degree[i] += 1;
+            dependents[dep_idx].push(i);
+        }
+    }
+
+    let mut waves: Vec<Vec<String>> = Vec::new();
+    let mut queue: VecDeque<usize> = in_degree
+        .iter()
+        .enumerate()
+        .filter(|&(_, d)| *d == 0)
+        .map(|(i, _)| i)
+        .collect();
+    let mut processed = 0;
+
+    while !queue.is_empty() {
+        let wave_size = queue.len();
+        let mut wave = Vec::with_capacity(wave_size);
+        for _ in 0..wave_size {
+            let Some(idx) = queue.pop_front() else {
+                break;
+            };
+            wave.push(nodes[idx].name.clone());
+            processed += 1;
+            for &dep_idx in &dependents[idx] {
+                in_degree[dep_idx] -= 1;
+                if in_degree[dep_idx] == 0 {
+                    queue.push_back(dep_idx);
+                }
+            }
+        }
+        wave.sort();
+        waves.push(wave);
+    }
+
+    if processed != nodes.len() {
+        return Err("graph contains a dependency cycle".to_owned());
+    }
+
+    Ok(waves)
+}
+
+/// Extract the required capabilities from a graph by reading each node's
+/// `by_capability` field.
+///
+/// This makes the deploy graph the **source of truth** for what capabilities
+/// a composition needs — no hardcoded rosters in Rust code.
+#[must_use]
+pub fn graph_required_capabilities(graph: &DeployGraph) -> Vec<String> {
+    graph
+        .graph
+        .node
+        .iter()
+        .filter_map(|n| n.by_capability.clone())
+        .collect()
 }
 
 /// Discover and validate all deploy graphs in a directory.
@@ -474,6 +618,278 @@ mod tests {
         let mut issues = Vec::new();
         structural_checks(&graph, &mut issues);
         assert!(issues.iter().any(|i| i.contains("duplicate order")));
+    }
+
+    #[test]
+    fn topological_waves_tower_graph() {
+        let path =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/tower_atomic_bootstrap.toml");
+        let graph = load_graph(&path).unwrap();
+        let waves = topological_waves(&graph).unwrap();
+        assert!(waves.len() >= 2, "tower should have at least 2 waves");
+        assert!(
+            waves[0].contains(&"beardog".to_owned()),
+            "beardog should be in wave 0 (no deps)"
+        );
+    }
+
+    #[test]
+    fn topological_waves_nucleus_complete() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/nucleus_complete.toml");
+        let graph = load_graph(&path).unwrap();
+        let waves = topological_waves(&graph).unwrap();
+        assert!(waves.len() >= 4, "nucleus should have at least 4 waves");
+        assert!(
+            waves[0].contains(&"beardog".to_owned()),
+            "beardog should be in wave 0"
+        );
+    }
+
+    #[test]
+    fn topological_waves_empty_graph() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "empty".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![],
+            },
+        };
+        let waves = topological_waves(&graph).unwrap();
+        assert!(waves.is_empty());
+    }
+
+    #[test]
+    fn topological_waves_single_node() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "single".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![GraphNode {
+                    name: "alpha".to_owned(),
+                    binary: "alpha_primal".to_owned(),
+                    order: 1,
+                    required: true,
+                    depends_on: vec![],
+                    health_method: "health".to_owned(),
+                    by_capability: Some("security".to_owned()),
+                    capabilities: vec![],
+                    condition: None,
+                    skip_if: None,
+                }],
+            },
+        };
+        let waves = topological_waves(&graph).unwrap();
+        assert_eq!(waves.len(), 1);
+        assert_eq!(waves[0], vec!["alpha"]);
+    }
+
+    #[test]
+    fn topological_waves_detects_missing_dependency() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "bad_dep".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![GraphNode {
+                    name: "alpha".to_owned(),
+                    binary: "alpha_primal".to_owned(),
+                    order: 1,
+                    required: true,
+                    depends_on: vec!["ghost".to_owned()],
+                    health_method: "health".to_owned(),
+                    by_capability: None,
+                    capabilities: vec![],
+                    condition: None,
+                    skip_if: None,
+                }],
+            },
+        };
+        let result = topological_waves(&graph);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("ghost"));
+    }
+
+    #[test]
+    fn topological_waves_detects_cycle() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "cycle".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![
+                    GraphNode {
+                        name: "alpha".to_owned(),
+                        binary: "a".to_owned(),
+                        order: 1,
+                        required: true,
+                        depends_on: vec!["beta".to_owned()],
+                        health_method: "health".to_owned(),
+                        by_capability: None,
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                    GraphNode {
+                        name: "beta".to_owned(),
+                        binary: "b".to_owned(),
+                        order: 2,
+                        required: true,
+                        depends_on: vec!["alpha".to_owned()],
+                        health_method: "health".to_owned(),
+                        by_capability: None,
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                ],
+            },
+        };
+        let result = topological_waves(&graph);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("cycle"));
+    }
+
+    #[test]
+    fn topological_waves_parallel_nodes() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "parallel".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![
+                    GraphNode {
+                        name: "root".to_owned(),
+                        binary: "r".to_owned(),
+                        order: 1,
+                        required: true,
+                        depends_on: vec![],
+                        health_method: "health".to_owned(),
+                        by_capability: None,
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                    GraphNode {
+                        name: "leaf_a".to_owned(),
+                        binary: "a".to_owned(),
+                        order: 2,
+                        required: true,
+                        depends_on: vec!["root".to_owned()],
+                        health_method: "health".to_owned(),
+                        by_capability: None,
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                    GraphNode {
+                        name: "leaf_b".to_owned(),
+                        binary: "b".to_owned(),
+                        order: 3,
+                        required: true,
+                        depends_on: vec!["root".to_owned()],
+                        health_method: "health".to_owned(),
+                        by_capability: None,
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                ],
+            },
+        };
+        let waves = topological_waves(&graph).unwrap();
+        assert_eq!(waves.len(), 2);
+        assert_eq!(waves[0], vec!["root"]);
+        assert_eq!(waves[1].len(), 2);
+        assert!(waves[1].contains(&"leaf_a".to_owned()));
+        assert!(waves[1].contains(&"leaf_b".to_owned()));
+    }
+
+    #[test]
+    fn graph_required_capabilities_from_nucleus() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/nucleus_complete.toml");
+        let graph = load_graph(&path).unwrap();
+        let caps = graph_required_capabilities(&graph);
+        assert!(caps.contains(&"security".to_owned()));
+        assert!(caps.contains(&"discovery".to_owned()));
+        assert!(caps.contains(&"compute".to_owned()));
+        assert!(caps.contains(&"storage".to_owned()));
+        assert!(caps.contains(&"coordination".to_owned()));
+    }
+
+    #[test]
+    fn graph_required_capabilities_empty_for_no_by_capability() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "bare".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![GraphNode {
+                    name: "alpha".to_owned(),
+                    binary: "a".to_owned(),
+                    order: 1,
+                    required: true,
+                    depends_on: vec![],
+                    health_method: "health".to_owned(),
+                    by_capability: None,
+                    capabilities: vec![],
+                    condition: None,
+                    skip_if: None,
+                }],
+            },
+        };
+        assert!(graph_required_capabilities(&graph).is_empty());
+    }
+
+    #[test]
+    fn topological_waves_all_graphs_acyclic() {
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+        let results = validate_all_graphs(&dir);
+        for r in &results {
+            if !r.parsed {
+                continue;
+            }
+            let graph = load_graph(Path::new(&r.path)).unwrap();
+            let waves = topological_waves(&graph);
+            assert!(
+                waves.is_ok(),
+                "graph {} has a cycle: {:?}",
+                r.path,
+                waves.err()
+            );
+        }
+    }
+
+    #[test]
+    fn all_graphs_have_by_capability_on_every_node() {
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+        let skip = ["spring_byob_template.toml"];
+        for entry in std::fs::read_dir(dir).unwrap().flatten() {
+            let path = entry.path();
+            if path.extension().is_none_or(|ext| ext != "toml") {
+                continue;
+            }
+            let name = path.file_name().unwrap().to_string_lossy();
+            if skip.iter().any(|s| name.as_ref() == *s) {
+                continue;
+            }
+            let graph = load_graph(&path).unwrap();
+            for node in &graph.graph.node {
+                assert!(
+                    node.by_capability.is_some(),
+                    "graph '{}' node '{}' missing by_capability",
+                    name,
+                    node.name
+                );
+            }
+        }
     }
 
     #[test]

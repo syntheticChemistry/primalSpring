@@ -303,7 +303,8 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
     }
 
     // Tier 2: Capability-named socket on filesystem
-    let base = std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+    let base =
+        std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
     let cap_sock = base.join("biomeos").join(format!("{capability}.sock"));
     if cap_sock.exists() {
         return CapabilityDiscoveryResult {
@@ -365,8 +366,10 @@ fn discover_from_socket_registry_by_capability(
             .get("capabilities")
             .and_then(serde_json::Value::as_array);
         let has_cap = caps.is_some_and(|arr| {
-            arr.iter()
-                .any(|c| c.as_str().is_some_and(|s| s.eq_ignore_ascii_case(capability)))
+            arr.iter().any(|c| {
+                c.as_str()
+                    .is_some_and(|s| s.eq_ignore_ascii_case(capability))
+            })
         });
 
         if has_cap {

@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.3.0-dev (Phase 2→3 — MCP tools, 5-tier discovery, structured provenance, 195 tests)  
+**Version**: 0.3.0-dev (Phase 3 — capability-first architecture, topological waves, 236 tests)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 18, 2026
 
@@ -37,9 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **195** (186 unit + 9 integration) |
-| Line coverage | **89.8%** (llvm-cov) |
-| Function coverage | **92.8%** (llvm-cov) |
+| Tests | **236** (225 unit + 10 integration + 1 doc-test) |
 | Experiments | 38 (7 tracks) |
 | Proptest fuzz tests | 15 |
 | Clippy (pedantic + nursery) | **0 warnings** |
@@ -47,40 +45,38 @@ primalSpring fills the gap.
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Neural API integration | `neural-api-client-sync` |
+| Deploy graphs | 11 TOMLs, all `by_capability`, topologically validated |
+| RPC endpoints | 17 methods |
+| Discovery | **Capability-first**: `discover_by_capability()` + 5-tier + Neural API |
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Niche self-knowledge | `niche.rs` — 22 capabilities, semantic mappings, cost estimates |
-| Capability registry | `config/capability_registry.toml` (sync-tested) |
-| Discovery | 5-tier: env/XDG/temp/manifest/socket-registry + Neural API |
-| Deploy graph validation | `deploy.rs` — 6 biomeOS TOMLs (structural + live) |
 | Meta-validator | `validate_all` binary — runs all 38 experiments |
-| Workspace lints | centralized in `Cargo.toml` |
 
 ### Key Capabilities
 
-- **Real IPC**: `probe_primal()`, `validate_composition()`, `health_check()` connect
-  to live primals via Unix socket JSON-RPC 2.0
-- **IPC resilience stack**: `IpcError` (8 typed variants), `CircuitBreaker`,
-  `RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`, `extract_rpc_result`/`extract_rpc_dispatch`
+- **Capability-first discovery**: `discover_by_capability()` resolves providers by what
+  they offer, not who they are. All RPC handlers default to capability-based validation.
+- **Graphs as source of truth**: `topological_waves()` computes startup ordering via
+  Kahn's algorithm. `graph_required_capabilities()` extracts capability rosters from
+  graph nodes. All 11 graphs have `by_capability` on every node (enforced by test).
+- **Real IPC**: `probe_primal()`, `validate_composition_by_capability()`, `health_check()`
+  connect to live providers via Unix socket JSON-RPC 2.0
+- **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase`), `CircuitBreaker`,
+  `RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`
 - **4-format capability parsing**: Handles Format A (string array), B (object array),
   C (method_info nested), D (semantic_mappings double-nested)
-- **MCP tool definitions**: 8 typed tools with JSON Schema for Squirrel AI discovery
+- **MCP tool definitions**: 8 typed tools with JSON Schema for Squirrel AI discovery +
+  `discover_remote_tools()` for cross-spring tool enumeration
 - **5-tier discovery**: env → XDG → temp → manifest → socket-registry (+ Neural API)
-- **Structured provenance**: `Provenance { source, baseline_date, description }` on `ValidationResult`
-- **Capability registry**: `config/capability_registry.toml` sync-tested against `niche::CAPABILITIES`
-- **Health probes**: `health.liveness`, `health.readiness` (Kubernetes-style) in server and client
-- **Neural API bridge**: `NeuralBridge` from `neural-api-client-sync` for ecosystem
-  discovery — no hardcoded primal rosters
+- **Capability-based health probing**: `check_capability_health()` discovers providers
+  at runtime and records health, latency, and capabilities checks
 - **Graceful degradation**: `check_skip()` and `check_or_skip()` for honest reporting
-  when primals are not running
-- **Validation harness**: `OrExit<T>`, `ValidationSink` (StdoutSink, NullSink), `safe_cast` module
-- **JSON output**: `PRIMALSPRING_JSON=1` for CI pipeline integration
-- **Server mode**: `primalspring_primal server` exposes 11 methods including `mcp.tools.list`
-- **Niche self-knowledge**: `niche.rs` defines 22 capabilities, semantic mappings, operation
-  dependencies, cost estimates, and `register_with_target()` for biomeOS registration
-- **Deploy graph validation**: `deploy.rs` parses biomeOS TOML graphs, validates structure
-  (names, binaries, dependencies, ordering), and probes running primals
+  when providers are not running
+- **Server mode**: `primalspring_primal server` exposes 17 methods including `graph.waves`,
+  `graph.capabilities`, `coordination.probe_capability`
+- **Deploy graph validation**: `deploy.rs` parses, structurally validates, topologically
+  sorts, and live-probes biomeOS TOML graphs
 
 ---
 
@@ -93,12 +89,12 @@ and responds to capability calls.
 
 | Exp | What | Primals | Status |
 |-----|------|---------|--------|
-| 001 | Tower Atomic bootstrap | BearDog + Songbird | **IPC wired** |
-| 002 | Node Atomic compute | Tower + ToadStool | Discovery wired |
-| 003 | Nest Atomic storage | Tower + NestGate | Discovery wired |
-| 004 | Full NUCLEUS | All primals + Squirrel | **IPC wired** |
+| 001 | Tower Atomic bootstrap | security + discovery | **Capability-based** |
+| 002 | Node Atomic compute | security + discovery + compute | **Capability-based** |
+| 003 | Nest Atomic storage | security + discovery + storage | **Capability-based** |
+| 004 | Full NUCLEUS | All 8 capability domains | **Capability-based** |
 | 005 | Atomic subtraction | Graceful degradation | Discovery wired |
-| 006 | Startup ordering | Dependency resolution | Discovery wired |
+| 006 | Startup ordering | Topological waves from graphs | **Graph-driven** |
 
 ### Track 2: Graph Execution (exp010–015)
 
@@ -163,7 +159,7 @@ Early coordination patterns extracted from phase1/ and phase2/ primal showcases.
 | Exp | What | Source |
 |-----|------|--------|
 | 050 | Compute triangle | coralReef -> toadStool -> barraCuda pipeline |
-| 051 | Socket discovery sweep | Composition-driven XDG enumeration |
+| 051 | Socket discovery sweep | Capability-based enumeration |
 | 052 | Protocol escalation | HTTP -> JSON-RPC -> tarpc negotiation |
 | 053 | Multi-primal lifecycle | 6-primal research paper lifecycle |
 | 054 | Bearer token auth | BearDog authenticate -> validate -> compute |
@@ -178,17 +174,29 @@ Early coordination patterns extracted from phase1/ and phase2/ primal showcases.
 ## Capability Domain
 
 ```
-coordination.validate_composition   — Validate atomic compositions
-coordination.discovery_sweep        — Discover all primals in a composition
-coordination.neural_api_status     — Neural API health
-health.check                       — Full self health status
-health.liveness                    — Kubernetes-style liveness probe
-health.readiness                   — Kubernetes-style readiness probe
-capabilities.list                  — Niche capabilities + semantic mappings + cost estimates
-graph.list                         — Structurally validate all deploy graphs
-graph.validate                     — Validate a specific graph (structural or live)
-lifecycle.status                   — Primal status report
-mcp.tools.list                     — MCP tool definitions for Squirrel AI
+coordination.validate_composition              — Validate composition (capability-based by default)
+coordination.validate_composition_by_capability — Explicitly capability-based validation
+coordination.discovery_sweep                    — Discover capabilities in a composition
+coordination.probe_primal                       — Probe a single primal by name
+coordination.probe_capability                   — Probe a single capability provider
+coordination.deploy_atomic                      — Deploy an atomic via graph
+coordination.bonding_test                       — Test bonding readiness
+coordination.neural_api_status                  — Neural API health
+composition.tower_health                        — Tower composition health (capability-based)
+composition.node_health                         — Node composition health
+composition.nest_health                         — Nest composition health
+composition.nucleus_health                      — Full NUCLEUS health
+health.check / health.liveness                  — Self health + liveness probe
+health.readiness                                — Readiness (capabilities + Neural API)
+identity.get                                    — sourDough identity compliance
+capabilities.list                               — Niche capabilities + mappings + costs
+graph.list                                      — Validate all deploy graphs
+graph.validate                                  — Validate a specific graph
+graph.waves                                     — Topological startup wave ordering
+graph.capabilities                              — Required capabilities from graph
+nucleus.start / nucleus.stop                    — Lifecycle management
+lifecycle.status                                — Primal status report
+mcp.tools.list                                  — MCP tool definitions for Squirrel AI
 ```
 
 ---
@@ -197,21 +205,23 @@ mcp.tools.list                     — MCP tool definitions for Squirrel AI
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.3.0 | `PRIMALSPRING_V030_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | v0.3.0 evolution: MCP tools, 5-tier discovery, provenance, 195 tests |
-| v0.3.0 | `PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | toadStool/barraCuda evolution: coordination intelligence + absorption |
+| v0.3.0 | `PRIMALSPRING_V030_CAPABILITY_FIRST_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Capability-first architecture, topological waves, 236 tests |
+| v0.3.0 | `PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_CAPABILITY_HANDOFF_MAR18_2026.md` | Mar 18 | toadStool/barraCuda: capability-based discovery, graph conventions |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.2.0 | `archive/PRIMALSPRING_V020_ECOSYSTEM_ABSORPTION_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Ecosystem absorption: IPC resilience, niche, deploy, 157 tests |
-| v0.2.0 | `archive/PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_COMPUTE_TRIANGLE_HANDOFF_MAR18_2026.md` | Mar 18 | Compute triangle coordination intelligence |
-| v0.2.0 | `archive/PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | barraCuda evolution + absorption |
-| v0.1.1 | `archive/PRIMALSPRING_V011_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | IPC resilience absorption (superseded by V020) |
-| v0.1.0 | `archive/PRIMALSPRING_V010_NEURAL_API_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Neural API integration + server mode |
-| v0.1.0 | `archive/PRIMALSPRING_V010_DEEP_DEBT_AUDIT_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Deep debt audit + workspace lint consolidation |
-| v0.1.0 | `archive/PRIMALSPRING_V010_COMPREHENSIVE_AUDIT_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Initial audit + deep debt evolution |
-| v0.1.0 | `archive/PRIMALSPRING_V010_TOADSTOOL_BARRACUDA_COORDINATION_HANDOFF_MAR17_2026.md` | Mar 17 | toadStool/barraCuda coordination intelligence |
+| v0.3.0 | `archive/PRIMALSPRING_V030_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Pre-capability evolution (superseded) |
+| v0.3.0 | `archive/PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Pre-capability barraCuda handoff (superseded) |
+| v0.2.0 | `archive/PRIMALSPRING_V020_ECOSYSTEM_ABSORPTION_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Ecosystem absorption: IPC resilience, niche, deploy |
+| v0.2.0 | `archive/PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_COMPUTE_TRIANGLE_HANDOFF_MAR18_2026.md` | Mar 18 | Compute triangle coordination |
+| v0.2.0 | `archive/PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | barraCuda evolution |
+| v0.1.1 | `archive/PRIMALSPRING_V011_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | IPC resilience absorption |
+| v0.1.0 | `archive/PRIMALSPRING_V010_NEURAL_API_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Neural API integration |
+| v0.1.0 | `archive/PRIMALSPRING_V010_DEEP_DEBT_AUDIT_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Deep debt audit |
+| v0.1.0 | `archive/PRIMALSPRING_V010_COMPREHENSIVE_AUDIT_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Initial audit |
+| v0.1.0 | `archive/PRIMALSPRING_V010_TOADSTOOL_BARRACUDA_COORDINATION_HANDOFF_MAR17_2026.md` | Mar 17 | toadStool/barraCuda coordination |
 
 ## Convention
 

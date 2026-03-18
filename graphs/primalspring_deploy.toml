@@ -25,6 +25,7 @@ binary = "beardog_primal"
 order = 1
 required = true
 health_method = "health"
+by_capability = "security"
 capabilities = [
     "crypto.identity",
     "crypto.verify",
@@ -41,6 +42,7 @@ order = 2
 required = true
 depends_on = ["beardog"]
 health_method = "health"
+by_capability = "discovery"
 capabilities = [
     "net.http",
     "net.discovery",
@@ -115,6 +117,7 @@ order = 7
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "compute.health"
+by_capability = "compute"
 capabilities = [
     "compute.execute",
     "compute.submit",

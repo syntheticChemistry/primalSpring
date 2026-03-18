@@ -12,8 +12,12 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
-use primalspring::coordination::{AtomicType, validate_composition};
-use primalspring::ipc::discover::{discover_for, neural_api_healthy, socket_path};
+use primalspring::coordination::{
+    AtomicType, validate_composition, validate_composition_by_capability,
+};
+use primalspring::ipc::discover::{
+    discover_capabilities_for, discover_for, neural_api_healthy, socket_path,
+};
 use primalspring::ipc::protocol::{JSONRPC_VERSION, JsonRpcError, JsonRpcResponse, error_codes};
 use primalspring::{PRIMAL_DOMAIN, PRIMAL_NAME};
 
@@ -275,6 +279,8 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
             success_response(serde_json::to_value(results).unwrap_or_default(), id)
         }
         "graph.validate" => handle_graph_validate(&req["params"], id),
+        "graph.waves" => handle_graph_waves(&req["params"], id),
+        "graph.capabilities" => handle_graph_capabilities(&req["params"], id),
 
         _ => JsonRpcResponse {
             jsonrpc: JSONRPC_VERSION.to_owned(),
@@ -299,7 +305,12 @@ fn handle_validate_composition(params: &serde_json::Value, id: u64) -> JsonRpcRe
         );
     };
 
-    let result = validate_composition(atomic);
+    let mode = params["mode"].as_str().unwrap_or("capability");
+    let result = if mode == "identity" {
+        validate_composition(atomic)
+    } else {
+        validate_composition_by_capability(atomic)
+    };
     match serde_json::to_value(result) {
         Ok(val) => success_response(val, id),
         Err(e) => error_response(
@@ -312,26 +323,45 @@ fn handle_validate_composition(params: &serde_json::Value, id: u64) -> JsonRpcRe
 
 fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let atomic_str = params["atomic"].as_str().unwrap_or("FullNucleus");
-    let primals = match atomic_str {
-        "Tower" => AtomicType::Tower.required_primals(),
-        "Node" => AtomicType::Node.required_primals(),
-        "Nest" => AtomicType::Nest.required_primals(),
-        _ => AtomicType::FullNucleus.required_primals(),
-    };
+    let atomic = parse_atomic_type(atomic_str).unwrap_or(AtomicType::FullNucleus);
+    let mode = params["mode"].as_str().unwrap_or("capability");
 
-    let results = discover_for(primals);
-    let summary: Vec<serde_json::Value> = results
-        .iter()
-        .map(|r| {
-            serde_json::json!({
-                "primal": r.primal,
-                "socket": r.socket.as_ref().map(|p| p.display().to_string()),
-                "source": format!("{:?}", r.source),
+    if mode == "identity" {
+        let primals = atomic.required_primals();
+        let results = discover_for(primals);
+        let summary: Vec<serde_json::Value> = results
+            .iter()
+            .map(|r| {
+                serde_json::json!({
+                    "primal": r.primal,
+                    "socket": r.socket.as_ref().map(|p| p.display().to_string()),
+                    "source": format!("{:?}", r.source),
+                })
             })
-        })
-        .collect();
-
-    success_response(serde_json::json!({ "primals": summary }), id)
+            .collect();
+        success_response(
+            serde_json::json!({ "primals": summary, "mode": "identity" }),
+            id,
+        )
+    } else {
+        let capabilities = atomic.required_capabilities();
+        let results = discover_capabilities_for(capabilities);
+        let summary: Vec<serde_json::Value> = results
+            .iter()
+            .map(|r| {
+                serde_json::json!({
+                    "capability": r.capability,
+                    "resolved_primal": r.resolved_primal,
+                    "socket": r.socket.as_ref().map(|p| p.display().to_string()),
+                    "source": format!("{:?}", r.source),
+                })
+            })
+            .collect();
+        success_response(
+            serde_json::json!({ "capabilities": summary, "mode": "capability" }),
+            id,
+        )
+    }
 }
 
 fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
@@ -367,7 +397,7 @@ fn handle_deploy_atomic(params: &serde_json::Value, id: u64) -> JsonRpcResponse 
         None
     };
 
-    let composition = validate_composition(atomic);
+    let composition = validate_composition_by_capability(atomic);
     success_response(
         serde_json::json!({
             "atomic": atomic_str,
@@ -397,8 +427,8 @@ fn handle_bonding_test(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
         }
     };
 
-    let required = AtomicType::FullNucleus.required_primals();
-    let discovered = discover_for(required);
+    let capabilities = AtomicType::FullNucleus.required_capabilities();
+    let discovered = discover_capabilities_for(capabilities);
     let gates = discovered.iter().filter(|d| d.socket.is_some()).count();
 
     success_response(
@@ -406,8 +436,8 @@ fn handle_bonding_test(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
             "bond_type": bond_str,
             "description": bond.description(),
             "gates_discovered": gates,
-            "total_primals": required.len(),
-            "status": if gates >= 2 { "ready" } else { "insufficient_primals" },
+            "total_capabilities": capabilities.len(),
+            "status": if gates >= 2 { "ready" } else { "insufficient_capabilities" },
         }),
         id,
     )
@@ -494,7 +524,7 @@ fn handle_nucleus_lifecycle(action: &str, params: &serde_json::Value, id: u64) -
             "atomic": atomic_str,
             "graph": atomic.graph_name(),
             "graph_exists": graph_file.exists(),
-            "required_primals": atomic.required_primals(),
+            "required_capabilities": atomic.required_capabilities(),
             "status": if graph_file.exists() { "graph_ready" } else { "graph_missing" },
             "note": format!("nucleus.{action} queued — biomeOS orchestrates actual deployment via deploy graph"),
         }),
@@ -550,6 +580,56 @@ fn handle_graph_validate(params: &serde_json::Value, id: u64) -> JsonRpcResponse
     }
 }
 
+fn handle_graph_waves(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let Some(path_str) = params["path"].as_str() else {
+        return error_response(
+            error_codes::INVALID_PARAMS,
+            "missing required 'path' parameter",
+            id,
+        );
+    };
+    let path = std::path::Path::new(path_str);
+    let graph = match primalspring::deploy::load_graph(path) {
+        Ok(g) => g,
+        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &e, id),
+    };
+    match primalspring::deploy::topological_waves(&graph) {
+        Ok(waves) => success_response(
+            serde_json::json!({
+                "graph": graph.graph.name,
+                "waves": waves,
+                "wave_count": waves.len(),
+            }),
+            id,
+        ),
+        Err(e) => error_response(error_codes::INTERNAL_ERROR, &e, id),
+    }
+}
+
+fn handle_graph_capabilities(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let Some(path_str) = params["path"].as_str() else {
+        return error_response(
+            error_codes::INVALID_PARAMS,
+            "missing required 'path' parameter",
+            id,
+        );
+    };
+    let path = std::path::Path::new(path_str);
+    let graph = match primalspring::deploy::load_graph(path) {
+        Ok(g) => g,
+        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &e, id),
+    };
+    let caps = primalspring::deploy::graph_required_capabilities(&graph);
+    success_response(
+        serde_json::json!({
+            "graph": graph.graph.name,
+            "required_capabilities": caps,
+            "count": caps.len(),
+        }),
+        id,
+    )
+}
+
 fn success_response(result: serde_json::Value, id: u64) -> JsonRpcResponse {
     JsonRpcResponse {
         jsonrpc: JSONRPC_VERSION.to_owned(),
@@ -570,13 +650,14 @@ fn print_status() {
         if neural_ok { "reachable" } else { "not found" }
     );
 
-    let required = AtomicType::FullNucleus.required_primals();
-    let discovered = discover_for(required);
+    let capabilities = AtomicType::FullNucleus.required_capabilities();
+    let discovered = discover_capabilities_for(capabilities);
     let found = discovered.iter().filter(|d| d.socket.is_some()).count();
-    println!("primals: {found}/{} discovered", required.len());
+    println!("capabilities: {found}/{} discovered", capabilities.len());
 
     for d in &discovered {
         let status = if d.socket.is_some() { "UP" } else { "DOWN" };
-        println!("  [{status}] {}", d.primal);
+        let provider = d.resolved_primal.as_deref().unwrap_or("unresolved");
+        println!("  [{status}] {} (via {provider})", d.capability);
     }
 }

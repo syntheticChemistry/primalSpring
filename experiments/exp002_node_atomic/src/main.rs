@@ -1,80 +1,42 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp002: Node Atomic — validates beardog, songbird, toadstool socket discovery and Node required primals (Tower + ToadStool).
+//! Exp002: Node Atomic — validates security + discovery + compute capabilities.
+//!
+//! Capability-based validation: discovers providers by what they offer,
+//! not by name. Node = Tower + compute.
 
-use primalspring::coordination::AtomicType;
-use primalspring::ipc::discover::discover_primal;
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
+use primalspring::coordination::{AtomicType, check_capability_health};
+use primalspring::ipc::discover::discover_by_capability;
 use primalspring::validation::ValidationResult;
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp002 — Node Atomic");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp002: Node Atomic (Tower + ToadStool)");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    ValidationResult::run_experiment(
+        "primalSpring Exp002 — Node Atomic",
+        "primalSpring Exp002: Node Atomic (security + discovery + compute)",
+        |v| {
+            let node_caps = AtomicType::Node.required_capabilities();
+            v.check_count("node_required_caps", node_caps.len(), 3);
 
-    // Real check: beardog socket exists
-    let beardog = discover_primal("beardog");
-    v.check_bool(
-        "socket_beardog",
-        beardog.socket.is_some(),
-        &format!(
-            "beardog socket {} (source: {:?})",
-            if beardog.socket.is_some() {
-                "found"
-            } else {
-                "not found"
-            },
-            beardog.source
-        ),
+            for cap in node_caps {
+                let disc = discover_by_capability(cap);
+                let provider = disc.resolved_primal.as_deref().unwrap_or("not found");
+                v.check_or_skip(
+                    &format!("discover_{cap}"),
+                    disc.socket.as_ref(),
+                    &format!("{cap} provider not discovered — not running"),
+                    |path, v| {
+                        v.check_bool(
+                            &format!("discover_{cap}"),
+                            true,
+                            &format!("{cap} provided by {provider} at {}", path.display()),
+                        );
+                    },
+                );
+            }
+
+            for cap in node_caps {
+                check_capability_health(v, cap);
+            }
+        },
     );
-
-    // Real check: songbird socket exists
-    let songbird = discover_primal("songbird");
-    v.check_bool(
-        "socket_songbird",
-        songbird.socket.is_some(),
-        &format!(
-            "songbird socket {} (source: {:?})",
-            if songbird.socket.is_some() {
-                "found"
-            } else {
-                "not found"
-            },
-            songbird.source
-        ),
-    );
-
-    // Real check: toadstool socket exists
-    let toadstool = discover_primal("toadstool");
-    v.check_bool(
-        "socket_toadstool",
-        toadstool.socket.is_some(),
-        &format!(
-            "toadstool socket {} (source: {:?})",
-            if toadstool.socket.is_some() {
-                "found"
-            } else {
-                "not found"
-            },
-            toadstool.source
-        ),
-    );
-
-    // Real check: AtomicType::Node.required_primals() matches expected (3)
-    let node_primals = AtomicType::Node.required_primals();
-    v.check_bool(
-        "node_required_count",
-        node_primals.len() == 3,
-        &format!("Node requires {} primals (expected 3)", node_primals.len()),
-    );
-
-    // Skip: health checks need live primals
-    v.check_skip("health_checks", "needs live primals");
-
-    // Skip: compute.execute needs live primals
-    v.check_skip("compute_execute", "needs live primals");
-
-    v.finish();
-    std::process::exit(v.exit_code());
 }

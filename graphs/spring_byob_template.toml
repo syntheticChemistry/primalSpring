@@ -136,4 +136,5 @@ order = 99
 required = false
 depends_on = ["${SPRING_NAME}"]
 health_method = "health.liveness"
+by_capability = "coordination"
 capabilities = ["coordination.validate_composition"]

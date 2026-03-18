@@ -19,6 +19,7 @@ binary = "beardog_primal"
 order = 1
 required = true
 health_method = "health"
+by_capability = "security"
 capabilities = ["crypto.identity"]
 
 # ── Node 2: NestGate (fetch) ───────────────────────────────────────────
@@ -29,6 +30,7 @@ order = 2
 required = true
 depends_on = ["beardog"]
 health_method = "health"
+by_capability = "storage"
 capabilities = ["storage.retrieve", "storage.fetch"]
 
 # ── Node 3: primalSpring (transform) ───────────────────────────────────
@@ -39,6 +41,7 @@ order = 3
 required = true
 depends_on = ["nestgate"]
 health_method = "health.check"
+by_capability = "coordination"
 capabilities = ["coordination.transform", "pipeline.transform"]
 
 # ── Node 4: sweetGrass (attribute) ─────────────────────────────────────
@@ -49,4 +52,5 @@ order = 4
 required = false
 depends_on = ["primalspring"]
 health_method = "provenance.health"
+by_capability = "provenance"
 capabilities = ["provenance.create_braid", "provenance.attribute"]

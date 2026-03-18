@@ -1,80 +1,42 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp003: Nest Atomic — validates beardog, songbird, nestgate socket discovery and Nest required primals (Tower + NestGate).
+//! Exp003: Nest Atomic — validates security + discovery + storage capabilities.
+//!
+//! Capability-based validation: discovers providers by what they offer,
+//! not by name. Nest = Tower + storage.
 
-use primalspring::coordination::AtomicType;
-use primalspring::ipc::discover::discover_primal;
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
+use primalspring::coordination::{AtomicType, check_capability_health};
+use primalspring::ipc::discover::discover_by_capability;
 use primalspring::validation::ValidationResult;
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp003 — Nest Atomic");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp003: Nest Atomic (Tower + NestGate)");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    ValidationResult::run_experiment(
+        "primalSpring Exp003 — Nest Atomic",
+        "primalSpring Exp003: Nest Atomic (security + discovery + storage)",
+        |v| {
+            let nest_caps = AtomicType::Nest.required_capabilities();
+            v.check_count("nest_required_caps", nest_caps.len(), 3);
 
-    // Real check: beardog socket exists
-    let beardog = discover_primal("beardog");
-    v.check_bool(
-        "socket_beardog",
-        beardog.socket.is_some(),
-        &format!(
-            "beardog socket {} (source: {:?})",
-            if beardog.socket.is_some() {
-                "found"
-            } else {
-                "not found"
-            },
-            beardog.source
-        ),
+            for cap in nest_caps {
+                let disc = discover_by_capability(cap);
+                let provider = disc.resolved_primal.as_deref().unwrap_or("not found");
+                v.check_or_skip(
+                    &format!("discover_{cap}"),
+                    disc.socket.as_ref(),
+                    &format!("{cap} provider not discovered — not running"),
+                    |path, v| {
+                        v.check_bool(
+                            &format!("discover_{cap}"),
+                            true,
+                            &format!("{cap} provided by {provider} at {}", path.display()),
+                        );
+                    },
+                );
+            }
+
+            for cap in nest_caps {
+                check_capability_health(v, cap);
+            }
+        },
     );
-
-    // Real check: songbird socket exists
-    let songbird = discover_primal("songbird");
-    v.check_bool(
-        "socket_songbird",
-        songbird.socket.is_some(),
-        &format!(
-            "songbird socket {} (source: {:?})",
-            if songbird.socket.is_some() {
-                "found"
-            } else {
-                "not found"
-            },
-            songbird.source
-        ),
-    );
-
-    // Real check: nestgate socket exists
-    let nestgate = discover_primal("nestgate");
-    v.check_bool(
-        "socket_nestgate",
-        nestgate.socket.is_some(),
-        &format!(
-            "nestgate socket {} (source: {:?})",
-            if nestgate.socket.is_some() {
-                "found"
-            } else {
-                "not found"
-            },
-            nestgate.source
-        ),
-    );
-
-    // Real check: AtomicType::Nest.required_primals() matches expected (3)
-    let nest_primals = AtomicType::Nest.required_primals();
-    v.check_bool(
-        "nest_required_count",
-        nest_primals.len() == 3,
-        &format!("Nest requires {} primals (expected 3)", nest_primals.len()),
-    );
-
-    // Skip: storage.store needs live primals
-    v.check_skip("storage_store", "needs live primals");
-
-    // Skip: storage.retrieve needs live primals
-    v.check_skip("storage_retrieve", "needs live primals");
-
-    v.finish();
-    std::process::exit(v.exit_code());
 }

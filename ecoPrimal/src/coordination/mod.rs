@@ -328,6 +328,56 @@ pub fn check_primal_health(v: &mut crate::validation::ValidationResult, primal: 
     }
 }
 
+/// Probe a capability provider's health and record check results on a
+/// [`crate::validation::ValidationResult`].
+///
+/// Capability-based analog of [`check_primal_health`]: discovers whatever
+/// primal provides the given capability at runtime, then records health,
+/// latency, and capabilities checks. Never hardcodes primal names.
+pub fn check_capability_health(v: &mut crate::validation::ValidationResult, capability: &str) {
+    let disc = crate::ipc::discover::discover_by_capability(capability);
+    let provider = disc.resolved_primal.as_deref().unwrap_or("unresolved");
+
+    if let Some(ref socket) = disc.socket {
+        let start = std::time::Instant::now();
+        let (health_ok, caps) = crate::ipc::client::PrimalClient::connect(socket, provider)
+            .map_or_else(
+                |_| (false, Vec::new()),
+                |mut c| {
+                    let h = c.health_check().unwrap_or(false);
+                    let caps = extract_capability_names(c.capabilities().ok());
+                    (h, caps)
+                },
+            );
+        let latency_us = crate::cast::micros_u64(start.elapsed());
+
+        v.check_bool(
+            &format!("health_{capability}"),
+            health_ok,
+            &format!("{capability} provider ({provider}) health.check"),
+        );
+        v.check_latency(
+            &format!("latency_{capability}"),
+            latency_us,
+            tolerances::HEALTH_CHECK_MAX_US,
+        );
+        v.check_minimum(&format!("caps_{capability}"), caps.len(), 1);
+    } else {
+        v.check_skip(
+            &format!("health_{capability}"),
+            &format!("{capability} provider not discovered"),
+        );
+        v.check_skip(
+            &format!("latency_{capability}"),
+            &format!("{capability} provider not discovered"),
+        );
+        v.check_skip(
+            &format!("caps_{capability}"),
+            &format!("{capability} provider not discovered"),
+        );
+    }
+}
+
 fn extract_capability_names(caps: Option<serde_json::Value>) -> Vec<String> {
     let Some(val) = caps else {
         return Vec::new();
@@ -473,6 +523,16 @@ mod tests {
     #[test]
     fn extract_capability_names_from_none() {
         assert!(extract_capability_names(None).is_empty());
+    }
+
+    #[test]
+    fn check_capability_health_graceful_when_not_running() {
+        use crate::validation::{NullSink, ValidationResult};
+        use std::sync::Arc;
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        check_capability_health(&mut v, "nonexistent_capability_xyzzy_12345");
+        assert_eq!(v.skipped, 3, "should skip health, latency, caps");
+        assert_eq!(v.failed, 0);
     }
 
     #[test]

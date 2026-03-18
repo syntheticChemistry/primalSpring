@@ -19,6 +19,7 @@ binary = "beardog_primal"
 order = 1
 required = true
 health_method = "health"
+by_capability = "security"
 capabilities = ["crypto.sign"]
 
 # ── Node 2: Songbird (net.discovery) ──────────────────────────────────
@@ -28,6 +29,7 @@ binary = "songbird_primal"
 order = 2
 required = true
 health_method = "health"
+by_capability = "discovery"
 capabilities = ["net.discovery"]
 
 # ── Node 3: NestGate (storage.health) ──────────────────────────────────
@@ -37,6 +39,7 @@ binary = "nestgate_primal"
 order = 3
 required = false
 health_method = "health"
+by_capability = "storage"
 capabilities = ["storage.health"]
 
 # ── Node 4: ToadStool (compute.health) ────────────────────────────────
@@ -46,4 +49,5 @@ binary = "toadstool_primal"
 order = 4
 required = false
 health_method = "compute.health"
+by_capability = "compute"
 capabilities = ["compute.health"]

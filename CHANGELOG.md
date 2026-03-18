@@ -6,28 +6,48 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased] — v0.3.0
 
 ### Added
+- **Capability-first architecture** — all RPC handlers, discovery, and experiments default
+  to capability-based resolution; identity-based is retained as `mode: "identity"` fallback
+- `topological_waves()` — Kahn's algorithm startup wave computation from deploy graph DAGs
+- `graph_required_capabilities()` — graph-as-source-of-truth capability extraction
+- `validate_live_by_capability()` — live validation using capability-first node probing
+- `check_capability_health()` — capability-based analog of `check_primal_health()`
+- `graph.waves` RPC endpoint — topological startup ordering from deploy graphs
+- `graph.capabilities` RPC endpoint — required capabilities extracted from graph nodes
+- `coordination.probe_capability` RPC endpoint — probe a single capability provider
+- `coordination.validate_composition_by_capability` RPC endpoint
+- `by_capability` on all 11 deploy graph TOML nodes (enforced by test)
+- `IpcErrorPhase` and `PhasedIpcError` — phase-aware IPC error context
+- `discover_remote_tools()` — spring tool discovery via `mcp.tools.list`
 - `deny.toml` — ecoBin 14-crate C-dep ban (aligned with airSpring, wetSpring, groundSpring)
 - `LICENSE` file — AGPL-3.0-or-later full text at repo root
 - `CHANGELOG.md` — this file
 - `ValidationResult::with_provenance()` — structured provenance metadata on validation results
+- `ValidationResult::run_experiment()` / `print_banner()` — shared experiment boilerplate helpers
 - MCP tool definitions — `mcp.tools.list` method for Squirrel AI coordination tool discovery
 - `config/capability_registry.toml` — single source of truth for 21 niche capabilities
 - Manifest discovery fallback — `$XDG_RUNTIME_DIR/ecoPrimals/manifests/*.json`
 - Socket registry fallback — `$XDG_RUNTIME_DIR/biomeos/socket-registry.json`
-- Resilience constants — `CIRCUIT_BREAKER_THRESHOLD`, `CIRCUIT_BREAKER_TIMEOUT_SECS`,
-  `RETRY_MAX_ATTEMPTS`, `RETRY_BASE_DELAY_MS`, `RETRY_MAX_DELAY_MS` in `tolerances/`
+- Resilience constants in `tolerances/` — circuit breaker, retry, cost-estimate named constants
 - `JSONRPC_VERSION` constant — eliminates `"2.0"` string repetition
 - Proptest IPC fuzz expansion — `extract_rpc_result`, `classify_response`, capability parsing
-- `or_exit` tests — coverage from 0% to full
-- `niche.rs` registration path tests
-- `deploy.rs` coverage improvements
+- 11 new deploy tests — topological waves, cycle detection, all-graphs-acyclic, by_capability enforcement
+- 236 tests total (225 unit + 10 integration + 1 doc-test)
 
 ### Changed
+- `handle_validate_composition` — defaults to capability-based validation
+- `handle_discovery_sweep` — returns capabilities by default (mode=capability)
+- `handle_deploy_atomic` — uses `validate_composition_by_capability()`
+- `handle_bonding_test` — discovers by capability instead of primal roster
+- `handle_nucleus_lifecycle` — emits `required_capabilities` instead of `required_primals`
+- `print_status` — shows capability discovery status with provider names
+- exp001–004 — evolved from identity-based to capability-based discovery
+- exp006 — evolved from primal subset checks to `topological_waves()` from real graphs
+- exp051 — evolved from `discover_for()` to `discover_capabilities_for()`
 - `deploy::validate_live()` — `.expect()` replaced with proper `Result` propagation
-- Workspace lints — `"allow"` migrated to `#[expect(reason)]` convention
 - `coordination/mod.rs` — circuit breaker and retry parameters extracted to named constants
 - `protocol.rs` — `"2.0"` literals replaced with `JSONRPC_VERSION`
-- Discovery — capability-based with manifest and socket-registry fallbacks
+- `niche.rs` — biomeOS registration target configurable via `BIOMEOS_PRIMAL` env var
 - Formatting — `cargo fmt --all` applied (import ordering, line wrapping)
 
 ### Fixed

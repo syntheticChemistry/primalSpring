@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: March 18, 2026  
-**Status**: Phase 2→3 — 38 experiments, 7 tracks, MCP tools, 5-tier discovery, 195 tests
+**Status**: Phase 3 — 38 experiments, 7 tracks, capability-first architecture, topological waves, 236 tests
 
 ---
 
@@ -15,10 +15,10 @@ produces. The review queue tracks which patterns are ready for validation.
 
 | Priority | Pattern | Track | Status | Dependencies |
 |----------|---------|-------|--------|-------------|
-| P0 | Tower Atomic (BearDog + Songbird) | 1 | **IPC wired** | Live BearDog + Songbird |
-| P0 | Node Atomic (Tower + ToadStool) | 1 | Discovery wired | Tower Atomic validated |
-| P0 | Nest Atomic (Tower + NestGate) | 1 | Discovery wired | Tower Atomic validated |
-| P0 | Full NUCLEUS | 1 | **IPC wired** | Live NUCLEUS deployment |
+| P0 | Tower Atomic (security + discovery) | 1 | **Capability-based** | Live security + discovery providers |
+| P0 | Node Atomic (Tower + compute) | 1 | **Capability-based** | Tower Atomic validated |
+| P0 | Nest Atomic (Tower + storage) | 1 | **Capability-based** | Tower Atomic validated |
+| P0 | Full NUCLEUS (all 8 capabilities) | 1 | **Capability-based** | Live NUCLEUS deployment |
 | P1 | Sequential graph execution | 2 | Discovery wired | Full NUCLEUS |
 | P1 | Parallel graph execution | 2 | Discovery wired | Full NUCLEUS |
 | P1 | ConditionalDag execution | 2 | Discovery wired | Full NUCLEUS |

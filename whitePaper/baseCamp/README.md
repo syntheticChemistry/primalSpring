@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 18, 2026
-**Status**: Phase 2→3 evolution — 38 experiments, 195 tests, 89.8% coverage, MCP tools, 5-tier discovery
+**Status**: Phase 3 — capability-first architecture, 38 experiments, 236 tests, topological wave ordering, graph-as-source-of-truth
 
 ---
 
@@ -34,52 +34,54 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Metric | Value |
 |--------|-------|
 | Experiments | 38 (7 tracks) |
-| Unit tests | 186 |
-| Integration tests | 9 (real JSON-RPC round-trips against live server) |
-| Line coverage | 89.8% (llvm-cov) |
-| Function coverage | 92.8% (llvm-cov) |
+| Unit tests | 225 |
+| Integration tests | 10 (real JSON-RPC round-trips against live server) |
+| Doc-tests | 1 |
+| Total tests | **236** |
 | Proptest fuzz tests | 15 (IPC protocol, extract, capability parsing) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
-| `#[expect()]` with reason | 3 (safe cast boundaries only) |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| IPC client | Real Unix socket client with JSON-RPC 2.0 |
-| IPC resilience | IpcError, CircuitBreaker, RetryPolicy, resilient_call, DispatchOutcome |
-| Capability parsing | 4-format (A/B/C/D) |
-| Discovery | 5-tier: env/XDG/temp/manifest/socket-registry + Neural API |
-| Niche self-knowledge | `niche.rs` — 22 capabilities, semantic mappings, cost estimates, registration |
-| Capability registry | `config/capability_registry.toml` sync-tested against code |
+| Deploy graphs | 11 TOMLs, all nodes have `by_capability`, topologically validated |
+| Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
+| RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
+| Niche self-knowledge | `niche.rs` — 22 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
-| Deploy graph validation | `deploy.rs` — parse, structural validate, live probe all 6 TOMLs |
-| Validation | `check_bool`, `check_skip`, `check_or_skip` + structured `Provenance` metadata |
-| Exit pattern | Uniform `finish()` + `exit_code()` with JSON output support |
+| Validation harness | `check_bool`, `check_skip`, `check_or_skip`, `run_experiment()`, `print_banner()` |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 
 ## What Changed (v0.2.0 → v0.3.0-dev)
 
-1. **MCP tool definitions** — 8 typed tools with JSON Schema for Squirrel AI discovery
-2. **5-tier discovery** — Manifest files + socket registry fallbacks (from biomeOS v2.50, Squirrel alpha.12)
-3. **Structured provenance** — `Provenance { source, baseline_date, description }` on `ValidationResult`
-4. **Capability registry TOML** — `config/capability_registry.toml` sync-tested against `niche::CAPABILITIES`
-5. **`deny.toml`** — 14-crate ecoBin C-dep ban
-6. **Proptest expansion** — 15 fuzz tests (up from 5): extract, dispatch, capability parsing
-7. **Coverage** — 86.0% → 89.8% line, 89.9% → 92.8% function
-8. **`deploy.rs` TOCTOU fix** — `.expect()` replaced with graceful `Result` propagation
-9. **Resilience constants** — Circuit breaker and retry parameters extracted to `tolerances/mod.rs`
-10. **`JSONRPC_VERSION` constant** — Eliminates `"2.0"` repetition across 9 sites
-11. **Graphs path** — Runtime-resolvable via `PRIMALSPRING_GRAPHS_DIR` env
-12. **LICENSE** file + **CHANGELOG.md** added
+### Capability-First Architecture (latest sprint)
+1. **Capability-based RPC handlers** — all coordination handlers default to capability-based validation; identity-based retained as `mode: "identity"` fallback
+2. **`topological_waves()`** — Kahn's algorithm startup wave computation from deploy graph DAGs
+3. **`graph_required_capabilities()`** — graphs as authoritative source of truth for capability rosters
+4. **`by_capability` on all graph nodes** — 11 TOML graphs, enforced by test
+5. **New RPC endpoints** — `graph.waves`, `graph.capabilities`, `coordination.probe_capability`, `coordination.validate_composition_by_capability`
+6. **`check_capability_health()`** — capability-based analog of `check_primal_health()`
+7. **Experiments evolved** — exp001-004, exp006, exp051 migrated from identity-based to capability-based discovery
+8. **`IpcErrorPhase` + `PhasedIpcError`** — phase-aware IPC error context
+9. **`discover_remote_tools()`** — spring tool discovery via `mcp.tools.list`
+10. **236 tests** — up from 195 (+41); 10 integration tests (up from 9)
 
-## What Remains (Phase 3+)
+### Earlier v0.3.0 Changes
+11. **MCP tool definitions** — 8 typed tools with JSON Schema for Squirrel AI discovery
+12. **5-tier discovery** — Manifest files + socket registry fallbacks
+13. **Structured provenance** — `Provenance { source, baseline_date, description }`
+14. **`deny.toml`** — 14-crate ecoBin C-dep ban
+15. **Proptest expansion** — 15 fuzz tests
+16. **`deploy.rs` TOCTOU fix** — graceful `Result` propagation
 
-- Tolerance calibration against live NUCLEUS deployment
-- biomeOS graph executor integration (deploy graphs are validated but not executed)
-- Songbird registration on startup (ecosystem-wide gap)
-- Live primal validation (Phase 3: Tower Atomic → Phase 4: Full NUCLEUS)
-- `cargo llvm-cov` CI integration with 90% floor
+## What Remains (Phase 4+)
+
+- Live NUCLEUS deployment with real primals running
+- biomeOS graph executor integration (graphs validated + topologically sorted but not executed)
+- Beacon coordination validation (generate → encrypt → exchange → decrypt chain)
 - Protocol escalation (JSON-RPC → tarpc sidecar from biomeOS v2.50)
+- `cargo llvm-cov` CI integration with 90% floor
+- Full experiment migration — remaining 32 experiments still use `discover_primal()` where applicable
 
 ---
 

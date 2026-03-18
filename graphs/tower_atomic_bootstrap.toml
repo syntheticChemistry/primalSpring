@@ -58,6 +58,7 @@ order = 3
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
+by_capability = "coordination"
 args = ["server"]
 capabilities = [
     "composition.tower_health",

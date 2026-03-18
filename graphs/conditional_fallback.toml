@@ -19,6 +19,7 @@ binary = "beardog_primal"
 order = 1
 required = true
 health_method = "health"
+by_capability = "security"
 capabilities = ["crypto.identity"]
 
 # ── Node 2: Songbird (network) ─────────────────────────────────────────
@@ -29,6 +30,7 @@ order = 2
 required = true
 depends_on = ["beardog"]
 health_method = "health"
+by_capability = "discovery"
 capabilities = ["net.discovery"]
 
 # ── Node 3: ToadStool (GPU dispatch — primary path) ────────────────────
@@ -39,6 +41,7 @@ order = 3
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "compute.health"
+by_capability = "compute"
 capabilities = ["compute.dispatch.submit"]
 condition = "toadstool_available"
 skip_if = "toadstool_unavailable"
@@ -51,5 +54,6 @@ order = 4
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.check"
+by_capability = "compute"
 capabilities = ["compute.cpu_fallback"]
 condition = "toadstool_unavailable"
