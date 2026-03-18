@@ -26,3 +26,6 @@ workspace = true
 [[bin]]
 name = "primalspring_primal"
 path = "src/bin/primalspring_primal/main.rs"
+
+[dev-dependencies]
+proptest = "1.10.0"

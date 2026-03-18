@@ -3,6 +3,7 @@
 //! Exp011: Parallel Graph — validates CoordinationPattern::Parallel description for parallel capability burst.
 
 use primalspring::graphs::CoordinationPattern;
+use primalspring::ipc::discover::neural_api_healthy;
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -16,6 +17,26 @@ fn main() {
         "parallel_description_exists",
         !desc.is_empty(),
         &format!("CoordinationPattern::Parallel.description() exists: {desc}"),
+    );
+
+    let neural_ok = neural_api_healthy();
+    if neural_ok {
+        v.check_bool("neural_api", true, "biomeOS Neural API reachable");
+    } else {
+        v.check_skip("neural_api", "biomeOS Neural API not reachable");
+    }
+
+    v.check_or_skip(
+        "graph_deployment",
+        neural_ok.then_some(()),
+        "Neural API unavailable — cannot deploy graph",
+        |(), v| {
+            v.check_bool(
+                "graph_deployment",
+                true,
+                "Neural API ready for graph deployment",
+            );
+        },
     );
 
     v.check_skip(

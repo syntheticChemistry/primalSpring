@@ -9,6 +9,16 @@
 //!
 //! Ecosystem-wide sweep discovery uses the Neural API to learn what primals
 //! are registered at runtime. primalSpring never hardcodes a primal roster.
+//!
+//! # Capability Parsing
+//!
+//! Primals return capabilities in up to 4 wire formats. The
+//! [`extract_capability_names`] function handles all of them:
+//!
+//! - **Format A** — flat string array: `["crypto.sign", "crypto.verify"]`
+//! - **Format B** — object array: `[{"method": "crypto.sign"}]`
+//! - **Format C** — nested `method_info`: `{"method_info": [{"name": "crypto.sign"}]}`
+//! - **Format D** — double-nested `semantic_mappings`: `{"semantic_mappings": {"crypto": {"sign": {}}}}`
 
 use std::path::{Path, PathBuf};
 
@@ -51,6 +61,7 @@ pub fn build_socket_path(base_dir: &Path, primal: &str, family: &str) -> PathBuf
 /// Compute the conventional socket path for a primal.
 ///
 /// Uses `$XDG_RUNTIME_DIR` if set, otherwise `std::env::temp_dir()`.
+/// Respects `$FAMILY_ID` for multi-tenant socket paths.
 #[must_use]
 pub fn socket_path(primal: &str) -> PathBuf {
     let base =
@@ -148,6 +159,73 @@ pub fn discover_capabilities(capability: &str) -> Option<serde_json::Value> {
     neural_bridge().and_then(|b| b.discover_capability(capability).ok())
 }
 
+/// Extract capability method names from any of the 4 ecosystem wire formats.
+///
+/// Handles:
+/// - **Format A** — flat string array: `["crypto.sign", "crypto.verify"]`
+/// - **Format B** — object array: `[{"method": "crypto.sign", ...}]`
+/// - **Format C** — nested `method_info`: `{"method_info": [{"name": "crypto.sign", ...}]}`
+/// - **Format D** — double-nested `semantic_mappings`: `{"semantic_mappings": {"crypto": {"sign": {}}}}`
+///
+/// Returns an empty `Vec` if the input is `None` or an unrecognised format.
+#[must_use]
+pub fn extract_capability_names(caps: Option<serde_json::Value>) -> Vec<String> {
+    let Some(val) = caps else {
+        return Vec::new();
+    };
+    match &val {
+        // Format A: ["method.name", ...]
+        serde_json::Value::Array(arr) => extract_from_array(arr),
+
+        serde_json::Value::Object(map) => {
+            // Format C: {"method_info": [{"name": "...", ...}]}
+            if let Some(serde_json::Value::Array(info)) = map.get("method_info") {
+                return info
+                    .iter()
+                    .filter_map(|item| item.get("name")?.as_str().map(String::from))
+                    .collect();
+            }
+
+            // Format D: {"semantic_mappings": {"domain": {"verb": {...}}}}
+            if let Some(serde_json::Value::Object(domains)) = map.get("semantic_mappings") {
+                return domains
+                    .iter()
+                    .flat_map(|(domain, verbs)| {
+                        if let serde_json::Value::Object(verb_map) = verbs {
+                            verb_map
+                                .keys()
+                                .map(|verb| format!("{domain}.{verb}"))
+                                .collect::<Vec<_>>()
+                        } else {
+                            vec![domain.clone()]
+                        }
+                    })
+                    .collect();
+            }
+
+            // Fallback: treat top-level object keys as capability names
+            map.keys().cloned().collect()
+        }
+        _ => Vec::new(),
+    }
+}
+
+/// Extract names from a JSON array (Formats A and B).
+fn extract_from_array(arr: &[serde_json::Value]) -> Vec<String> {
+    arr.iter()
+        .filter_map(|v| {
+            // Format A: bare strings
+            if let Some(s) = v.as_str() {
+                return Some(s.to_owned());
+            }
+            // Format B: {"method": "name"} objects
+            v.get("method")
+                .and_then(serde_json::Value::as_str)
+                .map(String::from)
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -206,7 +284,6 @@ mod tests {
 
     #[test]
     fn neural_bridge_returns_none_when_no_biomeos() {
-        // Neural API is not running in test environment
         assert!(neural_bridge().is_none());
     }
 
@@ -226,5 +303,70 @@ mod tests {
         if result.socket.is_none() {
             assert_eq!(result.source, DiscoverySource::NotFound);
         }
+    }
+
+    // --- 4-format capability parsing tests ---
+
+    #[test]
+    fn format_a_flat_string_array() {
+        let val = serde_json::json!(["crypto.sign", "crypto.verify", "storage.put"]);
+        let names = extract_capability_names(Some(val));
+        assert_eq!(names, vec!["crypto.sign", "crypto.verify", "storage.put"]);
+    }
+
+    #[test]
+    fn format_b_object_array() {
+        let val = serde_json::json!([
+            {"method": "crypto.sign", "version": "1.0"},
+            {"method": "crypto.verify"},
+        ]);
+        let names = extract_capability_names(Some(val));
+        assert_eq!(names, vec!["crypto.sign", "crypto.verify"]);
+    }
+
+    #[test]
+    fn format_c_method_info() {
+        let val = serde_json::json!({
+            "method_info": [
+                {"name": "crypto.sign", "params": []},
+                {"name": "crypto.verify", "params": []},
+            ]
+        });
+        let names = extract_capability_names(Some(val));
+        assert_eq!(names, vec!["crypto.sign", "crypto.verify"]);
+    }
+
+    #[test]
+    fn format_d_semantic_mappings() {
+        let val = serde_json::json!({
+            "semantic_mappings": {
+                "crypto": {"sign": {}, "verify": {}},
+                "storage": {"put": {}},
+            }
+        });
+        let names = extract_capability_names(Some(val));
+        assert!(names.contains(&"crypto.sign".to_owned()));
+        assert!(names.contains(&"crypto.verify".to_owned()));
+        assert!(names.contains(&"storage.put".to_owned()));
+    }
+
+    #[test]
+    fn fallback_object_keys() {
+        let val = serde_json::json!({"crypto": {}, "storage": {}});
+        let names = extract_capability_names(Some(val));
+        assert!(names.contains(&"crypto".to_owned()));
+        assert!(names.contains(&"storage".to_owned()));
+    }
+
+    #[test]
+    fn extract_from_none() {
+        assert!(extract_capability_names(None).is_empty());
+    }
+
+    #[test]
+    fn mixed_format_b_array() {
+        let val = serde_json::json!(["direct.method", {"method": "object.method"}]);
+        let names = extract_capability_names(Some(val));
+        assert_eq!(names, vec!["direct.method", "object.method"]);
     }
 }

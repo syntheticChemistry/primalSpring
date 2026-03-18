@@ -2,6 +2,7 @@
 
 //! Exp025: CoralForge Pipeline — validates pipeline graph over neuralSpring + wetSpring + toadStool.
 
+use primalspring::coordination::probe_primal;
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::validation::ValidationResult;
@@ -29,6 +30,36 @@ fn main() {
         toadstool.primal == "toadstool" && path.to_string_lossy().contains("toadstool"),
         "discover toadstool socket path",
     );
+
+    let coralreef = discover_primal("coralreef");
+    let nestgate = discover_primal("nestgate");
+    for (name, discovery) in [
+        ("toadstool", toadstool),
+        ("coralreef", coralreef),
+        ("nestgate", nestgate),
+    ] {
+        v.check_or_skip(
+            &format!("probe_{name}"),
+            discovery.socket.as_ref(),
+            &format!("{name} socket not found"),
+            |_, v| {
+                let health = probe_primal(name);
+                v.check_bool(
+                    &format!("{name}_health"),
+                    health.health_ok,
+                    &format!(
+                        "health ok: {}, latency: {}µs",
+                        health.health_ok, health.latency_us
+                    ),
+                );
+                v.check_bool(
+                    &format!("{name}_capabilities"),
+                    !health.capabilities.is_empty(),
+                    &format!("capabilities: {:?}", health.capabilities),
+                );
+            },
+        );
+    }
 
     v.check_skip(
         "actual_pipeline_execution",

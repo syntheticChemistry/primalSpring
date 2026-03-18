@@ -3,6 +3,7 @@
 //! Exp023: RPGPT Session — validates 60Hz game engine tick and provenance.
 
 use primalspring::emergent::EmergentSystem;
+use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
 use primalspring::tolerances::TICK_BUDGET_60HZ_US;
 use primalspring::validation::ValidationResult;
 
@@ -26,6 +27,33 @@ fn main() {
         "tick_budget_60hz_correct",
         within_tolerance,
         &format!("TICK_BUDGET_60HZ_US is correct for 60Hz (16_667 ± 1): {TICK_BUDGET_60HZ_US}µs"),
+    );
+
+    v.check_or_skip(
+        "biomeos_neural_api_health",
+        Some(()).filter(|()| neural_api_healthy()),
+        "Neural API not reachable — biomeOS not running",
+        |(), v| {
+            v.check_bool(
+                "biomeos_healthy",
+                true,
+                "Neural API health check OK (biomeOS reachable)",
+            );
+        },
+    );
+
+    let ludospring = discover_primal("ludospring");
+    v.check_bool(
+        "discover_ludospring",
+        ludospring.primal == "ludospring",
+        &format!(
+            "discover ludospring (RPGPT cross-spring): socket {}",
+            if ludospring.socket.is_some() {
+                "found"
+            } else {
+                "not found"
+            }
+        ),
     );
 
     v.check_skip("actual_session", "actual RPGPT session needs live IPC");

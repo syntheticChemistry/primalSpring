@@ -3,7 +3,8 @@
 //! Exp031: Ionic Bond — validates cross-family limited capability sharing.
 
 use primalspring::bonding::BondType;
-use primalspring::ipc::discover::discover_primal;
+use primalspring::coordination::probe_primal;
+use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -22,12 +23,46 @@ fn main() {
         ),
     );
 
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
+    let path_beardog = socket_path("beardog");
+    let path_contains_family = path_beardog
+        .to_string_lossy()
+        .contains(&format!("-{family_id}.sock"));
+    v.check_bool(
+        "socket_path_includes_family_id",
+        path_contains_family,
+        &format!(
+            "socket path includes FAMILY_ID: {} (path: {})",
+            family_id,
+            path_beardog.display()
+        ),
+    );
+
     let beardog = discover_primal("beardog");
     v.check_bool(
         "discover_beardog_returns_result",
         beardog.primal == "beardog",
         "discover_primal returns DiscoveryResult for beardog",
     );
+    let songbird = discover_primal("songbird");
+    for (name, discovery) in [("beardog", beardog), ("songbird", songbird)] {
+        v.check_or_skip(
+            &format!("probe_{name}"),
+            discovery.socket.as_ref(),
+            &format!("{name} socket not found (Tower primitive)"),
+            |_, v| {
+                let health = probe_primal(name);
+                v.check_bool(
+                    &format!("{name}_health"),
+                    health.health_ok,
+                    &format!(
+                        "health ok: {}, latency: {}µs",
+                        health.health_ok, health.latency_us
+                    ),
+                );
+            },
+        );
+    }
 
     v.check_skip(
         "cross_family_capability_sharing",

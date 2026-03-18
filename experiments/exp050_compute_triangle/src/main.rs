@@ -2,8 +2,33 @@
 
 //! Exp050: Compute Triangle — validates coralReef → toadStool → barraCuda pipeline.
 
-use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_path};
+use std::time::Instant;
+
+use primalspring::cast;
+use primalspring::ipc::client::PrimalClient;
+use primalspring::ipc::discover::{
+    DiscoverySource, discover_primal, extract_capability_names, socket_path,
+};
+use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
+
+fn probe_primal_with_liveness_readiness(
+    name: &str,
+    socket: &std::path::Path,
+) -> Option<(bool, bool, u64, Vec<String>)> {
+    let mut client = PrimalClient::connect(socket, name).ok()?;
+    let start = Instant::now();
+    let liveness = client.health_liveness().unwrap_or(false);
+    let readiness = if liveness {
+        client.health_readiness().unwrap_or(false)
+    } else {
+        false
+    };
+    let caps = client.capabilities().ok();
+    let latency_us = cast::micros_u64(start.elapsed());
+    let capability_names = extract_capability_names(caps);
+    Some((liveness, readiness, latency_us, capability_names))
+}
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp050 — Compute Triangle");
@@ -44,6 +69,47 @@ fn main() {
         valid_paths,
         "socket_path returns valid-looking paths for toadstool, coralreef, barracuda",
     );
+
+    for (primal, display_name) in [
+        ("toadstool", "toadStool"),
+        ("coralreef", "coralReef"),
+        ("barracuda", "barraCuda"),
+    ] {
+        let discovery = discover_primal(primal);
+        v.check_or_skip(
+            &format!("{primal}_probe"),
+            discovery.socket.as_ref(),
+            &format!("{display_name} not reachable"),
+            |path, v| {
+                if let Some((liveness, readiness, latency_us, caps)) =
+                    probe_primal_with_liveness_readiness(primal, path)
+                {
+                    v.check_bool(
+                        &format!("{primal}_liveness"),
+                        liveness,
+                        &format!("{display_name} health.liveness"),
+                    );
+                    v.check_bool(
+                        &format!("{primal}_readiness"),
+                        readiness,
+                        &format!("{display_name} health.readiness"),
+                    );
+                    v.check_latency(
+                        &format!("{primal}_latency"),
+                        latency_us,
+                        tolerances::HEALTH_CHECK_MAX_US,
+                    );
+                    v.check_minimum(&format!("{primal}_capabilities"), caps.len(), 1);
+                } else {
+                    v.check_bool(
+                        &format!("{primal}_connect"),
+                        false,
+                        &format!("{display_name} connection failed"),
+                    );
+                }
+            },
+        );
+    }
 
     v.check_skip(
         "compile_dispatch_pipeline",

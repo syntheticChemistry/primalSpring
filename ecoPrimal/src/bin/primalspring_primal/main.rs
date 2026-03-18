@@ -15,6 +15,7 @@ use clap::{Parser, Subcommand};
 use primalspring::coordination::{AtomicType, validate_composition};
 use primalspring::ipc::discover::{discover_for, neural_api_healthy, socket_path};
 use primalspring::ipc::protocol::{JsonRpcError, JsonRpcResponse, error_codes};
+use primalspring::{PRIMAL_DOMAIN, PRIMAL_NAME};
 
 #[derive(Parser)]
 #[command(
@@ -57,13 +58,13 @@ fn main() {
 }
 
 fn server_socket_path() -> PathBuf {
-    socket_path("primalspring")
+    socket_path(PRIMAL_NAME)
 }
 
 fn run_server() {
     let sock_path = server_socket_path();
-    tracing::info!("primalSpring server starting...");
-    tracing::info!(domain = "coordination, composition, nucleus");
+    tracing::info!("{PRIMAL_NAME} server starting...");
+    tracing::info!(domain = PRIMAL_DOMAIN);
     tracing::info!(socket = %sock_path.display());
 
     if let Some(parent) = sock_path.parent() {
@@ -142,20 +143,40 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
     let method = req["method"].as_str().unwrap_or("");
 
     match method {
-        "health.check" => success_response(
+        "health.check" | "health.liveness" => success_response(
             serde_json::json!({
                 "status": "healthy",
-                "primal": "primalspring",
+                "primal": PRIMAL_NAME,
+                "domain": PRIMAL_DOMAIN,
                 "version": env!("CARGO_PKG_VERSION"),
             }),
             id,
         ),
+        "health.readiness" => {
+            let neural_ok = neural_api_healthy();
+            let required = primalspring::coordination::AtomicType::FullNucleus.required_primals();
+            let discovered = discover_for(required);
+            let reachable = discovered.iter().filter(|d| d.socket.is_some()).count();
+            success_response(
+                serde_json::json!({
+                    "ready": reachable > 0,
+                    "neural_api": neural_ok,
+                    "primals_discovered": reachable,
+                    "primals_total": required.len(),
+                }),
+                id,
+            )
+        }
         "capabilities.list" => success_response(
             serde_json::json!({
                 "coordination": {
                     "validate_composition": "Validate an atomic composition (Tower/Node/Nest/FullNucleus)",
                     "probe_primal": "Health-check a single primal",
                     "discovery_sweep": "Discover all primals in a composition",
+                },
+                "health": {
+                    "liveness": "Am I alive?",
+                    "readiness": "Am I ready to serve? (Neural API status + discovered primals)",
                 },
                 "lifecycle": {
                     "status": "Report primalSpring status",
@@ -170,9 +191,9 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
         }
         "lifecycle.status" => success_response(
             serde_json::json!({
-                "primal": "primalspring",
+                "primal": PRIMAL_NAME,
                 "version": env!("CARGO_PKG_VERSION"),
-                "domain": "coordination, composition, nucleus",
+                "domain": PRIMAL_DOMAIN,
                 "status": "running",
             }),
             id,
@@ -249,8 +270,8 @@ fn success_response(result: serde_json::Value, id: u64) -> JsonRpcResponse {
 }
 
 fn print_status() {
-    println!("primalSpring v{}", env!("CARGO_PKG_VERSION"));
-    println!("domain: coordination, composition, nucleus");
+    println!("{PRIMAL_NAME} v{}", env!("CARGO_PKG_VERSION"));
+    println!("domain: {PRIMAL_DOMAIN}");
     println!("tracks: 6 (atomic, graph, emergent, bonding, coralforge, cross-spring)");
 
     let neural_ok = neural_api_healthy();

@@ -23,7 +23,14 @@
 //! - [`validation`] — experiment validation harness with structured output
 //! - [`tolerances`] — named latency and throughput bounds
 
+/// Canonical primal name — single source of truth for self-knowledge.
+pub const PRIMAL_NAME: &str = "primalspring";
+
+/// Capability domain this primal serves.
+pub const PRIMAL_DOMAIN: &str = "coordination";
+
 pub mod bonding;
+pub mod cast;
 pub mod coordination;
 pub mod emergent;
 pub mod graphs;

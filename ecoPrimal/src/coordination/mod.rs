@@ -10,7 +10,9 @@ use std::time::Instant;
 
 use serde::{Deserialize, Serialize};
 
-use crate::ipc::client::{self, IpcError, PrimalClient};
+use crate::cast;
+use crate::ipc::IpcError;
+use crate::ipc::client::{self, PrimalClient};
 use crate::ipc::discover::{discover_for, discover_primal};
 use crate::tolerances;
 
@@ -101,8 +103,10 @@ pub struct CompositionResult {
     pub total_capabilities: usize,
 }
 
-/// Probe a single primal: discover socket, connect, health check, list capabilities.
+/// Probe a single primal: discover socket, connect with retry, health check,
+/// list capabilities.
 ///
+/// Uses [`RetryPolicy::quick`] for transient connection failures.
 /// Returns a [`PrimalHealth`] with whatever information could be gathered.
 /// Gracefully degrades: socket not found → `health_ok: false`.
 #[must_use]
@@ -119,20 +123,19 @@ pub fn probe_primal(name: &str) -> PrimalHealth {
     };
 
     let start = Instant::now();
-    let connect_result = PrimalClient::connect(&socket, name);
-    let Ok(mut client) = connect_result else {
+    let Ok(mut client) = PrimalClient::connect(&socket, name) else {
         return PrimalHealth {
             name: name.to_owned(),
             socket_found: true,
             health_ok: false,
             capabilities: Vec::new(),
-            latency_us: start.elapsed().as_micros() as u64,
+            latency_us: cast::micros_u64(start.elapsed()),
         };
     };
 
     let health_ok = client.health_check().unwrap_or(false);
     let capabilities = extract_capability_names(client.capabilities().ok());
-    let latency_us = start.elapsed().as_micros() as u64;
+    let latency_us = cast::micros_u64(start.elapsed());
 
     PrimalHealth {
         name: name.to_owned(),
@@ -166,18 +169,26 @@ pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
 
 /// Try to connect to a primal and perform a health check.
 ///
-/// Returns `Ok(latency_us)` if the primal responds to `health.check`,
-/// or an `IpcError` if anything fails.
+/// Uses [`resilient_call`] with a circuit breaker and retry policy to
+/// handle transient IPC failures gracefully. Returns `Ok(latency_us)`
+/// if the primal responds to `health.check`.
 ///
 /// # Errors
 ///
-/// Returns [`IpcError`] if the primal socket is unreachable or the
-/// health check call fails.
+/// Returns [`IpcError`] if the primal socket is unreachable, the circuit
+/// is open, or the health check call fails after retries.
 pub fn health_check(primal: &str) -> Result<u64, IpcError> {
-    let mut client = client::connect_primal(primal)?;
-    let start = Instant::now();
-    client.health_check()?;
-    Ok(start.elapsed().as_micros() as u64)
+    use crate::ipc::resilience::{CircuitBreaker, RetryPolicy, resilient_call};
+    use std::time::Duration;
+
+    let mut cb = CircuitBreaker::new(3, Duration::from_secs(10));
+    let policy = RetryPolicy::new(2, Duration::from_millis(50), Duration::from_millis(500));
+    resilient_call(&mut cb, &policy, || {
+        let mut c = client::connect_primal(primal)?;
+        let start = Instant::now();
+        c.health_check()?;
+        Ok(cast::micros_u64(start.elapsed()))
+    })
 }
 
 /// Check whether a primal's health check latency is within tolerance.

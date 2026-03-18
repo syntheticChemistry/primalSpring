@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.1.0 (Phase 1 — Neural API integration, real IPC, server mode)  
+**Version**: 0.2.0 (Phase 2 — cross-ecosystem absorption, IPC resilience, semantic errors, health probes)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 17, 2026
+**Last Updated**: March 18, 2026
 
 ---
 
@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Unit tests | **69** |
+| Unit tests | **127** |
 | Experiments | 38 (7 tracks) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
@@ -52,10 +52,16 @@ primalSpring fills the gap.
 
 - **Real IPC**: `probe_primal()`, `validate_composition()`, `health_check()` connect
   to live primals via Unix socket JSON-RPC 2.0
+- **IPC resilience stack**: `IpcError` (8 typed variants), `CircuitBreaker`,
+  `RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`, `extract_rpc_result`/`extract_rpc_dispatch`
+- **4-format capability parsing**: Handles Format A (string array), B (object array),
+  C (method_info nested), D (semantic_mappings double-nested)
+- **Health probes**: `health.liveness`, `health.readiness` (Kubernetes-style) in server and client
 - **Neural API bridge**: `NeuralBridge` from `neural-api-client-sync` for ecosystem
   discovery — no hardcoded primal rosters
 - **Graceful degradation**: `check_skip()` and `check_or_skip()` for honest reporting
   when primals are not running
+- **Validation harness**: `OrExit<T>`, `ValidationSink` (StdoutSink, NullSink), `safe_cast` module
 - **JSON output**: `PRIMALSPRING_JSON=1` for CI pipeline integration
 - **Server mode**: `primalspring_primal server` exposes `coordination.validate_composition`,
   `coordination.discovery_sweep`, and `coordination.neural_api_status`
@@ -156,12 +162,14 @@ Early coordination patterns extracted from phase1/ and phase2/ primal showcases.
 ## Capability Domain
 
 ```
-coordination.validate_composition
-coordination.discovery_sweep
-coordination.neural_api_status
-health.check
-capabilities.list
-lifecycle.status
+coordination.validate_composition   — Validate atomic compositions
+coordination.discovery_sweep        — Discover all primals in a composition
+coordination.neural_api_status     — Neural API health
+health.check                       — Full self health status
+health.liveness                    — Kubernetes-style liveness probe
+health.readiness                   — Kubernetes-style readiness probe
+capabilities.list                  — List coordination capabilities
+lifecycle.status                   — Primal status report
 ```
 
 ---
@@ -170,7 +178,7 @@ lifecycle.status
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.1.0 | `PRIMALSPRING_V010_NEURAL_API_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Neural API integration, server mode, sovereignty fixes |
+| v0.2.0 | `PRIMALSPRING_V011_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | Cross-ecosystem absorption: resilience, dispatch, health probes, self-knowledge |
 
 ## Archived Handoffs
 

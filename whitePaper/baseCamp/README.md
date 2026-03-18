@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: March 17, 2026  
-**Status**: Phase 0→1 — 38 experiments, 69 unit tests, real discovery, honest skip/fail
+**Date**: March 18, 2026  
+**Status**: Phase 0→1 — 38 experiments, 127 unit tests, IPC resilience, 4-format capability parsing
 
 ---
 
@@ -29,18 +29,20 @@ paper documenting primalSpring's validation of ecosystem coordination.
 | 6 | Cross-Spring | exp040–044 | Do cross-spring data flows work? |
 | 7 | Showcase-Mined | exp050–059 | Do early coordination patterns from phase1/phase2 work? |
 
-## Current State (v0.1.0)
+## Current State (v0.2.0)
 
 | Metric | Value |
 |--------|-------|
 | Experiments | 38 (7 tracks) |
-| Unit tests | 69 |
+| Unit tests | 127 |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc (missing_docs) | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | C dependencies | 0 (pure Rust, ecoBin compliant) |
 | IPC client | Real Unix socket client with JSON-RPC 2.0 |
+| IPC resilience | IpcError, CircuitBreaker, RetryPolicy, resilient_call, DispatchOutcome |
+| Capability parsing | 4-format (A/B/C/D) via extract_capability_names |
 | Discovery | Runtime `discover_primal()` via env/XDG/temp_dir + Neural API |
 | Validation | `check_bool` (real) + `check_skip` (honest scaffolding) |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |

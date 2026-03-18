@@ -5,10 +5,10 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, bonding |
-| **Version** | 0.1.0 |
+| **Version** | 0.2.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 69 unit tests |
+| **Tests** | 127 unit tests |
 | **Experiments** | 38 (7 tracks) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero |
@@ -33,12 +33,13 @@ primalSpring/
 ├── ecoPrimal/              # Library crate + UniBin binary
 │   ├── src/
 │   │   ├── lib.rs          # Library root (unsafe_code = forbid via workspace lint)
+│   │   ├── cast.rs         # Safe numeric casts (micros_u64, u128_to_u64, etc.)
 │   │   ├── coordination/   # Atomic composition, health probing, composition validation
 │   │   ├── graphs/         # Graph execution pattern types
 │   │   ├── emergent/       # Emergent system validation types
 │   │   ├── bonding/        # Multi-gate bonding model types
-│   │   ├── ipc/            # JSON-RPC 2.0 client + Neural API bridge + socket discovery
-│   │   ├── validation/     # Experiment harness (check_bool, check_skip, JSON output)
+│   │   ├── ipc/            # JSON-RPC 2.0 client, discovery, error, dispatch, extract, resilience
+│   │   ├── validation/     # Experiment harness (check_bool, check_skip, OrExit, ValidationSink)
 │   │   └── tolerances/     # Named latency and throughput bounds
 │   └── src/bin/
 │       └── primalspring_primal/  # UniBin: JSON-RPC 2.0 server
@@ -106,15 +107,26 @@ The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 
 | Method | Description |
 |--------|-------------|
 | `health.check` | Self health status |
+| `health.liveness` | Kubernetes-style liveness probe |
+| `health.readiness` | Kubernetes-style readiness probe |
 | `capabilities.list` | Available coordination capabilities |
 | `coordination.validate_composition` | Validate an atomic composition |
 | `coordination.discovery_sweep` | Enumerate primals in a composition |
 | `coordination.neural_api_status` | Neural API reachability |
 | `lifecycle.status` | Primal status report |
 
+## IPC Resilience
+
+primalSpring provides a converged IPC resilience stack: `IpcError` (8 typed
+variants with `is_retriable()`, `is_timeout_likely()`, etc.), `CircuitBreaker`,
+`RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`, and centralized
+`extract_rpc_result`/`extract_rpc_dispatch` for JSON-RPC result extraction.
+Capability parsing handles 4 wire formats (A/B/C/D) across the ecosystem.
+
 ## Docs
 
 - `wateringHole/README.md` — Track structure and cross-spring context
+- `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance (standalone, Tower, Node, Nest, NUCLEUS, Provenance Trio, cross-spring)
 - `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path
 - `specs/PAPER_REVIEW_QUEUE.md` — Experiment priority queue
 - `specs/SHOWCASE_MINING_REPORT.md` — Patterns mined from phase1/phase2

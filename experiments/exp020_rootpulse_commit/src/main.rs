@@ -2,6 +2,7 @@
 
 //! Exp020: RootPulse Full Commit — validates RootPulse 6-phase commit, required graphs, and provenance trio discovery.
 
+use primalspring::coordination::probe_primal;
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::discover_primal;
 use primalspring::validation::ValidationResult;
@@ -37,6 +38,34 @@ fn main() {
         sweetgrass.primal == "sweetgrass",
         "discover sweetgrass (provenance trio)",
     );
+
+    for (name, discovery) in [
+        ("rhizocrypt", rhizocrypt),
+        ("loamspine", loamspine),
+        ("sweetgrass", sweetgrass),
+    ] {
+        v.check_or_skip(
+            &format!("probe_{name}"),
+            discovery.socket.as_ref(),
+            &format!("{name} socket not found"),
+            |_, v| {
+                let health = probe_primal(name);
+                v.check_bool(
+                    &format!("{name}_health"),
+                    health.health_ok,
+                    &format!(
+                        "health ok: {}, latency: {}µs",
+                        health.health_ok, health.latency_us
+                    ),
+                );
+                v.check_bool(
+                    &format!("{name}_capabilities"),
+                    !health.capabilities.is_empty(),
+                    &format!("capabilities: {:?}", health.capabilities),
+                );
+            },
+        );
+    }
 
     v.check_skip("health_phase", "health phase needs live IPC");
     v.check_skip("dehydrate_phase", "dehydrate phase needs live IPC");

@@ -13,10 +13,58 @@
 //!
 //! Set `PRIMALSPRING_JSON=1` or pass `--json` for machine-readable output.
 //! This is used by CI pipelines and primalSpring server aggregation.
+//!
+//! # Pluggable Output
+//!
+//! The [`ValidationSink`] trait allows experiments to redirect check output
+//! (e.g. to a test harness capture buffer instead of stdout). Default is
+//! [`StdoutSink`].
+
+pub mod or_exit;
+
+pub use or_exit::OrExit;
 
 use std::fmt;
+use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
+
+/// Pluggable output destination for validation check results.
+///
+/// Converged ecosystem pattern from airSpring and rhizoCrypt.
+/// Default implementation writes to stdout; test harnesses can
+/// substitute a capture buffer.
+pub trait ValidationSink: std::fmt::Debug + Send + Sync {
+    /// Emit a single check result.
+    fn on_check(&self, outcome: CheckOutcome, name: &str, detail: &str);
+}
+
+/// Default sink that writes check results to stdout.
+#[derive(Debug)]
+pub struct StdoutSink;
+
+impl ValidationSink for StdoutSink {
+    fn on_check(&self, outcome: CheckOutcome, name: &str, detail: &str) {
+        let tag = match outcome {
+            CheckOutcome::Pass => "PASS",
+            CheckOutcome::Fail => "FAIL",
+            CheckOutcome::Skip => "SKIP",
+        };
+        println!("  [{tag}] {name}: {detail}");
+    }
+}
+
+/// Sink that discards all output (useful for tests that only inspect counts).
+#[derive(Debug)]
+pub struct NullSink;
+
+impl ValidationSink for NullSink {
+    fn on_check(&self, _: CheckOutcome, _: &str, _: &str) {}
+}
+
+fn default_sink() -> Arc<dyn ValidationSink> {
+    Arc::new(StdoutSink)
+}
 
 /// Outcome of a single validation check.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -42,6 +90,12 @@ pub struct ValidationResult {
     pub skipped: u32,
     /// Individual check results in execution order.
     pub checks: Vec<CheckResult>,
+    /// Optional provenance chain for the Provenance Trio integration.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provenance: Option<String>,
+    /// Output sink (defaults to stdout, not serialized).
+    #[serde(skip, default = "default_sink")]
+    sink: Arc<dyn ValidationSink>,
 }
 
 /// Result of a single named check within an experiment.
@@ -65,6 +119,8 @@ impl CheckResult {
 
 impl ValidationResult {
     /// Create a new empty validation result for the given experiment name.
+    ///
+    /// Uses [`StdoutSink`] by default. Call [`with_sink`](Self::with_sink) to override.
     #[must_use]
     pub fn new(experiment: &str) -> Self {
         Self {
@@ -73,20 +129,37 @@ impl ValidationResult {
             failed: 0,
             skipped: 0,
             checks: Vec::new(),
+            provenance: None,
+            sink: Arc::new(StdoutSink),
         }
+    }
+
+    /// Replace the output sink (builder-style).
+    #[must_use]
+    pub fn with_sink(mut self, sink: Arc<dyn ValidationSink>) -> Self {
+        self.sink = sink;
+        self
+    }
+
+    /// Attach provenance metadata to this validation result.
+    ///
+    /// Returns `self` for builder-style chaining.
+    #[must_use]
+    pub fn with_provenance(mut self, provenance: &str) -> Self {
+        self.provenance = Some(provenance.to_owned());
+        self
     }
 
     /// Record a boolean pass/fail check.
     pub fn check_bool(&mut self, name: &str, condition: bool, detail: &str) {
         let outcome = if condition {
             self.passed += 1;
-            println!("  [PASS] {name}: {detail}");
             CheckOutcome::Pass
         } else {
             self.failed += 1;
-            println!("  [FAIL] {name}: {detail}");
             CheckOutcome::Fail
         };
+        self.sink.on_check(outcome, name, detail);
         self.checks.push(CheckResult {
             name: name.to_owned(),
             outcome,
@@ -100,7 +173,7 @@ impl ValidationResult {
     /// markers of incomplete validation — never fake a pass.
     pub fn check_skip(&mut self, name: &str, reason: &str) {
         self.skipped += 1;
-        println!("  [SKIP] {name}: {reason}");
+        self.sink.on_check(CheckOutcome::Skip, name, reason);
         self.checks.push(CheckResult {
             name: name.to_owned(),
             outcome: CheckOutcome::Skip,
@@ -390,5 +463,36 @@ mod tests {
         });
         assert_eq!(v.passed, 0);
         assert_eq!(v.skipped, 1);
+    }
+
+    #[test]
+    fn provenance_none_by_default() {
+        let v = ValidationResult::new("test");
+        assert!(v.provenance.is_none());
+    }
+
+    #[test]
+    fn with_provenance_sets_field() {
+        let v = ValidationResult::new("test").with_provenance("rhizocrypt:sha256:abc123");
+        assert_eq!(v.provenance.as_deref(), Some("rhizocrypt:sha256:abc123"));
+    }
+
+    #[test]
+    fn provenance_survives_json_round_trip() {
+        let mut v = ValidationResult::new("exp_prov").with_provenance("chain:abc");
+        v.check_bool("ok", true, "yes");
+
+        let json = v.to_json().unwrap();
+        let back: ValidationResult = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.provenance.as_deref(), Some("chain:abc"));
+    }
+
+    #[test]
+    fn provenance_absent_omitted_from_json() {
+        let mut v = ValidationResult::new("no_prov");
+        v.check_bool("ok", true, "yes");
+
+        let json = v.to_json().unwrap();
+        assert!(!json.contains("provenance"));
     }
 }

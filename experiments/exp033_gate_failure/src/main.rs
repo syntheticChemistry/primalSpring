@@ -3,7 +3,7 @@
 //! Exp033: Gate Failure — validates one gate drops and plasmodium degrades gracefully.
 
 use primalspring::bonding::BondType;
-use primalspring::ipc::discover::discover_primal;
+use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_path};
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -24,11 +24,33 @@ fn main() {
         "BondType variants exist for all bonding models with descriptions",
     );
 
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
+    let path_songbird = socket_path("songbird");
+    let path_contains_family = path_songbird
+        .to_string_lossy()
+        .contains(&format!("-{family_id}.sock"));
+    v.check_bool(
+        "socket_path_includes_family_id",
+        path_contains_family,
+        &format!(
+            "socket path includes FAMILY_ID: {} (path: {})",
+            family_id,
+            path_songbird.display()
+        ),
+    );
+
     let songbird = discover_primal("songbird");
     v.check_bool(
         "discover_songbird_returns_result",
         songbird.primal == "songbird",
         "discover_primal returns DiscoveryResult for songbird",
+    );
+
+    let missing = discover_primal("nonexistent_primal_xyzzy_12345");
+    v.check_bool(
+        "discovery_graceful_for_missing_primal",
+        missing.socket.is_none() && missing.source == DiscoverySource::NotFound,
+        "discover_primal returns NotFound for missing primal without panic",
     );
 
     v.check_skip("gate_failure", "needs live Plasmodium with multiple gates");

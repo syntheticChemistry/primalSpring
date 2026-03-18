@@ -10,56 +10,14 @@ use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::time::Duration;
 
+use super::error::{IpcError, classify_io_error};
 use super::protocol::{JsonRpcRequest, JsonRpcResponse};
 
 /// Default timeout for socket operations (5 seconds).
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(5);
 
-/// Errors from IPC client operations.
-#[derive(Debug)]
-pub enum IpcError {
-    /// Socket connection failed.
-    Connect(std::io::Error),
-    /// Failed to write request to socket.
-    Write(std::io::Error),
-    /// Failed to read response from socket.
-    Read(std::io::Error),
-    /// Response JSON was malformed.
-    Parse(serde_json::Error),
-    /// Request JSON serialization failed.
-    Serialize(serde_json::Error),
-    /// Server returned a JSON-RPC error.
-    Rpc(super::protocol::JsonRpcError),
-    /// No response line received (empty read).
-    EmptyResponse,
-}
-
-impl std::fmt::Display for IpcError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Connect(e) => write!(f, "IPC connect failed: {e}"),
-            Self::Write(e) => write!(f, "IPC write failed: {e}"),
-            Self::Read(e) => write!(f, "IPC read failed: {e}"),
-            Self::Parse(e) => write!(f, "IPC response parse failed: {e}"),
-            Self::Serialize(e) => write!(f, "IPC request serialize failed: {e}"),
-            Self::Rpc(e) => write!(f, "IPC RPC error: {e}"),
-            Self::EmptyResponse => write!(f, "IPC empty response"),
-        }
-    }
-}
-
-impl std::error::Error for IpcError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            Self::Connect(e) | Self::Write(e) | Self::Read(e) => Some(e),
-            Self::Parse(e) | Self::Serialize(e) => Some(e),
-            Self::Rpc(e) => Some(e),
-            Self::EmptyResponse => None,
-        }
-    }
-}
-
 /// A synchronous JSON-RPC 2.0 client connected to a primal socket.
+#[derive(Debug)]
 pub struct PrimalClient {
     stream: BufReader<UnixStream>,
     primal: String,
@@ -70,15 +28,16 @@ impl PrimalClient {
     ///
     /// # Errors
     ///
-    /// Returns [`IpcError::Connect`] if the socket is unreachable.
+    /// Returns [`IpcError::ConnectionRefused`] or [`IpcError::Timeout`]
+    /// if the socket is unreachable.
     pub fn connect(socket: &Path, primal: &str) -> Result<Self, IpcError> {
-        let stream = UnixStream::connect(socket).map_err(IpcError::Connect)?;
+        let stream = UnixStream::connect(socket).map_err(classify_io_error)?;
         stream
             .set_read_timeout(Some(DEFAULT_TIMEOUT))
-            .map_err(IpcError::Connect)?;
+            .map_err(classify_io_error)?;
         stream
             .set_write_timeout(Some(DEFAULT_TIMEOUT))
-            .map_err(IpcError::Connect)?;
+            .map_err(classify_io_error)?;
         Ok(Self {
             stream: BufReader::new(stream),
             primal: primal.to_owned(),
@@ -102,23 +61,31 @@ impl PrimalClient {
         params: serde_json::Value,
     ) -> Result<JsonRpcResponse, IpcError> {
         let request = JsonRpcRequest::new(method, params);
-        let line = request.to_line().map_err(IpcError::Serialize)?;
+        let line = request
+            .to_line()
+            .map_err(|e| IpcError::SerializationError {
+                detail: e.to_string(),
+            })?;
 
         self.stream
             .get_mut()
             .write_all(line.as_bytes())
-            .map_err(IpcError::Write)?;
+            .map_err(classify_io_error)?;
 
         let mut response_line = String::new();
         self.stream
             .read_line(&mut response_line)
-            .map_err(IpcError::Read)?;
+            .map_err(classify_io_error)?;
 
         if response_line.is_empty() {
-            return Err(IpcError::EmptyResponse);
+            return Err(IpcError::ProtocolError {
+                detail: "empty response".to_owned(),
+            });
         }
 
-        JsonRpcResponse::from_line(&response_line).map_err(IpcError::Parse)
+        JsonRpcResponse::from_line(&response_line).map_err(|e| IpcError::ProtocolError {
+            detail: e.to_string(),
+        })
     }
 
     /// Send a `health.check` request and return whether the primal is healthy.
@@ -131,6 +98,45 @@ impl PrimalClient {
         Ok(resp.is_success())
     }
 
+    /// Send a `health.liveness` probe — is the primal process alive?
+    ///
+    /// Kubernetes-style liveness probe. Returns `true` if the primal
+    /// responds (even with an error — it is at least alive).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] only on transport-level failures (socket
+    /// not found, connection refused, timeout).
+    pub fn health_liveness(&mut self) -> Result<bool, IpcError> {
+        match self.call("health.liveness", serde_json::Value::Null) {
+            Ok(resp) => Ok(resp.is_success()),
+            Err(e) if e.is_method_not_found() => {
+                // Primal is alive but doesn't implement health.liveness — fall back
+                self.health_check()
+            }
+            Err(e) => Err(e),
+        }
+    }
+
+    /// Send a `health.readiness` probe — is the primal ready for work?
+    ///
+    /// Kubernetes-style readiness probe. A primal may be alive but not
+    /// yet ready (still loading models, waiting for peers, etc.).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the call fails.
+    pub fn health_readiness(&mut self) -> Result<bool, IpcError> {
+        match self.call("health.readiness", serde_json::Value::Null) {
+            Ok(resp) => Ok(resp.is_success()),
+            Err(e) if e.is_method_not_found() => {
+                // Fall back to health.check if readiness is not implemented
+                self.health_check()
+            }
+            Err(e) => Err(e),
+        }
+    }
+
     /// Request the primal's capability list.
     ///
     /// # Errors
@@ -139,7 +145,7 @@ impl PrimalClient {
     pub fn capabilities(&mut self) -> Result<serde_json::Value, IpcError> {
         let resp = self.call("capabilities.list", serde_json::Value::Null)?;
         if let Some(err) = resp.error {
-            return Err(IpcError::Rpc(err));
+            return Err(IpcError::from(err));
         }
         Ok(resp.result.unwrap_or(serde_json::Value::Null))
     }
@@ -149,16 +155,15 @@ impl PrimalClient {
 ///
 /// # Errors
 ///
-/// Returns [`IpcError::Connect`] if discovery finds no socket or
-/// connection fails.
+/// Returns [`IpcError::SocketNotFound`] if discovery finds no socket, or
+/// a connection-level error if the socket exists but cannot be reached.
 pub fn connect_primal(primal: &str) -> Result<PrimalClient, IpcError> {
     let result = super::discover::discover_primal(primal);
     result.socket.map_or_else(
         || {
-            Err(IpcError::Connect(std::io::Error::new(
-                std::io::ErrorKind::NotFound,
-                format!("no socket found for primal '{primal}'"),
-            )))
+            Err(IpcError::SocketNotFound {
+                primal: primal.to_owned(),
+            })
         },
         |path| PrimalClient::connect(&path, primal),
     )
@@ -179,6 +184,8 @@ mod tests {
     fn connect_primal_fails_when_no_socket_discovered() {
         let result = connect_primal("definitely_not_a_real_primal");
         assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.is_connection_error());
     }
 
     #[test]
