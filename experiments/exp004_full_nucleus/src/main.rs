@@ -13,9 +13,9 @@ use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp004 — Full NUCLEUS");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp004: Full NUCLEUS (all primals)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
 
     let required = AtomicType::FullNucleus.required_primals();
     v.check_count(

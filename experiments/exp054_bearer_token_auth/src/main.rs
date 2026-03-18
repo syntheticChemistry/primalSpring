@@ -4,13 +4,14 @@
 
 use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::ipc::protocol::JsonRpcRequest;
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp054 — Bearer Token Auth");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp054: BearDog security.authenticate → compute.submit");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let beardog = discover_primal("beardog");
     let beardog_path = socket_path("beardog");

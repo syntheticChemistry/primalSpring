@@ -1,0 +1,147 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Full NUCLEUS Complete — all 8 primals + primalSpring coordination
+#
+# This is the complete ecosystem: Tower (security + discovery) +
+# Node (compute) + Nest (storage) + Squirrel (AI) + Provenance Trio
+# (rhizoCrypt + loamSpine + sweetGrass).
+#
+# Any spring deploying against Full NUCLEUS gets access to every
+# capability domain. This is the reference BYOB graph that other
+# springs should model their own deployments on.
+#
+# Usage:
+#   biomeos deploy --graph graphs/nucleus_complete.toml
+#   primalspring_primal server  # then: coordination.deploy_atomic {"atomic":"FullNucleus"}
+
+[graph]
+name = "nucleus_complete"
+description = "Full NUCLEUS: all 8 primals + primalSpring coordination"
+version = "0.3.0"
+coordination = "sequential"
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 1: Tower Atomic — security + discovery foundation
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
+    "crypto.verify", "crypto.keygen", "crypto.identity",
+]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 2: Provenance Trio — DAG, ledger, attribution
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt_primal"
+order = 3
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = [
+    "dag.create_session", "dag.append_event",
+    "dag.dehydrate", "dag.merkle_root",
+]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine_primal"
+order = 4
+required = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "commit"
+capabilities = ["commit.session", "commit.entry"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass_primal"
+order = 5
+required = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "provenance"
+capabilities = [
+    "provenance.create_braid", "provenance.lineage",
+    "provenance.graph",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 3: Node + Nest extensions
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 6
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve"]
+
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 7
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 4: AI bridge
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 8
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 5: Coordination validator
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.node]]
+name = "primalspring"
+binary = "primalspring_primal"
+order = 9
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = [
+    "coordination.validate_composition",
+    "coordination.deploy_atomic",
+    "composition.nucleus_health",
+    "nucleus.start", "nucleus.stop",
+]

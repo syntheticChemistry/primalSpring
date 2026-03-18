@@ -4,13 +4,14 @@
 
 use primalspring::graphs::CoordinationPattern;
 use primalspring::ipc::discover::neural_api_healthy;
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp011 — Parallel Graph");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp011: Parallel (parallel_capability_burst.toml)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let desc = CoordinationPattern::Parallel.description();
     v.check_bool(

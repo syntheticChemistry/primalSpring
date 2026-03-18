@@ -5,13 +5,14 @@
 use primalspring::coordination::probe_primal;
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp025 — CoralForge Pipeline");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp025: Pipeline Graph over neuralSpring + wetSpring + toadStool");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let graphs = EmergentSystem::CoralForge.required_graphs();
     let has_pipeline = graphs.contains(&"coralforge_pipeline");

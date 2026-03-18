@@ -6,15 +6,15 @@
 
 use primalspring::coordination::AtomicType;
 use primalspring::ipc::discover::discover_primal;
-use primalspring::tolerances::DISCOVERY_MAX_US;
+use primalspring::tolerances::{DISCOVERY_MAX_US, VALIDATION_SUMMARY_WIDTH};
 use primalspring::validation::ValidationResult;
 use std::time::Instant;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp055 — Wait For Health");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp055: Health Probe Pattern (NestGate start_ecosystem)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let tower_primals = AtomicType::Tower.required_primals();
     for &name in tower_primals {

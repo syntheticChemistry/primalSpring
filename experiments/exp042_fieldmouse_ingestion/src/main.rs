@@ -20,10 +20,10 @@ const INGEST_PRIMALS: &[&str] = &["fieldmouse", "nestgate", "sweetgrass"];
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp042 — FieldMouse Ingestion");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp042: FieldMouse Ingestion");
     println!("  fieldMouse (edge capture) → NestGate (storage) → sweetGrass (attribution)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
 
     for &name in INGEST_PRIMALS {
         let path = socket_path(name);

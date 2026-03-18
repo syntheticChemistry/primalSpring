@@ -72,11 +72,11 @@ pub fn extract_rpc_dispatch<T: DeserializeOwned>(response: &JsonRpcResponse) -> 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ipc::protocol::{JsonRpcError, error_codes};
+    use crate::ipc::protocol::{JSONRPC_VERSION, JsonRpcError, error_codes};
 
     fn success_response(result: serde_json::Value) -> JsonRpcResponse {
         JsonRpcResponse {
-            jsonrpc: "2.0".to_owned(),
+            jsonrpc: JSONRPC_VERSION.to_owned(),
             result: Some(result),
             error: None,
             id: 1,
@@ -85,7 +85,7 @@ mod tests {
 
     fn error_response(code: i64, message: &str) -> JsonRpcResponse {
         JsonRpcResponse {
-            jsonrpc: "2.0".to_owned(),
+            jsonrpc: JSONRPC_VERSION.to_owned(),
             result: None,
             error: Some(JsonRpcError {
                 code,
@@ -98,7 +98,7 @@ mod tests {
 
     fn empty_response() -> JsonRpcResponse {
         JsonRpcResponse {
-            jsonrpc: "2.0".to_owned(),
+            jsonrpc: JSONRPC_VERSION.to_owned(),
             result: None,
             error: None,
             id: 1,

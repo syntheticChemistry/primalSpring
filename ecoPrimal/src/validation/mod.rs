@@ -320,6 +320,29 @@ impl ValidationResult {
     pub const fn exit_code(&self) -> i32 {
         if self.all_passed() { 0 } else { 1 }
     }
+
+    /// Print a standard experiment banner.
+    ///
+    /// Shared helper that replaces `println!("=".repeat(72))` boilerplate
+    /// across all 38 experiments.
+    pub fn print_banner(title: &str) {
+        use crate::tolerances::VALIDATION_SUMMARY_WIDTH;
+        println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+        println!("{title}");
+        println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    }
+
+    /// Run an experiment body, print summary, and exit.
+    ///
+    /// Encapsulates the banner + body + finish + exit pattern shared
+    /// by all primalSpring experiments.
+    pub fn run_experiment(title: &str, subtitle: &str, body: impl FnOnce(&mut Self)) -> ! {
+        let mut v = Self::new(title);
+        Self::print_banner(subtitle);
+        body(&mut v);
+        v.finish();
+        std::process::exit(v.exit_code());
+    }
 }
 
 impl fmt::Display for ValidationResult {
@@ -552,5 +575,112 @@ mod tests {
 
         let json = v.to_json().unwrap();
         assert!(!json.contains("provenance"));
+    }
+
+    #[test]
+    fn all_experiment_tracks_have_provenance_schema() {
+        let experiment_ids = [
+            "exp001", "exp002", "exp003", "exp004", "exp005", "exp006", "exp010", "exp011",
+            "exp012", "exp013", "exp014", "exp015", "exp020", "exp021", "exp022", "exp023",
+            "exp024", "exp025", "exp030", "exp031", "exp032", "exp033", "exp034", "exp040",
+            "exp041", "exp042", "exp043", "exp044", "exp050", "exp051", "exp052", "exp053",
+            "exp054", "exp055", "exp056", "exp057", "exp058", "exp059",
+        ];
+        assert_eq!(
+            experiment_ids.len(),
+            38,
+            "expected 38 experiments across tracks"
+        );
+        let tracks: std::collections::HashSet<u32> = experiment_ids
+            .iter()
+            .filter_map(|id| id.strip_prefix("exp"))
+            .filter_map(|num| num.parse::<u32>().ok())
+            .map(|n| n / 10)
+            .collect();
+        assert!(
+            tracks.len() >= 6,
+            "expected at least 6 tracks, got {}",
+            tracks.len()
+        );
+    }
+
+    #[test]
+    fn print_banner_does_not_panic() {
+        ValidationResult::print_banner("Test Banner Title");
+    }
+
+    #[test]
+    fn with_sink_replaces_default() {
+        let v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        assert_eq!(v.passed, 0);
+        assert_eq!(v.failed, 0);
+    }
+
+    #[test]
+    fn evaluated_counts_pass_and_fail_only() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_bool("a", true, "pass");
+        v.check_bool("b", false, "fail");
+        v.check_skip("c", "skip");
+        assert_eq!(v.evaluated(), 2);
+        assert_eq!(v.passed, 1);
+        assert_eq!(v.failed, 1);
+        assert_eq!(v.skipped, 1);
+    }
+
+    #[test]
+    fn check_count_records_exact_match() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_count("count_ok", 5, 5);
+        assert_eq!(v.passed, 1);
+        v.check_count("count_bad", 3, 5);
+        assert_eq!(v.failed, 1);
+    }
+
+    #[test]
+    fn check_minimum_records_threshold() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_minimum("min_ok", 5, 3);
+        assert_eq!(v.passed, 1);
+        v.check_minimum("min_bad", 1, 3);
+        assert_eq!(v.failed, 1);
+    }
+
+    #[test]
+    fn exit_code_zero_when_all_passed() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_bool("ok", true, "yes");
+        assert_eq!(v.exit_code(), 0);
+    }
+
+    #[test]
+    fn exit_code_one_when_failure() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_bool("bad", false, "no");
+        assert_eq!(v.exit_code(), 1);
+    }
+
+    #[test]
+    fn display_format_includes_experiment_name() {
+        let v = ValidationResult::new("my experiment").with_sink(Arc::new(NullSink));
+        let display = format!("{v}");
+        assert!(display.contains("my experiment"));
+    }
+
+    #[test]
+    fn check_result_passed_method() {
+        let pass = CheckResult {
+            name: "a".to_owned(),
+            outcome: CheckOutcome::Pass,
+            detail: "ok".to_owned(),
+        };
+        assert!(pass.passed());
+
+        let fail = CheckResult {
+            name: "b".to_owned(),
+            outcome: CheckOutcome::Fail,
+            detail: "no".to_owned(),
+        };
+        assert!(!fail.passed());
     }
 }

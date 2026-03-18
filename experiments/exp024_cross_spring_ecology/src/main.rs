@@ -4,13 +4,14 @@
 
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::discover_primal;
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp024 — Cross-Spring Ecology");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp024: cross_spring_ecology.toml with airSpring + wetSpring Data");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let graphs = EmergentSystem::CrossSpringEcology.required_graphs();
     v.check_bool(

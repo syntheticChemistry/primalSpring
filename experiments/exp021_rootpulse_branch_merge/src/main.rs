@@ -5,13 +5,14 @@
 use primalspring::coordination::probe_primal;
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::discover_primal;
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp021 — RootPulse Branch Merge");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp021: Branch + Merge");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let graphs = EmergentSystem::RootPulse.required_graphs();
     let has_branch = graphs.contains(&"rootpulse_branch");

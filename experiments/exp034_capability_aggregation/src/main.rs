@@ -7,18 +7,19 @@
 
 use primalspring::coordination::AtomicType;
 use primalspring::ipc::client::connect_primal;
+use primalspring::ipc::discover::{discover_for, extract_capability_names, socket_path};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
+use primalspring::validation::ValidationResult;
 
 /// Minimum primals required for capability aggregation — at least 2 gates needed
 /// to test routing to best gate. Source: exp034 design.
 const MIN_AGGREGATION_PRIMALS: usize = 2;
-use primalspring::ipc::discover::{discover_for, extract_capability_names, socket_path};
-use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp034 — Capability Aggregation");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp034: Plasmodium Routes to Best Gate for Workload");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let required = AtomicType::FullNucleus.required_primals();
     v.check_count(

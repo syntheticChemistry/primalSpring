@@ -3,13 +3,14 @@
 //! Exp005: Atomic Subtraction — validates AtomicType hierarchy (Tower⊂Node⊂FullNucleus, Nest⊂FullNucleus) for graceful degradation.
 
 use primalspring::coordination::AtomicType;
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp005 — Atomic Subtraction");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp005: Atomic Subtraction (graceful degradation)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     // Real check: type system validates AtomicType hierarchy
     // Tower ⊂ Node (Node adds toadstool to Tower)

@@ -4,13 +4,14 @@
 //! Source: `phase2/sweetGrass/showcase/ROOTPULSE_EMERGENCE_PLAN.md`
 
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp058 — Semantic Attribution");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp058: sweetGrass Semantic Attribution (RootPulse)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let sweetgrass = discover_primal("sweetgrass");
     v.check_bool(

@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Tower Atomic Bootstrap — minimal NUCLEUS composition
+#
+# BearDog (crypto + identity) + Songbird (discovery + mesh).
+# This is the foundation every other atomic tier builds on.
+# After Tower is healthy, any spring can start with encrypted
+# IPC and capability-based discovery.
+#
+# Usage:
+#   biomeos deploy --graph graphs/tower_atomic_bootstrap.toml
+#   primalspring_primal server  # then: coordination.deploy_atomic {"atomic":"Tower"}
+
+[graph]
+name = "tower_atomic_bootstrap"
+description = "Tower Atomic: BearDog (crypto) + Songbird (discovery)"
+version = "0.3.0"
+coordination = "sequential"
+
+# ── Phase 1: BearDog — crypto foundation ──
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = [
+    "crypto.encrypt",
+    "crypto.decrypt",
+    "crypto.sign",
+    "crypto.verify",
+    "crypto.keygen",
+    "crypto.identity",
+]
+
+# ── Phase 2: Songbird — discovery + mesh ──
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = [
+    "discovery.find_primals",
+    "discovery.announce",
+    "network.tls_connect",
+    "network.http_request",
+]
+
+# ── Phase 3: Validation ──
+[[graph.node]]
+name = "validate_tower"
+binary = "primalspring_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+args = ["server"]
+capabilities = [
+    "composition.tower_health",
+]

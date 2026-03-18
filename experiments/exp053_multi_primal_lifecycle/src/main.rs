@@ -7,17 +7,18 @@
 
 use primalspring::coordination::{AtomicType, validate_composition};
 use primalspring::ipc::discover::discover_for;
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
+use primalspring::validation::ValidationResult;
 
 /// Source: PRIMAL_REGISTRY.md — 6 lifecycle participants in the research paper pipeline
 /// (beardog, songbird, toadstool, nestgate, rhizocrypt, sweetgrass).
 const LIFECYCLE_PARTICIPANT_COUNT: usize = 6;
-use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp053 — Multi-Primal Lifecycle");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp053: 6-Primal Research Paper Lifecycle");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let required = AtomicType::FullNucleus.required_primals();
     v.check_count(

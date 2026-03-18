@@ -9,6 +9,7 @@
 //! for visualization, Squirrel for AI coordination) are discoverable.
 
 use primalspring::ipc::discover::{discover_for, neural_api_healthy};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 /// Routing endpoints probed for capability-based cross-spring data flow.
@@ -20,11 +21,11 @@ const ROUTING_PRIMALS: &[&str] = &["petaltongue", "squirrel"];
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp040 — Cross Spring Data Flow");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!(
         "primalSpring Exp040: Cross Spring Data Flow (ecology pipeline via capability routing)"
     );
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let results = discover_for(ROUTING_PRIMALS);
     let found = results.iter().filter(|r| r.socket.is_some()).count();

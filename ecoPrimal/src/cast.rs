@@ -104,4 +104,37 @@ mod tests {
     fn f64_to_usize_nan_clamps() {
         assert_eq!(f64_to_usize(f64::NAN), 0);
     }
+
+    #[test]
+    fn f64_to_usize_infinity_saturates() {
+        assert_eq!(f64_to_usize(f64::INFINITY), usize::MAX);
+    }
+
+    #[test]
+    fn f64_to_usize_neg_infinity_clamps() {
+        assert_eq!(f64_to_usize(f64::NEG_INFINITY), 0);
+    }
+
+    #[test]
+    fn f64_to_usize_zero() {
+        assert_eq!(f64_to_usize(0.0), 0);
+        assert_eq!(f64_to_usize(-0.0), 0);
+    }
+
+    #[test]
+    fn micros_u64_realistic_duration() {
+        use std::time::Duration;
+        let d = Duration::from_millis(50);
+        assert_eq!(micros_u64(d), 50_000);
+    }
+
+    #[test]
+    fn u128_to_u64_at_boundary() {
+        assert_eq!(u128_to_u64(u128::from(u64::MAX) + 1), u64::MAX);
+    }
+
+    #[test]
+    fn u128_to_u64_zero() {
+        assert_eq!(u128_to_u64(0), 0);
+    }
 }

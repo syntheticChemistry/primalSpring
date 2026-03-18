@@ -4,13 +4,14 @@
 //! Source: phase1/beardog/showcase/04-advanced-features/09-cross-tower-federation
 
 use primalspring::coordination::AtomicType;
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp056 — Cross Tower Federation");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp056: BearDog Cross-Tower Federation (BYOB)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let variants = [
         AtomicType::Tower,

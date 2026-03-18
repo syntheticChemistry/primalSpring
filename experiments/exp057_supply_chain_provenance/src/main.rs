@@ -4,13 +4,14 @@
 //! Source: phase2/rhizoCrypt/showcase/01-inter-primal-live/05-complete-workflows/demo-supply-chain.sh
 
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp057 — Supply Chain Provenance");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp057: rhizoCrypt Farm-to-Table Provenance");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let rhizocrypt = discover_primal("rhizocrypt");
     v.check_bool(

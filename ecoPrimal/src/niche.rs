@@ -35,6 +35,10 @@ use crate::ipc::discover::discover_primal;
 /// Niche identity — delegates to the canonical [`crate::PRIMAL_NAME`].
 pub const NICHE_NAME: &str = crate::PRIMAL_NAME;
 
+/// Default registration target — discovered at runtime, not hardcoded.
+/// Override via `BIOMEOS_PRIMAL` env var for non-standard deployments.
+const REGISTRATION_TARGET: &str = "biomeos";
+
 /// All capabilities this niche exposes to biomeOS.
 ///
 /// Source: `primalspring_deploy.toml` node 9 capabilities + server RPC methods.
@@ -91,31 +95,45 @@ pub fn operation_dependencies() -> serde_json::Value {
 ///
 /// Coordination operations are IPC-bound (socket round-trips), not
 /// compute-bound. Costs reflect expected latency for live primal probing.
+/// Numeric values are sourced from [`crate::tolerances`] named constants.
 #[must_use]
 pub fn cost_estimates() -> serde_json::Value {
+    use crate::tolerances;
     serde_json::json!({
         "coordination.validate_composition": {
-            "latency_ms": 500, "cpu": "low", "memory_bytes": 4096,
+            "latency_ms": tolerances::COST_VALIDATE_COMPOSITION_MS,
+            "cpu": "low",
+            "memory_bytes": tolerances::COST_VALIDATE_COMPOSITION_BYTES,
             "note": "probes N primals sequentially"
         },
         "coordination.probe_primal": {
-            "latency_ms": 50, "cpu": "low", "memory_bytes": 1024,
+            "latency_ms": tolerances::COST_PROBE_PRIMAL_MS,
+            "cpu": "low",
+            "memory_bytes": tolerances::COST_PROBE_PRIMAL_BYTES,
             "note": "single socket round-trip"
         },
         "coordination.discovery_sweep": {
-            "latency_ms": 100, "cpu": "low", "memory_bytes": 2048,
+            "latency_ms": tolerances::COST_DISCOVERY_SWEEP_MS,
+            "cpu": "low",
+            "memory_bytes": tolerances::COST_DISCOVERY_SWEEP_BYTES,
             "note": "filesystem probes + env vars"
         },
         "composition.nucleus_health": {
-            "latency_ms": 1000, "cpu": "low", "memory_bytes": 8192,
-            "note": "probes all 8 NUCLEUS primals"
+            "latency_ms": tolerances::COST_NUCLEUS_HEALTH_MS,
+            "cpu": "low",
+            "memory_bytes": tolerances::COST_NUCLEUS_HEALTH_BYTES,
+            "note": "probes all NUCLEUS primals"
         },
         "graph.validate": {
-            "latency_ms": 10, "cpu": "low", "memory_bytes": 4096,
+            "latency_ms": tolerances::COST_GRAPH_VALIDATE_MS,
+            "cpu": "low",
+            "memory_bytes": tolerances::COST_GRAPH_VALIDATE_BYTES,
             "note": "TOML parse + structure check"
         },
         "health.check": {
-            "latency_ms": 1, "cpu": "low", "memory_bytes": 256,
+            "latency_ms": tolerances::COST_HEALTH_CHECK_MS,
+            "cpu": "low",
+            "memory_bytes": tolerances::COST_HEALTH_CHECK_BYTES,
         },
     })
 }
@@ -149,14 +167,15 @@ pub fn coordination_semantic_mappings() -> serde_json::Value {
 /// Degrades gracefully if biomeOS is unreachable — coordination must not
 /// depend on registration success.
 pub fn register_with_target(our_socket: &Path) {
-    let discovery = discover_primal("biomeos");
+    let target = std::env::var("BIOMEOS_PRIMAL").unwrap_or_else(|_| REGISTRATION_TARGET.to_owned());
+    let discovery = discover_primal(&target);
     let Some(biomeos_path) = discovery.socket else {
-        info!(target: "biomeos", "biomeOS not discovered — niche registration deferred");
+        info!(target: "niche", primal = %target, "registration target not discovered — deferred");
         return;
     };
 
-    let Ok(mut client) = PrimalClient::connect(&biomeos_path, "biomeos") else {
-        warn!(target: "biomeos", "cannot connect to biomeOS — skipping niche registration");
+    let Ok(mut client) = PrimalClient::connect(&biomeos_path, &target) else {
+        warn!(target: "niche", primal = %target, "cannot connect to registration target — skipping");
         return;
     };
 

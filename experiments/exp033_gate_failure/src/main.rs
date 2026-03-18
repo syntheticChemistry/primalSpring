@@ -4,17 +4,18 @@
 
 use primalspring::bonding::BondType;
 use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_path};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
+use primalspring::validation::ValidationResult;
 
 /// Source: bonding::BondType — 4 bond models defined in ecosystem architecture
 /// (Covalent, Ionic, Weak, OrganoMetalSalt).
 const BOND_TYPE_COUNT: usize = 4;
-use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp033 — Gate Failure");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp033: One Gate Drops; Plasmodium Degrades Gracefully");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let variants_exist = [
         BondType::Covalent,

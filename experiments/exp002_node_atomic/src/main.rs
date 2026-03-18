@@ -4,13 +4,14 @@
 
 use primalspring::coordination::AtomicType;
 use primalspring::ipc::discover::discover_primal;
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp002 — Node Atomic");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp002: Node Atomic (Tower + ToadStool)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     // Real check: beardog socket exists
     let beardog = discover_primal("beardog");

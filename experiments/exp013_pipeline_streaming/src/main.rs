@@ -4,14 +4,14 @@
 
 use primalspring::graphs::CoordinationPattern;
 use primalspring::ipc::discover::neural_api_healthy;
-use primalspring::tolerances::PIPELINE_THROUGHPUT_MIN;
+use primalspring::tolerances::{PIPELINE_THROUGHPUT_MIN, VALIDATION_SUMMARY_WIDTH};
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp013 — Pipeline Streaming");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp013: Pipeline (streaming_pipeline.toml)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let desc = CoordinationPattern::Pipeline.description();
     v.check_bool(

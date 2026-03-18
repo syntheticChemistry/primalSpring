@@ -17,10 +17,10 @@ const TRIO_PRIMALS: &[&str] = &["rhizocrypt", "loamspine", "sweetgrass"];
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp041 — Provenance Trio Science");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp041: Provenance Trio Science");
     println!("  rhizoCrypt (derivation) + loamSpine (anchoring) + sweetGrass (attribution)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
 
     for &name in TRIO_PRIMALS {
         let path = socket_path(name);

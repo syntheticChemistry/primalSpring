@@ -1,0 +1,139 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# BYOB Graph Template — Build Your Own Biome
+#
+# Copy this template to create a deployment graph for any new spring.
+# Replace ${SPRING_NAME}, ${SPRING_BINARY}, ${SPRING_DOMAIN}, and
+# capability lists with your spring's values.
+#
+# Every spring graph follows this structure:
+#   Phase 1: Tower Atomic (BearDog + Songbird) — always required
+#   Phase 2: Optional extensions (ToadStool, NestGate, Squirrel)
+#   Phase 3: Your spring — depends on Tower, optionally others
+#   Phase 4: Validation node
+#
+# The minimum viable BYOB graph is Tower + your spring.
+# Add compute (ToadStool), storage (NestGate), or AI (Squirrel)
+# as your spring's domain requires.
+#
+# Graduation checklist (sourDough compliance):
+#   [ ] UniBin binary with server/status/version subcommands
+#   [ ] JSON-RPC 2.0 over Unix socket
+#   [ ] health.liveness + health.readiness
+#   [ ] identity.get
+#   [ ] capability.list
+#   [ ] Semantic method naming (domain.verb[.variant])
+#   [ ] AGPL-3.0-only license
+#   [ ] capability_registry.toml matching code
+#   [ ] This deploy graph validates via primalSpring
+#
+# Usage:
+#   biomeos deploy --graph graphs/${SPRING_NAME}_deploy.toml
+
+[graph]
+name = "${SPRING_NAME}_niche"
+description = "${SPRING_NAME} BYOB deployment"
+version = "0.1.0"
+coordination = "sequential"
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 1: Tower Atomic — always required
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.encrypt", "crypto.sign", "crypto.verify"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["discovery.find_primals", "network.tls_connect"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 2: Optional extensions — uncomment what you need
+# ═══════════════════════════════════════════════════════════════
+
+# Uncomment for compute (GPU/CPU dispatch):
+# [[graph.node]]
+# name = "toadstool"
+# binary = "toadstool_primal"
+# order = 3
+# required = false
+# depends_on = ["beardog", "songbird"]
+# health_method = "health.liveness"
+# by_capability = "compute"
+# capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+# Uncomment for storage (content-addressed persistence):
+# [[graph.node]]
+# name = "nestgate"
+# binary = "nestgate_primal"
+# order = 3
+# required = false
+# depends_on = ["beardog", "songbird"]
+# health_method = "health.liveness"
+# by_capability = "storage"
+# capabilities = ["storage.store", "storage.retrieve"]
+
+# Uncomment for AI (MCP tool routing):
+# [[graph.node]]
+# name = "squirrel"
+# binary = "squirrel_primal"
+# order = 3
+# required = false
+# depends_on = ["beardog", "songbird"]
+# health_method = "health.liveness"
+# by_capability = "ai"
+# capabilities = ["ai.query", "mcp.tools.list"]
+
+# Uncomment for visualization (UI/rendering):
+# [[graph.node]]
+# name = "petaltongue"
+# binary = "petaltongue"
+# order = 3
+# required = false
+# depends_on = ["beardog", "songbird"]
+# health_method = "health.liveness"
+# by_capability = "visualization"
+# capabilities = ["visualization.render", "visualization.render.dashboard"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 3: Your spring
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.node]]
+name = "${SPRING_NAME}"
+binary = "${SPRING_BINARY}"
+order = 10
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "${SPRING_DOMAIN}"
+capabilities = [
+    # Replace with your spring's capabilities:
+    # "${SPRING_DOMAIN}.method_one",
+    # "${SPRING_DOMAIN}.method_two",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 4: Validation
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.node]]
+name = "validate_${SPRING_NAME}"
+binary = "primalspring_primal"
+order = 99
+required = false
+depends_on = ["${SPRING_NAME}"]
+health_method = "health.liveness"
+capabilities = ["coordination.validate_composition"]

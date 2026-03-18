@@ -133,6 +133,26 @@ pub fn tool_to_method(tool_name: &str) -> Option<&'static str> {
     tools.iter().find(|t| t.name == tool_name).map(|t| t.name)
 }
 
+/// Discover MCP tools from a remote primal via `mcp.tools.list`.
+///
+/// Connects to the given socket, calls `mcp.tools.list`, and returns
+/// the raw JSON array of tool definitions. Returns an empty `Vec` on
+/// any failure (connection, protocol, missing method).
+///
+/// Pattern absorbed from Squirrel alpha.13 `spring_tools.rs`.
+#[must_use]
+pub fn discover_remote_tools(socket: &std::path::Path, primal: &str) -> Vec<serde_json::Value> {
+    let Ok(mut client) = super::client::PrimalClient::connect(socket, primal) else {
+        return Vec::new();
+    };
+    let Ok(resp) = client.call("mcp.tools.list", serde_json::json!({})) else {
+        return Vec::new();
+    };
+    resp.result
+        .and_then(|v| v.as_array().cloned())
+        .unwrap_or_default()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -183,6 +203,19 @@ mod tests {
     #[test]
     fn tool_to_method_unknown_tool() {
         assert!(tool_to_method("nonexistent.tool").is_none());
+    }
+
+    #[test]
+    fn tool_count_matches_capability() {
+        let tools = list_tools();
+        assert_eq!(tools.len(), 8, "expected 8 MCP tools");
+    }
+
+    #[test]
+    fn discover_remote_tools_returns_empty_on_missing_socket() {
+        let nonexistent = std::path::Path::new("/tmp/nonexistent_primalspring_test.sock");
+        let tools = discover_remote_tools(nonexistent, "test");
+        assert!(tools.is_empty());
     }
 
     #[test]

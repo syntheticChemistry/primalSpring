@@ -3,13 +3,14 @@
 //! Exp052: Protocol Escalation — validates HTTP REST → JSON-RPC 2.0 → tarpc serialization.
 
 use primalspring::ipc::protocol::{JsonRpcRequest, JsonRpcResponse};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp052 — Protocol Escalation");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp052: HTTP REST → JSON-RPC 2.0 → tarpc");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let req = JsonRpcRequest::new("health.check", serde_json::Value::Null);
     let serialized = req.to_line();

@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Node Atomic Compute — Tower + ToadStool (GPU/CPU dispatch)
+#
+# Extends Tower with compute capabilities. Springs that need
+# GPU acceleration, shader execution, or heavy batch processing
+# deploy this tier.
+#
+# Usage:
+#   biomeos deploy --graph graphs/node_atomic_compute.toml
+#   primalspring_primal server  # then: coordination.deploy_atomic {"atomic":"Node"}
+
+[graph]
+name = "node_atomic_compute"
+description = "Node Atomic: Tower + ToadStool (compute dispatch)"
+version = "0.3.0"
+coordination = "sequential"
+
+# ── Phase 1: Tower Atomic (inherited) ──
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.encrypt", "crypto.sign", "crypto.verify"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["discovery.find_primals", "network.tls_connect"]
+
+# ── Phase 2: ToadStool — compute dispatch ──
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = [
+    "compute.dispatch.submit",
+    "compute.dispatch.status",
+    "compute.dispatch.cancel",
+    "compute.execute",
+]
+
+# ── Phase 3: Validation ──
+[[graph.node]]
+name = "validate_node"
+binary = "primalspring_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird", "toadstool"]
+health_method = "health.liveness"
+capabilities = ["composition.node_health"]

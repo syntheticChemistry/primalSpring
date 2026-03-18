@@ -4,14 +4,14 @@
 
 use primalspring::graphs::CoordinationPattern;
 use primalspring::ipc::discover::neural_api_healthy;
-use primalspring::tolerances::TICK_BUDGET_60HZ_US;
+use primalspring::tolerances::{TICK_BUDGET_60HZ_US, VALIDATION_SUMMARY_WIDTH};
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp014 — Continuous Tick");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp014: Continuous at 60Hz (continuous_tick.toml)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let desc = CoordinationPattern::Continuous.description();
     v.check_bool(

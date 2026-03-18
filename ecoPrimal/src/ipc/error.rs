@@ -9,6 +9,36 @@
 
 use super::protocol::{JsonRpcError, error_codes};
 
+/// Phase in which an IPC operation failed.
+///
+/// Absorbed from biomeOS v2.51 and loamSpine v0.9.5. Provides
+/// diagnostic context without leaking implementation details.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IpcErrorPhase {
+    /// Failure during socket connection (before any bytes sent).
+    Connect,
+    /// Failure while serializing the request payload.
+    Serialize,
+    /// Failure while sending bytes over the socket.
+    Send,
+    /// Failure while waiting for or reading the response.
+    Receive,
+    /// Failure while parsing the response payload.
+    Parse,
+}
+
+impl std::fmt::Display for IpcErrorPhase {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Connect => write!(f, "connect"),
+            Self::Serialize => write!(f, "serialize"),
+            Self::Send => write!(f, "send"),
+            Self::Receive => write!(f, "receive"),
+            Self::Parse => write!(f, "parse"),
+        }
+    }
+}
+
 /// Semantic IPC error — classifies failures by what happened rather
 /// than where in the code path the failure occurred.
 #[derive(Debug)]
@@ -50,7 +80,34 @@ pub enum IpcError {
     },
 }
 
+/// An [`IpcError`] annotated with the [`IpcErrorPhase`] where it occurred.
+#[derive(Debug)]
+pub struct PhasedIpcError {
+    /// The phase of the IPC operation that failed.
+    pub phase: IpcErrorPhase,
+    /// The underlying error.
+    pub error: IpcError,
+}
+
+impl std::fmt::Display for PhasedIpcError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{}] {}", self.phase, self.error)
+    }
+}
+
+impl std::error::Error for PhasedIpcError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        self.error.source()
+    }
+}
+
 impl IpcError {
+    /// Wrap this error with phase context for diagnostics.
+    #[must_use]
+    pub const fn in_phase(self, phase: IpcErrorPhase) -> PhasedIpcError {
+        PhasedIpcError { phase, error: self }
+    }
+
     /// Whether a retry is likely to succeed (transient failures).
     #[must_use]
     pub const fn is_retriable(&self) -> bool {
@@ -375,5 +432,44 @@ mod tests {
         for v in &variants {
             assert!(!v.to_string().is_empty());
         }
+    }
+
+    #[test]
+    fn ipc_error_phase_display() {
+        assert_eq!(IpcErrorPhase::Connect.to_string(), "connect");
+        assert_eq!(IpcErrorPhase::Serialize.to_string(), "serialize");
+        assert_eq!(IpcErrorPhase::Send.to_string(), "send");
+        assert_eq!(IpcErrorPhase::Receive.to_string(), "receive");
+        assert_eq!(IpcErrorPhase::Parse.to_string(), "parse");
+    }
+
+    #[test]
+    fn phased_error_display_includes_phase() {
+        let err = IpcError::ProtocolError {
+            detail: "bad json".to_owned(),
+        };
+        let phased = err.in_phase(IpcErrorPhase::Parse);
+        let display = phased.to_string();
+        assert!(display.starts_with("[parse]"));
+        assert!(display.contains("bad json"));
+    }
+
+    #[test]
+    fn phased_error_preserves_source() {
+        use std::error::Error;
+        let err = IpcError::Timeout(std::io::Error::new(std::io::ErrorKind::TimedOut, "slow"));
+        let phased = err.in_phase(IpcErrorPhase::Receive);
+        assert!(phased.source().is_some());
+        assert_eq!(phased.phase, IpcErrorPhase::Receive);
+    }
+
+    #[test]
+    fn phased_error_no_source_for_protocol_error() {
+        use std::error::Error;
+        let err = IpcError::ProtocolError {
+            detail: "x".to_owned(),
+        };
+        let phased = err.in_phase(IpcErrorPhase::Connect);
+        assert!(phased.source().is_none());
     }
 }

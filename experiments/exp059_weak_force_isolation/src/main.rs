@@ -4,13 +4,14 @@
 //! Source: `phase2/biomeOS/graphs/BONDING_TESTS_README.md`
 
 use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_env_var};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp059 — Weak Force Isolation");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp059: Zero Trust with Unknown Primals (Weak Bonding)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let unknown = discover_primal("definitely_not_a_primal_xyzzy");
     v.check_bool(

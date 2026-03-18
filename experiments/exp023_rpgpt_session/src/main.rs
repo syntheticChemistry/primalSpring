@@ -4,14 +4,14 @@
 
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
-use primalspring::tolerances::TICK_BUDGET_60HZ_US;
+use primalspring::tolerances::{TICK_BUDGET_60HZ_US, VALIDATION_SUMMARY_WIDTH};
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp023 — RPGPT Session");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp023: 60Hz + provenance");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let graphs = EmergentSystem::Rpgpt.required_graphs();
     let has_game_engine_tick = graphs.contains(&"game_engine_tick");

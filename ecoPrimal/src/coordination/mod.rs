@@ -206,6 +206,41 @@ pub fn health_check_within_tolerance(primal: &str) -> Option<bool> {
         .map(|us| us <= tolerances::HEALTH_CHECK_MAX_US)
 }
 
+/// Probe a primal's health and record check results on a [`crate::validation::ValidationResult`].
+///
+/// Reduces boilerplate across experiments: each primal probe produces 3 checks
+/// (`health_{name}`, `latency_{name}`, `caps_{name}`), either as PASS/FAIL
+/// when the primal is reachable or SKIP when it is not.
+pub fn check_primal_health(v: &mut crate::validation::ValidationResult, primal: &str) {
+    let health = probe_primal(primal);
+    if health.socket_found {
+        v.check_bool(
+            &format!("health_{primal}"),
+            health.health_ok,
+            &format!("{primal} health.check"),
+        );
+        v.check_latency(
+            &format!("latency_{primal}"),
+            health.latency_us,
+            tolerances::HEALTH_CHECK_MAX_US,
+        );
+        v.check_minimum(&format!("caps_{primal}"), health.capabilities.len(), 1);
+    } else {
+        v.check_skip(
+            &format!("health_{primal}"),
+            &format!("{primal} not reachable"),
+        );
+        v.check_skip(
+            &format!("latency_{primal}"),
+            &format!("{primal} not reachable"),
+        );
+        v.check_skip(
+            &format!("caps_{primal}"),
+            &format!("{primal} not reachable"),
+        );
+    }
+}
+
 fn extract_capability_names(caps: Option<serde_json::Value>) -> Vec<String> {
     let Some(val) = caps else {
         return Vec::new();
@@ -351,5 +386,15 @@ mod tests {
     #[test]
     fn extract_capability_names_from_none() {
         assert!(extract_capability_names(None).is_empty());
+    }
+
+    #[test]
+    fn check_primal_health_graceful_when_not_running() {
+        use crate::validation::{NullSink, ValidationResult};
+        use std::sync::Arc;
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        check_primal_health(&mut v, "nonexistent_primal_xyzzy_test_12345");
+        assert_eq!(v.skipped, 3, "should skip health, latency, caps");
+        assert_eq!(v.failed, 0);
     }
 }

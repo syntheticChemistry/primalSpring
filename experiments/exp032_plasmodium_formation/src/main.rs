@@ -5,6 +5,7 @@
 use primalspring::bonding::BondType;
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 /// Source: bonding::BondType — 4 bond models defined in ecosystem architecture
@@ -13,9 +14,9 @@ const BOND_TYPE_COUNT: usize = 4;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp032 — Plasmodium Formation");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp032: query_collective() with Real Songbird Mesh");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let all_have_descriptions = [
         BondType::Covalent,

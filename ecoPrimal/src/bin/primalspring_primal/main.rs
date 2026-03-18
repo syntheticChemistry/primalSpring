@@ -145,6 +145,10 @@ fn handle_connection(stream: &std::os::unix::net::UnixStream) -> std::io::Result
     Ok(())
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "table-driven dispatch; splitting loses readability"
+)]
 fn dispatch_request(line: &str) -> JsonRpcResponse {
     let req: serde_json::Value = match serde_json::from_str(line.trim()) {
         Ok(v) => v,
@@ -166,6 +170,7 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
     let method = req["method"].as_str().unwrap_or("");
 
     match method {
+        // ── Health probes ──
         "health.check" | "health.liveness" => success_response(
             serde_json::json!({
                 "status": "healthy",
@@ -177,7 +182,7 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
         ),
         "health.readiness" => {
             let neural_ok = neural_api_healthy();
-            let required = primalspring::coordination::AtomicType::FullNucleus.required_primals();
+            let required = AtomicType::FullNucleus.required_primals();
             let discovered = discover_for(required);
             let reachable = discovered.iter().filter(|d| d.socket.is_some()).count();
             success_response(
@@ -190,7 +195,24 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
                 id,
             )
         }
-        "capabilities.list" => {
+
+        // ── Identity (sourDough compliance) ──
+        "identity.get" => success_response(
+            serde_json::json!({
+                "id": PRIMAL_NAME,
+                "display_name": "primalSpring",
+                "version": env!("CARGO_PKG_VERSION"),
+                "capabilities": primalspring::niche::CAPABILITIES,
+                "phase": "running",
+                "family_id": std::env::var("FAMILY_ID")
+                    .or_else(|_| std::env::var("BIOMEOS_FAMILY_ID"))
+                    .unwrap_or_else(|_| "default".to_owned()),
+            }),
+            id,
+        ),
+
+        // ── Capability advertisement ──
+        "capabilities.list" | "capability.list" => {
             let caps: Vec<&str> = primalspring::niche::CAPABILITIES.to_vec();
             success_response(
                 serde_json::json!({
@@ -202,21 +224,26 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
                 id,
             )
         }
+
+        // ── Coordination domain ──
         "coordination.validate_composition" => handle_validate_composition(&req["params"], id),
         "coordination.discovery_sweep" => handle_discovery_sweep(&req["params"], id),
+        "coordination.probe_primal" => handle_probe_primal(&req["params"], id),
+        "coordination.deploy_atomic" => handle_deploy_atomic(&req["params"], id),
+        "coordination.bonding_test" => handle_bonding_test(&req["params"], id),
         "coordination.neural_api_status" => {
             success_response(serde_json::json!({ "healthy": neural_api_healthy() }), id)
         }
-        "mcp.tools.list" => {
-            let tools = primalspring::ipc::mcp::list_tools();
-            success_response(serde_json::to_value(tools).unwrap_or_default(), id)
-        }
-        "graph.list" => {
-            let graphs_dir = resolve_graphs_dir();
-            let results = primalspring::deploy::validate_all_graphs(&graphs_dir);
-            success_response(serde_json::to_value(results).unwrap_or_default(), id)
-        }
-        "graph.validate" => handle_graph_validate(&req["params"], id),
+
+        // ── Composition health (per-tier) ──
+        "composition.tower_health" => handle_composition_health(AtomicType::Tower, id),
+        "composition.node_health" => handle_composition_health(AtomicType::Node, id),
+        "composition.nest_health" => handle_composition_health(AtomicType::Nest, id),
+        "composition.nucleus_health" => handle_composition_health(AtomicType::FullNucleus, id),
+
+        // ── Lifecycle management ──
+        "nucleus.start" => handle_nucleus_lifecycle("start", &req["params"], id),
+        "nucleus.stop" => handle_nucleus_lifecycle("stop", &req["params"], id),
         "lifecycle.status" => success_response(
             serde_json::json!({
                 "primal": PRIMAL_NAME,
@@ -226,6 +253,21 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
             }),
             id,
         ),
+
+        // ── MCP tool discovery ──
+        "mcp.tools.list" => {
+            let tools = primalspring::ipc::mcp::list_tools();
+            success_response(serde_json::to_value(tools).unwrap_or_default(), id)
+        }
+
+        // ── Graph coordination ──
+        "graph.list" => {
+            let graphs_dir = resolve_graphs_dir();
+            let results = primalspring::deploy::validate_all_graphs(&graphs_dir);
+            success_response(serde_json::to_value(results).unwrap_or_default(), id)
+        }
+        "graph.validate" => handle_graph_validate(&req["params"], id),
+
         _ => JsonRpcResponse {
             jsonrpc: JSONRPC_VERSION.to_owned(),
             result: None,
@@ -241,38 +283,22 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
 
 fn handle_validate_composition(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let atomic_str = params["atomic"].as_str().unwrap_or("Tower");
-    let atomic = match atomic_str {
-        "Tower" => AtomicType::Tower,
-        "Node" => AtomicType::Node,
-        "Nest" => AtomicType::Nest,
-        "FullNucleus" => AtomicType::FullNucleus,
-        _ => {
-            return JsonRpcResponse {
-                jsonrpc: JSONRPC_VERSION.to_owned(),
-                result: None,
-                error: Some(JsonRpcError {
-                    code: error_codes::INVALID_PARAMS,
-                    message: format!("Unknown atomic type: {atomic_str}"),
-                    data: None,
-                }),
-                id,
-            };
-        }
+    let Some(atomic) = parse_atomic_type(atomic_str) else {
+        return error_response(
+            error_codes::INVALID_PARAMS,
+            &format!("Unknown atomic type: {atomic_str}"),
+            id,
+        );
     };
 
     let result = validate_composition(atomic);
     match serde_json::to_value(result) {
         Ok(val) => success_response(val, id),
-        Err(e) => JsonRpcResponse {
-            jsonrpc: JSONRPC_VERSION.to_owned(),
-            result: None,
-            error: Some(JsonRpcError {
-                code: error_codes::INTERNAL_ERROR,
-                message: format!("serialization failed: {e}"),
-                data: None,
-            }),
+        Err(e) => error_response(
+            error_codes::INTERNAL_ERROR,
+            &format!("serialization: {e}"),
             id,
-        },
+        ),
     }
 }
 
@@ -300,51 +326,163 @@ fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRespons
     success_response(serde_json::json!({ "primals": summary }), id)
 }
 
+fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let name = params["primal"].as_str().unwrap_or("beardog");
+    let health = primalspring::coordination::probe_primal(name);
+    match serde_json::to_value(health) {
+        Ok(val) => success_response(val, id),
+        Err(e) => error_response(
+            error_codes::INTERNAL_ERROR,
+            &format!("serialization: {e}"),
+            id,
+        ),
+    }
+}
+
+fn handle_deploy_atomic(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let atomic_str = params["atomic"].as_str().unwrap_or("Tower");
+    let Some(atomic) = parse_atomic_type(atomic_str) else {
+        return error_response(
+            error_codes::INVALID_PARAMS,
+            &format!("Unknown atomic type: {atomic_str}"),
+            id,
+        );
+    };
+
+    let graphs_dir = resolve_graphs_dir();
+    let graph_file = graphs_dir.join(format!("{}.toml", atomic.graph_name()));
+
+    let structure_ok = if graph_file.exists() {
+        let result = primalspring::deploy::validate_structure(&graph_file);
+        serde_json::to_value(&result).ok()
+    } else {
+        None
+    };
+
+    let composition = validate_composition(atomic);
+    success_response(
+        serde_json::json!({
+            "atomic": atomic_str,
+            "graph": atomic.graph_name(),
+            "graph_exists": graph_file.exists(),
+            "graph_path": graph_file.display().to_string(),
+            "graph_validation": structure_ok,
+            "composition": serde_json::to_value(&composition).unwrap_or_default(),
+        }),
+        id,
+    )
+}
+
+fn handle_bonding_test(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let bond_str = params["bond_type"].as_str().unwrap_or("Covalent");
+    let bond = match bond_str {
+        "Covalent" => primalspring::bonding::BondType::Covalent,
+        "Ionic" => primalspring::bonding::BondType::Ionic,
+        "Weak" => primalspring::bonding::BondType::Weak,
+        "OrganoMetalSalt" => primalspring::bonding::BondType::OrganoMetalSalt,
+        _ => {
+            return error_response(
+                error_codes::INVALID_PARAMS,
+                &format!("Unknown bond type: {bond_str}"),
+                id,
+            );
+        }
+    };
+
+    let required = AtomicType::FullNucleus.required_primals();
+    let discovered = discover_for(required);
+    let gates = discovered.iter().filter(|d| d.socket.is_some()).count();
+
+    success_response(
+        serde_json::json!({
+            "bond_type": bond_str,
+            "description": bond.description(),
+            "gates_discovered": gates,
+            "total_primals": required.len(),
+            "status": if gates >= 2 { "ready" } else { "insufficient_primals" },
+        }),
+        id,
+    )
+}
+
+fn handle_composition_health(atomic: AtomicType, id: u64) -> JsonRpcResponse {
+    let result = validate_composition(atomic);
+    match serde_json::to_value(result) {
+        Ok(val) => success_response(val, id),
+        Err(e) => error_response(
+            error_codes::INTERNAL_ERROR,
+            &format!("serialization: {e}"),
+            id,
+        ),
+    }
+}
+
+fn handle_nucleus_lifecycle(action: &str, params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let atomic_str = params["atomic"].as_str().unwrap_or("FullNucleus");
+    let atomic = parse_atomic_type(atomic_str).unwrap_or(AtomicType::FullNucleus);
+
+    let graphs_dir = resolve_graphs_dir();
+    let graph_file = graphs_dir.join(format!("{}.toml", atomic.graph_name()));
+
+    success_response(
+        serde_json::json!({
+            "action": action,
+            "atomic": atomic_str,
+            "graph": atomic.graph_name(),
+            "graph_exists": graph_file.exists(),
+            "required_primals": atomic.required_primals(),
+            "status": if graph_file.exists() { "graph_ready" } else { "graph_missing" },
+            "note": format!("nucleus.{action} queued — biomeOS orchestrates actual deployment via deploy graph"),
+        }),
+        id,
+    )
+}
+
+fn parse_atomic_type(s: &str) -> Option<AtomicType> {
+    match s {
+        "Tower" => Some(AtomicType::Tower),
+        "Node" => Some(AtomicType::Node),
+        "Nest" => Some(AtomicType::Nest),
+        "FullNucleus" | "Full" => Some(AtomicType::FullNucleus),
+        _ => None,
+    }
+}
+
+fn error_response(code: i64, message: &str, id: u64) -> JsonRpcResponse {
+    JsonRpcResponse {
+        jsonrpc: JSONRPC_VERSION.to_owned(),
+        result: None,
+        error: Some(JsonRpcError {
+            code,
+            message: message.to_owned(),
+            data: None,
+        }),
+        id,
+    }
+}
+
 fn handle_graph_validate(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let Some(path_str) = params["path"].as_str() else {
-        return JsonRpcResponse {
-            jsonrpc: JSONRPC_VERSION.to_owned(),
-            result: None,
-            error: Some(JsonRpcError {
-                code: error_codes::INVALID_PARAMS,
-                message: "missing required 'path' parameter".to_owned(),
-                data: None,
-            }),
+        return error_response(
+            error_codes::INVALID_PARAMS,
+            "missing required 'path' parameter",
             id,
-        };
+        );
     };
     let live = params["live"].as_bool().unwrap_or(false);
     let path = std::path::Path::new(path_str);
-    if live {
-        let result = primalspring::deploy::validate_live(path);
-        match serde_json::to_value(result) {
-            Ok(val) => success_response(val, id),
-            Err(e) => JsonRpcResponse {
-                jsonrpc: JSONRPC_VERSION.to_owned(),
-                result: None,
-                error: Some(JsonRpcError {
-                    code: error_codes::INTERNAL_ERROR,
-                    message: format!("serialization failed: {e}"),
-                    data: None,
-                }),
-                id,
-            },
-        }
+    let result = if live {
+        serde_json::to_value(primalspring::deploy::validate_live(path))
     } else {
-        let result = primalspring::deploy::validate_structure(path);
-        match serde_json::to_value(result) {
-            Ok(val) => success_response(val, id),
-            Err(e) => JsonRpcResponse {
-                jsonrpc: JSONRPC_VERSION.to_owned(),
-                result: None,
-                error: Some(JsonRpcError {
-                    code: error_codes::INTERNAL_ERROR,
-                    message: format!("serialization failed: {e}"),
-                    data: None,
-                }),
-                id,
-            },
-        }
+        serde_json::to_value(primalspring::deploy::validate_structure(path))
+    };
+    match result {
+        Ok(val) => success_response(val, id),
+        Err(e) => error_response(
+            error_codes::INTERNAL_ERROR,
+            &format!("serialization: {e}"),
+            id,
+        ),
     }
 }
 

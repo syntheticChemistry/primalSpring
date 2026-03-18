@@ -9,6 +9,8 @@
 use std::process::Command;
 use std::time::Instant;
 
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
+
 /// Experiment binaries in execution order (tracks 1-7).
 const EXPERIMENTS: &[&str] = &[
     "primalspring-exp001",
@@ -52,12 +54,12 @@ const EXPERIMENTS: &[&str] = &[
 ];
 
 fn main() {
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!(
         "primalSpring validate_all — running {} experiments",
         EXPERIMENTS.len()
     );
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let mut passed = 0u32;
     let mut failed = 0u32;
@@ -92,7 +94,7 @@ fn main() {
     }
 
     let wall_elapsed = wall_start.elapsed();
-    println!("\n{}", "=".repeat(72));
+    println!("\n{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!(
         "validate_all: {passed}/{} passed, {failed} failed ({wall_elapsed:.1?})",
         EXPERIMENTS.len()
@@ -105,6 +107,6 @@ fn main() {
         }
     }
 
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     std::process::exit(i32::from(failed > 0));
 }

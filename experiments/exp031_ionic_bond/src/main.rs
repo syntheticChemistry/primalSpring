@@ -5,13 +5,14 @@
 use primalspring::bonding::BondType;
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp031 — Ionic Bond");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp031: Cross-Family Limited Capability Sharing");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let bond = BondType::Ionic;
     v.check_bool(

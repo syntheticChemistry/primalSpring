@@ -32,9 +32,9 @@ fn probe_primal_with_liveness_readiness(
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp050 — Compute Triangle");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp050: coralReef → toadStool → barraCuda Pipeline");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
 
     let toadstool = discover_primal("toadstool");
     v.check_bool(

@@ -125,9 +125,13 @@ impl RetryPolicy {
 }
 
 impl Default for RetryPolicy {
-    /// Sensible defaults: 3 retries, 100ms base, 2s max.
     fn default() -> Self {
-        Self::new(3, Duration::from_millis(100), Duration::from_secs(2))
+        use crate::tolerances;
+        Self::new(
+            tolerances::RETRY_MAX_ATTEMPTS,
+            Duration::from_millis(tolerances::RETRY_BASE_DELAY_MS),
+            Duration::from_millis(tolerances::RETRY_MAX_DELAY_MS),
+        )
     }
 }
 
@@ -239,9 +243,13 @@ mod tests {
 
     #[test]
     fn default_retry_policy() {
+        use crate::tolerances;
         let policy = RetryPolicy::default();
-        assert_eq!(policy.max_retries, 3);
-        assert_eq!(policy.base_delay, Duration::from_millis(100));
+        assert_eq!(policy.max_retries, tolerances::RETRY_MAX_ATTEMPTS);
+        assert_eq!(
+            policy.base_delay,
+            Duration::from_millis(tolerances::RETRY_BASE_DELAY_MS)
+        );
     }
 
     #[test]

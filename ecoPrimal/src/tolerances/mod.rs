@@ -90,6 +90,41 @@ pub const RETRY_MAX_DELAY_MS: u64 = 500;
 /// Source: 72 columns matches standard terminal width conventions.
 pub const VALIDATION_SUMMARY_WIDTH: usize = 72;
 
+// ── Niche cost-estimate parameters ──
+//
+// Used by `niche::cost_estimates()` to provide biomeOS scheduling hints.
+// Factored here so magic numbers don't appear in niche.rs JSON literals.
+
+/// Estimated latency for `coordination.validate_composition` (ms).
+pub const COST_VALIDATE_COMPOSITION_MS: u64 = 500;
+/// Memory budget for `coordination.validate_composition` (bytes).
+pub const COST_VALIDATE_COMPOSITION_BYTES: u64 = 4096;
+
+/// Estimated latency for `coordination.probe_primal` (ms).
+pub const COST_PROBE_PRIMAL_MS: u64 = 50;
+/// Memory budget for `coordination.probe_primal` (bytes).
+pub const COST_PROBE_PRIMAL_BYTES: u64 = 1024;
+
+/// Estimated latency for `coordination.discovery_sweep` (ms).
+pub const COST_DISCOVERY_SWEEP_MS: u64 = 100;
+/// Memory budget for `coordination.discovery_sweep` (bytes).
+pub const COST_DISCOVERY_SWEEP_BYTES: u64 = 2048;
+
+/// Estimated latency for `composition.nucleus_health` (ms).
+pub const COST_NUCLEUS_HEALTH_MS: u64 = 1000;
+/// Memory budget for `composition.nucleus_health` (bytes).
+pub const COST_NUCLEUS_HEALTH_BYTES: u64 = 8192;
+
+/// Estimated latency for `graph.validate` (ms).
+pub const COST_GRAPH_VALIDATE_MS: u64 = 10;
+/// Memory budget for `graph.validate` (bytes).
+pub const COST_GRAPH_VALIDATE_BYTES: u64 = 4096;
+
+/// Estimated latency for `health.check` (ms).
+pub const COST_HEALTH_CHECK_MS: u64 = 1;
+/// Memory budget for `health.check` (bytes).
+pub const COST_HEALTH_CHECK_BYTES: u64 = 256;
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -131,5 +166,30 @@ mod tests {
     fn validation_summary_width_is_standard() {
         assert!(VALIDATION_SUMMARY_WIDTH >= 60);
         assert!(VALIDATION_SUMMARY_WIDTH <= 120);
+    }
+
+    #[test]
+    fn cost_estimates_are_positive() {
+        assert!(COST_VALIDATE_COMPOSITION_MS > 0);
+        assert!(COST_VALIDATE_COMPOSITION_BYTES > 0);
+        assert!(COST_PROBE_PRIMAL_MS > 0);
+        assert!(COST_PROBE_PRIMAL_BYTES > 0);
+        assert!(COST_DISCOVERY_SWEEP_MS > 0);
+        assert!(COST_DISCOVERY_SWEEP_BYTES > 0);
+        assert!(COST_NUCLEUS_HEALTH_MS > 0);
+        assert!(COST_NUCLEUS_HEALTH_BYTES > 0);
+        assert!(COST_GRAPH_VALIDATE_MS > 0);
+        assert!(COST_GRAPH_VALIDATE_BYTES > 0);
+        assert!(COST_HEALTH_CHECK_MS > 0);
+        assert!(COST_HEALTH_CHECK_BYTES > 0);
+    }
+
+    #[test]
+    fn cost_latencies_are_ordered() {
+        assert!(COST_HEALTH_CHECK_MS < COST_GRAPH_VALIDATE_MS);
+        assert!(COST_GRAPH_VALIDATE_MS < COST_PROBE_PRIMAL_MS);
+        assert!(COST_PROBE_PRIMAL_MS < COST_DISCOVERY_SWEEP_MS);
+        assert!(COST_DISCOVERY_SWEEP_MS < COST_VALIDATE_COMPOSITION_MS);
+        assert!(COST_VALIDATE_COMPOSITION_MS < COST_NUCLEUS_HEALTH_MS);
     }
 }

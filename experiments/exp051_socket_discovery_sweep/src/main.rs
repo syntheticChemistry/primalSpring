@@ -8,13 +8,14 @@
 
 use primalspring::coordination::AtomicType;
 use primalspring::ipc::discover::{discover_for, discover_reachable_for, socket_path};
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp051 — Socket Discovery Sweep");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp051: Enumerate NUCLEUS Primals at $XDG_RUNTIME_DIR/biomeos/");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let all_primals = AtomicType::FullNucleus.required_primals();
     let results = discover_for(all_primals);

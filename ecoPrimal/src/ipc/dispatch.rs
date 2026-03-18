@@ -134,4 +134,28 @@ mod tests {
         let result = outcome.into_result();
         assert!(result.is_err());
     }
+
+    #[test]
+    fn application_error_with_data_into_result() {
+        let outcome: DispatchOutcome<i32> = DispatchOutcome::ApplicationError {
+            code: -32_600,
+            message: "invalid".to_owned(),
+            data: Some(serde_json::json!({"detail": "bad param"})),
+        };
+        let result = outcome.into_result();
+        assert!(matches!(
+            result,
+            Err(IpcError::ApplicationError { data: Some(_), .. })
+        ));
+    }
+
+    #[test]
+    fn connection_reset_protocol_error_is_retriable() {
+        let outcome: DispatchOutcome<i32> =
+            DispatchOutcome::ProtocolError(IpcError::ConnectionReset(std::io::Error::new(
+                std::io::ErrorKind::ConnectionReset,
+                "reset",
+            )));
+        assert!(outcome.should_retry());
+    }
 }

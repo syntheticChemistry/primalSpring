@@ -4,13 +4,14 @@
 
 use primalspring::graphs::CoordinationPattern;
 use primalspring::ipc::discover::neural_api_healthy;
+use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp012 — Conditional DAG");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!("primalSpring Exp012: ConditionalDag (conditional_fallback.toml)");
-    println!("{}", "=".repeat(72));
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let desc = CoordinationPattern::ConditionalDag.description();
     v.check_bool(
