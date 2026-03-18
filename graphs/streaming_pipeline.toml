@@ -9,7 +9,7 @@
 [graph]
 name = "streaming_pipeline"
 description = "Pipeline: data flows from NestGate (fetch) -> primalSpring (transform) -> sweetGrass (attribute). Uses bounded mpsc channels."
-version = "0.1.0"
+version = "0.2.0"
 coordination = "Pipeline"
 
 # ── Node 1: BearDog (identity) ────────────────────────────────────────

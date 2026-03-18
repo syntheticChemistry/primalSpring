@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 18, 2026  
-**Status**: Phase 0→1 — 38 experiments, 127 unit tests, IPC resilience, 4-format capability parsing
+**Status**: Phase 2 — 38 experiments, 132 unit tests, IPC resilience, ecosystem absorption
 
 ---
 
@@ -14,8 +14,8 @@ The validation target is biomeOS and the Neural API.
 
 ## The Paper
 
-See `whitePaper/gen3/baseCamp/23_primal_coordination.md` for the full baseCamp
-paper documenting primalSpring's validation of ecosystem coordination.
+See `ecoPrimals/whitePaper/gen3/baseCamp/23_primal_coordination.md` (Paper 23) for
+the full baseCamp paper documenting primalSpring's validation of ecosystem coordination.
 
 ## Experiments by Track
 
@@ -34,7 +34,7 @@ paper documenting primalSpring's validation of ecosystem coordination.
 | Metric | Value |
 |--------|-------|
 | Experiments | 38 (7 tracks) |
-| Unit tests | 127 |
+| Unit tests | 132 |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc (missing_docs) | 0 warnings |
 | `#[allow()]` in production | 0 |

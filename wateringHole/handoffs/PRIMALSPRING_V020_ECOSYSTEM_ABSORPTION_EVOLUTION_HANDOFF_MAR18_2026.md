@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-primalSpring absorbed converged IPC resilience patterns from 7 sibling springs (wetSpring V127, healthSpring V35, groundSpring V114, airSpring V089, neuralSpring V115, ludoSpring V24, hotSpring v0.6.31) and leveraged capabilities from 12 phase1/phase2 primals. Evolution from v0.1.0 (69 tests) to v0.2.0 (127 tests).
+primalSpring absorbed converged IPC resilience patterns from 7 sibling springs (wetSpring V127, healthSpring V35, groundSpring V114, airSpring V089, neuralSpring V115, ludoSpring V24, hotSpring v0.6.31) and leveraged capabilities from 12 phase1/phase2 primals. Evolution from v0.1.0 (69 tests) to v0.2.0 (132 tests).
 
 ---
 
@@ -36,13 +36,17 @@ primalSpring absorbed converged IPC resilience patterns from 7 sibling springs (
 - **exp020-025**: Provenance trio probe patterns, cross-spring ecology discovery
 - **exp030-034**: FAMILY_ID-aware socket discovery, Tower primitive probes
 
+### P4: Testing Evolution
+
+- **proptest**: IPC protocol fuzzing — 5 property tests (request round-trip, response parse robustness, success/error parsing, notify generation)
+
 ---
 
 ## Metrics
 
 | Metric | v0.1.0 | v0.2.0 |
 |--------|--------|--------|
-| Tests | 69 | 127 (84% increase) |
+| Tests | 69 | 132 (91% increase) |
 | New source files | — | 4 (error.rs, resilience.rs, dispatch.rs, extract.rs) |
 | Clippy warnings | — | 0 (pedantic + nursery) |
 | Unsafe code | — | 0 (workspace forbid) |

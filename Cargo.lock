@@ -366,7 +366,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clap",
  "neural-api-client-sync",
@@ -379,7 +379,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp001"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -388,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp002"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -397,7 +397,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp003"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -406,7 +406,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp004"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -415,7 +415,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp005"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -424,7 +424,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp006"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -433,7 +433,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp010"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -442,7 +442,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp011"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -451,7 +451,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp012"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -460,7 +460,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp013"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -469,7 +469,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp014"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -478,7 +478,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp015"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -487,7 +487,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp020"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -496,7 +496,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp021"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -505,7 +505,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp022"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -514,7 +514,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp023"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -523,7 +523,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp024"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -532,7 +532,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp025"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -541,7 +541,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp030"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -550,7 +550,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp031"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -559,7 +559,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp032"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -568,7 +568,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp033"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -577,7 +577,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp034"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -586,7 +586,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp040"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -595,7 +595,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp041"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -604,7 +604,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp042"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -613,7 +613,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp043"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -622,7 +622,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp044"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -631,7 +631,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp050"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -640,7 +640,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp051"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -649,7 +649,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp052"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -658,7 +658,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp053"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -667,7 +667,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp054"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -676,7 +676,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp055"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -685,7 +685,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp056"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -694,7 +694,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp057"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -703,7 +703,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp058"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",
@@ -712,7 +712,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp059"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "primalspring",
  "serde",

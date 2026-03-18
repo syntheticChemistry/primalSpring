@@ -200,4 +200,84 @@ mod tests {
         };
         assert_eq!(err.to_string(), "JSON-RPC error -32601: method not found");
     }
+
+    mod proptest_fuzz {
+        use super::*;
+        use proptest::prelude::*;
+
+        fn arb_method() -> impl Strategy<Value = String> {
+            prop::string::string_regex("[a-z]{1,20}\\.[a-z]{1,20}").expect("valid regex")
+        }
+
+        fn arb_params() -> impl Strategy<Value = serde_json::Value> {
+            prop_oneof![
+                Just(serde_json::Value::Null),
+                any::<bool>().prop_map(serde_json::Value::Bool),
+                any::<i64>().prop_map(|n| serde_json::Value::Number(serde_json::Number::from(n))),
+                "[a-zA-Z0-9 _-]{0,50}".prop_map(serde_json::Value::String),
+            ]
+        }
+
+        proptest! {
+            #[test]
+            fn request_round_trips_through_json(
+                method in arb_method(),
+                params in arb_params(),
+            ) {
+                let req = JsonRpcRequest::new(&method, params.clone());
+                let line = req.to_line().unwrap();
+                let parsed: serde_json::Value = serde_json::from_str(line.trim()).unwrap();
+                prop_assert_eq!(parsed["method"].as_str().unwrap(), method.as_str());
+                prop_assert_eq!(parsed["jsonrpc"].as_str().unwrap(), "2.0");
+                if !params.is_null() {
+                    prop_assert_eq!(&parsed["params"], &params);
+                }
+            }
+
+            #[test]
+            fn response_from_line_never_panics(
+                input in "\\PC{0,500}",
+            ) {
+                let _ = JsonRpcResponse::from_line(&input);
+            }
+
+            #[test]
+            fn success_response_always_parses(
+                id in 0u64..1_000_000,
+                result_str in "[a-zA-Z0-9]{0,50}",
+            ) {
+                let json = format!(
+                    r#"{{"jsonrpc":"2.0","result":"{result_str}","id":{id}}}"#,
+                );
+                let resp = JsonRpcResponse::from_line(&json).unwrap();
+                prop_assert!(resp.is_success());
+                prop_assert_eq!(resp.id, id);
+            }
+
+            #[test]
+            fn error_response_always_parses(
+                id in 0u64..1_000_000,
+                code in -40_000i64..-30_000,
+                msg in "[a-zA-Z ]{1,50}",
+            ) {
+                let json = format!(
+                    r#"{{"jsonrpc":"2.0","error":{{"code":{},"message":"{}"}},"id":{}}}"#,
+                    code, msg, id
+                );
+                let resp = JsonRpcResponse::from_line(&json).unwrap();
+                prop_assert!(!resp.is_success());
+                let err = resp.error.unwrap();
+                prop_assert_eq!(err.code, code);
+            }
+
+            #[test]
+            fn request_notify_has_null_params(
+                method in arb_method(),
+            ) {
+                let req = JsonRpcRequest::notify(&method);
+                let json = serde_json::to_string(&req).unwrap();
+                prop_assert!(!json.contains("\"params\""));
+            }
+        }
+    }
 }

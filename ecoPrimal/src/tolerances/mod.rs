@@ -8,9 +8,9 @@
 //!
 //! # Provenance
 //!
-//! These values are initial estimates for Phase 0 scaffolding. They will
-//! be calibrated against real NUCLEUS deployment measurements in Phase 1+.
-//! Each constant documents its source and justification.
+//! These values are initial estimates pending calibration against real
+//! NUCLEUS deployment measurements with live primals. Each constant
+//! documents its source and justification.
 
 /// Maximum acceptable latency for a health check round-trip (microseconds).
 ///

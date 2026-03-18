@@ -2,7 +2,7 @@
 
 **Date**: 2026-03-18  
 **Previous**: `PRIMALSPRING_V010_NEURAL_API_EVOLUTION_HANDOFF_MAR17_2026.md`  
-**Tests**: 127 (from 69)  
+**Tests**: 132 (from 69)  
 **Clippy**: 0 warnings  
 **Status**: Phase 2 — ecosystem pattern convergence
 
@@ -116,7 +116,7 @@ Kept only the latest per-primal. Fixed primalSpring's own handoff locations.
 
 ## Test Summary
 
-127 tests, 0 failures, 0 Clippy warnings.
+132 tests, 0 failures, 0 Clippy warnings.
 
 ## Next Phase
 

@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Unit tests | **127** |
+| Unit tests | **132** |
 | Experiments | 38 (7 tracks) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
@@ -178,12 +178,16 @@ lifecycle.status                   — Primal status report
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.2.0 | `PRIMALSPRING_V011_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | Cross-ecosystem absorption: resilience, dispatch, health probes, self-knowledge |
+| v0.2.0 | `PRIMALSPRING_V020_ECOSYSTEM_ABSORPTION_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Ecosystem absorption: IPC resilience, dispatch, health probes, proptest, 132 tests |
+| v0.2.0 | `PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_COMPUTE_TRIANGLE_HANDOFF_MAR18_2026.md` | Mar 18 | Compute triangle coordination intelligence for toadStool/barraCuda team |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.1.1 | `archive/PRIMALSPRING_V011_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | IPC resilience absorption (superseded by V020) |
+| v0.1.0 | `archive/PRIMALSPRING_V010_NEURAL_API_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Neural API integration + server mode |
+| v0.1.0 | `archive/PRIMALSPRING_V010_DEEP_DEBT_AUDIT_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Deep debt audit + workspace lint consolidation |
 | v0.1.0 | `archive/PRIMALSPRING_V010_COMPREHENSIVE_AUDIT_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Initial audit + deep debt evolution |
 | v0.1.0 | `archive/PRIMALSPRING_V010_TOADSTOOL_BARRACUDA_COORDINATION_HANDOFF_MAR17_2026.md` | Mar 17 | toadStool/barraCuda coordination intelligence |
 

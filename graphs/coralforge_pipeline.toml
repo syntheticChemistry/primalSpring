@@ -10,7 +10,7 @@
 [graph]
 name = "coralforge_pipeline"
 description = "Pipeline: neuralSpring (evoformer) -> hotSpring (df64 precision) -> wetSpring (bio-shaders) -> toadStool (GPU dispatch) -> NestGate (store results). The structure prediction neural object."
-version = "0.1.0"
+version = "0.2.0"
 coordination = "Pipeline"
 
 # ── Node 1: BearDog (identity) ────────────────────────────────────────

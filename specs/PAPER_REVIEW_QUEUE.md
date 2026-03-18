@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
-**Date**: March 17, 2026  
-**Status**: Phase 1 — 38 experiments, 7 tracks, Neural API + real IPC
+**Date**: March 18, 2026  
+**Status**: Phase 2 — 38 experiments, 7 tracks, IPC resilience + ecosystem absorption
 
 ---
 
@@ -48,8 +48,8 @@ produces. The review queue tracks which patterns are ready for validation.
 
 ## Next Steps
 
-1. Phase 1: Tower Atomic with real BearDog + Songbird IPC
-2. Phase 2: Full NUCLEUS deployment and health validation
-3. Phase 3: Graph execution with real primals
-4. Phase 4: Emergent systems end-to-end
-5. Phase 5: Showcase-mined patterns validated
+1. Phase 3: Tower Atomic with real BearDog + Songbird IPC
+2. Phase 4: Full NUCLEUS deployment and health validation
+3. Phase 5: Graph execution with real primals
+4. Phase 6: Emergent systems end-to-end
+5. Phase 7–9: Bonding, cross-spring, showcase-mined patterns validated

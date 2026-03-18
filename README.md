@@ -8,7 +8,7 @@
 | **Version** | 0.2.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 127 unit tests |
+| **Tests** | 132 unit tests |
 | **Experiments** | 38 (7 tracks) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero |

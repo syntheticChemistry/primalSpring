@@ -16,7 +16,7 @@
 [graph]
 name = "primalspring_coordination_niche"
 description = "Full primalSpring niche: NUCLEUS + Provenance Trio + primalSpring"
-version = "0.1.0"
+version = "0.2.0"
 
 # ── Node 1: BearDog (crypto + identity) ─────────────────────────────
 [[graph.node]]

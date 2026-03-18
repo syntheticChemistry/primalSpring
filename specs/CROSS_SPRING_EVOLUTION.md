@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: March 17, 2026  
-**Status**: Phase 1 — Neural API integration, real IPC, server mode, 69 tests
+**Date**: March 18, 2026  
+**Status**: Phase 2 — Ecosystem absorption, IPC resilience stack, 132 tests
 
 ---
 
@@ -56,18 +56,31 @@ Phase 1 (done): Neural API + Deep Debt (March 17, 2026)
   → exp001 + exp004 IPC-wired with graceful degradation
   → Zero warnings: check, clippy (pedantic+nursery), doc, fmt
 
-Phase 2: Live Primals — Tower Atomic (Track 1, exp001–002)
+Phase 2 (done): Ecosystem Absorption (March 18, 2026)
+  → Absorbed IPC resilience from 7 sibling springs
+  → IpcError (8 typed variants), CircuitBreaker, RetryPolicy, resilient_call()
+  → DispatchOutcome<T>, extract_rpc_result<T>(), extract_rpc_dispatch<T>()
+  → 4-format capability parsing (Formats A–D)
+  → health.liveness / health.readiness (Kubernetes-style probes)
+  → safe_cast module, OrExit<T> trait, ValidationSink trait
+  → PRIMAL_NAME / PRIMAL_DOMAIN constants
+  → All 38 experiments evolved with real probe patterns
+  → FAMILY_ID-aware discovery, Neural API health checks
+  → proptest for IPC protocol fuzzing
+  → 132 unit tests, zero warnings, v0.2.0
+
+Phase 3: Live Primals — Tower Atomic (Track 1, exp001–002)
   → BearDog + Songbird real IPC validation
-Phase 3: Full NUCLEUS (Track 1, exp004)
+Phase 4: Full NUCLEUS (Track 1, exp004)
   → All primals deployed and validated
-Phase 4: Graph execution (Track 2)
+Phase 5: Graph execution (Track 2)
   → All 5 coordination patterns with real primals
-Phase 5: Emergent systems (Track 3)
+Phase 6: Emergent systems (Track 3)
   → RootPulse, coralForge pipeline validated
-Phase 6: Bonding (Track 4)
+Phase 7: Bonding (Track 4)
   → Multi-gate coordination
-Phase 7: Cross-spring (Track 6)
+Phase 8: Cross-spring (Track 6)
   → Full ecosystem integration
-Phase 8: Showcase patterns (Track 7)
+Phase 9: Showcase patterns (Track 7)
   → phase1/phase2 mined coordination patterns validated
 ```

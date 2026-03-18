@@ -9,7 +9,7 @@
 [graph]
 name = "conditional_fallback"
 description = "ConditionalDag: attempts GPU dispatch, falls back to CPU if toadstool unavailable"
-version = "0.1.0"
+version = "0.2.0"
 coordination = "ConditionalDag"
 
 # ── Node 1: BearDog (identity) ────────────────────────────────────────

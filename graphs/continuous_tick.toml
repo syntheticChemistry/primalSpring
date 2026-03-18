@@ -9,7 +9,7 @@
 [graph]
 name = "continuous_tick"
 description = "Continuous: 60Hz tick loop polling health from all NUCLEUS primals, reporting via SensorEventBus"
-version = "0.1.0"
+version = "0.2.0"
 coordination = "Continuous"
 
 # ── Node 1: BearDog ───────────────────────────────────────────────────
