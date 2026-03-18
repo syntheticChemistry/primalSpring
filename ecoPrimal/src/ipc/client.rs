@@ -169,6 +169,29 @@ pub fn connect_primal(primal: &str) -> Result<PrimalClient, IpcError> {
     )
 }
 
+/// Connect to whatever primal provides a capability domain.
+///
+/// **Loose coupling**: the caller doesn't know or care which primal
+/// implements the capability. The Neural API (or filesystem probing)
+/// resolves the provider at runtime.
+///
+/// # Errors
+///
+/// Returns [`IpcError::SocketNotFound`] if no provider is discovered, or
+/// a connection-level error if the socket exists but cannot be reached.
+pub fn connect_by_capability(capability: &str) -> Result<PrimalClient, IpcError> {
+    let result = super::discover::discover_by_capability(capability);
+    let label = result.resolved_primal.as_deref().unwrap_or(capability);
+    result.socket.map_or_else(
+        || {
+            Err(IpcError::SocketNotFound {
+                primal: format!("capability:{capability}"),
+            })
+        },
+        |path| PrimalClient::connect(&path, label),
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

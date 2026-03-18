@@ -7,16 +7,26 @@
 [meta]
 primal = "primalspring"
 domain = "coordination"
-version = "0.3.0"
+version = "0.3.2"
 
 [[capabilities]]
 method = "coordination.validate_composition"
-description = "Validate an atomic composition (Tower/Node/Nest/FullNucleus)"
+description = "Validate an atomic composition by primal identity (legacy)"
+domain = "coordination"
+
+[[capabilities]]
+method = "coordination.validate_composition_by_capability"
+description = "Validate an atomic composition by capability discovery (loose coupling)"
 domain = "coordination"
 
 [[capabilities]]
 method = "coordination.probe_primal"
-description = "Probe a single primal for health and capabilities"
+description = "Probe a single primal by name for health and capabilities"
+domain = "coordination"
+
+[[capabilities]]
+method = "coordination.probe_capability"
+description = "Discover and probe a provider by capability domain (loose coupling)"
 domain = "coordination"
 
 [[capabilities]]

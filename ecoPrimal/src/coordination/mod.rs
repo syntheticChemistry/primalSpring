@@ -30,7 +30,35 @@ pub enum AtomicType {
 }
 
 impl AtomicType {
+    /// Capability domains required for this composition.
+    ///
+    /// **Preferred**: resolve providers at runtime via
+    /// [`crate::ipc::discover::discover_by_capability`]. This is the loose
+    /// coupling path — callers ask for capabilities, not primal identities.
+    #[must_use]
+    pub const fn required_capabilities(self) -> &'static [&'static str] {
+        match self {
+            Self::Tower => &["security", "discovery"],
+            Self::Node => &["security", "discovery", "compute"],
+            Self::Nest => &["security", "discovery", "storage"],
+            Self::FullNucleus => &[
+                "security",
+                "discovery",
+                "compute",
+                "storage",
+                "ai",
+                "dag",
+                "commit",
+                "provenance",
+            ],
+        }
+    }
+
     /// Primal names required for this composition.
+    ///
+    /// **Legacy**: prefer [`required_capabilities`](Self::required_capabilities)
+    /// for loose coupling. These names are retained for backward compatibility
+    /// with deploy graphs and experiments that haven't migrated yet.
     #[must_use]
     pub const fn required_primals(self) -> &'static [&'static str] {
         match self {
@@ -65,11 +93,70 @@ impl AtomicType {
     #[must_use]
     pub const fn description(self) -> &'static str {
         match self {
-            Self::Tower => "BearDog + Songbird (crypto + mesh)",
-            Self::Node => "Tower + ToadStool (+ compute)",
-            Self::Nest => "Tower + NestGate (+ storage)",
-            Self::FullNucleus => "All primals + Squirrel (full composition)",
+            Self::Tower => "Security + Discovery (crypto + mesh)",
+            Self::Node => "Tower + Compute (+ GPU dispatch)",
+            Self::Nest => "Tower + Storage (+ persistence)",
+            Self::FullNucleus => "All capabilities (full composition)",
         }
+    }
+}
+
+/// Validate an atomic composition by discovering providers for each
+/// required capability at runtime.
+///
+/// **Loose coupling**: this function doesn't hardcode primal names.
+/// It asks the Neural API (or filesystem) who provides each capability,
+/// then probes whatever primal responds.
+#[must_use]
+pub fn validate_composition_by_capability(atomic: AtomicType) -> CompositionResult {
+    let capabilities = atomic.required_capabilities();
+    let results: Vec<_> = capabilities
+        .iter()
+        .map(|cap| {
+            let disc = crate::ipc::discover::discover_by_capability(cap);
+            let primal_name = disc
+                .resolved_primal
+                .unwrap_or_else(|| format!("capability:{cap}"));
+            if let Some(ref socket) = disc.socket {
+                let start = Instant::now();
+                let (health_ok, caps) = client::PrimalClient::connect(socket, &primal_name)
+                    .map_or_else(
+                        |_| (false, Vec::new()),
+                        |mut c| {
+                            let h = c.health_check().unwrap_or(false);
+                            let caps = extract_capability_names(c.capabilities().ok());
+                            (h, caps)
+                        },
+                    );
+                PrimalHealth {
+                    name: primal_name,
+                    socket_found: true,
+                    health_ok,
+                    capabilities: caps,
+                    latency_us: cast::micros_u64(start.elapsed()),
+                }
+            } else {
+                PrimalHealth {
+                    name: primal_name,
+                    socket_found: false,
+                    health_ok: false,
+                    capabilities: Vec::new(),
+                    latency_us: 0,
+                }
+            }
+        })
+        .collect();
+
+    let all_healthy = results.iter().all(|p| p.health_ok);
+    let discovery_ok = results.iter().all(|p| p.socket_found);
+    let total_capabilities: usize = results.iter().map(|p| p.capabilities.len()).sum();
+
+    CompositionResult {
+        atomic,
+        primals: results,
+        all_healthy,
+        discovery_ok,
+        total_capabilities,
     }
 }
 

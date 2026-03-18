@@ -45,7 +45,9 @@ const REGISTRATION_TARGET: &str = "biomeos";
 pub const CAPABILITIES: &[&str] = &[
     // ── Coordination (core domain) ──
     "coordination.validate_composition",
+    "coordination.validate_composition_by_capability",
     "coordination.probe_primal",
+    "coordination.probe_capability",
     "coordination.discovery_sweep",
     "coordination.deploy_atomic",
     "coordination.bonding_test",
@@ -145,18 +147,20 @@ pub fn cost_estimates() -> serde_json::Value {
 #[must_use]
 pub fn coordination_semantic_mappings() -> serde_json::Value {
     serde_json::json!({
-        "validate_composition":  "coordination.validate_composition",
-        "probe_primal":          "coordination.probe_primal",
-        "discovery_sweep":       "coordination.discovery_sweep",
-        "deploy_atomic":         "coordination.deploy_atomic",
-        "bonding_test":          "coordination.bonding_test",
-        "nucleus_health":        "composition.nucleus_health",
-        "tower_health":          "composition.tower_health",
-        "node_health":           "composition.node_health",
-        "nest_health":           "composition.nest_health",
-        "neural_api_status":     "coordination.neural_api_status",
-        "graph_validate":        "graph.validate",
-        "graph_list":            "graph.list",
+        "validate_composition":               "coordination.validate_composition",
+        "validate_composition_by_capability":  "coordination.validate_composition_by_capability",
+        "probe_primal":                        "coordination.probe_primal",
+        "probe_capability":                    "coordination.probe_capability",
+        "discovery_sweep":                     "coordination.discovery_sweep",
+        "deploy_atomic":                       "coordination.deploy_atomic",
+        "bonding_test":                        "coordination.bonding_test",
+        "nucleus_health":                      "composition.nucleus_health",
+        "tower_health":                        "composition.tower_health",
+        "node_health":                         "composition.node_health",
+        "nest_health":                         "composition.nest_health",
+        "neural_api_status":                   "coordination.neural_api_status",
+        "graph_validate":                      "graph.validate",
+        "graph_list":                          "graph.list",
     })
 }
 

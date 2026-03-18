@@ -182,15 +182,15 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
         ),
         "health.readiness" => {
             let neural_ok = neural_api_healthy();
-            let required = AtomicType::FullNucleus.required_primals();
-            let discovered = discover_for(required);
-            let reachable = discovered.iter().filter(|d| d.socket.is_some()).count();
+            let caps = AtomicType::FullNucleus.required_capabilities();
+            let cap_results = primalspring::ipc::discover::discover_capabilities_for(caps);
+            let reachable = cap_results.iter().filter(|r| r.socket.is_some()).count();
             success_response(
                 serde_json::json!({
                     "ready": reachable > 0,
                     "neural_api": neural_ok,
-                    "primals_discovered": reachable,
-                    "primals_total": required.len(),
+                    "capabilities_discovered": reachable,
+                    "capabilities_total": caps.len(),
                 }),
                 id,
             )
@@ -227,19 +227,27 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
 
         // ── Coordination domain ──
         "coordination.validate_composition" => handle_validate_composition(&req["params"], id),
+        "coordination.validate_composition_by_capability" => {
+            handle_validate_composition_by_capability(&req["params"], id)
+        }
         "coordination.discovery_sweep" => handle_discovery_sweep(&req["params"], id),
         "coordination.probe_primal" => handle_probe_primal(&req["params"], id),
+        "coordination.probe_capability" => handle_probe_capability(&req["params"], id),
         "coordination.deploy_atomic" => handle_deploy_atomic(&req["params"], id),
         "coordination.bonding_test" => handle_bonding_test(&req["params"], id),
         "coordination.neural_api_status" => {
             success_response(serde_json::json!({ "healthy": neural_api_healthy() }), id)
         }
 
-        // ── Composition health (per-tier) ──
-        "composition.tower_health" => handle_composition_health(AtomicType::Tower, id),
-        "composition.node_health" => handle_composition_health(AtomicType::Node, id),
-        "composition.nest_health" => handle_composition_health(AtomicType::Nest, id),
-        "composition.nucleus_health" => handle_composition_health(AtomicType::FullNucleus, id),
+        // ── Composition health (per-tier, capability-based) ──
+        "composition.tower_health" => {
+            handle_composition_health_by_capability(AtomicType::Tower, id)
+        }
+        "composition.node_health" => handle_composition_health_by_capability(AtomicType::Node, id),
+        "composition.nest_health" => handle_composition_health_by_capability(AtomicType::Nest, id),
+        "composition.nucleus_health" => {
+            handle_composition_health_by_capability(AtomicType::FullNucleus, id)
+        }
 
         // ── Lifecycle management ──
         "nucleus.start" => handle_nucleus_lifecycle("start", &req["params"], id),
@@ -405,8 +413,8 @@ fn handle_bonding_test(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     )
 }
 
-fn handle_composition_health(atomic: AtomicType, id: u64) -> JsonRpcResponse {
-    let result = validate_composition(atomic);
+fn handle_composition_health_by_capability(atomic: AtomicType, id: u64) -> JsonRpcResponse {
+    let result = primalspring::coordination::validate_composition_by_capability(atomic);
     match serde_json::to_value(result) {
         Ok(val) => success_response(val, id),
         Err(e) => error_response(
@@ -415,6 +423,62 @@ fn handle_composition_health(atomic: AtomicType, id: u64) -> JsonRpcResponse {
             id,
         ),
     }
+}
+
+fn handle_validate_composition_by_capability(
+    params: &serde_json::Value,
+    id: u64,
+) -> JsonRpcResponse {
+    let atomic_str = params["atomic"].as_str().unwrap_or("Tower");
+    let Some(atomic) = parse_atomic_type(atomic_str) else {
+        return error_response(
+            error_codes::INVALID_PARAMS,
+            &format!("Unknown atomic type: {atomic_str}"),
+            id,
+        );
+    };
+
+    let result = primalspring::coordination::validate_composition_by_capability(atomic);
+    match serde_json::to_value(result) {
+        Ok(val) => success_response(val, id),
+        Err(e) => error_response(
+            error_codes::INTERNAL_ERROR,
+            &format!("serialization: {e}"),
+            id,
+        ),
+    }
+}
+
+fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let capability = params["capability"].as_str().unwrap_or("security");
+    let disc = primalspring::ipc::discover::discover_by_capability(capability);
+
+    let resolved = disc.resolved_primal.as_deref().unwrap_or("unknown");
+
+    let health = if disc.socket.is_some() {
+        primalspring::coordination::probe_primal(resolved)
+    } else {
+        primalspring::coordination::PrimalHealth {
+            name: format!("capability:{capability}"),
+            socket_found: false,
+            health_ok: false,
+            capabilities: Vec::new(),
+            latency_us: 0,
+        }
+    };
+
+    success_response(
+        serde_json::json!({
+            "capability": capability,
+            "resolved_primal": resolved,
+            "socket_found": health.socket_found,
+            "source": format!("{:?}", disc.source),
+            "health_ok": health.health_ok,
+            "capabilities": health.capabilities,
+            "latency_us": health.latency_us,
+        }),
+        id,
+    )
 }
 
 fn handle_nucleus_lifecycle(action: &str, params: &serde_json::Value, id: u64) -> JsonRpcResponse {

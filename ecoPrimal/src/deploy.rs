@@ -205,21 +205,7 @@ pub fn validate_live(path: &Path) -> LiveGraphValidation {
             };
         }
     };
-    let nodes: Vec<NodeHealth> = graph
-        .graph
-        .node
-        .iter()
-        .map(|node| {
-            let health = probe_primal(&node.name);
-            NodeHealth {
-                name: node.name.clone(),
-                required: node.required,
-                socket_found: health.socket_found,
-                health_ok: health.health_ok,
-                capabilities: health.capabilities,
-            }
-        })
-        .collect();
+    let nodes: Vec<NodeHealth> = graph.graph.node.iter().map(probe_graph_node).collect();
 
     let healthy_count = nodes.iter().filter(|n| n.health_ok).count();
     let all_required_healthy = nodes.iter().filter(|n| n.required).all(|n| n.health_ok);
@@ -229,6 +215,34 @@ pub fn validate_live(path: &Path) -> LiveGraphValidation {
         nodes,
         healthy_count,
         all_required_healthy,
+    }
+}
+
+/// Probe a graph node using capability-first discovery when `by_capability`
+/// is set, falling back to identity-based discovery via `node.name`.
+///
+/// This is the loose coupling bridge: graph nodes that declare their
+/// capability domain are discovered by what they provide, not who they are.
+fn probe_graph_node(node: &GraphNode) -> NodeHealth {
+    let health = node.by_capability.as_ref().map_or_else(
+        || probe_primal(&node.name),
+        |cap| {
+            let disc = crate::ipc::discover::discover_by_capability(cap);
+            if disc.socket.is_some() {
+                let name = disc.resolved_primal.unwrap_or_else(|| node.name.clone());
+                probe_primal(&name)
+            } else {
+                probe_primal(&node.name)
+            }
+        },
+    );
+
+    NodeHealth {
+        name: node.name.clone(),
+        required: node.required,
+        socket_found: health.socket_found,
+        health_ok: health.health_ok,
+        capabilities: health.capabilities,
     }
 }
 
