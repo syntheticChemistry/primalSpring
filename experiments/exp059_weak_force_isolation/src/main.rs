@@ -3,7 +3,7 @@
 //! Validates zero information leakage with unknown primals (weak bonding).
 //! Source: `phase2/biomeOS/graphs/BONDING_TESTS_README.md`
 
-use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_env_var};
+use primalspring::ipc::discover::{discover_primal, socket_env_var, DiscoverySource};
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -31,6 +31,6 @@ fn main() {
         "actual isolation testing needs live primals",
     );
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }

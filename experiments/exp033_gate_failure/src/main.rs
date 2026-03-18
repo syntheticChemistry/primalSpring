@@ -3,7 +3,11 @@
 //! Exp033: Gate Failure — validates one gate drops and plasmodium degrades gracefully.
 
 use primalspring::bonding::BondType;
-use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_path};
+use primalspring::ipc::discover::{discover_primal, socket_path, DiscoverySource};
+
+/// Source: bonding::BondType — 4 bond models defined in ecosystem architecture
+/// (Covalent, Ionic, Weak, OrganoMetalSalt).
+const BOND_TYPE_COUNT: usize = 4;
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -20,7 +24,8 @@ fn main() {
     ];
     v.check_bool(
         "bond_type_variants_for_all_models",
-        variants_exist.len() == 4 && variants_exist.iter().all(|bt| !bt.description().is_empty()),
+        variants_exist.len() == BOND_TYPE_COUNT
+            && variants_exist.iter().all(|bt| !bt.description().is_empty()),
         "BondType variants exist for all bonding models with descriptions",
     );
 
@@ -59,6 +64,6 @@ fn main() {
         "needs live gate drop to test degradation",
     );
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }

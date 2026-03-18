@@ -44,6 +44,6 @@ fn main() {
     );
     v.check_skip("timeout_handling", "timeout handling needs live federation");
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }

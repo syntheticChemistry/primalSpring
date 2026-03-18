@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.2.0 (Phase 2 — cross-ecosystem absorption, IPC resilience, semantic errors, health probes)  
+**Version**: 0.2.0 (Phase 2 — niche self-knowledge, deploy graph validation, IPC resilience, 157 tests)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 18, 2026
 
@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Unit tests | **132** |
+| Tests | **157** (148 unit + 9 integration) |
 | Experiments | 38 (7 tracks) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
@@ -46,6 +46,9 @@ primalSpring fills the gap.
 | Files over 1000 LOC | 0 |
 | Neural API integration | `neural-api-client-sync` |
 | Server mode | JSON-RPC 2.0 over Unix socket |
+| Niche self-knowledge | `niche.rs` — 21 capabilities, semantic mappings, cost estimates |
+| Deploy graph validation | `deploy.rs` — 6 biomeOS TOMLs (structural + live) |
+| Meta-validator | `validate_all` binary — runs all 38 experiments |
 | Workspace lints | centralized in `Cargo.toml` |
 
 ### Key Capabilities
@@ -64,7 +67,11 @@ primalSpring fills the gap.
 - **Validation harness**: `OrExit<T>`, `ValidationSink` (StdoutSink, NullSink), `safe_cast` module
 - **JSON output**: `PRIMALSPRING_JSON=1` for CI pipeline integration
 - **Server mode**: `primalspring_primal server` exposes `coordination.validate_composition`,
-  `coordination.discovery_sweep`, and `coordination.neural_api_status`
+  `coordination.discovery_sweep`, `coordination.neural_api_status`, `graph.list`, and `graph.validate`
+- **Niche self-knowledge**: `niche.rs` defines 21 capabilities, semantic mappings, operation
+  dependencies, cost estimates, and `register_with_target()` for biomeOS registration
+- **Deploy graph validation**: `deploy.rs` parses biomeOS TOML graphs, validates structure
+  (names, binaries, dependencies, ordering), and probes running primals
 
 ---
 
@@ -134,7 +141,7 @@ validates the pipeline end-to-end.
 
 | Exp | What | Springs |
 |-----|------|---------|
-| 040 | Cross-spring data flow | airSpring -> wetSpring -> neuralSpring |
+| 040 | Cross-spring data flow | Capability-routed ecology pipeline (petalTongue, Squirrel) |
 | 041 | Provenance trio for science | Any spring -> provenance trio |
 | 042 | fieldMouse ingestion | fieldMouse frames -> NestGate -> sweetGrass |
 | 043 | petalTongue visualization | biomeOS SSE -> petalTongue |
@@ -168,7 +175,9 @@ coordination.neural_api_status     — Neural API health
 health.check                       — Full self health status
 health.liveness                    — Kubernetes-style liveness probe
 health.readiness                   — Kubernetes-style readiness probe
-capabilities.list                  — List coordination capabilities
+capabilities.list                  — Niche capabilities + semantic mappings + cost estimates
+graph.list                         — Structurally validate all deploy graphs
+graph.validate                     — Validate a specific graph (structural or live)
 lifecycle.status                   — Primal status report
 ```
 
@@ -178,8 +187,9 @@ lifecycle.status                   — Primal status report
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.2.0 | `PRIMALSPRING_V020_ECOSYSTEM_ABSORPTION_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Ecosystem absorption: IPC resilience, dispatch, health probes, proptest, 132 tests |
+| v0.2.0 | `PRIMALSPRING_V020_ECOSYSTEM_ABSORPTION_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Ecosystem absorption: IPC resilience, niche, deploy, 157 tests |
 | v0.2.0 | `PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_COMPUTE_TRIANGLE_HANDOFF_MAR18_2026.md` | Mar 18 | Compute triangle coordination intelligence for toadStool/barraCuda team |
+| v0.2.0 | `PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | barraCuda evolution + absorption recommendations for toadStool team |
 
 ## Archived Handoffs
 

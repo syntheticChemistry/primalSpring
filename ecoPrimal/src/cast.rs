@@ -9,6 +9,10 @@
 
 /// Saturating cast from `u128` to `u64`.
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "saturating boundary — truncation is guarded by the range check"
+)]
 pub const fn u128_to_u64(v: u128) -> u64 {
     if v > u64::MAX as u128 {
         u64::MAX
@@ -25,6 +29,10 @@ pub const fn micros_u64(d: std::time::Duration) -> u64 {
 
 /// Saturating cast from `usize` to `u32`.
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "saturating boundary — truncation is guarded by the range check"
+)]
 pub const fn usize_to_u32(v: usize) -> u32 {
     if v > u32::MAX as usize {
         u32::MAX

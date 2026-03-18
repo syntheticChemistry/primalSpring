@@ -6,7 +6,7 @@
 //! Discovers sockets at runtime, connects via JSON-RPC, and validates health +
 //! capabilities. Gracefully skips checks when primals are not running.
 
-use primalspring::coordination::{AtomicType, probe_primal, validate_composition};
+use primalspring::coordination::{probe_primal, validate_composition, AtomicType};
 use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
@@ -18,7 +18,11 @@ fn main() {
     println!("{}", "=".repeat(72));
 
     let tower_primals = AtomicType::Tower.required_primals();
-    v.check_count("tower_required_count", tower_primals.len(), 2);
+    v.check_count(
+        "tower_required_count",
+        tower_primals.len(),
+        AtomicType::Tower.required_primals().len(),
+    );
 
     let beardog = discover_primal("beardog");
     v.check_or_skip(

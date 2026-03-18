@@ -57,6 +57,6 @@ fn main() {
         "actual branch/merge operations need live IPC",
     );
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }

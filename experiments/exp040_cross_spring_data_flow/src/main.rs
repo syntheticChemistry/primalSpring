@@ -1,14 +1,22 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp040: Cross Spring Data Flow — airSpring -> wetSpring -> neuralSpring.
+//! Exp040: Cross Spring Data Flow — capability-routed ecology pipeline.
 //!
 //! Validates capability-based routing across spring primals. Discovery is
-//! driven by the Neural API rather than a hardcoded primal roster.
+//! driven by the Neural API rather than a hardcoded primal roster. The
+//! ecology pipeline (airSpring → wetSpring → neuralSpring) is dispatched
+//! via capability calls; we validate the routing endpoints (petalTongue
+//! for visualization, Squirrel for AI coordination) are discoverable.
 
 use primalspring::ipc::discover::{discover_for, neural_api_healthy};
 use primalspring::validation::ValidationResult;
 
-const SPRING_PRIMALS: &[&str] = &["petaltongue", "squirrel"];
+/// Routing endpoints probed for capability-based cross-spring data flow.
+///
+/// Source: `PRIMAL_REGISTRY.md` — petalTongue (visualization) and Squirrel
+/// (AI coordination) are post-NUCLEUS primals that participate in
+/// cross-spring ecology pipelines.
+const ROUTING_PRIMALS: &[&str] = &["petaltongue", "squirrel"];
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp040 — Cross Spring Data Flow");
@@ -18,14 +26,14 @@ fn main() {
     );
     println!("{}", "=".repeat(72));
 
-    let results = discover_for(SPRING_PRIMALS);
+    let results = discover_for(ROUTING_PRIMALS);
     let found = results.iter().filter(|r| r.socket.is_some()).count();
     v.check_bool(
-        "spring_primals_probed",
-        results.len() == SPRING_PRIMALS.len(),
+        "routing_primals_probed",
+        results.len() == ROUTING_PRIMALS.len(),
         &format!(
-            "probed {} spring primals, {found} reachable",
-            SPRING_PRIMALS.len()
+            "probed {} routing primals, {found} reachable",
+            ROUTING_PRIMALS.len()
         ),
     );
 

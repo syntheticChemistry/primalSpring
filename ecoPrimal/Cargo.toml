@@ -15,6 +15,7 @@ categories = ["science", "command-line-utilities"]
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
+toml = "0.8"
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 clap = { workspace = true }
@@ -26,6 +27,10 @@ workspace = true
 [[bin]]
 name = "primalspring_primal"
 path = "src/bin/primalspring_primal/main.rs"
+
+[[bin]]
+name = "validate_all"
+path = "src/bin/validate_all/main.rs"
 
 [dev-dependencies]
 proptest = "1.10.0"

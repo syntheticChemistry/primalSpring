@@ -16,10 +16,12 @@
 //! # Modules
 //!
 //! - [`coordination`] — atomic composition definitions (Tower, Node, Nest, Full NUCLEUS)
+//! - [`deploy`] — deploy graph parsing, structural validation, and live probing
 //! - [`graphs`] — graph execution pattern validation (Sequential, Parallel, DAG, Pipeline, Continuous)
 //! - [`emergent`] — emergent system validation (`RootPulse`, RPGPT, `CoralForge`)
 //! - [`bonding`] — multi-gate bonding models (Covalent, Ionic, Weak)
 //! - [`ipc`] — JSON-RPC 2.0 client + Neural API bridge + socket discovery
+//! - [`niche`] — BYOB niche self-knowledge (capabilities, semantic mappings, registration)
 //! - [`validation`] — experiment validation harness with structured output
 //! - [`tolerances`] — named latency and throughput bounds
 
@@ -32,8 +34,10 @@ pub const PRIMAL_DOMAIN: &str = "coordination";
 pub mod bonding;
 pub mod cast;
 pub mod coordination;
+pub mod deploy;
 pub mod emergent;
 pub mod graphs;
 pub mod ipc;
+pub mod niche;
 pub mod tolerances;
 pub mod validation;

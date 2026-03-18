@@ -36,6 +36,6 @@ fn main() {
         "needs live primals for actual startup sequence",
     );
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }

@@ -71,6 +71,6 @@ fn main() {
     v.check_skip("family_seed_sharing", "needs 2 live NUCLEUS instances");
     v.check_skip("mutual_discovery", "needs 2 live NUCLEUS instances");
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }

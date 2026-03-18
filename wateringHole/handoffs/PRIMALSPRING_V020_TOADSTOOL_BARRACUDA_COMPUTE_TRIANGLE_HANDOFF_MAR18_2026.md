@@ -14,7 +14,9 @@
 - IPC resilience stack adopted ecosystem-wide: typed `IpcError`, `CircuitBreaker`, `RetryPolicy`, `DispatchOutcome<T>`
 - 4-format capability parsing handles all known wire formats across the ecosystem
 - `health.liveness` / `health.readiness` probes integrated as Kubernetes-style health checks
-- **132 tests**, zero clippy warnings, zero unsafe, zero C deps
+- **157 tests** (148 unit + 9 integration), zero clippy warnings, zero unsafe, zero C deps
+- Niche self-knowledge module (`niche.rs`) models 21 coordination capabilities for biomeOS BYOB consumption
+- Deploy graph validation (`deploy.rs`) parses, structurally validates, and live-probes all 6 biomeOS TOMLs
 
 ---
 
@@ -174,10 +176,12 @@ Based on the ecosystem-wide survey conducted for primalSpring v0.2.0:
 
 | Metric | Value |
 |--------|-------|
-| Tests | 132 |
+| Tests | 157 (148 unit + 9 integration) |
 | Experiments | 38 (7 tracks) |
 | Compute triangle experiment | exp050 |
 | IPC modules | 7 (client, discover, protocol, error, resilience, dispatch, extract) |
+| Niche self-knowledge | 21 capabilities, semantic mappings, cost estimates |
+| Deploy graph validation | 6 biomeOS TOMLs (structural + live) |
 | Clippy warnings | 0 (pedantic + nursery) |
 | Unsafe code | 0 (workspace forbid) |
 | C dependencies | 0 |

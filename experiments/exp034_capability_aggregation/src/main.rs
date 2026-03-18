@@ -7,6 +7,10 @@
 
 use primalspring::coordination::AtomicType;
 use primalspring::ipc::client::connect_primal;
+
+/// Minimum primals required for capability aggregation — at least 2 gates needed
+/// to test routing to best gate. Source: exp034 design.
+const MIN_AGGREGATION_PRIMALS: usize = 2;
 use primalspring::ipc::discover::{discover_for, extract_capability_names, socket_path};
 use primalspring::validation::ValidationResult;
 
@@ -17,7 +21,11 @@ fn main() {
     println!("{}", "=".repeat(72));
 
     let required = AtomicType::FullNucleus.required_primals();
-    v.check_count("full_nucleus_has_eight_primals", required.len(), 8);
+    v.check_count(
+        "full_nucleus_has_eight_primals",
+        required.len(),
+        AtomicType::FullNucleus.required_primals().len(),
+    );
 
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
     let path_beardog = socket_path("beardog");
@@ -47,12 +55,16 @@ fn main() {
         }
     }
 
-    if found >= 2 {
-        v.check_minimum("aggregated_capabilities", all_cap_names.len(), 2);
+    if found >= MIN_AGGREGATION_PRIMALS {
+        v.check_minimum(
+            "aggregated_capabilities",
+            all_cap_names.len(),
+            MIN_AGGREGATION_PRIMALS,
+        );
     } else {
         v.check_skip(
             "aggregated_capabilities",
-            &format!("need >= 2 live primals for aggregation, found {found}"),
+            &format!("need >= {MIN_AGGREGATION_PRIMALS} live primals for aggregation, found {found}"),
         );
     }
 

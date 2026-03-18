@@ -11,9 +11,9 @@ use std::time::Instant;
 use serde::{Deserialize, Serialize};
 
 use crate::cast;
-use crate::ipc::IpcError;
 use crate::ipc::client::{self, PrimalClient};
 use crate::ipc::discover::{discover_for, discover_primal};
+use crate::ipc::IpcError;
 use crate::tolerances;
 
 /// Atomic composition layer — each represents a testable deployment target.
@@ -106,7 +106,7 @@ pub struct CompositionResult {
 /// Probe a single primal: discover socket, connect with retry, health check,
 /// list capabilities.
 ///
-/// Uses [`RetryPolicy::quick`] for transient connection failures.
+/// Uses [`crate::ipc::resilience::RetryPolicy`] for transient connection failures.
 /// Returns a [`PrimalHealth`] with whatever information could be gathered.
 /// Gracefully degrades: socket not found → `health_ok: false`.
 #[must_use]
@@ -169,7 +169,7 @@ pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
 
 /// Try to connect to a primal and perform a health check.
 ///
-/// Uses [`resilient_call`] with a circuit breaker and retry policy to
+/// Uses [`crate::ipc::resilience::resilient_call`] with a circuit breaker and retry policy to
 /// handle transient IPC failures gracefully. Returns `Ok(latency_us)`
 /// if the primal responds to `health.check`.
 ///
@@ -178,7 +178,7 @@ pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
 /// Returns [`IpcError`] if the primal socket is unreachable, the circuit
 /// is open, or the health check call fails after retries.
 pub fn health_check(primal: &str) -> Result<u64, IpcError> {
-    use crate::ipc::resilience::{CircuitBreaker, RetryPolicy, resilient_call};
+    use crate::ipc::resilience::{resilient_call, CircuitBreaker, RetryPolicy};
     use std::time::Duration;
 
     let mut cb = CircuitBreaker::new(3, Duration::from_secs(10));

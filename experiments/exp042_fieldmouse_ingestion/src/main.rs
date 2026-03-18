@@ -11,7 +11,12 @@ use primalspring::ipc::discover::{discover_for, neural_api_healthy, socket_path}
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-const INGEST_PRIMALS: &[&str] = &["nestgate", "sweetgrass"];
+/// Primals participating in the edge ingestion pipeline.
+///
+/// Source: `PRIMAL_REGISTRY.md` + `CROSS_SPRING_DATA_FLOW_STANDARD.md`.
+/// fieldMouse is the edge sensor primal (post-NUCLEUS, may not be running).
+/// NestGate stores artifacts, sweetGrass records attribution.
+const INGEST_PRIMALS: &[&str] = &["fieldmouse", "nestgate", "sweetgrass"];
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp042 — FieldMouse Ingestion");

@@ -280,7 +280,11 @@ impl ValidationResult {
     /// Process exit code: 0 if all passed, 1 otherwise.
     #[must_use]
     pub const fn exit_code(&self) -> i32 {
-        if self.all_passed() { 0 } else { 1 }
+        if self.all_passed() {
+            0
+        } else {
+            1
+        }
     }
 }
 

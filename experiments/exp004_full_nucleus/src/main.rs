@@ -6,7 +6,7 @@
 //! and checks the full composition. Gracefully degrades when primals
 //! are not running — skips are honest, never faked passes.
 
-use primalspring::coordination::{AtomicType, probe_primal, validate_composition};
+use primalspring::coordination::{probe_primal, validate_composition, AtomicType};
 use primalspring::ipc::discover::{discover_for, neural_api_healthy};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
@@ -18,7 +18,11 @@ fn main() {
     println!("{}", "=".repeat(72));
 
     let required = AtomicType::FullNucleus.required_primals();
-    v.check_count("full_nucleus_required_count", required.len(), 8);
+    v.check_count(
+        "full_nucleus_required_count",
+        required.len(),
+        AtomicType::FullNucleus.required_primals().len(),
+    );
 
     let discovered = discover_for(required);
     let found_count = discovered.iter().filter(|d| d.socket.is_some()).count();

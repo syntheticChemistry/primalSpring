@@ -72,7 +72,7 @@ pub fn extract_rpc_dispatch<T: DeserializeOwned>(response: &JsonRpcResponse) -> 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ipc::protocol::{JsonRpcError, error_codes};
+    use crate::ipc::protocol::{error_codes, JsonRpcError};
 
     fn success_response(result: serde_json::Value) -> JsonRpcResponse {
         JsonRpcResponse {

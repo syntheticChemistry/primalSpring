@@ -74,6 +74,6 @@ fn main() {
     // Skip: compute.execute needs live primals
     v.check_skip("compute_execute", "needs live primals");
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }

@@ -12,9 +12,9 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
-use primalspring::coordination::{AtomicType, validate_composition};
+use primalspring::coordination::{validate_composition, AtomicType};
 use primalspring::ipc::discover::{discover_for, neural_api_healthy, socket_path};
-use primalspring::ipc::protocol::{JsonRpcError, JsonRpcResponse, error_codes};
+use primalspring::ipc::protocol::{error_codes, JsonRpcError, JsonRpcResponse};
 use primalspring::{PRIMAL_DOMAIN, PRIMAL_NAME};
 
 #[derive(Parser)]
@@ -84,6 +84,10 @@ fn run_server() {
     };
 
     tracing::info!("listening for JSON-RPC 2.0 connections");
+
+    std::thread::spawn(move || {
+        primalspring::niche::register_with_target(&sock_path);
+    });
 
     for stream in listener.incoming() {
         match stream {
@@ -167,28 +171,29 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
                 id,
             )
         }
-        "capabilities.list" => success_response(
-            serde_json::json!({
-                "coordination": {
-                    "validate_composition": "Validate an atomic composition (Tower/Node/Nest/FullNucleus)",
-                    "probe_primal": "Health-check a single primal",
-                    "discovery_sweep": "Discover all primals in a composition",
-                },
-                "health": {
-                    "liveness": "Am I alive?",
-                    "readiness": "Am I ready to serve? (Neural API status + discovered primals)",
-                },
-                "lifecycle": {
-                    "status": "Report primalSpring status",
-                },
-            }),
-            id,
-        ),
+        "capabilities.list" => {
+            let caps: Vec<&str> = primalspring::niche::CAPABILITIES.to_vec();
+            success_response(
+                serde_json::json!({
+                    "capabilities": caps,
+                    "semantic_mappings": primalspring::niche::coordination_semantic_mappings(),
+                    "operation_dependencies": primalspring::niche::operation_dependencies(),
+                    "cost_estimates": primalspring::niche::cost_estimates(),
+                }),
+                id,
+            )
+        }
         "coordination.validate_composition" => handle_validate_composition(&req["params"], id),
         "coordination.discovery_sweep" => handle_discovery_sweep(&req["params"], id),
         "coordination.neural_api_status" => {
             success_response(serde_json::json!({ "healthy": neural_api_healthy() }), id)
         }
+        "graph.list" => {
+            let graphs_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+            let results = primalspring::deploy::validate_all_graphs(&graphs_dir);
+            success_response(serde_json::to_value(results).unwrap_or_default(), id)
+        }
+        "graph.validate" => handle_graph_validate(&req["params"], id),
         "lifecycle.status" => success_response(
             serde_json::json!({
                 "primal": PRIMAL_NAME,
@@ -233,7 +238,19 @@ fn handle_validate_composition(params: &serde_json::Value, id: u64) -> JsonRpcRe
     };
 
     let result = validate_composition(atomic);
-    success_response(serde_json::to_value(result).unwrap_or_default(), id)
+    match serde_json::to_value(result) {
+        Ok(val) => success_response(val, id),
+        Err(e) => JsonRpcResponse {
+            jsonrpc: "2.0".to_owned(),
+            result: None,
+            error: Some(JsonRpcError {
+                code: error_codes::INTERNAL_ERROR,
+                message: format!("serialization failed: {e}"),
+                data: None,
+            }),
+            id,
+        },
+    }
 }
 
 fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
@@ -258,6 +275,54 @@ fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRespons
         .collect();
 
     success_response(serde_json::json!({ "primals": summary }), id)
+}
+
+fn handle_graph_validate(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let Some(path_str) = params["path"].as_str() else {
+        return JsonRpcResponse {
+            jsonrpc: "2.0".to_owned(),
+            result: None,
+            error: Some(JsonRpcError {
+                code: error_codes::INVALID_PARAMS,
+                message: "missing required 'path' parameter".to_owned(),
+                data: None,
+            }),
+            id,
+        };
+    };
+    let live = params["live"].as_bool().unwrap_or(false);
+    let path = std::path::Path::new(path_str);
+    if live {
+        let result = primalspring::deploy::validate_live(path);
+        match serde_json::to_value(result) {
+            Ok(val) => success_response(val, id),
+            Err(e) => JsonRpcResponse {
+                jsonrpc: "2.0".to_owned(),
+                result: None,
+                error: Some(JsonRpcError {
+                    code: error_codes::INTERNAL_ERROR,
+                    message: format!("serialization failed: {e}"),
+                    data: None,
+                }),
+                id,
+            },
+        }
+    } else {
+        let result = primalspring::deploy::validate_structure(path);
+        match serde_json::to_value(result) {
+            Ok(val) => success_response(val, id),
+            Err(e) => JsonRpcResponse {
+                jsonrpc: "2.0".to_owned(),
+                result: None,
+                error: Some(JsonRpcError {
+                    code: error_codes::INTERNAL_ERROR,
+                    message: format!("serialization failed: {e}"),
+                    data: None,
+                }),
+                id,
+            },
+        }
+    }
 }
 
 fn success_response(result: serde_json::Value, id: u64) -> JsonRpcResponse {

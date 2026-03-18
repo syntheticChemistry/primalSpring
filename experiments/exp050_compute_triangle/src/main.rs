@@ -7,7 +7,7 @@ use std::time::Instant;
 use primalspring::cast;
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover::{
-    DiscoverySource, discover_primal, extract_capability_names, socket_path,
+    discover_primal, extract_capability_names, socket_path, DiscoverySource,
 };
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
@@ -116,6 +116,6 @@ fn main() {
         "actual compile+dispatch pipeline needs live primals",
     );
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }

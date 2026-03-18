@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-primalSpring absorbed converged IPC resilience patterns from 7 sibling springs (wetSpring V127, healthSpring V35, groundSpring V114, airSpring V089, neuralSpring V115, ludoSpring V24, hotSpring v0.6.31) and leveraged capabilities from 12 phase1/phase2 primals. Evolution from v0.1.0 (69 tests) to v0.2.0 (132 tests).
+primalSpring absorbed converged IPC resilience patterns from 7 sibling springs (wetSpring V127, healthSpring V35, groundSpring V114, airSpring V089, neuralSpring V115, ludoSpring V24, hotSpring v0.6.31) and leveraged capabilities from 12 phase1/phase2 primals. Evolution from v0.1.0 (69 tests) to v0.2.0 (157 tests: 148 unit + 9 integration).
 
 ---
 
@@ -36,9 +36,17 @@ primalSpring absorbed converged IPC resilience patterns from 7 sibling springs (
 - **exp020-025**: Provenance trio probe patterns, cross-spring ecology discovery
 - **exp030-034**: FAMILY_ID-aware socket discovery, Tower primitive probes
 
+### P3: Niche & Deploy (Phase 2b)
+
+- **`niche.rs`**: Self-knowledge module — 21 capabilities, semantic mappings, operation dependencies, cost estimates, `register_with_target()` for biomeOS registration
+- **`deploy.rs`**: Deploy graph parsing — `load_graph()`, `validate_structure()`, `validate_live()`, `validate_all_graphs()` for 6 biomeOS TOMLs
+- **`validate_all`**: Meta-validator binary runs all 38 experiments in sequence
+- **Server wiring**: `capabilities.list` returns structured niche knowledge; `graph.list` and `graph.validate` RPC methods added; niche registration on startup (background thread, non-blocking)
+
 ### P4: Testing Evolution
 
 - **proptest**: IPC protocol fuzzing — 5 property tests (request round-trip, response parse robustness, success/error parsing, notify generation)
+- **Integration tests**: 9 real JSON-RPC round-trip tests against live server (isolated socket per test)
 
 ---
 
@@ -46,8 +54,11 @@ primalSpring absorbed converged IPC resilience patterns from 7 sibling springs (
 
 | Metric | v0.1.0 | v0.2.0 |
 |--------|--------|--------|
-| Tests | 69 | 132 (91% increase) |
-| New source files | — | 4 (error.rs, resilience.rs, dispatch.rs, extract.rs) |
+| Tests | 69 | 157 (128% increase) |
+| Unit tests | — | 148 |
+| Integration tests | — | 9 (real IPC round-trips) |
+| New source files | — | 6 (error.rs, resilience.rs, dispatch.rs, extract.rs, niche.rs, deploy.rs) |
+| New binaries | — | validate_all (meta-validator) |
 | Clippy warnings | — | 0 (pedantic + nursery) |
 | Unsafe code | — | 0 (workspace forbid) |
 | Formatting issues | — | 0 |

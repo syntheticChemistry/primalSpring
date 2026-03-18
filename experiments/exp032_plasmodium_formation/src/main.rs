@@ -7,6 +7,10 @@ use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::validation::ValidationResult;
 
+/// Source: bonding::BondType — 4 bond models defined in ecosystem architecture
+/// (Covalent, Ionic, Weak, OrganoMetalSalt).
+const BOND_TYPE_COUNT: usize = 4;
+
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp032 — Plasmodium Formation");
     println!("{}", "=".repeat(72));
@@ -24,7 +28,7 @@ fn main() {
     v.check_bool(
         "all_bond_types_have_descriptions",
         all_have_descriptions,
-        "all 4 BondType variants have non-empty descriptions",
+        &format!("all {BOND_TYPE_COUNT} BondType variants have non-empty descriptions"),
     );
 
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
@@ -71,6 +75,6 @@ fn main() {
         "needs live primals for collective query",
     );
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }

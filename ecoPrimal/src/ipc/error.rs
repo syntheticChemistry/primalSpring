@@ -7,7 +7,7 @@
 //! rather than raw `std::io::Error`. This enables `CircuitBreaker`
 //! and `RetryPolicy` to make informed retry decisions.
 
-use super::protocol::{JsonRpcError, error_codes};
+use super::protocol::{error_codes, JsonRpcError};
 
 /// Semantic IPC error — classifies failures by what happened rather
 /// than where in the code path the failure occurred.

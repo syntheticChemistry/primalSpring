@@ -32,6 +32,6 @@ fn main() {
         "needs live Squirrel for Multi-MCP coordination",
     );
 
-    v.summary();
-    std::process::exit(i32::from(!v.all_passed()));
+    v.finish();
+    std::process::exit(v.exit_code());
 }
