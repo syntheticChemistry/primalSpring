@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: March 18, 2026  
-**Status**: Phase 2 — 38 experiments, 7 tracks, IPC resilience + ecosystem absorption
+**Status**: Phase 2→3 — 38 experiments, 7 tracks, MCP tools, 5-tier discovery, 195 tests
 
 ---
 

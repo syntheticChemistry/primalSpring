@@ -3,7 +3,7 @@
 //! Exp033: Gate Failure — validates one gate drops and plasmodium degrades gracefully.
 
 use primalspring::bonding::BondType;
-use primalspring::ipc::discover::{discover_primal, socket_path, DiscoverySource};
+use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_path};
 
 /// Source: bonding::BondType — 4 bond models defined in ecosystem architecture
 /// (Covalent, Ionic, Weak, OrganoMetalSalt).

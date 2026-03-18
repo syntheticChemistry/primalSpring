@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: March 18, 2026  
-**Status**: Phase 2 — Ecosystem absorption, IPC resilience stack, 132 tests
+**Date**: March 18, 2026
+**Status**: Phase 2→3 — Deep debt resolution, ecosystem absorption, MCP tools, 195 tests
 
 ---
 
@@ -24,15 +24,39 @@ an optional track. Every experiment involves multiple primals or springs.
 
 ## What primalSpring Learns from Each Spring
 
-| Spring | Lesson |
-|--------|--------|
-| hotSpring | Precision validation patterns (f64 tolerance tiers) |
-| wetSpring | Deep integration patterns (354 binaries, 214 named tolerances) |
-| airSpring | NUCLEUS niche deployment (30 capabilities, 4 deploy graphs) |
-| groundSpring | Uncertainty quantification (tolerance provenance system) |
-| neuralSpring | Graph execution validation (`validate_biomeos_graph`) |
-| ludoSpring | Cross-spring experiment patterns (exp041–044) |
-| healthSpring | Provenance trio resilience (circuit breaker, graceful degradation) |
+| Spring | Lesson | Absorbed in |
+|--------|--------|-------------|
+| hotSpring | Precision validation (170 tolerances, provenance) | v0.2.0 (pattern), v0.3.0 (provenance struct) |
+| wetSpring | Deep IPC integration (354 bins, 214 tolerances, MCP tools) | v0.2.0 (resilience), v0.3.0 (MCP tools) |
+| airSpring | NUCLEUS niche deployment (41 caps, deny.toml, MCP) | v0.2.0 (niche), v0.3.0 (deny.toml, MCP) |
+| groundSpring | Typed errors, ValidationSink, 13-tier tol | v0.2.0 (ValidationSink, OrExit) |
+| neuralSpring | Capability registry TOML, primal_names::display | v0.3.0 (capability_registry.toml) |
+| ludoSpring | ValidationResult::with_provenance(), #[expect(reason)] | v0.3.0 (structured provenance) |
+| healthSpring | Proptest IPC fuzz (18 tests), provenance completeness | v0.3.0 (proptest expansion) |
+
+## What primalSpring Contributes Back
+
+| Pattern | Absorbed By |
+|---------|-------------|
+| ValidationSink trait | groundSpring V116, rhizoCrypt v0.13 |
+| check_skip / check_or_skip | Referenced by all spring experiment patterns |
+| 4-format capability parsing | Converged implementation used as reference |
+| Deploy graph structural validation | 6 TOML graphs with parse + structural checks |
+| Coordination experiment framework | 38 experiments across 7 tracks |
+| MCP coordination tools | Available for Squirrel AI routing |
+
+## Ecosystem State (March 18, 2026)
+
+| Spring | Version | Tests | Key Absorption |
+|--------|---------|-------|----------------|
+| hotSpring | v0.6.32 | 848 | Sovereign GPU, CoralCompiler IPC |
+| groundSpring | V116 | 960+ | Typed errors, OnceLock GPU cache |
+| neuralSpring | V118 | 1,304 | Capability registry, display names |
+| wetSpring | V128 | 1,443+ | MCP tools, cast module, FMA |
+| airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, provenance registry |
+| healthSpring | V37 | 706 | 18 proptest IPC fuzz, MCP tools |
+| ludoSpring | V14 | 187 | with_provenance(), 93.2% coverage |
+| primalSpring | v0.3.0-dev | 195 | MCP tools, 5-tier discovery, provenance |
 
 ## Evolution Path
 
@@ -41,33 +65,29 @@ Phase 0 (done): Scaffolding (March 2, 2026)
   → 38 experiments scaffolded, workspace compiles
 
 Phase 0→1 (done): Real Discovery (March 17, 2026)
-  → Crate rename (primalspring-barracuda → primalspring)
-  → IPC module evolved: discover + protocol + client (3 modules)
+  → IPC module evolved: discover + protocol + client
   → All experiments use real discover_primal() + honest check_skip
 
 Phase 1 (done): Neural API + Deep Debt (March 17, 2026)
-  → neural-api-client-sync integrated (biomeOS path dep)
-  → KNOWN_PRIMALS removed — sovereignty fix
-  → Discovery evolved: composition-driven + Neural API
-  → Server mode: JSON-RPC 2.0 over Unix socket
-  → probe_primal(), validate_composition(), health_check()
-  → validation: check_or_skip(), JSON output, exit_code()
-  → Workspace lints centralized, 69 unit tests
-  → exp001 + exp004 IPC-wired with graceful degradation
-  → Zero warnings: check, clippy (pedantic+nursery), doc, fmt
+  → neural-api-client-sync, server mode, probe_primal(), 69 unit tests
 
 Phase 2 (done): Ecosystem Absorption (March 18, 2026)
-  → Absorbed IPC resilience from 7 sibling springs
-  → IpcError (8 typed variants), CircuitBreaker, RetryPolicy, resilient_call()
-  → DispatchOutcome<T>, extract_rpc_result<T>(), extract_rpc_dispatch<T>()
-  → 4-format capability parsing (Formats A–D)
-  → health.liveness / health.readiness (Kubernetes-style probes)
-  → safe_cast module, OrExit<T> trait, ValidationSink trait
-  → PRIMAL_NAME / PRIMAL_DOMAIN constants
-  → All 38 experiments evolved with real probe patterns
-  → FAMILY_ID-aware discovery, Neural API health checks
-  → proptest for IPC protocol fuzzing
-  → 132 unit tests, zero warnings, v0.2.0
+  → IPC resilience stack from 7 sibling springs
+  → IpcError, CircuitBreaker, RetryPolicy, DispatchOutcome
+  → 4-format capability parsing, health probes
+  → safe_cast, OrExit, ValidationSink, proptest
+  → 157 tests, zero warnings, v0.2.0
+
+Phase 2→3 (done): Deep Debt + Cross-Ecosystem (March 18, 2026)
+  → MCP tool definitions (8 tools with JSON Schema)
+  → 5-tier discovery (manifest + socket-registry fallbacks)
+  → Structured Provenance on ValidationResult
+  → Capability registry TOML (sync-tested)
+  → deny.toml (14-crate ecoBin ban)
+  → TOCTOU fix in deploy.rs, JSONRPC_VERSION const
+  → Resilience constants to tolerances/
+  → Proptest expansion (5 → 15 fuzz tests)
+  → Coverage 86.0% → 89.8%, 195 tests
 
 Phase 3: Live Primals — Tower Atomic (Track 1, exp001–002)
   → BearDog + Songbird real IPC validation

@@ -39,3 +39,25 @@ impl<T> OrExit<T> for Option<T> {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn result_ok_returns_value() {
+        let r: Result<i32, &str> = Ok(42);
+        assert_eq!(r.or_exit("should not exit"), 42);
+    }
+
+    #[test]
+    fn option_some_returns_value() {
+        let o: Option<i32> = Some(99);
+        assert_eq!(o.or_exit("should not exit"), 99);
+    }
+
+    #[test]
+    fn general_error_is_one() {
+        assert_eq!(GENERAL_ERROR, 1);
+    }
+}

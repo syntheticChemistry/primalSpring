@@ -9,6 +9,9 @@
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicU64, Ordering};
 
+/// JSON-RPC protocol version string — always `"2.0"`.
+pub const JSONRPC_VERSION: &str = "2.0";
+
 /// Global request ID counter for multiplexed IPC.
 static NEXT_REQUEST_ID: AtomicU64 = AtomicU64::new(1);
 
@@ -40,7 +43,7 @@ impl JsonRpcRequest {
     #[must_use]
     pub fn new(method: &str, params: serde_json::Value) -> Self {
         Self {
-            jsonrpc: "2.0".to_owned(),
+            jsonrpc: JSONRPC_VERSION.to_owned(),
             method: method.to_owned(),
             params,
             id: next_id(),

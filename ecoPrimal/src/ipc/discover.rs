@@ -6,6 +6,12 @@
 //!   1. `{PRIMAL}_SOCKET` environment override (explicit path)
 //!   2. `$XDG_RUNTIME_DIR/biomeos/{primal}-{family}.sock` (convention)
 //!   3. `{temp_dir}/biomeos/{primal}-{family}.sock` (fallback)
+//!   4. Manifest file: `$XDG_RUNTIME_DIR/ecoPrimals/manifests/{primal}.json`
+//!   5. Socket registry: `$XDG_RUNTIME_DIR/biomeos/socket-registry.json`
+//!
+//! Tiers 4–5 absorbed from biomeOS v2.50, rhizoCrypt v0.13, Squirrel alpha.12.
+//! Manifest files contain `{"socket_path": "..."}` and are written by primals
+//! on startup. The socket registry is a shared file with TTL-aware entries.
 //!
 //! Ecosystem-wide sweep discovery uses the Neural API to learn what primals
 //! are registered at runtime. primalSpring never hardcodes a primal roster.
@@ -44,6 +50,10 @@ pub enum DiscoverySource {
     XdgConvention,
     /// Found at the temp directory fallback path.
     TempFallback,
+    /// Found via primal manifest (`$XDG_RUNTIME_DIR/ecoPrimals/manifests/{primal}.json`).
+    Manifest,
+    /// Found via socket registry (`$XDG_RUNTIME_DIR/biomeos/socket-registry.json`).
+    SocketRegistry,
     /// Socket not found by any method.
     NotFound,
 }
@@ -77,7 +87,54 @@ pub fn socket_env_var(primal: &str) -> Option<PathBuf> {
     std::env::var(key).ok().map(PathBuf::from)
 }
 
+/// Attempt to read a socket path from a primal manifest file.
+///
+/// Manifests live at `$XDG_RUNTIME_DIR/ecoPrimals/manifests/{primal}.json`
+/// and contain `{"socket_path": "/path/to/socket.sock", ...}`.
+/// Pattern absorbed from biomeOS v2.50 `PrimalManifest`.
+#[must_use]
+pub fn discover_from_manifest(primal: &str) -> Option<PathBuf> {
+    let base = std::env::var("XDG_RUNTIME_DIR").ok()?;
+    let manifest_path = PathBuf::from(base)
+        .join("ecoPrimals")
+        .join("manifests")
+        .join(format!("{primal}.json"));
+
+    let contents = std::fs::read_to_string(manifest_path).ok()?;
+    let parsed: serde_json::Value = serde_json::from_str(&contents).ok()?;
+    let sock_str = parsed.get("socket_path")?.as_str()?;
+    let sock_path = PathBuf::from(sock_str);
+    sock_path.exists().then_some(sock_path)
+}
+
+/// Attempt to read a socket path from the biomeOS socket registry.
+///
+/// The registry lives at `$XDG_RUNTIME_DIR/biomeos/socket-registry.json`
+/// and maps primal names to socket paths with TTL metadata.
+/// Pattern absorbed from Squirrel alpha.12.
+#[must_use]
+pub fn discover_from_socket_registry(primal: &str) -> Option<PathBuf> {
+    let base = std::env::var("XDG_RUNTIME_DIR").ok()?;
+    let registry_path = PathBuf::from(base)
+        .join("biomeos")
+        .join("socket-registry.json");
+
+    let contents = std::fs::read_to_string(registry_path).ok()?;
+    let parsed: serde_json::Value = serde_json::from_str(&contents).ok()?;
+    let entry = parsed.get(primal)?;
+    let sock_str = entry.get("socket_path")?.as_str()?;
+    let sock_path = PathBuf::from(sock_str);
+    sock_path.exists().then_some(sock_path)
+}
+
 /// Discover a primal's socket at runtime.
+///
+/// Walks 5 discovery tiers in priority order:
+/// 1. `{PRIMAL}_SOCKET` env override
+/// 2. XDG convention socket path
+/// 3. Temp directory fallback
+/// 4. Primal manifest file
+/// 5. Socket registry
 ///
 /// Returns the path if a socket file exists, with source indicating
 /// how it was found. Returns `None` socket if no socket is reachable.
@@ -104,6 +161,22 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
             primal: primal.to_owned(),
             socket: Some(conv_path),
             source,
+        };
+    }
+
+    if let Some(p) = discover_from_manifest(primal) {
+        return DiscoveryResult {
+            primal: primal.to_owned(),
+            socket: Some(p),
+            source: DiscoverySource::Manifest,
+        };
+    }
+
+    if let Some(p) = discover_from_socket_registry(primal) {
+        return DiscoveryResult {
+            primal: primal.to_owned(),
+            socket: Some(p),
+            source: DiscoverySource::SocketRegistry,
         };
     }
 
@@ -305,6 +378,29 @@ mod tests {
         }
     }
 
+    #[test]
+    fn discover_from_manifest_returns_none_when_no_xdg() {
+        assert!(discover_from_manifest("nonexistent_primal_xyzzy").is_none());
+    }
+
+    #[test]
+    fn discover_from_socket_registry_returns_none_when_no_xdg() {
+        assert!(discover_from_socket_registry("nonexistent_primal_xyzzy").is_none());
+    }
+
+    #[test]
+    fn discovery_source_has_five_tiers() {
+        let sources = [
+            DiscoverySource::EnvOverride,
+            DiscoverySource::XdgConvention,
+            DiscoverySource::TempFallback,
+            DiscoverySource::Manifest,
+            DiscoverySource::SocketRegistry,
+            DiscoverySource::NotFound,
+        ];
+        assert_eq!(sources.len(), 6);
+    }
+
     // --- 4-format capability parsing tests ---
 
     #[test]
@@ -368,5 +464,49 @@ mod tests {
         let val = serde_json::json!(["direct.method", {"method": "object.method"}]);
         let names = extract_capability_names(Some(val));
         assert_eq!(names, vec!["direct.method", "object.method"]);
+    }
+
+    mod proptest_fuzz {
+        use super::*;
+        use proptest::prelude::*;
+
+        fn arb_capability_string() -> impl Strategy<Value = String> {
+            prop::string::string_regex("[a-z]{1,10}\\.[a-z]{1,10}").expect("valid regex")
+        }
+
+        proptest! {
+            #[test]
+            fn extract_capability_names_never_panics(
+                input in "[\\PC]{0,200}",
+            ) {
+                let val = serde_json::from_str::<serde_json::Value>(&input).ok();
+                let _ = extract_capability_names(val);
+            }
+
+            #[test]
+            fn format_a_round_trips(
+                caps in prop::collection::vec(arb_capability_string(), 0..10),
+            ) {
+                let val = serde_json::json!(caps);
+                let names = extract_capability_names(Some(val));
+                prop_assert_eq!(names.len(), caps.len());
+                for (a, b) in names.iter().zip(caps.iter()) {
+                    prop_assert_eq!(a, b);
+                }
+            }
+
+            #[test]
+            fn format_b_round_trips(
+                caps in prop::collection::vec(arb_capability_string(), 0..10),
+            ) {
+                let arr: Vec<serde_json::Value> = caps
+                    .iter()
+                    .map(|c| serde_json::json!({"method": c}))
+                    .collect();
+                let val = serde_json::Value::Array(arr);
+                let names = extract_capability_names(Some(val));
+                prop_assert_eq!(names.len(), caps.len());
+            }
+        }
     }
 }

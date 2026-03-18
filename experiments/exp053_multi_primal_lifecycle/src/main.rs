@@ -5,7 +5,7 @@
 //! Validates that the full NUCLEUS composition can be discovered and that
 //! each primal participates in a multi-step research lifecycle.
 
-use primalspring::coordination::{validate_composition, AtomicType};
+use primalspring::coordination::{AtomicType, validate_composition};
 use primalspring::ipc::discover::discover_for;
 
 /// Source: PRIMAL_REGISTRY.md — 6 lifecycle participants in the research paper pipeline

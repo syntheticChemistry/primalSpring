@@ -72,7 +72,7 @@ pub fn extract_rpc_dispatch<T: DeserializeOwned>(response: &JsonRpcResponse) -> 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ipc::protocol::{error_codes, JsonRpcError};
+    use crate::ipc::protocol::{JsonRpcError, error_codes};
 
     fn success_response(result: serde_json::Value) -> JsonRpcResponse {
         JsonRpcResponse {
@@ -173,5 +173,63 @@ mod tests {
         let resp = empty_response();
         let outcome: DispatchOutcome<i32> = extract_rpc_dispatch(&resp);
         assert!(!outcome.is_success());
+    }
+
+    mod proptest_fuzz {
+        use super::*;
+        use proptest::prelude::*;
+
+        fn arb_error_code() -> impl Strategy<Value = i64> {
+            prop_oneof![
+                Just(error_codes::PARSE_ERROR),
+                Just(error_codes::INVALID_REQUEST),
+                Just(error_codes::METHOD_NOT_FOUND),
+                Just(error_codes::INVALID_PARAMS),
+                Just(error_codes::INTERNAL_ERROR),
+                (-50_000i64..-20_000),
+            ]
+        }
+
+        proptest! {
+            #[test]
+            fn extract_rpc_result_never_panics_on_success(
+                val in "[a-zA-Z0-9]{0,50}",
+            ) {
+                let resp = success_response(serde_json::Value::String(val));
+                let _ = extract_rpc_result::<String>(&resp);
+            }
+
+            #[test]
+            fn extract_rpc_result_never_panics_on_error(
+                code in arb_error_code(),
+                msg in "[a-zA-Z ]{1,50}",
+            ) {
+                let resp = error_response(code, &msg);
+                let err = extract_rpc_result::<String>(&resp).unwrap_err();
+                if code == error_codes::METHOD_NOT_FOUND {
+                    prop_assert!(err.is_method_not_found());
+                }
+            }
+
+            #[test]
+            fn extract_rpc_dispatch_classifies_correctly(
+                code in arb_error_code(),
+                msg in "[a-zA-Z ]{1,50}",
+            ) {
+                let resp = error_response(code, &msg);
+                let outcome: DispatchOutcome<String> = extract_rpc_dispatch(&resp);
+                prop_assert!(!outcome.is_success());
+            }
+
+            #[test]
+            fn dispatch_success_round_trips_value(
+                val in 0i64..1_000_000,
+            ) {
+                let resp = success_response(serde_json::json!(val));
+                let outcome: DispatchOutcome<i64> = extract_rpc_dispatch(&resp);
+                prop_assert!(outcome.is_success());
+                prop_assert_eq!(outcome.into_result().unwrap(), val);
+            }
+        }
     }
 }

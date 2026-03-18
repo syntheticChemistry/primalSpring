@@ -10,7 +10,7 @@ use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::time::Duration;
 
-use super::error::{classify_io_error, IpcError};
+use super::error::{IpcError, classify_io_error};
 use super::protocol::{JsonRpcRequest, JsonRpcResponse};
 
 /// Default timeout for socket operations (5 seconds).

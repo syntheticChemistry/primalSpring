@@ -77,6 +77,23 @@ pub enum CheckOutcome {
     Skip,
 }
 
+/// Structured provenance metadata for validation traceability.
+///
+/// Absorbed from ludoSpring V14 `with_provenance()` and groundSpring's
+/// provenance schema. Links every validation result to its source
+/// experiment, baseline date, and optional description.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Provenance {
+    /// Where the baseline came from (e.g. `"exp001_tower_atomic"`).
+    pub source: String,
+    /// When the baseline was established (e.g. `"2026-03-18"`).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub baseline_date: Option<String>,
+    /// Free-form description of what this validation proves.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+}
+
 /// Aggregated validation result for one experiment.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ValidationResult {
@@ -90,9 +107,9 @@ pub struct ValidationResult {
     pub skipped: u32,
     /// Individual check results in execution order.
     pub checks: Vec<CheckResult>,
-    /// Optional provenance chain for the Provenance Trio integration.
+    /// Structured provenance metadata for traceability.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub provenance: Option<String>,
+    pub provenance: Option<Provenance>,
     /// Output sink (defaults to stdout, not serialized).
     #[serde(skip, default = "default_sink")]
     sink: Arc<dyn ValidationSink>,
@@ -141,12 +158,32 @@ impl ValidationResult {
         self
     }
 
-    /// Attach provenance metadata to this validation result.
+    /// Attach structured provenance metadata to this validation result.
     ///
     /// Returns `self` for builder-style chaining.
     #[must_use]
-    pub fn with_provenance(mut self, provenance: &str) -> Self {
-        self.provenance = Some(provenance.to_owned());
+    pub fn with_provenance(mut self, source: &str, baseline_date: &str) -> Self {
+        self.provenance = Some(Provenance {
+            source: source.to_owned(),
+            baseline_date: Some(baseline_date.to_owned()),
+            description: None,
+        });
+        self
+    }
+
+    /// Attach full provenance metadata including a description.
+    #[must_use]
+    pub fn with_provenance_full(
+        mut self,
+        source: &str,
+        baseline_date: &str,
+        description: &str,
+    ) -> Self {
+        self.provenance = Some(Provenance {
+            source: source.to_owned(),
+            baseline_date: Some(baseline_date.to_owned()),
+            description: Some(description.to_owned()),
+        });
         self
     }
 
@@ -235,7 +272,8 @@ impl ValidationResult {
 
     /// Print human-readable summary to stdout.
     pub fn summary(&self) {
-        println!("\n{}", "=".repeat(72));
+        use crate::tolerances::VALIDATION_SUMMARY_WIDTH;
+        println!("\n{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
         println!(
             "{}: {}/{} checks passed{}",
             self.experiment,
@@ -252,7 +290,7 @@ impl ValidationResult {
         } else {
             println!("Result: {} FAILURES", self.failed);
         }
-        println!("{}", "=".repeat(72));
+        println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     }
 
     /// Serialize to JSON string for machine-readable output.
@@ -280,11 +318,7 @@ impl ValidationResult {
     /// Process exit code: 0 if all passed, 1 otherwise.
     #[must_use]
     pub const fn exit_code(&self) -> i32 {
-        if self.all_passed() {
-            0
-        } else {
-            1
-        }
+        if self.all_passed() { 0 } else { 1 }
     }
 }
 
@@ -477,18 +511,38 @@ mod tests {
 
     #[test]
     fn with_provenance_sets_field() {
-        let v = ValidationResult::new("test").with_provenance("rhizocrypt:sha256:abc123");
-        assert_eq!(v.provenance.as_deref(), Some("rhizocrypt:sha256:abc123"));
+        let v = ValidationResult::new("test").with_provenance("exp001_tower", "2026-03-18");
+        let prov = v.provenance.as_ref().unwrap();
+        assert_eq!(prov.source, "exp001_tower");
+        assert_eq!(prov.baseline_date.as_deref(), Some("2026-03-18"));
+        assert!(prov.description.is_none());
+    }
+
+    #[test]
+    fn with_provenance_full_sets_all_fields() {
+        let v = ValidationResult::new("test").with_provenance_full(
+            "exp050_compute_triangle",
+            "2026-03-18",
+            "Compute triangle coordination validation",
+        );
+        let prov = v.provenance.as_ref().unwrap();
+        assert_eq!(prov.source, "exp050_compute_triangle");
+        assert_eq!(prov.baseline_date.as_deref(), Some("2026-03-18"));
+        assert_eq!(
+            prov.description.as_deref(),
+            Some("Compute triangle coordination validation")
+        );
     }
 
     #[test]
     fn provenance_survives_json_round_trip() {
-        let mut v = ValidationResult::new("exp_prov").with_provenance("chain:abc");
+        let mut v = ValidationResult::new("exp_prov").with_provenance("exp001_tower", "2026-03-18");
         v.check_bool("ok", true, "yes");
 
         let json = v.to_json().unwrap();
         let back: ValidationResult = serde_json::from_str(&json).unwrap();
-        assert_eq!(back.provenance.as_deref(), Some("chain:abc"));
+        let prov = back.provenance.as_ref().unwrap();
+        assert_eq!(prov.source, "exp001_tower");
     }
 
     #[test]

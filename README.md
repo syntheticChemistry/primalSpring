@@ -5,13 +5,14 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, bonding |
-| **Version** | 0.2.0 |
+| **Version** | 0.3.0 (unreleased) |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 157 (148 unit + 9 integration) |
+| **Tests** | 195 (186 unit + 9 integration) |
+| **Coverage** | 89.8% line, 92.8% function (llvm-cov) |
 | **Experiments** | 38 (7 tracks) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
-| **C deps** | Zero (ecoBin compliant) |
+| **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
 ---
 
@@ -74,7 +75,7 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 157 tests
+# Run all 195 tests
 cargo test --workspace
 
 # Run all 38 experiments (meta-validator)
@@ -103,6 +104,7 @@ The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 
 | `graph.list` | Structurally validate all deploy graphs |
 | `graph.validate` | Validate a specific graph (structural or live) |
 | `lifecycle.status` | Primal status report |
+| `mcp.tools.list` | MCP tool definitions for Squirrel AI |
 
 ## Deploy Graphs
 
@@ -126,6 +128,22 @@ typed variants with `is_retriable()`, `is_timeout_likely()`, etc.),
 `CircuitBreaker`, `RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`, and
 centralized `extract_rpc_result`/`extract_rpc_dispatch` for JSON-RPC result
 extraction. Capability parsing handles all 4 ecosystem wire formats (A/B/C/D).
+
+## Discovery (5-Tier)
+
+Discovery walks 5 tiers in priority order:
+1. `{PRIMAL}_SOCKET` env override
+2. `$XDG_RUNTIME_DIR/biomeos/{primal}-{family}.sock` (XDG convention)
+3. `{temp_dir}/biomeos/{primal}-{family}.sock` (fallback)
+4. Primal manifest: `$XDG_RUNTIME_DIR/ecoPrimals/manifests/{primal}.json`
+5. Socket registry: `$XDG_RUNTIME_DIR/biomeos/socket-registry.json`
+
+Tiers 4–5 absorbed from biomeOS v2.50 and Squirrel alpha.12.
+
+## MCP Tools
+
+primalSpring exposes 8 typed MCP tools via `mcp.tools.list` for Squirrel AI
+coordination tool discovery. Each tool has a JSON Schema input definition.
 
 ## Docs
 

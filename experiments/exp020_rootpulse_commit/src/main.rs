@@ -18,7 +18,9 @@ fn main() {
     v.check_bool(
         "rootpulse_has_five_required_graphs",
         graphs.len() == expected_graph_count,
-        &format!("EmergentSystem::RootPulse has {expected_graph_count} required graphs: {graphs:?}"),
+        &format!(
+            "EmergentSystem::RootPulse has {expected_graph_count} required graphs: {graphs:?}"
+        ),
     );
 
     let rhizocrypt = discover_primal("rhizocrypt");

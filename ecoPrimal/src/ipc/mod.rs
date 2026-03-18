@@ -20,6 +20,7 @@ pub mod discover;
 pub mod dispatch;
 pub mod error;
 pub mod extract;
+pub mod mcp;
 pub mod protocol;
 pub mod resilience;
 

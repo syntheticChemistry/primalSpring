@@ -137,9 +137,10 @@ fn capabilities_list_returns_niche_knowledge() {
     let result = &resp["result"];
     assert!(result["capabilities"].is_array());
     let caps = result["capabilities"].as_array().unwrap();
-    assert!(caps
-        .iter()
-        .any(|c| c == "coordination.validate_composition"));
+    assert!(
+        caps.iter()
+            .any(|c| c == "coordination.validate_composition")
+    );
     assert!(caps.iter().any(|c| c == "health.check"));
     assert!(result["semantic_mappings"].is_object());
     assert!(result["operation_dependencies"].is_object());

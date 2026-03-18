@@ -65,6 +65,8 @@ pub const CAPABILITIES: &[&str] = &[
     "graph.list",
     // ── Neural API bridge ──
     "coordination.neural_api_status",
+    // ── MCP tool discovery ──
+    "mcp.tools.list",
 ];
 
 /// Operation dependency hints for biomeOS Pathway Learner parallelization.
@@ -298,6 +300,33 @@ mod tests {
     fn niche_name_matches_convention() {
         assert_eq!(NICHE_NAME, crate::PRIMAL_NAME);
         assert!(NICHE_NAME.chars().all(|c| c.is_ascii_lowercase()));
+    }
+
+    #[test]
+    fn capabilities_match_registry_toml() {
+        let toml_str = include_str!("../../config/capability_registry.toml");
+        let parsed: toml::Value = toml::from_str(toml_str).unwrap();
+        let caps_in_toml: Vec<&str> = parsed["capabilities"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(|c| c.get("method")?.as_str())
+            .collect();
+
+        for code_cap in CAPABILITIES {
+            assert!(
+                caps_in_toml.contains(code_cap),
+                "capability '{code_cap}' is in niche::CAPABILITIES but missing from \
+                 config/capability_registry.toml"
+            );
+        }
+        for toml_cap in &caps_in_toml {
+            assert!(
+                CAPABILITIES.contains(toml_cap),
+                "capability '{toml_cap}' is in capability_registry.toml but missing from \
+                 niche::CAPABILITIES"
+            );
+        }
     }
 
     #[test]

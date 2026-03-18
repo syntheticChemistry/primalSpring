@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.2.0 (Phase 2 — niche self-knowledge, deploy graph validation, IPC resilience, 157 tests)  
+**Version**: 0.3.0-dev (Phase 2→3 — MCP tools, 5-tier discovery, structured provenance, 195 tests)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 18, 2026
 
@@ -37,16 +37,22 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **157** (148 unit + 9 integration) |
+| Tests | **195** (186 unit + 9 integration) |
+| Line coverage | **89.8%** (llvm-cov) |
+| Function coverage | **92.8%** (llvm-cov) |
 | Experiments | 38 (7 tracks) |
+| Proptest fuzz tests | 15 |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
-| `#![forbid(unsafe_code)]` | all files |
-| C dependencies | 0 |
+| `#![forbid(unsafe_code)]` | workspace-level |
+| C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
 | Neural API integration | `neural-api-client-sync` |
 | Server mode | JSON-RPC 2.0 over Unix socket |
-| Niche self-knowledge | `niche.rs` — 21 capabilities, semantic mappings, cost estimates |
+| MCP tools | 8 typed tools via `mcp.tools.list` |
+| Niche self-knowledge | `niche.rs` — 22 capabilities, semantic mappings, cost estimates |
+| Capability registry | `config/capability_registry.toml` (sync-tested) |
+| Discovery | 5-tier: env/XDG/temp/manifest/socket-registry + Neural API |
 | Deploy graph validation | `deploy.rs` — 6 biomeOS TOMLs (structural + live) |
 | Meta-validator | `validate_all` binary — runs all 38 experiments |
 | Workspace lints | centralized in `Cargo.toml` |
@@ -59,6 +65,10 @@ primalSpring fills the gap.
   `RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`, `extract_rpc_result`/`extract_rpc_dispatch`
 - **4-format capability parsing**: Handles Format A (string array), B (object array),
   C (method_info nested), D (semantic_mappings double-nested)
+- **MCP tool definitions**: 8 typed tools with JSON Schema for Squirrel AI discovery
+- **5-tier discovery**: env → XDG → temp → manifest → socket-registry (+ Neural API)
+- **Structured provenance**: `Provenance { source, baseline_date, description }` on `ValidationResult`
+- **Capability registry**: `config/capability_registry.toml` sync-tested against `niche::CAPABILITIES`
 - **Health probes**: `health.liveness`, `health.readiness` (Kubernetes-style) in server and client
 - **Neural API bridge**: `NeuralBridge` from `neural-api-client-sync` for ecosystem
   discovery — no hardcoded primal rosters
@@ -66,9 +76,8 @@ primalSpring fills the gap.
   when primals are not running
 - **Validation harness**: `OrExit<T>`, `ValidationSink` (StdoutSink, NullSink), `safe_cast` module
 - **JSON output**: `PRIMALSPRING_JSON=1` for CI pipeline integration
-- **Server mode**: `primalspring_primal server` exposes `coordination.validate_composition`,
-  `coordination.discovery_sweep`, `coordination.neural_api_status`, `graph.list`, and `graph.validate`
-- **Niche self-knowledge**: `niche.rs` defines 21 capabilities, semantic mappings, operation
+- **Server mode**: `primalspring_primal server` exposes 11 methods including `mcp.tools.list`
+- **Niche self-knowledge**: `niche.rs` defines 22 capabilities, semantic mappings, operation
   dependencies, cost estimates, and `register_with_target()` for biomeOS registration
 - **Deploy graph validation**: `deploy.rs` parses biomeOS TOML graphs, validates structure
   (names, binaries, dependencies, ordering), and probes running primals
@@ -179,6 +188,7 @@ capabilities.list                  — Niche capabilities + semantic mappings + 
 graph.list                         — Structurally validate all deploy graphs
 graph.validate                     — Validate a specific graph (structural or live)
 lifecycle.status                   — Primal status report
+mcp.tools.list                     — MCP tool definitions for Squirrel AI
 ```
 
 ---
@@ -187,14 +197,16 @@ lifecycle.status                   — Primal status report
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.2.0 | `PRIMALSPRING_V020_ECOSYSTEM_ABSORPTION_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Ecosystem absorption: IPC resilience, niche, deploy, 157 tests |
-| v0.2.0 | `PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_COMPUTE_TRIANGLE_HANDOFF_MAR18_2026.md` | Mar 18 | Compute triangle coordination intelligence for toadStool/barraCuda team |
-| v0.2.0 | `PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | barraCuda evolution + absorption recommendations for toadStool team |
+| v0.3.0 | `PRIMALSPRING_V030_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | v0.3.0 evolution: MCP tools, 5-tier discovery, provenance, 195 tests |
+| v0.3.0 | `PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | toadStool/barraCuda evolution: coordination intelligence + absorption |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.2.0 | `archive/PRIMALSPRING_V020_ECOSYSTEM_ABSORPTION_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Ecosystem absorption: IPC resilience, niche, deploy, 157 tests |
+| v0.2.0 | `archive/PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_COMPUTE_TRIANGLE_HANDOFF_MAR18_2026.md` | Mar 18 | Compute triangle coordination intelligence |
+| v0.2.0 | `archive/PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | barraCuda evolution + absorption |
 | v0.1.1 | `archive/PRIMALSPRING_V011_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | IPC resilience absorption (superseded by V020) |
 | v0.1.0 | `archive/PRIMALSPRING_V010_NEURAL_API_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Neural API integration + server mode |
 | v0.1.0 | `archive/PRIMALSPRING_V010_DEEP_DEBT_AUDIT_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Deep debt audit + workspace lint consolidation |
@@ -216,13 +228,13 @@ Every experiment involves multiple primals or springs.
 
 | Spring | What primalSpring Learns |
 |--------|-------------------------|
-| hotSpring | Precision validation patterns (f64 tolerance tiers) |
-| wetSpring | Deep integration patterns (354 binaries, 214 named tolerances) |
-| airSpring | NUCLEUS niche deployment (30 capabilities, 4 deploy graphs) |
-| groundSpring | Uncertainty quantification (tolerance provenance system) |
-| neuralSpring | Graph execution validation (`validate_biomeos_graph`) |
-| ludoSpring | Cross-spring experiment patterns, session decomposition |
-| healthSpring | Provenance trio resilience (circuit breaker, graceful degradation) |
+| hotSpring | Precision validation patterns (170 tolerances, structured provenance) |
+| wetSpring | Deep IPC integration (354 bins, 214 tolerances, MCP tools) |
+| airSpring | NUCLEUS niche deployment (41 caps, deny.toml, MCP) |
+| groundSpring | Typed errors, ValidationSink, 13-tier tolerance provenance |
+| neuralSpring | Capability registry TOML, primal_names::display, MCP tools |
+| ludoSpring | ValidationResult::with_provenance(), structured provenance |
+| healthSpring | Proptest IPC fuzz (18 tests), circuit breaker patterns |
 
 ---
 

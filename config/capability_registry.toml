@@ -1,0 +1,110 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring capability registry — single source of truth.
+# Sync-tested against niche::CAPABILITIES in unit tests.
+# Pattern absorbed from neuralSpring V118.
+
+[meta]
+primal = "primalspring"
+domain = "coordination"
+version = "0.3.0"
+
+[[capabilities]]
+method = "coordination.validate_composition"
+description = "Validate an atomic composition (Tower/Node/Nest/FullNucleus)"
+domain = "coordination"
+
+[[capabilities]]
+method = "coordination.probe_primal"
+description = "Probe a single primal for health and capabilities"
+domain = "coordination"
+
+[[capabilities]]
+method = "coordination.discovery_sweep"
+description = "Enumerate primals in a composition via discovery"
+domain = "coordination"
+
+[[capabilities]]
+method = "coordination.deploy_atomic"
+description = "Deploy an atomic composition via biomeOS graph"
+domain = "coordination"
+
+[[capabilities]]
+method = "coordination.bonding_test"
+description = "Test multi-gate bonding between NUCLEUS instances"
+domain = "coordination"
+
+[[capabilities]]
+method = "composition.nucleus_health"
+description = "Aggregate health of all NUCLEUS primals"
+domain = "composition"
+
+[[capabilities]]
+method = "composition.tower_health"
+description = "Health status of Tower (BearDog + Songbird)"
+domain = "composition"
+
+[[capabilities]]
+method = "composition.node_health"
+description = "Health status of Node (Tower + ToadStool)"
+domain = "composition"
+
+[[capabilities]]
+method = "composition.nest_health"
+description = "Health status of Nest (Tower + NestGate)"
+domain = "composition"
+
+[[capabilities]]
+method = "nucleus.start"
+description = "Start a NUCLEUS composition"
+domain = "lifecycle"
+
+[[capabilities]]
+method = "nucleus.stop"
+description = "Stop a running NUCLEUS composition"
+domain = "lifecycle"
+
+[[capabilities]]
+method = "lifecycle.status"
+description = "Primal status report"
+domain = "lifecycle"
+
+[[capabilities]]
+method = "health.check"
+description = "Self health status"
+domain = "health"
+
+[[capabilities]]
+method = "health.liveness"
+description = "Kubernetes-style liveness probe"
+domain = "health"
+
+[[capabilities]]
+method = "health.readiness"
+description = "Readiness probe (Neural API + discovered primals)"
+domain = "health"
+
+[[capabilities]]
+method = "capabilities.list"
+description = "Niche capabilities + semantic mappings + cost estimates"
+domain = "capability"
+
+[[capabilities]]
+method = "graph.validate"
+description = "Validate a specific deploy graph (structural or live)"
+domain = "graph"
+
+[[capabilities]]
+method = "graph.list"
+description = "Structurally validate all deploy graphs"
+domain = "graph"
+
+[[capabilities]]
+method = "coordination.neural_api_status"
+description = "Neural API reachability status"
+domain = "coordination"
+
+[[capabilities]]
+method = "mcp.tools.list"
+description = "List MCP tool definitions for Squirrel AI discovery"
+domain = "mcp"

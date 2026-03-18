@@ -7,7 +7,7 @@
 //! rather than raw `std::io::Error`. This enables `CircuitBreaker`
 //! and `RetryPolicy` to make informed retry decisions.
 
-use super::protocol::{error_codes, JsonRpcError};
+use super::protocol::{JsonRpcError, error_codes};
 
 /// Semantic IPC error — classifies failures by what happened rather
 /// than where in the code path the failure occurred.
@@ -262,5 +262,118 @@ mod tests {
         let s = err.to_string();
         assert!(s.contains("method not found"));
         assert!(s.contains("foo.bar"));
+    }
+
+    #[test]
+    fn is_retriable_true_for_reset() {
+        let err = IpcError::ConnectionReset(std::io::Error::new(
+            std::io::ErrorKind::ConnectionReset,
+            "reset",
+        ));
+        assert!(err.is_retriable());
+        assert!(!err.is_timeout_likely());
+        assert!(err.is_connection_error());
+    }
+
+    #[test]
+    fn is_retriable_true_for_timeout() {
+        let err = IpcError::Timeout(std::io::Error::new(std::io::ErrorKind::TimedOut, "slow"));
+        assert!(err.is_retriable());
+        assert!(err.is_timeout_likely());
+        assert!(!err.is_connection_error());
+    }
+
+    #[test]
+    fn is_retriable_false_for_socket_not_found() {
+        let err = IpcError::SocketNotFound {
+            primal: "beardog".to_owned(),
+        };
+        assert!(!err.is_retriable());
+        assert!(err.is_connection_error());
+    }
+
+    #[test]
+    fn is_retriable_false_for_application_error() {
+        let err = IpcError::ApplicationError {
+            code: -32603,
+            message: "internal".to_owned(),
+            data: None,
+        };
+        assert!(!err.is_retriable());
+        assert!(!err.is_connection_error());
+        assert!(!err.is_method_not_found());
+    }
+
+    #[test]
+    fn error_source_returns_io_error_for_connection_types() {
+        use std::error::Error;
+        let err = IpcError::ConnectionRefused(std::io::Error::new(
+            std::io::ErrorKind::ConnectionRefused,
+            "refused",
+        ));
+        assert!(err.source().is_some());
+
+        let err2 = IpcError::ProtocolError {
+            detail: "bad".to_owned(),
+        };
+        assert!(err2.source().is_none());
+    }
+
+    #[test]
+    fn from_jsonrpc_error_method_not_found() {
+        let rpc_err = JsonRpcError {
+            code: error_codes::METHOD_NOT_FOUND,
+            message: "health.check".to_owned(),
+            data: None,
+        };
+        let ipc_err: IpcError = rpc_err.into();
+        assert!(ipc_err.is_method_not_found());
+    }
+
+    #[test]
+    fn from_jsonrpc_error_application_error() {
+        let rpc_err = JsonRpcError {
+            code: error_codes::INTERNAL_ERROR,
+            message: "boom".to_owned(),
+            data: Some(serde_json::json!({"detail": "stack trace"})),
+        };
+        let ipc_err: IpcError = rpc_err.into();
+        assert!(!ipc_err.is_method_not_found());
+        assert!(matches!(ipc_err, IpcError::ApplicationError { .. }));
+    }
+
+    #[test]
+    fn display_all_variants() {
+        let variants: Vec<IpcError> = vec![
+            IpcError::SocketNotFound {
+                primal: "x".to_owned(),
+            },
+            IpcError::ConnectionRefused(std::io::Error::new(
+                std::io::ErrorKind::ConnectionRefused,
+                "r",
+            )),
+            IpcError::ConnectionReset(std::io::Error::new(
+                std::io::ErrorKind::ConnectionReset,
+                "r",
+            )),
+            IpcError::Timeout(std::io::Error::new(std::io::ErrorKind::TimedOut, "t")),
+            IpcError::ProtocolError {
+                detail: "bad".to_owned(),
+            },
+            IpcError::MethodNotFound {
+                method: "m".to_owned(),
+            },
+            IpcError::ApplicationError {
+                code: -1,
+                message: "e".to_owned(),
+                data: None,
+            },
+            IpcError::SerializationError {
+                detail: "s".to_owned(),
+            },
+        ];
+        for v in &variants {
+            assert!(!v.to_string().is_empty());
+        }
     }
 }

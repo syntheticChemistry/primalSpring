@@ -12,9 +12,9 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
-use primalspring::coordination::{validate_composition, AtomicType};
+use primalspring::coordination::{AtomicType, validate_composition};
 use primalspring::ipc::discover::{discover_for, neural_api_healthy, socket_path};
-use primalspring::ipc::protocol::{error_codes, JsonRpcError, JsonRpcResponse};
+use primalspring::ipc::protocol::{JSONRPC_VERSION, JsonRpcError, JsonRpcResponse, error_codes};
 use primalspring::{PRIMAL_DOMAIN, PRIMAL_NAME};
 
 #[derive(Parser)]
@@ -59,6 +59,25 @@ fn main() {
 
 fn server_socket_path() -> PathBuf {
     socket_path(PRIMAL_NAME)
+}
+
+/// Resolve the deploy graphs directory at runtime.
+///
+/// Priority: `PRIMALSPRING_GRAPHS_DIR` env var, then the binary's sibling
+/// `graphs/` directory, then the build-time `CARGO_MANIFEST_DIR` fallback.
+fn resolve_graphs_dir() -> PathBuf {
+    if let Ok(dir) = std::env::var("PRIMALSPRING_GRAPHS_DIR") {
+        return PathBuf::from(dir);
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(parent) = exe.parent() {
+            let sibling = parent.join("graphs");
+            if sibling.is_dir() {
+                return sibling;
+            }
+        }
+    }
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs")
 }
 
 fn run_server() {
@@ -131,7 +150,7 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
         Ok(v) => v,
         Err(_) => {
             return JsonRpcResponse {
-                jsonrpc: "2.0".to_owned(),
+                jsonrpc: JSONRPC_VERSION.to_owned(),
                 result: None,
                 error: Some(JsonRpcError {
                     code: error_codes::PARSE_ERROR,
@@ -188,8 +207,12 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
         "coordination.neural_api_status" => {
             success_response(serde_json::json!({ "healthy": neural_api_healthy() }), id)
         }
+        "mcp.tools.list" => {
+            let tools = primalspring::ipc::mcp::list_tools();
+            success_response(serde_json::to_value(tools).unwrap_or_default(), id)
+        }
         "graph.list" => {
-            let graphs_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+            let graphs_dir = resolve_graphs_dir();
             let results = primalspring::deploy::validate_all_graphs(&graphs_dir);
             success_response(serde_json::to_value(results).unwrap_or_default(), id)
         }
@@ -204,7 +227,7 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
             id,
         ),
         _ => JsonRpcResponse {
-            jsonrpc: "2.0".to_owned(),
+            jsonrpc: JSONRPC_VERSION.to_owned(),
             result: None,
             error: Some(JsonRpcError {
                 code: error_codes::METHOD_NOT_FOUND,
@@ -225,7 +248,7 @@ fn handle_validate_composition(params: &serde_json::Value, id: u64) -> JsonRpcRe
         "FullNucleus" => AtomicType::FullNucleus,
         _ => {
             return JsonRpcResponse {
-                jsonrpc: "2.0".to_owned(),
+                jsonrpc: JSONRPC_VERSION.to_owned(),
                 result: None,
                 error: Some(JsonRpcError {
                     code: error_codes::INVALID_PARAMS,
@@ -241,7 +264,7 @@ fn handle_validate_composition(params: &serde_json::Value, id: u64) -> JsonRpcRe
     match serde_json::to_value(result) {
         Ok(val) => success_response(val, id),
         Err(e) => JsonRpcResponse {
-            jsonrpc: "2.0".to_owned(),
+            jsonrpc: JSONRPC_VERSION.to_owned(),
             result: None,
             error: Some(JsonRpcError {
                 code: error_codes::INTERNAL_ERROR,
@@ -280,7 +303,7 @@ fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRespons
 fn handle_graph_validate(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let Some(path_str) = params["path"].as_str() else {
         return JsonRpcResponse {
-            jsonrpc: "2.0".to_owned(),
+            jsonrpc: JSONRPC_VERSION.to_owned(),
             result: None,
             error: Some(JsonRpcError {
                 code: error_codes::INVALID_PARAMS,
@@ -297,7 +320,7 @@ fn handle_graph_validate(params: &serde_json::Value, id: u64) -> JsonRpcResponse
         match serde_json::to_value(result) {
             Ok(val) => success_response(val, id),
             Err(e) => JsonRpcResponse {
-                jsonrpc: "2.0".to_owned(),
+                jsonrpc: JSONRPC_VERSION.to_owned(),
                 result: None,
                 error: Some(JsonRpcError {
                     code: error_codes::INTERNAL_ERROR,
@@ -312,7 +335,7 @@ fn handle_graph_validate(params: &serde_json::Value, id: u64) -> JsonRpcResponse
         match serde_json::to_value(result) {
             Ok(val) => success_response(val, id),
             Err(e) => JsonRpcResponse {
-                jsonrpc: "2.0".to_owned(),
+                jsonrpc: JSONRPC_VERSION.to_owned(),
                 result: None,
                 error: Some(JsonRpcError {
                     code: error_codes::INTERNAL_ERROR,
@@ -327,7 +350,7 @@ fn handle_graph_validate(params: &serde_json::Value, id: u64) -> JsonRpcResponse
 
 fn success_response(result: serde_json::Value, id: u64) -> JsonRpcResponse {
     JsonRpcResponse {
-        jsonrpc: "2.0".to_owned(),
+        jsonrpc: JSONRPC_VERSION.to_owned(),
         result: Some(result),
         error: None,
         id,

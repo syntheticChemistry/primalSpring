@@ -11,9 +11,9 @@ use std::time::Instant;
 use serde::{Deserialize, Serialize};
 
 use crate::cast;
+use crate::ipc::IpcError;
 use crate::ipc::client::{self, PrimalClient};
 use crate::ipc::discover::{discover_for, discover_primal};
-use crate::ipc::IpcError;
 use crate::tolerances;
 
 /// Atomic composition layer — each represents a testable deployment target.
@@ -178,11 +178,18 @@ pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
 /// Returns [`IpcError`] if the primal socket is unreachable, the circuit
 /// is open, or the health check call fails after retries.
 pub fn health_check(primal: &str) -> Result<u64, IpcError> {
-    use crate::ipc::resilience::{resilient_call, CircuitBreaker, RetryPolicy};
+    use crate::ipc::resilience::{CircuitBreaker, RetryPolicy, resilient_call};
     use std::time::Duration;
 
-    let mut cb = CircuitBreaker::new(3, Duration::from_secs(10));
-    let policy = RetryPolicy::new(2, Duration::from_millis(50), Duration::from_millis(500));
+    let mut cb = CircuitBreaker::new(
+        tolerances::CIRCUIT_BREAKER_THRESHOLD,
+        Duration::from_secs(tolerances::CIRCUIT_BREAKER_TIMEOUT_SECS),
+    );
+    let policy = RetryPolicy::new(
+        tolerances::RETRY_MAX_ATTEMPTS,
+        Duration::from_millis(tolerances::RETRY_BASE_DELAY_MS),
+        Duration::from_millis(tolerances::RETRY_MAX_DELAY_MS),
+    );
     resilient_call(&mut cb, &policy, || {
         let mut c = client::connect_primal(primal)?;
         let start = Instant::now();

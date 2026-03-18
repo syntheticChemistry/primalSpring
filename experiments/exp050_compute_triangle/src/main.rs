@@ -7,7 +7,7 @@ use std::time::Instant;
 use primalspring::cast;
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover::{
-    discover_primal, extract_capability_names, socket_path, DiscoverySource,
+    DiscoverySource, discover_primal, extract_capability_names, socket_path,
 };
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;

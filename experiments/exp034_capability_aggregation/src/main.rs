@@ -64,7 +64,9 @@ fn main() {
     } else {
         v.check_skip(
             "aggregated_capabilities",
-            &format!("need >= {MIN_AGGREGATION_PRIMALS} live primals for aggregation, found {found}"),
+            &format!(
+                "need >= {MIN_AGGREGATION_PRIMALS} live primals for aggregation, found {found}"
+            ),
         );
     }
 

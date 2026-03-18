@@ -6,7 +6,7 @@
 //! Discovers sockets at runtime, connects via JSON-RPC, and validates health +
 //! capabilities. Gracefully skips checks when primals are not running.
 
-use primalspring::coordination::{probe_primal, validate_composition, AtomicType};
+use primalspring::coordination::{AtomicType, probe_primal, validate_composition};
 use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;

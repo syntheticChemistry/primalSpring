@@ -176,11 +176,8 @@ pub fn validate_structure(path: &Path) -> GraphValidation {
 
 /// Validate a deploy graph against running primals.
 ///
-/// # Panics
-///
-/// Panics if the graph was structurally valid on first parse but fails
-/// on the second parse — this indicates filesystem mutation during
-/// validation, which is a caller bug.
+/// Returns structural validation only (with an issue note) if the graph
+/// file changes between the structural parse and the live-probe parse.
 #[must_use]
 pub fn validate_live(path: &Path) -> LiveGraphValidation {
     let structure = validate_structure(path);
@@ -193,7 +190,21 @@ pub fn validate_live(path: &Path) -> LiveGraphValidation {
         };
     }
 
-    let graph = load_graph(path).expect("graph was valid on first parse");
+    let graph = match load_graph(path) {
+        Ok(g) => g,
+        Err(e) => {
+            let mut degraded = structure;
+            degraded
+                .issues
+                .push(format!("graph changed between parse passes: {e}"));
+            return LiveGraphValidation {
+                structure: degraded,
+                nodes: Vec::new(),
+                healthy_count: 0,
+                all_required_healthy: false,
+            };
+        }
+    };
     let nodes: Vec<NodeHealth> = graph
         .graph
         .node
@@ -385,5 +396,96 @@ mod tests {
         let mut issues = Vec::new();
         structural_checks(&graph, &mut issues);
         assert!(issues.iter().any(|i| i.contains("nonexistent")));
+    }
+
+    #[test]
+    fn validate_all_graphs_empty_on_nonexistent_dir() {
+        let results = validate_all_graphs(Path::new("/nonexistent/dir/graphs"));
+        assert!(results.is_empty());
+    }
+
+    #[test]
+    fn validate_live_nonexistent_path_degrades() {
+        let result = validate_live(Path::new("/nonexistent/graph.toml"));
+        assert!(!result.structure.parsed);
+        assert!(!result.all_required_healthy);
+        assert!(result.nodes.is_empty());
+    }
+
+    #[test]
+    fn validate_live_primalspring_deploy_degrades_gracefully() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/primalspring_deploy.toml");
+        let result = validate_live(&path);
+        assert!(result.structure.parsed);
+        assert!(result.structure.issues.is_empty());
+        assert!(!result.nodes.is_empty());
+    }
+
+    #[test]
+    fn structural_checks_detect_duplicate_orders() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "dup_orders".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![
+                    GraphNode {
+                        name: "alpha".to_owned(),
+                        binary: "alpha_primal".to_owned(),
+                        order: 1,
+                        required: true,
+                        depends_on: vec![],
+                        health_method: "health".to_owned(),
+                        by_capability: None,
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                    GraphNode {
+                        name: "beta".to_owned(),
+                        binary: "beta_primal".to_owned(),
+                        order: 1,
+                        required: false,
+                        depends_on: vec![],
+                        health_method: "health".to_owned(),
+                        by_capability: None,
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                ],
+            },
+        };
+        let mut issues = Vec::new();
+        structural_checks(&graph, &mut issues);
+        assert!(issues.iter().any(|i| i.contains("duplicate order")));
+    }
+
+    #[test]
+    fn structural_checks_detect_empty_binary() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "test".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![GraphNode {
+                    name: "alpha".to_owned(),
+                    binary: String::new(),
+                    order: 1,
+                    required: true,
+                    depends_on: vec![],
+                    health_method: "health".to_owned(),
+                    by_capability: None,
+                    capabilities: vec![],
+                    condition: None,
+                    skip_if: None,
+                }],
+            },
+        };
+        let mut issues = Vec::new();
+        structural_checks(&graph, &mut issues);
+        assert!(issues.iter().any(|i| i.contains("empty binary")));
     }
 }
