@@ -261,8 +261,7 @@ mod tests {
                 msg in "[a-zA-Z ]{1,50}",
             ) {
                 let json = format!(
-                    r#"{{"jsonrpc":"2.0","error":{{"code":{},"message":"{}"}},"id":{}}}"#,
-                    code, msg, id
+                    r#"{{"jsonrpc":"2.0","error":{{"code":{code},"message":"{msg}"}},"id":{id}}}"#,
                 );
                 let resp = JsonRpcResponse::from_line(&json).unwrap();
                 prop_assert!(!resp.is_success());
