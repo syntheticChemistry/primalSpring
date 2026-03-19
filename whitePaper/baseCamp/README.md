@@ -99,15 +99,29 @@ Handoff documents delivered to `wateringHole/handoffs/`.
 
 **Total hardcoded sites traced**: 53+ (see `specs/CAPABILITY_ROUTING_TRACE.md`)
 
+## Co-Evolution Strategy: Tower First
+
+primalSpring co-evolves with **beardog, songbird, biomeOS** until the Tower is stable.
+Then nestgate joins (Nest), then toadstool/squirrel (Full NUCLEUS).
+
+| Phase | Focus | Partners | Gate Target |
+|---|---|---|---|
+| **Current** | Standard methods + Tower lifecycle | beardog, songbird, biomeOS | Gates 1–2 (9/24) |
+| Next | Neural API crypto routing | songbird, biomeOS | Gates 3 (5/24) |
+| Next+1 | TLS 1.3 end-to-end | songbird, beardog | Gates 4 (3/24) |
+| Next+2 | Socket discovery + dogfooding | all 3 | Gates 5–6 (6/24) |
+| Next+3 | **Stable Tower** → Nest Atomic | + nestgate | Storage gates |
+| Future | Full NUCLEUS | + toadstool, squirrel | All gates |
+
+See `specs/TOWER_STABILITY.md` for the full 24-gate acceptance criteria.
+
 ## What Remains (Phase 4+)
 
-- Expand live harness beyond Tower (Node, Nest, Full NUCLEUS)
 - biomeOS graph executor integration (graphs validated + topologically sorted but not executed)
 - Beacon coordination validation (generate → encrypt → exchange → decrypt chain)
 - Protocol escalation (JSON-RPC → tarpc sidecar from biomeOS v2.50)
 - `cargo llvm-cov` CI integration with 90% floor
 - Full experiment migration — remaining 32 experiments still use `discover_primal()` where applicable
-- Implement primalSpring validation role: method availability audit, socket bypass detection, capability translation coverage
 
 ---
 

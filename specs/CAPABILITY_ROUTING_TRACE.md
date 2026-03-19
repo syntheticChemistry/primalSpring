@@ -148,35 +148,68 @@ When these sites use hardcoded patterns:
 - **Primal swapping impossible** (can't replace beardog with another crypto provider)
 - **Testing requires real primals** (can't mock by capability)
 
+## Evolution Strategy: Tower First
+
+primalSpring co-evolves with **beardog, songbird, biomeOS** until the Tower Atomic
+is stable. Only then does nestgate join (Nest Atomic), then toadstool/squirrel (Full NUCLEUS).
+
+```
+Tower Atomic (beardog + songbird + biomeOS)     ← CURRENT FOCUS
+    24 gates, currently 4/24 passing
+    ▼  all gates green
+Nest Atomic (Tower + nestgate)
+    ▼  all storage gates green
+Node Atomic (Nest + toadstool)
+    ▼  all compute gates green
+Full NUCLEUS (Node + squirrel)
+```
+
+See `specs/TOWER_STABILITY.md` for the full 24-gate acceptance criteria.
+
 ## Evolution Path
 
-### Phase 1: Neural API Routing (primalSpring validates)
+### Phase 1: Standard Methods (current sprint)
 
-1. Replace all `DirectBeardogCaller` with `NeuralApiCapabilityCaller`
-2. Replace `discover_{primal}_socket()` with `discover_by_capability()`
-3. Replace raw method calls with `capability.call(domain, operation, args)`
-4. primalSpring adds validation: detect direct inter-primal socket connections
+Beardog and songbird register `health.liveness` and `capabilities.list`.
+Beardog adds bare crypto aliases as backward-compat bridge.
 
-### Phase 2: Backward Compatibility Bridge
+- BearDog: 3 changes (`health.rs`, `capabilities.rs`, pre-routing mapper)
+- Songbird: 1 change (`service.rs` aliases)
+- primalSpring: live tests validate
 
-During migration, beardog should register BOTH forms:
-- `x25519_generate_ephemeral` (raw, for backward compat)
-- `crypto.x25519_generate_ephemeral` (semantic, preferred)
+### Phase 2: Neural API Routing
 
-This allows old songbird binaries to keep working while new ones migrate.
+Songbird routes ALL crypto through `capability.call` via Neural API.
+biomeOS replaces `DirectBeardogCaller` with `NeuralApiCapabilityCaller`.
 
-### Phase 3: Strict Capability-Only
+- Songbird: extract `BearDogProvider` Neural API pattern into shared crate
+- biomeOS: complete `capability_registry.toml` (`genetic.*`, `lineage.*`)
+- biomeOS: replace `discover_beardog_socket()` with `discover_by_capability()`
+- primalSpring: new tests validate routing path
 
-Once all primals route through Neural API:
-- Remove raw method aliases
-- primalSpring enforces: no direct inter-primal socket connections
-- Composition validation confirms all calls go through capability routing
+### Phase 3: TLS 1.3 End-to-End
+
+Songbird TLS 1.3 handshake completes X25519 via capability routing.
+External HTTPS connectivity verified.
+
+### Phase 4: Socket Discovery Alignment
+
+All Tower primals align on 5-tier socket discovery.
+biomeOS eats its own dogfood for all inter-primal calls.
+
+### Phase 5: Stable Tower → Nest Atomic
+
+All 24 Tower gates green. nestgate joins.
+Repeat co-evolution with nestgate team for storage gates.
 
 ## primalSpring Validation Role
 
-primalSpring can validate this evolution by:
+primalSpring validates each phase by:
 
-1. **Live Tower + Neural API test** — verify calls route through capability translation
+1. **Live Tower integration suite** — `cargo test --test server_integration -- tower`
 2. **Method availability audit** — probe each primal for both raw and semantic method names
 3. **Socket connection trace** — detect when a primal opens a connection to another primal's socket directly (bypass detection)
 4. **Capability translation coverage** — verify all registered raw methods have semantic mappings
+5. **Gate reports** — per-sprint gate status to `wateringHole/handoffs/`
+
+See `wateringHole/handoffs/TOWER_COEVOLUTION_GUIDE.md` for the shared contract with all three teams.
