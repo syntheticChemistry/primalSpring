@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 18, 2026
-**Status**: Phase 3 — capability-first architecture, live atomic harness, 38 experiments, 248 tests, topological wave ordering, graph-as-source-of-truth
+**Status**: Phase 3 — capability-first architecture, live Tower + Neural API, NUCLEUS audit + handoffs, 38 experiments, 251 tests
 
 ---
 
@@ -83,6 +83,22 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 15. **Proptest expansion** — 15 fuzz tests
 16. **`deploy.rs` TOCTOU fix** — graceful `Result` propagation
 
+## NUCLEUS Capability Audit (v0.3.5 — Latest Sprint)
+
+Full audit of all 5 NUCLEUS primals + biomeOS for capability-based compliance.  
+Handoff documents delivered to `wateringHole/handoffs/`.
+
+| Primal | Severity | `health.liveness` | `capabilities.list` | 5-tier discovery | Coupling sites |
+|---|---|---|---|---|---|
+| BearDog | Medium | Missing | Missing | No (3-tier server / 4-tier client) | ~5 songbird/nestgate refs |
+| Songbird | High | Missing | Missing | No (7-tier mixed) | ~15 beardog direct calls |
+| NestGate | Medium | Missing | Missing | No (4-tier) | ~6 beardog/songbird refs |
+| ToadStool | Low | Missing | Missing | **Yes** | ~10 (showcase examples) |
+| Squirrel | Low | **Yes** | **Yes** | **Yes** | ~3 beardog auth fallbacks |
+| biomeOS | High | N/A | N/A | N/A | ~12 Neural API bypasses |
+
+**Total hardcoded sites traced**: 53+ (see `specs/CAPABILITY_ROUTING_TRACE.md`)
+
 ## What Remains (Phase 4+)
 
 - Expand live harness beyond Tower (Node, Nest, Full NUCLEUS)
@@ -91,6 +107,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 - Protocol escalation (JSON-RPC → tarpc sidecar from biomeOS v2.50)
 - `cargo llvm-cov` CI integration with 90% floor
 - Full experiment migration — remaining 32 experiments still use `discover_primal()` where applicable
+- Implement primalSpring validation role: method availability audit, socket bypass detection, capability translation coverage
 
 ---
 

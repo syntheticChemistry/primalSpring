@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.3.0-dev (Phase 3 — live atomic harness, capability-first architecture, 248 tests)  
+**Version**: 0.3.5 (Phase 3 — live Tower + Neural API, capability audits, 251 tests)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 18, 2026
 
@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **248** (233 unit + 13 integration + 2 doc-tests), 3 ignored (live) |
+| Tests | **251** (233 unit + 16 integration + 2 doc-tests), 6 ignored (live) |
 | Experiments | 38 (7 tracks) |
 | Proptest fuzz tests | 15 |
 | Clippy (pedantic + nursery) | **0 warnings** |
@@ -205,6 +205,12 @@ mcp.tools.list                                  — MCP tool definitions for Squ
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.3.5 | `BEARDOG_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | BearDog: method naming, health.liveness, bare crypto aliases, TLS blocker |
+| v0.3.5 | `SONGBIRD_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | Songbird: BeardogCryptoClient, TLS X25519 path, Neural API routing |
+| v0.3.5 | `NESTGATE_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | NestGate: health/caps methods, beardog socket defaults, 4-tier discovery |
+| v0.3.5 | `TOADSTOOL_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | ToadStool: showcase examples, health/caps methods |
+| v0.3.5 | `SQUIRREL_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | Squirrel: gold standard, beardog auth fallbacks |
+| v0.3.5 | `BIOMEOS_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | biomeOS: DirectBeardogCaller, Neural API dogfooding, registry gaps |
 | v0.3.0 | `PRIMALSPRING_V030_COORDINATION_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | biomeOS coordination absorption: launcher, harness, live atomic tests |
 | v0.3.0 | `PRIMALSPRING_V030_CAPABILITY_FIRST_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Capability-first architecture, topological waves |
 | v0.3.0 | `PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_CAPABILITY_HANDOFF_MAR18_2026.md` | Mar 18 | toadStool/barraCuda: capability-based discovery, graph conventions |

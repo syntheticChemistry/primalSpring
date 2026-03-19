@@ -105,15 +105,40 @@ Functions that resolve primal sockets by name instead of capability:
 | `biomeos-atomic-deploy/http_client.rs` | `"songbird".to_string()` as default | Capability discovery |
 | `biomeos-graph/executor/node_handlers.rs` | `SECURITY_PROVIDER = BEARDOG` | Capability discovery |
 
+### Category 6: Missing Standard Methods
+
+Primals that don't register ecosystem-standard method names:
+
+| Primal | `health.liveness` | `capabilities.list` | Notes |
+|---|---|---|---|
+| BearDog | Missing (has `ping`, `health`, `status`, `check`) | Missing (has `capabilities`, `get_capabilities`) | Quick fix: add aliases |
+| Songbird | Missing (has `health`) | Missing (has `primal.capabilities`) | Quick fix: add aliases |
+| NestGate | Missing (has `health.check`) | Missing | Quick fix: add aliases |
+| ToadStool | Missing | Missing | Needs implementation |
+| Squirrel | **Implemented** | **Implemented** | Gold standard |
+
+### Category 7: Socket Discovery Inconsistencies
+
+| Primal | Server Tiers | Client Tiers | Dir Pattern | Standard (5-tier) |
+|---|---|---|---|---|
+| BearDog | 3 | 4 | `biomeos/` vs `ecoPrimals/` | No |
+| Songbird | 7 (mixed) | N/A | `biomeos/` + identity names | No |
+| NestGate | 4 | N/A | `biomeos/` | No |
+| ToadStool | 5 | N/A | `biomeos/` | **Yes** |
+| Squirrel | 5 | N/A | `biomeos/` | **Yes** |
+
 ## Counts
 
 | Category | Sites |
 |---|---|
-| Direct raw method calls | ~25 |
-| Hardcoded socket discovery | ~8 |
+| Direct raw method calls (songbird→beardog) | ~15 |
+| Direct raw method calls (biomeOS→beardog) | ~12 |
+| Hardcoded socket discovery functions | ~8 |
 | Hardcoded socket paths | ~6 |
 | Identity-based capability mapping | ~4 |
-| **Total** | **~43 sites** |
+| Missing standard methods | ~8 (across 4 primals) |
+| Socket discovery non-standard | 3 primals |
+| **Total** | **~53+ sites** |
 
 ## Impact
 
