@@ -35,9 +35,9 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 |--------|-------|
 | Experiments | 38 (7 tracks) |
 | Unit tests | 233 |
-| Integration tests | 13 (10 JSON-RPC round-trips + 3 live atomic harness) |
+| Integration tests | 16 (10 JSON-RPC + 3 live atomic + 3 neural API) |
 | Doc-tests | 2 |
-| Total tests | **248** (245 auto + 3 ignored live) |
+| Total tests | **251** (245 auto + 6 ignored live) |
 | Proptest fuzz tests | 15 (IPC protocol, extract, capability parsing) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
@@ -58,9 +58,10 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 1. **Absorbed biomeOS primal coordination** — `launcher/` module (binary discovery, socket nucleation, process spawn, RAII lifecycle), `harness/` module (composition startup, health checks, capability validation, RAII teardown). Pure sync Rust, no tokio.
 2. **Harvested stable binaries** — beardog, songbird, nestgate, toadstool, squirrel to root `plasmidBin/primals/`
 3. **3 live integration tests** — `tower_atomic_live_*` (health, capabilities, validation), `#[ignore]` guarded
-4. **exp001 harness integration** — optionally spawns live Tower via `AtomicHarness` when `ECOPRIMALS_PLASMID_BIN` set
-5. **Launch profiles** — `config/primal_launch_profiles.toml`, data-driven socket config per primal
-6. **248 tests** — up from 236 (+12); 13 integration tests (up from 10)
+4. **Neural API integration** — `spawn_neural_api()`, `start_with_neural_api()`, `RunningAtomic::neural_bridge()` — live NeuralBridge health checks
+5. **exp001 harness + Neural API** — optionally spawns live Tower + Neural API, validates via NeuralBridge
+6. **Launch profiles** — `config/primal_launch_profiles.toml`, data-driven socket config per primal
+7. **251 tests** — up from 236 (+15); 16 integration tests (up from 10), 6 ignored (live)
 
 ### Capability-First Architecture
 1. **Capability-based RPC handlers** — all coordination handlers default to capability-based validation; identity-based retained as `mode: "identity"` fallback

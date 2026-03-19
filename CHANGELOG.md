@@ -46,7 +46,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `JSONRPC_VERSION` constant — eliminates `"2.0"` string repetition
 - Proptest IPC fuzz expansion — `extract_rpc_result`, `classify_response`, capability parsing
 - 11 new deploy tests — topological waves, cycle detection, all-graphs-acyclic, by_capability enforcement
-- 248 tests total (233 unit + 13 integration + 2 doc-tests), 3 ignored (live atomic)
+- `spawn_neural_api()` — dedicated Neural API server launcher (absolute path resolution, CWD with graphs)
+- `AtomicHarness::start_with_neural_api()` — full Tower + Neural API startup, NeuralBridge access
+- `RunningAtomic::neural_bridge()` — connect to live Neural API via harness
+- 3 Neural API integration tests (`tower_neural_api_*`, `#[ignore]`)
+- exp001 evolved: spawns Tower + Neural API, validates via NeuralBridge
+- 251 tests total (233 unit + 16 integration + 2 doc-tests), 6 ignored (live atomic + neural)
 
 ### Changed
 - `handle_validate_composition` — defaults to capability-based validation

@@ -439,6 +439,85 @@ pub fn spawn_primal(
     })
 }
 
+/// Spawn the biomeOS Neural API server.
+///
+/// Unlike regular primals, the Neural API server:
+/// - Has no `server` subcommand (just runs directly)
+/// - Creates its socket at `/tmp/neural-api-{family}.sock`
+/// - Needs CWD containing a `graphs/` directory for bootstrap
+/// - Detects already-running primals via its own nucleation
+///
+/// # Arguments
+///
+/// * `family_id` — shared family identifier (must match the primals)
+/// * `nucleation` — socket nucleation coordinator (for `XDG_RUNTIME_DIR`)
+/// * `graphs_dir` — directory containing deploy graph TOMLs
+///
+/// # Errors
+///
+/// Returns [`LaunchError`] on binary-not-found, spawn failure, or socket timeout.
+pub fn spawn_neural_api(
+    family_id: &str,
+    nucleation: &SocketNucleation,
+    graphs_dir: &Path,
+) -> Result<PrimalProcess, LaunchError> {
+    let relative_binary = discover_binary("neural-api-server")?;
+    let binary = std::fs::canonicalize(&relative_binary).unwrap_or(relative_binary);
+
+    let socket_path = std::env::temp_dir().join(format!("neural-api-{family_id}.sock"));
+    let _ = std::fs::remove_file(&socket_path);
+
+    let mut cmd = Command::new(&binary);
+    cmd.current_dir(graphs_dir.parent().unwrap_or(graphs_dir));
+    cmd.env("FAMILY_ID", family_id);
+    cmd.env(
+        "XDG_RUNTIME_DIR",
+        nucleation.base_dir().to_string_lossy().as_ref(),
+    );
+    if let Ok(plasmid) = std::env::var("ECOPRIMALS_PLASMID_BIN") {
+        cmd.env("BIOMEOS_PLASMID_BIN_DIR", &plasmid);
+    }
+
+    cmd.stdout(Stdio::piped());
+    cmd.stderr(Stdio::piped());
+
+    println!(
+        "[launcher] spawning neural-api-server from {}",
+        binary.display()
+    );
+
+    let mut child = cmd.spawn().map_err(|e| LaunchError::SpawnFailed {
+        primal: "neural-api-server".to_owned(),
+        source: e,
+    })?;
+
+    let relay_handle = relay_output(&mut child, "neural-api");
+
+    let timeout = Duration::from_secs(30);
+    if !wait_for_socket(&socket_path, timeout) {
+        let _ = child.kill();
+        let _ = child.wait();
+        return Err(LaunchError::SocketTimeout {
+            primal: "neural-api-server".to_owned(),
+            socket: socket_path,
+            waited: timeout,
+        });
+    }
+
+    println!(
+        "[launcher] neural-api-server ready at {} (pid {})",
+        socket_path.display(),
+        child.id()
+    );
+
+    Ok(PrimalProcess {
+        name: "neural-api-server".to_owned(),
+        socket_path,
+        child,
+        _relay_handle: Some(relay_handle),
+    })
+}
+
 /// Poll for a socket file to appear on disk.
 ///
 /// Returns `true` if the socket appeared, `false` on timeout.

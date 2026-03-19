@@ -20,7 +20,8 @@ pass_family_id = true
 env_socket = "PRIMAL_SOCKET"
 
 [profiles.beardog]
-# Gold standard — CLI flags only, inherits all defaults
+[profiles.beardog.extra_env]
+NODE_ID = "tower1"
 
 [profiles.squirrel]
 pass_family_id = false
@@ -43,3 +44,11 @@ FAMILY_ID = "$family_id"
 
 [profiles.toadstool]
 # Same as default
+
+[profiles.neural-api-server]
+# Neural API server uses a different socket pattern and no "server" subcommand.
+# Socket: /tmp/neural-api-{family_id}.sock (not in biomeos subdir).
+# Needs FAMILY_ID and BIOMEOS_PLASMID_BIN_DIR env vars.
+# CWD must contain graphs/ directory for bootstrap.
+socket_flag = "__skip__"
+pass_family_id = false

@@ -8,42 +8,59 @@
 //! capability-based path.
 //!
 //! When `ECOPRIMALS_PLASMID_BIN` is set, the experiment spawns live
-//! primals via [`AtomicHarness`] before validation. Without it, falls
-//! back to discovering whatever is already running.
+//! primals **and** the Neural API server via [`AtomicHarness`], then
+//! validates through both direct IPC and the Neural API bridge.
+//! Without it, falls back to discovering whatever is already running.
+
+use std::path::PathBuf;
 
 use primalspring::coordination::{
     AtomicType, check_capability_health, validate_composition_by_capability,
 };
-use primalspring::harness::AtomicHarness;
+use primalspring::harness::{AtomicHarness, RunningAtomic};
 use primalspring::ipc::discover::{discover_by_capability, neural_api_healthy};
 use primalspring::validation::ValidationResult;
+
+fn try_start_harness(v: &mut ValidationResult) -> Option<RunningAtomic> {
+    if std::env::var("ECOPRIMALS_PLASMID_BIN").is_err() {
+        v.check_skip("harness_start", "ECOPRIMALS_PLASMID_BIN not set — using discovery");
+        return None;
+    }
+
+    let family = format!("exp001-{}", std::process::id());
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
+
+    match AtomicHarness::start_with_neural_api(AtomicType::Tower, &family, &graphs) {
+        Ok(running) => {
+            v.check_bool(
+                "harness_start",
+                true,
+                &format!("live Tower + Neural API ({} primals)", running.primal_count()),
+            );
+            running.validate(v);
+            if let Some(bridge) = running.neural_bridge() {
+                let health = bridge.health_check();
+                v.check_bool(
+                    "neural_bridge_health",
+                    health.is_ok(),
+                    "Neural API bridge health check via live harness",
+                );
+            }
+            Some(running)
+        }
+        Err(e) => {
+            v.check_bool("harness_start", false, &format!("harness failed: {e}"));
+            None
+        }
+    }
+}
 
 fn main() {
     ValidationResult::run_experiment(
         "primalSpring Exp001 — Tower Atomic",
         "primalSpring Exp001: Tower Atomic (security + discovery capabilities)",
         |v| {
-            let _running = if std::env::var("ECOPRIMALS_PLASMID_BIN").is_ok() {
-                let family = format!("exp001-{}", std::process::id());
-                match AtomicHarness::start(AtomicType::Tower, &family) {
-                    Ok(running) => {
-                        v.check_bool(
-                            "harness_start",
-                            true,
-                            &format!("live Tower started ({} primals)", running.primal_count()),
-                        );
-                        running.validate(v);
-                        Some(running)
-                    }
-                    Err(e) => {
-                        v.check_bool("harness_start", false, &format!("harness failed: {e}"));
-                        None
-                    }
-                }
-            } else {
-                v.check_skip("harness_start", "ECOPRIMALS_PLASMID_BIN not set — using discovery");
-                None
-            };
+            let _running = try_start_harness(v);
 
             let tower_caps = AtomicType::Tower.required_capabilities();
             v.check_count("tower_required_caps", tower_caps.len(), 2);
@@ -85,10 +102,7 @@ fn main() {
                 );
                 v.check_minimum("composition_caps", comp.total_capabilities, 2);
             } else {
-                v.check_skip(
-                    "neural_api",
-                    "Neural API not reachable — biomeOS not running",
-                );
+                v.check_skip("neural_api", "Neural API not reachable — biomeOS not running");
                 v.check_skip("composition_healthy", "requires Neural API");
                 v.check_skip("composition_discovery", "requires Neural API");
                 v.check_skip("composition_caps", "requires Neural API");

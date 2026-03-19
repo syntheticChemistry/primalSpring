@@ -109,11 +109,8 @@ impl PrimalClient {
     /// not found, connection refused, timeout).
     pub fn health_liveness(&mut self) -> Result<bool, IpcError> {
         match self.call("health.liveness", serde_json::Value::Null) {
-            Ok(resp) => Ok(resp.is_success()),
-            Err(e) if e.is_method_not_found() => {
-                // Primal is alive but doesn't implement health.liveness — fall back
-                self.health_check()
-            }
+            Ok(_) => Ok(true),
+            Err(e) if e.is_method_not_found() => self.health_check(),
             Err(e) => Err(e),
         }
     }

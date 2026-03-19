@@ -8,7 +8,7 @@
 | **Version** | 0.3.0 (unreleased) |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 248 (233 unit + 13 integration + 2 doc-tests) |
+| **Tests** | 251 (233 unit + 16 integration + 2 doc-tests) |
 | **Experiments** | 38 (7 tracks) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
@@ -49,7 +49,7 @@ primalSpring/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
 │   │   └── validate_all/          # Meta-validator: runs all 38 experiments
 │   └── tests/
-│       └── server_integration.rs  # 13 real IPC round-trip tests (10 + 3 live atomic)
+│       └── server_integration.rs  # 16 tests (10 + 3 live atomic + 3 neural API)
 ├── experiments/                   # 38 validation experiments (7 tracks)
 ├── config/                        # Launch profiles (primal_launch_profiles.toml)
 ├── graphs/                        # 11 biomeOS deploy graph TOMLs (all by_capability)
@@ -82,7 +82,7 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 248 tests (245 auto + 3 ignored live tests)
+# Run all 251 tests (245 auto + 6 ignored live tests)
 cargo test --workspace
 
 # Run live atomic tests (requires plasmidBin binaries)
@@ -177,8 +177,8 @@ pure synchronous Rust (`std::process` + `std::thread`, no tokio).
 
 | Module | Responsibility |
 |--------|---------------|
-| `launcher/` | `discover_binary()`, `spawn_primal()`, `wait_for_socket()`, `SocketNucleation`, `LaunchProfile` |
-| `harness/` | `AtomicHarness::start()`, `RunningAtomic` (RAII lifecycle, health checks, capability queries) |
+| `launcher/` | `discover_binary()`, `spawn_primal()`, `spawn_neural_api()`, `wait_for_socket()`, `SocketNucleation`, `LaunchProfile` |
+| `harness/` | `AtomicHarness::start()`, `start_with_neural_api()`, `RunningAtomic` (RAII lifecycle, NeuralBridge, health checks) |
 
 Set `ECOPRIMALS_PLASMID_BIN` to point at `ecoPrimals/plasmidBin/` to enable
 live primal spawning. Without it, experiments fall back to discovering
