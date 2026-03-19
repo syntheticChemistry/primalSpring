@@ -21,6 +21,8 @@
 //! - [`emergent`] — emergent system validation (`RootPulse`, RPGPT, `CoralForge`)
 //! - [`bonding`] — multi-gate bonding models (Covalent, Ionic, Weak)
 //! - [`ipc`] — JSON-RPC 2.0 client + Neural API bridge + socket discovery
+//! - [`launcher`] — primal binary discovery, spawn, and socket lifecycle (sync port from biomeOS)
+//! - [`harness`] — atomic test orchestration: spawn compositions, validate, tear down
 //! - [`niche`] — BYOB niche self-knowledge (capabilities, semantic mappings, registration)
 //! - [`validation`] — experiment validation harness with structured output
 //! - [`tolerances`] — named latency and throughput bounds
@@ -37,7 +39,9 @@ pub mod coordination;
 pub mod deploy;
 pub mod emergent;
 pub mod graphs;
+pub mod harness;
 pub mod ipc;
+pub mod launcher;
 pub mod niche;
 pub mod tolerances;
 pub mod validation;

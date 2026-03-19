@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: March 18, 2026
-**Status**: Phase 3 — Capability-first architecture, topological waves, 236 tests
+**Status**: Phase 3 — Live atomic harness, capability-first architecture, 248 tests
 
 ---
 
@@ -56,7 +56,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, provenance registry |
 | healthSpring | V37 | 706 | 18 proptest IPC fuzz, MCP tools |
 | ludoSpring | V14 | 187 | with_provenance(), 93.2% coverage |
-| primalSpring | v0.3.0-dev | 236 | Capability-first, topological waves, 17 RPC endpoints |
+| primalSpring | v0.3.0-dev | 248 | Live atomic harness, capability-first, 17 RPC endpoints |
 
 ## Evolution Path
 
@@ -95,7 +95,7 @@ Phase 3 (done): Capability-First Architecture (March 18, 2026)
   → check_capability_health() for capability-based health probing
   → IpcErrorPhase + PhasedIpcError for phase-aware errors
   → discover_remote_tools() for cross-spring MCP tool discovery
-  → 236 tests (225 unit + 10 integration + 1 doc-test)
+  → 248 tests (233 unit + 13 integration + 2 doc-tests), 3 ignored (live atomic)
 
 Phase 4: Live Primals — Tower Atomic (Track 1, exp001–002)
   → Live security + discovery capability providers

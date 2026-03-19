@@ -248,3 +248,61 @@ fn malformed_json_returns_parse_error() {
     let resp: serde_json::Value = serde_json::from_str(&response_line).unwrap();
     assert_eq!(resp["error"]["code"], -32_700);
 }
+
+// ---------------------------------------------------------------------------
+// Live atomic harness tests — require plasmidBin binaries
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_atomic_live_health_check() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-tower-{}", std::process::id());
+    let running = AtomicHarness::start(AtomicType::Tower, &family_id)
+        .expect("tower atomic should start");
+
+    assert_eq!(running.primal_count(), 2, "Tower = beardog + songbird");
+
+    let health = running.health_check_all();
+    for (name, live) in &health {
+        assert!(live, "{name} should be live");
+    }
+}
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_atomic_live_capabilities() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-caps-{}", std::process::id());
+    let running = AtomicHarness::start(AtomicType::Tower, &family_id)
+        .expect("tower atomic should start");
+
+    let caps = running.capabilities_all();
+    for (name, cap_list) in &caps {
+        assert!(
+            !cap_list.is_empty(),
+            "{name} should report at least one capability"
+        );
+    }
+}
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_atomic_live_validation_result() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+    use primalspring::validation::ValidationResult;
+
+    let family_id = format!("itest-val-{}", std::process::id());
+    let running = AtomicHarness::start(AtomicType::Tower, &family_id)
+        .expect("tower atomic should start");
+
+    let mut v = ValidationResult::new("tower_atomic_live");
+    running.validate(&mut v);
+    assert!(v.passed > 0, "should have at least one passing check");
+    assert_eq!(v.failed, 0, "should have zero failures");
+}

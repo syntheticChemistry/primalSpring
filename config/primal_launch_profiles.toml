@@ -1,0 +1,45 @@
+# Primal Launch Profiles — data-driven socket configuration
+#
+# Primals declare their socket-passing conventions here.
+# Any primal not listed inherits [default].
+#
+# Fields:
+#   socket_flag     — CLI flag name for passing socket path (default: "--socket")
+#   pass_family_id  — whether to pass --family-id (default: true)
+#   env_socket      — env var name for socket path fallback (default: "PRIMAL_SOCKET")
+#   extra_env       — static environment variables to set
+#   env_sockets     — env vars whose values are resolved socket paths of other primals
+#   cli_sockets     — extra CLI flags whose values are resolved socket paths
+#
+# Absorbed from biomeOS config/primal_launch_profiles.toml (AGPL-3.0-only)
+# Ported to primalSpring coordination domain (AGPL-3.0-or-later)
+
+[default]
+socket_flag = "--socket"
+pass_family_id = true
+env_socket = "PRIMAL_SOCKET"
+
+[profiles.beardog]
+# Gold standard — CLI flags only, inherits all defaults
+
+[profiles.squirrel]
+pass_family_id = false
+[profiles.squirrel.env_sockets]
+SERVICE_MESH_ENDPOINT = "neural-api"
+
+[profiles.songbird]
+pass_family_id = false
+[profiles.songbird.cli_sockets]
+"--beardog-socket" = "beardog"
+[profiles.songbird.extra_env]
+BEARDOG_MODE = "direct"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+[profiles.songbird.env_sockets]
+BEARDOG_SOCKET = "beardog"
+FAMILY_ID = "$family_id"
+
+[profiles.nestgate]
+# Same as default
+
+[profiles.toadstool]
+# Same as default

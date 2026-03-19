@@ -8,7 +8,7 @@
 | **Version** | 0.3.0 (unreleased) |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 236 (225 unit + 10 integration + 1 doc-test) |
+| **Tests** | 248 (233 unit + 13 integration + 2 doc-tests) |
 | **Experiments** | 38 (7 tracks) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
@@ -40,6 +40,8 @@ primalSpring/
 │   │   ├── emergent/              # Emergent system validation (RootPulse, RPGPT, CoralForge)
 │   │   ├── bonding/               # Multi-gate bonding models (Covalent, Ionic, Weak, OMS)
 │   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, error, dispatch, extract, resilience
+│   │   ├── launcher/              # Primal binary discovery, spawn, socket nucleation (sync biomeOS port)
+│   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, OrExit, ValidationSink)
 │   │   └── tolerances/            # Named latency and throughput bounds
@@ -47,8 +49,9 @@ primalSpring/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
 │   │   └── validate_all/          # Meta-validator: runs all 38 experiments
 │   └── tests/
-│       └── server_integration.rs  # 10 real IPC round-trip tests
+│       └── server_integration.rs  # 13 real IPC round-trip tests (10 + 3 live atomic)
 ├── experiments/                   # 38 validation experiments (7 tracks)
+├── config/                        # Launch profiles (primal_launch_profiles.toml)
 ├── graphs/                        # 11 biomeOS deploy graph TOMLs (all by_capability)
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
@@ -79,11 +82,17 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 236 tests
+# Run all 248 tests (245 auto + 3 ignored live tests)
 cargo test --workspace
+
+# Run live atomic tests (requires plasmidBin binaries)
+ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
 # Run all 38 experiments (meta-validator)
 cargo run --release --bin validate_all
+
+# Run exp001 with live primals (harness auto-starts them)
+ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo run --bin exp001_tower_atomic
 
 # Start the primalSpring JSON-RPC server
 cargo run --bin primalspring_primal -- server
@@ -159,6 +168,21 @@ Tiers 4–5 absorbed from biomeOS v2.50 and Squirrel alpha.12.
 
 primalSpring exposes 8 typed MCP tools via `mcp.tools.list` for Squirrel AI
 coordination tool discovery. Each tool has a JSON Schema input definition.
+
+## Live Atomic Harness
+
+primalSpring absorbs primal coordination from biomeOS — binary discovery,
+socket nucleation, process spawning, and wave-based startup — ported to
+pure synchronous Rust (`std::process` + `std::thread`, no tokio).
+
+| Module | Responsibility |
+|--------|---------------|
+| `launcher/` | `discover_binary()`, `spawn_primal()`, `wait_for_socket()`, `SocketNucleation`, `LaunchProfile` |
+| `harness/` | `AtomicHarness::start()`, `RunningAtomic` (RAII lifecycle, health checks, capability queries) |
+
+Set `ECOPRIMALS_PLASMID_BIN` to point at `ecoPrimals/plasmidBin/` to enable
+live primal spawning. Without it, experiments fall back to discovering
+whatever is already running.
 
 ## Docs
 

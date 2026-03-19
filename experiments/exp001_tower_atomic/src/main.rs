@@ -6,10 +6,15 @@
 //! primal identity. Discovers whoever provides "security" and "discovery"
 //! at runtime, probes health, and validates the composition via the
 //! capability-based path.
+//!
+//! When `ECOPRIMALS_PLASMID_BIN` is set, the experiment spawns live
+//! primals via [`AtomicHarness`] before validation. Without it, falls
+//! back to discovering whatever is already running.
 
 use primalspring::coordination::{
     AtomicType, check_capability_health, validate_composition_by_capability,
 };
+use primalspring::harness::AtomicHarness;
 use primalspring::ipc::discover::{discover_by_capability, neural_api_healthy};
 use primalspring::validation::ValidationResult;
 
@@ -18,6 +23,28 @@ fn main() {
         "primalSpring Exp001 — Tower Atomic",
         "primalSpring Exp001: Tower Atomic (security + discovery capabilities)",
         |v| {
+            let _running = if std::env::var("ECOPRIMALS_PLASMID_BIN").is_ok() {
+                let family = format!("exp001-{}", std::process::id());
+                match AtomicHarness::start(AtomicType::Tower, &family) {
+                    Ok(running) => {
+                        v.check_bool(
+                            "harness_start",
+                            true,
+                            &format!("live Tower started ({} primals)", running.primal_count()),
+                        );
+                        running.validate(v);
+                        Some(running)
+                    }
+                    Err(e) => {
+                        v.check_bool("harness_start", false, &format!("harness failed: {e}"));
+                        None
+                    }
+                }
+            } else {
+                v.check_skip("harness_start", "ECOPRIMALS_PLASMID_BIN not set — using discovery");
+                None
+            };
+
             let tower_caps = AtomicType::Tower.required_capabilities();
             v.check_count("tower_required_caps", tower_caps.len(), 2);
 

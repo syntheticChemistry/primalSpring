@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.3.0-dev (Phase 3 — capability-first architecture, topological waves, 236 tests)  
+**Version**: 0.3.0-dev (Phase 3 — live atomic harness, capability-first architecture, 248 tests)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 18, 2026
 
@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **236** (225 unit + 10 integration + 1 doc-test) |
+| Tests | **248** (233 unit + 13 integration + 2 doc-tests), 3 ignored (live) |
 | Experiments | 38 (7 tracks) |
 | Proptest fuzz tests | 15 |
 | Clippy (pedantic + nursery) | **0 warnings** |
@@ -205,7 +205,8 @@ mcp.tools.list                                  — MCP tool definitions for Squ
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.3.0 | `PRIMALSPRING_V030_CAPABILITY_FIRST_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Capability-first architecture, topological waves, 236 tests |
+| v0.3.0 | `PRIMALSPRING_V030_COORDINATION_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | biomeOS coordination absorption: launcher, harness, live atomic tests |
+| v0.3.0 | `PRIMALSPRING_V030_CAPABILITY_FIRST_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Capability-first architecture, topological waves |
 | v0.3.0 | `PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_CAPABILITY_HANDOFF_MAR18_2026.md` | Mar 18 | toadStool/barraCuda: capability-based discovery, graph conventions |
 
 ## Archived Handoffs

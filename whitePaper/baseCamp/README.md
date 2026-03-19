@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 18, 2026
-**Status**: Phase 3 — capability-first architecture, 38 experiments, 236 tests, topological wave ordering, graph-as-source-of-truth
+**Status**: Phase 3 — capability-first architecture, live atomic harness, 38 experiments, 248 tests, topological wave ordering, graph-as-source-of-truth
 
 ---
 
@@ -34,10 +34,10 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Metric | Value |
 |--------|-------|
 | Experiments | 38 (7 tracks) |
-| Unit tests | 225 |
-| Integration tests | 10 (real JSON-RPC round-trips against live server) |
-| Doc-tests | 1 |
-| Total tests | **236** |
+| Unit tests | 233 |
+| Integration tests | 13 (10 JSON-RPC round-trips + 3 live atomic harness) |
+| Doc-tests | 2 |
+| Total tests | **248** (245 auto + 3 ignored live) |
 | Proptest fuzz tests | 15 (IPC protocol, extract, capability parsing) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
@@ -54,7 +54,15 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 
 ## What Changed (v0.2.0 → v0.3.0-dev)
 
-### Capability-First Architecture (latest sprint)
+### Live Atomic Harness (latest sprint)
+1. **Absorbed biomeOS primal coordination** — `launcher/` module (binary discovery, socket nucleation, process spawn, RAII lifecycle), `harness/` module (composition startup, health checks, capability validation, RAII teardown). Pure sync Rust, no tokio.
+2. **Harvested stable binaries** — beardog, songbird, nestgate, toadstool, squirrel to root `plasmidBin/primals/`
+3. **3 live integration tests** — `tower_atomic_live_*` (health, capabilities, validation), `#[ignore]` guarded
+4. **exp001 harness integration** — optionally spawns live Tower via `AtomicHarness` when `ECOPRIMALS_PLASMID_BIN` set
+5. **Launch profiles** — `config/primal_launch_profiles.toml`, data-driven socket config per primal
+6. **248 tests** — up from 236 (+12); 13 integration tests (up from 10)
+
+### Capability-First Architecture
 1. **Capability-based RPC handlers** — all coordination handlers default to capability-based validation; identity-based retained as `mode: "identity"` fallback
 2. **`topological_waves()`** — Kahn's algorithm startup wave computation from deploy graph DAGs
 3. **`graph_required_capabilities()`** — graphs as authoritative source of truth for capability rosters
@@ -64,7 +72,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 7. **Experiments evolved** — exp001-004, exp006, exp051 migrated from identity-based to capability-based discovery
 8. **`IpcErrorPhase` + `PhasedIpcError`** — phase-aware IPC error context
 9. **`discover_remote_tools()`** — spring tool discovery via `mcp.tools.list`
-10. **236 tests** — up from 195 (+41); 10 integration tests (up from 9)
+10. **248 tests** — up from 195 (+53); 13 integration tests (up from 9)
 
 ### Earlier v0.3.0 Changes
 11. **MCP tool definitions** — 8 typed tools with JSON Schema for Squirrel AI discovery
@@ -76,7 +84,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 
 ## What Remains (Phase 4+)
 
-- Live NUCLEUS deployment with real primals running
+- Expand live harness beyond Tower (Node, Nest, Full NUCLEUS)
 - biomeOS graph executor integration (graphs validated + topologically sorted but not executed)
 - Beacon coordination validation (generate → encrypt → exchange → decrypt chain)
 - Protocol escalation (JSON-RPC → tarpc sidecar from biomeOS v2.50)

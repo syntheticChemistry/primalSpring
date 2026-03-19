@@ -6,6 +6,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased] — v0.3.0
 
 ### Added
+- **Live Atomic Harness** — absorbed primal coordination from biomeOS, ported to pure
+  synchronous Rust (no tokio). New modules:
+  - `launcher/` — `discover_binary()` (5-tier search, 6 binary patterns), `spawn_primal()`,
+    `wait_for_socket()`, `SocketNucleation` (deterministic socket assignment), `LaunchProfile`
+    (data-driven TOML config), `PrimalProcess` (RAII child lifecycle), `LaunchError` (typed errors)
+  - `harness/` — `AtomicHarness::start()` (topological wave startup), `RunningAtomic`
+    (health checks, capability queries, validation, RAII teardown)
+- `config/primal_launch_profiles.toml` — per-primal socket-passing conventions
+- 3 live atomic integration tests (`tower_atomic_live_*`, `#[ignore]` — require plasmidBin)
+- exp001 evolved to optionally spawn live primals via `AtomicHarness` when
+  `ECOPRIMALS_PLASMID_BIN` is set
+- Harvested stable binaries to `ecoPrimals/plasmidBin/primals/` (beardog, songbird,
+  nestgate, toadstool, squirrel)
+- 248 tests total (233 unit + 13 integration + 2 doc-tests), 3 ignored (live)
 - **Capability-first architecture** — all RPC handlers, discovery, and experiments default
   to capability-based resolution; identity-based is retained as `mode: "identity"` fallback
 - `topological_waves()` — Kahn's algorithm startup wave computation from deploy graph DAGs
@@ -32,7 +46,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `JSONRPC_VERSION` constant — eliminates `"2.0"` string repetition
 - Proptest IPC fuzz expansion — `extract_rpc_result`, `classify_response`, capability parsing
 - 11 new deploy tests — topological waves, cycle detection, all-graphs-acyclic, by_capability enforcement
-- 236 tests total (225 unit + 10 integration + 1 doc-test)
+- 248 tests total (233 unit + 13 integration + 2 doc-tests), 3 ignored (live atomic)
 
 ### Changed
 - `handle_validate_composition` — defaults to capability-based validation

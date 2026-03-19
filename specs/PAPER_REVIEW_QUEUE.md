@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: March 18, 2026  
-**Status**: Phase 3 — 38 experiments, 7 tracks, capability-first architecture, topological waves, 236 tests
+**Status**: Phase 3 — 38 experiments, 7 tracks, live atomic harness, capability-first architecture, 248 tests
 
 ---
 
