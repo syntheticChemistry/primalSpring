@@ -35,6 +35,7 @@ pass_family_id = false
 [profiles.songbird.extra_env]
 BEARDOG_MODE = "direct"
 SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_DATA_DIR = "$base_dir"
 [profiles.songbird.env_sockets]
 BEARDOG_SOCKET = "beardog"
 FAMILY_ID = "$family_id"

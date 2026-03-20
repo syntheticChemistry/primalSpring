@@ -385,8 +385,10 @@ pub fn spawn_primal(
     );
 
     if let Some(p) = profile {
+        let base_dir_str = nucleation.base_dir().to_string_lossy().to_string();
         for (key, value) in &p.extra_env {
-            cmd.env(key, value);
+            let resolved = value.replace("$base_dir", &base_dir_str);
+            cmd.env(key, &resolved);
         }
         for (env_name, socket_ref) in &p.env_sockets {
             if socket_ref == "$family_id" {
@@ -468,6 +470,10 @@ pub fn spawn_neural_api(
     let _ = std::fs::remove_file(&socket_path);
 
     let mut cmd = Command::new(&binary);
+    cmd.arg("neural-api");
+    cmd.arg("--socket").arg(&socket_path);
+    cmd.arg("--graphs-dir").arg(graphs_dir);
+    cmd.arg("--family-id").arg(family_id);
     cmd.current_dir(graphs_dir.parent().unwrap_or(graphs_dir));
     cmd.env("FAMILY_ID", family_id);
     cmd.env(

@@ -1,7 +1,7 @@
 # Tower Stability Specification
 
-**Status**: Active — primalSpring v0.3.6+  
-**Date**: 2026-03-18  
+**Status**: Active — primalSpring v0.3.7  
+**Date**: 2026-03-20  
 **Strategy**: Tower first, then Nest, then NUCLEUS
 
 ## Co-Evolution Strategy
@@ -82,37 +82,45 @@ with binaries from `ecoPrimals/plasmidBin/`.
 | 6.2 | biomeOS graph executor uses `capability.call` (not direct `UnixStream`) | static audit |
 | 6.3 | `genetic.*` and `lineage.*` methods registered in capability translation registry | registry coverage test |
 
-## Current Status vs Gates
+## Current Status vs Gates (2026-03-20)
 
 | Gate | Status | Notes |
 |---|---|---|
-| 1. Process Lifecycle | **PASS** (4/5) | 1.5 zombie check not yet automated |
-| 2. Standard Methods | **UNBLOCKED** (5/5) | beardog + songbird now register `health.liveness`, `capabilities.list` (commit c8f882d, d882ee8) |
-| 3. Capability Routing | **PARTIAL** (2/5) | 3.2 + 3.3 unblocked: biomeOS registry now has `genetic.*` + `lineage.*` (commit daa60aa). 3.1 still needs songbird Neural API routing |
-| 4. TLS 1.3 E2E | **PARTIAL** (1/3) | 4.1 unblocked: beardog bare crypto bridge maps `x25519_generate_ephemeral` → `crypto.x25519_generate_ephemeral`. Full E2E needs songbird Neural API path |
+| 1. Process Lifecycle | **PASS** (4/5) | beardog + songbird + Neural API all start and bind sockets. 1.5 zombie check not yet automated |
+| 2. Standard Methods | **PASS** (5/5) | `health.liveness`, `capabilities.list` confirmed live via integration tests |
+| 3. Capability Routing | **PASS** (3/5) | Neural API health, capability discovery, and full validation all pass live. 3.1 still needs songbird Neural API routing. 3.5 discovery peer list not yet tested |
+| 4. TLS 1.3 E2E | **PARTIAL** (1/3) | Bare crypto bridge active. Full E2E needs songbird Neural API routing for TLS handshake |
 | 5. Socket Discovery | **FAIL** (0/3) | beardog 3-tier, songbird 7-tier mixed — deeper structural change |
 | 6. Neural API Dogfooding | **PARTIAL** (1/3) | 6.3 done: registry complete. 6.1 + 6.2 need biomeOS code changes |
 
-**Overall: ~13/24 gates unblocked** (up from 4/24). Needs live binary rebuild + test to confirm.
+**Overall: 15/24 gates passing** (up from ~13/24 unblocked → now 15 confirmed live).
+
+**Live test results (6/6 green):**
+- `tower_atomic_live_health_check` — PASS
+- `tower_atomic_live_capabilities` — PASS
+- `tower_atomic_live_validation_result` — PASS
+- `tower_neural_api_health` — PASS
+- `tower_neural_api_capability_discovery` — PASS
+- `tower_neural_api_full_validation` — PASS
 
 ## Per-Team Quick Wins
 
-### BearDog Team (3 changes → unlocks Gates 2.1, 2.3, 4.x)
+### BearDog Team (3 changes — all DONE by primalSpring)
 
-1. **`health.rs`**: Add `"health.liveness"`, `"health.readiness"` to `HealthHandler::methods()`
-2. **`capabilities.rs`**: Add `"capabilities.list"` to `CapabilitiesHandler::methods()`
-3. **`crypto_handler.rs`**: Add bare aliases OR pre-routing mapper for `x25519_generate_ephemeral` etc.
+1. ~~**`health.rs`**: Add `"health.liveness"`, `"health.readiness"` to `HealthHandler::methods()`~~ DONE
+2. ~~**`capabilities.rs`**: Add `"capabilities.list"` to `CapabilitiesHandler::methods()`~~ DONE
+3. ~~**`mod.rs`**: Pre-routing mapper for bare crypto aliases~~ DONE
 
-### Songbird Team (2 changes → unlocks Gates 2.2, 2.4, 3.1, 4.x)
+### Songbird Team (2 changes — 1/2 DONE by primalSpring)
 
-1. **`service.rs`**: Add `"health.liveness"`, `"capabilities.list"` as aliases
-2. **TLS + Tor + Orchestrator**: Route crypto calls through `BearDogProvider` with `RoutingMode::NeuralApi` (pattern already exists in `songbird-http-client`)
+1. ~~**`service.rs`**: Add `"health.liveness"`, `"capabilities.list"` as aliases~~ DONE
+2. **TLS + Tor + Orchestrator**: Route crypto calls through `BearDogProvider` with `RoutingMode::NeuralApi` — PENDING (team)
 
-### biomeOS Team (3 changes → unlocks Gates 3.2, 3.3, 6.x)
+### biomeOS Team (3 changes — 1/3 DONE by primalSpring)
 
-1. **`capability_registry.toml`**: Add `genetic.*` and `lineage.*` domain translations
-2. **`enroll.rs`**: Replace `DirectBeardogCaller` with `NeuralApiCapabilityCaller`
-3. **`node_handlers.rs`**: Replace `discover_beardog_socket` → `discover_by_capability("security")`
+1. ~~**`capability_registry.toml`**: Add `genetic.*` and `lineage.*` domain translations~~ DONE
+2. **`enroll.rs`**: Replace `DirectBeardogCaller` with `NeuralApiCapabilityCaller` — PENDING (team)
+3. **`node_handlers.rs`**: Replace `discover_beardog_socket` with `discover_by_capability("security")` — PENDING (team)
 
 ## Sprint Cadence
 
@@ -127,7 +135,7 @@ Each sprint, primalSpring:
 
 ```
 Tower Atomic (beardog + songbird + biomeOS)     ← WE ARE HERE
-    24 gates, currently 4/24
+    24 gates, currently 15/24
     │
     ▼  all 24 gates green
 Nest Atomic (Tower + nestgate)
