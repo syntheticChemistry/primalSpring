@@ -84,16 +84,16 @@ with binaries from `ecoPrimals/plasmidBin/`.
 
 ## Current Status vs Gates
 
-| Gate | Status | Blockers |
+| Gate | Status | Notes |
 |---|---|---|
 | 1. Process Lifecycle | **PASS** (4/5) | 1.5 zombie check not yet automated |
-| 2. Standard Methods | **FAIL** (0/5) | beardog + songbird missing `health.liveness`, `capabilities.list` |
-| 3. Capability Routing | **FAIL** (0/5) | songbird uses direct beardog calls; registry incomplete |
-| 4. TLS 1.3 E2E | **FAIL** (0/3) | blocked by Gate 3 (X25519 routing) |
-| 5. Socket Discovery | **FAIL** (0/3) | beardog 3-tier, songbird 7-tier mixed |
-| 6. Neural API Dogfooding | **FAIL** (0/3) | biomeOS uses `DirectBeardogCaller` |
+| 2. Standard Methods | **UNBLOCKED** (5/5) | beardog + songbird now register `health.liveness`, `capabilities.list` (commit c8f882d, d882ee8) |
+| 3. Capability Routing | **PARTIAL** (2/5) | 3.2 + 3.3 unblocked: biomeOS registry now has `genetic.*` + `lineage.*` (commit daa60aa). 3.1 still needs songbird Neural API routing |
+| 4. TLS 1.3 E2E | **PARTIAL** (1/3) | 4.1 unblocked: beardog bare crypto bridge maps `x25519_generate_ephemeral` → `crypto.x25519_generate_ephemeral`. Full E2E needs songbird Neural API path |
+| 5. Socket Discovery | **FAIL** (0/3) | beardog 3-tier, songbird 7-tier mixed — deeper structural change |
+| 6. Neural API Dogfooding | **PARTIAL** (1/3) | 6.3 done: registry complete. 6.1 + 6.2 need biomeOS code changes |
 
-**Overall: 4/24 gates passing**
+**Overall: ~13/24 gates unblocked** (up from 4/24). Needs live binary rebuild + test to confirm.
 
 ## Per-Team Quick Wins
 
