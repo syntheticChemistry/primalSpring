@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
-**Date**: March 18, 2026  
-**Status**: Phase 3 — 38 experiments, 7 tracks, live atomic harness, capability-first architecture, 248 tests
+**Date**: March 21, 2026  
+**Status**: Phase 4 — 40 experiments, 8 tracks, Tower STABLE (24/24), Squirrel AI composition, 264 tests
 
 ---
 
@@ -15,10 +15,11 @@ produces. The review queue tracks which patterns are ready for validation.
 
 | Priority | Pattern | Track | Status | Dependencies |
 |----------|---------|-------|--------|-------------|
-| P0 | Tower Atomic (security + discovery) | 1 | **Capability-based** | Live security + discovery providers |
-| P0 | Node Atomic (Tower + compute) | 1 | **Capability-based** | Tower Atomic validated |
-| P0 | Nest Atomic (Tower + storage) | 1 | **Capability-based** | Tower Atomic validated |
-| P0 | Full NUCLEUS (all 8 capabilities) | 1 | **Capability-based** | Live NUCLEUS deployment |
+| P0 | Tower Atomic (security + discovery) | 1 | **STABLE** (24/24 gates) | Live: beardog + songbird + biomeOS |
+| P0 | Tower + Squirrel AI | 8 | **Validated** | Live: Tower + squirrel + Anthropic Claude |
+| P0 | Nest Atomic (Tower + storage) | 1 | **Next** | Tower Atomic validated, nestgate needed |
+| P0 | Node Atomic (Tower + compute) | 1 | **Planned** | Nest Atomic validated, toadstool needed |
+| P0 | Full NUCLEUS (all 8 capabilities) | 1 | **Planned** | Live NUCLEUS deployment |
 | P1 | Sequential graph execution | 2 | Discovery wired | Full NUCLEUS |
 | P1 | Parallel graph execution | 2 | Discovery wired | Full NUCLEUS |
 | P1 | ConditionalDag execution | 2 | Discovery wired | Full NUCLEUS |
@@ -48,8 +49,9 @@ produces. The review queue tracks which patterns are ready for validation.
 
 ## Next Steps
 
-1. Phase 3: Tower Atomic with real BearDog + Songbird IPC
-2. Phase 4: Full NUCLEUS deployment and health validation
-3. Phase 5: Graph execution with real primals
-4. Phase 6: Emergent systems end-to-end
-5. Phase 7–9: Bonding, cross-spring, showcase-mined patterns validated
+1. Phase 5: Nest Atomic (Tower + NestGate) — storage gates
+2. Phase 6: Node Atomic (Nest + ToadStool) — compute gates
+3. Phase 7: Full NUCLEUS deployment and health validation
+4. Phase 8: Graph execution with real primals
+5. Phase 9: Emergent systems end-to-end
+6. Phase 10–12: Bonding, cross-spring, showcase-mined patterns validated

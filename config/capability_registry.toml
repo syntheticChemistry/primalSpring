@@ -7,7 +7,7 @@
 [meta]
 primal = "primalspring"
 domain = "coordination"
-version = "0.3.2"
+version = "0.4.0"
 
 [[capabilities]]
 method = "coordination.validate_composition"
@@ -118,3 +118,20 @@ domain = "coordination"
 method = "mcp.tools.list"
 description = "List MCP tool definitions for Squirrel AI discovery"
 domain = "mcp"
+
+[[capabilities]]
+method = "ai.query"
+description = "Route an AI inference query to Squirrel (Anthropic, OpenAI)"
+domain = "ai"
+provider = "squirrel"
+
+[[capabilities]]
+method = "ai.health"
+description = "Health check for AI provider connectivity"
+domain = "ai"
+provider = "squirrel"
+
+[[capabilities]]
+method = "composition.tower_squirrel_health"
+description = "Health status of Tower + Squirrel (beardog + songbird + squirrel)"
+domain = "composition"

@@ -17,25 +17,32 @@ use std::path::PathBuf;
 use primalspring::coordination::{
     AtomicType, check_capability_health, validate_composition_by_capability,
 };
-use primalspring::harness::{AtomicHarness, RunningAtomic};
+use primalspring::harness::AtomicHarness;
+use primalspring::harness::RunningAtomic;
 use primalspring::ipc::discover::{discover_by_capability, neural_api_healthy};
 use primalspring::validation::ValidationResult;
 
 fn try_start_harness(v: &mut ValidationResult) -> Option<RunningAtomic> {
     if std::env::var("ECOPRIMALS_PLASMID_BIN").is_err() {
-        v.check_skip("harness_start", "ECOPRIMALS_PLASMID_BIN not set — using discovery");
+        v.check_skip(
+            "harness_start",
+            "ECOPRIMALS_PLASMID_BIN not set — using discovery",
+        );
         return None;
     }
 
     let family = format!("exp001-{}", std::process::id());
     let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
 
-    match AtomicHarness::start_with_neural_api(AtomicType::Tower, &family, &graphs) {
+    match AtomicHarness::new(AtomicType::Tower).start_with_neural_api(&family, &graphs) {
         Ok(running) => {
             v.check_bool(
                 "harness_start",
                 true,
-                &format!("live Tower + Neural API ({} primals)", running.primal_count()),
+                &format!(
+                    "live Tower + Neural API ({} primals)",
+                    running.primal_count()
+                ),
             );
             running.validate(v);
             if let Some(bridge) = running.neural_bridge() {
@@ -102,7 +109,10 @@ fn main() {
                 );
                 v.check_minimum("composition_caps", comp.total_capabilities, 2);
             } else {
-                v.check_skip("neural_api", "Neural API not reachable — biomeOS not running");
+                v.check_skip(
+                    "neural_api",
+                    "Neural API not reachable — biomeOS not running",
+                );
                 v.check_skip("composition_healthy", "requires Neural API");
                 v.check_skip("composition_discovery", "requires Neural API");
                 v.check_skip("composition_caps", "requires Neural API");

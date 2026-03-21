@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: March 18, 2026
-**Status**: Phase 3 — capability-first architecture, live Tower + Neural API, NUCLEUS audit + handoffs, 38 experiments, 251 tests
+**Date**: March 21, 2026
+**Status**: Phase 4 — Tower STABLE (24/24 gates), Squirrel AI composition validated, 40 experiments, 264 tests
 
 ---
 
@@ -28,16 +28,17 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 5 | coralForge | (exp025) | Does the neural object pipeline work? |
 | 6 | Cross-Spring | exp040–044 | Do cross-spring data flows work? |
 | 7 | Showcase-Mined | exp050–059 | Do mined phase1/phase2 coordination patterns hold? |
+| 8 | Live Composition | exp060–061 | biomeOS Tower deploy + Squirrel AI composition |
 
-## Current State (v0.3.0-dev)
+## Current State (v0.4.0)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 38 (7 tracks) |
-| Unit tests | 233 |
-| Integration tests | 16 (10 JSON-RPC + 3 live atomic + 3 neural API) |
+| Experiments | 40 (8 tracks) |
+| Unit tests | 239 |
+| Integration tests | 23 (10 JSON-RPC + 11 live Tower + 2 Squirrel AI) |
 | Doc-tests | 2 |
-| Total tests | **251** (245 auto + 6 ignored live) |
+| Total tests | **264** (249 auto + 15 ignored live) |
 | Proptest fuzz tests | 15 (IPC protocol, extract, capability parsing) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
@@ -47,45 +48,33 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Deploy graphs | 11 TOMLs, all nodes have `by_capability`, topologically validated |
 | Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
-| Niche self-knowledge | `niche.rs` — 22 capabilities, semantic mappings, cost estimates |
+| Niche self-knowledge | `niche.rs` — 25 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | `check_bool`, `check_skip`, `check_or_skip`, `run_experiment()`, `print_banner()` |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
+| Tower Atomic | **STABLE** — 24/24 gates passing with plasmidBin binaries |
+| Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 
-## What Changed (v0.2.0 → v0.3.0-dev)
+## What Changed (v0.3.0 -> v0.4.0)
 
-### Live Atomic Harness (latest sprint)
-1. **Absorbed biomeOS primal coordination** — `launcher/` module (binary discovery, socket nucleation, process spawn, RAII lifecycle), `harness/` module (composition startup, health checks, capability validation, RAII teardown). Pure sync Rust, no tokio.
-2. **Harvested stable binaries** — beardog, songbird, nestgate, toadstool, squirrel to root `plasmidBin/primals/`
-3. **3 live integration tests** — `tower_atomic_live_*` (health, capabilities, validation), `#[ignore]` guarded
-4. **Neural API integration** — `spawn_neural_api()`, `start_with_neural_api()`, `RunningAtomic::neural_bridge()` — live NeuralBridge health checks
-5. **exp001 harness + Neural API** — optionally spawns live Tower + Neural API, validates via NeuralBridge
-6. **Launch profiles** — `config/primal_launch_profiles.toml`, data-driven socket config per primal
-7. **251 tests** — up from 236 (+15); 16 integration tests (up from 10), 6 ignored (live)
+### Tower Stability Sprint (v0.4.0)
+1. **All 24 Tower Atomic gates pass** — cross-primal changes to beardog (5-tier socket discovery), songbird (`songbird-crypto-provider` crate, Neural API routing), biomeOS (capability-based enrollment, graph executor, federation)
+2. **Squirrel AI Composition** — Tower + Squirrel (beardog + songbird + squirrel) with live Anthropic Claude inference via Neural API capability routing
+3. **exp060_biomeos_tower_deploy** — biomeOS-orchestrated Tower deployment via `neural-api-server` + bootstrap graph
+4. **exp061_squirrel_ai_composition** — 3-primal composition with live AI `ai.query` calls, API key passthrough, Tower post-query health validation
+5. **7 new integration tests** — `tower_zombie_check`, `tower_discovery_peer_list`, `tower_tls_handshake`, `tower_tls_internet_reach`, `tower_tls_routing_audit`, `tower_squirrel_ai_query`, `tower_squirrel_composition_health`
+6. **`PrimalProcess::from_parts()`** — construct from pre-spawned components for custom spawn logic
+7. **`LaunchProfile::passthrough_env`** — forward parent env vars (API keys, GPU config) to child processes
+8. **Abstract socket discovery** — Squirrel Universal Transport integration via Linux abstract namespace
+9. **264 tests** — up from 251 (+13); 23 integration tests, 15 ignored (live)
 
-### Capability-First Architecture
-1. **Capability-based RPC handlers** — all coordination handlers default to capability-based validation; identity-based retained as `mode: "identity"` fallback
-2. **`topological_waves()`** — Kahn's algorithm startup wave computation from deploy graph DAGs
-3. **`graph_required_capabilities()`** — graphs as authoritative source of truth for capability rosters
-4. **`by_capability` on all graph nodes** — 11 TOML graphs, enforced by test
-5. **New RPC endpoints** — `graph.waves`, `graph.capabilities`, `coordination.probe_capability`, `coordination.validate_composition_by_capability`
-6. **`check_capability_health()`** — capability-based analog of `check_primal_health()`
-7. **Experiments evolved** — exp001-004, exp006, exp051 migrated from identity-based to capability-based discovery
-8. **`IpcErrorPhase` + `PhasedIpcError`** — phase-aware IPC error context
-9. **`discover_remote_tools()`** — spring tool discovery via `mcp.tools.list`
-10. **248 tests** — up from 195 (+53); 13 integration tests (up from 9)
+### Earlier (v0.2.0 -> v0.3.0)
 
-### Earlier v0.3.0 Changes
-11. **MCP tool definitions** — 8 typed tools with JSON Schema for Squirrel AI discovery
-12. **5-tier discovery** — Manifest files + socket registry fallbacks
-13. **Structured provenance** — `Provenance { source, baseline_date, description }`
-14. **`deny.toml`** — 14-crate ecoBin C-dep ban
-15. **Proptest expansion** — 15 fuzz tests
-16. **`deploy.rs` TOCTOU fix** — graceful `Result` propagation
+See CHANGELOG.md for the full v0.3.0 evolution: capability-first architecture, live atomic harness, topological waves, 5-tier discovery, MCP tools, IPC resilience stack, proptest expansion.
 
-## NUCLEUS Capability Audit (v0.3.5 — Latest Sprint)
+## NUCLEUS Capability Audit (v0.3.5)
 
-Full audit of all 5 NUCLEUS primals + biomeOS for capability-based compliance.  
+Full audit of all 5 NUCLEUS primals + biomeOS for capability-based compliance.
 Handoff documents delivered to `wateringHole/handoffs/`.
 
 | Primal | Severity | `health.liveness` | `capabilities.list` | 5-tier discovery | Coupling sites |
@@ -99,29 +88,27 @@ Handoff documents delivered to `wateringHole/handoffs/`.
 
 **Total hardcoded sites traced**: 53+ (see `specs/CAPABILITY_ROUTING_TRACE.md`)
 
-## Co-Evolution Strategy: Tower First
+## Co-Evolution Strategy
 
-primalSpring co-evolves with **beardog, songbird, biomeOS** until the Tower is stable.
-Then nestgate joins (Nest), then toadstool/squirrel (Full NUCLEUS).
-
-| Phase | Focus | Partners | Gate Target |
-|---|---|---|---|
-| **Current** | Standard methods + Tower lifecycle | beardog, songbird, biomeOS | Gates 1–2 (9/24) |
-| Next | Neural API crypto routing | songbird, biomeOS | Gates 3 (5/24) |
-| Next+1 | TLS 1.3 end-to-end | songbird, beardog | Gates 4 (3/24) |
-| Next+2 | Socket discovery + dogfooding | all 3 | Gates 5–6 (6/24) |
-| Next+3 | **Stable Tower** → Nest Atomic | + nestgate | Storage gates |
-| Future | Full NUCLEUS | + toadstool, squirrel | All gates |
+| Phase | Focus | Partners | Gate Target | Status |
+|---|---|---|---|---|
+| Tower Stability | All 24 Tower gates | beardog, songbird, biomeOS | Gates 1–6 (24/24) | **DONE** |
+| Tower + Squirrel | AI composition | + squirrel | AI gates | **DONE** |
+| Nest Atomic | Storage gates | + nestgate | Storage gates | **NEXT** |
+| Node Atomic | Compute gates | + toadstool | Compute gates | Planned |
+| Full NUCLEUS | All gates | + all primals | All gates | Future |
 
 See `specs/TOWER_STABILITY.md` for the full 24-gate acceptance criteria.
 
-## What Remains (Phase 4+)
+## What Remains (Phase 5+)
 
-- biomeOS graph executor integration (graphs validated + topologically sorted but not executed)
-- Beacon coordination validation (generate → encrypt → exchange → decrypt chain)
-- Protocol escalation (JSON-RPC → tarpc sidecar from biomeOS v2.50)
+- Nest Atomic gate definition and nestgate integration
+- Node Atomic with toadStool compute capability registration
+- Full NUCLEUS composition (all primals + all gates)
+- Beacon coordination validation (generate -> encrypt -> exchange -> decrypt chain)
+- Protocol escalation (JSON-RPC -> tarpc sidecar from biomeOS v2.50)
 - `cargo llvm-cov` CI integration with 90% floor
-- Full experiment migration — remaining 32 experiments still use `discover_primal()` where applicable
+- Neural API auto-registration for Squirrel `ai` capabilities
 
 ---
 

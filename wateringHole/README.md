@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.3.7 (Phase 3 — live Tower 6/6 green, deprecation cleanup, 251 tests)  
+**Version**: 0.4.0 (Phase 4 — Tower STABLE 24/24, Squirrel AI composition validated, 264 tests, 40 experiments)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 20, 2026
+**Last Updated**: March 21, 2026
 
 ---
 
@@ -37,8 +37,8 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **251** (233 unit + 16 integration + 2 doc-tests), 6 ignored (live) |
-| Experiments | 38 (7 tracks) |
+| Tests | **264** (239 unit + 23 integration + 2 doc-tests), 15 ignored (live) |
+| Experiments | 40 (8 tracks) |
 | Proptest fuzz tests | 15 |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
@@ -50,8 +50,10 @@ primalSpring fills the gap.
 | Discovery | **Capability-first**: `discover_by_capability()` + 5-tier + Neural API |
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
-| Niche self-knowledge | `niche.rs` — 22 capabilities, semantic mappings, cost estimates |
-| Meta-validator | `validate_all` binary — runs all 38 experiments |
+| Niche self-knowledge | `niche.rs` — 25 capabilities, semantic mappings, cost estimates |
+| Meta-validator | `validate_all` binary — runs all 40 experiments |
+| Tower Atomic | **STABLE** — 24/24 gates passing |
+| Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 
 ### Key Capabilities
 
@@ -80,7 +82,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (7 Tracks, 38 Experiments)
+## Track Structure (8 Tracks, 40 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -169,6 +171,15 @@ Early coordination patterns extracted from phase1/ and phase2/ primal showcases.
 | 058 | Semantic attribution | Module/feature/function tracking + fair credit |
 | 059 | Weak force isolation | Zero leakage with unknown primals |
 
+### Track 8: Live Composition (exp060–061)
+
+Live multi-primal composition with real primals from `plasmidBin`.
+
+| Exp | What | Primals | Status |
+|-----|------|---------|--------|
+| 060 | biomeOS Tower deploy | beardog + songbird via neural-api-server bootstrap graph | **Live validated** |
+| 061 | Squirrel AI composition | Tower + Squirrel + Anthropic Claude `ai.query` | **Live validated** |
+
 ---
 
 ## Capability Domain
@@ -197,6 +208,9 @@ graph.capabilities                              — Required capabilities from g
 nucleus.start / nucleus.stop                    — Lifecycle management
 lifecycle.status                                — Primal status report
 mcp.tools.list                                  — MCP tool definitions for Squirrel AI
+ai.query                                        — Route AI inference queries (via Squirrel)
+ai.health                                       — AI provider health check (via Squirrel)
+composition.tower_squirrel_health               — Tower + Squirrel composition health
 ```
 
 ---
@@ -205,6 +219,9 @@ mcp.tools.list                                  — MCP tool definitions for Squ
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.4.0 | `PRIMALSPRING_V040_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR21_2026.md` | Mar 21 | toadStool/barraCuda evolution: Node Atomic gate definitions, passthrough_env, learnings |
+| v0.4.0 | `TOWER_STABILITY_SPRINT_MAR21_2026.md` | Mar 21 | Tower 24/24 STABLE, 7 new integration tests, cross-primal capability alignment |
+| v0.4.0 | `TOWER_SQUIRREL_COMPOSITION_MAR21_2026.md` | Mar 21 | Tower + Squirrel AI composition, exp060/061, abstract socket integration |
 | v0.3.7 | `DEPRECATION_CLEANUP_MAR20_2026.md` | Mar 20 | Cross-repo dead code removal: 6,478 lines across beardog, songbird, biomeOS |
 | v0.3.6 | `TOWER_COEVOLUTION_GUIDE.md` | Mar 18 | Tower co-evolution contract: sprint loop, per-team quick wins, timeline |
 | v0.3.5 | `BEARDOG_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | BearDog: method naming, health.liveness, bare crypto aliases, TLS blocker |

@@ -12,19 +12,22 @@
 //! use primalspring::harness::AtomicHarness;
 //! use primalspring::coordination::AtomicType;
 //!
-//! let running = AtomicHarness::start(AtomicType::Tower, "test-1")
+//! let running = AtomicHarness::new(AtomicType::Tower)
+//!     .start("test-1")
 //!     .expect("tower atomic start");
 //! // primals are now running — connect via running.socket_for("security")
 //! drop(running);
 //! // all primals killed and sockets cleaned up
 //! ```
 
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
 use crate::coordination::AtomicType;
+use crate::deploy;
+use crate::ipc::NeuralBridge;
 use crate::ipc::client::PrimalClient;
 use crate::ipc::discover::extract_capability_names;
-use crate::ipc::NeuralBridge;
 use crate::launcher::{self, LaunchError, PrimalProcess, SocketNucleation};
 
 /// A running atomic composition with RAII lifecycle management.
@@ -37,23 +40,40 @@ pub struct RunningAtomic {
     nucleation: SocketNucleation,
     family_id: String,
     runtime_dir: PathBuf,
+    atomic: AtomicType,
 }
 
 impl RunningAtomic {
+    /// Get the socket path for a capability (e.g. `"security"` → beardog's socket).
+    ///
+    /// Maps capability to primal using the composition's parallel
+    /// `required_capabilities()` / `required_primals()` arrays.
+    #[must_use]
+    pub fn socket_for(&self, capability: &str) -> Option<&PathBuf> {
+        let primal = self.capability_to_primal(capability)?;
+        self.nucleation.get(primal, &self.family_id)
+    }
+
     /// Get the socket path for a given primal name.
     #[must_use]
     pub fn socket_for_primal(&self, primal: &str) -> Option<&PathBuf> {
         self.nucleation.get(primal, &self.family_id)
     }
 
-    /// Connect a [`PrimalClient`] to the named primal.
+    /// Connect a [`PrimalClient`] to the provider of `capability`.
     ///
-    /// # Errors
-    ///
-    /// Returns `None` if the primal is not in this composition or if
-    /// the connection fails.
+    /// Returns `None` if the capability is not in this composition or
+    /// if the connection fails.
     #[must_use]
-    pub fn client_for(&self, primal: &str) -> Option<PrimalClient> {
+    pub fn client_for(&self, capability: &str) -> Option<PrimalClient> {
+        let primal = self.capability_to_primal(capability)?;
+        let socket = self.nucleation.get(primal, &self.family_id)?;
+        PrimalClient::connect(socket, primal).ok()
+    }
+
+    /// Connect a [`PrimalClient`] to a primal by name.
+    #[must_use]
+    pub fn client_for_primal(&self, primal: &str) -> Option<PrimalClient> {
         let socket = self.socket_for_primal(primal)?;
         PrimalClient::connect(socket, primal).ok()
     }
@@ -67,7 +87,7 @@ impl RunningAtomic {
             .iter()
             .map(|p| {
                 let live = self
-                    .client_for(&p.name)
+                    .client_for_primal(&p.name)
                     .and_then(|mut c| c.health_liveness().ok())
                     .unwrap_or(false);
                 (p.name.clone(), live)
@@ -83,7 +103,7 @@ impl RunningAtomic {
             .iter()
             .map(|p| {
                 let caps = self
-                    .client_for(&p.name)
+                    .client_for_primal(&p.name)
                     .and_then(|mut c| c.capabilities().ok())
                     .map(|v| extract_capability_names(Some(v)))
                     .unwrap_or_default();
@@ -97,7 +117,7 @@ impl RunningAtomic {
     /// Liveness is required (fail if not live). Capabilities are best-effort
     /// (skip if the primal doesn't implement `capabilities.list`).
     /// When a Neural API is running, also validates the Neural API bridge.
-    /// Records results on the provided [`ValidationResult`].
+    /// Records results on the provided [`crate::validation::ValidationResult`].
     pub fn validate(&self, v: &mut crate::validation::ValidationResult) {
         for (name, live) in self.health_check_all() {
             v.check_bool(
@@ -144,21 +164,43 @@ impl RunningAtomic {
         self.processes.len()
     }
 
+    /// Collect all child PIDs (primals + optional Neural API server).
+    #[must_use]
+    pub fn pids(&self) -> Vec<u32> {
+        let mut pids: Vec<u32> = self.processes.iter().map(PrimalProcess::pid).collect();
+        if let Some(ref neural) = self.neural_api_process {
+            pids.push(neural.pid());
+        }
+        pids
+    }
+
     /// The runtime directory used for sockets.
     #[must_use]
     pub fn runtime_dir(&self) -> &Path {
         &self.runtime_dir
+    }
+
+    /// The atomic type of this composition.
+    #[must_use]
+    pub const fn atomic_type(&self) -> AtomicType {
+        self.atomic
+    }
+
+    /// Map a capability name to the primal that provides it in this composition.
+    fn capability_to_primal(&self, capability: &str) -> Option<&'static str> {
+        let caps = self.atomic.required_capabilities();
+        let primals = self.atomic.required_primals();
+        caps.iter()
+            .zip(primals.iter())
+            .find(|&(cap, _)| *cap == capability)
+            .map(|(_, &primal)| primal)
     }
 }
 
 impl Drop for RunningAtomic {
     fn drop(&mut self) {
         if let Some(neural) = self.neural_api_process.take() {
-            println!(
-                "[harness] stopping {} (pid {})",
-                neural.name,
-                neural.pid()
-            );
+            println!("[harness] stopping {} (pid {})", neural.name, neural.pid());
             drop(neural);
         }
         while let Some(process) = self.processes.pop() {
@@ -174,24 +216,54 @@ impl Drop for RunningAtomic {
 }
 
 /// Harness for spawning and managing atomic compositions.
-pub struct AtomicHarness;
+///
+/// Constructed with an [`AtomicType`] and an optional deploy graph path.
+/// When a graph path is provided, [`start`](Self::start) uses
+/// [`topological_waves`](crate::deploy::topological_waves) to determine
+/// startup ordering. Without a graph, primals start in the static order
+/// from [`AtomicType::required_primals`].
+pub struct AtomicHarness {
+    atomic: AtomicType,
+    graph_path: Option<PathBuf>,
+}
 
 impl AtomicHarness {
-    /// Start all primals for an [`AtomicType`] composition.
+    /// Create a harness for the given composition (no graph-driven ordering).
+    #[must_use]
+    pub const fn new(atomic: AtomicType) -> Self {
+        Self {
+            atomic,
+            graph_path: None,
+        }
+    }
+
+    /// Create a harness with graph-driven topological startup ordering.
+    ///
+    /// `graph_path` should point to a deploy graph TOML (e.g.
+    /// `graphs/tower_atomic_bootstrap.toml`). The graph's
+    /// `topological_waves()` determines startup order; only primals in
+    /// [`AtomicType::required_primals`] are actually spawned.
+    #[must_use]
+    pub fn with_graph(atomic: AtomicType, graph_path: impl AsRef<Path>) -> Self {
+        Self {
+            atomic,
+            graph_path: Some(graph_path.as_ref().to_path_buf()),
+        }
+    }
+
+    /// Start all primals for this composition.
     ///
     /// Creates an isolated runtime directory, assigns sockets via
-    /// nucleation, and spawns primals in dependency order (beardog
-    /// first, since all other primals depend on security).
+    /// nucleation, and spawns primals in dependency order — either from
+    /// topological waves (when a graph was provided) or from the static
+    /// [`AtomicType::required_primals`] ordering.
     ///
     /// # Errors
     ///
     /// Returns [`LaunchError`] if any binary cannot be found, any
     /// process fails to spawn, or any socket times out.
-    pub fn start(
-        atomic: AtomicType,
-        family_id: &str,
-    ) -> Result<RunningAtomic, LaunchError> {
-        let primals = atomic.required_primals();
+    pub fn start(&self, family_id: &str) -> Result<RunningAtomic, LaunchError> {
+        let spawn_order = self.compute_spawn_order()?;
 
         let runtime_dir = std::env::temp_dir().join(format!(
             "primalspring-harness-{}-{}",
@@ -202,12 +274,17 @@ impl AtomicHarness {
 
         let mut nucleation = SocketNucleation::new(runtime_dir.clone());
 
-        nucleation.assign_batch(primals, family_id);
+        let primal_refs: Vec<&str> = spawn_order.iter().map(String::as_str).collect();
+        nucleation.assign_batch(&primal_refs, family_id);
 
-        let mut processes = Vec::with_capacity(primals.len());
+        let mut processes = Vec::with_capacity(spawn_order.len());
 
-        for primal in primals {
-            println!("[harness] starting {primal} ({}/{})", processes.len() + 1, primals.len());
+        for primal in &spawn_order {
+            println!(
+                "[harness] starting {primal} ({}/{})",
+                processes.len() + 1,
+                spawn_order.len()
+            );
             let process = launcher::spawn_primal(primal, family_id, &mut nucleation)?;
             processes.push(process);
         }
@@ -215,7 +292,7 @@ impl AtomicHarness {
         println!(
             "[harness] {} primals running for {:?}",
             processes.len(),
-            atomic
+            self.atomic
         );
 
         Ok(RunningAtomic {
@@ -224,14 +301,15 @@ impl AtomicHarness {
             nucleation,
             family_id: family_id.to_owned(),
             runtime_dir,
+            atomic: self.atomic,
         })
     }
 
-    /// Start primals for an [`AtomicType`] AND the Neural API server.
+    /// Start primals for this composition AND the Neural API server.
     ///
-    /// Primals are started first (beardog → songbird), then the Neural
-    /// API server is launched. The Neural API server detects the
-    /// already-running Tower and enters companion mode.
+    /// Primals are started first (in topological or static order), then
+    /// the Neural API server is launched. The Neural API server detects
+    /// the already-running primals and enters companion mode.
     ///
     /// `graphs_dir` should point to the directory containing deploy
     /// graph TOMLs (e.g. `primalSpring/graphs/`).
@@ -241,11 +319,11 @@ impl AtomicHarness {
     /// Returns [`LaunchError`] if any binary cannot be found, any
     /// process fails to spawn, or any socket times out.
     pub fn start_with_neural_api(
-        atomic: AtomicType,
+        &self,
         family_id: &str,
         graphs_dir: &Path,
     ) -> Result<RunningAtomic, LaunchError> {
-        let primals = atomic.required_primals();
+        let spawn_order = self.compute_spawn_order()?;
 
         let runtime_dir = std::env::temp_dir().join(format!(
             "primalspring-harness-{}-{}",
@@ -256,15 +334,16 @@ impl AtomicHarness {
 
         let mut nucleation = SocketNucleation::new(runtime_dir.clone());
 
-        nucleation.assign_batch(primals, family_id);
+        let primal_refs: Vec<&str> = spawn_order.iter().map(String::as_str).collect();
+        nucleation.assign_batch(&primal_refs, family_id);
 
-        let mut processes = Vec::with_capacity(primals.len());
+        let mut processes = Vec::with_capacity(spawn_order.len());
 
-        for primal in primals {
+        for primal in &spawn_order {
             println!(
                 "[harness] starting {primal} ({}/{})",
                 processes.len() + 1,
-                primals.len()
+                spawn_order.len()
             );
             let process = launcher::spawn_primal(primal, family_id, &mut nucleation)?;
             processes.push(process);
@@ -275,11 +354,11 @@ impl AtomicHarness {
             processes.len()
         );
 
-        let neural_api =
-            launcher::spawn_neural_api(family_id, &nucleation, graphs_dir)?;
+        let neural_api = launcher::spawn_neural_api(family_id, &nucleation, graphs_dir)?;
 
         println!(
-            "[harness] Tower + Neural API running ({} primals + neural-api-server)",
+            "[harness] {:?} + Neural API running ({} primals + neural-api-server)",
+            self.atomic,
             processes.len()
         );
 
@@ -289,7 +368,48 @@ impl AtomicHarness {
             nucleation,
             family_id: family_id.to_owned(),
             runtime_dir,
+            atomic: self.atomic,
         })
+    }
+
+    /// Determine spawn order: graph-driven topological waves when a graph
+    /// path was provided, otherwise the static `required_primals()` order.
+    ///
+    /// When using topological waves, only primals in `required_primals()`
+    /// are included (graph may contain validation nodes we don't spawn).
+    /// Any required primals missing from the graph are appended at the end.
+    fn compute_spawn_order(&self) -> Result<Vec<String>, LaunchError> {
+        let required: Vec<&str> = self.atomic.required_primals().to_vec();
+
+        let Some(ref graph_path) = self.graph_path else {
+            return Ok(required.iter().map(|s| (*s).to_owned()).collect());
+        };
+
+        let graph = deploy::load_graph(graph_path).map_err(|e| {
+            LaunchError::ProfileParseError(format!("deploy graph {}: {e}", graph_path.display()))
+        })?;
+
+        let waves = deploy::topological_waves(&graph).map_err(|e| {
+            LaunchError::ProfileParseError(format!(
+                "topological sort of {}: {e}",
+                graph_path.display()
+            ))
+        })?;
+
+        let required_set: HashSet<&str> = required.iter().copied().collect();
+        let mut ordered: Vec<String> = waves
+            .into_iter()
+            .flatten()
+            .filter(|name| required_set.contains(name.as_str()))
+            .collect();
+
+        for &r in &required {
+            if !ordered.iter().any(|o| o == r) {
+                ordered.push(r.to_owned());
+            }
+        }
+
+        Ok(ordered)
     }
 }
 
@@ -299,10 +419,8 @@ mod tests {
 
     #[test]
     fn running_atomic_drops_cleanly_even_if_empty() {
-        let dir = std::env::temp_dir().join(format!(
-            "primalspring-harness-empty-{}",
-            std::process::id()
-        ));
+        let dir =
+            std::env::temp_dir().join(format!("primalspring-harness-empty-{}", std::process::id()));
         let _ = std::fs::create_dir_all(&dir);
         let nuc = SocketNucleation::new(dir.clone());
         let running = RunningAtomic {
@@ -311,9 +429,86 @@ mod tests {
             nucleation: nuc,
             family_id: "test".to_owned(),
             runtime_dir: dir.clone(),
+            atomic: AtomicType::Tower,
         };
         assert_eq!(running.primal_count(), 0);
         drop(running);
         assert!(!dir.exists(), "runtime dir should be removed on drop");
+    }
+
+    #[test]
+    fn capability_to_primal_mapping() {
+        let dir =
+            std::env::temp_dir().join(format!("primalspring-harness-cap-{}", std::process::id()));
+        let _ = std::fs::create_dir_all(&dir);
+        let nuc = SocketNucleation::new(dir.clone());
+        let running = RunningAtomic {
+            processes: vec![],
+            neural_api_process: None,
+            nucleation: nuc,
+            family_id: "test".to_owned(),
+            runtime_dir: dir.clone(),
+            atomic: AtomicType::Tower,
+        };
+        assert_eq!(running.capability_to_primal("security"), Some("beardog"));
+        assert_eq!(running.capability_to_primal("discovery"), Some("songbird"));
+        assert_eq!(running.capability_to_primal("nonexistent"), None);
+        drop(running);
+    }
+
+    #[test]
+    fn compute_spawn_order_without_graph() {
+        let harness = AtomicHarness::new(AtomicType::Tower);
+        let order = harness.compute_spawn_order().unwrap();
+        assert_eq!(order, vec!["beardog", "songbird"]);
+    }
+
+    #[test]
+    fn compute_spawn_order_with_graph() {
+        let graph_path =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/tower_atomic_bootstrap.toml");
+        let harness = AtomicHarness::with_graph(AtomicType::Tower, &graph_path);
+        let order = harness.compute_spawn_order().unwrap();
+        assert!(
+            order.contains(&"beardog".to_owned()),
+            "should include beardog"
+        );
+        assert!(
+            order.contains(&"songbird".to_owned()),
+            "should include songbird"
+        );
+        let beardog_pos = order.iter().position(|n| n == "beardog").unwrap();
+        let songbird_pos = order.iter().position(|n| n == "songbird").unwrap();
+        assert!(
+            beardog_pos < songbird_pos,
+            "beardog should start before songbird (topological order)"
+        );
+    }
+
+    #[test]
+    fn compute_spawn_order_node_with_graph() {
+        let graph_path =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/node_atomic_compute.toml");
+        let harness = AtomicHarness::with_graph(AtomicType::Node, &graph_path);
+        let order = harness.compute_spawn_order().unwrap();
+        assert_eq!(order.len(), 3, "Node = beardog + songbird + toadstool");
+        assert!(order.contains(&"beardog".to_owned()));
+        assert!(order.contains(&"songbird".to_owned()));
+        assert!(order.contains(&"toadstool".to_owned()));
+    }
+
+    #[test]
+    fn harness_new_creates_without_graph() {
+        let harness = AtomicHarness::new(AtomicType::Tower);
+        assert!(harness.graph_path.is_none());
+    }
+
+    #[test]
+    fn harness_with_graph_stores_path() {
+        let harness = AtomicHarness::with_graph(AtomicType::Tower, "/tmp/test.toml");
+        assert_eq!(
+            harness.graph_path.as_deref(),
+            Some(Path::new("/tmp/test.toml"))
+        );
     }
 }

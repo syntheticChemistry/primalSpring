@@ -27,6 +27,11 @@ NODE_ID = "tower1"
 pass_family_id = false
 [profiles.squirrel.env_sockets]
 SERVICE_MESH_ENDPOINT = "neural-api"
+[profiles.squirrel.extra_env]
+SQUIRREL_MODE = "server"
+[profiles.squirrel.passthrough_env]
+ANTHROPIC_API_KEY = true
+OPENAI_API_KEY = true
 
 [profiles.songbird]
 pass_family_id = false

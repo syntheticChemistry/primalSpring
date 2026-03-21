@@ -46,6 +46,8 @@ members = [
     "experiments/exp057_supply_chain_provenance",
     "experiments/exp058_semantic_attribution",
     "experiments/exp059_weak_force_isolation",
+    "experiments/exp060_biomeos_tower_deploy",
+    "experiments/exp061_squirrel_ai_composition",
 ]
 
 [workspace.package]

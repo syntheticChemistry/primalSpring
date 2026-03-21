@@ -73,6 +73,11 @@ pub const CAPABILITIES: &[&str] = &[
     "coordination.neural_api_status",
     // ── MCP tool discovery ──
     "mcp.tools.list",
+    // ── AI capabilities (routed to Squirrel) ──
+    "ai.query",
+    "ai.health",
+    // ── Extended composition ──
+    "composition.tower_squirrel_health",
 ];
 
 /// Operation dependency hints for biomeOS Pathway Learner parallelization.

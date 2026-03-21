@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: March 18, 2026
-**Status**: Phase 3 — Live atomic harness, capability-first architecture, 248 tests
+**Date**: March 21, 2026
+**Status**: Phase 4 — Tower STABLE (24/24 gates), Squirrel AI composition, 264 tests, 40 experiments
 
 ---
 
@@ -42,8 +42,12 @@ an optional track. Every experiment involves multiple primals or springs.
 | check_skip / check_or_skip | Referenced by all spring experiment patterns |
 | 4-format capability parsing | Converged implementation used as reference |
 | Deploy graph structural + topological validation | 11 TOML graphs, all `by_capability`, topological waves |
-| Coordination experiment framework | 38 experiments across 7 tracks |
+| Coordination experiment framework | 40 experiments across 8 tracks |
 | MCP coordination tools | Available for Squirrel AI routing |
+| Tower + Squirrel AI composition | Live demo: Tower + Squirrel + Anthropic Claude (exp061) |
+| `passthrough_env` pattern | Secure env forwarding for API keys, GPU config vars |
+| `PrimalProcess::from_parts()` | Custom spawn for primals with non-standard transports |
+| Abstract socket integration | Squirrel Universal Transport on Linux abstract namespace |
 
 ## Ecosystem State (March 18, 2026)
 
@@ -56,7 +60,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, provenance registry |
 | healthSpring | V37 | 706 | 18 proptest IPC fuzz, MCP tools |
 | ludoSpring | V14 | 187 | with_provenance(), 93.2% coverage |
-| primalSpring | v0.3.0-dev | 248 | Live atomic harness, capability-first, 17 RPC endpoints |
+| primalSpring | v0.4.0 | 264 | Tower STABLE 24/24, Squirrel AI composition, 40 experiments, 25 capabilities |
 
 ## Evolution Path
 
@@ -97,18 +101,32 @@ Phase 3 (done): Capability-First Architecture (March 18, 2026)
   → discover_remote_tools() for cross-spring MCP tool discovery
   → 248 tests (233 unit + 13 integration + 2 doc-tests), 3 ignored (live atomic)
 
-Phase 4: Live Primals — Tower Atomic (Track 1, exp001–002)
-  → Live security + discovery capability providers
-Phase 5: Full NUCLEUS (Track 1, exp004)
+Phase 4 (done): Tower Stability Sprint (March 21, 2026)
+  → 24/24 Tower Atomic gates STABLE with plasmidBin binaries
+  → 11 live integration tests (beardog, songbird, Neural API)
+  → exp060: biomeOS-orchestrated Tower deployment via bootstrap graph
+
+Phase 4.5 (done): Squirrel AI Composition (March 21, 2026)
+  → Tower + Squirrel (3-primal) composition validated
+  → exp061: live ai.query via Anthropic Claude through Neural API
+  → 2 Squirrel integration tests (ai_query, composition_health)
+  → passthrough_env for API key forwarding, abstract socket support
+  → 264 tests (239 unit + 23 integration + 2 doc-tests), 15 ignored (live)
+
+Phase 5: Nest Atomic (Tower + NestGate)
+  → Storage gates, NestGate lifecycle integration
+Phase 6: Node Atomic (Nest + ToadStool)
+  → Compute gates, toadStool capability registration
+Phase 7: Full NUCLEUS (Track 1, exp004)
   → All primals deployed and validated
-Phase 5: Graph execution (Track 2)
+Phase 8: Graph execution (Track 2)
   → All 5 coordination patterns with real primals
-Phase 6: Emergent systems (Track 3)
+Phase 9: Emergent systems (Track 3)
   → RootPulse, coralForge pipeline validated
-Phase 7: Bonding (Track 4)
+Phase 10: Bonding (Track 4)
   → Multi-gate coordination
-Phase 8: Cross-spring (Track 6)
+Phase 11: Cross-spring (Track 6)
   → Full ecosystem integration
-Phase 9: Showcase patterns (Track 7)
+Phase 12: Showcase patterns (Track 7)
   → phase1/phase2 mined coordination patterns validated
 ```

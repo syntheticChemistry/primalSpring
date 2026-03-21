@@ -5,11 +5,11 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, bonding |
-| **Version** | 0.3.0 (unreleased) |
+| **Version** | 0.4.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 251 (233 unit + 16 integration + 2 doc-tests) |
-| **Experiments** | 38 (7 tracks) |
+| **Tests** | 264 (239 unit + 23 integration + 2 doc-tests) |
+| **Experiments** | 40 (7 tracks) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -82,7 +82,7 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 251 tests (245 auto + 6 ignored live tests)
+# Run all 264 tests (249 auto + 15 ignored live tests)
 cargo test --workspace
 
 # Run live atomic tests (requires plasmidBin binaries)
@@ -177,8 +177,8 @@ pure synchronous Rust (`std::process` + `std::thread`, no tokio).
 
 | Module | Responsibility |
 |--------|---------------|
-| `launcher/` | `discover_binary()`, `spawn_primal()`, `spawn_neural_api()`, `wait_for_socket()`, `SocketNucleation`, `LaunchProfile` |
-| `harness/` | `AtomicHarness::start()`, `start_with_neural_api()`, `RunningAtomic` (RAII lifecycle, NeuralBridge, health checks) |
+| `launcher/` | `discover_binary()`, `spawn_primal()`, `spawn_neural_api()`, `wait_for_socket()`, `SocketNucleation`, `LaunchProfile`, `LaunchError` (incl. `HealthCheckFailed`) |
+| `harness/` | `AtomicHarness::new()` / `::with_graph()`, `.start()` (topological waves), `.start_with_neural_api()`, `RunningAtomic` (capability-based `socket_for` / `client_for`, RAII lifecycle, NeuralBridge) |
 
 Set `ECOPRIMALS_PLASMID_BIN` to point at `ecoPrimals/plasmidBin/` to enable
 live primal spawning. Without it, experiments fall back to discovering

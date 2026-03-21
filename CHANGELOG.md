@@ -3,6 +3,47 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.0] — 2026-03-21
+
+### Added
+- **Tower Stability Sprint** — all 24 Tower Atomic gates now pass (was 15/24)
+- **Squirrel AI Composition** — full Tower + Squirrel composition (beardog + songbird + squirrel)
+  with AI inference via Anthropic Claude routed through Neural API capability system
+- **exp060_biomeos_tower_deploy** — biomeOS-orchestrated Tower deployment via `neural-api-server`
+  and `tower_atomic_bootstrap.toml` graph (validates graph-driven germination)
+- **exp061_squirrel_ai_composition** — 3-primal composition (Tower + Squirrel) with live
+  AI `ai.query` calls, API key passthrough from `testing-secrets/api-keys.toml`, and
+  post-query Tower health validation
+- 7 new integration tests: `tower_zombie_check` (Gate 1.5), `tower_discovery_peer_list`
+  (Gate 3.5), `tower_tls_handshake` (Gate 4.1), `tower_tls_internet_reach` (Gate 4.2),
+  `tower_tls_routing_audit` (Gate 4.3), `tower_squirrel_ai_query`, `tower_squirrel_composition_health`
+- `PrimalProcess::from_parts()` — construct from pre-spawned components (custom spawn logic)
+- `RunningAtomic::pids()` — collect all child PIDs for lifecycle assertions
+- `LaunchProfile::passthrough_env` — forward parent env vars to child processes
+- `ai.query`, `ai.health`, `composition.tower_squirrel_health` — new capabilities in registry
+- 40 experiments (38 → 40), 264 tests total (239 unit + 23 integration + 2 doc-tests)
+- Rebuilt Squirrel from source and harvested to `plasmidBin/primals/squirrel`
+
+### Changed (cross-primal, executed by primalSpring team)
+- **beardog** — 5-tier `biomeos/` socket discovery in `tower-atomic/discovery.rs` and
+  `neural_registration.rs`; removed hardcoded `/tmp/beardog-default.sock` fallback
+- **biomeOS** — enrollment uses `NeuralApiCapabilityCaller` (fallback to
+  `DirectBeardogCaller` for bootstrap only); graph executor and federation use
+  `capability.call` via Neural API; all `discover_beardog_socket()` /
+  `discover_songbird_socket()` replaced with capability-based discovery
+- **songbird** — new `songbird-crypto-provider` shared crate extracted from
+  `songbird-http-client`; `tor-protocol`, `orchestrator`, `nfc`, `sovereign-onion`,
+  and `quic` crates now route all crypto through Neural API; removed 7/8-tier
+  identity-based socket discovery in favor of Neural API socket discovery
+- Rebuilt and harvested updated beardog, songbird, and neural-api-server binaries
+  to `plasmidBin/primals/`
+
+### Fixed
+- Unresolved doc link to `ValidationResult`
+- `cargo fmt` formatting drift in 4 files
+- Version drift (Cargo.toml 0.2.0 → 0.4.0 across all workspace members)
+- `.gitignore` now excludes `audit.log` and `sqlite:/` test artifacts
+
 ## [Unreleased] — v0.3.0
 
 ### Added
@@ -10,16 +51,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   synchronous Rust (no tokio). New modules:
   - `launcher/` — `discover_binary()` (5-tier search, 6 binary patterns), `spawn_primal()`,
     `wait_for_socket()`, `SocketNucleation` (deterministic socket assignment), `LaunchProfile`
-    (data-driven TOML config), `PrimalProcess` (RAII child lifecycle), `LaunchError` (typed errors)
-  - `harness/` — `AtomicHarness::start()` (topological wave startup), `RunningAtomic`
-    (health checks, capability queries, validation, RAII teardown)
+    (data-driven TOML config), `PrimalProcess` (RAII child lifecycle), `LaunchError` (typed errors
+    including `HealthCheckFailed`)
+  - `harness/` — `AtomicHarness::new(atomic)` / `::with_graph(atomic, path)` constructors,
+    `start(family_id)` with topological wave startup from deploy graphs, `RunningAtomic`
+    (capability-based `socket_for(cap)` / `client_for(cap)`, health checks, validation, RAII teardown)
 - `config/primal_launch_profiles.toml` — per-primal socket-passing conventions
-- 3 live atomic integration tests (`tower_atomic_live_*`, `#[ignore]` — require plasmidBin)
+- 6 live atomic integration tests (`tower_atomic_live_*` + `tower_neural_api_*`, `#[ignore]`)
 - exp001 evolved to optionally spawn live primals via `AtomicHarness` when
   `ECOPRIMALS_PLASMID_BIN` is set
 - Harvested stable binaries to `ecoPrimals/plasmidBin/primals/` (beardog, songbird,
   nestgate, toadstool, squirrel)
-- 248 tests total (233 unit + 13 integration + 2 doc-tests), 3 ignored (live)
+- 262 tests total (239 unit + 21 integration + 2 doc-tests), 11 ignored (live)
 - **Capability-first architecture** — all RPC handlers, discovery, and experiments default
   to capability-based resolution; identity-based is retained as `mode: "identity"` fallback
 - `topological_waves()` — Kahn's algorithm startup wave computation from deploy graph DAGs
@@ -51,7 +94,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `RunningAtomic::neural_bridge()` — connect to live Neural API via harness
 - 3 Neural API integration tests (`tower_neural_api_*`, `#[ignore]`)
 - exp001 evolved: spawns Tower + Neural API, validates via NeuralBridge
-- 251 tests total (233 unit + 16 integration + 2 doc-tests), 6 ignored (live atomic + neural)
+- `AtomicHarness` refactored to struct with `new()` / `with_graph()` constructors
+- `AtomicHarness::start()` uses `topological_waves()` for graph-driven startup ordering
+- `RunningAtomic::socket_for(capability)` — capability-based socket lookup (security → beardog)
+- `RunningAtomic::client_for(capability)` — capability-based client connection
+- `LaunchError::HealthCheckFailed` — typed error for post-spawn health failures
+- 262 tests total (239 unit + 21 integration + 2 doc-tests), 11 ignored (live atomic + neural + stability)
 
 ### Changed
 - `handle_validate_composition` — defaults to capability-based validation

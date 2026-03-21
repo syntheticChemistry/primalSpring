@@ -1,1 +1,5 @@
 /target/
+audit.log
+ecoPrimal/audit.log
+sqlite:/
+ecoPrimal/sqlite:/

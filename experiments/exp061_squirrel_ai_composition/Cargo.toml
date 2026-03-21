@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 [package]
-name = "primalspring-exp041"
+name = "primalspring-exp061"
 version = "0.4.0"
 edition.workspace = true
 rust-version.workspace = true
@@ -8,13 +8,14 @@ license.workspace = true
 publish = false
 
 [[bin]]
-name = "exp041_provenance_trio_science"
+name = "exp061_squirrel_ai_composition"
 path = "src/main.rs"
 
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
 serde = { workspace = true }
 serde_json = { workspace = true }
+toml = "0.8"
 
 [lints]
 workspace = true

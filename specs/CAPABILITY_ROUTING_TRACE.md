@@ -1,7 +1,9 @@
 # Capability Routing Trace — Hardcoded → Semantic Evolution
 
-**Status**: Active trace — primalSpring v0.3.5+  
-**Date**: 2026-03-18  
+> **Historical note (2026-03-21)**: This trace was created during the Mar 18 Tower Atomic investigation when gates were 4/24. As of v0.4.0, Tower is **24/24 STABLE** with all standard methods implemented and capability routing validated. The hardcoding sites documented below remain relevant as the ongoing evolution roadmap for achieving full Neural API semantic routing across the ecosystem. See `TOWER_STABILITY.md` for current gate status.
+
+**Status**: Historical trace with ongoing evolution relevance — primalSpring v0.4.0  
+**Date**: 2026-03-18 (updated 2026-03-21)  
 **Context**: Tower Atomic live validation revealed method-naming mismatch between songbird and beardog, traced to hardcoded inter-primal calls that bypass capability-based routing.
 
 ## Architecture Principle
@@ -154,8 +156,8 @@ primalSpring co-evolves with **beardog, songbird, biomeOS** until the Tower Atom
 is stable. Only then does nestgate join (Nest Atomic), then toadstool/squirrel (Full NUCLEUS).
 
 ```
-Tower Atomic (beardog + songbird + biomeOS)     ← CURRENT FOCUS
-    24 gates, currently 4/24 passing
+Tower Atomic (beardog + songbird + biomeOS)     ← STABLE (24/24)
+    24 gates, all passing as of v0.4.0
     ▼  all gates green
 Nest Atomic (Tower + nestgate)
     ▼  all storage gates green

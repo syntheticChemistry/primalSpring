@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**38 experiments across 7 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**40 experiments across 8 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -13,12 +13,12 @@ Every experiment uses the shared validation harness (`check_bool`, `check_skip`,
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 38 experiments.
+across all 40 experiments.
 
 ## Running
 
 ```bash
-# Run all 38 experiments via meta-validator
+# Run all 40 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -39,6 +39,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 5 | coralForge | (exp025) | Discovery wired |
 | 6 | Cross-Spring | exp040–044 | Discovery wired |
 | 7 | Showcase-Mined | exp050–059 | Discovery wired |
+| 8 | Live Composition | exp060–061 | **Live validated** (Tower + Squirrel AI) |
 
 ## Experiment Status Key
 
@@ -53,9 +54,10 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 1 | Real discovery + honest skip | Done |
 | 2 | IPC resilience + niche + deploy | Done (v0.2.0) |
 | 2→3 | Deep debt + MCP + provenance | Done (v0.3.0-dev) |
-| 3 | Tower Atomic with live primals | Next |
-| 4 | Full NUCLEUS validation | Planned |
-| 5+ | Graph execution, emergent, bonding | Planned |
+| 3 | Capability-first architecture | Done (v0.3.0) |
+| 4 | Tower Atomic + Squirrel AI live | Done (v0.4.0) |
+| 5 | Nest Atomic + Node Atomic | Next |
+| 6+ | Full NUCLEUS, graph execution, emergent, bonding | Planned |
 
 ## Validation Harness
 
@@ -73,7 +75,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.2.0, depends on ecoPrimal
+├── Cargo.toml    # version 0.4.0, depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

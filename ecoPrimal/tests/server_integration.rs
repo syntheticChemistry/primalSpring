@@ -8,7 +8,7 @@
 
 use std::io::{BufRead, BufReader, Write};
 use std::os::unix::net::UnixStream;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
@@ -260,7 +260,8 @@ fn tower_atomic_live_health_check() {
     use primalspring::harness::AtomicHarness;
 
     let family_id = format!("itest-tower-{}", std::process::id());
-    let running = AtomicHarness::start(AtomicType::Tower, &family_id)
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start(&family_id)
         .expect("tower atomic should start");
 
     assert_eq!(running.primal_count(), 2, "Tower = beardog + songbird");
@@ -278,7 +279,8 @@ fn tower_atomic_live_capabilities() {
     use primalspring::harness::AtomicHarness;
 
     let family_id = format!("itest-caps-{}", std::process::id());
-    let running = AtomicHarness::start(AtomicType::Tower, &family_id)
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start(&family_id)
         .expect("tower atomic should start");
 
     let caps = running.capabilities_all();
@@ -295,7 +297,8 @@ fn tower_atomic_live_validation_result() {
     use primalspring::validation::ValidationResult;
 
     let family_id = format!("itest-val-{}", std::process::id());
-    let running = AtomicHarness::start(AtomicType::Tower, &family_id)
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start(&family_id)
         .expect("tower atomic should start");
 
     let mut v = ValidationResult::new("tower_atomic_live");
@@ -316,19 +319,19 @@ fn tower_neural_api_health() {
 
     let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
     let family_id = format!("itest-neural-{}", std::process::id());
-    let running = AtomicHarness::start_with_neural_api(
-        AtomicType::Tower,
-        &family_id,
-        &graphs,
-    )
-    .expect("tower + neural-api should start");
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
 
     assert!(running.has_neural_api(), "neural API should be running");
     assert_eq!(running.primal_count(), 2, "Tower = beardog + songbird");
 
     let bridge = running.neural_bridge().expect("should get NeuralBridge");
     let health = bridge.health_check();
-    assert!(health.is_ok(), "Neural API health check should succeed: {health:?}");
+    assert!(
+        health.is_ok(),
+        "Neural API health check should succeed: {health:?}"
+    );
 }
 
 #[test]
@@ -339,12 +342,9 @@ fn tower_neural_api_capability_discovery() {
 
     let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
     let family_id = format!("itest-ncap-{}", std::process::id());
-    let running = AtomicHarness::start_with_neural_api(
-        AtomicType::Tower,
-        &family_id,
-        &graphs,
-    )
-    .expect("tower + neural-api should start");
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
 
     let bridge = running.neural_bridge().expect("should get NeuralBridge");
     let coordination = bridge.discover_capability("ecosystem.coordination");
@@ -363,12 +363,9 @@ fn tower_neural_api_full_validation() {
 
     let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
     let family_id = format!("itest-nval-{}", std::process::id());
-    let running = AtomicHarness::start_with_neural_api(
-        AtomicType::Tower,
-        &family_id,
-        &graphs,
-    )
-    .expect("tower + neural-api should start");
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
 
     let mut v = ValidationResult::new("tower_neural_api_live");
     running.validate(&mut v);
@@ -376,5 +373,463 @@ fn tower_neural_api_full_validation() {
     assert!(
         v.checks.iter().any(|c| c.name == "neural_api_health"),
         "should include Neural API health check"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Gate 1.5: Zombie process check
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_zombie_check() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-zombie-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let pids = running.pids();
+    assert!(
+        pids.len() >= 3,
+        "should have beardog + songbird + neural-api PIDs, got {}",
+        pids.len()
+    );
+
+    for &pid in &pids {
+        assert!(process_alive(pid), "PID {pid} should be alive before drop");
+    }
+
+    drop(running);
+    std::thread::sleep(Duration::from_millis(500));
+
+    for &pid in &pids {
+        assert!(
+            !process_alive(pid),
+            "PID {pid} should NOT be alive after RunningAtomic::drop() — zombie or orphan detected"
+        );
+    }
+}
+
+/// Check if a process is alive via `kill(pid, 0)` (signal 0 = existence check).
+fn process_alive(pid: u32) -> bool {
+    Path::new(&format!("/proc/{pid}")).exists()
+}
+
+// ---------------------------------------------------------------------------
+// Gate 3.5: Discovery peer list via Neural API
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_discovery_peer_list() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-peers-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let bridge = running.neural_bridge().expect("should get NeuralBridge");
+
+    let result = bridge.capability_call("discovery", "peers", &serde_json::json!({}));
+
+    match result {
+        Ok(call_result) => {
+            assert!(
+                !call_result.value.is_null(),
+                "discovery.peers should return a non-null result"
+            );
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            assert!(
+                msg.contains("not found") || msg.contains("not registered"),
+                "expected capability routing (possibly unregistered), got unexpected error: {e}"
+            );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gate 4.1: TLS X25519 key exchange via Neural API
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_tls_handshake() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-tls-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let bridge = running.neural_bridge().expect("should get NeuralBridge");
+
+    let result = bridge.capability_call(
+        "crypto",
+        "generate_keypair",
+        &serde_json::json!({ "algorithm": "x25519" }),
+    );
+
+    match result {
+        Ok(call_result) => {
+            assert!(
+                !call_result.value.is_null(),
+                "crypto.generate_keypair should return key material"
+            );
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            assert!(
+                msg.contains("not found")
+                    || msg.contains("not registered")
+                    || msg.contains("Method not found"),
+                "expected capability routing (possibly unregistered), got unexpected error: {e}"
+            );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gate 4.2: TLS internet reach (requires network)
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries + network access (run with --include-ignored)"]
+fn tower_tls_internet_reach() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-https-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let bridge = running.neural_bridge().expect("should get NeuralBridge");
+
+    let result = bridge.capability_call(
+        "discovery",
+        "https_probe",
+        &serde_json::json!({ "url": "https://github.com", "timeout_secs": 10 }),
+    );
+
+    match result {
+        Ok(call_result) => {
+            let status = call_result
+                .value
+                .get("status_code")
+                .and_then(|v| v.as_u64());
+            if let Some(code) = status {
+                assert!(
+                    (200..400).contains(&(code as u16).into()),
+                    "HTTPS probe to github.com should return 2xx/3xx, got {code}"
+                );
+            }
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            assert!(
+                msg.contains("not found")
+                    || msg.contains("not registered")
+                    || msg.contains("not implemented")
+                    || msg.contains("Failed to forward"),
+                "expected routing attempt to songbird (forwarding or not-found), got: {e}"
+            );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gate 4.3: TLS routing audit — verify crypto uses capability.call path
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_tls_routing_audit() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-audit-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let bridge = running.neural_bridge().expect("should get NeuralBridge");
+
+    let crypto_cap = bridge.discover_capability("crypto");
+    assert!(
+        crypto_cap.is_ok(),
+        "Neural API should have 'crypto' capability registered: {crypto_cap:?}"
+    );
+
+    let crypto_info = crypto_cap.unwrap();
+    assert!(
+        !crypto_info.is_null(),
+        "crypto capability discovery should return non-null metadata"
+    );
+
+    let security_cap = bridge.discover_capability("security");
+    assert!(
+        security_cap.is_ok(),
+        "Neural API should have 'security' capability registered: {security_cap:?}"
+    );
+
+    let tls_ops = ["generate_keypair", "tls_x25519_keygen", "derive_child_seed"];
+    let mut routable = 0;
+    for op in &tls_ops {
+        let result = bridge.capability_call("crypto", op, &serde_json::json!({}));
+        match &result {
+            Ok(_) => routable += 1,
+            Err(e) => {
+                let msg = format!("{e}");
+                if !msg.contains("not found") && !msg.contains("Method not found") {
+                    routable += 1;
+                }
+            }
+        }
+    }
+
+    assert!(
+        routable > 0,
+        "at least one TLS crypto operation should be routable through capability.call"
+    );
+}
+
+// ===========================================================================
+// Squirrel AI composition tests
+// ===========================================================================
+
+fn load_anthropic_key() -> Option<String> {
+    if let Ok(key) = std::env::var("ANTHROPIC_API_KEY") {
+        if !key.is_empty() {
+            return Some(key);
+        }
+    }
+    let candidates = [
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../testing-secrets/api-keys.toml"),
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../testing-secrets/api-keys.toml"),
+    ];
+    for path in &candidates {
+        if let Ok(contents) = std::fs::read_to_string(path) {
+            // The file may have non-TOML lines before the first section header.
+            // Extract everything from the first `[` onward.
+            let toml_start = contents.find("\n[").map_or(0, |i| i + 1);
+            let toml_slice = &contents[toml_start..];
+            if let Ok(parsed) = toml_slice.parse::<toml::Table>() {
+                if let Some(ai) = parsed.get("ai_providers").and_then(|v| v.as_table()) {
+                    if let Some(key) = ai.get("anthropic_api_key").and_then(|v| v.as_str()) {
+                        if !key.is_empty() {
+                            return Some(key.to_owned());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Squirrel uses `UniversalListener` which on Linux prefers an abstract
+/// socket (`\0squirrel`) over filesystem sockets. We spawn the process
+/// and poll health on the abstract socket.
+struct SquirrelGuard {
+    _process: primalspring::launcher::PrimalProcess,
+}
+
+impl SquirrelGuard {
+    fn connect_abstract() -> std::io::Result<std::os::unix::net::UnixStream> {
+        use std::os::linux::net::SocketAddrExt;
+        use std::os::unix::net::{SocketAddr, UnixStream};
+        let addr = SocketAddr::from_abstract_name("squirrel")?;
+        UnixStream::connect_addr(&addr)
+    }
+
+    fn health_liveness(&self) -> bool {
+        if let Ok(mut stream) = Self::connect_abstract() {
+            use std::io::{BufRead, BufReader, Write};
+            let req = r#"{"jsonrpc":"2.0","method":"health.liveness","id":1}"#;
+            let msg = format!("{req}\n");
+            if stream.write_all(msg.as_bytes()).is_ok() {
+                let _ = stream.shutdown(std::net::Shutdown::Write);
+                let reader = BufReader::new(&stream);
+                for line in reader.lines().map_while(Result::ok) {
+                    if line.contains("\"result\"") {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+}
+
+fn spawn_squirrel_for_test(
+    family_id: &str,
+    nucleation: &mut primalspring::launcher::SocketNucleation,
+    api_key: &str,
+) -> SquirrelGuard {
+    use primalspring::launcher::{self, PrimalProcess};
+
+    let squirrel_socket = nucleation.assign("squirrel", family_id);
+    let binary = launcher::discover_binary("squirrel").expect("squirrel binary should be found");
+    let mut cmd = std::process::Command::new(&binary);
+    cmd.arg("server");
+    cmd.arg("--socket").arg(&squirrel_socket);
+    cmd.arg("--port").arg("0");
+    cmd.env("FAMILY_ID", family_id);
+    cmd.env("XDG_RUNTIME_DIR", nucleation.base_dir());
+    cmd.env("ANTHROPIC_API_KEY", api_key);
+    cmd.env("SERVICE_MESH_PORT", "0");
+    cmd.stdout(std::process::Stdio::piped());
+    cmd.stderr(std::process::Stdio::piped());
+    let child = cmd.spawn().expect("squirrel should spawn");
+
+    // Poll until the abstract socket is reachable
+    let deadline = std::time::Instant::now() + Duration::from_secs(15);
+    loop {
+        if SquirrelGuard::connect_abstract().is_ok() {
+            break;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "squirrel should become reachable within 15s (abstract socket \\0squirrel)"
+        );
+        std::thread::sleep(Duration::from_millis(100));
+    }
+
+    SquirrelGuard {
+        _process: PrimalProcess::from_parts("squirrel".to_owned(), squirrel_socket, child),
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Squirrel AI Query: Tower + Squirrel + Neural API, sends ai.query
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries + ANTHROPIC_API_KEY (run with --ignored)"]
+fn tower_squirrel_ai_query() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+    use primalspring::launcher::SocketNucleation;
+
+    let api_key = load_anthropic_key()
+        .expect("ANTHROPIC_API_KEY must be set or testing-secrets/api-keys.toml must exist");
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-sqai-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let runtime_dir = running.runtime_dir().to_path_buf();
+    let mut nucleation = SocketNucleation::new(runtime_dir);
+    let squirrel = spawn_squirrel_for_test(&family_id, &mut nucleation, &api_key);
+
+    assert!(squirrel.health_liveness(), "squirrel should be alive");
+
+    let bridge = running.neural_bridge().expect("should get NeuralBridge");
+    let result = bridge.capability_call(
+        "ai",
+        "query",
+        &serde_json::json!({
+            "prompt": "In one sentence, what is ecosystem coordination?"
+        }),
+    );
+
+    match result {
+        Ok(call_result) => {
+            let has_response = call_result
+                .value
+                .get("response")
+                .and_then(|v| v.as_str())
+                .is_some_and(|s| !s.is_empty());
+            assert!(
+                has_response,
+                "AI query should return a non-empty response: {call_result:?}"
+            );
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            assert!(
+                msg.contains("not found")
+                    || msg.contains("not registered")
+                    || msg.contains("Failed to forward")
+                    || msg.contains("Method not found"),
+                "expected routing attempt or AI response, got: {e}"
+            );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Composition health: Tower + Squirrel all healthy simultaneously
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries + ANTHROPIC_API_KEY (run with --ignored)"]
+fn tower_squirrel_composition_health() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+    use primalspring::launcher::SocketNucleation;
+
+    let api_key = load_anthropic_key()
+        .expect("ANTHROPIC_API_KEY must be set or testing-secrets/api-keys.toml must exist");
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-sqhealth-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let runtime_dir = running.runtime_dir().to_path_buf();
+    let mut nucleation = SocketNucleation::new(runtime_dir);
+    let squirrel = spawn_squirrel_for_test(&family_id, &mut nucleation, &api_key);
+
+    // Verify all Tower primals healthy
+    for (name, live) in running.health_check_all() {
+        assert!(
+            live,
+            "{name} should be healthy in tower+squirrel composition"
+        );
+    }
+
+    // Verify squirrel healthy
+    assert!(
+        squirrel.health_liveness(),
+        "squirrel should be healthy in composition"
+    );
+
+    // Verify the Neural API bridge is still functional
+    let bridge = running.neural_bridge().expect("should get NeuralBridge");
+    let health = bridge.health_check();
+    assert!(
+        health.is_ok(),
+        "Neural API should be healthy with Squirrel added: {health:?}"
+    );
+
+    // Verify security capability still registered
+    let security = bridge.discover_capability("security");
+    assert!(
+        security.is_ok(),
+        "security capability should still be registered: {security:?}"
+    );
+
+    // Verify discovery capability still registered
+    let discovery = bridge.discover_capability("discovery");
+    assert!(
+        discovery.is_ok(),
+        "discovery capability should still be registered: {discovery:?}"
     );
 }

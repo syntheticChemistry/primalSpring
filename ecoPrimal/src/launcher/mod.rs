@@ -67,6 +67,13 @@ pub enum LaunchError {
         /// How long we waited before giving up.
         waited: Duration,
     },
+    /// A spawned primal failed its post-launch health check.
+    HealthCheckFailed {
+        /// The primal that failed the check.
+        primal: String,
+        /// Detail from the failed health call.
+        detail: String,
+    },
     /// Launch profiles TOML failed to parse.
     ProfileParseError(
         /// Parse error detail.
@@ -78,10 +85,7 @@ impl fmt::Display for LaunchError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::BinaryNotFound { primal, searched } => {
-                write!(
-                    f,
-                    "binary not found for '{primal}'; searched: {searched:?}"
-                )
+                write!(f, "binary not found for '{primal}'; searched: {searched:?}")
             }
             Self::SpawnFailed { primal, source } => {
                 write!(f, "spawn failed for '{primal}': {source}")
@@ -97,6 +101,9 @@ impl fmt::Display for LaunchError {
                     socket.display(),
                     waited.as_secs_f64()
                 )
+            }
+            Self::HealthCheckFailed { primal, detail } => {
+                write!(f, "health check failed for '{primal}': {detail}")
             }
             Self::ProfileParseError(msg) => write!(f, "launch profile parse error: {msg}"),
         }
@@ -214,20 +221,13 @@ impl SocketNucleation {
         if let Some(existing) = self.assignments.get(&key) {
             return existing.clone();
         }
-        let socket = self
-            .base_dir
-            .join("biomeos")
-            .join(format!("{key}.sock"));
+        let socket = self.base_dir.join("biomeos").join(format!("{key}.sock"));
         self.assignments.insert(key, socket.clone());
         socket
     }
 
     /// Assign sockets for all primals in `names`.
-    pub fn assign_batch(
-        &mut self,
-        names: &[&str],
-        family_id: &str,
-    ) -> HashMap<String, PathBuf> {
+    pub fn assign_batch(&mut self, names: &[&str], family_id: &str) -> HashMap<String, PathBuf> {
         names
             .iter()
             .map(|name| ((*name).to_owned(), self.assign(name, family_id)))
@@ -252,8 +252,7 @@ impl SocketNucleation {
 // Launch profiles
 // ---------------------------------------------------------------------------
 
-static LAUNCH_PROFILES_TOML: &str =
-    include_str!("../../../config/primal_launch_profiles.toml");
+static LAUNCH_PROFILES_TOML: &str = include_str!("../../../config/primal_launch_profiles.toml");
 
 /// Per-primal socket configuration loaded from TOML.
 #[derive(Debug, Clone, Default, serde::Deserialize)]
@@ -273,6 +272,9 @@ pub struct LaunchProfile {
     /// Extra CLI flags whose values are resolved socket paths.
     #[serde(default)]
     pub cli_sockets: HashMap<String, String>,
+    /// Env vars to forward from the parent process when set.
+    #[serde(default)]
+    pub passthrough_env: HashMap<String, bool>,
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -287,8 +289,8 @@ struct ProfilesConfig {
 /// # Errors
 ///
 /// Returns [`LaunchError::ProfileParseError`] if the TOML is malformed.
-pub fn load_launch_profiles(
-) -> Result<(LaunchProfile, HashMap<String, LaunchProfile>), LaunchError> {
+pub fn load_launch_profiles() -> Result<(LaunchProfile, HashMap<String, LaunchProfile>), LaunchError>
+{
     let config: ProfilesConfig = toml::from_str(LAUNCH_PROFILES_TOML)
         .map_err(|e| LaunchError::ProfileParseError(e.to_string()))?;
     Ok((config.default, config.profiles))
@@ -316,6 +318,17 @@ impl PrimalProcess {
     #[must_use]
     pub fn pid(&self) -> u32 {
         self.child.id()
+    }
+
+    /// Construct from pre-spawned parts (for custom spawn logic).
+    #[must_use]
+    pub const fn from_parts(name: String, socket_path: PathBuf, child: Child) -> Self {
+        Self {
+            name,
+            socket_path,
+            child,
+            _relay_handle: None,
+        }
     }
 }
 
@@ -402,6 +415,13 @@ pub fn spawn_primal(
                 cmd.arg(flag).arg(resolved);
             }
         }
+        for (env_name, &enabled) in &p.passthrough_env {
+            if enabled {
+                if let Ok(val) = std::env::var(env_name) {
+                    cmd.env(env_name, val);
+                }
+            }
+        }
     }
 
     cmd.stdout(Stdio::piped());
@@ -466,20 +486,28 @@ pub fn spawn_neural_api(
     let relative_binary = discover_binary("neural-api-server")?;
     let binary = std::fs::canonicalize(&relative_binary).unwrap_or(relative_binary);
 
-    let socket_path = std::env::temp_dir().join(format!("neural-api-{family_id}.sock"));
+    let biomeos_dir = nucleation.base_dir().join("biomeos");
+    let _ = std::fs::create_dir_all(&biomeos_dir);
+    let socket_path = biomeos_dir.join(format!("neural-api-{family_id}.sock"));
     let _ = std::fs::remove_file(&socket_path);
+
+    let effective_graphs_dir = discover_biomeos_graphs(graphs_dir);
+    let working_dir = effective_graphs_dir
+        .parent()
+        .unwrap_or(&effective_graphs_dir);
 
     let mut cmd = Command::new(&binary);
     cmd.arg("neural-api");
     cmd.arg("--socket").arg(&socket_path);
-    cmd.arg("--graphs-dir").arg(graphs_dir);
+    cmd.arg("--graphs-dir").arg(&effective_graphs_dir);
     cmd.arg("--family-id").arg(family_id);
-    cmd.current_dir(graphs_dir.parent().unwrap_or(graphs_dir));
+    cmd.current_dir(working_dir);
     cmd.env("FAMILY_ID", family_id);
     cmd.env(
         "XDG_RUNTIME_DIR",
         nucleation.base_dir().to_string_lossy().as_ref(),
     );
+    cmd.env("BIOMEOS_MODE", "coordinated");
     if let Ok(plasmid) = std::env::var("ECOPRIMALS_PLASMID_BIN") {
         cmd.env("BIOMEOS_PLASMID_BIN_DIR", &plasmid);
     }
@@ -522,6 +550,37 @@ pub fn spawn_neural_api(
         child,
         _relay_handle: Some(relay_handle),
     })
+}
+
+/// Discover the biomeOS graphs directory, preferring the biomeOS source tree
+/// (which has the full `[[nodes]]` graph and `../config/capability_registry.toml`).
+/// Falls back to the caller-provided directory.
+fn discover_biomeos_graphs(fallback: &Path) -> PathBuf {
+    if let Ok(val) = std::env::var("BIOMEOS_GRAPHS_DIR") {
+        let p = PathBuf::from(&val);
+        if p.is_dir() {
+            return p;
+        }
+    }
+
+    let candidates = [
+        PathBuf::from("../phase2/biomeOS/graphs"),
+        PathBuf::from("../../phase2/biomeOS/graphs"),
+        PathBuf::from("../../../phase2/biomeOS/graphs"),
+    ];
+    for candidate in &candidates {
+        if candidate.join("tower_atomic_bootstrap.toml").is_file()
+            && candidate
+                .join("../config/capability_registry.toml")
+                .is_file()
+        {
+            if let Ok(p) = std::fs::canonicalize(candidate) {
+                return p;
+            }
+        }
+    }
+
+    fallback.to_path_buf()
 }
 
 /// Poll for a socket file to appear on disk.
@@ -660,10 +719,8 @@ mod tests {
 
     #[test]
     fn wait_for_socket_succeeds_when_file_exists() {
-        let dir = std::env::temp_dir().join(format!(
-            "primalspring-socket-test-{}",
-            std::process::id()
-        ));
+        let dir =
+            std::env::temp_dir().join(format!("primalspring-socket-test-{}", std::process::id()));
         let _ = std::fs::create_dir_all(&dir);
         let sock = dir.join("test.sock");
         std::fs::write(&sock, b"").expect("create sock");
