@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.3.5 (Phase 3 — live Tower + Neural API, capability audits, 251 tests)  
+**Version**: 0.3.7 (Phase 3 — live Tower 6/6 green, deprecation cleanup, 251 tests)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 18, 2026
+**Last Updated**: March 20, 2026
 
 ---
 
@@ -205,6 +205,7 @@ mcp.tools.list                                  — MCP tool definitions for Squ
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.3.7 | `DEPRECATION_CLEANUP_MAR20_2026.md` | Mar 20 | Cross-repo dead code removal: 6,478 lines across beardog, songbird, biomeOS |
 | v0.3.6 | `TOWER_COEVOLUTION_GUIDE.md` | Mar 18 | Tower co-evolution contract: sprint loop, per-team quick wins, timeline |
 | v0.3.5 | `BEARDOG_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | BearDog: method naming, health.liveness, bare crypto aliases, TLS blocker |
 | v0.3.5 | `SONGBIRD_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | Songbird: BeardogCryptoClient, TLS X25519 path, Neural API routing |
