@@ -7,7 +7,7 @@
 [meta]
 primal = "primalspring"
 domain = "coordination"
-version = "0.4.0"
+version = "0.5.0"
 
 [[capabilities]]
 method = "coordination.validate_composition"
@@ -135,3 +135,79 @@ provider = "squirrel"
 method = "composition.tower_squirrel_health"
 description = "Health status of Tower + Squirrel (beardog + songbird + squirrel)"
 domain = "composition"
+
+# ── Songbird subsystem capabilities ──
+
+[[capabilities]]
+method = "discovery.announce"
+description = "Announce a primal to the discovery mesh"
+domain = "discovery"
+provider = "songbird"
+
+[[capabilities]]
+method = "discovery.find_primals"
+description = "Find primals registered in the discovery mesh"
+domain = "discovery"
+provider = "songbird"
+
+[[capabilities]]
+method = "network.stun"
+description = "STUN public address resolution"
+domain = "network"
+provider = "songbird"
+
+[[capabilities]]
+method = "network.nat_type"
+description = "NAT type detection via STUN"
+domain = "network"
+provider = "songbird"
+
+[[capabilities]]
+method = "network.birdsong.beacon"
+description = "Generate encrypted BirdSong beacon"
+domain = "network"
+provider = "songbird"
+
+[[capabilities]]
+method = "network.birdsong.decrypt"
+description = "Decrypt a BirdSong beacon"
+domain = "network"
+provider = "songbird"
+
+[[capabilities]]
+method = "network.onion.start"
+description = "Start sovereign onion service"
+domain = "network"
+provider = "songbird"
+
+[[capabilities]]
+method = "network.onion.status"
+description = "Sovereign onion service status"
+domain = "network"
+provider = "songbird"
+
+[[capabilities]]
+method = "network.tor.status"
+description = "Tor subsystem status"
+domain = "network"
+provider = "songbird"
+
+[[capabilities]]
+method = "network.federation.peers"
+description = "Cross-tower federation peer list"
+domain = "network"
+provider = "songbird"
+
+# ── Visualization capabilities (petalTongue) ──
+
+[[capabilities]]
+method = "visualization.render.dashboard"
+description = "Render a Tower health dashboard via petalTongue"
+domain = "visualization"
+provider = "petaltongue"
+
+[[capabilities]]
+method = "visualization.render.grammar"
+description = "Render a Grammar-of-Graphics expression via petalTongue"
+domain = "visualization"
+provider = "petaltongue"

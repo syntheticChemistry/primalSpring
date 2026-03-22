@@ -447,7 +447,7 @@ mod tests {
             neural_api_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
-            runtime_dir: dir.clone(),
+            runtime_dir: dir,
             atomic: AtomicType::Tower,
         };
         assert_eq!(running.capability_to_primal("security"), Some("beardog"));

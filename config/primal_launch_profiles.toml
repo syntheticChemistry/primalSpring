@@ -51,6 +51,14 @@ FAMILY_ID = "$family_id"
 [profiles.toadstool]
 # Same as default
 
+[profiles.petaltongue]
+pass_family_id = false
+[profiles.petaltongue.extra_env]
+PETALTONGUE_MODE = "server"
+PETALTONGUE_HEADLESS = "true"
+[profiles.petaltongue.env_sockets]
+NEURAL_API_SOCKET = "neural-api"
+
 [profiles.neural-api-server]
 # Neural API server uses a different socket pattern and no "server" subcommand.
 # Socket: /tmp/neural-api-{family_id}.sock (not in biomeos subdir).

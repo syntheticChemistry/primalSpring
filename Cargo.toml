@@ -48,6 +48,10 @@ members = [
     "experiments/exp059_weak_force_isolation",
     "experiments/exp060_biomeos_tower_deploy",
     "experiments/exp061_squirrel_ai_composition",
+    "experiments/exp062_tower_subsystem_sweep",
+    "experiments/exp063_pixel_tower_rendezvous",
+    "experiments/exp064_nestgate_internet_reach",
+    "experiments/exp065_petaltongue_tower_dashboard",
 ]
 
 [workspace.package]

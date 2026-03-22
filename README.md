@@ -5,11 +5,11 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, bonding |
-| **Version** | 0.4.0 |
+| **Version** | 0.5.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 264 (239 unit + 23 integration + 2 doc-tests) |
-| **Experiments** | 40 (7 tracks) |
+| **Tests** | 270 (239 unit + 29 integration + 2 doc-tests) |
+| **Experiments** | 44 (8 tracks) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -82,13 +82,13 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 264 tests (249 auto + 15 ignored live tests)
+# Run all 270 tests (249 auto + 21 ignored live tests)
 cargo test --workspace
 
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 38 experiments (meta-validator)
+# Run all 44 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)

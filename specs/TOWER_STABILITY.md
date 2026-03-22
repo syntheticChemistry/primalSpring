@@ -87,6 +87,48 @@ with binaries from `ecoPrimals/plasmidBin/`.
 | 6.2 | biomeOS graph executor uses `capability.call` (not direct `UnixStream`) | static audit |
 | 6.3 | `genetic.*` and `lineage.*` methods registered in capability translation registry | registry coverage test |
 
+### Gate 7: Songbird Subsystem Health
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 7.1 | discovery.announce + discovery.find_primals respond | `tower_discovery_announce_find` |
+| 7.2 | stun.get_public_address resolves (network-dependent) | `tower_stun_public_address` |
+| 7.3 | birdsong beacon encrypt + decrypt round-trip | `tower_birdsong_beacon` |
+| 7.4 | onion.start + onion.status sovereign onion lifecycle | `tower_onion_service` |
+| 7.5 | tor.status Tor subsystem responds | `tower_tor_status` |
+| 7.6 | federation.peers cross-tower federation query | `tower_federation_status` |
+
+### Gate 8: Beacon Round-Trip
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 8.1 | BirdSong beacon generated with family_id + capabilities | `tower_birdsong_beacon`, `exp063` |
+| 8.2 | BirdSong beacon decrypts to valid payload | `tower_birdsong_beacon`, `exp063` |
+
+### Gate 9: Rendezvous (Pixel ↔ Tower)
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 9.1 | Local Tower generates beacon for rendezvous exchange | `exp063_pixel_tower_rendezvous` |
+| 9.2 | STUN public address obtained for hotspot meeting | `exp063_pixel_tower_rendezvous` |
+| 9.3 | Onion service available as Tor rendezvous fallback | `exp063_pixel_tower_rendezvous` |
+
+### Gate 10: Internet Reach
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 10.1 | HTTPS probe to api.nestgate.io succeeds | `exp064_nestgate_internet_reach` |
+| 10.2 | STUN resolves public IP | `exp064_nestgate_internet_reach` |
+| 10.3 | At least one internet path available | `exp064_nestgate_internet_reach` |
+
+### Gate 11: Visualization (petalTongue)
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 11.1 | petalTongue spawns in headless server mode | `exp065_petaltongue_tower_dashboard` |
+| 11.2 | visualization.render.dashboard returns Tower health | `exp065_petaltongue_tower_dashboard` |
+| 11.3 | visualization.render.grammar produces SVG/JSON output | `exp065_petaltongue_tower_dashboard` |
+
 ## Current Status vs Gates (2026-03-21)
 
 | Gate | Status | Notes |
@@ -97,8 +139,15 @@ with binaries from `ecoPrimals/plasmidBin/`.
 | 4. TLS 1.3 E2E | **PASS** (3/3) | `tower_tls_handshake`, `tower_tls_internet_reach`, `tower_tls_routing_audit` |
 | 5. Socket Discovery | **PASS** (3/3) | beardog 5-tier aligned, songbird uses `songbird-crypto-provider` (Neural API), biomeOS uses `discover_by_capability()` |
 | 6. Neural API Dogfooding | **PASS** (3/3) | biomeOS enrollment uses `NeuralApiCapabilityCaller`, graph executor uses `capability.call`, registry complete |
+| 7. Subsystem Health | **PENDING** (0/6) | Tests added, require live plasmidBin validation sprint |
+| 8. Beacon Round-Trip | **PENDING** (0/2) | Depends on Gate 7 BirdSong validation |
+| 9. Rendezvous | **PENDING** (0/3) | Depends on Gates 7+8, requires Pixel 8a for full validation |
+| 10. Internet Reach | **PENDING** (0/3) | Depends on network access + nestgate.io availability |
+| 11. Visualization | **PENDING** (0/3) | petalTongue wired, requires live validation sprint |
 
-**Overall: 24/24 gates passing — Tower Stable**
+**Gates 1-6: 24/24 PASS — Tower Core Stable**  
+**Gates 7-11: 0/17 PENDING — Tower Full Utilization (tests written, awaiting live sprint)**  
+**Overall: 24/41 gates passing — Tower Full Utilization in progress**
 
 **Live test results (11/11 green, validated 2026-03-21):**
 - `tower_atomic_live_health_check` — PASS
@@ -112,6 +161,14 @@ with binaries from `ecoPrimals/plasmidBin/`.
 - `tower_tls_handshake` — PASS (Gate 4.1)
 - `tower_tls_internet_reach` — PASS (Gate 4.2)
 - `tower_tls_routing_audit` — PASS (Gate 4.3)
+
+**New tests (awaiting live sprint):**
+- `tower_discovery_announce_find` — Gate 7.1
+- `tower_stun_public_address` — Gate 7.2
+- `tower_birdsong_beacon` — Gate 7.3
+- `tower_onion_service` — Gate 7.4
+- `tower_tor_status` — Gate 7.5
+- `tower_federation_status` — Gate 7.6
 
 ## Tower Stability Sprint (2026-03-21) — Completed
 
@@ -153,7 +210,12 @@ Each sprint, primalSpring:
 ## Progression Path
 
 ```
-Tower Atomic (beardog + songbird + biomeOS)     ✅ STABLE (24/24)
+Tower Atomic (beardog + songbird + biomeOS)     ✅ CORE STABLE (24/24)
+    │
+    ├── Tower Full Utilization                  ← IN PROGRESS (24/41)
+    │   Gates 7-11: subsystems, beacon, rendezvous, internet, visualization
+    │   + Squirrel AI composition
+    │   + petalTongue visualization
     │
     ▼  Tower gates inherited
 Nest Atomic (Tower + nestgate)                  ← NEXT

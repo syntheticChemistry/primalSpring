@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 21, 2026
-**Status**: Phase 4 — Tower STABLE (24/24 gates), Squirrel AI composition validated, 40 experiments, 264 tests
+**Status**: Phase 4 — Tower STABLE (24/24 core) + Full Utilization (24/41), songbird subsystems + petalTongue viz, 44 experiments, 270 tests
 
 ---
 
@@ -28,32 +28,44 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 5 | coralForge | (exp025) | Does the neural object pipeline work? |
 | 6 | Cross-Spring | exp040–044 | Do cross-spring data flows work? |
 | 7 | Showcase-Mined | exp050–059 | Do mined phase1/phase2 coordination patterns hold? |
-| 8 | Live Composition | exp060–061 | biomeOS Tower deploy + Squirrel AI composition |
+| 8 | Live Composition | exp060–065 | biomeOS Tower deploy + Squirrel AI + subsystem sweep + rendezvous + petalTongue viz |
 
-## Current State (v0.4.0)
+## Current State (v0.5.0)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 40 (8 tracks) |
+| Experiments | 44 (8 tracks) |
 | Unit tests | 239 |
-| Integration tests | 23 (10 JSON-RPC + 11 live Tower + 2 Squirrel AI) |
+| Integration tests | 29 (10 JSON-RPC + 11 live Tower + 2 Squirrel AI + 6 songbird subsystem) |
 | Doc-tests | 2 |
-| Total tests | **264** (249 auto + 15 ignored live) |
+| Total tests | **270** (249 auto + 21 ignored live) |
 | Proptest fuzz tests | 15 (IPC protocol, extract, capability parsing) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | 11 TOMLs, all nodes have `by_capability`, topologically validated |
+| Deploy graphs | 12 TOMLs (incl. `tower_full_capability.toml`), all nodes `by_capability` |
 | Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
-| Niche self-knowledge | `niche.rs` — 25 capabilities, semantic mappings, cost estimates |
+| Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | `check_bool`, `check_skip`, `check_or_skip`, `run_experiment()`, `print_banner()` |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
-| Tower Atomic | **STABLE** — 24/24 gates passing with plasmidBin binaries |
+| Tower Atomic | **STABLE** — 24/24 core gates + Full Utilization 24/41 |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
+| petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed (v0.4.0 -> v0.5.0)
+
+### Tower Full Utilization (v0.5.0)
+1. **Gates 7-11 added** — songbird subsystem health, beacon round-trip, Pixel rendezvous, internet reach, petalTongue visualization (24→41 total gates)
+2. **4 new experiments** — exp062 (subsystem sweep), exp063 (Pixel rendezvous), exp064 (internet reach), exp065 (petalTongue dashboard)
+3. **6 new songbird subsystem integration tests** — discovery, STUN, BirdSong, onion, Tor, federation
+4. **petalTongue v1.6.6** — built, deployed to plasmidBin, launch profile + capability registry wired
+5. **`tower_full_capability.toml`** — complete Tower deploy graph with all subsystem nodes
+6. **12 new capabilities** — songbird subsystems + petalTongue visualization (25→37 total)
+7. **270 tests** — up from 264 (+6); 29 integration tests, 21 ignored (live)
 
 ## What Changed (v0.3.0 -> v0.4.0)
 
@@ -94,6 +106,7 @@ Handoff documents delivered to `wateringHole/handoffs/`.
 |---|---|---|---|---|
 | Tower Stability | All 24 Tower gates | beardog, songbird, biomeOS | Gates 1–6 (24/24) | **DONE** |
 | Tower + Squirrel | AI composition | + squirrel | AI gates | **DONE** |
+| Tower Full Utilization | Subsystems + viz | + petalTongue | Gates 7–11 (0/17) | **IN PROGRESS** |
 | Nest Atomic | Storage gates | + nestgate | Storage gates | **NEXT** |
 | Node Atomic | Compute gates | + toadstool | Compute gates | Planned |
 | Full NUCLEUS | All gates | + all primals | All gates | Future |

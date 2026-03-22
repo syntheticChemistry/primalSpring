@@ -78,6 +78,20 @@ pub const CAPABILITIES: &[&str] = &[
     "ai.health",
     // ── Extended composition ──
     "composition.tower_squirrel_health",
+    // ── Songbird subsystem capabilities ──
+    "discovery.announce",
+    "discovery.find_primals",
+    "network.stun",
+    "network.nat_type",
+    "network.birdsong.beacon",
+    "network.birdsong.decrypt",
+    "network.onion.start",
+    "network.onion.status",
+    "network.tor.status",
+    "network.federation.peers",
+    // ── Visualization (petalTongue) ──
+    "visualization.render.dashboard",
+    "visualization.render.grammar",
 ];
 
 /// Operation dependency hints for biomeOS Pathway Learner parallelization.

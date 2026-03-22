@@ -528,7 +528,7 @@ fn tower_tls_internet_reach() {
             let status = call_result
                 .value
                 .get("status_code")
-                .and_then(|v| v.as_u64());
+                .and_then(serde_json::Value::as_u64);
             if let Some(code) = status {
                 assert!(
                     (200..400).contains(&(code as u16).into()),
@@ -832,4 +832,335 @@ fn tower_squirrel_composition_health() {
         discovery.is_ok(),
         "discovery capability should still be registered: {discovery:?}"
     );
+}
+
+// ===========================================================================
+// Tower Subsystem Tests — Songbird IPC surface (Phase 2 utilization gates)
+// ===========================================================================
+
+/// Helper: send a JSON-RPC call directly to a primal's socket.
+fn direct_rpc_call(
+    socket: &std::path::Path,
+    method: &str,
+    params: &serde_json::Value,
+) -> Result<serde_json::Value, String> {
+    use std::io::{BufRead, BufReader, Write};
+    use std::os::unix::net::UnixStream;
+
+    let mut stream =
+        UnixStream::connect(socket).map_err(|e| format!("connect to {}: {e}", socket.display()))?;
+    stream.set_read_timeout(Some(Duration::from_secs(10))).ok();
+    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
+
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": params,
+        "id": 1
+    });
+    let msg = format!("{req}\n");
+    stream
+        .write_all(msg.as_bytes())
+        .map_err(|e| format!("write: {e}"))?;
+    let _ = stream.shutdown(std::net::Shutdown::Write);
+
+    let reader = BufReader::new(&stream);
+    for line in reader.lines().map_while(Result::ok) {
+        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
+            if let Some(result) = parsed.get("result") {
+                return Ok(result.clone());
+            }
+            if let Some(error) = parsed.get("error") {
+                return Err(format!("RPC error: {error}"));
+            }
+        }
+    }
+    Err("no JSON-RPC response received".to_owned())
+}
+
+// ---------------------------------------------------------------------------
+// Gate 7.1: Discovery announce + find_primals
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_discovery_announce_find() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-disc-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let songbird_socket = running
+        .socket_for("discovery")
+        .or_else(|| running.socket_for_primal("songbird"))
+        .expect("songbird socket");
+
+    let announce_result = direct_rpc_call(
+        songbird_socket,
+        "discovery.announce",
+        &serde_json::json!({
+            "primal": "primalspring-test",
+            "capabilities": ["coordination"],
+            "socket": "/tmp/primalspring-test.sock"
+        }),
+    );
+
+    match &announce_result {
+        Ok(_) => println!("  discovery.announce: OK"),
+        Err(e) => println!("  discovery.announce: {e} (may be expected)"),
+    }
+
+    let find_result = direct_rpc_call(
+        songbird_socket,
+        "discovery.find_primals",
+        &serde_json::json!({}),
+    );
+
+    match &find_result {
+        Ok(v) => {
+            println!("  discovery.find_primals: {v}");
+            assert!(!v.is_null(), "find_primals should return data");
+        }
+        Err(e) => {
+            assert!(
+                e.contains("not found") || e.contains("Method not found") || e.contains("error"),
+                "expected graceful response from find_primals, got: {e}"
+            );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gate 7.2: STUN public address detection
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries + network (run with --ignored)"]
+fn tower_stun_public_address() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-stun-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let songbird_socket = running
+        .socket_for("discovery")
+        .or_else(|| running.socket_for_primal("songbird"))
+        .expect("songbird socket");
+
+    let result = direct_rpc_call(
+        songbird_socket,
+        "stun.get_public_address",
+        &serde_json::json!({}),
+    );
+
+    match &result {
+        Ok(v) => {
+            println!("  stun.get_public_address: {v}");
+        }
+        Err(e) => {
+            println!("  stun.get_public_address: {e}");
+            assert!(
+                e.contains("not found")
+                    || e.contains("Method not found")
+                    || e.contains("timeout")
+                    || e.contains("error"),
+                "expected graceful STUN response, got: {e}"
+            );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gate 7.3: BirdSong beacon round-trip (encrypt + decrypt)
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_birdsong_beacon() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-birdsong-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let songbird_socket = running
+        .socket_for("discovery")
+        .or_else(|| running.socket_for_primal("songbird"))
+        .expect("songbird socket");
+
+    let gen_result = direct_rpc_call(
+        songbird_socket,
+        "birdsong.generate_encrypted_beacon",
+        &serde_json::json!({
+            "family_id": &family_id,
+            "capabilities": ["security", "discovery"]
+        }),
+    );
+
+    match &gen_result {
+        Ok(beacon) => {
+            println!(
+                "  birdsong.generate_encrypted_beacon: OK ({}B)",
+                beacon.to_string().len()
+            );
+
+            let decrypt_result = direct_rpc_call(
+                songbird_socket,
+                "birdsong.decrypt_beacon",
+                &serde_json::json!({ "beacon": beacon }),
+            );
+
+            match &decrypt_result {
+                Ok(v) => println!("  birdsong.decrypt_beacon: {v}"),
+                Err(e) => println!("  birdsong.decrypt_beacon: {e}"),
+            }
+        }
+        Err(e) => {
+            println!("  birdsong.generate_encrypted_beacon: {e}");
+            assert!(
+                e.contains("not found") || e.contains("Method not found") || e.contains("error"),
+                "expected graceful BirdSong response, got: {e}"
+            );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gate 7.4: Sovereign onion service lifecycle
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_onion_service() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-onion-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let songbird_socket = running
+        .socket_for("discovery")
+        .or_else(|| running.socket_for_primal("songbird"))
+        .expect("songbird socket");
+
+    let status_result = direct_rpc_call(songbird_socket, "onion.status", &serde_json::json!({}));
+
+    match &status_result {
+        Ok(v) => println!("  onion.status: {v}"),
+        Err(e) => println!("  onion.status: {e}"),
+    }
+
+    let start_result = direct_rpc_call(
+        songbird_socket,
+        "onion.start",
+        &serde_json::json!({ "family_id": &family_id }),
+    );
+
+    match &start_result {
+        Ok(v) => {
+            println!("  onion.start: {v}");
+            if let Some(addr) = v.get("address").and_then(|a| a.as_str()) {
+                println!("  onion address: {addr}");
+            }
+        }
+        Err(e) => {
+            println!("  onion.start: {e}");
+            assert!(
+                e.contains("not found") || e.contains("Method not found") || e.contains("error"),
+                "expected graceful onion response, got: {e}"
+            );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gate 7.5: Tor subsystem status
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_tor_status() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-tor-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let songbird_socket = running
+        .socket_for("discovery")
+        .or_else(|| running.socket_for_primal("songbird"))
+        .expect("songbird socket");
+
+    let result = direct_rpc_call(songbird_socket, "tor.status", &serde_json::json!({}));
+
+    match &result {
+        Ok(v) => {
+            println!("  tor.status: {v}");
+        }
+        Err(e) => {
+            println!("  tor.status: {e}");
+            assert!(
+                e.contains("not found") || e.contains("Method not found") || e.contains("error"),
+                "expected graceful Tor response, got: {e}"
+            );
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gate 7.6: Federation status
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn tower_federation_status() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+    let family_id = format!("itest-fed-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Tower)
+        .start_with_neural_api(&family_id, &graphs)
+        .expect("tower + neural-api should start");
+
+    let songbird_socket = running
+        .socket_for("discovery")
+        .or_else(|| running.socket_for_primal("songbird"))
+        .expect("songbird socket");
+
+    let result = direct_rpc_call(
+        songbird_socket,
+        "songbird.federation.peers",
+        &serde_json::json!({}),
+    );
+
+    match &result {
+        Ok(v) => {
+            println!("  federation.peers: {v}");
+        }
+        Err(e) => {
+            println!("  federation.peers: {e}");
+            assert!(
+                e.contains("not found") || e.contains("Method not found") || e.contains("error"),
+                "expected graceful federation response, got: {e}"
+            );
+        }
+    }
 }

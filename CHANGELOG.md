@@ -3,6 +3,32 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.0] — 2026-03-21
+
+### Added
+- **Tower Full Utilization** — gates 7-11 added: songbird subsystem health, beacon
+  round-trip, Pixel rendezvous, internet reach, petalTongue visualization (24→41 gates)
+- **exp062_tower_subsystem_sweep** — probes all songbird JSON-RPC subsystems (Tor, STUN,
+  BirdSong, Onion, Federation, Discovery) and reports UP/DEGRADED/DOWN per method
+- **exp063_pixel_tower_rendezvous** — replicates Pixel 8a deployment flow: BirdSong beacon
+  generation, encrypt/decrypt round-trip, onion service, STUN public address
+- **exp064_nestgate_internet_reach** — tests full internet deployment paths (HTTPS to
+  api.nestgate.io, STUN, NAT type, onion, Tor) and reports which paths are available
+- **exp065_petaltongue_tower_dashboard** — spawns Tower + petalTongue, sends
+  visualization.render.dashboard and visualization.render.grammar requests
+- 6 new songbird subsystem integration tests: `tower_discovery_announce_find`,
+  `tower_stun_public_address`, `tower_birdsong_beacon`, `tower_onion_service`,
+  `tower_tor_status`, `tower_federation_status`
+- `graphs/tower_full_capability.toml` — complete Tower deploy graph with all subsystem
+  nodes, petalTongue visualization, and optional Squirrel AI
+- petalTongue v1.6.6 built and harvested to `plasmidBin/primals/petaltongue`
+- `[profiles.petaltongue]` in `primal_launch_profiles.toml` (headless server mode)
+- 12 new capabilities in registry: `discovery.announce`, `discovery.find_primals`,
+  `network.stun`, `network.nat_type`, `network.birdsong.beacon`, `network.birdsong.decrypt`,
+  `network.onion.start`, `network.onion.status`, `network.tor.status`,
+  `network.federation.peers`, `visualization.render.dashboard`, `visualization.render.grammar`
+- 44 experiments (40 → 44), 270 tests total (239 unit + 29 integration + 2 doc-tests)
+
 ## [0.4.0] — 2026-03-21
 
 ### Added
