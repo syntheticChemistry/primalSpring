@@ -235,7 +235,56 @@ Remember: complexity through coordination, not coupling.
 
 ---
 
-## 9. Graph-Driven Overlay Composition (v0.7.0)
+## 9. Cross-Architecture Deployment (v0.7.0)
+
+**Key Insight**: Rust's `cargo build --target` produces correct binaries for
+any architecture from a single codebase. Every composition pattern above
+works identically on x86_64 and aarch64 — the coordination logic is
+architecture-agnostic; only the binary needs rebuilding.
+
+### Validated Targets
+
+| Target | Linking | Binary Size | Runs On |
+|--------|---------|-------------|---------|
+| `x86_64-unknown-linux-musl` | static-pie | 3.0 MB | Desktop, server, USB spore |
+| `aarch64-unknown-linux-musl` | static | 2.99 MB | Pixel 8a, ARM server |
+
+### What Changes Per Architecture
+
+Nothing in the coordination or composition logic changes. The only
+architecture-dependent concerns are:
+
+| Concern | x86_64 | aarch64 (Android) |
+|---------|--------|--------------------|
+| Socket transport | Unix filesystem | Abstract sockets (`@name`) |
+| Working directory | `$XDG_RUNTIME_DIR` | `/data/local/tmp/` |
+| Discovery tiers | Standard 5-tier | Explicit env vars (tiers 2-3 unavailable) |
+| Binary format | ELF x86-64, static-pie | ELF aarch64, static |
+
+### Composition on Pixel
+
+The full Tower atomic (beardog + songbird + primalSpring) has been validated
+on Pixel 8a via ADB. The coordination protocol (JSON-RPC 2.0 over socket)
+is identical — only the transport layer (abstract vs filesystem socket) and
+the binary target differ.
+
+For Android deployment, each primal needs:
+- `aarch64-unknown-linux-musl` build (static, stripped)
+- Abstract socket support (`@biomeos/{primal}` namespace)
+- Explicit `FAMILY_ID`, `NODE_ID`, `{PRIMAL}_SOCKET` env vars
+- Writable CWD (`/data/local/tmp/`)
+
+### genomeBin: Architecture-Agnostic Packaging
+
+The genomeBin standard (wateringHole `GENOMEBIN_ARCHITECTURE_STANDARD.md`)
+solves the cross-arch distribution problem: a single `.genome` self-extractor
+embeds binaries for all supported architectures and selects the right one at
+deploy time. See `ECOBIN_GENOMEBIN_EVOLUTION_GUIDANCE_MAR22_2026.md` for the
+evolution roadmap.
+
+---
+
+## 10. Graph-Driven Overlay Composition (v0.7.0)
 
 **Key Insight**: Tier-independent primals (Squirrel, petalTongue, biomeOS) are
 not locked to `FullNucleus`. Any atomic tier can compose them as **optional
@@ -338,7 +387,7 @@ This pattern enables:
 
 ---
 
-## Section 10. Squirrel Free-Roaming Coordination (v0.7.0)
+## 11. Squirrel Free-Roaming Coordination (v0.7.0)
 
 Squirrel is the AI coordinator primal — it moves freely across the
 ecosystem, discovering sibling primals and routing tool/AI/context
@@ -398,3 +447,40 @@ Squirrel discovers all siblings via env vars and can:
 | `squirrel_tool_list_aggregates` | Aggregated tool listing from multiple primals |
 | `squirrel_context_create` | Context management via composition |
 | `squirrel_ai_query_routes_via_songbird` | Cloud AI routing through Songbird |
+
+---
+
+## 12. Expectations for Composed Primals
+
+For any primal to participate in primalSpring-validated compositions, it must
+meet these baseline requirements. primalSpring's integration tests and
+experiments enforce these at runtime.
+
+### JSON-RPC Surface
+
+Every primal must register: `health.liveness`, `health.readiness`,
+`health.check`, `capabilities.list`. primalSpring probes these during
+composition validation — missing methods cause gate failures.
+
+### Discovery
+
+Primals must resolve peers via capability, not identity. No hardcoded peer
+names or socket paths in production code. The 5-tier discovery chain
+(env var → XDG → temp → manifest → Neural API) is the standard; Android
+replaces tiers 2-3 with abstract sockets.
+
+### Build Targets
+
+Both `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-musl` are
+required for ecoBin compliance. `[profile.release] strip = true, lto = true`.
+See `PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` for per-primal compliance.
+
+### Honest Reporting
+
+primalSpring uses `check_skip()` when a primal is absent — never a fake
+pass. Composed primals should follow the same pattern: report what you
+actually observed, not what you hope is true.
+
+---
+
+**License**: AGPL-3.0-or-later

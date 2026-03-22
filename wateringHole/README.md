@@ -235,28 +235,29 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.7.0 | `PRIMALSPRING_V070_GRAPH_OVERLAY_HANDOFF_MAR22_2026.md` | Mar 22 | Graph overlays, Squirrel discovery, graph execution, integration guide for all teams |
+| v0.7.0 | `PRIMALSPRING_V070_HARDWARE_VALIDATION_HANDOFF_MAR22_2026.md` | Mar 22 | Hardware audit: Pixel 8a, USB spores, cross-arch deployment, blockers per team |
+| v0.7.0 | `PRIMALSPRING_V070_GRAPH_OVERLAY_HANDOFF_MAR22_2026.md` | Mar 22 | Graph overlays, Squirrel discovery, graph execution, integration guide |
+| v0.7.0 | `TOADSTOOL_BARRACUDA_V070_HANDOFF_MAR22_2026.md` | Mar 22 | 3 composition tiers, 5 patterns, IPC quirks, evolution path |
 | v0.7.0 | `PROVENANCE_TRIO_HANDOFF_MAR22_2026.md` | Mar 22 | sweetGrass/loamSpine/rhizoCrypt: blocker, required methods, integration path |
-| v0.6.0 | `PRIMALSPRING_V060_NUCLEUS_COMPOSITION_HANDOFF_MAR22_2026.md` | Mar 22 | NUCLEUS validated: Nest + Node atomic layers, 58/58 gates, toadstool/barracuda evolution |
-| v0.5.0 | `TOWER_FULL_UTILIZATION_VALIDATED_MAR21_2026.md` | Mar 21 | Tower 41/41, subsystems, petalTongue, parallel tests |
-| v0.4.0 | `TOWER_STABILITY_SPRINT_MAR21_2026.md` | Mar 21 | Tower 24/24 STABLE, 7 new integration tests, cross-primal capability alignment |
-| v0.4.0 | `TOWER_SQUIRREL_COMPOSITION_MAR21_2026.md` | Mar 21 | Tower + Squirrel AI composition, exp060/061, abstract socket integration |
-| v0.3.7 | `DEPRECATION_CLEANUP_MAR20_2026.md` | Mar 20 | Cross-repo dead code removal: 6,478 lines across beardog, songbird, biomeOS |
-| v0.3.6 | `TOWER_COEVOLUTION_GUIDE.md` | Mar 18 | Tower co-evolution contract: sprint loop, per-team quick wins, timeline |
-| v0.3.5 | Capability audits (6 files) | Mar 18 | BearDog, Songbird, NestGate, ToadStool, Squirrel, biomeOS |
+| v0.7.0 | `ECOBIN_GENOMEBIN_EVOLUTION_GUIDANCE_MAR22_2026.md` | Mar 22 | ecoBin/genomeBin: cross-compile workflow, `cargo genome` roadmap, Android guidance |
+| v0.7.0 | `PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` | Mar 22 | Consolidated primal audit: open items per primal + cross-primal standards |
+| v0.6.0 | `PRIMALSPRING_V060_NUCLEUS_COMPOSITION_HANDOFF_MAR22_2026.md` | Mar 22 | NUCLEUS validated: Nest + Node atomic layers, 58/58 gates (release record) |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.4.0 | `archive/PRIMALSPRING_V040_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR21_2026.md` | Mar 21 | Superseded by v0.6.0 NUCLEUS handoff |
-| v0.3.0 | `archive/PRIMALSPRING_V030_COORDINATION_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | biomeOS coordination absorption |
-| v0.3.0 | `archive/PRIMALSPRING_V030_CAPABILITY_FIRST_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Capability-first architecture |
-| v0.3.0 | `archive/PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_CAPABILITY_HANDOFF_MAR18_2026.md` | Mar 18 | toadStool/barraCuda: capability-based discovery |
-| v0.3.0 | `archive/PRIMALSPRING_V030_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Pre-capability evolution |
-| v0.3.0 | `archive/PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Pre-capability barraCuda handoff |
-| v0.2.0 | `archive/PRIMALSPRING_V020_*` (3 files) | Mar 18 | Ecosystem absorption, compute triangle, barraCuda evolution |
-| v0.1.x | `archive/PRIMALSPRING_V01*` (4 files) | Mar 17–18 | Initial audit, Neural API, deep debt, toadStool coordination |
+| v0.5.0 | `archive/TOWER_FULL_UTILIZATION_VALIDATED_MAR21_2026.md` | Mar 21 | Tower 41/41 milestone |
+| v0.5.0 | `archive/TOWER_FULL_UTILIZATION_HANDOFF_MAR21_2026.md` | Mar 21 | Superseded by VALIDATED version |
+| v0.4.0 | `archive/TOWER_SQUIRREL_COMPOSITION_MAR21_2026.md` | Mar 21 | Superseded by v0.7 overlay composition |
+| v0.4.0 | `archive/TOWER_STABILITY_SPRINT_MAR21_2026.md` | Mar 21 | Superseded by NUCLEUS/v0.7 |
+| v0.4.0 | `archive/PRIMALSPRING_V040_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR21_2026.md` | Mar 21 | Superseded by v0.7 toadStool handoff |
+| v0.3.7 | `archive/DEPRECATION_CLEANUP_MAR20_2026.md` | Mar 20 | Completed sprint: 6,478 lines removed |
+| v0.3.6 | `archive/TOWER_COEVOLUTION_GUIDE.md` | Mar 18 | Superseded by composition/leverage guides |
+| v0.3.5 | `archive/*_CAPABILITY_AUDIT_MAR18_2026.md` (6 files) | Mar 18 | Consolidated into PRIMAL_CAPABILITY_STATUS |
+| v0.3.0 | `archive/PRIMALSPRING_V030_*` (5 files) | Mar 18 | Pre-capability evolution, coordination absorption |
+| v0.2.0 | `archive/PRIMALSPRING_V020_*` (3 files) | Mar 18 | Ecosystem absorption, compute triangle |
+| v0.1.x | `archive/PRIMALSPRING_V01*` (4 files) | Mar 17–18 | Initial audit, Neural API, deep debt |
 
 ## Convention
 

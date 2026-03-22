@@ -98,4 +98,33 @@ probes other nodes by capability and reports composition health.
 
 ---
 
+## Cross-Architecture Leverage
+
+primalSpring is the reference implementation for cross-architecture deployment.
+Every pattern above works identically on `x86_64` and `aarch64`.
+
+### What primalSpring Proves
+
+| Capability | Proven |
+|------------|--------|
+| `aarch64-unknown-linux-musl` cross-compile | 2.99 MB static, runs on Pixel 8a |
+| Full workspace cross-compile (49 experiments + server) | 1.27s incremental |
+| JSON-RPC coordination over abstract sockets | Same protocol, different transport |
+| Zero architecture-specific code | All arch concerns in env/transport config |
+
+### What Other Primals Should Absorb
+
+1. **musl target**: `cargo build --release --target aarch64-unknown-linux-musl`
+2. **Release profile**: `strip = true`, `lto = true` in `[profile.release]`
+3. **Abstract socket support**: `@biomeos/{primal}` for Android deployment
+4. **Env-first config**: `FAMILY_ID`, `NODE_ID`, `{PRIMAL}_SOCKET` — no filesystem assumptions
+
+### Reference Documents
+
+- `PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` — per-primal open items and compliance
+- `ECOBIN_GENOMEBIN_EVOLUTION_GUIDANCE_MAR22_2026.md` — ecoBin/genomeBin evolution roadmap
+- `PRIMALSPRING_V070_HARDWARE_VALIDATION_HANDOFF_MAR22_2026.md` — full hardware audit
+
+---
+
 **License**: AGPL-3.0-or-later
