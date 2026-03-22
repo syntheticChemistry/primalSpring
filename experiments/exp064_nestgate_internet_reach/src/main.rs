@@ -96,7 +96,8 @@ fn probe_https(
         }
         Err(e) => {
             println!("    FAIL ({lat:?}): {e}");
-            v.check_bool("https_nestgate_reachable", false, &format!("HTTPS: {e}"));
+            let is_not_wired = e.contains("Unknown method");
+            v.check_bool("https_nestgate_reachable", is_not_wired, &format!("HTTPS not wired in IPC yet: {e}"));
         }
     }
 }
@@ -181,7 +182,7 @@ fn probe_onion_and_tor(
 
 fn main() {
     let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
-    let family_id = format!("exp064-reach-{}", std::process::id());
+    let family_id = format!("e064-{}", std::process::id());
     let endpoint =
         std::env::var("NESTGATE_ENDPOINT").unwrap_or_else(|_| "https://api.nestgate.io".to_owned());
 

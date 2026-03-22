@@ -119,12 +119,12 @@ const PROBES: &[(&str, &str, &str)] = &[
     (
         "birdsong.generate_encrypted_beacon",
         "birdsong",
-        r#"{"family_id":"sweep-test","capabilities":["security"]}"#,
+        r#"{"family_id":"sweep-test","node_id":"sweep-test","capabilities":["security"]}"#,
     ),
     ("onion.status", "onion", "{}"),
     ("onion.start", "onion", r#"{"family_id":"sweep-test"}"#),
     ("tor.status", "tor", "{}"),
-    ("tor.connect", "tor", r#"{"target":"example.com:443"}"#),
+    ("tor.connect", "tor", r#"{"address":"example.com:443"}"#),
     ("songbird.federation.peers", "federation", "{}"),
     ("songbird.federation.status", "federation", "{}"),
 ];

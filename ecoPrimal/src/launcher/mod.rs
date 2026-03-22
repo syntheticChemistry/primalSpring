@@ -272,6 +272,9 @@ pub struct LaunchProfile {
     /// Extra CLI flags whose values are resolved socket paths.
     #[serde(default)]
     pub cli_sockets: HashMap<String, String>,
+    /// Extra CLI arguments to pass verbatim (e.g. `["--port", "0"]`).
+    #[serde(default)]
+    pub extra_args: Vec<String>,
     /// Env vars to forward from the parent process when set.
     #[serde(default)]
     pub passthrough_env: HashMap<String, bool>,
@@ -414,6 +417,9 @@ pub fn spawn_primal(
             if let Some(resolved) = nucleation.get(socket_ref, family_id) {
                 cmd.arg(flag).arg(resolved);
             }
+        }
+        for arg in &p.extra_args {
+            cmd.arg(arg);
         }
         for (env_name, &enabled) in &p.passthrough_env {
             if enabled {

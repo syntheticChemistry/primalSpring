@@ -1004,6 +1004,7 @@ fn tower_birdsong_beacon() {
         "birdsong.generate_encrypted_beacon",
         &serde_json::json!({
             "family_id": &family_id,
+            "node_id": &family_id,
             "capabilities": ["security", "discovery"]
         }),
     );
@@ -1015,10 +1016,13 @@ fn tower_birdsong_beacon() {
                 beacon.to_string().len()
             );
 
+            let enc_str = beacon.get("encrypted_beacon")
+                .and_then(|v| v.as_str())
+                .unwrap_or_default();
             let decrypt_result = direct_rpc_call(
                 songbird_socket,
                 "birdsong.decrypt_beacon",
-                &serde_json::json!({ "beacon": beacon }),
+                &serde_json::json!({ "encrypted_beacon": enc_str }),
             );
 
             match &decrypt_result {

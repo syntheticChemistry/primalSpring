@@ -64,6 +64,7 @@ fn validate_beacon(
         "birdsong.generate_encrypted_beacon",
         &serde_json::json!({
             "family_id": family_id,
+            "node_id": family_id,
             "capabilities": ["security", "discovery", "network.tls"],
             "device_type": "tower"
         }),
@@ -78,10 +79,13 @@ fn validate_beacon(
                 "BirdSong encrypted beacon generated",
             );
 
+            let enc_str = beacon.get("encrypted_beacon")
+                .and_then(|v| v.as_str())
+                .unwrap_or_default();
             let decrypt = rpc_call(
                 socket,
                 "birdsong.decrypt_beacon",
-                &serde_json::json!({ "beacon": beacon }),
+                &serde_json::json!({ "encrypted_beacon": enc_str }),
             );
             match &decrypt {
                 Ok(plain) => {
@@ -161,7 +165,7 @@ fn validate_connectivity(
 
 fn main() {
     let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
-    let family_id = format!("exp063-rendezvous-{}", std::process::id());
+    let family_id = format!("e063-{}", std::process::id());
 
     ValidationResult::run_experiment(
         "primalSpring Exp063 — Pixel Tower Rendezvous",

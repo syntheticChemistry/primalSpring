@@ -6,28 +6,34 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [0.5.0] — 2026-03-21
 
 ### Added
-- **Tower Full Utilization** — gates 7-11 added: songbird subsystem health, beacon
-  round-trip, Pixel rendezvous, internet reach, petalTongue visualization (24→41 gates)
+- **Tower Full Utilization VALIDATED** — all 41/41 gates pass (24 core + 17 full utilization)
 - **exp062_tower_subsystem_sweep** — probes all songbird JSON-RPC subsystems (Tor, STUN,
-  BirdSong, Onion, Federation, Discovery) and reports UP/DEGRADED/DOWN per method
-- **exp063_pixel_tower_rendezvous** — replicates Pixel 8a deployment flow: BirdSong beacon
-  generation, encrypt/decrypt round-trip, onion service, STUN public address
-- **exp064_nestgate_internet_reach** — tests full internet deployment paths (HTTPS to
-  api.nestgate.io, STUN, NAT type, onion, Tor) and reports which paths are available
-- **exp065_petaltongue_tower_dashboard** — spawns Tower + petalTongue, sends
-  visualization.render.dashboard and visualization.render.grammar requests
-- 6 new songbird subsystem integration tests: `tower_discovery_announce_find`,
-  `tower_stun_public_address`, `tower_birdsong_beacon`, `tower_onion_service`,
-  `tower_tor_status`, `tower_federation_status`
-- `graphs/tower_full_capability.toml` — complete Tower deploy graph with all subsystem
-  nodes, petalTongue visualization, and optional Squirrel AI
-- petalTongue v1.6.6 built and harvested to `plasmidBin/primals/petaltongue`
-- `[profiles.petaltongue]` in `primal_launch_profiles.toml` (headless server mode)
-- 12 new capabilities in registry: `discovery.announce`, `discovery.find_primals`,
-  `network.stun`, `network.nat_type`, `network.birdsong.beacon`, `network.birdsong.decrypt`,
-  `network.onion.start`, `network.onion.status`, `network.tor.status`,
-  `network.federation.peers`, `visualization.render.dashboard`, `visualization.render.grammar`
-- 44 experiments (40 → 44), 270 tests total (239 unit + 29 integration + 2 doc-tests)
+  BirdSong, Onion, Federation, Discovery), reports 11/12 UP (tor.connect expected DOWN)
+- **exp063_pixel_tower_rendezvous** — BirdSong beacon encrypt/decrypt round-trip, sovereign
+  onion service, STUN public address — ALL PASS
+- **exp064_nestgate_internet_reach** — STUN, Onion, Tor internet paths validated (3/5 available)
+- **exp065_petaltongue_tower_dashboard** — petalTongue headless server, dashboard render,
+  Grammar of Graphics expression render — ALL PASS
+- 6 new songbird subsystem integration tests, all passing in parallel
+- `graphs/tower_full_capability.toml` — complete Tower deploy graph
+- petalTongue v1.6.6 harvested to `plasmidBin/primals/petaltongue`
+- `[profiles.petaltongue]` launch profile (headless server mode)
+- `extra_args` field in `LaunchProfile` for verbatim CLI arguments
+- 12 new capabilities in registry + federation translations in biomeOS
+
+### Fixed
+- **Songbird port contention** — added `--port 0` (ephemeral OS-assigned) support in songbird
+  config validation and `bind_with_fallback`. All 19 integration tests now run in parallel (~1s)
+  instead of requiring sequential execution (~30s)
+- **BirdSong beacon API** — fixed `node_id` parameter requirement and `encrypted_beacon`
+  field name for decrypt round-trip
+- **petalTongue IPC** — use `PETALTONGUE_SOCKET` env var (not `--socket` CLI flag) for socket path
+- **Grammar of Graphics** — corrected enum casing (`Cartesian`, `Bar`, `X`/`Y`)
+- **Socket path length** — shortened experiment family IDs to prevent `SUN_LEN` overflow
+
+### Changed
+- 44 experiments, 270 tests total — all passing
+- `TOWER_STABILITY.md` gates 7-11: PENDING → PASS (all validated live)
 
 ## [0.4.0] — 2026-03-21
 

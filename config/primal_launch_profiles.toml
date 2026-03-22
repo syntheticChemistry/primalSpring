@@ -35,12 +35,14 @@ OPENAI_API_KEY = true
 
 [profiles.songbird]
 pass_family_id = false
+extra_args = ["--port", "0"]
 [profiles.songbird.cli_sockets]
 "--beardog-socket" = "beardog"
 [profiles.songbird.extra_env]
 BEARDOG_MODE = "direct"
 SONGBIRD_SECURITY_PROVIDER = "beardog"
 SONGBIRD_DATA_DIR = "$base_dir"
+SONGBIRD_DISCOVERY_MODE = "disabled"
 [profiles.songbird.env_sockets]
 BEARDOG_SOCKET = "beardog"
 FAMILY_ID = "$family_id"

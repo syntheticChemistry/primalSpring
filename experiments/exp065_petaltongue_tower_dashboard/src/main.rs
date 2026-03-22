@@ -73,9 +73,9 @@ fn spawn_petaltongue(
 
     let mut cmd = std::process::Command::new(binary);
     cmd.arg("server");
-    cmd.arg("--socket").arg(&socket);
     cmd.env("FAMILY_ID", family_id);
     cmd.env("XDG_RUNTIME_DIR", nucleation.base_dir());
+    cmd.env("PETALTONGUE_SOCKET", &socket);
     cmd.stdout(std::process::Stdio::piped());
     cmd.stderr(std::process::Stdio::piped());
 
@@ -116,14 +116,19 @@ fn validate_dashboard(
         pt_socket,
         "visualization.render.dashboard",
         &serde_json::json!({
+            "session_id": family_id,
             "title": "Tower Atomic Health",
-            "family_id": family_id,
-            "panels": [{
-                "type": "table",
-                "title": "Primal Status",
-                "data": tower_health
+            "bindings": [{
+                "channel_type": "bar",
+                "id": "primal_status",
+                "label": "Primal Status",
+                "x_label": "Primal",
+                "y_label": "Health",
+                "categories": ["beardog", "songbird"],
+                "values": [1.0, 1.0],
+                "unit": "status"
             }],
-            "format": "json"
+            "modality": "description"
         }),
     );
 
@@ -146,16 +151,26 @@ fn validate_dashboard(
         pt_socket,
         "visualization.render.grammar",
         &serde_json::json!({
-            "spec": {
-                "data": tower_health,
-                "mark": "bar",
-                "encoding": {
-                    "x": { "field": "primal", "type": "nominal" },
-                    "y": { "field": "status", "type": "nominal" },
-                    "color": { "field": "status", "type": "nominal" }
-                }
+            "session_id": family_id,
+            "grammar": {
+                "data_source": "tower_health",
+                "variables": [
+                    { "name": "x", "role": "X", "field": "primal" },
+                    { "name": "y", "role": "Y", "field": "status" }
+                ],
+                "geometry": "Bar",
+                "scales": [],
+                "coordinate": "Cartesian",
+                "facets": null,
+                "aesthetics": [],
+                "title": "Tower Health",
+                "domain": "health"
             },
-            "format": "svg"
+            "data": [
+                { "primal": "beardog", "status": 1 },
+                { "primal": "songbird", "status": 1 }
+            ],
+            "modality": "description"
         }),
     );
 
@@ -182,7 +197,7 @@ fn validate_dashboard(
 
 fn main() {
     let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
-    let family_id = format!("exp065-viz-{}", std::process::id());
+    let family_id = format!("e065-{}", std::process::id());
 
     ValidationResult::run_experiment(
         "primalSpring Exp065 — petalTongue Tower Dashboard",
