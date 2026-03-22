@@ -3,3 +3,5 @@ audit.log
 ecoPrimal/audit.log
 sqlite:/
 ecoPrimal/sqlite:/
+data/
+ecoPrimal/data/

@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.4.0 (Phase 4 — Tower STABLE 24/24, Squirrel AI composition validated, 264 tests, 40 experiments)  
+**Version**: 0.6.0 (Phase 6 — NUCLEUS COMPOSITION VALIDATED 58/58, Tower + Nest + Node, 282 tests, 47 experiments)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 21, 2026
+**Last Updated**: March 22, 2026
 
 ---
 
@@ -37,8 +37,8 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **264** (239 unit + 23 integration + 2 doc-tests), 15 ignored (live) |
-| Experiments | 40 (8 tracks) |
+| Tests | **282** (239 unit + 31 integration + 2 doc-tests + 10 ignored) |
+| Experiments | 47 (8 tracks) |
 | Proptest fuzz tests | 15 |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
@@ -50,9 +50,12 @@ primalSpring fills the gap.
 | Discovery | **Capability-first**: `discover_by_capability()` + 5-tier + Neural API |
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
-| Niche self-knowledge | `niche.rs` — 25 capabilities, semantic mappings, cost estimates |
-| Meta-validator | `validate_all` binary — runs all 40 experiments |
-| Tower Atomic | **STABLE** — 24/24 gates passing |
+| Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
+| Meta-validator | `validate_all` binary — runs all 47 experiments |
+| Tower Atomic | **STABLE** — 41/41 gates passing (core + full utilization) |
+| Nest Atomic | **VALIDATED** — nestgate storage (8/8 gates) |
+| Node Atomic | **VALIDATED** — toadstool compute (5/5 gates) |
+| NUCLEUS | **VALIDATED** — Tower + Nest + Node (58/58 total gates) |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 
 ### Key Capabilities
@@ -82,7 +85,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (8 Tracks, 40 Experiments)
+## Track Structure (8 Tracks, 47 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -171,7 +174,7 @@ Early coordination patterns extracted from phase1/ and phase2/ primal showcases.
 | 058 | Semantic attribution | Module/feature/function tracking + fair credit |
 | 059 | Weak force isolation | Zero leakage with unknown primals |
 
-### Track 8: Live Composition (exp060–061)
+### Track 8: Live Composition (exp060–068)
 
 Live multi-primal composition with real primals from `plasmidBin`.
 
@@ -179,6 +182,13 @@ Live multi-primal composition with real primals from `plasmidBin`.
 |-----|------|---------|--------|
 | 060 | biomeOS Tower deploy | beardog + songbird via neural-api-server bootstrap graph | **Live validated** |
 | 061 | Squirrel AI composition | Tower + Squirrel + Anthropic Claude `ai.query` | **Live validated** |
+| 062 | Subsystem sweep | songbird JSON-RPC subsystems (11/12 UP) | **Live validated** |
+| 063 | Pixel rendezvous | BirdSong beacon encrypt/decrypt round-trip | **Live validated** |
+| 064 | Internet reach | STUN, Onion, Tor paths | **Live validated** |
+| 065 | petalTongue dashboard | Dashboard + Grammar of Graphics rendering | **Live validated** |
+| 066 | Nest Atomic | nestgate storage: store/retrieve/list/model cache (13/13) | **Live validated** |
+| 067 | Node Atomic | toadstool compute: health, capabilities, version (13/13) | **Live validated** |
+| 068 | Full NUCLEUS | Tower + Nest + Node composing together (16/16) | **Live validated** |
 
 ---
 
@@ -219,35 +229,26 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.4.0 | `PRIMALSPRING_V040_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR21_2026.md` | Mar 21 | toadStool/barraCuda evolution: Node Atomic gate definitions, passthrough_env, learnings |
+| v0.6.0 | `PRIMALSPRING_V060_NUCLEUS_COMPOSITION_HANDOFF_MAR22_2026.md` | Mar 22 | NUCLEUS validated: Nest + Node atomic layers, 58/58 gates, toadstool/barracuda evolution |
+| v0.5.0 | `TOWER_FULL_UTILIZATION_VALIDATED_MAR21_2026.md` | Mar 21 | Tower 41/41, subsystems, petalTongue, parallel tests |
 | v0.4.0 | `TOWER_STABILITY_SPRINT_MAR21_2026.md` | Mar 21 | Tower 24/24 STABLE, 7 new integration tests, cross-primal capability alignment |
 | v0.4.0 | `TOWER_SQUIRREL_COMPOSITION_MAR21_2026.md` | Mar 21 | Tower + Squirrel AI composition, exp060/061, abstract socket integration |
 | v0.3.7 | `DEPRECATION_CLEANUP_MAR20_2026.md` | Mar 20 | Cross-repo dead code removal: 6,478 lines across beardog, songbird, biomeOS |
 | v0.3.6 | `TOWER_COEVOLUTION_GUIDE.md` | Mar 18 | Tower co-evolution contract: sprint loop, per-team quick wins, timeline |
-| v0.3.5 | `BEARDOG_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | BearDog: method naming, health.liveness, bare crypto aliases, TLS blocker |
-| v0.3.5 | `SONGBIRD_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | Songbird: BeardogCryptoClient, TLS X25519 path, Neural API routing |
-| v0.3.5 | `NESTGATE_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | NestGate: health/caps methods, beardog socket defaults, 4-tier discovery |
-| v0.3.5 | `TOADSTOOL_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | ToadStool: showcase examples, health/caps methods |
-| v0.3.5 | `SQUIRREL_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | Squirrel: gold standard, beardog auth fallbacks |
-| v0.3.5 | `BIOMEOS_CAPABILITY_AUDIT_MAR18_2026.md` | Mar 18 | biomeOS: DirectBeardogCaller, Neural API dogfooding, registry gaps |
-| v0.3.0 | `PRIMALSPRING_V030_COORDINATION_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | biomeOS coordination absorption: launcher, harness, live atomic tests |
-| v0.3.0 | `PRIMALSPRING_V030_CAPABILITY_FIRST_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Capability-first architecture, topological waves |
-| v0.3.0 | `PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_CAPABILITY_HANDOFF_MAR18_2026.md` | Mar 18 | toadStool/barraCuda: capability-based discovery, graph conventions |
+| v0.3.5 | Capability audits (6 files) | Mar 18 | BearDog, Songbird, NestGate, ToadStool, Squirrel, biomeOS |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.3.0 | `archive/PRIMALSPRING_V030_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Pre-capability evolution (superseded) |
-| v0.3.0 | `archive/PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Pre-capability barraCuda handoff (superseded) |
-| v0.2.0 | `archive/PRIMALSPRING_V020_ECOSYSTEM_ABSORPTION_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Ecosystem absorption: IPC resilience, niche, deploy |
-| v0.2.0 | `archive/PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_COMPUTE_TRIANGLE_HANDOFF_MAR18_2026.md` | Mar 18 | Compute triangle coordination |
-| v0.2.0 | `archive/PRIMALSPRING_V020_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | barraCuda evolution |
-| v0.1.1 | `archive/PRIMALSPRING_V011_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | IPC resilience absorption |
-| v0.1.0 | `archive/PRIMALSPRING_V010_NEURAL_API_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Neural API integration |
-| v0.1.0 | `archive/PRIMALSPRING_V010_DEEP_DEBT_AUDIT_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Deep debt audit |
-| v0.1.0 | `archive/PRIMALSPRING_V010_COMPREHENSIVE_AUDIT_EVOLUTION_HANDOFF_MAR17_2026.md` | Mar 17 | Initial audit |
-| v0.1.0 | `archive/PRIMALSPRING_V010_TOADSTOOL_BARRACUDA_COORDINATION_HANDOFF_MAR17_2026.md` | Mar 17 | toadStool/barraCuda coordination |
+| v0.4.0 | `archive/PRIMALSPRING_V040_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR21_2026.md` | Mar 21 | Superseded by v0.6.0 NUCLEUS handoff |
+| v0.3.0 | `archive/PRIMALSPRING_V030_COORDINATION_ABSORPTION_HANDOFF_MAR18_2026.md` | Mar 18 | biomeOS coordination absorption |
+| v0.3.0 | `archive/PRIMALSPRING_V030_CAPABILITY_FIRST_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Capability-first architecture |
+| v0.3.0 | `archive/PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_CAPABILITY_HANDOFF_MAR18_2026.md` | Mar 18 | toadStool/barraCuda: capability-based discovery |
+| v0.3.0 | `archive/PRIMALSPRING_V030_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Pre-capability evolution |
+| v0.3.0 | `archive/PRIMALSPRING_V030_TOADSTOOL_BARRACUDA_EVOLUTION_HANDOFF_MAR18_2026.md` | Mar 18 | Pre-capability barraCuda handoff |
+| v0.2.0 | `archive/PRIMALSPRING_V020_*` (3 files) | Mar 18 | Ecosystem absorption, compute triangle, barraCuda evolution |
+| v0.1.x | `archive/PRIMALSPRING_V01*` (4 files) | Mar 17–18 | Initial audit, Neural API, deep debt, toadStool coordination |
 
 ## Convention
 

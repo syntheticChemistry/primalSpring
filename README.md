@@ -5,11 +5,12 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, bonding |
-| **Version** | 0.5.0 |
+| **Version** | 0.6.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 270 (239 unit + 29 integration + 2 doc-tests) |
-| **Experiments** | 44 (8 tracks) |
+| **Tests** | 282 (239 unit + 31 integration + 2 doc-tests + 10 ignored) |
+| **Experiments** | 47 (8 tracks) |
+| **Compositions** | Tower + Nest + Node + NUCLEUS (58/58 gates) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -47,10 +48,10 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   └── validate_all/          # Meta-validator: runs all 38 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 47 experiments
 │   └── tests/
-│       └── server_integration.rs  # 16 tests (10 + 3 live atomic + 3 neural API)
-├── experiments/                   # 38 validation experiments (7 tracks)
+│       └── server_integration.rs  # 41 tests (10 auto + 31 live atomic/Nest/Node/NUCLEUS)
+├── experiments/                   # 47 validation experiments (8 tracks)
 ├── config/                        # Launch profiles (primal_launch_profiles.toml)
 ├── graphs/                        # 11 biomeOS deploy graph TOMLs (all by_capability)
 ├── niches/                        # BYOB niche deployment YAML
@@ -82,13 +83,13 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 270 tests (249 auto + 21 ignored live tests)
+# Run all 282 tests (251 auto + 31 ignored live tests)
 cargo test --workspace
 
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 44 experiments (meta-validator)
+# Run all 47 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)

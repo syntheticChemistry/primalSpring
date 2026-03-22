@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: March 21, 2026
-**Status**: Phase 4 — Tower STABLE (24/24 gates), Squirrel AI composition, 264 tests, 40 experiments
+**Status**: Phase 6 — NUCLEUS COMPOSITION VALIDATED (58/58 gates), 282 tests, 47 experiments
 
 ---
 
@@ -42,14 +42,14 @@ an optional track. Every experiment involves multiple primals or springs.
 | check_skip / check_or_skip | Referenced by all spring experiment patterns |
 | 4-format capability parsing | Converged implementation used as reference |
 | Deploy graph structural + topological validation | 11 TOML graphs, all `by_capability`, topological waves |
-| Coordination experiment framework | 40 experiments across 8 tracks |
+| Coordination experiment framework | 47 experiments across 8 tracks |
 | MCP coordination tools | Available for Squirrel AI routing |
 | Tower + Squirrel AI composition | Live demo: Tower + Squirrel + Anthropic Claude (exp061) |
 | `passthrough_env` pattern | Secure env forwarding for API keys, GPU config vars |
 | `PrimalProcess::from_parts()` | Custom spawn for primals with non-standard transports |
 | Abstract socket integration | Squirrel Universal Transport on Linux abstract namespace |
 
-## Ecosystem State (March 18, 2026)
+## Ecosystem State (March 22, 2026)
 
 | Spring | Version | Tests | Key Absorption |
 |--------|---------|-------|----------------|
@@ -60,7 +60,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, provenance registry |
 | healthSpring | V37 | 706 | 18 proptest IPC fuzz, MCP tools |
 | ludoSpring | V14 | 187 | with_provenance(), 93.2% coverage |
-| primalSpring | v0.4.0 | 264 | Tower STABLE 24/24, Squirrel AI composition, 40 experiments, 25 capabilities |
+| primalSpring | v0.6.0 | 282 | NUCLEUS VALIDATED 58/58, Tower+Nest+Node, 47 experiments, 37 capabilities |
 
 ## Evolution Path
 
@@ -113,12 +113,20 @@ Phase 4.5 (done): Squirrel AI Composition (March 21, 2026)
   → passthrough_env for API key forwarding, abstract socket support
   → 264 tests (239 unit + 23 integration + 2 doc-tests), 15 ignored (live)
 
-Phase 5: Nest Atomic (Tower + NestGate)
-  → Storage gates, NestGate lifecycle integration
-Phase 6: Node Atomic (Nest + ToadStool)
-  → Compute gates, toadStool capability registration
-Phase 7: Full NUCLEUS (Track 1, exp004)
-  → All primals deployed and validated
+Phase 5 (done): Tower Full Utilization (March 21, 2026)
+  → 41/41 Tower gates (24 core + 17 full utilization)
+  → songbird subsystems, Pixel rendezvous, internet reach, petalTongue viz
+  → exp062-065, 270 tests, 44 experiments
+
+Phase 6 (done): NUCLEUS Composition (March 22, 2026)
+  → Nest Atomic: nestgate storage (8/8 gates, ZFS fallback, store/retrieve)
+  → Node Atomic: toadstool compute (5/5 gates, dual-protocol, 4 workloads)
+  → NUCLEUS: Tower + Nest + Node compose together (58/58 total)
+  → exp066-068, 282 tests, 47 experiments, 31 integration tests in parallel
+  → Harness: subcommand, jsonrpc_socket_suffix, env_sockets, remap()
+
+Phase 7: Full NUCLEUS (+ Squirrel + provenance trio)
+  → AI coordination + provenance gates
 Phase 8: Graph execution (Track 2)
   → All 5 coordination patterns with real primals
 Phase 9: Emergent systems (Track 3)

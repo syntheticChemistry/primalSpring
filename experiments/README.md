@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**40 experiments across 8 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**47 experiments across 8 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -13,12 +13,12 @@ Every experiment uses the shared validation harness (`check_bool`, `check_skip`,
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 40 experiments.
+across all 47 experiments.
 
 ## Running
 
 ```bash
-# Run all 40 experiments via meta-validator
+# Run all 47 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -39,7 +39,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 5 | coralForge | (exp025) | Discovery wired |
 | 6 | Cross-Spring | exp040–044 | Discovery wired |
 | 7 | Showcase-Mined | exp050–059 | Discovery wired |
-| 8 | Live Composition | exp060–061 | **Live validated** (Tower + Squirrel AI) |
+| 8 | Live Composition | exp060–068 | **Live validated** (Tower + Squirrel AI + Nest + Node + NUCLEUS) |
 
 ## Experiment Status Key
 
@@ -56,8 +56,9 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 2→3 | Deep debt + MCP + provenance | Done (v0.3.0-dev) |
 | 3 | Capability-first architecture | Done (v0.3.0) |
 | 4 | Tower Atomic + Squirrel AI live | Done (v0.4.0) |
-| 5 | Nest Atomic + Node Atomic | Next |
-| 6+ | Full NUCLEUS, graph execution, emergent, bonding | Planned |
+| 5 | Tower Full Utilization | Done (v0.5.0) |
+| 6 | Nest Atomic + Node Atomic + NUCLEUS | Done (v0.6.0) |
+| 7+ | Graph execution, emergent, bonding live | Planned |
 
 ## Validation Harness
 
@@ -75,7 +76,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.4.0, depends on ecoPrimal
+├── Cargo.toml    # version 0.6.0, depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```
