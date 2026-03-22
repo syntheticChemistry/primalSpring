@@ -41,7 +41,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | ValidationSink trait | groundSpring V116, rhizoCrypt v0.13 |
 | check_skip / check_or_skip | Referenced by all spring experiment patterns |
 | 4-format capability parsing | Converged implementation used as reference |
-| Deploy graph structural + topological validation | 16 TOML graphs, all `by_capability`, topological waves |
+| Deploy graph structural + topological validation | 18 TOML graphs, all `by_capability`, topological waves |
 | Graph-driven overlay composition | Tier-independent primals via deploy graph overlays |
 | Graph merge/compose | Base + overlay graph merging for runtime composition |
 | Squirrel cross-primal env_sockets wiring | Explicit `{CAPABILITY}_PROVIDER_SOCKET` env vars for fast discovery |
@@ -140,7 +140,7 @@ Phase 7 (done): Graph-Driven Overlay Composition (March 22, 2026)
   → merge_graphs() for base + overlay composition
   → 11 new integration tests (4 structural + 7 live overlay)
   → exp069: 25/25 overlay checks pass
-  → 72/72 total gates, 249+ tests, 48 experiments
+  → 87/87 total gates, 253+ tests, 49 experiments
 
 Phase 8 (done): Squirrel Cross-Primal Discovery (March 22, 2026)
   → Squirrel env_sockets wiring: 9 capability provider socket mappings

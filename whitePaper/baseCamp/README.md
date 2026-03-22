@@ -114,6 +114,26 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 
 See `specs/TOWER_STABILITY.md` for the full 87-gate acceptance criteria.
 
+## Hardware Validation (March 22, 2026)
+
+primalSpring validated against physical hardware: Pixel 8a (aarch64), 3 USB
+spores (biomeOS1, LiveSpore, ColdSpore), and SoloKey 2.
+
+| Target | Result |
+|--------|--------|
+| aarch64-unknown-linux-musl cross-compile | primalspring 0.7.0 runs on Pixel |
+| Pixel primal execution | beardog 0.9.0, songbird 3.33.0, squirrel 0.1.0, toadstool 0.1.0, nestgate 2.1.0 all execute |
+| USB primal execution | 5/6 primals run (nestgate has corrupt static build on USB) |
+| Host validate_all | 47/49 pass (exp060/061 blocked by external primal socket timeouts) |
+| genomeBin packages | Zero .genome self-extractors exist; raw binaries only |
+| plasmidBin aarch64 | Missing; only x86_64 in ecosystem plasmidBin |
+
+**Blockers for full Pixel atomic deployment:**
+- BearDog v0.9.0 abstract socket regression (Android SELinux blocks filesystem sockets)
+- No aarch64 binaries in ecosystem plasmidBin (all x86_64)
+- nestgate USB build corrupted (segfault, needs rebuild)
+- No biomeOS orchestrator binary on Pixel
+
 ## What Remains
 
 - **Provenance trio binaries** — blocked on `provenance-trio-types` shared crate
@@ -121,6 +141,9 @@ See `specs/TOWER_STABILITY.md` for the full 87-gate acceptance criteria.
 - Emergent system experiments (Track 3) — awaiting provenance trio
 - Protocol escalation (JSON-RPC -> tarpc sidecar)
 - biomeOS self-composition (biomeOS composes its own graphs at runtime)
+- **ecoBin compliance**: rebuild all primals as static musl for both x86_64 and aarch64
+- **genomeBin packaging**: run sourDough to produce actual .genome self-extractors
+- **beardog Android socket**: fix abstract socket regression for Pixel deployment
 
 ---
 

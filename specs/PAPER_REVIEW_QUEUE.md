@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: March 22, 2026  
-**Status**: Phase 7 — 48 experiments, 8 tracks, GRAPH OVERLAY COMPOSITION (72/72 gates), 249+ tests
+**Status**: Phase 10 — 49 experiments, 8 tracks, GRAPH EXECUTION + PROVENANCE READINESS (87/87 gates), 253+ tests
 
 ---
 
@@ -48,9 +48,10 @@ produces. The review queue tracks which patterns are ready for validation.
 | P3 | Semantic attribution | 7 | Discovery wired | sweetGrass |
 | P3 | Weak force isolation | 7 | Discovery wired | Unknown primals |
 
-## Next Steps
+## Next Steps (Post Phase 10)
 
-1. Phase 7: Full NUCLEUS (+ Squirrel AI + provenance trio) — AI coordination gates
-2. Phase 8: Graph execution with real primals (Track 2, all 5 patterns)
-3. Phase 9: Emergent systems end-to-end (Track 3, RootPulse, coralForge)
-4. Phase 10–12: Bonding, cross-spring, showcase-mined patterns validated
+1. **Provenance trio live** — sweetGrass, loamSpine, rhizoCrypt integration (awaiting provenance-trio-types crate)
+2. **Pipeline + Continuous graph execution** — exp013/014 (Track 2, remaining 2/5 patterns)
+3. **Emergent systems end-to-end** — Track 3 (RootPulse, coralForge) with real provenance trio
+4. **Cross-arch deployment** — aarch64 musl binaries + genomeBin packaging (see hardware validation handoff)
+5. **Bonding + cross-spring + showcase** — Track 4/6/7 patterns with full NUCLEUS compositions

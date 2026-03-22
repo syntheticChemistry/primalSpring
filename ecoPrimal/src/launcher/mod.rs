@@ -464,33 +464,9 @@ pub fn spawn_primal(
 
     let relay_handle = relay_output(&mut child, primal);
 
-    // Some primals (e.g. toadstool) create a JSON-RPC socket at a different
-    // path than the primary (tarpc) socket. Wait for the JSON-RPC socket and
-    // remap nucleation to point to it.
-    let wait_path = if let Some(suffix) = profile.and_then(|p| p.jsonrpc_socket_suffix.as_deref()) {
-        let base = socket_path.to_string_lossy();
-        PathBuf::from(base.replace(".sock", suffix))
-    } else {
-        socket_path.clone()
-    };
-
-    let timeout = Duration::from_secs(30);
-    if !wait_for_socket(&wait_path, timeout) {
-        let _ = child.kill();
-        let _ = child.wait();
-        return Err(LaunchError::SocketTimeout {
-            primal: primal.to_owned(),
-            socket: wait_path,
-            waited: timeout,
-        });
-    }
-
-    let effective_socket = if wait_path != socket_path {
-        nucleation.remap(primal, family_id, wait_path.clone());
-        wait_path
-    } else {
-        socket_path.clone()
-    };
+    let effective_socket = await_socket_ready(
+        primal, family_id, profile, socket_path, nucleation, &mut child,
+    )?;
 
     println!(
         "[launcher] {primal} ready at {} (pid {})",
@@ -504,6 +480,46 @@ pub fn spawn_primal(
         child,
         _relay_handle: Some(relay_handle),
     })
+}
+
+/// Wait for the primal's JSON-RPC socket to appear and resolve the effective
+/// socket path. Some primals (e.g. toadstool) expose a JSON-RPC socket at a
+/// suffix-derived path separate from the primary tarpc socket.
+fn await_socket_ready(
+    primal: &str,
+    family_id: &str,
+    profile: Option<&LaunchProfile>,
+    socket_path: PathBuf,
+    nucleation: &mut SocketNucleation,
+    child: &mut std::process::Child,
+) -> Result<PathBuf, LaunchError> {
+    let wait_path = profile
+        .and_then(|p| p.jsonrpc_socket_suffix.as_deref())
+        .map_or_else(
+            || socket_path.clone(),
+            |suffix| {
+                let base = socket_path.to_string_lossy();
+                PathBuf::from(base.replace(".sock", suffix))
+            },
+        );
+
+    let timeout = Duration::from_secs(30);
+    if !wait_for_socket(&wait_path, timeout) {
+        let _ = child.kill();
+        let _ = child.wait();
+        return Err(LaunchError::SocketTimeout {
+            primal: primal.to_owned(),
+            socket: wait_path,
+            waited: timeout,
+        });
+    }
+
+    if wait_path == socket_path {
+        Ok(socket_path)
+    } else {
+        nucleation.remap(primal, family_id, wait_path.clone());
+        Ok(wait_path)
+    }
 }
 
 /// Spawn the biomeOS Neural API server.

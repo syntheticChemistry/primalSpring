@@ -1,7 +1,7 @@
 # primalSpring — Ecosystem Leverage Guide
 
-**Date**: March 18, 2026
-**Version**: v0.3.0-dev
+**Date**: March 22, 2026
+**Version**: v0.7.0
 **License**: AGPL-3.0-or-later
 
 ---
@@ -20,7 +20,7 @@ can absorb or compose against.
 | **Deploy graph validation** | `graph.list` / `graph.validate` RPC | CI: ensure deploy TOMLs are structurally valid |
 | **Health probing** | `health.liveness` / `health.readiness` | Kubernetes-style health checks |
 | **MCP tool discovery** | `mcp.tools.list` | Squirrel AI routes coordination requests |
-| **Meta-validation** | `cargo run --bin validate_all` | Run all 38 experiments in sequence |
+| **Meta-validation** | `cargo run --bin validate_all` | Run all 49 experiments in sequence |
 
 ### Library Patterns to Absorb
 
@@ -91,7 +91,7 @@ can absorb or compose against.
 
 ### As a biomeOS Graph Node
 
-primalSpring ships 11 deploy graph TOMLs (all nodes declare `by_capability`).
+primalSpring ships 18 deploy graph TOMLs (all nodes declare `by_capability`).
 biomeOS orchestrates the niche directly from these graphs. `topological_waves()`
 computes startup ordering. primalSpring participates as a validator node that
 probes other nodes by capability and reports composition health.

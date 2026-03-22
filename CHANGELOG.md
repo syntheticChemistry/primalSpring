@@ -145,7 +145,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Version drift (Cargo.toml 0.2.0 → 0.4.0 across all workspace members)
 - `.gitignore` now excludes `audit.log` and `sqlite:/` test artifacts
 
-## [Unreleased] — v0.3.0
+## [0.3.0] — 2026-03-18
 
 ### Added
 - **Live Atomic Harness** — absorbed primal coordination from biomeOS, ported to pure

@@ -1,0 +1,4 @@
+[alias]
+# Requires cargo-llvm-cov (https://github.com/taiki-e/cargo-llvm-cov) and
+# `rustup component add llvm-tools-preview`. 70% line coverage baseline; raise toward 90% once stable.
+coverage = "llvm-cov --workspace --ignore-filename-regex tests/ --fail-under-lines 70"

@@ -128,7 +128,7 @@ primalSpring now validates 3 of the 5 coordination patterns live:
 - [ ] Binary in `plasmidBin/primals/` (or buildable from source)
 - [ ] Launch profile in `config/primal_launch_profiles.toml`
 - [ ] At least one deploy graph references your primal
-- [ ] Integration test in `ecoPrimal/tests/server_integration.rs`
+- [ ] Integration test in `ecoPrimal/tests/server_ecosystem_compose.rs`
 
 ---
 
@@ -138,7 +138,7 @@ primalSpring now validates 3 of the 5 coordination patterns live:
 |------|---------|
 | `config/primal_launch_profiles.toml` | How the harness launches each primal |
 | `graphs/*.toml` | All 19 deploy graph definitions |
-| `ecoPrimal/src/deploy.rs` | Graph parsing, validation, merge |
+| `ecoPrimal/src/deploy/` | Graph parsing, validation, merge |
 | `ecoPrimal/src/harness/mod.rs` | Composition orchestration (AtomicHarness) |
 | `ecoPrimal/src/launcher/mod.rs` | Binary discovery, spawn, socket nucleation |
 | `ecoPrimal/src/ipc/client.rs` | PrimalClient for JSON-RPC calls |

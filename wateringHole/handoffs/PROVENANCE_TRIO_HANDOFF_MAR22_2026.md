@@ -166,7 +166,7 @@ traceable, and attributable.
 | `config/primal_launch_profiles.toml` | Launch profiles for all primals including trio |
 | `graphs/provenance_overlay.toml` | Deploy graph ready for trio |
 | `ecoPrimal/src/harness/mod.rs` | Graph-driven composition harness |
-| `ecoPrimal/src/deploy.rs` | Deploy graph parsing + validation |
+| `ecoPrimal/src/deploy/` | Deploy graph parsing + validation |
 
 ---
 

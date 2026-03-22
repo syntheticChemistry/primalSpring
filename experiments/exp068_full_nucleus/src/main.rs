@@ -19,19 +19,16 @@ fn rpc(socket: &std::path::Path, primal: &str, method: &str, params: &serde_json
     Ok(resp.result.unwrap_or(serde_json::Value::Null))
 }
 
-fn main() {
-    let mut v = ValidationResult::new("exp068_full_nucleus");
-
-    let primals = AtomicType::FullNucleus.required_primals();
-    v.check_minimum("nucleus_required_primals", primals.len(), 5);
-
+fn validate_tower(v: &mut ValidationResult) {
     println!("\n=== Tower Atomic ===");
     let tower_fam = format!("exp068t-{}", std::process::id());
     match AtomicHarness::new(AtomicType::Tower).start(&tower_fam) {
-        Ok(r) => { v.check_bool("tower_start", true, "Tower started"); r.validate(&mut v); }
+        Ok(r) => { v.check_bool("tower_start", true, "Tower started"); r.validate(v); }
         Err(e) => v.check_bool("tower_start", false, &format!("{e}")),
     }
+}
 
+fn validate_nest(v: &mut ValidationResult) {
     println!("\n=== Nest Atomic ===");
     let nest_fam = format!("exp068n-{}", std::process::id());
     match AtomicHarness::new(AtomicType::Nest).start(&nest_fam) {
@@ -49,7 +46,9 @@ fn main() {
         }
         Err(e) => v.check_bool("nest_start", false, &format!("{e}")),
     }
+}
 
+fn validate_node(v: &mut ValidationResult) {
     println!("\n=== Node Atomic ===");
     let node_fam = format!("exp068d-{}", std::process::id());
     match AtomicHarness::new(AtomicType::Node).start(&node_fam) {
@@ -65,7 +64,19 @@ fn main() {
         }
         Err(e) => v.check_bool("node_start", false, &format!("{e}")),
     }
+}
 
-    println!("\n=== Full NUCLEUS Composition Summary ===");
-    v.summary();
+fn main() {
+    ValidationResult::run_experiment(
+        "exp068_full_nucleus",
+        "Full NUCLEUS — all primals composed",
+        |v| {
+            let primals = AtomicType::FullNucleus.required_primals();
+            v.check_minimum("nucleus_required_primals", primals.len(), 5);
+
+            validate_tower(v);
+            validate_nest(v);
+            validate_node(v);
+        },
+    );
 }

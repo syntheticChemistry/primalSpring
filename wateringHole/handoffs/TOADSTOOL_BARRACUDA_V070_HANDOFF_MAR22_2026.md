@@ -162,7 +162,7 @@ JSON-RPC handlers inside toadStool. This is the **budding surface**.
 | `specs/TOWER_STABILITY.md` | 87/87 gates, toadStool in Gates 14-15, 19, 22 |
 | `specs/BARRACUDA_REQUIREMENTS.md` | barraCuda relationship (indirect only) |
 | `config/primal_launch_profiles.toml` | toadStool launch profile with env_sockets |
-| `ecoPrimal/tests/server_integration.rs` | 6 tests exercising toadStool |
+| `ecoPrimal/tests/server_ecosystem_compose.rs` | 6 tests exercising toadStool |
 | `experiments/exp050_compute_triangle/` | Compute triangle IPC probe |
 | `experiments/exp067_node_atomic/` | Node Atomic validation (13/13) |
 

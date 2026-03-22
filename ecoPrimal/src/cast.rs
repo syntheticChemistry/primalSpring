@@ -47,6 +47,21 @@ pub const fn usize_to_u64(v: usize) -> u64 {
     v as u64
 }
 
+/// Saturating cast from `u64` to `usize` (identity on 64-bit, saturates on 32-bit).
+#[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "saturating boundary — truncation is guarded by the range check"
+)]
+pub const fn u64_to_usize(v: u64) -> usize {
+    // On 32-bit targets usize::MAX < u64::MAX; on 64-bit this is a noop.
+    if v > usize::MAX as u64 {
+        usize::MAX
+    } else {
+        v as usize
+    }
+}
+
 /// Saturating cast from `f64` to `usize` (clamps negatives to 0, NaN to 0).
 #[must_use]
 #[expect(
@@ -136,5 +151,17 @@ mod tests {
     #[test]
     fn u128_to_u64_zero() {
         assert_eq!(u128_to_u64(0), 0);
+    }
+
+    #[test]
+    fn u64_to_usize_within_range() {
+        assert_eq!(u64_to_usize(42), 42);
+        assert_eq!(u64_to_usize(0), 0);
+    }
+
+    #[test]
+    fn u64_to_usize_max() {
+        let result = u64_to_usize(u64::MAX);
+        assert!(result > 0);
     }
 }

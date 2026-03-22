@@ -36,7 +36,7 @@ primalSpring/
 │   │   ├── lib.rs                 # Library root (unsafe_code = forbid)
 │   │   ├── cast.rs                # Safe numeric casts (saturating boundary)
 │   │   ├── coordination/          # Atomic composition, health probing, composition validation
-│   │   ├── deploy.rs              # Deploy graph parsing, structural + live validation
+│   │   ├── deploy/                # Deploy graph parsing, structural + live validation
 │   │   ├── graphs/                # Graph execution pattern types (5 patterns)
 │   │   ├── emergent/              # Emergent system validation (RootPulse, RPGPT, CoralForge)
 │   │   ├── bonding/               # Multi-gate bonding models (Covalent, Ionic, Weak, OMS)
@@ -50,7 +50,10 @@ primalSpring/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
 │   │   └── validate_all/          # Meta-validator: runs all 49 experiments
 │   └── tests/
-│       └── server_integration.rs  # 45 tests (10 auto + 35 live atomic/Nest/Node/NUCLEUS/Squirrel)
+│       ├── integration/           # Shared test helpers (guards, spawn, RPC)
+│       ├── server_integration.rs  # 10 core auto tests
+│       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
+│       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
 ├── experiments/                   # 49 validation experiments (8 tracks)
 ├── config/                        # Launch profiles (primal_launch_profiles.toml)
 ├── graphs/                        # 18 biomeOS deploy graph TOMLs (all by_capability)
@@ -101,6 +104,16 @@ cargo run --bin primalspring_primal -- server
 # Show ecosystem status
 cargo run --bin primalspring_primal -- status
 ```
+
+### Code coverage ([cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov))
+
+Install the tool (`cargo install cargo-llvm-cov --locked` or a release binary) and `rustup component add llvm-tools-preview`, then:
+
+```bash
+cargo coverage
+```
+
+This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report, and fails if **line** coverage is below **70%** (a starting gate; tighten toward 90% once you have steady numbers). For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
 
 ## Server Mode
 

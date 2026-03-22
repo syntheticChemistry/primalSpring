@@ -57,10 +57,16 @@ fn rpc_call(
 }
 
 fn find_petaltongue_binary() -> Option<PathBuf> {
-    let candidates = [
+    let mut candidates = Vec::new();
+
+    if let Ok(plasmid) = std::env::var("ECOPRIMALS_PLASMID_BIN") {
+        candidates.push(PathBuf::from(plasmid).join("primals/petaltongue"));
+    }
+
+    candidates.push(
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../plasmidBin/primals/petaltongue"),
-        PathBuf::from("/home/eastgate/Development/ecoPrimals/plasmidBin/primals/petaltongue"),
-    ];
+    );
+
     candidates.into_iter().find(|p| p.exists())
 }
 
@@ -109,7 +115,7 @@ fn spawn_petaltongue(
 fn validate_dashboard(
     v: &mut primalspring::validation::ValidationResult,
     pt_socket: &Path,
-    tower_health: &[serde_json::Value],
+    _tower_health: &[serde_json::Value],
     family_id: &str,
 ) {
     let dashboard = rpc_call(

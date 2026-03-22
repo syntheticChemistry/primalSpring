@@ -100,12 +100,12 @@ fn main() {
             let songbird_caps = caps.iter().find(|(n, _)| n == "songbird");
             v.check_bool(
                 "beardog_has_capabilities",
-                beardog_caps.map_or(false, |(_, c)| !c.is_empty()),
+                beardog_caps.is_some_and(|(_, c)| !c.is_empty()),
                 "beardog reports capabilities",
             );
             v.check_bool(
                 "songbird_has_capabilities",
-                songbird_caps.map_or(false, |(_, c)| !c.is_empty()),
+                songbird_caps.is_some_and(|(_, c)| !c.is_empty()),
                 "songbird reports capabilities",
             );
         }

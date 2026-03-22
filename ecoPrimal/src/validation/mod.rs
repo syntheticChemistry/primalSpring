@@ -324,7 +324,7 @@ impl ValidationResult {
     /// Print a standard experiment banner.
     ///
     /// Shared helper that replaces `println!("=".repeat(72))` boilerplate
-    /// across all 38 experiments.
+    /// across all experiments.
     pub fn print_banner(title: &str) {
         use crate::tolerances::VALIDATION_SUMMARY_WIDTH;
         println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
@@ -584,12 +584,14 @@ mod tests {
             "exp012", "exp013", "exp014", "exp015", "exp020", "exp021", "exp022", "exp023",
             "exp024", "exp025", "exp030", "exp031", "exp032", "exp033", "exp034", "exp040",
             "exp041", "exp042", "exp043", "exp044", "exp050", "exp051", "exp052", "exp053",
-            "exp054", "exp055", "exp056", "exp057", "exp058", "exp059",
+            "exp054", "exp055", "exp056", "exp057", "exp058", "exp059", "exp060", "exp061",
+            "exp062", "exp063", "exp064", "exp065", "exp066", "exp067", "exp068", "exp069",
+            "exp070",
         ];
         assert_eq!(
             experiment_ids.len(),
-            38,
-            "expected 38 experiments across tracks"
+            49,
+            "expected 49 experiments across tracks"
         );
         let tracks: std::collections::HashSet<u32> = experiment_ids
             .iter()

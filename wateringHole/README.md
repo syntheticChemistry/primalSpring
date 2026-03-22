@@ -84,7 +84,7 @@ primalSpring fills the gap.
   when providers are not running
 - **Server mode**: `primalspring_primal server` exposes 17 methods including `graph.waves`,
   `graph.capabilities`, `coordination.probe_capability`
-- **Deploy graph validation**: `deploy.rs` parses, structurally validates, topologically
+- **Deploy graph validation**: `deploy/` module parses, structurally validates, topologically
   sorts, and live-probes biomeOS TOML graphs
 
 ---

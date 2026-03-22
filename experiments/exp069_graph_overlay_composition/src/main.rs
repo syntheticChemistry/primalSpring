@@ -26,9 +26,7 @@ fn graphs_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../graphs")
 }
 
-fn main() {
-    let mut v = ValidationResult::new("exp069_graph_overlay_composition");
-
+fn validate_overlay_structure(v: &mut ValidationResult) {
     println!("=== Phase 1: Overlay Graph Structural Validation ===\n");
 
     let overlay_graphs = [
@@ -53,8 +51,8 @@ fn main() {
         );
 
         if result.parsed {
-            let graph = load_graph(&path).unwrap();
-            let waves = topological_waves(&graph).unwrap();
+            let graph = load_graph(&path).expect("already validated as parseable");
+            let waves = topological_waves(&graph).expect("validated graph should have valid topology");
             v.check_minimum(&format!("waves_{name}"), waves.len(), 2);
             println!(
                 "  {name}: {} nodes, {} waves, {} required",
@@ -64,11 +62,20 @@ fn main() {
             );
         }
     }
+}
 
+fn validate_spawn_filtering(v: &mut ValidationResult) {
     println!("\n=== Phase 2: Spawn Filtering ===\n");
 
+    let overlay_graphs = [
+        "tower_ai.toml",
+        "tower_ai_viz.toml",
+        "nest_viz.toml",
+        "node_ai.toml",
+    ];
+
     for name in &overlay_graphs {
-        let graph = load_graph(&graphs_dir().join(name)).unwrap();
+        let graph = load_graph(&graphs_dir().join(name)).expect("validated in phase 1");
         let spawnable = graph_spawnable_primals(&graph);
         let total = graph.graph.node.len();
         let filtered = total - spawnable.len();
@@ -82,29 +89,31 @@ fn main() {
             spawnable.len()
         );
     }
+}
 
+fn validate_capability_maps(v: &mut ValidationResult) {
     println!("\n=== Phase 3: Capability Map Construction ===\n");
 
-    let tower_ai = load_graph(&graphs_dir().join("tower_ai.toml")).unwrap();
+    let tower_ai = load_graph(&graphs_dir().join("tower_ai.toml")).expect("validated in phase 1");
     let caps = graph_capability_map(&tower_ai);
     v.check_bool(
         "cap_security",
-        caps.get("security").map_or(false, |v| v == "beardog"),
+        caps.get("security").is_some_and(|v| v == "beardog"),
         "security -> beardog",
     );
     v.check_bool(
         "cap_discovery",
-        caps.get("discovery").map_or(false, |v| v == "songbird"),
+        caps.get("discovery").is_some_and(|v| v == "songbird"),
         "discovery -> songbird",
     );
     v.check_bool(
         "cap_ai",
-        caps.get("ai").map_or(false, |v| v == "squirrel"),
+        caps.get("ai").is_some_and(|v| v == "squirrel"),
         "ai -> squirrel",
     );
     println!("  tower_ai capability map: {caps:?}");
 
-    let node_ai = load_graph(&graphs_dir().join("node_ai.toml")).unwrap();
+    let node_ai = load_graph(&graphs_dir().join("node_ai.toml")).expect("validated in phase 1");
     let node_caps = graph_capability_map(&node_ai);
     v.check_bool(
         "node_ai_has_compute",
@@ -116,11 +125,13 @@ fn main() {
         node_caps.contains_key("ai"),
         "node_ai has ai capability",
     );
+}
 
+fn validate_graph_merge(v: &mut ValidationResult) {
     println!("\n=== Phase 4: Graph Merge/Compose ===\n");
 
-    let base = load_graph(&graphs_dir().join("tower_atomic_bootstrap.toml")).unwrap();
-    let overlay = load_graph(&graphs_dir().join("tower_ai.toml")).unwrap();
+    let base = load_graph(&graphs_dir().join("tower_atomic_bootstrap.toml")).expect("base graph must load");
+    let overlay = load_graph(&graphs_dir().join("tower_ai.toml")).expect("overlay graph must load");
     let merged = merge_graphs(&base, &overlay);
 
     v.check_bool(
@@ -129,7 +140,7 @@ fn main() {
         "merged graph name contains +",
     );
 
-    let merged_waves = topological_waves(&merged).unwrap();
+    let merged_waves = topological_waves(&merged).expect("merged graph must have valid topology");
     v.check_minimum("merge_waves", merged_waves.len(), 2);
 
     let all_names: Vec<String> = merged_waves.into_iter().flatten().collect();
@@ -144,7 +155,9 @@ fn main() {
         "merged has squirrel (from overlay)",
     );
     println!("  merged: {} nodes, names: {all_names:?}", all_names.len());
+}
 
+fn validate_live_overlay(v: &mut ValidationResult) {
     println!("\n=== Phase 5: Live Tower + AI Overlay ===\n");
 
     let graph_path = graphs_dir().join("tower_ai.toml");
@@ -165,7 +178,7 @@ fn main() {
                 "has security",
             );
 
-            running.validate(&mut v);
+            running.validate(v);
 
             if running.socket_for("ai").is_some() {
                 println!("  AI capability socket resolved!");
@@ -185,7 +198,18 @@ fn main() {
             );
         }
     }
+}
 
-    println!("\n=== Summary ===\n");
-    v.summary();
+fn main() {
+    ValidationResult::run_experiment(
+        "exp069_graph_overlay_composition",
+        "Graph-Driven Overlay Composition",
+        |v| {
+            validate_overlay_structure(v);
+            validate_spawn_filtering(v);
+            validate_capability_maps(v);
+            validate_graph_merge(v);
+            validate_live_overlay(v);
+        },
+    );
 }
