@@ -1,0 +1,103 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Full Overlay — Tower + Nest + Node + Squirrel (all capability domains)
+#
+# This graph gives Squirrel maximum reach: security (beardog), discovery
+# + network (songbird), storage (nestgate), compute (toadstool), and
+# AI coordination (squirrel). Squirrel discovers sibling primals via
+# $XDG_RUNTIME_DIR/biomeos/ socket scan and explicit env vars, then
+# routes tool.execute / ai.query / context.* calls through them.
+#
+# Usage:
+#   biomeos deploy --graph graphs/full_overlay.toml
+
+[graph]
+name = "full_overlay"
+description = "Tower + Nest + Node + Squirrel: full cross-primal discovery"
+version = "0.1.0"
+coordination = "sequential"
+
+# ── Phase 1: Tower Atomic (security + discovery) ──
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
+    "crypto.verify", "crypto.keygen", "crypto.identity",
+]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request",
+]
+
+# ── Phase 2: Nest + Node extensions ──
+
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 3
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = [
+    "storage.store", "storage.retrieve", "storage.list",
+    "model.register", "model.locate",
+]
+
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 4
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = [
+    "compute.dispatch.submit", "compute.dispatch.status",
+    "compute.dispatch.cancel", "compute.execute",
+]
+
+# ── Phase 3: Squirrel AI coordinator ──
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 5
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = [
+    "ai.query", "ai.complete", "ai.chat",
+    "tool.list", "tool.execute",
+    "context.create", "context.update", "context.summarize",
+    "capability.discover",
+]
+
+# ── Validation (not spawned) ──
+
+[[graph.node]]
+name = "validate_full_overlay"
+binary = "primalspring_primal"
+order = 99
+required = false
+spawn = false
+depends_on = ["beardog", "songbird", "nestgate", "toadstool", "squirrel"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.full_overlay_health"]

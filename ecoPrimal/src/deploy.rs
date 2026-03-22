@@ -71,6 +71,12 @@ pub struct GraphNode {
     /// Whether the deployment fails if this node can't start.
     #[serde(default)]
     pub required: bool,
+    /// Whether the harness should spawn this node as a primal process.
+    ///
+    /// Defaults to `true`. Set to `false` for validation/coordination
+    /// nodes (e.g. `primalspring`) that the harness should not spawn.
+    #[serde(default = "default_spawn")]
+    pub spawn: bool,
     /// Nodes that must be healthy before this one starts.
     #[serde(default)]
     pub depends_on: Vec<String>,
@@ -89,6 +95,10 @@ pub struct GraphNode {
     /// Skip predicate for conditional DAG execution.
     #[serde(default)]
     pub skip_if: Option<String>,
+}
+
+fn default_spawn() -> bool {
+    true
 }
 
 /// Result of loading and validating a deploy graph.
@@ -427,6 +437,76 @@ pub fn graph_required_capabilities(graph: &DeployGraph) -> Vec<String> {
         .collect()
 }
 
+/// Extract the names of spawnable primal nodes from a graph.
+///
+/// Returns only nodes where `spawn` is `true` (the default). Validation
+/// and coordination nodes set `spawn = false` and are excluded.
+#[must_use]
+pub fn graph_spawnable_primals(graph: &DeployGraph) -> Vec<String> {
+    graph
+        .graph
+        .node
+        .iter()
+        .filter(|n| n.spawn)
+        .map(|n| n.name.clone())
+        .collect()
+}
+
+/// Build a capability-to-primal mapping from the graph's spawnable nodes.
+///
+/// For each node with `spawn = true` and a `by_capability` field, maps
+/// `capability -> primal_name`. This lets the harness resolve capabilities
+/// for overlay primals that aren't in the static `AtomicType` mapping.
+#[must_use]
+pub fn graph_capability_map(graph: &DeployGraph) -> std::collections::HashMap<String, String> {
+    graph
+        .graph
+        .node
+        .iter()
+        .filter(|n| n.spawn)
+        .filter_map(|n| {
+            n.by_capability
+                .as_ref()
+                .map(|cap| (cap.clone(), n.name.clone()))
+        })
+        .collect()
+}
+
+/// Merge two deploy graphs: a base graph with an overlay.
+///
+/// All nodes from the overlay are appended to the base graph. If a node
+/// with the same name exists in both, the overlay version wins. The
+/// resulting graph's name is `"{base_name}+{overlay_name}"`.
+#[must_use]
+pub fn merge_graphs(base: &DeployGraph, overlay: &DeployGraph) -> DeployGraph {
+    let mut merged_nodes = base.graph.node.clone();
+    for overlay_node in &overlay.graph.node {
+        if let Some(existing) = merged_nodes.iter_mut().find(|n| n.name == overlay_node.name) {
+            *existing = overlay_node.clone();
+        } else {
+            merged_nodes.push(overlay_node.clone());
+        }
+    }
+    merged_nodes.sort_by_key(|n| n.order);
+
+    DeployGraph {
+        graph: GraphMeta {
+            name: format!("{}+{}", base.graph.name, overlay.graph.name),
+            description: format!(
+                "{} merged with {}",
+                base.graph.description, overlay.graph.description
+            ),
+            version: overlay.graph.version.clone(),
+            coordination: overlay
+                .graph
+                .coordination
+                .clone()
+                .or_else(|| base.graph.coordination.clone()),
+            node: merged_nodes,
+        },
+    }
+}
+
 /// Discover and validate all deploy graphs in a directory.
 #[must_use]
 pub fn validate_all_graphs(dir: &Path) -> Vec<GraphValidation> {
@@ -548,6 +628,7 @@ mod tests {
                     capabilities: vec![],
                     condition: None,
                     skip_if: None,
+                    spawn: true,
                 }],
             },
         };
@@ -593,6 +674,7 @@ mod tests {
                         binary: "alpha_primal".to_owned(),
                         order: 1,
                         required: true,
+                        spawn: true,
                         depends_on: vec![],
                         health_method: "health".to_owned(),
                         by_capability: None,
@@ -605,6 +687,7 @@ mod tests {
                         binary: "beta_primal".to_owned(),
                         order: 1,
                         required: false,
+                        spawn: true,
                         depends_on: vec![],
                         health_method: "health".to_owned(),
                         by_capability: None,
@@ -673,6 +756,7 @@ mod tests {
                     binary: "alpha_primal".to_owned(),
                     order: 1,
                     required: true,
+                    spawn: true,
                     depends_on: vec![],
                     health_method: "health".to_owned(),
                     by_capability: Some("security".to_owned()),
@@ -700,6 +784,7 @@ mod tests {
                     binary: "alpha_primal".to_owned(),
                     order: 1,
                     required: true,
+                    spawn: true,
                     depends_on: vec!["ghost".to_owned()],
                     health_method: "health".to_owned(),
                     by_capability: None,
@@ -728,6 +813,7 @@ mod tests {
                         binary: "a".to_owned(),
                         order: 1,
                         required: true,
+                        spawn: true,
                         depends_on: vec!["beta".to_owned()],
                         health_method: "health".to_owned(),
                         by_capability: None,
@@ -740,6 +826,7 @@ mod tests {
                         binary: "b".to_owned(),
                         order: 2,
                         required: true,
+                        spawn: true,
                         depends_on: vec!["alpha".to_owned()],
                         health_method: "health".to_owned(),
                         by_capability: None,
@@ -769,6 +856,7 @@ mod tests {
                         binary: "r".to_owned(),
                         order: 1,
                         required: true,
+                        spawn: true,
                         depends_on: vec![],
                         health_method: "health".to_owned(),
                         by_capability: None,
@@ -781,6 +869,7 @@ mod tests {
                         binary: "a".to_owned(),
                         order: 2,
                         required: true,
+                        spawn: true,
                         depends_on: vec!["root".to_owned()],
                         health_method: "health".to_owned(),
                         by_capability: None,
@@ -793,6 +882,7 @@ mod tests {
                         binary: "b".to_owned(),
                         order: 3,
                         required: true,
+                        spawn: true,
                         depends_on: vec!["root".to_owned()],
                         health_method: "health".to_owned(),
                         by_capability: None,
@@ -836,6 +926,7 @@ mod tests {
                     binary: "a".to_owned(),
                     order: 1,
                     required: true,
+                    spawn: true,
                     depends_on: vec![],
                     health_method: "health".to_owned(),
                     by_capability: None,
@@ -893,6 +984,192 @@ mod tests {
     }
 
     #[test]
+    fn graph_spawnable_primals_filters_spawn_false() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "overlay_test".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![
+                    GraphNode {
+                        name: "beardog".to_owned(),
+                        binary: "beardog_primal".to_owned(),
+                        order: 1,
+                        required: true,
+                        spawn: true,
+                        depends_on: vec![],
+                        health_method: "health".to_owned(),
+                        by_capability: Some("security".to_owned()),
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                    GraphNode {
+                        name: "primalspring".to_owned(),
+                        binary: "primalspring_primal".to_owned(),
+                        order: 99,
+                        required: false,
+                        spawn: false,
+                        depends_on: vec![],
+                        health_method: "health".to_owned(),
+                        by_capability: Some("coordination".to_owned()),
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                ],
+            },
+        };
+        let spawnable = graph_spawnable_primals(&graph);
+        assert_eq!(spawnable, vec!["beardog"]);
+        assert!(!spawnable.contains(&"primalspring".to_owned()));
+    }
+
+    #[test]
+    fn graph_capability_map_builds_mapping() {
+        let graph = DeployGraph {
+            graph: GraphMeta {
+                name: "cap_test".to_owned(),
+                description: String::new(),
+                version: String::new(),
+                coordination: None,
+                node: vec![
+                    GraphNode {
+                        name: "beardog".to_owned(),
+                        binary: "beardog_primal".to_owned(),
+                        order: 1,
+                        required: true,
+                        spawn: true,
+                        depends_on: vec![],
+                        health_method: "health".to_owned(),
+                        by_capability: Some("security".to_owned()),
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                    GraphNode {
+                        name: "squirrel".to_owned(),
+                        binary: "squirrel_primal".to_owned(),
+                        order: 2,
+                        required: false,
+                        spawn: true,
+                        depends_on: vec![],
+                        health_method: "health".to_owned(),
+                        by_capability: Some("ai".to_owned()),
+                        capabilities: vec![],
+                        condition: None,
+                        skip_if: None,
+                    },
+                ],
+            },
+        };
+        let map = graph_capability_map(&graph);
+        assert_eq!(map.get("security").unwrap(), "beardog");
+        assert_eq!(map.get("ai").unwrap(), "squirrel");
+    }
+
+    #[test]
+    fn merge_graphs_combines_nodes() {
+        let base = DeployGraph {
+            graph: GraphMeta {
+                name: "base".to_owned(),
+                description: "base graph".to_owned(),
+                version: "1.0.0".to_owned(),
+                coordination: Some("sequential".to_owned()),
+                node: vec![GraphNode {
+                    name: "beardog".to_owned(),
+                    binary: "beardog_primal".to_owned(),
+                    order: 1,
+                    required: true,
+                    spawn: true,
+                    depends_on: vec![],
+                    health_method: "health".to_owned(),
+                    by_capability: Some("security".to_owned()),
+                    capabilities: vec![],
+                    condition: None,
+                    skip_if: None,
+                }],
+            },
+        };
+        let overlay = DeployGraph {
+            graph: GraphMeta {
+                name: "ai_overlay".to_owned(),
+                description: "AI overlay".to_owned(),
+                version: "1.0.0".to_owned(),
+                coordination: None,
+                node: vec![GraphNode {
+                    name: "squirrel".to_owned(),
+                    binary: "squirrel_primal".to_owned(),
+                    order: 3,
+                    required: false,
+                    spawn: true,
+                    depends_on: vec!["beardog".to_owned()],
+                    health_method: "health".to_owned(),
+                    by_capability: Some("ai".to_owned()),
+                    capabilities: vec![],
+                    condition: None,
+                    skip_if: None,
+                }],
+            },
+        };
+        let merged = merge_graphs(&base, &overlay);
+        assert_eq!(merged.graph.name, "base+ai_overlay");
+        assert_eq!(merged.graph.node.len(), 2);
+        assert_eq!(merged.graph.node[0].name, "beardog");
+        assert_eq!(merged.graph.node[1].name, "squirrel");
+    }
+
+    #[test]
+    fn merge_graphs_overlay_overrides_existing() {
+        let base = DeployGraph {
+            graph: GraphMeta {
+                name: "base".to_owned(),
+                description: String::new(),
+                version: "1.0.0".to_owned(),
+                coordination: None,
+                node: vec![GraphNode {
+                    name: "beardog".to_owned(),
+                    binary: "beardog_primal".to_owned(),
+                    order: 1,
+                    required: true,
+                    spawn: true,
+                    depends_on: vec![],
+                    health_method: "health".to_owned(),
+                    by_capability: Some("security".to_owned()),
+                    capabilities: vec![],
+                    condition: None,
+                    skip_if: None,
+                }],
+            },
+        };
+        let overlay = DeployGraph {
+            graph: GraphMeta {
+                name: "override".to_owned(),
+                description: String::new(),
+                version: "2.0.0".to_owned(),
+                coordination: None,
+                node: vec![GraphNode {
+                    name: "beardog".to_owned(),
+                    binary: "beardog_v2".to_owned(),
+                    order: 1,
+                    required: false,
+                    spawn: true,
+                    depends_on: vec![],
+                    health_method: "health.v2".to_owned(),
+                    by_capability: Some("security".to_owned()),
+                    capabilities: vec![],
+                    condition: None,
+                    skip_if: None,
+                }],
+            },
+        };
+        let merged = merge_graphs(&base, &overlay);
+        assert_eq!(merged.graph.node.len(), 1);
+        assert_eq!(merged.graph.node[0].binary, "beardog_v2");
+    }
+
+    #[test]
     fn structural_checks_detect_empty_binary() {
         let graph = DeployGraph {
             graph: GraphMeta {
@@ -905,6 +1182,7 @@ mod tests {
                     binary: String::new(),
                     order: 1,
                     required: true,
+                    spawn: true,
                     depends_on: vec![],
                     health_method: "health".to_owned(),
                     by_capability: None,

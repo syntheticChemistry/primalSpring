@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 22, 2026
-**Status**: Phase 6 — NUCLEUS COMPOSITION VALIDATED (58/58 gates), Tower + Nest + Node, 47 experiments, 282 tests
+**Status**: Phase 10 — GRAPH EXECUTION + PROVENANCE READINESS (87/87 gates), 49 experiments, 253+ tests
 
 ---
 
@@ -22,30 +22,27 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Track | Domain | Experiments | Key Question |
 |-------|--------|-------------|--------------|
 | 1 | Atomic Composition | exp001–006 | Do atomics deploy correctly? |
-| 2 | Graph Execution | exp010–015 | Do all 5 coordination patterns work? |
+| 2 | Graph Execution | exp010–015 | Do all 5 coordination patterns work? (3/5 live) |
 | 3 | Emergent Systems | exp020–025 | Do Layer 3 systems emerge correctly? |
 | 4 | Bonding & Plasmodium | exp030–034 | Does multi-gate coordination work? |
 | 5 | coralForge | (exp025) | Does the neural object pipeline work? |
 | 6 | Cross-Spring | exp040–044 | Do cross-spring data flows work? |
 | 7 | Showcase-Mined | exp050–059 | Do mined phase1/phase2 coordination patterns hold? |
-| 8 | Live Composition | exp060–068 | Tower + Squirrel AI + subsystems + Nest + Node + NUCLEUS |
+| 8 | Live Composition | exp060–070 | Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery |
 
-## Current State (v0.6.0)
+## Current State (v0.7.0)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 47 (8 tracks) |
-| Unit tests | 239 |
-| Integration tests | 31 (10 JSON-RPC + 19 live Tower + 8 Nest + 4 Node) |
-| Doc-tests | 2 |
-| Total tests | **282** (251 auto + 31 ignored live) |
+| Experiments | 49 (8 tracks) |
+| Total tests | **253+** (unit + integration + doc-tests, 42 ignored live) |
 | Proptest fuzz tests | 15 (IPC protocol, extract, capability parsing) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | 12 TOMLs (incl. `tower_full_capability.toml`), all nodes `by_capability` |
+| Deploy graphs | 18 TOMLs, all nodes `by_capability`, topologically validated |
 | Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
@@ -55,57 +52,49 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
 | Node Atomic | **VALIDATED** — 5/5 gates (toadstool compute, dual-protocol) |
-| NUCLEUS | **VALIDATED** — 58/58 total gates (Tower + Nest + Node) |
+| NUCLEUS | **VALIDATED** — 58/58 base gates (Tower + Nest + Node) |
+| Graph Overlays | **VALIDATED** — 14/14 gates (tier-independent primals via deploy graphs) |
+| Squirrel Discovery | **VALIDATED** — 5/5 gates (cross-primal env_sockets, capability.discover) |
+| Graph Execution | **LIVE** — 6/6 gates (3/5 coordination patterns live) |
+| Provenance Readiness | **STRUCTURAL** — 4/4 gates (launch profiles + deploy graph) |
+| Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed (v0.6.0 -> v0.7.0)
+
+### Graph-Driven Overlay Composition
+1. **Tier-independent primals** — Squirrel, petalTongue, biomeOS compose at any atomic tier via deploy graphs
+2. **`spawn` field on GraphNode** — distinguishes primal nodes from validation nodes
+3. **5 new overlay deploy graphs** — tower_ai, tower_ai_viz, nest_viz, node_ai, full_overlay
+4. **`merge_graphs()`** — merge base + overlay deploy graphs at runtime
+5. **exp069** — end-to-end overlay validation (25/25 checks)
+
+### Squirrel Cross-Primal Discovery
+6. **9 env_sockets** — Squirrel discovers NestGate, ToadStool, Songbird, BearDog via explicit env vars
+7. **full_overlay.toml** — Tower + Nest + Node + Squirrel (all capability domains)
+8. **exp070** — cross-primal discovery validation
+9. **4 new integration tests** — squirrel_discovers_sibling_primals, tool_list, context_create, ai_query
+
+### Graph Execution Patterns (3/5 Live)
+10. **exp010 Sequential** — live Tower composition with ordering verification
+11. **exp011 Parallel** — live 4-primal burst (beardog+songbird+nestgate+toadstool)
+12. **exp012 ConditionalDag** — live toadstool/CPU fallback branching
+13. exp013/014 — awaiting provenance trio (sweetGrass, rhizoCrypt, loamSpine)
+
+### Provenance Readiness
+14. **Launch profiles** — sweetGrass, loamSpine, rhizoCrypt socket wiring
+15. **provenance_overlay.toml** — Tower + RootPulse deploy graph
+16. **Handoffs delivered** — provenance trio team + all teams
 
 ## What Changed (v0.5.0 -> v0.6.0)
 
 ### NUCLEUS Composition (v0.6.0)
-1. **Nest Atomic** — nestgate storage primal integrated: socket-only mode (no ZFS required), storage.store/retrieve round-trip, model.register/locate, discover_capabilities
-2. **Node Atomic** — toadstool compute primal integrated: dual-protocol socket (tarpc + JSON-RPC), toadstool.health, toadstool.query_capabilities (4 workload types, 24 CPU cores)
-3. **NUCLEUS Composition** — all 3 atomic layers (Tower + Nest + Node) compose and validate together. 58/58 total gates passing
-4. **3 new experiments** — exp066 (Nest 13/13), exp067 (Node 13/13), exp068 (NUCLEUS 16/16)
-5. **12 new integration tests** — 8 Nest + 4 Node, all passing in parallel with Tower tests
-6. **Harness enhancements** — `subcommand` override, `jsonrpc_socket_suffix` for dual-protocol primals, `SocketNucleation::remap()`, health liveness fallback chain
-7. **282 tests** — up from 270 (+12); 31 integration tests, 31 ignored (live)
-
-## What Changed (v0.4.0 -> v0.5.0)
-
-### Tower Full Utilization (v0.5.0)
-1. **Gates 7-11 added** — songbird subsystem health, beacon round-trip, Pixel rendezvous, internet reach, petalTongue visualization (24->41 total gates)
-2. **4 new experiments** — exp062 (subsystem sweep), exp063 (Pixel rendezvous), exp064 (internet reach), exp065 (petalTongue dashboard)
-3. **6 new songbird subsystem integration tests** — discovery, STUN, BirdSong, onion, Tor, federation
-4. **petalTongue v1.6.6** — built, deployed to plasmidBin, launch profile + capability registry wired
-5. **`tower_full_capability.toml`** — complete Tower deploy graph with all subsystem nodes
-6. **12 new capabilities** — songbird subsystems + petalTongue visualization (25->37 total)
-7. **270 tests** — up from 264 (+6); 29 integration tests, 21 ignored (live)
-
-## What Changed (v0.3.0 -> v0.4.0)
-
-### Tower Stability Sprint (v0.4.0)
-1. **All 24 Tower Atomic gates pass** — cross-primal changes to beardog, songbird, biomeOS
-2. **Squirrel AI Composition** — Tower + Squirrel with live Anthropic Claude inference
-3. **exp060 + exp061** — biomeOS Tower deploy and Squirrel AI composition experiments
-4. **264 tests** — up from 251 (+13); 23 integration tests, 15 ignored (live)
-
-See CHANGELOG.md for earlier evolution history (v0.1.0 -> v0.3.0).
-
-## NUCLEUS Capability Audit (v0.3.5)
-
-Full audit of all 5 NUCLEUS primals + biomeOS for capability-based compliance.
-Handoff documents delivered to `wateringHole/handoffs/`.
-
-| Primal | Severity | `health.liveness` | `capabilities.list` | 5-tier discovery | Coupling sites |
-|---|---|---|---|---|---|
-| BearDog | Medium | Missing | Missing | No (3-tier server / 4-tier client) | ~5 songbird/nestgate refs |
-| Songbird | High | Missing | Missing | No (7-tier mixed) | ~15 beardog direct calls |
-| NestGate | Medium | Missing | Missing | No (4-tier) | ~6 beardog/songbird refs |
-| ToadStool | Low | Missing | Missing | **Yes** | ~10 (showcase examples) |
-| Squirrel | Low | **Yes** | **Yes** | **Yes** | ~3 beardog auth fallbacks |
-| biomeOS | High | N/A | N/A | N/A | ~12 Neural API bypasses |
-
-**Total hardcoded sites traced**: 53+ (see `specs/CAPABILITY_ROUTING_TRACE.md`)
+1. **Nest Atomic** — nestgate storage primal integrated
+2. **Node Atomic** — toadstool compute primal integrated
+3. **NUCLEUS Composition** — all 3 atomic layers compose together (58/58 gates)
+4. **3 new experiments** — exp066, exp067, exp068
+5. **12 new integration tests** — 8 Nest + 4 Node
 
 ## Co-Evolution Strategy
 
@@ -117,19 +106,21 @@ Handoff documents delivered to `wateringHole/handoffs/`.
 | Nest Atomic | Storage gates | + nestgate | Gates 12–13 (8/8) | **DONE** |
 | Node Atomic | Compute gates | + toadstool | Gates 14–15 (5/5) | **DONE** |
 | NUCLEUS Composition | All layers compose | Tower + Nest + Node | Gate 16 (4/4) | **DONE** |
-| Full NUCLEUS | + provenance trio | + squirrel + provenance | All gates | **NEXT** |
+| Graph Overlays | Tier-independent primals | + squirrel, petalTongue | Gates 17–20 (14/14) | **DONE** |
+| Squirrel Discovery | Cross-primal wiring | + all primals | Gate 21 (5/5) | **DONE** |
+| Graph Execution | 3/5 patterns live | Tower + Nest + Node | Gate 22 (6/6) | **DONE** |
+| Provenance Readiness | Structural prep | sweetGrass/loamSpine/rhizoCrypt | Gate 23 (4/4) | **DONE** |
+| Provenance Live | Trio integration | + provenance trio | All gates | **NEXT** (awaiting provenance-trio-types) |
 
-See `specs/TOWER_STABILITY.md` for the full 58-gate acceptance criteria.
+See `specs/TOWER_STABILITY.md` for the full 87-gate acceptance criteria.
 
-## What Remains (Phase 7+)
+## What Remains
 
-- Full NUCLEUS with Squirrel AI + provenance trio (sourDough, sweetGrass, fieldMouse)
-- Beacon coordination validation (generate -> encrypt -> exchange -> decrypt chain)
-- Protocol escalation (JSON-RPC -> tarpc sidecar from biomeOS v2.50)
-- `cargo llvm-cov` CI integration with 90% floor
-- Neural API auto-registration for Squirrel `ai` capabilities
-- Graph execution experiments (Track 2) live with real primals
-- Emergent system experiments (Track 3) live validation
+- **Provenance trio binaries** — blocked on `provenance-trio-types` shared crate
+- Pipeline + Continuous graph execution (exp013/014) — awaiting sweetGrass/rhizoCrypt
+- Emergent system experiments (Track 3) — awaiting provenance trio
+- Protocol escalation (JSON-RPC -> tarpc sidecar)
+- biomeOS self-composition (biomeOS composes its own graphs at runtime)
 
 ---
 

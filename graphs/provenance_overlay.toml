@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Provenance Overlay — Tower + RootPulse (sweetGrass + loamSpine + rhizoCrypt)
+#
+# Adds the provenance trio to a Tower base. Together they provide:
+#   - Content-addressed DAG storage (rhizoCrypt)
+#   - Lineage/provenance tracking (loamSpine)
+#   - Braid attribution and provenance graphs (sweetGrass)
+#
+# Requires: provenance-trio-types shared crate built, binaries in plasmidBin.
+#
+# Usage:
+#   biomeos deploy --graph graphs/provenance_overlay.toml
+
+[graph]
+name = "provenance_overlay"
+description = "Tower + RootPulse provenance trio (rhizoCrypt + loamSpine + sweetGrass)"
+version = "0.1.0"
+coordination = "sequential"
+
+# ── Phase 1: Tower base ──
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
+    "crypto.verify", "crypto.keygen", "crypto.identity",
+]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request",
+]
+
+# ── Phase 2: Provenance trio ──
+
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt_primal"
+order = 3
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = [
+    "dag.session.create", "dag.session.get", "dag.session.list",
+    "dag.event.append", "dag.vertex.get", "dag.frontier.get",
+    "dag.merkle.root", "dag.merkle.proof", "dag.merkle.verify",
+    "dag.slice.checkout", "dag.slice.get",
+]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine_primal"
+order = 4
+required = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "lineage"
+capabilities = [
+    "spine.create", "spine.get", "spine.seal",
+    "entry.append", "entry.get",
+    "certificate.mint", "certificate.transfer",
+    "session.commit", "braid.commit",
+]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass_primal"
+order = 5
+required = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "provenance"
+capabilities = [
+    "braid.create", "braid.get", "braid.commit",
+    "anchoring.anchor", "anchoring.verify",
+    "provenance.graph", "provenance.export_provo",
+    "attribution.chain", "attribution.calculate_rewards",
+]
+
+# ── Validation (not spawned) ──
+
+[[graph.node]]
+name = "validate_provenance"
+binary = "primalspring_primal"
+order = 99
+required = false
+spawn = false
+depends_on = ["beardog", "songbird", "rhizocrypt", "loamspine", "sweetgrass"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.provenance_health"]

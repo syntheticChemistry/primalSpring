@@ -27,6 +27,15 @@ NODE_ID = "tower1"
 pass_family_id = false
 [profiles.squirrel.env_sockets]
 SERVICE_MESH_ENDPOINT = "neural-api"
+STORAGE_STORE_PROVIDER_SOCKET = "nestgate"
+STORAGE_GET_PROVIDER_SOCKET = "nestgate"
+STORAGE_LIST_PROVIDER_SOCKET = "nestgate"
+MODEL_REGISTER_PROVIDER_SOCKET = "nestgate"
+MODEL_LOCATE_PROVIDER_SOCKET = "nestgate"
+COMPUTE_EXECUTE_PROVIDER_SOCKET = "toadstool"
+COMPUTE_DISPATCH_SUBMIT_PROVIDER_SOCKET = "toadstool"
+HTTP_REQUEST_PROVIDER_SOCKET = "songbird"
+CRYPTO_SIGN_PROVIDER_SOCKET = "beardog"
 [profiles.squirrel.extra_env]
 SQUIRREL_MODE = "server"
 [profiles.squirrel.passthrough_env]
@@ -77,6 +86,34 @@ PETALTONGUE_MODE = "server"
 PETALTONGUE_HEADLESS = "true"
 [profiles.petaltongue.env_sockets]
 NEURAL_API_SOCKET = "neural-api"
+
+[profiles.sweetgrass]
+pass_family_id = false
+[profiles.sweetgrass.extra_env]
+SWEETGRASS_MODE = "server"
+[profiles.sweetgrass.env_sockets]
+SWEETGRASS_SOCKET = "sweetgrass"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+
+[profiles.loamspine]
+pass_family_id = false
+[profiles.loamspine.extra_env]
+LOAMSPINE_MODE = "server"
+[profiles.loamspine.env_sockets]
+LOAMSPINE_SOCKET = "loamspine"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+RHIZOCRYPT_SOCKET = "rhizocrypt"
+
+[profiles.rhizocrypt]
+pass_family_id = false
+[profiles.rhizocrypt.extra_env]
+RHIZOCRYPT_MODE = "server"
+[profiles.rhizocrypt.env_sockets]
+RHIZOCRYPT_SOCKET = "rhizocrypt"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
 
 [profiles.neural-api-server]
 # Neural API server uses a different socket pattern and no "server" subcommand.

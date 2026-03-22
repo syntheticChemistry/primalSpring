@@ -132,6 +132,7 @@ capabilities = [
 [[graph.node]]
 name = "validate_${SPRING_NAME}"
 binary = "primalspring_primal"
+spawn = false
 order = 99
 required = false
 depends_on = ["${SPRING_NAME}"]

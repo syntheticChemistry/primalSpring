@@ -366,7 +366,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "clap",
  "neural-api-client-sync",
@@ -796,6 +796,24 @@ dependencies = [
 [[package]]
 name = "primalspring-exp068"
 version = "0.6.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp069"
+version = "0.7.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp070"
+version = "0.7.0"
 dependencies = [
  "primalspring",
  "serde",

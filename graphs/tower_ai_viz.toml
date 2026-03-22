@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Tower + AI + Visualization Overlay — full user-facing composition
+#
+# Tower Atomic + Squirrel (AI alignment) + petalTongue (visualization).
+# This is the composition for user-facing deployments that need both
+# AI interaction and dashboard/visualization capabilities at the
+# Tower level.
+#
+# Usage:
+#   biomeos deploy --graph graphs/tower_ai_viz.toml
+
+[graph]
+name = "tower_ai_viz"
+description = "Tower Atomic + Squirrel + petalTongue (full user-facing)"
+version = "0.1.0"
+coordination = "sequential"
+
+# ── Phase 1: Tower Atomic (base tier) ──
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
+    "crypto.verify", "crypto.keygen", "crypto.identity",
+]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request",
+]
+
+# ── Phase 2: AI + Visualization Overlays ──
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 3
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
+
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue_primal"
+order = 4
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "visualization"
+capabilities = [
+    "viz.render", "viz.dashboard",
+    "viz.stream", "viz.query",
+]
+
+# ── Validation (not spawned) ──
+
+[[graph.node]]
+name = "validate_tower_ai_viz"
+binary = "primalspring_primal"
+order = 99
+required = false
+spawn = false
+depends_on = ["beardog", "songbird", "squirrel", "petaltongue"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.tower_ai_viz_health"]

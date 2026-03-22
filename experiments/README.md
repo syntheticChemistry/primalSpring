@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**47 experiments across 8 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**49 experiments across 8 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -13,12 +13,12 @@ Every experiment uses the shared validation harness (`check_bool`, `check_skip`,
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 47 experiments.
+across all 49 experiments.
 
 ## Running
 
 ```bash
-# Run all 47 experiments via meta-validator
+# Run all 49 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -33,13 +33,13 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | Track | Domain | Experiments | Status |
 |-------|--------|-------------|--------|
 | 1 | Atomic Composition | exp001–006 | IPC wired, discovery wired |
-| 2 | Graph Execution | exp010–015 | Discovery wired |
+| 2 | Graph Execution | exp010–015 | **3/5 live** (Sequential, Parallel, ConditionalDag), 2 awaiting provenance trio |
 | 3 | Emergent Systems | exp020–025 | Discovery wired |
 | 4 | Bonding & Plasmodium | exp030–034 | Discovery wired |
 | 5 | coralForge | (exp025) | Discovery wired |
 | 6 | Cross-Spring | exp040–044 | Discovery wired |
 | 7 | Showcase-Mined | exp050–059 | Discovery wired |
-| 8 | Live Composition | exp060–068 | **Live validated** (Tower + Squirrel AI + Nest + Node + NUCLEUS) |
+| 8 | Live Composition | exp060–070 | **Live validated** (Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery) |
 
 ## Experiment Status Key
 
@@ -58,7 +58,11 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 4 | Tower Atomic + Squirrel AI live | Done (v0.4.0) |
 | 5 | Tower Full Utilization | Done (v0.5.0) |
 | 6 | Nest Atomic + Node Atomic + NUCLEUS | Done (v0.6.0) |
-| 7+ | Graph execution, emergent, bonding live | Planned |
+| 7 | Graph-Driven Overlay Composition | Done (v0.7.0) |
+| 8 | Squirrel Cross-Primal Discovery | Done (v0.7.0) |
+| 9 | Graph Execution Patterns (3/5 live) | Done (v0.7.0) |
+| 10 | Provenance Readiness (structural) | Done (v0.7.0) |
+| 11+ | Provenance trio live, emergent, bonding | Awaiting provenance-trio-types |
 
 ## Validation Harness
 
@@ -76,7 +80,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.6.0, depends on ecoPrimal
+├── Cargo.toml    # version 0.7.0, depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

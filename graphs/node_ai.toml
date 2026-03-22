@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Node + AI Overlay — compute + AI coordination
+#
+# Node Atomic (Tower + ToadStool) + Squirrel (AI alignment).
+# Composes AI task coordination on top of the compute tier,
+# enabling GPU workloads to be directed by AI-driven planning.
+#
+# Usage:
+#   biomeos deploy --graph graphs/node_ai.toml
+
+[graph]
+name = "node_ai"
+description = "Node Atomic + Squirrel (compute + AI coordination)"
+version = "0.1.0"
+coordination = "sequential"
+
+# ── Phase 1: Tower Atomic (base) ──
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
+    "crypto.verify", "crypto.keygen", "crypto.identity",
+]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request",
+]
+
+# ── Phase 2: Node Extension ──
+
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = [
+    "compute.dispatch.submit",
+    "compute.dispatch.status",
+    "compute.dispatch.cancel",
+    "compute.execute",
+]
+
+# ── Phase 3: AI Overlay ──
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 4
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
+
+# ── Validation (not spawned) ──
+
+[[graph.node]]
+name = "validate_node_ai"
+binary = "primalspring_primal"
+order = 99
+required = false
+spawn = false
+depends_on = ["beardog", "songbird", "toadstool", "squirrel"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.node_ai_health"]

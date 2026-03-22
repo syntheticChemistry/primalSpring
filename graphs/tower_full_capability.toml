@@ -100,6 +100,7 @@ name = "validate_tower_full"
 binary = "primalspring_primal"
 order = 5
 required = true
+spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "coordination"

@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.6.0 (Phase 6 — NUCLEUS COMPOSITION VALIDATED 58/58, Tower + Nest + Node, 282 tests, 47 experiments)  
+**Version**: 0.7.0 (Phase 10 — GRAPH EXECUTION + PROVENANCE READINESS 87/87, 253+ tests, 49 experiments)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 22, 2026
 
@@ -37,26 +37,30 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **282** (239 unit + 31 integration + 2 doc-tests + 10 ignored) |
-| Experiments | 47 (8 tracks) |
+| Tests | **253+** (unit + integration + doc-tests, 42 ignored live) |
+| Experiments | 49 (8 tracks) |
 | Proptest fuzz tests | 15 |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | 11 TOMLs, all `by_capability`, topologically validated |
+| Deploy graphs | 18 TOMLs, all `by_capability`, topologically validated |
 | RPC endpoints | 17 methods |
 | Discovery | **Capability-first**: `discover_by_capability()` + 5-tier + Neural API |
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
-| Meta-validator | `validate_all` binary — runs all 47 experiments |
+| Meta-validator | `validate_all` binary — runs all 49 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates passing (core + full utilization) |
 | Nest Atomic | **VALIDATED** — nestgate storage (8/8 gates) |
 | Node Atomic | **VALIDATED** — toadstool compute (5/5 gates) |
-| NUCLEUS | **VALIDATED** — Tower + Nest + Node (58/58 total gates) |
-| Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
+| NUCLEUS | **VALIDATED** — Tower + Nest + Node (58/58 base gates) |
+| Graph Overlays | **VALIDATED** — tier-independent primals via deploy graphs (14/14) |
+| Squirrel Discovery | **VALIDATED** — cross-primal env_sockets wiring (5/5) |
+| Graph Execution | **LIVE** — 3/5 coordination patterns validated live (6/6) |
+| Provenance Readiness | **STRUCTURAL** — launch profiles + deploy graph ready (4/4) |
+| Total Gates | **87/87** |
 
 ### Key Capabilities
 
@@ -64,7 +68,7 @@ primalSpring fills the gap.
   they offer, not who they are. All RPC handlers default to capability-based validation.
 - **Graphs as source of truth**: `topological_waves()` computes startup ordering via
   Kahn's algorithm. `graph_required_capabilities()` extracts capability rosters from
-  graph nodes. All 11 graphs have `by_capability` on every node (enforced by test).
+  graph nodes. All 18 graphs have `by_capability` on every node (enforced by test).
 - **Real IPC**: `probe_primal()`, `validate_composition_by_capability()`, `health_check()`
   connect to live providers via Unix socket JSON-RPC 2.0
 - **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase`), `CircuitBreaker`,
@@ -85,7 +89,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (8 Tracks, 47 Experiments)
+## Track Structure (8 Tracks, 49 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -107,12 +111,12 @@ Validate all 5 coordination patterns with real primals.
 
 | Exp | Pattern | Graph |
 |-----|---------|-------|
-| 010 | Sequential | rootpulse_commit.toml |
-| 011 | Parallel | parallel_capability_burst.toml |
-| 012 | ConditionalDag | conditional_fallback.toml |
-| 013 | Pipeline | streaming_pipeline.toml |
-| 014 | Continuous | continuous_tick.toml |
-| 015 | PathwayLearner | Metrics + optimization |
+| 010 | Sequential | tower_atomic_bootstrap.toml | **Live validated** |
+| 011 | Parallel | parallel_capability_burst.toml | **Live validated** |
+| 012 | ConditionalDag | conditional_fallback.toml | **Live validated** |
+| 013 | Pipeline | streaming_pipeline.toml | Awaiting sweetGrass |
+| 014 | Continuous | continuous_tick.toml | Awaiting provenance trio |
+| 015 | PathwayLearner | Metrics + optimization | Discovery wired |
 
 ### Track 3: Emergent Systems (exp020–025)
 
@@ -174,7 +178,7 @@ Early coordination patterns extracted from phase1/ and phase2/ primal showcases.
 | 058 | Semantic attribution | Module/feature/function tracking + fair credit |
 | 059 | Weak force isolation | Zero leakage with unknown primals |
 
-### Track 8: Live Composition (exp060–068)
+### Track 8: Live Composition (exp060–070)
 
 Live multi-primal composition with real primals from `plasmidBin`.
 
@@ -189,6 +193,8 @@ Live multi-primal composition with real primals from `plasmidBin`.
 | 066 | Nest Atomic | nestgate storage: store/retrieve/list/model cache (13/13) | **Live validated** |
 | 067 | Node Atomic | toadstool compute: health, capabilities, version (13/13) | **Live validated** |
 | 068 | Full NUCLEUS | Tower + Nest + Node composing together (16/16) | **Live validated** |
+| 069 | Graph overlay composition | Overlay structural + merge + live (25/25) | **Live validated** |
+| 070 | Squirrel cross-primal discovery | Cross-primal env_sockets + capability.discover | **Live validated** |
 
 ---
 
@@ -229,6 +235,8 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_V070_GRAPH_OVERLAY_HANDOFF_MAR22_2026.md` | Mar 22 | Graph overlays, Squirrel discovery, graph execution, integration guide for all teams |
+| v0.7.0 | `PROVENANCE_TRIO_HANDOFF_MAR22_2026.md` | Mar 22 | sweetGrass/loamSpine/rhizoCrypt: blocker, required methods, integration path |
 | v0.6.0 | `PRIMALSPRING_V060_NUCLEUS_COMPOSITION_HANDOFF_MAR22_2026.md` | Mar 22 | NUCLEUS validated: Nest + Node atomic layers, 58/58 gates, toadstool/barracuda evolution |
 | v0.5.0 | `TOWER_FULL_UTILIZATION_VALIDATED_MAR21_2026.md` | Mar 21 | Tower 41/41, subsystems, petalTongue, parallel tests |
 | v0.4.0 | `TOWER_STABILITY_SPRINT_MAR21_2026.md` | Mar 21 | Tower 24/24 STABLE, 7 new integration tests, cross-primal capability alignment |

@@ -145,6 +145,7 @@ name = "primalspring"
 binary = "primalspring_primal"
 order = 9
 required = true
+spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.check"
 by_capability = "coordination"

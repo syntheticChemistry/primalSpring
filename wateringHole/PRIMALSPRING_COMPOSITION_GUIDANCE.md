@@ -1,7 +1,7 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
-**Date**: March 18, 2026
-**From**: primalSpring v0.3.0-dev
+**Date**: March 22, 2026
+**From**: primalSpring v0.7.0
 **License**: AGPL-3.0-or-later
 
 ---
@@ -232,3 +232,169 @@ primalSpring's composition guidance differs from compute springs: primalSpring
 5. **What capabilities you expose** — coordination, health, lifecycle
 
 Remember: complexity through coordination, not coupling.
+
+---
+
+## 9. Graph-Driven Overlay Composition (v0.7.0)
+
+**Key Insight**: Tier-independent primals (Squirrel, petalTongue, biomeOS) are
+not locked to `FullNucleus`. Any atomic tier can compose them as **optional
+overlays** via deploy graphs.
+
+### The Overlay Model
+
+Instead of fixed `AtomicType` enum gating, deploy graph TOMLs define the full
+primal set. The harness spawns **all nodes with `spawn = true`** and uses the
+base tier's `required_primals()` as the minimum guarantee.
+
+```
+Base Tier (required)    +    Overlay (optional, from graph)
+────────────────────        ─────────────────────────────
+Tower: beardog, songbird    + squirrel (AI alignment)
+Nest:  + nestgate           + petaltongue (storage dashboards)
+Node:  + toadstool          + squirrel (AI-driven compute)
+```
+
+### Deploy Graph TOMLs
+
+| Graph | Base Tier | Overlay Primals | Use Case |
+|-------|-----------|-----------------|----------|
+| `tower_ai.toml` | Tower | Squirrel | AI task alignment at Tower level |
+| `tower_ai_viz.toml` | Tower | Squirrel + petalTongue | Full user-facing with dashboards |
+| `nest_viz.toml` | Nest | petalTongue | Storage dashboards |
+| `node_ai.toml` | Node | Squirrel | AI-directed compute workloads |
+
+### Graph Node Fields
+
+Each graph node supports:
+
+```toml
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 3
+required = false           # composition doesn't fail if missing
+spawn = true               # harness spawns this as a process (default: true)
+depends_on = ["beardog"]   # topological ordering
+by_capability = "ai"       # capability routing key
+capabilities = ["ai.query", "ai.complete"]
+```
+
+Set `spawn = false` for validation/coordination nodes that the harness should
+not spawn (e.g. `validate_tower`, `primalspring`).
+
+### Capability Resolution
+
+The harness resolves capabilities in two layers:
+
+1. **Static base tier** — `AtomicType::required_capabilities()` maps to
+   `required_primals()` (e.g. `"security"` → `"beardog"`)
+2. **Dynamic overlay** — graph nodes with `spawn = true` and `by_capability`
+   populate an overlay map (e.g. `"ai"` → `"squirrel"`)
+
+`RunningAtomic::socket_for("ai")` transparently resolves through both layers.
+
+### Graph Merge/Compose
+
+biomeOS can compose graphs at runtime:
+
+```rust
+use primalspring::deploy::{load_graph, merge_graphs};
+
+let base = load_graph("graphs/tower_atomic_bootstrap.toml")?;
+let overlay = load_graph("graphs/tower_ai.toml")?;
+let merged = merge_graphs(&base, &overlay);
+// merged.graph.name = "tower_atomic_bootstrap+tower_ai"
+```
+
+Merge semantics: overlay nodes with the same name override base nodes; new
+nodes are appended. The result is topologically validated.
+
+### biomeOS Graph Self-Composition
+
+biomeOS itself is a tier-independent primal that can **compose its own graphs**:
+
+- A running biomeOS instance can call `graph.compose` to merge a base tier
+  graph with an overlay fragment
+- biomeOS can spawn nested biomeOS instances as VM-like systems, each with
+  their own deploy graph
+- Graph fragments are the unit of composition — biomeOS reads, merges, and
+  deploys them
+
+This pattern enables:
+- Dynamic composition changes without restart
+- Nested biomeOS topologies
+- Self-modifying deploy graphs (biomeOS updates its own graph)
+
+### Experiments and Tests
+
+| Artifact | Purpose |
+|----------|---------|
+| `exp069_graph_overlay_composition` | End-to-end overlay validation |
+| `overlay_tower_ai_*` integration tests | Tower + Squirrel via graph |
+| `overlay_nest_viz_*` integration tests | Nest + petalTongue via graph |
+| `overlay_node_ai_*` integration tests | Node + Squirrel via graph |
+| `overlay_graph_merge_base_plus_ai` | Graph merge validation |
+
+---
+
+## Section 10. Squirrel Free-Roaming Coordination (v0.7.0)
+
+Squirrel is the AI coordinator primal — it moves freely across the
+ecosystem, discovering sibling primals and routing tool/AI/context
+requests through them. Unlike domain-bound primals, Squirrel has no
+fixed tier; it attaches to any composition via deploy graph overlays.
+
+### Discovery Mechanism
+
+Squirrel uses 3-tier capability discovery:
+
+1. **Explicit env var** (`{CAPABILITY}_PROVIDER_SOCKET=/path/to/socket`) — fastest
+2. **Registry query** — Neural API capability registry
+3. **Socket scan** — `$XDG_RUNTIME_DIR/biomeos/` directory (fallback)
+
+The primalSpring harness provides all three: env vars via `env_sockets`
+in `primal_launch_profiles.toml`, Neural API via the composition, and
+the shared `biomeos/` runtime directory for socket scanning.
+
+### Wired Capabilities
+
+Squirrel's launch profile maps 9 capability-provider socket pairs:
+
+| Env Var | Provider | Capabilities |
+|---------|----------|-------------|
+| `STORAGE_STORE_PROVIDER_SOCKET` | nestgate | `storage.store` |
+| `STORAGE_GET_PROVIDER_SOCKET` | nestgate | `storage.retrieve` |
+| `STORAGE_LIST_PROVIDER_SOCKET` | nestgate | `storage.list` |
+| `MODEL_REGISTER_PROVIDER_SOCKET` | nestgate | `model.register` |
+| `MODEL_LOCATE_PROVIDER_SOCKET` | nestgate | `model.locate` |
+| `COMPUTE_EXECUTE_PROVIDER_SOCKET` | toadstool | `compute.execute` |
+| `COMPUTE_DISPATCH_SUBMIT_PROVIDER_SOCKET` | toadstool | `compute.dispatch.submit` |
+| `HTTP_REQUEST_PROVIDER_SOCKET` | songbird | `http.request` (cloud AI) |
+| `CRYPTO_SIGN_PROVIDER_SOCKET` | beardog | `crypto.sign` |
+
+### Full Overlay Graph
+
+`graphs/full_overlay.toml` composes all capability domains:
+
+```
+beardog (security) → songbird (discovery) → nestgate (storage)
+                                          → toadstool (compute)
+                                          → squirrel (ai)
+```
+
+Squirrel discovers all siblings via env vars and can:
+- **`capability.discover`** — report known sibling capabilities
+- **`tool.list`** — aggregate tools from all discovered primals
+- **`context.create`** — manage AI context (backed by nestgate storage)
+- **`ai.query`** — route queries through Songbird's `http.request` to cloud AI
+
+### Experiments and Tests
+
+| Artifact | Purpose |
+|----------|---------|
+| `exp070_squirrel_cross_primal_discovery` | Cross-primal discovery validation |
+| `squirrel_discovers_sibling_primals` | Squirrel finds NestGate/ToadStool/Songbird |
+| `squirrel_tool_list_aggregates` | Aggregated tool listing from multiple primals |
+| `squirrel_context_create` | Context management via composition |
+| `squirrel_ai_query_routes_via_songbird` | Cloud AI routing through Songbird |

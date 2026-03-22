@@ -3,6 +3,50 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.0] — 2026-03-22
+
+### Added
+- **Graph-Driven Overlay Composition** — tier-independent primals (Squirrel,
+  petalTongue, biomeOS) compose at any atomic tier via deploy graphs
+- **Squirrel Cross-Primal Discovery** — Squirrel discovers sibling primals
+  (NestGate, ToadStool, Songbird, BearDog) via explicit env_sockets wiring
+  and `$XDG_RUNTIME_DIR/biomeos/` socket scanning
+- `spawn` field on `GraphNode` — distinguishes primal nodes (spawn=true) from
+  validation/coordination nodes (spawn=false). Defaults to true for backward
+  compatibility with existing graphs
+- `graph_spawnable_primals()` — extract spawnable primal names from a graph
+- `graph_capability_map()` — build capability-to-primal mapping from graph
+- `merge_graphs()` — merge base + overlay deploy graphs for runtime composition
+- `RunningAtomic::overlay_capabilities` — dynamic capability resolution for
+  primals beyond the base tier
+- `RunningAtomic::all_capabilities()` — returns base + overlay capability names
+- `RunningAtomic::overlay_primals()` — names of primals from the graph overlay
+- 5 new overlay deploy graphs: `tower_ai.toml`, `tower_ai_viz.toml`,
+  `nest_viz.toml`, `node_ai.toml`, `full_overlay.toml`
+- 9 Squirrel env_sockets in launch profile for cross-primal capability routing
+- 15 new integration tests (4 structural + 7 live overlay + 4 Squirrel discovery)
+- **exp069_graph_overlay_composition** — end-to-end overlay validation (25/25)
+- **exp070_squirrel_cross_primal_discovery** — cross-primal discovery validation
+- Gates 17-20 in TOWER_STABILITY.md: overlay composition gates (14/14 PASS)
+- Gate 21 in TOWER_STABILITY.md: Squirrel cross-primal discovery (5/5 PASS)
+- **Graph Execution Patterns Live** — exp010 (Sequential), exp011 (Parallel),
+  exp012 (ConditionalDag) rewired from scaffolded skips to live AtomicHarness
+  compositions with real primals
+- **Provenance Readiness** — launch profiles for sweetGrass, loamSpine,
+  rhizoCrypt; `provenance_overlay.toml` deploy graph; handoffs delivered
+- Gate 22: Graph Execution Patterns (6/6 PASS)
+- Gate 23: Provenance Readiness (4/4 PASS)
+
+### Changed
+- `compute_spawn_order` now spawns **all** graph nodes with `spawn=true`, not
+  just those in `required_primals()`. Base tier primals are the minimum
+  guarantee; graphs can add more
+- `capability_to_primal` returns `Option<String>` (was `Option<&'static str>`)
+  to support dynamic overlay capabilities
+- All existing deploy graphs updated with `spawn = false` on validation nodes
+- exp010-012 rewired from scaffolded skips to live graph-driven compositions
+- 87/87 total gates, 49 experiments, 253+ tests
+
 ## [0.6.0] — 2026-03-22
 
 ### Added

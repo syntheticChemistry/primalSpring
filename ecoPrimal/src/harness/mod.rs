@@ -20,7 +20,7 @@
 //! // all primals killed and sockets cleaned up
 //! ```
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use crate::coordination::AtomicType;
@@ -41,6 +41,12 @@ pub struct RunningAtomic {
     family_id: String,
     runtime_dir: PathBuf,
     atomic: AtomicType,
+    /// Dynamic capability-to-primal mapping from graph overlay nodes.
+    ///
+    /// Populated when a deploy graph adds primals beyond the base tier's
+    /// `required_primals()`. Falls back to the static `AtomicType` mapping
+    /// when empty.
+    overlay_capabilities: HashMap<String, String>,
 }
 
 impl RunningAtomic {
@@ -51,7 +57,7 @@ impl RunningAtomic {
     #[must_use]
     pub fn socket_for(&self, capability: &str) -> Option<&PathBuf> {
         let primal = self.capability_to_primal(capability)?;
-        self.nucleation.get(primal, &self.family_id)
+        self.nucleation.get(&primal, &self.family_id)
     }
 
     /// Get the socket path for a given primal name.
@@ -67,8 +73,8 @@ impl RunningAtomic {
     #[must_use]
     pub fn client_for(&self, capability: &str) -> Option<PrimalClient> {
         let primal = self.capability_to_primal(capability)?;
-        let socket = self.nucleation.get(primal, &self.family_id)?;
-        PrimalClient::connect(socket, primal).ok()
+        let socket = self.nucleation.get(&primal, &self.family_id)?;
+        PrimalClient::connect(socket, &primal).ok()
     }
 
     /// Connect a [`PrimalClient`] to a primal by name.
@@ -187,13 +193,49 @@ impl RunningAtomic {
     }
 
     /// Map a capability name to the primal that provides it in this composition.
-    fn capability_to_primal(&self, capability: &str) -> Option<&'static str> {
+    ///
+    /// Checks the static `AtomicType` mapping first, then falls back to
+    /// the dynamic overlay capabilities populated from the deploy graph.
+    fn capability_to_primal(&self, capability: &str) -> Option<String> {
         let caps = self.atomic.required_capabilities();
         let primals = self.atomic.required_primals();
-        caps.iter()
+        if let Some(primal) = caps
+            .iter()
             .zip(primals.iter())
             .find(|&(cap, _)| *cap == capability)
-            .map(|(_, &primal)| primal)
+            .map(|(_, &primal)| primal.to_owned())
+        {
+            return Some(primal);
+        }
+        self.overlay_capabilities.get(capability).cloned()
+    }
+
+    /// All capability names available in this composition (base tier + overlay).
+    #[must_use]
+    pub fn all_capabilities(&self) -> Vec<String> {
+        let mut caps: Vec<String> = self
+            .atomic
+            .required_capabilities()
+            .iter()
+            .map(|&s| s.to_owned())
+            .collect();
+        for key in self.overlay_capabilities.keys() {
+            if !caps.contains(key) {
+                caps.push(key.clone());
+            }
+        }
+        caps
+    }
+
+    /// Names of overlay primals (those beyond the base tier).
+    #[must_use]
+    pub fn overlay_primals(&self) -> Vec<String> {
+        let base: HashSet<&str> = self.atomic.required_primals().iter().copied().collect();
+        self.processes
+            .iter()
+            .filter(|p| !base.contains(p.name.as_str()))
+            .map(|p| p.name.clone())
+            .collect()
     }
 }
 
@@ -263,7 +305,7 @@ impl AtomicHarness {
     /// Returns [`LaunchError`] if any binary cannot be found, any
     /// process fails to spawn, or any socket times out.
     pub fn start(&self, family_id: &str) -> Result<RunningAtomic, LaunchError> {
-        let spawn_order = self.compute_spawn_order()?;
+        let (spawn_order, overlay_capabilities) = self.compute_spawn_order()?;
 
         let runtime_dir = std::env::temp_dir().join(format!(
             "primalspring-harness-{}-{}",
@@ -302,6 +344,7 @@ impl AtomicHarness {
             family_id: family_id.to_owned(),
             runtime_dir,
             atomic: self.atomic,
+            overlay_capabilities,
         })
     }
 
@@ -323,7 +366,7 @@ impl AtomicHarness {
         family_id: &str,
         graphs_dir: &Path,
     ) -> Result<RunningAtomic, LaunchError> {
-        let spawn_order = self.compute_spawn_order()?;
+        let (spawn_order, overlay_capabilities) = self.compute_spawn_order()?;
 
         let runtime_dir = std::env::temp_dir().join(format!(
             "primalspring-harness-{}-{}",
@@ -369,20 +412,33 @@ impl AtomicHarness {
             family_id: family_id.to_owned(),
             runtime_dir,
             atomic: self.atomic,
+            overlay_capabilities,
         })
     }
 
     /// Determine spawn order: graph-driven topological waves when a graph
     /// path was provided, otherwise the static `required_primals()` order.
     ///
-    /// When using topological waves, only primals in `required_primals()`
-    /// are included (graph may contain validation nodes we don't spawn).
-    /// Any required primals missing from the graph are appended at the end.
-    fn compute_spawn_order(&self) -> Result<Vec<String>, LaunchError> {
+    /// **Graph-driven overlay model**: when a graph is provided, **all**
+    /// nodes with `spawn = true` are included in the spawn order. This
+    /// allows deploy graphs to compose tier-independent primals (Squirrel,
+    /// petalTongue, biomeOS) with any base tier. The base tier's
+    /// `required_primals()` are the minimum guarantee — appended if absent
+    /// from the graph.
+    ///
+    /// Returns `(spawn_order, overlay_capability_map)` where the overlay
+    /// map contains capability->primal entries for graph nodes beyond the
+    /// base tier.
+    fn compute_spawn_order(
+        &self,
+    ) -> Result<(Vec<String>, HashMap<String, String>), LaunchError> {
         let required: Vec<&str> = self.atomic.required_primals().to_vec();
 
         let Some(ref graph_path) = self.graph_path else {
-            return Ok(required.iter().map(|s| (*s).to_owned()).collect());
+            return Ok((
+                required.iter().map(|s| (*s).to_owned()).collect(),
+                HashMap::new(),
+            ));
         };
 
         let graph = deploy::load_graph(graph_path).map_err(|e| {
@@ -396,11 +452,13 @@ impl AtomicHarness {
             ))
         })?;
 
-        let required_set: HashSet<&str> = required.iter().copied().collect();
+        let spawnable: HashSet<String> =
+            deploy::graph_spawnable_primals(&graph).into_iter().collect();
+
         let mut ordered: Vec<String> = waves
             .into_iter()
             .flatten()
-            .filter(|name| required_set.contains(name.as_str()))
+            .filter(|name| spawnable.contains(name))
             .collect();
 
         for &r in &required {
@@ -409,7 +467,13 @@ impl AtomicHarness {
             }
         }
 
-        Ok(ordered)
+        let required_set: HashSet<&str> = required.iter().copied().collect();
+        let overlay_caps: HashMap<String, String> = deploy::graph_capability_map(&graph)
+            .into_iter()
+            .filter(|(_, primal)| !required_set.contains(primal.as_str()))
+            .collect();
+
+        Ok((ordered, overlay_caps))
     }
 }
 
@@ -430,6 +494,7 @@ mod tests {
             family_id: "test".to_owned(),
             runtime_dir: dir.clone(),
             atomic: AtomicType::Tower,
+            overlay_capabilities: HashMap::new(),
         };
         assert_eq!(running.primal_count(), 0);
         drop(running);
@@ -449,18 +514,62 @@ mod tests {
             family_id: "test".to_owned(),
             runtime_dir: dir,
             atomic: AtomicType::Tower,
+            overlay_capabilities: HashMap::new(),
         };
-        assert_eq!(running.capability_to_primal("security"), Some("beardog"));
-        assert_eq!(running.capability_to_primal("discovery"), Some("songbird"));
+        assert_eq!(
+            running.capability_to_primal("security"),
+            Some("beardog".to_owned())
+        );
+        assert_eq!(
+            running.capability_to_primal("discovery"),
+            Some("songbird".to_owned())
+        );
         assert_eq!(running.capability_to_primal("nonexistent"), None);
+        drop(running);
+    }
+
+    #[test]
+    fn capability_to_primal_overlay_fallback() {
+        let dir = std::env::temp_dir().join(format!(
+            "primalspring-harness-overlay-{}",
+            std::process::id()
+        ));
+        let _ = std::fs::create_dir_all(&dir);
+        let nuc = SocketNucleation::new(dir.clone());
+        let mut overlay = HashMap::new();
+        overlay.insert("ai".to_owned(), "squirrel".to_owned());
+        let running = RunningAtomic {
+            processes: vec![],
+            neural_api_process: None,
+            nucleation: nuc,
+            family_id: "test".to_owned(),
+            runtime_dir: dir,
+            atomic: AtomicType::Tower,
+            overlay_capabilities: overlay,
+        };
+        assert_eq!(
+            running.capability_to_primal("security"),
+            Some("beardog".to_owned()),
+            "base tier capabilities still resolve"
+        );
+        assert_eq!(
+            running.capability_to_primal("ai"),
+            Some("squirrel".to_owned()),
+            "overlay capabilities resolve"
+        );
+        assert_eq!(running.capability_to_primal("nonexistent"), None);
+        let all_caps = running.all_capabilities();
+        assert!(all_caps.contains(&"security".to_owned()));
+        assert!(all_caps.contains(&"ai".to_owned()));
         drop(running);
     }
 
     #[test]
     fn compute_spawn_order_without_graph() {
         let harness = AtomicHarness::new(AtomicType::Tower);
-        let order = harness.compute_spawn_order().unwrap();
+        let (order, overlay) = harness.compute_spawn_order().unwrap();
         assert_eq!(order, vec!["beardog", "songbird"]);
+        assert!(overlay.is_empty(), "no overlay without graph");
     }
 
     #[test]
@@ -468,7 +577,7 @@ mod tests {
         let graph_path =
             Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/tower_atomic_bootstrap.toml");
         let harness = AtomicHarness::with_graph(AtomicType::Tower, &graph_path);
-        let order = harness.compute_spawn_order().unwrap();
+        let (order, _overlay) = harness.compute_spawn_order().unwrap();
         assert!(
             order.contains(&"beardog".to_owned()),
             "should include beardog"
@@ -490,11 +599,39 @@ mod tests {
         let graph_path =
             Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/node_atomic_compute.toml");
         let harness = AtomicHarness::with_graph(AtomicType::Node, &graph_path);
-        let order = harness.compute_spawn_order().unwrap();
+        let (order, _overlay) = harness.compute_spawn_order().unwrap();
         assert_eq!(order.len(), 3, "Node = beardog + songbird + toadstool");
         assert!(order.contains(&"beardog".to_owned()));
         assert!(order.contains(&"songbird".to_owned()));
         assert!(order.contains(&"toadstool".to_owned()));
+    }
+
+    #[test]
+    fn compute_spawn_order_overlay_includes_extra_primals() {
+        let graph_path =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/tower_ai.toml");
+        if !graph_path.exists() {
+            return; // graph not yet created
+        }
+        let harness = AtomicHarness::with_graph(AtomicType::Tower, &graph_path);
+        let (order, overlay) = harness.compute_spawn_order().unwrap();
+        assert!(
+            order.contains(&"beardog".to_owned()),
+            "base tier beardog present"
+        );
+        assert!(
+            order.contains(&"songbird".to_owned()),
+            "base tier songbird present"
+        );
+        assert!(
+            order.contains(&"squirrel".to_owned()),
+            "overlay squirrel present from graph"
+        );
+        assert!(
+            overlay.contains_key("ai"),
+            "overlay should map ai capability"
+        );
+        assert_eq!(overlay.get("ai").unwrap(), "squirrel");
     }
 
     #[test]

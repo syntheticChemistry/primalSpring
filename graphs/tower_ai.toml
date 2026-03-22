@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Tower + AI Overlay — Tower Atomic + Squirrel (AI alignment)
+#
+# Composes Squirrel as a tier-independent AI overlay on top of the
+# Tower Atomic base. Towers with this graph get AI-assisted task
+# alignment, MCP tool access, and LLM bridging alongside the core
+# security + discovery foundation.
+#
+# Usage:
+#   biomeos deploy --graph graphs/tower_ai.toml
+#   primalspring_primal server  # coordination.deploy_atomic {"atomic":"Tower","graph":"tower_ai"}
+
+[graph]
+name = "tower_ai"
+description = "Tower Atomic + Squirrel AI overlay"
+version = "0.1.0"
+coordination = "sequential"
+
+# ── Phase 1: Tower Atomic (base tier) ──
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
+    "crypto.verify", "crypto.keygen", "crypto.identity",
+]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request",
+]
+
+# ── Phase 2: AI Overlay ──
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 3
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
+
+# ── Validation (not spawned) ──
+
+[[graph.node]]
+name = "validate_tower_ai"
+binary = "primalspring_primal"
+order = 99
+required = false
+spawn = false
+depends_on = ["beardog", "songbird", "squirrel"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.tower_ai_health"]

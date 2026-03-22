@@ -5,12 +5,12 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, bonding |
-| **Version** | 0.6.0 |
+| **Version** | 0.7.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 282 (239 unit + 31 integration + 2 doc-tests + 10 ignored) |
-| **Experiments** | 47 (8 tracks) |
-| **Compositions** | Tower + Nest + Node + NUCLEUS (58/58 gates) |
+| **Tests** | 253+ (unit + integration + doc-tests) |
+| **Experiments** | 49 (8 tracks) |
+| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution (87/87 gates) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -48,12 +48,12 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   └── validate_all/          # Meta-validator: runs all 47 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 49 experiments
 │   └── tests/
-│       └── server_integration.rs  # 41 tests (10 auto + 31 live atomic/Nest/Node/NUCLEUS)
-├── experiments/                   # 47 validation experiments (8 tracks)
+│       └── server_integration.rs  # 45 tests (10 auto + 35 live atomic/Nest/Node/NUCLEUS/Squirrel)
+├── experiments/                   # 49 validation experiments (8 tracks)
 ├── config/                        # Launch profiles (primal_launch_profiles.toml)
-├── graphs/                        # 11 biomeOS deploy graph TOMLs (all by_capability)
+├── graphs/                        # 18 biomeOS deploy graph TOMLs (all by_capability)
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
 └── wateringHole/                  # Docs and handoffs
@@ -83,13 +83,13 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 282 tests (251 auto + 31 ignored live tests)
+# Run all 253+ tests (auto + ignored live tests)
 cargo test --workspace
 
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 47 experiments (meta-validator)
+# Run all 49 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -126,21 +126,28 @@ The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 
 
 ## Deploy Graphs
 
-primalSpring ships 11 biomeOS deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 18 biomeOS deploy graph TOMLs (all nodes declare `by_capability`):
 
-| Graph | Pattern | Nodes |
-|-------|---------|-------|
-| `primalspring_deploy.toml` | Sequential | 9 (full NUCLEUS + primalSpring) |
-| `coralforge_pipeline.toml` | Pipeline | 7 (neuralSpring → hotSpring → wetSpring → toadStool → NestGate) |
-| `streaming_pipeline.toml` | Pipeline | 4 (NestGate → primalSpring → sweetGrass) |
-| `continuous_tick.toml` | Continuous | 8 (60 Hz health poll loop) |
-| `conditional_fallback.toml` | ConditionalDag | 4 (GPU → CPU fallback) |
-| `parallel_capability_burst.toml` | Parallel | 4 (crypto + net + storage + compute) |
-| `tower_atomic_bootstrap.toml` | Sequential | 3 (security + discovery + validation) |
-| `node_atomic_compute.toml` | Sequential | 4 (Tower + compute + validation) |
-| `nest_deploy.toml` | Sequential | 4 (Tower + storage + validation) |
-| `nucleus_complete.toml` | Sequential | 9 (all capabilities + coordination) |
-| `spring_byob_template.toml` | Sequential | Template for new springs |
+| Graph | Pattern | Primals |
+|-------|---------|---------|
+| `tower_atomic_bootstrap.toml` | Sequential | beardog, songbird |
+| `tower_full_capability.toml` | Sequential | beardog, songbird (full caps) |
+| `nest_deploy.toml` | Sequential | beardog, songbird, nestgate |
+| `node_atomic_compute.toml` | Sequential | beardog, songbird, toadstool |
+| `nucleus_complete.toml` | Sequential | beardog, songbird, nestgate, toadstool, sweetgrass |
+| `tower_ai.toml` | Sequential | beardog, songbird, squirrel |
+| `tower_ai_viz.toml` | Sequential | beardog, songbird, squirrel, petaltongue |
+| `nest_viz.toml` | Sequential | beardog, songbird, nestgate, petaltongue |
+| `node_ai.toml` | Sequential | beardog, songbird, toadstool, squirrel |
+| `full_overlay.toml` | Sequential | beardog, songbird, nestgate, toadstool, squirrel |
+| `provenance_overlay.toml` | Sequential | beardog, songbird, rhizocrypt, loamspine, sweetgrass |
+| `parallel_capability_burst.toml` | Parallel | beardog, songbird, nestgate, toadstool |
+| `conditional_fallback.toml` | ConditionalDag | beardog, songbird, toadstool |
+| `streaming_pipeline.toml` | Pipeline | beardog, nestgate, sweetgrass |
+| `continuous_tick.toml` | Continuous | all 7 primals |
+| `coralforge_pipeline.toml` | Pipeline | beardog, songbird, nestgate, toadstool, sweetgrass |
+| `primalspring_deploy.toml` | Sequential | primalspring coordination |
+| `spring_byob_template.toml` | Sequential | template for new springs |
 
 All graphs have `by_capability` on every node and are structurally validated +
 topologically sorted at test time. `topological_waves()` computes startup wave
@@ -190,7 +197,7 @@ whatever is already running.
 - `wateringHole/README.md` — Track structure and cross-spring context
 - `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance
 - `wateringHole/handoffs/` — Active + archived evolution handoffs
-- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–5+)
+- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–10)
 - `specs/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (indirect only)
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer
 

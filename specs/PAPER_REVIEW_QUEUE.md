@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
-**Date**: March 21, 2026  
-**Status**: Phase 6 — 47 experiments, 8 tracks, NUCLEUS VALIDATED (58/58 gates), 282 tests
+**Date**: March 22, 2026  
+**Status**: Phase 7 — 48 experiments, 8 tracks, GRAPH OVERLAY COMPOSITION (72/72 gates), 249+ tests
 
 ---
 
@@ -20,6 +20,7 @@ produces. The review queue tracks which patterns are ready for validation.
 | P0 | Nest Atomic (Tower + storage) | 1 | **VALIDATED** (8/8 gates) | nestgate storage, ZFS fallback, model cache |
 | P0 | Node Atomic (Tower + compute) | 1 | **VALIDATED** (5/5 gates) | toadstool compute, dual-protocol, 4 workloads |
 | P0 | NUCLEUS Composition (Tower+Nest+Node) | 1 | **VALIDATED** (58/58 total) | All 3 layers compose together |
+| P0 | Graph-Driven Overlay Composition | 8 | **VALIDATED** (72/72 total) | Tower+AI, Nest+Viz, Node+AI overlays, graph merge |
 | P1 | Sequential graph execution | 2 | Discovery wired | Full NUCLEUS |
 | P1 | Parallel graph execution | 2 | Discovery wired | Full NUCLEUS |
 | P1 | ConditionalDag execution | 2 | Discovery wired | Full NUCLEUS |

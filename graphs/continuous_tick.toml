@@ -94,6 +94,7 @@ name = "tick_aggregator"
 binary = "primalspring_primal"
 order = 8
 required = true
+spawn = false
 depends_on = ["beardog", "songbird", "rhizocrypt", "loamspine", "sweetgrass", "nestgate", "toadstool"]
 health_method = "health.check"
 by_capability = "coordination"

@@ -55,6 +55,8 @@ members = [
     "experiments/exp066_nest_atomic",
     "experiments/exp067_node_atomic",
     "experiments/exp068_full_nucleus",
+    "experiments/exp069_graph_overlay_composition",
+    "experiments/exp070_squirrel_cross_primal_discovery",
 ]
 
 [workspace.package]

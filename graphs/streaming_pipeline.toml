@@ -39,6 +39,7 @@ name = "primalspring"
 binary = "primalspring_primal"
 order = 3
 required = true
+spawn = false
 depends_on = ["nestgate"]
 health_method = "health.check"
 by_capability = "coordination"
