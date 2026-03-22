@@ -110,7 +110,25 @@ impl PrimalClient {
     pub fn health_liveness(&mut self) -> Result<bool, IpcError> {
         match self.call("health.liveness", serde_json::Value::Null) {
             Ok(_) => Ok(true),
-            Err(e) if e.is_method_not_found() => self.health_check(),
+            Err(e) if e.is_method_not_found() => {
+                // Fallback chain: health.check → health → {primal}.health
+                match self.health_check() {
+                    Ok(v) => Ok(v),
+                    Err(e2) if e2.is_method_not_found() => {
+                        match self.call("health", serde_json::Value::Null) {
+                            Ok(_) => Ok(true),
+                            Err(e3) if e3.is_method_not_found() => {
+                                let prefixed =
+                                    format!("{}.health", self.primal);
+                                self.call(&prefixed, serde_json::Value::Null)
+                                    .map(|_| true)
+                            }
+                            Err(e3) => Err(e3),
+                        }
+                    }
+                    Err(e2) => Err(e2),
+                }
+            }
             Err(e) => Err(e),
         }
     }

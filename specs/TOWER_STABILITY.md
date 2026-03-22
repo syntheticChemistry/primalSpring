@@ -1,8 +1,8 @@
 # Tower Stability Specification
 
-**Status**: **FULL UTILIZATION VALIDATED** — primalSpring v0.5.0  
-**Date**: 2026-03-21  
-**Strategy**: Tower first, then Nest, then NUCLEUS
+**Status**: **NUCLEUS COMPOSITION VALIDATED** — primalSpring v0.6.0  
+**Date**: 2026-03-22  
+**Strategy**: Tower first, then Nest, then Node, then NUCLEUS
 
 ## Co-Evolution Strategy
 
@@ -129,52 +129,123 @@ with binaries from `ecoPrimals/plasmidBin/`.
 | 11.2 | visualization.render.dashboard returns Tower health | `exp065_petaltongue_tower_dashboard` |
 | 11.3 | visualization.render.grammar produces SVG/JSON output | `exp065_petaltongue_tower_dashboard` |
 
-## Current Status vs Gates (2026-03-21)
+### Gate 12: Nest Atomic Startup
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 12.1 | nestgate starts in socket-only mode (no ZFS required) | `nest_atomic_live_health_check` |
+| 12.2 | Nest composition = beardog + songbird + nestgate (3 primals) | `nest_atomic_live_health_check` |
+| 12.3 | All 3 primals pass health liveness | `nest_atomic_live_validation` |
+
+### Gate 13: NestGate Storage
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 13.1 | storage.store round-trip succeeds | `nest_storage_round_trip` |
+| 13.2 | storage.retrieve returns correct data | `nest_storage_round_trip` |
+| 13.3 | storage.list + storage.exists respond | `nest_storage_list_exists` |
+| 13.4 | model.register + model.locate respond | `nest_model_cache` |
+| 13.5 | nestgate health + discover_capabilities respond | `nest_direct_health`, `nest_discover_capabilities` |
+
+### Gate 14: Node Atomic Startup
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 14.1 | toadstool starts in server mode with JSON-RPC | `node_atomic_live_health_check` |
+| 14.2 | Node composition = beardog + songbird + toadstool (3 primals) | `node_atomic_live_health_check` |
+| 14.3 | All 3 primals pass health liveness | `node_atomic_live_validation` |
+
+### Gate 15: ToadStool Compute
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 15.1 | toadstool.health returns healthy | `node_toadstool_health` |
+| 15.2 | toadstool.query_capabilities reports workload types | `node_toadstool_capabilities` |
+
+### Gate 16: NUCLEUS Composition
+
+| # | Criterion | primalSpring Test |
+|---|---|---|
+| 16.1 | Tower + Nest + Node all start in single experiment | `exp068_full_nucleus` |
+| 16.2 | All primals across all atomic layers pass health | `exp068_full_nucleus` |
+| 16.3 | nestgate storage works within NUCLEUS context | `exp068_full_nucleus` |
+| 16.4 | toadstool compute caps available within NUCLEUS context | `exp068_full_nucleus` |
+
+## Current Status vs Gates (2026-03-22)
 
 | Gate | Status | Notes |
 |---|---|---|
-| 1. Process Lifecycle | **PASS** (5/5) | All lifecycle gates pass. 1.5 zombie check automated via `tower_zombie_check` |
-| 2. Standard Methods | **PASS** (5/5) | `health.liveness`, `capabilities.list` confirmed live via integration tests |
-| 3. Capability Routing | **PASS** (5/5) | All crypto routes through Neural API. `tower_discovery_peer_list` validates 3.5 |
-| 4. TLS 1.3 E2E | **PASS** (3/3) | `tower_tls_handshake`, `tower_tls_internet_reach`, `tower_tls_routing_audit` |
-| 5. Socket Discovery | **PASS** (3/3) | beardog 5-tier aligned, songbird uses `songbird-crypto-provider` (Neural API), biomeOS uses `discover_by_capability()` |
-| 6. Neural API Dogfooding | **PASS** (3/3) | biomeOS enrollment uses `NeuralApiCapabilityCaller`, graph executor uses `capability.call`, registry complete |
-| 7. Subsystem Health | **PASS** (6/6) | All 6 subsystem tests pass: discovery, STUN, BirdSong, onion, Tor, federation |
-| 8. Beacon Round-Trip | **PASS** (2/2) | BirdSong encrypt→decrypt round-trip verified live (exp063) |
-| 9. Rendezvous | **PASS** (3/3) | Local Tower beacon + STUN + onion validated. Full Pixel 8a replication pending device |
-| 10. Internet Reach | **PASS** (3/3) | STUN, Onion, Tor paths available. HTTPS probe awaiting IPC wiring in songbird |
-| 11. Visualization | **PASS** (3/3) | petalTongue headless server, dashboard, and grammar rendering all validated live |
+| 1. Process Lifecycle | **PASS** (5/5) | All lifecycle gates pass |
+| 2. Standard Methods | **PASS** (5/5) | `health.liveness`, `capabilities.list` confirmed live |
+| 3. Capability Routing | **PASS** (5/5) | All crypto routes through Neural API |
+| 4. TLS 1.3 E2E | **PASS** (3/3) | TLS handshake, internet reach, routing audit |
+| 5. Socket Discovery | **PASS** (3/3) | beardog 5-tier, songbird crypto-provider, biomeOS capability-based |
+| 6. Neural API Dogfooding | **PASS** (3/3) | All Neural API paths validated |
+| 7. Subsystem Health | **PASS** (6/6) | discovery, STUN, BirdSong, onion, Tor, federation |
+| 8. Beacon Round-Trip | **PASS** (2/2) | BirdSong encrypt→decrypt verified |
+| 9. Rendezvous | **PASS** (3/3) | Local Tower beacon + STUN + onion |
+| 10. Internet Reach | **PASS** (3/3) | STUN, Onion, Tor paths available |
+| 11. Visualization | **PASS** (3/3) | petalTongue dashboard + grammar rendering |
+| 12. Nest Startup | **PASS** (3/3) | nestgate socket-only, 3 primals, all healthy |
+| 13. NestGate Storage | **PASS** (5/5) | store, retrieve, list, model cache, capabilities |
+| 14. Node Startup | **PASS** (3/3) | toadstool JSON-RPC, 3 primals, all healthy |
+| 15. ToadStool Compute | **PASS** (2/2) | toadstool.health, toadstool.query_capabilities |
+| 16. NUCLEUS Composition | **PASS** (4/4) | Tower+Nest+Node all compose and validate |
 
 **Gates 1-6: 24/24 PASS — Tower Core Stable**  
 **Gates 7-11: 17/17 PASS — Tower Full Utilization Validated**  
-**Overall: 41/41 gates passing — Tower Fully Utilized**
+**Gates 12-13: 8/8 PASS — Nest Atomic Validated**  
+**Gates 14-15: 5/5 PASS — Node Atomic Validated**  
+**Gate 16: 4/4 PASS — NUCLEUS Composition Validated**  
+**Overall: 58/58 gates passing — Full NUCLEUS Composition**
 
-**Live test results (19/19 green, validated 2026-03-21, parallel execution ~1s):**
+**Live test results (31/31 green, validated 2026-03-22, parallel execution ~5s):**
+
+Tower tests (19):
 - `tower_atomic_live_health_check` — PASS
 - `tower_atomic_live_capabilities` — PASS
 - `tower_atomic_live_validation_result` — PASS
 - `tower_neural_api_health` — PASS
 - `tower_neural_api_capability_discovery` — PASS
 - `tower_neural_api_full_validation` — PASS
-- `tower_zombie_check` — PASS (Gate 1.5)
-- `tower_discovery_peer_list` — PASS (Gate 3.5)
-- `tower_tls_handshake` — PASS (Gate 4.1)
-- `tower_tls_internet_reach` — PASS (Gate 4.2)
-- `tower_tls_routing_audit` — PASS (Gate 4.3)
-- `tower_discovery_announce_find` — PASS (Gate 7.1)
-- `tower_stun_public_address` — PASS (Gate 7.2)
-- `tower_birdsong_beacon` — PASS (Gate 7.3)
-- `tower_onion_service` — PASS (Gate 7.4)
-- `tower_tor_status` — PASS (Gate 7.5)
-- `tower_federation_status` — PASS (Gate 7.6)
-- `tower_squirrel_ai_query` — PASS (Squirrel composition)
-- `tower_squirrel_composition_health` — PASS (Squirrel composition)
+- `tower_zombie_check` — PASS
+- `tower_discovery_peer_list` — PASS
+- `tower_tls_handshake` — PASS
+- `tower_tls_internet_reach` — PASS
+- `tower_tls_routing_audit` — PASS
+- `tower_discovery_announce_find` — PASS
+- `tower_stun_public_address` — PASS
+- `tower_birdsong_beacon` — PASS
+- `tower_onion_service` — PASS
+- `tower_tor_status` — PASS
+- `tower_federation_status` — PASS
+- `tower_squirrel_ai_query` — PASS
+- `tower_squirrel_composition_health` — PASS
 
-**Experiment results (all pass, validated 2026-03-21):**
-- `exp062_tower_subsystem_sweep` — ALL PASS (11/12 UP, tor.connect expected DOWN)
+Nest tests (8):
+- `nest_atomic_live_health_check` — PASS
+- `nest_atomic_live_capabilities` — PASS
+- `nest_atomic_live_validation` — PASS
+- `nest_storage_round_trip` — PASS
+- `nest_storage_list_exists` — PASS
+- `nest_model_cache` — PASS
+- `nest_direct_health` — PASS
+- `nest_discover_capabilities` — PASS
+
+Node tests (4):
+- `node_atomic_live_health_check` — PASS
+- `node_atomic_live_validation` — PASS
+- `node_toadstool_health` — PASS
+- `node_toadstool_capabilities` — PASS
+
+**Experiment results (all pass, validated 2026-03-22):**
+- `exp062_tower_subsystem_sweep` — ALL PASS (11/12 UP)
 - `exp063_pixel_tower_rendezvous` — ALL PASS (beacon + onion + STUN)
-- `exp064_nestgate_internet_reach` — ALL PASS (3/5 internet paths available)
-- `exp065_petaltongue_tower_dashboard` — ALL PASS (dashboard + grammar rendering)
+- `exp064_nestgate_internet_reach` — ALL PASS (3/5 internet paths)
+- `exp065_petaltongue_tower_dashboard` — ALL PASS (dashboard + grammar)
+- `exp066_nest_atomic` — ALL PASS (13/13: storage round-trip, data integrity)
+- `exp067_node_atomic` — ALL PASS (13/13: 4 workload types, 24 CPU cores)
+- `exp068_full_nucleus` — ALL PASS (16/16: Tower+Nest+Node composing)
 
 ## Tower Stability Sprint (2026-03-21) — Completed
 
@@ -222,19 +293,28 @@ Tower Atomic (beardog + songbird + biomeOS)     ✅ FULLY UTILIZED (41/41)
     │   + Squirrel AI composition ✅
     │   + petalTongue visualization ✅
     │   + songbird subsystems (11/12 UP) ✅
-    │   + Parallel test execution (~1s) ✅
     │
     ▼  Tower gates inherited
-Nest Atomic (Tower + nestgate)                  ← NEXT
-    Tower gates + storage gates
+Nest Atomic (Tower + nestgate)                  ✅ VALIDATED (8/8)
+    │   Storage store/retrieve round-trip ✅
+    │   Model cache register/locate ✅
+    │   nestgate socket-only mode (no ZFS) ✅
     │
-    ▼  all storage gates green
-Node Atomic (Nest + toadstool)
-    Nest gates + compute gates
+    ▼  Nest gates inherited
+Node Atomic (Tower + toadstool)                 ✅ VALIDATED (5/5)
+    │   toadstool.health + query_capabilities ✅
+    │   4 workload types, 24 CPU cores ✅
+    │   JSON-RPC dual-protocol socket ✅
     │
-    ▼  all compute gates green
-Full NUCLEUS (Node + squirrel)
-    All gates + AI coordination gates
+    ▼  All gates inherited
+NUCLEUS Composition (Tower+Nest+Node)           ✅ VALIDATED (4/4)
+    │   All 3 atomic layers compose together ✅
+    │   58/58 total gates passing ✅
+    │   31 integration tests, 7 experiments ✅
+    │
+    ▼  Future
+Full NUCLEUS (+ Squirrel + provenance trio)
+    AI coordination + provenance gates
 ```
 
 Each tier inherits all gates from the previous tier.  

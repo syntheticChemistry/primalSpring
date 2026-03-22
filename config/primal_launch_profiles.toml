@@ -48,10 +48,27 @@ BEARDOG_SOCKET = "beardog"
 FAMILY_ID = "$family_id"
 
 [profiles.nestgate]
-# Same as default
+subcommand = "daemon"
+socket_flag = "__skip__"
+pass_family_id = false
+extra_args = ["--socket-only", "--dev"]
+[profiles.nestgate.extra_env]
+NESTGATE_JWT_SECRET = "primalspring-nest-atomic-test-jwt-secret-long-enough-for-validation-2026"
+[profiles.nestgate.env_sockets]
+NESTGATE_SOCKET = "nestgate"
+NESTGATE_FAMILY_ID = "$family_id"
 
 [profiles.toadstool]
-# Same as default
+socket_flag = "__skip__"
+pass_family_id = false
+extra_args = ["--port", "0"]
+jsonrpc_socket_suffix = ".jsonrpc.sock"
+[profiles.toadstool.extra_env]
+TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED = "1"
+[profiles.toadstool.env_sockets]
+TOADSTOOL_SOCKET = "toadstool"
+TOADSTOOL_FAMILY_ID = "$family_id"
+NESTGATE_SOCKET = "nestgate"
 
 [profiles.petaltongue]
 pass_family_id = false

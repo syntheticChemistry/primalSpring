@@ -3,6 +3,31 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.0] — 2026-03-22
+
+### Added
+- **NUCLEUS Composition VALIDATED** — all 58/58 gates pass across Tower + Nest + Node
+- **Nest Atomic** — nestgate storage primal integrated: socket-only mode (no ZFS required),
+  storage.store/retrieve round-trip, model.register/locate, discover_capabilities
+- **Node Atomic** — toadstool compute primal integrated: dual-protocol socket (tarpc + JSON-RPC),
+  toadstool.health, toadstool.query_capabilities (4 workload types, 24 CPU cores)
+- **exp066_nest_atomic** — Nest Atomic storage validation, 13/13 PASS
+- **exp067_node_atomic** — Node Atomic compute validation, 13/13 PASS
+- **exp068_full_nucleus** — all 3 atomic layers composing together, 16/16 PASS
+- 12 new integration tests (8 Nest + 4 Node), all passing in parallel with Tower tests
+- `subcommand` field in `LaunchProfile` to override default `"server"` subcommand
+- `jsonrpc_socket_suffix` field in `LaunchProfile` for dual-protocol primals (toadstool)
+- `SocketNucleation::remap()` for post-spawn socket path remapping
+- Health liveness fallback chain: `health.liveness` → `health.check` → `health` → `{primal}.health`
+
+### Fixed
+- **NestGate ZFS hard-fail** — nestgate now degrades to filesystem mode when ZFS kernel module
+  is not loaded (was: crash on startup). Fixed in `StorageState::new()` fallback to dev config
+- **NestGate `socket_only` pattern match** — fixed pre-existing compile error in `cli.rs`
+  where `Commands::Daemon` destructure was missing `socket_only` field
+- **ToadStool socket discovery** — toadstool ignores `--socket` CLI flag, uses `TOADSTOOL_SOCKET`
+  env var. Harness now passes socket via env and waits for `.jsonrpc.sock` suffix file
+
 ## [0.5.0] — 2026-03-21
 
 ### Added

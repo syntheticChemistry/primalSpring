@@ -241,6 +241,12 @@ impl SocketNucleation {
         self.assignments.get(&key)
     }
 
+    /// Remap a primal's socket path (e.g. to point to a JSON-RPC suffix).
+    pub fn remap(&mut self, primal: &str, family_id: &str, new_path: PathBuf) {
+        let key = format!("{primal}-{family_id}");
+        self.assignments.insert(key, new_path);
+    }
+
     /// The base directory (typically `$XDG_RUNTIME_DIR`).
     #[must_use]
     pub fn base_dir(&self) -> &Path {
@@ -257,8 +263,16 @@ static LAUNCH_PROFILES_TOML: &str = include_str!("../../../config/primal_launch_
 /// Per-primal socket configuration loaded from TOML.
 #[derive(Debug, Clone, Default, serde::Deserialize)]
 pub struct LaunchProfile {
+    /// Override the default `"server"` subcommand (e.g. `"daemon"`).
+    /// Set to `""` to skip the subcommand entirely.
+    pub subcommand: Option<String>,
     /// CLI flag name for passing socket path (e.g. `"--socket"`).
+    /// Set to `"__skip__"` to omit the socket CLI flag entirely.
     pub socket_flag: Option<String>,
+    /// Suffix appended to the assigned socket path to get the JSON-RPC
+    /// socket (e.g. `".jsonrpc.sock"` for toadstool's dual-protocol mode).
+    #[serde(default)]
+    pub jsonrpc_socket_suffix: Option<String>,
     /// Whether to pass `--family-id` on the command line.
     pub pass_family_id: Option<bool>,
     /// Env var name for socket path fallback (e.g. `"PRIMAL_SOCKET"`).
@@ -386,9 +400,17 @@ pub fn spawn_primal(
         .or(defaults.pass_family_id)
         .unwrap_or(true);
 
+    let subcommand = profile
+        .and_then(|p| p.subcommand.as_deref())
+        .unwrap_or("server");
+
     let mut cmd = Command::new(&binary);
-    cmd.arg("server");
-    cmd.arg(socket_flag).arg(&socket_path);
+    if !subcommand.is_empty() {
+        cmd.arg(subcommand);
+    }
+    if socket_flag != "__skip__" {
+        cmd.arg(socket_flag).arg(&socket_path);
+    }
 
     if pass_family_id {
         cmd.arg("--family-id").arg(family_id);
@@ -442,26 +464,43 @@ pub fn spawn_primal(
 
     let relay_handle = relay_output(&mut child, primal);
 
+    // Some primals (e.g. toadstool) create a JSON-RPC socket at a different
+    // path than the primary (tarpc) socket. Wait for the JSON-RPC socket and
+    // remap nucleation to point to it.
+    let wait_path = if let Some(suffix) = profile.and_then(|p| p.jsonrpc_socket_suffix.as_deref()) {
+        let base = socket_path.to_string_lossy();
+        PathBuf::from(base.replace(".sock", suffix))
+    } else {
+        socket_path.clone()
+    };
+
     let timeout = Duration::from_secs(30);
-    if !wait_for_socket(&socket_path, timeout) {
+    if !wait_for_socket(&wait_path, timeout) {
         let _ = child.kill();
         let _ = child.wait();
         return Err(LaunchError::SocketTimeout {
             primal: primal.to_owned(),
-            socket: socket_path,
+            socket: wait_path,
             waited: timeout,
         });
     }
 
+    let effective_socket = if wait_path != socket_path {
+        nucleation.remap(primal, family_id, wait_path.clone());
+        wait_path
+    } else {
+        socket_path.clone()
+    };
+
     println!(
         "[launcher] {primal} ready at {} (pid {})",
-        socket_path.display(),
+        effective_socket.display(),
         child.id()
     );
 
     Ok(PrimalProcess {
         name: primal.to_owned(),
-        socket_path,
+        socket_path: effective_socket,
         child,
         _relay_handle: Some(relay_handle),
     })

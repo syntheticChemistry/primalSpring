@@ -52,6 +52,9 @@ members = [
     "experiments/exp063_pixel_tower_rendezvous",
     "experiments/exp064_nestgate_internet_reach",
     "experiments/exp065_petaltongue_tower_dashboard",
+    "experiments/exp066_nest_atomic",
+    "experiments/exp067_node_atomic",
+    "experiments/exp068_full_nucleus",
 ]
 
 [workspace.package]
