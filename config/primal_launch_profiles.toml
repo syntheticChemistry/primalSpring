@@ -26,6 +26,7 @@ NODE_ID = "tower1"
 [profiles.squirrel]
 pass_family_id = false
 [profiles.squirrel.env_sockets]
+SQUIRREL_SOCKET = "squirrel"
 SERVICE_MESH_ENDPOINT = "neural-api"
 STORAGE_STORE_PROVIDER_SOCKET = "nestgate"
 STORAGE_GET_PROVIDER_SOCKET = "nestgate"

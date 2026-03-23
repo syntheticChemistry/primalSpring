@@ -113,6 +113,8 @@ fn probe(
 const PROBES: &[(&str, &str, &str)] = &[
     ("health.liveness", "core", "{}"),
     ("capabilities.list", "core", "{}"),
+    ("capability.list", "core", "{}"),
+    ("primal.capabilities", "core", "{}"),
     ("discovery.find_primals", "discovery", "{}"),
     ("stun.get_public_address", "stun", "{}"),
     ("stun.detect_nat_type", "stun", "{}"),

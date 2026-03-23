@@ -154,15 +154,44 @@ impl PrimalClient {
 
     /// Request the primal's capability list.
     ///
+    /// Tries `capabilities.list` first, then falls back to `capability.list`
+    /// and `primal.capabilities` if the primal returns `METHOD_NOT_FOUND`.
+    /// This handles the ecosystem naming drift where different primals
+    /// register different method names for the same operation.
+    ///
     /// # Errors
     ///
-    /// Returns [`IpcError`] if the call fails.
+    /// Returns [`IpcError`] if all three method names fail.
     pub fn capabilities(&mut self) -> Result<serde_json::Value, IpcError> {
-        let resp = self.call("capabilities.list", serde_json::Value::Null)?;
-        if let Some(err) = resp.error {
-            return Err(IpcError::from(err));
+        const METHODS: &[&str] = &[
+            "capabilities.list",
+            "capability.list",
+            "primal.capabilities",
+        ];
+        let mut last_err = None;
+        for method in METHODS {
+            match self.call(method, serde_json::Value::Null) {
+                Ok(resp) => {
+                    if let Some(err) = resp.error {
+                        let ipc_err = IpcError::from(err);
+                        if ipc_err.is_method_not_found() {
+                            last_err = Some(ipc_err);
+                            continue;
+                        }
+                        return Err(ipc_err);
+                    }
+                    return Ok(resp.result.unwrap_or(serde_json::Value::Null));
+                }
+                Err(e) if e.is_method_not_found() => {
+                    last_err = Some(e);
+                    continue;
+                }
+                Err(e) => return Err(e),
+            }
         }
-        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+        Err(last_err.unwrap_or_else(|| IpcError::MethodNotFound {
+            method: "capabilities.list".to_owned(),
+        }))
     }
 }
 
