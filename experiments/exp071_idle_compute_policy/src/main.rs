@@ -14,14 +14,7 @@ use primalspring::bonding::{BondType, BondingConstraint, BondingPolicy, TrustMod
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
-fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp071 — Idle Compute Policy");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp071: BondingPolicy — Capability Masks, Time Windows, Bandwidth");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    // === Phase 1: BondingConstraint capability filtering ===
-
+fn constraint_filtering(v: &mut ValidationResult) {
     let compute_only = BondingConstraint {
         capability_allow: vec!["compute.*".to_owned()],
         capability_deny: vec!["compute.admin".to_owned()],
@@ -65,16 +58,15 @@ fn main() {
         "max concurrent requests limited to 4",
     );
 
-    // Empty allow = permit everything (no restrictions)
     let unrestricted = BondingConstraint::default();
     v.check_bool(
         "empty_allow_permits_all",
         unrestricted.permits("anything.at.all"),
         "empty capability_allow permits everything",
     );
+}
 
-    // === Phase 2: BondingPolicy idle compute preset ===
-
+fn idle_compute_preset(v: &mut ValidationResult) {
     let idle = BondingPolicy::idle_compute(vec!["22:00-06:00".to_owned()], 100);
     let idle_errors = idle.validate();
     v.check_bool(
@@ -114,9 +106,9 @@ fn main() {
         idle.constraints.bandwidth_limit_mbps == 100,
         "idle policy bandwidth capped at 100 Mbps",
     );
+}
 
-    // === Phase 3: BondingPolicy covalent default ===
-
+fn covalent_default(v: &mut ValidationResult) {
     let full = BondingPolicy::covalent_default();
     let full_errors = full.validate();
     v.check_bool(
@@ -141,10 +133,13 @@ fn main() {
             && full.constraints.permits("ai.query"),
         "covalent default permits all capabilities",
     );
+}
 
-    // === Phase 4: BondingPolicy ionic contract ===
-
-    let ionic = BondingPolicy::ionic_contract(vec!["compute.submit".to_owned(), "compute.status".to_owned()]);
+fn ionic_contract(v: &mut ValidationResult) {
+    let ionic = BondingPolicy::ionic_contract(vec![
+        "compute.submit".to_owned(),
+        "compute.status".to_owned(),
+    ]);
     let ionic_errors = ionic.validate();
     v.check_bool(
         "ionic_contract_validates",
@@ -161,9 +156,9 @@ fn main() {
         ionic.trust_model == TrustModel::Contractual,
         "ionic contract uses Contractual trust model",
     );
+}
 
-    // === Phase 5: Policy validation catches inconsistencies ===
-
+fn inconsistency_detection(v: &mut ValidationResult) {
     let bad_covalent = BondingPolicy {
         bond_type: BondType::Covalent,
         trust_model: TrustModel::Contractual,
@@ -196,15 +191,15 @@ fn main() {
         !weak_errors.is_empty() && weak_errors.iter().any(|e| e.contains("capability_allow")),
         "validation catches weak bond with capability_allow list",
     );
+}
 
-    // === Phase 6: Graph metadata for idle compute federation ===
-
+fn graph_metadata_validation(v: &mut ValidationResult) {
     let graph_path = Path::new("graphs/multi_node/idle_compute_federation.toml");
     v.check_or_skip(
         "idle_graph_exists",
         graph_path.exists().then_some(&()),
         "idle_compute_federation.toml not found",
-        |_, v| {
+        |&(), v| {
             let meta = validate_graph_bonding(graph_path);
             v.check_bool(
                 "idle_graph_covalent",
@@ -237,7 +232,7 @@ fn main() {
         "friend_graph_exists",
         friend_path.exists().then_some(&()),
         "friend_remote_covalent.toml not found",
-        |_, v| {
+        |&(), v| {
             let meta = validate_graph_bonding(friend_path);
             v.check_bool(
                 "friend_graph_has_time_windows",
@@ -255,6 +250,20 @@ fn main() {
             );
         },
     );
+}
+
+fn main() {
+    let mut v = ValidationResult::new("primalSpring Exp071 — Idle Compute Policy");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    println!("primalSpring Exp071: BondingPolicy — Capability Masks, Time Windows, Bandwidth");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+
+    constraint_filtering(&mut v);
+    idle_compute_preset(&mut v);
+    covalent_default(&mut v);
+    ionic_contract(&mut v);
+    inconsistency_detection(&mut v);
+    graph_metadata_validation(&mut v);
 
     v.finish();
     std::process::exit(v.exit_code());

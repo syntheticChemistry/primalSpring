@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 23, 2026
-**Status**: Phase 12 — MULTI-NODE BONDING + FEDERATION (87/87 gates), 51 experiments, 280+ tests, 22 deploy graphs
+**Status**: Phase 12 — MULTI-NODE BONDING + FEDERATION (87/87 gates), 51 experiments, 303 tests, 22 deploy graphs
 
 ---
 
@@ -36,8 +36,8 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Metric | Value |
 |--------|-------|
 | Experiments | 51 (9 tracks) |
-| Total tests | **280+** (unit + integration + doc-tests, 42 ignored live) |
-| Proptest fuzz tests | 15 (IPC protocol, extract, capability parsing) |
+| Total tests | **303** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
@@ -78,7 +78,18 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 9. **`graph_metadata.rs`** — parse + validate `[graph.metadata]` and `[graph.bonding_policy]` from TOML
 10. **`stun_tiers.rs`** — 4-tier STUN config parser, sovereignty-first escalation validation
 11. **exp071 + exp072** — idle compute policy and data federation validation
-12. **280+ tests**, 51 experiments, 22 deploy graphs
+12. **303 tests**, 51 experiments, 22 deploy graphs
+
+### Ecosystem Absorption Wave (Phase 12.1, March 23, 2026)
+Absorbed patterns from all 7 sibling springs into primalSpring core:
+13. **`deny.toml` ban list** — merged groundSpring V120 + wetSpring V132 C-dep bans (aws-lc-sys, cmake, cc, pkg-config, vcpkg)
+14. **Cast discipline lints** — neuralSpring S170 / airSpring V010 clippy cast_* lints workspace-wide
+15. **`ValidationSink` enrichment** — `section()` + `write_summary()` from groundSpring V120
+16. **`exit_code_skip_aware()`** — 3-way exit from wetSpring V132 (0=pass, 1=fail, 2=all-skipped)
+17. **`proptest_ipc` module** — 7 cross-cutting property tests fuzzing the IPC pipeline (healthSpring V41)
+18. **`primal_names` module** — canonical display↔slug mapping for 23 primals/springs (neuralSpring pattern)
+19. **Provenance trio circuit breaker** — epoch-based breaker + exponential backoff in `ipc::provenance` (healthSpring V41)
+20. **303 tests** (up from 280) — zero clippy warnings, zero TODO/FIXME in production
 
 ## What Changed (v0.6.0 -> v0.7.0)
 

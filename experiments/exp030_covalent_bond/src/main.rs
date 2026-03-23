@@ -15,13 +15,7 @@ use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
-fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp030 — Covalent Bond");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp030: Covalent Bond — Family Seed, Mesh Discovery, Graph Metadata");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    // --- Phase 1: BondType structural ---
+fn bond_type_structural(v: &mut ValidationResult) {
     let bond = BondType::Covalent;
     v.check_bool(
         "covalent_description_non_empty",
@@ -38,8 +32,9 @@ fn main() {
         !bond.is_metered(),
         "Covalent bonds are not metered (cooperative)",
     );
+}
 
-    // --- Phase 2: Family-scoped socket paths ---
+fn family_scoped_socket_paths(v: &mut ValidationResult) {
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
     let path_beardog = socket_path("beardog");
     let path_contains_family = path_beardog
@@ -54,8 +49,9 @@ fn main() {
             path_beardog.display()
         ),
     );
+}
 
-    // --- Phase 3: BondingPolicy for covalent default ---
+fn covalent_bonding_policy(v: &mut ValidationResult) {
     let policy = BondingPolicy::covalent_default();
     let policy_errors = policy.validate();
     v.check_bool(
@@ -76,22 +72,20 @@ fn main() {
         policy.trust_model == TrustModel::GeneticLineage,
         "Covalent policy uses GeneticLineage trust",
     );
+}
 
-    // --- Phase 4: Graph metadata validation ---
+fn covalent_graph_metadata(v: &mut ValidationResult) {
     let graph_path = Path::new("graphs/multi_node/basement_hpc_covalent.toml");
     v.check_or_skip(
         "covalent_graph_metadata",
         graph_path.exists().then_some(&()),
         "basement_hpc_covalent.toml not found",
-        |_, v| {
+        |&(), v| {
             let meta = validate_graph_bonding(graph_path);
             v.check_bool(
                 "graph_bond_type_is_covalent",
                 meta.internal_bond_type == Some(BondType::Covalent),
-                &format!(
-                    "graph internal_bond_type = {:?}",
-                    meta.internal_bond_type
-                ),
+                &format!("graph internal_bond_type = {:?}", meta.internal_bond_type),
             );
             v.check_bool(
                 "graph_trust_is_genetic",
@@ -105,8 +99,9 @@ fn main() {
             );
         },
     );
+}
 
-    // --- Phase 5: Tower discovery + live probing ---
+fn tower_discovery_probing(v: &mut ValidationResult) {
     let beardog = discover_primal("beardog");
     v.check_bool(
         "discover_beardog_returns_result",
@@ -132,8 +127,9 @@ fn main() {
             },
         );
     }
+}
 
-    // --- Phase 6: Multi-node (needs 2 live NUCLEUS) ---
+fn multi_node_skips(v: &mut ValidationResult) {
     v.check_skip("family_seed_sharing", "needs 2 live NUCLEUS instances");
     v.check_skip(
         "mesh_auto_discover_second_gate",
@@ -143,6 +139,20 @@ fn main() {
         "cross_gate_capability_call",
         "needs live Plasmodium routing between gates",
     );
+}
+
+fn main() {
+    let mut v = ValidationResult::new("primalSpring Exp030 — Covalent Bond");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    println!("primalSpring Exp030: Covalent Bond — Family Seed, Mesh Discovery, Graph Metadata");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+
+    bond_type_structural(&mut v);
+    family_scoped_socket_paths(&mut v);
+    covalent_bonding_policy(&mut v);
+    covalent_graph_metadata(&mut v);
+    tower_discovery_probing(&mut v);
+    multi_node_skips(&mut v);
 
     v.finish();
     std::process::exit(v.exit_code());

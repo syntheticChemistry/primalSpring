@@ -75,8 +75,10 @@ All experiments share the `ecoPrimal` library crate's validation module:
 - `check_skip(name, reason)` — honest skip when dependency unavailable
 - `check_or_skip(name, result)` — check if available, skip otherwise
 - `ValidationResult::finish()` — summary with pass/fail/skip counts
-- `ValidationResult::exit_code()` — 0 if all pass/skip, 1 if any fail
+- `ValidationResult::exit_code()` — 0 if all checks pass (at least one required), 1 if any fail or none pass
+- `ValidationResult::exit_code_skip_aware()` — 0=pass, 1=fail, 2=all-skipped (skip ≠ fail in CI)
 - `ValidationResult::with_provenance(source, date)` — structured provenance metadata
+- `ValidationResult::section(name)` — begin a named section of checks (groundSpring V120)
 
 ## Crate Structure
 

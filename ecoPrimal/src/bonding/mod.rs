@@ -51,7 +51,7 @@ impl BondType {
 
     /// All bond type variants, ordered by trust level (highest first).
     #[must_use]
-    pub const fn all() -> &'static [BondType] {
+    pub const fn all() -> &'static [Self] {
         &[
             Self::Covalent,
             Self::Metallic,
@@ -91,7 +91,7 @@ pub enum TrustModel {
 ///
 /// Friends opting in idle compute might share `compute.*` but not `storage.*`.
 /// A university HPC allocation might expose only `compute.submit` and `compute.status`.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct BondingConstraint {
     /// Glob patterns for capabilities shared through this bond (e.g. `"compute.*"`).
     pub capability_allow: Vec<String>,
@@ -117,17 +117,6 @@ impl BondingConstraint {
             .iter()
             .any(|pat| glob_match(pat, capability));
         allowed && !denied
-    }
-}
-
-impl Default for BondingConstraint {
-    fn default() -> Self {
-        Self {
-            capability_allow: Vec::new(),
-            capability_deny: Vec::new(),
-            bandwidth_limit_mbps: 0,
-            max_concurrent_requests: 0,
-        }
     }
 }
 
@@ -212,9 +201,7 @@ impl BondingPolicy {
         if self.bond_type == BondType::Weak && !self.constraints.capability_allow.is_empty() {
             errors.push("weak bonds should not declare capability_allow".to_owned());
         }
-        if self.bond_type == BondType::Covalent
-            && self.trust_model != TrustModel::GeneticLineage
-        {
+        if self.bond_type == BondType::Covalent && self.trust_model != TrustModel::GeneticLineage {
             errors.push("covalent bonds require GeneticLineage trust model".to_owned());
         }
         if self.bond_type == BondType::Ionic && self.trust_model == TrustModel::ZeroTrust {
@@ -241,11 +228,9 @@ pub struct BondingResult {
 
 /// Simple glob matching: supports trailing `*` wildcard (e.g. `"compute.*"` matches `"compute.submit"`).
 fn glob_match(pattern: &str, value: &str) -> bool {
-    if let Some(prefix) = pattern.strip_suffix('*') {
-        value.starts_with(prefix)
-    } else {
-        pattern == value
-    }
+    pattern
+        .strip_suffix('*')
+        .map_or_else(|| pattern == value, |prefix| value.starts_with(prefix))
 }
 
 #[cfg(test)]

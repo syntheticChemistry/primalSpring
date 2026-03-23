@@ -106,82 +106,117 @@ fn parse_trust_model(s: &str) -> Option<TrustModel> {
     }
 }
 
+/// Parse a bonding policy from raw TOML, falling back to graph-level metadata values.
+fn parse_bonding_policy(
+    raw_policy: RawBondingPolicy,
+    graph_id: &str,
+    meta_bond: Option<BondType>,
+    meta_trust: Option<TrustModel>,
+    issues: &mut Vec<String>,
+) -> BondingPolicy {
+    let bond = raw_policy
+        .bond_type
+        .as_deref()
+        .and_then(parse_bond_type)
+        .unwrap_or_else(|| meta_bond.unwrap_or(BondType::Covalent));
+
+    let tm = raw_policy
+        .trust_model
+        .as_deref()
+        .and_then(parse_trust_model)
+        .unwrap_or_else(|| meta_trust.unwrap_or(TrustModel::GeneticLineage));
+
+    let constraints = raw_policy
+        .constraints
+        .map(|rc| BondingConstraint {
+            capability_allow: rc.capability_allow.unwrap_or_default(),
+            capability_deny: rc.capability_deny.unwrap_or_default(),
+            bandwidth_limit_mbps: rc.bandwidth_limit_mbps.unwrap_or(0),
+            max_concurrent_requests: rc.max_concurrent_requests.unwrap_or(0),
+        })
+        .unwrap_or_default();
+
+    let policy = BondingPolicy {
+        bond_type: bond,
+        trust_model: tm,
+        constraints,
+        active_windows: raw_policy.active_windows.unwrap_or_default(),
+        offer_relay: raw_policy.offer_relay.unwrap_or(false),
+        label: raw_policy.label.unwrap_or_else(|| graph_id.to_owned()),
+    };
+
+    for issue in policy.validate() {
+        issues.push(format!("bonding_policy: {issue}"));
+    }
+
+    policy
+}
+
+/// Extract a typed metadata field from raw graph TOML, recording an issue on parse failure.
+fn extract_metadata_field<T>(
+    metadata: Option<&RawMetadata>,
+    field: impl FnOnce(&RawMetadata) -> Option<&str>,
+    parser: impl FnOnce(&str) -> Option<T>,
+    field_name: &str,
+    issues: &mut Vec<String>,
+) -> Option<T> {
+    metadata.and_then(field).and_then(|s| {
+        let result = parser(s);
+        if result.is_none() {
+            issues.push(format!("unknown {field_name}: {s:?}"));
+        }
+        result
+    })
+}
+
 /// Load and validate bonding metadata from a deploy graph TOML file.
 ///
 /// Returns `GraphBondingMetadata` with any validation issues collected.
 /// Graphs without `[graph.metadata]` return an empty metadata with no issues.
+#[must_use]
 pub fn validate_graph_bonding(path: &Path) -> GraphBondingMetadata {
-    let contents = match std::fs::read_to_string(path) {
-        Ok(c) => c,
-        Err(e) => {
-            return GraphBondingMetadata {
-                graph_id: String::new(),
-                internal_bond_type: None,
-                default_interaction_bond: None,
-                trust_model: None,
-                policy: None,
-                issues: vec![format!("failed to read {}: {e}", path.display())],
-            };
-        }
+    let err_meta = |msg| GraphBondingMetadata {
+        graph_id: String::new(),
+        internal_bond_type: None,
+        default_interaction_bond: None,
+        trust_model: None,
+        policy: None,
+        issues: vec![msg],
     };
 
-    let raw: RawGraphToml = match toml::from_str(&contents) {
-        Ok(r) => r,
-        Err(e) => {
-            return GraphBondingMetadata {
-                graph_id: String::new(),
-                internal_bond_type: None,
-                default_interaction_bond: None,
-                trust_model: None,
-                policy: None,
-                issues: vec![format!("failed to parse {}: {e}", path.display())],
-            };
-        }
+    let Ok(contents) = std::fs::read_to_string(path) else {
+        return err_meta(format!("failed to read {}", path.display()));
+    };
+    let Ok(raw) = toml::from_str::<RawGraphToml>(&contents) else {
+        return err_meta(format!("failed to parse {}", path.display()));
     };
 
     let mut issues = Vec::new();
     let graph_id = raw.graph.id.clone();
+    let meta = raw.graph.metadata.as_ref();
 
-    let internal_bond_type = raw
-        .graph
-        .metadata
-        .as_ref()
-        .and_then(|m| m.internal_bond_type.as_deref())
-        .and_then(|s| {
-            let bt = parse_bond_type(s);
-            if bt.is_none() {
-                issues.push(format!("unknown internal_bond_type: {s:?}"));
-            }
-            bt
-        });
+    let internal_bond_type = extract_metadata_field(
+        meta,
+        |m| m.internal_bond_type.as_deref(),
+        parse_bond_type,
+        "internal_bond_type",
+        &mut issues,
+    );
+    let default_interaction_bond = extract_metadata_field(
+        meta,
+        |m| m.default_interaction_bond.as_deref(),
+        parse_bond_type,
+        "default_interaction_bond",
+        &mut issues,
+    );
+    let trust_model = extract_metadata_field(
+        meta,
+        |m| m.trust_model.as_deref(),
+        parse_trust_model,
+        "trust_model",
+        &mut issues,
+    );
 
-    let default_interaction_bond = raw
-        .graph
-        .metadata
-        .as_ref()
-        .and_then(|m| m.default_interaction_bond.as_deref())
-        .and_then(|s| {
-            let bt = parse_bond_type(s);
-            if bt.is_none() {
-                issues.push(format!("unknown default_interaction_bond: {s:?}"));
-            }
-            bt
-        });
-
-    let trust_model = raw
-        .graph
-        .metadata
-        .as_ref()
-        .and_then(|m| m.trust_model.as_deref())
-        .and_then(|s| {
-            let tm = parse_trust_model(s);
-            if tm.is_none() {
-                issues.push(format!("unknown trust_model: {s:?}"));
-            }
-            tm
-        });
-
-    // Cross-validate: covalent requires genetic lineage trust
     if let (Some(BondType::Covalent), Some(tm)) = (internal_bond_type, trust_model) {
         if tm != TrustModel::GeneticLineage {
             issues.push(format!(
@@ -190,47 +225,8 @@ pub fn validate_graph_bonding(path: &Path) -> GraphBondingMetadata {
         }
     }
 
-    // Parse bonding policy
-    let policy = raw.graph.bonding_policy.map(|raw_policy| {
-        let bond = raw_policy
-            .bond_type
-            .as_deref()
-            .and_then(parse_bond_type)
-            .unwrap_or(internal_bond_type.unwrap_or(BondType::Covalent));
-
-        let tm = raw_policy
-            .trust_model
-            .as_deref()
-            .and_then(parse_trust_model)
-            .unwrap_or(trust_model.unwrap_or(TrustModel::GeneticLineage));
-
-        let constraints = raw_policy
-            .constraints
-            .map(|rc| BondingConstraint {
-                capability_allow: rc.capability_allow.unwrap_or_default(),
-                capability_deny: rc.capability_deny.unwrap_or_default(),
-                bandwidth_limit_mbps: rc.bandwidth_limit_mbps.unwrap_or(0),
-                max_concurrent_requests: rc.max_concurrent_requests.unwrap_or(0),
-            })
-            .unwrap_or_default();
-
-        let policy = BondingPolicy {
-            bond_type: bond,
-            trust_model: tm,
-            constraints,
-            active_windows: raw_policy.active_windows.unwrap_or_default(),
-            offer_relay: raw_policy.offer_relay.unwrap_or(false),
-            label: raw_policy
-                .label
-                .unwrap_or_else(|| graph_id.clone()),
-        };
-
-        let policy_issues = policy.validate();
-        for issue in policy_issues {
-            issues.push(format!("bonding_policy: {issue}"));
-        }
-
-        policy
+    let policy = raw.graph.bonding_policy.map(|rp| {
+        parse_bonding_policy(rp, &graph_id, internal_bond_type, trust_model, &mut issues)
     });
 
     GraphBondingMetadata {
@@ -244,6 +240,7 @@ pub fn validate_graph_bonding(path: &Path) -> GraphBondingMetadata {
 }
 
 /// Validate all graph files in a directory for bonding metadata.
+#[must_use]
 pub fn validate_all_graph_bonding(dir: &Path) -> Vec<GraphBondingMetadata> {
     let mut results = Vec::new();
     let Ok(entries) = std::fs::read_dir(dir) else {

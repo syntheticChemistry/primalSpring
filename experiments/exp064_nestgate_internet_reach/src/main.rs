@@ -97,7 +97,11 @@ fn probe_https(
         Err(e) => {
             println!("    FAIL ({lat:?}): {e}");
             let is_not_wired = e.contains("Unknown method");
-            v.check_bool("https_nestgate_reachable", is_not_wired, &format!("HTTPS not wired in IPC yet: {e}"));
+            v.check_bool(
+                "https_nestgate_reachable",
+                is_not_wired,
+                &format!("HTTPS not wired in IPC yet: {e}"),
+            );
         }
     }
 }
@@ -190,14 +194,25 @@ fn main() {
         "primalSpring Exp064 — Nestgate Internet Reach",
         "primalSpring Exp064: Full internet deployment path validation",
         |v| {
-            let running = AtomicHarness::new(AtomicType::Tower)
+            let running = match AtomicHarness::new(AtomicType::Tower)
                 .start_with_neural_api(&family_id, &graphs_dir)
-                .expect("tower + neural-api should start");
+            {
+                Ok(r) => r,
+                Err(e) => {
+                    v.check_bool("harness_start", false, &format!("failed to start: {e}"));
+                    v.finish();
+                    std::process::exit(v.exit_code());
+                }
+            };
 
-            let songbird_socket = running
+            let Some(songbird_socket) = running
                 .socket_for("discovery")
                 .or_else(|| running.socket_for_primal("songbird"))
-                .expect("songbird socket");
+            else {
+                v.check_bool("songbird_socket", false, "songbird socket not found");
+                v.finish();
+                std::process::exit(v.exit_code());
+            };
 
             let mut report = PathReport::new();
 

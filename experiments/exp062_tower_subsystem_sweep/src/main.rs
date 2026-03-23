@@ -139,19 +139,40 @@ fn main() {
         "primalSpring Exp062 — Tower Subsystem Sweep",
         "primalSpring Exp062: Comprehensive songbird subsystem capability probe",
         |v| {
-            let running = AtomicHarness::new(AtomicType::Tower)
+            let running = match AtomicHarness::new(AtomicType::Tower)
                 .start_with_neural_api(&family_id, &graphs_dir)
-                .expect("tower + neural-api should start");
+            {
+                Ok(r) => r,
+                Err(e) => {
+                    v.check_bool("harness_start", false, &format!("failed to start: {e}"));
+                    v.finish();
+                    std::process::exit(v.exit_code());
+                }
+            };
 
-            let songbird_socket = running
+            let Some(songbird_socket) = running
                 .socket_for("discovery")
                 .or_else(|| running.socket_for_primal("songbird"))
-                .expect("songbird socket");
+            else {
+                v.check_bool("songbird_socket", false, "songbird socket not found");
+                v.finish();
+                std::process::exit(v.exit_code());
+            };
 
             let mut results = Vec::new();
             for &(method, subsystem, params_str) in PROBES {
-                let params: serde_json::Value =
-                    serde_json::from_str(params_str).expect("valid JSON");
+                let params: serde_json::Value = match serde_json::from_str(params_str) {
+                    Ok(p) => p,
+                    Err(e) => {
+                        v.check_bool(
+                            "probe_params_json",
+                            false,
+                            &format!("invalid JSON for {method}: {e}"),
+                        );
+                        v.finish();
+                        std::process::exit(v.exit_code());
+                    }
+                };
                 results.push(probe(songbird_socket, method, subsystem, &params));
             }
 

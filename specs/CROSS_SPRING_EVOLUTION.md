@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: March 23, 2026
-**Status**: Phase 12 — MULTI-NODE BONDING + FEDERATION (87/87 gates), 280+ tests, 51 experiments, 22 deploy graphs
+**Status**: Phase 12 — MULTI-NODE BONDING + FEDERATION (87/87 gates), 303 tests, 51 experiments, 22 deploy graphs
 
 ---
 
@@ -65,18 +65,18 @@ an optional track. Every experiment involves multiple primals or springs.
 | Idle compute policy validation | BondingPolicy presets for time-windowed, capability-scoped compute sharing |
 | Data federation pipeline | 7-phase NestGate replication with provenance trio tracking |
 
-## Ecosystem State (March 22, 2026)
+## Ecosystem State (March 23, 2026)
 
 | Spring | Version | Tests | Key Absorption |
 |--------|---------|-------|----------------|
 | hotSpring | v0.6.32 | 848 | Sovereign GPU, CoralCompiler IPC |
-| groundSpring | V116 | 960+ | Typed errors, OnceLock GPU cache |
-| neuralSpring | V118 | 1,304 | Capability registry, display names |
-| wetSpring | V128 | 1,443+ | MCP tools, cast module, FMA |
-| airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, provenance registry |
-| healthSpring | V37 | 706 | 18 proptest IPC fuzz, MCP tools |
-| ludoSpring | V14 | 187 | with_provenance(), 93.2% coverage |
-| primalSpring | v0.7.0 | 280+ | MULTI-NODE BONDING + FEDERATION 87/87, 3/5 patterns live, provenance trio structural, 51 experiments, 22 deploy graphs, 37 capabilities |
+| groundSpring | V120 | 960+ | Typed errors, 13-tier tolerances, OnceLock GPU cache |
+| neuralSpring | S170 | 1,320+ | Capability registry, display names, cast lints |
+| wetSpring | V132 | 1,443+ | MCP tools, cast module, 214 tolerances, FMA |
+| airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
+| healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
+| ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
+| primalSpring | v0.7.0 | 290+ | Phase 12 — 87/87 gates, 3/5 patterns live, provenance trio structural, 51 experiments, 22 deploy graphs, 37 capabilities |
 
 ## Evolution Path
 
@@ -212,7 +212,7 @@ Phase 12 (done): Multi-Node Bonding + Federation (March 23, 2026)
   → exp071: idle compute policy (capability masks, time windows, bandwidth, graph metadata)
   → exp072: data federation (NestGate replication, trio provenance, 7-phase pipeline)
   → Evolved exp030 (covalent), exp032 (plasmodium+Metallic), exp056 (cross-tower+3 graphs)
-  → 280+ tests (incl. 12 bonding, 6 graph metadata, 6 STUN tier), 51 experiments, 22 graphs
+  → 303 tests (incl. 12 bonding, 6 graph metadata, 6 STUN tier, 7 cross-cutting proptest), 51 experiments, 22 graphs
 
 Phase 13: Emergent Systems End-to-End (Track 3)
   → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)

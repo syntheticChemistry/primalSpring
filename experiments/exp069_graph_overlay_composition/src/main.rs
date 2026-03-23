@@ -51,8 +51,22 @@ fn validate_overlay_structure(v: &mut ValidationResult) {
         );
 
         if result.parsed {
-            let graph = load_graph(&path).expect("already validated as parseable");
-            let waves = topological_waves(&graph).expect("validated graph should have valid topology");
+            let Some(graph) = load_graph(&path).ok() else {
+                v.check_bool(
+                    &format!("load_{name}"),
+                    false,
+                    &format!("load_graph failed for {name}"),
+                );
+                continue;
+            };
+            let Some(waves) = topological_waves(&graph).ok() else {
+                v.check_bool(
+                    &format!("topology_{name}"),
+                    false,
+                    &format!("topological_waves failed for {name}"),
+                );
+                continue;
+            };
             v.check_minimum(&format!("waves_{name}"), waves.len(), 2);
             println!(
                 "  {name}: {} nodes, {} waves, {} required",
@@ -75,7 +89,14 @@ fn validate_spawn_filtering(v: &mut ValidationResult) {
     ];
 
     for name in &overlay_graphs {
-        let graph = load_graph(&graphs_dir().join(name)).expect("validated in phase 1");
+        let Some(graph) = load_graph(&graphs_dir().join(name)).ok() else {
+            v.check_bool(
+                &format!("load_{name}_phase2"),
+                false,
+                &format!("load_graph failed for {name}"),
+            );
+            continue;
+        };
         let spawnable = graph_spawnable_primals(&graph);
         let total = graph.graph.node.len();
         let filtered = total - spawnable.len();
@@ -94,7 +115,10 @@ fn validate_spawn_filtering(v: &mut ValidationResult) {
 fn validate_capability_maps(v: &mut ValidationResult) {
     println!("\n=== Phase 3: Capability Map Construction ===\n");
 
-    let tower_ai = load_graph(&graphs_dir().join("tower_ai.toml")).expect("validated in phase 1");
+    let Some(tower_ai) = load_graph(&graphs_dir().join("tower_ai.toml")).ok() else {
+        v.check_bool("load_tower_ai", false, "load_graph tower_ai.toml");
+        return;
+    };
     let caps = graph_capability_map(&tower_ai);
     v.check_bool(
         "cap_security",
@@ -113,7 +137,10 @@ fn validate_capability_maps(v: &mut ValidationResult) {
     );
     println!("  tower_ai capability map: {caps:?}");
 
-    let node_ai = load_graph(&graphs_dir().join("node_ai.toml")).expect("validated in phase 1");
+    let Some(node_ai) = load_graph(&graphs_dir().join("node_ai.toml")).ok() else {
+        v.check_bool("load_node_ai", false, "load_graph node_ai.toml");
+        return;
+    };
     let node_caps = graph_capability_map(&node_ai);
     v.check_bool(
         "node_ai_has_compute",
@@ -130,8 +157,18 @@ fn validate_capability_maps(v: &mut ValidationResult) {
 fn validate_graph_merge(v: &mut ValidationResult) {
     println!("\n=== Phase 4: Graph Merge/Compose ===\n");
 
-    let base = load_graph(&graphs_dir().join("tower_atomic_bootstrap.toml")).expect("base graph must load");
-    let overlay = load_graph(&graphs_dir().join("tower_ai.toml")).expect("overlay graph must load");
+    let Some(base) = load_graph(&graphs_dir().join("tower_atomic_bootstrap.toml")).ok() else {
+        v.check_bool(
+            "load_base_graph",
+            false,
+            "load_graph tower_atomic_bootstrap.toml",
+        );
+        return;
+    };
+    let Some(overlay) = load_graph(&graphs_dir().join("tower_ai.toml")).ok() else {
+        v.check_bool("load_overlay_graph", false, "load_graph tower_ai.toml");
+        return;
+    };
     let merged = merge_graphs(&base, &overlay);
 
     v.check_bool(
@@ -140,7 +177,10 @@ fn validate_graph_merge(v: &mut ValidationResult) {
         "merged graph name contains +",
     );
 
-    let merged_waves = topological_waves(&merged).expect("merged graph must have valid topology");
+    let Some(merged_waves) = topological_waves(&merged).ok() else {
+        v.check_bool("merge_topology", false, "merged graph has invalid topology");
+        return;
+    };
     v.check_minimum("merge_waves", merged_waves.len(), 2);
 
     let all_names: Vec<String> = merged_waves.into_iter().flatten().collect();

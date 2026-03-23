@@ -3,7 +3,7 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Phase 11–12 (2026-03-23)
+## [Unreleased] — Phase 11–12 + Ecosystem Absorption (2026-03-23)
 
 ### Added
 - **Provenance Trio Neural API Integration** — `ipc::provenance` module with
@@ -26,6 +26,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **exp071_idle_compute_policy** — BondingPolicy capability masks, time windows, bandwidth
 - **exp072_data_federation** — NestGate replication + trio provenance, 7-phase pipeline
 - 12 bonding unit tests, 6 graph metadata unit tests, 6 STUN tier unit tests
+- **Ecosystem Absorption Wave (Phase 12.1)**:
+  - `deny.toml` ban convergence (groundSpring V120 + wetSpring V132: aws-lc-sys, cmake, cc, pkg-config, vcpkg)
+  - Cast discipline clippy lints workspace-wide (neuralSpring S170 + airSpring V010)
+  - `ValidationSink::section()` + `write_summary()` (groundSpring V120)
+  - `ValidationResult::exit_code_skip_aware()` — 3-way CI exit (wetSpring V132)
+  - `proptest_ipc` module — 7 cross-cutting IPC fuzz tests (healthSpring V41)
+  - `primal_names` module — 23 canonical display↔slug mappings (neuralSpring pattern)
+  - Provenance trio epoch-based circuit breaker + exponential backoff (healthSpring V41)
 
 ### Changed
 - `BOND_TYPE_COUNT` updated to 5 in exp032, exp033
@@ -33,7 +41,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - exp032 (plasmodium) — added Metallic validation, graph metadata
 - exp056 (cross-tower) — added 3 multi-node graph metadata validations
 - Metallic match arm added to primalspring_primal bonding_test handler
-- 280+ tests, 51 experiments, 22 deploy graphs
+- 303 tests (up from 280), 51 experiments, 22 deploy graphs
 
 ## [0.7.0] — 2026-03-22
 

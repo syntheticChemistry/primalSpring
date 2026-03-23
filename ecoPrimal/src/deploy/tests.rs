@@ -79,7 +79,12 @@ fn validate_structure_all_graphs_clean() {
     assert!(!results.is_empty());
     for r in &results {
         assert!(r.parsed, "graph {} failed to parse", r.path);
-        assert!(r.issues.is_empty(), "graph {} has issues: {:?}", r.path, r.issues);
+        assert!(
+            r.issues.is_empty(),
+            "graph {} has issues: {:?}",
+            r.path,
+            r.issues
+        );
     }
 }
 
@@ -134,7 +139,10 @@ fn validate_live_primalspring_deploy_degrades_gracefully() {
 
 #[test]
 fn structural_checks_detect_duplicate_orders() {
-    let graph = test_graph("dup_orders", vec![test_node("alpha", 1), test_node("beta", 1)]);
+    let graph = test_graph(
+        "dup_orders",
+        vec![test_node("alpha", 1), test_node("beta", 1)],
+    );
     let mut issues = Vec::new();
     structural_checks(&graph, &mut issues);
     assert!(issues.iter().any(|i| i.contains("duplicate order")));
@@ -145,7 +153,10 @@ fn topological_waves_tower_graph() {
     let graph = load_graph(&graphs_path("tower_atomic_bootstrap.toml")).unwrap();
     let waves = topological_waves(&graph).unwrap();
     assert!(waves.len() >= 2, "tower should have at least 2 waves");
-    assert!(waves[0].contains(&"beardog".to_owned()), "beardog should be in wave 0 (no deps)");
+    assert!(
+        waves[0].contains(&"beardog".to_owned()),
+        "beardog should be in wave 0 (no deps)"
+    );
 }
 
 #[test]
@@ -153,7 +164,10 @@ fn topological_waves_nucleus_complete() {
     let graph = load_graph(&graphs_path("nucleus_complete.toml")).unwrap();
     let waves = topological_waves(&graph).unwrap();
     assert!(waves.len() >= 4, "nucleus should have at least 4 waves");
-    assert!(waves[0].contains(&"beardog".to_owned()), "beardog should be in wave 0");
+    assert!(
+        waves[0].contains(&"beardog".to_owned()),
+        "beardog should be in wave 0"
+    );
 }
 
 #[test]
@@ -242,7 +256,12 @@ fn topological_waves_all_graphs_acyclic() {
         }
         let graph = load_graph(Path::new(&r.path)).unwrap();
         let waves = topological_waves(&graph);
-        assert!(waves.is_ok(), "graph {} has a cycle: {:?}", r.path, waves.err());
+        assert!(
+            waves.is_ok(),
+            "graph {} has a cycle: {:?}",
+            r.path,
+            waves.err()
+        );
     }
 }
 
@@ -264,7 +283,8 @@ fn all_graphs_have_by_capability_on_every_node() {
             assert!(
                 node.by_capability.is_some(),
                 "graph '{}' node '{}' missing by_capability",
-                name, node.name
+                name,
+                node.name
             );
         }
     }

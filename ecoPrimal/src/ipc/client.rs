@@ -118,10 +118,8 @@ impl PrimalClient {
                         match self.call("health", serde_json::Value::Null) {
                             Ok(_) => Ok(true),
                             Err(e3) if e3.is_method_not_found() => {
-                                let prefixed =
-                                    format!("{}.health", self.primal);
-                                self.call(&prefixed, serde_json::Value::Null)
-                                    .map(|_| true)
+                                let prefixed = format!("{}.health", self.primal);
+                                self.call(&prefixed, serde_json::Value::Null).map(|_| true)
                             }
                             Err(e3) => Err(e3),
                         }
@@ -184,7 +182,6 @@ impl PrimalClient {
                 }
                 Err(e) if e.is_method_not_found() => {
                     last_err = Some(e);
-                    continue;
                 }
                 Err(e) => return Err(e),
             }

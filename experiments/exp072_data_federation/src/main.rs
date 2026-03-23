@@ -16,20 +16,13 @@ use primalspring::ipc::discover::discover_primal;
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
-fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp072 — Data Federation");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp072: Cross-Node Data Federation with Provenance Trio");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    // === Phase 1: Data federation graph metadata ===
-
+fn data_federation_graph_metadata(v: &mut ValidationResult) {
     let graph_path = Path::new("graphs/multi_node/data_federation_cross_site.toml");
     v.check_or_skip(
         "data_federation_graph_exists",
         graph_path.exists().then_some(&()),
         "data_federation_cross_site.toml not found",
-        |_, v| {
+        |&(), v| {
             let meta = validate_graph_bonding(graph_path);
             v.check_bool(
                 "graph_is_covalent",
@@ -48,9 +41,9 @@ fn main() {
             );
         },
     );
+}
 
-    // === Phase 2: NestGate storage capability discovery ===
-
+fn nestgate_storage_discovery(v: &mut ValidationResult) {
     let nestgate = discover_primal("nestgate");
     v.check_bool(
         "discover_nestgate",
@@ -73,9 +66,9 @@ fn main() {
             );
         },
     );
+}
 
-    // === Phase 3: Provenance trio discovery ===
-
+fn provenance_trio_discovery(v: &mut ValidationResult) {
     for (name, capability) in [
         ("sweetgrass", "attribution"),
         ("rhizocrypt", "dag"),
@@ -99,31 +92,23 @@ fn main() {
             },
         );
     }
+}
 
-    // === Phase 4: Federation pipeline validation (structural) ===
-
+fn federation_pipeline_structural(v: &mut ValidationResult) {
     v.check_bool(
         "provenance_module_available",
         true,
         "ipc::provenance module compiled and linked",
     );
 
-    // The full federation pipeline requires:
-    // 1. NestGate storage.list -> list datasets
-    // 2. NestGate storage.replicate -> push to remote
-    // 3. rhizoCrypt dag.session.create -> begin provenance
-    // 4. rhizoCrypt dag.event.append -> record replication
-    // 5. sweetGrass pipeline.attribute -> attribute contribution
-    // 6. rootpulse.federate -> sync DAG to remote
-    // 7. loamSpine commit.session -> permanent commit
     v.check_bool(
         "pipeline_steps_documented",
         true,
         "7-phase federation pipeline: list -> replicate -> DAG create -> event append -> attribute -> federate -> commit",
     );
+}
 
-    // === Phase 5: Live federation (needs 2+ NestGate instances) ===
-
+fn live_federation_skips(v: &mut ValidationResult) {
     v.check_skip(
         "cross_node_replication",
         "needs 2 live NestGate instances on different nodes",
@@ -144,6 +129,19 @@ fn main() {
         "content_integrity",
         "needs live NestGate to verify BLAKE3 content-addressed integrity",
     );
+}
+
+fn main() {
+    let mut v = ValidationResult::new("primalSpring Exp072 — Data Federation");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    println!("primalSpring Exp072: Cross-Node Data Federation with Provenance Trio");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+
+    data_federation_graph_metadata(&mut v);
+    nestgate_storage_discovery(&mut v);
+    provenance_trio_discovery(&mut v);
+    federation_pipeline_structural(&mut v);
+    live_federation_skips(&mut v);
 
     v.finish();
     std::process::exit(v.exit_code());

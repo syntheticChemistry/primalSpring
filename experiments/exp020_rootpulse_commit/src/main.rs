@@ -17,23 +17,19 @@ use primalspring::ipc::provenance::{
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
-fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp020 — RootPulse Full Commit");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp020: RootPulse Full 6-Phase Commit");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    // ── Structural: RootPulse graphs ──
-
+fn rootpulse_required_graphs(v: &mut ValidationResult) {
     let graphs = EmergentSystem::RootPulse.required_graphs();
     v.check_bool(
         "rootpulse_has_five_required_graphs",
         graphs.len() == 5,
-        &format!("EmergentSystem::RootPulse has {} required graphs: {graphs:?}", graphs.len()),
+        &format!(
+            "EmergentSystem::RootPulse has {} required graphs: {graphs:?}",
+            graphs.len()
+        ),
     );
+}
 
-    // ── Discovery: provenance trio ──
-
+fn provenance_trio_discovery(v: &mut ValidationResult) {
     for &name in &["rhizocrypt", "loamspine", "sweetgrass"] {
         let disc = discover_primal(name);
         v.check_bool(
@@ -50,7 +46,10 @@ fn main() {
                 v.check_bool(
                     &format!("{name}_health"),
                     health.health_ok,
-                    &format!("health ok: {}, latency: {}µs", health.health_ok, health.latency_us),
+                    &format!(
+                        "health ok: {}, latency: {}µs",
+                        health.health_ok, health.latency_us
+                    ),
                 );
                 v.check_bool(
                     &format!("{name}_capabilities"),
@@ -60,20 +59,19 @@ fn main() {
             },
         );
     }
+}
 
-    // ── 6-Phase Commit Pipeline via Neural API ──
-
-    let neural_api_live = neural_api_healthy();
-    let trio_health = provenance::trio_health();
-    let trio_all_healthy = neural_api_live && trio_health.iter().all(|(_domain, ok)| *ok);
-
-    // Phase 1: Health
+fn commit_phase_health(
+    v: &mut ValidationResult,
+    trio_all_healthy: bool,
+    trio_health: &[(&'static str, bool)],
+) {
     v.check_or_skip(
         "phase_1_health",
         trio_all_healthy.then_some(()),
         "trio not available for health phase",
         |(), v| {
-            for (domain, healthy) in &trio_health {
+            for (domain, healthy) in trio_health {
                 v.check_bool(
                     &format!("trio_health_{domain}"),
                     *healthy,
@@ -82,8 +80,9 @@ fn main() {
             }
         },
     );
+}
 
-    // Phase 2: Dehydrate (begin session + record step + dehydrate)
+fn commit_phase_dehydrate(v: &mut ValidationResult, trio_all_healthy: bool) {
     v.check_or_skip(
         "phase_2_dehydrate",
         trio_all_healthy.then_some(()),
@@ -91,7 +90,11 @@ fn main() {
         |(), v| {
             let session = begin_experiment_session("exp020-rootpulse-commit");
             let session_ok = session.status != ProvenanceStatus::Unavailable;
-            v.check_bool("dag_create_session", session_ok, "rhizoCrypt session created");
+            v.check_bool(
+                "dag_create_session",
+                session_ok,
+                "rhizoCrypt session created",
+            );
 
             if session_ok {
                 let step = record_experiment_step(
@@ -110,8 +113,9 @@ fn main() {
             }
         },
     );
+}
 
-    // Phase 3: Sign (beardog crypto)
+fn commit_phase_sign(v: &mut ValidationResult, neural_api_live: bool) {
     v.check_or_skip(
         "phase_3_sign",
         neural_api_live.then_some(()),
@@ -132,8 +136,9 @@ fn main() {
             );
         },
     );
+}
 
-    // Phase 4 + 5: Store + Commit (complete_experiment does dehydrate → commit → attribute)
+fn commit_phase_store_commit(v: &mut ValidationResult, trio_all_healthy: bool) {
     v.check_or_skip(
         "phase_4_5_store_commit",
         trio_all_healthy.then_some(()),
@@ -158,8 +163,9 @@ fn main() {
             );
         },
     );
+}
 
-    // Phase 6: Attribute (sweetGrass braid)
+fn commit_phase_attribute(v: &mut ValidationResult, trio_all_healthy: bool) {
     v.check_or_skip(
         "phase_6_attribute",
         trio_all_healthy.then_some(()),
@@ -179,6 +185,26 @@ fn main() {
             );
         },
     );
+}
+
+fn main() {
+    let mut v = ValidationResult::new("primalSpring Exp020 — RootPulse Full Commit");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    println!("primalSpring Exp020: RootPulse Full 6-Phase Commit");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+
+    rootpulse_required_graphs(&mut v);
+    provenance_trio_discovery(&mut v);
+
+    let neural_api_live = neural_api_healthy();
+    let trio_health = provenance::trio_health();
+    let trio_all_healthy = neural_api_live && trio_health.iter().all(|(_domain, ok)| *ok);
+
+    commit_phase_health(&mut v, trio_all_healthy, &trio_health);
+    commit_phase_dehydrate(&mut v, trio_all_healthy);
+    commit_phase_sign(&mut v, neural_api_live);
+    commit_phase_store_commit(&mut v, trio_all_healthy);
+    commit_phase_attribute(&mut v, trio_all_healthy);
 
     v.finish();
     std::process::exit(v.exit_code());

@@ -33,7 +33,11 @@ fn validate_graph_structure(v: &mut ValidationResult) {
 
     let path = graphs_dir().join("full_overlay.toml");
     let result = validate_structure(&path);
-    v.check_bool("parse_full_overlay", result.parsed, "full_overlay.toml parses");
+    v.check_bool(
+        "parse_full_overlay",
+        result.parsed,
+        "full_overlay.toml parses",
+    );
     v.check_bool(
         "clean_full_overlay",
         result.issues.is_empty(),
@@ -41,8 +45,18 @@ fn validate_graph_structure(v: &mut ValidationResult) {
     );
 
     if result.parsed {
-        let graph = load_graph(&path).expect("already validated as parseable");
-        let waves = topological_waves(&graph).expect("validated graph should have valid topology");
+        let Some(graph) = load_graph(&path).ok() else {
+            v.check_bool("load_full_overlay", false, "load_graph full_overlay.toml");
+            return;
+        };
+        let Some(waves) = topological_waves(&graph).ok() else {
+            v.check_bool(
+                "full_overlay_topology",
+                false,
+                "topological_waves full_overlay.toml",
+            );
+            return;
+        };
         v.check_minimum("full_overlay_waves", waves.len(), 2);
         println!(
             "  full_overlay.toml: {} nodes, {} waves, {} required",
@@ -57,13 +71,40 @@ fn validate_spawn_and_caps(v: &mut ValidationResult) {
     println!("\n=== Phase 2: Spawn Ordering & Capability Map ===\n");
 
     let path = graphs_dir().join("full_overlay.toml");
-    let graph = load_graph(&path).expect("validated in phase 1");
+    let Some(graph) = load_graph(&path).ok() else {
+        v.check_bool(
+            "load_full_overlay_phase2",
+            false,
+            "load_graph full_overlay.toml",
+        );
+        return;
+    };
     let spawnable = graph_spawnable_primals(&graph);
-    v.check_bool("spawnable_beardog", spawnable.contains(&"beardog".to_owned()), "beardog is spawnable");
-    v.check_bool("spawnable_songbird", spawnable.contains(&"songbird".to_owned()), "songbird is spawnable");
-    v.check_bool("spawnable_nestgate", spawnable.contains(&"nestgate".to_owned()), "nestgate is spawnable");
-    v.check_bool("spawnable_toadstool", spawnable.contains(&"toadstool".to_owned()), "toadstool is spawnable");
-    v.check_bool("spawnable_squirrel", spawnable.contains(&"squirrel".to_owned()), "squirrel is spawnable");
+    v.check_bool(
+        "spawnable_beardog",
+        spawnable.contains(&"beardog".to_owned()),
+        "beardog is spawnable",
+    );
+    v.check_bool(
+        "spawnable_songbird",
+        spawnable.contains(&"songbird".to_owned()),
+        "songbird is spawnable",
+    );
+    v.check_bool(
+        "spawnable_nestgate",
+        spawnable.contains(&"nestgate".to_owned()),
+        "nestgate is spawnable",
+    );
+    v.check_bool(
+        "spawnable_toadstool",
+        spawnable.contains(&"toadstool".to_owned()),
+        "toadstool is spawnable",
+    );
+    v.check_bool(
+        "spawnable_squirrel",
+        spawnable.contains(&"squirrel".to_owned()),
+        "squirrel is spawnable",
+    );
     v.check_bool(
         "validate_not_spawnable",
         !spawnable.contains(&"validate_full_overlay".to_owned()),
@@ -72,11 +113,31 @@ fn validate_spawn_and_caps(v: &mut ValidationResult) {
     println!("  spawnable: {spawnable:?}");
 
     let caps = graph_capability_map(&graph);
-    v.check_bool("cap_security", caps.get("security").is_some_and(|v| v == "beardog"), "security -> beardog");
-    v.check_bool("cap_storage", caps.get("storage").is_some_and(|v| v == "nestgate"), "storage -> nestgate");
-    v.check_bool("cap_compute", caps.get("compute").is_some_and(|v| v == "toadstool"), "compute -> toadstool");
-    v.check_bool("cap_ai", caps.get("ai").is_some_and(|v| v == "squirrel"), "ai -> squirrel");
-    v.check_bool("cap_discovery", caps.get("discovery").is_some_and(|v| v == "songbird"), "discovery -> songbird");
+    v.check_bool(
+        "cap_security",
+        caps.get("security").is_some_and(|v| v == "beardog"),
+        "security -> beardog",
+    );
+    v.check_bool(
+        "cap_storage",
+        caps.get("storage").is_some_and(|v| v == "nestgate"),
+        "storage -> nestgate",
+    );
+    v.check_bool(
+        "cap_compute",
+        caps.get("compute").is_some_and(|v| v == "toadstool"),
+        "compute -> toadstool",
+    );
+    v.check_bool(
+        "cap_ai",
+        caps.get("ai").is_some_and(|v| v == "squirrel"),
+        "ai -> squirrel",
+    );
+    v.check_bool(
+        "cap_discovery",
+        caps.get("discovery").is_some_and(|v| v == "songbird"),
+        "discovery -> songbird",
+    );
     println!("  capability map: {caps:?}");
 }
 
@@ -122,20 +183,43 @@ fn validate_live_overlay(v: &mut ValidationResult) {
 
             let all_caps = running.all_capabilities();
             println!("  all capabilities: {all_caps:?}");
-            v.check_bool("has_security", all_caps.contains(&"security".to_owned()), "has security");
-            v.check_bool("has_discovery", all_caps.contains(&"discovery".to_owned()), "has discovery");
+            v.check_bool(
+                "has_security",
+                all_caps.contains(&"security".to_owned()),
+                "has security",
+            );
+            v.check_bool(
+                "has_discovery",
+                all_caps.contains(&"discovery".to_owned()),
+                "has discovery",
+            );
 
             running.validate(v);
 
             println!("\n=== Phase 4: Squirrel capability.discover ===\n");
-            try_squirrel_rpc(&running, v, "squirrel_discover", "capability.discover", serde_json::json!({}));
+            try_squirrel_rpc(
+                &running,
+                v,
+                "squirrel_discover",
+                "capability.discover",
+                serde_json::json!({}),
+            );
 
             println!("\n=== Phase 5: Squirrel tool.list ===\n");
-            try_squirrel_rpc(&running, v, "squirrel_tool_list", "tool.list", serde_json::json!({}));
+            try_squirrel_rpc(
+                &running,
+                v,
+                "squirrel_tool_list",
+                "tool.list",
+                serde_json::json!({}),
+            );
 
             println!("\n=== Phase 6: Squirrel context.create ===\n");
             try_squirrel_rpc(
-                &running, v, "squirrel_context_create", "context.create",
+                &running,
+                v,
+                "squirrel_context_create",
+                "context.create",
                 serde_json::json!({
                     "name": "exp070-test-context",
                     "description": "Cross-primal discovery experiment context"
@@ -146,7 +230,10 @@ fn validate_live_overlay(v: &mut ValidationResult) {
         }
         Err(e) => {
             println!("  full overlay start failed (expected if binaries missing): {e}");
-            v.check_skip("overlay_start", &format!("full overlay could not start: {e}"));
+            v.check_skip(
+                "overlay_start",
+                &format!("full overlay could not start: {e}"),
+            );
             v.check_skip("squirrel_discover", "overlay not started");
             v.check_skip("squirrel_tool_list", "overlay not started");
             v.check_skip("squirrel_context_create", "overlay not started");
@@ -158,12 +245,15 @@ fn validate_live_overlay(v: &mut ValidationResult) {
 fn validate_ai_query(running: &RunningAtomic, v: &mut ValidationResult) {
     println!("\n=== Phase 7: Squirrel ai.query (skip if no API key) ===\n");
 
-    let has_api_key = std::env::var("ANTHROPIC_API_KEY").is_ok()
-        || std::env::var("OPENAI_API_KEY").is_ok();
+    let has_api_key =
+        std::env::var("ANTHROPIC_API_KEY").is_ok() || std::env::var("OPENAI_API_KEY").is_ok();
 
     if has_api_key {
         try_squirrel_rpc(
-            running, v, "squirrel_ai_query", "ai.query",
+            running,
+            v,
+            "squirrel_ai_query",
+            "ai.query",
             serde_json::json!({
                 "prompt": "What is 2+2? Reply with just the number.",
                 "max_tokens": 16
@@ -171,7 +261,10 @@ fn validate_ai_query(running: &RunningAtomic, v: &mut ValidationResult) {
         );
     } else {
         println!("  no API key set — skipping ai.query");
-        v.check_skip("squirrel_ai_query", "no ANTHROPIC_API_KEY or OPENAI_API_KEY");
+        v.check_skip(
+            "squirrel_ai_query",
+            "no ANTHROPIC_API_KEY or OPENAI_API_KEY",
+        );
     }
 }
 

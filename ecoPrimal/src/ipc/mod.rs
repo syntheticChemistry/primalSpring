@@ -21,6 +21,8 @@ pub mod dispatch;
 pub mod error;
 pub mod extract;
 pub mod mcp;
+#[cfg(test)]
+mod proptest_ipc;
 pub mod protocol;
 pub mod provenance;
 pub mod resilience;

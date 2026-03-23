@@ -14,13 +14,7 @@ use primalspring::coordination::AtomicType;
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
-fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp056 — Cross Tower Federation");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp056: Cross-Tower Federation — BYOB, NAT, Gossip");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    // --- Phase 1: AtomicType structural ---
+fn atomic_type_structural(v: &mut ValidationResult) {
     let variants = [
         AtomicType::Tower,
         AtomicType::Node,
@@ -46,14 +40,15 @@ fn main() {
         full_is_superset,
         "FullNucleus primals is superset of Tower primals",
     );
+}
 
-    // --- Phase 2: Friend remote covalent graph metadata ---
+fn friend_remote_covalent_graph_metadata(v: &mut ValidationResult) {
     let friend_graph = Path::new("graphs/multi_node/friend_remote_covalent.toml");
     v.check_or_skip(
         "friend_graph_metadata",
         friend_graph.exists().then_some(&()),
         "friend_remote_covalent.toml not found",
-        |_, v| {
+        |&(), v| {
             let meta = validate_graph_bonding(friend_graph);
             v.check_bool(
                 "friend_graph_is_covalent",
@@ -93,14 +88,15 @@ fn main() {
             );
         },
     );
+}
 
-    // --- Phase 3: Idle compute federation graph metadata ---
+fn idle_compute_federation_graph_metadata(v: &mut ValidationResult) {
     let idle_graph = Path::new("graphs/multi_node/idle_compute_federation.toml");
     v.check_or_skip(
         "idle_federation_graph_metadata",
         idle_graph.exists().then_some(&()),
         "idle_compute_federation.toml not found",
-        |_, v| {
+        |&(), v| {
             let meta = validate_graph_bonding(idle_graph);
             v.check_bool(
                 "idle_graph_is_covalent",
@@ -114,14 +110,15 @@ fn main() {
             );
         },
     );
+}
 
-    // --- Phase 4: Data federation graph metadata ---
+fn data_federation_graph_metadata(v: &mut ValidationResult) {
     let data_graph = Path::new("graphs/multi_node/data_federation_cross_site.toml");
     v.check_or_skip(
         "data_federation_graph_metadata",
         data_graph.exists().then_some(&()),
         "data_federation_cross_site.toml not found",
-        |_, v| {
+        |&(), v| {
             let meta = validate_graph_bonding(data_graph);
             v.check_bool(
                 "data_graph_is_covalent",
@@ -135,8 +132,9 @@ fn main() {
             );
         },
     );
+}
 
-    // --- Phase 5: Live federation (needs 2+ towers) ---
+fn live_federation_skips(v: &mut ValidationResult) {
     v.check_skip(
         "cross_tower_discovery",
         "cross-tower discovery needs live primals on 2+ machines",
@@ -153,6 +151,19 @@ fn main() {
         "timeout_handling",
         "timeout handling needs live federation across NAT",
     );
+}
+
+fn main() {
+    let mut v = ValidationResult::new("primalSpring Exp056 — Cross Tower Federation");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    println!("primalSpring Exp056: Cross-Tower Federation — BYOB, NAT, Gossip");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+
+    atomic_type_structural(&mut v);
+    friend_remote_covalent_graph_metadata(&mut v);
+    idle_compute_federation_graph_metadata(&mut v);
+    data_federation_graph_metadata(&mut v);
+    live_federation_skips(&mut v);
 
     v.finish();
     std::process::exit(v.exit_code());

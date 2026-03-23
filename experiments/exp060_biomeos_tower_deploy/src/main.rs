@@ -227,15 +227,19 @@ fn validate_neural_api(guard: &BiomeOsGuard, v: &mut ValidationResult) {
 }
 
 fn main() {
-    ValidationResult::run_experiment(
-        "primalSpring Exp060 — biomeOS Tower Deploy",
+    let mut v = ValidationResult::new("primalSpring Exp060 — biomeOS Tower Deploy")
+        .with_provenance("exp060_biomeos_tower_deploy", "2026-03-23");
+    ValidationResult::print_banner(
         "primalSpring Exp060: biomeOS-orchestrated Tower Atomic deployment",
-        |v| {
-            let guard = spawn_biomeos_neural_api(v);
-            if let Some(ref g) = guard {
-                validate_neural_api(g, v);
-            }
-            drop(guard);
-        },
     );
+    {
+        let v = &mut v;
+        let guard = spawn_biomeos_neural_api(v);
+        if let Some(ref g) = guard {
+            validate_neural_api(g, v);
+        }
+        drop(guard);
+    }
+    v.finish();
+    std::process::exit(v.exit_code());
 }

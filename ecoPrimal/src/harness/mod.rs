@@ -429,9 +429,7 @@ impl AtomicHarness {
     /// Returns `(spawn_order, overlay_capability_map)` where the overlay
     /// map contains capability->primal entries for graph nodes beyond the
     /// base tier.
-    fn compute_spawn_order(
-        &self,
-    ) -> Result<(Vec<String>, HashMap<String, String>), LaunchError> {
+    fn compute_spawn_order(&self) -> Result<(Vec<String>, HashMap<String, String>), LaunchError> {
         let required: Vec<&str> = self.atomic.required_primals().to_vec();
 
         let Some(ref graph_path) = self.graph_path else {
@@ -452,8 +450,9 @@ impl AtomicHarness {
             ))
         })?;
 
-        let spawnable: HashSet<String> =
-            deploy::graph_spawnable_primals(&graph).into_iter().collect();
+        let spawnable: HashSet<String> = deploy::graph_spawnable_primals(&graph)
+            .into_iter()
+            .collect();
 
         let mut ordered: Vec<String> = waves
             .into_iter()
@@ -608,8 +607,7 @@ mod tests {
 
     #[test]
     fn compute_spawn_order_overlay_includes_extra_primals() {
-        let graph_path =
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/tower_ai.toml");
+        let graph_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/tower_ai.toml");
         if !graph_path.exists() {
             return; // graph not yet created
         }

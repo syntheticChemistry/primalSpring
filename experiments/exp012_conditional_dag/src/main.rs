@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 use primalspring::coordination::AtomicType;
 use primalspring::deploy::{graph_spawnable_primals, load_graph, validate_structure};
 use primalspring::graphs::CoordinationPattern;
-use primalspring::harness::AtomicHarness;
+use primalspring::harness::{AtomicHarness, RunningAtomic};
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
@@ -20,12 +20,7 @@ fn graphs_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../graphs")
 }
 
-fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp012 — Conditional DAG");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp012: ConditionalDag (conditional_fallback.toml)");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
+fn coordination_pattern_constants(v: &mut ValidationResult) {
     println!("\n=== Phase 1: Pattern Constants ===\n");
 
     let desc = CoordinationPattern::ConditionalDag.description();
@@ -34,11 +29,12 @@ fn main() {
         !desc.is_empty(),
         &format!("CoordinationPattern::ConditionalDag.description() exists: {desc}"),
     );
+}
 
+fn conditional_fallback_graph_structure(v: &mut ValidationResult, graph_path: &Path) {
     println!("\n=== Phase 2: Graph Structural Validation ===\n");
 
-    let graph_path = graphs_dir().join("conditional_fallback.toml");
-    let result = validate_structure(&graph_path);
+    let result = validate_structure(graph_path);
     v.check_bool(
         "graph_parses",
         result.parsed,
@@ -51,7 +47,7 @@ fn main() {
     );
 
     if result.parsed {
-        let graph = load_graph(&graph_path).unwrap();
+        let graph = load_graph(graph_path).unwrap();
         let spawnable = graph_spawnable_primals(&graph);
         println!(
             "  {} nodes, {} spawnable: {spawnable:?}",
@@ -69,54 +65,68 @@ fn main() {
             "toadstool is spawnable (primary path)",
         );
     }
+}
 
+fn conditional_branch_verification(v: &mut ValidationResult, running: &RunningAtomic) {
+    println!("\n=== Phase 4: Conditional Branch Verification ===\n");
+
+    let health = running.health_check_all();
+    let beardog_live = health.iter().any(|(n, l)| n == "beardog" && *l);
+    let songbird_live = health.iter().any(|(n, l)| n == "songbird" && *l);
+    v.check_bool("beardog_live", beardog_live, "beardog healthy (required)");
+    v.check_bool(
+        "songbird_live",
+        songbird_live,
+        "songbird healthy (required)",
+    );
+
+    let toadstool_live = health.iter().any(|(n, l)| n == "toadstool" && *l);
+    if toadstool_live {
+        println!("  toadstool: LIVE — GPU dispatch path active");
+        v.check_bool(
+            "primary_path_active",
+            true,
+            "toadstool GPU dispatch path active",
+        );
+
+        let all_caps = running.all_capabilities();
+        v.check_bool(
+            "compute_capability",
+            all_caps.contains(&"compute".to_owned()),
+            "compute capability available via toadstool",
+        );
+    } else {
+        println!("  toadstool: DOWN — CPU fallback path would activate");
+        v.check_skip(
+            "primary_path_active",
+            "toadstool not available — CPU fallback path",
+        );
+    }
+
+    for (name, live) in &health {
+        println!(
+            "    {name}: {}",
+            if *live { "LIVE" } else { "DOWN (optional)" }
+        );
+    }
+}
+
+fn conditional_composition_live(v: &mut ValidationResult, graph_path: &Path) {
     println!("\n=== Phase 3: Live Conditional Composition ===\n");
 
     let family_id = format!("exp012-{}", std::process::id());
-    match AtomicHarness::with_graph(AtomicType::Tower, &graph_path).start(&family_id) {
+    match AtomicHarness::with_graph(AtomicType::Tower, graph_path).start(&family_id) {
         Ok(running) => {
-            v.check_bool("composition_started", true, "conditional composition started");
+            v.check_bool(
+                "composition_started",
+                true,
+                "conditional composition started",
+            );
             v.check_minimum("primal_count", running.primal_count(), 2);
 
-            running.validate(&mut v);
+            running.validate(v);
 
-            println!("\n=== Phase 4: Conditional Branch Verification ===\n");
-
-            let health = running.health_check_all();
-            let beardog_live = health.iter().any(|(n, l)| n == "beardog" && *l);
-            let songbird_live = health.iter().any(|(n, l)| n == "songbird" && *l);
-            v.check_bool("beardog_live", beardog_live, "beardog healthy (required)");
-            v.check_bool("songbird_live", songbird_live, "songbird healthy (required)");
-
-            let toadstool_live = health.iter().any(|(n, l)| n == "toadstool" && *l);
-            if toadstool_live {
-                println!("  toadstool: LIVE — GPU dispatch path active");
-                v.check_bool(
-                    "primary_path_active",
-                    true,
-                    "toadstool GPU dispatch path active",
-                );
-
-                let all_caps = running.all_capabilities();
-                v.check_bool(
-                    "compute_capability",
-                    all_caps.contains(&"compute".to_owned()),
-                    "compute capability available via toadstool",
-                );
-            } else {
-                println!("  toadstool: DOWN — CPU fallback path would activate");
-                v.check_skip(
-                    "primary_path_active",
-                    "toadstool not available — CPU fallback path",
-                );
-            }
-
-            for (name, live) in &health {
-                println!(
-                    "    {name}: {}",
-                    if *live { "LIVE" } else { "DOWN (optional)" }
-                );
-            }
+            conditional_branch_verification(v, &running);
         }
         Err(e) => {
             println!("  composition start failed: {e}");
@@ -126,6 +136,18 @@ fn main() {
             );
         }
     }
+}
+
+fn main() {
+    let mut v = ValidationResult::new("primalSpring Exp012 — Conditional DAG");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    println!("primalSpring Exp012: ConditionalDag (conditional_fallback.toml)");
+    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+
+    coordination_pattern_constants(&mut v);
+    let graph_path = graphs_dir().join("conditional_fallback.toml");
+    conditional_fallback_graph_structure(&mut v, &graph_path);
+    conditional_composition_live(&mut v, &graph_path);
 
     println!("\n{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     v.finish();

@@ -79,7 +79,8 @@ fn validate_beacon(
                 "BirdSong encrypted beacon generated",
             );
 
-            let enc_str = beacon.get("encrypted_beacon")
+            let enc_str = beacon
+                .get("encrypted_beacon")
                 .and_then(|v| v.as_str())
                 .unwrap_or_default();
             let decrypt = rpc_call(
@@ -171,14 +172,25 @@ fn main() {
         "primalSpring Exp063 — Pixel Tower Rendezvous",
         "primalSpring Exp063: BirdSong beacon generation + rendezvous exchange",
         |v| {
-            let running = AtomicHarness::new(AtomicType::Tower)
+            let running = match AtomicHarness::new(AtomicType::Tower)
                 .start_with_neural_api(&family_id, &graphs_dir)
-                .expect("tower + neural-api should start");
+            {
+                Ok(r) => r,
+                Err(e) => {
+                    v.check_bool("harness_start", false, &format!("failed to start: {e}"));
+                    v.finish();
+                    std::process::exit(v.exit_code());
+                }
+            };
 
-            let songbird_socket = running
+            let Some(songbird_socket) = running
                 .socket_for("discovery")
                 .or_else(|| running.socket_for_primal("songbird"))
-                .expect("songbird socket");
+            else {
+                v.check_bool("songbird_socket", false, "songbird socket not found");
+                v.finish();
+                std::process::exit(v.exit_code());
+            };
 
             validate_beacon(v, songbird_socket, &family_id);
             validate_connectivity(v, songbird_socket, &family_id);

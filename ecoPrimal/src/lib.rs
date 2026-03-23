@@ -24,6 +24,7 @@
 //! - [`launcher`] — primal binary discovery, spawn, and socket lifecycle (sync port from biomeOS)
 //! - [`harness`] — atomic test orchestration: spawn compositions, validate, tear down
 //! - [`niche`] — BYOB niche self-knowledge (capabilities, semantic mappings, registration)
+//! - [`primal_names`] — canonical display names and discovery slug mapping (neuralSpring pattern)
 //! - [`validation`] — experiment validation harness with structured output
 //! - [`tolerances`] — named latency and throughput bounds
 
@@ -43,5 +44,6 @@ pub mod harness;
 pub mod ipc;
 pub mod launcher;
 pub mod niche;
+pub mod primal_names;
 pub mod tolerances;
 pub mod validation;

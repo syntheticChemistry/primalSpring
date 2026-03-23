@@ -70,7 +70,10 @@ fn main() {
             "beardog_before_songbird",
             waves.len() >= 2
                 && waves[0].contains(&"beardog".to_owned())
-                && waves.iter().skip(1).any(|w| w.contains(&"songbird".to_owned())),
+                && waves
+                    .iter()
+                    .skip(1)
+                    .any(|w| w.contains(&"songbird".to_owned())),
             "beardog is in wave 0, songbird in a later wave",
         );
     }
@@ -80,7 +83,11 @@ fn main() {
     let family_id = format!("exp010-{}", std::process::id());
     match AtomicHarness::with_graph(AtomicType::Tower, &graph_path).start(&family_id) {
         Ok(running) => {
-            v.check_bool("composition_started", true, "sequential composition started");
+            v.check_bool(
+                "composition_started",
+                true,
+                "sequential composition started",
+            );
             v.check_minimum("primal_count", running.primal_count(), 2);
 
             running.validate(&mut v);

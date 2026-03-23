@@ -6,7 +6,7 @@
 mod integration;
 
 use integration::{
-    direct_rpc_call, load_anthropic_key, process_alive, spawn_squirrel_for_test, SquirrelGuard,
+    SquirrelGuard, direct_rpc_call, load_anthropic_key, process_alive, spawn_squirrel_for_test,
 };
 use std::path::PathBuf;
 use std::time::Duration;

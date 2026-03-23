@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 12 — MULTI-NODE BONDING + FEDERATION 87/87, 280+ tests, 51 experiments, 22 deploy graphs)  
+**Version**: 0.7.0 (Phase 12 — MULTI-NODE BONDING + FEDERATION 87/87, 303 tests, 51 experiments, 22 deploy graphs)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 23, 2026
 
@@ -37,9 +37,9 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **280+** (unit + integration + doc-tests, 42 ignored live) |
+| Tests | **303** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Experiments | 51 (9 tracks) |
-| Proptest fuzz tests | 15 |
+| Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
 | `#![forbid(unsafe_code)]` | workspace-level |
@@ -244,6 +244,7 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_V070_ECOSYSTEM_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Cross-spring absorption: deny.toml, cast lints, ValidationSink, proptest, primal_names, provenance circuit breaker — patterns for all teams |
 | v0.7.0 | `PRIMALSPRING_PHASE12_MULTINODE_BONDING_HANDOFF_MAR23_2026.md` | Mar 23 | Multi-node bonding, federation, idle compute, STUN tiers, BondingPolicy — primal + spring evolution guide |
 | v0.7.0 | `PRIMALSPRING_V070_HARDWARE_VALIDATION_HANDOFF_MAR22_2026.md` | Mar 22 | Hardware audit: Pixel 8a, USB spores, cross-arch deployment, blockers per team |
 | v0.7.0 | `PRIMALSPRING_V070_GRAPH_OVERLAY_HANDOFF_MAR22_2026.md` | Mar 22 | Graph overlays, Squirrel discovery, graph execution, integration guide |
@@ -288,12 +289,12 @@ Every experiment involves multiple primals or springs.
 | Spring | What primalSpring Learns |
 |--------|-------------------------|
 | hotSpring | Precision validation patterns (170 tolerances, structured provenance) |
-| wetSpring | Deep IPC integration (354 bins, 214 tolerances, MCP tools) |
-| airSpring | NUCLEUS niche deployment (41 caps, deny.toml, MCP) |
-| groundSpring | Typed errors, ValidationSink, 13-tier tolerance provenance |
-| neuralSpring | Capability registry TOML, primal_names::display, MCP tools |
-| ludoSpring | ValidationResult::with_provenance(), structured provenance |
-| healthSpring | Proptest IPC fuzz (18 tests), circuit breaker patterns |
+| wetSpring V132 | Deep IPC integration (354 bins, 214 tolerances, MCP tools, skip_with_code) |
+| airSpring V010 | NUCLEUS niche deployment (41 caps, deny.toml, MCP, cast lints) |
+| groundSpring V120 | Typed errors, ValidationSink (section + write_summary), 13-tier tolerance provenance, deny.toml merge |
+| neuralSpring S170 | Capability registry TOML, primal_names::display, cast lint policy |
+| ludoSpring V29 | ValidationResult::with_provenance(), XDG sockets, structured provenance |
+| healthSpring V41 | Proptest IPC fuzz consolidated module, epoch-based circuit breaker, tracing, DOI provenance |
 
 ---
 

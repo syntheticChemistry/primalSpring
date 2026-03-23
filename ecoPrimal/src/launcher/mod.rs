@@ -465,7 +465,12 @@ pub fn spawn_primal(
     let relay_handle = relay_output(&mut child, primal);
 
     let effective_socket = await_socket_ready(
-        primal, family_id, profile, socket_path, nucleation, &mut child,
+        primal,
+        family_id,
+        profile,
+        socket_path,
+        nucleation,
+        &mut child,
     )?;
 
     println!(

@@ -37,40 +37,67 @@ pub struct StunTierConfig {
 /// Tier 1: Lineage relay configuration.
 #[derive(Debug, Clone)]
 pub struct LineageTier {
+    /// Whether lineage relay is active.
     pub enabled: bool,
+    /// Whether lineage paths take priority over faster non-lineage routes.
     pub prefer_lineage: bool,
+    /// Maximum relay hops allowed through the lineage mesh.
     pub max_lineage_hops: u32,
+    /// Bandwidth cap in Mbps for relay traffic.
     pub relay_bandwidth_limit_mbps: u64,
+    /// Maximum simultaneous relay connections.
     pub max_concurrent_relays: u32,
 }
 
 /// A single STUN server entry (Tier 2 or Tier 3).
 #[derive(Debug, Clone)]
 pub struct StunServer {
+    /// Host and port (e.g. `"192.168.1.144:3478"`).
     pub address: String,
+    /// Transport protocol (`"udp"`, `"tcp"`, `"tls"`).
     pub protocol: String,
+    /// Lower values are tried first within the same tier.
     pub priority: u32,
+    /// Whether this server is currently active.
     pub enabled: bool,
+    /// Whether the server identity has been cryptographically verified.
     pub verified: bool,
+    /// Whether a human has audited this server for sovereignty compliance.
     pub vetted: bool,
+    /// Free-form annotation for operational context.
     pub comment: String,
 }
 
 /// Tier 3: Public STUN configuration.
 #[derive(Debug, Clone)]
 pub struct PublicStunTier {
+    /// Whether public STUN is available at all.
     pub enabled: bool,
+    /// If true, only used when Tiers 1-2 fail.
     pub use_as_fallback_only: bool,
+    /// Cycle through servers to avoid fingerprinting.
     pub rotate_servers: bool,
+    /// Community STUN server list.
     pub servers: Vec<StunServer>,
 }
 
 /// Advanced NAT traversal settings.
 #[derive(Debug, Clone)]
 pub struct AdvancedSettings {
+    /// Try multiple tiers simultaneously (faster, less sovereign).
     pub parallel_attempts: bool,
+    /// Auto-switch to direct connection when NAT is resolved.
     pub auto_upgrade_to_direct: bool,
+    /// Privacy-related settings for relay and metadata handling.
+    pub privacy: PrivacySettings,
+}
+
+/// Privacy settings for sovereignty-first relay behavior.
+#[derive(Debug, Clone)]
+pub struct PrivacySettings {
+    /// Require Dark Forest gating before relay handshake.
     pub dark_forest_gating: bool,
+    /// Strip non-essential metadata from relay headers.
     pub minimal_metadata: bool,
 }
 
@@ -114,9 +141,6 @@ struct RawLineage {
     relay_bandwidth_limit_mbps: Option<u64>,
     #[serde(default)]
     max_concurrent_relays: Option<u32>,
-    #[allow(dead_code)]
-    #[serde(default)]
-    relay_offer_mode: Option<String>,
 }
 
 #[derive(Debug, Default, Deserialize)]
@@ -147,21 +171,12 @@ struct RawPublicStun {
     rotate_servers: bool,
     #[serde(default)]
     servers: Vec<RawServer>,
-    #[allow(dead_code)]
-    #[serde(default)]
-    rotation_interval_secs: Option<u64>,
 }
 
 #[derive(Debug, Default, Deserialize)]
 struct RawRendezvous {
     #[serde(default)]
     enabled: bool,
-    #[allow(dead_code)]
-    #[serde(default)]
-    steam: Option<serde_json::Value>,
-    #[allow(dead_code)]
-    #[serde(default)]
-    discord: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Default, Deserialize)]
@@ -172,28 +187,10 @@ struct RawAdvanced {
     auto_upgrade_to_direct: bool,
     #[serde(default)]
     privacy: RawPrivacy,
-    #[allow(dead_code)]
-    #[serde(default)]
-    monitor_quality: bool,
-    #[allow(dead_code)]
-    #[serde(default)]
-    upgrade_latency_threshold_ms: Option<u64>,
-    #[allow(dead_code)]
-    #[serde(default)]
-    upgrade_packet_loss_threshold_percent: Option<f64>,
-    #[allow(dead_code)]
-    #[serde(default)]
-    log_stun_attempts: bool,
-    #[allow(dead_code)]
-    #[serde(default)]
-    log_relay_usage: bool,
 }
 
 #[derive(Debug, Default, Deserialize)]
 struct RawPrivacy {
-    #[allow(dead_code)]
-    #[serde(default)]
-    randomize_timing: bool,
     #[serde(default)]
     use_dark_forest_gating: bool,
     #[serde(default)]
@@ -248,8 +245,10 @@ pub fn load_stun_config(path: &Path) -> Result<StunTierConfig, String> {
         advanced: AdvancedSettings {
             parallel_attempts: raw.advanced.parallel_attempts,
             auto_upgrade_to_direct: raw.advanced.auto_upgrade_to_direct,
-            dark_forest_gating: raw.advanced.privacy.use_dark_forest_gating,
-            minimal_metadata: raw.advanced.privacy.minimal_metadata,
+            privacy: PrivacySettings {
+                dark_forest_gating: raw.advanced.privacy.use_dark_forest_gating,
+                minimal_metadata: raw.advanced.privacy.minimal_metadata,
+            },
         },
     })
 }
@@ -261,12 +260,11 @@ pub fn load_stun_config(path: &Path) -> Result<StunTierConfig, String> {
 pub fn validate_sovereignty_first(config: &StunTierConfig) -> Vec<String> {
     let mut issues = Vec::new();
 
-    if config.strategy != "sovereignty-first" && config.strategy != "lineage-only" {
-        if !config.public_stun.use_as_fallback_only {
-            issues.push(
-                "public STUN should be fallback-only in sovereignty-first strategy".to_owned(),
-            );
-        }
+    if config.strategy != "sovereignty-first"
+        && config.strategy != "lineage-only"
+        && !config.public_stun.use_as_fallback_only
+    {
+        issues.push("public STUN should be fallback-only in sovereignty-first strategy".to_owned());
     }
 
     if config.strategy == "sovereignty-first" {
@@ -274,9 +272,7 @@ pub fn validate_sovereignty_first(config: &StunTierConfig) -> Vec<String> {
             issues.push("sovereignty-first requires lineage relay (Tier 1) enabled".to_owned());
         }
         if !config.lineage.prefer_lineage {
-            issues.push(
-                "sovereignty-first requires prefer_lineage = true".to_owned(),
-            );
+            issues.push("sovereignty-first requires prefer_lineage = true".to_owned());
         }
         if config.advanced.parallel_attempts {
             issues.push(
@@ -290,7 +286,6 @@ pub fn validate_sovereignty_first(config: &StunTierConfig) -> Vec<String> {
         issues.push("lineage-only strategy should not enable public STUN".to_owned());
     }
 
-    // Tier 2 servers should all be verified
     for server in &config.user_provided {
         if server.enabled && !server.verified {
             issues.push(format!(
@@ -300,7 +295,6 @@ pub fn validate_sovereignty_first(config: &StunTierConfig) -> Vec<String> {
         }
     }
 
-    // Tier 3 should not include corporate surveillance servers
     let corporate_patterns = ["google", "cloudflare", "twilio"];
     for server in &config.public_stun.servers {
         if server.enabled {
@@ -316,8 +310,7 @@ pub fn validate_sovereignty_first(config: &StunTierConfig) -> Vec<String> {
         }
     }
 
-    // Privacy: Dark Forest gating should be enabled
-    if !config.advanced.dark_forest_gating {
+    if !config.advanced.privacy.dark_forest_gating {
         issues.push("Dark Forest gating should be enabled for relay security".to_owned());
     }
 
@@ -335,7 +328,6 @@ pub fn escalation_order(config: &StunTierConfig) -> Vec<&'static str> {
             "Tier 1: Lineage Relay",
             "Tier 4: Rendezvous",
         ],
-        // sovereignty-first (default)
         _ => {
             let mut tiers = Vec::new();
             if config.lineage.enabled {
@@ -364,6 +356,40 @@ mod tests {
         let mut f = tempfile::NamedTempFile::new().unwrap();
         f.write_all(content.as_bytes()).unwrap();
         f
+    }
+
+    fn default_privacy() -> PrivacySettings {
+        PrivacySettings {
+            dark_forest_gating: true,
+            minimal_metadata: true,
+        }
+    }
+
+    fn default_advanced() -> AdvancedSettings {
+        AdvancedSettings {
+            parallel_attempts: false,
+            auto_upgrade_to_direct: true,
+            privacy: default_privacy(),
+        }
+    }
+
+    fn default_lineage() -> LineageTier {
+        LineageTier {
+            enabled: true,
+            prefer_lineage: true,
+            max_lineage_hops: 3,
+            relay_bandwidth_limit_mbps: 100,
+            max_concurrent_relays: 10,
+        }
+    }
+
+    fn empty_public_stun(enabled: bool) -> PublicStunTier {
+        PublicStunTier {
+            enabled,
+            use_as_fallback_only: true,
+            rotate_servers: false,
+            servers: Vec::new(),
+        }
     }
 
     #[test]
@@ -407,13 +433,7 @@ minimal_metadata = true
             enabled: true,
             strategy: "sovereignty-first".to_owned(),
             tier_timeout_secs: 5,
-            lineage: LineageTier {
-                enabled: true,
-                prefer_lineage: true,
-                max_lineage_hops: 3,
-                relay_bandwidth_limit_mbps: 100,
-                max_concurrent_relays: 10,
-            },
+            lineage: default_lineage(),
             user_provided: vec![StunServer {
                 address: "192.168.1.144:3478".to_owned(),
                 protocol: "udp".to_owned(),
@@ -438,12 +458,7 @@ minimal_metadata = true
                 }],
             },
             rendezvous_enabled: false,
-            advanced: AdvancedSettings {
-                parallel_attempts: false,
-                auto_upgrade_to_direct: true,
-                dark_forest_gating: true,
-                minimal_metadata: true,
-            },
+            advanced: default_advanced(),
         };
         let issues = validate_sovereignty_first(&config);
         assert!(issues.is_empty(), "issues: {issues:?}");
@@ -455,26 +470,13 @@ minimal_metadata = true
             enabled: true,
             strategy: "sovereignty-first".to_owned(),
             tier_timeout_secs: 5,
-            lineage: LineageTier {
-                enabled: true,
-                prefer_lineage: true,
-                max_lineage_hops: 3,
-                relay_bandwidth_limit_mbps: 100,
-                max_concurrent_relays: 10,
-            },
+            lineage: default_lineage(),
             user_provided: Vec::new(),
-            public_stun: PublicStunTier {
-                enabled: false,
-                use_as_fallback_only: true,
-                rotate_servers: false,
-                servers: Vec::new(),
-            },
+            public_stun: empty_public_stun(false),
             rendezvous_enabled: false,
             advanced: AdvancedSettings {
                 parallel_attempts: true,
-                auto_upgrade_to_direct: true,
-                dark_forest_gating: true,
-                minimal_metadata: true,
+                ..default_advanced()
             },
         };
         let issues = validate_sovereignty_first(&config);
@@ -487,13 +489,7 @@ minimal_metadata = true
             enabled: true,
             strategy: "sovereignty-first".to_owned(),
             tier_timeout_secs: 5,
-            lineage: LineageTier {
-                enabled: true,
-                prefer_lineage: true,
-                max_lineage_hops: 3,
-                relay_bandwidth_limit_mbps: 100,
-                max_concurrent_relays: 10,
-            },
+            lineage: default_lineage(),
             user_provided: Vec::new(),
             public_stun: PublicStunTier {
                 enabled: true,
@@ -510,12 +506,7 @@ minimal_metadata = true
                 }],
             },
             rendezvous_enabled: false,
-            advanced: AdvancedSettings {
-                parallel_attempts: false,
-                auto_upgrade_to_direct: true,
-                dark_forest_gating: true,
-                minimal_metadata: true,
-            },
+            advanced: default_advanced(),
         };
         let issues = validate_sovereignty_first(&config);
         assert!(issues.iter().any(|i| i.contains("google")));
@@ -527,13 +518,7 @@ minimal_metadata = true
             enabled: true,
             strategy: "sovereignty-first".to_owned(),
             tier_timeout_secs: 5,
-            lineage: LineageTier {
-                enabled: true,
-                prefer_lineage: true,
-                max_lineage_hops: 3,
-                relay_bandwidth_limit_mbps: 100,
-                max_concurrent_relays: 10,
-            },
+            lineage: default_lineage(),
             user_provided: vec![StunServer {
                 address: "192.168.1.144:3478".to_owned(),
                 protocol: "udp".to_owned(),
@@ -550,12 +535,7 @@ minimal_metadata = true
                 servers: Vec::new(),
             },
             rendezvous_enabled: false,
-            advanced: AdvancedSettings {
-                parallel_attempts: false,
-                auto_upgrade_to_direct: true,
-                dark_forest_gating: true,
-                minimal_metadata: true,
-            },
+            advanced: default_advanced(),
         };
         let order = escalation_order(&config);
         assert_eq!(
@@ -574,27 +554,11 @@ minimal_metadata = true
             enabled: true,
             strategy: "lineage-only".to_owned(),
             tier_timeout_secs: 5,
-            lineage: LineageTier {
-                enabled: true,
-                prefer_lineage: true,
-                max_lineage_hops: 3,
-                relay_bandwidth_limit_mbps: 100,
-                max_concurrent_relays: 10,
-            },
+            lineage: default_lineage(),
             user_provided: Vec::new(),
-            public_stun: PublicStunTier {
-                enabled: false,
-                use_as_fallback_only: true,
-                rotate_servers: false,
-                servers: Vec::new(),
-            },
+            public_stun: empty_public_stun(false),
             rendezvous_enabled: false,
-            advanced: AdvancedSettings {
-                parallel_attempts: false,
-                auto_upgrade_to_direct: true,
-                dark_forest_gating: true,
-                minimal_metadata: true,
-            },
+            advanced: default_advanced(),
         };
         let order = escalation_order(&config);
         assert_eq!(order, vec!["Tier 1: Lineage Relay"]);

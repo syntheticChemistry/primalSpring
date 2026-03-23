@@ -503,7 +503,10 @@ fn overlay_tower_ai_validation() {
         "at least base tier checks should pass (got {})",
         v.passed
     );
-    println!("  passed={} failed={} skipped={}", v.passed, v.failed, v.skipped);
+    println!(
+        "  passed={} failed={} skipped={}",
+        v.passed, v.failed, v.skipped
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -617,7 +620,12 @@ fn overlay_graph_structural_validation() {
     use primalspring::deploy::{load_graph, topological_waves, validate_structure};
 
     let graphs_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
-    for name in &["tower_ai.toml", "tower_ai_viz.toml", "nest_viz.toml", "node_ai.toml"] {
+    for name in &[
+        "tower_ai.toml",
+        "tower_ai_viz.toml",
+        "nest_viz.toml",
+        "node_ai.toml",
+    ] {
         let path = graphs_dir.join(name);
         let v = validate_structure(&path);
         assert!(v.parsed, "{name} should parse");

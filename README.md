@@ -8,7 +8,7 @@
 | **Version** | 0.7.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 280+ (unit + integration + doc-tests) |
+| **Tests** | 303 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 51 (9 tracks) |
 | **Deploy Graphs** | 22 TOMLs (18 single-node + 4 multi-node) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding (87/87 gates) |
@@ -41,11 +41,12 @@ primalSpring/
 │   │   ├── graphs/                # Graph execution pattern types (5 patterns)
 │   │   ├── emergent/              # Emergent system validation (RootPulse, RPGPT, CoralForge)
 │   │   ├── bonding/               # Multi-gate bonding models (Covalent, Metallic, Ionic, Weak, OMS) + graph metadata + STUN tiers
-│   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, error, dispatch, extract, resilience
+│   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, error, dispatch, extract, resilience, proptest
 │   │   ├── launcher/              # Primal binary discovery, spawn, socket nucleation (sync biomeOS port)
 │   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
-│   │   ├── validation/            # Experiment harness (check_bool, check_skip, OrExit, ValidationSink)
+│   │   ├── primal_names.rs        # Canonical display names ↔ discovery slugs (neuralSpring pattern)
+│   │   ├── validation/            # Experiment harness (check_bool, check_skip, OrExit, ValidationSink, skip-aware exit)
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
@@ -88,7 +89,7 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 280+ tests (auto + ignored live tests)
+# Run all 303 tests (auto + ignored live tests)
 cargo test --workspace
 
 # Run live atomic tests (requires plasmidBin binaries)
@@ -115,7 +116,7 @@ Install the tool (`cargo install cargo-llvm-cov --locked` or a release binary) a
 cargo coverage
 ```
 
-This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report, and fails if **line** coverage is below **70%** (a starting gate; tighten toward 90% once you have steady numbers). For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
+This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report, and fails if **line** coverage is below **90%**. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
 
 ## Server Mode
 
@@ -186,6 +187,8 @@ typed variants with `is_retriable()`, `is_timeout_likely()`, etc.),
 `CircuitBreaker`, `RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`, and
 centralized `extract_rpc_result`/`extract_rpc_dispatch` for JSON-RPC result
 extraction. Capability parsing handles all 4 ecosystem wire formats (A/B/C/D).
+Provenance trio calls use an epoch-based circuit breaker with exponential
+backoff (absorbed from healthSpring V41).
 
 ## Discovery (5-Tier)
 

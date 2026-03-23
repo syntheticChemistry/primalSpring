@@ -481,7 +481,10 @@ pub fn graph_capability_map(graph: &DeployGraph) -> std::collections::HashMap<St
 pub fn merge_graphs(base: &DeployGraph, overlay: &DeployGraph) -> DeployGraph {
     let mut merged_nodes = base.graph.node.clone();
     for overlay_node in &overlay.graph.node {
-        if let Some(existing) = merged_nodes.iter_mut().find(|n| n.name == overlay_node.name) {
+        if let Some(existing) = merged_nodes
+            .iter_mut()
+            .find(|n| n.name == overlay_node.name)
+        {
             *existing = overlay_node.clone();
         } else {
             merged_nodes.push(overlay_node.clone());
@@ -523,7 +526,6 @@ pub fn validate_all_graphs(dir: &Path) -> Vec<GraphValidation> {
     results.sort_by(|a, b| a.path.cmp(&b.path));
     results
 }
-
 
 #[cfg(test)]
 mod tests;

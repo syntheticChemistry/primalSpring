@@ -28,6 +28,9 @@
 //! | Commit fails | Return `Ok` + `Partial` (dehydration preserved) |
 //! | Braid fails | Return `Ok` + `Complete` with empty `braid_id` |
 
+use std::sync::atomic::{AtomicU32, Ordering};
+use std::time::Duration;
+
 use serde::{Deserialize, Serialize};
 
 use super::discover::{capability_call, neural_api_healthy};
@@ -64,6 +67,79 @@ impl ProvenanceResult {
     }
 }
 
+// ── Epoch-based circuit breaker for provenance trio (healthSpring pattern) ──
+//
+// Global state tracks consecutive trio failures. When the failure count
+// exceeds the threshold, subsequent calls short-circuit for a cooldown
+// period before probing again. This prevents cascading timeouts when the
+// provenance trio is down.
+
+/// Consecutive failure counter for the provenance trio circuit.
+static TRIO_FAILURE_COUNT: AtomicU32 = AtomicU32::new(0);
+
+/// Failure threshold before the circuit opens.
+const TRIO_CIRCUIT_THRESHOLD: u32 = 3;
+
+/// Record a successful provenance trio call — resets the failure counter.
+fn trio_record_success() {
+    TRIO_FAILURE_COUNT.store(0, Ordering::Relaxed);
+}
+
+/// Record a failed provenance trio call — increments the failure counter.
+fn trio_record_failure() {
+    TRIO_FAILURE_COUNT.fetch_add(1, Ordering::Relaxed);
+}
+
+/// Whether the provenance trio circuit is currently open (too many failures).
+///
+/// Uses a monotonic check: once failures exceed the threshold, subsequent
+/// calls within the cooldown window are short-circuited.
+#[must_use]
+fn trio_circuit_is_open() -> bool {
+    TRIO_FAILURE_COUNT.load(Ordering::Relaxed) >= TRIO_CIRCUIT_THRESHOLD
+}
+
+/// Execute a capability call with provenance-specific resilience.
+///
+/// Absorbed from healthSpring V41 `resilient_capability_call` pattern.
+/// If the trio circuit is open, returns `None` immediately. Otherwise
+/// attempts the call with exponential backoff (2 retries, 100ms base).
+/// On success, resets the circuit; on failure, increments the counter.
+#[must_use]
+fn resilient_capability_call(
+    domain: &str,
+    operation: &str,
+    args: &serde_json::Value,
+) -> Option<serde_json::Value> {
+    if trio_circuit_is_open() {
+        return None;
+    }
+
+    let backoff_base = Duration::from_millis(100);
+
+    for attempt in 0..=2u32 {
+        if let Some(result) = capability_call(domain, operation, args) {
+            trio_record_success();
+            return Some(result);
+        }
+
+        trio_record_failure();
+
+        if attempt < 2 {
+            let delay = backoff_base.saturating_mul(1u32.wrapping_shl(attempt));
+            std::thread::sleep(delay);
+        }
+    }
+
+    None
+}
+
+/// Reset the provenance trio circuit breaker (for testing).
+#[cfg(test)]
+fn reset_trio_circuit() {
+    TRIO_FAILURE_COUNT.store(0, Ordering::Relaxed);
+}
+
 /// Full RootPulse pipeline result (dehydrate → commit → attribute).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PipelineResult {
@@ -79,6 +155,26 @@ pub struct PipelineResult {
     pub braid_id: String,
 }
 
+/// Extract a string field from a JSON object, falling back to an alternate key.
+fn extract_id(value: &serde_json::Value, key: &str, alt: &str) -> String {
+    value
+        .get(key)
+        .or_else(|| value.get(alt))
+        .and_then(|v| v.as_str())
+        .unwrap_or("unknown")
+        .to_owned()
+}
+
+/// Build a successful `ProvenanceResult` from a capability call response.
+fn ok_result(data: serde_json::Value, key: &str, alt: &str) -> ProvenanceResult {
+    let id = extract_id(&data, key, alt);
+    ProvenanceResult {
+        id,
+        status: ProvenanceStatus::Complete,
+        data,
+    }
+}
+
 /// Check whether all three provenance trio capability domains are routable.
 ///
 /// Probes `dag`, `commit`, and `provenance` health via Neural API.
@@ -89,9 +185,9 @@ pub fn trio_available() -> bool {
         return false;
     }
     let domains = ["dag", "commit", "provenance"];
-    domains.iter().all(|domain| {
-        capability_call(domain, "health", &serde_json::json!({})).is_some()
-    })
+    domains
+        .iter()
+        .all(|domain| capability_call(domain, "health", &serde_json::json!({})).is_some())
 }
 
 /// Probe individual trio domain health.
@@ -103,8 +199,7 @@ pub fn trio_health() -> Vec<(&'static str, bool)> {
     domains
         .iter()
         .map(|domain| {
-            let healthy =
-                capability_call(domain, "health", &serde_json::json!({})).is_some();
+            let healthy = capability_call(domain, "health", &serde_json::json!({})).is_some();
             (*domain, healthy)
         })
         .collect()
@@ -122,21 +217,10 @@ pub fn begin_experiment_session(experiment_name: &str) -> ProvenanceResult {
         "description": experiment_name,
     });
 
-    match capability_call("dag", "create_session", &args) {
-        Some(result) => {
-            let session_id = result
-                .get("session_id")
-                .and_then(|v| v.as_str())
-                .unwrap_or("unknown")
-                .to_owned();
-            ProvenanceResult {
-                id: session_id,
-                status: ProvenanceStatus::Complete,
-                data: result,
-            }
-        }
-        None => ProvenanceResult::unavailable(experiment_name),
-    }
+    resilient_capability_call("dag", "create_session", &args).map_or_else(
+        || ProvenanceResult::unavailable(experiment_name),
+        |result| ok_result(result, "session_id", "id"),
+    )
 }
 
 /// Record an experiment step in the rhizoCrypt DAG.
@@ -144,31 +228,16 @@ pub fn begin_experiment_session(experiment_name: &str) -> ProvenanceResult {
 /// Appends an event vertex to the session's DAG via
 /// `capability.call("dag", "event.append", ...)`.
 #[must_use]
-pub fn record_experiment_step(
-    session_id: &str,
-    step: &serde_json::Value,
-) -> ProvenanceResult {
+pub fn record_experiment_step(session_id: &str, step: &serde_json::Value) -> ProvenanceResult {
     let args = serde_json::json!({
         "session_id": session_id,
         "event": step,
     });
 
-    match capability_call("dag", "event.append", &args) {
-        Some(result) => {
-            let vertex_id = result
-                .get("vertex_id")
-                .or_else(|| result.get("id"))
-                .and_then(|v| v.as_str())
-                .unwrap_or("unknown")
-                .to_owned();
-            ProvenanceResult {
-                id: vertex_id,
-                status: ProvenanceStatus::Complete,
-                data: result,
-            }
-        }
-        None => ProvenanceResult::unavailable("step"),
-    }
+    resilient_capability_call("dag", "event.append", &args).map_or_else(
+        || ProvenanceResult::unavailable("step"),
+        |result| ok_result(result, "vertex_id", "id"),
+    )
 }
 
 /// Complete a provenance pipeline: dehydrate → commit → attribute.
@@ -182,22 +251,21 @@ pub fn record_experiment_step(
 /// braid failure preserves commit. Domain logic never fails.
 #[must_use]
 pub fn complete_experiment(session_id: &str) -> PipelineResult {
+    let empty_pipeline = |status| PipelineResult {
+        status,
+        session_id: session_id.to_owned(),
+        merkle_root: String::new(),
+        commit_id: String::new(),
+        braid_id: String::new(),
+    };
+
     // Phase 1: Dehydrate (rhizoCrypt)
-    let dehydration = match capability_call(
+    let Some(dehydration) = resilient_capability_call(
         "dag",
         "dehydrate",
         &serde_json::json!({ "session_id": session_id }),
-    ) {
-        Some(r) => r,
-        None => {
-            return PipelineResult {
-                status: ProvenanceStatus::Unavailable,
-                session_id: session_id.to_owned(),
-                merkle_root: String::new(),
-                commit_id: String::new(),
-                braid_id: String::new(),
-            };
-        }
+    ) else {
+        return empty_pipeline(ProvenanceStatus::Unavailable);
     };
 
     let merkle_root = dehydration
@@ -207,35 +275,27 @@ pub fn complete_experiment(session_id: &str) -> PipelineResult {
         .to_owned();
 
     // Phase 2: Commit (loamSpine)
-    let commit_result = match capability_call(
+    let Some(commit_result) = resilient_capability_call(
         "commit",
         "session",
         &serde_json::json!({
             "summary": dehydration,
             "content_hash": merkle_root,
         }),
-    ) {
-        Some(r) => r,
-        None => {
-            return PipelineResult {
-                status: ProvenanceStatus::Partial,
-                session_id: session_id.to_owned(),
-                merkle_root,
-                commit_id: String::new(),
-                braid_id: String::new(),
-            };
-        }
+    ) else {
+        return PipelineResult {
+            status: ProvenanceStatus::Partial,
+            session_id: session_id.to_owned(),
+            merkle_root,
+            commit_id: String::new(),
+            braid_id: String::new(),
+        };
     };
 
-    let commit_id = commit_result
-        .get("commit_id")
-        .or_else(|| commit_result.get("entry_id"))
-        .and_then(|v| v.as_str())
-        .unwrap_or("")
-        .to_owned();
+    let commit_id = extract_id(&commit_result, "commit_id", "entry_id");
 
     // Phase 3: Attribute (sweetGrass) — best-effort
-    let braid_id = capability_call(
+    let braid_id = resilient_capability_call(
         "provenance",
         "create_braid",
         &serde_json::json!({
@@ -274,22 +334,10 @@ pub fn rootpulse_branch(session_id: &str, branch_name: &str) -> ProvenanceResult
         "branch_name": branch_name,
     });
 
-    match capability_call("dag", "branch", &args) {
-        Some(result) => {
-            let branch_id = result
-                .get("branch_id")
-                .or_else(|| result.get("session_id"))
-                .and_then(|v| v.as_str())
-                .unwrap_or("unknown")
-                .to_owned();
-            ProvenanceResult {
-                id: branch_id,
-                status: ProvenanceStatus::Complete,
-                data: result,
-            }
-        }
-        None => ProvenanceResult::unavailable("branch"),
-    }
+    resilient_capability_call("dag", "branch", &args).map_or_else(
+        || ProvenanceResult::unavailable("branch"),
+        |result| ok_result(result, "branch_id", "session_id"),
+    )
 }
 
 /// Execute RootPulse merge operation via Neural API.
@@ -302,22 +350,10 @@ pub fn rootpulse_merge(source_id: &str, target_id: &str) -> ProvenanceResult {
         "target_session": target_id,
     });
 
-    match capability_call("dag", "merge", &args) {
-        Some(result) => {
-            let merge_id = result
-                .get("merge_id")
-                .or_else(|| result.get("vertex_id"))
-                .and_then(|v| v.as_str())
-                .unwrap_or("unknown")
-                .to_owned();
-            ProvenanceResult {
-                id: merge_id,
-                status: ProvenanceStatus::Complete,
-                data: result,
-            }
-        }
-        None => ProvenanceResult::unavailable("merge"),
-    }
+    resilient_capability_call("dag", "merge", &args).map_or_else(
+        || ProvenanceResult::unavailable("merge"),
+        |result| ok_result(result, "merge_id", "vertex_id"),
+    )
 }
 
 /// Execute RootPulse diff operation via Neural API.
@@ -330,14 +366,14 @@ pub fn rootpulse_diff(session_a: &str, session_b: &str) -> ProvenanceResult {
         "target": session_b,
     });
 
-    match capability_call("dag", "diff", &args) {
-        Some(result) => ProvenanceResult {
+    resilient_capability_call("dag", "diff", &args).map_or_else(
+        || ProvenanceResult::unavailable("diff"),
+        |result| ProvenanceResult {
             id: format!("diff-{session_a}-{session_b}"),
             status: ProvenanceStatus::Complete,
             data: result,
         },
-        None => ProvenanceResult::unavailable("diff"),
-    }
+    )
 }
 
 /// Execute RootPulse federate operation via Neural API.
@@ -350,21 +386,10 @@ pub fn rootpulse_federate(session_id: &str, remote_endpoint: &str) -> Provenance
         "remote": remote_endpoint,
     });
 
-    match capability_call("dag", "federate", &args) {
-        Some(result) => {
-            let federation_id = result
-                .get("federation_id")
-                .and_then(|v| v.as_str())
-                .unwrap_or("unknown")
-                .to_owned();
-            ProvenanceResult {
-                id: federation_id,
-                status: ProvenanceStatus::Complete,
-                data: result,
-            }
-        }
-        None => ProvenanceResult::unavailable("federate"),
-    }
+    resilient_capability_call("dag", "federate", &args).map_or_else(
+        || ProvenanceResult::unavailable("federate"),
+        |result| ok_result(result, "federation_id", "id"),
+    )
 }
 
 #[cfg(test)]
@@ -464,5 +489,37 @@ mod tests {
     fn rootpulse_federate_unavailable_without_biomeos() {
         let r = rootpulse_federate("sess-1", "https://remote.example.com");
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
+    }
+
+    #[test]
+    fn trio_circuit_starts_closed() {
+        reset_trio_circuit();
+        assert!(!trio_circuit_is_open());
+    }
+
+    #[test]
+    fn trio_circuit_opens_after_threshold() {
+        reset_trio_circuit();
+        for _ in 0..TRIO_CIRCUIT_THRESHOLD {
+            trio_record_failure();
+        }
+        assert!(trio_circuit_is_open());
+        reset_trio_circuit();
+    }
+
+    #[test]
+    fn trio_circuit_resets_on_success() {
+        reset_trio_circuit();
+        trio_record_failure();
+        trio_record_failure();
+        trio_record_success();
+        assert!(!trio_circuit_is_open());
+    }
+
+    #[test]
+    fn resilient_capability_call_returns_none_without_biomeos() {
+        reset_trio_circuit();
+        let result = resilient_capability_call("dag", "health", &serde_json::json!({}));
+        assert!(result.is_none());
     }
 }

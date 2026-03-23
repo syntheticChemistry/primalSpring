@@ -13,7 +13,7 @@ primalSpring Phase 12 extends the ecosystem from single-machine NUCLEUS composit
 to multi-node bonding and federation. This handoff documents what was built,
 what each team can absorb, and what patterns are now available for cross-spring evolution.
 
-**Key numbers**: 280+ tests, 51 experiments, 22 deploy graphs, 87/87 gates, 9 tracks.
+**Key numbers**: 303 tests, 51 experiments, 22 deploy graphs, 87/87 gates, 9 tracks.
 
 ---
 

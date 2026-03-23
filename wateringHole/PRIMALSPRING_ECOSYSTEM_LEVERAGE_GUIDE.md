@@ -43,6 +43,10 @@ can absorb or compose against.
 | **Safe cast** | `cast.rs` | Saturating numeric casts (`usize_u32`, `u64_usize`, `micros_u64`) |
 | **Named tolerances** | `tolerances/mod.rs` | All latency/throughput bounds as named constants with provenance |
 | **Capability registry** | `config/capability_registry.toml` | Single source of truth, sync-tested against code |
+| **Primal display names** | `primal_names.rs` | `display_name()` / `discovery_slug()` round-trip (neuralSpring pattern) |
+| **Skip-aware exit** | `validation/mod.rs` | `exit_code_skip_aware()`: 0=pass, 1=fail, 2=all-skipped (wetSpring pattern) |
+| **Provenance resilience** | `ipc/provenance.rs` | Epoch-based circuit breaker + exponential backoff for trio calls |
+| **Cross-cutting proptest** | `ipc/proptest_ipc.rs` | Pipeline-spanning property tests (healthSpring pattern) |
 
 ### Composition Patterns
 
@@ -62,14 +66,14 @@ can absorb or compose against.
 | Source | What | Where in primalSpring |
 |--------|------|----------------------|
 | hotSpring | Provenance patterns, tolerance structure | `tolerances/`, `validation/mod.rs` |
-| wetSpring | IPC resilience stack, cast module, MCP tools | `ipc/`, `cast.rs`, `ipc/mcp.rs` |
-| airSpring | deny.toml, ecoBin enforcement | `deny.toml` |
-| groundSpring | ValidationSink, typed errors, OrExit | `validation/`, `ipc/error.rs` |
-| neuralSpring | Capability registry TOML, discovery module | `config/`, `ipc/discover.rs` |
-| healthSpring | Proptest IPC fuzz, MCP tools, provenance registry | `ipc/extract.rs`, `ipc/mcp.rs` |
-| ludoSpring | with_provenance(), #[expect(reason)] | `validation/mod.rs`, `Cargo.toml` |
-| biomeOS v2.51 | IpcErrorPhase, manifest discovery, socket registry | `ipc/error.rs`, `ipc/discover.rs` |
-| Squirrel alpha.13 | Spring tool discovery, socket registry | `ipc/mcp.rs`, `ipc/discover.rs` |
+| wetSpring | IPC resilience stack, cast module, MCP tools, skip_with_code | `ipc/`, `cast.rs`, `ipc/mcp.rs`, `validation/mod.rs` |
+| airSpring | deny.toml merged bans, ecoBin enforcement, cast lints | `deny.toml`, `Cargo.toml` |
+| groundSpring V120 | ValidationSink (section + write_summary), typed errors, OrExit, deny.toml merge | `validation/`, `ipc/error.rs`, `deny.toml` |
+| neuralSpring S170 | Capability registry TOML, discovery module, primal_names::display, cast lint policy | `config/`, `ipc/discover.rs`, `primal_names.rs`, `Cargo.toml` |
+| healthSpring V41 | Proptest IPC consolidated module, provenance circuit breaker, MCP tools | `ipc/proptest_ipc.rs`, `ipc/provenance.rs`, `ipc/mcp.rs` |
+| ludoSpring V29 | with_provenance(), #[expect(reason)], XDG sockets | `validation/mod.rs`, `Cargo.toml` |
+| biomeOS v2.66 | IpcErrorPhase, manifest discovery, socket registry, aligned 5-tier | `ipc/error.rs`, `ipc/discover.rs` |
+| Squirrel alpha.21 | Spring tool discovery, socket registry | `ipc/mcp.rs`, `ipc/discover.rs` |
 
 ---
 

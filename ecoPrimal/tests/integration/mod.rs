@@ -73,7 +73,11 @@ pub fn setup_server() -> (ServerGuard, PathBuf) {
     (guard, socket_path)
 }
 
-pub fn send_rpc(stream: &UnixStream, method: &str, params: &serde_json::Value) -> serde_json::Value {
+pub fn send_rpc(
+    stream: &UnixStream,
+    method: &str,
+    params: &serde_json::Value,
+) -> serde_json::Value {
     let request = serde_json::json!({
         "jsonrpc": "2.0",
         "method": method,

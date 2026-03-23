@@ -16,7 +16,7 @@ primalSpring v0.7.0 introduces two major capabilities that affect every team:
 2. **Squirrel Cross-Primal Discovery** — Squirrel discovers sibling primals
    via env vars and socket scanning, then routes AI/tool/context requests.
 
-**87/87 gates**, **280+ tests**, **51 experiments**, **22 deploy graphs**.
+**87/87 gates**, **303 tests**, **51 experiments**, **22 deploy graphs**.
 
 ---
 

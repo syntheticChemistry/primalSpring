@@ -31,12 +31,26 @@ use serde::{Deserialize, Serialize};
 
 /// Pluggable output destination for validation check results.
 ///
-/// Converged ecosystem pattern from airSpring and rhizoCrypt.
+/// Converged ecosystem pattern from airSpring, rhizoCrypt, and groundSpring.
 /// Default implementation writes to stdout; test harnesses can
 /// substitute a capture buffer.
+///
+/// The `section` and `write_summary` methods have default no-op impls
+/// for backward compatibility (absorbed from groundSpring V120).
 pub trait ValidationSink: std::fmt::Debug + Send + Sync {
     /// Emit a single check result.
     fn on_check(&self, outcome: CheckOutcome, name: &str, detail: &str);
+
+    /// Begin a named section of checks (e.g. "IPC health", "Graph validation").
+    ///
+    /// Absorbed from groundSpring V120 `ValidationSink::section()`. Sinks that
+    /// support structured output can use this to group checks.
+    fn section(&self, _name: &str) {}
+
+    /// Write a summary footer after all checks are emitted.
+    ///
+    /// Absorbed from groundSpring V120 `ValidationSink::write_summary()`.
+    fn write_summary(&self, _passed: u32, _failed: u32, _skipped: u32) {}
 }
 
 /// Default sink that writes check results to stdout.
@@ -51,6 +65,19 @@ impl ValidationSink for StdoutSink {
             CheckOutcome::Skip => "SKIP",
         };
         println!("  [{tag}] {name}: {detail}");
+    }
+
+    fn section(&self, name: &str) {
+        println!("\n--- {name} ---");
+    }
+
+    fn write_summary(&self, passed: u32, failed: u32, skipped: u32) {
+        let total = passed + failed;
+        print!("  Summary: {passed}/{total} passed");
+        if skipped > 0 {
+            print!(" ({skipped} skipped)");
+        }
+        println!();
     }
 }
 
@@ -187,6 +214,14 @@ impl ValidationResult {
         self
     }
 
+    /// Begin a named section of checks.
+    ///
+    /// Delegates to the sink's `section()` method for structured output.
+    /// Absorbed from groundSpring V120 pattern.
+    pub fn section(&self, name: &str) {
+        self.sink.section(name);
+    }
+
     /// Record a boolean pass/fail check.
     pub fn check_bool(&mut self, name: &str, condition: bool, detail: &str) {
         let outcome = if condition {
@@ -270,7 +305,7 @@ impl ValidationResult {
         self.passed + self.failed
     }
 
-    /// Print human-readable summary to stdout.
+    /// Print human-readable summary to stdout and delegate to the sink.
     pub fn summary(&self) {
         use crate::tolerances::VALIDATION_SUMMARY_WIDTH;
         println!("\n{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
@@ -291,6 +326,8 @@ impl ValidationResult {
             println!("Result: {} FAILURES", self.failed);
         }
         println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+        self.sink
+            .write_summary(self.passed, self.failed, self.skipped);
     }
 
     /// Serialize to JSON string for machine-readable output.
@@ -319,6 +356,22 @@ impl ValidationResult {
     #[must_use]
     pub const fn exit_code(&self) -> i32 {
         if self.all_passed() { 0 } else { 1 }
+    }
+
+    /// Skip-aware exit code for CI: 0 = pass, 1 = fail, 2 = all skipped.
+    ///
+    /// Absorbed from wetSpring V129 `skip_with_code()` pattern. When all
+    /// checks are skipped (no live primals available), returning 2 lets CI
+    /// distinguish "nothing to test" from "tests failed" — skip ≠ fail.
+    #[must_use]
+    pub const fn exit_code_skip_aware(&self) -> i32 {
+        if self.all_passed() {
+            0
+        } else if self.failed > 0 {
+            1
+        } else {
+            2
+        }
     }
 
     /// Print a standard experiment banner.
@@ -667,6 +720,51 @@ mod tests {
         let v = ValidationResult::new("my experiment").with_sink(Arc::new(NullSink));
         let display = format!("{v}");
         assert!(display.contains("my experiment"));
+    }
+
+    #[test]
+    fn section_does_not_panic() {
+        let v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.section("IPC health");
+    }
+
+    #[test]
+    fn exit_code_skip_aware_zero_on_pass() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_bool("ok", true, "yes");
+        assert_eq!(v.exit_code_skip_aware(), 0);
+    }
+
+    #[test]
+    fn exit_code_skip_aware_one_on_fail() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_bool("bad", false, "no");
+        assert_eq!(v.exit_code_skip_aware(), 1);
+    }
+
+    #[test]
+    fn exit_code_skip_aware_two_when_all_skipped() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_skip("pending", "no live primals");
+        assert_eq!(v.exit_code_skip_aware(), 2);
+    }
+
+    #[test]
+    fn exit_code_skip_aware_two_when_empty() {
+        let v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        assert_eq!(v.exit_code_skip_aware(), 2);
+    }
+
+    #[test]
+    fn stdout_sink_section_does_not_panic() {
+        let sink = StdoutSink;
+        sink.section("test section");
+    }
+
+    #[test]
+    fn stdout_sink_write_summary_does_not_panic() {
+        let sink = StdoutSink;
+        sink.write_summary(5, 1, 2);
     }
 
     #[test]

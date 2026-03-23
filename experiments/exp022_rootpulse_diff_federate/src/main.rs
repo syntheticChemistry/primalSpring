@@ -52,7 +52,10 @@ fn main() {
                 v.check_bool(
                     &format!("{name}_health"),
                     health.health_ok,
-                    &format!("health ok: {}, latency: {}µs", health.health_ok, health.latency_us),
+                    &format!(
+                        "health ok: {}, latency: {}µs",
+                        health.health_ok, health.latency_us
+                    ),
                 );
                 v.check_bool(
                     &format!("{name}_capabilities"),

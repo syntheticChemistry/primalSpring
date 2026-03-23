@@ -8,8 +8,8 @@
 
 use std::path::Path;
 
-use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::bonding::BondType;
+use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
@@ -26,7 +26,10 @@ fn main() {
     v.check_bool(
         "bond_type_count",
         all_variants.len() == 5,
-        &format!("BondType::all() has 5 variants (got {})", all_variants.len()),
+        &format!(
+            "BondType::all() has 5 variants (got {})",
+            all_variants.len()
+        ),
     );
     v.check_bool(
         "all_bond_types_have_descriptions",
@@ -69,7 +72,7 @@ fn main() {
         "hpc_graph_metadata",
         graph_path.exists().then_some(&()),
         "basement_hpc_covalent.toml not found",
-        |_, v| {
+        |&(), v| {
             let meta = validate_graph_bonding(graph_path);
             v.check_bool(
                 "hpc_graph_is_covalent",

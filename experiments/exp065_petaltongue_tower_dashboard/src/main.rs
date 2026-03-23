@@ -225,9 +225,16 @@ fn main() {
                 "petaltongue binary located",
             );
 
-            let running = AtomicHarness::new(AtomicType::Tower)
+            let running = match AtomicHarness::new(AtomicType::Tower)
                 .start_with_neural_api(&family_id, &graphs_dir)
-                .expect("tower + neural-api should start");
+            {
+                Ok(r) => r,
+                Err(e) => {
+                    v.check_bool("harness_start", false, &format!("failed to start: {e}"));
+                    v.finish();
+                    std::process::exit(v.exit_code());
+                }
+            };
 
             let runtime_dir = running.runtime_dir().to_path_buf();
             let mut nucleation = SocketNucleation::new(runtime_dir);
