@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 12 — MULTI-NODE BONDING + FEDERATION 87/87, 303 tests, 51 experiments, 22 deploy graphs)  
+**Version**: 0.7.0 (Phase 12.2 — ECOSYSTEM ABSORPTION + MULTI-NODE BONDING 87/87, 360 tests, 51 experiments, 22 deploy graphs)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 23, 2026
 
@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **303** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Tests | **360** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Experiments | 51 (9 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
@@ -71,8 +71,9 @@ primalSpring fills the gap.
   graph nodes. All 18 graphs have `by_capability` on every node (enforced by test).
 - **Real IPC**: `probe_primal()`, `validate_composition_by_capability()`, `health_check()`
   connect to live providers via Unix socket JSON-RPC 2.0
-- **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase`), `CircuitBreaker`,
-  `RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`
+- **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase` + `is_recoverable()`),
+  `CircuitBreaker`, `RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`, `Transport` (Unix+Tcp),
+  `normalize_method()`, `OnceLock`-cached runtime probes
 - **4-format capability parsing**: Handles Format A (string array), B (object array),
   C (method_info nested), D (semantic_mappings double-nested)
 - **MCP tool definitions**: 8 typed tools with JSON Schema for Squirrel AI discovery +
@@ -244,6 +245,7 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_V070_PHASE122_DEEP_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Deep absorption: normalize_method, Transport enum, NdjsonSink, check_relative, is_recoverable, OnceLock probes, missing_docs deny, release gate — 360 tests |
 | v0.7.0 | `PRIMALSPRING_V070_ECOSYSTEM_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Cross-spring absorption: deny.toml, cast lints, ValidationSink, proptest, primal_names, provenance circuit breaker — patterns for all teams |
 | v0.7.0 | `PRIMALSPRING_PHASE12_MULTINODE_BONDING_HANDOFF_MAR23_2026.md` | Mar 23 | Multi-node bonding, federation, idle compute, STUN tiers, BondingPolicy — primal + spring evolution guide |
 | v0.7.0 | `PRIMALSPRING_V070_HARDWARE_VALIDATION_HANDOFF_MAR22_2026.md` | Mar 22 | Hardware audit: Pixel 8a, USB spores, cross-arch deployment, blockers per team |
@@ -288,13 +290,13 @@ Every experiment involves multiple primals or springs.
 
 | Spring | What primalSpring Learns |
 |--------|-------------------------|
-| hotSpring | Precision validation patterns (170 tolerances, structured provenance) |
-| wetSpring V132 | Deep IPC integration (354 bins, 214 tolerances, MCP tools, skip_with_code) |
-| airSpring V010 | NUCLEUS niche deployment (41 caps, deny.toml, MCP, cast lints) |
-| groundSpring V120 | Typed errors, ValidationSink (section + write_summary), 13-tier tolerance provenance, deny.toml merge |
-| neuralSpring S170 | Capability registry TOML, primal_names::display, cast lint policy |
-| ludoSpring V29 | ValidationResult::with_provenance(), XDG sockets, structured provenance |
-| healthSpring V41 | Proptest IPC fuzz consolidated module, epoch-based circuit breaker, tracing, DOI provenance |
+| hotSpring V0.6.32 | Precision validation, PMU hardening, OnceLock GPU probes for test parallelism |
+| wetSpring V133 | Deep IPC (354 bins, 214 tolerances, MCP, skip_with_code, NdjsonSink, is_recoverable) |
+| airSpring V010 | NUCLEUS niche deployment (41 caps, deny.toml, MCP, cast lints, Transport enum) |
+| groundSpring V121 | Typed errors, ValidationSink, check_relative, normalize_method, NdjsonSink, deny.toml bans |
+| neuralSpring V122 | Capability registry TOML, primal_names::display, cast lints, is_recoverable, OnceLock probes |
+| ludoSpring V14 | ValidationResult::with_provenance(), XDG sockets, structured provenance |
+| healthSpring V42 | Proptest IPC fuzz, epoch-based circuit breaker, check_abs_or_rel, Transport, tracing |
 
 ---
 

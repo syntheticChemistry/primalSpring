@@ -114,6 +114,24 @@ impl IpcError {
         matches!(self, Self::ConnectionReset(_) | Self::Timeout(_))
     }
 
+    /// Whether recovery is possible without operator intervention.
+    ///
+    /// Absorbed from neuralSpring V122 / wetSpring V133 / groundSpring V121.
+    /// Broader than `is_retriable()` — includes transient failures (resets,
+    /// timeouts) AND server-reported errors that may resolve if the primal
+    /// is restarted or stabilizes. Excludes `MethodNotFound` (permanent) and
+    /// `SerializationError` (client bug).
+    #[must_use]
+    pub const fn is_recoverable(&self) -> bool {
+        matches!(
+            self,
+            Self::ConnectionRefused(_)
+                | Self::ConnectionReset(_)
+                | Self::Timeout(_)
+                | Self::ApplicationError { .. }
+        )
+    }
+
     /// Whether this error is likely caused by a timeout.
     #[must_use]
     pub const fn is_timeout_likely(&self) -> bool {
@@ -471,5 +489,76 @@ mod tests {
         };
         let phased = err.in_phase(IpcErrorPhase::Connect);
         assert!(phased.source().is_none());
+    }
+
+    // ── is_recoverable tests ──
+
+    #[test]
+    fn is_recoverable_true_for_connection_refused() {
+        let err = IpcError::ConnectionRefused(std::io::Error::new(
+            std::io::ErrorKind::ConnectionRefused,
+            "refused",
+        ));
+        assert!(err.is_recoverable());
+    }
+
+    #[test]
+    fn is_recoverable_true_for_connection_reset() {
+        let err = IpcError::ConnectionReset(std::io::Error::new(
+            std::io::ErrorKind::ConnectionReset,
+            "reset",
+        ));
+        assert!(err.is_recoverable());
+        assert!(err.is_retriable());
+    }
+
+    #[test]
+    fn is_recoverable_true_for_timeout() {
+        let err = IpcError::Timeout(std::io::Error::new(std::io::ErrorKind::TimedOut, "slow"));
+        assert!(err.is_recoverable());
+        assert!(err.is_retriable());
+    }
+
+    #[test]
+    fn is_recoverable_true_for_application_error() {
+        let err = IpcError::ApplicationError {
+            code: -32_603,
+            message: "internal".to_owned(),
+            data: None,
+        };
+        assert!(err.is_recoverable());
+        assert!(!err.is_retriable());
+    }
+
+    #[test]
+    fn is_recoverable_false_for_method_not_found() {
+        let err = IpcError::MethodNotFound {
+            method: "foo.bar".to_owned(),
+        };
+        assert!(!err.is_recoverable());
+    }
+
+    #[test]
+    fn is_recoverable_false_for_serialization_error() {
+        let err = IpcError::SerializationError {
+            detail: "bad json".to_owned(),
+        };
+        assert!(!err.is_recoverable());
+    }
+
+    #[test]
+    fn is_recoverable_false_for_socket_not_found() {
+        let err = IpcError::SocketNotFound {
+            primal: "beardog".to_owned(),
+        };
+        assert!(!err.is_recoverable());
+    }
+
+    #[test]
+    fn is_recoverable_false_for_protocol_error() {
+        let err = IpcError::ProtocolError {
+            detail: "bad".to_owned(),
+        };
+        assert!(!err.is_recoverable());
     }
 }

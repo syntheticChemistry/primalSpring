@@ -89,6 +89,71 @@ impl ValidationSink for NullSink {
     fn on_check(&self, _: CheckOutcome, _: &str, _: &str) {}
 }
 
+/// Newline-delimited JSON sink for streaming validation output.
+///
+/// Absorbed from groundSpring V121 / wetSpring V133 / neuralSpring V122.
+/// Emits one JSON object per check, one per line — ideal for log aggregation,
+/// CI pipelines, and cross-process streaming. Each line is independently
+/// parseable, unlike a single JSON array.
+#[derive(Debug)]
+pub struct NdjsonSink<W: std::io::Write + std::fmt::Debug + Send + Sync> {
+    writer: std::sync::Mutex<W>,
+}
+
+impl<W: std::io::Write + std::fmt::Debug + Send + Sync> NdjsonSink<W> {
+    /// Create a new NDJSON sink writing to the given destination.
+    pub const fn new(writer: W) -> Self {
+        Self {
+            writer: std::sync::Mutex::new(writer),
+        }
+    }
+}
+
+impl NdjsonSink<std::io::Stdout> {
+    /// Create a sink that writes NDJSON to stdout.
+    #[must_use]
+    pub fn stdout() -> Self {
+        Self::new(std::io::stdout())
+    }
+}
+
+impl<W: std::io::Write + std::fmt::Debug + Send + Sync> ValidationSink for NdjsonSink<W> {
+    fn on_check(&self, outcome: CheckOutcome, name: &str, detail: &str) {
+        let tag = match outcome {
+            CheckOutcome::Pass => "pass",
+            CheckOutcome::Fail => "fail",
+            CheckOutcome::Skip => "skip",
+        };
+        let line = format!(
+            "{{\"outcome\":\"{tag}\",\"name\":{},\"detail\":{}}}",
+            serde_json::to_string(name).unwrap_or_else(|_| format!("\"{name}\"")),
+            serde_json::to_string(detail).unwrap_or_else(|_| format!("\"{detail}\"")),
+        );
+        if let Ok(mut w) = self.writer.lock() {
+            let _ = writeln!(w, "{line}");
+        }
+    }
+
+    fn section(&self, name: &str) {
+        let line = format!(
+            "{{\"section\":{}}}",
+            serde_json::to_string(name).unwrap_or_else(|_| format!("\"{name}\"")),
+        );
+        if let Ok(mut w) = self.writer.lock() {
+            let _ = writeln!(w, "{line}");
+        }
+    }
+
+    fn write_summary(&self, passed: u32, failed: u32, skipped: u32) {
+        let line = format!(
+            "{{\"summary\":{{\"passed\":{passed},\"failed\":{failed},\"skipped\":{skipped}}}}}"
+        );
+        if let Ok(mut w) = self.writer.lock() {
+            let _ = writeln!(w, "{line}");
+        }
+    }
+}
+
 fn default_sink() -> Arc<dyn ValidationSink> {
     Arc::new(StdoutSink)
 }
@@ -271,6 +336,47 @@ impl ValidationResult {
     pub fn check_minimum(&mut self, name: &str, actual: usize, minimum: usize) {
         let ok = actual >= minimum;
         let detail = format!("got {actual}, minimum {minimum}");
+        self.check_bool(name, ok, &detail);
+    }
+
+    /// Check that a floating-point value is within a relative tolerance.
+    ///
+    /// Absorbed from groundSpring V120 / wetSpring V133 / healthSpring V42.
+    /// Passes when `|actual - expected| / |expected| <= rel_tol`, or when
+    /// both values are zero.
+    pub fn check_relative(&mut self, name: &str, actual: f64, expected: f64, rel_tol: f64) {
+        let ok = if expected == 0.0 {
+            actual.abs() <= rel_tol
+        } else {
+            ((actual - expected) / expected).abs() <= rel_tol
+        };
+        let detail = format!("got {actual}, expected {expected} (rel_tol {rel_tol})");
+        self.check_bool(name, ok, &detail);
+    }
+
+    /// Check a floating-point value against either absolute OR relative tolerance.
+    ///
+    /// Absorbed from groundSpring V120 / healthSpring V42. Passes if the value
+    /// is within `abs_tol` of expected, OR within `rel_tol` fraction of expected.
+    /// This avoids false negatives near zero (where relative tolerance explodes)
+    /// while still catching large relative errors.
+    pub fn check_abs_or_rel(
+        &mut self,
+        name: &str,
+        actual: f64,
+        expected: f64,
+        abs_tol: f64,
+        rel_tol: f64,
+    ) {
+        let abs_ok = (actual - expected).abs() <= abs_tol;
+        let rel_ok = if expected == 0.0 {
+            actual.abs() <= rel_tol
+        } else {
+            ((actual - expected) / expected).abs() <= rel_tol
+        };
+        let ok = abs_ok || rel_ok;
+        let detail =
+            format!("got {actual}, expected {expected} (abs_tol {abs_tol}, rel_tol {rel_tol})");
         self.check_bool(name, ok, &detail);
     }
 
@@ -782,5 +888,129 @@ mod tests {
             detail: "no".to_owned(),
         };
         assert!(!fail.passed());
+    }
+
+    // ── check_relative tests ──
+
+    #[test]
+    fn check_relative_pass_exact() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_relative("exact", 1.0, 1.0, 0.01);
+        assert_eq!(v.passed, 1);
+    }
+
+    #[test]
+    fn check_relative_pass_within_tol() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_relative("close", 1.005, 1.0, 0.01);
+        assert_eq!(v.passed, 1);
+    }
+
+    #[test]
+    fn check_relative_fail_outside_tol() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_relative("far", 1.05, 1.0, 0.01);
+        assert_eq!(v.failed, 1);
+    }
+
+    #[test]
+    fn check_relative_zero_expected() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_relative("zero_ok", 0.005, 0.0, 0.01);
+        assert_eq!(v.passed, 1);
+        v.check_relative("zero_bad", 0.05, 0.0, 0.01);
+        assert_eq!(v.failed, 1);
+    }
+
+    // ── check_abs_or_rel tests ──
+
+    #[test]
+    fn check_abs_or_rel_pass_by_abs() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_abs_or_rel("abs_ok", 0.001, 0.0, 0.01, 0.000_01);
+        assert_eq!(v.passed, 1);
+    }
+
+    #[test]
+    fn check_abs_or_rel_pass_by_rel() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_abs_or_rel("rel_ok", 100.5, 100.0, 0.001, 0.01);
+        assert_eq!(v.passed, 1);
+    }
+
+    #[test]
+    fn check_abs_or_rel_fail_both() {
+        let mut v = ValidationResult::new("test").with_sink(Arc::new(NullSink));
+        v.check_abs_or_rel("both_bad", 200.0, 100.0, 0.01, 0.01);
+        assert_eq!(v.failed, 1);
+    }
+
+    // ── NdjsonSink tests ──
+
+    #[test]
+    fn ndjson_sink_emits_valid_json() {
+        let buf = std::sync::Arc::new(std::sync::Mutex::new(Vec::<u8>::new()));
+        let sink = NdjsonSink::new(CursorWriter(Arc::clone(&buf)));
+        sink.on_check(CheckOutcome::Pass, "test_check", "all good");
+
+        let output = String::from_utf8(buf.lock().unwrap().clone()).unwrap();
+        let parsed: serde_json::Value = serde_json::from_str(output.trim()).unwrap();
+        assert_eq!(parsed["outcome"], "pass");
+        assert_eq!(parsed["name"], "test_check");
+    }
+
+    #[test]
+    fn ndjson_sink_section_emits_json() {
+        let buf = std::sync::Arc::new(std::sync::Mutex::new(Vec::<u8>::new()));
+        let sink = NdjsonSink::new(CursorWriter(Arc::clone(&buf)));
+        sink.section("IPC health");
+
+        let output = String::from_utf8(buf.lock().unwrap().clone()).unwrap();
+        let parsed: serde_json::Value = serde_json::from_str(output.trim()).unwrap();
+        assert_eq!(parsed["section"], "IPC health");
+    }
+
+    #[test]
+    fn ndjson_sink_summary_emits_json() {
+        let buf = std::sync::Arc::new(std::sync::Mutex::new(Vec::<u8>::new()));
+        let sink = NdjsonSink::new(CursorWriter(Arc::clone(&buf)));
+        sink.write_summary(10, 2, 3);
+
+        let output = String::from_utf8(buf.lock().unwrap().clone()).unwrap();
+        let parsed: serde_json::Value = serde_json::from_str(output.trim()).unwrap();
+        assert_eq!(parsed["summary"]["passed"], 10);
+        assert_eq!(parsed["summary"]["failed"], 2);
+        assert_eq!(parsed["summary"]["skipped"], 3);
+    }
+
+    #[test]
+    fn ndjson_sink_with_validation_result() {
+        let buf = std::sync::Arc::new(std::sync::Mutex::new(Vec::<u8>::new()));
+        let sink = NdjsonSink::new(CursorWriter(Arc::clone(&buf)));
+        let mut v = ValidationResult::new("ndjson_test").with_sink(Arc::new(sink));
+        v.check_bool("a", true, "pass");
+        v.check_bool("b", false, "fail");
+        v.check_skip("c", "skipped");
+
+        let output = String::from_utf8(buf.lock().unwrap().clone()).unwrap();
+        let lines: Vec<&str> = output.trim().lines().collect();
+        assert_eq!(lines.len(), 3);
+        assert_eq!(v.passed, 1);
+        assert_eq!(v.failed, 1);
+        assert_eq!(v.skipped, 1);
+    }
+
+    /// Helper writer that delegates to a shared Vec<u8> behind a Mutex.
+    #[derive(Debug, Clone)]
+    struct CursorWriter(Arc<std::sync::Mutex<Vec<u8>>>);
+
+    impl std::io::Write for CursorWriter {
+        fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+            self.0.lock().unwrap().extend_from_slice(buf);
+            Ok(buf.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
     }
 }

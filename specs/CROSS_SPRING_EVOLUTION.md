@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: March 23, 2026
-**Status**: Phase 12 — MULTI-NODE BONDING + FEDERATION (87/87 gates), 303 tests, 51 experiments, 22 deploy graphs
+**Status**: Phase 12.2 — ECOSYSTEM ABSORPTION + MULTI-NODE BONDING (87/87 gates), 360 tests, 51 experiments, 22 deploy graphs
 
 ---
 
@@ -27,13 +27,13 @@ an optional track. Every experiment involves multiple primals or springs.
 
 | Spring | Lesson | Absorbed in |
 |--------|--------|-------------|
-| hotSpring | Precision validation (170 tolerances, provenance) | v0.2.0 (pattern), v0.3.0 (provenance struct) |
-| wetSpring | Deep IPC integration (354 bins, 214 tolerances, MCP tools) | v0.2.0 (resilience), v0.3.0 (MCP tools) |
-| airSpring | NUCLEUS niche deployment (41 caps, deny.toml, MCP) | v0.2.0 (niche), v0.3.0 (deny.toml, MCP) |
-| groundSpring | Typed errors, ValidationSink, 13-tier tol | v0.2.0 (ValidationSink, OrExit) |
-| neuralSpring | Capability registry TOML, primal_names::display | v0.3.0 (capability_registry.toml) |
-| ludoSpring | ValidationResult::with_provenance(), #[expect(reason)] | v0.3.0 (structured provenance) |
-| healthSpring | Proptest IPC fuzz (18 tests), provenance completeness | v0.3.0 (proptest expansion) |
+| hotSpring V0.6.32 | Precision validation (170 tolerances, provenance), OnceLock GPU probes | v0.2.0 (pattern), v0.3.0 (provenance), v0.7.0-12.2 (OnceLock probes) |
+| wetSpring V133 | Deep IPC (354 bins, 214 tolerances, MCP, skip_with_code, NdjsonSink, is_recoverable) | v0.2.0 (resilience), v0.3.0 (MCP), v0.7.0-12.1 (exit_code_skip_aware), v0.7.0-12.2 (NdjsonSink, is_recoverable) |
+| airSpring V010 | NUCLEUS niche deployment (41 caps, deny.toml, MCP, Transport enum) | v0.2.0 (niche), v0.3.0 (deny.toml, MCP), v0.7.0-12.1 (cast lints), v0.7.0-12.2 (Transport) |
+| groundSpring V121 | Typed errors, ValidationSink, check_relative, normalize_method, NdjsonSink | v0.2.0 (ValidationSink, OrExit), v0.7.0-12.1 (section, write_summary), v0.7.0-12.2 (check_relative, normalize_method, NdjsonSink) |
+| neuralSpring V122 | Capability registry, primal_names, cast lints, is_recoverable, OnceLock | v0.3.0 (capability_registry), v0.7.0-12.1 (primal_names, cast lints), v0.7.0-12.2 (is_recoverable, OnceLock) |
+| ludoSpring V14 | ValidationResult::with_provenance(), #[expect(reason)] | v0.3.0 (structured provenance) |
+| healthSpring V42 | Proptest IPC fuzz, epoch-based circuit breaker, check_abs_or_rel, Transport | v0.3.0 (proptest), v0.7.0-12.1 (proptest_ipc, circuit breaker), v0.7.0-12.2 (check_abs_or_rel, Transport) |
 
 ## What primalSpring Contributes Back
 

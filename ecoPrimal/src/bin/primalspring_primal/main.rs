@@ -171,7 +171,8 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
     };
 
     let id = req["id"].as_u64().unwrap_or(0);
-    let method = req["method"].as_str().unwrap_or("");
+    let raw_method = req["method"].as_str().unwrap_or("");
+    let method = primalspring::ipc::normalize_method(raw_method);
 
     match method {
         // ── Health probes ──

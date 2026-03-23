@@ -1,6 +1,6 @@
 # primalSpring — Ecosystem Leverage Guide
 
-**Date**: March 22, 2026
+**Date**: March 23, 2026
 **Version**: v0.7.0
 **License**: AGPL-3.0-or-later
 
@@ -47,6 +47,14 @@ can absorb or compose against.
 | **Skip-aware exit** | `validation/mod.rs` | `exit_code_skip_aware()`: 0=pass, 1=fail, 2=all-skipped (wetSpring pattern) |
 | **Provenance resilience** | `ipc/provenance.rs` | Epoch-based circuit breaker + exponential backoff for trio calls |
 | **Cross-cutting proptest** | `ipc/proptest_ipc.rs` | Pipeline-spanning property tests (healthSpring pattern) |
+| **normalize_method()** | `ipc/mod.rs` | Ecosystem-wide JSON-RPC method normalization — strips legacy prefixes |
+| **check_relative()** | `validation/mod.rs` | Relative-tolerance numeric validation (groundSpring/healthSpring pattern) |
+| **check_abs_or_rel()** | `validation/mod.rs` | Combined absolute-or-relative tolerance (avoids false negatives near zero) |
+| **NdjsonSink** | `validation/mod.rs` | Streaming NDJSON validation output for CI/log aggregation |
+| **is_recoverable()** | `ipc/error.rs` | Broader recovery classification: retriable + server-recoverable errors |
+| **Transport** | `ipc/transport.rs` | Unified Unix+Tcp transport with `connect_transport()` address parsing |
+| **OnceLock probes** | `ipc/probes.rs` | Cached runtime resource probes for parallel test execution |
+| **Release gate** | `scripts/validate_release.sh` | fmt + clippy + deny + test floor + docs CI gate |
 
 ### Composition Patterns
 

@@ -35,13 +35,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `primal_names` module — 23 canonical display↔slug mappings (neuralSpring pattern)
   - Provenance trio epoch-based circuit breaker + exponential backoff (healthSpring V41)
 
+- **Ecosystem Absorption Wave (Phase 12.2)**:
+  - `normalize_method()` — ecosystem-wide JSON-RPC dispatch standard, strips legacy prefixes (groundSpring V121, neuralSpring V122, wetSpring V133, healthSpring V42)
+  - `check_relative()` + `check_abs_or_rel()` — robust numeric validation (groundSpring V120, healthSpring V42)
+  - `NdjsonSink` — streaming validation output for CI/log aggregation (groundSpring V121, wetSpring V133)
+  - `IpcError::is_recoverable()` — broader recovery classification (neuralSpring V122, wetSpring V133)
+  - `Transport` enum (Unix + Tcp) — cross-platform IPC layer (airSpring V010, healthSpring V42)
+  - `ipc::probes` — `OnceLock`-cached runtime resource probes for test parallelism (hotSpring V0.6.32, neuralSpring V122)
+  - `validate_release.sh` — release quality gate (fmt + clippy + deny + test floor + docs)
+  - `missing_docs` upgraded from `warn` to `deny` workspace-wide
+  - Server dispatch wired through `normalize_method()` for prefix-agnostic routing
+
 ### Changed
 - `BOND_TYPE_COUNT` updated to 5 in exp032, exp033
 - exp030 (covalent) — added BondType properties, BondingPolicy, HPC graph metadata
 - exp032 (plasmodium) — added Metallic validation, graph metadata
 - exp056 (cross-tower) — added 3 multi-node graph metadata validations
 - Metallic match arm added to primalspring_primal bonding_test handler
-- 303 tests (up from 280), 51 experiments, 22 deploy graphs
+- `missing_docs` lint level evolved from `warn` to `deny` (all public items documented)
+- 360 tests (up from 303), 51 experiments, 22 deploy graphs
 
 ## [0.7.0] — 2026-03-22
 

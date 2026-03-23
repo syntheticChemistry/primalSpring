@@ -77,7 +77,7 @@ neural-api-client-sync = { path = "../phase2/biomeOS/crates/neural-api-client-sy
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
-missing_docs = "warn"
+missing_docs = "deny"
 
 [workspace.lints.clippy]
 all = { level = "deny", priority = -1 }

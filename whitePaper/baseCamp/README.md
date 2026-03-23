@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 23, 2026
-**Status**: Phase 12 — MULTI-NODE BONDING + FEDERATION (87/87 gates), 51 experiments, 303 tests, 22 deploy graphs
+**Status**: Phase 12.2 — ECOSYSTEM ABSORPTION + MULTI-NODE BONDING (87/87 gates), 51 experiments, 360 tests, 22 deploy graphs
 
 ---
 
@@ -36,7 +36,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Metric | Value |
 |--------|-------|
 | Experiments | 51 (9 tracks) |
-| Total tests | **303** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Total tests | **360** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
@@ -90,6 +90,19 @@ Absorbed patterns from all 7 sibling springs into primalSpring core:
 18. **`primal_names` module** — canonical display↔slug mapping for 23 primals/springs (neuralSpring pattern)
 19. **Provenance trio circuit breaker** — epoch-based breaker + exponential backoff in `ipc::provenance` (healthSpring V41)
 20. **303 tests** (up from 280) — zero clippy warnings, zero TODO/FIXME in production
+
+### Ecosystem Absorption Wave (Phase 12.2, March 23, 2026)
+Absorbed deeper patterns from all 7 sibling springs into primalSpring core:
+21. **`normalize_method()`** — ecosystem-wide JSON-RPC dispatch standard (groundSpring V121, neuralSpring V122, wetSpring V133, healthSpring V42)
+22. **`check_relative()` + `check_abs_or_rel()`** — robust numeric validation for both relative and absolute tolerance (groundSpring V120, healthSpring V42)
+23. **`NdjsonSink`** — streaming newline-delimited JSON validation output (groundSpring V121, wetSpring V133, neuralSpring V122)
+24. **`IpcError::is_recoverable()`** — broader recovery classification beyond `is_retriable()` (neuralSpring V122, wetSpring V133)
+25. **`Transport` enum (Unix + Tcp)** — cross-platform IPC layer (airSpring V010, healthSpring V42, groundSpring V121)
+26. **`ipc::probes`** — `OnceLock`-cached runtime resource probes for test parallelism (hotSpring V0.6.32, neuralSpring V122)
+27. **`validate_release.sh`** — release quality gate: fmt + clippy + deny + test floor (320) + docs
+28. **`missing_docs` → `deny`** — all public items documented, lint level upgraded from warn
+29. **Server `normalize_method()` dispatch** — prefix-agnostic routing for all ecosystem callers
+30. **360 tests** (up from 303) — zero clippy warnings, zero missing docs
 
 ## What Changed (v0.6.0 -> v0.7.0)
 
