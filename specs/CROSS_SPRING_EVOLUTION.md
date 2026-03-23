@@ -76,7 +76,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.7.0 | 290+ | Phase 12 — 87/87 gates, 3/5 patterns live, provenance trio structural, 51 experiments, 22 deploy graphs, 37 capabilities |
+| primalSpring | v0.7.0 | 360 | Phase 12.2 — 87/87 gates, 3/5 patterns live, deep ecosystem absorption, 51 experiments, 22 deploy graphs, 37 capabilities |
 
 ## Evolution Path
 
@@ -213,6 +213,28 @@ Phase 12 (done): Multi-Node Bonding + Federation (March 23, 2026)
   → exp072: data federation (NestGate replication, trio provenance, 7-phase pipeline)
   → Evolved exp030 (covalent), exp032 (plasmodium+Metallic), exp056 (cross-tower+3 graphs)
   → 303 tests (incl. 12 bonding, 6 graph metadata, 6 STUN tier, 7 cross-cutting proptest), 51 experiments, 22 graphs
+
+Phase 12.1 (done): Ecosystem Absorption Wave 1 (March 23, 2026)
+  → deny.toml convergence: merged groundSpring V121 + wetSpring V133 C-dep bans
+  → Cast discipline lints: neuralSpring S170 + airSpring V010 clippy cast_* workspace-wide
+  → ValidationSink enrichment: section() + write_summary() from groundSpring V121
+  → exit_code_skip_aware(): 3-way exit from wetSpring V133 (0=pass, 1=fail, 2=all-skipped)
+  → proptest_ipc module: 7 cross-cutting property tests fuzzing IPC pipeline (healthSpring V42)
+  → primal_names module: canonical display↔slug mapping for 23 primals/springs
+  → Provenance circuit breaker: epoch-based + exponential backoff (healthSpring V42)
+  → 303 tests (up from 280)
+
+Phase 12.2 (done): Deep Ecosystem Absorption Wave 2 (March 23, 2026)
+  → normalize_method(): ecosystem-wide JSON-RPC prefix-agnostic dispatch
+  → check_relative() + check_abs_or_rel(): robust numeric tolerance validation
+  → NdjsonSink: streaming newline-delimited JSON validation output
+  → IpcError::is_recoverable(): broader recovery classification beyond is_retriable()
+  → Transport enum (Unix + Tcp): cross-platform IPC with connect_transport() address parsing
+  → ipc::probes: OnceLock-cached runtime resource probes for test parallelism
+  → missing_docs → deny: all public items fully documented, lint upgraded
+  → validate_release.sh: fmt + clippy + deny + test floor (320) + docs quality gate
+  → Server dispatch wired through normalize_method()
+  → 360 tests (up from 303), zero clippy, zero missing docs, zero unsafe, zero C deps
 
 Phase 13: Emergent Systems End-to-End (Track 3)
   → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)

@@ -65,6 +65,8 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 10 | Provenance Readiness (structural) | Done (v0.7.0) |
 | 11 | Provenance Trio Neural API Integration | **Done** (trio inlined types, ipc::provenance wired) |
 | 12 | Multi-Node Bonding + Federation | **Done** (BondType 5 variants, BondingPolicy, 4 multi-node graphs, STUN tiers) |
+| 12.1 | Ecosystem Absorption Wave 1 | **Done** (deny.toml, cast lints, ValidationSink, exit_code_skip_aware, proptest_ipc, primal_names, circuit breaker — 303 tests) |
+| 12.2 | Ecosystem Absorption Wave 2 | **Done** (normalize_method, check_relative, NdjsonSink, is_recoverable, Transport, OnceLock probes, missing_docs deny, release gate — 360 tests) |
 | 13+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
 
 ## Validation Harness
@@ -74,11 +76,18 @@ All experiments share the `ecoPrimal` library crate's validation module:
 - `check_bool(name, actual, expected)` — strict equality check
 - `check_skip(name, reason)` — honest skip when dependency unavailable
 - `check_or_skip(name, result)` — check if available, skip otherwise
+- `check_relative(name, actual, expected, rel_tol)` — relative tolerance for floating-point validation
+- `check_abs_or_rel(name, actual, expected, abs_tol, rel_tol)` — combined absolute-or-relative tolerance
+- `check_latency(name, actual_us, max_us)` — latency bound check
+- `check_count(name, actual, expected)` — exact count match
+- `check_minimum(name, actual, minimum)` — minimum threshold check
 - `ValidationResult::finish()` — summary with pass/fail/skip counts
 - `ValidationResult::exit_code()` — 0 if all checks pass (at least one required), 1 if any fail or none pass
 - `ValidationResult::exit_code_skip_aware()` — 0=pass, 1=fail, 2=all-skipped (skip ≠ fail in CI)
 - `ValidationResult::with_provenance(source, date)` — structured provenance metadata
 - `ValidationResult::section(name)` — begin a named section of checks (groundSpring V120)
+- `NdjsonSink` — streaming NDJSON output for CI/log aggregation
+- `StdoutSink` / `NullSink` — pluggable output sinks
 
 ## Crate Structure
 

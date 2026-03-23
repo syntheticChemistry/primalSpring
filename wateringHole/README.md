@@ -245,6 +245,7 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_FULL_EVOLUTION_HANDOFF_MAR23_2026.md` | Mar 23 | **Comprehensive**: full evolution state, per-team guidance (all primals + all springs), patterns to absorb, architecture decisions, what remains |
 | v0.7.0 | `PRIMALSPRING_V070_PHASE122_DEEP_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Deep absorption: normalize_method, Transport enum, NdjsonSink, check_relative, is_recoverable, OnceLock probes, missing_docs deny, release gate — 360 tests |
 | v0.7.0 | `PRIMALSPRING_V070_ECOSYSTEM_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Cross-spring absorption: deny.toml, cast lints, ValidationSink, proptest, primal_names, provenance circuit breaker — patterns for all teams |
 | v0.7.0 | `PRIMALSPRING_PHASE12_MULTINODE_BONDING_HANDOFF_MAR23_2026.md` | Mar 23 | Multi-node bonding, federation, idle compute, STUN tiers, BondingPolicy — primal + spring evolution guide |

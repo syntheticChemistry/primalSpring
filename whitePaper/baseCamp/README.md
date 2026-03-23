@@ -48,7 +48,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
-| Validation harness | `check_bool`, `check_skip`, `check_or_skip`, `run_experiment()`, `print_banner()` |
+| Validation harness | `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `run_experiment()`, `NdjsonSink` |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
