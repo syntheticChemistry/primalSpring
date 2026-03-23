@@ -4,13 +4,14 @@
 
 | | |
 |-|-|
-| **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, bonding |
+| **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
 | **Version** | 0.7.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 253+ (unit + integration + doc-tests) |
-| **Experiments** | 49 (8 tracks) |
-| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution (87/87 gates) |
+| **Tests** | 280+ (unit + integration + doc-tests) |
+| **Experiments** | 51 (9 tracks) |
+| **Deploy Graphs** | 22 TOMLs (18 single-node + 4 multi-node) |
+| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding (87/87 gates) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -39,7 +40,7 @@ primalSpring/
 │   │   ├── deploy/                # Deploy graph parsing, structural + live validation
 │   │   ├── graphs/                # Graph execution pattern types (5 patterns)
 │   │   ├── emergent/              # Emergent system validation (RootPulse, RPGPT, CoralForge)
-│   │   ├── bonding/               # Multi-gate bonding models (Covalent, Ionic, Weak, OMS)
+│   │   ├── bonding/               # Multi-gate bonding models (Covalent, Metallic, Ionic, Weak, OMS) + graph metadata + STUN tiers
 │   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, error, dispatch, extract, resilience
 │   │   ├── launcher/              # Primal binary discovery, spawn, socket nucleation (sync biomeOS port)
 │   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
@@ -48,15 +49,16 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   └── validate_all/          # Meta-validator: runs all 49 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 51 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
 │       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
-├── experiments/                   # 49 validation experiments (8 tracks)
+├── experiments/                   # 51 validation experiments (9 tracks)
 ├── config/                        # Launch profiles (primal_launch_profiles.toml)
-├── graphs/                        # 18 biomeOS deploy graph TOMLs (all by_capability)
+├── graphs/                        # 22 biomeOS deploy graph TOMLs (18 single-node + 4 multi-node)
+│   └── multi_node/               # Multi-node federation graphs (HPC, friend, idle, data)
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
 └── wateringHole/                  # Docs and handoffs
@@ -86,13 +88,13 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 253+ tests (auto + ignored live tests)
+# Run all 280+ tests (auto + ignored live tests)
 cargo test --workspace
 
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 49 experiments (meta-validator)
+# Run all 51 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -139,7 +141,9 @@ The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 
 
 ## Deploy Graphs
 
-primalSpring ships 18 biomeOS deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 22 biomeOS deploy graph TOMLs (all nodes declare `by_capability`):
+
+**Single-node graphs (18)**:
 
 | Graph | Pattern | Primals |
 |-------|---------|---------|
@@ -162,9 +166,18 @@ primalSpring ships 18 biomeOS deploy graph TOMLs (all nodes declare `by_capabili
 | `primalspring_deploy.toml` | Sequential | primalspring coordination |
 | `spring_byob_template.toml` | Sequential | template for new springs |
 
+**Multi-node federation graphs (4)** — `graphs/multi_node/`:
+
+| Graph | Scenario | Bond Type | Trust Model |
+|-------|----------|-----------|-------------|
+| `basement_hpc_covalent.toml` | LAN HPC mesh | Covalent | GeneticLineage |
+| `friend_remote_covalent.toml` | Remote friend + NAT traversal | Covalent | GeneticLineage |
+| `idle_compute_federation.toml` | Federated idle compute sharing | Covalent | GeneticLineage |
+| `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
+
 All graphs have `by_capability` on every node and are structurally validated +
-topologically sorted at test time. `topological_waves()` computes startup wave
-ordering from dependency edges via Kahn's algorithm.
+topologically sorted at test time. Multi-node graphs include `[graph.metadata]`
+and `[graph.bonding_policy]` sections validated by `graph_metadata.rs`.
 
 ## IPC Resilience
 
@@ -210,7 +223,10 @@ whatever is already running.
 - `wateringHole/README.md` — Track structure and cross-spring context
 - `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance
 - `wateringHole/handoffs/` — Active + archived evolution handoffs
-- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–10)
+- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–12, future 13–19)
+- `specs/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression
+- `specs/PAPER_REVIEW_QUEUE.md` — Coordination patterns ready for validation
+- `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution
 - `specs/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (indirect only)
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer
 

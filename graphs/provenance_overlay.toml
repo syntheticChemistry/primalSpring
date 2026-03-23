@@ -7,7 +7,7 @@
 #   - Lineage/provenance tracking (loamSpine)
 #   - Braid attribution and provenance graphs (sweetGrass)
 #
-# Requires: provenance-trio-types shared crate built, binaries in plasmidBin.
+# Requires: trio release binaries in plasmidBin (trio teams inlined types).
 #
 # Usage:
 #   biomeos deploy --graph graphs/provenance_overlay.toml

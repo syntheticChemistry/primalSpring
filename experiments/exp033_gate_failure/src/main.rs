@@ -7,9 +7,9 @@ use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_path}
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
-/// Source: bonding::BondType — 4 bond models defined in ecosystem architecture
-/// (Covalent, Ionic, Weak, OrganoMetalSalt).
-const BOND_TYPE_COUNT: usize = 4;
+/// Source: bonding::BondType — 5 bond models defined in ecosystem architecture
+/// (Covalent, Metallic, Ionic, Weak, OrganoMetalSalt).
+const BOND_TYPE_COUNT: usize = 5;
 
 fn main() {
     let mut v = ValidationResult::new("primalSpring Exp033 — Gate Failure");
@@ -19,6 +19,7 @@ fn main() {
 
     let variants_exist = [
         BondType::Covalent,
+        BondType::Metallic,
         BondType::Ionic,
         BondType::Weak,
         BondType::OrganoMetalSalt,

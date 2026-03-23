@@ -57,6 +57,8 @@ members = [
     "experiments/exp068_full_nucleus",
     "experiments/exp069_graph_overlay_composition",
     "experiments/exp070_squirrel_cross_primal_discovery",
+    "experiments/exp071_idle_compute_policy",
+    "experiments/exp072_data_federation",
 ]
 
 [workspace.package]

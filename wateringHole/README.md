@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
-**Domain**: Primal coordination, atomic composition, graph execution, emergent systems, bonding  
-**Version**: 0.7.0 (Phase 10 — GRAPH EXECUTION + PROVENANCE READINESS 87/87, 253+ tests, 49 experiments)  
+**Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
+**Version**: 0.7.0 (Phase 12 — MULTI-NODE BONDING + FEDERATION 87/87, 280+ tests, 51 experiments, 22 deploy graphs)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 22, 2026
+**Last Updated**: March 23, 2026
 
 ---
 
@@ -37,21 +37,21 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **253+** (unit + integration + doc-tests, 42 ignored live) |
-| Experiments | 49 (8 tracks) |
+| Tests | **280+** (unit + integration + doc-tests, 42 ignored live) |
+| Experiments | 51 (9 tracks) |
 | Proptest fuzz tests | 15 |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | 18 TOMLs, all `by_capability`, topologically validated |
+| Deploy graphs | 22 TOMLs (18 single-node + 4 multi-node), all `by_capability`, topologically validated |
 | RPC endpoints | 17 methods |
 | Discovery | **Capability-first**: `discover_by_capability()` + 5-tier + Neural API |
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
-| Meta-validator | `validate_all` binary — runs all 49 experiments |
+| Meta-validator | `validate_all` binary — runs all 51 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates passing (core + full utilization) |
 | Nest Atomic | **VALIDATED** — nestgate storage (8/8 gates) |
 | Node Atomic | **VALIDATED** — toadstool compute (5/5 gates) |
@@ -89,7 +89,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (8 Tracks, 49 Experiments)
+## Track Structure (9 Tracks, 51 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -196,6 +196,15 @@ Live multi-primal composition with real primals from `plasmidBin`.
 | 069 | Graph overlay composition | Overlay structural + merge + live (25/25) | **Live validated** |
 | 070 | Squirrel cross-primal discovery | Cross-primal env_sockets + capability.discover | **Live validated** |
 
+### Track 9: Multi-Node Bonding + Federation (exp071–072)
+
+Validate bonding policies, multi-node deploy graphs, and cross-site data federation.
+
+| Exp | What | Validates | Status |
+|-----|------|-----------|--------|
+| 071 | Idle compute policy | BondingPolicy masks, time windows, bandwidth, graph metadata | **Structural** |
+| 072 | Data federation | NestGate replication + trio provenance, 7-phase pipeline | **Structural** |
+
 ---
 
 ## Capability Domain
@@ -235,18 +244,22 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_PHASE12_MULTINODE_BONDING_HANDOFF_MAR23_2026.md` | Mar 23 | Multi-node bonding, federation, idle compute, STUN tiers, BondingPolicy — primal + spring evolution guide |
 | v0.7.0 | `PRIMALSPRING_V070_HARDWARE_VALIDATION_HANDOFF_MAR22_2026.md` | Mar 22 | Hardware audit: Pixel 8a, USB spores, cross-arch deployment, blockers per team |
 | v0.7.0 | `PRIMALSPRING_V070_GRAPH_OVERLAY_HANDOFF_MAR22_2026.md` | Mar 22 | Graph overlays, Squirrel discovery, graph execution, integration guide |
 | v0.7.0 | `TOADSTOOL_BARRACUDA_V070_HANDOFF_MAR22_2026.md` | Mar 22 | 3 composition tiers, 5 patterns, IPC quirks, evolution path |
-| v0.7.0 | `PROVENANCE_TRIO_HANDOFF_MAR22_2026.md` | Mar 22 | sweetGrass/loamSpine/rhizoCrypt: blocker, required methods, integration path |
+| v0.7.0 | `PROVENANCE_TRIO_HANDOFF_MAR22_2026.md` | Mar 22 | sweetGrass/loamSpine/rhizoCrypt: types resolved, required methods, integration path |
 | v0.7.0 | `ECOBIN_GENOMEBIN_EVOLUTION_GUIDANCE_MAR22_2026.md` | Mar 22 | ecoBin/genomeBin: cross-compile workflow, `cargo genome` roadmap, Android guidance |
 | v0.7.0 | `PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` | Mar 22 | Consolidated primal audit: open items per primal + cross-primal standards |
+| v0.7.0 | `PROVENANCE_TRIO_LIVE_PROBING_MAR23_2026.md` | Mar 23 | Live probing: sweetGrass+rhizoCrypt working, loamSpine panic, 4 gaps documented |
+| v0.7.0 | `ROOTPULSE_NEURAL_API_INTEGRATION_HANDOFF_MAR22_2026.md` | Mar 22 | RootPulse via Neural API: ipc::provenance module, 4 experiments evolved, graceful degradation |
 | v0.6.0 | `PRIMALSPRING_V060_NUCLEUS_COMPOSITION_HANDOFF_MAR22_2026.md` | Mar 22 | NUCLEUS validated: Nest + Node atomic layers, 58/58 gates (release record) |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `archive/PROVENANCE_TRIO_TYPES_NOTE.md` | Mar 22 | Resolved: trio teams inlined types, shim deleted |
 | v0.5.0 | `archive/TOWER_FULL_UTILIZATION_VALIDATED_MAR21_2026.md` | Mar 21 | Tower 41/41 milestone |
 | v0.5.0 | `archive/TOWER_FULL_UTILIZATION_HANDOFF_MAR21_2026.md` | Mar 21 | Superseded by VALIDATED version |
 | v0.4.0 | `archive/TOWER_SQUIRREL_COMPOSITION_MAR21_2026.md` | Mar 21 | Superseded by v0.7 overlay composition |

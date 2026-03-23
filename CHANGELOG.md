@@ -3,6 +3,38 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 11–12 (2026-03-23)
+
+### Added
+- **Provenance Trio Neural API Integration** — `ipc::provenance` module with
+  full RootPulse pipeline (`begin_session`, `record_step`, `complete_experiment`)
+  via `capability.call` (zero compile-time coupling to trio crates)
+- `rootpulse_branch()`, `rootpulse_merge()`, `rootpulse_diff()`, `rootpulse_federate()`
+- `trio_available()` and `trio_health()` diagnostic functions
+- **BondType::Metallic** — electron-sea bonding for homogeneous fleet specialization
+- **TrustModel** enum — GeneticLineage, Contractual, Organizational, ZeroTrust
+- **BondingConstraint** — capability allow/deny lists, bandwidth limits, concurrency limits
+- **BondingPolicy** — bond type + trust + constraints + time windows + relay offer
+- Policy presets: `covalent_full()`, `idle_compute()`, `ionic_contract()`
+- `BondType::all()`, `shares_electrons()`, `is_metered()` helper methods
+- **4 multi-node deploy graphs** — `graphs/multi_node/`: basement_hpc_covalent,
+  friend_remote_covalent, idle_compute_federation, data_federation_cross_site
+- **`graph_metadata.rs`** — parse + validate `[graph.metadata]` and `[graph.bonding_policy]`
+  from biomeOS deploy TOMLs; `validate_graph_bonding()`, `validate_all_graph_bonding()`
+- **`stun_tiers.rs`** — 4-tier STUN config parser (Lineage → Self-hosted → Public → Rendezvous),
+  `validate_sovereignty_first()`, `escalation_order()`
+- **exp071_idle_compute_policy** — BondingPolicy capability masks, time windows, bandwidth
+- **exp072_data_federation** — NestGate replication + trio provenance, 7-phase pipeline
+- 12 bonding unit tests, 6 graph metadata unit tests, 6 STUN tier unit tests
+
+### Changed
+- `BOND_TYPE_COUNT` updated to 5 in exp032, exp033
+- exp030 (covalent) — added BondType properties, BondingPolicy, HPC graph metadata
+- exp032 (plasmodium) — added Metallic validation, graph metadata
+- exp056 (cross-tower) — added 3 multi-node graph metadata validations
+- Metallic match arm added to primalspring_primal bonding_test handler
+- 280+ tests, 51 experiments, 22 deploy graphs
+
 ## [0.7.0] — 2026-03-22
 
 ### Added

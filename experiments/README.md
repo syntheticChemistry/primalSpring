@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**49 experiments across 8 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**51 experiments across 9 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -13,12 +13,12 @@ Every experiment uses the shared validation harness (`check_bool`, `check_skip`,
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 49 experiments.
+across all 51 experiments.
 
 ## Running
 
 ```bash
-# Run all 49 experiments via meta-validator
+# Run all 51 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -40,6 +40,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 6 | Cross-Spring | exp040–044 | Discovery wired |
 | 7 | Showcase-Mined | exp050–059 | Discovery wired |
 | 8 | Live Composition | exp060–070 | **Live validated** (Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery) |
+| 9 | Multi-Node Bonding | exp071–072 | **Structural** (bonding policy, data federation, graph metadata) |
 
 ## Experiment Status Key
 
@@ -62,7 +63,9 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 8 | Squirrel Cross-Primal Discovery | Done (v0.7.0) |
 | 9 | Graph Execution Patterns (3/5 live) | Done (v0.7.0) |
 | 10 | Provenance Readiness (structural) | Done (v0.7.0) |
-| 11+ | Provenance trio live, emergent, bonding | Awaiting provenance-trio-types |
+| 11 | Provenance Trio Neural API Integration | **Done** (trio inlined types, ipc::provenance wired) |
+| 12 | Multi-Node Bonding + Federation | **Done** (BondType 5 variants, BondingPolicy, 4 multi-node graphs, STUN tiers) |
+| 13+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
 
 ## Validation Harness
 

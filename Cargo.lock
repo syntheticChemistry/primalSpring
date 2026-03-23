@@ -373,6 +373,7 @@ dependencies = [
  "proptest",
  "serde",
  "serde_json",
+ "tempfile",
  "toml",
  "tracing",
  "tracing-subscriber",
@@ -813,6 +814,24 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp070"
+version = "0.7.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp071"
+version = "0.7.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp072"
 version = "0.7.0"
 dependencies = [
  "primalspring",

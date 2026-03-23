@@ -1,0 +1,193 @@
+# Idle Compute Federation — Capability-Scoped Sharing with Provenance
+# =============================================================================
+#
+# Federates idle compute across multiple covalent peers with:
+#   - Capability-scoped bonding (compute.* only by default)
+#   - Provenance tracking via the trio (every workload attributed)
+#   - Bandwidth and concurrency limits per peer
+#
+# Bond Type: Covalent (family trust)
+# Trust Model: GeneticLineage
+# Discovery: BirdSong mesh + gossip federation
+#
+# This graph runs on the COORDINATOR (typically Tower/primary gate).
+# It discovers idle peers, validates their bonding policies, dispatches
+# workloads, and records provenance for each computation.
+#
+# Prerequisites:
+#   - All peers enrolled with same .family.seed
+#   - Each peer running at least Tower + Toadstool
+#   - Provenance trio available (sweetGrass, rhizoCrypt, loamSpine)
+#
+# Usage:
+#   biomeos atomic deploy graphs/multi_node/idle_compute_federation.toml \
+#     --env FAMILY_ID=cf7e8729 \
+#     --env NODE_ID=tower \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# =============================================================================
+
+[graph]
+id = "idle_compute_federation"
+version = "1.0.0"
+description = "Federated idle compute with capability-scoped bonding and provenance"
+coordination = "Sequential"
+
+[graph.metadata]
+internal_bond_type = "covalent"
+default_interaction_bond = "covalent"
+trust_model = "genetic_lineage"
+
+[graph.bonding_policy]
+bond_type = "Covalent"
+trust_model = "GeneticLineage"
+label = "idle-compute-federation"
+offer_relay = true
+active_windows = []
+
+[graph.bonding_policy.constraints]
+capability_allow = ["compute.*"]
+capability_deny = ["storage.store", "ai.query"]
+bandwidth_limit_mbps = 0
+max_concurrent_requests = 8
+
+# =============================================================================
+# PHASE 1: DISCOVER IDLE PEERS
+# =============================================================================
+
+[[nodes]]
+id = "discover_mesh_peers"
+output = "mesh_peers"
+
+[nodes.primal]
+by_capability = "mesh"
+
+[nodes.operation]
+name = "mesh.peers"
+
+[nodes.operation.params]
+family_only = true
+
+[nodes.constraints]
+timeout_ms = 10000
+
+[[nodes]]
+id = "query_peer_capabilities"
+depends_on = ["discover_mesh_peers"]
+output = "peer_capabilities"
+
+[nodes.primal]
+by_capability = "mesh"
+
+[nodes.operation]
+name = "mesh.find_path"
+
+[nodes.operation.params]
+capability = "compute"
+
+[nodes.constraints]
+timeout_ms = 10000
+
+# =============================================================================
+# PHASE 2: BEGIN PROVENANCE SESSION
+# =============================================================================
+
+[[nodes]]
+id = "provenance_session"
+depends_on = ["query_peer_capabilities"]
+output = "session_id"
+
+[nodes.primal]
+by_capability = "dag"
+
+[nodes.operation]
+name = "dag.session.create"
+
+[nodes.operation.params]
+source_primal = "primalspring"
+niche = "idle_compute_federation"
+
+[nodes.constraints]
+timeout_ms = 5000
+allow_failure = true
+
+# =============================================================================
+# PHASE 3: DISPATCH WORKLOAD (compute.submit to best peer)
+# =============================================================================
+
+[[nodes]]
+id = "dispatch_workload"
+depends_on = ["provenance_session"]
+output = "workload_result"
+
+[nodes.primal]
+by_capability = "compute"
+
+[nodes.operation]
+name = "compute.submit"
+
+[nodes.operation.params]
+workload_type = "${WORKLOAD_TYPE}"
+payload = "${WORKLOAD_PAYLOAD}"
+prefer_idle = true
+
+[nodes.constraints]
+timeout_ms = 300000
+
+# =============================================================================
+# PHASE 4: RECORD PROVENANCE
+# =============================================================================
+
+[[nodes]]
+id = "record_computation"
+depends_on = ["dispatch_workload"]
+output = "dag_event"
+
+[nodes.primal]
+by_capability = "dag"
+
+[nodes.operation]
+name = "dag.event.append"
+
+[nodes.operation.params]
+session_id = "${session_id}"
+event_type = { Observation = { measurement_type = "compute_result", value = "${workload_result}", unit = "workload" } }
+
+[nodes.constraints]
+timeout_ms = 5000
+allow_failure = true
+
+[[nodes]]
+id = "attribute_computation"
+depends_on = ["record_computation"]
+output = "attribution"
+
+[nodes.primal]
+by_capability = "attribution"
+
+[nodes.operation]
+name = "pipeline.attribute"
+
+[nodes.operation.params]
+agent_did = "did:eco:${FAMILY_ID}:${NODE_ID}"
+data_hash = "${workload_result.hash}"
+contribution_type = "compute"
+
+[nodes.constraints]
+timeout_ms = 5000
+allow_failure = true
+
+# =============================================================================
+# SUMMARY
+# =============================================================================
+#
+# Flow:
+#   1. Discover family peers with compute capability
+#   2. Begin provenance session (rhizoCrypt DAG)
+#   3. Dispatch workload to best idle peer (Toadstool)
+#   4. Record result in DAG + attribute via sweetGrass
+#
+# Every federated computation is traceable: who contributed, when, what.
+# sunCloud radiating attribution follows the sweetGrass braid.
+#
+# =============================================================================

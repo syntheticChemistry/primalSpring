@@ -9,12 +9,13 @@
 
 ## Executive Summary
 
-primalSpring is **structurally ready** to integrate the provenance trio
-(sweetGrass, loamSpine, rhizoCrypt) but **cannot build any of the three
-today** due to a missing shared dependency. This handoff documents:
+primalSpring is **fully wired** to integrate the provenance trio
+(sweetGrass, loamSpine, rhizoCrypt) via Neural API `capability.call`.
+All four RootPulse experiments exercise real IPC when the trio is running
+and degrade gracefully when not. This handoff documents:
 
-1. What primalSpring has prepared
-2. The blocker preventing builds
+1. What primalSpring has prepared (including `ipc::provenance` module)
+2. A build note for the trio teams (`provenance-trio-types`)
 3. What each team needs to deliver
 4. How the trio will compose once binaries are available
 
@@ -57,27 +58,18 @@ them via `$XDG_RUNTIME_DIR/biomeos/` socket scan or explicit env vars.
 
 ---
 
-## 2. The Blocker: `provenance-trio-types`
+## 2. Build Note: `provenance-trio-types` (RESOLVED)
 
-All three crates depend on a shared types crate:
+All three trio teams have **inlined their types** and removed the
+`provenance-trio-types` path dependency (confirmed March 22, 2026):
 
-```
-phase2/sweetGrass/crates/sweet-grass-core → path = "../../provenance-trio-types"
-phase2/loamSpine/crates/loam-spine-core   → path = "../../provenance-trio-types"
-phase2/rhizoCrypt/crates/rhizo-crypt-core → path = "../../provenance-trio-types"
-```
+- sweetGrass: `deny.toml` bans `provenance-trio-types`, types in local modules
+- loamSpine: types in `loam-spine-core/src/trio_types.rs`
+- rhizoCrypt: types in `rhizo-crypt-core/src/dehydration_wire.rs`
 
-**The path `phase2/provenance-trio-types/` does not exist on disk.**
-
-This is the **single blocker** preventing any of the trio from building.
-
-### Fix Options
-
-1. **Create the crate**: If `provenance-trio-types` was previously extracted
-   but not committed/cloned, create it at `phase2/provenance-trio-types/`
-2. **Inline the types**: If the crate was planned but never created, each
-   team can inline the shared types temporarily
-3. **Git submodule**: If it lives in a separate repo, add it as a submodule
+The temporary shim crate at `phase2/provenance-trio-types/` has been deleted.
+primalSpring has zero compile-time dependency on any trio crate — all
+integration is via Neural API `capability.call`.
 
 ---
 
@@ -85,7 +77,7 @@ This is the **single blocker** preventing any of the trio from building.
 
 ### All Three Teams
 
-- [ ] Resolve the `provenance-trio-types` dependency
+- [x] Resolve `provenance-trio-types` path dependency (done: all trio teams inlined types)
 - [ ] Build release binary and copy to `plasmidBin/primals/`
 - [ ] Verify Unix socket JSON-RPC works (line-delimited NDJSON on
   `$BIOMEOS_SOCKET_DIR/{primal}-{family_id}.sock`)
@@ -160,8 +152,8 @@ traceable, and attributable.
 
 | Document | What It Shows |
 |----------|--------------|
-| `specs/TOWER_STABILITY.md` | 77/77 gates, full progression path |
-| `specs/CROSS_SPRING_EVOLUTION.md` | Phase 8 complete, Phase 9 awaiting trio |
+| `specs/TOWER_STABILITY.md` | 87/87 gates, full progression path |
+| `specs/CROSS_SPRING_EVOLUTION.md` | Phase 12 complete, future Phases 13–19 |
 | `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` | Sections 1-10: all composition patterns |
 | `config/primal_launch_profiles.toml` | Launch profiles for all primals including trio |
 | `graphs/provenance_overlay.toml` | Deploy graph ready for trio |

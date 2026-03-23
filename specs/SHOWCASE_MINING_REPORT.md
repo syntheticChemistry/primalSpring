@@ -1,7 +1,7 @@
 # primalSpring — Showcase Mining Report
 
-**Date**: March 2, 2026 (mined), March 17, 2026 (updated)  
-**Source**: phase1/ and phase2/ showcase directories  
+**Date**: March 2, 2026 (mined), March 17, 2026 (updated), March 23, 2026 (expanded)  
+**Source**: phase1/ and phase2/ showcase directories, multi-node bonding patterns  
 **Purpose**: Extract early coordination patterns for primalSpring system tests
 
 ---
@@ -148,7 +148,8 @@
 
 ## New Experiments Recommended
 
-Based on the mined patterns, these 10 experiments (exp050–059) extended primalSpring to 38 total:
+Based on the mined patterns, these 10 experiments (exp050–059) extended primalSpring to 38 total.
+Subsequent phases added experiments through exp072, bringing the total to **51 experiments**.
 
 | Exp | Name | Source Pattern | What It Tests |
 |-----|------|----------------|---------------|
@@ -162,3 +163,85 @@ Based on the mined patterns, these 10 experiments (exp050–059) extended primal
 | 057 | Supply chain provenance | rhizoCrypt #13 | 7-stage DAG with per-agent signing |
 | 058 | Semantic attribution | SweetGrass #7 | Module/feature/function level tracking + fair credit |
 | 059 | Weak force isolation | biomeOS #9 | Zero leakage with unknown primals, read-only observation |
+
+---
+
+## Patterns from Multi-Node Bonding (Phase 12, March 23, 2026)
+
+### 14. Basement HPC Covalent Mesh (`graphs/multi_node/basement_hpc_covalent.toml`)
+
+**Pattern**: Deploy NUCLEUS on multiple LAN machines sharing a `.family.seed` for auto-trust via BirdSong encrypted beacons.
+
+**What to test**:
+- Covalent bonding with GeneticLineage trust model
+- BirdSong mesh discovery across LAN
+- Capability aggregation into a Plasmodium collective
+- Family-scoped socket naming (`{primal}-{FAMILY_ID}.sock`)
+
+### 15. Friend Remote Covalent with NAT Traversal (`graphs/multi_node/friend_remote_covalent.toml`)
+
+**Pattern**: Remote machine joins covalent mesh through 4-tier STUN (Lineage → Self-hosted → Public → Rendezvous), hole-punch, and relay fallback. BondingPolicy enforces capability scope and time windows.
+
+**What to test**:
+- STUN sovereignty-first escalation (never skip to public before lineage/self-hosted)
+- Hole-punch with relay fallback when direct connection fails
+- BondingPolicy: `compute.*` only, `22:00-06:00` active window, 100 Mbps cap
+- Dark forest discovery (encrypted beacons, zero metadata leakage)
+
+### 16. Idle Compute Federation (`graphs/multi_node/idle_compute_federation.toml`)
+
+**Pattern**: Orchestrate federated idle compute across bonded peers — discover idle nodes, dispatch workloads by capability, track provenance of remote compute results.
+
+**What to test** (exp071):
+- BondingConstraint capability filtering (`permits()` method)
+- Time window scheduling for idle compute offers
+- Bandwidth and concurrency limits enforcement
+- Provenance trio tracking of federated compute results
+
+### 17. Data Federation Cross-Site (`graphs/multi_node/data_federation_cross_site.toml`)
+
+**Pattern**: 7-phase NestGate replication pipeline with full provenance trio tracking — list → replicate → DAG create → event append → attribute → federate → commit.
+
+**What to test** (exp072):
+- NestGate cross-site storage replication with conflict resolution
+- rhizoCrypt DAG session per replication batch
+- sweetGrass attribution of replicated data provenance
+- loamSpine commit anchoring the federated state
+
+### 18. BondType Full Taxonomy
+
+**Pattern**: Chemistry-inspired bonding model covering all inter-node trust and interaction levels.
+
+**Established types** (validated in exp030/032/033/071):
+- **Covalent**: Shared `.family.seed`, mutual discovery, full in-mesh (basement HPC, friend clusters)
+- **Metallic**: Electron-sea delocalized capabilities, specialization (compute-only racks, storage fleets)
+- **Ionic**: Contract-based, metered, separate Towers (cloud burst GPU, external APIs)
+- **Weak**: Minimal coupling, zero/low trust, read-only (public APIs, unknown beacons)
+- **OrganoMetalSalt**: Mixed bond types in a single deployment
+
+### 19. TrustModel + BondingPolicy
+
+**Pattern**: Fine-grained access control for federated resource sharing.
+
+**What to test**:
+- GeneticLineage: `.family.seed` auto-trust, no credential exchange
+- Contractual: Service agreements, metered billing
+- Organizational: Certificate-based enterprise trust
+- ZeroTrust: Challenge-response on every request
+- BondingPolicy presets: idle_compute, covalent_full, ionic_contract
+
+### 20. STUN Multi-Tier NAT Traversal (`config/stun/multi_tier.toml`)
+
+**Pattern**: Sovereignty-first NAT traversal — never leak metadata to public infrastructure when private options exist.
+
+**What to test** (stun_tiers.rs):
+- Tier 1 (Lineage Relay): Family members relay for each other
+- Tier 2 (Self-Hosted): User's own STUN infrastructure
+- Tier 3 (Public): Community STUN servers, address discovery only
+- Tier 4 (Rendezvous): Future gaming platform integration
+- Sovereignty violations: parallel attempts, disabled lineage, corporate STUN
+
+| Exp | Name | Source Pattern | What It Tests |
+|-----|------|----------------|---------------|
+| 071 | Idle compute policy | Pattern #16, #19 | BondingPolicy masks, time windows, bandwidth, graph validation |
+| 072 | Data federation | Pattern #17 | NestGate replication + trio provenance, 7-phase pipeline |

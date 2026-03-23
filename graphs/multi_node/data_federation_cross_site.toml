@@ -1,0 +1,240 @@
+# Data Federation Cross-Site — NestGate + Provenance Trio Sync
+# =============================================================================
+#
+# Federates data across multiple sites (labs, gates, institutions) with
+# full provenance tracking: every replication is a DAG event, every
+# dataset attributed via sweetGrass braids, every state anchored in loamSpine.
+#
+# Bond Type: Covalent (same family) or Ionic (cross-family contract)
+# Trust Model: GeneticLineage or Contractual
+# Discovery: Songbird mesh (covalent) or explicit endpoint (ionic)
+#
+# Use Cases:
+#   - wetSpring: federate genetic sequence data across labs
+#   - groundSpring: share Anderson lattice results across institutions
+#   - hotSpring: distribute HMC trajectory data to collaborators
+#
+# Prerequisites:
+#   - Both sites running at least Tower + NestGate
+#   - Provenance trio available (sweetGrass, rhizoCrypt, loamSpine)
+#   - For covalent: shared .family.seed
+#   - For ionic: API credentials configured
+#
+# Usage:
+#   biomeos atomic deploy graphs/multi_node/data_federation_cross_site.toml \
+#     --env FAMILY_ID=cf7e8729 \
+#     --env NODE_ID=tower \
+#     --env REMOTE_PEER=gate2 \
+#     --env DATASET_PREFIX=wetspring:sequences \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# =============================================================================
+
+[graph]
+id = "data_federation_cross_site"
+version = "1.0.0"
+description = "Cross-site data federation with NestGate replication and provenance trio"
+coordination = "Sequential"
+
+[graph.metadata]
+internal_bond_type = "covalent"
+default_interaction_bond = "covalent"
+trust_model = "genetic_lineage"
+
+# =============================================================================
+# PHASE 1: DISCOVER REMOTE SITE
+# =============================================================================
+
+[[nodes]]
+id = "discover_remote"
+output = "remote_peer"
+
+[nodes.primal]
+by_capability = "mesh"
+
+[nodes.operation]
+name = "mesh.find_path"
+
+[nodes.operation.params]
+target_node = "${REMOTE_PEER}"
+
+[nodes.constraints]
+timeout_ms = 15000
+
+# =============================================================================
+# PHASE 2: BEGIN PROVENANCE SESSION
+# =============================================================================
+
+[[nodes]]
+id = "federation_session"
+depends_on = ["discover_remote"]
+output = "session_id"
+
+[nodes.primal]
+by_capability = "dag"
+
+[nodes.operation]
+name = "dag.session.create"
+
+[nodes.operation.params]
+source_primal = "primalspring"
+niche = "data_federation"
+
+[nodes.constraints]
+timeout_ms = 5000
+allow_failure = true
+
+# =============================================================================
+# PHASE 3: LIST LOCAL DATASETS FOR REPLICATION
+# =============================================================================
+
+[[nodes]]
+id = "list_local_data"
+depends_on = ["federation_session"]
+output = "local_datasets"
+
+[nodes.primal]
+by_capability = "storage"
+
+[nodes.operation]
+name = "storage.list"
+
+[nodes.operation.params]
+prefix = "${DATASET_PREFIX}"
+family_id = "${FAMILY_ID}"
+
+[nodes.constraints]
+timeout_ms = 10000
+
+# =============================================================================
+# PHASE 4: REPLICATE TO REMOTE
+# =============================================================================
+
+[[nodes]]
+id = "replicate_data"
+depends_on = ["list_local_data", "discover_remote"]
+output = "replication_result"
+
+[nodes.primal]
+by_capability = "storage"
+
+[nodes.operation]
+name = "storage.replicate"
+
+[nodes.operation.params]
+target_peer = "${REMOTE_PEER}"
+dataset_prefix = "${DATASET_PREFIX}"
+family_id = "${FAMILY_ID}"
+verify_integrity = true
+
+[nodes.constraints]
+timeout_ms = 600000
+
+# =============================================================================
+# PHASE 5: RECORD REPLICATION IN DAG
+# =============================================================================
+
+[[nodes]]
+id = "record_replication"
+depends_on = ["replicate_data"]
+output = "dag_event"
+
+[nodes.primal]
+by_capability = "dag"
+
+[nodes.operation]
+name = "dag.event.append"
+
+[nodes.operation.params]
+session_id = "${session_id}"
+event_type = { DataTransfer = { source_node = "${NODE_ID}", target_node = "${REMOTE_PEER}", dataset = "${DATASET_PREFIX}", hash = "${replication_result.content_hash}" } }
+
+[nodes.constraints]
+timeout_ms = 5000
+allow_failure = true
+
+# =============================================================================
+# PHASE 6: FEDERATE PROVENANCE (sync DAG + braids)
+# =============================================================================
+
+[[nodes]]
+id = "federate_dag"
+depends_on = ["record_replication"]
+output = "dag_federated"
+
+[nodes.primal]
+by_capability = "dag"
+
+[nodes.operation]
+name = "rootpulse.federate"
+
+[nodes.operation.params]
+target_peer = "${REMOTE_PEER}"
+session_id = "${session_id}"
+
+[nodes.constraints]
+timeout_ms = 30000
+allow_failure = true
+
+[[nodes]]
+id = "sync_attribution"
+depends_on = ["federate_dag"]
+output = "braid_synced"
+
+[nodes.primal]
+by_capability = "attribution"
+
+[nodes.operation]
+name = "braid.sync"
+
+[nodes.operation.params]
+target_peer = "${REMOTE_PEER}"
+dataset = "${DATASET_PREFIX}"
+
+[nodes.constraints]
+timeout_ms = 30000
+allow_failure = true
+
+# =============================================================================
+# PHASE 7: COMMIT TO LOAMSPINE
+# =============================================================================
+
+[[nodes]]
+id = "commit_state"
+depends_on = ["sync_attribution"]
+output = "commit_result"
+
+[nodes.primal]
+by_capability = "commit"
+
+[nodes.operation]
+name = "commit.session"
+
+[nodes.operation.params]
+summary = { federation = "${REMOTE_PEER}", dataset = "${DATASET_PREFIX}", items_replicated = "${replication_result.count}" }
+content_hash = "${replication_result.content_hash}"
+
+[nodes.constraints]
+timeout_ms = 10000
+allow_failure = true
+
+# =============================================================================
+# SUMMARY
+# =============================================================================
+#
+# Data Federation Pipeline:
+#   1. Discover remote site via Songbird mesh
+#   2. Begin provenance session (rhizoCrypt DAG)
+#   3. List local datasets matching prefix
+#   4. Replicate to remote NestGate (content-addressed, BLAKE3 verified)
+#   5. Record replication event in DAG
+#   6. Federate DAG + braids to remote (rootpulse.federate + braid.sync)
+#   7. Commit permanent state to loamSpine
+#
+# Every byte replicated is:
+#   - Content-addressed (BLAKE3 hash)
+#   - DAG-tracked (rhizoCrypt session)
+#   - Attributed (sweetGrass braid)
+#   - Permanently committed (loamSpine certificate)
+#
+# =============================================================================

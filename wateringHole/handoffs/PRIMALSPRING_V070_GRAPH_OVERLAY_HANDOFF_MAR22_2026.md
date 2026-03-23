@@ -16,7 +16,7 @@ primalSpring v0.7.0 introduces two major capabilities that affect every team:
 2. **Squirrel Cross-Primal Discovery** — Squirrel discovers sibling primals
    via env vars and socket scanning, then routes AI/tool/context requests.
 
-**77/77 gates**, **253+ tests**, **49 experiments**, **19 deploy graphs**.
+**87/87 gates**, **280+ tests**, **51 experiments**, **22 deploy graphs**.
 
 ---
 
@@ -142,8 +142,8 @@ primalSpring now validates 3 of the 5 coordination patterns live:
 | `ecoPrimal/src/harness/mod.rs` | Composition orchestration (AtomicHarness) |
 | `ecoPrimal/src/launcher/mod.rs` | Binary discovery, spawn, socket nucleation |
 | `ecoPrimal/src/ipc/client.rs` | PrimalClient for JSON-RPC calls |
-| `specs/TOWER_STABILITY.md` | 77/77 gate progression |
-| `specs/CROSS_SPRING_EVOLUTION.md` | Phase 8 evolution path |
+| `specs/TOWER_STABILITY.md` | 87/87 gate progression |
+| `specs/CROSS_SPRING_EVOLUTION.md` | Phase 12 evolution path |
 | `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` | Full composition guide (10 sections) |
 
 ---

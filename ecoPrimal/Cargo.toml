@@ -34,3 +34,4 @@ path = "src/bin/validate_all/main.rs"
 
 [dev-dependencies]
 proptest = "1.10.0"
+tempfile = "3.27.0"

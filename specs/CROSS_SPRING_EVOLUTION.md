@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: March 22, 2026
-**Status**: Phase 10 — GRAPH EXECUTION + PROVENANCE READINESS (87/87 gates), 253+ tests, 49 experiments
+**Date**: March 23, 2026
+**Status**: Phase 12 — MULTI-NODE BONDING + FEDERATION (87/87 gates), 280+ tests, 51 experiments, 22 deploy graphs
 
 ---
 
@@ -17,10 +17,11 @@ an optional track. Every experiment involves multiple primals or springs.
 | 1 (Atomic) | BearDog, Songbird, ToadStool, NestGate, Squirrel | Deploy + health check |
 | 2 (Graph) | biomeOS, all primals | Graph execution |
 | 3 (Emergent) | rhizoCrypt, LoamSpine, sweetGrass, ludoSpring, neuralSpring, wetSpring | Layer 3 systems |
-| 4 (Bonding) | Songbird (mesh), BearDog (trust), all NUCLEUS | Multi-gate |
+| 4 (Bonding) | Songbird (mesh), BearDog (trust), all NUCLEUS | Multi-gate bonding (Covalent, Metallic, Ionic, Weak, OrganoMetalSalt) |
 | 5 (coralForge) | neuralSpring, wetSpring, hotSpring, ToadStool, NestGate | Pipeline graph |
 | 6 (Cross-Spring) | airSpring, wetSpring, neuralSpring, petalTongue, Squirrel | Data flow |
 | 7 (Showcase) | coralReef, toadStool, barraCuda, BearDog, NestGate, sweetGrass, rhizoCrypt | Mined patterns |
+| 8 (Multi-Node) | Songbird (mesh+STUN), BearDog (lineage), NestGate (replication), Trio | Federation, idle compute, data sync |
 
 ## What primalSpring Learns from Each Spring
 
@@ -49,12 +50,20 @@ an optional track. Every experiment involves multiple primals or springs.
 | provenance_overlay.toml | Tower + RootPulse provenance trio deploy graph |
 | Live graph execution patterns | Sequential, Parallel, ConditionalDag validated live |
 | Provenance trio launch profiles | sweetGrass, loamSpine, rhizoCrypt socket wiring |
-| Coordination experiment framework | 49 experiments across 8 tracks |
+| Coordination experiment framework | 51 experiments across 9 tracks |
 | MCP coordination tools | Available for Squirrel AI routing |
 | Tower + Squirrel AI composition | Live demo: Tower + Squirrel + Anthropic Claude (exp061) |
 | `passthrough_env` pattern | Secure env forwarding for API keys, GPU config vars |
 | `PrimalProcess::from_parts()` | Custom spawn for primals with non-standard transports |
 | Abstract socket integration | Squirrel Universal Transport on Linux abstract namespace |
+| BondType full taxonomy | Covalent, Metallic, Ionic, Weak, OrganoMetalSalt — chemistry-inspired bonding |
+| BondingConstraint + BondingPolicy | Capability-scoped permissions, bandwidth limits, time windows for federated sharing |
+| Multi-node deploy graph templates | basement_hpc, friend_remote, idle_compute, data_federation TOML graphs |
+| Graph bonding metadata validation | Parses [graph.metadata] + [graph.bonding_policy] for structural consistency |
+| STUN tier config + sovereignty-first | 4-tier NAT traversal: Lineage → Self-hosted → Public → Rendezvous |
+| TrustModel taxonomy | GeneticLineage, Contractual, Organizational, ZeroTrust |
+| Idle compute policy validation | BondingPolicy presets for time-windowed, capability-scoped compute sharing |
+| Data federation pipeline | 7-phase NestGate replication with provenance trio tracking |
 
 ## Ecosystem State (March 22, 2026)
 
@@ -67,7 +76,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, provenance registry |
 | healthSpring | V37 | 706 | 18 proptest IPC fuzz, MCP tools |
 | ludoSpring | V14 | 187 | with_provenance(), 93.2% coverage |
-| primalSpring | v0.7.0 | 253+ | GRAPH EXECUTION + PROVENANCE READINESS 87/87, 3/5 patterns live, provenance trio structural, 49 experiments, 37 capabilities |
+| primalSpring | v0.7.0 | 280+ | MULTI-NODE BONDING + FEDERATION 87/87, 3/5 patterns live, provenance trio structural, 51 experiments, 22 deploy graphs, 37 capabilities |
 
 ## Evolution Path
 
@@ -148,7 +157,7 @@ Phase 8 (done): Squirrel Cross-Primal Discovery (March 22, 2026)
   → capability.discover, tool.list, context.create, ai.query via composition
   → exp070: structural + live cross-primal discovery validation
   → 4 new integration tests (squirrel_discovers_sibling_primals, tool_list, context, ai_query)
-  → 77/77 total gates, 253+ tests, 49 experiments
+  → 87/87 total gates, 253+ tests, 49 experiments
 
 Phase 9 (done): Graph Execution Patterns (March 22, 2026)
   → exp010 sequential: live Tower composition with ordering verification
@@ -163,19 +172,83 @@ Phase 10 (done): Provenance Readiness (March 22, 2026)
   → provenance_overlay.toml: Tower + RootPulse deploy graph
   → Handoff to provenance trio teams (PROVENANCE_TRIO_HANDOFF)
   → Handoff to all teams (V070_GRAPH_OVERLAY_HANDOFF)
-  → Blocker: provenance-trio-types shared crate missing from disk
+  → Resolved: trio teams inlined types, provenance-trio-types shim deleted (Mar 22)
   → 87/87 total gates, 253+ tests, 49 experiments
 
-Phase 11: Provenance Trio Live Integration
-  → Awaiting provenance-trio-types resolution + binaries in plasmidBin
-Phase 12: Emergent systems (Track 3)
-  → RootPulse, coralForge pipeline validated
-Phase 13: Bonding (Track 4)
-  → Multi-gate coordination
-Phase 14: Cross-spring (Track 6)
-  → Full ecosystem integration
-Phase 15: Showcase patterns (Track 7)
-  → phase1/phase2 mined coordination patterns validated
-Phase 16: biomeOS Self-Composition
+Phase 11 (done): Provenance Trio Neural API Integration (March 22, 2026)
+  → ipc::provenance module: begin_session, record_step, complete_experiment
+  → Full RootPulse pipeline: dehydrate → commit → attribute via capability.call
+  → rootpulse_branch, rootpulse_merge, rootpulse_diff, rootpulse_federate
+  → exp020 evolved: 6-phase commit via Neural API (graceful degradation)
+  → exp021 evolved: branch/merge operations via capability.call
+  → exp022 evolved: diff/federate operations via capability.call
+  → exp041 evolved: E2E provenance chain (session → steps → pipeline)
+  → Zero compile-time coupling to trio crates (all via capability.call)
+  → Trio teams inlined types — no provenance-trio-types dependency anywhere
+  → Release binaries built and in plasmidBin/primals/
+  → Live probing revealed 3 gaps + 2 working primals (see Phase 11.1)
+
+Phase 11.1 (done): Live Trio Probing (March 23, 2026)
+  → sweetGrass: LIVE — Unix socket + HTTP JSON-RPC, 24 methods, 9 domains, PROV-O response
+  → rhizoCrypt: LIVE (TCP only) — HTTP JSON-RPC on :9401/rpc, full DAG lifecycle works
+  → loamSpine: BROKEN — panic in infant_discovery (nested runtime block_on)
+  → Gap 1: rhizoCrypt TCP-only (no Unix socket, ignores RHIZOCRYPT_SOCKET env var)
+  → Gap 2: loamSpine runtime panic (cannot block_on inside async runtime)
+  → Gap 3: Event type wire format mismatch (struct variants, not strings)
+  → Gap 4: braid.create/pipeline.attribute param schemas differ from ipc::provenance
+  → Validated: DAG session lifecycle (create → ExperimentStart → Observation → merkle root)
+  → Validated: sweetGrass braid.create (returns JSON-LD PROV-O with DID attribution)
+  → Validated: sweetGrass pipeline.attribute (returns commit_ref + merkle_root)
+  → sweetGrass capability.list reports consumed_capabilities matching primalSpring graph
+
+Phase 12 (done): Multi-Node Bonding + Federation (March 23, 2026)
+  → BondType expanded: Covalent, Metallic, Ionic, Weak, OrganoMetalSalt (5 variants)
+  → TrustModel: GeneticLineage, Contractual, Organizational, ZeroTrust
+  → BondingConstraint: capability allow/deny lists, bandwidth, concurrency limits
+  → BondingPolicy: bond type + trust + constraints + time windows + relay offer
+  → 4 multi-node deploy graphs: basement_hpc, friend_remote, idle_compute, data_federation
+  → graph_metadata.rs: parse + validate [graph.metadata] and [graph.bonding_policy] from TOML
+  → stun_tiers.rs: 4-tier STUN config parser, sovereignty-first escalation validation
+  → exp071: idle compute policy (capability masks, time windows, bandwidth, graph metadata)
+  → exp072: data federation (NestGate replication, trio provenance, 7-phase pipeline)
+  → Evolved exp030 (covalent), exp032 (plasmodium+Metallic), exp056 (cross-tower+3 graphs)
+  → 280+ tests (incl. 12 bonding, 6 graph metadata, 6 STUN tier), 51 experiments, 22 graphs
+
+Phase 13: Emergent Systems End-to-End (Track 3)
+  → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)
+  → coralForge pipeline streaming (exp013) — needs sweetGrass running
+  → Continuous 60Hz tick (exp014) — needs provenance trio running
+  → RPGPT session management with provenance tracking
+
+Phase 14: Live Multi-Node Validation (Track 8)
+  → Basement HPC: deploy NUCLEUS on 2+ LAN machines, validate covalent mesh formation
+  → Friend remote: NAT traversal via STUN tiers, hole-punch, relay fallback
+  → Idle compute: validate BondingPolicy enforcement (time windows, capability scope)
+  → Data federation: NestGate cross-site replication with trio provenance chain
+  → Plasmodium: decentralized capability aggregation across covalently bonded nodes
+
+Phase 15: Bonding Live Coordination (Track 4)
+  → Multi-gate covalent mesh with BirdSong encrypted beacons
+  → Ionic contract-based metered bonds (cloud burst, external APIs)
+  → Metallic electron-sea: homogeneous fleet specialization (compute-only racks)
+  → Weak force: zero-trust read-only bonds to unknown primals
+  → OrganoMetalSalt: mixed bond types in a single deployment
+
+Phase 16: Cross-Spring Integration (Track 6)
+  → Full ecosystem data flow: airSpring, wetSpring, neuralSpring, petalTongue, Squirrel
+  → wetSpring uses provenance trio to track genetic data lineage
+  → Cross-spring BYOB composition: primals as DAG execution nodes
+
+Phase 17: Showcase Patterns (Track 7)
+  → phase1/phase2 mined coordination patterns validated end-to-end
+  → Compute triangle, bearer token auth, supply chain provenance, semantic attribution
+
+Phase 18: Anchoring + Economics
+  → sweetGrass anchoring.anchor → BTC/ETH (hash attestation, not currency)
+  → loamSpine certificates as Novel Ferment Transcripts (NFTs)
+  → sunCloud radiating attribution via sweetGrass braids
+
+Phase 19: biomeOS Self-Composition
   → biomeOS composes its own graphs at runtime
+  → Dynamic capability negotiation for BYOB niche creation
 ```

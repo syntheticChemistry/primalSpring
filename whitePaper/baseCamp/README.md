@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: March 22, 2026
-**Status**: Phase 10 — GRAPH EXECUTION + PROVENANCE READINESS (87/87 gates), 49 experiments, 253+ tests
+**Date**: March 23, 2026
+**Status**: Phase 12 — MULTI-NODE BONDING + FEDERATION (87/87 gates), 51 experiments, 280+ tests, 22 deploy graphs
 
 ---
 
@@ -29,20 +29,21 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 6 | Cross-Spring | exp040–044 | Do cross-spring data flows work? |
 | 7 | Showcase-Mined | exp050–059 | Do mined phase1/phase2 coordination patterns hold? |
 | 8 | Live Composition | exp060–070 | Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery |
+| 9 | Multi-Node Bonding | exp071–072 | Do bonding policies and data federation structures validate? |
 
 ## Current State (v0.7.0)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 49 (8 tracks) |
-| Total tests | **253+** (unit + integration + doc-tests, 42 ignored live) |
+| Experiments | 51 (9 tracks) |
+| Total tests | **280+** (unit + integration + doc-tests, 42 ignored live) |
 | Proptest fuzz tests | 15 (IPC protocol, extract, capability parsing) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | 18 TOMLs, all nodes `by_capability`, topologically validated |
+| Deploy graphs | 22 TOMLs (18 single-node + 4 multi-node), all nodes `by_capability`, topologically validated |
 | Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
@@ -60,6 +61,24 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed — Phase 11–12 (Multi-Node Bonding + Federation)
+
+### Provenance Trio Neural API (Phase 11)
+1. **`ipc::provenance` module** — full RootPulse pipeline via `capability.call` (zero compile coupling)
+2. **4 experiments evolved** — exp020 (6-phase commit), exp021 (branch/merge), exp022 (diff/federate), exp041 (E2E chain)
+3. **Live probing** — sweetGrass LIVE, rhizoCrypt LIVE (TCP), loamSpine BROKEN (runtime panic)
+4. **4 gaps documented** — wire format mismatches, param schema drift
+
+### Multi-Node Bonding + Federation (Phase 12)
+5. **BondType expanded** — Covalent, Metallic, Ionic, Weak, OrganoMetalSalt (5 variants)
+6. **TrustModel** — GeneticLineage, Contractual, Organizational, ZeroTrust
+7. **BondingConstraint + BondingPolicy** — capability masks, bandwidth limits, time windows, concurrency
+8. **4 multi-node deploy graphs** — basement HPC, friend remote, idle compute, data federation
+9. **`graph_metadata.rs`** — parse + validate `[graph.metadata]` and `[graph.bonding_policy]` from TOML
+10. **`stun_tiers.rs`** — 4-tier STUN config parser, sovereignty-first escalation validation
+11. **exp071 + exp072** — idle compute policy and data federation validation
+12. **280+ tests**, 51 experiments, 22 deploy graphs
 
 ## What Changed (v0.6.0 -> v0.7.0)
 
@@ -110,7 +129,9 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Squirrel Discovery | Cross-primal wiring | + all primals | Gate 21 (5/5) | **DONE** |
 | Graph Execution | 3/5 patterns live | Tower + Nest + Node | Gate 22 (6/6) | **DONE** |
 | Provenance Readiness | Structural prep | sweetGrass/loamSpine/rhizoCrypt | Gate 23 (4/4) | **DONE** |
-| Provenance Live | Trio integration | + provenance trio | All gates | **NEXT** (awaiting provenance-trio-types) |
+| Provenance Trio Neural API | ipc::provenance wired | + sweetGrass/loamSpine/rhizoCrypt | Neural API gates | **DONE** |
+| Multi-Node Bonding | BondType, BondingPolicy, STUN, federation graphs | + Songbird, NestGate | Bonding gates | **DONE** |
+| Emergent E2E | RootPulse + coralForge live | + provenance trio running | Emergent gates | **NEXT** |
 
 See `specs/TOWER_STABILITY.md` for the full 87-gate acceptance criteria.
 
@@ -136,9 +157,12 @@ spores (biomeOS1, LiveSpore, ColdSpore), and SoloKey 2.
 
 ## What Remains
 
-- **Provenance trio binaries** — blocked on `provenance-trio-types` shared crate
-- Pipeline + Continuous graph execution (exp013/014) — awaiting sweetGrass/rhizoCrypt
-- Emergent system experiments (Track 3) — awaiting provenance trio
+- **Emergent systems E2E** — RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired, awaiting biomeOS + trio running)
+- **Live multi-node validation** — deploy NUCLEUS on 2+ machines, validate covalent mesh, BondingPolicy enforcement, NAT traversal, data federation
+- **Pipeline + Continuous graph execution** (exp013/014) — awaiting sweetGrass/rhizoCrypt live
+- **Bonding live coordination** — multi-gate covalent mesh, ionic contracts, metallic fleets
+- **Cross-spring integration** — wetSpring genetic lineage via trio, BYOB primal DAG execution
+- **Anchoring + Economics** — sweetGrass anchoring to BTC/ETH, Novel Ferment Transcripts, sunCloud
 - Protocol escalation (JSON-RPC -> tarpc sidecar)
 - biomeOS self-composition (biomeOS composes its own graphs at runtime)
 - **ecoBin compliance**: rebuild all primals as static musl for both x86_64 and aarch64

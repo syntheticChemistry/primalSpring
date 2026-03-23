@@ -62,6 +62,8 @@ const EXPERIMENTS: &[&str] = &[
     "primalspring-exp068",
     "primalspring-exp069",
     "primalspring-exp070",
+    "primalspring-exp071",
+    "primalspring-exp072",
 ];
 
 fn main() {

@@ -1,8 +1,8 @@
 # Tower Stability Specification
 
-**Status**: **GRAPH EXECUTION + PROVENANCE READINESS** — primalSpring v0.7.0  
-**Date**: 2026-03-22  
-**Strategy**: Tower → Nest → Node → NUCLEUS → Graph Overlays → Cross-Primal Discovery → Graph Execution → Provenance Readiness
+**Status**: **MULTI-NODE BONDING + FEDERATION** — primalSpring v0.7.0  
+**Date**: 2026-03-23  
+**Strategy**: Tower → Nest → Node → NUCLEUS → Graph Overlays → Cross-Primal Discovery → Graph Execution → Provenance Readiness → Multi-Node Bonding + Federation
 
 ## Co-Evolution Strategy
 
@@ -406,13 +406,38 @@ Provenance Readiness                             ✅ STRUCTURAL (4/4)
     │   Launch profiles for sweetGrass/loamSpine/rhizoCrypt ✅
     │   provenance_overlay.toml deploy graph ✅
     │   Handoff delivered to trio teams ✅
-    │   Blocker: provenance-trio-types shared crate missing ⏳
-    │   87/87 total gates, 49 experiments ✅
+    │   Resolved: trio teams inlined types (Mar 22) ✅
     │
-    ▼  Future (awaiting provenance trio binaries)
-Provenance Trio Live Integration
-    DAG session lifecycle, spine entries, braid provenance
-biomeOS Self-Composition
+    ▼  Provenance trio wired via Neural API
+Provenance Trio Neural API                       ✅ WIRED (Phase 11)
+    │   ipc::provenance module: full RootPulse pipeline ✅
+    │   Zero compile-time coupling (all via capability.call) ✅
+    │   Live probing: sweetGrass ✅, rhizoCrypt ✅ (TCP), loamSpine ✗ (panic) ✅
+    │   4 gaps identified and documented ✅
+    │
+    ▼  Multi-node bonding unlocked
+Multi-Node Bonding + Federation                  ✅ STRUCTURAL (Phase 12)
+    │   BondType: Covalent, Metallic, Ionic, Weak, OrganoMetalSalt ✅
+    │   TrustModel: GeneticLineage, Contractual, Organizational, ZeroTrust ✅
+    │   BondingConstraint + BondingPolicy ✅
+    │   4 multi-node deploy graphs ✅
+    │   graph_metadata.rs validation ✅
+    │   stun_tiers.rs sovereignty-first ✅
+    │   exp071 (idle compute) + exp072 (data federation) ✅
+    │   280+ tests, 51 experiments, 22 deploy graphs ✅
+    │
+    ▼  Future: Live multi-node validation
+Emergent Systems End-to-End (Phase 13)
+    RootPulse + coralForge pipeline with live trio
+Live Multi-Node (Phase 14)
+    Basement HPC, friend remote, idle compute, data federation
+Bonding Live Coordination (Phase 15)
+    Covalent mesh, ionic contracts, metallic fleets
+Cross-Spring Integration (Phase 16)
+    wetSpring genetic lineage, BYOB primal DAG execution
+Anchoring + Economics (Phase 18)
+    BTC/ETH hash attestation, Novel Ferment Transcripts, sunCloud
+biomeOS Self-Composition (Phase 19)
     biomeOS composes its own graphs at runtime
 ```
 

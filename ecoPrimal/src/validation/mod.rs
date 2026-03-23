@@ -586,12 +586,12 @@ mod tests {
             "exp041", "exp042", "exp043", "exp044", "exp050", "exp051", "exp052", "exp053",
             "exp054", "exp055", "exp056", "exp057", "exp058", "exp059", "exp060", "exp061",
             "exp062", "exp063", "exp064", "exp065", "exp066", "exp067", "exp068", "exp069",
-            "exp070",
+            "exp070", "exp071", "exp072",
         ];
         assert_eq!(
             experiment_ids.len(),
-            49,
-            "expected 49 experiments across tracks"
+            51,
+            "expected 51 experiments across tracks"
         );
         let tracks: std::collections::HashSet<u32> = experiment_ids
             .iter()
@@ -600,8 +600,8 @@ mod tests {
             .map(|n| n / 10)
             .collect();
         assert!(
-            tracks.len() >= 6,
-            "expected at least 6 tracks, got {}",
+            tracks.len() >= 7,
+            "expected at least 7 tracks, got {}",
             tracks.len()
         );
     }

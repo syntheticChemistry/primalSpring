@@ -1,4 +1,5 @@
 /target/
+plasmidBin/primals/
 audit.log
 ecoPrimal/audit.log
 sqlite:/

@@ -22,6 +22,7 @@ pub mod error;
 pub mod extract;
 pub mod mcp;
 pub mod protocol;
+pub mod provenance;
 pub mod resilience;
 
 pub use error::IpcError;

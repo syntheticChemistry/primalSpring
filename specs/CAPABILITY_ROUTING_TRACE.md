@@ -1,10 +1,10 @@
 # Capability Routing Trace — Hardcoded → Semantic Evolution
 
-> **Historical note (2026-03-21)**: This trace was created during the Mar 18 Tower Atomic investigation when gates were 4/24. As of v0.4.0, Tower is **24/24 STABLE** with all standard methods implemented and capability routing validated. The hardcoding sites documented below remain relevant as the ongoing evolution roadmap for achieving full Neural API semantic routing across the ecosystem. See `TOWER_STABILITY.md` for current gate status.
+> **Historical note (2026-03-23)**: This trace was created during the Mar 18 Tower Atomic investigation when gates were 4/24. As of v0.7.0, NUCLEUS is **87/87 STABLE** with full Tower + Nest + Node composition, graph-driven overlays, provenance trio integration, and multi-node bonding. The hardcoding sites documented below remain relevant as the ongoing evolution roadmap for achieving full Neural API semantic routing across the ecosystem. See `TOWER_STABILITY.md` for current gate status.
 
-**Status**: Historical trace with ongoing evolution relevance — primalSpring v0.4.0  
-**Date**: 2026-03-18 (updated 2026-03-21)  
-**Context**: Tower Atomic live validation revealed method-naming mismatch between songbird and beardog, traced to hardcoded inter-primal calls that bypass capability-based routing.
+**Status**: Historical trace with ongoing evolution relevance — primalSpring v0.7.0  
+**Date**: 2026-03-18 (updated 2026-03-23)  
+**Context**: Tower Atomic live validation revealed method-naming mismatch between songbird and beardog, traced to hardcoded inter-primal calls that bypass capability-based routing. Now extends to multi-node bonding scenarios where capability routing is critical for cross-machine federation.
 
 ## Architecture Principle
 
@@ -157,16 +157,19 @@ is stable. Only then does nestgate join (Nest Atomic), then toadstool/squirrel (
 
 ```
 Tower Atomic (beardog + songbird + biomeOS)     ← STABLE (24/24)
-    24 gates, all passing as of v0.4.0
     ▼  all gates green
-Nest Atomic (Tower + nestgate)
+Nest Atomic (Tower + nestgate)                  ← VALIDATED (8/8)
     ▼  all storage gates green
-Node Atomic (Nest + toadstool)
+Node Atomic (Nest + toadstool)                  ← VALIDATED (5/5)
     ▼  all compute gates green
-Full NUCLEUS (Node + squirrel)
+Full NUCLEUS (Node + squirrel)                  ← VALIDATED (58/58 → 87/87 with overlays)
+    ▼  overlays + provenance + Squirrel AI
+Multi-Node (NUCLEUS + bonding + federation)     ← STRUCTURAL (Phase 12)
+    ▼  4 deploy graphs, BondingPolicy, STUN tiers
+Live Multi-Node (bonded NUCLEUS mesh)           ← FUTURE (Phase 14)
 ```
 
-See `specs/TOWER_STABILITY.md` for the full 24-gate acceptance criteria.
+See `specs/TOWER_STABILITY.md` for the full gate acceptance criteria.
 
 ## Evolution Path
 
@@ -215,3 +218,33 @@ primalSpring validates each phase by:
 5. **Gate reports** — per-sprint gate status to `wateringHole/handoffs/`
 
 See `wateringHole/handoffs/TOWER_COEVOLUTION_GUIDE.md` for the shared contract with all three teams.
+
+## Multi-Node Capability Routing (Phase 12+)
+
+Multi-node deployments amplify every hardcoding problem — a hardcoded socket path
+that works on one machine is meaningless across a LAN or over NAT traversal. The
+bonding model enforces capability routing as the *only* inter-node communication path.
+
+### New Routing Patterns
+
+| Pattern | Where It Matters | Routing Path |
+|---------|-----------------|--------------|
+| Cross-machine capability | HPC mesh, friend remote | `capability.call` → Songbird mesh → remote Neural API → remote primal |
+| Federated storage | Data federation | `capability.call("storage", "replicate")` → NestGate cross-site |
+| Bonded compute dispatch | Idle compute | `capability.call("compute", "submit")` → BondingPolicy filter → remote ToadStool |
+| Provenance tracking | All federation | `capability.call("provenance.*")` → trio via Neural API (zero compile coupling) |
+| NAT traversal | Remote nodes | Songbird STUN escalation → sovereignty-first → hole-punch → relay |
+
+### BondingPolicy as Capability Filter
+
+`BondingConstraint` acts as a runtime capability firewall for bonded nodes:
+
+```
+Remote capability.call("storage.store", ...) 
+  → BondingPolicy.constraints.capability_deny contains "storage.*"
+  → REJECTED (idle compute nodes share compute only)
+```
+
+This means even with full Neural API routing, a bonded node only exposes the
+capabilities permitted by its BondingPolicy — enforced at the bond layer, not the
+application layer.

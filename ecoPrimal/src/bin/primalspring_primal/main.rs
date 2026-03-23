@@ -415,6 +415,7 @@ fn handle_bonding_test(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let bond_str = params["bond_type"].as_str().unwrap_or("Covalent");
     let bond = match bond_str {
         "Covalent" => primalspring::bonding::BondType::Covalent,
+        "Metallic" => primalspring::bonding::BondType::Metallic,
         "Ionic" => primalspring::bonding::BondType::Ionic,
         "Weak" => primalspring::bonding::BondType::Weak,
         "OrganoMetalSalt" => primalspring::bonding::BondType::OrganoMetalSalt,
