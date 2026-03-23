@@ -1,79 +1,98 @@
 # Primal Capability Status — Consolidated Audit
 
-**Date**: 2026-03-22
+**Date**: 2026-03-22 (updated March 22 evening — post primal evolution review)
 **From**: primalSpring v0.7.0
-**Consolidates**: 6 capability audits from v0.3.5 (March 18, 2026), filtered
-against v0.7.0 validated state
+**Consolidates**: 6 capability audits from v0.3.5 (March 18, 2026), cross-
+referenced against primal evolution through March 22 (biomeOS v2.67,
+BearDog v0.9.0, Squirrel alpha.17, Songbird wave60)
 **License**: AGPL-3.0-or-later
 
 ---
 
 ## Purpose
 
-This document replaces the 6 individual primal capability audits from
-March 18, 2026 (now archived). It distills the **still-open** items from
-those audits after accounting for everything primalSpring v0.7.0 has since
-validated: capability-based discovery, graph overlays, deploy graph
-validation, Nest/Node/NUCLEUS gates, Squirrel cross-primal wiring,
-and hardware cross-arch deployment.
-
-Items are grouped by primal. Each item is a concrete evolution target.
+This document tracks the capability compliance state of each primal against
+ecosystem standards. Items marked RESOLVED have been verified in the primal's
+codebase or handoffs. Items marked OPEN still need work.
 
 ---
 
-## BearDog
+## BearDog (v0.9.0)
 
-| # | Open Item | Impact |
-|---|-----------|--------|
-| 1 | Register `health.liveness`, `health.readiness`, `capabilities.list` as JSON-RPC methods (only `ping`/`health`/`status` surface exists) | Ecosystem probes expect these standard names |
-| 2 | Restore abstract socket support for Android (v0.9.0 regression — `BEARDOG_ABSTRACT_SOCKET` codepath broken) | Blocks all Pixel IPC |
-| 3 | Replace hardcoded `/tmp/neural-api.sock` in neural registration with standard 5-tier discovery | Identity coupling |
-| 4 | Replace `peer_id: "songbird-nat0"` default with capability-based peer resolution | Identity coupling |
-| 5 | Drop `register_with_legacy_songbird()` in favor of capability-based registration | Dead pattern |
-| 6 | Add bare-name aliases (or pre-route) for crypto methods (`x25519_*`, `chacha20_*`, `sign_ed25519`, etc.) to standard `crypto.*` names | Method name fragmentation |
+| # | Item | Status | Notes |
+|---|------|--------|-------|
+| 1 | `health.liveness`, `health.readiness`, `capabilities.list` JSON-RPC | **RESOLVED** | Implemented in `beardog-tunnel` handlers (health.rs, capabilities.rs) |
+| 2 | Android abstract socket support | **EVOLVED** | Old `BEARDOG_ABSTRACT_SOCKET` env replaced by `platform/android.rs` module using `@biomeos_{primal}` namespace. Needs Pixel re-test. |
+| 3 | `/tmp/neural-api.sock` in neural registration | **REDUCED** | 5-tier Neural discovery in `neural_registration.rs`, but `/tmp/neural-api.sock` remains as last-resort fallback |
+| 4 | `peer_id: "songbird-nat0"` default | OPEN | Identity coupling |
+| 5 | `register_with_legacy_songbird()` | OPEN | Dead pattern |
+| 6 | `crypto.*` method naming | **RESOLVED** | Standard `crypto.*` is primary namespace (~91 methods); `beardog.crypto.*` aliases for Tor/onion legacy |
 
 ---
 
-## biomeOS
+## biomeOS (v2.67)
 
-| # | Open Item | Impact |
-|---|-----------|--------|
-| 1 | Replace `DirectBeardogCaller` with `NeuralApiCapabilityCaller` in enrollment, dark forest beacon, lineage derivation (keep direct only for pre-Neural-API bootstrap) | 12+ production bypasses of Neural API |
-| 2 | Replace identity-based discovery helpers (`discover_beardog_socket`, `discover_songbird_socket`) with capability-based discovery at each callsite | Identity coupling across many modules |
-| 3 | Complete capability translation registry for `genetic.*`, `lineage.*`, and associated `crypto.*` methods | Incomplete routing |
-| 4 | Remove hardcoded primal rosters (`orchestrator`, `beacon_verification`, `primal_coordinator`, etc.) in favor of graph/capability-driven lists | Roster coupling |
-| 5 | Fix neural-api-server socket readiness (exp060 timeout — server spawns but never creates socket) | Blocks graph-driven Tower atomic deployment |
+| # | Item | Status | Notes |
+|---|------|--------|-------|
+| 1 | `DirectBeardogCaller` in production | **REDUCED** | Enrollment prefers `NeuralApiCapabilityCaller` when socket exists; direct retained only for bootstrap. Caller-agnostic `load_lineage()` free functions in v2.67. |
+| 2 | Identity-based discovery helpers | **RESOLVED** | v2.66: 5 callsites evolved to `discover_capability_socket()` with taxonomy keys |
+| 3 | `genetic.*`/`lineage.*` translations | **RESOLVED** | v2.66: taxonomy aliases, default primal fix, translations in `defaults.rs` |
+| 4 | Hardcoded primal rosters | **RESOLVED** | v2.67: dynamic `primals.len()`, `primal_names` constants, lowercase convention |
+| 5 | Neural API socket readiness (exp060) | **LIKELY RESOLVED** | v2.66: `serve()` binds socket before bootstrap/translation loading. Needs primalSpring re-test. |
+| 6 | `capability.list` vs `capabilities.list` | **NAMING DRIFT** | biomeOS uses `capability.list`; primalSpring expects `capabilities.list`. See naming drift section below. |
 
 ---
 
 ## NestGate
 
-| # | Open Item | Impact |
-|---|-----------|--------|
-| 1 | Register `health.liveness`, `health.readiness`, `capabilities.list` as JSON-RPC aliases | Ecosystem probe compatibility |
-| 2 | Extend socket resolution from 4-tier to 5-tier (add `PRIMAL_SOCKET` env var tier) | Discovery standard alignment |
-| 3 | Rebuild as `x86_64-unknown-linux-musl` static-pie (USB binary segfaults, dynamic build fails on Android) | ecoBin compliance |
+| # | Item | Status | Notes |
+|---|------|--------|-------|
+| 1 | `health.liveness`, `health.readiness`, `capabilities.list` | OPEN | Not yet reviewed against latest NestGate code |
+| 2 | Socket resolution 4→5 tier | OPEN | |
+| 3 | USB binary segfault / static musl rebuild | OPEN | |
 
 ---
 
-## Songbird
+## Songbird (v0.2.1-wave60)
 
-| # | Open Item | Impact |
-|---|-----------|--------|
-| 1 | Register `health.liveness`, `health.readiness`, `capabilities.list` as JSON-RPC aliases | Ecosystem probe compatibility |
-| 2 | Route BearDog crypto calls (`songbird-tor-protocol`, `songbird-orchestrator`, `songbird-nfc`, `songbird-sovereign-onion`) through Neural API instead of direct `BeardogCryptoClient` | Identity coupling across 4+ subsystems |
-| 3 | Drop identity-based socket tiers (`BEARDOG_*`, `beardog.sock`); keep capability-oriented tiers; add Neural API as tier 0 | Discovery standard alignment |
-| 4 | Fix 12th subsystem (11/12 UP in v3.33.0 — identify and fix the failing one) | Full Tower utilization |
+| # | Item | Status | Notes |
+|---|------|--------|-------|
+| 1 | `health.liveness`, `health.readiness`, `capabilities.list` aliases | OPEN | Still uses `health` and `primal.capabilities` names. Added "ecosystem standard method aliases" but these three not confirmed. |
+| 2 | Neural API for BearDog crypto (4+ crates) | OPEN | `songbird-http-client` has `RoutingMode::NeuralApi`; tor/orchestrator/nfc/onion still direct `BeardogCryptoClient` |
+| 3 | Identity-based discovery tiers | OPEN | Orchestrator still uses 7-tier with `BEARDOG_*`/`beardog.sock` names |
+| 4 | 12th subsystem (11/12 UP) | OPEN | Not identified which subsystem fails |
+
+Quality improvements (not in original audit):
+- 9,969 tests, 0 clippy, all files under 1000 LOC
+- Federation mock→real state, zero-copy evolution, 25 fuzz tests
+- 30 workspace crates, ~72% coverage (target 90%)
 
 ---
 
-## Squirrel
+## Squirrel (v0.1.0-alpha.17)
 
-| # | Open Item | Impact |
-|---|-----------|--------|
-| 1 | Replace BearDog-oriented socket fallbacks in auth (`capability_crypto`, `security_provider_client`, `delegated_jwt_client`) with capability-based discovery | Identity coupling in auth path |
-| 2 | Evolve `DEPENDENCIES` in `niche.rs` from primal names to capability-oriented deployment metadata | Compile-time identity knowledge |
-| 3 | Fix socket startup timeout (exp061 — Squirrel never creates its socket file within 15s) | Blocks AI composition validation |
+| # | Item | Status | Notes |
+|---|------|--------|-------|
+| 1 | BearDog auth socket fallbacks | OPEN | `capability_crypto.rs`, `security_provider_client.rs` still enumerate hardcoded paths |
+| 2 | `DEPENDENCIES` in `niche.rs` names primals | OPEN | |
+| 3 | Socket startup timeout (exp061) | **DIAGNOSED** | Squirrel's `UniversalListener` binds abstract socket first (`\0squirrel`), not filesystem. primalSpring harness waits for filesystem `.sock` — fix by setting explicit `SQUIRREL_SOCKET` path in launch profile. **Actionable from primalSpring side.** |
+| 4 | `capability.list` vs `capabilities.list` | **NAMING DRIFT** | Uses `capability.list` (biomeOS convention). See naming drift section below. |
+
+Quality improvements (not in original audit):
+- 5,775 tests, 0 clippy, 977 max LOC, ~73% coverage
+- BYOB graph types + graph.parse/validate RPC (alpha.15)
+- `UniversalListener` with abstract+filesystem+TCP transport
+- deny.toml ecoBin bans, cross-compile config for aarch64
+
+---
+
+## ToadStool
+
+| # | Item | Status | Notes |
+|---|------|--------|-------|
+| 1 | `health.liveness`, `capabilities.list` | OPEN | Not yet reviewed against latest ToadStool code |
+| 2 | Showcase examples off primal names | OPEN | |
+| 3 | Integration crate naming | OPEN | |
 
 ---
 
@@ -87,6 +106,28 @@ Items are grouped by primal. Each item is a concrete evolution target.
 
 ---
 
+## Ecosystem Naming Drift: `capability.list` vs `capabilities.list`
+
+A real integration issue discovered during this review:
+
+| Primal | Method Name |
+|--------|-------------|
+| BearDog v0.9.0 | `capabilities.list` |
+| biomeOS v2.67 | `capability.list` |
+| Squirrel alpha.17 | `capability.list` |
+| primalSpring v0.7.0 | probes `capabilities.list` |
+| Songbird wave60 | `primal.capabilities` |
+
+Three different names for the same operation. The `SEMANTIC_METHOD_NAMING_STANDARD.md`
+should be updated to canonicalize one form. Until then, all probing code
+(primalSpring's `extract_capability_names()`) should accept all known aliases.
+
+**Recommendation**: Adopt `capabilities.list` as canonical (matches BearDog,
+which is the most compliance-driven implementation). biomeOS and Squirrel
+should add `capabilities.list` as an alias for `capability.list`.
+
+---
+
 ## Cross-Primal Standards (Expectations for All)
 
 These are the **ecosystem expectations** that every primal should meet.
@@ -94,14 +135,14 @@ primalSpring validates compliance via its integration tests and experiments.
 
 ### Required JSON-RPC Surface
 
-Every primal must register these methods:
+Every primal must register these methods (and common aliases):
 
-| Method | Response | Purpose |
-|--------|----------|---------|
-| `health.liveness` | `{"status": "alive"}` | Am I running? |
-| `health.readiness` | `{"status": "ready", ...}` | Am I ready to serve? |
-| `health.check` | `{"status": "healthy", ...}` | Full health with details |
-| `capabilities.list` | `[{"name": "...", ...}]` | What can I do? |
+| Method | Aliases | Response | Purpose |
+|--------|---------|----------|---------|
+| `health.liveness` | `ping`, `health` | `{"status": "alive"}` | Am I running? |
+| `health.readiness` | | `{"status": "ready", ...}` | Am I ready to serve? |
+| `health.check` | `status`, `check` | `{"status": "healthy", ...}` | Full health with details |
+| `capabilities.list` | `capability.list`, `primal.capabilities` | `[{"name": "...", ...}]` | What can I do? |
 
 ### Required Build Targets
 
