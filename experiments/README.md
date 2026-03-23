@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**51 experiments across 9 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**53 experiments across 10 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -41,6 +41,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 7 | Showcase-Mined | exp050–059 | Discovery wired |
 | 8 | Live Composition | exp060–070 | **Live validated** (Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery) |
 | 9 | Multi-Node Bonding | exp071–072 | **Structural** (bonding policy, data federation, graph metadata) |
+| 10 | Cross-Gate Deployment | exp073–074 | **New** (LAN covalent mesh, remote NUCLEUS health via TCP) |
 
 ## Experiment Status Key
 
@@ -67,7 +68,9 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 12 | Multi-Node Bonding + Federation | **Done** (BondType 5 variants, BondingPolicy, 4 multi-node graphs, STUN tiers) |
 | 12.1 | Ecosystem Absorption Wave 1 | **Done** (deny.toml, cast lints, ValidationSink, exit_code_skip_aware, proptest_ipc, primal_names, circuit breaker — 303 tests) |
 | 12.2 | Ecosystem Absorption Wave 2 | **Done** (normalize_method, check_relative, NdjsonSink, is_recoverable, Transport, OnceLock probes, missing_docs deny, release gate — 360 tests) |
-| 13+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
+| 13 | Cross-Gate Deployment Tooling | **Done** (build_ecosystem_musl.sh, prepare_spore_payload.sh, validate_remote_gate.sh, exp073, exp074, exp063 cross-device) |
+| 14 | LAN Covalent Deployment | **Next** — LAN_COVALENT_DEPLOYMENT_GUIDE, live multi-gate NUCLEUS, BirdSong beacon exchange |
+| 15+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
 
 ## Validation Harness
 

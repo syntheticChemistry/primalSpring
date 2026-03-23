@@ -426,7 +426,16 @@ Multi-Node Bonding + Federation                  ✅ STRUCTURAL (Phase 12)
     │   exp071 (idle compute) + exp072 (data federation) ✅
     │   303 tests, 51 experiments, 22 deploy graphs ✅
     │
-    ▼  Future: Live multi-node validation
+    ├── Phase 13: Cross-Gate Deployment Tooling ✅
+    │   build_ecosystem_musl.sh (x86_64+aarch64 static) ✅
+    │   prepare_spore_payload.sh (USB spore assembly) ✅
+    │   validate_remote_gate.sh (TCP health probe) ✅
+    │   exp073 LAN covalent mesh, exp074 cross-gate health ✅
+    │   exp063 cross-device Pixel beacon exchange ✅
+    │   LAN_COVALENT_DEPLOYMENT_GUIDE handoff ✅
+    │   360 tests, 53 experiments, 22 deploy graphs ✅
+    │
+    ▼  Phase 14: Live multi-gate LAN covalent deployment
 Emergent Systems End-to-End (Phase 13)
     RootPulse + coralForge pipeline with live trio
 Live Multi-Node (Phase 14)

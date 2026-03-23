@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: March 23, 2026
-**Status**: Phase 12.2 — ECOSYSTEM ABSORPTION + MULTI-NODE BONDING (87/87 gates), 360 tests, 51 experiments, 22 deploy graphs
+**Status**: Phase 13 — CROSS-GATE DEPLOYMENT TOOLING (87/87 gates), 360 tests, 53 experiments, 22 deploy graphs
 
 ---
 
@@ -76,7 +76,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.7.0 | 360 | Phase 12.2 — 87/87 gates, 3/5 patterns live, deep ecosystem absorption, 51 experiments, 22 deploy graphs, 37 capabilities |
+| primalSpring | v0.7.0 | 360 | Phase 13 — 87/87 gates, 3/5 patterns live, cross-gate deployment tooling, 53 experiments, 22 deploy graphs, 37 capabilities |
 
 ## Evolution Path
 
@@ -236,7 +236,23 @@ Phase 12.2 (done): Deep Ecosystem Absorption Wave 2 (March 23, 2026)
   → Server dispatch wired through normalize_method()
   → 360 tests (up from 303), zero clippy, zero missing docs, zero unsafe, zero C deps
 
-Phase 13: Emergent Systems End-to-End (Track 3)
+Phase 13 (done): Cross-Gate Deployment Tooling (March 23, 2026)
+  → build_ecosystem_musl.sh: x86_64 + aarch64 musl static builds for all primals
+  → prepare_spore_payload.sh: USB spore assembly (binaries + graphs + genetics)
+  → validate_remote_gate.sh: remote gate NUCLEUS health via TCP JSON-RPC
+  → exp073: LAN covalent mesh (remote Songbird mesh + BirdSong beacon exchange)
+  → exp074: cross-gate health (per-primal TCP health + capabilities + composition)
+  → exp063 evolved: cross-device Pixel beacon exchange via TCP
+  → basement_hpc_covalent.toml: annotated with full gate inventory from HARDWARE.md
+  → LAN_COVALENT_DEPLOYMENT_GUIDE handoff for all gate operators
+  → 53 experiments (up from 51), 10 tracks (up from 9)
+
+Phase 14: LAN Covalent Deployment (Next)
+  → Live multi-gate NUCLEUS deployment with BirdSong beacon exchange
+  → Pixel Songbird-only deployment (workaround for BearDog abstract socket)
+  → 10G mesh backbone validation
+
+Phase 15: Emergent Systems End-to-End (Track 3)
   → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)
   → coralForge pipeline streaming (exp013) — needs sweetGrass running
   → Continuous 60Hz tick (exp014) — needs provenance trio running

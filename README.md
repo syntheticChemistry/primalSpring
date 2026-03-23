@@ -9,7 +9,7 @@
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 360 (unit + integration + doc-tests + proptest) |
-| **Experiments** | 51 (9 tracks) |
+| **Experiments** | 53 (10 tracks) |
 | **Deploy Graphs** | 22 TOMLs (18 single-node + 4 multi-node) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding (87/87 gates) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
@@ -89,7 +89,7 @@ primalSpring/
 # Build everything
 cargo build --workspace
 
-# Run all 360 tests (auto + ignored live tests)
+# Run all tests (auto + ignored live tests)
 cargo test --workspace
 
 # Run live atomic tests (requires plasmidBin binaries)
@@ -233,6 +233,15 @@ whatever is already running.
 - `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution
 - `specs/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (indirect only)
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer
+
+## Deployment Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/build_ecosystem_musl.sh` | Build all primals as `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-musl` static binaries |
+| `scripts/prepare_spore_payload.sh` | Assemble USB spore deployment payload (binaries + graphs + scripts + genetics) |
+| `scripts/validate_remote_gate.sh` | Probe a remote gate's NUCLEUS health via TCP JSON-RPC |
+| `scripts/validate_release.sh` | Release quality gate: fmt + clippy + deny + test floor + docs |
 
 ---
 

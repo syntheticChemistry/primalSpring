@@ -59,6 +59,8 @@ members = [
     "experiments/exp070_squirrel_cross_primal_discovery",
     "experiments/exp071_idle_compute_policy",
     "experiments/exp072_data_federation",
+    "experiments/exp073_lan_covalent_mesh",
+    "experiments/exp074_cross_gate_health",
 ]
 
 [workspace.package]

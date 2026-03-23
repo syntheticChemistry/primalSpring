@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: March 23, 2026  
-**Status**: Phase 12.2 — 51 experiments, 9 tracks, ECOSYSTEM ABSORPTION + MULTI-NODE BONDING (87/87 gates), 360 tests, 22 deploy graphs
+**Status**: Phase 13 — 53 experiments, 10 tracks, CROSS-GATE DEPLOYMENT + ECOSYSTEM ABSORPTION + MULTI-NODE BONDING (87/87 gates), 360 tests, 22 deploy graphs
 
 ---
 

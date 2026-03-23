@@ -3,7 +3,7 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Phase 11–12 + Ecosystem Absorption (2026-03-23)
+## [Unreleased] — Phase 11–13 + Ecosystem Absorption + Cross-Gate Deployment (2026-03-23)
 
 ### Added
 - **Provenance Trio Neural API Integration** — `ipc::provenance` module with
@@ -45,6 +45,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `validate_release.sh` — release quality gate (fmt + clippy + deny + test floor + docs)
   - `missing_docs` upgraded from `warn` to `deny` workspace-wide
   - Server dispatch wired through `normalize_method()` for prefix-agnostic routing
+
+- **Cross-Gate Deployment Tooling (Phase 13)**:
+  - `scripts/build_ecosystem_musl.sh` — build all primals as x86_64 + aarch64 musl static binaries
+  - `scripts/prepare_spore_payload.sh` — assemble USB spore deployment payload (binaries + graphs + genetics)
+  - `scripts/validate_remote_gate.sh` — probe remote gate NUCLEUS health via TCP JSON-RPC
+  - **exp073_lan_covalent_mesh** — cross-gate Songbird mesh + BirdSong beacon exchange via TCP
+  - **exp074_cross_gate_health** — remote per-primal TCP health + capabilities + composition assessment
+  - exp063 evolved: cross-device Pixel beacon exchange via `PIXEL_SONGBIRD_HOST` + TCP
+  - `basement_hpc_covalent.toml` annotated with full gate inventory from HARDWARE.md
+  - **LAN_COVALENT_DEPLOYMENT_GUIDE** handoff — step-by-step for all gate operators
+  - 53 experiments (up from 51), 10 tracks (up from 9)
 
 ### Changed
 - `BOND_TYPE_COUNT` updated to 5 in exp032, exp033

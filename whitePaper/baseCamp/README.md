@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 23, 2026
-**Status**: Phase 12.2 — ECOSYSTEM ABSORPTION + MULTI-NODE BONDING (87/87 gates), 51 experiments, 360 tests, 22 deploy graphs
+**Status**: Phase 13 — CROSS-GATE DEPLOYMENT + ECOSYSTEM ABSORPTION + MULTI-NODE BONDING (87/87 gates), 53 experiments, 360 tests, 22 deploy graphs
 
 ---
 
@@ -78,7 +78,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 9. **`graph_metadata.rs`** — parse + validate `[graph.metadata]` and `[graph.bonding_policy]` from TOML
 10. **`stun_tiers.rs`** — 4-tier STUN config parser, sovereignty-first escalation validation
 11. **exp071 + exp072** — idle compute policy and data federation validation
-12. **303 tests**, 51 experiments, 22 deploy graphs
+12. **303 tests**, 51 experiments, 22 deploy graphs (at time of Phase 12)
 
 ### Ecosystem Absorption Wave (Phase 12.1, March 23, 2026)
 Absorbed patterns from all 7 sibling springs into primalSpring core:
@@ -103,6 +103,18 @@ Absorbed deeper patterns from all 7 sibling springs into primalSpring core:
 28. **`missing_docs` → `deny`** — all public items documented, lint level upgraded from warn
 29. **Server `normalize_method()` dispatch** — prefix-agnostic routing for all ecosystem callers
 30. **360 tests** (up from 303) — zero clippy warnings, zero missing docs
+
+### Cross-Gate Deployment Tooling (Phase 13, March 23, 2026)
+Built deployment pipeline for live multi-gate LAN covalent deployment:
+31. **`build_ecosystem_musl.sh`** — build all 6 core primals as x86_64 + aarch64 musl static binaries
+32. **`prepare_spore_payload.sh`** — assemble USB spore deployment payload (binaries + graphs + genetics)
+33. **`validate_remote_gate.sh`** — probe remote gate NUCLEUS health via TCP JSON-RPC
+34. **exp073_lan_covalent_mesh** — cross-gate Songbird mesh + BirdSong beacon exchange via TCP
+35. **exp074_cross_gate_health** — remote per-primal TCP health + capabilities + composition assessment
+36. **exp063 evolved** — cross-device Pixel beacon exchange via `PIXEL_SONGBIRD_HOST` + TCP
+37. **`basement_hpc_covalent.toml`** — annotated with full gate inventory from HARDWARE.md
+38. **LAN_COVALENT_DEPLOYMENT_GUIDE** — step-by-step handoff for all gate operators
+39. **53 experiments** (up from 51), **10 tracks** (up from 9)
 
 ## What Changed (v0.6.0 -> v0.7.0)
 
