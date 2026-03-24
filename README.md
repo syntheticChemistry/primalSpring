@@ -13,7 +13,7 @@
 | **Deploy Graphs** | 22 TOMLs (18 single-node + 4 multi-node) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding (87/87 gates) |
 | **Provenance** | All 53 experiments carry structured `with_provenance()` metadata |
-| **Clippy** | 0 warnings (pedantic + nursery + cast discipline) |
+| **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -47,7 +47,7 @@ primalSpring/
 │   │   ├── launcher/              # Primal binary discovery, spawn, socket nucleation (sync biomeOS port)
 │   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
-│   │   ├── primal_names.rs        # Canonical display names ↔ discovery slugs (neuralSpring pattern)
+│   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/

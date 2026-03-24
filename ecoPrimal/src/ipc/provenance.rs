@@ -13,11 +13,11 @@
 //!
 //! # Capability Routing
 //!
-//! | Domain | Primal | Operations |
-//! |--------|--------|------------|
-//! | `dag` | rhizoCrypt | `create_session`, `event.append`, `dehydrate` |
-//! | `commit` | loamSpine | `session`, `entry` |
-//! | `provenance` | sweetGrass | `create_braid`, `graph` |
+//! | Domain | Primal | Operations | Backend |
+//! |--------|--------|------------|---------|
+//! | `dag` | rhizoCrypt | `create_session`, `event.append`, `dehydrate` | redb + memory (sled removed v0.14) |
+//! | `commit` | loamSpine | `session`, `entry` | capability-based env vars only |
+//! | `provenance` | sweetGrass | `create_braid`, `graph` | zero-copy braids |
 //!
 //! # Graceful Degradation Contract
 //!

@@ -3,6 +3,26 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 15: Cross-Ecosystem Absorption (2026-03-24)
+
+### Added
+- **`primal_names` slug constants** — `BEARDOG`, `SONGBIRD`, `TOADSTOOL`, `NESTGATE`,
+  `SQUIRREL`, `RHIZOCRYPT`, `LOAMSPINE`, `SWEETGRASS` as `pub const` for zero-duplication
+- **`CONTRIBUTING.md`** — ecosystem contributor guide (neuralSpring V124 pattern)
+- **`SECURITY.md`** — security policy and vulnerability reporting
+- **`unwrap_used` / `expect_used` = `warn`** workspace-wide (healthSpring V42 / wetSpring V135)
+  with `cfg_attr(test, allow)` for test targets
+
+### Changed
+- **Hardcoded primal names eliminated** — `coordination/mod.rs`, `ipc/probes.rs`,
+  `bin/main.rs` now use `primal_names::BEARDOG` etc. instead of string literals
+- **`launcher/mod.rs` refactored** — tests extracted to `launcher/tests.rs` (802 → 695 LOC),
+  env var names extracted as constants (`ENV_PLASMID_BIN`, `ENV_BIOMEOS_BIN_DIR`),
+  relative discovery paths extracted to `RELATIVE_PLASMID_TIERS`
+- **`ipc/provenance.rs` docs updated** — rhizoCrypt backend change (sled → redb v0.14),
+  capability-based env vars noted for all trio primals
+- 361 tests, 0 clippy warnings (including `--all-targets`), 0 doc warnings
+
 ## [Unreleased] — Phase 14: Deep Debt + Builder Pattern + Full Provenance (2026-03-24)
 
 ### Added

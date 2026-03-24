@@ -22,6 +22,7 @@
 use std::sync::OnceLock;
 
 use super::discover;
+use crate::primal_names;
 
 /// Cached result of `neural_api_healthy()`.
 static NEURAL_API_PROBE: OnceLock<bool> = OnceLock::new();
@@ -44,19 +45,31 @@ pub fn neural_api_reachable() -> bool {
 /// Whether BearDog has a reachable socket (cached once per process).
 #[must_use]
 pub fn beardog_reachable() -> bool {
-    *BEARDOG_PROBE.get_or_init(|| discover::discover_primal("beardog").socket.is_some())
+    *BEARDOG_PROBE.get_or_init(|| {
+        discover::discover_primal(primal_names::BEARDOG)
+            .socket
+            .is_some()
+    })
 }
 
 /// Whether Songbird has a reachable socket (cached once per process).
 #[must_use]
 pub fn songbird_reachable() -> bool {
-    *SONGBIRD_PROBE.get_or_init(|| discover::discover_primal("songbird").socket.is_some())
+    *SONGBIRD_PROBE.get_or_init(|| {
+        discover::discover_primal(primal_names::SONGBIRD)
+            .socket
+            .is_some()
+    })
 }
 
 /// Whether ToadStool has a reachable socket (cached once per process).
 #[must_use]
 pub fn toadstool_reachable() -> bool {
-    *TOADSTOOL_PROBE.get_or_init(|| discover::discover_primal("toadstool").socket.is_some())
+    *TOADSTOOL_PROBE.get_or_init(|| {
+        discover::discover_primal(primal_names::TOADSTOOL)
+            .socket
+            .is_some()
+    })
 }
 
 /// Whether a Tower atomic composition is plausibly reachable

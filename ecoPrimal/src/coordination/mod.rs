@@ -8,6 +8,8 @@
 
 use std::time::Instant;
 
+use crate::primal_names;
+
 use serde::{Deserialize, Serialize};
 
 use crate::cast;
@@ -62,18 +64,26 @@ impl AtomicType {
     #[must_use]
     pub const fn required_primals(self) -> &'static [&'static str] {
         match self {
-            Self::Tower => &["beardog", "songbird"],
-            Self::Node => &["beardog", "songbird", "toadstool"],
-            Self::Nest => &["beardog", "songbird", "nestgate"],
+            Self::Tower => &[primal_names::BEARDOG, primal_names::SONGBIRD],
+            Self::Node => &[
+                primal_names::BEARDOG,
+                primal_names::SONGBIRD,
+                primal_names::TOADSTOOL,
+            ],
+            Self::Nest => &[
+                primal_names::BEARDOG,
+                primal_names::SONGBIRD,
+                primal_names::NESTGATE,
+            ],
             Self::FullNucleus => &[
-                "beardog",
-                "songbird",
-                "toadstool",
-                "nestgate",
-                "squirrel",
-                "rhizocrypt",
-                "loamspine",
-                "sweetgrass",
+                primal_names::BEARDOG,
+                primal_names::SONGBIRD,
+                primal_names::TOADSTOOL,
+                primal_names::NESTGATE,
+                primal_names::SQUIRREL,
+                primal_names::RHIZOCRYPT,
+                primal_names::LOAMSPINE,
+                primal_names::SWEETGRASS,
             ],
         }
     }

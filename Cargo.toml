@@ -89,6 +89,9 @@ nursery = { level = "warn", priority = -1 }
 assertions_on_constants = "allow"
 # ecosystem terms (biomeOS, primalSpring, etc.) trigger false positives
 doc_markdown = "allow"
+# unwrap/expect discipline absorbed from healthSpring V42 / wetSpring V135
+unwrap_used = "warn"
+expect_used = "warn"
 # cast discipline absorbed from neuralSpring S170 / airSpring V010
 cast_lossless = "warn"
 cast_precision_loss = "warn"

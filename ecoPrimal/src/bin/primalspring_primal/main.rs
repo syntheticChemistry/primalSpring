@@ -366,7 +366,9 @@ fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRespons
 }
 
 fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
-    let name = params["primal"].as_str().unwrap_or("beardog");
+    let name = params["primal"]
+        .as_str()
+        .unwrap_or(primalspring::primal_names::BEARDOG);
     let health = primalspring::coordination::probe_primal(name);
     match serde_json::to_value(health) {
         Ok(val) => success_response(val, id),

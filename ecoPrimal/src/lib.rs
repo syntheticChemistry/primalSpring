@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used))]
+
 //! primalSpring — coordination and composition validation library.
 //!
 //! The spring whose domain IS the ecosystem. Where other springs validate
