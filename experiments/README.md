@@ -81,8 +81,9 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 12.2 | Ecosystem Absorption Wave 2 | **Done** (normalize_method, check_relative, NdjsonSink, is_recoverable, Transport, OnceLock probes, missing_docs deny, release gate — 360 tests) |
 | 13 | Cross-Gate Deployment Tooling | **Done** (build_ecosystem_musl.sh, prepare_spore_payload.sh, validate_remote_gate.sh, exp073, exp074, exp063 cross-device) |
 | 14 | Deep Debt + Builder Pattern + Full Provenance | **Done** (builder `.run()`, all 53 experiments with `with_provenance()`, validation/tests.rs extracted, zero `#[allow()]`, zero `.unwrap()` in experiments, 361 tests) |
-| 15 | LAN Covalent Deployment | **Next** — LAN_COVALENT_DEPLOYMENT_GUIDE, live multi-gate NUCLEUS, BirdSong beacon exchange |
-| 16+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
+| 15 | Cross-Ecosystem Absorption | **Done** (slug constants, unwrap/expect discipline, launcher smart refactor, CONTRIBUTING.md, SECURITY.md, capability-based env naming) |
+| 16 | LAN Covalent Deployment | **Next** — LAN_COVALENT_DEPLOYMENT_GUIDE, live multi-gate NUCLEUS, BirdSong beacon exchange |
+| 17+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
 
 ## Validation Harness
 

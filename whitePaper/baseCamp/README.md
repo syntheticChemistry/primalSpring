@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 24, 2026
-**Status**: Phase 14 — DEEP DEBT + BUILDER PATTERN + FULL PROVENANCE (87/87 gates), 53 experiments, 361 tests, 22 deploy graphs
+**Status**: Phase 15 — CROSS-ECOSYSTEM ABSORPTION (87/87 gates), 53 experiments, 361 tests, 22 deploy graphs
 
 ---
 
@@ -39,7 +39,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Experiments | 53 (10 tracks) |
 | Total tests | **361** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
-| clippy (pedantic+nursery) | 0 warnings |
+| clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
@@ -63,6 +63,18 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed — Phase 15 (Cross-Ecosystem Absorption)
+
+### Absorption Wave (March 24, 2026)
+Absorbed patterns from 7 sibling springs + 10 primals:
+1. **`primal_names` slug constants** — `BEARDOG`, `SONGBIRD`, etc. as `pub const` for zero-duplication
+2. **Hardcoded primal names eliminated** — `coordination/mod.rs`, `ipc/probes.rs`, `bin/main.rs` use `primal_names::` constants
+3. **`unwrap_used` / `expect_used` = `warn` workspace-wide** — healthSpring V42 / wetSpring V135 discipline, `cfg_attr(test, allow)` for tests
+4. **`launcher/mod.rs` smart refactored** — tests extracted to `launcher/tests.rs` (802 → 699 LOC), env var names as constants
+5. **`ipc/provenance.rs` docs updated** — rhizoCrypt sled→redb migration, capability-based env vars for trio
+6. **`CONTRIBUTING.md` + `SECURITY.md`** — neuralSpring V124 ecosystem standard docs
+7. **Zero clippy warnings on `--all-targets`** including unwrap/expect discipline
 
 ## What Changed — Phase 14 (Deep Debt + Builder Pattern + Full Provenance)
 

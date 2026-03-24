@@ -229,7 +229,7 @@ whatever is already running.
 - `wateringHole/README.md` — Track structure and cross-spring context
 - `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance
 - `wateringHole/handoffs/` — Active + archived evolution handoffs
-- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–13 done, 14+ next)
+- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–15 done, 16+ next)
 - `specs/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression
 - `specs/PAPER_REVIEW_QUEUE.md` — Coordination patterns ready for validation
 - `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution

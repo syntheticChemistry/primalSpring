@@ -1,7 +1,7 @@
 # primalSpring Full Evolution Handoff — All Teams
 
 **Date**: March 23, 2026
-**Version**: v0.7.0 Phase 13
+**Version**: v0.7.0 Phase 13 (at time of writing; current: Phase 15)
 **From**: primalSpring
 **To**: All primal teams, all spring teams, biomeOS, wateringHole
 

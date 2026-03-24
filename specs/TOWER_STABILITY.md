@@ -442,18 +442,25 @@ Multi-Node Bonding + Federation                  ✅ STRUCTURAL (Phase 12)
     │   Zero .unwrap(), zero #[allow()] ✅
     │   361 tests, 0 warnings ✅
     │
-    ▼  Phase 15: Live multi-gate LAN covalent deployment
-Emergent Systems End-to-End (Phase 17)
+    │ Phase 15: Cross-Ecosystem Absorption (March 24, 2026)
+    │   primal_names slug constants (zero hardcoded names) ✅
+    │   unwrap_used/expect_used = warn workspace-wide ✅
+    │   launcher/tests.rs extracted (802 → 699 LOC) ✅
+    │   CONTRIBUTING.md + SECURITY.md ✅
+    │   Zero clippy warnings --all-targets ✅
+    │
+    ▼  Phase 16: Live multi-gate LAN covalent deployment
+Emergent Systems End-to-End (Phase 18)
     RootPulse + coralForge pipeline with live trio
-Live Multi-Node (Phase 16)
+Live Multi-Node (Phase 17)
     Basement HPC, friend remote, idle compute, data federation
-Bonding Live Coordination (Phase 18)
+Bonding Live Coordination (Phase 19)
     Covalent mesh, ionic contracts, metallic fleets
-Cross-Spring Integration (Phase 16)
+Cross-Spring Integration (Phase 20)
     wetSpring genetic lineage, BYOB primal DAG execution
-Anchoring + Economics (Phase 18)
+Anchoring + Economics (Phase 22)
     BTC/ETH hash attestation, Novel Ferment Transcripts, sunCloud
-biomeOS Self-Composition (Phase 19)
+biomeOS Self-Composition (Phase 23)
     biomeOS composes its own graphs at runtime
 ```
 

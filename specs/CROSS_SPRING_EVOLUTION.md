@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: March 24, 2026
-**Status**: Phase 14 — DEEP DEBT + BUILDER PATTERN + FULL PROVENANCE (87/87 gates), 361 tests, 53 experiments, 22 deploy graphs
+**Status**: Phase 15 — CROSS-ECOSYSTEM ABSORPTION (87/87 gates), 361 tests, 53 experiments, 22 deploy graphs
 
 ---
 
@@ -255,46 +255,54 @@ Phase 14: Deep Debt + Builder Pattern + Full Provenance (March 24, 2026)
   → Zero #[allow()] in production (all #[expect(reason)])
   → 361 tests, 0 clippy/doc/fmt warnings
 
-Phase 15: LAN Covalent Deployment (Next)
+Phase 15: Cross-Ecosystem Absorption (March 24, 2026)
+  → primal_names slug constants (BEARDOG, SONGBIRD, etc.) — zero hardcoded names
+  → unwrap_used/expect_used = warn workspace-wide (healthSpring V42 / wetSpring V135)
+  → launcher/mod.rs smart refactored (802 → 699 LOC, tests extracted)
+  → CONTRIBUTING.md + SECURITY.md (neuralSpring V124 ecosystem standard)
+  → ipc::provenance docs updated for rhizoCrypt sled→redb migration
+  → Zero clippy warnings on --all-targets including unwrap/expect discipline
+
+Phase 16: LAN Covalent Deployment (Next)
   → Live multi-gate NUCLEUS deployment with BirdSong beacon exchange
   → Pixel Songbird-only deployment (workaround for BearDog abstract socket)
   → 10G mesh backbone validation
 
-Phase 16: Live Multi-Node Validation (Track 8)
+Phase 17: Live Multi-Node Validation (Track 8)
   → Basement HPC: deploy NUCLEUS on 2+ LAN machines, validate covalent mesh formation
   → Friend remote: NAT traversal via STUN tiers, hole-punch, relay fallback
   → Idle compute: validate BondingPolicy enforcement (time windows, capability scope)
   → Data federation: NestGate cross-site replication with trio provenance chain
   → Plasmodium: decentralized capability aggregation across covalently bonded nodes
 
-Phase 17: Emergent Systems End-to-End (Track 3)
+Phase 18: Emergent Systems End-to-End (Track 3)
   → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)
   → coralForge pipeline streaming (exp013) — needs sweetGrass running
   → Continuous 60Hz tick (exp014) — needs provenance trio running
   → RPGPT session management with provenance tracking
 
-Phase 18: Bonding Live Coordination (Track 4)
+Phase 19: Bonding Live Coordination (Track 4)
   → Multi-gate covalent mesh with BirdSong encrypted beacons
   → Ionic contract-based metered bonds (cloud burst, external APIs)
   → Metallic electron-sea: homogeneous fleet specialization (compute-only racks)
   → Weak force: zero-trust read-only bonds to unknown primals
   → OrganoMetalSalt: mixed bond types in a single deployment
 
-Phase 19: Cross-Spring Integration (Track 6)
+Phase 20: Cross-Spring Integration (Track 6)
   → Full ecosystem data flow: airSpring, wetSpring, neuralSpring, petalTongue, Squirrel
   → wetSpring uses provenance trio to track genetic data lineage
   → Cross-spring BYOB composition: primals as DAG execution nodes
 
-Phase 20: Showcase Patterns (Track 7)
+Phase 21: Showcase Patterns (Track 7)
   → phase1/phase2 mined coordination patterns validated end-to-end
   → Compute triangle, bearer token auth, supply chain provenance, semantic attribution
 
-Phase 21: Anchoring + Economics
+Phase 22: Anchoring + Economics
   → sweetGrass anchoring.anchor → BTC/ETH (hash attestation, not currency)
   → loamSpine certificates as Novel Ferment Transcripts (NFTs)
   → sunCloud radiating attribution via sweetGrass braids
 
-Phase 22: biomeOS Self-Composition
+Phase 23: biomeOS Self-Composition
   → biomeOS composes its own graphs at runtime
   → Dynamic capability negotiation for BYOB niche creation
 ```

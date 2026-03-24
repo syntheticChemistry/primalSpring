@@ -166,7 +166,7 @@ Full NUCLEUS (Node + squirrel)                  ← VALIDATED (58/58 → 87/87 w
     ▼  overlays + provenance + Squirrel AI
 Multi-Node (NUCLEUS + bonding + federation)     ← STRUCTURAL (Phase 12)
     ▼  4 deploy graphs, BondingPolicy, STUN tiers
-Live Multi-Node (bonded NUCLEUS mesh)           ← FUTURE (Phase 16)
+Live Multi-Node (bonded NUCLEUS mesh)           ← FUTURE (Phase 17)
 ```
 
 See `specs/TOWER_STABILITY.md` for the full gate acceptance criteria.

@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 14 — DEEP DEBT + BUILDER PATTERN + FULL PROVENANCE 87/87, 361 tests, 53 experiments, 22 deploy graphs)  
+**Version**: 0.7.0 (Phase 15 — CROSS-ECOSYSTEM ABSORPTION 87/87, 361 tests, 53 experiments, 22 deploy graphs)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 24, 2026
 
@@ -90,7 +90,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (9 Tracks, 51 Experiments)
+## Track Structure (10 Tracks, 53 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -245,6 +245,7 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_V070_PHASE15_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR24_2026.md` | Mar 24 | **Cross-ecosystem absorption**: slug constants, unwrap/expect discipline, launcher smart refactor, CONTRIBUTING.md, SECURITY.md, capability-based env naming — patterns for all teams |
 | v0.7.0 | `PRIMALSPRING_V070_PHASE14_DEEP_DEBT_HANDOFF_MAR24_2026.md` | Mar 24 | **Deep debt**: builder `.run()`, 100% provenance, smart extraction, zero `.unwrap()`, zero `#[allow()]` — patterns for all teams |
 | v0.7.0 | `LAN_COVALENT_DEPLOYMENT_GUIDE_MAR23_2026.md` | Mar 23 | **Deployment**: Step-by-step LAN covalent deployment, USB spore prep, gate provisioning, BirdSong exchange, Pixel workaround |
 | v0.7.0 | `PRIMALSPRING_FULL_EVOLUTION_HANDOFF_MAR23_2026.md` | Mar 23 | **Comprehensive**: full evolution state, per-team guidance (all primals + all springs), patterns to absorb, architecture decisions, what remains |
@@ -294,12 +295,12 @@ Every experiment involves multiple primals or springs.
 | Spring | What primalSpring Learns |
 |--------|-------------------------|
 | hotSpring V0.6.32 | Precision validation, PMU hardening, OnceLock GPU probes for test parallelism |
-| wetSpring V133 | Deep IPC (354 bins, 214 tolerances, MCP, skip_with_code, NdjsonSink, is_recoverable) |
-| airSpring V010 | NUCLEUS niche deployment (41 caps, deny.toml, MCP, cast lints, Transport enum) |
-| groundSpring V121 | Typed errors, ValidationSink, check_relative, normalize_method, NdjsonSink, deny.toml bans |
-| neuralSpring V122 | Capability registry TOML, primal_names::display, cast lints, is_recoverable, OnceLock probes |
-| ludoSpring V14 | ValidationResult::with_provenance(), XDG sockets, structured provenance |
-| healthSpring V42 | Proptest IPC fuzz, epoch-based circuit breaker, check_abs_or_rel, Transport, tracing |
+| wetSpring V135 | Deep IPC (354 bins, 214 tolerances, MCP, skip_with_code, NdjsonSink, is_recoverable, `-> ExitCode` pattern, validation stack decomposition) |
+| airSpring V010 | NUCLEUS niche deployment (41 caps, deny.toml, MCP, cast lints, Transport enum, `f64::total_cmp`, 3-tier capability discovery) |
+| groundSpring V122 | Typed errors, ValidationSink, check_relative, normalize_method, NdjsonSink, deny.toml bans, smart cast extraction |
+| neuralSpring V124 | Capability registry TOML, primal_names::display, cast lints, is_recoverable, OnceLock probes, upstream tolerance contract pins, CONTRIBUTING.md/SECURITY.md |
+| ludoSpring V14 | ValidationResult::with_provenance(), XDG sockets, structured provenance, `#[expect(reason)]` migration |
+| healthSpring V42 | Proptest IPC fuzz, epoch-based circuit breaker, check_abs_or_rel, Transport, tracing, `deny(unwrap_used/expect_used)` |
 
 ---
 
