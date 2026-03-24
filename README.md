@@ -50,13 +50,13 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   └── validate_all/          # Meta-validator: runs all 51 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 53 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
 │       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
-├── experiments/                   # 51 validation experiments (9 tracks)
+├── experiments/                   # 53 validation experiments (10 tracks)
 ├── config/                        # Launch profiles (primal_launch_profiles.toml)
 ├── graphs/                        # 22 biomeOS deploy graph TOMLs (18 single-node + 4 multi-node)
 │   └── multi_node/               # Multi-node federation graphs (HPC, friend, idle, data)
@@ -95,7 +95,7 @@ cargo test --workspace
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 51 experiments (meta-validator)
+# Run all 53 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -227,7 +227,7 @@ whatever is already running.
 - `wateringHole/README.md` — Track structure and cross-spring context
 - `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance
 - `wateringHole/handoffs/` — Active + archived evolution handoffs
-- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–12, future 13–19)
+- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–13 done, 14+ next)
 - `specs/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression
 - `specs/PAPER_REVIEW_QUEUE.md` — Coordination patterns ready for validation
 - `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution

@@ -50,7 +50,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | provenance_overlay.toml | Tower + RootPulse provenance trio deploy graph |
 | Live graph execution patterns | Sequential, Parallel, ConditionalDag validated live |
 | Provenance trio launch profiles | sweetGrass, loamSpine, rhizoCrypt socket wiring |
-| Coordination experiment framework | 51 experiments across 9 tracks |
+| Coordination experiment framework | 53 experiments across 10 tracks |
 | MCP coordination tools | Available for Squirrel AI routing |
 | Tower + Squirrel AI composition | Live demo: Tower + Squirrel + Anthropic Claude (exp061) |
 | `passthrough_env` pattern | Secure env forwarding for API keys, GPU config vars |
@@ -212,7 +212,7 @@ Phase 12 (done): Multi-Node Bonding + Federation (March 23, 2026)
   → exp071: idle compute policy (capability masks, time windows, bandwidth, graph metadata)
   → exp072: data federation (NestGate replication, trio provenance, 7-phase pipeline)
   → Evolved exp030 (covalent), exp032 (plasmodium+Metallic), exp056 (cross-tower+3 graphs)
-  → 303 tests (incl. 12 bonding, 6 graph metadata, 6 STUN tier, 7 cross-cutting proptest), 51 experiments, 22 graphs
+  → 303 tests (incl. 12 bonding, 6 graph metadata, 6 STUN tier, 7 cross-cutting proptest), 51 experiments, 22 graphs (at time of Phase 12)
 
 Phase 12.1 (done): Ecosystem Absorption Wave 1 (March 23, 2026)
   → deny.toml convergence: merged groundSpring V121 + wetSpring V133 C-dep bans

@@ -11,7 +11,7 @@ use std::time::Instant;
 
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 
-/// Experiment binaries in execution order (tracks 1-8).
+/// Experiment binaries in execution order (tracks 1-10).
 const EXPERIMENTS: &[&str] = &[
     "primalspring-exp001",
     "primalspring-exp002",
@@ -64,6 +64,8 @@ const EXPERIMENTS: &[&str] = &[
     "primalspring-exp070",
     "primalspring-exp071",
     "primalspring-exp072",
+    "primalspring-exp073",
+    "primalspring-exp074",
 ];
 
 fn main() {

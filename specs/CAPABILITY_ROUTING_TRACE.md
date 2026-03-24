@@ -173,7 +173,7 @@ See `specs/TOWER_STABILITY.md` for the full gate acceptance criteria.
 
 ## Evolution Path
 
-### Phase 1: Standard Methods (current sprint)
+### Phase 1: Standard Methods (done)
 
 Beardog and songbird register `health.liveness` and `capabilities.list`.
 Beardog adds bare crypto aliases as backward-compat bridge.

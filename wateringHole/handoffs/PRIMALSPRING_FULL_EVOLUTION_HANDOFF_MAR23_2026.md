@@ -1,7 +1,7 @@
 # primalSpring Full Evolution Handoff — All Teams
 
 **Date**: March 23, 2026
-**Version**: v0.7.0 Phase 12.2
+**Version**: v0.7.0 Phase 13
 **From**: primalSpring
 **To**: All primal teams, all spring teams, biomeOS, wateringHole
 
@@ -18,7 +18,7 @@ and is ready for the next frontier: live multi-node validation.
 | Metric | Value |
 |--------|-------|
 | Tests | 360 (unit + integration + doc-tests + proptest) |
-| Experiments | 51 across 9 tracks |
+| Experiments | 53 across 10 tracks |
 | Deploy graphs | 22 (18 single-node + 4 multi-node federation) |
 | Gates | 87/87 |
 | Proptest fuzz | 22 cross-cutting IPC property tests |

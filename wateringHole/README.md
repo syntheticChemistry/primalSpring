@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 12.2 — ECOSYSTEM ABSORPTION + MULTI-NODE BONDING 87/87, 360 tests, 51 experiments, 22 deploy graphs)  
+**Version**: 0.7.0 (Phase 13 — CROSS-GATE DEPLOYMENT + ECOSYSTEM ABSORPTION + MULTI-NODE BONDING 87/87, 360 tests, 53 experiments, 22 deploy graphs)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 23, 2026
 
@@ -38,7 +38,7 @@ primalSpring fills the gap.
 | Metric | Value |
 |--------|-------|
 | Tests | **360** (unit + integration + doc-tests + proptest, 42 ignored live) |
-| Experiments | 51 (9 tracks) |
+| Experiments | 53 (10 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
@@ -51,7 +51,7 @@ primalSpring fills the gap.
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
-| Meta-validator | `validate_all` binary — runs all 51 experiments |
+| Meta-validator | `validate_all` binary — runs all 53 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates passing (core + full utilization) |
 | Nest Atomic | **VALIDATED** — nestgate storage (8/8 gates) |
 | Node Atomic | **VALIDATED** — toadstool compute (5/5 gates) |

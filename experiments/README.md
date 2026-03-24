@@ -13,12 +13,12 @@ Every experiment uses the shared validation harness (`check_bool`, `check_skip`,
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 51 experiments.
+across all 53 experiments.
 
 ## Running
 
 ```bash
-# Run all 51 experiments via meta-validator
+# Run all 53 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment

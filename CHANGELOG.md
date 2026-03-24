@@ -64,7 +64,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - exp056 (cross-tower) — added 3 multi-node graph metadata validations
 - Metallic match arm added to primalspring_primal bonding_test handler
 - `missing_docs` lint level evolved from `warn` to `deny` (all public items documented)
-- 360 tests (up from 303), 51 experiments, 22 deploy graphs
+- 360 tests (up from 303), 51 experiments, 22 deploy graphs (at time of Phase 12.2)
 
 ## [0.7.0] — 2026-03-22
 

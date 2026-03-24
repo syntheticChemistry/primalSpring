@@ -35,7 +35,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 51 (9 tracks) |
+| Experiments | 53 (10 tracks) |
 | Total tests | **360** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery) | 0 warnings |
