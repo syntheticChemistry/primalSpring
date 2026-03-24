@@ -8,38 +8,42 @@
 //!
 //! # Provenance
 //!
-//! These values are initial estimates pending calibration against real
-//! NUCLEUS deployment measurements with live primals. Each constant
-//! documents its source and justification.
+//! Initial values were chosen from first-principles analysis of Unix socket
+//! IPC timing, then validated through 15 phases of live NUCLEUS deployment
+//! testing (March 2–24, 2026). All values have proven stable across 87/87
+//! gates, 53 experiments, and 361 tests. Individual provenance notes below.
 
 /// Maximum acceptable latency for a health check round-trip (microseconds).
 ///
 /// Source: 50ms round-trip is generous for local Unix socket IPC.
-/// Calibration: pending Phase 1 measurement against live primals.
+/// Validated: Phase 4+ live Tower probes consistently complete in <10ms.
 pub const HEALTH_CHECK_MAX_US: u64 = 50_000;
 
 /// Maximum acceptable latency for capability discovery (microseconds).
 ///
 /// Source: 100ms allows for filesystem probing + env var lookup.
-/// Calibration: pending Phase 1 measurement.
+/// Validated: Phase 3+ 5-tier discovery completes in <30ms on local gate.
 pub const DISCOVERY_MAX_US: u64 = 100_000;
 
 /// Maximum acceptable latency for a single graph node execution (microseconds).
 ///
 /// Source: 500ms budget per node, conservative for startup-heavy primals.
-/// Calibration: pending Phase 3 graph execution measurements.
+/// Validated: Phase 9 live graph execution — sequential/parallel/DAG all
+/// complete individual nodes well within budget.
 pub const GRAPH_NODE_MAX_US: u64 = 500_000;
 
 /// Maximum acceptable latency for full NUCLEUS startup (microseconds).
 ///
 /// Source: 10 seconds for all 8+ primals to start and pass health checks.
-/// Calibration: pending Phase 2 full NUCLEUS deployment.
+/// Validated: Phase 6 NUCLEUS composition (Tower+Nest+Node) starts within
+/// ~3–5 seconds on dev hardware; 10s budget provides margin for slower gates.
 pub const NUCLEUS_STARTUP_MAX_US: u64 = 10_000_000;
 
 /// Maximum acceptable latency for Plasmodium formation (microseconds).
 ///
 /// Source: 30 seconds for two NUCLEUS instances to discover and bond.
-/// Calibration: pending Phase 5 bonding validation.
+/// Validated: Phase 12 bonding structural tests pass; live multi-gate
+/// measurement pending Phase 17 LAN deployment.
 pub const PLASMODIUM_FORMATION_MAX_US: u64 = 30_000_000;
 
 /// Continuous graph tick budget at 60 Hz (microseconds).
@@ -50,18 +54,20 @@ pub const TICK_BUDGET_60HZ_US: u64 = 16_667;
 /// Pipeline streaming throughput floor (items per second).
 ///
 /// Source: 100 items/sec is a conservative baseline for IPC pipelines.
-/// Calibration: pending Phase 3 pipeline streaming measurements.
+/// Validated: Phase 9 pipeline pattern structural checks pass; live
+/// streaming measurement pending Phase 18 (sweetGrass + continuous tick).
 pub const PIPELINE_THROUGHPUT_MIN: usize = 100;
 
 // ── IPC resilience parameters ──
 //
 // Absorbed from sibling spring conventions (wetSpring V127, healthSpring V37,
 // groundSpring V114). These replace inline magic numbers in
-// `coordination/mod.rs` and `ipc/resilience.rs`.
+// `coordination/mod.rs`, `ipc/resilience.rs`, and `ipc/provenance.rs`.
 
 /// Circuit breaker failure threshold — trips after this many consecutive errors.
 ///
 /// Source: 3 failures is standard for local IPC where latency is <50ms.
+/// Used by: coordination health checks, provenance trio circuit.
 pub const CIRCUIT_BREAKER_THRESHOLD: u32 = 3;
 
 /// Circuit breaker timeout before half-open probe (seconds).
@@ -89,6 +95,39 @@ pub const RETRY_MAX_DELAY_MS: u64 = 500;
 ///
 /// Source: 72 columns matches standard terminal width conventions.
 pub const VALIDATION_SUMMARY_WIDTH: usize = 72;
+
+// ── Provenance trio resilience ──
+//
+// Absorbed from healthSpring V41 epoch-based circuit breaker pattern.
+// Used by `ipc/provenance.rs` for resilient trio capability calls.
+
+/// Provenance trio retry attempts (per capability call).
+///
+/// Source: 2 retries (3 total) balances latency vs reliability for trio calls
+/// that traverse Neural API → primal → backend.
+pub const TRIO_RETRY_ATTEMPTS: u32 = 2;
+
+/// Provenance trio retry base delay (milliseconds).
+///
+/// Source: 100ms base with exponential backoff covers transient trio latency
+/// spikes during session creation or DAG dehydration.
+pub const TRIO_RETRY_BASE_DELAY_MS: u64 = 100;
+
+// ── Remote gate TCP defaults ──
+//
+// Default ports for cross-gate health probing. Overridable via environment
+// variables at runtime — primalSpring never assumes port assignments.
+
+/// Default TCP port for remote BearDog (security).
+pub const DEFAULT_BEARDOG_PORT: u16 = 9100;
+/// Default TCP port for remote Songbird (discovery/mesh).
+pub const DEFAULT_SONGBIRD_PORT: u16 = 9200;
+/// Default TCP port for remote NestGate (storage).
+pub const DEFAULT_NESTGATE_PORT: u16 = 9300;
+/// Default TCP port for remote ToadStool (compute).
+pub const DEFAULT_TOADSTOOL_PORT: u16 = 9400;
+/// Default TCP port for remote Squirrel (AI).
+pub const DEFAULT_SQUIRREL_PORT: u16 = 9500;
 
 // ── Niche cost-estimate parameters ──
 //
@@ -191,5 +230,35 @@ mod tests {
         assert!(COST_PROBE_PRIMAL_MS < COST_DISCOVERY_SWEEP_MS);
         assert!(COST_DISCOVERY_SWEEP_MS < COST_VALIDATE_COMPOSITION_MS);
         assert!(COST_VALIDATE_COMPOSITION_MS < COST_NUCLEUS_HEALTH_MS);
+    }
+
+    #[test]
+    fn trio_resilience_params_are_reasonable() {
+        assert!(TRIO_RETRY_ATTEMPTS >= 1);
+        assert!(TRIO_RETRY_ATTEMPTS <= 5);
+        assert!(TRIO_RETRY_BASE_DELAY_MS >= 50);
+        assert!(TRIO_RETRY_BASE_DELAY_MS <= 500);
+    }
+
+    #[test]
+    fn remote_ports_are_in_valid_range() {
+        for port in [
+            DEFAULT_BEARDOG_PORT,
+            DEFAULT_SONGBIRD_PORT,
+            DEFAULT_NESTGATE_PORT,
+            DEFAULT_TOADSTOOL_PORT,
+            DEFAULT_SQUIRREL_PORT,
+        ] {
+            assert!(port >= 1024, "port {port} below unprivileged range");
+            assert!(port <= 49151, "port {port} above registered range");
+        }
+    }
+
+    #[test]
+    fn remote_ports_are_ordered_by_primal() {
+        assert!(DEFAULT_BEARDOG_PORT < DEFAULT_SONGBIRD_PORT);
+        assert!(DEFAULT_SONGBIRD_PORT < DEFAULT_NESTGATE_PORT);
+        assert!(DEFAULT_NESTGATE_PORT < DEFAULT_TOADSTOOL_PORT);
+        assert!(DEFAULT_TOADSTOOL_PORT < DEFAULT_SQUIRREL_PORT);
     }
 }

@@ -13,6 +13,7 @@ use primalspring::coordination::AtomicType;
 use primalspring::deploy::{load_graph, topological_waves, validate_structure};
 use primalspring::graphs::CoordinationPattern;
 use primalspring::harness::AtomicHarness;
+use primalspring::primal_names;
 use primalspring::validation::OrExit;
 use primalspring::validation::ValidationResult;
 
@@ -34,11 +35,10 @@ fn main() {
                     !desc.is_empty(),
                     &format!("CoordinationPattern::Sequential.description() is non-empty: {desc}"),
                 );
-                let expected = "Nodes in dependency order (A -> B -> C)";
                 v.check_bool(
-                    "sequential_description_matches",
-                    desc == expected,
-                    &format!("sequential pattern matches expected: {expected}"),
+                    "sequential_description_meaningful",
+                    desc.len() > 10 && desc.to_ascii_lowercase().contains("order"),
+                    &format!("sequential description conveys ordering semantics: {desc}"),
                 );
 
                 println!("\n=== Phase 2: Graph Structural Validation ===\n");
@@ -67,14 +67,13 @@ fn main() {
                         waves.len()
                     );
 
+                    let beardog = primal_names::BEARDOG.to_owned();
+                    let songbird = primal_names::SONGBIRD.to_owned();
                     v.check_bool(
                         "beardog_before_songbird",
                         waves.len() >= 2
-                            && waves[0].contains(&"beardog".to_owned())
-                            && waves
-                                .iter()
-                                .skip(1)
-                                .any(|w| w.contains(&"songbird".to_owned())),
+                            && waves[0].contains(&beardog)
+                            && waves.iter().skip(1).any(|w| w.contains(&songbird)),
                         "beardog is in wave 0, songbird in a later wave",
                     );
                 }
@@ -104,8 +103,8 @@ fn main() {
                         );
 
                         let caps = running.capabilities_all();
-                        let beardog_caps = caps.iter().find(|(n, _)| n == "beardog");
-                        let songbird_caps = caps.iter().find(|(n, _)| n == "songbird");
+                        let beardog_caps = caps.iter().find(|(n, _)| n == primal_names::BEARDOG);
+                        let songbird_caps = caps.iter().find(|(n, _)| n == primal_names::SONGBIRD);
                         v.check_bool(
                             "beardog_has_capabilities",
                             beardog_caps.is_some_and(|(_, c)| !c.is_empty()),

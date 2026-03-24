@@ -2,9 +2,11 @@
 
 //! Meta-validator that runs all primalSpring experiment binaries in sequence.
 //!
-//! Follows the hotSpring/neuralSpring `validate_all` pattern: discover
-//! experiment binaries at build time, run each one, collect pass/fail,
-//! and exit 0 only if every experiment passes.
+//! Follows the hotSpring/neuralSpring `validate_all` pattern: enumerate
+//! experiment packages from a maintained manifest, run each one via
+//! `cargo run --release`, collect pass/fail, and exit 0 only if every
+//! experiment passes. The `EXPERIMENTS` slice must be updated when
+//! experiment crates are added or removed.
 
 use std::process::Command;
 use std::time::Instant;

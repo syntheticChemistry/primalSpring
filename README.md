@@ -8,7 +8,7 @@
 | **Version** | 0.7.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 361 (unit + integration + doc-tests + proptest) |
+| **Tests** | 364 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 53 (10 tracks) |
 | **Deploy Graphs** | 22 TOMLs (18 single-node + 4 multi-node) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding (87/87 gates) |

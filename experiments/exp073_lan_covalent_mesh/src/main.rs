@@ -18,6 +18,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::net::TcpStream;
 use std::time::Duration;
 
+use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
 fn tcp_rpc_call(
@@ -320,11 +321,11 @@ fn main() {
     let songbird_port: u16 = std::env::var("REMOTE_SONGBIRD_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(9200);
+        .unwrap_or(tolerances::DEFAULT_SONGBIRD_PORT);
     let beardog_port: u16 = std::env::var("REMOTE_BEARDOG_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(9100);
+        .unwrap_or(tolerances::DEFAULT_BEARDOG_PORT);
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "8ff3b864a4bc589a".to_owned());
 
     ValidationResult::new("primalSpring Exp073 — LAN Covalent Mesh")

@@ -5,7 +5,7 @@
 # health.liveness + capabilities.list. Reports per-primal status.
 #
 # Usage:
-#   ./scripts/validate_remote_gate.sh <host> [--port-base 9000]
+#   ./scripts/validate_remote_gate.sh <host> [--unix <socket-dir>]
 #   ./scripts/validate_remote_gate.sh 192.168.1.100
 #   ./scripts/validate_remote_gate.sh northgate.local
 #

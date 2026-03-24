@@ -389,17 +389,7 @@ pub fn check_capability_health(v: &mut crate::validation::ValidationResult, capa
 }
 
 fn extract_capability_names(caps: Option<serde_json::Value>) -> Vec<String> {
-    let Some(val) = caps else {
-        return Vec::new();
-    };
-    match val {
-        serde_json::Value::Array(arr) => arr
-            .iter()
-            .filter_map(|v| v.as_str().map(String::from))
-            .collect(),
-        serde_json::Value::Object(map) => map.keys().cloned().collect(),
-        _ => Vec::new(),
-    }
+    crate::ipc::discover::extract_capability_names(caps)
 }
 
 #[cfg(test)]
@@ -409,22 +399,30 @@ mod tests {
     #[test]
     fn tower_requires_two_primals() {
         assert_eq!(AtomicType::Tower.required_primals().len(), 2);
-        assert!(AtomicType::Tower.required_primals().contains(&"beardog"));
-        assert!(AtomicType::Tower.required_primals().contains(&"songbird"));
+        assert!(
+            AtomicType::Tower
+                .required_primals()
+                .contains(&primal_names::BEARDOG)
+        );
+        assert!(
+            AtomicType::Tower
+                .required_primals()
+                .contains(&primal_names::SONGBIRD)
+        );
     }
 
     #[test]
     fn node_extends_tower_with_toadstool() {
         let primals = AtomicType::Node.required_primals();
-        assert!(primals.contains(&"beardog"));
-        assert!(primals.contains(&"songbird"));
-        assert!(primals.contains(&"toadstool"));
+        assert!(primals.contains(&primal_names::BEARDOG));
+        assert!(primals.contains(&primal_names::SONGBIRD));
+        assert!(primals.contains(&primal_names::TOADSTOOL));
     }
 
     #[test]
     fn nest_extends_tower_with_nestgate() {
         let primals = AtomicType::Nest.required_primals();
-        assert!(primals.contains(&"nestgate"));
+        assert!(primals.contains(&primal_names::NESTGATE));
     }
 
     #[test]

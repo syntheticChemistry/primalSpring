@@ -3,9 +3,11 @@
 //! Exp064: Nestgate Internet Reach — test full internet deployment paths.
 //!
 //! Spawns Tower and exercises every connectivity path: STUN public address,
-//! HTTPS probe to `api.nestgate.io` (or configurable endpoint), sovereign
-//! onion service, and Tor status. Reports which paths are available for
-//! the Pixel 8a / USB / nestgate.io deployment model.
+//! HTTPS probe, sovereign onion service, and Tor status. Reports which
+//! paths are available for the Pixel 8a / USB / nestgate.io deployment model.
+//!
+//! Environment:
+//!   `NESTGATE_ENDPOINT` — HTTPS endpoint to probe (default: `https://api.nestgate.io`)
 
 use std::io::{BufRead, BufReader, Write};
 use std::os::unix::net::UnixStream;

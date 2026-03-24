@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 15 — CROSS-ECOSYSTEM ABSORPTION 87/87, 361 tests, 53 experiments, 22 deploy graphs)  
+**Version**: 0.7.0 (Phase 16 — DEEP DEBT AUDIT 87/87, 364 tests, 53 experiments, 22 deploy graphs)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 24, 2026
 
@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **361** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Tests | **364** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Experiments | 53 (10 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
@@ -245,28 +245,29 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_V070_PHASE16_DEEP_DEBT_AUDIT_HANDOFF_MAR24_2026.md` | Mar 24 | **Deep debt audit**: centralized tolerances, deduplicated capability parsing, hardcoding→capability-based evolution, coverage baseline, primal+spring team guidance |
 | v0.7.0 | `PRIMALSPRING_V070_PHASE15_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR24_2026.md` | Mar 24 | **Cross-ecosystem absorption**: slug constants, unwrap/expect discipline, launcher smart refactor, CONTRIBUTING.md, SECURITY.md, capability-based env naming — patterns for all teams |
 | v0.7.0 | `PRIMALSPRING_V070_PHASE14_DEEP_DEBT_HANDOFF_MAR24_2026.md` | Mar 24 | **Deep debt**: builder `.run()`, 100% provenance, smart extraction, zero `.unwrap()`, zero `#[allow()]` — patterns for all teams |
 | v0.7.0 | `LAN_COVALENT_DEPLOYMENT_GUIDE_MAR23_2026.md` | Mar 23 | **Deployment**: Step-by-step LAN covalent deployment, USB spore prep, gate provisioning, BirdSong exchange, Pixel workaround |
 | v0.7.0 | `PRIMALSPRING_FULL_EVOLUTION_HANDOFF_MAR23_2026.md` | Mar 23 | **Comprehensive**: full evolution state, per-team guidance (all primals + all springs), patterns to absorb, architecture decisions, what remains |
-| v0.7.0 | `PRIMALSPRING_V070_PHASE122_DEEP_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Deep absorption: normalize_method, Transport enum, NdjsonSink, check_relative, is_recoverable, OnceLock probes, missing_docs deny, release gate — 360 tests |
-| v0.7.0 | `PRIMALSPRING_V070_ECOSYSTEM_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Cross-spring absorption: deny.toml, cast lints, ValidationSink, proptest, primal_names, provenance circuit breaker — patterns for all teams |
-| v0.7.0 | `PRIMALSPRING_PHASE12_MULTINODE_BONDING_HANDOFF_MAR23_2026.md` | Mar 23 | Multi-node bonding, federation, idle compute, STUN tiers, BondingPolicy — primal + spring evolution guide |
-| v0.7.0 | `PRIMALSPRING_V070_HARDWARE_VALIDATION_HANDOFF_MAR22_2026.md` | Mar 22 | Hardware audit: Pixel 8a, USB spores, cross-arch deployment, blockers per team |
-| v0.7.0 | `PRIMALSPRING_V070_GRAPH_OVERLAY_HANDOFF_MAR22_2026.md` | Mar 22 | Graph overlays, Squirrel discovery, graph execution, integration guide |
-| v0.7.0 | `TOADSTOOL_BARRACUDA_V070_HANDOFF_MAR22_2026.md` | Mar 22 | 3 composition tiers, 5 patterns, IPC quirks, evolution path |
-| v0.7.0 | `PROVENANCE_TRIO_HANDOFF_MAR22_2026.md` | Mar 22 | sweetGrass/loamSpine/rhizoCrypt: types resolved, required methods, integration path |
-| v0.7.0 | `ECOBIN_GENOMEBIN_EVOLUTION_GUIDANCE_MAR22_2026.md` | Mar 22 | ecoBin/genomeBin: cross-compile workflow, `cargo genome` roadmap, Android guidance |
-| v0.7.0 | `PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` | Mar 22 | Consolidated primal audit: open items per primal + cross-primal standards |
-| v0.7.0 | `PROVENANCE_TRIO_LIVE_PROBING_MAR23_2026.md` | Mar 23 | Live probing: sweetGrass+rhizoCrypt working, loamSpine panic, 4 gaps documented |
-| v0.7.0 | `ROOTPULSE_NEURAL_API_INTEGRATION_HANDOFF_MAR22_2026.md` | Mar 22 | RootPulse via Neural API: ipc::provenance module, 4 experiments evolved, graceful degradation |
-| v0.6.0 | `archive/PRIMALSPRING_V060_NUCLEUS_COMPOSITION_HANDOFF_MAR22_2026.md` | Mar 22 | NUCLEUS validated: Nest + Node atomic layers, 58/58 gates (release record) |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `archive/TOADSTOOL_BARRACUDA_V070_HANDOFF_MAR22_2026.md` | Mar 22 | 3 composition tiers, 5 patterns, IPC quirks, evolution path |
+| v0.7.0 | `archive/PROVENANCE_TRIO_HANDOFF_MAR22_2026.md` | Mar 22 | sweetGrass/loamSpine/rhizoCrypt: types resolved, required methods, integration path |
+| v0.7.0 | `archive/PROVENANCE_TRIO_LIVE_PROBING_MAR23_2026.md` | Mar 23 | Live probing: sweetGrass+rhizoCrypt working, loamSpine panic, 4 gaps documented |
+| v0.7.0 | `archive/ROOTPULSE_NEURAL_API_INTEGRATION_HANDOFF_MAR22_2026.md` | Mar 22 | RootPulse via Neural API: ipc::provenance module, 4 experiments evolved |
+| v0.7.0 | `archive/ECOBIN_GENOMEBIN_EVOLUTION_GUIDANCE_MAR22_2026.md` | Mar 22 | ecoBin/genomeBin: cross-compile workflow, `cargo genome` roadmap |
+| v0.7.0 | `archive/PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` | Mar 22 | Consolidated primal audit: open items per primal |
+| v0.7.0 | `archive/PRIMALSPRING_V070_HARDWARE_VALIDATION_HANDOFF_MAR22_2026.md` | Mar 22 | Hardware audit: Pixel 8a, USB spores, cross-arch deployment |
+| v0.7.0 | `archive/PRIMALSPRING_V070_GRAPH_OVERLAY_HANDOFF_MAR22_2026.md` | Mar 22 | Graph overlays, Squirrel discovery, graph execution |
+| v0.7.0 | `archive/PRIMALSPRING_V070_PHASE122_DEEP_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Deep absorption: normalize_method, Transport, NdjsonSink — 360 tests |
+| v0.7.0 | `archive/PRIMALSPRING_V070_ECOSYSTEM_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Cross-spring absorption: deny.toml, cast lints, proptest — 303 tests |
+| v0.7.0 | `archive/PRIMALSPRING_PHASE12_MULTINODE_BONDING_HANDOFF_MAR23_2026.md` | Mar 23 | Multi-node bonding, federation, STUN tiers, BondingPolicy |
 | v0.7.0 | `archive/PROVENANCE_TRIO_TYPES_NOTE.md` | Mar 22 | Resolved: trio teams inlined types, shim deleted |
+| v0.6.0 | `archive/PRIMALSPRING_V060_NUCLEUS_COMPOSITION_HANDOFF_MAR22_2026.md` | Mar 22 | NUCLEUS validated: 58/58 gates |
 | v0.5.0 | `archive/TOWER_FULL_UTILIZATION_VALIDATED_MAR21_2026.md` | Mar 21 | Tower 41/41 milestone |
 | v0.5.0 | `archive/TOWER_FULL_UTILIZATION_HANDOFF_MAR21_2026.md` | Mar 21 | Superseded by VALIDATED version |
 | v0.4.0 | `archive/TOWER_SQUIRREL_COMPOSITION_MAR21_2026.md` | Mar 21 | Superseded by v0.7 overlay composition |

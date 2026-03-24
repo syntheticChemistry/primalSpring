@@ -3,6 +3,39 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 16: Deep Debt Audit + Centralized Tolerances (2026-03-24)
+
+### Added
+- **Remote gate TCP port defaults** — `DEFAULT_BEARDOG_PORT` through `DEFAULT_SQUIRREL_PORT`
+  centralized in `tolerances/` (was inline in exp073/074)
+- **Provenance trio resilience params** — `TRIO_RETRY_ATTEMPTS`, `TRIO_RETRY_BASE_DELAY_MS`
+  centralized in `tolerances/` (was inline in `ipc/provenance.rs`)
+- 3 new tolerance tests: trio resilience bounds, remote port range, port ordering
+- Phase 16 handoff for primal and spring teams
+
+### Changed
+- **Tolerance calibration notes updated** — all 7 latency/throughput constants now document
+  Phase 15 operational validation history (was "pending Phase N measurement")
+- **Provenance trio circuit breaker** — `TRIO_CIRCUIT_THRESHOLD` removed from `ipc/provenance.rs`,
+  now uses `tolerances::CIRCUIT_BREAKER_THRESHOLD` (single source of truth)
+- **`extract_capability_names` deduplicated** — `coordination/mod.rs` local 2-format copy replaced
+  with delegation to `ipc::discover::extract_capability_names` (full 4-format parser)
+- **exp010 hardcoded description** — replaced exact string match with semantic check
+  (description conveys ordering semantics, survives text evolution)
+- **exp073/074 inline ports** — `9100`–`9500` literals replaced with `tolerances::DEFAULT_*_PORT`
+  constants + env var override
+- **exp074 primal names** — string literals replaced with `primal_names::*` slug constants
+- **exp010 primal names** — string literals replaced with `primal_names::BEARDOG` etc.
+- **Coordination tests** — `"beardog"`/`"songbird"`/etc. string literals replaced with
+  `primal_names::*` constants
+- **`validate_all` doc comment** — corrected from "discover at build time" to "enumerate
+  experiment packages from a maintained manifest"
+- **`validate_release.sh`** — test floor updated 361 → 364
+- **`validate_remote_gate.sh`** — fixed stale `--port-base` in usage (actually `--unix`)
+- **`niches/primalspring-coordination.yaml`** — version bumped 0.2.0 → 0.7.0
+- Stale Mar 22 handoffs archived to `wateringHole/handoffs/archive/`
+- 364 tests (up from 361), 0 clippy warnings, 0 fmt diff, 0 deny issues
+
 ## [Unreleased] — Phase 15: Cross-Ecosystem Absorption (2026-03-24)
 
 ### Added

@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: March 24, 2026
-**Status**: Phase 15 — CROSS-ECOSYSTEM ABSORPTION (87/87 gates), 361 tests, 53 experiments, 22 deploy graphs
+**Status**: Phase 16 — DEEP DEBT AUDIT + CENTRALIZED TOLERANCES (87/87 gates), 364 tests, 53 experiments, 22 deploy graphs
 
 ---
 
@@ -76,7 +76,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.7.0 | 361 | Phase 14 — 87/87 gates, builder `.run()`, 100% provenance, 53 experiments, 22 deploy graphs, 37 capabilities |
+| primalSpring | v0.7.0 | 364 | Phase 16 — 87/87 gates, deep debt audit, centralized tolerances, capability-based hardcoding evolution, 53 experiments, 22 deploy graphs, 37 capabilities |
 
 ## Evolution Path
 
@@ -263,46 +263,60 @@ Phase 15: Cross-Ecosystem Absorption (March 24, 2026)
   → ipc::provenance docs updated for rhizoCrypt sled→redb migration
   → Zero clippy warnings on --all-targets including unwrap/expect discipline
 
-Phase 16: LAN Covalent Deployment (Next)
+Phase 16 (done): Deep Debt Audit + Centralized Tolerances (March 24, 2026)
+  → Comprehensive audit against ecosystem standards (zero debt found in critical paths)
+  → TRIO_CIRCUIT_THRESHOLD centralized to tolerances (was local const in provenance)
+  → Provenance trio retry params centralized (TRIO_RETRY_ATTEMPTS, TRIO_RETRY_BASE_DELAY_MS)
+  → Remote gate TCP port defaults centralized (DEFAULT_{PRIMAL}_PORT constants)
+  → All tolerance calibration notes updated from "pending" to Phase 15 operational data
+  → extract_capability_names deduplicated (coordination delegates to ipc::discover 4-format parser)
+  → exp010 hardcoded description → capability-based semantic check
+  → exp073/074 inline ports → tolerances constants + env override
+  → coordination tests → primal_names slug constants (zero string literals)
+  → validate_all doc comment corrected (not build-time discovery)
+  → Coverage baseline measured (cargo llvm-cov)
+  → 364 tests (up from 361), zero clippy, zero fmt diff, zero deny issues
+
+Phase 17: LAN Covalent Deployment (Next)
   → Live multi-gate NUCLEUS deployment with BirdSong beacon exchange
   → Pixel Songbird-only deployment (workaround for BearDog abstract socket)
   → 10G mesh backbone validation
 
-Phase 17: Live Multi-Node Validation (Track 8)
+Phase 18: Live Multi-Node Validation (Track 8)
   → Basement HPC: deploy NUCLEUS on 2+ LAN machines, validate covalent mesh formation
   → Friend remote: NAT traversal via STUN tiers, hole-punch, relay fallback
   → Idle compute: validate BondingPolicy enforcement (time windows, capability scope)
   → Data federation: NestGate cross-site replication with trio provenance chain
   → Plasmodium: decentralized capability aggregation across covalently bonded nodes
 
-Phase 18: Emergent Systems End-to-End (Track 3)
+Phase 19: Emergent Systems End-to-End (Track 3)
   → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)
   → coralForge pipeline streaming (exp013) — needs sweetGrass running
   → Continuous 60Hz tick (exp014) — needs provenance trio running
   → RPGPT session management with provenance tracking
 
-Phase 19: Bonding Live Coordination (Track 4)
+Phase 20: Bonding Live Coordination (Track 4)
   → Multi-gate covalent mesh with BirdSong encrypted beacons
   → Ionic contract-based metered bonds (cloud burst, external APIs)
   → Metallic electron-sea: homogeneous fleet specialization (compute-only racks)
   → Weak force: zero-trust read-only bonds to unknown primals
   → OrganoMetalSalt: mixed bond types in a single deployment
 
-Phase 20: Cross-Spring Integration (Track 6)
+Phase 21: Cross-Spring Integration (Track 6)
   → Full ecosystem data flow: airSpring, wetSpring, neuralSpring, petalTongue, Squirrel
   → wetSpring uses provenance trio to track genetic data lineage
   → Cross-spring BYOB composition: primals as DAG execution nodes
 
-Phase 21: Showcase Patterns (Track 7)
+Phase 22: Showcase Patterns (Track 7)
   → phase1/phase2 mined coordination patterns validated end-to-end
   → Compute triangle, bearer token auth, supply chain provenance, semantic attribution
 
-Phase 22: Anchoring + Economics
+Phase 23: Anchoring + Economics
   → sweetGrass anchoring.anchor → BTC/ETH (hash attestation, not currency)
   → loamSpine certificates as Novel Ferment Transcripts (NFTs)
   → sunCloud radiating attribution via sweetGrass braids
 
-Phase 23: biomeOS Self-Composition
+Phase 24: biomeOS Self-Composition
   → biomeOS composes its own graphs at runtime
   → Dynamic capability negotiation for BYOB niche creation
 ```

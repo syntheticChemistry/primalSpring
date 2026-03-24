@@ -34,6 +34,7 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 
 use super::discover::{capability_call, neural_api_healthy};
+use crate::tolerances;
 
 /// Provenance availability status.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -77,9 +78,6 @@ impl ProvenanceResult {
 /// Consecutive failure counter for the provenance trio circuit.
 static TRIO_FAILURE_COUNT: AtomicU32 = AtomicU32::new(0);
 
-/// Failure threshold before the circuit opens.
-const TRIO_CIRCUIT_THRESHOLD: u32 = 3;
-
 /// Record a successful provenance trio call — resets the failure counter.
 fn trio_record_success() {
     TRIO_FAILURE_COUNT.store(0, Ordering::Relaxed);
@@ -96,15 +94,16 @@ fn trio_record_failure() {
 /// calls within the cooldown window are short-circuited.
 #[must_use]
 fn trio_circuit_is_open() -> bool {
-    TRIO_FAILURE_COUNT.load(Ordering::Relaxed) >= TRIO_CIRCUIT_THRESHOLD
+    TRIO_FAILURE_COUNT.load(Ordering::Relaxed) >= tolerances::CIRCUIT_BREAKER_THRESHOLD
 }
 
 /// Execute a capability call with provenance-specific resilience.
 ///
 /// Absorbed from healthSpring V41 `resilient_capability_call` pattern.
 /// If the trio circuit is open, returns `None` immediately. Otherwise
-/// attempts the call with exponential backoff (2 retries, 100ms base).
-/// On success, resets the circuit; on failure, increments the counter.
+/// attempts the call with exponential backoff using centralized retry
+/// parameters from [`tolerances`]. On success, resets the circuit; on
+/// failure, increments the counter.
 #[must_use]
 fn resilient_capability_call(
     domain: &str,
@@ -115,9 +114,10 @@ fn resilient_capability_call(
         return None;
     }
 
-    let backoff_base = Duration::from_millis(100);
+    let backoff_base = Duration::from_millis(tolerances::TRIO_RETRY_BASE_DELAY_MS);
+    let max_attempts = tolerances::TRIO_RETRY_ATTEMPTS;
 
-    for attempt in 0..=2u32 {
+    for attempt in 0..=max_attempts {
         if let Some(result) = capability_call(domain, operation, args) {
             trio_record_success();
             return Some(result);
@@ -125,7 +125,7 @@ fn resilient_capability_call(
 
         trio_record_failure();
 
-        if attempt < 2 {
+        if attempt < max_attempts {
             let delay = backoff_base.saturating_mul(1u32.wrapping_shl(attempt));
             std::thread::sleep(delay);
         }
@@ -500,7 +500,7 @@ mod tests {
     #[test]
     fn trio_circuit_opens_after_threshold() {
         reset_trio_circuit();
-        for _ in 0..TRIO_CIRCUIT_THRESHOLD {
+        for _ in 0..tolerances::CIRCUIT_BREAKER_THRESHOLD {
             trio_record_failure();
         }
         assert!(trio_circuit_is_open());

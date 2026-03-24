@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 24, 2026
-**Status**: Phase 15 — CROSS-ECOSYSTEM ABSORPTION (87/87 gates), 53 experiments, 361 tests, 22 deploy graphs
+**Status**: Phase 16 — DEEP DEBT AUDIT + CENTRALIZED TOLERANCES (87/87 gates), 53 experiments, 364 tests, 22 deploy graphs
 
 ---
 
@@ -37,7 +37,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Metric | Value |
 |--------|-------|
 | Experiments | 53 (10 tracks) |
-| Total tests | **361** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Total tests | **364** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
@@ -63,6 +63,19 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed — Phase 16 (Deep Debt Audit + Centralized Tolerances)
+
+### Comprehensive Audit (March 24, 2026)
+Deep debt audit against all ecosystem standards (wateringHole/) and sibling spring conventions:
+1. **Tolerance calibration notes** — all 7 latency/throughput constants updated from "pending" to document Phase 15 operational validation history
+2. **Provenance trio resilience centralized** — `TRIO_CIRCUIT_THRESHOLD` removed from `ipc/provenance.rs`, trio retry params (`TRIO_RETRY_ATTEMPTS`, `TRIO_RETRY_BASE_DELAY_MS`) centralized in `tolerances/`
+3. **Remote gate TCP port defaults** — `DEFAULT_BEARDOG_PORT` through `DEFAULT_SQUIRREL_PORT` centralized (was inline magic numbers in exp073/074)
+4. **`extract_capability_names` deduplicated** — coordination delegates to ipc::discover 4-format parser (was local 2-format copy)
+5. **Hardcoding evolved to capability-based** — exp010 string match → semantic check, exp073/074 inline ports → tolerances, coordination tests → `primal_names` slug constants
+6. **Stale docs cleaned** — validate_all comment, validate_remote_gate.sh usage, niche version bump
+7. **Coverage baseline measured** — `cargo llvm-cov` run, cast/dispatch/error/protocol 95–100%, coordination/discover/provenance 66–74%, launcher 21% (requires live primals)
+8. **364 tests** (up from 361) — 3 new tolerance tests
 
 ## What Changed — Phase 15 (Cross-Ecosystem Absorption)
 

@@ -17,6 +17,8 @@ use std::io::{BufRead, BufReader, Write};
 use std::net::TcpStream;
 use std::time::Duration;
 
+use primalspring::primal_names;
+use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
 /// TCP JSON-RPC call with timeout.
@@ -69,29 +71,29 @@ struct PrimalProbe {
 
 const PRIMALS: &[PrimalProbe] = &[
     PrimalProbe {
-        name: "beardog",
+        name: primal_names::BEARDOG,
         port_env: "BEARDOG_PORT",
-        default_port: 9100,
+        default_port: tolerances::DEFAULT_BEARDOG_PORT,
     },
     PrimalProbe {
-        name: "songbird",
+        name: primal_names::SONGBIRD,
         port_env: "SONGBIRD_PORT",
-        default_port: 9200,
+        default_port: tolerances::DEFAULT_SONGBIRD_PORT,
     },
     PrimalProbe {
-        name: "nestgate",
+        name: primal_names::NESTGATE,
         port_env: "NESTGATE_PORT",
-        default_port: 9300,
+        default_port: tolerances::DEFAULT_NESTGATE_PORT,
     },
     PrimalProbe {
-        name: "toadstool",
+        name: primal_names::TOADSTOOL,
         port_env: "TOADSTOOL_PORT",
-        default_port: 9400,
+        default_port: tolerances::DEFAULT_TOADSTOOL_PORT,
     },
     PrimalProbe {
-        name: "squirrel",
+        name: primal_names::SQUIRREL,
         port_env: "SQUIRREL_PORT",
-        default_port: 9500,
+        default_port: tolerances::DEFAULT_SQUIRREL_PORT,
     },
 ];
 
