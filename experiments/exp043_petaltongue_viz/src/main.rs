@@ -9,49 +9,47 @@
 use primalspring::coordination::{AtomicType, validate_composition};
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover::{discover_primal, socket_path};
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp043 — petalTongue Viz");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp043: petalTongue Atomic Health Visualization");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    ValidationResult::new("primalSpring Exp043 — petalTongue Viz")
+        .with_provenance("exp043_petaltongue_viz", "2026-03-24")
+        .run(
+            "primalSpring Exp043: petalTongue Atomic Health Visualization",
+            |v| {
+                let petaltongue = discover_primal("petaltongue");
+                v.check_bool(
+                    "discover_petaltongue",
+                    petaltongue.primal == "petaltongue",
+                    "discover petaltongue",
+                );
 
-    let petaltongue = discover_primal("petaltongue");
-    v.check_bool(
-        "discover_petaltongue",
-        petaltongue.primal == "petaltongue",
-        "discover petaltongue",
-    );
+                let path = socket_path("petaltongue");
+                v.check_bool(
+                    "petaltongue_socket_path",
+                    path.to_string_lossy().contains("petaltongue"),
+                    "petaltongue socket path contains 'petaltongue'",
+                );
 
-    let path = socket_path("petaltongue");
-    v.check_bool(
-        "petaltongue_socket_path",
-        path.to_string_lossy().contains("petaltongue"),
-        "petaltongue socket path contains 'petaltongue'",
-    );
+                let health = primalspring::coordination::probe_primal("petaltongue");
+                if health.socket_found {
+                    v.check_bool("petaltongue_health", health.health_ok, "petaltongue health");
+                    v.check_minimum("petaltongue_caps", health.capabilities.len(), 1);
 
-    let health = primalspring::coordination::probe_primal("petaltongue");
-    if health.socket_found {
-        v.check_bool("petaltongue_health", health.health_ok, "petaltongue health");
-        v.check_minimum("petaltongue_caps", health.capabilities.len(), 1);
-
-        if let Some(ref sock) = petaltongue.socket {
-            if let Ok(mut client) = PrimalClient::connect(sock, "petaltongue") {
-                probe_live_petaltongue(&mut v, &mut client);
-            } else {
-                skip_viz_checks(&mut v, "cannot connect");
-            }
-        }
-    } else {
-        v.check_skip("petaltongue_health", "petaltongue not reachable");
-        v.check_skip("petaltongue_caps", "petaltongue not reachable");
-        skip_viz_checks(&mut v, "petaltongue not reachable");
-    }
-
-    v.finish();
-    std::process::exit(v.exit_code());
+                    if let Some(ref sock) = petaltongue.socket {
+                        if let Ok(mut client) = PrimalClient::connect(sock, "petaltongue") {
+                            probe_live_petaltongue(v, &mut client);
+                        } else {
+                            skip_viz_checks(v, "cannot connect");
+                        }
+                    }
+                } else {
+                    v.check_skip("petaltongue_health", "petaltongue not reachable");
+                    v.check_skip("petaltongue_caps", "petaltongue not reachable");
+                    skip_viz_checks(v, "petaltongue not reachable");
+                }
+            },
+        );
 }
 
 fn skip_viz_checks(v: &mut ValidationResult, reason: &str) {

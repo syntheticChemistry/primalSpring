@@ -9,7 +9,6 @@
 //! for visualization, Squirrel for AI coordination) are discoverable.
 
 use primalspring::ipc::discover::{discover_for, neural_api_healthy};
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 /// Routing endpoints probed for capability-based cross-spring data flow.
@@ -20,38 +19,35 @@ use primalspring::validation::ValidationResult;
 const ROUTING_PRIMALS: &[&str] = &["petaltongue", "squirrel"];
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp040 — Cross Spring Data Flow");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!(
-        "primalSpring Exp040: Cross Spring Data Flow (ecology pipeline via capability routing)"
-    );
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    ValidationResult::new("primalSpring Exp040 — Cross Spring Data Flow")
+        .with_provenance("exp040_cross_spring_data_flow", "2026-03-24")
+        .run(
+            "primalSpring Exp040: Cross Spring Data Flow (ecology pipeline via capability routing)",
+            |v| {
+                let results = discover_for(ROUTING_PRIMALS);
+                let found = results.iter().filter(|r| r.socket.is_some()).count();
+                v.check_bool(
+                    "routing_primals_probed",
+                    results.len() == ROUTING_PRIMALS.len(),
+                    &format!(
+                        "probed {} routing primals, {found} reachable",
+                        ROUTING_PRIMALS.len()
+                    ),
+                );
 
-    let results = discover_for(ROUTING_PRIMALS);
-    let found = results.iter().filter(|r| r.socket.is_some()).count();
-    v.check_bool(
-        "routing_primals_probed",
-        results.len() == ROUTING_PRIMALS.len(),
-        &format!(
-            "probed {} routing primals, {found} reachable",
-            ROUTING_PRIMALS.len()
-        ),
-    );
-
-    if neural_api_healthy() {
-        v.check_bool("neural_api_reachable", true, "Neural API healthy");
-        v.check_skip(
-            "cross_spring_data_flow",
-            "end-to-end flow requires airSpring + wetSpring + neuralSpring registered",
+                if neural_api_healthy() {
+                    v.check_bool("neural_api_reachable", true, "Neural API healthy");
+                    v.check_skip(
+                        "cross_spring_data_flow",
+                        "end-to-end flow requires airSpring + wetSpring + neuralSpring registered",
+                    );
+                } else {
+                    v.check_skip("neural_api_reachable", "Neural API not running");
+                    v.check_skip(
+                        "cross_spring_data_flow",
+                        "needs live spring primals for capability routing",
+                    );
+                }
+            },
         );
-    } else {
-        v.check_skip("neural_api_reachable", "Neural API not running");
-        v.check_skip(
-            "cross_spring_data_flow",
-            "needs live spring primals for capability routing",
-        );
-    }
-
-    v.finish();
-    std::process::exit(v.exit_code());
 }

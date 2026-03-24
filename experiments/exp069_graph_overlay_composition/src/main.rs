@@ -241,15 +241,13 @@ fn validate_live_overlay(v: &mut ValidationResult) {
 }
 
 fn main() {
-    ValidationResult::run_experiment(
-        "exp069_graph_overlay_composition",
-        "Graph-Driven Overlay Composition",
-        |v| {
+    ValidationResult::new("exp069_graph_overlay_composition")
+        .with_provenance("exp069_graph_overlay_composition", "2026-03-24")
+        .run("Graph-Driven Overlay Composition", |v| {
             validate_overlay_structure(v);
             validate_spawn_filtering(v);
             validate_capability_maps(v);
             validate_graph_merge(v);
             validate_live_overlay(v);
-        },
-    );
+        });
 }

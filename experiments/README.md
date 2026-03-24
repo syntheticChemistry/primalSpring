@@ -7,9 +7,20 @@
 ## Overview
 
 Each experiment is a standalone Rust binary in its own crate under `experiments/`.
-Every experiment uses the shared validation harness (`check_bool`, `check_skip`,
-`check_or_skip`) with uniform `finish()` + `exit_code()` and optional JSON output
-(`PRIMALSPRING_JSON=1`).
+Every experiment uses the builder-pattern validation harness:
+
+```rust
+ValidationResult::new("Experiment Title")
+    .with_provenance("exp_crate_name", "2026-03-24")
+    .run("subtitle", |v| {
+        v.check_bool("name", actual, expected);
+        v.check_skip("name", "reason");
+    });
+```
+
+The `.run()` method prints the banner, executes checks, prints the summary,
+and exits with the appropriate code (0 = pass, 1 = fail). All 53 experiments
+carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
@@ -41,7 +52,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 7 | Showcase-Mined | exp050–059 | Discovery wired |
 | 8 | Live Composition | exp060–070 | **Live validated** (Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery) |
 | 9 | Multi-Node Bonding | exp071–072 | **Structural** (bonding policy, data federation, graph metadata) |
-| 10 | Cross-Gate Deployment | exp073–074 | **New** (LAN covalent mesh, remote NUCLEUS health via TCP) |
+| 10 | Cross-Gate Deployment | exp073–074 | **Structural** (LAN covalent mesh, remote NUCLEUS health via TCP) |
 
 ## Experiment Status Key
 
@@ -69,13 +80,20 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 12.1 | Ecosystem Absorption Wave 1 | **Done** (deny.toml, cast lints, ValidationSink, exit_code_skip_aware, proptest_ipc, primal_names, circuit breaker — 303 tests) |
 | 12.2 | Ecosystem Absorption Wave 2 | **Done** (normalize_method, check_relative, NdjsonSink, is_recoverable, Transport, OnceLock probes, missing_docs deny, release gate — 360 tests) |
 | 13 | Cross-Gate Deployment Tooling | **Done** (build_ecosystem_musl.sh, prepare_spore_payload.sh, validate_remote_gate.sh, exp073, exp074, exp063 cross-device) |
-| 14 | LAN Covalent Deployment | **Next** — LAN_COVALENT_DEPLOYMENT_GUIDE, live multi-gate NUCLEUS, BirdSong beacon exchange |
-| 15+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
+| 14 | Deep Debt + Builder Pattern + Full Provenance | **Done** (builder `.run()`, all 53 experiments with `with_provenance()`, validation/tests.rs extracted, zero `#[allow()]`, zero `.unwrap()` in experiments, 361 tests) |
+| 15 | LAN Covalent Deployment | **Next** — LAN_COVALENT_DEPLOYMENT_GUIDE, live multi-gate NUCLEUS, BirdSong beacon exchange |
+| 16+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
 
 ## Validation Harness
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
+**Builder API** (preferred — all 53 experiments use this):
+- `ValidationResult::new(title)` — create a harness with title
+- `.with_provenance(source, date)` — attach structured provenance metadata
+- `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit
+
+**Check methods** (called on `&mut ValidationResult` inside `.run()`):
 - `check_bool(name, actual, expected)` — strict equality check
 - `check_skip(name, reason)` — honest skip when dependency unavailable
 - `check_or_skip(name, result)` — check if available, skip otherwise
@@ -84,11 +102,10 @@ All experiments share the `ecoPrimal` library crate's validation module:
 - `check_latency(name, actual_us, max_us)` — latency bound check
 - `check_count(name, actual, expected)` — exact count match
 - `check_minimum(name, actual, minimum)` — minimum threshold check
-- `ValidationResult::finish()` — summary with pass/fail/skip counts
-- `ValidationResult::exit_code()` — 0 if all checks pass (at least one required), 1 if any fail or none pass
-- `ValidationResult::exit_code_skip_aware()` — 0=pass, 1=fail, 2=all-skipped (skip ≠ fail in CI)
-- `ValidationResult::with_provenance(source, date)` — structured provenance metadata
-- `ValidationResult::section(name)` — begin a named section of checks (groundSpring V120)
+- `exit_code_skip_aware()` — 0=pass, 1=fail, 2=all-skipped (skip ≠ fail in CI)
+- `section(name)` — begin a named section of checks (groundSpring V120)
+
+**Output sinks**:
 - `NdjsonSink` — streaming NDJSON output for CI/log aggregation
 - `StdoutSink` / `NullSink` — pluggable output sinks
 

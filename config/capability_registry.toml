@@ -7,7 +7,7 @@
 [meta]
 primal = "primalspring"
 domain = "coordination"
-version = "0.5.0"
+version = "0.7.0"
 
 [[capabilities]]
 method = "coordination.validate_composition"

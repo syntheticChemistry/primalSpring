@@ -190,54 +190,53 @@ fn main() {
     let endpoint =
         std::env::var("NESTGATE_ENDPOINT").unwrap_or_else(|_| "https://api.nestgate.io".to_owned());
 
-    ValidationResult::run_experiment(
-        "primalSpring Exp064 — Nestgate Internet Reach",
-        "primalSpring Exp064: Full internet deployment path validation",
-        |v| {
-            let running = match AtomicHarness::new(AtomicType::Tower)
-                .start_with_neural_api(&family_id, &graphs_dir)
-            {
-                Ok(r) => r,
-                Err(e) => {
-                    v.check_bool("harness_start", false, &format!("failed to start: {e}"));
-                    v.finish();
-                    std::process::exit(v.exit_code());
-                }
-            };
+    ValidationResult::new("primalSpring Exp064 — Nestgate Internet Reach")
+        .with_provenance("exp064_nestgate_internet_reach", "2026-03-24")
+        .run(
+            "primalSpring Exp064: Full internet deployment path validation",
+            |v| {
+                let running = match AtomicHarness::new(AtomicType::Tower)
+                    .start_with_neural_api(&family_id, &graphs_dir)
+                {
+                    Ok(r) => r,
+                    Err(e) => {
+                        v.check_bool("harness_start", false, &format!("failed to start: {e}"));
+                        return;
+                    }
+                };
 
-            let Some(songbird_socket) = running
-                .socket_for("discovery")
-                .or_else(|| running.socket_for_primal("songbird"))
-            else {
-                v.check_bool("songbird_socket", false, "songbird socket not found");
-                v.finish();
-                std::process::exit(v.exit_code());
-            };
+                let Some(songbird_socket) = running
+                    .socket_for("discovery")
+                    .or_else(|| running.socket_for_primal("songbird"))
+                else {
+                    v.check_bool("songbird_socket", false, "songbird socket not found");
+                    return;
+                };
 
-            let mut report = PathReport::new();
+                let mut report = PathReport::new();
 
-            probe_https(v, songbird_socket, &endpoint, &mut report);
-            probe_stun_and_nat(v, songbird_socket, &mut report);
-            probe_onion_and_tor(v, songbird_socket, &family_id, &mut report);
+                probe_https(v, songbird_socket, &endpoint, &mut report);
+                probe_stun_and_nat(v, songbird_socket, &mut report);
+                probe_onion_and_tor(v, songbird_socket, &family_id, &mut report);
 
-            println!("\n  ╔══════════════════════════════════════════════════════╗");
-            println!(
-                "  ║  Internet Reach: {}/{} paths available             ║",
-                report.available.len(),
-                5
-            );
-            println!("  ╚══════════════════════════════════════════════════════╝");
-            println!("  Available: {}", report.available.join(", "));
-            println!("\n  Deployment model: nestgate.io (Cloudflare tunnel)");
-            println!("    Tower ─── HTTPS ──→ api.nestgate.io ←── Pixel 8a (hotspot)");
-            println!("    Tower ─── Onion ──→ .onion ←── Pixel 8a (Tor)");
-            println!("    Tower ─── STUN ──→ public IP ←── Pixel 8a (direct)");
+                println!("\n  ╔══════════════════════════════════════════════════════╗");
+                println!(
+                    "  ║  Internet Reach: {}/{} paths available             ║",
+                    report.available.len(),
+                    5
+                );
+                println!("  ╚══════════════════════════════════════════════════════╝");
+                println!("  Available: {}", report.available.join(", "));
+                println!("\n  Deployment model: nestgate.io (Cloudflare tunnel)");
+                println!("    Tower ─── HTTPS ──→ api.nestgate.io ←── Pixel 8a (hotspot)");
+                println!("    Tower ─── Onion ──→ .onion ←── Pixel 8a (Tor)");
+                println!("    Tower ─── STUN ──→ public IP ←── Pixel 8a (direct)");
 
-            v.check_bool(
-                "at_least_one_path",
-                !report.available.is_empty(),
-                "at least one path",
-            );
-        },
-    );
+                v.check_bool(
+                    "at_least_one_path",
+                    !report.available.is_empty(),
+                    "at least one path",
+                );
+            },
+        );
 }

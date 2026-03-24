@@ -26,73 +26,69 @@ fn rpc(
 }
 
 fn main() {
-    let mut v = ValidationResult::new("exp067_node_atomic")
-        .with_provenance("exp067_node_atomic", "2026-03-23");
-    ValidationResult::print_banner("Node Atomic — Tower + ToadStool compute");
-    {
-        let v = &mut v;
-        let primals = AtomicType::Node.required_primals();
-        v.check_bool(
-            "node_composition_valid",
-            primals.len() == 3,
-            "Node = beardog + songbird + toadstool",
-        );
-
-        let family_id = format!("exp067-{}", std::process::id());
-        let running = match AtomicHarness::new(AtomicType::Node).start(&family_id) {
-            Ok(r) => {
-                v.check_bool("node_startup", true, "Node Atomic started");
-                r
-            }
-            Err(e) => {
-                v.check_bool("node_startup", false, &format!("{e}"));
-                return;
-            }
-        };
-
-        v.check_minimum("node_primal_count", running.primal_count(), 3);
-        running.validate(v);
-
-        if let Some(ts) = running
-            .socket_for("compute")
-            .or_else(|| running.socket_for_primal("toadstool"))
-        {
-            let health = rpc(ts, "toadstool.health", &serde_json::json!({}));
+    ValidationResult::new("exp067_node_atomic")
+        .with_provenance("exp067_node_atomic", "2026-03-23")
+        .run("Node Atomic — Tower + ToadStool compute", |v| {
+            let primals = AtomicType::Node.required_primals();
             v.check_bool(
-                "toadstool_health",
-                health.as_ref().is_ok_and(|v| v["healthy"] == true),
-                "toadstool.health",
+                "node_composition_valid",
+                primals.len() == 3,
+                "Node = beardog + songbird + toadstool",
             );
 
-            let caps = rpc(ts, "toadstool.query_capabilities", &serde_json::json!({}));
-            v.check_bool(
-                "toadstool_caps",
-                caps.as_ref()
-                    .is_ok_and(|v| v["supported_workload_types"].is_array()),
-                "toadstool capabilities",
-            );
+            let family_id = format!("exp067-{}", std::process::id());
+            let running = match AtomicHarness::new(AtomicType::Node).start(&family_id) {
+                Ok(r) => {
+                    v.check_bool("node_startup", true, "Node Atomic started");
+                    r
+                }
+                Err(e) => {
+                    v.check_bool("node_startup", false, &format!("{e}"));
+                    return;
+                }
+            };
 
-            if let Ok(c) = &caps {
-                let types = c["supported_workload_types"].as_array().map_or(0, Vec::len);
-                v.check_minimum("toadstool_workload_types", types, 1);
-                let cores = u64_to_usize(
-                    c["available_resources"]["total_cpu_cores"]
-                        .as_u64()
-                        .unwrap_or(0),
+            v.check_minimum("node_primal_count", running.primal_count(), 3);
+            running.validate(v);
+
+            if let Some(ts) = running
+                .socket_for("compute")
+                .or_else(|| running.socket_for_primal("toadstool"))
+            {
+                let health = rpc(ts, "toadstool.health", &serde_json::json!({}));
+                v.check_bool(
+                    "toadstool_health",
+                    health.as_ref().is_ok_and(|v| v["healthy"] == true),
+                    "toadstool.health",
                 );
-                v.check_minimum("toadstool_cpu_cores", cores, 1);
-                println!("  toadstool: {types} workload types, {cores} CPU cores");
-            }
 
-            v.check_bool(
-                "toadstool_version",
-                rpc(ts, "toadstool.version", &serde_json::json!({})).is_ok(),
-                "toadstool.version",
-            );
-        } else {
-            v.check_skip("toadstool_health", "toadstool socket not found");
-        }
-    }
-    v.finish();
-    std::process::exit(v.exit_code());
+                let caps = rpc(ts, "toadstool.query_capabilities", &serde_json::json!({}));
+                v.check_bool(
+                    "toadstool_caps",
+                    caps.as_ref()
+                        .is_ok_and(|v| v["supported_workload_types"].is_array()),
+                    "toadstool capabilities",
+                );
+
+                if let Ok(c) = &caps {
+                    let types = c["supported_workload_types"].as_array().map_or(0, Vec::len);
+                    v.check_minimum("toadstool_workload_types", types, 1);
+                    let cores = u64_to_usize(
+                        c["available_resources"]["total_cpu_cores"]
+                            .as_u64()
+                            .unwrap_or(0),
+                    );
+                    v.check_minimum("toadstool_cpu_cores", cores, 1);
+                    println!("  toadstool: {types} workload types, {cores} CPU cores");
+                }
+
+                v.check_bool(
+                    "toadstool_version",
+                    rpc(ts, "toadstool.version", &serde_json::json!({})).is_ok(),
+                    "toadstool.version",
+                );
+            } else {
+                v.check_skip("toadstool_health", "toadstool socket not found");
+            }
+        });
 }

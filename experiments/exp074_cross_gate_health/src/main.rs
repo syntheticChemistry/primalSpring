@@ -160,10 +160,11 @@ fn probe_primal_capabilities(v: &mut ValidationResult, host: &str, primal: &Prim
 fn main() {
     let host = std::env::var("REMOTE_GATE_HOST").unwrap_or_default();
 
-    ValidationResult::run_experiment(
-        "primalSpring Exp074 — Cross-Gate Health",
-        "primalSpring Exp074: Remote NUCLEUS per-primal health + capabilities via TCP",
-        |v| {
+    ValidationResult::new("primalSpring Exp074 — Cross-Gate Health")
+        .with_provenance("exp074_cross_gate_health", "2026-03-24")
+        .run(
+            "primalSpring Exp074: Remote NUCLEUS per-primal health + capabilities via TCP",
+            |v| {
             if host.is_empty() {
                 println!("  REMOTE_GATE_HOST not set — skipping all remote checks.");
                 println!(
@@ -220,6 +221,6 @@ fn main() {
                     &format!("only {live_count} primals live, need >= 2 for Tower"),
                 );
             }
-        },
-    );
+            },
+        );
 }

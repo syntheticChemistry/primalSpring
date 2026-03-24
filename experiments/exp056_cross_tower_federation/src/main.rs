@@ -11,7 +11,6 @@ use std::path::Path;
 use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::bonding::{BondType, TrustModel};
 use primalspring::coordination::AtomicType;
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn atomic_type_structural(v: &mut ValidationResult) {
@@ -154,17 +153,16 @@ fn live_federation_skips(v: &mut ValidationResult) {
 }
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp056 — Cross Tower Federation");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp056: Cross-Tower Federation — BYOB, NAT, Gossip");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    atomic_type_structural(&mut v);
-    friend_remote_covalent_graph_metadata(&mut v);
-    idle_compute_federation_graph_metadata(&mut v);
-    data_federation_graph_metadata(&mut v);
-    live_federation_skips(&mut v);
-
-    v.finish();
-    std::process::exit(v.exit_code());
+    ValidationResult::new("primalSpring Exp056 — Cross Tower Federation")
+        .with_provenance("exp056_cross_tower_federation", "2026-03-24")
+        .run(
+            "primalSpring Exp056: Cross-Tower Federation — BYOB, NAT, Gossip",
+            |v| {
+                atomic_type_structural(v);
+                friend_remote_covalent_graph_metadata(v);
+                idle_compute_federation_graph_metadata(v);
+                data_federation_graph_metadata(v);
+                live_federation_skips(v);
+            },
+        );
 }

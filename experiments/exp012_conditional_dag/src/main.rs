@@ -13,7 +13,7 @@ use primalspring::coordination::AtomicType;
 use primalspring::deploy::{graph_spawnable_primals, load_graph, validate_structure};
 use primalspring::graphs::CoordinationPattern;
 use primalspring::harness::{AtomicHarness, RunningAtomic};
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
+use primalspring::validation::OrExit;
 use primalspring::validation::ValidationResult;
 
 fn graphs_dir() -> PathBuf {
@@ -47,7 +47,7 @@ fn conditional_fallback_graph_structure(v: &mut ValidationResult, graph_path: &P
     );
 
     if result.parsed {
-        let graph = load_graph(graph_path).unwrap();
+        let graph = load_graph(graph_path).or_exit("load conditional_fallback graph");
         let spawnable = graph_spawnable_primals(&graph);
         println!(
             "  {} nodes, {} spawnable: {spawnable:?}",
@@ -139,17 +139,15 @@ fn conditional_composition_live(v: &mut ValidationResult, graph_path: &Path) {
 }
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp012 — Conditional DAG");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp012: ConditionalDag (conditional_fallback.toml)");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    coordination_pattern_constants(&mut v);
-    let graph_path = graphs_dir().join("conditional_fallback.toml");
-    conditional_fallback_graph_structure(&mut v, &graph_path);
-    conditional_composition_live(&mut v, &graph_path);
-
-    println!("\n{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    v.finish();
-    std::process::exit(v.exit_code());
+    ValidationResult::new("primalSpring Exp012 — Conditional DAG")
+        .with_provenance("exp012_conditional_dag", "2026-03-24")
+        .run(
+            "primalSpring Exp012: ConditionalDag (conditional_fallback.toml)",
+            |v| {
+                coordination_pattern_constants(v);
+                let graph_path = graphs_dir().join("conditional_fallback.toml");
+                conditional_fallback_graph_structure(v, &graph_path);
+                conditional_composition_live(v, &graph_path);
+            },
+        );
 }

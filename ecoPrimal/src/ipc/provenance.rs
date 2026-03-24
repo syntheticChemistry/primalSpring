@@ -9,7 +9,7 @@
 //! - **Graceful degradation** when the trio is unavailable
 //! - **Semantic routing** via Neural API (capability → primal mapping)
 //!
-//! Pattern: [`SPRING_PROVENANCE_TRIO_INTEGRATION_PATTERN.md`]
+//! Pattern: `SPRING_PROVENANCE_TRIO_INTEGRATION_PATTERN.md` (wateringHole)
 //!
 //! # Capability Routing
 //!

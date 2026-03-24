@@ -5,71 +5,69 @@
 use primalspring::bonding::BondType;
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_primal, socket_path};
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp031 — Ionic Bond");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp031: Cross-Family Limited Capability Sharing");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    let bond = BondType::Ionic;
-    v.check_bool(
-        "ionic_description_non_empty",
-        !bond.description().is_empty(),
-        &format!(
-            "BondType::Ionic.description() is non-empty — {}",
-            bond.description()
-        ),
-    );
-
-    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
-    let path_beardog = socket_path("beardog");
-    let path_contains_family = path_beardog
-        .to_string_lossy()
-        .contains(&format!("-{family_id}.sock"));
-    v.check_bool(
-        "socket_path_includes_family_id",
-        path_contains_family,
-        &format!(
-            "socket path includes FAMILY_ID: {} (path: {})",
-            family_id,
-            path_beardog.display()
-        ),
-    );
-
-    let beardog = discover_primal("beardog");
-    v.check_bool(
-        "discover_beardog_returns_result",
-        beardog.primal == "beardog",
-        "discover_primal returns DiscoveryResult for beardog",
-    );
-    let songbird = discover_primal("songbird");
-    for (name, discovery) in [("beardog", beardog), ("songbird", songbird)] {
-        v.check_or_skip(
-            &format!("probe_{name}"),
-            discovery.socket.as_ref(),
-            &format!("{name} socket not found (Tower primitive)"),
-            |_, v| {
-                let health = probe_primal(name);
+    ValidationResult::new("primalSpring Exp031 — Ionic Bond")
+        .with_provenance("exp031_ionic_bond", "2026-03-24")
+        .run(
+            "primalSpring Exp031: Cross-Family Limited Capability Sharing",
+            |v| {
+                let bond = BondType::Ionic;
                 v.check_bool(
-                    &format!("{name}_health"),
-                    health.health_ok,
+                    "ionic_description_non_empty",
+                    !bond.description().is_empty(),
                     &format!(
-                        "health ok: {}, latency: {}µs",
-                        health.health_ok, health.latency_us
+                        "BondType::Ionic.description() is non-empty — {}",
+                        bond.description()
                     ),
+                );
+
+                let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
+                let path_beardog = socket_path("beardog");
+                let path_contains_family = path_beardog
+                    .to_string_lossy()
+                    .contains(&format!("-{family_id}.sock"));
+                v.check_bool(
+                    "socket_path_includes_family_id",
+                    path_contains_family,
+                    &format!(
+                        "socket path includes FAMILY_ID: {} (path: {})",
+                        family_id,
+                        path_beardog.display()
+                    ),
+                );
+
+                let beardog = discover_primal("beardog");
+                v.check_bool(
+                    "discover_beardog_returns_result",
+                    beardog.primal == "beardog",
+                    "discover_primal returns DiscoveryResult for beardog",
+                );
+                let songbird = discover_primal("songbird");
+                for (name, discovery) in [("beardog", beardog), ("songbird", songbird)] {
+                    v.check_or_skip(
+                        &format!("probe_{name}"),
+                        discovery.socket.as_ref(),
+                        &format!("{name} socket not found (Tower primitive)"),
+                        |_, v| {
+                            let health = probe_primal(name);
+                            v.check_bool(
+                                &format!("{name}_health"),
+                                health.health_ok,
+                                &format!(
+                                    "health ok: {}, latency: {}µs",
+                                    health.health_ok, health.latency_us
+                                ),
+                            );
+                        },
+                    );
+                }
+
+                v.check_skip(
+                    "cross_family_capability_sharing",
+                    "needs live primals from different families",
                 );
             },
         );
-    }
-
-    v.check_skip(
-        "cross_family_capability_sharing",
-        "needs live primals from different families",
-    );
-
-    v.finish();
-    std::process::exit(v.exit_code());
 }

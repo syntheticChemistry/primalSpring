@@ -262,17 +262,18 @@ fn validate_tower_still_healthy(guard: &CompositionGuard, v: &mut ValidationResu
 }
 
 fn main() {
-    ValidationResult::run_experiment(
-        "primalSpring Exp061 — Squirrel AI Composition",
-        "primalSpring Exp061: Tower + Squirrel AI (beardog + songbird + squirrel + Neural API)",
-        |v| {
-            let guard = start_composition(v);
-            if let Some(ref g) = guard {
-                validate_squirrel_health(g, v);
-                validate_ai_query(g, v);
-                validate_tower_still_healthy(g, v);
-            }
-            drop(guard);
-        },
-    );
+    ValidationResult::new("primalSpring Exp061 — Squirrel AI Composition")
+        .with_provenance("exp061_squirrel_ai_composition", "2026-03-24")
+        .run(
+            "primalSpring Exp061: Tower + Squirrel AI (beardog + songbird + squirrel + Neural API)",
+            |v| {
+                let guard = start_composition(v);
+                if let Some(ref g) = guard {
+                    validate_squirrel_health(g, v);
+                    validate_ai_query(g, v);
+                    validate_tower_still_healthy(g, v);
+                }
+                drop(guard);
+            },
+        );
 }

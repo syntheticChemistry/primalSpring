@@ -3,6 +3,30 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 14: Deep Debt + Builder Pattern + Full Provenance (2026-03-24)
+
+### Added
+- **Builder-pattern `ValidationResult::run()`** — consumes `self` for idiomatic
+  chaining: `ValidationResult::new(title).with_provenance(src, date).run(sub, |v| { ... })`
+- **All 53 experiments carry structured provenance** — `with_provenance()` on every
+  experiment (was 4/53). Source and baseline date traceable for every validation run
+
+### Changed
+- **`validation/mod.rs` refactored** — extracted 493-line test module to
+  `validation/tests.rs`, production code now 540 lines (was 1016, over 1000 LOC limit)
+- **All 53 experiments standardized on builder `.run()`** — eliminated manual
+  `println!` banners, `v.finish()`, `std::process::exit(v.exit_code())` boilerplate
+- **`.unwrap()` eliminated from all experiment binaries** — exp010/011/012 graph
+  loading now uses `.or_exit()` with context messages
+- **`#[allow(dead_code)]` → `#[expect(dead_code, reason = "...")]`** — 3 integration
+  test files evolved to modern Rust with documented reason
+- **Doc link fixed** in `ipc/provenance.rs` — broken intra-doc link escaped
+- **Stale doc fixed** in `launcher/mod.rs` — Neural API socket path now documents
+  actual `{nucleation_base}/biomeos/` location
+- **`capability_registry.toml` version synced** — 0.5.0 → 0.7.0
+- **`too_many_lines` resolved** — exp044 and exp063 refactored with extracted helpers
+- 361 tests (up from 360), 0 clippy warnings, 0 doc warnings, 0 `#[allow()]` in production
+
 ## [Unreleased] — Phase 11–13 + Ecosystem Absorption + Cross-Gate Deployment (2026-03-23)
 
 ### Added

@@ -12,7 +12,6 @@ use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::bonding::{BondType, BondingPolicy, TrustModel};
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_primal, socket_path};
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn bond_type_structural(v: &mut ValidationResult) {
@@ -142,18 +141,17 @@ fn multi_node_skips(v: &mut ValidationResult) {
 }
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp030 — Covalent Bond");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp030: Covalent Bond — Family Seed, Mesh Discovery, Graph Metadata");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    bond_type_structural(&mut v);
-    family_scoped_socket_paths(&mut v);
-    covalent_bonding_policy(&mut v);
-    covalent_graph_metadata(&mut v);
-    tower_discovery_probing(&mut v);
-    multi_node_skips(&mut v);
-
-    v.finish();
-    std::process::exit(v.exit_code());
+    ValidationResult::new("primalSpring Exp030 — Covalent Bond")
+        .with_provenance("exp030_covalent_bond", "2026-03-24")
+        .run(
+            "primalSpring Exp030: Covalent Bond — Family Seed, Mesh Discovery, Graph Metadata",
+            |v| {
+                bond_type_structural(v);
+                family_scoped_socket_paths(v);
+                covalent_bonding_policy(v);
+                covalent_graph_metadata(v);
+                tower_discovery_probing(v);
+                multi_node_skips(v);
+            },
+        );
 }

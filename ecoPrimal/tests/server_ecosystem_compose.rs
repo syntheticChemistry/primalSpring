@@ -2,7 +2,10 @@
 
 //! Nest, node, overlay, and cross-primal integration tests. Run with `cargo test --ignored`.
 
-#[allow(dead_code)]
+#[expect(
+    dead_code,
+    reason = "shared helpers — each test file uses a different subset"
+)]
 mod integration;
 
 use integration::direct_rpc_call;

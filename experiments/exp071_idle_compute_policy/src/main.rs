@@ -11,7 +11,6 @@ use std::path::Path;
 
 use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::bonding::{BondType, BondingConstraint, BondingPolicy, TrustModel};
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn constraint_filtering(v: &mut ValidationResult) {
@@ -253,18 +252,17 @@ fn graph_metadata_validation(v: &mut ValidationResult) {
 }
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp071 — Idle Compute Policy");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp071: BondingPolicy — Capability Masks, Time Windows, Bandwidth");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    constraint_filtering(&mut v);
-    idle_compute_preset(&mut v);
-    covalent_default(&mut v);
-    ionic_contract(&mut v);
-    inconsistency_detection(&mut v);
-    graph_metadata_validation(&mut v);
-
-    v.finish();
-    std::process::exit(v.exit_code());
+    ValidationResult::new("primalSpring Exp071 — Idle Compute Policy")
+        .with_provenance("exp071_idle_compute_policy", "2026-03-24")
+        .run(
+            "primalSpring Exp071: BondingPolicy — Capability Masks, Time Windows, Bandwidth",
+            |v| {
+                constraint_filtering(v);
+                idle_compute_preset(v);
+                covalent_default(v);
+                ionic_contract(v);
+                inconsistency_detection(v);
+                graph_metadata_validation(v);
+            },
+        );
 }

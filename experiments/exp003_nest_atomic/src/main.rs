@@ -10,33 +10,34 @@ use primalspring::ipc::discover::discover_by_capability;
 use primalspring::validation::ValidationResult;
 
 fn main() {
-    ValidationResult::run_experiment(
-        "primalSpring Exp003 — Nest Atomic",
-        "primalSpring Exp003: Nest Atomic (security + discovery + storage)",
-        |v| {
-            let nest_caps = AtomicType::Nest.required_capabilities();
-            v.check_count("nest_required_caps", nest_caps.len(), 3);
+    ValidationResult::new("primalSpring Exp003 — Nest Atomic")
+        .with_provenance("exp003_nest_atomic", "2026-03-24")
+        .run(
+            "primalSpring Exp003: Nest Atomic (security + discovery + storage)",
+            |v| {
+                let nest_caps = AtomicType::Nest.required_capabilities();
+                v.check_count("nest_required_caps", nest_caps.len(), 3);
 
-            for cap in nest_caps {
-                let disc = discover_by_capability(cap);
-                let provider = disc.resolved_primal.as_deref().unwrap_or("not found");
-                v.check_or_skip(
-                    &format!("discover_{cap}"),
-                    disc.socket.as_ref(),
-                    &format!("{cap} provider not discovered — not running"),
-                    |path, v| {
-                        v.check_bool(
-                            &format!("discover_{cap}"),
-                            true,
-                            &format!("{cap} provided by {provider} at {}", path.display()),
-                        );
-                    },
-                );
-            }
+                for cap in nest_caps {
+                    let disc = discover_by_capability(cap);
+                    let provider = disc.resolved_primal.as_deref().unwrap_or("not found");
+                    v.check_or_skip(
+                        &format!("discover_{cap}"),
+                        disc.socket.as_ref(),
+                        &format!("{cap} provider not discovered — not running"),
+                        |path, v| {
+                            v.check_bool(
+                                &format!("discover_{cap}"),
+                                true,
+                                &format!("{cap} provided by {provider} at {}", path.display()),
+                            );
+                        },
+                    );
+                }
 
-            for cap in nest_caps {
-                check_capability_health(v, cap);
-            }
-        },
-    );
+                for cap in nest_caps {
+                    check_capability_health(v, cap);
+                }
+            },
+        );
 }

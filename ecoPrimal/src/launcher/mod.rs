@@ -531,7 +531,7 @@ fn await_socket_ready(
 ///
 /// Unlike regular primals, the Neural API server:
 /// - Has no `server` subcommand (just runs directly)
-/// - Creates its socket at `/tmp/neural-api-{family}.sock`
+/// - Creates its socket at `{nucleation_base}/biomeos/neural-api-{family}.sock`
 /// - Needs CWD containing a `graphs/` directory for bootstrap
 /// - Detects already-running primals via its own nucleation
 ///

@@ -31,91 +31,90 @@ fn probe_primal_with_liveness_readiness(
 }
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp050 — Compute Triangle");
-    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp050: coralReef → toadStool → barraCuda Pipeline");
-    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
+    ValidationResult::new("primalSpring Exp050 — Compute Triangle")
+        .with_provenance("exp050_compute_triangle", "2026-03-24")
+        .run(
+            "primalSpring Exp050: coralReef → toadStool → barraCuda Pipeline",
+            |v| {
+                let toadstool = discover_primal("toadstool");
+                v.check_bool(
+                    "toadstool_discovery",
+                    toadstool.primal == "toadstool",
+                    "discover_primal returns DiscoveryResult for toadstool",
+                );
 
-    let toadstool = discover_primal("toadstool");
-    v.check_bool(
-        "toadstool_discovery",
-        toadstool.primal == "toadstool",
-        "discover_primal returns DiscoveryResult for toadstool",
-    );
+                let coralreef = discover_primal("coralreef");
+                let coralreef_attempted = coralreef.source == DiscoverySource::NotFound
+                    || coralreef.source == DiscoverySource::XdgConvention
+                    || coralreef.source == DiscoverySource::TempFallback
+                    || coralreef.source == DiscoverySource::EnvOverride;
+                v.check_bool(
+                    "coralreef_socket_discovery_attempted",
+                    coralreef_attempted,
+                    "attempt to discover coralreef socket (may be NotFound if not running)",
+                );
 
-    let coralreef = discover_primal("coralreef");
-    let coralreef_attempted = coralreef.source == DiscoverySource::NotFound
-        || coralreef.source == DiscoverySource::XdgConvention
-        || coralreef.source == DiscoverySource::TempFallback
-        || coralreef.source == DiscoverySource::EnvOverride;
-    v.check_bool(
-        "coralreef_socket_discovery_attempted",
-        coralreef_attempted,
-        "attempt to discover coralreef socket (may be NotFound if not running)",
-    );
+                let path_toadstool = socket_path("toadstool");
+                let path_coralreef = socket_path("coralreef");
+                let path_barracuda = socket_path("barracuda");
+                let valid_paths = path_toadstool.to_string_lossy().contains("biomeos")
+                    && path_toadstool.to_string_lossy().contains("toadstool")
+                    && path_toadstool.to_string_lossy().ends_with(".sock")
+                    && path_coralreef.to_string_lossy().contains("biomeos")
+                    && path_coralreef.to_string_lossy().contains("coralreef")
+                    && path_barracuda.to_string_lossy().contains("biomeos")
+                    && path_barracuda.to_string_lossy().contains("barracuda");
+                v.check_bool(
+                    "socket_path_valid_for_all_three",
+                    valid_paths,
+                    "socket_path returns valid-looking paths for toadstool, coralreef, barracuda",
+                );
 
-    let path_toadstool = socket_path("toadstool");
-    let path_coralreef = socket_path("coralreef");
-    let path_barracuda = socket_path("barracuda");
-    let valid_paths = path_toadstool.to_string_lossy().contains("biomeos")
-        && path_toadstool.to_string_lossy().contains("toadstool")
-        && path_toadstool.to_string_lossy().ends_with(".sock")
-        && path_coralreef.to_string_lossy().contains("biomeos")
-        && path_coralreef.to_string_lossy().contains("coralreef")
-        && path_barracuda.to_string_lossy().contains("biomeos")
-        && path_barracuda.to_string_lossy().contains("barracuda");
-    v.check_bool(
-        "socket_path_valid_for_all_three",
-        valid_paths,
-        "socket_path returns valid-looking paths for toadstool, coralreef, barracuda",
-    );
-
-    for (primal, display_name) in [
-        ("toadstool", "toadStool"),
-        ("coralreef", "coralReef"),
-        ("barracuda", "barraCuda"),
-    ] {
-        let discovery = discover_primal(primal);
-        v.check_or_skip(
-            &format!("{primal}_probe"),
-            discovery.socket.as_ref(),
-            &format!("{display_name} not reachable"),
-            |path, v| {
-                if let Some((liveness, readiness, latency_us, caps)) =
-                    probe_primal_with_liveness_readiness(primal, path)
-                {
-                    v.check_bool(
-                        &format!("{primal}_liveness"),
-                        liveness,
-                        &format!("{display_name} health.liveness"),
-                    );
-                    v.check_bool(
-                        &format!("{primal}_readiness"),
-                        readiness,
-                        &format!("{display_name} health.readiness"),
-                    );
-                    v.check_latency(
-                        &format!("{primal}_latency"),
-                        latency_us,
-                        tolerances::HEALTH_CHECK_MAX_US,
-                    );
-                    v.check_minimum(&format!("{primal}_capabilities"), caps.len(), 1);
-                } else {
-                    v.check_bool(
-                        &format!("{primal}_connect"),
-                        false,
-                        &format!("{display_name} connection failed"),
+                for (primal, display_name) in [
+                    ("toadstool", "toadStool"),
+                    ("coralreef", "coralReef"),
+                    ("barracuda", "barraCuda"),
+                ] {
+                    let discovery = discover_primal(primal);
+                    v.check_or_skip(
+                        &format!("{primal}_probe"),
+                        discovery.socket.as_ref(),
+                        &format!("{display_name} not reachable"),
+                        |path, v| {
+                            if let Some((liveness, readiness, latency_us, caps)) =
+                                probe_primal_with_liveness_readiness(primal, path)
+                            {
+                                v.check_bool(
+                                    &format!("{primal}_liveness"),
+                                    liveness,
+                                    &format!("{display_name} health.liveness"),
+                                );
+                                v.check_bool(
+                                    &format!("{primal}_readiness"),
+                                    readiness,
+                                    &format!("{display_name} health.readiness"),
+                                );
+                                v.check_latency(
+                                    &format!("{primal}_latency"),
+                                    latency_us,
+                                    tolerances::HEALTH_CHECK_MAX_US,
+                                );
+                                v.check_minimum(&format!("{primal}_capabilities"), caps.len(), 1);
+                            } else {
+                                v.check_bool(
+                                    &format!("{primal}_connect"),
+                                    false,
+                                    &format!("{display_name} connection failed"),
+                                );
+                            }
+                        },
                     );
                 }
+
+                v.check_skip(
+                    "compile_dispatch_pipeline",
+                    "actual compile+dispatch pipeline needs live primals",
+                );
             },
         );
-    }
-
-    v.check_skip(
-        "compile_dispatch_pipeline",
-        "actual compile+dispatch pipeline needs live primals",
-    );
-
-    v.finish();
-    std::process::exit(v.exit_code());
 }

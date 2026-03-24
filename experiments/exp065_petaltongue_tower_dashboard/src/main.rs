@@ -205,70 +205,70 @@ fn main() {
     let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
     let family_id = format!("e065-{}", std::process::id());
 
-    ValidationResult::run_experiment(
-        "primalSpring Exp065 — petalTongue Tower Dashboard",
-        "primalSpring Exp065: Tower health visualization via petalTongue",
-        |v| {
-            let Some(pt_binary) = find_petaltongue_binary() else {
-                println!("  [SKIP] petaltongue binary not found in plasmidBin/primals/");
+    ValidationResult::new("primalSpring Exp065 — petalTongue Tower Dashboard")
+        .with_provenance("exp065_petaltongue_tower_dashboard", "2026-03-24")
+        .run(
+            "primalSpring Exp065: Tower health visualization via petalTongue",
+            |v| {
+                let Some(pt_binary) = find_petaltongue_binary() else {
+                    println!("  [SKIP] petaltongue binary not found in plasmidBin/primals/");
+                    v.check_bool(
+                        "petaltongue_binary_found",
+                        false,
+                        "petaltongue not in plasmidBin — build and copy first",
+                    );
+                    return;
+                };
+
                 v.check_bool(
                     "petaltongue_binary_found",
-                    false,
-                    "petaltongue not in plasmidBin — build and copy first",
+                    true,
+                    "petaltongue binary located",
                 );
-                return;
-            };
 
-            v.check_bool(
-                "petaltongue_binary_found",
-                true,
-                "petaltongue binary located",
-            );
+                let running = match AtomicHarness::new(AtomicType::Tower)
+                    .start_with_neural_api(&family_id, &graphs_dir)
+                {
+                    Ok(r) => r,
+                    Err(e) => {
+                        v.check_bool("harness_start", false, &format!("failed to start: {e}"));
+                        return;
+                    }
+                };
 
-            let running = match AtomicHarness::new(AtomicType::Tower)
-                .start_with_neural_api(&family_id, &graphs_dir)
-            {
-                Ok(r) => r,
-                Err(e) => {
-                    v.check_bool("harness_start", false, &format!("failed to start: {e}"));
-                    v.finish();
-                    std::process::exit(v.exit_code());
+                let runtime_dir = running.runtime_dir().to_path_buf();
+                let mut nucleation = SocketNucleation::new(runtime_dir);
+
+                let Some((_pt_proc, pt_socket)) =
+                    spawn_petaltongue(&family_id, &mut nucleation, &pt_binary)
+                else {
+                    v.check_bool("petaltongue_spawned", false, "petaltongue failed to spawn");
+                    return;
+                };
+
+                v.check_bool("petaltongue_spawned", true, "petaltongue running");
+
+                let health = rpc_call(&pt_socket, "health.liveness", &serde_json::json!({}));
+                match &health {
+                    Ok(_) => v.check_bool("petaltongue_healthy", true, "petalTongue health OK"),
+                    Err(e) => {
+                        println!("  health: {e}");
+                        v.check_bool("petaltongue_healthy", false, &format!("health: {e}"));
+                    }
                 }
-            };
 
-            let runtime_dir = running.runtime_dir().to_path_buf();
-            let mut nucleation = SocketNucleation::new(runtime_dir);
-
-            let Some((_pt_proc, pt_socket)) =
-                spawn_petaltongue(&family_id, &mut nucleation, &pt_binary)
-            else {
-                v.check_bool("petaltongue_spawned", false, "petaltongue failed to spawn");
-                return;
-            };
-
-            v.check_bool("petaltongue_spawned", true, "petaltongue running");
-
-            let health = rpc_call(&pt_socket, "health.liveness", &serde_json::json!({}));
-            match &health {
-                Ok(_) => v.check_bool("petaltongue_healthy", true, "petalTongue health OK"),
-                Err(e) => {
-                    println!("  health: {e}");
-                    v.check_bool("petaltongue_healthy", false, &format!("health: {e}"));
-                }
-            }
-
-            let tower_health: Vec<serde_json::Value> = running
-                .health_check_all()
-                .iter()
-                .map(|(name, live)| {
-                    serde_json::json!({
-                        "primal": name,
-                        "status": if *live { "healthy" } else { "unhealthy" }
+                let tower_health: Vec<serde_json::Value> = running
+                    .health_check_all()
+                    .iter()
+                    .map(|(name, live)| {
+                        serde_json::json!({
+                            "primal": name,
+                            "status": if *live { "healthy" } else { "unhealthy" }
+                        })
                     })
-                })
-                .collect();
+                    .collect();
 
-            validate_dashboard(v, &pt_socket, &tower_health, &family_id);
-        },
-    );
+                validate_dashboard(v, &pt_socket, &tower_health, &family_id);
+            },
+        );
 }

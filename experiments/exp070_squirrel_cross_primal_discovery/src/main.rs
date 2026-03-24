@@ -269,13 +269,11 @@ fn validate_ai_query(running: &RunningAtomic, v: &mut ValidationResult) {
 }
 
 fn main() {
-    ValidationResult::run_experiment(
-        "exp070_squirrel_cross_primal_discovery",
-        "Squirrel Cross-Primal Discovery",
-        |v| {
+    ValidationResult::new("exp070_squirrel_cross_primal_discovery")
+        .with_provenance("exp070_squirrel_cross_primal_discovery", "2026-03-24")
+        .run("Squirrel Cross-Primal Discovery", |v| {
             validate_graph_structure(v);
             validate_spawn_and_caps(v);
             validate_live_overlay(v);
-        },
-    );
+        });
 }

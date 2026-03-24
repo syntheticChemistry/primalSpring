@@ -93,18 +93,14 @@ fn validate_node(v: &mut ValidationResult) {
 }
 
 fn main() {
-    let mut v = ValidationResult::new("exp068_full_nucleus")
-        .with_provenance("exp068_full_nucleus", "2026-03-23");
-    ValidationResult::print_banner("Full NUCLEUS — all primals composed");
-    {
-        let v = &mut v;
-        let primals = AtomicType::FullNucleus.required_primals();
-        v.check_minimum("nucleus_required_primals", primals.len(), 5);
+    ValidationResult::new("exp068_full_nucleus")
+        .with_provenance("exp068_full_nucleus", "2026-03-23")
+        .run("Full NUCLEUS — all primals composed", |v| {
+            let primals = AtomicType::FullNucleus.required_primals();
+            v.check_minimum("nucleus_required_primals", primals.len(), 5);
 
-        validate_tower(v);
-        validate_nest(v);
-        validate_node(v);
-    }
-    v.finish();
-    std::process::exit(v.exit_code());
+            validate_tower(v);
+            validate_nest(v);
+            validate_node(v);
+        });
 }

@@ -135,103 +135,101 @@ fn main() {
     let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
     let family_id = format!("exp062-sweep-{}", std::process::id());
 
-    ValidationResult::run_experiment(
-        "primalSpring Exp062 — Tower Subsystem Sweep",
-        "primalSpring Exp062: Comprehensive songbird subsystem capability probe",
-        |v| {
-            let running = match AtomicHarness::new(AtomicType::Tower)
-                .start_with_neural_api(&family_id, &graphs_dir)
-            {
-                Ok(r) => r,
-                Err(e) => {
-                    v.check_bool("harness_start", false, &format!("failed to start: {e}"));
-                    v.finish();
-                    std::process::exit(v.exit_code());
-                }
-            };
-
-            let Some(songbird_socket) = running
-                .socket_for("discovery")
-                .or_else(|| running.socket_for_primal("songbird"))
-            else {
-                v.check_bool("songbird_socket", false, "songbird socket not found");
-                v.finish();
-                std::process::exit(v.exit_code());
-            };
-
-            let mut results = Vec::new();
-            for &(method, subsystem, params_str) in PROBES {
-                let params: serde_json::Value = match serde_json::from_str(params_str) {
-                    Ok(p) => p,
+    ValidationResult::new("primalSpring Exp062 — Tower Subsystem Sweep")
+        .with_provenance("exp062_tower_subsystem_sweep", "2026-03-24")
+        .run(
+            "primalSpring Exp062: Comprehensive songbird subsystem capability probe",
+            |v| {
+                let running = match AtomicHarness::new(AtomicType::Tower)
+                    .start_with_neural_api(&family_id, &graphs_dir)
+                {
+                    Ok(r) => r,
                     Err(e) => {
-                        v.check_bool(
-                            "probe_params_json",
-                            false,
-                            &format!("invalid JSON for {method}: {e}"),
-                        );
-                        v.finish();
-                        std::process::exit(v.exit_code());
+                        v.check_bool("harness_start", false, &format!("failed to start: {e}"));
+                        return;
                     }
                 };
-                results.push(probe(songbird_socket, method, subsystem, &params));
-            }
 
-            let up_count = results
-                .iter()
-                .filter(|r| matches!(r.status, ProbeStatus::Up))
-                .count();
-            let degraded = results
-                .iter()
-                .filter(|r| matches!(r.status, ProbeStatus::Degraded))
-                .count();
-            let down = results
-                .iter()
-                .filter(|r| matches!(r.status, ProbeStatus::Down))
-                .count();
+                let Some(songbird_socket) = running
+                    .socket_for("discovery")
+                    .or_else(|| running.socket_for_primal("songbird"))
+                else {
+                    v.check_bool("songbird_socket", false, "songbird socket not found");
+                    return;
+                };
 
-            println!("\n  ╔══════════════════════════════════════════════════════════════╗");
-            println!(
+                let mut results = Vec::new();
+                for &(method, subsystem, params_str) in PROBES {
+                    let params: serde_json::Value = match serde_json::from_str(params_str) {
+                        Ok(p) => p,
+                        Err(e) => {
+                            v.check_bool(
+                                "probe_params_json",
+                                false,
+                                &format!("invalid JSON for {method}: {e}"),
+                            );
+                            return;
+                        }
+                    };
+                    results.push(probe(songbird_socket, method, subsystem, &params));
+                }
+
+                let up_count = results
+                    .iter()
+                    .filter(|r| matches!(r.status, ProbeStatus::Up))
+                    .count();
+                let degraded = results
+                    .iter()
+                    .filter(|r| matches!(r.status, ProbeStatus::Degraded))
+                    .count();
+                let down = results
+                    .iter()
+                    .filter(|r| matches!(r.status, ProbeStatus::Down))
+                    .count();
+
+                println!("\n  ╔══════════════════════════════════════════════════════════════╗");
+                println!(
                 "  ║  Tower Subsystem Sweep — {up_count} UP / {degraded} DEGRADED / {down} DOWN  ║"
             );
-            println!("  ╚══════════════════════════════════════════════════════════════╝\n");
+                println!("  ╚══════════════════════════════════════════════════════════════╝\n");
 
-            for r in &results {
-                println!(
-                    "  [{:>8}] {:>35} ({:>5}ms) {}",
-                    r.status.label(),
-                    r.method,
-                    r.latency.as_millis(),
-                    r.detail.chars().take(60).collect::<String>()
+                for r in &results {
+                    println!(
+                        "  [{:>8}] {:>35} ({:>5}ms) {}",
+                        r.status.label(),
+                        r.method,
+                        r.latency.as_millis(),
+                        r.detail.chars().take(60).collect::<String>()
+                    );
+                }
+
+                v.check_bool(
+                    "tower_subsystem_sweep_ran",
+                    !results.is_empty(),
+                    "sweep probed all known subsystem methods",
                 );
-            }
 
-            v.check_bool(
-                "tower_subsystem_sweep_ran",
-                !results.is_empty(),
-                "sweep probed all known subsystem methods",
-            );
+                v.check_bool(
+                    "core_health_up",
+                    results.iter().any(|r| {
+                        r.method == "health.liveness" && matches!(r.status, ProbeStatus::Up)
+                    }),
+                    "health.liveness should respond",
+                );
 
-            v.check_bool(
-                "core_health_up",
-                results
-                    .iter()
-                    .any(|r| r.method == "health.liveness" && matches!(r.status, ProbeStatus::Up)),
-                "health.liveness should respond",
-            );
+                v.check_count("total_probes", results.len(), PROBES.len());
 
-            v.check_count("total_probes", results.len(), PROBES.len());
-
-            let subsystems: std::collections::HashSet<&str> =
-                results.iter().map(|r| r.subsystem).collect();
-            println!("\n  Subsystems probed: {}", subsystems.len());
-            for ss in &subsystems {
-                let ss_up = results
-                    .iter()
-                    .filter(|r| r.subsystem == *ss && matches!(r.status, ProbeStatus::Up))
-                    .count();
-                let ss_total = results.iter().filter(|r| r.subsystem == *ss).count();
-                println!("    {ss}: {ss_up}/{ss_total} methods UP");
-            }
-        },
-    );
+                let subsystems: std::collections::HashSet<&str> =
+                    results.iter().map(|r| r.subsystem).collect();
+                println!("\n  Subsystems probed: {}", subsystems.len());
+                for ss in &subsystems {
+                    let ss_up = results
+                        .iter()
+                        .filter(|r| r.subsystem == *ss && matches!(r.status, ProbeStatus::Up))
+                        .count();
+                    let ss_total = results.iter().filter(|r| r.subsystem == *ss).count();
+                    println!("    {ss}: {ss_up}/{ss_total} methods UP");
+                }
+            },
+        );
 }

@@ -8,10 +8,12 @@
 | **Version** | 0.7.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 360 (unit + integration + doc-tests + proptest) |
+| **Tests** | 361 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 53 (10 tracks) |
 | **Deploy Graphs** | 22 TOMLs (18 single-node + 4 multi-node) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding (87/87 gates) |
+| **Provenance** | All 53 experiments carry structured `with_provenance()` metadata |
+| **Clippy** | 0 warnings (pedantic + nursery + cast discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -46,7 +48,7 @@ primalSpring/
 │   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
 │   │   ├── primal_names.rs        # Canonical display names ↔ discovery slugs (neuralSpring pattern)
-│   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, skip-aware exit)
+│   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration

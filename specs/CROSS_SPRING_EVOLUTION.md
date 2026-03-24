@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: March 23, 2026
-**Status**: Phase 13 — CROSS-GATE DEPLOYMENT TOOLING (87/87 gates), 360 tests, 53 experiments, 22 deploy graphs
+**Date**: March 24, 2026
+**Status**: Phase 14 — DEEP DEBT + BUILDER PATTERN + FULL PROVENANCE (87/87 gates), 361 tests, 53 experiments, 22 deploy graphs
 
 ---
 
@@ -76,7 +76,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.7.0 | 360 | Phase 13 — 87/87 gates, 3/5 patterns live, cross-gate deployment tooling, 53 experiments, 22 deploy graphs, 37 capabilities |
+| primalSpring | v0.7.0 | 361 | Phase 14 — 87/87 gates, builder `.run()`, 100% provenance, 53 experiments, 22 deploy graphs, 37 capabilities |
 
 ## Evolution Path
 
@@ -247,46 +247,54 @@ Phase 13 (done): Cross-Gate Deployment Tooling (March 23, 2026)
   → LAN_COVALENT_DEPLOYMENT_GUIDE handoff for all gate operators
   → 53 experiments (up from 51), 10 tracks (up from 9)
 
-Phase 14: LAN Covalent Deployment (Next)
+Phase 14: Deep Debt + Builder Pattern + Full Provenance (March 24, 2026)
+  → Builder-pattern ValidationResult::run() on all 53 experiments
+  → 100% structured provenance via with_provenance() on all experiments
+  → Smart module extraction: validation/tests.rs (1016 → 540+493 LOC)
+  → Zero .unwrap() in experiment binaries (all .or_exit())
+  → Zero #[allow()] in production (all #[expect(reason)])
+  → 361 tests, 0 clippy/doc/fmt warnings
+
+Phase 15: LAN Covalent Deployment (Next)
   → Live multi-gate NUCLEUS deployment with BirdSong beacon exchange
   → Pixel Songbird-only deployment (workaround for BearDog abstract socket)
   → 10G mesh backbone validation
 
-Phase 15: Emergent Systems End-to-End (Track 3)
-  → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)
-  → coralForge pipeline streaming (exp013) — needs sweetGrass running
-  → Continuous 60Hz tick (exp014) — needs provenance trio running
-  → RPGPT session management with provenance tracking
-
-Phase 14: Live Multi-Node Validation (Track 8)
+Phase 16: Live Multi-Node Validation (Track 8)
   → Basement HPC: deploy NUCLEUS on 2+ LAN machines, validate covalent mesh formation
   → Friend remote: NAT traversal via STUN tiers, hole-punch, relay fallback
   → Idle compute: validate BondingPolicy enforcement (time windows, capability scope)
   → Data federation: NestGate cross-site replication with trio provenance chain
   → Plasmodium: decentralized capability aggregation across covalently bonded nodes
 
-Phase 15: Bonding Live Coordination (Track 4)
+Phase 17: Emergent Systems End-to-End (Track 3)
+  → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)
+  → coralForge pipeline streaming (exp013) — needs sweetGrass running
+  → Continuous 60Hz tick (exp014) — needs provenance trio running
+  → RPGPT session management with provenance tracking
+
+Phase 18: Bonding Live Coordination (Track 4)
   → Multi-gate covalent mesh with BirdSong encrypted beacons
   → Ionic contract-based metered bonds (cloud burst, external APIs)
   → Metallic electron-sea: homogeneous fleet specialization (compute-only racks)
   → Weak force: zero-trust read-only bonds to unknown primals
   → OrganoMetalSalt: mixed bond types in a single deployment
 
-Phase 16: Cross-Spring Integration (Track 6)
+Phase 19: Cross-Spring Integration (Track 6)
   → Full ecosystem data flow: airSpring, wetSpring, neuralSpring, petalTongue, Squirrel
   → wetSpring uses provenance trio to track genetic data lineage
   → Cross-spring BYOB composition: primals as DAG execution nodes
 
-Phase 17: Showcase Patterns (Track 7)
+Phase 20: Showcase Patterns (Track 7)
   → phase1/phase2 mined coordination patterns validated end-to-end
   → Compute triangle, bearer token auth, supply chain provenance, semantic attribution
 
-Phase 18: Anchoring + Economics
+Phase 21: Anchoring + Economics
   → sweetGrass anchoring.anchor → BTC/ETH (hash attestation, not currency)
   → loamSpine certificates as Novel Ferment Transcripts (NFTs)
   → sunCloud radiating attribution via sweetGrass braids
 
-Phase 19: biomeOS Self-Composition
+Phase 22: biomeOS Self-Composition
   → biomeOS composes its own graphs at runtime
   → Dynamic capability negotiation for BYOB niche creation
 ```

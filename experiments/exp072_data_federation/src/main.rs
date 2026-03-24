@@ -13,7 +13,6 @@ use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::bonding::{BondType, TrustModel};
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::discover_primal;
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn data_federation_graph_metadata(v: &mut ValidationResult) {
@@ -132,17 +131,16 @@ fn live_federation_skips(v: &mut ValidationResult) {
 }
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp072 — Data Federation");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp072: Cross-Node Data Federation with Provenance Trio");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-
-    data_federation_graph_metadata(&mut v);
-    nestgate_storage_discovery(&mut v);
-    provenance_trio_discovery(&mut v);
-    federation_pipeline_structural(&mut v);
-    live_federation_skips(&mut v);
-
-    v.finish();
-    std::process::exit(v.exit_code());
+    ValidationResult::new("primalSpring Exp072 — Data Federation")
+        .with_provenance("exp072_data_federation", "2026-03-24")
+        .run(
+            "primalSpring Exp072: Cross-Node Data Federation with Provenance Trio",
+            |v| {
+                data_federation_graph_metadata(v);
+                nestgate_storage_discovery(v);
+                provenance_trio_discovery(v);
+                federation_pipeline_structural(v);
+                live_federation_skips(v);
+            },
+        );
 }

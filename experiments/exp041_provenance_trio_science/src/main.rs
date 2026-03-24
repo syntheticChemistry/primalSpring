@@ -81,115 +81,119 @@ fn validate_e2e_chain(v: &mut ValidationResult) {
 }
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp041 — Provenance Trio Science");
-    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp041: Provenance Trio Science");
-    println!("  rhizoCrypt (derivation) + loamSpine (anchoring) + sweetGrass (attribution)");
-    println!("{}", "=".repeat(tolerances::VALIDATION_SUMMARY_WIDTH));
+    ValidationResult::new("primalSpring Exp041 — Provenance Trio Science")
+        .with_provenance("exp041_provenance_trio_science", "2026-03-24")
+        .run(
+            "primalSpring Exp041: Provenance Trio Science — rhizoCrypt + loamSpine + sweetGrass",
+            |v| {
+                // ── Structural: socket path conventions ──
 
-    // ── Structural: socket path conventions ──
+                for &name in TRIO_PRIMALS {
+                    let path = socket_path(name);
+                    let valid = path.to_string_lossy().contains("biomeos")
+                        && path.to_string_lossy().contains(name)
+                        && path.to_string_lossy().ends_with(".sock");
+                    v.check_bool(
+                        &format!("socket_path_{name}"),
+                        valid,
+                        &format!("socket_path({name}) = {}", path.display()),
+                    );
+                }
 
-    for &name in TRIO_PRIMALS {
-        let path = socket_path(name);
-        let valid = path.to_string_lossy().contains("biomeos")
-            && path.to_string_lossy().contains(name)
-            && path.to_string_lossy().ends_with(".sock");
-        v.check_bool(
-            &format!("socket_path_{name}"),
-            valid,
-            &format!("socket_path({name}) = {}", path.display()),
-        );
-    }
+                // ── Discovery: trio reachability ──
 
-    // ── Discovery: trio reachability ──
+                let results = discover_for(TRIO_PRIMALS);
+                v.check_count("trio_discovery_count", results.len(), TRIO_PRIMALS.len());
 
-    let results = discover_for(TRIO_PRIMALS);
-    v.check_count("trio_discovery_count", results.len(), TRIO_PRIMALS.len());
+                let reachable: Vec<_> = results.iter().filter(|r| r.socket.is_some()).collect();
+                let trio_online = reachable.len() == TRIO_PRIMALS.len();
 
-    let reachable: Vec<_> = results.iter().filter(|r| r.socket.is_some()).collect();
-    let trio_online = reachable.len() == TRIO_PRIMALS.len();
+                if trio_online {
+                    v.check_bool(
+                        "trio_all_discoverable",
+                        true,
+                        "all three provenance primals have sockets",
+                    );
 
-    if trio_online {
-        v.check_bool(
-            "trio_all_discoverable",
-            true,
-            "all three provenance primals have sockets",
-        );
+                    for &name in TRIO_PRIMALS {
+                        let health = probe_primal(name);
+                        v.check_bool(
+                            &format!("health_{name}"),
+                            health.health_ok,
+                            &format!("{name} health.check"),
+                        );
+                        v.check_latency(
+                            &format!("latency_{name}"),
+                            health.latency_us,
+                            tolerances::HEALTH_CHECK_MAX_US,
+                        );
+                        v.check_minimum(&format!("caps_{name}"), health.capabilities.len(), 1);
+                    }
+                } else {
+                    v.check_skip(
+                        "trio_all_discoverable",
+                        &format!(
+                            "{}/{} trio primals reachable — need all three running",
+                            reachable.len(),
+                            TRIO_PRIMALS.len()
+                        ),
+                    );
+                    for &name in TRIO_PRIMALS {
+                        let disc = discover_primal(name);
+                        if disc.socket.is_none() {
+                            v.check_skip(
+                                &format!("health_{name}"),
+                                &format!("{name} not reachable"),
+                            );
+                            v.check_skip(
+                                &format!("latency_{name}"),
+                                &format!("{name} not reachable"),
+                            );
+                            v.check_skip(&format!("caps_{name}"), &format!("{name} not reachable"));
+                        }
+                    }
+                }
 
-        for &name in TRIO_PRIMALS {
-            let health = probe_primal(name);
-            v.check_bool(
-                &format!("health_{name}"),
-                health.health_ok,
-                &format!("{name} health.check"),
-            );
-            v.check_latency(
-                &format!("latency_{name}"),
-                health.latency_us,
-                tolerances::HEALTH_CHECK_MAX_US,
-            );
-            v.check_minimum(&format!("caps_{name}"), health.capabilities.len(), 1);
-        }
-    } else {
-        v.check_skip(
-            "trio_all_discoverable",
-            &format!(
-                "{}/{} trio primals reachable — need all three running",
-                reachable.len(),
-                TRIO_PRIMALS.len()
-            ),
-        );
-        for &name in TRIO_PRIMALS {
-            let disc = discover_primal(name);
-            if disc.socket.is_none() {
-                v.check_skip(&format!("health_{name}"), &format!("{name} not reachable"));
-                v.check_skip(&format!("latency_{name}"), &format!("{name} not reachable"));
-                v.check_skip(&format!("caps_{name}"), &format!("{name} not reachable"));
-            }
-        }
-    }
+                // ── Neural API health ──
 
-    // ── Neural API health ──
-
-    let neural_live = neural_api_healthy();
-    v.check_or_skip(
-        "neural_api",
-        neural_live.then_some(()),
-        "Neural API not running",
-        |(), v| {
-            v.check_bool("neural_api_reachable", true, "Neural API reachable");
-        },
-    );
-
-    // ── Trio capability health via Neural API ──
-
-    let trio_health = provenance::trio_health();
-    let trio_caps_healthy = neural_live && trio_health.iter().all(|(_d, ok)| *ok);
-
-    v.check_or_skip(
-        "trio_capability_health",
-        trio_caps_healthy.then_some(()),
-        "trio capabilities not all healthy via Neural API",
-        |(), v| {
-            for (domain, healthy) in &trio_health {
-                v.check_bool(
-                    &format!("cap_health_{domain}"),
-                    *healthy,
-                    &format!("{domain} capability domain healthy"),
+                let neural_live = neural_api_healthy();
+                v.check_or_skip(
+                    "neural_api",
+                    neural_live.then_some(()),
+                    "Neural API not running",
+                    |(), v| {
+                        v.check_bool("neural_api_reachable", true, "Neural API reachable");
+                    },
                 );
-            }
-        },
-    );
 
-    // ── E2E Provenance Chain ──
+                // ── Trio capability health via Neural API ──
 
-    v.check_or_skip(
-        "provenance_chain_e2e",
-        trio_caps_healthy.then_some(()),
-        "needs live trio primals + Neural API for chain validation",
-        |(), v| validate_e2e_chain(v),
-    );
+                let trio_health = provenance::trio_health();
+                let trio_caps_healthy = neural_live && trio_health.iter().all(|(_d, ok)| *ok);
 
-    v.finish();
-    std::process::exit(v.exit_code());
+                v.check_or_skip(
+                    "trio_capability_health",
+                    trio_caps_healthy.then_some(()),
+                    "trio capabilities not all healthy via Neural API",
+                    |(), v| {
+                        for (domain, healthy) in &trio_health {
+                            v.check_bool(
+                                &format!("cap_health_{domain}"),
+                                *healthy,
+                                &format!("{domain} capability domain healthy"),
+                            );
+                        }
+                    },
+                );
+
+                // ── E2E Provenance Chain ──
+
+                v.check_or_skip(
+                    "provenance_chain_e2e",
+                    trio_caps_healthy.then_some(()),
+                    "needs live trio primals + Neural API for chain validation",
+                    |(), v| validate_e2e_chain(v),
+                );
+            },
+        );
 }

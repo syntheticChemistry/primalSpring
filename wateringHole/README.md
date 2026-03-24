@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 13 — CROSS-GATE DEPLOYMENT + ECOSYSTEM ABSORPTION + MULTI-NODE BONDING 87/87, 360 tests, 53 experiments, 22 deploy graphs)  
+**Version**: 0.7.0 (Phase 14 — DEEP DEBT + BUILDER PATTERN + FULL PROVENANCE 87/87, 361 tests, 53 experiments, 22 deploy graphs)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 23, 2026
+**Last Updated**: March 24, 2026
 
 ---
 
@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **360** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Tests | **361** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Experiments | 53 (10 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
@@ -245,6 +245,7 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_V070_PHASE14_DEEP_DEBT_HANDOFF_MAR24_2026.md` | Mar 24 | **Deep debt**: builder `.run()`, 100% provenance, smart extraction, zero `.unwrap()`, zero `#[allow()]` — patterns for all teams |
 | v0.7.0 | `LAN_COVALENT_DEPLOYMENT_GUIDE_MAR23_2026.md` | Mar 23 | **Deployment**: Step-by-step LAN covalent deployment, USB spore prep, gate provisioning, BirdSong exchange, Pixel workaround |
 | v0.7.0 | `PRIMALSPRING_FULL_EVOLUTION_HANDOFF_MAR23_2026.md` | Mar 23 | **Comprehensive**: full evolution state, per-team guidance (all primals + all springs), patterns to absorb, architecture decisions, what remains |
 | v0.7.0 | `PRIMALSPRING_V070_PHASE122_DEEP_ABSORPTION_HANDOFF_MAR23_2026.md` | Mar 23 | Deep absorption: normalize_method, Transport enum, NdjsonSink, check_relative, is_recoverable, OnceLock probes, missing_docs deny, release gate — 360 tests |
@@ -258,7 +259,7 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 | v0.7.0 | `PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` | Mar 22 | Consolidated primal audit: open items per primal + cross-primal standards |
 | v0.7.0 | `PROVENANCE_TRIO_LIVE_PROBING_MAR23_2026.md` | Mar 23 | Live probing: sweetGrass+rhizoCrypt working, loamSpine panic, 4 gaps documented |
 | v0.7.0 | `ROOTPULSE_NEURAL_API_INTEGRATION_HANDOFF_MAR22_2026.md` | Mar 22 | RootPulse via Neural API: ipc::provenance module, 4 experiments evolved, graceful degradation |
-| v0.6.0 | `PRIMALSPRING_V060_NUCLEUS_COMPOSITION_HANDOFF_MAR22_2026.md` | Mar 22 | NUCLEUS validated: Nest + Node atomic layers, 58/58 gates (release record) |
+| v0.6.0 | `archive/PRIMALSPRING_V060_NUCLEUS_COMPOSITION_HANDOFF_MAR22_2026.md` | Mar 22 | NUCLEUS validated: Nest + Node atomic layers, 58/58 gates (release record) |
 
 ## Archived Handoffs
 

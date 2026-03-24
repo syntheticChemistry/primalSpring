@@ -14,7 +14,6 @@ use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
 use primalspring::ipc::provenance::{
     self, ProvenanceStatus, begin_experiment_session, complete_experiment, record_experiment_step,
 };
-use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 use primalspring::validation::ValidationResult;
 
 fn rootpulse_required_graphs(v: &mut ValidationResult) {
@@ -188,24 +187,20 @@ fn commit_phase_attribute(v: &mut ValidationResult, trio_all_healthy: bool) {
 }
 
 fn main() {
-    let mut v = ValidationResult::new("primalSpring Exp020 — RootPulse Full Commit");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
-    println!("primalSpring Exp020: RootPulse Full 6-Phase Commit");
-    println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+    ValidationResult::new("primalSpring Exp020 — RootPulse Full Commit")
+        .with_provenance("exp020_rootpulse_commit", "2026-03-24")
+        .run("primalSpring Exp020: RootPulse Full 6-Phase Commit", |v| {
+            rootpulse_required_graphs(v);
+            provenance_trio_discovery(v);
 
-    rootpulse_required_graphs(&mut v);
-    provenance_trio_discovery(&mut v);
+            let neural_api_live = neural_api_healthy();
+            let trio_health = provenance::trio_health();
+            let trio_all_healthy = neural_api_live && trio_health.iter().all(|(_domain, ok)| *ok);
 
-    let neural_api_live = neural_api_healthy();
-    let trio_health = provenance::trio_health();
-    let trio_all_healthy = neural_api_live && trio_health.iter().all(|(_domain, ok)| *ok);
-
-    commit_phase_health(&mut v, trio_all_healthy, &trio_health);
-    commit_phase_dehydrate(&mut v, trio_all_healthy);
-    commit_phase_sign(&mut v, neural_api_live);
-    commit_phase_store_commit(&mut v, trio_all_healthy);
-    commit_phase_attribute(&mut v, trio_all_healthy);
-
-    v.finish();
-    std::process::exit(v.exit_code());
+            commit_phase_health(v, trio_all_healthy, &trio_health);
+            commit_phase_dehydrate(v, trio_all_healthy);
+            commit_phase_sign(v, neural_api_live);
+            commit_phase_store_commit(v, trio_all_healthy);
+            commit_phase_attribute(v, trio_all_healthy);
+        });
 }

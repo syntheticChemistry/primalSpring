@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: March 23, 2026
-**Status**: Phase 13 — CROSS-GATE DEPLOYMENT + ECOSYSTEM ABSORPTION + MULTI-NODE BONDING (87/87 gates), 53 experiments, 360 tests, 22 deploy graphs
+**Date**: March 24, 2026
+**Status**: Phase 14 — DEEP DEBT + BUILDER PATTERN + FULL PROVENANCE (87/87 gates), 53 experiments, 361 tests, 22 deploy graphs
 
 ---
 
@@ -30,13 +30,14 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 7 | Showcase-Mined | exp050–059 | Do mined phase1/phase2 coordination patterns hold? |
 | 8 | Live Composition | exp060–070 | Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery |
 | 9 | Multi-Node Bonding | exp071–072 | Do bonding policies and data federation structures validate? |
+| 10 | Cross-Gate Deployment | exp073–074 | Does cross-gate health probing and LAN covalent mesh work? |
 
 ## Current State (v0.7.0)
 
 | Metric | Value |
 |--------|-------|
 | Experiments | 53 (10 tracks) |
-| Total tests | **360** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Total tests | **361** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery) | 0 warnings |
 | cargo doc | 0 warnings |
@@ -48,7 +49,8 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
-| Validation harness | `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `run_experiment()`, `NdjsonSink` |
+| Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
+| Provenance coverage | **100%** — all 53 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
@@ -61,6 +63,18 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed — Phase 14 (Deep Debt + Builder Pattern + Full Provenance)
+
+### Builder-Pattern Validation (March 24, 2026)
+All 53 experiments standardized on the builder-pattern `ValidationResult`:
+1. **`ValidationResult::run()`** — consumes self, prints banner, executes checks, prints summary, exits
+2. **All 53 experiments carry structured provenance** — `with_provenance(source, date)` on every experiment
+3. **`validation/tests.rs` extracted** — 493-line test module separated from production code (540 lines, was 1016)
+4. **Zero `.unwrap()` in experiment binaries** — all replaced with `.or_exit("context")`
+5. **Zero `#[allow()]` in production** — 3 integration test files evolved to `#[expect(reason)]`
+6. **Doc and config fixes** — broken intra-doc link, stale socket path doc, capability_registry version sync
+7. **361 tests** (up from 360), 0 clippy warnings, 0 doc warnings, 0 fmt diff
 
 ## What Changed — Phase 11–12 (Multi-Node Bonding + Federation)
 

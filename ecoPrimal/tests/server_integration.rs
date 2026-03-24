@@ -9,7 +9,10 @@
 //! Live ecosystem tests (requiring plasmidBin binaries) are in
 //! `server_ecosystem.rs`.
 
-#[allow(dead_code)]
+#[expect(
+    dead_code,
+    reason = "shared helpers — each test file uses a different subset"
+)]
 mod integration;
 
 use std::io::{BufRead, BufReader, Write};

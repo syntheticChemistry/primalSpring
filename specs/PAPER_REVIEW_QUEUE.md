@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
-**Date**: March 23, 2026  
-**Status**: Phase 13 — 53 experiments, 10 tracks, CROSS-GATE DEPLOYMENT + ECOSYSTEM ABSORPTION + MULTI-NODE BONDING (87/87 gates), 360 tests, 22 deploy graphs
+**Date**: March 24, 2026  
+**Status**: Phase 14 — 53 experiments, 10 tracks, DEEP DEBT + BUILDER PATTERN + FULL PROVENANCE (87/87 gates), 361 tests, 22 deploy graphs
 
 ---
 
@@ -63,7 +63,7 @@ produces. The review queue tracks which patterns are ready for validation.
 | P3 | sunCloud economic attribution | 8 | Future | sweetGrass braid radiating attribution |
 | P3 | BYOB primal DAG execution | 8 | Future | Primals as DAG nodes for custom niche compositions |
 
-## Next Steps (Post Phase 13)
+## Next Steps (Post Phase 14)
 
 1. **Emergent systems end-to-end** — Track 3: RootPulse commit/branch/merge/diff/federate with live trio; coralForge pipeline (exp013), continuous tick (exp014) — `ipc::provenance` wired, promoting to Live Validated when biomeOS + trio run
 2. **Live multi-node validation** — Track 8: deploy NUCLEUS on 2+ machines (basement HPC, friend remote), validate BondingPolicy enforcement, NAT traversal, plasmodium formation, data federation with trio provenance

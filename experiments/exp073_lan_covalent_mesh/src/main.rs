@@ -327,10 +327,11 @@ fn main() {
         .unwrap_or(9100);
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "8ff3b864a4bc589a".to_owned());
 
-    ValidationResult::run_experiment(
-        "primalSpring Exp073 — LAN Covalent Mesh",
-        "primalSpring Exp073: Cross-gate Songbird mesh + BirdSong beacon exchange",
-        |v| {
+    ValidationResult::new("primalSpring Exp073 — LAN Covalent Mesh")
+        .with_provenance("exp073_lan_covalent_mesh", "2026-03-24")
+        .run(
+            "primalSpring Exp073: Cross-gate Songbird mesh + BirdSong beacon exchange",
+            |v| {
             if host.is_empty() {
                 println!("  REMOTE_GATE_HOST not set — skipping all remote checks.");
                 println!(
@@ -353,6 +354,6 @@ fn main() {
             validate_mesh_peers(v, &host, songbird_port);
             validate_birdsong_beacon(v, &host, songbird_port, &family_id);
             validate_stun(v, &host, songbird_port);
-        },
-    );
+            },
+        );
 }

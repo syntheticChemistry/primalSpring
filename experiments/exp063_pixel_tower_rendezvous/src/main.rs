@@ -212,113 +212,113 @@ fn validate_connectivity(
     }
 }
 
+fn cross_device_exchange(
+    v: &mut ValidationResult,
+    songbird_socket: &Path,
+    family_id: &str,
+    host: &str,
+    pixel_port: u16,
+) {
+    v.section("Cross-Device Beacon Exchange");
+    println!("  Pixel host: {host}:{pixel_port}");
+
+    match tcp_rpc_call(host, pixel_port, "health.liveness", &serde_json::json!({})) {
+        Ok(_) => {
+            println!("  Pixel songbird: LIVE");
+            v.check_bool("pixel_songbird_live", true, "Pixel songbird reachable");
+        }
+        Err(e) => {
+            println!("  Pixel songbird: {e}");
+            v.check_skip("pixel_songbird_live", &format!("Pixel unreachable: {e}"));
+        }
+    }
+
+    let local_beacon = rpc_call(
+        songbird_socket,
+        "birdsong.generate_encrypted_beacon",
+        &serde_json::json!({
+            "family_id": family_id,
+            "node_id": "tower_local",
+            "capabilities": ["security", "discovery"],
+            "device_type": "tower"
+        }),
+    );
+    if let Ok(beacon) = &local_beacon {
+        let enc = beacon
+            .get("encrypted_beacon")
+            .and_then(|v| v.as_str())
+            .unwrap_or_default();
+        if !enc.is_empty() {
+            match tcp_rpc_call(
+                host,
+                pixel_port,
+                "birdsong.decrypt_beacon",
+                &serde_json::json!({ "encrypted_beacon": enc }),
+            ) {
+                Ok(_) => {
+                    println!("  cross-device beacon: Tower→Pixel decrypt OK");
+                    v.check_bool(
+                        "cross_device_beacon",
+                        true,
+                        "Tower beacon decrypted by Pixel",
+                    );
+                }
+                Err(e) => {
+                    println!("  cross-device beacon: {e}");
+                    v.check_skip("cross_device_beacon", &format!("Pixel decrypt: {e}"));
+                }
+            }
+        }
+    }
+}
+
 fn main() {
     let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
     let family_id = format!("e063-{}", std::process::id());
 
-    ValidationResult::run_experiment(
-        "primalSpring Exp063 — Pixel Tower Rendezvous",
-        "primalSpring Exp063: BirdSong beacon generation + rendezvous exchange",
-        |v| {
-            let running = match AtomicHarness::new(AtomicType::Tower)
-                .start_with_neural_api(&family_id, &graphs_dir)
-            {
-                Ok(r) => r,
-                Err(e) => {
-                    v.check_bool("harness_start", false, &format!("failed to start: {e}"));
-                    v.finish();
-                    std::process::exit(v.exit_code());
-                }
-            };
-
-            let Some(songbird_socket) = running
-                .socket_for("discovery")
-                .or_else(|| running.socket_for_primal("songbird"))
-            else {
-                v.check_bool("songbird_socket", false, "songbird socket not found");
-                v.finish();
-                std::process::exit(v.exit_code());
-            };
-
-            validate_beacon(v, songbird_socket, &family_id);
-            validate_connectivity(v, songbird_socket, &family_id);
-
-            // Cross-device beacon exchange (optional — set PIXEL_SONGBIRD_HOST)
-            let pixel_host = std::env::var("PIXEL_SONGBIRD_HOST").ok();
-            let pixel_port: u16 = std::env::var("PIXEL_SONGBIRD_PORT")
-                .ok()
-                .and_then(|p| p.parse().ok())
-                .unwrap_or(9200);
-
-            if let Some(ref host) = pixel_host {
-                v.section("Cross-Device Beacon Exchange");
-                println!("  Pixel host: {host}:{pixel_port}");
-
-                match tcp_rpc_call(host, pixel_port, "health.liveness", &serde_json::json!({})) {
-                    Ok(_) => {
-                        println!("  Pixel songbird: LIVE");
-                        v.check_bool("pixel_songbird_live", true, "Pixel songbird reachable");
-                    }
+    ValidationResult::new("primalSpring Exp063 — Pixel Tower Rendezvous")
+        .with_provenance("exp063_pixel_tower_rendezvous", "2026-03-24")
+        .run(
+            "primalSpring Exp063: BirdSong beacon generation + rendezvous exchange",
+            |v| {
+                let running = match AtomicHarness::new(AtomicType::Tower)
+                    .start_with_neural_api(&family_id, &graphs_dir)
+                {
+                    Ok(r) => r,
                     Err(e) => {
-                        println!("  Pixel songbird: {e}");
-                        v.check_skip("pixel_songbird_live", &format!("Pixel unreachable: {e}"));
+                        v.check_bool("harness_start", false, &format!("failed to start: {e}"));
+                        return;
                     }
+                };
+
+                let Some(songbird_socket) = running
+                    .socket_for("discovery")
+                    .or_else(|| running.socket_for_primal("songbird"))
+                else {
+                    v.check_bool("songbird_socket", false, "songbird socket not found");
+                    return;
+                };
+
+                validate_beacon(v, songbird_socket, &family_id);
+                validate_connectivity(v, songbird_socket, &family_id);
+
+                let pixel_host = std::env::var("PIXEL_SONGBIRD_HOST").ok();
+                let pixel_port: u16 = std::env::var("PIXEL_SONGBIRD_PORT")
+                    .ok()
+                    .and_then(|p| p.parse().ok())
+                    .unwrap_or(9200);
+
+                if let Some(ref host) = pixel_host {
+                    cross_device_exchange(v, songbird_socket, &family_id, host, pixel_port);
                 }
 
-                // Generate beacon on local Tower, send to Pixel for decrypt
-                let local_beacon = rpc_call(
-                    songbird_socket,
-                    "birdsong.generate_encrypted_beacon",
-                    &serde_json::json!({
-                        "family_id": family_id,
-                        "node_id": "tower_local",
-                        "capabilities": ["security", "discovery"],
-                        "device_type": "tower"
-                    }),
-                );
-                if let Ok(beacon) = &local_beacon {
-                    let enc = beacon
-                        .get("encrypted_beacon")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or_default();
-                    if !enc.is_empty() {
-                        match tcp_rpc_call(
-                            host,
-                            pixel_port,
-                            "birdsong.decrypt_beacon",
-                            &serde_json::json!({ "encrypted_beacon": enc }),
-                        ) {
-                            Ok(_) => {
-                                println!("  cross-device beacon: Tower→Pixel decrypt OK");
-                                v.check_bool(
-                                    "cross_device_beacon",
-                                    true,
-                                    "Tower beacon decrypted by Pixel",
-                                );
-                            }
-                            Err(e) => {
-                                println!("  cross-device beacon: {e}");
-                                v.check_skip("cross_device_beacon", &format!("Pixel decrypt: {e}"));
-                            }
-                        }
-                    }
+                println!("\n  === Rendezvous Flow Summary ===");
+                println!("  Tower ({family_id}) local validation complete.");
+                if pixel_host.is_some() {
+                    println!("  Cross-device beacon exchange attempted.");
+                } else {
+                    println!("  Set PIXEL_SONGBIRD_HOST to enable cross-device beacon exchange.");
                 }
-            }
-
-            println!("\n  === Rendezvous Flow Summary ===");
-            println!("  Tower ({family_id}) local validation complete.");
-            if pixel_host.is_some() {
-                println!("  Cross-device beacon exchange attempted.");
-            } else {
-                println!("  Set PIXEL_SONGBIRD_HOST to enable cross-device beacon exchange.");
-            }
-            println!("  For full Pixel replication:");
-            println!("    1. Run biomeOS/pixel8a-deploy/start_nucleus_mobile.sh on Pixel 8a");
-            println!(
-                "    2. Both POST beacons to https://api.nestgate.io/api/v1/rendezvous/beacon"
-            );
-            println!("    3. Both poll https://api.nestgate.io/api/v1/rendezvous/check");
-            println!("    4. Encrypted Dark Forest beacons verify family lineage");
-        },
-    );
+            },
+        );
 }
