@@ -1,6 +1,6 @@
-# LAN Covalent Deployment Guide — Phase 14
+# LAN Covalent Deployment Guide — Phase 17
 
-**Date**: March 23, 2026
+**Date**: March 25, 2026 (revised; originally March 23, 2026)
 **From**: primalSpring v0.7.0
 **To**: All gate operators, biomeOS team
 **Scope**: Deploy NUCLEUS on LAN gates, validate Songbird mesh + BirdSong beacon exchange
@@ -99,40 +99,56 @@ On each gate, start Tower Atomic first:
 export FAMILY_ID=8ff3b864a4bc589a
 export NODE_ID=northgate  # unique per gate
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
+mkdir -p $XDG_RUNTIME_DIR/biomeos
 
-# Start BearDog (security)
+# Start BearDog (security) — auto-binds Unix + TCP
 /tmp/biomeos-deploy/primals/x86_64/beardog-x86_64-linux-musl server &
-sleep 2
+sleep 3
 
-# Start Songbird (discovery + mesh)
-BEARDOG_SOCKET="$XDG_RUNTIME_DIR/biomeos/beardog-$FAMILY_ID.sock" \
+# Start Songbird (discovery + mesh) — requires security provider
+SONGBIRD_SECURITY_PROVIDER="$XDG_RUNTIME_DIR/biomeos/beardog.sock" \
+SECURITY_ENDPOINT="$XDG_RUNTIME_DIR/biomeos/beardog.sock" \
+BEARDOG_SOCKET="$XDG_RUNTIME_DIR/biomeos/beardog.sock" \
 SONGBIRD_MESH_ENABLED=true \
-/tmp/biomeos-deploy/primals/x86_64/songbird-x86_64-linux-musl server &
-sleep 2
+/tmp/biomeos-deploy/primals/x86_64/songbird-x86_64-linux-musl server --port 0 &
+sleep 3
 
 # Verify Tower is live
 echo '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":1}' | \
-  socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/biomeos/beardog-$FAMILY_ID.sock
+  socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/biomeos/beardog.sock
 ```
 
 Then expand to full NUCLEUS:
 
 ```bash
-# ToadStool (compute)
+# ToadStool (compute) — note: `server` subcommand required
 TOADSTOOL_FAMILY_ID=$FAMILY_ID \
 TOADSTOOL_NODE_ID=$NODE_ID \
+TOADSTOOL_SOCKET="$XDG_RUNTIME_DIR/biomeos/toadstool.sock" \
 TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED=1 \
-/tmp/biomeos-deploy/primals/x86_64/toadstool-x86_64-linux-musl --port 0 &
+/tmp/biomeos-deploy/primals/x86_64/toadstool-x86_64-linux-musl server --port 0 &
 
-# NestGate (storage)
-NESTGATE_SOCKET="$XDG_RUNTIME_DIR/biomeos/nestgate-$FAMILY_ID.sock" \
+# NestGate (storage) — requires NESTGATE_JWT_SECRET
+export NESTGATE_JWT_SECRET=$(openssl rand -base64 48)
+NESTGATE_SOCKET="$XDG_RUNTIME_DIR/biomeos/nestgate.sock" \
 NESTGATE_FAMILY_ID=$FAMILY_ID \
 /tmp/biomeos-deploy/primals/x86_64/nestgate-x86_64-linux-musl daemon --socket-only --dev &
 
 # Squirrel (AI)
-SQUIRREL_SOCKET="$XDG_RUNTIME_DIR/biomeos/squirrel-$FAMILY_ID.sock" \
-/tmp/biomeos-deploy/primals/x86_64/squirrel-x86_64-linux-musl &
+SQUIRREL_SOCKET="$XDG_RUNTIME_DIR/biomeos/squirrel.sock" \
+/tmp/biomeos-deploy/primals/x86_64/squirrel-x86_64-linux-musl server &
 ```
+
+**Known issues (March 25, 2026)**:
+- **NestGate musl static** segfaults — use the dynamically linked `plasmidBin` binary until
+  the musl build is fixed. The musl beardog/songbird/toadstool/squirrel work fine.
+- **Songbird** requires `SONGBIRD_SECURITY_PROVIDER` pointing to the BearDog socket.
+  Without it, Songbird exits immediately with "No security provider configured."
+- **ToadStool** uses `toadstool.health` (not `health.liveness`) for health checks.
+  Its JSON-RPC socket is at `toadstool.jsonrpc.sock` (separate from its tarpc socket).
+- **Squirrel** creates its socket at `$XDG_RUNTIME_DIR/squirrel/squirrel.sock`
+  (outside `biomeos/`), not where `SQUIRREL_SOCKET` requests.
+- **Socket names** do NOT include family ID (e.g., `beardog.sock`, not `beardog-{family}.sock`).
 
 Or use biomeOS's deploy graph orchestrator:
 

@@ -75,12 +75,50 @@ rpc_unix() {
     echo "$req" | timeout 5 socat - "UNIX-CONNECT:$socket" 2>/dev/null | head -1
 }
 
+HEALTH_METHODS=("health.liveness" "health.check" "health" "toadstool.health")
+
+try_health_probe_unix() {
+    local socket="$1"
+    for method in "${HEALTH_METHODS[@]}"; do
+        local resp
+        resp=$(rpc_unix "$socket" "$method" 2>/dev/null || true)
+        if echo "$resp" | grep -q '"result"'; then
+            echo "$method"
+            return 0
+        fi
+    done
+    return 1
+}
+
+try_health_probe_tcp() {
+    local host="$1"
+    local port="$2"
+    for method in "${HEALTH_METHODS[@]}"; do
+        local resp
+        resp=$(rpc_tcp "$host" "$port" "$method" 2>/dev/null || true)
+        if echo "$resp" | grep -q '"result"'; then
+            echo "$method"
+            return 0
+        fi
+    done
+    return 1
+}
+
 probe_primal() {
     local name="$1"
     local port="$2"
 
     if [ -n "$UNIX_DIR" ]; then
-        local candidates=("$UNIX_DIR/${name}-"*.sock "$UNIX_DIR/${name}.sock")
+        local candidates=(
+            "$UNIX_DIR/${name}.jsonrpc.sock"
+            "$UNIX_DIR/${name}-"*.sock
+            "$UNIX_DIR/${name}.sock"
+        )
+        # Squirrel and others may place sockets in sibling dirs
+        local parent
+        parent="$(dirname "$UNIX_DIR")"
+        candidates+=("$parent/${name}/${name}.sock")
+
         local socket=""
         for c in "${candidates[@]}"; do
             if [ -S "$c" ] 2>/dev/null; then
@@ -89,31 +127,32 @@ probe_primal() {
             fi
         done
         if [ -z "$socket" ]; then
-            printf "  %-12s  SKIP  (no socket in %s)\n" "$name" "$UNIX_DIR"
+            printf "  %-12s  SKIP  (no socket found)\n" "$name"
             ((skipped++)) || true
             return
         fi
-        local resp
-        resp=$(rpc_unix "$socket" "health.liveness" 2>/dev/null || true)
+        local method
+        if method=$(try_health_probe_unix "$socket"); then
+            printf "  %-12s  LIVE  (%s OK)\n" "$name" "$method"
+            ((passed++)) || true
+        else
+            printf "  %-12s  DOWN  (no health method responded)\n" "$name"
+            ((failed++)) || true
+        fi
     else
         if ! timeout 2 bash -c "echo >/dev/tcp/$HOST/$port" 2>/dev/null; then
             printf "  %-12s  DOWN  (port %s unreachable)\n" "$name" "$port"
             ((failed++)) || true
             return
         fi
-        local resp
-        resp=$(rpc_tcp "$HOST" "$port" "health.liveness" 2>/dev/null || true)
-    fi
-
-    if echo "$resp" | grep -q '"result"'; then
-        printf "  %-12s  LIVE  (health.liveness OK)\n" "$name"
-        ((passed++)) || true
-    elif [ -n "$resp" ]; then
-        printf "  %-12s  WARN  (responded but: %s)\n" "$name" "$(echo "$resp" | head -c 80)"
-        ((passed++)) || true
-    else
-        printf "  %-12s  DOWN  (no response)\n" "$name"
-        ((failed++)) || true
+        local method
+        if method=$(try_health_probe_tcp "$HOST" "$port"); then
+            printf "  %-12s  LIVE  (%s OK)\n" "$name" "$method"
+            ((passed++)) || true
+        else
+            printf "  %-12s  DOWN  (port %s, no health method responded)\n" "$name" "$port"
+            ((failed++)) || true
+        fi
     fi
 }
 
