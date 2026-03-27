@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 //! Validates zero information leakage with unknown primals (weak bonding).
-//! Source: `phase2/biomeOS/graphs/BONDING_TESTS_README.md`
+//! Source: `primals/biomeOS/graphs/BONDING_TESTS_README.md`
 
 use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_env_var};
 use primalspring::validation::ValidationResult;

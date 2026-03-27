@@ -256,6 +256,22 @@ substrate (full UI + AI + crypto + mesh surface).
 
 See `specs/CROSS_SPRING_EVOLUTION.md` Phase 17 for details.
 
+## Live Integration Status
+
+| Primal | Eastgate | Pixel (ADB) | Notes |
+|--------|----------|-------------|-------|
+| BearDog | healthy v0.9.0 | healthy v0.9.0 | Unix socket + TCP |
+| Songbird | healthy v0.2.1 | healthy (HTTP) | Birdsong beacons validated |
+| NestGate | healthy v0.1.0 | — | ZFS graceful degradation, family-scoped sockets, storage CRUD |
+| Squirrel | alive v0.1.0 | — | Abstract socket `@squirrel` |
+| biomeOS | neural-api (24 domains) | — | Substrate orchestrator |
+| ToadStool | structural | — | Awaiting plasmidBin |
+
+NestGate upstream fixes absorbed: ZFS graceful degradation when kernel module
+unavailable, 6 unsafe blocks evolved to safe alternatives, family-scoped socket
+names, comprehensive audit + coverage push. plasmidBin binary updated (dynamic
+build — musl static segfaults, nestgate-team scope).
+
 ## Docs
 
 - `wateringHole/README.md` — Track structure and cross-spring context

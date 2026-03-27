@@ -5,21 +5,26 @@
 **Date**: March 27, 2026
 **From**: primalSpring (coordination and composition validation spring)
 **To**: All primal teams, all spring teams, biomeOS
-**Phase**: 16.1 (Coverage Evolution + Deep Debt Audit complete)
+**Phase**: 17 (gen4 Deployment Evolution complete)
 
 ---
 
 ## Context
 
-primalSpring has completed a comprehensive deep audit and coverage evolution
-across two sessions. The patterns that proved effective here are documented
-below as **specific, actionable audit guidance** each primal and spring team
-can review and enact independently to solve remaining deep debt.
+primalSpring has completed gen4 deployment evolution including biomeOS substrate
+validation, cross-gate Pixel deployment, NestGate integration, and Squirrel AI
+bridging. The patterns that proved effective here are documented below as
+**specific, actionable audit guidance** each primal and spring team can review
+and enact independently to solve remaining deep debt.
+
+**See also**: `PRIMALSPRING_COMPOSITION_DEEP_DEBT_EVOLUTION_HANDOFF_MAR27_2026.md`
+for composition-specific findings (protocol, transport, schema issues).
 
 ### primalSpring Current State (verified March 27, 2026)
 
-- 378 tests (0 failures, 42 ignored live), 72.5% library coverage
+- 385 tests (0 failures, 42 ignored live), 72.5% library coverage
 - 87/87 composition gates passing
+- 59 experiments across 11 tracks, 35 deploy graphs
 - Zero TODOs, FIXMEs, HACKs in Rust source
 - Zero `unsafe` (workspace `forbid`), zero `#[allow()]` in production
 - Zero C dependencies (`deny.toml` enforced, ecoBin compliant)
@@ -28,6 +33,7 @@ can review and enact independently to solve remaining deep debt.
 - All timeouts/tolerances centralized in `tolerances/` module
 - Zero clippy warnings (pedantic + nursery + cast discipline)
 - Zero `cargo deny` policy violations
+- Zero `phase1/`/`phase2/` path references in Rust or shell (all `primals/`)
 
 ---
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 //! Validates sweetGrass semantic attribution at module/feature/function levels.
-//! Source: `phase2/sweetGrass/showcase/ROOTPULSE_EMERGENCE_PLAN.md`
+//! Source: `primals/sweetGrass/showcase/ROOTPULSE_EMERGENCE_PLAN.md`
 
 use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::primal_names;

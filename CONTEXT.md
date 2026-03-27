@@ -21,9 +21,9 @@ primals at runtime via capability-based discovery.
 
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
-- **experiments/** — 53 validation binaries covering 10 tracks
-  (atomics, graphs, emergent, bonding, IPC, provenance, deployment)
-- **graphs/** — 22 deploy graph TOMLs (single-node + multi-node)
+- **experiments/** — 59 validation binaries covering 11 tracks
+  (atomics, graphs, emergent, bonding, IPC, provenance, deployment, gen4 substrate)
+- **graphs/** — 35 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4)
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs

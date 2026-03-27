@@ -3,6 +3,39 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 17: gen4 Deployment Evolution (2026-03-27)
+
+### Added
+- **6 new experiments** (exp075–080): biomeOS substrate, cross-gate routing, Squirrel AI bridge,
+  petalTongue viz, spring deploy sweep, cross-spring ecology
+- **13 new deploy graphs** — 7 spring validation, 2 cross-spring, 4 gen4 prototypes (35 total)
+- **Native `NeuralBridge`** — replaced `neural-api-client-sync` compile dependency with runtime
+  JSON-RPC via `PrimalClient` (zero cross-primal coupling)
+- `discover_biomeos_binary()` — discovers `biomeos` or `neural-api-server` with fallback
+- `spawn_biomeos()` — refactored from `spawn_neural_api()` with `#[deprecated]` alias
+- **NestGate integration** — pulled upstream updates (ZFS graceful degradation, unsafe evolution,
+  family-scoped sockets, comprehensive audit), plasmidBin binary updated
+- **Primal team handoff** — per-team guidance for biomeOS, Squirrel, Songbird, BearDog, petalTongue
+
+### Changed
+- `ipc/neural_bridge.rs` — new module for biomeOS neural-api substrate communication
+- `harness/` — `neural_api_process` → `biomeos_process`, calls `spawn_biomeos()`
+- `launcher/` — biomeOS graph paths updated from `phase2/` to `primals/`
+- `scripts/build_ecosystem_musl.sh` — `phase1/`/`phase2/` paths → `primals/`
+- `scripts/prepare_spore_payload.sh` — `phase2/biomeOS` → `primals/biomeOS`
+- `exp060` — graph discovery paths updated to `primals/biomeOS/graphs`
+- `bonding/mod.rs` — doc link updated to `primals/biomeOS/specs/`
+- All docs updated: 59 experiments, 385 tests, 35 deploy graphs
+- `thiserror` migration for `IpcError` and `LaunchError`
+- 385 tests (up from 378), 59 experiments (up from 53)
+
+### Validated
+- biomeOS coordinated mode: 24 capability domains, 39 deploy graphs
+- Cross-gate Pixel routing via ADB-forwarded TCP (BearDog + Songbird)
+- Squirrel AI via abstract socket, `ai.*` domain routing
+- Spring deploy sweep: all 7 sibling spring biomeOS graphs loaded
+- Full NUCLEUS: 16/16 gates with live NestGate storage round-trip
+
 ## [Unreleased] — Phase 16.1: Coverage Evolution + Docs Refresh (2026-03-27)
 
 ### Added

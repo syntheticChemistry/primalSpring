@@ -2,7 +2,7 @@
 
 //! Validates the repeated health probe pattern with timeout and ordering from
 //! `NestGate`'s `start_ecosystem.sh`.
-//! Source: `phase1/nestgate/showcase/scripts/start_ecosystem.sh`
+//! Source: `primals/nestgate/showcase/scripts/start_ecosystem.sh`
 
 use primalspring::coordination::AtomicType;
 use primalspring::ipc::discover::discover_primal;

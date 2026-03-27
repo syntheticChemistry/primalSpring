@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 //! Validates multi-stage supply chain provenance from rhizoCrypt's complete workflows.
-//! Source: phase2/rhizoCrypt/showcase/01-inter-primal-live/05-complete-workflows/demo-supply-chain.sh
+//! Source: primals/rhizoCrypt/showcase/01-inter-primal-live/05-complete-workflows/demo-supply-chain.sh
 
 use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::primal_names;
