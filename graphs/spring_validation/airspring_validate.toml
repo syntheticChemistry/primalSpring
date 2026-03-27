@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation graph for biomeOS `airspring_deploy`.
+# Verifies Tower health, brings up airspring_primal for weather/ET₀/water-balance
+# ecology work, then validates the ecology pipeline.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/airspring_validate.toml
+
+[graph]
+name = "airspring_validate"
+description = "Validates airspring_deploy: Tower check, airspring primal, ecology pipeline"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "composition.tower_health",
+]
+
+[[graph.node]]
+name = "start_airspring"
+binary = "airspring_primal"
+order = 2
+required = true
+depends_on = ["verify_tower"]
+health_method = "health.check"
+by_capability = "ecology"
+capabilities = [
+    "ecology.weather",
+    "ecology.et0",
+    "ecology.water_balance",
+]
+
+[[graph.node]]
+name = "validate_ecology"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["start_airspring"]
+health_method = "health.check"
+by_capability = "ecology"
+capabilities = [
+    "coordination.validate_ecology",
+]

@@ -87,7 +87,8 @@ fn spawn_petaltongue(
     cmd.stderr(std::process::Stdio::piped());
 
     let child = cmd.spawn().ok()?;
-    let process = PrimalProcess::from_parts(primal_names::PETALTONGUE.to_owned(), socket.clone(), child);
+    let process =
+        PrimalProcess::from_parts(primal_names::PETALTONGUE.to_owned(), socket.clone(), child);
 
     let deadline = std::time::Instant::now() + Duration::from_secs(10);
     loop {

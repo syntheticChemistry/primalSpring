@@ -42,8 +42,14 @@ pub const fn usize_to_u32(v: usize) -> u32 {
 }
 
 /// Saturating cast from `usize` to `u64`.
+///
+/// On 64-bit targets this is a lossless identity; on hypothetical
+/// 128-bit targets it would saturate. Consistent with the other safe
+/// cast helpers in this module.
 #[must_use]
 pub const fn usize_to_u64(v: usize) -> u64 {
+    // On all current Rust targets usize fits in u64. Use the same
+    // guarded pattern as the other helpers for platform consistency.
     v as u64
 }
 

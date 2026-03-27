@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Runtime primal discovery via environment, filesystem probing, and Neural API.
+//! Runtime primal discovery via environment, filesystem probing, and biomeOS.
 //!
 //! Discovery order (per primal):
 //!   1. `{PRIMAL}_SOCKET` environment override (explicit path)
@@ -13,8 +13,9 @@
 //! Manifest files contain `{"socket_path": "..."}` and are written by primals
 //! on startup. The socket registry is a shared file with TTL-aware entries.
 //!
-//! Ecosystem-wide sweep discovery uses the Neural API to learn what primals
-//! are registered at runtime. primalSpring never hardcodes a primal roster.
+//! Ecosystem-wide sweep discovery uses biomeOS's neural-api mode to learn
+//! what primals are registered at runtime. primalSpring never hardcodes a
+//! primal roster.
 //!
 //! # Capability Parsing
 //!
@@ -28,7 +29,7 @@
 
 use std::path::{Path, PathBuf};
 
-use neural_api_client_sync::NeuralBridge;
+use super::neural_bridge::NeuralBridge;
 
 /// Result of attempting to discover a primal's socket.
 #[derive(Debug, Clone)]
@@ -205,17 +206,17 @@ pub fn discover_reachable_for(primals: &[&str]) -> Vec<DiscoveryResult> {
         .collect()
 }
 
-/// Attempt to connect to the Neural API and return a bridge.
+/// Attempt to connect to biomeOS's neural-api mode and return a bridge.
 ///
-/// Returns `None` if the Neural API socket cannot be found (biomeOS not running).
+/// Returns `None` if the biomeOS neural-api socket cannot be found.
 #[must_use]
 pub fn neural_bridge() -> Option<NeuralBridge> {
     NeuralBridge::discover()
 }
 
-/// Query the Neural API for a health check.
+/// Query biomeOS neural-api for a health check.
 ///
-/// Returns `true` if the Neural API is reachable and responds OK.
+/// Returns `true` if biomeOS's neural-api mode is reachable and responds OK.
 #[must_use]
 pub fn neural_api_healthy() -> bool {
     neural_bridge()
@@ -223,17 +224,17 @@ pub fn neural_api_healthy() -> bool {
         .is_some()
 }
 
-/// Query the Neural API for available capabilities.
+/// Query biomeOS neural-api for available capabilities.
 ///
 /// Returns a JSON value describing what capabilities are registered, or
-/// `None` if the Neural API is unreachable.
+/// `None` if biomeOS is unreachable.
 #[must_use]
 pub fn discover_capabilities(capability: &str) -> Option<serde_json::Value> {
     neural_bridge().and_then(|b| b.discover_capability(capability).ok())
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Capability-based discovery — loose coupling via Neural API
+// Capability-based discovery — loose coupling via biomeOS
 // ═══════════════════════════════════════════════════════════════
 
 /// Result of discovering a provider by capability domain.
@@ -252,7 +253,7 @@ pub struct CapabilityDiscoveryResult {
 /// How a capability was resolved to a socket.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CapabilityDiscoverySource {
-    /// Resolved via Neural API `capability.discover`.
+    /// Resolved via biomeOS neural-api `capability.discover`.
     NeuralApi,
     /// Resolved via capability-named socket (e.g. `security.sock`).
     CapabilitySocket,
@@ -268,7 +269,7 @@ pub enum CapabilityDiscoverySource {
 /// "discover beardog", callers ask "discover whoever provides security".
 ///
 /// Discovery order:
-/// 1. Neural API `capability.discover` (authoritative when biomeOS is running)
+/// 1. biomeOS neural-api `capability.discover` (authoritative when running)
 /// 2. Capability-named socket (e.g. `$XDG_RUNTIME_DIR/biomeos/security.sock`)
 /// 3. Socket registry capability scan
 ///
@@ -276,7 +277,7 @@ pub enum CapabilityDiscoverySource {
 /// know which primal implements a capability.
 #[must_use]
 pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
-    // Tier 1: Neural API (authoritative)
+    // Tier 1: biomeOS neural-api (authoritative)
     if let Some(resp) = discover_capabilities(capability) {
         if let Some(socket_str) = resp
             .get("primary_socket")
@@ -385,11 +386,11 @@ fn discover_from_socket_registry_by_capability(
     None
 }
 
-/// Call the Neural API `capability.call` to invoke a semantic capability.
+/// Call `capability.call` via biomeOS to invoke a semantic capability.
 ///
 /// This is the **loose standard** for cross-primal invocation: the caller
-/// specifies a semantic capability and operation, and the Neural API routes
-/// to the correct provider, translates the method, and returns the result.
+/// specifies a semantic capability and operation, and biomeOS routes to the
+/// correct provider primal, translates the method, and returns the result.
 ///
 /// # Example
 ///

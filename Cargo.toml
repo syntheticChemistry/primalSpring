@@ -6,6 +6,7 @@
 
 [workspace]
 resolver = "2"
+default-members = ["ecoPrimal"]
 members = [
     "ecoPrimal",
     "experiments/exp001_tower_atomic",
@@ -61,6 +62,12 @@ members = [
     "experiments/exp072_data_federation",
     "experiments/exp073_lan_covalent_mesh",
     "experiments/exp074_cross_gate_health",
+    "experiments/exp075_biomeos_neural_api_live",
+    "experiments/exp076_cross_gate_neural_routing",
+    "experiments/exp077_squirrel_neural_api_bridge",
+    "experiments/exp078_petaltongue_viz_surface",
+    "experiments/exp079_spring_deploy_sweep",
+    "experiments/exp080_cross_spring_ecology_live",
 ]
 
 [workspace.package]
@@ -75,7 +82,7 @@ serde_json = "1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 clap = { version = "4", features = ["derive"] }
-neural-api-client-sync = { path = "../phase2/biomeOS/crates/neural-api-client-sync" }
+thiserror = "2"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

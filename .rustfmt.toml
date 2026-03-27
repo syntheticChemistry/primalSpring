@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# primalSpring formatting — stable rustfmt only, no nightly options.
+
+edition = "2024"
+max_width = 100
+use_field_init_shorthand = true
+use_try_shorthand = true

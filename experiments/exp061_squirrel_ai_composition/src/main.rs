@@ -167,11 +167,10 @@ fn start_composition(v: &mut ValidationResult) -> Option<CompositionGuard> {
 }
 
 fn validate_squirrel_health(guard: &CompositionGuard, v: &mut ValidationResult) {
-    let squirrel_client =
-        primalspring::ipc::client::PrimalClient::connect(
-            &guard.squirrel.socket_path,
-            primal_names::SQUIRREL,
-        );
+    let squirrel_client = primalspring::ipc::client::PrimalClient::connect(
+        &guard.squirrel.socket_path,
+        primal_names::SQUIRREL,
+    );
     match squirrel_client {
         Ok(mut client) => {
             let live = client.health_liveness().unwrap_or(false);

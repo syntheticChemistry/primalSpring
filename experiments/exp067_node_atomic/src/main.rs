@@ -16,7 +16,8 @@ fn rpc(
     method: &str,
     params: &serde_json::Value,
 ) -> Result<serde_json::Value, String> {
-    let mut client = PrimalClient::connect(socket, primal_names::TOADSTOOL).map_err(|e| format!("{e}"))?;
+    let mut client =
+        PrimalClient::connect(socket, primal_names::TOADSTOOL).map_err(|e| format!("{e}"))?;
     let resp = client
         .call(method, params.clone())
         .map_err(|e| format!("{e}"))?;

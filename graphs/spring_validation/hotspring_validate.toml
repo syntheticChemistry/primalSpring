@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation graph for biomeOS `hotspring_deploy`.
+# Verifies Tower health, brings up hotspring_primal for thermal/fluid/radiation physics,
+# then validates integrated health for the hot stack.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/hotspring_validate.toml
+
+[graph]
+name = "hotspring_validate"
+description = "Validates hotspring_deploy: Tower check, hotspring primal, health validation"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "composition.tower_health",
+]
+
+[[graph.node]]
+name = "start_hotspring"
+binary = "hotspring_primal"
+order = 2
+required = true
+depends_on = ["verify_tower"]
+health_method = "health.check"
+by_capability = "physics"
+capabilities = [
+    "physics.thermal",
+    "physics.fluid",
+    "physics.radiation",
+]
+
+[[graph.node]]
+name = "validate_health"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["start_hotspring"]
+health_method = "health.check"
+by_capability = "physics"
+capabilities = [
+    "coordination.validate_health",
+]

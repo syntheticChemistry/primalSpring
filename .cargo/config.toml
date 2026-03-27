@@ -1,4 +1,14 @@
-[alias]
-# Requires cargo-llvm-cov (https://github.com/taiki-e/cargo-llvm-cov) and
-# `rustup component add llvm-tools-preview`.
-coverage = "llvm-cov --workspace --ignore-filename-regex tests/ --fail-under-lines 90"
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Lean release binaries: LTO + single codegen unit + stripped symbols.
+# Sovereign binary reproducibility per ecoBin standard.
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
+
+[profile.release-with-debug]
+inherits = "release"
+strip = false
+debug = true

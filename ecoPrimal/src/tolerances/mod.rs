@@ -81,7 +81,7 @@ pub const IPC_SOCKET_TIMEOUT_SECS: u64 = 5;
 /// Source: 30 seconds covers slow-starting primals (model loading, etc.).
 /// Validated: Phase 6 NUCLEUS primals appear within ~2–5 seconds; 30s
 /// provides generous margin for resource-constrained gates.
-/// Used by: `launcher::spawn_primal`, `launcher::spawn_neural_api`.
+/// Used by: `launcher::spawn_primal`, `launcher::spawn_biomeos`.
 pub const LAUNCHER_SOCKET_TIMEOUT_SECS: u64 = 30;
 
 /// Polling interval for socket readiness checks (milliseconds).

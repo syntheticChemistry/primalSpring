@@ -38,7 +38,9 @@ fn main() {
                     v.check_minimum("petaltongue_caps", health.capabilities.len(), 1);
 
                     if let Some(ref sock) = petaltongue.socket {
-                        if let Ok(mut client) = PrimalClient::connect(sock, primal_names::PETALTONGUE) {
+                        if let Ok(mut client) =
+                            PrimalClient::connect(sock, primal_names::PETALTONGUE)
+                        {
                             probe_live_petaltongue(v, &mut client);
                         } else {
                             skip_viz_checks(v, "cannot connect");

@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# gen4 Interactive Substrate — full UI + AI + crypto + mesh surface
+#
+# BearDog and Songbird, biomeOS neural API, Squirrel for AI tooling, optional
+# petalTongue visualization/dashboard/input, then capability-list validation of
+# the composed surface.
+#
+# Usage:
+#   biomeos deploy --graph graphs/gen4/gen4_interactive_substrate.toml
+
+[graph]
+name = "gen4_interactive_substrate"
+description = "gen4 Interactive Substrate: full UI + AI + crypto + mesh surface"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.encrypt"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+health_method = "health.liveness"
+by_capability = "mesh"
+capabilities = ["mesh.announce"]
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 3
+required = true
+health_method = "health.check"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel"
+order = 4
+required = true
+health_method = "health.check"
+by_capability = "ai"
+capabilities = ["ai.query", "ai.execute_tool"]
+
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue_primal"
+order = 5
+required = false
+health_method = "health.check"
+by_capability = "visualization"
+capabilities = ["visualization.render", "ui.dashboard", "interaction.input"]
+
+[[graph.node]]
+name = "validate_interactive"
+binary = "primalspring_primal"
+order = 6
+required = true
+spawn = false
+health_method = "capability.list"
+by_capability = "coordination"
+args = ["server"]
+capabilities = []

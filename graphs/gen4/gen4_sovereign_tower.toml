@@ -1,0 +1,81 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# gen4 Sovereign Tower — encrypted substrate with Dark Forest beacons
+#
+# Tower crypto (BearDog), mesh + onion + encrypted BirdSong (Songbird), biomeOS
+# neural API orchestration, then validation-only onion/mesh init and Dark Forest
+# beacon readiness.
+#
+# Usage:
+#   biomeos deploy --graph graphs/gen4/gen4_sovereign_tower.toml
+
+[graph]
+name = "gen4_sovereign_tower"
+description = "gen4 Sovereign Tower: encrypted substrate with Dark Forest beacons"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.encrypt", "crypto.sign", "beacon.generate"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+health_method = "health.liveness"
+by_capability = "mesh"
+capabilities = [
+    "mesh.announce",
+    "mesh.peers",
+    "onion.create_service",
+    "birdsong.generate_encrypted_beacon",
+]
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 3
+required = true
+health_method = "capability.list"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]
+
+[[graph.node]]
+name = "init_sovereign_onion"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+health_method = "health.check"
+by_capability = "onion"
+args = ["server"]
+capabilities = ["onion.create_service", "onion.get_address"]
+
+[[graph.node]]
+name = "init_beacon_mesh"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+health_method = "health.check"
+by_capability = "mesh"
+args = ["server"]
+capabilities = ["mesh.announce", "birdsong.generate_encrypted_beacon"]
+
+[[graph.node]]
+name = "validate_dark_forest"
+binary = "primalspring_primal"
+order = 6
+required = true
+spawn = false
+health_method = "beacon.generate"
+by_capability = "security"
+args = ["server"]
+capabilities = []

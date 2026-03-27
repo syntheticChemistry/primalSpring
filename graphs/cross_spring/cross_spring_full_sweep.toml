@@ -1,0 +1,112 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Cross-Spring full capability sweep — sequential validation of all spring surfaces
+#
+# Verifies Tower and biomeOS neural-api, then walks ground → wet → health → ludo →
+# neural → air → hot spring primals in order, ending with a capability-list health
+# gate for the full sweep.
+#
+# Usage:
+#   biomeos deploy --graph graphs/cross_spring/cross_spring_full_sweep.toml
+
+[graph]
+name = "cross_spring_full_sweep"
+description = "Validates all spring capabilities in sequence (Tower, biomeOS, full spring roster, capability.list)"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = ["composition.tower_health"]
+
+[[graph.node]]
+name = "verify_biomeos"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+health_method = "health.check"
+by_capability = "ecosystem"
+args = ["server"]
+capabilities = ["graph.execution", "ecosystem.coordination"]
+
+[[graph.node]]
+name = "groundspring"
+binary = "groundspring_primal"
+order = 3
+required = true
+health_method = "health.check"
+by_capability = "measurement"
+capabilities = ["measurement.sense"]
+
+[[graph.node]]
+name = "wetspring"
+binary = "wetspring_primal"
+order = 4
+required = true
+health_method = "health.check"
+by_capability = "science"
+capabilities = ["science.diversity"]
+
+[[graph.node]]
+name = "healthspring"
+binary = "healthspring_primal"
+order = 5
+required = true
+health_method = "health.check"
+by_capability = "health"
+capabilities = ["health.pharmacology"]
+
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring_primal"
+order = 6
+required = true
+health_method = "health.check"
+by_capability = "game"
+capabilities = ["game.engine"]
+
+[[graph.node]]
+name = "neuralspring"
+binary = "neuralspring_primal"
+order = 7
+required = true
+health_method = "health.check"
+by_capability = "neural"
+capabilities = ["neural.spectral"]
+
+[[graph.node]]
+name = "airspring"
+binary = "airspring_primal"
+order = 8
+required = true
+health_method = "health.check"
+by_capability = "ecology"
+capabilities = ["ecology.weather"]
+
+[[graph.node]]
+name = "hotspring"
+binary = "hotspring_primal"
+order = 9
+required = true
+health_method = "health.check"
+by_capability = "physics"
+capabilities = ["physics.thermal"]
+
+[[graph.node]]
+name = "validate_sweep"
+binary = "primalspring_primal"
+order = 10
+required = true
+spawn = false
+health_method = "capability.list"
+by_capability = "coordination"
+args = ["server"]
+capabilities = []

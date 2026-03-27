@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation graph for biomeOS `wetspring_deploy`.
+# Verifies Tower health, brings up wetspring_primal for the science pipeline,
+# then validates the deployed science sequence end-to-end.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/wetspring_validate.toml
+
+[graph]
+name = "wetspring_validate"
+description = "Validates wetspring_deploy: Tower check, wetspring primal, science pipeline"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "composition.tower_health",
+]
+
+[[graph.node]]
+name = "start_wetspring"
+binary = "wetspring_primal"
+order = 2
+required = true
+depends_on = ["verify_tower"]
+health_method = "health.check"
+by_capability = "science"
+capabilities = [
+    "science.sequence",
+    "science.diversity",
+    "science.phylogenetics",
+]
+
+[[graph.node]]
+name = "validate_pipeline"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["start_wetspring"]
+health_method = "health.check"
+by_capability = "science"
+capabilities = [
+    "coordination.validate_pipeline",
+]

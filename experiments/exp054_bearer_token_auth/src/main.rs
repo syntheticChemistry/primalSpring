@@ -18,7 +18,9 @@ fn main() {
                 v.check_bool(
                     "beardog_socket_path_discoverable",
                     beardog.primal == primal_names::BEARDOG
-                        && beardog_path.to_string_lossy().contains(primal_names::BEARDOG),
+                        && beardog_path
+                            .to_string_lossy()
+                            .contains(primal_names::BEARDOG),
                     "discover beardog socket path",
                 );
 

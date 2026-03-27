@@ -302,14 +302,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8ca58f447f06ed17d5fc4043ce1b10dd205e060fb3ce5b979b8ed8e59ff3f79"
 
 [[package]]
-name = "neural-api-client-sync"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "nu-ansi-term"
 version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -369,11 +361,11 @@ name = "primalspring"
 version = "0.7.0"
 dependencies = [
  "clap",
- "neural-api-client-sync",
  "proptest",
  "serde",
  "serde_json",
  "tempfile",
+ "thiserror",
  "toml",
  "tracing",
  "tracing-subscriber",
@@ -858,6 +850,60 @@ dependencies = [
 ]
 
 [[package]]
+name = "primalspring-exp075"
+version = "0.7.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp076"
+version = "0.7.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp077"
+version = "0.7.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp078"
+version = "0.7.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp079"
+version = "0.7.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp080"
+version = "0.7.0"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "proc-macro2"
 version = "1.0.106"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1093,6 +1139,26 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys",
+]
+
+[[package]]
+name = "thiserror"
+version = "2.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4288b5bcbc7920c07a1149a35cf9590a2aa808e0bc1eafaade0b80947865fbc4"
+dependencies = [
+ "thiserror-impl",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "2.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ebc4ee7f67670e9b64d05fa4253e753e016c6c95ff35b89b7941d6b856dec1d5"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

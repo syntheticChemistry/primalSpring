@@ -13,58 +13,58 @@ use super::protocol::{JsonRpcError, error_codes};
 ///
 /// Absorbed from biomeOS v2.51 and loamSpine v0.9.5. Provides
 /// diagnostic context without leaking implementation details.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 pub enum IpcErrorPhase {
     /// Failure during socket connection (before any bytes sent).
+    #[error("connect")]
     Connect,
     /// Failure while serializing the request payload.
+    #[error("serialize")]
     Serialize,
     /// Failure while sending bytes over the socket.
+    #[error("send")]
     Send,
     /// Failure while waiting for or reading the response.
+    #[error("receive")]
     Receive,
     /// Failure while parsing the response payload.
+    #[error("parse")]
     Parse,
-}
-
-impl std::fmt::Display for IpcErrorPhase {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Connect => write!(f, "connect"),
-            Self::Serialize => write!(f, "serialize"),
-            Self::Send => write!(f, "send"),
-            Self::Receive => write!(f, "receive"),
-            Self::Parse => write!(f, "parse"),
-        }
-    }
 }
 
 /// Semantic IPC error — classifies failures by what happened rather
 /// than where in the code path the failure occurred.
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum IpcError {
     /// No socket file found for the requested primal.
+    #[error("no socket found for primal '{primal}'")]
     SocketNotFound {
         /// Primal name that was searched for.
         primal: String,
     },
     /// Socket exists but the connection was actively refused.
-    ConnectionRefused(std::io::Error),
+    #[error("connection refused: {0}")]
+    ConnectionRefused(#[source] std::io::Error),
     /// Connection was established but dropped mid-communication.
-    ConnectionReset(std::io::Error),
+    #[error("connection reset: {0}")]
+    ConnectionReset(#[source] std::io::Error),
     /// Operation exceeded the configured timeout.
-    Timeout(std::io::Error),
+    #[error("timeout: {0}")]
+    Timeout(#[source] std::io::Error),
     /// Wire-level protocol violation (malformed JSON, empty response, etc.).
+    #[error("protocol error: {detail}")]
     ProtocolError {
         /// Human-readable description of the protocol violation.
         detail: String,
     },
     /// Server explicitly reported the method does not exist.
+    #[error("method not found: {method}")]
     MethodNotFound {
         /// The method name or server message.
         method: String,
     },
     /// Server returned a JSON-RPC error that is not `MethodNotFound`.
+    #[error("application error {code}: {message}")]
     ApplicationError {
         /// JSON-RPC error code.
         code: i64,
@@ -74,6 +74,7 @@ pub enum IpcError {
         data: Option<serde_json::Value>,
     },
     /// Failed to serialize a request or deserialize a typed result.
+    #[error("serialization error: {detail}")]
     SerializationError {
         /// Human-readable description of the serialization failure.
         detail: String,
@@ -81,6 +82,10 @@ pub enum IpcError {
 }
 
 /// An [`IpcError`] annotated with the [`IpcErrorPhase`] where it occurred.
+///
+/// `source()` delegates to the inner `IpcError`'s error source, preserving
+/// the io::Error chain for connection types while returning `None` for
+/// protocol/application errors.
 #[derive(Debug)]
 pub struct PhasedIpcError {
     /// The phase of the IPC operation that failed.
@@ -151,34 +156,6 @@ impl IpcError {
             self,
             Self::SocketNotFound { .. } | Self::ConnectionRefused(_) | Self::ConnectionReset(_)
         )
-    }
-}
-
-impl std::fmt::Display for IpcError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::SocketNotFound { primal } => {
-                write!(f, "no socket found for primal '{primal}'")
-            }
-            Self::ConnectionRefused(e) => write!(f, "connection refused: {e}"),
-            Self::ConnectionReset(e) => write!(f, "connection reset: {e}"),
-            Self::Timeout(e) => write!(f, "timeout: {e}"),
-            Self::ProtocolError { detail } => write!(f, "protocol error: {detail}"),
-            Self::MethodNotFound { method } => write!(f, "method not found: {method}"),
-            Self::ApplicationError { code, message, .. } => {
-                write!(f, "application error {code}: {message}")
-            }
-            Self::SerializationError { detail } => write!(f, "serialization error: {detail}"),
-        }
-    }
-}
-
-impl std::error::Error for IpcError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            Self::ConnectionRefused(e) | Self::ConnectionReset(e) | Self::Timeout(e) => Some(e),
-            _ => None,
-        }
     }
 }
 

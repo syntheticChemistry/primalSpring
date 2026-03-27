@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation graph for biomeOS `groundspring_deploy`.
+# Verifies Tower health, brings up groundspring_primal with measurement
+# capabilities, then validates end-to-end health via capability routing.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/groundspring_validate.toml
+
+[graph]
+name = "groundspring_validate"
+description = "Validates groundspring_deploy: Tower check, groundspring primal, routed health"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "composition.tower_health",
+]
+
+[[graph.node]]
+name = "start_groundspring"
+binary = "groundspring_primal"
+order = 2
+required = true
+depends_on = ["verify_tower"]
+health_method = "health.check"
+by_capability = "measurement"
+capabilities = [
+    "measurement.sense",
+    "measurement.inverse",
+    "measurement.temporal",
+]
+
+[[graph.node]]
+name = "validate_health"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["start_groundspring"]
+health_method = "health.check"
+by_capability = "measurement"
+capabilities = [
+    "coordination.validate_health",
+]

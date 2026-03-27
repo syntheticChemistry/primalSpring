@@ -73,7 +73,9 @@ fn conditional_branch_verification(v: &mut ValidationResult, running: &RunningAt
 
     let health = running.health_check_all();
     let beardog_live = health.iter().any(|(n, l)| n == primal_names::BEARDOG && *l);
-    let songbird_live = health.iter().any(|(n, l)| n == primal_names::SONGBIRD && *l);
+    let songbird_live = health
+        .iter()
+        .any(|(n, l)| n == primal_names::SONGBIRD && *l);
     v.check_bool("beardog_live", beardog_live, "beardog healthy (required)");
     v.check_bool(
         "songbird_live",
@@ -81,7 +83,9 @@ fn conditional_branch_verification(v: &mut ValidationResult, running: &RunningAt
         "songbird healthy (required)",
     );
 
-    let toadstool_live = health.iter().any(|(n, l)| n == primal_names::TOADSTOOL && *l);
+    let toadstool_live = health
+        .iter()
+        .any(|(n, l)| n == primal_names::TOADSTOOL && *l);
     if toadstool_live {
         println!("  toadstool: LIVE — GPU dispatch path active");
         v.check_bool(

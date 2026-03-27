@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation graph for biomeOS `neuralspring_deploy`.
+# Verifies Tower health, brings up neuralspring_primal for Hamiltonian/eigensolve/spectral
+# work, then validates the spectral pipeline.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/neuralspring_validate.toml
+
+[graph]
+name = "neuralspring_validate"
+description = "Validates neuralspring_deploy: Tower check, neuralspring primal, spectral pipeline"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "composition.tower_health",
+]
+
+[[graph.node]]
+name = "start_neuralspring"
+binary = "neuralspring_primal"
+order = 2
+required = true
+depends_on = ["verify_tower"]
+health_method = "health.check"
+by_capability = "neural"
+capabilities = [
+    "neural.hamiltonian",
+    "neural.eigensolve",
+    "neural.spectral",
+]
+
+[[graph.node]]
+name = "validate_spectral"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["start_neuralspring"]
+health_method = "health.check"
+by_capability = "neural"
+capabilities = [
+    "coordination.validate_spectral",
+]

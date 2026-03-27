@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# gen4 Agentic Tower — AI-orchestrated deployment via Squirrel + biomeOS
+#
+# BearDog and Songbird for crypto and discovery, biomeOS neural API for graph
+# execution and coordination, Squirrel for AI query/tooling/peer discovery, then
+# agentic AI health validation.
+#
+# Usage:
+#   biomeos deploy --graph graphs/gen4/gen4_agentic_tower.toml
+
+[graph]
+name = "gen4_agentic_tower"
+description = "gen4 Agentic Tower: AI-driven deployment and interaction via Squirrel + biomeOS"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.encrypt", "crypto.sign"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["mesh.announce", "discovery.query"]
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 3
+required = true
+health_method = "health.check"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel"
+order = 4
+required = true
+health_method = "health.check"
+by_capability = "ai"
+capabilities = ["ai.query", "ai.execute_tool", "ai.discover_peers"]
+
+[[graph.node]]
+name = "validate_agentic"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+health_method = "ai.health"
+by_capability = "ai"
+args = ["server"]
+capabilities = []

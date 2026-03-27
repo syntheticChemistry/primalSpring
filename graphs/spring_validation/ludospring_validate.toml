@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation graph for biomeOS `ludospring_deploy`.
+# Verifies Tower health, brings up ludospring_primal for game engine/physics/flow,
+# then validates the continuous tick surface via game.tick_health.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/ludospring_validate.toml
+
+[graph]
+name = "ludospring_validate"
+description = "Validates ludospring_deploy: Tower check, ludospring primal, continuous tick"
+version = "0.1.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "composition.tower_health",
+]
+
+[[graph.node]]
+name = "start_ludospring"
+binary = "ludospring_primal"
+order = 2
+required = true
+depends_on = ["verify_tower"]
+health_method = "health.check"
+by_capability = "game"
+capabilities = [
+    "game.engine",
+    "game.physics",
+    "game.flow_state",
+]
+
+[[graph.node]]
+name = "validate_tick"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["start_ludospring"]
+health_method = "game.tick_health"
+by_capability = "game"
+capabilities = [
+    "coordination.validate_tick",
+]

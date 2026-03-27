@@ -116,17 +116,20 @@ fn validate_spawn_and_caps(v: &mut ValidationResult) {
     let caps = graph_capability_map(&graph);
     v.check_bool(
         "cap_security",
-        caps.get("security").is_some_and(|v| v == primal_names::BEARDOG),
+        caps.get("security")
+            .is_some_and(|v| v == primal_names::BEARDOG),
         "security -> beardog",
     );
     v.check_bool(
         "cap_storage",
-        caps.get("storage").is_some_and(|v| v == primal_names::NESTGATE),
+        caps.get("storage")
+            .is_some_and(|v| v == primal_names::NESTGATE),
         "storage -> nestgate",
     );
     v.check_bool(
         "cap_compute",
-        caps.get("compute").is_some_and(|v| v == primal_names::TOADSTOOL),
+        caps.get("compute")
+            .is_some_and(|v| v == primal_names::TOADSTOOL),
         "compute -> toadstool",
     );
     v.check_bool(
@@ -136,7 +139,8 @@ fn validate_spawn_and_caps(v: &mut ValidationResult) {
     );
     v.check_bool(
         "cap_discovery",
-        caps.get("discovery").is_some_and(|v| v == primal_names::SONGBIRD),
+        caps.get("discovery")
+            .is_some_and(|v| v == primal_names::SONGBIRD),
         "discovery -> songbird",
     );
     println!("  capability map: {caps:?}");

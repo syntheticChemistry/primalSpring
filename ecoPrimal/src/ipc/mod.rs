@@ -21,6 +21,7 @@ pub mod dispatch;
 pub mod error;
 pub mod extract;
 pub mod mcp;
+pub mod neural_bridge;
 pub mod probes;
 #[cfg(test)]
 mod proptest_ipc;
@@ -30,7 +31,7 @@ pub mod resilience;
 pub mod transport;
 
 pub use error::IpcError;
-pub use neural_api_client_sync::NeuralBridge;
+pub use neural_bridge::NeuralBridge;
 
 /// Known legacy method prefixes that callers may prepend.
 ///

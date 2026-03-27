@@ -123,12 +123,14 @@ fn validate_capability_maps(v: &mut ValidationResult) {
     let caps = graph_capability_map(&tower_ai);
     v.check_bool(
         "cap_security",
-        caps.get("security").is_some_and(|v| v == primal_names::BEARDOG),
+        caps.get("security")
+            .is_some_and(|v| v == primal_names::BEARDOG),
         "security -> beardog",
     );
     v.check_bool(
         "cap_discovery",
-        caps.get("discovery").is_some_and(|v| v == primal_names::SONGBIRD),
+        caps.get("discovery")
+            .is_some_and(|v| v == primal_names::SONGBIRD),
         "discovery -> songbird",
     );
     v.check_bool(

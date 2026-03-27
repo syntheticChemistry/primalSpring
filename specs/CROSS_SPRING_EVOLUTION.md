@@ -345,18 +345,25 @@ Phase 16 (done): Deep Debt Audit + Centralized Tolerances (March 24, 2026)
   → Coverage baseline measured (cargo llvm-cov)
   → 364 tests (up from 361), zero clippy, zero fmt diff, zero deny issues
 
-Phase 17: gen4 Composition Bridge (Track 9) (Next)
-  → Implement composition.webb_*_health endpoints (6 capabilities)
-  → Webb deploy graph validation: parse + validate webb_*.toml structural contracts
-  → Capability drift detection: registry ↔ bridge ↔ graph ↔ niche YAML consistency
-  → TCP-first transport priority validation (matching PrimalBridge::discover)
-  → Session pipeline ordering tests (narrate → dialogue → flow → render → DAG)
-  → Degradation correctness: absent primals → sensible defaults, never panics
-  → New experiments: exp075 (Webb tower health), exp076 (full composition), exp077 (capability drift)
+Phase 17: gen4 Deployment Evolution — biomeOS Substrate Validation
+  → biomeOS neural-api running on Eastgate in coordinated mode (24 capability domains, 39 graphs)
+  → Capability routing validated: crypto.generate_keypair, beacon.generate via biomeOS → BearDog
+  → Cross-gate routing: Eastgate biomeOS orchestrates Pixel Tower via TCP (ADB-forwarded)
+  → Squirrel AI primal validated via abstract socket @squirrel + biomeOS ai.* domain registered
+  → petalTongue ui_atomic graph loaded in biomeOS, structural validation passing
+  → Birdsong encrypted beacon generation validated (direct Songbird + biomeOS capability routing)
+  → Spring deploy sweep: all 7 spring + 4 pipeline graphs loaded in biomeOS (39 total)
+  → Cross-spring ecology graph validated: 9 nodes, ET₀ → diversity → spectral pipeline
+  → New experiments: exp075 (biomeOS live), exp076 (cross-gate), exp077 (Squirrel bridge),
+    exp078 (petalTongue viz), exp079 (spring sweep), exp080 (cross-spring ecology)
+  → New graph templates: graphs/spring_validation/ (7), graphs/cross_spring/ (2), graphs/gen4/ (4)
+  → gen4 prototypes: sovereign tower, science substrate, agentic tower, interactive substrate
+  → Known gaps: Squirrel uses abstract sockets (biomeOS routes to filesystem sockets),
+    no aarch64 biomeOS binary for Pixel substrate deployment (biomeOS-scope work)
 
 Phase 18: LAN Covalent Deployment
   → Live multi-gate NUCLEUS deployment with BirdSong beacon exchange
-  → Pixel Songbird-only deployment (workaround for BearDog abstract socket)
+  → biomeOS aarch64 musl-static cross-compile for full Pixel substrate deployment
   → 10G mesh backbone validation
 
 Phase 19: Live Multi-Node Validation (Track 8)

@@ -52,6 +52,17 @@ cargo deny check
 
 All must pass with zero warnings.
 
-## License
+## License — scyBorg Provenance Trio
 
-AGPL-3.0-or-later (scyBorg trio: AGPL + ORC + CC-BY-SA 4.0)
+All **source code** is AGPL-3.0-or-later. The ecosystem uses the scyBorg
+triple-license model (see `SCYBORG_PROVENANCE_TRIO_GUIDANCE.md` in wateringHole):
+
+| Layer | License | Applies to |
+|-------|---------|------------|
+| Code | AGPL-3.0-or-later | All `.rs`, `.toml`, `.sh` files |
+| Mechanics | ORC (Open RPG Creative) | Game mechanics if applicable (n/a for primalSpring) |
+| Creative | CC-BY-SA 4.0 | Documentation, diagrams, creative content |
+
+primalSpring is a coordination/validation spring with no game mechanics.
+ORC does not apply. Documentation and specs are CC-BY-SA 4.0.
+Every source file must carry `// SPDX-License-Identifier: AGPL-3.0-or-later`.

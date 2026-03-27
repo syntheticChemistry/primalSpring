@@ -53,9 +53,10 @@ const RELATIVE_PLASMID_TIERS: &[&str] = &["./plasmidBin", "../plasmidBin", "../.
 // ---------------------------------------------------------------------------
 
 /// Typed errors for primal launch operations.
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum LaunchError {
     /// Binary not found after searching all tiers and patterns.
+    #[error("binary not found for '{primal}'; searched: {searched:?}")]
     BinaryNotFound {
         /// The primal name that was searched for.
         primal: String,
@@ -63,6 +64,7 @@ pub enum LaunchError {
         searched: Vec<PathBuf>,
     },
     /// `std::process::Command::spawn` failed.
+    #[error("spawn failed for '{primal}': {source}")]
     SpawnFailed {
         /// The primal whose binary failed to spawn.
         primal: String,
@@ -70,6 +72,7 @@ pub enum LaunchError {
         source: std::io::Error,
     },
     /// Socket did not appear within the timeout.
+    #[error("socket timeout for '{primal}' at {socket} after {waited:.1?}")]
     SocketTimeout {
         /// The primal whose socket was expected.
         primal: String,
@@ -79,6 +82,7 @@ pub enum LaunchError {
         waited: Duration,
     },
     /// A spawned primal failed its post-launch health check.
+    #[error("health check failed for '{primal}': {detail}")]
     HealthCheckFailed {
         /// The primal that failed the check.
         primal: String,
@@ -86,48 +90,11 @@ pub enum LaunchError {
         detail: String,
     },
     /// Launch profiles TOML failed to parse.
+    #[error("launch profile parse error: {0}")]
     ProfileParseError(
         /// Parse error detail.
         String,
     ),
-}
-
-impl fmt::Display for LaunchError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::BinaryNotFound { primal, searched } => {
-                write!(f, "binary not found for '{primal}'; searched: {searched:?}")
-            }
-            Self::SpawnFailed { primal, source } => {
-                write!(f, "spawn failed for '{primal}': {source}")
-            }
-            Self::SocketTimeout {
-                primal,
-                socket,
-                waited,
-            } => {
-                write!(
-                    f,
-                    "socket timeout for '{primal}' at {} after {:.1}s",
-                    socket.display(),
-                    waited.as_secs_f64()
-                )
-            }
-            Self::HealthCheckFailed { primal, detail } => {
-                write!(f, "health check failed for '{primal}': {detail}")
-            }
-            Self::ProfileParseError(msg) => write!(f, "launch profile parse error: {msg}"),
-        }
-    }
-}
-
-impl std::error::Error for LaunchError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            Self::SpawnFailed { source, .. } => Some(source),
-            _ => None,
-        }
-    }
 }
 
 // ---------------------------------------------------------------------------
@@ -539,13 +506,31 @@ fn await_socket_ready(
     }
 }
 
-/// Spawn the biomeOS Neural API server.
+/// Discover the biomeOS binary, trying `biomeos` first then the legacy
+/// `neural-api-server` name as a fallback.
 ///
-/// Unlike regular primals, the Neural API server:
-/// - Has no `server` subcommand (just runs directly)
-/// - Creates its socket at `{nucleation_base}/biomeos/neural-api-{family}.sock`
-/// - Needs CWD containing a `graphs/` directory for bootstrap
-/// - Detects already-running primals via its own nucleation
+/// biomeOS is the substrate primal — the ecosystem's composition,
+/// coordination, and deployment orchestrator. The Neural API is one of
+/// its UniBin modes (`biomeos neural-api`). Some plasmidBin harvests
+/// still ship the binary under the legacy name `neural-api-server`.
+///
+/// # Errors
+///
+/// Returns [`LaunchError::BinaryNotFound`] if neither name is found.
+pub fn discover_biomeos_binary() -> Result<PathBuf, LaunchError> {
+    discover_binary("biomeos").or_else(|_| discover_binary("neural-api-server"))
+}
+
+/// Spawn biomeOS in neural-api mode (graph orchestration + capability routing).
+///
+/// biomeOS is the substrate primal. Its `neural-api` mode provides
+/// graph execution, capability routing, and primal coordination. Unlike
+/// regular primals that use `server` subcommand, biomeOS uses the
+/// `neural-api` subcommand.
+///
+/// The socket is created at `{nucleation_base}/biomeos/neural-api-{family}.sock`.
+/// biomeOS detects already-running primals via its own nucleation and
+/// enters companion mode.
 ///
 /// # Arguments
 ///
@@ -556,12 +541,12 @@ fn await_socket_ready(
 /// # Errors
 ///
 /// Returns [`LaunchError`] on binary-not-found, spawn failure, or socket timeout.
-pub fn spawn_neural_api(
+pub fn spawn_biomeos(
     family_id: &str,
     nucleation: &SocketNucleation,
     graphs_dir: &Path,
 ) -> Result<PrimalProcess, LaunchError> {
-    let relative_binary = discover_binary("neural-api-server")?;
+    let relative_binary = discover_biomeos_binary()?;
     let binary = std::fs::canonicalize(&relative_binary).unwrap_or(relative_binary);
 
     let biomeos_dir = nucleation.base_dir().join("biomeos");
@@ -594,40 +579,54 @@ pub fn spawn_neural_api(
     cmd.stderr(Stdio::piped());
 
     println!(
-        "[launcher] spawning neural-api-server from {}",
+        "[launcher] spawning biomeOS (neural-api mode) from {}",
         binary.display()
     );
 
     let mut child = cmd.spawn().map_err(|e| LaunchError::SpawnFailed {
-        primal: "neural-api-server".to_owned(),
+        primal: "biomeos".to_owned(),
         source: e,
     })?;
 
-    let relay_handle = relay_output(&mut child, "neural-api");
+    let relay_handle = relay_output(&mut child, "biomeos");
 
     let timeout = Duration::from_secs(tolerances::LAUNCHER_SOCKET_TIMEOUT_SECS);
     if !wait_for_socket(&socket_path, timeout) {
         let _ = child.kill();
         let _ = child.wait();
         return Err(LaunchError::SocketTimeout {
-            primal: "neural-api-server".to_owned(),
+            primal: "biomeos".to_owned(),
             socket: socket_path,
             waited: timeout,
         });
     }
 
     println!(
-        "[launcher] neural-api-server ready at {} (pid {})",
+        "[launcher] biomeOS ready at {} (pid {})",
         socket_path.display(),
         child.id()
     );
 
     Ok(PrimalProcess {
-        name: "neural-api-server".to_owned(),
+        name: "biomeos".to_owned(),
         socket_path,
         child,
         _relay_handle: Some(relay_handle),
     })
+}
+
+/// Legacy alias for [`spawn_biomeos`].
+///
+/// # Errors
+///
+/// Returns [`LaunchError`] on binary-not-found, spawn failure, or socket timeout.
+#[deprecated(note = "use spawn_biomeos() — Neural API is a biomeOS mode, not a separate entity")]
+pub fn spawn_neural_api(
+    family_id: &str,
+    nucleation: &SocketNucleation,
+    graphs_dir: &Path,
+) -> Result<PrimalProcess, LaunchError> {
+    spawn_biomeos(family_id, nucleation, graphs_dir)
 }
 
 /// Discover the biomeOS graphs directory, preferring the biomeOS source tree
@@ -643,9 +642,9 @@ fn discover_biomeos_graphs(fallback: &Path) -> PathBuf {
     }
 
     let candidates = [
-        PathBuf::from("../phase2/biomeOS/graphs"),
-        PathBuf::from("../../phase2/biomeOS/graphs"),
-        PathBuf::from("../../../phase2/biomeOS/graphs"),
+        PathBuf::from("../primals/biomeOS/graphs"),
+        PathBuf::from("../../primals/biomeOS/graphs"),
+        PathBuf::from("../../../primals/biomeOS/graphs"),
     ];
     for candidate in &candidates {
         if candidate.join("tower_atomic_bootstrap.toml").is_file()

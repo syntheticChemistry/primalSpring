@@ -59,12 +59,18 @@ fn main() {
                 let path_coralreef = socket_path(primal_names::CORALREEF);
                 let path_barracuda = socket_path(primal_names::BARRACUDA);
                 let valid_paths = path_toadstool.to_string_lossy().contains("biomeos")
-                    && path_toadstool.to_string_lossy().contains(primal_names::TOADSTOOL)
+                    && path_toadstool
+                        .to_string_lossy()
+                        .contains(primal_names::TOADSTOOL)
                     && path_toadstool.to_string_lossy().ends_with(".sock")
                     && path_coralreef.to_string_lossy().contains("biomeos")
-                    && path_coralreef.to_string_lossy().contains(primal_names::CORALREEF)
+                    && path_coralreef
+                        .to_string_lossy()
+                        .contains(primal_names::CORALREEF)
                     && path_barracuda.to_string_lossy().contains("biomeos")
-                    && path_barracuda.to_string_lossy().contains(primal_names::BARRACUDA);
+                    && path_barracuda
+                        .to_string_lossy()
+                        .contains(primal_names::BARRACUDA);
                 v.check_bool(
                     "socket_path_valid_for_all_three",
                     valid_paths,

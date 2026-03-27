@@ -69,10 +69,18 @@ else
     fail "test count: ${TEST_COUNT:-0} below floor $MIN_TESTS"
 fi
 
+MIN_COVERAGE=70
+
 if [ "${SKIP_COVERAGE:-}" != "1" ] && command -v cargo-llvm-cov >/dev/null 2>&1; then
     step "cargo llvm-cov (line coverage)"
-    COV_OUTPUT=$(cargo llvm-cov --workspace --no-report 2>&1 || true)
-    pass "coverage collected (review with 'cargo llvm-cov report')"
+    COV_JSON=$(cargo llvm-cov --workspace --json 2>&1 || true)
+    LINE_COV=$(echo "$COV_JSON" | grep -o '"lines":{"count":[0-9]*,"covered":[0-9]*' | head -1 | \
+        awk -F'[:,]' '{if ($3 > 0) printf "%.0f", ($5/$3)*100; else print "0"}')
+    if [ "${LINE_COV:-0}" -ge "$MIN_COVERAGE" ]; then
+        pass "line coverage: ${LINE_COV}% (floor: ${MIN_COVERAGE}%)"
+    else
+        fail "line coverage: ${LINE_COV:-0}% below floor ${MIN_COVERAGE}%"
+    fi
 else
     step "coverage"
     printf "${YELLOW}⚠ cargo-llvm-cov not installed or SKIP_COVERAGE=1 — skipping${NC}\n"
@@ -89,7 +97,11 @@ step "plasmidBin health check"
 PLASMID_DIR="$(dirname "$WORKSPACE_ROOT")/plasmidBin"
 if [ -d "$PLASMID_DIR" ] && [ -f "$PLASMID_DIR/checksums.toml" ]; then
     PLASMID_OK=true
-    for bin in beardog songbird nestgate toadstool squirrel; do
+    CORE_PRIMALS=$(ls "$PLASMID_DIR/primals/" 2>/dev/null | grep -v '^archive$' | head -20)
+    if [ -z "$CORE_PRIMALS" ]; then
+        CORE_PRIMALS="beardog songbird nestgate toadstool squirrel"
+    fi
+    for bin in $CORE_PRIMALS; do
         if [ ! -f "$PLASMID_DIR/primals/$bin" ]; then
             fail "plasmidBin missing: primals/$bin"
             PLASMID_OK=false

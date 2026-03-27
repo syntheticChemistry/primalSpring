@@ -2,88 +2,66 @@
 
 //! Meta-validator that runs all primalSpring experiment binaries in sequence.
 //!
-//! Follows the hotSpring/neuralSpring `validate_all` pattern: enumerate
-//! experiment packages from a maintained manifest, run each one via
-//! `cargo run --release`, collect pass/fail, and exit 0 only if every
-//! experiment passes. The `EXPERIMENTS` slice must be updated when
-//! experiment crates are added or removed.
+//! Auto-discovers experiment packages from `cargo metadata` rather than
+//! maintaining a hardcoded list. Any workspace member whose package name
+//! starts with `primalspring-exp` is treated as an experiment.
 
 use std::process::Command;
 use std::time::Instant;
 
 use primalspring::tolerances::VALIDATION_SUMMARY_WIDTH;
 
-/// Experiment binaries in execution order (tracks 1-10).
-const EXPERIMENTS: &[&str] = &[
-    "primalspring-exp001",
-    "primalspring-exp002",
-    "primalspring-exp003",
-    "primalspring-exp004",
-    "primalspring-exp005",
-    "primalspring-exp006",
-    "primalspring-exp010",
-    "primalspring-exp011",
-    "primalspring-exp012",
-    "primalspring-exp013",
-    "primalspring-exp014",
-    "primalspring-exp015",
-    "primalspring-exp020",
-    "primalspring-exp021",
-    "primalspring-exp022",
-    "primalspring-exp023",
-    "primalspring-exp024",
-    "primalspring-exp025",
-    "primalspring-exp030",
-    "primalspring-exp031",
-    "primalspring-exp032",
-    "primalspring-exp033",
-    "primalspring-exp034",
-    "primalspring-exp040",
-    "primalspring-exp041",
-    "primalspring-exp042",
-    "primalspring-exp043",
-    "primalspring-exp044",
-    "primalspring-exp050",
-    "primalspring-exp051",
-    "primalspring-exp052",
-    "primalspring-exp053",
-    "primalspring-exp054",
-    "primalspring-exp055",
-    "primalspring-exp056",
-    "primalspring-exp057",
-    "primalspring-exp058",
-    "primalspring-exp059",
-    "primalspring-exp060",
-    "primalspring-exp061",
-    "primalspring-exp062",
-    "primalspring-exp063",
-    "primalspring-exp064",
-    "primalspring-exp065",
-    "primalspring-exp066",
-    "primalspring-exp067",
-    "primalspring-exp068",
-    "primalspring-exp069",
-    "primalspring-exp070",
-    "primalspring-exp071",
-    "primalspring-exp072",
-    "primalspring-exp073",
-    "primalspring-exp074",
-];
+/// Discover experiment package names from `cargo metadata`.
+///
+/// Falls back to an empty list if metadata cannot be read (e.g. outside
+/// the workspace). Sorts lexicographically so execution order is stable.
+fn discover_experiments() -> Vec<String> {
+    let output = Command::new("cargo")
+        .args(["metadata", "--format-version=1", "--no-deps"])
+        .output();
+
+    let Ok(output) = output else {
+        eprintln!("[validate_all] warning: cargo metadata failed, no experiments discovered");
+        return Vec::new();
+    };
+
+    let Ok(meta) = serde_json::from_slice::<serde_json::Value>(&output.stdout) else {
+        eprintln!("[validate_all] warning: failed to parse cargo metadata JSON");
+        return Vec::new();
+    };
+
+    let mut experiments: Vec<String> = meta
+        .get("packages")
+        .and_then(|p| p.as_array())
+        .into_iter()
+        .flatten()
+        .filter_map(|pkg| {
+            let name = pkg.get("name")?.as_str()?;
+            name.starts_with("primalspring-exp")
+                .then(|| name.to_owned())
+        })
+        .collect();
+
+    experiments.sort();
+    experiments
+}
 
 fn main() {
+    let experiments = discover_experiments();
+
     println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!(
         "primalSpring validate_all — running {} experiments",
-        EXPERIMENTS.len()
+        experiments.len()
     );
     println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
 
     let mut passed = 0u32;
     let mut failed = 0u32;
-    let mut failures: Vec<&str> = Vec::new();
+    let mut failures: Vec<String> = Vec::new();
     let wall_start = Instant::now();
 
-    for &name in EXPERIMENTS {
+    for name in &experiments {
         let start = Instant::now();
         let result = Command::new("cargo")
             .args(["run", "--release", "-p", name])
@@ -100,12 +78,12 @@ fn main() {
                 let code = status.code().unwrap_or(-1);
                 println!("  [FAIL] {name} (exit {code}, {elapsed:.1?})");
                 failed += 1;
-                failures.push(name);
+                failures.push(name.clone());
             }
             Err(e) => {
                 println!("  [FAIL] {name} (spawn error: {e})");
                 failed += 1;
-                failures.push(name);
+                failures.push(name.clone());
             }
         }
     }
@@ -114,7 +92,7 @@ fn main() {
     println!("\n{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
     println!(
         "validate_all: {passed}/{} passed, {failed} failed ({wall_elapsed:.1?})",
-        EXPERIMENTS.len()
+        experiments.len()
     );
 
     if !failures.is_empty() {

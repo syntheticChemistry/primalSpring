@@ -36,7 +36,9 @@ use crate::launcher::{self, LaunchError, PrimalProcess, SocketNucleation};
 /// killed in reverse startup order and sockets are cleaned up.
 pub struct RunningAtomic {
     processes: Vec<PrimalProcess>,
-    neural_api_process: Option<PrimalProcess>,
+    /// biomeOS running in neural-api mode (graph orchestration + capability routing).
+    /// biomeOS is the substrate primal; the Neural API is its orchestration mode.
+    biomeos_process: Option<PrimalProcess>,
     nucleation: SocketNucleation,
     family_id: String,
     runtime_dir: PathBuf,
@@ -122,7 +124,7 @@ impl RunningAtomic {
     ///
     /// Liveness is required (fail if not live). Capabilities are best-effort
     /// (skip if the primal doesn't implement `capabilities.list`).
-    /// When a Neural API is running, also validates the Neural API bridge.
+    /// When biomeOS (neural-api mode) is running, also validates the bridge.
     /// Records results on the provided [`crate::validation::ValidationResult`].
     pub fn validate(&self, v: &mut crate::validation::ValidationResult) {
         for (name, live) in self.health_check_all() {
@@ -144,38 +146,42 @@ impl RunningAtomic {
         }
         if let Some(bridge) = self.neural_bridge() {
             let neural_ok = bridge.health_check().is_ok();
-            v.check_bool("neural_api_health", neural_ok, "Neural API health check");
+            v.check_bool(
+                "neural_api_health",
+                neural_ok,
+                "biomeOS neural-api health check",
+            );
         }
     }
 
-    /// Whether the Neural API server is running in this composition.
+    /// Whether biomeOS (neural-api mode) is running in this composition.
     #[must_use]
     pub const fn has_neural_api(&self) -> bool {
-        self.neural_api_process.is_some()
+        self.biomeos_process.is_some()
     }
 
-    /// Get a [`NeuralBridge`] to the running Neural API server.
+    /// Get a [`NeuralBridge`] to the running biomeOS neural-api instance.
     ///
-    /// Returns `None` if no Neural API was started with this composition.
+    /// Returns `None` if biomeOS was not started with this composition.
     #[must_use]
     pub fn neural_bridge(&self) -> Option<NeuralBridge> {
-        let proc = self.neural_api_process.as_ref()?;
+        let proc = self.biomeos_process.as_ref()?;
         let socket_str = proc.socket_path.to_string_lossy();
         NeuralBridge::discover_with(Some(&socket_str), Some(&self.family_id))
     }
 
-    /// Number of running primals (excluding Neural API server).
+    /// Number of running primals (excluding biomeOS).
     #[must_use]
     pub const fn primal_count(&self) -> usize {
         self.processes.len()
     }
 
-    /// Collect all child PIDs (primals + optional Neural API server).
+    /// Collect all child PIDs (primals + optional biomeOS).
     #[must_use]
     pub fn pids(&self) -> Vec<u32> {
         let mut pids: Vec<u32> = self.processes.iter().map(PrimalProcess::pid).collect();
-        if let Some(ref neural) = self.neural_api_process {
-            pids.push(neural.pid());
+        if let Some(ref biomeos) = self.biomeos_process {
+            pids.push(biomeos.pid());
         }
         pids
     }
@@ -241,9 +247,13 @@ impl RunningAtomic {
 
 impl Drop for RunningAtomic {
     fn drop(&mut self) {
-        if let Some(neural) = self.neural_api_process.take() {
-            println!("[harness] stopping {} (pid {})", neural.name, neural.pid());
-            drop(neural);
+        if let Some(biomeos) = self.biomeos_process.take() {
+            println!(
+                "[harness] stopping {} (pid {})",
+                biomeos.name,
+                biomeos.pid()
+            );
+            drop(biomeos);
         }
         while let Some(process) = self.processes.pop() {
             println!(
@@ -339,7 +349,7 @@ impl AtomicHarness {
 
         Ok(RunningAtomic {
             processes,
-            neural_api_process: None,
+            biomeos_process: None,
             nucleation,
             family_id: family_id.to_owned(),
             runtime_dir,
@@ -348,11 +358,12 @@ impl AtomicHarness {
         })
     }
 
-    /// Start primals for this composition AND the Neural API server.
+    /// Start primals for this composition AND biomeOS in neural-api mode.
     ///
     /// Primals are started first (in topological or static order), then
-    /// the Neural API server is launched. The Neural API server detects
-    /// the already-running primals and enters companion mode.
+    /// biomeOS is launched in `neural-api` mode. biomeOS detects the
+    /// already-running primals and enters companion mode for graph
+    /// orchestration and capability routing.
     ///
     /// `graphs_dir` should point to the directory containing deploy
     /// graph TOMLs (e.g. `primalSpring/graphs/`).
@@ -393,21 +404,21 @@ impl AtomicHarness {
         }
 
         println!(
-            "[harness] {} primals running, starting Neural API server...",
+            "[harness] {} primals running, starting biomeOS (neural-api mode)...",
             processes.len()
         );
 
-        let neural_api = launcher::spawn_neural_api(family_id, &nucleation, graphs_dir)?;
+        let biomeos = launcher::spawn_biomeos(family_id, &nucleation, graphs_dir)?;
 
         println!(
-            "[harness] {:?} + Neural API running ({} primals + neural-api-server)",
+            "[harness] {:?} + biomeOS running ({} primals + biomeos neural-api)",
             self.atomic,
             processes.len()
         );
 
         Ok(RunningAtomic {
             processes,
-            neural_api_process: Some(neural_api),
+            biomeos_process: Some(biomeos),
             nucleation,
             family_id: family_id.to_owned(),
             runtime_dir,
@@ -488,7 +499,7 @@ mod tests {
         let nuc = SocketNucleation::new(dir.clone());
         let running = RunningAtomic {
             processes: vec![],
-            neural_api_process: None,
+            biomeos_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
             runtime_dir: dir.clone(),
@@ -508,7 +519,7 @@ mod tests {
         let nuc = SocketNucleation::new(dir.clone());
         let running = RunningAtomic {
             processes: vec![],
-            neural_api_process: None,
+            biomeos_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
             runtime_dir: dir,
@@ -539,7 +550,7 @@ mod tests {
         overlay.insert("ai".to_owned(), "squirrel".to_owned());
         let running = RunningAtomic {
             processes: vec![],
-            neural_api_process: None,
+            biomeos_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
             runtime_dir: dir,
