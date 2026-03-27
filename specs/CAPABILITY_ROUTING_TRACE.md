@@ -166,10 +166,22 @@ Full NUCLEUS (Node + squirrel)                  ← VALIDATED (58/58 → 87/87 w
     ▼  overlays + provenance + Squirrel AI
 Multi-Node (NUCLEUS + bonding + federation)     ← STRUCTURAL (Phase 12)
     ▼  4 deploy graphs, BondingPolicy, STUN tiers
-Live Multi-Node (bonded NUCLEUS mesh)           ← FUTURE (Phase 17)
+Live Multi-Node (bonded NUCLEUS mesh)           ← FUTURE (Phase 18)
 ```
 
 See `specs/TOWER_STABILITY.md` for the full gate acceptance criteria.
+
+### gen4 Composition Validation (Phase 17)
+
+```
+Full NUCLEUS (Node + squirrel)                  ← VALIDATED (87/87 with overlays)
+    ▼  overlays + provenance + Squirrel AI
+Multi-Node (NUCLEUS + bonding + federation)     ← STRUCTURAL (Phase 12)
+    ▼  4 deploy graphs, BondingPolicy, STUN tiers
+gen4 Bridge (NUCLEUS + Webb composition)        ← NEXT (Phase 17)
+    ▼  6 composition.webb_* capabilities, drift detection, session pipeline
+Live Multi-Node (bonded NUCLEUS mesh)           ← FUTURE (Phase 18)
+```
 
 ## Evolution Path
 
@@ -218,6 +230,89 @@ primalSpring validates each phase by:
 5. **Gate reports** — per-sprint gate status to `wateringHole/handoffs/`
 
 See `wateringHole/handoffs/TOWER_COEVOLUTION_GUIDE.md` for the shared contract with all three teams.
+
+## gen4 Product Composition Routing (Phase 17 — Track 9)
+
+gen4 products introduce a new routing topology: products consume primals via
+IPC with **zero knowledge of the Neural API**. Webb's `PrimalBridge` discovers
+primals by domain, not by Neural API capability routing. This creates a parallel
+routing surface that primalSpring must validate.
+
+### Category 8: esotericWebb Domain-Centric Discovery
+
+Webb discovers primals by **8 capability domains** defined in `webb/src/ipc/mod.rs`:
+
+| Domain | Default Primal | Webb Method Constants |
+|--------|----------------|----------------------|
+| `ai` | squirrel | `ai.chat`, `ai.summarize`, `ai.query` |
+| `visualization` | petaltongue | `visualization.render.scene`, `interaction.poll` |
+| `compute` | toadstool | `compute.dispatch.submit` |
+| `storage` | nestgate | `storage.put`, `storage.get` |
+| `game` | ludospring | `game.narrate_action`, `game.npc_dialogue`, `game.evaluate_flow` |
+| `dag` | rhizocrypt | `dag.session.create`, `dag.event.append`, `dag.session.complete` |
+| `lineage` | loamspine | `lineage.certify`, `lineage.verify` |
+| `provenance` | sweetgrass | `provenance.session_create`, `provenance.braid.create` |
+
+These domain→primal mappings are hardcoded in `PRIMAL_DOMAINS` — similar to
+Category 5 (biomeOS hardcoded mapping) but in a different codebase. The difference:
+Webb is a gen4 consumer, not an orchestrator. It deliberately uses domain-based
+lookup because it cannot access the Neural API translation layer.
+
+**Validation implication**: primalSpring should validate that domain→primal
+mappings in Webb's bridge stay consistent with the capability registry and
+deploy graphs, since Webb can't self-validate against the Neural API.
+
+### Category 9: Capability String Drift Across Surfaces
+
+Webb uses capability strings in four independent locations:
+
+| Surface | File | Example |
+|---------|------|---------|
+| Bridge method constants | `webb/src/ipc/mod.rs` | `dag.session.create` |
+| Deploy graph capabilities | `graphs/webb_*.toml` | `composition.webb_full_health` |
+| Capability registry | `webb/capability_registry.toml` | `webb.session.start`, `tools.list` |
+| Niche YAML | `niches/*.yaml` | `game.*`, `ai.*` (dotted glob patterns) |
+
+No single source of truth enforces consistency across these four surfaces.
+primalSpring is the natural validation point — it already validates deploy
+graph capabilities and capability registry consistency for gen3 primals.
+Extending this to gen4 product surfaces is a Track 9 goal.
+
+### Category 10: Transport Priority Mismatch
+
+Webb's `PrimalBridge::discover` uses **TCP-first, UDS fallback**:
+1. If `tcp_addr` exists in capability registry → try TCP → `health_liveness()` → accept
+2. Else if `socket_path` exists → try UDS → `health_liveness()` → accept
+3. Else → domain absent → degrade gracefully
+
+This is the **opposite** of primalSpring's gen3 validation, which uses UDS-first
+(local socket) because springs run on the same machine as primals. gen4 products
+may run on different machines (containers, remote gates), making TCP the primary
+transport.
+
+primalSpring should validate both transport orderings and ensure primals respond
+identically regardless of transport.
+
+### Category 11: Resilience Contract
+
+Webb's `resilient_call` enforces a specific resilience contract:
+
+```
+1. CircuitBreaker.is_allowed(domain)?  → if no, Err(circuit open) immediately
+2. client.call(method, params)
+3. On Ok → circuit.record_success()
+4. On Err:
+   a. is_recoverable(err)? → retry (up to max, with exponential backoff)
+   b. not recoverable? → circuit.record_failure() → Err immediately
+5. All retries exhausted → Err
+```
+
+`is_recoverable` matches: Io, Timeout, ConnectionFailed.
+Not recoverable: MethodNotFound, InvalidParams, ParseError.
+
+primalSpring already has `is_recoverable()` (absorbed from wetSpring V133) and
+`CircuitBreaker` (absorbed from healthSpring V42). The validation gap is that
+primalSpring has never tested these against a gen4 consumer's actual call patterns.
 
 ## Multi-Node Capability Routing (Phase 12+)
 

@@ -449,18 +449,20 @@ Multi-Node Bonding + Federation                  ✅ STRUCTURAL (Phase 12)
     │   CONTRIBUTING.md + SECURITY.md ✅
     │   Zero clippy warnings --all-targets ✅
     │
-    ▼  Phase 16: Live multi-gate LAN covalent deployment
-Emergent Systems End-to-End (Phase 18)
+    ▼  Phase 17: gen4 Composition Bridge (Webb + helixVision)
+Phase 18: LAN Covalent Deployment
+    Live multi-gate NUCLEUS, BirdSong beacon exchange
+Emergent Systems End-to-End (Phase 19)
     RootPulse + coralForge pipeline with live trio
-Live Multi-Node (Phase 17)
+Live Multi-Node (Phase 20)
     Basement HPC, friend remote, idle compute, data federation
-Bonding Live Coordination (Phase 19)
+Bonding Live Coordination (Phase 21)
     Covalent mesh, ionic contracts, metallic fleets
-Cross-Spring Integration (Phase 20)
+Cross-Spring Integration (Phase 22)
     wetSpring genetic lineage, BYOB primal DAG execution
-Anchoring + Economics (Phase 22)
+Anchoring + Economics (Phase 24)
     BTC/ETH hash attestation, Novel Ferment Transcripts, sunCloud
-biomeOS Self-Composition (Phase 23)
+biomeOS Self-Composition (Phase 25)
     biomeOS composes its own graphs at runtime
 ```
 

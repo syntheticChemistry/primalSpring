@@ -1,4 +1,4 @@
-# LAN Covalent Deployment Guide — Phase 17
+# LAN Covalent Deployment Guide — Phase 18
 
 **Date**: March 25, 2026 (revised; originally March 23, 2026)
 **From**: primalSpring v0.7.0

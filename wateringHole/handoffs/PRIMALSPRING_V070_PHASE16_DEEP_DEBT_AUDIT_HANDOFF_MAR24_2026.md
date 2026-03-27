@@ -112,7 +112,7 @@ offline unit tests cover logic; live integration tests cover IPC.
 
 ### Songbird
 - primalSpring centralizes all remote Songbird TCP port defaults in `tolerances/`
-- BirdSong beacon exchange (exp073) is validated structurally; needs live LAN for Phase 17
+- BirdSong beacon exchange (exp073) is validated structurally; needs live LAN for Phase 18
 
 ### ToadStool
 - exp067 validates dual-protocol (tarpc + JSON-RPC) — `jsonrpc_socket_suffix` pattern
@@ -163,7 +163,8 @@ offline unit tests cover logic; live integration tests cover IPC.
 
 ## What Remains
 
-- **Phase 17**: Live LAN covalent deployment (multi-gate NUCLEUS, BirdSong exchange)
+- **Phase 17**: gen4 Composition Bridge (Webb composition health, capability drift, TCP transport)
+- **Phase 18**: LAN covalent deployment (multi-gate NUCLEUS, BirdSong exchange)
 - **Phase 18+**: Live multi-node validation, emergent E2E, bonding coordination
 - **Coverage improvement**: launcher module (21%) needs live primal integration test CI
 - **ecoBin compliance**: rebuild all primals as static musl for x86_64 + aarch64

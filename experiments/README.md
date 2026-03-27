@@ -53,6 +53,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 8 | Live Composition | exp060–070 | **Live validated** (Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery) |
 | 9 | Multi-Node Bonding | exp071–072 | **Structural** (bonding policy, data federation, graph metadata) |
 | 10 | Cross-Gate Deployment | exp073–074 | **Structural** (LAN covalent mesh, remote NUCLEUS health via TCP) |
+| 11 | gen4 Composition Bridge | exp075–077 (planned) | **Planned** (Webb composition health, pipeline ordering, capability drift) |
 
 ## Experiment Status Key
 
@@ -83,8 +84,9 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 14 | Deep Debt + Builder Pattern + Full Provenance | **Done** (builder `.run()`, all 53 experiments with `with_provenance()`, validation/tests.rs extracted, zero `#[allow()]`, zero `.unwrap()` in experiments, 361 tests) |
 | 15 | Cross-Ecosystem Absorption | **Done** (slug constants, unwrap/expect discipline, launcher smart refactor, CONTRIBUTING.md, SECURITY.md, capability-based env naming) |
 | 16 | Deep Debt Audit + Centralized Tolerances | **Done** (comprehensive audit, centralized trio/port tolerances, deduplicated capability parsing, hardcoding→capability-based evolution, 364 tests) |
-| 17 | LAN Covalent Deployment | **Next** — LAN_COVALENT_DEPLOYMENT_GUIDE, live multi-gate NUCLEUS, BirdSong beacon exchange |
-| 17+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
+| 17 | gen4 Composition Bridge (Track 9) | **Next** — Webb composition health (6 endpoints), capability drift detection, session pipeline ordering, TCP-first transport. See `specs/GEN4_COMPOSITION_AUDIT.md` |
+| 18 | LAN Covalent Deployment | Planned — live multi-gate NUCLEUS, BirdSong beacon exchange |
+| 18+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
 
 ## Validation Harness
 

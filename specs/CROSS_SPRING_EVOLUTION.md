@@ -22,6 +22,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | 6 (Cross-Spring) | airSpring, wetSpring, neuralSpring, petalTongue, Squirrel | Data flow |
 | 7 (Showcase) | coralReef, toadStool, barraCuda, BearDog, NestGate, sweetGrass, rhizoCrypt | Mined patterns |
 | 8 (Multi-Node) | Songbird (mesh+STUN), BearDog (lineage), NestGate (replication), Trio | Federation, idle compute, data sync |
+| 9 (gen4 Bridge) | esotericWebb, ludoSpring, all NUCLEUS primals | Product composition health, session pipeline ordering, capability drift detection |
 
 ## What primalSpring Learns from Each Spring
 
@@ -64,6 +65,73 @@ an optional track. Every experiment involves multiple primals or springs.
 | TrustModel taxonomy | GeneticLineage, Contractual, Organizational, ZeroTrust |
 | Idle compute policy validation | BondingPolicy presets for time-windowed, capability-scoped compute sharing |
 | Data federation pipeline | 7-phase NestGate replication with provenance trio tracking |
+
+## gen4 Bridge Role
+
+primalSpring is uniquely positioned to bridge gen3→gen4. It already validates
+that primals compose — gen4 extends this to "primals compose into products."
+
+### esotericWebb Composition Contract
+
+Esoteric Webb (sporeGarden/esotericWebb) deploy graphs declare `primalspring_primal`
+as a post-deploy validation node. Six composition health capabilities are expected:
+
+| Capability | Webb Graph | Primal Stack |
+|------------|-----------|--------------|
+| `composition.webb_tower_health` | `webb_tower.toml` | BearDog + Songbird |
+| `composition.webb_node_health` | `webb_node.toml` | Tower + ToadStool |
+| `composition.webb_nest_health` | `webb_nest.toml` | Tower + NestGate |
+| `composition.webb_ai_viz_health` | `webb_ai_viz.toml` | Tower + Squirrel + PetalTongue |
+| `composition.webb_provenance_health` | `webb_provenance.toml` | Nest + Provenance Trio |
+| `composition.webb_full_health` | `webb_full.toml` | All 8 domains |
+
+These map to primalSpring's existing atomic tiers (Tower/Node/Nest/NUCLEUS)
+but add product-specific assertions: Webb's `PrimalBridge` uses TCP-first
+discovery, `resilient_call` with circuit breakers, and four degradation
+patterns (`call_or_default`, `call_fire`, `call_extract_id`, `call_passthrough`).
+
+### What primalSpring Must Validate for gen4
+
+1. **Composition health endpoints** — `composition.webb_*_health` RPCs that
+   run the same stack validation Webb's deploy graphs expect
+2. **Capability string consistency** — detect drift between Webb's capability
+   registry (`webb/capability_registry.toml`), bridge method constants
+   (`webb/src/ipc/mod.rs`), deploy graph capabilities, and niche YAML
+3. **Transport priority** — TCP-first, UDS fallback (matching `PrimalBridge::discover`)
+4. **Resilience semantics** — circuit breaker open/short-circuit, retry with
+   exponential backoff, `is_recoverable` classification
+5. **Session pipeline ordering** — narrate → dialogue → flow → render → DAG
+   append → complete (6 sequential phases)
+6. **Degradation correctness** — when primals are absent, sensible defaults,
+   never panics
+
+### ludoSpring Co-Evolution
+
+ludoSpring validates game science; primalSpring validates the IPC and composition
+that makes those models available to gen4 products. Together:
+
+- ludoSpring proves `game.*` RPCs return correct game science results
+- primalSpring proves `game.*` RPCs arrive reliably via IPC composition
+- Webb's `GameSession::act()` calls both in sequence — mechanical resolution
+  (ludoSpring) then enrichment pipeline (all primals)
+
+### helixVision — Second gen4 Product
+
+helixVision (sporeGarden, planned) is the second gen4 product primalSpring
+validates. It composes wetSpring genomics (16S pipeline, microbiome analytics)
+and coralForge structure prediction (AlphaFold primitives) into a sovereign
+genomics discovery platform.
+
+helixVision proves the sporeGarden pattern works for science — same
+PrimalBridge, same deploy graphs, same degradation — different domain. Where
+Webb composes `game.*` and `ai.*` RPCs into a narrative pipeline, helixVision
+composes `compute.*`, `storage.*`, and provenance RPCs into a sample-to-
+publication pipeline.
+
+primalSpring's composition health endpoints (`composition.webb_*_health`) are
+Webb-specific, but the underlying validation — can these primals compose via
+TCP IPC with graceful degradation? — applies directly to helixVision's
+Sequence/Provenance/Field/Full deploy graph tiers.
 
 ## Ecosystem State (March 23, 2026)
 
@@ -277,46 +345,55 @@ Phase 16 (done): Deep Debt Audit + Centralized Tolerances (March 24, 2026)
   → Coverage baseline measured (cargo llvm-cov)
   → 364 tests (up from 361), zero clippy, zero fmt diff, zero deny issues
 
-Phase 17: LAN Covalent Deployment (Next)
+Phase 17: gen4 Composition Bridge (Track 9) (Next)
+  → Implement composition.webb_*_health endpoints (6 capabilities)
+  → Webb deploy graph validation: parse + validate webb_*.toml structural contracts
+  → Capability drift detection: registry ↔ bridge ↔ graph ↔ niche YAML consistency
+  → TCP-first transport priority validation (matching PrimalBridge::discover)
+  → Session pipeline ordering tests (narrate → dialogue → flow → render → DAG)
+  → Degradation correctness: absent primals → sensible defaults, never panics
+  → New experiments: exp075 (Webb tower health), exp076 (full composition), exp077 (capability drift)
+
+Phase 18: LAN Covalent Deployment
   → Live multi-gate NUCLEUS deployment with BirdSong beacon exchange
   → Pixel Songbird-only deployment (workaround for BearDog abstract socket)
   → 10G mesh backbone validation
 
-Phase 18: Live Multi-Node Validation (Track 8)
+Phase 19: Live Multi-Node Validation (Track 8)
   → Basement HPC: deploy NUCLEUS on 2+ LAN machines, validate covalent mesh formation
   → Friend remote: NAT traversal via STUN tiers, hole-punch, relay fallback
   → Idle compute: validate BondingPolicy enforcement (time windows, capability scope)
   → Data federation: NestGate cross-site replication with trio provenance chain
   → Plasmodium: decentralized capability aggregation across covalently bonded nodes
 
-Phase 19: Emergent Systems End-to-End (Track 3)
+Phase 20: Emergent Systems End-to-End (Track 3)
   → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)
   → coralForge pipeline streaming (exp013) — needs sweetGrass running
   → Continuous 60Hz tick (exp014) — needs provenance trio running
   → RPGPT session management with provenance tracking
 
-Phase 20: Bonding Live Coordination (Track 4)
+Phase 21: Bonding Live Coordination (Track 4)
   → Multi-gate covalent mesh with BirdSong encrypted beacons
   → Ionic contract-based metered bonds (cloud burst, external APIs)
   → Metallic electron-sea: homogeneous fleet specialization (compute-only racks)
   → Weak force: zero-trust read-only bonds to unknown primals
   → OrganoMetalSalt: mixed bond types in a single deployment
 
-Phase 21: Cross-Spring Integration (Track 6)
+Phase 22: Cross-Spring Integration (Track 6)
   → Full ecosystem data flow: airSpring, wetSpring, neuralSpring, petalTongue, Squirrel
   → wetSpring uses provenance trio to track genetic data lineage
   → Cross-spring BYOB composition: primals as DAG execution nodes
 
-Phase 22: Showcase Patterns (Track 7)
+Phase 23: Showcase Patterns (Track 7)
   → phase1/phase2 mined coordination patterns validated end-to-end
   → Compute triangle, bearer token auth, supply chain provenance, semantic attribution
 
-Phase 23: Anchoring + Economics
+Phase 24: Anchoring + Economics
   → sweetGrass anchoring.anchor → BTC/ETH (hash attestation, not currency)
   → loamSpine certificates as Novel Ferment Transcripts (NFTs)
   → sunCloud radiating attribution via sweetGrass braids
 
-Phase 24: biomeOS Self-Composition
+Phase 25: biomeOS Self-Composition
   → biomeOS composes its own graphs at runtime
   → Dynamic capability negotiation for BYOB niche creation
 ```

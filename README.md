@@ -224,15 +224,29 @@ Set `ECOPRIMALS_PLASMID_BIN` to point at `ecoPrimals/plasmidBin/` to enable
 live primal spawning. Without it, experiments fall back to discovering
 whatever is already running.
 
+## gen4 Bridge Role
+
+primalSpring is uniquely positioned to bridge gen3→gen4. It validates that
+primals compose correctly — gen4 extends this to "primals compose into products."
+
+**esotericWebb** (sporeGarden) deploy graphs already declare `primalspring_primal`
+as a post-deploy validator with 6 `composition.webb_*_health` capabilities.
+**helixVision** (planned) applies the same pattern to sovereign genomics.
+
+Phase 17 wires this bridge: composition health endpoints, capability drift
+detection, session pipeline ordering, transport priority validation. See
+`specs/GEN4_COMPOSITION_AUDIT.md` for the full shortcomings audit.
+
 ## Docs
 
 - `wateringHole/README.md` — Track structure and cross-spring context
 - `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance
 - `wateringHole/handoffs/` — Active + archived evolution handoffs
-- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–15 done, 16+ next)
+- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–16 done, 17 next — gen4 bridge)
 - `specs/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression
+- `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution (incl. gen4 categories 8–11)
+- `specs/GEN4_COMPOSITION_AUDIT.md` — Shortcomings audit: primalSpring vs esotericWebb gen4 needs
 - `specs/PAPER_REVIEW_QUEUE.md` — Coordination patterns ready for validation
-- `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution
 - `specs/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (indirect only)
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer
 

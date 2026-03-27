@@ -245,16 +245,17 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.7.0 | `PRIMALSPRING_V070_PHASE16_DEEP_DEBT_AUDIT_HANDOFF_MAR24_2026.md` | Mar 24 | **Deep debt audit**: centralized tolerances, deduplicated capability parsing, hardcoding→capability-based evolution, coverage baseline, primal+spring team guidance |
-| v0.7.0 | `PRIMALSPRING_V070_PHASE15_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR24_2026.md` | Mar 24 | **Cross-ecosystem absorption**: slug constants, unwrap/expect discipline, launcher smart refactor, CONTRIBUTING.md, SECURITY.md, capability-based env naming — patterns for all teams |
-| v0.7.0 | `PRIMALSPRING_V070_PHASE14_DEEP_DEBT_HANDOFF_MAR24_2026.md` | Mar 24 | **Deep debt**: builder `.run()`, 100% provenance, smart extraction, zero `.unwrap()`, zero `#[allow()]` — patterns for all teams |
-| v0.7.0 | `LAN_COVALENT_DEPLOYMENT_GUIDE_MAR23_2026.md` | Mar 23 | **Deployment**: Step-by-step LAN covalent deployment, USB spore prep, gate provisioning, BirdSong exchange, Pixel workaround |
-| v0.7.0 | `PRIMALSPRING_FULL_EVOLUTION_HANDOFF_MAR23_2026.md` | Mar 23 | **Comprehensive**: full evolution state, per-team guidance (all primals + all springs), patterns to absorb, architecture decisions, what remains |
+| v0.7.0 | `PRIMALSPRING_V070_GEN4_BRIDGE_HANDOFF_MAR24_2026.md` | Mar 24 | **gen4 bridge**: esotericWebb + helixVision composition, 7 shortcomings, per-team gen4 actions, plasmidBin deployment model, Phase 17 direction |
+| v0.7.0 | `PRIMALSPRING_V070_PHASE16_DEEP_DEBT_AUDIT_HANDOFF_MAR24_2026.md` | Mar 24 | **Deep debt audit**: centralized tolerances, deduplicated capability parsing, hardcoding→capability-based evolution, coverage baseline |
+| v0.7.0 | `LAN_COVALENT_DEPLOYMENT_GUIDE_MAR23_2026.md` | Mar 23 | **Deployment**: Step-by-step LAN covalent deployment, USB spore prep, gate provisioning, BirdSong exchange |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `archive/PRIMALSPRING_V070_PHASE15_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR24_2026.md` | Mar 24 | Cross-ecosystem absorption: slug constants, unwrap/expect, launcher refactor (superseded by Phase 16 + gen4 bridge) |
+| v0.7.0 | `archive/PRIMALSPRING_V070_PHASE14_DEEP_DEBT_HANDOFF_MAR24_2026.md` | Mar 24 | Deep debt: builder `.run()`, provenance, zero `.unwrap()`/`#[allow()]` (superseded by Phase 16) |
+| v0.7.0 | `archive/PRIMALSPRING_FULL_EVOLUTION_HANDOFF_MAR23_2026.md` | Mar 23 | Comprehensive evolution state (superseded by gen4 bridge handoff) |
 | v0.7.0 | `archive/TOADSTOOL_BARRACUDA_V070_HANDOFF_MAR22_2026.md` | Mar 22 | 3 composition tiers, 5 patterns, IPC quirks, evolution path |
 | v0.7.0 | `archive/PROVENANCE_TRIO_HANDOFF_MAR22_2026.md` | Mar 22 | sweetGrass/loamSpine/rhizoCrypt: types resolved, required methods, integration path |
 | v0.7.0 | `archive/PROVENANCE_TRIO_LIVE_PROBING_MAR23_2026.md` | Mar 23 | Live probing: sweetGrass+rhizoCrypt working, loamSpine panic, 4 gaps documented |
@@ -279,6 +280,22 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 | v0.3.0 | `archive/PRIMALSPRING_V030_*` (5 files) | Mar 18 | Pre-capability evolution, coordination absorption |
 | v0.2.0 | `archive/PRIMALSPRING_V020_*` (3 files) | Mar 18 | Ecosystem absorption, compute triangle |
 | v0.1.x | `archive/PRIMALSPRING_V01*` (4 files) | Mar 17–18 | Initial audit, Neural API, deep debt |
+
+## gen4 Bridge Context
+
+Phase 17 pivots primalSpring from "do primals compose?" (gen3) to "do primals
+compose into products?" (gen4). Two sporeGarden products drive this:
+
+- **esotericWebb**: CRPG engine, 8 primal domains, 6 `composition.webb_*_health`
+  capabilities expected from primalSpring. PrimalBridge with TCP-first transport.
+- **helixVision** (planned): Sovereign genomics — wetSpring + coralForge +
+  provenance trio. Same composition pattern, different domain.
+
+The gen4 bridge handoff (`PRIMALSPRING_V070_GEN4_BRIDGE_HANDOFF_MAR24_2026.md`)
+details per-team actions and the 7 shortcomings identified in
+`specs/GEN4_COMPOSITION_AUDIT.md`.
+
+---
 
 ## Convention
 
