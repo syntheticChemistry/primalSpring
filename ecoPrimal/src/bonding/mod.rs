@@ -6,7 +6,7 @@
 //! two or more NUCLEUS instances discovering each other, sharing capabilities,
 //! and degrading gracefully when gates fail.
 //!
-//! See `phase2/biomeOS/specs/NUCLEUS_BONDING_MODEL.md` for the full specification.
+//! See `primals/biomeOS/specs/NUCLEUS_BONDING_MODEL.md` for the full specification.
 
 pub mod graph_metadata;
 pub mod stun_tiers;

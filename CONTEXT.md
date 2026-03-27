@@ -58,8 +58,8 @@ Capability-based discovery via Neural API or 5-tier filesystem probing.
 
 ## Status
 
-v0.7.0 Phase 16.1 — 87/87 gates passing, 378 tests, 72.5% library
-coverage, 53 experiments, 4 proptest sites, pedantic+nursery clippy clean.
+v0.7.0 Phase 17 — 87/87 gates passing, 385 tests, 72.5% library
+coverage, 59 experiments, 4 proptest sites, pedantic+nursery clippy clean.
 
 ## Ecosystem Position
 

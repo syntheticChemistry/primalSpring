@@ -1,7 +1,7 @@
 # primalSpring — Showcase Mining Report
 
 **Date**: March 2, 2026 (mined), March 17, 2026 (updated), March 23, 2026 (expanded)  
-**Source**: phase1/ and phase2/ showcase directories, multi-node bonding patterns  
+**Source**: primal showcase directories (historically `phase1/`/`phase2/`, now `primals/`), multi-node bonding patterns  
 **Purpose**: Extract early coordination patterns for primalSpring system tests
 
 ---
@@ -149,7 +149,7 @@
 ## New Experiments Recommended
 
 Based on the mined patterns, these 10 experiments (exp050–059) extended primalSpring to 38 total.
-Subsequent phases added experiments through exp074 (including cross-gate deployment in Track 10), bringing the total to **53 experiments**.
+Subsequent phases added experiments through exp080 (including cross-gate deployment in Track 10 and gen4 deployment evolution in Track 11), bringing the total to **59 experiments**.
 
 | Exp | Name | Source Pattern | What It Tests |
 |-----|------|----------------|---------------|

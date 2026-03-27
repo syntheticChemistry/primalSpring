@@ -54,9 +54,9 @@ fn discover_biomeos_graphs() -> Option<PathBuf> {
         }
     }
     let candidates = [
-        PathBuf::from("../phase2/biomeOS/graphs"),
-        PathBuf::from("../../phase2/biomeOS/graphs"),
-        PathBuf::from("../../../phase2/biomeOS/graphs"),
+        PathBuf::from("../primals/biomeOS/graphs"),
+        PathBuf::from("../../primals/biomeOS/graphs"),
+        PathBuf::from("../../../primals/biomeOS/graphs"),
     ];
     for c in &candidates {
         if c.join("tower_atomic_bootstrap.toml").is_file() {

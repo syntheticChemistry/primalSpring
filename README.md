@@ -8,12 +8,12 @@
 | **Version** | 0.7.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 378 (unit + integration + doc-tests + proptest) |
-| **Experiments** | 53 (10 tracks) |
-| **Deploy Graphs** | 22 TOMLs (18 single-node + 4 multi-node) |
+| **Tests** | 385 (unit + integration + doc-tests + proptest) |
+| **Experiments** | 59 (11 tracks) |
+| **Deploy Graphs** | 35 TOMLs (18 single-node + 4 multi-node + 7 spring validation + 2 cross-spring + 4 gen4 prototypes) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
-| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding (87/87 gates) |
-| **Provenance** | All 53 experiments carry structured `with_provenance()` metadata |
+| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate (87/87 gates) |
+| **Provenance** | All 59 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
@@ -53,16 +53,19 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   └── validate_all/          # Meta-validator: runs all 53 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 59 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
 │       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
-├── experiments/                   # 53 validation experiments (10 tracks)
+├── experiments/                   # 59 validation experiments (11 tracks)
 ├── config/                        # Launch profiles (primal_launch_profiles.toml)
-├── graphs/                        # 22 biomeOS deploy graph TOMLs (18 single-node + 4 multi-node)
-│   └── multi_node/               # Multi-node federation graphs (HPC, friend, idle, data)
+├── graphs/                        # 35 deploy graph TOMLs
+│   ├── multi_node/               # Multi-node federation graphs (HPC, friend, idle, data)
+│   ├── spring_validation/        # Per-spring validation wrappers (7)
+│   ├── cross_spring/             # Cross-spring ecology + full sweep (2)
+│   └── gen4/                     # gen4 prototypes: sovereign, science, agentic, interactive (4)
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
 └── wateringHole/                  # Docs and handoffs
@@ -71,9 +74,10 @@ primalSpring/
 ## Key Design Principles
 
 - **Capability-first discovery**: No hardcoded primal rosters. Discovery is
-  capability-based (via `discover_by_capability()`) or Neural API-driven
-  (via `neural-api-client-sync`). Deploy graphs use `by_capability` for
-  loose coupling — callers ask for capabilities, not primal identities.
+  capability-based (via `discover_by_capability()`) or routed through the
+  biomeOS Neural API substrate (via `NeuralBridge`). Deploy graphs use
+  `by_capability` for loose coupling — callers ask for capabilities, not
+  primal identities.
 - **Graphs as source of truth**: Deploy graph TOMLs define what capabilities
   a composition needs. `topological_waves()` computes startup ordering from
   dependency edges. `graph_required_capabilities()` extracts the capability
@@ -98,7 +102,7 @@ cargo test --workspace
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 53 experiments (meta-validator)
+# Run all 59 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -145,7 +149,7 @@ The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 
 
 ## Deploy Graphs
 
-primalSpring ships 22 biomeOS deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 35 deploy graph TOMLs (all nodes declare `by_capability`):
 
 **Single-node graphs (18)**:
 
@@ -178,6 +182,16 @@ primalSpring ships 22 biomeOS deploy graph TOMLs (all nodes declare `by_capabili
 | `friend_remote_covalent.toml` | Remote friend + NAT traversal | Covalent | GeneticLineage |
 | `idle_compute_federation.toml` | Federated idle compute sharing | Covalent | GeneticLineage |
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
+
+**Spring validation graphs (7)** — `graphs/spring_validation/`: per-spring validation
+wrappers (groundspring, wetspring, healthspring, ludospring, neuralspring, airspring,
+hotspring). Each exercises the corresponding biomeOS `*_deploy.toml` graph.
+
+**Cross-spring graphs (2)** — `graphs/cross_spring/`: ecology validation
+(ET₀ → diversity → spectral) and full sweep across all springs.
+
+**gen4 prototype graphs (4)** — `graphs/gen4/`: sovereign tower, science substrate,
+agentic tower, interactive substrate.
 
 All graphs have `by_capability` on every node and are structurally validated +
 topologically sorted at test time. Multi-node graphs include `[graph.metadata]`
@@ -218,32 +232,36 @@ pure synchronous Rust (`std::process` + `std::thread`, no tokio).
 
 | Module | Responsibility |
 |--------|---------------|
-| `launcher/` | `discover_binary()`, `spawn_primal()`, `spawn_neural_api()`, `wait_for_socket()`, `SocketNucleation`, `LaunchProfile`, `LaunchError` (incl. `HealthCheckFailed`) |
+| `launcher/` | `discover_binary()`, `spawn_primal()`, `spawn_biomeos()`, `wait_for_socket()`, `SocketNucleation`, `LaunchProfile`, `LaunchError` (incl. `HealthCheckFailed`) |
 | `harness/` | `AtomicHarness::new()` / `::with_graph()`, `.start()` (topological waves), `.start_with_neural_api()`, `RunningAtomic` (capability-based `socket_for` / `client_for`, RAII lifecycle, NeuralBridge) |
 
 Set `ECOPRIMALS_PLASMID_BIN` to point at `ecoPrimals/plasmidBin/` to enable
 live primal spawning. Without it, experiments fall back to discovering
 whatever is already running.
 
-## gen4 Bridge Role
+## gen4 Deployment Evolution
 
-primalSpring is uniquely positioned to bridge gen3→gen4. It validates that
-primals compose correctly — gen4 extends this to "primals compose into products."
+primalSpring validates the biomeOS substrate model end-to-end: biomeOS as the
+neural-api orchestrator, capability routing across primals (crypto, beacon,
+mesh, AI, visualization), and cross-gate deployment to heterogeneous hardware.
 
-**esotericWebb** (sporeGarden) deploy graphs already declare `primalspring_primal`
-as a post-deploy validator with 6 `composition.webb_*_health` capabilities.
-**helixVision** (planned) applies the same pattern to sovereign genomics.
+**Phase 17 (done)**: biomeOS neural-api validated on Eastgate in coordinated mode
+with 24 capability domains and 39 deploy graphs. Cross-gate routing to Pixel
+via ADB-forwarded TCP. Squirrel AI primal validated. Spring deploy sweep confirms
+all 7 sibling springs' biomeOS graphs load correctly.
 
-Phase 17 wires this bridge: composition health endpoints, capability drift
-detection, session pipeline ordering, transport priority validation. See
-`specs/GEN4_COMPOSITION_AUDIT.md` for the full shortcomings audit.
+**gen4 prototypes** (graphs/gen4/): sovereign tower (Dark Forest ready), science
+substrate (multi-spring pipeline), agentic tower (AI-orchestrated), interactive
+substrate (full UI + AI + crypto + mesh surface).
+
+See `specs/CROSS_SPRING_EVOLUTION.md` Phase 17 for details.
 
 ## Docs
 
 - `wateringHole/README.md` — Track structure and cross-spring context
 - `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance
 - `wateringHole/handoffs/` — Active + archived evolution handoffs
-- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–16 done, 17 next — gen4 bridge)
+- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–17 done — gen4 deployment evolution)
 - `specs/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression
 - `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution (incl. gen4 categories 8–11)
 - `specs/GEN4_COMPOSITION_AUDIT.md` — Shortcomings audit: primalSpring vs esotericWebb gen4 needs

@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 16.1 — 87/87 gates, 378 tests, 72.5% coverage, 53 experiments, 22 deploy graphs)  
+**Version**: 0.7.0 (Phase 17 — 87/87 gates, 385 tests, 72.5% coverage, 59 experiments, 35 deploy graphs)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 27, 2026
 
@@ -51,7 +51,7 @@ primalSpring fills the gap.
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
-| Meta-validator | `validate_all` binary — runs all 53 experiments |
+| Meta-validator | `validate_all` binary — runs all 59 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates passing (core + full utilization) |
 | Nest Atomic | **VALIDATED** — nestgate storage (8/8 gates) |
 | Node Atomic | **VALIDATED** — toadstool compute (5/5 gates) |
@@ -164,7 +164,7 @@ validates the pipeline end-to-end.
 
 ### Track 7: Showcase-Mined Patterns (exp050–059)
 
-Early coordination patterns extracted from phase1/ and phase2/ primal showcases.
+Early coordination patterns extracted from primal showcases (historically `phase1/`/`phase2/`, now consolidated under `primals/`).
 
 | Exp | What | Source |
 |-----|------|--------|
@@ -185,7 +185,7 @@ Live multi-primal composition with real primals from `plasmidBin`.
 
 | Exp | What | Primals | Status |
 |-----|------|---------|--------|
-| 060 | biomeOS Tower deploy | beardog + songbird via neural-api-server bootstrap graph | **Live validated** |
+| 060 | biomeOS Tower deploy | beardog + songbird via biomeOS bootstrap graph | **Live validated** |
 | 061 | Squirrel AI composition | Tower + Squirrel + Anthropic Claude `ai.query` | **Live validated** |
 | 062 | Subsystem sweep | songbird JSON-RPC subsystems (11/12 UP) | **Live validated** |
 | 063 | Pixel rendezvous | BirdSong beacon encrypt/decrypt round-trip | **Live validated** |
@@ -205,6 +205,28 @@ Validate bonding policies, multi-node deploy graphs, and cross-site data federat
 |-----|------|-----------|--------|
 | 071 | Idle compute policy | BondingPolicy masks, time windows, bandwidth, graph metadata | **Structural** |
 | 072 | Data federation | NestGate replication + trio provenance, 7-phase pipeline | **Structural** |
+
+### Track 10: Cross-Gate Deployment (exp073–074)
+
+Cross-gate health probing and LAN covalent mesh validation.
+
+| Exp | What | Validates | Status |
+|-----|------|-----------|--------|
+| 073 | LAN covalent mesh | Cross-gate Songbird mesh + BirdSong beacons via TCP | **Structural** |
+| 074 | Cross-gate health | Per-primal TCP health + capabilities + composition | **Structural** |
+
+### Track 11: gen4 Deployment Evolution (exp075–080)
+
+biomeOS substrate validation, cross-gate routing, interaction primal integration, spring deploy sweep.
+
+| Exp | What | Validates | Status |
+|-----|------|-----------|--------|
+| 075 | biomeOS Neural API live | Capability routing: crypto, beacon, birdsong, graph listing | **Live validated** |
+| 076 | Cross-gate neural routing | Pixel BearDog/Songbird via ADB-forwarded TCP | **Live validated** |
+| 077 | Squirrel neural API bridge | AI capability routing via biomeOS, abstract socket | **Live validated** |
+| 078 | petalTongue viz surface | UI primal + biomeOS graph loading (tower_ai_viz) | **Live validated** |
+| 079 | Spring deploy sweep | All 7 sibling spring biomeOS deploy graphs + pipeline graphs | **Live validated** |
+| 080 | Cross-spring ecology live | 9-node ET₀ → diversity → spectral cross-spring pipeline | **Live validated** |
 
 ---
 

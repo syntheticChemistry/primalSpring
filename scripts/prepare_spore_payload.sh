@@ -85,7 +85,7 @@ echo "Copying deployment scripts..."
 cp "$SCRIPT_DIR/validate_remote_gate.sh" "$OUTPUT/scripts/" 2>/dev/null || true
 chmod +x "$OUTPUT/scripts/"*.sh 2>/dev/null || true
 
-BIOMEOS_SCRIPTS="$ECO_ROOT/phase2/biomeOS/livespore-usb/x86_64/scripts"
+BIOMEOS_SCRIPTS="$ECO_ROOT/primals/biomeOS/livespore-usb/x86_64/scripts"
 if [ -d "$BIOMEOS_SCRIPTS" ]; then
     for script in deploy_to_gate.sh start_tower.sh start_node.sh start_nest.sh deploy_atomic.sh deploy_cross_arch.sh; do
         if [ -f "$BIOMEOS_SCRIPTS/$script" ]; then
@@ -98,7 +98,7 @@ fi
 
 SEED_PATHS=(
     "/media/$USER/BEA6-BBCE/biomeOS/.family.seed"
-    "$ECO_ROOT/phase2/biomeOS/livespore-usb/.beacon_seeds/.family.seed"
+    "$ECO_ROOT/primals/biomeOS/livespore-usb/.beacon_seeds/.family.seed"
     "$HOME/.config/biomeos/.family.seed"
 )
 for seed in "${SEED_PATHS[@]}"; do

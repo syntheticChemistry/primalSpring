@@ -20,7 +20,7 @@ can absorb or compose against.
 | **Deploy graph validation** | `graph.list` / `graph.validate` RPC | CI: ensure deploy TOMLs are structurally valid |
 | **Health probing** | `health.liveness` / `health.readiness` | Kubernetes-style health checks |
 | **MCP tool discovery** | `mcp.tools.list` | Squirrel AI routes coordination requests |
-| **Meta-validation** | `cargo run --bin validate_all` | Run all 53 experiments in sequence |
+| **Meta-validation** | `cargo run --bin validate_all` | Run all 59 experiments in sequence |
 | **Remote gate probe** | `./scripts/validate_remote_gate.sh <host>` | Per-primal TCP health check on any gate |
 | **Musl build** | `./scripts/build_ecosystem_musl.sh` | Static x86_64+aarch64 binaries for deployment |
 | **Spore prep** | `./scripts/prepare_spore_payload.sh <dir>` | USB payload assembly |
@@ -123,7 +123,7 @@ Every pattern above works identically on `x86_64` and `aarch64`.
 | Capability | Proven |
 |------------|--------|
 | `aarch64-unknown-linux-musl` cross-compile | 2.99 MB static, runs on Pixel 8a |
-| Full workspace cross-compile (53 experiments + server) | 1.27s incremental |
+| Full workspace cross-compile (59 experiments + server) | 1.27s incremental |
 | JSON-RPC coordination over abstract sockets | Same protocol, different transport |
 | Zero architecture-specific code | All arch concerns in env/transport config |
 

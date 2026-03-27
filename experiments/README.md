@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**53 experiments across 10 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**59 experiments across 11 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -19,17 +19,17 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 53 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 59 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 53 experiments.
+across all 59 experiments.
 
 ## Running
 
 ```bash
-# Run all 53 experiments via meta-validator
+# Run all 59 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -53,7 +53,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 8 | Live Composition | exp060–070 | **Live validated** (Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery) |
 | 9 | Multi-Node Bonding | exp071–072 | **Structural** (bonding policy, data federation, graph metadata) |
 | 10 | Cross-Gate Deployment | exp073–074 | **Structural** (LAN covalent mesh, remote NUCLEUS health via TCP) |
-| 11 | gen4 Composition Bridge | exp075–077 (planned) | **Planned** (Webb composition health, pipeline ordering, capability drift) |
+| 11 | gen4 Deployment Evolution | exp075–080 | **Live validated** (biomeOS substrate, cross-gate routing, Squirrel AI, petalTongue, spring sweep, cross-spring ecology) |
 
 ## Experiment Status Key
 
@@ -81,18 +81,18 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 12.1 | Ecosystem Absorption Wave 1 | **Done** (deny.toml, cast lints, ValidationSink, exit_code_skip_aware, proptest_ipc, primal_names, circuit breaker — 303 tests) |
 | 12.2 | Ecosystem Absorption Wave 2 | **Done** (normalize_method, check_relative, NdjsonSink, is_recoverable, Transport, OnceLock probes, missing_docs deny, release gate — 360 tests) |
 | 13 | Cross-Gate Deployment Tooling | **Done** (build_ecosystem_musl.sh, prepare_spore_payload.sh, validate_remote_gate.sh, exp073, exp074, exp063 cross-device) |
-| 14 | Deep Debt + Builder Pattern + Full Provenance | **Done** (builder `.run()`, all 53 experiments with `with_provenance()`, validation/tests.rs extracted, zero `#[allow()]`, zero `.unwrap()` in experiments, 361 tests) |
+| 14 | Deep Debt + Builder Pattern + Full Provenance | **Done** (builder `.run()`, all experiments with `with_provenance()`, validation/tests.rs extracted, zero `#[allow()]`, zero `.unwrap()` in experiments) |
 | 15 | Cross-Ecosystem Absorption | **Done** (slug constants, unwrap/expect discipline, launcher smart refactor, CONTRIBUTING.md, SECURITY.md, capability-based env naming) |
-| 16 | Deep Debt Audit + Centralized Tolerances | **Done** (comprehensive audit, centralized trio/port tolerances, deduplicated capability parsing, hardcoding→capability-based evolution, 364 tests) |
-| 17 | gen4 Composition Bridge (Track 9) | **Next** — Webb composition health (6 endpoints), capability drift detection, session pipeline ordering, TCP-first transport. See `specs/GEN4_COMPOSITION_AUDIT.md` |
-| 18 | LAN Covalent Deployment | Planned — live multi-gate NUCLEUS, BirdSong beacon exchange |
+| 16 | Deep Debt Audit + Centralized Tolerances | **Done** (comprehensive audit, centralized trio/port tolerances, deduplicated capability parsing, hardcoding→capability-based evolution) |
+| 17 | gen4 Deployment Evolution | **Done** (biomeOS substrate validation, cross-gate Pixel routing, Squirrel AI bridge, spring deploy sweep, gen4 prototype graphs, 59 experiments, 385 tests) |
+| 18 | LAN Covalent Deployment | Planned — live multi-gate NUCLEUS, biomeOS aarch64 cross-compile for Pixel substrate |
 | 18+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
 
 ## Validation Harness
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 53 experiments use this):
+**Builder API** (preferred — all 59 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit

@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: March 24, 2026
-**Status**: Phase 16 — DEEP DEBT AUDIT + CENTRALIZED TOLERANCES (87/87 gates), 53 experiments, 364 tests, 22 deploy graphs
+**Date**: March 27, 2026
+**Status**: Phase 17 — GEN4 DEPLOYMENT EVOLUTION (87/87 gates), 59 experiments, 385 tests, 35 deploy graphs
 
 ---
 
@@ -27,30 +27,31 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 4 | Bonding & Plasmodium | exp030–034 | Does multi-gate coordination work? |
 | 5 | coralForge | (exp025) | Does the neural object pipeline work? |
 | 6 | Cross-Spring | exp040–044 | Do cross-spring data flows work? |
-| 7 | Showcase-Mined | exp050–059 | Do mined phase1/phase2 coordination patterns hold? |
+| 7 | Showcase-Mined | exp050–059 | Do mined coordination patterns hold? |
 | 8 | Live Composition | exp060–070 | Tower + Squirrel AI + Nest + Node + NUCLEUS + Graph Overlays + Cross-Primal Discovery |
 | 9 | Multi-Node Bonding | exp071–072 | Do bonding policies and data federation structures validate? |
 | 10 | Cross-Gate Deployment | exp073–074 | Does cross-gate health probing and LAN covalent mesh work? |
+| 11 | gen4 Deployment Evolution | exp075–080 | Does biomeOS substrate validate? Cross-gate routing? Spring deploy sweep? |
 
 ## Current State (v0.7.0)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 53 (10 tracks) |
-| Total tests | **364** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Experiments | 59 (11 tracks) |
+| Total tests | **385** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | 22 TOMLs (18 single-node + 4 multi-node), all nodes `by_capability`, topologically validated |
+| Deploy graphs | 35 TOMLs (18 single-node + 4 multi-node + 7 spring validation + 2 cross-spring + 4 gen4), all nodes `by_capability`, topologically validated |
 | Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 53 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 59 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
@@ -63,6 +64,25 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed — Phase 17 (gen4 Deployment Evolution)
+
+### biomeOS Substrate Validation (March 27, 2026)
+1. **Native NeuralBridge** — replaced `neural-api-client-sync` compile-time dependency with runtime JSON-RPC via `PrimalClient` (zero cross-primal coupling)
+2. **`spawn_biomeos()`** — refactored from `spawn_neural_api()`, discovers `biomeos` or `neural-api-server` binary with fallback
+3. **biomeOS coordinated mode** — validated on Eastgate: 24 capability domains, 39 deploy graphs, routing `crypto.generate_keypair` and `beacon.generate` through biomeOS → BearDog
+4. **Cross-gate routing** — Pixel BearDog/Songbird validated via TCP through ADB-forwarded ports
+5. **Squirrel AI primal** — validated via abstract socket `@squirrel`, `ai.*` domain registered in biomeOS
+6. **Spring deploy sweep** — all 7 sibling spring + 4 pipeline biomeOS deploy graphs loaded and validated
+7. **Cross-spring ecology** — 9-node ET₀ → diversity → spectral pipeline validated structurally
+8. **gen4 prototype graphs** — sovereign tower, science substrate, agentic tower, interactive substrate
+9. **Spring validation graphs** — 7 per-spring + 2 cross-spring wrappers
+10. **6 new experiments** (exp075–080): biomeOS live, cross-gate routing, Squirrel bridge, petalTongue viz, spring sweep, cross-spring ecology
+11. **385 tests** (up from 378), **59 experiments** (up from 53), **35 deploy graphs** (up from 22)
+
+### Known Gaps
+- Squirrel uses abstract sockets (`@squirrel`); biomeOS routes to filesystem sockets — integration gap
+- No aarch64 biomeOS binary for full Pixel substrate deployment (biomeOS-scope work)
 
 ## What Changed — Phase 16 (Deep Debt Audit + Centralized Tolerances)
 
@@ -92,9 +112,9 @@ Absorbed patterns from 7 sibling springs + 10 primals:
 ## What Changed — Phase 14 (Deep Debt + Builder Pattern + Full Provenance)
 
 ### Builder-Pattern Validation (March 24, 2026)
-All 53 experiments standardized on the builder-pattern `ValidationResult`:
+All experiments standardized on the builder-pattern `ValidationResult`:
 1. **`ValidationResult::run()`** — consumes self, prints banner, executes checks, prints summary, exits
-2. **All 53 experiments carry structured provenance** — `with_provenance(source, date)` on every experiment
+2. **All experiments carry structured provenance** — `with_provenance(source, date)` on every experiment
 3. **`validation/tests.rs` extracted** — 493-line test module separated from production code (540 lines, was 1016)
 4. **Zero `.unwrap()` in experiment binaries** — all replaced with `.or_exit("context")`
 5. **Zero `#[allow()]` in production** — 3 integration test files evolved to `#[expect(reason)]`
@@ -153,7 +173,7 @@ Built deployment pipeline for live multi-gate LAN covalent deployment:
 36. **exp063 evolved** — cross-device Pixel beacon exchange via `PIXEL_SONGBIRD_HOST` + TCP
 37. **`basement_hpc_covalent.toml`** — annotated with full gate inventory from HARDWARE.md
 38. **LAN_COVALENT_DEPLOYMENT_GUIDE** — step-by-step handoff for all gate operators
-39. **53 experiments** (up from 51), **10 tracks** (up from 9)
+39. **53 experiments** (up from 51), **10 tracks** (up from 9) — later expanded to 59/11 in Phase 17
 
 ## What Changed (v0.6.0 -> v0.7.0)
 

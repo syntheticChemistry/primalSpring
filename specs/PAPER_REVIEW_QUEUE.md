@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: March 24, 2026  
-**Status**: Phase 15 — 53 experiments, 10 tracks, CROSS-ECOSYSTEM ABSORPTION (87/87 gates), 361 tests, 22 deploy graphs
+**Status**: Phase 17 — 59 experiments, 11 tracks, GEN4 DEPLOYMENT EVOLUTION (87/87 gates), 385 tests, 35 deploy graphs
 
 ---
 

@@ -48,12 +48,12 @@ for arg in "$@"; do
 done
 
 PRIMALS=(
-    "phase1/beardog"
-    "phase1/songbird"
-    "phase1/nestgate"
-    "phase1/toadstool"
-    "phase1/squirrel"
-    "phase2/biomeOS"
+    "primals/beardog"
+    "primals/songbird"
+    "primals/nestgate"
+    "primals/toadstool"
+    "primals/squirrel"
+    "primals/biomeOS"
 )
 
 PRIMAL_NAMES=(beardog songbird nestgate toadstool squirrel biomeos)

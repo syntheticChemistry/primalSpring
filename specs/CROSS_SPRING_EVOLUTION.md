@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: March 24, 2026
-**Status**: Phase 16 — DEEP DEBT AUDIT + CENTRALIZED TOLERANCES (87/87 gates), 364 tests, 53 experiments, 22 deploy graphs
+**Date**: March 27, 2026
+**Status**: Phase 17 — GEN4 DEPLOYMENT EVOLUTION (87/87 gates), 385 tests, 59 experiments, 35 deploy graphs
 
 ---
 
@@ -51,7 +51,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | provenance_overlay.toml | Tower + RootPulse provenance trio deploy graph |
 | Live graph execution patterns | Sequential, Parallel, ConditionalDag validated live |
 | Provenance trio launch profiles | sweetGrass, loamSpine, rhizoCrypt socket wiring |
-| Coordination experiment framework | 53 experiments across 10 tracks |
+| Coordination experiment framework | 59 experiments across 11 tracks |
 | MCP coordination tools | Available for Squirrel AI routing |
 | Tower + Squirrel AI composition | Live demo: Tower + Squirrel + Anthropic Claude (exp061) |
 | `passthrough_env` pattern | Secure env forwarding for API keys, GPU config vars |
@@ -144,7 +144,7 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.7.0 | 364 | Phase 16 — 87/87 gates, deep debt audit, centralized tolerances, capability-based hardcoding evolution, 53 experiments, 22 deploy graphs, 37 capabilities |
+| primalSpring | v0.7.0 | 385 | Phase 17 — 87/87 gates, gen4 deployment evolution, biomeOS substrate validation, 59 experiments, 35 deploy graphs, 37 capabilities |
 
 ## Evolution Path
 
