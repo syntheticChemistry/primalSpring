@@ -8,6 +8,7 @@
 #   ./scripts/build_ecosystem_musl.sh                 # x86_64 only
 #   ./scripts/build_ecosystem_musl.sh --aarch64       # both architectures
 #   ./scripts/build_ecosystem_musl.sh --aarch64-only  # aarch64 only
+#   ./scripts/build_ecosystem_musl.sh --harvest       # build + harvest into plasmidBin
 #
 # Output: /tmp/primalspring-deploy/primals/{x86_64,aarch64}/
 #
@@ -28,13 +29,19 @@ ARM_TARGET="aarch64-unknown-linux-musl"
 
 BUILD_X86=true
 BUILD_ARM=false
+DO_HARVEST=false
+
+# aarch64-unknown-linux-musl needs a cross-linker.
+# aarch64-linux-gnu-gcc works for pure Rust (Rust provides musl runtime).
+export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER="${CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER:-aarch64-linux-gnu-gcc}"
 
 for arg in "$@"; do
     case "$arg" in
         --aarch64)      BUILD_ARM=true ;;
         --aarch64-only) BUILD_ARM=true; BUILD_X86=false ;;
+        --harvest)      DO_HARVEST=true ;;
         --help|-h)
-            echo "Usage: $0 [--aarch64] [--aarch64-only]"
+            echo "Usage: $0 [--aarch64] [--aarch64-only] [--harvest]"
             exit 0
             ;;
     esac
@@ -158,4 +165,23 @@ echo "Staging directory: $STAGING"
 if [ "$failed" -gt 0 ]; then
     echo "WARNING: $failed builds failed. Check logs in /tmp/build_*.log"
     exit 1
+fi
+
+if $DO_HARVEST; then
+    HARVEST_SCRIPT="$ECO_ROOT/plasmidBin/harvest.sh"
+    if [ -x "$HARVEST_SCRIPT" ]; then
+        echo ""
+        echo "=== Harvesting into plasmidBin ==="
+        if $BUILD_X86 && [ -d "$STAGING/primals/x86_64" ]; then
+            "$HARVEST_SCRIPT" --source "$STAGING/primals/x86_64" --arch x86_64
+        fi
+        if $BUILD_ARM && [ -d "$STAGING/primals/aarch64" ]; then
+            "$HARVEST_SCRIPT" --source "$STAGING/primals/aarch64" --arch aarch64
+        fi
+    else
+        echo ""
+        echo "WARNING: harvest.sh not found at $HARVEST_SCRIPT"
+        echo "  Run from ecoPrimals/ or ensure plasmidBin/harvest.sh exists."
+        exit 1
+    fi
 fi

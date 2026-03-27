@@ -1,0 +1,410 @@
+# Three-Node Covalent Cross-Network Deployment
+# =============================================================================
+#
+# Deploys a heterogeneous three-node mesh across two network boundaries:
+#
+#   devGate     (x86_64, basement)   — coordinator, full NUCLEUS
+#   pixelGate   (aarch64, GrapheneOS) — mobile, Tower atomic, iPhone hotspot
+#   flockGate   (x86_64, Ubuntu)     — brother's node, remote internet
+#
+# Network topology:
+#   devGate  <--hotspot LAN--> pixelGate  (same iPhone hotspot subnet)
+#   devGate  <----internet---> flockGate  (NAT traversal or port fwd)
+#   pixelGate <---internet---> flockGate  (mobile data)
+#
+# Trust model (two-seed genetics):
+#   Beacon Seed (mitobeacon / mitochondrial DNA) — SHARED across all 3
+#     Controls who can find family. BirdSong discovery encrypted with this.
+#     Outsiders see noise (TRUE Dark Forest).
+#
+#   Lineage Seed (nuclear DNA) — UNIQUE per device
+#     Controls what a node can do after discovery.
+#     Grandma can't give access to a cousin's bank.
+#
+# Discovery flow:
+#   1. All nodes share the same .beacon.seed (distributed out-of-band)
+#   2. BearDog loads beacon seed, derives encryption keys
+#   3. Songbird broadcasts Dark Forest beacons (fully encrypted)
+#   4. Only nodes with matching beacon genetics can decrypt and discover peers
+#   5. After discovery, lineage verification determines permissions
+#   6. flockGate gets compute.* only (no storage.*, no ai.*)
+#
+# Deployment:
+#   devGate:    deploy_gate.sh localhost (or direct)
+#   pixelGate:  deploy_pixel.sh --dark-forest --beacon-seed ~/.beacon.seed
+#   flockGate:  bootstrap_gate.sh --family-id <id> --dark-forest
+#
+# =============================================================================
+
+[graph]
+id = "three_node_covalent_cross_network"
+version = "1.0.0"
+description = "Heterogeneous three-node mesh: x86_64 + aarch64 + x86_64 across hotspot and internet"
+coordination = "Sequential"
+
+[graph.metadata]
+internal_bond_type = "covalent"
+default_interaction_bond = "covalent"
+trust_model = "genetic_lineage"
+beacon_mode = "dark_forest"
+architectures = ["x86_64-linux-musl", "aarch64-linux-musl"]
+
+[graph.bonding_policy]
+bond_type = "Covalent"
+trust_model = "GeneticLineage"
+label = "three-node-cross-network"
+offer_relay = true
+active_windows = []
+
+[graph.bonding_policy.constraints]
+capability_allow = ["compute.*", "discovery.*", "crypto.*"]
+capability_deny = ["storage.store"]
+bandwidth_limit_mbps = 0
+max_concurrent_requests = 8
+
+# =============================================================================
+# NODE 1: devGate — Coordinator (x86_64, basement)
+# =============================================================================
+
+[[nodes]]
+id = "dev_beardog"
+output = "dev_beardog_genesis"
+capabilities = ["crypto", "tls_crypto", "genetic", "security", "beacon"]
+
+[nodes.primal]
+by_capability = "security"
+
+[nodes.operation]
+name = "start"
+
+[nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[nodes.operation.environment]
+RUST_LOG = "beardog=info"
+BEARDOG_BEACON_SEED = "${BEACON_SEED_PATH}"
+
+[nodes.constraints]
+timeout_ms = 30000
+
+[nodes.hardware]
+arch = "x86_64-linux-musl"
+gate = "devGate"
+
+[[nodes]]
+id = "dev_songbird"
+depends_on = ["dev_beardog"]
+output = "dev_songbird_genesis"
+capabilities = ["http", "discovery", "mesh", "stun", "birdsong"]
+
+[nodes.primal]
+by_capability = "discovery"
+
+[nodes.operation]
+name = "start"
+
+[nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[nodes.operation.environment]
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_DARK_FOREST = "true"
+SONGBIRD_AUTO_DISCOVERY = "true"
+RUST_LOG = "songbird=info"
+
+[nodes.constraints]
+timeout_ms = 30000
+
+[nodes.hardware]
+arch = "x86_64-linux-musl"
+gate = "devGate"
+
+# =============================================================================
+# NODE 2: pixelGate — Mobile (aarch64, GrapheneOS on iPhone hotspot)
+# =============================================================================
+
+[[nodes]]
+id = "pixel_beardog"
+output = "pixel_beardog_genesis"
+capabilities = ["crypto", "genetic", "security", "beacon"]
+
+[nodes.primal]
+by_capability = "security"
+
+[nodes.operation]
+name = "start"
+
+[nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+abstract = true
+
+[nodes.operation.environment]
+RUST_LOG = "beardog=info"
+
+[nodes.constraints]
+timeout_ms = 30000
+
+[nodes.hardware]
+arch = "aarch64-linux-musl"
+gate = "pixelGate"
+platform = "grapheneos"
+socket_mode = "abstract"
+
+[[nodes]]
+id = "pixel_songbird"
+depends_on = ["pixel_beardog"]
+output = "pixel_songbird_genesis"
+capabilities = ["http", "discovery", "mesh", "birdsong"]
+
+[nodes.primal]
+by_capability = "discovery"
+
+[nodes.operation]
+name = "start"
+
+[nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+listen = "0.0.0.0:9200"
+
+[nodes.operation.environment]
+BEARDOG_SOCKET = "@biomeos_beardog"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_DARK_FOREST = "true"
+RUST_LOG = "songbird=info"
+
+[nodes.constraints]
+timeout_ms = 30000
+
+[nodes.hardware]
+arch = "aarch64-linux-musl"
+gate = "pixelGate"
+platform = "grapheneos"
+
+# =============================================================================
+# NODE 3: flockGate — Brother (x86_64, Ubuntu, remote internet)
+# =============================================================================
+
+[[nodes]]
+id = "flock_beardog"
+output = "flock_beardog_genesis"
+capabilities = ["crypto", "genetic", "security", "beacon"]
+
+[nodes.primal]
+by_capability = "security"
+
+[nodes.operation]
+name = "start"
+
+[nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[nodes.operation.environment]
+RUST_LOG = "beardog=info"
+
+[nodes.constraints]
+timeout_ms = 30000
+
+[nodes.hardware]
+arch = "x86_64-linux-musl"
+gate = "flockGate"
+specs = "i9-13900K, RTX 3070 Ti, 64GB DDR5, Ubuntu 24.04.3"
+
+[[nodes]]
+id = "flock_songbird"
+depends_on = ["flock_beardog"]
+output = "flock_songbird_genesis"
+capabilities = ["http", "discovery", "mesh", "birdsong"]
+
+[nodes.primal]
+by_capability = "discovery"
+
+[nodes.operation]
+name = "start"
+
+[nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[nodes.operation.environment]
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_DARK_FOREST = "true"
+SONGBIRD_AUTO_DISCOVERY = "true"
+RUST_LOG = "songbird=info"
+
+[nodes.constraints]
+timeout_ms = 30000
+
+[nodes.hardware]
+arch = "x86_64-linux-musl"
+gate = "flockGate"
+
+# =============================================================================
+# PHASE 2: BIRDSONG DARK FOREST BEACON EXCHANGE
+# =============================================================================
+
+# devGate generates encrypted beacon
+[[nodes]]
+id = "dev_beacon_generate"
+depends_on = ["dev_songbird", "dev_beardog"]
+output = "dev_beacon"
+
+[nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[nodes.operation.params]
+method = "birdsong.generate_encrypted_beacon"
+params = { node_id = "${NODE_ID}", capabilities = ["compute", "discovery", "crypto"] }
+
+[nodes.constraints]
+timeout_ms = 10000
+
+[nodes.hardware]
+gate = "devGate"
+
+# pixelGate decrypts devGate's beacon (proves shared beacon genetics)
+[[nodes]]
+id = "pixel_beacon_verify"
+depends_on = ["pixel_songbird", "dev_beacon_generate"]
+output = "pixel_sees_dev"
+
+[nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[nodes.operation.params]
+method = "birdsong.decrypt_beacon"
+params = { encrypted_beacon = "${dev_beacon.encrypted_beacon}" }
+
+[nodes.constraints]
+timeout_ms = 10000
+
+[nodes.hardware]
+gate = "pixelGate"
+
+# =============================================================================
+# PHASE 3: MESH FORMATION (LAN first, then WAN)
+# =============================================================================
+
+# devGate <-> pixelGate: LAN discovery (same iPhone hotspot)
+[[nodes]]
+id = "hotspot_mesh_discover"
+depends_on = ["dev_songbird", "pixel_songbird"]
+output = "lan_peers"
+
+[nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[nodes.operation.params]
+method = "mesh.auto_discover"
+params = {}
+
+[nodes.constraints]
+timeout_ms = 15000
+
+[nodes.hardware]
+gate = "devGate"
+
+# devGate <-> flockGate: WAN connect (direct TCP or NAT traversal)
+[[nodes]]
+id = "flock_mesh_connect"
+depends_on = ["flock_songbird", "hotspot_mesh_discover"]
+output = "flock_connected"
+
+[nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[nodes.operation.params]
+method = "mesh.connect"
+params = { peer_endpoint = "${FLOCK_GATE_ENDPOINT}" }
+
+[nodes.constraints]
+timeout_ms = 15000
+allow_failure = true
+
+[nodes.hardware]
+gate = "devGate"
+
+# =============================================================================
+# PHASE 4: LINEAGE VERIFICATION (nuclear DNA — permissions)
+# =============================================================================
+
+# Genetic challenge-response between devGate and flockGate
+[[nodes]]
+id = "verify_flock_lineage"
+depends_on = ["flock_mesh_connect"]
+output = "flock_lineage"
+
+[nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[nodes.operation.params]
+method = "birdsong.verify_lineage"
+params = { peer_node_id = "flockGate" }
+
+[nodes.constraints]
+timeout_ms = 10000
+allow_failure = true
+
+[nodes.hardware]
+gate = "devGate"
+
+# =============================================================================
+# PHASE 5: VALIDATE ALL NODES
+# =============================================================================
+
+[[nodes]]
+id = "mesh_health"
+depends_on = ["hotspot_mesh_discover", "flock_mesh_connect"]
+output = "mesh_validated"
+
+[nodes.operation]
+name = "health_check"
+
+[nodes.operation.params]
+check_beardog = true
+check_songbird = true
+timeout_seconds = 20
+
+[nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# SUMMARY
+# =============================================================================
+#
+# Three-Node Cross-Network Flow:
+#   1. Start Tower (beardog + songbird) on all three gates
+#   2. BirdSong Dark Forest beacons broadcast (encrypted)
+#   3. Beacon exchange proves shared family (mitobeacon)
+#   4. Mesh forms: LAN (devGate <-> pixelGate) + WAN (devGate <-> flockGate)
+#   5. Lineage verification (nuclear DNA) sets permissions
+#   6. Mesh health validated across all nodes
+#
+# Trust model:
+#   Mitobeacon (beacon seed) = discovery. Shared, enables finding family.
+#   Nuclear DNA (lineage seed) = authorization. Unique, determines capabilities.
+#   "Grandma can hear cousin, but can't access cousin's bank."
+#
+# Deployment commands:
+#   devGate:    (local — already running)
+#   pixelGate:  ./deploy_pixel.sh --dark-forest --beacon-seed ~/.beacon.seed
+#   flockGate:  (via RustDesk) ./bootstrap_gate.sh --family-id <id> --dark-forest
+#
+# Validation:
+#   ./validate_gate.sh localhost                # devGate
+#   ./validate_gate.sh <pixel-ip>              # pixelGate (hotspot LAN)
+#   ./validate_gate.sh <flock-public-ip>       # flockGate (internet)
+#   ./validate_mesh.sh localhost <pixel-ip> <flock-ip>  # Full mesh
+#
+# =============================================================================

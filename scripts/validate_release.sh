@@ -85,6 +85,38 @@ else
     fail "doc build has warnings or errors"
 fi
 
+step "plasmidBin health check"
+PLASMID_DIR="$(dirname "$WORKSPACE_ROOT")/plasmidBin"
+if [ -d "$PLASMID_DIR" ] && [ -f "$PLASMID_DIR/checksums.toml" ]; then
+    PLASMID_OK=true
+    for bin in beardog songbird nestgate toadstool squirrel; do
+        if [ ! -f "$PLASMID_DIR/primals/$bin" ]; then
+            fail "plasmidBin missing: primals/$bin"
+            PLASMID_OK=false
+        elif ! ldd "$PLASMID_DIR/primals/$bin" 2>&1 | grep -qE 'statically linked|not a dynamic'; then
+            fail "plasmidBin not static: primals/$bin"
+            PLASMID_OK=false
+        fi
+    done
+    if [ ! -f "$PLASMID_DIR/springs/primalspring_primal" ]; then
+        fail "plasmidBin missing: springs/primalspring_primal"
+        PLASMID_OK=false
+    fi
+    if $PLASMID_OK; then
+        if [ -x "$PLASMID_DIR/update.sh" ]; then
+            if "$PLASMID_DIR/update.sh" --verify-only 2>/dev/null; then
+                pass "plasmidBin checksums verified"
+            else
+                fail "plasmidBin checksum verification failed"
+            fi
+        else
+            pass "plasmidBin core binaries present and static"
+        fi
+    fi
+else
+    printf "${YELLOW}⚠ plasmidBin not found at $PLASMID_DIR — skipping${NC}\n"
+fi
+
 printf "\n"
 step "RESULT"
 if [ "$FAILURES" -eq 0 ]; then
