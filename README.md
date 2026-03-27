@@ -8,9 +8,10 @@
 | **Version** | 0.7.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 364 (unit + integration + doc-tests + proptest) |
+| **Tests** | 378 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 53 (10 tracks) |
 | **Deploy Graphs** | 22 TOMLs (18 single-node + 4 multi-node) |
+| **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding (87/87 gates) |
 | **Provenance** | All 53 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |

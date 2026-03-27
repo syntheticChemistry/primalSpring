@@ -8,6 +8,7 @@ use primalspring::cast::u64_to_usize;
 use primalspring::coordination::AtomicType;
 use primalspring::harness::AtomicHarness;
 use primalspring::ipc::client::PrimalClient;
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn rpc(
@@ -15,7 +16,7 @@ fn rpc(
     method: &str,
     params: &serde_json::Value,
 ) -> Result<serde_json::Value, String> {
-    let mut client = PrimalClient::connect(socket, "toadstool").map_err(|e| format!("{e}"))?;
+    let mut client = PrimalClient::connect(socket, primal_names::TOADSTOOL).map_err(|e| format!("{e}"))?;
     let resp = client
         .call(method, params.clone())
         .map_err(|e| format!("{e}"))?;
@@ -53,7 +54,7 @@ fn main() {
 
             if let Some(ts) = running
                 .socket_for("compute")
-                .or_else(|| running.socket_for_primal("toadstool"))
+                .or_else(|| running.socket_for_primal(primal_names::TOADSTOOL))
             {
                 let health = rpc(ts, "toadstool.health", &serde_json::json!({}));
                 v.check_bool(

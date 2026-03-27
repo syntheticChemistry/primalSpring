@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 16 — DEEP DEBT AUDIT 87/87, 364 tests, 53 experiments, 22 deploy graphs)  
+**Version**: 0.7.0 (Phase 16.1 — 87/87 gates, 378 tests, 72.5% coverage, 53 experiments, 22 deploy graphs)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 24, 2026
+**Last Updated**: March 27, 2026
 
 ---
 
@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **364** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Tests | **378** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Experiments | 53 (10 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
@@ -245,9 +245,10 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_V070_DEEP_AUDIT_DEBT_CLEANUP_HANDOFF_MAR26_2026.md` | Mar 26 | **Coverage evolution**: 29 new tests, tick slack centralized, per-module coverage gains, offline paths saturated |
 | v0.7.0 | `PRIMALSPRING_V070_GEN4_BRIDGE_HANDOFF_MAR24_2026.md` | Mar 24 | **gen4 bridge**: esotericWebb + helixVision composition, 7 shortcomings, per-team gen4 actions, plasmidBin deployment model, Phase 17 direction |
 | v0.7.0 | `PRIMALSPRING_V070_PHASE16_DEEP_DEBT_AUDIT_HANDOFF_MAR24_2026.md` | Mar 24 | **Deep debt audit**: centralized tolerances, deduplicated capability parsing, hardcoding→capability-based evolution, coverage baseline |
-| v0.7.0 | `LAN_COVALENT_DEPLOYMENT_GUIDE_MAR23_2026.md` | Mar 23 | **Deployment**: Step-by-step LAN covalent deployment, USB spore prep, gate provisioning, BirdSong exchange |
+| v0.7.0 | `PRIMALSPRING_V070_LAN_COVALENT_DEPLOYMENT_HANDOFF_MAR23_2026.md` | Mar 23 | **Deployment**: Step-by-step LAN covalent deployment, USB spore prep, gate provisioning, BirdSong exchange |
 
 ## Archived Handoffs
 

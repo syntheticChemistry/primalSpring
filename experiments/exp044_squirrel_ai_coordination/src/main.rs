@@ -10,6 +10,7 @@
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn probe_squirrel_rpc(v: &mut ValidationResult, client: &mut PrimalClient) {
@@ -80,21 +81,21 @@ fn main() {
     ValidationResult::new("primalSpring Exp044 — Squirrel AI Coordination")
         .with_provenance("exp044_squirrel_ai_coordination", "2026-03-24")
         .run("primalSpring Exp044: Squirrel AI Coordination", |v| {
-            let squirrel = discover_primal("squirrel");
+            let squirrel = discover_primal(primal_names::SQUIRREL);
             v.check_bool(
                 "discover_squirrel",
-                squirrel.primal == "squirrel",
+                squirrel.primal == primal_names::SQUIRREL,
                 "discover squirrel",
             );
 
-            let path = socket_path("squirrel");
+            let path = socket_path(primal_names::SQUIRREL);
             v.check_bool(
                 "squirrel_socket_path_valid",
-                path.to_string_lossy().contains("squirrel"),
+                path.to_string_lossy().contains(primal_names::SQUIRREL),
                 "squirrel socket path contains 'squirrel'",
             );
 
-            let health = probe_primal("squirrel");
+            let health = probe_primal(primal_names::SQUIRREL);
             if health.socket_found {
                 v.check_bool(
                     "squirrel_health",
@@ -104,7 +105,7 @@ fn main() {
                 v.check_minimum("squirrel_caps", health.capabilities.len(), 1);
 
                 if let Some(ref sock) = squirrel.socket {
-                    if let Ok(mut client) = PrimalClient::connect(sock, "squirrel") {
+                    if let Ok(mut client) = PrimalClient::connect(sock, primal_names::SQUIRREL) {
                         probe_squirrel_rpc(v, &mut client);
                     } else {
                         v.check_skip("mcp_tools_discovered", "cannot connect to squirrel");

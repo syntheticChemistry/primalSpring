@@ -9,6 +9,7 @@
 use primalspring::coordination::{AtomicType, validate_composition};
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -17,27 +18,27 @@ fn main() {
         .run(
             "primalSpring Exp043: petalTongue Atomic Health Visualization",
             |v| {
-                let petaltongue = discover_primal("petaltongue");
+                let petaltongue = discover_primal(primal_names::PETALTONGUE);
                 v.check_bool(
                     "discover_petaltongue",
-                    petaltongue.primal == "petaltongue",
+                    petaltongue.primal == primal_names::PETALTONGUE,
                     "discover petaltongue",
                 );
 
-                let path = socket_path("petaltongue");
+                let path = socket_path(primal_names::PETALTONGUE);
                 v.check_bool(
                     "petaltongue_socket_path",
-                    path.to_string_lossy().contains("petaltongue"),
+                    path.to_string_lossy().contains(primal_names::PETALTONGUE),
                     "petaltongue socket path contains 'petaltongue'",
                 );
 
-                let health = primalspring::coordination::probe_primal("petaltongue");
+                let health = primalspring::coordination::probe_primal(primal_names::PETALTONGUE);
                 if health.socket_found {
                     v.check_bool("petaltongue_health", health.health_ok, "petaltongue health");
                     v.check_minimum("petaltongue_caps", health.capabilities.len(), 1);
 
                     if let Some(ref sock) = petaltongue.socket {
-                        if let Ok(mut client) = PrimalClient::connect(sock, "petaltongue") {
+                        if let Ok(mut client) = PrimalClient::connect(sock, primal_names::PETALTONGUE) {
                             probe_live_petaltongue(v, &mut client);
                         } else {
                             skip_viz_checks(v, "cannot connect");

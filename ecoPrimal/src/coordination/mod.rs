@@ -552,4 +552,71 @@ mod tests {
         assert_eq!(v.skipped, 3, "should skip health, latency, caps");
         assert_eq!(v.failed, 0);
     }
+
+    #[test]
+    fn validate_composition_by_capability_graceful_when_nothing_running() {
+        let result = validate_composition_by_capability(AtomicType::Tower);
+        assert_eq!(result.atomic, AtomicType::Tower);
+        assert_eq!(result.primals.len(), 2);
+        assert!(!result.all_healthy);
+    }
+
+    #[test]
+    fn validate_composition_by_capability_full_nucleus() {
+        let result = validate_composition_by_capability(AtomicType::FullNucleus);
+        assert_eq!(result.primals.len(), 8);
+        assert!(!result.all_healthy);
+        assert_eq!(result.total_capabilities, 0);
+    }
+
+    #[test]
+    fn health_check_within_tolerance_returns_none_when_unreachable() {
+        assert!(health_check_within_tolerance("nonexistent_primal_xyzzy").is_none());
+    }
+
+    #[test]
+    fn validate_composition_node() {
+        let result = validate_composition(AtomicType::Node);
+        assert_eq!(result.atomic, AtomicType::Node);
+        assert_eq!(result.primals.len(), 3);
+    }
+
+    #[test]
+    fn validate_composition_nest() {
+        let result = validate_composition(AtomicType::Nest);
+        assert_eq!(result.atomic, AtomicType::Nest);
+        assert_eq!(result.primals.len(), 3);
+    }
+
+    #[test]
+    fn validate_composition_full_nucleus() {
+        let result = validate_composition(AtomicType::FullNucleus);
+        assert_eq!(result.atomic, AtomicType::FullNucleus);
+        assert_eq!(result.primals.len(), 8);
+    }
+
+    #[test]
+    fn primal_health_socket_not_found_has_zero_latency() {
+        let health = probe_primal("nonexistent_xyzzy_zero_latency");
+        assert_eq!(health.latency_us, 0);
+        assert_eq!(health.name, "nonexistent_xyzzy_zero_latency");
+    }
+
+    #[test]
+    fn required_capabilities_tower_has_security_and_discovery() {
+        let caps = AtomicType::Tower.required_capabilities();
+        assert!(caps.contains(&"security"));
+        assert!(caps.contains(&"discovery"));
+        assert_eq!(caps.len(), 2);
+    }
+
+    #[test]
+    fn required_capabilities_full_nucleus_has_eight() {
+        let caps = AtomicType::FullNucleus.required_capabilities();
+        assert_eq!(caps.len(), 8);
+        assert!(caps.contains(&"ai"));
+        assert!(caps.contains(&"dag"));
+        assert!(caps.contains(&"commit"));
+        assert!(caps.contains(&"provenance"));
+    }
 }

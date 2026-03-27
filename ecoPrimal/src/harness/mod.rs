@@ -608,9 +608,11 @@ mod tests {
     #[test]
     fn compute_spawn_order_overlay_includes_extra_primals() {
         let graph_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/tower_ai.toml");
-        if !graph_path.exists() {
-            return; // graph not yet created
-        }
+        assert!(
+            graph_path.exists(),
+            "required test fixture missing: {}",
+            graph_path.display()
+        );
         let harness = AtomicHarness::with_graph(AtomicType::Tower, &graph_path);
         let (order, overlay) = harness.compute_spawn_order().unwrap();
         assert!(

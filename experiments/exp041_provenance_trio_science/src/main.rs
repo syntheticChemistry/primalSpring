@@ -14,10 +14,15 @@ use primalspring::ipc::discover::{discover_for, discover_primal, neural_api_heal
 use primalspring::ipc::provenance::{
     self, ProvenanceStatus, begin_experiment_session, complete_experiment, record_experiment_step,
 };
+use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-const TRIO_PRIMALS: &[&str] = &["rhizocrypt", "loamspine", "sweetgrass"];
+const TRIO_PRIMALS: &[&str] = &[
+    primal_names::RHIZOCRYPT,
+    primal_names::LOAMSPINE,
+    primal_names::SWEETGRASS,
+];
 
 fn validate_e2e_chain(v: &mut ValidationResult) {
     // Step 1: Begin session

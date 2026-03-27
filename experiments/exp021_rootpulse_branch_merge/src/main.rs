@@ -14,6 +14,7 @@ use primalspring::ipc::provenance::{
     self, ProvenanceStatus, begin_experiment_session, record_experiment_step, rootpulse_branch,
     rootpulse_merge,
 };
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -36,9 +37,9 @@ fn main() {
             // ── Discovery: trio probe ──
 
             for (name, discovery) in [
-                ("rhizocrypt", discover_primal("rhizocrypt")),
-                ("loamspine", discover_primal("loamspine")),
-                ("sweetgrass", discover_primal("sweetgrass")),
+                ("rhizocrypt", discover_primal(primal_names::RHIZOCRYPT)),
+                ("loamspine", discover_primal(primal_names::LOAMSPINE)),
+                ("sweetgrass", discover_primal(primal_names::SWEETGRASS)),
             ] {
                 v.check_or_skip(
                     &format!("probe_{name}"),

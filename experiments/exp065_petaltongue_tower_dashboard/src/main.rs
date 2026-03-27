@@ -19,6 +19,7 @@ use std::time::Duration;
 use primalspring::coordination::AtomicType;
 use primalspring::harness::AtomicHarness;
 use primalspring::launcher::{PrimalProcess, SocketNucleation};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn rpc_call(
@@ -75,7 +76,7 @@ fn spawn_petaltongue(
     nucleation: &mut SocketNucleation,
     binary: &Path,
 ) -> Option<(PrimalProcess, PathBuf)> {
-    let socket = nucleation.assign("petaltongue", family_id);
+    let socket = nucleation.assign(primal_names::PETALTONGUE, family_id);
 
     let mut cmd = std::process::Command::new(binary);
     cmd.arg("server");
@@ -86,7 +87,7 @@ fn spawn_petaltongue(
     cmd.stderr(std::process::Stdio::piped());
 
     let child = cmd.spawn().ok()?;
-    let process = PrimalProcess::from_parts("petaltongue".to_owned(), socket.clone(), child);
+    let process = PrimalProcess::from_parts(primal_names::PETALTONGUE.to_owned(), socket.clone(), child);
 
     let deadline = std::time::Instant::now() + Duration::from_secs(10);
     loop {

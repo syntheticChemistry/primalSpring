@@ -12,9 +12,7 @@ use std::time::Duration;
 
 use super::error::{IpcError, classify_io_error};
 use super::protocol::{JsonRpcRequest, JsonRpcResponse};
-
-/// Default timeout for socket operations (5 seconds).
-const DEFAULT_TIMEOUT: Duration = Duration::from_secs(5);
+use crate::tolerances;
 
 /// A synchronous JSON-RPC 2.0 client connected to a primal socket.
 #[derive(Debug)]
@@ -31,12 +29,13 @@ impl PrimalClient {
     /// Returns [`IpcError::ConnectionRefused`] or [`IpcError::Timeout`]
     /// if the socket is unreachable.
     pub fn connect(socket: &Path, primal: &str) -> Result<Self, IpcError> {
+        let timeout = Duration::from_secs(tolerances::IPC_SOCKET_TIMEOUT_SECS);
         let stream = UnixStream::connect(socket).map_err(classify_io_error)?;
         stream
-            .set_read_timeout(Some(DEFAULT_TIMEOUT))
+            .set_read_timeout(Some(timeout))
             .map_err(classify_io_error)?;
         stream
-            .set_write_timeout(Some(DEFAULT_TIMEOUT))
+            .set_write_timeout(Some(timeout))
             .map_err(classify_io_error)?;
         Ok(Self {
             stream: BufReader::new(stream),
@@ -250,6 +249,30 @@ mod tests {
         assert!(result.is_err());
         let err = result.unwrap_err();
         assert!(err.is_connection_error());
+    }
+
+    #[test]
+    fn connect_by_capability_fails_when_no_provider() {
+        let result = super::connect_by_capability("nonexistent_capability_xyzzy_12345");
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.is_connection_error());
+    }
+
+    #[test]
+    fn primal_client_primal_name_accessor() {
+        let dir = std::env::temp_dir().join("primalspring-accessor-test");
+        std::fs::create_dir_all(&dir).unwrap();
+        let sock = dir.join("accessor-test.sock");
+        let _ = std::fs::remove_file(&sock);
+        let listener = UnixListener::bind(&sock).unwrap();
+
+        let client = PrimalClient::connect(&sock, "my-primal").unwrap();
+        assert_eq!(client.primal(), "my-primal");
+
+        drop(client);
+        drop(listener);
+        let _ = std::fs::remove_file(&sock);
     }
 
     #[test]

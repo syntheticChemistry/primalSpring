@@ -18,9 +18,7 @@ use std::time::Duration;
 
 use super::error::{IpcError, classify_io_error};
 use super::protocol::{JsonRpcRequest, JsonRpcResponse};
-
-/// Default timeout for transport operations (5 seconds).
-const TRANSPORT_TIMEOUT: Duration = Duration::from_secs(5);
+use crate::tolerances;
 
 /// Connection transport — Unix domain socket or TCP.
 ///
@@ -42,12 +40,13 @@ impl Transport {
     ///
     /// Returns [`IpcError`] on connection failure.
     pub fn unix(path: &Path) -> Result<Self, IpcError> {
+        let timeout = Duration::from_secs(tolerances::IPC_SOCKET_TIMEOUT_SECS);
         let stream = UnixStream::connect(path).map_err(classify_io_error)?;
         stream
-            .set_read_timeout(Some(TRANSPORT_TIMEOUT))
+            .set_read_timeout(Some(timeout))
             .map_err(classify_io_error)?;
         stream
-            .set_write_timeout(Some(TRANSPORT_TIMEOUT))
+            .set_write_timeout(Some(timeout))
             .map_err(classify_io_error)?;
         Ok(Self::Unix(BufReader::new(stream)))
     }
@@ -58,12 +57,13 @@ impl Transport {
     ///
     /// Returns [`IpcError`] on connection failure.
     pub fn tcp(addr: &str) -> Result<Self, IpcError> {
+        let timeout = Duration::from_secs(tolerances::IPC_SOCKET_TIMEOUT_SECS);
         let stream = TcpStream::connect(addr).map_err(classify_io_error)?;
         stream
-            .set_read_timeout(Some(TRANSPORT_TIMEOUT))
+            .set_read_timeout(Some(timeout))
             .map_err(classify_io_error)?;
         stream
-            .set_write_timeout(Some(TRANSPORT_TIMEOUT))
+            .set_write_timeout(Some(timeout))
             .map_err(classify_io_error)?;
         Ok(Self::Tcp(BufReader::new(stream)))
     }

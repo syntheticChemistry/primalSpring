@@ -9,6 +9,7 @@ use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover::{
     DiscoverySource, discover_primal, extract_capability_names, socket_path,
 };
+use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
@@ -36,14 +37,14 @@ fn main() {
         .run(
             "primalSpring Exp050: coralReef → toadStool → barraCuda Pipeline",
             |v| {
-                let toadstool = discover_primal("toadstool");
+                let toadstool = discover_primal(primal_names::TOADSTOOL);
                 v.check_bool(
                     "toadstool_discovery",
-                    toadstool.primal == "toadstool",
+                    toadstool.primal == primal_names::TOADSTOOL,
                     "discover_primal returns DiscoveryResult for toadstool",
                 );
 
-                let coralreef = discover_primal("coralreef");
+                let coralreef = discover_primal(primal_names::CORALREEF);
                 let coralreef_attempted = coralreef.source == DiscoverySource::NotFound
                     || coralreef.source == DiscoverySource::XdgConvention
                     || coralreef.source == DiscoverySource::TempFallback
@@ -54,16 +55,16 @@ fn main() {
                     "attempt to discover coralreef socket (may be NotFound if not running)",
                 );
 
-                let path_toadstool = socket_path("toadstool");
-                let path_coralreef = socket_path("coralreef");
-                let path_barracuda = socket_path("barracuda");
+                let path_toadstool = socket_path(primal_names::TOADSTOOL);
+                let path_coralreef = socket_path(primal_names::CORALREEF);
+                let path_barracuda = socket_path(primal_names::BARRACUDA);
                 let valid_paths = path_toadstool.to_string_lossy().contains("biomeos")
-                    && path_toadstool.to_string_lossy().contains("toadstool")
+                    && path_toadstool.to_string_lossy().contains(primal_names::TOADSTOOL)
                     && path_toadstool.to_string_lossy().ends_with(".sock")
                     && path_coralreef.to_string_lossy().contains("biomeos")
-                    && path_coralreef.to_string_lossy().contains("coralreef")
+                    && path_coralreef.to_string_lossy().contains(primal_names::CORALREEF)
                     && path_barracuda.to_string_lossy().contains("biomeos")
-                    && path_barracuda.to_string_lossy().contains("barracuda");
+                    && path_barracuda.to_string_lossy().contains(primal_names::BARRACUDA);
                 v.check_bool(
                     "socket_path_valid_for_all_three",
                     valid_paths,
@@ -71,9 +72,18 @@ fn main() {
                 );
 
                 for (primal, display_name) in [
-                    ("toadstool", "toadStool"),
-                    ("coralreef", "coralReef"),
-                    ("barracuda", "barraCuda"),
+                    (
+                        primal_names::TOADSTOOL,
+                        primal_names::display_name(primal_names::TOADSTOOL),
+                    ),
+                    (
+                        primal_names::CORALREEF,
+                        primal_names::display_name(primal_names::CORALREEF),
+                    ),
+                    (
+                        primal_names::BARRACUDA,
+                        primal_names::display_name(primal_names::BARRACUDA),
+                    ),
                 ] {
                     let discovery = discover_primal(primal);
                     v.check_or_skip(

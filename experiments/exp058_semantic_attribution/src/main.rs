@@ -4,6 +4,7 @@
 //! Source: `phase2/sweetGrass/showcase/ROOTPULSE_EMERGENCE_PLAN.md`
 
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -12,22 +13,22 @@ fn main() {
         .run(
             "primalSpring Exp058: sweetGrass Semantic Attribution (RootPulse)",
             |v| {
-                let sweetgrass = discover_primal("sweetgrass");
+                let sweetgrass = discover_primal(primal_names::SWEETGRASS);
                 v.check_bool(
                     "discover_sweetgrass",
-                    sweetgrass.primal == "sweetgrass",
+                    sweetgrass.primal == primal_names::SWEETGRASS,
                     "discover sweetgrass",
                 );
 
-                let rhizocrypt = discover_primal("rhizocrypt");
+                let rhizocrypt = discover_primal(primal_names::RHIZOCRYPT);
                 v.check_bool(
                     "discover_rhizocrypt",
-                    rhizocrypt.primal == "rhizocrypt",
+                    rhizocrypt.primal == primal_names::RHIZOCRYPT,
                     "discover rhizocrypt",
                 );
 
-                let path_sweetgrass = socket_path("sweetgrass");
-                let path_rhizocrypt = socket_path("rhizocrypt");
+                let path_sweetgrass = socket_path(primal_names::SWEETGRASS);
+                let path_rhizocrypt = socket_path(primal_names::RHIZOCRYPT);
                 v.check_bool(
                     "socket_paths_valid",
                     path_sweetgrass.to_string_lossy().contains("biomeos")

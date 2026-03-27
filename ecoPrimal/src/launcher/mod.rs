@@ -37,6 +37,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::time::{Duration, Instant};
 
+use crate::tolerances;
+
 /// Env var: override base directory for primal binaries.
 const ENV_PLASMID_BIN: &str = "ECOPRIMALS_PLASMID_BIN";
 
@@ -518,7 +520,7 @@ fn await_socket_ready(
             },
         );
 
-    let timeout = Duration::from_secs(30);
+    let timeout = Duration::from_secs(tolerances::LAUNCHER_SOCKET_TIMEOUT_SECS);
     if !wait_for_socket(&wait_path, timeout) {
         let _ = child.kill();
         let _ = child.wait();
@@ -603,7 +605,7 @@ pub fn spawn_neural_api(
 
     let relay_handle = relay_output(&mut child, "neural-api");
 
-    let timeout = Duration::from_secs(30);
+    let timeout = Duration::from_secs(tolerances::LAUNCHER_SOCKET_TIMEOUT_SECS);
     if !wait_for_socket(&socket_path, timeout) {
         let _ = child.kill();
         let _ = child.wait();
@@ -666,10 +668,10 @@ fn discover_biomeos_graphs(fallback: &Path) -> PathBuf {
 #[must_use]
 pub fn wait_for_socket(path: &Path, timeout: Duration) -> bool {
     let start = Instant::now();
-    let poll_interval = Duration::from_millis(100);
+    let poll_interval = Duration::from_millis(tolerances::LAUNCHER_POLL_INTERVAL_MS);
     while start.elapsed() < timeout {
         if path.exists() {
-            std::thread::sleep(Duration::from_millis(50));
+            std::thread::sleep(Duration::from_millis(tolerances::LAUNCHER_SOCKET_SETTLE_MS));
             return true;
         }
         std::thread::sleep(poll_interval);

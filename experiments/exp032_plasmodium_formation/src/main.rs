@@ -12,6 +12,7 @@ use primalspring::bonding::BondType;
 use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -51,7 +52,7 @@ fn main() {
 
                 // --- Phase 2: Family-scoped socket paths ---
                 let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
-                let path_songbird = socket_path("songbird");
+                let path_songbird = socket_path(primal_names::SONGBIRD);
                 let path_contains_family = path_songbird
                     .to_string_lossy()
                     .contains(&format!("-{family_id}.sock"));
@@ -87,10 +88,10 @@ fn main() {
                 );
 
                 // --- Phase 4: Live Songbird probing ---
-                let songbird = discover_primal("songbird");
+                let songbird = discover_primal(primal_names::SONGBIRD);
                 v.check_bool(
                     "discover_songbird_returns_result",
-                    songbird.primal == "songbird",
+                    songbird.primal == primal_names::SONGBIRD,
                     "discover_primal returns DiscoveryResult for songbird",
                 );
                 v.check_or_skip(
@@ -98,7 +99,7 @@ fn main() {
                     songbird.socket.as_ref(),
                     "songbird socket not found (needed for multi-NUCLEUS mesh)",
                     |_, v| {
-                        let health = probe_primal("songbird");
+                        let health = probe_primal(primal_names::SONGBIRD);
                         v.check_bool(
                             "songbird_health",
                             health.health_ok,

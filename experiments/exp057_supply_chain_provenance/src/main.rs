@@ -4,6 +4,7 @@
 //! Source: phase2/rhizoCrypt/showcase/01-inter-primal-live/05-complete-workflows/demo-supply-chain.sh
 
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -12,28 +13,28 @@ fn main() {
         .run(
             "primalSpring Exp057: rhizoCrypt Farm-to-Table Provenance",
             |v| {
-                let rhizocrypt = discover_primal("rhizocrypt");
+                let rhizocrypt = discover_primal(primal_names::RHIZOCRYPT);
                 v.check_bool(
                     "discover_rhizocrypt",
-                    rhizocrypt.primal == "rhizocrypt",
+                    rhizocrypt.primal == primal_names::RHIZOCRYPT,
                     "discover rhizocrypt (provenance trio)",
                 );
 
-                let loamspine = discover_primal("loamspine");
+                let loamspine = discover_primal(primal_names::LOAMSPINE);
                 v.check_bool(
                     "discover_loamspine",
-                    loamspine.primal == "loamspine",
+                    loamspine.primal == primal_names::LOAMSPINE,
                     "discover loamspine (provenance trio)",
                 );
 
-                let sweetgrass = discover_primal("sweetgrass");
+                let sweetgrass = discover_primal(primal_names::SWEETGRASS);
                 v.check_bool(
                     "discover_sweetgrass",
-                    sweetgrass.primal == "sweetgrass",
+                    sweetgrass.primal == primal_names::SWEETGRASS,
                     "discover sweetgrass (provenance trio)",
                 );
 
-                let path_rhizocrypt = socket_path("rhizocrypt");
+                let path_rhizocrypt = socket_path(primal_names::RHIZOCRYPT);
                 v.check_bool(
                     "socket_path_contains_biomeos",
                     path_rhizocrypt.to_string_lossy().contains("biomeos"),

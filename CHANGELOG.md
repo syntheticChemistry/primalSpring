@@ -3,6 +3,32 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 16.1: Coverage Evolution + Docs Refresh (2026-03-27)
+
+### Added
+- **29 new unit tests** — 349 → 378 (coordination, niche, launcher, ipc/client)
+- Coverage tests for `validate_composition_by_capability` graceful degradation (all atomics)
+- Coverage tests for `health_check_within_tolerance` failure path
+- Coverage test for `register_with_target` graceful degradation when biomeOS absent
+- Coverage tests for all `LaunchError` Display + Error::source variants
+- Coverage tests for `SocketNucleation::from_env`, `get`, `remap`
+- Coverage test for `connect_by_capability` error path
+- Cost estimate completeness + memory field tests for niche
+- Semantic mapping cross-validation tests for niche
+
+### Changed
+- **exp014/exp023 tick slack** — `<= 1` magic tolerance replaced with
+  `tolerances::TICK_BUDGET_60HZ_SLACK_US`
+- **validate_release.sh test floor** — 364 → 378
+- **README.md** — test count, coverage metric added
+- **CONTEXT.md** — test count, coverage, phase updated
+- **PRIMAL_REGISTRY.md** — Phase 16.1, 378 tests, 72.5% coverage
+- **baseCamp README.md** — primalSpring status line updated
+- **gen4 README.md + thesis** — test/experiment counts updated
+- **wateringHole/README.md** — stats, handoff table, deep audit added
+- Coverage: coordination 67%→83%, niche 63%→73%, launcher 22%→32%, ipc/client 53%→66%
+- Library total coverage: 70% → 72.5%
+
 ## [Unreleased] — Phase 16: Deep Debt Audit + Centralized Tolerances (2026-03-24)
 
 ### Added

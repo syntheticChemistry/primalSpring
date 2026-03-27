@@ -13,6 +13,7 @@ use primalspring::coordination::AtomicType;
 use primalspring::deploy::{graph_spawnable_primals, load_graph, validate_structure};
 use primalspring::graphs::CoordinationPattern;
 use primalspring::harness::{AtomicHarness, RunningAtomic};
+use primalspring::primal_names;
 use primalspring::validation::OrExit;
 use primalspring::validation::ValidationResult;
 
@@ -61,7 +62,7 @@ fn conditional_fallback_graph_structure(v: &mut ValidationResult, graph_path: &P
         );
         v.check_bool(
             "toadstool_spawnable",
-            spawnable.contains(&"toadstool".to_owned()),
+            spawnable.contains(&primal_names::TOADSTOOL.to_owned()),
             "toadstool is spawnable (primary path)",
         );
     }
@@ -71,8 +72,8 @@ fn conditional_branch_verification(v: &mut ValidationResult, running: &RunningAt
     println!("\n=== Phase 4: Conditional Branch Verification ===\n");
 
     let health = running.health_check_all();
-    let beardog_live = health.iter().any(|(n, l)| n == "beardog" && *l);
-    let songbird_live = health.iter().any(|(n, l)| n == "songbird" && *l);
+    let beardog_live = health.iter().any(|(n, l)| n == primal_names::BEARDOG && *l);
+    let songbird_live = health.iter().any(|(n, l)| n == primal_names::SONGBIRD && *l);
     v.check_bool("beardog_live", beardog_live, "beardog healthy (required)");
     v.check_bool(
         "songbird_live",
@@ -80,7 +81,7 @@ fn conditional_branch_verification(v: &mut ValidationResult, running: &RunningAt
         "songbird healthy (required)",
     );
 
-    let toadstool_live = health.iter().any(|(n, l)| n == "toadstool" && *l);
+    let toadstool_live = health.iter().any(|(n, l)| n == primal_names::TOADSTOOL && *l);
     if toadstool_live {
         println!("  toadstool: LIVE — GPU dispatch path active");
         v.check_bool(

@@ -9,6 +9,7 @@
 //! for visualization, Squirrel for AI coordination) are discoverable.
 
 use primalspring::ipc::discover::{discover_for, neural_api_healthy};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 /// Routing endpoints probed for capability-based cross-spring data flow.
@@ -16,7 +17,7 @@ use primalspring::validation::ValidationResult;
 /// Source: `PRIMAL_REGISTRY.md` — petalTongue (visualization) and Squirrel
 /// (AI coordination) are post-NUCLEUS primals that participate in
 /// cross-spring ecology pipelines.
-const ROUTING_PRIMALS: &[&str] = &["petaltongue", "squirrel"];
+const ROUTING_PRIMALS: &[&str] = &[primal_names::PETALTONGUE, primal_names::SQUIRREL];
 
 fn main() {
     ValidationResult::new("primalSpring Exp040 — Cross Spring Data Flow")

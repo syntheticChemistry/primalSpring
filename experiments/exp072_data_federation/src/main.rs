@@ -13,6 +13,7 @@ use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::bonding::{BondType, TrustModel};
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::discover_primal;
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn data_federation_graph_metadata(v: &mut ValidationResult) {
@@ -43,10 +44,10 @@ fn data_federation_graph_metadata(v: &mut ValidationResult) {
 }
 
 fn nestgate_storage_discovery(v: &mut ValidationResult) {
-    let nestgate = discover_primal("nestgate");
+    let nestgate = discover_primal(primal_names::NESTGATE);
     v.check_bool(
         "discover_nestgate",
-        nestgate.primal == "nestgate",
+        nestgate.primal == primal_names::NESTGATE,
         "discover_primal returns DiscoveryResult for nestgate",
     );
     v.check_or_skip(
@@ -54,7 +55,7 @@ fn nestgate_storage_discovery(v: &mut ValidationResult) {
         nestgate.socket.as_ref(),
         "nestgate socket not found (storage primitive for federation)",
         |_, v| {
-            let health = probe_primal("nestgate");
+            let health = probe_primal(primal_names::NESTGATE);
             v.check_bool(
                 "nestgate_health",
                 health.health_ok,
@@ -69,9 +70,9 @@ fn nestgate_storage_discovery(v: &mut ValidationResult) {
 
 fn provenance_trio_discovery(v: &mut ValidationResult) {
     for (name, capability) in [
-        ("sweetgrass", "attribution"),
-        ("rhizocrypt", "dag"),
-        ("loamspine", "commit"),
+        (primal_names::SWEETGRASS, "attribution"),
+        (primal_names::RHIZOCRYPT, "dag"),
+        (primal_names::LOAMSPINE, "commit"),
     ] {
         let disc = discover_primal(name);
         v.check_or_skip(

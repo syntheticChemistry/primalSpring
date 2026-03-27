@@ -20,6 +20,7 @@ use std::path::PathBuf;
 use primalspring::coordination::AtomicType;
 use primalspring::harness::{AtomicHarness, RunningAtomic};
 use primalspring::launcher::{self, LaunchError, PrimalProcess, SocketNucleation};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 /// Load the Anthropic API key, trying env var first, then testing-secrets.
@@ -57,8 +58,8 @@ fn spawn_squirrel_with_key(
     nucleation: &mut SocketNucleation,
     api_key: &str,
 ) -> Result<PrimalProcess, LaunchError> {
-    let binary = launcher::discover_binary("squirrel")?;
-    let socket_path = nucleation.assign("squirrel", family_id);
+    let binary = launcher::discover_binary(primal_names::SQUIRREL)?;
+    let socket_path = nucleation.assign(primal_names::SQUIRREL, family_id);
 
     let mut cmd = std::process::Command::new(&binary);
     cmd.arg("server");
@@ -73,21 +74,21 @@ fn spawn_squirrel_with_key(
     cmd.stderr(std::process::Stdio::piped());
 
     let child = cmd.spawn().map_err(|e| LaunchError::SpawnFailed {
-        primal: "squirrel".to_owned(),
+        primal: primal_names::SQUIRREL.to_owned(),
         source: e,
     })?;
 
     let timeout = std::time::Duration::from_secs(15);
     if !launcher::wait_for_socket(&socket_path, timeout) {
         return Err(LaunchError::SocketTimeout {
-            primal: "squirrel".to_owned(),
+            primal: primal_names::SQUIRREL.to_owned(),
             socket: socket_path,
             waited: timeout,
         });
     }
 
     Ok(PrimalProcess::from_parts(
-        "squirrel".to_owned(),
+        primal_names::SQUIRREL.to_owned(),
         socket_path,
         child,
     ))
@@ -146,7 +147,7 @@ fn start_composition(v: &mut ValidationResult) -> Option<CompositionGuard> {
 
     let runtime_dir = running.runtime_dir().to_path_buf();
     let mut nucleation = SocketNucleation::new(runtime_dir);
-    let squirrel_socket = nucleation.assign("squirrel", &family);
+    let squirrel_socket = nucleation.assign(primal_names::SQUIRREL, &family);
 
     let squirrel = match spawn_squirrel_with_key(&family, &mut nucleation, &api_key) {
         Ok(p) => p,
@@ -167,7 +168,10 @@ fn start_composition(v: &mut ValidationResult) -> Option<CompositionGuard> {
 
 fn validate_squirrel_health(guard: &CompositionGuard, v: &mut ValidationResult) {
     let squirrel_client =
-        primalspring::ipc::client::PrimalClient::connect(&guard.squirrel.socket_path, "squirrel");
+        primalspring::ipc::client::PrimalClient::connect(
+            &guard.squirrel.socket_path,
+            primal_names::SQUIRREL,
+        );
     match squirrel_client {
         Ok(mut client) => {
             let live = client.health_liveness().unwrap_or(false);

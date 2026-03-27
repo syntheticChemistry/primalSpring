@@ -7,6 +7,7 @@
 use primalspring::coordination::AtomicType;
 use primalspring::harness::AtomicHarness;
 use primalspring::ipc::client::PrimalClient;
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn rpc(
@@ -14,7 +15,7 @@ fn rpc(
     method: &str,
     params: &serde_json::Value,
 ) -> Result<serde_json::Value, String> {
-    let mut client = PrimalClient::connect(socket, "nestgate").map_err(|e| format!("{e}"))?;
+    let mut client = PrimalClient::connect(socket, primal_names::NESTGATE).map_err(|e| format!("{e}"))?;
     let resp = client
         .call(method, params.clone())
         .map_err(|e| format!("{e}"))?;
@@ -52,7 +53,7 @@ fn main() {
 
             if let Some(ng) = running
                 .socket_for("storage")
-                .or_else(|| running.socket_for_primal("nestgate"))
+                .or_else(|| running.socket_for_primal(primal_names::NESTGATE))
             {
                 let store = rpc(
                     ng,

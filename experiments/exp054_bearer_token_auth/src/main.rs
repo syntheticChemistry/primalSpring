@@ -4,6 +4,7 @@
 
 use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::ipc::protocol::JsonRpcRequest;
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -12,12 +13,12 @@ fn main() {
         .run(
             "primalSpring Exp054: BearDog security.authenticate → compute.submit",
             |v| {
-                let beardog = discover_primal("beardog");
-                let beardog_path = socket_path("beardog");
+                let beardog = discover_primal(primal_names::BEARDOG);
+                let beardog_path = socket_path(primal_names::BEARDOG);
                 v.check_bool(
                     "beardog_socket_path_discoverable",
-                    beardog.primal == "beardog"
-                        && beardog_path.to_string_lossy().contains("beardog"),
+                    beardog.primal == primal_names::BEARDOG
+                        && beardog_path.to_string_lossy().contains(primal_names::BEARDOG),
                     "discover beardog socket path",
                 );
 

@@ -382,4 +382,66 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn register_with_target_graceful_when_biomeos_unreachable() {
+        let sock = std::path::Path::new("/tmp/primalspring-niche-test-nonexistent.sock");
+        register_with_target(sock);
+    }
+
+    #[test]
+    fn cost_estimates_have_memory() {
+        let costs = cost_estimates();
+        let map = costs.as_object().unwrap();
+        for (key, val) in map {
+            assert!(
+                val.get("memory_bytes").is_some(),
+                "cost estimate for '{key}' missing memory_bytes"
+            );
+        }
+    }
+
+    #[test]
+    fn cost_estimates_cover_core_operations() {
+        let costs = cost_estimates();
+        let map = costs.as_object().unwrap();
+        let expected_ops = [
+            "coordination.validate_composition",
+            "coordination.probe_primal",
+            "coordination.discovery_sweep",
+            "composition.nucleus_health",
+            "graph.validate",
+            "health.check",
+        ];
+        for op in expected_ops {
+            assert!(map.contains_key(op), "missing cost estimate for '{op}'");
+        }
+    }
+
+    #[test]
+    fn operation_dependencies_cover_core_operations() {
+        let deps = operation_dependencies();
+        let map = deps.as_object().unwrap();
+        assert!(map.contains_key("coordination.validate_composition"));
+        assert!(map.contains_key("coordination.probe_primal"));
+        assert!(map.contains_key("graph.validate"));
+    }
+
+    #[test]
+    fn semantic_mappings_values_exist_in_capabilities() {
+        let mappings = coordination_semantic_mappings();
+        let map = mappings.as_object().unwrap();
+        for (key, val) in map {
+            let method = val.as_str().unwrap();
+            assert!(
+                CAPABILITIES.contains(&method),
+                "semantic mapping '{key}' → '{method}' not in CAPABILITIES"
+            );
+        }
+    }
+
+    #[test]
+    fn registration_target_is_biomeos() {
+        assert_eq!(REGISTRATION_TARGET, "biomeos");
+    }
 }

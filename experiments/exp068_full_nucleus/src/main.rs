@@ -8,6 +8,7 @@
 use primalspring::coordination::AtomicType;
 use primalspring::harness::AtomicHarness;
 use primalspring::ipc::client::PrimalClient;
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn rpc(
@@ -49,11 +50,11 @@ fn validate_nest(v: &mut ValidationResult) {
             }
             if let Some(ng) = r
                 .socket_for("storage")
-                .or_else(|| r.socket_for_primal("nestgate"))
+                .or_else(|| r.socket_for_primal(primal_names::NESTGATE))
             {
                 let store = rpc(
                     ng,
-                    "nestgate",
+                    primal_names::NESTGATE,
                     "storage.store",
                     &serde_json::json!({
                         "family_id": nest_fam, "key": "nucleus_test", "data": {"source": "exp068"}
@@ -77,11 +78,11 @@ fn validate_node(v: &mut ValidationResult) {
             }
             if let Some(ts) = r
                 .socket_for("compute")
-                .or_else(|| r.socket_for_primal("toadstool"))
+                .or_else(|| r.socket_for_primal(primal_names::TOADSTOOL))
             {
                 let caps = rpc(
                     ts,
-                    "toadstool",
+                    primal_names::TOADSTOOL,
                     "toadstool.query_capabilities",
                     &serde_json::json!({}),
                 );

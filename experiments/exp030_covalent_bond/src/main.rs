@@ -12,6 +12,7 @@ use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::bonding::{BondType, BondingPolicy, TrustModel};
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn bond_type_structural(v: &mut ValidationResult) {
@@ -35,7 +36,7 @@ fn bond_type_structural(v: &mut ValidationResult) {
 
 fn family_scoped_socket_paths(v: &mut ValidationResult) {
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
-    let path_beardog = socket_path("beardog");
+    let path_beardog = socket_path(primal_names::BEARDOG);
     let path_contains_family = path_beardog
         .to_string_lossy()
         .contains(&format!("-{family_id}.sock"));
@@ -101,13 +102,13 @@ fn covalent_graph_metadata(v: &mut ValidationResult) {
 }
 
 fn tower_discovery_probing(v: &mut ValidationResult) {
-    let beardog = discover_primal("beardog");
+    let beardog = discover_primal(primal_names::BEARDOG);
     v.check_bool(
         "discover_beardog_returns_result",
-        beardog.primal == "beardog",
+        beardog.primal == primal_names::BEARDOG,
         "discover_primal returns DiscoveryResult for beardog",
     );
-    let songbird = discover_primal("songbird");
+    let songbird = discover_primal(primal_names::SONGBIRD);
     for (name, discovery) in [("beardog", beardog), ("songbird", songbird)] {
         v.check_or_skip(
             &format!("probe_{name}"),

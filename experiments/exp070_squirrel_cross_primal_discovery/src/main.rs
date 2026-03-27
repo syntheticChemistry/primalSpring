@@ -22,6 +22,7 @@ use primalspring::deploy::{
     validate_structure,
 };
 use primalspring::harness::{AtomicHarness, RunningAtomic};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn graphs_dir() -> PathBuf {
@@ -82,27 +83,27 @@ fn validate_spawn_and_caps(v: &mut ValidationResult) {
     let spawnable = graph_spawnable_primals(&graph);
     v.check_bool(
         "spawnable_beardog",
-        spawnable.contains(&"beardog".to_owned()),
+        spawnable.contains(&primal_names::BEARDOG.to_owned()),
         "beardog is spawnable",
     );
     v.check_bool(
         "spawnable_songbird",
-        spawnable.contains(&"songbird".to_owned()),
+        spawnable.contains(&primal_names::SONGBIRD.to_owned()),
         "songbird is spawnable",
     );
     v.check_bool(
         "spawnable_nestgate",
-        spawnable.contains(&"nestgate".to_owned()),
+        spawnable.contains(&primal_names::NESTGATE.to_owned()),
         "nestgate is spawnable",
     );
     v.check_bool(
         "spawnable_toadstool",
-        spawnable.contains(&"toadstool".to_owned()),
+        spawnable.contains(&primal_names::TOADSTOOL.to_owned()),
         "toadstool is spawnable",
     );
     v.check_bool(
         "spawnable_squirrel",
-        spawnable.contains(&"squirrel".to_owned()),
+        spawnable.contains(&primal_names::SQUIRREL.to_owned()),
         "squirrel is spawnable",
     );
     v.check_bool(
@@ -115,27 +116,27 @@ fn validate_spawn_and_caps(v: &mut ValidationResult) {
     let caps = graph_capability_map(&graph);
     v.check_bool(
         "cap_security",
-        caps.get("security").is_some_and(|v| v == "beardog"),
+        caps.get("security").is_some_and(|v| v == primal_names::BEARDOG),
         "security -> beardog",
     );
     v.check_bool(
         "cap_storage",
-        caps.get("storage").is_some_and(|v| v == "nestgate"),
+        caps.get("storage").is_some_and(|v| v == primal_names::NESTGATE),
         "storage -> nestgate",
     );
     v.check_bool(
         "cap_compute",
-        caps.get("compute").is_some_and(|v| v == "toadstool"),
+        caps.get("compute").is_some_and(|v| v == primal_names::TOADSTOOL),
         "compute -> toadstool",
     );
     v.check_bool(
         "cap_ai",
-        caps.get("ai").is_some_and(|v| v == "squirrel"),
+        caps.get("ai").is_some_and(|v| v == primal_names::SQUIRREL),
         "ai -> squirrel",
     );
     v.check_bool(
         "cap_discovery",
-        caps.get("discovery").is_some_and(|v| v == "songbird"),
+        caps.get("discovery").is_some_and(|v| v == primal_names::SONGBIRD),
         "discovery -> songbird",
     );
     println!("  capability map: {caps:?}");

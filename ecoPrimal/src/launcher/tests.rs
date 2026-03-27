@@ -107,3 +107,127 @@ fn wait_for_socket_times_out() {
     let path = std::env::temp_dir().join("nonexistent-socket-xyz.sock");
     assert!(!wait_for_socket(&path, Duration::from_millis(200)));
 }
+
+#[test]
+fn nucleation_from_env_creates_biomeos_dir() {
+    let nuc = SocketNucleation::from_env();
+    let biomeos_dir = nuc.base_dir().join("biomeos");
+    assert!(biomeos_dir.exists() || nuc.base_dir().exists());
+}
+
+#[test]
+fn nucleation_get_returns_none_for_unassigned() {
+    let dir = std::env::temp_dir().join(format!(
+        "primalspring-nucleation-get-{}",
+        std::process::id()
+    ));
+    let _ = std::fs::create_dir_all(&dir);
+    let nuc = SocketNucleation::new(dir.clone());
+    assert!(nuc.get("unknown", "family").is_none());
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn nucleation_get_returns_some_after_assign() {
+    let dir = std::env::temp_dir().join(format!(
+        "primalspring-nucleation-getassign-{}",
+        std::process::id()
+    ));
+    let _ = std::fs::create_dir_all(&dir);
+    let mut nuc = SocketNucleation::new(dir.clone());
+    let assigned = nuc.assign("beardog", "test");
+    assert_eq!(nuc.get("beardog", "test"), Some(&assigned));
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn nucleation_remap_changes_path() {
+    let dir = std::env::temp_dir().join(format!(
+        "primalspring-nucleation-remap-{}",
+        std::process::id()
+    ));
+    let _ = std::fs::create_dir_all(&dir);
+    let mut nuc = SocketNucleation::new(dir.clone());
+    let _ = nuc.assign("toadstool", "remap-test");
+    let new_path = PathBuf::from("/tmp/toadstool-jsonrpc.sock");
+    nuc.remap("toadstool", "remap-test", new_path.clone());
+    assert_eq!(nuc.get("toadstool", "remap-test"), Some(&new_path));
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn launch_error_display_binary_not_found() {
+    let err = LaunchError::BinaryNotFound {
+        primal: "test".to_owned(),
+        searched: vec![PathBuf::from("/a"), PathBuf::from("/b")],
+    };
+    let msg = err.to_string();
+    assert!(msg.contains("test"));
+    assert!(msg.contains("binary not found"));
+}
+
+#[test]
+fn launch_error_display_socket_timeout() {
+    let err = LaunchError::SocketTimeout {
+        primal: "beardog".to_owned(),
+        socket: PathBuf::from("/tmp/test.sock"),
+        waited: Duration::from_secs(10),
+    };
+    let msg = err.to_string();
+    assert!(msg.contains("socket timeout"));
+    assert!(msg.contains("beardog"));
+}
+
+#[test]
+fn launch_error_display_health_check_failed() {
+    let err = LaunchError::HealthCheckFailed {
+        primal: "songbird".to_owned(),
+        detail: "connection refused".to_owned(),
+    };
+    let msg = err.to_string();
+    assert!(msg.contains("health check failed"));
+    assert!(msg.contains("songbird"));
+}
+
+#[test]
+fn launch_error_display_profile_parse() {
+    let err = LaunchError::ProfileParseError("bad toml".to_owned());
+    let msg = err.to_string();
+    assert!(msg.contains("launch profile parse error"));
+}
+
+#[test]
+fn launch_error_source_spawn_failed() {
+    let err = LaunchError::SpawnFailed {
+        primal: "x".to_owned(),
+        source: std::io::Error::new(std::io::ErrorKind::NotFound, "no binary"),
+    };
+    assert!(std::error::Error::source(&err).is_some());
+}
+
+#[test]
+fn launch_error_source_none_for_other_variants() {
+    let err = LaunchError::BinaryNotFound {
+        primal: "x".to_owned(),
+        searched: vec![],
+    };
+    assert!(std::error::Error::source(&err).is_none());
+
+    let err2 = LaunchError::ProfileParseError("x".to_owned());
+    assert!(std::error::Error::source(&err2).is_none());
+}
+
+#[test]
+fn launch_profiles_contain_known_primals() {
+    let (_defaults, profiles) = load_launch_profiles().unwrap();
+    assert!(
+        profiles.contains_key("toadstool"),
+        "toadstool should have a launch profile"
+    );
+}
+
+#[test]
+fn launch_profiles_default_has_socket_flag() {
+    let (defaults, _profiles) = load_launch_profiles().unwrap();
+    assert!(defaults.socket_flag.is_some());
+}

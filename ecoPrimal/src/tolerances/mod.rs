@@ -51,12 +51,49 @@ pub const PLASMODIUM_FORMATION_MAX_US: u64 = 30_000_000;
 /// Source: 1/60 seconds = 16,667 microseconds. Hard physical constraint.
 pub const TICK_BUDGET_60HZ_US: u64 = 16_667;
 
+/// Acceptable jitter for 60 Hz tick timing assertions (microseconds).
+///
+/// Source: integer division of 1_000_000/60 drops the fractional part;
+/// 1 µs slack covers the rounding. Used by exp014 and exp023.
+pub const TICK_BUDGET_60HZ_SLACK_US: u64 = 1;
+
 /// Pipeline streaming throughput floor (items per second).
 ///
 /// Source: 100 items/sec is a conservative baseline for IPC pipelines.
 /// Validated: Phase 9 pipeline pattern structural checks pass; live
 /// streaming measurement pending Phase 18 (sweetGrass + continuous tick).
 pub const PIPELINE_THROUGHPUT_MIN: usize = 100;
+
+// ── IPC transport timeouts ──
+//
+// Centralized from ipc/client.rs, ipc/transport.rs, and launcher/mod.rs.
+// Replaces inline Duration literals that risked drift.
+
+/// Default timeout for IPC socket read/write operations.
+///
+/// Source: 5 seconds is generous for local Unix socket IPC.
+/// Validated: Phase 4+ live Tower calls consistently complete in <50ms.
+/// Used by: `ipc::client::PrimalClient`, `ipc::transport::Transport`.
+pub const IPC_SOCKET_TIMEOUT_SECS: u64 = 5;
+
+/// Maximum time to wait for a primal's socket file to appear after spawn.
+///
+/// Source: 30 seconds covers slow-starting primals (model loading, etc.).
+/// Validated: Phase 6 NUCLEUS primals appear within ~2–5 seconds; 30s
+/// provides generous margin for resource-constrained gates.
+/// Used by: `launcher::spawn_primal`, `launcher::spawn_neural_api`.
+pub const LAUNCHER_SOCKET_TIMEOUT_SECS: u64 = 30;
+
+/// Polling interval for socket readiness checks (milliseconds).
+///
+/// Source: 100ms gives responsive detection without busy-wait overhead.
+pub const LAUNCHER_POLL_INTERVAL_MS: u64 = 100;
+
+/// Settle delay after socket appears before declaring ready (milliseconds).
+///
+/// Source: 50ms allows the primal's listener to fully bind after the
+/// socket file is created.
+pub const LAUNCHER_SOCKET_SETTLE_MS: u64 = 50;
 
 // ── IPC resilience parameters ──
 //
@@ -173,7 +210,7 @@ mod tests {
         let expected = 1_000_000 / 60;
         let budget = i64::from(u32::try_from(TICK_BUDGET_60HZ_US).unwrap());
         let exp = i64::from(expected);
-        assert!(budget.abs_diff(exp) <= 1);
+        assert!(budget.abs_diff(exp) <= TICK_BUDGET_60HZ_SLACK_US);
     }
 
     #[test]
@@ -260,5 +297,26 @@ mod tests {
         assert!(DEFAULT_SONGBIRD_PORT < DEFAULT_NESTGATE_PORT);
         assert!(DEFAULT_NESTGATE_PORT < DEFAULT_TOADSTOOL_PORT);
         assert!(DEFAULT_TOADSTOOL_PORT < DEFAULT_SQUIRREL_PORT);
+    }
+
+    #[test]
+    fn ipc_socket_timeout_is_reasonable() {
+        assert!(IPC_SOCKET_TIMEOUT_SECS >= 1);
+        assert!(IPC_SOCKET_TIMEOUT_SECS <= 30);
+    }
+
+    #[test]
+    fn launcher_timeouts_are_reasonable() {
+        assert!(LAUNCHER_SOCKET_TIMEOUT_SECS >= 10);
+        assert!(LAUNCHER_SOCKET_TIMEOUT_SECS <= 120);
+        assert!(LAUNCHER_POLL_INTERVAL_MS >= 10);
+        assert!(LAUNCHER_POLL_INTERVAL_MS <= 1000);
+        assert!(LAUNCHER_SOCKET_SETTLE_MS >= 10);
+        assert!(LAUNCHER_SOCKET_SETTLE_MS <= 500);
+    }
+
+    #[test]
+    fn tick_slack_is_minimal() {
+        assert!(TICK_BUDGET_60HZ_SLACK_US <= 5);
     }
 }

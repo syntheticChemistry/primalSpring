@@ -8,6 +8,7 @@
 use primalspring::coordination::AtomicType;
 use primalspring::ipc::client::connect_primal;
 use primalspring::ipc::discover::{discover_for, extract_capability_names, socket_path};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 /// Minimum primals required for capability aggregation — at least 2 gates needed
@@ -29,7 +30,7 @@ fn main() {
 
                 let family_id =
                     std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
-                let path_beardog = socket_path("beardog");
+                let path_beardog = socket_path(primal_names::BEARDOG);
                 let path_contains_family = path_beardog
                     .to_string_lossy()
                     .contains(&format!("-{family_id}.sock"));

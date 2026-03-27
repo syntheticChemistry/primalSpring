@@ -24,6 +24,16 @@ pub const RHIZOCRYPT: &str = "rhizocrypt";
 pub const LOAMSPINE: &str = "loamspine";
 /// Discovery slug for sweetGrass.
 pub const SWEETGRASS: &str = "sweetgrass";
+/// Discovery slug for petalTongue.
+pub const PETALTONGUE: &str = "petaltongue";
+/// Discovery slug for biomeOS.
+pub const BIOMEOS: &str = "biomeos";
+/// Discovery slug for barraCuda.
+pub const BARRACUDA: &str = "barracuda";
+/// Discovery slug for coralReef.
+pub const CORALREEF: &str = "coralreef";
+/// Discovery slug for fieldMouse.
+pub const FIELDMOUSE: &str = "fieldmouse";
 
 /// Lowercase discovery slug → mixed-case display name.
 ///

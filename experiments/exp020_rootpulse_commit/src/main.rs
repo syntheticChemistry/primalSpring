@@ -14,6 +14,7 @@ use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
 use primalspring::ipc::provenance::{
     self, ProvenanceStatus, begin_experiment_session, complete_experiment, record_experiment_step,
 };
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn rootpulse_required_graphs(v: &mut ValidationResult) {
@@ -29,7 +30,11 @@ fn rootpulse_required_graphs(v: &mut ValidationResult) {
 }
 
 fn provenance_trio_discovery(v: &mut ValidationResult) {
-    for &name in &["rhizocrypt", "loamspine", "sweetgrass"] {
+    for &name in &[
+        primal_names::RHIZOCRYPT,
+        primal_names::LOAMSPINE,
+        primal_names::SWEETGRASS,
+    ] {
         let disc = discover_primal(name);
         v.check_bool(
             &format!("discover_{name}"),

@@ -5,6 +5,7 @@
 use primalspring::coordination::probe_primal;
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::{discover_primal, socket_path};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -23,16 +24,17 @@ fn main() {
                     ),
                 );
 
-                let toadstool = discover_primal("toadstool");
-                let path = socket_path("toadstool");
+                let toadstool = discover_primal(primal_names::TOADSTOOL);
+                let path = socket_path(primal_names::TOADSTOOL);
                 v.check_bool(
                     "discover_toadstool_socket_path",
-                    toadstool.primal == "toadstool" && path.to_string_lossy().contains("toadstool"),
+                    toadstool.primal == primal_names::TOADSTOOL
+                        && path.to_string_lossy().contains(primal_names::TOADSTOOL),
                     "discover toadstool socket path",
                 );
 
-                let coralreef = discover_primal("coralreef");
-                let nestgate = discover_primal("nestgate");
+                let coralreef = discover_primal(primal_names::CORALREEF);
+                let nestgate = discover_primal(primal_names::NESTGATE);
                 for (name, discovery) in [
                     ("toadstool", toadstool),
                     ("coralreef", coralreef),

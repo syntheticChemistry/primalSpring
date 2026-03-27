@@ -16,6 +16,7 @@ use std::time::{Duration, Instant};
 
 use primalspring::coordination::AtomicType;
 use primalspring::harness::AtomicHarness;
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn rpc_call(
@@ -209,7 +210,7 @@ fn main() {
 
                 let Some(songbird_socket) = running
                     .socket_for("discovery")
-                    .or_else(|| running.socket_for_primal("songbird"))
+                    .or_else(|| running.socket_for_primal(primal_names::SONGBIRD))
                 else {
                     v.check_bool("songbird_socket", false, "songbird socket not found");
                     return;

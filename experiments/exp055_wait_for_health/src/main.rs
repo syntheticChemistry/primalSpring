@@ -6,6 +6,7 @@
 
 use primalspring::coordination::AtomicType;
 use primalspring::ipc::discover::discover_primal;
+use primalspring::primal_names;
 use primalspring::tolerances::DISCOVERY_MAX_US;
 use primalspring::validation::ValidationResult;
 use std::time::Instant;
@@ -27,8 +28,8 @@ fn main() {
                 }
 
                 let start = Instant::now();
-                let _ = discover_primal("beardog");
-                let _ = discover_primal("songbird");
+                let _ = discover_primal(primal_names::BEARDOG);
+                let _ = discover_primal(primal_names::SONGBIRD);
                 let elapsed_us = u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX);
                 v.check_bool(
                     "discovery_sweep_within_tolerance",

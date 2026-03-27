@@ -20,6 +20,7 @@ use primalspring::deploy::{
     validate_structure,
 };
 use primalspring::harness::AtomicHarness;
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn graphs_dir() -> PathBuf {
@@ -122,17 +123,17 @@ fn validate_capability_maps(v: &mut ValidationResult) {
     let caps = graph_capability_map(&tower_ai);
     v.check_bool(
         "cap_security",
-        caps.get("security").is_some_and(|v| v == "beardog"),
+        caps.get("security").is_some_and(|v| v == primal_names::BEARDOG),
         "security -> beardog",
     );
     v.check_bool(
         "cap_discovery",
-        caps.get("discovery").is_some_and(|v| v == "songbird"),
+        caps.get("discovery").is_some_and(|v| v == primal_names::SONGBIRD),
         "discovery -> songbird",
     );
     v.check_bool(
         "cap_ai",
-        caps.get("ai").is_some_and(|v| v == "squirrel"),
+        caps.get("ai").is_some_and(|v| v == primal_names::SQUIRREL),
         "ai -> squirrel",
     );
     println!("  tower_ai capability map: {caps:?}");
@@ -186,12 +187,12 @@ fn validate_graph_merge(v: &mut ValidationResult) {
     let all_names: Vec<String> = merged_waves.into_iter().flatten().collect();
     v.check_bool(
         "merge_has_beardog",
-        all_names.contains(&"beardog".to_owned()),
+        all_names.contains(&primal_names::BEARDOG.to_owned()),
         "merged has beardog",
     );
     v.check_bool(
         "merge_has_squirrel",
-        all_names.contains(&"squirrel".to_owned()),
+        all_names.contains(&primal_names::SQUIRREL.to_owned()),
         "merged has squirrel (from overlay)",
     );
     println!("  merged: {} nodes, names: {all_names:?}", all_names.len());

@@ -4,7 +4,7 @@
 
 use primalspring::graphs::CoordinationPattern;
 use primalspring::ipc::discover::neural_api_healthy;
-use primalspring::tolerances::TICK_BUDGET_60HZ_US;
+use primalspring::tolerances::{TICK_BUDGET_60HZ_SLACK_US, TICK_BUDGET_60HZ_US};
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -20,7 +20,8 @@ fn main() {
                     &format!("CoordinationPattern::Continuous.description() exists: {desc}"),
                 );
                 let expected_60hz_us: u64 = 1_000_000 / 60;
-                let within_tolerance = TICK_BUDGET_60HZ_US.abs_diff(expected_60hz_us) <= 1;
+                let within_tolerance =
+                    TICK_BUDGET_60HZ_US.abs_diff(expected_60hz_us) <= TICK_BUDGET_60HZ_SLACK_US;
                 v.check_bool(
                     "tick_budget_60hz_correct",
                     within_tolerance,
