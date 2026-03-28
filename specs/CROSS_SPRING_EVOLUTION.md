@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: March 27, 2026
-**Status**: Phase 17 — GEN4 DEPLOYMENT EVOLUTION (87/87 gates), 385 tests, 59 experiments, 35 deploy graphs
+**Date**: March 28, 2026
+**Status**: Phase 19 — Gen4 Spring Scaffolding (87/87 gates), 385 tests, 59 experiments, 36 deploy graphs, 5 spring primal binaries in plasmidBin
 
 ---
 
@@ -144,7 +144,7 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.7.0 | 385 | Phase 17 — 87/87 gates, gen4 deployment evolution, biomeOS substrate validation, 59 experiments, 35 deploy graphs, 37 capabilities |
+| primalSpring | v0.7.0 | 385 | Phase 19 — 87/87 gates, gen4 spring scaffolding, 5 spring primal binaries built, 59 experiments, 36 deploy graphs |
 
 ## Evolution Path
 
@@ -361,46 +361,71 @@ Phase 17: gen4 Deployment Evolution — biomeOS Substrate Validation
   → Known gaps: Squirrel uses abstract sockets (biomeOS routes to filesystem sockets),
     no aarch64 biomeOS binary for Pixel substrate deployment (biomeOS-scope work)
 
-Phase 18: LAN Covalent Deployment
+Phase 18: Live NUCLEUS + Cross-Gate Federation (March 28, 2026) ✅
+  → Full NUCLEUS on Eastgate: biomeOS + BearDog + Songbird + NestGate + Squirrel running concurrently
+  → FAMILY_ID reconciliation: all primals use seed-derived 8ff3b864a4bc589a (matching biomeOS internal routing)
+  → biomeOS capability.call validated: crypto (BearDog), storage (NestGate), AI (Squirrel)
+  → Cross-gate: Pixel Songbird TCP (v0.1.0) → ADB forward → Eastgate biomeOS route.register (gate: pixel8a)
+  → Mesh init: both Eastgate and Pixel mesh networks initialized, announce operational
+  → STUN: Eastgate public address 162.226.225.148 via racing 3 servers
+  → GrapheneOS SELinux gap: sock_file creation denied for shell context — blocks BearDog, biomeOS, NestGate on Android
+  → Songbird only primal with --listen TCP IPC mode for mobile; BearDog/biomeOS need TCP-only server mode
+  → biomeOS capability.call lacks gate-aware routing (ignores gate param, always uses primary endpoint)
+  → Handoff: CROSS_GATE_MOBILE_TCP_TRANSPORT_GAP_HANDOFF_MAR28_2026.md
+
+Phase 19: Gen4 Spring Scaffolding (March 28, 2026) ✅
+  → Resolved broken path deps across 7 springs via symlinks (barraCuda, bingoCube, toadStool, coralReef, loamSpine, rhizoCrypt, sweetGrass)
+  → Patched barraCuda: version 0.3.5→0.3.7, F16 precision variant, GPU feature-gating, missing DeviceCapabilities methods, rel_tolerance on Check, PrecisionRoutingAdvice re-export
+  → Patched bingoCube/nautilus: json feature gate, input_dim on ShellConfig
+  → Built 5/6 spring primal binaries (groundspring, healthspring_primal, ludospring, neuralspring, wetspring)
+  → airspring_primal BLOCKED: internal data::Provider / data::NestGateProvider API drift
+  → Binaries stripped + deployed to plasmidBin/springs/, blake3 checksums recorded
+  → plasmidBin manifest.toml, sources.toml, checksums.toml, doctor.sh updated
+  → gen4_spring_composition.toml: master graph (Tower + biomeOS + 5 springs + cross-spring validation)
+  → All 7 spring validation graphs updated with biomeOS substrate node (start_biomeos, order 2)
+  → Launch profiles added for all 6 springs in primal_launch_profiles.toml
+  → 36 deploy graphs (up from 35), 5 spring binaries in plasmidBin/springs/
+
+Phase 20: LAN Covalent Deployment
   → Live multi-gate NUCLEUS deployment with BirdSong beacon exchange
-  → biomeOS aarch64 musl-static cross-compile for full Pixel substrate deployment
+  → BearDog + biomeOS TCP-only mode for mobile (unblocks full Pixel NUCLEUS)
   → 10G mesh backbone validation
 
-Phase 19: Live Multi-Node Validation (Track 8)
+Phase 21: Live Multi-Node Validation (Track 8)
   → Basement HPC: deploy NUCLEUS on 2+ LAN machines, validate covalent mesh formation
   → Friend remote: NAT traversal via STUN tiers, hole-punch, relay fallback
   → Idle compute: validate BondingPolicy enforcement (time windows, capability scope)
   → Data federation: NestGate cross-site replication with trio provenance chain
   → Plasmodium: decentralized capability aggregation across covalently bonded nodes
 
-Phase 20: Emergent Systems End-to-End (Track 3)
+Phase 22: Emergent Systems End-to-End (Track 3)
   → RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired)
   → coralForge pipeline streaming (exp013) — needs sweetGrass running
   → Continuous 60Hz tick (exp014) — needs provenance trio running
   → RPGPT session management with provenance tracking
 
-Phase 21: Bonding Live Coordination (Track 4)
+Phase 23: Bonding Live Coordination (Track 4)
   → Multi-gate covalent mesh with BirdSong encrypted beacons
   → Ionic contract-based metered bonds (cloud burst, external APIs)
   → Metallic electron-sea: homogeneous fleet specialization (compute-only racks)
   → Weak force: zero-trust read-only bonds to unknown primals
   → OrganoMetalSalt: mixed bond types in a single deployment
 
-Phase 22: Cross-Spring Integration (Track 6)
+Phase 24: Cross-Spring Integration (Track 6)
   → Full ecosystem data flow: airSpring, wetSpring, neuralSpring, petalTongue, Squirrel
   → wetSpring uses provenance trio to track genetic data lineage
   → Cross-spring BYOB composition: primals as DAG execution nodes
 
-Phase 23: Showcase Patterns (Track 7)
+Phase 25: Showcase Patterns (Track 7)
   → phase1/phase2 mined coordination patterns validated end-to-end
   → Compute triangle, bearer token auth, supply chain provenance, semantic attribution
 
-Phase 24: Anchoring + Economics
+Phase 26: Anchoring + Economics
   → sweetGrass anchoring.anchor → BTC/ETH (hash attestation, not currency)
   → loamSpine certificates as Novel Ferment Transcripts (NFTs)
   → sunCloud radiating attribution via sweetGrass braids
 
-Phase 25: biomeOS Self-Composition
+Phase 27: biomeOS Self-Composition
   → biomeOS composes its own graphs at runtime
   → Dynamic capability negotiation for BYOB niche creation
 ```

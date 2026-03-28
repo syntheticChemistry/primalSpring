@@ -150,21 +150,28 @@ pub const TRIO_RETRY_ATTEMPTS: u32 = 2;
 /// spikes during session creation or DAG dehydration.
 pub const TRIO_RETRY_BASE_DELAY_MS: u64 = 100;
 
-// ── Remote gate TCP defaults ──
+// ── Remote gate TCP fallback ports ──
 //
-// Default ports for cross-gate health probing. Overridable via environment
-// variables at runtime — primalSpring never assumes port assignments.
+// Fallback ports for cross-gate TCP probing (ADB forwarding, WAN firewalls).
+// On the same machine, primals use Unix/abstract sockets discovered by biomeOS
+// SocketDiscoveryEngine — no ports needed. These are ONLY used when a script
+// or experiment explicitly needs a TCP endpoint and the environment variable
+// override is not set.
+//
+// Canonical source: plasmidBin/ports.env
 
-/// Default TCP port for remote BearDog (security).
-pub const DEFAULT_BEARDOG_PORT: u16 = 9100;
-/// Default TCP port for remote Songbird (discovery/mesh).
-pub const DEFAULT_SONGBIRD_PORT: u16 = 9200;
-/// Default TCP port for remote NestGate (storage).
-pub const DEFAULT_NESTGATE_PORT: u16 = 9300;
-/// Default TCP port for remote ToadStool (compute).
-pub const DEFAULT_TOADSTOOL_PORT: u16 = 9400;
-/// Default TCP port for remote Squirrel (AI).
-pub const DEFAULT_SQUIRREL_PORT: u16 = 9500;
+/// TCP fallback port for remote BearDog (security).
+pub const TCP_FALLBACK_BEARDOG_PORT: u16 = 9100;
+/// TCP fallback port for remote Songbird (discovery/mesh).
+pub const TCP_FALLBACK_SONGBIRD_PORT: u16 = 9200;
+/// TCP fallback port for remote NestGate (storage).
+pub const TCP_FALLBACK_NESTGATE_PORT: u16 = 9300;
+/// TCP fallback port for remote ToadStool (compute).
+pub const TCP_FALLBACK_TOADSTOOL_PORT: u16 = 9400;
+/// TCP fallback port for remote Squirrel (AI).
+pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9500;
+/// TCP fallback port for remote biomeOS (substrate).
+pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
 
 // ── Niche cost-estimate parameters ──
 //
@@ -278,13 +285,14 @@ mod tests {
     }
 
     #[test]
-    fn remote_ports_are_in_valid_range() {
+    fn tcp_fallback_ports_are_in_valid_range() {
         for port in [
-            DEFAULT_BEARDOG_PORT,
-            DEFAULT_SONGBIRD_PORT,
-            DEFAULT_NESTGATE_PORT,
-            DEFAULT_TOADSTOOL_PORT,
-            DEFAULT_SQUIRREL_PORT,
+            TCP_FALLBACK_BEARDOG_PORT,
+            TCP_FALLBACK_SONGBIRD_PORT,
+            TCP_FALLBACK_NESTGATE_PORT,
+            TCP_FALLBACK_TOADSTOOL_PORT,
+            TCP_FALLBACK_SQUIRREL_PORT,
+            TCP_FALLBACK_BIOMEOS_PORT,
         ] {
             assert!(port >= 1024, "port {port} below unprivileged range");
             assert!(port <= 49151, "port {port} above registered range");
@@ -292,11 +300,19 @@ mod tests {
     }
 
     #[test]
-    fn remote_ports_are_ordered_by_primal() {
-        assert!(DEFAULT_BEARDOG_PORT < DEFAULT_SONGBIRD_PORT);
-        assert!(DEFAULT_SONGBIRD_PORT < DEFAULT_NESTGATE_PORT);
-        assert!(DEFAULT_NESTGATE_PORT < DEFAULT_TOADSTOOL_PORT);
-        assert!(DEFAULT_TOADSTOOL_PORT < DEFAULT_SQUIRREL_PORT);
+    fn tcp_fallback_ports_are_unique() {
+        let ports = [
+            TCP_FALLBACK_BEARDOG_PORT,
+            TCP_FALLBACK_SONGBIRD_PORT,
+            TCP_FALLBACK_NESTGATE_PORT,
+            TCP_FALLBACK_TOADSTOOL_PORT,
+            TCP_FALLBACK_SQUIRREL_PORT,
+            TCP_FALLBACK_BIOMEOS_PORT,
+        ];
+        let mut sorted = ports.to_vec();
+        sorted.sort_unstable();
+        sorted.dedup();
+        assert_eq!(ports.len(), sorted.len(), "TCP fallback ports must be unique");
     }
 
     #[test]

@@ -10,7 +10,7 @@
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 385 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 59 (11 tracks) |
-| **Deploy Graphs** | 35 TOMLs (18 single-node + 4 multi-node + 7 spring validation + 2 cross-spring + 4 gen4 prototypes) |
+| **Deploy Graphs** | 36 TOMLs (18 single-node + 4 multi-node + 7 spring validation + 2 cross-spring + 5 gen4) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate (87/87 gates) |
 | **Provenance** | All 59 experiments carry structured `with_provenance()` metadata |
@@ -61,7 +61,7 @@ primalSpring/
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
 ├── experiments/                   # 59 validation experiments (11 tracks)
 ├── config/                        # Launch profiles (primal_launch_profiles.toml)
-├── graphs/                        # 35 deploy graph TOMLs
+├── graphs/                        # 36 deploy graph TOMLs
 │   ├── multi_node/               # Multi-node federation graphs (HPC, friend, idle, data)
 │   ├── spring_validation/        # Per-spring validation wrappers (7)
 │   ├── cross_spring/             # Cross-spring ecology + full sweep (2)
@@ -149,7 +149,7 @@ The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 
 
 ## Deploy Graphs
 
-primalSpring ships 35 deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 36 deploy graph TOMLs (all nodes declare `by_capability`):
 
 **Single-node graphs (18)**:
 
@@ -185,13 +185,13 @@ primalSpring ships 35 deploy graph TOMLs (all nodes declare `by_capability`):
 
 **Spring validation graphs (7)** — `graphs/spring_validation/`: per-spring validation
 wrappers (groundspring, wetspring, healthspring, ludospring, neuralspring, airspring,
-hotspring). Each exercises the corresponding biomeOS `*_deploy.toml` graph.
+hotspring). Each deploys biomeOS as substrate then germinates the spring primal.
 
 **Cross-spring graphs (2)** — `graphs/cross_spring/`: ecology validation
 (ET₀ → diversity → spectral) and full sweep across all springs.
 
-**gen4 prototype graphs (4)** — `graphs/gen4/`: sovereign tower, science substrate,
-agentic tower, interactive substrate.
+**gen4 graphs (5)** — `graphs/gen4/`: sovereign tower, science substrate,
+agentic tower, interactive substrate, **spring composition** (Tower + biomeOS + all spring primals + cross-spring routing validation).
 
 All graphs have `by_capability` on every node and are structurally validated +
 topologically sorted at test time. Multi-node graphs include `[graph.metadata]`
@@ -245,6 +245,13 @@ primalSpring validates the biomeOS substrate model end-to-end: biomeOS as the
 neural-api orchestrator, capability routing across primals (crypto, beacon,
 mesh, AI, visualization), and cross-gate deployment to heterogeneous hardware.
 
+**Phase 18 (done)**: Full NUCLEUS deployed and validated on Eastgate (biomeOS +
+BearDog + Songbird + NestGate + Squirrel, all running concurrently under seed-derived
+FAMILY_ID `8ff3b864a4bc589a`). Cross-gate federation: Pixel Songbird TCP via ADB
+port forwarding, registered on Eastgate biomeOS via `route.register`. Mobile
+SELinux gap documented — GrapheneOS blocks `sock_file` creation for `shell` context,
+requiring TCP-only transport modes for all primals on Android.
+
 **Phase 17 (done)**: biomeOS neural-api validated on Eastgate in coordinated mode
 with 24 capability domains and 39 deploy graphs. Cross-gate routing to Pixel
 via ADB-forwarded TCP. Squirrel AI primal validated. Spring deploy sweep confirms
@@ -252,25 +259,33 @@ all 7 sibling springs' biomeOS graphs load correctly.
 
 **gen4 prototypes** (graphs/gen4/): sovereign tower (Dark Forest ready), science
 substrate (multi-spring pipeline), agentic tower (AI-orchestrated), interactive
-substrate (full UI + AI + crypto + mesh surface).
+substrate (full UI + AI + crypto + mesh surface), **spring composition**
+(Tower + biomeOS + 5 spring primals + cross-spring capability routing).
 
-See `specs/CROSS_SPRING_EVOLUTION.md` Phase 17 for details.
+**Spring Gen4 Scaffolding** (Phase 19): 5 of 6 spring primal binaries built
+and deployed to `plasmidBin/springs/` (groundspring, healthspring_primal,
+ludospring, neuralspring, wetspring). All spring validation graphs updated to
+deploy biomeOS as substrate. Launch profiles added for all 6 springs.
 
-## Live Integration Status
+See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
+
+## Live Integration Status (March 28, 2026)
 
 | Primal | Eastgate | Pixel (ADB) | Notes |
 |--------|----------|-------------|-------|
-| BearDog | healthy v0.9.0 | healthy v0.9.0 | Unix socket + TCP |
-| Songbird | healthy v0.2.1 | healthy (HTTP) | Birdsong beacons validated |
-| NestGate | healthy v0.1.0 | — | ZFS graceful degradation, family-scoped sockets, storage CRUD |
-| Squirrel | alive v0.1.0 | — | Abstract socket `@squirrel` |
-| biomeOS | neural-api (24 domains) | — | Substrate orchestrator |
-| ToadStool | structural | — | Awaiting plasmidBin |
+| BearDog | healthy v0.9.0 (Unix socket) | **BLOCKED** (no TCP mode) | Needs `--listen` for Android SELinux |
+| Songbird | healthy v0.2.1 (Unix socket + mesh) | healthy v0.1.0 (TCP :9901) | `--listen` works on Android |
+| NestGate | healthy (Unix socket, store/retrieve) | not deployed | Needs `--listen` for Android |
+| Squirrel | alive v0.1.0 (abstract `@squirrel`) | not deployed | Abstract sockets TBD on Android |
+| biomeOS | neural-api (39+ graphs, route.register) | **BLOCKED** (forces Unix socket) | `api --port` ignored |
+| ToadStool | structural | not deployed | CLI-only, no server |
 
-NestGate upstream fixes absorbed: ZFS graceful degradation when kernel module
-unavailable, 6 unsafe blocks evolved to safe alternatives, family-scoped socket
-names, comprehensive audit + coverage push. plasmidBin binary updated (dynamic
-build — musl static segfaults, nestgate-team scope).
+**Cross-gate federation**: Pixel Songbird registered on Eastgate biomeOS as
+`gate: pixel8a` with capabilities [network, discovery, http, mesh, birdsong].
+ADB forwards Pixel TCP 9901 → Eastgate 19901 for JSON-RPC IPC.
+
+See `infra/wateringHole/handoffs/CROSS_GATE_MOBILE_TCP_TRANSPORT_GAP_HANDOFF_MAR28_2026.md`
+for the full SELinux gap analysis and per-primal remediation plan.
 
 ## Docs
 

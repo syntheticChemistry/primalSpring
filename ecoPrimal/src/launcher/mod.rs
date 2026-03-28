@@ -506,19 +506,17 @@ fn await_socket_ready(
     }
 }
 
-/// Discover the biomeOS binary, trying `biomeos` first then the legacy
-/// `neural-api-server` name as a fallback.
+/// Discover the biomeOS binary in `plasmidBin/primals/` or `$PATH`.
 ///
 /// biomeOS is the substrate primal — the ecosystem's composition,
 /// coordination, and deployment orchestrator. The Neural API is one of
-/// its UniBin modes (`biomeos neural-api`). Some plasmidBin harvests
-/// still ship the binary under the legacy name `neural-api-server`.
+/// its UniBin modes (`biomeos api`).
 ///
 /// # Errors
 ///
-/// Returns [`LaunchError::BinaryNotFound`] if neither name is found.
+/// Returns [`LaunchError::BinaryNotFound`] if `biomeos` is not found.
 pub fn discover_biomeos_binary() -> Result<PathBuf, LaunchError> {
-    discover_binary("biomeos").or_else(|_| discover_binary("neural-api-server"))
+    discover_binary("biomeos")
 }
 
 /// Spawn biomeOS in neural-api mode (graph orchestration + capability routing).

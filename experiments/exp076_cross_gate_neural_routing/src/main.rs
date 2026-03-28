@@ -37,7 +37,7 @@ fn local_songbird_port() -> u16 {
     std::env::var("SONGBIRD_PORT")
         .ok()
         .and_then(|s| s.parse().ok())
-        .unwrap_or(9200)
+        .unwrap_or(primalspring::tolerances::TCP_FALLBACK_SONGBIRD_PORT)
 }
 
 /// Newline-delimited JSON-RPC over TCP (BearDog protocol).

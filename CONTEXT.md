@@ -23,7 +23,7 @@ primals at runtime via capability-based discovery.
   (`primalspring_primal` server, `validate_all` runner)
 - **experiments/** — 59 validation binaries covering 11 tracks
   (atomics, graphs, emergent, bonding, IPC, provenance, deployment, gen4 substrate)
-- **graphs/** — 35 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4)
+- **graphs/** — 36 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4)
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -58,8 +58,8 @@ Capability-based discovery via Neural API or 5-tier filesystem probing.
 
 ## Status
 
-v0.7.0 Phase 17 — 87/87 gates passing, 385 tests, 72.5% library
-coverage, 59 experiments, 4 proptest sites, pedantic+nursery clippy clean.
+v0.7.0 Phase 19 — 87/87 gates, 385 tests, 72.5% library coverage,
+59 experiments, 36 deploy graphs, 5 spring primal binaries in plasmidBin.
 
 ## Ecosystem Position
 

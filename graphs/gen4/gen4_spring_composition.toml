@@ -1,0 +1,152 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# gen4 Spring Composition — full primal composition via biomeOS
+#
+# Starts Tower (beardog + songbird), starts biomeOS in api mode,
+# germinates each available spring primal, then validates cross-spring
+# capability routing via biomeOS.
+#
+# Usage:
+#   biomeos deploy --graph graphs/gen4/gen4_spring_composition.toml
+
+[graph]
+name = "gen4_spring_composition"
+description = "gen4 Spring Composition: Tower + biomeOS + all spring primals + cross-spring routing"
+version = "0.1.0"
+coordination = "sequential"
+
+# ── Tower Atomic ─────────────────────────────────────────────────────────────
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.encrypt", "birdsong.generate"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "mesh"
+capabilities = ["mesh.announce", "mesh.peers", "http.request"]
+
+# ── biomeOS Neural API ───────────────────────────────────────────────────────
+
+[[graph.node]]
+name = "biomeos_api"
+binary = "biomeos"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "capability.list"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]
+
+# ── Spring Primals (germinate each) ──────────────────────────────────────────
+
+[[graph.node]]
+name = "groundspring"
+binary = "groundspring"
+order = 10
+required = false
+depends_on = ["biomeos_api"]
+health_method = "health.check"
+by_capability = "measurement"
+capabilities = [
+    "measurement.sense",
+    "measurement.inverse",
+    "measurement.temporal",
+]
+
+[[graph.node]]
+name = "healthspring"
+binary = "healthspring_primal"
+order = 11
+required = false
+depends_on = ["biomeos_api"]
+health_method = "health.check"
+by_capability = "medical"
+capabilities = [
+    "medical.microbiome",
+    "medical.pipeline",
+]
+
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring"
+order = 12
+required = false
+depends_on = ["biomeos_api"]
+health_method = "health.check"
+by_capability = "gaming"
+capabilities = [
+    "gaming.flow",
+    "gaming.dda",
+    "gaming.telemetry",
+]
+
+[[graph.node]]
+name = "neuralspring"
+binary = "neuralspring"
+order = 13
+required = false
+depends_on = ["biomeos_api"]
+health_method = "health.check"
+by_capability = "bio_ml"
+capabilities = [
+    "science.spiking_network",
+    "science.hill_kinetics",
+    "science.reservoir_computing",
+    "science.cross_spring_provenance",
+]
+
+[[graph.node]]
+name = "wetspring"
+binary = "wetspring"
+order = 14
+required = false
+depends_on = ["biomeos_api"]
+health_method = "health.check"
+by_capability = "metagenomics"
+capabilities = [
+    "metagenomics.ode",
+    "metagenomics.diversity",
+    "metagenomics.community",
+]
+
+# ── Cross-Spring Validation ──────────────────────────────────────────────────
+
+[[graph.node]]
+name = "validate_cross_spring_routing"
+binary = "primalspring_primal"
+order = 20
+required = true
+spawn = false
+depends_on = ["groundspring", "healthspring", "ludospring", "neuralspring", "wetspring"]
+health_method = "health.check"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "coordination.validate_cross_spring",
+    "coordination.validate_capability_routing",
+]
+
+[[graph.node]]
+name = "validate_biomeos_composition"
+binary = "primalspring_primal"
+order = 21
+required = true
+spawn = false
+depends_on = ["validate_cross_spring_routing"]
+health_method = "health.check"
+by_capability = "ecosystem"
+args = ["server"]
+capabilities = [
+    "coordination.validate_composition",
+]

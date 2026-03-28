@@ -4,34 +4,26 @@
 # Connects to each primal's JSON-RPC endpoint on a remote gate and checks
 # health.liveness + capabilities.list. Reports per-primal status.
 #
+# TCP ports are fallback defaults for cross-gate probing. On the same machine,
+# use --unix to probe via sockets (the primary transport).
+#
 # Usage:
 #   ./scripts/validate_remote_gate.sh <host> [--unix <socket-dir>]
 #   ./scripts/validate_remote_gate.sh 192.168.1.100
 #   ./scripts/validate_remote_gate.sh northgate.local
-#
-# Default port mapping (override with env vars):
-#   BEARDOG_PORT=9100
-#   SONGBIRD_PORT=9200
-#   NESTGATE_PORT=9300
-#   TOADSTOOL_PORT=9400
-#   SQUIRREL_PORT=9500
-#   NEURAL_API_PORT=9600
-#
-# Each primal is probed with health.liveness via TCP JSON-RPC.
-# If a primal doesn't expose a TCP port, this script skips it.
-#
-# For Unix socket probing on the local machine, use:
-#   ./scripts/validate_remote_gate.sh localhost --unix /run/user/1000/biomeos
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLASMIDBIN_PORTS="$SCRIPT_DIR/../../infra/plasmidBin/ports.env"
 
 HOST="${1:-}"
 if [ -z "$HOST" ]; then
     echo "Usage: $0 <host> [--unix <socket-dir>]"
     echo ""
     echo "Examples:"
-    echo "  $0 192.168.1.100          # TCP probe"
-    echo "  $0 localhost --unix /run/user/1000/biomeos  # Unix socket probe"
+    echo "  $0 192.168.1.100          # TCP probe (cross-gate)"
+    echo "  $0 localhost --unix /run/user/1000/biomeos  # Unix socket probe (local)"
     exit 1
 fi
 
@@ -44,12 +36,18 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-BEARDOG_PORT="${BEARDOG_PORT:-9100}"
-SONGBIRD_PORT="${SONGBIRD_PORT:-9200}"
-NESTGATE_PORT="${NESTGATE_PORT:-9300}"
-TOADSTOOL_PORT="${TOADSTOOL_PORT:-9400}"
-SQUIRREL_PORT="${SQUIRREL_PORT:-9500}"
-BIOMEOS_PORT="${BIOMEOS_PORT:-9600}"
+# Source shared port definitions from plasmidBin if available
+if [[ -f "$PLASMIDBIN_PORTS" ]]; then
+    # shellcheck source=../../infra/plasmidBin/ports.env
+    source "$PLASMIDBIN_PORTS"
+else
+    BEARDOG_PORT="${BEARDOG_PORT:-9100}"
+    SONGBIRD_PORT="${SONGBIRD_PORT:-9200}"
+    NESTGATE_PORT="${NESTGATE_PORT:-9300}"
+    TOADSTOOL_PORT="${TOADSTOOL_PORT:-9400}"
+    SQUIRREL_PORT="${SQUIRREL_PORT:-9500}"
+    BIOMEOS_PORT="${BIOMEOS_PORT:-9800}"
+fi
 
 PRIMALS=("beardog" "songbird" "nestgate" "toadstool" "squirrel" "biomeos")
 PORTS=("$BEARDOG_PORT" "$SONGBIRD_PORT" "$NESTGATE_PORT" "$TOADSTOOL_PORT" "$SQUIRREL_PORT" "$BIOMEOS_PORT")

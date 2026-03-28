@@ -63,7 +63,7 @@ socket_flag = "__skip__"
 pass_family_id = false
 extra_args = ["--socket-only", "--dev"]
 [profiles.nestgate.extra_env]
-NESTGATE_JWT_SECRET = "primalspring-nest-atomic-test-jwt-secret-long-enough-for-validation-2026"
+NESTGATE_JWT_SECRET = "dev-only-primalspring-jwt-override-via-NESTGATE_JWT_SECRET-env"
 [profiles.nestgate.env_sockets]
 NESTGATE_SOCKET = "nestgate"
 NESTGATE_FAMILY_ID = "$family_id"
@@ -116,10 +116,83 @@ RHIZOCRYPT_SOCKET = "rhizocrypt"
 BIOMEOS_SOCKET_DIR = "$biomeos_dir"
 BEARDOG_SOCKET = "beardog"
 
-[profiles.neural-api-server]
-# Neural API server uses a different socket pattern and no "server" subcommand.
-# Socket: /tmp/neural-api-{family_id}.sock (not in biomeos subdir).
-# Needs FAMILY_ID and BIOMEOS_PLASMID_BIN_DIR env vars.
-# CWD must contain graphs/ directory for bootstrap.
+[profiles.biomeos]
 socket_flag = "__skip__"
 pass_family_id = false
+[profiles.biomeos.extra_env]
+BIOMEOS_MODE = "api"
+[profiles.biomeos.env_sockets]
+BIOMEOS_SOCKET = "neural-api"
+FAMILY_ID = "$family_id"
+
+# =============================================================================
+# SPRING PRIMALS — Science validation binaries (gen4 composition)
+# =============================================================================
+
+[profiles.groundspring]
+pass_family_id = false
+[profiles.groundspring.extra_env]
+GROUNDSPRING_MODE = "server"
+[profiles.groundspring.env_sockets]
+GROUNDSPRING_SOCKET = "groundspring"
+BARRACUDA_SOCKET = "barracuda"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+
+[profiles.healthspring]
+pass_family_id = false
+[profiles.healthspring.extra_env]
+HEALTHSPRING_MODE = "server"
+[profiles.healthspring.env_sockets]
+HEALTHSPRING_SOCKET = "healthspring"
+BARRACUDA_SOCKET = "barracuda"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+NESTGATE_SOCKET = "nestgate"
+
+[profiles.ludospring]
+pass_family_id = false
+[profiles.ludospring.extra_env]
+LUDOSPRING_MODE = "server"
+[profiles.ludospring.env_sockets]
+LUDOSPRING_SOCKET = "ludospring"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+
+[profiles.neuralspring]
+pass_family_id = false
+[profiles.neuralspring.extra_env]
+NEURALSPRING_MODE = "server"
+[profiles.neuralspring.env_sockets]
+NEURALSPRING_SOCKET = "neuralspring"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+NESTGATE_SOCKET = "nestgate"
+
+[profiles.wetspring]
+pass_family_id = false
+[profiles.wetspring.extra_env]
+WETSPRING_MODE = "server"
+[profiles.wetspring.env_sockets]
+WETSPRING_SOCKET = "wetspring"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+NESTGATE_SOCKET = "nestgate"
+
+[profiles.airspring]
+pass_family_id = false
+[profiles.airspring.extra_env]
+AIRSPRING_MODE = "server"
+[profiles.airspring.env_sockets]
+AIRSPRING_SOCKET = "airspring"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+NESTGATE_SOCKET = "nestgate"

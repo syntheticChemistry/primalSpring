@@ -169,7 +169,7 @@ name = "start"
 [nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
-listen = "0.0.0.0:9200"
+listen = "0.0.0.0:${SONGBIRD_PORT:-9200}"
 
 [nodes.operation.environment]
 BEARDOG_SOCKET = "@biomeos_beardog"

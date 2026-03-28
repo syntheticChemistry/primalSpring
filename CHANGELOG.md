@@ -3,6 +3,29 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 19: Gen4 Spring Scaffolding (2026-03-28)
+
+### Added
+- **gen4_spring_composition.toml** — master deploy graph: Tower + biomeOS + 5 spring primals
+  + cross-spring validation node (36 graphs total, up from 35)
+- **6 spring launch profiles** in `primal_launch_profiles.toml` — airspring, groundspring,
+  healthspring, hotspring, ludospring, neuralspring, wetspring
+- Phase 19 handoff: `SPRING_GEN4_SCAFFOLDING_PHASE19_HANDOFF_MAR28_2026.md`
+
+### Changed
+- All 7 spring validation graphs updated: biomeOS substrate node (`start_biomeos`, order 2)
+  inserted before spring primal germination
+- plasmidBin: `manifest.toml`, `sources.toml`, `checksums.toml`, `doctor.sh` updated for
+  5 spring primal binaries (groundspring, healthspring_primal, ludospring, neuralspring, wetspring)
+- All docs updated: 36 deploy graphs, Phase 19 status, 5 spring binaries in plasmidBin
+
+### Built (upstream patches for spring compilation)
+- **barraCuda** v0.3.5→v0.3.7: F16 precision variant, GPU feature-gating (`plasma_dispersion`,
+  `analyze_weight_matrix`), 4 missing `DeviceCapabilities` methods, `rel_tolerance` on `Check`,
+  `PrecisionRoutingAdvice` re-export
+- **bingoCube/nautilus**: no-op `json` feature gate, `input_dim` on `ShellConfig`
+- 5/6 spring primal binaries built, stripped, checksummed (airspring blocked by internal API drift)
+
 ## [Unreleased] — Phase 17: gen4 Deployment Evolution (2026-03-27)
 
 ### Added
@@ -25,7 +48,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `scripts/prepare_spore_payload.sh` — `phase2/biomeOS` → `primals/biomeOS`
 - `exp060` — graph discovery paths updated to `primals/biomeOS/graphs`
 - `bonding/mod.rs` — doc link updated to `primals/biomeOS/specs/`
-- All docs updated: 59 experiments, 385 tests, 35 deploy graphs
+- All docs updated: 59 experiments, 385 tests, 35 deploy graphs (now 36 as of Phase 19)
 - `thiserror` migration for `IpcError` and `LaunchError`
 - 385 tests (up from 378), 59 experiments (up from 53)
 

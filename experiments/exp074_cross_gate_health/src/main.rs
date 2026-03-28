@@ -7,11 +7,11 @@
 //!
 //! Environment:
 //!   `REMOTE_GATE_HOST` — hostname or IP of the remote gate (required)
-//!   `BEARDOG_PORT`  — default 9100
-//!   `SONGBIRD_PORT` — default 9200
-//!   `NESTGATE_PORT` — default 9300
-//!   `TOADSTOOL_PORT` — default 9400
-//!   `SQUIRREL_PORT` — default 9500
+//!   `BEARDOG_PORT`  — TCP fallback (default 9100, only for cross-gate)
+//!   `SONGBIRD_PORT` — TCP fallback (default 9200, only for cross-gate)
+//!   `NESTGATE_PORT` — TCP fallback (default 9300, only for cross-gate)
+//!   `TOADSTOOL_PORT` — TCP fallback (default 9400, only for cross-gate)
+//!   `SQUIRREL_PORT` — TCP fallback (default 9500, only for cross-gate)
 
 use std::io::{BufRead, BufReader, Write};
 use std::net::TcpStream;
@@ -73,27 +73,27 @@ const PRIMALS: &[PrimalProbe] = &[
     PrimalProbe {
         name: primal_names::BEARDOG,
         port_env: "BEARDOG_PORT",
-        default_port: tolerances::DEFAULT_BEARDOG_PORT,
+        default_port: tolerances::TCP_FALLBACK_BEARDOG_PORT,
     },
     PrimalProbe {
         name: primal_names::SONGBIRD,
         port_env: "SONGBIRD_PORT",
-        default_port: tolerances::DEFAULT_SONGBIRD_PORT,
+        default_port: tolerances::TCP_FALLBACK_SONGBIRD_PORT,
     },
     PrimalProbe {
         name: primal_names::NESTGATE,
         port_env: "NESTGATE_PORT",
-        default_port: tolerances::DEFAULT_NESTGATE_PORT,
+        default_port: tolerances::TCP_FALLBACK_NESTGATE_PORT,
     },
     PrimalProbe {
         name: primal_names::TOADSTOOL,
         port_env: "TOADSTOOL_PORT",
-        default_port: tolerances::DEFAULT_TOADSTOOL_PORT,
+        default_port: tolerances::TCP_FALLBACK_TOADSTOOL_PORT,
     },
     PrimalProbe {
         name: primal_names::SQUIRREL,
         port_env: "SQUIRREL_PORT",
-        default_port: tolerances::DEFAULT_SQUIRREL_PORT,
+        default_port: tolerances::TCP_FALLBACK_SQUIRREL_PORT,
     },
 ];
 

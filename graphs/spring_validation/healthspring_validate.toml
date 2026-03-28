@@ -27,11 +27,21 @@ capabilities = [
 ]
 
 [[graph.node]]
-name = "start_healthspring"
-binary = "healthspring_primal"
+name = "start_biomeos"
+binary = "biomeos"
 order = 2
 required = true
 depends_on = ["verify_tower"]
+health_method = "capability.list"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]
+
+[[graph.node]]
+name = "start_healthspring"
+binary = "healthspring_primal"
+order = 3
+required = true
+depends_on = ["start_biomeos"]
 health_method = "health.check"
 by_capability = "health"
 capabilities = [
@@ -43,7 +53,7 @@ capabilities = [
 [[graph.node]]
 name = "validate_niche"
 binary = "primalspring_primal"
-order = 3
+order = 4
 required = true
 spawn = false
 depends_on = ["start_healthspring"]

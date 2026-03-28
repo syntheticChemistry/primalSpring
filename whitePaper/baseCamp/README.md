@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: March 27, 2026
-**Status**: Phase 17 — GEN4 DEPLOYMENT EVOLUTION (87/87 gates), 59 experiments, 385 tests, 35 deploy graphs
+**Date**: March 28, 2026
+**Status**: Phase 19 — Gen4 Spring Scaffolding (87/87 gates), 59 experiments, 385 tests, 36 deploy graphs, 5 spring primal binaries in plasmidBin
 
 ---
 
@@ -45,7 +45,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | 35 TOMLs (18 single-node + 4 multi-node + 7 spring validation + 2 cross-spring + 4 gen4), all nodes `by_capability`, topologically validated |
+| Deploy graphs | 36 TOMLs (18 single-node + 4 multi-node + 7 spring validation + 2 cross-spring + 5 gen4), all nodes `by_capability`, topologically validated |
 | Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
@@ -65,6 +65,81 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
 
+## What Changed — Phase 19 (Gen4 Spring Scaffolding)
+
+### Spring Primal Build + Deploy (March 28, 2026)
+
+Resolved broken `path = "..."` dependencies across 7 spring repositories by creating local
+symlinks for `barraCuda`, `bingoCube`, `toadStool`, `coralReef`, `loamSpine`, `rhizoCrypt`,
+and `sweetGrass`. Patched upstream primal crates to align APIs with spring expectations
+(feature-gating, missing fields, precision variants). Built 5 of 6 spring primal binaries.
+
+| Spring | Binary | Status | Notes |
+|--------|--------|--------|-------|
+| groundSpring | `groundspring` | **BUILT** | `--no-default-features --features biomeos` |
+| healthSpring | `healthspring_primal` | **BUILT** | Full features |
+| ludoSpring | `ludospring` | **BUILT** | Full features |
+| neuralSpring | `neuralspring` | **BUILT** | Full features |
+| wetSpring | `wetspring` | **BUILT** | `--no-default-features` |
+| airSpring | `airspring_primal` | **BLOCKED** | Internal `data::Provider` / `data::NestGateProvider` API drift |
+
+**plasmidBin updates**: `manifest.toml`, `sources.toml`, `checksums.toml` (blake3),
+`doctor.sh` spring inventory section — all 5 binaries stripped and registered.
+
+**gen4_spring_composition.toml**: New master graph deploying Tower + biomeOS + all 5
+spring primals with cross-spring validation node.
+
+**Spring validation graphs**: All 7 updated to deploy biomeOS as substrate (`start_biomeos`
+node, order 2) before germinating the spring primal.
+
+**Launch profiles**: Added profiles for all 6 springs in `primal_launch_profiles.toml`
+(env vars, socket mappings, dependent primal sockets).
+
+**Upstream patches applied**:
+- `barraCuda`: version bump 0.3.5→0.3.7, `F16` precision variant, GPU feature-gating
+  for `plasma_dispersion` and `analyze_weight_matrix`, missing `DeviceCapabilities` methods,
+  `rel_tolerance` field on `Check`, `PrecisionRoutingAdvice` re-export
+- `bingoCube/nautilus`: no-op `json` feature gate, `input_dim` field on `ShellConfig`
+
+## What Changed — Phase 18 (Live NUCLEUS + Cross-Gate Federation)
+
+### Live Deployment Validation (March 28, 2026)
+
+Full NUCLEUS deployed and validated on Eastgate with all 5 primals running concurrently
+under biomeOS orchestration. Cross-gate federation demonstrated between Eastgate (x86_64)
+and Pixel 8a (aarch64) via ADB TCP port forwarding.
+
+**Eastgate NUCLEUS (Full Stack)**:
+1. **biomeOS** — Neural API server running, 39+ deploy graphs loaded, `graph.list` and `capability.call` operational
+2. **BearDog** — crypto/security via Unix socket, `health`, `generate_keypair`, `sha256` routed through biomeOS
+3. **Songbird** — network orchestration, mesh initialized, STUN public address discovery (162.226.225.148), BirdSong beacons
+4. **NestGate** — storage via Unix socket, store/retrieve round-trip validated through biomeOS
+5. **Squirrel** — AI/MCP via abstract socket `@squirrel`, `ai.*` domain registered
+6. **FAMILY_ID reconciliation** — all primals use seed-derived `8ff3b864a4bc589a` matching biomeOS internal routing
+
+**Cross-Gate: Eastgate ↔ Pixel Federation**:
+7. **Pixel Songbird (TCP)** — running v0.1.0 on TCP ports 9200/9901 (SELinux blocks Unix sockets)
+8. **ADB port forwarding** — Pixel 9901 → Eastgate 19901, Pixel 9200 → Eastgate 19200
+9. **`route.register`** — Pixel Songbird registered on Eastgate biomeOS as `gate: pixel8a` with 5 capabilities (network, discovery, http, mesh, birdsong)
+10. **Cross-gate health** — Pixel Songbird health confirmed via `tcp://127.0.0.1:19901` from Eastgate
+11. **Mesh initialized** — both Eastgate and Pixel mesh networks initialized, announce operational
+12. **`primal.info` comparison** — Eastgate v0.2.1 (14 capabilities) vs Pixel v0.1.0 (8 capabilities), binary upgrade needed
+
+**SELinux Mobile Gap (Critical)**:
+13. **GrapheneOS blocks `sock_file` creation** — confirmed via audit log: `avc: denied { create } for name="beardog-pixel.sock" scontext=u:r:shell:s0 tcontext=u:object_r:shell_data_file:s0 tclass=sock_file permissive=0`
+14. **BearDog** — server mode hard-exits if Unix socket fails; no `--listen` TCP fallback for mobile
+15. **biomeOS api** — ignores `--port` flag, forces Unix socket ("HTTP mode deprecated")
+16. **biomeOS nucleus** — waits for Unix socket from primals, times out on Android
+17. **Songbird** — only primal with `--listen` TCP IPC mode; works correctly on Pixel
+18. **Impact**: Tower atomic on Pixel runs degraded (Songbird only, no BearDog crypto, no biomeOS substrate)
+
+### Known Gaps (Updated)
+- BearDog needs `--listen <addr>` for TCP-only server mode on Android/mobile
+- biomeOS `api` and `nucleus` modes need TCP transport for mobile substrates
+- biomeOS `capability.call` does not implement gate-aware routing (`gate` param ignored, always uses primary endpoint)
+- Pixel primal binaries are v0.1.0; need aarch64-musl static rebuilds from latest evolution
+- Squirrel uses abstract sockets (`@squirrel`); biomeOS routes to filesystem sockets
+
 ## What Changed — Phase 17 (gen4 Deployment Evolution)
 
 ### biomeOS Substrate Validation (March 27, 2026)
@@ -79,10 +154,6 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 9. **Spring validation graphs** — 7 per-spring + 2 cross-spring wrappers
 10. **6 new experiments** (exp075–080): biomeOS live, cross-gate routing, Squirrel bridge, petalTongue viz, spring sweep, cross-spring ecology
 11. **385 tests** (up from 378), **59 experiments** (up from 53), **35 deploy graphs** (up from 22)
-
-### Known Gaps
-- Squirrel uses abstract sockets (`@squirrel`); biomeOS routes to filesystem sockets — integration gap
-- No aarch64 biomeOS binary for full Pixel substrate deployment (biomeOS-scope work)
 
 ## What Changed — Phase 16 (Deep Debt Audit + Centralized Tolerances)
 
@@ -245,13 +316,27 @@ spores (biomeOS1, LiveSpore, ColdSpore), and SoloKey 2.
 | plasmidBin aarch64 | Missing; only x86_64 in ecosystem plasmidBin |
 
 **Blockers for full Pixel atomic deployment:**
-- BearDog v0.9.0 abstract socket regression (Android SELinux blocks filesystem sockets)
-- No aarch64 binaries in ecosystem plasmidBin (all x86_64)
-- nestgate USB build corrupted (segfault, needs rebuild)
-- No biomeOS orchestrator binary on Pixel
+- SELinux `sock_file` creation denied for all primals in `shell` context (GrapheneOS)
+- BearDog lacks `--listen` TCP-only server mode (hard-exits on socket bind failure)
+- biomeOS `api`/`nucleus` modes ignore `--port`, force Unix sockets
+- Pixel binaries stale (v0.1.0); need aarch64-musl static rebuilds from latest waves
+- biomeOS `capability.call` lacks gate-aware routing
+
+**What works on Pixel (validated March 28, 2026):**
+- Songbird TCP mode (`--listen 127.0.0.1:9901`) — health, mesh.init, mesh.announce
+- ADB port forwarding for cross-gate communication
+- biomeOS `route.register` to register remote Pixel capabilities on Eastgate
+- biomeOS aarch64 binary cross-compiles and starts (fails only at socket bind)
 
 ## What Remains
 
+### Critical Path (Mobile Deployment)
+- **BearDog TCP server mode** — add `--listen <addr>` flag for TCP-only IPC on Android/mobile (SELinux blocks `sock_file`)
+- **biomeOS mobile transport** — `api`/`nucleus` modes must support TCP when Unix sockets unavailable
+- **biomeOS gate-aware routing** — `capability.call` must honor `gate` parameter to route to specific remote endpoints
+- **aarch64-musl rebuilds** — all primals need fresh static builds from latest evolution waves
+
+### Live Ecosystem
 - **Emergent systems E2E** — RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired, awaiting biomeOS + trio running)
 - **Live multi-node validation** — deploy NUCLEUS on 2+ machines, validate covalent mesh, BondingPolicy enforcement, NAT traversal, data federation
 - **Pipeline + Continuous graph execution** (exp013/014) — awaiting sweetGrass/rhizoCrypt live
@@ -262,7 +347,6 @@ spores (biomeOS1, LiveSpore, ColdSpore), and SoloKey 2.
 - biomeOS self-composition (biomeOS composes its own graphs at runtime)
 - **ecoBin compliance**: rebuild all primals as static musl for both x86_64 and aarch64
 - **genomeBin packaging**: run sourDough to produce actual .genome self-extractors
-- **beardog Android socket**: fix abstract socket regression for Pixel deployment
 
 ---
 

@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 17 — 87/87 gates, 385 tests, 72.5% coverage, 59 experiments, 35 deploy graphs)  
+**Version**: 0.7.0 (Phase 19 — 87/87 gates, 385 tests, 72.5% coverage, 59 experiments, 36 deploy graphs, 5 spring primal binaries)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 27, 2026
+**Last Updated**: March 28, 2026
 
 ---
 
@@ -37,15 +37,15 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **378** (unit + integration + doc-tests + proptest, 42 ignored live) |
-| Experiments | 53 (10 tracks) |
+| Tests | **385** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Experiments | 59 (11 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | 22 TOMLs (18 single-node + 4 multi-node), all `by_capability`, topologically validated |
+| Deploy graphs | 36 TOMLs (18 single-node + 4 multi-node + 7 spring validation + 2 cross-spring + 5 gen4), all `by_capability`, topologically validated |
 | RPC endpoints | 17 methods |
 | Discovery | **Capability-first**: `discover_by_capability()` + 5-tier + Neural API |
 | Server mode | JSON-RPC 2.0 over Unix socket |
@@ -68,7 +68,7 @@ primalSpring fills the gap.
   they offer, not who they are. All RPC handlers default to capability-based validation.
 - **Graphs as source of truth**: `topological_waves()` computes startup ordering via
   Kahn's algorithm. `graph_required_capabilities()` extracts capability rosters from
-  graph nodes. All 18 graphs have `by_capability` on every node (enforced by test).
+  graph nodes. All 36 graphs have `by_capability` on every node (enforced by test).
 - **Real IPC**: `probe_primal()`, `validate_composition_by_capability()`, `health_check()`
   connect to live providers via Unix socket JSON-RPC 2.0
 - **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase` + `is_recoverable()`),
@@ -90,7 +90,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (10 Tracks, 53 Experiments)
+## Track Structure (11 Tracks, 59 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -267,9 +267,9 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `SPRING_GEN4_SCAFFOLDING_PHASE19_HANDOFF_MAR28_2026.md` | Mar 28 | **Gen4 spring scaffolding**: 5/6 spring primal binaries built, plasmidBin updated, gen4 spring composition graph, biomeOS substrate in validation graphs, launch profiles |
 | v0.7.0 | `PRIMALSPRING_V070_DEEP_AUDIT_DEBT_CLEANUP_HANDOFF_MAR26_2026.md` | Mar 26 | **Coverage evolution**: 29 new tests, tick slack centralized, per-module coverage gains, offline paths saturated |
-| v0.7.0 | `PRIMALSPRING_V070_GEN4_BRIDGE_HANDOFF_MAR24_2026.md` | Mar 24 | **gen4 bridge**: esotericWebb + helixVision composition, 7 shortcomings, per-team gen4 actions, plasmidBin deployment model, Phase 17 direction |
-| v0.7.0 | `PRIMALSPRING_V070_PHASE16_DEEP_DEBT_AUDIT_HANDOFF_MAR24_2026.md` | Mar 24 | **Deep debt audit**: centralized tolerances, deduplicated capability parsing, hardcoding→capability-based evolution, coverage baseline |
+| v0.7.0 | `PRIMALSPRING_V070_GEN4_BRIDGE_HANDOFF_MAR24_2026.md` | Mar 24 | **gen4 bridge**: esotericWebb + helixVision composition, 7 shortcomings, per-team gen4 actions, plasmidBin deployment model |
 | v0.7.0 | `PRIMALSPRING_V070_LAN_COVALENT_DEPLOYMENT_HANDOFF_MAR23_2026.md` | Mar 23 | **Deployment**: Step-by-step LAN covalent deployment, USB spore prep, gate provisioning, BirdSong exchange |
 
 ## Archived Handoffs

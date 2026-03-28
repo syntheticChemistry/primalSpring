@@ -10,8 +10,8 @@
 //!
 //! Environment:
 //!   `REMOTE_GATE_HOST` — hostname or IP of the remote gate (required)
-//!   `REMOTE_SONGBIRD_PORT` — Songbird TCP port (default: 9200)
-//!   `REMOTE_BEARDOG_PORT`  — BearDog TCP port (default: 9100)
+//!   `REMOTE_SONGBIRD_PORT` — Songbird TCP fallback (default: 9200, cross-gate only)
+//!   `REMOTE_BEARDOG_PORT`  — BearDog TCP fallback (default: 9100, cross-gate only)
 //!   `FAMILY_ID` — shared family ID for beacon generation
 
 use std::io::{BufRead, BufReader, Write};
@@ -321,11 +321,11 @@ fn main() {
     let songbird_port: u16 = std::env::var("REMOTE_SONGBIRD_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(tolerances::DEFAULT_SONGBIRD_PORT);
+        .unwrap_or(tolerances::TCP_FALLBACK_SONGBIRD_PORT);
     let beardog_port: u16 = std::env::var("REMOTE_BEARDOG_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(tolerances::DEFAULT_BEARDOG_PORT);
+        .unwrap_or(tolerances::TCP_FALLBACK_BEARDOG_PORT);
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "8ff3b864a4bc589a".to_owned());
 
     ValidationResult::new("primalSpring Exp073 — LAN Covalent Mesh")

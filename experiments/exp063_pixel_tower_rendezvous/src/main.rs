@@ -307,7 +307,7 @@ fn main() {
                 let pixel_port: u16 = std::env::var("PIXEL_SONGBIRD_PORT")
                     .ok()
                     .and_then(|p| p.parse().ok())
-                    .unwrap_or(9200);
+                    .unwrap_or(primalspring::tolerances::TCP_FALLBACK_SONGBIRD_PORT);
 
                 if let Some(ref host) = pixel_host {
                     cross_device_exchange(v, songbird_socket, &family_id, host, pixel_port);

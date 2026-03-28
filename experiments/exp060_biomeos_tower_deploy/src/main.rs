@@ -3,7 +3,7 @@
 //! Exp060: biomeOS Tower Deploy — validate Tower composition via biomeOS orchestration.
 //!
 //! Unlike the harness-based experiments, this experiment launches the biomeOS
-//! `neural-api-server` binary directly with the `neural-api` subcommand,
+//! `biomeos` binary directly with the `api` subcommand,
 //! pointing it at biomeOS's `tower_atomic_bootstrap.toml` graph. biomeOS
 //! discovers and germinates beardog + songbird from plasmidBin, then
 //! primalSpring validates the resulting composition via the Neural API bridge.
@@ -32,13 +32,13 @@ impl Drop for BiomeOsGuard {
     }
 }
 
-fn discover_neural_api_binary() -> Option<PathBuf> {
+fn discover_biomeos_binary() -> Option<PathBuf> {
     if let Ok(plasmid) = std::env::var("ECOPRIMALS_PLASMID_BIN") {
-        let candidate = PathBuf::from(&plasmid).join("primals/neural-api-server");
+        let candidate = PathBuf::from(&plasmid).join("primals/biomeos");
         if candidate.is_file() {
             return Some(candidate);
         }
-        let candidate = PathBuf::from(&plasmid).join("neural-api-server");
+        let candidate = PathBuf::from(&plasmid).join("biomeos");
         if candidate.is_file() {
             return Some(candidate);
         }
@@ -67,10 +67,10 @@ fn discover_biomeos_graphs() -> Option<PathBuf> {
 }
 
 fn spawn_biomeos_neural_api(v: &mut ValidationResult) -> Option<BiomeOsGuard> {
-    let Some(binary) = discover_neural_api_binary() else {
+    let Some(binary) = discover_biomeos_binary() else {
         v.check_skip(
             "biomeos_binary",
-            "neural-api-server not found — set ECOPRIMALS_PLASMID_BIN",
+            "biomeos not found — set ECOPRIMALS_PLASMID_BIN",
         );
         return None;
     };
@@ -129,7 +129,7 @@ fn spawn_biomeos_neural_api(v: &mut ValidationResult) -> Option<BiomeOsGuard> {
         }
     };
 
-    v.check_bool("biomeos_spawn", true, "neural-api-server spawned");
+    v.check_bool("biomeos_spawn", true, "biomeos spawned");
 
     let start = Instant::now();
     let timeout = Duration::from_secs(45);
