@@ -18,6 +18,7 @@
 use primalspring::ipc::NeuralBridge;
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover;
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn validate_neural_api_connection(v: &mut ValidationResult) -> Option<NeuralBridge> {
@@ -41,7 +42,7 @@ fn validate_neural_api_connection(v: &mut ValidationResult) -> Option<NeuralBrid
 }
 
 fn validate_capability_list(bridge: &NeuralBridge, v: &mut ValidationResult) {
-    let mut client = match PrimalClient::connect(bridge.socket_path(), "biomeos") {
+    let mut client = match PrimalClient::connect(bridge.socket_path(), primal_names::BIOMEOS) {
         Ok(c) => c,
         Err(e) => {
             v.check_bool("capability_list", false, &format!("connect failed: {e}"));
@@ -109,13 +110,13 @@ fn validate_capability_discover(bridge: &NeuralBridge, v: &mut ValidationResult)
 }
 
 fn validate_birdsong_beacon(v: &mut ValidationResult) {
-    let songbird = discover::discover_primal("songbird");
+    let songbird = discover::discover_primal(primal_names::SONGBIRD);
     let Some(socket) = songbird.socket else {
         v.check_skip("birdsong_beacon", "Songbird not discovered");
         return;
     };
 
-    let mut client = match PrimalClient::connect(&socket, "songbird") {
+    let mut client = match PrimalClient::connect(&socket, primal_names::SONGBIRD) {
         Ok(c) => c,
         Err(e) => {
             v.check_bool("birdsong_connect", false, &format!("{e}"));
@@ -146,7 +147,7 @@ fn validate_birdsong_beacon(v: &mut ValidationResult) {
 }
 
 fn validate_graph_list(bridge: &NeuralBridge, v: &mut ValidationResult) {
-    let mut client = match PrimalClient::connect(bridge.socket_path(), "biomeos") {
+    let mut client = match PrimalClient::connect(bridge.socket_path(), primal_names::BIOMEOS) {
         Ok(c) => c,
         Err(e) => {
             v.check_bool("graph_list", false, &format!("connect failed: {e}"));

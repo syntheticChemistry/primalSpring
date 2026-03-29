@@ -458,7 +458,15 @@ impl ValidationResult {
         }
     }
 
-    /// Process exit code: 0 if all passed, 1 otherwise.
+    /// Process exit code: 0 if all passed (at least one pass), 1 otherwise.
+    ///
+    /// # Design note
+    ///
+    /// This is the default used by [`run`](Self::run). An experiment where
+    /// every check is skipped (no live primals) exits 1 because `passed == 0`.
+    /// This is intentional: a skip-only run is not a confirmed pass. Use
+    /// [`exit_code_skip_aware`](Self::exit_code_skip_aware) when CI needs to
+    /// distinguish "nothing to test" (exit 2) from "tests failed" (exit 1).
     #[must_use]
     pub const fn exit_code(&self) -> i32 {
         if self.all_passed() { 0 } else { 1 }
@@ -469,6 +477,9 @@ impl ValidationResult {
     /// Absorbed from wetSpring V129 `skip_with_code()` pattern. When all
     /// checks are skipped (no live primals available), returning 2 lets CI
     /// distinguish "nothing to test" from "tests failed" — skip ≠ fail.
+    ///
+    /// Use this in CI pipelines or scripts that need to handle the
+    /// "no primals available" case differently from actual failures.
     #[must_use]
     pub const fn exit_code_skip_aware(&self) -> i32 {
         if self.all_passed() {

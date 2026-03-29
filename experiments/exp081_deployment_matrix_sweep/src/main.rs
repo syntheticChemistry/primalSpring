@@ -14,93 +14,13 @@
 //!   `DEPLOY_ARCH`       — "x86_64" or "aarch64" (for reporting)
 //!   `*_PORT`            — per-primal TCP port overrides
 
-use std::io::{BufRead, BufReader, Write};
-use std::net::TcpStream;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
+use primalspring::ipc::methods;
+use primalspring::ipc::tcp::{env_port, http_health_probe, tcp_rpc};
 use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
-
-fn tcp_rpc(
-    host: &str,
-    port: u16,
-    method: &str,
-    params: &serde_json::Value,
-) -> Result<(serde_json::Value, Duration), String> {
-    let addr = format!("{host}:{port}");
-    let start = Instant::now();
-    let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
-        Duration::from_secs(5),
-    )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(10))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let msg = format!("{req}\n");
-    stream
-        .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
-
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
-            let elapsed = start.elapsed();
-            if let Some(result) = parsed.get("result") {
-                return Ok((result.clone(), elapsed));
-            }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
-            }
-        }
-    }
-    Err("no response".to_owned())
-}
-
-fn http_health(host: &str, port: u16) -> Result<(serde_json::Value, Duration), String> {
-    let addr = format!("{host}:{port}");
-    let start = Instant::now();
-    let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
-        Duration::from_secs(5),
-    )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(5))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let http_req = format!(
-        "GET /health HTTP/1.1\r\nHost: {addr}\r\nConnection: close\r\n\r\n"
-    );
-    stream
-        .write_all(http_req.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-
-    let mut buf = String::new();
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        buf.push_str(&line);
-        buf.push('\n');
-    }
-    let elapsed = start.elapsed();
-
-    if buf.contains("200 OK") || buf.contains("200 Ok") || buf.contains("\nOK\n") || buf.ends_with("OK\n")
-    {
-        Ok((
-            serde_json::json!({"status": "alive", "protocol": "http"}),
-            elapsed,
-        ))
-    } else {
-        Err("HTTP health: non-OK response".to_owned())
-    }
-}
 
 #[derive(Clone, Copy)]
 enum ProbeProtocol {
@@ -155,10 +75,7 @@ const ALL_PRIMALS: &[PrimalProbe] = &[
 ];
 
 fn port_for(probe: &PrimalProbe) -> u16 {
-    std::env::var(probe.port_env)
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or(probe.default_port)
+    env_port(probe.port_env, probe.default_port)
 }
 
 fn rpc_for_primal(
@@ -171,13 +88,205 @@ fn rpc_for_primal(
     match protocol {
         ProbeProtocol::TcpJsonRpc => tcp_rpc(host, port, method, params),
         ProbeProtocol::Http => {
-            if method == "health.liveness" {
-                http_health(host, port)
+            if method == methods::health::LIVENESS {
+                http_health_probe(host, port)
             } else {
-                Err("HTTP probe: only health.liveness supported".to_owned())
+                Err(format!(
+                    "HTTP probe: only {} supported",
+                    methods::health::LIVENESS
+                ))
             }
         }
     }
+}
+
+fn phase_tcp_connectivity(
+    v: &mut ValidationResult,
+    host: &str,
+    tcp_mode: bool,
+) -> (Vec<&'static str>, Vec<(&'static str, Duration)>) {
+    v.section("TCP Connectivity");
+    let mut live_primals: Vec<&'static str> = Vec::new();
+    let mut response_times: Vec<(&'static str, Duration)> = Vec::new();
+
+    for primal in ALL_PRIMALS {
+        let port = port_for(primal);
+        let check_name = format!("{}_health", primal.name);
+
+        match rpc_for_primal(
+            host,
+            port,
+            methods::health::LIVENESS,
+            &serde_json::json!({}),
+            primal.protocol,
+        ) {
+            Ok((_resp, latency)) => {
+                let ms = latency.as_millis();
+                println!("  {:<12} LIVE  (port {port}, {ms}ms)", primal.name);
+                v.check_bool(
+                    &check_name,
+                    true,
+                    &format!("{} alive on TCP port {port} ({ms}ms)", primal.name),
+                );
+                live_primals.push(primal.name);
+                response_times.push((primal.name, latency));
+            }
+            Err(e) => {
+                println!("  {:<12} DOWN  (port {port}: {e})", primal.name);
+                if tcp_mode && primal.required_for_tcp {
+                    v.check_bool(
+                        &check_name,
+                        false,
+                        &format!(
+                            "{} REQUIRED for TCP-first but unreachable: {e}",
+                            primal.name
+                        ),
+                    );
+                } else {
+                    v.check_skip(&check_name, &format!("{} unreachable: {e}", primal.name));
+                }
+            }
+        }
+    }
+
+    (live_primals, response_times)
+}
+
+fn phase_tcp_transport_compliance(v: &mut ValidationResult, tcp_mode: bool, live_primals: &[&str]) {
+    if tcp_mode {
+        v.section("TCP Transport Compliance");
+        let tower_tcp = live_primals.contains(&primal_names::BEARDOG)
+            && live_primals.contains(&primal_names::SONGBIRD);
+        v.check_bool(
+            "tower_tcp_reachable",
+            tower_tcp,
+            "Tower Atomic (BearDog + Songbird) reachable via TCP",
+        );
+
+        println!();
+        if !tower_tcp {
+            println!(
+                "  BLOCKER: Tower primals not reachable on TCP — this blocks mobile/Pixel deployment"
+            );
+            println!("  Fix: BearDog needs --listen TCP-first, biomeOS needs --port TCP-only");
+        }
+    }
+}
+
+fn phase_latency_profile(v: &mut ValidationResult, response_times: &[(&str, Duration)]) {
+    v.section("Latency Profile");
+    if !response_times.is_empty() {
+        let max_latency = response_times
+            .iter()
+            .map(|(_, d)| d.as_millis())
+            .max()
+            .unwrap_or(0);
+        let count = response_times.len() as u128;
+        let avg_latency = response_times
+            .iter()
+            .map(|(_, d)| d.as_millis())
+            .sum::<u128>()
+            / count;
+
+        println!("  Avg response: {avg_latency}ms");
+        println!("  Max response: {max_latency}ms");
+
+        v.check_bool(
+            "latency_acceptable",
+            max_latency < 5000,
+            &format!("max latency {max_latency}ms < 5000ms threshold"),
+        );
+
+        for (name, latency) in response_times {
+            if latency.as_millis() > 2000 {
+                println!(
+                    "  WARNING: {name} response {}ms exceeds 2s soft limit",
+                    latency.as_millis()
+                );
+            }
+        }
+    }
+}
+
+fn phase_capability_enumeration(
+    v: &mut ValidationResult,
+    host: &str,
+    live_primals: &[&str],
+) -> usize {
+    v.section("Capabilities");
+    let mut total_capabilities: usize = 0;
+    for primal in ALL_PRIMALS {
+        if !live_primals.contains(&primal.name) {
+            continue;
+        }
+        let port = port_for(primal);
+        let check_name = format!("{}_capabilities", primal.name);
+
+        match rpc_for_primal(
+            host,
+            port,
+            methods::capabilities::LIST,
+            &serde_json::json!({}),
+            primal.protocol,
+        ) {
+            Ok((caps, _)) => {
+                let count = caps
+                    .as_array()
+                    .map(Vec::len)
+                    .or_else(|| {
+                        caps.get("capabilities")
+                            .and_then(|c| c.as_array())
+                            .map(Vec::len)
+                    })
+                    .unwrap_or(1);
+                println!("  {:<12} {count} capabilities", primal.name);
+                total_capabilities += count;
+                v.check_bool(
+                    &check_name,
+                    count > 0,
+                    &format!("{}: {count} capabilities", primal.name),
+                );
+            }
+            Err(e) => {
+                v.check_skip(
+                    &check_name,
+                    &format!("{} {}: {e}", primal.name, methods::capabilities::LIST),
+                );
+            }
+        }
+    }
+    total_capabilities
+}
+
+fn phase_composition_assessment(
+    v: &mut ValidationResult,
+    cell: &str,
+    arch: &str,
+    transport: &str,
+    live: usize,
+    total_capabilities: usize,
+) {
+    v.section("Composition Assessment");
+    let composition = match live {
+        0 => "NO NUCLEUS",
+        1 => "SINGLE PRIMAL",
+        2 => "TOWER ATOMIC (partial)",
+        3 => "TOWER + one layer",
+        4 => "NUCLEUS (near-complete)",
+        _ => "FULL NUCLEUS",
+    };
+    println!("  Composition:  {composition}");
+    println!("  Live primals: {live}/5");
+    println!("  Capabilities: {total_capabilities}");
+    println!("  Architecture: {arch}");
+    println!("  Transport:    {transport}");
+    println!("  Cell:         {cell}");
+
+    v.check_bool(
+        "composition_viable",
+        live >= 2,
+        &format!("{composition}: {live}/5 primals, {total_capabilities} capabilities"),
+    );
 }
 
 fn main() {
@@ -206,176 +315,21 @@ fn main() {
 
                 v.check_bool("remote_gate_configured", true, "REMOTE_GATE_HOST is set");
 
-                // Phase 1: TCP connectivity sweep
-                v.section("TCP Connectivity");
-                let mut live_primals: Vec<&str> = Vec::new();
-                let mut response_times: Vec<(&str, Duration)> = Vec::new();
+                let (live_primals, response_times) = phase_tcp_connectivity(v, &host, tcp_mode);
 
-                for primal in ALL_PRIMALS {
-                    let port = port_for(primal);
-                    let check_name = format!("{}_health", primal.name);
+                phase_tcp_transport_compliance(v, tcp_mode, &live_primals);
 
-                    match rpc_for_primal(
-                        &host,
-                        port,
-                        "health.liveness",
-                        &serde_json::json!({}),
-                        primal.protocol,
-                    ) {
-                        Ok((_resp, latency)) => {
-                            let ms = latency.as_millis();
-                            println!("  {:<12} LIVE  (port {port}, {ms}ms)", primal.name);
-                            v.check_bool(
-                                &check_name,
-                                true,
-                                &format!("{} alive on TCP port {port} ({ms}ms)", primal.name),
-                            );
-                            live_primals.push(primal.name);
-                            response_times.push((primal.name, latency));
-                        }
-                        Err(e) => {
-                            println!("  {:<12} DOWN  (port {port}: {e})", primal.name);
-                            if tcp_mode && primal.required_for_tcp {
-                                v.check_bool(
-                                    &check_name,
-                                    false,
-                                    &format!(
-                                        "{} REQUIRED for TCP-first but unreachable: {e}",
-                                        primal.name
-                                    ),
-                                );
-                            } else {
-                                v.check_skip(
-                                    &check_name,
-                                    &format!("{} unreachable: {e}", primal.name),
-                                );
-                            }
-                        }
-                    }
-                }
+                phase_latency_profile(v, &response_times);
 
-                // Phase 2: Transport compliance (TCP-first mode)
-                if tcp_mode {
-                    v.section("TCP Transport Compliance");
-                    let tower_tcp =
-                        live_primals.contains(&primal_names::BEARDOG)
-                            && live_primals.contains(&primal_names::SONGBIRD);
-                    v.check_bool(
-                        "tower_tcp_reachable",
-                        tower_tcp,
-                        "Tower Atomic (BearDog + Songbird) reachable via TCP",
-                    );
+                let total_capabilities = phase_capability_enumeration(v, &host, &live_primals);
 
-                    println!();
-                    if !tower_tcp {
-                        println!(
-                            "  BLOCKER: Tower primals not reachable on TCP — this blocks mobile/Pixel deployment"
-                        );
-                        println!(
-                            "  Fix: BearDog needs --listen TCP-first, biomeOS needs --port TCP-only"
-                        );
-                    }
-                }
-
-                // Phase 3: Response time analysis
-                v.section("Latency Profile");
-                if !response_times.is_empty() {
-                    let max_latency = response_times
-                        .iter()
-                        .map(|(_, d)| d.as_millis())
-                        .max()
-                        .unwrap_or(0);
-                    let avg_latency = response_times
-                        .iter()
-                        .map(|(_, d)| d.as_millis())
-                        .sum::<u128>()
-                        / response_times.len() as u128;
-
-                    println!("  Avg response: {avg_latency}ms");
-                    println!("  Max response: {max_latency}ms");
-
-                    v.check_bool(
-                        "latency_acceptable",
-                        max_latency < 5000,
-                        &format!("max latency {max_latency}ms < 5000ms threshold"),
-                    );
-
-                    for (name, latency) in &response_times {
-                        if latency.as_millis() > 2000 {
-                            println!(
-                                "  WARNING: {name} response {}ms exceeds 2s soft limit",
-                                latency.as_millis()
-                            );
-                        }
-                    }
-                }
-
-                // Phase 4: Capability enumeration
-                v.section("Capabilities");
-                let mut total_capabilities: usize = 0;
-                for primal in ALL_PRIMALS {
-                    if !live_primals.contains(&primal.name) {
-                        continue;
-                    }
-                    let port = port_for(primal);
-                    let check_name = format!("{}_capabilities", primal.name);
-
-                    match rpc_for_primal(
-                        &host,
-                        port,
-                        "capabilities.list",
-                        &serde_json::json!({}),
-                        primal.protocol,
-                    ) {
-                        Ok((caps, _)) => {
-                            let count = caps
-                                .as_array()
-                                .map(Vec::len)
-                                .or_else(|| {
-                                    caps.get("capabilities")
-                                        .and_then(|c| c.as_array())
-                                        .map(Vec::len)
-                                })
-                                .unwrap_or(1);
-                            println!("  {:<12} {count} capabilities", primal.name);
-                            total_capabilities += count;
-                            v.check_bool(
-                                &check_name,
-                                count > 0,
-                                &format!("{}: {count} capabilities", primal.name),
-                            );
-                        }
-                        Err(e) => {
-                            v.check_skip(
-                                &check_name,
-                                &format!("{} capabilities.list: {e}", primal.name),
-                            );
-                        }
-                    }
-                }
-
-                // Phase 5: Composition assessment
-                v.section("Composition Assessment");
-                let live = live_primals.len();
-                let composition = match live {
-                    0 => "NO NUCLEUS",
-                    1 => "SINGLE PRIMAL",
-                    2 => "TOWER ATOMIC (partial)",
-                    3 => "TOWER + one layer",
-                    4 => "NUCLEUS (near-complete)",
-                    _ => "FULL NUCLEUS",
-                };
-                println!("  Composition:  {composition}");
-                println!("  Live primals: {live}/5");
-                println!("  Capabilities: {total_capabilities}");
-                println!("  Architecture: {arch}");
-                println!("  Transport:    {transport}");
-                println!("  Cell:         {cell}");
-
-                v.check_bool(
-                    "composition_viable",
-                    live >= 2,
-                    &format!("{composition}: {live}/5 primals, {total_capabilities} capabilities"),
+                phase_composition_assessment(
+                    v,
+                    cell.as_str(),
+                    arch.as_str(),
+                    transport.as_str(),
+                    live_primals.len(),
+                    total_capabilities,
                 );
             },
         );

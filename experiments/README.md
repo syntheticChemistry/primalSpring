@@ -19,12 +19,13 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 59 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 63 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 63 experiments.
+across all 63 experiments. All 63 use centralized library helpers for TCP RPC,
+method name constants (`ipc::methods`), and primal name constants (`primal_names`).
 
 ## Running
 
@@ -90,7 +91,8 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 18 | LAN Covalent Deployment | Planned — live multi-gate NUCLEUS, biomeOS aarch64 cross-compile for Pixel substrate |
 | 19 | Gen4 Spring Scaffolding | **Done** (5 spring primal binaries built, 7 validation graphs, launch profiles) |
 | 20 | Deployment Matrix + Substrate Validation | **Done** (43-cell matrix, benchScale topologies, chaos/federation/provenance experiments, agentic trio, storytelling stack, showcase mining, 63 experiments, 59 graphs) |
-| 21 | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
+| 21 | Deep Ecosystem Audit + Library Consolidation | **Done** (ipc::tcp + ipc::methods library modules, launcher 4-module refactor, provenance circuit breaker half-open, tracing migration, 8 experiments consolidated to library helpers, 411 tests, zero clippy/fmt/doc warnings) |
+| 22 | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
 
 ## Validation Harness
 

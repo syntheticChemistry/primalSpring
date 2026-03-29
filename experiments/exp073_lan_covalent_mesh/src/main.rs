@@ -14,82 +14,22 @@
 //!   `REMOTE_BEARDOG_PORT`  — BearDog TCP fallback (default: 9100, cross-gate only)
 //!   `FAMILY_ID` — shared family ID for beacon generation
 
-use std::io::{BufRead, BufReader, Write};
-use std::net::TcpStream;
-use std::time::Duration;
-
+use primalspring::ipc::methods;
+use primalspring::ipc::tcp::{http_health_probe, tcp_rpc};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-fn tcp_rpc_call(
+fn tcp_rpc_value(
     host: &str,
     port: u16,
     method: &str,
     params: &serde_json::Value,
 ) -> Result<serde_json::Value, String> {
-    let addr = format!("{host}:{port}");
-    let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
-        Duration::from_secs(5),
-    )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(10))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let msg = format!("{req}\n");
-    stream
-        .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
-
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
-            if let Some(result) = parsed.get("result") {
-                return Ok(result.clone());
-            }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
-            }
-        }
-    }
-    Err("no response".to_owned())
+    tcp_rpc(host, port, method, params).map(|(v, _)| v)
 }
 
-/// HTTP health probe for primals that serve HTTP instead of raw TCP JSON-RPC.
 fn http_health_check(host: &str, port: u16) -> Result<(), String> {
-    let addr = format!("{host}:{port}");
-    let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
-        Duration::from_secs(5),
-    )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(5))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let http_req = format!("GET /health HTTP/1.1\r\nHost: {addr}\r\nConnection: close\r\n\r\n");
-    stream
-        .write_all(http_req.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-
-    let mut buf = String::new();
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        buf.push_str(&line);
-        buf.push('\n');
-    }
-
-    if buf.contains("200 OK") || buf.contains("200 Ok") || buf.contains("\nOK\n") || buf.ends_with("OK\n") {
-        Ok(())
-    } else {
-        Err("HTTP health: non-OK response".to_owned())
-    }
+    http_health_probe(host, port).map(|_| ())
 }
 
 fn validate_remote_health(
@@ -100,10 +40,10 @@ fn validate_remote_health(
 ) {
     v.section("Remote Health");
 
-    match tcp_rpc_call(
+    match tcp_rpc_value(
         host,
         beardog_port,
-        "health.liveness",
+        methods::health::LIVENESS,
         &serde_json::json!({}),
     ) {
         Ok(_) => {
@@ -123,11 +63,7 @@ fn validate_remote_health(
     match http_health_check(host, songbird_port) {
         Ok(()) => {
             println!("  remote songbird: LIVE (HTTP /health)");
-            v.check_bool(
-                "remote_songbird_live",
-                true,
-                "remote songbird HTTP health",
-            );
+            v.check_bool("remote_songbird_live", true, "remote songbird HTTP health");
         }
         Err(e) => {
             println!("  remote songbird: {e}");
@@ -142,10 +78,10 @@ fn validate_remote_health(
 fn validate_remote_capabilities(v: &mut ValidationResult, host: &str, songbird_port: u16) {
     v.section("Remote Capabilities");
 
-    match tcp_rpc_call(
+    match tcp_rpc_value(
         host,
         songbird_port,
-        "capabilities.list",
+        methods::capabilities::LIST,
         &serde_json::json!({}),
     ) {
         Ok(caps) => {
@@ -178,7 +114,7 @@ fn validate_remote_capabilities(v: &mut ValidationResult, host: &str, songbird_p
 fn validate_mesh_peers(v: &mut ValidationResult, host: &str, songbird_port: u16) {
     v.section("Mesh Discovery");
 
-    match tcp_rpc_call(host, songbird_port, "mesh.peers", &serde_json::json!({})) {
+    match tcp_rpc_value(host, songbird_port, "mesh.peers", &serde_json::json!({})) {
         Ok(peers) => {
             let count = peers
                 .as_array()
@@ -211,7 +147,7 @@ fn validate_mesh_peers(v: &mut ValidationResult, host: &str, songbird_port: u16)
         }
     }
 
-    match tcp_rpc_call(
+    match tcp_rpc_value(
         host,
         songbird_port,
         "mesh.auto_discover",
@@ -236,7 +172,7 @@ fn validate_birdsong_beacon(
 ) {
     v.section("BirdSong Beacon Exchange");
 
-    let beacon_result = tcp_rpc_call(
+    let beacon_result = tcp_rpc_value(
         host,
         songbird_port,
         "birdsong.generate_encrypted_beacon",
@@ -268,7 +204,7 @@ fn validate_birdsong_beacon(
                     "beacon generated but encrypted_beacon field empty",
                 );
             } else {
-                match tcp_rpc_call(
+                match tcp_rpc_value(
                     host,
                     songbird_port,
                     "birdsong.decrypt_beacon",
@@ -320,7 +256,7 @@ fn validate_birdsong_beacon(
 fn validate_stun(v: &mut ValidationResult, host: &str, songbird_port: u16) {
     v.section("STUN / NAT Discovery");
 
-    match tcp_rpc_call(
+    match tcp_rpc_value(
         host,
         songbird_port,
         "stun.get_public_address",

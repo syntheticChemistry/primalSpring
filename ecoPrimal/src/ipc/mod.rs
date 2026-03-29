@@ -2,7 +2,8 @@
 
 //! IPC client for primalSpring coordination validation.
 //!
-//! Provides JSON-RPC 2.0 over Unix sockets for communicating with primals
+//! Provides JSON-RPC 2.0 over IPC ([`transport::Transport`]: Unix sockets for
+//! local primals, TCP when connecting by address) for communicating with primals
 //! during composition and coordination validation. Discovery is
 //! capability-based: primalSpring has only self-knowledge and discovers
 //! peers at runtime via environment overrides, XDG socket convention,
@@ -15,12 +16,14 @@
 //! module classifies responses into `Success`, `ProtocolError`, or
 //! `ApplicationError` for informed retry decisions.
 
+pub mod capability;
 pub mod client;
 pub mod discover;
 pub mod dispatch;
 pub mod error;
 pub mod extract;
 pub mod mcp;
+pub mod methods;
 pub mod neural_bridge;
 pub mod probes;
 #[cfg(test)]
@@ -28,6 +31,7 @@ mod proptest_ipc;
 pub mod protocol;
 pub mod provenance;
 pub mod resilience;
+pub mod tcp;
 pub mod transport;
 
 pub use error::IpcError;

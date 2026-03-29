@@ -14,65 +14,21 @@
 //!   `CHAOS_SCENARIO`    — which scenario to run: all|kill|slow|port|half_open|partition
 //!   `*_PORT`            — per-primal TCP port overrides
 
-use std::io::{BufRead, BufReader, Write};
 use std::net::TcpStream;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
+use primalspring::ipc::methods;
+use primalspring::ipc::tcp::{env_port, tcp_rpc, tcp_rpc_with_timeout};
 use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
-
-fn tcp_rpc(
-    host: &str,
-    port: u16,
-    method: &str,
-    params: &serde_json::Value,
-    timeout: Duration,
-) -> Result<(serde_json::Value, Duration), String> {
-    let addr = format!("{host}:{port}");
-    let start = Instant::now();
-    let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
-        timeout,
-    )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
-    stream.set_read_timeout(Some(timeout)).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let msg = format!("{req}\n");
-    stream
-        .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
-
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
-            let elapsed = start.elapsed();
-            if let Some(result) = parsed.get("result") {
-                return Ok((result.clone(), elapsed));
-            }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
-            }
-        }
-    }
-    Err("no response".to_owned())
-}
 
 fn probe_health(host: &str, port: u16) -> Result<Duration, String> {
     tcp_rpc(
         host,
         port,
-        "health.liveness",
+        methods::health::LIVENESS,
         &serde_json::json!({}),
-        Duration::from_secs(5),
     )
     .map(|(_, d)| d)
 }
@@ -150,11 +106,208 @@ fn targets(host: &str) -> Vec<ChaosTarget> {
     ]
 }
 
-fn env_port(key: &str, default: u16) -> u16 {
-    std::env::var(key)
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or(default)
+fn scenario_baseline_health(
+    v: &mut ValidationResult,
+    host: &str,
+    targets: &[ChaosTarget],
+) -> Vec<&'static str> {
+    v.section("Baseline Health");
+    let mut live: Vec<&'static str> = Vec::new();
+    for t in targets {
+        if host.is_empty() {
+            v.check_skip(&format!("{}_baseline", t.name), "no host — skip live probe");
+            continue;
+        }
+        match probe_health(host, t.port) {
+            Ok(d) => {
+                println!("  {:<12} LIVE  ({}ms)", t.name, d.as_millis());
+                v.check_bool(
+                    &format!("{}_baseline", t.name),
+                    true,
+                    &format!("{} healthy at baseline", t.name),
+                );
+                live.push(t.name);
+            }
+            Err(e) => {
+                println!("  {:<12} DOWN  ({e})", t.name);
+                v.check_skip(
+                    &format!("{}_baseline", t.name),
+                    &format!("{} unreachable: {e}", t.name),
+                );
+            }
+        }
+    }
+    live
+}
+
+fn scenario_half_open(
+    v: &mut ValidationResult,
+    host: &str,
+    targets: &[ChaosTarget],
+    live: &[&str],
+) {
+    v.section("Half-Open Connections");
+    for t in targets {
+        if !live.contains(&t.name) {
+            v.check_skip(
+                &format!("{}_half_open", t.name),
+                &format!("{} not live — skip", t.name),
+            );
+            continue;
+        }
+        println!("  Testing {}: hold connection 10s with no data...", t.name);
+        match half_open_test(host, t.port, 10) {
+            Ok(msg) => {
+                println!("    {msg}");
+                v.check_bool(
+                    &format!("{}_half_open", t.name),
+                    true,
+                    &format!("{}: {msg}", t.name),
+                );
+            }
+            Err(msg) => {
+                println!("    WARN: {msg}");
+                v.check_bool(
+                    &format!("{}_half_open", t.name),
+                    false,
+                    &format!("{}: {msg}", t.name),
+                );
+            }
+        }
+    }
+}
+
+fn scenario_port_collision(
+    v: &mut ValidationResult,
+    host: &str,
+    targets: &[ChaosTarget],
+    live: &[&str],
+) {
+    v.section("Port Collision / Concurrent Connections");
+    for t in targets {
+        if !live.contains(&t.name) {
+            v.check_skip(
+                &format!("{}_concurrent", t.name),
+                &format!("{} not live — skip", t.name),
+            );
+            continue;
+        }
+        match port_collision_test(host, t.port) {
+            Ok(msg) => {
+                println!("  {:<12} {msg}", t.name);
+                v.check_bool(
+                    &format!("{}_concurrent", t.name),
+                    true,
+                    &format!("{}: {msg}", t.name),
+                );
+            }
+            Err(msg) => {
+                println!("  {:<12} FAIL: {msg}", t.name);
+                v.check_bool(
+                    &format!("{}_concurrent", t.name),
+                    false,
+                    &format!("{}: {msg}", t.name),
+                );
+            }
+        }
+    }
+}
+
+fn scenario_rapid_reconnection(
+    v: &mut ValidationResult,
+    host: &str,
+    targets: &[ChaosTarget],
+    live: &[&str],
+) {
+    v.section("Rapid Reconnection (Kill Simulation)");
+    println!("  Sending 10 rapid health probes to stress connection handling...");
+    for t in targets {
+        if !live.contains(&t.name) {
+            v.check_skip(
+                &format!("{}_rapid", t.name),
+                &format!("{} not live — skip", t.name),
+            );
+            continue;
+        }
+        let mut successes = 0u32;
+        let mut failures = 0u32;
+        for _ in 0..10 {
+            match probe_health(host, t.port) {
+                Ok(_) => successes += 1,
+                Err(_) => failures += 1,
+            }
+        }
+        println!("  {:<12} {successes}/10 OK, {failures}/10 failed", t.name);
+        v.check_bool(
+            &format!("{}_rapid", t.name),
+            successes >= 8,
+            &format!("{}: {successes}/10 rapid probes succeeded", t.name),
+        );
+    }
+}
+
+fn scenario_timeout_resilience(
+    v: &mut ValidationResult,
+    host: &str,
+    targets: &[ChaosTarget],
+    live: &[&str],
+) {
+    v.section("Timeout Resilience");
+    for t in targets {
+        if !live.contains(&t.name) {
+            v.check_skip(
+                &format!("{}_timeout", t.name),
+                &format!("{} not live — skip", t.name),
+            );
+            continue;
+        }
+        // Use a very short timeout to test server behavior
+        let result = tcp_rpc_with_timeout(
+            host,
+            t.port,
+            methods::health::LIVENESS,
+            &serde_json::json!({}),
+            Duration::from_millis(100),
+        );
+        match result {
+            Ok((_, d)) => {
+                println!(
+                    "  {:<12} responded in {}ms (within 100ms timeout)",
+                    t.name,
+                    d.as_millis()
+                );
+                v.check_bool(
+                    &format!("{}_timeout", t.name),
+                    true,
+                    &format!("{}: fast response under tight timeout", t.name),
+                );
+            }
+            Err(e) => {
+                println!("  {:<12} timed out or errored: {e}", t.name);
+                v.check_skip(
+                    &format!("{}_timeout", t.name),
+                    &format!("{}: expected under 100ms timeout: {e}", t.name),
+                );
+            }
+        }
+    }
+}
+
+fn scenario_summary_assessment(
+    v: &mut ValidationResult,
+    scenario: &str,
+    host: &str,
+    targets: &[ChaosTarget],
+    live: &[&str],
+) {
+    v.section("Chaos Assessment");
+    println!("  Scenarios tested: {scenario}");
+    println!("  Live primals:     {}/{}", live.len(), targets.len());
+    if host.is_empty() {
+        println!("  NOTE: Set REMOTE_GATE_HOST for live chaos testing");
+    }
+
+    v.check_bool("chaos_structural", true, "chaos experiment structure valid");
 }
 
 fn main() {
@@ -172,189 +325,24 @@ fn main() {
             let run_all = scenario == "all";
             let targets = targets(&host);
 
-            // ── Scenario 1: Baseline health ───────────────────────────
-            v.section("Baseline Health");
-            let mut live: Vec<&str> = Vec::new();
-            for t in &targets {
-                if host.is_empty() {
-                    v.check_skip(
-                        &format!("{}_baseline", t.name),
-                        "no host — skip live probe",
-                    );
-                    continue;
-                }
-                match probe_health(&host, t.port) {
-                    Ok(d) => {
-                        println!("  {:<12} LIVE  ({}ms)", t.name, d.as_millis());
-                        v.check_bool(
-                            &format!("{}_baseline", t.name),
-                            true,
-                            &format!("{} healthy at baseline", t.name),
-                        );
-                        live.push(t.name);
-                    }
-                    Err(e) => {
-                        println!("  {:<12} DOWN  ({e})", t.name);
-                        v.check_skip(
-                            &format!("{}_baseline", t.name),
-                            &format!("{} unreachable: {e}", t.name),
-                        );
-                    }
-                }
-            }
+            let live = scenario_baseline_health(v, &host, &targets);
 
-            // ── Scenario 2: Half-open connections ─────────────────────
             if run_all || scenario == "half_open" {
-                v.section("Half-Open Connections");
-                for t in &targets {
-                    if !live.contains(&t.name) {
-                        v.check_skip(
-                            &format!("{}_half_open", t.name),
-                            &format!("{} not live — skip", t.name),
-                        );
-                        continue;
-                    }
-                    println!("  Testing {}: hold connection 10s with no data...", t.name);
-                    match half_open_test(&host, t.port, 10) {
-                        Ok(msg) => {
-                            println!("    {msg}");
-                            v.check_bool(
-                                &format!("{}_half_open", t.name),
-                                true,
-                                &format!("{}: {msg}", t.name),
-                            );
-                        }
-                        Err(msg) => {
-                            println!("    WARN: {msg}");
-                            v.check_bool(
-                                &format!("{}_half_open", t.name),
-                                false,
-                                &format!("{}: {msg}", t.name),
-                            );
-                        }
-                    }
-                }
+                scenario_half_open(v, &host, &targets, &live);
             }
 
-            // ── Scenario 3: Port collision (concurrent connections) ───
             if run_all || scenario == "port" {
-                v.section("Port Collision / Concurrent Connections");
-                for t in &targets {
-                    if !live.contains(&t.name) {
-                        v.check_skip(
-                            &format!("{}_concurrent", t.name),
-                            &format!("{} not live — skip", t.name),
-                        );
-                        continue;
-                    }
-                    match port_collision_test(&host, t.port) {
-                        Ok(msg) => {
-                            println!("  {:<12} {msg}", t.name);
-                            v.check_bool(
-                                &format!("{}_concurrent", t.name),
-                                true,
-                                &format!("{}: {msg}", t.name),
-                            );
-                        }
-                        Err(msg) => {
-                            println!("  {:<12} FAIL: {msg}", t.name);
-                            v.check_bool(
-                                &format!("{}_concurrent", t.name),
-                                false,
-                                &format!("{}: {msg}", t.name),
-                            );
-                        }
-                    }
-                }
+                scenario_port_collision(v, &host, &targets, &live);
             }
 
-            // ── Scenario 4: Rapid reconnection (kill simulation) ──────
             if run_all || scenario == "kill" {
-                v.section("Rapid Reconnection (Kill Simulation)");
-                println!("  Sending 10 rapid health probes to stress connection handling...");
-                for t in &targets {
-                    if !live.contains(&t.name) {
-                        v.check_skip(
-                            &format!("{}_rapid", t.name),
-                            &format!("{} not live — skip", t.name),
-                        );
-                        continue;
-                    }
-                    let mut successes = 0u32;
-                    let mut failures = 0u32;
-                    for _ in 0..10 {
-                        match probe_health(&host, t.port) {
-                            Ok(_) => successes += 1,
-                            Err(_) => failures += 1,
-                        }
-                    }
-                    println!(
-                        "  {:<12} {successes}/10 OK, {failures}/10 failed",
-                        t.name
-                    );
-                    v.check_bool(
-                        &format!("{}_rapid", t.name),
-                        successes >= 8,
-                        &format!("{}: {successes}/10 rapid probes succeeded", t.name),
-                    );
-                }
+                scenario_rapid_reconnection(v, &host, &targets, &live);
             }
 
-            // ── Scenario 5: Timeout under load ───────────────────────
             if run_all || scenario == "slow" {
-                v.section("Timeout Resilience");
-                for t in &targets {
-                    if !live.contains(&t.name) {
-                        v.check_skip(
-                            &format!("{}_timeout", t.name),
-                            &format!("{} not live — skip", t.name),
-                        );
-                        continue;
-                    }
-                    // Use a very short timeout to test server behavior
-                    let result = tcp_rpc(
-                        &host,
-                        t.port,
-                        "health.liveness",
-                        &serde_json::json!({}),
-                        Duration::from_millis(100),
-                    );
-                    match result {
-                        Ok((_, d)) => {
-                            println!(
-                                "  {:<12} responded in {}ms (within 100ms timeout)",
-                                t.name,
-                                d.as_millis()
-                            );
-                            v.check_bool(
-                                &format!("{}_timeout", t.name),
-                                true,
-                                &format!("{}: fast response under tight timeout", t.name),
-                            );
-                        }
-                        Err(e) => {
-                            println!("  {:<12} timed out or errored: {e}", t.name);
-                            v.check_skip(
-                                &format!("{}_timeout", t.name),
-                                &format!("{}: expected under 100ms timeout: {e}", t.name),
-                            );
-                        }
-                    }
-                }
+                scenario_timeout_resilience(v, &host, &targets, &live);
             }
 
-            // ── Summary ───────────────────────────────────────────────
-            v.section("Chaos Assessment");
-            println!("  Scenarios tested: {scenario}");
-            println!("  Live primals:     {}/{}", live.len(), targets.len());
-            if host.is_empty() {
-                println!("  NOTE: Set REMOTE_GATE_HOST for live chaos testing");
-            }
-
-            v.check_bool(
-                "chaos_structural",
-                true,
-                "chaos experiment structure valid",
-            );
+            scenario_summary_assessment(v, &scenario, &host, &targets, &live);
         });
 }

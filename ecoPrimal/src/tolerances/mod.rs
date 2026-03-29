@@ -10,8 +10,8 @@
 //!
 //! Initial values were chosen from first-principles analysis of Unix socket
 //! IPC timing, then validated through 15 phases of live NUCLEUS deployment
-//! testing (March 2–24, 2026). All values have proven stable across 87/87
-//! gates, 53 experiments, and 361 tests. Individual provenance notes below.
+//! testing (March 2–28, 2026). All values have proven stable across 87/87
+//! gates, 63 experiments, and 403 tests. Individual provenance notes below.
 
 /// Maximum acceptable latency for a health check round-trip (microseconds).
 ///
@@ -149,6 +149,27 @@ pub const TRIO_RETRY_ATTEMPTS: u32 = 2;
 /// Source: 100ms base with exponential backoff covers transient trio latency
 /// spikes during session creation or DAG dehydration.
 pub const TRIO_RETRY_BASE_DELAY_MS: u64 = 100;
+
+// ── TCP cross-gate transport timeouts ──
+//
+// Used by `ipc::tcp` helpers for cross-gate probing experiments.
+// On the same machine, Unix socket timeouts in IPC_SOCKET_TIMEOUT_SECS apply.
+
+/// TCP connect timeout for remote gate probing (seconds).
+///
+/// Source: 5 seconds is generous for LAN/WAN TCP connect.
+/// Validated: Phase 15 cross-gate experiments connect within <2s on LAN.
+pub const TCP_CONNECT_TIMEOUT_SECS: u64 = 5;
+
+/// TCP read timeout for remote gate probing (seconds).
+///
+/// Source: 10 seconds covers slow primals and high-latency WAN links.
+pub const TCP_READ_TIMEOUT_SECS: u64 = 10;
+
+/// TCP write timeout for remote gate probing (seconds).
+///
+/// Source: 5 seconds matches connect timeout for symmetric behavior.
+pub const TCP_WRITE_TIMEOUT_SECS: u64 = 5;
 
 // ── Remote gate TCP fallback ports ──
 //
@@ -312,7 +333,11 @@ mod tests {
         let mut sorted = ports.to_vec();
         sorted.sort_unstable();
         sorted.dedup();
-        assert_eq!(ports.len(), sorted.len(), "TCP fallback ports must be unique");
+        assert_eq!(
+            ports.len(),
+            sorted.len(),
+            "TCP fallback ports must be unique"
+        );
     }
 
     #[test]

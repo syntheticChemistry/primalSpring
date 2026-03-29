@@ -125,6 +125,25 @@ BIOMEOS_MODE = "api"
 BIOMEOS_SOCKET = "neural-api"
 FAMILY_ID = "$family_id"
 
+[profiles.barracuda]
+pass_family_id = false
+[profiles.barracuda.extra_env]
+BARRACUDA_MODE = "server"
+[profiles.barracuda.env_sockets]
+BARRACUDA_SOCKET = "barracuda"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+TOADSTOOL_SOCKET = "toadstool"
+
+[profiles.coralreef]
+pass_family_id = false
+[profiles.coralreef.extra_env]
+CORALREEF_MODE = "server"
+[profiles.coralreef.env_sockets]
+CORALREEF_SOCKET = "coralreef"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+
 # =============================================================================
 # SPRING PRIMALS — Science validation binaries (gen4 composition)
 # =============================================================================

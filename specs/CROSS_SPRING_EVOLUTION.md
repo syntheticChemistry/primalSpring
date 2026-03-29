@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: March 28, 2026
-**Status**: Phase 19 — Gen4 Spring Scaffolding (87/87 gates), 385 tests, 59 experiments, 36 deploy graphs, 5 spring primal binaries in plasmidBin
+**Status**: Phase 21 — Deep Ecosystem Audit + Library Consolidation (87/87 gates), 411 tests, 63 experiments, 59 deploy graphs, 5 spring primal binaries in plasmidBin
 
 ---
 
@@ -51,7 +51,7 @@ an optional track. Every experiment involves multiple primals or springs.
 | provenance_overlay.toml | Tower + RootPulse provenance trio deploy graph |
 | Live graph execution patterns | Sequential, Parallel, ConditionalDag validated live |
 | Provenance trio launch profiles | sweetGrass, loamSpine, rhizoCrypt socket wiring |
-| Coordination experiment framework | 59 experiments across 11 tracks |
+| Coordination experiment framework | 63 experiments across 13 tracks |
 | MCP coordination tools | Available for Squirrel AI routing |
 | Tower + Squirrel AI composition | Live demo: Tower + Squirrel + Anthropic Claude (exp061) |
 | `passthrough_env` pattern | Secure env forwarding for API keys, GPU config vars |
@@ -144,7 +144,7 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.7.0 | 385 | Phase 19 — 87/87 gates, gen4 spring scaffolding, 5 spring primal binaries built, 59 experiments, 36 deploy graphs |
+| primalSpring | v0.7.0 | 411 | Phase 21 — 87/87 gates, deep ecosystem audit + library consolidation, 63 experiments, 59 deploy graphs |
 
 ## Evolution Path
 
@@ -384,7 +384,7 @@ Phase 19: Gen4 Spring Scaffolding (March 28, 2026) ✅
   → gen4_spring_composition.toml: master graph (Tower + biomeOS + 5 springs + cross-spring validation)
   → All 7 spring validation graphs updated with biomeOS substrate node (start_biomeos, order 2)
   → Launch profiles added for all 6 springs in primal_launch_profiles.toml
-  → 36 deploy graphs (up from 35), 5 spring binaries in plasmidBin/springs/
+  → 59 deploy graphs, 5 spring binaries in plasmidBin/springs/
 
 Phase 20: LAN Covalent Deployment
   → Live multi-gate NUCLEUS deployment with BirdSong beacon exchange

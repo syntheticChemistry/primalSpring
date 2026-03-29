@@ -28,8 +28,9 @@
 //! | Commit fails | Return `Ok` + `Partial` (dehydration preserved) |
 //! | Braid fails | Return `Ok` + `Complete` with empty `braid_id` |
 
-use std::sync::atomic::{AtomicU32, Ordering};
-use std::time::Duration;
+use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
+use std::time::{Duration, Instant};
 
 use serde::{Deserialize, Serialize};
 
@@ -74,27 +75,70 @@ impl ProvenanceResult {
 // exceeds the threshold, subsequent calls short-circuit for a cooldown
 // period before probing again. This prevents cascading timeouts when the
 // provenance trio is down.
+//
+// After [`tolerances::CIRCUIT_BREAKER_TIMEOUT_SECS`], the circuit enters
+// half-open: one probe attempt is allowed; success closes the circuit,
+// failure refreshes the cooldown window.
 
 /// Consecutive failure counter for the provenance trio circuit.
 static TRIO_FAILURE_COUNT: AtomicU32 = AtomicU32::new(0);
 
+/// When the circuit last tripped (`Some`) — used for cooldown / half-open.
+static TRIO_OPENED_AT: Mutex<Option<Instant>> = Mutex::new(None);
+
+/// `true` while a half-open probe is in flight (blocks other callers).
+static TRIO_HALF_OPEN_PROBE: AtomicBool = AtomicBool::new(false);
+
+const fn circuit_breaker_timeout() -> Duration {
+    Duration::from_secs(tolerances::CIRCUIT_BREAKER_TIMEOUT_SECS)
+}
+
 /// Record a successful provenance trio call — resets the failure counter.
 fn trio_record_success() {
     TRIO_FAILURE_COUNT.store(0, Ordering::Relaxed);
+    if let Ok(mut guard) = TRIO_OPENED_AT.lock() {
+        *guard = None;
+    }
+    TRIO_HALF_OPEN_PROBE.store(false, Ordering::Release);
 }
 
 /// Record a failed provenance trio call — increments the failure counter.
 fn trio_record_failure() {
-    TRIO_FAILURE_COUNT.fetch_add(1, Ordering::Relaxed);
+    let prev = TRIO_FAILURE_COUNT.fetch_add(1, Ordering::Relaxed);
+    let new = prev.saturating_add(1);
+    if new == tolerances::CIRCUIT_BREAKER_THRESHOLD {
+        if let Ok(mut guard) = TRIO_OPENED_AT.lock() {
+            *guard = Some(Instant::now());
+        }
+    }
+    if TRIO_HALF_OPEN_PROBE.load(Ordering::Acquire) {
+        if let Ok(mut guard) = TRIO_OPENED_AT.lock() {
+            *guard = Some(Instant::now());
+        }
+        TRIO_HALF_OPEN_PROBE.store(false, Ordering::Release);
+    }
 }
 
-/// Whether the provenance trio circuit is currently open (too many failures).
+/// Whether callers should short-circuit without attempting a trio call.
 ///
-/// Uses a monotonic check: once failures exceed the threshold, subsequent
-/// calls within the cooldown window are short-circuited.
+/// Returns `true` while the circuit is open (cooldown) or while another
+/// thread holds the half-open probe. Returns `false` when closed, or when
+/// half-open and no probe is in flight yet (read-only; does not claim the probe).
 #[must_use]
 fn trio_circuit_is_open() -> bool {
-    TRIO_FAILURE_COUNT.load(Ordering::Relaxed) >= tolerances::CIRCUIT_BREAKER_THRESHOLD
+    let count = TRIO_FAILURE_COUNT.load(Ordering::Relaxed);
+    if count < tolerances::CIRCUIT_BREAKER_THRESHOLD {
+        return false;
+    }
+    let Ok(guard) = TRIO_OPENED_AT.lock() else {
+        return true;
+    };
+    let cooldown_active = guard.is_none_or(|opened| opened.elapsed() < circuit_breaker_timeout());
+    drop(guard);
+    if cooldown_active {
+        return true;
+    }
+    TRIO_HALF_OPEN_PROBE.load(Ordering::Acquire)
 }
 
 /// Execute a capability call with provenance-specific resilience.
@@ -114,8 +158,25 @@ fn resilient_capability_call(
         return None;
     }
 
+    let count = TRIO_FAILURE_COUNT.load(Ordering::Relaxed);
+    if count >= tolerances::CIRCUIT_BREAKER_THRESHOLD
+        && TRIO_HALF_OPEN_PROBE
+            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Relaxed)
+            .is_err()
+    {
+        return None;
+    }
+
+    let half_open_probe = TRIO_FAILURE_COUNT.load(Ordering::Relaxed)
+        >= tolerances::CIRCUIT_BREAKER_THRESHOLD
+        && TRIO_HALF_OPEN_PROBE.load(Ordering::Acquire);
+
     let backoff_base = Duration::from_millis(tolerances::TRIO_RETRY_BASE_DELAY_MS);
-    let max_attempts = tolerances::TRIO_RETRY_ATTEMPTS;
+    let max_attempts = if half_open_probe {
+        0
+    } else {
+        tolerances::TRIO_RETRY_ATTEMPTS
+    };
 
     for attempt in 0..=max_attempts {
         if let Some(result) = capability_call(domain, operation, args) {
@@ -138,6 +199,8 @@ fn resilient_capability_call(
 #[cfg(test)]
 fn reset_trio_circuit() {
     TRIO_FAILURE_COUNT.store(0, Ordering::Relaxed);
+    *TRIO_OPENED_AT.lock().expect("TRIO_OPENED_AT poisoned") = None;
+    TRIO_HALF_OPEN_PROBE.store(false, Ordering::Release);
 }
 
 /// Full RootPulse pipeline result (dehydrate → commit → attribute).
@@ -395,9 +458,24 @@ pub fn rootpulse_federate(session_id: &str, remote_endpoint: &str) -> Provenance
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::{Arc, Barrier, Mutex};
+    use std::thread;
+
+    /// Serializes tests that share the global trio circuit state (parallel `#[test]` runs otherwise race).
+    static TRIO_TEST_MUTEX: Mutex<()> = Mutex::new(());
+
+    /// Sleep past [`tolerances::CIRCUIT_BREAKER_TIMEOUT_SECS`] so `Instant::elapsed` is strictly
+    /// beyond the cooldown (a plain `sleep(timeout)` can finish a hair under the limit).
+    fn sleep_past_circuit_breaker_timeout() {
+        thread::sleep(
+            Duration::from_secs(tolerances::CIRCUIT_BREAKER_TIMEOUT_SECS)
+                + Duration::from_millis(100),
+        );
+    }
 
     #[test]
     fn provenance_result_unavailable_has_correct_status() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let r = ProvenanceResult::unavailable("test");
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
         assert!(r.id.starts_with("local-"));
@@ -405,6 +483,7 @@ mod tests {
 
     #[test]
     fn pipeline_result_serializes_round_trip() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let result = PipelineResult {
             status: ProvenanceStatus::Complete,
             session_id: "sess-1".to_owned(),
@@ -420,6 +499,7 @@ mod tests {
 
     #[test]
     fn provenance_status_serializes_round_trip() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         for status in [
             ProvenanceStatus::Complete,
             ProvenanceStatus::Partial,
@@ -433,11 +513,13 @@ mod tests {
 
     #[test]
     fn trio_available_false_without_biomeos() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         assert!(!trio_available());
     }
 
     #[test]
     fn trio_health_returns_three_domains() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let health = trio_health();
         assert_eq!(health.len(), 3);
         assert_eq!(health[0].0, "dag");
@@ -447,12 +529,14 @@ mod tests {
 
     #[test]
     fn begin_session_unavailable_without_biomeos() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let r = begin_experiment_session("test-exp");
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
     }
 
     #[test]
     fn record_step_unavailable_without_biomeos() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let step = serde_json::json!({ "action": "validate", "result": "pass" });
         let r = record_experiment_step("sess-1", &step);
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
@@ -460,6 +544,7 @@ mod tests {
 
     #[test]
     fn complete_experiment_unavailable_without_biomeos() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let r = complete_experiment("sess-1");
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
         assert!(r.merkle_root.is_empty());
@@ -469,36 +554,42 @@ mod tests {
 
     #[test]
     fn rootpulse_branch_unavailable_without_biomeos() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let r = rootpulse_branch("sess-1", "feature-x");
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
     }
 
     #[test]
     fn rootpulse_merge_unavailable_without_biomeos() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let r = rootpulse_merge("branch-1", "main-1");
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
     }
 
     #[test]
     fn rootpulse_diff_unavailable_without_biomeos() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let r = rootpulse_diff("sess-a", "sess-b");
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
     }
 
     #[test]
     fn rootpulse_federate_unavailable_without_biomeos() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         let r = rootpulse_federate("sess-1", "https://remote.example.com");
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
     }
 
     #[test]
     fn trio_circuit_starts_closed() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         reset_trio_circuit();
         assert!(!trio_circuit_is_open());
     }
 
     #[test]
     fn trio_circuit_opens_after_threshold() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         reset_trio_circuit();
         for _ in 0..tolerances::CIRCUIT_BREAKER_THRESHOLD {
             trio_record_failure();
@@ -509,6 +600,7 @@ mod tests {
 
     #[test]
     fn trio_circuit_resets_on_success() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         reset_trio_circuit();
         trio_record_failure();
         trio_record_failure();
@@ -518,8 +610,63 @@ mod tests {
 
     #[test]
     fn resilient_capability_call_returns_none_without_biomeos() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
         reset_trio_circuit();
         let result = resilient_capability_call("dag", "health", &serde_json::json!({}));
         assert!(result.is_none());
+    }
+
+    #[test]
+    fn trio_circuit_half_open_after_cooldown() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
+        reset_trio_circuit();
+        for _ in 0..tolerances::CIRCUIT_BREAKER_THRESHOLD {
+            trio_record_failure();
+        }
+        assert!(trio_circuit_is_open());
+        sleep_past_circuit_breaker_timeout();
+        assert!(!trio_circuit_is_open());
+        reset_trio_circuit();
+    }
+
+    #[test]
+    fn trio_circuit_failed_probe_restarts_cooldown() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
+        reset_trio_circuit();
+        for _ in 0..tolerances::CIRCUIT_BREAKER_THRESHOLD {
+            trio_record_failure();
+        }
+        sleep_past_circuit_breaker_timeout();
+        assert!(!trio_circuit_is_open());
+        let result = resilient_capability_call("dag", "health", &serde_json::json!({}));
+        assert!(result.is_none());
+        assert!(trio_circuit_is_open());
+        reset_trio_circuit();
+    }
+
+    #[test]
+    fn trio_circuit_half_open_only_one_probe_wins_cas() {
+        let _lock = TRIO_TEST_MUTEX.lock().expect("TRIO_TEST_MUTEX poisoned");
+        reset_trio_circuit();
+        for _ in 0..tolerances::CIRCUIT_BREAKER_THRESHOLD {
+            trio_record_failure();
+        }
+        sleep_past_circuit_breaker_timeout();
+
+        let barrier = Arc::new(Barrier::new(2));
+        let b1 = Arc::clone(&barrier);
+        let b2 = Arc::clone(&barrier);
+        let h1 = thread::spawn(move || {
+            b1.wait();
+            resilient_capability_call("dag", "health", &serde_json::json!({}))
+        });
+        let h2 = thread::spawn(move || {
+            b2.wait();
+            resilient_capability_call("dag", "health", &serde_json::json!({}))
+        });
+        let _ = h1.join().unwrap();
+        let _ = h2.join().unwrap();
+        assert!(trio_circuit_is_open());
+        reset_trio_circuit();
     }
 }

@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 28, 2026
-**Status**: Phase 20 — Deployment Matrix + Substrate Validation (87/87 gates), 63 experiments, 385 tests, 59 deploy graphs, 43-cell deployment matrix, agentic trio + storytelling stack
+**Status**: Phase 21 — Deep Ecosystem Audit + Library Consolidation (87/87 gates), 63 experiments, 411 tests, 59 deploy graphs, 43-cell deployment matrix, agentic trio + storytelling stack
 
 ---
 
@@ -40,7 +40,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Metric | Value |
 |--------|-------|
 | Experiments | 63 (13 tracks) |
-| Total tests | **385** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Total tests | **411** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
@@ -66,6 +66,34 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed — Phase 21 (Deep Ecosystem Audit + Library Consolidation)
+
+### Deep Audit Execution (March 29, 2026)
+
+Comprehensive 8-axis audit against ecosystem standards (`wateringHole/`) with full
+remediation execution. Zero TODOs/FIXMEs/HACKs remain. Zero clippy warnings (pedantic+nursery).
+
+**Library Consolidation**:
+- **`ipc::tcp`** — shared TCP RPC helper (`tcp_rpc`, `tcp_rpc_with_timeout`, `http_health_probe`, `env_port`) extracted from 8 experiments into library module
+- **`ipc::methods`** — centralized JSON-RPC method name constants (`health::LIVENESS`, `capabilities::LIST`, `provenance::*`, etc.) — zero hardcoded method strings in experiments
+- **`ipc::capability`** — capability discovery and routing extracted from `ipc/discover.rs`
+- **`launcher/`** — smart refactor into 4 sub-modules: `discovery.rs`, `profiles.rs`, `spawn.rs`, `biomeos.rs` (public API preserved)
+
+**Provenance Circuit Breaker Evolution**:
+- Time-based half-open state with `TRIO_OPENED_AT` epoch tracking
+- Probe token via `AtomicBool` — single probe admitted during half-open window
+- Graceful mutex poisoning handling (circuit defaults to open on poison)
+
+**Tracing Migration**: Library `println!`/`eprintln!` → `tracing::info!`/`tracing::error!` (harness, validation/or_exit)
+
+**Experiment Consolidation**: 8 experiments (`exp063`, `exp073`, `exp074`, `exp076`, `exp081`–`exp084`) refactored to use library `ipc::tcp` helpers and `ipc::methods` constants. Hardcoded primal name strings replaced with `primal_names::*` in 4 experiments.
+
+**Test Growth**: 385 → 411 tests (+26). New tests cover: `ipc::tcp` module (TCP RPC, health probe, env port), `ipc::methods` constants (health, capabilities, provenance, coordination), provenance circuit breaker half-open state, launcher sub-module APIs.
+
+**Transport Unification**: `PrimalClient` now uses `Transport` enum internally — single code path for Unix + TCP IPC.
+
+**Phase 21 Metrics**: 411 tests, 63 experiments, 59 deploy graphs, 0 clippy warnings (all-targets), 0 fmt diff, 0 doc warnings, 0 `#[allow()]` in production, 0 unsafe, 0 C deps.
 
 ## What Changed — Phase 20 (Deployment Matrix + Substrate Validation)
 

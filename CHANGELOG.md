@@ -3,6 +3,40 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 21: Deep Ecosystem Audit + Library Consolidation (2026-03-29)
+
+### Added
+- **`ipc::tcp` module** — shared TCP RPC helper (`tcp_rpc`, `tcp_rpc_with_timeout`,
+  `http_health_probe`, `env_port`) extracted from 8 experiments into library; eliminates
+  per-experiment TCP boilerplate
+- **`ipc::methods` module** — centralized JSON-RPC method name constants (`health::LIVENESS`,
+  `capabilities::LIST`, `provenance::SESSION_CREATE`, `coordination::VALIDATE_COMPOSITION`,
+  etc.) — zero hardcoded method strings in experiments
+- **`ipc::capability` module** — capability discovery and routing logic extracted from
+  `ipc/discover.rs` with full test coverage
+- **`tolerances::TCP_CONNECT_TIMEOUT_SECS`**, `TCP_READ_TIMEOUT_SECS`,
+  `TCP_WRITE_TIMEOUT_SECS` — centralized network timeout constants
+- **Provenance circuit breaker half-open** — time-based half-open state with
+  `TRIO_OPENED_AT` epoch, `AtomicBool` probe token, graceful mutex poisoning handling
+- 26 new tests (385 → 411): ipc::tcp, ipc::methods, provenance half-open, launcher APIs
+- Phase 21 handoff: `PRIMALSPRING_V070_PHASE21_DEEP_AUDIT_HANDOFF_MAR29_2026.md`
+
+### Changed
+- **`launcher/` smart refactor** — split into 4 sub-modules: `discovery.rs` (binary resolution),
+  `profiles.rs` (launch profile parsing), `spawn.rs` (process spawning + socket wait),
+  `biomeos.rs` (biomeOS-specific logic). Public API preserved via re-exports
+- **8 experiments consolidated** — `exp063`, `exp073`, `exp074`, `exp076`, `exp081`–`exp084`
+  refactored from local TCP RPC to `ipc::tcp` library helpers
+- **Hardcoded primal names eliminated** — 4 experiments (`exp065`, `exp075`, `exp076`,
+  `exp083`) now use `primal_names::*` slug constants
+- **Hardcoded method strings eliminated** — all experiments use `ipc::methods::*` constants
+- **Library tracing** — `println!`/`eprintln!` → `tracing::info!`/`tracing::error!` in
+  harness/mod.rs and validation/or_exit.rs
+- **`PrimalClient` transport unification** — uses `Transport` enum internally (Unix + TCP)
+- **`validate_release.sh` test floor** — 378 → 411
+- All docs updated: 411 tests, Phase 21 status, new module documentation
+- All clippy warnings resolved (pedantic + nursery + cast + unwrap/expect discipline)
+
 ## [Unreleased] — Phase 19: Gen4 Spring Scaffolding (2026-03-28)
 
 ### Added

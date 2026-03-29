@@ -200,10 +200,13 @@ pub struct CompositionResult {
     pub total_capabilities: usize,
 }
 
-/// Probe a single primal: discover socket, connect with retry, health check,
+/// Probe a single primal: discover socket, connect, health check,
 /// list capabilities.
 ///
-/// Uses [`crate::ipc::resilience::RetryPolicy`] for transient connection failures.
+/// Single-attempt connection (no retry) followed by a health check and
+/// capability enumeration. For resilient probing with circuit breaker
+/// and exponential backoff, use [`health_check`] instead.
+///
 /// Returns a [`PrimalHealth`] with whatever information could be gathered.
 /// Gracefully degrades: socket not found → `health_ok: false`.
 #[must_use]

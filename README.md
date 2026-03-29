@@ -8,11 +8,11 @@
 | **Version** | 0.7.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 385 (unit + integration + doc-tests + proptest) |
+| **Tests** | 411 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 63 (13 tracks) |
 | **Deploy Graphs** | 59 TOMLs (18 single-node + 5 multi-node + 7 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
-| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate (87/87 gates) |
+| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress (87/87 gates) |
 | **Provenance** | All 63 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
@@ -44,8 +44,8 @@ primalSpring/
 │   │   ├── graphs/                # Graph execution pattern types (5 patterns)
 │   │   ├── emergent/              # Emergent system validation (RootPulse, RPGPT, CoralForge)
 │   │   ├── bonding/               # Multi-gate bonding models (Covalent, Metallic, Ionic, Weak, OMS) + graph metadata + STUN tiers
-│   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, error, dispatch, extract, resilience, transport, probes, proptest
-│   │   ├── launcher/              # Primal binary discovery, spawn, socket nucleation (sync biomeOS port)
+│   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, capability, error, dispatch, extract, resilience, transport, tcp, methods, probes, provenance, proptest
+│   │   ├── launcher/              # Primal binary discovery, spawn, profiles, socket nucleation (sync biomeOS port)
 │   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
@@ -307,7 +307,7 @@ deploy biomeOS as substrate. Launch profiles added for all 6 springs.
 
 See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
-## Live Integration Status (March 28, 2026)
+## Live Integration Status (March 29, 2026)
 
 | Primal | Eastgate | Pixel (ADB) | Notes |
 |--------|----------|-------------|-------|

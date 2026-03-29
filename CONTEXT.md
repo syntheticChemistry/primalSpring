@@ -21,9 +21,9 @@ primals at runtime via capability-based discovery.
 
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
-- **experiments/** — 59 validation binaries covering 11 tracks
-  (atomics, graphs, emergent, bonding, IPC, provenance, deployment, gen4 substrate)
-- **graphs/** — 36 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4)
+- **experiments/** — 63 validation binaries covering 13 tracks
+  (atomics, graphs, emergent, bonding, IPC, provenance, deployment, gen4 substrate, deployment matrix, substrate stress)
+- **graphs/** — 59 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4 + bonding + chaos + science)
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -58,8 +58,11 @@ Capability-based discovery via Neural API or 5-tier filesystem probing.
 
 ## Status
 
-v0.7.0 Phase 19 — 87/87 gates, 385 tests, 72.5% library coverage,
-59 experiments, 36 deploy graphs, 5 spring primal binaries in plasmidBin.
+v0.7.0 Phase 21 — 87/87 gates, 411 tests, 72.5% library coverage,
+63 experiments, 59 deploy graphs, 5 spring primal binaries in plasmidBin.
+Phase 21: deep ecosystem audit — ipc::tcp + ipc::methods library modules,
+launcher smart refactor (4 sub-modules), provenance circuit breaker half-open,
+tracing migration, 8 experiments refactored to library helpers, 26 new tests.
 
 ## Ecosystem Position
 

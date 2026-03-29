@@ -1,23 +1,21 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Synchronous JSON-RPC 2.0 client over Unix sockets.
+//! Synchronous JSON-RPC 2.0 client over IPC.
 //!
-//! Pure Rust, zero async runtime required. Uses `std::os::unix::net`
-//! for Unix domain socket I/O with line-delimited JSON-RPC 2.0.
+//! Pure Rust, zero async runtime required. Uses [`super::transport::Transport`]
+//! for Unix domain socket I/O (and the same transport stack supports TCP when
+//! used directly). Line-delimited JSON-RPC 2.0.
 
-use std::io::{BufRead, BufReader, Write};
-use std::os::unix::net::UnixStream;
 use std::path::Path;
-use std::time::Duration;
 
-use super::error::{IpcError, classify_io_error};
-use super::protocol::{JsonRpcRequest, JsonRpcResponse};
-use crate::tolerances;
+use super::error::IpcError;
+use super::protocol::JsonRpcResponse;
+use super::transport::Transport;
 
 /// A synchronous JSON-RPC 2.0 client connected to a primal socket.
 #[derive(Debug)]
 pub struct PrimalClient {
-    stream: BufReader<UnixStream>,
+    transport: Transport,
     primal: String,
 }
 
@@ -29,16 +27,8 @@ impl PrimalClient {
     /// Returns [`IpcError::ConnectionRefused`] or [`IpcError::Timeout`]
     /// if the socket is unreachable.
     pub fn connect(socket: &Path, primal: &str) -> Result<Self, IpcError> {
-        let timeout = Duration::from_secs(tolerances::IPC_SOCKET_TIMEOUT_SECS);
-        let stream = UnixStream::connect(socket).map_err(classify_io_error)?;
-        stream
-            .set_read_timeout(Some(timeout))
-            .map_err(classify_io_error)?;
-        stream
-            .set_write_timeout(Some(timeout))
-            .map_err(classify_io_error)?;
         Ok(Self {
-            stream: BufReader::new(stream),
+            transport: Transport::connect(socket)?,
             primal: primal.to_owned(),
         })
     }
@@ -59,32 +49,7 @@ impl PrimalClient {
         method: &str,
         params: serde_json::Value,
     ) -> Result<JsonRpcResponse, IpcError> {
-        let request = JsonRpcRequest::new(method, params);
-        let line = request
-            .to_line()
-            .map_err(|e| IpcError::SerializationError {
-                detail: e.to_string(),
-            })?;
-
-        self.stream
-            .get_mut()
-            .write_all(line.as_bytes())
-            .map_err(classify_io_error)?;
-
-        let mut response_line = String::new();
-        self.stream
-            .read_line(&mut response_line)
-            .map_err(classify_io_error)?;
-
-        if response_line.is_empty() {
-            return Err(IpcError::ProtocolError {
-                detail: "empty response".to_owned(),
-            });
-        }
-
-        JsonRpcResponse::from_line(&response_line).map_err(|e| IpcError::ProtocolError {
-            detail: e.to_string(),
-        })
+        self.transport.call(method, params)
     }
 
     /// Send a `health.check` request and return whether the primal is healthy.
@@ -235,6 +200,7 @@ pub fn connect_by_capability(capability: &str) -> Result<PrimalClient, IpcError>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::{BufRead, BufReader, Write};
     use std::os::unix::net::UnixListener;
 
     #[test]

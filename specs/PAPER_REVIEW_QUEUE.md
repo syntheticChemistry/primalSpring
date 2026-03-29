@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: March 24, 2026  
-**Status**: Phase 19 — 59 experiments, 11 tracks, gen4 spring scaffolding (87/87 gates), 385 tests, 36 deploy graphs
+**Status**: Phase 21 — 63 experiments, 13 tracks, deep ecosystem audit + library consolidation (87/87 gates), 411 tests, 59 deploy graphs
 
 ---
 

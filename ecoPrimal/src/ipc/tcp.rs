@@ -1,0 +1,183 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+//! TCP JSON-RPC client for cross-gate remote probing.
+//!
+//! On a single machine, primals communicate via Unix sockets discovered by
+//! biomeOS. When probing a **remote** gate (another machine's NUCLEUS),
+//! experiments use TCP JSON-RPC. This module extracts the shared TCP RPC
+//! pattern that was duplicated across experiments (exp063, exp073, exp074,
+//! exp076, exp081, exp082, exp083, exp084).
+//!
+//! Timeouts are sourced from [`crate::tolerances`] — no magic numbers.
+
+use std::io::{BufRead, BufReader, Write};
+use std::net::TcpStream;
+use std::time::{Duration, Instant};
+
+use crate::tolerances;
+
+/// Result of a TCP JSON-RPC call: the parsed result value and round-trip latency.
+pub type TcpRpcResult = Result<(serde_json::Value, Duration), String>;
+
+/// Send a single JSON-RPC 2.0 request over TCP and return the result.
+///
+/// Uses centralized timeouts from [`tolerances`]. Connection, write, and read
+/// timeouts are applied. The TCP connection is shut down for writing after
+/// the request is sent (half-close), then the first JSON-RPC response line
+/// is parsed and returned.
+///
+/// # Errors
+///
+/// Returns a human-readable `String` on connection failure, timeout, write
+/// error, or if the response contains a JSON-RPC error object.
+pub fn tcp_rpc(host: &str, port: u16, method: &str, params: &serde_json::Value) -> TcpRpcResult {
+    tcp_rpc_with_timeout(
+        host,
+        port,
+        method,
+        params,
+        Duration::from_secs(tolerances::TCP_CONNECT_TIMEOUT_SECS),
+    )
+}
+
+/// Like [`tcp_rpc`] but with a custom connect timeout.
+///
+/// Read and write timeouts still use the centralized tolerances values.
+///
+/// # Errors
+///
+/// Same as [`tcp_rpc`].
+pub fn tcp_rpc_with_timeout(
+    host: &str,
+    port: u16,
+    method: &str,
+    params: &serde_json::Value,
+    connect_timeout: Duration,
+) -> TcpRpcResult {
+    let addr = format!("{host}:{port}");
+    let start = Instant::now();
+    let mut stream = TcpStream::connect_timeout(
+        &addr.parse().map_err(|e| format!("parse: {e}"))?,
+        connect_timeout,
+    )
+    .map_err(|e| format!("connect {addr}: {e}"))?;
+    stream
+        .set_read_timeout(Some(Duration::from_secs(tolerances::TCP_READ_TIMEOUT_SECS)))
+        .ok();
+    stream
+        .set_write_timeout(Some(Duration::from_secs(
+            tolerances::TCP_WRITE_TIMEOUT_SECS,
+        )))
+        .ok();
+
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": params,
+        "id": 1
+    });
+    let msg = format!("{req}\n");
+    stream
+        .write_all(msg.as_bytes())
+        .map_err(|e| format!("write: {e}"))?;
+    let _ = stream.shutdown(std::net::Shutdown::Write);
+
+    let reader = BufReader::new(&stream);
+    for line in reader.lines().map_while(Result::ok) {
+        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
+            let elapsed = start.elapsed();
+            if let Some(result) = parsed.get("result") {
+                return Ok((result.clone(), elapsed));
+            }
+            if let Some(error) = parsed.get("error") {
+                return Err(format!("RPC error: {error}"));
+            }
+        }
+    }
+    Err("no response".to_owned())
+}
+
+/// HTTP health probe for primals that serve HTTP (e.g. Songbird).
+///
+/// Sends `GET /health HTTP/1.1` and checks for a 200 OK response.
+///
+/// # Errors
+///
+/// Returns an error string on connection failure or non-OK response.
+pub fn http_health_probe(host: &str, port: u16) -> TcpRpcResult {
+    let addr = format!("{host}:{port}");
+    let start = Instant::now();
+    let mut stream = TcpStream::connect_timeout(
+        &addr.parse().map_err(|e| format!("parse: {e}"))?,
+        Duration::from_secs(tolerances::TCP_CONNECT_TIMEOUT_SECS),
+    )
+    .map_err(|e| format!("connect {addr}: {e}"))?;
+    stream
+        .set_read_timeout(Some(Duration::from_secs(tolerances::TCP_READ_TIMEOUT_SECS)))
+        .ok();
+    stream
+        .set_write_timeout(Some(Duration::from_secs(
+            tolerances::TCP_WRITE_TIMEOUT_SECS,
+        )))
+        .ok();
+
+    let http_req = format!("GET /health HTTP/1.1\r\nHost: {addr}\r\nConnection: close\r\n\r\n");
+    stream
+        .write_all(http_req.as_bytes())
+        .map_err(|e| format!("write: {e}"))?;
+
+    let mut buf = String::new();
+    let reader = BufReader::new(&stream);
+    for line in reader.lines().map_while(Result::ok) {
+        buf.push_str(&line);
+        buf.push('\n');
+    }
+    let elapsed = start.elapsed();
+
+    if buf.contains("200 OK")
+        || buf.contains("200 Ok")
+        || buf.contains("\nOK\n")
+        || buf.ends_with("OK\n")
+    {
+        Ok((
+            serde_json::json!({"status": "alive", "protocol": "http"}),
+            elapsed,
+        ))
+    } else {
+        Err("HTTP health: non-OK response".to_owned())
+    }
+}
+
+/// Read a TCP port from an environment variable, falling back to a default.
+///
+/// Common pattern across cross-gate experiments: `BEARDOG_PORT=9100`, etc.
+#[must_use]
+pub fn env_port(key: &str, default: u16) -> u16 {
+    std::env::var(key)
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(default)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn env_port_returns_default_when_unset() {
+        let port = env_port("PRIMALSPRING_TCP_TEST_PORT_NONEXISTENT_XYZ", 9999);
+        assert_eq!(port, 9999);
+    }
+
+    #[test]
+    fn tcp_rpc_fails_gracefully_on_unreachable_host() {
+        let result = tcp_rpc("127.0.0.1", 1, "health.liveness", &serde_json::json!({}));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn http_health_fails_gracefully_on_unreachable_host() {
+        let result = http_health_probe("127.0.0.1", 1);
+        assert!(result.is_err());
+    }
+}

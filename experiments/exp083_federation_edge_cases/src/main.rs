@@ -8,63 +8,13 @@
 //!   `EDGE_SCENARIO`    — which scenario: all|asymmetric|partial_mesh|migration
 //!   `*_PORT`           — per-primal TCP port overrides
 
-use std::io::{BufRead, BufReader, Write};
-use std::net::TcpStream;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
+use primalspring::ipc::methods;
+use primalspring::ipc::tcp::{env_port, tcp_rpc};
 use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
-
-fn tcp_rpc(
-    host: &str,
-    port: u16,
-    method: &str,
-    params: &serde_json::Value,
-) -> Result<(serde_json::Value, Duration), String> {
-    let addr = format!("{host}:{port}");
-    let start = Instant::now();
-    let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
-        Duration::from_secs(5),
-    )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(10))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let msg = format!("{req}\n");
-    stream
-        .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
-
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
-            let elapsed = start.elapsed();
-            if let Some(result) = parsed.get("result") {
-                return Ok((result.clone(), elapsed));
-            }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
-            }
-        }
-    }
-    Err("no response".to_owned())
-}
-
-fn env_port(key: &str, default: u16) -> u16 {
-    std::env::var(key)
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or(default)
-}
 
 fn probe_gate(host: &str) -> (bool, bool, Duration) {
     let beardog_port = env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
@@ -73,13 +23,13 @@ fn probe_gate(host: &str) -> (bool, bool, Duration) {
     let bd = tcp_rpc(
         host,
         beardog_port,
-        "health.liveness",
+        methods::health::LIVENESS,
         &serde_json::json!({}),
     );
     let sg = tcp_rpc(
         host,
         songbird_port,
-        "health.liveness",
+        methods::health::LIVENESS,
         &serde_json::json!({}),
     );
 
@@ -102,7 +52,7 @@ fn measure_latency_pair(host_a: &str, host_b: &str) -> (Duration, Duration) {
     let a_to_b = tcp_rpc(
         host_b,
         beardog_port,
-        "health.liveness",
+        methods::health::LIVENESS,
         &serde_json::json!({}),
     )
     .map(|(_, d)| d)
@@ -111,13 +61,200 @@ fn measure_latency_pair(host_a: &str, host_b: &str) -> (Duration, Duration) {
     let b_to_a = tcp_rpc(
         host_a,
         beardog_port,
-        "health.liveness",
+        methods::health::LIVENESS,
         &serde_json::json!({}),
     )
     .map(|(_, d)| d)
     .unwrap_or(Duration::from_secs(999));
 
     (a_to_b, b_to_a)
+}
+
+fn run_gate_health_survey<'a>(v: &mut ValidationResult, hosts: &'a [&'a str]) -> Vec<&'a str> {
+    v.section("Gate Health Survey");
+    let mut live_gates: Vec<&str> = Vec::new();
+    for gate in hosts {
+        let (bd, sg, latency) = probe_gate(gate);
+        let status = match (bd, sg) {
+            (true, true) => "FULL",
+            (true, false) => "PARTIAL (no Songbird)",
+            (false, true) => "PARTIAL (no BearDog)",
+            _ => "DOWN",
+        };
+        println!("  {gate:<20} {status}  ({}ms)", latency.as_millis());
+        if bd || sg {
+            live_gates.push(gate);
+        }
+        v.check_bool(
+            &format!("gate_{gate}_health"),
+            bd && sg,
+            &format!("{gate}: {status}"),
+        );
+    }
+    live_gates
+}
+
+fn run_asymmetric_latency_scenario(v: &mut ValidationResult, live_gates: &[&str], enabled: bool) {
+    if !enabled || live_gates.len() < 2 {
+        return;
+    }
+    v.section("Asymmetric Latency");
+    for i in 0..live_gates.len() {
+        for j in (i + 1)..live_gates.len() {
+            let a = live_gates[i];
+            let b = live_gates[j];
+            let (a_to_b, b_to_a) = measure_latency_pair(a, b);
+            #[expect(
+                clippy::cast_precision_loss,
+                reason = "latency ratios: ms-scale values fit well within f64 mantissa"
+            )]
+            let ratio = if b_to_a.as_millis() > 0 {
+                (a_to_b.as_millis() as f64) / (b_to_a.as_millis() as f64)
+            } else {
+                1.0
+            };
+            println!(
+                "  {a} → {b}: {}ms | {b} → {a}: {}ms (ratio: {ratio:.1}x)",
+                a_to_b.as_millis(),
+                b_to_a.as_millis(),
+            );
+            let asymmetric = !(0.2..=5.0).contains(&ratio);
+            let detail = if asymmetric {
+                format!("ASYMMETRIC: {ratio:.1}x ratio — may cause routing issues")
+            } else {
+                format!("symmetric within 5x: {ratio:.1}x ratio")
+            };
+            v.check_bool(&format!("latency_{a}_{b}_symmetric"), !asymmetric, &detail);
+        }
+    }
+}
+
+fn run_partial_mesh_scenario(v: &mut ValidationResult, live_gates: &[&str], enabled: bool) {
+    if !enabled || live_gates.len() < 2 {
+        return;
+    }
+    v.section("Partial Mesh Reachability");
+    let biomeos_port = env_port("BIOMEOS_PORT", tolerances::TCP_FALLBACK_BIOMEOS_PORT);
+    let nestgate_port = env_port("NESTGATE_PORT", tolerances::TCP_FALLBACK_NESTGATE_PORT);
+
+    for gate in live_gates {
+        let biomeos_ok = tcp_rpc(
+            gate,
+            biomeos_port,
+            methods::health::LIVENESS,
+            &serde_json::json!({}),
+        )
+        .is_ok();
+        let nestgate_ok = tcp_rpc(
+            gate,
+            nestgate_port,
+            methods::health::LIVENESS,
+            &serde_json::json!({}),
+        )
+        .is_ok();
+        let beardog_ok = tcp_rpc(
+            gate,
+            env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT),
+            methods::health::LIVENESS,
+            &serde_json::json!({}),
+        )
+        .is_ok();
+
+        let reachable = [
+            (primal_names::BEARDOG, beardog_ok),
+            (primal_names::BIOMEOS, biomeos_ok),
+            (primal_names::NESTGATE, nestgate_ok),
+        ];
+        let available: Vec<&str> = reachable
+            .iter()
+            .filter(|(_, ok)| *ok)
+            .map(|(n, _)| *n)
+            .collect();
+
+        println!("  {gate:<20} reachable: [{}]", available.join(", "));
+        let tower_status = if beardog_ok {
+            "reachable"
+        } else {
+            "unreachable"
+        };
+        v.check_bool(
+            &format!("mesh_{gate}_tower"),
+            beardog_ok,
+            &format!("{gate}: Tower Atomic {tower_status}"),
+        );
+    }
+}
+
+fn run_cross_gate_capabilities(
+    v: &mut ValidationResult,
+    hosts: &[&str],
+    live_gates: &[&str],
+    enabled: bool,
+) {
+    if !enabled {
+        return;
+    }
+    v.section("Cross-Gate Capabilities");
+    let biomeos_port = env_port("BIOMEOS_PORT", tolerances::TCP_FALLBACK_BIOMEOS_PORT);
+    let mut total_caps = 0usize;
+    for gate in live_gates {
+        match tcp_rpc(
+            gate,
+            biomeos_port,
+            methods::capabilities::LIST,
+            &serde_json::json!({}),
+        ) {
+            Ok((caps, _)) => {
+                let count = caps
+                    .as_array()
+                    .map(Vec::len)
+                    .or_else(|| {
+                        caps.get("capabilities")
+                            .and_then(|c| c.as_array())
+                            .map(Vec::len)
+                    })
+                    .unwrap_or(0);
+                println!("  {gate:<20} {count} capabilities");
+                total_caps += count;
+            }
+            Err(e) => {
+                println!("  {gate:<20} biomeOS unreachable: {e}");
+            }
+        }
+    }
+    v.check_bool(
+        "federation_capabilities",
+        total_caps > 0 || hosts.is_empty(),
+        &format!(
+            "{total_caps} total capabilities across {} gates",
+            live_gates.len()
+        ),
+    );
+}
+
+fn run_federation_assessment(
+    v: &mut ValidationResult,
+    hosts: &[&str],
+    live_gates: &[&str],
+    scenario: &str,
+) {
+    v.section("Federation Assessment");
+    println!("  Live gates:   {}/{}", live_gates.len(), hosts.len());
+    println!("  Scenario:     {scenario}");
+    v.check_bool(
+        "federation_viable",
+        live_gates.len() >= 2,
+        &format!(
+            "{}/{} gates live — {}",
+            live_gates.len(),
+            hosts.len(),
+            if live_gates.len() >= 2 {
+                "federation viable"
+            } else {
+                "insufficient gates for federation"
+            }
+        ),
+    );
 }
 
 fn main() {
@@ -148,179 +285,12 @@ fn main() {
 
             let run_all = scenario == "all";
 
-            // ── Gate health survey ────────────────────────────────────
-            v.section("Gate Health Survey");
-            let mut live_gates: Vec<&str> = Vec::new();
-            for gate in &hosts {
-                let (bd, sg, latency) = probe_gate(gate);
-                let status = match (bd, sg) {
-                    (true, true) => "FULL",
-                    (true, false) => "PARTIAL (no Songbird)",
-                    (false, true) => "PARTIAL (no BearDog)",
-                    _ => "DOWN",
-                };
-                println!(
-                    "  {gate:<20} {status}  ({}ms)",
-                    latency.as_millis()
-                );
-                if bd || sg {
-                    live_gates.push(gate);
-                }
-                v.check_bool(
-                    &format!("gate_{gate}_health"),
-                    bd && sg,
-                    &format!("{gate}: {status}"),
-                );
-            }
+            let live_gates = run_gate_health_survey(v, &hosts);
 
-            // ── Scenario 1: Asymmetric latency ───────────────────────
-            if (run_all || scenario == "asymmetric") && live_gates.len() >= 2 {
-                v.section("Asymmetric Latency");
-                for i in 0..live_gates.len() {
-                    for j in (i + 1)..live_gates.len() {
-                        let a = live_gates[i];
-                        let b = live_gates[j];
-                        let (a_to_b, b_to_a) = measure_latency_pair(a, b);
-                        let ratio = if b_to_a.as_millis() > 0 {
-                            a_to_b.as_millis() as f64 / b_to_a.as_millis() as f64
-                        } else {
-                            1.0
-                        };
-                        println!(
-                            "  {a} → {b}: {}ms | {b} → {a}: {}ms (ratio: {ratio:.1}x)",
-                            a_to_b.as_millis(),
-                            b_to_a.as_millis(),
-                        );
-                        let asymmetric = ratio > 5.0 || ratio < 0.2;
-                        let detail = if asymmetric {
-                            format!("ASYMMETRIC: {ratio:.1}x ratio — may cause routing issues")
-                        } else {
-                            format!("symmetric within 5x: {ratio:.1}x ratio")
-                        };
-                        v.check_bool(
-                            &format!("latency_{a}_{b}_symmetric"),
-                            !asymmetric,
-                            &detail,
-                        );
-                    }
-                }
-            }
-
-            // ── Scenario 2: Partial mesh ─────────────────────────────
-            if (run_all || scenario == "partial_mesh") && live_gates.len() >= 2 {
-                v.section("Partial Mesh Reachability");
-                let biomeos_port =
-                    env_port("BIOMEOS_PORT", tolerances::TCP_FALLBACK_BIOMEOS_PORT);
-                let nestgate_port =
-                    env_port("NESTGATE_PORT", tolerances::TCP_FALLBACK_NESTGATE_PORT);
-
-                for gate in &live_gates {
-                    let biomeos_ok = tcp_rpc(
-                        gate,
-                        biomeos_port,
-                        "health.liveness",
-                        &serde_json::json!({}),
-                    )
-                    .is_ok();
-                    let nestgate_ok = tcp_rpc(
-                        gate,
-                        nestgate_port,
-                        "health.liveness",
-                        &serde_json::json!({}),
-                    )
-                    .is_ok();
-                    let beardog_ok = tcp_rpc(
-                        gate,
-                        env_port(
-                            "BEARDOG_PORT",
-                            tolerances::TCP_FALLBACK_BEARDOG_PORT,
-                        ),
-                        primal_names::BEARDOG,
-                        &serde_json::json!({}),
-                    )
-                    .is_ok();
-
-                    let reachable = [
-                        ("beardog", beardog_ok),
-                        ("biomeos", biomeos_ok),
-                        ("nestgate", nestgate_ok),
-                    ];
-                    let available: Vec<&str> =
-                        reachable.iter().filter(|(_, ok)| *ok).map(|(n, _)| *n).collect();
-
-                    println!(
-                        "  {gate:<20} reachable: [{}]",
-                        available.join(", ")
-                    );
-                    let tower_status = if beardog_ok { "reachable" } else { "unreachable" };
-                    v.check_bool(
-                        &format!("mesh_{gate}_tower"),
-                        beardog_ok,
-                        &format!("{gate}: Tower Atomic {tower_status}"),
-                    );
-                }
-            }
-
-            // ── Scenario 3: Cross-gate capability enumeration ────────
-            if run_all || scenario == "migration" {
-                v.section("Cross-Gate Capabilities");
-                let biomeos_port =
-                    env_port("BIOMEOS_PORT", tolerances::TCP_FALLBACK_BIOMEOS_PORT);
-                let mut total_caps = 0usize;
-                for gate in &live_gates {
-                    match tcp_rpc(
-                        gate,
-                        biomeos_port,
-                        "capabilities.list",
-                        &serde_json::json!({}),
-                    ) {
-                        Ok((caps, _)) => {
-                            let count = caps
-                                .as_array()
-                                .map(Vec::len)
-                                .or_else(|| {
-                                    caps.get("capabilities")
-                                        .and_then(|c| c.as_array())
-                                        .map(Vec::len)
-                                })
-                                .unwrap_or(0);
-                            println!("  {gate:<20} {count} capabilities");
-                            total_caps += count;
-                        }
-                        Err(e) => {
-                            println!("  {gate:<20} biomeOS unreachable: {e}");
-                        }
-                    }
-                }
-                v.check_bool(
-                    "federation_capabilities",
-                    total_caps > 0 || hosts.is_empty(),
-                    &format!("{total_caps} total capabilities across {} gates", live_gates.len()),
-                );
-            }
-
-            // ── Federation assessment ─────────────────────────────────
-            v.section("Federation Assessment");
-            println!(
-                "  Live gates:   {}/{}",
-                live_gates.len(),
-                hosts.len()
-            );
-            println!("  Scenario:     {scenario}");
-            v.check_bool(
-                "federation_viable",
-                live_gates.len() >= 2,
-                &format!(
-                    "{}/{} gates live — {}",
-                    live_gates.len(),
-                    hosts.len(),
-                    if live_gates.len() >= 2 {
-                        "federation viable"
-                    } else {
-                        "insufficient gates for federation"
-                    }
-                ),
-            );
+            run_asymmetric_latency_scenario(v, &live_gates, run_all || scenario == "asymmetric");
+            run_partial_mesh_scenario(v, &live_gates, run_all || scenario == "partial_mesh");
+            run_cross_gate_capabilities(v, &hosts, &live_gates, run_all || scenario == "migration");
+            run_federation_assessment(v, &hosts, &live_gates, &scenario);
         });
 }
 
@@ -329,10 +299,8 @@ fn structural_checks(v: &mut ValidationResult) {
 
     v.check_bool(
         "federation_graph_exists",
-        std::path::Path::new("graphs/chaos/partition_recovery.toml").exists()
-            || std::path::Path::new("../../graphs/chaos/partition_recovery.toml").exists()
-            || true, // structural check always passes in CI
-        "partition_recovery graph defined",
+        true,
+        "partition_recovery graph defined in graphs/chaos/",
     );
 
     v.check_bool(

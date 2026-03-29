@@ -13,17 +13,20 @@
 //! - Pixel BearDog reachable at `PIXEL_BEARDOG_TCP` (default `localhost:19100`)
 //! - Pixel Songbird reachable at `PIXEL_SONGBIRD_TCP` (default `localhost:19200`)
 
-use std::io::{BufRead, BufReader, Read, Write};
-use std::net::TcpStream;
-use std::time::Duration;
-
 use primalspring::ipc::NeuralBridge;
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover;
+use primalspring::ipc::methods;
+use primalspring::ipc::tcp::{http_health_probe, tcp_rpc};
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
-fn pixel_beardog_addr() -> String {
-    std::env::var("PIXEL_BEARDOG_TCP").unwrap_or_else(|_| "localhost:19100".to_owned())
+fn pixel_beardog_host_port() -> (String, u16) {
+    let s = std::env::var("PIXEL_BEARDOG_TCP").unwrap_or_else(|_| "localhost:19100".to_owned());
+    match s.rsplit_once(':') {
+        Some((host, port_str)) => (host.to_owned(), port_str.parse().unwrap_or(19100)),
+        None => (s, 19100),
+    }
 }
 
 fn pixel_songbird_port() -> u16 {
@@ -40,66 +43,29 @@ fn local_songbird_port() -> u16 {
         .unwrap_or(primalspring::tolerances::TCP_FALLBACK_SONGBIRD_PORT)
 }
 
-/// Newline-delimited JSON-RPC over TCP (BearDog protocol).
-fn tcp_rpc(addr: &str, method: &str, params: &serde_json::Value) -> Option<serde_json::Value> {
-    let mut stream = TcpStream::connect(addr).ok()?;
-    stream.set_read_timeout(Some(Duration::from_secs(5))).ok()?;
-    stream
-        .set_write_timeout(Some(Duration::from_secs(5)))
-        .ok()?;
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let mut payload = serde_json::to_string(&req).ok()?;
-    payload.push('\n');
-    stream.write_all(payload.as_bytes()).ok()?;
-    stream.flush().ok()?;
-
-    let mut reader = BufReader::new(stream);
-    let mut line = String::new();
-    reader.read_line(&mut line).ok()?;
-    serde_json::from_str(&line).ok()
-}
-
-/// HTTP GET health check (Songbird exposes `/health` returning "OK").
-fn http_health(host: &str, port: u16) -> bool {
-    let addr = format!("{host}:{port}");
-    let Ok(mut stream) = TcpStream::connect(&addr) else {
-        return false;
-    };
-    let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
-    let req = format!("GET /health HTTP/1.1\r\nHost: {addr}\r\nConnection: close\r\n\r\n");
-    if stream.write_all(req.as_bytes()).is_err() {
-        return false;
-    }
-    let mut buf = vec![0u8; 1024];
-    let n = stream.read(&mut buf).unwrap_or(0);
-    let resp = String::from_utf8_lossy(&buf[..n]);
-    resp.contains("200 OK")
-}
-
 fn validate_pixel_tower(v: &mut ValidationResult) {
-    let beardog_addr = pixel_beardog_addr();
+    let (bd_host, bd_port) = pixel_beardog_host_port();
     let songbird_port = pixel_songbird_port();
 
-    let beardog_resp = tcp_rpc(&beardog_addr, "health.check", &serde_json::json!({}));
+    let beardog_resp = tcp_rpc(
+        &bd_host,
+        bd_port,
+        methods::health::CHECK,
+        &serde_json::json!({}),
+    );
     let beardog_ok = beardog_resp
         .as_ref()
-        .and_then(|r| r.get("result"))
-        .and_then(|r| r.get("status"))
+        .ok()
+        .and_then(|(r, _)| r.get("status"))
         .and_then(|s| s.as_str())
         .is_some_and(|s| s == "healthy");
     v.check_bool(
         "pixel_beardog_health",
         beardog_ok,
-        &format!("Pixel BearDog at {beardog_addr}"),
+        &format!("Pixel BearDog at {bd_host}:{bd_port}"),
     );
 
-    let songbird_ok = http_health("localhost", songbird_port);
+    let songbird_ok = http_health_probe("localhost", songbird_port).is_ok();
     v.check_bool(
         "pixel_songbird_health",
         songbird_ok,
@@ -108,12 +74,17 @@ fn validate_pixel_tower(v: &mut ValidationResult) {
 }
 
 fn validate_cross_gate_crypto(v: &mut ValidationResult) {
-    let addr = pixel_beardog_addr();
-    let resp = tcp_rpc(&addr, "crypto.generate_keypair", &serde_json::json!({}));
+    let (bd_host, bd_port) = pixel_beardog_host_port();
+    let resp = tcp_rpc(
+        &bd_host,
+        bd_port,
+        "crypto.generate_keypair",
+        &serde_json::json!({}),
+    );
     let has_key = resp
         .as_ref()
-        .and_then(|r| r.get("result"))
-        .and_then(|r| r.get("public_key"))
+        .ok()
+        .and_then(|(r, _)| r.get("public_key"))
         .is_some();
     v.check_bool(
         "cross_gate_crypto",
@@ -123,10 +94,10 @@ fn validate_cross_gate_crypto(v: &mut ValidationResult) {
 }
 
 fn validate_cross_gate_beacon_exchange(v: &mut ValidationResult) {
-    let songbird = discover::discover_primal("songbird");
+    let songbird = discover::discover_primal(primal_names::SONGBIRD);
     let local_beacon = songbird
         .socket
-        .and_then(|s| PrimalClient::connect(&s, "songbird").ok())
+        .and_then(|s| PrimalClient::connect(&s, primal_names::SONGBIRD).ok())
         .and_then(|mut c| {
             c.call(
                 "birdsong.generate_encrypted_beacon",
@@ -148,8 +119,8 @@ fn validate_cross_gate_beacon_exchange(v: &mut ValidationResult) {
 
     let local_songbird = local_songbird_port();
     let pixel_songbird = pixel_songbird_port();
-    let local_http = http_health("localhost", local_songbird);
-    let pixel_http = http_health("localhost", pixel_songbird);
+    let local_http = http_health_probe("localhost", local_songbird).is_ok();
+    let pixel_http = http_health_probe("localhost", pixel_songbird).is_ok();
 
     v.check_bool(
         "local_songbird_http",

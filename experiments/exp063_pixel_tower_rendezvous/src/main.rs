@@ -17,13 +17,14 @@
 //! and optionally the cross-device beacon exchange.
 
 use std::io::{BufRead, BufReader, Write};
-use std::net::TcpStream;
 use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::time::Duration;
 
 use primalspring::coordination::AtomicType;
 use primalspring::harness::AtomicHarness;
+use primalspring::ipc::methods;
+use primalspring::ipc::tcp;
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
@@ -33,47 +34,6 @@ fn rpc_call(
     params: &serde_json::Value,
 ) -> Result<serde_json::Value, String> {
     let mut stream = UnixStream::connect(socket).map_err(|e| format!("connect: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(10))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let msg = format!("{req}\n");
-    stream
-        .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
-
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
-            if let Some(result) = parsed.get("result") {
-                return Ok(result.clone());
-            }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
-            }
-        }
-    }
-    Err("no response".to_owned())
-}
-
-fn tcp_rpc_call(
-    host: &str,
-    port: u16,
-    method: &str,
-    params: &serde_json::Value,
-) -> Result<serde_json::Value, String> {
-    let addr = format!("{host}:{port}");
-    let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
-        Duration::from_secs(5),
-    )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
     stream.set_read_timeout(Some(Duration::from_secs(10))).ok();
     stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
 
@@ -223,7 +183,12 @@ fn cross_device_exchange(
     v.section("Cross-Device Beacon Exchange");
     println!("  Pixel host: {host}:{pixel_port}");
 
-    match tcp_rpc_call(host, pixel_port, "health.liveness", &serde_json::json!({})) {
+    match tcp::tcp_rpc(
+        host,
+        pixel_port,
+        methods::health::LIVENESS,
+        &serde_json::json!({}),
+    ) {
         Ok(_) => {
             println!("  Pixel songbird: LIVE");
             v.check_bool("pixel_songbird_live", true, "Pixel songbird reachable");
@@ -250,7 +215,7 @@ fn cross_device_exchange(
             .and_then(|v| v.as_str())
             .unwrap_or_default();
         if !enc.is_empty() {
-            match tcp_rpc_call(
+            match tcp::tcp_rpc(
                 host,
                 pixel_port,
                 "birdsong.decrypt_beacon",
@@ -304,10 +269,10 @@ fn main() {
                 validate_connectivity(v, songbird_socket, &family_id);
 
                 let pixel_host = std::env::var("PIXEL_SONGBIRD_HOST").ok();
-                let pixel_port: u16 = std::env::var("PIXEL_SONGBIRD_PORT")
-                    .ok()
-                    .and_then(|p| p.parse().ok())
-                    .unwrap_or(primalspring::tolerances::TCP_FALLBACK_SONGBIRD_PORT);
+                let pixel_port = tcp::env_port(
+                    "PIXEL_SONGBIRD_PORT",
+                    primalspring::tolerances::TCP_FALLBACK_SONGBIRD_PORT,
+                );
 
                 if let Some(ref host) = pixel_host {
                     cross_device_exchange(v, songbird_socket, &family_id, host, pixel_port);

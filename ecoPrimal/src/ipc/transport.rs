@@ -34,6 +34,18 @@ pub enum Transport {
 }
 
 impl Transport {
+    /// Connect to a primal at the given Unix domain socket path.
+    ///
+    /// Alias for [`Self::unix`]. Used by [`super::client::PrimalClient`] so the
+    /// client and transport share one connection path.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on connection failure.
+    pub fn connect(path: &Path) -> Result<Self, IpcError> {
+        Self::unix(path)
+    }
+
     /// Connect via Unix domain socket.
     ///
     /// # Errors
@@ -108,15 +120,12 @@ impl Transport {
 
     fn read_line(&mut self) -> Result<String, IpcError> {
         let mut line = String::new();
-        let bytes_read = match self {
+        match self {
             Self::Unix(reader) => reader.read_line(&mut line).map_err(classify_io_error)?,
             Self::Tcp(reader) => reader.read_line(&mut line).map_err(classify_io_error)?,
         };
-        if bytes_read == 0 {
-            return Err(IpcError::ProtocolError {
-                detail: "connection closed".to_owned(),
-            });
-        }
+        // EOF yields an empty line — [`Self::call`] maps that to `empty response`,
+        // matching legacy `PrimalClient` behavior.
         Ok(line)
     }
 

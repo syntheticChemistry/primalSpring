@@ -3,10 +3,12 @@
 //! Zero-panic exit trait for validation binaries.
 //!
 //! Absorbed from groundSpring/wetSpring/healthSpring. Replaces verbose
-//! `let Ok(v) = expr else { eprintln!(...); process::exit(1); }` boilerplate
+//! `let Ok(v) = expr else { tracing::error!(...); process::exit(1); }` boilerplate
 //! in experiment binaries with a clean `.or_exit(msg)` call.
 
 use std::fmt;
+
+use tracing::error;
 
 /// Exit code for general errors in validation binaries.
 const GENERAL_ERROR: i32 = 1;
@@ -24,7 +26,7 @@ impl<T, E: fmt::Display> OrExit<T> for Result<T, E> {
         match self {
             Ok(v) => v,
             Err(e) => {
-                eprintln!("FATAL: {msg}: {e}");
+                error!(msg = %msg, error = %e, "FATAL");
                 std::process::exit(GENERAL_ERROR);
             }
         }
@@ -34,7 +36,7 @@ impl<T, E: fmt::Display> OrExit<T> for Result<T, E> {
 impl<T> OrExit<T> for Option<T> {
     fn or_exit(self, msg: &str) -> T {
         self.unwrap_or_else(|| {
-            eprintln!("FATAL: {msg}");
+            error!(msg = %msg, "FATAL");
             std::process::exit(GENERAL_ERROR);
         })
     }

@@ -149,7 +149,7 @@
 ## New Experiments Recommended
 
 Based on the mined patterns, these 10 experiments (exp050–059) extended primalSpring to 38 total.
-Subsequent phases added experiments through exp080 (including cross-gate deployment in Track 10 and gen4 deployment evolution in Track 11), bringing the total to **59 experiments**.
+Subsequent phases added experiments through exp084 (including cross-gate deployment in Track 10, gen4 deployment evolution in Track 11, deployment matrix in Track 12, and substrate stress in Track 13), bringing the total to **63 experiments**.
 
 | Exp | Name | Source Pattern | What It Tests |
 |-----|------|----------------|---------------|

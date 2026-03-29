@@ -29,6 +29,7 @@ use crate::ipc::NeuralBridge;
 use crate::ipc::client::PrimalClient;
 use crate::ipc::discover::extract_capability_names;
 use crate::launcher::{self, LaunchError, PrimalProcess, SocketNucleation};
+use tracing::{debug, info};
 
 /// A running atomic composition with RAII lifecycle management.
 ///
@@ -248,18 +249,18 @@ impl RunningAtomic {
 impl Drop for RunningAtomic {
     fn drop(&mut self) {
         if let Some(biomeos) = self.biomeos_process.take() {
-            println!(
-                "[harness] stopping {} (pid {})",
-                biomeos.name,
-                biomeos.pid()
+            info!(
+                primal = %biomeos.name,
+                pid = biomeos.pid(),
+                "[harness] stopping primal"
             );
             drop(biomeos);
         }
         while let Some(process) = self.processes.pop() {
-            println!(
-                "[harness] stopping {} (pid {})",
-                process.name,
-                process.pid()
+            info!(
+                primal = %process.name,
+                pid = process.pid(),
+                "[harness] stopping primal"
             );
             drop(process);
         }
@@ -332,19 +333,20 @@ impl AtomicHarness {
         let mut processes = Vec::with_capacity(spawn_order.len());
 
         for primal in &spawn_order {
-            println!(
-                "[harness] starting {primal} ({}/{})",
-                processes.len() + 1,
-                spawn_order.len()
+            debug!(
+                primal = %primal,
+                index = processes.len() + 1,
+                total = spawn_order.len(),
+                "[harness] starting primal"
             );
             let process = launcher::spawn_primal(primal, family_id, &mut nucleation)?;
             processes.push(process);
         }
 
-        println!(
-            "[harness] {} primals running for {:?}",
-            processes.len(),
-            self.atomic
+        info!(
+            count = processes.len(),
+            atomic = ?self.atomic,
+            "[harness] primals running"
         );
 
         Ok(RunningAtomic {
@@ -394,26 +396,27 @@ impl AtomicHarness {
         let mut processes = Vec::with_capacity(spawn_order.len());
 
         for primal in &spawn_order {
-            println!(
-                "[harness] starting {primal} ({}/{})",
-                processes.len() + 1,
-                spawn_order.len()
+            debug!(
+                primal = %primal,
+                index = processes.len() + 1,
+                total = spawn_order.len(),
+                "[harness] starting primal"
             );
             let process = launcher::spawn_primal(primal, family_id, &mut nucleation)?;
             processes.push(process);
         }
 
-        println!(
-            "[harness] {} primals running, starting biomeOS (neural-api mode)...",
-            processes.len()
+        info!(
+            count = processes.len(),
+            "[harness] primals running, starting biomeOS (neural-api mode)"
         );
 
         let biomeos = launcher::spawn_biomeos(family_id, &nucleation, graphs_dir)?;
 
-        println!(
-            "[harness] {:?} + biomeOS running ({} primals + biomeos neural-api)",
-            self.atomic,
-            processes.len()
+        info!(
+            atomic = ?self.atomic,
+            primal_count = processes.len(),
+            "[harness] atomic + biomeOS running (primals + biomeos neural-api)"
         );
 
         Ok(RunningAtomic {

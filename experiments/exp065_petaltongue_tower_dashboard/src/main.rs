@@ -132,7 +132,7 @@ fn validate_dashboard(
                 "label": "Primal Status",
                 "x_label": "Primal",
                 "y_label": "Health",
-                "categories": ["beardog", "songbird"],
+                "categories": [primal_names::BEARDOG, primal_names::SONGBIRD],
                 "values": [1.0, 1.0],
                 "unit": "status"
             }],
@@ -175,8 +175,8 @@ fn validate_dashboard(
                 "domain": "health"
             },
             "data": [
-                { "primal": "beardog", "status": 1 },
-                { "primal": "songbird", "status": 1 }
+                { "primal": primal_names::BEARDOG, "status": 1 },
+                { "primal": primal_names::SONGBIRD, "status": 1 }
             ],
             "modality": "description"
         }),
