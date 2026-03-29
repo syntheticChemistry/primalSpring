@@ -21,7 +21,7 @@ use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-/// TCP JSON-RPC call with timeout.
+/// TCP JSON-RPC call with timeout (raw newline-delimited JSON over TCP).
 fn tcp_rpc(
     host: &str,
     port: u16,
@@ -63,10 +63,50 @@ fn tcp_rpc(
     Err("no response".to_owned())
 }
 
+/// HTTP health probe for primals that serve HTTP instead of raw TCP JSON-RPC.
+/// Sends `GET /health` and checks for a 200 OK response.
+fn http_health(host: &str, port: u16) -> Result<serde_json::Value, String> {
+    let addr = format!("{host}:{port}");
+    let mut stream = TcpStream::connect_timeout(
+        &addr.parse().map_err(|e| format!("parse: {e}"))?,
+        Duration::from_secs(5),
+    )
+    .map_err(|e| format!("connect {addr}: {e}"))?;
+    stream.set_read_timeout(Some(Duration::from_secs(5))).ok();
+    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
+
+    let http_req = format!(
+        "GET /health HTTP/1.1\r\nHost: {addr}\r\nConnection: close\r\n\r\n"
+    );
+    stream
+        .write_all(http_req.as_bytes())
+        .map_err(|e| format!("write: {e}"))?;
+
+    let mut buf = String::new();
+    let reader = BufReader::new(&stream);
+    for line in reader.lines().map_while(Result::ok) {
+        buf.push_str(&line);
+        buf.push('\n');
+    }
+
+    if buf.contains("200 OK") || buf.contains("200 Ok") || buf.contains("\nOK\n") || buf.ends_with("OK\n") {
+        Ok(serde_json::json!({"primal": "songbird", "status": "alive", "protocol": "http"}))
+    } else {
+        Err(format!("HTTP health: non-OK response"))
+    }
+}
+
+#[derive(Clone, Copy)]
+enum ProbeProtocol {
+    TcpJsonRpc,
+    Http,
+}
+
 struct PrimalProbe {
     name: &'static str,
     port_env: &'static str,
     default_port: u16,
+    protocol: ProbeProtocol,
 }
 
 const PRIMALS: &[PrimalProbe] = &[
@@ -74,26 +114,31 @@ const PRIMALS: &[PrimalProbe] = &[
         name: primal_names::BEARDOG,
         port_env: "BEARDOG_PORT",
         default_port: tolerances::TCP_FALLBACK_BEARDOG_PORT,
+        protocol: ProbeProtocol::TcpJsonRpc,
     },
     PrimalProbe {
         name: primal_names::SONGBIRD,
         port_env: "SONGBIRD_PORT",
         default_port: tolerances::TCP_FALLBACK_SONGBIRD_PORT,
+        protocol: ProbeProtocol::Http,
     },
     PrimalProbe {
         name: primal_names::NESTGATE,
         port_env: "NESTGATE_PORT",
         default_port: tolerances::TCP_FALLBACK_NESTGATE_PORT,
+        protocol: ProbeProtocol::TcpJsonRpc,
     },
     PrimalProbe {
         name: primal_names::TOADSTOOL,
         port_env: "TOADSTOOL_PORT",
         default_port: tolerances::TCP_FALLBACK_TOADSTOOL_PORT,
+        protocol: ProbeProtocol::TcpJsonRpc,
     },
     PrimalProbe {
         name: primal_names::SQUIRREL,
         port_env: "SQUIRREL_PORT",
         default_port: tolerances::TCP_FALLBACK_SQUIRREL_PORT,
+        protocol: ProbeProtocol::TcpJsonRpc,
     },
 ];
 
@@ -104,11 +149,30 @@ fn port_for(probe: &PrimalProbe) -> u16 {
         .unwrap_or(probe.default_port)
 }
 
+fn rpc_for_primal(
+    host: &str,
+    port: u16,
+    method: &str,
+    params: &serde_json::Value,
+    protocol: ProbeProtocol,
+) -> Result<serde_json::Value, String> {
+    match protocol {
+        ProbeProtocol::TcpJsonRpc => tcp_rpc(host, port, method, params),
+        ProbeProtocol::Http => {
+            if method == "health.liveness" {
+                http_health(host, port)
+            } else {
+                Err("HTTP probe: only health.liveness supported".to_owned())
+            }
+        }
+    }
+}
+
 fn probe_primal_health(v: &mut ValidationResult, host: &str, primal: &PrimalProbe) {
     let port = port_for(primal);
     let check_name = format!("{}_live", primal.name);
 
-    match tcp_rpc(host, port, "health.liveness", &serde_json::json!({})) {
+    match rpc_for_primal(host, port, "health.liveness", &serde_json::json!({}), primal.protocol) {
         Ok(resp) => {
             let status = resp.get("status").and_then(|s| s.as_str()).unwrap_or("ok");
             println!(
@@ -132,7 +196,7 @@ fn probe_primal_capabilities(v: &mut ValidationResult, host: &str, primal: &Prim
     let port = port_for(primal);
     let check_name = format!("{}_capabilities", primal.name);
 
-    match tcp_rpc(host, port, "capabilities.list", &serde_json::json!({})) {
+    match rpc_for_primal(host, port, "capabilities.list", &serde_json::json!({}), primal.protocol) {
         Ok(caps) => {
             let count = caps
                 .as_array()
@@ -185,7 +249,7 @@ fn main() {
             let mut live_count: u32 = 0;
             for primal in PRIMALS {
                 let port = port_for(primal);
-                if tcp_rpc(&host, port, "health.liveness", &serde_json::json!({})).is_ok() {
+                if rpc_for_primal(&host, port, "health.liveness", &serde_json::json!({}), primal.protocol).is_ok() {
                     live_count += 1;
                 }
                 probe_primal_health(v, &host, primal);

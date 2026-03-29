@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Defensive Mesh — skunkBat layered security with external probe.
+# Source: primals/skunkBat/showcase/01-violation-detection/ through 04-layered-security/
+#
+# skunkBat provides defensive reconnaissance and denial:
+#   - Genetic violations (lineage tampering)
+#   - Topology violations (layer hopping)
+#   - Behavioral anomalies (abnormal patterns)
+#   - Resource exhaustion (DoS detection)
+#
+# NOT surveillance — sovereignty proofs demonstrate user control.
+#
+# Bond: covalent internally, weak/hostile at the boundary
+#
+# Usage:
+#   biomeos deploy --graph graphs/bonding/defensive_mesh.toml
+
+[graph]
+name = "defensive_mesh"
+description = "skunkBat layered security: violation detection, defensive response, sovereignty proofs against external probes"
+version = "1.0.0"
+coordination = "parallel"
+bond_type = "covalent"
+source_showcase = "primals/skunkBat/showcase"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.verify", "crypto.family_seed"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]
+
+# skunkBat: defensive security layer
+[[graph.node]]
+name = "skunkbat"
+binary = "skunkbat_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "defense"
+capabilities = ["defense.genetic_violation", "defense.topology_violation", "defense.behavioral_anomaly", "defense.resource_exhaustion", "defense.sovereignty_proof"]
+
+# Groundspring: health validation of defended mesh
+[[graph.node]]
+name = "groundspring"
+binary = "groundspring_primal"
+order = 5
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "validation"
+capabilities = ["validate.health", "validate.composition"]
+
+# Healthspring: continuous monitoring under defense conditions
+[[graph.node]]
+name = "healthspring"
+binary = "healthspring_primal"
+order = 6
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "health"
+capabilities = ["health.monitor", "health.probe"]

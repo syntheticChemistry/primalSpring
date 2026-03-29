@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Slow Start Composition — random startup delays, composition convergence.
+# Primals start in random order with 0-30s delays. Does the composition
+# still form? Does biomeOS wait for dependencies or crash?
+#
+# This graph is used by exp082_chaos_substrate.
+#
+# Usage:
+#   biomeos deploy --graph graphs/chaos/slow_start_composition.toml
+
+[graph]
+name = "slow_start_composition"
+description = "Random startup delays (0-30s) — tests composition convergence, dependency waiting, timeout handling"
+version = "1.0.0"
+coordination = "sequential"
+bond_type = "covalent"
+chaos_scenario = "slow_start"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity"]
+chaos_delay_range_ms = [0, 30000]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery"]
+chaos_delay_range_ms = [0, 30000]
+
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]
+chaos_delay_range_ms = [0, 10000]
+
+[[graph.node]]
+name = "groundspring"
+binary = "groundspring_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "validation"
+capabilities = ["validate.health"]
+chaos_delay_range_ms = [0, 30000]
+
+[[graph.node]]
+name = "healthspring"
+binary = "healthspring_primal"
+order = 5
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "health"
+capabilities = ["health.monitor", "health.probe"]
+chaos_delay_range_ms = [0, 30000]

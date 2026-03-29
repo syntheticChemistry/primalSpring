@@ -1,0 +1,111 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Gen4 Agentic fieldMouse — AI-guided edge sensor orchestration.
+# The agentic tower (biomeOS+Squirrel+petalTongue) receives fieldMouse
+# frames, Squirrel classifies anomalies, biomeOS routes to analysis springs,
+# petalTongue renders real-time sensor dashboards.
+#
+# Usage:
+#   biomeos deploy --graph graphs/gen4/gen4_agentic_fieldmouse.toml
+
+[graph]
+name = "gen4_agentic_fieldmouse"
+description = "AI-guided edge sensors: fieldMouse → NestGate → Squirrel classify → biomeOS route → petalTongue dashboard"
+version = "1.0.0"
+coordination = "Pipeline"
+bond_type = "covalent"
+deployment_class = "fieldmouse"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.verify"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination", "capability.call", "capability.discover"]
+
+# NestGate: receives and buffers fieldMouse frames
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
+
+# Squirrel: classifies incoming sensor data, detects anomalies
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 5
+required = true
+depends_on = ["biomeos", "nestgate"]
+health_method = "health"
+by_capability = "ai"
+capabilities = ["ai.query", "ai.chat", "tool.execute", "tool.list", "context.create"]
+
+# Analysis springs: biomeOS routes classified data here
+[[graph.node]]
+name = "neuralspring"
+binary = "neuralspring_primal"
+order = 6
+required = false
+depends_on = ["biomeos"]
+health_method = "neural.health"
+by_capability = "neural"
+capabilities = ["neural.classify", "neural.spectral"]
+
+[[graph.node]]
+name = "wetspring"
+binary = "wetspring_primal"
+order = 7
+required = false
+depends_on = ["biomeos"]
+health_method = "shader.health"
+by_capability = "shader"
+capabilities = ["science.diversity", "science.sequence"]
+
+# petalTongue: renders live sensor dashboards, anomaly alerts
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue_primal"
+order = 8
+required = true
+depends_on = ["biomeos", "squirrel"]
+health_method = "health"
+by_capability = "visualization"
+capabilities = ["visualization.render.dashboard", "visualization.render.stream", "interaction.subscribe"]
+
+# fieldMouse chimera: leaf node (not graph-managed)
+[[graph.node]]
+name = "fieldmouse_sensor"
+binary = "fieldmouse_chimera"
+order = 9
+required = false
+spawn = false
+health_method = "health.check"
+by_capability = "sensor"
+capabilities = ["sensor.read", "fieldmouse.frame"]

@@ -1,0 +1,157 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# OrganoMetalSalt Complex — the most chemically-inspired composition.
+# Covalent core (lab, full trust) + ionic edge (university, contract) +
+# weak public endpoint (zero trust, metered API).
+#
+# This models a real-world deployment: a research lab sharing compute
+# with a partner institution while exposing a rate-limited public API.
+#
+# Usage:
+#   biomeos deploy --graph graphs/bonding/organo_metal_salt_complex.toml
+
+[graph]
+name = "organo_metal_salt_complex"
+description = "Covalent lab + ionic cloud burst + weak public API — the full chemistry of multi-trust deployment"
+version = "1.0.0"
+coordination = "parallel"
+bond_type = "organo_metal_salt"
+
+# ── Covalent core: shared family seed, full mutual trust ──────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.verify", "crypto.family_seed"]
+bond_role = "covalent_core"
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+bond_role = "covalent_core"
+
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination", "route.register"]
+bond_role = "covalent_core"
+
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.replicate"]
+bond_role = "covalent_core"
+
+# Core springs
+[[graph.node]]
+name = "groundspring"
+binary = "groundspring_primal"
+order = 5
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "validation"
+capabilities = ["validate.health", "validate.composition"]
+bond_role = "covalent_core"
+
+[[graph.node]]
+name = "neuralspring"
+binary = "neuralspring_primal"
+order = 6
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "neural.health"
+by_capability = "neural"
+capabilities = ["neural.evoformer", "neural.spectral"]
+bond_role = "covalent_core"
+
+# Provenance Trio (covalent backbone)
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt_primal"
+order = 7
+required = false
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "provenance"
+capabilities = ["provenance.session", "provenance.merkle_root"]
+bond_role = "covalent_core"
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine_primal"
+order = 8
+required = false
+depends_on = ["rhizocrypt"]
+health_method = "health"
+by_capability = "ledger"
+capabilities = ["provenance.commit", "provenance.verify"]
+bond_role = "covalent_core"
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass_primal"
+order = 9
+required = false
+depends_on = ["loamspine"]
+health_method = "health"
+by_capability = "attribution"
+capabilities = ["provenance.braid", "provenance.attribute"]
+bond_role = "covalent_core"
+
+# ── Ionic edge: different family seed, contract-based ──────────────────
+[[graph.node]]
+name = "toadstool_ionic"
+binary = "toadstool_primal"
+order = 10
+required = false
+depends_on = ["biomeos"]
+health_method = "compute.health"
+by_capability = "compute"
+capabilities = ["compute.dispatch.submit", "compute.execute", "compute.gpu"]
+bond_role = "ionic_edge"
+family = "external_partner"
+
+[[graph.node]]
+name = "squirrel_ionic"
+binary = "squirrel_primal"
+order = 11
+required = false
+depends_on = ["biomeos"]
+health_method = "health"
+by_capability = "ai"
+capabilities = ["ai.coordinate", "ai.infer"]
+bond_role = "ionic_edge"
+family = "external_partner"
+
+# ── Weak public: no family seed, zero trust ────────────────────────────
+[[graph.node]]
+name = "songbird_public"
+binary = "songbird_primal"
+order = 12
+required = false
+depends_on = ["biomeos"]
+health_method = "health"
+by_capability = "public_api"
+capabilities = ["net.discovery"]
+bond_role = "weak_public"
+family = ""

@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**59 experiments across 11 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**63 experiments across 13 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -24,12 +24,12 @@ carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 59 experiments.
+across all 63 experiments.
 
 ## Running
 
 ```bash
-# Run all 59 experiments via meta-validator
+# Run all 63 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -54,6 +54,8 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 9 | Multi-Node Bonding | exp071–072 | **Structural** (bonding policy, data federation, graph metadata) |
 | 10 | Cross-Gate Deployment | exp073–074 | **Structural** (LAN covalent mesh, remote NUCLEUS health via TCP) |
 | 11 | gen4 Deployment Evolution | exp075–080 | **Live validated** (biomeOS substrate, cross-gate routing, Squirrel AI, petalTongue, spring sweep, cross-spring ecology) |
+| 12 | Deployment Matrix | exp081 | **Structural** (43-cell deployment matrix sweep across arch × topology × preset × transport) |
+| 13 | Substrate Stress | exp082–084 | **Structural** (chaos substrate, federation edge cases, provenance adversarial) |
 
 ## Experiment Status Key
 
@@ -86,13 +88,15 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 16 | Deep Debt Audit + Centralized Tolerances | **Done** (comprehensive audit, centralized trio/port tolerances, deduplicated capability parsing, hardcoding→capability-based evolution) |
 | 17 | gen4 Deployment Evolution | **Done** (biomeOS substrate validation, cross-gate Pixel routing, Squirrel AI bridge, spring deploy sweep, gen4 prototype graphs, 59 experiments, 385 tests) |
 | 18 | LAN Covalent Deployment | Planned — live multi-gate NUCLEUS, biomeOS aarch64 cross-compile for Pixel substrate |
-| 18+ | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
+| 19 | Gen4 Spring Scaffolding | **Done** (5 spring primal binaries built, 7 validation graphs, launch profiles) |
+| 20 | Deployment Matrix + Substrate Validation | **Done** (43-cell matrix, benchScale topologies, chaos/federation/provenance experiments, agentic trio, storytelling stack, showcase mining, 63 experiments, 59 graphs) |
+| 21 | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
 
 ## Validation Harness
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 59 experiments use this):
+**Builder API** (preferred — all 63 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit

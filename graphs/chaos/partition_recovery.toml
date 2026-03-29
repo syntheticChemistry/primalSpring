@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Partition Recovery — network partition + recovery + BirdSong mesh reformation.
+# Deploys a 3-node Tower mesh, induces iptables partition between nodes,
+# then lifts it and validates mesh recovery.
+#
+# This graph is used by exp082_chaos_substrate.
+#
+# Usage:
+#   biomeos deploy --graph graphs/chaos/partition_recovery.toml
+
+[graph]
+name = "partition_recovery"
+description = "Network partition → recovery → BirdSong mesh reformation — tests mesh resilience"
+version = "1.0.0"
+coordination = "sequential"
+bond_type = "covalent"
+chaos_scenario = "network_partition"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]
+
+# Groundspring validates health before, during, and after partition
+[[graph.node]]
+name = "groundspring"
+binary = "groundspring_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "validation"
+capabilities = ["validate.health", "validate.composition"]

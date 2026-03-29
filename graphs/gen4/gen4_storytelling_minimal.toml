@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Gen4 Storytelling Minimal — offline/portable AI DM without biomeOS.
+# esotericWebb discovers ludoSpring and Squirrel directly via Songbird.
+# petalTongue in TUI mode for terminal-only play.
+# No provenance trio — fast iteration, local sessions.
+#
+# Validates:
+#   - esotericWebb graceful degradation without biomeOS Neural API
+#   - Direct IPC: esotericWebb → ludoSpring game.evaluate_flow
+#   - Direct IPC: esotericWebb → Squirrel ai.chat (AI DM)
+#   - petalTongue TUI: scene rendering in terminal
+#   - Single-node deployment: all primals co-located
+#
+# Usage:
+#   cargo run -p esotericwebb -- serve  (start Webb)
+#   cargo run -p ludospring -- server   (start game science)
+#   squirrel serve                      (start AI DM)
+#   petaltongue tui                     (start terminal UI)
+
+[graph]
+name = "gen4_storytelling_minimal"
+description = "Offline AI DM: esotericWebb + ludoSpring + Squirrel + petalTongue TUI — no biomeOS, direct discovery"
+version = "1.0.0"
+coordination = "Continuous"
+tick_hz = 60
+bond_type = "covalent"
+deployment_class = "minimal"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery"]
+
+[[graph.node]]
+name = "esotericwebb"
+binary = "esotericwebb"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "narrative"
+capabilities = ["webb.resolve_scene", "session.create", "session.advance"]
+
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "game"
+capabilities = ["game.evaluate_flow", "game.difficulty_adjustment", "game.engagement"]
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 5
+required = true
+depends_on = ["songbird"]
+health_method = "health"
+by_capability = "ai"
+capabilities = ["ai.chat", "ai.summarize", "context.create", "context.update"]
+
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue_primal"
+order = 6
+required = true
+depends_on = ["songbird"]
+health_method = "health"
+by_capability = "visualization"
+capabilities = ["visualization.render.scene", "interaction.poll"]

@@ -68,6 +68,10 @@ members = [
     "experiments/exp078_petaltongue_viz_surface",
     "experiments/exp079_spring_deploy_sweep",
     "experiments/exp080_cross_spring_ecology_live",
+    "experiments/exp081_deployment_matrix_sweep",
+    "experiments/exp082_chaos_substrate",
+    "experiments/exp083_federation_edge_cases",
+    "experiments/exp084_provenance_adversarial",
 ]
 
 [workspace.package]

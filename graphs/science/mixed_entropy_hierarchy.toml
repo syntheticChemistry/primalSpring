@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Mixed Entropy Hierarchy — BearDog's human + device entropy composition.
+# Source: primals/beardog/showcase/05-mixed-entropy/
+#
+# BearDog mixes entropy from multiple sources:
+#   - Hardware RNG (device entropy)
+#   - Human interaction (mouse, keyboard, timing)
+#   - Environmental sensors (fieldMouse frames)
+#   - Network jitter (Songbird RTT variance)
+#
+# This graph validates that BearDog's key generation uses the full
+# entropy hierarchy, and that the resulting cryptographic material
+# is indistinguishable from true random.
+#
+# Bond: covalent
+# Science domain: cryptography, randomness quality
+#
+# Usage:
+#   biomeos deploy --graph graphs/science/mixed_entropy_hierarchy.toml
+
+[graph]
+name = "mixed_entropy_hierarchy"
+description = "BearDog mixed human+device entropy: validates key generation uses full entropy hierarchy"
+version = "1.0.0"
+coordination = "sequential"
+bond_type = "covalent"
+science_domain = "cryptography"
+source_showcase = "primals/beardog/showcase/05-mixed-entropy"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.sign", "crypto.verify", "crypto.entropy.mixed"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# Groundspring validates cryptographic output quality
+[[graph.node]]
+name = "groundspring"
+binary = "groundspring_primal"
+order = 3
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "validation"
+capabilities = ["validate.health", "validate.composition"]
+
+# biomeOS coordinates entropy collection cycle
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]

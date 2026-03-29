@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Gaming Mesh Chimera — ludoSpring + Songbird + ToadStool coordination.
+# Source: primals/toadstool/showcase/gaming-evolution/ (6-level evolution)
+#
+# The gaming-mesh chimera fuses Songbird networking with ludoSpring game logic.
+# ToadStool dispatches GPU compute for rendering/physics.
+# petalTongue provides visualization/UI.
+#
+# Tests: real-time tick budget compliance (16.67ms @ 60Hz),
+# protocol bridge to game platforms, game state sync across mesh.
+#
+# Bond: covalent (same-machine, zero-latency)
+#
+# Usage:
+#   biomeos deploy --graph graphs/science/gaming_mesh_chimera.toml
+
+[graph]
+name = "gaming_mesh_chimera"
+description = "ludoSpring + Songbird + ToadStool: game coordination, GPU dispatch, 60Hz tick budget, platform bridge"
+version = "1.0.0"
+coordination = "Pipeline"
+bond_type = "covalent"
+science_domain = "interactive_compute"
+source_showcase = "primals/toadstool/showcase/gaming-evolution"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh", "net.realtime"]
+
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination"]
+
+# ludoSpring: game state, library management, protocol bridge
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "gaming"
+capabilities = ["gaming.state", "gaming.library", "gaming.protocol_bridge", "gaming.session"]
+
+# ToadStool: GPU dispatch for game compute
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 5
+required = true
+depends_on = ["ludospring"]
+health_method = "compute.health"
+by_capability = "compute"
+capabilities = ["compute.dispatch.submit", "compute.execute", "compute.gpu", "compute.shader"]
+
+# petalTongue: visualization and UI
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue_primal"
+order = 6
+required = false
+depends_on = ["ludospring"]
+health_method = "health"
+by_capability = "visualization"
+capabilities = ["viz.dashboard", "viz.topology", "viz.realtime"]

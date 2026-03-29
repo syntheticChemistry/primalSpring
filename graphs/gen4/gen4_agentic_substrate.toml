@@ -1,0 +1,151 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Gen4 Agentic Substrate — the full human+AI coordination loop.
+# biomeOS (nervous system) + Squirrel (brain) + petalTongue (senses).
+#
+# This graph validates the three-layer agentic stack:
+#   1. biomeOS Neural API routes capabilities and executes graphs
+#   2. Squirrel provides AI inference, MCP tool execution, context management
+#   3. petalTongue renders ecosystem state and captures human intent
+#
+# The loop: petalTongue observes → human/agent decides → Squirrel acts →
+#           biomeOS routes → springs execute → petalTongue renders result
+#
+# Usage:
+#   biomeos deploy --graph graphs/gen4/gen4_agentic_substrate.toml
+
+[graph]
+name = "gen4_agentic_substrate"
+description = "Full human+AI coordination: biomeOS Neural API + Squirrel MCP/AI + petalTongue UI — the agentic loop"
+version = "1.0.0"
+coordination = "parallel"
+bond_type = "covalent"
+
+# ── Tower layer ────────────────────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# ── biomeOS: the nervous system ───────────────────────────────────────
+# Routes capabilities, executes graphs, federation coordination.
+# Neural API surface: capability.call, capability.discover, graph.execute,
+# graph.list, route.register, topology.*, lifecycle.*
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = [
+    "graph.execution",
+    "ecosystem.coordination",
+    "route.register",
+    "capability.call",
+    "capability.discover",
+    "capability.list",
+    "graph.list",
+    "graph.status",
+    "graph.suggest_optimizations",
+    "topology.nodes",
+    "lifecycle.register",
+    "lifecycle.status",
+]
+
+# ── Squirrel: the brain ───────────────────────────────────────────────
+# AI inference routing, MCP tool hub, context management.
+# Receives capability.call(ai, *) from biomeOS.
+# Exposes: ai.query, ai.complete, ai.chat, tool.execute, tool.list,
+# context.create, context.update, discovery.peers
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird", "biomeos"]
+health_method = "health"
+by_capability = "ai"
+capabilities = [
+    "ai.query",
+    "ai.complete",
+    "ai.chat",
+    "tool.execute",
+    "tool.list",
+    "context.create",
+    "context.update",
+    "context.summarize",
+    "discovery.peers",
+    "identity.get",
+]
+
+# ── petalTongue: the senses ───────────────────────────────────────────
+# Human-facing UI: TUI/egui/web/headless, SSE events from biomeOS,
+# Grammar of Graphics, dashboards, topology visualization.
+# Captures human intent → feeds back to Squirrel/biomeOS.
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue_primal"
+order = 5
+required = true
+depends_on = ["biomeos"]
+health_method = "health"
+by_capability = "visualization"
+capabilities = [
+    "visualization.render",
+    "visualization.render.scene",
+    "visualization.render.stream",
+    "visualization.render.dashboard",
+    "visualization.render.grammar",
+    "visualization.validate",
+    "interaction.subscribe",
+    "ui.topology",
+    "ui.health",
+]
+
+# ── Compute + storage for AI workflows ─────────────────────────────────
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 6
+required = false
+depends_on = ["biomeos"]
+health_method = "compute.health"
+by_capability = "compute"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 7
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve"]
+
+# ── Validation springs ─────────────────────────────────────────────────
+[[graph.node]]
+name = "groundspring"
+binary = "groundspring_primal"
+order = 8
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "validation"
+capabilities = ["validate.health", "validate.composition"]

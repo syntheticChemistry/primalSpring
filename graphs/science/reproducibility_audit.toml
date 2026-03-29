@@ -1,0 +1,80 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Reproducibility Audit — replay and verify any prior experiment's provenance chain.
+# Any spring can be the subject; the Trio validates the full chain of custody.
+#
+# Bond: covalent — all components share family trust.
+# This graph doesn't do science; it AUDITS science.
+#
+# Usage:
+#   biomeos deploy --graph graphs/science/reproducibility_audit.toml
+
+[graph]
+name = "reproducibility_audit"
+description = "Replay and verify any prior experiment's provenance chain — the Trio audits all spring computations"
+version = "1.0.0"
+coordination = "sequential"
+bond_type = "covalent"
+science_domain = "reproducibility"
+
+# ── Tower layer ────────────────────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.verify"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery"]
+
+# ── Provenance Trio (core audit capability) ────────────────────────────
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt_primal"
+order = 3
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "provenance"
+capabilities = ["provenance.session", "provenance.merkle_root", "provenance.replay"]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine_primal"
+order = 4
+required = true
+depends_on = ["rhizocrypt"]
+health_method = "health"
+by_capability = "ledger"
+capabilities = ["provenance.commit", "provenance.verify", "provenance.diff"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass_primal"
+order = 5
+required = true
+depends_on = ["loamspine"]
+health_method = "health"
+by_capability = "attribution"
+capabilities = ["provenance.braid", "provenance.attribute", "provenance.audit"]
+
+# ── biomeOS (orchestrator for audit workflow) ──────────────────────────
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 6
+required = true
+depends_on = ["beardog", "songbird", "sweetgrass"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination", "audit.orchestrate"]

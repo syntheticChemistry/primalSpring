@@ -62,6 +62,36 @@ fn tcp_rpc_call(
     Err("no response".to_owned())
 }
 
+/// HTTP health probe for primals that serve HTTP instead of raw TCP JSON-RPC.
+fn http_health_check(host: &str, port: u16) -> Result<(), String> {
+    let addr = format!("{host}:{port}");
+    let mut stream = TcpStream::connect_timeout(
+        &addr.parse().map_err(|e| format!("parse: {e}"))?,
+        Duration::from_secs(5),
+    )
+    .map_err(|e| format!("connect {addr}: {e}"))?;
+    stream.set_read_timeout(Some(Duration::from_secs(5))).ok();
+    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
+
+    let http_req = format!("GET /health HTTP/1.1\r\nHost: {addr}\r\nConnection: close\r\n\r\n");
+    stream
+        .write_all(http_req.as_bytes())
+        .map_err(|e| format!("write: {e}"))?;
+
+    let mut buf = String::new();
+    let reader = BufReader::new(&stream);
+    for line in reader.lines().map_while(Result::ok) {
+        buf.push_str(&line);
+        buf.push('\n');
+    }
+
+    if buf.contains("200 OK") || buf.contains("200 Ok") || buf.contains("\nOK\n") || buf.ends_with("OK\n") {
+        Ok(())
+    } else {
+        Err("HTTP health: non-OK response".to_owned())
+    }
+}
+
 fn validate_remote_health(
     v: &mut ValidationResult,
     host: &str,
@@ -90,18 +120,13 @@ fn validate_remote_health(
         }
     }
 
-    match tcp_rpc_call(
-        host,
-        songbird_port,
-        "health.liveness",
-        &serde_json::json!({}),
-    ) {
-        Ok(_) => {
-            println!("  remote songbird: LIVE");
+    match http_health_check(host, songbird_port) {
+        Ok(()) => {
+            println!("  remote songbird: LIVE (HTTP /health)");
             v.check_bool(
                 "remote_songbird_live",
                 true,
-                "remote songbird health.liveness",
+                "remote songbird HTTP health",
             );
         }
         Err(e) => {

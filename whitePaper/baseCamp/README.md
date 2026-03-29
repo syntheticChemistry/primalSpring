@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 28, 2026
-**Status**: Phase 19 — Gen4 Spring Scaffolding (87/87 gates), 59 experiments, 385 tests, 36 deploy graphs, 5 spring primal binaries in plasmidBin
+**Status**: Phase 20 — Deployment Matrix + Substrate Validation (87/87 gates), 63 experiments, 385 tests, 59 deploy graphs, 43-cell deployment matrix, agentic trio + storytelling stack
 
 ---
 
@@ -32,12 +32,14 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 9 | Multi-Node Bonding | exp071–072 | Do bonding policies and data federation structures validate? |
 | 10 | Cross-Gate Deployment | exp073–074 | Does cross-gate health probing and LAN covalent mesh work? |
 | 11 | gen4 Deployment Evolution | exp075–080 | Does biomeOS substrate validate? Cross-gate routing? Spring deploy sweep? |
+| 12 | Deployment Matrix | exp081 | Does the 43-cell deployment matrix validate across arch × topology × preset × transport? |
+| 13 | Substrate Stress | exp082–084 | Chaos substrate, federation edge cases, provenance adversarial — does the stack survive? |
 
 ## Current State (v0.7.0)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 59 (11 tracks) |
+| Experiments | 63 (13 tracks) |
 | Total tests | **385** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
@@ -45,13 +47,13 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | 36 TOMLs (18 single-node + 4 multi-node + 7 spring validation + 2 cross-spring + 5 gen4), all nodes `by_capability`, topologically validated |
+| Deploy graphs | 59 TOMLs (18 single-node + 5 multi-node + 7 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science), all nodes `by_capability`, topologically validated |
 | Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 59 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 63 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
@@ -64,6 +66,52 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed — Phase 20 (Deployment Matrix + Substrate Validation)
+
+### Deployment Matrix + Validation Substrate (March 28, 2026)
+
+Built a comprehensive deployment validation matrix and substrate validation system using
+benchScale (Docker topologies) and agentReagents (image provisioning) from `ecoPrimals/infra/`.
+
+**Deployment Matrix** (`config/deployment_matrix.toml`):
+- **43 test cells** across x86_64/aarch64, 7 network presets, UDS/TCP transport modes
+- Matrix runner: `scripts/validate_deployment_matrix.sh` with dry-run, per-cell, and tier modes
+- Known blockers tracked: biomeOS TCP-only, Squirrel abstract socket, ludoSpring IPC surface
+
+**benchScale Topologies** (15 new in `infra/benchScale/topologies/`):
+- Niche/constrained: Alpine minimal, read-only FS, 256MB constrained
+- Bonding models: Ionic 2-family, metallic fleet, organo-metal-salt
+- Scale: 10-node federation, mixed-arch cluster
+- Showcase: fieldMouse chimera, Albatross multiplex, skunkBat defensive, neuromorphic edge, gaming mesh
+- Agentic: biomeOS + Squirrel + petalTongue tower, agentic fieldMouse
+- Storytelling: esotericWebb + ludoSpring + Squirrel AI DM + petalTongue
+
+**Graph Compositions** (23 new):
+- `graphs/bonding/` (5): ionic, metallic, OMS, defensive mesh, albatross multiplex
+- `graphs/chaos/` (2): partition recovery, slow-start convergence
+- `graphs/science/` (10): coralForge federated, ecology provenance, reproducibility audit, fieldMouse ingestion, paper lifecycle, supply chain provenance, mixed entropy, gaming mesh, neuromorphic classify, RPGPT session provenance
+- `graphs/gen4/` (6 new): agentic substrate, agentic fieldMouse, UI-orchestrator loop, storytelling full, storytelling minimal
+
+**New Experiments** (4):
+- exp081: deployment matrix sweep (structural)
+- exp082: chaos substrate (kill-and-recover, half-open, rapid reconnect)
+- exp083: federation edge cases (asymmetric latency, partial mesh)
+- exp084: provenance adversarial (tampered DAG, replay attacks, attribution disputes)
+
+**Chaos Engineering**: `scripts/chaos-inject.sh` — partition, kill, disk-fill, slow DNS, clock drift injection.
+
+**Evolution Specs** (3 new):
+- `specs/AGENTIC_TRIO_EVOLUTION.md` — biomeOS + Squirrel + petalTongue as the agentic loop (nervous system + brain + senses)
+- `specs/STORYTELLING_EVOLUTION.md` — ludoSpring + esotericWebb AI DM storytelling stack
+- `specs/SHOWCASE_MINING_REPORT.md` — patterns mined from primal showcases
+
+**Primal Integration Analysis**:
+- biomeOS: 285+ methods, 26 domains, 5 graph patterns — P0 gap: TCP-only `--port` ignored
+- Squirrel: MCP hub, AI inference, context — P0 gap: abstract socket vs filesystem
+- petalTongue: TUI/egui/web/headless, SSE events — P1 gap: dialogue-tree scene type
+- ludoSpring: 8 game science IPC methods — P0 gap: 6 methods esotericWebb needs
+- esotericWebb: CRPG narrative engine — P0 gap: TCP-first vs biomeOS UDS-first
 
 ## What Changed — Phase 19 (Gen4 Spring Scaffolding)
 

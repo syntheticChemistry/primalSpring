@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Research Paper Lifecycle — 6-primal capability-only wiring for
+# full scientific paper provenance from data acquisition to publication.
+# Source: primals/loamSpine/showcase/04-inter-primal/05-full-ecosystem/
+#
+# Pipeline: Songbird (discover) → Squirrel (AI coordinate) → NestGate (store) →
+#           LoamSpine (commit) → BearDog (sign) → ToadStool (compute verify)
+#
+# Bond: covalent
+# Science domain: reproducibility, publication provenance
+#
+# Usage:
+#   biomeos deploy --graph graphs/science/paper_lifecycle.toml
+
+[graph]
+name = "paper_lifecycle"
+description = "6-primal research paper lifecycle: discover → AI → store → commit → sign → verify"
+version = "1.0.0"
+coordination = "Pipeline"
+bond_type = "covalent"
+science_domain = "reproducibility"
+source_showcase = "primals/loamSpine/showcase/04-inter-primal/05-full-ecosystem"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# Squirrel: AI coordination — analyzes paper, generates metadata
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 3
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "ai"
+capabilities = ["ai.coordinate", "ai.infer", "ai.classify"]
+
+# NestGate: stores paper artifacts (data, figures, manuscript)
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
+
+# LoamSpine: permanent ledger commit of paper provenance
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine_primal"
+order = 5
+required = true
+depends_on = ["nestgate"]
+health_method = "health"
+by_capability = "ledger"
+capabilities = ["provenance.commit", "provenance.verify", "provenance.diff"]
+
+# ToadStool: computational verification of results
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 6
+required = false
+depends_on = ["nestgate"]
+health_method = "compute.health"
+by_capability = "compute"
+capabilities = ["compute.dispatch.submit", "compute.execute"]

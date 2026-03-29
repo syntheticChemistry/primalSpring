@@ -1,0 +1,99 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# fieldMouse Ingestion Pipeline — edge sensor data → gate → provenance trio.
+# fieldMouse (Tower chimera) emits signed frames via BirdSong.
+# Gate receives frames → NestGate stores → sweetGrass attributes → LoamSpine commits.
+#
+# Source: wateringHole/FIELDMOUSE_DEPLOYMENT_STANDARD.md
+# Mined: primals/nestgate/showcase/05_real_world/ (edge computing)
+# Experiment: exp042_fieldmouse_ingestion
+#
+# Bond: covalent (same family seed on chimera and gate)
+# Deployment class: fieldMouse (no biomeOS on edge)
+#
+# Usage:
+#   biomeos deploy --graph graphs/science/fieldmouse_ingestion.toml
+
+[graph]
+name = "fieldmouse_ingestion"
+description = "Edge sensor data pipeline: fieldMouse chimera → NestGate → sweetGrass → LoamSpine (provenance trio)"
+version = "1.0.0"
+coordination = "Pipeline"
+bond_type = "covalent"
+science_domain = "edge_data_acquisition"
+deployment_class = "fieldmouse"
+
+# ── Gate Tower layer ───────────────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.verify"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# ── NestGate: receives and stores fieldMouse frames ────────────────────
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
+
+# ── Provenance Trio: stamps and commits edge data ──────────────────────
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt_primal"
+order = 4
+required = false
+depends_on = ["nestgate"]
+health_method = "health"
+by_capability = "provenance"
+capabilities = ["provenance.session", "provenance.merkle_root"]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine_primal"
+order = 5
+required = false
+depends_on = ["rhizocrypt"]
+health_method = "health"
+by_capability = "ledger"
+capabilities = ["provenance.commit", "provenance.verify"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass_primal"
+order = 6
+required = false
+depends_on = ["loamspine"]
+health_method = "health"
+by_capability = "attribution"
+capabilities = ["provenance.braid", "provenance.attribute"]
+
+# ── fieldMouse chimera: leaf node, emits frames ───────────────────────
+# Not a graph-managed node — it's a remote capability provider
+# discovered via BirdSong. Included here for documentation.
+[[graph.node]]
+name = "fieldmouse_sensor"
+binary = "fieldmouse_chimera"
+order = 7
+required = false
+spawn = false
+health_method = "health.check"
+by_capability = "sensor"
+capabilities = ["sensor.read", "fieldmouse.frame", "provenance.stamp"]

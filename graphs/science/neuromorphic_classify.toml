@@ -1,0 +1,88 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Neuromorphic Classification Pipeline — Akida/NPU edge inference.
+# Source: primals/toadstool/showcase/neuromorphic/03-akida-llm-intent/, 04-akida-mesh/
+#
+# fieldMouse Edge class: Tower chimera + ToadStool (NPU dispatch) +
+# NeuralSpring (model inference) + NestGate (result storage).
+#
+# Data flows: sensor stream → ToadStool (dispatch to NPU) →
+# NeuralSpring (classify) → NestGate (store) → Trio (provenance).
+#
+# Bond: covalent
+# Science domain: edge AI, real-time classification
+#
+# Usage:
+#   biomeos deploy --graph graphs/science/neuromorphic_classify.toml
+
+[graph]
+name = "neuromorphic_classify"
+description = "Edge AI classification: sensor → ToadStool NPU dispatch → NeuralSpring inference → NestGate storage"
+version = "1.0.0"
+coordination = "Pipeline"
+bond_type = "covalent"
+science_domain = "edge_ai"
+source_showcase = "primals/toadstool/showcase/neuromorphic"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.sign"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# ToadStool: dispatches compute to NPU (or CPU fallback)
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "compute.health"
+by_capability = "compute"
+capabilities = ["compute.dispatch.submit", "compute.execute", "compute.npu", "compute.gpu"]
+
+# NeuralSpring: inference on classified data
+[[graph.node]]
+name = "neuralspring"
+binary = "neuralspring_primal"
+order = 4
+required = true
+depends_on = ["toadstool"]
+health_method = "neural.health"
+by_capability = "neural"
+capabilities = ["neural.classify", "neural.infer", "neural.spectral"]
+
+# NestGate: stores classification results
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 5
+required = true
+depends_on = ["neuralspring"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
+
+# Provenance stamp on classified results
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt_primal"
+order = 6
+required = false
+depends_on = ["nestgate"]
+health_method = "health"
+by_capability = "provenance"
+capabilities = ["provenance.session", "provenance.merkle_root"]

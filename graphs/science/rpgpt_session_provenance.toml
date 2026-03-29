@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# RPGPT Session Provenance — every narrative decision gets a DAG entry.
+# Validates the session integrity story: game state is cryptographically
+# stamped so sessions can be replayed, audited, and shared.
+#
+# The provenance chain:
+#   1. esotericWebb creates a session (rhizoCrypt dag.session.create)
+#   2. Each scene resolution appends to the DAG (dag.event.append)
+#   3. ludoSpring game science results are part of the event payload
+#   4. Squirrel AI narrations are stamped with attribution (sweetGrass)
+#   5. Player choices branch the DAG (loamSpine lineage.branch)
+#   6. Session completion finalizes + certifies (loamSpine lineage.certify)
+#
+# This is the "game save as provenance record" pattern — sessions are
+# not opaque blobs but structured, verifiable, forkable DAGs.
+
+[graph]
+name = "rpgpt_session_provenance"
+description = "RPGPT session integrity: every narrative event → DAG stamp → replayable + auditable + forkable"
+version = "1.0.0"
+coordination = "Pipeline"
+bond_type = "covalent"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.sign"]
+
+[[graph.node]]
+name = "esotericwebb"
+binary = "esotericwebb"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "narrative"
+capabilities = ["session.create", "session.advance", "webb.resolve_scene"]
+
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring"
+order = 3
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "game"
+capabilities = ["game.evaluate_flow", "game.difficulty_adjustment"]
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 4
+required = true
+health_method = "health"
+by_capability = "ai"
+capabilities = ["ai.chat", "context.create"]
+
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt_primal"
+order = 5
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append", "dag.session.finalize"]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine_primal"
+order = 6
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "lineage"
+capabilities = ["lineage.commit", "lineage.branch", "lineage.certify"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass_primal"
+order = 7
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "provenance"
+capabilities = ["provenance.create_braid", "provenance.verify_braid"]

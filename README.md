@@ -9,11 +9,11 @@
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 385 (unit + integration + doc-tests + proptest) |
-| **Experiments** | 59 (11 tracks) |
-| **Deploy Graphs** | 36 TOMLs (18 single-node + 4 multi-node + 7 spring validation + 2 cross-spring + 5 gen4) |
+| **Experiments** | 63 (13 tracks) |
+| **Deploy Graphs** | 59 TOMLs (18 single-node + 5 multi-node + 7 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate (87/87 gates) |
-| **Provenance** | All 59 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 63 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
@@ -53,19 +53,22 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   └── validate_all/          # Meta-validator: runs all 59 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 63 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
 │       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
-├── experiments/                   # 59 validation experiments (11 tracks)
-├── config/                        # Launch profiles (primal_launch_profiles.toml)
-├── graphs/                        # 36 deploy graph TOMLs
-│   ├── multi_node/               # Multi-node federation graphs (HPC, friend, idle, data)
+├── experiments/                   # 63 validation experiments (13 tracks)
+├── config/                        # Launch profiles, deployment matrix, capability registry
+├── graphs/                        # 59 deploy graph TOMLs
+│   ├── bonding/                  # Bonding model graphs: ionic, metallic, OMS, defensive, albatross (5)
+│   ├── chaos/                    # Chaos engineering: partition recovery, slow start (2)
+│   ├── multi_node/               # Multi-node federation graphs (5)
+│   ├── science/                  # Science + showcase graphs: provenance, fieldMouse, gaming, neuro (10)
 │   ├── spring_validation/        # Per-spring validation wrappers (7)
 │   ├── cross_spring/             # Cross-spring ecology + full sweep (2)
-│   └── gen4/                     # gen4 prototypes: sovereign, science, agentic, interactive (4)
+│   └── gen4/                     # gen4: sovereign, science, agentic, storytelling, UI loop (10)
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
 └── wateringHole/                  # Docs and handoffs
@@ -102,7 +105,7 @@ cargo test --workspace
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 59 experiments (meta-validator)
+# Run all 63 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -147,9 +150,30 @@ The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 
 | `lifecycle.status` | Primal status report |
 | `mcp.tools.list` | MCP tool definitions for Squirrel AI |
 
+## Deployment Matrix
+
+primalSpring includes a deployment validation matrix (`config/deployment_matrix.toml`) that
+defines **43 test cells** across architectures (x86_64, aarch64), topologies, network presets,
+and transport modes. Each cell validates a specific primal composition under specific conditions.
+
+```bash
+# Run all cells (dry-run to see what would execute)
+scripts/validate_deployment_matrix.sh --dry-run --all
+
+# Run a specific cell
+scripts/validate_deployment_matrix.sh --cell tower-x86-homelan
+
+# Run all cells in an experiment group
+scripts/validate_deployment_matrix.sh --tier docker
+```
+
+Topology categories: Tower (2-node), NUCLEUS (3-node), Federation (10-node), Bonding (ionic, metallic, OMS),
+Showcase (fieldMouse, Albatross, skunkBat, neuromorphic, gaming), Agentic (biomeOS+Squirrel+petalTongue),
+Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
+
 ## Deploy Graphs
 
-primalSpring ships 36 deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 59 deploy graph TOMLs (all nodes declare `by_capability`):
 
 **Single-node graphs (18)**:
 
@@ -174,7 +198,7 @@ primalSpring ships 36 deploy graph TOMLs (all nodes declare `by_capability`):
 | `primalspring_deploy.toml` | Sequential | primalspring coordination |
 | `spring_byob_template.toml` | Sequential | template for new springs |
 
-**Multi-node federation graphs (4)** — `graphs/multi_node/`:
+**Multi-node federation graphs (5)** — `graphs/multi_node/`:
 
 | Graph | Scenario | Bond Type | Trust Model |
 |-------|----------|-----------|-------------|
@@ -190,8 +214,22 @@ hotspring). Each deploys biomeOS as substrate then germinates the spring primal.
 **Cross-spring graphs (2)** — `graphs/cross_spring/`: ecology validation
 (ET₀ → diversity → spectral) and full sweep across all springs.
 
-**gen4 graphs (5)** — `graphs/gen4/`: sovereign tower, science substrate,
-agentic tower, interactive substrate, **spring composition** (Tower + biomeOS + all spring primals + cross-spring routing validation).
+**Bonding model graphs (5)** — `graphs/bonding/`: ionic capability sharing,
+metallic GPU pool, organo-metal-salt complex, defensive mesh (skunkBat),
+Albatross multiplex (Songbird fleet).
+
+**Chaos engineering graphs (2)** — `graphs/chaos/`: network partition recovery
+and slow-start composition convergence.
+
+**Science + showcase graphs (10)** — `graphs/science/`: coralForge federated, ecology
+provenance, reproducibility audit, fieldMouse ingestion, paper lifecycle, supply chain
+provenance, mixed entropy hierarchy, gaming mesh chimera, neuromorphic classify,
+RPGPT session provenance.
+
+**gen4 graphs (10)** — `graphs/gen4/`: sovereign tower, science substrate, agentic tower,
+interactive substrate, spring composition, **agentic substrate** (biomeOS+Squirrel+petalTongue),
+**agentic fieldMouse**, **UI-orchestrator loop**, **storytelling full** (esotericWebb+ludoSpring+Squirrel AI DM),
+**storytelling minimal** (offline play).
 
 All graphs have `by_capability` on every node and are structurally validated +
 topologically sorted at test time. Multi-node graphs include `[graph.metadata]`
@@ -298,12 +336,19 @@ for the full SELinux gap analysis and per-primal remediation plan.
 - `specs/GEN4_COMPOSITION_AUDIT.md` — Shortcomings audit: primalSpring vs esotericWebb gen4 needs
 - `specs/PAPER_REVIEW_QUEUE.md` — Coordination patterns ready for validation
 - `specs/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (indirect only)
+- `specs/AGENTIC_TRIO_EVOLUTION.md` — biomeOS + Squirrel + petalTongue evolution guidance for the agentic loop
+- `specs/STORYTELLING_EVOLUTION.md` — ludoSpring + esotericWebb evolution for AI DM storytelling
+- `specs/SHOWCASE_MINING_REPORT.md` — Showcase patterns mined from primals for substrate validation
+- `config/deployment_matrix.toml` — 43-cell deployment validation matrix
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer
 
 ## Deployment Scripts
 
 | Script | Purpose |
 |--------|---------|
+| `scripts/validate_deployment_matrix.sh` | Run deployment matrix cells: topology × arch × preset × transport validation |
+| `scripts/chaos-inject.sh` | Inject chaos conditions (partition, kill, disk-fill, slow DNS, clock drift) into benchScale labs |
+| `scripts/validate_local_lab.sh` | Quick local lab validation for benchScale topologies |
 | `scripts/build_ecosystem_musl.sh` | Build all primals as `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-musl` static binaries |
 | `scripts/prepare_spore_payload.sh` | Assemble USB spore deployment payload (binaries + graphs + scripts + genetics) |
 | `scripts/validate_remote_gate.sh` | Probe a remote gate's NUCLEUS health via TCP JSON-RPC |

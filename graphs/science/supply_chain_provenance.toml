@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Supply Chain Provenance — multi-agent DAG signing workflow.
+# Source: primals/rhizoCrypt/showcase/01-inter-primal-live/05-complete-workflows/
+#
+# Multiple agents sign provenance events into a DAG. BearDog provides
+# identity, rhizoCrypt manages the working memory DAG, sweetGrass
+# braids attribution, LoamSpine commits permanently.
+#
+# Use cases: supply chain tracking, document provenance, federated identity
+#
+# Bond: covalent (internal), ionic (external supply chain partners)
+#
+# Usage:
+#   biomeos deploy --graph graphs/science/supply_chain_provenance.toml
+
+[graph]
+name = "supply_chain_provenance"
+description = "Multi-agent DAG signing: supply chain tracking, document provenance, federated identity workflows"
+version = "1.0.0"
+coordination = "Pipeline"
+bond_type = "covalent"
+science_domain = "supply_chain"
+source_showcase = "primals/rhizoCrypt/showcase/01-inter-primal-live/05-complete-workflows"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# rhizoCrypt: working memory DAG — multi-agent event append
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt_primal"
+order = 3
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "provenance"
+capabilities = ["provenance.session", "provenance.merkle_root", "provenance.event.append", "provenance.dag"]
+
+# sweetGrass: attribution braiding for multi-agent work
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass_primal"
+order = 4
+required = true
+depends_on = ["rhizocrypt"]
+health_method = "health"
+by_capability = "attribution"
+capabilities = ["provenance.braid", "provenance.attribute", "provenance.audit"]
+
+# LoamSpine: permanent commit of supply chain events
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine_primal"
+order = 5
+required = true
+depends_on = ["sweetgrass"]
+health_method = "health"
+by_capability = "ledger"
+capabilities = ["provenance.commit", "provenance.verify"]
+
+# NestGate: stores supply chain artifacts (receipts, manifests, certificates)
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 6
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.replicate"]

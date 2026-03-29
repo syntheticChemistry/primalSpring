@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Albatross Multiplex — multi-Songbird tarpc fleet with intelligent routing.
+# Source: primals/songbird/showcase/05-albatross-multiplex/
+#
+# 3 Songbird instances (master + 2 workers) coordinating via tarpc
+# connection pooling. Master distributes workloads: light tasks to workers,
+# heavy compute to ToadStool. Protocol selected automatically based on
+# payload size, latency requirements, and client capabilities.
+#
+# Bond: metallic (fleet of identical Songbird instances, shared resource pool)
+#
+# Usage:
+#   biomeos deploy --graph graphs/bonding/albatross_multiplex.toml
+
+[graph]
+name = "albatross_multiplex"
+description = "Multi-Songbird tarpc fleet: connection pooling, intelligent routing, workload distribution to ToadStool"
+version = "1.0.0"
+coordination = "parallel"
+bond_type = "metallic"
+source_showcase = "primals/songbird/showcase/05-albatross-multiplex"
+
+# ── Identity layer ─────────────────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.verify"]
+
+# ── Songbird master (coordinator) ─────────────────────────────────────
+[[graph.node]]
+name = "songbird_master"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh", "net.tarpc_pool", "net.protocol_select"]
+bond_role = "albatross_master"
+
+# ── Songbird workers (tarpc multiplex pool) ────────────────────────────
+[[graph.node]]
+name = "songbird_worker_1"
+binary = "songbird_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird_master"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh", "net.tarpc_serve"]
+bond_role = "albatross_worker"
+
+[[graph.node]]
+name = "songbird_worker_2"
+binary = "songbird_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird_master"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh", "net.tarpc_serve"]
+bond_role = "albatross_worker"
+
+# ── biomeOS (orchestrator) ─────────────────────────────────────────────
+[[graph.node]]
+name = "biomeos"
+binary = "biomeos_primal"
+order = 5
+required = true
+depends_on = ["beardog", "songbird_master"]
+health_method = "health"
+by_capability = "ecosystem"
+capabilities = ["graph.execution", "ecosystem.coordination", "route.register"]
+
+# ── ToadStool (compute target for heavy workloads) ─────────────────────
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 6
+required = true
+depends_on = ["songbird_master"]
+health_method = "compute.health"
+by_capability = "compute"
+capabilities = ["compute.dispatch.submit", "compute.execute", "compute.gpu"]
