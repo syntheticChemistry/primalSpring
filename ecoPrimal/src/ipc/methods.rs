@@ -117,6 +117,8 @@ pub mod genetic {
     pub const VERIFY_LINEAGE: &str = "genetic.verify_lineage";
     /// Derive a per-domain key from lineage seed.
     pub const DERIVE_LINEAGE_KEY: &str = "genetic.derive_lineage_key";
+    /// Generate a BLAKE3 lineage proof for family verification.
+    pub const GENERATE_LINEAGE_PROOF: &str = "genetic.generate_lineage_proof";
 }
 
 /// Secrets domain — encrypted key-value storage (BearDog).
@@ -190,6 +192,7 @@ mod tests {
             genetic::DERIVE_LINEAGE_BEACON_KEY,
             genetic::VERIFY_LINEAGE,
             genetic::DERIVE_LINEAGE_KEY,
+            genetic::GENERATE_LINEAGE_PROOF,
             secrets::STORE,
             secrets::RETRIEVE,
             storage::STORE,

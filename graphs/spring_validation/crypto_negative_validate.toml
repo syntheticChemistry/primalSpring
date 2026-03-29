@@ -1,0 +1,199 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring negative validation graph for BearDog crypto and genetic operations.
+# Validates that rejection paths work correctly — wrong keys, wrong seeds,
+# tampered ciphertext, and cross-family isolation all produce failures.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/crypto_negative_validate.toml
+
+[graph]
+name = "crypto_negative_validate"
+description = "Validates rejection paths: wrong-seed lineage, tampered ciphertext, empty seed rejection"
+version = "0.1.0"
+coordination = "sequential"
+
+[graph.metadata]
+bond_type = "validation"
+trust_model = "genetic_lineage"
+negative_tests = true
+
+# --- Phase 1: Tower Health ---
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.tower_health"]
+
+# --- Phase 2: Lineage Proof Generate-then-Verify ---
+
+[[graph.node]]
+name = "generate_lineage_proof"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+by_capability = "security"
+capabilities = ["genetic.generate_lineage_proof"]
+
+[graph.node.operation]
+method = "genetic.generate_lineage_proof"
+
+[graph.node.operation.params]
+our_family_id = "family-alpha"
+peer_family_id = "family-beta"
+lineage_seed = "${LINEAGE_SEED_B64}"
+
+[[graph.node]]
+name = "verify_lineage_correct_seed"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["generate_lineage_proof"]
+by_capability = "security"
+capabilities = ["genetic.verify_lineage"]
+
+[graph.node.operation]
+method = "genetic.verify_lineage"
+expect = "valid"
+
+[graph.node.operation.params]
+our_family_id = "family-alpha"
+peer_family_id = "family-beta"
+lineage_proof = "${generate_lineage_proof.proof}"
+lineage_seed = "${LINEAGE_SEED_B64}"
+
+# --- Phase 3: Negative — Wrong Seed Rejected ---
+
+[[graph.node]]
+name = "verify_lineage_wrong_seed"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["generate_lineage_proof"]
+by_capability = "security"
+capabilities = ["genetic.verify_lineage"]
+
+[graph.node.operation]
+method = "genetic.verify_lineage"
+expect = "invalid"
+
+[graph.node.operation.params]
+our_family_id = "family-alpha"
+peer_family_id = "family-beta"
+lineage_proof = "${generate_lineage_proof.proof}"
+lineage_seed = "${WRONG_LINEAGE_SEED_B64}"
+
+# --- Phase 4: Negative — Empty Seed Rejected ---
+
+[[graph.node]]
+name = "beacon_key_empty_seed_rejected"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+by_capability = "security"
+capabilities = ["genetic.derive_lineage_beacon_key"]
+
+[graph.node.operation]
+method = "genetic.derive_lineage_beacon_key"
+expect = "error"
+
+[graph.node.operation.params]
+lineage_seed = ""
+
+# --- Phase 5: Beacon Encrypt-Decrypt Round-Trip ---
+
+[[graph.node]]
+name = "beacon_generate_encrypt"
+binary = "primalspring_primal"
+order = 6
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+by_capability = "security"
+capabilities = ["birdsong.generate_encrypted_beacon"]
+
+[graph.node.operation]
+method = "birdsong.generate_encrypted_beacon"
+
+[graph.node.operation.params]
+node_id = "negative-test-node"
+capabilities = ["crypto", "validation"]
+
+[[graph.node]]
+name = "beacon_decrypt_same_family"
+binary = "primalspring_primal"
+order = 7
+required = true
+spawn = false
+depends_on = ["beacon_generate_encrypt"]
+by_capability = "security"
+capabilities = ["birdsong.decrypt_beacon"]
+
+[graph.node.operation]
+method = "birdsong.decrypt_beacon"
+expect = "success"
+
+[graph.node.operation.params]
+encrypted_beacon = "${beacon_generate_encrypt.encrypted_beacon}"
+
+# --- Phase 6: Ed25519 Tamper Rejection ---
+
+[[graph.node]]
+name = "ed25519_sign"
+binary = "primalspring_primal"
+order = 8
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+by_capability = "security"
+capabilities = ["crypto.sign_ed25519"]
+
+[graph.node.operation]
+method = "crypto.sign_ed25519"
+
+[graph.node.operation.params]
+data = "primalSpring negative test payload"
+
+[[graph.node]]
+name = "ed25519_verify_tampered"
+binary = "primalspring_primal"
+order = 9
+required = true
+spawn = false
+depends_on = ["ed25519_sign"]
+by_capability = "security"
+capabilities = ["crypto.verify_ed25519"]
+
+[graph.node.operation]
+method = "crypto.verify_ed25519"
+expect = "invalid"
+
+[graph.node.operation.params]
+data = "TAMPERED payload — not the original"
+signature = "${ed25519_sign.signature}"
+public_key = "${ed25519_sign.public_key}"
+
+# =============================================================================
+# SUMMARY
+#
+# This graph validates that:
+#   1. Correct lineage proof verifies (positive baseline)
+#   2. Wrong lineage seed causes verification FAILURE (not silent pass)
+#   3. Empty lineage seed is REJECTED by BearDog (not defaulted to zeros)
+#   4. Same-family beacon decrypt works (positive baseline)
+#   5. Ed25519 tampered payload is REJECTED
+#
+# These are the "dark side" tests that prove security boundaries exist.
+# Without them, we only know the happy path works.
+# =============================================================================

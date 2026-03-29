@@ -28,14 +28,19 @@ fn main() {
 
 /// Nuclear genetics: derive keys from family/lineage seed.
 fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16) {
+    use base64::Engine;
+    let b64 = base64::engine::general_purpose::STANDARD;
+
     v.section("Lineage Key Derivation (Nuclear)");
+
+    let lineage_seed = b64.encode(b"primalSpring_exp086_test_seed!!");
 
     let beacon_key = tcp::tcp_rpc(
         host,
         port,
         methods::genetic::DERIVE_LINEAGE_BEACON_KEY,
         &serde_json::json!({
-            "domain": "birdsong_beacon_v1"
+            "lineage_seed": lineage_seed
         }),
     );
     match &beacon_key {
@@ -63,7 +68,10 @@ fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16)
         port,
         methods::genetic::DERIVE_LINEAGE_KEY,
         &serde_json::json!({
-            "domain": "storage_encryption_v1"
+            "our_family_id": "exp086-family",
+            "peer_family_id": "exp086-peer",
+            "context": "storage_encryption_v1",
+            "lineage_seed": lineage_seed,
         }),
     );
     match domain_key {
@@ -185,57 +193,135 @@ fn phase_biomeos_family_registry(v: &mut ValidationResult, host: &str, port: u16
     }
 }
 
-/// Verify lineage chain integrity.
+/// Verify lineage chain integrity via generate-then-verify round-trip.
 fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port: u16) {
+    use base64::Engine;
+    let b64 = base64::engine::general_purpose::STANDARD;
+
     v.section("Lineage Verification");
 
-    let lineage = tcp::tcp_rpc(
+    let lineage_seed = b64.encode(b"primalSpring_exp086_test_seed!!");
+    let our_family = "exp086-family-alpha";
+    let peer_family = "exp086-family-beta";
+
+    // Step 1: generate a lineage proof
+    let proof_result = tcp::tcp_rpc(
+        host,
+        port,
+        methods::genetic::GENERATE_LINEAGE_PROOF,
+        &serde_json::json!({
+            "our_family_id": our_family,
+            "peer_family_id": peer_family,
+            "lineage_seed": lineage_seed,
+        }),
+    );
+    let proof_b64 = match &proof_result {
+        Ok((result, _)) => {
+            let has_proof = result.get("proof").is_some();
+            v.check_bool(
+                "lineage proof generated",
+                has_proof,
+                "genetic.generate_lineage_proof returns proof",
+            );
+            result
+                .get("proof")
+                .and_then(|p| p.as_str())
+                .map(String::from)
+        }
+        Err(e) => {
+            v.check_skip(
+                "lineage proof generation",
+                &format!("BearDog genetic RPC not reachable: {e}"),
+            );
+            return;
+        }
+    };
+
+    let Some(proof) = proof_b64 else {
+        v.check_skip("lineage verification", "no proof to verify");
+        return;
+    };
+
+    // Step 2: verify with correct seed (should pass)
+    let verify_ok = tcp::tcp_rpc(
         host,
         port,
         methods::genetic::VERIFY_LINEAGE,
-        &serde_json::json!({}),
+        &serde_json::json!({
+            "our_family_id": our_family,
+            "peer_family_id": peer_family,
+            "lineage_proof": proof,
+            "lineage_seed": lineage_seed,
+        }),
     );
-    match lineage {
+    match verify_ok {
         Ok((result, _)) => {
             let valid = result
                 .get("valid")
                 .and_then(serde_json::Value::as_bool)
-                .unwrap_or(false)
-                || result
-                    .get("verified")
-                    .and_then(serde_json::Value::as_bool)
-                    .unwrap_or(false)
-                || result
-                    .get("lineage_valid")
-                    .and_then(serde_json::Value::as_bool)
-                    .unwrap_or(false);
+                .unwrap_or(false);
             v.check_bool(
                 "lineage chain valid",
                 valid,
-                "genetic.verify_lineage confirms chain integrity",
+                "genetic.verify_lineage confirms chain integrity with correct seed",
             );
         }
         Err(e) => v.check_skip(
             "lineage verification",
-            &format!("genetic RPC not reachable: {e}"),
+            &format!("genetic.verify_lineage failed: {e}"),
         ),
     }
 
+    // Step 3: verify with wrong seed (should fail — negative test)
+    let wrong_seed = b64.encode(b"WRONG_seed_not_the_real_one!!!!");
+    let verify_bad = tcp::tcp_rpc(
+        host,
+        port,
+        methods::genetic::VERIFY_LINEAGE,
+        &serde_json::json!({
+            "our_family_id": our_family,
+            "peer_family_id": peer_family,
+            "lineage_proof": proof,
+            "lineage_seed": wrong_seed,
+        }),
+    );
+    match verify_bad {
+        Ok((result, _)) => {
+            let valid = result
+                .get("valid")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(true);
+            v.check_bool(
+                "wrong-seed rejected",
+                !valid,
+                "genetic.verify_lineage rejects proof with wrong lineage seed",
+            );
+        }
+        Err(_) => v.check_bool(
+            "wrong-seed rejected",
+            true,
+            "RPC error on wrong seed is acceptable rejection",
+        ),
+    }
+
+    // Step 4: birdsong.verify_lineage (challenge step 1 — returns challenge, not boolean)
     let birdsong_lineage = tcp::tcp_rpc(
         host,
         port,
         methods::birdsong::VERIFY_LINEAGE,
-        &serde_json::json!({}),
+        &serde_json::json!({
+            "peer_node_id": "exp086-peer-node"
+        }),
     );
     match birdsong_lineage {
         Ok((result, _)) => {
-            let has_lineage = result.get("lineage").is_some()
-                || result.get("chain").is_some()
+            let has_challenge = result.get("challenge_generated").is_some()
+                || result.get("challenge").is_some()
                 || result.get("valid").is_some();
             v.check_bool(
-                "birdsong lineage",
-                has_lineage,
-                "birdsong.verify_lineage returns lineage data",
+                "birdsong lineage challenge",
+                has_challenge,
+                "birdsong.verify_lineage generates challenge (step 1 of protocol)",
             );
         }
         Err(e) => v.check_skip(
