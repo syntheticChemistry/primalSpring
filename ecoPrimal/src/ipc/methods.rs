@@ -81,6 +81,76 @@ pub mod provenance {
     pub const ATTRIBUTION_RESOLVE: &str = "attribution.resolve";
 }
 
+/// BearDog crypto domain — real cryptographic operations.
+pub mod crypto {
+    /// Generate an Ed25519 keypair.
+    pub const GENERATE_KEYPAIR: &str = "crypto.generate_keypair";
+    /// Sign data with Ed25519.
+    pub const SIGN_ED25519: &str = "crypto.sign_ed25519";
+    /// Verify an Ed25519 signature.
+    pub const VERIFY_ED25519: &str = "crypto.verify_ed25519";
+    /// Blake3 hash of data.
+    pub const BLAKE3_HASH: &str = "crypto.blake3_hash";
+    /// SHA-256 hash of data.
+    pub const SHA256_HASH: &str = "crypto.sha256_hash";
+}
+
+/// BirdSong beacon domain — encrypted peer discovery.
+pub mod birdsong {
+    /// Generate an encrypted discovery beacon.
+    pub const GENERATE_ENCRYPTED_BEACON: &str = "birdsong.generate_encrypted_beacon";
+    /// Decrypt a discovery beacon.
+    pub const DECRYPT_BEACON: &str = "birdsong.decrypt_beacon";
+    /// Verify lineage chain from a beacon.
+    pub const VERIFY_LINEAGE: &str = "birdsong.verify_lineage";
+    /// Encrypt discovery payload (BearDog-side).
+    pub const ENCRYPT: &str = "birdsong.encrypt";
+    /// Decrypt discovery payload (BearDog-side).
+    pub const DECRYPT: &str = "birdsong.decrypt";
+}
+
+/// Genetic identity domain — family/lineage key derivation.
+pub mod genetic {
+    /// Derive a beacon key from lineage seed (HKDF, domain birdsong_beacon_v1).
+    pub const DERIVE_LINEAGE_BEACON_KEY: &str = "genetic.derive_lineage_beacon_key";
+    /// Verify a lineage chain.
+    pub const VERIFY_LINEAGE: &str = "genetic.verify_lineage";
+    /// Derive a per-domain key from lineage seed.
+    pub const DERIVE_LINEAGE_KEY: &str = "genetic.derive_lineage_key";
+}
+
+/// Secrets domain — encrypted key-value storage (BearDog).
+pub mod secrets {
+    /// Store an encrypted secret.
+    pub const STORE: &str = "secrets.store";
+    /// Retrieve a stored secret.
+    pub const RETRIEVE: &str = "secrets.retrieve";
+}
+
+/// NestGate storage domain — persistent object storage.
+pub mod storage {
+    /// Store an object.
+    pub const STORE: &str = "storage.store";
+    /// Retrieve an object.
+    pub const RETRIEVE: &str = "storage.retrieve";
+    /// List stored objects.
+    pub const LIST: &str = "storage.list";
+}
+
+/// Game domain — ludoSpring game science methods.
+pub mod game {
+    /// Evaluate flow state (Csikszentmihalyi).
+    pub const EVALUATE_FLOW: &str = "game.evaluate_flow";
+    /// Dynamic difficulty adjustment.
+    pub const DIFFICULTY_ADJUSTMENT: &str = "game.difficulty_adjustment";
+    /// Wave Function Collapse step.
+    pub const WFC_STEP: &str = "game.wfc_step";
+    /// Fitts's law cost analysis.
+    pub const FITTS_COST: &str = "game.fitts_cost";
+    /// Engagement metrics.
+    pub const ENGAGEMENT: &str = "game.engagement";
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -107,6 +177,29 @@ mod tests {
             provenance::COMMIT,
             provenance::ATTRIBUTION_CLAIM,
             provenance::ATTRIBUTION_RESOLVE,
+            crypto::GENERATE_KEYPAIR,
+            crypto::SIGN_ED25519,
+            crypto::VERIFY_ED25519,
+            crypto::BLAKE3_HASH,
+            crypto::SHA256_HASH,
+            birdsong::GENERATE_ENCRYPTED_BEACON,
+            birdsong::DECRYPT_BEACON,
+            birdsong::VERIFY_LINEAGE,
+            birdsong::ENCRYPT,
+            birdsong::DECRYPT,
+            genetic::DERIVE_LINEAGE_BEACON_KEY,
+            genetic::VERIFY_LINEAGE,
+            genetic::DERIVE_LINEAGE_KEY,
+            secrets::STORE,
+            secrets::RETRIEVE,
+            storage::STORE,
+            storage::RETRIEVE,
+            storage::LIST,
+            game::EVALUATE_FLOW,
+            game::DIFFICULTY_ADJUSTMENT,
+            game::WFC_STEP,
+            game::FITTS_COST,
+            game::ENGAGEMENT,
         ];
         for method in all {
             assert!(
@@ -124,6 +217,12 @@ mod tests {
             capabilities::LIST,
             capability::DISCOVER,
             coordination::VALIDATE_COMPOSITION,
+            crypto::GENERATE_KEYPAIR,
+            birdsong::ENCRYPT,
+            genetic::DERIVE_LINEAGE_KEY,
+            secrets::STORE,
+            storage::LIST,
+            game::ENGAGEMENT,
         ];
         for method in all {
             assert!(!method.starts_with('.'), "{method:?} starts with dot");

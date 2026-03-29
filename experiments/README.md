@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**63 experiments across 13 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**67 experiments across 14 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -19,18 +19,18 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 63 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 67 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 63 experiments. All 63 use centralized library helpers for TCP RPC,
+across all 67 experiments. All 67 use centralized library helpers for TCP RPC,
 method name constants (`ipc::methods`), and primal name constants (`primal_names`).
 
 ## Running
 
 ```bash
-# Run all 63 experiments via meta-validator
+# Run all 67 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -57,6 +57,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 11 | gen4 Deployment Evolution | exp075–080 | **Live validated** (biomeOS substrate, cross-gate routing, Squirrel AI, petalTongue, spring sweep, cross-spring ecology) |
 | 12 | Deployment Matrix | exp081 | **Structural** (43-cell deployment matrix sweep across arch × topology × preset × transport) |
 | 13 | Substrate Stress | exp082–084 | **Structural** (chaos substrate, federation edge cases, provenance adversarial) |
+| 14 | E2E Composition | exp085–088 | **E2E composition** (BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition) |
 
 ## Experiment Status Key
 
@@ -90,15 +91,15 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 17 | gen4 Deployment Evolution | **Done** (biomeOS substrate validation, cross-gate Pixel routing, Squirrel AI bridge, spring deploy sweep, gen4 prototype graphs, 59 experiments, 385 tests) |
 | 18 | LAN Covalent Deployment | Planned — live multi-gate NUCLEUS, biomeOS aarch64 cross-compile for Pixel substrate |
 | 19 | Gen4 Spring Scaffolding | **Done** (5 spring primal binaries built, 7 validation graphs, launch profiles) |
-| 20 | Deployment Matrix + Substrate Validation | **Done** (43-cell matrix, benchScale topologies, chaos/federation/provenance experiments, agentic trio, storytelling stack, showcase mining, 63 experiments, 59 graphs) |
-| 21 | Deep Ecosystem Audit + Library Consolidation | **Done** (ipc::tcp + ipc::methods library modules, launcher 4-module refactor, provenance circuit breaker half-open, tracing migration, 8 experiments consolidated to library helpers, 411 tests, zero clippy/fmt/doc warnings) |
-| 22 | Emergent E2E, live multi-node, bonding coordination | Awaiting live multi-machine deployment |
+| 20 | Deployment Matrix + Substrate Validation | **Done** (43-cell matrix, benchScale topologies, chaos/federation/provenance experiments, agentic trio, storytelling stack, showcase mining, 67 experiments, 59 graphs) |
+| 21 | Deep Ecosystem Audit + Library Consolidation | **Done** (ipc::tcp + ipc::methods library modules, launcher 4-module refactor, provenance circuit breaker half-open, tracing migration, 8 experiments consolidated to library helpers, 413 tests, zero clippy/fmt/doc warnings) |
+| 22 | Track 14 — exp085–exp088 — E2E composition: BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition | **Done** |
 
 ## Validation Harness
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 63 experiments use this):
+**Builder API** (preferred — all 67 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit

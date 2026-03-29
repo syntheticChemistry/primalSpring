@@ -3,6 +3,24 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## Phase 22: E2E Composition Testing (Track 14)
+
+### Added
+- `ipc::methods` — 6 new domain modules: `crypto`, `birdsong`, `genetic`, `secrets`, `storage`, `game`
+- `ipc::tcp` — `neural_api_capability_call` and `neural_api_capability_discover` helpers
+- `tolerances` — `PRIMAL_STARTUP_LATENCY_US`, `DEFAULT_SQUIRREL_PORT` aliases
+- exp085: BearDog crypto lifecycle E2E (Ed25519, Blake3, BirdSong beacon, secrets)
+- exp086: Genetic identity E2E (mito beacon seed vs nuclear lineage, family scoping)
+- exp087: Neural API routing E2E (security, discovery, storage, compute, AI domains)
+- exp088: Storytelling composition (ludoSpring + esotericWebb + Squirrel + petalTongue)
+- `scripts/validate_composition.sh` — composition validation with benchScale topology support
+- ludoSpring game.* method gap handoff for esotericWebb contract
+
+### Changed
+- Experiment count: 63 → 67, test count: 411 → 413
+- `validate_release.sh` test floor: 411 → 413
+- IPC method modules: 10 → 16 domain-specific constant sets
+
 ## [Unreleased] — Phase 21: Deep Ecosystem Audit + Library Consolidation (2026-03-29)
 
 ### Added

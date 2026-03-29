@@ -21,7 +21,7 @@ primals at runtime via capability-based discovery.
 
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
-- **experiments/** — 63 validation binaries covering 13 tracks
+- **experiments/** — 67 validation binaries covering 14 tracks
   (atomics, graphs, emergent, bonding, IPC, provenance, deployment, gen4 substrate, deployment matrix, substrate stress)
 - **graphs/** — 59 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4 + bonding + chaos + science)
 - **config/** — capability registry, launch profiles
@@ -58,11 +58,12 @@ Capability-based discovery via Neural API or 5-tier filesystem probing.
 
 ## Status
 
-v0.7.0 Phase 21 — 87/87 gates, 411 tests, 72.5% library coverage,
-63 experiments, 59 deploy graphs, 5 spring primal binaries in plasmidBin.
-Phase 21: deep ecosystem audit — ipc::tcp + ipc::methods library modules,
-launcher smart refactor (4 sub-modules), provenance circuit breaker half-open,
-tracing migration, 8 experiments refactored to library helpers, 26 new tests.
+v0.7.0 Phase 22 — 87/87 gates, 413 tests, 72.5% library coverage,
+67 experiments, 59 deploy graphs, 5 spring primal binaries in plasmidBin.
+Phase 22: E2E composition testing (Track 14) — exp085–exp088 (BearDog crypto lifecycle,
+genetic identity, Neural API routing, storytelling composition), ipc::methods domain modules,
+ipc::tcp neural API helpers, tolerances aliases, validate_composition.sh, ludoSpring game
+method gap handoff; experiment count 63→67, test count 411→413.
 
 ## Ecosystem Position
 

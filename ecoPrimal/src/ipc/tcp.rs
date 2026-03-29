@@ -159,6 +159,50 @@ pub fn env_port(key: &str, default: u16) -> u16 {
         .unwrap_or(default)
 }
 
+/// Invoke an operation via the biomeOS Neural API `capability.call` pattern.
+///
+/// Wraps the `capability.call` JSON-RPC method, routing to the appropriate
+/// primal based on `domain` and `operation`.
+///
+/// # Errors
+///
+/// Returns an error string on connection/timeout failure or if the Neural API
+/// returns an RPC error.
+pub fn neural_api_capability_call(
+    host: &str,
+    port: u16,
+    domain: &str,
+    operation: &str,
+    params: &serde_json::Value,
+) -> TcpRpcResult {
+    let call_params = serde_json::json!({
+        "domain": domain,
+        "operation": operation,
+        "params": params
+    });
+    tcp_rpc(
+        host,
+        port,
+        crate::ipc::methods::capability::CALL,
+        &call_params,
+    )
+}
+
+/// Discover primals for a capability domain via the Neural API.
+///
+/// # Errors
+///
+/// Returns an error string on connection failure or RPC error.
+pub fn neural_api_capability_discover(host: &str, port: u16, domain: &str) -> TcpRpcResult {
+    let params = serde_json::json!({ "domain": domain });
+    tcp_rpc(
+        host,
+        port,
+        crate::ipc::methods::capability::DISCOVER,
+        &params,
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -178,6 +222,24 @@ mod tests {
     #[test]
     fn http_health_fails_gracefully_on_unreachable_host() {
         let result = http_health_probe("127.0.0.1", 1);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn neural_api_capability_call_fails_on_unreachable() {
+        let result = neural_api_capability_call(
+            "127.0.0.1",
+            1,
+            "security",
+            "crypto.sign_ed25519",
+            &serde_json::json!({}),
+        );
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn neural_api_capability_discover_fails_on_unreachable() {
+        let result = neural_api_capability_discover("127.0.0.1", 1, "security");
         assert!(result.is_err());
     }
 }

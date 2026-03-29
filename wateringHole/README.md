@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 21 — 87/87 gates, 411 tests, 72.5% coverage, 63 experiments, 59 deploy graphs, 5 spring primal binaries)  
+**Version**: 0.7.0 (Phase 22 — 87/87 gates, 413 tests, 72.5% coverage, 67 experiments, 59 deploy graphs, 5 spring primal binaries)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 29, 2026
 
@@ -37,8 +37,8 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **411** (unit + integration + doc-tests + proptest, 42 ignored live) |
-| Experiments | 63 (13 tracks) |
+| Tests | **413** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Experiments | 67 (14 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
@@ -51,7 +51,7 @@ primalSpring fills the gap.
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
-| Meta-validator | `validate_all` binary — runs all 63 experiments |
+| Meta-validator | `validate_all` binary — runs all 67 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates passing (core + full utilization) |
 | Nest Atomic | **VALIDATED** — nestgate storage (8/8 gates) |
 | Node Atomic | **VALIDATED** — toadstool compute (5/5 gates) |
@@ -90,7 +90,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (13 Tracks, 63 Experiments)
+## Track Structure (14 Tracks, 67 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -246,6 +246,17 @@ Chaos injection, federation edge cases, and provenance adversarial testing.
 | 083 | Federation edge cases | Asymmetric latency, partial mesh, gate survey | **Structural** |
 | 084 | Provenance adversarial | Tampered DAG, replay attacks, attribution disputes | **Structural** |
 
+### Track 14: E2E Composition (exp085–088)
+
+End-to-end composition across crypto, genetics, Neural API routing, and storytelling stacks.
+
+| Exp | What | Validates | Status |
+|-----|------|-----------|--------|
+| 085 | BearDog crypto lifecycle | Ed25519, Blake3, BirdSong beacon, secrets | **E2E** |
+| 086 | Genetic identity | Mito beacon seed vs nuclear lineage, family scoping | **E2E** |
+| 087 | Neural API routing | Security, discovery, storage, compute, AI domains | **E2E** |
+| 088 | Storytelling composition | ludoSpring + esotericWebb + Squirrel + petalTongue | **E2E** |
+
 ---
 
 ## Capability Domain
@@ -285,6 +296,7 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `PRIMALSPRING_V070_PHASE22_LUDOSPRING_GAME_METHOD_GAP_HANDOFF_MAR29_2026.md` | Mar 29 | **Phase 22 E2E composition**: exp085–exp088, ipc::methods domains, neural_api_capability_* helpers, validate_composition.sh, ludoSpring game.* gap for esotericWebb, 413 tests |
 | v0.7.0 | `PRIMALSPRING_V070_PHASE21_DEEP_AUDIT_HANDOFF_MAR29_2026.md` | Mar 29 | **Phase 21 deep audit**: ipc::tcp + ipc::methods library extraction, launcher 4-module refactor, provenance circuit breaker half-open, tracing migration, 8 experiments consolidated, 411 tests |
 | v0.7.0 | `PRIMALSPRING_V070_ECOSYSTEM_AUDIT_GUIDANCE_HANDOFF_MAR27_2026.md` | Mar 27 | **Ecosystem audit guidance**: 8-axis audit methodology, per-axis findings, evolution recommendations |
 | v0.7.0 | `PRIMALSPRING_COMPOSITION_DEEP_DEBT_EVOLUTION_HANDOFF_MAR27_2026.md` | Mar 27 | **Composition deep debt**: hardcoding→capability-based, primal_names centralization, method constants |

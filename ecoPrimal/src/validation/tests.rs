@@ -226,11 +226,12 @@ fn all_experiment_tracks_have_provenance_schema() {
         "exp058", "exp059", "exp060", "exp061", "exp062", "exp063", "exp064", "exp065", "exp066",
         "exp067", "exp068", "exp069", "exp070", "exp071", "exp072", "exp073", "exp074", "exp075",
         "exp076", "exp077", "exp078", "exp079", "exp080", "exp081", "exp082", "exp083", "exp084",
+        "exp085", "exp086", "exp087", "exp088",
     ];
     assert_eq!(
         experiment_ids.len(),
-        63,
-        "expected 63 experiments across tracks"
+        67,
+        "expected 67 experiments across tracks"
     );
     let tracks: std::collections::HashSet<u32> = experiment_ids
         .iter()

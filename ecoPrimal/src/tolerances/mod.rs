@@ -25,6 +25,12 @@ pub const HEALTH_CHECK_MAX_US: u64 = 50_000;
 /// Validated: Phase 3+ 5-tier discovery completes in <30ms on local gate.
 pub const DISCOVERY_MAX_US: u64 = 100_000;
 
+/// Upper bound for neural API / primal routing round-trip latency checks (microseconds).
+///
+/// Same budget as [`DISCOVERY_MAX_US`]; used by experiments validating capability
+/// routing through biomeOS (e.g. exp087).
+pub const PRIMAL_STARTUP_LATENCY_US: u64 = DISCOVERY_MAX_US;
+
 /// Maximum acceptable latency for a single graph node execution (microseconds).
 ///
 /// Source: 500ms budget per node, conservative for startup-heavy primals.
@@ -191,6 +197,8 @@ pub const TCP_FALLBACK_NESTGATE_PORT: u16 = 9300;
 pub const TCP_FALLBACK_TOADSTOOL_PORT: u16 = 9400;
 /// TCP fallback port for remote Squirrel (AI).
 pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9500;
+/// Default `SQUIRREL_PORT` when unset (same as [`TCP_FALLBACK_SQUIRREL_PORT`]).
+pub const DEFAULT_SQUIRREL_PORT: u16 = TCP_FALLBACK_SQUIRREL_PORT;
 /// TCP fallback port for remote biomeOS (substrate).
 pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
 

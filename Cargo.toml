@@ -72,6 +72,10 @@ members = [
     "experiments/exp082_chaos_substrate",
     "experiments/exp083_federation_edge_cases",
     "experiments/exp084_provenance_adversarial",
+    "experiments/exp085_beardog_crypto_lifecycle",
+    "experiments/exp086_genetic_identity_e2e",
+    "experiments/exp087_neural_api_routing_e2e",
+    "experiments/exp088_storytelling_composition",
 ]
 
 [workspace.package]
