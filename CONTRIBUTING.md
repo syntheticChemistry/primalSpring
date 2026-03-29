@@ -55,7 +55,7 @@ All must pass with zero warnings.
 ## License — scyBorg Provenance Trio
 
 All **source code** is AGPL-3.0-or-later. The ecosystem uses the scyBorg
-triple-license model (see `SCYBORG_PROVENANCE_TRIO_GUIDANCE.md` in wateringHole):
+triple-license model (see `SCYBORG_PROVENANCE_TRIO_GUIDANCE.md` in `ecoPrimals/infra/wateringHole/`):
 
 | Layer | License | Applies to |
 |-------|---------|------------|

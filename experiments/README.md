@@ -94,6 +94,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 20 | Deployment Matrix + Substrate Validation | **Done** (43-cell matrix, benchScale topologies, chaos/federation/provenance experiments, agentic trio, storytelling stack, showcase mining, 67 experiments, 59 graphs) |
 | 21 | Deep Ecosystem Audit + Library Consolidation | **Done** (ipc::tcp + ipc::methods library modules, launcher 4-module refactor, provenance circuit breaker half-open, tracing migration, 8 experiments consolidated to library helpers, 413 tests, zero clippy/fmt/doc warnings) |
 | 22 | Track 14 — exp085–exp088 — E2E composition: BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition | **Done** |
+| 23 | Ecosystem debt resolution — gap map, crypto negative validation graph, exp086 generate-then-verify, per-primal handoffs, composition standards | **Done** (v0.8.0) |
 
 ## Validation Harness
 
@@ -125,7 +126,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.7.0, depends on ecoPrimal
+├── Cargo.toml    # version 0.8.0, depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

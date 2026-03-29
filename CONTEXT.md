@@ -23,7 +23,7 @@ primals at runtime via capability-based discovery.
   (`primalspring_primal` server, `validate_all` runner)
 - **experiments/** — 67 validation binaries covering 14 tracks
   (atomics, graphs, emergent, bonding, IPC, provenance, deployment, gen4 substrate, deployment matrix, substrate stress)
-- **graphs/** — 59 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4 + bonding + chaos + science)
+- **graphs/** — 60 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4 + bonding + chaos + science)
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -58,12 +58,14 @@ Capability-based discovery via Neural API or 5-tier filesystem probing.
 
 ## Status
 
-v0.7.0 Phase 22 — 87/87 gates, 413 tests, 72.5% library coverage,
-67 experiments, 59 deploy graphs, 5 spring primal binaries in plasmidBin.
-Phase 22: E2E composition testing (Track 14) — exp085–exp088 (BearDog crypto lifecycle,
-genetic identity, Neural API routing, storytelling composition), ipc::methods domain modules,
-ipc::tcp neural API helpers, tolerances aliases, validate_composition.sh, ludoSpring game
-method gap handoff; experiment count 63→67, test count 411→413.
+v0.8.0 Phase 23 — 87/87 gates, 413 tests, 72.5% library coverage,
+67 experiments, 60 deploy graphs, 5 spring primal binaries in plasmidBin.
+Phase 23: Ecosystem debt resolution — comprehensive gap map reclassifying
+debt across BearDog/Songbird/biomeOS, crypto_negative_validate.toml graph
+(wrong-seed, empty-seed, tampered-payload rejection), exp086 generate-then-verify
+round-trip, GENERATE_LINEAGE_PROOF method constant, per-primal team handoffs,
+COMPOSITION_PATTERNS.md and SPOREGARDEN_DEPLOYMENT_STANDARD.md standards
+for wateringHole; deploy graph count 59→60.
 
 ## Ecosystem Position
 

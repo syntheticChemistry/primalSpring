@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: March 24, 2026  
-**Status**: Phase 21 — 63 experiments, 13 tracks, deep ecosystem audit + library consolidation (87/87 gates), 411 tests, 59 deploy graphs
+**Status**: Phase 23 — 67 experiments, 14 tracks, ecosystem debt resolution + standards (87/87 gates), 413 tests, 60 deploy graphs
 
 ---
 

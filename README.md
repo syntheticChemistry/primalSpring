@@ -5,12 +5,12 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.7.0 |
+| **Version** | 0.8.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 413 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 67 (14 tracks) |
-| **Deploy Graphs** | 59 TOMLs (18 single-node + 5 multi-node + 7 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science) |
+| **Deploy Graphs** | 60 TOMLs (18 single-node + 5 multi-node + 8 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress (87/87 gates) |
 | **Provenance** | All 67 experiments carry structured `with_provenance()` metadata |
@@ -61,7 +61,7 @@ primalSpring/
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
 ├── experiments/                   # 67 validation experiments (14 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 59 deploy graph TOMLs
+├── graphs/                        # 60 deploy graph TOMLs
 │   ├── bonding/                  # Bonding model graphs: ionic, metallic, OMS, defensive, albatross (5)
 │   ├── chaos/                    # Chaos engineering: partition recovery, slow start (2)
 │   ├── multi_node/               # Multi-node federation graphs (5)
@@ -173,7 +173,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 59 deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 60 deploy graph TOMLs (all nodes declare `by_capability`):
 
 **Single-node graphs (18)**:
 
@@ -207,9 +207,10 @@ primalSpring ships 59 deploy graph TOMLs (all nodes declare `by_capability`):
 | `idle_compute_federation.toml` | Federated idle compute sharing | Covalent | GeneticLineage |
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
 
-**Spring validation graphs (7)** — `graphs/spring_validation/`: per-spring validation
+**Spring validation graphs (8)** — `graphs/spring_validation/`: per-spring validation
 wrappers (groundspring, wetspring, healthspring, ludospring, neuralspring, airspring,
-hotspring). Each deploys biomeOS as substrate then germinates the spring primal.
+hotspring) plus `crypto_negative_validate` (negative security boundary tests).
+Each deploys biomeOS as substrate then germinates the spring primal.
 
 **Cross-spring graphs (2)** — `graphs/cross_spring/`: ecology validation
 (ET₀ → diversity → spectral) and full sweep across all springs.

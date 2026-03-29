@@ -4,7 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
-| 0.7.x   | Yes       |
+| 0.8.x   | Yes       |
 
 ## Reporting a Vulnerability
 
@@ -21,7 +21,8 @@ vulnerability, please report it responsibly:
 - **Zero unsafe code**: `#![forbid(unsafe_code)]` at workspace level
 - **Zero C dependencies**: enforced by `deny.toml` (ecoBin compliant)
 - **No network listeners by default**: the JSON-RPC server binds to Unix
-  domain sockets only, not TCP
+  domain sockets by default; TCP is available for cross-gate and mobile
+  deployments but requires explicit configuration
 - **Capability-based discovery**: no hardcoded addresses or credentials
 - **No secrets in source**: API keys are passed via environment variables
   or `testing-secrets/` (gitignored)

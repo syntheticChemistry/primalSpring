@@ -3,6 +3,30 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0] — Phase 23: Ecosystem Debt Resolution + Standards (2026-03-29)
+
+### Added
+- `crypto_negative_validate.toml` — spring validation graph for negative security boundary tests (wrong-seed, empty-seed rejection, tampered-payload detection)
+- `ipc::methods::genetic::GENERATE_LINEAGE_PROOF` — method constant for lineage proof generation
+- Per-primal team debt handoffs in wateringHole (BearDog, Songbird, biomeOS)
+- `COMPOSITION_PATTERNS.md` — canonical reference for deploy graph formats, niche YAML, launch profiles, socket discovery
+- `SPOREGARDEN_DEPLOYMENT_STANDARD.md` — BYOB model, esotericWebb reference, environment contract
+- `PRIMALSPRING_V080_GAP_MAP_MAR29_2026.md` — comprehensive gap map reclassifying 11 findings from audit
+- Glossary terms: BYOB, Niche YAML, Primal Launch Profile, sporeGarden Product, PrimalBridge, Primal Resolution Order
+
+### Changed
+- exp086: full generate-then-verify lineage round-trip with positive and negative tests (was incomplete `verify_lineage` call)
+- Deploy graph count: 59 → 60, spring validation graph count: 7 → 8
+- Version bump: 0.7.0 → 0.8.0
+
+### Fixed (upstream, driven by primalSpring audit)
+- BearDog: `genetic.derive_lineage_beacon_key` registered in method_list.rs (method count 92→93)
+- BearDog: empty/zero/short lineage seeds now rejected (was silently defaulting to 32 zero bytes)
+- BearDog: `federation.verify_family_member` label corrected from `genetic_lineage_hkdf` to `family_id_equality`
+- BearDog: `encryption.encrypt/decrypt` docs no longer claim "HSM-backed"
+- Songbird: `SONGBIRD_DARK_FOREST`, `SONGBIRD_ACCEPT_LEGACY_BIRDSONG`, `SONGBIRD_DUAL_BROADCAST` env vars wired into BirdSongConfig
+- biomeOS: `eprintln!` → `tracing::warn!` in capability_domains.rs
+
 ## Phase 22: E2E Composition Testing (Track 14)
 
 ### Added

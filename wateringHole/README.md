@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.7.0 (Phase 22 — 87/87 gates, 413 tests, 72.5% coverage, 67 experiments, 59 deploy graphs, 5 spring primal binaries)  
+**Version**: 0.8.0 (Phase 23 — 87/87 gates, 413 tests, 72.5% coverage, 67 experiments, 60 deploy graphs, 5 spring primal binaries)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 29, 2026
 
@@ -68,7 +68,7 @@ primalSpring fills the gap.
   they offer, not who they are. All RPC handlers default to capability-based validation.
 - **Graphs as source of truth**: `topological_waves()` computes startup ordering via
   Kahn's algorithm. `graph_required_capabilities()` extracts capability rosters from
-  graph nodes. All 59 graphs have `by_capability` on every node (enforced by test).
+  graph nodes. All 60 graphs have `by_capability` on every node (enforced by test).
 - **Real IPC**: `probe_primal()`, `validate_composition_by_capability()`, `health_check()`
   connect to live providers via Unix socket JSON-RPC 2.0
 - **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase` + `is_recoverable()`),
@@ -296,18 +296,22 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.7.0 | `PRIMALSPRING_V070_PHASE22_LUDOSPRING_GAME_METHOD_GAP_HANDOFF_MAR29_2026.md` | Mar 29 | **Phase 22 E2E composition**: exp085–exp088, ipc::methods domains, neural_api_capability_* helpers, validate_composition.sh, ludoSpring game.* gap for esotericWebb, 413 tests |
-| v0.7.0 | `PRIMALSPRING_V070_PHASE21_DEEP_AUDIT_HANDOFF_MAR29_2026.md` | Mar 29 | **Phase 21 deep audit**: ipc::tcp + ipc::methods library extraction, launcher 4-module refactor, provenance circuit breaker half-open, tracing migration, 8 experiments consolidated, 411 tests |
-| v0.7.0 | `PRIMALSPRING_V070_ECOSYSTEM_AUDIT_GUIDANCE_HANDOFF_MAR27_2026.md` | Mar 27 | **Ecosystem audit guidance**: 8-axis audit methodology, per-axis findings, evolution recommendations |
-| v0.7.0 | `PRIMALSPRING_COMPOSITION_DEEP_DEBT_EVOLUTION_HANDOFF_MAR27_2026.md` | Mar 27 | **Composition deep debt**: hardcoding→capability-based, primal_names centralization, method constants |
-| v0.7.0 | `GEN4_PRIMAL_TEAM_HANDOFF_MAR27_2026.md` | Mar 27 | **gen4 primal team**: per-team guidance from Phase 17 learnings |
-| v0.7.0 | `PRIMALSPRING_V070_GEN4_BRIDGE_HANDOFF_MAR24_2026.md` | Mar 24 | **gen4 bridge**: esotericWebb + helixVision composition, 7 shortcomings, per-team gen4 actions |
-| v0.7.0 | `PRIMALSPRING_V070_LAN_COVALENT_DEPLOYMENT_HANDOFF_MAR23_2026.md` | Mar 23 | **Deployment**: LAN covalent deployment, USB spore prep, gate provisioning, BirdSong exchange |
+| v0.8.0 | `PRIMALSPRING_V080_ECOSYSTEM_DEBT_RESOLUTION_HANDOFF_MAR29_2026.md` | Mar 29 | **Phase 23 debt resolution**: 6 upstream fixes (BearDog, Songbird, biomeOS), gap map, crypto negative graph, composition standards, per-primal handoffs |
+| v0.8.0 | `PRIMALSPRING_V080_GAP_MAP_MAR29_2026.md` | Mar 29 | **Comprehensive gap map**: 11 findings reclassified (2 intentional, 2 wiring, 1 defensive, 4 documentation, 2 test) |
+| v0.8.0 | `PRIMALSPRING_V080_BEACON_ARCHITECTURE_EVOLUTION_HANDOFF_MAR29_2026.md` | Mar 29 | **Beacon architecture**: two-seed crypto model analysis (beacon vs birdsong), trust model documentation |
+| v0.8.0 | `PRIMALSPRING_V080_DEEP_GENETICS_BEACON_CRYPTO_AUDIT_HANDOFF_MAR29_2026.md` | Mar 29 | **Deep genetics audit**: lineage verification, seed validation, crypto path tracing |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.7.0 | `archive/PRIMALSPRING_V070_PHASE22_LUDOSPRING_GAME_METHOD_GAP_HANDOFF_MAR29_2026.md` | Mar 29 | Phase 22 E2E composition (superseded by v0.8.0 debt resolution) |
+| v0.7.0 | `archive/PRIMALSPRING_V070_PHASE21_DEEP_AUDIT_HANDOFF_MAR29_2026.md` | Mar 29 | Phase 21 deep audit (superseded by v0.8.0 debt resolution) |
+| v0.7.0 | `archive/PRIMALSPRING_V070_ECOSYSTEM_AUDIT_GUIDANCE_HANDOFF_MAR27_2026.md` | Mar 27 | Ecosystem audit guidance (superseded by v0.8.0 gap map) |
+| v0.7.0 | `archive/PRIMALSPRING_COMPOSITION_DEEP_DEBT_EVOLUTION_HANDOFF_MAR27_2026.md` | Mar 27 | Composition deep debt (superseded by v0.8.0 standards) |
+| v0.7.0 | `archive/GEN4_PRIMAL_TEAM_HANDOFF_MAR27_2026.md` | Mar 27 | Gen4 primal team guidance (superseded by v0.8.0 per-primal handoffs in infra/wateringHole) |
+| v0.7.0 | `archive/PRIMALSPRING_V070_GEN4_BRIDGE_HANDOFF_MAR24_2026.md` | Mar 24 | Gen4 bridge (superseded by SPOREGARDEN_DEPLOYMENT_STANDARD) |
+| v0.7.0 | `archive/PRIMALSPRING_V070_LAN_COVALENT_DEPLOYMENT_HANDOFF_MAR23_2026.md` | Mar 23 | LAN covalent deployment (historical) |
 | v0.7.0 | `archive/PRIMALSPRING_V070_DEEP_AUDIT_DEBT_CLEANUP_HANDOFF_MAR26_2026.md` | Mar 26 | Coverage evolution: 29 new tests, tick slack centralized (superseded by Phase 21 deep audit) |
 | v0.7.0 | `archive/PLASMIBIN_CROSS_HARDWARE_DARK_FOREST_DEPLOYMENT_HANDOFF_MAR27_2026.md` | Mar 27 | plasmidBin cross-hardware Dark Forest deployment (superseded by Phase 21 handoff) |
 | v0.7.0 | `archive/PRIMALSPRING_V070_PHASE15_CROSS_ECOSYSTEM_ABSORPTION_HANDOFF_MAR24_2026.md` | Mar 24 | Cross-ecosystem absorption: slug constants, unwrap/expect, launcher refactor (superseded by Phase 16 + gen4 bridge) |

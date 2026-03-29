@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: March 28, 2026
-**Status**: Phase 21 — Deep Ecosystem Audit + Library Consolidation (87/87 gates), 63 experiments, 411 tests, 59 deploy graphs, 43-cell deployment matrix, agentic trio + storytelling stack
+**Date**: March 29, 2026
+**Status**: Phase 23 — Ecosystem Debt Resolution + Standards (87/87 gates), 67 experiments, 413 tests, 60 deploy graphs, 43-cell deployment matrix, crypto negative validation, per-primal team handoffs
 
 ---
 
@@ -34,26 +34,27 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 11 | gen4 Deployment Evolution | exp075–080 | Does biomeOS substrate validate? Cross-gate routing? Spring deploy sweep? |
 | 12 | Deployment Matrix | exp081 | Does the 43-cell deployment matrix validate across arch × topology × preset × transport? |
 | 13 | Substrate Stress | exp082–084 | Chaos substrate, federation edge cases, provenance adversarial — does the stack survive? |
+| 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
 
-## Current State (v0.7.0)
+## Current State (v0.8.0)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 63 (13 tracks) |
-| Total tests | **411** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Experiments | 67 (14 tracks) |
+| Total tests | **413** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | 59 TOMLs (18 single-node + 5 multi-node + 7 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science), all nodes `by_capability`, topologically validated |
+| Deploy graphs | 60 TOMLs (18 single-node + 5 multi-node + 8 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science), all nodes `by_capability`, topologically validated |
 | Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 63 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 67 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
@@ -66,6 +67,46 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed — Phase 23 (Ecosystem Debt Resolution + Standards)
+
+### Debt Resolution + Composition Standards (March 29, 2026)
+
+Comprehensive ecosystem audit reclassified 11 findings from the initial deep audit into
+proper categories: intentional design (2), deployment wiring (2), defensive coding (1),
+documentation (4), test gaps (2). Executed all actionable debt across BearDog, Songbird,
+and biomeOS.
+
+**Upstream Fixes Driven by primalSpring Audit**:
+- BearDog: `genetic.derive_lineage_beacon_key` registered, empty/zero/short seed rejection, federation label fix, HSM labeling correction
+- Songbird: Dark Forest / legacy birdsong / dual broadcast env vars wired into BirdSongConfig
+- biomeOS: eprintln→tracing in capability_domains.rs
+
+**New Validation Graph**: `crypto_negative_validate.toml` — 9-node graph validating security
+rejection paths (wrong-seed lineage, empty-seed rejection, tampered-payload detection, same-family beacon decrypt).
+
+**exp086 Evolution**: Full generate-then-verify lineage round-trip with both positive (correct seed verifies) and negative (wrong seed fails) tests. Added `base64` dependency, `GENERATE_LINEAGE_PROOF` method constant.
+
+**Standards Documents for wateringHole**:
+- `COMPOSITION_PATTERNS.md` — canonical reference for both deploy graph formats, niche YAML, primal launch profiles, 8-step socket discovery
+- `SPOREGARDEN_DEPLOYMENT_STANDARD.md` — BYOB model, esotericWebb reference, environment contract
+- Per-primal team debt handoffs (BearDog, Songbird, biomeOS)
+- Glossary updated with 6 composition terms
+
+**Metrics**: 67 experiments, 413 tests, 60 deploy graphs, 0 clippy warnings, 0 unsafe, 0 C deps.
+
+## What Changed — Phase 22 (E2E Composition Testing)
+
+### Track 14: E2E Composition (March 29, 2026)
+
+4 new experiments (exp085–exp088) for end-to-end composition testing:
+- exp085: BearDog crypto lifecycle (Ed25519, Blake3, BirdSong beacon, secrets)
+- exp086: Genetic identity E2E (mito beacon seed vs nuclear lineage, family scoping)
+- exp087: Neural API routing E2E (security, discovery, storage, compute, AI domains)
+- exp088: Storytelling composition (ludoSpring + esotericWebb + Squirrel + petalTongue)
+
+`ipc::methods` expanded to 16 domain modules. `validate_composition.sh` added.
+ludoSpring game method gap handoff for esotericWebb contract.
 
 ## What Changed — Phase 21 (Deep Ecosystem Audit + Library Consolidation)
 
