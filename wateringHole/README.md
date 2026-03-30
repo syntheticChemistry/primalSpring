@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.8.0 (Phase 23 — 87/87 gates, 413 tests, 72.5% coverage, 67 experiments, 60 deploy graphs, 5 spring primal binaries)  
+**Version**: 0.8.0 (Phase 23c — 87/87 gates, 402 tests, 72.5% coverage, 67 experiments, 63 deploy graphs, 5 spring primal binaries)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: March 29, 2026
 
@@ -37,7 +37,7 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **413** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Tests | **402** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Experiments | 67 (14 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
@@ -45,12 +45,12 @@ primalSpring fills the gap.
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | 59 TOMLs (18 single-node + 5 multi-node + 7 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science), all `by_capability`, topologically validated |
+| Deploy graphs | 63 TOMLs (18 single-node + 5 multi-node + 11 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science), all `by_capability`, topologically validated |
 | RPC endpoints | 17 methods |
 | Discovery | **Capability-first**: `discover_by_capability()` + 5-tier + Neural API |
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
-| Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
+| Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | Meta-validator | `validate_all` binary — runs all 67 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates passing (core + full utilization) |
 | Nest Atomic | **VALIDATED** — nestgate storage (8/8 gates) |
@@ -68,7 +68,7 @@ primalSpring fills the gap.
   they offer, not who they are. All RPC handlers default to capability-based validation.
 - **Graphs as source of truth**: `topological_waves()` computes startup ordering via
   Kahn's algorithm. `graph_required_capabilities()` extracts capability rosters from
-  graph nodes. All 60 graphs have `by_capability` on every node (enforced by test).
+  graph nodes. All 63 graphs have `by_capability` on every node (enforced by test).
 - **Real IPC**: `probe_primal()`, `validate_composition_by_capability()`, `health_check()`
   connect to live providers via Unix socket JSON-RPC 2.0
 - **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase` + `is_recoverable()`),

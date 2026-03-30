@@ -8,7 +8,7 @@
 | **Version** | 0.8.0 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 399 (unit + integration + doc-tests + proptest) |
+| **Tests** | 402 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 67 (14 tracks) |
 | **Deploy Graphs** | 63 TOMLs (18 single-node + 5 multi-node + 11 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
@@ -61,12 +61,12 @@ primalSpring/
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
 ├── experiments/                   # 67 validation experiments (14 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 60 deploy graph TOMLs
+├── graphs/                        # 63 deploy graph TOMLs
 │   ├── bonding/                  # Bonding model graphs: ionic, metallic, OMS, defensive, albatross (5)
 │   ├── chaos/                    # Chaos engineering: partition recovery, slow start (2)
 │   ├── multi_node/               # Multi-node federation graphs (5)
 │   ├── science/                  # Science + showcase graphs: provenance, fieldMouse, gaming, neuro (10)
-│   ├── spring_validation/        # Per-spring validation wrappers (7)
+│   ├── spring_validation/        # Per-spring + NUCLEUS + security validation (11)
 │   ├── cross_spring/             # Cross-spring ecology + full sweep (2)
 │   └── gen4/                     # gen4: sovereign, science, agentic, storytelling, UI loop (10)
 ├── niches/                        # BYOB niche deployment YAML
@@ -173,7 +173,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 60 deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 63 deploy graph TOMLs (all nodes declare `by_capability`):
 
 **Single-node graphs (18)**:
 
@@ -181,9 +181,9 @@ primalSpring ships 60 deploy graph TOMLs (all nodes declare `by_capability`):
 |-------|---------|---------|
 | `tower_atomic_bootstrap.toml` | Sequential | beardog, songbird |
 | `tower_full_capability.toml` | Sequential | beardog, songbird (full caps) |
-| `nest_deploy.toml` | Sequential | beardog, songbird, nestgate |
+| `nest_deploy.toml` | Sequential | beardog, songbird, nestgate, squirrel |
 | `node_atomic_compute.toml` | Sequential | beardog, songbird, toadstool |
-| `nucleus_complete.toml` | Sequential | beardog, songbird, nestgate, toadstool, sweetgrass |
+| `nucleus_complete.toml` | Sequential | biomeos, beardog, songbird, nestgate, toadstool, squirrel (+trio) |
 | `tower_ai.toml` | Sequential | beardog, songbird, squirrel |
 | `tower_ai_viz.toml` | Sequential | beardog, songbird, squirrel, petaltongue |
 | `nest_viz.toml` | Sequential | beardog, songbird, nestgate, petaltongue |
@@ -207,10 +207,11 @@ primalSpring ships 60 deploy graph TOMLs (all nodes declare `by_capability`):
 | `idle_compute_federation.toml` | Federated idle compute sharing | Covalent | GeneticLineage |
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
 
-**Spring validation graphs (8)** — `graphs/spring_validation/`: per-spring validation
-wrappers (groundspring, wetspring, healthspring, ludospring, neuralspring, airspring,
-hotspring) plus `crypto_negative_validate` (negative security boundary tests).
-Each deploys biomeOS as substrate then germinates the spring primal.
+**Spring validation graphs (11)** — `graphs/spring_validation/`: per-spring validation
+wrappers (7 springs) plus `crypto_negative_validate` (negative security boundary tests),
+`rollback_validate` (biomeOS graph rollback lifecycle), `federation_manifest_validate`
+(federation configure→join→health), `nucleus_atomics_validate` (all 4 NUCLEUS tiers).
+All graphs include biomeOS Neural API as orchestration substrate.
 
 **Cross-spring graphs (2)** — `graphs/cross_spring/`: ecology validation
 (ET₀ → diversity → spectral) and full sweep across all springs.
@@ -308,7 +309,7 @@ deploy biomeOS as substrate. Launch profiles added for all 6 springs.
 
 See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
-## Live Integration Status (March 29, 2026)
+## Live Integration Status (March 28, 2026)
 
 | Primal | Eastgate | Pixel (ADB) | Notes |
 |--------|----------|-------------|-------|

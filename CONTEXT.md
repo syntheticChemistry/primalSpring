@@ -58,15 +58,14 @@ Capability-based discovery via Neural API or 5-tier filesystem probing.
 
 ## Status
 
-v0.8.0 Phase 23b — 87/87 gates, 399 tests, 72.5% library coverage,
-67 experiments, 63 deploy graphs, 5 spring primal binaries in plasmidBin.
-Phase 23b: biomeOS v2.78 rewire — all 4 blocking biomeOS debt items resolved
-upstream. NeuralBridge gains graph_deploy/status/rollback + discover_domain.
-20 new method constants (federation.*, discovery.*, topology.*, graph.deploy/
-status/rollback/pipeline/continuous, lifecycle.start/stop/register,
-capability.register/unregister/route, route.register). Two new validation
-graphs: rollback_validate.toml and federation_manifest_validate.toml.
-Deploy graph count 60→63, validation graphs 8→11.
+v0.8.0 Phase 23c — 87/87 gates, 402 tests, 72.5% library coverage,
+67 experiments, 63 deploy graphs (11 validation), 5 spring primal binaries.
+Phase 23c: NUCLEUS atomics + biomeOS substrate — biomeOS Neural API is now
+an explicit substrate in every NUCLEUS composition. SubstrateHealth in
+CompositionResult. All 4 canonical atomic deploy graphs carry a Phase 0
+biomeos_neural_api node. Nest gains Squirrel (ai). FullNucleus core 5
+aligned with biomeOS's `nucleus --mode full`. composition.tower_squirrel_health
+wired. 63 method constants across 18 domains.
 
 ## Ecosystem Position
 

@@ -1,7 +1,7 @@
 # Tower Stability Specification
 
-**Status**: **MULTI-NODE BONDING + FEDERATION** — primalSpring v0.7.0  
-**Date**: 2026-03-23  
+**Status**: **MULTI-NODE BONDING + FEDERATION** — primalSpring v0.8.0  
+**Date**: 2026-03-28  
 **Strategy**: Tower → Nest → Node → NUCLEUS → Graph Overlays → Cross-Primal Discovery → Graph Execution → Provenance Readiness → Multi-Node Bonding + Federation
 
 ## Co-Evolution Strategy

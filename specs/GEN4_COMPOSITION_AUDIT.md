@@ -11,7 +11,7 @@ primals via IPC. This audit identifies gaps between what primalSpring validates
 ## Methodology
 
 Compared three surfaces:
-1. **primalSpring capability registry** (`config/capability_registry.toml`) — 37 capabilities
+1. **primalSpring capability registry** (`config/capability_registry.toml`) — 47 capabilities
 2. **esotericWebb deploy graphs** (`graphs/webb_*.toml`) — 6 composition health nodes
 3. **esotericWebb source** (`webb/src/ipc/`) — bridge, resilience, session pipeline
 

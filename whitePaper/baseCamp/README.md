@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 28, 2026
-**Status**: Phase 23b — biomeOS v2.78 Rewire (87/87 gates), 67 experiments, 399 tests, 62 deploy graphs, 43-cell deployment matrix, rollback + federation manifest validation, 20 new method constants
+**Status**: Phase 23c — NUCLEUS Atomics + biomeOS Substrate (87/87 gates), 67 experiments, 402 tests, 63 deploy graphs (11 validation), 43-cell deployment matrix, biomeOS substrate in all NUCLEUS compositions, 63 method constants
 
 ---
 
@@ -41,17 +41,17 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Metric | Value |
 |--------|-------|
 | Experiments | 67 (14 tracks) |
-| Total tests | **413** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Total tests | **402** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | 60 TOMLs (18 single-node + 5 multi-node + 8 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science), all nodes `by_capability`, topologically validated |
+| Deploy graphs | 63 TOMLs (18 single-node + 5 multi-node + 11 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science), all nodes `by_capability`, topologically validated |
 | Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
-| Niche self-knowledge | `niche.rs` — 37 capabilities, semantic mappings, cost estimates |
+| Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
 | Provenance coverage | **100%** — all 67 experiments carry `with_provenance()` metadata |
@@ -67,6 +67,31 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+
+## What Changed — Phase 23c (NUCLEUS Atomics + biomeOS Substrate)
+
+### biomeOS Substrate Integration (March 28, 2026)
+
+biomeOS Neural API is now an explicit substrate in every NUCLEUS composition.
+`SubstrateHealth` in `CompositionResult` tracks Neural API health independently.
+All 4 canonical atomic deploy graphs (Tower, Node, Nest, Full) include a Phase 0
+`biomeos_neural_api` node (required, spawn=false, health.liveness) to verify the
+orchestration substrate before any primals deploy.
+
+**Nest Alignment**: Squirrel added to `AtomicType::Nest` (`required_primals` + `ai`
+capability), matching biomeOS's `nucleus --mode nest` runtime behavior.
+
+**Full NUCLEUS Alignment**: NestGate, ToadStool, Squirrel marked `required = true`
+in `nucleus_complete.toml`, matching the 5 core primals biomeOS starts in Full mode.
+
+**New Validation Graph**: `nucleus_atomics_validate.toml` — validates all 4 NUCLEUS
+tiers + Tower+Squirrel overlay + structural graph validation + biomeOS substrate.
+
+**composition.tower_squirrel_health**: Wired in `primalspring_primal` dispatch —
+was advertised in capability registry but previously unimplemented.
+
+**Metrics**: 402 tests, 67 experiments, 63 deploy graphs (11 validation), 63 method
+constants, 47 capabilities in registry, 0 clippy warnings.
 
 ## What Changed — Phase 23 (Ecosystem Debt Resolution + Standards)
 
@@ -93,7 +118,7 @@ rejection paths (wrong-seed lineage, empty-seed rejection, tampered-payload dete
 - Per-primal team debt handoffs (BearDog, Songbird, biomeOS)
 - Glossary updated with 6 composition terms
 
-**Metrics**: 67 experiments, 413 tests, 60 deploy graphs, 0 clippy warnings, 0 unsafe, 0 C deps.
+**Metrics**: 67 experiments, 402 tests, 63 deploy graphs (11 validation), 0 clippy warnings, 0 unsafe, 0 C deps.
 
 ## What Changed — Phase 22 (E2E Composition Testing)
 

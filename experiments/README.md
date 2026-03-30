@@ -96,6 +96,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 22 | Track 14 — exp085–exp088 — E2E composition: BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition | **Done** |
 | 23 | Ecosystem debt resolution — gap map, crypto negative validation graph, exp086 generate-then-verify, per-primal handoffs, composition standards | **Done** (v0.8.0) |
 | 23b | biomeOS v2.78 rewire — 20 method constants, NeuralBridge graph lifecycle + discover_domain, rollback + federation validation graphs | **Done** (v0.8.0b) |
+| 23c | NUCLEUS atomics + biomeOS substrate — SubstrateHealth, Nest+Squirrel, all deploy graphs carry Phase 0 biomeos node, composition.tower_squirrel_health wired, 402 tests | **Done** (v0.8.0c) |
 
 ## Validation Harness
 
@@ -127,7 +128,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.8.0, depends on ecoPrimal
+├── Cargo.toml    # version 0.8.0 (workspace), depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: March 24, 2026  
-**Status**: Phase 23 — 67 experiments, 14 tracks, ecosystem debt resolution + standards (87/87 gates), 413 tests, 60 deploy graphs
+**Status**: Phase 23c — 67 experiments, 14 tracks, NUCLEUS atomics + biomeOS substrate (87/87 gates), 402 tests, 63 deploy graphs
 
 ---
 

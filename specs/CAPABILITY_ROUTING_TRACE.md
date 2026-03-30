@@ -2,8 +2,8 @@
 
 > **Historical note (2026-03-23)**: This trace was created during the Mar 18 Tower Atomic investigation when gates were 4/24. As of v0.7.0, NUCLEUS is **87/87 STABLE** with full Tower + Nest + Node composition, graph-driven overlays, provenance trio integration, and multi-node bonding. The hardcoding sites documented below remain relevant as the ongoing evolution roadmap for achieving full Neural API semantic routing across the ecosystem. See `TOWER_STABILITY.md` for current gate status.
 
-**Status**: Historical trace with ongoing evolution relevance — primalSpring v0.7.0  
-**Date**: 2026-03-18 (updated 2026-03-23)  
+**Status**: Historical trace with ongoing evolution relevance — primalSpring v0.8.0  
+**Date**: 2026-03-18 (updated 2026-03-28)  
 **Context**: Tower Atomic live validation revealed method-naming mismatch between songbird and beardog, traced to hardcoded inter-primal calls that bypass capability-based routing. Now extends to multi-node bonding scenarios where capability routing is critical for cross-machine federation.
 
 ## Architecture Principle

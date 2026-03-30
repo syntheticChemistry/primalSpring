@@ -3,6 +3,26 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0c] — Phase 23c: NUCLEUS Atomics + biomeOS Substrate (2026-03-28)
+
+### Added
+- `nucleus_atomics_validate.toml` — validates all 4 NUCLEUS tiers (Tower, Node, Nest, Full) + Tower+Squirrel overlay + structural graph validation
+- `SubstrateHealth` struct — biomeOS Neural API health status in `CompositionResult`
+- `AtomicType::substrate_capabilities()` — Neural API surface every composition requires
+- `AtomicType::substrate_primal()` — returns `"biomeos"`
+- `probe_substrate()` — discovers and health-checks the Neural API
+- `composition.tower_squirrel_health` — wired in `primalspring_primal` dispatch (was advertised but unimplemented)
+- biomeOS Neural API Phase 0 health node in all 4 canonical atomic deploy graphs
+
+### Changed
+- Nest composition: `[beardog, songbird, nestgate]` → `[beardog, songbird, nestgate, squirrel]` (matches biomeOS `nucleus --mode nest`)
+- Nest capabilities: `[security, discovery, storage]` → `[security, discovery, storage, ai]`
+- `nucleus_complete.toml`: NestGate, ToadStool, Squirrel now `required = true` (core 5 match biomeOS Full)
+- `validate_composition()` and `validate_composition_by_capability()` now probe biomeOS substrate
+- `all_healthy` requires both substrate + primals healthy
+- `node_atomic_compute.toml`, `nest_deploy.toml`: add `args = ["server"]` to validation nodes
+- Deploy graphs: 62 → 63, validation graphs: 10 → 11, tests: 399 → 402
+
 ## [0.8.0b] — Phase 23b: biomeOS v2.78 Rewire (2026-03-28)
 
 ### Added

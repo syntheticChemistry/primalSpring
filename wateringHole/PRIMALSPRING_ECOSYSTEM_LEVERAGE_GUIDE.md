@@ -1,7 +1,7 @@
 # primalSpring — Ecosystem Leverage Guide
 
 **Date**: March 23, 2026
-**Version**: v0.7.0
+**Version**: v0.8.0
 **License**: AGPL-3.0-or-later
 
 ---

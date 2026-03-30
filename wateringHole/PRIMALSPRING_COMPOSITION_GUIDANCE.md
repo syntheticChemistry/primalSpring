@@ -1,7 +1,7 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
 **Date**: March 22, 2026
-**From**: primalSpring v0.7.0
+**From**: primalSpring v0.8.0
 **License**: AGPL-3.0-or-later
 
 ---
