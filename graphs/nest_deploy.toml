@@ -12,9 +12,25 @@
 
 [graph]
 name = "nest_deploy"
-description = "Nest Atomic: Tower + NestGate + Squirrel (storage + AI bridge)"
-version = "0.4.0"
+description = "Nest Atomic: biomeOS + Tower + NestGate + Squirrel (storage + AI bridge)"
+version = "0.5.0"
 coordination = "sequential"
+
+# ── Phase 0: biomeOS Neural API — orchestration substrate ──
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = [
+    "graph.deploy",
+    "graph.status",
+    "capability.discover",
+    "capability.route",
+]
 
 # ── Phase 1: Tower Atomic (inherited) ──
 [[graph.node]]
@@ -74,7 +90,7 @@ binary = "primalspring_primal"
 order = 5
 required = true
 spawn = false
-depends_on = ["beardog", "songbird", "nestgate", "squirrel"]
+depends_on = ["biomeos_neural_api", "beardog", "songbird", "nestgate", "squirrel"]
 health_method = "health.liveness"
 by_capability = "coordination"
 args = ["server"]

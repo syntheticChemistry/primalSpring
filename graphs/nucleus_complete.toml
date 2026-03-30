@@ -16,9 +16,31 @@
 
 [graph]
 name = "nucleus_complete"
-description = "Full NUCLEUS: all 8 primals + primalSpring coordination"
-version = "0.4.0"
+description = "Full NUCLEUS: biomeOS + all 5 core primals + provenance trio + primalSpring coordination"
+version = "0.5.0"
 coordination = "sequential"
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 0: biomeOS Neural API — orchestration substrate
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = [
+    "graph.deploy",
+    "graph.status",
+    "graph.rollback",
+    "capability.discover",
+    "capability.route",
+    "federation.configure",
+    "federation.join",
+]
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 1: Tower Atomic — security + discovery foundation
@@ -137,7 +159,7 @@ binary = "primalspring_primal"
 order = 9
 required = true
 spawn = false
-depends_on = ["beardog", "songbird", "nestgate", "toadstool", "squirrel"]
+depends_on = ["biomeos_neural_api", "beardog", "songbird", "nestgate", "toadstool", "squirrel"]
 health_method = "health.liveness"
 by_capability = "coordination"
 args = ["server"]

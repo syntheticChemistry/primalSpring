@@ -32,11 +32,14 @@ pub enum AtomicType {
 }
 
 impl AtomicType {
-    /// Capability domains required for this composition.
+    /// Capability domains required for this composition (primal-provided).
     ///
     /// **Preferred**: resolve providers at runtime via
     /// [`crate::ipc::discover::discover_by_capability`]. This is the loose
     /// coupling path — callers ask for capabilities, not primal identities.
+    ///
+    /// Does not include `orchestration` — use [`substrate_capabilities`](Self::substrate_capabilities)
+    /// for the biomeOS Neural API capabilities that every composition requires.
     #[must_use]
     pub const fn required_capabilities(self) -> &'static [&'static str] {
         match self {
@@ -56,11 +59,32 @@ impl AtomicType {
         }
     }
 
+    /// biomeOS Neural API capabilities that every composition requires.
+    ///
+    /// All NUCLEUS compositions run on top of biomeOS's Neural API, which
+    /// provides orchestration, graph execution, capability routing, and
+    /// lifecycle management. These are the substrate capabilities.
+    #[must_use]
+    pub const fn substrate_capabilities() -> &'static [&'static str] {
+        &[
+            "orchestration",
+            "graph.deploy",
+            "graph.status",
+            "graph.rollback",
+            "capability.discover",
+            "capability.route",
+            "health.liveness",
+        ]
+    }
+
     /// Primal names required for this composition.
     ///
     /// **Legacy**: prefer [`required_capabilities`](Self::required_capabilities)
     /// for loose coupling. These names are retained for backward compatibility
     /// with deploy graphs and experiments that haven't migrated yet.
+    ///
+    /// Does not include `biomeos` — use [`substrate_primal`](Self::substrate_primal)
+    /// for the biomeOS orchestrator that every composition requires.
     #[must_use]
     pub const fn required_primals(self) -> &'static [&'static str] {
         match self {
@@ -87,6 +111,15 @@ impl AtomicType {
                 primal_names::SWEETGRASS,
             ],
         }
+    }
+
+    /// The biomeOS substrate primal name.
+    ///
+    /// Every NUCLEUS composition requires biomeOS running in neural-api mode
+    /// as the orchestration substrate. This is always `"biomeos"`.
+    #[must_use]
+    pub const fn substrate_primal() -> &'static str {
+        primal_names::BIOMEOS
     }
 
     /// biomeOS deploy graph name for this composition.
@@ -158,17 +191,41 @@ pub fn validate_composition_by_capability(atomic: AtomicType) -> CompositionResu
         })
         .collect();
 
-    let all_healthy = results.iter().all(|p| p.health_ok);
+    let substrate = probe_substrate();
+
+    let primal_healthy = results.iter().all(|p| p.health_ok);
+    let substrate_healthy = substrate.as_ref().is_some_and(|s| s.health_ok);
+    let all_healthy = primal_healthy && substrate_healthy;
     let discovery_ok = results.iter().all(|p| p.socket_found);
     let total_capabilities: usize = results.iter().map(|p| p.capabilities.len()).sum();
 
     CompositionResult {
         atomic,
         primals: results,
+        substrate,
         all_healthy,
         discovery_ok,
         total_capabilities,
     }
+}
+
+/// Probe the biomeOS Neural API substrate.
+///
+/// Attempts to discover and health-check the Neural API. Returns `None` if
+/// biomeOS is not discoverable (no socket found), or `Some` with health status.
+#[must_use]
+pub fn probe_substrate() -> Option<SubstrateHealth> {
+    let bridge = crate::ipc::neural_bridge::NeuralBridge::discover()?;
+    let socket_path = Some(bridge.socket_path().to_string_lossy().into_owned());
+    let start = Instant::now();
+    let health_ok = bridge.health_check().unwrap_or(false);
+    let latency_us = cast::micros_u64(start.elapsed());
+    Some(SubstrateHealth {
+        socket_found: true,
+        health_ok,
+        socket_path,
+        latency_us,
+    })
 }
 
 /// Health status of a single primal after probing.
@@ -193,12 +250,28 @@ pub struct CompositionResult {
     pub atomic: AtomicType,
     /// Health status of each required primal.
     pub primals: Vec<PrimalHealth>,
+    /// biomeOS Neural API substrate health (if probed).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub substrate: Option<SubstrateHealth>,
     /// `true` if every primal passed its health check.
     pub all_healthy: bool,
     /// `true` if every primal's socket was discovered.
     pub discovery_ok: bool,
     /// Sum of capabilities across all primals.
     pub total_capabilities: usize,
+}
+
+/// Health status of the biomeOS Neural API substrate.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SubstrateHealth {
+    /// Whether the Neural API socket was discovered.
+    pub socket_found: bool,
+    /// Whether the Neural API responded to health check.
+    pub health_ok: bool,
+    /// Socket path used.
+    pub socket_path: Option<String>,
+    /// Round-trip latency of the health check in microseconds.
+    pub latency_us: u64,
 }
 
 /// Probe a single primal: discover socket, connect, health check,
@@ -247,7 +320,8 @@ pub fn probe_primal(name: &str) -> PrimalHealth {
     }
 }
 
-/// Validate an entire atomic composition by probing all its required primals.
+/// Validate an entire atomic composition by probing all its required primals
+/// and the biomeOS Neural API substrate.
 #[must_use]
 pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
     let required = atomic.required_primals();
@@ -255,13 +329,17 @@ pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
     let discovery_ok = discovery.iter().all(|d| d.socket.is_some());
 
     let primals: Vec<PrimalHealth> = required.iter().map(|name| probe_primal(name)).collect();
+    let substrate = probe_substrate();
 
-    let all_healthy = primals.iter().all(|p| p.health_ok);
+    let primal_healthy = primals.iter().all(|p| p.health_ok);
+    let substrate_healthy = substrate.as_ref().is_some_and(|s| s.health_ok);
+    let all_healthy = primal_healthy && substrate_healthy;
     let total_capabilities: usize = primals.iter().map(|p| p.capabilities.len()).sum();
 
     CompositionResult {
         atomic,
         primals,
+        substrate,
         all_healthy,
         discovery_ok,
         total_capabilities,
@@ -486,6 +564,12 @@ mod tests {
                 capabilities: vec!["crypto.sign".to_owned()],
                 latency_us: 500,
             }],
+            substrate: Some(SubstrateHealth {
+                socket_found: true,
+                health_ok: true,
+                socket_path: Some("/tmp/biomeos/neural-api.sock".to_owned()),
+                latency_us: 200,
+            }),
             all_healthy: true,
             discovery_ok: true,
             total_capabilities: 1,
@@ -494,6 +578,25 @@ mod tests {
         let back: CompositionResult = serde_json::from_str(&json).unwrap();
         assert_eq!(back.atomic, AtomicType::Tower);
         assert!(back.all_healthy);
+        assert!(back.substrate.unwrap().health_ok);
+    }
+
+    #[test]
+    fn substrate_capabilities_are_not_empty() {
+        let caps = AtomicType::substrate_capabilities();
+        assert!(!caps.is_empty());
+        assert!(caps.contains(&"orchestration"));
+        assert!(caps.contains(&"graph.deploy"));
+    }
+
+    #[test]
+    fn substrate_primal_is_biomeos() {
+        assert_eq!(AtomicType::substrate_primal(), "biomeos");
+    }
+
+    #[test]
+    fn probe_substrate_returns_none_when_biomeos_not_running() {
+        assert!(probe_substrate().is_none());
     }
 
     #[test]

@@ -20,24 +20,37 @@ coordination = "sequential"
 bond_type = "validation"
 requires_biomeos = ">=2.78"
 
-# --- Phase 1: Verify primalSpring is running ---
+# --- Phase 1: Verify biomeOS Neural API substrate ---
 
 [[graph.node]]
-name = "verify_primalspring"
-binary = "primalspring_primal"
+name = "verify_biomeos"
+binary = "biomeos"
 order = 1
 required = true
 spawn = false
 health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "graph.status", "graph.rollback", "capability.discover", "capability.route"]
+
+# --- Phase 2: Verify primalSpring is running ---
+
+[[graph.node]]
+name = "verify_primalspring"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["verify_biomeos"]
+health_method = "health.liveness"
 by_capability = "coordination"
 capabilities = ["composition.tower_health", "composition.node_health", "composition.nest_health", "composition.nucleus_health"]
 
-# --- Phase 2: Tower Atomic (security + discovery) ---
+# --- Phase 3: Tower Atomic (security + discovery) ---
 
 [[graph.node]]
 name = "validate_tower"
 binary = "primalspring_primal"
-order = 2
+order = 3
 required = true
 spawn = false
 depends_on = ["verify_primalspring"]
@@ -48,12 +61,12 @@ capabilities = ["composition.tower_health"]
 method = "composition.tower_health"
 expect = "healthy"
 
-# --- Phase 3: Node Atomic (Tower + compute) ---
+# --- Phase 4: Node Atomic (Tower + compute) ---
 
 [[graph.node]]
 name = "validate_node"
 binary = "primalspring_primal"
-order = 3
+order = 4
 required = true
 spawn = false
 depends_on = ["validate_tower"]
@@ -64,12 +77,12 @@ capabilities = ["composition.node_health"]
 method = "composition.node_health"
 expect = "healthy"
 
-# --- Phase 4: Nest Atomic (Tower + storage + AI bridge) ---
+# --- Phase 5: Nest Atomic (Tower + storage + AI bridge) ---
 
 [[graph.node]]
 name = "validate_nest"
 binary = "primalspring_primal"
-order = 4
+order = 5
 required = true
 spawn = false
 depends_on = ["validate_tower"]
@@ -80,12 +93,12 @@ capabilities = ["composition.nest_health"]
 method = "composition.nest_health"
 expect = "healthy"
 
-# --- Phase 5: Full NUCLEUS (all capabilities) ---
+# --- Phase 6: Full NUCLEUS (all capabilities) ---
 
 [[graph.node]]
 name = "validate_full_nucleus"
 binary = "primalspring_primal"
-order = 5
+order = 6
 required = true
 spawn = false
 depends_on = ["validate_node", "validate_nest"]
@@ -96,12 +109,12 @@ capabilities = ["composition.nucleus_health"]
 method = "composition.nucleus_health"
 expect = "healthy"
 
-# --- Phase 6: Tower + Squirrel overlay ---
+# --- Phase 7: Tower + Squirrel overlay ---
 
 [[graph.node]]
 name = "validate_tower_squirrel"
 binary = "primalspring_primal"
-order = 6
+order = 7
 required = false
 spawn = false
 depends_on = ["validate_tower"]
@@ -111,12 +124,12 @@ capabilities = ["composition.tower_squirrel_health"]
 [graph.node.operation]
 method = "composition.tower_squirrel_health"
 
-# --- Phase 7: Graph structural validation ---
+# --- Phase 8: Graph structural validation ---
 
 [[graph.node]]
 name = "validate_atomic_graphs"
 binary = "primalspring_primal"
-order = 7
+order = 8
 required = true
 spawn = false
 depends_on = ["verify_primalspring"]
@@ -134,13 +147,14 @@ mode = "structure"
 # SUMMARY
 #
 # This graph validates all NUCLEUS atomic deployment tiers:
-#   1. primalSpring is running and healthy
-#   2. Tower (beardog + songbird) — security + discovery foundation
-#   3. Node (Tower + toadstool) — adds compute dispatch
-#   4. Nest (Tower + nestgate + squirrel) — adds storage + AI bridge
-#   5. Full NUCLEUS (all 5 core primals) — complete ecosystem
-#   6. Tower + Squirrel overlay (optional) — AI bridge without storage
-#   7. Structural validation of all 4 canonical atomic deploy graphs
+#   1. biomeOS Neural API substrate is healthy and provides orchestration
+#   2. primalSpring is running and healthy
+#   3. Tower (beardog + songbird) — security + discovery foundation
+#   4. Node (Tower + toadstool) — adds compute dispatch
+#   5. Nest (Tower + nestgate + squirrel) — adds storage + AI bridge
+#   6. Full NUCLEUS (all 5 core primals) — complete ecosystem
+#   7. Tower + Squirrel overlay (optional) — AI bridge without storage
+#   8. Structural validation of all 4 canonical atomic deploy graphs
 #
 # Composition tiers align with biomeOS v2.78 NucleusMode:
 #   Tower:  [beardog, songbird]
