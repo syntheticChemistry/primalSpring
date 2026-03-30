@@ -207,6 +207,54 @@ pub mod game {
     pub const FITTS_COST: &str = "game.fitts_cost";
     /// Engagement metrics.
     pub const ENGAGEMENT: &str = "game.engagement";
+    /// UI analysis (accessibility evaluation).
+    pub const ANALYZE_UI: &str = "game.analyze_ui";
+    /// Accessibility evaluation.
+    pub const ACCESSIBILITY: &str = "game.accessibility";
+    /// Procedural noise generation.
+    pub const GENERATE_NOISE: &str = "game.generate_noise";
+}
+
+/// Compute domain — toadStool dispatch methods.
+pub mod compute {
+    /// Submit a compute dispatch job.
+    pub const DISPATCH_SUBMIT: &str = "compute.dispatch.submit";
+    /// Execute a dispatch (coralReef delegation).
+    pub const DISPATCH_EXECUTE: &str = "compute.dispatch.execute";
+    /// Health check for compute substrate.
+    pub const HEALTH: &str = "compute.health";
+}
+
+/// Shader domain — toadStool S168 shader pipeline.
+pub mod shader {
+    /// Dispatch compiled shader binary (base64/u8/compile_result).
+    pub const DISPATCH: &str = "shader.dispatch";
+    /// Compile WGSL shader source (coralReef).
+    pub const COMPILE_WGSL: &str = "shader.compile.wgsl";
+}
+
+/// Webb (narrative) domain — esotericWebb V6 session methods.
+pub mod webb {
+    /// Resolve a scene: predicates, effects, NPC state.
+    pub const RESOLVE_SCENE: &str = "webb.resolve_scene";
+    /// Query NPC state.
+    pub const NPC_STATE: &str = "webb.npc_state";
+    /// Ability check.
+    pub const ABILITY_CHECK: &str = "webb.ability_check";
+    /// Session state.
+    pub const SESSION_STATE: &str = "webb.session_state";
+    /// Liveness probe.
+    pub const LIVENESS: &str = "webb.liveness";
+}
+
+/// Session domain — shared session lifecycle (esotericWebb, ludoSpring).
+pub mod session {
+    /// Create a new session.
+    pub const CREATE: &str = "session.create";
+    /// Advance to next scene.
+    pub const ADVANCE: &str = "session.advance";
+    /// Complete / finalize a session.
+    pub const COMPLETE: &str = "session.complete";
 }
 
 #[cfg(test)]
@@ -279,6 +327,22 @@ mod tests {
             game::WFC_STEP,
             game::FITTS_COST,
             game::ENGAGEMENT,
+            game::ANALYZE_UI,
+            game::ACCESSIBILITY,
+            game::GENERATE_NOISE,
+            compute::DISPATCH_SUBMIT,
+            compute::DISPATCH_EXECUTE,
+            compute::HEALTH,
+            shader::DISPATCH,
+            shader::COMPILE_WGSL,
+            webb::RESOLVE_SCENE,
+            webb::NPC_STATE,
+            webb::ABILITY_CHECK,
+            webb::SESSION_STATE,
+            webb::LIVENESS,
+            session::CREATE,
+            session::ADVANCE,
+            session::COMPLETE,
         ];
         for method in all {
             assert!(
@@ -309,6 +373,10 @@ mod tests {
             secrets::STORE,
             storage::LIST,
             game::ENGAGEMENT,
+            compute::DISPATCH_SUBMIT,
+            shader::DISPATCH,
+            webb::RESOLVE_SCENE,
+            session::CREATE,
         ];
         for method in all {
             assert!(!method.starts_with('.'), "{method:?} starts with dot");

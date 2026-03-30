@@ -2,17 +2,19 @@
 #
 # Gen4 Storytelling Full — the complete AI DM + game science + visualization stack.
 #
-# esotericWebb drives the narrative DAG. ludoSpring provides game science
-# (flow, DDA, engagement, Fitts). Squirrel serves as the AI Dungeon Master
-# via ai.chat with game context. petalTongue renders scenes and captures
-# player input. biomeOS orchestrates the loop. Provenance trio stamps
+# esotericWebb V6 drives the narrative DAG with its own embedded game science
+# (flow, DDA, engagement — absorbed from ludoSpring into webb/src/science/).
+# Squirrel serves as the AI Dungeon Master via ai.query/ai.suggest with
+# session context. petalTongue renders scenes and captures player input.
+# biomeOS orchestrates the loop. ludoSpring provides supplemental game
+# science (WFC, Fitts, accessibility) if available. Provenance trio stamps
 # every session event for replay integrity.
 #
 # The storytelling loop:
 #   1. petalTongue captures player input (interaction.poll)
 #   2. esotericWebb resolves scene: predicates, effects, NPC state
-#   3. ludoSpring evaluates flow state + difficulty adjustment
-#   4. Squirrel narrates (ai.chat with session context) — fallback from game.narrate_action
+#   3. esotericWebb evaluates flow state + DDA locally (or delegates to ludoSpring)
+#   4. Squirrel narrates (ai.query with session context)
 #   5. rhizoCrypt stamps the session event (dag.event.append)
 #   6. petalTongue renders the new scene (visualization.render.scene)
 #   7. Loop at 60Hz tick budget
@@ -22,11 +24,22 @@
 
 [graph]
 name = "gen4_storytelling_full"
-description = "Full AI DM storytelling: esotericWebb CRPG + ludoSpring game science + Squirrel narration + petalTongue scenes + provenance"
-version = "1.0.0"
+description = "Full AI DM storytelling: esotericWebb V6 CRPG (embedded game science) + Squirrel AI DM + petalTongue scenes + ludoSpring supplemental + provenance"
+version = "2.0.0"
 coordination = "Continuous"
 tick_hz = 60
 bond_type = "covalent"
+
+# ── Phase 0: biomeOS Neural API substrate ──────────────────────────────
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "graph.status", "capability.discover", "health.liveness"]
 
 # ── Tower identity + discovery ─────────────────────────────────────────
 [[graph.node]]
@@ -34,6 +47,7 @@ name = "beardog"
 binary = "beardog_primal"
 order = 1
 required = true
+depends_on = ["biomeos_neural_api"]
 health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
@@ -48,28 +62,18 @@ health_method = "health"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-# ── biomeOS: orchestrator ──────────────────────────────────────────────
-[[graph.node]]
-name = "biomeos"
-binary = "biomeos_primal"
-order = 3
-required = true
-depends_on = ["beardog", "songbird"]
-health_method = "health"
-by_capability = "ecosystem"
-capabilities = ["graph.execution", "capability.call", "capability.discover", "lifecycle.register"]
-
-# ── esotericWebb: narrative engine ─────────────────────────────────────
+# ── esotericWebb V6: narrative engine + embedded game science ──────────
 # DAG-traced CRPG: scene resolution, NPC state, ability interactions,
 # predicate/effect system, bounded endings.
-# Consumes: ludoSpring game.*, Squirrel ai.*, petalTongue viz.*
+# V6: owns flow/DDA/engagement locally (webb/src/science/), no ludoSpring
+# compile dep. Consumes Squirrel ai.*, petalTongue viz.* at runtime.
 [[graph.node]]
 name = "esotericwebb"
 binary = "esotericwebb"
-order = 4
+order = 3
 required = true
 depends_on = ["beardog", "songbird"]
-health_method = "health"
+health_method = "webb.liveness"
 by_capability = "narrative"
 capabilities = [
     "webb.resolve_scene",
@@ -83,46 +87,21 @@ capabilities = [
     "tools.call",
 ]
 
-# ── ludoSpring: game science ───────────────────────────────────────────
-# Flow analysis, difficulty adjustment, engagement metrics, Fitts law,
-# WFC procedural generation, accessibility evaluation.
-# The 8 IPC methods powering game feel.
-[[graph.node]]
-name = "ludospring"
-binary = "ludospring"
-order = 5
-required = true
-depends_on = ["beardog", "songbird"]
-health_method = "health"
-by_capability = "game"
-capabilities = [
-    "game.evaluate_flow",
-    "game.fitts_cost",
-    "game.engagement",
-    "game.analyze_ui",
-    "game.accessibility",
-    "game.wfc_step",
-    "game.difficulty_adjustment",
-    "game.generate_noise",
-]
-
 # ── Squirrel: AI Dungeon Master ────────────────────────────────────────
-# Provides narrative generation via ai.chat with session context.
-# esotericWebb calls game.narrate_action first (ludoSpring), then
-# falls back to ai.chat (Squirrel) for rich AI narration.
+# Provides narrative generation via ai.query/ai.suggest with session context.
 # Context windows track session state across scenes.
 [[graph.node]]
 name = "squirrel"
 binary = "squirrel_primal"
-order = 6
+order = 4
 required = true
-depends_on = ["biomeos"]
+depends_on = ["biomeos_neural_api"]
 health_method = "health"
 by_capability = "ai"
 capabilities = [
-    "ai.chat",
-    "ai.summarize",
     "ai.query",
+    "ai.suggest",
+    "ai.analyze",
     "tool.execute",
     "tool.list",
     "context.create",
@@ -137,9 +116,9 @@ capabilities = [
 [[graph.node]]
 name = "petaltongue"
 binary = "petaltongue_primal"
-order = 7
+order = 5
 required = true
-depends_on = ["biomeos"]
+depends_on = ["biomeos_neural_api"]
 health_method = "health"
 by_capability = "visualization"
 capabilities = [
@@ -151,13 +130,36 @@ capabilities = [
     "interaction.subscribe",
 ]
 
+# ── ludoSpring: supplemental game science (optional) ───────────────────
+# WFC procedural generation, Fitts law, accessibility evaluation,
+# GPU game compute. Core flow/DDA/engagement is in esotericWebb V6.
+# When available, enriches the composition with advanced game mechanics.
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring"
+order = 6
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "game"
+capabilities = [
+    "game.evaluate_flow",
+    "game.fitts_cost",
+    "game.engagement",
+    "game.analyze_ui",
+    "game.accessibility",
+    "game.wfc_step",
+    "game.difficulty_adjustment",
+    "game.generate_noise",
+]
+
 # ── Provenance: session integrity ──────────────────────────────────────
 # Every scene resolution, dice roll, NPC interaction, and AI narration
 # gets a DAG entry. Sessions are replayable and auditable.
 [[graph.node]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
-order = 8
+order = 7
 required = false
 depends_on = ["beardog"]
 health_method = "health"
@@ -167,7 +169,7 @@ capabilities = ["dag.session.create", "dag.event.append", "dag.session.finalize"
 [[graph.node]]
 name = "loamspine"
 binary = "loamspine_primal"
-order = 9
+order = 8
 required = false
 depends_on = ["beardog"]
 health_method = "health"
@@ -177,7 +179,7 @@ capabilities = ["lineage.commit", "lineage.branch", "lineage.certify"]
 [[graph.node]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
-order = 10
+order = 9
 required = false
 depends_on = ["beardog"]
 health_method = "health"
@@ -188,7 +190,7 @@ capabilities = ["provenance.create_braid", "provenance.verify_braid"]
 [[graph.node]]
 name = "nestgate"
 binary = "nestgate_primal"
-order = 11
+order = 10
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "health"
@@ -198,9 +200,9 @@ capabilities = ["storage.store", "storage.retrieve"]
 [[graph.node]]
 name = "toadstool"
 binary = "toadstool_primal"
-order = 12
+order = 11
 required = false
-depends_on = ["biomeos"]
+depends_on = ["biomeos_neural_api"]
 health_method = "compute.health"
 by_capability = "compute"
-capabilities = ["compute.dispatch.submit"]
+capabilities = ["compute.dispatch.submit", "shader.dispatch"]

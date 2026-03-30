@@ -1,17 +1,33 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# primalSpring validation graph for biomeOS `ludospring_deploy`.
-# Verifies Tower health, brings up ludospring_primal for game engine/physics/flow,
-# then validates the continuous tick surface via game.tick_health.
+# primalSpring validation graph for ludoSpring V32 deployment.
+# Verifies biomeOS substrate, Tower health, brings up ludospring_primal
+# for game science (flow, DDA, engagement, WFC, Fitts, GPU dispatch),
+# then validates the composition and game method surface.
+#
+# ludoSpring V32: 8 game.* methods, tolerances centralized, zero eprintln
+# patterns, exp030 rewritten to ValidationHarness. esotericWebb V6 owns
+# its own flow/DDA/engagement locally — ludoSpring provides supplemental
+# WFC/Fitts/accessibility + GPU compute via toadStool delegation.
 #
 # Usage:
 #   biomeos deploy --graph graphs/spring_validation/ludospring_validate.toml
 
 [graph]
 name = "ludospring_validate"
-description = "Validates ludospring_deploy: Tower check, ludospring primal, continuous tick"
-version = "0.1.0"
+description = "Validates ludoSpring V32 deployment: biomeOS substrate, Tower, game science surface, GPU delegation"
+version = "0.2.0"
 coordination = "sequential"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "capability.discover", "health.liveness"]
 
 [[graph.node]]
 name = "verify_tower"
@@ -19,6 +35,7 @@ binary = "primalspring_primal"
 order = 1
 required = true
 spawn = false
+depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "coordination"
 args = ["server"]
@@ -27,38 +44,34 @@ capabilities = [
 ]
 
 [[graph.node]]
-name = "start_biomeos"
-binary = "biomeos"
+name = "start_ludospring"
+binary = "ludospring"
 order = 2
 required = true
 depends_on = ["verify_tower"]
-health_method = "capability.list"
-by_capability = "ecosystem"
-capabilities = ["graph.execution", "ecosystem.coordination"]
-
-[[graph.node]]
-name = "start_ludospring"
-binary = "ludospring"
-order = 3
-required = true
-depends_on = ["start_biomeos"]
 health_method = "health.check"
 by_capability = "game"
 capabilities = [
-    "game.engine",
-    "game.physics",
-    "game.flow_state",
+    "game.evaluate_flow",
+    "game.fitts_cost",
+    "game.engagement",
+    "game.difficulty_adjustment",
+    "game.wfc_step",
+    "game.generate_noise",
+    "game.analyze_ui",
+    "game.accessibility",
 ]
 
 [[graph.node]]
-name = "validate_tick"
+name = "validate_game_surface"
 binary = "primalspring_primal"
-order = 4
+order = 3
 required = true
 spawn = false
 depends_on = ["start_ludospring"]
-health_method = "game.tick_health"
-by_capability = "game"
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
 capabilities = [
-    "coordination.validate_tick",
+    "coordination.validate_composition",
 ]

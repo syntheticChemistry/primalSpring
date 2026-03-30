@@ -3,6 +3,21 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0d] — Phase 23d: Absorb toadStool S168 + esotericWebb V6 + ludoSpring V32 (2026-03-28)
+
+### Added
+- `compute::DISPATCH_SUBMIT`, `compute::DISPATCH_EXECUTE`, `compute::HEALTH` — toadStool compute dispatch methods
+- `shader::DISPATCH`, `shader::COMPILE_WGSL` — toadStool S168 sovereign shader pipeline methods
+- `webb::RESOLVE_SCENE`, `webb::NPC_STATE`, `webb::ABILITY_CHECK`, `webb::SESSION_STATE`, `webb::LIVENESS` — esotericWebb V6 narrative methods
+- `session::CREATE`, `session::ADVANCE`, `session::COMPLETE` — shared session lifecycle
+- `game::ANALYZE_UI`, `game::ACCESSIBILITY`, `game::GENERATE_NOISE` — ludoSpring V32 supplemental methods
+
+### Changed
+- `gen4_storytelling_full.toml` v2.0.0: esotericWebb V6 owns game science locally; ludoSpring now optional supplemental; biomeOS substrate Phase 0 node added; Squirrel AI methods updated (ai.query/suggest/analyze); toadStool gains shader.dispatch
+- `gen4_storytelling_minimal.toml` v2.0.0: esotericWebb V6 self-contained; ludoSpring optional; Squirrel ai.query replaces ai.chat
+- `ludospring_validate.toml` v0.2.0: biomeOS substrate node; V32 game.* capabilities (8 methods); updated validation surface
+- Method constants: 63 → 79 (24 domains, 6 new modules: compute, shader, webb, session + 3 expanded game constants)
+
 ## [0.8.0c] — Phase 23c: NUCLEUS Atomics + biomeOS Substrate (2026-03-28)
 
 ### Added

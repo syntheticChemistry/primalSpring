@@ -53,19 +53,20 @@ primals at runtime via capability-based discovery.
 ## IPC
 
 JSON-RPC 2.0 over Unix domain sockets (TCP fallback).
-63 method constants across 18 domains. MCP tool surface for Squirrel AI.
+79 method constants across 24 domains. MCP tool surface for Squirrel AI.
 Capability-based discovery via Neural API or 5-tier filesystem probing.
 
 ## Status
 
-v0.8.0 Phase 23c — 87/87 gates, 402 tests, 72.5% library coverage,
+v0.8.0 Phase 23d — 87/87 gates, 402 tests, 72.5% library coverage,
 67 experiments, 63 deploy graphs (11 validation), 5 spring primal binaries.
-Phase 23c: NUCLEUS atomics + biomeOS substrate — biomeOS Neural API is now
-an explicit substrate in every NUCLEUS composition. SubstrateHealth in
-CompositionResult. All 4 canonical atomic deploy graphs carry a Phase 0
-biomeos_neural_api node. Nest gains Squirrel (ai). FullNucleus core 5
-aligned with biomeOS's `nucleus --mode full`. composition.tower_squirrel_health
-wired. 63 method constants across 18 domains.
+Phase 23d: Absorb toadStool S168 + esotericWebb V6 + ludoSpring V32.
+Storytelling graphs updated: esotericWebb V6 owns game science locally
+(flow/DDA/engagement), ludoSpring now optional supplemental. biomeOS
+substrate Phase 0 node in storytelling full graph. 16 new method constants
+(compute.*, shader.*, webb.*, session.*, game.analyze_ui/accessibility/
+generate_noise). ludospring_validate.toml updated for V32 capabilities.
+79 method constants across 24 domains.
 
 ## Ecosystem Position
 
