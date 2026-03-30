@@ -29,12 +29,24 @@ pub mod capability {
     pub const DISCOVER: &str = "capability.discover";
     /// Invoke an operation on a capability domain.
     pub const CALL: &str = "capability.call";
+    /// Register a capability provider with the neural router.
+    pub const REGISTER: &str = "capability.register";
+    /// Unregister a primal's capabilities (used by biomeOS rollback).
+    pub const UNREGISTER: &str = "capability.unregister";
+    /// Route a request to a capability provider.
+    pub const ROUTE: &str = "capability.route";
 }
 
-/// Lifecycle domain — primal lifecycle introspection.
+/// Lifecycle domain — primal lifecycle management.
 pub mod lifecycle {
+    /// Start a primal.
+    pub const START: &str = "lifecycle.start";
+    /// Stop a primal (used by biomeOS rollback).
+    pub const STOP: &str = "lifecycle.stop";
     /// Current lifecycle status (starting, ready, degraded, stopping).
     pub const STATUS: &str = "lifecycle.status";
+    /// Register a primal with the lifecycle manager.
+    pub const REGISTER: &str = "lifecycle.register";
 }
 
 /// Coordination domain — primalSpring's own methods.
@@ -49,10 +61,54 @@ pub mod coordination {
 
 /// Graph domain — deploy graph operations.
 pub mod graph {
+    /// Deploy a graph (biomeOS graph executor).
+    pub const DEPLOY: &str = "graph.deploy";
+    /// Query graph execution status.
+    pub const STATUS: &str = "graph.status";
+    /// Roll back a deployed graph (reverse topological lifecycle.stop).
+    pub const ROLLBACK: &str = "graph.rollback";
     /// Validate a deploy graph structurally.
     pub const VALIDATE: &str = "graph.validate";
     /// List known deploy graphs.
     pub const LIST: &str = "graph.list";
+    /// Run a streaming pipeline graph.
+    pub const PIPELINE: &str = "graph.pipeline";
+    /// Run a continuous-tick graph.
+    pub const CONTINUOUS: &str = "graph.continuous";
+}
+
+/// Federation domain — cross-gate federation operations.
+pub mod federation {
+    /// Configure a gate for federation (per-gate setup).
+    pub const CONFIGURE: &str = "federation.configure";
+    /// Join a gate to a federation.
+    pub const JOIN: &str = "federation.join";
+    /// Health check across all gates in a federation.
+    pub const HEALTH_CHECK: &str = "federation.health_check";
+}
+
+/// Discovery domain — primal and service discovery.
+pub mod discovery {
+    /// Discover primals via all available mechanisms.
+    pub const DISCOVER: &str = "discovery.discover";
+    /// Discover all primals (exhaustive scan).
+    pub const DISCOVER_ALL: &str = "discovery.discover_all";
+    /// List available discovery protocols.
+    pub const PROTOCOLS: &str = "discovery.protocols";
+}
+
+/// Topology domain — network and composition topology.
+pub mod topology {
+    /// Get the current topology graph.
+    pub const GET: &str = "topology.get";
+    /// Proprioceptive topology (self-aware network map).
+    pub const PROPRIOCEPTION: &str = "topology.proprioception";
+}
+
+/// Route domain — batch capability registration.
+pub mod route {
+    /// Batch-register all capabilities for a remote primal.
+    pub const REGISTER: &str = "route.register";
 }
 
 /// Composition domain — high-level composition health.
@@ -166,12 +222,32 @@ mod tests {
             capabilities::LIST,
             capability::DISCOVER,
             capability::CALL,
+            capability::REGISTER,
+            capability::UNREGISTER,
+            capability::ROUTE,
+            lifecycle::START,
+            lifecycle::STOP,
             lifecycle::STATUS,
+            lifecycle::REGISTER,
             coordination::VALIDATE_COMPOSITION,
             coordination::PROBE_PRIMAL,
             coordination::DISCOVERY_SWEEP,
+            graph::DEPLOY,
+            graph::STATUS,
+            graph::ROLLBACK,
             graph::VALIDATE,
             graph::LIST,
+            graph::PIPELINE,
+            graph::CONTINUOUS,
+            federation::CONFIGURE,
+            federation::JOIN,
+            federation::HEALTH_CHECK,
+            discovery::DISCOVER,
+            discovery::DISCOVER_ALL,
+            discovery::PROTOCOLS,
+            topology::GET,
+            topology::PROPRIOCEPTION,
+            route::REGISTER,
             composition::NUCLEUS_HEALTH,
             mcp::TOOLS_LIST,
             provenance::SESSION_CREATE,
@@ -219,7 +295,14 @@ mod tests {
             health::LIVENESS,
             capabilities::LIST,
             capability::DISCOVER,
+            capability::UNREGISTER,
+            lifecycle::STOP,
             coordination::VALIDATE_COMPOSITION,
+            graph::ROLLBACK,
+            federation::CONFIGURE,
+            discovery::DISCOVER,
+            topology::GET,
+            route::REGISTER,
             crypto::GENERATE_KEYPAIR,
             birdsong::ENCRYPT,
             genetic::DERIVE_LINEAGE_KEY,

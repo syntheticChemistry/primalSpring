@@ -7,7 +7,7 @@
 [meta]
 primal = "primalspring"
 domain = "coordination"
-version = "0.7.0"
+version = "0.8.0"
 
 [[capabilities]]
 method = "coordination.validate_composition"
@@ -75,6 +75,16 @@ description = "Stop a running NUCLEUS composition"
 domain = "lifecycle"
 
 [[capabilities]]
+method = "lifecycle.start"
+description = "Start a primal (biomeOS lifecycle management)"
+domain = "lifecycle"
+
+[[capabilities]]
+method = "lifecycle.stop"
+description = "Stop a primal (used by biomeOS rollback)"
+domain = "lifecycle"
+
+[[capabilities]]
 method = "lifecycle.status"
 description = "Primal status report"
 domain = "lifecycle"
@@ -108,6 +118,24 @@ domain = "graph"
 method = "graph.list"
 description = "Structurally validate all deploy graphs"
 domain = "graph"
+
+[[capabilities]]
+method = "graph.deploy"
+description = "Deploy a graph via biomeOS graph executor"
+domain = "graph"
+provider = "biomeos"
+
+[[capabilities]]
+method = "graph.status"
+description = "Query graph execution status"
+domain = "graph"
+provider = "biomeos"
+
+[[capabilities]]
+method = "graph.rollback"
+description = "Roll back a deployed graph (reverse topo lifecycle.stop)"
+domain = "graph"
+provider = "biomeos"
 
 [[capabilities]]
 method = "coordination.neural_api_status"
@@ -197,6 +225,40 @@ method = "network.federation.peers"
 description = "Cross-tower federation peer list"
 domain = "network"
 provider = "songbird"
+
+# ── Federation lifecycle (biomeOS v2.78+) ──
+
+[[capabilities]]
+method = "federation.configure"
+description = "Configure a gate for federation (per-gate setup)"
+domain = "federation"
+provider = "biomeos"
+
+[[capabilities]]
+method = "federation.join"
+description = "Join a gate to a federation"
+domain = "federation"
+provider = "biomeos"
+
+[[capabilities]]
+method = "federation.health_check"
+description = "Health check across all gates in a federation"
+domain = "federation"
+provider = "biomeos"
+
+# ── Topology queries ──
+
+[[capabilities]]
+method = "topology.get"
+description = "Get the current topology graph"
+domain = "topology"
+provider = "biomeos"
+
+[[capabilities]]
+method = "topology.proprioception"
+description = "Proprioceptive topology (self-aware network map)"
+domain = "topology"
+provider = "biomeos"
 
 # ── Visualization capabilities (petalTongue) ──
 

@@ -118,9 +118,9 @@ impl NeuralBridge {
         client.health_check()
     }
 
-    /// Discover what capabilities are registered for a domain.
+    /// Discover what capabilities are registered for a capability name.
     ///
-    /// Calls `capability.discover` on biomeOS's neural-api.
+    /// Calls `capability.discover` with the `capability` parameter.
     ///
     /// # Errors
     ///
@@ -129,6 +129,77 @@ impl NeuralBridge {
         let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
         let params = serde_json::json!({ "capability": capability });
         let resp = client.call("capability.discover", params)?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
+
+    /// Discover what capabilities are registered for a domain.
+    ///
+    /// Calls `capability.discover` with the `domain` parameter — biomeOS v2.78+
+    /// accepts both `capability` and `domain` for cross-transport compatibility.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport or application failure.
+    pub fn discover_domain(&self, domain: &str) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let params = serde_json::json!({ "domain": domain });
+        let resp = client.call("capability.discover", params)?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
+
+    /// Deploy a graph via the biomeOS graph executor.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport or application failure.
+    pub fn graph_deploy(
+        &self,
+        graph: &serde_json::Value,
+    ) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let resp = client.call("graph.deploy", graph.clone())?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
+
+    /// Query graph execution status.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport or application failure.
+    pub fn graph_status(
+        &self,
+        graph_id: &str,
+    ) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let params = serde_json::json!({ "graph_id": graph_id });
+        let resp = client.call("graph.status", params)?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
+
+    /// Roll back a deployed graph (reverse topological lifecycle.stop + capability.unregister).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport or application failure.
+    pub fn graph_rollback(
+        &self,
+        graph_id: &str,
+    ) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let params = serde_json::json!({ "graph_id": graph_id });
+        let resp = client.call("graph.rollback", params)?;
         if let Some(err) = resp.error {
             return Err(IpcError::from(err));
         }
@@ -210,11 +281,44 @@ mod tests {
     }
 
     #[test]
+    fn discover_domain_fails_for_nonexistent_socket() {
+        let bridge = NeuralBridge {
+            socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
+        };
+        assert!(bridge.discover_domain("crypto").is_err());
+    }
+
+    #[test]
     fn capability_call_fails_for_nonexistent_socket() {
         let bridge = NeuralBridge {
             socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
         };
         let args = serde_json::json!({});
         assert!(bridge.capability_call("crypto", "sign", &args).is_err());
+    }
+
+    #[test]
+    fn graph_deploy_fails_for_nonexistent_socket() {
+        let bridge = NeuralBridge {
+            socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
+        };
+        let graph = serde_json::json!({"nodes": []});
+        assert!(bridge.graph_deploy(&graph).is_err());
+    }
+
+    #[test]
+    fn graph_status_fails_for_nonexistent_socket() {
+        let bridge = NeuralBridge {
+            socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
+        };
+        assert!(bridge.graph_status("test-graph-123").is_err());
+    }
+
+    #[test]
+    fn graph_rollback_fails_for_nonexistent_socket() {
+        let bridge = NeuralBridge {
+            socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
+        };
+        assert!(bridge.graph_rollback("test-graph-123").is_err());
     }
 }

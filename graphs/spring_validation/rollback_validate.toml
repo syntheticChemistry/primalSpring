@@ -1,0 +1,132 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation graph for biomeOS v2.78 graph rollback.
+# Validates that graph deployment, checkpoint/restore, and rollback
+# (reverse topological lifecycle.stop + capability.unregister) work.
+#
+# Requires biomeOS v2.78+ (rollback is real checkpoint/restore, not a no-op).
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/rollback_validate.toml
+
+[graph]
+name = "rollback_validate"
+description = "Validates biomeOS graph rollback: deploy, checkpoint, rollback lifecycle"
+version = "0.1.0"
+coordination = "sequential"
+rollback_on_failure = true
+
+[graph.metadata]
+bond_type = "validation"
+requires_biomeos = ">=2.78"
+checkpoint_enabled = true
+
+# --- Phase 1: Neural API Health ---
+
+[[graph.node]]
+name = "verify_neural_api"
+binary = "biomeos"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "graph.status", "graph.rollback"]
+
+# --- Phase 2: Coordination Primal Health ---
+
+[[graph.node]]
+name = "verify_primalspring"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.tower_health"]
+
+# --- Phase 3: Deploy a Sub-Graph and Verify Status ---
+
+[[graph.node]]
+name = "deploy_test_graph"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["verify_neural_api", "verify_primalspring"]
+by_capability = "orchestration"
+capabilities = ["graph.deploy"]
+
+[graph.node.operation]
+method = "graph.deploy"
+
+[graph.node.operation.params]
+graph_name = "healthspring_validate"
+wait_for_completion = true
+
+# --- Phase 4: Verify Graph Status Reports Completed ---
+
+[[graph.node]]
+name = "check_graph_status"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["deploy_test_graph"]
+by_capability = "orchestration"
+capabilities = ["graph.status"]
+
+[graph.node.operation]
+method = "graph.status"
+expect = "completed"
+
+[graph.node.operation.params]
+graph_id = "${deploy_test_graph.graph_id}"
+
+# --- Phase 5: Trigger Rollback ---
+
+[[graph.node]]
+name = "rollback_test_graph"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+depends_on = ["check_graph_status"]
+by_capability = "orchestration"
+capabilities = ["graph.rollback"]
+
+[graph.node.operation]
+method = "graph.rollback"
+
+[graph.node.operation.params]
+graph_id = "${deploy_test_graph.graph_id}"
+
+# --- Phase 6: Verify Post-Rollback Health ---
+
+[[graph.node]]
+name = "post_rollback_health"
+binary = "primalspring_primal"
+order = 6
+required = true
+spawn = false
+depends_on = ["rollback_test_graph"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.tower_health"]
+
+# =============================================================================
+# SUMMARY
+#
+# This graph validates the biomeOS v2.78 graph lifecycle:
+#   1. Neural API is healthy and supports graph operations
+#   2. Deploy a known-good validation graph (healthspring_validate)
+#   3. Verify graph.status reports completion
+#   4. Trigger graph.rollback (reverse topo lifecycle.stop + capability.unregister)
+#   5. Verify the tower remains healthy after rollback
+#
+# The rollback flow exercises:
+#   - Checkpoint save/restore (execution_state.json)
+#   - Reverse topological ordering
+#   - lifecycle.stop per launched primal
+#   - capability.unregister per registered capability set
+# =============================================================================

@@ -23,7 +23,7 @@ primals at runtime via capability-based discovery.
   (`primalspring_primal` server, `validate_all` runner)
 - **experiments/** — 67 validation binaries covering 14 tracks
   (atomics, graphs, emergent, bonding, IPC, provenance, deployment, gen4 substrate, deployment matrix, substrate stress)
-- **graphs/** — 60 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4 + bonding + chaos + science)
+- **graphs/** — 62 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4 + bonding + chaos + science)
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -53,19 +53,20 @@ primals at runtime via capability-based discovery.
 ## IPC
 
 JSON-RPC 2.0 over Unix domain sockets (TCP fallback).
-37 registered capabilities. MCP tool surface for Squirrel AI.
+63 method constants across 18 domains. MCP tool surface for Squirrel AI.
 Capability-based discovery via Neural API or 5-tier filesystem probing.
 
 ## Status
 
-v0.8.0 Phase 23 — 87/87 gates, 413 tests, 72.5% library coverage,
-67 experiments, 60 deploy graphs, 5 spring primal binaries in plasmidBin.
-Phase 23: Ecosystem debt resolution — comprehensive gap map reclassifying
-debt across BearDog/Songbird/biomeOS, crypto_negative_validate.toml graph
-(wrong-seed, empty-seed, tampered-payload rejection), exp086 generate-then-verify
-round-trip, GENERATE_LINEAGE_PROOF method constant, per-primal team handoffs,
-COMPOSITION_PATTERNS.md and SPOREGARDEN_DEPLOYMENT_STANDARD.md standards
-for wateringHole; deploy graph count 59→60.
+v0.8.0 Phase 23b — 87/87 gates, 399 tests, 72.5% library coverage,
+67 experiments, 62 deploy graphs, 5 spring primal binaries in plasmidBin.
+Phase 23b: biomeOS v2.78 rewire — all 4 blocking biomeOS debt items resolved
+upstream. NeuralBridge gains graph_deploy/status/rollback + discover_domain.
+20 new method constants (federation.*, discovery.*, topology.*, graph.deploy/
+status/rollback/pipeline/continuous, lifecycle.start/stop/register,
+capability.register/unregister/route, route.register). Two new validation
+graphs: rollback_validate.toml and federation_manifest_validate.toml.
+Deploy graph count 60→62, validation graphs 8→10.
 
 ## Ecosystem Position
 

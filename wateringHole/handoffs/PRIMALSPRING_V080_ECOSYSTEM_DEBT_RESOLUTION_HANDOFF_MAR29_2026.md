@@ -86,8 +86,9 @@ Full details: `PRIMALSPRING_V080_GAP_MAP_MAR29_2026.md`
 - See `SONGBIRD_TEAM_DEBT_HANDOFF_MAR29_2026.md` for full categorized debt.
 
 ### biomeOS Team
+- biomeOS v2.78 resolved all 4 blocking debt items (graph rollback, DNS discovery, remote acquisition, federation manifest) and S-2/S-3 (health check probe, harvest GitHub). See updated `BIOMEOS_TEAM_DEBT_HANDOFF_MAR29_2026.md`.
+- primalSpring Phase 23b rewired to match: `NeuralBridge` gains `graph_deploy/status/rollback` + `discover_domain`, 20 new method constants, 2 new validation graphs (`rollback_validate.toml`, `federation_manifest_validate.toml`).
 - The `crypto_negative_validate.toml` graph is designed to run against a live Tower. Add it to your validation suite.
-- See `BIOMEOS_TEAM_DEBT_HANDOFF_MAR29_2026.md` for full categorized debt.
 
 ---
 
@@ -97,7 +98,7 @@ Full details: `PRIMALSPRING_V080_GAP_MAP_MAR29_2026.md`
 
 1. **Negative validation graph pattern** — `crypto_negative_validate.toml` demonstrates how to encode negative tests (expect = "invalid", expect = "error") in deploy graphs. Springs with security-sensitive operations should create equivalent graphs.
 
-2. **`ipc::methods` expansion** — 16 domain modules now (crypto, birdsong, genetic, secrets, storage, game, health, capabilities, provenance, coordination, graph, lifecycle, mcp, discovery, network, compute). Springs should use these constants instead of hardcoding method strings.
+2. **`ipc::methods` expansion** — 18 domain modules, 63 method constants (crypto, birdsong, genetic, secrets, storage, game, health, capabilities, capability, provenance, coordination, graph, lifecycle, mcp, discovery, federation, topology, route). Springs should use these constants instead of hardcoding method strings.
 
 3. **Generate-then-verify pattern** — exp086 demonstrates the correct pattern for lineage verification: generate proof with one RPC, verify with another, then verify with wrong seed. Springs doing genetic operations should follow this pattern.
 

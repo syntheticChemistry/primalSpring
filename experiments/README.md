@@ -95,6 +95,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 21 | Deep Ecosystem Audit + Library Consolidation | **Done** (ipc::tcp + ipc::methods library modules, launcher 4-module refactor, provenance circuit breaker half-open, tracing migration, 8 experiments consolidated to library helpers, 413 tests, zero clippy/fmt/doc warnings) |
 | 22 | Track 14 — exp085–exp088 — E2E composition: BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition | **Done** |
 | 23 | Ecosystem debt resolution — gap map, crypto negative validation graph, exp086 generate-then-verify, per-primal handoffs, composition standards | **Done** (v0.8.0) |
+| 23b | biomeOS v2.78 rewire — 20 method constants, NeuralBridge graph lifecycle + discover_domain, rollback + federation validation graphs | **Done** (v0.8.0b) |
 
 ## Validation Harness
 

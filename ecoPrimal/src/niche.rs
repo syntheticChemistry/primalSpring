@@ -59,6 +59,8 @@ pub const CAPABILITIES: &[&str] = &[
     // ── Lifecycle management ──
     "nucleus.start",
     "nucleus.stop",
+    "lifecycle.start",
+    "lifecycle.stop",
     "lifecycle.status",
     // ── Health probes (biomeOS orchestration) ──
     "health.check",
@@ -69,6 +71,9 @@ pub const CAPABILITIES: &[&str] = &[
     // ── Graph coordination ──
     "graph.validate",
     "graph.list",
+    "graph.deploy",
+    "graph.status",
+    "graph.rollback",
     // ── Neural API bridge ──
     "coordination.neural_api_status",
     // ── MCP tool discovery ──
@@ -89,6 +94,13 @@ pub const CAPABILITIES: &[&str] = &[
     "network.onion.status",
     "network.tor.status",
     "network.federation.peers",
+    // ── Federation lifecycle (biomeOS v2.78+) ──
+    "federation.configure",
+    "federation.join",
+    "federation.health_check",
+    // ── Topology queries ──
+    "topology.get",
+    "topology.proprioception",
     // ── Visualization (petalTongue) ──
     "visualization.render.dashboard",
     "visualization.render.grammar",

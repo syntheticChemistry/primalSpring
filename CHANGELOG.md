@@ -3,6 +3,19 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0b] — Phase 23b: biomeOS v2.78 Rewire (2026-03-28)
+
+### Added
+- `rollback_validate.toml` — spring validation graph for biomeOS graph rollback (deploy → status → rollback lifecycle)
+- `federation_manifest_validate.toml` — spring validation graph for biomeOS federation manifest deployment (configure → join → health_check)
+- `NeuralBridge::discover_domain()` — biomeOS v2.78 dual-param `capability.discover` (accepts `domain` alongside `capability`)
+- `NeuralBridge::graph_deploy()`, `graph_status()`, `graph_rollback()` — graph lifecycle via Neural API
+- 20 new method constants: `federation.{configure,join,health_check}`, `discovery.{discover,discover_all,protocols}`, `topology.{get,proprioception}`, `route.register`, `graph.{deploy,status,rollback,pipeline,continuous}`, `lifecycle.{start,stop,register}`, `capability.{register,unregister,route}`
+
+### Changed
+- Deploy graphs: 60 → 62, spring validation graphs: 8 → 10
+- biomeOS debt handoff updated: all 4 blocking items + S-2/S-3 marked RESOLVED per v2.78
+
 ## [0.8.0] — Phase 23: Ecosystem Debt Resolution + Standards (2026-03-29)
 
 ### Added
