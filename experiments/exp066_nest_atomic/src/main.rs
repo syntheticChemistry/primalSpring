@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-//! exp066 — Nest Atomic validation: Tower + NestGate storage
+//! exp066 — Nest Atomic validation: Tower + NestGate + Squirrel
 //!
-//! Validates that the Nest Atomic composition (beardog + songbird + nestgate)
+//! Validates that the Nest Atomic composition (beardog + songbird + nestgate + squirrel)
 //! starts, stores/retrieves data, and passes health checks.
 
 use primalspring::coordination::AtomicType;
@@ -29,12 +29,12 @@ fn rpc(
 fn main() {
     ValidationResult::new("exp066_nest_atomic")
         .with_provenance("exp066_nest_atomic", "2026-03-23")
-        .run("Nest Atomic — Tower + NestGate storage", |v| {
+        .run("Nest Atomic — Tower + NestGate + Squirrel", |v| {
             let primals = AtomicType::Nest.required_primals();
             v.check_bool(
                 "nest_composition_valid",
-                primals.len() == 3,
-                "Nest = beardog + songbird + nestgate",
+                primals.len() == 4,
+                "Nest = beardog + songbird + nestgate + squirrel",
             );
 
             let family_id = format!("exp066-{}", std::process::id());
@@ -49,7 +49,7 @@ fn main() {
                 }
             };
 
-            v.check_minimum("nest_primal_count", running.primal_count(), 3);
+            v.check_minimum("nest_primal_count", running.primal_count(), 4);
             running.validate(v);
 
             if let Some(ng) = running

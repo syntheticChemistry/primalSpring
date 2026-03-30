@@ -25,7 +25,7 @@ pub enum AtomicType {
     Tower,
     /// Tower + ToadStool (adds compute).
     Node,
-    /// Tower + NestGate (adds storage).
+    /// Tower + NestGate + Squirrel (adds storage + AI bridge).
     Nest,
     /// All 8 primals including Squirrel and provenance trio.
     FullNucleus,
@@ -42,7 +42,7 @@ impl AtomicType {
         match self {
             Self::Tower => &["security", "discovery"],
             Self::Node => &["security", "discovery", "compute"],
-            Self::Nest => &["security", "discovery", "storage"],
+            Self::Nest => &["security", "discovery", "storage", "ai"],
             Self::FullNucleus => &[
                 "security",
                 "discovery",
@@ -74,6 +74,7 @@ impl AtomicType {
                 primal_names::BEARDOG,
                 primal_names::SONGBIRD,
                 primal_names::NESTGATE,
+                primal_names::SQUIRREL,
             ],
             Self::FullNucleus => &[
                 primal_names::BEARDOG,
@@ -105,7 +106,7 @@ impl AtomicType {
         match self {
             Self::Tower => "Security + Discovery (crypto + mesh)",
             Self::Node => "Tower + Compute (+ GPU dispatch)",
-            Self::Nest => "Tower + Storage (+ persistence)",
+            Self::Nest => "Tower + Storage + AI bridge (+ persistence)",
             Self::FullNucleus => "All capabilities (full composition)",
         }
     }
@@ -423,9 +424,10 @@ mod tests {
     }
 
     #[test]
-    fn nest_extends_tower_with_nestgate() {
+    fn nest_extends_tower_with_nestgate_and_squirrel() {
         let primals = AtomicType::Nest.required_primals();
         assert!(primals.contains(&primal_names::NESTGATE));
+        assert!(primals.contains(&primal_names::SQUIRREL));
     }
 
     #[test]
@@ -588,7 +590,7 @@ mod tests {
     fn validate_composition_nest() {
         let result = validate_composition(AtomicType::Nest);
         assert_eq!(result.atomic, AtomicType::Nest);
-        assert_eq!(result.primals.len(), 3);
+        assert_eq!(result.primals.len(), 4);
     }
 
     #[test]

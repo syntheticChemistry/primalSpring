@@ -62,4 +62,5 @@ spawn = false
 depends_on = ["beardog", "songbird", "toadstool"]
 health_method = "health.liveness"
 by_capability = "coordination"
+args = ["server"]
 capabilities = ["composition.node_health"]

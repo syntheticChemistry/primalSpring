@@ -248,6 +248,9 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
         "composition.tower_health" => {
             handle_composition_health_by_capability(AtomicType::Tower, id)
         }
+        "composition.tower_squirrel_health" => {
+            handle_tower_squirrel_health(id)
+        }
         "composition.node_health" => handle_composition_health_by_capability(AtomicType::Node, id),
         "composition.nest_health" => handle_composition_health_by_capability(AtomicType::Nest, id),
         "composition.nucleus_health" => {
@@ -457,6 +460,23 @@ fn handle_composition_health_by_capability(atomic: AtomicType, id: u64) -> JsonR
             id,
         ),
     }
+}
+
+/// Tower + Squirrel overlay health — Tower capabilities plus AI bridge.
+fn handle_tower_squirrel_health(id: u64) -> JsonRpcResponse {
+    let tower = primalspring::coordination::validate_composition_by_capability(AtomicType::Tower);
+    let ai_disc = primalspring::ipc::discover::discover_by_capability("ai");
+    let ai_ok = ai_disc.socket.as_ref().is_some_and(|sock| {
+        primalspring::ipc::client::PrimalClient::connect(sock, "squirrel")
+            .is_ok_and(|mut c| c.health_check().unwrap_or(false))
+    });
+    let all_healthy = tower.all_healthy && ai_ok;
+    let combined = serde_json::json!({
+        "tower": tower,
+        "squirrel_healthy": ai_ok,
+        "all_healthy": all_healthy,
+    });
+    success_response(combined, id)
 }
 
 fn handle_validate_composition_by_capability(

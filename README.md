@@ -10,7 +10,7 @@
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 399 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 67 (14 tracks) |
-| **Deploy Graphs** | 62 TOMLs (18 single-node + 5 multi-node + 10 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science) |
+| **Deploy Graphs** | 63 TOMLs (18 single-node + 5 multi-node + 11 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress (87/87 gates) |
 | **Provenance** | All 67 experiments carry structured `with_provenance()` metadata |

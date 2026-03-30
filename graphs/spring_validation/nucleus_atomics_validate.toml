@@ -1,0 +1,150 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation graph for NUCLEUS atomic compositions.
+# Validates all 4 tiers (Tower, Node, Nest, Full) via composition health
+# endpoints. Each tier is validated capability-first through the
+# coordination primal's composition.* methods.
+#
+# Requires a Full NUCLEUS to be running (all 5 core primals + primalSpring).
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/nucleus_atomics_validate.toml
+
+[graph]
+name = "nucleus_atomics_validate"
+description = "Validates all 4 NUCLEUS atomic tiers: Tower, Node, Nest, Full"
+version = "0.1.0"
+coordination = "sequential"
+
+[graph.metadata]
+bond_type = "validation"
+requires_biomeos = ">=2.78"
+
+# --- Phase 1: Verify primalSpring is running ---
+
+[[graph.node]]
+name = "verify_primalspring"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.tower_health", "composition.node_health", "composition.nest_health", "composition.nucleus_health"]
+
+# --- Phase 2: Tower Atomic (security + discovery) ---
+
+[[graph.node]]
+name = "validate_tower"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["verify_primalspring"]
+by_capability = "coordination"
+capabilities = ["composition.tower_health"]
+
+[graph.node.operation]
+method = "composition.tower_health"
+expect = "healthy"
+
+# --- Phase 3: Node Atomic (Tower + compute) ---
+
+[[graph.node]]
+name = "validate_node"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["validate_tower"]
+by_capability = "coordination"
+capabilities = ["composition.node_health"]
+
+[graph.node.operation]
+method = "composition.node_health"
+expect = "healthy"
+
+# --- Phase 4: Nest Atomic (Tower + storage + AI bridge) ---
+
+[[graph.node]]
+name = "validate_nest"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["validate_tower"]
+by_capability = "coordination"
+capabilities = ["composition.nest_health"]
+
+[graph.node.operation]
+method = "composition.nest_health"
+expect = "healthy"
+
+# --- Phase 5: Full NUCLEUS (all capabilities) ---
+
+[[graph.node]]
+name = "validate_full_nucleus"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+depends_on = ["validate_node", "validate_nest"]
+by_capability = "coordination"
+capabilities = ["composition.nucleus_health"]
+
+[graph.node.operation]
+method = "composition.nucleus_health"
+expect = "healthy"
+
+# --- Phase 6: Tower + Squirrel overlay ---
+
+[[graph.node]]
+name = "validate_tower_squirrel"
+binary = "primalspring_primal"
+order = 6
+required = false
+spawn = false
+depends_on = ["validate_tower"]
+by_capability = "coordination"
+capabilities = ["composition.tower_squirrel_health"]
+
+[graph.node.operation]
+method = "composition.tower_squirrel_health"
+
+# --- Phase 7: Graph structural validation ---
+
+[[graph.node]]
+name = "validate_atomic_graphs"
+binary = "primalspring_primal"
+order = 7
+required = true
+spawn = false
+depends_on = ["verify_primalspring"]
+by_capability = "coordination"
+capabilities = ["graph.validate"]
+
+[graph.node.operation]
+method = "graph.validate"
+
+[graph.node.operation.params]
+graphs = ["tower_atomic_bootstrap", "node_atomic_compute", "nest_deploy", "nucleus_complete"]
+mode = "structure"
+
+# =============================================================================
+# SUMMARY
+#
+# This graph validates all NUCLEUS atomic deployment tiers:
+#   1. primalSpring is running and healthy
+#   2. Tower (beardog + songbird) — security + discovery foundation
+#   3. Node (Tower + toadstool) — adds compute dispatch
+#   4. Nest (Tower + nestgate + squirrel) — adds storage + AI bridge
+#   5. Full NUCLEUS (all 5 core primals) — complete ecosystem
+#   6. Tower + Squirrel overlay (optional) — AI bridge without storage
+#   7. Structural validation of all 4 canonical atomic deploy graphs
+#
+# Composition tiers align with biomeOS v2.78 NucleusMode:
+#   Tower:  [beardog, songbird]
+#   Node:   [beardog, songbird, toadstool]
+#   Nest:   [beardog, songbird, nestgate, squirrel]
+#   Full:   [beardog, songbird, nestgate, toadstool, squirrel]
+# =============================================================================
