@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# ludoSpring Science Validation — sequential barraCuda math pipeline
+# Source: ludoSpring V37.1 live validation (exp086: 10/10, exp090: 13/13,
+#         exp092: 8/8, exp097: 10/10)
+#
+# Validates: tensor math, activation functions, stats, population dynamics.
+# All operations route through barraCuda IPC.
+
+[graph]
+name = "ludospring_science_validation"
+description = "ludoSpring science pipeline — barraCuda tensor/activation/stats validated end-to-end"
+version = "1.0.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+
+[[graph.node]]
+name = "barracuda"
+binary = "barracuda"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "math"
+capabilities = [
+    "tensor.create",
+    "tensor.read",
+    "tensor.add",
+    "tensor.scale",
+    "tensor.clamp",
+    "tensor.reduce",
+    "tensor.sigmoid",
+    "tensor.matmul",
+    "activation.sigmoid",
+    "activation.fitts",
+    "activation.hick",
+    "stats.mean",
+    "stats.weighted_mean",
+    "stats.std_dev",
+    "noise.perlin3d",
+]
+
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring_primal"
+order = 4
+required = true
+depends_on = ["barracuda"]
+health_method = "health.check"
+by_capability = "game"
+args = ["server"]
+capabilities = [
+    "game.evaluate_flow",
+    "game.fitts_cost",
+    "game.wfc_step",
+    "game.engagement",
+]

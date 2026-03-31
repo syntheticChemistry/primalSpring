@@ -3,7 +3,7 @@
 Structured inventory of known gaps per primal that block or degrade composable deployments.
 Each entry links to the composition that exposes it and proposes a fix path.
 
-> **Last updated**: 2026-03-28 — Phase 23f (Composition Decomposition)
+> **Last updated**: 2026-03-31 — Phase 23f+ (ludoSpring V37.1 live gap matrix absorbed)
 
 ---
 
@@ -83,6 +83,71 @@ Current state: NestGate's IPC layer accepts `storage.store` and `storage.retriev
 | BM-01 | `graph.deploy` not in routing table — had to use `graph.execute` instead | **Fixed** | — | primalSpring now calls `graph.execute` |
 | BM-02 | `health.liveness` not implemented on Neural API — fallback to `graph.list` needed | Low | All | Already handled in `NeuralBridge::health_check`; optional to add proper `health.liveness` to biomeOS |
 | BM-03 | `capability.discover` returns `primary_endpoint` with `unix://` prefix — inconsistent with `primary_socket` used elsewhere | **Fixed** | — | primalSpring `strip_unix_uri` handles both formats |
+| BM-04 | **Neural API capability registration: running primals not auto-registered** — `capability.list` only shows 5 biomeOS self-capabilities; `discover_and_register_primals` runs once at startup with 500ms timeouts, fails if primals aren't yet listening. No retry loop. | **High** | ludoSpring V37.1 (14 checks fail: exp084, exp087, exp088) | 3 options: (1) retry `discover_and_register_primals` periodically or on first `capability.call` miss, (2) primals self-register via `capability.register` on startup, (3) `topology.rescan` callable from outside |
+| BM-05 | `probe_primal_capabilities` expects `capabilities.list` response format — primals returning different JSON shape or framing get empty list, silently skipped | Medium | ludoSpring V37.1 | Standardize expected response shape; add debug logging for mismatched formats |
+
+### biomeOS: Capability Registration Architecture
+
+The root cause of BM-04 is that `discover_and_register_primals()` in `server_lifecycle.rs` runs **once** at startup. The flow:
+1. Scans `$XDG_RUNTIME_DIR/biomeos/*.sock` for known primal names
+2. Sends `capabilities.list` with 500ms timeout
+3. Registers non-empty responses in `NeuralRouter.capability_registry`
+
+If primals start **after** biomeOS (which is the normal graph startup order), they miss the window. Category routing (`discover_by_capability_category`) falls back to socket scanning, but `capability.call` reports the domain as unregistered.
+
+**Fix paths:**
+- **Quick**: Add `topology.rescan` JSON-RPC method that re-runs `discover_and_register_primals`
+- **Medium**: Retry discovery on first `capability.call` miss for an unregistered domain
+- **Full**: Primals call `capability.register` on their own startup (requires SDK change)
+
+---
+
+## rhizoCrypt
+
+| ID | Gap | Severity | Exposed By | Fix Path |
+|----|-----|----------|------------|----------|
+| RC-01 | **TCP-only transport** — binds `0.0.0.0:9401` for JSON-RPC but creates no Unix domain socket | **Critical** | ludoSpring V37.1 (blocks exp094, exp095, exp096, exp098 = +9 checks) | Add `--unix [PATH]` CLI flag, default to `$XDG_RUNTIME_DIR/biomeos/rhizocrypt.sock`. Follow BearDog/NestGate/sweetGrass/barraCuda pattern |
+
+### rhizoCrypt: UDS is Prerequisite for All Composition
+
+Every other ecoBin primal follows `$XDG_RUNTIME_DIR/biomeos/{primal}.sock`. rhizoCrypt being TCP-only means it cannot participate in any composition graph that expects UDS discovery. This is the #1 blocker for provenance trio compositions (rhizoCrypt + loamSpine + sweetGrass).
+
+---
+
+## loamSpine
+
+| ID | Gap | Severity | Exposed By | Fix Path |
+|----|-----|----------|------------|----------|
+| LS-03 | **Panic on startup**: "Cannot start a runtime from within a runtime" at `infant_discovery.rs:233` — Tokio `block_on()` called inside existing async runtime | **Critical** | ludoSpring V37.1 (blocks exp095 = +6 checks) | Replace `block_on()` with `spawn` or restructure infant discovery to avoid nesting runtimes |
+
+---
+
+## barraCuda
+
+| ID | Gap | Severity | Exposed By | Fix Path |
+|----|-----|----------|------------|----------|
+| BC-01 | **Fitts formula mismatch**: `activation.fitts(d=256, w=32, a=200, b=150)` → 800 (Welford `log2(D/W)`) vs Python 708.85 (Shannon `log2(2D/W+1)`) | **High** | ludoSpring V37.1 (exp089: -4 checks) | Add `variant` parameter to select Shannon vs Welford; default to Shannon (most-cited) |
+| BC-02 | **Hick formula variant**: `activation.hick(n=8, a=200, b=150)` → 675.49 (`log2(n+1)`) vs Python 650 (`log2(n)`) | Medium | ludoSpring V37.1 (exp089) | Add `include_no_choice` parameter; default to standard `log2(n)` |
+| BC-03 | **Perlin3D lattice invariant broken**: `noise.perlin3d(0,0,0)` → -0.11 instead of 0. Gradient noise must be zero at integer lattice points | Medium | ludoSpring V37.1 (exp091: -1 check) | Fix gradient interpolation at lattice boundaries in 3D implementation |
+| BC-04 | **No binary in plasmidBin** — must be started from source build | Medium | ludoSpring V37.1 | Publish ecoBin to `infra/plasmidBin/barracuda/` |
+
+---
+
+## toadStool
+
+| ID | Gap | Severity | Exposed By | Fix Path |
+|----|-----|----------|------------|----------|
+| TS-01 | `compute.dispatch` cannot find coralReef despite socket at `/run/user/1000/biomeos/coralreef-core-default.sock` — hardcoded discovery | Medium | ludoSpring V37.1 (exp085: -1 check) | Discover coralReef via socket directory scan or Songbird query; aligns with S169 overstep cleanup |
+
+**Note**: toadStool S169 just completed major overstep cleanup (-10,659 lines): removed 30+ JSON-RPC methods belonging to Squirrel, coralReef, biomeOS, songBird. Shifted to pure JSON-RPC over UDS. Discovery should now use capability-based resolution.
+
+---
+
+## plasmidBin
+
+| ID | Gap | Severity | Exposed By | Fix Path |
+|----|-----|----------|------------|----------|
+| PB-01 | NestGate JWT secret in `start_primal.sh` generates 25-byte key; NestGate requires 32+ bytes | Low | ludoSpring V37.1 | Use `openssl rand -base64 48` in the NestGate case block |
 
 ---
 
@@ -107,20 +172,44 @@ Current state: NestGate's IPC layer accepts `storage.store` and `storage.retriev
 
 ## Priority Order
 
-**Immediate** (blocks interactive product):
-1. PT-02 — petalTongue WebSocket push (enables live dashboard without polling)
-2. SQ-01 — Squirrel Ollama routing (enables AI narration via primals)
-3. EW-01 — esotericWebb scene format (enables primal-driven rendering)
+**Critical** (primals cannot participate in composition):
+1. RC-01 — rhizoCrypt UDS transport (blocks all provenance trio compositions, +9 checks)
+2. LS-03 — loamSpine startup panic (blocks provenance trio, +6 checks)
 
-**Next** (improves composition quality):
-4. NG-01 — NestGate real persistence
-5. PT-05 — petalTongue awareness initialization
-6. EW-02 — esotericWebb poll_input wiring
-7. LS-01 — ludoSpring dynamic flow params
+**High** (blocks interactive product or major capability routing):
+3. BM-04 — biomeOS capability registration (running primals invisible to `capability.call`, +14 checks)
+4. BC-01 — barraCuda Fitts formula mismatch (wrong HCI results, +4 checks)
+5. PT-02 — petalTongue WebSocket push (enables live dashboard without polling)
+6. SQ-01 — Squirrel Ollama routing (enables AI narration via primals)
+7. EW-01 — esotericWebb scene format (enables primal-driven rendering)
 
-**Later** (polish):
-8. PT-01, PT-03, PT-04, PT-06, PT-07
-9. SQ-02, SQ-03
-10. NG-02, NG-03
-11. EW-03, EW-04, LS-02
-12. XC-01, XC-02, XC-03
+**Medium** (improves composition quality):
+8. NG-01 — NestGate real persistence
+9. BC-02 — barraCuda Hick formula variant
+10. BC-03 — barraCuda Perlin3D lattice invariant
+11. BC-04 — barraCuda plasmidBin binary
+12. BM-05 — biomeOS probe response format standardization
+13. TS-01 — toadStool↔coralReef discovery
+14. PT-05 — petalTongue awareness initialization
+15. EW-02 — esotericWebb poll_input wiring
+16. LS-01 — ludoSpring dynamic flow params
+
+**Low** (polish):
+17. PT-01, PT-03, PT-04, PT-06, PT-07
+18. SQ-02, SQ-03
+19. NG-02, NG-03
+20. EW-03, EW-04, LS-02
+21. PB-01 — plasmidBin NestGate JWT secret length
+22. XC-01, XC-02, XC-03
+
+## Projected Impact (from ludoSpring V37.1 gap matrix)
+
+| Fix | Checks Gained | Running Total | % |
+|-----|--------------|---------------|---|
+| Current | — | 95/141 | 67.4% |
+| + RC-01 (rhizoCrypt UDS) | +9 | 104/141 | 73.8% |
+| + LS-03 (loamSpine panic) | +6 | 110/141 | 78.0% |
+| + BC-01/02/03 (barraCuda formulas) | +5 | 115/141 | 81.6% |
+| + BM-04 (biomeOS capability reg) | +14 | 129/141 | 91.5% |
+| + TS-01 (toadStool↔coralReef) | +1 | 130/141 | 92.2% |
+| **All fixes** | **+35** | **130/141** | **92.2%** |

@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# NUCLEUS Game Session — continuous 60Hz game tick composition
+# Source: ludoSpring V37.1 live validation (exp093: 6/6 — 10-tick continuous
+#         loop under 0.54ms per tick, exp098: 5/6)
+#
+# Full NUCLEUS + barraCuda for game loop: crypto identity, storage persistence,
+# math compute, game science, narrative session.
+
+[graph]
+name = "nucleus_game_session"
+description = "NUCLEUS continuous 60Hz game session — crypto + storage + math + game science + narrative"
+version = "1.0.0"
+coordination = "continuous"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.blake3_hash", "crypto.sign_ed25519", "crypto.verify_ed25519"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve"]
+
+[[graph.node]]
+name = "barracuda"
+binary = "barracuda"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "math"
+capabilities = ["tensor.create", "tensor.read", "activation.sigmoid"]
+
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring_primal"
+order = 5
+required = false
+depends_on = ["barracuda"]
+health_method = "health.check"
+by_capability = "game"
+args = ["server"]
+capabilities = ["game.evaluate_flow", "game.engagement"]
+
+[[graph.node]]
+name = "esotericwebb"
+binary = "esotericwebb"
+order = 6
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "webb.liveness"
+by_capability = "narrative"
+args = ["server"]
+capabilities = ["session.start", "session.state", "session.actions", "session.act"]

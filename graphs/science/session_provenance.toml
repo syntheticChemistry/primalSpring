@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Session Provenance — Nest Atomic + Provenance Trio for session lifecycle
+# Source: ludoSpring V37.1 (exp094: 3/8 partial, exp095: 0/8 blocked by
+#         rhizoCrypt UDS + loamSpine panic)
+#
+# Validates: session creation → crypto identity → storage persistence →
+# provenance DAG → attribution → ledger. Requires all 3 provenance primals
+# (rhizoCrypt, loamSpine, sweetGrass) plus Nest Atomic (BearDog + NestGate).
+#
+# BLOCKED BY: RC-01 (rhizoCrypt UDS), LS-03 (loamSpine panic)
+
+[graph]
+name = "session_provenance"
+description = "Session lifecycle via Nest Atomic + Provenance Trio (rhizoCrypt + loamSpine + sweetGrass)"
+version = "1.0.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.blake3_hash", "crypto.sign_ed25519"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 4
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = ["dag.create_session", "dag.add_vertex", "dag.query"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 5
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "attribution"
+capabilities = ["braid.create", "braid.verify", "attribution.query"]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine"
+order = 6
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = ["ledger.append", "ledger.query", "certificate.issue"]
