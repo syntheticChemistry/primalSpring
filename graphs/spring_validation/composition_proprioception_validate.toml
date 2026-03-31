@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation: C6 Proprioception Composition (petalTongue interaction loop)
+#
+# Validates the isolated interaction/feedback subsystem:
+#   1. biomeOS substrate alive
+#   2. petalTongue liveness
+#   3. interaction.subscribe returns subscriber_id
+#   4. visualization.interact.apply broadcasts intent
+#   5. interaction.poll returns events for subscriber
+#   6. visualization.showing returns awareness state
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/composition_proprioception_validate.toml
+
+[graph]
+name = "composition_proprioception_validate"
+description = "Validates C6: petalTongue proprioception — subscribe, apply, poll, showing"
+version = "1.0.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+[[graph.node]]
+name = "verify_petaltongue_alive"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_petaltongue_liveness"]
+[graph.node.checks]
+method = "health.liveness"
+target = "petaltongue"
+expect = "ok"
+
+[[graph.node]]
+name = "verify_subscribe"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["verify_petaltongue_alive"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_subscribe"]
+[graph.node.checks]
+method = "interaction.subscribe"
+target = "petaltongue"
+expect = "subscriber_id returned"
+
+[[graph.node]]
+name = "verify_apply_intent"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["verify_subscribe"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_apply_intent"]
+[graph.node.checks]
+method = "visualization.interact.apply"
+target = "petaltongue"
+params = { intent = "select", target = "test_element", value = "test" }
+expect = "applied"
+
+[[graph.node]]
+name = "verify_poll_events"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["verify_apply_intent"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_poll_events"]
+[graph.node.checks]
+method = "interaction.poll"
+target = "petaltongue"
+expect = "events array includes applied intent"
+
+[[graph.node]]
+name = "verify_showing_awareness"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+depends_on = ["verify_poll_events"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_showing"]
+[graph.node.checks]
+method = "visualization.showing"
+target = "petaltongue"
+expect = "showing boolean returned"

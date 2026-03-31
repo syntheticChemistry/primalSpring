@@ -1,0 +1,80 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# ludoSpring Game Science — deploy via biomeOS composition.
+#
+# Deploys ludoSpring V14 as a game-science primal atop the Tower Atomic.
+# ludoSpring registers with biomeOS Neural API on startup, exposing 8
+# game.* capabilities for flow analysis, DDA, WFC, Fitts, accessibility,
+# noise generation, and UI analysis.
+#
+# Consumers (esotericWebb, petalTongue dashboards, spring experiments) discover
+# ludoSpring via biomeOS capability.discover("game") at runtime.
+#
+# Usage:
+#   biomeos deploy --graph graphs/ludospring_game_deploy.toml
+
+[graph]
+name = "ludospring_game_deploy"
+description = "ludoSpring V14 game science primal via biomeOS composition: Tower + game.* surface"
+version = "1.0.0"
+coordination = "sequential"
+
+# ── Phase 0: biomeOS substrate ────────────────────────────────────────
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+# ── Phase 1: Tower Atomic (security + discovery) ─────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.check"
+by_capability = "security"
+capabilities = [
+    "crypto.sign", "crypto.verify", "crypto.identity",
+    "crypto.generate_keypair", "beacon.generate",
+]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.check"
+by_capability = "discovery"
+capabilities = [
+    "net.discovery", "net.mesh",
+    "birdsong.generate_encrypted_beacon",
+]
+
+# ── Phase 2: ludoSpring game-science primal ───────────────────────────
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.check"
+by_capability = "game"
+capabilities = [
+    "game.evaluate_flow",
+    "game.fitts_cost",
+    "game.engagement",
+    "game.difficulty_adjustment",
+    "game.wfc_step",
+    "game.generate_noise",
+    "game.analyze_ui",
+    "game.accessibility",
+]

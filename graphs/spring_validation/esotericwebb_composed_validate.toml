@@ -1,0 +1,90 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation: esotericWebb full composed product.
+#
+# Validates the full ecoPrimals-composed Webb product:
+#   1. biomeOS substrate healthy
+#   2. Tower Atomic primals (BearDog security + Songbird discovery)
+#   3. Overlay primals (Squirrel AI, petalTongue viz, ludoSpring game) if present
+#   4. esotericWebb narrative surface (session, scene, tools)
+#   5. End-to-end capability routing: biomeOS routes narrative → Webb,
+#      Webb routes ai.query → Squirrel, game.* → ludoSpring
+#
+# This is the spring's proof that ecoPrimals composition produces
+# a working consumer product — the validation-from-springs pattern.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/esotericwebb_composed_validate.toml
+
+[graph]
+name = "esotericwebb_composed_validate"
+description = "Validates full ecoPrimals-composed Webb product: substrate, Tower, overlays, narrative surface, capability routing"
+version = "1.0.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = ["composition.tower_health"]
+
+[[graph.node]]
+name = "verify_overlays"
+binary = "primalspring_primal"
+order = 2
+required = false
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "coordination.validate_ai_overlay",
+    "coordination.validate_viz_overlay",
+    "coordination.validate_game_overlay",
+]
+
+[[graph.node]]
+name = "verify_esotericwebb"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "coordination.validate_narrative_surface",
+]
+
+[[graph.node]]
+name = "verify_routing"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["verify_esotericwebb"]
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "coordination.validate_capability_routing",
+    "coordination.validate_composition",
+]

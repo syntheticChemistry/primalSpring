@@ -1,0 +1,148 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# esotericWebb Composed Product — full ecoPrimals composition via biomeOS.
+#
+# This is the canonical "ecoPrimals product" deployment: biomeOS orchestrates
+# the NUCLEUS primals, and esotericWebb emerges as the consumer-facing
+# experience — a CRPG with AI Dungeon Master, visual scene rendering,
+# and game science enrichment.
+#
+# Composition layers:
+#   Phase 0: biomeOS Neural API substrate (already running)
+#   Phase 1: Tower Atomic — BearDog (security) + Songbird (discovery)
+#   Phase 2: AI + Viz overlays — Squirrel (AI DM) + petalTongue (scenes)
+#   Phase 3: ludoSpring (supplemental game science — optional)
+#   Phase 4: esotericWebb V6 — narrative engine, the composed product
+#
+# esotericWebb V6 owns flow/DDA/engagement locally. Squirrel provides AI
+# narration (ai.query + context windows). petalTongue renders scenes.
+# ludoSpring enriches with WFC, Fitts, accessibility when available.
+#
+# Springs validate: primalSpring experiments probe each layer independently.
+#
+# Usage:
+#   biomeos deploy --graph graphs/esotericwebb_composed_deploy.toml
+
+[graph]
+name = "esotericwebb_composed_deploy"
+description = "esotericWebb V6 as full ecoPrimals product: biomeOS + Tower + Squirrel AI DM + petalTongue + ludoSpring + narrative engine"
+version = "1.0.0"
+coordination = "sequential"
+bond_type = "covalent"
+
+# ── Phase 0: biomeOS substrate ────────────────────────────────────────
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+# ── Phase 1: Tower Atomic ────────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.check"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.check"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# ── Phase 2: AI + Visualization overlays ──────────────────────────────
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel_primal"
+order = 3
+required = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health"
+by_capability = "ai"
+capabilities = [
+    "ai.query",
+    "ai.suggest",
+    "ai.analyze",
+    "context.create",
+    "context.update",
+    "context.summarize",
+]
+
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue_primal"
+order = 4
+required = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health"
+by_capability = "visualization"
+capabilities = [
+    "visualization.render.scene",
+    "visualization.render.dashboard",
+    "interaction.poll",
+    "interaction.subscribe",
+]
+
+# ── Phase 3: ludoSpring supplemental game science (optional) ──────────
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring"
+order = 5
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.check"
+by_capability = "game"
+capabilities = [
+    "game.evaluate_flow",
+    "game.fitts_cost",
+    "game.engagement",
+    "game.difficulty_adjustment",
+    "game.wfc_step",
+    "game.generate_noise",
+    "game.analyze_ui",
+    "game.accessibility",
+]
+
+# ── Phase 4: esotericWebb — the composed product ─────────────────────
+# V6: self-contained narrative engine with embedded game science.
+# Discovers Squirrel for AI DM, petalTongue for rendering, ludoSpring
+# for enrichment — all via biomeOS capability routing or direct discovery.
+[[graph.node]]
+name = "esotericwebb"
+binary = "esotericwebb"
+order = 6
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "webb.liveness"
+by_capability = "narrative"
+args = ["serve"]
+capabilities = [
+    "webb.liveness",
+    "webb.health",
+    "webb.scene.current",
+    "webb.narrative.status",
+    "webb.content.list",
+    "session.start",
+    "session.state",
+    "session.actions",
+    "session.act",
+    "session.history",
+    "session.narrate",
+    "session.graph",
+    "tools.list",
+    "tools.call",
+]

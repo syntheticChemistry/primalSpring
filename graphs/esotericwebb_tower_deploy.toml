@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# esotericWebb Tower — minimum viable composed product.
+#
+# Deploys esotericWebb V6 as a product of ecoPrimals composition via biomeOS.
+# Tower Atomic provides encrypted IPC (BearDog) and peer discovery (Songbird).
+# Webb runs as a standalone text CRPG with embedded game science (flow, DDA,
+# engagement from webb/src/science/ — no ludoSpring required).
+#
+# This is the simplest path from "ecoPrimals running" to "playable product".
+#
+# Usage:
+#   biomeos deploy --graph graphs/esotericwebb_tower_deploy.toml
+
+[graph]
+name = "esotericwebb_tower_deploy"
+description = "esotericWebb V6 as composed product: biomeOS + Tower + narrative engine (embedded game science)"
+version = "1.0.0"
+coordination = "sequential"
+
+# ── Phase 0: biomeOS substrate ────────────────────────────────────────
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+# ── Phase 1: Tower Atomic ────────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.check"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.check"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# ── Phase 2: esotericWebb — the composed product ─────────────────────
+# V6: self-contained narrative + game science. Discovers Tower primals
+# via biomeOS or Songbird. Exposes session.*, webb.*, tools.* surface.
+[[graph.node]]
+name = "esotericwebb"
+binary = "esotericwebb"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "webb.liveness"
+by_capability = "narrative"
+args = ["serve"]
+capabilities = [
+    "webb.liveness",
+    "webb.health",
+    "webb.scene.current",
+    "webb.narrative.status",
+    "webb.content.list",
+    "session.start",
+    "session.state",
+    "session.actions",
+    "session.act",
+    "session.history",
+    "session.narrate",
+    "session.graph",
+    "tools.list",
+    "tools.call",
+]

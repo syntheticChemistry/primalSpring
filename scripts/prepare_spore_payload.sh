@@ -9,7 +9,7 @@
 #
 # The output directory will contain:
 #   primals/         — static musl binaries
-#   graphs/          — all 63 primalSpring deploy graphs (incl. multi-node, validation, gen4)
+#   graphs/          — all primalSpring deploy graphs (incl. compositions, multi-node, validation, gen4, spring_deploy)
 #   config/          — launch profiles
 #   scripts/         — deploy_to_gate.sh, start_tower.sh, validate_remote_gate.sh
 #   .family.seed     — genetics (copied from existing seed if available)

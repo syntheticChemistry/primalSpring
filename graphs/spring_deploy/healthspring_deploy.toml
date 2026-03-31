@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# HealthSpring Science Deploy — biomeOS composition for health science.
+#
+# Deploys HealthSpring as a primal composition. Springs reference
+# primalSpring's wateringHole for patterns and standards.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_deploy/healthspring_deploy.toml
+
+[graph]
+name = "healthspring_science"
+description = "HealthSpring health science composition — Tower + healthspring"
+version = "1.0.0"
+coordination = "sequential"
+
+# Phase 0: biomeOS substrate
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+# Phase 1: Tower
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# Phase 3: Spring
+[[graph.node]]
+name = "healthspring"
+binary = "healthspring_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.check"
+by_capability = "health"
+args = ["server"]
+capabilities = [
+    "health.metabolic_rate",
+    "health.population_model",
+    "health.epidemiology",
+]

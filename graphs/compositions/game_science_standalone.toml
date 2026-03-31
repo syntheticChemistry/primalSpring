@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# C4: Game Science Composition — ludoSpring standalone
+#
+# Isolates the game science subsystem for independent testing.
+# Tower (BearDog + Songbird) is the minimum base.
+#
+# Gaps exposed:
+#   - Gateway hardcodes flow params instead of deriving from game state
+#   - Need esotericWebb state -> ludoSpring input mapping in composition
+#
+# See also: graphs/ludospring_game_deploy.toml (canonical deploy)
+#
+# Usage:
+#   biomeos deploy --graph graphs/compositions/game_science_standalone.toml
+
+[graph]
+name = "game_science_standalone"
+description = "C4: ludoSpring game science subsystem — flow, engagement, WFC, accessibility"
+version = "1.0.0"
+coordination = "sequential"
+
+# ── Phase 0: biomeOS substrate ─────────────────────────────────────
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+# ── Phase 1: Tower Atomic ──────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# ── Phase 2: ludoSpring game science ───────────────────────────────
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.check"
+by_capability = "game"
+args = ["server"]
+capabilities = [
+    "game.evaluate_flow",
+    "game.fitts_cost",
+    "game.engagement",
+    "game.difficulty_adjustment",
+    "game.wfc_step",
+    "game.generate_noise",
+    "game.analyze_ui",
+    "game.accessibility",
+]

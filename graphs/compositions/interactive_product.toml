@@ -1,0 +1,135 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# C7: Full Interactive Product — all subsystems composed
+#
+# This is the "real" deployment: NUCLEUS base (biomeOS + Tower) with
+# all capability primals layered on top, culminating in esotericWebb
+# as the narrative product. Each phase maps to a standalone composition
+# (C1-C6) that can be tested independently.
+#
+# Composition layers:
+#   Phase 0: biomeOS Neural API (orchestration substrate)
+#   Phase 1: Tower Atomic — BearDog + Songbird (C3/C4/C5 base)
+#   Phase 2: NestGate (C5: persistence)
+#   Phase 3: Squirrel (C2: AI narration) + petalTongue (C1: render + C6: proprioception)
+#   Phase 4: ludoSpring (C4: game science)
+#   Phase 5: esotericWebb (C3: session/narrative — the composed product)
+#
+# The gateway (tools/ws_gateway.py) is a thin WebSocket-to-capability-call
+# bridge outside this graph. It adds no business logic — all subsystem
+# behavior lives in the primals.
+#
+# Usage:
+#   biomeos deploy --graph graphs/compositions/interactive_product.toml
+
+[graph]
+name = "interactive_product"
+description = "C7: Full interactive product — all subsystems composed: render + narration + session + game science + persistence + proprioception"
+version = "1.0.0"
+coordination = "sequential"
+bond_type = "covalent"
+
+# ── Phase 0: biomeOS substrate ─────────────────────────────────────
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "capability.call", "graph.list", "graph.execute"]
+
+# ── Phase 1: Tower Atomic ──────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# ── Phase 2: Persistence (C5) ─────────────────────────────────────
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate"
+order = 3
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+
+# ── Phase 3: AI + Visualization (C2 + C1 + C6) ───────────────────
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel"
+order = 4
+required = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = ["ai.query", "ai.complete", "ai.chat", "context.create", "context.summarize"]
+
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 5
+required = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "visualization"
+args = ["server"]
+capabilities = [
+    "visualization.render.scene",
+    "visualization.render.dashboard",
+    "visualization.export",
+    "interaction.subscribe",
+    "interaction.poll",
+    "visualization.interact.apply",
+    "visualization.session.list",
+    "visualization.showing",
+]
+
+# ── Phase 4: Game Science (C4) ────────────────────────────────────
+[[graph.node]]
+name = "ludospring"
+binary = "ludospring"
+order = 6
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.check"
+by_capability = "game"
+args = ["server"]
+capabilities = ["game.evaluate_flow", "game.wfc_step", "game.engagement"]
+
+# ── Phase 5: Narrative Product (C3) ───────────────────────────────
+[[graph.node]]
+name = "esotericwebb"
+binary = "esotericwebb"
+order = 7
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "webb.liveness"
+by_capability = "narrative"
+args = ["serve"]
+capabilities = [
+    "session.start",
+    "session.state",
+    "session.actions",
+    "session.act",
+    "session.graph",
+    "webb.liveness",
+]

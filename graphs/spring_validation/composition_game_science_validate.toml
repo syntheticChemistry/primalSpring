@@ -1,0 +1,118 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation: C4 Game Science Composition (ludoSpring standalone)
+#
+# Validates the isolated game science subsystem:
+#   1. biomeOS substrate alive
+#   2. Tower health (BearDog + Songbird)
+#   3. ludoSpring liveness via health.check
+#   4. Flow evaluation with parameterized skill/challenge
+#   5. Fitts' law cost calculation
+#   6. WFC step generation
+#   7. Engagement scoring
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/composition_game_science_validate.toml
+
+[graph]
+name = "composition_game_science_validate"
+description = "Validates C4: ludoSpring game science — flow, fitts, WFC, engagement"
+version = "1.0.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.tower_health"]
+
+[[graph.node]]
+name = "verify_ludospring_alive"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_ludospring_liveness"]
+[graph.node.checks]
+method = "health.check"
+target = "ludospring"
+expect = "ok"
+
+[[graph.node]]
+name = "verify_flow_evaluation"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["verify_ludospring_alive"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_flow"]
+[graph.node.checks]
+method = "game.evaluate_flow"
+target = "ludospring"
+params = { skill = 0.5, challenge = 0.5, time_pressure = 0.3 }
+expect = "flow_score numeric"
+
+[[graph.node]]
+name = "verify_fitts_cost"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["verify_flow_evaluation"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_fitts"]
+[graph.node.checks]
+method = "game.fitts_cost"
+target = "ludospring"
+expect = "cost numeric"
+
+[[graph.node]]
+name = "verify_wfc_step"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+depends_on = ["verify_fitts_cost"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_wfc"]
+[graph.node.checks]
+method = "game.wfc_step"
+target = "ludospring"
+expect = "grid returned"
+
+[[graph.node]]
+name = "verify_engagement"
+binary = "primalspring_primal"
+order = 6
+required = true
+spawn = false
+depends_on = ["verify_wfc_step"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_engagement"]
+[graph.node.checks]
+method = "game.engagement"
+target = "ludospring"
+expect = "engagement_score numeric"

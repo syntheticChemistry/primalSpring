@@ -1,0 +1,104 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation: C1 Render Composition (petalTongue standalone)
+#
+# Validates the isolated render subsystem:
+#   1. biomeOS substrate alive
+#   2. petalTongue liveness and capability registration
+#   3. Dashboard render with DataBindings → SVG export
+#   4. Scene storage and session awareness
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/composition_render_validate.toml
+
+[graph]
+name = "composition_render_validate"
+description = "Validates C1: petalTongue render — dashboard, export, scene, session awareness"
+version = "1.0.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+[[graph.node]]
+name = "verify_petaltongue_alive"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_petaltongue_liveness"]
+[graph.node.checks]
+method = "health.liveness"
+target = "petaltongue"
+expect = "ok"
+
+[[graph.node]]
+name = "verify_dashboard_render"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["verify_petaltongue_alive"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_render_dashboard"]
+[graph.node.checks]
+method = "visualization.render.dashboard"
+target = "petaltongue"
+params_schema = "DataBinding[]"
+expect = "ok"
+
+[[graph.node]]
+name = "verify_svg_export"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["verify_dashboard_render"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_svg_export"]
+[graph.node.checks]
+method = "visualization.export"
+target = "petaltongue"
+expect = "svg_content"
+
+[[graph.node]]
+name = "verify_scene_storage"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["verify_svg_export"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_scene_storage"]
+[graph.node.checks]
+method = "visualization.render.scene"
+target = "petaltongue"
+expect = "stored"
+
+[[graph.node]]
+name = "verify_session_awareness"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+depends_on = ["verify_scene_storage"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_session_awareness"]
+[graph.node.checks]
+method = "visualization.session.list"
+target = "petaltongue"
+expect = "session_count >= 1"

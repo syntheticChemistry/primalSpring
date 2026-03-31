@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation: C5 Persistence Composition (NestGate standalone)
+#
+# Validates the isolated persistence subsystem:
+#   1. biomeOS substrate alive
+#   2. Tower health (BearDog + Songbird)
+#   3. NestGate liveness
+#   4. Store / retrieve round-trip
+#   5. Storage listing
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/composition_persistence_validate.toml
+
+[graph]
+name = "composition_persistence_validate"
+description = "Validates C5: NestGate persistence — store, retrieve, list"
+version = "1.0.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.tower_health"]
+
+[[graph.node]]
+name = "verify_nestgate_alive"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_nestgate_liveness"]
+[graph.node.checks]
+method = "health.liveness"
+target = "nestgate"
+expect = "ok"
+
+[[graph.node]]
+name = "verify_store_retrieve"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["verify_nestgate_alive"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_storage_roundtrip"]
+[graph.node.checks]
+methods = ["storage.store", "storage.retrieve"]
+target = "nestgate"
+expect = "retrieved value matches stored value"
+
+[[graph.node]]
+name = "verify_storage_list"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["verify_store_retrieve"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_storage_list"]
+[graph.node.checks]
+method = "storage.list"
+target = "nestgate"
+expect = "list includes stored key"

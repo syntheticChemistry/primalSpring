@@ -23,7 +23,9 @@ primals at runtime via capability-based discovery.
   (`primalspring_primal` server, `validate_all` runner)
 - **experiments/** — 67 validation binaries covering 14 tracks
   (atomics, graphs, emergent, bonding, IPC, provenance, deployment, gen4 substrate, deployment matrix, substrate stress)
-- **graphs/** — 63 deploy graph TOMLs (single-node + multi-node + spring validation + cross-spring + gen4 + bonding + chaos + science)
+- **graphs/** — 83 deploy graph TOMLs (single-node + multi-node + 21 spring validation + cross-spring + gen4 + bonding + chaos + science + 7 composition subsystems + ludoSpring deploy + esotericWebb product)
+- **docs/** — structured gap registry (`PRIMAL_GAPS.md`)
+- **tools/** — nucleus launcher, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -58,14 +60,17 @@ Capability-based discovery via Neural API or 5-tier filesystem probing.
 
 ## Status
 
-v0.8.0 Phase 23d — 87/87 gates, 402 tests, 72.5% library coverage,
-67 experiments, 63 deploy graphs (11 validation), 5 spring primal binaries.
-Phase 23d: Absorb toadStool S168 + esotericWebb V6 + ludoSpring V32.
-Storytelling graphs updated: esotericWebb V6 owns game science locally
-(flow/DDA/engagement), ludoSpring now optional supplemental. biomeOS
-substrate Phase 0 node in storytelling full graph. 16 new method constants
-(compute.*, shader.*, webb.*, session.*, game.analyze_ui/accessibility/
-generate_noise). ludospring_validate.toml updated for V32 capabilities.
+v0.8.0f Phase 23f — 87/87 gates, 402 tests, 72.5% library coverage,
+67 experiments, 89 deploy graphs (21 validation + 7 compositions + 6 spring deploy), 5 spring primal binaries.
+Phase 23f: Composition decomposition — 7 subsystem compositions (C1-C7)
+independently deployable and validated. docs/PRIMAL_GAPS.md gap registry
+(22 gaps across 6 primals + cross-cutting). Gateway refactored to thin
+WebSocket-to-IPC bridge (zero business logic). web/play.html reclassified
+as composition monitor. Live validation: C1 6/6, C3 8/8, C4 6/6, C6 5/5
+(C2/C5 expected gaps — Squirrel Ollama routing, NestGate persistence).
+Phase 23e: esotericWebb as ecoPrimals product, exp088 UDS rewrite,
+capability discovery fix, NeuralBridge health fallback.
+Live validated: Tower 13/13, Neural API 12/12, Storytelling 16/16.
 79 method constants across 24 domains.
 
 ## Ecosystem Position

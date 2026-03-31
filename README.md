@@ -5,14 +5,15 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.8.0 |
+| **Version** | 0.8.0f |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 402 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 67 (14 tracks) |
-| **Deploy Graphs** | 63 TOMLs (18 single-node + 5 multi-node + 11 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science) |
+| **Deploy Graphs** | 89 TOMLs (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + 7 compositions + 6 spring deploy) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
-| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress (87/87 gates) |
+| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + ludoSpring Game + esotericWebb Product + **7 Decomposed Subsystems (C1-C7)** (87/87 gates) |
+| **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 67 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
@@ -61,14 +62,24 @@ primalSpring/
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
 ├── experiments/                   # 67 validation experiments (14 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 63 deploy graph TOMLs
+├── graphs/                        # 83 deploy graph TOMLs
+│   ├── compositions/             # Decomposed subsystem graphs: C1-C7 (render, narration, session, game_science, persistence, proprioception, interactive_product) (7)
 │   ├── bonding/                  # Bonding model graphs: ionic, metallic, OMS, defensive, albatross (5)
 │   ├── chaos/                    # Chaos engineering: partition recovery, slow start (2)
 │   ├── multi_node/               # Multi-node federation graphs (5)
 │   ├── science/                  # Science + showcase graphs: provenance, fieldMouse, gaming, neuro (10)
-│   ├── spring_validation/        # Per-spring + NUCLEUS + security validation (11)
+│   ├── spring_validation/        # Per-spring + NUCLEUS + composition + security validation (21)
 │   ├── cross_spring/             # Cross-spring ecology + full sweep (2)
-│   └── gen4/                     # gen4: sovereign, science, agentic, storytelling, UI loop (10)
+│   ├── gen4/                     # gen4: sovereign, science, agentic, storytelling, UI loop (10)
+│   └── spring_deploy/            # Per-spring science compositions (airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring) (6)
+├── docs/                          # Structured gap registry and subsystem documentation
+│   └── PRIMAL_GAPS.md            # Per-primal gap inventory with severity and fix paths
+├── tools/                         # Operational tooling
+│   ├── nucleus_launcher.sh       # Start/stop/restart full NUCLEUS stack
+│   ├── ws_gateway.py             # Thin WebSocket-to-IPC bridge (no business logic)
+│   └── validate_compositions.py  # Live subsystem composition validator (C1-C7)
+├── web/
+│   └── play.html                 # Composition monitor / debug dashboard (not primary UI)
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
 └── wateringHole/                  # Docs and handoffs
@@ -173,7 +184,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 63 deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 89 deploy graph TOMLs (all nodes declare `by_capability`):
 
 **Single-node graphs (18)**:
 
@@ -207,10 +218,20 @@ primalSpring ships 63 deploy graph TOMLs (all nodes declare `by_capability`):
 | `idle_compute_federation.toml` | Federated idle compute sharing | Covalent | GeneticLineage |
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
 
-**Spring validation graphs (11)** — `graphs/spring_validation/`: per-spring validation
+**Composition subsystem graphs (7)** — `graphs/compositions/`: each subfunction
+decomposed into a separately deployable biomeOS graph with its own validation:
+`render_standalone` (C1: petalTongue), `narration_ai` (C2: Squirrel),
+`session_standalone` (C3: esotericWebb), `game_science_standalone` (C4: ludoSpring),
+`persistence_standalone` (C5: NestGate), `proprioception_loop` (C6: petalTongue interaction),
+`interactive_product` (C7: all subsystems composed).
+
+**Spring validation graphs (21)** — `graphs/spring_validation/`: per-spring validation
 wrappers (7 springs) plus `crypto_negative_validate` (negative security boundary tests),
 `rollback_validate` (biomeOS graph rollback lifecycle), `federation_manifest_validate`
-(federation configure→join→health), `nucleus_atomics_validate` (all 4 NUCLEUS tiers).
+(federation configure→join→health), `nucleus_atomics_validate` (all 4 NUCLEUS tiers),
+3 product validation (esotericwebb_tower, esotericwebb_composed, ludospring_game),
+7 composition subsystem validation (C1-C7: render, narration, session, game_science,
+persistence, proprioception, interactive).
 All graphs include biomeOS Neural API as orchestration substrate.
 
 **Cross-spring graphs (2)** — `graphs/cross_spring/`: ecology validation
@@ -232,6 +253,12 @@ RPGPT session provenance.
 interactive substrate, spring composition, **agentic substrate** (biomeOS+Squirrel+petalTongue),
 **agentic fieldMouse**, **UI-orchestrator loop**, **storytelling full** (esotericWebb+ludoSpring+Squirrel AI DM),
 **storytelling minimal** (offline play).
+
+**Spring science deploy graphs (6)** — `graphs/spring_deploy/`: per-spring compositions
+for deploying domain science as biomeOS compositions. Each includes biomeOS Phase 0
+substrate, Tower base, optional ToadStool for GPU-compute springs (hotSpring, neuralSpring,
+wetSpring, groundSpring), and the spring primal. Springs reference primalSpring's
+wateringHole patterns for composition standards.
 
 All graphs have `by_capability` on every node and are structurally validated +
 topologically sorted at test time. Multi-node graphs include `[graph.metadata]`
@@ -308,6 +335,22 @@ ludospring, neuralspring, wetspring). All spring validation graphs updated to
 deploy biomeOS as substrate. Launch profiles added for all 6 springs.
 
 See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
+
+## Live Composition Validation (March 28, 2026)
+
+7 decomposed subsystem compositions validated independently against live stack:
+
+| Composition | Result | Notes |
+|-------------|--------|-------|
+| C1: Render (petalTongue) | **6/6 PASS** | Dashboard render, SVG export, SceneGraph storage, session awareness |
+| C2: Narration (Squirrel) | 0/3 FAIL | **Expected** — Squirrel not running (gap SQ-01: Ollama routing) |
+| C3: Session (esotericWebb) | **8/8 PASS** | Full session lifecycle, actions, act, graph |
+| C4: Game Science (ludoSpring) | **6/6 PASS** | Flow, Fitts, WFC, engagement |
+| C5: Persistence (NestGate) | 1/5 PARTIAL | **Expected** — NestGate process stopped (gap NG-01: in-memory KV) |
+| C6: Proprioception (petalTongue) | **5/5 PASS** | Subscribe, apply, poll, showing |
+| C7: Full Interactive | 8/10 PARTIAL | Only C2 + C5 gaps propagate; cross-subsystem session→render + export verified |
+
+See `docs/PRIMAL_GAPS.md` for the structured gap registry per primal.
 
 ## Live Integration Status (March 28, 2026)
 

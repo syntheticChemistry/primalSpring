@@ -97,6 +97,9 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 23 | Ecosystem debt resolution — gap map, crypto negative validation graph, exp086 generate-then-verify, per-primal handoffs, composition standards | **Done** (v0.8.0) |
 | 23b | biomeOS v2.78 rewire — 20 method constants, NeuralBridge graph lifecycle + discover_domain, rollback + federation validation graphs | **Done** (v0.8.0b) |
 | 23c | NUCLEUS atomics + biomeOS substrate — SubstrateHealth, Nest+Squirrel, all deploy graphs carry Phase 0 biomeos node, composition.tower_squirrel_health wired, 402 tests | **Done** (v0.8.0c) |
+| 23d | Absorb toadStool S168 + esotericWebb V6 + ludoSpring V32 — 16 new method constants (compute, shader, webb, session, game), gen4 storytelling graphs v2.0 | **Done** (v0.8.0d) |
+| 23e | Live composition — esotericWebb as ecoPrimals product: 3 new deploy graphs, 3 validation graphs, exp088 UDS rewrite, capability discovery fix, NeuralBridge health fallback, Tower 13/13, Neural API 12/12, Storytelling 16/16 | **Done** (v0.8.0e) |
+| 23f | Composition decomposition — 7 subsystem compositions (C1-C7), 7 composition validation graphs, PRIMAL_GAPS.md (22 gaps), thin gateway bridge, composition monitor, live subsystem validation 34/43 (79%) | **Done** (v0.8.0f) |
 
 ## Validation Harness
 

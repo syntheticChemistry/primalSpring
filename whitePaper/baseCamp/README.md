@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: March 28, 2026
-**Status**: Phase 23c — NUCLEUS Atomics + biomeOS Substrate (87/87 gates), 67 experiments, 402 tests, 63 deploy graphs (11 validation), 43-cell deployment matrix, biomeOS substrate in all NUCLEUS compositions, 63 method constants
+**Status**: Phase 23f — Composition Decomposition (87/87 gates), 67 experiments, 402 tests, 83 deploy graphs (21 validation + 7 compositions), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), structured primal gap registry (22 gaps), thin gateway bridge, composition monitor, live subsystem validation (79% pass, all failures documented gaps)
 
 ---
 
@@ -36,7 +36,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 13 | Substrate Stress | exp082–084 | Chaos substrate, federation edge cases, provenance adversarial — does the stack survive? |
 | 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
 
-## Current State (v0.8.0)
+## Current State (v0.8.0f)
 
 | Metric | Value |
 |--------|-------|
@@ -48,8 +48,10 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | 63 TOMLs (18 single-node + 5 multi-node + 11 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science), all nodes `by_capability`, topologically validated |
-| Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` |
+| Deploy graphs | **83 TOMLs** (18 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 3 product), all nodes `by_capability`, topologically validated |
+| Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
+| Primal gap registry | **22 gaps** documented across 6 primals + cross-cutting (`docs/PRIMAL_GAPS.md`) |
+| Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` + biomeOS `capability.discover` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
@@ -66,6 +68,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Provenance Readiness | **STRUCTURAL** — 4/4 gates (launch profiles + deploy graph) |
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
+| Subsystem validation | C1: 6/6, C3: 8/8, C4: 6/6, C6: 5/5 PASS; C2: 0/3, C5: 1/5 (documented gaps) |
 | petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
 
 ## What Changed — Phase 23c (NUCLEUS Atomics + biomeOS Substrate)

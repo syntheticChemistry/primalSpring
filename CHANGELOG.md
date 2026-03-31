@@ -3,6 +3,63 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0f] — Phase 23f: Composition Decomposition — 7 Subsystem Compositions (2026-03-28)
+
+### Added
+- `graphs/compositions/` — 7 independently deployable subsystem compositions:
+  - `render_standalone.toml` (C1: petalTongue render)
+  - `narration_ai.toml` (C2: Squirrel AI narration)
+  - `session_standalone.toml` (C3: esotericWebb session)
+  - `game_science_standalone.toml` (C4: ludoSpring game science)
+  - `persistence_standalone.toml` (C5: NestGate persistence)
+  - `proprioception_loop.toml` (C6: petalTongue interaction loop)
+  - `interactive_product.toml` (C7: all subsystems composed)
+- 7 matching validation graphs in `graphs/spring_validation/composition_*_validate.toml`
+- `docs/PRIMAL_GAPS.md` — structured gap registry: 22 gaps across petalTongue (7), Squirrel (3), NestGate (3), esotericWebb (4), biomeOS (3), ludoSpring (2), cross-cutting (3)
+- `tools/validate_compositions.py` — live subsystem composition validator (C1-C7)
+- biomeOS `capability.discover` socket resolution with liveness probing
+- `graphs/spring_deploy/` — 6 science spring deploy graphs (airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring) for next validation cycle
+- `infra/wateringHole/handoffs/` — composition decomposition handoff, primal team gaps handoff, spring teams deployment handoff
+
+### Changed
+- `tools/ws_gateway.py` — refactored from monolithic orchestrator to thin WebSocket-to-IPC bridge: generic RPC pass-through, batch calls, capability discovery via biomeOS, zero business logic
+- `web/play.html` — reclassified from game UI to composition monitor: shows subsystem health grid, C1-C7 cards with click-to-test, debug session section, all calls via thin bridge protocol
+- Deploy graphs: 69 → 89 (21 validation, 7 compositions, 6 spring deploy)
+
+### Live Composition Validation Results (2026-03-28)
+- **C1: Render (petalTongue)**: 6/6 PASS — dashboard, export, scene, sessions
+- **C2: Narration (Squirrel)**: 0/3 FAIL — expected gap SQ-01 (Ollama routing)
+- **C3: Session (esotericWebb)**: 8/8 PASS — full lifecycle + graph
+- **C4: Game Science (ludoSpring)**: 6/6 PASS — flow, Fitts, WFC, engagement
+- **C5: Persistence (NestGate)**: 1/5 PARTIAL — expected gap NG-01 (process stopped)
+- **C6: Proprioception (petalTongue)**: 5/5 PASS — subscribe, apply, poll, showing
+- **C7: Full Interactive**: 8/10 PARTIAL — only C2+C5 gaps propagate
+- **Overall**: 34/43 (79%), all failures traced to documented gaps
+
+## [0.8.0e] — Phase 23e: Live Composition — esotericWebb as ecoPrimals Product (2026-03-30)
+
+### Added
+- `graphs/ludospring_game_deploy.toml` — deploy ludoSpring V14 as game-science primal via biomeOS
+- `graphs/esotericwebb_tower_deploy.toml` — minimum viable Webb product (Tower + narrative)
+- `graphs/esotericwebb_composed_deploy.toml` — full AI DM composition (Tower + Squirrel + petalTongue + ludoSpring + Webb)
+- `graphs/spring_validation/esotericwebb_tower_validate.toml` — spring validation for Webb Tower
+- `graphs/spring_validation/esotericwebb_composed_validate.toml` — spring validation for full composed Webb
+- `graphs/spring_validation/ludospring_game_validate.toml` — spring validation for ludoSpring game composition
+- `strip_unix_uri()` helper — converts biomeOS `unix:///path` endpoints to raw filesystem paths
+
+### Changed
+- `ipc::capability::discover_by_capability` — reads `primary_endpoint` (biomeOS v2.78) with fallback to `primary_socket`
+- `NeuralBridge::health_check` — uses liveness fallback chain with `graph.list` last-resort probe (biomeOS Neural API doesn't implement `health.check`)
+- `exp075_biomeos_neural_api_live` — checks `primary_endpoint || primary_socket` for domain discovery
+- **exp088 rewritten**: TCP-hardcoded → UDS socket discovery via `discover_primal` / `discover_by_capability`; now validates Tower + biomeOS + ludoSpring + esotericWebb end-to-end (16/16 PASS)
+- Deploy graphs: 63 → 69 (14 validation)
+
+### Live Validation Results (2026-03-30)
+- **Tower Atomic**: 13/13 PASS — BearDog security + Songbird discovery + biomeOS substrate
+- **biomeOS Neural API**: 12/12 PASS — 125 domains, 41 graphs, crypto/beacon routing
+- **Storytelling Composition**: 16/16 PASS — Tower + ludoSpring (game science) + esotericWebb (CRPG) + biomeOS routing
+- **Unit Tests**: 402/402 PASS, 0 clippy warnings
+
 ## [0.8.0d] — Phase 23d: Absorb toadStool S168 + esotericWebb V6 + ludoSpring V32 (2026-03-28)
 
 ### Added

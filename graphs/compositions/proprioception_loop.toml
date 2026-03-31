@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# C6: Proprioception Composition — petalTongue interaction loop
+#
+# Isolates the interaction/feedback subsystem for independent testing.
+# Tests the full proprioception cycle: subscribe, apply intent,
+# poll events, check awareness state.
+#
+# Gaps exposed:
+#   - visualization.showing requires rendering_awareness (not always wired)
+#   - callback_method stored but never invoked (poll-only)
+#   - No external event source in server mode
+#
+# Usage:
+#   biomeos deploy --graph graphs/compositions/proprioception_loop.toml
+
+[graph]
+name = "proprioception_loop"
+description = "C6: petalTongue proprioception subsystem — interaction subscribe/poll/apply, awareness state"
+version = "1.0.0"
+coordination = "sequential"
+
+# ── Phase 0: biomeOS substrate ─────────────────────────────────────
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+# ── Phase 1: petalTongue interaction server ────────────────────────
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "visualization"
+args = ["server"]
+capabilities = [
+    "interaction.subscribe",
+    "interaction.poll",
+    "interaction.unsubscribe",
+    "interaction.sensor_stream.subscribe",
+    "interaction.sensor_stream.poll",
+    "visualization.interact.apply",
+    "visualization.interact.perspectives",
+    "visualization.showing",
+    "visualization.introspect",
+    "visualization.session.list",
+]

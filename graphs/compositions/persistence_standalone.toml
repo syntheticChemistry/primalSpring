@@ -1,0 +1,76 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# C5: Persistence Composition — NestGate standalone
+#
+# Isolates the storage/persistence subsystem for independent testing.
+# Tower (BearDog + Songbird) is the minimum base.
+#
+# Gaps exposed:
+#   - Isomorphic IPC uses in-memory KV, not nestgate-core storage
+#   - No dedicated game session API (use generic storage.store)
+#   - data.* handlers are unrelated live-data providers
+#
+# Usage:
+#   biomeos deploy --graph graphs/compositions/persistence_standalone.toml
+
+[graph]
+name = "persistence_standalone"
+description = "C5: NestGate persistence subsystem — storage, retrieval, blob management"
+version = "1.0.0"
+coordination = "sequential"
+
+# ── Phase 0: biomeOS substrate ─────────────────────────────────────
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+# ── Phase 1: Tower Atomic ──────────────────────────────────────────
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# ── Phase 2: NestGate storage ──────────────────────────────────────
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = [
+    "storage.store",
+    "storage.retrieve",
+    "storage.exists",
+    "storage.delete",
+    "storage.list",
+    "storage.stats",
+    "storage.store_blob",
+    "storage.retrieve_blob",
+    "model.register",
+    "model.exists",
+    "model.locate",
+    "model.metadata",
+]

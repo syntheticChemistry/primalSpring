@@ -1,0 +1,78 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# GroundSpring Science Deploy — biomeOS composition for geology science.
+#
+# Deploys GroundSpring as a primal composition. Springs reference
+# primalSpring's wateringHole for patterns and standards.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_deploy/groundspring_deploy.toml
+
+[graph]
+name = "groundspring_science"
+description = "GroundSpring geology science composition — Tower + ToadStool + groundspring"
+version = "1.0.0"
+coordination = "sequential"
+
+# Phase 0: biomeOS substrate
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+# Phase 1: Tower
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["net.discovery", "net.mesh"]
+
+# Phase 2: ToadStool (compute for GPU delegation)
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "compute.health"
+by_capability = "compute"
+capabilities = [
+    "compute.execute",
+    "compute.submit",
+    "compute.dispatch.submit",
+]
+
+# Phase 3: Spring
+[[graph.node]]
+name = "groundspring"
+binary = "groundspring_primal"
+order = 4
+required = true
+depends_on = ["beardog", "songbird", "toadstool"]
+health_method = "health.check"
+by_capability = "geology"
+args = ["server"]
+capabilities = [
+    "geology.erosion_rate",
+    "geology.spectral_classify",
+    "geology.delegation_dispatch",
+]

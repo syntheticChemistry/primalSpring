@@ -1,252 +1,231 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! exp088 — Storytelling Composition
+//! exp088 — Storytelling Composition (live socket discovery)
 //!
-//! Validates the ludoSpring + esotericWebb + Squirrel + petalTongue
-//! storytelling composition via biomeOS Neural API routing.
-//! Documents the game.* method gap between ludoSpring and esotericWebb.
+//! Validates the ludoSpring + esotericWebb + Tower + biomeOS storytelling
+//! composition via standard socket discovery and biomeOS Neural API routing.
+//!
+//! Discovers all primals via `discover_primal` / `discover_by_capability`
+//! (UDS sockets), not hardcoded TCP ports.
 
-use primalspring::ipc::{methods, tcp};
-use primalspring::tolerances;
+use primalspring::ipc::client::PrimalClient;
+use primalspring::ipc::discover::{
+    discover_by_capability, discover_primal, neural_api_healthy, neural_bridge,
+};
+use primalspring::ipc::neural_bridge::NeuralBridge;
+use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
+
+fn phase_tower(v: &mut ValidationResult) {
+    v.section("Tower Atomic");
+
+    let bd = discover_primal(primal_names::BEARDOG);
+    let Some(bd_sock) = bd.socket.as_ref() else {
+        v.check_skip("beardog", "BearDog not discovered");
+        v.check_skip("songbird", "requires BearDog");
+        return;
+    };
+    let bd_healthy = PrimalClient::connect(bd_sock, primal_names::BEARDOG)
+        .map_or(false, |mut c| c.health_check().unwrap_or(false));
+    v.check_bool("beardog", bd_healthy, "BearDog security healthy");
+
+    let sb = discover_primal(primal_names::SONGBIRD);
+    let sb_healthy = sb.socket.as_ref().map_or(false, |sock| {
+        PrimalClient::connect(sock, primal_names::SONGBIRD)
+            .map_or(false, |mut c| c.health_check().unwrap_or(false))
+    });
+    v.check_bool("songbird", sb_healthy, "Songbird discovery healthy");
+}
+
+fn phase_biomeos(v: &mut ValidationResult) -> Option<NeuralBridge> {
+    v.section("biomeOS Substrate");
+    let healthy = neural_api_healthy();
+    v.check_bool("neural_api", healthy, "biomeOS Neural API reachable");
+    if !healthy {
+        return None;
+    }
+    neural_bridge()
+}
+
+fn phase_ludospring(v: &mut ValidationResult, bridge: Option<&NeuralBridge>) {
+    v.section("ludoSpring Game Science");
+
+    let disc = discover_primal("ludospring");
+    let Some(sock) = disc.socket.as_ref() else {
+        v.check_skip("ludospring_health", "ludoSpring not discovered");
+        v.check_skip("game.evaluate_flow", "requires ludoSpring");
+        v.check_skip("game.fitts_cost", "requires ludoSpring");
+        v.check_skip("game.generate_noise", "requires ludoSpring");
+        return;
+    };
+
+    let healthy = PrimalClient::connect(sock, "ludospring")
+        .map_or(false, |mut c| c.health_check().unwrap_or(false));
+    v.check_bool("ludospring_health", healthy, "ludoSpring healthy");
+
+    let flow = PrimalClient::connect(sock, "ludospring").and_then(|mut c| {
+        c.call(
+            "game.evaluate_flow",
+            serde_json::json!({"skill": 0.7, "challenge": 0.6}),
+        )
+    });
+    v.check_bool(
+        "game.evaluate_flow",
+        flow.as_ref()
+            .is_ok_and(|r| r.result.as_ref().and_then(|v| v.get("state")).is_some()),
+        "flow evaluation returns state",
+    );
+
+    let fitts = PrimalClient::connect(sock, "ludospring").and_then(|mut c| {
+        c.call(
+            "game.fitts_cost",
+            serde_json::json!({"distance": 100.0, "target_width": 20.0}),
+        )
+    });
+    v.check_bool(
+        "game.fitts_cost",
+        fitts
+            .as_ref()
+            .is_ok_and(|r| r.result.as_ref().and_then(|v| v.get("movement_time_ms")).is_some()),
+        "Fitts cost returns movement_time_ms",
+    );
+
+    let noise = PrimalClient::connect(sock, "ludospring").and_then(|mut c| {
+        c.call(
+            "game.generate_noise",
+            serde_json::json!({"x": 1.0, "y": 2.0}),
+        )
+    });
+    v.check_bool(
+        "game.generate_noise",
+        noise.as_ref().is_ok_and(|r| r.is_success()),
+        "noise generation returns value",
+    );
+
+    if let Some(b) = bridge {
+        let routed = b.capability_call(
+            "game",
+            "evaluate_flow",
+            &serde_json::json!({"skill": 0.5, "challenge": 0.5}),
+        );
+        v.check_bool(
+            "biomeos_game_routing",
+            routed.is_ok(),
+            "biomeOS routes game.evaluate_flow → ludoSpring",
+        );
+    } else {
+        v.check_skip("biomeos_game_routing", "biomeOS not available");
+    }
+}
+
+fn phase_esotericwebb(v: &mut ValidationResult) {
+    v.section("esotericWebb Narrative Product");
+
+    let disc = discover_primal("esotericwebb");
+    let Some(sock) = disc.socket.as_ref() else {
+        v.check_skip("webb_liveness", "esotericWebb not discovered");
+        v.check_skip("session.state", "requires esotericWebb");
+        v.check_skip("webb.scene.current", "requires esotericWebb");
+        v.check_skip("capabilities.list", "requires esotericWebb");
+        return;
+    };
+
+    let liveness = PrimalClient::connect(sock, "esotericwebb").and_then(|mut c| {
+        c.call("webb.liveness", serde_json::Value::Null)
+    });
+    v.check_bool(
+        "webb_liveness",
+        liveness.as_ref().is_ok_and(|r| r.is_success()),
+        "esotericWebb liveness responds",
+    );
+
+    let state = PrimalClient::connect(sock, "esotericwebb").and_then(|mut c| {
+        c.call("session.state", serde_json::Value::Null)
+    });
+    let has_session = state.as_ref().is_ok_and(|r| {
+        r.result
+            .as_ref()
+            .and_then(|v| v.get("current_node"))
+            .is_some()
+    });
+    v.check_bool("session.state", has_session, "active session with current_node");
+
+    let scene = PrimalClient::connect(sock, "esotericwebb").and_then(|mut c| {
+        c.call("webb.scene.current", serde_json::Value::Null)
+    });
+    let has_scene = scene.as_ref().is_ok_and(|r| {
+        r.result
+            .as_ref()
+            .and_then(|v| v.get("scene"))
+            .is_some()
+    });
+    v.check_bool("webb.scene.current", has_scene, "current scene available");
+
+    let caps = PrimalClient::connect(sock, "esotericwebb").and_then(|mut c| {
+        c.call("capabilities.list", serde_json::json!({}))
+    });
+    let cap_count = caps.as_ref().ok().and_then(|r| {
+        r.result
+            .as_ref()
+            .and_then(|v| v.get("capabilities"))
+            .and_then(|c| c.as_array())
+            .map(Vec::len)
+    });
+    v.check_minimum("webb_capabilities", cap_count.unwrap_or(0), 15);
+}
+
+fn phase_composition(v: &mut ValidationResult) {
+    v.section("Full Composition Discovery");
+
+    let game = discover_by_capability("game");
+    v.check_bool(
+        "discover_game",
+        game.socket.is_some(),
+        &format!(
+            "game → {}",
+            game.resolved_primal.as_deref().unwrap_or("unknown")
+        ),
+    );
+
+    let narrative = discover_primal("esotericwebb");
+    v.check_bool(
+        "discover_narrative",
+        narrative.socket.is_some(),
+        "esotericWebb discoverable via socket path",
+    );
+
+    let security = discover_by_capability("security");
+    v.check_bool(
+        "discover_security",
+        security.socket.is_some(),
+        &format!(
+            "security → {}",
+            security.resolved_primal.as_deref().unwrap_or("unknown")
+        ),
+    );
+
+    let discovery = discover_by_capability("discovery");
+    v.check_bool(
+        "discover_discovery",
+        discovery.socket.is_some(),
+        &format!(
+            "discovery → {}",
+            discovery.resolved_primal.as_deref().unwrap_or("unknown")
+        ),
+    );
+}
 
 fn main() {
     ValidationResult::new("Storytelling Composition")
-        .with_provenance("exp088_storytelling_composition", "2026-03-29")
-        .run("ludoSpring + esotericWebb composition", |v| {
-            let bm_port = tcp::env_port("BIOMEOS_PORT", 9800);
-            let ls_port = tcp::env_port("LUDOSPRING_PORT", 9140);
-            let pt_port = tcp::env_port("PETALTONGUE_PORT", 9160);
-            let sq_port = tcp::env_port("SQUIRREL_PORT", tolerances::DEFAULT_SQUIRREL_PORT);
-            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
-
-            phase_ludospring_methods(v, &host, ls_port);
-            phase_esotericwebb_gap(v, &host, ls_port);
-            phase_petaltongue_viz(v, &host, pt_port);
-            phase_squirrel_ai(v, &host, sq_port);
-            phase_composition_routing(v, &host, bm_port);
-        });
-}
-
-/// Validate ludoSpring's implemented game.* methods.
-fn phase_ludospring_methods(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("ludoSpring Game Methods (Implemented)");
-
-    let flow = tcp::tcp_rpc(
-        host,
-        port,
-        methods::game::EVALUATE_FLOW,
-        &serde_json::json!({
-            "skill": 0.7,
-            "challenge": 0.6
-        }),
-    );
-    match flow {
-        Ok((result, _)) => {
-            let has_flow = result.get("flow_state").is_some()
-                || result.get("state").is_some()
-                || result.get("result").is_some();
-            v.check_bool(
-                "game.evaluate_flow",
-                has_flow,
-                "flow state evaluation works",
-            );
-        }
-        Err(e) => v.check_skip(
-            "game.evaluate_flow",
-            &format!("ludoSpring not reachable: {e}"),
-        ),
-    }
-
-    let dda = tcp::tcp_rpc(
-        host,
-        port,
-        methods::game::DIFFICULTY_ADJUSTMENT,
-        &serde_json::json!({
-            "current_difficulty": 0.5,
-            "player_performance": 0.7
-        }),
-    );
-    match dda {
-        Ok((_, _)) => v.check_bool("game.difficulty_adjustment", true, "DDA responds"),
-        Err(e) => v.check_skip("game.difficulty_adjustment", &format!("ludoSpring: {e}")),
-    }
-
-    let wfc = tcp::tcp_rpc(
-        host,
-        port,
-        methods::game::WFC_STEP,
-        &serde_json::json!({
-            "width": 4, "height": 4
-        }),
-    );
-    match wfc {
-        Ok((_, _)) => v.check_bool("game.wfc_step", true, "Wave Function Collapse responds"),
-        Err(e) => v.check_skip("game.wfc_step", &format!("ludoSpring: {e}")),
-    }
-
-    let fitts = tcp::tcp_rpc(
-        host,
-        port,
-        methods::game::FITTS_COST,
-        &serde_json::json!({
-            "distance": 100.0, "width": 20.0
-        }),
-    );
-    match fitts {
-        Ok((_, _)) => v.check_bool("game.fitts_cost", true, "Fitts cost analysis responds"),
-        Err(e) => v.check_skip("game.fitts_cost", &format!("ludoSpring: {e}")),
-    }
-}
-
-/// Document the gap: methods esotericWebb expects but ludoSpring doesn't implement yet.
-fn phase_esotericwebb_gap(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("esotericWebb Method Gap (Expected but Missing)");
-
-    let gap_methods = [
-        ("game.npc_dialogue", "NPC dialogue generation for RPGPT"),
-        ("game.narrate_action", "Action narration for AI DM"),
-        ("game.begin_session", "Session lifecycle management"),
-    ];
-
-    for (method, description) in &gap_methods {
-        let result = tcp::tcp_rpc(host, port, method, &serde_json::json!({}));
-        match result {
-            Ok((_, _)) => {
-                v.check_bool(
-                    &format!("{method} (gap closed)"),
-                    true,
-                    &format!("{description} — now implemented"),
-                );
-            }
-            Err(e) => {
-                if e.contains("method not found") || e.contains("-32601") {
-                    v.check_skip(
-                        method,
-                        &format!("GAP: {description} — not yet implemented in ludoSpring"),
-                    );
-                } else {
-                    v.check_skip(method, &format!("ludoSpring not reachable: {e}"));
-                }
-            }
-        }
-    }
-}
-
-/// Validate petalTongue visualization rendering.
-fn phase_petaltongue_viz(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("petalTongue Visualization");
-
-    let dashboard = tcp::tcp_rpc(
-        host,
-        port,
-        "visualization.render.dashboard",
-        &serde_json::json!({
-            "title": "exp088 storytelling test",
-            "panels": []
-        }),
-    );
-    match dashboard {
-        Ok((_, _)) => v.check_bool(
-            "dashboard render",
-            true,
-            "petalTongue dashboard rendering works",
-        ),
-        Err(e) => v.check_skip(
-            "dashboard render",
-            &format!("petalTongue not reachable: {e}"),
-        ),
-    }
-
-    let dialogue = tcp::tcp_rpc(
-        host,
-        port,
-        "visualization.render.dialogue_tree",
-        &serde_json::json!({
-            "scene_type": "dialogue_tree"
-        }),
-    );
-    match dialogue {
-        Ok((_, _)) => v.check_bool(
-            "dialogue tree render",
-            true,
-            "petalTongue dialogue-tree scene type works",
-        ),
-        Err(e) => {
-            if e.contains("method not found") || e.contains("-32601") {
-                v.check_skip(
-                    "dialogue tree",
-                    "GAP: dialogue-tree scene type not yet implemented in petalTongue",
-                );
-            } else {
-                v.check_skip("dialogue tree", &format!("petalTongue: {e}"));
-            }
-        }
-    }
-}
-
-/// Validate Squirrel AI integration.
-fn phase_squirrel_ai(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Squirrel AI");
-
-    let health = tcp::tcp_rpc(
-        host,
-        port,
-        methods::health::LIVENESS,
-        &serde_json::json!({}),
-    );
-    match health {
-        Ok((_, _)) => v.check_bool("Squirrel alive", true, "Squirrel responds to liveness"),
-        Err(e) => v.check_skip("Squirrel liveness", &format!("Squirrel not reachable: {e}")),
-    }
-
-    let tools = tcp::tcp_rpc(host, port, methods::mcp::TOOLS_LIST, &serde_json::json!({}));
-    match tools {
-        Ok((val, _)) => {
-            let has_tools = val.is_array() || val.get("tools").is_some();
-            v.check_bool(
-                "MCP tools available",
-                has_tools,
-                "Squirrel exposes MCP tools",
-            );
-        }
-        Err(e) => v.check_skip("MCP tools", &format!("Squirrel: {e}")),
-    }
-}
-
-/// Validate routing through biomeOS Neural API for the storytelling stack.
-fn phase_composition_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Composition Routing via Neural API");
-
-    let game_route = tcp::neural_api_capability_call(
-        host,
-        port,
-        "game",
-        "game.evaluate_flow",
-        &serde_json::json!({"skill": 0.5, "challenge": 0.5}),
-    );
-    match game_route {
-        Ok((_, _)) => v.check_bool(
-            "game domain routed",
-            true,
-            "Neural API routes game.* to ludoSpring",
-        ),
-        Err(e) => v.check_skip("game domain routing", &format!("biomeOS game routing: {e}")),
-    }
-
-    let viz_route = tcp::neural_api_capability_call(
-        host,
-        port,
-        "visualization",
-        "visualization.render.dashboard",
-        &serde_json::json!({"title": "test"}),
-    );
-    match viz_route {
-        Ok((_, _)) => v.check_bool(
-            "viz domain routed",
-            true,
-            "Neural API routes visualization.* to petalTongue",
-        ),
-        Err(e) => v.check_skip("viz domain routing", &format!("biomeOS viz routing: {e}")),
-    }
+        .with_provenance("exp088_storytelling_composition", "2026-03-30")
+        .run(
+            "ecoPrimals Storytelling: Tower + ludoSpring + esotericWebb via biomeOS",
+            |v| {
+                phase_tower(v);
+                let bridge = phase_biomeos(v);
+                phase_ludospring(v, bridge.as_ref());
+                phase_esotericwebb(v);
+                phase_composition(v);
+            },
+        );
 }

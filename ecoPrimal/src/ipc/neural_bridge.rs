@@ -109,13 +109,22 @@ impl NeuralBridge {
 
     /// Check whether the biomeOS neural-api is healthy.
     ///
+    /// Uses the liveness fallback chain (`health.liveness` → `health.check`
+    /// → `health` → `neural-api.health`) since the Neural API may not
+    /// implement every health method. Falls back to `graph.list` as a
+    /// last-resort liveness probe — if the API can list graphs, it is alive.
+    ///
     /// # Errors
     ///
-    /// Returns [`IpcError`] if the socket is unreachable or the health
-    /// check call fails.
+    /// Returns [`IpcError`] if the socket is unreachable or no probe succeeds.
     pub fn health_check(&self) -> Result<bool, IpcError> {
         let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
-        client.health_check()
+        if let Ok(v) = client.health_liveness() {
+            return Ok(v);
+        }
+        let mut client2 = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let resp = client2.call("graph.list", serde_json::Value::Null)?;
+        Ok(resp.is_success())
     }
 
     /// Discover what capabilities are registered for a capability name.
@@ -163,7 +172,7 @@ impl NeuralBridge {
         graph: &serde_json::Value,
     ) -> Result<serde_json::Value, IpcError> {
         let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
-        let resp = client.call("graph.deploy", graph.clone())?;
+        let resp = client.call("graph.execute", graph.clone())?;
         if let Some(err) = resp.error {
             return Err(IpcError::from(err));
         }

@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
-**Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation  
-**Version**: 0.8.0 (Phase 23c — 87/87 gates, 402 tests, 72.5% coverage, 67 experiments, 63 deploy graphs, 5 spring primal binaries)  
+**Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **subsystem composition decomposition**  
+**Version**: 0.8.0f (Phase 23f — 87/87 gates, 402 tests, 72.5% coverage, 67 experiments, 83 deploy graphs, 7 composition subsystems, 22 documented primal gaps)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 29, 2026
+**Last Updated**: March 28, 2026
 
 ---
 
@@ -45,7 +45,10 @@ primalSpring fills the gap.
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | 63 TOMLs (18 single-node + 5 multi-node + 11 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science), all `by_capability`, topologically validated |
+| Deploy graphs | **83 TOMLs** (18 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 3 product), all `by_capability`, topologically validated |
+| Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
+| Primal gap registry | **22 gaps** documented (`docs/PRIMAL_GAPS.md`) |
+| Live subsystem validation | C1: 6/6, C3: 8/8, C4: 6/6, C6: 5/5 PASS; C2/C5: documented gaps |
 | RPC endpoints | 17 methods |
 | Discovery | **Capability-first**: `discover_by_capability()` + 5-tier + Neural API |
 | Server mode | JSON-RPC 2.0 over Unix socket |

@@ -65,10 +65,13 @@ pub fn discover_capabilities(capability: &str) -> Option<serde_json::Value> {
 pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
     // Tier 1: biomeOS neural-api (authoritative)
     if let Some(resp) = discover_capabilities(capability) {
-        if let Some(socket_str) = resp
-            .get("primary_socket")
-            .and_then(serde_json::Value::as_str)
-        {
+        let endpoint_str = resp
+            .get("primary_endpoint")
+            .or_else(|| resp.get("primary_socket"))
+            .and_then(serde_json::Value::as_str);
+
+        if let Some(raw) = endpoint_str {
+            let socket_str = strip_unix_uri(raw);
             let path = PathBuf::from(socket_str);
             if path.exists() {
                 let primal = resp
@@ -248,6 +251,16 @@ pub fn extract_capability_names(caps: Option<serde_json::Value>) -> Vec<String> 
         }
         _ => Vec::new(),
     }
+}
+
+/// Strip `unix://` prefix from an endpoint URI to get the raw filesystem path.
+///
+/// biomeOS returns endpoints as `unix:///run/user/1000/biomeos/foo.sock`;
+/// primalSpring needs the bare path for `std::os::unix::net::UnixStream`.
+fn strip_unix_uri(endpoint: &str) -> &str {
+    endpoint
+        .strip_prefix("unix://")
+        .unwrap_or(endpoint)
 }
 
 /// Extract names from a JSON array (Formats A and B).

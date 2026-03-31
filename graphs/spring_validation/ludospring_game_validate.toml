@@ -1,0 +1,71 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation: ludoSpring game-science composition.
+#
+# Validates ludoSpring as a deployed game-science primal. Probes:
+#   1. biomeOS substrate and Tower health
+#   2. ludoSpring registers and responds to health
+#   3. All 8 game.* capabilities are discoverable via biomeOS
+#   4. Round-trip validation: call game.evaluate_flow through biomeOS routing
+#
+# Next-level validation: primalSpring experiments invoke game.* methods
+# directly and compare results against python baselines (springs → primals).
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/ludospring_game_validate.toml
+
+[graph]
+name = "ludospring_game_validate"
+description = "Validates ludoSpring game-science primal: substrate, Tower, 8 game.* capabilities, biomeOS routing"
+version = "1.0.0"
+coordination = "sequential"
+
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = ["composition.tower_health"]
+
+[[graph.node]]
+name = "verify_ludospring_health"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "coordination.validate_game_surface",
+]
+
+[[graph.node]]
+name = "verify_game_routing"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["verify_ludospring_health"]
+health_method = "health.liveness"
+by_capability = "coordination"
+args = ["server"]
+capabilities = [
+    "coordination.validate_capability_routing",
+]

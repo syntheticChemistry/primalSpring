@@ -1,0 +1,174 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring validation: C7 Full Interactive Product
+#
+# Validates the composed product with all subsystems running together.
+# Each phase verifies one subsystem composition (C1-C6), then tests
+# cross-subsystem integration:
+#   1. biomeOS substrate alive
+#   2. Tower health (BearDog + Songbird)
+#   3. C1: Render — petalTongue dashboard render + export
+#   4. C2: Narration — Squirrel ai.query
+#   5. C3: Session — esotericWebb session lifecycle
+#   6. C4: Game Science — ludoSpring flow evaluation
+#   7. C5: Persistence — NestGate store/retrieve
+#   8. C6: Proprioception — petalTongue subscribe/poll
+#   9. Cross-subsystem: session state → DataBinding → render → export
+#  10. Cross-subsystem: session state → narration prompt → ai.query
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/composition_interactive_validate.toml
+
+[graph]
+name = "composition_interactive_validate"
+description = "Validates C7: Full interactive product — all subsystems + cross-subsystem integration"
+version = "1.0.0"
+coordination = "sequential"
+
+# ── Phase 0: Substrate ──────────────────────────────────────────────
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+capabilities = ["capability.discover", "graph.list"]
+
+# ── Phase 1: Tower ──────────────────────────────────────────────────
+[[graph.node]]
+name = "verify_tower"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.tower_health"]
+
+# ── Phase 2: C1 Render ─────────────────────────────────────────────
+[[graph.node]]
+name = "verify_render"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_render_subsystem"]
+[graph.node.checks]
+methods = ["visualization.render.dashboard", "visualization.export"]
+target = "petaltongue"
+expect = "dashboard stored, SVG exported"
+
+# ── Phase 3: C2 Narration ──────────────────────────────────────────
+[[graph.node]]
+name = "verify_narration"
+binary = "primalspring_primal"
+order = 3
+required = false
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_narration_subsystem"]
+[graph.node.checks]
+method = "ai.query"
+target = "squirrel"
+expect = "prose response"
+
+# ── Phase 4: C3 Session ────────────────────────────────────────────
+[[graph.node]]
+name = "verify_session"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_session_subsystem"]
+[graph.node.checks]
+methods = ["session.start", "session.state", "session.actions", "session.act"]
+target = "esotericwebb"
+expect = "full lifecycle"
+
+# ── Phase 5: C4 Game Science ───────────────────────────────────────
+[[graph.node]]
+name = "verify_game_science"
+binary = "primalspring_primal"
+order = 5
+required = false
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_game_science_subsystem"]
+[graph.node.checks]
+method = "game.evaluate_flow"
+target = "ludospring"
+expect = "flow_score numeric"
+
+# ── Phase 6: C5 Persistence ────────────────────────────────────────
+[[graph.node]]
+name = "verify_persistence"
+binary = "primalspring_primal"
+order = 6
+required = false
+spawn = false
+depends_on = ["verify_tower"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_persistence_subsystem"]
+[graph.node.checks]
+methods = ["storage.store", "storage.retrieve"]
+target = "nestgate"
+expect = "round-trip"
+
+# ── Phase 7: C6 Proprioception ─────────────────────────────────────
+[[graph.node]]
+name = "verify_proprioception"
+binary = "primalspring_primal"
+order = 7
+required = false
+spawn = false
+depends_on = ["verify_render"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_proprioception_subsystem"]
+[graph.node.checks]
+methods = ["interaction.subscribe", "interaction.poll"]
+target = "petaltongue"
+expect = "subscriber_id, events array"
+
+# ── Phase 8: Cross-subsystem integration ───────────────────────────
+[[graph.node]]
+name = "verify_session_to_render"
+binary = "primalspring_primal"
+order = 8
+required = true
+spawn = false
+depends_on = ["verify_session", "verify_render"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_session_to_render"]
+[graph.node.checks]
+description = "session.state → DataBinding construction → visualization.render.dashboard → visualization.export"
+expect = "SVG contains session data"
+
+[[graph.node]]
+name = "verify_session_to_narration"
+binary = "primalspring_primal"
+order = 9
+required = false
+spawn = false
+depends_on = ["verify_session", "verify_narration"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_session_to_narration"]
+[graph.node.checks]
+description = "session.state → prompt construction → ai.query → narration prose"
+expect = "narration references session state"
