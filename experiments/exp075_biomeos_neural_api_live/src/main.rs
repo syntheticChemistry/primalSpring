@@ -101,8 +101,8 @@ fn validate_capability_discover(bridge: &NeuralBridge, v: &mut ValidationResult)
         let key = format!("discover_{domain}");
         match result {
             Ok(val) => {
-                let has_socket = val.get("primary_endpoint").is_some()
-                    || val.get("primary_socket").is_some();
+                let has_socket =
+                    val.get("primary_endpoint").is_some() || val.get("primary_socket").is_some();
                 v.check_bool(&key, has_socket, &format!("{domain} domain discoverable"));
             }
             Err(e) => v.check_bool(&key, false, &format!("{e}")),

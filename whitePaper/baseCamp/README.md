@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: March 28, 2026
-**Status**: Phase 23f — Composition Decomposition (87/87 gates), 67 experiments, 402 tests, 83 deploy graphs (21 validation + 7 compositions), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), structured primal gap registry (22 gaps), thin gateway bridge, composition monitor, live subsystem validation (79% pass, all failures documented gaps)
+**Date**: April 1, 2026
+**Status**: Phase 23g — Primal Rewiring + Gap Cleanup (87/87 gates), 67 experiments, 403 tests, 89 deploy graphs (21 validation + 7 compositions + 6 nucleated spring deploy), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), structured primal gap registry (**8 open**, 18 resolved, zero critical), nucleated spring deploy graphs, live subsystem validation (**98% pass** — 43/44)
 
 ---
 
@@ -36,22 +36,22 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 13 | Substrate Stress | exp082–084 | Chaos substrate, federation edge cases, provenance adversarial — does the stack survive? |
 | 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
 
-## Current State (v0.8.0f)
+## Current State (v0.8.0g)
 
 | Metric | Value |
 |--------|-------|
 | Experiments | 67 (14 tracks) |
-| Total tests | **402** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Total tests | **403** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | **83 TOMLs** (18 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 3 product), all nodes `by_capability`, topologically validated |
+| Deploy graphs | **89 TOMLs** (18 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 3 product + **6 nucleated spring deploy**), all nodes `by_capability`, topologically validated |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
-| Primal gap registry | **22 gaps** documented across 6 primals + cross-cutting (`docs/PRIMAL_GAPS.md`) |
-| Discovery | Capability-first: 5-tier + Neural API + `discover_by_capability()` + biomeOS `capability.discover` |
+| Primal gap registry | **8 open** (18 resolved, zero critical) — primals only (`docs/PRIMAL_GAPS.md`) |
+| Discovery | Capability-first: 6-tier + Neural API + `discover_by_capability()` + biomeOS `capability.discover` + `topology.rescan` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
@@ -68,8 +68,41 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Provenance Readiness | **STRUCTURAL** — 4/4 gates (launch profiles + deploy graph) |
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
-| Subsystem validation | C1: 6/6, C3: 8/8, C4: 6/6, C6: 5/5 PASS; C2: 0/3, C5: 1/5 (documented gaps) |
-| petalTongue | v1.6.6 integrated, visualization.render.dashboard + grammar |
+| Subsystem validation | C1: 6/6, C3: 8/8, C4: 6/6, C5: **5/5**, C6: 5/5, C7: **10/10** PASS; C2: 3/4 (no local Ollama) |
+| Live pass rate | **43/44 (98%)** — up from 93% → 79% pre-evolution |
+| petalTongue | v1.6.6+ integrated, zero-copy IPC, blake3, RenderingAwareness auto-init, PT-07 server discovery |
+| Nucleated spring deploys | 6 proto graphs: airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring |
+
+## What Changed — Phase 23g (Primal Rewiring + Gap Cleanup)
+
+### Primal Evolution Rewiring (April 1, 2026)
+
+Full primal audit and rewiring cycle. Reviewed all 10 primals, updated
+primalSpring internals to match latest APIs, cleaned gap registry to
+primal-only scope, validated at 98%.
+
+**Code Rewiring**:
+- `ipc/methods.rs` — `graph.execute` (was `graph.deploy`), `topology.rescan` (biomeOS v2.81), `ember.*` (toadStool S171), `ai.*` (Squirrel), `visualization.*`/`interaction.*` (petalTongue). Removed downstream modules (`game.*`, `webb.*`, `session.*`)
+- `ipc/neural_bridge.rs` — `topology_rescan()` for biomeOS v2.81
+- `ipc/discover.rs` — 6-tier discovery with plain socket names (`{name}.sock`, `{name}-ipc.sock`)
+- `tools/validate_compositions.py` — SQ-02 resolved messaging, NestGate `family_id`, C7 live Squirrel check
+
+**Gap Resolution** (5 newly resolved):
+- SQ-02: `LOCAL_AI_ENDPOINT` wired into AiRouter (alpha.27)
+- PT-05: `RenderingAwareness` auto-init in `UnixSocketServer`
+- PT-07: periodic discovery refresh in server mode
+- NG-04: ring/aws-lc-rs eliminated (TLS → system curl)
+- NG-05: nestgate-security zero crypto deps (BearDog IPC delegation)
+
+**Nucleated Spring Deploy Graphs** (6 new):
+- `graphs/spring_deploy/` — airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring
+- Each provides NUCLEUS base (biomeOS + BearDog + Songbird) + domain-specific primals
+- Downstream tributaries consume these as proto-compositions
+
+**Gap Registry Cleanup**:
+- Scoped to primals only — removed downstream (esotericWebb, ludoSpring, cross-cutting)
+- 8 open gaps (1 medium, 7 low), zero critical/high
+- 18 resolved across all primals
 
 ## What Changed — Phase 23c (NUCLEUS Atomics + biomeOS Substrate)
 

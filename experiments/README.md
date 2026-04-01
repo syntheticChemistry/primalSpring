@@ -62,7 +62,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 ## Experiment Status Key
 
 - **IPC wired**: Uses real `probe_primal()` with Unix socket JSON-RPC 2.0
-- **Discovery wired**: Uses `discover_primal()` with 5-tier fallback; skips honestly if primal unavailable
+- **Discovery wired**: Uses `discover_primal()` with 6-tier fallback; skips honestly if primal unavailable
 
 ## Phase Progression
 
@@ -100,6 +100,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 23d | Absorb toadStool S168 + esotericWebb V6 + ludoSpring V32 — 16 new method constants (compute, shader, webb, session, game), gen4 storytelling graphs v2.0 | **Done** (v0.8.0d) |
 | 23e | Live composition — esotericWebb as ecoPrimals product: 3 new deploy graphs, 3 validation graphs, exp088 UDS rewrite, capability discovery fix, NeuralBridge health fallback, Tower 13/13, Neural API 12/12, Storytelling 16/16 | **Done** (v0.8.0e) |
 | 23f | Composition decomposition — 7 subsystem compositions (C1-C7), 7 composition validation graphs, PRIMAL_GAPS.md (22 gaps), thin gateway bridge, composition monitor, live subsystem validation 34/43 (79%) | **Done** (v0.8.0f) |
+| 23g | Primal rewiring + gap cleanup — methods.rs/neural_bridge.rs/discover.rs rewired, 5 gaps resolved, gap registry scoped to primals only, 6 nucleated spring deploy graphs, 43/44 (98%) live validation | **Done** (v0.8.0g) |
 
 ## Validation Harness
 

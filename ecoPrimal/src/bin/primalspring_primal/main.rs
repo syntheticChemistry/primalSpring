@@ -248,9 +248,7 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
         "composition.tower_health" => {
             handle_composition_health_by_capability(AtomicType::Tower, id)
         }
-        "composition.tower_squirrel_health" => {
-            handle_tower_squirrel_health(id)
-        }
+        "composition.tower_squirrel_health" => handle_tower_squirrel_health(id),
         "composition.node_health" => handle_composition_health_by_capability(AtomicType::Node, id),
         "composition.nest_health" => handle_composition_health_by_capability(AtomicType::Nest, id),
         "composition.nucleus_health" => {

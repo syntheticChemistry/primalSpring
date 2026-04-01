@@ -1,20 +1,29 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# HealthSpring Science Deploy — biomeOS composition for health science.
+# HealthSpring Nucleated Deploy — health/biomedical science via NUCLEUS composition.
 #
-# Deploys HealthSpring as a primal composition. Springs reference
-# primalSpring's wateringHole for patterns and standards.
+# Proto graph for healthSpring tributaries. As healthSpring validates its
+# science (model inference, data fetch, health analysis), gaps will surface
+# upstream for primals and primalSpring to solve.
+#
+# NUCLEUS base: biomeOS + Tower (BearDog + Songbird)
+# AI layer: Squirrel (model inference routing)
+# Persistence: NestGate (storage)
+# Provenance: rhizoCrypt + loamSpine + sweetGrass
+#
+# References: ecoPrimals/infra/wateringHole/ for IPC and composition standards.
 #
 # Usage:
 #   biomeos deploy --graph graphs/spring_deploy/healthspring_deploy.toml
 
 [graph]
-name = "healthspring_science"
-description = "HealthSpring health science composition — Tower + healthspring"
-version = "1.0.0"
+name = "healthspring_nucleated"
+description = "HealthSpring health science — NUCLEUS base + AI + persistence + provenance"
+version = "2.0.0"
 coordination = "sequential"
 
-# Phase 0: biomeOS substrate
+# ── NUCLEUS Base ──────────────────────────────────────────────────────
+
 [[graph.node]]
 name = "biomeos_neural_api"
 binary = "biomeos"
@@ -23,22 +32,21 @@ required = true
 spawn = false
 health_method = "graph.list"
 by_capability = "orchestration"
-capabilities = ["capability.discover", "graph.list"]
+capabilities = ["graph.execute", "capability.discover", "topology.rescan"]
 
-# Phase 1: Tower
 [[graph.node]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.blake3_hash"]
 
 [[graph.node]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -46,18 +54,83 @@ health_method = "health.liveness"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-# Phase 3: Spring
+# ── AI Layer ──────────────────────────────────────────────────────────
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel"
+order = 3
+required = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "ai"
+args = ["server"]
+capabilities = ["ai.query", "ai.list_providers"]
+
+# ── Persistence ───────────────────────────────────────────────────────
+
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate"
+order = 4
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+args = ["server"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+
+# ── Provenance Trio ───────────────────────────────────────────────────
+
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 5
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "provenance"
+args = ["--unix"]
+capabilities = ["dag.session.create", "dag.session.list"]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine"
+order = 6
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "ledger"
+args = ["server"]
+capabilities = ["entry.append", "ledger.status"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 7
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "attribution"
+args = ["server"]
+capabilities = ["attribution.claim", "attribution.resolve"]
+
+# ── Spring Science ────────────────────────────────────────────────────
+
 [[graph.node]]
 name = "healthspring"
 binary = "healthspring_primal"
-order = 3
+order = 8
 required = true
 depends_on = ["beardog", "songbird"]
-health_method = "health.check"
+health_method = "health.liveness"
 by_capability = "health"
 args = ["server"]
 capabilities = [
-    "health.metabolic_rate",
-    "health.population_model",
-    "health.epidemiology",
+    "data.fetch",
+    "model.inference_route",
+    "compute.offload",
+    "provenance.begin",
+    "provenance.record",
+    "provenance.complete",
 ]

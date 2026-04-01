@@ -61,8 +61,8 @@ pub mod coordination {
 
 /// Graph domain — deploy graph operations.
 pub mod graph {
-    /// Deploy a graph (biomeOS graph executor).
-    pub const DEPLOY: &str = "graph.deploy";
+    /// Execute a deploy graph (biomeOS neural-api routing target).
+    pub const EXECUTE: &str = "graph.execute";
     /// Query graph execution status.
     pub const STATUS: &str = "graph.status";
     /// Roll back a deployed graph (reverse topological lifecycle.stop).
@@ -103,6 +103,8 @@ pub mod topology {
     pub const GET: &str = "topology.get";
     /// Proprioceptive topology (self-aware network map).
     pub const PROPRIOCEPTION: &str = "topology.proprioception";
+    /// Rescan for newly-registered primals (biomeOS v2.81+).
+    pub const RESCAN: &str = "topology.rescan";
 }
 
 /// Route domain — batch capability registration.
@@ -195,24 +197,12 @@ pub mod storage {
     pub const LIST: &str = "storage.list";
 }
 
-/// Game domain — ludoSpring game science methods.
-pub mod game {
-    /// Evaluate flow state (Csikszentmihalyi).
-    pub const EVALUATE_FLOW: &str = "game.evaluate_flow";
-    /// Dynamic difficulty adjustment.
-    pub const DIFFICULTY_ADJUSTMENT: &str = "game.difficulty_adjustment";
-    /// Wave Function Collapse step.
-    pub const WFC_STEP: &str = "game.wfc_step";
-    /// Fitts's law cost analysis.
-    pub const FITTS_COST: &str = "game.fitts_cost";
-    /// Engagement metrics.
-    pub const ENGAGEMENT: &str = "game.engagement";
-    /// UI analysis (accessibility evaluation).
-    pub const ANALYZE_UI: &str = "game.analyze_ui";
-    /// Accessibility evaluation.
-    pub const ACCESSIBILITY: &str = "game.accessibility";
-    /// Procedural noise generation.
-    pub const GENERATE_NOISE: &str = "game.generate_noise";
+/// AI domain — Squirrel AI bridge methods.
+pub mod ai {
+    /// Query an AI model.
+    pub const QUERY: &str = "ai.query";
+    /// List available AI providers.
+    pub const LIST_PROVIDERS: &str = "ai.list_providers";
 }
 
 /// Compute domain — toadStool dispatch methods.
@@ -225,36 +215,40 @@ pub mod compute {
     pub const HEALTH: &str = "compute.health";
 }
 
-/// Shader domain — toadStool S168 shader pipeline.
+/// Shader domain — dispatch only. Compilation is coralReef's domain (S169+).
 pub mod shader {
     /// Dispatch compiled shader binary (base64/u8/compile_result).
     pub const DISPATCH: &str = "shader.dispatch";
-    /// Compile WGSL shader source (coralReef).
-    pub const COMPILE_WGSL: &str = "shader.compile.wgsl";
 }
 
-/// Webb (narrative) domain — esotericWebb V6 session methods.
-pub mod webb {
-    /// Resolve a scene: predicates, effects, NPC state.
-    pub const RESOLVE_SCENE: &str = "webb.resolve_scene";
-    /// Query NPC state.
-    pub const NPC_STATE: &str = "webb.npc_state";
-    /// Ability check.
-    pub const ABILITY_CHECK: &str = "webb.ability_check";
-    /// Session state.
-    pub const SESSION_STATE: &str = "webb.session_state";
-    /// Liveness probe.
-    pub const LIVENESS: &str = "webb.liveness";
+/// Ember domain — toadStool S171 hardware lifecycle.
+pub mod ember {
+    /// List ember-managed hardware devices.
+    pub const LIST: &str = "ember.list";
+    /// Query status of an ember-managed device.
+    pub const STATUS: &str = "ember.status";
 }
 
-/// Session domain — shared session lifecycle (esotericWebb, ludoSpring).
-pub mod session {
-    /// Create a new session.
-    pub const CREATE: &str = "session.create";
-    /// Advance to next scene.
-    pub const ADVANCE: &str = "session.advance";
-    /// Complete / finalize a session.
-    pub const COMPLETE: &str = "session.complete";
+/// Visualization domain — petalTongue rendering methods.
+pub mod visualization {
+    /// Render a dashboard from DataBindings.
+    pub const RENDER_DASHBOARD: &str = "visualization.render.dashboard";
+    /// Render a scene graph.
+    pub const RENDER_SCENE: &str = "visualization.render.scene";
+    /// Export rendered content (SVG, etc.).
+    pub const EXPORT: &str = "visualization.export";
+    /// Query what is currently being shown.
+    pub const SHOWING: &str = "visualization.showing";
+}
+
+/// Interaction domain — petalTongue proprioception.
+pub mod interaction {
+    /// Subscribe to interaction events.
+    pub const SUBSCRIBE: &str = "interaction.subscribe";
+    /// Poll for pending interaction events.
+    pub const POLL: &str = "interaction.poll";
+    /// Apply an interaction intent.
+    pub const APPLY: &str = "visualization.interact.apply";
 }
 
 #[cfg(test)]
@@ -280,7 +274,7 @@ mod tests {
             coordination::VALIDATE_COMPOSITION,
             coordination::PROBE_PRIMAL,
             coordination::DISCOVERY_SWEEP,
-            graph::DEPLOY,
+            graph::EXECUTE,
             graph::STATUS,
             graph::ROLLBACK,
             graph::VALIDATE,
@@ -295,6 +289,7 @@ mod tests {
             discovery::PROTOCOLS,
             topology::GET,
             topology::PROPRIOCEPTION,
+            topology::RESCAN,
             route::REGISTER,
             composition::NUCLEUS_HEALTH,
             mcp::TOOLS_LIST,
@@ -322,27 +317,21 @@ mod tests {
             storage::STORE,
             storage::RETRIEVE,
             storage::LIST,
-            game::EVALUATE_FLOW,
-            game::DIFFICULTY_ADJUSTMENT,
-            game::WFC_STEP,
-            game::FITTS_COST,
-            game::ENGAGEMENT,
-            game::ANALYZE_UI,
-            game::ACCESSIBILITY,
-            game::GENERATE_NOISE,
+            ai::QUERY,
+            ai::LIST_PROVIDERS,
             compute::DISPATCH_SUBMIT,
             compute::DISPATCH_EXECUTE,
             compute::HEALTH,
             shader::DISPATCH,
-            shader::COMPILE_WGSL,
-            webb::RESOLVE_SCENE,
-            webb::NPC_STATE,
-            webb::ABILITY_CHECK,
-            webb::SESSION_STATE,
-            webb::LIVENESS,
-            session::CREATE,
-            session::ADVANCE,
-            session::COMPLETE,
+            ember::LIST,
+            ember::STATUS,
+            visualization::RENDER_DASHBOARD,
+            visualization::RENDER_SCENE,
+            visualization::EXPORT,
+            visualization::SHOWING,
+            interaction::SUBSCRIBE,
+            interaction::POLL,
+            interaction::APPLY,
         ];
         for method in all {
             assert!(
@@ -366,17 +355,19 @@ mod tests {
             federation::CONFIGURE,
             discovery::DISCOVER,
             topology::GET,
+            topology::RESCAN,
             route::REGISTER,
             crypto::GENERATE_KEYPAIR,
             birdsong::ENCRYPT,
             genetic::DERIVE_LINEAGE_KEY,
             secrets::STORE,
             storage::LIST,
-            game::ENGAGEMENT,
+            ai::QUERY,
             compute::DISPATCH_SUBMIT,
             shader::DISPATCH,
-            webb::RESOLVE_SCENE,
-            session::CREATE,
+            ember::LIST,
+            visualization::EXPORT,
+            interaction::SUBSCRIBE,
         ];
         for method in all {
             assert!(!method.starts_with('.'), "{method:?} starts with dot");

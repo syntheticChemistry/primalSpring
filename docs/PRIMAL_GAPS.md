@@ -3,214 +3,172 @@
 Structured inventory of known gaps per primal that block or degrade composable deployments.
 Each entry links to the composition that exposes it and proposes a fix path.
 
-> **Last updated**: 2026-04-01 — Phase 23i (plasmidBin harvest: rhizoCrypt, loamSpine, sweetGrass, barraCuda; 13 gaps resolved, 19 open, zero CRITICAL)
+> **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
+> (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
+>
+> **Last updated**: 2026-04-01 — Post-pull re-evaluation. 18 gaps resolved, 8 open (zero critical, zero high).
 
 ---
 
 ## biomeOS
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| BM-01 | `graph.deploy` not in routing table | — | — | primalSpring calls `graph.execute` | **RESOLVED** (v2.79) |
-| BM-02 | `health.liveness` not on Neural API | Low | All | `NeuralBridge::health_check` fallback works | **RESOLVED** (v2.81) |
-| BM-03 | `capability.discover` returns `unix://` prefix | — | — | primalSpring `strip_unix_uri` handles both | **RESOLVED** (v2.79) |
-| BM-04 | Neural API capability registration: primals starting after biomeOS invisible to `capability.list` | ~~**High**~~ | ludoSpring V37.1 | v2.81: `topology.rescan` + lazy discovery on miss + multi-shape probe | **RESOLVED** (v2.81) |
-| BM-05 | `probe_primal_capabilities` silently skips unknown response shapes | ~~Medium~~ | ludoSpring V37.1 | v2.81: `extract_capabilities_from_response` accepts multiple shapes, warn! on unknown | **RESOLVED** (v2.81) |
+All gaps **RESOLVED**.
 
-biomeOS v2.81 also added: TCP-only CLI (`--tcp-only`), cross-gate `capability.call` routing via `GateRegistry`, fully concurrent tests (7,212 tests, 0 warnings).
+| ID | Gap | Status |
+|----|-----|--------|
+| BM-01 | `graph.deploy` routing | **RESOLVED** (v2.79 — `graph.execute`) |
+| BM-02 | `health.liveness` on Neural API | **RESOLVED** (v2.81) |
+| BM-03 | `unix://` prefix on `capability.discover` | **RESOLVED** (v2.79 — `strip_unix_uri`) |
+| BM-04 | Late primal registration invisible | **RESOLVED** (v2.81 — `topology.rescan` + lazy discovery) |
+| BM-05 | Multi-shape probe response | **RESOLVED** (v2.81) |
 
 ---
 
 ## petalTongue
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| PT-01 | Socket at non-standard path, not discoverable by biomeOS | ~~Low~~ | C1 | Moved to `$XDG_RUNTIME_DIR/biomeos/petaltongue.sock` | **RESOLVED** |
-| PT-02 | No live push to browser (was WebSocket/SSE) | ~~**High**~~ | C1: Render | SSE `/api/events` endpoint added in `web_mode.rs` | **RESOLVED** (SSE, not WS) |
-| PT-03 | `motor_tx` not wired in server/web mode | ~~Medium~~ | C1, C6 | Drain channel wired so `motor.*` does not error | **RESOLVED** |
-| PT-04 | No HTML export modality | Low | C1: Render | Accept SVG-in-HTML as sufficient | Open — low priority |
-| PT-05 | `visualization.showing` returns false when not wired | Medium | C6: Proprioception | Initialize default `RenderingAwareness` | Open |
-| PT-06 | `callback_method` stored but never invoked — poll-only | Medium | C6: Proprioception | Implement callback dispatch | Open |
-| PT-07 | No external event source in server mode | Low | C6: Proprioception | Wire capability discovery into `DataService` | Open |
+| ID | Gap | Severity | Status |
+|----|-----|----------|--------|
+| PT-01 | Socket at non-standard path | **RESOLVED** — `biomeos/petaltongue.sock` |
+| PT-02 | No live push to browser | **RESOLVED** — SSE `/api/events` |
+| PT-03 | `motor_tx` not wired in server mode | **RESOLVED** — drain channel wired |
+| PT-04 | No HTML export modality | Low | Open — SVG-in-HTML is sufficient |
+| PT-05 | `visualization.showing` returns false | **RESOLVED** — `RenderingAwareness` auto-init in `UnixSocketServer` |
+| PT-06 | `callback_method` poll-only dispatch | Low | Partially resolved — `PendingCallback` struct + tests exist |
+| PT-07 | No external event source in server mode | **RESOLVED** — periodic discovery refresh wired (explicit `PT-07` tag) |
 
-Also added: `--port` TCP JSON-RPC flag, `health.liveness`/`readiness`/`check` triad, `identity.get`, `lifecycle.status`, `capabilities.list`. New `graph_editor/ui_components/` for reasoning + status display.
-
-### petalTongue: Full Rust egui Gap
-
-EguiShapes variant is **deferred** — `EguiCompiler` still outputs `ModalityOutput::Description` (JSON string). The egui compiler module doc references `EguiShapes` but the enum variant does not exist yet. This remains the path to full native desktop UI driven by primals.
+**EguiShapes variant** deferred — `EguiCompiler` still outputs `ModalityOutput::Description`. Tracked by petalTongue team.
 
 ---
 
 ## barraCuda
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| BC-01 | Fitts formula: Welford `log2(D/W)` instead of Shannon `log2(2D/W+1)` | ~~**High**~~ | ludoSpring V37.1 (exp089) | `variant` parameter added, default `"shannon"` | **RESOLVED** (Sprint 25 / v0.3.11) |
-| BC-02 | Hick formula: `log2(n+1)` vs standard `log2(n)` | ~~Medium~~ | ludoSpring V37.1 | `include_no_choice` parameter added, default `false` | **RESOLVED** (Sprint 25 / v0.3.11) |
-| BC-03 | Perlin3D lattice: `perlin3d(0,0,0)` returns -0.11 | ~~Medium~~ | ludoSpring V37.1 (exp091) | Proper gradient vectors + trilinear interpolation + quintic fade | **RESOLVED** (Sprint 25 / v0.3.11) |
-| BC-04 | ~~No binary in plasmidBin~~ | ~~Medium~~ | ludoSpring V37.1 | Harvested to plasmidBin (4.5M stripped). Requires GPU — panics on headless servers without wgpu device. | **RESOLVED** (April 1 harvest) |
+All gaps **RESOLVED**.
 
-Also: zero panics, modern idiomatic Rust, capability-based naming, WGSL-as-truth test architecture, NagaExecutor, 15-tier precision continuum.
+| ID | Gap | Status |
+|----|-----|--------|
+| BC-01 | Fitts formula variant | **RESOLVED** (Sprint 25 — `variant` param, Shannon default) |
+| BC-02 | Hick formula off-by-one | **RESOLVED** (Sprint 25 — `include_no_choice` param) |
+| BC-03 | Perlin3D lattice | **RESOLVED** (Sprint 25 — proper gradients + quintic fade) |
+| BC-04 | No plasmidBin binary | **RESOLVED** (April 1 harvest, 4.5M, requires GPU) |
 
 ---
 
 ## Squirrel
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| SQ-01 | Abstract-only socket (`@squirrel`), invisible to filesystem scan | ~~**High**~~ | C2: Narration | `UniversalListener` now prefers abstract → filesystem → TCP | **RESOLVED** (alpha.25b) |
-| SQ-02 | `LOCAL_AI_ENDPOINT` not wired into `AiRouter` discovery | Medium | C2: Narration | Config exists but `AiRouter::new_with_discovery` doesn't read it | **Open** |
-| SQ-03 | `deprecated-adapters` feature flag gate poorly documented | Low | C2: Narration | Document feature flags | Open |
-
-Also added: `health.liveness`/`health.readiness` canonical names, blake3 crypto, ecosystem absorption.
-
-### Squirrel: Local AI Integration Path
-
-SQ-02 remains the last blocker for Ollama routing. `LOCAL_AI_ENDPOINT` env var is read by `AIProviderConfig::from_env()` but the `AiRouter` only discovers providers from `AI_HTTP_PROVIDERS`, `AI_PROVIDER_SOCKETS`, and biomeOS/toadStool socket probe. Once SQ-02 is wired, `ai.query` routes to Ollama at `localhost:11434` without API keys.
+| ID | Gap | Severity | Status |
+|----|-----|----------|--------|
+| SQ-01 | Abstract-only socket | **RESOLVED** (alpha.25b — `UniversalListener`) |
+| SQ-02 | `LOCAL_AI_ENDPOINT` not wired into `AiRouter` | **RESOLVED** (alpha.27 — step 1.5 discovery, `resolve_local_ai_endpoint()`) |
+| SQ-03 | `deprecated-adapters` feature flag docs | Low | Open |
 
 ---
 
 ## songBird
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| SB-01 | `health.liveness` not exposed by canonical name | ~~Low~~ | IPC compliance | Canonical normalization added in `json_rpc_method.rs`, handlers wired | **RESOLVED** (wave89-90) |
-| SB-02 | Local crypto deps (`sha2`, `hmac`, `ed25519-dalek`) — should delegate to bearDog | Low | Overstep | QUIC crate now uses `BearDogQuicCrypto` provider; `ring` eliminated from `songbird-quic`. CLI still has optional `ring-crypto` feature flag | **Partially resolved** |
-| SB-03 | Embedded `sled` persistence | Low | Overstep | Still present in `songbird-orchestrator`, `songbird-sovereign-onion` | Open |
+| ID | Gap | Severity | Status |
+|----|-----|----------|--------|
+| SB-01 | `health.liveness` canonical name | **RESOLVED** (wave89-90) |
+| SB-02 | CLI `ring-crypto` opt-in feature | Low | Partially — `songbird-quic` is `ring`-free via `BearDogQuicCrypto`; CLI feature flag remains opt-in |
+| SB-03 | `sled` in orchestrator/sovereign-onion/tor | Low | Open — persistence overstep |
 
 ---
 
 ## NestGate
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| NG-01 | IPC adapter uses in-memory `HashMap`, not real storage backend | Medium | C5: Persistence | Wire `nestgate-core` storage into RPC handlers | Open |
-| NG-02 | No dedicated game session API | Low | C5: Persistence | Add `session.save`/`session.load` convenience methods | Open |
-| NG-03 | `data.*` handlers conflate live feeds with storage | Low | C5: Persistence | Namespace clearly | Open |
-| NG-04 | `aws-lc-rs` C dependency still present via `nestgate-installer` → `reqwest` → `rustls` | Medium | ecoBin | `ring` removed, but replaced with `aws-lc-rs` (still C/ASM). Needs pure Rust TLS or songBird delegation | Open |
-| NG-05 | `CryptoDelegate` pattern started but crypto crates not fully shed | Medium | Overstep | `nestgate-security` still has full crypto stack; delegation is WIP | Open |
-
-Also: ~2,300 lines deprecated trait excision, flaky test fixes, service name centralization.
-
----
-
-## esotericWebb
-
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| EW-01 | `push_scene_to_ui` sends flat JSON, petalTongue expects `SceneGraph` | **High** | C3: Session | Construct `DataBinding::GameScene` or `SceneGraph` | Open |
-| EW-02 | `poll_input` exists but not wired into game loop | Medium | C3: Session | Wire into session tick/act cycle | Open |
-| EW-03 | `replay` command not implemented | Low | C3: Session | Wire provenance DAG to replay engine | Open |
-| EW-04 | V6 internal game science duplicates ludoSpring | Low | C4: Game Science | Composition contract for capability precedence | Open |
+| ID | Gap | Severity | Status |
+|----|-----|----------|--------|
+| NG-01 | IPC adapter uses in-memory HashMap | Medium | Open — `nestgate-core` storage not wired into RPC handlers |
+| NG-02 | No dedicated game session API | Low | Open |
+| NG-03 | `data.*` handlers conflate live feeds with storage | Low | Open |
+| NG-04 | C dependency (`aws-lc-rs`/`ring`) | **RESOLVED** — `ring` eliminated, TLS delegated to system `curl` |
+| NG-05 | Crypto crates not fully delegated | **RESOLVED** — `nestgate-security` zero crypto deps, all via BearDog IPC `CryptoDelegate` |
 
 ---
 
 ## rhizoCrypt
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| RC-01 | ~~**TCP-only transport**~~ | ~~**Critical**~~ | ludoSpring V37.1 | Session 23: `--unix [PATH]` CLI flag with default `$XDG_RUNTIME_DIR/biomeos/rhizocrypt.sock`. `UdsJsonRpcServer` in `jsonrpc/uds.rs`. Path migrated from `ecoPrimals/` to `biomeos/`. | **RESOLVED** (v0.14.0-dev s23) |
+All gaps **RESOLVED**.
 
-**Live validation (April 1)**: rhizoCrypt v0.14.0-dev (session 24, source-built) starts with `--unix`, binds UDS at `/run/user/1000/biomeos/rhizocrypt.sock` **AND** TCP on ports 9400 (tarpc) + 9401 (JSON-RPC dual-mode). Full health triad via UDS: `health.liveness` ✅ (`{"status":"alive"}`), `health.readiness` ✅ (`primal: rhizocrypt, version: 0.14.0-dev`), `health.check` ✅ (session counts, vertices, uptime). `dag.session.create` + `dag.session.list` via UDS ✅. 1,423 tests, lock-free CircuitBreaker, zero-sleep testing. **RC-01 RESOLVED — zero CRITICAL blockers remain.**
-
-plasmidBin binary harvested April 1 (5.4M stripped). UDS via `--unix` verified from plasmidBin.
+| ID | Gap | Status |
+|----|-----|--------|
+| RC-01 | TCP-only transport | **RESOLVED** (v0.14.0-dev s23 — `--unix`, `UdsJsonRpcServer`, `biomeos/` path) |
 
 ---
 
 ## loamSpine
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| LS-03 | ~~**Panic on startup**~~ | ~~**Critical**~~ | ludoSpring V37.1 | Infant discovery now fails gracefully ("No discovery service found") instead of panicking. Continues without discovery. | **RESOLVED** (v0.9.15) |
+All gaps **RESOLVED**.
 
-**Live validation (March 31)**: loamSpine v0.9.15 starts cleanly, binds UDS at `/run/user/1000/biomeos/loamspine.sock`, responds to `health.liveness`, reports 19 capabilities across 4 domains. `entry.append` requires `spine_id` parameter. Socket path is conformant (`biomeos/loamspine.sock`). Infant discovery failure is now a `WARN` not a panic.
+| ID | Gap | Status |
+|----|-----|--------|
+| LS-03 | Panic on startup | **RESOLVED** (v0.9.15 — infant discovery fails gracefully) |
 
 ---
 
 ## toadStool
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| TS-01 | coralReef discovery hardcoded | Medium | ludoSpring V37.1 | Socket scan or `capability.discover` | Open |
+| ID | Gap | Severity | Status |
+|----|-----|----------|--------|
+| TS-01 | coralReef discovery not pure capability-based | Low | Improved — 6-step discovery (env vars, manifest, biomeos scan), but not fully `capability.discover` |
 
-S169 cleanup completed (30+ methods removed, -10,659 lines). On disk: S168. S169 was handed off.
-
----
-
-## plasmidBin
-
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| PB-01 | NestGate JWT secret too short (25 bytes, needs 32+) | Low | ludoSpring V37.1 | `openssl rand -base64 48` | Open |
+S171 on disk. `shader.compile.*` removed (coralReef domain). `ember.list`/`ember.status` added. Health triad wired.
 
 ---
 
-## ludoSpring
+## sweetGrass
 
-| ID | Gap | Severity | Exposed By | Fix Path | Status |
-|----|-----|----------|------------|----------|--------|
-| LS-01 | Gateway hardcodes flow params | Medium | C4: Game Science | Derive from session state | Open |
-| LS-02 | No composition contract for esotericWebb vs ludoSpring dedup | Low | C4: Game Science | Capability precedence in graph metadata | Open |
+All gaps **RESOLVED**. TCP JSON-RPC added, `cargo-deny`, `forbid(unsafe)`.
 
 ---
 
-## Cross-Cutting Gaps
+## coralReef
 
-| ID | Gap | Severity | Fix Path | Status |
-|----|-----|----------|----------|--------|
-| XC-01 | No standard `DataBinding` construction library | Medium | `ecoPrimal::databinding` module | Open |
-| XC-02 | Gateway knows primal socket paths directly | ~~Medium~~ | Use `capability.discover` exclusively — now viable with BM-04 resolved | **Unblocked** |
-| XC-03 | No composition health aggregator | Medium | `composition.health` in C7 graph | Open |
+No gaps identified.
 
 ---
 
-## Priority Order (revised post-full-validation)
+## bearDog
 
-**ZERO CRITICAL BLOCKERS** — RC-01 and LS-03 both RESOLVED.
+No gaps identified.
 
-**High** (blocks interactive product or major capability):
-1. **EW-01** — esotericWebb scene format (enables primal-driven rendering)
-2. **SQ-02** — Squirrel `LOCAL_AI_ENDPOINT` → `AiRouter` wiring (last blocker for local AI)
+---
+
+## Priority Order
+
+**ZERO CRITICAL / HIGH BLOCKERS.**
 
 **Medium** (improves composition quality):
-5. NG-01 — NestGate real persistence
-6. NG-04 — NestGate `aws-lc-rs` C dependency
-7. PT-05 — petalTongue awareness initialization
-8. EW-02 — esotericWebb poll_input wiring
-9. LS-01 — ludoSpring dynamic flow params
-10. TS-01 — toadStool↔coralReef discovery
+1. **NG-01** — NestGate real persistence backend
 
-**Low** (polish):
-11. PT-04, PT-06, PT-07
-12. SQ-03, SB-03
-13. NG-02, NG-03, NG-05
-14. EW-03, EW-04, LS-02
-15. PB-01
-16. XC-01, XC-03
+**Low** (polish, owned by primal teams):
+2. PT-04 — HTML export
+3. PT-06 — callback push dispatch
+4. SQ-03 — feature flag docs
+5. SB-02 — CLI ring-crypto opt-in
+6. SB-03 — sled persistence overstep
+7. NG-02, NG-03 — NestGate session API / namespace
+8. TS-01 — coralReef pure capability discovery
 
 ---
 
-## Resolved Gaps Summary (this cycle)
+## Resolved Gaps Summary
 
 | ID | Primal | What Was Fixed | Resolved In |
 |----|--------|---------------|-------------|
-| BM-04 | biomeOS | `topology.rescan` + lazy discovery on miss + multi-shape probe | v2.81 |
-| BM-05 | biomeOS | Multi-shape `extract_capabilities_from_response` | v2.81 |
-| BC-01 | barraCuda | Fitts `variant` param (Shannon default) | Sprint 25 / v0.3.11 |
-| BC-02 | barraCuda | Hick `include_no_choice` param | Sprint 25 / v0.3.11 |
-| BC-03 | barraCuda | Perlin3D lattice fix (proper gradients + quintic fade) | Sprint 25 / v0.3.11 |
-| PT-01 | petalTongue | Socket → `$XDG_RUNTIME_DIR/biomeos/petaltongue.sock` | IPC compliance evolution |
-| PT-02 | petalTongue | SSE `/api/events` push (+ `--port` TCP flag) | IPC compliance evolution |
-| PT-03 | petalTongue | `motor_tx` drain channel wired | IPC compliance evolution |
-| SQ-01 | Squirrel | Filesystem socket via `UniversalListener` | alpha.25b |
-| SB-01 | songBird | `health.liveness` canonical name | wave89-90 |
-| LS-03 | loamSpine | Startup panic fixed — infant discovery fails gracefully | v0.9.15 |
-| RC-01 | rhizoCrypt | UDS transport + `biomeos/` path migration + dual-mode TCP | v0.14.0-dev s23 |
-| BC-04 | barraCuda | Binary harvested to plasmidBin | April 1 harvest |
+| BM-01–05 | biomeOS | Graph routing, health, discovery, multi-shape | v2.79–v2.81 |
+| BC-01–04 | barraCuda | Fitts/Hick/Perlin fixes, plasmidBin harvest | Sprint 25 |
+| PT-01–03, PT-05, PT-07 | petalTongue | Socket, SSE, motor_tx, awareness init, server discovery | IPC compliance evolution |
+| SQ-01–02 | Squirrel | Filesystem socket, `LOCAL_AI_ENDPOINT` wiring | alpha.25b–27 |
+| SB-01 | songBird | `health.liveness` canonical | wave89-90 |
+| NG-04–05 | NestGate | ring/aws-lc-rs eliminated, crypto delegated to BearDog | deep debt evolution |
+| RC-01 | rhizoCrypt | UDS transport + biomeos/ path | v0.14.0-dev s23 |
+| LS-03 | loamSpine | Startup panic → graceful degradation | v0.9.15 |
 
-**13 gaps resolved** this cycle. Gap count: **32 → 19 open** (13 resolved, 2 newly identified: NG-04, NG-05). **Zero CRITICAL blockers remaining.**
+**18 gaps resolved** across the full cycle. **8 open** (1 medium, 7 low). Zero critical.
 
-### plasmidBin Inventory (April 1, 2026)
+---
+
+## plasmidBin Inventory
 
 | Binary | Size | Source | UDS | Notes |
 |--------|------|--------|-----|-------|
@@ -220,75 +178,45 @@ S169 cleanup completed (30+ methods removed, -10,659 lines). On disk: S168. S169
 | squirrel | 5.8M | musl-static | ✅ | Mar 27 |
 | petaltongue | 30M | musl-static | ✅ | Mar 28 |
 | nestgate | 4.9M | musl-static | ✅ | Mar 28 |
-| toadstool | 16M | musl-static | ✅ | Mar 27 (S168 — needs S169 rebuild) |
-| **rhizocrypt** | **5.4M** | **glibc** | **✅** | **April 1 — RC-01 fix, UDS via --unix** |
-| **loamspine** | **6.9M** | **glibc** | **✅** | **April 1 — LS-03 fix, starts cleanly** |
-| **sweetgrass** | **8.8M** | **glibc** | **✅** | **April 1 — 27 capabilities, UDS conformant** |
-| **barracuda** | **4.5M** | **glibc** | **N/A** | **April 1 — requires GPU, panics without wgpu device** |
+| toadstool | 16M | musl-static | ✅ | Mar 27 (S168 binary — S171 needs rebuild) |
+| rhizocrypt | 5.4M | glibc | ✅ | April 1 — RC-01 fix |
+| loamspine | 6.9M | glibc | ✅ | April 1 — LS-03 fix |
+| sweetgrass | 8.8M | glibc | ✅ | April 1 |
+| barracuda | 4.5M | glibc | N/A | April 1 — requires GPU |
+
+**Note**: rhizoCrypt/loamSpine/sweetGrass/barraCuda are glibc dynamic — musl-static cross-compile needed for containers.
 
 ---
 
-## Live Validation Results (March 31, 2026 — post-evolution)
+## primalSpring Rewiring Status (April 1, 2026)
+
+| Area | Status |
+|------|--------|
+| `methods.rs` | ✅ Aligned — `graph.execute`, `topology.rescan`, `ember.*`, `shader.compile` removed, `ai.*`, `visualization.*`, `interaction.*` added |
+| `NeuralBridge` | ✅ Aligned — `topology_rescan()` added, `graph.execute` call correct |
+| `discover.rs` | ✅ Aligned — plain socket name discovery (`{name}.sock`, `{name}-ipc.sock`) added |
+| `capability.rs` | ✅ Aligned — 4-format parsing, `strip_unix_uri`, multi-shape |
+| `validate_compositions.py` | ✅ Aligned — SQ-02 messaging updated, NestGate `family_id`, C7 Squirrel check live |
+| Composition graphs (C1–C7) | ✅ Clean — no stale references |
+| Cargo.toml | ✅ `edition = "2024"`, `rust-version = "1.87"` |
+| Tests | ✅ 10/10 pass, 4/4 doc-tests pass |
+
+---
+
+## Live Validation Results (April 1, 2026 — post-rewiring)
 
 ```
   C1: Render                           6/6  PASS
-  C2: Narration                        3/4  PARTIAL (ai.query fails: no Ollama provider — SQ-02)
+  C2: Narration                        3/4  PARTIAL (ai.query — no local Ollama running)
   C3: Session                          8/8  PASS
   C4: Game Science                     6/6  PASS
-  C5: Persistence                      4/5  PARTIAL (storage.list fails — NestGate method gap)
+  C5: Persistence                      5/5  PASS
   C6: Proprioception                   5/5  PASS
-  C7: Full Interactive                 9/10 PARTIAL (Squirrel AI cross-subsystem probe)
+  C7: Full Interactive                 10/10 PASS
 
-  TOTAL                                41/44  (93%)
+  TOTAL                                43/44  (98%)
 ```
 
-Previous: 34/43 (79%) → **41/44 (93%)** after evolution cycle.
+Previous: 41/44 (93%) → **43/44 (98%)** after rewiring and pull.
 
-### Remaining 3 Failures (C1-C7 suite)
-
-| Failure | Composition | Root Cause | Gap ID |
-|---------|------------|------------|--------|
-| `ai.query` | C2 | No Ollama provider wired into `AiRouter` | SQ-02 |
-| `storage.list` | C5 | NestGate method returns error on empty prefix | NG-01 |
-| Squirrel AI cross-subsystem | C7 | Squirrel socket at non-biomeos path, C7 probe uses biomeos/ only | SQ-01 (partial — socket at `/run/user/1000/squirrel/squirrel.sock`, not `biomeos/`) |
-
-### Deep Validation — Per-Primal Findings (March 31)
-
-| Primal | Socket | Health Triad | Capabilities | Notable |
-|--------|--------|-------------|-------------|---------|
-| **biomeOS** | `/biomeos/neural-api-*.sock` | `graph.list` (no `health.liveness` method) | 173+ capability domains, routing works for crypto/storage/viz/ai/game | `topology.rescan` → "Method not found" (running old v2.80 binary, v2.81 not deployed yet) |
-| **bearDog** | `/biomeos/beardog-*.sock` | liveness ✅ readiness ✅ | 0 methods in `capabilities.list` (empty response) | `crypto.hash` base64 input required |
-| **songBird** | `/biomeos/songbird-*.sock` | liveness ✅ health(short) ✅ | 14 capabilities | Uptime 338K+ seconds, stable |
-| **petalTongue** | `/biomeos/petaltongue-ipc.sock` | liveness ✅ readiness ✅ check ✅ | 0 in `capabilities.list` (returns empty) | `identity.get` → not found, `lifecycle.status` → not found (old binary) |
-| **NestGate** | `/biomeos/nestgate.sock` | health ✅ | 25 capabilities | `storage.list` works WITH `family_id` param, store/retrieve round-trip ✅ |
-| **Squirrel** | `/squirrel/squirrel.sock` (not biomeos!) | liveness ✅ readiness ✅ | 25 capabilities | `ai_router: false` in readiness, 0 providers |
-| **ludoSpring** | `/biomeos/ludospring-*.sock` | health.check ✅ | game.* methods work | All game science checks pass |
-| **esotericWebb** | `/biomeos/esotericwebb-*.sock` | webb.liveness ✅ | Full session lifecycle | 12 actions, graph, state all working |
-| **toadStool** | `/biomeos/toadstool.jsonrpc.sock` | "Method not found" | 0 capabilities | S168 binary — outdated, needs S169 rebuild |
-| **rhizoCrypt** | `/biomeos/rhizocrypt.sock` ✅ | liveness ✅ readiness ✅ check ✅ | 4 domains, 26 methods | **RC-01 RESOLVED** (source-built). UDS + dual-mode TCP. plasmidBin needs harvest. |
-| **loamSpine** | `/biomeos/loamspine.sock` ✅ | liveness ✅ | 19 capabilities | **LS-03 RESOLVED** — starts cleanly, infant discovery fails gracefully |
-| **sweetGrass** | `/biomeos/sweetgrass.sock` ✅ | liveness ✅ | 27 capabilities | Harvested April 1. UDS conformant. In-memory storage. |
-| **barraCuda** | not started (requires GPU) | — | — | Harvested to plasmidBin (4.5M). Panics without wgpu device. |
-
-### Projected Impact With Remaining Fixes
-
-| Fix | Result |
-|-----|--------|
-| SQ-02 (wire `LOCAL_AI_ENDPOINT` into `AiRouter`) | C2 → 4/4 PASS |
-| NG-01 (`storage.list` fix) | C5 → 5/5 PASS |
-| Squirrel socket in `biomeos/` | C7 → 10/10 PASS |
-| **All C1-C7 fixes** | **44/44 (100%)** |
-
-### ludoSpring 141-Check Broader Matrix
-
-The C1-C7 suite covers 44 checks. ludoSpring's full 141-check matrix (exp084-098) includes provenance trio experiments. Both RC-01 and LS-03 are now **RESOLVED**. Projected:
-
-| Fix | Running Total | % |
-|-----|---------------|---|
-| Previous (pre-evolution) | ~95/141 | 67.4% |
-| + LS-03 resolved (v0.9.15) | ~124/141 | 87.9% |
-| + RC-01 resolved (v0.14.0-dev s23) | ~133/141 | 94.3% |
-| + TS-01 (toadStool S169 rebuild) | ~134/141 | 95.0% |
-| + SQ-02 + remaining | ~138/141 | 97.9% |
-
-**Note**: All three provenance trio primals (rhizoCrypt, loamSpine, sweetGrass) now have plasmidBin binaries with UDS support. The trio is unblocked for composition. rhizoCrypt/loamSpine/sweetGrass are glibc dynamic builds — musl-static cross-compile needed for mobile/container deployment.
+The single remaining failure (`ai.query`) is an **environment dependency** — Squirrel's `AiRouter` is now correctly wired (SQ-02 resolved), but no local Ollama/llama.cpp instance is running. With Ollama serving a model at `localhost:11434`, C2 would reach 4/4.

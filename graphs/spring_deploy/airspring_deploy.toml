@@ -1,20 +1,28 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# AirSpring Science Deploy — biomeOS composition for weather science.
+# AirSpring Nucleated Deploy — weather science via NUCLEUS composition.
 #
-# Deploys AirSpring as a primal composition. Springs reference
-# primalSpring's wateringHole for patterns and standards.
+# Proto graph for airSpring tributaries. As airSpring validates its science
+# (ET0, water balance, cross-spring weather), gaps will surface upstream
+# for primals and primalSpring to solve.
+#
+# NUCLEUS base: biomeOS + Tower (BearDog + Songbird)
+# Science layer: barraCuda (compute), Squirrel (model inference), airSpring
+# Provenance: rhizoCrypt + loamSpine + sweetGrass
+#
+# References: ecoPrimals/infra/wateringHole/ for IPC and composition standards.
 #
 # Usage:
 #   biomeos deploy --graph graphs/spring_deploy/airspring_deploy.toml
 
 [graph]
-name = "airspring_science"
-description = "AirSpring weather science composition — Tower + airspring"
-version = "1.0.0"
+name = "airspring_nucleated"
+description = "AirSpring weather science — NUCLEUS base + compute + provenance"
+version = "2.0.0"
 coordination = "sequential"
 
-# Phase 0: biomeOS substrate
+# ── NUCLEUS Base ──────────────────────────────────────────────────────
+
 [[graph.node]]
 name = "biomeos_neural_api"
 binary = "biomeos"
@@ -23,22 +31,21 @@ required = true
 spawn = false
 health_method = "graph.list"
 by_capability = "orchestration"
-capabilities = ["capability.discover", "graph.list"]
+capabilities = ["graph.execute", "capability.discover", "topology.rescan"]
 
-# Phase 1: Tower
 [[graph.node]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.blake3_hash"]
 
 [[graph.node]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -46,18 +53,83 @@ health_method = "health.liveness"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-# Phase 3: Spring
+# ── Compute Layer ─────────────────────────────────────────────────────
+
+[[graph.node]]
+name = "barracuda"
+binary = "barracuda"
+order = 3
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "math"
+capabilities = ["math.stats", "math.tensor", "math.noise"]
+
+# ── AI Layer (optional — for model-driven weather inference) ──────────
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel"
+order = 4
+required = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "ai"
+args = ["server"]
+capabilities = ["ai.query", "ai.list_providers"]
+
+# ── Provenance Trio ───────────────────────────────────────────────────
+
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 5
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "provenance"
+args = ["--unix"]
+capabilities = ["dag.session.create", "dag.session.list"]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine"
+order = 6
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "ledger"
+args = ["server"]
+capabilities = ["entry.append", "ledger.status"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 7
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "attribution"
+args = ["server"]
+capabilities = ["attribution.claim", "attribution.resolve"]
+
+# ── Spring Science ────────────────────────────────────────────────────
+
 [[graph.node]]
 name = "airspring"
 binary = "airspring_primal"
-order = 3
+order = 8
 required = true
 depends_on = ["beardog", "songbird"]
-health_method = "health.check"
+health_method = "health.liveness"
 by_capability = "weather"
 args = ["server"]
 capabilities = [
-    "weather.forecast",
-    "weather.et0_compute",
-    "weather.water_balance",
+    "data.weather",
+    "data.cross_spring_weather",
+    "ecology.experiment",
+    "provenance.begin",
+    "provenance.record",
+    "provenance.complete",
+    "compute.offload",
 ]

@@ -84,9 +84,12 @@ fn phase_ludospring(v: &mut ValidationResult, bridge: Option<&NeuralBridge>) {
     });
     v.check_bool(
         "game.fitts_cost",
-        fitts
-            .as_ref()
-            .is_ok_and(|r| r.result.as_ref().and_then(|v| v.get("movement_time_ms")).is_some()),
+        fitts.as_ref().is_ok_and(|r| {
+            r.result
+                .as_ref()
+                .and_then(|v| v.get("movement_time_ms"))
+                .is_some()
+        }),
         "Fitts cost returns movement_time_ms",
     );
 
@@ -130,40 +133,37 @@ fn phase_esotericwebb(v: &mut ValidationResult) {
         return;
     };
 
-    let liveness = PrimalClient::connect(sock, "esotericwebb").and_then(|mut c| {
-        c.call("webb.liveness", serde_json::Value::Null)
-    });
+    let liveness = PrimalClient::connect(sock, "esotericwebb")
+        .and_then(|mut c| c.call("webb.liveness", serde_json::Value::Null));
     v.check_bool(
         "webb_liveness",
         liveness.as_ref().is_ok_and(|r| r.is_success()),
         "esotericWebb liveness responds",
     );
 
-    let state = PrimalClient::connect(sock, "esotericwebb").and_then(|mut c| {
-        c.call("session.state", serde_json::Value::Null)
-    });
+    let state = PrimalClient::connect(sock, "esotericwebb")
+        .and_then(|mut c| c.call("session.state", serde_json::Value::Null));
     let has_session = state.as_ref().is_ok_and(|r| {
         r.result
             .as_ref()
             .and_then(|v| v.get("current_node"))
             .is_some()
     });
-    v.check_bool("session.state", has_session, "active session with current_node");
+    v.check_bool(
+        "session.state",
+        has_session,
+        "active session with current_node",
+    );
 
-    let scene = PrimalClient::connect(sock, "esotericwebb").and_then(|mut c| {
-        c.call("webb.scene.current", serde_json::Value::Null)
-    });
-    let has_scene = scene.as_ref().is_ok_and(|r| {
-        r.result
-            .as_ref()
-            .and_then(|v| v.get("scene"))
-            .is_some()
-    });
+    let scene = PrimalClient::connect(sock, "esotericwebb")
+        .and_then(|mut c| c.call("webb.scene.current", serde_json::Value::Null));
+    let has_scene = scene
+        .as_ref()
+        .is_ok_and(|r| r.result.as_ref().and_then(|v| v.get("scene")).is_some());
     v.check_bool("webb.scene.current", has_scene, "current scene available");
 
-    let caps = PrimalClient::connect(sock, "esotericwebb").and_then(|mut c| {
-        c.call("capabilities.list", serde_json::json!({}))
-    });
+    let caps = PrimalClient::connect(sock, "esotericwebb")
+        .and_then(|mut c| c.call("capabilities.list", serde_json::json!({})));
     let cap_count = caps.as_ref().ok().and_then(|r| {
         r.result
             .as_ref()

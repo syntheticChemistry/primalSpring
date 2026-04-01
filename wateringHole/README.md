@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **subsystem composition decomposition**  
-**Version**: 0.8.0f (Phase 23f — 87/87 gates, 402 tests, 72.5% coverage, 67 experiments, 83 deploy graphs, 7 composition subsystems, 22 documented primal gaps)  
+**Version**: 0.8.0g (Phase 23g — 87/87 gates, 403 tests, 67 experiments, 89 deploy graphs, 7 composition subsystems + 6 nucleated spring deploy, 8 open primal gaps, 43/44 (98%) live validation)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: March 28, 2026
+**Last Updated**: April 1, 2026
 
 ---
 

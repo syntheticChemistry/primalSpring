@@ -3,6 +3,35 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0g] — Phase 23g: Primal Rewiring + Gap Cleanup (2026-04-01)
+
+### Changed
+- `ecoPrimal/src/ipc/methods.rs` — aligned with primal evolution:
+  - `graph::DEPLOY` → `graph::EXECUTE` (matches actual biomeOS routing target)
+  - Added `topology::RESCAN` (biomeOS v2.81)
+  - Added `ember::LIST`, `ember::STATUS` (toadStool S171 hardware lifecycle)
+  - Added `ai::QUERY`, `ai::LIST_PROVIDERS` (Squirrel)
+  - Added `visualization::*`, `interaction::*` (petalTongue)
+  - Removed `shader::COMPILE_WGSL` (coralReef domain since S169)
+  - Removed downstream modules (`game::*`, `webb::*`, `session::*` — springs/gardens own these)
+- `ecoPrimal/src/ipc/neural_bridge.rs` — added `topology_rescan()` for biomeOS v2.81
+- `ecoPrimal/src/ipc/discover.rs` — added plain socket name discovery (`{name}.sock`, `{name}-ipc.sock`) for primals that don't use family-suffixed sockets
+- `tools/validate_compositions.py` — updated SQ-02 messaging (resolved), NestGate `storage.list` passes `family_id`, C7 Squirrel check now live (not hardcoded fail)
+- `docs/PRIMAL_GAPS.md` — scoped to primals only (downstream removed), 18 resolved, 8 open
+
+### Live Validation Results (2026-04-01)
+- **43/44 (98%)** — up from 93% (previous) and 79% (pre-evolution)
+- C5: Persistence now **5/5 PASS** (was partial)
+- C7: Full Interactive now **10/10 PASS** (was 9/10)
+- Only failure: C2 `ai.query` — environment dependency (no local Ollama), code is wired (SQ-02 resolved)
+
+### Newly Resolved Gaps (this session)
+- **SQ-02** — `LOCAL_AI_ENDPOINT` wired into AiRouter (alpha.27)
+- **PT-05** — `RenderingAwareness` auto-init in `UnixSocketServer`
+- **PT-07** — periodic discovery refresh in server mode
+- **NG-04** — ring/aws-lc-rs eliminated (TLS → system curl)
+- **NG-05** — nestgate-security zero crypto deps (BearDog IPC delegation)
+
 ## [0.8.0f] — Phase 23f: Composition Decomposition — 7 Subsystem Compositions (2026-03-28)
 
 ### Added

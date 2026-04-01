@@ -167,10 +167,7 @@ impl NeuralBridge {
     /// # Errors
     ///
     /// Returns [`IpcError`] on transport or application failure.
-    pub fn graph_deploy(
-        &self,
-        graph: &serde_json::Value,
-    ) -> Result<serde_json::Value, IpcError> {
+    pub fn graph_deploy(&self, graph: &serde_json::Value) -> Result<serde_json::Value, IpcError> {
         let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
         let resp = client.call("graph.execute", graph.clone())?;
         if let Some(err) = resp.error {
@@ -184,10 +181,7 @@ impl NeuralBridge {
     /// # Errors
     ///
     /// Returns [`IpcError`] on transport or application failure.
-    pub fn graph_status(
-        &self,
-        graph_id: &str,
-    ) -> Result<serde_json::Value, IpcError> {
+    pub fn graph_status(&self, graph_id: &str) -> Result<serde_json::Value, IpcError> {
         let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
         let params = serde_json::json!({ "graph_id": graph_id });
         let resp = client.call("graph.status", params)?;
@@ -202,13 +196,26 @@ impl NeuralBridge {
     /// # Errors
     ///
     /// Returns [`IpcError`] on transport or application failure.
-    pub fn graph_rollback(
-        &self,
-        graph_id: &str,
-    ) -> Result<serde_json::Value, IpcError> {
+    pub fn graph_rollback(&self, graph_id: &str) -> Result<serde_json::Value, IpcError> {
         let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
         let params = serde_json::json!({ "graph_id": graph_id });
         let resp = client.call("graph.rollback", params)?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
+
+    /// Trigger a topology rescan so biomeOS re-discovers late-registering primals.
+    ///
+    /// Available since biomeOS v2.81. Older versions return "Method not found".
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport or application failure.
+    pub fn topology_rescan(&self) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let resp = client.call("topology.rescan", serde_json::Value::Null)?;
         if let Some(err) = resp.error {
             return Err(IpcError::from(err));
         }
@@ -329,5 +336,13 @@ mod tests {
             socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
         };
         assert!(bridge.graph_rollback("test-graph-123").is_err());
+    }
+
+    #[test]
+    fn topology_rescan_fails_for_nonexistent_socket() {
+        let bridge = NeuralBridge {
+            socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
+        };
+        assert!(bridge.topology_rescan().is_err());
     }
 }

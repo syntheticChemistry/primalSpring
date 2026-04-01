@@ -1,20 +1,31 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# NeuralSpring Science Deploy — biomeOS composition for neural science.
+# NeuralSpring Nucleated Deploy — neural/ML science via NUCLEUS composition.
 #
-# Deploys NeuralSpring as a primal composition. Springs reference
-# primalSpring's wateringHole for patterns and standards.
+# Proto graph for neuralSpring tributaries. As neuralSpring validates its
+# science (protein folding, population genetics, reservoir computing,
+# Anderson localization), gaps will surface upstream for primals and
+# primalSpring to solve.
+#
+# NUCLEUS base: biomeOS + Tower (BearDog + Songbird)
+# Compute layer: toadStool (GPU dispatch), coralReef (shader compile), barraCuda (math)
+# AI layer: Squirrel (model inference)
+# Persistence: NestGate (storage)
+# Provenance: rhizoCrypt + loamSpine + sweetGrass
+#
+# References: ecoPrimals/infra/wateringHole/ for IPC and composition standards.
 #
 # Usage:
 #   biomeos deploy --graph graphs/spring_deploy/neuralspring_deploy.toml
 
 [graph]
-name = "neuralspring_science"
-description = "NeuralSpring neural science composition — Tower + ToadStool + neuralspring"
-version = "1.0.0"
+name = "neuralspring_nucleated"
+description = "NeuralSpring ML science — NUCLEUS base + GPU + AI + persistence + provenance"
+version = "2.0.0"
 coordination = "sequential"
 
-# Phase 0: biomeOS substrate
+# ── NUCLEUS Base ──────────────────────────────────────────────────────
+
 [[graph.node]]
 name = "biomeos_neural_api"
 binary = "biomeos"
@@ -23,22 +34,21 @@ required = true
 spawn = false
 health_method = "graph.list"
 by_capability = "orchestration"
-capabilities = ["capability.discover", "graph.list"]
+capabilities = ["graph.execute", "capability.discover", "topology.rescan"]
 
-# Phase 1: Tower
 [[graph.node]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.blake3_hash"]
 
 [[graph.node]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -46,33 +56,123 @@ health_method = "health.liveness"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-# Phase 2: ToadStool (compute for GPU neural work)
+# ── GPU Compute Layer ─────────────────────────────────────────────────
+
 [[graph.node]]
 name = "toadstool"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]
-health_method = "compute.health"
+health_method = "health.liveness"
 by_capability = "compute"
-capabilities = [
-    "compute.execute",
-    "compute.submit",
-    "compute.dispatch.submit",
-]
+capabilities = ["compute.dispatch.submit", "shader.dispatch", "ember.list"]
 
-# Phase 3: Spring
+[[graph.node]]
+name = "coralreef"
+binary = "coralreef"
+order = 4
+required = false
+depends_on = ["toadstool"]
+health_method = "health.liveness"
+by_capability = "shader_compile"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
+
+[[graph.node]]
+name = "barracuda"
+binary = "barracuda"
+order = 5
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "math"
+capabilities = ["math.stats", "math.tensor", "math.activation", "math.noise"]
+
+# ── AI Layer ──────────────────────────────────────────────────────────
+
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel"
+order = 6
+required = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "ai"
+args = ["server"]
+capabilities = ["ai.query", "ai.list_providers"]
+
+# ── Persistence ───────────────────────────────────────────────────────
+
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate"
+order = 7
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+args = ["server"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+
+# ── Provenance Trio ───────────────────────────────────────────────────
+
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 8
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "provenance"
+args = ["--unix"]
+capabilities = ["dag.session.create", "dag.session.list"]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine"
+order = 9
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "ledger"
+args = ["server"]
+capabilities = ["entry.append", "ledger.status"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 10
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "attribution"
+args = ["server"]
+capabilities = ["attribution.claim", "attribution.resolve"]
+
+# ── Spring Science ────────────────────────────────────────────────────
+
 [[graph.node]]
 name = "neuralspring"
 binary = "neuralspring_primal"
-order = 4
+order = 11
 required = true
 depends_on = ["beardog", "songbird", "toadstool"]
-health_method = "health.check"
+health_method = "health.liveness"
 by_capability = "neural"
 args = ["server"]
 capabilities = [
-    "neural.classify",
-    "neural.train_step",
-    "neural.pipeline_dispatch",
+    "science.evoformer_block",
+    "science.structure_module",
+    "science.folding_health",
+    "science.eigensolve",
+    "science.anderson_localization",
+    "science.isomorphic_reservoir",
+    "science.attention_anderson",
+    "science.allele_frequencies",
+    "science.nucleotide_diversity",
+    "science.pairwise_fst",
+    "science.shannon_entropy",
+    "science.introgression_nn",
+    "science.ipr",
+    "science.level_spacing_ratio",
 ]

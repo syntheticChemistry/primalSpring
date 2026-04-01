@@ -5,12 +5,12 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.8.0f |
+| **Version** | 0.8.0g |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 402 (unit + integration + doc-tests + proptest) |
+| **Tests** | 403 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 67 (14 tracks) |
-| **Deploy Graphs** | 89 TOMLs (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + 7 compositions + 6 spring deploy) |
+| **Deploy Graphs** | 89 TOMLs (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + 7 compositions + 6 nucleated spring deploy) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + ludoSpring Game + esotericWebb Product + **7 Decomposed Subsystems (C1-C7)** (87/87 gates) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
@@ -336,21 +336,21 @@ deploy biomeOS as substrate. Launch profiles added for all 6 springs.
 
 See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
-## Live Composition Validation (March 28, 2026)
+## Live Composition Validation (April 1, 2026)
 
 7 decomposed subsystem compositions validated independently against live stack:
 
 | Composition | Result | Notes |
 |-------------|--------|-------|
 | C1: Render (petalTongue) | **6/6 PASS** | Dashboard render, SVG export, SceneGraph storage, session awareness |
-| C2: Narration (Squirrel) | 0/3 FAIL | **Expected** — Squirrel not running (gap SQ-01: Ollama routing) |
+| C2: Narration (Squirrel) | 3/4 PARTIAL | SQ-02 resolved (code wired); `ai.query` fails only because no local Ollama running |
 | C3: Session (esotericWebb) | **8/8 PASS** | Full session lifecycle, actions, act, graph |
 | C4: Game Science (ludoSpring) | **6/6 PASS** | Flow, Fitts, WFC, engagement |
-| C5: Persistence (NestGate) | 1/5 PARTIAL | **Expected** — NestGate process stopped (gap NG-01: in-memory KV) |
+| C5: Persistence (NestGate) | **5/5 PASS** | Store, retrieve round-trip, list with `family_id` |
 | C6: Proprioception (petalTongue) | **5/5 PASS** | Subscribe, apply, poll, showing |
-| C7: Full Interactive | 8/10 PARTIAL | Only C2 + C5 gaps propagate; cross-subsystem session→render + export verified |
+| C7: Full Interactive | **10/10 PASS** | Full cross-subsystem: session→render→export, game science, Squirrel health, NestGate |
 
-See `docs/PRIMAL_GAPS.md` for the structured gap registry per primal.
+**43/44 (98%)** — up from 93%. See `docs/PRIMAL_GAPS.md` for the structured gap registry (8 open, zero critical).
 
 ## Live Integration Status (March 28, 2026)
 

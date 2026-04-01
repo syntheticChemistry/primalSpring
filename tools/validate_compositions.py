@@ -151,9 +151,9 @@ def validate_c2_narration() -> Result:
     """C2: Narration (Squirrel AI standalone)"""
     r = Result("C2: Narration")
     sock = find_sock("squirrel")
-    r.check("squirrel socket found", sock is not None, sock or "NOT FOUND — expected gap")
+    r.check("squirrel socket found", sock is not None, sock or "NOT FOUND")
     if not sock:
-        r.check("ai.query", False, "Squirrel not running (gap SQ-01: AiRouter + Ollama)")
+        r.check("ai.query", False, "Squirrel not running")
         r.check("ai.list_providers", False, "Squirrel not running")
         return r
 
@@ -284,7 +284,7 @@ def validate_c5_persistence() -> Result:
     r.check("storage.retrieve (round-trip)", val == "validation_ping",
             f"got: {val!r}")
 
-    resp = call_uds(sock, "storage.list")
+    resp = call_uds(sock, "storage.list", {"family_id": "validation"})
     r.check("storage.list", "result" in resp)
 
     return r
@@ -385,7 +385,12 @@ def validate_c7_interactive() -> Result:
     else:
         r.check("C4→C7: game.evaluate_flow", False, "ludoSpring not found")
 
-    r.check("C2→C7: Squirrel AI", False, "Squirrel not running (expected gap SQ-01)")
+    sq_sock = find_sock("squirrel")
+    if sq_sock:
+        sq_resp = call_uds(sq_sock, "health.liveness")
+        r.check("C2→C7: Squirrel AI alive", "result" in sq_resp)
+    else:
+        r.check("C2→C7: Squirrel AI alive", False, "Squirrel not running")
 
     ng_sock = find_sock("nestgate")
     if ng_sock:
@@ -438,8 +443,7 @@ def main():
 
     if total_pass < total_checks:
         print(f"\n  Known gaps (expected failures):")
-        print(f"    - C2: Squirrel not running (gap SQ-01)")
-        print(f"    - C5: NestGate process stopped (gap NG-01)")
+        print(f"    - C5: NestGate storage.list may need family_id (gap NG-01)")
 
     return 0 if total_pass == total_checks else 1
 

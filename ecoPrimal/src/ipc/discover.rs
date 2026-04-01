@@ -129,12 +129,14 @@ pub fn discover_from_socket_registry(primal: &str) -> Option<PathBuf> {
 
 /// Discover a primal's socket at runtime.
 ///
-/// Walks 5 discovery tiers in priority order:
+/// Walks discovery tiers in priority order:
+///
 /// 1. `{PRIMAL}_SOCKET` env override
-/// 2. XDG convention socket path
-/// 3. Temp directory fallback
-/// 4. Primal manifest file
-/// 5. Socket registry
+/// 2. XDG convention: `{primal}-{family}.sock`
+/// 3. Plain socket name: `{primal}.sock` or `{primal}-ipc.sock`
+/// 4. Temp directory fallback
+/// 5. Primal manifest file
+/// 6. Socket registry
 ///
 /// Returns the path if a socket file exists, with source indicating
 /// how it was found. Returns `None` socket if no socket is reachable.
@@ -162,6 +164,21 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
             socket: Some(conv_path),
             source,
         };
+    }
+
+    // Many primals now use plain `{name}.sock` or `{name}-ipc.sock`
+    let base =
+        std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+    let biomeos_dir = base.join("biomeos");
+    for suffix in [".sock", "-ipc.sock"] {
+        let plain = biomeos_dir.join(format!("{primal}{suffix}"));
+        if plain.exists() {
+            return DiscoveryResult {
+                primal: primal.to_owned(),
+                socket: Some(plain),
+                source: DiscoverySource::XdgConvention,
+            };
+        }
     }
 
     if let Some(p) = discover_from_manifest(primal) {

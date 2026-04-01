@@ -1,20 +1,29 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# WetSpring Science Deploy — biomeOS composition for biology science.
+# WetSpring Nucleated Deploy — biology/ecology science via NUCLEUS composition.
 #
-# Deploys WetSpring as a primal composition. Springs reference
-# primalSpring's wateringHole for patterns and standards.
+# Proto graph for wetSpring tributaries. As wetSpring validates its science
+# (Anderson QS, community diversity, calibration, NCBI fetch, GPU bio
+# compute), gaps will surface upstream for primals and primalSpring to solve.
+#
+# NUCLEUS base: biomeOS + Tower (BearDog + Songbird)
+# Compute layer: toadStool (GPU dispatch), barraCuda (math)
+# Persistence: NestGate (storage for bio data)
+# Provenance: rhizoCrypt + loamSpine + sweetGrass
+#
+# References: ecoPrimals/infra/wateringHole/ for IPC and composition standards.
 #
 # Usage:
 #   biomeos deploy --graph graphs/spring_deploy/wetspring_deploy.toml
 
 [graph]
-name = "wetspring_science"
-description = "WetSpring biology science composition — Tower + ToadStool + wetspring"
-version = "1.0.0"
+name = "wetspring_nucleated"
+description = "WetSpring biology science — NUCLEUS base + GPU + persistence + provenance"
+version = "2.0.0"
 coordination = "sequential"
 
-# Phase 0: biomeOS substrate
+# ── NUCLEUS Base ──────────────────────────────────────────────────────
+
 [[graph.node]]
 name = "biomeos_neural_api"
 binary = "biomeos"
@@ -23,22 +32,21 @@ required = true
 spawn = false
 health_method = "graph.list"
 by_capability = "orchestration"
-capabilities = ["capability.discover", "graph.list"]
+capabilities = ["graph.execute", "capability.discover", "topology.rescan"]
 
-# Phase 1: Tower
 [[graph.node]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.blake3_hash"]
 
 [[graph.node]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -46,33 +54,95 @@ health_method = "health.liveness"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-# Phase 2: ToadStool (compute for bio-spectral GPU work)
+# ── Compute Layer ─────────────────────────────────────────────────────
+
 [[graph.node]]
 name = "toadstool"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 3
-required = true
+required = false
 depends_on = ["beardog", "songbird"]
-health_method = "compute.health"
+health_method = "health.liveness"
 by_capability = "compute"
-capabilities = [
-    "compute.execute",
-    "compute.submit",
-    "compute.dispatch.submit",
-]
+capabilities = ["compute.dispatch.submit", "shader.dispatch", "ember.list"]
 
-# Phase 3: Spring
+[[graph.node]]
+name = "barracuda"
+binary = "barracuda"
+order = 4
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "math"
+capabilities = ["math.stats", "math.tensor"]
+
+# ── Persistence ───────────────────────────────────────────────────────
+
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate"
+order = 5
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+args = ["server"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+
+# ── Provenance Trio ───────────────────────────────────────────────────
+
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 6
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "provenance"
+args = ["--unix"]
+capabilities = ["dag.session.create", "dag.session.list"]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine"
+order = 7
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "ledger"
+args = ["server"]
+capabilities = ["entry.append", "ledger.status"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 8
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "attribution"
+args = ["server"]
+capabilities = ["attribution.claim", "attribution.resolve"]
+
+# ── Spring Science ────────────────────────────────────────────────────
+
 [[graph.node]]
 name = "wetspring"
 binary = "wetspring_primal"
-order = 4
+order = 9
 required = true
-depends_on = ["beardog", "songbird", "toadstool"]
+depends_on = ["beardog", "songbird"]
 health_method = "health.check"
 by_capability = "biology"
 args = ["server"]
 capabilities = [
-    "biology.diversity_index",
-    "biology.nmf_decompose",
-    "biology.spectral_analysis",
+    "science.anderson",
+    "science.diversity",
+    "science.full_pipeline",
+    "science.ncbi_fetch",
+    "science.qs_model",
+    "science.validation",
+    "calibration.nrs",
+    "community.fastq",
+    "metrics.snapshot",
 ]
