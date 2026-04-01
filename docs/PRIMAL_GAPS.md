@@ -111,7 +111,7 @@ Also: ~2,300 lines deprecated trait excision, flaky test fixes, service name cen
 |----|-----|----------|------------|----------|--------|
 | RC-01 | **TCP-only transport** — no Unix domain socket for service | **Critical** | ludoSpring V37.1 (+9 checks) | Add `--unix [PATH]` CLI flag. Client-side UDS support exists but service still binds TCP only. `SafeEnv::get_socket_path` references `$XDG_RUNTIME_DIR/ecoPrimals/` (non-standard, should be `biomeos/`) | **Open** |
 
-rhizoCrypt has strong **client-side** UDS support (`UnixSocketAdapter`, `TransportHint::UnixSocket`) and docs about HTTP/1.1 on Unix stream, but the **service daemon** itself still listens only on TCP. Also: socket path convention uses `ecoPrimals/` not `biomeos/` — needs alignment.
+**Live validation (March 31)**: rhizoCrypt v0.14.0-dev starts, binds TCP on ports 9400 (tarpc) and 9401 (JSON-RPC dual-mode: HTTP + raw newline). Raw newline TCP works (socat test passes). Full health triad (`health.liveness`, `health.readiness`, `health.check`). 4 capability domains, 26 methods (DAG, health, capabilities, tools). **But still no UDS socket** — RC-01 confirmed. `SafeEnv::get_socket_path` references `ecoPrimals/` not `biomeos/`.
 
 ---
 
@@ -119,9 +119,9 @@ rhizoCrypt has strong **client-side** UDS support (`UnixSocketAdapter`, `Transpo
 
 | ID | Gap | Severity | Exposed By | Fix Path | Status |
 |----|-----|----------|------------|----------|--------|
-| LS-03 | **Panic on startup**: `block_on()` inside async runtime in `infant_discovery.rs` | **Critical** | ludoSpring V37.1 (+6 checks) | DNS SRV path still calls `handle.block_on()` from async context. Test fixes addressed test-level nesting but not the production DNS discovery path. | **Open** |
+| LS-03 | ~~**Panic on startup**~~ | ~~**Critical**~~ | ludoSpring V37.1 | Infant discovery now fails gracefully ("No discovery service found") instead of panicking. Continues without discovery. | **RESOLVED** (v0.9.15) |
 
-v0.9.14 added const fn, `#[non_exhaustive]`, configurable tarpc, doc alignment. But the production `infant_discovery` DNS SRV path with nested `block_on` + `spawn_blocking` + `Runtime::new()?.block_on()` remains.
+**Live validation (March 31)**: loamSpine v0.9.15 starts cleanly, binds UDS at `/run/user/1000/biomeos/loamspine.sock`, responds to `health.liveness`, reports 19 capabilities across 4 domains. `entry.append` requires `spine_id` parameter. Socket path is conformant (`biomeos/loamspine.sock`). Infant discovery failure is now a `WARN` not a panic.
 
 ---
 
@@ -162,15 +162,14 @@ S169 cleanup completed (30+ methods removed, -10,659 lines). On disk: S168. S169
 
 ---
 
-## Priority Order (revised post-evolution)
+## Priority Order (revised post-full-validation)
 
-**Critical** (primals cannot participate in composition):
-1. **RC-01** — rhizoCrypt UDS transport (blocks provenance trio, +9 checks)
-2. **LS-03** — loamSpine startup panic (blocks provenance trio, +6 checks)
+**Critical** (primal cannot participate in standard composition):
+1. **RC-01** — rhizoCrypt UDS transport (blocks provenance trio via biomeOS socket discovery)
 
-**High** (blocks interactive product):
-3. **EW-01** — esotericWebb scene format (enables primal-driven rendering)
-4. **SQ-02** — Squirrel `LOCAL_AI_ENDPOINT` → `AiRouter` wiring (last blocker for local AI)
+**High** (blocks interactive product or major capability):
+2. **EW-01** — esotericWebb scene format (enables primal-driven rendering)
+3. **SQ-02** — Squirrel `LOCAL_AI_ENDPOINT` → `AiRouter` wiring (last blocker for local AI)
 
 **Medium** (improves composition quality):
 5. NG-01 — NestGate real persistence
@@ -204,8 +203,9 @@ S169 cleanup completed (30+ methods removed, -10,659 lines). On disk: S168. S169
 | PT-03 | petalTongue | `motor_tx` drain channel wired | IPC compliance evolution |
 | SQ-01 | Squirrel | Filesystem socket via `UniversalListener` | alpha.25b |
 | SB-01 | songBird | `health.liveness` canonical name | wave89-90 |
+| LS-03 | loamSpine | Startup panic fixed — infant discovery fails gracefully | v0.9.15 |
 
-**10 gaps resolved** this cycle. Gap count: **32 → 22 open** (10 resolved, 2 newly identified: NG-04, NG-05).
+**11 gaps resolved** this cycle. Gap count: **32 → 21 open** (11 resolved, 2 newly identified: NG-04, NG-05).
 
 ---
 
@@ -225,13 +225,31 @@ S169 cleanup completed (30+ methods removed, -10,659 lines). On disk: S168. S169
 
 Previous: 34/43 (79%) → **41/44 (93%)** after evolution cycle.
 
-### Remaining 3 Failures
+### Remaining 3 Failures (C1-C7 suite)
 
 | Failure | Composition | Root Cause | Gap ID |
 |---------|------------|------------|--------|
 | `ai.query` | C2 | No Ollama provider wired into `AiRouter` | SQ-02 |
 | `storage.list` | C5 | NestGate method returns error on empty prefix | NG-01 |
-| Squirrel AI cross-subsystem | C7 | Squirrel socket at non-biomeos path, C7 probe uses biomeos/ only | SQ-01 (partial — socket exists but at `/run/user/1000/squirrel/squirrel.sock`, not `biomeos/`) |
+| Squirrel AI cross-subsystem | C7 | Squirrel socket at non-biomeos path, C7 probe uses biomeos/ only | SQ-01 (partial — socket at `/run/user/1000/squirrel/squirrel.sock`, not `biomeos/`) |
+
+### Deep Validation — Per-Primal Findings (March 31)
+
+| Primal | Socket | Health Triad | Capabilities | Notable |
+|--------|--------|-------------|-------------|---------|
+| **biomeOS** | `/biomeos/neural-api-*.sock` | `graph.list` (no `health.liveness` method) | 173+ capability domains, routing works for crypto/storage/viz/ai/game | `topology.rescan` → "Method not found" (running old v2.80 binary, v2.81 not deployed yet) |
+| **bearDog** | `/biomeos/beardog-*.sock` | liveness ✅ readiness ✅ | 0 methods in `capabilities.list` (empty response) | `crypto.hash` base64 input required |
+| **songBird** | `/biomeos/songbird-*.sock` | liveness ✅ health(short) ✅ | 14 capabilities | Uptime 338K+ seconds, stable |
+| **petalTongue** | `/biomeos/petaltongue-ipc.sock` | liveness ✅ readiness ✅ check ✅ | 0 in `capabilities.list` (returns empty) | `identity.get` → not found, `lifecycle.status` → not found (old binary) |
+| **NestGate** | `/biomeos/nestgate.sock` | health ✅ | 25 capabilities | `storage.list` works WITH `family_id` param, store/retrieve round-trip ✅ |
+| **Squirrel** | `/squirrel/squirrel.sock` (not biomeos!) | liveness ✅ readiness ✅ | 25 capabilities | `ai_router: false` in readiness, 0 providers |
+| **ludoSpring** | `/biomeos/ludospring-*.sock` | health.check ✅ | game.* methods work | All game science checks pass |
+| **esotericWebb** | `/biomeos/esotericwebb-*.sock` | webb.liveness ✅ | Full session lifecycle | 12 actions, graph, state all working |
+| **toadStool** | `/biomeos/toadstool.jsonrpc.sock` | "Method not found" | 0 capabilities | S168 binary — outdated, needs S169 rebuild |
+| **rhizoCrypt** | **NO UDS** (TCP 9400/9401 only) | liveness ✅ readiness ✅ check ✅ | 4 domains, 26 methods | Dual-mode TCP works (raw newline + HTTP). RC-01 open. |
+| **loamSpine** | `/biomeos/loamspine.sock` ✅ | liveness ✅ | 19 capabilities | **LS-03 RESOLVED** — starts cleanly, infant discovery fails gracefully |
+| **sweetGrass** | not tested (no binary) | — | — | No plasmidBin or local binary available |
+| **barraCuda** | not tested (no binary) | — | — | No plasmidBin or local binary available |
 
 ### Projected Impact With Remaining Fixes
 
@@ -240,6 +258,15 @@ Previous: 34/43 (79%) → **41/44 (93%)** after evolution cycle.
 | SQ-02 (wire `LOCAL_AI_ENDPOINT` into `AiRouter`) | C2 → 4/4 PASS |
 | NG-01 (`storage.list` fix) | C5 → 5/5 PASS |
 | Squirrel socket in `biomeos/` | C7 → 10/10 PASS |
-| **All fixes** | **44/44 (100%)** |
+| **All C1-C7 fixes** | **44/44 (100%)** |
 
-Note: ludoSpring's 141-check matrix includes additional experiments (084-098) beyond C1-C7. The C1-C7 composition validator covers 44 checks. The full 141-check suite requires provenance trio (RC-01, LS-03) which remain critical blockers for that broader matrix.
+### ludoSpring 141-Check Broader Matrix
+
+The C1-C7 suite covers 44 checks. ludoSpring's full 141-check matrix (exp084-098) includes provenance trio experiments. With LS-03 now resolved, only **RC-01 (rhizoCrypt UDS)** blocks the provenance pipeline. Projected:
+
+| Fix | Running Total | % |
+|-----|---------------|---|
+| Current (post-evolution) | ~118/141 | 83.7% |
+| + LS-03 resolved | ~124/141 | 87.9% |
+| + RC-01 (rhizoCrypt UDS) | ~133/141 | 94.3% |
+| + TS-01 (toadStool S169 rebuild) | ~134/141 | 95.0% |
