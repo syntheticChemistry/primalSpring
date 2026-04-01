@@ -21,10 +21,15 @@ SOCKET_DIR = f"/run/user/{os.getuid()}/biomeos"
 
 
 def find_sock(name: str) -> str | None:
+    candidates = []
     if name == "petaltongue":
-        ipc = f"{SOCKET_DIR}/petaltongue-ipc.sock"
-        if os.path.exists(ipc):
-            return ipc
+        candidates.append(f"{SOCKET_DIR}/petaltongue-ipc.sock")
+    candidates.append(f"{SOCKET_DIR}/{name}.sock")
+    xdg = os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")
+    candidates.append(f"{xdg}/{name}/{name}.sock")
+    for c in candidates:
+        if os.path.exists(c) and _probe_alive(c):
+            return c
     if name in ("biomeos", "neural-api"):
         matches = glob.glob(f"{SOCKET_DIR}/neural-api-*.sock")
     else:
@@ -34,7 +39,7 @@ def find_sock(name: str) -> str | None:
     for sock in matches:
         if _probe_alive(sock):
             return sock
-    return matches[0]
+    return None
 
 
 def _probe_alive(sock_path: str) -> bool:
