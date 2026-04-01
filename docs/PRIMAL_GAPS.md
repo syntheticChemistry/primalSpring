@@ -3,7 +3,7 @@
 Structured inventory of known gaps per primal that block or degrade composable deployments.
 Each entry links to the composition that exposes it and proposes a fix path.
 
-> **Last updated**: 2026-04-01 — Phase 23h (rhizoCrypt RC-01 RESOLVED via source build; 12 gaps resolved, zero CRITICAL blockers)
+> **Last updated**: 2026-04-01 — Phase 23i (plasmidBin harvest: rhizoCrypt, loamSpine, sweetGrass, barraCuda; 13 gaps resolved, 19 open, zero CRITICAL)
 
 ---
 
@@ -48,7 +48,7 @@ EguiShapes variant is **deferred** — `EguiCompiler` still outputs `ModalityOut
 | BC-01 | Fitts formula: Welford `log2(D/W)` instead of Shannon `log2(2D/W+1)` | ~~**High**~~ | ludoSpring V37.1 (exp089) | `variant` parameter added, default `"shannon"` | **RESOLVED** (Sprint 25 / v0.3.11) |
 | BC-02 | Hick formula: `log2(n+1)` vs standard `log2(n)` | ~~Medium~~ | ludoSpring V37.1 | `include_no_choice` parameter added, default `false` | **RESOLVED** (Sprint 25 / v0.3.11) |
 | BC-03 | Perlin3D lattice: `perlin3d(0,0,0)` returns -0.11 | ~~Medium~~ | ludoSpring V37.1 (exp091) | Proper gradient vectors + trilinear interpolation + quintic fade | **RESOLVED** (Sprint 25 / v0.3.11) |
-| BC-04 | No binary in plasmidBin | Medium | ludoSpring V37.1 | Binary ready (`barracuda.sock`, dual UDS+TCP), needs publishing to plasmidBin | **Mostly resolved** — binary exists, needs plasmidBin harvest |
+| BC-04 | ~~No binary in plasmidBin~~ | ~~Medium~~ | ludoSpring V37.1 | Harvested to plasmidBin (4.5M stripped). Requires GPU — panics on headless servers without wgpu device. | **RESOLVED** (April 1 harvest) |
 
 Also: zero panics, modern idiomatic Rust, capability-based naming, WGSL-as-truth test architecture, NagaExecutor, 15-tier precision continuum.
 
@@ -113,7 +113,7 @@ Also: ~2,300 lines deprecated trait excision, flaky test fixes, service name cen
 
 **Live validation (April 1)**: rhizoCrypt v0.14.0-dev (session 24, source-built) starts with `--unix`, binds UDS at `/run/user/1000/biomeos/rhizocrypt.sock` **AND** TCP on ports 9400 (tarpc) + 9401 (JSON-RPC dual-mode). Full health triad via UDS: `health.liveness` ✅ (`{"status":"alive"}`), `health.readiness` ✅ (`primal: rhizocrypt, version: 0.14.0-dev`), `health.check` ✅ (session counts, vertices, uptime). `dag.session.create` + `dag.session.list` via UDS ✅. 1,423 tests, lock-free CircuitBreaker, zero-sleep testing. **RC-01 RESOLVED — zero CRITICAL blockers remain.**
 
-Note: The plasmidBin binary is still the old TCP-only version. Needs harvest of the source-built binary.
+plasmidBin binary harvested April 1 (5.4M stripped). UDS via `--unix` verified from plasmidBin.
 
 ---
 
@@ -185,7 +185,7 @@ S169 cleanup completed (30+ methods removed, -10,659 lines). On disk: S168. S169
 12. SQ-03, SB-03
 13. NG-02, NG-03, NG-05
 14. EW-03, EW-04, LS-02
-15. PB-01, BC-04 (harvest)
+15. PB-01
 16. XC-01, XC-03
 
 ---
@@ -206,8 +206,25 @@ S169 cleanup completed (30+ methods removed, -10,659 lines). On disk: S168. S169
 | SB-01 | songBird | `health.liveness` canonical name | wave89-90 |
 | LS-03 | loamSpine | Startup panic fixed — infant discovery fails gracefully | v0.9.15 |
 | RC-01 | rhizoCrypt | UDS transport + `biomeos/` path migration + dual-mode TCP | v0.14.0-dev s23 |
+| BC-04 | barraCuda | Binary harvested to plasmidBin | April 1 harvest |
 
-**12 gaps resolved** this cycle. Gap count: **32 → 20 open** (12 resolved, 2 newly identified: NG-04, NG-05). **Zero CRITICAL blockers remaining.**
+**13 gaps resolved** this cycle. Gap count: **32 → 19 open** (13 resolved, 2 newly identified: NG-04, NG-05). **Zero CRITICAL blockers remaining.**
+
+### plasmidBin Inventory (April 1, 2026)
+
+| Binary | Size | Source | UDS | Notes |
+|--------|------|--------|-----|-------|
+| beardog | 7.1M | musl-static | ✅ | Mar 27 |
+| biomeos | 12M | musl-static | ✅ | Mar 28 |
+| songbird | 16M | musl-static | ✅ | Mar 27 |
+| squirrel | 5.8M | musl-static | ✅ | Mar 27 |
+| petaltongue | 30M | musl-static | ✅ | Mar 28 |
+| nestgate | 4.9M | musl-static | ✅ | Mar 28 |
+| toadstool | 16M | musl-static | ✅ | Mar 27 (S168 — needs S169 rebuild) |
+| **rhizocrypt** | **5.4M** | **glibc** | **✅** | **April 1 — RC-01 fix, UDS via --unix** |
+| **loamspine** | **6.9M** | **glibc** | **✅** | **April 1 — LS-03 fix, starts cleanly** |
+| **sweetgrass** | **8.8M** | **glibc** | **✅** | **April 1 — 27 capabilities, UDS conformant** |
+| **barracuda** | **4.5M** | **glibc** | **N/A** | **April 1 — requires GPU, panics without wgpu device** |
 
 ---
 
@@ -250,8 +267,8 @@ Previous: 34/43 (79%) → **41/44 (93%)** after evolution cycle.
 | **toadStool** | `/biomeos/toadstool.jsonrpc.sock` | "Method not found" | 0 capabilities | S168 binary — outdated, needs S169 rebuild |
 | **rhizoCrypt** | `/biomeos/rhizocrypt.sock` ✅ | liveness ✅ readiness ✅ check ✅ | 4 domains, 26 methods | **RC-01 RESOLVED** (source-built). UDS + dual-mode TCP. plasmidBin needs harvest. |
 | **loamSpine** | `/biomeos/loamspine.sock` ✅ | liveness ✅ | 19 capabilities | **LS-03 RESOLVED** — starts cleanly, infant discovery fails gracefully |
-| **sweetGrass** | not tested (no binary) | — | — | No plasmidBin or local binary available |
-| **barraCuda** | not tested (no binary) | — | — | No plasmidBin or local binary available |
+| **sweetGrass** | `/biomeos/sweetgrass.sock` ✅ | liveness ✅ | 27 capabilities | Harvested April 1. UDS conformant. In-memory storage. |
+| **barraCuda** | not started (requires GPU) | — | — | Harvested to plasmidBin (4.5M). Panics without wgpu device. |
 
 ### Projected Impact With Remaining Fixes
 
@@ -274,4 +291,4 @@ The C1-C7 suite covers 44 checks. ludoSpring's full 141-check matrix (exp084-098
 | + TS-01 (toadStool S169 rebuild) | ~134/141 | 95.0% |
 | + SQ-02 + remaining | ~138/141 | 97.9% |
 
-**Note**: rhizoCrypt's source-built binary has the fix. The plasmidBin binary is still the old TCP-only version and needs harvesting. Once deployed, the provenance trio (rhizoCrypt + loamSpine + sweetGrass) compositions are unblocked.
+**Note**: All three provenance trio primals (rhizoCrypt, loamSpine, sweetGrass) now have plasmidBin binaries with UDS support. The trio is unblocked for composition. rhizoCrypt/loamSpine/sweetGrass are glibc dynamic builds — musl-static cross-compile needed for mobile/container deployment.
