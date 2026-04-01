@@ -3,7 +3,7 @@
 Structured inventory of known gaps per primal that block or degrade composable deployments.
 Each entry links to the composition that exposes it and proposes a fix path.
 
-> **Last updated**: 2026-03-31 — Phase 23g (post full-ecosystem pull: biomeOS v2.81, barraCuda Sprint 25, petalTongue IPC compliance, squirrel alpha.25b, songbird wave89-90)
+> **Last updated**: 2026-04-01 — Phase 23h (rhizoCrypt RC-01 RESOLVED via source build; 12 gaps resolved, zero CRITICAL blockers)
 
 ---
 
@@ -109,9 +109,11 @@ Also: ~2,300 lines deprecated trait excision, flaky test fixes, service name cen
 
 | ID | Gap | Severity | Exposed By | Fix Path | Status |
 |----|-----|----------|------------|----------|--------|
-| RC-01 | **TCP-only transport** — no Unix domain socket for service | **Critical** | ludoSpring V37.1 (+9 checks) | Add `--unix [PATH]` CLI flag. Client-side UDS support exists but service still binds TCP only. `SafeEnv::get_socket_path` references `$XDG_RUNTIME_DIR/ecoPrimals/` (non-standard, should be `biomeos/`) | **Open** |
+| RC-01 | ~~**TCP-only transport**~~ | ~~**Critical**~~ | ludoSpring V37.1 | Session 23: `--unix [PATH]` CLI flag with default `$XDG_RUNTIME_DIR/biomeos/rhizocrypt.sock`. `UdsJsonRpcServer` in `jsonrpc/uds.rs`. Path migrated from `ecoPrimals/` to `biomeos/`. | **RESOLVED** (v0.14.0-dev s23) |
 
-**Live validation (March 31)**: rhizoCrypt v0.14.0-dev starts, binds TCP on ports 9400 (tarpc) and 9401 (JSON-RPC dual-mode: HTTP + raw newline). Raw newline TCP works (socat test passes). Full health triad (`health.liveness`, `health.readiness`, `health.check`). 4 capability domains, 26 methods (DAG, health, capabilities, tools). **But still no UDS socket** — RC-01 confirmed. `SafeEnv::get_socket_path` references `ecoPrimals/` not `biomeos/`.
+**Live validation (April 1)**: rhizoCrypt v0.14.0-dev (session 24, source-built) starts with `--unix`, binds UDS at `/run/user/1000/biomeos/rhizocrypt.sock` **AND** TCP on ports 9400 (tarpc) + 9401 (JSON-RPC dual-mode). Full health triad via UDS: `health.liveness` ✅ (`{"status":"alive"}`), `health.readiness` ✅ (`primal: rhizocrypt, version: 0.14.0-dev`), `health.check` ✅ (session counts, vertices, uptime). `dag.session.create` + `dag.session.list` via UDS ✅. 1,423 tests, lock-free CircuitBreaker, zero-sleep testing. **RC-01 RESOLVED — zero CRITICAL blockers remain.**
+
+Note: The plasmidBin binary is still the old TCP-only version. Needs harvest of the source-built binary.
 
 ---
 
@@ -164,12 +166,11 @@ S169 cleanup completed (30+ methods removed, -10,659 lines). On disk: S168. S169
 
 ## Priority Order (revised post-full-validation)
 
-**Critical** (primal cannot participate in standard composition):
-1. **RC-01** — rhizoCrypt UDS transport (blocks provenance trio via biomeOS socket discovery)
+**ZERO CRITICAL BLOCKERS** — RC-01 and LS-03 both RESOLVED.
 
 **High** (blocks interactive product or major capability):
-2. **EW-01** — esotericWebb scene format (enables primal-driven rendering)
-3. **SQ-02** — Squirrel `LOCAL_AI_ENDPOINT` → `AiRouter` wiring (last blocker for local AI)
+1. **EW-01** — esotericWebb scene format (enables primal-driven rendering)
+2. **SQ-02** — Squirrel `LOCAL_AI_ENDPOINT` → `AiRouter` wiring (last blocker for local AI)
 
 **Medium** (improves composition quality):
 5. NG-01 — NestGate real persistence
@@ -204,8 +205,9 @@ S169 cleanup completed (30+ methods removed, -10,659 lines). On disk: S168. S169
 | SQ-01 | Squirrel | Filesystem socket via `UniversalListener` | alpha.25b |
 | SB-01 | songBird | `health.liveness` canonical name | wave89-90 |
 | LS-03 | loamSpine | Startup panic fixed — infant discovery fails gracefully | v0.9.15 |
+| RC-01 | rhizoCrypt | UDS transport + `biomeos/` path migration + dual-mode TCP | v0.14.0-dev s23 |
 
-**11 gaps resolved** this cycle. Gap count: **32 → 21 open** (11 resolved, 2 newly identified: NG-04, NG-05).
+**12 gaps resolved** this cycle. Gap count: **32 → 20 open** (12 resolved, 2 newly identified: NG-04, NG-05). **Zero CRITICAL blockers remaining.**
 
 ---
 
@@ -246,7 +248,7 @@ Previous: 34/43 (79%) → **41/44 (93%)** after evolution cycle.
 | **ludoSpring** | `/biomeos/ludospring-*.sock` | health.check ✅ | game.* methods work | All game science checks pass |
 | **esotericWebb** | `/biomeos/esotericwebb-*.sock` | webb.liveness ✅ | Full session lifecycle | 12 actions, graph, state all working |
 | **toadStool** | `/biomeos/toadstool.jsonrpc.sock` | "Method not found" | 0 capabilities | S168 binary — outdated, needs S169 rebuild |
-| **rhizoCrypt** | **NO UDS** (TCP 9400/9401 only) | liveness ✅ readiness ✅ check ✅ | 4 domains, 26 methods | Dual-mode TCP works (raw newline + HTTP). RC-01 open. |
+| **rhizoCrypt** | `/biomeos/rhizocrypt.sock` ✅ | liveness ✅ readiness ✅ check ✅ | 4 domains, 26 methods | **RC-01 RESOLVED** (source-built). UDS + dual-mode TCP. plasmidBin needs harvest. |
 | **loamSpine** | `/biomeos/loamspine.sock` ✅ | liveness ✅ | 19 capabilities | **LS-03 RESOLVED** — starts cleanly, infant discovery fails gracefully |
 | **sweetGrass** | not tested (no binary) | — | — | No plasmidBin or local binary available |
 | **barraCuda** | not tested (no binary) | — | — | No plasmidBin or local binary available |
@@ -262,11 +264,14 @@ Previous: 34/43 (79%) → **41/44 (93%)** after evolution cycle.
 
 ### ludoSpring 141-Check Broader Matrix
 
-The C1-C7 suite covers 44 checks. ludoSpring's full 141-check matrix (exp084-098) includes provenance trio experiments. With LS-03 now resolved, only **RC-01 (rhizoCrypt UDS)** blocks the provenance pipeline. Projected:
+The C1-C7 suite covers 44 checks. ludoSpring's full 141-check matrix (exp084-098) includes provenance trio experiments. Both RC-01 and LS-03 are now **RESOLVED**. Projected:
 
 | Fix | Running Total | % |
 |-----|---------------|---|
-| Current (post-evolution) | ~118/141 | 83.7% |
-| + LS-03 resolved | ~124/141 | 87.9% |
-| + RC-01 (rhizoCrypt UDS) | ~133/141 | 94.3% |
+| Previous (pre-evolution) | ~95/141 | 67.4% |
+| + LS-03 resolved (v0.9.15) | ~124/141 | 87.9% |
+| + RC-01 resolved (v0.14.0-dev s23) | ~133/141 | 94.3% |
 | + TS-01 (toadStool S169 rebuild) | ~134/141 | 95.0% |
+| + SQ-02 + remaining | ~138/141 | 97.9% |
+
+**Note**: rhizoCrypt's source-built binary has the fix. The plasmidBin binary is still the old TCP-only version and needs harvesting. Once deployed, the provenance trio (rhizoCrypt + loamSpine + sweetGrass) compositions are unblocked.
