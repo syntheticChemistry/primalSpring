@@ -6,9 +6,10 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-02 — Re-audit cycle: gap re-verification, overstep scan, compliance recheck.
-> 19 gaps resolved, 8 open (zero critical, zero high). 3 gaps improved this cycle (NG-01, SB-02, SB-03).
-> Overstep scan confirms PRIMAL_RESPONSIBILITY_MATRIX — no new boundary violations found.
+> **Last updated**: 2026-04-02 (PM) — Evolution pull + re-audit. Major progress across all tiers.
+> 20 gaps resolved (+NG-02), 7 open (zero critical, zero high, zero medium).
+> BearDog AI tree feature-gated. Squirrel 49K orphan lines removed, 0 todo!/unimplemented!.
+> NestGate compile fixed + NG-02 resolved. toadStool fmt+clippy clean. petalTongue CHANGELOG added.
 
 ---
 
@@ -35,12 +36,12 @@ All gaps **RESOLVED**.
 | PT-01 | Socket at non-standard path | **RESOLVED** — `biomeos/petaltongue.sock` |
 | PT-02 | No live push to browser | **RESOLVED** — SSE `/api/events` |
 | PT-03 | `motor_tx` not wired in server mode | **RESOLVED** — drain channel wired |
-| PT-04 | No `ExportFormat::Html` in headless CLI | Low | Partially — IPC `compile_html` wraps SVG-in-HTML (PT-04 tag), but `ExportFormat` enum lacks `Html` variant |
+| PT-04 | No `ExportFormat::Html` in headless CLI | Low | Partially — `ExportFormat::Html` exists in headless path + IPC; needs product validation |
 | PT-05 | `visualization.showing` returns false | **RESOLVED** — `RenderingAwareness` auto-init in `UnixSocketServer` |
-| PT-06 | `callback_method` poll-only dispatch | Low | Open — `CallbackDispatch` struct + tests exist, but server `apply_interaction` discards broadcast results; push delivery not wired |
+| PT-06 | `callback_method` poll-only dispatch | Low | Code-complete — `push_delivery.rs` module, `broadcast()`, `CallbackDispatch` wired; **not enabled on live server** (`callback_tx` = `None` at startup; server wiring needed to activate push) |
 | PT-07 | No external event source in server mode | **RESOLVED** — periodic discovery refresh wired |
 
-**Compliance**: clippy **3 warnings**, fmt clean, `forbid(unsafe_code)` per-crate (not workspace-level), `deny.toml` present, SPDX headers present. **Tests PASS** (previously 1 failure resolved). `#[expect]` migration (commit 158c21a) in progress.
+**Compliance**: clippy status pending (disk space issue on audit host), fmt clean, `forbid(unsafe_code)` per-crate (not workspace-level), `deny.toml` present, SPDX headers present. Tests PASS. Sensory capability matrix + accessibility adapters added (in-domain UUI). **CHANGELOG.md added** (was missing). Zero stubs.
 
 ---
 
@@ -65,7 +66,7 @@ All gaps **RESOLVED**.
 | SQ-02 | `LOCAL_AI_ENDPOINT` not wired into `AiRouter` | **RESOLVED** (alpha.27 — step 1.5 discovery, `resolve_local_ai_endpoint()`) |
 | SQ-03 | `deprecated-adapters` feature flag docs | **RESOLVED** — documented in `CURRENT_STATUS.md` feature-gates table; intentional retention until v0.3.0 with migration path to `UniversalAiAdapter` + `LOCAL_AI_ENDPOINT` |
 
-**Compliance**: clippy **2 warnings** (minor unfulfilled lint expectations), fmt clean, `deny.toml` present, tests pass. **Note**: no `forbid(unsafe_code)` at workspace manifest level (uses clippy groups instead). SPDX headers present. `deprecated-adapters` feature still present (empty, documented in CURRENT_STATUS.md).
+**Compliance** (alpha.29): 50+ unused deps removed across 13 crates. 112 orphan files (42K lines) deleted from uncompiled module trees. **Zero `todo!()` / `unimplemented!()`** (was 14 + 4). All hardcoded localhost/ports → discovery-first patterns. MockAIClient isolated to test builds. fmt clean, `deny.toml` present, tests pass. Workspace `forbid(unsafe_code)` added in alpha.28.
 
 ---
 
@@ -86,12 +87,12 @@ All gaps **RESOLVED**.
 | ID | Gap | Severity | Status |
 |----|-----|----------|--------|
 | NG-01 | IPC storage backend inconsistency | Low | Improved — `StorageBackend` trait injection wired for tarpc object storage (`with_backend`/`with_backend_arc`). Semantic router delegates to `NestGateRpcClient`. **Residual**: `InMemoryMetadataBackend` is default for metadata axis; callers must inject filesystem-backed `MetadataBackend` |
-| NG-02 | Session API inconsistency | Low | Improved — `session.save`/`session.load` work on unix-socket + isomorphic paths; `session.list`/`session.delete` on isomorphic only. **Inconsistency**: `capabilities.rs` advertises all `session.*` but `SemanticRouter::call_method` has no `session.*` arms — semantic callers hit "unknown method" |
-| NG-03 | `data.*` handlers still stubs | Low | Open — both `unix_socket_server/data_handlers.rs` and `semantic_router/data.rs` return `not_implemented`. Message improved ("configure NESTGATE_EXTERNAL_*") but no nestgate-core wiring |
+| NG-02 | Session API inconsistency | **RESOLVED** — `semantic_router/session.rs` added (~489 lines); `SemanticRouter::call_method` dispatches `session.save`/`load`/`list`/`delete`. Full parity across unix-socket, isomorphic, and semantic paths |
+| NG-03 | `data.*` handlers delegation | Low | Reframed — `data.*` removed from advertised capabilities (honest delegation story); `data_handlers.rs` stubs remain as explicit `not_implemented` for external live feeds; `model_cache_handlers.rs` also stubs |
 | NG-04 | C dependency (`aws-lc-rs`/`ring`) | **RESOLVED** — `ring` eliminated, TLS delegated to system `curl` |
 | NG-05 | Crypto crates not fully delegated | **RESOLVED** — `nestgate-security` zero crypto deps, all via BearDog IPC `CryptoDelegate` |
 
-**Compliance**: clippy **16 warnings** + test compile errors (regression — `nestgate-zfs` unresolved imports, `nestgate_core::constants` missing fields). fmt clean. `forbid(unsafe_code)` per-crate + workspace `deny`. **`deny.toml` now PRESENT** (was missing). SPDX headers present. Tests: **RED** — compile errors in test targets block full suite.
+**Compliance** (d7a0716b): Compile errors **FIXED** (constants re-exported, ZFS test gated). Clippy **clean exit** on `--workspace --all-targets` (~2 minor warnings: observe test assert, zfs test docs). fmt clean. `forbid(unsafe_code)` per-crate + workspace `deny`. `deny.toml` present. SPDX present. Discovery overstep modules **deprecated**. `src/cli/mod.rs` removed (444 lines). Session 15: TCP/RPC parity, health triad, `FileMetadataBackend`.
 
 ---
 
@@ -125,7 +126,7 @@ All gaps **RESOLVED**.
 |----|-----|----------|--------|
 | TS-01 | coralReef discovery not pure capability-based | Low | Improved — S166 capability-based discovery added (`discover_by_capability` in `service_discovery.rs`), but `coral_reef_client` still uses explicit 6-step ordered discovery, not unified `capability.discover` RPC |
 
-**Compliance**: clippy **25 warnings**, **fmt STILL FAILS** (persistent formatting debt), no `forbid(unsafe_code)` at workspace level, `deny.toml` present. **Tests PASS** (previously 1 failure resolved; full suite ~19.6 min).
+**Compliance** (S172-4): **clippy CLEAN** (was 25 warnings — all resolved). **fmt PASSES** (was 18 files failing — all resolved). `deny.toml` present. Tests pass (~19.6 min). VFIO DMA sharing module added (in-domain hw-safe). TS-01 partially advanced (async hygiene in discovery, but not full `capability.discover` migration).
 
 ---
 
@@ -147,7 +148,7 @@ No gaps identified.
 
 No gaps identified.
 
-**Compliance**: clippy clean, fmt clean, `forbid(unsafe_code)` at workspace level, `deny.toml` present, SPDX headers present, tests pass (14,201+). Gold standard for ecosystem compliance.
+**Compliance** (Wave 26): clippy clean, fmt clean, `forbid(unsafe_code)` at workspace level, `deny.toml` present (skip-list 30 → 15), SPDX present, **14,366+ tests, 0 failures**. Gold standard. **AI tree (11.9K LOC) feature-gated** behind `ai` feature per responsibility matrix. Flaky `production_ready` test stabilized. `handle_key_info` + client JSON-RPC dispatch evolved from stubs to real implementations.
 
 ---
 
@@ -155,17 +156,16 @@ No gaps identified.
 
 **ZERO CRITICAL / HIGH / MEDIUM BLOCKERS.**
 
-All 8 open gaps are **Low** severity — polish items owned by primal teams.
+All 7 open gaps are **Low** severity — polish items owned by primal teams.
 
 **Low** (polish, owned by primal teams):
-1. **NG-01** — NestGate metadata backend injection (object storage wired; metadata axis still in-memory default)
-2. **NG-02** — Session API inconsistency (capabilities advertise `session.*` but semantic router doesn't dispatch)
-3. **NG-03** — `data.*` handler stubs (documented separation, no nestgate-core wiring)
-4. **PT-04** — `ExportFormat::Html` headless variant (IPC modality already works)
-5. **PT-06** — callback push dispatch (struct exists, wiring needed)
-6. **SB-02** — `ring` lockfile ghost (not compiled in default build; lockfile refresh clears it)
-7. **SB-03** — `sled` feature-gated but default-on in orchestrator/sovereign-onion (pending NestGate API)
-8. **TS-01** — coralReef pure `capability.discover` (6-step heuristic works, not unified)
+1. **NG-01** — NestGate metadata backend injection (`FileMetadataBackend` available; needs default wiring)
+2. **NG-03** — `data.*` handler stubs (removed from capabilities; honest delegation story; stubs remain)
+3. **PT-04** — `ExportFormat::Html` headless variant (exists; needs product validation)
+4. **PT-06** — callback push dispatch (code-complete; server `callback_tx` wiring needed to activate)
+5. **SB-02** — `ring` lockfile ghost (not compiled in default build; lockfile refresh clears it)
+6. **SB-03** — `sled` feature-gated but default-on in orchestrator/sovereign-onion (pending NestGate API)
+7. **TS-01** — coralReef pure `capability.discover` (discovery async-improved in S172-4, not fully migrated)
 
 ---
 
@@ -174,29 +174,28 @@ All 8 open gaps are **Low** severity — polish items owned by primal teams.
 | Primal | Clippy | Fmt | `forbid(unsafe)` | `deny.toml` | SPDX | Tests |
 |--------|--------|-----|-------------------|-------------|------|-------|
 | biomeOS | 1 warn | PASS | deny + per-crate forbid | YES | YES | PASS |
-| BearDog | CLEAN | PASS | workspace forbid | YES | YES | PASS (14K+) |
-| Songbird | **8 warn** ↓ | PASS | per-crate forbid | YES | YES | PASS |
-| NestGate | **16 warn** ↑ | PASS | deny + per-crate forbid | **YES** ↑ | YES | **RED** ↓ |
-| petalTongue | **3 warn** | PASS | per-crate forbid | YES | YES | **PASS** ↑ |
-| Squirrel | **2 warn** | PASS | **absent** | YES | YES | PASS |
-| toadStool | **25 warn** | **FAIL** | **absent** | YES | n/c | **PASS** ↑ |
+| BearDog | CLEAN | PASS | workspace forbid | YES (skip 30→15) | YES | **PASS (14.4K+)** |
+| Songbird | 8 warn | PASS | per-crate forbid | YES | YES | PASS |
+| NestGate | **~2 warn** ↑↑ | PASS | deny + per-crate forbid | YES | YES | **PASS** ↑↑ |
+| petalTongue | pending | PASS | per-crate forbid | YES | YES | PASS |
+| Squirrel | pending | PASS | **workspace forbid** ↑ | YES | YES | PASS |
+| toadStool | **CLEAN** ↑↑ | **PASS** ↑↑ | **absent** | YES | n/c | PASS |
 | sweetGrass | 1 warn | PASS | deny + per-crate forbid | YES | YES | PASS |
 | rhizoCrypt | CLEAN | PASS | deny + cfg_attr forbid | YES | n/c | PASS |
-| loamSpine | CLEAN | **PASS** ↑ | workspace forbid | YES | n/c | PASS |
+| loamSpine | CLEAN | PASS | workspace forbid | YES | n/c | PASS |
 | barraCuda | n/c | n/c | n/c | n/c | n/c | n/c |
-| coralReef | n/c | n/c | n/c | n/c | n/c | n/c |
+| coralReef | **RED** | n/c | n/c | n/c | n/c | **RED** |
 
-**Legend**: n/c = not checked this cycle; ↑ = improved since last audit; ↓ = regressed
+**Legend**: n/c = not checked this cycle; ↑↑ = major improvement
 
-### Compliance Evolution (April 2 re-audit)
+### Compliance Evolution (April 2 PM — post-pull)
 
-1. **BearDog** remains gold standard: workspace `forbid(unsafe_code)`, clippy clean, fmt clean, deny.toml, all tests pass
-2. **Songbird** massive improvement: 395 → 8 clippy warnings (wave93 ring elimination, concurrency fixes)
-3. **loamSpine** fmt now passes (was failing — fixed in v0.9.16 deep debt evolution)
-4. **NestGate** regressed: was clippy-clean, now 16 warnings + test compile errors (`nestgate-zfs`, `nestgate_core::constants`). **BUT** `deny.toml` now present (was the only primal without one)
-5. **petalTongue** tests now pass (was 1 failure); `#[expect]` migration in progress
-6. **toadStool** tests now pass (was 1 failure), but **fmt still fails** — persistent formatting debt
-7. **Squirrel** and **toadStool** still lack `forbid(unsafe_code)` at workspace level
+1. **BearDog** (Wave 26): AI tree feature-gated, flaky test stabilized, deny.toml skip-list halved (30→15), stubs→implementations
+2. **NestGate** (d7a0716b): **compile fixed**, clippy ~2 warnings (was 16+RED), NG-02 resolved (session.rs), discovery overstep deprecated
+3. **toadStool** (S172-4): **fmt fixed** (18 files), **clippy clean** (was 25 warnings), VFIO DMA in-domain
+4. **Squirrel** (alpha.29): **49K orphan lines removed**, 0 `todo!`/`unimplemented!` (was 14+4), 50+ unused deps removed, workspace `forbid(unsafe_code)` added
+5. **petalTongue** (9ce7a97): CHANGELOG.md added, sensory matrix + accessibility adapters (in-domain), PT-06 code-complete
+6. **Songbird** + **biomeOS**: stable, no new commits
 
 ---
 
@@ -213,7 +212,7 @@ All 8 open gaps are **Low** severity — polish items owned by primal teams.
 | RC-01 | rhizoCrypt | UDS transport + biomeos/ path | v0.14.0-dev s23 |
 | LS-03 | loamSpine | Startup panic → graceful degradation | v0.9.15 |
 
-**19 gaps resolved** across the full cycle. **8 open** (all low). Zero critical, zero medium.
+**20 gaps resolved** across the full cycle (+NG-02 this pull). **7 open** (all low). Zero critical, zero medium.
 
 ---
 

@@ -3,6 +3,23 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0j] — Phase 23j: Evolution Pull + Deep Debt Synthesis (2026-04-02)
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — evolution pull with major progress across all tiers:
+  - NG-02 **RESOLVED** (session.rs + semantic router dispatch in d7a0716b)
+  - NestGate compile fixed, clippy ~2 warnings (was RED)
+  - toadStool S172-4: fmt + clippy both **CLEAN** (was 25 warnings + 18 fmt failures)
+  - Squirrel alpha.29: 49K orphan lines removed, 0 todo!/unimplemented! (was 14+4)
+  - BearDog Wave 26: AI tree feature-gated, flaky test stabilized, deny.toml skip-list halved
+  - petalTongue: CHANGELOG.md added, sensory matrix + accessibility adapters, PT-06 code-complete
+  - 20 gaps resolved (+1), 7 open (all low)
+
+### Deep Debt Review
+- Full per-primal debt audit: NUCLEUS atomics, meta-tier, provenance trio, extended computation
+- Provenance trio (rhizoCrypt, loamSpine, sweetGrass) confirmed **debt-free**
+- coralReef + barraCuda deferred (separate scope)
+
 ## [0.8.0i] — Phase 23i: Re-Audit Cycle + Overstep Verification (2026-04-02)
 
 ### Changed
