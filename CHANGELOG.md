@@ -3,6 +3,29 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0i] — Phase 23i: Re-Audit Cycle + Overstep Verification (2026-04-02)
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — re-audit with overstep scan and compliance recheck:
+  - NG-01 reclassified Medium → **Low** (StorageBackend trait injection wired; metadata axis residual)
+  - SB-02 reclassified to **Near-resolved** (rcgen removed from lockfile; ring not compiled in default)
+  - SB-03 reclassified to **Improved** (sled feature-gated in all 3 crates)
+  - All 8 open gaps now **Low** severity — zero critical, zero high, zero medium
+  - Added overstep audit section confirming PRIMAL_RESPONSIBILITY_MATRIX alignment
+
+### Compliance Evolution
+- **Songbird**: 395 → **8** clippy warnings (wave93 ring elimination, concurrency fix)
+- **NestGate**: **regressed** — 16 warnings + test compile errors; BUT `deny.toml` now present
+- **loamSpine**: fmt now **PASSES** (was failing)
+- **petalTongue**: tests now **PASS** (was 1 failure)
+- **toadStool**: tests now **PASS** (was 1 failure), fmt **still fails**
+
+### Overstep Scan
+- No new boundary violations found
+- Confirmed: rhizoCrypt/loamSpine TCP = standard IPC dual-mode (not networking overstep)
+- biomeOS `redb`, BearDog `axum`+AI, Songbird `sled` = known items per matrix
+- toadStool S169 cleanup holds (30+ methods removed)
+
 ## [0.8.0h] — Phase 23h: Full Primal Audit + Guideline Compliance (2026-04-01)
 
 ### Changed
