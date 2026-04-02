@@ -13,6 +13,7 @@ use primalspring::ipc::discover::{
     discover_by_capability, discover_primal, neural_api_healthy, neural_bridge,
 };
 use primalspring::ipc::neural_bridge::NeuralBridge;
+use primalspring::ipc::protocol::JsonRpcResponse;
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
@@ -26,13 +27,13 @@ fn phase_tower(v: &mut ValidationResult) {
         return;
     };
     let bd_healthy = PrimalClient::connect(bd_sock, primal_names::BEARDOG)
-        .map_or(false, |mut c| c.health_check().unwrap_or(false));
+        .is_ok_and(|mut c| c.health_check().unwrap_or(false));
     v.check_bool("beardog", bd_healthy, "BearDog security healthy");
 
     let sb = discover_primal(primal_names::SONGBIRD);
-    let sb_healthy = sb.socket.as_ref().map_or(false, |sock| {
+    let sb_healthy = sb.socket.as_ref().is_some_and(|sock| {
         PrimalClient::connect(sock, primal_names::SONGBIRD)
-            .map_or(false, |mut c| c.health_check().unwrap_or(false))
+            .is_ok_and(|mut c| c.health_check().unwrap_or(false))
     });
     v.check_bool("songbird", sb_healthy, "Songbird discovery healthy");
 }
@@ -60,7 +61,7 @@ fn phase_ludospring(v: &mut ValidationResult, bridge: Option<&NeuralBridge>) {
     };
 
     let healthy = PrimalClient::connect(sock, "ludospring")
-        .map_or(false, |mut c| c.health_check().unwrap_or(false));
+        .is_ok_and(|mut c| c.health_check().unwrap_or(false));
     v.check_bool("ludospring_health", healthy, "ludoSpring healthy");
 
     let flow = PrimalClient::connect(sock, "ludospring").and_then(|mut c| {
@@ -101,7 +102,7 @@ fn phase_ludospring(v: &mut ValidationResult, bridge: Option<&NeuralBridge>) {
     });
     v.check_bool(
         "game.generate_noise",
-        noise.as_ref().is_ok_and(|r| r.is_success()),
+        noise.as_ref().is_ok_and(JsonRpcResponse::is_success),
         "noise generation returns value",
     );
 
@@ -137,7 +138,7 @@ fn phase_esotericwebb(v: &mut ValidationResult) {
         .and_then(|mut c| c.call("webb.liveness", serde_json::Value::Null));
     v.check_bool(
         "webb_liveness",
-        liveness.as_ref().is_ok_and(|r| r.is_success()),
+        liveness.as_ref().is_ok_and(JsonRpcResponse::is_success),
         "esotericWebb liveness responds",
     );
 

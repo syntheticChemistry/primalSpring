@@ -3,6 +3,24 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0h] — Phase 23h: Full Primal Audit + Guideline Compliance (2026-04-01)
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — full primal audit with guideline compliance matrix:
+  - SQ-03 reclassified as **RESOLVED** (documented in `CURRENT_STATUS.md`, intentional retention)
+  - NG-01/NG-02/NG-03 reclassified as **Improved** (unix-socket path is durable; session save/load exists; data/storage separation documented)
+  - Added per-primal compliance data: clippy, fmt, unsafe policy, deny.toml, SPDX, test status
+  - 19 gaps resolved (was 18), 8 open (1 medium, 7 low)
+
+### Audit Findings
+- **BearDog**: gold standard compliance — workspace `forbid(unsafe_code)`, clippy clean, 14K+ tests
+- **NestGate**: missing `deny.toml`, 3 test failures (timing/env), tarpc path still in-memory
+- **toadStool**: `cargo fmt` failure, 1 test failure, no workspace `forbid(unsafe_code)`
+- **loamSpine**: `cargo fmt` failure (needs `cargo fmt --all`)
+- **Songbird**: 395 clippy warnings in orchestrator tests (`unwrap_used`), `sled` still direct dep
+- **petalTongue**: 1 test failure (`provenance_trio` discovery test), callback push not wired
+- **Squirrel**: no workspace `forbid(unsafe_code)` (uses clippy groups)
+
 ## [0.8.0g] — Phase 23g: Primal Rewiring + Gap Cleanup (2026-04-01)
 
 ### Changed
