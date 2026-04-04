@@ -6,13 +6,13 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-04 — Comprehensive compliance matrix published (9 tiers, 40+ dimensions, A–F grades).
-> **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` — supersedes `IPC_COMPLIANCE_MATRIX.md`.
-> **Grade distribution**: 1 A (rhizoCrypt), 7 B, 3 C, 2 D, 1 F (bingoCube).
+> **Last updated**: 2026-04-04 — bingoCube compliance sprint (F→A), ecosystem tool taxonomy codified, 4 tools audited.
+> **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v1.1.0 — 14 primals + 4 tools.
+> **Grade distribution**: 3 A (rhizoCrypt, barraCuda, bingoCube), 7 B, 3 C, 1 D, 0 F.
+> **Tool grades**: bingoCube A, benchScale C, agentReagents D, rustChip C.
 > **Top ecosystem gaps**: discovery debt (5 primals), license alignment (8 primals), `#[allow(` migration (4 primals), domain symlinks (8 primals).
 > **barraCuda**: BLOCKED — compile failure in `barracuda-naga-exec` (E0061). SIGSEGV remains concurrent-test driver debt.
 > **ToadStool**: Heavy fmt debt (~1,899 lines of diff), clippy failures, discovery debt (2,998 refs).
-> **bingoCube**: Edition 2021, no `forbid(unsafe)`, no CHANGELOG/CONTEXT/deny.toml, 15 clippy cast errors. Grade: F.
 
 ---
 

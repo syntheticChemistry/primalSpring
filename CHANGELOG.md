@@ -3,6 +3,23 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0y] — Phase 23y: bingoCube Compliance Sprint + Ecosystem Tool Taxonomy (2026-04-04)
+
+### Fixed
+- **bingoCube**: F → A — Edition 2024, `AGPL-3.0-or-later`, `forbid(unsafe_code)`, clippy pedantic+nursery clean, 54 tests passing, SPDX headers on all 20 files, CHANGELOG, CONTEXT.md, `deny.toml`, README updated with nautilus. All `gen` variable renames for Rust 2024 edition keyword.
+
+### Added
+- **Ecosystem Tool Taxonomy** — Codified gen2.5 "Tool" layer in `PRIMAL_SPRING_GARDEN_TAXONOMY.md`, `PRIMAL_RESPONSIBILITY_MATRIX.md`, and `GLOSSARY.md`. Tools are bounded-domain crates consumed by primals/springs/infra without IPC surface.
+- **Ecosystem Tools section** in `ECOSYSTEM_COMPLIANCE_MATRIX.md` v1.1.0 — Tier 1/6/7/8 audit data for bingoCube, benchScale, agentReagents, rustChip with tool debt summary.
+
+### Audited
+- **benchScale** (22K lines): fmt FAIL, clippy FAIL (78), tests FAIL. License `-only`. Grade: C.
+- **agentReagents** (6K lines): fmt FAIL, clippy FAIL (6), tests FAIL. No CHANGELOG. Grade: D.
+- **rustChip** (21K lines): fmt PASS, clippy FAIL (54), tests PASS (0 tests). Edition 2021. Grade: C.
+
+### Changed
+- Grade distribution updated: 3 A, 7 B, 3 C, 1 D, 0 F (was 2/7/3/1/1)
+
 ## [0.8.0x] — Phase 23x: Ecosystem Compliance Matrix — 9 Tiers, 14 Primals (2026-04-04)
 
 ### Added
