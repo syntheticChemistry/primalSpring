@@ -62,7 +62,7 @@ The storytelling loop: **player input → scene resolution → game science → 
 
 ### P1: Graph Capability Alignment
 
-**Gap**: `graphs/spring_validation/ludospring_validate.toml` expects `game.engine`, `game.physics`, `game.flow_state`, `game.tick_health` — none match actual IPC method names.
+**Gap**: `graphs/sketches/validation/ludospring_validate.toml` expects `game.engine`, `game.physics`, `game.flow_state`, `game.tick_health` — none match actual IPC method names.
 
 **Evolution**:
 - Align graph `capabilities` arrays with actual IPC surface

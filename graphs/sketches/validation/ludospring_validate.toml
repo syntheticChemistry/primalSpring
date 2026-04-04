@@ -1,17 +1,16 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# primalSpring validation graph for ludoSpring V32 deployment.
-# Verifies biomeOS substrate, Tower health, brings up ludospring_primal
-# for game science (flow, DDA, engagement, WFC, Fitts, GPU dispatch),
-# then validates the composition and game method surface.
+# PROTO SKETCH — ludoSpring V32 validation graph.
 #
-# ludoSpring V32: 8 game.* methods, tolerances centralized, zero eprintln
-# patterns, exp030 rewritten to ValidationHarness. esotericWebb V6 owns
-# its own flow/DDA/engagement locally — ludoSpring provides supplemental
-# WFC/Fitts/accessibility + GPU compute via toadStool delegation.
+# This is a sketch of how ludoSpring SHOULD validate its own deployment.
+# primalSpring does NOT own or run the ludospring binary — ludoSpring
+# runs this validation itself.
 #
-# Usage:
-#   biomeos deploy --graph graphs/spring_validation/ludospring_validate.toml
+# Shape: biomeOS substrate, Tower health, ludospring game science surface,
+# then composition validation for game.* method surface.
+#
+# Usage (by ludoSpring, not primalSpring):
+#   biomeos deploy --graph graphs/sketches/validation/ludospring_validate.toml
 
 [graph]
 name = "ludospring_validate"

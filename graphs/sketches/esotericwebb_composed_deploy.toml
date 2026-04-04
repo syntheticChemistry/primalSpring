@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# esotericWebb Composed Product — full ecoPrimals composition via biomeOS.
+# PROTO SKETCH — esotericWebb Composed Product (full ecoPrimals composition).
 #
-# This is the canonical "ecoPrimals product" deployment: biomeOS orchestrates
-# the NUCLEUS primals, and esotericWebb emerges as the consumer-facing
-# experience — a CRPG with AI Dungeon Master, visual scene rendering,
-# and game science enrichment.
+# This is an upstream sketch co-evolved by primalSpring and ludoSpring.
+# primalSpring does NOT own, build, or run the esotericwebb or ludospring
+# binaries. esotericWebb takes ownership of this graph as the final
+# gameplay creation tool.
 #
-# Composition layers:
+# The sketch documents the full product composition shape:
 #   Phase 0: biomeOS Neural API substrate (already running)
 #   Phase 1: Tower Atomic — BearDog (security) + Songbird (discovery)
 #   Phase 2: AI + Viz overlays — Squirrel (AI DM) + petalTongue (scenes)
@@ -15,13 +15,11 @@
 #   Phase 4: esotericWebb V6 — narrative engine, the composed product
 #
 # esotericWebb V6 owns flow/DDA/engagement locally. Squirrel provides AI
-# narration (ai.query + context windows). petalTongue renders scenes.
-# ludoSpring enriches with WFC, Fitts, accessibility when available.
+# narration. petalTongue renders scenes. ludoSpring enriches with WFC,
+# Fitts, accessibility when available.
 #
-# Springs validate: primalSpring experiments probe each layer independently.
-#
-# Usage:
-#   biomeos deploy --graph graphs/esotericwebb_composed_deploy.toml
+# Usage (by esotericWebb, not primalSpring):
+#   biomeos deploy --graph graphs/sketches/esotericwebb_composed_deploy.toml
 
 [graph]
 name = "esotericwebb_composed_deploy"

@@ -1,22 +1,22 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# C4: Game Science Composition — ludoSpring standalone
+# PROTO SKETCH — C3: Session Composition (esotericWebb standalone).
 #
-# Isolates the game science subsystem for independent testing.
-# Tower (BearDog + Songbird) is the minimum base.
+# Upstream sketch co-evolved by primalSpring and ludoSpring.
+# primalSpring does NOT own or run the esotericwebb binary.
+# esotericWebb takes ownership and validates its own session surface.
 #
-# Gaps exposed:
-#   - Gateway hardcodes flow params instead of deriving from game state
-#   - Need esotericWebb state -> ludoSpring input mapping in composition
+# Documents the expected composition shape: NUCLEUS base (biomeOS +
+# Tower) with esotericWebb as the narrative engine.
 #
-# See also: graphs/ludospring_game_deploy.toml (canonical deploy)
+# See also: graphs/sketches/esotericwebb_tower_deploy.toml
 #
-# Usage:
-#   biomeos deploy --graph graphs/compositions/game_science_standalone.toml
+# Usage (by esotericWebb, not primalSpring):
+#   biomeos deploy --graph graphs/sketches/session_standalone.toml
 
 [graph]
-name = "game_science_standalone"
-description = "C4: ludoSpring game science subsystem — flow, engagement, WFC, accessibility"
+name = "session_standalone"
+description = "C3: esotericWebb session subsystem — session lifecycle, actions, state, narrative graph"
 version = "1.0.0"
 coordination = "sequential"
 
@@ -52,23 +52,27 @@ health_method = "health.liveness"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-# ── Phase 2: ludoSpring game science ───────────────────────────────
+# ── Phase 2: esotericWebb narrative engine ─────────────────────────
 [[graph.node]]
-name = "ludospring"
-binary = "ludospring"
+name = "esotericwebb"
+binary = "esotericwebb"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]
-health_method = "health.check"
-by_capability = "game"
-args = ["server"]
+health_method = "webb.liveness"
+by_capability = "narrative"
+args = ["serve"]
 capabilities = [
-    "game.evaluate_flow",
-    "game.fitts_cost",
-    "game.engagement",
-    "game.difficulty_adjustment",
-    "game.wfc_step",
-    "game.generate_noise",
-    "game.analyze_ui",
-    "game.accessibility",
+    "session.start",
+    "session.state",
+    "session.actions",
+    "session.act",
+    "session.history",
+    "session.graph",
+    "session.narrate",
+    "webb.liveness",
+    "webb.health",
+    "webb.scene.current",
+    "webb.narrative.status",
+    "webb.content.list",
 ]

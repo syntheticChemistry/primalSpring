@@ -1,16 +1,18 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# esotericWebb Tower — minimum viable composed product.
+# PROTO SKETCH — esotericWebb Tower (minimum viable composed product).
 #
-# Deploys esotericWebb V6 as a product of ecoPrimals composition via biomeOS.
-# Tower Atomic provides encrypted IPC (BearDog) and peer discovery (Songbird).
-# Webb runs as a standalone text CRPG with embedded game science (flow, DDA,
-# engagement from webb/src/science/ — no ludoSpring required).
+# This is an upstream sketch co-evolved by primalSpring and ludoSpring.
+# primalSpring does NOT own, build, or run the esotericwebb binary.
+# esotericWebb takes ownership of this graph as the final gameplay
+# creation tool.
 #
-# This is the simplest path from "ecoPrimals running" to "playable product".
+# The sketch documents the simplest path: biomeOS + Tower Atomic
+# (BearDog security + Songbird discovery) + esotericWebb standalone
+# text CRPG with embedded game science (no ludoSpring required).
 #
-# Usage:
-#   biomeos deploy --graph graphs/esotericwebb_tower_deploy.toml
+# Usage (by esotericWebb, not primalSpring):
+#   biomeos deploy --graph graphs/sketches/esotericwebb_tower_deploy.toml
 
 [graph]
 name = "esotericwebb_tower_deploy"

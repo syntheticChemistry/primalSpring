@@ -1,13 +1,15 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# primalSpring validation: esotericWebb Tower composition.
+# PROTO SKETCH — esotericWebb Tower validation graph.
 #
-# Validates the minimum viable Webb product deployed as an ecoPrimals
-# composition via biomeOS. Probes biomeOS substrate, Tower primals,
-# then verifies esotericWebb's narrative surface is responsive.
+# This is a sketch of how esotericWebb SHOULD validate its minimum
+# viable Tower composition. primalSpring does NOT run this —
+# esotericWebb does.
 #
-# Usage:
-#   biomeos deploy --graph graphs/spring_validation/esotericwebb_tower_validate.toml
+# Probes: biomeOS substrate, Tower primals, Webb narrative surface.
+#
+# Usage (by esotericWebb, not primalSpring):
+#   biomeos deploy --graph graphs/sketches/validation/esotericwebb_tower_validate.toml
 
 [graph]
 name = "esotericwebb_tower_validate"

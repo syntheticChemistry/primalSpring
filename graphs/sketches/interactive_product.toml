@@ -1,26 +1,26 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# C7: Full Interactive Product — all subsystems composed
+# PROTO SKETCH — C7: Full Interactive Product (all subsystems composed).
 #
-# This is the "real" deployment: NUCLEUS base (biomeOS + Tower) with
-# all capability primals layered on top, culminating in esotericWebb
-# as the narrative product. Each phase maps to a standalone composition
-# (C1-C6) that can be tested independently.
+# Upstream sketch co-evolved by primalSpring and ludoSpring.
+# primalSpring does NOT own or run the esotericwebb or ludospring
+# binaries. esotericWebb takes ownership of this graph as the final
+# gameplay creation tool.
 #
-# Composition layers:
+# Documents the full product composition shape:
 #   Phase 0: biomeOS Neural API (orchestration substrate)
-#   Phase 1: Tower Atomic — BearDog + Songbird (C3/C4/C5 base)
-#   Phase 2: NestGate (C5: persistence)
-#   Phase 3: Squirrel (C2: AI narration) + petalTongue (C1: render + C6: proprioception)
-#   Phase 4: ludoSpring (C4: game science)
-#   Phase 5: esotericWebb (C3: session/narrative — the composed product)
+#   Phase 1: Tower Atomic — BearDog + Songbird
+#   Phase 2: NestGate (persistence)
+#   Phase 3: Squirrel (AI narration) + petalTongue (render + proprioception)
+#   Phase 4: ludoSpring (game science — optional, parallel peer)
+#   Phase 5: esotericWebb (narrative engine — downstream consumer)
 #
-# The gateway (tools/ws_gateway.py) is a thin WebSocket-to-capability-call
-# bridge outside this graph. It adds no business logic — all subsystem
-# behavior lives in the primals.
+# primalSpring validates primal-layer readiness (C1/C2/C5/C6).
+# ludoSpring validates game science (C4). esotericWebb validates the
+# composed product (C3/C7).
 #
-# Usage:
-#   biomeos deploy --graph graphs/compositions/interactive_product.toml
+# Usage (by esotericWebb, not primalSpring):
+#   biomeos deploy --graph graphs/sketches/interactive_product.toml
 
 [graph]
 name = "interactive_product"

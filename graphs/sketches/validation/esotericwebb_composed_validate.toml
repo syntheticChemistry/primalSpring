@@ -1,20 +1,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# primalSpring validation: esotericWebb full composed product.
+# PROTO SKETCH — esotericWebb full composed product validation graph.
 #
-# Validates the full ecoPrimals-composed Webb product:
+# This is a sketch of how esotericWebb SHOULD validate its full
+# composed product. primalSpring does NOT run this — esotericWebb does.
+#
+# Validates:
 #   1. biomeOS substrate healthy
-#   2. Tower Atomic primals (BearDog security + Songbird discovery)
-#   3. Overlay primals (Squirrel AI, petalTongue viz, ludoSpring game) if present
+#   2. Tower Atomic primals (BearDog + Songbird)
+#   3. Overlay primals (Squirrel AI, petalTongue viz, ludoSpring game)
 #   4. esotericWebb narrative surface (session, scene, tools)
-#   5. End-to-end capability routing: biomeOS routes narrative → Webb,
-#      Webb routes ai.query → Squirrel, game.* → ludoSpring
+#   5. End-to-end capability routing
 #
-# This is the spring's proof that ecoPrimals composition produces
-# a working consumer product — the validation-from-springs pattern.
-#
-# Usage:
-#   biomeos deploy --graph graphs/spring_validation/esotericwebb_composed_validate.toml
+# Usage (by esotericWebb, not primalSpring):
+#   biomeos deploy --graph graphs/sketches/validation/esotericwebb_composed_validate.toml
 
 [graph]
 name = "esotericwebb_composed_validate"

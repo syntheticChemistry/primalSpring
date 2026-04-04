@@ -3,6 +3,176 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0v] — Phase 23v: Self-Knowledge Standard + Songbird Wave 111 Audit (2026-04-04)
+
+### Added
+- **`wateringHole/PRIMAL_SELF_KNOWLEDGE_STANDARD.md` v1.0.0** — New canonical standard defining the self-knowledge boundary, capability domain registry, socket naming (`{domain}.sock` primary, `{primal}.sock` legacy symlink), env var conventions (`{DOMAIN}_SOCKET` not `{PRIMAL}_SOCKET`), six code organization patterns (provider traits, tiered discovery, serde aliases, deprecated test fixtures, capability.call, EnvSource injection), compliance audit checklist with scoring (A–F), and phased migration path. Unifies fragmented guidance from 7+ existing standards.
+
+### Audited
+- **Songbird wave 110-111**: Discovery **935→302 refs** (68% further reduction, 88% total since first audit). concurrent_helpers smart-refactored (787L → 8 modules). +38 tests. 12,568 tests passing. Clippy/fmt/deny CLEAN.
+- **barraCuda**: Pushed clippy lint fix (stale `expect(clippy::large_stack_arrays)`). SIGSEGV is concurrent-test driver contention (llvmpipe/NVK) — passes single-threaded. Larger project for barraCuda team.
+
+### Changed
+- `wateringHole/CAPABILITY_BASED_DISCOVERY_STANDARD.md` — Added cross-reference to self-knowledge standard
+- `wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md` — Added cross-reference to self-knowledge standard
+- `docs/PRIMAL_GAPS.md` — Songbird 935→302, barraCuda lint fix, self-knowledge standard reference
+
+## [0.8.0u] — Phase 23u: NestGate EnvSource Evolution (2026-04-04)
+
+### Audited
+- **NestGate** (f298c1c1): Config layer evolved to `EnvSource` injection pattern — eliminates direct `env::var()` calls, enables pure-function testing. 31 serial tests converted to concurrent. **11,264 tests** (was 6,451 — tests unlocked by removing serial bottleneck). 1 env-dep failure (`test_arc_stats_collect` — needs ZFS `/proc` entries). Clippy CLEAN, fmt PASS. Discovery stable at 195/24.
+- coralReef, Songbird: no new commits.
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — NestGate test count 6.6K→11.3K
+- `wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md` — NestGate updated
+
+## [0.8.0t] — Phase 23t: Full Ecosystem Audit — 4 Primals Evolved (2026-04-04)
+
+### Audited
+- **Songbird wave 107-109**: Final primal-name cleanup wave (`btsp_beardog_integration→btsp_security_provider_integration`). Discovery **1016→935 refs** (178 files). 63% total reduction since wave 97. 8,938 tests.
+- **NestGate** (6b6bf799): **nestgate-automation deprecated** (overstep shed). -15,579 lines across 98 files. 83 `self.base_url` artifacts removed. 10.2K orphan lines deleted. 4.3K dead code deleted. Clippy CLEAN, 6,451 tests (2 flaky).
+- **toadStool** (S176-S178): `env_config` primal names → capability names (S177). Deprecated API removal. Discovery **3239→2998 refs**. Clippy still FAIL (aes_gcm deprecated).
+- **barraCuda Sprint 28**: Zero-copy ESN, capability-based sovereign naming. **SIGSEGV appears resolved** — 3,835 tests, 0 failures. Clippy: 1 unfulfilled lint expectation.
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — barraCuda SIGSEGV→PASS, discovery tables updated, header updated
+- `wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md` — all 4 primals updated
+- `wateringHole/IPC_COMPLIANCE_MATRIX.md` — Songbird 1016→935
+
+## [0.8.0s] — Phase 23s: Songbird Wave 106 + petalTongue Discovery Evolution (2026-04-04)
+
+### Audited
+- **Songbird wave 106** (`a26d73bfd`): Dead code cleanup, unwrap evolution, tor coverage +30 tests. Discovery **1472→1016 refs** (31% cut, 60% total since wave 97). 8,903 tests, 1 env-dep failure. Clippy CLEAN, fmt PASS.
+- **petalTongue** (`9b0f0d0`): Capability compliance renames: `squirrel_adapter→ai_adapter`, `toadstool→discovered_display`, `toadstool_compute→gpu_compute`. 13 unused primal constants removed. **PT-04 RESOLVED** (HTML graph export), **PT-06 RESOLVED** (callback_tx push). Zero-copy evolution. 5,968 tests, 0 failures.
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — PT-04/PT-06 RESOLVED (23 resolved, 4 open). Songbird P→P→C. petalTongue P→P→C. Discovery priority list reordered. Compliance matrix updated.
+- `wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md` — Songbird + petalTongue compliance updated
+- `wateringHole/IPC_COMPLIANCE_MATRIX.md` — Songbird discovery 1472→1016
+
+## [0.8.0r] — Phase 23r: coralReef First Audit + toadStool S174 (2026-04-03)
+
+### Audited
+- **coralReef** (Iter 72 — 5a6ca52): **First-ever audit.** Clippy CLEAN, fmt PASS, **4,257 tests PASS**. `forbid(unsafe_code)` on core/stubs, `deny.toml` present. Discovery **CLEAN** — 28 `BIOMEOS_*` refs (ecosystem-standard), 2 primal names in doc/attribution comments only. Zero routing violations. Socket at `biomeos/coralreef-core-{family}.sock` with `shader.sock` + `device.sock` symlinks.
+- **toadStool** (S174-S175): Unsafe reduction -80% in consumer blocks. New clippy errors: `v4l2` private `_pad` fields in `toadstool-display` + deprecated `aes_gcm::from_slice`.
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — coralReef compliance data added (n/c → CLEAN/PASS/C), discovery table updated, header updated. toadStool clippy status updated for S174 regressions. Gap count: 21 resolved, 6 open.
+- `wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md` — coralReef compliance updated
+- `wateringHole/IPC_COMPLIANCE_MATRIX.md` — coralReef discovery compliance added
+
+## [0.8.0q] — Phase 23q: Full Ecosystem Pull + Re-Audit (2026-04-03)
+
+### Audited
+- **Squirrel alpha.36**: Build **FIXED**. Clippy CLEAN, fmt PASS, **6,856 tests PASS** (was build-broken). alpha.33 removed 65,910 lines dead code. Discovery: 215 files / 1789 refs (full scan).
+- **NestGate** (3dc0044b): **Overstep shedding** — deleted `discovery_mechanism` (-2K lines), deprecated `nestgate-network` (zero workspace dependents). Clippy CLEAN, fmt PASS, 6,607 tests (2 flaky). Discovery: 22 files / 192 refs, 9 files / 32 env refs.
+- **toadStool** (S173-3): S173-2 direct primalSpring audit response — **TS-01 RESOLVED** (`coral_reef_client` uses `capability.discover("shader")`), `deny(unsafe_code)` workspace policy documented (43/43 crates). S173-3: smart refactoring + coverage. Clippy **FAIL** (deprecated `aes_gcm::from_slice`). 6,481 tests (1 timeout assertion bug). Discovery: 393 files / 3239 refs (full scan).
+- biomeOS, BearDog, rhizoCrypt, loamSpine, sweetGrass, petalTongue, sourDough, barraCuda: no new commits.
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — Squirrel FAIL→CLEAN, toadStool TS-01 RESOLVED (21→6 open gaps), updated compliance matrix with full-scan discovery data
+- `wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md` — Squirrel/NestGate/toadStool compliance updated
+- `wateringHole/IPC_COMPLIANCE_MATRIX.md` — Squirrel discovery data updated
+
+## [0.8.0p] — Phase 23p: Songbird Wave 102 Re-Audit (2026-04-03)
+
+### Audited
+- **Songbird wave 102** (`0c893f22e`): deep debt evolution — TLS safety, capability completion, smart refactoring
+- Clippy **CLEAN**, fmt **PASS** (was FAIL — both regressions resolved)
+- **7,020+ tests**, 4 env-dep failures (need running BearDog — not code bugs)
+- Discovery: **2558→1472 refs** (230 files) — 42% reduction
+- Key renames: `beardog_*`→`security_*`, `squirrel_*`→`coordination_*`, `nestgate`→`storage_provider`, `toadstool`→`compute_provider`
+- Primal-named spec docs archived to `specs/archive/`
+- Remaining: 805 beardog refs (171 files), 130 toadstool (47), 96 squirrel (39), 53 nestgate (20)
+- Env var refs rose 143→291 (capability-first chains with fallback lookups — correct pattern)
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — Songbird status **X→P**, updated compliance matrix, discovery table, header
+- `wateringHole/IPC_COMPLIANCE_MATRIX.md` — Songbird discovery X→P with measured data
+- `wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md` — Songbird compliance updated, overstep detail expanded
+
+## [0.8.0o] — Phase 23o: Responsibility Matrix Restructure + sourDough Integration (2026-04-03)
+
+### Added
+- **sourDough** added to `docs/PRIMAL_GAPS.md` gap registry — SD-01/02/03 (deny.toml, musl, signing), all Low. Compliance: clippy CLEAN, fmt PASS, 239 tests, discovery NEAR-CLEAN.
+- sourDough added to guideline compliance matrix and discovery compliance table.
+
+### Changed
+- **`wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md` v2.3 → v3.0** — major restructure:
+  - Added **Primal Directory**: clear role definitions, capability namespaces, and purpose for each primal.
+  - Added sourDough (Tooling tier) and skunkBat (Nascent tier).
+  - Added **Interaction Rules** section: discovery protocol, communication protocol, prohibition list.
+  - Added **Capability Routing Guide**: quick-reference routing table for deploy graph design.
+  - Added **Compliance Status** table with measured audit data from primalSpring full scan.
+  - Simplified Overstep Detail section. Added Squirrel overstep (sled/crypto).
+  - Reorganized Concern Matrix with sourDough column and `(resolved)` markers.
+  - Designed for human and AI agent comprehension — defines primal roles to understand gaps and prevent overstep.
+- **`wateringHole/IPC_COMPLIANCE_MATRIX.md` v1.5.0 → v1.6.0** — sourDough added to scorecard and discovery compliance; cross-reference to responsibility matrix v3.0.
+
+## [0.8.0n] — Phase 23n: Full Audit Cycle Against WateringHole Standards (2026-04-03)
+
+### Audited
+- Full primal pull: nestGate (a75e9f2a) and toadStool (S172-5) had new evolution
+- wateringHole pull: 2 new handoffs (nestGate v4.7.0, barraCuda v0.3.11), toadStool discovery X→C claim
+- **nestGate**: Clippy CLEAN (was ~2 warnings), fmt PASS, 1449+ tests PASS. Discovery near-compliant: 7 files, zero primal env vars.
+- **toadStool**: Clippy 2 warnings, fmt PASS, 21.5K tests PASS. Discovery improved but ~30 files + SONGBIRD_*/BEARDOG_SOCKET in fallbacks. Compliance claim overstated.
+- **petalTongue**: Tests ALL PASS (was 1 failure — fixed). 24 env refs across 10 files.
+- **Songbird**: fmt STILL FAILS. Discovery debt massive: 2558 refs in 321 files, 143 env-var refs in 50 files.
+- **Squirrel**: clippy/tests STILL FAIL (ai-tools build error). 322 refs in 96 files.
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — full audit findings, updated compliance matrix, discovery compliance table with measured ref counts
+- `wateringHole/IPC_COMPLIANCE_MATRIX.md` v1.4.0 → **v1.5.0** — §Discovery Compliance updated with primalSpring scan data, corrected toadStool/Songbird statuses
+
+## [0.8.0m] — Phase 23m: Downstream Graph Sketch Reframe (2026-04-03)
+
+### Changed
+- **Architectural correction**: ludoSpring is a parallel peer, esotericWebb is downstream. primalSpring does NOT own, build, or run their binaries.
+- Moved ludoSpring/esotericWebb deploy graphs to `graphs/sketches/` — proto sketches co-evolved by primalSpring + ludoSpring, with esotericWebb as eventual owner.
+- Moved ludoSpring/esotericWebb composition graphs to `graphs/sketches/`.
+- Moved ludoSpring/esotericWebb validation graphs to `graphs/sketches/validation/` — sketches of how those systems should validate themselves.
+- All moved graph headers updated with "PROTO SKETCH" designation and correct ownership.
+
+### Reframed
+- `validate_compositions.py` C3/C4/C7 no longer require downstream binaries:
+  - **C3 → Session Readiness**: validates substrate + Tower + capability routing for narrative domain.
+  - **C4 → Game Science Readiness**: validates substrate + Tower + capability routing for game domain.
+  - **C7 → Product Readiness**: validates full primal stack health across all owned domains.
+- `composition_game_science_validate.toml` → validates primal-layer readiness, not ludoSpring surface.
+- `composition_session_validate.toml` → validates primal-layer readiness, not esotericWebb surface.
+- `composition_interactive_validate.toml` → validates all owned primal domains, no downstream nodes.
+
+## [0.8.0l] — Phase 23l: Evolution Pull + Discovery Compliance Re-Audit (2026-04-03)
+
+### Audited
+- Full primal pull and evolution review across all 12 primals
+- **biomeOS v2.87**: Discovery compliance **RESOLVED** — identity-based routing removed from non-test code. All checks green.
+- **petalTongue wave 99**: `SongbirdClient` + `barracuda.compute.dispatch` removed. Clippy+fmt clean. 11 residual env aliases. 1 test failure.
+- **Songbird wave 99**: Clippy clean (0 warnings), `discover_beardog→discover_security_provider` rename. **fmt regressed** (widespread). ~30 files still have legacy refs.
+- **Squirrel alpha.31**: Capability-based discovery commit. **clippy/tests regressed** (ai-tools cfg gate). 7 files still have Songbird coupling.
+- **barraCuda Sprint 27**: Clippy+fmt clean. **`fault_injection` test SIGSEGV** — new regression.
+- BearDog, NestGate, toadStool, rhizoCrypt, loamSpine, sweetGrass: no new commits.
+
+### Changed
+- `docs/PRIMAL_GAPS.md` — updated all compliance sections with April 3 findings, discovery matrix with trends
+- `wateringHole/IPC_COMPLIANCE_MATRIX.md` — updated §Capability-Based Discovery Compliance with post-evolution status
+- Guideline Compliance Matrix: added Discovery column, updated clippy/fmt/test status per primal
+
+## [0.8.0k] — Phase 23k: Capability-Based Discovery Compliance Audit (2026-04-02)
+
+### Audited
+- Full ecosystem audit against `CAPABILITY_BASED_DISCOVERY_STANDARD.md` v1.2.0
+- Scanned all primals for identity-based routing violations (hardcoded primal names, env vars, method namespaces)
+- 4/10 primals **fully compliant**: BearDog, rhizoCrypt, loamSpine, sweetGrass
+- 6/10 primals **non-compliant**: biomeOS, Songbird, Squirrel, toadStool, petalTongue, NestGate (partial)
+- petalTongue deep audit: `SongbirdClient`, `discover_toadstool()`, `BARRACUDA_SOCKET`, `barracuda.compute.dispatch` identified as violations; `toadstool_v2.rs` display backend confirmed as correct exemplar
+
+### Changed
+- `wateringHole/CAPABILITY_BASED_DISCOVERY_STANDARD.md` v1.1.0 → **v1.2.0**: Added compliance audit checklist with grep patterns, per-primal findings, SHOULD → MUST upgrade
+- `wateringHole/IPC_COMPLIANCE_MATRIX.md` v1.3.2 → **v1.4.0**: Added §Capability-Based Discovery Compliance with per-primal matrix and priority ranking
+- `docs/PRIMAL_GAPS.md`: Added §Capability-Based Discovery Compliance matrix linking to IPC Compliance Matrix
+
 ## [0.8.0j] — Phase 23j: Evolution Pull + Deep Debt Synthesis (2026-04-02)
 
 ### Changed

@@ -1,17 +1,18 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# ludoSpring Game Science — deploy via biomeOS composition.
+# PROTO SKETCH — ludoSpring Game Science deploy graph.
 #
-# Deploys ludoSpring V14 as a game-science primal atop the Tower Atomic.
-# ludoSpring registers with biomeOS Neural API on startup, exposing 8
-# game.* capabilities for flow analysis, DDA, WFC, Fitts, accessibility,
-# noise generation, and UI analysis.
+# This is an upstream sketch co-evolved by primalSpring and ludoSpring.
+# primalSpring does NOT own, build, or run the ludospring binary.
+# ludoSpring validates and evolves this graph; esotericWebb eventually
+# takes ownership as the final gameplay creation tool.
 #
-# Consumers (esotericWebb, petalTongue dashboards, spring experiments) discover
-# ludoSpring via biomeOS capability.discover("game") at runtime.
+# The sketch documents the expected composition shape: NUCLEUS base
+# (biomeOS + Tower) with ludoSpring registering 8 game.* capabilities.
+# Consumers discover ludoSpring via biomeOS capability.discover("game").
 #
-# Usage:
-#   biomeos deploy --graph graphs/ludospring_game_deploy.toml
+# Usage (by ludoSpring, not primalSpring):
+#   biomeos deploy --graph graphs/sketches/ludospring_game_deploy.toml
 
 [graph]
 name = "ludospring_game_deploy"

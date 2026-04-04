@@ -1,28 +1,31 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# primalSpring validation: C7 Full Interactive Product
+# primalSpring validation: C7 Full Product Readiness
 #
-# Validates the composed product with all subsystems running together.
-# Each phase verifies one subsystem composition (C1-C6), then tests
-# cross-subsystem integration:
-#   1. biomeOS substrate alive
+# Validates the complete primal stack is ready for the full interactive
+# product composition. Does NOT require downstream (esotericWebb) or
+# parallel (ludoSpring) binaries — those systems validate themselves.
+#
+# primalSpring owns and validates:
+#   1. biomeOS substrate alive and routing
 #   2. Tower health (BearDog + Songbird)
 #   3. C1: Render — petalTongue dashboard render + export
-#   4. C2: Narration — Squirrel ai.query
-#   5. C3: Session — esotericWebb session lifecycle
-#   6. C4: Game Science — ludoSpring flow evaluation
-#   7. C5: Persistence — NestGate store/retrieve
-#   8. C6: Proprioception — petalTongue subscribe/poll
-#   9. Cross-subsystem: session state → DataBinding → render → export
-#  10. Cross-subsystem: session state → narration prompt → ai.query
+#   4. C2: Narration — Squirrel ai.query (optional)
+#   5. C5: Persistence — NestGate store/retrieve (optional)
+#   6. C6: Proprioception — petalTongue subscribe/poll
+#   7. biomeOS capability routing across all owned domains
+#
+# C3 (session) and C4 (game science) readiness are validated by
+# confirming the substrate can route those domains — actual surface
+# validation is owned by esotericWebb and ludoSpring respectively.
 #
 # Usage:
 #   biomeos deploy --graph graphs/spring_validation/composition_interactive_validate.toml
 
 [graph]
-name = "composition_interactive_validate"
-description = "Validates C7: Full interactive product — all subsystems + cross-subsystem integration"
-version = "1.0.0"
+name = "composition_product_readiness_validate"
+description = "Validates C7: full primal-layer readiness — substrate, Tower, owned overlays, capability routing"
+version = "2.0.0"
 coordination = "sequential"
 
 # ── Phase 0: Substrate ──────────────────────────────────────────────
@@ -34,7 +37,7 @@ required = true
 spawn = false
 health_method = "graph.list"
 by_capability = "orchestration"
-capabilities = ["capability.discover", "graph.list"]
+capabilities = ["capability.discover", "capability.list", "graph.list"]
 
 # ── Phase 1: Tower ──────────────────────────────────────────────────
 [[graph.node]]
@@ -48,7 +51,7 @@ health_method = "health.liveness"
 by_capability = "coordination"
 capabilities = ["composition.tower_health"]
 
-# ── Phase 2: C1 Render ─────────────────────────────────────────────
+# ── Phase 2: C1 Render (owned primal) ──────────────────────────────
 [[graph.node]]
 name = "verify_render"
 binary = "primalspring_primal"
@@ -64,7 +67,7 @@ methods = ["visualization.render.dashboard", "visualization.export"]
 target = "petaltongue"
 expect = "dashboard stored, SVG exported"
 
-# ── Phase 3: C2 Narration ──────────────────────────────────────────
+# ── Phase 3: C2 Narration (owned primal) ───────────────────────────
 [[graph.node]]
 name = "verify_narration"
 binary = "primalspring_primal"
@@ -80,43 +83,11 @@ method = "ai.query"
 target = "squirrel"
 expect = "prose response"
 
-# ── Phase 4: C3 Session ────────────────────────────────────────────
-[[graph.node]]
-name = "verify_session"
-binary = "primalspring_primal"
-order = 4
-required = true
-spawn = false
-depends_on = ["verify_tower"]
-health_method = "health.liveness"
-by_capability = "coordination"
-capabilities = ["coordination.validate_session_subsystem"]
-[graph.node.checks]
-methods = ["session.start", "session.state", "session.actions", "session.act"]
-target = "esotericwebb"
-expect = "full lifecycle"
-
-# ── Phase 5: C4 Game Science ───────────────────────────────────────
-[[graph.node]]
-name = "verify_game_science"
-binary = "primalspring_primal"
-order = 5
-required = false
-spawn = false
-depends_on = ["verify_tower"]
-health_method = "health.liveness"
-by_capability = "coordination"
-capabilities = ["coordination.validate_game_science_subsystem"]
-[graph.node.checks]
-method = "game.evaluate_flow"
-target = "ludospring"
-expect = "flow_score numeric"
-
-# ── Phase 6: C5 Persistence ────────────────────────────────────────
+# ── Phase 4: C5 Persistence (owned primal) ─────────────────────────
 [[graph.node]]
 name = "verify_persistence"
 binary = "primalspring_primal"
-order = 6
+order = 4
 required = false
 spawn = false
 depends_on = ["verify_tower"]
@@ -128,11 +99,11 @@ methods = ["storage.store", "storage.retrieve"]
 target = "nestgate"
 expect = "round-trip"
 
-# ── Phase 7: C6 Proprioception ─────────────────────────────────────
+# ── Phase 5: C6 Proprioception (owned primal) ──────────────────────
 [[graph.node]]
 name = "verify_proprioception"
 binary = "primalspring_primal"
-order = 7
+order = 5
 required = false
 spawn = false
 depends_on = ["verify_render"]
@@ -144,31 +115,18 @@ methods = ["interaction.subscribe", "interaction.poll"]
 target = "petaltongue"
 expect = "subscriber_id, events array"
 
-# ── Phase 8: Cross-subsystem integration ───────────────────────────
+# ── Phase 6: Capability routing (substrate readiness) ───────────────
 [[graph.node]]
-name = "verify_session_to_render"
+name = "verify_capability_routing"
 binary = "primalspring_primal"
-order = 8
+order = 6
 required = true
 spawn = false
-depends_on = ["verify_session", "verify_render"]
+depends_on = ["verify_tower"]
 health_method = "health.liveness"
 by_capability = "coordination"
-capabilities = ["coordination.validate_session_to_render"]
+capabilities = ["coordination.validate_capability_routing"]
 [graph.node.checks]
-description = "session.state → DataBinding construction → visualization.render.dashboard → visualization.export"
-expect = "SVG contains session data"
-
-[[graph.node]]
-name = "verify_session_to_narration"
-binary = "primalspring_primal"
-order = 9
-required = false
-spawn = false
-depends_on = ["verify_session", "verify_narration"]
-health_method = "health.liveness"
-by_capability = "coordination"
-capabilities = ["coordination.validate_session_to_narration"]
-[graph.node.checks]
-description = "session.state → prompt construction → ai.query → narration prose"
-expect = "narration references session state"
+method = "capability.list"
+target = "biomeos"
+expect = "all owned capability domains registered and routable"

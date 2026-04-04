@@ -1,23 +1,22 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# C3: Session Composition — esotericWebb standalone
+# PROTO SKETCH — C4: Game Science Composition (ludoSpring standalone).
 #
-# Isolates the narrative session subsystem for independent testing.
-# Tower (BearDog + Songbird) is the minimum base required by esotericWebb.
+# Upstream sketch co-evolved by primalSpring and ludoSpring.
+# primalSpring does NOT own or run the ludospring binary.
+# ludoSpring validates its own game.* surface against this sketch.
 #
-# Gaps exposed:
-#   - push_scene_to_ui sends flat JSON, not SceneGraph/DataBinding
-#   - poll_input not wired into game loop
-#   - replay command not implemented
+# Documents the expected composition shape: NUCLEUS base (biomeOS +
+# Tower) with ludoSpring as the game science subsystem.
 #
-# See also: graphs/esotericwebb_tower_deploy.toml (canonical product deploy)
+# See also: graphs/sketches/ludospring_game_deploy.toml
 #
-# Usage:
-#   biomeos deploy --graph graphs/compositions/session_standalone.toml
+# Usage (by ludoSpring, not primalSpring):
+#   biomeos deploy --graph graphs/sketches/game_science_standalone.toml
 
 [graph]
-name = "session_standalone"
-description = "C3: esotericWebb session subsystem — session lifecycle, actions, state, narrative graph"
+name = "game_science_standalone"
+description = "C4: ludoSpring game science subsystem — flow, engagement, WFC, accessibility"
 version = "1.0.0"
 coordination = "sequential"
 
@@ -53,27 +52,23 @@ health_method = "health.liveness"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-# ── Phase 2: esotericWebb narrative engine ─────────────────────────
+# ── Phase 2: ludoSpring game science ───────────────────────────────
 [[graph.node]]
-name = "esotericwebb"
-binary = "esotericwebb"
+name = "ludospring"
+binary = "ludospring"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]
-health_method = "webb.liveness"
-by_capability = "narrative"
-args = ["serve"]
+health_method = "health.check"
+by_capability = "game"
+args = ["server"]
 capabilities = [
-    "session.start",
-    "session.state",
-    "session.actions",
-    "session.act",
-    "session.history",
-    "session.graph",
-    "session.narrate",
-    "webb.liveness",
-    "webb.health",
-    "webb.scene.current",
-    "webb.narrative.status",
-    "webb.content.list",
+    "game.evaluate_flow",
+    "game.fitts_cost",
+    "game.engagement",
+    "game.difficulty_adjustment",
+    "game.wfc_step",
+    "game.generate_noise",
+    "game.analyze_ui",
+    "game.accessibility",
 ]

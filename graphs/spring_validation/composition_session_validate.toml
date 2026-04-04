@@ -1,21 +1,24 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# primalSpring validation: C3 Session Composition (esotericWebb standalone)
+# primalSpring validation: C3 Session Readiness
 #
-# Validates the isolated session/narrative subsystem:
+# Validates that the primal layer is ready to support a session/narrative
+# composition. esotericWebb is downstream and owns its own session
+# validation — primalSpring validates substrate readiness.
+#
+# Checks:
 #   1. biomeOS substrate alive
 #   2. Tower health (BearDog + Songbird)
-#   3. esotericWebb liveness via webb.liveness
-#   4. Full session lifecycle: start → state → actions → act → graph
-#   5. Scene format correctness (for petalTongue interop)
+#   3. biomeOS capability routing is functional
+#   4. narrative/session domain discoverable (if esotericWebb is registered)
 #
 # Usage:
 #   biomeos deploy --graph graphs/spring_validation/composition_session_validate.toml
 
 [graph]
-name = "composition_session_validate"
-description = "Validates C3: esotericWebb session — lifecycle, state, actions, narrative graph"
-version = "1.0.0"
+name = "composition_session_readiness_validate"
+description = "Validates C3: primal-layer readiness for session — substrate, Tower, capability routing"
+version = "2.0.0"
 coordination = "sequential"
 
 [[graph.node]]
@@ -26,7 +29,7 @@ required = true
 spawn = false
 health_method = "graph.list"
 by_capability = "orchestration"
-capabilities = ["capability.discover", "graph.list"]
+capabilities = ["capability.discover", "capability.list", "graph.list"]
 
 [[graph.node]]
 name = "verify_tower"
@@ -40,7 +43,7 @@ by_capability = "coordination"
 capabilities = ["composition.tower_health"]
 
 [[graph.node]]
-name = "verify_webb_liveness"
+name = "verify_capability_routing"
 binary = "primalspring_primal"
 order = 2
 required = true
@@ -48,53 +51,24 @@ spawn = false
 depends_on = ["verify_tower"]
 health_method = "health.liveness"
 by_capability = "coordination"
-capabilities = ["coordination.validate_webb_liveness"]
+capabilities = ["coordination.validate_capability_routing"]
 [graph.node.checks]
-method = "webb.liveness"
-target = "esotericwebb"
-expect = "ok"
+method = "capability.list"
+target = "biomeos"
+expect = "capability routing functional"
 
 [[graph.node]]
-name = "verify_session_lifecycle"
+name = "verify_narrative_domain_routable"
 binary = "primalspring_primal"
 order = 3
-required = true
+required = false
 spawn = false
-depends_on = ["verify_webb_liveness"]
+depends_on = ["verify_capability_routing"]
 health_method = "health.liveness"
 by_capability = "coordination"
-capabilities = ["coordination.validate_session_lifecycle"]
+capabilities = ["coordination.validate_narrative_domain"]
 [graph.node.checks]
-methods = ["session.start", "session.state", "session.actions", "session.act"]
-target = "esotericwebb"
-expect = "session_id returned, state has turn/trust, actions non-empty, act advances turn"
-
-[[graph.node]]
-name = "verify_narrative_graph"
-binary = "primalspring_primal"
-order = 4
-required = true
-spawn = false
-depends_on = ["verify_session_lifecycle"]
-health_method = "health.liveness"
-by_capability = "coordination"
-capabilities = ["coordination.validate_narrative_graph"]
-[graph.node.checks]
-method = "session.graph"
-target = "esotericwebb"
-expect = "dot_format_graph"
-
-[[graph.node]]
-name = "verify_scene_format"
-binary = "primalspring_primal"
-order = 5
-required = true
-spawn = false
-depends_on = ["verify_narrative_graph"]
-health_method = "health.liveness"
-by_capability = "coordination"
-capabilities = ["coordination.validate_scene_format"]
-[graph.node.checks]
-method = "webb.scene.current"
-target = "esotericwebb"
-expect = "has node, description, npcs fields"
+method = "capability.discover"
+target = "biomeos"
+params = { domain = "narrative" }
+expect = "narrative domain registered (requires esotericWebb running)"

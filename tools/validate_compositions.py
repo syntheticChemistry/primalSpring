@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """
-Composition Subsystem Validator — tests each C1-C7 composition independently.
+Composition Subsystem Validator — tests primal-layer readiness for C1-C7.
 
-Probes live primal sockets to verify each subsystem can operate in isolation.
-Outputs a structured pass/fail report per composition.
+Probes live primal sockets to verify each subsystem the primal layer owns.
+C1/C2/C5/C6: primalSpring owns these primals and validates them directly.
+C3/C4/C7: primalSpring sketches these for downstream (esotericWebb) and
+parallel (ludoSpring) systems. Validation checks primal-layer readiness
+(substrate, Tower, capability routing) — NOT downstream binaries.
 
 Usage:
     python3 tools/validate_compositions.py
@@ -169,89 +172,98 @@ def validate_c2_narration() -> Result:
     return r
 
 
-def validate_c3_session() -> Result:
-    """C3: Session (esotericWebb standalone)"""
-    r = Result("C3: Session")
-    sock = find_sock("esotericwebb")
-    r.check("esotericwebb socket found", sock is not None, sock or "")
-    if not sock:
+def validate_c3_session_readiness() -> Result:
+    """C3: Session Readiness — primal layer can support session composition.
+
+    esotericWebb is downstream and owns its own session validation.
+    primalSpring validates that the substrate is ready for it.
+    """
+    r = Result("C3: Session Readiness")
+
+    bio_sock = find_sock("biomeos")
+    r.check("biomeOS substrate alive", bio_sock is not None, bio_sock or "")
+    if not bio_sock:
+        r.check("Tower: BearDog alive", False, "no substrate")
+        r.check("Tower: Songbird alive", False, "no substrate")
+        r.check("capability routing available", False, "no substrate")
         return r
 
-    resp = call_uds(sock, "webb.liveness")
-    r.check("webb.liveness", "result" in resp)
-
-    resp = call_uds(sock, "session.start", {"content": "default"})
-    has_session = "result" in resp
-    r.check("session.start", has_session)
-
-    resp = call_uds(sock, "session.state")
-    state = resp.get("result", {})
-    has_turn = "turn_count" in state or "turn" in state
-    r.check("session.state (has turn)", has_turn, f"turn={state.get('turn_count', state.get('turn', '?'))}")
-
-    has_trust = "trust" in state and isinstance(state.get("trust"), dict)
-    r.check("session.state (has trust)", has_trust)
-
-    resp = call_uds(sock, "session.actions")
-    result = resp.get("result", {})
-    actions = result.get("actions", result) if isinstance(result, dict) else result
-    has_actions = isinstance(actions, list) and len(actions) > 0
-    r.check("session.actions (non-empty)", has_actions, f"{len(actions) if isinstance(actions, list) else 0} actions")
-
-    if has_actions and isinstance(actions, list) and len(actions) > 0:
-        a = actions[0]
-        kind = a.get("kind", a.get("action_kind", ""))
-        act_id = a.get("id", a.get("detail", ""))
-        resp = call_uds(sock, "session.act", {"action_kind": kind, "detail": act_id})
-        acted = "result" in resp
-        if not acted:
-            resp = call_uds(sock, "session.act", {"kind": kind, "id": act_id})
-            acted = "result" in resp
-        r.check("session.act", acted,
-                resp.get("error", {}).get("message", "") if not acted else "")
+    bd_sock = find_sock("beardog")
+    if bd_sock:
+        bd_resp = call_uds(bd_sock, "health.liveness")
+        r.check("Tower: BearDog alive", "result" in bd_resp, bd_sock)
     else:
-        r.check("session.act", False, "no actions to test")
+        r.check("Tower: BearDog alive", False, "socket not found")
 
-    resp = call_uds(sock, "session.graph")
-    has_graph = "result" in resp
-    r.check("session.graph", has_graph)
+    sb_sock = find_sock("songbird")
+    if sb_sock:
+        sb_resp = call_uds(sb_sock, "health.liveness")
+        r.check("Tower: Songbird alive", "result" in sb_resp, sb_sock)
+    else:
+        r.check("Tower: Songbird alive", False, "socket not found")
+
+    resp = call_uds(bio_sock, "capability.list")
+    result = resp.get("result", {})
+    caps = result if isinstance(result, list) else result.get("capabilities", [])
+    r.check("capability routing available", "result" in resp,
+            f"{len(caps) if isinstance(caps, list) else '?'} capabilities registered")
+
+    has_narrative_ready = any(
+        "session" in str(c).lower() or "narrative" in str(c).lower()
+        for c in (caps if isinstance(caps, list) else [])
+    )
+    r.check("narrative/session domain routable",
+            has_narrative_ready,
+            "domain registered" if has_narrative_ready else
+            "not yet registered — esotericWebb not running (expected)")
 
     return r
 
 
-def validate_c4_game_science() -> Result:
-    """C4: Game Science (ludoSpring standalone)"""
-    r = Result("C4: Game Science")
-    sock = find_sock("ludospring")
-    r.check("ludospring socket found", sock is not None, sock or "")
-    if not sock:
+def validate_c4_game_readiness() -> Result:
+    """C4: Game Science Readiness — primal layer can support game composition.
+
+    ludoSpring is a parallel peer and owns its own game.* validation.
+    primalSpring validates that the substrate is ready for it.
+    """
+    r = Result("C4: Game Science Readiness")
+
+    bio_sock = find_sock("biomeos")
+    r.check("biomeOS substrate alive", bio_sock is not None, bio_sock or "")
+    if not bio_sock:
+        r.check("Tower: BearDog alive", False, "no substrate")
+        r.check("Tower: Songbird alive", False, "no substrate")
+        r.check("capability routing available", False, "no substrate")
         return r
 
-    resp = call_uds(sock, "health.check")
-    r.check("health.check", "result" in resp)
+    bd_sock = find_sock("beardog")
+    if bd_sock:
+        bd_resp = call_uds(bd_sock, "health.liveness")
+        r.check("Tower: BearDog alive", "result" in bd_resp, bd_sock)
+    else:
+        r.check("Tower: BearDog alive", False, "socket not found")
 
-    resp = call_uds(sock, "game.evaluate_flow", {"skill": 0.5, "challenge": 0.5, "time_pressure": 0.3})
+    sb_sock = find_sock("songbird")
+    if sb_sock:
+        sb_resp = call_uds(sb_sock, "health.liveness")
+        r.check("Tower: Songbird alive", "result" in sb_resp, sb_sock)
+    else:
+        r.check("Tower: Songbird alive", False, "socket not found")
+
+    resp = call_uds(bio_sock, "capability.list")
     result = resp.get("result", {})
-    has_flow = "flow_score" in result or "score" in result or "state" in result
-    r.check("game.evaluate_flow", has_flow,
-            f"state={result.get('state', result.get('flow_score', '?'))}")
+    caps = result if isinstance(result, list) else result.get("capabilities", [])
+    r.check("capability routing available", "result" in resp,
+            f"{len(caps) if isinstance(caps, list) else '?'} capabilities registered")
 
-    resp = call_uds(sock, "game.fitts_cost", {"distance": 100.0, "target_width": 50.0})
-    r.check("game.fitts_cost", "result" in resp,
-            f"ID={resp.get('result', {}).get('index_of_difficulty', '?')}" if "result" in resp else
-            resp.get("error", {}).get("message", ""))
-
-    resp = call_uds(sock, "game.wfc_step", {"n_tiles": 4, "width": 4, "height": 4})
-    r.check("game.wfc_step", "result" in resp,
-            resp.get("error", {}).get("message", "") if "error" in resp else "")
-
-    resp = call_uds(sock, "game.engagement", {
-        "skill": 0.6, "challenge": 0.5, "session_duration_s": 120,
-        "action_count": 10, "exploration_breadth": 3,
-        "challenge_seeking": 2, "retry_count": 1, "deliberate_pauses": 1,
-    })
-    r.check("game.engagement", "result" in resp,
-            resp.get("error", {}).get("message", "") if "error" in resp else "")
+    has_game_ready = any(
+        "game" in str(c).lower()
+        for c in (caps if isinstance(caps, list) else [])
+    )
+    r.check("game.* domain routable",
+            has_game_ready,
+            "domain registered" if has_game_ready else
+            "not yet registered — ludoSpring not running (expected)")
 
     return r
 
@@ -322,82 +334,68 @@ def validate_c6_proprioception() -> Result:
     return r
 
 
-def validate_c7_interactive() -> Result:
-    """C7: Full Interactive Product (cross-subsystem)"""
-    r = Result("C7: Full Interactive")
+def validate_c7_product_readiness() -> Result:
+    """C7: Full Product Readiness — all primal capability domains healthy.
+
+    Validates the complete primal stack is ready for esotericWebb to
+    compose on. Does NOT require downstream (esotericWebb) or parallel
+    (ludoSpring) binaries. Those systems validate themselves.
+    """
+    r = Result("C7: Product Readiness")
 
     bio_sock = find_sock("biomeos")
-    r.check("biomeOS Neural API found", bio_sock is not None, bio_sock or "")
-    if bio_sock:
-        resp = call_uds(bio_sock, "graph.list")
-        r.check("biomeOS graph.list", "result" in resp,
-                f"{len(resp.get('result', []))} graphs" if "result" in resp else
-                resp.get("error", {}).get("message", ""))
+    r.check("biomeOS Neural API alive", bio_sock is not None, bio_sock or "")
+    if not bio_sock:
+        r.check("biomeOS graph.list", False, "no substrate")
+        r.check("Tower: BearDog alive", False, "no substrate")
+        r.check("Tower: Songbird alive", False, "no substrate")
+        return r
+
+    resp = call_uds(bio_sock, "graph.list")
+    r.check("biomeOS graph.list", "result" in resp,
+            f"{len(resp.get('result', []))} graphs" if "result" in resp else
+            resp.get("error", {}).get("message", ""))
 
     bd_sock = find_sock("beardog")
-    sb_sock = find_sock("songbird")
     if bd_sock:
         bd_resp = call_uds(bd_sock, "health.liveness")
         r.check("Tower: BearDog alive", "result" in bd_resp, bd_sock)
     else:
         r.check("Tower: BearDog alive", False, "socket not found")
+
+    sb_sock = find_sock("songbird")
     if sb_sock:
         sb_resp = call_uds(sb_sock, "health.liveness")
         r.check("Tower: Songbird alive", "result" in sb_resp, sb_sock)
     else:
         r.check("Tower: Songbird alive", False, "socket not found")
 
-    webb_sock = find_sock("esotericwebb")
-    if webb_sock:
-        resp = call_uds(webb_sock, "session.start", {"content": "default"})
-        has_session = "result" in resp
-        r.check("C3→C7: session.start", has_session)
-
-        if has_session:
-            state_resp = call_uds(webb_sock, "session.state")
-            state = state_resp.get("result", {})
-
-            pt_sock = find_sock("petaltongue")
-            if pt_sock and state:
-                turn = state.get("turn_count", state.get("turn", 0))
-                bindings = [{"channel_type": "gauge", "id": "turn", "label": "Turn",
-                             "value": float(turn), "min": 0.0, "max": 100.0,
-                             "unit": "", "normal_range": [0,100], "warning_range": [0,100]}]
-                resp = call_uds(pt_sock, "visualization.render.dashboard", {
-                    "session_id": "c7-test", "title": "C7 Cross-System",
-                    "bindings": bindings, "modality": "svg",
-                })
-                r.check("C3→C1: state→DataBinding→render", "result" in resp)
-
-                resp = call_uds(pt_sock, "visualization.export", {"session_id": "c7-test", "format": "svg"})
-                svg = resp.get("result", {}).get("content", "")
-                r.check("C1→C7: render→export SVG", bool(svg), f"{len(svg)} bytes")
-            else:
-                r.check("C3→C1: state→DataBinding→render", False, "petalTongue or state missing")
-                r.check("C1→C7: render→export SVG", False, "")
-    else:
-        r.check("C3→C7: session.start", False, "esotericWebb not found")
-
-    ludo_sock = find_sock("ludospring")
-    if ludo_sock:
-        resp = call_uds(ludo_sock, "game.evaluate_flow", {"skill": 0.5, "challenge": 0.5, "time_pressure": 0.3})
-        r.check("C4→C7: game.evaluate_flow", "result" in resp)
-    else:
-        r.check("C4→C7: game.evaluate_flow", False, "ludoSpring not found")
-
     sq_sock = find_sock("squirrel")
     if sq_sock:
         sq_resp = call_uds(sq_sock, "health.liveness")
-        r.check("C2→C7: Squirrel AI alive", "result" in sq_resp)
+        r.check("AI layer: Squirrel alive", "result" in sq_resp)
     else:
-        r.check("C2→C7: Squirrel AI alive", False, "Squirrel not running")
+        r.check("AI layer: Squirrel alive", False, "Squirrel not running (optional)")
+
+    pt_sock = find_sock("petaltongue")
+    if pt_sock:
+        pt_resp = call_uds(pt_sock, "health.liveness")
+        r.check("Viz layer: petalTongue alive", "result" in pt_resp)
+    else:
+        r.check("Viz layer: petalTongue alive", False, "petalTongue not running (optional)")
 
     ng_sock = find_sock("nestgate")
     if ng_sock:
-        resp = call_uds(ng_sock, "health.liveness")
-        r.check("C5→C7: NestGate alive", "result" in resp)
+        ng_resp = call_uds(ng_sock, "health.liveness")
+        r.check("Persistence: NestGate alive", "result" in ng_resp)
     else:
-        r.check("C5→C7: NestGate alive", False, "NestGate not responding")
+        r.check("Persistence: NestGate alive", False, "NestGate not running (optional)")
+
+    resp = call_uds(bio_sock, "capability.list")
+    result = resp.get("result", {})
+    caps = result if isinstance(result, list) else result.get("capabilities", [])
+    r.check("biomeOS capability routing", "result" in resp,
+            f"{len(caps) if isinstance(caps, list) else '?'} capabilities registered")
 
     return r
 
@@ -411,11 +409,11 @@ def main():
     compositions = [
         ("C1: Render (petalTongue)", validate_c1_render),
         ("C2: Narration (Squirrel AI)", validate_c2_narration),
-        ("C3: Session (esotericWebb)", validate_c3_session),
-        ("C4: Game Science (ludoSpring)", validate_c4_game_science),
+        ("C3: Session Readiness (substrate)", validate_c3_session_readiness),
+        ("C4: Game Science Readiness (substrate)", validate_c4_game_readiness),
         ("C5: Persistence (NestGate)", validate_c5_persistence),
         ("C6: Proprioception (petalTongue)", validate_c6_proprioception),
-        ("C7: Full Interactive", validate_c7_interactive),
+        ("C7: Product Readiness (full stack)", validate_c7_product_readiness),
     ]
 
     all_results = []
@@ -443,6 +441,7 @@ def main():
 
     if total_pass < total_checks:
         print(f"\n  Known gaps (expected failures):")
+        print(f"    - C3/C4 domain routing: downstream not running (expected)")
         print(f"    - C5: NestGate storage.list may need family_id (gap NG-01)")
 
     return 0 if total_pass == total_checks else 1
