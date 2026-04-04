@@ -3,6 +3,21 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0x] — Phase 23x: Ecosystem Compliance Matrix — 9 Tiers, 14 Primals (2026-04-04)
+
+### Added
+- **`wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v1.0.0** — Comprehensive compliance matrix covering 40+ auditable dimensions across 9 tiers (Build Quality, UniBin/ecoBin, IPC Protocol, Discovery/Self-Knowledge, Semantic Naming, Responsibility/Overstep, Workspace Dependencies, Presentation, Deployment/Mobile). Each primal graded A–F per tier with rollup grade. Supersedes `IPC_COMPLIANCE_MATRIX.md` v1.6.0.
+
+### Audited
+- **Phase 2 checks** across all 14 primals: `forbid(unsafe_code)`, `warn(missing_docs)`, CONTEXT.md, `#[allow(` vs `#[expect(`, PII scan, workspace dependencies, commented-out code, SPDX headers, C deps via `cargo tree`.
+- **Grade distribution**: 1 A (rhizoCrypt), 7 B (BearDog, coralReef, biomeOS, petalTongue, sweetGrass, LoamSpine, sourDough), 3 C (Songbird, NestGate, Squirrel), 2 D (ToadStool, barraCuda), 1 F (bingoCube).
+- **Top ecosystem gaps**: discovery debt (5 primals with >100 primal-name refs), license alignment (8 primals need `-or-later`), `#[allow(` migration (4 primals with >30 allow attrs), domain symlinks (8 primals missing).
+
+### Changed
+- `wateringHole/IPC_COMPLIANCE_MATRIX.md` — Archived to `fossilRecord/consolidated-apr2026/`
+- `wateringHole/README.md` — Updated reference from IPC matrix to ecosystem matrix
+- `docs/PRIMAL_GAPS.md` — Updated header to reference compliance matrix and grade distribution
+
 ## [0.8.0w] — Phase 23w: wateringHole Consolidation — 74 docs to 31 (2026-04-04)
 
 ### Changed

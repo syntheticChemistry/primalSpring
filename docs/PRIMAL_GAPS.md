@@ -6,13 +6,13 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-04 — Full 14-primal ecosystem audit + wateringHole consolidation (74→31 docs).
-> **Clean primals**: Songbird, biomeOS, petalTongue, LoamSpine, sourDough (fmt+clippy+tests all green).
-> **License policy**: `AGPL-3.0-or-later` is the ecosystem standard. `-only` means not trusting the nonprofit stewards who fight the legal battles. 8 primals need license string update.
+> **Last updated**: 2026-04-04 — Comprehensive compliance matrix published (9 tiers, 40+ dimensions, A–F grades).
+> **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` — supersedes `IPC_COMPLIANCE_MATRIX.md`.
+> **Grade distribution**: 1 A (rhizoCrypt), 7 B, 3 C, 2 D, 1 F (bingoCube).
+> **Top ecosystem gaps**: discovery debt (5 primals), license alignment (8 primals), `#[allow(` migration (4 primals), domain symlinks (8 primals).
 > **barraCuda**: BLOCKED — compile failure in `barracuda-naga-exec` (E0061). SIGSEGV remains concurrent-test driver debt.
-> **ToadStool**: Heavy fmt debt (~1,899 lines of diff), clippy failures (`manual_let_else`, deprecated `GenericArray`).
-> **bingoCube**: Edition 2021 (needs 2024), 15 clippy cast errors, no CHANGELOG, license ambiguous (`AGPL-3.0`).
-> **wateringHole**: 49 docs consolidated into 7, originals archived to `fossilRecord/consolidated-apr2026/`.
+> **ToadStool**: Heavy fmt debt (~1,899 lines of diff), clippy failures, discovery debt (2,998 refs).
+> **bingoCube**: Edition 2021, no `forbid(unsafe)`, no CHANGELOG/CONTEXT/deny.toml, 15 clippy cast errors. Grade: F.
 
 ---
 
@@ -265,7 +265,7 @@ by capability domain via Neural API, not by hardcoded primal names in routing co
 4. **Songbird** — **935 refs / 178 files** (was 2558→1472→1016→935 — **63% total reduction**). Strongest trajectory. Near-compliant.
 5. **NestGate** — 195 refs / 24 files. Near-compliant. Overstep shedding is the real work.
 
-Full per-primal details: `wateringHole/IPC_COMPLIANCE_MATRIX.md` §Capability-Based Discovery Compliance.
+Full per-primal details: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` §Tier 4: Discovery / Self-Knowledge.
 
 ---
 
