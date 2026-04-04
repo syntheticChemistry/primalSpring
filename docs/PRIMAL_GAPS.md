@@ -6,12 +6,13 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-04 — Songbird wave 111 audit + self-knowledge standard.
-> 23 gaps resolved, 4 open (zero critical, zero high, zero medium).
-> **Songbird wave 110-111**: Discovery **935→302 refs** (68% cut). 12,568 tests. Trajectory: 2558→302 (88% total reduction).
-> **barraCuda**: Clippy lint fix pushed (stale `large_stack_arrays` expect). SIGSEGV is concurrent-test driver issue (passes single-threaded).
-> **New**: `PRIMAL_SELF_KNOWLEDGE_STANDARD.md` v1.0.0 published in wateringHole — codifies socket naming, env var conventions, code patterns, and phased migration.
-> **10 of 14 primals now discovery-compliant or near-compliant.**
+> **Last updated**: 2026-04-04 — Full 14-primal ecosystem audit + wateringHole consolidation (74→31 docs).
+> **Clean primals**: Songbird, biomeOS, petalTongue, LoamSpine, sourDough (fmt+clippy+tests all green).
+> **License policy**: `AGPL-3.0-or-later` is the ecosystem standard. `-only` means not trusting the nonprofit stewards who fight the legal battles. 8 primals need license string update.
+> **barraCuda**: BLOCKED — compile failure in `barracuda-naga-exec` (E0061). SIGSEGV remains concurrent-test driver debt.
+> **ToadStool**: Heavy fmt debt (~1,899 lines of diff), clippy failures (`manual_let_else`, deprecated `GenericArray`).
+> **bingoCube**: Edition 2021 (needs 2024), 15 clippy cast errors, no CHANGELOG, license ambiguous (`AGPL-3.0`).
+> **wateringHole**: 49 docs consolidated into 7, originals archived to `fossilRecord/consolidated-apr2026/`.
 
 ---
 
@@ -339,3 +340,43 @@ Cross-referenced against `wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md`. No new 
 Previous: 41/44 (93%) → **43/44 (98%)** after rewiring and pull.
 
 The single remaining failure (`ai.query`) is an **environment dependency** — Squirrel's `AiRouter` is now correctly wired (SQ-02 resolved), but no local Ollama/llama.cpp instance is running. With Ollama serving a model at `localhost:11434`, C2 would reach 4/4.
+
+---
+
+## Ecosystem Audit Debt (April 4, 2026)
+
+### License Alignment — `AGPL-3.0-or-later` is the standard
+
+Pinning to `-only` means not trusting the nonprofit stewards who fight the legal battles. The scyBorg triple-copyleft is aggressive by design; `-or-later` is the correct SPDX identifier.
+
+| Primal | Current | Needed | Debt |
+|--------|---------|--------|------|
+| BearDog | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
+| Songbird | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
+| NestGate | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
+| ToadStool | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
+| coralReef | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
+| biomeOS | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
+| sweetGrass | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
+| bingoCube | `AGPL-3.0` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
+
+Compliant (no change needed): barraCuda, Squirrel, petalTongue, rhizoCrypt, LoamSpine, sourDough.
+
+### Build/Test Debt
+
+| Primal | Category | Issue |
+|--------|----------|-------|
+| barraCuda | **compile** | `barracuda-naga-exec/src/eval.rs` E0061 — missing arg to `eval_math`. Blocks all tests. |
+| barraCuda | **file size** | `executor.rs` 1,097 lines (limit 1,000) |
+| ToadStool | **fmt** | ~1,899 lines of diff — `cargo fmt --all` never run cleanly |
+| ToadStool | **clippy** | `manual_let_else` in GPU test code, deprecated `GenericArray::from_slice` |
+| NestGate | **fmt** | 1 file: `migration.rs:189` line wrap |
+| coralReef | **clippy** | 7 errors: `items_after_statements`, `doc_markdown` in `coral-gpu` tests |
+| bingoCube | **clippy** | 15 cast errors in `core/src/lib.rs` |
+| bingoCube | **edition** | 2021 (needs 2024) |
+| bingoCube | **docs** | No `CHANGELOG.md` |
+| rhizoCrypt | **clippy** | 5 `doc_markdown` in test file `store_redb_tests_query.rs` |
+| sweetGrass | **clippy** | 1 unused import in `tcp_jsonrpc.rs:123` |
+| sweetGrass | **config** | `.cargo/config.toml` target-dir points to `/home/southgate/` |
+| BearDog | **test** | `dispatch_doctor_comprehensive_runs` fails when no live primals |
+| biomeOS | **edition** | `tools/` sub-crate still on 2021 |
