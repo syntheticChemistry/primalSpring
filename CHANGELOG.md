@@ -3,6 +3,18 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0w] — Phase 23w: wateringHole Consolidation — 74 docs to 31 (2026-04-04)
+
+### Changed
+- **wateringHole consolidation**: 49 original documents merged into 7 consolidated files, reducing the top-level from 74 to 31 documents. Originals archived to `fossilRecord/consolidated-apr2026/`.
+  - 13 leverage guides → `LEVERAGE_GUIDES.md`
+  - 3 licensing docs → `LICENSING_AND_COPYLEFT.md`
+  - 5 GPU/compute docs → `GPU_AND_COMPUTE_EVOLUTION.md`
+  - 16 deploy/composition docs → `DEPLOYMENT_AND_COMPOSITION.md` + `ARTIFACT_AND_PACKAGING.md`
+  - 12 spring pattern docs → `SPRING_INTERACTION_PATTERNS.md` + `SPRING_COORDINATION_AND_VALIDATION.md`
+- `wateringHole/README.md` — Document Index rewritten to reflect consolidated structure
+- `wateringHole/STANDARDS_AND_EXPECTATIONS.md` — All section references updated to point to consolidated documents
+
 ## [0.8.0v] — Phase 23v: Self-Knowledge Standard + Songbird Wave 111 Audit (2026-04-04)
 
 ### Added
