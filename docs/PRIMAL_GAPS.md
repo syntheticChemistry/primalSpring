@@ -6,11 +6,13 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-04 — bingoCube compliance sprint (F→A), ecosystem tool taxonomy codified, 4 tools audited.
-> **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v1.1.0 — 14 primals + 4 tools.
+> **Last updated**: 2026-04-05 — Deep Debt Resolution + Public Readiness Sprint complete.
+> **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.0.0 — 14 primals + 4 tools.
 > **Grade distribution**: 3 A (rhizoCrypt, barraCuda, bingoCube), 7 B, 3 C, 1 D, 0 F.
-> **Tool grades**: bingoCube A, benchScale B, agentReagents B, rustChip B.
-> **Top ecosystem gaps**: discovery debt (5 primals), license alignment (8 primals), `#[allow(` migration (4 primals), domain symlinks (8 primals).
+> **Tool grades**: bingoCube A, benchScale A, agentReagents A, rustChip B.
+> **Public-ready tools**: bingoCube (83.4% coverage), benchScale (61.9%), agentReagents (60.2%) — all >=60% gate, scrubbed, Grade A.
+> **Deep debt resolved**: unsafe code evolution (benchScale: EnvGuard+LeaseList+nix, rustChip: 31 SAFETY docs), large file refactoring (3 repos), dependency modernization (thiserror 2.0, C deps documented), hardcoding → capability-based (agentReagents RegistrationSettings), mock → reference (rustChip).
+> **Top ecosystem gaps (primals)**: discovery debt (5 primals), license alignment (8 primals), `#[allow(` migration (4 primals), domain symlinks (8 primals).
 > **barraCuda**: BLOCKED — compile failure in `barracuda-naga-exec` (E0061). SIGSEGV remains concurrent-test driver debt.
 > **ToadStool**: Heavy fmt debt (~1,899 lines of diff), clippy failures, discovery debt (2,998 refs).
 

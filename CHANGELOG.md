@@ -3,6 +3,24 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.0] — Phase 24: Deep Debt Resolution + Public Readiness Sprint (2026-04-05)
+
+### Fixed
+- **bingoCube**: Public-readiness scrub — internal docs deleted, home paths scrubbed, path dep made optional, README AGPL wording fixed, whitePaper license aligned, broken links fixed. `shell.rs` refactored into 3 cohesive modules (shell+snapshot+evolve). Coverage 62.6% → 83.4%.
+- **benchScale**: B → A — README license aligned, archive paths scrubbed, all `#[allow(` → `#[expect(` (7 sites), SPDX consistency fixed. Unsafe evolution: `EnvGuard` RAII, `LeaseList` safe abstraction, `libc::kill` → `nix::sys::signal::kill`. `thiserror` 1.0 → 2.0. Large files refactored (`vm_state.rs`, `stages.rs`, `config/legacy.rs`). Coverage 35.5% → 61.9%.
+- **agentReagents**: B → A — Path dep documented, README license aligned, archive paths scrubbed, all `#[allow(` → `#[expect(` (9+ sites), template passwords documented. Hardcoded Songbird registration → capability-based `RegistrationSettings`. Coverage 7.1% → 60.2%.
+- **rustChip**: 31 unsafe blocks documented with `// SAFETY:` comments, `deny(unsafe_op_in_unsafe_fn)` enforced. `vfio/mod.rs` split into `ioctls.rs` + `container.rs`, `hybrid/mod.rs` → `software.rs`. `create_stub_model` → `create_reference_model`, `SoftSystemBackend` → `SoftwareBackend`.
+
+### Added
+- `tarpaulin.toml` with `fail-under = 60.0` on bingoCube, benchScale, agentReagents
+- C dependency documentation in `deny.toml` for all 4 tools (virt/libvirt, sqlite3/sqlx, libc VFIO)
+- Cross-primal doc references in rustChip marked as "ecosystem context — not a runtime dependency"
+- `ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.0.0 — coverage column, updated tool grades and debt summary
+
+### Changed
+- Tool grade distribution: 3 A (bingoCube, benchScale, agentReagents), 1 B (rustChip)
+- **Public-ready**: bingoCube, benchScale, agentReagents cleared for public repos
+
 ## [0.8.0y] — Phase 23y: Full Tool Compliance Sprint + Ecosystem Tool Taxonomy (2026-04-04)
 
 ### Fixed
