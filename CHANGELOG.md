@@ -3,6 +3,15 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.1] — Phase 24b: rustChip B → A (2026-04-05)
+
+### Fixed
+- **rustChip**: B → A — 828 clippy warnings resolved to 0 (workspace cast allows for numeric code, auto-fix + manual source fixes). 237 tests added across 5 crates (was 0 test functions). Coverage 60.8% (software-testable; hardware-only VFIO/mmap excluded). `tarpaulin.toml` with fail-under=60.0 and hardware exclude list.
+
+### Changed
+- All 4 ecosystem tools now at Grade A
+- `ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.1.0 — rustChip updated to Grade A with coverage column
+
 ## [0.9.0] — Phase 24: Deep Debt Resolution + Public Readiness Sprint (2026-04-05)
 
 ### Fixed
