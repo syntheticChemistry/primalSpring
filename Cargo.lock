@@ -490,6 +490,7 @@ name = "primalspring-exp020"
 version = "0.8.0"
 dependencies = [
  "primalspring",
+ "primalspring-trio-ops",
  "serde",
  "serde_json",
 ]
@@ -499,6 +500,7 @@ name = "primalspring-exp021"
 version = "0.8.0"
 dependencies = [
  "primalspring",
+ "primalspring-trio-ops",
  "serde",
  "serde_json",
 ]
@@ -508,6 +510,7 @@ name = "primalspring-exp022"
 version = "0.8.0"
 dependencies = [
  "primalspring",
+ "primalspring-trio-ops",
  "serde",
  "serde_json",
 ]
@@ -598,6 +601,7 @@ name = "primalspring-exp041"
 version = "0.8.0"
 dependencies = [
  "primalspring",
+ "primalspring-trio-ops",
  "serde",
  "serde_json",
 ]
@@ -979,6 +983,14 @@ version = "0.8.0"
 dependencies = [
  "primalspring",
  "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-trio-ops"
+version = "0.8.0"
+dependencies = [
+ "primalspring",
  "serde_json",
 ]
 

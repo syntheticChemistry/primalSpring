@@ -6,9 +6,20 @@
 //! IPC and Neural API routing: Ed25519 sign/verify, `BirdSong` beacon
 //! round-trip, Blake3 hashing, and secrets store/retrieve.
 
-use primalspring::ipc::{methods, tcp};
+use primalspring::ipc::tcp;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
+
+/// BearDog / Songbird RPC names (owned by those primals).
+const CRYPTO_GENERATE_KEYPAIR: &str = "crypto.generate_keypair";
+const CRYPTO_SIGN_ED25519: &str = "crypto.sign_ed25519";
+const CRYPTO_VERIFY_ED25519: &str = "crypto.verify_ed25519";
+const CRYPTO_BLAKE3_HASH: &str = "crypto.blake3_hash";
+const CRYPTO_SHA256_HASH: &str = "crypto.sha256_hash";
+const BIRDSONG_GENERATE_ENCRYPTED_BEACON: &str = "birdsong.generate_encrypted_beacon";
+const BIRDSONG_DECRYPT_BEACON: &str = "birdsong.decrypt_beacon";
+const SECRETS_STORE: &str = "secrets.store";
+const SECRETS_RETRIEVE: &str = "secrets.retrieve";
 
 fn main() {
     ValidationResult::new("BearDog Crypto Lifecycle E2E")
@@ -38,7 +49,7 @@ fn phase_ed25519_generate(
     let keypair = tcp::tcp_rpc(
         host,
         port,
-        methods::crypto::GENERATE_KEYPAIR,
+        CRYPTO_GENERATE_KEYPAIR,
         &serde_json::json!({ "algorithm": "ed25519" }),
     );
     match &keypair {
@@ -79,7 +90,7 @@ fn phase_ed25519_sign_verify(v: &mut ValidationResult, host: &str, port: u16, pu
     let sign_result = tcp::tcp_rpc(
         host,
         port,
-        methods::crypto::SIGN_ED25519,
+        CRYPTO_SIGN_ED25519,
         &serde_json::json!({ "data": test_payload }),
     );
     let sig = match &sign_result {
@@ -104,7 +115,7 @@ fn phase_ed25519_sign_verify(v: &mut ValidationResult, host: &str, port: u16, pu
     let verify_ok = tcp::tcp_rpc(
         host,
         port,
-        methods::crypto::VERIFY_ED25519,
+        CRYPTO_VERIFY_ED25519,
         &serde_json::json!({ "data": test_payload, "signature": sig, "public_key": pub_key }),
     );
     match verify_ok {
@@ -130,7 +141,7 @@ fn phase_ed25519_sign_verify(v: &mut ValidationResult, host: &str, port: u16, pu
     let verify_tampered = tcp::tcp_rpc(
         host,
         port,
-        methods::crypto::VERIFY_ED25519,
+        CRYPTO_VERIFY_ED25519,
         &serde_json::json!({ "data": "TAMPERED payload", "signature": sig, "public_key": pub_key }),
     );
     match verify_tampered {
@@ -163,7 +174,7 @@ fn phase_hashing(v: &mut ValidationResult, host: &str, port: u16) {
     let hash_result = tcp::tcp_rpc(
         host,
         port,
-        methods::crypto::BLAKE3_HASH,
+        CRYPTO_BLAKE3_HASH,
         &serde_json::json!({
             "data": "primalSpring exp085 hash test"
         }),
@@ -183,7 +194,7 @@ fn phase_hashing(v: &mut ValidationResult, host: &str, port: u16) {
     let sha_result = tcp::tcp_rpc(
         host,
         port,
-        methods::crypto::SHA256_HASH,
+        CRYPTO_SHA256_HASH,
         &serde_json::json!({
             "data": "primalSpring exp085 sha test"
         }),
@@ -207,7 +218,7 @@ fn phase_birdsong_beacon(v: &mut ValidationResult, host: &str, port: u16) {
     let beacon_gen = tcp::tcp_rpc(
         host,
         port,
-        methods::birdsong::GENERATE_ENCRYPTED_BEACON,
+        BIRDSONG_GENERATE_ENCRYPTED_BEACON,
         &serde_json::json!({
             "node_id": "exp085-test-node",
             "capabilities": ["coordination", "crypto"]
@@ -239,7 +250,7 @@ fn phase_birdsong_beacon(v: &mut ValidationResult, host: &str, port: u16) {
     let beacon_dec = tcp::tcp_rpc(
         host,
         port,
-        methods::birdsong::DECRYPT_BEACON,
+        BIRDSONG_DECRYPT_BEACON,
         &serde_json::json!({
             "encrypted_beacon": beacon_data
         }),
@@ -267,7 +278,7 @@ fn phase_secrets(v: &mut ValidationResult, host: &str, port: u16) {
     let store_result = tcp::tcp_rpc(
         host,
         port,
-        methods::secrets::STORE,
+        SECRETS_STORE,
         &serde_json::json!({
             "key": "exp085_test_secret",
             "value": "sovereign_data_at_rest"
@@ -289,7 +300,7 @@ fn phase_secrets(v: &mut ValidationResult, host: &str, port: u16) {
     let retrieve_result = tcp::tcp_rpc(
         host,
         port,
-        methods::secrets::RETRIEVE,
+        SECRETS_RETRIEVE,
         &serde_json::json!({
             "key": "exp085_test_secret"
         }),

@@ -58,7 +58,7 @@ order = 3
 required = false
 depends_on = ["beardog"]
 health_method = "dag.health"
-by_capability = "dag"
+by_capability = "provenance"
 capabilities = [
     "dag.create_session",
     "dag.append_event",
@@ -74,7 +74,7 @@ order = 4
 required = false
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "commit.health"
-by_capability = "commit"
+by_capability = "ledger"
 capabilities = [
     "commit.session",
     "commit.entry",
@@ -88,7 +88,7 @@ order = 5
 required = false
 depends_on = ["beardog", "loamspine"]
 health_method = "provenance.health"
-by_capability = "provenance"
+by_capability = "attribution"
 capabilities = [
     "provenance.create_braid",
     "provenance.lineage",

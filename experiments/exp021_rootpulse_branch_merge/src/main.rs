@@ -10,9 +10,10 @@
 use primalspring::coordination::probe_primal;
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
-use primalspring::ipc::provenance::{
-    self, ProvenanceStatus, begin_experiment_session, record_experiment_step, rootpulse_branch,
-    rootpulse_merge,
+use primalspring::ipc::provenance::ProvenanceStatus;
+use primalspring_trio_ops::{
+    begin_experiment_session, record_experiment_step, rootpulse_branch, rootpulse_merge,
+    trio_health,
 };
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
@@ -67,7 +68,7 @@ fn main() {
             // ── Branch/Merge operations via Neural API ──
 
             let neural_live = neural_api_healthy();
-            let trio_health = provenance::trio_health();
+            let trio_health = trio_health();
             let trio_available = neural_live && trio_health.iter().all(|(_d, ok)| *ok);
 
             v.check_or_skip(

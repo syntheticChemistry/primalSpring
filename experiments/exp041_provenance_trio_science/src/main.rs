@@ -11,8 +11,9 @@
 
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_for, discover_primal, neural_api_healthy, socket_path};
-use primalspring::ipc::provenance::{
-    self, ProvenanceStatus, begin_experiment_session, complete_experiment, record_experiment_step,
+use primalspring::ipc::provenance::ProvenanceStatus;
+use primalspring_trio_ops::{
+    begin_experiment_session, complete_experiment, record_experiment_step, trio_health,
 };
 use primalspring::primal_names;
 use primalspring::tolerances;
@@ -173,7 +174,7 @@ fn main() {
 
                 // ── Trio capability health via Neural API ──
 
-                let trio_health = provenance::trio_health();
+                let trio_health = trio_health();
                 let trio_caps_healthy = neural_live && trio_health.iter().all(|(_d, ok)| *ok);
 
                 v.check_or_skip(

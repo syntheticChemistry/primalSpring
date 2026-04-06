@@ -163,7 +163,7 @@ order = 7
 required = false
 depends_on = ["beardog"]
 health_method = "health"
-by_capability = "dag"
+by_capability = "provenance"
 capabilities = ["dag.session.create", "dag.event.append", "dag.session.finalize"]
 
 [[graph.node]]
@@ -173,7 +173,7 @@ order = 8
 required = false
 depends_on = ["beardog"]
 health_method = "health"
-by_capability = "lineage"
+by_capability = "ledger"
 capabilities = ["lineage.commit", "lineage.branch", "lineage.certify"]
 
 [[graph.node]]
@@ -183,7 +183,7 @@ order = 9
 required = false
 depends_on = ["beardog"]
 health_method = "health"
-by_capability = "provenance"
+by_capability = "attribution"
 capabilities = ["provenance.create_braid", "provenance.verify_braid"]
 
 # ── Storage + compute ──────────────────────────────────────────────────

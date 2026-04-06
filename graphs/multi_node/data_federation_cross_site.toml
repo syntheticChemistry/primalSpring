@@ -71,7 +71,7 @@ depends_on = ["discover_remote"]
 output = "session_id"
 
 [nodes.primal]
-by_capability = "dag"
+by_capability = "provenance"
 
 [nodes.operation]
 name = "dag.session.create"
@@ -140,7 +140,7 @@ depends_on = ["replicate_data"]
 output = "dag_event"
 
 [nodes.primal]
-by_capability = "dag"
+by_capability = "provenance"
 
 [nodes.operation]
 name = "dag.event.append"
@@ -163,7 +163,7 @@ depends_on = ["record_replication"]
 output = "dag_federated"
 
 [nodes.primal]
-by_capability = "dag"
+by_capability = "provenance"
 
 [nodes.operation]
 name = "rootpulse.federate"
@@ -205,7 +205,7 @@ depends_on = ["sync_attribution"]
 output = "commit_result"
 
 [nodes.primal]
-by_capability = "commit"
+by_capability = "ledger"
 
 [nodes.operation]
 name = "commit.session"

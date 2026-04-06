@@ -18,6 +18,13 @@ use primalspring::ipc::methods;
 use primalspring::ipc::tcp::{env_port, tcp_rpc};
 use primalspring::validation::ValidationResult;
 
+/// RPC method names for the provenance trio (owned by those primals).
+const PROVENANCE_SESSION_CREATE: &str = "provenance.session.create";
+const PROVENANCE_EVENT_APPEND: &str = "provenance.event.append";
+const PROVENANCE_COMMIT: &str = "provenance.commit";
+const ATTRIBUTION_CLAIM: &str = "attribution.claim";
+const ATTRIBUTION_RESOLVE: &str = "attribution.resolve";
+
 const DEFAULT_RHIZOCRYPT_PORT: u16 = 9600;
 const DEFAULT_LOAMSPINE_PORT: u16 = 9610;
 const DEFAULT_SWEETGRASS_PORT: u16 = 9620;
@@ -94,7 +101,7 @@ fn scenario_tampered_dag(v: &mut ValidationResult, host: &str, rhizo_port: u16) 
     let session = tcp_rpc(
         host,
         rhizo_port,
-        methods::provenance::SESSION_CREATE,
+        PROVENANCE_SESSION_CREATE,
         &serde_json::json!({"agent": "exp084_adversarial", "purpose": "tamper_test"}),
     );
 
@@ -107,7 +114,7 @@ fn scenario_tampered_dag(v: &mut ValidationResult, host: &str, rhizo_port: u16) 
             let tampered = tcp_rpc(
                 host,
                 rhizo_port,
-                methods::provenance::EVENT_APPEND,
+                PROVENANCE_EVENT_APPEND,
                 &serde_json::json!({
                     "session_id": session_data
                         .get("session_id")
@@ -162,8 +169,8 @@ fn scenario_replay_attack(v: &mut ValidationResult, host: &str, loam_port: u16) 
         "timestamp": "2026-03-28T00:00:00Z"
     });
 
-    let first = tcp_rpc(host, loam_port, methods::provenance::COMMIT, &commit_params);
-    let second = tcp_rpc(host, loam_port, methods::provenance::COMMIT, &commit_params);
+    let first = tcp_rpc(host, loam_port, PROVENANCE_COMMIT, &commit_params);
+    let second = tcp_rpc(host, loam_port, PROVENANCE_COMMIT, &commit_params);
 
     match (first, second) {
         (Ok(_), Ok(_)) => {
@@ -196,7 +203,7 @@ fn scenario_attribution_dispute(v: &mut ValidationResult, host: &str, sweet_port
     let claim_a = tcp_rpc(
         host,
         sweet_port,
-        methods::provenance::ATTRIBUTION_CLAIM,
+        ATTRIBUTION_CLAIM,
         &serde_json::json!({
             "computation_id": "dispute-test-comp-001",
             "agent": "agent_alice",
@@ -207,7 +214,7 @@ fn scenario_attribution_dispute(v: &mut ValidationResult, host: &str, sweet_port
     let claim_b = tcp_rpc(
         host,
         sweet_port,
-        methods::provenance::ATTRIBUTION_CLAIM,
+        ATTRIBUTION_CLAIM,
         &serde_json::json!({
             "computation_id": "dispute-test-comp-001",
             "agent": "agent_bob",
@@ -221,7 +228,7 @@ fn scenario_attribution_dispute(v: &mut ValidationResult, host: &str, sweet_port
             let resolve = tcp_rpc(
                 host,
                 sweet_port,
-                methods::provenance::ATTRIBUTION_RESOLVE,
+                ATTRIBUTION_RESOLVE,
                 &serde_json::json!({"computation_id": "dispute-test-comp-001"}),
             );
             match resolve {

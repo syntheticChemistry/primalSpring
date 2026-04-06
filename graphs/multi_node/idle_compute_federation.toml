@@ -98,7 +98,7 @@ depends_on = ["query_peer_capabilities"]
 output = "session_id"
 
 [nodes.primal]
-by_capability = "dag"
+by_capability = "provenance"
 
 [nodes.operation]
 name = "dag.session.create"
@@ -144,7 +144,7 @@ depends_on = ["dispatch_workload"]
 output = "dag_event"
 
 [nodes.primal]
-by_capability = "dag"
+by_capability = "provenance"
 
 [nodes.operation]
 name = "dag.event.append"

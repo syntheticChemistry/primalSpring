@@ -9,6 +9,7 @@ resolver = "2"
 default-members = ["ecoPrimal"]
 members = [
     "ecoPrimal",
+    "experiments/trio_ops",
     "experiments/exp001_tower_atomic",
     "experiments/exp002_node_atomic",
     "experiments/exp003_nest_atomic",

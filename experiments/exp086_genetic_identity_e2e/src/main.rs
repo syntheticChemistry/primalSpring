@@ -10,6 +10,15 @@ use primalspring::ipc::{methods, tcp};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
+/// BearDog / Songbird genetic & beacon RPC names (owned by those primals).
+const GENETIC_DERIVE_LINEAGE_BEACON_KEY: &str = "genetic.derive_lineage_beacon_key";
+const GENETIC_DERIVE_LINEAGE_KEY: &str = "genetic.derive_lineage_key";
+const GENETIC_GENERATE_LINEAGE_PROOF: &str = "genetic.generate_lineage_proof";
+const GENETIC_VERIFY_LINEAGE: &str = "genetic.verify_lineage";
+const BIRDSONG_GENERATE_ENCRYPTED_BEACON: &str = "birdsong.generate_encrypted_beacon";
+const BIRDSONG_DECRYPT_BEACON: &str = "birdsong.decrypt_beacon";
+const BIRDSONG_VERIFY_LINEAGE: &str = "birdsong.verify_lineage";
+
 fn main() {
     ValidationResult::new("Genetic Identity E2E")
         .with_provenance("exp086_genetic_identity_e2e", "2026-03-29")
@@ -38,7 +47,7 @@ fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16)
     let beacon_key = tcp::tcp_rpc(
         host,
         port,
-        methods::genetic::DERIVE_LINEAGE_BEACON_KEY,
+        GENETIC_DERIVE_LINEAGE_BEACON_KEY,
         &serde_json::json!({
             "lineage_seed": lineage_seed
         }),
@@ -66,7 +75,7 @@ fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16)
     let domain_key = tcp::tcp_rpc(
         host,
         port,
-        methods::genetic::DERIVE_LINEAGE_KEY,
+        GENETIC_DERIVE_LINEAGE_KEY,
         &serde_json::json!({
             "our_family_id": "exp086-family",
             "peer_family_id": "exp086-peer",
@@ -94,7 +103,7 @@ fn phase_beacon_family_scoping(v: &mut ValidationResult, host: &str, port: u16) 
     let beacon = tcp::tcp_rpc(
         host,
         port,
-        methods::birdsong::GENERATE_ENCRYPTED_BEACON,
+        BIRDSONG_GENERATE_ENCRYPTED_BEACON,
         &serde_json::json!({
             "node_id": "exp086-mito-test",
             "capabilities": ["security", "discovery"]
@@ -129,7 +138,7 @@ fn phase_beacon_family_scoping(v: &mut ValidationResult, host: &str, port: u16) 
     let decrypt_same = tcp::tcp_rpc(
         host,
         port,
-        methods::birdsong::DECRYPT_BEACON,
+        BIRDSONG_DECRYPT_BEACON,
         &serde_json::json!({
             "encrypted_beacon": beacon_data
         }),
@@ -194,6 +203,7 @@ fn phase_biomeos_family_registry(v: &mut ValidationResult, host: &str, port: u16
 }
 
 /// Verify lineage chain integrity via generate-then-verify round-trip.
+#[allow(clippy::too_many_lines)]
 fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port: u16) {
     use base64::Engine;
     let b64 = base64::engine::general_purpose::STANDARD;
@@ -208,7 +218,7 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
     let proof_result = tcp::tcp_rpc(
         host,
         port,
-        methods::genetic::GENERATE_LINEAGE_PROOF,
+        GENETIC_GENERATE_LINEAGE_PROOF,
         &serde_json::json!({
             "our_family_id": our_family,
             "peer_family_id": peer_family,
@@ -246,7 +256,7 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
     let verify_ok = tcp::tcp_rpc(
         host,
         port,
-        methods::genetic::VERIFY_LINEAGE,
+        GENETIC_VERIFY_LINEAGE,
         &serde_json::json!({
             "our_family_id": our_family,
             "peer_family_id": peer_family,
@@ -277,7 +287,7 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
     let verify_bad = tcp::tcp_rpc(
         host,
         port,
-        methods::genetic::VERIFY_LINEAGE,
+        GENETIC_VERIFY_LINEAGE,
         &serde_json::json!({
             "our_family_id": our_family,
             "peer_family_id": peer_family,
@@ -308,7 +318,7 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
     let birdsong_lineage = tcp::tcp_rpc(
         host,
         port,
-        methods::birdsong::VERIFY_LINEAGE,
+        BIRDSONG_VERIFY_LINEAGE,
         &serde_json::json!({
             "peer_node_id": "exp086-peer-node"
         }),

@@ -11,8 +11,9 @@
 use primalspring::coordination::probe_primal;
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
-use primalspring::ipc::provenance::{
-    self, ProvenanceStatus, begin_experiment_session, complete_experiment, record_experiment_step,
+use primalspring::ipc::provenance::ProvenanceStatus;
+use primalspring_trio_ops::{
+    begin_experiment_session, complete_experiment, record_experiment_step, trio_health,
 };
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
@@ -199,7 +200,7 @@ fn main() {
             provenance_trio_discovery(v);
 
             let neural_api_live = neural_api_healthy();
-            let trio_health = provenance::trio_health();
+            let trio_health = trio_health();
             let trio_all_healthy = neural_api_live && trio_health.iter().all(|(_domain, ok)| *ok);
 
             commit_phase_health(v, trio_all_healthy, &trio_health);

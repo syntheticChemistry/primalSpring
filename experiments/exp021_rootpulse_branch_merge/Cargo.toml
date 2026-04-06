@@ -13,6 +13,7 @@ path = "src/main.rs"
 
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
+primalspring-trio-ops = { path = "../trio_ops" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 

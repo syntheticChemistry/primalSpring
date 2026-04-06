@@ -54,7 +54,7 @@ order = 3
 required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "dag"
+by_capability = "provenance"
 capabilities = [
     "dag.session.create", "dag.session.get", "dag.session.list",
     "dag.event.append", "dag.vertex.get", "dag.frontier.get",
@@ -69,7 +69,7 @@ order = 4
 required = false
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
-by_capability = "lineage"
+by_capability = "ledger"
 capabilities = [
     "spine.create", "spine.get", "spine.seal",
     "entry.append", "entry.get",
@@ -84,7 +84,7 @@ order = 5
 required = false
 depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
-by_capability = "provenance"
+by_capability = "attribution"
 capabilities = [
     "braid.create", "braid.get", "braid.commit",
     "anchoring.anchor", "anchoring.verify",
