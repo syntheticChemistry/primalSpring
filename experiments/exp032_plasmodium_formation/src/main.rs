@@ -4,7 +4,7 @@
 //! covalently bonded NUCLEUS instances via Songbird mesh.
 //!
 //! Phase 1 (structural): All bond types, Metallic properties, graph metadata.
-//! Phase 2 (live, when available): mesh.peers, PlasmodiumState, cross-gate routing.
+//! Phase 2 (live, when available): mesh.peers, `PlasmodiumState`, cross-gate routing.
 
 use std::path::Path;
 

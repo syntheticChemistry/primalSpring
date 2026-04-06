@@ -59,7 +59,7 @@ pub const TICK_BUDGET_60HZ_US: u64 = 16_667;
 
 /// Acceptable jitter for 60 Hz tick timing assertions (microseconds).
 ///
-/// Source: integer division of 1_000_000/60 drops the fractional part;
+/// Source: integer division of `1_000_000/60` drops the fractional part;
 /// 1 µs slack covers the rounding. Used by exp014 and exp023.
 pub const TICK_BUDGET_60HZ_SLACK_US: u64 = 1;
 
@@ -187,13 +187,13 @@ pub const TCP_WRITE_TIMEOUT_SECS: u64 = 5;
 //
 // Canonical source: plasmidBin/ports.env
 
-/// TCP fallback port for remote BearDog (security).
+/// TCP fallback port for remote `BearDog` (security).
 pub const TCP_FALLBACK_BEARDOG_PORT: u16 = 9100;
 /// TCP fallback port for remote Songbird (discovery/mesh).
 pub const TCP_FALLBACK_SONGBIRD_PORT: u16 = 9200;
-/// TCP fallback port for remote NestGate (storage).
+/// TCP fallback port for remote `NestGate` (storage).
 pub const TCP_FALLBACK_NESTGATE_PORT: u16 = 9300;
-/// TCP fallback port for remote ToadStool (compute).
+/// TCP fallback port for remote `ToadStool` (compute).
 pub const TCP_FALLBACK_TOADSTOOL_PORT: u16 = 9400;
 /// TCP fallback port for remote Squirrel (AI).
 pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9500;

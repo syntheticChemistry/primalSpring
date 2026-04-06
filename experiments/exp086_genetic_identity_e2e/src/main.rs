@@ -10,7 +10,7 @@ use primalspring::ipc::{methods, tcp};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-/// BearDog / Songbird genetic & beacon RPC names (owned by those primals).
+/// `BearDog` / Songbird genetic & beacon RPC names (owned by those primals).
 const GENETIC_DERIVE_LINEAGE_BEACON_KEY: &str = "genetic.derive_lineage_beacon_key";
 const GENETIC_DERIVE_LINEAGE_KEY: &str = "genetic.derive_lineage_key";
 const GENETIC_GENERATE_LINEAGE_PROOF: &str = "genetic.generate_lineage_proof";

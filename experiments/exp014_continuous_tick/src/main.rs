@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp014: Continuous Tick — validates CoordinationPattern::Continuous and TICK_BUDGET_60HZ_US at 60Hz.
+//! Exp014: Continuous Tick — validates `CoordinationPattern::Continuous` and `TICK_BUDGET_60HZ_US` at 60Hz.
 
 use primalspring::graphs::CoordinationPattern;
 use primalspring::ipc::discover::neural_api_healthy;

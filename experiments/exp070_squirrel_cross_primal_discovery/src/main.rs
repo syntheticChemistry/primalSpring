@@ -6,7 +6,7 @@
 //! AI requests through them.
 //!
 //! Phases:
-//! 1. Graph structural validation of full_overlay.toml
+//! 1. Graph structural validation of `full_overlay.toml`
 //! 2. Spawn ordering and capability map verification
 //! 3. Live full overlay start (graceful skip if binaries missing)
 //! 4. Squirrel capability.discover (verify sibling awareness)

@@ -3,7 +3,7 @@
 //! Exp056: Cross-Tower Federation — validates BYOB manifest, NAT traversal
 //! graph structure, gossip federation metadata, and STUN tier escalation.
 //!
-//! Phase 1 (structural): AtomicType superset, friend graph bonding metadata.
+//! Phase 1 (structural): `AtomicType` superset, friend graph bonding metadata.
 //! Phase 2 (live, when available): gossip federation flow, STUN tier probing.
 
 use std::path::Path;

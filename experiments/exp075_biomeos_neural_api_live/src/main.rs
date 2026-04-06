@@ -7,8 +7,8 @@
 //! socket paths or `NEURAL_API_SOCKET` env) and validates:
 //!
 //! - Neural API health and capability listing
-//! - `crypto.generate_keypair` routing through biomeOS -> BearDog
-//! - `beacon.generate` routing through biomeOS -> BearDog
+//! - `crypto.generate_keypair` routing through biomeOS -> `BearDog`
+//! - `beacon.generate` routing through biomeOS -> `BearDog`
 //! - Birdsong encrypted beacon generation (direct Songbird RPC)
 //! - Capability discovery for security, network, beacon domains
 //!

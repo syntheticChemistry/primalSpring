@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp020: RootPulse Full Commit — validates the 6-phase commit pipeline
+//! Exp020: `RootPulse` Full Commit — validates the 6-phase commit pipeline
 //! via Neural API `capability.call`.
 //!
 //! Phases: health → dehydrate → sign → store → commit → attribute.

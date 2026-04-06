@@ -8,19 +8,19 @@
 //!
 //! Single source of truth — no duplicated name tables across modules.
 
-/// Discovery slug for BearDog.
+/// Discovery slug for `BearDog`.
 pub const BEARDOG: &str = "beardog";
 /// Discovery slug for Songbird.
 pub const SONGBIRD: &str = "songbird";
-/// Discovery slug for ToadStool.
+/// Discovery slug for `ToadStool`.
 pub const TOADSTOOL: &str = "toadstool";
-/// Discovery slug for NestGate.
+/// Discovery slug for `NestGate`.
 pub const NESTGATE: &str = "nestgate";
 /// Discovery slug for Squirrel.
 pub const SQUIRREL: &str = "squirrel";
 /// Discovery slug for rhizoCrypt.
 pub const RHIZOCRYPT: &str = "rhizocrypt";
-/// Discovery slug for LoamSpine.
+/// Discovery slug for `LoamSpine`.
 pub const LOAMSPINE: &str = "loamspine";
 /// Discovery slug for sweetGrass.
 pub const SWEETGRASS: &str = "sweetgrass";

@@ -6,7 +6,7 @@
 //! When biomeOS is running with spring primals registered, this experiment
 //! validates that the `cross_spring_ecology.toml` graph's capabilities
 //! can be discovered and routed: airSpring (ecology), wetSpring (science),
-//! and neuralSpring (neural_science) domains.
+//! and neuralSpring (`neural_science`) domains.
 //!
 //! Falls back to structural graph validation when spring primals are not
 //! running.

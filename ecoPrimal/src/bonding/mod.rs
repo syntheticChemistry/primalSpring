@@ -9,17 +9,18 @@
 //! See `primals/biomeOS/specs/NUCLEUS_BONDING_MODEL.md` for the full specification.
 
 pub mod graph_metadata;
+pub mod ionic;
 pub mod stun_tiers;
 
 use serde::{Deserialize, Serialize};
 
 /// Multi-gate bonding model between NUCLEUS instances.
 ///
-/// Maps to the chemistry-inspired trust hierarchy in NUCLEUS_BONDING_MODEL.md:
+/// Maps to the chemistry-inspired trust hierarchy in `NUCLEUS_BONDING_MODEL.md`:
 /// Covalent (genetic trust) > Metallic (organizational) > Ionic (contract) > Weak (zero trust).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum BondType {
-    /// Shared family seed, full trust, mutual discovery via BirdSong mesh.
+    /// Shared family seed, full trust, mutual discovery via `BirdSong` mesh.
     /// Use case: basement HPC, friend clusters, research collaborations.
     Covalent,
     /// Delocalized electron sea — Towers pool for global optimization.
@@ -77,7 +78,7 @@ impl BondType {
 /// Trust model governing a bonding interaction.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TrustModel {
-    /// BearDog genetic lineage via shared `.family.seed`.
+    /// `BearDog` genetic lineage via shared `.family.seed`.
     GeneticLineage,
     /// API key, OAuth, mutual TLS — contract-verified.
     Contractual,
@@ -216,7 +217,7 @@ impl BondingPolicy {
 pub struct BondingResult {
     /// Which bonding model was tested.
     pub bond_type: BondType,
-    /// Number of NestGate instances discovered during bonding.
+    /// Number of `NestGate` instances discovered during bonding.
     pub gates_discovered: usize,
     /// Number of capabilities shared across the bond.
     pub capabilities_shared: usize,

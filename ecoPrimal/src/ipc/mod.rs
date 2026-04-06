@@ -40,7 +40,7 @@ pub use neural_bridge::NeuralBridge;
 /// Known legacy method prefixes that callers may prepend.
 ///
 /// Ecosystem convention (groundSpring V121, neuralSpring V122, wetSpring V133,
-/// healthSpring V42, BearDog Waves 9-12, Songbird v0.2.1): strip any of these
+/// healthSpring V42, `BearDog` Waves 9-12, Songbird v0.2.1): strip any of these
 /// dotted prefixes before dispatch so `primalspring.health.check` resolves
 /// identically to `health.check`.
 const LEGACY_PREFIXES: &[&str] = &[
@@ -58,7 +58,7 @@ const LEGACY_PREFIXES: &[&str] = &[
 /// Normalize a JSON-RPC method name by stripping known legacy prefixes.
 ///
 /// Ecosystem-wide standard absorbed from groundSpring V121, neuralSpring V122,
-/// wetSpring V133, healthSpring V42, BearDog, and Songbird. Callers may send
+/// wetSpring V133, healthSpring V42, `BearDog`, and Songbird. Callers may send
 /// `primalspring.health.check` or `health.check` — both resolve identically.
 ///
 /// Also handles the `capabilities.list` → `capabilities.list` plural alias

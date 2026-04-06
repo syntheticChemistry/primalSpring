@@ -3,7 +3,7 @@
 //! Exp062: Tower Subsystem Sweep — probe every songbird JSON-RPC method.
 //!
 //! Spawns a Tower atomic via the harness and systematically calls every
-//! known songbird subsystem method (Tor, STUN, BirdSong, Onion,
+//! known songbird subsystem method (Tor, STUN, `BirdSong`, Onion,
 //! Federation, Discovery). Reports each subsystem as UP / DEGRADED / DOWN
 //! with latency. Like exp051 (socket discovery sweep) but for RPC methods.
 

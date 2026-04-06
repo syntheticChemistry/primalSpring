@@ -5,7 +5,7 @@
 //!
 //! Environment:
 //!   `GATE_HOSTS`       — comma-separated list of gate hostnames (required)
-//!   `EDGE_SCENARIO`    — which scenario: all|asymmetric|partial_mesh|migration
+//!   `EDGE_SCENARIO`    — which scenario: `all|asymmetric|partial_mesh|migration`
 //!   `*_PORT`           — per-primal TCP port overrides
 
 use std::time::Duration;

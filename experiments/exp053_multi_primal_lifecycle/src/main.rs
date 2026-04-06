@@ -9,7 +9,7 @@ use primalspring::coordination::{AtomicType, validate_composition};
 use primalspring::ipc::discover::discover_for;
 use primalspring::validation::ValidationResult;
 
-/// Source: PRIMAL_REGISTRY.md — 6 lifecycle participants in the research paper pipeline
+/// Source: `PRIMAL_REGISTRY.md` — 6 lifecycle participants in the research paper pipeline
 /// (beardog, songbird, toadstool, nestgate, rhizocrypt, sweetgrass).
 const LIFECYCLE_PARTICIPANT_COUNT: usize = 6;
 

@@ -3,7 +3,7 @@
 //! Exp063: Pixel ↔ Tower Rendezvous — replicate the biomeOS beacon exchange.
 //!
 //! Validates the local half of the Pixel 8a deployment flow demonstrated
-//! by biomeOS: spawn Tower, generate an encrypted BirdSong beacon, POST
+//! by biomeOS: spawn Tower, generate an encrypted `BirdSong` beacon, POST
 //! it to the rendezvous endpoint, and verify the exchange.
 //!
 //! Supports two modes:

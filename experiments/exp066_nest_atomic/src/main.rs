@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-//! exp066 — Nest Atomic validation: Tower + NestGate + Squirrel
+//! exp066 — Nest Atomic validation: Tower + `NestGate` + Squirrel
 //!
 //! Validates that the Nest Atomic composition (beardog + songbird + nestgate + squirrel)
 //! starts, stores/retrieves data, and passes health checks.

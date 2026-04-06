@@ -84,7 +84,7 @@ pub enum IpcError {
 /// An [`IpcError`] annotated with the [`IpcErrorPhase`] where it occurred.
 ///
 /// `source()` delegates to the inner `IpcError`'s error source, preserving
-/// the io::Error chain for connection types while returning `None` for
+/// the `io::Error` chain for connection types while returning `None` for
 /// protocol/application errors.
 #[derive(Debug)]
 pub struct PhasedIpcError {

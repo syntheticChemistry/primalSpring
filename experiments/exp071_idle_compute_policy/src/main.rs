@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp071: Idle Compute Policy — validates BondingPolicy capability masks,
+//! Exp071: Idle Compute Policy — validates `BondingPolicy` capability masks,
 //! time windows, bandwidth limits, and graph metadata for idle compute
 //! federation scenarios.
 //!

@@ -22,7 +22,7 @@
 //! - [`deploy`] — deploy graph parsing, structural validation, and live probing
 //! - [`graphs`] — graph execution pattern validation (Sequential, Parallel, DAG, Pipeline, Continuous)
 //! - [`emergent`] — emergent system validation (`RootPulse`, RPGPT, `CoralForge`)
-//! - [`bonding`] — multi-gate bonding models (Covalent, Metallic, Ionic, Weak, OrganoMetalSalt)
+//! - [`bonding`] — multi-gate bonding models (Covalent, Metallic, Ionic, Weak, `OrganoMetalSalt`)
 //! - [`ipc`] — JSON-RPC 2.0 client + Neural API bridge + socket discovery
 //! - [`launcher`] — primal binary discovery, spawn, and socket lifecycle (sync port from biomeOS)
 //! - [`harness`] — atomic test orchestration: spawn compositions, validate, tear down

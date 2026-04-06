@@ -353,7 +353,7 @@ fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
 ///
 /// # Example
 ///
-/// Given Tower (`beardog` order=1) → Songbird (order=2, depends_on=`beardog`):
+/// Given Tower (`beardog` order=1) → Songbird (order=2, `depends_on`=`beardog`):
 /// - Wave 0: `["beardog"]`
 /// - Wave 1: `["songbird"]`
 pub fn topological_waves(graph: &DeployGraph) -> Result<Vec<Vec<String>>, String> {

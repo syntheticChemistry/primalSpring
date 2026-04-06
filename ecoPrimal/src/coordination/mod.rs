@@ -21,11 +21,11 @@ use crate::tolerances;
 /// Atomic composition layer — each represents a testable deployment target.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AtomicType {
-    /// BearDog + Songbird (crypto + mesh). Minimal NUCLEUS composition.
+    /// `BearDog` + Songbird (crypto + mesh). Minimal NUCLEUS composition.
     Tower,
-    /// Tower + ToadStool (adds compute).
+    /// Tower + `ToadStool` (adds compute).
     Node,
-    /// Tower + NestGate + Squirrel (adds storage + AI bridge).
+    /// Tower + `NestGate` + Squirrel (adds storage + AI bridge).
     Nest,
     /// All 8 primals including Squirrel and provenance trio.
     FullNucleus,

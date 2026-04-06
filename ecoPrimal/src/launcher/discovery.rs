@@ -73,7 +73,7 @@ pub fn discover_binary(primal: &str) -> Result<PathBuf, LaunchError> {
 ///
 /// biomeOS is the substrate primal — the ecosystem's composition,
 /// coordination, and deployment orchestrator. The Neural API is one of
-/// its UniBin modes (`biomeos api`).
+/// its `UniBin` modes (`biomeos api`).
 ///
 /// # Errors
 ///

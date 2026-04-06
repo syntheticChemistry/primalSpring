@@ -4,7 +4,7 @@
 //!
 //! biomeOS is the ecosystem's **substrate primal**: it orchestrates
 //! deployments, routes capabilities, and coordinates primals. The Neural
-//! API is one of its UniBin modes (`biomeos neural-api`), providing
+//! API is one of its `UniBin` modes (`biomeos neural-api`), providing
 //! graph execution and capability routing over JSON-RPC 2.0.
 //!
 //! This module provides a thin wrapper around [`PrimalClient`] for

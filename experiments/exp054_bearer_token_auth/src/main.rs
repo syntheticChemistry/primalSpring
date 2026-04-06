@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp054: Bearer Token Auth — validates BearDog security.authenticate → compute.submit flow.
+//! Exp054: Bearer Token Auth — validates `BearDog` security.authenticate → compute.submit flow.
 
 use primalspring::ipc::discover::{discover_primal, socket_path};
 use primalspring::ipc::protocol::JsonRpcRequest;

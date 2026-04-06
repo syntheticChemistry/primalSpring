@@ -4,7 +4,7 @@
 //!
 //! Uses `topological_waves()` to compute the startup wave ordering from
 //! each atomic graph's dependency edges, then validates that the waves
-//! respect the Tower ⊂ Node ⊂ FullNucleus containment.
+//! respect the Tower ⊂ Node ⊂ `FullNucleus` containment.
 
 use std::path::Path;
 

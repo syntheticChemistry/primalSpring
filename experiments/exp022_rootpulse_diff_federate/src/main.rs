@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp022: RootPulse Diff Federate — validates Merkle diff and federation
+//! Exp022: `RootPulse` Diff Federate — validates Merkle diff and federation
 //! via Neural API `capability.call`.
 //!
 //! When the provenance trio is running, exercises real diff and federate

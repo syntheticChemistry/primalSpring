@@ -11,7 +11,7 @@
 //!
 //! Environment:
 //!   `REMOTE_GATE_HOST`  — gate node hostname (required)
-//!   `CHAOS_SCENARIO`    — which scenario to run: all|kill|slow|port|half_open|partition
+//!   `CHAOS_SCENARIO`    — which scenario to run: `all|kill|slow|port|half_open|partition`
 //!   `*_PORT`            — per-primal TCP port overrides
 
 use std::net::TcpStream;

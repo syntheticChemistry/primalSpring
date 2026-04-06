@@ -2,9 +2,9 @@
 //! Exp010: Sequential Graph — validates sequential coordination pattern
 //! with a live Tower Atomic composition (beardog -> songbird).
 //!
-//! Phase 1: CoordinationPattern constant validation
-//! Phase 2: Graph structural validation (tower_atomic_bootstrap.toml)
-//! Phase 3: Live sequential composition via AtomicHarness
+//! Phase 1: `CoordinationPattern` constant validation
+//! Phase 2: Graph structural validation (`tower_atomic_bootstrap.toml`)
+//! Phase 3: Live sequential composition via `AtomicHarness`
 //! Phase 4: Sequential ordering verification (beardog before songbird)
 
 use std::path::{Path, PathBuf};

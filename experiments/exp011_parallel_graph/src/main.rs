@@ -2,9 +2,9 @@
 //! Exp011: Parallel Graph — validates parallel coordination pattern
 //! with a live 4-primal composition (beardog, songbird, nestgate, toadstool).
 //!
-//! Phase 1: CoordinationPattern constant validation
-//! Phase 2: Graph structural validation (parallel_capability_burst.toml)
-//! Phase 3: Live parallel composition via AtomicHarness
+//! Phase 1: `CoordinationPattern` constant validation
+//! Phase 2: Graph structural validation (`parallel_capability_burst.toml`)
+//! Phase 3: Live parallel composition via `AtomicHarness`
 //! Phase 4: Parallel health burst (all 4 primals respond concurrently)
 
 use std::path::{Path, PathBuf};

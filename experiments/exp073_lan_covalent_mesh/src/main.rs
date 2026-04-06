@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp073: LAN Covalent Mesh — validate cross-gate Songbird mesh and BirdSong.
+//! Exp073: LAN Covalent Mesh — validate cross-gate Songbird mesh and `BirdSong`.
 //!
 //! Connects to a remote gate's Songbird over TCP and validates:
 //! - `mesh.peers` discovers at least 1 peer
@@ -11,7 +11,7 @@
 //! Environment:
 //!   `REMOTE_GATE_HOST` — hostname or IP of the remote gate (required)
 //!   `REMOTE_SONGBIRD_PORT` — Songbird TCP fallback (default: 9200, cross-gate only)
-//!   `REMOTE_BEARDOG_PORT`  — BearDog TCP fallback (default: 9100, cross-gate only)
+//!   `REMOTE_BEARDOG_PORT`  — `BearDog` TCP fallback (default: 9100, cross-gate only)
 //!   `FAMILY_ID` — shared family ID for beacon generation
 
 use primalspring::ipc::methods;

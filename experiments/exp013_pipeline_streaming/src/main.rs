@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp013: Pipeline Streaming — validates CoordinationPattern::Pipeline and PIPELINE_THROUGHPUT_MIN for streaming pipeline.
+//! Exp013: Pipeline Streaming — validates `CoordinationPattern::Pipeline` and `PIPELINE_THROUGHPUT_MIN` for streaming pipeline.
 
 use primalspring::graphs::CoordinationPattern;
 use primalspring::ipc::discover::neural_api_healthy;

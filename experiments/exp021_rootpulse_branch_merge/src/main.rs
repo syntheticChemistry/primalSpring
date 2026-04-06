@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp021: RootPulse Branch Merge — validates branch and merge operations
+//! Exp021: `RootPulse` Branch Merge — validates branch and merge operations
 //! via Neural API `capability.call`.
 //!
 //! When the provenance trio is running, exercises real branch/merge DAG

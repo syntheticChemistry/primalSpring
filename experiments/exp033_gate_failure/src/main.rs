@@ -7,8 +7,8 @@ use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_path}
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
-/// Source: bonding::BondType — 5 bond models defined in ecosystem architecture
-/// (Covalent, Metallic, Ionic, Weak, OrganoMetalSalt).
+/// Source: `bonding::BondType` — 5 bond models defined in ecosystem architecture
+/// (Covalent, Metallic, Ionic, Weak, `OrganoMetalSalt`).
 const BOND_TYPE_COUNT: usize = 5;
 
 fn main() {

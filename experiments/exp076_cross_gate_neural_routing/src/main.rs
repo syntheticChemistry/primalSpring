@@ -10,7 +10,7 @@
 //!
 //! Expects:
 //! - biomeOS neural-api running on localhost (Unix socket)
-//! - Pixel BearDog reachable at `PIXEL_BEARDOG_TCP` (default `localhost:19100`)
+//! - Pixel `BearDog` reachable at `PIXEL_BEARDOG_TCP` (default `localhost:19100`)
 //! - Pixel Songbird reachable at `PIXEL_SONGBIRD_TCP` (default `localhost:19200`)
 
 use primalspring::ipc::NeuralBridge;

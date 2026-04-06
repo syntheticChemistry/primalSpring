@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp025: CoralForge Pipeline — validates pipeline graph over neuralSpring + wetSpring + toadStool.
+//! Exp025: `CoralForge` Pipeline — validates pipeline graph over neuralSpring + wetSpring + toadStool.
 
 use primalspring::coordination::probe_primal;
 use primalspring::emergent::EmergentSystem;

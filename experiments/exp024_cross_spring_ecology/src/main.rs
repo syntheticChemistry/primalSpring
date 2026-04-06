@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp024: Cross-Spring Ecology — validates cross_spring_ecology.toml with airSpring + wetSpring data.
+//! Exp024: Cross-Spring Ecology — validates `cross_spring_ecology.toml` with airSpring + wetSpring data.
 
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::discover_primal;

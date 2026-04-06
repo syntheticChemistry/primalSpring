@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp042: FieldMouse Ingestion — fieldMouse frames → NestGate → sweetGrass.
+//! Exp042: `FieldMouse` Ingestion — fieldMouse frames → `NestGate` → sweetGrass.
 //!
-//! Validates edge data ingestion: fieldMouse captures frames, NestGate stores
+//! Validates edge data ingestion: fieldMouse captures frames, `NestGate` stores
 //! artifacts, sweetGrass records attribution. This tests the ingest pipeline
 //! that every edge sensor primal will follow.
 
@@ -16,7 +16,7 @@ use primalspring::validation::ValidationResult;
 ///
 /// Source: `PRIMAL_REGISTRY.md` + `CROSS_SPRING_DATA_FLOW_STANDARD.md`.
 /// fieldMouse is the edge sensor primal (post-NUCLEUS, may not be running).
-/// NestGate stores artifacts, sweetGrass records attribution.
+/// `NestGate` stores artifacts, sweetGrass records attribution.
 const INGEST_PRIMALS: &[&str] = &[
     primal_names::FIELDMOUSE,
     primal_names::NESTGATE,

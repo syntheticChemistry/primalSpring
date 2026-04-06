@@ -2,9 +2,9 @@
 //! Exp012: Conditional DAG — validates conditional coordination pattern
 //! with toadstool GPU dispatch and CPU fallback path.
 //!
-//! Phase 1: CoordinationPattern constant validation
-//! Phase 2: Graph structural validation (conditional_fallback.toml)
-//! Phase 3: Live conditional composition via AtomicHarness
+//! Phase 1: `CoordinationPattern` constant validation
+//! Phase 2: Graph structural validation (`conditional_fallback.toml`)
+//! Phase 3: Live conditional composition via `AtomicHarness`
 //! Phase 4: Conditional branch verification (toadstool primary, CPU fallback)
 
 use std::path::{Path, PathBuf};

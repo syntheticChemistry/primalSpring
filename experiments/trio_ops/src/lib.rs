@@ -274,7 +274,7 @@ pub fn complete_experiment(session_id: &str) -> PipelineResult {
     }
 }
 
-/// Execute RootPulse branch operation via Neural API.
+/// Execute `RootPulse` branch operation via Neural API.
 #[must_use]
 pub fn rootpulse_branch(session_id: &str, branch_name: &str) -> ProvenanceResult {
     let args = serde_json::json!({
@@ -288,7 +288,7 @@ pub fn rootpulse_branch(session_id: &str, branch_name: &str) -> ProvenanceResult
     )
 }
 
-/// Execute RootPulse merge operation via Neural API.
+/// Execute `RootPulse` merge operation via Neural API.
 #[must_use]
 pub fn rootpulse_merge(source_id: &str, target_id: &str) -> ProvenanceResult {
     let args = serde_json::json!({
@@ -302,7 +302,7 @@ pub fn rootpulse_merge(source_id: &str, target_id: &str) -> ProvenanceResult {
     )
 }
 
-/// Execute RootPulse diff operation via Neural API.
+/// Execute `RootPulse` diff operation via Neural API.
 #[must_use]
 pub fn rootpulse_diff(session_a: &str, session_b: &str) -> ProvenanceResult {
     let args = serde_json::json!({
@@ -320,7 +320,7 @@ pub fn rootpulse_diff(session_a: &str, session_b: &str) -> ProvenanceResult {
     )
 }
 
-/// Execute RootPulse federate operation via Neural API.
+/// Execute `RootPulse` federate operation via Neural API.
 #[must_use]
 pub fn rootpulse_federate(session_id: &str, remote_endpoint: &str) -> ProvenanceResult {
     let args = serde_json::json!({

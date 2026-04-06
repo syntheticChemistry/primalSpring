@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 //! Exp030: Covalent Bond — validates two NUCLEUS instances share family seed
-//! and discover each other via BirdSong mesh.
+//! and discover each other via `BirdSong` mesh.
 //!
-//! Phase 1 (structural): BondType properties, family-scoped sockets, graph metadata.
-//! Phase 2 (live, when available): mesh.auto_discover finds second gate.
+//! Phase 1 (structural): `BondType` properties, family-scoped sockets, graph metadata.
+//! Phase 2 (live, when available): `mesh.auto_discover` finds second gate.
 
 use std::path::Path;
 

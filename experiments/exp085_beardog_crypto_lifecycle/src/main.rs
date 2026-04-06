@@ -10,7 +10,7 @@ use primalspring::ipc::tcp;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-/// BearDog / Songbird RPC names (owned by those primals).
+/// `BearDog` / Songbird RPC names (owned by those primals).
 const CRYPTO_GENERATE_KEYPAIR: &str = "crypto.generate_keypair";
 const CRYPTO_SIGN_ED25519: &str = "crypto.sign_ed25519";
 const CRYPTO_VERIFY_ED25519: &str = "crypto.verify_ed25519";

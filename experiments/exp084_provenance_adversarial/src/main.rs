@@ -4,14 +4,14 @@
 //!
 //! Scenarios:
 //! 1. Tampered DAG: inject a modified event → does Merkle verification catch it?
-//! 2. Replay attack: replay an old session → does LoamSpine reject duplicates?
+//! 2. Replay attack: replay an old session → does `LoamSpine` reject duplicates?
 //! 3. Attribution dispute: two agents claim same work → does sweetGrass resolve?
 //!
 //! Environment:
 //!   `REMOTE_GATE_HOST`      — gate node hostname
 //!   `PROVENANCE_SCENARIO`   — which scenario: all|tamper|replay|dispute
 //!   `RHIZOCRYPT_PORT`       — rhizoCrypt port (default 9600)
-//!   `LOAMSPINE_PORT`        — LoamSpine port (default 9610)
+//!   `LOAMSPINE_PORT`        — `LoamSpine` port (default 9610)
 //!   `SWEETGRASS_PORT`       — sweetGrass port (default 9620)
 
 use primalspring::ipc::methods;

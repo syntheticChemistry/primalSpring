@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp005: Atomic Subtraction — validates AtomicType hierarchy (Tower⊂Node⊂FullNucleus, Nest⊂FullNucleus) for graceful degradation.
+//! Exp005: Atomic Subtraction — validates `AtomicType` hierarchy (Tower⊂Node⊂FullNucleus, Nest⊂FullNucleus) for graceful degradation.
 
 use primalspring::coordination::AtomicType;
 use primalspring::validation::ValidationResult;

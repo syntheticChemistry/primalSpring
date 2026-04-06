@@ -9,9 +9,9 @@
 //!
 //! Environment:
 //!   `REMOTE_GATE_HOST`  — hostname or IP of the primary gate node (required)
-//!   `MATRIX_CELL`       — cell ID from deployment_matrix.toml (for reporting)
+//!   `MATRIX_CELL`       — cell ID from `deployment_matrix.toml` (for reporting)
 //!   `PRIMAL_TRANSPORT`  — "tcp" or "uds" (default: detect)
-//!   `DEPLOY_ARCH`       — "x86_64" or "aarch64" (for reporting)
+//!   `DEPLOY_ARCH`       — "`x86_64`" or "aarch64" (for reporting)
 //!   `*_PORT`            — per-primal TCP port overrides
 
 use std::time::Duration;

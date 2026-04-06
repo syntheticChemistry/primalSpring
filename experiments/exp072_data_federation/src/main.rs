@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp072: Data Federation — validates cross-node NestGate replication
+//! Exp072: Data Federation — validates cross-node `NestGate` replication
 //! with provenance trio tracking (rhizoCrypt DAG, sweetGrass braids,
 //! loamSpine commits).
 //!
 //! Phase 1 (structural): Graph metadata, provenance pipeline structure.
-//! Phase 2 (live, when available): NestGate storage probe, trio federation.
+//! Phase 2 (live, when available): `NestGate` storage probe, trio federation.
 
 use std::path::Path;
 

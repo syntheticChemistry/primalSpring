@@ -42,7 +42,7 @@ pub fn neural_api_reachable() -> bool {
     *NEURAL_API_PROBE.get_or_init(discover::neural_api_healthy)
 }
 
-/// Whether BearDog has a reachable socket (cached once per process).
+/// Whether `BearDog` has a reachable socket (cached once per process).
 #[must_use]
 pub fn beardog_reachable() -> bool {
     *BEARDOG_PROBE.get_or_init(|| {
@@ -62,7 +62,7 @@ pub fn songbird_reachable() -> bool {
     })
 }
 
-/// Whether ToadStool has a reachable socket (cached once per process).
+/// Whether `ToadStool` has a reachable socket (cached once per process).
 #[must_use]
 pub fn toadstool_reachable() -> bool {
     *TOADSTOOL_PROBE.get_or_init(|| {
@@ -73,14 +73,14 @@ pub fn toadstool_reachable() -> bool {
 }
 
 /// Whether a Tower atomic composition is plausibly reachable
-/// (BearDog + Songbird both have sockets).
+/// (`BearDog` + Songbird both have sockets).
 #[must_use]
 pub fn tower_reachable() -> bool {
     beardog_reachable() && songbird_reachable()
 }
 
 /// Whether a Node atomic composition is plausibly reachable
-/// (Tower + ToadStool).
+/// (Tower + `ToadStool`).
 #[must_use]
 pub fn node_reachable() -> bool {
     tower_reachable() && toadstool_reachable()

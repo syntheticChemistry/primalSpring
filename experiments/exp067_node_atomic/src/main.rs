@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-//! exp067 — Node Atomic validation: Tower + ToadStool compute
+//! exp067 — Node Atomic validation: Tower + `ToadStool` compute
 //!
 //! Validates that the Node Atomic composition (beardog + songbird + toadstool)
 //! starts, reports capabilities, and responds to compute health.

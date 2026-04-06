@@ -14,7 +14,7 @@ pub enum CoordinationPattern {
     Sequential,
     /// Independent nodes run concurrently.
     Parallel,
-    /// DAG with condition/skip_if branching.
+    /// DAG with `condition/skip_if` branching.
     ConditionalDag,
     /// Streaming via bounded mpsc channels.
     Pipeline,
