@@ -44,7 +44,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 | BM-03 | `unix://` prefix on `capability.discover` | **RESOLVED** (v2.79 — `strip_unix_uri`) |
 | BM-04 | Late primal registration invisible | **RESOLVED** (v2.81 — `topology.rescan` + lazy discovery) |
 | BM-05 | Multi-shape probe response | **RESOLVED** (v2.81) |
-| BM-06 | `discover_capability` lacks domain prefix matching | LOW — workaround: deploy graphs include bare domain aliases in capabilities array. Only affects late-joining primals after graph load. See `PRIMALSPRING_BIOMEOS_NEURAL_API_GAPS_HANDOFF_APR07_2026.md` GAP-019. |
+| BM-06 | `discover_capability` lacks domain prefix matching | **RESOLVED** (v2.92 — `try_prefix_lookup` + `capability_to_provider_fallback` last resort). Deploy graphs also include bare domain aliases as belt-and-suspenders. |
 
 **Compliance** (v2.87): clippy **CLEAN**, fmt **PASS**, all tests **PASS**, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, SPDX headers present. **Discovery compliance: COMPLETE** — identity-based routing (`discover_beardog_socket`, `beardog.health`) removed from all non-test code (v2.82 + v2.87). Only test fixtures retain primal names.
 
