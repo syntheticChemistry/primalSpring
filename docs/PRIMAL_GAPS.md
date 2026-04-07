@@ -6,14 +6,14 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-05 — Deep Debt Resolution + Public Readiness Sprint complete.
-> **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.0.0 — 14 primals + 4 tools.
+> **Last updated**: 2026-04-06 — DEBT-02/05/06 resolved, capability registry published, barraCuda unblocked.
+> **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.2.0 — 14 primals + 4 tools.
 > **Grade distribution**: 3 A (rhizoCrypt, barraCuda, bingoCube), 7 B, 3 C, 1 D, 0 F.
 > **Tool grades**: bingoCube A, benchScale A, agentReagents A, rustChip A.
 > **Public-ready tools**: bingoCube (83.4% coverage), benchScale (61.9%), agentReagents (60.2%) — all >=60% gate, scrubbed, Grade A.
-> **Deep debt resolved**: unsafe code evolution (benchScale: EnvGuard+LeaseList+nix, rustChip: 31 SAFETY docs), large file refactoring (3 repos), dependency modernization (thiserror 2.0, C deps documented), hardcoding → capability-based (agentReagents RegistrationSettings), mock → reference (rustChip).
+> **Deep debt resolved**: DEBT-02 (canonical capability registry — LOCAL/ROUTED split), DEBT-03 (Neural API routing — biomeOS v2.90), DEBT-05 (plasmidBin binary name verification), DEBT-06 (ionic protocol handlers — partial), probe_capability Tier 2 fix. Capability registry published to `wateringHole/capability_registry.toml`.
 > **Top ecosystem gaps (primals)**: discovery debt (5 primals), license alignment (8 primals), `#[allow(` migration (4 primals), domain symlinks (8 primals).
-> **barraCuda**: BLOCKED — compile failure in `barracuda-naga-exec` (E0061). SIGSEGV remains concurrent-test driver debt.
+> **barraCuda**: E0061 compile failure **FIXED** (Sprint 29). SIGSEGV remains concurrent-test driver debt. Musl-static rebuild pending.
 > **ToadStool**: Heavy fmt debt (~1,899 lines of diff), clippy failures, discovery debt (2,998 refs).
 
 ---
@@ -61,7 +61,7 @@ All gaps **RESOLVED**.
 | BC-03 | Perlin3D lattice | **RESOLVED** (Sprint 25 — proper gradients + quintic fade) |
 | BC-04 | No plasmidBin binary | **RESOLVED** (April 1 harvest, 4.5M, requires GPU) |
 
-**Compliance** (Sprint 27 — 54183dee): clippy **CLEAN** (1 `unfulfilled_lint_expectations` warning on test-only `large_stack_arrays`), fmt **PASS**, `deny.toml` present, zero `todo!`/`unimplemented!`/`FIXME`. **`fault_injection` integration test SIGSEGV** — signal 11 crash after 2 of 12 tests pass. Doc reconciliation complete (file counts, test counts, stale refs).
+**Compliance** (Sprint 29 — 318a6e6c): **E0061 compile failure FIXED** — `eval_math` decomposition added `c: Option<&Value>` for 3-operand naga math (`Clamp`, `Mix`, `SmoothStep`, `Fma`). clippy **CLEAN** (1 `unfulfilled_lint_expectations` warning on test-only `large_stack_arrays`), fmt **PASS**, `deny.toml` present, zero `todo!`/`unimplemented!`/`FIXME`. **`fault_injection` integration test SIGSEGV** — signal 11 crash after 2 of 12 tests pass (concurrent-test driver debt). Musl-static rebuild needed to refresh plasmidBin binary + checksums.
 
 ---
 
@@ -368,7 +368,7 @@ Compliant (no change needed): barraCuda, Squirrel, petalTongue, rhizoCrypt, Loam
 
 | Primal | Category | Issue |
 |--------|----------|-------|
-| barraCuda | **compile** | `barracuda-naga-exec/src/eval.rs` E0061 — missing arg to `eval_math`. Blocks all tests. |
+| barraCuda | ~~compile~~ | ~~E0061~~ **FIXED** (Sprint 29 — `eval_math` decomposition). Musl-static rebuild pending. |
 | barraCuda | **file size** | `executor.rs` 1,097 lines (limit 1,000) |
 | ToadStool | **fmt** | ~1,899 lines of diff — `cargo fmt --all` never run cleanly |
 | ToadStool | **clippy** | `manual_let_else` in GPU test code, deprecated `GenericArray::from_slice` |
