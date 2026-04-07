@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: March 28, 2026
-**Status**: Phase 23c — NUCLEUS Atomics + biomeOS Substrate (87/87 gates), 402 tests, 67 experiments, 63 deploy graphs (11 validation), 5 spring primal binaries in plasmidBin
+**Date**: April 7, 2026
+**Status**: Phase 23c+ — trio witness harvest, garden acceleration (87/87 gates), 402+ tests, 89 experiments, 89 deploy graphs, trio binaries in plasmidBin
 
 ---
 
@@ -145,6 +145,67 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
 | primalSpring | v0.7.0 | 411 | Phase 21 — 87/87 gates, deep ecosystem audit + library consolidation, 63 experiments, 59 deploy graphs |
+
+## Garden Acceleration State (April 7, 2026)
+
+### What Changed (April 6-7)
+
+- **Trio witness evolution**: `WireAttestationRef` -> `WireWitnessRef` across
+  rhizoCrypt, loamSpine, sweetGrass. Self-describing `kind`/`encoding`/
+  `algorithm`/`tier`/`context` fields. Trio is now algo-agnostic — tracks
+  crypto signatures, hash observations, game checkpoints, conversation markers.
+- **plasmidBin harvest**: Trio glibc binaries built, checksums updated,
+  manifest versions bumped, doctor.sh + deploy_gate.sh updated.
+- **exp089**: BearDog witness round-trip validation (offline + live crypto).
+- **26 primal gaps resolved**, 5 remain (all low). BD-01 (BearDog encoding
+  hint) added.
+- **biomeOS Neural API handoff**: GAP-017 (benchScale ZOMBIE) + GAP-018
+  (executor RPCs — partially resolved: pipeline + continuous now on JSON-RPC).
+
+### Spring-to-Garden Acceleration Assignments
+
+esotericWebb (first gen4 garden) has 11 open `EVOLUTION_GAPS.md` entries.
+Each spring accelerates specific primal interactions that the garden needs.
+
+| Webb Gap | Spring | Primal Interaction |
+|----------|--------|--------------------|
+| GAP-004 (trio E2E) | wetSpring | rhizoCrypt -> loamSpine -> sweetGrass pipeline with Anderson QS data |
+| GAP-019 (BearDog crypto bridge) | primalSpring | BearDog sign/verify -> WireWitnessRef -> trio (exp089 validates) |
+| GAP-010 (plasmidBin deploy) | primalSpring | deploy_gate.sh + doctor.sh + compositions |
+| GAP-017 (biomeOS ZOMBIE) | primalSpring -> biomeOS | Neural API startup health in benchScale |
+| GAP-018 (executor RPCs) | primalSpring + neuralSpring | Pipeline + Continuous now exposed; ConditionalDag implicit |
+| GAP-002 (dialogue scene) | neuralSpring | petalTongue visualization.render.scene for CRPG |
+| GAP-003 (cert-gated AI) | ludoSpring + primalSpring | Squirrel ai.query with loamSpine certificate constraints |
+| GAP-006 (filtered discovery) | primalSpring | Songbird discovery.query with capability filter |
+| GAP-021 (game primal) | ludoSpring | game.* RPCs as deployable primal binary |
+| GAP-007 (voice preview) | ludoSpring + neuralSpring | Squirrel surrogate for offline AI |
+| GAP-009 (RulesetCert) | ludoSpring | loamSpine certificate YAML spec |
+
+### Cross-Spring Data Flow with Provenance
+
+The trio witness wire type (`WireWitnessRef`) enables cross-spring data flow
+with provenance tracking. Each spring emits witnesses appropriate to its domain:
+
+| Spring | Witness Kind | Encoding | Use |
+|--------|-------------|----------|-----|
+| wetSpring | `"hash"` | hex | Data ingest content hash |
+| wetSpring | `"signature"` | base64 | BearDog-signed pipeline result |
+| wetSpring | `"checkpoint"` | none | Anderson QS pipeline step |
+| ludoSpring | `"checkpoint"` | none | Game session tick / action |
+| ludoSpring | `"signature"` | base64 | BearDog-signed sovereign save |
+| hotSpring | `"hash"` | hex | GPU compute output hash |
+| groundSpring | `"hash"` | hex | Measurement data hash |
+| airSpring | `"checkpoint"` | none | ET0 pipeline step |
+| neuralSpring | `"checkpoint"` | none | CoralForge pipeline stage |
+| healthSpring | `"hash"` | hex | PK/PD result hash |
+
+### helixVision (Second Garden, Planned)
+
+helixVision composes wetSpring genomics + coralForge structure prediction
+into a sovereign genomics platform. Same PrimalBridge, same deploy graphs,
+same degradation patterns as esotericWebb. When wetSpring validates the
+Anderson QS provenance pipeline E2E, the same pattern applies to helixVision's
+sample-to-publication pipeline.
 
 ## Evolution Path
 
