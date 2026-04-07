@@ -79,6 +79,9 @@ members = [
     "experiments/exp088_storytelling_composition",
     "experiments/exp089_beardog_witness_roundtrip",
     "experiments/exp090_tower_atomic_lan_probe",
+    "experiments/exp091_primal_routing_matrix",
+    "experiments/exp092_dual_tower_ionic",
+    "experiments/exp093_covalent_mesh_backup",
 ]
 
 [workspace.package]

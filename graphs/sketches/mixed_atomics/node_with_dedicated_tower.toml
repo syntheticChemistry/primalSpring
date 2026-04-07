@@ -1,0 +1,202 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# L2 Mixed Atomic: Node with Dedicated Tower
+# =============================================================================
+#
+# SKETCH — a Node Atomic (proton: ToadStool compute) with its own dedicated
+# Tower (electron: BearDog + Songbird) separate from the composition's main
+# Tower. Isolates compute-facing network from data-facing network.
+#
+# Particle model: a proton with a dedicated electron for its own interactions,
+# separate from the nucleus's shared electron cloud. The dedicated Tower handles
+# compute-facing traffic (workload submission, GPU telemetry) while the main
+# Tower handles data-facing traffic (storage, provenance, mesh discovery).
+#
+# Use case — ludoSpring:
+#   Main Tower: player-facing network (game state sync, matchmaking).
+#   Dedicated Tower: GPU compute pipeline (real-time rendering, physics sim).
+#   Network isolation prevents compute-bound traffic from competing with
+#   latency-sensitive player traffic.
+#
+# Use case — hotSpring:
+#   Main Tower: data pipeline (sensor ingest, result storage).
+#   Dedicated Tower: GPU compute (lattice QCD, RHMC). Dedicated Tower talks
+#   directly to the HPC mesh without routing through the data Tower.
+#
+# Driven by: exp092_dual_tower_ionic (shared experiment validates both L2 patterns)
+#
+# Usage:
+#   biomeos deploy --graph graphs/sketches/mixed_atomics/node_with_dedicated_tower.toml \
+#     --env FAMILY_ID=<hex> --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# =============================================================================
+
+[graph]
+id = "node-dedicated-tower"
+name = "node_with_dedicated_tower"
+version = "0.1.0"
+description = "L2: Node Atomic with dedicated Tower — isolates compute-facing from data-facing network"
+coordination = "sequential"
+
+[graph.metadata]
+layer = "L2"
+particle_model = "proton with dedicated electron"
+internal_bond_type = "covalent"
+
+# =============================================================================
+# MAIN TOWER — data-facing (storage, provenance, mesh discovery)
+# =============================================================================
+
+[[graph.nodes]]
+id = "main_beardog"
+output = "main_beardog_genesis"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.encrypt", "crypto.decrypt"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+instance_label = "main-tower"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "main_songbird"
+depends_on = ["main_beardog"]
+output = "main_songbird_genesis"
+capabilities = ["http.request", "http.get", "discovery.find_primals", "discovery.announce", "mesh.init", "mesh.auto_discover", "mesh.peers"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+instance_label = "main-tower"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_MESH_ENABLED = "true"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# DEDICATED COMPUTE TOWER — compute-facing (workload submission, GPU telemetry)
+# =============================================================================
+
+[[graph.nodes]]
+id = "compute_beardog"
+output = "compute_beardog_genesis"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+instance_label = "compute-tower"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+BEARDOG_SOCKET_SUFFIX = "compute"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "compute_songbird"
+depends_on = ["compute_beardog"]
+output = "compute_songbird_genesis"
+capabilities = ["http.request", "http.get"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+instance_label = "compute-tower"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}-compute.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}-compute.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_MESH_ENABLED = "false"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# NODE ATOMIC (Proton) — compute via dedicated Tower
+# =============================================================================
+
+[[graph.nodes]]
+id = "toadstool"
+depends_on = ["compute_beardog", "compute_songbird"]
+output = "toadstool_genesis"
+capabilities = ["compute.submit", "compute.status", "compute.health"]
+
+[graph.nodes.primal]
+by_capability = "compute"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+TOADSTOOL_FAMILY_ID = "${FAMILY_ID}"
+SONGBIRD_ENDPOINT = "${XDG_RUNTIME_DIR}/biomeos/songbird-${FAMILY_ID}-compute.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}-compute.sock"
+RUST_LOG = "toadstool=info"
+
+[graph.nodes.constraints]
+timeout_ms = 45000
+
+# =============================================================================
+# VALIDATION
+# =============================================================================
+
+[[graph.nodes]]
+id = "validate_isolation"
+depends_on = ["main_songbird", "toadstool"]
+output = "validation_result"
+
+[graph.nodes.operation]
+name = "health_check"
+
+[graph.nodes.operation.params]
+check_main_tower = true
+check_compute_tower = true
+check_toadstool = true
+verify_network_isolation = true
+timeout_seconds = 20
+
+[graph.nodes.constraints]
+timeout_ms = 30000

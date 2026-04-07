@@ -1,0 +1,221 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# L0 Primal Routing Matrix — validate biomeOS routes to each primal independently.
+#
+# SKETCH — structural validation graph. Each node exercises one primal capability
+# domain through the Neural API `capability.call` path. Confirms that biomeOS
+# correctly discovers and routes to all 10 capability domains.
+#
+# Particle model context: this is pre-atomic validation — individual particles
+# before they form compositions. L1 validates atomics (compositions).
+#
+# Driven by: exp091_primal_routing_matrix
+#
+# Usage:
+#   biomeos deploy --graph graphs/sketches/validation/primal_routing_matrix.toml
+
+[graph]
+id = "primal-routing-matrix"
+name = "primal_routing_matrix"
+version = "1.0.0"
+description = "L0: Validate biomeOS capability routing to all 10 primal domains independently"
+coordination = "sequential"
+
+# ─── Domain 1: Security (BearDog) ───
+
+[[graph.nodes]]
+name = "route_security"
+binary = "primalspring_primal"
+order = 0
+required = true
+by_capability = "security"
+health_method = "health.liveness"
+capabilities = ["crypto.sign_ed25519"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "security"
+method = "crypto.sign_ed25519"
+args = { message = "L0_routing_probe" }
+
+# ─── Domain 2: Discovery (Songbird) ───
+
+[[graph.nodes]]
+name = "route_discovery"
+binary = "primalspring_primal"
+order = 1
+required = true
+depends_on = ["route_security"]
+by_capability = "discovery"
+health_method = "health.liveness"
+capabilities = ["discovery.find_primals"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "discovery"
+method = "discovery.find_primals"
+args = {}
+
+# ─── Domain 3: Compute (ToadStool) ───
+
+[[graph.nodes]]
+name = "route_compute"
+binary = "primalspring_primal"
+order = 2
+required = false
+depends_on = ["route_discovery"]
+by_capability = "compute"
+health_method = "health.liveness"
+capabilities = ["compute.submit"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "compute"
+method = "compute.submit"
+args = { workload = "noop", timeout_ms = 5000 }
+
+# ─── Domain 4: Storage (NestGate) ───
+
+[[graph.nodes]]
+name = "route_storage"
+binary = "primalspring_primal"
+order = 3
+required = false
+depends_on = ["route_discovery"]
+by_capability = "storage"
+health_method = "health.liveness"
+capabilities = ["storage.put"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "storage"
+method = "storage.put"
+args = { key = "l0_probe", value = "routing_matrix_test" }
+
+# ─── Domain 5: AI (Squirrel) ───
+
+[[graph.nodes]]
+name = "route_ai"
+binary = "primalspring_primal"
+order = 4
+required = false
+depends_on = ["route_discovery"]
+by_capability = "ai"
+health_method = "health.liveness"
+capabilities = ["ai.query"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "ai"
+method = "ai.query"
+args = { prompt = "L0 routing probe — respond with OK", max_tokens = 8 }
+
+# ─── Domain 6: DAG (rhizoCrypt) ───
+
+[[graph.nodes]]
+name = "route_dag"
+binary = "primalspring_primal"
+order = 5
+required = false
+depends_on = ["route_security"]
+by_capability = "dag"
+health_method = "health.liveness"
+capabilities = ["dag.session.create"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "dag"
+method = "dag.session.create"
+args = { label = "l0_probe" }
+
+# ─── Domain 7: Spine (loamSpine) ───
+
+[[graph.nodes]]
+name = "route_spine"
+binary = "primalspring_primal"
+order = 6
+required = false
+depends_on = ["route_security"]
+by_capability = "spine"
+health_method = "health.liveness"
+capabilities = ["spine.create"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "spine"
+method = "spine.create"
+args = { label = "l0_probe" }
+
+# ─── Domain 8: Attribution (sweetGrass) ───
+
+[[graph.nodes]]
+name = "route_braid"
+binary = "primalspring_primal"
+order = 7
+required = false
+depends_on = ["route_security"]
+by_capability = "braid"
+health_method = "health.liveness"
+capabilities = ["braid.create"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "braid"
+method = "braid.create"
+args = { label = "l0_probe" }
+
+# ─── Domain 9: HTTPS (Songbird via Tower) ───
+
+[[graph.nodes]]
+name = "route_https"
+binary = "primalspring_primal"
+order = 8
+required = true
+depends_on = ["route_security", "route_discovery"]
+by_capability = "discovery"
+health_method = "health.liveness"
+capabilities = ["http.get"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "http"
+method = "http.get"
+args = { url = "https://ifconfig.me/ip" }
+
+# ─── Domain 10: Mesh (Songbird BirdSong) ───
+
+[[graph.nodes]]
+name = "route_mesh"
+binary = "primalspring_primal"
+order = 9
+required = false
+depends_on = ["route_discovery"]
+by_capability = "discovery"
+health_method = "health.liveness"
+capabilities = ["mesh.peers"]
+
+[graph.nodes.operation]
+name = "capability_call"
+
+[graph.nodes.operation.params]
+capability = "mesh"
+method = "mesh.peers"
+args = {}

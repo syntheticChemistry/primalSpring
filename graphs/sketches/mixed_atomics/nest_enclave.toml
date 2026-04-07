@@ -1,0 +1,196 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# L2 Mixed Atomic: Nest Enclave
+# =============================================================================
+#
+# SKETCH — a Nest Atomic (neutron: NestGate storage + Squirrel AI) behind a
+# BondingPolicy fence that restricts data flow. Neutron-heavy isotope: extra
+# data mass behind a policy boundary.
+#
+# Particle model: a neutron-rich isotope. The additional neutrons (data) are
+# bound within the nucleus but shielded by policy. External interactions
+# (via Tower/electron) can query metadata but cannot extract raw data without
+# satisfying the BondingPolicy.
+#
+# Use case — healthSpring:
+#   HIPAA-scoped storage enclave. Patient records stored in NestGate with
+#   BondingPolicy restricting `storage.get` to authorized FAMILY_IDs.
+#   Squirrel can run AI inference on enclave data without exposing raw records.
+#   Only de-identified aggregates leave the enclave boundary.
+#
+# Use case — neuralSpring:
+#   Model IP enclave. Trained model weights stored in NestGate with
+#   BondingPolicy restricting export. Inference runs inside the enclave.
+#   Results exit; weights stay.
+#
+# Gaps exercised:
+#   - BondingPolicy as software enclave (no hardware attestation yet)
+#   - Nest-internal AI inference (Squirrel inside policy boundary)
+#   - Data egress control via capability_deny on storage.get
+#
+# Usage:
+#   biomeos deploy --graph graphs/sketches/mixed_atomics/nest_enclave.toml \
+#     --env FAMILY_ID=<hex> --env ENCLAVE_LABEL=<label> \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# =============================================================================
+
+[graph]
+id = "nest-enclave"
+name = "nest_enclave"
+version = "0.1.0"
+description = "L2: Nest Atomic behind BondingPolicy fence — neutron-heavy isotope with data egress control"
+coordination = "sequential"
+
+[graph.metadata]
+layer = "L2"
+particle_model = "neutron-heavy isotope"
+internal_bond_type = "covalent"
+enclave_label = "${ENCLAVE_LABEL}"
+
+# =============================================================================
+# TOWER (Electron) — trust boundary for the enclave
+# =============================================================================
+
+[[graph.nodes]]
+id = "enclave_beardog"
+output = "beardog_genesis"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.encrypt", "crypto.decrypt"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "enclave_songbird"
+depends_on = ["enclave_beardog"]
+output = "songbird_genesis"
+capabilities = ["http.request", "http.get", "discovery.find_primals", "mesh.peers"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# NEST ATOMIC (Neutron) — storage + AI inside enclave boundary
+# =============================================================================
+
+[[graph.nodes]]
+id = "enclave_nestgate"
+depends_on = ["enclave_beardog", "enclave_songbird"]
+output = "nestgate_genesis"
+capabilities = ["storage.put", "storage.get", "storage.list", "storage.exists"]
+
+[graph.nodes.primal]
+by_capability = "storage"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+provenance_enabled = true
+encryption_at_rest = true
+
+[graph.nodes.operation.environment]
+NESTGATE_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/nestgate-${FAMILY_ID}-enclave.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+RUST_LOG = "nestgate=info"
+
+[graph.nodes.constraints]
+timeout_ms = 60000
+
+[[graph.nodes]]
+id = "enclave_squirrel"
+depends_on = ["enclave_beardog", "enclave_songbird"]
+output = "squirrel_genesis"
+capabilities = ["ai.query", "ai.chat"]
+
+[graph.nodes.primal]
+by_capability = "ai"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+CAPABILITY_REGISTRY_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+RUST_LOG = "squirrel=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# BONDING POLICY FENCE — restrict data egress from enclave
+# =============================================================================
+
+[[graph.nodes]]
+id = "apply_enclave_policy"
+depends_on = ["enclave_nestgate", "enclave_squirrel"]
+output = "policy_applied"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "primalspring"
+
+[graph.nodes.operation.params]
+method = "bonding.propose"
+params = { bond_type = "covalent", trust_model = "genetic_lineage", label = "${ENCLAVE_LABEL}", capability_allow = ["storage.put", "storage.list", "storage.exists", "ai.query", "ai.chat"], capability_deny = ["storage.get", "storage.fetch_external"], bandwidth_limit_mbps = 0, max_concurrent_requests = 0 }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+# =============================================================================
+# VALIDATION — verify enclave policy enforcement
+# =============================================================================
+
+[[graph.nodes]]
+id = "validate_enclave"
+depends_on = ["apply_enclave_policy"]
+output = "validation_result"
+
+[graph.nodes.operation]
+name = "health_check"
+
+[graph.nodes.operation.params]
+check_nestgate = true
+check_squirrel = true
+verify_egress_blocked = true
+test_storage_get_denied = true
+test_ai_query_allowed = true
+timeout_seconds = 20
+
+[graph.nodes.constraints]
+timeout_ms = 30000

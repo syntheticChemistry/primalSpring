@@ -1,0 +1,296 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# L3 Bonding Pattern: Organo-Metal-Salt (Multi-Bond Complex)
+# =============================================================================
+#
+# SKETCH — simultaneous covalent, ionic, and weak bonds in a single deployment.
+# The full basement-to-cloud production pattern.
+#
+# Particle model: organo-metal-salt compound. The "organic" core is the covalent
+# family HPC mesh (shared electrons, genetic trust). The "metal" is the
+# delocalized Tower pool serving as relay infrastructure. The "salt" is the
+# ionic edge to cloud and weak connections to public APIs.
+#
+# Architecture:
+#   ┌─────────────────────────────────────────┐
+#   │  Covalent Core (family HPC)             │
+#   │  ├── Northgate (Node-heavy, AI)         │
+#   │  ├── Southgate (balanced)               │
+#   │  ├── Strandgate (Node-heavy, bio)       │
+#   │  └── Westgate (Nest-heavy, storage)     │
+#   │       ↕ shared electrons (Tower mesh)   │
+#   ├─────────────────────────────────────────┤
+#   │  Ionic Edge                             │
+#   │  ├──[ionic]── Cloud VM (burst GPU)      │
+#   │  └──[ionic]── University HPC (collab)   │
+#   ├─────────────────────────────────────────┤
+#   │  Weak Forces                            │
+#   │  ├──[weak]── OpenAI API (Squirrel)      │
+#   │  ├──[weak]── Public STUN (fallback)     │
+#   │  └──[weak→covalent]── Pixel 8a (mobile) │
+#   └─────────────────────────────────────────┘
+#
+# This is the "end state" deployment that exercises all BondType variants
+# simultaneously. primalSpring validates the coordination; each spring
+# specializes the payload.
+#
+# Usage:
+#   biomeos deploy --graph graphs/sketches/bonding_patterns/organo_metal_salt.toml \
+#     --env FAMILY_ID=<hex> --env NODE_ID=<gate> \
+#     --env CLOUD_ENDPOINT=<host:port> \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# =============================================================================
+
+[graph]
+id = "organo-metal-salt"
+name = "organo_metal_salt"
+version = "0.1.0"
+description = "L3: OrganoMetalSalt — simultaneous covalent + ionic + weak bonding in production deployment"
+coordination = "sequential"
+
+[graph.metadata]
+layer = "L3"
+particle_model = "organo-metal-salt compound"
+internal_bond_type = "organo_metal_salt"
+trust_model = "mixed"
+
+# =============================================================================
+# PHASE 1: COVALENT CORE — local Tower + full NUCLEUS
+# =============================================================================
+
+[[graph.nodes]]
+id = "core_beardog"
+output = "beardog_genesis"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.encrypt", "crypto.decrypt", "crypto.blake3_hash", "crypto.keygen"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "core_songbird"
+depends_on = ["core_beardog"]
+output = "songbird_genesis"
+capabilities = ["http.request", "http.get", "http.post", "discovery.find_primals", "discovery.announce", "mesh.init", "mesh.auto_discover", "mesh.peers"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_MESH_ENABLED = "true"
+BIOMEOS_BIND_ALL = "true"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "core_toadstool"
+depends_on = ["core_beardog", "core_songbird"]
+output = "toadstool_genesis"
+capabilities = ["compute.submit", "compute.status", "compute.health"]
+
+[graph.nodes.primal]
+by_capability = "compute"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+TOADSTOOL_FAMILY_ID = "${FAMILY_ID}"
+TOADSTOOL_NODE_ID = "${NODE_ID}"
+RUST_LOG = "toadstool=info"
+
+[graph.nodes.constraints]
+timeout_ms = 45000
+
+[[graph.nodes]]
+id = "core_nestgate"
+depends_on = ["core_beardog", "core_songbird"]
+output = "nestgate_genesis"
+capabilities = ["storage.put", "storage.get", "storage.list", "storage.exists"]
+
+[graph.nodes.primal]
+by_capability = "storage"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+provenance_enabled = true
+
+[graph.nodes.operation.environment]
+NESTGATE_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/nestgate-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+RUST_LOG = "nestgate=info"
+
+[graph.nodes.constraints]
+timeout_ms = 60000
+
+[[graph.nodes]]
+id = "core_squirrel"
+depends_on = ["core_beardog", "core_songbird"]
+output = "squirrel_genesis"
+capabilities = ["ai.query", "ai.chat", "ai.list_providers"]
+
+[graph.nodes.primal]
+by_capability = "ai"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+CAPABILITY_REGISTRY_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+RUST_LOG = "squirrel=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# PHASE 2: COVALENT MESH — discover family peers
+# =============================================================================
+
+[[graph.nodes]]
+id = "mesh_init"
+depends_on = ["core_songbird"]
+output = "mesh_state"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.init"
+params = { node_id = "${NODE_ID}", bootstrap_onions = [] }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+[[graph.nodes]]
+id = "discover_family"
+depends_on = ["mesh_init"]
+output = "family_peers"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.auto_discover"
+params = {}
+
+[graph.nodes.constraints]
+timeout_ms = 15000
+
+# =============================================================================
+# PHASE 3: IONIC EDGE — establish contract bond to cloud
+# =============================================================================
+
+[[graph.nodes]]
+id = "ionic_cloud_bond"
+depends_on = ["core_songbird"]
+output = "cloud_contract"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "primalspring"
+
+[graph.nodes.operation.params]
+method = "bonding.propose"
+params = { bond_type = "ionic", trust_model = "contractual", lessee_endpoint = "${CLOUD_ENDPOINT}", capability_allow = ["compute.submit", "compute.status"], capability_deny = ["storage.*", "dag.*", "braid.*", "crypto.*"], bandwidth_limit_mbps = 500, max_concurrent_requests = 16, label = "cloud-burst-gpu" }
+
+[graph.nodes.constraints]
+timeout_ms = 15000
+
+# =============================================================================
+# PHASE 4: WEAK FORCES — external API connections (no trust)
+# =============================================================================
+
+[[graph.nodes]]
+id = "weak_openai"
+depends_on = ["core_squirrel"]
+output = "openai_status"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "squirrel"
+
+[graph.nodes.operation.params]
+method = "ai.health"
+params = { provider = "openai" }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+[[graph.nodes]]
+id = "weak_stun"
+depends_on = ["core_songbird"]
+output = "stun_result"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "network.stun"
+params = {}
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+# =============================================================================
+# PHASE 5: VALIDATE ALL BOND TYPES SIMULTANEOUSLY
+# =============================================================================
+
+[[graph.nodes]]
+id = "validate_compound"
+depends_on = ["discover_family", "ionic_cloud_bond", "weak_openai", "weak_stun", "core_toadstool", "core_nestgate"]
+output = "validation_result"
+
+[graph.nodes.operation]
+name = "health_check"
+
+[graph.nodes.operation.params]
+check_covalent_core = true
+check_ionic_edge = true
+check_weak_forces = true
+verify_bond_isolation = true
+verify_capability_routing = true
+timeout_seconds = 30
+
+[graph.nodes.constraints]
+timeout_ms = 45000

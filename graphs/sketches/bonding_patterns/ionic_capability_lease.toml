@@ -1,0 +1,177 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# L3 Bonding Pattern: Ionic Capability Lease
+# =============================================================================
+#
+# SKETCH — Tower (electron) transfers scoped capability access to an external
+# gate. Metered, time-bounded, auditable via sweetGrass attribution braids.
+#
+# Particle model: ionic bond — electron transfer from one atom to another.
+# The leasing gate "donates" electron density (Tower capability access) to
+# the lessee gate. The lessee gains specific capabilities (e.g., compute.submit)
+# but has no genetic trust — purely contractual.
+#
+# Use case — cloud burst GPU:
+#   Family HPC mesh (covalent) is saturated. Northgate's RTX 5090 queue is full.
+#   An ionic bond is established to a cloud VM with GPU capacity. The VM gets
+#   scoped access to compute.submit (nothing else). Usage is metered via
+#   sweetGrass attribution braids. The bond has a time window and auto-expires.
+#
+# Use case — university HPC allocation:
+#   A researcher gets a time-limited allocation of compute on the family mesh.
+#   Ionic bond scoped to compute.* with bandwidth limit. All usage attributed
+#   via sweetGrass for billing/reporting.
+#
+# Usage:
+#   biomeos deploy --graph graphs/sketches/bonding_patterns/ionic_capability_lease.toml \
+#     --env FAMILY_ID=<hex> --env LESSEE_ENDPOINT=<host:port> \
+#     --env LEASE_CAPABILITIES="compute.submit,compute.status" \
+#     --env LEASE_DURATION_HOURS=24 \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# =============================================================================
+
+[graph]
+id = "ionic-capability-lease"
+name = "ionic_capability_lease"
+version = "0.1.0"
+description = "L3: Ionic capability lease — metered, time-bounded capability sharing with external gate"
+coordination = "sequential"
+
+[graph.metadata]
+layer = "L3"
+particle_model = "ionic bond, electron transfer"
+internal_bond_type = "ionic"
+trust_model = "contractual"
+
+# =============================================================================
+# PHASE 1: LOCAL TOWER (lessor's electron)
+# =============================================================================
+
+[[graph.nodes]]
+id = "lessor_beardog"
+output = "beardog_genesis"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "lessor_songbird"
+depends_on = ["lessor_beardog"]
+output = "songbird_genesis"
+capabilities = ["http.request", "http.get", "discovery.find_primals"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# PHASE 2: IONIC BOND NEGOTIATION
+# =============================================================================
+
+[[graph.nodes]]
+id = "propose_lease"
+depends_on = ["lessor_songbird"]
+output = "lease_contract"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "primalspring"
+
+[graph.nodes.operation.params]
+method = "bonding.propose"
+params = { bond_type = "ionic", trust_model = "contractual", lessee_endpoint = "${LESSEE_ENDPOINT}", capability_allow = ["${LEASE_CAPABILITIES}"], capability_deny = ["storage.*", "dag.*", "braid.*", "crypto.*"], bandwidth_limit_mbps = 100, max_concurrent_requests = 8, lease_duration_hours = "${LEASE_DURATION_HOURS}" }
+
+[graph.nodes.constraints]
+timeout_ms = 15000
+
+# =============================================================================
+# PHASE 3: ATTRIBUTION BRAID (sweetGrass metering)
+# =============================================================================
+
+[[graph.nodes]]
+id = "create_attribution_braid"
+depends_on = ["propose_lease"]
+output = "attribution_braid"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "sweetgrass"
+
+[graph.nodes.operation.params]
+method = "braid.create"
+params = { label = "ionic-lease-${LESSEE_ENDPOINT}", type = "metering", fields = ["capability", "timestamp", "duration_ms", "bytes_transferred"] }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+# =============================================================================
+# PHASE 4: ACTIVATE LEASE
+# =============================================================================
+
+[[graph.nodes]]
+id = "activate_lease"
+depends_on = ["create_attribution_braid"]
+output = "lease_active"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "primalspring"
+
+[graph.nodes.operation.params]
+method = "bonding.status"
+params = { contract_ref = "${lease_contract}", action = "activate", attribution_braid = "${attribution_braid}" }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+# =============================================================================
+# PHASE 5: VALIDATE LEASE ENFORCEMENT
+# =============================================================================
+
+[[graph.nodes]]
+id = "validate_lease"
+depends_on = ["activate_lease"]
+output = "validation_result"
+
+[graph.nodes.operation]
+name = "health_check"
+
+[graph.nodes.operation.params]
+verify_lease_active = true
+verify_capability_scope = true
+verify_metering = true
+verify_time_bound = true
+timeout_seconds = 20
+
+[graph.nodes.constraints]
+timeout_ms = 30000

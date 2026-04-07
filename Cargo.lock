@@ -1005,6 +1005,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "primalspring-exp091"
+version = "0.9.2"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp092"
+version = "0.9.2"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp093"
+version = "0.9.2"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "primalspring-trio-ops"
 version = "0.8.0"
 dependencies = [

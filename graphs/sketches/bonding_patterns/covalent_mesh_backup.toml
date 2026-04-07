@@ -1,0 +1,242 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# L3 Bonding Pattern: Covalent Mesh Backup
+# =============================================================================
+#
+# SKETCH — shared electrons across 3+ gates. Nest (neutron) data is sharded,
+# encrypted client-side by BearDog, and replicated via covalent bond to peer
+# Nests. "Player-owned Steam" pattern: all data owned and hosted by the mesh
+# participants, no central cloud.
+#
+# Particle model: covalent molecule — multiple atoms sharing an electron cloud.
+# Each gate contributes its Tower (electron) to the shared mesh. Each gate's
+# Nest (neutron) holds encrypted shards of the mesh's collective data. The
+# shared Tower discovers peers, negotiates shard placement, and verifies
+# integrity. BearDog (inside Tower) encrypts each shard before distribution.
+#
+# Data flow:
+#   1. Source gate encrypts data blob with BearDog AES-256-GCM (client-side)
+#   2. Encrypted blob split into N shards (placeholder: equal split; future: Reed-Solomon)
+#   3. Shards distributed to peer Nests via covalent bond (genetic trust)
+#   4. Each peer Nest stores shard via storage.put (content-addressed)
+#   5. Recovery: retrieve K-of-N shards from peers, reassemble, decrypt locally
+#
+# Gaps exercised:
+#   - Client-side shard encryption (BearDog crypto.encrypt per shard)
+#   - Shard distribution logic (not yet implemented — placeholder nodes)
+#   - Reed-Solomon erasure coding (future barraCuda primitive)
+#   - Shard recovery quorum
+#
+# Driven by: exp093_covalent_mesh_backup
+#
+# Usage:
+#   biomeos deploy --graph graphs/sketches/bonding_patterns/covalent_mesh_backup.toml \
+#     --env FAMILY_ID=<hex> --env NODE_ID=<gate> \
+#     --env SHARD_COUNT=3 --env RECOVERY_QUORUM=2 \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# =============================================================================
+
+[graph]
+id = "covalent-mesh-backup"
+name = "covalent_mesh_backup"
+version = "0.1.0"
+description = "L3: Covalent mesh backup — sharded encrypted data replicated across trusted peers"
+coordination = "sequential"
+
+[graph.metadata]
+layer = "L3"
+particle_model = "covalent molecule, shared electron cloud"
+internal_bond_type = "covalent"
+trust_model = "genetic_lineage"
+shard_count = "${SHARD_COUNT}"
+recovery_quorum = "${RECOVERY_QUORUM}"
+
+# =============================================================================
+# PHASE 1: LOCAL TOWER + NEST (this gate's atom)
+# =============================================================================
+
+[[graph.nodes]]
+id = "local_beardog"
+output = "beardog_genesis"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.encrypt", "crypto.decrypt", "crypto.blake3_hash"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "local_songbird"
+depends_on = ["local_beardog"]
+output = "songbird_genesis"
+capabilities = ["http.request", "discovery.find_primals", "discovery.announce", "mesh.init", "mesh.auto_discover", "mesh.peers"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_MESH_ENABLED = "true"
+BIOMEOS_BIND_ALL = "true"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "local_nestgate"
+depends_on = ["local_beardog", "local_songbird"]
+output = "nestgate_genesis"
+capabilities = ["storage.put", "storage.get", "storage.list", "storage.exists"]
+
+[graph.nodes.primal]
+by_capability = "storage"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_ID}"
+provenance_enabled = true
+
+[graph.nodes.operation.environment]
+NESTGATE_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/nestgate-${FAMILY_ID}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
+RUST_LOG = "nestgate=info"
+
+[graph.nodes.constraints]
+timeout_ms = 60000
+
+# =============================================================================
+# PHASE 2: MESH DISCOVERY (find peer gates)
+# =============================================================================
+
+[[graph.nodes]]
+id = "mesh_init"
+depends_on = ["local_songbird"]
+output = "mesh_state"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.init"
+params = { node_id = "${NODE_ID}", bootstrap_onions = [] }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+[[graph.nodes]]
+id = "discover_peers"
+depends_on = ["mesh_init"]
+output = "peers_discovered"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.auto_discover"
+params = {}
+
+[graph.nodes.constraints]
+timeout_ms = 15000
+
+# =============================================================================
+# PHASE 3: CLIENT-SIDE ENCRYPTION + SHARD DISTRIBUTION (placeholder)
+# =============================================================================
+
+[[graph.nodes]]
+id = "encrypt_blob"
+depends_on = ["local_beardog", "local_nestgate"]
+output = "encrypted_blob"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "beardog"
+
+[graph.nodes.operation.params]
+method = "crypto.encrypt"
+params = { plaintext_key = "mesh_backup_test_blob", algorithm = "aes-256-gcm" }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+[[graph.nodes]]
+id = "distribute_shards"
+depends_on = ["encrypt_blob", "discover_peers"]
+output = "shard_manifest"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "primalspring"
+
+[graph.nodes.operation.params]
+method = "coordination.bonding_test"
+params = { test = "shard_distribute", shard_count = "${SHARD_COUNT}", peers = "${peers_discovered}", encrypted_blob_ref = "${encrypted_blob}" }
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# PHASE 4: VERIFY SHARD RECOVERY
+# =============================================================================
+
+[[graph.nodes]]
+id = "verify_recovery"
+depends_on = ["distribute_shards"]
+output = "recovery_result"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "primalspring"
+
+[graph.nodes.operation.params]
+method = "coordination.bonding_test"
+params = { test = "shard_recover", recovery_quorum = "${RECOVERY_QUORUM}", shard_manifest = "${shard_manifest}" }
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# PHASE 5: ANNOUNCE BACKUP CAPABILITY TO MESH
+# =============================================================================
+
+[[graph.nodes]]
+id = "announce_backup"
+depends_on = ["verify_recovery"]
+output = "announced"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.announce"
+params = { as_relay = false, capabilities = ["storage.shard_backup", "storage.shard_recover"] }
+
+[graph.nodes.constraints]
+timeout_ms = 5000

@@ -1,0 +1,193 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# L2 Mixed Atomic: Dual Tower Ionic Bond
+# =============================================================================
+#
+# SKETCH — two Tower Atomics (two electron shells) on the same host with
+# different FAMILY_IDs, connected by an ionic bond for scoped capability sharing.
+#
+# Particle model: two atoms sharing an electron via ionic transfer. Tower A
+# (FAMILY_A) has full genetic trust internally. Tower B (FAMILY_B) has its own
+# trust domain. The ionic bridge allows Tower B to call scoped capabilities on
+# Tower A without genetic trust — contract-based, metered, auditable.
+#
+# Use case — healthSpring:
+#   Tower A: zero-knowledge client data processing (patient records never leave
+#            this trust boundary). HIPAA-scoped.
+#   Tower B: modeling/compute Tower for health analytics. Receives only
+#            de-identified aggregates from Tower A via ionic bond.
+#
+# Gaps exercised:
+#   - Dual-Tower coexistence on same host (L2 gap)
+#   - Ionic bridge between FAMILY_IDs
+#   - BondingPolicy enforcement at Tower boundary
+#
+# Driven by: exp092_dual_tower_ionic
+#
+# Usage:
+#   biomeos deploy --graph graphs/sketches/mixed_atomics/dual_tower_ionic.toml \
+#     --env FAMILY_A=<hex> --env FAMILY_B=<hex> \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+#
+# =============================================================================
+
+[graph]
+id = "dual-tower-ionic"
+name = "dual_tower_ionic"
+version = "0.1.0"
+description = "L2: Two Tower Atomics with ionic bond — scoped capability sharing across trust domains"
+coordination = "sequential"
+
+[graph.metadata]
+layer = "L2"
+particle_model = "two electron shells, ionic bond"
+internal_bond_type = "ionic"
+default_interaction_bond = "ionic"
+
+# =============================================================================
+# TOWER A — Primary trust domain (e.g., patient data)
+# =============================================================================
+
+[[graph.nodes]]
+id = "tower_a_beardog"
+output = "beardog_a_genesis"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.encrypt", "crypto.decrypt"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_A}"
+instance_label = "tower-a"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+BEARDOG_SOCKET_SUFFIX = "family-a"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "tower_a_songbird"
+depends_on = ["tower_a_beardog"]
+output = "songbird_a_genesis"
+capabilities = ["http.request", "http.get", "discovery.find_primals", "mesh.init", "mesh.peers"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_A}"
+instance_label = "tower-a"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_A}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_A}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# TOWER B — Secondary trust domain (e.g., modeling compute)
+# =============================================================================
+
+[[graph.nodes]]
+id = "tower_b_beardog"
+output = "beardog_b_genesis"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.encrypt", "crypto.decrypt"]
+
+[graph.nodes.primal]
+by_capability = "security"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_B}"
+instance_label = "tower-b"
+
+[graph.nodes.operation.environment]
+RUST_LOG = "beardog=info"
+BEARDOG_SOCKET_SUFFIX = "family-b"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+[[graph.nodes]]
+id = "tower_b_songbird"
+depends_on = ["tower_b_beardog"]
+output = "songbird_b_genesis"
+capabilities = ["http.request", "http.get", "discovery.find_primals", "mesh.init", "mesh.peers"]
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "start"
+
+[graph.nodes.operation.params]
+mode = "server"
+family_id = "${FAMILY_B}"
+instance_label = "tower-b"
+
+[graph.nodes.operation.environment]
+NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_B}.sock"
+BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_B}.sock"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+RUST_LOG = "songbird=info"
+
+[graph.nodes.constraints]
+timeout_ms = 30000
+
+# =============================================================================
+# IONIC BRIDGE — scoped capability sharing between Tower A and Tower B
+# =============================================================================
+
+[[graph.nodes]]
+id = "ionic_bridge_propose"
+depends_on = ["tower_a_songbird", "tower_b_songbird"]
+output = "ionic_contract"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "primalspring"
+
+[graph.nodes.operation.params]
+method = "bonding.propose"
+params = { from_family = "${FAMILY_B}", to_family = "${FAMILY_A}", bond_type = "ionic", capabilities_requested = ["compute.submit", "ai.query"], capabilities_denied = ["storage.*", "dag.*"], metered = true }
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+# =============================================================================
+# VALIDATION — verify both Towers healthy, ionic bridge functional
+# =============================================================================
+
+[[graph.nodes]]
+id = "validate_dual_tower"
+depends_on = ["ionic_bridge_propose"]
+output = "validation_result"
+
+[graph.nodes.operation]
+name = "health_check"
+
+[graph.nodes.operation.params]
+check_tower_a = true
+check_tower_b = true
+check_ionic_bridge = true
+verify_capability_isolation = true
+timeout_seconds = 20
+
+[graph.nodes.constraints]
+timeout_ms = 30000

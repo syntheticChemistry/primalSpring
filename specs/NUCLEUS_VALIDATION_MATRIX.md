@@ -70,6 +70,65 @@ These are the composition patterns proven in primalSpring that downstream system
 | **esotericWebb** | CRPG Engine | pending | pending | pending | pending | pending | pending | pending | pending | **required** | pending |
 | **helixVision** | Genomics | planned | planned | planned | planned | planned | planned | planned | planned | **required** | planned |
 
+### Extended Columns (Particle Model & Mixed Composition)
+
+| Column | What to Validate | Method |
+|--------|-----------------|--------|
+| **K: Particle Profile** | Which particle the spring primarily exercises (proton-heavy, neutron-heavy, balanced) | Architectural analysis per `MIXED_COMPOSITION_PATTERNS.md` §5 |
+| **L: Mixed Atomic** | Can the spring deploy L2 patterns (dual tower, dedicated tower, enclave) | Graph sketch structural validation |
+| **M: Bonding Patterns** | Which L3 bonding patterns the spring requires | Domain analysis |
+| **N: Sharding Ready** | Covalent mesh backup applicable (L3 `covalent_mesh_backup.toml`) | Structural + BondingPolicy validation |
+| **O: Enclave Ready** | BondingPolicy data egress fence applicable (L2 `nest_enclave.toml`) | BondingPolicy structural validation |
+
+### Extended Rows (Springs)
+
+| Spring | Domain | K: Particle | L: Mixed Atomic | M: Bonding | N: Sharding | O: Enclave |
+|--------|--------|-------------|-----------------|------------|-------------|------------|
+| **primalSpring** | Coordination | balanced | structural | all (test arena) | structural | structural |
+| **wetSpring** | Biology | balanced | nest enclave | covalent mesh | planned | planned |
+| **hotSpring** | Physics | proton-heavy | node+dedicated tower | metallic, ionic lease | n/a | n/a |
+| **airSpring** | Agriculture | balanced | nest enclave | covalent mesh | planned | planned |
+| **groundSpring** | Uncertainty | proton-heavy | node+dedicated tower | ionic lease | n/a | n/a |
+| **neuralSpring** | ML/Neural | balanced | nest enclave | ionic lease | n/a | **required** |
+| **healthSpring** | Health | neutron-heavy | dual tower + enclave | covalent mesh | **required** | **required** |
+| **ludoSpring** | Game Science | proton-heavy | node+dedicated tower | organo-metal-salt | planned | n/a |
+
+### Extended Rows (sporeGarden Products)
+
+| Product | Domain | K: Particle | L: Mixed Atomic | M: Bonding | N: Sharding | O: Enclave |
+|---------|--------|-------------|-----------------|------------|-------------|------------|
+| **esotericWebb** | CRPG Engine | proton-heavy | node+dedicated tower | covalent, ionic | planned | n/a |
+| **helixVision** | Genomics | neutron-heavy | dual tower + enclave | covalent mesh | **required** | **required** |
+
+---
+
+## Layered Validation Model
+
+The matrix columns map to a four-layer validation model defined in `specs/MIXED_COMPOSITION_PATTERNS.md`:
+
+| Layer | Scope | Matrix Columns | Key Graph |
+|-------|-------|---------------|-----------|
+| **L0** | biomeOS + any primal | A, B, C | `graphs/sketches/validation/primal_routing_matrix.toml` |
+| **L1** | Each atomic (Tower/Node/Nest) | C, D, E, F, G | Existing: `nest-deploy.toml`, `node_atomic_compute.toml` |
+| **L2** | Mixed atomics | L, O | `graphs/sketches/mixed_atomics/*.toml` |
+| **L3** | Bonding patterns | H, M, N | `graphs/sketches/bonding_patterns/*.toml` |
+
+### Particle Model Reference
+
+The atomic-to-particle mapping (Paper 23, `gen3/baseCamp/23_mass_energy_information_equivalence.md`):
+
+| Atomic | Particle | Property | Fungibility |
+|--------|----------|----------|-------------|
+| **Tower** | Electron | Trust boundary, mediates all bonding | n/a (medium) |
+| **Node** | Proton | Compute = energy | Fungible |
+| **Nest** | Neutron | Data = energy at rest | Non-fungible |
+| **NUCLEUS** | Atom | Complete composition | — |
+
+Column K (Particle Profile) characterizes each spring's emphasis:
+- **Proton-heavy**: compute-dominated (hotSpring, groundSpring, ludoSpring)
+- **Neutron-heavy**: data-dominated (healthSpring, helixVision)
+- **Balanced**: equal compute + data emphasis (wetSpring, airSpring, neuralSpring, primalSpring)
+
 ---
 
 ## Validation Approach per Spring
@@ -131,8 +190,16 @@ For products:
 | `primalSpring/scripts/validate_remote_gate.sh` | Remote gate NUCLEUS health probe |
 | `primalSpring/scripts/prepare_spore_payload.sh` | USB spore payload assembly |
 | `primalSpring/ecoPrimal/src/harness/` | `AtomicHarness` for live composition |
+| `primalSpring/ecoPrimal/src/bonding/` | `BondType`, `BondingPolicy`, `BondingConstraint` |
 | `primalSpring/experiments/exp090_tower_atomic_lan_probe/` | LAN discovery validation |
+| `primalSpring/experiments/exp091_primal_routing_matrix/` | L0 routing matrix validation |
+| `primalSpring/experiments/exp092_dual_tower_ionic/` | L2 dual tower + ionic validation |
+| `primalSpring/experiments/exp093_covalent_mesh_backup/` | L3 covalent mesh backup validation |
+| `primalSpring/specs/MIXED_COMPOSITION_PATTERNS.md` | Particle model, layered validation, gap inventory |
+| `primalSpring/graphs/sketches/mixed_atomics/` | L2 mixed atomic graph sketches |
+| `primalSpring/graphs/sketches/bonding_patterns/` | L3 bonding pattern graph sketches |
 | `infra/whitePaper/gen4/architecture/COMPOSITION_PATTERNS.md` | gen4 patterns (PrimalBridge, graceful degradation, deploy graphs) |
+| `infra/whitePaper/gen3/baseCamp/23_mass_energy_information_equivalence.md` | Paper 23: particle model theoretical foundation |
 
 ---
 
@@ -148,9 +215,30 @@ The NUCLEUS validation matrix is the gen3→gen4 bridge checkpoint: when all spr
 
 ---
 
+## New Sketches & Experiments (Phase 25+)
+
+| Artifact | Layer | Purpose |
+|----------|-------|---------|
+| `graphs/sketches/validation/primal_routing_matrix.toml` | L0 | 10-domain Neural API routing sweep |
+| `graphs/sketches/mixed_atomics/dual_tower_ionic.toml` | L2 | Two electron shells, ionic bridge |
+| `graphs/sketches/mixed_atomics/node_with_dedicated_tower.toml` | L2 | Proton with dedicated electron |
+| `graphs/sketches/mixed_atomics/nest_enclave.toml` | L2 | Neutron-heavy isotope, policy fence |
+| `graphs/sketches/bonding_patterns/covalent_mesh_backup.toml` | L3 | Sharded encrypted backup across peers |
+| `graphs/sketches/bonding_patterns/ionic_capability_lease.toml` | L3 | Metered electron transfer |
+| `graphs/sketches/bonding_patterns/organo_metal_salt.toml` | L3 | Multi-bond compound (covalent + ionic + weak) |
+| `experiments/exp091_primal_routing_matrix/` | L0 | Drives routing matrix graph |
+| `experiments/exp092_dual_tower_ionic/` | L2 | Structural dual-tower + ionic bond validation |
+| `experiments/exp093_covalent_mesh_backup/` | L3 | Structural shard model + covalent policy validation |
+| `specs/MIXED_COMPOSITION_PATTERNS.md` | All | Particle model, layered validation, gap inventory |
+
+---
+
 ## Next Steps
 
 1. **Immediate**: Verify Phase 25 graph migration covers all spring deploy graphs (already done).
 2. **Short-term**: Run live Phase B validation on Eastgate for each spring's deploy graph.
 3. **Medium-term**: Extend exp090 pattern to validate each spring's NUCLEUS health remotely.
-4. **Long-term**: Automate the full matrix as a CI pipeline per spring.
+4. **Medium-term**: Run exp091 (L0 routing matrix) to validate all 10 primal domains.
+5. **Medium-term**: Implement dual-Tower coexistence in AtomicHarness (L2 gap).
+6. **Long-term**: Implement erasure coding as barraCuda primitive for L3 sharding.
+7. **Long-term**: Automate the full matrix (columns A-O) as a CI pipeline per spring.
