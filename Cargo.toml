@@ -77,6 +77,7 @@ members = [
     "experiments/exp086_genetic_identity_e2e",
     "experiments/exp087_neural_api_routing_e2e",
     "experiments/exp088_storytelling_composition",
+    "experiments/exp089_beardog_witness_roundtrip",
 ]
 
 [workspace.package]

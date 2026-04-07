@@ -297,3 +297,22 @@ method = "visualization.render.grammar"
 description = "Render a Grammar-of-Graphics expression via petalTongue"
 domain = "visualization"
 provider = "petaltongue"
+
+# ── Crypto capabilities (BearDog) — witness bridge mapping ──
+# BearDog response fields map to WireWitnessRef:
+#   signature (base64) → evidence
+#   "Ed25519"          → algorithm: "ed25519"
+#   (implied)          → encoding: "base64"
+#   (implied)          → tier: "local"
+
+[[capabilities]]
+method = "crypto.sign_ed25519"
+description = "Sign a message with Ed25519 — returns base64 signature for witness evidence"
+domain = "crypto"
+provider = "beardog"
+
+[[capabilities]]
+method = "crypto.verify_ed25519"
+description = "Verify an Ed25519 signature — caller decodes evidence per encoding field"
+domain = "crypto"
+provider = "beardog"

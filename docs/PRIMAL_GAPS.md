@@ -6,7 +6,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-06 (evening) — full ecosystem re-audit. 10 build/test debt items resolved.
+> **Last updated**: 2026-04-07 — trio witness harvest. plasmidBin updated. exp089 validation binary.
 > License alignment COMPLETE. toadStool clippy CLEAN. bingoCube edition 2024.
 > **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.3.0 — 15 primals + 4 tools.
 > **Grade distribution**: 4 A (barraCuda, bingoCube, coralReef, skunkBat), 8 B, 3 C, 0 D, 0 F.
@@ -23,6 +23,13 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > (`rootpulse_commit.toml`) executed over the provenance trio. Cross-spring data
 > exchange is a biomeOS graph design problem, not a missing primal. See
 > `wateringHole/DEPLOYMENT_AND_COMPOSITION.md` §The Composition Principle.
+>
+> **Trio witness evolution (April 7)**: `WireAttestationRef` → `WireWitnessRef`.
+> Attestation → Witness. `signature` → `evidence`. `attestations` → `witnesses`.
+> Self-describing `kind`/`encoding`/`algorithm`/`tier`/`context` fields. Trio is now
+> algo-agnostic and can track non-crypto events (checkpoints, markers, hashes).
+> BearDog-to-witness bridge documented. Trio harvested to plasmidBin (glibc).
+> See `wateringHole/handoffs/PRIMALSPRING_TRIO_WITNESS_HARVEST_HANDOFF_APR07_2026.md`.
 
 ---
 
@@ -118,8 +125,9 @@ All gaps **RESOLVED**.
 | ID | Gap | Status |
 |----|-----|--------|
 | RC-01 | TCP-only transport | **RESOLVED** (v0.14.0-dev s23 — `--unix`, `UdsJsonRpcServer`, `biomeos/` path) |
+| RC-02 | Witness wire evolution | **RESOLVED** (v0.14.0-dev — `WireWitnessRef`: kind/evidence/encoding/algorithm/tier/context) |
 
-**Compliance**: clippy clean, fmt clean, `deny(unsafe_code)` + `forbid` in non-test builds via `cfg_attr`, `deny.toml` present, tests pass.
+**Compliance**: clippy clean, fmt clean, `deny(unsafe_code)` + `forbid` in non-test builds via `cfg_attr`, `deny.toml` present, tests pass. Witness evolution harvested to plasmidBin (April 7).
 
 ---
 
@@ -130,8 +138,9 @@ All gaps **RESOLVED**.
 | ID | Gap | Status |
 |----|-----|--------|
 | LS-03 | Panic on startup | **RESOLVED** (v0.9.15 — infant discovery fails gracefully) |
+| LS-04 | Witness wire evolution | **RESOLVED** (v0.9.16 — `WireWitnessRef` in `trio_types.rs`, witnesses on wire summaries) |
 
-**Compliance**: clippy clean, **fmt now PASSES** (previously failing — fixed), `forbid(unsafe_code)` at workspace level, `deny.toml` present, tests pass.
+**Compliance**: clippy clean, **fmt now PASSES** (previously failing — fixed), `forbid(unsafe_code)` at workspace level, `deny.toml` present, tests pass. Witness evolution harvested to plasmidBin (April 7).
 
 ---
 
@@ -149,7 +158,11 @@ All gaps **RESOLVED**.
 
 All gaps **RESOLVED**. TCP JSON-RPC added, `cargo-deny`, `forbid(unsafe)`.
 
-**Compliance**: clippy 1 warning (unused imports in `tcp_jsonrpc.rs` test), fmt clean, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, tests pass.
+| ID | Gap | Status |
+|----|-----|--------|
+| SG-01 | Witness wire evolution | **RESOLVED** (v0.7.27 — `Witness` type, `EcoPrimalsAttributes.witnesses`, kind/evidence/encoding) |
+
+**Compliance**: clippy clean, fmt clean, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, tests pass. Witness evolution harvested to plasmidBin (April 7).
 
 ---
 
@@ -175,7 +188,9 @@ No gaps identified.
 
 ## bearDog
 
-No gaps identified.
+| ID | Gap | Severity | Status |
+|----|-----|----------|--------|
+| BD-01 | `crypto.verify_ed25519` does not accept `encoding` hint | Low | Open — caller must decode hex→raw→base64 before calling verify when witness has `encoding: "hex"`. Future evolution should accept encoding on verify wire. |
 
 **Compliance** (Wave 26): clippy clean, fmt clean, `forbid(unsafe_code)` at workspace level, `deny.toml` present (skip-list 30 → 15), SPDX present, **14,366+ tests, 0 failures**. Gold standard. **AI tree (11.9K LOC) feature-gated** behind `ai` feature per responsibility matrix. Flaky `production_ready` test stabilized. `handle_key_info` + client JSON-RPC dispatch evolved from stubs to real implementations.
 
@@ -185,13 +200,14 @@ No gaps identified.
 
 **ZERO CRITICAL / HIGH / MEDIUM BLOCKERS.**
 
-All 4 open gaps are **Low** severity — polish items owned by primal teams.
+All 5 open gaps are **Low** severity — polish items owned by primal teams.
 
 **Low** (polish, owned by primal teams):
-1. **NG-01** — NestGate metadata backend injection (`FileMetadataBackend` available; needs default wiring)
-2. **NG-03** — `data.*` handler stubs (removed from capabilities; honest delegation story; stubs remain)
-3. **SB-02** — `ring` lockfile ghost (not compiled in default build; lockfile refresh clears it)
-4. **SB-03** — `sled` feature-gated but default-on in orchestrator/sovereign-onion (pending NestGate API)
+1. **BD-01** — BearDog `crypto.verify_ed25519` encoding hint (caller decodes for now; future BearDog wire evolution)
+2. **NG-01** — NestGate metadata backend injection (`FileMetadataBackend` available; needs default wiring)
+3. **NG-03** — `data.*` handler stubs (removed from capabilities; honest delegation story; stubs remain)
+4. **SB-02** — `ring` lockfile ghost (not compiled in default build; lockfile refresh clears it)
+5. **SB-03** — `sled` feature-gated but default-on in orchestrator/sovereign-onion (pending NestGate API)
 
 ---
 
@@ -249,15 +265,19 @@ All 4 open gaps are **Low** severity — polish items owned by primal teams.
 | NG-04–05 | NestGate | ring/aws-lc-rs eliminated, crypto delegated to BearDog | deep debt evolution |
 | RC-01 | rhizoCrypt | UDS transport + biomeos/ path | v0.14.0-dev s23 |
 | LS-03 | loamSpine | Startup panic → graceful degradation | v0.9.15 |
+| LS-04 | loamSpine | Witness wire evolution (`WireWitnessRef` in `trio_types.rs`) | v0.9.16 |
+| RC-02 | rhizoCrypt | Witness wire evolution (`WireWitnessRef`, evidence, kind) | v0.14.0-dev |
+| SG-01 | sweetGrass | Witness wire evolution (`Witness`, `EcoPrimalsAttributes.witnesses`) | v0.7.27 |
 
 | TS-01 | toadStool | coralReef `capability.discover` | S173-2 |
 | PT-04 | petalTongue | HTML graph export | deep debt evolution |
 | PT-06 | petalTongue | callback_tx push notifications | deep debt evolution |
 
-**23 gaps resolved** across the full cycle. **4 open** (all low). Zero critical, zero medium.
+**26 gaps resolved** across the full cycle. **5 open** (all low). Zero critical, zero medium.
 10 build/test debt items resolved (April 6): license alignment complete, toadStool clippy+fmt,
 bingoCube clippy+edition, coralReef clippy, rhizoCrypt clippy, sweetGrass clippy, NestGate fmt,
-barraCuda compile.
+barraCuda compile. 3 trio witness wire gaps resolved (April 7): RC-02, LS-04, SG-01.
+BD-01 added (BearDog encoding hint on verify — low, forward-compatible).
 
 ---
 
@@ -335,9 +355,9 @@ Cross-referenced against `wateringHole/PRIMAL_RESPONSIBILITY_MATRIX.md`. No new 
 | petaltongue | 30M | musl-static | yes | Mar 28 |
 | nestgate | 4.9M | musl-static | yes | Mar 28 |
 | toadstool | 16M | musl-static | yes | Mar 27 (S168 binary — S171 needs rebuild) |
-| rhizocrypt | 5.4M | glibc | yes | April 1 — RC-01 fix |
-| loamspine | 6.9M | glibc | yes | April 1 — LS-03 fix |
-| sweetgrass | 8.8M | glibc | yes | April 1 |
+| rhizocrypt | 5.4M | glibc | yes | April 7 — witness evolution harvest |
+| loamspine | 8.5M | glibc | yes | April 7 — witness evolution harvest |
+| sweetgrass | 11.9M | glibc | yes | April 7 — witness evolution harvest |
 | barracuda | 4.5M | glibc | N/A | April 1 — requires GPU |
 
 **Note**: rhizoCrypt/loamSpine/sweetGrass/barraCuda are glibc dynamic — musl-static cross-compile needed for containers.
