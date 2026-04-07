@@ -1,57 +1,74 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Provenance Overlay — Tower + RootPulse (sweetGrass + loamSpine + rhizoCrypt)
+# Provenance Overlay — Tower + provenance trio (rhizoCrypt + loamSpine + sweetGrass)
 #
-# Adds the provenance trio to a Tower base. Together they provide:
-#   - Content-addressed DAG storage (rhizoCrypt)
-#   - Lineage/provenance tracking (loamSpine)
-#   - Braid attribution and provenance graphs (sweetGrass)
+# The trio provides verifiable lineage for any data pipeline:
+#   - rhizoCrypt: content-addressed DAG (sessions, events, merkle proofs)
+#   - loamSpine: append-only ledger (spines, entries, certificates)
+#   - sweetGrass: attribution braids and provenance graph export
 #
-# Requires: trio release binaries in plasmidBin (trio teams inlined types).
+# Witness wire type: WireWitnessRef
+#   { agent, kind, evidence, witnessed_at, encoding, algorithm, tier, context }
+#
+# BearDog crypto bridge:
+#   crypto.sign_ed25519 → evidence (base64), algorithm "ed25519", tier "local"
+#   crypto.verify_ed25519 → verify evidence per encoding field
+#
+# Non-crypto witnesses (kind = "checkpoint" | "observation" | "marker")
+# track pipeline steps without cryptographic signing.
+#
+# The trio is algo-agnostic and can track non-crypto events (game checkpoints,
+# conversation markers, sensor observations) as well as signed attestations.
+#
+# See: wateringHole/ATTESTATION_ENCODING_STANDARD.md
+#      wateringHole/handoffs/PRIMALSPRING_TRIO_WITNESS_HARVEST_HANDOFF_APR07_2026.md
 #
 # Usage:
 #   biomeos deploy --graph graphs/provenance_overlay.toml
 
 [graph]
 name = "provenance_overlay"
-description = "Tower + RootPulse provenance trio (rhizoCrypt + loamSpine + sweetGrass)"
-version = "0.1.0"
+description = "Tower + provenance trio — verifiable lineage via WireWitnessRef"
+version = "2.0.0"
 coordination = "sequential"
+
+[graph.metadata]
+pattern_version = "2026-04-07"
+witness_wire = "WireWitnessRef"
+encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 
 # ── Phase 1: Tower base ──
 
 [[graph.node]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health.liveness"
 by_capability = "security"
 capabilities = [
-    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
-    "crypto.verify", "crypto.keygen", "crypto.identity",
+    "crypto.sign_ed25519", "crypto.verify_ed25519",
+    "crypto.blake3_hash",
 ]
 
 [[graph.node]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
-capabilities = [
-    "discovery.find_primals", "discovery.announce",
-    "network.tls_connect", "network.http_request",
-]
+capabilities = ["discovery.find_primals", "discovery.announce"]
 
 # ── Phase 2: Provenance trio ──
+# Order: rhizoCrypt → loamSpine → sweetGrass (DAG → ledger → attribution)
 
 [[graph.node]]
 name = "rhizocrypt"
-binary = "rhizocrypt_primal"
+binary = "rhizocrypt"
 order = 3
-required = false
+required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "provenance"
@@ -64,9 +81,9 @@ capabilities = [
 
 [[graph.node]]
 name = "loamspine"
-binary = "loamspine_primal"
+binary = "loamspine"
 order = 4
-required = false
+required = true
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
@@ -79,9 +96,9 @@ capabilities = [
 
 [[graph.node]]
 name = "sweetgrass"
-binary = "sweetgrass_primal"
+binary = "sweetgrass"
 order = 5
-required = false
+required = true
 depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"

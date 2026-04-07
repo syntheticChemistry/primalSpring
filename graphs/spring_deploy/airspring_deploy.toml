@@ -8,9 +8,11 @@
 #
 # NUCLEUS base: biomeOS + Tower (BearDog + Songbird)
 # Science layer: barraCuda (compute), Squirrel (model inference), airSpring
-# Provenance: rhizoCrypt + loamSpine + sweetGrass
+# Provenance: rhizoCrypt + loamSpine + sweetGrass (WireWitnessRef)
 #
-# References: ecoPrimals/infra/wateringHole/ for IPC and composition standards.
+# References:
+#   wateringHole/ATTESTATION_ENCODING_STANDARD.md
+#   config/capability_registry.toml
 #
 # Usage:
 #   biomeos deploy --graph graphs/spring_deploy/airspring_deploy.toml
@@ -18,8 +20,13 @@
 [graph]
 name = "airspring_nucleated"
 description = "AirSpring weather science — NUCLEUS base + compute + provenance"
-version = "2.0.0"
+version = "3.0.0"
 coordination = "sequential"
+
+[graph.metadata]
+pattern_version = "2026-04-07"
+witness_wire = "WireWitnessRef"
+encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 
 # ── NUCLEUS Base ──────────────────────────────────────────────────────
 
@@ -29,9 +36,9 @@ binary = "biomeos"
 order = 0
 required = true
 spawn = false
-health_method = "graph.list"
+health_method = "health.liveness"
 by_capability = "orchestration"
-capabilities = ["graph.execute", "capability.discover", "topology.rescan"]
+capabilities = ["graph.deploy", "capability.discover", "topology.rescan"]
 
 [[graph.node]]
 name = "beardog"
@@ -41,7 +48,7 @@ required = true
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.blake3_hash"]
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash"]
 
 [[graph.node]]
 name = "songbird"
@@ -51,7 +58,7 @@ required = true
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "discovery"
-capabilities = ["net.discovery", "net.mesh"]
+capabilities = ["discovery.find_primals", "discovery.announce"]
 
 # ── Compute Layer ─────────────────────────────────────────────────────
 
@@ -75,10 +82,9 @@ required = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "ai"
-args = ["server"]
-capabilities = ["ai.query", "ai.list_providers"]
+capabilities = ["ai.query", "mcp.tools.list"]
 
-# ── Provenance Trio ───────────────────────────────────────────────────
+# ── Provenance Trio (WireWitnessRef) ─────────────────────────────────
 
 [[graph.node]]
 name = "rhizocrypt"
@@ -88,30 +94,27 @@ required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "provenance"
-args = ["--unix"]
-capabilities = ["dag.session.create", "dag.session.list"]
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify"]
 
 [[graph.node]]
 name = "loamspine"
 binary = "loamspine"
 order = 6
 required = false
-depends_on = ["beardog"]
+depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
-args = ["server"]
-capabilities = ["entry.append", "ledger.status"]
+capabilities = ["spine.create", "entry.append", "session.commit"]
 
 [[graph.node]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 7
 required = false
-depends_on = ["beardog"]
+depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
-args = ["server"]
-capabilities = ["attribution.claim", "attribution.resolve"]
+capabilities = ["braid.create", "braid.commit", "provenance.graph"]
 
 # ── Spring Science ────────────────────────────────────────────────────
 
@@ -123,13 +126,9 @@ required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "weather"
-args = ["server"]
 capabilities = [
     "data.weather",
     "data.cross_spring_weather",
     "ecology.experiment",
-    "provenance.begin",
-    "provenance.record",
-    "provenance.complete",
     "compute.offload",
 ]

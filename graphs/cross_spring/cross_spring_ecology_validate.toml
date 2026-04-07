@@ -13,8 +13,12 @@
 [graph]
 name = "cross_spring_ecology_validate"
 description = "Validates cross_spring_ecology: ET₀ → diversity → spectral (Tower, biomeOS, springs, coordination)"
-version = "0.1.0"
+version = "2.0.0"
 coordination = "sequential"
+
+[graph.metadata]
+pattern_version = "2026-04-07"
+witness_wire = "WireWitnessRef"
 
 [[graph.node]]
 name = "verify_tower"
@@ -33,17 +37,17 @@ binary = "primalspring_primal"
 order = 2
 required = true
 spawn = false
-health_method = "health.check"
-by_capability = "ecosystem"
+health_method = "health.liveness"
+by_capability = "orchestration"
 args = ["server"]
-capabilities = ["graph.execution", "ecosystem.coordination"]
+capabilities = ["graph.deploy", "capability.discover"]
 
 [[graph.node]]
 name = "airspring_ecology"
 binary = "airspring_primal"
 order = 3
 required = true
-health_method = "health.check"
+health_method = "health.liveness"
 by_capability = "ecology"
 capabilities = [
     "ecology.weather",
@@ -57,7 +61,7 @@ name = "wetspring_science"
 binary = "wetspring_primal"
 order = 4
 required = true
-health_method = "health.check"
+health_method = "health.liveness"
 by_capability = "science"
 capabilities = ["science.diversity", "science.sequence"]
 
@@ -66,7 +70,7 @@ name = "neuralspring_spectral"
 binary = "neuralspring_primal"
 order = 5
 required = true
-health_method = "health.check"
+health_method = "health.liveness"
 by_capability = "neural"
 capabilities = ["neural.spectral", "neural.eigensolve"]
 
@@ -76,7 +80,7 @@ binary = "primalspring_primal"
 order = 6
 required = true
 spawn = false
-health_method = "ecosystem.coordination"
-by_capability = "ecosystem"
+health_method = "health.liveness"
+by_capability = "coordination"
 args = ["server"]
-capabilities = []
+capabilities = ["coordination.validate_composition"]

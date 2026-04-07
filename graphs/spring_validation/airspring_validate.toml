@@ -10,8 +10,13 @@
 [graph]
 name = "airspring_validate"
 description = "Validates airspring_deploy: Tower check, airspring primal, ecology pipeline"
-version = "0.1.0"
+version = "2.0.0"
 coordination = "sequential"
+
+[graph.metadata]
+pattern_version = "2026-04-07"
+witness_wire = "WireWitnessRef"
+encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 
 [[graph.node]]
 name = "verify_tower"
@@ -22,27 +27,25 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "coordination"
 args = ["server"]
-capabilities = [
-    "composition.tower_health",
-]
+capabilities = ["composition.tower_health"]
 
 [[graph.node]]
-name = "start_biomeos"
+name = "verify_biomeos"
 binary = "biomeos"
 order = 2
 required = true
 depends_on = ["verify_tower"]
-health_method = "capability.list"
-by_capability = "ecosystem"
-capabilities = ["graph.execution", "ecosystem.coordination"]
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "capability.discover"]
 
 [[graph.node]]
 name = "start_airspring"
 binary = "airspring_primal"
 order = 3
 required = true
-depends_on = ["start_biomeos"]
-health_method = "health.check"
+depends_on = ["verify_biomeos"]
+health_method = "health.liveness"
 by_capability = "ecology"
 capabilities = [
     "ecology.weather",
@@ -51,14 +54,23 @@ capabilities = [
 ]
 
 [[graph.node]]
-name = "validate_ecology"
+name = "validate_provenance"
 binary = "primalspring_primal"
 order = 4
 required = true
 spawn = false
 depends_on = ["start_airspring"]
-health_method = "health.check"
-by_capability = "ecology"
-capabilities = [
-    "coordination.validate_ecology",
-]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["composition.provenance_health"]
+
+[[graph.node]]
+name = "validate_airspring"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+depends_on = ["validate_provenance"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_composition"]

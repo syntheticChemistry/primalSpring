@@ -18,18 +18,22 @@
 [graph]
 name = "rpgpt_session_provenance"
 description = "RPGPT session integrity: every narrative event → DAG stamp → replayable + auditable + forkable"
-version = "1.0.0"
+version = "2.0.0"
 coordination = "Pipeline"
 bond_type = "covalent"
 
+[graph.metadata]
+pattern_version = "2026-04-07"
+witness_wire = "WireWitnessRef"
+
 [[graph.node]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.identity", "crypto.sign"]
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
 
 [[graph.node]]
 name = "esotericwebb"
@@ -37,7 +41,7 @@ binary = "esotericwebb"
 order = 2
 required = true
 depends_on = ["beardog"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "narrative"
 capabilities = ["session.create", "session.advance", "webb.resolve_scene"]
 
@@ -47,45 +51,46 @@ binary = "ludospring"
 order = 3
 required = true
 depends_on = ["beardog"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "game"
 capabilities = ["game.evaluate_flow", "game.difficulty_adjustment"]
 
 [[graph.node]]
 name = "squirrel"
-binary = "squirrel_primal"
+binary = "squirrel"
 order = 4
 required = true
-health_method = "health"
+depends_on = ["beardog"]
+health_method = "health.liveness"
 by_capability = "ai"
 capabilities = ["ai.chat", "context.create"]
 
 [[graph.node]]
 name = "rhizocrypt"
-binary = "rhizocrypt_primal"
+binary = "rhizocrypt"
 order = 5
 required = true
 depends_on = ["beardog"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "provenance"
-capabilities = ["dag.session.create", "dag.event.append", "dag.session.finalize"]
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root", "dag.session.finalize"]
 
 [[graph.node]]
 name = "loamspine"
-binary = "loamspine_primal"
+binary = "loamspine"
 order = 6
 required = true
-depends_on = ["beardog"]
-health_method = "health"
+depends_on = ["rhizocrypt"]
+health_method = "health.liveness"
 by_capability = "ledger"
-capabilities = ["lineage.commit", "lineage.branch", "lineage.certify"]
+capabilities = ["spine.create", "entry.append", "session.commit", "lineage.certify"]
 
 [[graph.node]]
 name = "sweetgrass"
-binary = "sweetgrass_primal"
+binary = "sweetgrass"
 order = 7
 required = true
-depends_on = ["beardog"]
-health_method = "health"
+depends_on = ["loamspine"]
+health_method = "health.liveness"
 by_capability = "attribution"
-capabilities = ["provenance.create_braid", "provenance.verify_braid"]
+capabilities = ["braid.create", "braid.commit", "provenance.graph"]

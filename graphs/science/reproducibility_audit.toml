@@ -12,61 +12,65 @@
 [graph]
 name = "reproducibility_audit"
 description = "Replay and verify any prior experiment's provenance chain — the Trio audits all spring computations"
-version = "1.0.0"
+version = "2.0.0"
 coordination = "sequential"
 bond_type = "covalent"
 science_domain = "reproducibility"
 
+[graph.metadata]
+pattern_version = "2026-04-07"
+witness_wire = "WireWitnessRef"
+
 # ── Tower layer ────────────────────────────────────────────────────────
 [[graph.node]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.identity", "crypto.verify"]
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
 
 [[graph.node]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "discovery"
 capabilities = ["net.discovery"]
 
 # ── Provenance Trio (core audit capability) ────────────────────────────
 [[graph.node]]
 name = "rhizocrypt"
-binary = "rhizocrypt_primal"
+binary = "rhizocrypt"
 order = 3
 required = true
 depends_on = ["beardog"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "provenance"
-capabilities = ["provenance.session", "provenance.merkle_root", "provenance.replay"]
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root", "provenance.replay"]
 
 [[graph.node]]
 name = "loamspine"
-binary = "loamspine_primal"
+binary = "loamspine"
 order = 4
 required = true
 depends_on = ["rhizocrypt"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "ledger"
-capabilities = ["provenance.commit", "provenance.verify", "provenance.diff"]
+capabilities = ["spine.create", "entry.append", "session.commit", "provenance.verify", "provenance.diff"]
 
 [[graph.node]]
 name = "sweetgrass"
-binary = "sweetgrass_primal"
+binary = "sweetgrass"
 order = 5
 required = true
 depends_on = ["loamspine"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "attribution"
-capabilities = ["provenance.braid", "provenance.attribute", "provenance.audit"]
+capabilities = ["braid.create", "braid.commit", "provenance.graph", "provenance.braid", "provenance.attribute", "provenance.audit"]
 
 # ── biomeOS (orchestrator for audit workflow) ──────────────────────────
 [[graph.node]]
@@ -75,6 +79,6 @@ binary = "biomeos_primal"
 order = 6
 required = true
 depends_on = ["beardog", "songbird", "sweetgrass"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "ecosystem"
-capabilities = ["graph.execution", "ecosystem.coordination", "audit.orchestrate"]
+capabilities = ["graph.deploy", "ecosystem.coordination", "audit.orchestrate"]

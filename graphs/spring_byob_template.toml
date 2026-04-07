@@ -8,22 +8,28 @@
 #
 # Every spring graph follows this structure:
 #   Phase 1: Tower Atomic (BearDog + Songbird) — always required
-#   Phase 2: Optional extensions (ToadStool, NestGate, Squirrel)
-#   Phase 3: Your spring — depends on Tower, optionally others
-#   Phase 4: Validation node
+#   Phase 2: Optional extensions (ToadStool, NestGate, Squirrel, petalTongue)
+#   Phase 3: Provenance trio (rhizoCrypt + loamSpine + sweetGrass) — optional
+#   Phase 4: Your spring — depends on Tower, optionally others
+#   Phase 5: Validation node
 #
 # The minimum viable BYOB graph is Tower + your spring.
-# Add compute (ToadStool), storage (NestGate), or AI (Squirrel)
-# as your spring's domain requires.
+# Add compute (ToadStool), storage (NestGate), AI (Squirrel),
+# visualization (petalTongue), or provenance (trio) as needed.
+#
+# Canonical references:
+#   - Capability names: config/capability_registry.toml
+#   - Wire types: wateringHole/ATTESTATION_ENCODING_STANDARD.md (WireWitnessRef)
+#   - Binary names: plasmidBin/manifest.toml
+#   - Health method: always "health.liveness" (JSON-RPC standard)
 #
 # Graduation checklist (sourDough compliance):
 #   [ ] UniBin binary with server/status/version subcommands
-#   [ ] JSON-RPC 2.0 over Unix socket
+#   [ ] JSON-RPC 2.0 over Unix socket + optional TCP
 #   [ ] health.liveness + health.readiness
-#   [ ] identity.get
-#   [ ] capability.list
+#   [ ] identity.get + capabilities.list
 #   [ ] Semantic method naming (domain.verb[.variant])
-#   [ ] AGPL-3.0-only license
+#   [ ] AGPL-3.0-or-later license
 #   [ ] capability_registry.toml matching code
 #   [ ] This deploy graph validates via primalSpring
 #
@@ -33,8 +39,13 @@
 [graph]
 name = "${SPRING_NAME}_niche"
 description = "${SPRING_NAME} BYOB deployment"
-version = "0.1.0"
+version = "2.0.0"
 coordination = "sequential"
+
+[graph.metadata]
+pattern_version = "2026-04-07"
+witness_wire = "WireWitnessRef"
+encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 1: Tower Atomic — always required
@@ -42,22 +53,26 @@ coordination = "sequential"
 
 [[graph.node]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.encrypt", "crypto.sign", "crypto.verify"]
+capabilities = [
+    "crypto.sign_ed25519",
+    "crypto.verify_ed25519",
+    "crypto.blake3_hash",
+]
 
 [[graph.node]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
-capabilities = ["discovery.find_primals", "network.tls_connect"]
+capabilities = ["discovery.find_primals", "discovery.announce"]
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 2: Optional extensions — uncomment what you need
@@ -66,7 +81,7 @@ capabilities = ["discovery.find_primals", "network.tls_connect"]
 # Uncomment for compute (GPU/CPU dispatch):
 # [[graph.node]]
 # name = "toadstool"
-# binary = "toadstool_primal"
+# binary = "toadstool"
 # order = 3
 # required = false
 # depends_on = ["beardog", "songbird"]
@@ -77,18 +92,18 @@ capabilities = ["discovery.find_primals", "network.tls_connect"]
 # Uncomment for storage (content-addressed persistence):
 # [[graph.node]]
 # name = "nestgate"
-# binary = "nestgate_primal"
+# binary = "nestgate"
 # order = 3
 # required = false
 # depends_on = ["beardog", "songbird"]
 # health_method = "health.liveness"
 # by_capability = "storage"
-# capabilities = ["storage.store", "storage.retrieve"]
+# capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
 # Uncomment for AI (MCP tool routing):
 # [[graph.node]]
 # name = "squirrel"
-# binary = "squirrel_primal"
+# binary = "squirrel"
 # order = 3
 # required = false
 # depends_on = ["beardog", "songbird"]
@@ -105,10 +120,52 @@ capabilities = ["discovery.find_primals", "network.tls_connect"]
 # depends_on = ["beardog", "songbird"]
 # health_method = "health.liveness"
 # by_capability = "visualization"
-# capabilities = ["visualization.render", "visualization.render.dashboard"]
+# capabilities = ["visualization.render.dashboard", "visualization.render.grammar"]
 
 # ═══════════════════════════════════════════════════════════════
-# Phase 3: Your spring
+# Phase 3: Provenance trio — uncomment for verifiable lineage
+#
+# Witness wire: WireWitnessRef { agent, kind, evidence, witnessed_at,
+#   encoding, algorithm, tier, context }
+# BearDog signs → evidence (base64), algorithm "ed25519", tier "local"
+# Non-crypto witnesses: kind "checkpoint" | "observation" | "marker"
+# ═══════════════════════════════════════════════════════════════
+
+# [[graph.node]]
+# name = "rhizocrypt"
+# binary = "rhizocrypt"
+# order = 5
+# required = false
+# depends_on = ["beardog"]
+# health_method = "health.liveness"
+# by_capability = "provenance"
+# capabilities = [
+#     "dag.session.create", "dag.event.append",
+#     "dag.merkle.root", "dag.merkle.verify",
+# ]
+
+# [[graph.node]]
+# name = "loamspine"
+# binary = "loamspine"
+# order = 6
+# required = false
+# depends_on = ["beardog", "rhizocrypt"]
+# health_method = "health.liveness"
+# by_capability = "ledger"
+# capabilities = ["spine.create", "entry.append", "session.commit"]
+
+# [[graph.node]]
+# name = "sweetgrass"
+# binary = "sweetgrass"
+# order = 7
+# required = false
+# depends_on = ["beardog", "loamspine"]
+# health_method = "health.liveness"
+# by_capability = "attribution"
+# capabilities = ["braid.create", "braid.commit", "provenance.graph"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 4: Your spring
 # ═══════════════════════════════════════════════════════════════
 
 [[graph.node]]
@@ -126,7 +183,7 @@ capabilities = [
 ]
 
 # ═══════════════════════════════════════════════════════════════
-# Phase 4: Validation
+# Phase 5: Validation
 # ═══════════════════════════════════════════════════════════════
 
 [[graph.node]]
