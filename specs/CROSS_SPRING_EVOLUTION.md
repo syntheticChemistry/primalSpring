@@ -617,18 +617,18 @@ Phase 27: biomeOS Self-Composition
 
 ### L0: Individual Primal Routing (Direct IPC)
 
-| # | Domain | Provider | Direct Probe | Neural API Route | Status |
-|---|--------|----------|-------------|-----------------|--------|
-| 1 | security | BearDog | **PASS** (health, sign, hash) | **FAIL** (not registered) | GAP: Neural API capability registration |
-| 2 | discovery | Songbird | **PASS** (health, find_primals) | **FAIL** (not registered) | GAP: Neural API capability registration |
-| 3 | compute | ToadStool | NOT RUNNING | — | Need: start ToadStool process |
-| 4 | storage | NestGate | NOT RUNNING | — | Need: start NestGate process |
-| 5 | ai | Squirrel | NOT RUNNING | — | Need: start Squirrel process |
-| 6 | dag | rhizoCrypt | NOT RUNNING | — | Need: start rhizoCrypt process |
-| 7 | spine | loamSpine | NOT RUNNING | — | Need: start loamSpine process |
-| 8 | braid | sweetGrass | NOT RUNNING | — | Need: start sweetGrass process |
-| 9 | http | Songbird (Tower) | **PASS** (ifconfig.me HTTP 200) | **FAIL** (not registered) | GAP: Neural API capability registration |
-| 10 | mesh | Songbird (BirdSong) | **FAIL** (mesh not initialized) | — | Expected: mesh.init required first |
+| # | Domain | Provider | Direct Probe | Neural API Route (v2.81) | Neural API Route (v2.92) | Status |
+|---|--------|----------|-------------|-------------------------|-------------------------|--------|
+| 1 | security | BearDog | **PASS** (health, sign, hash) | **FAIL** (0 caps) | **FAIL** (Format E unrecognized) | GAP-MATRIX-01b: BearDog wire format |
+| 2 | discovery | Songbird | **PASS** (health, find_primals) | **FAIL** (0 caps) | **PARTIAL** (14 caps registered, forwarding fails) | GAP-MATRIX-07: proxy forwarding |
+| 3 | compute | ToadStool | NOT RUNNING | — | — | Need: start ToadStool process |
+| 4 | storage | NestGate | NOT RUNNING | — | — | Need: start NestGate process |
+| 5 | ai | Squirrel | NOT RUNNING | — | — | Need: start Squirrel process |
+| 6 | dag | rhizoCrypt | NOT RUNNING | — | — | Need: start rhizoCrypt process |
+| 7 | spine | loamSpine | NOT RUNNING | — | — | Need: start loamSpine process |
+| 8 | braid | sweetGrass | NOT RUNNING | — | — | Need: start sweetGrass process |
+| 9 | http | Songbird (Tower) | **PASS** (ifconfig.me HTTP 200) | **FAIL** (0 caps) | **PARTIAL** (crypto.delegate registered, forwarding fails) | GAP-MATRIX-07 |
+| 10 | mesh | Songbird (BirdSong) | **FAIL** (mesh not initialized) | — | — | Expected: mesh.init required first |
 
 ### L1: Tower Atomic Composition
 
@@ -645,13 +645,23 @@ Phase 27: biomeOS Self-Composition
 
 ### Critical Gaps Found
 
-**GAP-MATRIX-01: Neural API does not register primal capabilities from running sockets**
+**GAP-MATRIX-01: Neural API capability registration — PARTIALLY RESOLVED (biomeOS v2.92)**
 
-biomeOS Neural API v2 detects BearDog and Songbird sockets (`beardog healthy with 0 capabilities`, `songbird healthy with 0 capabilities`) but the capability probe returns 0 capabilities. The primals ARE advertising capabilities (BearDog reports 9 capability groups via `capabilities.list`), but biomeOS's probe mechanism doesn't match the response format.
+biomeOS v2.92 (commits `489f8d66` + `3cfeeecf`, April 7) added real JSON-RPC probing (`identity.get` + `capabilities.list`), 4-format capability parsing, and domain prefix matching (GAP-019).
 
-Impact: All L0 Neural API routing tests FAIL. Direct IPC works. This blocks the `capability.call` path that all springs rely on.
+**Result**: Songbird now discovered with **14 capabilities** (was 0). `capability.discover("network")` correctly routes to Songbird. BearDog still reports 0 capabilities — its `provided_capabilities` wire format (`[{type: "security", methods: [...]}]`) is Format E, not handled by the A-D parser. biomeOS logs: `Unrecognized capabilities.list response shape`.
 
-Severity: **Critical** — blocks L0 Neural API routing for all downstream springs.
+**GAP-MATRIX-01b (NEW)**: BearDog Format E wire format unrecognized. biomeOS team needs to add Format E parsing: `result.provided_capabilities: [{type, methods, description?, version?}]`.
+
+Severity: **Medium** (downgraded from Critical) — Songbird routing works, BearDog still blocked.
+
+**GAP-MATRIX-07 (NEW): Neural API proxy forwarding fails after discovery**
+
+biomeOS discovers the correct provider and endpoint, but `capability.call` forwarding fails with "Failed to forward {method} to unix:///...". The proxy layer cannot connect to primal sockets despite `capability.discover` correctly returning the endpoint. Likely a URI scheme handling issue (`unix:///path` vs bare path in the `AtomicClient`).
+
+Impact: All `capability.call` forwarding fails even for correctly discovered primals.
+
+Severity: **Critical** — blocks the `capability.call` path that all springs rely on. Direct IPC works as workaround.
 
 **GAP-MATRIX-02: tower_atomic_bootstrap.toml fails to parse in biomeOS**
 

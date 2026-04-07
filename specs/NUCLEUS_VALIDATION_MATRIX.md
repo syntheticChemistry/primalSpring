@@ -217,21 +217,42 @@ The NUCLEUS validation matrix is the gen3→gen4 bridge checkpoint: when all spr
 
 ## Live Validation Results (April 7, 2026)
 
-Tower Atomic (BearDog + Songbird) validated live on Eastgate. Neural API running but capability registration gap identified.
+### Run 1: biomeOS v2.81 (pre-fix)
+
+Tower Atomic (BearDog + Songbird) validated live on Eastgate. Neural API running but capability registration gap identified — 0 capabilities discovered from running primals.
+
+### Run 2: biomeOS v2.92 (post-fix — probe_endpoint + prefix matching)
+
+biomeOS v2.92 includes real JSON-RPC probing (`identity.get` + `capabilities.list`), 4-format capability parser alignment, and domain prefix matching (GAP-019). Rebuilt from source and validated:
 
 | Probe | Result | Notes |
 |-------|--------|-------|
-| BearDog health.liveness | **LIVE PASS** | v0.9.0, 9 capability groups |
-| BearDog crypto.sign_ed25519 | **LIVE PASS** | Ed25519 signature generated |
-| BearDog crypto.blake3_hash | **LIVE PASS** | BLAKE3 hash confirmed |
-| Songbird health.liveness | **LIVE PASS** | Healthy |
-| Songbird HTTPS (ifconfig.me) | **LIVE PASS** | HTTP 200 via Tower crypto |
-| Songbird discovery.find_primals | **LIVE PASS** | Discovery operational |
-| Neural API capability.call | **LIVE FAIL** | GAP-MATRIX-01: primals not registered in Neural API |
+| BearDog health.liveness (direct) | **LIVE PASS** | v0.9.0, 9 capability groups via `capabilities.list` |
+| BearDog crypto.sign_ed25519 (direct) | **LIVE PASS** | Ed25519 signature generated |
+| BearDog crypto.blake3_hash (direct) | **LIVE PASS** | BLAKE3 hash confirmed |
+| Songbird health.liveness (direct) | **LIVE PASS** | Healthy |
+| Songbird HTTPS ifconfig.me (direct) | **LIVE PASS** | HTTP 200 via Tower crypto, 300ms |
+| Neural API health.liveness | **LIVE PASS** | v0.1.0, alive |
+| Neural API → Songbird discovery | **PARTIAL** | 14 Songbird capabilities registered (was 0). Routing finds Songbird. Proxy forwarding fails. |
+| Neural API → BearDog capabilities | **FAIL** | BearDog `provided_capabilities` wire format (`[{type, methods}]`) unrecognized — 0 BearDog capabilities registered. **GAP-MATRIX-01b** |
+| Neural API capability.call forwarding | **FAIL** | Discovers correct provider, but proxy connection to primal socket fails. **GAP-MATRIX-07** |
+| Neural API capability.discover | **LIVE PASS** | Returns correct Songbird endpoint for `network.*` domains |
 | NestGate | NOT STARTED | GAP-MATRIX-04: CLI instability |
 | ToadStool, Squirrel, Trio | NOT STARTED | GAP-MATRIX-05: require manual process launch |
 
-Critical gaps blocking full matrix: see `CROSS_SPRING_EVOLUTION.md` "Live Validation Matrix" section for details (GAP-MATRIX-01 through GAP-MATRIX-06).
+### What biomeOS v2.92 Fixed
+
+- **Songbird capabilities discovered**: 14 capabilities registered (network.discovery, network.federation, network.relay, network.stun, network.igd, network.quic, network.tls, network.tor, network.onion, ipc.jsonrpc, ipc.tarpc, crypto.delegate, nfc.genesis, bluetooth.pair). Was 0 in v2.81.
+- **Prefix routing works**: `capability.discover("network")` correctly finds Songbird via `network.*` prefix scan.
+- **Domain fallback table expanded**: "registry" added as CapabilityTaxonomy alias for Discovery→songbird.
+
+### What Remains
+
+- **GAP-MATRIX-01b**: BearDog uses Format E wire format (`provided_capabilities: [{type, methods}]`). biomeOS v2.92 parses Formats A-D but not E. BearDog capabilities still not registered.
+- **GAP-MATRIX-07**: biomeOS proxy forwarding to primal sockets fails after discovery. Provider is found, but the actual JSON-RPC forwarding connection fails. Likely a URI handling issue (`unix:///path` vs bare path).
+- **GAP-MATRIX-02**: `tower_atomic_bootstrap.toml` still fails biomeOS graph parser.
+
+Critical path: GAP-MATRIX-07 (proxy forwarding) blocks all `capability.call` even for correctly discovered primals.
 
 ---
 
