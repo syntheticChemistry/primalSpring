@@ -150,16 +150,27 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 
 ### What Changed (April 6-7)
 
-- **Nest Atomic composition validated live**: NestGate `storage.fetch_external`
-  refactored to delegate HTTPS fetch via biomeOS `capability.call` → Songbird
-  `http.request` → BearDog TLS. NestGate no longer uses `reqwest`/`rustls`
-  directly; the Tower Atomic (`BearDog` + `Songbird`) is the single TLS
-  boundary. Full end-to-end validated: NestGate → neural-api → Songbird → HTTP
-  response → BLAKE3 hash → disk cache → provenance metadata.
-- **Nest deploy graph** (`graphs/nest-deploy.toml`) created for biomeOS
-  `graph.execute`. Sequential: BearDog → Songbird → NestGate → validation.
-  Graph validates via `biomeos deploy --validate-only` and `biomeos deploy
-  --dry-run`. Graph deployment executed via neural-api `graph.execute`.
+- **Nest Atomic composition validated live (4 primals)**: NestGate
+  `storage.fetch_external` refactored to delegate HTTPS fetch via biomeOS
+  `capability.call` → Songbird `http.request` → BearDog TLS. NestGate no
+  longer uses `reqwest`/`rustls` directly; Tower Atomic is the single TLS
+  boundary. Full e2e: NestGate → neural-api → Songbird → HTTP → BLAKE3 →
+  cache → provenance. Squirrel (AI orchestration) also validated through
+  the same `capability.call` routing: `context.create`, `tool.list`,
+  `ai.list_providers` all routed through neural-api to Squirrel.
+- **Nest deploy graph v3.1** (`graphs/nest-deploy.toml`): BearDog → Songbird →
+  NestGate → Squirrel → validation. Validates via `biomeos deploy --validate-only`
+  and `--dry-run`. Deployed live via neural-api `graph.execute`.
+- **Tower Atomic HTTPS fixed**: Songbird TLS 1.3 client was sending empty
+  `legacy_session_id` (rejected by CDN middleboxes) and using non-CSPRNG
+  random. Fixed with 32-byte random session ID per RFC 8446 Appendix D.4,
+  `getrandom` CSPRNG, and P-256 fallback in `supported_groups`. HTTPS
+  validated against api.github.com, ifconfig.me, jsonplaceholder.typicode.com.
+  Full Nest Atomic e2e: NestGate `storage.fetch_external` → biomeOS → Songbird
+  TLS 1.3 → BearDog X25519/HKDF/AEAD → HTTPS 200 + BLAKE3 hash + cache.
+- **16 Nest Atomic gaps documented** (NA-001 through NA-016) with severity,
+  including Squirrel abstract socket transport (NA-001), graph format
+  divergence (NA-016), and Node Atomic (ToadStool GPU) noted as next step.
 - **Trio witness evolution**: `WireAttestationRef` -> `WireWitnessRef` across
   rhizoCrypt, loamSpine, sweetGrass. Self-describing `kind`/`encoding`/
   `algorithm`/`tier`/`context` fields. Trio is now algo-agnostic — tracks
@@ -171,6 +182,71 @@ Sequence/Provenance/Field/Full deploy graph tiers.
   hint) added.
 - **biomeOS Neural API handoff**: GAP-017 (benchScale ZOMBIE) + GAP-018
   (executor RPCs — partially resolved: pipeline + continuous now on JSON-RPC).
+
+### Nest Atomic — Gaps, Debt, and Inconsistencies
+
+Tracked during live Nest Atomic validation (April 7, 2026). These are
+actionable items for primal teams to address before garden production use.
+
+**Architecture / Routing**
+
+| ID | Primal | Severity | Description |
+|----|--------|----------|-------------|
+| NA-001 | Squirrel | **HIGH** | Socket transport uses abstract namespace (`@squirrel`) instead of filesystem UDS. `--socket` CLI arg is logged but not honored for binding. biomeOS `capability.call` cannot forward to abstract sockets without a socat bridge. Squirrel's `universal_transport` layer needs a filesystem socket mode. |
+| NA-002 | biomeOS | MEDIUM | `capability.call` forwarding intermittently fails on first request after registration. Retry succeeds. Possible race between registration confirmation and router table update. |
+| NA-003 | biomeOS | LOW | `capability.register` accepts any socket path without verifying the socket exists or is connectable. Should probe health before confirming. |
+| NA-004 | NestGate | MEDIUM | `fetch_external` falls back to `status` field from `status_code` in Songbird response. Should be a single canonical field name — coordinate with Songbird team. |
+
+**Build / Binary**
+
+| ID | Primal | Severity | Description |
+|----|--------|----------|-------------|
+| NA-005 | loamSpine | MEDIUM | `plasmidBin` binary is dynamically linked (`glibc`). Should be `musl-static` per ecoBin standard. |
+| NA-006 | sweetGrass | MEDIUM | Same as NA-005: dynamically linked, pending musl-static cross-compile. |
+| NA-007 | NestGate | LOW | Binary crate is `nestgate-bin`, not `nestgate`. Inconsistent with other primals where `cargo build -p <name>` yields the binary. |
+
+**Schema / Wire Types**
+
+| ID | Primal | Severity | Description |
+|----|--------|----------|-------------|
+| NA-008 | sweetGrass | LOW | Internal `Attestation` struct still uses `attested_at` field, while wire type `WireWitnessRef` uses `witnessed_at`. Field rename needed for consistency. |
+| NA-009 | rhizoCrypt | LOW | `capability_registry.toml` lists `dag.dehydrate` but the actual RPC method is `dag.dehydration.trigger`. Registry and code out of sync. |
+| NA-010 | Squirrel | LOW | `discovery.list` is implemented in the dispatcher but absent from `niche::CAPABILITIES`. Niche-vs-code drift not caught by tests. |
+| NA-011 | Squirrel | LOW | `capability_registry.toml` not found at runtime ("No such file or directory"). Falls back to embedded defaults — registry file location needs alignment with CWD or env var. |
+| NA-012 | Songbird | LOW | HTTP response uses both `status_code` and `status` in different code paths. Should standardize to one field (prefer `status_code` per HTTP semantics). |
+
+**AI Provider Plumbing (Squirrel)**
+
+| ID | Primal | Severity | Description |
+|----|--------|----------|-------------|
+| NA-013 | Squirrel | MEDIUM | No AI providers discovered at startup. Squirrel needs `http.request` capability from Songbird to route cloud API calls (Anthropic, OpenAI) through the Tower Atomic TLS boundary, but has no auto-discovery path for this. |
+| NA-014 | Squirrel | LOW | `AI_HTTP_PROVIDERS` env var and `deprecated-adapters` feature gate create two disjoint provider init paths. Should converge on capability-based routing through Tower. |
+
+**TLS**
+
+| ID | Primal | Severity | Description |
+|----|--------|----------|-------------|
+| NA-015 | Songbird | **RESOLVED** | TLS 1.3 ClientHello was missing 32-byte `legacy_session_id` (RFC 8446 Appendix D.4 middlebox compat) and used non-CSPRNG random. Fixed: CSPRNG via `getrandom`, 32-byte session ID, P-256 fallback group. HTTPS now works against GitHub, Google, Cloudflare-fronted services. httpbin.org specifically rejects (Cloudflare WAF fingerprint issue, not a protocol failure). |
+
+**Graph Deployment**
+
+| ID | Primal | Severity | Description |
+|----|--------|----------|-------------|
+| NA-016 | primalSpring / biomeOS | MEDIUM | Graph format divergence: primalSpring validator expects `[[graph.node]]` (singular); biomeOS `deploy` expects `[[graph.nodes]]` (plural) with mandatory `id` field. Requires dual-format or parser alignment. `GraphId` requires hyphens, primalSpring names use underscores. |
+
+**Next Atomic: Node Atomic (ToadStool GPU + Local AI)**
+
+The same composition pattern (graph-deployed, capability.call routed) extends
+to local AI inference:
+
+- **ToadStool** (GPU compute primal) provides `compute.execute` / `compute.submit`
+- Squirrel routes `ai.query` to ToadStool when `AI_PROVIDER_SOCKETS` or biomeOS
+  socket scan finds it (already coded in `router.rs`)
+- Node Atomic = Nest Atomic + ToadStool: full local-first AI stack with no
+  external API dependency
+- Composition: BearDog → Songbird → NestGate → Squirrel → ToadStool
+- ToadStool is `required = false` in Squirrel's niche graph; Squirrel degrades
+  gracefully to cloud providers when ToadStool is absent
 
 ### Spring-to-Garden Acceleration Assignments
 

@@ -1,17 +1,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Nest Atomic Deploy — Tower + NestGate
+# Nest Atomic Deploy — Tower + NestGate + Squirrel
 #
 # The Nest Atomic extends the Tower Atomic (BearDog + Songbird) with
-# persistent storage and content-addressed external data ingestion.
-# NestGate delegates all HTTPS fetch to Songbird via capability.call,
-# keeping BearDog as the single TLS/crypto boundary.
+# persistent storage, content-addressed external data ingestion, and
+# AI orchestration. NestGate delegates HTTPS fetch to Songbird via
+# capability.call. Squirrel provides AI query routing, tool execution,
+# and context management. BearDog remains the single TLS boundary.
 #
 # Composition:
 #   Phase 1: BearDog (crypto — TLS, signing, identity)
 #   Phase 2: Songbird (discovery, HTTP/TLS via BearDog)
 #   Phase 3: NestGate (storage, fetch_external via Tower)
-#   Phase 4: Validation (storage.fetch_external through the full stack)
+#   Phase 4: Squirrel (AI orchestration, tool routing, context)
+#   Phase 5: Validation
 #
 # Usage:
 #   biomeos deploy graphs/nest-deploy.toml   (biomeOS native — graph.execute)
@@ -19,8 +21,8 @@
 
 [graph]
 name = "nest_deploy"
-description = "Nest Atomic: BearDog (crypto) + Songbird (HTTP) + NestGate (storage) — graph-deployed composition"
-version = "3.0.0"
+description = "Nest Atomic: BearDog (crypto) + Songbird (HTTP) + NestGate (storage) + Squirrel (AI) — graph-deployed composition"
+version = "3.1.0"
 coordination = "sequential"
 
 # ── Phase 1: BearDog — crypto foundation + TLS boundary ──
@@ -76,14 +78,38 @@ capabilities = [
     "storage.fetch_external",
 ]
 
-# ── Phase 4: Validation ──
+# ── Phase 4: Squirrel — AI orchestration + tool routing ──
+# Squirrel routes AI queries to local/remote providers, manages context
+# sessions, and executes MCP-style tools across the ecosystem. When Node
+# Atomic (ToadStool GPU) is available, Squirrel routes inference there.
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = [
+    "ai.query",
+    "ai.complete",
+    "ai.chat",
+    "ai.list_providers",
+    "tool.execute",
+    "tool.list",
+    "context.create",
+    "context.update",
+    "context.summarize",
+]
+
+# ── Phase 5: Validation ──
 [[graph.node]]
 name = "validate_nest"
 binary = "primalspring_primal"
-order = 4
+order = 5
 required = true
 spawn = false
-depends_on = ["beardog", "songbird", "nestgate"]
+depends_on = ["beardog", "songbird", "nestgate", "squirrel"]
 health_method = "health.liveness"
 by_capability = "coordination"
 capabilities = ["coordination.validate_composition"]
