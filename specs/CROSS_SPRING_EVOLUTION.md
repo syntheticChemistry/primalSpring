@@ -150,6 +150,16 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 
 ### What Changed (April 6-7)
 
+- **Nest Atomic composition validated live**: NestGate `storage.fetch_external`
+  refactored to delegate HTTPS fetch via biomeOS `capability.call` → Songbird
+  `http.request` → BearDog TLS. NestGate no longer uses `reqwest`/`rustls`
+  directly; the Tower Atomic (`BearDog` + `Songbird`) is the single TLS
+  boundary. Full end-to-end validated: NestGate → neural-api → Songbird → HTTP
+  response → BLAKE3 hash → disk cache → provenance metadata.
+- **Nest deploy graph** (`graphs/nest-deploy.toml`) created for biomeOS
+  `graph.execute`. Sequential: BearDog → Songbird → NestGate → validation.
+  Graph validates via `biomeos deploy --validate-only` and `biomeos deploy
+  --dry-run`. Graph deployment executed via neural-api `graph.execute`.
 - **Trio witness evolution**: `WireAttestationRef` -> `WireWitnessRef` across
   rhizoCrypt, loamSpine, sweetGrass. Self-describing `kind`/`encoding`/
   `algorithm`/`tier`/`context` fields. Trio is now algo-agnostic — tracks

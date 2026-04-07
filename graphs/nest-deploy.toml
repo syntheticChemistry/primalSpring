@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Nest Atomic Deploy — Tower + NestGate
+#
+# The Nest Atomic extends the Tower Atomic (BearDog + Songbird) with
+# persistent storage and content-addressed external data ingestion.
+# NestGate delegates all HTTPS fetch to Songbird via capability.call,
+# keeping BearDog as the single TLS/crypto boundary.
+#
+# Composition:
+#   Phase 1: BearDog (crypto — TLS, signing, identity)
+#   Phase 2: Songbird (discovery, HTTP/TLS via BearDog)
+#   Phase 3: NestGate (storage, fetch_external via Tower)
+#   Phase 4: Validation (storage.fetch_external through the full stack)
+#
+# Usage:
+#   biomeos deploy graphs/nest-deploy.toml   (biomeOS native — graph.execute)
+#   primalspring_primal server               (coordination.deploy_atomic {"atomic":"Nest"})
+
+[graph]
+name = "nest_deploy"
+description = "Nest Atomic: BearDog (crypto) + Songbird (HTTP) + NestGate (storage) — graph-deployed composition"
+version = "3.0.0"
+coordination = "sequential"
+
+# ── Phase 1: BearDog — crypto foundation + TLS boundary ──
+# BearDog owns ALL crypto and TLS for the ecosystem.
+[[graph.node]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = [
+    "crypto.sign_ed25519",
+    "crypto.verify_ed25519",
+    "crypto.blake3_hash",
+    "crypto.encrypt",
+    "crypto.decrypt",
+    "crypto.keygen",
+]
+
+# ── Phase 2: Songbird — discovery + HTTP (TLS via BearDog) ──
+[[graph.node]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = [
+    "discovery.find_primals",
+    "discovery.announce",
+    "http.request",
+    "http.get",
+    "http.post",
+]
+
+# ── Phase 3: NestGate — storage + external fetch via Tower ──
+# NestGate delegates HTTPS to Songbird via biomeOS capability.call.
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = [
+    "storage.put",
+    "storage.get",
+    "storage.list",
+    "storage.exists",
+    "storage.fetch_external",
+]
+
+# ── Phase 4: Validation ──
+[[graph.node]]
+name = "validate_nest"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["beardog", "songbird", "nestgate"]
+health_method = "health.liveness"
+by_capability = "coordination"
+capabilities = ["coordination.validate_composition"]
