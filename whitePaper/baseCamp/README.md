@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: April 7, 2026
-**Status**: Phase 25 — Modernization Sweep (87/87 gates), 69 experiments, 404 tests, 92 deploy graphs (21 validation + 7 compositions + 6 nucleated spring deploy), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), structured primal gap registry (**8 open**, 20 resolved, zero critical), unified `[[graph.nodes]]` format, Tower Atomic HTTPS validated, live subsystem validation (**98% pass** — 43/44)
+**Status**: Phase 26 — Mixed Composition + Live Validation Matrix (87/87 gates), 72 experiments, 404 tests, 99 deploy graphs (17 validation + 4 compositions + 6 nucleated spring deploy + 17 sketches), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), particle model (Tower=electron, Node=proton, Nest=neutron), layered validation (L0-L3), 6 GAP-MATRIX items from live probing, structured primal gap registry (**8 open**, 20 resolved, zero critical), live Tower Atomic on Eastgate (**BearDog + Songbird LIVE PASS**, Neural API capability registration CRITICAL GAP)
 
 ---
 
@@ -35,13 +35,13 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 12 | Deployment Matrix | exp081 | Does the 43-cell deployment matrix validate across arch × topology × preset × transport? |
 | 13 | Substrate Stress | exp082–084 | Chaos substrate, federation edge cases, provenance adversarial — does the stack survive? |
 | 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
-| 15 | LAN/Covalent Modernization | exp089–090 | Deployment graph sweep, Tower Atomic LAN probe (mesh, HTTPS, STUN) |
+| 15 | LAN/Covalent + Mixed Composition | exp089–093 | Deployment graph sweep, Tower Atomic LAN probe, L0 routing matrix, L2 dual-tower ionic, L3 covalent mesh backup |
 
-## Current State (v0.9.2)
+## Current State (v0.9.3)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 69 (15 tracks) |
+| Experiments | 72 (15 tracks) |
 | Total tests | **404** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
@@ -49,7 +49,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | **92 TOMLs** (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 3 product + **6 nucleated spring deploy**), all `[[graph.nodes]]` format, topologically validated |
+| Deploy graphs | **99 TOMLs** (18 root + 5 multi-node + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + **4 compositions** + **6 nucleated spring deploy** + **17 sketches** (L0/L2/L3)), all `[[graph.nodes]]` format, topologically validated |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | **8 open** (18 resolved, zero critical) — primals only (`docs/PRIMAL_GAPS.md`) |
 | Discovery | Capability-first: 6-tier + Neural API + `discover_by_capability()` + biomeOS `capability.discover` + `topology.rescan` |
@@ -57,7 +57,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 69 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 72 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
@@ -73,6 +73,46 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Live pass rate | **43/44 (98%)** — up from 93% → 79% pre-evolution |
 | petalTongue | v1.6.6+ integrated, zero-copy IPC, blake3, RenderingAwareness auto-init, PT-07 server discovery |
 | Nucleated spring deploys | 6 proto graphs: airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring |
+
+## What Changed — Phase 26 (Mixed Composition + Live Validation Matrix)
+
+### Particle Model + Layered Validation + Live Probing (April 7, 2026)
+
+Adopted particle model from Paper 23 (Mass-Energy-Information Equivalence) for compositional reasoning:
+
+| Particle | Atomic | Role | Property |
+|----------|--------|------|----------|
+| Electron | Tower (BearDog + Songbird) | Mediates bonds, trust boundary | `shares_electrons()` for Covalent/Metallic |
+| Proton | Node (Tower + ToadStool) | Compute = energy, defines gate identity | Fungible across gates |
+| Neutron | Nest (Tower + NestGate + Squirrel) | Data = energy at rest, stabilizes nucleus | Non-fungible, unique content |
+| Atom | NUCLEUS | Complete system | All particles composed |
+
+**Layered Validation Framework** (L0-L3):
+1. **L0**: biomeOS Neural API + any single primal routing (`primal_routing_matrix.toml`)
+2. **L1**: Each atomic composition independently (Tower, Node, Nest)
+3. **L2**: Mixed atomics — a Node with a dedicated Tower separate from the atomic Tower (`dual_tower_ionic.toml`, `node_with_dedicated_tower.toml`, `nest_enclave.toml`)
+4. **L3**: Bonding patterns on top of atomics — covalent mesh backup, ionic capability lease, organo-metal-salt complex
+
+**Live Validation on Eastgate (April 7, 2026)**:
+- BearDog: `health.liveness` LIVE PASS, `crypto.sign_ed25519` LIVE PASS, `crypto.blake3_hash` LIVE PASS, 9 capability groups
+- Songbird: `health.liveness` LIVE PASS, HTTPS `ifconfig.me` LIVE PASS (HTTP 200, 283ms), Tower crypto confirmed
+- Neural API: Running, detects sockets, but `capability.call` FAILS — **GAP-MATRIX-01** (0 capabilities registered from primals)
+
+**6 GAP-MATRIX Items Documented** (see `specs/CROSS_SPRING_EVOLUTION.md`):
+1. **GAP-MATRIX-01 (Critical)**: Neural API capability registration — primals advertise via `capabilities.list` but biomeOS probe returns 0 capabilities
+2. **GAP-MATRIX-02 (Medium)**: biomeOS graph parser rejects `tower_atomic_bootstrap.toml`
+3. **GAP-MATRIX-03 (Low)**: Songbird TLS cipher suite gaps for some HTTPS targets
+4. **GAP-MATRIX-04 (Medium)**: NestGate HTTP REST IPC diverges from JSON-RPC over UDS model
+5. **GAP-MATRIX-05 (Medium)**: Provenance trio + Squirrel + ToadStool not yet live-tested
+6. **GAP-MATRIX-06 (Low)**: plasmidBin binary freshness varies across primals
+
+**New Artifacts**:
+- `specs/MIXED_COMPOSITION_PATTERNS.md` — particle model, gap inventory, spring specialization guide
+- `specs/NUCLEUS_VALIDATION_MATRIX.md` — updated with live results and sketch cross-references
+- 17 sketch graphs in `graphs/sketches/` (validation, mixed_atomics, bonding_patterns)
+- exp091 (L0 routing), exp092 (L2 dual-tower), exp093 (L3 mesh backup)
+
+**Metrics**: 404 tests, 72 experiments (15 tracks), 99 deploy graphs. 6 GAP-MATRIX items documented.
 
 ## What Changed — Phase 25 (Modernization Sweep)
 

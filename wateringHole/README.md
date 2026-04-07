@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **subsystem composition decomposition**  
-**Version**: 0.9.2 (Phase 25 — 87/87 gates, 404 tests, 69 experiments, 92 deploy graphs, 7 composition subsystems + 6 nucleated spring deploy, 8 open primal gaps, 43/44 (98%) live validation)  
+**Version**: 0.9.3 (Phase 26 — 87/87 gates, 404 tests, 72 experiments, 99 deploy graphs, 17 sketch graphs, particle model (Tower=electron, Node=proton, Nest=neutron), layered validation L0-L3, live Tower Atomic PASS, 6 GAP-MATRIX items, 8 open primal gaps)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: April 7, 2026
 
@@ -38,14 +38,14 @@ primalSpring fills the gap.
 | Metric | Value |
 |--------|-------|
 | Tests | **404** (unit + integration + doc-tests + proptest, 42 ignored live) |
-| Experiments | 69 (15 tracks) |
+| Experiments | 72 (15 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | **92 TOMLs** (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 6 nucleated spring deploy + 3 node/nest/tower), all `by_capability`, topologically validated |
+| Deploy graphs | **99 TOMLs** (18 root + 5 multi-node + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + **4 compositions** + 6 nucleated spring deploy + **17 sketches** (L0/L2/L3)), all `by_capability`, topologically validated |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | **22 gaps** documented (`docs/PRIMAL_GAPS.md`) |
 | Live subsystem validation | C1: 6/6, C3: 8/8, C4: 6/6, C6: 5/5 PASS; C2/C5: documented gaps |
@@ -93,7 +93,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (15 Tracks, 69 Experiments)
+## Track Structure (15 Tracks, 72 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -308,12 +308,13 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.9.2 | `PRIMALSPRING_V092_MODERNIZATION_SWEEP_HANDOFF_APR07_2026.md` | Apr 7 | **Phase 25 modernization sweep**: capability naming cleanup (17 files), graph format unification (87+ graphs), `http_health_probe` deprecated, `nest-deploy.toml` v4.0, exp090 Tower Atomic LAN probe, covalent bonding modernized, NA-009/NA-016 resolved |
+| v0.9.3 | `PRIMALSPRING_V093_MIXED_COMPOSITION_LIVE_VALIDATION_HANDOFF_APR07_2026.md` | Apr 7 | **Phase 26**: Particle model, layered validation (L0-L3), 17 sketch graphs, exp091-093, live Tower Atomic probes, 6 GAP-MATRIX items, primal team work blurbs |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.9.2 | `archive/PRIMALSPRING_V092_MODERNIZATION_SWEEP_HANDOFF_APR07_2026.md` | Apr 7 | Phase 25 modernization sweep (superseded by v0.9.3) |
 | v0.8.0 | `archive/PRIMALSPRING_V080_ECOSYSTEM_DEBT_RESOLUTION_HANDOFF_MAR29_2026.md` | Mar 29 | Phase 23 debt resolution (superseded by v0.9.2 modernization sweep) |
 | v0.8.0 | `archive/PRIMALSPRING_V080_GAP_MAP_MAR29_2026.md` | Mar 29 | Comprehensive gap map (superseded by v0.9.2) |
 | v0.8.0 | `archive/PRIMALSPRING_V080_BEACON_ARCHITECTURE_EVOLUTION_HANDOFF_MAR29_2026.md` | Mar 29 | Beacon architecture (superseded by v0.9.2) |

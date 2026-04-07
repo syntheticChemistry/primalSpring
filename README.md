@@ -5,16 +5,16 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.2 |
+| **Version** | 0.9.3 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 404 (unit + integration + doc-tests + proptest) |
-| **Experiments** | 69 (15 tracks) |
-| **Deploy Graphs** | 92 TOMLs (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + 7 compositions + 6 nucleated spring deploy + 3 node/nest/tower) |
+| **Experiments** | 72 (15 tracks) |
+| **Deploy Graphs** | 99 TOMLs (18 root + 17 sketches + 5 multi-node + 4 compositions + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + 6 nucleated spring deploy) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
-| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + ludoSpring Game + esotericWebb Product + **7 Decomposed Subsystems (C1-C7)** (87/87 gates) |
+| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + ludoSpring Game + esotericWebb Product + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 69 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 72 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
@@ -60,15 +60,19 @@ primalSpring/
 │       ├── server_integration.rs  # 10 core auto tests
 │       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
-├── experiments/                   # 67 validation experiments (14 tracks)
+├── experiments/                   # 72 validation experiments (15 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 83 deploy graph TOMLs
-│   ├── compositions/             # Decomposed subsystem graphs: C1-C7 (render, narration, session, game_science, persistence, proprioception, interactive_product) (7)
+├── graphs/                        # 99 deploy graph TOMLs
+│   ├── sketches/                 # Particle-model validation & mixed composition sketches (17)
+│   │   ├── validation/           # L0 primal routing matrix (1)
+│   │   ├── mixed_atomics/        # L2 dual-tower ionic, dedicated tower, nest enclave (3+)
+│   │   └── bonding_patterns/     # L3 covalent mesh backup, ionic lease, organo-metal-salt (3+)
+│   ├── compositions/             # Decomposed subsystem graphs: C1-C7 (4)
 │   ├── bonding/                  # Bonding model graphs: ionic, metallic, OMS, defensive, albatross (5)
 │   ├── chaos/                    # Chaos engineering: partition recovery, slow start (2)
 │   ├── multi_node/               # Multi-node federation graphs (5)
-│   ├── science/                  # Science + showcase graphs: provenance, fieldMouse, gaming, neuro (10)
-│   ├── spring_validation/        # Per-spring + NUCLEUS + composition + security validation (21)
+│   ├── science/                  # Science + showcase graphs: provenance, fieldMouse, gaming, neuro (13)
+│   ├── spring_validation/        # Per-spring + NUCLEUS + composition + security validation (17)
 │   ├── cross_spring/             # Cross-spring ecology + full sweep (2)
 │   ├── gen4/                     # gen4: sovereign, science, agentic, storytelling, UI loop (10)
 │   └── spring_deploy/            # Per-spring science compositions (airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring) (6)
@@ -184,7 +188,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 89 deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 99 deploy graph TOMLs (all nodes declare `by_capability`):
 
 **Single-node graphs (18)**:
 
@@ -337,9 +341,18 @@ deploy biomeOS as substrate. Launch profiles added for all 6 springs.
 
 See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
+## Mixed Composition + Live Validation Matrix (April 7, 2026)
+
+- **Particle model adopted**: Tower = electron (trust boundary, mediates bonds), Node = proton (compute, fungible), Nest = neutron (data at rest, non-fungible), NUCLEUS = atom. Grounded in Paper 23 (Mass-Energy-Information Equivalence). See `specs/MIXED_COMPOSITION_PATTERNS.md`.
+- **Layered validation framework**: L0 (biomeOS + any primal), L1 (each atomic), L2 (mixed atomics), L3 (bonding patterns on top of atomics). Full NUCLEUS Validation Matrix at `specs/NUCLEUS_VALIDATION_MATRIX.md`.
+- **17 sketch graphs** (`graphs/sketches/`): L0 primal routing matrix, L2 dual-tower ionic / dedicated tower / nest enclave, L3 covalent mesh backup / ionic lease / organo-metal-salt.
+- **3 new experiments** (exp091–093): L0 primal routing matrix, L2 dual-tower ionic structural, L3 covalent mesh backup structural.
+- **Live validation on Eastgate**: Tower Atomic (BearDog + Songbird) fully validated — crypto, HTTPS, discovery all LIVE PASS. Neural API running but capability registration gap identified (GAP-MATRIX-01). See `specs/CROSS_SPRING_EVOLUTION.md` for 6 gap items.
+- **6 GAP-MATRIX items documented**: Neural API capability registration (Critical), biomeOS graph parsing (Medium), Songbird TLS cipher suites (Low), NestGate IPC model (Medium), untested primals (Medium), plasmidBin freshness (Low).
+
 ## Modernization Sweep (April 7, 2026)
 
-- **Graph format unified**: All 92 graphs migrated from `[[graph.node]]` to canonical `[[graph.nodes]]`. Parser accepts both via serde alias; `GraphMeta` gains optional `id` field for biomeOS `GraphId` compatibility.
+- **Graph format unified**: All 92+ graphs migrated from `[[graph.node]]` to canonical `[[graph.nodes]]`. Parser accepts both via serde alias; `GraphMeta` gains optional `id` field for biomeOS `GraphId` compatibility.
 - **Capability names canonical**: `dag.dehydration.trigger`, `dag.session.create`, `dag.event.append`, `dag.merkle.root`, `session.commit`, `entry.append` — cleaned across 17 graph files, `capability_registry.toml`, and `niche.rs`.
 - **`http_health_probe` deprecated**: All primals expose JSON-RPC `health.liveness`. Four experiments (exp073, exp074, exp076, exp081) updated to use `tcp_rpc` instead.
 - **`nest-deploy.toml` v4.0**: Gold standard graph — BearDog + Songbird + NestGate + Squirrel + HTTPS validation phase + composition validation.
@@ -387,7 +400,9 @@ for the full SELinux gap analysis and per-primal remediation plan.
 - `wateringHole/README.md` — Track structure and cross-spring context
 - `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance
 - `wateringHole/handoffs/` — Active + archived evolution handoffs
-- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–17 done — gen4 deployment evolution)
+- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–25+ done — includes live validation matrix + 6 GAP-MATRIX items)
+- `specs/NUCLEUS_VALIDATION_MATRIX.md` — NUCLEUS capability validation matrix with particle model
+- `specs/MIXED_COMPOSITION_PATTERNS.md` — Particle model, layered validation (L0-L3), gap inventory, spring specialization guide
 - `specs/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression
 - `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution (incl. gen4 categories 8–11)
 - `specs/GEN4_COMPOSITION_AUDIT.md` — Shortcomings audit: primalSpring vs esotericWebb gen4 needs

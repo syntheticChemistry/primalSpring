@@ -26,10 +26,11 @@ back upstream to primals and primalSpring.
 
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
-- **experiments/** — 69 validation binaries covering 15 tracks
-- **graphs/** — 92 deploy graph TOMLs (single-node + multi-node +
-  21 spring validation + cross-spring + gen4 + bonding + chaos +
-  science + 7 composition subsystems + 6 nucleated spring deploy)
+- **experiments/** — 72 validation binaries covering 15 tracks
+- **graphs/** — 99 deploy graph TOMLs (single-node + multi-node +
+  17 spring validation + cross-spring + gen4 + bonding + chaos +
+  science + 4 composition subsystems + 6 nucleated spring deploy +
+  17 sketch graphs for particle-model validation + mixed atomics + bonding patterns)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`)
 - **tools/** — nucleus launcher, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
@@ -65,15 +66,20 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.2 Phase 24 — 404 tests, 69 experiments, 92 deploy graphs.
+v0.9.3 Phase 26 — 404 tests, 72 experiments, 99 deploy graphs.
 
-Live validation: **43/44 (98%)**. C1 6/6, C3 8/8, C4 6/6, C5 5/5,
-C6 5/5, C7 10/10. Only C2 `ai.query` fails (no local Ollama — code
-is wired, SQ-02 resolved).
+Live validation: **43/44 (98%)** subsystem, plus live Tower Atomic
+probes (BearDog crypto, Songbird HTTPS, Neural API all LIVE PASS/FAIL).
+6 GAP-MATRIX items documented from live validation matrix run.
 
-Primal gap registry: **8 open** (1 medium, 7 low), zero critical/high.
-18 gaps resolved this cycle. Downstream gaps (gardens, springs) removed
-from our scope — they own their own debt.
+Particle model adopted: Tower = electron, Node = proton, Nest = neutron,
+NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →
+L2 (mixed atomics) → L3 (bonding patterns). 17 sketch graphs, 3 new
+experiments (exp091-093).
+
+Primal gap registry: **8 open** (1 medium, 7 low), zero critical/high
+in primals. 6 GAP-MATRIX items from live ecosystem validation
+(1 critical: Neural API capability registration).
 
 Rewired for latest primal evolution: biomeOS v2.81 (`topology.rescan`),
 toadStool S171 (`ember.*`, `shader.compile` removed), petalTongue

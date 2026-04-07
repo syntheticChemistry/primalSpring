@@ -3,6 +3,29 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.3] — Phase 26: Mixed Composition + Live Validation Matrix (2026-04-07)
+
+### Added
+- **Particle model specification** (`specs/MIXED_COMPOSITION_PATTERNS.md`): Tower = electron (trust boundary), Node = proton (compute, fungible), Nest = neutron (data at rest, non-fungible), NUCLEUS = atom. Grounded in Paper 23 (Mass-Energy-Information Equivalence).
+- **Layered validation framework**: L0 (biomeOS + any primal), L1 (each atomic), L2 (mixed atomics), L3 (bonding patterns). Documented in `specs/NUCLEUS_VALIDATION_MATRIX.md`.
+- **17 sketch graphs** (`graphs/sketches/`): L0 primal routing matrix (10 domains), L2 dual-tower ionic, dedicated tower, nest enclave, L3 covalent mesh backup, ionic capability lease, organo-metal-salt complex, plus variations.
+- **exp091 primal routing matrix**: L0 validation — drives 10-domain Neural API routing sweep.
+- **exp092 dual tower ionic**: L2 validation — two Tower Atomics with ionic bond structural validation.
+- **exp093 covalent mesh backup**: L3 validation — sharded encrypted backup across covalent peer mesh.
+- **Live validation matrix** (`specs/CROSS_SPRING_EVOLUTION.md`): Tower Atomic (BearDog + Songbird) fully validated live on Eastgate. 6 GAP-MATRIX items documented from systematic probing.
+
+### Fixed
+- **GAP-MATRIX-01 identified (Critical)**: Neural API detects primal sockets but reports 0 capabilities — blocks all `capability.call` routing. Direct IPC works.
+- **GAP-MATRIX-02 identified (Medium)**: `tower_atomic_bootstrap.toml` fails biomeOS internal parser despite valid TOML.
+- **GAP-MATRIX-03 identified (Low)**: Songbird TLS 1.3 cipher suite gaps for some HTTPS targets.
+- **GAP-MATRIX-04 identified (Medium)**: NestGate HTTP REST IPC diverges from JSON-RPC over UDS model.
+
+### Changed
+- 404 tests, 72 experiments (15 tracks), 99 deploy graphs.
+- Root docs, wateringHole, whitePaper/baseCamp, experiments/README, CONTEXT.md metrics synchronized.
+- `CROSS_SPRING_EVOLUTION.md` updated with "Live Validation Matrix — April 7, 2026" section.
+- `NUCLEUS_VALIDATION_MATRIX.md` updated with live validation results and sketch cross-references.
+
 ## [0.9.2] — Phase 25: Modernization Sweep (2026-04-07)
 
 ### Fixed
