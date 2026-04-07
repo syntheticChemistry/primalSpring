@@ -3,6 +3,26 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.2] — Phase 25: Modernization Sweep (2026-04-07)
+
+### Fixed
+- **Capability naming**: `dag.dehydrate` → `dag.dehydration.trigger` across `capability_registry.toml`, `niche.rs`, and 17 graph files. Also fixed stale `dag.create_session`/`dag.append_event`/`dag.merkle_root`/`commit.session`/`commit.entry` → canonical dotted names in `primalspring_deploy`, `nucleus_complete`, `continuous_tick`, and `data_federation_cross_site` graphs.
+- **Graph format unification (NA-016 resolved)**: Parser accepts `[[graph.node]]`, `[[graph.nodes]]`, and top-level `[[nodes]]` via serde alias + merge. All 87+ graphs migrated from `[[graph.node]]` to `[[graph.nodes]]`. Multi-node graphs converted from `[[nodes]]` to `[[graph.nodes]]` with `[graph.nodes.*]` subsections. `GraphMeta` gains optional `id` field.
+- **HTTP health probe deprecated (NA-009 resolved)**: `http_health_probe` marked `#[deprecated]` — Songbird no longer exposes HTTP /health; Tower Atomic owns all HTTP. Experiments exp073, exp074, exp076, exp081 updated to use `tcp_rpc` with `health.liveness`.
+- **Discovery tier count**: README corrected from 5-Tier to 6-Tier (plain socket name tier was missing from docs).
+
+### Added
+- **`nest-deploy.toml` v4.0**: Gold standard graph — HTTPS validation phase (order 5) calls `http.get` to `https://ifconfig.me/ip` through Tower Atomic. Songbird gains `mesh.init`, `mesh.auto_discover`, `mesh.peers` capabilities.
+- **exp090 Tower Atomic LAN probe**: BirdSong mesh discovery, peer capability enumeration, HTTPS through Tower Atomic, STUN/NAT detection.
+- **exp073 covalent bonding modernized**: Neural API routing validation, `FAMILY_ID` genetic lineage via BearDog `health.check`, end-to-end HTTPS through Tower Atomic.
+- **`basement_hpc_covalent.toml`**: Canonical capability names, HTTPS validation phase between `gate_validate` and `announce_capabilities`.
+
+### Changed
+- 404 tests, 69 experiments (15 tracks), 92 deploy graphs.
+- Root docs, wateringHole, whitePaper/baseCamp, experiments/README metrics synchronized.
+- `CROSS_SPRING_EVOLUTION.md`: NA-009 and NA-016 marked RESOLVED with detailed notes.
+- `SHOWCASE_MINING_REPORT.md`: "HTTP REST" references corrected to JSON-RPC 2.0 serialization.
+
 ## [0.9.1] — Phase 24b: rustChip B → A (2026-04-05)
 
 ### Fixed

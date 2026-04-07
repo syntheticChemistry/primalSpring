@@ -15,7 +15,7 @@ description = "gen4 Sovereign Tower: encrypted substrate with Dark Forest beacon
 version = "0.1.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -24,7 +24,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.encrypt", "crypto.sign", "beacon.generate"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -38,7 +38,7 @@ capabilities = [
     "birdsong.generate_encrypted_beacon",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 3
@@ -47,7 +47,7 @@ health_method = "capability.list"
 by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "init_sovereign_onion"
 binary = "primalspring_primal"
 order = 4
@@ -58,7 +58,7 @@ by_capability = "onion"
 args = ["server"]
 capabilities = ["onion.create_service", "onion.get_address"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "init_beacon_mesh"
 binary = "primalspring_primal"
 order = 5
@@ -69,7 +69,7 @@ by_capability = "mesh"
 args = ["server"]
 capabilities = ["mesh.announce", "birdsong.generate_encrypted_beacon"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_dark_forest"
 binary = "primalspring_primal"
 order = 6

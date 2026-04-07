@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **subsystem composition decomposition**  
-**Version**: 0.8.0g (Phase 23g — 87/87 gates, 403 tests, 67 experiments, 89 deploy graphs, 7 composition subsystems + 6 nucleated spring deploy, 8 open primal gaps, 43/44 (98%) live validation)  
+**Version**: 0.9.2 (Phase 25 — 87/87 gates, 404 tests, 69 experiments, 92 deploy graphs, 7 composition subsystems + 6 nucleated spring deploy, 8 open primal gaps, 43/44 (98%) live validation)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: April 1, 2026
+**Last Updated**: April 7, 2026
 
 ---
 
@@ -37,24 +37,24 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **402** (unit + integration + doc-tests + proptest, 42 ignored live) |
-| Experiments | 67 (14 tracks) |
+| Tests | **404** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Experiments | 69 (15 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | **83 TOMLs** (18 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 3 product), all `by_capability`, topologically validated |
+| Deploy graphs | **92 TOMLs** (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 6 nucleated spring deploy + 3 node/nest/tower), all `by_capability`, topologically validated |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | **22 gaps** documented (`docs/PRIMAL_GAPS.md`) |
 | Live subsystem validation | C1: 6/6, C3: 8/8, C4: 6/6, C6: 5/5 PASS; C2/C5: documented gaps |
 | RPC endpoints | 17 methods |
-| Discovery | **Capability-first**: `discover_by_capability()` + 5-tier + Neural API |
+| Discovery | **Capability-first**: `discover_by_capability()` + 6-tier + Neural API |
 | Server mode | JSON-RPC 2.0 over Unix socket |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
-| Meta-validator | `validate_all` binary — runs all 67 experiments |
+| Meta-validator | `validate_all` binary — runs all 69 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates passing (core + full utilization) |
 | Nest Atomic | **VALIDATED** — nestgate storage (8/8 gates) |
 | Node Atomic | **VALIDATED** — toadstool compute (5/5 gates) |
@@ -71,7 +71,7 @@ primalSpring fills the gap.
   they offer, not who they are. All RPC handlers default to capability-based validation.
 - **Graphs as source of truth**: `topological_waves()` computes startup ordering via
   Kahn's algorithm. `graph_required_capabilities()` extracts capability rosters from
-  graph nodes. All 63 graphs have `by_capability` on every node (enforced by test).
+  graph nodes. All 92 graphs have `by_capability` on every node (enforced by test).
 - **Real IPC**: `probe_primal()`, `validate_composition_by_capability()`, `health_check()`
   connect to live providers via Unix socket JSON-RPC 2.0
 - **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase` + `is_recoverable()`),
@@ -81,7 +81,7 @@ primalSpring fills the gap.
   C (method_info nested), D (semantic_mappings double-nested)
 - **MCP tool definitions**: 8 typed tools with JSON Schema for Squirrel AI discovery +
   `discover_remote_tools()` for cross-spring tool enumeration
-- **5-tier discovery**: env → XDG → temp → manifest → socket-registry (+ Neural API)
+- **6-tier discovery**: env → XDG → plain socket → temp → manifest → socket-registry (+ Neural API)
 - **Capability-based health probing**: `check_capability_health()` discovers providers
   at runtime and records health, latency, and capabilities checks
 - **Graceful degradation**: `check_skip()` and `check_or_skip()` for honest reporting
@@ -93,7 +93,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (14 Tracks, 67 Experiments)
+## Track Structure (15 Tracks, 69 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -173,7 +173,7 @@ Early coordination patterns extracted from primal showcases (historically `phase
 |-----|------|--------|
 | 050 | Compute triangle | coralReef -> toadStool -> barraCuda pipeline |
 | 051 | Socket discovery sweep | Capability-based enumeration |
-| 052 | Protocol escalation | HTTP -> JSON-RPC -> tarpc negotiation |
+| 052 | Protocol serialization | JSON-RPC 2.0 text → tarpc binary |
 | 053 | Multi-primal lifecycle | 6-primal research paper lifecycle |
 | 054 | Bearer token auth | BearDog authenticate -> validate -> compute |
 | 055 | Wait-for-health | Repeated health probes with timeout and ordering |
@@ -260,6 +260,15 @@ End-to-end composition across crypto, genetics, Neural API routing, and storytel
 | 087 | Neural API routing | Security, discovery, storage, compute, AI domains | **E2E** |
 | 088 | Storytelling composition | ludoSpring + esotericWebb + Squirrel + petalTongue | **E2E** |
 
+### Track 15: LAN/Covalent Modernization (exp089–090)
+
+Tower Atomic LAN probing, covalent mesh validation, and BirdSong mesh discovery.
+
+| Exp | What | Validates | Status |
+|-----|------|-----------|--------|
+| 089 | Deployment graph structural sweep | All 92 graphs parse, validate, topological waves | **Structural** |
+| 090 | Tower Atomic LAN probe | BirdSong mesh discovery, peer capabilities, HTTPS through Tower, STUN/NAT | **Structural** |
+
 ---
 
 ## Capability Domain
@@ -299,12 +308,16 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.8.0 | `PRIMALSPRING_V080_ECOSYSTEM_DEBT_RESOLUTION_HANDOFF_MAR29_2026.md` | Mar 29 | **Phase 23 debt resolution**: 6 upstream fixes (BearDog, Songbird, biomeOS), gap map, crypto negative graph, composition standards, per-primal handoffs |
-| v0.8.0 | `PRIMALSPRING_V080_GAP_MAP_MAR29_2026.md` | Mar 29 | **Comprehensive gap map**: 11 findings reclassified (2 intentional, 2 wiring, 1 defensive, 4 documentation, 2 test) |
-| v0.8.0 | `PRIMALSPRING_V080_BEACON_ARCHITECTURE_EVOLUTION_HANDOFF_MAR29_2026.md` | Mar 29 | **Beacon architecture**: two-seed crypto model analysis (beacon vs birdsong), trust model documentation |
-| v0.8.0 | `PRIMALSPRING_V080_DEEP_GENETICS_BEACON_CRYPTO_AUDIT_HANDOFF_MAR29_2026.md` | Mar 29 | **Deep genetics audit**: lineage verification, seed validation, crypto path tracing |
+| v0.9.2 | `PRIMALSPRING_V092_MODERNIZATION_SWEEP_HANDOFF_APR07_2026.md` | Apr 7 | **Phase 25 modernization sweep**: capability naming cleanup (17 files), graph format unification (87+ graphs), `http_health_probe` deprecated, `nest-deploy.toml` v4.0, exp090 Tower Atomic LAN probe, covalent bonding modernized, NA-009/NA-016 resolved |
 
 ## Archived Handoffs
+
+| Version | File | Date | Scope |
+|---------|------|------|-------|
+| v0.8.0 | `archive/PRIMALSPRING_V080_ECOSYSTEM_DEBT_RESOLUTION_HANDOFF_MAR29_2026.md` | Mar 29 | Phase 23 debt resolution (superseded by v0.9.2 modernization sweep) |
+| v0.8.0 | `archive/PRIMALSPRING_V080_GAP_MAP_MAR29_2026.md` | Mar 29 | Comprehensive gap map (superseded by v0.9.2) |
+| v0.8.0 | `archive/PRIMALSPRING_V080_BEACON_ARCHITECTURE_EVOLUTION_HANDOFF_MAR29_2026.md` | Mar 29 | Beacon architecture (superseded by v0.9.2) |
+| v0.8.0 | `archive/PRIMALSPRING_V080_DEEP_GENETICS_BEACON_CRYPTO_AUDIT_HANDOFF_MAR29_2026.md` | Mar 29 | Deep genetics audit (superseded by v0.9.2) |
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|

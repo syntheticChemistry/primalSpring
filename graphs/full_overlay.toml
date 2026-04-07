@@ -19,7 +19,7 @@ coordination = "sequential"
 
 # ── Phase 1: Tower Atomic (security + discovery) ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -31,7 +31,7 @@ capabilities = [
     "crypto.verify", "crypto.keygen", "crypto.identity",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -46,7 +46,7 @@ capabilities = [
 
 # ── Phase 2: Nest + Node extensions ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 3
@@ -59,7 +59,7 @@ capabilities = [
     "model.register", "model.locate",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 4
@@ -74,7 +74,7 @@ capabilities = [
 
 # ── Phase 3: Squirrel AI coordinator ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 5
@@ -91,7 +91,7 @@ capabilities = [
 
 # ── Validation (not spawned) ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_full_overlay"
 binary = "primalspring_primal"
 order = 99

@@ -18,7 +18,7 @@ version = "1.0.0"
 coordination = "parallel"
 bond_type = "covalent"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -27,7 +27,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -38,7 +38,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery"]
 
 # biomeOS Neural API — routes between petalTongue and Squirrel
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 3
@@ -49,7 +49,7 @@ by_capability = "ecosystem"
 capabilities = ["capability.call", "capability.discover", "capability.list", "graph.execution"]
 
 # Squirrel AI — provides inference + tools for the loop
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 4
@@ -60,7 +60,7 @@ by_capability = "ai"
 capabilities = ["ai.query", "tool.execute", "tool.list", "context.create", "discovery.peers"]
 
 # petalTongue UI — renders state, captures intent
-[[graph.node]]
+[[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue_primal"
 order = 5

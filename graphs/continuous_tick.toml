@@ -13,7 +13,7 @@ version = "0.2.0"
 coordination = "Continuous"
 
 # ── Node 1: BearDog ───────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -23,7 +23,7 @@ by_capability = "security"
 capabilities = ["crypto.identity", "crypto.sign"]
 
 # ── Node 2: Songbird ───────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -34,7 +34,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.http"]
 
 # ── Node 3: rhizoCrypt ─────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
 order = 3
@@ -42,10 +42,10 @@ required = false
 depends_on = ["beardog"]
 health_method = "dag.health"
 by_capability = "provenance"
-capabilities = ["dag.create_session", "dag.health"]
+capabilities = ["dag.session.create", "health.liveness"]
 
 # ── Node 4: loamSpine ─────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine_primal"
 order = 4
@@ -53,10 +53,10 @@ required = false
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "commit.health"
 by_capability = "ledger"
-capabilities = ["commit.session", "commit.health"]
+capabilities = ["session.commit", "health.liveness"]
 
 # ── Node 5: sweetGrass ─────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
 order = 5
@@ -67,7 +67,7 @@ by_capability = "attribution"
 capabilities = ["provenance.health"]
 
 # ── Node 6: NestGate ────────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 6
@@ -78,7 +78,7 @@ by_capability = "storage"
 capabilities = ["storage.health"]
 
 # ── Node 7: ToadStool ──────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 7
@@ -89,7 +89,7 @@ by_capability = "compute"
 capabilities = ["compute.health"]
 
 # ── Node 8: Tick aggregator (SensorEventBus reporter) ──────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "tick_aggregator"
 binary = "primalspring_primal"
 order = 8

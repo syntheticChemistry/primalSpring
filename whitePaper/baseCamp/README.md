@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: April 1, 2026
-**Status**: Phase 23g — Primal Rewiring + Gap Cleanup (87/87 gates), 67 experiments, 403 tests, 89 deploy graphs (21 validation + 7 compositions + 6 nucleated spring deploy), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), structured primal gap registry (**8 open**, 18 resolved, zero critical), nucleated spring deploy graphs, live subsystem validation (**98% pass** — 43/44)
+**Date**: April 7, 2026
+**Status**: Phase 25 — Modernization Sweep (87/87 gates), 69 experiments, 404 tests, 92 deploy graphs (21 validation + 7 compositions + 6 nucleated spring deploy), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), structured primal gap registry (**8 open**, 20 resolved, zero critical), unified `[[graph.nodes]]` format, Tower Atomic HTTPS validated, live subsystem validation (**98% pass** — 43/44)
 
 ---
 
@@ -14,7 +14,7 @@ The validation target is biomeOS and the Neural API.
 
 ## The Paper
 
-See `ecoPrimals/whitePaper/gen3/baseCamp/README.md` (Paper 23 section) for
+See `ecoPrimals/infra/whitePaper/gen3/baseCamp/README.md` (Paper 23 section) for
 the full baseCamp paper documenting primalSpring's validation of ecosystem coordination.
 
 ## Experiments by Track
@@ -35,20 +35,21 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 12 | Deployment Matrix | exp081 | Does the 43-cell deployment matrix validate across arch × topology × preset × transport? |
 | 13 | Substrate Stress | exp082–084 | Chaos substrate, federation edge cases, provenance adversarial — does the stack survive? |
 | 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
+| 15 | LAN/Covalent Modernization | exp089–090 | Deployment graph sweep, Tower Atomic LAN probe (mesh, HTTPS, STUN) |
 
-## Current State (v0.8.0g)
+## Current State (v0.9.2)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 67 (14 tracks) |
-| Total tests | **403** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Experiments | 69 (15 tracks) |
+| Total tests | **404** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | **89 TOMLs** (18 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 3 product + **6 nucleated spring deploy**), all nodes `by_capability`, topologically validated |
+| Deploy graphs | **92 TOMLs** (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + **7 compositions** + 3 product + **6 nucleated spring deploy**), all `[[graph.nodes]]` format, topologically validated |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | **8 open** (18 resolved, zero critical) — primals only (`docs/PRIMAL_GAPS.md`) |
 | Discovery | Capability-first: 6-tier + Neural API + `discover_by_capability()` + biomeOS `capability.discover` + `topology.rescan` |
@@ -56,7 +57,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 67 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 69 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
@@ -72,6 +73,24 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Live pass rate | **43/44 (98%)** — up from 93% → 79% pre-evolution |
 | petalTongue | v1.6.6+ integrated, zero-copy IPC, blake3, RenderingAwareness auto-init, PT-07 server discovery |
 | Nucleated spring deploys | 6 proto graphs: airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring |
+
+## What Changed — Phase 25 (Modernization Sweep)
+
+### Pattern Cleanup + Tower Atomic Validation (April 7, 2026)
+
+Comprehensive modernization sweep resolving all legacy patterns:
+
+1. **Capability naming canonical** — `dag.dehydrate` → `dag.dehydration.trigger`, plus 5 other stale method names, across 17 graph files + `capability_registry.toml` + `niche.rs`
+2. **Graph format unified (NA-016)** — Parser accepts `[[graph.node]]`, `[[graph.nodes]]`, `[[nodes]]` via serde alias + merge. All 87+ graphs migrated to `[[graph.nodes]]`. `GraphMeta` gains `id` field.
+3. **`http_health_probe` deprecated (NA-009)** — Tower Atomic owns all HTTP. 4 experiments updated to `tcp_rpc` + `health.liveness`.
+4. **`nest-deploy.toml` v4.0** — Gold standard: HTTPS validation phase (calls `http.get` through Tower Atomic), Songbird mesh capabilities.
+5. **exp090 Tower Atomic LAN probe** — BirdSong mesh discovery, peer capability enumeration, HTTPS through Tower, STUN/NAT.
+6. **exp073 modernized** — Neural API routing, `FAMILY_ID` genetic lineage, HTTPS through Tower.
+7. **`basement_hpc_covalent.toml`** — Canonical capability names, HTTPS validation phase inserted.
+8. **Cross-primal alignment** — Songbird TLS 1.3 fix rebased, trio naming confirmed, biomeOS graph format aligned.
+9. **Resolved gaps** — NA-009 (capability naming), NA-016 (graph format).
+
+**Metrics**: 404 tests, 69 experiments (15 tracks), 92 deploy graphs. 2 gaps resolved.
 
 ## What Changed — Phase 23g (Primal Rewiring + Gap Cleanup)
 

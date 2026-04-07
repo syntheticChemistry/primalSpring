@@ -15,7 +15,7 @@ description = "gen4 Agentic Tower: AI-driven deployment and interaction via Squi
 version = "0.1.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -24,7 +24,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.encrypt", "crypto.sign"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -33,7 +33,7 @@ health_method = "health.liveness"
 by_capability = "discovery"
 capabilities = ["mesh.announce", "discovery.query"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 3
@@ -42,7 +42,7 @@ health_method = "health.check"
 by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
 order = 4
@@ -51,7 +51,7 @@ health_method = "health.check"
 by_capability = "ai"
 capabilities = ["ai.query", "ai.execute_tool", "ai.discover_peers"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_agentic"
 binary = "primalspring_primal"
 order = 5

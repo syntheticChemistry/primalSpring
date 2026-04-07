@@ -24,7 +24,7 @@ bond_type = "covalent"
 science_domain = "edge_ai"
 source_showcase = "primals/toadstool/showcase/neuromorphic"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -33,7 +33,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.sign"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -44,7 +44,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
 # ToadStool: dispatches compute to NPU (or CPU fallback)
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 3
@@ -55,7 +55,7 @@ by_capability = "compute"
 capabilities = ["compute.dispatch.submit", "compute.execute", "compute.npu", "compute.gpu"]
 
 # NeuralSpring: inference on classified data
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring_primal"
 order = 4
@@ -66,7 +66,7 @@ by_capability = "neural"
 capabilities = ["neural.classify", "neural.infer", "neural.spectral"]
 
 # NestGate: stores classification results
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 5
@@ -77,7 +77,7 @@ by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
 
 # Provenance stamp on classified results
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
 order = 6

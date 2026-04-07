@@ -19,7 +19,7 @@ coordination = "sequential"
 
 # ── Phase 1: Tower Atomic (base tier) ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -31,7 +31,7 @@ capabilities = [
     "crypto.verify", "crypto.keygen", "crypto.identity",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -46,7 +46,7 @@ capabilities = [
 
 # ── Phase 2: AI Overlay ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 3
@@ -58,7 +58,7 @@ capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
 
 # ── Validation (not spawned) ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_tower_ai"
 binary = "primalspring_primal"
 order = 99

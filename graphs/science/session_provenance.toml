@@ -20,7 +20,7 @@ coordination = "sequential"
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -29,7 +29,7 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "orchestration"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
@@ -39,7 +39,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.blake3_hash", "crypto.sign_ed25519", "crypto.verify_ed25519"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
@@ -48,7 +48,7 @@ depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "discovery"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 3
@@ -58,7 +58,7 @@ health_method = "health.liveness"
 by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 4
@@ -69,11 +69,11 @@ by_capability = "dag"
 capabilities = [
     "dag",
     "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify",
-    "dag.dehydrate", "dag.frontier.get",
+    "dag.dehydration.trigger", "dag.frontier.get",
     "dag.add_vertex", "dag.query",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
 order = 5
@@ -87,7 +87,7 @@ capabilities = [
     "ledger.query", "certificate.issue",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 6

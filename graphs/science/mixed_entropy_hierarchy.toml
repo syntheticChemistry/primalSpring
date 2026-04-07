@@ -28,7 +28,7 @@ bond_type = "covalent"
 science_domain = "cryptography"
 source_showcase = "primals/beardog/showcase/05-mixed-entropy"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -37,7 +37,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.sign", "crypto.verify", "crypto.entropy.mixed"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -48,7 +48,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
 # Groundspring validates cryptographic output quality
-[[graph.node]]
+[[graph.nodes]]
 name = "groundspring"
 binary = "groundspring_primal"
 order = 3
@@ -59,7 +59,7 @@ by_capability = "validation"
 capabilities = ["validate.health", "validate.composition"]
 
 # biomeOS coordinates entropy collection cycle
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 4

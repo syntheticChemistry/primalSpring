@@ -5,16 +5,16 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.8.0g |
+| **Version** | 0.9.2 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 403 (unit + integration + doc-tests + proptest) |
-| **Experiments** | 67 (14 tracks) |
-| **Deploy Graphs** | 89 TOMLs (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + 7 compositions + 6 nucleated spring deploy) |
+| **Tests** | 404 (unit + integration + doc-tests + proptest) |
+| **Experiments** | 69 (15 tracks) |
+| **Deploy Graphs** | 92 TOMLs (21 single-node + 5 multi-node + 21 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 10 science + 7 compositions + 6 nucleated spring deploy + 3 node/nest/tower) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + ludoSpring Game + esotericWebb Product + **7 Decomposed Subsystems (C1-C7)** (87/87 gates) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 67 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 69 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
@@ -275,16 +275,17 @@ etc.), `CircuitBreaker`, `RetryPolicy`, `resilient_call()`, `DispatchOutcome<T>`
 all 4 ecosystem wire formats (A/B/C/D). Provenance trio calls use an epoch-based
 circuit breaker with exponential backoff (absorbed from healthSpring V41).
 
-## Discovery (5-Tier)
+## Discovery (6-Tier)
 
-Discovery walks 5 tiers in priority order:
+Discovery walks 6 tiers in priority order:
 1. `{PRIMAL}_SOCKET` env override
 2. `$XDG_RUNTIME_DIR/biomeos/{primal}-{family}.sock` (XDG convention)
-3. `{temp_dir}/biomeos/{primal}-{family}.sock` (fallback)
-4. Primal manifest: `$XDG_RUNTIME_DIR/ecoPrimals/manifests/{primal}.json`
-5. Socket registry: `$XDG_RUNTIME_DIR/biomeos/socket-registry.json`
+3. Plain socket name: `{primal}.sock` or `{primal}-ipc.sock`
+4. `{temp_dir}/biomeos/{primal}-{family}.sock` (temp fallback)
+5. Primal manifest: `$XDG_RUNTIME_DIR/ecoPrimals/manifests/{primal}.json`
+6. Socket registry: `$XDG_RUNTIME_DIR/biomeos/socket-registry.json`
 
-Tiers 4–5 absorbed from biomeOS v2.50 and Squirrel alpha.12.
+Tiers 5–6 absorbed from biomeOS v2.50 and Squirrel alpha.12.
 
 ## MCP Tools
 
@@ -335,6 +336,17 @@ ludospring, neuralspring, wetspring). All spring validation graphs updated to
 deploy biomeOS as substrate. Launch profiles added for all 6 springs.
 
 See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
+
+## Modernization Sweep (April 7, 2026)
+
+- **Graph format unified**: All 92 graphs migrated from `[[graph.node]]` to canonical `[[graph.nodes]]`. Parser accepts both via serde alias; `GraphMeta` gains optional `id` field for biomeOS `GraphId` compatibility.
+- **Capability names canonical**: `dag.dehydration.trigger`, `dag.session.create`, `dag.event.append`, `dag.merkle.root`, `session.commit`, `entry.append` — cleaned across 17 graph files, `capability_registry.toml`, and `niche.rs`.
+- **`http_health_probe` deprecated**: All primals expose JSON-RPC `health.liveness`. Four experiments (exp073, exp074, exp076, exp081) updated to use `tcp_rpc` instead.
+- **`nest-deploy.toml` v4.0**: Gold standard graph — BearDog + Songbird + NestGate + Squirrel + HTTPS validation phase + composition validation.
+- **exp090 Tower Atomic LAN probe**: BirdSong mesh discovery, peer capability enumeration, HTTPS through Tower Atomic, STUN/NAT detection.
+- **exp073 covalent bonding modernized**: Neural API routing validation, `FAMILY_ID` genetic lineage, end-to-end HTTPS.
+- **Basement HPC graph aligned**: `basement_hpc_covalent.toml` updated with canonical capability names and HTTPS validation phase.
+- **NA-009, NA-016 resolved** in `specs/CROSS_SPRING_EVOLUTION.md`.
 
 ## Live Composition Validation (April 1, 2026)
 

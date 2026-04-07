@@ -26,7 +26,7 @@ bond_type = "covalent"
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
@@ -35,7 +35,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "esotericwebb"
 binary = "esotericwebb"
 order = 2
@@ -45,7 +45,7 @@ health_method = "health.liveness"
 by_capability = "narrative"
 capabilities = ["session.create", "session.advance", "webb.resolve_scene"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "ludospring"
 binary = "ludospring"
 order = 3
@@ -55,7 +55,7 @@ health_method = "health.liveness"
 by_capability = "game"
 capabilities = ["game.evaluate_flow", "game.difficulty_adjustment"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
 order = 4
@@ -65,7 +65,7 @@ health_method = "health.liveness"
 by_capability = "ai"
 capabilities = ["ai.chat", "context.create"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 5
@@ -76,11 +76,11 @@ by_capability = "dag"
 capabilities = [
     "dag",
     "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify",
-    "dag.dehydrate", "dag.frontier.get",
+    "dag.dehydration.trigger", "dag.frontier.get",
     "dag.session.finalize",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
 order = 6
@@ -94,7 +94,7 @@ capabilities = [
     "lineage.certify",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 7

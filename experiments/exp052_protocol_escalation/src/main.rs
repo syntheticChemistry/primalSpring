@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp052: Protocol Escalation — validates HTTP REST → JSON-RPC 2.0 → tarpc serialization.
+//! Exp052: JSON-RPC Serialization — validates JSON-RPC 2.0 text → tarpc binary serialization.
+//!
+//! (Formerly "Protocol Escalation". HTTP REST removed — all IPC is JSON-RPC 2.0.)
 
 use primalspring::ipc::protocol::{JsonRpcRequest, JsonRpcResponse};
 use primalspring::validation::ValidationResult;
@@ -9,7 +11,7 @@ fn main() {
     ValidationResult::new("primalSpring Exp052 — Protocol Escalation")
         .with_provenance("exp052_protocol_escalation", "2026-03-24")
         .run(
-            "primalSpring Exp052: HTTP REST → JSON-RPC 2.0 → tarpc",
+            "primalSpring Exp052: JSON-RPC 2.0 text → tarpc binary serialization",
             |v| {
                 let req = JsonRpcRequest::new("health.check", serde_json::Value::Null);
                 let serialized = req.to_line();

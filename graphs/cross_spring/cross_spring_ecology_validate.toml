@@ -20,7 +20,7 @@ coordination = "sequential"
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -31,7 +31,7 @@ by_capability = "coordination"
 args = ["server"]
 capabilities = ["composition.tower_health"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_biomeos"
 binary = "primalspring_primal"
 order = 2
@@ -42,7 +42,7 @@ by_capability = "orchestration"
 args = ["server"]
 capabilities = ["graph.deploy", "capability.discover"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "airspring_ecology"
 binary = "airspring_primal"
 order = 3
@@ -56,7 +56,7 @@ capabilities = [
     "ecology.yield_response",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "wetspring_science"
 binary = "wetspring_primal"
 order = 4
@@ -65,7 +65,7 @@ health_method = "health.liveness"
 by_capability = "science"
 capabilities = ["science.diversity", "science.sequence"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring_spectral"
 binary = "neuralspring_primal"
 order = 5
@@ -74,7 +74,7 @@ health_method = "health.liveness"
 by_capability = "neural"
 capabilities = ["neural.spectral", "neural.eigensolve"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_cross_spring"
 binary = "primalspring_primal"
 order = 6

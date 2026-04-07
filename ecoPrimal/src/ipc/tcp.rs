@@ -104,6 +104,10 @@ pub fn tcp_rpc_with_timeout(
 /// # Errors
 ///
 /// Returns an error string on connection failure or non-OK response.
+#[deprecated(
+    since = "0.71.0",
+    note = "All primals expose JSON-RPC `health.liveness`. Use `tcp_rpc(host, port, \"health.liveness\", &json!({}))` instead. Songbird no longer exposes HTTP /health on a port — Tower Atomic owns all HTTP."
+)]
 pub fn http_health_probe(host: &str, port: u16) -> TcpRpcResult {
     let addr = format!("{host}:{port}");
     let start = Instant::now();
@@ -220,6 +224,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(deprecated)]
     fn http_health_fails_gracefully_on_unreachable_host() {
         let result = http_health_probe("127.0.0.1", 1);
         assert!(result.is_err());

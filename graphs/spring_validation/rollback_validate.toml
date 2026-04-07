@@ -23,7 +23,7 @@ checkpoint_enabled = true
 
 # --- Phase 1: Neural API Health ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_neural_api"
 binary = "biomeos"
 order = 1
@@ -35,7 +35,7 @@ capabilities = ["graph.deploy", "graph.status", "graph.rollback"]
 
 # --- Phase 2: Coordination Primal Health ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_primalspring"
 binary = "primalspring_primal"
 order = 2
@@ -47,7 +47,7 @@ capabilities = ["composition.tower_health"]
 
 # --- Phase 3: Deploy a Sub-Graph and Verify Status ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "deploy_test_graph"
 binary = "primalspring_primal"
 order = 3
@@ -66,7 +66,7 @@ wait_for_completion = true
 
 # --- Phase 4: Verify Graph Status Reports Completed ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "check_graph_status"
 binary = "primalspring_primal"
 order = 4
@@ -85,7 +85,7 @@ graph_id = "${deploy_test_graph.graph_id}"
 
 # --- Phase 5: Trigger Rollback ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "rollback_test_graph"
 binary = "primalspring_primal"
 order = 5
@@ -103,7 +103,7 @@ graph_id = "${deploy_test_graph.graph_id}"
 
 # --- Phase 6: Verify Post-Rollback Health ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "post_rollback_health"
 binary = "primalspring_primal"
 order = 6

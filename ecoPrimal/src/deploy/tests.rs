@@ -23,12 +23,14 @@ fn test_node(name: &str, order: u32) -> GraphNode {
 fn test_graph(name: &str, nodes: Vec<GraphNode>) -> DeployGraph {
     DeployGraph {
         graph: GraphMeta {
+            id: None,
             name: name.to_owned(),
             description: String::new(),
             version: String::new(),
             coordination: None,
             node: nodes,
         },
+        nodes: Vec::new(),
     }
 }
 
@@ -326,12 +328,14 @@ fn merge_graphs_combines_nodes() {
     base_node.by_capability = Some("security".to_owned());
     let base = DeployGraph {
         graph: GraphMeta {
+            id: None,
             name: "base".to_owned(),
             description: "base graph".to_owned(),
             version: "1.0.0".to_owned(),
             coordination: Some("sequential".to_owned()),
             node: vec![base_node],
         },
+        nodes: Vec::new(),
     };
 
     let mut overlay_node = test_node("squirrel", 3);
@@ -340,12 +344,14 @@ fn merge_graphs_combines_nodes() {
     overlay_node.by_capability = Some("ai".to_owned());
     let overlay = DeployGraph {
         graph: GraphMeta {
+            id: None,
             name: "ai_overlay".to_owned(),
             description: "AI overlay".to_owned(),
             version: "1.0.0".to_owned(),
             coordination: None,
             node: vec![overlay_node],
         },
+        nodes: Vec::new(),
     };
 
     let merged = merge_graphs(&base, &overlay);
@@ -368,12 +374,14 @@ fn merge_graphs_overlay_overrides_existing() {
     override_node.by_capability = Some("security".to_owned());
     let overlay = DeployGraph {
         graph: GraphMeta {
+            id: None,
             name: "override".to_owned(),
             description: String::new(),
             version: "2.0.0".to_owned(),
             coordination: None,
             node: vec![override_node],
         },
+        nodes: Vec::new(),
     };
 
     let merged = merge_graphs(&base, &overlay);

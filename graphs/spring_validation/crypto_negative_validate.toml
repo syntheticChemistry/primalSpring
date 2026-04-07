@@ -20,7 +20,7 @@ negative_tests = true
 
 # --- Phase 1: Tower Health ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -32,7 +32,7 @@ capabilities = ["composition.tower_health"]
 
 # --- Phase 2: Lineage Proof Generate-then-Verify ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "generate_lineage_proof"
 binary = "primalspring_primal"
 order = 2
@@ -50,7 +50,7 @@ our_family_id = "family-alpha"
 peer_family_id = "family-beta"
 lineage_seed = "${LINEAGE_SEED_B64}"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_lineage_correct_seed"
 binary = "primalspring_primal"
 order = 3
@@ -72,7 +72,7 @@ lineage_seed = "${LINEAGE_SEED_B64}"
 
 # --- Phase 3: Negative — Wrong Seed Rejected ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_lineage_wrong_seed"
 binary = "primalspring_primal"
 order = 4
@@ -94,7 +94,7 @@ lineage_seed = "${WRONG_LINEAGE_SEED_B64}"
 
 # --- Phase 4: Negative — Empty Seed Rejected ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beacon_key_empty_seed_rejected"
 binary = "primalspring_primal"
 order = 5
@@ -113,7 +113,7 @@ lineage_seed = ""
 
 # --- Phase 5: Beacon Encrypt-Decrypt Round-Trip ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beacon_generate_encrypt"
 binary = "primalspring_primal"
 order = 6
@@ -130,7 +130,7 @@ method = "birdsong.generate_encrypted_beacon"
 node_id = "negative-test-node"
 capabilities = ["crypto", "validation"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beacon_decrypt_same_family"
 binary = "primalspring_primal"
 order = 7
@@ -149,7 +149,7 @@ encrypted_beacon = "${beacon_generate_encrypt.encrypted_beacon}"
 
 # --- Phase 6: Ed25519 Tamper Rejection ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "ed25519_sign"
 binary = "primalspring_primal"
 order = 8
@@ -165,7 +165,7 @@ method = "crypto.sign_ed25519"
 [graph.node.operation.params]
 data = "primalSpring negative test payload"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "ed25519_verify_tampered"
 binary = "primalspring_primal"
 order = 9

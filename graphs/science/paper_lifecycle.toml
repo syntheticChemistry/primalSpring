@@ -22,7 +22,7 @@ bond_type = "covalent"
 science_domain = "reproducibility"
 source_showcase = "primals/loamSpine/showcase/04-inter-primal/05-full-ecosystem"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -31,7 +31,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -42,7 +42,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
 # Squirrel: AI coordination — analyzes paper, generates metadata
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 3
@@ -53,7 +53,7 @@ by_capability = "ai"
 capabilities = ["ai.coordinate", "ai.infer", "ai.classify"]
 
 # NestGate: stores paper artifacts (data, figures, manuscript)
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 4
@@ -64,7 +64,7 @@ by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
 
 # LoamSpine: permanent ledger commit of paper provenance
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine_primal"
 order = 5
@@ -75,7 +75,7 @@ by_capability = "ledger"
 capabilities = ["provenance.commit", "provenance.verify", "provenance.diff"]
 
 # ToadStool: computational verification of results
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 6

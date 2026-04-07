@@ -44,10 +44,10 @@
 
 ### 4. NestGate: Songbird Coordination (`phase1/nestgate/showcase/04_inter_primal_mesh/`)
 
-**Pattern**: Protocol negotiation (HTTP -> JSON-RPC -> tarpc), orchestrated workflows
+**Pattern**: Protocol negotiation (JSON-RPC 2.0 serialization formats), orchestrated workflows
 
 **What to test**:
-- Protocol escalation: HTTP REST -> JSON-RPC 2.0 -> tarpc binary
+- Protocol serialization: JSON-RPC 2.0 text → tarpc binary (HTTP REST removed — all IPC is JSON-RPC)
 - Pool discovery and dataset creation via Songbird
 - Three-primal workflow: Songbird + NestGate + ToadStool
 
@@ -155,7 +155,7 @@ Subsequent phases added experiments through exp084 (including cross-gate deploym
 |-----|------|----------------|---------------|
 | 050 | Compute triangle | ToadStool #1 | coralReef -> toadStool -> barraCuda live pipeline |
 | 051 | Socket discovery sweep | ToadStool #1 | XDG_RUNTIME_DIR/biomeos/ enumeration for all primals |
-| 052 | Protocol escalation | NestGate #4 | HTTP -> JSON-RPC -> tarpc negotiation |
+| 052 | JSON-RPC serialization | NestGate #4 | JSON-RPC 2.0 text → tarpc binary serialization validation |
 | 053 | Multi-primal lifecycle | LoamSpine #12 | 6-primal research paper lifecycle |
 | 054 | Bearer token auth flow | ToadStool #2 | BearDog authenticate -> validate -> compute.submit |
 | 055 | Wait-for-health pattern | NestGate #3 | Repeated health probe with timeout and ordering |

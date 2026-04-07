@@ -17,7 +17,7 @@ coordination = "sequential"
 
 # ── Phase 1: Tower Atomic (base) ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -29,7 +29,7 @@ capabilities = [
     "crypto.verify", "crypto.keygen", "crypto.identity",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -44,7 +44,7 @@ capabilities = [
 
 # ── Phase 2: Nest Extension ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 3
@@ -56,7 +56,7 @@ capabilities = ["storage.store", "storage.retrieve"]
 
 # ── Phase 3: Visualization Overlay ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue_primal"
 order = 4
@@ -71,7 +71,7 @@ capabilities = [
 
 # ── Validation (not spawned) ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_nest_viz"
 binary = "primalspring_primal"
 order = 99

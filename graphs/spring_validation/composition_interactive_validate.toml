@@ -29,7 +29,7 @@ version = "2.0.0"
 coordination = "sequential"
 
 # ── Phase 0: Substrate ──────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -40,7 +40,7 @@ by_capability = "orchestration"
 capabilities = ["capability.discover", "capability.list", "graph.list"]
 
 # ── Phase 1: Tower ──────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -52,7 +52,7 @@ by_capability = "coordination"
 capabilities = ["composition.tower_health"]
 
 # ── Phase 2: C1 Render (owned primal) ──────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_render"
 binary = "primalspring_primal"
 order = 2
@@ -68,7 +68,7 @@ target = "petaltongue"
 expect = "dashboard stored, SVG exported"
 
 # ── Phase 3: C2 Narration (owned primal) ───────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_narration"
 binary = "primalspring_primal"
 order = 3
@@ -84,7 +84,7 @@ target = "squirrel"
 expect = "prose response"
 
 # ── Phase 4: C5 Persistence (owned primal) ─────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_persistence"
 binary = "primalspring_primal"
 order = 4
@@ -100,7 +100,7 @@ target = "nestgate"
 expect = "round-trip"
 
 # ── Phase 5: C6 Proprioception (owned primal) ──────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_proprioception"
 binary = "primalspring_primal"
 order = 5
@@ -116,7 +116,7 @@ target = "petaltongue"
 expect = "subscriber_id, events array"
 
 # ── Phase 6: Capability routing (substrate readiness) ───────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_capability_routing"
 binary = "primalspring_primal"
 order = 6

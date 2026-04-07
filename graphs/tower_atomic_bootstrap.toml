@@ -18,7 +18,7 @@ version = "0.4.0"
 coordination = "sequential"
 
 # ── Phase 0: biomeOS Neural API — orchestration substrate ──
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -35,7 +35,7 @@ capabilities = [
 ]
 
 # ── Phase 1: BearDog — crypto foundation ──
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -52,7 +52,7 @@ capabilities = [
 ]
 
 # ── Phase 2: Songbird — discovery + mesh ──
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -68,7 +68,7 @@ capabilities = [
 ]
 
 # ── Phase 3: Validation ──
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_tower"
 binary = "primalspring_primal"
 order = 3

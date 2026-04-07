@@ -17,7 +17,7 @@ coordination = "sequential"
 bond_type = "covalent"
 chaos_scenario = "slow_start"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -27,7 +27,7 @@ by_capability = "security"
 capabilities = ["crypto.identity"]
 chaos_delay_range_ms = [0, 30000]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -38,7 +38,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery"]
 chaos_delay_range_ms = [0, 30000]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 3
@@ -49,7 +49,7 @@ by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination"]
 chaos_delay_range_ms = [0, 10000]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "groundspring"
 binary = "groundspring_primal"
 order = 4
@@ -60,7 +60,7 @@ by_capability = "validation"
 capabilities = ["validate.health"]
 chaos_delay_range_ms = [0, 30000]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "healthspring"
 binary = "healthspring_primal"
 order = 5

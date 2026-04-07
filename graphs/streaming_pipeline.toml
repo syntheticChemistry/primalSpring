@@ -13,7 +13,7 @@ version = "0.2.0"
 coordination = "Pipeline"
 
 # ── Node 1: BearDog (identity) ────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -23,7 +23,7 @@ by_capability = "security"
 capabilities = ["crypto.identity"]
 
 # ── Node 2: NestGate (fetch) ───────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 2
@@ -34,7 +34,7 @@ by_capability = "storage"
 capabilities = ["storage.retrieve", "storage.fetch"]
 
 # ── Node 3: primalSpring (transform) ───────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "primalspring"
 binary = "primalspring_primal"
 order = 3
@@ -46,7 +46,7 @@ by_capability = "coordination"
 capabilities = ["coordination.transform", "pipeline.transform"]
 
 # ── Node 4: sweetGrass (attribute) ─────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
 order = 4

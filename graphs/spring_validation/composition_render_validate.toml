@@ -17,7 +17,7 @@ description = "Validates C1: petalTongue render — dashboard, export, scene, se
 version = "1.0.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -27,7 +27,7 @@ health_method = "graph.list"
 by_capability = "orchestration"
 capabilities = ["capability.discover", "graph.list"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_petaltongue_alive"
 binary = "primalspring_primal"
 order = 1
@@ -42,7 +42,7 @@ method = "health.liveness"
 target = "petaltongue"
 expect = "ok"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_dashboard_render"
 binary = "primalspring_primal"
 order = 2
@@ -58,7 +58,7 @@ target = "petaltongue"
 params_schema = "DataBinding[]"
 expect = "ok"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_svg_export"
 binary = "primalspring_primal"
 order = 3
@@ -73,7 +73,7 @@ method = "visualization.export"
 target = "petaltongue"
 expect = "svg_content"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_scene_storage"
 binary = "primalspring_primal"
 order = 4
@@ -88,7 +88,7 @@ method = "visualization.render.scene"
 target = "petaltongue"
 expect = "stored"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_session_awareness"
 binary = "primalspring_primal"
 order = 5

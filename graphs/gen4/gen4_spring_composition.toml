@@ -17,7 +17,7 @@ coordination = "sequential"
 
 # ── Tower Atomic ─────────────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
@@ -26,7 +26,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.sign", "crypto.encrypt", "birdsong.generate"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
@@ -38,7 +38,7 @@ capabilities = ["mesh.announce", "mesh.peers", "http.request"]
 
 # ── biomeOS Neural API ───────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_api"
 binary = "biomeos"
 order = 3
@@ -50,7 +50,7 @@ capabilities = ["graph.execution", "ecosystem.coordination"]
 
 # ── Spring Primals (germinate each) ──────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "groundspring"
 binary = "groundspring"
 order = 10
@@ -64,7 +64,7 @@ capabilities = [
     "measurement.temporal",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "healthspring"
 binary = "healthspring_primal"
 order = 11
@@ -77,7 +77,7 @@ capabilities = [
     "medical.pipeline",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "ludospring"
 binary = "ludospring"
 order = 12
@@ -91,7 +91,7 @@ capabilities = [
     "gaming.telemetry",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring"
 order = 13
@@ -106,7 +106,7 @@ capabilities = [
     "science.cross_spring_provenance",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "wetspring"
 binary = "wetspring"
 order = 14
@@ -122,7 +122,7 @@ capabilities = [
 
 # ── Cross-Spring Validation ──────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_cross_spring_routing"
 binary = "primalspring_primal"
 order = 20
@@ -137,7 +137,7 @@ capabilities = [
     "coordination.validate_capability_routing",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_biomeos_composition"
 binary = "primalspring_primal"
 order = 21

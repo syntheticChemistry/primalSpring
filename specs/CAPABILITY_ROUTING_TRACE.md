@@ -121,7 +121,7 @@ Primals that don't register ecosystem-standard method names:
 
 ### Category 7: Socket Discovery Inconsistencies
 
-| Primal | Server Tiers | Client Tiers | Dir Pattern | Standard (5-tier) |
+| Primal | Server Tiers | Client Tiers | Dir Pattern | Standard (6-tier) |
 |---|---|---|---|---|
 | BearDog | 3 | 4 | `biomeos/` vs `ecoPrimals/` | No |
 | Songbird | 7 (mixed) | N/A | `biomeos/` + identity names | No |
@@ -211,7 +211,7 @@ External HTTPS connectivity verified.
 
 ### Phase 4: Socket Discovery Alignment
 
-All Tower primals align on 5-tier socket discovery.
+All Tower primals align on 6-tier socket discovery.
 biomeOS eats its own dogfood for all inter-primal calls.
 
 ### Phase 5: Stable Tower → Nest Atomic

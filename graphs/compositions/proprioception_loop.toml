@@ -21,7 +21,7 @@ version = "1.0.0"
 coordination = "sequential"
 
 # ── Phase 0: biomeOS substrate ─────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -32,7 +32,7 @@ by_capability = "orchestration"
 capabilities = ["capability.discover", "graph.list"]
 
 # ── Phase 1: petalTongue interaction server ────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
 order = 1

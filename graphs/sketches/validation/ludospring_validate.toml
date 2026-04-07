@@ -18,7 +18,7 @@ description = "Validates ludoSpring V32 deployment: biomeOS substrate, Tower, ga
 version = "0.2.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -28,7 +28,7 @@ health_method = "health.liveness"
 by_capability = "orchestration"
 capabilities = ["graph.deploy", "capability.discover", "health.liveness"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -42,7 +42,7 @@ capabilities = [
     "composition.tower_health",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "start_ludospring"
 binary = "ludospring"
 order = 2
@@ -61,7 +61,7 @@ capabilities = [
     "game.accessibility",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_game_surface"
 binary = "primalspring_primal"
 order = 3

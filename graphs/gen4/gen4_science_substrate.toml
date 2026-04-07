@@ -15,7 +15,7 @@ description = "gen4 Science Substrate: multi-spring pipeline via biomeOS orchest
 version = "0.1.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -26,7 +26,7 @@ by_capability = "coordination"
 args = ["server"]
 capabilities = ["composition.tower_health"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_substrate"
 binary = "biomeos"
 order = 2
@@ -35,7 +35,7 @@ health_method = "health.check"
 by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "groundspring"
 binary = "groundspring_primal"
 order = 3
@@ -44,7 +44,7 @@ health_method = "health.check"
 by_capability = "measurement"
 capabilities = ["measurement.sense", "measurement.inverse"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "wetspring"
 binary = "wetspring_primal"
 order = 4
@@ -53,7 +53,7 @@ health_method = "health.check"
 by_capability = "science"
 capabilities = ["science.diversity", "science.phylogenetics"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring_primal"
 order = 5
@@ -62,7 +62,7 @@ health_method = "health.check"
 by_capability = "neural"
 capabilities = ["neural.hamiltonian", "neural.spectral"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_pipeline"
 binary = "primalspring_primal"
 order = 6

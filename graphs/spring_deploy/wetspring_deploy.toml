@@ -37,7 +37,7 @@ encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 
 # ── NUCLEUS Base ──────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -47,7 +47,7 @@ health_method = "health.liveness"
 by_capability = "orchestration"
 capabilities = ["graph.deploy", "capability.discover", "topology.rescan"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
@@ -57,7 +57,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
@@ -69,7 +69,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 
 # ── Compute Layer ─────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool"
 order = 3
@@ -79,7 +79,7 @@ health_method = "health.liveness"
 by_capability = "compute"
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
 order = 4
@@ -91,7 +91,7 @@ capabilities = ["math.stats", "math.tensor"]
 
 # ── Persistence ───────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate"
 order = 5
@@ -103,7 +103,7 @@ capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
 # ── Provenance Trio (WireWitnessRef) ─────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 6
@@ -111,9 +111,9 @@ required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "dag"
-capabilities = ["dag", "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify", "dag.dehydrate", "dag.frontier.get"]
+capabilities = ["dag", "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify", "dag.dehydration.trigger", "dag.frontier.get"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
 order = 7
@@ -123,7 +123,7 @@ health_method = "health.liveness"
 by_capability = "ledger"
 capabilities = ["spine", "entry", "session", "certificate", "commit", "ledger", "spine.create", "entry.append", "session.commit", "certificate.mint"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 8
@@ -135,7 +135,7 @@ capabilities = ["braid", "attribution", "provenance", "anchoring", "braid.create
 
 # ── Spring Science ────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "wetspring"
 binary = "wetspring_primal"
 order = 9

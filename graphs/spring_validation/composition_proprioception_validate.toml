@@ -19,7 +19,7 @@ description = "Validates C6: petalTongue proprioception — subscribe, apply, po
 version = "1.0.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -29,7 +29,7 @@ health_method = "graph.list"
 by_capability = "orchestration"
 capabilities = ["capability.discover", "graph.list"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_petaltongue_alive"
 binary = "primalspring_primal"
 order = 1
@@ -44,7 +44,7 @@ method = "health.liveness"
 target = "petaltongue"
 expect = "ok"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_subscribe"
 binary = "primalspring_primal"
 order = 2
@@ -59,7 +59,7 @@ method = "interaction.subscribe"
 target = "petaltongue"
 expect = "subscriber_id returned"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_apply_intent"
 binary = "primalspring_primal"
 order = 3
@@ -75,7 +75,7 @@ target = "petaltongue"
 params = { intent = "select", target = "test_element", value = "test" }
 expect = "applied"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_poll_events"
 binary = "primalspring_primal"
 order = 4
@@ -90,7 +90,7 @@ method = "interaction.poll"
 target = "petaltongue"
 expect = "events array includes applied intent"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_showing_awareness"
 binary = "primalspring_primal"
 order = 5

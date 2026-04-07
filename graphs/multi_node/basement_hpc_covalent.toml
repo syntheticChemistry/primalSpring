@@ -40,7 +40,8 @@
 # =============================================================================
 
 [graph]
-id = "basement_hpc_covalent"
+id = "basement-hpc-covalent"
+name = "basement_hpc_covalent"
 version = "1.0.0"
 description = "Covalent NUCLEUS gate for basement HPC mesh"
 coordination = "Sequential"
@@ -54,44 +55,44 @@ trust_model = "genetic_lineage"
 # PHASE 1: TOWER ATOMIC (Crypto + Network)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "gate_beardog"
 output = "beardog_genesis"
-capabilities = ["crypto", "tls_crypto", "genetic", "security", "beacon"]
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash", "crypto.encrypt", "crypto.decrypt", "crypto.keygen"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "security"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 RUST_LOG = "beardog=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[[nodes]]
+[[graph.nodes]]
 id = "gate_songbird"
 depends_on = ["gate_beardog"]
 output = "songbird_genesis"
-capabilities = ["http", "discovery", "secure_http", "mesh", "onion", "relay", "stun", "punch"]
+capabilities = ["http.request", "http.get", "http.post", "discovery.find_primals", "discovery.announce", "mesh.init", "mesh.auto_discover", "mesh.peers", "stun.get_public_address"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "discovery"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
 BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
 CRYPTO_PROVIDER_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
@@ -100,66 +101,66 @@ SONGBIRD_MESH_ENABLED = "true"
 BIOMEOS_BIND_ALL = "true"
 RUST_LOG = "songbird=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
 # =============================================================================
 # PHASE 2: MESH DISCOVERY (find existing gates on LAN)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "mesh_init"
 depends_on = ["gate_songbird"]
 output = "mesh_state"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "mesh.init"
 params = { node_id = "${NODE_ID}", bootstrap_onions = [] }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 
-[[nodes]]
+[[graph.nodes]]
 id = "discover_peers"
 depends_on = ["mesh_init"]
 output = "peers_discovered"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "mesh.auto_discover"
 params = {}
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 15000
 
 # =============================================================================
 # PHASE 3: COMPUTE + STORAGE + AI
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "gate_toadstool"
 depends_on = ["gate_beardog", "gate_songbird"]
 output = "toadstool_genesis"
-capabilities = ["compute", "workload", "orchestration"]
+capabilities = ["compute.submit", "compute.status", "compute.health"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "compute"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 TOADSTOOL_FAMILY_ID = "${FAMILY_ID}"
 TOADSTOOL_NODE_ID = "${NODE_ID}"
 TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED = "1"
@@ -167,73 +168,73 @@ SONGBIRD_ENDPOINT = "${XDG_RUNTIME_DIR}/biomeos/songbird-${FAMILY_ID}.sock"
 BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
 RUST_LOG = "toadstool=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 45000
 
-[[nodes]]
+[[graph.nodes]]
 id = "gate_nestgate"
 depends_on = ["gate_beardog", "gate_songbird"]
 output = "nestgate_genesis"
-capabilities = ["storage", "provenance", "persistence"]
+capabilities = ["storage.put", "storage.get", "storage.list", "storage.exists", "storage.fetch_external"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "storage"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 provenance_enabled = true
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 NESTGATE_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/nestgate-${FAMILY_ID}.sock"
 BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
 SONGBIRD_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/songbird-${FAMILY_ID}.sock"
 RUST_LOG = "nestgate=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 60000
 
-[[nodes]]
+[[graph.nodes]]
 id = "gate_squirrel"
 depends_on = ["gate_beardog", "gate_songbird"]
 output = "squirrel_genesis"
-capabilities = ["ai", "inference", "learning"]
+capabilities = ["ai.query", "ai.chat", "ai.list_providers", "tool.execute", "tool.list", "context.create"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "ai"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 CAPABILITY_REGISTRY_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
 BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
 SONGBIRD_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/songbird-${FAMILY_ID}.sock"
 RUST_LOG = "squirrel=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
 # =============================================================================
-# PHASE 4: VALIDATE + ANNOUNCE
+# PHASE 4: VALIDATE + HTTPS + ANNOUNCE
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "gate_validate"
 depends_on = ["gate_toadstool", "gate_nestgate", "gate_squirrel", "discover_peers"]
 output = "gate_validated"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "health_check"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 check_beardog = true
 check_songbird = true
 check_toadstool = true
@@ -242,23 +243,39 @@ check_squirrel = true
 check_capability_routing = true
 timeout_seconds = 20
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[[nodes]]
-id = "announce_capabilities"
+[[graph.nodes]]
+id = "gate_https_validate"
 depends_on = ["gate_validate"]
-output = "announced"
+output = "https_validated"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
-method = "mesh.announce"
-params = { as_relay = true, capabilities = ["relay", "compute", "storage", "ai"] }
+[graph.nodes.operation.params]
+method = "http.get"
+params = { url = "https://ifconfig.me/ip" }
 
-[nodes.constraints]
+[graph.nodes.constraints]
+timeout_ms = 15000
+
+[[graph.nodes]]
+id = "announce_capabilities"
+depends_on = ["gate_https_validate"]
+output = "announced"
+
+[graph.nodes.operation]
+name = "rpc_call"
+target = "songbird"
+
+[graph.nodes.operation.params]
+method = "mesh.announce"
+params = { as_relay = true, capabilities = ["compute.submit", "storage.fetch_external", "ai.query"] }
+
+[graph.nodes.constraints]
 timeout_ms = 5000
 
 # =============================================================================

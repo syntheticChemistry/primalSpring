@@ -18,7 +18,7 @@ coordination = "parallel"
 bond_type = "organo_metal_salt"
 
 # ── Covalent core: shared family seed, full mutual trust ──────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -28,7 +28,7 @@ by_capability = "security"
 capabilities = ["crypto.identity", "crypto.verify", "crypto.family_seed"]
 bond_role = "covalent_core"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -39,7 +39,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 bond_role = "covalent_core"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 3
@@ -50,7 +50,7 @@ by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination", "route.register"]
 bond_role = "covalent_core"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 4
@@ -62,7 +62,7 @@ capabilities = ["storage.store", "storage.retrieve", "storage.replicate"]
 bond_role = "covalent_core"
 
 # Core springs
-[[graph.node]]
+[[graph.nodes]]
 name = "groundspring"
 binary = "groundspring_primal"
 order = 5
@@ -73,7 +73,7 @@ by_capability = "validation"
 capabilities = ["validate.health", "validate.composition"]
 bond_role = "covalent_core"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring_primal"
 order = 6
@@ -85,7 +85,7 @@ capabilities = ["neural.evoformer", "neural.spectral"]
 bond_role = "covalent_core"
 
 # Provenance Trio (covalent backbone)
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
 order = 7
@@ -96,7 +96,7 @@ by_capability = "provenance"
 capabilities = ["provenance.session", "provenance.merkle_root"]
 bond_role = "covalent_core"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine_primal"
 order = 8
@@ -107,7 +107,7 @@ by_capability = "ledger"
 capabilities = ["provenance.commit", "provenance.verify"]
 bond_role = "covalent_core"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
 order = 9
@@ -119,7 +119,7 @@ capabilities = ["provenance.braid", "provenance.attribute"]
 bond_role = "covalent_core"
 
 # ── Ionic edge: different family seed, contract-based ──────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool_ionic"
 binary = "toadstool_primal"
 order = 10
@@ -131,7 +131,7 @@ capabilities = ["compute.dispatch.submit", "compute.execute", "compute.gpu"]
 bond_role = "ionic_edge"
 family = "external_partner"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel_ionic"
 binary = "squirrel_primal"
 order = 11
@@ -144,7 +144,7 @@ bond_role = "ionic_edge"
 family = "external_partner"
 
 # ── Weak public: no family seed, zero trust ────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird_public"
 binary = "songbird_primal"
 order = 12

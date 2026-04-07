@@ -19,7 +19,7 @@ coordination = "sequential"
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -30,7 +30,7 @@ by_capability = "coordination"
 args = ["server"]
 capabilities = ["composition.tower_health"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_biomeos"
 binary = "primalspring_primal"
 order = 2
@@ -41,7 +41,7 @@ by_capability = "orchestration"
 args = ["server"]
 capabilities = ["graph.deploy", "capability.discover"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "groundspring"
 binary = "groundspring_primal"
 order = 3
@@ -50,7 +50,7 @@ health_method = "health.liveness"
 by_capability = "measurement"
 capabilities = ["measurement.sense"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "wetspring"
 binary = "wetspring_primal"
 order = 4
@@ -59,7 +59,7 @@ health_method = "health.liveness"
 by_capability = "science"
 capabilities = ["science.diversity"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "healthspring"
 binary = "healthspring_primal"
 order = 5
@@ -68,7 +68,7 @@ health_method = "health.liveness"
 by_capability = "health"
 capabilities = ["health.pharmacology"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "ludospring"
 binary = "ludospring_primal"
 order = 6
@@ -77,7 +77,7 @@ health_method = "health.liveness"
 by_capability = "game"
 capabilities = ["game.engine"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring_primal"
 order = 7
@@ -86,7 +86,7 @@ health_method = "health.liveness"
 by_capability = "neural"
 capabilities = ["neural.spectral"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "airspring"
 binary = "airspring_primal"
 order = 8
@@ -95,7 +95,7 @@ health_method = "health.liveness"
 by_capability = "ecology"
 capabilities = ["ecology.weather"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "hotspring"
 binary = "hotspring_primal"
 order = 9
@@ -104,7 +104,7 @@ health_method = "health.liveness"
 by_capability = "physics"
 capabilities = ["physics.thermal"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_sweep"
 binary = "primalspring_primal"
 order = 10

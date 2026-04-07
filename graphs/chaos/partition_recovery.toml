@@ -17,7 +17,7 @@ coordination = "sequential"
 bond_type = "covalent"
 chaos_scenario = "network_partition"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -26,7 +26,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -36,7 +36,7 @@ health_method = "health"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 3
@@ -47,7 +47,7 @@ by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination"]
 
 # Groundspring validates health before, during, and after partition
-[[graph.node]]
+[[graph.nodes]]
 name = "groundspring"
 binary = "groundspring_primal"
 order = 4

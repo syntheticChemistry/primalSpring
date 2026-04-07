@@ -22,7 +22,7 @@ coordination = "parallel"
 bond_type = "covalent"
 
 # ── Tower layer ────────────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -31,7 +31,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -45,7 +45,7 @@ capabilities = ["net.discovery", "net.mesh"]
 # Routes capabilities, executes graphs, federation coordination.
 # Neural API surface: capability.call, capability.discover, graph.execute,
 # graph.list, route.register, topology.*, lifecycle.*
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 3
@@ -73,7 +73,7 @@ capabilities = [
 # Receives capability.call(ai, *) from biomeOS.
 # Exposes: ai.query, ai.complete, ai.chat, tool.execute, tool.list,
 # context.create, context.update, discovery.peers
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 4
@@ -98,7 +98,7 @@ capabilities = [
 # Human-facing UI: TUI/egui/web/headless, SSE events from biomeOS,
 # Grammar of Graphics, dashboards, topology visualization.
 # Captures human intent → feeds back to Squirrel/biomeOS.
-[[graph.node]]
+[[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue_primal"
 order = 5
@@ -119,7 +119,7 @@ capabilities = [
 ]
 
 # ── Compute + storage for AI workflows ─────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 6
@@ -129,7 +129,7 @@ health_method = "compute.health"
 by_capability = "compute"
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 7
@@ -140,7 +140,7 @@ by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve"]
 
 # ── Validation springs ─────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "groundspring"
 binary = "groundspring_primal"
 order = 8

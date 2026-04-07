@@ -17,7 +17,7 @@ version = "0.5.0"
 coordination = "sequential"
 
 # ── Phase 1: BearDog — crypto foundation ──
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -34,7 +34,7 @@ capabilities = [
 ]
 
 # ── Phase 2: Songbird — full network stack ──
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -65,7 +65,7 @@ capabilities = [
 ]
 
 # ── Phase 3: petalTongue — universal visualization ──
-[[graph.node]]
+[[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
 order = 3
@@ -80,7 +80,7 @@ capabilities = [
 ]
 
 # ── Phase 4: Squirrel — AI orchestration (optional) ──
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
 order = 4
@@ -95,7 +95,7 @@ capabilities = [
 ]
 
 # ── Phase 5: Coordination validation ──
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_tower_full"
 binary = "primalspring_primal"
 order = 5

@@ -20,7 +20,7 @@ description = "Validates ludoSpring game-science primal: substrate, Tower, 8 gam
 version = "1.0.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -30,7 +30,7 @@ health_method = "graph.list"
 by_capability = "orchestration"
 capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -42,7 +42,7 @@ by_capability = "coordination"
 args = ["server"]
 capabilities = ["composition.tower_health"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_ludospring_health"
 binary = "primalspring_primal"
 order = 2
@@ -56,7 +56,7 @@ capabilities = [
     "coordination.validate_game_surface",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_game_routing"
 binary = "primalspring_primal"
 order = 3

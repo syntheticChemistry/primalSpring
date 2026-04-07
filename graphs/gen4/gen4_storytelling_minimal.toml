@@ -27,7 +27,7 @@ tick_hz = 60
 bond_type = "covalent"
 deployment_class = "minimal"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -36,7 +36,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -46,7 +46,7 @@ health_method = "health"
 by_capability = "discovery"
 capabilities = ["net.discovery"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "esotericwebb"
 binary = "esotericwebb"
 order = 3
@@ -56,7 +56,7 @@ health_method = "webb.liveness"
 by_capability = "narrative"
 capabilities = ["webb.resolve_scene", "session.create", "session.advance"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 4
@@ -66,7 +66,7 @@ health_method = "health"
 by_capability = "ai"
 capabilities = ["ai.query", "ai.suggest", "context.create", "context.update"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue_primal"
 order = 5
@@ -78,7 +78,7 @@ capabilities = ["visualization.render.scene", "interaction.poll"]
 
 # ── ludoSpring: supplemental game science (optional) ───────────────────
 # Enriches Webb's embedded flow/DDA/engagement with WFC, Fitts, GPU compute.
-[[graph.node]]
+[[graph.nodes]]
 name = "ludospring"
 binary = "ludospring"
 order = 6

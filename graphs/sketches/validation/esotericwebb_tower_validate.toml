@@ -17,7 +17,7 @@ description = "Validates esotericWebb V6 Tower composition: biomeOS substrate, T
 version = "1.0.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -27,7 +27,7 @@ health_method = "graph.list"
 by_capability = "orchestration"
 capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -39,7 +39,7 @@ by_capability = "coordination"
 args = ["server"]
 capabilities = ["composition.tower_health"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_esotericwebb"
 binary = "primalspring_primal"
 order = 2
@@ -53,7 +53,7 @@ capabilities = [
     "coordination.validate_narrative_surface",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_capability_routing"
 binary = "primalspring_primal"
 order = 3

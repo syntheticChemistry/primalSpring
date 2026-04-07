@@ -205,7 +205,7 @@ or "science provenance." They expose atomic capabilities:
 
 | Primal | Temporal Model | Key Capabilities |
 |--------|---------------|------------------|
-| rhizoCrypt | Ephemeral DAG (mutable present) | `dag.session.create`, `dag.dehydrate`, `dag.event.append` |
+| rhizoCrypt | Ephemeral DAG (mutable present) | `dag.session.create`, `dag.dehydration.trigger`, `dag.event.append` |
 | loamSpine | Permanent linear history (immutable past) | `session.commit`, `anchor.publish`, `anchor.verify` |
 | sweetGrass | Semantic attribution (who contributed what) | `contribution.record_dehydration`, `braid.create`, `pipeline.attribute` |
 
@@ -328,7 +328,7 @@ architecture-dependent concerns are:
 |---------|--------|--------------------|
 | Socket transport | Unix filesystem | Abstract sockets (`@name`) |
 | Working directory | `$XDG_RUNTIME_DIR` | `/data/local/tmp/` |
-| Discovery tiers | Standard 5-tier | Explicit env vars (tiers 2-3 unavailable) |
+| Discovery tiers | Standard 6-tier | Explicit env vars (tiers 2-3 unavailable) |
 | Binary format | ELF x86-64, static-pie | ELF aarch64, static |
 
 ### Composition on Pixel
@@ -388,7 +388,7 @@ Node:  + toadstool          + squirrel (AI-driven compute)
 Each graph node supports:
 
 ```toml
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 3
@@ -535,8 +535,8 @@ composition validation — missing methods cause gate failures.
 ### Discovery
 
 Primals must resolve peers via capability, not identity. No hardcoded peer
-names or socket paths in production code. The 5-tier discovery chain
-(env var → XDG → temp → manifest → Neural API) is the standard; Android
+names or socket paths in production code. The 6-tier discovery chain
+(env var → XDG → plain socket → temp → manifest → socket-registry; Neural API for ecosystem sweep) is the standard; Android
 replaces tiers 2-3 with abstract sockets.
 
 ### Build Targets

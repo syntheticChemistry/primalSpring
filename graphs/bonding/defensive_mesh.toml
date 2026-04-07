@@ -24,7 +24,7 @@ coordination = "parallel"
 bond_type = "covalent"
 source_showcase = "primals/skunkBat/showcase"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -33,7 +33,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.verify", "crypto.family_seed"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -43,7 +43,7 @@ health_method = "health"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 3
@@ -54,7 +54,7 @@ by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination"]
 
 # skunkBat: defensive security layer
-[[graph.node]]
+[[graph.nodes]]
 name = "skunkbat"
 binary = "skunkbat_primal"
 order = 4
@@ -65,7 +65,7 @@ by_capability = "defense"
 capabilities = ["defense.genetic_violation", "defense.topology_violation", "defense.behavioral_anomaly", "defense.resource_exhaustion", "defense.sovereignty_proof"]
 
 # Groundspring: health validation of defended mesh
-[[graph.node]]
+[[graph.nodes]]
 name = "groundspring"
 binary = "groundspring_primal"
 order = 5
@@ -76,7 +76,7 @@ by_capability = "validation"
 capabilities = ["validate.health", "validate.composition"]
 
 # Healthspring: continuous monitoring under defense conditions
-[[graph.node]]
+[[graph.nodes]]
 name = "healthspring"
 binary = "healthspring_primal"
 order = 6

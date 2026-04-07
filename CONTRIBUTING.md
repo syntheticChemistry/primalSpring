@@ -34,8 +34,19 @@ Experiments must:
 ## Discovery
 
 Primal code has only self-knowledge. Other primals are discovered at runtime
-via 5-tier capability-based discovery. Use `primal_names::` constants for
+via 6-tier capability-based discovery. Use `primal_names::` constants for
 slugs — never hardcode primal names as string literals.
+
+## Deploy Graphs
+
+New graphs must use the canonical `[[graph.nodes]]` format (biomeOS-native).
+The legacy `[[graph.node]]` format is accepted by the parser but should not
+be used in new files. Multi-node graphs use `[graph.nodes.*]` subsections.
+The `[graph]` section should include an `id` field (lowercase-hyphenated)
+alongside `name`. See `graphs/nest-deploy.toml` as the gold standard.
+
+All health checks must use JSON-RPC `health.liveness` — raw HTTP health
+probing is deprecated.
 
 ## Quality Gates
 

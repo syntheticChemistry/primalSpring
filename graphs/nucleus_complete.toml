@@ -24,7 +24,7 @@ coordination = "sequential"
 # Phase 0: biomeOS Neural API — orchestration substrate
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -46,7 +46,7 @@ capabilities = [
 # Phase 1: Tower Atomic — security + discovery foundation
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -58,7 +58,7 @@ capabilities = [
     "crypto.verify", "crypto.keygen", "crypto.identity",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -75,7 +75,7 @@ capabilities = [
 # Phase 2: Provenance Trio — DAG, ledger, attribution
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
 order = 3
@@ -84,11 +84,11 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "provenance"
 capabilities = [
-    "dag.create_session", "dag.append_event",
-    "dag.dehydrate", "dag.merkle_root",
+    "dag.session.create", "dag.event.append",
+    "dag.dehydration.trigger", "dag.merkle.root",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine_primal"
 order = 4
@@ -96,9 +96,9 @@ required = false
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
-capabilities = ["commit.session", "commit.entry"]
+capabilities = ["session.commit", "entry.append"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
 order = 5
@@ -115,7 +115,7 @@ capabilities = [
 # Phase 3: Node + Nest extensions
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 6
@@ -125,7 +125,7 @@ health_method = "health.liveness"
 by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 7
@@ -139,7 +139,7 @@ capabilities = ["compute.dispatch.submit", "compute.execute"]
 # Phase 4: AI bridge
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 8
@@ -153,7 +153,7 @@ capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
 # Phase 5: Coordination validator
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.node]]
+[[graph.nodes]]
 name = "primalspring"
 binary = "primalspring_primal"
 order = 9

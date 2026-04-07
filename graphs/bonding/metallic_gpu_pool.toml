@@ -19,7 +19,7 @@ bond_type = "metallic"
 science_domain = "high_performance_compute"
 
 # ── Shared Tower (all nodes see same BirdSong mesh) ───────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -28,7 +28,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -38,7 +38,7 @@ health_method = "health"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 3
@@ -49,7 +49,7 @@ by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination", "route.register"]
 
 # ── Fleet ToadStool nodes (delocalized compute) ───────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool_pool"
 binary = "toadstool_primal"
 order = 4
@@ -62,7 +62,7 @@ bond_role = "metallic_pool"
 instances = 3
 
 # ── Science springs that consume the pool ──────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "hotspring"
 binary = "hotspring_primal"
 order = 5
@@ -72,7 +72,7 @@ health_method = "compute.health"
 by_capability = "precision"
 capabilities = ["compute.df64", "compute.precision"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring_primal"
 order = 6

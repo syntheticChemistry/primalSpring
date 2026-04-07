@@ -10,17 +10,22 @@
 //!
 //! ```toml
 //! [graph]
+//! id = "primalspring-coordination-niche"
 //! name = "primalspring_coordination_niche"
 //! version = "0.2.0"
 //!
-//! [[graph.node]]
+//! [[graph.nodes]]
 //! name = "beardog"
 //! binary = "beardog_primal"
 //! order = 1
 //! required = true
-//! health_method = "health"
-//! capabilities = ["crypto.sign"]
+//! health_method = "health.liveness"
+//! by_capability = "security"
+//! capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
 //! ```
+//!
+//! The parser also accepts the legacy `[[graph.node]]` (singular) format
+//! and top-level `[[nodes]]` (merged into `graph.node` on load).
 //!
 //! # Live Validation
 //!
@@ -34,16 +39,31 @@ use serde::{Deserialize, Serialize};
 use crate::coordination::probe_primal;
 
 /// A parsed biomeOS deploy graph.
+///
+/// Accepts three TOML node formats:
+/// - `[[graph.node]]`  — primalSpring legacy (singular)
+/// - `[[graph.nodes]]` — biomeOS native (plural, canonical)
+/// - `[[nodes]]`       — top-level shorthand (e.g. `basement_hpc_covalent`)
+///
+/// Top-level `[[nodes]]` are merged into `graph.node` during [`load_graph`].
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeployGraph {
     /// Top-level graph metadata.
     pub graph: GraphMeta,
+
+    /// Top-level `[[nodes]]` (alternative to `[[graph.node]]` / `[[graph.nodes]]`).
+    /// Merged into `graph.node` by [`load_graph`].
+    #[serde(default)]
+    pub nodes: Vec<GraphNode>,
 }
 
 /// Graph metadata and node list.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GraphMeta {
-    /// Graph identifier (e.g. `"primalspring_coordination_niche"`).
+    /// Graph identifier — biomeOS uses hyphenated `id` (e.g. `"nest-deploy"`).
+    #[serde(default)]
+    pub id: Option<String>,
+    /// Graph name (e.g. `"primalspring_coordination_niche"`).
     pub name: String,
     /// Human-readable description.
     #[serde(default)]
@@ -55,7 +75,8 @@ pub struct GraphMeta {
     #[serde(default)]
     pub coordination: Option<String>,
     /// Ordered list of primal nodes.
-    #[serde(default)]
+    /// Accepts both `[[graph.node]]` (legacy) and `[[graph.nodes]]` (biomeOS native).
+    #[serde(default, alias = "nodes")]
     pub node: Vec<GraphNode>,
 }
 
@@ -194,13 +215,24 @@ pub fn validate_live_by_capability(path: &Path) -> LiveGraphValidation {
 
 /// Load a deploy graph from a TOML file path.
 ///
+/// Handles three node formats: `[[graph.node]]`, `[[graph.nodes]]` (serde
+/// alias), and top-level `[[nodes]]` (merged into `graph.node`).
+///
 /// # Errors
 ///
 /// Returns a string description if reading or parsing fails.
 pub fn load_graph(path: &Path) -> Result<DeployGraph, String> {
     let contents = std::fs::read_to_string(path)
         .map_err(|e| format!("failed to read {}: {e}", path.display()))?;
-    toml::from_str(&contents).map_err(|e| format!("failed to parse {}: {e}", path.display()))
+    let mut graph: DeployGraph =
+        toml::from_str(&contents).map_err(|e| format!("failed to parse {}: {e}", path.display()))?;
+
+    if !graph.nodes.is_empty() {
+        graph.graph.node.extend(graph.nodes.drain(..));
+        graph.graph.node.sort_by_key(|n| n.order);
+    }
+
+    Ok(graph)
 }
 
 /// Structurally validate a deploy graph (no live probing).
@@ -494,6 +526,7 @@ pub fn merge_graphs(base: &DeployGraph, overlay: &DeployGraph) -> DeployGraph {
 
     DeployGraph {
         graph: GraphMeta {
+            id: overlay.graph.id.clone().or_else(|| base.graph.id.clone()),
             name: format!("{}+{}", base.graph.name, overlay.graph.name),
             description: format!(
                 "{} merged with {}",
@@ -507,6 +540,7 @@ pub fn merge_graphs(base: &DeployGraph, overlay: &DeployGraph) -> DeployGraph {
                 .or_else(|| base.graph.coordination.clone()),
             node: merged_nodes,
         },
+        nodes: Vec::new(),
     }
 }
 

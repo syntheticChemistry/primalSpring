@@ -13,7 +13,7 @@ description = "ludoSpring science pipeline — barraCuda tensor/activation/stats
 version = "1.0.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -23,7 +23,7 @@ health_method = "graph.list"
 by_capability = "orchestration"
 capabilities = ["capability.discover", "graph.list"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -32,7 +32,7 @@ depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "security"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -41,7 +41,7 @@ depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "discovery"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
 order = 3
@@ -67,7 +67,7 @@ capabilities = [
     "noise.perlin3d",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "ludospring"
 binary = "ludospring_primal"
 order = 4

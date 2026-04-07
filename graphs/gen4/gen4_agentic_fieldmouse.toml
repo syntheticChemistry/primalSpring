@@ -16,7 +16,7 @@ coordination = "Pipeline"
 bond_type = "covalent"
 deployment_class = "fieldmouse"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -25,7 +25,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.verify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -35,7 +35,7 @@ health_method = "health"
 by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 3
@@ -46,7 +46,7 @@ by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination", "capability.call", "capability.discover"]
 
 # NestGate: receives and buffers fieldMouse frames
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 4
@@ -57,7 +57,7 @@ by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
 
 # Squirrel: classifies incoming sensor data, detects anomalies
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 5
@@ -68,7 +68,7 @@ by_capability = "ai"
 capabilities = ["ai.query", "ai.chat", "tool.execute", "tool.list", "context.create"]
 
 # Analysis springs: biomeOS routes classified data here
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring_primal"
 order = 6
@@ -78,7 +78,7 @@ health_method = "neural.health"
 by_capability = "neural"
 capabilities = ["neural.classify", "neural.spectral"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "wetspring"
 binary = "wetspring_primal"
 order = 7
@@ -89,7 +89,7 @@ by_capability = "shader"
 capabilities = ["science.diversity", "science.sequence"]
 
 # petalTongue: renders live sensor dashboards, anomaly alerts
-[[graph.node]]
+[[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue_primal"
 order = 8
@@ -100,7 +100,7 @@ by_capability = "visualization"
 capabilities = ["visualization.render.dashboard", "visualization.render.stream", "interaction.subscribe"]
 
 # fieldMouse chimera: leaf node (not graph-managed)
-[[graph.node]]
+[[graph.nodes]]
 name = "fieldmouse_sensor"
 binary = "fieldmouse_chimera"
 order = 9

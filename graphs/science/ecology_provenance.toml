@@ -23,7 +23,7 @@ pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 
 # ── Tower layer ────────────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
@@ -32,7 +32,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
@@ -43,7 +43,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery"]
 
 # ── Provenance Trio (per sampling event) ───────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 3
@@ -54,10 +54,10 @@ by_capability = "dag"
 capabilities = [
     "dag",
     "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify",
-    "dag.dehydrate", "dag.frontier.get",
+    "dag.dehydration.trigger", "dag.frontier.get",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
 order = 4
@@ -71,7 +71,7 @@ capabilities = [
     "provenance.verify",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 5
@@ -87,7 +87,7 @@ capabilities = [
 ]
 
 # ── Ecology pipeline ──────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "airspring"
 binary = "airspring_primal"
 order = 6
@@ -97,7 +97,7 @@ health_method = "health.liveness"
 by_capability = "ecology"
 capabilities = ["ecology.weather", "ecology.et0", "ecology.water_balance", "ecology.yield_response"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "wetspring"
 binary = "wetspring_primal"
 order = 7
@@ -107,7 +107,7 @@ health_method = "health.liveness"
 by_capability = "science"
 capabilities = ["science.diversity", "science.sequence", "science.microbiome"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring_primal"
 order = 8

@@ -13,7 +13,7 @@ description = "NUCLEUS continuous 60Hz game session — crypto + storage + math 
 version = "1.0.0"
 coordination = "continuous"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -22,7 +22,7 @@ spawn = false
 health_method = "graph.list"
 by_capability = "orchestration"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -32,7 +32,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.blake3_hash", "crypto.sign_ed25519", "crypto.verify_ed25519"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -41,7 +41,7 @@ depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "discovery"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 3
@@ -51,7 +51,7 @@ health_method = "health.liveness"
 by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
 order = 4
@@ -61,7 +61,7 @@ health_method = "health.liveness"
 by_capability = "math"
 capabilities = ["tensor.create", "tensor.read", "activation.sigmoid"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "ludospring"
 binary = "ludospring_primal"
 order = 5
@@ -72,7 +72,7 @@ by_capability = "game"
 args = ["server"]
 capabilities = ["game.evaluate_flow", "game.engagement"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "esotericwebb"
 binary = "esotericwebb"
 order = 6

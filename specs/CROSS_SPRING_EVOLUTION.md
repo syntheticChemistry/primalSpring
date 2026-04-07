@@ -146,6 +146,40 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
 | primalSpring | v0.7.0 | 411 | Phase 21 — 87/87 gates, deep ecosystem audit + library consolidation, 63 experiments, 59 deploy graphs |
 
+## Modernization Sweep (April 7, 2026)
+
+### What Changed (April 7 — Pattern Modernization)
+
+- **Capability naming cleanup (NA-009 resolved)**: `dag.dehydrate` → `dag.dehydration.trigger`
+  across `capability_registry.toml`, `niche.rs`, and 17 graph files. Also fixed stale
+  `dag.create_session`/`dag.append_event`/`dag.merkle_root` → dotted canonical names in
+  `primalspring_deploy`, `nucleus_complete`, `continuous_tick`. `commit.session` →
+  `session.commit`, `commit.entry` → `entry.append` in all loamSpine capability lists.
+- **HTTP health probe deprecated**: `http_health_probe` in `tcp.rs` marked `#[deprecated]`
+  with guidance to use TCP JSON-RPC `health.liveness`. All experiments (exp073, exp074,
+  exp076, exp081) updated to use `tcp_rpc` instead. `ProbeProtocol::Http` variant removed
+  from exp074 and exp081. Songbird no longer exposes HTTP /health on a port — Tower Atomic
+  owns all HTTP.
+- **Graph format unified (NA-016 resolved)**: primalSpring deploy parser now accepts three
+  TOML formats: `[[graph.node]]` (legacy), `[[graph.nodes]]` (biomeOS native), and
+  top-level `[[nodes]]` (multi-node shorthand). Implemented via `#[serde(alias = "nodes")]`
+  on `GraphMeta.node` and a top-level `nodes` merge in `load_graph`. `GraphMeta` gains
+  optional `id: Option<String>` for biomeOS `GraphId` support. All 87+ graphs migrated to
+  `[[graph.nodes]]`. Multi-node files converted from `[[nodes]]` to `[[graph.nodes]]`.
+- **nest-deploy.toml v4.0 (gold standard)**: Added `id = "nest-deploy"`, mesh capabilities
+  (`mesh.init`, `mesh.auto_discover`, `mesh.peers`), HTTPS validation phase (Phase 5),
+  and renumbered composition validation to Phase 6. Serves as canonical reference for all
+  deployment graphs.
+- **exp090 Tower Atomic LAN Probe**: New experiment for LAN discovery — mesh.init +
+  mesh.auto_discover via BirdSong, peer capability enumeration, HTTPS through Tower,
+  STUN/NAT discovery. Topology summary reports gate inventory.
+- **exp073 modernized for covalent bonding**: Added neural-api `capability.call` routing
+  validation, genetic lineage (`FAMILY_ID`) verification via BearDog, and HTTPS validation
+  through remote Tower Atomic.
+- **basement_hpc_covalent.toml updated**: Capability names modernized to dotted canonical
+  form (`crypto.sign_ed25519`, `http.request`, `storage.fetch_external`, etc.). HTTPS
+  validation phase added between gate validation and capability announcement.
+
 ## Garden Acceleration State (April 7, 2026)
 
 ### What Changed (April 6-7)
@@ -210,7 +244,7 @@ actionable items for primal teams to address before garden production use.
 | ID | Primal | Severity | Description |
 |----|--------|----------|-------------|
 | NA-008 | sweetGrass | LOW | Internal `Attestation` struct still uses `attested_at` field, while wire type `WireWitnessRef` uses `witnessed_at`. Field rename needed for consistency. |
-| NA-009 | rhizoCrypt | LOW | `capability_registry.toml` lists `dag.dehydrate` but the actual RPC method is `dag.dehydration.trigger`. Registry and code out of sync. |
+| NA-009 | rhizoCrypt | **RESOLVED** | `capability_registry.toml` listed `dag.dehydrate` but the actual RPC method is `dag.dehydration.trigger`. Fixed: registry, niche.rs, and all 17 graph files updated to `dag.dehydration.trigger`. Also fixed stale `dag.create_session`/`dag.append_event`/`dag.merkle_root`/`commit.session`/`commit.entry` → canonical names across `primalspring_deploy`, `nucleus_complete`, `continuous_tick`, and `data_federation_cross_site` graphs. |
 | NA-010 | Squirrel | LOW | `discovery.list` is implemented in the dispatcher but absent from `niche::CAPABILITIES`. Niche-vs-code drift not caught by tests. |
 | NA-011 | Squirrel | LOW | `capability_registry.toml` not found at runtime ("No such file or directory"). Falls back to embedded defaults — registry file location needs alignment with CWD or env var. |
 | NA-012 | Songbird | LOW | HTTP response uses both `status_code` and `status` in different code paths. Should standardize to one field (prefer `status_code` per HTTP semantics). |
@@ -232,7 +266,7 @@ actionable items for primal teams to address before garden production use.
 
 | ID | Primal | Severity | Description |
 |----|--------|----------|-------------|
-| NA-016 | primalSpring / biomeOS | MEDIUM | Graph format divergence: primalSpring validator expects `[[graph.node]]` (singular); biomeOS `deploy` expects `[[graph.nodes]]` (plural) with mandatory `id` field. Requires dual-format or parser alignment. `GraphId` requires hyphens, primalSpring names use underscores. |
+| NA-016 | primalSpring / biomeOS | **RESOLVED** | Graph format divergence eliminated. primalSpring parser now accepts `[[graph.node]]` (legacy), `[[graph.nodes]]` (biomeOS native), and top-level `[[nodes]]` via serde alias + merge. `GraphMeta` gains optional `id` field. All 87+ graphs migrated from `[[graph.node]]` to `[[graph.nodes]]`. Multi-node graphs converted from `[[nodes]]` to `[[graph.nodes]]` with `[graph.nodes.*]` subsections. `nest-deploy.toml` v4.0 established as gold standard. |
 
 **Next Atomic: Node Atomic (ToadStool GPU + Local AI)**
 

@@ -13,7 +13,7 @@ version = "0.2.0"
 coordination = "Parallel"
 
 # ── Node 1: BearDog (crypto.sign) ─────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -23,7 +23,7 @@ by_capability = "security"
 capabilities = ["crypto.sign"]
 
 # ── Node 2: Songbird (net.discovery) ──────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -33,7 +33,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery"]
 
 # ── Node 3: NestGate (storage.health) ──────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 3
@@ -43,7 +43,7 @@ by_capability = "storage"
 capabilities = ["storage.health"]
 
 # ── Node 4: ToadStool (compute.health) ────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 4

@@ -30,7 +30,7 @@ coordination = "sequential"
 bond_type = "covalent"
 
 # ── Phase 0: biomeOS substrate ─────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -41,7 +41,7 @@ by_capability = "orchestration"
 capabilities = ["capability.discover", "capability.call", "graph.list", "graph.execute"]
 
 # ── Phase 1: Tower Atomic ──────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -51,7 +51,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -62,7 +62,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
 # ── Phase 2: Persistence (C5) ─────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate"
 order = 3
@@ -73,7 +73,7 @@ by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
 # ── Phase 3: AI + Visualization (C2 + C1 + C6) ───────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
 order = 4
@@ -83,7 +83,7 @@ health_method = "health.liveness"
 by_capability = "ai"
 capabilities = ["ai.query", "ai.complete", "ai.chat", "context.create", "context.summarize"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
 order = 5
@@ -104,7 +104,7 @@ capabilities = [
 ]
 
 # ── Phase 4: Game Science (C4) ────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "ludospring"
 binary = "ludospring"
 order = 6
@@ -116,7 +116,7 @@ args = ["server"]
 capabilities = ["game.evaluate_flow", "game.wfc_step", "game.engagement"]
 
 # ── Phase 5: Narrative Product (C3) ───────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "esotericwebb"
 binary = "esotericwebb"
 order = 7

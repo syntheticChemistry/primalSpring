@@ -22,7 +22,7 @@ pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 
 # ── Tower layer ────────────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
@@ -31,7 +31,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
@@ -42,7 +42,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery"]
 
 # ── Provenance Trio (core audit capability) ────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 3
@@ -53,11 +53,11 @@ by_capability = "dag"
 capabilities = [
     "dag",
     "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify",
-    "dag.dehydrate", "dag.frontier.get",
+    "dag.dehydration.trigger", "dag.frontier.get",
     "provenance.replay",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
 order = 4
@@ -71,7 +71,7 @@ capabilities = [
     "provenance.verify", "provenance.diff",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 5
@@ -87,7 +87,7 @@ capabilities = [
 ]
 
 # ── biomeOS (orchestrator for audit workflow) ──────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 6

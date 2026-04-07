@@ -19,7 +19,7 @@ description = "Full primalSpring niche: NUCLEUS + Provenance Trio + primalSpring
 version = "0.2.0"
 
 # ── Node 1: BearDog (crypto + identity) ─────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -35,7 +35,7 @@ capabilities = [
 ]
 
 # ── Node 2: Songbird (network + sovereign TLS 1.3) ──────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -51,7 +51,7 @@ capabilities = [
 ]
 
 # ── Node 3: rhizoCrypt (ephemeral DAG sessions) ─────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
 order = 3
@@ -60,14 +60,14 @@ depends_on = ["beardog"]
 health_method = "dag.health"
 by_capability = "provenance"
 capabilities = [
-    "dag.create_session",
-    "dag.append_event",
-    "dag.dehydrate",
-    "dag.merkle_root",
+    "dag.session.create",
+    "dag.event.append",
+    "dag.dehydration.trigger",
+    "dag.merkle.root",
 ]
 
 # ── Node 4: loamSpine (immutable linear ledger) ─────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine_primal"
 order = 4
@@ -76,12 +76,12 @@ depends_on = ["beardog", "rhizocrypt"]
 health_method = "commit.health"
 by_capability = "ledger"
 capabilities = [
-    "commit.session",
-    "commit.entry",
+    "session.commit",
+    "entry.append",
 ]
 
 # ── Node 5: sweetGrass (semantic provenance braids) ──────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
 order = 5
@@ -96,7 +96,7 @@ capabilities = [
 ]
 
 # ── Node 6: NestGate (content-addressed data storage) ────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 6
@@ -110,7 +110,7 @@ capabilities = [
 ]
 
 # ── Node 7: ToadStool (GPU/CPU compute dispatch) ────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 7
@@ -125,7 +125,7 @@ capabilities = [
 ]
 
 # ── Node 8: Squirrel (AI coordination) ──────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 8
@@ -140,7 +140,7 @@ capabilities = [
 ]
 
 # ── Node 9: primalSpring (coordination validator) ────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "primalspring"
 binary = "primalspring_primal"
 order = 9

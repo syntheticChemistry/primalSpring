@@ -39,7 +39,7 @@ encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 
 # ── Phase 1: Tower base ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
@@ -51,7 +51,7 @@ capabilities = [
     "crypto.blake3_hash",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
@@ -64,7 +64,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # ── Phase 2: Provenance trio ──
 # Order: rhizoCrypt → loamSpine → sweetGrass (DAG → ledger → attribution)
 
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 3
@@ -77,11 +77,11 @@ capabilities = [
     "dag.session.create", "dag.session.get", "dag.session.list",
     "dag.event.append", "dag.vertex.get", "dag.frontier.get",
     "dag.merkle.root", "dag.merkle.proof", "dag.merkle.verify",
-    "dag.dehydrate",
+    "dag.dehydration.trigger",
     "dag.slice.checkout", "dag.slice.get",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
 order = 4
@@ -97,7 +97,7 @@ capabilities = [
     "session.commit", "braid.commit",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 5
@@ -115,7 +115,7 @@ capabilities = [
 
 # ── Validation (not spawned) ──
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_provenance"
 binary = "primalspring_primal"
 order = 99

@@ -26,8 +26,8 @@ back upstream to primals and primalSpring.
 
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
-- **experiments/** — 67 validation binaries covering 14 tracks
-- **graphs/** — 89 deploy graph TOMLs (single-node + multi-node +
+- **experiments/** — 69 validation binaries covering 15 tracks
+- **graphs/** — 92 deploy graph TOMLs (single-node + multi-node +
   21 spring validation + cross-spring + gen4 + bonding + chaos +
   science + 7 composition subsystems + 6 nucleated spring deploy)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`)
@@ -65,7 +65,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.8.0g Phase 23g — 403 tests, 67 experiments, 89 deploy graphs.
+v0.9.2 Phase 24 — 404 tests, 69 experiments, 92 deploy graphs.
 
 Live validation: **43/44 (98%)**. C1 6/6, C3 8/8, C4 6/6, C5 5/5,
 C6 5/5, C7 10/10. Only C2 `ai.query` fails (no local Ollama — code

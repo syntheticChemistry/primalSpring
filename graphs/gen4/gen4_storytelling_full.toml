@@ -31,7 +31,7 @@ tick_hz = 60
 bond_type = "covalent"
 
 # ── Phase 0: biomeOS Neural API substrate ──────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -42,7 +42,7 @@ by_capability = "orchestration"
 capabilities = ["graph.deploy", "graph.status", "capability.discover", "health.liveness"]
 
 # ── Tower identity + discovery ─────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -52,7 +52,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -67,7 +67,7 @@ capabilities = ["net.discovery", "net.mesh"]
 # predicate/effect system, bounded endings.
 # V6: owns flow/DDA/engagement locally (webb/src/science/), no ludoSpring
 # compile dep. Consumes Squirrel ai.*, petalTongue viz.* at runtime.
-[[graph.node]]
+[[graph.nodes]]
 name = "esotericwebb"
 binary = "esotericwebb"
 order = 3
@@ -90,7 +90,7 @@ capabilities = [
 # ── Squirrel: AI Dungeon Master ────────────────────────────────────────
 # Provides narrative generation via ai.query/ai.suggest with session context.
 # Context windows track session state across scenes.
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel_primal"
 order = 4
@@ -113,7 +113,7 @@ capabilities = [
 # Renders narrative scenes (dialogue trees, NPC portraits, world state).
 # Captures player choices via interaction.poll.
 # Modes: TUI for terminal play, egui for desktop, web for browser.
-[[graph.node]]
+[[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue_primal"
 order = 5
@@ -134,7 +134,7 @@ capabilities = [
 # WFC procedural generation, Fitts law, accessibility evaluation,
 # GPU game compute. Core flow/DDA/engagement is in esotericWebb V6.
 # When available, enriches the composition with advanced game mechanics.
-[[graph.node]]
+[[graph.nodes]]
 name = "ludospring"
 binary = "ludospring"
 order = 6
@@ -156,7 +156,7 @@ capabilities = [
 # ── Provenance: session integrity ──────────────────────────────────────
 # Every scene resolution, dice roll, NPC interaction, and AI narration
 # gets a DAG entry. Sessions are replayable and auditable.
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
 order = 7
@@ -166,7 +166,7 @@ health_method = "health"
 by_capability = "provenance"
 capabilities = ["dag.session.create", "dag.event.append", "dag.session.finalize"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine_primal"
 order = 8
@@ -176,7 +176,7 @@ health_method = "health"
 by_capability = "ledger"
 capabilities = ["lineage.commit", "lineage.branch", "lineage.certify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
 order = 9
@@ -187,7 +187,7 @@ by_capability = "attribution"
 capabilities = ["provenance.create_braid", "provenance.verify_braid"]
 
 # ── Storage + compute ──────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 10
@@ -197,7 +197,7 @@ health_method = "health"
 by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 11

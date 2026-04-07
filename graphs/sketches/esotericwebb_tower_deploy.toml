@@ -21,7 +21,7 @@ version = "1.0.0"
 coordination = "sequential"
 
 # ── Phase 0: biomeOS substrate ────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -32,7 +32,7 @@ by_capability = "orchestration"
 capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 
 # ── Phase 1: Tower Atomic ────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -43,7 +43,7 @@ health_method = "health.check"
 by_capability = "security"
 capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -57,7 +57,7 @@ capabilities = ["net.discovery", "net.mesh"]
 # ── Phase 2: esotericWebb — the composed product ─────────────────────
 # V6: self-contained narrative + game science. Discovers Tower primals
 # via biomeOS or Songbird. Exposes session.*, webb.*, tools.* surface.
-[[graph.node]]
+[[graph.nodes]]
 name = "esotericwebb"
 binary = "esotericwebb"
 order = 3

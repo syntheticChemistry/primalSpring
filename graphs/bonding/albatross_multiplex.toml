@@ -22,7 +22,7 @@ bond_type = "metallic"
 source_showcase = "primals/songbird/showcase/05-albatross-multiplex"
 
 # ── Identity layer ─────────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -32,7 +32,7 @@ by_capability = "security"
 capabilities = ["crypto.identity", "crypto.verify"]
 
 # ── Songbird master (coordinator) ─────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird_master"
 binary = "songbird_primal"
 order = 2
@@ -44,7 +44,7 @@ capabilities = ["net.discovery", "net.mesh", "net.tarpc_pool", "net.protocol_sel
 bond_role = "albatross_master"
 
 # ── Songbird workers (tarpc multiplex pool) ────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird_worker_1"
 binary = "songbird_primal"
 order = 3
@@ -55,7 +55,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh", "net.tarpc_serve"]
 bond_role = "albatross_worker"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird_worker_2"
 binary = "songbird_primal"
 order = 4
@@ -67,7 +67,7 @@ capabilities = ["net.discovery", "net.mesh", "net.tarpc_serve"]
 bond_role = "albatross_worker"
 
 # ── biomeOS (orchestrator) ─────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos"
 binary = "biomeos_primal"
 order = 5
@@ -78,7 +78,7 @@ by_capability = "ecosystem"
 capabilities = ["graph.execution", "ecosystem.coordination", "route.register"]
 
 # ── ToadStool (compute target for heavy workloads) ─────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 6

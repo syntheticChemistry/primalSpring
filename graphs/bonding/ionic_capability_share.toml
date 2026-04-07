@@ -18,7 +18,7 @@ coordination = "parallel"
 bond_type = "ionic"
 
 # ── Family Alpha: Lab Tower ────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog_alpha"
 binary = "beardog_primal"
 order = 1
@@ -28,7 +28,7 @@ by_capability = "security"
 capabilities = ["crypto.identity"]
 family = "alpha"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird_alpha"
 binary = "songbird_primal"
 order = 2
@@ -39,7 +39,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 family = "alpha"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool_alpha"
 binary = "toadstool_primal"
 order = 3
@@ -51,7 +51,7 @@ capabilities = ["compute.dispatch.submit", "compute.execute"]
 family = "alpha"
 
 # ── Family Beta: University Tower ──────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog_beta"
 binary = "beardog_primal"
 order = 4
@@ -61,7 +61,7 @@ by_capability = "security"
 capabilities = ["crypto.identity"]
 family = "beta"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird_beta"
 binary = "songbird_primal"
 order = 5
@@ -72,7 +72,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery"]
 family = "beta"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring_beta"
 binary = "neuralspring_primal"
 order = 6
@@ -84,7 +84,7 @@ capabilities = ["neural.spectral", "neural.eigensolve", "neural.evoformer"]
 family = "beta"
 
 # ── Ionic bridge (contract layer) ──────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_bridge"
 binary = "biomeos_primal"
 order = 7

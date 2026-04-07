@@ -18,7 +18,7 @@ description = "Validates C2: Squirrel AI narration — query, providers, context
 version = "1.0.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -28,7 +28,7 @@ health_method = "graph.list"
 by_capability = "orchestration"
 capabilities = ["capability.discover", "graph.list"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_squirrel_alive"
 binary = "primalspring_primal"
 order = 1
@@ -43,7 +43,7 @@ method = "health.liveness"
 target = "squirrel"
 expect = "ok"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_ai_query"
 binary = "primalspring_primal"
 order = 2
@@ -58,7 +58,7 @@ method = "ai.query"
 target = "squirrel"
 expect = "non_empty_response"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_providers"
 binary = "primalspring_primal"
 order = 3
@@ -73,7 +73,7 @@ method = "ai.list_providers"
 target = "squirrel"
 expect = "provider_count >= 1"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_context_lifecycle"
 binary = "primalspring_primal"
 order = 4

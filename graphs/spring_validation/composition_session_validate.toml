@@ -21,7 +21,7 @@ description = "Validates C3: primal-layer readiness for session — substrate, T
 version = "2.0.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -31,7 +31,7 @@ health_method = "graph.list"
 by_capability = "orchestration"
 capabilities = ["capability.discover", "capability.list", "graph.list"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -42,7 +42,7 @@ health_method = "health.liveness"
 by_capability = "coordination"
 capabilities = ["composition.tower_health"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_capability_routing"
 binary = "primalspring_primal"
 order = 2
@@ -57,7 +57,7 @@ method = "capability.list"
 target = "biomeos"
 expect = "capability routing functional"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_narrative_domain_routable"
 binary = "primalspring_primal"
 order = 3

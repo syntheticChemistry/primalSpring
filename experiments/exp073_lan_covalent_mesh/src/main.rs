@@ -1,21 +1,25 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp073: LAN Covalent Mesh — validate cross-gate Songbird mesh and `BirdSong`.
+//! Exp073: LAN Covalent Mesh — validate cross-gate covalent bonding.
 //!
-//! Connects to a remote gate's Songbird over TCP and validates:
-//! - `mesh.peers` discovers at least 1 peer
-//! - `birdsong.generate_encrypted_beacon` + decrypt round-trip
-//! - `health.liveness` on remote beardog + songbird
+//! Validates the full covalent bonding pattern between two gates:
+//! - TCP JSON-RPC `health.liveness` on remote beardog + songbird
 //! - `capabilities.list` enumerates remote NUCLEUS capabilities
+//! - `mesh.peers` discovers at least 1 peer via BirdSong UDP
+//! - `birdsong.generate_encrypted_beacon` + decrypt round-trip
+//! - Neural-api `capability.call` routing to local primals
+//! - `FAMILY_ID` genetic lineage verification via BearDog
+//! - HTTPS validation through Tower Atomic
 //!
 //! Environment:
 //!   `REMOTE_GATE_HOST` — hostname or IP of the remote gate (required)
 //!   `REMOTE_SONGBIRD_PORT` — Songbird TCP fallback (default: 9200, cross-gate only)
 //!   `REMOTE_BEARDOG_PORT`  — `BearDog` TCP fallback (default: 9100, cross-gate only)
-//!   `FAMILY_ID` — shared family ID for beacon generation
+//!   `FAMILY_ID` — shared family ID for beacon generation and lineage check
 
+use primalspring::ipc::NeuralBridge;
 use primalspring::ipc::methods;
-use primalspring::ipc::tcp::{http_health_probe, tcp_rpc};
+use primalspring::ipc::tcp::tcp_rpc;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
@@ -26,10 +30,6 @@ fn tcp_rpc_value(
     params: &serde_json::Value,
 ) -> Result<serde_json::Value, String> {
     tcp_rpc(host, port, method, params).map(|(v, _)| v)
-}
-
-fn http_health_check(host: &str, port: u16) -> Result<(), String> {
-    http_health_probe(host, port).map(|_| ())
 }
 
 fn validate_remote_health(
@@ -60,10 +60,19 @@ fn validate_remote_health(
         }
     }
 
-    match http_health_check(host, songbird_port) {
-        Ok(()) => {
-            println!("  remote songbird: LIVE (HTTP /health)");
-            v.check_bool("remote_songbird_live", true, "remote songbird HTTP health");
+    match tcp_rpc_value(
+        host,
+        songbird_port,
+        methods::health::LIVENESS,
+        &serde_json::json!({}),
+    ) {
+        Ok(_) => {
+            println!("  remote songbird: LIVE");
+            v.check_bool(
+                "remote_songbird_live",
+                true,
+                "remote songbird health.liveness",
+            );
         }
         Err(e) => {
             println!("  remote songbird: {e}");
@@ -277,6 +286,102 @@ fn validate_stun(v: &mut ValidationResult, host: &str, songbird_port: u16) {
     }
 }
 
+fn validate_neural_api_routing(v: &mut ValidationResult) {
+    v.section("Neural API Capability Routing");
+
+    let Some(bridge) = NeuralBridge::discover() else {
+        println!("  biomeOS not running — skipping neural-api routing checks");
+        v.check_skip("neural_api_routing", "biomeOS neural-api not discovered");
+        return;
+    };
+
+    match bridge.health_check() {
+        Ok(_) => {
+            println!("  neural-api: HEALTHY");
+            v.check_bool("neural_api_health", true, "biomeOS neural-api healthy");
+        }
+        Err(e) => {
+            println!("  neural-api: {e}");
+            v.check_bool("neural_api_health", false, &format!("neural-api: {e}"));
+            return;
+        }
+    }
+
+    match bridge.capability_call("crypto", "generate_keypair", &serde_json::json!({})) {
+        Ok(_) => {
+            println!("  capability.call → BearDog crypto: OK");
+            v.check_bool(
+                "neural_routing_crypto",
+                true,
+                "capability.call routes crypto to BearDog",
+            );
+        }
+        Err(e) => {
+            println!("  capability.call → crypto: {e}");
+            v.check_skip("neural_routing_crypto", &format!("crypto routing: {e}"));
+        }
+    }
+}
+
+fn validate_genetic_lineage(
+    v: &mut ValidationResult,
+    host: &str,
+    beardog_port: u16,
+    family_id: &str,
+) {
+    v.section("Genetic Lineage (FAMILY_ID)");
+
+    match tcp_rpc_value(host, beardog_port, "health.check", &serde_json::json!({ "include_details": true })) {
+        Ok(resp) => {
+            let remote_family = resp
+                .get("family_id")
+                .and_then(|f| f.as_str())
+                .unwrap_or("unknown");
+            let matches = remote_family == family_id;
+            println!("  local  FAMILY_ID: {family_id}");
+            println!("  remote FAMILY_ID: {remote_family}");
+            println!("  lineage match:    {matches}");
+            v.check_bool(
+                "family_id_matches",
+                matches,
+                &format!("FAMILY_ID lineage: local={family_id} remote={remote_family}"),
+            );
+        }
+        Err(e) => {
+            println!("  genetic lineage check: {e}");
+            v.check_skip("family_id_matches", &format!("BearDog health.check: {e}"));
+        }
+    }
+}
+
+fn validate_tower_https(v: &mut ValidationResult, host: &str, songbird_port: u16) {
+    v.section("HTTPS Through Tower Atomic");
+
+    match tcp_rpc_value(
+        host,
+        songbird_port,
+        "http.get",
+        &serde_json::json!({ "url": "https://ifconfig.me/ip" }),
+    ) {
+        Ok(resp) => {
+            let status = resp
+                .get("status_code")
+                .and_then(serde_json::Value::as_u64)
+                .unwrap_or(0);
+            println!("  remote HTTPS via Songbird: status {status}");
+            v.check_bool(
+                "remote_tower_https",
+                status == 200,
+                &format!("remote Tower Atomic HTTPS: status {status}"),
+            );
+        }
+        Err(e) => {
+            println!("  remote HTTPS: {e}");
+            v.check_skip("remote_tower_https", &format!("http.get: {e}"));
+        }
+    }
+}
+
 fn main() {
     let host = std::env::var("REMOTE_GATE_HOST").unwrap_or_default();
     let songbird_port: u16 = std::env::var("REMOTE_SONGBIRD_PORT")
@@ -290,9 +395,9 @@ fn main() {
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "8ff3b864a4bc589a".to_owned());
 
     ValidationResult::new("primalSpring Exp073 — LAN Covalent Mesh")
-        .with_provenance("exp073_lan_covalent_mesh", "2026-03-24")
+        .with_provenance("exp073_lan_covalent_mesh", "2026-04-06")
         .run(
-            "primalSpring Exp073: Cross-gate Songbird mesh + BirdSong beacon exchange",
+            "primalSpring Exp073: Cross-gate covalent bonding — mesh, beacon, lineage, HTTPS",
             |v| {
             if host.is_empty() {
                 println!("  REMOTE_GATE_HOST not set — skipping all remote checks.");
@@ -315,6 +420,9 @@ fn main() {
             validate_remote_capabilities(v, &host, songbird_port);
             validate_mesh_peers(v, &host, songbird_port);
             validate_birdsong_beacon(v, &host, songbird_port, &family_id);
+            validate_genetic_lineage(v, &host, beardog_port, &family_id);
+            validate_tower_https(v, &host, songbird_port);
+            validate_neural_api_routing(v);
             validate_stun(v, &host, songbird_port);
             },
         );

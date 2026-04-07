@@ -25,7 +25,7 @@ federation = true
 
 # --- Phase 1: Neural API Health ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_neural_api"
 binary = "biomeos"
 order = 1
@@ -37,7 +37,7 @@ capabilities = ["federation.configure", "federation.join", "federation.health_ch
 
 # --- Phase 2: BearDog Crypto Health (federation uses family_id trust) ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_beardog"
 binary = "primalspring_primal"
 order = 2
@@ -49,7 +49,7 @@ capabilities = ["crypto.generate_keypair"]
 
 # --- Phase 3: Configure Gate for Federation ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "configure_gate"
 binary = "primalspring_primal"
 order = 3
@@ -71,7 +71,7 @@ force = false
 
 # --- Phase 4: Join Gate to Federation ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "join_gate"
 binary = "primalspring_primal"
 order = 4
@@ -93,7 +93,7 @@ force = false
 
 # --- Phase 5: Federation Health Check ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "federation_health"
 binary = "primalspring_primal"
 order = 5
@@ -113,7 +113,7 @@ expected_gate_ids = ["${GATE_ID}"]
 
 # --- Phase 6: Post-Federation Topology Verification ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_topology"
 binary = "primalspring_primal"
 order = 6

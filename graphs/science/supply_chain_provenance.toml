@@ -23,7 +23,7 @@ bond_type = "covalent"
 science_domain = "supply_chain"
 source_showcase = "primals/rhizoCrypt/showcase/01-inter-primal-live/05-complete-workflows"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -32,7 +32,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -43,7 +43,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
 # rhizoCrypt: working memory DAG — multi-agent event append
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
 order = 3
@@ -54,7 +54,7 @@ by_capability = "provenance"
 capabilities = ["provenance.session", "provenance.merkle_root", "provenance.event.append", "provenance.dag"]
 
 # sweetGrass: attribution braiding for multi-agent work
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
 order = 4
@@ -65,7 +65,7 @@ by_capability = "attribution"
 capabilities = ["provenance.braid", "provenance.attribute", "provenance.audit"]
 
 # LoamSpine: permanent commit of supply chain events
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine_primal"
 order = 5
@@ -76,7 +76,7 @@ by_capability = "ledger"
 capabilities = ["provenance.commit", "provenance.verify"]
 
 # NestGate: stores supply chain artifacts (receipts, manifests, certificates)
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 6

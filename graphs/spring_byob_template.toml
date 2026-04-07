@@ -51,7 +51,7 @@ encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 # Phase 1: Tower Atomic — always required
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
@@ -64,7 +64,7 @@ capabilities = [
     "crypto.blake3_hash",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
@@ -79,7 +79,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # ═══════════════════════════════════════════════════════════════
 
 # Uncomment for compute (GPU/CPU dispatch):
-# [[graph.node]]
+# [[graph.nodes]]
 # name = "toadstool"
 # binary = "toadstool"
 # order = 3
@@ -90,7 +90,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # capabilities = ["compute.dispatch.submit", "compute.execute"]
 
 # Uncomment for storage (content-addressed persistence):
-# [[graph.node]]
+# [[graph.nodes]]
 # name = "nestgate"
 # binary = "nestgate"
 # order = 3
@@ -101,7 +101,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
 # Uncomment for AI (MCP tool routing):
-# [[graph.node]]
+# [[graph.nodes]]
 # name = "squirrel"
 # binary = "squirrel"
 # order = 3
@@ -112,7 +112,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # capabilities = ["ai.query", "mcp.tools.list"]
 
 # Uncomment for visualization (UI/rendering):
-# [[graph.node]]
+# [[graph.nodes]]
 # name = "petaltongue"
 # binary = "petaltongue"
 # order = 3
@@ -131,7 +131,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # Non-crypto witnesses: kind "checkpoint" | "observation" | "marker"
 # ═══════════════════════════════════════════════════════════════
 
-# [[graph.node]]
+# [[graph.nodes]]
 # name = "rhizocrypt"
 # binary = "rhizocrypt"
 # order = 5
@@ -142,10 +142,10 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # capabilities = [
 #     "dag",
 #     "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify",
-#     "dag.dehydrate", "dag.frontier.get",
+#     "dag.dehydration.trigger", "dag.frontier.get",
 # ]
 
-# [[graph.node]]
+# [[graph.nodes]]
 # name = "loamspine"
 # binary = "loamspine"
 # order = 6
@@ -158,7 +158,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 #     "spine.create", "entry.append", "session.commit", "certificate.mint",
 # ]
 
-# [[graph.node]]
+# [[graph.nodes]]
 # name = "sweetgrass"
 # binary = "sweetgrass"
 # order = 7
@@ -176,7 +176,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # Phase 4: Your spring
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.node]]
+[[graph.nodes]]
 name = "${SPRING_NAME}"
 binary = "${SPRING_BINARY}"
 order = 10
@@ -194,7 +194,7 @@ capabilities = [
 # Phase 5: Validation
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_${SPRING_NAME}"
 binary = "primalspring_primal"
 spawn = false

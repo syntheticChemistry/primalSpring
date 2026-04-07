@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**67 experiments across 14 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**69 experiments across 15 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -19,18 +19,18 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 67 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 69 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 67 experiments. All 67 use centralized library helpers for TCP RPC,
+across all 69 experiments. All 69 use centralized library helpers for TCP RPC,
 method name constants (`ipc::methods`), and primal name constants (`primal_names`).
 
 ## Running
 
 ```bash
-# Run all 67 experiments via meta-validator
+# Run all 69 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -58,6 +58,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 12 | Deployment Matrix | exp081 | **Structural** (43-cell deployment matrix sweep across arch × topology × preset × transport) |
 | 13 | Substrate Stress | exp082–084 | **Structural** (chaos substrate, federation edge cases, provenance adversarial) |
 | 14 | E2E Composition | exp085–088 | **E2E composition** (BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition) |
+| 15 | LAN/Covalent Modernization | exp089–090 | **Structural** (deployment graph sweep, Tower Atomic LAN probe — mesh, HTTPS, STUN) |
 
 ## Experiment Status Key
 
@@ -101,12 +102,14 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 23e | Live composition — esotericWebb as ecoPrimals product: 3 new deploy graphs, 3 validation graphs, exp088 UDS rewrite, capability discovery fix, NeuralBridge health fallback, Tower 13/13, Neural API 12/12, Storytelling 16/16 | **Done** (v0.8.0e) |
 | 23f | Composition decomposition — 7 subsystem compositions (C1-C7), 7 composition validation graphs, PRIMAL_GAPS.md (22 gaps), thin gateway bridge, composition monitor, live subsystem validation 34/43 (79%) | **Done** (v0.8.0f) |
 | 23g | Primal rewiring + gap cleanup — methods.rs/neural_bridge.rs/discover.rs rewired, 5 gaps resolved, gap registry scoped to primals only, 6 nucleated spring deploy graphs, 43/44 (98%) live validation | **Done** (v0.8.0g) |
+| 24 | Deep debt resolution + public readiness sprint — bingoCube, benchScale, agentReagents, rustChip graded A | **Done** (v0.9.0–v0.9.1) |
+| 25 | Modernization sweep — capability naming cleanup, `[[graph.nodes]]` unification, `http_health_probe` deprecated, `nest-deploy.toml` v4.0, exp089+090, Tower Atomic HTTPS validated | **Done** (v0.9.2) |
 
 ## Validation Harness
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 67 experiments use this):
+**Builder API** (preferred — all 69 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit
@@ -132,7 +135,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.8.0 (workspace), depends on ecoPrimal
+├── Cargo.toml    # version 0.9.2 (workspace), depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

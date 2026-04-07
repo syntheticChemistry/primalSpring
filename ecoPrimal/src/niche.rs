@@ -138,7 +138,7 @@ pub const ROUTED_CAPABILITIES: &[(&str, &str)] = &[
     ("dag.merkle.proof", "rhizocrypt"),
     ("dag.merkle.verify", "rhizocrypt"),
     ("dag.slice.checkout", "rhizocrypt"),
-    ("dag.dehydrate", "rhizocrypt"),
+    ("dag.dehydration.trigger", "rhizocrypt"),
     // ── Ledger (loamSpine) ──
     ("spine.create", "loamspine"),
     ("spine.get", "loamspine"),

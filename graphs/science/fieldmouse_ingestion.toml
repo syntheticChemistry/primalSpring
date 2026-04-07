@@ -24,7 +24,7 @@ science_domain = "edge_data_acquisition"
 deployment_class = "fieldmouse"
 
 # ── Gate Tower layer ───────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -33,7 +33,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.verify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -44,7 +44,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
 # ── NestGate: receives and stores fieldMouse frames ────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 3
@@ -55,7 +55,7 @@ by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
 
 # ── Provenance Trio: stamps and commits edge data ──────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
 order = 4
@@ -65,7 +65,7 @@ health_method = "health"
 by_capability = "provenance"
 capabilities = ["provenance.session", "provenance.merkle_root"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine_primal"
 order = 5
@@ -75,7 +75,7 @@ health_method = "health"
 by_capability = "ledger"
 capabilities = ["provenance.commit", "provenance.verify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
 order = 6
@@ -88,7 +88,7 @@ capabilities = ["provenance.braid", "provenance.attribute"]
 # ── fieldMouse chimera: leaf node, emits frames ───────────────────────
 # Not a graph-managed node — it's a remote capability provider
 # discovered via BirdSong. Included here for documentation.
-[[graph.node]]
+[[graph.nodes]]
 name = "fieldmouse_sensor"
 binary = "fieldmouse_chimera"
 order = 7

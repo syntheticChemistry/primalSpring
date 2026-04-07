@@ -18,7 +18,7 @@ description = "Validates C5: NestGate persistence — store, retrieve, list"
 version = "1.0.0"
 coordination = "sequential"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -28,7 +28,7 @@ health_method = "graph.list"
 by_capability = "orchestration"
 capabilities = ["capability.discover", "graph.list"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -39,7 +39,7 @@ health_method = "health.liveness"
 by_capability = "coordination"
 capabilities = ["composition.tower_health"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_nestgate_alive"
 binary = "primalspring_primal"
 order = 2
@@ -54,7 +54,7 @@ method = "health.liveness"
 target = "nestgate"
 expect = "ok"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_store_retrieve"
 binary = "primalspring_primal"
 order = 3
@@ -69,7 +69,7 @@ methods = ["storage.store", "storage.retrieve"]
 target = "nestgate"
 expect = "retrieved value matches stored value"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_storage_list"
 binary = "primalspring_primal"
 order = 4

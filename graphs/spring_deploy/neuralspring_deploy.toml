@@ -33,7 +33,7 @@ encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 
 # ── NUCLEUS Base ──────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
 order = 0
@@ -43,7 +43,7 @@ health_method = "health.liveness"
 by_capability = "orchestration"
 capabilities = ["graph.deploy", "capability.discover", "topology.rescan"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
@@ -53,7 +53,7 @@ health_method = "health.liveness"
 by_capability = "security"
 capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
@@ -65,7 +65,7 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 
 # ── GPU Compute Layer ─────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool"
 order = 3
@@ -75,7 +75,7 @@ health_method = "health.liveness"
 by_capability = "compute"
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "coralreef"
 binary = "coralreef"
 order = 4
@@ -85,7 +85,7 @@ health_method = "health.liveness"
 by_capability = "shader_compile"
 capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
 order = 5
@@ -97,7 +97,7 @@ capabilities = ["math.stats", "math.tensor", "math.activation", "math.noise"]
 
 # ── AI Layer ──────────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
 order = 6
@@ -109,7 +109,7 @@ capabilities = ["ai.query", "mcp.tools.list"]
 
 # ── Persistence ───────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate"
 order = 7
@@ -121,7 +121,7 @@ capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
 # ── Provenance Trio (WireWitnessRef) ─────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 8
@@ -129,9 +129,9 @@ required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "dag"
-capabilities = ["dag", "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify", "dag.dehydrate", "dag.frontier.get"]
+capabilities = ["dag", "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify", "dag.dehydration.trigger", "dag.frontier.get"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
 order = 9
@@ -141,7 +141,7 @@ health_method = "health.liveness"
 by_capability = "ledger"
 capabilities = ["spine", "entry", "session", "certificate", "commit", "ledger", "spine.create", "entry.append", "session.commit", "certificate.mint"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 10
@@ -153,7 +153,7 @@ capabilities = ["braid", "attribution", "provenance", "anchoring", "braid.create
 
 # ── Spring Science ────────────────────────────────────────────────────
 
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring_primal"
 order = 11

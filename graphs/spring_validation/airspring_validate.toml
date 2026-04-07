@@ -18,7 +18,7 @@ pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"
 order = 1
@@ -29,7 +29,7 @@ by_capability = "coordination"
 args = ["server"]
 capabilities = ["composition.tower_health"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_biomeos"
 binary = "biomeos"
 order = 2
@@ -39,7 +39,7 @@ health_method = "health.liveness"
 by_capability = "orchestration"
 capabilities = ["graph.deploy", "capability.discover"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "start_airspring"
 binary = "airspring_primal"
 order = 3
@@ -53,7 +53,7 @@ capabilities = [
     "ecology.water_balance",
 ]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_provenance"
 binary = "primalspring_primal"
 order = 4
@@ -64,7 +64,7 @@ health_method = "health.liveness"
 by_capability = "coordination"
 capabilities = ["composition.provenance_health"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_airspring"
 binary = "primalspring_primal"
 order = 5

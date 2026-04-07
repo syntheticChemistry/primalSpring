@@ -19,7 +19,7 @@ bond_type = "metallic_ionic"
 science_domain = "structural_biology"
 
 # ── Tower layer (identity + mesh) ──────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -28,7 +28,7 @@ health_method = "health"
 by_capability = "security"
 capabilities = ["crypto.identity", "crypto.verify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -39,7 +39,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery", "net.mesh"]
 
 # ── Provenance backbone (runs alongside pipeline) ─────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt_primal"
 order = 3
@@ -49,7 +49,7 @@ health_method = "health"
 by_capability = "provenance"
 capabilities = ["provenance.session", "provenance.merkle_root"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "loamspine"
 binary = "loamspine_primal"
 order = 4
@@ -59,7 +59,7 @@ health_method = "health"
 by_capability = "ledger"
 capabilities = ["provenance.commit", "provenance.verify"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass_primal"
 order = 5
@@ -70,7 +70,7 @@ by_capability = "attribution"
 capabilities = ["provenance.braid", "provenance.attribute"]
 
 # ── Science pipeline ───────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "neuralspring"
 binary = "neuralspring_primal"
 order = 6
@@ -80,7 +80,7 @@ health_method = "neural.health"
 by_capability = "neural"
 capabilities = ["neural.evoformer", "neural.structure_prediction", "neural.spectral"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "hotspring"
 binary = "hotspring_primal"
 order = 7
@@ -90,7 +90,7 @@ health_method = "compute.health"
 by_capability = "precision"
 capabilities = ["compute.df64", "compute.precision", "compute.deterministic"]
 
-[[graph.node]]
+[[graph.nodes]]
 name = "wetspring"
 binary = "wetspring_primal"
 order = 8
@@ -101,7 +101,7 @@ by_capability = "shader"
 capabilities = ["shader.bio", "shader.compile", "science.diversity"]
 
 # ── Metallic GPU pool ──────────────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 9
@@ -113,7 +113,7 @@ capabilities = ["compute.dispatch.submit", "compute.execute", "compute.gpu"]
 bond_role = "metallic_pool"
 
 # ── Storage + ionic external ───────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "nestgate"
 binary = "nestgate_primal"
 order = 10

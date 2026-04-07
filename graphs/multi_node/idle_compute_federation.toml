@@ -28,7 +28,8 @@
 # =============================================================================
 
 [graph]
-id = "idle_compute_federation"
+id = "idle-compute-federation"
+name = "idle_compute_federation"
 version = "1.0.0"
 description = "Federated idle compute with capability-scoped bonding and provenance"
 coordination = "Sequential"
@@ -55,59 +56,59 @@ max_concurrent_requests = 8
 # PHASE 1: DISCOVER IDLE PEERS
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "discover_mesh_peers"
 output = "mesh_peers"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "mesh"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "mesh.peers"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 family_only = true
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 
-[[nodes]]
+[[graph.nodes]]
 id = "query_peer_capabilities"
 depends_on = ["discover_mesh_peers"]
 output = "peer_capabilities"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "mesh"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "mesh.find_path"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 capability = "compute"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 
 # =============================================================================
 # PHASE 2: BEGIN PROVENANCE SESSION
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "provenance_session"
 depends_on = ["query_peer_capabilities"]
 output = "session_id"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "provenance"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "dag.session.create"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 source_primal = "primalspring"
 niche = "idle_compute_federation"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 5000
 allow_failure = true
 
@@ -115,65 +116,65 @@ allow_failure = true
 # PHASE 3: DISPATCH WORKLOAD (compute.submit to best peer)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "dispatch_workload"
 depends_on = ["provenance_session"]
 output = "workload_result"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "compute"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "compute.submit"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 workload_type = "${WORKLOAD_TYPE}"
 payload = "${WORKLOAD_PAYLOAD}"
 prefer_idle = true
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 300000
 
 # =============================================================================
 # PHASE 4: RECORD PROVENANCE
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "record_computation"
 depends_on = ["dispatch_workload"]
 output = "dag_event"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "provenance"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "dag.event.append"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 session_id = "${session_id}"
 event_type = { Observation = { measurement_type = "compute_result", value = "${workload_result}", unit = "workload" } }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 5000
 allow_failure = true
 
-[[nodes]]
+[[graph.nodes]]
 id = "attribute_computation"
 depends_on = ["record_computation"]
 output = "attribution"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "attribution"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "pipeline.attribute"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 agent_did = "did:eco:${FAMILY_ID}:${NODE_ID}"
 data_hash = "${workload_result.hash}"
 contribution_type = "compute"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 5000
 allow_failure = true
 

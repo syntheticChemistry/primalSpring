@@ -31,7 +31,8 @@
 # =============================================================================
 
 [graph]
-id = "data_federation_cross_site"
+id = "data-federation-cross-site"
+name = "data_federation_cross_site"
 version = "1.0.0"
 description = "Cross-site data federation with NestGate replication and provenance trio"
 coordination = "Sequential"
@@ -45,42 +46,42 @@ trust_model = "genetic_lineage"
 # PHASE 1: DISCOVER REMOTE SITE
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "discover_remote"
 output = "remote_peer"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "mesh"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "mesh.find_path"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 target_node = "${REMOTE_PEER}"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 15000
 
 # =============================================================================
 # PHASE 2: BEGIN PROVENANCE SESSION
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "federation_session"
 depends_on = ["discover_remote"]
 output = "session_id"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "provenance"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "dag.session.create"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 source_primal = "primalspring"
 niche = "data_federation"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 5000
 allow_failure = true
 
@@ -88,68 +89,68 @@ allow_failure = true
 # PHASE 3: LIST LOCAL DATASETS FOR REPLICATION
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "list_local_data"
 depends_on = ["federation_session"]
 output = "local_datasets"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "storage"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "storage.list"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 prefix = "${DATASET_PREFIX}"
 family_id = "${FAMILY_ID}"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 
 # =============================================================================
 # PHASE 4: REPLICATE TO REMOTE
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "replicate_data"
 depends_on = ["list_local_data", "discover_remote"]
 output = "replication_result"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "storage"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "storage.replicate"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 target_peer = "${REMOTE_PEER}"
 dataset_prefix = "${DATASET_PREFIX}"
 family_id = "${FAMILY_ID}"
 verify_integrity = true
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 600000
 
 # =============================================================================
 # PHASE 5: RECORD REPLICATION IN DAG
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "record_replication"
 depends_on = ["replicate_data"]
 output = "dag_event"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "provenance"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "dag.event.append"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 session_id = "${session_id}"
 event_type = { DataTransfer = { source_node = "${NODE_ID}", target_node = "${REMOTE_PEER}", dataset = "${DATASET_PREFIX}", hash = "${replication_result.content_hash}" } }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 5000
 allow_failure = true
 
@@ -157,41 +158,41 @@ allow_failure = true
 # PHASE 6: FEDERATE PROVENANCE (sync DAG + braids)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "federate_dag"
 depends_on = ["record_replication"]
 output = "dag_federated"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "provenance"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rootpulse.federate"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 target_peer = "${REMOTE_PEER}"
 session_id = "${session_id}"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 allow_failure = true
 
-[[nodes]]
+[[graph.nodes]]
 id = "sync_attribution"
 depends_on = ["federate_dag"]
 output = "braid_synced"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "attribution"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "braid.sync"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 target_peer = "${REMOTE_PEER}"
 dataset = "${DATASET_PREFIX}"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 allow_failure = true
 
@@ -199,22 +200,22 @@ allow_failure = true
 # PHASE 7: COMMIT TO LOAMSPINE
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "commit_state"
 depends_on = ["sync_attribution"]
 output = "commit_result"
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "ledger"
 
-[nodes.operation]
-name = "commit.session"
+[graph.nodes.operation]
+name = "session.commit"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 summary = { federation = "${REMOTE_PEER}", dataset = "${DATASET_PREFIX}", items_replicated = "${replication_result.count}" }
 content_hash = "${replication_result.content_hash}"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 allow_failure = true
 

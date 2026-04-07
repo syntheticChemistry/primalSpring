@@ -37,7 +37,8 @@
 # =============================================================================
 
 [graph]
-id = "three_node_covalent_cross_network"
+id = "three-node-covalent-cross-network"
+name = "three_node_covalent_cross_network"
 version = "1.0.0"
 description = "Heterogeneous three-node mesh: x86_64 + aarch64 + x86_64 across hotspot and internet"
 coordination = "Sequential"
@@ -66,59 +67,59 @@ max_concurrent_requests = 8
 # NODE 1: devGate — Coordinator (x86_64, basement)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "dev_beardog"
 output = "dev_beardog_genesis"
 capabilities = ["crypto", "tls_crypto", "genetic", "security", "beacon"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "security"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 RUST_LOG = "beardog=info"
 BEARDOG_BEACON_SEED = "${BEACON_SEED_PATH}"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[nodes.hardware]
+[graph.nodes.hardware]
 arch = "x86_64-linux-musl"
 gate = "devGate"
 
-[[nodes]]
+[[graph.nodes]]
 id = "dev_songbird"
 depends_on = ["dev_beardog"]
 output = "dev_songbird_genesis"
 capabilities = ["http", "discovery", "mesh", "stun", "birdsong"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "discovery"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
 SONGBIRD_SECURITY_PROVIDER = "beardog"
 SONGBIRD_DARK_FOREST = "true"
 SONGBIRD_AUTO_DISCOVERY = "true"
 RUST_LOG = "songbird=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[nodes.hardware]
+[graph.nodes.hardware]
 arch = "x86_64-linux-musl"
 gate = "devGate"
 
@@ -126,61 +127,61 @@ gate = "devGate"
 # NODE 2: pixelGate — Mobile (aarch64, GrapheneOS on iPhone hotspot)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "pixel_beardog"
 output = "pixel_beardog_genesis"
 capabilities = ["crypto", "genetic", "security", "beacon"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "security"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 abstract = true
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 RUST_LOG = "beardog=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[nodes.hardware]
+[graph.nodes.hardware]
 arch = "aarch64-linux-musl"
 gate = "pixelGate"
 platform = "grapheneos"
 socket_mode = "abstract"
 
-[[nodes]]
+[[graph.nodes]]
 id = "pixel_songbird"
 depends_on = ["pixel_beardog"]
 output = "pixel_songbird_genesis"
 capabilities = ["http", "discovery", "mesh", "birdsong"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "discovery"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 listen = "0.0.0.0:${SONGBIRD_PORT:-9200}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 BEARDOG_SOCKET = "@biomeos_beardog"
 SONGBIRD_SECURITY_PROVIDER = "beardog"
 SONGBIRD_DARK_FOREST = "true"
 RUST_LOG = "songbird=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[nodes.hardware]
+[graph.nodes.hardware]
 arch = "aarch64-linux-musl"
 gate = "pixelGate"
 platform = "grapheneos"
@@ -189,59 +190,59 @@ platform = "grapheneos"
 # NODE 3: flockGate — Brother (x86_64, Ubuntu, remote internet)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "flock_beardog"
 output = "flock_beardog_genesis"
 capabilities = ["crypto", "genetic", "security", "beacon"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "security"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 RUST_LOG = "beardog=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[nodes.hardware]
+[graph.nodes.hardware]
 arch = "x86_64-linux-musl"
 gate = "flockGate"
 specs = "i9-13900K, RTX 3070 Ti, 64GB DDR5, Ubuntu 24.04.3"
 
-[[nodes]]
+[[graph.nodes]]
 id = "flock_songbird"
 depends_on = ["flock_beardog"]
 output = "flock_songbird_genesis"
 capabilities = ["http", "discovery", "mesh", "birdsong"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "discovery"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
 SONGBIRD_SECURITY_PROVIDER = "beardog"
 SONGBIRD_DARK_FOREST = "true"
 SONGBIRD_AUTO_DISCOVERY = "true"
 RUST_LOG = "songbird=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[nodes.hardware]
+[graph.nodes.hardware]
 arch = "x86_64-linux-musl"
 gate = "flockGate"
 
@@ -250,43 +251,43 @@ gate = "flockGate"
 # =============================================================================
 
 # devGate generates encrypted beacon
-[[nodes]]
+[[graph.nodes]]
 id = "dev_beacon_generate"
 depends_on = ["dev_songbird", "dev_beardog"]
 output = "dev_beacon"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "birdsong.generate_encrypted_beacon"
 params = { node_id = "${NODE_ID}", capabilities = ["compute", "discovery", "crypto"] }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 
-[nodes.hardware]
+[graph.nodes.hardware]
 gate = "devGate"
 
 # pixelGate decrypts devGate's beacon (proves shared beacon genetics)
-[[nodes]]
+[[graph.nodes]]
 id = "pixel_beacon_verify"
 depends_on = ["pixel_songbird", "dev_beacon_generate"]
 output = "pixel_sees_dev"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "birdsong.decrypt_beacon"
 params = { encrypted_beacon = "${dev_beacon.encrypted_beacon}" }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 
-[nodes.hardware]
+[graph.nodes.hardware]
 gate = "pixelGate"
 
 # =============================================================================
@@ -294,44 +295,44 @@ gate = "pixelGate"
 # =============================================================================
 
 # devGate <-> pixelGate: LAN discovery (same iPhone hotspot)
-[[nodes]]
+[[graph.nodes]]
 id = "hotspot_mesh_discover"
 depends_on = ["dev_songbird", "pixel_songbird"]
 output = "lan_peers"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "mesh.auto_discover"
 params = {}
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 15000
 
-[nodes.hardware]
+[graph.nodes.hardware]
 gate = "devGate"
 
 # devGate <-> flockGate: WAN connect (direct TCP or NAT traversal)
-[[nodes]]
+[[graph.nodes]]
 id = "flock_mesh_connect"
 depends_on = ["flock_songbird", "hotspot_mesh_discover"]
 output = "flock_connected"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "mesh.connect"
 params = { peer_endpoint = "${FLOCK_GATE_ENDPOINT}" }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 15000
 allow_failure = true
 
-[nodes.hardware]
+[graph.nodes.hardware]
 gate = "devGate"
 
 # =============================================================================
@@ -339,44 +340,44 @@ gate = "devGate"
 # =============================================================================
 
 # Genetic challenge-response between devGate and flockGate
-[[nodes]]
+[[graph.nodes]]
 id = "verify_flock_lineage"
 depends_on = ["flock_mesh_connect"]
 output = "flock_lineage"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "birdsong.verify_lineage"
 params = { peer_node_id = "flockGate" }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 allow_failure = true
 
-[nodes.hardware]
+[graph.nodes.hardware]
 gate = "devGate"
 
 # =============================================================================
 # PHASE 5: VALIDATE ALL NODES
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "mesh_health"
 depends_on = ["hotspot_mesh_discover", "flock_mesh_connect"]
 output = "mesh_validated"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "health_check"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 check_beardog = true
 check_songbird = true
 timeout_seconds = 20
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
 # =============================================================================

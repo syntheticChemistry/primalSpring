@@ -75,7 +75,7 @@ with binaries from `ecoPrimals/plasmidBin/`.
 
 | # | Criterion | primalSpring Test |
 |---|---|---|
-| 5.1 | beardog uses 5-tier socket resolution (server + client aligned) | static audit |
+| 5.1 | beardog uses 6-tier socket resolution (server + client aligned) | static audit |
 | 5.2 | songbird uses capability-based crypto socket discovery (no identity tiers) | static audit |
 | 5.3 | biomeOS uses `discover_by_capability()` for beardog (not `discover_beardog_socket()`) | static audit |
 
@@ -213,7 +213,7 @@ with binaries from `ecoPrimals/plasmidBin/`.
 | 2. Standard Methods | **PASS** (5/5) | `health.liveness`, `capabilities.list` confirmed live |
 | 3. Capability Routing | **PASS** (5/5) | All crypto routes through Neural API |
 | 4. TLS 1.3 E2E | **PASS** (3/3) | TLS handshake, internet reach, routing audit |
-| 5. Socket Discovery | **PASS** (3/3) | beardog 5-tier, songbird crypto-provider, biomeOS capability-based |
+| 5. Socket Discovery | **PASS** (3/3) | beardog 6-tier, songbird crypto-provider, biomeOS capability-based |
 | 6. Neural API Dogfooding | **PASS** (3/3) | All Neural API paths validated |
 | 7. Subsystem Health | **PASS** (6/6) | discovery, STUN, BirdSong, onion, Tor, federation |
 | 8. Beacon Round-Trip | **PASS** (2/2) | BirdSong encrypt→decrypt verified |
@@ -323,8 +323,8 @@ executing changes across beardog, songbird, and biomeOS codebases.
 1. ~~**`health.rs`**: Add `"health.liveness"`, `"health.readiness"` to `HealthHandler::methods()`~~ DONE
 2. ~~**`capabilities.rs`**: Add `"capabilities.list"` to `CapabilitiesHandler::methods()`~~ DONE
 3. ~~**`mod.rs`**: Pre-routing mapper for bare crypto aliases~~ DONE
-4. ~~**`discovery.rs`**: 5-tier `biomeos/` namespace alignment~~ DONE (sprint)
-5. ~~**`neural_registration.rs`**: 5-tier Neural API socket discovery~~ DONE (sprint)
+4. ~~**`discovery.rs`**: 6-tier `biomeos/` namespace alignment~~ DONE (sprint)
+5. ~~**`neural_registration.rs`**: 6-tier Neural API socket discovery~~ DONE (sprint)
 6. ~~**`songbird_client.rs`**: Remove hardcoded `/tmp/beardog-default.sock`~~ DONE (sprint)
 
 ### Songbird (Gates 3.1, 5.2)

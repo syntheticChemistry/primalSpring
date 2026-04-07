@@ -13,7 +13,7 @@ version = "0.2.0"
 coordination = "ConditionalDag"
 
 # ── Node 1: BearDog (identity) ────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "beardog"
 binary = "beardog_primal"
 order = 1
@@ -23,7 +23,7 @@ by_capability = "security"
 capabilities = ["crypto.identity"]
 
 # ── Node 2: Songbird (network) ─────────────────────────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "songbird"
 binary = "songbird_primal"
 order = 2
@@ -34,7 +34,7 @@ by_capability = "discovery"
 capabilities = ["net.discovery"]
 
 # ── Node 3: ToadStool (GPU dispatch — primary path) ────────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool_primal"
 order = 3
@@ -47,7 +47,7 @@ condition = "toadstool_available"
 skip_if = "toadstool_unavailable"
 
 # ── Node 4: CPU fallback (when toadstool unavailable) ──────────────────
-[[graph.node]]
+[[graph.nodes]]
 name = "cpu_fallback"
 binary = "primalspring_primal"
 order = 4

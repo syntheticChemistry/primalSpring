@@ -30,7 +30,8 @@
 # =============================================================================
 
 [graph]
-id = "friend_remote_covalent"
+id = "friend-remote-covalent"
+name = "friend_remote_covalent"
 version = "1.0.0"
 description = "Remote covalent join for friend/family idle compute with NAT traversal"
 coordination = "Sequential"
@@ -57,44 +58,44 @@ max_concurrent_requests = 4
 # PHASE 1: TOWER ATOMIC (Crypto + Network)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "friend_beardog"
 output = "beardog_genesis"
 capabilities = ["crypto", "tls_crypto", "genetic", "security", "beacon"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "security"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 RUST_LOG = "beardog=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[[nodes]]
+[[graph.nodes]]
 id = "friend_songbird"
 depends_on = ["friend_beardog"]
 output = "songbird_genesis"
 capabilities = ["http", "discovery", "secure_http", "mesh", "stun", "punch", "relay"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "discovery"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 NEURAL_API_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/neural-api-${FAMILY_ID}.sock"
 BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
 CRYPTO_PROVIDER_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
@@ -102,7 +103,7 @@ SONGBIRD_SECURITY_PROVIDER = "beardog"
 SONGBIRD_MESH_ENABLED = "true"
 RUST_LOG = "songbird=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
 # =============================================================================
@@ -110,133 +111,133 @@ timeout_ms = 30000
 # =============================================================================
 
 # 2.1: Initialize mesh
-[[nodes]]
+[[graph.nodes]]
 id = "mesh_init"
 depends_on = ["friend_songbird"]
 output = "mesh_state"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "mesh.init"
 params = { node_id = "${NODE_ID}" }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 
 # 2.2: Discover public address via STUN
-[[nodes]]
+[[graph.nodes]]
 id = "stun_discover"
 depends_on = ["mesh_init"]
 output = "public_address"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "stun.discover"
 params = {}
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 allow_failure = true
 
 # 2.3: Detect NAT type for hole-punch feasibility
-[[nodes]]
+[[graph.nodes]]
 id = "nat_detect"
 depends_on = ["stun_discover"]
 output = "nat_type"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "stun.detect_nat_type"
 params = {}
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 allow_failure = true
 
 # 2.4: Attempt hole punch to known Tower endpoint
-[[nodes]]
+[[graph.nodes]]
 id = "punch_tower"
 depends_on = ["nat_detect"]
 output = "punch_result"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "punch.request"
 params = { target = "${TOWER_ENDPOINT}" }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 15000
 allow_failure = true
 
 # 2.5: Fallback — request lineage relay from family
-[[nodes]]
+[[graph.nodes]]
 id = "relay_fallback"
 depends_on = ["punch_tower"]
 output = "relay_result"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "relay.allocate"
 params = { family_id = "${FAMILY_ID}" }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 10000
 allow_failure = true
 on_condition = "punch_result.connected == false"
 
 # 2.6: Auto-discover family peers via mesh
-[[nodes]]
+[[graph.nodes]]
 id = "discover_family"
 depends_on = ["punch_tower", "relay_fallback"]
 output = "peers_discovered"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "mesh.auto_discover"
 params = {}
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 15000
 
 # =============================================================================
 # PHASE 3: COMPUTE (the shared capability)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "friend_toadstool"
 depends_on = ["friend_beardog", "friend_songbird"]
 output = "toadstool_genesis"
 capabilities = ["compute", "workload"]
 
-[nodes.primal]
+[graph.nodes.primal]
 by_capability = "compute"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "start"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 mode = "server"
 family_id = "${FAMILY_ID}"
 
-[nodes.operation.environment]
+[graph.nodes.operation.environment]
 TOADSTOOL_FAMILY_ID = "${FAMILY_ID}"
 TOADSTOOL_NODE_ID = "${NODE_ID}"
 TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED = "1"
@@ -244,44 +245,44 @@ SONGBIRD_ENDPOINT = "${XDG_RUNTIME_DIR}/biomeos/songbird-${FAMILY_ID}.sock"
 BEARDOG_SOCKET = "${XDG_RUNTIME_DIR}/biomeos/beardog-${FAMILY_ID}.sock"
 RUST_LOG = "toadstool=info"
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 45000
 
 # =============================================================================
 # PHASE 4: VALIDATE + ANNOUNCE (compute only per policy)
 # =============================================================================
 
-[[nodes]]
+[[graph.nodes]]
 id = "friend_validate"
 depends_on = ["friend_toadstool", "discover_family"]
 output = "friend_validated"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "health_check"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 check_beardog = true
 check_songbird = true
 check_toadstool = true
 timeout_seconds = 20
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 30000
 
-[[nodes]]
+[[graph.nodes]]
 id = "announce_compute"
 depends_on = ["friend_validate"]
 output = "announced"
 
-[nodes.operation]
+[graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
 
-[nodes.operation.params]
+[graph.nodes.operation.params]
 method = "mesh.announce"
 params = { as_relay = false, capabilities = ["compute"] }
 
-[nodes.constraints]
+[graph.nodes.constraints]
 timeout_ms = 5000
 
 # =============================================================================

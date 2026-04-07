@@ -373,7 +373,7 @@ domain = "dag"
 provider = "rhizocrypt"
 
 [[capabilities]]
-method = "dag.dehydrate"
+method = "dag.dehydration.trigger"
 description = "Dehydrate a session — produces wire summary with Merkle root and witnesses"
 domain = "dag"
 provider = "rhizocrypt"

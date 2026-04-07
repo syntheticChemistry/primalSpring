@@ -22,7 +22,7 @@ requires_biomeos = ">=2.78"
 
 # --- Phase 1: Verify biomeOS Neural API substrate ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_biomeos"
 binary = "biomeos"
 order = 1
@@ -34,7 +34,7 @@ capabilities = ["graph.deploy", "graph.status", "graph.rollback", "capability.di
 
 # --- Phase 2: Verify primalSpring is running ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "verify_primalspring"
 binary = "primalspring_primal"
 order = 2
@@ -47,7 +47,7 @@ capabilities = ["composition.tower_health", "composition.node_health", "composit
 
 # --- Phase 3: Tower Atomic (security + discovery) ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_tower"
 binary = "primalspring_primal"
 order = 3
@@ -63,7 +63,7 @@ expect = "healthy"
 
 # --- Phase 4: Node Atomic (Tower + compute) ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_node"
 binary = "primalspring_primal"
 order = 4
@@ -79,7 +79,7 @@ expect = "healthy"
 
 # --- Phase 5: Nest Atomic (Tower + storage + AI bridge) ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_nest"
 binary = "primalspring_primal"
 order = 5
@@ -95,7 +95,7 @@ expect = "healthy"
 
 # --- Phase 6: Full NUCLEUS (all capabilities) ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_full_nucleus"
 binary = "primalspring_primal"
 order = 6
@@ -111,7 +111,7 @@ expect = "healthy"
 
 # --- Phase 7: Tower + Squirrel overlay ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_tower_squirrel"
 binary = "primalspring_primal"
 order = 7
@@ -126,7 +126,7 @@ method = "composition.tower_squirrel_health"
 
 # --- Phase 8: Graph structural validation ---
 
-[[graph.node]]
+[[graph.nodes]]
 name = "validate_atomic_graphs"
 binary = "primalspring_primal"
 order = 8

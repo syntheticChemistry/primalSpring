@@ -17,7 +17,7 @@ use primalspring::ipc::NeuralBridge;
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover;
 use primalspring::ipc::methods;
-use primalspring::ipc::tcp::{http_health_probe, tcp_rpc};
+use primalspring::ipc::tcp::tcp_rpc;
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
@@ -65,11 +65,17 @@ fn validate_pixel_tower(v: &mut ValidationResult) {
         &format!("Pixel BearDog at {bd_host}:{bd_port}"),
     );
 
-    let songbird_ok = http_health_probe("localhost", songbird_port).is_ok();
+    let songbird_ok = tcp_rpc(
+        "localhost",
+        songbird_port,
+        methods::health::LIVENESS,
+        &serde_json::json!({}),
+    )
+    .is_ok();
     v.check_bool(
         "pixel_songbird_health",
         songbird_ok,
-        &format!("Pixel Songbird HTTP at localhost:{songbird_port}"),
+        &format!("Pixel Songbird at localhost:{songbird_port}"),
     );
 }
 
@@ -119,21 +125,33 @@ fn validate_cross_gate_beacon_exchange(v: &mut ValidationResult) {
 
     let local_songbird = local_songbird_port();
     let pixel_songbird = pixel_songbird_port();
-    let local_http = http_health_probe("localhost", local_songbird).is_ok();
-    let pixel_http = http_health_probe("localhost", pixel_songbird).is_ok();
+    let local_live = tcp_rpc(
+        "localhost",
+        local_songbird,
+        methods::health::LIVENESS,
+        &serde_json::json!({}),
+    )
+    .is_ok();
+    let pixel_live = tcp_rpc(
+        "localhost",
+        pixel_songbird,
+        methods::health::LIVENESS,
+        &serde_json::json!({}),
+    )
+    .is_ok();
 
     v.check_bool(
-        "local_songbird_http",
-        local_http,
-        &format!("Eastgate Songbird HTTP at :{local_songbird}"),
+        "local_songbird_live",
+        local_live,
+        &format!("Eastgate Songbird at :{local_songbird}"),
     );
     v.check_bool(
-        "pixel_songbird_http",
-        pixel_http,
-        &format!("Pixel Songbird HTTP at :{pixel_songbird}"),
+        "pixel_songbird_live",
+        pixel_live,
+        &format!("Pixel Songbird at :{pixel_songbird}"),
     );
 
-    let both_reachable = local_http && pixel_http;
+    let both_reachable = local_live && pixel_live;
     v.check_bool(
         "cross_gate_songbird_pair",
         both_reachable,
