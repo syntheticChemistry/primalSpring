@@ -260,6 +260,30 @@ description = "Proprioceptive topology (self-aware network map)"
 domain = "topology"
 provider = "biomeos"
 
+# ── Graph analysis (local) ──
+
+[[capabilities]]
+method = "graph.waves"
+description = "Topological wave decomposition of a deploy graph"
+domain = "graph"
+
+[[capabilities]]
+method = "graph.capabilities"
+description = "Extract required capabilities from a deploy graph"
+domain = "graph"
+
+# ── Ionic bond negotiation (Track 4 — local) ──
+
+[[capabilities]]
+method = "bonding.propose"
+description = "Propose an ionic bond contract (validate + queue)"
+domain = "bonding"
+
+[[capabilities]]
+method = "bonding.status"
+description = "Query ionic bond contract status"
+domain = "bonding"
+
 # ── Visualization capabilities (petalTongue) ──
 
 [[capabilities]]

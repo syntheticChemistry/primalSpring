@@ -247,8 +247,7 @@ impl IonicContract {
     /// Whether this contract permits a given capability call.
     #[must_use]
     pub fn permits(&self, capability: &str) -> bool {
-        self.state == ContractState::Active
-            && self.negotiated_constraints.permits(capability)
+        self.state == ContractState::Active && self.negotiated_constraints.permits(capability)
     }
 
     /// Whether the contract has reached a terminal state.
@@ -366,7 +365,11 @@ mod tests {
 
     #[test]
     fn terminal_states() {
-        for state in [ContractState::Rejected, ContractState::Sealed, ContractState::Expired] {
+        for state in [
+            ContractState::Rejected,
+            ContractState::Sealed,
+            ContractState::Expired,
+        ] {
             let contract = IonicContract {
                 contract_id: "test".into(),
                 state,
@@ -383,7 +386,12 @@ mod tests {
 
     #[test]
     fn non_terminal_states() {
-        for state in [ContractState::Proposed, ContractState::Active, ContractState::Modifying, ContractState::Terminating] {
+        for state in [
+            ContractState::Proposed,
+            ContractState::Active,
+            ContractState::Modifying,
+            ContractState::Terminating,
+        ] {
             let contract = IonicContract {
                 contract_id: "test".into(),
                 state,

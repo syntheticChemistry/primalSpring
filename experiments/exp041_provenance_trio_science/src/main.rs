@@ -12,12 +12,12 @@
 use primalspring::coordination::probe_primal;
 use primalspring::ipc::discover::{discover_for, discover_primal, neural_api_healthy, socket_path};
 use primalspring::ipc::provenance::ProvenanceStatus;
-use primalspring_trio_ops::{
-    begin_experiment_session, complete_experiment, record_experiment_step, trio_health,
-};
 use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
+use primalspring_trio_ops::{
+    begin_experiment_session, complete_experiment, record_experiment_step, trio_health,
+};
 
 const TRIO_PRIMALS: &[&str] = &[
     primal_names::RHIZOCRYPT,

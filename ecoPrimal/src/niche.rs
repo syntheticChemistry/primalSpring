@@ -39,10 +39,12 @@ pub const NICHE_NAME: &str = crate::PRIMAL_NAME;
 /// Override via `BIOMEOS_PRIMAL` env var for non-standard deployments.
 const REGISTRATION_TARGET: &str = "biomeos";
 
-/// All capabilities this niche exposes to biomeOS.
+/// Capabilities this binary **locally serves** via `dispatch_request`.
 ///
-/// Source: `primalspring_deploy.toml` node 9 capabilities + server RPC methods.
-pub const CAPABILITIES: &[&str] = &[
+/// These are the methods `primalspring_primal` actually handles — callers
+/// get a real response, not a routing bounce. When registering with biomeOS,
+/// these are claimed as "served here."
+pub const LOCAL_CAPABILITIES: &[&str] = &[
     // ── Coordination (core domain) ──
     "coordination.validate_composition",
     "coordination.validate_composition_by_capability",
@@ -51,18 +53,18 @@ pub const CAPABILITIES: &[&str] = &[
     "coordination.discovery_sweep",
     "coordination.deploy_atomic",
     "coordination.bonding_test",
+    "coordination.neural_api_status",
     // ── Composition health ──
     "composition.nucleus_health",
     "composition.tower_health",
     "composition.node_health",
     "composition.nest_health",
+    "composition.tower_squirrel_health",
     // ── Lifecycle management ──
     "nucleus.start",
     "nucleus.stop",
-    "lifecycle.start",
-    "lifecycle.stop",
     "lifecycle.status",
-    // ── Health probes (biomeOS orchestration) ──
+    // ── Health probes ──
     "health.check",
     "health.liveness",
     "health.readiness",
@@ -71,40 +73,70 @@ pub const CAPABILITIES: &[&str] = &[
     // ── Graph coordination ──
     "graph.validate",
     "graph.list",
-    "graph.deploy",
-    "graph.status",
-    "graph.rollback",
-    // ── Neural API bridge ──
-    "coordination.neural_api_status",
+    "graph.waves",
+    "graph.capabilities",
     // ── MCP tool discovery ──
     "mcp.tools.list",
-    // ── AI capabilities (routed to Squirrel) ──
-    "ai.query",
-    "ai.health",
-    // ── Extended composition ──
-    "composition.tower_squirrel_health",
-    // ── Songbird subsystem capabilities ──
-    "discovery.announce",
-    "discovery.find_primals",
-    "network.stun",
-    "network.nat_type",
-    "network.birdsong.beacon",
-    "network.birdsong.decrypt",
-    "network.onion.start",
-    "network.onion.status",
-    "network.tor.status",
-    "network.federation.peers",
-    // ── Federation lifecycle (biomeOS v2.78+) ──
-    "federation.configure",
-    "federation.join",
-    "federation.health_check",
-    // ── Topology queries ──
-    "topology.get",
-    "topology.proprioception",
-    // ── Visualization (petalTongue) ──
-    "visualization.render.dashboard",
-    "visualization.render.grammar",
+    // ── Ionic bond negotiation (Track 4) ──
+    "bonding.propose",
+    "bonding.status",
 ];
+
+/// Ecosystem capabilities that primalSpring **coordinates but routes to
+/// other primals** via biomeOS Neural API semantic routing.
+///
+/// These are registered as coordination metadata so biomeOS and springs
+/// know primalSpring understands these domains. Callers reaching
+/// primalSpring directly for these methods get `METHOD_NOT_FOUND` — they
+/// should go through `capability.call` or the Neural API.
+///
+/// Each entry names the canonical provider per `capability_registry.toml`.
+pub const ROUTED_CAPABILITIES: &[(&str, &str)] = &[
+    // ── Lifecycle (biomeOS) ──
+    ("lifecycle.start", "biomeos"),
+    ("lifecycle.stop", "biomeos"),
+    // ── Graph execution (biomeOS) ──
+    ("graph.deploy", "biomeos"),
+    ("graph.status", "biomeos"),
+    ("graph.rollback", "biomeos"),
+    // ── AI (Squirrel) ──
+    ("ai.query", "squirrel"),
+    ("ai.health", "squirrel"),
+    // ── Discovery mesh (Songbird) ──
+    ("discovery.announce", "songbird"),
+    ("discovery.find_primals", "songbird"),
+    // ── Network (Songbird) ──
+    ("network.stun", "songbird"),
+    ("network.nat_type", "songbird"),
+    ("network.birdsong.beacon", "songbird"),
+    ("network.birdsong.decrypt", "songbird"),
+    ("network.onion.start", "songbird"),
+    ("network.onion.status", "songbird"),
+    ("network.tor.status", "songbird"),
+    ("network.federation.peers", "songbird"),
+    // ── Federation (biomeOS v2.78+) ──
+    ("federation.configure", "biomeos"),
+    ("federation.join", "biomeos"),
+    ("federation.health_check", "biomeos"),
+    // ── Topology (biomeOS) ──
+    ("topology.get", "biomeos"),
+    ("topology.proprioception", "biomeos"),
+    // ── Visualization (petalTongue) ──
+    ("visualization.render.dashboard", "petaltongue"),
+    ("visualization.render.grammar", "petaltongue"),
+];
+
+/// All capabilities (local + routed method names) as a flat slice.
+///
+/// Backward-compatible accessor for code that needs the combined list.
+/// Prefer [`LOCAL_CAPABILITIES`] when you need to know what this binary
+/// actually serves.
+#[must_use]
+pub fn all_capabilities() -> Vec<&'static str> {
+    let mut all = LOCAL_CAPABILITIES.to_vec();
+    all.extend(ROUTED_CAPABILITIES.iter().map(|(method, _)| *method));
+    all
+}
 
 /// Operation dependency hints for biomeOS Pathway Learner parallelization.
 ///
@@ -268,7 +300,7 @@ pub fn register_with_target(our_socket: &Path) {
     }
 
     let mut registered = 0u32;
-    for cap in CAPABILITIES {
+    for cap in LOCAL_CAPABILITIES {
         if client
             .call(
                 "capability.register",
@@ -276,6 +308,7 @@ pub fn register_with_target(our_socket: &Path) {
                     "primal": NICHE_NAME,
                     "capability": cap,
                     "socket": &sock_str,
+                    "served_locally": true,
                 }),
             )
             .is_ok()
@@ -286,10 +319,26 @@ pub fn register_with_target(our_socket: &Path) {
         }
     }
 
+    for (cap, provider) in ROUTED_CAPABILITIES {
+        let _ = client.call(
+            "capability.register",
+            serde_json::json!({
+                "primal": NICHE_NAME,
+                "capability": cap,
+                "socket": &sock_str,
+                "served_locally": false,
+                "canonical_provider": provider,
+            }),
+        );
+    }
+
+    let total = LOCAL_CAPABILITIES.len() + ROUTED_CAPABILITIES.len();
     info!(
         target: "biomeos",
         registered,
-        total = CAPABILITIES.len(),
+        local = LOCAL_CAPABILITIES.len(),
+        routed = ROUTED_CAPABILITIES.len(),
+        total,
         domains = domains.len(),
         "capabilities + domains registered",
     );
@@ -300,13 +349,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn capabilities_are_not_empty() {
-        assert!(!CAPABILITIES.is_empty());
+    fn local_capabilities_are_not_empty() {
+        assert!(!LOCAL_CAPABILITIES.is_empty());
     }
 
     #[test]
-    fn capabilities_follow_semantic_naming() {
-        for cap in CAPABILITIES {
+    fn routed_capabilities_are_not_empty() {
+        assert!(!ROUTED_CAPABILITIES.is_empty());
+    }
+
+    #[test]
+    fn all_capabilities_follow_semantic_naming() {
+        let all = all_capabilities();
+        for cap in &all {
             assert!(
                 cap.contains('.'),
                 "capability '{cap}' should follow domain.operation format"
@@ -317,8 +372,29 @@ mod tests {
     #[test]
     fn no_duplicate_capabilities() {
         let mut seen = std::collections::HashSet::new();
-        for cap in CAPABILITIES {
+        let all = all_capabilities();
+        for cap in &all {
             assert!(seen.insert(cap), "duplicate capability: {cap}");
+        }
+    }
+
+    #[test]
+    fn local_and_routed_are_disjoint() {
+        for (routed_method, _) in ROUTED_CAPABILITIES {
+            assert!(
+                !LOCAL_CAPABILITIES.contains(routed_method),
+                "'{routed_method}' is in both LOCAL and ROUTED — pick one"
+            );
+        }
+    }
+
+    #[test]
+    fn routed_capabilities_have_providers() {
+        for (method, provider) in ROUTED_CAPABILITIES {
+            assert!(
+                !provider.is_empty(),
+                "routed capability '{method}' has empty provider"
+            );
         }
     }
 
@@ -338,7 +414,7 @@ mod tests {
     fn semantic_mappings_cover_coordination_capabilities() {
         let mappings = coordination_semantic_mappings();
         let map = mappings.as_object().unwrap();
-        let coord_caps: Vec<&&str> = CAPABILITIES
+        let coord_caps: Vec<&&str> = LOCAL_CAPABILITIES
             .iter()
             .filter(|c| c.starts_with("coordination."))
             .collect();
@@ -367,18 +443,19 @@ mod tests {
             .filter_map(|c| c.get("method")?.as_str())
             .collect();
 
-        for code_cap in CAPABILITIES {
+        let all = all_capabilities();
+        for code_cap in &all {
             assert!(
                 caps_in_toml.contains(code_cap),
-                "capability '{code_cap}' is in niche::CAPABILITIES but missing from \
+                "capability '{code_cap}' is in niche but missing from \
                  config/capability_registry.toml"
             );
         }
         for toml_cap in &caps_in_toml {
             assert!(
-                CAPABILITIES.contains(toml_cap),
+                all.contains(toml_cap),
                 "capability '{toml_cap}' is in capability_registry.toml but missing from \
-                 niche::CAPABILITIES"
+                 niche capabilities"
             );
         }
     }
@@ -443,11 +520,12 @@ mod tests {
     fn semantic_mappings_values_exist_in_capabilities() {
         let mappings = coordination_semantic_mappings();
         let map = mappings.as_object().unwrap();
+        let all = all_capabilities();
         for (key, val) in map {
             let method = val.as_str().unwrap();
             assert!(
-                CAPABILITIES.contains(&method),
-                "semantic mapping '{key}' → '{method}' not in CAPABILITIES"
+                all.contains(&method),
+                "semantic mapping '{key}' → '{method}' not in capabilities"
             );
         }
     }

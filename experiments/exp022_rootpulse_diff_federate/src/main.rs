@@ -11,12 +11,12 @@ use primalspring::coordination::probe_primal;
 use primalspring::emergent::EmergentSystem;
 use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
 use primalspring::ipc::provenance::ProvenanceStatus;
+use primalspring::primal_names;
+use primalspring::validation::ValidationResult;
 use primalspring_trio_ops::{
     begin_experiment_session, record_experiment_step, rootpulse_diff, rootpulse_federate,
     trio_health,
 };
-use primalspring::primal_names;
-use primalspring::validation::ValidationResult;
 
 fn main() {
     ValidationResult::new("primalSpring Exp022 — RootPulse Diff Federate")

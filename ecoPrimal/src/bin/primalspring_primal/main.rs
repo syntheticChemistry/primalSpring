@@ -207,7 +207,7 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
                 "id": PRIMAL_NAME,
                 "display_name": "primalSpring",
                 "version": env!("CARGO_PKG_VERSION"),
-                "capabilities": primalspring::niche::CAPABILITIES,
+                "capabilities": primalspring::niche::LOCAL_CAPABILITIES,
                 "phase": "running",
                 "family_id": std::env::var("FAMILY_ID")
                     .or_else(|_| std::env::var("BIOMEOS_FAMILY_ID"))
@@ -218,10 +218,17 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
 
         // ── Capability advertisement ──
         "capabilities.list" | "capability.list" => {
-            let caps: Vec<&str> = primalspring::niche::CAPABILITIES.to_vec();
+            let routed: Vec<serde_json::Value> = primalspring::niche::ROUTED_CAPABILITIES
+                .iter()
+                .map(|(method, provider)| {
+                    serde_json::json!({ "method": method, "provider": provider })
+                })
+                .collect();
             success_response(
                 serde_json::json!({
-                    "capabilities": caps,
+                    "local_capabilities": primalspring::niche::LOCAL_CAPABILITIES,
+                    "routed_capabilities": routed,
+                    "capabilities": primalspring::niche::all_capabilities(),
                     "semantic_mappings": primalspring::niche::coordination_semantic_mappings(),
                     "operation_dependencies": primalspring::niche::operation_dependencies(),
                     "cost_estimates": primalspring::niche::cost_estimates(),
@@ -273,6 +280,10 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
             let tools = primalspring::ipc::mcp::list_tools();
             success_response(serde_json::to_value(tools).unwrap_or_default(), id)
         }
+
+        // ── Ionic bond negotiation (Track 4) ──
+        "bonding.propose" => handle_bonding_propose(&req["params"], id),
+        "bonding.status" => handle_bonding_status(&req["params"], id),
 
         // ── Graph coordination ──
         "graph.list" => {
@@ -507,16 +518,24 @@ fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcRespon
 
     let resolved = disc.resolved_primal.as_deref().unwrap_or("unknown");
 
-    let health = if disc.socket.is_some() {
-        primalspring::coordination::probe_primal(resolved)
-    } else {
-        primalspring::coordination::PrimalHealth {
+    let health = match &disc.socket {
+        Some(sock) => {
+            if disc.resolved_primal.is_some() {
+                primalspring::coordination::probe_primal(resolved)
+            } else {
+                primalspring::coordination::probe_primal_at_socket(
+                    &format!("capability:{capability}"),
+                    sock,
+                )
+            }
+        }
+        None => primalspring::coordination::PrimalHealth {
             name: format!("capability:{capability}"),
             socket_found: false,
             health_ok: false,
             capabilities: Vec::new(),
             latency_us: 0,
-        }
+        },
     };
 
     success_response(
@@ -652,6 +671,58 @@ fn handle_graph_capabilities(params: &serde_json::Value, id: u64) -> JsonRpcResp
     )
 }
 
+fn handle_bonding_propose(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let proposal: Result<primalspring::bonding::ionic::IonicProposal, _> =
+        serde_json::from_value(params.clone());
+    match proposal {
+        Ok(p) => {
+            let errors = p.validate();
+            if errors.is_empty() {
+                success_response(
+                    serde_json::json!({
+                        "status": "validated",
+                        "proposer": p.proposer_identity,
+                        "capabilities_requested": p.requested_capabilities,
+                        "duration_secs": p.duration_secs,
+                        "note": "proposal validated — ionic negotiation runtime pending BearDog crypto signatures",
+                    }),
+                    id,
+                )
+            } else {
+                error_response(
+                    error_codes::INVALID_PARAMS,
+                    &format!("proposal validation failed: {}", errors.join("; ")),
+                    id,
+                )
+            }
+        }
+        Err(e) => error_response(
+            error_codes::INVALID_PARAMS,
+            &format!("invalid proposal: {e}"),
+            id,
+        ),
+    }
+}
+
+fn handle_bonding_status(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let contract_id = params["contract_id"].as_str().unwrap_or("");
+    if contract_id.is_empty() {
+        return error_response(
+            error_codes::INVALID_PARAMS,
+            "missing required 'contract_id' parameter",
+            id,
+        );
+    }
+    success_response(
+        serde_json::json!({
+            "contract_id": contract_id,
+            "state": "not_found",
+            "note": "ionic contract store not yet implemented — types and validation ready",
+        }),
+        id,
+    )
+}
+
 fn success_response(result: serde_json::Value, id: u64) -> JsonRpcResponse {
     JsonRpcResponse {
         jsonrpc: JSONRPC_VERSION.to_owned(),
@@ -665,6 +736,11 @@ fn print_status() {
     println!("{PRIMAL_NAME} v{}", env!("CARGO_PKG_VERSION"));
     println!("domain: {PRIMAL_DOMAIN}");
     println!("tracks: 6 (atomic, graph, emergent, bonding, coralforge, cross-spring)");
+    println!(
+        "local methods: {} | routed: {}",
+        primalspring::niche::LOCAL_CAPABILITIES.len(),
+        primalspring::niche::ROUTED_CAPABILITIES.len(),
+    );
 
     let neural_ok = neural_api_healthy();
     println!(

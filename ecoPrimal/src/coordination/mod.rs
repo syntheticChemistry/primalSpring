@@ -320,6 +320,36 @@ pub fn probe_primal(name: &str) -> PrimalHealth {
     }
 }
 
+/// Probe a primal at a known socket path (no discovery step).
+///
+/// Used when capability-based discovery resolved a socket but not a primal
+/// name — e.g. a capability-named socket like `security.sock` in Tier 2.
+#[must_use]
+pub fn probe_primal_at_socket(label: &str, socket: &std::path::Path) -> PrimalHealth {
+    let start = Instant::now();
+    let Ok(mut client) = PrimalClient::connect(socket, label) else {
+        return PrimalHealth {
+            name: label.to_owned(),
+            socket_found: true,
+            health_ok: false,
+            capabilities: Vec::new(),
+            latency_us: cast::micros_u64(start.elapsed()),
+        };
+    };
+
+    let health_ok = client.health_check().unwrap_or(false);
+    let capabilities = extract_capability_names(client.capabilities().ok());
+    let latency_us = cast::micros_u64(start.elapsed());
+
+    PrimalHealth {
+        name: label.to_owned(),
+        socket_found: true,
+        health_ok,
+        capabilities,
+        latency_us,
+    }
+}
+
 /// Validate an entire atomic composition by probing all its required primals
 /// and the biomeOS Neural API substrate.
 #[must_use]
