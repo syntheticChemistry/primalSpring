@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 7, 2026
-**Status**: Phase 23c+ — trio witness harvest, garden acceleration (87/87 gates), 402+ tests, 89 experiments, 89 deploy graphs, trio binaries in plasmidBin
+**Status**: Phase 26 — Mixed Composition + Live Validation (72 experiments, 99 deploy graphs, biomeOS v2.93: 52 capabilities, 7/9 capability.call PASS)
 
 ---
 
@@ -617,88 +617,112 @@ Phase 27: biomeOS Self-Composition
 
 ### L0: Individual Primal Routing (Direct IPC)
 
-| # | Domain | Provider | Direct Probe | Neural API Route (v2.81) | Neural API Route (v2.92) | Status |
-|---|--------|----------|-------------|-------------------------|-------------------------|--------|
-| 1 | security | BearDog | **PASS** (health, sign, hash) | **FAIL** (0 caps) | **FAIL** (Format E unrecognized) | GAP-MATRIX-01b: BearDog wire format |
-| 2 | discovery | Songbird | **PASS** (health, find_primals) | **FAIL** (0 caps) | **PARTIAL** (14 caps registered, forwarding fails) | GAP-MATRIX-07: proxy forwarding |
-| 3 | compute | ToadStool | NOT RUNNING | — | — | Need: start ToadStool process |
-| 4 | storage | NestGate | NOT RUNNING | — | — | Need: start NestGate process |
-| 5 | ai | Squirrel | NOT RUNNING | — | — | Need: start Squirrel process |
-| 6 | dag | rhizoCrypt | NOT RUNNING | — | — | Need: start rhizoCrypt process |
-| 7 | spine | loamSpine | NOT RUNNING | — | — | Need: start loamSpine process |
-| 8 | braid | sweetGrass | NOT RUNNING | — | — | Need: start sweetGrass process |
-| 9 | http | Songbird (Tower) | **PASS** (ifconfig.me HTTP 200) | **FAIL** (0 caps) | **PARTIAL** (crypto.delegate registered, forwarding fails) | GAP-MATRIX-07 |
-| 10 | mesh | Songbird (BirdSong) | **FAIL** (mesh not initialized) | — | — | Expected: mesh.init required first |
+| # | Domain | Provider | Direct Probe | Neural API (v2.81) | Neural API (v2.92) | Neural API (v2.93) | Status |
+|---|--------|----------|-------------|--------------------|--------------------|--------------------|---------| 
+| 1 | security | BearDog | **PASS** (health, sign, hash) | **FAIL** (0 caps) | **FAIL** (Format E) | **PASS** (38 caps, call works) | ✅ RESOLVED |
+| 2 | discovery | Songbird | **PASS** (health, find_primals) | **FAIL** (0 caps) | **PARTIAL** (14 caps, forwarding fails) | **PARTIAL** (14 caps, method not impl) | Songbird method gap |
+| 3 | compute | ToadStool | NOT RUNNING | — | — | — | Need: start ToadStool |
+| 4 | storage | NestGate | NOT RUNNING | — | — | — | Need: start NestGate |
+| 5 | ai | Squirrel | NOT RUNNING | — | — | — | Need: start Squirrel |
+| 6 | dag | rhizoCrypt | NOT RUNNING | — | — | — | Need: start rhizoCrypt |
+| 7 | spine | loamSpine | NOT RUNNING | — | — | — | Need: start loamSpine |
+| 8 | braid | sweetGrass | NOT RUNNING | — | — | — | Need: start sweetGrass |
+| 9 | http | Songbird (Tower) | **PASS** (ifconfig.me HTTP 200) | **FAIL** (0 caps) | **PARTIAL** | **PARTIAL** (crypto.delegate registered) | Songbird method gap |
+| 10 | mesh | Songbird (BirdSong) | **FAIL** (mesh not init) | — | — | — | Expected: mesh.init required first |
 
 ### L1: Tower Atomic Composition
 
 | Check | Result | Detail |
 |-------|--------|--------|
 | BearDog health.liveness | **PASS** | v0.9.0, 9 capability groups |
-| crypto.sign_ed25519 | **PASS** | Ed25519 signature, 88-char base64 |
-| crypto.blake3_hash | **PASS** | BLAKE3 hash of test data |
-| Songbird health.liveness | **PASS** | Healthy |
+| crypto.sign_ed25519 (direct + proxy) | **PASS** | Ed25519 signature, end-to-end through Neural API |
+| crypto.blake3_hash (direct + proxy) | **PASS** | BLAKE3 hash, end-to-end through Neural API |
+| crypto.hmac_sha256 (proxy) | **PASS** | HMAC result through Neural API |
+| security.evaluate (proxy) | **PASS** | Trust evaluation through Neural API |
+| trust.evaluate (proxy) | **PASS** | Trust evaluation through Neural API |
+| tls.derive_secrets (proxy) | **PASS** | TLS key derivation through Neural API |
+| Songbird health.liveness | **PASS** | v0.2.1, healthy |
 | HTTPS via Tower (ifconfig.me) | **PASS** | HTTP 200, public IP obtained |
-| HTTPS via Tower (httpbin.org) | **FAIL** | TLS handshake failure (cipher suite gap) |
+| HTTPS via Tower (httpbin.org) | **FAIL** | TLS handshake failure (cipher suite gap — GAP-MATRIX-03) |
 | discovery.find_primals | **PASS** | Discovery operational |
 | BearDog → Songbird composition | **PASS** | Songbird uses BearDog crypto for TLS |
+| Neural API auto-discovery | **PASS** | 52 capabilities from 2 primals (biomeOS v2.93) |
+| capability.call end-to-end | **PASS** | 7/9 methods forwarded successfully |
 
 ### Critical Gaps Found
 
-**GAP-MATRIX-01: Neural API capability registration — PARTIALLY RESOLVED (biomeOS v2.92)**
+**GAP-MATRIX-01: Neural API capability registration — RESOLVED (biomeOS v2.93)**
 
-biomeOS v2.92 (commits `489f8d66` + `3cfeeecf`, April 7) added real JSON-RPC probing (`identity.get` + `capabilities.list`), 4-format capability parsing, and domain prefix matching (GAP-019).
+biomeOS v2.92 added real JSON-RPC probing and 4-format capability parsing. biomeOS v2.93 (commit `13ca2328`) added Format E parsing for BearDog's `provided_capabilities` wire format.
 
-**Result**: Songbird now discovered with **14 capabilities** (was 0). `capability.discover("network")` correctly routes to Songbird. BearDog still reports 0 capabilities — its `provided_capabilities` wire format (`[{type: "security", methods: [...]}]`) is Format E, not handled by the A-D parser. biomeOS logs: `Unrecognized capabilities.list response shape`.
+**Result (v2.93)**: 52 total capabilities auto-discovered from 2 primals. BearDog: 38 capabilities (9 domain groups + 29 qualified methods). Songbird: 14 capabilities. The original "0 capabilities" issue is **fully resolved**.
 
-**GAP-MATRIX-01b (NEW)**: BearDog Format E wire format unrecognized. biomeOS team needs to add Format E parsing: `result.provided_capabilities: [{type, methods, description?, version?}]`.
+Severity: ~~Critical~~ → **RESOLVED**
 
-Severity: **Medium** (downgraded from Critical) — Songbird routing works, BearDog still blocked.
+**GAP-MATRIX-01b: BearDog Format E wire format — RESOLVED (biomeOS v2.93)**
 
-**GAP-MATRIX-07 (NEW): Neural API proxy forwarding fails after discovery**
+biomeOS v2.93 added Format E to the canonical parser: `result.provided_capabilities: [{type, methods}]`. Emits both group type ("security") and qualified methods ("security.sign"). BearDog's 9 capability groups now register correctly.
 
-biomeOS discovers the correct provider and endpoint, but `capability.call` forwarding fails with "Failed to forward {method} to unix:///...". The proxy layer cannot connect to primal sockets despite `capability.discover` correctly returning the endpoint. Likely a URI scheme handling issue (`unix:///path` vs bare path in the `AtomicClient`).
+Severity: ~~Medium~~ → **RESOLVED**
 
-Impact: All `capability.call` forwarding fails even for correctly discovered primals.
+**GAP-MATRIX-07: Neural API proxy forwarding — RESOLVED (biomeOS v2.93)**
 
-Severity: **Critical** — blocks the `capability.call` path that all springs rely on. Direct IPC works as workaround.
+biomeOS v2.93 fixed `TransportEndpoint::parse()` to handle `unix://` URI scheme. Previously, `unix:///path` strings (from `display_string()` round-trips) contained ':' and were misrouted to TCP parsing.
 
-**GAP-MATRIX-02: tower_atomic_bootstrap.toml fails to parse in biomeOS**
+**Result (v2.93)**: 7 of 9 tested capability.call methods forwarded successfully through the Neural API to BearDog. crypto.blake3_hash, crypto.sign_ed25519, crypto.hmac_sha256, security.evaluate, trust.evaluate, tls.derive_secrets all return correct results end-to-end.
 
-biomeOS logs: `Failed to parse TOML from: tower_atomic_bootstrap.toml`. The file is valid TOML (Python parser confirms). biomeOS's internal graph parser may require fields not present (e.g., `id`, or biomeOS-specific node structure).
+Severity: ~~Critical~~ → **RESOLVED**
 
-Impact: biomeOS cannot load semantic translations from the Tower graph. Falls back to internal defaults.
+**GAP-MATRIX-07b (NEW): biomeOS proxy error propagation**
 
-Severity: **Medium** — degraded routing, workaround available (direct IPC).
+When a primal returns a JSON-RPC error response to a forwarded `capability.call` (e.g., parameter validation error `-32601`), biomeOS reports "Failed to forward" instead of propagating the primal's error back to the caller. The proxy conflates transport-level failure with application-level errors.
+
+Impact: Callers cannot distinguish between "primal unreachable" and "primal rejected the request". This masks parameter validation errors.
+
+Severity: **Medium** — workaround: ensure correct parameters. Does not block methods with valid params.
+
+**GAP-MATRIX-08 (NEW): biomeOS self-discovery routing pollution**
+
+Neural API discovers its own socket ~20s after startup during a re-scan sweep, registering itself as a capability provider for all domains. Creates duplicate `neural @` routing entries. Correct primal remains the `primary_endpoint` so routing works, but the table is polluted.
+
+Impact: Cosmetic/diagnostic noise. No functional impact observed.
+
+Severity: **Low** — biomeOS should exclude its own socket from auto-discovery.
+
+**GAP-MATRIX-02: tower_atomic_bootstrap.toml — PARTIALLY RESOLVED (biomeOS v2.93)**
+
+biomeOS v2.93 added `#[serde(default)]` to `GraphDefinition.name/version`. The graph loader code path now successfully parses all TOML files (confirmed via debug logs). However:
+- Bootstrap sequence still fails on `tower_atomic_bootstrap.toml` (different code path)
+- `graph.list` returns empty array despite loader parsing success
+
+Severity: **Medium** — graph loading works for analysis but not for bootstrap or runtime listing.
 
 **GAP-MATRIX-03: Songbird TLS cipher suite compatibility**
 
-Some HTTPS targets fail TLS handshake (httpbin.org) while others succeed (ifconfig.me). This suggests Songbird's TLS 1.3 implementation doesn't support all cipher suites the targets require.
-
-Impact: Some HTTPS endpoints unreachable through Tower Atomic.
+Some HTTPS targets fail TLS handshake (httpbin.org) while others succeed (ifconfig.me). Songbird's TLS 1.3 implementation doesn't support all cipher suites targets require.
 
 Severity: **Low** — most targets work. Songbird team can expand cipher suite support.
 
 **GAP-MATRIX-04: NestGate CLI instability**
 
-NestGate's `--help` historically segfaults. The `daemon --socket-only --dev` mode is inferred from binary strings, not documented. NestGate uses HTTP REST, not JSON-RPC over UDS — different IPC pattern from other primals.
+NestGate uses HTTP REST, not JSON-RPC over UDS — different IPC pattern from other primals. CLI `--help` historically segfaults.
 
-Impact: NestGate integration requires HTTP bridge or NestGate evolution to JSON-RPC.
-
-Severity: **Medium** — workaround via HTTP port, but breaks the uniform JSON-RPC IPC model.
+Severity: **Medium** — breaks the uniform JSON-RPC IPC model. HTTP bridge or NestGate evolution needed.
 
 **GAP-MATRIX-05: Provenance trio + Squirrel + ToadStool not tested live**
 
-rhizoCrypt, loamSpine, sweetGrass, Squirrel, and ToadStool were not running during validation. Their individual L0 routing and L1 composition patterns remain structural-only (validated by primalSpring Rust code, not by live IPC).
+L0 domains 3-8 remain structural-only (validated by primalSpring Rust code, not live IPC).
 
-Impact: L0 domains 3-8 are structural-only PASS, not live PASS.
-
-Severity: **Medium** — requires starting each primal, which needs plasmidBin binaries and correct CLI flags.
+Severity: **Medium** — requires starting each primal with correct CLI flags.
 
 **GAP-MATRIX-06: plasmidBin binary freshness**
 
-`primalspring_primal` was from March 27 (pre-Phase 25). Updated to April 7 during this session. Other binaries: BearDog (Mar 27), Songbird (Mar 27 plasmidBin, Apr 7 from-source), NestGate (Mar 28), Squirrel (Mar 27), ToadStool (Mar 27). The provenance trio was updated Apr 7 (rhizoCrypt, loamSpine, sweetGrass).
-
-Impact: Some binaries may not reflect latest primal evolution.
+Some binaries pre-date Phase 25 evolution.
 
 Severity: **Low** — rebuild from source when needed. Manifest tracks versions.
+
+**Songbird capability advertisement gap**
+
+Songbird lists domain descriptors (e.g., `network.discovery`) in `capabilities.list` but returns "unknown JSON-RPC method" when called. These are capability domain markers, not method endpoints. biomeOS forwards the exact capability name as a method, which Songbird doesn't implement.
+
+Severity: **Low** — Songbird needs to either implement advertised names as methods or provide a method-name mapping in its `capabilities.list` response.

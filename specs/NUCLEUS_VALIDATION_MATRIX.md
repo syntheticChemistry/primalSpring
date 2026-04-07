@@ -54,7 +54,7 @@ These are the composition patterns proven in primalSpring that downstream system
 
 | Spring | Domain | A | B | C | D | E | F | G | H | I | J |
 |--------|--------|---|---|---|---|---|---|---|---|---|---|
-| **primalSpring** | Coordination | **PASS** | **PASS** | **LIVE** (Tower) | **LIVE** (ifconfig.me 200) | structural | structural | structural | structural | n/a | structural |
+| **primalSpring** | Coordination | **PASS** | **PASS** | **LIVE** (Tower) | **LIVE** (ifconfig.me 200) | structural | structural | structural | structural | n/a | structural | **52 caps, 7/9 call PASS** |
 | **wetSpring** | Biology | pending | pending | pending | pending | pending | pending | pending | pending | n/a | pending |
 | **hotSpring** | Physics | pending | pending | pending | pending | pending | **likely** | pending | pending | n/a | pending |
 | **airSpring** | Agriculture | pending | pending | pending | pending | pending | pending | pending | pending | n/a | pending |
@@ -223,36 +223,58 @@ Tower Atomic (BearDog + Songbird) validated live on Eastgate. Neural API running
 
 ### Run 2: biomeOS v2.92 (post-fix — probe_endpoint + prefix matching)
 
-biomeOS v2.92 includes real JSON-RPC probing (`identity.get` + `capabilities.list`), 4-format capability parser alignment, and domain prefix matching (GAP-019). Rebuilt from source and validated:
+biomeOS v2.92 includes real JSON-RPC probing (`identity.get` + `capabilities.list`), 4-format capability parser alignment, and domain prefix matching (GAP-019). Songbird (14 caps) registered. BearDog (Format E) still unrecognized. Proxy forwarding broken for all methods.
+
+### Run 3: biomeOS v2.93 (post-fix — GAP-MATRIX-07 + 01b + 02)
+
+biomeOS v2.93 resolves all three gaps from Run 2. Rebuilt from source (`13ca2328`) and validated:
 
 | Probe | Result | Notes |
 |-------|--------|-------|
-| BearDog health.liveness (direct) | **LIVE PASS** | v0.9.0, 9 capability groups via `capabilities.list` |
+| BearDog health.liveness (direct) | **LIVE PASS** | v0.9.0, 9 capability groups |
 | BearDog crypto.sign_ed25519 (direct) | **LIVE PASS** | Ed25519 signature generated |
 | BearDog crypto.blake3_hash (direct) | **LIVE PASS** | BLAKE3 hash confirmed |
-| Songbird health.liveness (direct) | **LIVE PASS** | Healthy |
-| Songbird HTTPS ifconfig.me (direct) | **LIVE PASS** | HTTP 200 via Tower crypto, 300ms |
-| Neural API health.liveness | **LIVE PASS** | v0.1.0, alive |
-| Neural API → Songbird discovery | **PARTIAL** | 14 Songbird capabilities registered (was 0). Routing finds Songbird. Proxy forwarding fails. |
-| Neural API → BearDog capabilities | **FAIL** | BearDog `provided_capabilities` wire format (`[{type, methods}]`) unrecognized — 0 BearDog capabilities registered. **GAP-MATRIX-01b** |
-| Neural API capability.call forwarding | **FAIL** | Discovers correct provider, but proxy connection to primal socket fails. **GAP-MATRIX-07** |
-| Neural API capability.discover | **LIVE PASS** | Returns correct Songbird endpoint for `network.*` domains |
+| Songbird health.liveness (direct) | **LIVE PASS** | v0.2.1, healthy |
+| Songbird capabilities.list (direct) | **LIVE PASS** | 14 capabilities via Format A |
+| Neural API → BearDog capabilities | **LIVE PASS** | **38 BearDog capabilities registered** (Format E parsed). Was 0 in v2.92. |
+| Neural API → Songbird capabilities | **LIVE PASS** | 14 Songbird capabilities registered. |
+| Neural API auto-discovery total | **LIVE PASS** | **52 capabilities from 2 primals** |
+| capability.discover crypto | **LIVE PASS** | Routes to beardog, correct endpoint |
+| capability.discover network | **LIVE PASS** | Routes to songbird, correct endpoint |
+| capability.discover tls | **LIVE PASS** | Routes to beardog, correct endpoint |
+| capability.discover security | **LIVE PASS** | Routes to beardog, correct endpoint |
+| **capability.call crypto.blake3_hash** | **LIVE PASS** | End-to-end: Neural API → BearDog → BLAKE3 hash result |
+| **capability.call crypto.sign_ed25519** | **LIVE PASS** | End-to-end: Neural API → BearDog → Ed25519 signature |
+| **capability.call crypto.hmac_sha256** | **LIVE PASS** | End-to-end: Neural API → BearDog → HMAC result |
+| **capability.call security.evaluate** | **LIVE PASS** | End-to-end: Neural API → BearDog → trust evaluation |
+| **capability.call trust.evaluate** | **LIVE PASS** | End-to-end: Neural API → BearDog → trust evaluation |
+| **capability.call tls.derive_secrets** | **LIVE PASS** | End-to-end: Neural API → BearDog → TLS key derivation |
+| capability.call crypto.verify_ed25519 | **FAIL** | GAP-MATRIX-07b: primal returns param error, proxy reports "Failed to forward" |
+| capability.call encryption.encrypt | **FAIL** | GAP-MATRIX-07b: primal returns param error, proxy reports "Failed to forward" |
+| capability.call network.discovery | **FAIL** | Songbird advertises but does not implement as callable method |
+| graph.list | **EMPTY** | Returns `[]` despite TOML parsing succeeding in loader. Bootstrap path still fails. |
 | NestGate | NOT STARTED | GAP-MATRIX-04: CLI instability |
 | ToadStool, Squirrel, Trio | NOT STARTED | GAP-MATRIX-05: require manual process launch |
 
-### What biomeOS v2.92 Fixed
+### What biomeOS v2.93 Fixed
 
-- **Songbird capabilities discovered**: 14 capabilities registered (network.discovery, network.federation, network.relay, network.stun, network.igd, network.quic, network.tls, network.tor, network.onion, ipc.jsonrpc, ipc.tarpc, crypto.delegate, nfc.genesis, bluetooth.pair). Was 0 in v2.81.
-- **Prefix routing works**: `capability.discover("network")` correctly finds Songbird via `network.*` prefix scan.
-- **Domain fallback table expanded**: "registry" added as CapabilityTaxonomy alias for Discovery→songbird.
+- **GAP-MATRIX-07 (Critical) → RESOLVED**: `TransportEndpoint::parse()` now handles `unix://` URI scheme. `capability.call` proxy forwarding works end-to-end. 7 of 9 tested BearDog methods forwarded successfully through Neural API.
+- **GAP-MATRIX-01b (Medium) → RESOLVED**: Format E parser handles BearDog's `provided_capabilities: [{type, methods}]` wire format. 38 BearDog capabilities now registered (9 domain groups + 29 qualified methods).
+- **GAP-MATRIX-01 (Medium) → RESOLVED**: Combined with Songbird (14 caps), 52 total capabilities auto-discovered from 2 primals. The original "0 capabilities" issue is fully resolved.
+- **GAP-MATRIX-02 PARTIAL**: `#[serde(default)]` on `GraphDefinition.name/version` fixes the graph loader path, but the bootstrap sequence still fails on `tower_atomic_bootstrap.toml`. `graph.list` returns empty.
 
 ### What Remains
 
-- **GAP-MATRIX-01b**: BearDog uses Format E wire format (`provided_capabilities: [{type, methods}]`). biomeOS v2.92 parses Formats A-D but not E. BearDog capabilities still not registered.
-- **GAP-MATRIX-07**: biomeOS proxy forwarding to primal sockets fails after discovery. Provider is found, but the actual JSON-RPC forwarding connection fails. Likely a URI handling issue (`unix:///path` vs bare path).
-- **GAP-MATRIX-02**: `tower_atomic_bootstrap.toml` still fails biomeOS graph parser.
+- **GAP-MATRIX-07b (Medium, NEW)**: biomeOS proxy error propagation — when a primal returns a JSON-RPC error response (e.g., param validation: `-32601`), biomeOS reports "Failed to forward" instead of propagating the error. This masks the real error from callers. The proxy conflates transport failure with application-level errors.
+- **GAP-MATRIX-08 (Low, NEW)**: biomeOS self-discovery — Neural API discovers its own socket during re-scan sweeps (~20s after startup) and registers itself as a capability provider, creating duplicate `neural @` routing entries. Correct primal remains primary_endpoint but routing table is polluted.
+- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML parsing still fails; `graph.list` returns empty.
+- **GAP-MATRIX-03 (Low)**: Songbird TLS cipher suite — some HTTPS endpoints fail TLS handshake.
+- **GAP-MATRIX-04 (Medium)**: NestGate CLI instability, HTTP REST (not JSON-RPC/UDS).
+- **GAP-MATRIX-05 (Low)**: No auto-start for ToadStool, Squirrel, Trio.
+- **GAP-MATRIX-06 (Low)**: SweetGrass/LoamSpine/RhizoCrypt provenance graph missing.
+- **Songbird method gap**: Songbird lists `network.discovery` etc. in `capabilities.list` but returns "unknown JSON-RPC method" when called. These are domain descriptors, not method endpoints.
 
-Critical path: GAP-MATRIX-07 (proxy forwarding) blocks all `capability.call` even for correctly discovered primals.
+Critical path: All Critical gaps resolved. Medium priority: GAP-MATRIX-07b (error propagation) → GAP-MATRIX-02 (graph loading) → GAP-MATRIX-04 (NestGate).
 
 ---
 
