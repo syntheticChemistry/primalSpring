@@ -71,11 +71,13 @@ order = 3
 required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "provenance"
+by_capability = "dag"
 capabilities = [
+    "dag",
     "dag.session.create", "dag.session.get", "dag.session.list",
     "dag.event.append", "dag.vertex.get", "dag.frontier.get",
     "dag.merkle.root", "dag.merkle.proof", "dag.merkle.verify",
+    "dag.dehydrate",
     "dag.slice.checkout", "dag.slice.get",
 ]
 
@@ -88,6 +90,7 @@ depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
 capabilities = [
+    "spine", "entry", "session", "certificate", "commit", "ledger",
     "spine.create", "spine.get", "spine.seal",
     "entry.append", "entry.get",
     "certificate.mint", "certificate.transfer",
@@ -103,6 +106,7 @@ depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
 capabilities = [
+    "braid", "attribution", "provenance", "anchoring",
     "braid.create", "braid.get", "braid.commit",
     "anchoring.anchor", "anchoring.verify",
     "provenance.graph", "provenance.export_provo",

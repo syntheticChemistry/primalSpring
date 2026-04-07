@@ -298,6 +298,178 @@ description = "Render a Grammar-of-Graphics expression via petalTongue"
 domain = "visualization"
 provider = "petaltongue"
 
+# ── Provenance trio (rhizoCrypt + loamSpine + sweetGrass) ──
+# Routing via biomeOS capability.call:
+#   capability.call({ capability: "dag", operation: "session.create", args: {...} })
+#   → discovers rhizoCrypt (by_capability = "dag") → forwards "dag.session.create"
+#
+# IMPORTANT: operation names must match the method suffix after the domain dot.
+# E.g., method "dag.session.create" → capability="dag", operation="session.create"
+#       method "entry.append" → capability="entry", operation="append"
+#       method "braid.create" → capability="braid", operation="create"
+#
+# biomeOS discover_capability uses prefix matching: "dag" finds primals
+# with capabilities starting with "dag.".
+
+# rhizoCrypt — content-addressed DAG (by_capability = "dag")
+[[capabilities]]
+method = "dag.session.create"
+description = "Create a provenance DAG session"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.session.get"
+description = "Get session metadata"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.session.list"
+description = "List DAG sessions"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.event.append"
+description = "Append an event (with witnesses) to a DAG session"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.vertex.get"
+description = "Get a vertex from the DAG"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.frontier.get"
+description = "Get the frontier (leaf vertices) of a session"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.merkle.root"
+description = "Compute Merkle root of a session (dehydration)"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.merkle.proof"
+description = "Generate a Merkle inclusion proof"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.merkle.verify"
+description = "Verify a Merkle proof"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.slice.checkout"
+description = "Checkout a DAG slice (subset)"
+domain = "dag"
+provider = "rhizocrypt"
+
+[[capabilities]]
+method = "dag.dehydrate"
+description = "Dehydrate a session — produces wire summary with Merkle root and witnesses"
+domain = "dag"
+provider = "rhizocrypt"
+
+# loamSpine — append-only ledger (by_capability = "ledger")
+[[capabilities]]
+method = "spine.create"
+description = "Create a new append-only spine"
+domain = "spine"
+provider = "loamspine"
+
+[[capabilities]]
+method = "spine.get"
+description = "Get spine metadata"
+domain = "spine"
+provider = "loamspine"
+
+[[capabilities]]
+method = "spine.seal"
+description = "Seal a spine (make immutable)"
+domain = "spine"
+provider = "loamspine"
+
+[[capabilities]]
+method = "entry.append"
+description = "Append an entry to a spine"
+domain = "entry"
+provider = "loamspine"
+
+[[capabilities]]
+method = "entry.get"
+description = "Get an entry by ID"
+domain = "entry"
+provider = "loamspine"
+
+[[capabilities]]
+method = "certificate.mint"
+description = "Mint a certificate for a committed session"
+domain = "certificate"
+provider = "loamspine"
+
+[[capabilities]]
+method = "session.commit"
+description = "Commit a dehydrated session to the ledger"
+domain = "session"
+provider = "loamspine"
+
+# sweetGrass — attribution braids (by_capability = "attribution")
+[[capabilities]]
+method = "braid.create"
+description = "Create an attribution braid"
+domain = "braid"
+provider = "sweetgrass"
+
+[[capabilities]]
+method = "braid.get"
+description = "Get braid metadata"
+domain = "braid"
+provider = "sweetgrass"
+
+[[capabilities]]
+method = "braid.commit"
+description = "Commit a braid to the graph"
+domain = "braid"
+provider = "sweetgrass"
+
+[[capabilities]]
+method = "anchoring.anchor"
+description = "Anchor a braid to external system"
+domain = "anchoring"
+provider = "sweetgrass"
+
+[[capabilities]]
+method = "anchoring.verify"
+description = "Verify an anchor"
+domain = "anchoring"
+provider = "sweetgrass"
+
+[[capabilities]]
+method = "provenance.graph"
+description = "Query the provenance graph"
+domain = "provenance"
+provider = "sweetgrass"
+
+[[capabilities]]
+method = "provenance.export_provo"
+description = "Export PROV-O representation of a braid"
+domain = "provenance"
+provider = "sweetgrass"
+
+[[capabilities]]
+method = "attribution.chain"
+description = "Get the attribution chain for a resource"
+domain = "attribution"
+provider = "sweetgrass"
+
 # ── Crypto capabilities (BearDog) — witness bridge mapping ──
 # BearDog response fields map to WireWitnessRef:
 #   signature (base64) → evidence

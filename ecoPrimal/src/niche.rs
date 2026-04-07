@@ -124,6 +124,38 @@ pub const ROUTED_CAPABILITIES: &[(&str, &str)] = &[
     // ── Visualization (petalTongue) ──
     ("visualization.render.dashboard", "petaltongue"),
     ("visualization.render.grammar", "petaltongue"),
+    // ── Crypto (BearDog) ──
+    ("crypto.sign_ed25519", "beardog"),
+    ("crypto.verify_ed25519", "beardog"),
+    // ── Provenance DAG (rhizoCrypt) ──
+    ("dag.session.create", "rhizocrypt"),
+    ("dag.session.get", "rhizocrypt"),
+    ("dag.session.list", "rhizocrypt"),
+    ("dag.event.append", "rhizocrypt"),
+    ("dag.vertex.get", "rhizocrypt"),
+    ("dag.frontier.get", "rhizocrypt"),
+    ("dag.merkle.root", "rhizocrypt"),
+    ("dag.merkle.proof", "rhizocrypt"),
+    ("dag.merkle.verify", "rhizocrypt"),
+    ("dag.slice.checkout", "rhizocrypt"),
+    ("dag.dehydrate", "rhizocrypt"),
+    // ── Ledger (loamSpine) ──
+    ("spine.create", "loamspine"),
+    ("spine.get", "loamspine"),
+    ("spine.seal", "loamspine"),
+    ("entry.append", "loamspine"),
+    ("entry.get", "loamspine"),
+    ("certificate.mint", "loamspine"),
+    ("session.commit", "loamspine"),
+    // ── Attribution (sweetGrass) ──
+    ("braid.create", "sweetgrass"),
+    ("braid.get", "sweetgrass"),
+    ("braid.commit", "sweetgrass"),
+    ("anchoring.anchor", "sweetgrass"),
+    ("anchoring.verify", "sweetgrass"),
+    ("provenance.graph", "sweetgrass"),
+    ("provenance.export_provo", "sweetgrass"),
+    ("attribution.chain", "sweetgrass"),
 ];
 
 /// All capabilities (local + routed method names) as a flat slice.

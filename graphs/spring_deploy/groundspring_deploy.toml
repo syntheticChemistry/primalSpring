@@ -104,8 +104,8 @@ order = 6
 required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "provenance"
-capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify"]
+by_capability = "dag"
+capabilities = ["dag", "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify", "dag.dehydrate", "dag.frontier.get"]
 
 [[graph.node]]
 name = "loamspine"
@@ -115,7 +115,7 @@ required = false
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
-capabilities = ["spine.create", "entry.append", "session.commit"]
+capabilities = ["spine", "entry", "session", "certificate", "commit", "ledger", "spine.create", "entry.append", "session.commit", "certificate.mint"]
 
 [[graph.node]]
 name = "sweetgrass"
@@ -125,7 +125,7 @@ required = false
 depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
-capabilities = ["braid.create", "braid.commit", "provenance.graph"]
+capabilities = ["braid", "attribution", "provenance", "anchoring", "braid.create", "braid.commit", "provenance.graph", "provenance.export_provo", "attribution.chain"]
 
 # ── Spring Science ────────────────────────────────────────────────────
 

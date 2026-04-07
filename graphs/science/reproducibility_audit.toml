@@ -49,8 +49,13 @@ order = 3
 required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "provenance"
-capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root", "provenance.replay"]
+by_capability = "dag"
+capabilities = [
+    "dag",
+    "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify",
+    "dag.dehydrate", "dag.frontier.get",
+    "provenance.replay",
+]
 
 [[graph.node]]
 name = "loamspine"
@@ -60,7 +65,11 @@ required = true
 depends_on = ["rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
-capabilities = ["spine.create", "entry.append", "session.commit", "provenance.verify", "provenance.diff"]
+capabilities = [
+    "spine", "entry", "session", "certificate", "commit", "ledger",
+    "spine.create", "entry.append", "session.commit", "certificate.mint",
+    "provenance.verify", "provenance.diff",
+]
 
 [[graph.node]]
 name = "sweetgrass"
@@ -70,7 +79,12 @@ required = true
 depends_on = ["loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
-capabilities = ["braid.create", "braid.commit", "provenance.graph", "provenance.braid", "provenance.attribute", "provenance.audit"]
+capabilities = [
+    "braid", "attribution", "provenance", "anchoring",
+    "braid.create", "braid.commit", "provenance.graph", "provenance.export_provo",
+    "attribution.chain",
+    "provenance.braid", "provenance.attribute", "provenance.audit",
+]
 
 # ── biomeOS (orchestrator for audit workflow) ──────────────────────────
 [[graph.node]]

@@ -6,7 +6,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-07 — GAP-017 resolved, fmt debt cleared, trio witness harvest.
+> **Last updated**: 2026-04-07 — GAP-017 resolved, fmt debt cleared, trio witness harvest, capability routing audit.
 > License alignment COMPLETE. toadStool clippy CLEAN. bingoCube edition 2024.
 > **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.3.0 — 15 primals + 4 tools.
 > **Grade distribution**: 4 A (barraCuda, bingoCube, coralReef, skunkBat), 8 B, 3 C, 0 D, 0 F.
@@ -37,8 +37,6 @@ Each entry links to the composition that exposes it and proposes a fix path.
 
 ## biomeOS
 
-All gaps **RESOLVED**.
-
 | ID | Gap | Status |
 |----|-----|--------|
 | BM-01 | `graph.deploy` routing | **RESOLVED** (v2.79 — `graph.execute`) |
@@ -46,6 +44,7 @@ All gaps **RESOLVED**.
 | BM-03 | `unix://` prefix on `capability.discover` | **RESOLVED** (v2.79 — `strip_unix_uri`) |
 | BM-04 | Late primal registration invisible | **RESOLVED** (v2.81 — `topology.rescan` + lazy discovery) |
 | BM-05 | Multi-shape probe response | **RESOLVED** (v2.81) |
+| BM-06 | `discover_capability` lacks domain prefix matching | LOW — workaround: deploy graphs include bare domain aliases in capabilities array. Only affects late-joining primals after graph load. See `PRIMALSPRING_BIOMEOS_NEURAL_API_GAPS_HANDOFF_APR07_2026.md` GAP-019. |
 
 **Compliance** (v2.87): clippy **CLEAN**, fmt **PASS**, all tests **PASS**, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, SPDX headers present. **Discovery compliance: COMPLETE** — identity-based routing (`discover_beardog_socket`, `beardog.health`) removed from all non-test code (v2.82 + v2.87). Only test fixtures retain primal names.
 
