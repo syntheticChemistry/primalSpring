@@ -610,3 +610,85 @@ Phase 27: biomeOS Self-Composition
   → biomeOS composes its own graphs at runtime
   → Dynamic capability negotiation for BYOB niche creation
 ```
+
+---
+
+## Live Validation Matrix — April 7, 2026
+
+### L0: Individual Primal Routing (Direct IPC)
+
+| # | Domain | Provider | Direct Probe | Neural API Route | Status |
+|---|--------|----------|-------------|-----------------|--------|
+| 1 | security | BearDog | **PASS** (health, sign, hash) | **FAIL** (not registered) | GAP: Neural API capability registration |
+| 2 | discovery | Songbird | **PASS** (health, find_primals) | **FAIL** (not registered) | GAP: Neural API capability registration |
+| 3 | compute | ToadStool | NOT RUNNING | — | Need: start ToadStool process |
+| 4 | storage | NestGate | NOT RUNNING | — | Need: start NestGate process |
+| 5 | ai | Squirrel | NOT RUNNING | — | Need: start Squirrel process |
+| 6 | dag | rhizoCrypt | NOT RUNNING | — | Need: start rhizoCrypt process |
+| 7 | spine | loamSpine | NOT RUNNING | — | Need: start loamSpine process |
+| 8 | braid | sweetGrass | NOT RUNNING | — | Need: start sweetGrass process |
+| 9 | http | Songbird (Tower) | **PASS** (ifconfig.me HTTP 200) | **FAIL** (not registered) | GAP: Neural API capability registration |
+| 10 | mesh | Songbird (BirdSong) | **FAIL** (mesh not initialized) | — | Expected: mesh.init required first |
+
+### L1: Tower Atomic Composition
+
+| Check | Result | Detail |
+|-------|--------|--------|
+| BearDog health.liveness | **PASS** | v0.9.0, 9 capability groups |
+| crypto.sign_ed25519 | **PASS** | Ed25519 signature, 88-char base64 |
+| crypto.blake3_hash | **PASS** | BLAKE3 hash of test data |
+| Songbird health.liveness | **PASS** | Healthy |
+| HTTPS via Tower (ifconfig.me) | **PASS** | HTTP 200, public IP obtained |
+| HTTPS via Tower (httpbin.org) | **FAIL** | TLS handshake failure (cipher suite gap) |
+| discovery.find_primals | **PASS** | Discovery operational |
+| BearDog → Songbird composition | **PASS** | Songbird uses BearDog crypto for TLS |
+
+### Critical Gaps Found
+
+**GAP-MATRIX-01: Neural API does not register primal capabilities from running sockets**
+
+biomeOS Neural API v2 detects BearDog and Songbird sockets (`beardog healthy with 0 capabilities`, `songbird healthy with 0 capabilities`) but the capability probe returns 0 capabilities. The primals ARE advertising capabilities (BearDog reports 9 capability groups via `capabilities.list`), but biomeOS's probe mechanism doesn't match the response format.
+
+Impact: All L0 Neural API routing tests FAIL. Direct IPC works. This blocks the `capability.call` path that all springs rely on.
+
+Severity: **Critical** — blocks L0 Neural API routing for all downstream springs.
+
+**GAP-MATRIX-02: tower_atomic_bootstrap.toml fails to parse in biomeOS**
+
+biomeOS logs: `Failed to parse TOML from: tower_atomic_bootstrap.toml`. The file is valid TOML (Python parser confirms). biomeOS's internal graph parser may require fields not present (e.g., `id`, or biomeOS-specific node structure).
+
+Impact: biomeOS cannot load semantic translations from the Tower graph. Falls back to internal defaults.
+
+Severity: **Medium** — degraded routing, workaround available (direct IPC).
+
+**GAP-MATRIX-03: Songbird TLS cipher suite compatibility**
+
+Some HTTPS targets fail TLS handshake (httpbin.org) while others succeed (ifconfig.me). This suggests Songbird's TLS 1.3 implementation doesn't support all cipher suites the targets require.
+
+Impact: Some HTTPS endpoints unreachable through Tower Atomic.
+
+Severity: **Low** — most targets work. Songbird team can expand cipher suite support.
+
+**GAP-MATRIX-04: NestGate CLI instability**
+
+NestGate's `--help` historically segfaults. The `daemon --socket-only --dev` mode is inferred from binary strings, not documented. NestGate uses HTTP REST, not JSON-RPC over UDS — different IPC pattern from other primals.
+
+Impact: NestGate integration requires HTTP bridge or NestGate evolution to JSON-RPC.
+
+Severity: **Medium** — workaround via HTTP port, but breaks the uniform JSON-RPC IPC model.
+
+**GAP-MATRIX-05: Provenance trio + Squirrel + ToadStool not tested live**
+
+rhizoCrypt, loamSpine, sweetGrass, Squirrel, and ToadStool were not running during validation. Their individual L0 routing and L1 composition patterns remain structural-only (validated by primalSpring Rust code, not by live IPC).
+
+Impact: L0 domains 3-8 are structural-only PASS, not live PASS.
+
+Severity: **Medium** — requires starting each primal, which needs plasmidBin binaries and correct CLI flags.
+
+**GAP-MATRIX-06: plasmidBin binary freshness**
+
+`primalspring_primal` was from March 27 (pre-Phase 25). Updated to April 7 during this session. Other binaries: BearDog (Mar 27), Songbird (Mar 27 plasmidBin, Apr 7 from-source), NestGate (Mar 28), Squirrel (Mar 27), ToadStool (Mar 27). The provenance trio was updated Apr 7 (rhizoCrypt, loamSpine, sweetGrass).
+
+Impact: Some binaries may not reflect latest primal evolution.
+
+Severity: **Low** — rebuild from source when needed. Manifest tracks versions.

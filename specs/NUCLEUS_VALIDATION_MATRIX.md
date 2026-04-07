@@ -54,7 +54,7 @@ These are the composition patterns proven in primalSpring that downstream system
 
 | Spring | Domain | A | B | C | D | E | F | G | H | I | J |
 |--------|--------|---|---|---|---|---|---|---|---|---|---|
-| **primalSpring** | Coordination | **PASS** | **PASS** | **PASS** | **PASS** | **PASS** | **PASS** | structural | structural | n/a | structural |
+| **primalSpring** | Coordination | **PASS** | **PASS** | **LIVE** (Tower) | **LIVE** (ifconfig.me 200) | structural | structural | structural | structural | n/a | structural |
 | **wetSpring** | Biology | pending | pending | pending | pending | pending | pending | pending | pending | n/a | pending |
 | **hotSpring** | Physics | pending | pending | pending | pending | pending | **likely** | pending | pending | n/a | pending |
 | **airSpring** | Agriculture | pending | pending | pending | pending | pending | pending | pending | pending | n/a | pending |
@@ -212,6 +212,26 @@ The gen4 vision (`COMPOSITION_PATTERNS.md`) introduces two patterns that extend 
 2. **PrimalBridge**: Each gen4 product has a bridge that connects to 8+ primal domains. The matrix validates that these domains are reachable through NUCLEUS composition.
 
 The NUCLEUS validation matrix is the gen3→gen4 bridge checkpoint: when all springs pass columns A-H, products can trust the composition layer.
+
+---
+
+## Live Validation Results (April 7, 2026)
+
+Tower Atomic (BearDog + Songbird) validated live on Eastgate. Neural API running but capability registration gap identified.
+
+| Probe | Result | Notes |
+|-------|--------|-------|
+| BearDog health.liveness | **LIVE PASS** | v0.9.0, 9 capability groups |
+| BearDog crypto.sign_ed25519 | **LIVE PASS** | Ed25519 signature generated |
+| BearDog crypto.blake3_hash | **LIVE PASS** | BLAKE3 hash confirmed |
+| Songbird health.liveness | **LIVE PASS** | Healthy |
+| Songbird HTTPS (ifconfig.me) | **LIVE PASS** | HTTP 200 via Tower crypto |
+| Songbird discovery.find_primals | **LIVE PASS** | Discovery operational |
+| Neural API capability.call | **LIVE FAIL** | GAP-MATRIX-01: primals not registered in Neural API |
+| NestGate | NOT STARTED | GAP-MATRIX-04: CLI instability |
+| ToadStool, Squirrel, Trio | NOT STARTED | GAP-MATRIX-05: require manual process launch |
+
+Critical gaps blocking full matrix: see `CROSS_SPRING_EVOLUTION.md` "Live Validation Matrix" section for details (GAP-MATRIX-01 through GAP-MATRIX-06).
 
 ---
 
