@@ -6,16 +6,18 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-07 — trio witness harvest. plasmidBin updated. exp089 validation binary.
+> **Last updated**: 2026-04-07 — GAP-017 resolved, fmt debt cleared, trio witness harvest.
 > License alignment COMPLETE. toadStool clippy CLEAN. bingoCube edition 2024.
 > **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.3.0 — 15 primals + 4 tools.
 > **Grade distribution**: 4 A (barraCuda, bingoCube, coralReef, skunkBat), 8 B, 3 C, 0 D, 0 F.
 > **Tool grades**: bingoCube A, benchScale A, agentReagents A, rustChip A.
 > **Public-ready tools**: bingoCube (83.4% coverage), benchScale (61.9%), agentReagents (60.2%) — all >=60% gate, scrubbed, Grade A.
 > **Deep debt resolved**: DEBT-02 (canonical capability registry — LOCAL/ROUTED split), DEBT-03 (Neural API routing — biomeOS v2.90), DEBT-05 (plasmidBin binary name verification), DEBT-06 (ionic protocol handlers — partial), probe_capability Tier 2 fix. Capability registry published to `wateringHole/capability_registry.toml`.
-> **Top ecosystem gaps (primals)**: discovery debt (toadStool D, Squirrel D), 3 fmt diffs (BearDog, Songbird, toadStool), domain symlinks (8 primals).
-> **barraCuda**: E0061 compile failure **FIXED** (Sprint 29). SIGSEGV remains concurrent-test driver debt. Musl-static rebuild pending.
-> **ToadStool**: Clippy **CLEAN** ↑↑, fmt 1 diff ↑↑ (was 1,899), discovery debt (285 files).
+> **Top ecosystem gaps (primals)**: discovery debt (toadStool D, Squirrel D), domain symlinks (8 primals).
+> **Fmt debt CLEARED**: BearDog 0 diffs ↑, Songbird 0 diffs ↑, toadStool 0 diffs ↑ — all 15 primals now pass `cargo fmt --check`.
+> **GAP-017 RESOLVED**: benchScale `deploy-ecoprimals.sh` now passes `--graphs-dir`, `--port`, `--family-id` to biomeOS. Health check upgraded to 15s grace + 3 retries.
+> **barraCuda**: E0061 compile failure **FIXED** (Sprint 29). executor.rs split (max 845 LOC ↑). SIGSEGV remains concurrent-test driver debt. Musl-static rebuild pending.
+> **ToadStool**: Clippy **CLEAN** ↑↑, fmt **CLEAN** ↑↑ (was 1,899), discovery debt (285 files).
 > **License**: All 15 primals on `AGPL-3.0-or-later` — zero license debt.
 >
 > **Composition principle (April 6)**: Complex functions emerge from composing base
@@ -216,12 +218,12 @@ All 5 open gaps are **Low** severity — polish items owned by primal teams.
 | Primal | Clippy | Fmt | `deny.toml` | License | Edition | Tests | Discovery |
 |--------|--------|-----|-------------|---------|---------|-------|-----------|
 | biomeOS | **CLEAN** | **PASS** | YES | **`-or-later`** ↑ | 2024 | **PASS (7,638)** ↑ | **P** |
-| BearDog | **CLEAN** | 1 diff | YES | **`-or-later`** ↑ | 2024 | **PASS (14,366)** | **P** |
-| Songbird | **CLEAN** | 2 diffs | YES | **`-or-later`** ↑ | 2024 | TIMEOUT (large suite) | **P** |
+| BearDog | **CLEAN** | **PASS** ↑ | YES | **`-or-later`** ↑ | 2024 | **PASS (14,366)** | **P** |
+| Songbird | **CLEAN** | **PASS** ↑ | YES | **`-or-later`** ↑ | 2024 | TIMEOUT (large suite) | **P** |
 | NestGate | **CLEAN** | **PASS** | YES | **`-or-later`** ↑ | 2024 | **PASS (11,661)** ↑ | **P** |
 | petalTongue | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS** (1 flaky) | **P** |
 | Squirrel | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (6,868)** | **P** |
-| toadStool | **CLEAN** ↑↑ | 1 diff ↑↑ | YES | **`-or-later`** ↑ | 2024 | TIMEOUT (large suite) | **D** |
+| toadStool | **CLEAN** ↑↑ | **PASS** ↑↑ | YES | **`-or-later`** ↑ | 2024 | TIMEOUT (large suite) | **D** |
 | sweetGrass | **CLEAN** ↑ | **PASS** | YES | **`-or-later`** ↑ | 2024 | PASS | **P** |
 | rhizoCrypt | **CLEAN** ↑ | **PASS** | YES | `-or-later` | 2024 | PASS | **P** |
 | loamSpine | **CLEAN** | **PASS** ↑ | YES | `-or-later` | 2024 | **PASS (29)** | **P** |
@@ -410,11 +412,11 @@ All 15 primals now on `AGPL-3.0-or-later`. Zero license debt remaining.
 | Primal | Category | Issue | Status |
 |--------|----------|-------|--------|
 | barraCuda | ~~compile~~ | ~~E0061~~ `eval_math` decomposition | **FIXED** (Sprint 29) |
-| barraCuda | **file size** | `executor.rs` 1,097 lines (limit 1,000) | Open |
+| barraCuda | ~~file size~~ | ~~`executor.rs` 1,097 lines~~ → split (max 845 LOC) | **FIXED** ↑ |
 | barraCuda | **test** | `fault_injection` SIGSEGV (thread cap added Sprint 29) | Open |
-| BearDog | **fmt** | 1 file diff | Open |
-| Songbird | **fmt** | 2 file diffs | Open |
-| toadStool | **fmt** | ~~1,899 diffs~~ → **1 diff** | **Nearly resolved** ↑↑ |
+| BearDog | ~~fmt~~ | ~~1 file diff~~ | **FIXED** ↑ |
+| Songbird | ~~fmt~~ | ~~2 file diffs~~ | **FIXED** ↑ |
+| toadStool | ~~fmt~~ | ~~1,899 diffs~~ → ~~1 diff~~ → **0 diffs** | **FIXED** ↑↑ |
 | toadStool | ~~clippy~~ | ~~`manual_let_else`, deprecated `GenericArray`~~ | **FIXED** ↑↑ |
 | NestGate | ~~fmt~~ | ~~`migration.rs:189`~~ | **FIXED** |
 | coralReef | ~~clippy~~ | ~~7 errors in `coral-gpu` tests~~ | **FIXED** ↑ |
@@ -422,7 +424,7 @@ All 15 primals now on `AGPL-3.0-or-later`. Zero license debt remaining.
 | bingoCube | ~~edition~~ | ~~2021~~ → **2024** | **FIXED** ↑ |
 | rhizoCrypt | ~~clippy~~ | ~~5 `doc_markdown` warnings~~ | **FIXED** (39 warnings resolved) ↑ |
 | sweetGrass | ~~clippy~~ | ~~1 unused import~~ | **FIXED** ↑ |
-| sweetGrass | **config** | `.cargo/config.toml` target-dir points to `/home/southgate/` | Open (non-blocking) |
+| sweetGrass | ~~config~~ | ~~`.cargo/config.toml` target-dir points to `/home/southgate/`~~ | **FIXED** (already cleaned) |
 | petalTongue | **test** | 1 flaky test (`test_resolve_instance_id_error_message_invalid`) | Open (passes on retry) |
 
-**Resolved this cycle:** 10 build/test debt items. **Remaining:** 6 (3 barraCuda, 1 BearDog fmt, 1 Songbird fmt, 1 sweetGrass config, 1 petalTongue flaky).
+**Resolved this cycle:** 14 build/test debt items (+4 this push: fmt×3, executor split). **Remaining:** 2 (barraCuda SIGSEGV test, petalTongue flaky test).
