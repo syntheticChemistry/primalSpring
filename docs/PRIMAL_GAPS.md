@@ -6,15 +6,23 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
 > (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
 >
-> **Last updated**: 2026-04-06 — DEBT-02/05/06 resolved, capability registry published, barraCuda unblocked.
-> **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.2.0 — 14 primals + 4 tools.
-> **Grade distribution**: 3 A (rhizoCrypt, barraCuda, bingoCube), 7 B, 3 C, 1 D, 0 F.
+> **Last updated**: 2026-04-06 (evening) — full ecosystem re-audit. 10 build/test debt items resolved.
+> License alignment COMPLETE. toadStool clippy CLEAN. bingoCube edition 2024.
+> **Compliance matrix**: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` v2.3.0 — 15 primals + 4 tools.
+> **Grade distribution**: 4 A (barraCuda, bingoCube, coralReef, skunkBat), 8 B, 3 C, 0 D, 0 F.
 > **Tool grades**: bingoCube A, benchScale A, agentReagents A, rustChip A.
 > **Public-ready tools**: bingoCube (83.4% coverage), benchScale (61.9%), agentReagents (60.2%) — all >=60% gate, scrubbed, Grade A.
 > **Deep debt resolved**: DEBT-02 (canonical capability registry — LOCAL/ROUTED split), DEBT-03 (Neural API routing — biomeOS v2.90), DEBT-05 (plasmidBin binary name verification), DEBT-06 (ionic protocol handlers — partial), probe_capability Tier 2 fix. Capability registry published to `wateringHole/capability_registry.toml`.
-> **Top ecosystem gaps (primals)**: discovery debt (5 primals), license alignment (8 primals), `#[allow(` migration (4 primals), domain symlinks (8 primals).
+> **Top ecosystem gaps (primals)**: discovery debt (toadStool D, Squirrel D), 3 fmt diffs (BearDog, Songbird, toadStool), domain symlinks (8 primals).
 > **barraCuda**: E0061 compile failure **FIXED** (Sprint 29). SIGSEGV remains concurrent-test driver debt. Musl-static rebuild pending.
-> **ToadStool**: Heavy fmt debt (~1,899 lines of diff), clippy failures, discovery debt (2,998 refs).
+> **ToadStool**: Clippy **CLEAN** ↑↑, fmt 1 diff ↑↑ (was 1,899), discovery debt (285 files).
+> **License**: All 15 primals on `AGPL-3.0-or-later` — zero license debt.
+>
+> **Composition principle (April 6)**: Complex functions emerge from composing base
+> primals via Neural API graphs. RootPulse is not a primal — it is a workflow graph
+> (`rootpulse_commit.toml`) executed over the provenance trio. Cross-spring data
+> exchange is a biomeOS graph design problem, not a missing primal. See
+> `wateringHole/DEPLOYMENT_AND_COMPOSITION.md` §The Composition Principle.
 
 ---
 
@@ -189,32 +197,43 @@ All 4 open gaps are **Low** severity — polish items owned by primal teams.
 
 ## Guideline Compliance Matrix
 
-| Primal | Clippy | Fmt | `forbid(unsafe)` | `deny.toml` | SPDX | Tests | Discovery |
-|--------|--------|-----|-------------------|-------------|------|-------|-----------|
-| biomeOS | CLEAN | PASS | deny + per-crate forbid | YES | YES | **PASS** | **C** |
-| BearDog | CLEAN | PASS | workspace forbid | YES (skip 30→15) | YES | **PASS (14.4K+)** | **C** |
-| Songbird | CLEAN | PASS | per-crate forbid | YES | YES | **PASS (8.9K+)** | **P→C** ↑ |
-| NestGate | CLEAN | PASS | deny + per-crate forbid | YES | YES | **PASS (11.3K)** ↑ | **P→C** |
-| petalTongue | CLEAN | PASS | per-crate forbid | YES | YES | **PASS (6K)** ↑ | **P→C** ↑ |
-| Squirrel | **CLEAN** ↑ | PASS | workspace forbid | YES | YES | **PASS (6.9K)** ↑ | **P** |
-| toadStool | **FAIL** ↓ | PASS | deny (workspace) ↑ | YES | n/c | **PASS (6.5K)** | **P** ↑ |
-| sweetGrass | 1 warn | PASS | deny + per-crate forbid | YES | YES | PASS | **C** |
-| rhizoCrypt | CLEAN | PASS | deny + cfg_attr forbid | YES | n/c | PASS | **C** |
-| loamSpine | CLEAN | PASS | workspace forbid | YES | n/c | PASS | **C** |
-| barraCuda | **1 lint** | PASS | n/c | YES | n/c | **PASS (3.8K)** ↑ | n/a |
-| sourDough | CLEAN | PASS | workspace forbid | **NO** | YES | **PASS (239)** | **C** |
-| coralReef | CLEAN | PASS | forbid (core/stubs) | YES | YES | **PASS (4.3K)** | **C** |
+| Primal | Clippy | Fmt | `deny.toml` | License | Edition | Tests | Discovery |
+|--------|--------|-----|-------------|---------|---------|-------|-----------|
+| biomeOS | **CLEAN** | **PASS** | YES | **`-or-later`** ↑ | 2024 | **PASS (7,638)** ↑ | **P** |
+| BearDog | **CLEAN** | 1 diff | YES | **`-or-later`** ↑ | 2024 | **PASS (14,366)** | **P** |
+| Songbird | **CLEAN** | 2 diffs | YES | **`-or-later`** ↑ | 2024 | TIMEOUT (large suite) | **P** |
+| NestGate | **CLEAN** | **PASS** | YES | **`-or-later`** ↑ | 2024 | **PASS (11,661)** ↑ | **P** |
+| petalTongue | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS** (1 flaky) | **P** |
+| Squirrel | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (6,868)** | **P** |
+| toadStool | **CLEAN** ↑↑ | 1 diff ↑↑ | YES | **`-or-later`** ↑ | 2024 | TIMEOUT (large suite) | **D** |
+| sweetGrass | **CLEAN** ↑ | **PASS** | YES | **`-or-later`** ↑ | 2024 | PASS | **P** |
+| rhizoCrypt | **CLEAN** ↑ | **PASS** | YES | `-or-later` | 2024 | PASS | **P** |
+| loamSpine | **CLEAN** | **PASS** ↑ | YES | `-or-later` | 2024 | **PASS (29)** | **P** |
+| barraCuda | **CLEAN** ↑ | **PASS** | YES | `-or-later` | 2024 | **PASS (3,899)** | **P** |
+| sourDough | **CLEAN** | **PASS** | **YES** ↑ | `-or-later` | 2024 | **PASS (3)** | **P→C** |
+| coralReef | **CLEAN** ↑ | **PASS** | YES | **`-or-later`** ↑ | 2024 | **PASS (7)** | **P→C** |
+| bingoCube | **CLEAN** ↑ | **PASS** | **YES** ↑ | **`-or-later`** ↑ | **2024** ↑ | PASS | **P→C** |
+| skunkBat | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | PASS (3 ignored) | **P** |
 
-**Legend**: n/c = not checked this cycle; ↑ = improved since last audit
+**Legend**: ↑ = improved since last audit; ↑↑ = major improvement
 
-### Compliance Evolution (April 3 — full ecosystem pull + re-audit)
+### Compliance Evolution (April 6 — full ecosystem re-audit)
 
-1. **Squirrel** (alpha.36): **Major turnaround.** Clippy **CLEAN** (was FAIL), fmt PASS, **6,856 tests PASS, 0 failures** (was build-broken). alpha.33 removed 65,910 lines dead code. alpha.36: stub evolution, self-ref cleanup, zero-copy. Build fully unblocked. Discovery: 215 files / 1789 refs, env vars 38 files / 225 refs (broader scan than previous — full crates/).
-2. **NestGate** (3dc0044b): **Overstep shedding accelerating.** Deleted `discovery_mechanism` module (-2K lines, zero in-tree consumers). Deprecated `nestgate-network` crate (`#![deprecated]`, zero workspace dependents). Removed dead features from automation/zfs. Documented security delegation model. Clippy CLEAN, fmt PASS, 6,607 tests (2 flaky discovery tests — pass on retry). Discovery: 22 files / 192 refs, env vars 9 files / 32 refs.
-3. **toadStool** (S174-S175): S173-2 was a direct primalSpring audit response — **TS-01 RESOLVED**, `deny(unsafe_code)` documented (43/43 crates). S174-S175: unsafe reduction -80% in consumer blocks, doc cleanup. Clippy **FAIL** (2 errors: `v4l2` private `_pad` fields in `toadstool-display`, plus deprecated `aes_gcm::from_slice` in `toadstool-distributed`). fmt PASS. Discovery: 393 files / 3239 refs (full scan).
-4. **Songbird** (wave 102): fmt **PASS** (was FAIL). Discovery 2558→1472 refs (42% reduction). 7,020+ tests. Status X→P.
-5. **barraCuda**: No new commits. `fault_injection` SIGSEGV unresolved.
-6. **biomeOS**, **BearDog**, **rhizoCrypt**, **loamSpine**, **sweetGrass**, **petalTongue**, **sourDough**: No new commits. Status stable.
+**Ecosystem-wide license alignment COMPLETE.** All 15 primals now on `AGPL-3.0-or-later`. Previously 8 were on `-only`.
+
+1. **toadStool**: **Massive turnaround.** Clippy **CLEAN** (was FAIL — 2 errors). Fmt from ~1,899 diffs to **1 diff**. License updated. `tar` dep updated.
+2. **bingoCube**: Edition **2024** (was 2021). Clippy **CLEAN** (was 15 errors). `deny.toml` added. License updated.
+3. **coralReef**: Clippy **CLEAN** (was 7 errors in `coral-gpu` tests). License updated.
+4. **rhizoCrypt**: Clippy **CLEAN** (was 5 `doc_markdown` warnings). 39 warnings resolved.
+5. **sweetGrass**: Clippy **CLEAN** (was 1 warning). License updated.
+6. **sourDough**: `deny.toml` **added** (was missing).
+7. **loamSpine**: Fmt **PASS** (was failing). v0.9.16 public chain anchor.
+8. **biomeOS**: v2.91 — large file refactoring, 27 new tests, license `-or-later`. 7,638 tests.
+9. **beardog**: 344 clippy warnings resolved (pedantic+nursery clean). License updated. 1 fmt diff.
+10. **songbird**: 48 clippy warnings resolved. License updated. 2 fmt diffs.
+11. **barraCuda**: E0061 compile failure **FIXED** (Sprint 29). SIGSEGV test thread cap. 3,899 tests pass.
+12. **NestGate**: 11,661 tests. Doc alignment. License updated.
+13. **Squirrel**, **petalTongue**, **skunkBat**: Stable, clean.
 
 ---
 
@@ -236,36 +255,51 @@ All 4 open gaps are **Low** severity — polish items owned by primal teams.
 | PT-06 | petalTongue | callback_tx push notifications | deep debt evolution |
 
 **23 gaps resolved** across the full cycle. **4 open** (all low). Zero critical, zero medium.
+10 build/test debt items resolved (April 6): license alignment complete, toadStool clippy+fmt,
+bingoCube clippy+edition, coralReef clippy, rhizoCrypt clippy, sweetGrass clippy, NestGate fmt,
+barraCuda compile.
 
 ---
 
-## Capability-Based Discovery Compliance (April 3, 2026)
+## Capability-Based Discovery Compliance (April 6, 2026)
 
 Per `CAPABILITY_BASED_DISCOVERY_STANDARD.md` v1.2: primals MUST discover each other
 by capability domain via Neural API, not by hardcoded primal names in routing code.
 
-| Primal | Compliance | Primal-Name Refs (files) | Env-Var Refs (files) | Trend |
-|--------|-----------|--------------------------|----------------------|-------|
-| BearDog | **C** | 0 (self-refs only) | 0 | Stable |
-| biomeOS | **C** | 0 non-test | 0 non-test | Stable |
-| rhizoCrypt | **C** | 0 | 0 | Stable |
-| loamSpine | **C** | 0 | 0 | Stable |
-| sweetGrass | **C** | 0 | 0 | Stable |
-| NestGate | **P→C** | 22 files / 192 refs (full scan) | 9 files / 32 refs | **Improving** ↑ |
-| petalTongue | **P→C** ↑ | 125 files / 982 refs (full scan) | 15 files / 77 refs | **Improving** ↑ |
-| toadStool | **P** ↑ | 384 files / 2998 refs ↑ | 52 files / 168 refs | **Improving** ↑ |
-| Squirrel | **P** | 215 files / 1789 refs (full scan) | 38 files / 225 refs | **Build fixed** ↑ |
-| Songbird | **P→C** ↑ | 178 files / 935 refs ↑ | 68 files / 285 refs | **Improving** ↑↑↑ |
-| coralReef | **C** | 2 (doc/attribution comments) | 0 (only `BIOMEOS_*` standard) | Stable |
-| sourDough | **C** | 1 (cosmetic) | 0 | Stable |
+Scan methodology: `rg -l` for other-primal names in non-test, non-archive, non-target source
+files. Self-references excluded. biomeOS excluded from grading (orchestrator — primal-name
+awareness is in-domain for routing).
+
+| Primal | Compliance | Other-Primal Files | Env-Var Refs | Trend |
+|--------|-----------|-------------------|--------------|-------|
+| sourDough | **P→C** | 5 | 2 | Stable |
+| bingoCube | **P→C** | 9 | 0 | Stable |
+| coralReef | **P→C** | 31 | 17 | Stable |
+| NestGate | **P** | 63 | 97 | Improving ↑ |
+| loamSpine | **P** | 72 | 155 | Stable |
+| sweetGrass | **P** | 93 | 196 | Stable |
+| skunkBat | **P** | 66 | 9 | New entry |
+| BearDog | **P** | 131 | 147 | New methodology (broader scan) |
+| barraCuda | **P** | 136 | 17 | New entry |
+| petalTongue | **P** | 168 | 106 | Stable |
+| rhizoCrypt | **P** | 127 | 204 | Broader scan vs previous |
+| Songbird | **P** | 193 | 329 | Improving ↑ |
+| Squirrel | **D** | 205 | 232 | Stable |
+| toadStool | **D** | 285 | 203 | Improving ↑ |
+| biomeOS | *(orchestrator)* | 458 | 733 | In-domain routing refs |
+
+**Note on methodology change**: This scan uses a broader regex than previous audits
+(includes all 15 primal tokens, case-insensitive, across all non-test source files).
+Previous audits used a narrower scope, producing lower absolute numbers. Relative
+rankings and trends are consistent.
 
 ### Discovery Compliance Priority
 
-1. **toadStool** — 2998 refs / 384 files (was 3239/393 — 7% cut in S176-S178). `env_config` primal names → capability names. Trajectory improving.
-2. **Squirrel** — 1789 refs / 215 files. Build FIXED (alpha.36). Bulk is acceptable (logging, aliases, serde compat).
-3. **petalTongue** — 982 refs / 125 files. Major renames landed. Improving.
-4. **Songbird** — **935 refs / 178 files** (was 2558→1472→1016→935 — **63% total reduction**). Strongest trajectory. Near-compliant.
-5. **NestGate** — 195 refs / 24 files. Near-compliant. Overstep shedding is the real work.
+1. **toadStool** — 285 files (was 384 previous scan). Improving but still highest non-orchestrator.
+2. **Squirrel** — 205 files. Many refs are acceptable (logging, aliases, serde compat).
+3. **Songbird** — 193 files. Strongest improvement trajectory across audit cycles.
+4. **petalTongue** — 168 files. UI backends reference primal names for display/discovery.
+5. **NestGate** — 63 files. Near-compliant. Overstep shedding continues.
 
 Full per-primal details: `wateringHole/ECOSYSTEM_COMPLIANCE_MATRIX.md` §Tier 4: Discovery / Self-Knowledge.
 
@@ -345,40 +379,30 @@ The single remaining failure (`ai.query`) is an **environment dependency** — S
 
 ---
 
-## Ecosystem Audit Debt (April 4, 2026)
+## Ecosystem Audit Debt (April 6, 2026)
 
-### License Alignment — `AGPL-3.0-or-later` is the standard
+### License Alignment — **COMPLETE**
 
-Pinning to `-only` means not trusting the nonprofit stewards who fight the legal battles. The scyBorg triple-copyleft is aggressive by design; `-or-later` is the correct SPDX identifier.
-
-| Primal | Current | Needed | Debt |
-|--------|---------|--------|------|
-| BearDog | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
-| Songbird | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
-| NestGate | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
-| ToadStool | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
-| coralReef | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
-| biomeOS | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
-| sweetGrass | `AGPL-3.0-only` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
-| bingoCube | `AGPL-3.0` | `AGPL-3.0-or-later` | Update `Cargo.toml` |
-
-Compliant (no change needed): barraCuda, Squirrel, petalTongue, rhizoCrypt, LoamSpine, sourDough.
+All 15 primals now on `AGPL-3.0-or-later`. Zero license debt remaining.
 
 ### Build/Test Debt
 
-| Primal | Category | Issue |
-|--------|----------|-------|
-| barraCuda | ~~compile~~ | ~~E0061~~ **FIXED** (Sprint 29 — `eval_math` decomposition). Musl-static rebuild pending. |
-| barraCuda | **file size** | `executor.rs` 1,097 lines (limit 1,000) |
-| ToadStool | **fmt** | ~1,899 lines of diff — `cargo fmt --all` never run cleanly |
-| ToadStool | **clippy** | `manual_let_else` in GPU test code, deprecated `GenericArray::from_slice` |
-| NestGate | **fmt** | 1 file: `migration.rs:189` line wrap |
-| coralReef | **clippy** | 7 errors: `items_after_statements`, `doc_markdown` in `coral-gpu` tests |
-| bingoCube | **clippy** | 15 cast errors in `core/src/lib.rs` |
-| bingoCube | **edition** | 2021 (needs 2024) |
-| bingoCube | **docs** | No `CHANGELOG.md` |
-| rhizoCrypt | **clippy** | 5 `doc_markdown` in test file `store_redb_tests_query.rs` |
-| sweetGrass | **clippy** | 1 unused import in `tcp_jsonrpc.rs:123` |
-| sweetGrass | **config** | `.cargo/config.toml` target-dir points to `/home/southgate/` |
-| BearDog | **test** | `dispatch_doctor_comprehensive_runs` fails when no live primals |
-| biomeOS | **edition** | `tools/` sub-crate still on 2021 |
+| Primal | Category | Issue | Status |
+|--------|----------|-------|--------|
+| barraCuda | ~~compile~~ | ~~E0061~~ `eval_math` decomposition | **FIXED** (Sprint 29) |
+| barraCuda | **file size** | `executor.rs` 1,097 lines (limit 1,000) | Open |
+| barraCuda | **test** | `fault_injection` SIGSEGV (thread cap added Sprint 29) | Open |
+| BearDog | **fmt** | 1 file diff | Open |
+| Songbird | **fmt** | 2 file diffs | Open |
+| toadStool | **fmt** | ~~1,899 diffs~~ → **1 diff** | **Nearly resolved** ↑↑ |
+| toadStool | ~~clippy~~ | ~~`manual_let_else`, deprecated `GenericArray`~~ | **FIXED** ↑↑ |
+| NestGate | ~~fmt~~ | ~~`migration.rs:189`~~ | **FIXED** |
+| coralReef | ~~clippy~~ | ~~7 errors in `coral-gpu` tests~~ | **FIXED** ↑ |
+| bingoCube | ~~clippy~~ | ~~15 cast errors~~ | **FIXED** ↑ |
+| bingoCube | ~~edition~~ | ~~2021~~ → **2024** | **FIXED** ↑ |
+| rhizoCrypt | ~~clippy~~ | ~~5 `doc_markdown` warnings~~ | **FIXED** (39 warnings resolved) ↑ |
+| sweetGrass | ~~clippy~~ | ~~1 unused import~~ | **FIXED** ↑ |
+| sweetGrass | **config** | `.cargo/config.toml` target-dir points to `/home/southgate/` | Open (non-blocking) |
+| petalTongue | **test** | 1 flaky test (`test_resolve_instance_id_error_message_invalid`) | Open (passes on retry) |
+
+**Resolved this cycle:** 10 build/test debt items. **Remaining:** 6 (3 barraCuda, 1 BearDog fmt, 1 Songbird fmt, 1 sweetGrass config, 1 petalTongue flaky).

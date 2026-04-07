@@ -1,17 +1,70 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
-**Date**: March 22, 2026
-**From**: primalSpring v0.8.0
+**Date**: April 6, 2026
+**From**: primalSpring v0.8.1
 **License**: AGPL-3.0-or-later
+
+---
+
+## The Composition Principle
+
+**Complex functions emerge from composing base primals via Neural API graphs.
+You never build a new primal to achieve a higher-order capability — you compose
+existing ones.**
+
+Primals are atoms. Each owns one responsibility domain and exposes it as
+JSON-RPC capabilities. biomeOS's Neural API executes TOML workflow graphs
+that sequence capability calls across primals. The graph is the program;
+the primals are the instruction set; the emergent function is the product.
+
+```
+Layer 3: Emergent Systems (RootPulse, science pipelines, game engines)
+         Defined by TOML graphs, not new code
+         |
+Layer 2: biomeOS Neural API (graph execution + capability routing)
+         graph.execute → capability_call → route to provider
+         |
+Layer 1: Primals & Springs (autonomous, self-describing)
+         niche.rs self-knowledge, health.check, capability.list
+```
+
+**RootPulse** demonstrates this concretely: it is not a primal. It is a biomeOS
+CLI mode (`biomeos rootpulse commit`) that sends `graph.execute("rootpulse_commit")`
+to the Neural API. The Neural API executes `rootpulse_commit.toml` — a Sequential
+graph over the provenance trio (rhizoCrypt → loamSpine → sweetGrass) with BearDog
+signing. The trio primals know nothing about "RootPulse." They expose `dag.*`,
+`session.commit`, `braid.*` capabilities. The graph composes them into version
+control.
+
+**wetSpring's NUCLEUS** follows the same pattern: 11 nodes in
+`wetspring_science_nucleus.toml` compose Tower + Node + Nest + Provenance Trio +
+petalTongue into a full science pipeline with auth, compute, storage, provenance,
+and visualization. No spring code imports any primal. Every interaction is a
+`capability_call` routed by Neural API.
+
+### What this means for springs
+
+1. **New function = new graph, not new primal.** Cross-spring provenance,
+   federated data, multi-pipeline orchestration — all are graph design problems.
+2. **Compose, don't import.** Springs never import primal source. All
+   coordination is IPC over JSON-RPC routed by Neural API.
+3. **Provenance is composition.** The provenance trio is three independent
+   primals composed by a graph. Springs get provenance by including trio nodes
+   in their deploy graph with `fallback = "skip"` for graceful degradation.
+4. **Don't build what exists.** If a capability exists, call it. Don't reimplement.
 
 ---
 
 ## Purpose
 
-This document describes how primalSpring's coordination validation capabilities
-can be leveraged across composition layers. primalSpring is unique: it validates
-the ecosystem itself — the coordination, composition, and emergent behavior that
-biomeOS and the Neural API produce when primals work together.
+primalSpring validates the ecosystem itself — the coordination, composition,
+and emergent behavior that biomeOS and the Neural API produce when primals
+work together. It is:
+
+- **Upstream of springs** — defines proto graphs and coordination patterns
+- **Downstream of primals** — validates primal compositions via plasmidBin deployments
+- **Gap resolver** — when a spring exposes a composition failure, primalSpring
+  determines whether the fix belongs in the graph, the primal, or the standard
 
 Each primal in the ecosystem should write an equivalent document. No primal knows
 about another at compile time — all composition happens at runtime via
@@ -142,9 +195,24 @@ required primal. `health.readiness` on primalSpring itself reports
 
 ---
 
-## 6. Provenance Trio — rhizoCrypt + loamSpine + sweetGrass (RootPulse)
+## 6. Provenance Trio — rhizoCrypt + loamSpine + sweetGrass
 
-**Composition**: primalSpring coordinates validation of the RootPulse workflow.
+**Composition**: The provenance trio demonstrates the composition principle.
+Three independent primals — each owning one temporal model — compose into
+RootPulse (version control), science provenance (experiment attribution), and
+any future lineage-bearing workflow. The primals know nothing about "RootPulse"
+or "science provenance." They expose atomic capabilities:
+
+| Primal | Temporal Model | Key Capabilities |
+|--------|---------------|------------------|
+| rhizoCrypt | Ephemeral DAG (mutable present) | `dag.session.create`, `dag.dehydrate`, `dag.event.append` |
+| loamSpine | Permanent linear history (immutable past) | `session.commit`, `anchor.publish`, `anchor.verify` |
+| sweetGrass | Semantic attribution (who contributed what) | `contribution.record_dehydration`, `braid.create`, `pipeline.attribute` |
+
+biomeOS composes them via workflow graphs:
+- `rootpulse_commit.toml` → 6-phase commit: health → dehydrate → sign → store → commit → attribute
+- `provenance_trio_deploy.toml` → startup ordering: loamSpine first (others anchor to it)
+- Spring deploy graphs include trio nodes with `fallback = "skip"` for graceful degradation
 
 ### What primalSpring Validates
 
@@ -157,10 +225,12 @@ required primal. `health.readiness` on primalSpring itself reports
 
 ### Novel Patterns
 
-primalSpring validates that the provenance trio (rhizoCrypt, loamSpine,
-sweetGrass) composes correctly for RootPulse. Uses `extract_capability_names`
-to handle all 4 capability wire formats from each primal. `CircuitBreaker`
-prevents cascading failures when one trio member is down.
+primalSpring validates that the trio composes correctly across multiple
+graph patterns. Uses `extract_capability_names` to handle all 4 capability
+wire formats from each primal. `CircuitBreaker` prevents cascading failures
+when one trio member is down. Wire types (`DehydrationWireSummary`,
+`PipelineRequest`) carry `niche` / `session_type` metadata for
+workflow-specific tagging without changing the primal code.
 
 ---
 
