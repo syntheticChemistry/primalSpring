@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 8, 2026
-**Status**: Phase 26 — Mixed Composition + Live Validation (72 experiments, 99 deploy graphs, biomeOS v2.95. Wire Standard sprint: BearDog L2, Songbird L2, NestGate L3, ToadStool L3. NestGate UDS resolves GAP-04. All Critical/Medium gaps closed.)
+**Status**: Phase 27 — All 10 primals BTSP Phase 1 complete. Wire Standard L2 ecosystem (72 experiments, 99 deploy graphs, biomeOS v2.99. Wire Standard: BD L2, SB L2, NG L3, TS L3, BC L2, SQ L2. BTSP: 10/10 primals compliant, BearDog live-encrypted. All ecoBins fresh. GAP-11 pending Run 6 live validation.)
 
 ---
 
@@ -59,6 +59,11 @@ an optional track. Every experiment involves multiple primals or springs.
 | Abstract socket integration | Squirrel Universal Transport on Linux abstract namespace |
 | BondType full taxonomy | Covalent, Metallic, Ionic, Weak, OrganoMetalSalt — chemistry-inspired bonding |
 | BondingConstraint + BondingPolicy | Capability-scoped permissions, bandwidth limits, time windows for federated sharing |
+| BTSP Protocol Standard | BearDog Secure Tunnel Protocol for authenticated local IPC (ChaCha20-Poly1305, HMAC-Plain, Null) |
+| BtspEnforcer | Connection-time cipher negotiation + per-request capability filtering via BondingPolicy |
+| BIOMEOS_INSECURE guard | Safety valve: refuses start when FAMILY_ID (production) + INSECURE coexist |
+| Family-scoped socket naming | `{primal}-{family_id}.sock` convention aligning biomeOS graph-boot with primal sockets |
+| Wire Standard Compliance Matrix | L1/L2/L3 audit framework for primal capability advertisement |
 | Multi-node deploy graph templates | basement_hpc, friend_remote, idle_compute, data_federation TOML graphs |
 | Graph bonding metadata validation | Parses [graph.metadata] + [graph.bonding_policy] for structural consistency |
 | STUN tier config + sovereignty-first | 4-tier NAT traversal: Lineage → Self-hosted → Public → Rendezvous |

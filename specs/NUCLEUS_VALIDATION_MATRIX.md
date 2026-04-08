@@ -1,8 +1,8 @@
 # NUCLEUS Validation Matrix
 
-**Date**: April 7, 2026  
-**Phase**: 25+ (planning)  
-**Purpose**: Define the validation matrix for NUCLEUS composition patterns across downstream springs and sporeGarden products, based on gen4 architecture (`infra/whitePaper/gen4/architecture/COMPOSITION_PATTERNS.md`) and primalSpring's Phase 25 modernization results.
+**Date**: April 8, 2026  
+**Phase**: 27 (All 10 primals BTSP Phase 1 + Wire Standard L2 ecosystem — Run 6 ready)  
+**Purpose**: Define the validation matrix for NUCLEUS composition patterns across downstream springs and sporeGarden products, based on gen4 architecture (`infra/whitePaper/gen4/architecture/COMPOSITION_PATTERNS.md`) and primalSpring's Phase 25-26 modernization results.
 
 ---
 
@@ -85,7 +85,7 @@ These are the composition patterns proven in primalSpring that downstream system
 
 | Spring | Domain | K: Particle | L: Mixed Atomic | M: Bonding | N: Sharding | O: Enclave | P: Wire Std |
 |--------|--------|-------------|-----------------|------------|-------------|------------|-------------|
-| **primalSpring** | Coordination | balanced | structural | all (test arena) | structural | structural | L2 (ref) — BD L2, SB L2, NG L3, TS L3 |
+| **primalSpring** | Coordination | balanced | structural | all (test arena) | structural | structural | L2+ (ref) — BD L2, SB L2, NG L3, TS L3, BC L2, SQ L2. **All 10 BTSP Phase 1.** |
 | **wetSpring** | Biology | balanced | nest enclave | covalent mesh | planned | planned | pending |
 | **hotSpring** | Physics | proton-heavy | node+dedicated tower | metallic, ionic lease | n/a | n/a | pending |
 | **airSpring** | Agriculture | balanced | nest enclave | covalent mesh | planned | planned | pending |
@@ -337,17 +337,51 @@ Impact: Songbird's L2 compliance exists in code but is unreachable on the socket
 
 Recommended fix: Songbird should wire the universal-ipc dispatch (Wire Standard methods) through the orchestrator's socket handler, or expose a second socket for universal-ipc.
 
+### Resolved in biomeOS v2.96–v2.97 (April 8, 2026)
+
+- **GAP-MATRIX-02 → RESOLVED (v2.96)**: `biomeos deploy` now accepts both `DeploymentGraph` (`[[graph.nodes]]`) and `neural_graph` (`[[nodes]]`) formats via dual-parser fallback. `tower_atomic_bootstrap.toml` loadable via `biomeos deploy --validate`.
+- **GAP-MATRIX-09 → RESOLVED (v2.96)**: Attribution domain translations corrected — `provenance.create_braid` → `braid.create`, `provenance.get_braid` → `braid.get` to match sweetGrass v0.7.5 wire methods. Aliases now emit correct targets.
+- **biomeOS v2.97 safety hardening**: `#![forbid(unsafe_code)]` on all 20+ binary entry points. Smart refactors: discovery.rs 843→94 LOC (split into registry/primal/composite/tests), orchestrator.rs 836→36 LOC, genome-deploy/lib.rs 860→35 LOC. 8 niche template IDs → `primal_names::` constants.
+
+### Resolved in BarraCuda Sprint 33 + Squirrel alpha.43 (April 8, 2026)
+
+- **GAP-MATRIX-10 → FURTHER RESOLVED**: Wire Standard adoption expands:
+  - **BarraCuda (Sprint 33)**: **L2 complete** — `{primal, version, methods, provided_capabilities}` + `identity.get`. Both JSON-RPC dispatch and tarpc `BarraCudaService` paths wired. 31 methods, 4,187 tests. `provided_capability_groups()` derives structured groups from dispatch table — zero hardcoded domain catalog.
+  - **Squirrel (alpha.43)**: **L2 complete** — `capabilities.list`/`identity.get`/`health.liveness` aligned to Wire Standard. `reqwest` banned in `deny.toml` (Tower Atomic pattern). Production mock elimination: 791 lines dead orchestration code removed, SDK MCP `OperationHandler` returns honest errors.
+
+### Resolved in Latest Sprint (April 8, 2026 — post-Run 5)
+
+- **Songbird socket gap → RESOLVED (Wave 128)**: Wire Standard L2 methods (`capabilities.list`, `identity.get`, `health.liveness`) now wired through orchestrator socket handler — the same `songbird.sock` that biomeOS discovers.
+- **GAP-MATRIX-12 → LARGELY RESOLVED**: BTSP Phase 1 adoption sprint — all primals now have INSECURE guard:
+  - **BearDog (Wave 31-32)**: Full BTSP handshake enforcement. 4-step X25519+HMAC-SHA256 handshake, encrypted framing (ChaCha20-Poly1305/HMAC-Plain/Null), socket listener enforcement when FAMILY_ID set. **First primal live-encrypted.** 96 crypto methods, 14,366+ tests.
+  - **ToadStool (S192)**: `validate_insecure_guard()` + `is_btsp_required()` + startup logging. Hooks into both unibin server and CLI daemon. 11 new tests, 21,526+ total.
+  - **BarraCuda (Sprint 34-35)**: FAMILY_ID socket scoping (`BARRACUDA_FAMILY_ID` → `FAMILY_ID`), BIOMEOS_SOCKET_DIR support, INSECURE guard with typed `BarracudaCoreError`. 20 BTSP compliance tests, 4,207+ total.
+  - **rhizoCrypt (S30)**: `family_scoped_socket_path()` (`rhizocrypt-{fid}.sock`), `btsp_env_guard()`, typed `BtspConfigError`. 16 new tests, 1,441 total.
+  - **sweetGrass (Phase 11)**: INSECURE guard with typed `BtspGuardViolation`, FAMILY_ID chain (`SWEETGRASS_FAMILY_ID` → `BIOMEOS_FAMILY_ID` → `FAMILY_ID`). 5 DI-based tests, 1,218 total.
+  - **loamSpine (S38)**: Domain-based socket (`loamspine.sock` → `permanence.sock`), family-scoped naming, INSECURE guard, legacy symlink with shutdown cleanup. **Now has UDS** (was TCP-only). 1,316 total.
+  - **biomeOS (v2.98)**: `btsp_client` module with `validate_insecure_guard()` + `log_security_posture()` wired into all 4 startup paths.
+  - **Squirrel (alpha.46)**: INSECURE guard + family-scoped socket naming (`squirrel-{fid}.sock`) + env resolution chain (`SQUIRREL_FAMILY_ID` → `BIOMEOS_FAMILY_ID` → `FAMILY_ID`). 6,875+ tests. Fresh ecoBin harvested.
+- **GAP-MATRIX-06 → RESOLVED**: All ecoBins fresh in plasmidBin (April 8). No stale binaries remain.
+- **biomeOS v2.99**: Zero-debt audit — 0 unsafe, 0 mocks, 0 TODO, 0 hardcoded names, 0 C deps. 7,695 tests.
+- **ToadStool S193-194**: Headless GPU architecture (`TOADSTOOL_HEADLESS=1`), capability-based naming evolution across production code.
+
 ### What Remains
 
-- **GAP-MATRIX-11 (Medium, NEW)**: Graph-boot socket path mismatch — capability.call forwarding fails for taxonomy domains. Direct probes and `beardog` domain work.
-- **Songbird socket gap (Medium, NEW)**: Wire Standard L2 methods not exposed on the discoverable socket.
-- **GAP-MATRIX-10 (Low, RESIDUAL)**: Trio L2 convergence. rhizoCrypt `identity.get` not found (needs implementation or binary rebuild). sweetGrass `identity.get` not found. loamSpine TCP-only (no UDS — biomeOS can't auto-discover).
-- **GAP-MATRIX-09 (Low)**: biomeOS taxonomy translation. Resolves once `result.methods` is source of truth.
-- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML path still fails.
-- **GAP-MATRIX-05 (Low, RESIDUAL)**: Squirrel not tested. ToadStool daemon mode works but not yet routed through Neural API (blocked by GAP-11).
-- **GAP-MATRIX-06 (Low)**: plasmidBin binaries now fresh (April 8, 2026).
+**Medium:**
+- **GAP-MATRIX-11 (Medium)**: Socket naming alignment implemented in all primals, but NOT YET LIVE VALIDATED. Run 6 needed with all fresh ecoBins + biomeOS v2.99 to confirm family-scoped sockets resolve graph-boot mismatch end-to-end.
+- **BearDog socket_config gap (Medium)**: BearDog `socket_config.rs` Tiers 2-4 still produce `beardog.sock` (not family-scoped `beardog-{fid}.sock`). Handshake enforcement works regardless via `BtspSecurityMode`, and auto-discovery uses `crypto.sock` symlink. But graph-boot path mismatch for `beardog` domain persists.
 
-Critical path: **Direct primal probes pass across all 7 primals.** Neural API routing works for `beardog` domain (auto-discovered). Graph-boot socket mismatch (GAP-11) blocks end-to-end routing for other domains. Two new medium gaps: GAP-11 (biomeOS routing) and Songbird socket exposure.
+**Low / Residual:**
+- **GAP-MATRIX-10 (Low, RESIDUAL)**: Wire Standard L2/L3 convergence. sweetGrass needs `provided_capabilities` grouping + `identity.get` for L3. rhizoCrypt needs flat `methods` array for full L2. loamSpine needs `identity.get` for full L2.
+- **GAP-MATRIX-05 (Low, RESIDUAL)**: Squirrel + ToadStool not yet routed through Neural API (blocked by GAP-11 until Run 6).
+
+**Ecosystem-wide Status:**
+- **All 10 primals** have BTSP INSECURE guard + family-scoped socket naming. Zero BTSP holdouts.
+- BearDog is the first primal with live BTSP encrypted socket enforcement.
+- **All ecoBins fresh** (April 8). Zero stale binaries.
+- Direct primal probes pass across all 9 tested primals (8 on UDS, Squirrel on abstract socket).
+- Neural API routing confirmed for `beardog` domain. Other domains need Run 6 live validation.
+- Wire Standard L2+ achieved: BD L2, SB L2, NG L3, TS L3, BC L2, SQ L2, rC L2 partial, lS L2 partial, sG L2 partial.
 
 ---
 
@@ -369,13 +403,74 @@ Critical path: **Direct primal probes pass across all 7 primals.** Neural API ro
 
 ---
 
+## Secure Socket Architecture (Phase 26)
+
+**Status**: Phase 1 complete. Phases 2-4 implemented.
+
+| Phase | Scope | Status |
+|-------|-------|--------|
+| Phase 1: Socket Naming | All primals honor `FAMILY_ID` for `{primal}-{fid}.sock` naming | ✓ Implemented |
+| Phase 2: BTSP Spec | `BTSP_PROTOCOL_STANDARD.md` in wateringHole | ✓ Written |
+| Phase 3: BTSP Session Methods | BearDog: `btsp.session.create/verify/negotiate` | ✓ Implemented |
+| Phase 3: biomeOS BTSP Client | Neural API BTSP-aware forwarding, INSECURE guard | ✓ Implemented |
+| Phase 4: BondingPolicy Enforcement | `BtspEnforcer` — connection-time + per-request checks | ✓ Implemented |
+
+**Key Changes:**
+- BearDog `socket_config.rs`: XDG/BIOMEOS_SOCKET_DIR tiers now family-scoped when `FAMILY_ID` set
+- Songbird `env_config.rs`: auto-family-scoped socket when `FAMILY_ID` set (no `SONGBIRD_MULTI_FAMILY` needed)
+- NestGate `socket_config.rs`: `FAMILY_ID` fallback added, family-scoped tiers 2-3
+- All primals: `BIOMEOS_INSECURE` guard (refuse start when both `FAMILY_ID` + `INSECURE` set)
+- biomeOS: `btsp_client` module, security posture logging, family-scoped socket detection
+- primalSpring ecoPrimal: `btsp` module (cipher suites, security mode, enforcement), `BtspEnforcer` in bonding
+
+**Resolves**: GAP-MATRIX-11 (biomeOS graph-boot socket path mismatch) — pending live Run 6 validation.
+
+---
+
+## BTSP Adoption Tiers
+
+The Secure Socket Architecture (Phase 26) defined the protocol and implemented it in the Tower Atomic primals. Remaining primals need phased adoption:
+
+| Tier | Primals | Status | What Remains |
+|------|---------|--------|--------------|
+| **1: BTSP-native** | BearDog | ✓ **Live encrypted** | Full handshake enforcement (Wave 31). Socket listener requires BTSP when FAMILY_ID set. socket_config Tiers 2-4 still need family-scoped naming. |
+| **1: BTSP Phase 1** | Songbird, NestGate, ToadStool, BarraCuda, rhizoCrypt, sweetGrass, loamSpine, biomeOS, Squirrel | ✓ **All complete** | FAMILY_ID socket ✓, INSECURE guard ✓. Handshake client not yet implemented (BearDog is the only handshake server). |
+
+---
+
+## Wire Standard Compliance Summary (April 8, 2026)
+
+| Primal | Level | `identity.get` | `capabilities.list` envelope | `provided_capabilities` | `health.liveness` | Notes |
+|--------|-------|-----------------|------------------------------|-------------------------|-------------------|-------|
+| BearDog | **L2** | ✓ | ✓ `{primal, version, methods}` | ✓ | ✓ | Wave 30 |
+| Songbird | **L2** | ✓ | ✓ `{primal, version, methods}` | — | ✓ | Wave 128. L2 on discoverable socket ✓ |
+| NestGate | **L3** | ✓ | ✓ full envelope | ✓ 9 groups | ✓ | S36. `consumed_capabilities`, `protocol`, `transport` |
+| ToadStool | **L3** | ✓ | ✓ full envelope | ✓ | ✓ | S191. `cost_estimates`, `operation_dependencies` |
+| BarraCuda | **L2** | ✓ | ✓ `{primal, version, methods}` | ✓ groups | ✓ | Sprint 33. JSON-RPC + tarpc |
+| Squirrel | **L2** | ✓ | ✓ `{primal, version, methods}` | — | ✓ | alpha.46. BTSP Phase 1 ✓, family-scoped socket ✓ |
+| rhizoCrypt | **L2 partial** | needs rebuild | Format E (groups) | ✓ 5 groups | ✓ | Needs flat `methods` array for full L2 |
+| loamSpine | **L2 partial** | needs impl | Format A | — | ✓ | UDS now ✓ (`permanence.sock`). Needs top-level `methods` + `identity.get` |
+| sweetGrass | **L2 partial** | needs impl | Format B | — | ✓ | Needs `provided_capabilities` grouping for L3 |
+
+---
+
 ## Next Steps
 
-1. **Immediate**: Verify Phase 25 graph migration covers all spring deploy graphs (already done).
-2. **Short-term**: Run live Phase B validation on Eastgate for each spring's deploy graph.
-3. **Medium-term**: Extend exp090 pattern to validate each spring's NUCLEUS health remotely.
-4. **Medium-term**: Run exp091 (L0 routing matrix) to validate all 10 primal domains.
-5. **Medium-term**: Implement dual-Tower coexistence in AtomicHarness (L2 gap).
-6. **Long-term**: Implement erasure coding as barraCuda primitive for L3 sharding.
-7. **Short-term**: Wire Standard audit — validate each primal against Level 2 checklist (column P).
-8. **Long-term**: Automate the full matrix (columns A-P) as a CI pipeline per spring.
+### Immediate (Run 6)
+1. **Run 6 live validation** on Eastgate with all fresh ecoBins + biomeOS v2.99. Validate family-scoped socket naming resolves GAP-11 end-to-end. All 10 primals now have BTSP Phase 1 + fresh ecoBins.
+
+### Short-term (primal convergence)
+3. **BearDog socket_config**: add family-scoped naming to Tiers 2-4 (`beardog-{fid}.sock`). Handshake works but graph-boot path mismatch for `beardog` domain persists.
+4. **Wire Standard L2 convergence**: rhizoCrypt flat `methods` array, loamSpine `identity.get`, sweetGrass `identity.get` + `provided_capabilities` grouping.
+5. **BTSP handshake clients**: Songbird, NestGate, ToadStool, biomeOS need client-side handshake to connect to BearDog's encrypted socket in production mode.
+
+### Medium-term (composition validation)
+6. Run exp091 (L0 routing matrix) to validate all 10 primal domains through Neural API.
+7. Implement dual-Tower coexistence in AtomicHarness (L2 gap).
+8. Extend exp090 pattern to validate each spring's NUCLEUS health remotely.
+9. Wire Standard audit — validate each primal against Level 2 checklist (column P).
+
+### Long-term (downstream readiness)
+10. Implement erasure coding as barraCuda primitive for L3 sharding.
+11. Automate the full matrix (columns A-P) as a CI pipeline per spring.
+12. Run live Phase B validation on Eastgate for each spring's deploy graph.
