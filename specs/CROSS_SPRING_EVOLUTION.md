@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 7, 2026
-**Status**: Phase 26 — Mixed Composition + Live Validation (72 experiments, 99 deploy graphs, biomeOS v2.93: 162 capabilities from 6 primals, 12/14 capability.call PASS)
+**Status**: Phase 26 — Mixed Composition + Live Validation (72 experiments, 99 deploy graphs, biomeOS v2.94: 162 capabilities from 6 primals, 12/14 capability.call PASS, Capability Wire Standard v1.0 published)
 
 ---
 
@@ -673,29 +673,29 @@ biomeOS v2.93 fixed `TransportEndpoint::parse()` to handle `unix://` URI scheme.
 
 Severity: ~~Critical~~ → **RESOLVED**
 
-**GAP-MATRIX-07b (NEW): biomeOS proxy error propagation**
+**GAP-MATRIX-07b: biomeOS proxy error propagation — RESOLVED (biomeOS v2.94)**
 
-When a primal returns a JSON-RPC error response to a forwarded `capability.call` (e.g., parameter validation error `-32601`), biomeOS reports "Failed to forward" instead of propagating the primal's error back to the caller. The proxy conflates transport-level failure with application-level errors.
+~~When a primal returns a JSON-RPC error response to a forwarded `capability.call`, biomeOS reports "Failed to forward" instead of propagating the primal's error back to the caller.~~
 
-Impact: Callers cannot distinguish between "primal unreachable" and "primal rejected the request". This masks parameter validation errors.
+Fix: `forward_request()` preserves primal JSON-RPC error codes via `try_call()` and downcast in `dispatch()`, instead of swallowing as generic `-32603`.
 
-Severity: **Medium** — workaround: ensure correct parameters. Does not block methods with valid params.
+Severity: ~~Medium~~ → **RESOLVED**
 
-**GAP-MATRIX-08 (NEW): biomeOS self-discovery routing pollution**
+**GAP-MATRIX-08: biomeOS self-discovery routing pollution — RESOLVED (biomeOS v2.94)**
 
-Neural API discovers its own socket ~20s after startup during a re-scan sweep, registering itself as a capability provider for all domains. Creates duplicate `neural @` routing entries. Correct primal remains the `primary_endpoint` so routing works, but the table is polluted.
+~~Neural API discovers its own socket during a re-scan sweep, registering itself as a capability provider for all domains.~~
 
-Impact: Cosmetic/diagnostic noise. No functional impact observed.
+Fix: `NeuralRouter.self_socket_path` excludes own socket from `lazy_rescan_sockets()`, eliminating self-registration pollution.
 
-Severity: **Low** — biomeOS should exclude its own socket from auto-discovery.
+Severity: ~~Low~~ → **RESOLVED**
 
-**GAP-MATRIX-02: tower_atomic_bootstrap.toml — PARTIALLY RESOLVED (biomeOS v2.93)**
+**GAP-MATRIX-02: tower_atomic_bootstrap.toml — PARTIALLY RESOLVED (biomeOS v2.93 + v2.94)**
 
-biomeOS v2.93 added `#[serde(default)]` to `GraphDefinition.name/version`. The graph loader code path now successfully parses all TOML files (confirmed via debug logs). However:
-- Bootstrap sequence still fails on `tower_atomic_bootstrap.toml` (different code path)
-- `graph.list` returns empty array despite loader parsing success
+biomeOS v2.93 added `#[serde(default)]` to `GraphDefinition.name/version`. biomeOS v2.94 added fallback in `graph.list` to `biomeos_graph::GraphLoader` when neural parser fails, so `DeploymentGraph`-format TOMLs now appear in listings (GAP-02b resolved).
 
-Severity: **Medium** — graph loading works for analysis but not for bootstrap or runtime listing.
+Remaining: Bootstrap sequence still fails on `tower_atomic_bootstrap.toml` (different code path from `graph.list`).
+
+Severity: **Medium** (reduced) — `graph.list` now works; bootstrap path remains.
 
 **GAP-MATRIX-03: Songbird TLS cipher suite compatibility**
 
@@ -732,20 +732,27 @@ biomeOS's semantic routing translates `braid.create` → `provenance.create_brai
 
 Severity: **Low** — workaround: use untranslated methods (e.g., `braid.query` works because biomeOS has no translation for it and falls through to direct routing).
 
-**GAP-MATRIX-10 (Medium, NEW): Capability Wire Format Convergence**
+**GAP-MATRIX-10 (Medium): Capability Wire Standard — Active Ecosystem Standard**
 
-5 independent wire formats evolved across primals. Standard defined: `infra/wateringHole/handoffs/PRIMAL_CAPABILITY_WIRE_STANDARD_APR08_2026.md`. Required envelope: `{primal, version, methods}`. Recommended: `provided_capabilities` grouping. Optional: `consumed_capabilities`, `cost_estimates`, `operation_dependencies`.
+Formal specification published: **`infra/whitePaper/technical/CAPABILITY_WIRE_STANDARD.md`** (v1.0).
 
-Current compliance (closest → furthest):
-1. **sweetGrass**: has `primal`, `version`, `methods`, `consumed_capabilities`, `identity.get` — add `provided_capabilities`
-2. **rhizoCrypt**: has `primal`, `version`, `provided_capabilities`, `identity.get` — add flat `methods`
-3. **loamSpine**: has `primal`, `version`, `methods` (nested) — promote `methods`, add `identity.get`
-4. **BearDog**: has `primal`, `version`, `provided_capabilities` — add flat `methods`, `identity.get`
-5. **Songbird**: bare flat array only — wrap in `{primal, version, methods}`, add `identity.get`
+Three compliance levels:
+- **Level 1 (Routable)**: biomeOS can parse response, `health.liveness` implemented
+- **Level 2 (Standard)**: `{primal, version, methods}` envelope, `identity.get`, all advertised methods callable
+- **Level 3 (Composable)**: `provided_capabilities` grouping, `consumed_capabilities`, cost/dependency metadata
+
+Current compliance (closest → furthest from Level 2):
+1. **sweetGrass**: L1 ✓, near-L2 — has `primal`, `version`, `methods`, `consumed_capabilities`, `identity.get` — add `provided_capabilities` for L3
+2. **rhizoCrypt**: L1 ✓, near-L2 — has `primal`, `version`, `provided_capabilities`, `identity.get` — add flat `methods`
+3. **loamSpine**: L1 ✓, partial-L2 — has `primal`, `version`, `methods` (nested) — promote `methods` to top-level, add `identity.get`
+4. **BearDog**: L1 ✓, partial-L2 — has `primal`, `version`, `provided_capabilities` — add flat `methods`, `identity.get`
+5. **Songbird**: L1 ✓, needs work — bare flat array only — wrap in `{primal, version, methods}`, add `identity.get`
 
 Tier 1 migration is non-breaking: add `methods` flat array to existing responses.
 
-Severity: **Medium** — not blocking routing (parser handles all formats) but blocking: composition completeness validation, AI-assisted routing, self-describing compositions.
+Severity: **Medium** — not blocking routing (parser handles all formats) but blocking: composition completeness validation, AI-assisted routing, self-describing compositions. **Part of future deep-debt audits (matrix column P).**
+
+Audit protocol: every primalSpring deep-debt audit and cross-spring evolution review MUST run the Level 2 checklist from the spec against each primal present in the composition.
 
 **Songbird capability advertisement gap**
 

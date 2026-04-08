@@ -79,26 +79,27 @@ These are the composition patterns proven in primalSpring that downstream system
 | **M: Bonding Patterns** | Which L3 bonding patterns the spring requires | Domain analysis |
 | **N: Sharding Ready** | Covalent mesh backup applicable (L3 `covalent_mesh_backup.toml`) | Structural + BondingPolicy validation |
 | **O: Enclave Ready** | BondingPolicy data egress fence applicable (L2 `nest_enclave.toml`) | BondingPolicy structural validation |
+| **P: Wire Standard** | Primal's `capabilities.list` follows Capability Wire Standard v1.0 | Level 1/2/3 audit per `infra/whitePaper/technical/CAPABILITY_WIRE_STANDARD.md` |
 
 ### Extended Rows (Springs)
 
-| Spring | Domain | K: Particle | L: Mixed Atomic | M: Bonding | N: Sharding | O: Enclave |
-|--------|--------|-------------|-----------------|------------|-------------|------------|
-| **primalSpring** | Coordination | balanced | structural | all (test arena) | structural | structural |
-| **wetSpring** | Biology | balanced | nest enclave | covalent mesh | planned | planned |
-| **hotSpring** | Physics | proton-heavy | node+dedicated tower | metallic, ionic lease | n/a | n/a |
-| **airSpring** | Agriculture | balanced | nest enclave | covalent mesh | planned | planned |
-| **groundSpring** | Uncertainty | proton-heavy | node+dedicated tower | ionic lease | n/a | n/a |
-| **neuralSpring** | ML/Neural | balanced | nest enclave | ionic lease | n/a | **required** |
-| **healthSpring** | Health | neutron-heavy | dual tower + enclave | covalent mesh | **required** | **required** |
-| **ludoSpring** | Game Science | proton-heavy | node+dedicated tower | organo-metal-salt | planned | n/a |
+| Spring | Domain | K: Particle | L: Mixed Atomic | M: Bonding | N: Sharding | O: Enclave | P: Wire Std |
+|--------|--------|-------------|-----------------|------------|-------------|------------|-------------|
+| **primalSpring** | Coordination | balanced | structural | all (test arena) | structural | structural | L2 (reference) |
+| **wetSpring** | Biology | balanced | nest enclave | covalent mesh | planned | planned | pending |
+| **hotSpring** | Physics | proton-heavy | node+dedicated tower | metallic, ionic lease | n/a | n/a | pending |
+| **airSpring** | Agriculture | balanced | nest enclave | covalent mesh | planned | planned | pending |
+| **groundSpring** | Uncertainty | proton-heavy | node+dedicated tower | ionic lease | n/a | n/a | pending |
+| **neuralSpring** | ML/Neural | balanced | nest enclave | ionic lease | n/a | **required** | pending |
+| **healthSpring** | Health | neutron-heavy | dual tower + enclave | covalent mesh | **required** | **required** | pending |
+| **ludoSpring** | Game Science | proton-heavy | node+dedicated tower | organo-metal-salt | planned | n/a | pending |
 
 ### Extended Rows (sporeGarden Products)
 
-| Product | Domain | K: Particle | L: Mixed Atomic | M: Bonding | N: Sharding | O: Enclave |
-|---------|--------|-------------|-----------------|------------|-------------|------------|
-| **esotericWebb** | CRPG Engine | proton-heavy | node+dedicated tower | covalent, ionic | planned | n/a |
-| **helixVision** | Genomics | neutron-heavy | dual tower + enclave | covalent mesh | **required** | **required** |
+| Product | Domain | K: Particle | L: Mixed Atomic | M: Bonding | N: Sharding | O: Enclave | P: Wire Std |
+|---------|--------|-------------|-----------------|------------|-------------|------------|-------------|
+| **esotericWebb** | CRPG Engine | proton-heavy | node+dedicated tower | covalent, ionic | planned | n/a | pending |
+| **helixVision** | Genomics | neutron-heavy | dual tower + enclave | covalent mesh | **required** | **required** | pending |
 
 ---
 
@@ -273,19 +274,24 @@ Trio pushed GAP-MATRIX-05 resolution commits: `identity.get` + biomeOS-parseable
 
 ### What Remains
 
-- **GAP-MATRIX-07b (Medium)**: Proxy error propagation — primal JSON-RPC errors (`-32601`/`-32602`) reported as "Failed to forward". Methods with correct params work.
-- **GAP-MATRIX-09 (Low, NEW)**: biomeOS capability taxonomy translates `braid.create` → `provenance.create_braid`, but sweetGrass's actual method is `braid.create`. Translation table needs alignment.
-- **GAP-MATRIX-08 (Low)**: Neural API self-discovery routing pollution.
-- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML still fails; `graph.list` empty.
+### Resolved in biomeOS v2.94
+
+- **GAP-MATRIX-07b → RESOLVED (v2.94)**: `forward_request()` preserves primal JSON-RPC error codes via `try_call()` + downcast in `dispatch()`. No more swallowed `-32601`/`-32602`.
+- **GAP-MATRIX-08 → RESOLVED (v2.94)**: `NeuralRouter.self_socket_path` excludes own socket from `lazy_rescan_sockets()`, eliminating self-registration pollution.
+- **GAP-MATRIX-02b → RESOLVED (v2.94)**: `graph.list` falls back to `biomeos_graph::GraphLoader` when neural parser fails, so `DeploymentGraph`-format TOMLs appear in listings.
+
+### What Remains
+
+- **GAP-MATRIX-10 (Medium)**: Capability Wire Standard convergence — formal spec published at `infra/whitePaper/technical/CAPABILITY_WIRE_STANDARD.md`. Defines 3 compliance levels (Routable → Standard → Composable). All primals at Level 1; none yet at Level 2. Audit checklist included in spec. **Part of future deep-debt audits (matrix column P).**
+- **GAP-MATRIX-09 (Low)**: biomeOS capability taxonomy translates `braid.create` → `provenance.create_braid`, but sweetGrass's actual method is `braid.create`. Resolves naturally once primals adopt Wire Standard Level 2 (`methods` array becomes source of truth).
+- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML still fails; `graph.list` improved via 02b fix.
 - **GAP-MATRIX-03 (Low)**: Songbird TLS cipher suite gaps.
 - **GAP-MATRIX-04 (Medium)**: NestGate HTTP REST divergence.
 - **GAP-MATRIX-05 (Low, PARTIAL)**: Squirrel + ToadStool not live-tested.
 - **GAP-MATRIX-06 (Low)**: plasmidBin binary freshness.
-- **Songbird method gap (Low)**: Advertises capabilities it doesn't implement as methods.
+- **Songbird method gap (Low)**: Advertises capabilities it doesn't implement as methods. Wire Standard Level 2 compliance will enforce callable guarantee.
 
-- **GAP-MATRIX-10 (Medium, NEW)**: Capability wire format convergence — 5 independent formats across primals. Standard defined in `infra/wateringHole/handoffs/PRIMAL_CAPABILITY_WIRE_STANDARD_APR08_2026.md`. Required: flat `methods` array + `primal` + `version` envelope. Recommended: `provided_capabilities` grouping. Optional: `consumed_capabilities`, `cost_estimates`, `operation_dependencies`.
-
-Critical path: All Critical gaps resolved. **12 of 14 capability.call tests pass across 4 primals** (BearDog, Songbird, rhizoCrypt, loamSpine, sweetGrass). Medium priority: GAP-MATRIX-10 (wire convergence) → GAP-MATRIX-07b (error propagation) → GAP-MATRIX-02 (graph loading) → GAP-MATRIX-04 (NestGate).
+Critical path: All Critical gaps resolved. **12 of 14 capability.call tests pass across 4 primals** (BearDog, Songbird, rhizoCrypt, loamSpine, sweetGrass). Medium priority: GAP-MATRIX-10 (wire standard adoption) → GAP-MATRIX-02 (graph loading) → GAP-MATRIX-04 (NestGate).
 
 ---
 
@@ -315,4 +321,5 @@ Critical path: All Critical gaps resolved. **12 of 14 capability.call tests pass
 4. **Medium-term**: Run exp091 (L0 routing matrix) to validate all 10 primal domains.
 5. **Medium-term**: Implement dual-Tower coexistence in AtomicHarness (L2 gap).
 6. **Long-term**: Implement erasure coding as barraCuda primitive for L3 sharding.
-7. **Long-term**: Automate the full matrix (columns A-O) as a CI pipeline per spring.
+7. **Short-term**: Wire Standard audit — validate each primal against Level 2 checklist (column P).
+8. **Long-term**: Automate the full matrix (columns A-P) as a CI pipeline per spring.
