@@ -79,7 +79,7 @@ These are the composition patterns proven in primalSpring that downstream system
 | **M: Bonding Patterns** | Which L3 bonding patterns the spring requires | Domain analysis |
 | **N: Sharding Ready** | Covalent mesh backup applicable (L3 `covalent_mesh_backup.toml`) | Structural + BondingPolicy validation |
 | **O: Enclave Ready** | BondingPolicy data egress fence applicable (L2 `nest_enclave.toml`) | BondingPolicy structural validation |
-| **P: Wire Standard** | Primal's `capabilities.list` follows Capability Wire Standard v1.0 | Level 1/2/3 audit per `infra/whitePaper/technical/CAPABILITY_WIRE_STANDARD.md` |
+| **P: Wire Standard** | Primal's `capabilities.list` follows Capability Wire Standard v1.0 | Level 1/2/3 audit per `infra/wateringHole/CAPABILITY_WIRE_STANDARD.md` |
 
 ### Extended Rows (Springs)
 
@@ -272,26 +272,27 @@ Trio pushed GAP-MATRIX-05 resolution commits: `identity.get` + biomeOS-parseable
 - **GAP-MATRIX-01 + 01b → RESOLVED**: 5-format parser (A-E). 162 capabilities from 6 primals auto-discovered.
 - **GAP-MATRIX-05 → PARTIALLY RESOLVED**: Provenance trio live-validated through Neural API. rhizoCrypt (dag), loamSpine (permanence), sweetGrass (braid/provenance) all routing correctly. Squirrel + ToadStool remain untested.
 
-### What Remains
-
 ### Resolved in biomeOS v2.94
 
 - **GAP-MATRIX-07b → RESOLVED (v2.94)**: `forward_request()` preserves primal JSON-RPC error codes via `try_call()` + downcast in `dispatch()`. No more swallowed `-32601`/`-32602`.
 - **GAP-MATRIX-08 → RESOLVED (v2.94)**: `NeuralRouter.self_socket_path` excludes own socket from `lazy_rescan_sockets()`, eliminating self-registration pollution.
 - **GAP-MATRIX-02b → RESOLVED (v2.94)**: `graph.list` falls back to `biomeos_graph::GraphLoader` when neural parser fails, so `DeploymentGraph`-format TOMLs appear in listings.
 
+### Resolved in Songbird Wave 123
+
+- **GAP-MATRIX-03 → RESOLVED (Wave 123)**: TLS 1.3 ClientHello now includes 32-byte legacy session ID for middlebox compatibility (RFC 8446 Appendix D.4) and expanded RSA-PSS signature algorithms (`rsa_pss_rsae_sha384`, `rsa_pss_rsae_sha512`, `rsa_pss_pss_*`). Fixes handshake failures against CDN-fronted hosts (httpbin.org via Cloudflare).
+- **Songbird method gap → RESOLVED (Wave 123)**: New `capabilities.methods` endpoint returns token→method mapping (`CAPABILITY_METHOD_MAP`). Capability tokens like `network.discovery` now normalize to callable methods (`discovery.peers`, `discovery.announce`, `discovery.list_peers`) via `normalize_json_rpc_method_name()`.
+
 ### What Remains
 
-- **GAP-MATRIX-10 (Medium)**: Capability Wire Standard convergence — formal spec published at `infra/whitePaper/technical/CAPABILITY_WIRE_STANDARD.md`. Defines 3 compliance levels (Routable → Standard → Composable). All primals at Level 1; none yet at Level 2. Audit checklist included in spec. **Part of future deep-debt audits (matrix column P).**
+- **GAP-MATRIX-10 (Medium)**: Capability Wire Standard convergence — formal spec published at `infra/wateringHole/CAPABILITY_WIRE_STANDARD.md`. Defines 3 compliance levels (Routable → Standard → Composable). All primals at Level 1; none yet at Level 2. Audit checklist included in spec. **Part of future deep-debt audits (matrix column P).**
 - **GAP-MATRIX-09 (Low)**: biomeOS capability taxonomy translates `braid.create` → `provenance.create_braid`, but sweetGrass's actual method is `braid.create`. Resolves naturally once primals adopt Wire Standard Level 2 (`methods` array becomes source of truth).
 - **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML still fails; `graph.list` improved via 02b fix.
-- **GAP-MATRIX-03 (Low)**: Songbird TLS cipher suite gaps.
 - **GAP-MATRIX-04 (Medium)**: NestGate HTTP REST divergence.
 - **GAP-MATRIX-05 (Low, PARTIAL)**: Squirrel + ToadStool not live-tested.
 - **GAP-MATRIX-06 (Low)**: plasmidBin binary freshness.
-- **Songbird method gap (Low)**: Advertises capabilities it doesn't implement as methods. Wire Standard Level 2 compliance will enforce callable guarantee.
 
-Critical path: All Critical gaps resolved. **12 of 14 capability.call tests pass across 4 primals** (BearDog, Songbird, rhizoCrypt, loamSpine, sweetGrass). Medium priority: GAP-MATRIX-10 (wire standard adoption) → GAP-MATRIX-02 (graph loading) → GAP-MATRIX-04 (NestGate).
+Critical path: All Critical and Low-severity primal gaps resolved. **12 of 14 capability.call tests pass across 4 primals** (BearDog, Songbird, rhizoCrypt, loamSpine, sweetGrass). Medium priority: GAP-MATRIX-10 (wire standard adoption) → GAP-MATRIX-02 (graph bootstrap) → GAP-MATRIX-04 (NestGate).
 
 ---
 

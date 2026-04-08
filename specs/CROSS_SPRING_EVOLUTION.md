@@ -643,7 +643,7 @@ Phase 27: biomeOS Self-Composition
 | tls.derive_secrets (proxy) | **PASS** | TLS key derivation through Neural API |
 | Songbird health.liveness | **PASS** | v0.2.1, healthy |
 | HTTPS via Tower (ifconfig.me) | **PASS** | HTTP 200, public IP obtained |
-| HTTPS via Tower (httpbin.org) | **FAIL** | TLS handshake failure (cipher suite gap — GAP-MATRIX-03) |
+| HTTPS via Tower (httpbin.org) | ~~FAIL~~ → **RESOLVED** | TLS handshake failure fixed by Wave 123 (legacy session ID + RSA-PSS) |
 | discovery.find_primals | **PASS** | Discovery operational |
 | BearDog → Songbird composition | **PASS** | Songbird uses BearDog crypto for TLS |
 | Neural API auto-discovery | **PASS** | 52 capabilities from 2 primals (biomeOS v2.93) |
@@ -697,11 +697,13 @@ Remaining: Bootstrap sequence still fails on `tower_atomic_bootstrap.toml` (diff
 
 Severity: **Medium** (reduced) — `graph.list` now works; bootstrap path remains.
 
-**GAP-MATRIX-03: Songbird TLS cipher suite compatibility**
+**GAP-MATRIX-03: Songbird TLS cipher suite compatibility — RESOLVED (Wave 123)**
 
-Some HTTPS targets fail TLS handshake (httpbin.org) while others succeed (ifconfig.me). Songbird's TLS 1.3 implementation doesn't support all cipher suites targets require.
+~~Some HTTPS targets fail TLS handshake (httpbin.org) while others succeed (ifconfig.me). Songbird's TLS 1.3 implementation doesn't support all cipher suites targets require.~~
 
-Severity: **Low** — most targets work. Songbird team can expand cipher suite support.
+Fix: Wave 123 (commit `bb1f1beef`) adds 32-byte legacy session ID for middlebox compatibility (RFC 8446 Appendix D.4) and expanded RSA-PSS signature algorithms (`rsa_pss_rsae_sha384`, `rsa_pss_rsae_sha512`, `rsa_pss_pss_*` variants). Fixes handshake failures against CDN-fronted hosts (httpbin.org via Cloudflare).
+
+Severity: ~~Low~~ → **RESOLVED**
 
 **GAP-MATRIX-04: NestGate CLI instability**
 
@@ -734,7 +736,7 @@ Severity: **Low** — workaround: use untranslated methods (e.g., `braid.query` 
 
 **GAP-MATRIX-10 (Medium): Capability Wire Standard — Active Ecosystem Standard**
 
-Formal specification published: **`infra/whitePaper/technical/CAPABILITY_WIRE_STANDARD.md`** (v1.0).
+Formal specification published: **`infra/wateringHole/CAPABILITY_WIRE_STANDARD.md`** (v1.0).
 
 Three compliance levels:
 - **Level 1 (Routable)**: biomeOS can parse response, `health.liveness` implemented
@@ -754,8 +756,10 @@ Severity: **Medium** — not blocking routing (parser handles all formats) but b
 
 Audit protocol: every primalSpring deep-debt audit and cross-spring evolution review MUST run the Level 2 checklist from the spec against each primal present in the composition.
 
-**Songbird capability advertisement gap**
+**Songbird capability advertisement gap — RESOLVED (Wave 123)**
 
-Songbird lists domain descriptors (e.g., `network.discovery`) in `capabilities.list` but returns "unknown JSON-RPC method" when called. These are capability domain markers, not method endpoints. biomeOS forwards the exact capability name as a method, which Songbird doesn't implement.
+~~Songbird lists domain descriptors (e.g., `network.discovery`) in `capabilities.list` but returns "unknown JSON-RPC method" when called.~~
 
-Severity: **Low** — Songbird needs to either implement advertised names as methods or provide a method-name mapping in its `capabilities.list` response.
+Fix: Wave 123 (commit `bb1f1beef`) adds `capabilities.methods` endpoint returning `CAPABILITY_METHOD_MAP` — a token→method mapping (e.g., `network.discovery` → `[discovery.peers, discovery.announce, discovery.list_peers]`). `normalize_json_rpc_method_name()` bridges domain tokens to callable methods. biomeOS can now query `capabilities.methods` alongside `capabilities.list` to get the full mapping.
+
+Severity: ~~Low~~ → **RESOLVED**
