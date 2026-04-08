@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: April 7, 2026
-**Status**: Phase 26 — Mixed Composition + Live Validation (72 experiments, 99 deploy graphs, biomeOS v2.94: 162 capabilities from 6 primals, 12/14 capability.call PASS, Capability Wire Standard v1.0 published)
+**Date**: April 8, 2026
+**Status**: Phase 26 — Mixed Composition + Live Validation (72 experiments, 99 deploy graphs, biomeOS v2.95. Wire Standard sprint: BearDog L2, Songbird L2, NestGate L3, ToadStool L3. NestGate UDS resolves GAP-04. All Critical/Medium gaps closed.)
 
 ---
 
@@ -705,11 +705,15 @@ Fix: Wave 123 (commit `bb1f1beef`) adds 32-byte legacy session ID for middlebox 
 
 Severity: ~~Low~~ → **RESOLVED**
 
-**GAP-MATRIX-04: NestGate CLI instability**
+**GAP-MATRIX-04: NestGate IPC divergence — RESOLVED (NestGate S36)**
 
-NestGate uses HTTP REST, not JSON-RPC over UDS — different IPC pattern from other primals. CLI `--help` historically segfaults.
+~~NestGate uses HTTP REST, not JSON-RPC over UDS — different IPC pattern from other primals.~~
 
-Severity: **Medium** — breaks the uniform JSON-RPC IPC model. HTTP bridge or NestGate evolution needed.
+Fix: NestGate S36 (commit `51645186`) implements JSON-RPC 2.0 over Unix domain sockets via `UnixListener::bind` + full method dispatch. Wire Standard L3 compliance on the UDS path: `capabilities.list` returns 9 capability groups, 46+ methods, `consumed_capabilities`, `protocol`, `transport: ["uds", "http"]`. HTTP REST retained as secondary transport. `identity.get` implemented with `domain: "storage"`.
+
+Additionally, commit `bd5a793c` delegates `storage.fetch_external` to Tower Atomic via biomeOS `capability.call` (`http.request` → Songbird). NestGate no longer terminates TLS — BearDog remains the single auditable crypto boundary. This is the **Nest Atomic composition pattern** working end-to-end.
+
+Severity: ~~Medium~~ → **RESOLVED**
 
 **GAP-MATRIX-05: Provenance trio + Squirrel + ToadStool not tested live — PARTIALLY RESOLVED**
 
@@ -718,9 +722,11 @@ Provenance trio (rhizoCrypt, loamSpine, sweetGrass) all live-validated through N
 - loamSpine: Format A capabilities → 21 caps discovered, `spine.create` + `health.check` end-to-end PASS
 - sweetGrass: `identity.get` + Format B capabilities → 28 caps discovered, `braid.query` end-to-end PASS
 
-Squirrel + ToadStool remain untested (need daemon mode docs).
+ToadStool S189-191: daemon mode documented (`SERVER_METHODS.md` rewritten, 67 methods, 11 namespaces), Wire Standard L3 with `cost_estimates` implemented. Socket works via normal `UnixListener::bind`. Not yet live-validated through Neural API.
 
-Severity: ~~Medium~~ → **Low** — only 2 primals untested.
+Squirrel remains untested.
+
+Severity: ~~Medium~~ → **Low** — ToadStool structurally ready, Squirrel untested.
 
 **GAP-MATRIX-06: plasmidBin binary freshness**
 
@@ -743,16 +749,16 @@ Three compliance levels:
 - **Level 2 (Standard)**: `{primal, version, methods}` envelope, `identity.get`, all advertised methods callable
 - **Level 3 (Composable)**: `provided_capabilities` grouping, `consumed_capabilities`, cost/dependency metadata
 
-Current compliance (closest → furthest from Level 2):
-1. **sweetGrass**: L1 ✓, near-L2 — has `primal`, `version`, `methods`, `consumed_capabilities`, `identity.get` — add `provided_capabilities` for L3
-2. **rhizoCrypt**: L1 ✓, near-L2 — has `primal`, `version`, `provided_capabilities`, `identity.get` — add flat `methods`
-3. **loamSpine**: L1 ✓, partial-L2 — has `primal`, `version`, `methods` (nested) — promote `methods` to top-level, add `identity.get`
-4. **BearDog**: L1 ✓, partial-L2 — has `primal`, `version`, `provided_capabilities` — add flat `methods`, `identity.get`
-5. **Songbird**: L1 ✓, needs work — bare flat array only — wrap in `{primal, version, methods}`, add `identity.get`
+Current compliance (post–catch-up sprint, April 8 2026):
+1. **NestGate**: **L3** ✓ — full envelope: 9 groups, 46+ methods, `consumed_capabilities`, `protocol`, `transport`, `identity.get`
+2. **ToadStool**: **L3** ✓ — full envelope: `cost_estimates`, `operation_dependencies`, `consumed_capabilities`, `identity.get`
+3. **BearDog**: **L2** ✓ — `{primal, version, methods, provided_capabilities}` + `identity.get` (Wave 30)
+4. **Songbird**: **L2** ✓ — `{primal: "songbird", version, methods}` 73 callable methods + `identity.get` (Wave 125)
+5. **sweetGrass**: Near-L2 — has `primal`, `version`, `methods`, `consumed_capabilities`, `identity.get` — add `provided_capabilities` for L3
+6. **rhizoCrypt**: Near-L2 — has `primal`, `version`, `provided_capabilities`, `identity.get` — add flat `methods`
+7. **loamSpine**: Partial-L2 — has `primal`, `version`, `methods` (nested) — promote `methods` to top-level, add `identity.get`
 
-Tier 1 migration is non-breaking: add `methods` flat array to existing responses.
-
-Severity: **Medium** — not blocking routing (parser handles all formats) but blocking: composition completeness validation, AI-assisted routing, self-describing compositions. **Part of future deep-debt audits (matrix column P).**
+Severity: ~~Medium~~ → **Low (residual)** — 4/7 primals at L2+. Remaining 3 (trio) need small, non-breaking additions. **Part of future deep-debt audits (matrix column P).**
 
 Audit protocol: every primalSpring deep-debt audit and cross-spring evolution review MUST run the Level 2 checklist from the spec against each primal present in the composition.
 

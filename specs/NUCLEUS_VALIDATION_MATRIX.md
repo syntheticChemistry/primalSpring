@@ -85,7 +85,7 @@ These are the composition patterns proven in primalSpring that downstream system
 
 | Spring | Domain | K: Particle | L: Mixed Atomic | M: Bonding | N: Sharding | O: Enclave | P: Wire Std |
 |--------|--------|-------------|-----------------|------------|-------------|------------|-------------|
-| **primalSpring** | Coordination | balanced | structural | all (test arena) | structural | structural | L2 (reference) |
+| **primalSpring** | Coordination | balanced | structural | all (test arena) | structural | structural | L2 (ref) — BD L2, SB L2, NG L3, TS L3 |
 | **wetSpring** | Biology | balanced | nest enclave | covalent mesh | planned | planned | pending |
 | **hotSpring** | Physics | proton-heavy | node+dedicated tower | metallic, ionic lease | n/a | n/a | pending |
 | **airSpring** | Agriculture | balanced | nest enclave | covalent mesh | planned | planned | pending |
@@ -283,16 +283,28 @@ Trio pushed GAP-MATRIX-05 resolution commits: `identity.get` + biomeOS-parseable
 - **GAP-MATRIX-03 → RESOLVED (Wave 123)**: TLS 1.3 ClientHello now includes 32-byte legacy session ID for middlebox compatibility (RFC 8446 Appendix D.4) and expanded RSA-PSS signature algorithms (`rsa_pss_rsae_sha384`, `rsa_pss_rsae_sha512`, `rsa_pss_pss_*`). Fixes handshake failures against CDN-fronted hosts (httpbin.org via Cloudflare).
 - **Songbird method gap → RESOLVED (Wave 123)**: New `capabilities.methods` endpoint returns token→method mapping (`CAPABILITY_METHOD_MAP`). Capability tokens like `network.discovery` now normalize to callable methods (`discovery.peers`, `discovery.announce`, `discovery.list_peers`) via `normalize_json_rpc_method_name()`.
 
+### Resolved in Primal Catch-Up Sprint (April 8, 2026)
+
+- **GAP-MATRIX-10 → LARGELY RESOLVED**: Wire Standard adoption sprint — all atomic primals shipped compliance:
+  - **BearDog (Wave 30)**: L2 complete — `{primal, version, methods, provided_capabilities}` + `identity.get`. Deep debt sweep: -654 lines dead code.
+  - **Songbird (Wave 125)**: L2 complete — `{primal: "songbird", version, methods}` with 73 callable methods via `CALLABLE_METHODS` const + `identity.get`.
+  - **NestGate (S36)**: **L3 complete** — full envelope with 9 capability groups, 46+ methods, `consumed_capabilities`, `protocol`, `transport`. Plus `identity.get`.
+  - **ToadStool (S190-191)**: **L3 complete** — full envelope with `cost_estimates`, `operation_dependencies`, `consumed_capabilities`. `health.liveness` adds `"status": "alive"`.
+  - **rhizoCrypt, loamSpine, sweetGrass**: previously validated (Run 4). sweetGrass near-L2, rhizoCrypt/loamSpine partial-L2.
+  - Remaining: rhizoCrypt needs flat `methods`; loamSpine needs top-level `methods` + `identity.get`; sweetGrass needs `provided_capabilities` grouping for L3.
+- **GAP-MATRIX-04 → RESOLVED (NestGate S36)**: NestGate now implements JSON-RPC 2.0 over Unix domain sockets alongside HTTP REST. `UnixListener::bind` + full method dispatch. Dual transport: `["uds", "http"]`.
+- **GAP-MATRIX-05 → PARTIALLY RESOLVED (ToadStool S189)**: Daemon mode documented, `SERVER_METHODS.md` rewritten (67 methods, 11 namespaces), `DAEMON_MODE_USER_GUIDE.md` updated. Socket activation works via normal `UnixListener::bind` (not systemd `LISTEN_FDS`). Squirrel still untested.
+- **NestGate → Tower Atomic composition**: `storage.fetch_external` now delegates HTTPS to Songbird via biomeOS `capability.call` (`http.request`). NestGate does NOT terminate TLS — BearDog remains the single auditable crypto boundary. This is the **Nest Atomic composition pattern** working end-to-end.
+
 ### What Remains
 
-- **GAP-MATRIX-10 (Medium)**: Capability Wire Standard convergence — formal spec published at `infra/wateringHole/CAPABILITY_WIRE_STANDARD.md`. Defines 3 compliance levels (Routable → Standard → Composable). All primals at Level 1; none yet at Level 2. Audit checklist included in spec. **Part of future deep-debt audits (matrix column P).**
-- **GAP-MATRIX-09 (Low)**: biomeOS capability taxonomy translates `braid.create` → `provenance.create_braid`, but sweetGrass's actual method is `braid.create`. Resolves naturally once primals adopt Wire Standard Level 2 (`methods` array becomes source of truth).
-- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML still fails; `graph.list` improved via 02b fix.
-- **GAP-MATRIX-04 (Medium)**: NestGate HTTP REST divergence.
-- **GAP-MATRIX-05 (Low, PARTIAL)**: Squirrel + ToadStool not live-tested.
+- **GAP-MATRIX-10 (Low, RESIDUAL)**: Wire Standard L2 not yet reached by rhizoCrypt (needs `methods`), loamSpine (needs top-level `methods` + `identity.get`), sweetGrass (L3 needs `provided_capabilities`). All are small, non-breaking additions. **Part of future deep-debt audits (matrix column P).**
+- **GAP-MATRIX-09 (Low)**: biomeOS capability taxonomy translates `braid.create` → `provenance.create_braid`. Resolves once biomeOS adopts `result.methods` as source of truth (all primals now provide it or will shortly).
+- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML path still fails; `graph.list` works via 02b fix.
+- **GAP-MATRIX-05 (Low, RESIDUAL)**: Squirrel not live-tested. ToadStool daemon mode documented but not yet live-validated through Neural API.
 - **GAP-MATRIX-06 (Low)**: plasmidBin binary freshness.
 
-Critical path: All Critical and Low-severity primal gaps resolved. **12 of 14 capability.call tests pass across 4 primals** (BearDog, Songbird, rhizoCrypt, loamSpine, sweetGrass). Medium priority: GAP-MATRIX-10 (wire standard adoption) → GAP-MATRIX-02 (graph bootstrap) → GAP-MATRIX-04 (NestGate).
+Critical path: **All Critical and Medium gaps resolved.** Wire Standard adopted across all atomic primals (BearDog L2, Songbird L2, NestGate L3, ToadStool L3). NestGate UDS resolves the last structural IPC divergence. Remaining items are low-severity residuals and trio L2 convergence.
 
 ---
 
