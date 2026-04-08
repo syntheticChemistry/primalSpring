@@ -732,6 +732,21 @@ biomeOS's semantic routing translates `braid.create` → `provenance.create_brai
 
 Severity: **Low** — workaround: use untranslated methods (e.g., `braid.query` works because biomeOS has no translation for it and falls through to direct routing).
 
+**GAP-MATRIX-10 (Medium, NEW): Capability Wire Format Convergence**
+
+5 independent wire formats evolved across primals. Standard defined: `infra/wateringHole/handoffs/PRIMAL_CAPABILITY_WIRE_STANDARD_APR08_2026.md`. Required envelope: `{primal, version, methods}`. Recommended: `provided_capabilities` grouping. Optional: `consumed_capabilities`, `cost_estimates`, `operation_dependencies`.
+
+Current compliance (closest → furthest):
+1. **sweetGrass**: has `primal`, `version`, `methods`, `consumed_capabilities`, `identity.get` — add `provided_capabilities`
+2. **rhizoCrypt**: has `primal`, `version`, `provided_capabilities`, `identity.get` — add flat `methods`
+3. **loamSpine**: has `primal`, `version`, `methods` (nested) — promote `methods`, add `identity.get`
+4. **BearDog**: has `primal`, `version`, `provided_capabilities` — add flat `methods`, `identity.get`
+5. **Songbird**: bare flat array only — wrap in `{primal, version, methods}`, add `identity.get`
+
+Tier 1 migration is non-breaking: add `methods` flat array to existing responses.
+
+Severity: **Medium** — not blocking routing (parser handles all formats) but blocking: composition completeness validation, AI-assisted routing, self-describing compositions.
+
 **Songbird capability advertisement gap**
 
 Songbird lists domain descriptors (e.g., `network.discovery`) in `capabilities.list` but returns "unknown JSON-RPC method" when called. These are capability domain markers, not method endpoints. biomeOS forwards the exact capability name as a method, which Songbird doesn't implement.

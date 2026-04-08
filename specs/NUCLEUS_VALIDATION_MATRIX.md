@@ -283,7 +283,9 @@ Trio pushed GAP-MATRIX-05 resolution commits: `identity.get` + biomeOS-parseable
 - **GAP-MATRIX-06 (Low)**: plasmidBin binary freshness.
 - **Songbird method gap (Low)**: Advertises capabilities it doesn't implement as methods.
 
-Critical path: All Critical gaps resolved. **12 of 14 capability.call tests pass across 4 primals** (BearDog, Songbird, rhizoCrypt, loamSpine, sweetGrass). Medium priority: GAP-MATRIX-07b (error propagation) → GAP-MATRIX-02 (graph loading) → GAP-MATRIX-04 (NestGate).
+- **GAP-MATRIX-10 (Medium, NEW)**: Capability wire format convergence — 5 independent formats across primals. Standard defined in `infra/wateringHole/handoffs/PRIMAL_CAPABILITY_WIRE_STANDARD_APR08_2026.md`. Required: flat `methods` array + `primal` + `version` envelope. Recommended: `provided_capabilities` grouping. Optional: `consumed_capabilities`, `cost_estimates`, `operation_dependencies`.
+
+Critical path: All Critical gaps resolved. **12 of 14 capability.call tests pass across 4 primals** (BearDog, Songbird, rhizoCrypt, loamSpine, sweetGrass). Medium priority: GAP-MATRIX-10 (wire convergence) → GAP-MATRIX-07b (error propagation) → GAP-MATRIX-02 (graph loading) → GAP-MATRIX-04 (NestGate).
 
 ---
 
