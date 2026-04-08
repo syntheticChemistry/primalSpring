@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 7, 2026
-**Status**: Phase 26 — Mixed Composition + Live Validation (72 experiments, 99 deploy graphs, biomeOS v2.93: 52 capabilities, 7/9 capability.call PASS)
+**Status**: Phase 26 — Mixed Composition + Live Validation (72 experiments, 99 deploy graphs, biomeOS v2.93: 162 capabilities from 6 primals, 12/14 capability.call PASS)
 
 ---
 
@@ -624,9 +624,9 @@ Phase 27: biomeOS Self-Composition
 | 3 | compute | ToadStool | NOT RUNNING | — | — | — | Need: start ToadStool |
 | 4 | storage | NestGate | NOT RUNNING | — | — | — | Need: start NestGate |
 | 5 | ai | Squirrel | NOT RUNNING | — | — | — | Need: start Squirrel |
-| 6 | dag | rhizoCrypt | NOT RUNNING | — | — | — | Need: start rhizoCrypt |
-| 7 | spine | loamSpine | NOT RUNNING | — | — | — | Need: start loamSpine |
-| 8 | braid | sweetGrass | NOT RUNNING | — | — | — | Need: start sweetGrass |
+| 6 | dag | rhizoCrypt | **PASS** (health, session) | — | — | **PASS** (33 caps, call works) | ✅ GAP-MATRIX-05 resolved |
+| 7 | permanence | loamSpine | **PASS** (health, spine) | — | — | **PASS** (21 caps, call works) | ✅ GAP-MATRIX-05 resolved |
+| 8 | braid | sweetGrass | **PASS** (health, query) | — | — | **PASS** (28 caps, query works) | ✅ GAP-MATRIX-05 resolved |
 | 9 | http | Songbird (Tower) | **PASS** (ifconfig.me HTTP 200) | **FAIL** (0 caps) | **PARTIAL** | **PARTIAL** (crypto.delegate registered) | Songbird method gap |
 | 10 | mesh | Songbird (BirdSong) | **FAIL** (mesh not init) | — | — | — | Expected: mesh.init required first |
 
@@ -709,17 +709,28 @@ NestGate uses HTTP REST, not JSON-RPC over UDS — different IPC pattern from ot
 
 Severity: **Medium** — breaks the uniform JSON-RPC IPC model. HTTP bridge or NestGate evolution needed.
 
-**GAP-MATRIX-05: Provenance trio + Squirrel + ToadStool not tested live**
+**GAP-MATRIX-05: Provenance trio + Squirrel + ToadStool not tested live — PARTIALLY RESOLVED**
 
-L0 domains 3-8 remain structural-only (validated by primalSpring Rust code, not live IPC).
+Provenance trio (rhizoCrypt, loamSpine, sweetGrass) all live-validated through Neural API in Run 4:
+- rhizoCrypt: `identity.get` + Format E capabilities → 33 caps discovered, `dag.session.create` + `dag.session.list` end-to-end PASS
+- loamSpine: Format A capabilities → 21 caps discovered, `spine.create` + `health.check` end-to-end PASS
+- sweetGrass: `identity.get` + Format B capabilities → 28 caps discovered, `braid.query` end-to-end PASS
 
-Severity: **Medium** — requires starting each primal with correct CLI flags.
+Squirrel + ToadStool remain untested (need daemon mode docs).
+
+Severity: ~~Medium~~ → **Low** — only 2 primals untested.
 
 **GAP-MATRIX-06: plasmidBin binary freshness**
 
 Some binaries pre-date Phase 25 evolution.
 
 Severity: **Low** — rebuild from source when needed. Manifest tracks versions.
+
+**GAP-MATRIX-09 (Low, NEW): biomeOS capability taxonomy translation mismatch**
+
+biomeOS's semantic routing translates `braid.create` → `provenance.create_braid` before forwarding to sweetGrass. sweetGrass's actual JSON-RPC method is `braid.create`. The translation table in CapabilityTaxonomy has an incorrect mapping for provenance trio methods.
+
+Severity: **Low** — workaround: use untranslated methods (e.g., `braid.query` works because biomeOS has no translation for it and falls through to direct routing).
 
 **Songbird capability advertisement gap**
 

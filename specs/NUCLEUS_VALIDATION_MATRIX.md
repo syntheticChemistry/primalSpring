@@ -225,56 +225,65 @@ Tower Atomic (BearDog + Songbird) validated live on Eastgate. Neural API running
 
 biomeOS v2.92 includes real JSON-RPC probing (`identity.get` + `capabilities.list`), 4-format capability parser alignment, and domain prefix matching (GAP-019). Songbird (14 caps) registered. BearDog (Format E) still unrecognized. Proxy forwarding broken for all methods.
 
-### Run 3: biomeOS v2.93 (post-fix — GAP-MATRIX-07 + 01b + 02)
+### Run 3: biomeOS v2.93 — BearDog + Songbird (2 primals)
 
-biomeOS v2.93 resolves all three gaps from Run 2. Rebuilt from source (`13ca2328`) and validated:
+biomeOS v2.93 resolves GAP-MATRIX-07, 01b, 02. 52 capabilities from 2 primals. 7/9 BearDog capability.call methods forwarded end-to-end.
+
+### Run 4: biomeOS v2.93 — Full Tower + Provenance Trio (6 primals)
+
+Trio pushed GAP-MATRIX-05 resolution commits: `identity.get` + biomeOS-parseable `capabilities.list` (rhizoCrypt Format E, loamSpine Format A, sweetGrass Format B). Rebuilt from source and validated with all 6 primals running:
 
 | Probe | Result | Notes |
 |-------|--------|-------|
-| BearDog health.liveness (direct) | **LIVE PASS** | v0.9.0, 9 capability groups |
-| BearDog crypto.sign_ed25519 (direct) | **LIVE PASS** | Ed25519 signature generated |
-| BearDog crypto.blake3_hash (direct) | **LIVE PASS** | BLAKE3 hash confirmed |
-| Songbird health.liveness (direct) | **LIVE PASS** | v0.2.1, healthy |
-| Songbird capabilities.list (direct) | **LIVE PASS** | 14 capabilities via Format A |
-| Neural API → BearDog capabilities | **LIVE PASS** | **38 BearDog capabilities registered** (Format E parsed). Was 0 in v2.92. |
-| Neural API → Songbird capabilities | **LIVE PASS** | 14 Songbird capabilities registered. |
-| Neural API auto-discovery total | **LIVE PASS** | **52 capabilities from 2 primals** |
-| capability.discover crypto | **LIVE PASS** | Routes to beardog, correct endpoint |
-| capability.discover network | **LIVE PASS** | Routes to songbird, correct endpoint |
-| capability.discover tls | **LIVE PASS** | Routes to beardog, correct endpoint |
-| capability.discover security | **LIVE PASS** | Routes to beardog, correct endpoint |
-| **capability.call crypto.blake3_hash** | **LIVE PASS** | End-to-end: Neural API → BearDog → BLAKE3 hash result |
-| **capability.call crypto.sign_ed25519** | **LIVE PASS** | End-to-end: Neural API → BearDog → Ed25519 signature |
-| **capability.call crypto.hmac_sha256** | **LIVE PASS** | End-to-end: Neural API → BearDog → HMAC result |
-| **capability.call security.evaluate** | **LIVE PASS** | End-to-end: Neural API → BearDog → trust evaluation |
-| **capability.call trust.evaluate** | **LIVE PASS** | End-to-end: Neural API → BearDog → trust evaluation |
-| **capability.call tls.derive_secrets** | **LIVE PASS** | End-to-end: Neural API → BearDog → TLS key derivation |
-| capability.call crypto.verify_ed25519 | **FAIL** | GAP-MATRIX-07b: primal returns param error, proxy reports "Failed to forward" |
-| capability.call encryption.encrypt | **FAIL** | GAP-MATRIX-07b: primal returns param error, proxy reports "Failed to forward" |
-| capability.call network.discovery | **FAIL** | Songbird advertises but does not implement as callable method |
-| graph.list | **EMPTY** | Returns `[]` despite TOML parsing succeeding in loader. Bootstrap path still fails. |
-| NestGate | NOT STARTED | GAP-MATRIX-04: CLI instability |
-| ToadStool, Squirrel, Trio | NOT STARTED | GAP-MATRIX-05: require manual process launch |
+| **Auto-discovery** | **LIVE PASS** | **162 capabilities from 6 primals** |
+| rhizoCrypt discovered | **LIVE PASS** | 33 capabilities (Format E, 5 groups) |
+| loamSpine discovered | **LIVE PASS** | 21 capabilities (Format A) |
+| sweetGrass discovered | **LIVE PASS** | 28 capabilities (Format B) |
+| provenance (symlink) discovered | **LIVE PASS** | 28 capabilities via provenance.sock → sweetgrass.sock |
+| Songbird discovered | **LIVE PASS** | 14 capabilities (Format A) |
+| BearDog discovered | **LIVE PASS** | 38 capabilities (Format E) |
+| capability.discover dag | **LIVE PASS** | → rhizocrypt, correct endpoint |
+| capability.discover permanence | **LIVE PASS** | → loamspine, correct endpoint |
+| capability.discover braid | **LIVE PASS** | → provenance (sweetgrass), correct endpoint |
+| capability.discover provenance | **LIVE PASS** | → provenance (sweetgrass), correct endpoint |
+| capability.discover crypto | **LIVE PASS** | → beardog, correct endpoint |
+| capability.discover network | **LIVE PASS** | → songbird, correct endpoint |
+| **capability.call dag.session.create** | **LIVE PASS** | Neural API → rhizoCrypt → UUID `019d6a61-...` |
+| **capability.call dag.session.list** | **LIVE PASS** | Neural API → rhizoCrypt → 2 active sessions |
+| **capability.call health.liveness** | **LIVE PASS** | Neural API → rhizoCrypt → alive |
+| **capability.call spine.create** | **LIVE PASS** | Neural API → loamSpine → spine_id + genesis_hash |
+| **capability.call health.check** | **LIVE PASS** | Neural API → loamSpine → healthy, running |
+| **capability.call braid.query** | **LIVE PASS** | Neural API → sweetGrass → empty result set |
+| **capability.call crypto.blake3_hash** | **LIVE PASS** | Neural API → BearDog → BLAKE3 hash |
+| **capability.call crypto.sign_ed25519** | **LIVE PASS** | Neural API → BearDog → Ed25519 signature |
+| **capability.call crypto.hmac_sha256** | **LIVE PASS** | Neural API → BearDog → HMAC result |
+| **capability.call security.evaluate** | **LIVE PASS** | Neural API → BearDog → trust evaluation |
+| **capability.call trust.evaluate** | **LIVE PASS** | Neural API → BearDog → trust evaluation |
+| **capability.call tls.derive_secrets** | **LIVE PASS** | Neural API → BearDog → TLS key derivation |
+| capability.call braid.create | **FAIL** | biomeOS translates to `provenance.create_braid` (wrong method name) |
+| capability.call with wrong params | **FAIL** | GAP-MATRIX-07b: primal -32602 errors swallowed as "Failed to forward" |
+| NestGate | NOT STARTED | GAP-MATRIX-04: HTTP REST, not JSON-RPC/UDS |
+| ToadStool, Squirrel | NOT STARTED | GAP-MATRIX-05 partial: need daemon mode |
 
-### What biomeOS v2.93 Fixed
+### biomeOS v2.93 Validated (Runs 3+4)
 
-- **GAP-MATRIX-07 (Critical) → RESOLVED**: `TransportEndpoint::parse()` now handles `unix://` URI scheme. `capability.call` proxy forwarding works end-to-end. 7 of 9 tested BearDog methods forwarded successfully through Neural API.
-- **GAP-MATRIX-01b (Medium) → RESOLVED**: Format E parser handles BearDog's `provided_capabilities: [{type, methods}]` wire format. 38 BearDog capabilities now registered (9 domain groups + 29 qualified methods).
-- **GAP-MATRIX-01 (Medium) → RESOLVED**: Combined with Songbird (14 caps), 52 total capabilities auto-discovered from 2 primals. The original "0 capabilities" issue is fully resolved.
-- **GAP-MATRIX-02 PARTIAL**: `#[serde(default)]` on `GraphDefinition.name/version` fixes the graph loader path, but the bootstrap sequence still fails on `tower_atomic_bootstrap.toml`. `graph.list` returns empty.
+- **GAP-MATRIX-07 (Critical) → RESOLVED**: `unix://` URI scheme parsed. 12/14 capability.call tests pass across 4 primals.
+- **GAP-MATRIX-01 + 01b → RESOLVED**: 5-format parser (A-E). 162 capabilities from 6 primals auto-discovered.
+- **GAP-MATRIX-05 → PARTIALLY RESOLVED**: Provenance trio live-validated through Neural API. rhizoCrypt (dag), loamSpine (permanence), sweetGrass (braid/provenance) all routing correctly. Squirrel + ToadStool remain untested.
 
 ### What Remains
 
-- **GAP-MATRIX-07b (Medium, NEW)**: biomeOS proxy error propagation — when a primal returns a JSON-RPC error response (e.g., param validation: `-32601`), biomeOS reports "Failed to forward" instead of propagating the error. This masks the real error from callers. The proxy conflates transport failure with application-level errors.
-- **GAP-MATRIX-08 (Low, NEW)**: biomeOS self-discovery — Neural API discovers its own socket during re-scan sweeps (~20s after startup) and registers itself as a capability provider, creating duplicate `neural @` routing entries. Correct primal remains primary_endpoint but routing table is polluted.
-- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML parsing still fails; `graph.list` returns empty.
-- **GAP-MATRIX-03 (Low)**: Songbird TLS cipher suite — some HTTPS endpoints fail TLS handshake.
-- **GAP-MATRIX-04 (Medium)**: NestGate CLI instability, HTTP REST (not JSON-RPC/UDS).
-- **GAP-MATRIX-05 (Low)**: No auto-start for ToadStool, Squirrel, Trio.
-- **GAP-MATRIX-06 (Low)**: SweetGrass/LoamSpine/RhizoCrypt provenance graph missing.
-- **Songbird method gap**: Songbird lists `network.discovery` etc. in `capabilities.list` but returns "unknown JSON-RPC method" when called. These are domain descriptors, not method endpoints.
+- **GAP-MATRIX-07b (Medium)**: Proxy error propagation — primal JSON-RPC errors (`-32601`/`-32602`) reported as "Failed to forward". Methods with correct params work.
+- **GAP-MATRIX-09 (Low, NEW)**: biomeOS capability taxonomy translates `braid.create` → `provenance.create_braid`, but sweetGrass's actual method is `braid.create`. Translation table needs alignment.
+- **GAP-MATRIX-08 (Low)**: Neural API self-discovery routing pollution.
+- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML still fails; `graph.list` empty.
+- **GAP-MATRIX-03 (Low)**: Songbird TLS cipher suite gaps.
+- **GAP-MATRIX-04 (Medium)**: NestGate HTTP REST divergence.
+- **GAP-MATRIX-05 (Low, PARTIAL)**: Squirrel + ToadStool not live-tested.
+- **GAP-MATRIX-06 (Low)**: plasmidBin binary freshness.
+- **Songbird method gap (Low)**: Advertises capabilities it doesn't implement as methods.
 
-Critical path: All Critical gaps resolved. Medium priority: GAP-MATRIX-07b (error propagation) → GAP-MATRIX-02 (graph loading) → GAP-MATRIX-04 (NestGate).
+Critical path: All Critical gaps resolved. **12 of 14 capability.call tests pass across 4 primals** (BearDog, Songbird, rhizoCrypt, loamSpine, sweetGrass). Medium priority: GAP-MATRIX-07b (error propagation) → GAP-MATRIX-02 (graph loading) → GAP-MATRIX-04 (NestGate).
 
 ---
 
