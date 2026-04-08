@@ -296,15 +296,58 @@ Trio pushed GAP-MATRIX-05 resolution commits: `identity.get` + biomeOS-parseable
 - **GAP-MATRIX-05 → PARTIALLY RESOLVED (ToadStool S189)**: Daemon mode documented, `SERVER_METHODS.md` rewritten (67 methods, 11 namespaces), `DAEMON_MODE_USER_GUIDE.md` updated. Socket activation works via normal `UnixListener::bind` (not systemd `LISTEN_FDS`). Squirrel still untested.
 - **NestGate → Tower Atomic composition**: `storage.fetch_external` now delegates HTTPS to Songbird via biomeOS `capability.call` (`http.request`). NestGate does NOT terminate TLS — BearDog remains the single auditable crypto boundary. This is the **Nest Atomic composition pattern** working end-to-end.
 
+### Live Validation Run 5: biomeOS v2.95 — 9 primals, 607 capabilities (April 8, 2026)
+
+All 9 primals started (fresh ecoBin builds). biomeOS auto-discovered **607 capabilities from 7 sockets** (beardog, crypto, songbird, nestgate, storage, sweetgrass, provenance, toadstool.jsonrpc). loamSpine TCP-only (no UDS).
+
+| Probe | Result | Detail |
+|-------|--------|--------|
+| BearDog `crypto.blake3_hash` via Neural API | **PASS** | `beardog` domain → BLAKE3 hash returned |
+| BearDog `crypto.sign_ed25519` via Neural API | **PASS** | Ed25519 signature returned |
+| BearDog `crypto.hmac_sha256` via Neural API | **PASS** | HMAC-SHA256 returned |
+| BearDog `identity.get` (direct) | **PASS** | `{primal: "beardog-tunnel", version: "0.9.0", domain: "crypto", license}` |
+| BearDog `health.liveness` (direct) | **PASS** | `{status: "alive"}` |
+| NestGate `identity.get` (direct) | **PASS (partial)** | `{primal: "nestgate", version: "0.1.0", family_id}` — missing `domain`, `license` |
+| NestGate `health.liveness` (direct) | **PASS** | `{status: "alive"}` |
+| NestGate `capabilities.list` (direct) | **PASS** | L3 envelope: methods array, provided_capabilities |
+| NestGate `storage.list` (direct) | **PASS** | Returns stored keys |
+| ToadStool `identity.get` (direct) | **PASS** | Full L3: domain, license, methods, capabilities |
+| ToadStool `health.liveness` (direct) | **PASS** | `{status: "alive"}`, uptime, workload counts |
+| ToadStool `capabilities.list` (direct) | **PASS** | L3: cost_estimates, consumed_capabilities |
+| rhizoCrypt `dag.session.create` (direct) | **PASS** | Session UUID returned |
+| sweetGrass `braid.query` (direct) | **PASS** | Empty result set (correct) |
+| sweetGrass `capabilities.list` (direct) | **PASS** | Format B: methods + capabilities array |
+| Songbird `capabilities.list` (direct) | **FAIL** | `Unknown method: capabilities.list` on orchestrator socket |
+| Storage/Compute/DAG via Neural API | **FAIL** | GAP-MATRIX-11: graph-boot socket paths don't match actual sockets |
+| NestGate `fetch_external` → Tower | **FAIL** | Looks for `neural-api-<family_id>.sock` which doesn't exist |
+
+### New Gap: GAP-MATRIX-11 (Medium) — Graph-Boot Socket Path Mismatch
+
+biomeOS graph-based bootstrap registers capabilities at FAMILY_ID-suffixed socket paths (e.g., `nestgate-8ff3b864a4bc589a.sock`, `toadstool-8ff3b864a4bc589a.sock`) which don't exist. Primals create sockets at simple names (`nestgate.sock`, `toadstool.jsonrpc.sock`). Graph paths take routing precedence over auto-discovered paths for taxonomy domains (`storage`, `compute`, `dag`, `braid`). The `beardog` domain works because it was registered from auto-discovery, not graph. `security.evaluate` worked in Run 4 for the same reason.
+
+Impact: Neural API `capability.call` fails for any domain whose graph-boot registration overrides auto-discovery. Direct primal probes all work.
+
+Recommended fix: biomeOS should either (a) auto-discovery results override graph-boot when socket exists, or (b) graph-boot should probe for actual socket existence before registering.
+
+### Songbird Socket Gap (Medium)
+
+Songbird's Wire Standard L2 methods (`capabilities.list`, `identity.get`, `health.liveness`) are implemented in the universal-ipc dispatch handler, but the `songbird.sock` socket is served by the orchestrator handler which doesn't expose these methods. biomeOS probes `songbird.sock` and gets "Unknown method" errors.
+
+Impact: Songbird's L2 compliance exists in code but is unreachable on the socket biomeOS discovers.
+
+Recommended fix: Songbird should wire the universal-ipc dispatch (Wire Standard methods) through the orchestrator's socket handler, or expose a second socket for universal-ipc.
+
 ### What Remains
 
-- **GAP-MATRIX-10 (Low, RESIDUAL)**: Wire Standard L2 not yet reached by rhizoCrypt (needs `methods`), loamSpine (needs top-level `methods` + `identity.get`), sweetGrass (L3 needs `provided_capabilities`). All are small, non-breaking additions. **Part of future deep-debt audits (matrix column P).**
-- **GAP-MATRIX-09 (Low)**: biomeOS capability taxonomy translates `braid.create` → `provenance.create_braid`. Resolves once biomeOS adopts `result.methods` as source of truth (all primals now provide it or will shortly).
-- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML path still fails; `graph.list` works via 02b fix.
-- **GAP-MATRIX-05 (Low, RESIDUAL)**: Squirrel not live-tested. ToadStool daemon mode documented but not yet live-validated through Neural API.
-- **GAP-MATRIX-06 (Low)**: plasmidBin binary freshness.
+- **GAP-MATRIX-11 (Medium, NEW)**: Graph-boot socket path mismatch — capability.call forwarding fails for taxonomy domains. Direct probes and `beardog` domain work.
+- **Songbird socket gap (Medium, NEW)**: Wire Standard L2 methods not exposed on the discoverable socket.
+- **GAP-MATRIX-10 (Low, RESIDUAL)**: Trio L2 convergence. rhizoCrypt `identity.get` not found (needs implementation or binary rebuild). sweetGrass `identity.get` not found. loamSpine TCP-only (no UDS — biomeOS can't auto-discover).
+- **GAP-MATRIX-09 (Low)**: biomeOS taxonomy translation. Resolves once `result.methods` is source of truth.
+- **GAP-MATRIX-02 (Medium, PARTIAL)**: Bootstrap TOML path still fails.
+- **GAP-MATRIX-05 (Low, RESIDUAL)**: Squirrel not tested. ToadStool daemon mode works but not yet routed through Neural API (blocked by GAP-11).
+- **GAP-MATRIX-06 (Low)**: plasmidBin binaries now fresh (April 8, 2026).
 
-Critical path: **All Critical and Medium gaps resolved.** Wire Standard adopted across all atomic primals (BearDog L2, Songbird L2, NestGate L3, ToadStool L3). NestGate UDS resolves the last structural IPC divergence. Remaining items are low-severity residuals and trio L2 convergence.
+Critical path: **Direct primal probes pass across all 7 primals.** Neural API routing works for `beardog` domain (auto-discovered). Graph-boot socket mismatch (GAP-11) blocks end-to-end routing for other domains. Two new medium gaps: GAP-11 (biomeOS routing) and Songbird socket exposure.
 
 ---
 
