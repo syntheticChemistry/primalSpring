@@ -31,7 +31,7 @@ tcp_ports = 0
 pattern_version = "2026-04-09"
 witness_wire = "WireWitnessRef"
 composition_model = "pure"
-fragments = ["tower_base", "provenance_trio"]
+fragments = ["tower_atomic", "provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

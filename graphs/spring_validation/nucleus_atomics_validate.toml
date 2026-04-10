@@ -25,7 +25,7 @@ tcp_ports = 0
 bond_type = "validation"
 requires_biomeos = ">=2.78"
 composition_model = "validation"
-fragments = ["tower_base"]
+fragments = ["tower_atomic"]
 
 [[graph.nodes]]
 name = "verify_biomeos"

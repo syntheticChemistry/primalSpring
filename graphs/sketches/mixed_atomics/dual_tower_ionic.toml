@@ -51,7 +51,7 @@ particle_model = "two electron shells, ionic bond"
 internal_bond_type = "ionic"
 default_interaction_bond = "ionic"
 composition_model = "pure"
-fragments = ["tower_base"]
+fragments = ["tower_atomic"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

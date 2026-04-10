@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Fragment: Meta-Tier Primals — biomeOS + Squirrel + petalTongue
+#
+# These primals operate at ALL atomic levels. They are not part of
+# any single atomic (Tower/Node/Nest) — they compose with any
+# combination of atomics to provide orchestration, AI coordination,
+# and visualization.
+#
+# biomeOS: the orchestrator — graph execution, capability routing,
+#          service discovery. The kernel. Always present.
+# Squirrel: AI coordination — model routing, MCP tools, context
+#           management. Available wherever AI alignment is needed.
+# petalTongue: UI/rendering — dashboards, visualization grammars.
+#              Available wherever visual output is needed.
+#
+# Meta-tier primals can bond to Tower, Node, or Nest independently.
+
+[fragment]
+name = "meta_tier"
+description = "biomeOS (orchestrator) + Squirrel (AI) + petalTongue (UI) — cross-atomic meta primals"
+version = "2.0.0"
+node_count = 3
+
+[[fragment.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+[[fragment.nodes]]
+name = "squirrel"
+binary = "squirrel"
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
+
+[[fragment.nodes]]
+name = "petaltongue"
+binary = "petaltongue"
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "visualization"
+security_model = "tower_delegated"
+capabilities = ["viz.render", "viz.dashboard"]

@@ -22,7 +22,7 @@ tcp_ports = 0
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 composition_model = "validation"
-fragments = ["tower_base", "nucleus_core"]
+fragments = ["tower_atomic", "nucleus"]
 
 [[graph.nodes]]
 name = "verify_tower"

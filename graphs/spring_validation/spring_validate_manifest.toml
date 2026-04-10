@@ -1,0 +1,71 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Spring Validation Manifest — parameters for spring_validate_template.toml
+#
+# Each [[spring]] entry provides the substitution values for the template.
+# biomeOS reads this manifest to instantiate per-spring validation graphs.
+
+[manifest]
+template = "spring_validate_template.toml"
+version = "2.0.0"
+description = "Parameter table for the 6 science springs"
+
+[[spring]]
+spring_name = "airspring"
+spring_binary = "airspring_primal"
+domain = "ecology"
+capabilities = [
+    "ecology.weather",
+    "ecology.et0",
+    "ecology.water_balance",
+]
+
+[[spring]]
+spring_name = "groundspring"
+spring_binary = "groundspring"
+domain = "measurement"
+capabilities = [
+    "measurement.sense",
+    "measurement.inverse",
+    "measurement.temporal",
+]
+
+[[spring]]
+spring_name = "wetspring"
+spring_binary = "wetspring"
+domain = "science"
+capabilities = [
+    "science.sequence",
+    "science.diversity",
+    "science.phylogenetics",
+]
+
+[[spring]]
+spring_name = "hotspring"
+spring_binary = "hotspring_primal"
+domain = "physics"
+capabilities = [
+    "physics.thermal",
+    "physics.fluid",
+    "physics.radiation",
+]
+
+[[spring]]
+spring_name = "neuralspring"
+spring_binary = "neuralspring"
+domain = "neural"
+capabilities = [
+    "neural.hamiltonian",
+    "neural.eigensolve",
+    "neural.spectral",
+]
+
+[[spring]]
+spring_name = "healthspring"
+spring_binary = "healthspring_primal"
+domain = "health"
+capabilities = [
+    "health.pharmacology",
+    "health.genomics",
+    "health.clinical",
+]

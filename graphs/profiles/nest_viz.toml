@@ -1,28 +1,28 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Node + AI Overlay — compute + AI coordination
+# Profile: Nest + Viz — Nest Atomic + petalTongue (meta)
 #
-# Node Atomic (Tower + ToadStool) + Squirrel (AI alignment).
-# Composes AI task coordination on top of the compute tier,
-# enabling GPU workloads to be directed by AI-driven planning.
+# Storage tier with visualization overlay. petalTongue is a meta-tier
+# primal that bonds to Nest for storage dashboards, capacity monitoring,
+# and visual inspection of content-addressed data.
 #
 # Usage:
-#   biomeos deploy --graph graphs/node_ai.toml
+#   biomeos deploy --graph graphs/profiles/nest_viz.toml
 
 [graph]
-name = "node_ai"
-description = "Node Atomic + Squirrel (compute + AI coordination)"
-version = "0.1.0"
+name = "nest_viz_profile"
+description = "Nest Atomic + petalTongue (meta-tier visualization for storage)"
+version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
+base = "nucleus_complete"
+profile = "nest_viz"
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
 composition_model = "pure"
-fragments = ["tower_base"]
-
-# ── Phase 1: Tower Atomic (base) ──
+fragments = ["tower_atomic", "nest_atomic", "meta_tier"]
 
 [[graph.nodes]]
 name = "beardog"
@@ -31,6 +31,7 @@ order = 1
 required = true
 health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 capabilities = [
     "crypto.encrypt", "crypto.decrypt", "crypto.sign",
     "crypto.verify", "crypto.keygen", "crypto.identity",
@@ -44,49 +45,45 @@ required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
+security_model = "btsp"
 capabilities = [
     "discovery.find_primals", "discovery.announce",
     "network.tls_connect", "network.http_request",
 ]
 
-# ── Phase 2: Node Extension ──
-
 [[graph.nodes]]
-name = "toadstool"
-binary = "toadstool"
+name = "nestgate"
+binary = "nestgate"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
-by_capability = "compute"
-capabilities = [
-    "compute.dispatch.submit",
-    "compute.dispatch.status",
-    "compute.dispatch.cancel",
-    "compute.execute",
-]
-
-# ── Phase 3: AI Overlay ──
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve"]
 
 [[graph.nodes]]
-name = "squirrel"
-binary = "squirrel"
+name = "petaltongue"
+binary = "petaltongue"
 order = 4
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
-by_capability = "ai"
-capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
-
-# ── Validation (not spawned) ──
+by_capability = "visualization"
+security_model = "tower_delegated"
+capabilities = [
+    "viz.render", "viz.dashboard",
+    "viz.stream", "viz.query",
+]
 
 [[graph.nodes]]
-name = "validate_node_ai"
+name = "validate_nest_viz"
 binary = "primalspring_primal"
 order = 99
 required = false
 spawn = false
-depends_on = ["beardog", "songbird", "toadstool", "squirrel"]
+depends_on = ["beardog", "songbird", "nestgate", "petaltongue"]
 health_method = "health.liveness"
 by_capability = "coordination"
-capabilities = ["composition.node_ai_health"]
+security_model = "tower_delegated"
+capabilities = ["composition.nest_viz_health"]

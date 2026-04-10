@@ -1,0 +1,97 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Profile: Tower + Viz — Tower Atomic + Squirrel + petalTongue (meta)
+#
+# Full Tower with both meta-tier overlays: AI (Squirrel) and
+# visualization (petalTongue). Exercises every capability validated
+# by primalSpring gates 1-11.
+#
+# Usage:
+#   biomeos deploy --graph graphs/profiles/tower_viz.toml
+
+[graph]
+name = "tower_viz_profile"
+description = "Tower Atomic + Squirrel + petalTongue (meta-tier AI + visualization)"
+version = "2.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+base = "nucleus_complete"
+profile = "tower_viz"
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+composition_model = "validation"
+fragments = ["tower_atomic", "meta_tier"]
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
+    "crypto.verify", "crypto.keygen", "crypto.identity",
+]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request",
+    "network.stun", "network.nat_type",
+    "network.birdsong.beacon", "network.birdsong.decrypt",
+    "network.onion.start", "network.onion.status",
+    "network.tor.status",
+    "network.federation.peers",
+]
+
+[[graph.nodes]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 3
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "visualization"
+security_model = "tower_delegated"
+capabilities = [
+    "visualization.render.dashboard",
+    "visualization.render.grammar",
+]
+
+[[graph.nodes]]
+name = "squirrel"
+binary = "squirrel"
+order = 4
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = ["ai.query", "ai.health"]
+
+[[graph.nodes]]
+name = "validate_tower_viz"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "coordination"
+security_model = "tower_delegated"
+capabilities = [
+    "composition.tower_health",
+    "composition.tower_squirrel_health",
+]

@@ -29,7 +29,7 @@ bond_type = "validation"
 requires_biomeos = ">=2.78"
 federation = true
 composition_model = "validation"
-fragments = ["tower_base"]
+fragments = ["tower_atomic"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

@@ -27,10 +27,10 @@ back upstream to primals and primalSpring.
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
 - **experiments/** — 72 validation binaries covering 15 tracks
-- **graphs/** — 100 deploy graph TOMLs + 4 fragments (single-node + multi-node +
-  17 spring validation + cross-spring + gen4 + bonding + chaos +
-  science + 3 composition subsystems + 6 nucleated spring deploy +
-  12 sketch graphs + 5 downstream proto-nucleate + 3 pipeline + 4 fragments)
+- **graphs/** — 93 deploy graph TOMLs + 6 atomic-aligned fragments (9 profiles +
+  4 patterns + 13 spring validation + cross-spring + gen4 + bonding + chaos +
+  science + 5 spring deploy + 12 sketches + 5 downstream proto-nucleate +
+  3 pipeline + 5 multi-node + 7 root-level)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`)
 - **tools/** — nucleus launcher, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
@@ -67,7 +67,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.5 Phase 29 — 404 tests, 72 experiments, 100 deploy graphs + 4 fragments.
+v0.9.6 Phase 30 — 404 tests, 72 experiments, 93 deploy graphs + 6 atomic-aligned fragments.
 
 Live validation: **43/44 (98%)** subsystem, plus live Tower Atomic
 probes (BearDog crypto, Songbird HTTPS, Neural API all LIVE PASS/FAIL).
@@ -90,7 +90,7 @@ Squirrel (local AI endpoint + inference bridge).
 April 10: BTSP Phase 2 cascade (11/13 primals enforce handshake), inference
 provider abstraction (`inference.complete`/`embed`/`models`), WGSL shader
 composition model, 5 proto-nucleate graphs (neuralSpring ML, hotSpring QCD,
-healthSpring enclave), 3 pipeline graphs, 100 deploy graphs + 4 fragments with
+healthSpring enclave), 3 pipeline graphs, 93 deploy graphs + 6 fragments with
 `secure_by_default` metadata.
 
 April 9: Graph consolidation — ludoSpring/esotericWebb evolved to pure compositions

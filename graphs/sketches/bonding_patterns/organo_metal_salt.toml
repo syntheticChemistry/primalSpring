@@ -62,7 +62,7 @@ particle_model = "organo-metal-salt compound"
 internal_bond_type = "organo_metal_salt"
 trust_model = "mixed"
 composition_model = "pure"
-fragments = ["tower_base"]
+fragments = ["tower_atomic"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

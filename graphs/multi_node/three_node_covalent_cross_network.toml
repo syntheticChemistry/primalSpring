@@ -71,7 +71,7 @@ trust_model = "genetic_lineage"
 beacon_mode = "dark_forest"
 architectures = ["x86_64-linux-musl", "aarch64-linux-musl"]
 composition_model = "nucleated"
-fragments = ["tower_base"]
+fragments = ["tower_atomic"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

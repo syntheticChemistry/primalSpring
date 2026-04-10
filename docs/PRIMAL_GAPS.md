@@ -1021,7 +1021,7 @@ Springs and gardens are **consumers** of NUCLEUS, not primals. Key changes:
 6. **Stale binary names**: `ludospring_primal` → `ludospring` in remaining science/sketch
    graphs (4 files fixed).
 
-7. **Secure-by-default graph rewiring (April 10)**: All 101 deploy graphs now include
+7. **Secure-by-default graph rewiring (April 10)**: All 93 deploy graphs now include
    `[graph.metadata]` with `security_model = "btsp_enforced"`, `transport = "uds_only"`,
    `tcp_ports = 0`. Previously 91/101 graphs were missing security metadata (plaintext-first
    patterns from early evolution). Bonding-specific graphs get appropriate `[graph.bonding_policy]`:
@@ -1047,9 +1047,9 @@ DDA, session lifecycle, provenance) — they are the "papers" that validate grap
   constituent primals (barraCuda for game math, Squirrel for AI/narration, petalTongue
   for rendering, NestGate for storage, provenance trio for session integrity).
 - **7 graphs deleted**: 5 redundant sketches + 2 duplicate compositions.
-- **4 canonical fragments** (`graphs/fragments/`): `tower_base`, `provenance_trio`,
-  `wgsl_shader_pipeline`, `nucleus_core` — documenting the "periodic table" of composition.
-- **100% metadata annotation**: Every deploy graph carries `composition_model` and `fragments`.
+- **6 canonical fragments** (`graphs/fragments/`): `tower_atomic`, `provenance_trio`,
+  `node_atomic`, `nucleus` — documenting the "periodic table" of composition.
+- **100% metadata annotation**: Every deploy graph carries `composition_model` and `fragments` (atomic-aligned: `tower_atomic`, `node_atomic`, `nest_atomic`, `meta_tier`, `nucleus`, `provenance_trio`).
 
 ### How Capabilities Map
 

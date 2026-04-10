@@ -1,20 +1,38 @@
-# Graph Fragments — Canonical Composition Patterns
+# Graph Fragments — NUCLEUS Atomic Architecture
 
-Fragments define the **reusable building blocks** that deploy graphs compose.
-They are the "periodic table" of NUCLEUS composition — every graph is built
-from combinations of these canonical patterns.
+Fragments define the **three atomics** that compose into NUCLEUS, plus the
+meta-tier primals that operate at any level. They are the "periodic table"
+of primal composition — every graph is built from combinations of these
+canonical structures.
 
 Fragments are **documentation**, not a runtime merge system. biomeOS deploys
 complete graphs; fragments show which canonical patterns each graph includes.
 
-## Fragments
+## The Three Atomics
 
-| Fragment | Nodes | Description |
-|----------|-------|-------------|
-| `tower_base` | biomeOS + BearDog + Songbird | Minimum viable composition: orchestration + security + discovery |
-| `provenance_trio` | rhizoCrypt + loamSpine + sweetGrass | DAG + ledger + attribution chain for any lineage workflow |
-| `wgsl_shader_pipeline` | coralReef + toadStool + barraCuda | Compile + dispatch + execute for GPU/CPU compute |
-| `nucleus_core` | Tower Base + toadStool + NestGate + Squirrel | 6 core primals forming a complete NUCLEUS |
+| Fragment | Particle | Primals | Description |
+|----------|----------|---------|-------------|
+| `tower_atomic` | Electron | BearDog + Songbird | Trust boundary — crypto, discovery, mesh |
+| `node_atomic` | Proton | Tower + ToadStool + barraCuda + coralReef | Compute substrate — dispatch, execute, compile |
+| `nest_atomic` | Neutron | Tower + NestGate + provenance trio | Storage + provenance — content-addressed data + lineage |
+
+## Supporting Patterns
+
+| Fragment | Primals | Description |
+|----------|---------|-------------|
+| `nucleus` | Tower + Node + Nest (9 primals) | Full NUCLEUS — all three atomics bound together |
+| `meta_tier` | biomeOS + Squirrel + petalTongue | Cross-atomic primals — orchestration, AI, UI |
+| `provenance_trio` | rhizoCrypt + loamSpine + sweetGrass | Sub-pattern within Nest — DAG + ledger + attribution |
+
+## Particle Model
+
+From gen3 Paper 23 (mass-energy-information equivalence):
+
+- **Tower = Electron**: Mediates bonding. All inter-gate communication flows through Tower.
+- **Node = Proton**: Compute = energy. Fungible (a TFLOP is a TFLOP). Identity of a gate.
+- **Nest = Neutron**: Data at rest. Non-fungible, content-addressed. Isotope = data profile.
+- **NUCLEUS = Atom**: Tower + Node + Nest bound together. The deployment unit.
+- **Meta-tier**: biomeOS, Squirrel, petalTongue — not part of any atomic, available at all levels.
 
 ## How Graphs Compose Fragments
 
@@ -23,8 +41,8 @@ array listing which canonical patterns it includes:
 
 ```toml
 [graph.metadata]
-fragments = ["tower_base", "provenance_trio"]
-composition_model = "pure"  # no downstream binary spawned
+fragments = ["tower_atomic", "nest_atomic"]
+composition_model = "pure"
 ```
 
 ## Composition Models
@@ -41,9 +59,9 @@ Complex functions emerge from composing base primals via Neural API graphs.
 You never build a new primal to achieve a higher-order capability — you compose
 existing ones.
 
-- **ML inference** = barraCuda matmul/attention + coralReef compile + toadStool dispatch
-- **QCD physics** = barraCuda df64 + coralReef QCD operators + toadStool GPU fleet
-- **Game science** = barraCuda Fitts/Perlin/WFC + toadStool dispatch + Squirrel DDA
-- **CRPG product** = Squirrel narration + petalTongue rendering + NestGate sessions + provenance trio
+- **ML inference** = Node Atomic (barraCuda matmul/attention + coralReef compile + toadStool dispatch)
+- **QCD physics** = Node Atomic (barraCuda df64 + coralReef QCD operators + toadStool GPU fleet)
+- **Game science** = Node Atomic (barraCuda Fitts/Perlin/WFC + toadStool dispatch) + meta (Squirrel DDA)
+- **CRPG product** = meta (Squirrel narration + petalTongue rendering) + Nest Atomic (NestGate sessions + provenance)
 
 Primals are the instruction set. Graphs are the program. biomeOS is the CPU.

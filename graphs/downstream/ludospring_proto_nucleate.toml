@@ -35,7 +35,7 @@ tcp_ports = 0
 owner = "ludoSpring"
 pattern = "proto_nucleate"
 composition_model = "pure"
-fragments = ["tower_base", "wgsl_shader_pipeline"]
+fragments = ["tower_atomic", "node_atomic"]
 evolution_target = "game science via primal composition"
 
 [graph.bonding_policy]
@@ -46,7 +46,7 @@ encryption_tiers.tower = "full"
 encryption_tiers.nucleus = "hmac_plain"
 
 # ═══════════════════════════════════════════════════════════════
-# Tower Base (fragment: tower_base)
+# Tower Base (fragment: tower_atomic)
 # ═══════════════════════════════════════════════════════════════
 
 [[graph.nodes]]
@@ -84,7 +84,7 @@ security_model = "btsp"
 capabilities = ["net.discovery", "net.mesh", "network.http_request"]
 
 # ═══════════════════════════════════════════════════════════════
-# Compute: GPU game math (fragment: wgsl_shader_pipeline, partial)
+# Compute: GPU game math (fragment: node_atomic, partial)
 # ═══════════════════════════════════════════════════════════════
 
 [[graph.nodes]]

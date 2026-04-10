@@ -610,7 +610,7 @@ spawn = true
 ```toml
 [graph.metadata]
 composition_model = "pure"
-fragments = ["tower_base", "wgsl_shader_pipeline"]
+fragments = ["tower_atomic", "node_atomic"]
 
 [[graph.nodes]]
 name = "barracuda"

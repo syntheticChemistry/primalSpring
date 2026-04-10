@@ -3,6 +3,29 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.6] — Phase 30: NUCLEUS Atomic Alignment (2026-04-09)
+
+### Added
+- **6 atomic-aligned fragments** (`graphs/fragments/`): `tower_atomic` (electron: BearDog + Songbird), `node_atomic` (proton: Tower + ToadStool + barraCuda + coralReef), `nest_atomic` (neutron: Tower + NestGate + provenance trio), `meta_tier` (biomeOS + Squirrel + petalTongue), `nucleus` (Tower + Node + Nest), `provenance_trio` (kept). Aligned to gen3 ECOSYSTEM_ARCHITECTURE §3 particle model.
+- **9 NUCLEUS profiles** (`graphs/profiles/`): `tower`, `node`, `nest`, `nucleus`, `full`, `tower_ai`, `tower_viz`, `node_ai`, `nest_viz`. Each is a documented slice of NUCLEUS with `base = "nucleus_complete"` metadata.
+- **Spring validation template + manifest** (`spring_validate_template.toml` + `spring_validate_manifest.toml`): Parameterized skeleton replaces 6 identical per-spring validation graphs.
+- **Execution patterns directory** (`graphs/patterns/`): `parallel_capability_burst`, `conditional_fallback`, `streaming_pipeline`, `continuous_tick` — coordination mode demonstrations.
+
+### Changed
+- **Fragment names aligned to atomics**: `tower_base` → `tower_atomic`, `wgsl_shader_pipeline` → `node_atomic`, `nucleus_core` → `nucleus`. All 93 graphs updated.
+- **Meta-tier primals documented**: biomeOS, Squirrel, petalTongue operate at any atomic level — not part of any single atomic.
+- **Nest Atomic now includes provenance trio**: rhizoCrypt + loamSpine + sweetGrass are integral to the neutron (storage + lineage).
+- **4 ludo/webb sketch validates updated**: Reflect pure composition model (no spawnable binaries).
+- **hotspring_deploy merged into proto-nucleate**: `spring_deploy/hotspring_deploy.toml` absorbed by `downstream/hotspring_qcd_proto_nucleate.toml`.
+- Deploy graph count: 100 → 93 (+ 6 fragment definitions, 17 directories).
+
+### Removed
+- **8 root-level subset graphs**: `tower_atomic_bootstrap`, `tower_ai`, `tower_full_capability`, `node_atomic_compute`, `node_ai`, `nest-deploy`, `nest_viz`, `full_overlay` — replaced by `graphs/profiles/`.
+- **6 per-spring validate files**: `airspring_validate`, `groundspring_validate`, `wetspring_validate`, `hotspring_validate`, `neuralspring_validate`, `healthspring_validate` — replaced by template + manifest.
+- **3 composition files + directory**: `narration_ai`, `proprioception_loop`, `persistence_standalone` — absorbed into corresponding `composition_*_validate` files.
+- **3 old fragment definitions**: `tower_base.toml`, `wgsl_shader_pipeline.toml`, `nucleus_core.toml` — replaced by atomic-aligned versions.
+- **hotspring_deploy.toml**: Merged into `hotspring_qcd_proto_nucleate.toml`.
+
 ## [0.9.5] — Phase 29: Graph Consolidation + Composition Evolution (2026-04-09)
 
 ### Added

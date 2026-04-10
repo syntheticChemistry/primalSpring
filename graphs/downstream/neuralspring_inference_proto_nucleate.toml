@@ -64,7 +64,7 @@ pattern_version = "2026-04-10"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 composition_model = "nucleated"
-fragments = ["tower_base", "wgsl_shader_pipeline"]
+fragments = ["tower_atomic", "node_atomic"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

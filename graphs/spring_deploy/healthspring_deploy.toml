@@ -38,7 +38,7 @@ witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 particle_profile = "neutron_heavy"
 composition_model = "nucleated"
-fragments = ["tower_base", "provenance_trio"]
+fragments = ["tower_atomic", "provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

@@ -62,7 +62,7 @@ pattern = "proto_nucleate"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 composition_model = "nucleated"
-fragments = ["tower_base"]
+fragments = ["tower_atomic"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

@@ -77,7 +77,7 @@ encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 particle_profile = "proton_heavy"
 science_domain = "high_performance_compute"
 composition_model = "nucleated"
-fragments = ["tower_base", "wgsl_shader_pipeline", "provenance_trio"]
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
