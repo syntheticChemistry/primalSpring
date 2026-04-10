@@ -21,6 +21,8 @@ chaos_scenario = "network_partition"
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "validation"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: April 10, 2026
-**Status**: Phase 28 — BTSP + Inference Abstraction + Proto-Nucleate Graphs (87/87 gates), 72 experiments, 404 tests, 107 deploy graphs (17 validation + 4 compositions + 6 spring deploy + 17 sketches + 5 downstream proto-nucleate + 3 pipeline), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), particle model, layered validation (L0-L3), BTSP Phase 2 (11/13 primals), inference wire standard, WGSL shader composition model, 5 proto-nucleate compositions (neuralSpring ML, hotSpring QCD, healthSpring enclave), structured primal gap registry (**8 open**, 20 resolved, zero critical)
+**Status**: Phase 28 — BTSP + Inference Abstraction + Proto-Nucleate Graphs (87/87 gates), 72 experiments, 404 tests, 100 deploy graphs + 4 fragments (17 validation + 4 compositions + 6 spring deploy + 17 sketches + 5 downstream proto-nucleate + 3 pipeline), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), particle model, layered validation (L0-L3), BTSP Phase 2 (11/13 primals), inference wire standard, WGSL shader composition model, 5 proto-nucleate compositions (neuralSpring ML, hotSpring QCD, healthSpring enclave), structured primal gap registry (**8 open**, 20 resolved, zero critical)
 
 ---
 
@@ -37,7 +37,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | Deployment graph sweep, Tower Atomic LAN probe, L0 routing matrix, L2 dual-tower ionic, L3 covalent mesh backup |
 
-## Current State (v0.9.4)
+## Current State (v0.9.5)
 
 | Metric | Value |
 |--------|-------|
@@ -49,7 +49,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | **107 TOMLs** (18 root + 5 multi-node + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + **4 compositions** + **6 spring deploy** + **17 sketches** + **5 downstream proto-nucleate** + **3 pipeline**), all `[[graph.nodes]]` format, topologically validated |
+| Deploy graphs | **100 deploy graphs + 4 fragments** (18 root + 5 multi-node + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + **4 compositions** + **6 spring deploy** + **17 sketches** + **5 downstream proto-nucleate** + **3 pipeline**), all `[[graph.nodes]]` format, topologically validated |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | **8 open** (18 resolved, zero critical) — primals only (`docs/PRIMAL_GAPS.md`) |
 | Discovery | Capability-first: 6-tier + Neural API + `discover_by_capability()` + biomeOS `capability.discover` + `topology.rescan` |
@@ -80,7 +80,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 
 **Zero-Port Tower Atomic achieved** — 0 TCP ports across all 10+ primals. Pure Unix domain socket IPC. BTSP (`btsp.handshake`) authenticates every connection with FAMILY_ID + nonce + HMAC.
 
-**BTSP Phase 2 Cascade** — 11/13 primals enforce `btsp.handshake` on connection. Client-side `ipc::btsp_handshake` module added to ecoPrimal. All 107 deploy graphs carry `[graph.metadata] secure_by_default = true` and `btsp_phase = 2`.
+**BTSP Phase 2 Cascade** — 11/13 primals enforce `btsp.handshake` on connection. Client-side `ipc::btsp_handshake` module added to ecoPrimal. All 100 deploy graphs and 4 fragments carry `[graph.metadata] secure_by_default = true` and `btsp_phase = 2`.
 
 **Inference Provider Abstraction** — Vendor-agnostic wire standard in ecoPrimal:
 - `inference.complete` / `inference.embed` / `inference.models` — JSON-RPC 2.0 methods
@@ -108,7 +108,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 
 **ToadStool Semantic Cleanup** — Removed unimplemented `ollama.*` and `inference.*` method mappings. ToadStool is compute substrate, not inference provider.
 
-**Metrics**: 404 tests, 72 experiments (15 tracks), 107 deploy graphs. 12/12 plasmidBin ecoBin compliant.
+**Metrics**: 404 tests, 72 experiments (15 tracks), 100 deploy graphs + 4 fragments. 12/12 plasmidBin ecoBin compliant.
 
 ## What Changed — Phase 26 (Mixed Composition + Live Validation Matrix)
 

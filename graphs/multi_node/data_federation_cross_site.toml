@@ -48,6 +48,8 @@ tcp_ports = 0
 internal_bond_type = "covalent"
 default_interaction_bond = "covalent"
 trust_model = "genetic_lineage"
+composition_model = "nucleated"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

@@ -22,6 +22,8 @@ bond_type = "covalent"
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "pure"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -51,8 +53,8 @@ capabilities = ["net.discovery"]
 
 # biomeOS Neural API — routes between petalTongue and Squirrel
 [[graph.nodes]]
-name = "biomeos"
-binary = "biomeos_primal"
+name = "biomeos_neural_api"
+binary = "biomeos"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]
@@ -66,7 +68,7 @@ name = "squirrel"
 binary = "squirrel"
 order = 4
 required = true
-depends_on = ["biomeos"]
+depends_on = ["biomeos_neural_api"]
 health_method = "health"
 by_capability = "ai"
 capabilities = ["ai.query", "tool.execute", "tool.list", "context.create", "discovery.peers"]
@@ -77,7 +79,7 @@ name = "petaltongue"
 binary = "petaltongue"
 order = 5
 required = true
-depends_on = ["biomeos"]
+depends_on = ["biomeos_neural_api"]
 health_method = "health"
 by_capability = "visualization"
 capabilities = ["visualization.render.dashboard", "visualization.render.grammar", "interaction.subscribe"]

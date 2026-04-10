@@ -79,6 +79,8 @@ encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 particle_profile = "neutron_heavy"
 layer = "L2"
 particle_model = "two electron shells, ionic bond"
+composition_model = "nucleated"
+fragments = ["tower_base", "provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

@@ -1,38 +1,37 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# PROTO SKETCH — C7: Full Interactive Product (all subsystems composed).
+# PROTO SKETCH — C7: Full Interactive Product (Pure Composition)
 #
-# Upstream sketch co-evolved by primalSpring and ludoSpring.
-# primalSpring does NOT own or run the esotericwebb or ludospring
-# binaries. esotericWebb takes ownership of this graph as the final
-# gameplay creation tool.
+# The canonical "full product" graph: every NUCLEUS primal composed
+# into an interactive CRPG product. No downstream binaries — the
+# graph IS the product, biomeOS IS the execution engine.
 #
 # Documents the full product composition shape:
 #   Phase 0: biomeOS Neural API (orchestration substrate)
 #   Phase 1: Tower Atomic — BearDog + Songbird
-#   Phase 2: NestGate (persistence)
-#   Phase 3: Squirrel (AI narration) + petalTongue (render + proprioception)
-#   Phase 4: ludoSpring (game science — optional, parallel peer)
-#   Phase 5: esotericWebb (narrative engine — downstream consumer)
+#   Phase 2: NestGate (persistence) + toadStool (compute)
+#   Phase 3: Squirrel (AI narration/DDA) + petalTongue (render + proprioception)
+#   Phase 4: barraCuda (GPU: Fitts, Flow, Perlin, WFC)
+#   Phase 5: Provenance Trio (session DAG, creative attribution, anti-cheat)
 #
-# primalSpring validates primal-layer readiness (C1/C2/C5/C6).
-# ludoSpring validates game science (C4). esotericWebb validates the
-# composed product (C3/C7).
+# All prior ludoSpring/esotericWebb "binary" work validated these
+# composition patterns. The graph replaces the binaries.
 #
-# Usage (by esotericWebb, not primalSpring):
+# Usage:
 #   biomeos deploy --graph graphs/sketches/interactive_product.toml
 
 [graph]
 name = "interactive_product"
-description = "C7: Full interactive product — all subsystems composed: render + narration + session + game science + persistence + proprioception"
-version = "1.0.0"
+description = "C7: Full interactive product — pure NUCLEUS composition: render + narration + session + game math + persistence + provenance"
+version = "2.0.0"
 coordination = "sequential"
-bond_type = "covalent"
 
 [graph.metadata]
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "pure"
+fragments = ["tower_base", "wgsl_shader_pipeline", "provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -48,9 +47,10 @@ binary = "biomeos"
 order = 0
 required = true
 spawn = false
-health_method = "graph.list"
+health_method = "health.liveness"
 by_capability = "orchestration"
-capabilities = ["capability.discover", "capability.call", "graph.list", "graph.execute"]
+security_model = "tower_delegated"
+capabilities = ["capability.discover", "graph.deploy", "graph.list"]
 
 # ── Phase 1: Tower Atomic ──────────────────────────────────────────
 [[graph.nodes]]
@@ -58,9 +58,10 @@ name = "beardog"
 binary = "beardog"
 order = 1
 required = true
-depends_on = ["biomeos_neural_api"]
+spawn = false
 health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
 
 [[graph.nodes]]
@@ -68,84 +69,123 @@ name = "songbird"
 binary = "songbird"
 order = 2
 required = true
-depends_on = ["biomeos_neural_api"]
+spawn = false
+depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
+security_model = "btsp"
 capabilities = ["net.discovery", "net.mesh"]
 
-# ── Phase 2: Persistence (C5) ─────────────────────────────────────
+# ── Phase 2: Persistence + Compute ────────────────────────────────
 [[graph.nodes]]
 name = "nestgate"
 binary = "nestgate"
 order = 3
-required = false
+required = true
+spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "storage"
+security_model = "tower_delegated"
 capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
-# ── Phase 3: AI + Visualization (C2 + C1 + C6) ───────────────────
+[[graph.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 4
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+security_model = "tower_delegated"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+# ── Phase 3: AI + Visualization ───────────────────────────────────
 [[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
-order = 4
-required = false
-depends_on = ["biomeos_neural_api"]
+order = 5
+required = true
+spawn = false
+depends_on = ["beardog", "songbird", "toadstool", "nestgate"]
 health_method = "health.liveness"
 by_capability = "ai"
-capabilities = ["ai.query", "ai.complete", "ai.chat", "context.create", "context.summarize"]
+security_model = "tower_delegated"
+capabilities = [
+    "ai.query", "ai.complete",
+    "ai.narrate", "ai.constrain_ruleset",
+    "mcp.tools.list", "mcp.tools.call",
+]
 
 [[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
-order = 5
-required = false
+order = 6
+required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "visualization"
-args = ["server"]
+security_model = "tower_delegated"
 capabilities = [
     "visualization.render.scene",
     "visualization.render.dashboard",
     "visualization.export",
     "interaction.subscribe",
     "interaction.poll",
-    "visualization.interact.apply",
-    "visualization.session.list",
-    "visualization.showing",
 ]
 
-# ── Phase 4: Game Science (C4) ────────────────────────────────────
+# ── Phase 4: GPU game math (replaces ludospring binary) ───────────
 [[graph.nodes]]
-name = "ludospring"
-spawn = true
-security_model = "tower_delegated"
-binary = "ludospring"
-order = 6
-required = false
-depends_on = ["beardog", "songbird"]
-health_method = "health.check"
-by_capability = "game"
-args = ["server"]
-capabilities = ["game.evaluate_flow", "game.wfc_step", "game.engagement"]
-
-# ── Phase 5: Narrative Product (C3) ───────────────────────────────
-[[graph.nodes]]
-name = "esotericwebb"
-spawn = true
-security_model = "tower_delegated"
-binary = "esotericwebb"
+name = "barracuda"
+binary = "barracuda"
 order = 7
-required = true
+required = false
+spawn = false
 depends_on = ["beardog", "songbird"]
-health_method = "webb.liveness"
-by_capability = "narrative"
-args = ["serve"]
+health_method = "health.liveness"
+by_capability = "tensor"
+security_model = "tower_delegated"
 capabilities = [
-    "session.start",
-    "session.state",
-    "session.actions",
-    "session.act",
-    "session.graph",
-    "webb.liveness",
+    "tensor.fitts", "tensor.flow_sigmoid", "tensor.engagement",
+    "tensor.perlin", "tensor.wfc", "tensor.noise",
+    "tensor.matmul",
 ]
+
+# ── Phase 5: Provenance Trio (session integrity) ──────────────────
+[[graph.nodes]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 8
+required = false
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "provenance"
+security_model = "tower_delegated"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
+
+[[graph.nodes]]
+name = "loamspine"
+binary = "loamspine"
+order = 9
+required = false
+spawn = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+security_model = "tower_delegated"
+capabilities = ["session.commit", "entry.append"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 10
+required = false
+spawn = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "tower_delegated"
+capabilities = ["provenance.create_braid", "provenance.lineage"]

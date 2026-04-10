@@ -49,6 +49,8 @@ tcp_ports = 0
 layer = "L2"
 particle_model = "proton with dedicated electron"
 internal_bond_type = "covalent"
+composition_model = "pure"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

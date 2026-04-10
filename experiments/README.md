@@ -106,8 +106,8 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 24 | Deep debt resolution + public readiness sprint — bingoCube, benchScale, agentReagents, rustChip graded A | **Done** (v0.9.0–v0.9.1) |
 | 25 | Modernization sweep — capability naming cleanup, `[[graph.nodes]]` unification, `http_health_probe` deprecated, `nest-deploy.toml` v4.0, exp089+090, Tower Atomic HTTPS validated | **Done** (v0.9.2) |
 | 26 | Mixed composition + live validation — particle model (Tower=electron, Node=proton, Nest=neutron), 17 sketch graphs, exp091-093, live Tower Atomic probes, 6 GAP-MATRIX items documented | **Done** (v0.9.3) |
-| 27 | BTSP Phase 2 cascade — secure-by-default across 11/13 primals, `ipc::btsp_handshake` module, all 107 deploy graphs carry `secure_by_default` metadata | **Done** (v0.9.4) |
-| 28 | Inference abstraction + proto-nucleate graphs — vendor-agnostic `inference.*` wire standard, Squirrel bridge, WGSL shader composition model, 5 downstream proto-nucleate + 3 pipeline graphs (neuralSpring/hotSpring/healthSpring) | **Done** (v0.9.4) |
+| 27 | BTSP Phase 2 cascade — secure-by-default across 11/13 primals, `ipc::btsp_handshake` module; 100 deploy graphs + 4 fragments; all deploy graphs carry `secure_by_default` metadata | **Done** (v0.9.5) |
+| 28 | Inference abstraction + proto-nucleate graphs — vendor-agnostic `inference.*` wire standard, Squirrel bridge, WGSL shader composition model, 5 downstream proto-nucleate + 3 pipeline graphs (neuralSpring/hotSpring/healthSpring) | **Done** (v0.9.5) |
 
 ## Validation Harness
 
@@ -139,7 +139,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.9.4 (workspace), depends on ecoPrimal
+├── Cargo.toml    # version 0.9.5 (workspace), depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

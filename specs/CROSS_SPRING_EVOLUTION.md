@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 10, 2026
-**Status**: Phase 28 — BTSP Phase 2 (11/13 primals enforce handshake), inference abstraction, WGSL shader composition model, 5 proto-nucleate graphs. 72 experiments, 107 deploy graphs. Wire Standard: BD L2, SB L2, NG L3, TS L3, BC L2, SQ L2. All ecoBins fresh. GAP-11 pending Run 6 live validation.
+**Status**: Phase 28 — BTSP Phase 2 (11/13 primals enforce handshake), inference abstraction, WGSL shader composition model, 5 proto-nucleate graphs. 72 experiments, 100 deploy graphs + 4 fragments. Wire Standard: BD L2, SB L2, NG L3, TS L3, BC L2, SQ L2. All ecoBins fresh. GAP-11 pending Run 6 live validation.
 
 ---
 

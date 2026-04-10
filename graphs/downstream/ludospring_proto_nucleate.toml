@@ -1,24 +1,31 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Proto-Nucleate Graph — ludoSpring Game Science
+# Proto-Nucleate Graph — ludoSpring Game Science (Pure Composition)
 #
-# ludoSpring owns this graph. primalSpring provides the proto-nucleate
-# pattern showing how a downstream spring composes NUCLEUS capabilities.
+# ludoSpring is NOT a binary. It is a composition of NUCLEUS primals
+# that biomeOS deploys and executes directly. The "game science"
+# capabilities emerge from composing existing primals:
 #
-# All NUCLEUS nodes have spawn = false — they are already running.
-# ludoSpring discovers them via biomeOS capability routing.
-# The ludospring binary is built by the ludoSpring repo (NOT in plasmidBin).
+#   game.evaluate_flow / game.fitts_cost / game.engagement
+#     → barraCuda (sigmoid, dot product, noise) + toadStool (dispatch)
+#   game.wfc_step / game.generate_noise
+#     → barraCuda (Perlin, WFC shaders) + toadStool (dispatch)
+#   game.analyze_ui / game.accessibility / game.difficulty_adjustment
+#     → Squirrel (AI analysis + DDA) + petalTongue (rendering context)
+#   Session / state / provenance
+#     → NestGate (storage)
 #
-# Security: inherits Tower Atomic BTSP perimeter. ludoSpring traffic
-# is same-host UDS behind the Tower boundary (tower_delegated).
+# All prior ludoSpring "binary" work is VALIDATION — it proved these
+# composition patterns work (Fitts, Flow, DDA, session lifecycle).
+# The graph IS the product. biomeOS IS the execution engine.
 #
-# Usage (by ludoSpring, not primalSpring):
+# Usage:
 #   biomeos deploy --graph graphs/downstream/ludospring_proto_nucleate.toml
 
 [graph]
 name = "ludospring_proto_nucleate"
-description = "ludoSpring game science composing NUCLEUS: Tower + compute + game.* surface"
-version = "1.0.0"
+description = "ludoSpring game science — pure NUCLEUS composition, no downstream binary"
+version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
@@ -27,6 +34,9 @@ transport = "uds_only"
 tcp_ports = 0
 owner = "ludoSpring"
 pattern = "proto_nucleate"
+composition_model = "pure"
+fragments = ["tower_base", "wgsl_shader_pipeline"]
+evolution_target = "game science via primal composition"
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -36,7 +46,7 @@ encryption_tiers.tower = "full"
 encryption_tiers.nucleus = "hmac_plain"
 
 # ═══════════════════════════════════════════════════════════════
-# NUCLEUS primals (spawn = false — already running)
+# Tower Base (fragment: tower_base)
 # ═══════════════════════════════════════════════════════════════
 
 [[graph.nodes]]
@@ -45,7 +55,7 @@ binary = "biomeos"
 order = 0
 required = true
 spawn = false
-health_method = "graph.list"
+health_method = "health.liveness"
 by_capability = "orchestration"
 security_model = "tower_delegated"
 capabilities = ["graph.deploy", "capability.discover", "graph.list"]
@@ -73,11 +83,15 @@ by_capability = "discovery"
 security_model = "btsp"
 capabilities = ["net.discovery", "net.mesh", "network.http_request"]
 
+# ═══════════════════════════════════════════════════════════════
+# Compute: GPU game math (fragment: wgsl_shader_pipeline, partial)
+# ═══════════════════════════════════════════════════════════════
+
 [[graph.nodes]]
 name = "toadstool"
 binary = "toadstool"
 order = 3
-required = false
+required = true
 spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -85,27 +99,72 @@ by_capability = "compute"
 security_model = "tower_delegated"
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 
+[[graph.nodes]]
+name = "barracuda"
+binary = "barracuda"
+order = 4
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "tensor"
+security_model = "tower_delegated"
+capabilities = [
+    "tensor.fitts", "tensor.flow_sigmoid", "tensor.engagement",
+    "tensor.perlin", "tensor.wfc", "tensor.noise",
+    "tensor.matmul", "tensor.dot",
+]
+
 # ═══════════════════════════════════════════════════════════════
-# ludoSpring (spawn = true — built by ludoSpring repo)
+# AI: DDA, analysis, accessibility
 # ═══════════════════════════════════════════════════════════════
 
 [[graph.nodes]]
-name = "ludospring"
-binary = "ludospring"
-order = 10
+name = "squirrel"
+binary = "squirrel"
+order = 5
 required = true
-spawn = true
-depends_on = ["beardog", "songbird"]
-health_method = "health.check"
-by_capability = "game"
+spawn = false
+depends_on = ["beardog", "songbird", "toadstool"]
+health_method = "health.liveness"
+by_capability = "ai"
 security_model = "tower_delegated"
 capabilities = [
-    "game.evaluate_flow",
-    "game.fitts_cost",
-    "game.engagement",
-    "game.difficulty_adjustment",
-    "game.wfc_step",
-    "game.generate_noise",
-    "game.analyze_ui",
-    "game.accessibility",
+    "ai.query", "ai.complete",
+    "ai.difficulty_adjustment", "ai.analyze_ui", "ai.accessibility",
 ]
+
+# ═══════════════════════════════════════════════════════════════
+# Interface: rendering context for game scenes
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 6
+required = false
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "visualization"
+security_model = "tower_delegated"
+capabilities = [
+    "visualization.render.scene", "visualization.render.dashboard",
+    "interaction.poll", "interaction.subscribe",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Storage: session state, game saves
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 7
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve"]

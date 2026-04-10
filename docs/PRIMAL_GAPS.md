@@ -1010,7 +1010,7 @@ Springs and gardens are **consumers** of NUCLEUS, not primals. Key changes:
      (neutron-heavy: ionic bond between patient data Tower A and analytics Tower B,
      BondingPolicy egress fence, regulatory provenance audit)
 
-   All NUCLEUS nodes use `spawn = false`, downstream nodes use `spawn = true`.
+   All NUCLEUS nodes use `spawn = false`. ludoSpring and esotericWebb proto-nucleates now use `composition_model = "pure"` (no downstream binary).
    Pipeline graphs: `neuralspring_inference_pipeline.toml`, `hotspring_qcd_pipeline.toml` ↑,
    `healthspring_clinical_pipeline.toml` ↑.
 
@@ -1030,3 +1030,39 @@ Springs and gardens are **consumers** of NUCLEUS, not primals. Key changes:
    ludoSpring/esotericWebb nodes in 14 science/sketch/gen4 graphs annotated with
    `spawn = true` + `security_model = "tower_delegated"` to clarify downstream boundary.
    Pre-existing metadata fields (trust_model, internal_bond_type, etc.) preserved via merge.
+
+## Composition Evolution (April 9, 2026)
+
+ludoSpring and esotericWebb are **NOT primals and NOT spawnable binaries**. They are
+pure compositions of NUCLEUS primals — the graph defines the product, biomeOS executes it.
+Their experiments and validation work prove the composition patterns work (Fitts, Flow,
+DDA, session lifecycle, provenance) — they are the "papers" that validate graph-driven products.
+
+### What Changed
+
+- **Proto-nucleate graphs rewritten** (`graphs/downstream/`): `ludospring_proto_nucleate.toml`
+  and `esotericwebb_proto_nucleate.toml` now have `composition_model = "pure"` and no `spawn = true`
+  binary nodes. All capabilities map to existing NUCLEUS primals.
+- **10 graphs consolidated**: 8 graphs rewritten to replace ludo/webb binary nodes with
+  constituent primals (barraCuda for game math, Squirrel for AI/narration, petalTongue
+  for rendering, NestGate for storage, provenance trio for session integrity).
+- **7 graphs deleted**: 5 redundant sketches + 2 duplicate compositions.
+- **4 canonical fragments** (`graphs/fragments/`): `tower_base`, `provenance_trio`,
+  `wgsl_shader_pipeline`, `nucleus_core` — documenting the "periodic table" of composition.
+- **100% metadata annotation**: Every deploy graph carries `composition_model` and `fragments`.
+
+### How Capabilities Map
+
+| Old Binary Node | Replacement Primals | Capabilities |
+|-----------------|---------------------|-------------|
+| `ludospring` | barraCuda + toadStool | GPU math: Fitts, Flow, Perlin, WFC, engagement |
+| `ludospring` | Squirrel | AI: DDA, analysis, accessibility |
+| `esotericwebb` | Squirrel + petalTongue | AI narration + scene rendering |
+| `esotericwebb` | NestGate + provenance trio | Session storage + DAG integrity |
+
+### What This Means for Other Springs
+
+This is the same pattern as neuralSpring (ML inference = composition of WGSL shaders)
+extended to game science and narrative products. **Every "product" is a graph. Every graph
+is a composition of primals. biomeOS is the CPU.** Springs that want to evolve game science,
+narrative, or interactive capabilities should compose the same primals — not build new binaries.

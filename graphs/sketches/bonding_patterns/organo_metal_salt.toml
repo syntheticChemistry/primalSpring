@@ -61,6 +61,8 @@ layer = "L3"
 particle_model = "organo-metal-salt compound"
 internal_bond_type = "organo_metal_salt"
 trust_model = "mixed"
+composition_model = "pure"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

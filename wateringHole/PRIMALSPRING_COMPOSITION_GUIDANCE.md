@@ -593,7 +593,48 @@ See `graphs/downstream/healthspring_enclave_proto_nucleate.toml` and
 
 ---
 
-## 14. Expectations for Composed Primals
+## 14. Pure Composition Pattern (ludoSpring/esotericWebb Model)
+
+When a downstream spring or garden can be expressed entirely as a composition of
+existing NUCLEUS primals, it should NOT have its own binary. The graph IS the product.
+
+**Before** (nucleated model):
+```toml
+[[graph.nodes]]
+name = "ludospring"
+binary = "ludospring"
+spawn = true
+```
+
+**After** (pure composition):
+```toml
+[graph.metadata]
+composition_model = "pure"
+fragments = ["tower_base", "wgsl_shader_pipeline"]
+
+[[graph.nodes]]
+name = "barracuda"
+binary = "barracuda"
+spawn = false
+capabilities = ["tensor.fitts", "tensor.perlin", "tensor.wfc"]
+```
+
+Key properties:
+- `composition_model = "pure"` — no downstream binary spawned
+- All nodes are `spawn = false` — biomeOS manages the full lifecycle
+- `fragments` lists which canonical patterns the graph includes
+- Game science, narrative, interactive products are ALL pure compositions
+- The previous "binary" work is validation — it proved the composition works
+
+This pattern applies whenever capabilities can be mapped entirely to existing primals.
+Springs that still need their own binary (e.g., hotSpring for QCD-specific orchestration,
+healthSpring for compliance workflow) use `composition_model = "nucleated"`.
+
+See `graphs/fragments/README.md` for the full fragment model.
+
+---
+
+## 15. Expectations for Composed Primals
 
 For any primal to participate in primalSpring-validated compositions, it must
 meet these baseline requirements. primalSpring's integration tests and

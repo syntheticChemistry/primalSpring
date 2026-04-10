@@ -24,6 +24,8 @@ transport = "uds_only"
 tcp_ports = 0
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
+composition_model = "pure"
+fragments = ["provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

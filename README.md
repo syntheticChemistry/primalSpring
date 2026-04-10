@@ -10,9 +10,9 @@
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 404 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 72 (15 tracks) |
-| **Deploy Graphs** | 107 TOMLs (18 root + 17 sketches + 5 multi-node + 4 compositions + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + 6 spring deploy + 5 downstream proto-nucleate + 3 pipeline) |
+| **Deploy Graphs** | 100 TOMLs (17 root + 12 sketches + 5 multi-node + 3 compositions + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + 6 spring deploy + 5 downstream proto-nucleate + 3 pipeline) + 4 fragment definitions |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
-| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + ludoSpring Game + esotericWebb Product + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates) |
+| **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 72 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
@@ -63,12 +63,12 @@ primalSpring/
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
 ├── experiments/                   # 72 validation experiments (15 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 107 deploy graph TOMLs
-│   ├── sketches/                 # Particle-model validation & mixed composition sketches (17)
+├── graphs/                        # 100 deploy graph TOMLs + 4 fragments
+│   ├── sketches/                 # Particle-model validation & mixed composition sketches (12)
 │   │   ├── validation/           # L0 primal routing matrix (1)
 │   │   ├── mixed_atomics/        # L2 dual-tower ionic, dedicated tower, nest enclave (3+)
 │   │   └── bonding_patterns/     # L3 covalent mesh backup, ionic lease, organo-metal-salt (3+)
-│   ├── compositions/             # Decomposed subsystem graphs: C1-C7 (4)
+│   ├── compositions/             # Decomposed subsystem graphs: C1-C7 (3)
 │   ├── bonding/                  # Bonding model graphs: ionic, metallic, OMS, defensive, albatross (5)
 │   ├── chaos/                    # Chaos engineering: partition recovery, slow start (2)
 │   ├── multi_node/               # Multi-node federation graphs (5)
@@ -77,7 +77,8 @@ primalSpring/
 │   ├── cross_spring/             # Cross-spring ecology + full sweep (2)
 │   ├── gen4/                     # gen4: sovereign, science, agentic, storytelling, UI loop (10)
 │   ├── spring_deploy/            # Per-spring science compositions (airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring) (6)
-│   └── downstream/               # Proto-nucleate graphs for spring evolution (neuralSpring, hotSpring, healthSpring) (5)
+│   ├── downstream/               # Proto-nucleate graphs for spring evolution (neuralSpring, hotSpring, healthSpring) (5)
+│   └── fragments/                # Canonical composition patterns: tower_base, provenance_trio, wgsl_shader_pipeline, nucleus_core (4)
 ├── docs/                          # Structured gap registry and subsystem documentation
 │   └── PRIMAL_GAPS.md            # Per-primal gap inventory with severity and fix paths
 ├── tools/                         # Operational tooling
@@ -190,9 +191,9 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 107 deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 100 deploy graph TOMLs + 4 canonical fragments (all nodes declare `by_capability`):
 
-**Single-node graphs (18)**:
+**Single-node graphs (17)**:
 
 | Graph | Pattern | Primals |
 |-------|---------|---------|
@@ -202,7 +203,6 @@ primalSpring ships 107 deploy graph TOMLs (all nodes declare `by_capability`):
 | `node_atomic_compute.toml` | Sequential | beardog, songbird, toadstool |
 | `nucleus_complete.toml` | Sequential | biomeos, beardog, songbird, nestgate, toadstool, squirrel (+trio) |
 | `tower_ai.toml` | Sequential | beardog, songbird, squirrel |
-| `tower_ai_viz.toml` | Sequential | beardog, songbird, squirrel, petaltongue |
 | `nest_viz.toml` | Sequential | beardog, songbird, nestgate, petaltongue |
 | `node_ai.toml` | Sequential | beardog, songbird, toadstool, squirrel |
 | `full_overlay.toml` | Sequential | beardog, songbird, nestgate, toadstool, squirrel |
@@ -224,12 +224,10 @@ primalSpring ships 107 deploy graph TOMLs (all nodes declare `by_capability`):
 | `idle_compute_federation.toml` | Federated idle compute sharing | Covalent | GeneticLineage |
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
 
-**Composition subsystem graphs (7)** — `graphs/compositions/`: each subfunction
+**Composition subsystem graphs (3)** — `graphs/compositions/`: each subfunction
 decomposed into a separately deployable biomeOS graph with its own validation:
-`render_standalone` (C1: petalTongue), `narration_ai` (C2: Squirrel),
-`session_standalone` (C3: esotericWebb), `game_science_standalone` (C4: ludoSpring),
-`persistence_standalone` (C5: NestGate), `proprioception_loop` (C6: petalTongue interaction),
-`interactive_product` (C7: all subsystems composed).
+`narration_ai` (C2: Squirrel), `persistence_standalone` (C5: NestGate),
+`proprioception_loop` (C6: petalTongue interaction).
 
 **Spring validation graphs (17)** — `graphs/spring_validation/`: per-spring validation
 wrappers (7 springs) plus `crypto_negative_validate` (negative security boundary tests),
@@ -250,7 +248,7 @@ Albatross multiplex (Songbird fleet).
 **Chaos engineering graphs (2)** — `graphs/chaos/`: network partition recovery
 and slow-start composition convergence.
 
-**Science + showcase graphs (10)** — `graphs/science/`: coralForge federated, ecology
+**Science + showcase graphs (13)** — `graphs/science/`: coralForge federated, ecology
 provenance, reproducibility audit, fieldMouse ingestion, paper lifecycle, supply chain
 provenance, mixed entropy hierarchy, gaming mesh chimera, neuromorphic classify,
 RPGPT session provenance.
@@ -346,7 +344,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 ## BTSP, Inference Abstraction, and Proto-Nucleate Graphs (April 10, 2026)
 
 - **Zero-Port Tower Atomic achieved**: 0 TCP ports across all 10+ primals. Pure Unix domain socket IPC with BTSP handshake authentication.
-- **BTSP Phase 2 ecosystem cascade**: 11/13 primals enforce `btsp.handshake` on connection. Client-side `ipc::btsp_handshake` module added to ecoPrimal. All 107 deploy graphs carry `secure_by_default = true` metadata.
+- **BTSP Phase 2 ecosystem cascade**: 11/13 primals enforce `btsp.handshake` on connection. Client-side `ipc::btsp_handshake` module added to ecoPrimal. All 100 deploy graphs carry `secure_by_default = true` metadata.
 - **Inference provider abstraction**: Vendor-agnostic `inference.complete`/`embed`/`models` wire standard in ecoPrimal. Squirrel bridge routes through `AiRouter` (Ollama as OpenAI-compatible HTTP endpoint). No vendor lock-in to CUDA or Ollama.
 - **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of existing barraCuda WGSL shaders (826 kernels: matmul, attention, FFT, df64) compiled by coralReef and dispatched by toadStool.
 - **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
@@ -354,11 +352,21 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **13/13 critical experiments ALL PASS** — 72 total experiments across 15 tracks.
 - **12/12 plasmidBin musl-static ecoBin compliant** — zero C dependencies.
 
+## Graph Consolidation + Composition Evolution (April 9, 2026)
+
+- **ludoSpring and esotericWebb evolved to pure compositions**: No longer spawnable binaries — the graph IS the product, biomeOS IS the execution engine. All prior "binary" work is validation that proves composition patterns work.
+- **4 canonical fragments** (`graphs/fragments/`): `tower_base`, `provenance_trio`, `wgsl_shader_pipeline`, `nucleus_core` — the "periodic table" of NUCLEUS composition.
+- **7 graphs deleted** (5 redundant sketches + 2 duplicate compositions): `ludospring_game_deploy`, `esotericwebb_tower_deploy`, `game_science_standalone`, `session_standalone`, `esotericwebb_composed_deploy`, `render_standalone`, `tower_ai_viz`.
+- **10 graphs rewritten**: 2 proto-nucleates + 8 science/gen4/sketch graphs — all ludo/webb binary nodes replaced with constituent NUCLEUS primals.
+- **100% fragment + composition_model metadata**: Every deploy graph annotated with `fragments` and `composition_model` (pure/nucleated/validation).
+- **Gen4 naming normalized**: All 10 gen4 graphs use canonical `biomeos_neural_api` node name.
+- Deploy graph count: 107 → 100 (+ 4 fragment definitions).
+
 ## Mixed Composition + Live Validation Matrix (April 7, 2026)
 
 - **Particle model adopted**: Tower = electron (trust boundary, mediates bonds), Node = proton (compute, fungible), Nest = neutron (data at rest, non-fungible), NUCLEUS = atom. Grounded in Paper 23 (Mass-Energy-Information Equivalence). See `specs/MIXED_COMPOSITION_PATTERNS.md`.
 - **Layered validation framework**: L0 (biomeOS + any primal), L1 (each atomic), L2 (mixed atomics), L3 (bonding patterns on top of atomics). Full NUCLEUS Validation Matrix at `specs/NUCLEUS_VALIDATION_MATRIX.md`.
-- **17 sketch graphs** (`graphs/sketches/`): L0 primal routing matrix, L2 dual-tower ionic / dedicated tower / nest enclave, L3 covalent mesh backup / ionic lease / organo-metal-salt.
+- **12 sketch graphs** (`graphs/sketches/`): L0 primal routing matrix, L2 dual-tower ionic / dedicated tower / nest enclave, L3 covalent mesh backup / ionic lease / organo-metal-salt.
 - **3 new experiments** (exp091–093): L0 primal routing matrix, L2 dual-tower ionic structural, L3 covalent mesh backup structural.
 - **Live validation on Eastgate**: Tower Atomic (BearDog + Songbird) fully validated — crypto, HTTPS, discovery all LIVE PASS. Neural API running but capability registration gap identified (GAP-MATRIX-01). See `specs/CROSS_SPRING_EVOLUTION.md` for 6 gap items.
 - **6 GAP-MATRIX items documented**: Neural API capability registration (Critical), biomeOS graph parsing (Medium), Songbird TLS cipher suites (Low), NestGate IPC model (Medium), untested primals (Medium), plasmidBin freshness (Low).

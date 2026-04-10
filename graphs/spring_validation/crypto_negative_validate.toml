@@ -22,6 +22,8 @@ tcp_ports = 0
 bond_type = "validation"
 trust_model = "genetic_lineage"
 negative_tests = true
+composition_model = "validation"
+fragments = ["tower_base"]
 
 [[graph.nodes]]
 name = "verify_tower"

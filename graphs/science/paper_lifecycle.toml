@@ -26,6 +26,8 @@ source_showcase = "primals/loamSpine/showcase/04-inter-primal/05-full-ecosystem"
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "pure"
+fragments = ["provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

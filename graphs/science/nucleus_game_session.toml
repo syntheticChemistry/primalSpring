@@ -1,22 +1,27 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# NUCLEUS Game Session — continuous 60Hz game tick composition
-# Source: ludoSpring V37.1 live validation (exp093: 6/6 — 10-tick continuous
-#         loop under 0.54ms per tick, exp098: 5/6)
+# NUCLEUS Game Session — Pure Composition, 60Hz
 #
-# Full NUCLEUS + barraCuda for game loop: crypto identity, storage persistence,
-# math compute, game science, narrative session.
+# Continuous 60Hz game tick composition using NUCLEUS primals directly.
+# No downstream binaries — game math runs on barraCuda + toadStool,
+# session state on NestGate, narrative via Squirrel.
+#
+# Source: ludoSpring V37.1 live validation (exp093: 6/6 — 10-tick
+# continuous loop under 0.54ms per tick, exp098: 5/6) proved this
+# composition pattern works. The graph replaces the binary.
 
 [graph]
 name = "nucleus_game_session"
-description = "NUCLEUS continuous 60Hz game session — crypto + storage + math + game science + narrative"
-version = "1.0.0"
+description = "NUCLEUS continuous 60Hz game session — pure composition: crypto + storage + GPU math + AI"
+version = "2.0.0"
 coordination = "continuous"
 
 [graph.metadata]
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "pure"
+fragments = ["tower_base"]
 
 [[graph.nodes]]
 name = "biomeos_neural_api"
@@ -24,17 +29,21 @@ binary = "biomeos"
 order = 0
 required = true
 spawn = false
-health_method = "graph.list"
+health_method = "health.liveness"
 by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["capability.discover", "graph.list"]
 
 [[graph.nodes]]
 name = "beardog"
 binary = "beardog"
 order = 1
 required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 capabilities = ["crypto.blake3_hash", "crypto.sign_ed25519", "crypto.verify_ed25519"]
 
 [[graph.nodes]]
@@ -42,52 +51,62 @@ name = "songbird"
 binary = "songbird"
 order = 2
 required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "discovery"
+security_model = "btsp"
 
 [[graph.nodes]]
 name = "nestgate"
 binary = "nestgate"
 order = 3
 required = true
+spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "storage"
+security_model = "tower_delegated"
 capabilities = ["storage.store", "storage.retrieve"]
+
+# ── GPU game math (replaces ludospring binary) ─────────────────────────
+[[graph.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 4
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+security_model = "tower_delegated"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
 
 [[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 4
+order = 5
 required = true
+spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
-by_capability = "math"
-capabilities = ["tensor.create", "tensor.read", "activation.sigmoid"]
-
-[[graph.nodes]]
-name = "ludospring"
-spawn = true
+by_capability = "tensor"
 security_model = "tower_delegated"
-binary = "ludospring"
-order = 5
-required = false
-depends_on = ["barracuda"]
-health_method = "health.check"
-by_capability = "game"
-args = ["server"]
-capabilities = ["game.evaluate_flow", "game.engagement"]
+capabilities = [
+    "tensor.create", "tensor.read",
+    "tensor.fitts", "tensor.flow_sigmoid", "tensor.engagement",
+    "activation.sigmoid",
+]
 
+# ── AI narration (replaces esotericwebb binary) ────────────────────────
 [[graph.nodes]]
-name = "esotericwebb"
-spawn = true
-security_model = "tower_delegated"
-binary = "esotericwebb"
+name = "squirrel"
+binary = "squirrel"
 order = 6
 required = false
+spawn = false
 depends_on = ["beardog", "songbird"]
-health_method = "webb.liveness"
-by_capability = "narrative"
-args = ["server"]
-capabilities = ["session.start", "session.state", "session.actions", "session.act"]
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = ["ai.query", "ai.complete", "ai.narrate"]

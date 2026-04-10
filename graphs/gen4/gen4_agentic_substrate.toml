@@ -25,6 +25,8 @@ bond_type = "covalent"
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "nucleated"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -58,8 +60,8 @@ capabilities = ["net.discovery", "net.mesh"]
 # Neural API surface: capability.call, capability.discover, graph.execute,
 # graph.list, route.register, topology.*, lifecycle.*
 [[graph.nodes]]
-name = "biomeos"
-binary = "biomeos_primal"
+name = "biomeos_neural_api"
+binary = "biomeos"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]
@@ -90,7 +92,7 @@ name = "squirrel"
 binary = "squirrel"
 order = 4
 required = true
-depends_on = ["beardog", "songbird", "biomeos"]
+depends_on = ["beardog", "songbird", "biomeos_neural_api"]
 health_method = "health"
 by_capability = "ai"
 capabilities = [
@@ -115,7 +117,7 @@ name = "petaltongue"
 binary = "petaltongue"
 order = 5
 required = true
-depends_on = ["biomeos"]
+depends_on = ["biomeos_neural_api"]
 health_method = "health"
 by_capability = "visualization"
 capabilities = [
@@ -136,7 +138,7 @@ name = "toadstool"
 binary = "toadstool"
 order = 6
 required = false
-depends_on = ["biomeos"]
+depends_on = ["biomeos_neural_api"]
 health_method = "compute.health"
 by_capability = "compute"
 capabilities = ["compute.dispatch.submit", "compute.execute"]

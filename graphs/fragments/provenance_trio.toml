@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Fragment: Provenance Trio — rhizoCrypt + loamSpine + sweetGrass
+#
+# Three independent primals composing into version control, science
+# provenance, and any lineage-bearing workflow. The primals know
+# nothing about "RootPulse" or "session provenance" — they expose
+# atomic capabilities. Graphs compose them into higher-order functions.
+#
+# Chain: rhizoCrypt (ephemeral DAG) → loamSpine (permanent ledger)
+#        → sweetGrass (semantic attribution)
+# All depend on BearDog for signing.
+#
+# Appears in: nucleus_complete, spring deploys, science graphs,
+# RPGPT session provenance, healthSpring enclave (both towers).
+
+[fragment]
+name = "provenance_trio"
+description = "rhizoCrypt (DAG) + loamSpine (ledger) + sweetGrass (attribution)"
+version = "1.0.0"
+node_count = 3
+
+[[fragment.nodes]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "provenance"
+security_model = "tower_delegated"
+capabilities = [
+    "dag.session.create", "dag.event.append",
+    "dag.dehydration.trigger", "dag.merkle.root",
+]
+
+[[fragment.nodes]]
+name = "loamspine"
+binary = "loamspine"
+required = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+security_model = "tower_delegated"
+capabilities = ["session.commit", "entry.append"]
+
+[[fragment.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+required = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "tower_delegated"
+capabilities = [
+    "provenance.create_braid", "provenance.lineage",
+    "provenance.graph",
+]

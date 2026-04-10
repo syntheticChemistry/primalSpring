@@ -1,36 +1,34 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Gen4 Storytelling Minimal — offline/portable AI DM without biomeOS substrate.
-# esotericWebb V6 has its own game science (flow, DDA, engagement) —
-# no ludoSpring required for core gameplay. Direct IPC via Songbird discovery.
-# petalTongue in TUI mode for terminal-only play.
-# No provenance trio — fast iteration, local sessions.
+# Gen4 Storytelling Minimal — Pure Composition, Portable
+#
+# Minimal AI DM as a pure NUCLEUS composition. Tower + Squirrel
+# (AI narration) + petalTongue (TUI rendering). No provenance,
+# no GPU compute. Fast iteration, local sessions.
 #
 # Validates:
-#   - esotericWebb V6 self-contained narrative + game science
-#   - Direct IPC: esotericWebb → Squirrel ai.query (AI DM)
-#   - petalTongue TUI: scene rendering in terminal
+#   - Squirrel constrained AI narration replaces esotericWebb binary
+#   - petalTongue TUI scene rendering in terminal
 #   - Single-node deployment: all primals co-located
 #   - Graceful degradation without biomeOS Neural API
 #
 # Usage:
-#   cargo run -p esotericwebb -- serve  (start Webb)
-#   squirrel serve                      (start AI DM)
-#   petaltongue tui                     (start terminal UI)
+#   biomeos deploy --graph graphs/gen4/gen4_storytelling_minimal.toml
 
 [graph]
 name = "gen4_storytelling_minimal"
-description = "Offline AI DM: esotericWebb V6 (embedded game science) + Squirrel AI + petalTongue TUI — no biomeOS, direct discovery"
-version = "2.0.0"
+description = "Minimal AI DM — pure NUCLEUS composition: Tower + Squirrel AI + petalTongue TUI"
+version = "3.0.0"
 coordination = "Continuous"
 tick_hz = 60
-bond_type = "covalent"
 deployment_class = "minimal"
 
 [graph.metadata]
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "pure"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -44,8 +42,10 @@ name = "beardog"
 binary = "beardog"
 order = 1
 required = true
-health_method = "health"
+spawn = false
+health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 capabilities = ["crypto.identity"]
 
 [[graph.nodes]]
@@ -53,53 +53,49 @@ name = "songbird"
 binary = "songbird"
 order = 2
 required = true
+spawn = false
 depends_on = ["beardog"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "discovery"
+security_model = "btsp"
 capabilities = ["net.discovery"]
-
-[[graph.nodes]]
-name = "esotericwebb"
-spawn = true
-security_model = "tower_delegated"
-binary = "esotericwebb"
-order = 3
-required = true
-depends_on = ["beardog", "songbird"]
-health_method = "webb.liveness"
-by_capability = "narrative"
-capabilities = ["webb.resolve_scene", "session.create", "session.advance"]
 
 [[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
-order = 4
+order = 3
 required = true
+spawn = false
 depends_on = ["songbird"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "ai"
-capabilities = ["ai.query", "ai.suggest", "context.create", "context.update"]
+security_model = "tower_delegated"
+capabilities = [
+    "ai.query", "ai.complete",
+    "ai.narrate", "ai.constrain_ruleset",
+    "context.create", "context.update",
+]
 
 [[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
-order = 5
+order = 4
 required = true
+spawn = false
 depends_on = ["songbird"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "visualization"
+security_model = "tower_delegated"
 capabilities = ["visualization.render.scene", "interaction.poll"]
 
-# ── ludoSpring: supplemental game science (optional) ───────────────────
-# Enriches Webb's embedded flow/DDA/engagement with WFC, Fitts, GPU compute.
 [[graph.nodes]]
-name = "ludospring"
-spawn = true
-security_model = "tower_delegated"
-binary = "ludospring"
-order = 6
+name = "nestgate"
+binary = "nestgate"
+order = 5
 required = false
+spawn = false
 depends_on = ["beardog", "songbird"]
-health_method = "health"
-by_capability = "game"
-capabilities = ["game.evaluate_flow", "game.difficulty_adjustment", "game.wfc_step"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve"]

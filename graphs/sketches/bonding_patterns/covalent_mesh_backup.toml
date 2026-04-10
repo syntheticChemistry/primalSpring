@@ -58,6 +58,8 @@ internal_bond_type = "covalent"
 trust_model = "genetic_lineage"
 shard_count = "${SHARD_COUNT}"
 recovery_quorum = "${RECOVERY_QUORUM}"
+composition_model = "pure"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

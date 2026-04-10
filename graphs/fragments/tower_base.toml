@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Fragment: Tower Base — biomeOS + BearDog + Songbird
+#
+# The minimum viable composition. Every deploy graph includes this
+# fragment: biomeOS as orchestration substrate, BearDog for crypto
+# identity and BTSP enforcement, Songbird for discovery and mesh.
+#
+# This file is DOCUMENTATION of the canonical pattern, not a runtime
+# artifact. It defines the node names, edges, capabilities, and
+# security model that all graphs share when they include Tower Base.
+#
+# Appears in: every deploy graph, every proto-nucleate, every sketch.
+
+[fragment]
+name = "tower_base"
+description = "biomeOS + BearDog + Songbird — the minimum viable NUCLEUS composition"
+version = "1.0.0"
+node_count = 3
+
+[[fragment.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+[[fragment.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[fragment.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["net.discovery", "net.mesh", "network.http_request"]

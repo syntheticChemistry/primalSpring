@@ -1,39 +1,40 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Gen4 Storytelling Full — the complete AI DM + game science + visualization stack.
+# Gen4 Storytelling Full — Pure NUCLEUS Composition
 #
-# esotericWebb V6 drives the narrative DAG with its own embedded game science
-# (flow, DDA, engagement — absorbed from ludoSpring into webb/src/science/).
-# Squirrel serves as the AI Dungeon Master via ai.query/ai.suggest with
-# session context. petalTongue renders scenes and captures player input.
-# biomeOS orchestrates the loop. ludoSpring provides supplemental game
-# science (WFC, Fitts, accessibility) if available. Provenance trio stamps
-# every session event for replay integrity.
+# The complete AI DM + game science + visualization stack as a pure
+# composition of NUCLEUS primals. No downstream binaries.
 #
-# The storytelling loop:
+# The storytelling loop (all via primal composition):
 #   1. petalTongue captures player input (interaction.poll)
-#   2. esotericWebb resolves scene: predicates, effects, NPC state
-#   3. esotericWebb evaluates flow state + DDA locally (or delegates to ludoSpring)
-#   4. Squirrel narrates (ai.query with session context)
-#   5. rhizoCrypt stamps the session event (dag.event.append)
-#   6. petalTongue renders the new scene (visualization.render.scene)
-#   7. Loop at 60Hz tick budget
+#   2. NestGate resolves session state (storage.retrieve)
+#   3. Squirrel narrates (ai.query with session context)
+#   4. barraCuda evaluates flow + DDA (GPU: sigmoid, Fitts, engagement)
+#   5. toadStool dispatches compute (compute.dispatch.submit)
+#   6. rhizoCrypt stamps the session event (dag.event.append)
+#   7. petalTongue renders the new scene (visualization.render.scene)
+#   8. Loop at 60Hz tick budget
+#
+# All prior esotericWebb/ludoSpring "binary" work validated these
+# composition patterns work (narrative AI, session lifecycle, Fitts,
+# Flow, DDA, WFC, provenance). The graph IS the product.
 #
 # Usage:
 #   biomeos deploy --graph graphs/gen4/gen4_storytelling_full.toml
 
 [graph]
 name = "gen4_storytelling_full"
-description = "Full AI DM storytelling: esotericWebb V6 CRPG (embedded game science) + Squirrel AI DM + petalTongue scenes + ludoSpring supplemental + provenance"
-version = "2.0.0"
+description = "Full AI DM storytelling — pure NUCLEUS composition: AI narration + game math + scenes + provenance"
+version = "3.0.0"
 coordination = "Continuous"
 tick_hz = 60
-bond_type = "covalent"
 
 [graph.metadata]
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "pure"
+fragments = ["tower_base", "wgsl_shader_pipeline", "provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -51,7 +52,8 @@ required = true
 spawn = false
 health_method = "health.liveness"
 by_capability = "orchestration"
-capabilities = ["graph.deploy", "graph.status", "capability.discover", "health.liveness"]
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "graph.status", "capability.discover"]
 
 # ── Tower identity + discovery ─────────────────────────────────────────
 [[graph.nodes]]
@@ -59,9 +61,11 @@ name = "beardog"
 binary = "beardog"
 order = 1
 required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
 
 [[graph.nodes]]
@@ -69,156 +73,124 @@ name = "songbird"
 binary = "songbird"
 order = 2
 required = true
+spawn = false
 depends_on = ["beardog"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "discovery"
+security_model = "btsp"
 capabilities = ["net.discovery", "net.mesh"]
 
-# ── esotericWebb V6: narrative engine + embedded game science ──────────
-# DAG-traced CRPG: scene resolution, NPC state, ability interactions,
-# predicate/effect system, bounded endings.
-# V6: owns flow/DDA/engagement locally (webb/src/science/), no ludoSpring
-# compile dep. Consumes Squirrel ai.*, petalTongue viz.* at runtime.
-[[graph.nodes]]
-name = "esotericwebb"
-spawn = true
-security_model = "tower_delegated"
-binary = "esotericwebb"
-order = 3
-required = true
-depends_on = ["beardog", "songbird"]
-health_method = "webb.liveness"
-by_capability = "narrative"
-capabilities = [
-    "webb.resolve_scene",
-    "webb.npc_state",
-    "webb.ability_check",
-    "webb.session_state",
-    "session.create",
-    "session.advance",
-    "session.complete",
-    "tools.list",
-    "tools.call",
-]
-
-# ── Squirrel: AI Dungeon Master ────────────────────────────────────────
-# Provides narrative generation via ai.query/ai.suggest with session context.
-# Context windows track session state across scenes.
+# ── AI: narration (replaces esotericwebb narrative engine) ─────────────
 [[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
-order = 4
+order = 3
 required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "ai"
+security_model = "tower_delegated"
 capabilities = [
-    "ai.query",
-    "ai.suggest",
-    "ai.analyze",
-    "tool.execute",
-    "tool.list",
-    "context.create",
-    "context.update",
-    "context.summarize",
+    "ai.query", "ai.complete",
+    "ai.narrate", "ai.constrain_ruleset",
+    "mcp.tools.list", "mcp.tools.call",
+    "context.create", "context.update", "context.summarize",
 ]
 
-# ── petalTongue: scene rendering + player input ───────────────────────
-# Renders narrative scenes (dialogue trees, NPC portraits, world state).
-# Captures player choices via interaction.poll.
-# Modes: TUI for terminal play, egui for desktop, web for browser.
+# ── Interface: scene rendering + player input ──────────────────────────
 [[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
-order = 5
+order = 4
 required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "visualization"
+security_model = "tower_delegated"
 capabilities = [
     "visualization.render.scene",
     "visualization.render.dashboard",
     "visualization.render.stream",
-    "visualization.render.grammar",
     "interaction.poll",
     "interaction.subscribe",
 ]
 
-# ── ludoSpring: supplemental game science (optional) ───────────────────
-# WFC procedural generation, Fitts law, accessibility evaluation,
-# GPU game compute. Core flow/DDA/engagement is in esotericWebb V6.
-# When available, enriches the composition with advanced game mechanics.
+# ── GPU game math (replaces ludospring binary) ─────────────────────────
 [[graph.nodes]]
-name = "ludospring"
-spawn = true
+name = "toadstool"
+binary = "toadstool"
+order = 5
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "compute"
 security_model = "tower_delegated"
-binary = "ludospring"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+[[graph.nodes]]
+name = "barracuda"
+binary = "barracuda"
 order = 6
 required = false
+spawn = false
 depends_on = ["beardog", "songbird"]
-health_method = "health"
-by_capability = "game"
+health_method = "health.liveness"
+by_capability = "tensor"
+security_model = "tower_delegated"
 capabilities = [
-    "game.evaluate_flow",
-    "game.fitts_cost",
-    "game.engagement",
-    "game.analyze_ui",
-    "game.accessibility",
-    "game.wfc_step",
-    "game.difficulty_adjustment",
-    "game.generate_noise",
+    "tensor.fitts", "tensor.flow_sigmoid", "tensor.engagement",
+    "tensor.perlin", "tensor.wfc", "tensor.noise",
 ]
 
+# ── Session storage ────────────────────────────────────────────────────
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 7
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve"]
+
 # ── Provenance: session integrity ──────────────────────────────────────
-# Every scene resolution, dice roll, NPC interaction, and AI narration
-# gets a DAG entry. Sessions are replayable and auditable.
 [[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
-order = 7
+order = 8
 required = false
+spawn = false
 depends_on = ["beardog"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "provenance"
+security_model = "tower_delegated"
 capabilities = ["dag.session.create", "dag.event.append", "dag.session.finalize"]
 
 [[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
-order = 8
+order = 9
 required = false
-depends_on = ["beardog"]
-health_method = "health"
+spawn = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
 by_capability = "ledger"
-capabilities = ["lineage.commit", "lineage.branch", "lineage.certify"]
+security_model = "tower_delegated"
+capabilities = ["session.commit", "entry.append"]
 
 [[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
-order = 9
-required = false
-depends_on = ["beardog"]
-health_method = "health"
-by_capability = "attribution"
-capabilities = ["provenance.create_braid", "provenance.verify_braid"]
-
-# ── Storage + compute ──────────────────────────────────────────────────
-[[graph.nodes]]
-name = "nestgate"
-binary = "nestgate"
 order = 10
 required = false
-depends_on = ["beardog", "songbird"]
-health_method = "health"
-by_capability = "storage"
-capabilities = ["storage.store", "storage.retrieve"]
-
-[[graph.nodes]]
-name = "toadstool"
-binary = "toadstool"
-order = 11
-required = false
-depends_on = ["biomeos_neural_api"]
-health_method = "compute.health"
-by_capability = "compute"
-capabilities = ["compute.dispatch.submit", "shader.dispatch"]
+spawn = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "tower_delegated"
+capabilities = ["provenance.create_braid", "provenance.lineage"]

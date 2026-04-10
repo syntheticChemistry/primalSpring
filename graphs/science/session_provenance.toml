@@ -22,6 +22,8 @@ transport = "uds_only"
 tcp_ports = 0
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
+composition_model = "pure"
+fragments = ["tower_base", "provenance_trio"]
 
 [[graph.nodes]]
 name = "biomeos_neural_api"

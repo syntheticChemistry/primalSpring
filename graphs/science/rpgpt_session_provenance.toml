@@ -1,14 +1,17 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# RPGPT Session Provenance — every narrative decision gets a DAG entry.
-# Validates the session integrity story: game state is cryptographically
-# stamped so sessions can be replayed, audited, and shared.
+# RPGPT Session Provenance — Pure Composition
+#
+# Every narrative decision gets a DAG entry via pure primal composition.
+# No downstream binaries — RPGPT is a composition of Squirrel (AI
+# narration) + NestGate (session storage) + provenance trio (DAG
+# integrity, attribution, anti-cheat).
 #
 # The provenance chain:
-#   1. esotericWebb creates a session (rhizoCrypt dag.session.create)
-#   2. Each scene resolution appends to the DAG (dag.event.append)
-#   3. ludoSpring game science results are part of the event payload
-#   4. Squirrel AI narrations are stamped with attribution (sweetGrass)
+#   1. NestGate creates a session record (storage.store)
+#   2. Squirrel narrates scene (ai.query with session context)
+#   3. Each scene resolution appends to the DAG (rhizoCrypt dag.event.append)
+#   4. AI narrations are stamped with attribution (sweetGrass)
 #   5. Player choices branch the DAG (loamSpine lineage.branch)
 #   6. Session completion finalizes + certifies (loamSpine lineage.certify)
 #
@@ -17,17 +20,18 @@
 
 [graph]
 name = "rpgpt_session_provenance"
-description = "RPGPT session integrity: every narrative event → DAG stamp → replayable + auditable + forkable"
-version = "2.0.0"
+description = "RPGPT session integrity — pure composition: AI narration + session storage + provenance chain"
+version = "3.0.0"
 coordination = "Pipeline"
-bond_type = "covalent"
 
 [graph.metadata]
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
-pattern_version = "2026-04-07"
+pattern_version = "2026-04-09"
 witness_wire = "WireWitnessRef"
+composition_model = "pure"
+fragments = ["tower_base", "provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -41,56 +45,68 @@ name = "beardog"
 binary = "beardog"
 order = 1
 required = true
+spawn = false
 health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
 
 [[graph.nodes]]
-name = "esotericwebb"
-spawn = true
-security_model = "tower_delegated"
-binary = "esotericwebb"
+name = "songbird"
+binary = "songbird"
 order = 2
 required = true
+spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "narrative"
-capabilities = ["session.create", "session.advance", "webb.resolve_scene"]
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["net.discovery", "net.mesh"]
 
-[[graph.nodes]]
-name = "ludospring"
-spawn = true
-security_model = "tower_delegated"
-binary = "ludospring"
-order = 3
-required = true
-depends_on = ["beardog"]
-health_method = "health.liveness"
-by_capability = "game"
-capabilities = ["game.evaluate_flow", "game.difficulty_adjustment"]
-
+# ── AI narration (replaces esotericwebb + ludospring binaries) ─────────
 [[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
-order = 4
+order = 3
 required = true
-depends_on = ["beardog"]
+spawn = false
+depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "ai"
-capabilities = ["ai.chat", "context.create"]
+security_model = "tower_delegated"
+capabilities = [
+    "ai.query", "ai.complete",
+    "ai.narrate", "ai.constrain_ruleset",
+    "context.create",
+]
 
+# ── Session storage ────────────────────────────────────────────────────
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 4
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve"]
+
+# ── Provenance chain ──────────────────────────────────────────────────
 [[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 5
 required = true
+spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "dag"
+by_capability = "provenance"
+security_model = "tower_delegated"
 capabilities = [
-    "dag",
-    "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify",
-    "dag.dehydration.trigger", "dag.frontier.get",
+    "dag.session.create", "dag.event.append", "dag.merkle.root",
+    "dag.merkle.verify", "dag.dehydration.trigger", "dag.frontier.get",
     "dag.session.finalize",
 ]
 
@@ -99,13 +115,14 @@ name = "loamspine"
 binary = "loamspine"
 order = 6
 required = true
+spawn = false
 depends_on = ["rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
+security_model = "tower_delegated"
 capabilities = [
-    "spine", "entry", "session", "certificate", "commit", "ledger",
-    "spine.create", "entry.append", "session.commit", "certificate.mint",
-    "lineage.certify",
+    "spine.create", "entry.append", "session.commit",
+    "certificate.mint", "lineage.certify",
 ]
 
 [[graph.nodes]]
@@ -113,11 +130,12 @@ name = "sweetgrass"
 binary = "sweetgrass"
 order = 7
 required = true
+spawn = false
 depends_on = ["loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
+security_model = "tower_delegated"
 capabilities = [
-    "braid", "attribution", "provenance", "anchoring",
-    "braid.create", "braid.commit", "provenance.graph", "provenance.export_provo",
-    "attribution.chain",
+    "braid.create", "braid.commit", "provenance.graph",
+    "provenance.export_provo", "attribution.chain",
 ]

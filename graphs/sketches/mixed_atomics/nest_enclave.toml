@@ -54,6 +54,8 @@ layer = "L2"
 particle_model = "neutron-heavy isotope"
 internal_bond_type = "covalent"
 enclave_label = "${ENCLAVE_LABEL}"
+composition_model = "pure"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

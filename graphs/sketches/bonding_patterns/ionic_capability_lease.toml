@@ -50,6 +50,8 @@ layer = "L3"
 particle_model = "ionic bond, electron transfer"
 internal_bond_type = "ionic"
 trust_model = "contractual"
+composition_model = "pure"
+fragments = ["tower_base"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

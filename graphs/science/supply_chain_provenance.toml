@@ -27,6 +27,8 @@ source_showcase = "primals/rhizoCrypt/showcase/01-inter-primal-live/05-complete-
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "pure"
+fragments = ["provenance_trio"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

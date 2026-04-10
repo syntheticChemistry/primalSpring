@@ -1,22 +1,29 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# ludoSpring Science Validation — sequential barraCuda math pipeline
-# Source: ludoSpring V37.1 live validation (exp086: 10/10, exp090: 13/13,
-#         exp092: 8/8, exp097: 10/10)
+# Game Science Validation — Pure Composition
 #
-# Validates: tensor math, activation functions, stats, population dynamics.
-# All operations route through barraCuda IPC.
+# Sequential barraCuda math pipeline for game science validation.
+# The ludoSpring binary is no longer spawned — barraCuda IS the
+# math engine, toadStool IS the dispatch layer.
+#
+# Source: ludoSpring V37.1 live validation (exp086: 10/10, exp090: 13/13,
+#         exp092: 8/8, exp097: 10/10) proved these capabilities work.
+#
+# Validates: tensor math, activation functions, stats, population
+# dynamics, Fitts, WFC — all via barraCuda WGSL shaders.
 
 [graph]
-name = "ludospring_science_validation"
-description = "ludoSpring science pipeline — barraCuda tensor/activation/stats validated end-to-end"
-version = "1.0.0"
+name = "game_science_validation"
+description = "Game science pipeline — barraCuda tensor/activation/stats validated end-to-end, pure composition"
+version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "pure"
+fragments = ["tower_base"]
 
 [[graph.nodes]]
 name = "biomeos_neural_api"
@@ -24,8 +31,9 @@ binary = "biomeos"
 order = 0
 required = true
 spawn = false
-health_method = "graph.list"
+health_method = "health.liveness"
 by_capability = "orchestration"
+security_model = "tower_delegated"
 capabilities = ["capability.discover", "graph.list"]
 
 [[graph.nodes]]
@@ -33,59 +41,52 @@ name = "beardog"
 binary = "beardog"
 order = 1
 required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 
 [[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
 required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "discovery"
+security_model = "btsp"
 
+# ── Compute dispatch ───────────────────────────────────────────────────
+[[graph.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 3
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+security_model = "tower_delegated"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+# ── GPU math (replaces ludospring binary) ──────────────────────────────
 [[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 3
-required = true
-depends_on = ["beardog", "songbird"]
-health_method = "health.liveness"
-by_capability = "math"
-capabilities = [
-    "tensor.create",
-    "tensor.read",
-    "tensor.add",
-    "tensor.scale",
-    "tensor.clamp",
-    "tensor.reduce",
-    "tensor.sigmoid",
-    "tensor.matmul",
-    "activation.sigmoid",
-    "activation.fitts",
-    "activation.hick",
-    "stats.mean",
-    "stats.weighted_mean",
-    "stats.std_dev",
-    "noise.perlin3d",
-]
-
-[[graph.nodes]]
-name = "ludospring"
-spawn = true
-security_model = "tower_delegated"
-binary = "ludospring"
 order = 4
 required = true
-depends_on = ["barracuda"]
-health_method = "health.check"
-by_capability = "game"
-args = ["server"]
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "tensor"
+security_model = "tower_delegated"
 capabilities = [
-    "game.evaluate_flow",
-    "game.fitts_cost",
-    "game.wfc_step",
-    "game.engagement",
+    "tensor.create", "tensor.read",
+    "tensor.add", "tensor.scale", "tensor.clamp", "tensor.reduce",
+    "tensor.sigmoid", "tensor.matmul",
+    "activation.sigmoid", "activation.fitts", "activation.hick",
+    "stats.mean", "stats.weighted_mean", "stats.std_dev",
+    "noise.perlin3d",
 ]

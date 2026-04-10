@@ -27,10 +27,10 @@ back upstream to primals and primalSpring.
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
 - **experiments/** — 72 validation binaries covering 15 tracks
-- **graphs/** — 107 deploy graph TOMLs (single-node + multi-node +
+- **graphs/** — 100 deploy graph TOMLs + 4 fragments (single-node + multi-node +
   17 spring validation + cross-spring + gen4 + bonding + chaos +
-  science + 4 composition subsystems + 6 nucleated spring deploy +
-  17 sketch graphs + 5 downstream proto-nucleate + 3 pipeline)
+  science + 3 composition subsystems + 6 nucleated spring deploy +
+  12 sketch graphs + 5 downstream proto-nucleate + 3 pipeline + 4 fragments)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`)
 - **tools/** — nucleus launcher, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
@@ -67,7 +67,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.4 Phase 28 — 404 tests, 72 experiments, 107 deploy graphs.
+v0.9.5 Phase 29 — 404 tests, 72 experiments, 100 deploy graphs + 4 fragments.
 
 Live validation: **43/44 (98%)** subsystem, plus live Tower Atomic
 probes (BearDog crypto, Songbird HTTPS, Neural API all LIVE PASS/FAIL).
@@ -75,7 +75,7 @@ probes (BearDog crypto, Songbird HTTPS, Neural API all LIVE PASS/FAIL).
 
 Particle model adopted: Tower = electron, Node = proton, Nest = neutron,
 NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →
-L2 (mixed atomics) → L3 (bonding patterns). 17 sketch graphs, 3 new
+L2 (mixed atomics) → L3 (bonding patterns). 12 sketch graphs, 3 new
 experiments (exp091-093).
 
 Primal gap registry: **8 open** (1 medium, 7 low), zero critical/high
@@ -90,8 +90,12 @@ Squirrel (local AI endpoint + inference bridge).
 April 10: BTSP Phase 2 cascade (11/13 primals enforce handshake), inference
 provider abstraction (`inference.complete`/`embed`/`models`), WGSL shader
 composition model, 5 proto-nucleate graphs (neuralSpring ML, hotSpring QCD,
-healthSpring enclave), 3 pipeline graphs, 107 deploy graphs with
+healthSpring enclave), 3 pipeline graphs, 100 deploy graphs + 4 fragments with
 `secure_by_default` metadata.
+
+April 9: Graph consolidation — ludoSpring/esotericWebb evolved to pure compositions
+(no spawnable binaries), 4 canonical fragments extracted, 7 graphs deleted, 10 rewritten,
+100% fragment/composition_model metadata annotation, gen4 naming normalized.
 
 ## Ecosystem Position
 

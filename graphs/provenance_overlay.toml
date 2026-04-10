@@ -39,6 +39,8 @@ tcp_ports = 0
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
+composition_model = "pure"
+fragments = ["provenance_trio"]
 
 # ── Phase 1: Tower base ──
 

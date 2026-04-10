@@ -3,6 +3,23 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.5] — Phase 29: Graph Consolidation + Composition Evolution (2026-04-09)
+
+### Added
+- **4 canonical fragment definitions** (`graphs/fragments/`): `tower_base` (biomeOS + BearDog + Songbird), `provenance_trio` (rhizoCrypt + loamSpine + sweetGrass), `wgsl_shader_pipeline` (coralReef + toadStool + barraCuda), `nucleus_core` (Tower + toadStool + NestGate + Squirrel). Documents the "periodic table" of NUCLEUS composition.
+- **`composition_model` + `fragments` metadata**: Every deploy graph annotated with `composition_model = "pure"|"nucleated"|"validation"` and `fragments = [...]` listing which canonical patterns it composes. Makes isomorphic families visible.
+- **Composition Evolution section** in `PRIMAL_GAPS.md`: documents that ludoSpring and esotericWebb are pure NUCLEUS compositions — the graph IS the product, biomeOS IS the execution engine.
+
+### Changed
+- **ludoSpring/esotericWebb proto-nucleates rewritten** as pure compositions (`composition_model = "pure"`): no `spawn = true` binary nodes. Game science capabilities map to barraCuda + toadStool + Squirrel + petalTongue. CRPG product maps to Squirrel + petalTongue + NestGate + provenance trio.
+- **8 graphs rewritten**: `interactive_product`, `gen4_storytelling_full`, `gen4_storytelling_minimal`, `gen4_spring_composition`, `rpgpt_session_provenance`, `nucleus_game_session`, `ludospring_science_validation`, `gaming_mesh_chimera` — all ludo/webb binary nodes replaced with constituent NUCLEUS primals.
+- **Gen4 naming normalized**: `biomeos` / `biomeos_api` / `biomeos_substrate` → canonical `biomeos_neural_api` across all 10 gen4 graphs. `depends_on` edges updated.
+- Deploy graph count: 107 → 100 (7 deleted, 4 fragment definitions added separately).
+
+### Removed
+- **5 redundant sketches**: `ludospring_game_deploy`, `esotericwebb_tower_deploy`, `game_science_standalone`, `session_standalone`, `esotericwebb_composed_deploy` — superseded by rewritten proto-nucleates.
+- **2 duplicate compositions**: `render_standalone.toml` (identical to `proprioception_loop`), `tower_ai_viz.toml` (redundant subset of `tower_ai`).
+
 ## [0.9.4] — Phase 28: BTSP Cascade, Inference Abstraction, Proto-Nucleate Graphs (2026-04-10)
 
 ### Added

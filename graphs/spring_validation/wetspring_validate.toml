@@ -20,6 +20,8 @@ tcp_ports = 0
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
+composition_model = "validation"
+fragments = ["tower_base"]
 
 [[graph.nodes]]
 name = "verify_tower"

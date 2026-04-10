@@ -1,26 +1,24 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Gaming Mesh Chimera — ludoSpring + Songbird + ToadStool coordination.
+# Gaming Mesh Chimera — Pure Composition
+#
+# Fuses Songbird networking with GPU game compute + visualization.
+# No downstream binary — toadStool dispatches GPU compute for
+# rendering/physics via barraCuda, petalTongue provides visualization.
+#
 # Source: primals/toadstool/showcase/gaming-evolution/ (6-level evolution)
 #
-# The gaming-mesh chimera fuses Songbird networking with ludoSpring game logic.
-# ToadStool dispatches GPU compute for rendering/physics.
-# petalTongue provides visualization/UI.
-#
 # Tests: real-time tick budget compliance (16.67ms @ 60Hz),
-# protocol bridge to game platforms, game state sync across mesh.
-#
-# Bond: covalent (same-machine, zero-latency)
+# game state sync across mesh, GPU dispatch latency.
 #
 # Usage:
 #   biomeos deploy --graph graphs/science/gaming_mesh_chimera.toml
 
 [graph]
 name = "gaming_mesh_chimera"
-description = "ludoSpring + Songbird + ToadStool: game coordination, GPU dispatch, 60Hz tick budget, platform bridge"
-version = "1.0.0"
+description = "Gaming mesh: Songbird + toadStool + barraCuda — GPU dispatch, 60Hz tick budget, mesh sync"
+version = "2.0.0"
 coordination = "Pipeline"
-bond_type = "covalent"
 science_domain = "interactive_compute"
 source_showcase = "primals/toadstool/showcase/gaming-evolution"
 
@@ -28,6 +26,8 @@ source_showcase = "primals/toadstool/showcase/gaming-evolution"
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+composition_model = "pure"
+fragments = ["tower_base", "wgsl_shader_pipeline"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -41,8 +41,10 @@ name = "beardog"
 binary = "beardog"
 order = 1
 required = true
-health_method = "health"
+spawn = false
+health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 capabilities = ["crypto.identity"]
 
 [[graph.nodes]]
@@ -50,52 +52,62 @@ name = "songbird"
 binary = "songbird"
 order = 2
 required = true
+spawn = false
 depends_on = ["beardog"]
-health_method = "health"
+health_method = "health.liveness"
 by_capability = "discovery"
+security_model = "btsp"
 capabilities = ["net.discovery", "net.mesh", "net.realtime"]
 
 [[graph.nodes]]
-name = "biomeos"
-binary = "biomeos_primal"
+name = "biomeos_neural_api"
+binary = "biomeos"
 order = 3
 required = true
+spawn = false
 depends_on = ["beardog", "songbird"]
-health_method = "health"
-by_capability = "ecosystem"
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
 capabilities = ["graph.execution", "ecosystem.coordination"]
 
-# ludoSpring: game state, library management, protocol bridge
-[[graph.nodes]]
-name = "ludospring"
-spawn = true
-security_model = "tower_delegated"
-binary = "ludospring"
-order = 4
-required = true
-depends_on = ["beardog", "songbird"]
-health_method = "health"
-by_capability = "gaming"
-capabilities = ["gaming.state", "gaming.library", "gaming.protocol_bridge", "gaming.session"]
-
-# ToadStool: GPU dispatch for game compute
+# ── Compute dispatch + GPU math (replaces ludospring binary) ───────────
 [[graph.nodes]]
 name = "toadstool"
 binary = "toadstool"
-order = 5
+order = 4
 required = true
-depends_on = ["ludospring"]
-health_method = "compute.health"
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
 by_capability = "compute"
+security_model = "tower_delegated"
 capabilities = ["compute.dispatch.submit", "compute.execute", "compute.gpu", "compute.shader"]
 
-# petalTongue: visualization and UI
+[[graph.nodes]]
+name = "barracuda"
+binary = "barracuda"
+order = 5
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "tensor"
+security_model = "tower_delegated"
+capabilities = [
+    "tensor.fitts", "tensor.flow_sigmoid",
+    "tensor.perlin", "tensor.wfc", "tensor.noise",
+]
+
+# ── Visualization + UI ────────────────────────────────────────────────
 [[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
 order = 6
 required = false
-depends_on = ["ludospring"]
-health_method = "health"
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
 by_capability = "visualization"
+security_model = "tower_delegated"
 capabilities = ["viz.dashboard", "viz.topology", "viz.realtime"]
