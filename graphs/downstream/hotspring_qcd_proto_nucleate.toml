@@ -50,6 +50,8 @@
 #   - Use toadStool metallic pool for multi-GPU lattice partitioning
 #   - Wire ionic bond for CERN cloud GPU lease (different FAMILY_ID)
 #   - Provenance: every gauge configuration witnessed for reproducibility
+#   - Add Squirrel for AI-guided parameter selection (neuralSpring provides
+#     inference as it evolves WGSL shader ML — no code change needed)
 #   - Pass back: df64 requirements, multi-GPU dispatch patterns, HPC gaps
 #
 # Security: inherits Tower Atomic BTSP perimeter. hotSpring traffic

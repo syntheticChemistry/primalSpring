@@ -5,12 +5,12 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.8 |
+| **Version** | 0.9.9 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 404 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 72 (15 tracks) |
-| **Deploy Graphs** | 93 TOMLs (7 root + 9 profiles + 12 sketches + 5 multi-node + 13 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + 5 spring deploy + 5 downstream proto-nucleate + 3 pipeline + 4 patterns) + 6 fragment definitions |
+| **Deploy Graphs** | 96 TOMLs (7 root + 9 profiles + 12 sketches + 5 multi-node + 13 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + 5 spring deploy + 8 downstream proto-nucleate + 3 pipeline + 4 patterns) + 6 fragment definitions |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |

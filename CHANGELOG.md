@@ -3,6 +3,16 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.9] — Phase 33: Full Spring Alignment + Proto-Nucleate Coverage (2026-04-10)
+
+### Added
+- **3 new proto-nucleate graphs**: `airspring_ecology_proto_nucleate.toml` (Tower + Node + Nest, ecology/agriculture), `groundspring_geoscience_proto_nucleate.toml` (Tower + Node + Nest, measurement science), `wetspring_lifescience_proto_nucleate.toml` (Tower + Node + Nest + Meta, life science/chemistry). All 7 science springs now have proto-nucleates.
+- **`NUCLEUS_SPRING_ALIGNMENT.md`** (`wateringHole/`): Comprehensive spring × atomic alignment matrix, per-spring composition diagrams, cross-pollination network, neuralSpring AI provider role documented.
+
+### Changed
+- **`hotspring_qcd_proto_nucleate.toml`**: Added Squirrel/neuralSpring AI cross-pollination evolution note.
+- Deploy graph count: 93 → 96 (8 downstream proto-nucleates).
+
 ## [0.9.8] — Phase 32: NUCLEUS Validation & Spring Evolution Handoff (2026-04-10)
 
 ### Changed
