@@ -1,7 +1,11 @@
-# NUCLEUS Spring Alignment — Phase 32
+# NUCLEUS Spring Alignment — Phase 33 (local copy)
+
+> **Canonical version**: `ecoPrimals/infra/wateringHole/NUCLEUS_SPRING_ALIGNMENT.md`
+> This local copy is for primalSpring context. The infra version is the
+> inter-spring reference.
 
 **Date**: April 10, 2026
-**From**: primalSpring v0.9.8
+**From**: primalSpring v0.9.9
 **License**: AGPL-3.0-or-later
 
 ---
