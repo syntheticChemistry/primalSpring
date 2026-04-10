@@ -19,9 +19,35 @@
 # as primal teams fix gaps.
 
 [matrix]
-version = "2.0.0"
-description = "Zero-Port Tower Atomic deployment validation — UDS-only default, TCP opt-in for federation"
+version = "3.0.0"
+description = "NUCLEUS Atomic-Aligned"
 last_updated = "2026-04-10"
+
+[atomics]
+description = "NUCLEUS atomic model — Phase 31 aligned"
+
+[atomics.tower]
+particle = "electron"
+primals = ["beardog", "songbird"]
+description = "Trust boundary — crypto + discovery"
+
+[atomics.node]
+particle = "proton"
+primals = ["beardog", "songbird", "toadstool", "barracuda", "coralreef"]
+description = "Compute substrate — dispatch + execute + compile"
+
+[atomics.nest]
+particle = "neutron"
+primals = ["beardog", "songbird", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+description = "Storage + provenance — content-addressed data + lineage"
+
+[atomics.nucleus]
+primals = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+description = "Full atom — Tower + Node + Nest"
+
+[atomics.meta_tier]
+primals = ["biomeos", "squirrel", "petaltongue"]
+description = "Cross-atomic primals — orchestration, AI, UI"
 
 # ── Architectures ───────────────────────────────────────────────────────
 
@@ -48,6 +74,7 @@ prerequisites = ["qemu-user-static", "binfmt_misc"]
 file = "ecoprimals-tower-2node"
 nodes = 2
 primals = ["beardog", "songbird", "biomeos"]
+atomic = "tower+meta_partial"
 springs = ["groundspring", "healthspring", "neuralspring", "wetspring"]
 composition = "Tower + Springs"
 description = "Minimal cross-gate: Tower substrate + downstream springs (springs build their own binaries)"
@@ -55,14 +82,16 @@ description = "Minimal cross-gate: Tower substrate + downstream springs (springs
 [topologies.nucleus_3node]
 file = "ecoprimals-nucleus-3node"
 nodes = 3
-primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring", "neuralspring", "wetspring", "ludospring"]
+primals = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "biomeos", "squirrel"]
+atomic = "nucleus+meta"
 composition = "Full NUCLEUS + Springs + Mobile"
 description = "Full NUCLEUS with NAT-degraded mobile node"
 
 [topologies.wan_federation]
 file = "ecoprimals-wan-federation"
 nodes = 3
-primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring", "neuralspring", "wetspring", "ludospring"]
+primals = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "biomeos", "squirrel"]
+atomic = "nucleus+meta"
 composition = "WAN Federation"
 description = "Cross-site federation with satellite-grade latency"
 
@@ -70,6 +99,7 @@ description = "Cross-site federation with satellite-grade latency"
 file = "ecoprimals-tower-2node-tcp"
 nodes = 2
 primals = ["beardog", "songbird", "biomeos"]
+atomic = "tower+meta_partial"
 composition = "Tower (TCP-only)"
 description = "DEPRECATED: Mobile/Android future work. All primals now UDS-only by default."
 deprecated = true
@@ -81,6 +111,7 @@ deprecated_reason = "Zero-Port Tower Atomic standard. TCP opt-in via Songbird --
 file = "ecoprimals-alpine-minimal"
 nodes = 2
 primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring"]
+atomic = "tower+meta_partial"
 composition = "Tower + Springs (Alpine)"
 description = "6MB Alpine base — no glibc, no systemd, BusyBox only"
 
@@ -88,6 +119,7 @@ description = "6MB Alpine base — no glibc, no systemd, BusyBox only"
 file = "ecoprimals-readonly-fs"
 nodes = 2
 primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring"]
+atomic = "tower+meta_partial"
 composition = "Tower + Springs (read-only)"
 description = "Read-only containers — simulates Android/GrapheneOS CWD write failures"
 
@@ -95,6 +127,7 @@ description = "Read-only containers — simulates Android/GrapheneOS CWD write f
 file = "ecoprimals-constrained-256m"
 nodes = 2
 primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring"]
+atomic = "tower+meta_partial"
 composition = "Tower + Springs (256MB)"
 description = "256MB RAM, 0.5 CPU per node — tests OOM handling and graceful degradation"
 
@@ -104,6 +137,7 @@ description = "256MB RAM, 0.5 CPU per node — tests OOM handling and graceful d
 file = "ecoprimals-ionic-2family"
 nodes = 4
 primals = ["beardog", "songbird", "biomeos", "toadstool", "groundspring", "neuralspring", "wetspring"]
+atomic = "tower+meta_partial"
 composition = "2x Tower (Ionic Bond)"
 description = "Two family seeds, contract-based cross-family capability sharing"
 bond_type = "ionic"
@@ -112,6 +146,7 @@ bond_type = "ionic"
 file = "ecoprimals-metallic-fleet"
 nodes = 5
 primals = ["beardog", "songbird", "biomeos", "toadstool", "groundspring", "hotspring", "neuralspring", "wetspring"]
+atomic = "tower+meta_partial"
 composition = "Fleet Pool (Metallic Bond)"
 description = "5 nodes sharing delocalized resource pool — data center rack pattern"
 bond_type = "metallic"
@@ -119,7 +154,8 @@ bond_type = "metallic"
 [topologies.organo_metal_salt]
 file = "ecoprimals-organo-metal-salt"
 nodes = 5
-primals = ["beardog", "songbird", "biomeos", "nestgate", "toadstool", "squirrel", "groundspring", "healthspring", "neuralspring", "wetspring"]
+primals = ["beardog", "songbird", "biomeos", "nestgate", "toadstool", "barracuda", "coralreef", "squirrel", "groundspring", "healthspring", "neuralspring", "wetspring"]
+atomic = "nucleus+meta"
 composition = "OrganoMetalSalt Complex"
 description = "Covalent core + ionic edge + weak public — the full chemistry"
 bond_type = "organo_metal_salt"
@@ -129,7 +165,8 @@ bond_type = "organo_metal_salt"
 [topologies.federation_10node]
 file = "ecoprimals-federation-10node"
 nodes = 10
-primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "rhizocrypt", "loamspine", "sweetgrass"]
+primals = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "biomeos", "squirrel"]
+atomic = "nucleus+meta"
 springs = ["groundspring", "healthspring", "neuralspring", "wetspring"]
 composition = "Full Federation + Provenance Trio"
 description = "3 NUCLEUS gates + spring nodes + 2 mobile-degraded — Plasmodium at scale"
@@ -139,6 +176,7 @@ bond_type = "covalent"
 file = "ecoprimals-mixed-arch-cluster"
 nodes = 4
 primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring", "neuralspring"]
+atomic = "tower+meta_partial"
 composition = "Mixed-Arch Cluster"
 description = "x86_64 + aarch64 nodes in same lab — tests cross-arch binary dispatch and crypto parity"
 bond_type = "covalent"
@@ -149,6 +187,7 @@ bond_type = "covalent"
 file = "ecoprimals-fieldmouse-chimera"
 nodes = 3
 primals = ["beardog", "songbird", "biomeos", "nestgate"]
+atomic = "tower_partial"
 composition = "Gate + fieldMouse Chimeras"
 description = "fieldMouse deployment class: Tower chimera on Alpine (no biomeOS), data ingestion to gate"
 bond_type = "covalent"
@@ -158,6 +197,7 @@ deployment_class = "fieldmouse"
 file = "ecoprimals-albatross-multiplex"
 nodes = 5
 primals = ["beardog", "songbird", "biomeos", "toadstool"]
+atomic = "tower+node_partial"
 composition = "Albatross (Multi-Songbird Fleet)"
 description = "3 Songbird instances with tarpc connection pooling and intelligent routing to ToadStool"
 bond_type = "metallic"
@@ -166,6 +206,7 @@ bond_type = "metallic"
 file = "ecoprimals-skunkbat-defensive"
 nodes = 3
 primals = ["beardog", "songbird", "biomeos", "skunkbat", "groundspring", "healthspring"]
+atomic = "tower+meta_partial"
 composition = "Defended Mesh + External Probe"
 description = "skunkBat defensive security mesh: violation detection, sovereignty proofs, external probe"
 bond_type = "covalent"
@@ -174,6 +215,7 @@ bond_type = "covalent"
 file = "ecoprimals-neuromorphic-edge"
 nodes = 3
 primals = ["beardog", "songbird", "biomeos", "nestgate", "toadstool", "neuralspring", "wetspring"]
+atomic = "tower+node_partial+nest_partial"
 composition = "Gate + Edge NPU + Neural Analysis"
 description = "Neuromorphic edge: Akida/NPU real-time classification with gate storage and analysis"
 bond_type = "covalent"
@@ -183,6 +225,7 @@ deployment_class = "fieldmouse_edge"
 file = "ecoprimals-gaming-mesh"
 nodes = 3
 primals = ["beardog", "songbird", "biomeos", "ludospring", "toadstool", "petaltongue"]
+atomic = "tower+node_partial+meta_partial"
 composition = "Gaming Mesh Chimera"
 description = "ludoSpring + Songbird + ToadStool: game coordination, GPU dispatch, 60Hz tick budget"
 bond_type = "covalent"
@@ -193,6 +236,7 @@ bond_type = "covalent"
 file = "ecoprimals-agentic-tower"
 nodes = 3
 primals = ["beardog", "songbird", "biomeos", "squirrel", "petaltongue", "groundspring", "healthspring", "neuralspring", "toadstool", "nestgate"]
+atomic = "tower+node_partial+nest_partial+meta"
 composition = "Agentic Tower (biomeOS + Squirrel + petalTongue)"
 description = "Full human+AI coordination: Neural API routing + MCP tools + UI dashboards"
 bond_type = "covalent"
@@ -201,6 +245,7 @@ bond_type = "covalent"
 file = "ecoprimals-agentic-fieldmouse"
 nodes = 3
 primals = ["beardog", "songbird", "biomeos", "squirrel", "petaltongue", "nestgate", "neuralspring", "wetspring", "groundspring"]
+atomic = "tower+nest_partial+meta"
 composition = "Agentic Gate + fieldMouse Sensors"
 description = "AI-guided edge sensor orchestration: Squirrel classifies, biomeOS routes, petalTongue dashboards"
 bond_type = "covalent"
@@ -212,6 +257,7 @@ deployment_class = "fieldmouse"
 file = "ecoprimals-storytelling-tower"
 nodes = 3
 primals = ["beardog", "songbird", "biomeos", "squirrel", "petaltongue", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+atomic = "tower+nest+meta"
 downstream = ["esotericwebb", "ludospring"]
 composition = "Storytelling Tower (esotericWebb + ludoSpring + Squirrel DM + petalTongue)"
 description = "Full AI DM storytelling: CRPG narrative + game science + AI narration + scene rendering + session provenance. esotericWebb/ludoSpring are downstream (not primals)."
@@ -221,6 +267,7 @@ bond_type = "covalent"
 file = "ecoprimals-storytelling-minimal"
 nodes = 1
 primals = ["beardog", "songbird", "esotericwebb", "ludospring", "squirrel", "petaltongue"]
+atomic = "tower+meta_partial"
 composition = "Minimal Storytelling (no biomeOS, direct IPC)"
 description = "Offline AI DM: esotericWebb + ludoSpring + Squirrel + petalTongue TUI — single node, no orchestrator"
 bond_type = "covalent"
@@ -314,7 +361,7 @@ notes = "Tower boundary. BTSP handshake required. Full encryption for all cross-
 [security_tiers.nucleus]
 enforcement = "tower_delegated"
 encryption = "hmac_plain"
-primals = ["biomeos", "toadstool", "nestgate", "squirrel", "rhizocrypt", "loamspine", "sweetgrass", "petaltongue"]
+primals = ["biomeos", "toadstool", "barracuda", "coralreef", "nestgate", "squirrel", "rhizocrypt", "loamspine", "sweetgrass", "petaltongue"]
 notes = "Same-host UDS behind Tower perimeter. Lower encryption acceptable. HMAC-plain or cleartext."
 
 [security_tiers.federation]

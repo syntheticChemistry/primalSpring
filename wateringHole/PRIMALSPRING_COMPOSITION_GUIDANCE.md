@@ -1,7 +1,7 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
 **Date**: April 10, 2026
-**From**: primalSpring v0.9.4
+**From**: primalSpring v0.9.8
 **License**: AGPL-3.0-or-later
 
 ---
@@ -26,6 +26,9 @@ Layer 2: biomeOS Neural API (graph execution + capability routing)
          |
 Layer 1: Primals & Springs (autonomous, self-describing)
          niche.rs self-knowledge, health.check, capability.list
+         |
+Layer 0: NUCLEUS Atomics (Tower / Node / Nest + Meta-tier)
+         Canonical compositions from graphs/fragments/
 ```
 
 **RootPulse** demonstrates this concretely: it is not a primal. It is a biomeOS
@@ -133,9 +136,11 @@ transient failures. `DispatchOutcome::should_retry()` guides retry decisions.
 
 ---
 
-## 3. Node — Tower + ToadStool
+## 3. Node — Tower + ToadStool + barraCuda + coralReef
 
-**Atomic**: Node adds GPU/CPU compute dispatch.
+Node adds GPU/CPU compute — dispatch (ToadStool), execution (barraCuda), and shader compilation (coralReef).
+
+**Atomic**: Node = Tower + ToadStool + barraCuda + coralReef (proton).
 
 ### What primalSpring Validates
 
@@ -143,7 +148,7 @@ transient failures. `DispatchOutcome::should_retry()` guides retry decisions.
 |------------|------------|---------|
 | **Compute pipeline coordination** | exp002 | ToadStool `compute.execute` capability routing |
 | **Discovery within Node** | exp002 | Tower primals + ToadStool discovered via FAMILY_ID-aware sweep |
-| **GPU dispatch** | exp050 | coralReef → toadStool → barraCuda compute triangle |
+| **Compute triangle** | exp050 | coralReef → toadStool → barraCuda pipeline |
 
 ### Novel Patterns
 
@@ -154,9 +159,11 @@ capability mismatches from connection failures.
 
 ---
 
-## 4. Nest — Tower + NestGate
+## 4. Nest — Tower + NestGate + Provenance Trio
 
-**Atomic**: Nest adds content-addressed storage.
+Nest adds content-addressed storage (NestGate) and full provenance lineage (rhizoCrypt + loamSpine + sweetGrass).
+
+**Atomic**: Nest = Tower + NestGate + rhizoCrypt + loamSpine + sweetGrass (neutron).
 
 ### What primalSpring Validates
 
@@ -174,16 +181,17 @@ operations. `safe_cast::micros_u64` for latency metrics in validation reports.
 
 ---
 
-## 5. Full NUCLEUS — All 8 Primals
+## 5. Full NUCLEUS — 9 Core Primals + Meta-Tier
 
-**Atomic**: BearDog, Songbird, ToadStool, NestGate, rhizoCrypt, loamSpine,
-sweetGrass, Squirrel.
+**Atomic**: BearDog, Songbird, ToadStool, barraCuda, coralReef, NestGate, rhizoCrypt, loamSpine, sweetGrass.
+
+Meta-tier primals (biomeOS, Squirrel, petalTongue) operate at any atomic level and are not counted in the NUCLEUS core.
 
 ### What primalSpring Validates
 
 | Validation | Experiment | Purpose |
 |------------|------------|---------|
-| **Full composition** | exp004 | All 8 primals start, discover peers, respond to capability calls |
+| **Full composition** | exp004 | All 9 core primals start, discover peers, respond to capability calls |
 | **Squirrel AI coordination** | exp044 | Multi-MCP routing, `ai.query`, `ai.analyze`, `ai.suggest` |
 | **Neural API integration** | exp004 | Composition-driven discovery via Neural API |
 
@@ -378,10 +386,11 @@ Node:  + toadstool          + squirrel (AI-driven compute)
 
 | Graph | Base Tier | Overlay Primals | Use Case |
 |-------|-----------|-----------------|----------|
-| `tower_ai.toml` | Tower | Squirrel | AI task alignment at Tower level |
-| `tower_ai_viz.toml` | Tower | Squirrel + petalTongue | Full user-facing with dashboards |
-| `nest_viz.toml` | Nest | petalTongue | Storage dashboards |
-| `node_ai.toml` | Node | Squirrel | AI-directed compute workloads |
+| `profiles/tower_ai.toml` | Tower | Squirrel | AI task alignment at Tower level |
+| `profiles/tower_viz.toml` | Tower | Squirrel + petalTongue | Full user-facing with dashboards |
+| `profiles/nest_viz.toml` | Nest | petalTongue | Storage dashboards |
+| `profiles/node_ai.toml` | Node | Squirrel | AI-directed compute workloads |
+| `profiles/full.toml` | NUCLEUS | Squirrel + petalTongue (optional) | Full platform overlay |
 
 ### Graph Node Fields
 
@@ -421,7 +430,7 @@ biomeOS can compose graphs at runtime:
 use primalspring::deploy::{load_graph, merge_graphs};
 
 let base = load_graph("graphs/tower_atomic_bootstrap.toml")?;
-let overlay = load_graph("graphs/tower_ai.toml")?;
+let overlay = load_graph("graphs/profiles/tower_ai.toml")?;
 let merged = merge_graphs(&base, &overlay);
 // merged.graph.name = "tower_atomic_bootstrap+tower_ai"
 ```
@@ -494,7 +503,7 @@ Squirrel's launch profile maps 9 capability-provider socket pairs:
 
 ### Full Overlay Graph
 
-`graphs/full_overlay.toml` composes all capability domains:
+`graphs/profiles/full.toml` composes all capability domains:
 
 ```
 beardog (security) → songbird (discovery) → nestgate (storage)
@@ -664,6 +673,32 @@ See `PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` for per-primal compliance.
 primalSpring uses `check_skip()` when a primal is absent — never a fake
 pass. Composed primals should follow the same pattern: report what you
 actually observed, not what you hope is true.
+
+---
+
+## 16. Meta-Tier Primals — biomeOS + Squirrel + petalTongue
+
+Meta-tier primals operate at **any** atomic level. They are not part of Tower,
+Node, or Nest — they overlay any composition.
+
+| Primal | Role | Key Capabilities |
+|--------|------|------------------|
+| biomeOS | Orchestration | `graph.deploy`, `graph.execute`, `capability.route`, `capability.discover` |
+| Squirrel | AI coordination | `ai.query`, `ai.complete`, `tool.list`, `context.create` |
+| petalTongue | UI/rendering | `render.scene`, `render.dashboard`, `tui.push` |
+
+Meta-tier primals appear in deploy graphs as optional overlays. Any atomic
+tier (Tower, Node, Nest, NUCLEUS) can compose with any subset of meta-tier
+primals. The `meta_tier` fragment defines the canonical triple.
+
+### Why Meta-Tier Matters for Springs
+
+Springs consume meta-tier primals without depending on specific atomic tiers:
+- A Tower + Squirrel composition gives AI without compute or storage
+- A Nest + petalTongue composition gives storage dashboards without GPU
+- NUCLEUS + full meta-tier gives the complete platform
+
+This separation ensures springs can start minimal and compose up.
 
 ---
 

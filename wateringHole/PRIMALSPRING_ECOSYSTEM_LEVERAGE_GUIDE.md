@@ -1,7 +1,7 @@
 # primalSpring — Ecosystem Leverage Guide
 
 **Date**: April 10, 2026
-**Version**: v0.9.4
+**Version**: v0.9.8
 **License**: AGPL-3.0-or-later
 
 ---
@@ -67,9 +67,10 @@ can absorb or compose against.
 | Layer | What primalSpring Validates |
 |-------|-----------------------------|
 | **Tower Atomic** | BearDog + Songbird discover, health, capabilities |
-| **Node Atomic** | Tower + ToadStool compute |
-| **Nest Atomic** | Tower + NestGate storage |
-| **Full NUCLEUS** | All primals + Squirrel |
+| **Node Atomic** | Tower + ToadStool + barraCuda + coralReef (proton: dispatch, execute, compile) |
+| **Nest Atomic** | Tower + NestGate + rhizoCrypt + loamSpine + sweetGrass (neutron: storage + provenance) |
+| **Full NUCLEUS** | Tower + Node + Nest — 9 core primals (atom) |
+| **Meta-Tier** | biomeOS + Squirrel + petalTongue — cross-atomic orchestration, AI, UI |
 | **Graph Execution** | 5 coordination patterns (Sequential, Parallel, DAG, Pipeline, Continuous) |
 | **Emergent Systems** | RootPulse, RPGPT, coralForge pipeline |
 | **Bonding** | Covalent, Ionic, Plasmodium multi-gate |
@@ -156,6 +157,23 @@ primals (evolve to close gaps)
     ↓ ... cycle continues
 ```
 
+### NUCLEUS Atomic Alignment (Phase 31)
+
+All proto-nucleate graphs, deploy graphs, and validation infrastructure now
+use the Phase 31 atomic model. Springs should reference this model when
+building their compositions:
+
+| Atomic | Particle | Primals | Fragment |
+|--------|----------|---------|----------|
+| Tower | Electron | BearDog + Songbird | `tower_atomic` |
+| Node | Proton | Tower + ToadStool + barraCuda + coralReef | `node_atomic` |
+| Nest | Neutron | Tower + NestGate + rhizoCrypt + loamSpine + sweetGrass | `nest_atomic` |
+| NUCLEUS | Atom | Tower + Node + Nest (9 unique primals) | `nucleus` |
+| Meta-tier | — | biomeOS + Squirrel + petalTongue | `meta_tier` |
+
+Deploy graphs declare their atomics via `fragments = [...]` metadata.
+Bonding policies document how atomics bind within cross-atomic compositions.
+
 Each spring solving its domain unlocks patterns for all others. hotSpring's
 GPU work drove coralReef evolution. neuralSpring's ML patterns will flow to
 every spring that needs inference. healthSpring's enclave pattern applies to
@@ -181,7 +199,7 @@ any spring handling sensitive data.
 
 ### As a biomeOS Graph Node
 
-primalSpring ships 18 deploy graph TOMLs (all nodes declare `by_capability`).
+primalSpring ships 93 deploy graph TOMLs (all nodes declare `by_capability`).
 biomeOS orchestrates the niche directly from these graphs. `topological_waves()`
 computes startup ordering. primalSpring participates as a validator node that
 probes other nodes by capability and reports composition health.
@@ -214,6 +232,117 @@ Every pattern above works identically on `x86_64` and `aarch64`.
 - `PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` — per-primal open items and compliance
 - `ECOBIN_GENOMEBIN_EVOLUTION_GUIDANCE_MAR22_2026.md` — ecoBin/genomeBin evolution roadmap
 - `PRIMALSPRING_V070_HARDWARE_VALIDATION_HANDOFF_MAR22_2026.md` — full hardware audit
+
+---
+
+## How Springs Help Primals Evolve
+
+Each spring is a **domain laboratory**. When a spring solves its domain problem
+by composing NUCLEUS primals, it simultaneously stress-tests and evolves those
+primals. The patterns discovered feed back through primalSpring to the primal
+teams. This section maps each spring's domain work to the primal evolution it
+drives.
+
+### The Feedback Protocol
+
+When a spring discovers a gap or pattern, it should:
+
+1. **Document the gap** — what capability is missing, what the workaround is
+2. **Propose the wire** — what JSON-RPC method signature would close the gap
+3. **Build validation** — a primalSpring experiment or graph that tests the gap
+4. **Hand back** — PR to primalSpring `docs/PRIMAL_GAPS.md` + graph in `graphs/downstream/`
+
+primalSpring triages, refines, and routes the gap to the responsible primal.
+
+### Per-Spring Evolution Map
+
+| Spring | Domain | Primary Atomic | Primals Evolved | What They Teach |
+|--------|--------|----------------|-----------------|-----------------|
+| **hotSpring** | QCD / physics | Node (proton-heavy) | barraCuda, coralReef, toadStool | df64 GPU precision, shader pipeline scaling, multi-GPU federation, compute budget management |
+| **neuralSpring** | ML / AI | Node + Meta | barraCuda, coralReef, Squirrel | Tokenization as WGSL shader, inference pipeline composition, model routing, embedding workflows |
+| **wetSpring** | Biology / ecology | Node + Nest | barraCuda, NestGate, provenance trio | Sensor ingestion patterns, time-series storage, biodiversity attribution, fieldMouse edge composition |
+| **airSpring** | Weather / atmosphere | Node | barraCuda, coralReef | Atmospheric simulation shaders, real-time sensor fusion, streaming pipeline patterns |
+| **groundSpring** | Soil / geology | Node + Nest | barraCuda, NestGate | Long-duration storage patterns, geospatial indexing, soil model shaders |
+| **healthSpring** | Clinical / compliance | Nest (neutron-heavy) | NestGate, BearDog, provenance trio | Ionic bonding enforcement, data egress fences, dual-tower enclave, HIPAA audit trails |
+| **ludoSpring** | Game science | Node + Meta | barraCuda, petalTongue, Squirrel | 60Hz tick budgets, real-time shader composition, AI narration latency, pure composition model |
+| **esotericWebb** | CRPG / narrative | Full NUCLEUS + Meta | All primals | End-to-end product validation, session lifecycle, persistence + provenance + AI + render as single graph |
+
+### What Each Spring Hands Back
+
+**hotSpring → barraCuda / coralReef**
+- df64 emulation patterns (double-precision on consumer GPU)
+- Shader pipeline scaling beyond single-GPU dispatch
+- Compute budget allocation for long-running QCD lattice sweeps
+- Multi-node GPU federation via metallic bonding
+
+**neuralSpring → barraCuda / coralReef / Squirrel**
+- Tokenization as a WGSL compute shader (not a CPU-side library)
+- Attention/FFN forward pass shaders for inference
+- Model weight storage patterns (NestGate as model registry)
+- `inference.*` wire evolution: streaming responses, batch embedding
+
+**wetSpring → NestGate / provenance trio**
+- Time-series storage optimizations for high-frequency sensor data
+- Provenance patterns for biodiversity attribution
+- fieldMouse chimera patterns (Tower-only edge deployment)
+- Cross-spring ecology pipeline (data federation)
+
+**healthSpring → BearDog / NestGate**
+- Ionic bond runtime enforcement (cross-family trust negotiation)
+- `crypto.sign_contract` capability for bond establishment
+- Data egress fence implementation in NestGate bonding policy
+- Regulatory audit trail patterns via provenance trio
+
+**ludoSpring / esotericWebb → petalTongue / Squirrel / barraCuda**
+- 60Hz composition budget: how fast can a graph execute end-to-end?
+- AI narration latency: Squirrel response time under game-tick pressure
+- Pure composition proof: complex product with zero downstream binary
+- Session lifecycle: create → save → restore → fork across compositions
+
+### Evolution Priority by Primal
+
+| Primal | Primary Spring Drivers | Key Evolution |
+|--------|----------------------|---------------|
+| **barraCuda** | hotSpring, neuralSpring, ludoSpring | df64 precision, ML shaders, tick-budget dispatch |
+| **coralReef** | hotSpring, neuralSpring | Domain-specific shader compilation, pipeline optimization |
+| **toadStool** | hotSpring, ludoSpring | Multi-GPU dispatch, tick-budget scheduling, federation |
+| **NestGate** | healthSpring, wetSpring, groundSpring | Egress fences, time-series storage, geospatial indexing |
+| **BearDog** | healthSpring | Ionic bond contracts, cross-family trust, regulatory crypto |
+| **Songbird** | all (federation) | NAT traversal improvements, mesh scaling, relay protocols |
+| **Provenance trio** | healthSpring, wetSpring | Audit trail patterns, attribution granularity, federation |
+| **Squirrel** | neuralSpring, ludoSpring | Inference routing, model discovery, real-time AI under latency constraints |
+| **petalTongue** | ludoSpring, esotericWebb | Scene rendering composition, dashboard patterns, TUI push |
+| **biomeOS** | all (orchestration) | Graph execution performance, tick-loop scheduling, deploy class resolution |
+
+### Starting a Spring Evolution Session
+
+```
+1. Read your proto-nucleate:
+   graphs/downstream/{yourspring}_*_proto_nucleate.toml
+
+2. Check the deployment matrix for your topology:
+   config/deployment_matrix.toml → find cells matching your atomic
+
+3. Wire your domain logic to primal capabilities via IPC:
+   use ecoPrimal::ipc::PrimalClient;
+
+4. Run primalSpring validation experiments:
+   cargo run --bin validate_all -- --filter {yourspring}
+
+5. Document gaps in primalSpring:
+   docs/PRIMAL_GAPS.md → add your spring's findings
+
+6. Propose new graph patterns:
+   graphs/downstream/ or graphs/science/ → submit via PR
+
+7. Hand back patterns to primalSpring for refinement
+```
+
+Each cycle makes the whole ecosystem stronger. A gap discovered by hotSpring
+in barraCuda's df64 handling benefits neuralSpring's ML precision.
+A bonding model hardened by healthSpring's compliance work protects every
+spring's data sovereignty. The atomics are shared infrastructure — springs
+are domain laboratories that evolve it.
 
 ---
 

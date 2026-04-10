@@ -3,6 +3,17 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.8] — Phase 32: NUCLEUS Validation & Spring Evolution Handoff (2026-04-10)
+
+### Changed
+- **`nucleus_atomics_validate.toml`**: Fixed old graph references (`tower_atomic_bootstrap` → `profiles/tower`, etc.), corrected SUMMARY atomic definitions to Phase 31 model (Node = Tower + ToadStool + barraCuda + coralReef, Nest = Tower + NestGate + provenance trio), bumped to v0.2.0.
+- **`deployment_matrix.toml`**: Bumped to v3.0.0. Added `[atomics]` documentation section. Fixed `nucleus_3node`, `wan_federation`, `federation_10node`, `organo_metal_salt` topology primal lists to include full NUCLEUS (barraCuda, coralReef, provenance trio). Added `atomic = ` metadata to all 21 topologies. Updated `security_tiers.nucleus.primals`.
+- **`PRIMALSPRING_COMPOSITION_GUIDANCE.md`**: Bumped to v0.9.8. Fixed Node/Nest/NUCLEUS definitions. Updated overlay graph refs to `profiles/` paths. Added Layer 0 (Atomics) to composition diagram. Added §16 Meta-Tier Primals section.
+- **`PRIMALSPRING_ECOSYSTEM_LEVERAGE_GUIDE.md`**: Bumped to v0.9.8. Fixed Composition Patterns table atomic definitions. Added NUCLEUS Atomic Alignment (Phase 31) reference table. Updated deploy graph count to 93.
+
+### Added
+- **Spring Evolution Feedback Guidance** in `PRIMALSPRING_ECOSYSTEM_LEVERAGE_GUIDE.md`: Per-spring evolution map, feedback protocol, primal evolution priority table, and step-by-step session guide for springs evolving primals through composition.
+
 ## [0.9.7] — Phase 31: Atomic Cleanup & Bonding Alignment (2026-04-09)
 
 ### Fixed

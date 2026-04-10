@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **subsystem composition decomposition**  
-**Version**: 0.9.5 (Phase 28 — 87/87 gates, 404 tests, 72 experiments, 100 deploy graphs, BTSP Phase 2 cascade, inference abstraction, WGSL shader composition model, 5 proto-nucleate graphs, 3 pipeline graphs)  
+**Version**: 0.9.8 (Phase 32 — 87/87 gates, 404 tests, 72 experiments, 93 deploy graphs, BTSP Phase 2 cascade, inference abstraction, WGSL shader composition model, 5 proto-nucleate graphs, 3 pipeline graphs)  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: April 10, 2026
 
@@ -45,7 +45,7 @@ primalSpring fills the gap.
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | **99 TOMLs** (18 root + 5 multi-node + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + **4 compositions** + 6 nucleated spring deploy + **17 sketches** (L0/L2/L3)), all `by_capability`, topologically validated |
+| Deploy graphs | **93 TOMLs** (18 root + 5 multi-node + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + **4 compositions** + 6 nucleated spring deploy + **17 sketches** (L0/L2/L3)), all `by_capability`, topologically validated |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | **22 gaps** documented (`docs/PRIMAL_GAPS.md`) |
 | Live subsystem validation | C1: 6/6, C3: 8/8, C4: 6/6, C6: 5/5 PASS; C2/C5: documented gaps |
@@ -71,7 +71,7 @@ primalSpring fills the gap.
   they offer, not who they are. All RPC handlers default to capability-based validation.
 - **Graphs as source of truth**: `topological_waves()` computes startup ordering via
   Kahn's algorithm. `graph_required_capabilities()` extracts capability rosters from
-  graph nodes. All 92 graphs have `by_capability` on every node (enforced by test).
+  graph nodes. All 93 graphs have `by_capability` on every node (enforced by test).
 - **Real IPC**: `probe_primal()`, `validate_composition_by_capability()`, `health_check()`
   connect to live providers via Unix socket JSON-RPC 2.0
 - **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase` + `is_recoverable()`),
@@ -266,7 +266,7 @@ Tower Atomic LAN probing, covalent mesh validation, and BirdSong mesh discovery.
 
 | Exp | What | Validates | Status |
 |-----|------|-----------|--------|
-| 089 | Deployment graph structural sweep | All 92 graphs parse, validate, topological waves | **Structural** |
+| 089 | Deployment graph structural sweep | All 93 graphs parse, validate, topological waves | **Structural** |
 | 090 | Tower Atomic LAN probe | BirdSong mesh discovery, peer capabilities, HTTPS through Tower, STUN/NAT | **Structural** |
 
 ---

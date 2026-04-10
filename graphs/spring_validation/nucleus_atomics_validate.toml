@@ -1,19 +1,25 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # primalSpring validation graph for NUCLEUS atomic compositions.
-# Validates all 4 tiers (Tower, Node, Nest, Full) via composition health
-# endpoints. Each tier is validated capability-first through the
-# coordination primal's composition.* methods.
+# Validates the 3 atomics + full NUCLEUS via composition health endpoints.
+# Each tier is validated capability-first through coordination primal methods.
 #
-# Requires a Full NUCLEUS to be running (all 5 core primals + primalSpring).
+# Atomic model (Phase 31):
+#   Tower (electron):  BearDog + Songbird
+#   Node  (proton):    Tower + ToadStool + barraCuda + coralReef
+#   Nest  (neutron):   Tower + NestGate + rhizoCrypt + loamSpine + sweetGrass
+#   NUCLEUS (atom):    Tower + Node + Nest (9 core primals)
+#   Meta-tier:         biomeOS + Squirrel + petalTongue (cross-atomic)
+#
+# Requires NUCLEUS + meta-tier to be running (9 core + meta + primalSpring).
 #
 # Usage:
 #   biomeos deploy --graph graphs/spring_validation/nucleus_atomics_validate.toml
 
 [graph]
 name = "nucleus_atomics_validate"
-description = "Validates all 4 NUCLEUS atomic tiers: Tower, Node, Nest, Full"
-version = "0.1.0"
+description = "Validates NUCLEUS atomics: Tower (electron), Node (proton), Nest (neutron), Full NUCLEUS (atom)"
+version = "0.2.0"
 coordination = "sequential"
 
 # --- Phase 1: Verify biomeOS Neural API substrate ---
@@ -25,7 +31,7 @@ tcp_ports = 0
 bond_type = "validation"
 requires_biomeos = ">=2.78"
 composition_model = "validation"
-fragments = ["tower_atomic"]
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "meta_tier"]
 
 [[graph.nodes]]
 name = "verify_biomeos"
@@ -82,7 +88,7 @@ capabilities = ["composition.node_health"]
 method = "composition.node_health"
 expect = "healthy"
 
-# --- Phase 5: Nest Atomic (Tower + storage + AI bridge) ---
+# --- Phase 5: Nest Atomic (Tower + NestGate + provenance trio) ---
 
 [[graph.nodes]]
 name = "validate_nest"
@@ -145,25 +151,26 @@ capabilities = ["graph.validate"]
 method = "graph.validate"
 
 [graph.node.operation.params]
-graphs = ["tower_atomic_bootstrap", "node_atomic_compute", "nest_deploy", "nucleus_complete"]
+graphs = ["profiles/tower", "profiles/node", "profiles/nest", "profiles/nucleus", "nucleus_complete"]
 mode = "structure"
 
 # =============================================================================
 # SUMMARY
 #
-# This graph validates all NUCLEUS atomic deployment tiers:
+# This graph validates NUCLEUS atomic deployment tiers (Phase 31 aligned):
 #   1. biomeOS Neural API substrate is healthy and provides orchestration
 #   2. primalSpring is running and healthy
-#   3. Tower (beardog + songbird) — security + discovery foundation
-#   4. Node (Tower + toadstool) — adds compute dispatch
-#   5. Nest (Tower + nestgate + squirrel) — adds storage + AI bridge
-#   6. Full NUCLEUS (all 5 core primals) — complete ecosystem
-#   7. Tower + Squirrel overlay (optional) — AI bridge without storage
-#   8. Structural validation of all 4 canonical atomic deploy graphs
+#   3. Tower (beardog + songbird) — electron: security + discovery
+#   4. Node (Tower + toadstool + barracuda + coralreef) — proton: compute
+#   5. Nest (Tower + nestgate + rhizocrypt + loamspine + sweetgrass) — neutron: storage + provenance
+#   6. Full NUCLEUS (Tower + Node + Nest = 9 core primals) — the atom
+#   7. Tower + Squirrel overlay (optional) — meta-tier AI at Tower level
+#   8. Structural validation of canonical atomic profiles + nucleus_complete
 #
-# Composition tiers align with biomeOS v2.78 NucleusMode:
-#   Tower:  [beardog, songbird]
-#   Node:   [beardog, songbird, toadstool]
-#   Nest:   [beardog, songbird, nestgate, squirrel]
-#   Full:   [beardog, songbird, nestgate, toadstool, squirrel]
+# NUCLEUS atomics (Phase 31):
+#   Tower:    [beardog, songbird]
+#   Node:     [beardog, songbird, toadstool, barracuda, coralreef]
+#   Nest:     [beardog, songbird, nestgate, rhizocrypt, loamspine, sweetgrass]
+#   NUCLEUS:  Tower + Node + Nest (9 unique primals)
+#   Meta-tier: [biomeos, squirrel, petaltongue] — cross-atomic, any level
 # =============================================================================
