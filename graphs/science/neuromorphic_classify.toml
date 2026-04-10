@@ -29,7 +29,7 @@ security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
 composition_model = "nucleated"
-fragments = ["tower_atomic"]
+fragments = ["tower_atomic", "nest_atomic"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

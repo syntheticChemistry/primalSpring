@@ -21,7 +21,7 @@
 
 [graph]
 name = "primalspring_coordination_niche"
-description = "Full primalSpring niche: NUCLEUS + Provenance Trio + primalSpring"
+description = "Full primalSpring niche: Tower + partial Node (Toadstool only) + Nest + Provenance Trio + petalTongue + primalSpring"
 version = "1.0.0"
 
 [graph.metadata]

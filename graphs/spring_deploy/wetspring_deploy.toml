@@ -26,7 +26,7 @@
 
 [graph]
 name = "wetspring_nucleated"
-description = "WetSpring biology science — NUCLEUS base + GPU + persistence + provenance"
+description = "WetSpring biology science — Tower + partial Node (no CoralReef) + Nest + provenance trio + wetSpring"
 version = "3.0.0"
 coordination = "sequential"
 
@@ -39,6 +39,16 @@ witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 composition_model = "nucleated"
 fragments = ["tower_atomic"]
+
+[graph.bonding_policy]
+bond_type = "Metallic"
+trust_model = "InternalNucleus"
+tower_internal = "covalent"
+tower_to_node = "metallic"
+tower_to_nest = "metallic"
+encryption_tiers.tower = "full"
+encryption_tiers.node = "delegated"
+encryption_tiers.nest = "delegated"
 
 # ── NUCLEUS Base ──────────────────────────────────────────────────────
 

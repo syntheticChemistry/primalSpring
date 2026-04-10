@@ -85,9 +85,21 @@ security_model = "tower_delegated"
 capabilities = ["compute.dispatch.submit", "compute.execute", "compute.gpu", "compute.shader"]
 
 [[graph.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 5
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "shader"
+security_model = "tower_delegated"
+capabilities = ["shader.compile", "shader.list"]
+
+[[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 5
+order = 6
 required = true
 spawn = false
 depends_on = ["beardog", "songbird"]
@@ -103,7 +115,7 @@ capabilities = [
 [[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
-order = 6
+order = 7
 required = false
 spawn = false
 depends_on = ["biomeos_neural_api"]

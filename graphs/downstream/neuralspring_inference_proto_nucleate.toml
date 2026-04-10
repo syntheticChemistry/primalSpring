@@ -64,14 +64,18 @@ pattern_version = "2026-04-10"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 composition_model = "nucleated"
-fragments = ["tower_atomic", "node_atomic"]
+fragments = ["tower_atomic", "node_atomic", "meta_tier"]
 
 [graph.bonding_policy]
+bond_type = "Metallic"
+trust_model = "InternalNucleus"
 tower_internal = "covalent"
-tower_to_nucleus = "metallic"
-nucleus_internal = "weak"
+tower_to_node = "metallic"
+tower_to_nest = "metallic"
 encryption_tiers.tower = "full"
-encryption_tiers.nucleus = "hmac_plain"
+encryption_tiers.node = "delegated"
+encryption_tiers.nest = "delegated"
+encryption_tiers.meta = "delegated"
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 0: biomeOS Neural API (spawn = false — already running)

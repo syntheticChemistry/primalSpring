@@ -3,6 +3,19 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.7] — Phase 31: Atomic Cleanup & Bonding Alignment (2026-04-09)
+
+### Fixed
+- **3 multi_node graphs** (`three_node_covalent_cross_network`, `idle_compute_federation`, `friend_remote_covalent`): Merged duplicate `[graph.bonding_policy]` tables into single valid TOML sections.
+- **5 graphs claiming `node_atomic` without coralReef**: Added coralReef nodes to `gaming_mesh_chimera`, `gen4_storytelling_full`, `ludospring_proto_nucleate`, `nucleus_game_session`, `ludospring_science_validation`.
+- **6 graphs using `provenance_trio` where `nest_atomic` fits**: Upgraded to `nest_atomic` where NestGate + full trio present (`hotspring_qcd_proto_nucleate`, `healthspring_enclave_proto_nucleate`, `rpgpt_session_provenance`, `supply_chain_provenance`, `nucleus_complete`, `interactive_product`).
+- **7 graph descriptions overstating "NUCLEUS"**: Replaced with accurate atomic descriptions where full NUCLEUS primals were not present.
+
+### Changed
+- **~20 graphs with understated fragments**: Updated `fragments` metadata to properly reflect atomics present (added `nest_atomic`, `node_atomic`, `meta_tier` where primals exist).
+- **9 nucleated deploys gained `[graph.bonding_policy]`**: All cross-atomic graphs now declare bonding type, trust model, and encryption tiers per atomic boundary.
+- **3 multi_node graphs gained `atomic_layout`**: Documents which gate plays which atomic role.
+
 ## [0.9.6] — Phase 30: NUCLEUS Atomic Alignment (2026-04-09)
 
 ### Added

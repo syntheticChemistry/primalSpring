@@ -43,7 +43,7 @@
 id = "basement-hpc-covalent"
 name = "basement_hpc_covalent"
 version = "1.0.0"
-description = "Covalent NUCLEUS gate for basement HPC mesh"
+description = "Covalent Tower + partial Node (Toadstool) + NestGate + Squirrel gate for basement HPC mesh"
 coordination = "Sequential"
 
 # =============================================================================

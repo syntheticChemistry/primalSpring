@@ -38,15 +38,17 @@ witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 particle_profile = "neutron_heavy"
 composition_model = "nucleated"
-fragments = ["tower_atomic", "provenance_trio"]
+fragments = ["tower_atomic", "nest_atomic", "meta_tier"]
 
 [graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "EnclaveFence"
 tower_internal = "covalent"
-cross_family = "ionic"
-nucleus_internal = "weak"
+tower_to_nest = "ionic"
+nest_internal = "covalent"
 encryption_tiers.tower = "full"
-encryption_tiers.cross_family = "full"
-encryption_tiers.nucleus = "hmac_plain"
+encryption_tiers.nest = "full"
+data_egress_fence = true
 
 # ── NUCLEUS Base ──────────────────────────────────────────────────────
 

@@ -131,9 +131,21 @@ security_model = "tower_delegated"
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 
 [[graph.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 6
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "shader"
+security_model = "tower_delegated"
+capabilities = ["shader.compile", "shader.list"]
+
+[[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 6
+order = 7
 required = false
 spawn = false
 depends_on = ["beardog", "songbird"]
@@ -149,7 +161,7 @@ capabilities = [
 [[graph.nodes]]
 name = "nestgate"
 binary = "nestgate"
-order = 7
+order = 8
 required = true
 spawn = false
 depends_on = ["beardog", "songbird"]
@@ -162,7 +174,7 @@ capabilities = ["storage.store", "storage.retrieve"]
 [[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
-order = 8
+order = 9
 required = false
 spawn = false
 depends_on = ["beardog"]
@@ -174,7 +186,7 @@ capabilities = ["dag.session.create", "dag.event.append", "dag.session.finalize"
 [[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
-order = 9
+order = 10
 required = false
 spawn = false
 depends_on = ["beardog", "rhizocrypt"]
@@ -186,7 +198,7 @@ capabilities = ["session.commit", "entry.append"]
 [[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
-order = 10
+order = 11
 required = false
 spawn = false
 depends_on = ["beardog", "loamspine"]

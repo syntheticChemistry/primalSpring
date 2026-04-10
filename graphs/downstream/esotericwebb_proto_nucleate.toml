@@ -35,15 +35,17 @@ tcp_ports = 0
 owner = "esotericWebb"
 pattern = "proto_nucleate"
 composition_model = "pure"
-fragments = ["tower_atomic", "provenance_trio"]
+fragments = ["tower_atomic", "nest_atomic", "meta_tier"]
 evolution_target = "CRPG product via primal composition"
 
 [graph.bonding_policy]
+bond_type = "Metallic"
+trust_model = "InternalNucleus"
 tower_internal = "covalent"
-tower_to_nucleus = "metallic"
-nucleus_internal = "weak"
+tower_to_nest = "metallic"
 encryption_tiers.tower = "full"
-encryption_tiers.nucleus = "hmac_plain"
+encryption_tiers.nest = "delegated"
+encryption_tiers.meta = "delegated"
 
 # ═══════════════════════════════════════════════════════════════
 # Tower Base (fragment: tower_atomic)

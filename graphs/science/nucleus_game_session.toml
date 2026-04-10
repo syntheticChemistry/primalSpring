@@ -12,7 +12,7 @@
 
 [graph]
 name = "nucleus_game_session"
-description = "NUCLEUS continuous 60Hz game session — pure composition: crypto + storage + GPU math + AI"
+description = "Continuous 60Hz game session — Tower + Node + NestGate: crypto, storage, GPU math, AI (no provenance trio)"
 version = "2.0.0"
 coordination = "continuous"
 
@@ -21,7 +21,7 @@ security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
 composition_model = "pure"
-fragments = ["tower_atomic"]
+fragments = ["tower_atomic", "node_atomic"]
 
 [[graph.nodes]]
 name = "biomeos_neural_api"
@@ -83,9 +83,21 @@ security_model = "tower_delegated"
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 
 [[graph.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 5
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "shader"
+security_model = "tower_delegated"
+capabilities = ["shader.compile", "shader.list"]
+
+[[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 5
+order = 6
 required = true
 spawn = false
 depends_on = ["beardog", "songbird"]
@@ -102,7 +114,7 @@ capabilities = [
 [[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
-order = 6
+order = 7
 required = false
 spawn = false
 depends_on = ["beardog", "songbird"]

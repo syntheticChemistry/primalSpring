@@ -19,7 +19,7 @@
 
 [graph]
 name = "airspring_nucleated"
-description = "AirSpring weather science — NUCLEUS base + compute + provenance"
+description = "AirSpring weather science — Tower base + Barracuda + Squirrel + provenance trio (no NestGate, no Toadstool/CoralReef)"
 version = "3.0.0"
 coordination = "sequential"
 
@@ -32,6 +32,14 @@ witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 composition_model = "nucleated"
 fragments = ["tower_atomic"]
+
+[graph.bonding_policy]
+bond_type = "Metallic"
+trust_model = "InternalNucleus"
+tower_internal = "covalent"
+tower_to_compute = "metallic"
+encryption_tiers.tower = "full"
+encryption_tiers.compute = "delegated"
 
 # ── NUCLEUS Base ──────────────────────────────────────────────────────
 

@@ -77,17 +77,19 @@ encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 particle_profile = "proton_heavy"
 science_domain = "high_performance_compute"
 composition_model = "nucleated"
-fragments = ["tower_atomic", "node_atomic", "nest_atomic", "provenance_trio"]
+fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 
 [graph.bonding_policy]
+bond_type = "Metallic"
+trust_model = "InternalNucleus"
 tower_internal = "covalent"
-tower_to_nucleus = "metallic"
+tower_to_node = "metallic"
+tower_to_nest = "metallic"
+node_to_nest = "metallic"
 nucleus_internal = "weak"
-fleet_internal = "metallic"
 encryption_tiers.tower = "full"
-encryption_tiers.nucleus = "hmac_plain"
-encryption_tiers.fleet = "hmac_plain"
-encryption_tiers.cross_family = "full"
+encryption_tiers.node = "delegated"
+encryption_tiers.nest = "delegated"
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 0: biomeOS Neural API (spawn = false — already running)

@@ -35,15 +35,21 @@ tcp_ports = 0
 owner = "ludoSpring"
 pattern = "proto_nucleate"
 composition_model = "pure"
-fragments = ["tower_atomic", "node_atomic"]
+fragments = ["tower_atomic", "node_atomic", "meta_tier"]
 evolution_target = "game science via primal composition"
 
 [graph.bonding_policy]
+bond_type = "Metallic"
+trust_model = "InternalNucleus"
 tower_internal = "covalent"
-tower_to_nucleus = "metallic"
+tower_to_node = "metallic"
+tower_to_nest = "metallic"
+node_to_nest = "metallic"
 nucleus_internal = "weak"
 encryption_tiers.tower = "full"
-encryption_tiers.nucleus = "hmac_plain"
+encryption_tiers.node = "delegated"
+encryption_tiers.nest = "delegated"
+encryption_tiers.meta = "delegated"
 
 # ═══════════════════════════════════════════════════════════════
 # Tower Base (fragment: tower_atomic)
@@ -100,9 +106,21 @@ security_model = "tower_delegated"
 capabilities = ["compute.dispatch.submit", "compute.execute"]
 
 [[graph.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 4
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "shader"
+security_model = "tower_delegated"
+capabilities = ["shader.compile", "shader.list"]
+
+[[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 4
+order = 5
 required = true
 spawn = false
 depends_on = ["beardog", "songbird"]
@@ -122,7 +140,7 @@ capabilities = [
 [[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
-order = 5
+order = 6
 required = true
 spawn = false
 depends_on = ["beardog", "songbird", "toadstool"]
@@ -141,7 +159,7 @@ capabilities = [
 [[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
-order = 6
+order = 7
 required = false
 spawn = false
 depends_on = ["biomeos_neural_api"]
@@ -160,7 +178,7 @@ capabilities = [
 [[graph.nodes]]
 name = "nestgate"
 binary = "nestgate"
-order = 7
+order = 8
 required = true
 spawn = false
 depends_on = ["beardog", "songbird"]
