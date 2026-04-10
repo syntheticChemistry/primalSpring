@@ -1,0 +1,111 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Proto-Nucleate Graph — ludoSpring Game Science
+#
+# ludoSpring owns this graph. primalSpring provides the proto-nucleate
+# pattern showing how a downstream spring composes NUCLEUS capabilities.
+#
+# All NUCLEUS nodes have spawn = false — they are already running.
+# ludoSpring discovers them via biomeOS capability routing.
+# The ludospring binary is built by the ludoSpring repo (NOT in plasmidBin).
+#
+# Security: inherits Tower Atomic BTSP perimeter. ludoSpring traffic
+# is same-host UDS behind the Tower boundary (tower_delegated).
+#
+# Usage (by ludoSpring, not primalSpring):
+#   biomeos deploy --graph graphs/downstream/ludospring_proto_nucleate.toml
+
+[graph]
+name = "ludospring_proto_nucleate"
+description = "ludoSpring game science composing NUCLEUS: Tower + compute + game.* surface"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+owner = "ludoSpring"
+pattern = "proto_nucleate"
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+# ═══════════════════════════════════════════════════════════════
+# NUCLEUS primals (spawn = false — already running)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["net.discovery", "net.mesh", "network.http_request"]
+
+[[graph.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 3
+required = false
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+security_model = "tower_delegated"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+# ═══════════════════════════════════════════════════════════════
+# ludoSpring (spawn = true — built by ludoSpring repo)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "ludospring"
+binary = "ludospring"
+order = 10
+required = true
+spawn = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.check"
+by_capability = "game"
+security_model = "tower_delegated"
+capabilities = [
+    "game.evaluate_flow",
+    "game.fitts_cost",
+    "game.engagement",
+    "game.difficulty_adjustment",
+    "game.wfc_step",
+    "game.generate_noise",
+    "game.analyze_ui",
+    "game.accessibility",
+]

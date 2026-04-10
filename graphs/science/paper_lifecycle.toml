@@ -22,9 +22,21 @@ bond_type = "covalent"
 science_domain = "reproducibility"
 source_showcase = "primals/loamSpine/showcase/04-inter-primal/05-full-ecosystem"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -33,7 +45,7 @@ capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -44,7 +56,7 @@ capabilities = ["net.discovery", "net.mesh"]
 # Squirrel: AI coordination — analyzes paper, generates metadata
 [[graph.nodes]]
 name = "squirrel"
-binary = "squirrel_primal"
+binary = "squirrel"
 order = 3
 required = false
 depends_on = ["beardog", "songbird"]
@@ -55,7 +67,7 @@ capabilities = ["ai.coordinate", "ai.infer", "ai.classify"]
 # NestGate: stores paper artifacts (data, figures, manuscript)
 [[graph.nodes]]
 name = "nestgate"
-binary = "nestgate_primal"
+binary = "nestgate"
 order = 4
 required = true
 depends_on = ["beardog", "songbird"]
@@ -66,7 +78,7 @@ capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
 # LoamSpine: permanent ledger commit of paper provenance
 [[graph.nodes]]
 name = "loamspine"
-binary = "loamspine_primal"
+binary = "loamspine"
 order = 5
 required = true
 depends_on = ["nestgate"]
@@ -77,7 +89,7 @@ capabilities = ["provenance.commit", "provenance.verify", "provenance.diff"]
 # ToadStool: computational verification of results
 [[graph.nodes]]
 name = "toadstool"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 6
 required = false
 depends_on = ["nestgate"]

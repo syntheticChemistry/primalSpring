@@ -18,10 +18,23 @@ coordination = "Pipeline"
 bond_type = "metallic_ionic"
 science_domain = "structural_biology"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+fleet_internal = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.fleet = "hmac_plain"
+encryption_tiers.nucleus = "hmac_plain"
+
 # ── Tower layer (identity + mesh) ──────────────────────────────────────
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -30,7 +43,7 @@ capabilities = ["crypto.identity", "crypto.verify"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -41,7 +54,7 @@ capabilities = ["net.discovery", "net.mesh"]
 # ── Provenance backbone (runs alongside pipeline) ─────────────────────
 [[graph.nodes]]
 name = "rhizocrypt"
-binary = "rhizocrypt_primal"
+binary = "rhizocrypt"
 order = 3
 required = false
 depends_on = ["beardog", "songbird"]
@@ -51,7 +64,7 @@ capabilities = ["provenance.session", "provenance.merkle_root"]
 
 [[graph.nodes]]
 name = "loamspine"
-binary = "loamspine_primal"
+binary = "loamspine"
 order = 4
 required = false
 depends_on = ["rhizocrypt"]
@@ -61,7 +74,7 @@ capabilities = ["provenance.commit", "provenance.verify"]
 
 [[graph.nodes]]
 name = "sweetgrass"
-binary = "sweetgrass_primal"
+binary = "sweetgrass"
 order = 5
 required = false
 depends_on = ["loamspine"]
@@ -103,7 +116,7 @@ capabilities = ["shader.bio", "shader.compile", "science.diversity"]
 # ── Metallic GPU pool ──────────────────────────────────────────────────
 [[graph.nodes]]
 name = "toadstool"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 9
 required = true
 depends_on = ["wetspring"]
@@ -115,7 +128,7 @@ bond_role = "metallic_pool"
 # ── Storage + ionic external ───────────────────────────────────────────
 [[graph.nodes]]
 name = "nestgate"
-binary = "nestgate_primal"
+binary = "nestgate"
 order = 10
 required = true
 depends_on = ["toadstool"]

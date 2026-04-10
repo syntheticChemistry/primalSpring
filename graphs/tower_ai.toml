@@ -17,11 +17,16 @@ description = "Tower Atomic + Squirrel AI overlay"
 version = "0.1.0"
 coordination = "sequential"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
 # ── Phase 1: Tower Atomic (base tier) ──
 
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health.liveness"
@@ -33,7 +38,7 @@ capabilities = [
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -48,7 +53,7 @@ capabilities = [
 
 [[graph.nodes]]
 name = "squirrel"
-binary = "squirrel_primal"
+binary = "squirrel"
 order = 3
 required = false
 depends_on = ["beardog", "songbird"]

@@ -58,7 +58,7 @@ impl PrimalClient {
     ///
     /// Returns [`IpcError`] if the call fails.
     pub fn health_check(&mut self) -> Result<bool, IpcError> {
-        let resp = self.call("health.check", serde_json::Value::Null)?;
+        let resp = self.call("health.liveness", serde_json::json!({}))?;
         Ok(resp.is_success())
     }
 
@@ -132,7 +132,7 @@ impl PrimalClient {
         ];
         let mut last_err = None;
         for method in METHODS {
-            match self.call(method, serde_json::Value::Null) {
+            match self.call(method, serde_json::json!({})) {
                 Ok(resp) => {
                     if let Some(err) = resp.error {
                         let ipc_err = IpcError::from(err);

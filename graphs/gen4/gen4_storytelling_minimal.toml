@@ -27,9 +27,21 @@ tick_hz = 60
 bond_type = "covalent"
 deployment_class = "minimal"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -38,7 +50,7 @@ capabilities = ["crypto.identity"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -48,6 +60,8 @@ capabilities = ["net.discovery"]
 
 [[graph.nodes]]
 name = "esotericwebb"
+spawn = true
+security_model = "tower_delegated"
 binary = "esotericwebb"
 order = 3
 required = true
@@ -58,7 +72,7 @@ capabilities = ["webb.resolve_scene", "session.create", "session.advance"]
 
 [[graph.nodes]]
 name = "squirrel"
-binary = "squirrel_primal"
+binary = "squirrel"
 order = 4
 required = true
 depends_on = ["songbird"]
@@ -68,7 +82,7 @@ capabilities = ["ai.query", "ai.suggest", "context.create", "context.update"]
 
 [[graph.nodes]]
 name = "petaltongue"
-binary = "petaltongue_primal"
+binary = "petaltongue"
 order = 5
 required = true
 depends_on = ["songbird"]
@@ -80,6 +94,8 @@ capabilities = ["visualization.render.scene", "interaction.poll"]
 # Enriches Webb's embedded flow/DDA/engagement with WFC, Fitts, GPU compute.
 [[graph.nodes]]
 name = "ludospring"
+spawn = true
+security_model = "tower_delegated"
 binary = "ludospring"
 order = 6
 required = false

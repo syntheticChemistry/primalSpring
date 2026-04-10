@@ -18,10 +18,23 @@ coordination = "parallel"
 bond_type = "metallic"
 science_domain = "high_performance_compute"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+fleet_internal = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.fleet = "hmac_plain"
+encryption_tiers.nucleus = "hmac_plain"
+
 # ── Shared Tower (all nodes see same BirdSong mesh) ───────────────────
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -30,7 +43,7 @@ capabilities = ["crypto.identity"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -51,7 +64,7 @@ capabilities = ["graph.execution", "ecosystem.coordination", "route.register"]
 # ── Fleet ToadStool nodes (delocalized compute) ───────────────────────
 [[graph.nodes]]
 name = "toadstool_pool"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 4
 required = true
 depends_on = ["biomeos"]

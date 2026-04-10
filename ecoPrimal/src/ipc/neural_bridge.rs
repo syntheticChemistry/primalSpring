@@ -82,20 +82,26 @@ impl NeuralBridge {
             .or_else(|| std::env::var("FAMILY_ID").ok())
             .unwrap_or_else(|| "default".to_owned());
 
-        let socket_name = format!("neural-api-{family}.sock");
+        let candidates = [
+            format!("neural-api-{family}.sock"),
+            format!("biomeos-{family}.sock"),
+        ];
 
         if let Ok(xdg) = std::env::var("XDG_RUNTIME_DIR") {
-            let path = PathBuf::from(xdg).join("biomeos").join(&socket_name);
-            if path.exists() {
-                return Some(Self { socket_path: path });
+            let base = PathBuf::from(xdg).join("biomeos");
+            for name in &candidates {
+                let path = base.join(name);
+                if path.exists() {
+                    return Some(Self { socket_path: path });
+                }
             }
         }
 
-        let tmp_path = std::env::temp_dir().join("biomeos").join(&socket_name);
-        if tmp_path.exists() {
-            return Some(Self {
-                socket_path: tmp_path,
-            });
+        for name in &candidates {
+            let path = std::env::temp_dir().join("biomeos").join(name);
+            if path.exists() {
+                return Some(Self { socket_path: path });
+            }
         }
 
         None

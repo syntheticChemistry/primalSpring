@@ -466,8 +466,14 @@ pub fn check_capability_health(v: &mut crate::validation::ValidationResult, capa
             .map_or_else(
                 |_| (false, Vec::new()),
                 |mut c| {
-                    let h = c.health_check().unwrap_or(false);
+                    // Fetch capabilities first; some primals close the
+                    // connection after a single response (loamSpine).
                     let caps = extract_capability_names(c.capabilities().ok());
+                    let h = if !caps.is_empty() {
+                        true
+                    } else {
+                        c.health_check().unwrap_or(false)
+                    };
                     (h, caps)
                 },
             );

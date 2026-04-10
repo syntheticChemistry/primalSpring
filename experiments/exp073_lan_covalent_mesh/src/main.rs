@@ -331,7 +331,12 @@ fn validate_genetic_lineage(
 ) {
     v.section("Genetic Lineage (FAMILY_ID)");
 
-    match tcp_rpc_value(host, beardog_port, "health.check", &serde_json::json!({ "include_details": true })) {
+    match tcp_rpc_value(
+        host,
+        beardog_port,
+        "health.check",
+        &serde_json::json!({ "include_details": true }),
+    ) {
         Ok(resp) => {
             let remote_family = resp
                 .get("family_id")

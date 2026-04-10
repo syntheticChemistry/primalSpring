@@ -29,6 +29,18 @@ version = "1.0.0"
 coordination = "sequential"
 bond_type = "covalent"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 # ── Phase 0: biomeOS substrate ─────────────────────────────────────
 [[graph.nodes]]
 name = "biomeos_neural_api"
@@ -43,7 +55,7 @@ capabilities = ["capability.discover", "capability.call", "graph.list", "graph.e
 # ── Phase 1: Tower Atomic ──────────────────────────────────────────
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -53,7 +65,7 @@ capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -106,6 +118,8 @@ capabilities = [
 # ── Phase 4: Game Science (C4) ────────────────────────────────────
 [[graph.nodes]]
 name = "ludospring"
+spawn = true
+security_model = "tower_delegated"
 binary = "ludospring"
 order = 6
 required = false
@@ -118,6 +132,8 @@ capabilities = ["game.evaluate_flow", "game.wfc_step", "game.engagement"]
 # ── Phase 5: Narrative Product (C3) ───────────────────────────────
 [[graph.nodes]]
 name = "esotericwebb"
+spawn = true
+security_model = "tower_delegated"
 binary = "esotericwebb"
 order = 7
 required = true

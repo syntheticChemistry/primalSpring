@@ -1,15 +1,17 @@
-# Primal Launch Profiles — data-driven socket configuration
+# Primal Launch Profiles — Zero-Port Tower Atomic Standard
 #
-# Primals declare their socket-passing conventions here.
-# Any primal not listed inherits [default].
+# All primals run UDS-only by default. TCP is opt-in only via explicit --port.
+# Tower primals (beardog, songbird) enforce BTSP at the perimeter.
+# NUCLEUS primals trust the Tower boundary and may use lower encryption.
 #
 # Fields:
-#   socket_flag     — CLI flag name for passing socket path (default: "--socket")
-#   pass_family_id  — whether to pass --family-id (default: true)
-#   env_socket      — env var name for socket path fallback (default: "PRIMAL_SOCKET")
-#   extra_env       — static environment variables to set
-#   env_sockets     — env vars whose values are resolved socket paths of other primals
-#   cli_sockets     — extra CLI flags whose values are resolved socket paths
+#   socket_flag      — CLI flag name for passing socket path (default: "--socket")
+#   pass_family_id   — whether to pass --family-id (default: true)
+#   env_socket       — env var name for socket path fallback (default: "PRIMAL_SOCKET")
+#   extra_env        — static environment variables to set
+#   env_sockets      — env vars whose values are resolved socket paths of other primals
+#   cli_sockets      — extra CLI flags whose values are resolved socket paths
+#   security_model   — "btsp" (Tower perimeter) or "tower_delegated" (trusts Tower)
 #
 # Absorbed from biomeOS config/primal_launch_profiles.toml (AGPL-3.0-only)
 # Ported to primalSpring coordination domain (AGPL-3.0-or-later)
@@ -18,8 +20,10 @@
 socket_flag = "--socket"
 pass_family_id = true
 env_socket = "PRIMAL_SOCKET"
+security_model = "tower_delegated"
 
 [profiles.beardog]
+security_model = "btsp"
 [profiles.beardog.extra_env]
 NODE_ID = "tower1"
 
@@ -44,8 +48,8 @@ ANTHROPIC_API_KEY = true
 OPENAI_API_KEY = true
 
 [profiles.songbird]
+security_model = "btsp"
 pass_family_id = false
-extra_args = ["--port", "0"]
 [profiles.songbird.cli_sockets]
 "--beardog-socket" = "beardog"
 [profiles.songbird.extra_env]
@@ -56,6 +60,11 @@ SONGBIRD_DISCOVERY_MODE = "disabled"
 [profiles.songbird.env_sockets]
 BEARDOG_SOCKET = "beardog"
 FAMILY_ID = "$family_id"
+[profiles.songbird.federation]
+# TCP is opt-in only. Pass --port <N> to enable LAN mesh/federation.
+# Without --port, Songbird runs UDS-only (Tower Atomic standard).
+# Example: songbird server --port 8080 --socket ... --beardog-socket ...
+opt_in_flag = "--port"
 
 [profiles.nestgate]
 subcommand = "daemon"
@@ -71,7 +80,6 @@ NESTGATE_FAMILY_ID = "$family_id"
 [profiles.toadstool]
 socket_flag = "__skip__"
 pass_family_id = false
-extra_args = ["--port", "0"]
 jsonrpc_socket_suffix = ".jsonrpc.sock"
 [profiles.toadstool.extra_env]
 TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED = "1"
@@ -145,8 +153,15 @@ BARRACUDA_SOCKET = "barracuda"
 TOADSTOOL_SOCKET = "toadstool"
 
 # =============================================================================
-# SPRING PRIMALS — Science validation binaries (gen4 composition)
+# DOWNSTREAM SPRING/GARDEN PROFILES — reference only
 # =============================================================================
+#
+# These profiles are NOT launched by the NUCLEUS launcher. They document
+# socket wiring for downstream springs and gardens that compose NUCLEUS
+# primals. Each spring/garden builds its own binary (NOT in plasmidBin).
+#
+# Downstream repos own their launch — primalSpring provides the wiring
+# reference so biomeOS graph deploy can resolve socket dependencies.
 
 [profiles.groundspring]
 pass_family_id = false
@@ -157,6 +172,19 @@ GROUNDSPRING_SOCKET = "groundspring"
 BARRACUDA_SOCKET = "barracuda"
 BIOMEOS_SOCKET_DIR = "$biomeos_dir"
 BEARDOG_SOCKET = "beardog"
+
+[profiles.hotspring]
+pass_family_id = false
+[profiles.hotspring.extra_env]
+HOTSPRING_MODE = "server"
+[profiles.hotspring.env_sockets]
+HOTSPRING_SOCKET = "hotspring"
+BARRACUDA_SOCKET = "barracuda"
+CORALREEF_SOCKET = "coralreef"
+TOADSTOOL_SOCKET = "toadstool"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+NESTGATE_SOCKET = "nestgate"
 
 [profiles.healthspring]
 pass_family_id = false

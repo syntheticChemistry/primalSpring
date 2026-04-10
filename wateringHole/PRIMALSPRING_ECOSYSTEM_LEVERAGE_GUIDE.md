@@ -1,7 +1,7 @@
 # primalSpring — Ecosystem Leverage Guide
 
-**Date**: March 23, 2026
-**Version**: v0.8.0
+**Date**: April 10, 2026
+**Version**: v0.9.4
 **License**: AGPL-3.0-or-later
 
 ---
@@ -20,7 +20,7 @@ can absorb or compose against.
 | **Deploy graph validation** | `graph.list` / `graph.validate` RPC | CI: ensure deploy TOMLs are structurally valid |
 | **Health probing** | `health.liveness` / `health.readiness` | Kubernetes-style health checks |
 | **MCP tool discovery** | `mcp.tools.list` | Squirrel AI routes coordination requests |
-| **Meta-validation** | `cargo run --bin validate_all` | Run all 67 experiments in sequence |
+| **Meta-validation** | `cargo run --bin validate_all` | Run all 72 experiments in sequence |
 | **Remote gate probe** | `./scripts/validate_remote_gate.sh <host>` | Per-primal TCP health check on any gate |
 | **Musl build** | `./scripts/build_ecosystem_musl.sh` | Static x86_64+aarch64 binaries for deployment |
 | **Spore prep** | `./scripts/prepare_spore_payload.sh <dir>` | USB payload assembly |
@@ -58,6 +58,9 @@ can absorb or compose against.
 | **Transport** | `ipc/transport.rs` | Unified Unix+Tcp transport with `connect_transport()` address parsing |
 | **OnceLock probes** | `ipc/probes.rs` | Cached runtime resource probes for parallel test execution |
 | **Release gate** | `scripts/validate_release.sh` | fmt + clippy + deny + test floor + docs CI gate |
+| **BTSP handshake** | `ipc/btsp_handshake.rs` | Client-side BTSP authentication (FAMILY_ID + nonce + HMAC) for secure socket connections |
+| **InferenceClient** | `inference/mod.rs` | Vendor-agnostic inference client — `complete`, `embed`, `models` via socket discovery |
+| **Inference wire types** | `inference/types.rs` | `CompleteRequest`, `EmbedRequest`, `ModelsResponse`, `ProviderInfo` — no vendor lock-in |
 
 ### Composition Patterns
 
@@ -71,6 +74,11 @@ can absorb or compose against.
 | **Emergent Systems** | RootPulse, RPGPT, coralForge pipeline |
 | **Bonding** | Covalent, Ionic, Plasmodium multi-gate |
 | **Cross-Spring** | Data flow, provenance trio, fieldMouse, petalTongue, Squirrel AI |
+| **WGSL Shader Composition** | Springs compose barraCuda/coralReef/toadStool for domain compute (ML, QCD, biology) |
+| **Proto-Nucleate Graphs** | `graphs/downstream/*.toml` — target compositions for spring evolution |
+| **Pipeline Graphs** | End-to-end data flow models through primal compositions |
+| **Dual-Tower Enclave** | Ionic bond between patient-data and analytics towers (healthSpring pattern) |
+| **Metallic GPU Pool** | Shared compute fleet via toadStool metallic bonding (hotSpring pattern) |
 
 ### What primalSpring Absorbs From
 
@@ -85,6 +93,73 @@ can absorb or compose against.
 | ludoSpring V29 | with_provenance(), #[expect(reason)], XDG sockets | `validation/mod.rs`, `Cargo.toml` |
 | biomeOS v2.66 | IpcErrorPhase, manifest discovery, socket registry, aligned 6-tier | `ipc/error.rs`, `ipc/discover.rs` |
 | Squirrel alpha.21 | Spring tool discovery, socket registry | `ipc/mcp.rs`, `ipc/discover.rs` |
+
+### Inference Wire Standard (v0.9.4)
+
+Springs and primals that handle AI/ML requests use the `inference.*` wire:
+
+| Method | Purpose | When to Use |
+|--------|---------|-------------|
+| `inference.complete` | Text generation (chat/completion) | Any spring serving or consuming LLM responses |
+| `inference.embed` | Vector embedding | Similarity search, RAG, classification |
+| `inference.models` | List available models + providers | Discovery: what's available on this node? |
+
+Squirrel is the current bridge (routes to Ollama via `AiRouter`). As springs evolve native WGSL-based inference, the wire standard stays the same — only the provider changes.
+
+### WGSL Shader Composition Pattern (v0.9.4)
+
+The unifying compute pattern: **springs compose barraCuda/coralReef/toadStool, they don't build their own math.**
+
+```
+Spring (application layer — defines the problem)
+    → coralReef (compiles WGSL programs for the domain)
+    → toadStool (dispatches to GPU/CPU substrate)
+    → barraCuda (executes 826 WGSL compute shaders)
+```
+
+This applies to ML inference (neuralSpring), QCD physics (hotSpring), biology (wetSpring), and any future compute domain. Same shaders, different compositions.
+
+### Proto-Nucleate Absorption Workflow (v0.9.4)
+
+How a spring picks up a proto-nucleate graph and evolves against it:
+
+1. **Read** `graphs/downstream/{yourspring}_*_proto_nucleate.toml` — your target composition
+2. **Understand dependencies** — which primals are `required = true` for your domain
+3. **Wire IPC** — use ecoPrimal's `PrimalClient` or `InferenceClient` to call primals
+4. **Compose** — build your domain logic as orchestration of primal capability calls
+5. **Validate** — run primalSpring experiments to verify your composition works
+6. **Hand back** — document gaps/patterns discovered, hand back to primalSpring
+
+### BTSP Client Handshake Pattern (v0.9.4)
+
+All socket connections to BTSP Phase 2 primals must authenticate:
+
+```rust
+use primalspring::ipc::btsp_handshake;
+// After connecting to a primal socket:
+btsp_handshake::perform(&mut stream, family_id, nonce)?;
+// Connection is now authenticated — proceed with capability calls
+```
+
+### Upstream/Downstream Evolution Cycle
+
+```
+primals (base capabilities)
+    ↓ expose capabilities
+primalSpring (composition patterns + proto-nucleate graphs)
+    ↓ graphs/downstream/*.toml
+springs (domain applications — absorb + evolve)
+    ↓ discover gaps + new patterns
+primalSpring (absorbs patterns, refines compositions)
+    ↓ primal-level gaps
+primals (evolve to close gaps)
+    ↓ ... cycle continues
+```
+
+Each spring solving its domain unlocks patterns for all others. hotSpring's
+GPU work drove coralReef evolution. neuralSpring's ML patterns will flow to
+every spring that needs inference. healthSpring's enclave pattern applies to
+any spring handling sensitive data.
 
 ---
 

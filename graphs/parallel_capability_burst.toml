@@ -12,10 +12,15 @@ description = "Parallel pattern: fires crypto.sign, net.discovery, storage.healt
 version = "0.2.0"
 coordination = "Parallel"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
 # ── Node 1: BearDog (crypto.sign) ─────────────────────────────────────
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -25,7 +30,7 @@ capabilities = ["crypto.sign"]
 # ── Node 2: Songbird (net.discovery) ──────────────────────────────────
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 health_method = "health"
@@ -35,7 +40,7 @@ capabilities = ["net.discovery"]
 # ── Node 3: NestGate (storage.health) ──────────────────────────────────
 [[graph.nodes]]
 name = "nestgate"
-binary = "nestgate_primal"
+binary = "nestgate"
 order = 3
 required = false
 health_method = "health"
@@ -45,7 +50,7 @@ capabilities = ["storage.health"]
 # ── Node 4: ToadStool (compute.health) ────────────────────────────────
 [[graph.nodes]]
 name = "toadstool"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 4
 required = false
 health_method = "compute.health"

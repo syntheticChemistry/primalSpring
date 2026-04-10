@@ -1,7 +1,7 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
-**Date**: April 6, 2026
-**From**: primalSpring v0.8.1
+**Date**: April 10, 2026
+**From**: primalSpring v0.9.4
 **License**: AGPL-3.0-or-later
 
 ---
@@ -520,7 +520,80 @@ Squirrel discovers all siblings via env vars and can:
 
 ---
 
-## 12. Expectations for Composed Primals
+## 12. Proto-Nucleate Graph Pattern (v0.9.4)
+
+Proto-nucleate graphs define **target compositions** that downstream springs
+absorb and evolve against. They live in `graphs/downstream/` and follow a
+standard structure:
+
+```toml
+[graph]
+name = "yourspring_domain_proto_nucleate"
+description = "Proto-nucleate: YourSpring domain composition"
+pattern = "ProtoNucleate"
+version = "1.0.0"
+
+[graph.metadata]
+particle_model = "balanced"       # proton-heavy | neutron-heavy | balanced
+bonding_primary = "covalent"      # default same-family bonding
+secure_by_default = true
+btsp_phase = 2
+
+[[graph.nodes]]
+name = "coralreef"
+required = true                   # shader compiler is mandatory for compute springs
+by_capability = "shader"
+
+[[graph.nodes]]
+name = "toadstool"
+required = true                   # dispatch substrate is mandatory
+by_capability = "compute"
+
+[[graph.nodes]]
+name = "barracuda"
+required = true                   # GPU/CPU math execution
+by_capability = "tensor"
+```
+
+Springs absorb these by:
+1. Reading the proto-nucleate to understand required primals and capabilities
+2. Wiring their application logic to call those primals via IPC
+3. Running primalSpring experiments to validate the composition
+4. Handing gaps and new patterns back to primalSpring
+
+Current proto-nucleates: `neuralspring_inference_proto_nucleate.toml`,
+`hotspring_qcd_proto_nucleate.toml`, `healthspring_enclave_proto_nucleate.toml`.
+
+---
+
+## 13. Dual-Tower Enclave Pattern (v0.9.4)
+
+For springs handling sensitive data (healthSpring, regulatory, financial),
+the **dual-tower enclave** separates data custody from analytics:
+
+```
+Tower A (Data Custody)              Tower B (Analytics)
+┌─────────────────────┐            ┌─────────────────────┐
+│ healthSpring         │            │ Squirrel (AI)       │
+│ NestGate-A (egress   │ ══ionic══ │ NestGate-B (model   │
+│   fence enforced)    │  bridge   │   weights cache)    │
+│ Provenance Trio A    │            │ Provenance Trio B   │
+└─────────────────────┘            └─────────────────────┘
+```
+
+**Key properties**:
+- Different `FAMILY_ID` per tower (ionic bond, not covalent)
+- `capabilities_denied = ["storage.*", "dag.*"]` on the bridge — Tower B cannot access raw data
+- NestGate-A enforces `BondingPolicy` egress fence — data cannot leave Tower A except as de-identified aggregates
+- Both towers carry full provenance trios for regulatory audit trails
+
+This pattern applies to any spring handling data with compliance requirements.
+See `graphs/downstream/healthspring_enclave_proto_nucleate.toml` and
+`graphs/sketches/mixed_atomics/dual_tower_ionic.toml`.
+
+---
+
+## 14. Expectations for Composed Primals
 
 For any primal to participate in primalSpring-validated compositions, it must
 meet these baseline requirements. primalSpring's integration tests and

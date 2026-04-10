@@ -18,9 +18,21 @@ version = "1.0.0"
 coordination = "parallel"
 bond_type = "covalent"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -29,7 +41,7 @@ capabilities = ["crypto.identity"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -51,7 +63,7 @@ capabilities = ["capability.call", "capability.discover", "capability.list", "gr
 # Squirrel AI — provides inference + tools for the loop
 [[graph.nodes]]
 name = "squirrel"
-binary = "squirrel_primal"
+binary = "squirrel"
 order = 4
 required = true
 depends_on = ["biomeos"]
@@ -62,7 +74,7 @@ capabilities = ["ai.query", "tool.execute", "tool.list", "context.create", "disc
 # petalTongue UI — renders state, captures intent
 [[graph.nodes]]
 name = "petaltongue"
-binary = "petaltongue_primal"
+binary = "petaltongue"
 order = 5
 required = true
 depends_on = ["biomeos"]

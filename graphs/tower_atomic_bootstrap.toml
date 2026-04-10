@@ -2,20 +2,32 @@
 #
 # Tower Atomic Bootstrap — minimal NUCLEUS composition
 #
-# BearDog (crypto + identity) + Songbird (discovery + mesh).
+# BearDog (crypto root) + Songbird (gateway). Zero TCP ports.
 # This is the foundation every other atomic tier builds on.
-# After Tower is healthy, any spring can start with encrypted
-# IPC and capability-based discovery.
+# After Tower is healthy, any spring can start with BTSP-secured
+# IPC and capability-based discovery over Unix domain sockets.
+#
+# Security: BTSP enforced at Tower boundary. No TCP unless
+# Songbird is explicitly started with --port for LAN federation.
 #
 # Usage:
 #   biomeos deploy --graph graphs/tower_atomic_bootstrap.toml
-#   primalspring_primal server  # then: coordination.deploy_atomic {"atomic":"Tower"}
 
 [graph]
 name = "tower_atomic_bootstrap"
-description = "Tower Atomic: biomeOS + BearDog (crypto) + Songbird (discovery)"
-version = "0.4.0"
+description = "Tower Atomic: biomeOS + BearDog (crypto root) + Songbird (gateway, UDS-only)"
+version = "1.0.0"
 coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_external = "ionic"
+encryption_tier = "full"
 
 # ── Phase 0: biomeOS Neural API — orchestration substrate ──
 [[graph.nodes]]
@@ -26,6 +38,7 @@ required = true
 spawn = false
 health_method = "health.liveness"
 by_capability = "orchestration"
+security_model = "tower_delegated"
 capabilities = [
     "graph.deploy",
     "graph.status",
@@ -34,14 +47,15 @@ capabilities = [
     "capability.route",
 ]
 
-# ── Phase 1: BearDog — crypto foundation ──
+# ── Phase 1: BearDog — crypto root ──
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 capabilities = [
     "crypto.encrypt",
     "crypto.decrypt",
@@ -51,15 +65,16 @@ capabilities = [
     "crypto.identity",
 ]
 
-# ── Phase 2: Songbird — discovery + mesh ──
+# ── Phase 1: Songbird — gateway (UDS-only default) ──
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
+security_model = "btsp"
 capabilities = [
     "discovery.find_primals",
     "discovery.announce",
@@ -67,7 +82,7 @@ capabilities = [
     "network.http_request",
 ]
 
-# ── Phase 3: Validation ──
+# ── Phase 2: Validation ──
 [[graph.nodes]]
 name = "validate_tower"
 binary = "primalspring_primal"
@@ -77,6 +92,7 @@ spawn = false
 depends_on = ["biomeos_neural_api", "beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "coordination"
+security_model = "tower_delegated"
 args = ["server"]
 capabilities = [
     "composition.tower_health",

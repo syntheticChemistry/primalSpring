@@ -36,17 +36,32 @@ pub enum Transport {
 impl Transport {
     /// Connect to a primal at the given Unix domain socket path.
     ///
-    /// Alias for [`Self::unix`]. Used by [`super::client::PrimalClient`] so the
-    /// client and transport share one connection path.
+    /// When `FAMILY_ID` is set (production mode) and `FAMILY_SEED` is available,
+    /// performs a BTSP handshake before returning the transport. In development
+    /// mode (`FAMILY_ID` absent or `"default"`), connects with cleartext JSON-RPC.
     ///
     /// # Errors
     ///
-    /// Returns [`IpcError`] on connection failure.
+    /// Returns [`IpcError`] on connection failure or BTSP handshake failure.
     pub fn connect(path: &Path) -> Result<Self, IpcError> {
-        Self::unix(path)
+        use crate::btsp;
+
+        match btsp::security_mode_from_env() {
+            btsp::SecurityMode::Production => {
+                if let Some(seed) = super::btsp_handshake::family_seed_from_env() {
+                    Self::unix_btsp(path, &seed)
+                } else {
+                    tracing::warn!(
+                        "BTSP production mode but FAMILY_SEED not set — falling back to cleartext"
+                    );
+                    Self::unix(path)
+                }
+            }
+            btsp::SecurityMode::Development => Self::unix(path),
+        }
     }
 
-    /// Connect via Unix domain socket.
+    /// Connect via Unix domain socket (cleartext, no handshake).
     ///
     /// # Errors
     ///
@@ -60,6 +75,27 @@ impl Transport {
         stream
             .set_write_timeout(Some(timeout))
             .map_err(classify_io_error)?;
+        Ok(Self::Unix(BufReader::new(stream)))
+    }
+
+    /// Connect via Unix socket with BTSP handshake authentication.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on connection or handshake failure.
+    pub fn unix_btsp(path: &Path, family_seed: &[u8]) -> Result<Self, IpcError> {
+        let timeout = Duration::from_secs(tolerances::IPC_SOCKET_TIMEOUT_SECS);
+        let mut stream = UnixStream::connect(path).map_err(classify_io_error)?;
+        stream
+            .set_read_timeout(Some(timeout))
+            .map_err(classify_io_error)?;
+        stream
+            .set_write_timeout(Some(timeout))
+            .map_err(classify_io_error)?;
+
+        let session_id = super::btsp_handshake::client_handshake(&mut stream, family_seed)?;
+        tracing::debug!(session_id = %session_id, path = %path.display(), "BTSP authenticated");
+
         Ok(Self::Unix(BufReader::new(stream)))
     }
 

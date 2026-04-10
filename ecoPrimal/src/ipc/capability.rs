@@ -82,10 +82,14 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
                     .and_then(serde_json::Value::as_str)
                     .map(String::from);
 
+                // Prefer .jsonrpc.sock when available (ToadStool's primary is
+                // tarpc; JSON-RPC lives on the .jsonrpc.sock sibling).
+                let resolved = prefer_jsonrpc_socket(&path);
+
                 return CapabilityDiscoveryResult {
                     capability: capability.to_owned(),
                     resolved_primal: primal,
-                    socket: Some(path),
+                    socket: Some(resolved),
                     source: CapabilityDiscoverySource::NeuralApi,
                 };
             }
@@ -133,6 +137,25 @@ pub fn discover_capabilities_for(capabilities: &[&str]) -> Vec<CapabilityDiscove
         .iter()
         .map(|cap| discover_by_capability(cap))
         .collect()
+}
+
+/// If a `.jsonrpc.sock` sibling exists for a tarpc `.sock`, prefer it.
+///
+/// Some primals (ToadStool) bind separate tarpc and JSON-RPC sockets.
+/// biomeOS returns the tarpc socket as `primary_endpoint`, but our IPC
+/// client speaks JSON-RPC. This helper upgrades the path transparently.
+fn prefer_jsonrpc_socket(path: &std::path::Path) -> PathBuf {
+    let name = path.file_name().and_then(|n| n.to_str()).unwrap_or("");
+    if name.ends_with(".jsonrpc.sock") {
+        return path.to_path_buf();
+    }
+    if let Some(stem) = name.strip_suffix(".sock") {
+        let jsonrpc = path.with_file_name(format!("{stem}.jsonrpc.sock"));
+        if jsonrpc.exists() {
+            return jsonrpc;
+        }
+    }
+    path.to_path_buf()
 }
 
 /// Scan the socket registry for a primal that provides a given capability.
@@ -246,6 +269,16 @@ pub fn extract_capability_names(caps: Option<serde_json::Value>) -> Vec<String> 
                     .collect();
             }
 
+            // Format E: {"capabilities": ["cap1", ...], ...} (loamSpine wraps them)
+            if let Some(serde_json::Value::Array(caps_arr)) = map.get("capabilities") {
+                return extract_from_array(caps_arr);
+            }
+
+            // Format F: {"methods": ["m1", ...], ...} (method-list style)
+            if let Some(serde_json::Value::Array(methods)) = map.get("methods") {
+                return extract_from_array(methods);
+            }
+
             // Fallback: treat top-level object keys as capability names
             map.keys().cloned().collect()
         }
@@ -257,7 +290,7 @@ pub fn extract_capability_names(caps: Option<serde_json::Value>) -> Vec<String> 
 ///
 /// biomeOS returns endpoints as `unix:///run/user/1000/biomeos/foo.sock`;
 /// primalSpring needs the bare path for `std::os::unix::net::UnixStream`.
-fn strip_unix_uri(endpoint: &str) -> &str {
+pub fn strip_unix_uri(endpoint: &str) -> &str {
     endpoint.strip_prefix("unix://").unwrap_or(endpoint)
 }
 

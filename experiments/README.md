@@ -19,7 +19,7 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 69 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 72 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
@@ -91,7 +91,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 15 | Cross-Ecosystem Absorption | **Done** (slug constants, unwrap/expect discipline, launcher smart refactor, CONTRIBUTING.md, SECURITY.md, capability-based env naming) |
 | 16 | Deep Debt Audit + Centralized Tolerances | **Done** (comprehensive audit, centralized trio/port tolerances, deduplicated capability parsing, hardcoding→capability-based evolution) |
 | 17 | gen4 Deployment Evolution | **Done** (biomeOS substrate validation, cross-gate Pixel routing, Squirrel AI bridge, spring deploy sweep, gen4 prototype graphs, 59 experiments, 385 tests) |
-| 18 | LAN Covalent Deployment | Planned — live multi-gate NUCLEUS, biomeOS aarch64 cross-compile for Pixel substrate |
+| 18 | LAN Covalent Deployment | Planned — live multi-gate NUCLEUS, biomeOS aarch64 cross-compile for Pixel substrate (blocked on GAP-MATRIX-05) |
 | 19 | Gen4 Spring Scaffolding | **Done** (5 spring primal binaries built, 7 validation graphs, launch profiles) |
 | 20 | Deployment Matrix + Substrate Validation | **Done** (43-cell matrix, benchScale topologies, chaos/federation/provenance experiments, agentic trio, storytelling stack, showcase mining, 67 experiments, 59 graphs) |
 | 21 | Deep Ecosystem Audit + Library Consolidation | **Done** (ipc::tcp + ipc::methods library modules, launcher 4-module refactor, provenance circuit breaker half-open, tracing migration, 8 experiments consolidated to library helpers, 413 tests, zero clippy/fmt/doc warnings) |
@@ -106,6 +106,8 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 24 | Deep debt resolution + public readiness sprint — bingoCube, benchScale, agentReagents, rustChip graded A | **Done** (v0.9.0–v0.9.1) |
 | 25 | Modernization sweep — capability naming cleanup, `[[graph.nodes]]` unification, `http_health_probe` deprecated, `nest-deploy.toml` v4.0, exp089+090, Tower Atomic HTTPS validated | **Done** (v0.9.2) |
 | 26 | Mixed composition + live validation — particle model (Tower=electron, Node=proton, Nest=neutron), 17 sketch graphs, exp091-093, live Tower Atomic probes, 6 GAP-MATRIX items documented | **Done** (v0.9.3) |
+| 27 | BTSP Phase 2 cascade — secure-by-default across 11/13 primals, `ipc::btsp_handshake` module, all 107 deploy graphs carry `secure_by_default` metadata | **Done** (v0.9.4) |
+| 28 | Inference abstraction + proto-nucleate graphs — vendor-agnostic `inference.*` wire standard, Squirrel bridge, WGSL shader composition model, 5 downstream proto-nucleate + 3 pipeline graphs (neuralSpring/hotSpring/healthSpring) | **Done** (v0.9.4) |
 
 ## Validation Harness
 
@@ -137,7 +139,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.9.2 (workspace), depends on ecoPrimal
+├── Cargo.toml    # version 0.9.4 (workspace), depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

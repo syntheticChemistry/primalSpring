@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# NeuralSpring Nucleated Deploy — neural/ML science via NUCLEUS composition.
+# NeuralSpring Nucleated Deploy — neural/ML science + inference via NUCLEUS composition.
 #
 # Proto graph for neuralSpring tributaries. As neuralSpring validates its
 # science (protein folding, population genetics, reservoir computing,
-# Anderson localization), gaps will surface upstream for primals and
-# primalSpring to solve.
+# Anderson localization) and ML inference (WGSL shader composition of
+# barraCuda + coralReef + toadStool), gaps will surface upstream for
+# primals and primalSpring to solve.
 #
 # NUCLEUS base: biomeOS + Tower (BearDog + Songbird)
 # Compute layer: toadStool (GPU dispatch), coralReef (shader compile), barraCuda (math)
@@ -22,11 +23,14 @@
 
 [graph]
 name = "neuralspring_nucleated"
-description = "NeuralSpring ML science — NUCLEUS base + GPU + AI + persistence + provenance"
+description = "NeuralSpring ML science + inference — NUCLEUS base + GPU + AI + persistence + provenance"
 version = "3.0.0"
 coordination = "sequential"
 
 [graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
@@ -105,7 +109,7 @@ required = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "ai"
-capabilities = ["ai.query", "mcp.tools.list"]
+capabilities = ["ai.query", "mcp.tools.list", "inference.complete", "inference.embed", "inference.models"]
 
 # ── Persistence ───────────────────────────────────────────────────────
 
@@ -158,10 +162,15 @@ name = "neuralspring"
 binary = "neuralspring_primal"
 order = 11
 required = true
-depends_on = ["beardog", "songbird", "toadstool"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel"]
 health_method = "health.liveness"
 by_capability = "neural"
 capabilities = [
+    # Inference domain (WGSL shader composition of barraCuda + coralReef + toadStool)
+    "inference.complete",
+    "inference.embed",
+    "inference.models",
+    # Science domain (existing — also shader compositions)
     "science.evoformer_block",
     "science.structure_module",
     "science.folding_health",

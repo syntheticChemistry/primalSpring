@@ -17,10 +17,23 @@ version = "1.0.0"
 coordination = "parallel"
 bond_type = "ionic"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+cross_family = "ionic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_family = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 # ── Family Alpha: Lab Tower ────────────────────────────────────────────
 [[graph.nodes]]
 name = "beardog_alpha"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -30,7 +43,7 @@ family = "alpha"
 
 [[graph.nodes]]
 name = "songbird_alpha"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog_alpha"]
@@ -41,7 +54,7 @@ family = "alpha"
 
 [[graph.nodes]]
 name = "toadstool_alpha"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 3
 required = true
 depends_on = ["beardog_alpha", "songbird_alpha"]
@@ -53,7 +66,7 @@ family = "alpha"
 # ── Family Beta: University Tower ──────────────────────────────────────
 [[graph.nodes]]
 name = "beardog_beta"
-binary = "beardog_primal"
+binary = "beardog"
 order = 4
 required = true
 health_method = "health"
@@ -63,7 +76,7 @@ family = "beta"
 
 [[graph.nodes]]
 name = "songbird_beta"
-binary = "songbird_primal"
+binary = "songbird"
 order = 5
 required = true
 depends_on = ["beardog_beta"]

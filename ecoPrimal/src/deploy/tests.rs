@@ -43,7 +43,7 @@ fn load_primalspring_deploy_graph() {
     let graph = load_graph(&graphs_path("primalspring_deploy.toml")).unwrap();
     assert_eq!(graph.graph.name, "primalspring_coordination_niche");
     assert!(!graph.graph.node.is_empty());
-    assert_eq!(graph.graph.node[0].name, "beardog");
+    assert_eq!(graph.graph.node[0].name, "biomeos_neural_api");
 }
 
 #[test]

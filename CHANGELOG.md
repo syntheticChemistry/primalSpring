@@ -3,6 +3,24 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.4] — Phase 28: BTSP Cascade, Inference Abstraction, Proto-Nucleate Graphs (2026-04-10)
+
+### Added
+- **BTSP client handshake** (`ipc::btsp_handshake`): Client-side secure-by-default authentication module. All socket connections can now perform `btsp.handshake` before capability calls.
+- **Inference wire standard** (`inference` module): Vendor-agnostic `inference.complete`, `inference.embed`, `inference.models` wire types and `InferenceClient` in ecoPrimal. Decouples AI inference from CUDA/Ollama vendor lock-in.
+- **Squirrel inference bridge**: `inference.complete`/`embed`/`models` dispatch routes in Squirrel's JSON-RPC server, bridging ecoPrimal wire types to `AiRouter`.
+- **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference (WGSL shader composition), hotSpring Lattice QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI). Two additional composition variants.
+- **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — end-to-end data flow through primal compositions.
+- **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of barraCuda's 826 WGSL shaders, compiled by coralReef, dispatched by toadStool. Springs are application layers, not compute engines.
+- **Spring evolution nucleation** in `PRIMAL_GAPS.md`: hotSpring (proton-heavy, metallic bond, ionic lease for CERN cloud), healthSpring (neutron-heavy, dual-tower enclave, covalent mesh).
+
+### Changed
+- **BTSP Phase 2 cascade**: 11/13 primals enforce `btsp.handshake`. All 107 deploy graphs carry `[graph.metadata] secure_by_default = true` and `btsp_phase = 2`.
+- **ToadStool semantic cleanup**: Removed unimplemented `ollama.*` and `inference.*` method mappings — ToadStool is compute substrate, not inference provider.
+- Deploy graph count: 99 → 107 (5 downstream proto-nucleate + 3 pipeline).
+- Root docs, CONTEXT.md, experiments/README synchronized to April 10 state.
+- 404 tests, 72 experiments (15 tracks), 107 deploy graphs.
+
 ## [0.9.3] — Phase 26: Mixed Composition + Live Validation Matrix (2026-04-07)
 
 ### Added

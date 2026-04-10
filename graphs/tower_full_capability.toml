@@ -16,10 +16,15 @@ description = "Tower Full: all subsystems + visualization"
 version = "0.5.0"
 coordination = "sequential"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
 # ── Phase 1: BearDog — crypto foundation ──
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health.liveness"
@@ -36,7 +41,7 @@ capabilities = [
 # ── Phase 2: Songbird — full network stack ──
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]

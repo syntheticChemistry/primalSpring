@@ -16,6 +16,7 @@
 //! module classifies responses into `Success`, `ProtocolError`, or
 //! `ApplicationError` for informed retry decisions.
 
+pub mod btsp_handshake;
 pub mod capability;
 pub mod client;
 pub mod discover;

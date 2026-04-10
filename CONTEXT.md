@@ -27,10 +27,10 @@ back upstream to primals and primalSpring.
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
 - **experiments/** — 72 validation binaries covering 15 tracks
-- **graphs/** — 99 deploy graph TOMLs (single-node + multi-node +
+- **graphs/** — 107 deploy graph TOMLs (single-node + multi-node +
   17 spring validation + cross-spring + gen4 + bonding + chaos +
   science + 4 composition subsystems + 6 nucleated spring deploy +
-  17 sketch graphs for particle-model validation + mixed atomics + bonding patterns)
+  17 sketch graphs + 5 downstream proto-nucleate + 3 pipeline)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`)
 - **tools/** — nucleus launcher, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
@@ -43,7 +43,8 @@ back upstream to primals and primalSpring.
 |--------|---------|
 | `coordination` | Atomic composition definitions, health probing |
 | `deploy` | Deploy graph parsing, structural + live validation |
-| `ipc` | JSON-RPC 2.0 client, Neural API bridge, socket discovery |
+| `ipc` | JSON-RPC 2.0 client, Neural API bridge, socket discovery, BTSP handshake |
+| `inference` | Vendor-agnostic inference wire types + InferenceClient |
 | `launcher` | Binary discovery, process spawn, socket nucleation |
 | `harness` | Spawn compositions, validate, RAII teardown |
 | `bonding` | Multi-gate bonding models + STUN tiers |
@@ -66,7 +67,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.3 Phase 26 — 404 tests, 72 experiments, 99 deploy graphs.
+v0.9.4 Phase 28 — 404 tests, 72 experiments, 107 deploy graphs.
 
 Live validation: **43/44 (98%)** subsystem, plus live Tower Atomic
 probes (BearDog crypto, Songbird HTTPS, Neural API all LIVE PASS/FAIL).
@@ -84,7 +85,13 @@ in primals. 6 GAP-MATRIX items from live ecosystem validation
 Rewired for latest primal evolution: biomeOS v2.81 (`topology.rescan`),
 toadStool S171 (`ember.*`, `shader.compile` removed), petalTongue
 (awareness init, server discovery), NestGate (crypto delegation),
-Squirrel (local AI endpoint).
+Squirrel (local AI endpoint + inference bridge).
+
+April 10: BTSP Phase 2 cascade (11/13 primals enforce handshake), inference
+provider abstraction (`inference.complete`/`embed`/`models`), WGSL shader
+composition model, 5 proto-nucleate graphs (neuralSpring ML, hotSpring QCD,
+healthSpring enclave), 3 pipeline graphs, 107 deploy graphs with
+`secure_by_default` metadata.
 
 ## Ecosystem Position
 

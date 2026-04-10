@@ -1,0 +1,217 @@
+# Primal Launch Profiles — data-driven socket configuration
+#
+# Primals declare their socket-passing conventions here.
+# Any primal not listed inherits [default].
+#
+# Fields:
+#   socket_flag     — CLI flag name for passing socket path (default: "--socket")
+#   pass_family_id  — whether to pass --family-id (default: true)
+#   env_socket      — env var name for socket path fallback (default: "PRIMAL_SOCKET")
+#   extra_env       — static environment variables to set
+#   env_sockets     — env vars whose values are resolved socket paths of other primals
+#   cli_sockets     — extra CLI flags whose values are resolved socket paths
+#
+# Absorbed from biomeOS config/primal_launch_profiles.toml (AGPL-3.0-only)
+# Ported to primalSpring coordination domain (AGPL-3.0-or-later)
+
+[default]
+socket_flag = "--socket"
+pass_family_id = true
+env_socket = "PRIMAL_SOCKET"
+
+[profiles.beardog]
+[profiles.beardog.extra_env]
+NODE_ID = "tower1"
+
+[profiles.squirrel]
+pass_family_id = false
+[profiles.squirrel.env_sockets]
+SQUIRREL_SOCKET = "squirrel"
+SERVICE_MESH_ENDPOINT = "neural-api"
+STORAGE_STORE_PROVIDER_SOCKET = "nestgate"
+STORAGE_GET_PROVIDER_SOCKET = "nestgate"
+STORAGE_LIST_PROVIDER_SOCKET = "nestgate"
+MODEL_REGISTER_PROVIDER_SOCKET = "nestgate"
+MODEL_LOCATE_PROVIDER_SOCKET = "nestgate"
+COMPUTE_EXECUTE_PROVIDER_SOCKET = "toadstool"
+COMPUTE_DISPATCH_SUBMIT_PROVIDER_SOCKET = "toadstool"
+HTTP_REQUEST_PROVIDER_SOCKET = "songbird"
+CRYPTO_SIGN_PROVIDER_SOCKET = "beardog"
+[profiles.squirrel.extra_env]
+SQUIRREL_MODE = "server"
+[profiles.squirrel.passthrough_env]
+ANTHROPIC_API_KEY = true
+OPENAI_API_KEY = true
+
+[profiles.songbird]
+pass_family_id = false
+extra_args = ["--port", "0"]
+[profiles.songbird.cli_sockets]
+"--beardog-socket" = "beardog"
+[profiles.songbird.extra_env]
+BEARDOG_MODE = "direct"
+SONGBIRD_SECURITY_PROVIDER = "beardog"
+SONGBIRD_DATA_DIR = "$base_dir"
+SONGBIRD_DISCOVERY_MODE = "disabled"
+[profiles.songbird.env_sockets]
+BEARDOG_SOCKET = "beardog"
+FAMILY_ID = "$family_id"
+
+[profiles.nestgate]
+subcommand = "daemon"
+socket_flag = "__skip__"
+pass_family_id = false
+extra_args = ["--socket-only", "--dev"]
+[profiles.nestgate.extra_env]
+NESTGATE_JWT_SECRET = "dev-only-primalspring-jwt-override-via-NESTGATE_JWT_SECRET-env"
+[profiles.nestgate.env_sockets]
+NESTGATE_SOCKET = "nestgate"
+NESTGATE_FAMILY_ID = "$family_id"
+
+[profiles.toadstool]
+socket_flag = "__skip__"
+pass_family_id = false
+extra_args = ["--port", "0"]
+jsonrpc_socket_suffix = ".jsonrpc.sock"
+[profiles.toadstool.extra_env]
+TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED = "1"
+[profiles.toadstool.env_sockets]
+TOADSTOOL_SOCKET = "toadstool"
+TOADSTOOL_FAMILY_ID = "$family_id"
+NESTGATE_SOCKET = "nestgate"
+
+[profiles.petaltongue]
+pass_family_id = false
+[profiles.petaltongue.extra_env]
+PETALTONGUE_MODE = "server"
+PETALTONGUE_HEADLESS = "true"
+[profiles.petaltongue.env_sockets]
+NEURAL_API_SOCKET = "neural-api"
+
+[profiles.sweetgrass]
+pass_family_id = false
+[profiles.sweetgrass.extra_env]
+SWEETGRASS_MODE = "server"
+[profiles.sweetgrass.env_sockets]
+SWEETGRASS_SOCKET = "sweetgrass"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+
+[profiles.loamspine]
+pass_family_id = false
+[profiles.loamspine.extra_env]
+LOAMSPINE_MODE = "server"
+[profiles.loamspine.env_sockets]
+LOAMSPINE_SOCKET = "loamspine"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+RHIZOCRYPT_SOCKET = "rhizocrypt"
+
+[profiles.rhizocrypt]
+pass_family_id = false
+[profiles.rhizocrypt.extra_env]
+RHIZOCRYPT_MODE = "server"
+[profiles.rhizocrypt.env_sockets]
+RHIZOCRYPT_SOCKET = "rhizocrypt"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+
+[profiles.biomeos]
+socket_flag = "__skip__"
+pass_family_id = false
+[profiles.biomeos.extra_env]
+BIOMEOS_MODE = "api"
+[profiles.biomeos.env_sockets]
+BIOMEOS_SOCKET = "neural-api"
+FAMILY_ID = "$family_id"
+
+[profiles.barracuda]
+pass_family_id = false
+[profiles.barracuda.extra_env]
+BARRACUDA_MODE = "server"
+[profiles.barracuda.env_sockets]
+BARRACUDA_SOCKET = "barracuda"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+TOADSTOOL_SOCKET = "toadstool"
+
+[profiles.coralreef]
+pass_family_id = false
+[profiles.coralreef.extra_env]
+CORALREEF_MODE = "server"
+[profiles.coralreef.env_sockets]
+CORALREEF_SOCKET = "coralreef"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+
+# =============================================================================
+# SPRING PRIMALS — Science validation binaries (gen4 composition)
+# =============================================================================
+
+[profiles.groundspring]
+pass_family_id = false
+[profiles.groundspring.extra_env]
+GROUNDSPRING_MODE = "server"
+[profiles.groundspring.env_sockets]
+GROUNDSPRING_SOCKET = "groundspring"
+BARRACUDA_SOCKET = "barracuda"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+
+[profiles.healthspring]
+pass_family_id = false
+[profiles.healthspring.extra_env]
+HEALTHSPRING_MODE = "server"
+[profiles.healthspring.env_sockets]
+HEALTHSPRING_SOCKET = "healthspring"
+BARRACUDA_SOCKET = "barracuda"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+NESTGATE_SOCKET = "nestgate"
+
+[profiles.ludospring]
+pass_family_id = false
+[profiles.ludospring.extra_env]
+LUDOSPRING_MODE = "server"
+[profiles.ludospring.env_sockets]
+LUDOSPRING_SOCKET = "ludospring"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+
+[profiles.neuralspring]
+pass_family_id = false
+[profiles.neuralspring.extra_env]
+NEURALSPRING_MODE = "server"
+[profiles.neuralspring.env_sockets]
+NEURALSPRING_SOCKET = "neuralspring"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+NESTGATE_SOCKET = "nestgate"
+
+[profiles.wetspring]
+pass_family_id = false
+[profiles.wetspring.extra_env]
+WETSPRING_MODE = "server"
+[profiles.wetspring.env_sockets]
+WETSPRING_SOCKET = "wetspring"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+NESTGATE_SOCKET = "nestgate"
+
+[profiles.airspring]
+pass_family_id = false
+[profiles.airspring.extra_env]
+AIRSPRING_MODE = "server"
+[profiles.airspring.env_sockets]
+AIRSPRING_SOCKET = "airspring"
+BARRACUDA_SOCKET = "barracuda"
+TOADSTOOL_SOCKET = "toadstool"
+BIOMEOS_SOCKET_DIR = "$biomeos_dir"
+BEARDOG_SOCKET = "beardog"
+NESTGATE_SOCKET = "nestgate"

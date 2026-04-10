@@ -1,0 +1,376 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Proto-Nucleate Graph — healthSpring Dual-Tower Enclave Composition
+#
+# healthSpring owns this graph. primalSpring provides the proto-nucleate
+# pattern showing how healthSpring composes NUCLEUS for clinical/health
+# data workflows with the strongest security model in the ecosystem.
+#
+# healthSpring is NEUTRON-HEAVY (data-dominated). Patient records are
+# the most security-sensitive data in the system. The composition uses
+# a dual-tower ionic bond pattern: patient data never leaves Tower A
+# (the HIPAA enclave). Only de-identified aggregates cross the ionic
+# bridge to Tower B (the analytics/inference tower).
+#
+# This pattern evolves the sketch at:
+#   graphs/sketches/mixed_atomics/dual_tower_ionic.toml
+# which specifically names healthSpring as the use case.
+#
+# Architecture:
+#   Tower A (FAMILY_A) — Patient Data Enclave
+#     BearDog A (identity + encryption for patient records)
+#     Songbird A (discovery within trust boundary)
+#     NestGate A (patient record storage, BondingPolicy egress fence)
+#     healthSpring (ingest, de-identify, aggregate)
+#     Provenance trio A (regulatory audit trail)
+#
+#   Tower B (FAMILY_B) — Analytics/Inference Tower
+#     BearDog B (separate trust domain)
+#     Songbird B (discovery)
+#     Squirrel (clinical AI inference — receives only aggregates)
+#     NestGate B (model weights, inference cache)
+#     Provenance trio B (inference audit trail)
+#
+#   Ionic Bridge (between FAMILY_A and FAMILY_B)
+#     capabilities_requested: ["inference.complete", "inference.models"]
+#     capabilities_denied: ["storage.*", "dag.*"]
+#     bonding_policy: metered, time-windowed, auditable
+#     data crossing: de-identified aggregates ONLY
+#
+# The BondingPolicy egress fence on NestGate A ensures patient records
+# NEVER leave Tower A. healthSpring's de-identification module
+# transforms patient data into aggregates before crossing the ionic
+# bridge. This is not optional — it is enforced at the composition
+# level by NestGate's BondingPolicy.
+#
+# Evolution path:
+#   healthSpring absorbs this graph and evolves:
+#   - Implement dual-tower deployment with separate FAMILY_IDs
+#   - Wire BondingPolicy egress fence on NestGate (data never leaves)
+#   - Compose ionic bond for de-identified aggregate sharing
+#   - Wire Squirrel inference routing for clinical AI
+#   - Provenance: full audit trail for regulatory compliance
+#   - Covalent mesh sharding for clinical data fault tolerance
+#   - Pass back: BondingPolicy enforcement gaps, ionic metering needs
+#
+# Security: dual BTSP perimeters — Tower A and Tower B each have their
+# own BearDog and BTSP handshake. Cross-family traffic is fully
+# encrypted via ionic bond (encryption_tiers.cross_family = "full").
+#
+# Usage (by healthSpring, not primalSpring):
+#   biomeos deploy --graph graphs/downstream/healthspring_enclave_proto_nucleate.toml \
+#     --env FAMILY_A=<hex> --env FAMILY_B=<hex>
+
+[graph]
+name = "healthspring_enclave_proto_nucleate"
+description = "healthSpring dual-tower enclave: Tower A (patient data, HIPAA) + ionic bond + Tower B (clinical AI inference). BondingPolicy egress fence — patient records never leave Tower A."
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+owner = "healthSpring"
+pattern = "proto_nucleate"
+pattern_version = "2026-04-10"
+witness_wire = "WireWitnessRef"
+encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
+particle_profile = "neutron_heavy"
+layer = "L2"
+particle_model = "two electron shells, ionic bond"
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+cross_family = "ionic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_family = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+# ═══════════════════════════════════════════════════════════════
+# TOWER A — Patient Data Enclave (HIPAA trust boundary)
+#
+# All patient records live here. BondingPolicy egress fence
+# prevents any storage.* capability from crossing the ionic
+# bridge. Only de-identified aggregates leave this tower.
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "biomeos_tower_a"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+[[graph.nodes]]
+name = "beardog_a"
+binary = "beardog"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash", "crypto.encrypt", "crypto.decrypt"]
+
+[[graph.nodes]]
+name = "songbird_a"
+binary = "songbird"
+order = 2
+required = true
+spawn = false
+depends_on = ["beardog_a"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["discovery.find_primals", "discovery.announce"]
+
+# Patient record storage — NestGate A with BondingPolicy egress fence.
+# storage.* calls are ONLY serviced within Tower A's FAMILY_ID.
+# The egress fence is enforced by BondingPolicy: ionic bond between
+# families explicitly denies storage.* capabilities.
+[[graph.nodes]]
+name = "nestgate_a"
+binary = "nestgate"
+order = 3
+required = true
+spawn = false
+depends_on = ["beardog_a"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+bond_role = "enclave_storage"
+
+# Provenance trio A — regulatory audit trail for patient data access.
+# Every read, write, transform, and de-identification is witnessed.
+# Required for HIPAA / clinical data governance compliance.
+[[graph.nodes]]
+name = "rhizocrypt_a"
+binary = "rhizocrypt"
+order = 4
+required = true
+spawn = false
+depends_on = ["beardog_a"]
+health_method = "health.liveness"
+by_capability = "dag"
+security_model = "tower_delegated"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify"]
+
+[[graph.nodes]]
+name = "loamspine_a"
+binary = "loamspine"
+order = 5
+required = true
+spawn = false
+depends_on = ["beardog_a", "rhizocrypt_a"]
+health_method = "health.liveness"
+by_capability = "ledger"
+security_model = "tower_delegated"
+capabilities = ["spine.create", "entry.append", "session.commit", "certificate.mint"]
+
+[[graph.nodes]]
+name = "sweetgrass_a"
+binary = "sweetgrass"
+order = 6
+required = true
+spawn = false
+depends_on = ["beardog_a", "loamspine_a"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "tower_delegated"
+capabilities = ["braid.create", "braid.commit", "provenance.graph", "attribution.chain"]
+
+# ═══════════════════════════════════════════════════════════════
+# TOWER B — Analytics / Inference Tower
+#
+# Receives ONLY de-identified aggregates from Tower A via ionic
+# bridge. Runs clinical AI inference via Squirrel. Stores model
+# weights and inference results (not patient data).
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "beardog_b"
+binary = "beardog"
+order = 10
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash"]
+
+[[graph.nodes]]
+name = "songbird_b"
+binary = "songbird"
+order = 11
+required = true
+spawn = false
+depends_on = ["beardog_b"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["discovery.find_primals", "discovery.announce"]
+
+# Clinical AI inference — Squirrel routes inference.complete for
+# diagnostic suggestions, pharmacology analysis, and genomic
+# variant interpretation. Input is ALWAYS de-identified aggregates
+# from the ionic bridge — never raw patient records.
+[[graph.nodes]]
+name = "squirrel_b"
+binary = "squirrel"
+order = 12
+required = true
+spawn = false
+depends_on = ["beardog_b", "songbird_b"]
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = [
+    "ai.query", "ai.complete",
+    "inference.complete", "inference.embed", "inference.models",
+]
+
+# Model weight + inference result storage — NestGate B holds model
+# weights, clinical knowledge bases, and inference results.
+# This is NOT patient data — no egress fence needed.
+[[graph.nodes]]
+name = "nestgate_b"
+binary = "nestgate"
+order = 13
+required = false
+spawn = false
+depends_on = ["beardog_b"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+
+# Provenance trio B — inference audit trail. Tracks which models
+# were used, what aggregated input was provided, and what clinical
+# suggestions were generated. Links back to Tower A provenance
+# for full chain of custody.
+[[graph.nodes]]
+name = "rhizocrypt_b"
+binary = "rhizocrypt"
+order = 14
+required = false
+spawn = false
+depends_on = ["beardog_b"]
+health_method = "health.liveness"
+by_capability = "dag"
+security_model = "tower_delegated"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
+
+[[graph.nodes]]
+name = "sweetgrass_b"
+binary = "sweetgrass"
+order = 15
+required = false
+spawn = false
+depends_on = ["beardog_b", "rhizocrypt_b"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "tower_delegated"
+capabilities = ["provenance.graph", "attribution.chain"]
+
+# ═══════════════════════════════════════════════════════════════
+# IONIC BRIDGE — scoped capability sharing between towers
+#
+# Tower B can call inference.complete on Tower A's data (via
+# de-identified aggregates). Tower B CANNOT call storage.* on
+# Tower A (patient records stay in the enclave).
+#
+# The bridge is mediated by primalSpring's bonding.propose +
+# BearDog crypto.sign_contract (ionic bond acceptance).
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "ionic_bridge"
+binary = "primalspring_primal"
+order = 20
+required = true
+spawn = false
+depends_on = ["songbird_a", "songbird_b"]
+health_method = "health.liveness"
+by_capability = "coordination"
+security_model = "tower_delegated"
+capabilities = ["bonding.propose", "bonding.accept"]
+
+[graph.nodes.ionic_policy]
+from_family = "${FAMILY_B}"
+to_family = "${FAMILY_A}"
+bond_type = "ionic"
+capabilities_requested = ["inference.complete", "inference.models", "health.aggregate"]
+capabilities_denied = ["storage.*", "dag.*"]
+metered = true
+time_window = "session"
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 4: healthSpring (spawn = true — built by healthSpring repo)
+#
+# healthSpring is the CLINICAL APPLICATION layer. It runs in
+# Tower A alongside the patient data. It handles:
+#   - Patient record ingestion and validation
+#   - De-identification (PHI removal, k-anonymity)
+#   - Aggregate computation for ionic bridge crossing
+#   - Clinical workflow orchestration
+#
+# healthSpring does NOT do inference — it delegates to Squirrel
+# in Tower B via the ionic bridge (de-identified aggregates only).
+#
+# The binary is NOT in plasmidBin — healthSpring builds it.
+#
+# Evolution targets (healthSpring absorbs and evolves):
+#   - Implement de-identification pipeline (PHI stripping)
+#   - Wire BondingPolicy egress fence enforcement
+#   - Compose ionic bond for aggregate sharing
+#   - Wire clinical workflow: ingest → validate → de-identify →
+#     aggregate → inference (via bridge) → result
+#   - Provenance: every access witnessed for regulatory audit
+#   - Covalent mesh sharding for clinical data replication
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "healthspring"
+binary = "healthspring_primal"
+order = 30
+required = true
+spawn = true
+depends_on = ["beardog_a", "songbird_a", "nestgate_a", "ionic_bridge"]
+health_method = "health.liveness"
+by_capability = "health"
+security_model = "tower_delegated"
+capabilities = [
+    # Clinical domain
+    "health.pharmacology",
+    "health.genomics",
+    "health.clinical",
+    # Data handling (within Tower A enclave)
+    "health.de_identify",
+    "health.aggregate",
+    "data.fetch",
+    "model.inference_route",
+    "compute.offload",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 5: Validation (spawn = false — primalSpring coordination)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "validate_healthspring_enclave"
+binary = "primalspring_primal"
+order = 99
+required = false
+spawn = false
+depends_on = ["healthspring"]
+health_method = "health.liveness"
+by_capability = "coordination"
+security_model = "tower_delegated"
+capabilities = ["coordination.validate_composition"]

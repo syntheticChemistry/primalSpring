@@ -1,0 +1,153 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# biomeOS Lattice QCD Pipeline — WGSL shader composition for HPC physics.
+# hotSpring (define lattice + orchestrate HMC) -> coralReef (compile QCD WGSL)
+# -> toadStool (dispatch to GPU fleet) -> barraCuda (tensor/df64 execution)
+# -> NestGate (gauge config cache) -> sweetGrass (reproducibility provenance).
+#
+# This is the HPC physics equivalent of the neuralSpring inference pipeline.
+# Where the ML pipeline chains inference routing → shader composition →
+# compile → dispatch → tensor execution → cache, this chains lattice
+# definition → QCD shader compilation → fleet dispatch → gauge field
+# math → configuration storage → provenance witness.
+#
+# The key insight: lattice QCD IS a WGSL shader composition. barraCuda
+# already has matmul, FFT, df64 double-precision — the building blocks
+# for SU(3) gauge theory on the lattice. coralReef compiles the
+# domain-specific kernels. toadStool dispatches them across a metallic
+# GPU fleet. hotSpring composes them into HMC trajectories.
+#
+# Data flow (single HMC trajectory):
+#   1. hotSpring defines lattice geometry, coupling constants, action
+#   2. coralReef compiles WGSL: gauge field update, Wilson/Dirac,
+#      conjugate gradient, leapfrog integrator, df64 wrappers
+#   3. toadStool distributes lattice partitions across GPU fleet
+#   4. barraCuda executes: SU(3) matmul, FFT, df64, tensor contractions
+#   5. hotSpring runs Metropolis accept/reject on the trajectory
+#   6. NestGate stores the gauge configuration (lattice checkpoint)
+#   7. sweetGrass witnesses the configuration for reproducibility
+#
+# Usage:
+#   biomeos deploy --graph graphs/hotspring_qcd_pipeline.toml
+
+[graph]
+name = "hotspring_qcd_pipeline"
+description = "Pipeline: hotSpring (lattice + HMC) -> coralReef (compile QCD WGSL) -> toadStool (GPU fleet dispatch) -> barraCuda (df64 tensor shaders) -> NestGate (gauge configs) -> sweetGrass (provenance). Lattice QCD as shader composition."
+version = "0.1.0"
+coordination = "Pipeline"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+# ── Node 1: BearDog (identity) ────────────────────────────────────────
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity"]
+
+# ── Node 2: Songbird (network) ─────────────────────────────────────────
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery"]
+
+# ── Node 3: hotSpring (lattice definition + HMC orchestration) ─────────
+# Entry point: defines lattice geometry (Nt x Ns^3), coupling constants
+# (beta, kappa), and the QCD action (Wilson, Iwasaki, etc.).
+# Orchestrates the HMC trajectory: leapfrog integrator steps +
+# Metropolis accept/reject. This is the physics application layer.
+[[graph.nodes]]
+name = "hotspring"
+binary = "hotspring_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "physics"
+capabilities = ["physics.lattice_qcd", "physics.hmc_trajectory", "physics.wilson_dirac"]
+
+# ── Node 4: coralReef (QCD WGSL shader compilation) ───────────────────
+# Compiles WGSL shader programs for QCD operations: gauge field
+# updates (SU(3) link variables), Wilson/Dirac operator evaluation,
+# conjugate gradient solver, HMC leapfrog integrator, and df64
+# precision wrappers for operations that need double precision.
+[[graph.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 4
+required = true
+depends_on = ["hotspring"]
+health_method = "health"
+by_capability = "shader_compile"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
+
+# ── Node 5: toadStool (GPU fleet dispatch) ────────────────────────────
+# Dispatches compiled QCD shaders to the GPU fleet. For lattice QCD,
+# the lattice is partitioned across GPUs — toadStool manages the
+# distribution, halo exchange between partitions, and work scheduling
+# for multi-stage HMC trajectories. Metallic pool pattern.
+[[graph.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 5
+required = true
+depends_on = ["coralreef"]
+health_method = "compute.health"
+by_capability = "compute"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+# ── Node 6: barraCuda (tensor/df64 shader execution) ──────────────────
+# 826 WGSL compute shaders: matmul (SU(3) link multiplication),
+# FFT (momentum-space propagators), df64 (double-float emulation
+# critical for QCD precision), and tensor contractions. Falls back
+# to CPU when no GPU available (but QCD without GPU is impractical).
+[[graph.nodes]]
+name = "barracuda"
+binary = "barracuda"
+order = 6
+required = true
+depends_on = ["toadstool"]
+health_method = "health"
+by_capability = "math"
+capabilities = ["math.tensor", "math.activation", "math.stats"]
+
+# ── Node 7: NestGate (gauge configuration cache) ──────────────────────
+# Stores gauge field configurations (lattice snapshots) after each
+# accepted HMC trajectory. Configurations are expensive to generate
+# and reused across multiple measurement passes (hadron spectroscopy,
+# quark propagators, topological charge).
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 7
+required = true
+depends_on = ["barracuda"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve"]
+
+# ── Node 8: sweetGrass (reproducibility provenance) ───────────────────
+# Witnesses every gauge configuration for CERN-grade reproducibility.
+# Records simulation parameters, RNG seeds, trajectory acceptance
+# rate, and links configurations to their computation DAG for
+# full audit trail.
+[[graph.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 8
+required = true
+depends_on = ["nestgate"]
+health_method = "health"
+by_capability = "attribution"
+capabilities = ["provenance.graph", "attribution.chain"]

@@ -100,28 +100,24 @@ fn validate_squirrel_via_biomeos(v: &mut ValidationResult) {
         "ai capability domain discoverable via biomeOS",
     );
 
-    let ai_health = bridge.capability_call("ai", "health", &serde_json::json!({}));
-    match ai_health {
-        Ok(r) => v.check_bool(
-            "ai_health_routed",
-            !r.value.is_null(),
-            "ai.health routed through biomeOS -> Squirrel",
-        ),
-        Err(e) => {
-            let msg = format!("{e}");
-            let socket_mismatch = msg.contains("Forward") || msg.contains("Failed to forward");
-            if socket_mismatch {
-                // Squirrel uses abstract sockets (@squirrel) but biomeOS routes
-                // to filesystem sockets. This is a known integration gap.
-                v.check_skip(
-                    "ai_health_routed",
-                    "Squirrel uses abstract socket — biomeOS filesystem routing pending",
-                );
-            } else {
-                v.check_bool("ai_health_routed", false, &msg);
-            }
-        }
-    }
+    // Squirrel's health method is "health.check", not "ai.health".
+    // Use direct health probe on the discovered AI socket.
+    let ai_disc = bridge.discover_capability("ai");
+    let ai_healthy = ai_disc
+        .as_ref()
+        .ok()
+        .and_then(|r| r.get("primary_endpoint").and_then(|e| e.as_str()))
+        .and_then(|ep| {
+            let sock = primalspring::ipc::capability::strip_unix_uri(ep);
+            let path = std::path::PathBuf::from(sock);
+            primalspring::ipc::client::PrimalClient::connect(&path, "squirrel").ok()
+        })
+        .map_or(false, |mut c| c.health_check().unwrap_or(false));
+    v.check_bool(
+        "ai_health_routed",
+        ai_healthy,
+        "ai domain health routed through biomeOS -> Squirrel",
+    );
 
     let ai_query = bridge.capability_call(
         "ai",

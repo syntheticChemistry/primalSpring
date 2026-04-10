@@ -18,6 +18,11 @@ description = "Validates C5: NestGate persistence — store, retrieve, list"
 version = "1.0.0"
 coordination = "sequential"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
 [[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"

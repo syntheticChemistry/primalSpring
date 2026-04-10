@@ -1,0 +1,314 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Proto-Nucleate Graph — hotSpring Lattice QCD / HPC Physics
+#
+# hotSpring owns this graph. primalSpring provides the proto-nucleate
+# pattern showing how hotSpring composes NUCLEUS WGSL shader primals
+# into lattice QCD, molecular dynamics, and HPC physics simulations
+# deployable on CERN-level cloud infrastructure.
+#
+# All NUCLEUS nodes have spawn = false — they are already running.
+# hotSpring discovers them via biomeOS capability routing.
+# The hotspring binary is built by the hotSpring repo (NOT in plasmidBin).
+#
+# Key insight: lattice QCD is a WGSL shader composition. barraCuda's
+# shaders already provide matmul, FFT, tensor contractions, and df64
+# double-precision emulation on GPU. coralReef compiles domain-specific
+# WGSL programs (gauge field updates, Wilson/Dirac operators, HMC
+# integrators). toadStool dispatches to a metallic GPU pool for
+# multi-GPU lattice partitioning. hotSpring is the physics application
+# layer that composes these into simulation pipelines.
+#
+# Composition: Tower + shader compile (coralReef) + compute dispatch
+# (toadStool, metallic pool) + GPU math / WGSL shaders (barraCuda) +
+# gauge config cache (NestGate) + reproducibility (Provenance trio) +
+# physics application (hotSpring).
+#
+# How a lattice QCD simulation flows:
+#   1. hotSpring defines the lattice geometry, coupling constants, and action
+#   2. coralReef compiles WGSL kernels: gauge field update, Wilson/Dirac,
+#      conjugate gradient solver, HMC leapfrog integrator
+#   3. toadStool distributes lattice partitions across the GPU fleet
+#   4. barraCuda executes tensor ops: SU(3) matmul, FFT, df64 precision
+#   5. hotSpring orchestrates the HMC trajectory (leapfrog + Metropolis)
+#   6. NestGate stores gauge configurations for later analysis
+#   7. Provenance trio witnesses every configuration for reproducibility
+#
+# CERN-level deployment:
+#   - Metallic bonding: toadStool fleet pool shares GPU resources across
+#     nodes (delocalized electron sea). See metallic_gpu_pool.toml.
+#   - Ionic bonding: CERN infrastructure provides GPU capacity via ionic
+#     lease (different FAMILY_ID, metered, time-windowed, auditable).
+#   - Multi-node: BirdSong mesh discovers peer gates; lattice partitioned
+#     across nodes via covalent mesh within the science team's FAMILY_ID.
+#
+# Evolution path:
+#   hotSpring absorbs this graph and evolves:
+#   - Compose barraCuda shaders into SU(3) gauge field update kernels
+#   - Compose df64 precision shaders for Wilson/Dirac operator evaluation
+#   - Use coralReef to compile lattice-specific WGSL (HMC, CG solver)
+#   - Use toadStool metallic pool for multi-GPU lattice partitioning
+#   - Wire ionic bond for CERN cloud GPU lease (different FAMILY_ID)
+#   - Provenance: every gauge configuration witnessed for reproducibility
+#   - Pass back: df64 requirements, multi-GPU dispatch patterns, HPC gaps
+#
+# Security: inherits Tower Atomic BTSP perimeter. hotSpring traffic
+# is same-host UDS behind the Tower boundary (tower_delegated).
+# CERN ionic lease uses encrypted cross-family channel.
+#
+# Usage (by hotSpring, not primalSpring):
+#   biomeos deploy --graph graphs/downstream/hotspring_qcd_proto_nucleate.toml
+
+[graph]
+name = "hotspring_qcd_proto_nucleate"
+description = "hotSpring lattice QCD as WGSL shader composition: coralReef (compile) + toadStool (metallic dispatch) + barraCuda (df64 tensor shaders) + provenance (reproducibility)"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+owner = "hotSpring"
+pattern = "proto_nucleate"
+pattern_version = "2026-04-10"
+witness_wire = "WireWitnessRef"
+encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
+particle_profile = "proton_heavy"
+science_domain = "high_performance_compute"
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+fleet_internal = "metallic"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+encryption_tiers.fleet = "hmac_plain"
+encryption_tiers.cross_family = "full"
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 0: biomeOS Neural API (spawn = false — already running)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 1: Tower Atomic (spawn = false — already running)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash"]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["discovery.find_primals", "discovery.announce"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 2: WGSL shader compute primals for physics (spawn = false)
+#
+# These three primals form the GPU compute substrate that
+# hotSpring composes into lattice QCD and HPC physics pipelines.
+# The shaders ARE the physics engine — hotSpring applies them.
+# ═══════════════════════════════════════════════════════════════
+
+# Shader compilation — coralReef compiles WGSL shader programs
+# that define QCD-specific operations: gauge field updates, SU(3)
+# matrix multiplications, Wilson/Dirac operators, conjugate gradient
+# solvers, HMC leapfrog integrators, and df64 precision wrappers.
+[[graph.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 3
+required = true
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "shader_compile"
+security_model = "tower_delegated"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
+
+# Compute dispatch — toadStool routes compiled shader workloads
+# to the GPU fleet. For QCD, this means distributing lattice
+# partitions across multiple GPUs (metallic pool pattern).
+# Manages execution scheduling for multi-stage HMC trajectories.
+[[graph.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 4
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+security_model = "tower_delegated"
+capabilities = ["compute.dispatch.submit", "compute.execute"]
+
+# WGSL tensor shaders — barraCuda's 826 WGSL compute shaders
+# provide the math primitives for QCD: matmul (SU(3) gauge links),
+# FFT (momentum-space propagators), df64 double-precision emulation
+# (critical for QCD where f32 is insufficient), and tensor
+# contractions. Originally from hotSpring itself — evolved into
+# primal-based composition.
+[[graph.nodes]]
+name = "barracuda"
+binary = "barracuda"
+order = 5
+required = true
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "math"
+security_model = "tower_delegated"
+capabilities = ["math.tensor", "math.stats", "math.activation", "math.noise"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 2b: Persistence + Provenance (spawn = false)
+# ═══════════════════════════════════════════════════════════════
+
+# Gauge configuration cache — NestGate stores gauge field
+# configurations (lattice snapshots), propagator results, and
+# thermalization checkpoints. Critical for QCD workflows where
+# configurations are expensive to generate and reused across
+# multiple measurement passes.
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 6
+required = true
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+
+# Provenance trio — CERN-quality science requires every gauge
+# configuration to be reproducible. rhizoCrypt DAG tracks the
+# computation graph, loamSpine ledger records configuration
+# lineage, sweetGrass attributes results to simulation parameters.
+[[graph.nodes]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 7
+required = true
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+security_model = "tower_delegated"
+capabilities = ["dag", "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify"]
+
+[[graph.nodes]]
+name = "loamspine"
+binary = "loamspine"
+order = 8
+required = true
+spawn = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+security_model = "tower_delegated"
+capabilities = ["spine.create", "entry.append", "session.commit", "certificate.mint"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 9
+required = true
+spawn = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "tower_delegated"
+capabilities = ["braid.create", "braid.commit", "provenance.graph", "provenance.export_provo", "attribution.chain"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 4: hotSpring (spawn = true — built by hotSpring repo)
+#
+# hotSpring is the PHYSICS APPLICATION layer. It composes the
+# WGSL shader primals into lattice QCD, molecular dynamics,
+# fluid simulation, and nuclear equation-of-state pipelines.
+#
+# The binary is NOT in plasmidBin — hotSpring builds it.
+#
+# Evolution targets (hotSpring absorbs and evolves):
+#   - Compose barraCuda's matmul + df64 shaders into SU(3)
+#     gauge field update kernels
+#   - Compose FFT shaders into momentum-space propagator
+#     evaluation
+#   - Use coralReef to compile QCD-specific WGSL: Wilson/Dirac
+#     operators, conjugate gradient solvers, HMC integrators
+#   - Use toadStool metallic pool for multi-GPU lattice
+#     partitioning across the compute fleet
+#   - Wire ionic bond for CERN cloud GPU lease (external
+#     FAMILY_ID, metered, time-windowed)
+#   - Provenance: every gauge config witnessed for CERN-grade
+#     reproducibility
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "hotspring"
+binary = "hotspring_primal"
+order = 10
+required = true
+spawn = true
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
+health_method = "health.liveness"
+by_capability = "physics"
+security_model = "tower_delegated"
+capabilities = [
+    # QCD domain (WGSL shader compositions)
+    "physics.lattice_qcd",
+    "physics.lattice_gauge_update",
+    "physics.hmc_trajectory",
+    "physics.wilson_dirac",
+    "physics.molecular_dynamics",
+    "physics.fluid",
+    "physics.nuclear_eos",
+    # Compute primitives exposed by hotSpring
+    "compute.df64",
+    "compute.cg_solver",
+    "compute.gradient_flow",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 5: Validation (spawn = false — primalSpring coordination)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "validate_hotspring_qcd"
+binary = "primalspring_primal"
+order = 99
+required = false
+spawn = false
+depends_on = ["hotspring"]
+health_method = "health.liveness"
+by_capability = "coordination"
+security_model = "tower_delegated"
+capabilities = ["coordination.validate_composition"]

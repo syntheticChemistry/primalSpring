@@ -13,12 +13,15 @@ description = "Validates rejection paths: wrong-seed lineage, tampered ciphertex
 version = "0.1.0"
 coordination = "sequential"
 
+# --- Phase 1: Tower Health ---
+
 [graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
 bond_type = "validation"
 trust_model = "genetic_lineage"
 negative_tests = true
-
-# --- Phase 1: Tower Health ---
 
 [[graph.nodes]]
 name = "verify_tower"

@@ -44,7 +44,14 @@ version = "0.1.0"
 description = "L3: Covalent mesh backup — sharded encrypted data replicated across trusted peers"
 coordination = "sequential"
 
+# =============================================================================
+# PHASE 1: LOCAL TOWER + NEST (this gate's atom)
+# =============================================================================
+
 [graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
 layer = "L3"
 particle_model = "covalent molecule, shared electron cloud"
 internal_bond_type = "covalent"
@@ -52,9 +59,12 @@ trust_model = "genetic_lineage"
 shard_count = "${SHARD_COUNT}"
 recovery_quorum = "${RECOVERY_QUORUM}"
 
-# =============================================================================
-# PHASE 1: LOCAL TOWER + NEST (this gate's atom)
-# =============================================================================
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
 
 [[graph.nodes]]
 id = "local_beardog"

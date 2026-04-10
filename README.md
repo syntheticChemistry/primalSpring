@@ -5,12 +5,12 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.3 |
+| **Version** | 0.9.4 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 404 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 72 (15 tracks) |
-| **Deploy Graphs** | 99 TOMLs (18 root + 17 sketches + 5 multi-node + 4 compositions + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + 6 nucleated spring deploy) |
+| **Deploy Graphs** | 107 TOMLs (18 root + 17 sketches + 5 multi-node + 4 compositions + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + 6 spring deploy + 5 downstream proto-nucleate + 3 pipeline) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + ludoSpring Game + esotericWebb Product + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
@@ -45,7 +45,8 @@ primalSpring/
 │   │   ├── graphs/                # Graph execution pattern types (5 patterns)
 │   │   ├── emergent/              # Emergent system validation (RootPulse, RPGPT, CoralForge)
 │   │   ├── bonding/               # Multi-gate bonding models (Covalent, Metallic, Ionic, Weak, OMS) + graph metadata + STUN tiers
-│   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, capability, error, dispatch, extract, resilience, transport, tcp, methods, probes, provenance, proptest
+│   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, capability, error, dispatch, extract, resilience, transport, tcp, methods, probes, provenance, proptest, btsp_handshake
+│   │   ├── inference/             # Vendor-agnostic inference wire types + InferenceClient (inference.complete/embed/models)
 │   │   ├── launcher/              # Primal binary discovery, spawn, profiles, socket nucleation (sync biomeOS port)
 │   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
@@ -54,7 +55,7 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   └── validate_all/          # Meta-validator: runs all 67 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 72 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
@@ -62,7 +63,7 @@ primalSpring/
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
 ├── experiments/                   # 72 validation experiments (15 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 99 deploy graph TOMLs
+├── graphs/                        # 107 deploy graph TOMLs
 │   ├── sketches/                 # Particle-model validation & mixed composition sketches (17)
 │   │   ├── validation/           # L0 primal routing matrix (1)
 │   │   ├── mixed_atomics/        # L2 dual-tower ionic, dedicated tower, nest enclave (3+)
@@ -75,7 +76,8 @@ primalSpring/
 │   ├── spring_validation/        # Per-spring + NUCLEUS + composition + security validation (17)
 │   ├── cross_spring/             # Cross-spring ecology + full sweep (2)
 │   ├── gen4/                     # gen4: sovereign, science, agentic, storytelling, UI loop (10)
-│   └── spring_deploy/            # Per-spring science compositions (airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring) (6)
+│   ├── spring_deploy/            # Per-spring science compositions (airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring) (6)
+│   └── downstream/               # Proto-nucleate graphs for spring evolution (neuralSpring, hotSpring, healthSpring) (5)
 ├── docs/                          # Structured gap registry and subsystem documentation
 │   └── PRIMAL_GAPS.md            # Per-primal gap inventory with severity and fix paths
 ├── tools/                         # Operational tooling
@@ -120,7 +122,7 @@ cargo test --workspace
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 67 experiments (meta-validator)
+# Run all 72 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -188,7 +190,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 99 deploy graph TOMLs (all nodes declare `by_capability`):
+primalSpring ships 107 deploy graph TOMLs (all nodes declare `by_capability`):
 
 **Single-node graphs (18)**:
 
@@ -229,7 +231,7 @@ decomposed into a separately deployable biomeOS graph with its own validation:
 `persistence_standalone` (C5: NestGate), `proprioception_loop` (C6: petalTongue interaction),
 `interactive_product` (C7: all subsystems composed).
 
-**Spring validation graphs (21)** — `graphs/spring_validation/`: per-spring validation
+**Spring validation graphs (17)** — `graphs/spring_validation/`: per-spring validation
 wrappers (7 springs) plus `crypto_negative_validate` (negative security boundary tests),
 `rollback_validate` (biomeOS graph rollback lifecycle), `federation_manifest_validate`
 (federation configure→join→health), `nucleus_atomics_validate` (all 4 NUCLEUS tiers),
@@ -340,6 +342,17 @@ ludospring, neuralspring, wetspring). All spring validation graphs updated to
 deploy biomeOS as substrate. Launch profiles added for all 6 springs.
 
 See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
+
+## BTSP, Inference Abstraction, and Proto-Nucleate Graphs (April 10, 2026)
+
+- **Zero-Port Tower Atomic achieved**: 0 TCP ports across all 10+ primals. Pure Unix domain socket IPC with BTSP handshake authentication.
+- **BTSP Phase 2 ecosystem cascade**: 11/13 primals enforce `btsp.handshake` on connection. Client-side `ipc::btsp_handshake` module added to ecoPrimal. All 107 deploy graphs carry `secure_by_default = true` metadata.
+- **Inference provider abstraction**: Vendor-agnostic `inference.complete`/`embed`/`models` wire standard in ecoPrimal. Squirrel bridge routes through `AiRouter` (Ollama as OpenAI-compatible HTTP endpoint). No vendor lock-in to CUDA or Ollama.
+- **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of existing barraCuda WGSL shaders (826 kernels: matmul, attention, FFT, df64) compiled by coralReef and dispatched by toadStool.
+- **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
+- **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — modeling end-to-end data flow through primal compositions.
+- **13/13 critical experiments ALL PASS** — 72 total experiments across 15 tracks.
+- **12/12 plasmidBin musl-static ecoBin compliant** — zero C dependencies.
 
 ## Mixed Composition + Live Validation Matrix (April 7, 2026)
 

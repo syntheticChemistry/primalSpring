@@ -30,6 +30,18 @@ coordination = "Continuous"
 tick_hz = 60
 bond_type = "covalent"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 # ── Phase 0: biomeOS Neural API substrate ──────────────────────────────
 [[graph.nodes]]
 name = "biomeos_neural_api"
@@ -44,7 +56,7 @@ capabilities = ["graph.deploy", "graph.status", "capability.discover", "health.l
 # ── Tower identity + discovery ─────────────────────────────────────────
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -54,7 +66,7 @@ capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -69,6 +81,8 @@ capabilities = ["net.discovery", "net.mesh"]
 # compile dep. Consumes Squirrel ai.*, petalTongue viz.* at runtime.
 [[graph.nodes]]
 name = "esotericwebb"
+spawn = true
+security_model = "tower_delegated"
 binary = "esotericwebb"
 order = 3
 required = true
@@ -92,7 +106,7 @@ capabilities = [
 # Context windows track session state across scenes.
 [[graph.nodes]]
 name = "squirrel"
-binary = "squirrel_primal"
+binary = "squirrel"
 order = 4
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -115,7 +129,7 @@ capabilities = [
 # Modes: TUI for terminal play, egui for desktop, web for browser.
 [[graph.nodes]]
 name = "petaltongue"
-binary = "petaltongue_primal"
+binary = "petaltongue"
 order = 5
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -136,6 +150,8 @@ capabilities = [
 # When available, enriches the composition with advanced game mechanics.
 [[graph.nodes]]
 name = "ludospring"
+spawn = true
+security_model = "tower_delegated"
 binary = "ludospring"
 order = 6
 required = false
@@ -158,7 +174,7 @@ capabilities = [
 # gets a DAG entry. Sessions are replayable and auditable.
 [[graph.nodes]]
 name = "rhizocrypt"
-binary = "rhizocrypt_primal"
+binary = "rhizocrypt"
 order = 7
 required = false
 depends_on = ["beardog"]
@@ -168,7 +184,7 @@ capabilities = ["dag.session.create", "dag.event.append", "dag.session.finalize"
 
 [[graph.nodes]]
 name = "loamspine"
-binary = "loamspine_primal"
+binary = "loamspine"
 order = 8
 required = false
 depends_on = ["beardog"]
@@ -178,7 +194,7 @@ capabilities = ["lineage.commit", "lineage.branch", "lineage.certify"]
 
 [[graph.nodes]]
 name = "sweetgrass"
-binary = "sweetgrass_primal"
+binary = "sweetgrass"
 order = 9
 required = false
 depends_on = ["beardog"]
@@ -189,7 +205,7 @@ capabilities = ["provenance.create_braid", "provenance.verify_braid"]
 # ── Storage + compute ──────────────────────────────────────────────────
 [[graph.nodes]]
 name = "nestgate"
-binary = "nestgate_primal"
+binary = "nestgate"
 order = 10
 required = false
 depends_on = ["beardog", "songbird"]
@@ -199,7 +215,7 @@ capabilities = ["storage.store", "storage.retrieve"]
 
 [[graph.nodes]]
 name = "toadstool"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 11
 required = false
 depends_on = ["biomeos_neural_api"]

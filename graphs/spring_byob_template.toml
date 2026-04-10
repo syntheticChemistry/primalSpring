@@ -2,30 +2,40 @@
 #
 # BYOB Graph Template — Build Your Own Biome
 #
-# Copy this template to create a deployment graph for any new spring.
+# Copy this template to create a deployment graph for any new spring or garden.
 # Replace ${SPRING_NAME}, ${SPRING_BINARY}, ${SPRING_DOMAIN}, and
 # capability lists with your spring's values.
 #
+# IMPORTANT: Spring/garden binaries are NOT in plasmidBin. Only primal
+# binaries go in plasmidBin. Your spring builds its own binary.
+#
 # Every spring graph follows this structure:
-#   Phase 1: Tower Atomic (BearDog + Songbird) — always required
-#   Phase 2: Optional extensions (ToadStool, NestGate, Squirrel, petalTongue)
-#   Phase 3: Provenance trio (rhizoCrypt + loamSpine + sweetGrass) — optional
-#   Phase 4: Your spring — depends on Tower, optionally others
+#   Phase 0: biomeOS Neural API (orchestration substrate, spawn = false)
+#   Phase 1: Tower Atomic (BearDog + Songbird, spawn = false)
+#   Phase 2: Optional NUCLEUS extensions (spawn = false — already running)
+#   Phase 3: Provenance trio (spawn = false — already running)
+#   Phase 4: Your spring (spawn = true — YOU build and own this binary)
 #   Phase 5: Validation node
 #
-# The minimum viable BYOB graph is Tower + your spring.
-# Add compute (ToadStool), storage (NestGate), AI (Squirrel),
-# visualization (petalTongue), or provenance (trio) as needed.
+# NUCLEUS primals use spawn = false because they are already running.
+# Your spring discovers them via biomeOS capability routing.
+# The minimum viable graph is Tower + your spring.
+#
+# Security model:
+#   Tower boundary (BearDog + Songbird) enforces BTSP.
+#   Your spring traffic is same-host UDS behind the Tower boundary.
+#   Your spring's security_model is "tower_delegated" (trusts Tower).
 #
 # Canonical references:
 #   - Capability names: config/capability_registry.toml
 #   - Wire types: wateringHole/ATTESTATION_ENCODING_STANDARD.md (WireWitnessRef)
-#   - Binary names: plasmidBin/manifest.toml
+#   - Binary names: plasmidBin/manifest.toml (primals only)
 #   - Health method: always "health.liveness" (JSON-RPC standard)
+#   - Proto-nucleate examples: graphs/downstream/
 #
 # Graduation checklist (sourDough compliance):
 #   [ ] UniBin binary with server/status/version subcommands
-#   [ ] JSON-RPC 2.0 over Unix socket + optional TCP
+#   [ ] JSON-RPC 2.0 over Unix socket (TCP is opt-in only)
 #   [ ] health.liveness + health.readiness
 #   [ ] identity.get + capabilities.list
 #   [ ] Semantic method naming (domain.verb[.variant])
@@ -43,12 +53,39 @@ version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
-pattern_version = "2026-04-07"
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+pattern_version = "2026-04-10"
+owner = "${SPRING_NAME}"
+pattern = "proto_nucleate"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 # ═══════════════════════════════════════════════════════════════
-# Phase 1: Tower Atomic — always required
+# Phase 0: biomeOS Neural API (spawn = false — already running)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 1: Tower Atomic (spawn = false — already running)
 # ═══════════════════════════════════════════════════════════════
 
 [[graph.nodes]]
@@ -56,8 +93,10 @@ name = "beardog"
 binary = "beardog"
 order = 1
 required = true
+spawn = false
 health_method = "health.liveness"
 by_capability = "security"
+security_model = "btsp"
 capabilities = [
     "crypto.sign_ed25519",
     "crypto.verify_ed25519",
@@ -69,13 +108,16 @@ name = "songbird"
 binary = "songbird"
 order = 2
 required = true
+spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
+security_model = "btsp"
 capabilities = ["discovery.find_primals", "discovery.announce"]
 
 # ═══════════════════════════════════════════════════════════════
-# Phase 2: Optional extensions — uncomment what you need
+# Phase 2: Optional NUCLEUS extensions (spawn = false)
+# Uncomment the primals your spring needs.
 # ═══════════════════════════════════════════════════════════════
 
 # Uncomment for compute (GPU/CPU dispatch):
@@ -84,9 +126,11 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # binary = "toadstool"
 # order = 3
 # required = false
+# spawn = false
 # depends_on = ["beardog", "songbird"]
 # health_method = "health.liveness"
 # by_capability = "compute"
+# security_model = "tower_delegated"
 # capabilities = ["compute.dispatch.submit", "compute.execute"]
 
 # Uncomment for storage (content-addressed persistence):
@@ -95,9 +139,11 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # binary = "nestgate"
 # order = 3
 # required = false
+# spawn = false
 # depends_on = ["beardog", "songbird"]
 # health_method = "health.liveness"
 # by_capability = "storage"
+# security_model = "tower_delegated"
 # capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
 # Uncomment for AI (MCP tool routing):
@@ -106,9 +152,11 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # binary = "squirrel"
 # order = 3
 # required = false
+# spawn = false
 # depends_on = ["beardog", "songbird"]
 # health_method = "health.liveness"
 # by_capability = "ai"
+# security_model = "tower_delegated"
 # capabilities = ["ai.query", "mcp.tools.list"]
 
 # Uncomment for visualization (UI/rendering):
@@ -117,17 +165,19 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # binary = "petaltongue"
 # order = 3
 # required = false
-# depends_on = ["beardog", "songbird"]
+# spawn = false
+# depends_on = ["biomeos_neural_api"]
 # health_method = "health.liveness"
 # by_capability = "visualization"
+# security_model = "tower_delegated"
 # capabilities = ["visualization.render.dashboard", "visualization.render.grammar"]
 
 # ═══════════════════════════════════════════════════════════════
-# Phase 3: Provenance trio — uncomment for verifiable lineage
+# Phase 3: Provenance trio (spawn = false — uncomment for lineage)
 #
 # Witness wire: WireWitnessRef { agent, kind, evidence, witnessed_at,
 #   encoding, algorithm, tier, context }
-# BearDog signs → evidence (base64), algorithm "ed25519", tier "local"
+# BearDog signs -> evidence (base64), algorithm "ed25519", tier "local"
 # Non-crypto witnesses: kind "checkpoint" | "observation" | "marker"
 # ═══════════════════════════════════════════════════════════════
 
@@ -136,9 +186,11 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # binary = "rhizocrypt"
 # order = 5
 # required = false
+# spawn = false
 # depends_on = ["beardog"]
 # health_method = "health.liveness"
 # by_capability = "dag"
+# security_model = "tower_delegated"
 # capabilities = [
 #     "dag",
 #     "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify",
@@ -150,9 +202,11 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # binary = "loamspine"
 # order = 6
 # required = false
+# spawn = false
 # depends_on = ["beardog", "rhizocrypt"]
 # health_method = "health.liveness"
 # by_capability = "ledger"
+# security_model = "tower_delegated"
 # capabilities = [
 #     "spine", "entry", "session", "certificate", "commit", "ledger",
 #     "spine.create", "entry.append", "session.commit", "certificate.mint",
@@ -163,9 +217,11 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # binary = "sweetgrass"
 # order = 7
 # required = false
+# spawn = false
 # depends_on = ["beardog", "loamspine"]
 # health_method = "health.liveness"
 # by_capability = "attribution"
+# security_model = "tower_delegated"
 # capabilities = [
 #     "braid", "attribution", "provenance", "anchoring",
 #     "braid.create", "braid.commit", "provenance.graph", "provenance.export_provo",
@@ -173,7 +229,9 @@ capabilities = ["discovery.find_primals", "discovery.announce"]
 # ]
 
 # ═══════════════════════════════════════════════════════════════
-# Phase 4: Your spring
+# Phase 4: Your spring (spawn = true — YOU own this binary)
+#
+# Your binary is NOT in plasmidBin. You build it in your own repo.
 # ═══════════════════════════════════════════════════════════════
 
 [[graph.nodes]]
@@ -181,9 +239,11 @@ name = "${SPRING_NAME}"
 binary = "${SPRING_BINARY}"
 order = 10
 required = true
+spawn = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "${SPRING_DOMAIN}"
+security_model = "tower_delegated"
 capabilities = [
     # Replace with your spring's capabilities:
     # "${SPRING_DOMAIN}.method_one",
@@ -191,7 +251,7 @@ capabilities = [
 ]
 
 # ═══════════════════════════════════════════════════════════════
-# Phase 5: Validation
+# Phase 5: Validation (spawn = false — primalSpring coordination)
 # ═══════════════════════════════════════════════════════════════
 
 [[graph.nodes]]
@@ -203,4 +263,5 @@ required = false
 depends_on = ["${SPRING_NAME}"]
 health_method = "health.liveness"
 by_capability = "coordination"
+security_model = "tower_delegated"
 capabilities = ["coordination.validate_composition"]

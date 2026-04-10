@@ -13,6 +13,11 @@ description = "NUCLEUS continuous 60Hz game session — crypto + storage + math 
 version = "1.0.0"
 coordination = "continuous"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
 [[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
@@ -24,7 +29,7 @@ by_capability = "orchestration"
 
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -34,7 +39,7 @@ capabilities = ["crypto.blake3_hash", "crypto.sign_ed25519", "crypto.verify_ed25
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -43,7 +48,7 @@ by_capability = "discovery"
 
 [[graph.nodes]]
 name = "nestgate"
-binary = "nestgate_primal"
+binary = "nestgate"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]
@@ -63,7 +68,9 @@ capabilities = ["tensor.create", "tensor.read", "activation.sigmoid"]
 
 [[graph.nodes]]
 name = "ludospring"
-binary = "ludospring_primal"
+spawn = true
+security_model = "tower_delegated"
+binary = "ludospring"
 order = 5
 required = false
 depends_on = ["barracuda"]
@@ -74,6 +81,8 @@ capabilities = ["game.evaluate_flow", "game.engagement"]
 
 [[graph.nodes]]
 name = "esotericwebb"
+spawn = true
+security_model = "tower_delegated"
 binary = "esotericwebb"
 order = 6
 required = false

@@ -16,6 +16,9 @@ version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 
@@ -70,7 +73,9 @@ capabilities = ["health.pharmacology"]
 
 [[graph.nodes]]
 name = "ludospring"
-binary = "ludospring_primal"
+spawn = true
+security_model = "tower_delegated"
+binary = "ludospring"
 order = 6
 required = true
 health_method = "health.liveness"

@@ -38,15 +38,26 @@ version = "0.1.0"
 description = "L2: Two Tower Atomics with ionic bond — scoped capability sharing across trust domains"
 coordination = "sequential"
 
+# =============================================================================
+# TOWER A — Primary trust domain (e.g., patient data)
+# =============================================================================
+
 [graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
 layer = "L2"
 particle_model = "two electron shells, ionic bond"
 internal_bond_type = "ionic"
 default_interaction_bond = "ionic"
 
-# =============================================================================
-# TOWER A — Primary trust domain (e.g., patient data)
-# =============================================================================
+[graph.bonding_policy]
+tower_internal = "covalent"
+cross_family = "ionic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_family = "full"
+encryption_tiers.nucleus = "hmac_plain"
 
 [[graph.nodes]]
 id = "tower_a_beardog"

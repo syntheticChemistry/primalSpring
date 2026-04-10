@@ -37,14 +37,25 @@ version = "1.0.0"
 description = "Cross-site data federation with NestGate replication and provenance trio"
 coordination = "Sequential"
 
+# =============================================================================
+# PHASE 1: DISCOVER REMOTE SITE
+# =============================================================================
+
 [graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
 internal_bond_type = "covalent"
 default_interaction_bond = "covalent"
 trust_model = "genetic_lineage"
 
-# =============================================================================
-# PHASE 1: DISCOVER REMOTE SITE
-# =============================================================================
+[graph.bonding_policy]
+tower_internal = "covalent"
+cross_family = "ionic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_family = "full"
+encryption_tiers.nucleus = "hmac_plain"
 
 [[graph.nodes]]
 id = "discover_remote"

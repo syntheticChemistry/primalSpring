@@ -1,0 +1,149 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# biomeOS Clinical Data Pipeline — dual-tower enclave data flow.
+# healthSpring (ingest + de-identify) -> NestGate-A (patient enclave) ->
+# ionic bridge (aggregates only) -> Squirrel (clinical AI inference) ->
+# NestGate-B (inference cache) -> sweetGrass (regulatory audit trail).
+#
+# This is the clinical equivalent of the coralforge and neuralSpring
+# inference pipelines. Where those chain shader composition → GPU
+# dispatch → tensor execution, this chains patient data ingestion →
+# de-identification → enclave storage → ionic bridge → AI inference →
+# provenance audit.
+#
+# The key security property: patient records NEVER cross the ionic bridge.
+# healthSpring's de-identification pipeline strips PHI (Protected Health
+# Information) and produces k-anonymous aggregates. Only aggregates are
+# sent to Tower B for clinical AI inference. The BondingPolicy denies
+# storage.* across the ionic bond.
+#
+# Data flow (clinical workflow):
+#   1. healthSpring ingests patient record (Tower A)
+#   2. healthSpring validates and transforms the record
+#   3. NestGate-A stores the full patient record (enclave)
+#   4. healthSpring de-identifies: strips PHI, k-anonymity
+#   5. De-identified aggregate crosses ionic bridge to Tower B
+#   6. Squirrel routes aggregate to clinical AI model (inference)
+#   7. NestGate-B caches inference result (not patient data)
+#   8. sweetGrass witnesses the full chain for regulatory audit
+#
+# Usage:
+#   biomeos deploy --graph graphs/healthspring_clinical_pipeline.toml
+
+[graph]
+name = "healthspring_clinical_pipeline"
+description = "Pipeline: healthSpring (ingest + de-identify) -> NestGate-A (patient enclave) -> ionic bridge (aggregates) -> Squirrel (clinical AI) -> NestGate-B (cache) -> sweetGrass (audit). Patient records never leave Tower A."
+version = "0.1.0"
+coordination = "Pipeline"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+# ── Node 1: BearDog (identity — Tower A) ──────────────────────────────
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health"
+by_capability = "security"
+capabilities = ["crypto.identity", "crypto.encrypt"]
+
+# ── Node 2: Songbird (network — Tower A) ──────────────────────────────
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health"
+by_capability = "discovery"
+capabilities = ["net.discovery"]
+
+# ── Node 3: healthSpring (ingest + de-identify) ───────────────────────
+# Ingests patient records, validates clinical data, stores in enclave,
+# then produces de-identified aggregates for the ionic bridge.
+# healthSpring is the gatekeeper — nothing leaves without de-ID.
+[[graph.nodes]]
+name = "healthspring"
+binary = "healthspring_primal"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health"
+by_capability = "health"
+capabilities = ["health.clinical", "health.de_identify", "health.aggregate"]
+
+# ── Node 4: NestGate-A (patient record enclave) ──────────────────────
+# Stores full patient records with PHI. BondingPolicy egress fence
+# prevents any storage.* call from crossing the ionic bridge.
+# Records are encrypted at rest via BearDog crypto.encrypt.
+[[graph.nodes]]
+name = "nestgate_enclave"
+binary = "nestgate"
+order = 4
+required = true
+depends_on = ["healthspring"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve"]
+bond_role = "enclave_storage"
+
+# ── Node 5: Ionic Bridge (de-identified aggregates cross) ─────────────
+# Only de-identified, k-anonymous aggregates pass through.
+# Mediated by primalSpring bonding.propose + BearDog contract.
+# Metered and auditable — every crossing is logged.
+[[graph.nodes]]
+name = "ionic_bridge"
+binary = "primalspring_primal"
+order = 5
+required = true
+depends_on = ["nestgate_enclave"]
+health_method = "health"
+by_capability = "coordination"
+capabilities = ["bonding.propose", "bonding.accept"]
+
+# ── Node 6: Squirrel (clinical AI inference — Tower B) ────────────────
+# Receives de-identified aggregates from the ionic bridge.
+# Routes to clinical AI models for diagnostic suggestions,
+# pharmacology analysis, and genomic variant interpretation.
+# Input is NEVER raw patient data.
+[[graph.nodes]]
+name = "squirrel"
+binary = "squirrel"
+order = 6
+required = true
+depends_on = ["ionic_bridge"]
+health_method = "health"
+by_capability = "ai"
+capabilities = ["inference.complete", "inference.models"]
+
+# ── Node 7: NestGate-B (inference cache — Tower B) ───────────────────
+# Stores model weights, clinical knowledge bases, and inference
+# results. This is NOT patient data — no egress fence needed.
+[[graph.nodes]]
+name = "nestgate_inference"
+binary = "nestgate"
+order = 7
+required = true
+depends_on = ["squirrel"]
+health_method = "health"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve"]
+
+# ── Node 8: sweetGrass (regulatory audit trail) ──────────────────────
+# Witnesses the full clinical pipeline for regulatory compliance.
+# Records which patient data was accessed, how it was de-identified,
+# what aggregates were produced, what models were queried, and what
+# clinical suggestions were generated. Full chain of custody.
+[[graph.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 8
+required = true
+depends_on = ["nestgate_inference"]
+health_method = "health"
+by_capability = "attribution"
+capabilities = ["provenance.graph", "attribution.chain"]

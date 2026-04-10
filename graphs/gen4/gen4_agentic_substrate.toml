@@ -21,10 +21,22 @@ version = "1.0.0"
 coordination = "parallel"
 bond_type = "covalent"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 # ── Tower layer ────────────────────────────────────────────────────────
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -33,7 +45,7 @@ capabilities = ["crypto.identity", "crypto.sign", "crypto.verify"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -75,7 +87,7 @@ capabilities = [
 # context.create, context.update, discovery.peers
 [[graph.nodes]]
 name = "squirrel"
-binary = "squirrel_primal"
+binary = "squirrel"
 order = 4
 required = true
 depends_on = ["beardog", "songbird", "biomeos"]
@@ -100,7 +112,7 @@ capabilities = [
 # Captures human intent → feeds back to Squirrel/biomeOS.
 [[graph.nodes]]
 name = "petaltongue"
-binary = "petaltongue_primal"
+binary = "petaltongue"
 order = 5
 required = true
 depends_on = ["biomeos"]
@@ -121,7 +133,7 @@ capabilities = [
 # ── Compute + storage for AI workflows ─────────────────────────────────
 [[graph.nodes]]
 name = "toadstool"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 6
 required = false
 depends_on = ["biomeos"]
@@ -131,7 +143,7 @@ capabilities = ["compute.dispatch.submit", "compute.execute"]
 
 [[graph.nodes]]
 name = "nestgate"
-binary = "nestgate_primal"
+binary = "nestgate"
 order = 7
 required = false
 depends_on = ["beardog", "songbird"]

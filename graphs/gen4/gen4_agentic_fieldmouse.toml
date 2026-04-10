@@ -16,9 +16,21 @@ coordination = "Pipeline"
 bond_type = "covalent"
 deployment_class = "fieldmouse"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -27,7 +39,7 @@ capabilities = ["crypto.identity", "crypto.verify"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -48,7 +60,7 @@ capabilities = ["graph.execution", "ecosystem.coordination", "capability.call", 
 # NestGate: receives and buffers fieldMouse frames
 [[graph.nodes]]
 name = "nestgate"
-binary = "nestgate_primal"
+binary = "nestgate"
 order = 4
 required = true
 depends_on = ["beardog", "songbird"]
@@ -59,7 +71,7 @@ capabilities = ["storage.store", "storage.retrieve", "storage.content_address"]
 # Squirrel: classifies incoming sensor data, detects anomalies
 [[graph.nodes]]
 name = "squirrel"
-binary = "squirrel_primal"
+binary = "squirrel"
 order = 5
 required = true
 depends_on = ["biomeos", "nestgate"]
@@ -91,7 +103,7 @@ capabilities = ["science.diversity", "science.sequence"]
 # petalTongue: renders live sensor dashboards, anomaly alerts
 [[graph.nodes]]
 name = "petaltongue"
-binary = "petaltongue_primal"
+binary = "petaltongue"
 order = 8
 required = true
 depends_on = ["biomeos", "squirrel"]

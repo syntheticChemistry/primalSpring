@@ -28,6 +28,18 @@ version = "1.0.0"
 coordination = "sequential"
 bond_type = "covalent"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 # ── Phase 0: biomeOS substrate ────────────────────────────────────────
 [[graph.nodes]]
 name = "biomeos_neural_api"
@@ -42,7 +54,7 @@ capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 # ── Phase 1: Tower Atomic ────────────────────────────────────────────
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 spawn = false
@@ -53,7 +65,7 @@ capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 spawn = false
@@ -65,7 +77,7 @@ capabilities = ["net.discovery", "net.mesh"]
 # ── Phase 2: AI + Visualization overlays ──────────────────────────────
 [[graph.nodes]]
 name = "squirrel"
-binary = "squirrel_primal"
+binary = "squirrel"
 order = 3
 required = false
 depends_on = ["biomeos_neural_api"]
@@ -82,7 +94,7 @@ capabilities = [
 
 [[graph.nodes]]
 name = "petaltongue"
-binary = "petaltongue_primal"
+binary = "petaltongue"
 order = 4
 required = false
 depends_on = ["biomeos_neural_api"]
@@ -98,6 +110,8 @@ capabilities = [
 # ── Phase 3: ludoSpring supplemental game science (optional) ──────────
 [[graph.nodes]]
 name = "ludospring"
+spawn = true
+security_model = "tower_delegated"
 binary = "ludospring"
 order = 5
 required = false
@@ -121,6 +135,8 @@ capabilities = [
 # for enrichment — all via biomeOS capability routing or direct discovery.
 [[graph.nodes]]
 name = "esotericwebb"
+spawn = true
+security_model = "tower_delegated"
 binary = "esotericwebb"
 order = 6
 required = true

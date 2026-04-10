@@ -15,9 +15,14 @@ description = "gen4 Agentic Tower: AI-driven deployment and interaction via Squi
 version = "0.1.0"
 coordination = "sequential"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health.liveness"
@@ -26,7 +31,7 @@ capabilities = ["crypto.encrypt", "crypto.sign"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 health_method = "health.liveness"

@@ -1,0 +1,156 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Proto-Nucleate Graph — esotericWebb Composed Product
+#
+# esotericWebb owns this graph. primalSpring provides the proto-nucleate
+# pattern showing how a downstream garden composes NUCLEUS capabilities.
+#
+# All NUCLEUS nodes have spawn = false — they are already running.
+# esotericWebb and ludoSpring are spawn = true (built by their own repos,
+# NOT in plasmidBin — only primals go in plasmidBin).
+#
+# Composition: Tower + AI (Squirrel) + Viz (petalTongue) + Game
+# (ludoSpring, optional) + Narrative (esotericWebb).
+#
+# Security: inherits Tower Atomic BTSP perimeter. All downstream
+# traffic is same-host UDS behind the Tower boundary.
+#
+# Usage (by esotericWebb, not primalSpring):
+#   biomeos deploy --graph graphs/downstream/esotericwebb_proto_nucleate.toml
+
+[graph]
+name = "esotericwebb_proto_nucleate"
+description = "esotericWebb V6 composing NUCLEUS: Tower + AI + Viz + Game + Narrative"
+version = "1.0.0"
+coordination = "sequential"
+bond_type = "covalent"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+owner = "esotericWebb"
+pattern = "proto_nucleate"
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+# ═══════════════════════════════════════════════════════════════
+# NUCLEUS primals (spawn = false — already running)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "capability.discover", "graph.list"]
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["net.discovery", "net.mesh", "network.http_request"]
+
+[[graph.nodes]]
+name = "squirrel"
+binary = "squirrel"
+order = 3
+required = false
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = ["ai.query", "ai.suggest", "ai.analyze", "context.create"]
+
+[[graph.nodes]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 4
+required = false
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "visualization"
+security_model = "tower_delegated"
+capabilities = [
+    "visualization.render.scene", "visualization.render.dashboard",
+    "interaction.poll", "interaction.subscribe",
+]
+
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 5
+required = false
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.retrieve"]
+
+# ═══════════════════════════════════════════════════════════════
+# Downstream (spawn = true — built by their own repos)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "ludospring"
+binary = "ludospring"
+order = 10
+required = false
+spawn = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.check"
+by_capability = "game"
+security_model = "tower_delegated"
+capabilities = [
+    "game.evaluate_flow", "game.fitts_cost", "game.engagement",
+    "game.difficulty_adjustment", "game.wfc_step", "game.generate_noise",
+    "game.analyze_ui", "game.accessibility",
+]
+
+[[graph.nodes]]
+name = "esotericwebb"
+binary = "esotericwebb"
+order = 11
+required = true
+spawn = true
+depends_on = ["beardog", "songbird"]
+health_method = "webb.liveness"
+by_capability = "narrative"
+security_model = "tower_delegated"
+args = ["serve"]
+capabilities = [
+    "webb.liveness", "webb.health",
+    "webb.scene.current", "webb.narrative.status", "webb.content.list",
+    "session.start", "session.state", "session.actions", "session.act",
+    "session.history", "session.narrate", "session.graph",
+    "tools.list", "tools.call",
+]

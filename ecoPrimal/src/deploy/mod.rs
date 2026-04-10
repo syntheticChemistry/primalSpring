@@ -224,11 +224,11 @@ pub fn validate_live_by_capability(path: &Path) -> LiveGraphValidation {
 pub fn load_graph(path: &Path) -> Result<DeployGraph, String> {
     let contents = std::fs::read_to_string(path)
         .map_err(|e| format!("failed to read {}: {e}", path.display()))?;
-    let mut graph: DeployGraph =
-        toml::from_str(&contents).map_err(|e| format!("failed to parse {}: {e}", path.display()))?;
+    let mut graph: DeployGraph = toml::from_str(&contents)
+        .map_err(|e| format!("failed to parse {}: {e}", path.display()))?;
 
     if !graph.nodes.is_empty() {
-        graph.graph.node.extend(graph.nodes.drain(..));
+        graph.graph.node.append(&mut graph.nodes);
         graph.graph.node.sort_by_key(|n| n.order);
     }
 

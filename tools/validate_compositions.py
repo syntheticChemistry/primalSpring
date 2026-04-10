@@ -27,6 +27,8 @@ def find_sock(name: str) -> str | None:
     candidates = []
     if name == "petaltongue":
         candidates.append(f"{SOCKET_DIR}/petaltongue-ipc.sock")
+        candidates.append(f"{SOCKET_DIR}/visualization.sock")
+        candidates.append(f"{SOCKET_DIR}/ui.sock")
     candidates.append(f"{SOCKET_DIR}/{name}.sock")
     xdg = os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")
     candidates.append(f"{xdg}/{name}/{name}.sock")
@@ -34,7 +36,15 @@ def find_sock(name: str) -> str | None:
         if os.path.exists(c) and _probe_alive(c):
             return c
     if name in ("biomeos", "neural-api"):
-        matches = glob.glob(f"{SOCKET_DIR}/neural-api-*.sock")
+        matches = glob.glob(f"{SOCKET_DIR}/neural-api-*.sock") + glob.glob(f"{SOCKET_DIR}/biomeos-*.sock")
+    elif name == "nestgate":
+        matches = glob.glob(f"{SOCKET_DIR}/nestgate-*.sock") + glob.glob(f"{SOCKET_DIR}/storage-*.sock")
+    elif name == "toadstool":
+        matches = (
+            glob.glob(f"{SOCKET_DIR}/toadstool-*.sock")
+            + glob.glob(f"{SOCKET_DIR}/compute-*.sock")
+            + glob.glob(f"{SOCKET_DIR}/compute-*.jsonrpc.sock")
+        )
     else:
         matches = glob.glob(f"{SOCKET_DIR}/{name}-*.sock")
     if not matches:

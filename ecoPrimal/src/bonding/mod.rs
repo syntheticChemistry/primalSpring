@@ -210,6 +210,105 @@ impl BondingPolicy {
         }
         errors
     }
+
+    /// Minimum BTSP cipher suite allowed by this policy's bond type.
+    ///
+    /// See `BTSP_PROTOCOL_STANDARD.md` §Cipher Selection Rules.
+    #[must_use]
+    pub const fn min_btsp_cipher(&self) -> crate::btsp::BtspCipherSuite {
+        crate::btsp::min_cipher_for_bond(self.bond_type)
+    }
+
+    /// Check whether a requested BTSP cipher suite is allowed under this policy.
+    #[must_use]
+    pub const fn btsp_cipher_allowed(&self, cipher: crate::btsp::BtspCipherSuite) -> bool {
+        crate::btsp::cipher_allowed(self.bond_type, cipher)
+    }
+}
+
+/// BTSP enforcement decision for a single connection.
+///
+/// Produced by [`BtspEnforcer::evaluate`] at connection time (Enforcement Point 1)
+/// and checked per-request at runtime (Enforcement Point 2).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BtspEnforcementDecision {
+    /// Whether the connection is allowed at all.
+    pub allowed: bool,
+    /// Effective cipher suite for the session.
+    pub cipher: crate::btsp::BtspCipherSuite,
+    /// Whether the capability is permitted by the bond's constraint.
+    pub capability_permitted: bool,
+    /// Human-readable reason (for logging/debugging).
+    pub reason: String,
+}
+
+/// Enforces `BondingPolicy` at the BTSP handshake and per-request layers.
+///
+/// This is the canonical enforcement point where the bonding model meets
+/// the socket layer. Tower Atomic calls this to validate connections.
+pub struct BtspEnforcer;
+
+impl BtspEnforcer {
+    /// Enforcement Point 1: evaluate a connection at handshake time.
+    ///
+    /// Called after BTSP handshake succeeds. Determines whether the
+    /// authenticated peer is allowed to connect and which cipher to use.
+    #[must_use]
+    pub fn evaluate_connection(
+        policy: &BondingPolicy,
+        requested_cipher: crate::btsp::BtspCipherSuite,
+    ) -> BtspEnforcementDecision {
+        let cipher_ok = policy.btsp_cipher_allowed(requested_cipher);
+        let effective_cipher = if cipher_ok {
+            requested_cipher
+        } else {
+            policy.min_btsp_cipher()
+        };
+
+        BtspEnforcementDecision {
+            allowed: true,
+            cipher: effective_cipher,
+            capability_permitted: true,
+            reason: if cipher_ok {
+                format!(
+                    "Bond {} allows {} — granted",
+                    serde_json::to_string(&policy.bond_type).unwrap_or_default(),
+                    requested_cipher.description()
+                )
+            } else {
+                format!(
+                    "Bond {} requires minimum {} — upgraded from {}",
+                    serde_json::to_string(&policy.bond_type).unwrap_or_default(),
+                    effective_cipher.description(),
+                    requested_cipher.description()
+                )
+            },
+        }
+    }
+
+    /// Enforcement Point 2: evaluate a per-request capability check.
+    ///
+    /// Called on every JSON-RPC request after the session is established.
+    /// Checks whether the requested capability is allowed through this bond.
+    #[must_use]
+    pub fn evaluate_request(
+        policy: &BondingPolicy,
+        capability: &str,
+        session_cipher: crate::btsp::BtspCipherSuite,
+    ) -> BtspEnforcementDecision {
+        let cap_ok = policy.constraints.permits(capability);
+
+        BtspEnforcementDecision {
+            allowed: cap_ok,
+            cipher: session_cipher,
+            capability_permitted: cap_ok,
+            reason: if cap_ok {
+                format!("Capability '{capability}' permitted by bond constraints")
+            } else {
+                format!("Capability '{capability}' denied by bond constraints")
+            },
+        }
+    }
 }
 
 /// Result of a bonding validation experiment.
@@ -322,6 +421,68 @@ mod tests {
         let errors = p.validate();
         assert!(!errors.is_empty());
         assert!(errors[0].contains("GeneticLineage"));
+    }
+
+    #[test]
+    fn policy_min_btsp_cipher() {
+        use crate::btsp::BtspCipherSuite;
+        let cov = BondingPolicy::covalent_default();
+        assert_eq!(cov.min_btsp_cipher(), BtspCipherSuite::Null);
+
+        let ionic = BondingPolicy::ionic_contract(vec!["compute.*".to_owned()]);
+        assert_eq!(ionic.min_btsp_cipher(), BtspCipherSuite::ChaCha20Poly1305);
+    }
+
+    #[test]
+    fn policy_btsp_cipher_allowed() {
+        use crate::btsp::BtspCipherSuite;
+        let cov = BondingPolicy::covalent_default();
+        assert!(cov.btsp_cipher_allowed(BtspCipherSuite::Null));
+        assert!(cov.btsp_cipher_allowed(BtspCipherSuite::ChaCha20Poly1305));
+
+        let ionic = BondingPolicy::ionic_contract(vec![]);
+        assert!(!ionic.btsp_cipher_allowed(BtspCipherSuite::Null));
+        assert!(!ionic.btsp_cipher_allowed(BtspCipherSuite::HmacPlain));
+        assert!(ionic.btsp_cipher_allowed(BtspCipherSuite::ChaCha20Poly1305));
+    }
+
+    #[test]
+    fn btsp_enforcer_connection_upgrade() {
+        use crate::btsp::BtspCipherSuite;
+        let ionic = BondingPolicy::ionic_contract(vec!["compute.*".to_owned()]);
+        let decision = BtspEnforcer::evaluate_connection(&ionic, BtspCipherSuite::Null);
+        assert!(decision.allowed);
+        assert_eq!(decision.cipher, BtspCipherSuite::ChaCha20Poly1305);
+        assert!(decision.reason.contains("upgraded"));
+    }
+
+    #[test]
+    fn btsp_enforcer_connection_accepted() {
+        use crate::btsp::BtspCipherSuite;
+        let cov = BondingPolicy::covalent_default();
+        let decision = BtspEnforcer::evaluate_connection(&cov, BtspCipherSuite::Null);
+        assert!(decision.allowed);
+        assert_eq!(decision.cipher, BtspCipherSuite::Null);
+        assert!(decision.reason.contains("granted"));
+    }
+
+    #[test]
+    fn btsp_enforcer_request_filtering() {
+        use crate::btsp::BtspCipherSuite;
+        let policy = BondingPolicy::idle_compute(vec![], 100);
+        let allowed = BtspEnforcer::evaluate_request(
+            &policy,
+            "compute.submit",
+            BtspCipherSuite::ChaCha20Poly1305,
+        );
+        assert!(allowed.capability_permitted);
+
+        let denied = BtspEnforcer::evaluate_request(
+            &policy,
+            "storage.store",
+            BtspCipherSuite::ChaCha20Poly1305,
+        );
+        assert!(!denied.capability_permitted);
     }
 
     #[test]

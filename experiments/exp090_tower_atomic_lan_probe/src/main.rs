@@ -49,35 +49,68 @@ fn validate_local_tower(v: &mut ValidationResult) {
     let bd_port = beardog_port();
     let sb_port = songbird_port();
 
-    match tcp_rpc("localhost", bd_port, methods::health::LIVENESS, &serde_json::json!({})) {
+    match tcp_rpc(
+        "localhost",
+        bd_port,
+        methods::health::LIVENESS,
+        &serde_json::json!({}),
+    ) {
         Ok((resp, latency)) => {
             let ms = latency.as_millis();
             println!("  BearDog:  LIVE (port {bd_port}, {ms}ms)");
-            v.check_bool("local_beardog_live", true, &format!("BearDog at :{bd_port} ({ms}ms)"));
+            v.check_bool(
+                "local_beardog_live",
+                true,
+                &format!("BearDog at :{bd_port} ({ms}ms)"),
+            );
 
-            let status = resp.get("status").and_then(|s| s.as_str()).unwrap_or("unknown");
+            let status = resp
+                .get("status")
+                .and_then(|s| s.as_str())
+                .unwrap_or("unknown");
             println!("  BearDog status: {status}");
         }
         Err(e) => {
             println!("  BearDog:  DOWN ({e})");
-            v.check_bool("local_beardog_live", false, &format!("BearDog unreachable: {e}"));
+            v.check_bool(
+                "local_beardog_live",
+                false,
+                &format!("BearDog unreachable: {e}"),
+            );
         }
     }
 
-    match tcp_rpc("localhost", sb_port, methods::health::LIVENESS, &serde_json::json!({})) {
+    match tcp_rpc(
+        "localhost",
+        sb_port,
+        methods::health::LIVENESS,
+        &serde_json::json!({}),
+    ) {
         Ok((_, latency)) => {
             let ms = latency.as_millis();
             println!("  Songbird: LIVE (port {sb_port}, {ms}ms)");
-            v.check_bool("local_songbird_live", true, &format!("Songbird at :{sb_port} ({ms}ms)"));
+            v.check_bool(
+                "local_songbird_live",
+                true,
+                &format!("Songbird at :{sb_port} ({ms}ms)"),
+            );
         }
         Err(e) => {
             println!("  Songbird: DOWN ({e})");
-            v.check_bool("local_songbird_live", false, &format!("Songbird unreachable: {e}"));
+            v.check_bool(
+                "local_songbird_live",
+                false,
+                &format!("Songbird unreachable: {e}"),
+            );
         }
     }
 }
 
-fn validate_mesh_discovery(v: &mut ValidationResult, family_id: &str, node_id: &str) -> Vec<serde_json::Value> {
+fn validate_mesh_discovery(
+    v: &mut ValidationResult,
+    family_id: &str,
+    node_id: &str,
+) -> Vec<serde_json::Value> {
     v.section("BirdSong Mesh Discovery");
 
     let sb_port = songbird_port();
@@ -100,7 +133,10 @@ fn validate_mesh_discovery(v: &mut ValidationResult, family_id: &str, node_id: &
             println!("  mesh.init: {e}");
             let acceptable = e.contains("Method not found");
             if acceptable {
-                v.check_skip("mesh_init", "mesh.init not available on this Songbird build");
+                v.check_skip(
+                    "mesh_init",
+                    "mesh.init not available on this Songbird build",
+                );
             } else {
                 v.check_skip("mesh_init", &format!("mesh.init error: {e}"));
             }
@@ -123,12 +159,7 @@ fn validate_mesh_discovery(v: &mut ValidationResult, family_id: &str, node_id: &
         }
     }
 
-    let peers = match tcp_rpc(
-        "localhost",
-        sb_port,
-        "mesh.peers",
-        &serde_json::json!({}),
-    ) {
+    let peers = match tcp_rpc("localhost", sb_port, "mesh.peers", &serde_json::json!({})) {
         Ok((resp, _)) => {
             let peer_list = resp
                 .as_array()
@@ -144,7 +175,10 @@ fn validate_mesh_discovery(v: &mut ValidationResult, family_id: &str, node_id: &
             );
 
             for (i, peer) in peer_list.iter().enumerate() {
-                let addr = peer.get("address").and_then(|a| a.as_str()).unwrap_or("unknown");
+                let addr = peer
+                    .get("address")
+                    .and_then(|a| a.as_str())
+                    .unwrap_or("unknown");
                 let pid = peer.get("node_id").and_then(|n| n.as_str()).unwrap_or("?");
                 println!("    [{i}] {pid} @ {addr}");
             }
@@ -180,7 +214,12 @@ fn validate_peer_capabilities(v: &mut ValidationResult, peers: &[serde_json::Val
         let (host, port) = parse_host_port(addr, tolerances::TCP_FALLBACK_SONGBIRD_PORT);
         let check_name = format!("peer_{i}_capabilities");
 
-        match tcp_rpc(&host, port, methods::capabilities::LIST, &serde_json::json!({})) {
+        match tcp_rpc(
+            &host,
+            port,
+            methods::capabilities::LIST,
+            &serde_json::json!({}),
+        ) {
             Ok((caps, latency)) => {
                 let count = caps
                     .as_array()
@@ -194,7 +233,11 @@ fn validate_peer_capabilities(v: &mut ValidationResult, peers: &[serde_json::Val
                 let ms = latency.as_millis();
                 println!("  peer[{i}] {addr}: {count} capabilities ({ms}ms)");
                 total_caps += count;
-                v.check_bool(&check_name, count > 0, &format!("peer {addr}: {count} caps"));
+                v.check_bool(
+                    &check_name,
+                    count > 0,
+                    &format!("peer {addr}: {count} caps"),
+                );
             }
             Err(e) => {
                 println!("  peer[{i}] {addr}: unreachable ({e})");
@@ -221,10 +264,17 @@ fn validate_https_through_tower(v: &mut ValidationResult) {
                 &serde_json::json!({ "url": "https://ifconfig.me/ip" }),
             ) {
                 Ok((resp, latency)) => {
-                    let status = resp.get("status_code").and_then(|s| s.as_u64()).unwrap_or(0);
+                    let status = resp
+                        .get("status_code")
+                        .and_then(|s| s.as_u64())
+                        .unwrap_or(0);
                     let ms = latency.as_millis();
                     println!("  HTTPS via direct Songbird: status {status} ({ms}ms)");
-                    v.check_bool("tower_https", status == 200, &format!("HTTPS status {status}"));
+                    v.check_bool(
+                        "tower_https",
+                        status == 200,
+                        &format!("HTTPS status {status}"),
+                    );
                 }
                 Err(e) => {
                     println!("  HTTPS via Songbird: {e}");
@@ -242,11 +292,23 @@ fn validate_https_through_tower(v: &mut ValidationResult) {
         return;
     }
 
-    match bridge.capability_call("http", "get", &serde_json::json!({ "url": "https://ifconfig.me/ip" })) {
+    match bridge.capability_call(
+        "http",
+        "get",
+        &serde_json::json!({ "url": "https://ifconfig.me/ip" }),
+    ) {
         Ok(resp) => {
-            let status = resp.value.get("status_code").and_then(serde_json::Value::as_u64).unwrap_or(0);
+            let status = resp
+                .value
+                .get("status_code")
+                .and_then(serde_json::Value::as_u64)
+                .unwrap_or(0);
             println!("  HTTPS via neural-api → Songbird: status {status}");
-            v.check_bool("tower_https", status == 200, &format!("HTTPS routed through Tower: {status}"));
+            v.check_bool(
+                "tower_https",
+                status == 200,
+                &format!("HTTPS routed through Tower: {status}"),
+            );
         }
         Err(e) => {
             println!("  HTTPS via neural-api: {e}");

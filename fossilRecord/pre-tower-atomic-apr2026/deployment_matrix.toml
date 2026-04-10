@@ -1,0 +1,876 @@
+# Deployment Validation Matrix — primalSpring
+#
+# Defines the test surface for primal composition deployments across
+# architectures, topologies, network conditions, and transport modes.
+#
+# Usage:
+#   scripts/validate_deployment_matrix.sh --cell tower-x86-homelan
+#   scripts/validate_deployment_matrix.sh --tier docker
+#   scripts/validate_deployment_matrix.sh --all
+#
+# Each cell = topology × arch × preset × transport. A cell passes when:
+#   1. All primals in the topology start successfully
+#   2. All health probes return OK within timeout
+#   3. Core experiments (exp073, exp074) pass
+#   4. No primal crashes under the network preset
+#
+# Matrix dimensions are evaluated combinatorially but only the cells
+# listed in [[cells]] are actually run. This allows incremental expansion
+# as primal teams fix gaps.
+
+[matrix]
+version = "1.0.0"
+description = "Pre-deployment validation for cross-arch, cross-network primal compositions"
+last_updated = "2026-03-28"
+
+# ── Architectures ───────────────────────────────────────────────────────
+
+[architectures.x86_64]
+target = "x86_64-unknown-linux-musl"
+docker_platform = "linux/amd64"
+plasmidbin_subdir = "primals"
+springs_subdir = "springs"
+tier = "docker"
+notes = "Native Docker — no emulation needed"
+
+[architectures.aarch64]
+target = "aarch64-unknown-linux-musl"
+docker_platform = "linux/arm64"
+plasmidbin_subdir = "primals/aarch64"
+springs_subdir = "springs/aarch64"
+tier = "docker-qemu"
+notes = "Requires qemu-user-static or real ARM64 host"
+prerequisites = ["qemu-user-static", "binfmt_misc"]
+
+# ── Topologies ──────────────────────────────────────────────────────────
+
+[topologies.tower_2node]
+file = "ecoprimals-tower-2node"
+nodes = 2
+primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal", "neuralspring", "wetspring", "ludospring"]
+composition = "Tower + Springs"
+description = "Minimal cross-gate: Tower substrate + spring primals"
+
+[topologies.nucleus_3node]
+file = "ecoprimals-nucleus-3node"
+nodes = 3
+primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring_primal", "neuralspring", "wetspring", "ludospring"]
+composition = "Full NUCLEUS + Springs + Mobile"
+description = "Full NUCLEUS with NAT-degraded mobile node"
+
+[topologies.wan_federation]
+file = "ecoprimals-wan-federation"
+nodes = 3
+primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring_primal", "neuralspring", "wetspring", "ludospring"]
+composition = "WAN Federation"
+description = "Cross-site federation with satellite-grade latency"
+
+[topologies.tower_tcp_first]
+file = "ecoprimals-tower-2node-tcp"
+nodes = 2
+primals = ["beardog", "songbird", "biomeos"]
+composition = "Tower (TCP-only)"
+description = "Mobile/Android simulation: no UDS, TCP transport only"
+
+# ── Niche / constrained substrates ─────────────────────────────────────
+
+[topologies.alpine_minimal]
+file = "ecoprimals-alpine-minimal"
+nodes = 2
+primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal"]
+composition = "Tower + Springs (Alpine)"
+description = "6MB Alpine base — no glibc, no systemd, BusyBox only"
+
+[topologies.readonly_fs]
+file = "ecoprimals-readonly-fs"
+nodes = 2
+primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal"]
+composition = "Tower + Springs (read-only)"
+description = "Read-only containers — simulates Android/GrapheneOS CWD write failures"
+
+[topologies.constrained_256m]
+file = "ecoprimals-constrained-256m"
+nodes = 2
+primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal"]
+composition = "Tower + Springs (256MB)"
+description = "256MB RAM, 0.5 CPU per node — tests OOM handling and graceful degradation"
+
+# ── Bonding model topologies ───────────────────────────────────────────
+
+[topologies.ionic_2family]
+file = "ecoprimals-ionic-2family"
+nodes = 4
+primals = ["beardog", "songbird", "biomeos", "toadstool", "groundspring", "neuralspring", "wetspring"]
+composition = "2x Tower (Ionic Bond)"
+description = "Two family seeds, contract-based cross-family capability sharing"
+bond_type = "ionic"
+
+[topologies.metallic_fleet]
+file = "ecoprimals-metallic-fleet"
+nodes = 5
+primals = ["beardog", "songbird", "biomeos", "toadstool", "groundspring", "hotspring_primal", "neuralspring", "wetspring"]
+composition = "Fleet Pool (Metallic Bond)"
+description = "5 nodes sharing delocalized resource pool — data center rack pattern"
+bond_type = "metallic"
+
+[topologies.organo_metal_salt]
+file = "ecoprimals-organo-metal-salt"
+nodes = 5
+primals = ["beardog", "songbird", "biomeos", "nestgate", "toadstool", "squirrel", "groundspring", "healthspring_primal", "neuralspring", "wetspring"]
+composition = "OrganoMetalSalt Complex"
+description = "Covalent core + ionic edge + weak public — the full chemistry"
+bond_type = "organo_metal_salt"
+
+# ── Scale topologies ───────────────────────────────────────────────────
+
+[topologies.federation_10node]
+file = "ecoprimals-federation-10node"
+nodes = 10
+primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring_primal", "neuralspring", "wetspring", "ludospring", "rhizocrypt", "loamspine", "sweetgrass"]
+composition = "Full Federation + Provenance Trio"
+description = "3 NUCLEUS gates + 5 spring nodes + 2 mobile-degraded — Plasmodium at scale"
+bond_type = "covalent"
+
+[topologies.mixed_arch_cluster]
+file = "ecoprimals-mixed-arch-cluster"
+nodes = 4
+primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal", "neuralspring"]
+composition = "Mixed-Arch Cluster"
+description = "x86_64 + aarch64 nodes in same lab — tests cross-arch binary dispatch and crypto parity"
+bond_type = "covalent"
+
+# ── Showcase-mined topologies ──────────────────────────────────────────
+
+[topologies.fieldmouse_chimera]
+file = "ecoprimals-fieldmouse-chimera"
+nodes = 3
+primals = ["beardog", "songbird", "biomeos", "nestgate"]
+composition = "Gate + fieldMouse Chimeras"
+description = "fieldMouse deployment class: Tower chimera on Alpine (no biomeOS), data ingestion to gate"
+bond_type = "covalent"
+deployment_class = "fieldmouse"
+
+[topologies.albatross_multiplex]
+file = "ecoprimals-albatross-multiplex"
+nodes = 5
+primals = ["beardog", "songbird", "biomeos", "toadstool"]
+composition = "Albatross (Multi-Songbird Fleet)"
+description = "3 Songbird instances with tarpc connection pooling and intelligent routing to ToadStool"
+bond_type = "metallic"
+
+[topologies.skunkbat_defensive]
+file = "ecoprimals-skunkbat-defensive"
+nodes = 3
+primals = ["beardog", "songbird", "biomeos", "skunkbat", "groundspring", "healthspring_primal"]
+composition = "Defended Mesh + External Probe"
+description = "skunkBat defensive security mesh: violation detection, sovereignty proofs, external probe"
+bond_type = "covalent"
+
+[topologies.neuromorphic_edge]
+file = "ecoprimals-neuromorphic-edge"
+nodes = 3
+primals = ["beardog", "songbird", "biomeos", "nestgate", "toadstool", "neuralspring", "wetspring"]
+composition = "Gate + Edge NPU + Neural Analysis"
+description = "Neuromorphic edge: Akida/NPU real-time classification with gate storage and analysis"
+bond_type = "covalent"
+deployment_class = "fieldmouse_edge"
+
+[topologies.gaming_mesh]
+file = "ecoprimals-gaming-mesh"
+nodes = 3
+primals = ["beardog", "songbird", "biomeos", "ludospring", "toadstool", "petaltongue"]
+composition = "Gaming Mesh Chimera"
+description = "ludoSpring + Songbird + ToadStool: game coordination, GPU dispatch, 60Hz tick budget"
+bond_type = "covalent"
+
+# ── Agentic topologies ─────────────────────────────────────────────────
+
+[topologies.agentic_tower]
+file = "ecoprimals-agentic-tower"
+nodes = 3
+primals = ["beardog", "songbird", "biomeos", "squirrel", "petaltongue", "groundspring", "healthspring_primal", "neuralspring", "toadstool", "nestgate"]
+composition = "Agentic Tower (biomeOS + Squirrel + petalTongue)"
+description = "Full human+AI coordination: Neural API routing + MCP tools + UI dashboards"
+bond_type = "covalent"
+
+[topologies.agentic_fieldmouse]
+file = "ecoprimals-agentic-fieldmouse"
+nodes = 3
+primals = ["beardog", "songbird", "biomeos", "squirrel", "petaltongue", "nestgate", "neuralspring", "wetspring", "groundspring"]
+composition = "Agentic Gate + fieldMouse Sensors"
+description = "AI-guided edge sensor orchestration: Squirrel classifies, biomeOS routes, petalTongue dashboards"
+bond_type = "covalent"
+deployment_class = "fieldmouse"
+
+# ── Storytelling topologies ────────────────────────────────────────────
+
+[topologies.storytelling_tower]
+file = "ecoprimals-storytelling-tower"
+nodes = 3
+primals = ["beardog", "songbird", "biomeos", "squirrel", "esotericwebb", "ludospring", "petaltongue", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+composition = "Storytelling Tower (esotericWebb + ludoSpring + Squirrel DM + petalTongue)"
+description = "Full AI DM storytelling: CRPG narrative + game science + AI narration + scene rendering + session provenance"
+bond_type = "covalent"
+
+[topologies.storytelling_minimal]
+file = "ecoprimals-storytelling-minimal"
+nodes = 1
+primals = ["beardog", "songbird", "esotericwebb", "ludospring", "squirrel", "petaltongue"]
+composition = "Minimal Storytelling (no biomeOS, direct IPC)"
+description = "Offline AI DM: esotericWebb + ludoSpring + Squirrel + petalTongue TUI — single node, no orchestrator"
+bond_type = "covalent"
+deployment_class = "minimal"
+
+# ── Network Presets ─────────────────────────────────────────────────────
+
+[presets.basement_lan]
+latency_ms = 0.5
+loss_pct = 0.0
+bandwidth_mbps = 10000
+scenario = "Same-rack HPC / server room"
+
+[presets.home_lan]
+latency_ms = 2
+loss_pct = 0.01
+bandwidth_mbps = 1000
+scenario = "Home network — WiFi or ethernet"
+
+[presets.friend_wan]
+latency_ms = 50
+loss_pct = 0.5
+bandwidth_mbps = 100
+scenario = "Friend's gate over broadband WAN"
+
+[presets.mobile_cell]
+latency_ms = 100
+loss_pct = 2.0
+bandwidth_mbps = 10
+scenario = "Pixel over LTE/5G, behind NAT"
+
+[presets.satellite]
+latency_ms = 600
+loss_pct = 5.0
+bandwidth_mbps = 5
+scenario = "Starlink / geostationary — extreme latency"
+
+[presets.deep_space]
+latency_ms = 2000
+loss_pct = 10.0
+bandwidth_mbps = 1
+scenario = "Intercontinental / Tor-routed — extreme RTT"
+
+[presets.urban_congested]
+latency_ms = 150
+loss_pct = 15.0
+bandwidth_mbps = 2
+scenario = "Dense urban LTE during peak hours"
+
+[presets.intermittent]
+latency_ms = 500
+loss_pct = 50.0
+bandwidth_mbps = 0.5
+scenario = "Spotty rural / tunnel transitions — near-unusable"
+
+[presets.localhost]
+latency_ms = 0
+loss_pct = 0.0
+bandwidth_mbps = 0
+scenario = "Same-machine loopback — no network simulation"
+
+# ── Transport Modes ─────────────────────────────────────────────────────
+
+[transports.uds_first]
+description = "Unix domain sockets preferred, TCP fallback"
+env_override = {}
+notes = "Default for desktop/server gates"
+
+[transports.tcp_first]
+description = "TCP-only — simulates mobile/Android (no UDS)"
+env_override = { PRIMAL_TRANSPORT = "tcp", BIOMEOS_MODE = "api", BIOMEOS_TCP_ONLY = "true" }
+notes = "Required for Pixel/GrapheneOS (SELinux denies sock_file create)"
+
+# ── Experiments ─────────────────────────────────────────────────────────
+
+[experiments]
+core = ["exp074_cross_gate_health", "exp073_lan_covalent_mesh"]
+extended = ["exp076_cross_gate_neural_routing", "exp063_pixel_tower_rendezvous"]
+full = ["exp060_biomeos_tower_deploy", "exp075_biomeos_neural_api_live", "exp079_spring_deploy_sweep"]
+matrix_sweep = ["exp081_deployment_matrix_sweep"]
+bonding = ["exp030_covalent_bond", "exp031_ionic_bond", "exp032_plasmodium_formation"]
+chaos = ["exp082_chaos_substrate"]
+federation = ["exp083_federation_edge_cases"]
+provenance = ["exp084_provenance_adversarial", "exp041_provenance_trio_science"]
+showcase = ["exp042_fieldmouse_ingestion", "exp050_compute_triangle", "exp052_protocol_escalation", "exp053_multi_primal_lifecycle", "exp057_supply_chain_provenance", "exp058_semantic_attribution", "exp059_weak_force_isolation"]
+agentic = ["exp061_squirrel_ai_composition", "exp077_squirrel_neural_api_bridge", "exp078_petaltongue_viz_surface", "exp075_biomeos_neural_api_live"]
+storytelling = ["exp023_rpgpt_session", "exp061_squirrel_ai_composition", "exp078_petaltongue_viz_surface"]
+
+# ── Validation Cells ────────────────────────────────────────────────────
+#
+# Each cell is a specific combination to test. Status tracks what works today.
+#
+# Status: pass | fail | blocked | untested
+# Priority: P0 (must pass before any deploy) | P1 (blocks real gates) | P2 (nice to have)
+
+[[cells]]
+id = "tower-x86-homelan-uds"
+topology = "tower_2node"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "core"
+priority = "P0"
+status = "pass"
+notes = "Golden path — live-tested, 7/8 primals alive"
+
+[[cells]]
+id = "tower-x86-basement-uds"
+topology = "tower_2node"
+arch = "x86_64"
+preset = "basement_lan"
+transport = "uds_first"
+experiments = "core"
+priority = "P1"
+status = "untested"
+notes = "HPC scenario — should be easiest"
+
+[[cells]]
+id = "nucleus-x86-mixed-uds"
+topology = "nucleus_3node"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "core"
+priority = "P0"
+status = "untested"
+notes = "Full NUCLEUS — includes NestGate, ToadStool, Squirrel"
+
+[[cells]]
+id = "nucleus-x86-mobile-uds"
+topology = "nucleus_3node"
+arch = "x86_64"
+preset = "mobile_cell"
+transport = "uds_first"
+experiments = "core"
+priority = "P1"
+status = "untested"
+notes = "Mobile-degraded node — tests NAT traversal, latency tolerance"
+
+[[cells]]
+id = "tower-x86-homelan-tcp"
+topology = "tower_tcp_first"
+arch = "x86_64"
+preset = "home_lan"
+transport = "tcp_first"
+experiments = "core"
+priority = "P0"
+status = "untested"
+notes = "TCP-only on x86_64 — validates mobile transport path before ARM"
+
+[[cells]]
+id = "tower-x86-mobile-tcp"
+topology = "tower_tcp_first"
+arch = "x86_64"
+preset = "mobile_cell"
+transport = "tcp_first"
+experiments = "core"
+priority = "P1"
+status = "untested"
+notes = "Pixel-like conditions on x86_64 — catches biomeOS --port, BearDog TCP issues"
+
+[[cells]]
+id = "wan-x86-satellite-uds"
+topology = "wan_federation"
+arch = "x86_64"
+preset = "satellite"
+transport = "uds_first"
+experiments = "core"
+priority = "P2"
+status = "untested"
+notes = "Extreme latency — tests timeout handling, retry logic"
+
+[[cells]]
+id = "tower-aarch64-homelan-uds"
+topology = "tower_2node"
+arch = "aarch64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "core"
+priority = "P1"
+status = "untested"
+notes = "ARM64 Docker via qemu-user-static — catches musl/arch issues"
+
+[[cells]]
+id = "tower-aarch64-homelan-tcp"
+topology = "tower_tcp_first"
+arch = "aarch64"
+preset = "home_lan"
+transport = "tcp_first"
+experiments = "core"
+priority = "P0"
+status = "untested"
+notes = "Pixel deployment simulation — the cell that catches SELinux/UDS issues"
+
+[[cells]]
+id = "tower-aarch64-mobile-tcp"
+topology = "tower_tcp_first"
+arch = "aarch64"
+preset = "mobile_cell"
+transport = "tcp_first"
+experiments = "core"
+priority = "P1"
+status = "untested"
+notes = "Full Pixel simulation: ARM64 + TCP-only + cellular conditions"
+
+[[cells]]
+id = "nucleus-aarch64-mixed-tcp"
+topology = "nucleus_3node"
+arch = "aarch64"
+preset = "mobile_cell"
+transport = "tcp_first"
+experiments = "core"
+priority = "P2"
+status = "blocked"
+notes = "Blocked: NestGate aarch64 musl segfault (see IPC_COMPLIANCE_MATRIX.md)"
+
+[[cells]]
+id = "wan-x86-friend-uds"
+topology = "wan_federation"
+arch = "x86_64"
+preset = "friend_wan"
+transport = "uds_first"
+experiments = "extended"
+priority = "P2"
+status = "untested"
+notes = "Friend gate scenario — moderate latency, tests federation"
+
+# ── Niche / constrained cells ──────────────────────────────────────────
+
+[[cells]]
+id = "alpine-x86-homelan-uds"
+topology = "alpine_minimal"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "core"
+priority = "P1"
+status = "untested"
+notes = "Alpine 6MB base — tests musl portability without glibc/systemd"
+
+[[cells]]
+id = "readonly-x86-homelan-tcp"
+topology = "readonly_fs"
+arch = "x86_64"
+preset = "home_lan"
+transport = "tcp_first"
+experiments = "core"
+priority = "P1"
+status = "untested"
+notes = "Read-only FS — catches BearDog audit.log, Songbird PID, NestGate data dir failures"
+
+[[cells]]
+id = "constrained-x86-homelan-uds"
+topology = "constrained_256m"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "core"
+priority = "P1"
+status = "untested"
+notes = "256MB RAM — tests OOM handling, which compositions fit in constrained memory"
+
+[[cells]]
+id = "tower-x86-deepspace-uds"
+topology = "tower_2node"
+arch = "x86_64"
+preset = "deep_space"
+transport = "uds_first"
+experiments = "core"
+priority = "P2"
+status = "untested"
+notes = "2000ms RTT — tests JSON-RPC timeout cascades, session expiry under extreme latency"
+
+[[cells]]
+id = "tower-x86-intermittent-tcp"
+topology = "tower_tcp_first"
+arch = "x86_64"
+preset = "intermittent"
+transport = "tcp_first"
+experiments = "core"
+priority = "P2"
+status = "untested"
+notes = "50% packet loss — tests graceful degradation vs crash on near-unusable link"
+
+[[cells]]
+id = "tower-x86-localhost-uds"
+topology = "tower_2node"
+arch = "x86_64"
+preset = "localhost"
+transport = "uds_first"
+experiments = "core"
+priority = "P1"
+status = "untested"
+notes = "Zero-overhead loopback — baseline performance, no tc simulation"
+
+# ── Bonding model cells ────────────────────────────────────────────────
+
+[[cells]]
+id = "ionic-x86-homelan-uds"
+topology = "ionic_2family"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "bonding"
+priority = "P2"
+status = "untested"
+notes = "Two-family ionic bond — tests cross-family BearDog verification, metered capabilities"
+
+[[cells]]
+id = "metallic-x86-basement-uds"
+topology = "metallic_fleet"
+arch = "x86_64"
+preset = "basement_lan"
+transport = "uds_first"
+experiments = "bonding"
+priority = "P2"
+status = "untested"
+notes = "5-node metallic fleet — tests delocalized compute dispatch, Plasmodium aggregation"
+
+[[cells]]
+id = "oms-x86-mixed-uds"
+topology = "organo_metal_salt"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "bonding"
+priority = "P2"
+status = "untested"
+notes = "OrganoMetalSalt complex — covalent core + ionic edge + weak public in one lab"
+
+# ── Scale cells ────────────────────────────────────────────────────────
+
+[[cells]]
+id = "federation-x86-mixed-uds"
+topology = "federation_10node"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "federation"
+priority = "P2"
+status = "untested"
+notes = "10-node federation — Plasmodium formation at scale, 3 NUCLEUS gates + springs + mobile"
+
+[[cells]]
+id = "federation-x86-urban-tcp"
+topology = "federation_10node"
+arch = "x86_64"
+preset = "urban_congested"
+transport = "tcp_first"
+experiments = "federation"
+priority = "P2"
+status = "untested"
+notes = "10-node federation under urban congestion — tests resilience at scale + degraded network"
+
+[[cells]]
+id = "mixed-arch-homelan-uds"
+topology = "mixed_arch_cluster"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "core"
+priority = "P2"
+status = "untested"
+notes = "Mixed x86_64 + aarch64 cluster — tests cross-arch binary dispatch, crypto parity"
+
+# ── Science composition cells ──────────────────────────────────────────
+
+[[cells]]
+id = "nucleus-x86-basement-provenance"
+topology = "nucleus_3node"
+arch = "x86_64"
+preset = "basement_lan"
+transport = "uds_first"
+experiments = "provenance"
+priority = "P2"
+status = "untested"
+notes = "Full NUCLEUS + provenance trio — tests RootPulse commit/branch/merge/diff chain"
+
+# ── Chaos / adversarial cells ──────────────────────────────────────────
+
+[[cells]]
+id = "chaos-x86-homelan-uds"
+topology = "tower_2node"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "chaos"
+priority = "P2"
+status = "untested"
+notes = "Chaos substrate: kill-and-recover, half-open, rapid reconnect, timeout resilience"
+
+[[cells]]
+id = "chaos-x86-intermittent-tcp"
+topology = "tower_tcp_first"
+arch = "x86_64"
+preset = "intermittent"
+transport = "tcp_first"
+experiments = "chaos"
+priority = "P2"
+status = "untested"
+notes = "Chaos under extreme packet loss (50%) — tests graceful degradation vs crash"
+
+[[cells]]
+id = "federation-x86-friend-edge"
+topology = "federation_10node"
+arch = "x86_64"
+preset = "friend_wan"
+transport = "uds_first"
+experiments = "federation"
+priority = "P2"
+status = "untested"
+notes = "10-node federation edge cases: asymmetric latency, partial mesh, cross-gate capabilities"
+
+# ── Showcase-mined cells ───────────────────────────────────────────────
+
+[[cells]]
+id = "fieldmouse-x86-homelan-uds"
+topology = "fieldmouse_chimera"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "showcase"
+priority = "P1"
+status = "untested"
+notes = "fieldMouse chimera: Tower fused binary on Alpine, no biomeOS, data ingestion to gate with provenance"
+
+[[cells]]
+id = "fieldmouse-aarch64-homelan-tcp"
+topology = "fieldmouse_chimera"
+arch = "aarch64"
+preset = "home_lan"
+transport = "tcp_first"
+experiments = "showcase"
+priority = "P2"
+status = "untested"
+notes = "fieldMouse chimera on ARM64: models Pi Zero / RISC-V sensor deployment"
+
+[[cells]]
+id = "albatross-x86-basement-uds"
+topology = "albatross_multiplex"
+arch = "x86_64"
+preset = "basement_lan"
+transport = "uds_first"
+experiments = "showcase"
+priority = "P2"
+status = "untested"
+notes = "Albatross multiplex: 3 Songbird instances + ToadStool, tarpc connection pooling, workload distribution"
+
+[[cells]]
+id = "skunkbat-x86-homelan-uds"
+topology = "skunkbat_defensive"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "showcase"
+priority = "P2"
+status = "untested"
+notes = "skunkBat defensive mesh: violation detection, external probe, sovereignty proofs"
+
+[[cells]]
+id = "neuromorphic-x86-homelan-uds"
+topology = "neuromorphic_edge"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "showcase"
+priority = "P2"
+status = "untested"
+notes = "Neuromorphic edge: ToadStool NPU dispatch, NeuralSpring classify, NestGate store"
+
+[[cells]]
+id = "neuromorphic-aarch64-homelan-tcp"
+topology = "neuromorphic_edge"
+arch = "aarch64"
+preset = "home_lan"
+transport = "tcp_first"
+experiments = "showcase"
+priority = "P2"
+status = "untested"
+notes = "Neuromorphic edge on ARM64: models Coral/Jetson deployment with NPU"
+
+[[cells]]
+id = "gaming-x86-localhost-uds"
+topology = "gaming_mesh"
+arch = "x86_64"
+preset = "localhost"
+transport = "uds_first"
+experiments = "showcase"
+priority = "P2"
+status = "untested"
+notes = "Gaming mesh: ludoSpring + ToadStool GPU + petalTongue viz, 60Hz tick budget validation"
+
+# ── Agentic trio cells ─────────────────────────────────────────────────
+
+[[cells]]
+id = "agentic-x86-homelan-uds"
+topology = "agentic_tower"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "agentic"
+priority = "P1"
+status = "untested"
+notes = "Full agentic loop: biomeOS Neural API → Squirrel AI → petalTongue dashboard, home network"
+
+[[cells]]
+id = "agentic-x86-basement-uds"
+topology = "agentic_tower"
+arch = "x86_64"
+preset = "basement_lan"
+transport = "uds_first"
+experiments = "agentic"
+priority = "P1"
+status = "untested"
+notes = "Agentic tower on HPC — lowest latency, validates Neural API + Squirrel + petalTongue loop"
+
+[[cells]]
+id = "agentic-x86-homelan-tcp"
+topology = "agentic_tower"
+arch = "x86_64"
+preset = "home_lan"
+transport = "tcp_first"
+experiments = "agentic"
+priority = "P1"
+status = "untested"
+notes = "Agentic tower TCP-only — exposes biomeOS --port gap with Squirrel + petalTongue"
+
+[[cells]]
+id = "agentic-fm-x86-homelan-uds"
+topology = "agentic_fieldmouse"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "agentic"
+priority = "P2"
+status = "untested"
+notes = "AI-guided fieldMouse: sensor → NestGate → Squirrel classify → petalTongue alert dashboard"
+
+# ── Storytelling cells ─────────────────────────────────────────────────
+
+[[cells]]
+id = "storytelling-x86-homelan-uds"
+topology = "storytelling_tower"
+arch = "x86_64"
+preset = "home_lan"
+transport = "uds_first"
+experiments = "storytelling"
+priority = "P1"
+status = "untested"
+notes = "Full storytelling: esotericWebb CRPG + ludoSpring game science + Squirrel AI DM + petalTongue scenes + provenance trio"
+
+[[cells]]
+id = "storytelling-x86-homelan-tcp"
+topology = "storytelling_tower"
+arch = "x86_64"
+preset = "home_lan"
+transport = "tcp_first"
+experiments = "storytelling"
+priority = "P1"
+status = "untested"
+notes = "Storytelling TCP-first — validates esotericWebb native transport mode, exposes biomeOS --port gap"
+
+[[cells]]
+id = "storytelling-x86-localhost-uds"
+topology = "storytelling_minimal"
+arch = "x86_64"
+preset = "localhost"
+transport = "uds_first"
+experiments = "storytelling"
+priority = "P1"
+status = "untested"
+notes = "Minimal storytelling: single node, no biomeOS, direct discovery — validates offline/portable play"
+
+[[cells]]
+id = "storytelling-x86-basement-uds"
+topology = "storytelling_tower"
+arch = "x86_64"
+preset = "basement_lan"
+transport = "uds_first"
+experiments = "storytelling"
+priority = "P2"
+status = "untested"
+notes = "Storytelling on HPC — lowest latency for 60Hz continuous coordination with AI DM"
+
+# ── Known Blockers ──────────────────────────────────────────────────────
+#
+# Issues that block specific cells. Tracked here so the matrix runner
+# can skip blocked cells with a clear reason.
+
+[[blockers]]
+id = "nestgate-aarch64-musl"
+affects = ["nucleus-aarch64-mixed-tcp"]
+primal = "nestgate"
+description = "NestGate aarch64-musl segfaults (exit 139). x86_64-musl fixed March 28."
+tracking = "IPC_COMPLIANCE_MATRIX.md"
+
+[[blockers]]
+id = "biomeos-tcp-api"
+affects = ["tower-x86-homelan-tcp", "tower-x86-mobile-tcp", "tower-aarch64-homelan-tcp", "tower-aarch64-mobile-tcp"]
+primal = "biomeos"
+description = "biomeOS api mode ignores --port, forces UDS. TCP-only mode not implemented."
+tracking = "CROSS_GATE_MOBILE_TCP_TRANSPORT_GAP_HANDOFF_MAR28_2026.md"
+
+[[blockers]]
+id = "beardog-tcp-startup"
+affects = ["tower-x86-homelan-tcp", "tower-aarch64-homelan-tcp"]
+primal = "beardog"
+description = "BearDog server hard-exits if UDS bind fails (~5s). --listen TCP path exists but not first-class."
+tracking = "CROSS_GATE_MOBILE_TCP_TRANSPORT_GAP_HANDOFF_MAR28_2026.md"
+
+[[blockers]]
+id = "loamspine-startup-crash"
+affects = ["nucleus-x86-basement-provenance"]
+primal = "loamspine"
+description = "LoamSpine crashes on startup (Tokio nested runtime in infant_discovery). Blocks full provenance chain."
+tracking = "IPC_COMPLIANCE_MATRIX.md"
+
+[[blockers]]
+id = "ionic-not-implemented"
+affects = ["ionic-x86-homelan-uds"]
+primal = "beardog"
+description = "Cross-family ionic trust negotiation not implemented in BearDog/Songbird. Taxonomy exists, runtime enforcement does not."
+tracking = "BENCHSCALE_AGENTREAGENTS_MODERNIZATION_HANDOFF_MAR28_2026.md"
+
+[[blockers]]
+id = "squirrel-abstract-socket"
+affects = ["agentic-x86-homelan-uds", "agentic-x86-basement-uds", "agentic-fm-x86-homelan-uds"]
+primal = "squirrel"
+description = "Squirrel listens on abstract socket @squirrel but biomeOS routes to filesystem sockets. Forward fails silently."
+tracking = "specs/AGENTIC_TRIO_EVOLUTION.md"
+
+[[blockers]]
+id = "biomeos-tcp-api-agentic"
+affects = ["agentic-x86-homelan-tcp"]
+primal = "biomeos"
+description = "biomeOS api mode ignores --port, forces UDS. TCP-only agentic tower cannot function."
+tracking = "specs/AGENTIC_TRIO_EVOLUTION.md"
+
+[[blockers]]
+id = "ludospring-ipc-surface"
+affects = ["storytelling-x86-homelan-uds", "storytelling-x86-homelan-tcp", "storytelling-x86-localhost-uds", "storytelling-x86-basement-uds"]
+primal = "ludospring"
+description = "ludoSpring binary only exposes 8 game science methods. esotericWebb requires 6 additional methods (game.narrate_action, game.npc_dialogue, game.voice_check, game.push_scene, game.begin_session, game.complete_session). Squirrel ai.chat fallback works but loses game-science enrichment."
+tracking = "specs/STORYTELLING_EVOLUTION.md"
+
+[[blockers]]
+id = "ludospring-plasmidbin"
+affects = ["storytelling-x86-homelan-uds", "storytelling-x86-homelan-tcp", "storytelling-x86-basement-uds"]
+primal = "ludospring"
+description = "ludoSpring not deployed to plasmidBin. benchScale cannot provision the binary for lab topologies."
+tracking = "specs/STORYTELLING_EVOLUTION.md"
+
+[[blockers]]
+id = "esotericwebb-transport"
+affects = ["storytelling-x86-homelan-uds"]
+primal = "esotericwebb"
+description = "esotericWebb is TCP-first (webb/src/ipc/mod.rs) but UDS-first cells expect biomeOS UDS routing. Transport negotiation needed."
+tracking = "specs/STORYTELLING_EVOLUTION.md"

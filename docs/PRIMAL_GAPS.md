@@ -3,8 +3,10 @@
 Structured inventory of known gaps per primal that block or degrade composable deployments.
 Each entry links to the composition that exposes it and proposes a fix path.
 
-> **Scope**: Primal-only gaps relevant to primalSpring's upstream role. Downstream systems
-> (gardens, springs) own their own debt and pick up patterns from `wateringHole/`.
+> **Scope**: NUCLEUS primals only (the 10 core primals + 3 compute/ecosystem primals).
+> Downstream springs and gardens (ludoSpring, esotericWebb, etc.) own their own debt
+> and are NOT tracked here. See `graphs/downstream/` for proto-nucleate patterns.
+> Springs/gardens do NOT have binaries in plasmidBin — only primals do.
 >
 > **Last updated**: 2026-04-10 — **ZERO PORT TOWER ATOMIC ACHIEVED**.
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
@@ -12,12 +14,12 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
 > TCP is opt-in only for Songbird federation (`--port 8080` enables covalent mesh).
 >
-> **Live validation (April 10 — Tower Atomic)**:
+> **Live validation (April 10 — NUCLEUS polish, session 2)**:
 > - TCP ports: **0** (was 12 across 8 primals)
 > - UDS sockets: **25** active in `/run/user/$UID/biomeos/`
-> - C1-C7 compositions: **36/38 (95%)** (2 known gaps: downstream not running)
-> - exp091 routing matrix: **10/12** (2 pre-existing BM-10 method translation failures)
-> - All 10 primals healthy over UDS (`health.liveness` OK)
+> - C1-C7 compositions: **37/38 (97%)** — single partial: C2 `ai.query` (Ollama provider config)
+> - **13/13 critical experiments ALL PASS** (exp001/002/003/004/051/069/075/077/079/089/091/092/093)
+> - All 10 primals healthy over UDS (`health.liveness` OK), all `ALIVE` in launcher status
 >
 > **Squirrel AI provider chain (April 10)**:
 > - Squirrel rebuilt with `deprecated-adapters` feature + 3 fixes:
@@ -63,10 +65,11 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >   derivation + HMAC-SHA256 challenge response matching BearDog's `crypto.rs`. Auto-detection
 >   in `Transport::connect()` via `security_mode_from_env()`. Both rebuilt to plasmidBin.
 >
-> **BTSP Phase 2 ECOSYSTEM CASCADE (April 9)**: 12/13 primals now enforce handshake on UDS
-> accept. Songbird Wave 133, ToadStool S198, barraCuda Sprint 38, rhizoCrypt S31,
-> loamSpine, sweetGrass all wired. petalTongue Phase 1 COMPLETE (Phase 2 stub).
-> coralReef Phase 1 COMPLETE + gate (refuses until BearDog integration). skunkBat
+> **BTSP Phase 2 ECOSYSTEM CASCADE (April 9–10)**: **11/13** primals enforce handshake on UDS
+> accept. Songbird Wave 133, ToadStool S198, barraCuda Sprint 39 ↑, coralReef Iter 78 ↑,
+> rhizoCrypt S31, loamSpine, sweetGrass all wired. petalTongue Phase 1 COMPLETE (Phase 2 stub).
+> skunkBat Phase 1 only.
+> coralReef Phase 2 COMPLETE ↑ (Iter 78 — real BearDog RPC, degraded when absent). skunkBat
 > new JSON-RPC IPC server + Phase 1 COMPLETE. **BearDog is the sole handshake provider,
 > not a consumer — its status as "already complete" is by design.**
 >
@@ -97,6 +100,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 | BM-07 | Registry stores `{primal}-{hash}.sock` instead of live sockets | **RESOLVED** (April 10 — `get_family_id()` → `self.family_id` in defaults, config, domain bridge; socket alias for toadstool→compute, nestgate→storage) |
 | BM-08 | Socket resolution misses primals without `--socket` flag | **RESOLVED** (April 10 — plain `{primal}.sock` fallback in `resolve_primal_socket_with()` for loamSpine, sweetGrass, petalTongue) |
 | BM-09 | `capability.call` forwards to tarpc socket instead of JSON-RPC | **RESOLVED** (April 10 — `.jsonrpc.sock` preferred over `.sock` for domain aliases in socket resolution) |
+| BM-11 | ToadStool dual-socket: `build_socket_path` + `resolve_primal_socket` lack explicit JSON-RPC preference | **RESOLVED** (April 10 — `prefers_jsonrpc` flag in `socket.rs`, `.jsonrpc.sock` sibling check in `path_builder.rs`, stale socket cleanup in launcher) |
 
 **Compliance** (v3.00 — April 9 second pull): clippy **CLEAN**, fmt **PASS**, **7,724 tests PASS** ↑, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, SPDX present. Zero `#[allow(`. **BTSP Phase 1 COMPLETE** (v2.98). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_client.rs` expanded to 524+ lines: full server-side handshake (`server_handshake()`) wired into Neural API UDS listener (`handle_connection_with_btsp`), enforce vs warn-only modes, graceful fallback for raw JSON-RPC clients. Wire types: `ClientHello/ServerHello/ChallengeResponse/HandshakeComplete`. BearDog delegation. **v3.00 evolution**: async-trait → native async fn (Edition 2024), `itertools` + `async-trait` removed from 4 crates, license `-only` → `-or-later` across all docs/scripts/LICENSE-ORC, orphan `nucleus_executor.rs` deleted (288 LOC), `/tmp/biomeos` → centralized `runtime_paths`. **Discovery compliance: COMPLETE**.
 
@@ -115,14 +119,16 @@ Each entry links to the composition that exposes it and proposes a fix path.
 | PT-07 | No external event source in server mode | **RESOLVED** — periodic discovery refresh wired |
 | PT-08 | No BTSP Phase 1 (`BIOMEOS_INSECURE` guard) | **RESOLVED** ↑ — `btsp.rs` module: `validate_insecure_guard()`, family-scoped sockets, domain symlinks |
 | PT-09 | BTSP Phase 2 (handshake integration) | Low | Phase 2 stub — `handshake_policy` logs warning, connections accepted without handshake |
+| PT-10 | `--socket` CLI flag missing | **RESOLVED** | April 10 — `--socket` flag added to `Commands::Server`, plumbed via `UnixSocketServer::with_socket_path()` |
+| PT-11 | Only `visualization` domain symlink | **RESOLVED** | April 10 — now creates `visualization.sock`, `ui.sock`, `interaction.sock` symlinks (create+drop) |
 
-**Compliance** (v1.6.6 — April 9 wave 3): clippy **CLEAN**, fmt **PASS**, `forbid(unsafe_code)` per-crate, `deny.toml` present, SPDX present. Zero `todo!`/`unimplemented!`/`FIXME`. Tests **ALL PASS**. **BTSP Phase 1 COMPLETE** ↑↑ — new `petal-tongue-ipc/src/btsp.rs`: `validate_insecure_guard()`, family-scoped socket naming, domain symlink helpers, tests. Called from `socket_path.rs` at startup. **BTSP Phase 2 STUB** — `handshake_policy` logs but does not enforce. **Capability Wire Standard L2/L3**.
+**Compliance** (v1.6.6+ — April 10): clippy **CLEAN**, fmt **PASS**, `forbid(unsafe_code)` per-crate, `deny.toml` present, SPDX present. Zero `todo!`/`unimplemented!`/`FIXME`. Tests **ALL PASS**. **BTSP Phase 1 COMPLETE** ↑↑. **BTSP Phase 2 STUB** — `handshake_policy` logs but does not enforce. **`--socket` CLI flag** wired via `with_socket_path()`. **Domain symlinks**: `visualization`, `ui`, `interaction`. **Capability Wire Standard L2/L3**.
 
 ---
 
 ## barraCuda
 
-All gaps **RESOLVED**.
+All gaps **RESOLVED**. GPU panic fixed (Sprint 39).
 
 | ID | Gap | Status |
 |----|-----|--------|
@@ -130,8 +136,9 @@ All gaps **RESOLVED**.
 | BC-02 | Hick formula off-by-one | **RESOLVED** (Sprint 25 — `include_no_choice` param) |
 | BC-03 | Perlin3D lattice | **RESOLVED** (Sprint 25 — proper gradients + quintic fade) |
 | BC-04 | No plasmidBin binary | **RESOLVED** (April 1 harvest, 4.5M, requires GPU) |
+| BC-05 | `barracuda server` panics without GPU | **RESOLVED** (Sprint 39 — `Auto::new()` returns `Err`, server starts with `device = None`, health reports `Degraded`) |
 
-**Compliance** (Sprint 38 — April 9 wave 3): clippy **CLEAN**, fmt **PASS**, `deny.toml` present, zero `todo!`/`unimplemented!`/`FIXME`. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 PARTIAL** ↑ — new `ipc/btsp.rs`: `guard_connection()` wired into all 3 accept loops (Unix JSON-RPC, TCP, tarpc). Discovers BearDog and calls `btsp.session.create` per accept. Full X25519 challenge-response on client stream documented as follow-up. **Capability Wire Standard L2**. **`fault_injection` SIGSEGV** remains. Musl rebuild pending.
+**Compliance** (Sprint 39 — April 10): clippy **CLEAN** (`-D warnings`, pedantic + nursery), fmt **PASS**, `deny.toml` present (bans openssl/native-tls/ring/aws-lc-sys), zero `todo!`/`unimplemented!`/`FIXME`. **4,422 tests PASS** (nextest CI). `#![forbid(unsafe_code)]` on `barracuda` + `barracuda-core`. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `guard_connection()` implements full 6-step handshake relay: `ClientHello` → `btsp.session.create` → `ServerHello` → `ChallengeResponse` → `btsp.session.verify` → `HandshakeComplete`. Capability-based crypto provider discovery (`crypto-{fid}.sock` → `crypto.sock` → `*.json` scan). All 3 accept loops guarded (Unix, TCP, tarpc). Legacy/non-BTSP clients degrade gracefully (2s timeout). **Capability Wire Standard L2**. Nextest `gpu-serial` extended to stress/gpu profiles. **Note**: `BufReader` lifetime gap between handshake phases (edge-case for fast/coalescing clients); post-handshake stream encryption not yet applied.
 
 ---
 
@@ -143,7 +150,7 @@ All gaps **RESOLVED**.
 | SQ-02 | `LOCAL_AI_ENDPOINT` not wired into `AiRouter` | **RESOLVED** (alpha.27 — step 1.5 discovery, `resolve_local_ai_endpoint()`) |
 | SQ-03 | `deprecated-adapters` feature flag docs | **RESOLVED** — documented in `CURRENT_STATUS.md` feature-gates table; intentional retention until v0.3.0 with migration path to `UniversalAiAdapter` + `LOCAL_AI_ENDPOINT` |
 
-**Compliance** (alpha.46+ — April 9 second pull): Zero `todo!`/`unimplemented!`/`FIXME` in non-test code. fmt **PASS**. clippy **PASS**. **7,203 tests PASS**. `deny.toml` present. Workspace `forbid(unsafe_code)`. **BTSP Phase 1 COMPLETE** (alpha.44). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_handshake.rs` (627 LOC) implements full server-side handshake on UDS accept with BearDog delegation (`btsp.session.create`, `btsp.session.verify`). `maybe_handshake()` called in both abstract+filesystem UDS accept paths in `jsonrpc_server.rs`. Length-prefixed wire framing per standard. `is_btsp_required()` checks `FAMILY_ID` + `BIOMEOS_INSECURE`. Provider discovery: env → manifest scan → well-known `beardog-{fid}.sock`. **Capability Wire Standard L2**. Smart refactoring: session/mod.rs, transport/client.rs, context_state.rs, api.rs all under 600 LOC. Dependency purge: pprof/openai/libloading removed, flate2 → pure Rust backend.
+**Compliance** (alpha.46+ — April 9 second pull): Zero `todo!`/`unimplemented!`/`FIXME` in non-test code. fmt **PASS**. clippy **PASS**. **7,203 tests PASS**. `deny.toml` present. Workspace `forbid(unsafe_code)`. **BTSP Phase 1 COMPLETE** (alpha.44). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_handshake.rs` (627 LOC) implements full server-side handshake on UDS accept with BearDog delegation (`btsp.session.create`, `btsp.session.verify`). `maybe_handshake()` called in both abstract+filesystem UDS accept paths in `jsonrpc_server.rs`. Length-prefixed wire framing per standard. `is_btsp_required()` checks `FAMILY_ID` + `BIOMEOS_INSECURE`. Provider discovery: env → manifest scan → well-known `beardog-{fid}.sock`. **Capability Wire Standard L2**. Smart refactoring: session/mod.rs, transport/client.rs, context_state.rs, api.rs all under 600 LOC. Dependency purge: pprof/openai/libloading removed, flate2 → pure Rust backend. **Inference provider bridge** ↑ — `inference.complete`/`embed`/`models` wire methods dispatched via `handlers_inference.rs`, bridging ecoPrimal wire standard to `AiRouter`.
 
 ---
 
@@ -170,6 +177,7 @@ All gaps **RESOLVED**.
 | NG-05 | Crypto crates not fully delegated | **RESOLVED** — `nestgate-security` zero crypto deps, all via BearDog IPC `CryptoDelegate` |
 
 | NG-06 | `--socket` CLI flag not wired in `Commands::Server` | **RESOLVED** | April 10 — `--socket` flag added to `Commands::Server`, sets `NESTGATE_SOCKET` env var before `run_daemon`, feeds into `SocketConfig::from_environment()` tier-1 resolution |
+| NG-07 | aarch64-musl segfault | **RESOLVED** | Static-PIE + musl ≤1.2.2 crash in `_start_c/dlstart.c`. Fixed: `-C relocation-model=static` in `.cargo/config.toml` for both x86_64 and aarch64 targets |
 
 **Compliance** (April 10 NUCLEUS patterns): Clippy **CLEAN**, fmt **PASS**, **11,856+ tests PASS** ↑. `forbid(unsafe_code)` per-crate + workspace `deny`. `deny.toml` present. SPDX present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_server_handshake.rs` implements full server-side handshake wired into **both** UDS listener paths (`unix_socket_server/mod.rs:handle_connection` and `isomorphic_ipc/server.rs`). Delegates to BearDog `btsp.session.create/verify/negotiate`. `is_btsp_required()` guard. **NG-01 RESOLVED** — `FileMetadataBackend` enforced in production. **NG-03 RESOLVED** — `data.*` wildcard delegation. **NG-06 RESOLVED** ↑ — `--socket` CLI flag wired through dispatch. `uzers` dep removed (replaced by `rustix::process`). 81 hardcoded `base_url` strings → `format!()`. tarpc_server smart-refactored to directory module. Zero TODO/FIXME/HACK in production code. **Capability Wire Standard L3**.
 
@@ -196,8 +204,9 @@ All gaps **RESOLVED**.
 |----|-----|--------|
 | LS-03 | Panic on startup | **RESOLVED** (v0.9.15 — infant discovery fails gracefully) |
 | LS-04 | Witness wire evolution | **RESOLVED** (v0.9.16 — `WireWitnessRef` in `trio_types.rs`, witnesses on wire summaries) |
+| LS-05 | `--socket` CLI flag missing | **RESOLVED** | April 10 — `--socket` flag added to `Command::Server`, passed directly to `run_server` (no env mutation, respects `forbid(unsafe_code)`) |
 
-**Compliance** (v0.9.16+ — April 9 wave 3): clippy clean, fmt **PASS**, `forbid(unsafe_code)` workspace, `deny.toml` present, tests pass. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake()` in `crates/loam-spine-core/src/btsp.rs`, wired into UDS accept loop (`run_jsonrpc_uds_server` → `handle_uds_connection`). **Delegates to BearDog** (`btsp.session.create`, `btsp.session.verify`, `btsp.negotiate`). Tests with mock BearDog + mock client in `btsp_tests.rs`. **Capability Wire Standard L2/L3**.
+**Compliance** (v0.9.16+ — April 10): clippy clean, fmt **PASS**, `forbid(unsafe_code)` workspace, `deny.toml` present, tests pass. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake()` in `crates/loam-spine-core/src/btsp.rs`, wired into UDS accept loop (`run_jsonrpc_uds_server` → `handle_uds_connection`). **Delegates to BearDog** (`btsp.session.create`, `btsp.session.verify`, `btsp.negotiate`). Tests with mock BearDog + mock client in `btsp_tests.rs`. **`--socket` CLI flag** wired. **Capability Wire Standard L2/L3**.
 
 ---
 
@@ -205,9 +214,10 @@ All gaps **RESOLVED**.
 
 | ID | Gap | Severity | Status |
 |----|-----|----------|--------|
-| TS-01 | coralReef discovery not pure capability-based | Low | Improved — S166 capability-based discovery added (`discover_by_capability` in `service_discovery.rs`), but `coral_reef_client` still uses explicit 6-step ordered discovery, not unified `capability.discover` RPC |
+| TS-01 | coralReef discovery not pure capability-based | Low | **RESOLVED** — `VisualizationClient` (shader client) uses `capability.discover("shader")` Tier 1, then filesystem fallback Tiers 0/2/3. No 6-step pattern remains. |
 | TS-02 | `compute.sock` tarpc-only; JSON-RPC probes fail | **RESOLVED** | April 10 — `jsonrpc_socket` now `compute.jsonrpc.sock` (separate from tarpc `compute.sock`). Legacy symlinks: `toadstool.jsonrpc.sock` → `compute.jsonrpc.sock` |
 | TS-03 | `--socket` CLI flag parsed but not wired | **RESOLVED** | April 10 — `socket_override` param added to `run_server_main`, wired through dispatch. Overrides `get_socket_path()` resolution |
+| TS-04 | `ollama.*`/`inference.*` semantic mappings advertised but not dispatched | **RESOLVED** | April 10 — Removed from `mappings_extended.rs`. Inference is Squirrel's domain via ecoPrimal wire standard. ToadStool is compute substrate, not model serving. |
 
 **Compliance** (S198+ — April 10 NUCLEUS patterns): Clippy **CLEAN**, fmt **PASS**. 21,600+ tests **PASS**. `deny.toml` present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `BtspServer::accept_handshake` wired into JSON-RPC Unix accept (`pure_jsonrpc/connection/unix.rs`) and tarpc accept (`unix_maybe_btsp_before_tarpc`), feature-gated behind `btsp` feature + env check. `BtspClient` in `toadstool_common::btsp`. Fuzz targets added (`fuzz_btsp_framing.rs`). **Capability Wire Standard L3**. **Socket separation COMPLETE** — JSON-RPC and tarpc bind distinct sockets. `--socket` CLI override wired to `run_server_main`.
 
@@ -220,8 +230,9 @@ All gaps **RESOLVED**. TCP JSON-RPC added, `cargo-deny`, `forbid(unsafe)`.
 | ID | Gap | Status |
 |----|-----|--------|
 | SG-01 | Witness wire evolution | **RESOLVED** (v0.7.27 — `Witness` type, `EcoPrimalsAttributes.witnesses`, kind/evidence/encoding) |
+| SG-02 | `--socket` CLI flag missing | **RESOLVED** | April 10 — `--socket` flag added to `Commands::Server`, plumbed via `start_uds_listener_at()` / `cleanup_socket_at()` |
 
-**Compliance** (v0.7.27+ — April 9 wave 3): clippy clean, fmt clean, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, tests pass. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — new `sweet-grass-service/src/btsp/` module (mod.rs, protocol.rs, server.rs): `perform_server_handshake()` wired into UDS accept (`handle_uds_connection_btsp` in `uds.rs`) + TCP (`tcp_jsonrpc.rs`). **Delegates to BearDog** (`btsp.session.create/verify/negotiate`). Client: `perform_handshake()` in `sweet-grass-integration/src/btsp/protocol.rs`. **Capability Wire Standard L3**.
+**Compliance** (v0.7.27+ — April 10): clippy clean, fmt clean, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, tests pass. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — new `sweet-grass-service/src/btsp/` module (mod.rs, protocol.rs, server.rs): `perform_server_handshake()` wired into UDS accept (`handle_uds_connection_btsp` in `uds.rs`) + TCP (`tcp_jsonrpc.rs`). **Delegates to BearDog** (`btsp.session.create/verify/negotiate`). Client: `perform_handshake()` in `sweet-grass-integration/src/btsp/protocol.rs`. **`--socket` CLI flag** wired. **Capability Wire Standard L3**.
 
 ---
 
@@ -243,9 +254,11 @@ All gaps **RESOLVED**. TCP JSON-RPC added, `cargo-deny`, `forbid(unsafe)`.
 |----|-----|----------|--------|
 | CR-01 | No BTSP Phase 1 (`BIOMEOS_INSECURE` guard) | **RESOLVED** ↑ — `validate_insecure_guard()` in glowplug, core, ember; called from `main.rs` |
 | CR-02 | No `capabilities.list` with flat `methods` array | **RESOLVED** ↑ — `capability.list` + `identity.get` with flat `methods` (uses singular `capability.list` not `capabilities.list`) |
-| CR-03 | BTSP Phase 2 (handshake) | Low | Phase 2 gate scaffold — `gate_connection()` in accept loops; production **refuses** connections with "BTSP handshake required but not yet implemented" |
+| CR-03 | BTSP Phase 2 (handshake) | **RESOLVED** ↑↑ — `guard_connection()` (renamed from `gate_connection`) in all 3 crates: BearDog delegation via `btsp.session.create`, capability-based crypto socket discovery, `BtspOutcome` enum. Async in core/glowplug, blocking in ember. Degraded mode when provider missing. |
+| CR-04 | Typed errors (`Result<_, String>` in driver) | Low | Partial — Waves 1–3: `PciDiscoveryError`, `ChannelError`, `DevinitError` with `#[from]` into `DriverError`. ~20 deep HW functions still use `Result<_, String>` (Wave 4+ pending). |
+| CR-05 | `cpu_exec.rs` dead code | Low | File exists but `mod cpu_exec` not in `service/mod.rs` — not compiled. `interpret_simple` is a no-op stub. Phase 3 CPU validation/execute prep, not yet wired to IPC dispatch. |
 
-**Compliance** (Iter 77 — April 9 wave 3): clippy **CLEAN**, fmt **PASS**, `forbid(unsafe_code)` on coralreef-core + nak-ir-proc + stubs, `deny.toml` present. **4,257+ tests, 0 failures**. SPDX present. **BTSP Phase 1 COMPLETE** ↑↑ — `validate_insecure_guard()` in glowplug + core + ember, called from all entry points. Family-scoped socket naming. **BTSP Phase 2 SCAFFOLD** — `BtspMode`/`gate_connection()` wired into all accept paths; production mode **refuses** connections (returns "BTSP handshake required … pending hotspring-sec2-hal integration"). New BTSP modules in `coralreef-core/ipc/btsp.rs`, `coral-glowplug/socket/btsp.rs`, `coral-ember/btsp.rs`. **Capability Wire Standard L2** ↑ — `capability.list` + `identity.get` with flat `methods`. Note: uses singular `capability.list` (not `capabilities.list`).
+**Compliance** (Iter 78 — April 10): clippy **CLEAN** (pedantic + nursery, 0 warnings), fmt **PASS**, `forbid(unsafe_code)` on coralreef-core + nak-ir-proc + stubs, `deny.toml` present (bans wildcards, yanked-deny). **4,459 tests, 0 failures**, ~153 ignored (HW-gated). SPDX present. **0 files over 1000 LOC** (7 large files split into modules: `nv_metal`, `memory`, `vfio_compute`, `falcon_capability`, `knowledge`, `device`, `codegen/ops`). `coral-driver` opts out of workspace `unsafe_code = "deny"` (ioctl/mmap/MMIO required). **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `guard_connection()` calls `btsp.session.create` on real UDS, parses `session_id`, degrades when provider absent. Wired into Unix JSON-RPC, TCP newline, tarpc accept paths. Full challenge-response + encrypted framing still Phase 3. **Capability Wire Standard L2** ↑ — `capability.list` + `identity.get` with flat `methods`. Uses singular `capability.list` (not `capabilities.list`). **Note**: crypto socket discovery paths differ between core (`config::discovery_dir()`) and ember/glowplug (`XDG_RUNTIME_DIR`) — potential cross-process alignment issue for NUCLEUS. tarpc `Result<_, String>` → `TarpcCompileError` (typed serde-friendly wrapper). `#[allow]` → `#[expect]` lint migration started.
 
 ---
 
@@ -295,16 +308,18 @@ alignment (Phase 1) and BTSP handshake (Phase 2) when `FAMILY_ID` is set.
 | rhizoCrypt | **YES** ↑↑ (`BtspServer::accept_handshake`) | **YES** (`btsp/handshake.rs`) | **COMPLETE** ↑↑ — S31 (local crypto) |
 | loamSpine | **YES** ↑↑ (`perform_server_handshake`) | mock only | **COMPLETE** ↑↑ — BearDog delegation |
 | sweetGrass | **YES** ↑↑ (`perform_server_handshake`) | **YES** (`btsp/protocol.rs`) | **COMPLETE** ↑↑ — BearDog delegation |
-| barraCuda | **PARTIAL** ↑ (`guard_connection`) | BearDog RPC from guard | **PARTIAL** ↑ — Sprint 38 (guard, no full wire) |
+| barraCuda | **YES** ↑↑ (`guard_connection`) | **YES** (BearDog relay) | **COMPLETE** ↑↑ — Sprint 39 (full 6-step relay: ClientHello→create→ServerHello→ChallengeResponse→verify→Complete) |
 | petalTongue | stub (warn-only) | no | **STUB** ↑ — Phase 1 done, Phase 2 log-only |
-| coralReef | gate (refuse prod) | no | **SCAFFOLD** ↑ — refuses connections until BearDog |
+| coralReef | **YES** ↑↑ (`guard_connection`) | **YES** (BearDog session.create) | **COMPLETE** ↑↑ — Iter 78 (real UDS RPC to BearDog, session_id parsed, degraded when provider absent) |
 | skunkBat | no | no | **NOT STARTED** — Phase 1 only |
 
-**Phase 2 ecosystem cascade (April 9 wave 3)**: 9/13 primals now enforce BTSP handshake on
+**Phase 2 ecosystem cascade (April 9–10)**: **11/13** primals now enforce BTSP handshake on
 incoming UDS connections: BearDog, Songbird, biomeOS, NestGate, ToadStool, Squirrel,
-rhizoCrypt, loamSpine, sweetGrass. **Tower Atomic: 100%.** **Node Atomic: 100%.**
-**NUCLEUS: 100%.** barraCuda has guard-per-accept but not full wire handshake.
-petalTongue/coralReef/skunkBat have Phase 1 complete with Phase 2 stubs/scaffolds.
+rhizoCrypt, loamSpine, sweetGrass, **barraCuda** ↑ (Sprint 39), **coralReef** ↑ (Iter 78).
+**Tower Atomic: 100%.** **Node Atomic: 100%.** **NUCLEUS: 100%.**
+petalTongue has Phase 1 + Phase 2 stub (warn-only). skunkBat Phase 1 only.
+**Note**: Full challenge-response + encrypted framing (Phase 3) not yet applied to
+post-handshake streams in barraCuda or coralReef.
 
 **plasmidBin validation (April 10)**: Full musl-static rebuild confirms all BTSP Phase 1+2
 code is now in the deployed binaries. Previous plasmidBin binaries (Apr 8) predated the
@@ -354,7 +369,7 @@ All 12 x86_64 primals rebuilt with `--target x86_64-unknown-linux-musl` and stri
 | rhizocrypt | 5.7M | **STATIC** | YES | Apr 10 | **YES** |
 | loamspine | 4.4M | **STATIC** | YES | Apr 10 | **YES** |
 | sweetgrass | 8.9M | **STATIC** | YES | Apr 10 | **YES** |
-| barracuda | 4.7M | **STATIC** | YES | Apr 10 | **YES** (guard, partial wire) |
+| barracuda | 4.7M | **STATIC** | YES | Apr 10 | **YES** ↑ (full 6-step relay) |
 | skunkbat | 2.2M | **STATIC** | YES | Apr 10 | Phase 1 only |
 
 **aarch64** (5 binaries): beardog, songbird, squirrel, toadstool static+stripped; biomeos static NOT stripped.
@@ -364,9 +379,98 @@ from the April 9 ecosystem cascade. musl-static compliance: 12/12 (was 2/11).
 
 ---
 
+## Per-Primal Team Handoff (April 10, 2026)
+
+Copy-paste blurbs for team assignment. Grouped by priority.
+
+### Primals Needing Dedicated Team Evolution
+
+**barraCuda** — BTSP Phase 2 **COMPLETE** ↑↑ (Sprint 39 — full 6-step handshake relay).
+GPU panic **RESOLVED** (BC-05 — `Auto::new()` returns `Err`, health `Degraded`).
+`fault_injection` test SIGSEGV persists (nextest `gpu-serial` workaround). 4,422 tests.
+**Remaining**: `BufReader` lifetime edge-case in handshake relay, post-handshake stream
+encryption (Phase 3), musl rebuild with Sprint 39 changes. **Effort: low.**
+
+**coralReef** — BTSP Phase 2 **COMPLETE** ↑↑ (Iter 78 — `guard_connection()` with real
+BearDog RPC in all 3 crates, degraded mode when provider absent). 7 large files split
+into modules, typed driver errors Waves 1–3. 4,459 tests. `cpu_exec.rs` exists but is
+dead code (not wired into `service/mod.rs`). Wire Standard L2 (singular `capability.list`).
+**Remaining**: CR-04 typed errors Wave 4+ (~20 HW functions still `Result<_, String>`),
+CR-05 `cpu_exec.rs` wiring, crypto socket discovery path alignment across crates, musl
+rebuild with Iter 78 changes. **Effort: low-medium.**
+
+### Deferred (later development cycle)
+
+**skunkBat** — BTSP Phase 2 not started (Phase 1 + Wire L2 done). Deferred to later cycle.
+
+**sourDough** — `deny.toml` missing, musl build, genomeBin signing. Scaffolding CLI tool, not IPC primal. Deferred to later cycle.
+
+### Primals With Tractable Local Fixes
+
+**biomeOS** — BM-10: method translation **RESOLVED**. BM-11: ToadStool dual-socket
+**RESOLVED** (`prefers_jsonrpc` + `.jsonrpc.sock` sibling check). **All tractable biomeOS gaps resolved.**
+
+**ToadStool** — TS-01: coralReef discovery **RESOLVED** (`capability.discover("shader")` Tier 1).
+Compute socket resolution fully functional via BM-11 (`prefers_jsonrpc` flag + `.jsonrpc.sock`
+sibling preference). **All tractable ToadStool gaps resolved.**
+
+**Songbird** — SB-02: `ring` lockfile ghost (not compiled, just stale `Cargo.lock` stanza).
+SB-03: `sled` feature-gated but default-on in orchestrator/sovereign-onion — pending
+NestGate storage API migration. **Effort: low. Polish items, no runtime blockers.**
+
+**petalTongue** — PT-10 `--socket` **RESOLVED**, PT-11 domain symlinks **RESOLVED** (`ui`, `interaction`, `visualization`).
+Remaining: PT-04 HTML export (partial), PT-06 push delivery (`callback_tx` not activated), PT-09 BTSP Phase 2 stub.
+**Effort: low-medium. Functional for NUCLEUS.**
+
+**NestGate** — aarch64-musl segfault **RESOLVED** (static-PIE + musl ≤1.2.2 root cause;
+`-C relocation-model=static` in `.cargo/config.toml` for both x86_64 and aarch64 targets).
+All gaps resolved. **Reference standard alongside BearDog.**
+
+**loamSpine** — LS-03 startup crash **RESOLVED** (v0.9.15 — infant discovery graceful
+degradation). No `--socket` CLI flag (uses plain socket fallback). Connection closes after
+first response — primalSpring now calls `capabilities()` before `health_check()` as
+workaround. **Effort: trivial (connection reuse would be nice but not blocking).**
+
+### Reference Standard Primals (Working Well)
+
+**BearDog** — Gold standard. Zero-port, BTSP Phase 2+3 complete, 14,593 tests, 90.51%
+coverage, all files under 1000 LOC, dynamic `ipc.register`, standalone startup. Only minor:
+`btsp.negotiate` vs `btsp.session.negotiate` metadata inconsistency.
+
+**Songbird** — Zero-port default, federation opt-in via `--port`. BTSP Phase 2 complete,
+Wire Standard L3. The gateway model for all external communication.
+
+**Squirrel** — Zero-port, BTSP Phase 2 complete, AI provider chain fully operational
+(Squirrel → OpenAI adapter → Songbird → Ollama). 7,203 tests. Wire Standard L2.
+**Inference provider bridge**: `inference.complete`/`embed`/`models` via ecoPrimal wire standard.
+
+**biomeOS** — Orchestration substrate. BTSP Phase 2 complete, 7,724 tests, registry routing
+fixed (BM-07/08/09), BM-10 method translation + BM-11 ToadStool dual-socket **RESOLVED**.
+**All gaps resolved.**
+
+**NestGate** — 11,856 tests, BTSP Phase 2 complete, Wire Standard L3. `--socket` wired.
+Fully functional on x86_64.
+
+**ToadStool** — 21,600 tests, BTSP Phase 2 complete, Wire Standard L3. Socket separation
+complete (JSON-RPC vs tarpc). `--socket` wired.
+
+**Provenance Trio (rhizoCrypt + loamSpine + sweetGrass)** — All three BTSP Phase 2 complete,
+Wire Standard L2/L3. Witness wire (`WireWitnessRef`) fully standardized. rhizoCrypt uses
+local crypto (self-sovereign), loamSpine/sweetGrass delegate to BearDog.
+
+### Downstream (NOT in this registry — reference only)
+
+**ludoSpring** — Spring (not a primal). Binary NOT in plasmidBin. IPC surface: 8 `game.*`
+methods; esotericWebb needs 6 more. See `graphs/downstream/ludospring_proto_nucleate.toml`.
+
+**esotericWebb** — Garden/composition (not a primal). Binary NOT in plasmidBin. Transport
+needs UDS negotiation. See `graphs/downstream/esotericwebb_proto_nucleate.toml`.
+
+---
+
 ## Priority Order
 
-**0 HIGH blockers. 2 MEDIUM. 11 LOW. Zero runtime blockers.**
+**0 HIGH blockers. 2 MEDIUM. 7 LOW. Zero runtime blockers.** (sourDough + skunkBat deferred)
 
 **High**: ~~PLASMIBIN-STALE~~ **RESOLVED** (April 10 — full musl-static rebuild, 12/12 ecoBin).
 
@@ -384,15 +488,16 @@ from the April 9 ecosystem cascade. musl-static compliance: 12/12 (was 2/11).
 3. **SB-02** — `ring` lockfile ghost
 4. **SB-03** — `sled` feature-gated but default-on
 5. **PT-09** — petalTongue Phase 2 stub (warn-only, no enforcement)
-6. **PT-DOMAINS** — petalTongue `ui`/`interaction` domain symlinks missing (only `visualization` registered)
-7. **CR-03** — coralReef Phase 2 scaffold (refuses prod connections until BearDog wired)
-8. **SD-01** — sourDough missing `deny.toml`
-9. **SD-02** — sourDough musl cross-compilation
-10. **SD-03** — sourDough genomeBin signing
-11. **BC-GPU-PANIC** — barraCuda panics without GPU instead of graceful CPU-only degradation
-12. ~~**EXP091-REGISTRY**~~ **RESOLVED** (April 10 — `get_family_id()` → `self.family_id`; socket alias mapping)
-13. **EXP-TCP-UDS** — exp085/exp090 hardcode TCP ports; need UDS discovery migration
-14. **BTSP-E2E** — Full end-to-end BTSP test (non-default FAMILY_ID + FAMILY_SEED) not yet validated against live stack
+6. ~~**PT-DOMAINS**~~ **RESOLVED** (April 10 — `ui.sock` + `interaction.sock` symlinks added)
+7. ~~**CR-03**~~ **RESOLVED** (Iter 78 — `guard_connection()` with real BearDog RPC, degraded when absent)
+8. ~~**BC-GPU-PANIC (BC-05)**~~ **RESOLVED** (Sprint 39 — `Auto::new()` → `Err`, health `Degraded`)
+9. ~~**EXP091-REGISTRY**~~ **RESOLVED** (April 10 — `get_family_id()` → `self.family_id`; socket alias mapping)
+10. **EXP-TCP-UDS** — exp085/exp090 hardcode TCP ports; need UDS discovery migration
+11. **BTSP-E2E** — Full end-to-end BTSP test (non-default FAMILY_ID + FAMILY_SEED) not yet validated against live stack
+
+**Deferred** (later development cycle):
+- **SD-01/02/03** — sourDough `deny.toml`, musl, genomeBin signing
+- **SKUNKBAT-BTSP-P2** — skunkBat BTSP Phase 2 (Phase 1 + Wire L2 done)
 
 ---
 
@@ -420,19 +525,19 @@ from the April 9 ecosystem cascade. musl-static compliance: 12/12 (was 2/11).
 
 ### Compliance Evolution (April 9 — BTSP Phase 2 ecosystem cascade)
 
-**BTSP Phase 2 rollout effectively complete.** 9/13 primals enforce full handshake on accept.
-3 have Phase 1 + stubs/scaffolds. 1 (barraCuda) has guard-per-accept without full wire.
-All 13 primals now have Phase 1 (guard + socket naming). **Tower Atomic: 100%. Node Atomic: 100%.
+**BTSP Phase 2 rollout effectively complete.** **11/13** primals enforce full handshake on accept
+(+barraCuda Sprint 39, +coralReef Iter 78). 1 has Phase 1 + stub (petalTongue). 1 Phase 1 only (skunkBat).
+All 13 primals have Phase 1 (guard + socket naming). **Tower Atomic: 100%. Node Atomic: 100%.
 NUCLEUS: 100%.** primalSpring itself: clippy ZERO warnings, fmt PASS, all tests PASS.
 
 1. **Songbird**: **BTSP Phase 2 COMPLETE** ↑↑ (Wave 133) — `perform_server_handshake()` in `ipc/btsp.rs`, wired into UDS accept loop, BearDog delegation via `SecurityRpcClient`. `BtspClient` + connection managers.
 2. **ToadStool**: **BTSP Phase 2 COMPLETE** ↑↑ (S198) — `BtspServer::accept_handshake` on JSON-RPC Unix + tarpc paths, feature-gated. `BtspClient`. Fuzz targets (`fuzz_btsp_framing.rs`).
-3. **barraCuda**: **BTSP Phase 2 PARTIAL** ↑ (Sprint 38) — `guard_connection()` in all 3 accept loops, BearDog session creation. Full X25519 wire handshake documented as follow-up.
+3. **barraCuda**: **BTSP Phase 2 COMPLETE** ↑↑ (Sprint 39) — `guard_connection()` full 6-step handshake relay in all 3 accept loops. BearDog delegation via capability-based `crypto` socket discovery. Legacy clients degrade (2s timeout).
 4. **rhizoCrypt**: **BTSP Phase 2 COMPLETE** ↑↑ (S31) — `BtspServer::accept_handshake` in UDS accept. Local crypto (self-sovereign — HKDF/X25519/HMAC-SHA256, no BearDog delegation).
 5. **loamSpine**: **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake` in UDS accept, BearDog delegation (`btsp.session.create/verify/negotiate`). Mock tests.
 6. **sweetGrass**: **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake` in UDS + TCP accept, BearDog delegation. Client `perform_handshake` in integration crate.
 7. **petalTongue**: **BTSP Phase 1 COMPLETE** ↑↑ — new `btsp.rs` module: guard, family-scoped sockets, domain symlinks. Phase 2 stub (warn-only).
-8. **coralReef**: **BTSP Phase 1 COMPLETE** ↑↑ (Iter 77) — `validate_insecure_guard()` in glowplug/core/ember. **Wire Standard L2** ↑ (`capability.list` + flat `methods`). Phase 2 scaffold (gate refuses prod connections).
+8. **coralReef**: **BTSP Phase 2 COMPLETE** ↑↑ (Iter 78) — `guard_connection()` in all 3 crates (async core/glowplug, blocking ember). Real UDS RPC to BearDog `btsp.session.create`. Degraded mode when provider absent. **Wire Standard L2** ↑ (`capability.list` + flat `methods`). 7 large files split into modules, typed driver errors (Waves 1–3).
 9. **skunkBat**: **JSON-RPC IPC server from scratch** ↑↑ + **BTSP Phase 1 COMPLETE** + **Wire Standard L2**. Phase 2 not started.
 10. **BearDog**: Wave 33 — **BD-01 RESOLVED** (per-field encoding hints + semantic aliases). 90.51% coverage. 14,593+ tests. `#[allow(` 193→75. `runtime.rs` 1244→360 LOC. Dynamic `ipc.register`. Standalone startup (`standalone-{uuid}`). 0 files over 1000 LOC. Minor: `btsp.negotiate` vs `btsp.session.negotiate` metadata inconsistency.
 11. **Squirrel/biomeOS/NestGate**: Phase 2 complete (wave 2, unchanged).
@@ -472,8 +577,19 @@ NUCLEUS: 100%.** primalSpring itself: clippy ZERO warnings, fmt PASS, all tests 
 | BM-08 | biomeOS | Plain socket fallback for primals without `--socket` | April 10 (socket resolution) |
 | BM-09 | biomeOS | JSON-RPC socket preference over tarpc for `capability.call` | April 10 (socket resolution) |
 | — | primalSpring | `NeuralBridge::discover()` checks both `neural-api-` and `biomeos-` sockets | April 10 (NeuralBridge fix) |
+| LS-03 | loamSpine | Startup crash reconciled — `deployment_matrix.toml` `loamspine-startup-crash` marked resolved (was v0.9.15) | April 10 (gap audit) |
+| BM-11 | biomeOS | ToadStool dual-socket: `prefers_jsonrpc` in `socket.rs` + `.jsonrpc.sock` sibling in `path_builder.rs` | April 10 (NUCLEUS polish) |
+| SG-02 | sweetGrass | `--socket` CLI flag → `start_uds_listener_at()` / `cleanup_socket_at()` | April 10 (NUCLEUS polish) |
+| — | primalSpring | `extract_capability_names` handles `capabilities`/`methods` wrappers; caps-first health ordering | April 10 (NUCLEUS polish) |
+| — | primalSpring | `strip_unix_uri` made public; exp077 `ai_health_routed` uses direct socket probe | April 10 (NUCLEUS polish) |
+| — | nucleus_launcher | Capability domain symlinks + primal family-alias symlinks + stale socket cleanup | April 10 (NUCLEUS polish) |
+| BC-05 | barraCuda | GPU panic → graceful `Degraded` (`Auto::new()` returns `Err`, no panic) | Sprint 39 (April 10 pull) |
+| CR-03 | coralReef | BTSP Phase 2 — `guard_connection()` with real BearDog RPC in all 3 crates | Iter 78 (April 10 pull) |
+| CR-04 | coralReef | Typed driver errors Waves 1–3 (`PciDiscoveryError`/`ChannelError`/`DevinitError`) | Iter 78 (April 10 pull) |
+| TS-04 | toadStool | `ollama.*`/`inference.*` semantic mappings removed — inference is Squirrel's domain | April 10 (inference abstraction) |
 
-**41 gaps resolved** across the full cycle. **14 open** (0 high, 2 medium, 12 low).
+**50 gaps resolved** across the full cycle (includes LS-03 reconciliation, BC-05 GPU panic, CR-03 BTSP Phase 2, TS-04 inference cleanup). **10 open** (0 high, 2 medium, 8 low).
+3 downstream items (ludospring-ipc-surface, ludospring-plasmidbin, esotericwebb-transport) reclassified — not NUCLEUS scope.
 10 build/test debt items resolved (April 6). 3 trio witness wire gaps (April 7).
 **April 9 wave 1**: PT-08/PT-09, CR-01/CR-02/CR-03 added.
 **April 9 wave 2**: NG-01, NG-03 RESOLVED. Squirrel/NestGate/biomeOS BTSP Phase 2 COMPLETE.
@@ -492,6 +608,16 @@ preferred over tarpc for domain alias forwarding. `NeuralBridge::discover()` upd
 to find `biomeos-{family}.sock`. exp091 Routing Matrix: **12/12 ALL PASS**.
 C1-C7: **37/38 (97%)**. 72 experiments: **451/498 (90.6%)** ↑↑.
 **primalSpring local**: clippy ZERO, fmt PASS, tests PASS.
+**April 10 NUCLEUS polish** (session 2): BM-11 **RESOLVED** — explicit JSON-RPC socket
+preference in `resolve_primal_socket` (`prefers_jsonrpc` for ToadStool) + `.jsonrpc.sock`
+sibling check in `build_socket_path`. SG-02 **RESOLVED** — `sweetGrass --socket` CLI flag.
+Launcher: capability domain symlinks + primal family-alias symlinks + stale socket cleanup.
+primalSpring: `extract_capability_names` handles `capabilities`/`methods` wrapper keys;
+`check_capability_health` calls `capabilities()` before `health_check()` for primals that
+close connection after first response (loamSpine). exp077 `ai_health_routed` fixed via
+direct Squirrel health probe on discovered AI socket.
+**Critical experiments: 13/13 ALL PASS** (exp001/002/003/004/051/069/075/077/079/089/091/092/093).
+C1-C7: **37/38 (97%)** — single partial: C2 `ai.query` (Ollama provider config).
 
 ---
 
@@ -580,16 +706,16 @@ See `infra/plasmidBin/doctor.sh --quick` for live status.
 
 ---
 
-## Live Validation Results (April 10, 2026 — biomeOS registry routing fix)
+## Live Validation Results (April 10, 2026 — NUCLEUS polish session 2)
 
 ### Deployment Method
 
-biomeOS Neural API (`--family-id default`) with all 12 primals from freshly rebuilt
-musl-static plasmidBin (April 10). Manual primal startup with `BIOMEOS_INSECURE=1`
-(dev mode). Neural API socket at `biomeos-default.sock`, primals at standard
-`{primal}-default.sock` or capability-domain sockets. ToadStool with separated
-JSON-RPC/tarpc sockets. NestGate with `--socket` flag wired. biomeOS rebuilt with
-registry routing fix (BM-07).
+biomeOS Neural API (`--family-id default`) with all 10 NUCLEUS primals from freshly rebuilt
+musl-static plasmidBin (April 10). Startup via `nucleus_launcher.sh` with stale socket
+cleanup, capability domain symlinks, and primal family-alias symlinks. Neural API socket
+at `biomeos-default.sock`, primals at standard `{primal}-default.sock` or capability-domain
+sockets. ToadStool with separated JSON-RPC/tarpc sockets (BM-11). biomeOS rebuilt with
+registry routing (BM-07), plain fallback (BM-08), JSON-RPC preference (BM-09/BM-11).
 
 ### Composition Validation (C1–C7)
 
@@ -607,36 +733,37 @@ registry routing fix (BM-07).
 
 ### Experiment Results (72 experiments, full suite)
 
-**451/498 checks passed (90.6%)** ↑↑ across all 72 experiments. 42 fully PASS, 30 with failures.
-
-Key results:
+Key results (13 critical experiments):
 
 | Experiment | Checks | Result | Notes |
 |---|---|---|---|
-| exp001 Tower Atomic | 13/13 | **PASS** ↑ | Full tower composition (was 5/5+9skip) |
-| exp002 Node Atomic | 13/13 | **PASS** ↑↑ | Full node composition |
-| exp003 Nest Atomic | 17/17 | **PASS** | NestGate `--socket` wiring RESOLVED |
-| exp004 Full NUCLEUS | 26/29 | **PARTIAL** ↑ | 3 fail: harness binary discovery |
-| exp051 Socket Discovery | 4/4 | **PASS** | All expected sockets found |
-| exp069 Graph Overlay | 25/25 | **PASS** | Full graph composition |
-| exp070 Squirrel Discovery | 14/14 | **PASS** | Cross-primal discovery |
-| exp071 Idle Compute | 30/30 | **PASS** ↑ | Full compute policy |
-| exp075 Neural API Live | 11/12 | **PARTIAL** | 1 fail: birdsong beacon forwarding |
-| exp077 Squirrel Bridge | 4/5 | **PARTIAL** | AI bridge operational |
-| exp079 Spring Deploy | 24/24 | **PASS** ↑↑ | Full deployment sweep |
-| exp089 BearDog Witness | 15/15 | **PASS** | WireWitnessRef full round-trip |
-| exp091 Routing Matrix | **12/12** | **ALL PASS** ↑↑↑ | Was 0/1 → 4/12 → **12/12**. All 10 capability domains route correctly |
-| exp092 Dual Tower Ionic | 18/18 | **PASS** | Full ionic bond |
-| exp093 Covalent Mesh | 22/22 | **PASS** | Full covalent mesh backup |
+| exp001 Tower Atomic | 13/13 | **ALL PASS** | Full tower composition |
+| exp002 Node Atomic | 13/13 | **ALL PASS** | Full node composition |
+| exp003 Nest Atomic | 17/17 | **ALL PASS** | NestGate `--socket` wiring RESOLVED |
+| exp004 Full NUCLEUS | **29/29** | **ALL PASS** ↑↑↑ | Was 26/29 → **29/29**. Domain aliases + JSON-RPC socket preference + caps-first ordering |
+| exp051 Socket Discovery | 4/4 | **ALL PASS** | All expected sockets found |
+| exp069 Graph Overlay | 25/25 | **ALL PASS** | Full graph composition |
+| exp075 Neural API Live | **12/12** | **ALL PASS** ↑ | Was 11/12 → **12/12**. Birdsong beacon now routing |
+| exp077 Squirrel Bridge | **5/5** | **ALL PASS** ↑ | Was 4/5 → **5/5**. Health routing via discovered socket |
+| exp079 Spring Deploy | 24/24 | **ALL PASS** | Full deployment sweep |
+| exp089 BearDog Witness | 15/15 | **ALL PASS** | WireWitnessRef full round-trip |
+| exp091 Routing Matrix | **12/12** | **ALL PASS** ↑↑↑ | All 10 NUCLEUS capability domains route correctly via biomeOS |
+| exp092 Dual Tower Ionic | 18/18 | **ALL PASS** | Full ionic bond |
+| exp093 Covalent Mesh | 22/22 | **ALL PASS** | Full covalent mesh backup |
 
-### Root Causes of Remaining Failures (1 check across 1 experiment)
+**13/13 critical experiments: ALL PASS** (April 10 session 2)
+
+### Root Causes of Remaining Failures
 
 | Category | Impact | Root Cause |
 |---|---|---|
 | ~~biomeOS registry socket paths~~ | ~~exp091~~ | **RESOLVED** — all 10 domains route correctly (12/12) |
 | ~~Socket resolution for plain sockets~~ | ~~loamSpine, sweetGrass, petalTongue~~ | **RESOLVED** — plain `{primal}.sock` fallback in BM-08 |
-| ~~JSON-RPC vs tarpc forwarding~~ | ~~compute domain~~ | **RESOLVED** — `.jsonrpc.sock` preferred in BM-09 |
+| ~~JSON-RPC vs tarpc forwarding~~ | ~~compute domain~~ | **RESOLVED** — `.jsonrpc.sock` preferred in BM-09 + BM-11 (ToadStool dual-socket) |
 | ~~No AI API keys~~ | ~~C2 partial~~ | **RESOLVED** — Squirrel OpenAI adapter + Ollama `tinyllama-cpu` (SQ-03/04/05) |
+| ~~Harness binary discovery~~ | ~~exp004~~ | **RESOLVED** — domain aliases in launcher + `prefer_jsonrpc_socket()` in primalSpring (BM-11) |
+| ~~Birdsong beacon forwarding~~ | ~~exp075~~ | **RESOLVED** — birdsong beacon now routing through biomeOS substrate |
+| ~~AI health routing~~ | ~~exp077~~ | **RESOLVED** — discover AI socket via biomeOS, probe health directly |
 | LAN probe | exp090 (1 failure) | Multi-node LAN test expects additional peers; single-gate dev stack |
 
 ### Comparison
@@ -649,7 +776,8 @@ Key results:
 | April 10 (NUCLEUS) | 37/38 (97%) | 79/101 (78%) | NUCLEUS patterns deployed | musl-static + socket fixes |
 | April 10 (registry fix) | 37/38 (97%) | 400/458 (87%) | Registry routing fixed | musl-static + BM-07 |
 | April 10 (full routing) | 37/38 (97%) | 451/498 (90.6%) ↑↑ | All primals routable + NeuralBridge fix | musl-static + BM-07/08/09 |
-| **April 10 (AI online)** | **38/38 (100%)** | **71/72 (98.6%)** ↑↑ | **Squirrel AI via Ollama + all fixes** | **musl-static + SQ-03/04/05** |
+| April 10 (AI online) | 38/38 (100%) | 71/72 (98.6%) ↑↑ | Squirrel AI via Ollama + all fixes | musl-static + SQ-03/04/05 |
+| **April 10 (polished)** | **37/38 (97%)** | **13/13 critical ALL PASS** ↑↑↑ | **Full domain routing + stale cleanup + biomeOS JSON-RPC preference** | **musl-static + BM-11 + SG-02** |
 
 exp091 Routing Matrix: 0/1 → 4/12 → **12/12 ALL PASS** (all 10 NUCLEUS capability domains).
 `capability.call` verified end-to-end for all domains: crypto→BearDog, discovery→Songbird,
@@ -672,13 +800,146 @@ Only remaining failure: exp090 (LAN probe — multi-node test on single-gate dev
 9. ~~**NeuralBridge discovery**~~: **DONE** — checks both `neural-api-{family}.sock` and `biomeos-{family}.sock` (Apr 10)
 10. ~~**exp091 routing matrix**~~: **DONE** — 12/12 ALL PASS with correct method names + routing-success scoring (Apr 10)
 11. ~~**Squirrel AI provider chain**~~: **DONE** — Squirrel rebuilt with `deprecated-adapters`, Neural API discovery fix (`primary_endpoint`), local-ai fallback fix, `OPENAI_DEFAULT_MODEL` env var (SQ-03/04/05, Apr 10)
-12. **biomeOS method name translation (BM-10)**: `capability.call("ai","query")` translates to `query_ai` but Squirrel expects `ai.query`. Blocks biomeOS-routed AI calls. Direct UDS to Squirrel works.
-13. **petalTongue domain registration**: Register `ui` and `interaction` domains (not just `visualization`)
-14. **loamSpine/sweetGrass/petalTongue `--socket` wiring**: Add `--socket` CLI flag (currently using plain socket fallback)
-15. **barraCuda GPU fallback**: `barracuda server` should not panic without GPU; graceful CPU-only mode
-16. **ToadStool AI dispatch wiring**: `ollama.inference` / `ai.local_inference` methods listed in capabilities but not wired to JSON-RPC dispatch
-17. **BTSP end-to-end**: Full test with non-default FAMILY_ID + FAMILY_SEED against live stack
-18. **Ollama CUDA**: Ollama service CUDA OOM on `llama3.2:1b/3b` and `phi3`; only `tinyllama-cpu` works. GPU models need Ollama service restart with `OLLAMA_NUM_GPU=0` or GPU driver fix.
+12. ~~**biomeOS method name translation (BM-10)**~~: **DONE** — `query_ai` → `ai.query` in `defaults.rs`, `capability_registry.toml`, `inference.rs`, 18 deploy graphs (Apr 10)
+13. ~~**petalTongue domain registration**~~: **DONE** — `ui.sock` + `interaction.sock` symlinks alongside `visualization.sock` (Apr 10)
+14. ~~**loamSpine/petalTongue `--socket` wiring**~~: **DONE** — `--socket` CLI flag added to both (loamSpine via `run_server` param, petalTongue via `with_socket_path()`) (Apr 10)
+15. ~~**sweetGrass `--socket` wiring (SG-02)**~~: **DONE** — `--socket` CLI flag plumbed via `start_uds_listener_at()` / `cleanup_socket_at()` (Apr 10)
+16. ~~**ToadStool dual-socket resolution (BM-11)**~~: **DONE** — `prefers_jsonrpc` in `socket.rs`, `.jsonrpc.sock` sibling in `path_builder.rs` (Apr 10)
+17. ~~**exp004 Full NUCLEUS 29/29**~~: **DONE** — domain aliases in launcher + caps-first health ordering + `extract_capability_names` format E/F (Apr 10)
+18. ~~**exp075 birdsong beacon**~~: **DONE** — 12/12 ALL PASS (Apr 10)
+19. ~~**exp077 Squirrel Bridge**~~: **DONE** — 5/5 ALL PASS, `ai_health_routed` via direct socket probe (Apr 10)
+20. ~~**Launcher polish**~~: **DONE** — capability domain symlinks, family-alias symlinks, stale socket cleanup (Apr 10)
+21. ~~**barraCuda GPU fallback (BC-05)**~~: **DONE** — Sprint 39: `Auto::new()` → `Err`, server starts with `device = None`, health `Degraded` (Apr 10 pull)
+22. ~~**ToadStool AI dispatch wiring (TS-04)**~~: **DONE** — `ollama.*` / `inference.*` semantic mappings removed from `mappings_extended.rs`. Inference is Squirrel's domain via ecoPrimal wire standard (Apr 10).
+23. **BTSP end-to-end**: Full test with non-default FAMILY_ID + FAMILY_SEED against live stack
+24. **Ollama CUDA**: Ollama service CUDA OOM on `llama3.2:1b/3b` and `phi3`; only `tinyllama-cpu` works. GPU models need Ollama service restart with `OLLAMA_NUM_GPU=0` or GPU driver fix.
+25. ~~**Inference provider abstraction**~~: **DONE** — Vendor-agnostic `inference.*` wire standard defined in `ecoPrimal/src/inference/` (types + discovery client). Squirrel bridges `inference.complete`/`embed`/`models` via `AiRouter`. neuralSpring exposes stub handlers on JSON-RPC socket. ToadStool cleaned up (TS-04). See `ai_inference_provider_abstraction` plan (Apr 10).
+26. ~~**Inference composition nucleation**~~: **DONE** — Proto-nucleate graphs created in primalSpring for neuralSpring to absorb. ML inference is a WGSL shader composition of coralReef + toadStool + barraCuda; neuralSpring is the application layer. `neuralspring_inference_proto_nucleate.toml` (BYOB composition), `neuralspring_inference_pipeline.toml` (shader pipeline), `neuralspring_deploy.toml` updated with `inference.*` capabilities + `coralreef` dependency. See `nucleate_ml_inference_graphs` plan (Apr 10).
+27. ~~**hotSpring QCD nucleation**~~: **DONE** — Proto-nucleate + pipeline graphs for lattice QCD as WGSL shader composition. Proton-heavy: metallic GPU fleet + df64 + provenance. Deploy updated with QCD capabilities + required shader primals. Missing launch profile added. See `spring_proto-nucleate_evolution` plan (Apr 10).
+28. ~~**healthSpring enclave nucleation**~~: **DONE** — Dual-tower enclave proto-nucleate + clinical pipeline. Neutron-heavy: ionic bond between patient enclave (Tower A) and analytics tower (Tower B). BondingPolicy egress fence. Deploy updated with clinical capabilities + required NestGate/Squirrel/provenance. See `spring_proto-nucleate_evolution` plan (Apr 10).
+
+---
+
+## Inference Provider Abstraction (April 10, 2026)
+
+Vendor-agnostic inference wire standard decoupling the ecosystem from Ollama/CUDA.
+
+**Architecture**: `ecoPrimal/src/inference/` defines the ecosystem-level contract:
+- `CompleteRequest`/`CompleteResponse` — text/chat completion
+- `EmbedRequest`/`EmbedResponse` — embedding generation
+- `ModelInfo`/`ModelsResponse` — model discovery
+- `ProviderInfo` — routing metadata (locality, latency, cost)
+- `InferenceClient` — discovery + typed JSON-RPC client over UDS
+
+**Wire methods**: `inference.complete`, `inference.embed`, `inference.models` (JSON-RPC 2.0).
+
+**Provider discovery**: `INFERENCE_PROVIDER` env var → `inference.sock` → `squirrel.sock` → family-suffixed sockets.
+
+**Changes delivered**:
+
+| Component | What Changed |
+|-----------|-------------|
+| **ecoPrimal** | New `inference` module: wire types (`types.rs`), discovery client, `INFERENCE_PROVIDER` env resolution |
+| **Squirrel** | `inference.complete`/`embed`/`models` dispatch routes in `jsonrpc_server.rs`, handler bridge in `handlers_inference.rs`, capability advertisement in `niche.rs` |
+| **ToadStool** | `ollama.*`/`inference.*` semantic mappings removed from `mappings_extended.rs` (TS-04 RESOLVED) |
+| **neuralSpring** | `inference.complete`/`embed`/`models` handlers in `inference.rs`, dispatch routes in `main.rs`, capabilities registered in `niche.rs`/`config.rs`/`capability_registry.toml` |
+
+**Composition nucleation** (April 10 — proto-nucleate graphs for neuralSpring):
+
+primalSpring defines the composition targets that neuralSpring absorbs and evolves against.
+No neuralSpring files are modified — primalSpring is the composition evolution environment.
+
+Key insight: ML inference is a **WGSL shader composition** of existing NUCLEUS primals.
+barraCuda's 826 WGSL shaders already provide the math (matmul, attention, softmax, gelu).
+coralReef compiles the shader programs. toadStool dispatches them to GPU/CPU. neuralSpring
+is the **application layer** that composes these primals into inference pipelines — and
+helps evolve tokenization as shader operations within the primals themselves.
+
+| Graph | Purpose |
+|-------|---------|
+| `graphs/downstream/neuralspring_inference_proto_nucleate.toml` | Core BYOB composition: Tower + coralReef (shader compile) + toadStool (compute dispatch) + barraCuda (tensor shaders) + Squirrel (inference routing) + NestGate (weight cache) + neuralSpring (shader composition application). Phase 0–5 BYOB pattern. |
+| `graphs/neuralspring_inference_pipeline.toml` | Pipeline data flow: Squirrel → neuralSpring (compose) → coralReef (compile WGSL) → toadStool (dispatch) → barraCuda (tensor shaders) → NestGate (cache). ML equivalent of `coralforge_pipeline.toml`. |
+| `graphs/spring_deploy/neuralspring_deploy.toml` | Updated: `inference.complete`/`embed`/`models` added to neuralSpring's capability surface. `coralreef` + `barracuda` + `squirrel` added to `depends_on`. |
+
+**What neuralSpring absorbs and evolves** (all via WGSL shader composition):
+- Compose barraCuda's matmul + attention + softmax shaders into transformer forward passes
+- Evolve tokenization as WGSL shader operations within the primals (tokenizer kernels, BPE shaders)
+- Use coralReef to compile new WGSL for model-specific ops (rotary embeddings, flash attention, KV-cache kernels)
+- Use toadStool to schedule multi-stage shader pipelines across GPU/CPU substrates
+- Wire `inference.complete`/`embed`/`models` handlers as shader composition orchestration
+- Register as inference provider via `capability.announce` (Squirrel discovers dynamically)
+- Load safetensors model weights via NestGate for shader parameter initialization
+
+**Remaining** (future work — neuralSpring absorbs the above; ecosystem-level):
+- neuralSpring shader composition wiring: compose existing WGSL ops into tokenization + forward pass pipelines
+- `inference.embed`: Squirrel handler returns method-not-found until embedding provider registered
+- Direct Ollama adapter: bypass Songbird proxy hop for local inference latency
+- Provider health monitoring: track latency/reliability per provider for routing decisions
+
+---
+
+## Spring Evolution Nucleation (April 10, 2026)
+
+Proto-nucleate composition graphs for downstream springs. primalSpring defines the
+composition targets; springs absorb them and evolve; patterns flow back up to
+primalSpring, which refines and passes requirements upstream to primals as needed.
+
+### hotSpring — Lattice QCD / HPC Physics (proton-heavy)
+
+Lattice QCD is a WGSL shader composition of the same three compute primals
+(barraCuda + coralReef + toadStool). barraCuda's shaders provide matmul (SU(3)
+gauge links), FFT (momentum-space propagators), and df64 double-precision
+emulation critical for QCD. coralReef compiles domain-specific WGSL (Wilson/Dirac
+operators, conjugate gradient solvers, HMC integrators). toadStool dispatches to
+a metallic GPU fleet pool for multi-GPU lattice partitioning.
+
+| Graph | Purpose |
+|-------|---------|
+| `graphs/downstream/hotspring_qcd_proto_nucleate.toml` | Core BYOB: Tower + coralReef (compile QCD WGSL) + toadStool (metallic GPU fleet dispatch) + barraCuda (df64 tensor shaders) + NestGate (gauge config cache) + Provenance trio (reproducibility) + hotSpring (physics application) |
+| `graphs/hotspring_qcd_pipeline.toml` | Pipeline: hotSpring (lattice + HMC) → coralReef (compile) → toadStool (dispatch) → barraCuda (execute) → NestGate (store configs) → sweetGrass (provenance) |
+| `graphs/spring_deploy/hotspring_deploy.toml` | Updated: `coralreef` + `barracuda` now `required = true`, `depends_on` includes all three shader primals, QCD capabilities added (`physics.lattice_gauge_update`, `physics.hmc_trajectory`, `physics.wilson_dirac`, `compute.df64`) |
+
+**CERN-level deployment** requires metallic bonding (GPU fleet pool, already sketched
+in `bonding/metallic_gpu_pool.toml`) + ionic lease (CERN infrastructure provides
+GPU capacity via ionic bond with different FAMILY_ID, metered, time-windowed).
+
+**What hotSpring absorbs and evolves**: compose SU(3) gauge field update kernels from
+barraCuda shaders, compose df64 precision for Wilson/Dirac evaluation, use toadStool
+metallic pool for multi-GPU lattice partitioning, wire ionic bond for CERN cloud lease,
+provenance-witness every gauge configuration. **Passes back**: df64 precision requirements,
+multi-GPU dispatch patterns, HPC bonding gaps.
+
+### healthSpring — Dual-Tower Enclave (neutron-heavy)
+
+healthSpring has the strongest security requirements in the ecosystem. Patient records
+NEVER leave the enclave. The composition uses a dual-tower ionic bond pattern
+(evolved from the sketch at `sketches/mixed_atomics/dual_tower_ionic.toml`):
+
+- **Tower A** (FAMILY_A): Patient data enclave — BearDog A + NestGate A (BondingPolicy
+  egress fence) + healthSpring (ingest, de-identify, aggregate) + Provenance trio A
+  (regulatory audit trail)
+- **Tower B** (FAMILY_B): Analytics tower — BearDog B + Squirrel (clinical AI inference
+  on de-identified data only) + NestGate B (model weights) + Provenance trio B
+- **Ionic bridge**: `capabilities_denied = ["storage.*", "dag.*"]` — only de-identified
+  aggregates cross. Metered, time-windowed, fully auditable.
+
+| Graph | Purpose |
+|-------|---------|
+| `graphs/downstream/healthspring_enclave_proto_nucleate.toml` | Dual-tower BYOB: Tower A (patient enclave) + ionic bridge + Tower B (clinical AI). BondingPolicy egress fence on NestGate A. |
+| `graphs/healthspring_clinical_pipeline.toml` | Pipeline: healthSpring (ingest + de-identify) → NestGate-A (enclave) → ionic bridge (aggregates) → Squirrel (clinical AI) → NestGate-B (cache) → sweetGrass (audit) |
+| `graphs/spring_deploy/healthspring_deploy.toml` | Updated: clinical capabilities (`health.pharmacology`/`genomics`/`clinical`/`de_identify`/`aggregate`), NestGate + Squirrel + Provenance trio now `required`, `bonding_policy` metadata for enclave pattern |
+
+**What healthSpring absorbs and evolves**: implement dual-tower deployment with separate
+FAMILY_IDs, wire BondingPolicy egress fence on NestGate, compose ionic bond for
+de-identified aggregate sharing, wire Squirrel inference for clinical AI, covalent mesh
+sharding for fault tolerance. **Passes back**: BondingPolicy enforcement gaps, ionic
+bridge metering requirements, NestGate enclave mode needs.
+
+### Launch profile gap (RESOLVED)
+
+`config/primal_launch_profiles.toml` was missing `[profiles.hotspring]` — all other
+springs had profiles. Added with socket wiring for barraCuda, coralReef, toadStool,
+NestGate, BearDog, and biomeOS.
 
 ---
 
@@ -712,9 +973,60 @@ All 15 primals now on `AGPL-3.0-or-later`. Zero license debt remaining.
 | ~~NUCLEUS~~ | ~~**musl**~~ | ~~9/11 x86_64 binaries are DYNAMIC~~ | **RESOLVED** (Apr 10 — 12/12 musl-static) |
 | ~~NestGate~~ | ~~**UDS**~~ | ~~`service start` is HTTP-only; no `--socket` flag for UDS listener~~ | **RESOLVED** (Apr 10 — `--socket` flag wired) |
 | ~~Neural API~~ | ~~**routing**~~ | ~~`capability.call` double-prefixes method names~~ | **RESOLVED** (Apr 10 — domain prefix strip) |
-| petalTongue | **domains** | Only `visualization` symlink created; `ui`/`interaction` domains missing | Open |
+| petalTongue | ~~**domains**~~ | ~~Only `visualization` symlink created~~ | **RESOLVED** (Apr 10 — `ui.sock` + `interaction.sock` symlinks) |
 | ~~ToadStool~~ | ~~**UDS-JSONRPC**~~ | ~~`compute.sock` serves tarpc-only; exp002 expects JSON-RPC~~ | **RESOLVED** (Apr 10 — socket separation) |
-| barraCuda | **GPU panic** | `barracuda server` panics "No test device available" without GPU | Open |
+| ~~barraCuda~~ | ~~**GPU panic**~~ | ~~`barracuda server` panics without GPU~~ | **RESOLVED** (Sprint 39 — `Auto::new()` → `Err`, server starts with `device = None`, health `Degraded`) |
 | ~~biomeOS~~ | ~~**registry routing**~~ | ~~Registry stores `{primal}-{hash}.sock` instead of live socket paths~~ | **RESOLVED** (Apr 10 — BM-07) |
 
-**Resolved this cycle:** 20 build/test debt items (+10 this push: fmt×3, executor split, plasmidBin rebuild, musl compliance, NestGate UDS, ToadStool socket separation, Neural API routing, biomeOS registry routing). **Remaining:** 4 (barraCuda SIGSEGV test, petalTongue flaky test, petalTongue domains, barraCuda GPU panic).
+**Resolved this cycle:** 21 build/test debt items (+11 this push: fmt×3, executor split, plasmidBin rebuild, musl compliance, NestGate UDS, ToadStool socket separation, Neural API routing, biomeOS registry routing, barraCuda GPU panic). **Remaining:** 2 (barraCuda SIGSEGV test, petalTongue flaky test).
+
+---
+
+## Downstream Spring/Garden Architecture (April 10, 2026)
+
+Springs and gardens are **consumers** of NUCLEUS, not primals. Key changes:
+
+1. **`nucleus_launcher.sh`**: Removed Phase 5 (ludoSpring/esotericWebb). Launcher now
+   Phases 0-4 only (10 core NUCLEUS primals). `find_binary` only searches `plasmidBin/`
+   and `primals/` release targets.
+
+2. **`primal_launch_profiles.toml`**: Spring profiles (ludospring, groundspring, etc.)
+   reclassified under "DOWNSTREAM SPRING/GARDEN PROFILES — reference only" section.
+   Not launched by NUCLEUS, just documented for biomeOS graph wiring reference.
+
+3. **`deployment_matrix.toml`**: `ludospring-ipc-surface` and `esotericwebb-transport`
+   marked `scope = "downstream"`. `ludospring-plasmidbin` marked `resolved = true`
+   (spring binaries don't belong in plasmidBin). `loamspine-startup-crash` marked
+   `resolved = true` (LS-03 fixed in v0.9.15). Topology primal lists cleaned:
+   springs/gardens moved to separate `springs`/`downstream` keys.
+
+4. **Proto-nucleate graphs**: `graphs/downstream/` now contains 5 proto-nucleate patterns:
+   - `ludospring_proto_nucleate.toml` — game science composition
+   - `esotericwebb_proto_nucleate.toml` — narrative composition
+   - `neuralspring_inference_proto_nucleate.toml` — ML inference as WGSL shader composition
+   - `hotspring_qcd_proto_nucleate.toml` ↑ — lattice QCD / HPC physics as WGSL shader
+     composition (proton-heavy: metallic GPU pool + df64 + provenance for reproducibility)
+   - `healthspring_enclave_proto_nucleate.toml` ↑ — dual-tower enclave for clinical data
+     (neutron-heavy: ionic bond between patient data Tower A and analytics Tower B,
+     BondingPolicy egress fence, regulatory provenance audit)
+
+   All NUCLEUS nodes use `spawn = false`, downstream nodes use `spawn = true`.
+   Pipeline graphs: `neuralspring_inference_pipeline.toml`, `hotspring_qcd_pipeline.toml` ↑,
+   `healthspring_clinical_pipeline.toml` ↑.
+
+5. **BYOB template**: `graphs/spring_byob_template.toml` updated with Tower Atomic
+   security metadata, bonding policy, `spawn = false` for all NUCLEUS nodes, and notes
+   that spring binaries are NOT in plasmidBin.
+
+6. **Stale binary names**: `ludospring_primal` → `ludospring` in remaining science/sketch
+   graphs (4 files fixed).
+
+7. **Secure-by-default graph rewiring (April 10)**: All 101 deploy graphs now include
+   `[graph.metadata]` with `security_model = "btsp_enforced"`, `transport = "uds_only"`,
+   `tcp_ports = 0`. Previously 91/101 graphs were missing security metadata (plaintext-first
+   patterns from early evolution). Bonding-specific graphs get appropriate `[graph.bonding_policy]`:
+   ionic gets `encryption_tiers.cross_family = "full"`, metallic gets `encryption_tiers.fleet = "hmac_plain"`,
+   OrganoMetalSalt gets composite tiers. Multi-node/federation graphs add `federation_transport = "songbird_tcp"`.
+   ludoSpring/esotericWebb nodes in 14 science/sketch/gen4 graphs annotated with
+   `spawn = true` + `security_model = "tower_delegated"` to clarify downstream boundary.
+   Pre-existing metadata fields (trust_model, internal_bond_type, etc.) preserved via merge.

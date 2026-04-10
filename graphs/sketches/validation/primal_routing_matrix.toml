@@ -21,6 +21,11 @@ version = "1.0.0"
 description = "L0: Validate biomeOS capability routing to all 10 primal domains independently"
 coordination = "sequential"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
 # ─── Domain 1: Security (BearDog) ───
 
 [[graph.nodes]]

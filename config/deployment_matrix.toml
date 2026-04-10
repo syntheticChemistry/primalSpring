@@ -19,9 +19,9 @@
 # as primal teams fix gaps.
 
 [matrix]
-version = "1.0.0"
-description = "Pre-deployment validation for cross-arch, cross-network primal compositions"
-last_updated = "2026-03-28"
+version = "2.0.0"
+description = "Zero-Port Tower Atomic deployment validation — UDS-only default, TCP opt-in for federation"
+last_updated = "2026-04-10"
 
 # ── Architectures ───────────────────────────────────────────────────────
 
@@ -47,21 +47,22 @@ prerequisites = ["qemu-user-static", "binfmt_misc"]
 [topologies.tower_2node]
 file = "ecoprimals-tower-2node"
 nodes = 2
-primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal", "neuralspring", "wetspring", "ludospring"]
+primals = ["beardog", "songbird", "biomeos"]
+springs = ["groundspring", "healthspring", "neuralspring", "wetspring"]
 composition = "Tower + Springs"
-description = "Minimal cross-gate: Tower substrate + spring primals"
+description = "Minimal cross-gate: Tower substrate + downstream springs (springs build their own binaries)"
 
 [topologies.nucleus_3node]
 file = "ecoprimals-nucleus-3node"
 nodes = 3
-primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring_primal", "neuralspring", "wetspring", "ludospring"]
+primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring", "neuralspring", "wetspring", "ludospring"]
 composition = "Full NUCLEUS + Springs + Mobile"
 description = "Full NUCLEUS with NAT-degraded mobile node"
 
 [topologies.wan_federation]
 file = "ecoprimals-wan-federation"
 nodes = 3
-primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring_primal", "neuralspring", "wetspring", "ludospring"]
+primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring", "neuralspring", "wetspring", "ludospring"]
 composition = "WAN Federation"
 description = "Cross-site federation with satellite-grade latency"
 
@@ -70,28 +71,30 @@ file = "ecoprimals-tower-2node-tcp"
 nodes = 2
 primals = ["beardog", "songbird", "biomeos"]
 composition = "Tower (TCP-only)"
-description = "Mobile/Android simulation: no UDS, TCP transport only"
+description = "DEPRECATED: Mobile/Android future work. All primals now UDS-only by default."
+deprecated = true
+deprecated_reason = "Zero-Port Tower Atomic standard. TCP opt-in via Songbird --port for federation only."
 
 # ── Niche / constrained substrates ─────────────────────────────────────
 
 [topologies.alpine_minimal]
 file = "ecoprimals-alpine-minimal"
 nodes = 2
-primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal"]
+primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring"]
 composition = "Tower + Springs (Alpine)"
 description = "6MB Alpine base — no glibc, no systemd, BusyBox only"
 
 [topologies.readonly_fs]
 file = "ecoprimals-readonly-fs"
 nodes = 2
-primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal"]
+primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring"]
 composition = "Tower + Springs (read-only)"
 description = "Read-only containers — simulates Android/GrapheneOS CWD write failures"
 
 [topologies.constrained_256m]
 file = "ecoprimals-constrained-256m"
 nodes = 2
-primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal"]
+primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring"]
 composition = "Tower + Springs (256MB)"
 description = "256MB RAM, 0.5 CPU per node — tests OOM handling and graceful degradation"
 
@@ -108,7 +111,7 @@ bond_type = "ionic"
 [topologies.metallic_fleet]
 file = "ecoprimals-metallic-fleet"
 nodes = 5
-primals = ["beardog", "songbird", "biomeos", "toadstool", "groundspring", "hotspring_primal", "neuralspring", "wetspring"]
+primals = ["beardog", "songbird", "biomeos", "toadstool", "groundspring", "hotspring", "neuralspring", "wetspring"]
 composition = "Fleet Pool (Metallic Bond)"
 description = "5 nodes sharing delocalized resource pool — data center rack pattern"
 bond_type = "metallic"
@@ -116,7 +119,7 @@ bond_type = "metallic"
 [topologies.organo_metal_salt]
 file = "ecoprimals-organo-metal-salt"
 nodes = 5
-primals = ["beardog", "songbird", "biomeos", "nestgate", "toadstool", "squirrel", "groundspring", "healthspring_primal", "neuralspring", "wetspring"]
+primals = ["beardog", "songbird", "biomeos", "nestgate", "toadstool", "squirrel", "groundspring", "healthspring", "neuralspring", "wetspring"]
 composition = "OrganoMetalSalt Complex"
 description = "Covalent core + ionic edge + weak public — the full chemistry"
 bond_type = "organo_metal_salt"
@@ -126,15 +129,16 @@ bond_type = "organo_metal_salt"
 [topologies.federation_10node]
 file = "ecoprimals-federation-10node"
 nodes = 10
-primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "groundspring", "healthspring_primal", "neuralspring", "wetspring", "ludospring", "rhizocrypt", "loamspine", "sweetgrass"]
+primals = ["beardog", "songbird", "nestgate", "toadstool", "squirrel", "biomeos", "rhizocrypt", "loamspine", "sweetgrass"]
+springs = ["groundspring", "healthspring", "neuralspring", "wetspring"]
 composition = "Full Federation + Provenance Trio"
-description = "3 NUCLEUS gates + 5 spring nodes + 2 mobile-degraded — Plasmodium at scale"
+description = "3 NUCLEUS gates + spring nodes + 2 mobile-degraded — Plasmodium at scale"
 bond_type = "covalent"
 
 [topologies.mixed_arch_cluster]
 file = "ecoprimals-mixed-arch-cluster"
 nodes = 4
-primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring_primal", "neuralspring"]
+primals = ["beardog", "songbird", "biomeos", "groundspring", "healthspring", "neuralspring"]
 composition = "Mixed-Arch Cluster"
 description = "x86_64 + aarch64 nodes in same lab — tests cross-arch binary dispatch and crypto parity"
 bond_type = "covalent"
@@ -161,7 +165,7 @@ bond_type = "metallic"
 [topologies.skunkbat_defensive]
 file = "ecoprimals-skunkbat-defensive"
 nodes = 3
-primals = ["beardog", "songbird", "biomeos", "skunkbat", "groundspring", "healthspring_primal"]
+primals = ["beardog", "songbird", "biomeos", "skunkbat", "groundspring", "healthspring"]
 composition = "Defended Mesh + External Probe"
 description = "skunkBat defensive security mesh: violation detection, sovereignty proofs, external probe"
 bond_type = "covalent"
@@ -188,7 +192,7 @@ bond_type = "covalent"
 [topologies.agentic_tower]
 file = "ecoprimals-agentic-tower"
 nodes = 3
-primals = ["beardog", "songbird", "biomeos", "squirrel", "petaltongue", "groundspring", "healthspring_primal", "neuralspring", "toadstool", "nestgate"]
+primals = ["beardog", "songbird", "biomeos", "squirrel", "petaltongue", "groundspring", "healthspring", "neuralspring", "toadstool", "nestgate"]
 composition = "Agentic Tower (biomeOS + Squirrel + petalTongue)"
 description = "Full human+AI coordination: Neural API routing + MCP tools + UI dashboards"
 bond_type = "covalent"
@@ -207,9 +211,10 @@ deployment_class = "fieldmouse"
 [topologies.storytelling_tower]
 file = "ecoprimals-storytelling-tower"
 nodes = 3
-primals = ["beardog", "songbird", "biomeos", "squirrel", "esotericwebb", "ludospring", "petaltongue", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+primals = ["beardog", "songbird", "biomeos", "squirrel", "petaltongue", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+downstream = ["esotericwebb", "ludospring"]
 composition = "Storytelling Tower (esotericWebb + ludoSpring + Squirrel DM + petalTongue)"
-description = "Full AI DM storytelling: CRPG narrative + game science + AI narration + scene rendering + session provenance"
+description = "Full AI DM storytelling: CRPG narrative + game science + AI narration + scene rendering + session provenance. esotericWebb/ludoSpring are downstream (not primals)."
 bond_type = "covalent"
 
 [topologies.storytelling_minimal]
@@ -279,15 +284,44 @@ scenario = "Same-machine loopback — no network simulation"
 
 # ── Transport Modes ─────────────────────────────────────────────────────
 
+[transports.uds_only]
+description = "Unix domain sockets only — Zero-Port Tower Atomic standard (DEFAULT)"
+env_override = {}
+notes = "All primals UDS-only. No TCP ports bound. This is the canonical transport."
+
 [transports.uds_first]
 description = "Unix domain sockets preferred, TCP fallback"
 env_override = {}
-notes = "Default for desktop/server gates"
+notes = "Legacy: equivalent to uds_only now that all primals default to no TCP"
 
 [transports.tcp_first]
-description = "TCP-only — simulates mobile/Android (no UDS)"
+description = "DEPRECATED: TCP-only — mobile/Android future work"
 env_override = { PRIMAL_TRANSPORT = "tcp", BIOMEOS_MODE = "api", BIOMEOS_TCP_ONLY = "true" }
-notes = "Required for Pixel/GrapheneOS (SELinux denies sock_file create)"
+notes = "Required for Pixel/GrapheneOS (SELinux denies sock_file create). Not yet re-enabled post-Tower-Atomic."
+deprecated = true
+
+# ── Security Tiers ─────────────────────────────────────────────────────
+
+[security_tiers]
+description = "Encryption tiers enforced by the Tower Atomic security model"
+
+[security_tiers.tower]
+enforcement = "btsp_enforced"
+encryption = "full"
+primals = ["beardog", "songbird"]
+notes = "Tower boundary. BTSP handshake required. Full encryption for all cross-boundary traffic."
+
+[security_tiers.nucleus]
+enforcement = "tower_delegated"
+encryption = "hmac_plain"
+primals = ["biomeos", "toadstool", "nestgate", "squirrel", "rhizocrypt", "loamspine", "sweetgrass", "petaltongue"]
+notes = "Same-host UDS behind Tower perimeter. Lower encryption acceptable. HMAC-plain or cleartext."
+
+[security_tiers.federation]
+enforcement = "btsp_enforced"
+encryption = "full"
+transport = "songbird_tcp_opt_in"
+notes = "Inter-host traffic via Songbird --port. Full encryption. Zero-knowledge to external observers."
 
 # ── Experiments ─────────────────────────────────────────────────────────
 
@@ -316,11 +350,11 @@ id = "tower-x86-homelan-uds"
 topology = "tower_2node"
 arch = "x86_64"
 preset = "home_lan"
-transport = "uds_first"
+transport = "uds_only"
 experiments = "core"
 priority = "P0"
 status = "pass"
-notes = "Golden path — live-tested, 7/8 primals alive"
+notes = "Golden path — live-tested, zero TCP ports, all primals UDS-only (Apr 2026)"
 
 [[cells]]
 id = "tower-x86-basement-uds"
@@ -816,15 +850,15 @@ tracking = "IPC_COMPLIANCE_MATRIX.md"
 id = "biomeos-tcp-api"
 affects = ["tower-x86-homelan-tcp", "tower-x86-mobile-tcp", "tower-aarch64-homelan-tcp", "tower-aarch64-mobile-tcp"]
 primal = "biomeos"
-description = "biomeOS api mode ignores --port, forces UDS. TCP-only mode not implemented."
-tracking = "CROSS_GATE_MOBILE_TCP_TRANSPORT_GAP_HANDOFF_MAR28_2026.md"
+description = "RESOLVED (Apr 2026): biomeOS TCP mode is moot — all primals now UDS-only by default."
+resolved = true
 
 [[blockers]]
 id = "beardog-tcp-startup"
 affects = ["tower-x86-homelan-tcp", "tower-aarch64-homelan-tcp"]
 primal = "beardog"
-description = "BearDog server hard-exits if UDS bind fails (~5s). --listen TCP path exists but not first-class."
-tracking = "CROSS_GATE_MOBILE_TCP_TRANSPORT_GAP_HANDOFF_MAR28_2026.md"
+description = "RESOLVED (Apr 2026): BearDog TCP is now opt-in only. UDS-only by default, no TCP bind attempted."
+resolved = true
 
 [[blockers]]
 id = "loamspine-startup-crash"
@@ -832,6 +866,7 @@ affects = ["nucleus-x86-basement-provenance"]
 primal = "loamspine"
 description = "LoamSpine crashes on startup (Tokio nested runtime in infant_discovery). Blocks full provenance chain."
 tracking = "IPC_COMPLIANCE_MATRIX.md"
+resolved = true
 
 [[blockers]]
 id = "ionic-not-implemented"
@@ -844,33 +879,36 @@ tracking = "BENCHSCALE_AGENTREAGENTS_MODERNIZATION_HANDOFF_MAR28_2026.md"
 id = "squirrel-abstract-socket"
 affects = ["agentic-x86-homelan-uds", "agentic-x86-basement-uds", "agentic-fm-x86-homelan-uds"]
 primal = "squirrel"
-description = "Squirrel listens on abstract socket @squirrel but biomeOS routes to filesystem sockets. Forward fails silently."
-tracking = "specs/AGENTIC_TRIO_EVOLUTION.md"
+description = "RESOLVED (Apr 2026): Squirrel now accepts --socket for filesystem UDS. Launcher passes explicit path."
+resolved = true
 
 [[blockers]]
 id = "biomeos-tcp-api-agentic"
 affects = ["agentic-x86-homelan-tcp"]
 primal = "biomeos"
-description = "biomeOS api mode ignores --port, forces UDS. TCP-only agentic tower cannot function."
-tracking = "specs/AGENTIC_TRIO_EVOLUTION.md"
+description = "RESOLVED (Apr 2026): biomeOS TCP mode is moot — all primals now UDS-only by default."
+resolved = true
 
 [[blockers]]
 id = "ludospring-ipc-surface"
 affects = ["storytelling-x86-homelan-uds", "storytelling-x86-homelan-tcp", "storytelling-x86-localhost-uds", "storytelling-x86-basement-uds"]
 primal = "ludospring"
-description = "ludoSpring binary only exposes 8 game science methods. esotericWebb requires 6 additional methods (game.narrate_action, game.npc_dialogue, game.voice_check, game.push_scene, game.begin_session, game.complete_session). Squirrel ai.chat fallback works but loses game-science enrichment."
+scope = "downstream"
+description = "DOWNSTREAM (not a primal): ludoSpring is a spring, not a NUCLEUS primal. IPC surface expansion is owned by ludoSpring repo. 8 game.* methods exposed; esotericWebb needs 6 more."
 tracking = "specs/STORYTELLING_EVOLUTION.md"
 
 [[blockers]]
 id = "ludospring-plasmidbin"
 affects = ["storytelling-x86-homelan-uds", "storytelling-x86-homelan-tcp", "storytelling-x86-basement-uds"]
 primal = "ludospring"
-description = "ludoSpring not deployed to plasmidBin. benchScale cannot provision the binary for lab topologies."
-tracking = "specs/STORYTELLING_EVOLUTION.md"
+scope = "downstream"
+description = "NOT APPLICABLE: ludoSpring is a spring — spring binaries do not belong in plasmidBin. Only primals go in plasmidBin. ludoSpring builds its own binary."
+resolved = true
 
 [[blockers]]
 id = "esotericwebb-transport"
 affects = ["storytelling-x86-homelan-uds"]
 primal = "esotericwebb"
-description = "esotericWebb is TCP-first (webb/src/ipc/mod.rs) but UDS-first cells expect biomeOS UDS routing. Transport negotiation needed."
+scope = "downstream"
+description = "DOWNSTREAM (not a primal): esotericWebb is a garden/composition. Transport negotiation is owned by esotericWebb repo."
 tracking = "specs/STORYTELLING_EVOLUTION.md"

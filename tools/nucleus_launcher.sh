@@ -1,14 +1,27 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# NUCLEUS Launcher — starts the ecoPrimals composition stack in dependency order.
+# NUCLEUS Launcher — Zero-Port Tower Atomic Standard
+#
+# Starts the ecoPrimals NUCLEUS composition stack in dependency order.
+# All primals run UDS-only by default. No TCP ports are bound.
+# Songbird TCP is opt-in only via SONGBIRD_FEDERATION_PORT for LAN mesh.
 #
 # Phases:
 #   0: biomeOS Neural API (orchestration substrate)
-#   1: Tower Atomic — BearDog (crypto) + Songbird (discovery)
-#   2: NestGate (persistence) + Squirrel (AI bridge)
-#   3: petalTongue (visualization) + ludoSpring (game science)
-#   4: esotericWebb (narrative engine — the composed product)
+#   1: Tower Atomic — BearDog (crypto root) + Songbird (gateway, UDS-only)
+#   2: Core Services — ToadStool (compute) + NestGate (persistence) + Squirrel (AI)
+#   3: Provenance — rhizoCrypt (crypto-storage) + loamSpine (DAG) + sweetGrass (commit)
+#   4: Interface — petalTongue (visualization, server mode)
+#
+# Springs and gardens (ludoSpring, esotericWebb, etc.) are downstream
+# consumers of NUCLEUS, not primals. They use proto-nucleate graphs to
+# compose NUCLEUS capabilities. See graphs/downstream/ for patterns.
+#
+# Security Model:
+#   Tower boundary (BearDog + Songbird) enforces BTSP.
+#   NUCLEUS internal traffic (same-host UDS) may use lower encryption.
+#   External federation (opt-in Songbird TCP) uses full encryption.
 #
 # Usage:
 #   ./tools/nucleus_launcher.sh start     # launch full stack
@@ -17,11 +30,12 @@
 #   ./tools/nucleus_launcher.sh restart   # stop + start
 #
 # Environment:
-#   NUCLEUS_BIN_DIR     — directory containing primal binaries (default: auto-detect)
-#   NUCLEUS_FAMILY_ID   — family ID for socket naming (default: auto-detect)
-#   NUCLEUS_LOG_LEVEL   — tracing log level (default: info)
-#   OLLAMA_ENDPOINT     — Ollama URL for AI narration (default: http://localhost:11434)
-#   BIOMEOS_GRAPHS_DIR  — biomeOS graphs directory (default: auto-detect)
+#   NUCLEUS_BIN_DIR            — directory containing primal binaries (default: auto-detect)
+#   NUCLEUS_FAMILY_ID          — family ID for socket naming (default: auto-detect)
+#   NUCLEUS_LOG_LEVEL          — tracing log level (default: info)
+#   OLLAMA_ENDPOINT            — Ollama URL for AI narration (default: http://localhost:11434)
+#   BIOMEOS_GRAPHS_DIR         — biomeOS graphs directory (default: auto-detect)
+#   SONGBIRD_FEDERATION_PORT   — opt-in TCP port for LAN federation (unset = UDS-only)
 
 set -euo pipefail
 
@@ -39,10 +53,9 @@ detect_bin_dir() {
         echo "$NUCLEUS_BIN_DIR"
         return
     fi
-    local deploy_dir
-    deploy_dir=$(ls -d /tmp/nucleus-deploy-*/bin 2>/dev/null | head -1)
-    if [[ -n "$deploy_dir" ]]; then
-        echo "$deploy_dir"
+    local plasmid="$ECO_ROOT/infra/plasmidBin/primals"
+    if [[ -d "$plasmid" ]]; then
+        echo "$plasmid"
         return
     fi
     echo ""
@@ -85,19 +98,7 @@ err() { echo "[nucleus] ERROR: $*" >&2; }
 wait_for_socket() {
     local sock="$1" timeout="${2:-10}" elapsed=0
     while [[ $elapsed -lt $timeout ]]; do
-        if [[ -S "$sock" ]] || ss -xlp 2>/dev/null | grep -q "$sock"; then
-            return 0
-        fi
-        sleep 0.5
-        elapsed=$((elapsed + 1))
-    done
-    return 1
-}
-
-wait_for_abstract() {
-    local name="$1" timeout="${2:-10}" elapsed=0
-    while [[ $elapsed -lt $timeout ]]; do
-        if ss -xlp 2>/dev/null | grep -q "@${name}"; then
+        if [[ -S "$sock" ]]; then
             return 0
         fi
         sleep 0.5
@@ -128,18 +129,14 @@ read_pid() {
 
 find_binary() {
     local name="$1"
+    local primal_dir="${2:-$name}"
     if [[ -n "$BIN_DIR" && -x "$BIN_DIR/$name" ]]; then
         echo "$BIN_DIR/$name"
         return
     fi
-    local target="$ECO_ROOT/primals/$name/target/release/$name"
+    local target="$ECO_ROOT/primals/$primal_dir/target/release/$name"
     if [[ -x "$target" ]]; then
         echo "$target"
-        return
-    fi
-    local garden_target="$ECO_ROOT/gardens/$2/target/release/$name"
-    if [[ -x "$garden_target" ]]; then
-        echo "$garden_target"
         return
     fi
     which "$name" 2>/dev/null || true
@@ -150,15 +147,16 @@ start_primal() {
     shift 2
     local args=("$@")
 
-    if pgrep -f "$name.*(server|serve|web)" >/dev/null 2>&1; then
+    if pgrep -f "$name.*(server|serve|daemon)" >/dev/null 2>&1; then
         log "$name already running, skipping"
         return 0
     fi
 
     local logfile="/tmp/nucleus-${name}.log"
     log "starting $name..."
-    nohup "$binary" "${args[@]}" > "$logfile" 2>&1 &
+    setsid "$binary" "${args[@]}" > "$logfile" 2>&1 &
     local pid=$!
+    disown "$pid" 2>/dev/null || true
     save_pid "$name" "$pid"
     sleep 1
 
@@ -171,13 +169,20 @@ start_primal() {
 }
 
 cmd_start() {
-    log "Starting NUCLEUS composition stack"
-    log "  bin_dir:   ${BIN_DIR:-<release targets>}"
-    log "  family_id: $FAMILY_ID"
+    log "╔══════════════════════════════════════════════════════════════╗"
+    log "║  NUCLEUS — Zero-Port Tower Atomic Deployment               ║"
+    log "╚══════════════════════════════════════════════════════════════╝"
+    log "  bin_dir:    ${BIN_DIR:-<release targets>}"
+    log "  family_id:  $FAMILY_ID"
     log "  socket_dir: $SOCKET_DIR"
+    log "  security:   Tower=BTSP, NUCLEUS=tower_delegated, TCP=disabled"
+    if [[ -n "${SONGBIRD_FEDERATION_PORT:-}" ]]; then
+        log "  federation: Songbird TCP port $SONGBIRD_FEDERATION_PORT (opt-in)"
+    fi
     mkdir -p "$SOCKET_DIR"
 
-    # Phase 0: biomeOS Neural API
+    # ── Phase 0: biomeOS Neural API ──────────────────────────────────
+    log "── Phase 0: biomeOS Neural API ──"
     local biomeos_bin
     biomeos_bin="$(find_binary biomeos biomeOS)"
     if [[ -z "$biomeos_bin" ]]; then
@@ -188,15 +193,18 @@ cmd_start() {
     if ! pgrep -f "biomeos.*neural-api.*${FAMILY_ID}" >/dev/null 2>&1; then
         local biomeos_args=(neural-api --socket "$neural_sock" --family-id "$FAMILY_ID" --log-level "$NUCLEUS_LOG_LEVEL")
         [[ -n "$GRAPHS_DIR" ]] && biomeos_args+=(--graphs-dir "$GRAPHS_DIR")
-        nohup "$biomeos_bin" "${biomeos_args[@]}" > /tmp/nucleus-biomeos.log 2>&1 &
-        save_pid biomeos $!
-        log "biomeOS Neural API starting (pid=$!)"
+        setsid "$biomeos_bin" "${biomeos_args[@]}" > /tmp/nucleus-biomeos.log 2>&1 &
+        local bm_pid=$!
+        disown "$bm_pid" 2>/dev/null || true
+        save_pid biomeos "$bm_pid"
+        log "biomeOS Neural API starting (pid=$bm_pid)"
         wait_for_socket "$neural_sock" 10 || { err "biomeOS socket timeout"; return 1; }
     else
         log "biomeOS Neural API already running"
     fi
 
-    # Phase 1: Tower — BearDog + Songbird
+    # ── Phase 1: Tower Atomic — BearDog + Songbird ───────────────────
+    log "── Phase 1: Tower Atomic (BTSP enforced) ──"
     local beardog_bin songbird_bin
     beardog_bin="$(find_binary beardog beardog)"
     songbird_bin="$(find_binary songbird songbird)"
@@ -204,27 +212,55 @@ cmd_start() {
     local songbird_sock="$SOCKET_DIR/songbird-${FAMILY_ID}.sock"
 
     if [[ -n "$beardog_bin" ]]; then
-        start_primal beardog "$beardog_bin" server --socket "$beardog_sock" --family-id "$FAMILY_ID" || true
+        start_primal beardog "$beardog_bin" server \
+            --socket "$beardog_sock" \
+            --family-id "$FAMILY_ID" || true
         wait_for_socket "$beardog_sock" 8 || log "WARN: beardog socket not ready"
     else
         log "WARN: beardog binary not found, skipping"
     fi
 
     if [[ -n "$songbird_bin" ]]; then
-        start_primal songbird "$songbird_bin" server --socket "$songbird_sock" --beardog-socket "$beardog_sock" --port 9200 || true
+        local songbird_args=(server --socket "$songbird_sock" --beardog-socket "$beardog_sock")
+        if [[ -n "${SONGBIRD_FEDERATION_PORT:-}" ]]; then
+            songbird_args+=(--port "$SONGBIRD_FEDERATION_PORT")
+            log "  Songbird: TCP federation on port $SONGBIRD_FEDERATION_PORT"
+        fi
+        SONGBIRD_SECURITY_PROVIDER="$beardog_sock" \
+        SONGBIRD_DISCOVERY_MODE="disabled" \
+        FAMILY_ID="$FAMILY_ID" \
+            start_primal songbird "$songbird_bin" "${songbird_args[@]}" || true
         wait_for_socket "$songbird_sock" 8 || log "WARN: songbird socket not ready"
     else
         log "WARN: songbird binary not found, skipping"
     fi
 
-    # Phase 2: NestGate + Squirrel
-    local nestgate_bin squirrel_bin
+    # ── Phase 2: Core Services — ToadStool + NestGate + Squirrel ─────
+    log "── Phase 2: Core Services (tower_delegated) ──"
+    local toadstool_bin nestgate_bin squirrel_bin
+    toadstool_bin="$(find_binary toadstool toadStool)"
     nestgate_bin="$(find_binary nestgate nestgate)"
     squirrel_bin="$(find_binary squirrel squirrel)"
+    local toadstool_sock="$SOCKET_DIR/toadstool-${FAMILY_ID}.sock"
     local nestgate_sock="$SOCKET_DIR/nestgate-${FAMILY_ID}.sock"
+    local squirrel_sock="$SOCKET_DIR/squirrel-${FAMILY_ID}.sock"
+
+    if [[ -n "$toadstool_bin" ]]; then
+        TOADSTOOL_SOCKET="$toadstool_sock" \
+        TOADSTOOL_FAMILY_ID="$FAMILY_ID" \
+        TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED="1" \
+        NESTGATE_SOCKET="$nestgate_sock" \
+            start_primal toadstool "$toadstool_bin" server || true
+        wait_for_socket "$toadstool_sock" 8 || log "WARN: toadstool socket not ready"
+    else
+        log "WARN: toadstool binary not found, skipping"
+    fi
 
     if [[ -n "$nestgate_bin" ]]; then
-        start_primal nestgate "$nestgate_bin" server --socket "$nestgate_sock" --family-id "$FAMILY_ID" || true
+        NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-dev-only-primalspring-jwt-override}" \
+        NESTGATE_SOCKET="$nestgate_sock" \
+        NESTGATE_FAMILY_ID="$FAMILY_ID" \
+            start_primal nestgate "$nestgate_bin" daemon --socket-only --dev || true
         wait_for_socket "$nestgate_sock" 8 || log "WARN: nestgate socket not ready"
     else
         log "WARN: nestgate binary not found, skipping"
@@ -233,14 +269,23 @@ cmd_start() {
     if [[ -n "$squirrel_bin" ]]; then
         if ! pgrep -f "squirrel.*server" >/dev/null 2>&1; then
             log "starting squirrel (with Ollama at $OLLAMA_ENDPOINT)..."
-            nohup env \
+            setsid env \
                 LOCAL_AI_ENDPOINT="$OLLAMA_ENDPOINT" \
                 OLLAMA_ENDPOINT="$OLLAMA_ENDPOINT" \
                 MCP_DEFAULT_MODEL="${MCP_DEFAULT_MODEL:-llama3.2:3b}" \
-                "$squirrel_bin" server > /tmp/nucleus-squirrel.log 2>&1 &
-            save_pid squirrel $!
-            log "squirrel started (pid=$!)"
-            wait_for_abstract squirrel 8 || log "WARN: squirrel socket not ready"
+                SQUIRREL_SOCKET="$squirrel_sock" \
+                SERVICE_MESH_ENDPOINT="$neural_sock" \
+                HTTP_REQUEST_PROVIDER_SOCKET="$songbird_sock" \
+                CRYPTO_SIGN_PROVIDER_SOCKET="$beardog_sock" \
+                COMPUTE_EXECUTE_PROVIDER_SOCKET="$toadstool_sock" \
+                STORAGE_STORE_PROVIDER_SOCKET="$nestgate_sock" \
+                STORAGE_GET_PROVIDER_SOCKET="$nestgate_sock" \
+                "$squirrel_bin" server --socket "$squirrel_sock" > /tmp/nucleus-squirrel.log 2>&1 &
+            local sq_pid=$!
+            disown "$sq_pid" 2>/dev/null || true
+            save_pid squirrel "$sq_pid"
+            log "squirrel started (pid=$sq_pid)"
+            wait_for_socket "$squirrel_sock" 8 || log "WARN: squirrel socket not ready"
         else
             log "squirrel already running"
         fi
@@ -248,56 +293,120 @@ cmd_start() {
         log "WARN: squirrel binary not found, skipping"
     fi
 
-    # Phase 3: petalTongue + ludoSpring
-    local petaltongue_bin ludospring_bin
+    # ── Phase 3: Provenance — rhizoCrypt + loamSpine + sweetGrass ────
+    log "── Phase 3: Provenance Trio (tower_delegated) ──"
+    local rhizocrypt_bin loamspine_bin sweetgrass_bin
+    rhizocrypt_bin="$(find_binary rhizocrypt rhizoCrypt)"
+    loamspine_bin="$(find_binary loamspine loamSpine)"
+    sweetgrass_bin="$(find_binary sweetgrass sweetGrass)"
+    local rhizocrypt_sock="$SOCKET_DIR/rhizocrypt-${FAMILY_ID}.sock"
+    local loamspine_sock="$SOCKET_DIR/loamspine-${FAMILY_ID}.sock"
+    local sweetgrass_sock="$SOCKET_DIR/sweetgrass-${FAMILY_ID}.sock"
+
+    if [[ -n "$rhizocrypt_bin" ]]; then
+        RHIZOCRYPT_SOCKET="$rhizocrypt_sock" \
+        BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
+        BEARDOG_SOCKET="$beardog_sock" \
+            start_primal rhizocrypt "$rhizocrypt_bin" server || true
+        wait_for_socket "$rhizocrypt_sock" 8 || log "WARN: rhizocrypt socket not ready"
+    else
+        log "WARN: rhizocrypt binary not found, skipping"
+    fi
+
+    if [[ -n "$loamspine_bin" ]]; then
+        LOAMSPINE_SOCKET="$loamspine_sock" \
+        BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
+        BEARDOG_SOCKET="$beardog_sock" \
+        RHIZOCRYPT_SOCKET="$rhizocrypt_sock" \
+            start_primal loamspine "$loamspine_bin" server || true
+        wait_for_socket "$loamspine_sock" 8 || log "WARN: loamspine socket not ready"
+    else
+        log "WARN: loamspine binary not found, skipping"
+    fi
+
+    if [[ -n "$sweetgrass_bin" ]]; then
+        SWEETGRASS_SOCKET="$sweetgrass_sock" \
+        BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
+        BEARDOG_SOCKET="$beardog_sock" \
+            start_primal sweetgrass "$sweetgrass_bin" server || true
+        wait_for_socket "$sweetgrass_sock" 8 || log "WARN: sweetgrass socket not ready"
+    else
+        log "WARN: sweetgrass binary not found, skipping"
+    fi
+
+    # ── Phase 4: Interface — petalTongue (server mode, UDS) ──────────
+    log "── Phase 4: Interface (tower_delegated) ──"
+    local petaltongue_bin
     petaltongue_bin="$(find_binary petaltongue petalTongue)"
     [[ -z "$petaltongue_bin" ]] && petaltongue_bin="$ECO_ROOT/primals/petalTongue/target/release/petaltongue"
-    ludospring_bin="$(find_binary ludospring ludoSpring)"
-    [[ -z "$ludospring_bin" ]] && ludospring_bin="$ECO_ROOT/springs/ludoSpring/target/release/ludospring"
+    local petaltongue_sock="$SOCKET_DIR/petaltongue-${FAMILY_ID}.sock"
 
     if [[ -x "$petaltongue_bin" ]]; then
-        # Start web mode for HTTP dashboard
-        start_primal petaltongue "$petaltongue_bin" web || true
-        # Start server mode for IPC (proprioception)
-        local pt_ipc_sock="$SOCKET_DIR/petaltongue-ipc.sock"
-        if ! [[ -S "$pt_ipc_sock" ]]; then
-            log "starting petaltongue IPC server..."
-            nohup env PETALTONGUE_SOCKET="$pt_ipc_sock" "$petaltongue_bin" server > /tmp/nucleus-petaltongue-ipc.log 2>&1 &
-            save_pid petaltongue-ipc $!
-            log "petaltongue IPC started (pid=$!)"
-            wait_for_socket "$pt_ipc_sock" 8 || log "WARN: petaltongue IPC socket not ready"
-        else
-            log "petaltongue IPC already running"
-        fi
+        PETALTONGUE_MODE="server" \
+        PETALTONGUE_HEADLESS="true" \
+        NEURAL_API_SOCKET="$neural_sock" \
+            start_primal petaltongue "$petaltongue_bin" server \
+                --socket "$petaltongue_sock" || true
+        wait_for_socket "$petaltongue_sock" 8 || log "WARN: petaltongue socket not ready"
     else
         log "WARN: petaltongue binary not found, skipping"
     fi
 
-    if [[ -x "$ludospring_bin" ]]; then
-        start_primal ludospring "$ludospring_bin" server || true
-    else
-        log "WARN: ludospring binary not found, skipping"
-    fi
+    # ── Domain capability aliases ────────────────────────────────
+    # biomeOS and experiments discover primals by capability domain.
+    # Each primal should create its own symlinks, but we ensure the
+    # canonical set exists for NUCLEUS compositions.
+    log "── Creating capability domain aliases ──"
+    local -A domain_map=(
+        [security]="beardog-${FAMILY_ID}.sock"
+        [crypto]="beardog-${FAMILY_ID}.sock"
+        [discovery]="songbird-${FAMILY_ID}.sock"
+        [network]="songbird-${FAMILY_ID}.sock"
+        [compute]="toadstool-${FAMILY_ID}.jsonrpc.sock"
+        [storage]="nestgate-${FAMILY_ID}.sock"
+        [ai]="squirrel.sock"
+        [dag]="rhizocrypt.sock"
+        [spine]="loamspine-${FAMILY_ID}.sock"
+        [commit]="sweetgrass-${FAMILY_ID}.sock"
+        [braid]="sweetgrass-${FAMILY_ID}.sock"
+        [provenance]="sweetgrass-${FAMILY_ID}.sock"
+    )
+    for domain in "${!domain_map[@]}"; do
+        local target="$SOCKET_DIR/${domain_map[$domain]}"
+        local alias_path="$SOCKET_DIR/${domain}.sock"
+        if [[ -e "$target" || -L "$target" ]] && [[ ! -e "$alias_path" ]]; then
+            ln -sf "$target" "$alias_path" 2>/dev/null && \
+                log "  ${domain}.sock → ${domain_map[$domain]}" || true
+        fi
+    done
 
-    # Phase 4: esotericWebb
-    local esotericwebb_bin
-    esotericwebb_bin="$(find_binary esotericwebb esotericWebb)"
-    [[ -z "$esotericwebb_bin" ]] && esotericwebb_bin="$ECO_ROOT/gardens/esotericWebb/target/release/esotericwebb"
+    # ── Primal family-suffix aliases ───────────────────────────────
+    # Primals that bind as {primal}.sock (no family suffix) need
+    # {primal}-{family_id}.sock aliases so biomeOS graph translation
+    # resolves them correctly.
+    local -A primal_alias_map=(
+        [rhizocrypt-${FAMILY_ID}]="rhizocrypt"
+        [squirrel-${FAMILY_ID}]="squirrel"
+    )
+    for alias in "${!primal_alias_map[@]}"; do
+        local target="$SOCKET_DIR/${primal_alias_map[$alias]}.sock"
+        local alias_path="$SOCKET_DIR/${alias}.sock"
+        if [[ -e "$target" ]] && [[ ! -e "$alias_path" ]]; then
+            ln -sf "$target" "$alias_path" 2>/dev/null && \
+                log "  ${alias}.sock → ${primal_alias_map[$alias]}.sock" || true
+        fi
+    done
 
-    if [[ -x "$esotericwebb_bin" ]]; then
-        start_primal esotericwebb "$esotericwebb_bin" serve || true
-    else
-        log "WARN: esotericwebb binary not found, skipping"
-    fi
-
-    log "NUCLEUS stack launch complete"
+    log "╔══════════════════════════════════════════════════════════════╗"
+    log "║  NUCLEUS stack launch complete — zero TCP ports bound       ║"
+    log "╚══════════════════════════════════════════════════════════════╝"
     echo ""
     cmd_status
 }
 
 cmd_stop() {
-    log "Stopping NUCLEUS stack..."
-    local primals=(esotericwebb ludospring petaltongue squirrel nestgate songbird beardog biomeos)
+    log "Stopping NUCLEUS stack (reverse order)..."
+    local primals=(petaltongue sweetgrass loamspine rhizocrypt squirrel nestgate toadstool songbird beardog biomeos)
     for name in "${primals[@]}"; do
         local pid
         pid="$(read_pid "$name")"
@@ -305,7 +414,7 @@ cmd_stop() {
             log "stopping $name (pid=$pid)"
             kill "$pid" 2>/dev/null || true
         else
-            pkill -f "$name.*(server|serve|web|neural-api)" 2>/dev/null || true
+            pkill -f "$name.*(server|serve|daemon|neural-api)" 2>/dev/null || true
         fi
     done
     sleep 2
@@ -313,58 +422,66 @@ cmd_stop() {
 }
 
 cmd_status() {
-    log "NUCLEUS Stack Status"
-    echo "──────────────────────────────────────────────"
-    printf "%-16s %-8s %-50s\n" "PRIMAL" "STATUS" "SOCKET"
-    echo "──────────────────────────────────────────────"
+    log "NUCLEUS Stack Status — Zero-Port Tower Atomic"
+    echo "══════════════════════════════════════════════════════════════"
+    printf "%-14s %-6s %-10s %s\n" "PRIMAL" "PHASE" "STATUS" "SOCKET"
+    echo "──────────────────────────────────────────────────────────────"
 
     local checks=(
-        "biomeOS|neural-api-${FAMILY_ID}|graph.list"
-        "BearDog|beardog-${FAMILY_ID}|health.liveness"
-        "Songbird|songbird-${FAMILY_ID}|health.liveness"
-        "NestGate|nestgate-${FAMILY_ID}|health.liveness"
-        "ludoSpring|ludospring-${FAMILY_ID}|health.check"
-        "esotericWebb|esotericwebb-${FAMILY_ID}|webb.liveness"
+        "biomeOS|0|biomeos-${FAMILY_ID}:neural-api-${FAMILY_ID}|graph.list"
+        "BearDog|1|beardog-${FAMILY_ID}|health.liveness"
+        "Songbird|1|songbird-${FAMILY_ID}:songbird|health.liveness"
+        "ToadStool|2|toadstool-${FAMILY_ID}.jsonrpc:compute:toadstool.jsonrpc|health.liveness"
+        "NestGate|2|nestgate-${FAMILY_ID}:storage-${FAMILY_ID}|health.liveness"
+        "Squirrel|2|squirrel-${FAMILY_ID}:squirrel|health.liveness"
+        "rhizoCrypt|3|rhizocrypt-${FAMILY_ID}:rhizocrypt|health.liveness"
+        "loamSpine|3|loamspine-${FAMILY_ID}:permanence|health.liveness"
+        "sweetGrass|3|sweetgrass-${FAMILY_ID}:sweetgrass|health.liveness"
+        "petalTongue|4|petaltongue-${FAMILY_ID}:petaltongue|health.liveness"
     )
 
     for entry in "${checks[@]}"; do
-        IFS='|' read -r display sock method <<< "$entry"
-        local full="$SOCKET_DIR/${sock}.sock"
-        if [[ -S "$full" ]]; then
+        IFS='|' read -r display phase sock_candidates method <<< "$entry"
+        local found_sock=""
+        IFS=':' read -ra candidates <<< "$sock_candidates"
+        for candidate in "${candidates[@]}"; do
+            local try="$SOCKET_DIR/${candidate}.sock"
+            if [[ -S "$try" ]]; then
+                found_sock="$try"
+                break
+            fi
+        done
+        if [[ -n "$found_sock" ]]; then
             local resp
-            resp=$(health_check "$full" "$method" 2>/dev/null || true)
+            resp=$(health_check "$found_sock" "$method" 2>/dev/null || true)
             if [[ -n "$resp" ]] && echo "$resp" | grep -q '"result"'; then
-                printf "%-16s \033[32m%-8s\033[0m %s\n" "$display" "ALIVE" "$full"
+                printf "%-14s %-6s \033[32m%-10s\033[0m %s\n" "$display" "$phase" "ALIVE" "$found_sock"
             else
-                printf "%-16s \033[33m%-8s\033[0m %s\n" "$display" "ERROR" "$full"
+                printf "%-14s %-6s \033[33m%-10s\033[0m %s\n" "$display" "$phase" "SOCKET" "$found_sock"
             fi
         else
-            printf "%-16s \033[31m%-8s\033[0m %s\n" "$display" "DOWN" "(no socket)"
+            printf "%-14s %-6s \033[31m%-10s\033[0m %s\n" "$display" "$phase" "DOWN" "(no socket)"
         fi
     done
 
-    # Squirrel uses abstract socket
-    if ss -xlp 2>/dev/null | grep -q "@squirrel"; then
-        printf "%-16s \033[32m%-8s\033[0m %s\n" "Squirrel" "ALIVE" "@squirrel (abstract)"
-    else
-        printf "%-16s \033[31m%-8s\033[0m %s\n" "Squirrel" "DOWN" "(no socket)"
-    fi
+    echo "──────────────────────────────────────────────────────────────"
 
-    # petalTongue check via process
-    if pgrep -f "petaltongue.*web" >/dev/null 2>&1; then
-        printf "%-16s \033[32m%-8s\033[0m %s\n" "petalTongue" "ALIVE" "http://localhost:3000"
+    # TCP port audit
+    local tcp_count=0
+    tcp_count=$(ss -tlnp 2>/dev/null | grep -cE "(beardog|songbird|toadstool|nestgate|squirrel|biomeos|rhizocrypt|loamspine|sweetgrass|petaltongue)" 2>/dev/null) || tcp_count=0
+    if [[ "$tcp_count" -eq 0 ]]; then
+        printf "%-14s %-6s \033[32m%-10s\033[0m %s\n" "TCP Ports" "--" "ZERO" "Tower Atomic: no TCP bound"
     else
-        printf "%-16s \033[31m%-8s\033[0m %s\n" "petalTongue" "DOWN" "(not running)"
+        printf "%-14s %-6s \033[31m%-10s\033[0m %s\n" "TCP Ports" "--" "$tcp_count" "WARNING: TCP ports detected"
     fi
-
-    echo "──────────────────────────────────────────────"
 
     # Ollama check
     if curl -sf http://localhost:11434/api/tags >/dev/null 2>&1; then
-        printf "%-16s \033[32m%-8s\033[0m %s\n" "Ollama" "ALIVE" "$OLLAMA_ENDPOINT"
+        printf "%-14s %-6s \033[32m%-10s\033[0m %s\n" "Ollama" "ext" "ALIVE" "$OLLAMA_ENDPOINT"
     else
-        printf "%-16s \033[31m%-8s\033[0m %s\n" "Ollama" "DOWN" "$OLLAMA_ENDPOINT"
+        printf "%-14s %-6s \033[31m%-10s\033[0m %s\n" "Ollama" "ext" "DOWN" "$OLLAMA_ENDPOINT"
     fi
+    echo "══════════════════════════════════════════════════════════════"
     echo ""
 }
 

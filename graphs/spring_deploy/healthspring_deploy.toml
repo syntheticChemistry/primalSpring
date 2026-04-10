@@ -1,15 +1,20 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# HealthSpring Nucleated Deploy — health/biomedical science via NUCLEUS composition.
+# HealthSpring Nucleated Deploy — clinical/biomedical science via NUCLEUS composition.
 #
 # Proto graph for healthSpring tributaries. As healthSpring validates its
-# science (model inference, data fetch, health analysis), gaps will surface
-# upstream for primals and primalSpring to solve.
+# clinical workflows (pharmacology, genomics, de-identification, clinical
+# AI inference via dual-tower enclave pattern), gaps will surface upstream
+# for primals and primalSpring to solve.
 #
 # NUCLEUS base: biomeOS + Tower (BearDog + Songbird)
-# AI layer: Squirrel (model inference routing)
-# Persistence: NestGate (storage)
-# Provenance: rhizoCrypt + loamSpine + sweetGrass (WireWitnessRef)
+# AI layer: Squirrel (clinical inference routing — de-identified data only)
+# Persistence: NestGate (patient enclave storage + inference cache)
+# Provenance: rhizoCrypt + loamSpine + sweetGrass (WireWitnessRef — regulatory audit)
+#
+# Security model: neutron-heavy (data-dominated). Dual-tower enclave pattern
+# required for production (see healthspring_enclave_proto_nucleate.toml).
+# This single-tower deploy is the base composition; enclave adds ionic bond.
 #
 # References:
 #   wateringHole/ATTESTATION_ENCODING_STANDARD.md
@@ -20,14 +25,26 @@
 
 [graph]
 name = "healthspring_nucleated"
-description = "HealthSpring health science — NUCLEUS base + AI + persistence + provenance"
-version = "3.0.0"
+description = "HealthSpring clinical science — NUCLEUS base + AI inference + patient enclave + provenance audit"
+version = "3.1.0"
 coordination = "sequential"
 
 [graph.metadata]
-pattern_version = "2026-04-07"
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+pattern_version = "2026-04-10"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
+particle_profile = "neutron_heavy"
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+cross_family = "ionic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_family = "full"
+encryption_tiers.nucleus = "hmac_plain"
 
 # ── NUCLEUS Base ──────────────────────────────────────────────────────
 
@@ -71,27 +88,27 @@ required = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "ai"
-capabilities = ["ai.query", "mcp.tools.list"]
+capabilities = ["ai.query", "mcp.tools.list", "inference.complete", "inference.embed", "inference.models"]
 
-# ── Persistence ───────────────────────────────────────────────────────
+# ── Persistence (required — patient records + model cache) ───────────
 
 [[graph.nodes]]
 name = "nestgate"
 binary = "nestgate"
 order = 4
-required = false
+required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "storage"
 capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
-# ── Provenance Trio (WireWitnessRef) ─────────────────────────────────
+# ── Provenance Trio (WireWitnessRef — required for regulatory audit) ──
 
 [[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 5
-required = false
+required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "dag"
@@ -101,7 +118,7 @@ capabilities = ["dag", "dag.session.create", "dag.event.append", "dag.merkle.roo
 name = "loamspine"
 binary = "loamspine"
 order = 6
-required = false
+required = true
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
@@ -111,7 +128,7 @@ capabilities = ["spine", "entry", "session", "certificate", "commit", "ledger", 
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 7
-required = false
+required = true
 depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
@@ -124,11 +141,19 @@ name = "healthspring"
 binary = "healthspring_primal"
 order = 8
 required = true
-depends_on = ["beardog", "songbird"]
+depends_on = ["beardog", "songbird", "squirrel", "nestgate"]
 health_method = "health.liveness"
 by_capability = "health"
 capabilities = [
+    # Clinical domain (healthSpring's primary science)
+    "health.pharmacology",
+    "health.genomics",
+    "health.clinical",
+    # Data handling (de-identification for enclave pattern)
+    "health.de_identify",
+    "health.aggregate",
     "data.fetch",
+    # Inference routing (delegates to Squirrel via ionic bridge in enclave)
     "model.inference_route",
     "compute.offload",
 ]

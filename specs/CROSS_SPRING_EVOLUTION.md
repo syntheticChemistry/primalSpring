@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: April 8, 2026
-**Status**: Phase 27 — All 10 primals BTSP Phase 1 complete. Wire Standard L2 ecosystem (72 experiments, 99 deploy graphs, biomeOS v2.99. Wire Standard: BD L2, SB L2, NG L3, TS L3, BC L2, SQ L2. BTSP: 10/10 primals compliant, BearDog live-encrypted. All ecoBins fresh. GAP-11 pending Run 6 live validation.)
+**Date**: April 10, 2026
+**Status**: Phase 28 — BTSP Phase 2 (11/13 primals enforce handshake), inference abstraction, WGSL shader composition model, 5 proto-nucleate graphs. 72 experiments, 107 deploy graphs. Wire Standard: BD L2, SB L2, NG L3, TS L3, BC L2, SQ L2. All ecoBins fresh. GAP-11 pending Run 6 live validation.
 
 ---
 

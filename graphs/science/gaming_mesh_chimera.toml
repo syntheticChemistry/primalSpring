@@ -24,9 +24,21 @@ bond_type = "covalent"
 science_domain = "interactive_compute"
 source_showcase = "primals/toadstool/showcase/gaming-evolution"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 health_method = "health"
@@ -35,7 +47,7 @@ capabilities = ["crypto.identity"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["beardog"]
@@ -56,7 +68,9 @@ capabilities = ["graph.execution", "ecosystem.coordination"]
 # ludoSpring: game state, library management, protocol bridge
 [[graph.nodes]]
 name = "ludospring"
-binary = "ludospring_primal"
+spawn = true
+security_model = "tower_delegated"
+binary = "ludospring"
 order = 4
 required = true
 depends_on = ["beardog", "songbird"]
@@ -67,7 +81,7 @@ capabilities = ["gaming.state", "gaming.library", "gaming.protocol_bridge", "gam
 # ToadStool: GPU dispatch for game compute
 [[graph.nodes]]
 name = "toadstool"
-binary = "toadstool_primal"
+binary = "toadstool"
 order = 5
 required = true
 depends_on = ["ludospring"]
@@ -78,7 +92,7 @@ capabilities = ["compute.dispatch.submit", "compute.execute", "compute.gpu", "co
 # petalTongue: visualization and UI
 [[graph.nodes]]
 name = "petaltongue"
-binary = "petaltongue_primal"
+binary = "petaltongue"
 order = 6
 required = false
 depends_on = ["ludospring"]

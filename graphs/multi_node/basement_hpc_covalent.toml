@@ -46,14 +46,27 @@ version = "1.0.0"
 description = "Covalent NUCLEUS gate for basement HPC mesh"
 coordination = "Sequential"
 
+# =============================================================================
+# PHASE 1: TOWER ATOMIC (Crypto + Network)
+# =============================================================================
+
 [graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+federation_transport = "songbird_tcp"
 internal_bond_type = "covalent"
 default_interaction_bond = "covalent"
 trust_model = "genetic_lineage"
 
-# =============================================================================
-# PHASE 1: TOWER ATOMIC (Crypto + Network)
-# =============================================================================
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+cross_node = "covalent"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_node = "full"
+encryption_tiers.nucleus = "hmac_plain"
 
 [[graph.nodes]]
 id = "gate_beardog"

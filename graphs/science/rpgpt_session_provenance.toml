@@ -23,8 +23,18 @@ coordination = "Pipeline"
 bond_type = "covalent"
 
 [graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
 
 [[graph.nodes]]
 name = "beardog"
@@ -37,6 +47,8 @@ capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519"]
 
 [[graph.nodes]]
 name = "esotericwebb"
+spawn = true
+security_model = "tower_delegated"
 binary = "esotericwebb"
 order = 2
 required = true
@@ -47,6 +59,8 @@ capabilities = ["session.create", "session.advance", "webb.resolve_scene"]
 
 [[graph.nodes]]
 name = "ludospring"
+spawn = true
+security_model = "tower_delegated"
 binary = "ludospring"
 order = 3
 required = true

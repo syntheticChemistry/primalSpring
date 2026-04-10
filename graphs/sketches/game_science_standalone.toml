@@ -20,6 +20,11 @@ description = "C4: ludoSpring game science subsystem — flow, engagement, WFC, 
 version = "1.0.0"
 coordination = "sequential"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
 # ── Phase 0: biomeOS substrate ─────────────────────────────────────
 [[graph.nodes]]
 name = "biomeos_neural_api"
@@ -34,7 +39,7 @@ capabilities = ["capability.discover", "graph.list"]
 # ── Phase 1: Tower Atomic ──────────────────────────────────────────
 [[graph.nodes]]
 name = "beardog"
-binary = "beardog_primal"
+binary = "beardog"
 order = 1
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -44,7 +49,7 @@ capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
 
 [[graph.nodes]]
 name = "songbird"
-binary = "songbird_primal"
+binary = "songbird"
 order = 2
 required = true
 depends_on = ["biomeos_neural_api"]
@@ -55,6 +60,8 @@ capabilities = ["net.discovery", "net.mesh"]
 # ── Phase 2: ludoSpring game science ───────────────────────────────
 [[graph.nodes]]
 name = "ludospring"
+spawn = true
+security_model = "tower_delegated"
 binary = "ludospring"
 order = 3
 required = true

@@ -21,6 +21,11 @@ description = "Validates C3: primal-layer readiness for session — substrate, T
 version = "2.0.0"
 coordination = "sequential"
 
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+
 [[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"

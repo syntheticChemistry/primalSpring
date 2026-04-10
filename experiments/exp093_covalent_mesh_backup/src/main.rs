@@ -102,7 +102,12 @@ fn validate_storage_across_bond(v: &mut ValidationResult) {
 
     let policy = BondingPolicy::covalent_default();
 
-    for cap in &["storage.put", "storage.get", "storage.list", "storage.exists"] {
+    for cap in &[
+        "storage.put",
+        "storage.get",
+        "storage.list",
+        "storage.exists",
+    ] {
         v.check_bool(
             &format!("covalent_{}", cap.replace('.', "_")),
             policy.constraints.permits(cap),
@@ -114,21 +119,61 @@ fn validate_storage_across_bond(v: &mut ValidationResult) {
 fn validate_encryption_model(v: &mut ValidationResult) {
     v.section("L3: Client-Side Shard Encryption");
 
-    v.check_bool("encrypt_algorithm", true, "AES-256-GCM via BearDog crypto.encrypt");
-    v.check_bool("encrypt_key_derivation", true, "Per-shard key from master + shard index");
-    v.check_bool("encrypt_per_shard", true, "Each shard encrypted independently before distribution");
-    v.check_bool("encrypt_opaque", true, "Shards opaque to peer Nests — decryption requires local BearDog");
+    v.check_bool(
+        "encrypt_algorithm",
+        true,
+        "AES-256-GCM via BearDog crypto.encrypt",
+    );
+    v.check_bool(
+        "encrypt_key_derivation",
+        true,
+        "Per-shard key from master + shard index",
+    );
+    v.check_bool(
+        "encrypt_per_shard",
+        true,
+        "Each shard encrypted independently before distribution",
+    );
+    v.check_bool(
+        "encrypt_opaque",
+        true,
+        "Shards opaque to peer Nests — decryption requires local BearDog",
+    );
 }
 
 fn identify_gaps(v: &mut ValidationResult) {
     v.section("L3: Gap Inventory");
 
-    v.check_bool("gap_erasure_coding", true, "GAP [blocking]: Reed-Solomon erasure coding not implemented");
-    v.check_bool("gap_shard_distribution", true, "GAP [blocking]: Shard distribution logic is placeholder");
-    v.check_bool("gap_key_management", true, "GAP [blocking]: Per-shard key derivation needs BearDog API");
-    v.check_bool("gap_recovery_protocol", true, "GAP [non-blocking]: Recovery protocol structural only");
-    v.check_bool("gap_shard_integrity", true, "GAP [non-blocking]: BLAKE3 per-shard hash (BearDog has this)");
-    v.check_bool("gap_erasure_barracuda", true, "GAP [future]: Erasure coding as barraCuda primitive");
+    v.check_bool(
+        "gap_erasure_coding",
+        true,
+        "GAP [blocking]: Reed-Solomon erasure coding not implemented",
+    );
+    v.check_bool(
+        "gap_shard_distribution",
+        true,
+        "GAP [blocking]: Shard distribution logic is placeholder",
+    );
+    v.check_bool(
+        "gap_key_management",
+        true,
+        "GAP [blocking]: Per-shard key derivation needs BearDog API",
+    );
+    v.check_bool(
+        "gap_recovery_protocol",
+        true,
+        "GAP [non-blocking]: Recovery protocol structural only",
+    );
+    v.check_bool(
+        "gap_shard_integrity",
+        true,
+        "GAP [non-blocking]: BLAKE3 per-shard hash (BearDog has this)",
+    );
+    v.check_bool(
+        "gap_erasure_barracuda",
+        true,
+        "GAP [future]: Erasure coding as barraCuda primitive",
+    );
 }
 
 fn main() {

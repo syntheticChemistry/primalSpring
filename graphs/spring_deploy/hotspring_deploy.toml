@@ -3,7 +3,8 @@
 # HotSpring Nucleated Deploy — physics science via NUCLEUS composition.
 #
 # Proto graph for hotSpring tributaries. As hotSpring validates its
-# science (lattice QCD, molecular dynamics, fluid, nuclear EOS), gaps
+# science (lattice QCD, molecular dynamics, fluid, nuclear EOS) as
+# WGSL shader compositions of barraCuda + coralReef + toadStool, gaps
 # will surface upstream for primals and primalSpring to solve.
 #
 # NUCLEUS base: biomeOS + Tower (BearDog + Songbird)
@@ -20,11 +21,14 @@
 
 [graph]
 name = "hotspring_nucleated"
-description = "HotSpring physics science — NUCLEUS base + GPU compute + persistence + provenance"
+description = "HotSpring physics science — NUCLEUS base + WGSL shader composition (QCD/MD/fluid) + persistence + provenance"
 version = "3.0.0"
 coordination = "sequential"
 
 [graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
 pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
@@ -77,7 +81,7 @@ capabilities = ["compute.dispatch.submit", "compute.execute"]
 name = "coralreef"
 binary = "coralreef"
 order = 4
-required = false
+required = true
 depends_on = ["toadstool"]
 health_method = "health.liveness"
 by_capability = "shader_compile"
@@ -87,11 +91,11 @@ capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
 name = "barracuda"
 binary = "barracuda"
 order = 5
-required = false
+required = true
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "math"
-capabilities = ["math.stats", "math.tensor", "math.activation"]
+capabilities = ["math.stats", "math.tensor", "math.activation", "math.noise"]
 
 # ── Persistence ───────────────────────────────────────────────────────
 
@@ -144,14 +148,21 @@ name = "hotspring"
 binary = "hotspring_primal"
 order = 10
 required = true
-depends_on = ["beardog", "songbird", "toadstool"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda"]
 health_method = "health.liveness"
 by_capability = "physics"
 capabilities = [
+    # QCD domain (WGSL shader compositions of barraCuda + coralReef + toadStool)
     "physics.lattice_qcd",
+    "physics.lattice_gauge_update",
+    "physics.hmc_trajectory",
+    "physics.wilson_dirac",
+    # Simulation domains (existing)
     "physics.molecular_dynamics",
     "physics.fluid",
     "physics.nuclear_eos",
+    # Compute primitives
+    "compute.df64",
     "compute.cg_solver",
     "compute.gradient_flow",
     "compute.npu",

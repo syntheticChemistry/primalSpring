@@ -43,13 +43,6 @@ version = "1.0.0"
 description = "Heterogeneous three-node mesh: x86_64 + aarch64 + x86_64 across hotspot and internet"
 coordination = "Sequential"
 
-[graph.metadata]
-internal_bond_type = "covalent"
-default_interaction_bond = "covalent"
-trust_model = "genetic_lineage"
-beacon_mode = "dark_forest"
-architectures = ["x86_64-linux-musl", "aarch64-linux-musl"]
-
 [graph.bonding_policy]
 bond_type = "Covalent"
 trust_model = "GeneticLineage"
@@ -66,6 +59,26 @@ max_concurrent_requests = 8
 # =============================================================================
 # NODE 1: devGate — Coordinator (x86_64, basement)
 # =============================================================================
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+federation_transport = "songbird_tcp"
+internal_bond_type = "covalent"
+default_interaction_bond = "covalent"
+trust_model = "genetic_lineage"
+beacon_mode = "dark_forest"
+architectures = ["x86_64-linux-musl", "aarch64-linux-musl"]
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+cross_node = "covalent"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.cross_node = "full"
+encryption_tiers.nucleus = "hmac_plain"
 
 [[graph.nodes]]
 id = "dev_beardog"
