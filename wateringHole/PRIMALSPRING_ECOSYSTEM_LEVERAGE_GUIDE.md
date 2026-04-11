@@ -1,7 +1,7 @@
 # primalSpring — Ecosystem Leverage Guide
 
 **Date**: April 11, 2026
-**Version**: v0.9.9
+**Version**: v1.0.0
 **License**: AGPL-3.0-or-later
 
 ---
@@ -262,6 +262,83 @@ Every pattern above works identically on `x86_64` and `aarch64`.
 - `PRIMAL_CAPABILITY_STATUS_MAR22_2026.md` — per-primal open items and compliance
 - `ECOBIN_GENOMEBIN_EVOLUTION_GUIDANCE_MAR22_2026.md` — ecoBin/genomeBin evolution roadmap
 - `PRIMALSPRING_V070_HARDWARE_VALIDATION_HANDOFF_MAR22_2026.md` — full hardware audit
+
+---
+
+## Live Composition Validation (April 11, 2026)
+
+plasmidBin validation results from `doctor.sh` and `validate_composition.sh`:
+
+### NUCLEUS Binary Readiness
+
+| Primal | x86_64 | ecoBin | aarch64 | Notes |
+|--------|--------|--------|---------|-------|
+| beardog | 7.5M | static, stripped | 5.6M | Checksum drift (binary updated, checksums stale) |
+| songbird | 22M | static, **not stripped** | 13M | Strip pending |
+| toadstool | 11M | static, stripped | 13M | |
+| barracuda | 4.7M | static, stripped | pending | No checksum entry yet |
+| coralreef | — | **MISSING** | pending | Build-from-source, wgpu musl alignment needed |
+| nestgate | 7.9M | static, stripped | pending | |
+| rhizocrypt | 5.7M | static, stripped | pending | |
+| loamspine | 4.4M | **dynamic** | pending | Musl-static cross-compile pending |
+| sweetgrass | 13M | **dynamic** | pending | Musl-static cross-compile pending |
+| biomeos | 17M | **dynamic** | 14M | Musl-static rebuild needed |
+| squirrel | 3.4M | static, stripped | 4.9M | |
+| petaltongue | 28M | **dynamic** | pending | Musl-static rebuild needed |
+| skunkbat | 2.2M | static, stripped | pending | |
+
+### Atomic Composition Status
+
+| Atomic | Score | Missing |
+|--------|-------|---------|
+| Tower (electron) | 2/2 PASS | — |
+| Node (proton) | 4/5 WARN | coralreef binary missing |
+| Nest (neutron) | 6/6 PASS | loamspine/sweetgrass dynamic |
+| Meta-tier | 3/3 PASS | biomeos/petaltongue dynamic |
+| NUCLEUS (atom) | 8/9 WARN | coralreef |
+
+### Spring Evolution Ladder (Live Audit)
+
+The evolution path: **Research paper → Python → Rust → Primal composition**
+
+| Spring | Evolution | Tests | barraCuda | Key Pattern | What Unblocks Next |
+|--------|-----------|-------|-----------|-------------|-------------------|
+| **hotSpring** 0.6.32 | **composing** | 1,040 | composing | `NucleusContext.detect()` + `by_domain()` dual path | Live biomeOS primals for full IPC mode |
+| **neuralSpring** 0.1.0 | **composing** | 1,403 | composing | `inference.*` stubs + niche capabilities | Squirrel `register_provider` + coralReef `shader.compile.wgsl` |
+| **wetSpring** 0.3.0 | **composed** | 1,902 | composing | Lean absorption, IPC/MCP, composition handoffs | Upstream absorption candidates |
+| **airSpring** 0.10.0 | **composed** | 1,364 | composing | Full ladder traced, Phase 4.7 product vision | Product deployment (Penny Irrigation) |
+| **groundSpring** 0.1.0 | **composing** | 1,050 | calling | ~110 barraCuda delegations, biomeOS UDS | Breadth of real-world domains |
+| **healthSpring** 0.1.0 | **composing** | 940 | composing | Dual-tower ionic bond, exp112-117 composition | TensorSession for shader unification |
+| **ludoSpring** 0.1.0 | **composing** | 222 | composing | Pure composition proof, graph-as-product | IPC surface + esotericWebb session integration |
+
+### Acceleration Effect
+
+Each NUCLEUS deployment accelerates every other spring:
+
+```
+wetSpring (composed) + airSpring (composed)
+    → proved the full ladder works, patterns absorbed by primalSpring
+    → every "composing" spring has a template to follow
+
+hotSpring (composing)
+    → GPU patterns drove barraCuda + coralReef evolution
+    → neuralSpring, ludoSpring, groundSpring inherit the compute stack
+
+neuralSpring (composing)
+    → inference.* wire standard benefits ALL springs needing AI
+    → Squirrel routing = one integration, every spring gets AI
+
+healthSpring (composing)
+    → ionic bonding + dual-tower enclave pattern
+    → any spring handling sensitive data inherits compliance
+
+ludoSpring (composing)
+    → pure composition proof: zero binary, graph-as-product
+    → esotericWebb + future products inherit the model
+```
+
+**The pattern**: as each spring completes its niche, it unlocks capabilities
+for every sibling. This is not parallel development — it's **compound evolution**.
 
 ---
 
