@@ -1,7 +1,7 @@
 # primalSpring — Ecosystem Leverage Guide
 
-**Date**: April 10, 2026
-**Version**: v0.9.8
+**Date**: April 11, 2026
+**Version**: v0.9.9
 **License**: AGPL-3.0-or-later
 
 ---
@@ -130,6 +130,36 @@ How a spring picks up a proto-nucleate graph and evolves against it:
 4. **Compose** — build your domain logic as orchestration of primal capability calls
 5. **Validate** — run primalSpring experiments to verify your composition works
 6. **Hand back** — document gaps/patterns discovered, hand back to primalSpring
+
+### Primal Composition Validation Layer (v0.9.9)
+
+The next evolution beyond Rust validation: validate that your spring's domain
+logic works **as a composition of primal capabilities**, not just as Rust code.
+
+**The validation maturity ladder**:
+
+```
+Level 1: Python baseline        — reference implementation, documented provenance
+Level 2: Rust validation        — faithful port, pass/fail exit code, tolerance-gated
+Level 3: barraCuda CPU          — primal math (WGSL CPU fallback), same tolerances
+Level 4: barraCuda GPU          — sovereign shader execution, performance validated
+Level 5: Primal composition     — domain logic as IPC calls to NUCLEUS primals
+Level 6: Deploy graph validated — proto-nucleate satisfied, all nodes healthy
+```
+
+**What composition validation proves**:
+- Your domain logic **delegates** to primals instead of reimplementing
+- IPC round-trips stay within latency budgets (named tolerances)
+- The NUCLEUS atomics your proto-nucleate declares are **live and healthy**
+- Graceful degradation works when optional primals are absent
+
+**Standardized patterns** for composition validation are documented in
+`infra/wateringHole/SPRING_COMPOSITION_PATTERNS.md`. Every spring MUST adopt:
+- Method normalization (§1)
+- Capability registration as contract (§2)
+- Tiered socket discovery (§3)
+- Graceful degradation for provenance (§7)
+- Niche identity with dependencies (§11)
 
 ### BTSP Client Handshake Pattern (v0.9.4)
 
