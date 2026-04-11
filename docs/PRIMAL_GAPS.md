@@ -8,7 +8,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > and are NOT tracked here. See `graphs/downstream/` for proto-nucleate patterns.
 > Springs/gardens do NOT have binaries in plasmidBin — only primals do.
 >
-> **Last updated**: 2026-04-10 — **ZERO PORT TOWER ATOMIC ACHIEVED**.
+> **Last updated**: 2026-04-11 — **PORTABILITY DEBT AUDIT INITIATED**.
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -84,6 +84,222 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Trio witness evolution (April 7)**: `WireAttestationRef` → `WireWitnessRef`.
 > Self-describing `kind`/`encoding`/`algorithm`/`tier`/`context` fields. Trio harvested
 > to plasmidBin (glibc → musl). See `wateringHole/handoffs/PRIMALSPRING_TRIO_WITNESS_HARVEST_HANDOFF_APR07_2026.md`.
+
+---
+
+## Portability Debt Registry (April 11, 2026)
+
+Cross-cutting non-portable dependencies that violate the ecoBin "pure Rust, universal
+binary" principle. Organized by severity class. Each class follows the same resolution
+pattern: **identify → centralize in one primal → delegate via IPC → ban in consumers**.
+
+### Class 1: C Crypto — SOLVED (Tower Atomic Delegation)
+
+`ring` (C/ASM crypto) blocked musl cross-compile and single-target builds. Solution:
+BearDog provides RustCrypto in-process (pure Rust). Other primals delegate crypto
+to BearDog via JSON-RPC IPC. `deny.toml` bans `ring`, `openssl`, `aws-lc-sys`
+ecosystem-wide. This established the delegation pattern.
+
+| Primal | Had | Replaced With | Pattern |
+|--------|-----|---------------|---------|
+| Songbird | `ring` (C/ASM TLS) | `rustls_rustcrypto` + BearDog IPC | Tower Atomic delegation |
+| NestGate | `aws-lc-rs` / `ring` | System `curl` (TLS) + BearDog IPC (crypto) | Delegation + system bridge |
+| barraCuda | Banned in deny.toml | Never had — preemptive ban | Policy |
+| Squirrel | `libloading` (FFI) | Removed (alpha.46) | Direct elimination |
+
+**Remaining Class 1 leak — NestGate NG-08 (see below)**: `ring` v0.17.14 confirmed in
+production builds via `rustls` → `reqwest` → `nestgate-rpc` despite `deny.toml` ban.
+`cargo deny check bans` is either not enforced in CI or `ring` enters as an undetected
+transitive via `rustls`'s default crypto provider. Fix: switch to
+`rustls = { default-features = false, features = ["ring"] }` → `features = ["aws-lc-rs"]`
+or use `rustls-rustcrypto` provider explicitly.
+
+### Class 2: GPU/Vulkan Dynamic Linking — OPEN (Node Atomic Delegation)
+
+The same class of problem as ring but for compute hardware. The dependency chain:
+
+```
+wgpu 28.0.0  →  wgpu-hal 28.0.1  →  ash 0.38.0 (Vulkan bindings)
+                                   →  metal 0.33.0 (Apple)
+                                   →  windows-rs (DX12)
+                                   →  renderdoc-sys
+
+ash 0.38.0   →  libloading 0.8.9  →  dlopen(libvulkan.so.1)  ← FAILS on musl-static
+```
+
+**Why musl-static breaks**: musl's `dlopen` implementation cannot load glibc-linked
+shared objects. `libvulkan.so.1` (and all GPU ICDs) require glibc. Therefore ecoBin
+musl-static binaries can **never** access GPU hardware through the wgpu path.
+This is not a bug — it's a fundamental incompatibility between static linking and
+dynamic GPU driver loading.
+
+**Affected primals** (compile-time wgpu dependency):
+
+| Primal | wgpu Version | Feature-Gated? | Impact |
+|--------|-------------|----------------|--------|
+| barraCuda | 28.0.0 | `gpu` feature (default ON) | ecoBin binary always CPU-only |
+| toadStool | 22.0.0 | `wgpu` feature (optional) | GPU features unavailable in ecoBin |
+| petalTongue | via eframe/egui | Inherent to GUI | Headless mode avoids; acceptable |
+
+**Existing abstractions (partial solutions)**:
+
+| Abstraction | Location | Status | What It Does |
+|------------|----------|--------|--------------|
+| `GpuBackend` trait | `barraCuda/device/backend.rs` | Done | Backend-agnostic compute interface (9 required methods) |
+| `WgpuDevice` | `barraCuda/device/wgpu_backend.rs` | Done | Implements `GpuBackend` via wgpu (needs dlopen — non-portable) |
+| `SovereignDevice` | `barraCuda/device/sovereign_device.rs` | Wired | Implements `GpuBackend` via IPC to coralReef+toadStool (portable) |
+| `CpuExecutor` | `barraCuda/unified_hardware/cpu_executor.rs` | Done | Native Rust CPU math execution |
+| `cpu-shader` + `naga-exec` | `barracuda-naga-exec` crate | Partial | Interprets WGSL shaders on CPU via naga IR (same math, scalar speed) |
+| `Auto::new()` | `barraCuda/device/mod.rs` | Done | Tries GPU → CPU software rasterizer → `Err`. **Missing**: no fallback to SovereignDevice or cpu-shader |
+| `coral-gpu` | `coralReef/crates/coral-gpu/` | In progress | Sovereign GPU compute — replaces wgpu for compute. No wgpu dependency in production |
+
+**The resolution pattern (Node Atomic Delegation)** mirrors Tower Atomic:
+
+| Tower (SOLVED) | Node (TO SOLVE) |
+|----------------|-----------------|
+| BearDog: pure Rust crypto | barraCuda: pure Rust math (WGSL) |
+| Songbird: TLS via BearDog IPC | barraCuda: GPU via toadStool+coralReef IPC |
+| Consumer delegates crypto | Consumer delegates compute dispatch |
+| `deny.toml` bans `ring` | Future: `deny.toml` bans direct `wgpu` in consumers |
+
+**Gaps to close** (mapped to BC-06/07/08):
+
+- **BC-06**: Architectural constraint — document, don't fix musl. ecoBin = CPU-only for wgpu path.
+- **BC-07**: Wire `SovereignDevice` into `Auto::new()` fallback chain. The trait exists, the impl exists, the IPC wiring exists — they just aren't connected in the failure path.
+- **BC-08**: Make `cpu-shader` feature default-on. `barracuda-naga-exec` already interprets WGSL on CPU. Batch ops already have `#[cfg(feature = "cpu-shader")]` paths with scalar Rust fallbacks.
+
+**Target state**: barraCuda computes on **any** hardware:
+1. wgpu GPU (development, glibc hosts with GPU) — fastest
+2. SovereignDevice IPC (NUCLEUS deployment, coralReef+toadStool available) — GPU via IPC
+3. cpu-shader/naga-exec (ecoBin, Docker, no peers) — CPU WGSL interpretation
+4. Scalar Rust (absolute minimum, no naga) — native f64 fallback
+
+### Class 3: Remaining C Surfaces — PARTIAL
+
+| ID | Primal | Dependency | Severity | Production? | Status |
+|----|--------|-----------|----------|-------------|--------|
+| NG-08 | NestGate | `ring` v0.17.14 via `rustls` → `reqwest` | **High** | **YES** — `nestgate-rpc` production path | **OPEN** — deny.toml ban exists but ring resolves anyway |
+| CR-01 | coralReef | Missing `deny.toml` C/FFI ban list | Medium | Policy gap | **OPEN** — only license/advisory bans; no `ring`/`openssl` bans |
+| CR-02 | coralReef | `cudarc` (CUDA FFI) | Low | Feature-gated (`cuda`) | Acceptable — sovereign path (`coral-gpu`) is pure Rust |
+| SG-01 | sweetGrass | `ring` via testcontainers → bollard → rustls | Low | **No** — dev-deps only | Acceptable — does not affect ecoBin binary |
+| SB-02 | Songbird | `ring-crypto` opt-in feature | Low | **No** — opt-in, not default | Acceptable — default path uses `rustls_rustcrypto` |
+| PT-12 | petalTongue | eframe/egui/glow (OpenGL/Vulkan GUI) | Low | Only in GUI mode | Acceptable — headless (`PETALTONGUE_HEADLESS=true`) avoids |
+| TS-03 | toadStool | `wgpu`/`ash`/`vulkano`/`wasmtime`/`esp-idf-sys` | Low | All feature-gated | Acceptable — core crate does not require wgpu by default |
+| BD-01 | bearDog | `ndk-sys`/`security-framework-sys` | Low | Target-gated (Android/macOS) | Acceptable — Linux ecoBin unaffected |
+
+### Ring Transitive Audit (April 11, 2026 — `cargo tree -i ring --edges normal`)
+
+| Primal | ring in production? | Path | Action |
+|--------|--------------------|----|--------|
+| Squirrel | **No** | Not in tree | Clean |
+| Songbird | **No** | Not in tree (opt-in `ring-crypto` feature not compiled) | Clean |
+| NestGate | **YES** | `ring` → `rustls` → `reqwest` → `nestgate-rpc` → production binary | **NG-08: Fix required** |
+| sweetGrass | **No** (dev only) | `ring` → `rustls` → `bollard` → `testcontainers` (dev-deps) | Clean for ecoBin |
+| barraCuda | **No** | Banned in deny.toml, not in tree | Clean |
+| coralReef | **Unaudited** | No deny.toml ban list (CR-01) | **Audit needed** |
+
+---
+
+## Cross-Spring Upstream Gap Synthesis (April 11, 2026)
+
+Consolidated from April 11 handoffs across all 7 science springs. These are gaps
+that multiple springs independently report as blocking their composition evolution.
+Each maps to a specific primal team for resolution.
+
+### Recurring Blockers (reported by 3+ springs)
+
+| Gap | Affected Springs | Owner | Status |
+|-----|-----------------|-------|--------|
+| **BearDog BTSP server endpoint** — no ecosystem BTSP server exists; springs have client stubs but nothing to connect to | hotSpring, healthSpring, neuralSpring, ludoSpring | **BearDog team** | **OPEN** — BearDog is the handshake *provider*, not consumer; needs `btsp.server.*` RPC surface |
+| **Ionic bond runtime** — `crypto.ionic_bond` / cross-family GPU lease / data egress fence negotiation | hotSpring (GAP-HS-005), healthSpring (§2), ludoSpring | **BearDog team** | **OPEN** — bonding model is documented in graphs but no runtime protocol |
+| **Canonical inference namespace** — springs accept `inference.*` / `model.*` / `ai.*` inconsistently | healthSpring (§4), neuralSpring (Gap 1), ludoSpring (GAP-10) | **primalSpring + Squirrel + neuralSpring** | **OPEN** — need single canonical namespace |
+| **TensorSession adoption** — fused multi-op GPU pipelines; springs defer because API unstable | hotSpring (GAP-HS-027), healthSpring, wetSpring | **barraCuda team** | **OPEN** — API exists but not stable enough for spring adoption |
+| **Provenance trio IPC stability** — trio endpoints panic, TCP-only, or unreachable | wetSpring (PG-02), ludoSpring, healthSpring | **rhizoCrypt + loamSpine + sweetGrass teams** | **PARTIAL** — UDS wired but endpoints not fully stable |
+| **NestGate storage IPC** — `storage.retrieve` / persistent cross-spring data | wetSpring (PG-04), neuralSpring (Gap 5), healthSpring | **NestGate team** | **OPEN** — NestGate has IPC surface but not wired for cross-spring storage |
+| **`capability.resolve` / capability-first discovery** — springs want to route by capability, not primal name | wetSpring (PG-03), healthSpring (§3), all springs | **biomeOS + Songbird** | **OPEN** — `capability.discover` exists but `capability.resolve` (single-step) does not |
+
+### Per-Primal Upstream Tasks (from spring handoffs)
+
+**barraCuda** (reported by: hotSpring, neuralSpring, groundSpring, airSpring, ludoSpring)
+
+| Task | Source | Priority |
+|------|--------|----------|
+| BC-07: Wire `SovereignDevice` into `Auto::new()` fallback | primalSpring benchScale audit | Medium |
+| BC-08: Make `cpu-shader` default-on | primalSpring benchScale audit | Medium |
+| `TensorSession` stabilization for spring adoption | hotSpring GAP-HS-027, healthSpring | Medium |
+| `plasma_dispersion` feature-gate bug (`domain-lattice` required) | neuralSpring Gap 9 | Low |
+| 29 shader absorption candidates from neuralSpring | neuralSpring Gap 10 | Low |
+| RAWR GPU kernel (currently CPU-only `stats::rawr_mean`) | groundSpring | Low |
+| Batched `OdeRK45F64` for Richards PDE | airSpring evolution_gaps | Low |
+
+**coralReef** (reported by: neuralSpring, hotSpring, healthSpring)
+
+| Task | Source | Priority |
+|------|--------|----------|
+| CR-01: Add `deny.toml` C/FFI ban list | primalSpring portability audit | Medium |
+| Multi-stage ML pipeline support via `shader.compile.wgsl` | neuralSpring handoff | Medium |
+| IPC timing for `shader.compile` in deployment | neuralSpring, healthSpring | Low |
+
+**toadStool** (reported by: wetSpring, neuralSpring, airSpring)
+
+| Task | Source | Priority |
+|------|--------|----------|
+| Stable `compute.dispatch.submit` / `compute.execute` IPC | wetSpring PG-05, neuralSpring | Medium |
+| Pipeline scheduling for ordered dispatch | neuralSpring handoff | Low |
+
+**NestGate** (reported by: wetSpring, neuralSpring, healthSpring)
+
+| Task | Source | Priority |
+|------|--------|----------|
+| NG-08: Eliminate `ring` from production build | primalSpring portability audit | **High** |
+| `storage.retrieve` for large/streaming tensors | neuralSpring, wetSpring PG-04 | Medium |
+| Cross-spring persistent storage IPC | healthSpring, wetSpring | Medium |
+
+**BearDog** (reported by: hotSpring, healthSpring, neuralSpring, ludoSpring)
+
+| Task | Source | Priority |
+|------|--------|----------|
+| BTSP server endpoint (`btsp.server.*`) | healthSpring §10, hotSpring GAP-HS-006 | **High** |
+| Ionic bond runtime (`crypto.ionic_bond`) | hotSpring GAP-HS-005, healthSpring §2 | Medium |
+| Signed capability announcements | neuralSpring handoff | Low |
+
+**Squirrel** (reported by: neuralSpring, healthSpring, ludoSpring)
+
+| Task | Source | Priority |
+|------|--------|----------|
+| `inference.register_provider` wire method | neuralSpring Gap 1 | Medium |
+| Stable ecoBin binary for composition deployments | healthSpring §9 | Medium |
+
+**biomeOS / Songbird** (reported by: wetSpring, healthSpring, ludoSpring)
+
+| Task | Source | Priority |
+|------|--------|----------|
+| `capability.resolve` single-step routing | wetSpring PG-03, healthSpring §3 | Medium |
+| Deploy-time `consumed_capabilities` completeness check | wetSpring V143 handoff | Low |
+| `lifecycle.composition` for live dashboards | ludoSpring handoff | Low |
+
+### Spring Evolution Status (April 11, 2026)
+
+| Spring | Version | Stage | Deploy Graphs | Tests | barraCuda | deny.toml | plasmidBin Ready? |
+|--------|---------|-------|---------------|-------|-----------|-----------|-------------------|
+| **hotSpring** | v0.6.32 | composing | 1 (QCD deploy) | 4,422+ | 0.3.11 (git rev) | **Missing** | Yes — niche-hotspring in manifest |
+| **neuralSpring** | v0.1.0 / S181 | composing | 1 (inference deploy) | many | 0.3.11 (path) | Weak (no bans) | Yes — niche-neuralspring in manifest |
+| **wetSpring** | V143 | composing | 7 (deploy + workflows) | 1,950 | 0.3.11 (pinned) | Good (openssl banned) | Yes — niche-wetspring in manifest |
+| **healthSpring** | V52 / 0.8.0 | composing | 7 (deploy + workflows) | 985+ | 0.3.11 (rev pin) | Good (ring exception for rustls) | Yes — niche-healthspring in manifest |
+| **airSpring** | v0.10.0 | composing | 5 (deploy + pipelines) | 1,364 | 0.3.11 (path) | Present | Yes — niche-airspring in manifest |
+| **groundSpring** | V124 | composing | 6 (deploy + validation) | many | 0.3.11 (path) | Present | Yes — niche-groundspring in manifest |
+| **ludoSpring** | V41 | composing | (via primalSpring) | — | (via barraCuda) | — | Yes — pure composition |
+
+### Spring deny.toml Compliance
+
+| Spring | deny.toml? | `ring` banned? | `openssl` banned? | Notes |
+|--------|-----------|---------------|-------------------|-------|
+| hotSpring | **No** | N/A | N/A | **Gap: needs deny.toml** |
+| neuralSpring | Yes (weak) | **No** | **No** | Only license/advisory checks; **no C/FFI bans** |
+| wetSpring | Yes | **No** | **Yes** | Bans openssl + sys crates; ring not explicitly banned |
+| healthSpring | Yes | **Exception** | **Yes** | ring allowed as rustls wrapper; explicit evolution note |
+| airSpring | Yes | Unknown | Unknown | Present but not fully audited |
+| groundSpring | Yes | Unknown | Unknown | Present but not fully audited |
 
 ---
 
@@ -183,6 +399,7 @@ barraCuda from fulfilling its role as a hardware-agnostic math primal.
 
 | NG-06 | `--socket` CLI flag not wired in `Commands::Server` | **RESOLVED** | April 10 — `--socket` flag added to `Commands::Server`, sets `NESTGATE_SOCKET` env var before `run_daemon`, feeds into `SocketConfig::from_environment()` tier-1 resolution |
 | NG-07 | aarch64-musl segfault | **RESOLVED** | Static-PIE + musl ≤1.2.2 crash in `_start_c/dlstart.c`. Fixed: `-C relocation-model=static` in `.cargo/config.toml` for both x86_64 and aarch64 targets |
+| NG-08 | `ring` v0.17.14 in production via `rustls` default crypto | **High** | **OPEN** — `deny.toml` bans `ring` but it resolves: `ring` → `rustls` → `hyper-rustls` → `reqwest` → `nestgate-rpc` → `nestgate-core` → binary. NG-04 claimed "ring eliminated" but `cargo tree -i ring --edges normal` (April 11) proves it's live. Fix: explicit `rustls-rustcrypto` provider (like Songbird), or replace `reqwest` with `ureq`/pure-Rust HTTP for IPC |
 
 **Compliance** (April 10 NUCLEUS patterns): Clippy **CLEAN**, fmt **PASS**, **11,856+ tests PASS** ↑. `forbid(unsafe_code)` per-crate + workspace `deny`. `deny.toml` present. SPDX present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_server_handshake.rs` implements full server-side handshake wired into **both** UDS listener paths (`unix_socket_server/mod.rs:handle_connection` and `isomorphic_ipc/server.rs`). Delegates to BearDog `btsp.session.create/verify/negotiate`. `is_btsp_required()` guard. **NG-01 RESOLVED** — `FileMetadataBackend` enforced in production. **NG-03 RESOLVED** — `data.*` wildcard delegation. **NG-06 RESOLVED** ↑ — `--socket` CLI flag wired through dispatch. `uzers` dep removed (replaced by `rustix::process`). 81 hardcoded `base_url` strings → `format!()`. tarpc_server smart-refactored to directory module. Zero TODO/FIXME/HACK in production code. **Capability Wire Standard L3**.
 

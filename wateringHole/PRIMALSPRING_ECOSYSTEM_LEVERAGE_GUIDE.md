@@ -277,54 +277,65 @@ plasmidBin validation results from `doctor.sh` and `validate_composition.sh`:
 | songbird | 22M | static, **not stripped** | 13M | Strip pending |
 | toadstool | 11M | static, stripped | 13M | |
 | barracuda | 4.7M | static, stripped | pending | No checksum entry yet |
-| coralreef | — | **MISSING** | pending | Build-from-source, wgpu musl alignment needed |
-| nestgate | 7.9M | static, stripped | pending | |
-| rhizocrypt | 5.7M | static, stripped | pending | |
-| loamspine | 4.4M | **dynamic** | pending | Musl-static cross-compile pending |
-| sweetgrass | 13M | **dynamic** | pending | Musl-static cross-compile pending |
-| biomeos | 17M | **dynamic** | 14M | Musl-static rebuild needed |
-| squirrel | 3.4M | static, stripped | 4.9M | |
-| petaltongue | 28M | **dynamic** | pending | Musl-static rebuild needed |
-| skunkbat | 2.2M | static, stripped | pending | |
+| coralreef | 8.1M | static, stripped | verified | **Rebuilt April 11** — ecoBin compliant |
+| nestgate | 7.9M | static, stripped | verified | |
+| rhizocrypt | 5.7M | static, stripped | verified | |
+| loamspine | 4.4M | static, stripped | verified | **Rebuilt April 11** — musl-static |
+| sweetgrass | 8.9M | static, stripped | verified | **Rebuilt April 11** — musl-static |
+| biomeos | 13M | static, stripped | verified | **Rebuilt April 11** — musl-static |
+| squirrel | 3.4M | static, stripped | verified | |
+| petaltongue | 29M | static, stripped | verified | **Rebuilt April 11** — musl-static |
+| skunkbat | 2.2M | static, stripped | verified | |
 
 ### Atomic Composition Status
 
-| Atomic | Score | Missing |
-|--------|-------|---------|
-| Tower (electron) | 2/2 PASS | — |
-| Node (proton) | 4/5 WARN | coralreef binary missing |
-| Nest (neutron) | 6/6 PASS | loamspine/sweetgrass dynamic |
-| Meta-tier | 3/3 PASS | biomeos/petaltongue dynamic |
-| NUCLEUS (atom) | 8/9 WARN | coralreef |
+| Atomic | Score | Notes |
+|--------|-------|-------|
+| Tower (electron) | **2/2 PASS** | beardog + songbird |
+| Node (proton) | **5/5 PASS** | tower + toadstool + barracuda + coralreef |
+| Nest (neutron) | **6/6 PASS** | tower + nestgate + provenance trio |
+| Meta-tier | **3/3 PASS** | biomeos + squirrel + petaltongue |
+| **NUCLEUS (atom)** | **13/13 PASS** | **Full NUCLEUS deployable** (benchScale validated April 11) |
 
-### Spring Evolution Ladder (Live Audit)
+### Spring Evolution Ladder (Live Audit — April 11, 2026)
 
 The evolution path: **Research paper → Python → Rust → Primal composition**
 
-| Spring | Evolution | Tests | barraCuda | Key Pattern | What Unblocks Next |
-|--------|-----------|-------|-----------|-------------|-------------------|
-| **hotSpring** 0.6.32 | **composing** | 1,040 | composing | `NucleusContext.detect()` + `by_domain()` dual path | Live biomeOS primals for full IPC mode |
-| **neuralSpring** 0.1.0 | **composing** | 1,403 | composing | `inference.*` stubs + niche capabilities | Squirrel `register_provider` + coralReef `shader.compile.wgsl` |
-| **wetSpring** 0.3.0 | **composed** | 1,902 | composing | Lean absorption, IPC/MCP, composition handoffs | Upstream absorption candidates |
-| **airSpring** 0.10.0 | **composed** | 1,364 | composing | Full ladder traced, Phase 4.7 product vision | Product deployment (Penny Irrigation) |
-| **groundSpring** 0.1.0 | **composing** | 1,050 | calling | ~110 barraCuda delegations, biomeOS UDS | Breadth of real-world domains |
-| **healthSpring** 0.1.0 | **composing** | 940 | composing | Dual-tower ionic bond, exp112-117 composition | TensorSession for shader unification |
-| **ludoSpring** 0.1.0 | **composing** | 222 | composing | Pure composition proof, graph-as-product | IPC surface + esotericWebb session integration |
+All springs are at barraCuda **0.3.11**. All 13 plasmidBin primals are ecoBin compliant
+(musl-static, stripped, blake3 checksummed). `NICHE_*` compositions defined in
+`plasmidBin/ports.env` for all 7 springs.
+
+| Spring | Version | Stage | Deploy Graphs | Tests | Key Pattern | What Unblocks Next |
+|--------|---------|-------|---------------|-------|-------------|-------------------|
+| **hotSpring** | v0.6.32 | **composing** | 1 (QCD deploy) | 4,422+ | `NucleusContext.detect()` + `by_domain()` | BTSP server + ionic runtime (BearDog) |
+| **neuralSpring** | v0.1.0 / S181 | **composing** | 1 (inference deploy) | many | 30 capabilities + Squirrel forwarding | Squirrel `register_provider` + coralReef multi-stage |
+| **wetSpring** | V143 | **composing** | 7 (deploy + workflows) | 1,950 | Tier 3 composition validation (141/141) | Trio IPC stability + `capability.resolve` |
+| **healthSpring** | V52 / 0.8.0 | **composing** | 7 (deploy + workflows) | 985+ | Tier 5 deploy-graph validation (exp118) | BearDog BTSP server + ionic bond runtime |
+| **airSpring** | v0.10.0 | **composing** | 5 (deploy + pipelines) | 1,364 | Full ladder traced, Phase 5.13 audit | TensorSession + batched ODE upstream |
+| **groundSpring** | V124 | **composing** | 6 (deploy + validation) | many | 110 barraCuda delegations, biomeOS UDS | RAWR GPU kernel + eigenvector GPU path |
+| **ludoSpring** | V41 | **composing** | (via primalSpring) | — | 9 composition patterns absorbed | rhizoCrypt/loamSpine UDS stability |
 
 ### Acceleration Effect
 
 Each NUCLEUS deployment accelerates every other spring:
 
 ```
-wetSpring (composed) + airSpring (composed)
-    → proved the full ladder works, patterns absorbed by primalSpring
-    → every "composing" spring has a template to follow
+plasmidBin v2026.04.11 (13/13 ecoBin primals)
+    → every spring can now deploy full NUCLEUS from plasmidBin
+    → niche compositions defined for all 7 springs
+    → benchScale validated end-to-end (Docker lab)
 
-hotSpring (composing)
+wetSpring (V143, Tier 3 validation)
+    → 141/141 composition checks, 7 deploy graphs
+    → deploy-graph canonical format adopted by other springs
+    → upstream_contract pin pattern reusable
+
+hotSpring (v0.6.32, QCD deploy)
     → GPU patterns drove barraCuda + coralReef evolution
     → neuralSpring, ludoSpring, groundSpring inherit the compute stack
+    → NucleusContext.detect() pattern adopted ecosystem-wide
 
-neuralSpring (composing)
+neuralSpring (S181, 30 capabilities)
     → inference.* wire standard benefits ALL springs needing AI
     → Squirrel routing = one integration, every spring gets AI
 
@@ -450,6 +461,46 @@ in barraCuda's df64 handling benefits neuralSpring's ML precision.
 A bonding model hardened by healthSpring's compliance work protects every
 spring's data sovereignty. The atomics are shared infrastructure — springs
 are domain laboratories that evolve it.
+
+---
+
+## Portability Debt: Upstream Handoffs (April 11, 2026)
+
+primalSpring's benchScale NUCLEUS deployment validation exposed three classes of
+non-portable dependency across the ecosystem. Class 1 (C crypto via `ring`) was
+solved by the Tower Atomic delegation pattern. Class 2 (GPU/Vulkan via `wgpu` →
+`dlopen`) and Class 3 (remaining C surfaces) require the same pattern applied to
+compute hardware.
+
+### Active Upstream Handoffs
+
+| ID | Owner | What | Priority | Guidance |
+|----|-------|------|----------|----------|
+| NG-08 | NestGate team | `ring` v0.17.14 live in production via `rustls` default crypto provider despite `deny.toml` ban. `cargo tree -i ring --edges normal` confirms | **High** | Switch to `rustls-rustcrypto` provider (Songbird pattern) or replace `reqwest` with `ureq` for IPC |
+| CR-01 | coralReef team | `deny.toml` missing C/FFI ban list — only license/advisory checks. Policy gap vs ecosystem standard | **Medium** | Add standard ecoBin v3 ban block matching barraCuda/NestGate/Songbird |
+| BC-07 | barraCuda team | `SovereignDevice` not in `Auto::new()` fallback chain. The trait exists, the impl exists, the IPC wiring exists — just not connected on failure | **Medium** | Wire `SovereignDevice::with_auto_device()` between wgpu CPU fallback and give-up |
+| BC-08 | barraCuda team | `cpu-shader` feature not default-on. Batch ops have `#[cfg(feature = "cpu-shader")]` paths but feature is opt-in, so ecoBin binaries skip naga-exec CPU math | **Medium** | Flip `cpu-shader` to default in `crates/barracuda/Cargo.toml` + CI validation |
+| BC-06 | Documentation | musl-static cannot `dlopen(libvulkan.so.1)` — ecoBin binaries will always be CPU-only for wgpu path. Not a bug, architectural constraint | **Low** | Document in barraCuda README + CONTEXT.md. The fix IS BC-07 + BC-08 |
+| CI-01 | primalSpring (infra) | `cargo deny check bans` not enforced ecosystem-wide. NestGate's `ring` ban exists but ring resolves anyway | **Medium** | Add `cargo deny check` to CI for all primals |
+
+### The Node Atomic Delegation Pattern
+
+Just as Tower Atomic (BearDog + Songbird) solved C crypto by centralizing in
+one pure-Rust primal + IPC, Node Atomic (barraCuda + coralReef + toadStool)
+solves GPU dynamic linking the same way:
+
+```
+Tower (SOLVED):  ring (C crypto)  → BearDog (RustCrypto) via IPC
+Node  (TO SOLVE): wgpu (dlopen)   → coralReef (compiler) + toadStool (hardware) via IPC
+```
+
+Target state for barraCuda: computes on ANY hardware via four-tier fallback:
+1. wgpu GPU (dev/glibc hosts) → fastest
+2. wgpu CPU software rasterizer (llvmpipe) → slow but correct
+3. SovereignDevice IPC (NUCLEUS deployment) → GPU via coralReef+toadStool
+4. cpu-shader/naga-exec (ecoBin, Docker, standalone) → pure Rust CPU math
+
+Full details: `ecoPrimals/infra/wateringHole/PORTABILITY_DEBT_AND_NODE_DELEGATION.md`
 
 ---
 
