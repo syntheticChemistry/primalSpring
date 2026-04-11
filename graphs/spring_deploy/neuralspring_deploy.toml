@@ -174,30 +174,30 @@ capabilities = ["braid", "attribution", "provenance", "anchoring", "braid.create
 
 [[graph.nodes]]
 name = "neuralspring"
-binary = "neuralspring_primal"
+binary = "neuralspring"
 order = 11
 required = true
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel"]
 health_method = "health.liveness"
-by_capability = "neural"
+by_capability = "inference"
 capabilities = [
     # Inference domain (WGSL shader composition of barraCuda + coralReef + toadStool)
     "inference.complete",
     "inference.embed",
     "inference.models",
     # Science domain (existing — also shader compositions)
+    "science.spectral_analysis",
+    "science.anderson_localization",
+    "science.hessian_eigen",
+    "science.agent_coordination",
+    "science.ipr",
+    "science.disorder_sweep",
+    "science.training_trajectory",
     "science.evoformer_block",
     "science.structure_module",
     "science.folding_health",
-    "science.eigensolve",
-    "science.anderson_localization",
-    "science.isomorphic_reservoir",
-    "science.attention_anderson",
-    "science.allele_frequencies",
-    "science.nucleotide_diversity",
-    "science.pairwise_fst",
-    "science.shannon_entropy",
-    "science.introgression_nn",
-    "science.ipr",
-    "science.level_spacing_ratio",
+    "science.gpu_dispatch",
+    "science.cross_spring_provenance",
+    "science.cross_spring_benchmark",
+    "science.precision_routing",
 ]
