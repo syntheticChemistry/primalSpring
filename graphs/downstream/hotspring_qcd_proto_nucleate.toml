@@ -255,6 +255,26 @@ security_model = "tower_delegated"
 capabilities = ["braid.create", "braid.commit", "provenance.graph", "provenance.export_provo", "attribution.chain"]
 
 # ═══════════════════════════════════════════════════════════════
+# Phase 3: AI coordination (optional — composing Squirrel gives
+# hotSpring access to inference.complete, inference.embed, and
+# inference.models from neuralSpring's WGSL shader ML as it
+# evolves. No hotSpring code change needed — Squirrel discovers
+# neuralSpring as an inference provider, falls back to Ollama.)
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "squirrel"
+binary = "squirrel"
+order = 9
+required = false
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = ["inference.complete", "inference.embed", "inference.models"]
+
+# ═══════════════════════════════════════════════════════════════
 # Phase 4: hotSpring (spawn = true — built by hotSpring repo)
 #
 # hotSpring is the PHYSICS APPLICATION layer. It composes the
