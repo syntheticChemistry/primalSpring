@@ -103,16 +103,14 @@ ecosystem-wide. This established the delegation pattern.
 | Primal | Had | Replaced With | Pattern |
 |--------|-----|---------------|---------|
 | Songbird | `ring` (C/ASM TLS) | `rustls_rustcrypto` + BearDog IPC | Tower Atomic delegation |
-| NestGate | `aws-lc-rs` / `ring` | System `curl` (TLS) + BearDog IPC (crypto) | Delegation + system bridge |
+| NestGate | `aws-lc-rs` / `ring` | `ureq` + `rustls-rustcrypto` (pure Rust); system `curl` (installer) | `reqwest` → `ureq` migration |
 | barraCuda | Banned in deny.toml | Never had — preemptive ban | Policy |
 | Squirrel | `libloading` (FFI) | Removed (alpha.46) | Direct elimination |
 
-**Remaining Class 1 leak — NestGate NG-08 (see below)**: `ring` v0.17.14 confirmed in
-production builds via `rustls` → `reqwest` → `nestgate-rpc` despite `deny.toml` ban.
-`cargo deny check bans` is either not enforced in CI or `ring` enters as an undetected
-transitive via `rustls`'s default crypto provider. Fix: switch to
-`rustls = { default-features = false, features = ["ring"] }` → `features = ["aws-lc-rs"]`
-or use `rustls-rustcrypto` provider explicitly.
+**Class 1 leak — NestGate NG-08: RESOLVED** (April 11, 2026). `ring` v0.17.14 was present
+via `rustls` → `reqwest` → `nestgate-rpc`. Fix applied: `reqwest` replaced with `ureq` 3.3
++ `rustls-rustcrypto` (pure Rust crypto provider). Verified: `cargo tree -i ring` returns
+"did not match any packages"; `cargo deny check bans` PASS.
 
 ### Class 2: GPU/Vulkan Dynamic Linking — OPEN (Node Atomic Delegation)
 
@@ -251,7 +249,7 @@ Each maps to a specific primal team for resolution.
 
 | Task | Source | Priority |
 |------|--------|----------|
-| NG-08: Eliminate `ring` from production build | primalSpring portability audit | **High** |
+| ~~NG-08: Eliminate `ring` from production build~~ | primalSpring portability audit | ~~**High**~~ **RESOLVED** (April 11) |
 | `storage.retrieve` for large/streaming tensors | neuralSpring, wetSpring PG-04 | Medium |
 | Cross-spring persistent storage IPC | healthSpring, wetSpring | Medium |
 
@@ -394,14 +392,14 @@ barraCuda from fulfilling its role as a hardware-agnostic math primal.
 | NG-01 | IPC storage backend inconsistency | **RESOLVED** ↑ — `SemanticRouter::new()` enforces `FileMetadataBackend` in production; `InMemoryMetadataBackend` only used in tests/ephemeral. NG-01 compliance: file backend mandatory when `FAMILY_ID` set |
 | NG-02 | Session API inconsistency | **RESOLVED** — `semantic_router/session.rs` added; `SemanticRouter::call_method` dispatches `session.save`/`load`/`list`/`delete` |
 | NG-03 | `data.*` handlers delegation | **RESOLVED** ↑ — `data.*` wildcard delegation replaces hardcoded NCBI/NOAA/IRIS stubs. Returns structured `NotImplemented` with `discovery.query` redirect. Explicitly excluded from `capabilities.list`. Tested in `data_wildcard_returns_delegation_not_implemented` |
-| NG-04 | C dependency (`aws-lc-rs`/`ring`) | **RESOLVED** — `ring` eliminated, TLS delegated to system `curl` |
+| NG-04 | C dependency (`aws-lc-rs`/`ring`) | **RESOLVED** — `ring` eliminated; `reqwest` → `ureq` + `rustls-rustcrypto` (April 11, 2026) |
 | NG-05 | Crypto crates not fully delegated | **RESOLVED** — `nestgate-security` zero crypto deps, all via BearDog IPC `CryptoDelegate` |
 
 | NG-06 | `--socket` CLI flag not wired in `Commands::Server` | **RESOLVED** | April 10 — `--socket` flag added to `Commands::Server`, sets `NESTGATE_SOCKET` env var before `run_daemon`, feeds into `SocketConfig::from_environment()` tier-1 resolution |
 | NG-07 | aarch64-musl segfault | **RESOLVED** | Static-PIE + musl ≤1.2.2 crash in `_start_c/dlstart.c`. Fixed: `-C relocation-model=static` in `.cargo/config.toml` for both x86_64 and aarch64 targets |
-| NG-08 | `ring` v0.17.14 in production via `rustls` default crypto | **High** | **OPEN** — `deny.toml` bans `ring` but it resolves: `ring` → `rustls` → `hyper-rustls` → `reqwest` → `nestgate-rpc` → `nestgate-core` → binary. NG-04 claimed "ring eliminated" but `cargo tree -i ring --edges normal` (April 11) proves it's live. Fix: explicit `rustls-rustcrypto` provider (like Songbird), or replace `reqwest` with `ureq`/pure-Rust HTTP for IPC |
+| NG-08 | `ring` v0.17.14 in production via `rustls` default crypto | **High** | **RESOLVED** (April 11) — `reqwest` replaced with `ureq` 3.3 + `rustls-rustcrypto`. `cargo tree -i ring` clean. `cargo deny check bans` PASS |
 
-**Compliance** (April 10 NUCLEUS patterns): Clippy **CLEAN**, fmt **PASS**, **11,856+ tests PASS** ↑. `forbid(unsafe_code)` per-crate + workspace `deny`. `deny.toml` present. SPDX present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_server_handshake.rs` implements full server-side handshake wired into **both** UDS listener paths (`unix_socket_server/mod.rs:handle_connection` and `isomorphic_ipc/server.rs`). Delegates to BearDog `btsp.session.create/verify/negotiate`. `is_btsp_required()` guard. **NG-01 RESOLVED** — `FileMetadataBackend` enforced in production. **NG-03 RESOLVED** — `data.*` wildcard delegation. **NG-06 RESOLVED** ↑ — `--socket` CLI flag wired through dispatch. `uzers` dep removed (replaced by `rustix::process`). 81 hardcoded `base_url` strings → `format!()`. tarpc_server smart-refactored to directory module. Zero TODO/FIXME/HACK in production code. **Capability Wire Standard L3**.
+**Compliance** (April 11, 2026): Clippy **ZERO WARNINGS** (`--workspace --lib`), fmt **PASS**, **11,856+ tests PASS**, `cargo doc -D warnings` **PASS**, `cargo deny check bans` **PASS**. `forbid(unsafe_code)` per-crate + workspace `deny`. SPDX present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE**. **NG-08 RESOLVED** — `reqwest` → `ureq` + `rustls-rustcrypto`; `ring`/`openssl`/`aws-lc-rs`/`native-tls` fully eliminated; `cargo tree -i ring` clean. **NG-01 RESOLVED** — `FileMetadataBackend` enforced in production. **NG-03 RESOLVED** — `data.*` wildcard delegation. **NG-06 RESOLVED** — `--socket` CLI flag. Dead code cleaned (unwired modules, `if false` stubs, `#[allow(dead_code)]` → `#[expect]`). Zero TODO/FIXME/HACK in production code. **Capability Wire Standard L3**.
 
 ---
 
@@ -644,9 +642,10 @@ NestGate storage API migration. **Effort: low. Polish items, no runtime blockers
 Remaining: PT-04 HTML export (partial), PT-06 push delivery (`callback_tx` not activated), PT-09 BTSP Phase 2 stub.
 **Effort: low-medium. Functional for NUCLEUS.**
 
-**NestGate** — aarch64-musl segfault **RESOLVED** (static-PIE + musl ≤1.2.2 root cause;
-`-C relocation-model=static` in `.cargo/config.toml` for both x86_64 and aarch64 targets).
-All gaps resolved. **Reference standard alongside BearDog.**
+**NestGate** — aarch64-musl segfault **RESOLVED**, NG-08 `ring` leak **RESOLVED** (April 11 —
+`reqwest` → `ureq` + `rustls-rustcrypto`; zero C/ASM crypto in production binary).
+All code gaps resolved. Open: `storage.retrieve` streaming variant + cross-spring storage IPC.
+**Reference standard alongside BearDog.**
 
 **loamSpine** — LS-03 startup crash **RESOLVED** (v0.9.15 — infant discovery graceful
 degradation). No `--socket` CLI flag (uses plain socket fallback). Connection closes after
