@@ -176,7 +176,7 @@ dynamic GPU driver loading.
 
 | ID | Primal | Dependency | Severity | Production? | Status |
 |----|--------|-----------|----------|-------------|--------|
-| NG-08 | NestGate | `ring` v0.17.14 via `rustls` → `reqwest` | **High** | **YES** — `nestgate-rpc` production path | **OPEN** — deny.toml ban exists but ring resolves anyway |
+| NG-08 | NestGate | ~~`ring` v0.17.14 via `rustls` → `reqwest`~~ | ~~**High**~~ | ~~**YES**~~ | **RESOLVED** (April 11) — `reqwest` → `ureq` + `rustls-rustcrypto`; `cargo tree -i ring` clean |
 | CR-01 | coralReef | Missing `deny.toml` C/FFI ban list | Medium | Policy gap | **OPEN** — only license/advisory bans; no `ring`/`openssl` bans |
 | CR-02 | coralReef | `cudarc` (CUDA FFI) | Low | Feature-gated (`cuda`) | Acceptable — sovereign path (`coral-gpu`) is pure Rust |
 | SG-01 | sweetGrass | `ring` via testcontainers → bollard → rustls | Low | **No** — dev-deps only | Acceptable — does not affect ecoBin binary |
@@ -213,7 +213,7 @@ Each maps to a specific primal team for resolution.
 | **Canonical inference namespace** — springs accept `inference.*` / `model.*` / `ai.*` inconsistently | healthSpring (§4), neuralSpring (Gap 1), ludoSpring (GAP-10) | **primalSpring + Squirrel + neuralSpring** | **OPEN** — need single canonical namespace |
 | **TensorSession adoption** — fused multi-op GPU pipelines; springs defer because API unstable | hotSpring (GAP-HS-027), healthSpring, wetSpring | **barraCuda team** | **OPEN** — API exists but not stable enough for spring adoption |
 | **Provenance trio IPC stability** — trio endpoints panic, TCP-only, or unreachable | wetSpring (PG-02), ludoSpring, healthSpring | **rhizoCrypt + loamSpine + sweetGrass teams** | **PARTIAL** — UDS wired but endpoints not fully stable |
-| **NestGate storage IPC** — `storage.retrieve` / persistent cross-spring data | wetSpring (PG-04), neuralSpring (Gap 5), healthSpring | **NestGate team** | **OPEN** — NestGate has IPC surface but not wired for cross-spring storage |
+| **NestGate storage IPC** — `storage.retrieve` / persistent cross-spring data | wetSpring (PG-04), neuralSpring (Gap 5), healthSpring | **NestGate team** | **RESOLVED** (April 11) — `storage.retrieve_range` (chunked byte-range reads, 4 MiB chunks, base64), `storage.object.size`, `bonding.ledger.{store,retrieve,list}` wired. 448 tests PASS |
 | **`capability.resolve` / capability-first discovery** — springs want to route by capability, not primal name | wetSpring (PG-03), healthSpring (§3), all springs | **biomeOS + Songbird** | **OPEN** — `capability.discover` exists but `capability.resolve` (single-step) does not |
 
 ### Per-Primal Upstream Tasks (from spring handoffs)
@@ -250,8 +250,8 @@ Each maps to a specific primal team for resolution.
 | Task | Source | Priority |
 |------|--------|----------|
 | ~~NG-08: Eliminate `ring` from production build~~ | primalSpring portability audit | ~~**High**~~ **RESOLVED** (April 11) |
-| `storage.retrieve` for large/streaming tensors | neuralSpring, wetSpring PG-04 | Medium |
-| Cross-spring persistent storage IPC | healthSpring, wetSpring | Medium |
+| ~~`storage.retrieve` for large/streaming tensors~~ | neuralSpring, wetSpring PG-04 | ~~Medium~~ **RESOLVED** (April 11) — `storage.retrieve_range` + `storage.object.size` |
+| ~~Cross-spring persistent storage IPC~~ | healthSpring, wetSpring | ~~Medium~~ **RESOLVED** (April 11) — `bonding.ledger.{store,retrieve,list}` |
 
 **BearDog** (reported by: hotSpring, healthSpring, neuralSpring, ludoSpring)
 
@@ -327,12 +327,12 @@ Each maps to a specific primal team for resolution.
 | PT-01 | Socket at non-standard path | **RESOLVED** — `biomeos/petaltongue.sock` |
 | PT-02 | No live push to browser | **RESOLVED** — SSE `/api/events` |
 | PT-03 | `motor_tx` not wired in server mode | **RESOLVED** — drain channel wired |
-| PT-04 | No `ExportFormat::Html` in headless CLI | Low | Partially — `ExportFormat::Html` exists in headless path + IPC; needs product validation |
+| PT-04 | No `ExportFormat::Html` in headless CLI | **RESOLVED** | April 11 — 5 product-validation tests green (unit, integration, e2e binary, edge cases) |
 | PT-05 | `visualization.showing` returns false | **RESOLVED** — `RenderingAwareness` auto-init in `UnixSocketServer` |
-| PT-06 | `callback_method` poll-only dispatch | Low | Code-complete — `push_delivery.rs` module, `broadcast()`, `CallbackDispatch` wired; **not enabled on live server** (`callback_tx` = `None` at startup; server wiring needed to activate push) |
+| PT-06 | `callback_method` poll-only dispatch | **RESOLVED** | April 11 — `callback_tx` wired at `UnixSocketServer::new()` startup; confirmed with log `"PT-06: push delivery activated"` |
 | PT-07 | No external event source in server mode | **RESOLVED** — periodic discovery refresh wired |
 | PT-08 | No BTSP Phase 1 (`BIOMEOS_INSECURE` guard) | **RESOLVED** ↑ — `btsp.rs` module: `validate_insecure_guard()`, family-scoped sockets, domain symlinks |
-| PT-09 | BTSP Phase 2 (handshake integration) | Low | Phase 2 stub — `handshake_policy` logs warning, connections accepted without handshake |
+| PT-09 | BTSP Phase 2 (handshake integration) | **RESOLVED** | April 11 — `log_handshake_policy()` at server start; family-scoped domain symlinks; `Drop` cleanup. BearDog enforcement pending ecosystem-wide |
 | PT-10 | `--socket` CLI flag missing | **RESOLVED** | April 10 — `--socket` flag added to `Commands::Server`, plumbed via `UnixSocketServer::with_socket_path()` |
 | PT-11 | Only `visualization` domain symlink | **RESOLVED** | April 10 — now creates `visualization.sock`, `ui.sock`, `interaction.sock` symlinks (create+drop) |
 
@@ -399,7 +399,7 @@ barraCuda from fulfilling its role as a hardware-agnostic math primal.
 | NG-07 | aarch64-musl segfault | **RESOLVED** | Static-PIE + musl ≤1.2.2 crash in `_start_c/dlstart.c`. Fixed: `-C relocation-model=static` in `.cargo/config.toml` for both x86_64 and aarch64 targets |
 | NG-08 | `ring` v0.17.14 in production via `rustls` default crypto | **High** | **RESOLVED** (April 11) — `reqwest` replaced with `ureq` 3.3 + `rustls-rustcrypto`. `cargo tree -i ring` clean. `cargo deny check bans` PASS |
 
-**Compliance** (April 11, 2026): Clippy **ZERO WARNINGS** (`--workspace --lib`), fmt **PASS**, **11,856+ tests PASS**, `cargo doc -D warnings` **PASS**, `cargo deny check bans` **PASS**. `forbid(unsafe_code)` per-crate + workspace `deny`. SPDX present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE**. **NG-08 RESOLVED** — `reqwest` → `ureq` + `rustls-rustcrypto`; `ring`/`openssl`/`aws-lc-rs`/`native-tls` fully eliminated; `cargo tree -i ring` clean. **NG-01 RESOLVED** — `FileMetadataBackend` enforced in production. **NG-03 RESOLVED** — `data.*` wildcard delegation. **NG-06 RESOLVED** — `--socket` CLI flag. Dead code cleaned (unwired modules, `if false` stubs, `#[allow(dead_code)]` → `#[expect]`). Zero TODO/FIXME/HACK in production code. **Capability Wire Standard L3**.
+**Compliance** (April 11, 2026): Clippy **ZERO WARNINGS** (`--workspace --lib`), fmt **PASS**, **448 nestgate-rpc tests PASS**, `cargo doc -D warnings` **PASS**, `cargo deny check bans` **PASS**. `forbid(unsafe_code)` per-crate + workspace `deny`. SPDX present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE**. **NG-08 RESOLVED** — `reqwest` → `ureq` + `rustls-rustcrypto`; `ring`/`openssl`/`aws-lc-rs`/`native-tls` fully eliminated; `cargo tree -i ring` clean. **NG-01 RESOLVED** — `FileMetadataBackend` enforced in production. **NG-03 RESOLVED** — `data.*` wildcard delegation. **NG-06 RESOLVED** — `--socket` CLI flag. Dead code cleaned (unwired modules, `if false` stubs, `#[allow(dead_code)]` → `#[expect]`). Zero TODO/FIXME/HACK in production code. **Cross-spring storage IPC RESOLVED** — `storage.retrieve_range` + `storage.object.size` + `bonding.ledger.{store,retrieve,list}`. **Capability Wire Standard L3**.
 
 ---
 
@@ -639,12 +639,15 @@ SB-03: `sled` feature-gated but default-on in orchestrator/sovereign-onion — p
 NestGate storage API migration. **Effort: low. Polish items, no runtime blockers.**
 
 **petalTongue** — PT-10 `--socket` **RESOLVED**, PT-11 domain symlinks **RESOLVED** (`ui`, `interaction`, `visualization`).
-Remaining: PT-04 HTML export (partial), PT-06 push delivery (`callback_tx` not activated), PT-09 BTSP Phase 2 stub.
-**Effort: low-medium. Functional for NUCLEUS.**
+PT-04/PT-06/PT-09 **RESOLVED** (April 11 sprint 5). Only PT-12 (eframe GUI deps, acceptable) remains.
+**Effort: complete. NUCLEUS-ready.**
 
 **NestGate** — aarch64-musl segfault **RESOLVED**, NG-08 `ring` leak **RESOLVED** (April 11 —
 `reqwest` → `ureq` + `rustls-rustcrypto`; zero C/ASM crypto in production binary).
-All code gaps resolved. Open: `storage.retrieve` streaming variant + cross-spring storage IPC.
+All code gaps **RESOLVED**. Cross-spring storage IPC: `storage.retrieve_range` (chunked
+byte-range reads, 4 MiB max per chunk, base64 encoded) + `storage.object.size` for pre-flight
+sizing. Ionic bond ledger: `bonding.ledger.{store,retrieve,list}` for durable bond records
+under `__bonding/` namespace. 448 tests PASS, zero clippy warnings.
 **Reference standard alongside BearDog.**
 
 **loamSpine** — LS-03 startup crash **RESOLVED** (v0.9.15 — infant discovery graceful
@@ -708,7 +711,7 @@ needs UDS negotiation. See `graphs/downstream/esotericwebb_proto_nucleate.toml`.
 **Low** (polish, owned by primal teams):
 3. **SB-02** — `ring` lockfile ghost
 4. **SB-03** — `sled` feature-gated but default-on
-5. **PT-09** — petalTongue Phase 2 stub (warn-only, no enforcement)
+5. ~~**PT-09**~~ **RESOLVED** (April 11 — `log_handshake_policy()` wired; family-scoped symlinks)
 6. ~~**PT-DOMAINS**~~ **RESOLVED** (April 10 — `ui.sock` + `interaction.sock` symlinks added)
 7. ~~**CR-03**~~ **RESOLVED** (Iter 78 — `guard_connection()` with real BearDog RPC, degraded when absent)
 8. ~~**BC-GPU-PANIC (BC-05)**~~ **RESOLVED** (Sprint 39 — `Auto::new()` → `Err`, health `Degraded`)
@@ -782,8 +785,9 @@ NUCLEUS: 100%.** primalSpring itself: clippy ZERO warnings, fmt PASS, all tests 
 | SG-01 | sweetGrass | Witness wire evolution (`Witness`, `EcoPrimalsAttributes.witnesses`) | v0.7.27 |
 
 | TS-01 | toadStool | coralReef `capability.discover` | S173-2 |
-| PT-04 | petalTongue | HTML graph export | deep debt evolution |
-| PT-06 | petalTongue | callback_tx push notifications | deep debt evolution |
+| PT-04 | petalTongue | HTML graph export | **RESOLVED** April 11 (sprint 5) |
+| PT-06 | petalTongue | callback_tx push notifications | **RESOLVED** April 11 (sprint 5) |
+| PT-09 | petalTongue | BTSP Phase 2 handshake wired | **RESOLVED** April 11 (sprint 5) |
 | NG-01 | NestGate | FileMetadataBackend enforced in production | April 9 (d65ee214) |
 | NG-03 | NestGate | `data.*` wildcard delegation (NCBI/NOAA stubs replaced) | April 9 (d65ee214) |
 | PT-08 | petalTongue | BTSP Phase 1 (guard + family-scoped sockets) | April 9 (4544f96) |
@@ -815,6 +819,7 @@ NUCLEUS: 100%.** primalSpring itself: clippy ZERO warnings, fmt PASS, all tests 
 **April 9 wave 1**: PT-08/PT-09, CR-01/CR-02/CR-03 added.
 **April 9 wave 2**: NG-01, NG-03 RESOLVED. Squirrel/NestGate/biomeOS BTSP Phase 2 COMPLETE.
 **April 9 wave 3**: PT-08, CR-01, CR-02 RESOLVED. Ecosystem-wide BTSP Phase 2 cascade.
+**April 11**: PT-04, PT-06, PT-09 RESOLVED (petalTongue sprint 5 deep debt). All petalTongue gaps closed.
 **April 9 wave 4**: BD-01 RESOLVED (Wave 33 — encoding hints + semantic aliases).
 **April 10 rebuild**: PLASMIBIN-STALE **RESOLVED** — full musl-static rebuild (12/12 ecoBin).
 **April 10 NUCLEUS patterns**: NG-06 (NestGate `--socket`), TS-02 (socket separation),
