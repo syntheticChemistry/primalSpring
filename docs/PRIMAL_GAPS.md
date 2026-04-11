@@ -128,15 +128,20 @@ Each entry links to the composition that exposes it and proposes a fix path.
 
 ## barraCuda
 
-All gaps **RESOLVED**. GPU panic fixed (Sprint 39).
+BC-01–BC-05 **RESOLVED**. New architectural gaps BC-06–BC-08 identified during benchScale
+NUCLEUS deployment validation (April 11). Math is universal — these gaps block
+barraCuda from fulfilling its role as a hardware-agnostic math primal.
 
-| ID | Gap | Status |
-|----|-----|--------|
+| ID | Gap | Severity | Status |
+|----|-----|----------|--------|
 | BC-01 | Fitts formula variant | **RESOLVED** (Sprint 25 — `variant` param, Shannon default) |
 | BC-02 | Hick formula off-by-one | **RESOLVED** (Sprint 25 — `include_no_choice` param) |
 | BC-03 | Perlin3D lattice | **RESOLVED** (Sprint 25 — proper gradients + quintic fade) |
-| BC-04 | No plasmidBin binary | **RESOLVED** (April 1 harvest, 4.5M, requires GPU) |
-| BC-05 | `barracuda server` panics without GPU | **RESOLVED** (Sprint 39 — `Auto::new()` returns `Err`, server starts with `device = None`, health reports `Degraded`) |
+| BC-04 | No plasmidBin binary | **RESOLVED** (April 1 harvest, 4.5M static-pie stripped) |
+| BC-05 | `barracuda server` panics without GPU | **RESOLVED** (Sprint 39 — `Auto::new()` returns `Err`, server starts with `device = None`, health reports `Degraded`. Stale binary in plasmidBin was pre-Sprint 39; refreshed April 11) |
+| BC-06 | musl-static binary can't access GPU | Medium | **OPEN** — wgpu requires `dlopen(libvulkan.so.1)` at runtime, which musl doesn't support. ecoBin musl-static binaries will **always** run in CPU-only mode. Fix: IPC delegation to coralReef+toadStool (glibc or host GPU access), or pure-CPU scalar fallback for all WGSL ops |
+| BC-07 | No toadStool→coralReef IPC delegation | Medium | **OPEN** — when barraCuda has no local device, it should discover toadStool (hardware) + coralReef (compiler) via IPC and delegate compute. Currently it just runs with `device = None` and reports `Degraded`. The dispatch chain should be: barraCuda → toadStool (discover hardware) → coralReef (compile WGSL) → execute |
+| BC-08 | No pure-CPU scalar fallback | Low | **OPEN** — math ops expressed as WGSL shaders have no scalar CPU fallback when wgpu is unavailable. A CPU-only codegen path (or Rust scalar implementations of each WGSL op) would allow barraCuda to compute anywhere without wgpu. This is the "math is universal" principle |
 
 **Compliance** (Sprint 39 — April 10): clippy **CLEAN** (`-D warnings`, pedantic + nursery), fmt **PASS**, `deny.toml` present (bans openssl/native-tls/ring/aws-lc-sys), zero `todo!`/`unimplemented!`/`FIXME`. **4,422 tests PASS** (nextest CI). `#![forbid(unsafe_code)]` on `barracuda` + `barracuda-core`. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `guard_connection()` implements full 6-step handshake relay: `ClientHello` → `btsp.session.create` → `ServerHello` → `ChallengeResponse` → `btsp.session.verify` → `HandshakeComplete`. Capability-based crypto provider discovery (`crypto-{fid}.sock` → `crypto.sock` → `*.json` scan). All 3 accept loops guarded (Unix, TCP, tarpc). Legacy/non-BTSP clients degrade gracefully (2s timeout). **Capability Wire Standard L2**. Nextest `gpu-serial` extended to stress/gpu profiles. **Note**: `BufReader` lifetime gap between handshake phases (edge-case for fast/coalescing clients); post-handshake stream encryption not yet applied.
 
