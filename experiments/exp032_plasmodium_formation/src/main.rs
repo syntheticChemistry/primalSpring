@@ -17,7 +17,7 @@ use primalspring::validation::ValidationResult;
 
 fn main() {
     ValidationResult::new("primalSpring Exp032 — Plasmodium Formation")
-        .with_provenance("exp032_plasmodium_formation", "2026-03-24")
+        .with_provenance("exp032_plasmodium_formation", "2026-04-13")
         .run(
             "primalSpring Exp032: Plasmodium — Collective from Covalent Mesh",
             |v| {

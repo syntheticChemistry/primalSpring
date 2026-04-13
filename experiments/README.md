@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**72 experiments across 15 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**73 experiments across 16 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -19,18 +19,18 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 72 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 73 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 72 experiments. All 72 use centralized library helpers for TCP RPC,
+across all 73 experiments. All 73 use centralized library helpers for TCP RPC,
 method name constants (`ipc::methods`), and primal name constants (`primal_names`).
 
 ## Running
 
 ```bash
-# Run all 72 experiments via meta-validator
+# Run all 73 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -59,6 +59,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 13 | Substrate Stress | exp082–084 | **Structural** (chaos substrate, federation edge cases, provenance adversarial) |
 | 14 | E2E Composition | exp085–088 | **E2E composition** (BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition) |
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | **Structural** (deployment graph sweep, Tower Atomic LAN probe, L0 primal routing matrix, L2 dual-tower ionic, L3 covalent mesh backup) |
+| 16 | Composition Parity | exp094 | Full NUCLEUS composition parity: 19/19 checks via live IPC |
 
 ## Experiment Status Key
 
@@ -106,14 +107,17 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 24 | Deep debt resolution + public readiness sprint — bingoCube, benchScale, agentReagents, rustChip graded A | **Done** (v0.9.0–v0.9.1) |
 | 25 | Modernization sweep — capability naming cleanup, `[[graph.nodes]]` unification, `http_health_probe` deprecated, `nest-deploy.toml` v4.0, exp089+090, Tower Atomic HTTPS validated | **Done** (v0.9.2) |
 | 26 | Mixed composition + live validation — particle model (Tower=electron, Node=proton, Nest=neutron), 17 sketch graphs, exp091-093, live Tower Atomic probes, 6 GAP-MATRIX items documented | **Done** (v0.9.3) |
-| 27 | BTSP Phase 2 cascade — secure-by-default across 11/13 primals, `ipc::btsp_handshake` module; 100 deploy graphs + 4 fragments; all deploy graphs carry `secure_by_default` metadata | **Done** (v0.9.5) |
-| 28 | Inference abstraction + proto-nucleate graphs — vendor-agnostic `inference.*` wire standard, Squirrel bridge, WGSL shader composition model, 5 downstream proto-nucleate + 3 pipeline graphs (neuralSpring/hotSpring/healthSpring) | **Done** (v0.9.5) |
+| 27 | BTSP Phase 2 cascade — secure-by-default across 11/13 primals, `ipc::btsp_handshake` module; 100 deploy graphs + 4 fragments; all deploy graphs carry `secure_by_default` metadata | **Done** (v0.9.14) |
+| 28 | Inference abstraction + proto-nucleate graphs — vendor-agnostic `inference.*` wire standard, Squirrel bridge, WGSL shader composition model, 5 downstream proto-nucleate + 3 pipeline graphs (neuralSpring/hotSpring/healthSpring) | **Done** (v0.9.14) |
+| 39 | NUCLEUS Composition PASS | 17/17 exp094, 441 tests |
+| 40 | NUCLEUS Complete | 12/12 ALIVE, 19/19 exp094 PASS, 455 tests |
+| 41 | Pre-Downstream Gap Resolution | 13 FullNucleus caps, 443 tests, gap resolution |
 
 ## Validation Harness
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 72 experiments use this):
+**Builder API** (preferred — all 73 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit
@@ -139,7 +143,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.9.5 (workspace), depends on ecoPrimal
+├── Cargo.toml    # version 0.9.14 (workspace), depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

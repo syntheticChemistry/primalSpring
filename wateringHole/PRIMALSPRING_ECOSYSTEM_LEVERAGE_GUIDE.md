@@ -1,8 +1,23 @@
 # primalSpring — Ecosystem Leverage Guide
 
-**Date**: April 11, 2026
-**Version**: v1.0.0
+**Date**: April 13, 2026
+**Version**: v1.2.0
 **License**: AGPL-3.0-or-later
+
+---
+
+## Current Season: Mountain → Spring Transition
+
+The ecosystem evolves in seasonal cycles. Capabilities flow downhill from
+primals (mountains) through primalSpring to domain springs (delta).
+Gaps discovered by springs evaporate back up through primalSpring to
+primal teams. See **`ECOSYSTEM_EVOLUTION_CYCLE.md`** in
+`infra/wateringHole/` for the full model.
+
+**Right now**: Primals are closing debt and stabilizing IPC response schemas.
+primalSpring is proving composition parity (Tower, Nest ready; Node blocked
+on barraCuda response schema standardization). Domain springs should prepare
+to elevate from Rust math to primal composition validation.
 
 ---
 
@@ -59,8 +74,15 @@ can absorb or compose against.
 | **OnceLock probes** | `ipc/probes.rs` | Cached runtime resource probes for parallel test execution |
 | **Release gate** | `scripts/validate_release.sh` | fmt + clippy + deny + test floor + docs CI gate |
 | **BTSP handshake** | `ipc/btsp_handshake.rs` | Client-side BTSP authentication (FAMILY_ID + nonce + HMAC) for secure socket connections |
-| **InferenceClient** | `inference/mod.rs` | Vendor-agnostic inference client — `complete`, `embed`, `models` via socket discovery |
-| **Inference wire types** | `inference/types.rs` | `CompleteRequest`, `EmbedRequest`, `ModelsResponse`, `ProviderInfo` — no vendor lock-in |
+| ~~InferenceClient~~ | ~~inference/~~ | *Archived to fossilRecord Apr 12 — inference is Squirrel/neuralSpring's domain. Wire types documented in wateringHole.* |
+| **CompositionContext** | `composition/mod.rs` | Capability-keyed IPC client set for math parity validation — abstracts discovery, connection, extraction |
+| **validate_parity** | `composition/mod.rs` | One-call scalar comparison: local baseline vs primal composition result with tolerance-gated pass/fail |
+| **validate_parity_vec** | `composition/mod.rs` | Element-wise vector comparison for tensor/array results |
+| **check_composition_parity** | `validation/mod.rs` | Lower-level composition check with user-supplied extractor closure for custom schemas |
+| **call_extract_f64** | `ipc/client.rs` | Typed extraction: JSON-RPC call + extract scalar by key from result object |
+| **call_extract_vec_f64** | `ipc/client.rs` | Typed extraction: JSON-RPC call + extract f64 array by key from result object |
+| **call_extract\<T\>** | `ipc/client.rs` | Generic typed extraction: call + `DeserializeOwned` deserialization in one step |
+| **Composition parity tolerances** | `tolerances/mod.rs` | 7 named f64 constants: `EXACT`, `DETERMINISTIC_FLOAT`, `DF64`, `CPU_GPU`, `IPC_ROUND_TRIP`, `WGSL_SHADER`, `STOCHASTIC_SEED` |
 
 ### Composition Patterns
 
@@ -95,7 +117,7 @@ can absorb or compose against.
 | biomeOS v2.66 | IpcErrorPhase, manifest discovery, socket registry, aligned 6-tier | `ipc/error.rs`, `ipc/discover.rs` |
 | Squirrel alpha.21 | Spring tool discovery, socket registry | `ipc/mcp.rs`, `ipc/discover.rs` |
 
-### Inference Wire Standard (v0.9.4)
+### Inference Wire Standard (documented contract — implementation in Squirrel/neuralSpring)
 
 Springs and primals that handle AI/ML requests use the `inference.*` wire:
 
@@ -126,12 +148,12 @@ How a spring picks up a proto-nucleate graph and evolves against it:
 
 1. **Read** `graphs/downstream/{yourspring}_*_proto_nucleate.toml` — your target composition
 2. **Understand dependencies** — which primals are `required = true` for your domain
-3. **Wire IPC** — use ecoPrimal's `PrimalClient` or `InferenceClient` to call primals
+3. **Wire IPC** — use ecoPrimal's `CompositionContext` for capability-based calls (or `PrimalClient` / `InferenceClient` for direct wiring)
 4. **Compose** — build your domain logic as orchestration of primal capability calls
-5. **Validate** — run primalSpring experiments to verify your composition works
-6. **Hand back** — document gaps/patterns discovered, hand back to primalSpring
+5. **Validate parity** — use `composition::validate_parity()` to compare local Rust math against primal composition output within named tolerances
+6. **Hand back** — document gaps/patterns discovered (especially response schema issues), hand back to primalSpring
 
-### Primal Composition Validation Layer (v0.9.9)
+### Primal Composition Validation Layer (v1.1.0)
 
 The next evolution beyond Rust validation: validate that your spring's domain
 logic works **as a composition of primal capabilities**, not just as Rust code.
@@ -141,17 +163,62 @@ logic works **as a composition of primal capabilities**, not just as Rust code.
 ```
 Level 1: Python baseline        — reference implementation, documented provenance
 Level 2: Rust validation        — faithful port, pass/fail exit code, tolerance-gated
-Level 3: barraCuda CPU          — primal math (WGSL CPU fallback), same tolerances
+Level 3: barraCuda CPU          — same math via primal (WGSL CPU fallback)
 Level 4: barraCuda GPU          — sovereign shader execution, performance validated
-Level 5: Primal composition     — domain logic as IPC calls to NUCLEUS primals
-Level 6: Deploy graph validated — proto-nucleate satisfied, all nodes healthy
+Level 5: Primal composition     — ALL math via NUCLEUS primals (IPC only, no local Rust math)
+Level 6: Deploy graph validated — proto-nucleate satisfied, all nodes healthy via biomeOS
 ```
 
+**Critical principle**: At Level 5+, the spring has **no local math**. All domain
+computation is delegated to primals via IPC. The spring's Rust code (Levels 2-4)
+served its purpose: it evolved the upstream primals (e.g., hotSpring's QCD drove
+barraCuda shader evolution). Once primals absorb the math, the spring validates
+that the composition produces the same results — then the Rust math code becomes
+fossil record. **Springs do not ship binaries at the composition level.**
+
 **What composition validation proves**:
-- Your domain logic **delegates** to primals instead of reimplementing
+- Primals have absorbed the spring's domain math correctly
+- The composition (primals orchestrated by biomeOS) produces results matching the original Python baseline
 - IPC round-trips stay within latency budgets (named tolerances)
-- The NUCLEUS atomics your proto-nucleate declares are **live and healthy**
+- The NUCLEUS atomics the proto-nucleate declares are **live and healthy**
 - Graceful degradation works when optional primals are absent
+
+**How springs use the composition validation library** (ecoPrimal v0.8.0+):
+
+```rust
+use primalspring::composition::{CompositionContext, validate_parity};
+use primalspring::validation::ValidationResult;
+use primalspring::tolerances;
+
+// Discover whatever NUCLEUS primals are running (via biomeOS or plasmidBin)
+let mut ctx = CompositionContext::from_live_discovery();
+let mut v = ValidationResult::new("hotSpring QCD Level 5 Parity");
+
+// The expected value comes from the PYTHON BASELINE (Level 1),
+// already validated through Rust (Level 2) and barraCuda (Levels 3-4).
+// At Level 5, the spring's own Rust math is retired — primals own it now.
+let python_baseline = 0.7539_f64; // from documented Python run
+
+// Validate: does the primal composition produce the same result?
+validate_parity(
+    &mut ctx, &mut v,
+    "qcd_hmc_trajectory",
+    "tensor",                           // capability (not primal name)
+    "tensor.matmul",                    // JSON-RPC method
+    serde_json::json!({"a": a, "b": b}), // params
+    "value",                            // result key
+    python_baseline,                    // expected from Python/Rust baseline
+    tolerances::CPU_GPU_PARITY_TOL,     // named tolerance
+);
+
+v.finish_and_exit(); // 0=pass, 1=fail, 2=all-skipped
+```
+
+The spring understands its domain and provides the expected values (from Python
+baselines). primalSpring handles primal discovery, IPC, result extraction, and
+tolerance-based comparison. The spring has **no local math at this level** — it
+only validates that primals produce correct results. When a primal isn't running,
+checks degrade to `SKIP` — honest about what couldn't be tested.
 
 **Standardized patterns** for composition validation are documented in
 `infra/wateringHole/SPRING_COMPOSITION_PATTERNS.md`. Every spring MUST adopt:
@@ -175,16 +242,22 @@ btsp_handshake::perform(&mut stream, family_id, nonce)?;
 ### Upstream/Downstream Evolution Cycle
 
 ```
-primals (base capabilities)
-    ↓ expose capabilities
-primalSpring (composition patterns + proto-nucleate graphs)
-    ↓ graphs/downstream/*.toml
-springs (domain applications — absorb + evolve)
-    ↓ discover gaps + new patterns
-primalSpring (absorbs patterns, refines compositions)
-    ↓ primal-level gaps
-primals (evolve to close gaps)
+                          THE EVOLUTION ARC
+
+Springs (downstream): Paper → Python → Rust validation
+    ↓ Rust validation evolves upstream primals (shaders, IPC, math)
+Primals (upstream): absorb math, expose as capabilities via IPC
+    ↓ capabilities mature
+primalSpring: demonstrates composition (primals via biomeOS = same results)
+    ↓ composition patterns + proto-nucleate graphs
+Springs (Level 5): validate composition parity (IPC only, no local math)
+    ↓ gaps discovered → hand back to primalSpring → route to primal teams
+Primals: evolve to close gaps
     ↓ ... cycle continues
+
+Gardens (esotericWebb): final downstream — niche compositions of primals
+    ↑ uses ludoSpring math (now in barraCuda), wetSpring biology (now in primals)
+    ↑ pure composition: no garden binary, graph-as-product via biomeOS
 ```
 
 ### NUCLEUS Atomic Alignment (Phase 31)
@@ -297,9 +370,14 @@ plasmidBin validation results from `doctor.sh` and `validate_composition.sh`:
 | Meta-tier | **3/3 PASS** | biomeos + squirrel + petaltongue |
 | **NUCLEUS (atom)** | **13/13 PASS** | **Full NUCLEUS deployable** (benchScale validated April 11) |
 
-### Spring Evolution Ladder (Live Audit — April 11, 2026)
+### Spring Evolution Ladder (Live Audit — April 12, 2026)
 
-The evolution path: **Research paper → Python → Rust → Primal composition**
+The evolution path: **Research paper → Python → Rust → (evolves primals) → Primal composition (IPC only)**
+
+At each stage, the spring's local code **evolves upstream primals** and then
+retires as fossil record. The spring's final form is a composition validator:
+it calls primals via IPC and confirms results match original Python baselines.
+**There are no spring binaries at the composition level.**
 
 All springs are at barraCuda **0.3.11**. All 13 plasmidBin primals are ecoBin compliant
 (musl-static, stripped, blake3 checksummed). `NICHE_*` compositions defined in
@@ -467,21 +545,25 @@ are domain laboratories that evolve it.
 ## Portability Debt: Upstream Handoffs (April 11, 2026)
 
 primalSpring's benchScale NUCLEUS deployment validation exposed three classes of
-non-portable dependency across the ecosystem. Class 1 (C crypto via `ring`) was
-solved by the Tower Atomic delegation pattern. Class 2 (GPU/Vulkan via `wgpu` →
-`dlopen`) and Class 3 (remaining C surfaces) require the same pattern applied to
-compute hardware.
+non-portable dependency across the ecosystem. **Class 1 (C crypto via `ring`) is
+now FULLY RESOLVED** — all 13 primals are ring-free after NestGate's NG-08 fix.
+Class 2 (GPU/Vulkan via `wgpu` → `dlopen`) is partially addressed via BC-08
+(cpu-shader default-on) and primal-level sovereign probe. Class 3 (remaining C
+surfaces) is largely resolved via deny.toml enforcement (CR-01 closed).
 
-### Active Upstream Handoffs
+### Active Upstream Handoffs (refreshed April 11, cross-primal evolution review)
 
-| ID | Owner | What | Priority | Guidance |
-|----|-------|------|----------|----------|
-| NG-08 | NestGate team | `ring` v0.17.14 live in production via `rustls` default crypto provider despite `deny.toml` ban. `cargo tree -i ring --edges normal` confirms | **High** | Switch to `rustls-rustcrypto` provider (Songbird pattern) or replace `reqwest` with `ureq` for IPC |
-| CR-01 | coralReef team | `deny.toml` missing C/FFI ban list — only license/advisory checks. Policy gap vs ecosystem standard | **Medium** | Add standard ecoBin v3 ban block matching barraCuda/NestGate/Songbird |
-| BC-07 | barraCuda team | `SovereignDevice` not in `Auto::new()` fallback chain. The trait exists, the impl exists, the IPC wiring exists — just not connected on failure | **Medium** | Wire `SovereignDevice::with_auto_device()` between wgpu CPU fallback and give-up |
-| BC-08 | barraCuda team | `cpu-shader` feature not default-on. Batch ops have `#[cfg(feature = "cpu-shader")]` paths but feature is opt-in, so ecoBin binaries skip naga-exec CPU math | **Medium** | Flip `cpu-shader` to default in `crates/barracuda/Cargo.toml` + CI validation |
-| BC-06 | Documentation | musl-static cannot `dlopen(libvulkan.so.1)` — ecoBin binaries will always be CPU-only for wgpu path. Not a bug, architectural constraint | **Low** | Document in barraCuda README + CONTEXT.md. The fix IS BC-07 + BC-08 |
-| CI-01 | primalSpring (infra) | `cargo deny check bans` not enforced ecosystem-wide. NestGate's `ring` ban exists but ring resolves anyway | **Medium** | Add `cargo deny check` to CI for all primals |
+| ID | Owner | What | Status | Notes |
+|----|-------|------|--------|-------|
+| NG-08 | NestGate team | `ring` in production via `rustls`/`reqwest` | **RESOLVED** | Eliminated `reqwest` → `ureq` + `rustls-no-provider` + `rustls-rustcrypto`. `cargo tree -i ring` empty. 13/13 primals ring-free |
+| CR-01 | coralReef team | `deny.toml` missing C/FFI ban list | **RESOLVED** | Iter 79: full ecoBin v3 ban block (ring, openssl, native-tls, aws-lc-sys, cmake, pkg-config, bindgen, etc.) |
+| BC-08 | barraCuda team | `cpu-shader` feature not default-on | **RESOLVED** | Sprint 40: `default = ["gpu", "domain-models", "cpu-shader"]`. ecoBin binaries include naga-exec |
+| BC-07 | barraCuda team | `SovereignDevice` not in `Auto::new()` fallback | **RESOLVED** | Sprint 41: `Auto::new()` returns `DiscoveredDevice` with 3-tier fallback: wgpu GPU → wgpu CPU → SovereignDevice IPC (requires `sovereign-dispatch` feature + live peers). `BarraCudaPrimal` holds `DiscoveredDevice`. Node Atomic delegation is now fully wired |
+| BC-06 | Documentation | musl-static cannot `dlopen(libvulkan.so.1)` | **Documented** | Architectural constraint. Fix IS BC-07 + BC-08 for CPU; sovereign IPC for GPU |
+| CI-01 | primalSpring (infra) | `cargo deny check bans` ecosystem-wide CI | **PARTIAL** | Songbird Wave 134 added `cargo deny` to GitHub Actions. Pattern available for all primals to copy |
+| BD-IONIC | BearDog team | Ionic bond persistent storage | **PARTIAL** | Wave 34-35: Real Ed25519 signing+verification wired. Bond state in-memory by design (BearDog = crypto, not storage). Needs NestGate `storage.*` / loamSpine ledger for durability. HSM/BTSP Phase 3 stubbed |
+| TS-PIPELINE | toadStool team | Pipeline scheduling for ordered dispatch | **RESOLVED** | S199: `compute.dispatch.pipeline.submit` with DAG validation, topological execution, `previous_results`, `.status`. S202: capability-based naming evolution |
+| TRIO-IPC | Provenance Trio | flush-on-write + concurrent load testing | **RESOLVED** | All three primals now implement TCP_NODELAY + flush-after-write on all TCP/UDS paths. rhizoCrypt S33-34: TCP_NODELAY+flush+31 tests. loamSpine: dedicated UDS transport, constants centralization, 8×5 load test. sweetGrass: BTSP mock BearDog tests, Postgres error-path coverage |
 
 ### The Node Atomic Delegation Pattern
 

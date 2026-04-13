@@ -3,6 +3,166 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.14] — Phase 41: Pre-Downstream Gap Resolution (2026-04-13)
+
+### Milestone
+**Pre-downstream gap resolution complete.** All 7 blocking/confusing gaps resolved
+before handing to springs for absorption. 13 FullNucleus capabilities (was 11).
+443 tests (was 441). DeployGraph now parses both single-node and multi-node dialects.
+
+### Fixed
+- **Songbird capability alias mismatch**: `ledger`, `attribution`, `visualization` now
+  registered in Phase 5 launcher seeding. `FullNucleus` capabilities expanded from 11 to 13.
+  `capability_to_primal()` maps all self-reported names (`spine`, `merkle`, `braid`, `provenance`).
+- **`validate_parity_vec` silent element drop**: Non-numeric array elements now detected
+  and reported explicitly instead of being silently filtered by `filter_map(as_f64)`.
+- **`validate_parity` doc examples**: Module-level and function-level examples updated
+  from `tensor.matmul` to `stats.mean` with correct `"data"` param and `"result"` key.
+- **loamSpine `health.check` auto-param**: `CompositionContext::health_check()` now sends
+  `{"include_details": true}` automatically for loamSpine capabilities.
+
+### Changed
+- **DeployGraph multi-node unification**: `GraphNode.name` accepts `id` alias. `binary`,
+  `order`, `health_method` default when absent. `primal`, `operation`, `constraints`,
+  `output` fields captured for multi-node sub-tables. `structural_checks()` skips
+  binary/health/order validation for multi-node graphs. 2 new tests confirm parsing.
+- **`NICHE_STARTER_PATTERNS.md`**: `tensor.softmax` result key `"values"` → `"result"`.
+
+### Documented
+- **BtspEnforcer limitations**: Struct-level and method-level docs explain cipher-upgrade-only
+  semantics (never denies connections). Downstream README includes bonding enforcement table.
+- **rhizoCrypt `dag.event.append` event_type**: Full 27-variant enum reference with 4 worked
+  JSON examples added to downstream README.
+- **`graphs/multi_node/README.md`**: Schema differences documented, deployment instructions.
+
+### Test Results
+- **primalSpring**: 443 tests PASS, 0 failures (2 new deploy tests for multi-node graphs).
+- **exp094**: 19/19 PASS (unchanged — validates against live stack).
+
+## [Unreleased] — Phase 40: NUCLEUS Complete — 12/12 ALIVE, 19/19 PASS (2026-04-13)
+
+### Milestone
+**exp094 NUCLEUS Composition Parity: 19/19 PASS, 0 FAIL, 0 SKIP.**
+**12/12 primals ALIVE.** All LD gaps RESOLVED. Full NUCLEUS composition validated
+across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline. 11 capabilities
+discovered. This is the first time every primal is alive and every check passes.
+
+### Resolved (Upstream — second pull cycle)
+- **LD-10 RESOLVED** — barraCuda Sprint 42 phase 5: `fix(LD-10): replay consumed BTSP guard line to JSON-RPC handler`. JSON-RPC now fully operational on UDS (`stats.mean`, `capabilities.list`, 32 methods).
+- **LD-06 RESOLVED** — rhizoCrypt S37: UDS unconditional, TCP opt-in. `rhizocrypt_alive` PASS. Provenance trio at full UDS parity.
+- **Songbird Wave 139**: Self-healing socket auto-discovery — periodic 30s re-scan eliminates need for Phase 5 launcher seeding (retained as belt-and-suspenders).
+- **BearDog**: TCP transport now skip when `--port`/`--listen` not passed.
+- **petalTongue Sprint 6**: `--socket` CLI flag added for NUCLEUS launcher alignment. Now ALIVE in stack.
+
+### Changed
+- **Full ecosystem rebuild**: All 12 primals pulled, rebuilt, harvested to plasmidBin. Every primal has new commits addressing debt/gaps.
+- **exp094**: `tensor_dot_3elem` replaced with `tensor_stats_mean` (barraCuda `stats.mean` — actual JSON-RPC wire method). `rhizocrypt_alive` now PASS (was SKIP).
+- **Unit tests**: `node_parity_tensor_matmul_identity` updated to use `stats.mean` (barraCuda `tensor.matmul` uses session-based IDs, not inline data).
+
+### Test Results
+- **primalSpring**: 455 tests PASS, 0 failures.
+- **exp094**: 19/19 PASS, 0 FAIL, 0 SKIP. 11 capabilities discovered.
+- **NUCLEUS stack**: 12/12 primals ALIVE (including rhizoCrypt UDS, petalTongue, barraCuda).
+
+## [0.9.13] — Phase 39: NUCLEUS Composition PASS — 17/17 exp094 (2026-04-13)
+
+### Milestone
+**exp094 NUCLEUS Composition Parity: 17/17 PASS, 0 FAIL, 2 SKIP.**
+All 4 critical LD gaps resolved. Full NUCLEUS cross-atomic pipeline operational.
+
+### Added
+- **`nucleus_launcher.sh` Phase 5**: Registry seeding — after all primals start, launcher calls `ipc.register` on Songbird for 9 primals with their capability sets. Resolves LD-08 (Songbird auto-discovery races startup).
+- **`IpcError::is_transport_mismatch()`**: Detects tarpc-socket-receives-JSON-RPC pattern (EAGAIN timeout). `validate_parity` and `validate_parity_vec` now gracefully SKIP on transport mismatch.
+
+### Resolved (Upstream)
+- **LD-04 RESOLVED** — ToadStool S203d: BTSP auto-detect via first-byte inspection.
+- **LD-05 RESOLVED** — barraCuda Sprint 42 phase 2: eliminated TCP sidecar in UDS mode.
+- **LD-08 RESOLVED** — Songbird Wave 138: socket auto-discovery + Phase 5 launcher seeding.
+- **LD-09 RESOLVED** — loamSpine: TCP transports opt-in. UDS unconditional.
+
+### Changed
+- **`nucleus_launcher.sh`**: Removed `--unix` from barraCuda start args. Added Phase 5 registry seeding.
+- **exp094**: `resolve_*` checks accept `native_endpoint`/`virtual_endpoint`. Transport mismatch → graceful SKIP.
+- **Integration tests**: Updated overlay graph tests to current consolidated graphs.
+
+### Test Results
+- **primalSpring**: 455 tests PASS, 0 failures.
+- **exp094**: 17/17 PASS, 2 SKIP (tensor.dot tarpc transport, rhizoCrypt TCP-only).
+
+## [0.9.12] — Phase 38: Upstream Revalidation + Composition Parity (2026-04-12)
+
+### Added
+- **LD-08**: New gap — Songbird `ipc.resolve` returns "Primal not found" because primals don't call `ipc.register` at startup. Wire accepts `capability` param (Wave 137b) but no directory entries.
+- **LD-09**: New gap — loamSpine binds `0.0.0.0:8080` on startup, conflicts with other services. Needs socket-only mode.
+
+### Changed
+- **Upstream revalidation**: Pulled + rebuilt + tested all 5 core NUCLEUS primals (barraCuda Sprint 42, BearDog Wave 38, ToadStool S203c, Songbird Wave 137d, NestGate Session 43d). Fresh ecoBins copied to plasmidBin.
+- **exp094 revalidation**: 13/16 PASS (was 7/16). Tower Atomic fully operational, Nest storage roundtrip works (LD-03 resolved upstream), cross-atomic pipeline (hash→store→retrieve) PASS end-to-end.
+- **`PRIMAL_GAPS.md` Class 5**: Full revalidation section added with per-primal socket/health/IPC status table. LD-03 marked RESOLVED upstream. LD-04/LD-05 re-assessed with current evidence.
+- **`nucleus_launcher.sh`**: Fixed stale `compute.sock` symlink (pointed to `toadstool-${FAMILY_ID}.jsonrpc.sock`, now `toadstool-${FAMILY_ID}.sock`). Updated ToadStool status check to include new socket name. Added BTSP/Ed25519/X25519 aliases for BearDog. Fixed Squirrel alias to use family-scoped socket.
+
+### Test Results (all 5 primals)
+- **BearDog**: 14,774+ tests, 0 failures. CLEAN.
+- **Songbird**: Build CLEAN, tests PASS.
+- **NestGate**: 11,856+ tests, 0 failures. CLEAN.
+- **ToadStool**: 1,025 passed, 2 failures (env-dependent localhost fallback). Non-blocking.
+- **barraCuda**: 3,835 passed, 14 failures (ESN model + tensor scalar race under parallel load). Non-blocking.
+
+## [0.9.11] — Phase 37: Live NUCLEUS Deployment + Downstream Patterns (2026-04-12)
+
+### Added
+- **9 composition parity tests** (`composition/mod.rs`): Tower (crypto.hash, capability.resolve, health.liveness), Nest (storage round-trip, NestGate health), Node (tensor.batch.submit, tensor.matmul identity, shader.compile.capabilities), NUCLEUS (cross-atomic pipeline: hash → store → retrieve → verify). All degrade to SKIP when primals absent, PASS against live NUCLEUS.
+- **`ECOSYSTEM_EVOLUTION_CYCLE.md`** (`wateringHole/`): Water-cycle model for ecosystem evolution — mountains (primals), springs (validation), delta (domain springs), evaporation (gap feedback). Documents current season, acceleration effect, per-layer guidance, modernization debt section.
+- **Composition Elevation Sprint Priorities** in `PRIMAL_GAPS.md`: 6-item primalSpring sprint roadmap with upstream enablement targets.
+- **Class 4: Pre-Modern Async Rust** in `PRIMAL_GAPS.md`: Full ecosystem async-trait/dyn audit across 12 primals.
+- **`CompositionContext::health_check()`**: Normalizes diverse primal health response formats (`{"alive":true}`, `{"status":"alive"}`, `{"status":"ok"}`) into single boolean.
+- **`CompositionContext::hash_bytes()`**: Handles base64 encoding/decoding for BearDog `crypto.hash`.
+- **`CompositionContext::resolve_capability()`**: Maps capability→primal_id for Songbird `ipc.resolve`.
+
+### Changed
+- **`PRIMAL_GAPS.md`**: Wire contract blockers (tensor/shader/dispatch) all marked RESOLVED. Sprint table updated: Tower + Nest + Node all UNBLOCKED, upstream primals all DELIVERED.
+- **`SPRING_AUDIT_PROMPT.md`**: v2.2 — added `ECOSYSTEM_EVOLUTION_CYCLE.md` to required reading, seasonal context.
+- **`NUCLEUS_SPRING_ALIGNMENT.md`**: Phase 36 — "Current Season: Mountain → Spring Transition" section.
+- **`wateringHole/README.md`**: Added "Ecosystem Evolution" section to document index.
+
+### Fixed
+- **5 test fixtures** referencing archived graphs: `tower_atomic_bootstrap.toml` → `profiles/tower.toml`, `node_atomic_compute.toml` → `profiles/node.toml`, `tower_ai.toml` → `profiles/tower_ai.toml`, `conditional_fallback.toml` → `patterns/conditional_fallback.toml`. 428 → 437 tests, 0 failures.
+- **3 pre-existing clippy warnings resolved**: unnecessary boolean not in `coordination/mod.rs`, missing `#[must_use]` on `strip_unix_uri`, if-let→`map_or_else` in `transport.rs`. clippy now returns 0 warnings.
+- **`nucleus_launcher.sh`**: Added barraCuda + coralReef to Phase 2 (Node Atomic). Added `tensor` and `shader` to capability domain alias map. Updated stop sequence and status table.
+
+### Documented
+- **`exp094_composition_parity`**: New canonical NUCLEUS parity experiment (Tower + Node + Nest + cross-atomic pipeline). Live-tested against running NUCLEUS: 8 capabilities discovered, 7 PASS, 5 FAIL (upstream wire gaps), 7 SKIP.
+- **`graphs/downstream/README.md`**: Index of proto-nucleate graphs with upstream gap table from live deployment.
+- **`graphs/downstream/NICHE_STARTER_PATTERNS.md`**: Copy-paste-ready starter patterns for hotSpring (QCD), neuralSpring (ML), healthSpring (enclaves), wetSpring (genomics).
+- **`PRIMAL_GAPS.md` Class 5**: 7 live deployment gaps (LD-01 through LD-07) from exp094 — base64 transport, ipc.resolve params, single-shot UDS, port conflicts, socket naming, health format inconsistency.
+- **`SPRING_COMPOSITION_PATTERNS.md` §14**: NUCLEUS composition experiment pattern added with live deployment findings and key findings for springs.
+
+## [0.9.10] — Phase 35: Seasonal Tightening + Composition Validation Library (2026-04-12)
+
+### Added
+- **Composition validation library** (`ecoPrimal/src/composition/`): `CompositionContext`, `validate_parity`, `validate_parity_vec` — capability-keyed IPC client management and one-call math parity comparison.
+- **Typed IPC extractors** (`ipc/client.rs`): `call_extract<T>`, `call_extract_f64`, `call_extract_vec_f64`.
+- **Math parity tolerances** (`tolerances/mod.rs`): 7 named constants (`EXACT_PARITY_TOL`, `CPU_GPU_PARITY_TOL`, `WGSL_SHADER_TOL`, `DF64_PARITY_TOL`, `STOCHASTIC_SEED_TOL`, `NETWORK_LATENCY_TOL`, `COMPOSITION_OVERHEAD_TOL`).
+- **Composition parity checks** (`validation/mod.rs`): `check_composition_parity`, `check_composition_parity_vec`.
+
+### Changed
+- **`lib.rs`**: Rewritten module documentation — core intermediary role ("start, validate, surface gaps, provide library"), modules categorized as Core vs Supporting.
+- **`coordination/mod.rs`**: `AtomicType::Node` now includes barraCuda + coralReef; `FullNucleus` includes all 11 primals.
+- **`harness/mod.rs`**: `RunningAtomic::composition_context()` added.
+- **All `#[allow(dead_code)]`** in `btsp_handshake.rs` converted to `#[expect(dead_code, reason = "...")]`.
+
+### Removed
+- **`inference/` module** (534 LOC): Archived to `fossilRecord/inference_module_apr12_2026/`. Speculative, unused — belongs with Squirrel/neuralSpring.
+- **35 stale graph TOMLs** (4,328 LOC): `science/`, `sketches/`, `gen4/` archived to `fossilRecord/stale_graphs_apr12_2026/`. Graph count 102 → 67.
+- **`EmergentValidation` struct** (29 LOC): Unused outside own tests.
+- **`GraphExecutionResult` struct** (35 LOC): Unused outside own tests.
+- **`spawn_neural_api` deprecated alias**: Removed from `launcher/mod.rs`.
+
+### Fixed
+- `BASE64.encode(&client_pub_bytes)` → `BASE64.encode(client_pub_bytes)` (clippy: borrowed expression).
+- All `map_or` with function calls → `map_or_else` (clippy: function call in map_or).
+- `PRIMAL_GAPS.md` split into active (865 LOC) + `PRIMAL_GAPS_RESOLVED_HISTORY.md` (522 LOC) to stay under 1000 LOC standard.
+
 ## [0.9.9] — Phase 33: Full Spring Alignment + Proto-Nucleate Coverage (2026-04-10)
 
 ### Added

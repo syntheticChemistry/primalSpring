@@ -53,21 +53,6 @@ impl EmergentSystem {
     }
 }
 
-/// Result of validating an emergent system.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmergentValidation {
-    /// Which emergent system was tested.
-    pub system: EmergentSystem,
-    /// Graph names that executed successfully.
-    pub graphs_executed: Vec<String>,
-    /// Number of pipeline phases that completed.
-    pub phases_completed: usize,
-    /// Whether provenance was verified end-to-end.
-    pub provenance_verified: bool,
-    /// Overall pass/fail.
-    pub success: bool,
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -117,18 +102,4 @@ mod tests {
         }
     }
 
-    #[test]
-    fn validation_round_trip_json() {
-        let val = EmergentValidation {
-            system: EmergentSystem::CoralForge,
-            graphs_executed: vec!["coralforge_pipeline".to_owned()],
-            phases_completed: 3,
-            provenance_verified: true,
-            success: true,
-        };
-        let json = serde_json::to_string(&val).unwrap();
-        let back: EmergentValidation = serde_json::from_str(&json).unwrap();
-        assert_eq!(back.system, EmergentSystem::CoralForge);
-        assert!(back.success);
-    }
 }

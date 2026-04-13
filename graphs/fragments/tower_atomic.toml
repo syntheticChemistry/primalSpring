@@ -30,7 +30,7 @@ required = true
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair"]
 
 [[fragment.nodes]]
 name = "songbird"
@@ -41,4 +41,4 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
-capabilities = ["net.discovery", "net.mesh", "network.http_request"]
+capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]

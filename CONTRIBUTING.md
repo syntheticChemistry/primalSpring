@@ -43,7 +43,7 @@ New graphs must use the canonical `[[graph.nodes]]` format (biomeOS-native).
 The legacy `[[graph.node]]` format is accepted by the parser but should not
 be used in new files. Multi-node graphs use `[graph.nodes.*]` subsections.
 The `[graph]` section should include an `id` field (lowercase-hyphenated)
-alongside `name`. See `graphs/nest-deploy.toml` as the gold standard.
+alongside `name`. See `graphs/profiles/nucleus.toml` as the gold standard.
 
 All health checks must use JSON-RPC `health.liveness` — raw HTTP health
 probing is deprecated.

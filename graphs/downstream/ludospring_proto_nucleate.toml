@@ -62,7 +62,7 @@ order = 0
 required = true
 spawn = false
 health_method = "health.liveness"
-by_capability = "orchestration"
+by_capability = "discovery"
 security_model = "tower_delegated"
 capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 
@@ -75,7 +75,7 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
 
 [[graph.nodes]]
 name = "songbird"
@@ -87,7 +87,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
-capabilities = ["net.discovery", "net.mesh", "network.http_request"]
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 # ═══════════════════════════════════════════════════════════════
 # Compute: GPU game math (fragment: node_atomic, partial)
@@ -103,7 +103,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "compute"
 security_model = "tower_delegated"
-capabilities = ["compute.dispatch.submit", "compute.execute"]
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities"]
 
 [[graph.nodes]]
 name = "coralreef"
@@ -115,7 +115,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "shader"
 security_model = "tower_delegated"
-capabilities = ["shader.compile", "shader.list"]
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.compile.capabilities"]
 
 [[graph.nodes]]
 name = "barracuda"
@@ -128,9 +128,12 @@ health_method = "health.liveness"
 by_capability = "tensor"
 security_model = "tower_delegated"
 capabilities = [
-    "tensor.fitts", "tensor.flow_sigmoid", "tensor.engagement",
-    "tensor.perlin", "tensor.wfc", "tensor.noise",
-    "tensor.matmul", "tensor.dot",
+    "tensor.matmul",
+    "tensor.batch.submit",
+    "stats.mean",
+    "stats.std_dev",
+    "noise.perlin2d",
+    "compute.dispatch",
 ]
 
 # ═══════════════════════════════════════════════════════════════
@@ -145,12 +148,9 @@ required = true
 spawn = false
 depends_on = ["beardog", "songbird", "toadstool"]
 health_method = "health.liveness"
-by_capability = "ai"
+by_capability = "inference"
 security_model = "tower_delegated"
-capabilities = [
-    "ai.query", "ai.complete",
-    "ai.difficulty_adjustment", "ai.analyze_ui", "ai.accessibility",
-]
+capabilities = ["inference.complete", "inference.embed", "ai.query"]
 
 # ═══════════════════════════════════════════════════════════════
 # Interface: rendering context for game scenes
@@ -164,7 +164,7 @@ required = false
 spawn = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
-by_capability = "visualization"
+by_capability = "shader"
 security_model = "tower_delegated"
 capabilities = [
     "visualization.render.scene", "visualization.render.dashboard",
@@ -185,4 +185,4 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "storage"
 security_model = "tower_delegated"
-capabilities = ["storage.store", "storage.retrieve"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists"]

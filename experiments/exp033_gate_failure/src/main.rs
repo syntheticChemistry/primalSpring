@@ -13,7 +13,7 @@ const BOND_TYPE_COUNT: usize = 5;
 
 fn main() {
     ValidationResult::new("primalSpring Exp033 — Gate Failure")
-        .with_provenance("exp033_gate_failure", "2026-03-24")
+        .with_provenance("exp033_gate_failure", "2026-04-13")
         .run(
             "primalSpring Exp033: One Gate Drops; Plasmodium Degrades Gracefully",
             |v| {

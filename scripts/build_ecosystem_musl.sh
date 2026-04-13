@@ -21,7 +21,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SPRING_ROOT="$(dirname "$SCRIPT_DIR")"
-ECO_ROOT="$(dirname "$SPRING_ROOT")"
+ECO_ROOT="$(dirname "$(dirname "$SPRING_ROOT")")"
 STAGING="/tmp/primalspring-deploy"
 
 X86_TARGET="x86_64-unknown-linux-musl"
@@ -51,12 +51,19 @@ PRIMALS=(
     "primals/beardog"
     "primals/songbird"
     "primals/nestgate"
-    "primals/toadstool"
+    "primals/toadStool"
     "primals/squirrel"
     "primals/biomeOS"
+    "primals/barraCuda"
+    "primals/coralReef"
+    "primals/rhizoCrypt"
+    "primals/loamSpine"
+    "primals/sweetGrass"
+    "primals/petalTongue"
+    "primals/skunkBat"
 )
 
-PRIMAL_NAMES=(beardog songbird nestgate toadstool squirrel biomeos)
+PRIMAL_NAMES=(beardog songbird nestgate toadstool squirrel biomeos barracuda coralreef rhizocrypt loamspine sweetgrass petaltongue skunkbat)
 
 passed=0
 failed=0

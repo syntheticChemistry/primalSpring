@@ -114,6 +114,96 @@ impl PrimalClient {
         }
     }
 
+    /// Call a method and deserialize the result into a typed value.
+    ///
+    /// Combines `call()` + `extract_rpc_result()` in one step. Springs use
+    /// this when they know the full result schema (e.g. a struct with known
+    /// fields).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport failure, JSON-RPC error, or
+    /// deserialization mismatch.
+    pub fn call_extract<T: serde::de::DeserializeOwned>(
+        &mut self,
+        method: &str,
+        params: serde_json::Value,
+    ) -> Result<T, IpcError> {
+        let response = self.call(method, params)?;
+        super::extract::extract_rpc_result(&response)
+    }
+
+    /// Call a method and extract a single `f64` from the result by key.
+    ///
+    /// Handles the common ecosystem pattern where results are returned as
+    /// `{"value": 42.0}` or `{"result": 3.14}`. The `result_key` parameter
+    /// specifies which field to extract.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport failure, JSON-RPC error, missing
+    /// key, or type mismatch.
+    pub fn call_extract_f64(
+        &mut self,
+        method: &str,
+        params: serde_json::Value,
+        result_key: &str,
+    ) -> Result<f64, IpcError> {
+        let response = self.call(method, params)?;
+        let result = response.result.ok_or_else(|| {
+            IpcError::ProtocolError {
+                detail: response
+                    .error
+                    .as_ref()
+                    .map_or_else(|| "no result".to_owned(), |e| e.message.clone()),
+            }
+        })?;
+        result
+            .get(result_key)
+            .and_then(serde_json::Value::as_f64)
+            .ok_or_else(|| IpcError::SerializationError {
+                detail: format!("key '{result_key}' not found or not a number in {result}"),
+            })
+    }
+
+    /// Call a method and extract a `Vec<f64>` from the result by key.
+    ///
+    /// For tensor/array results like `{"values": [1.0, 2.0, 3.0]}`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport failure, JSON-RPC error, missing
+    /// key, or type mismatch.
+    pub fn call_extract_vec_f64(
+        &mut self,
+        method: &str,
+        params: serde_json::Value,
+        result_key: &str,
+    ) -> Result<Vec<f64>, IpcError> {
+        let response = self.call(method, params)?;
+        let result = response.result.ok_or_else(|| {
+            IpcError::ProtocolError {
+                detail: response
+                    .error
+                    .as_ref()
+                    .map_or_else(|| "no result".to_owned(), |e| e.message.clone()),
+            }
+        })?;
+        let arr = result
+            .get(result_key)
+            .and_then(serde_json::Value::as_array)
+            .ok_or_else(|| IpcError::SerializationError {
+                detail: format!("key '{result_key}' not found or not an array in {result}"),
+            })?;
+        arr.iter()
+            .map(|v| {
+                v.as_f64().ok_or_else(|| IpcError::SerializationError {
+                    detail: format!("array element is not a number: {v}"),
+                })
+            })
+            .collect()
+    }
+
     /// Request the primal's capability list.
     ///
     /// Tries `capabilities.list` first, then falls back to `capability.list`

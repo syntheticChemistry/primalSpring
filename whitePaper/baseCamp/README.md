@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: April 10, 2026
-**Status**: Phase 28 — BTSP + Inference Abstraction + Proto-Nucleate Graphs (87/87 gates), 72 experiments, 404 tests, 100 deploy graphs + 4 fragments (17 validation + 4 compositions + 6 spring deploy + 17 sketches + 5 downstream proto-nucleate + 3 pipeline), 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), particle model, layered validation (L0-L3), BTSP Phase 2 (11/13 primals), inference wire standard, WGSL shader composition model, 5 proto-nucleate compositions (neuralSpring ML, hotSpring QCD, healthSpring enclave), structured primal gap registry (**8 open**, 20 resolved, zero critical)
+**Date**: April 13, 2026
+**Status**: Phase 41 — Pre-Downstream Gap Resolution (87/87 gates), 73 experiments, 443 tests, 67 deploy graphs + 6 fragments, 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), particle model, layered validation (L0-L3), BTSP Phase 2 (12/12 primals), 13 FullNucleus capabilities, 5 bonding models validated (structural), structured primal gap registry, pre-downstream gap resolution complete
 
 ---
 
@@ -16,6 +16,24 @@ The validation target is biomeOS and the Neural API.
 
 See `ecoPrimals/infra/whitePaper/gen3/baseCamp/README.md` (Paper 23 section) for
 the full baseCamp paper documenting primalSpring's validation of ecosystem coordination.
+
+## The baseCamp Pattern: Python -> Rust -> Primal
+
+Every spring's baseCamp follows a three-stage validation pipeline that bridges
+peer-reviewed science with production-grade primal compositions:
+
+1. **Python baseline** — peer-reviewed, reproducible implementations using
+   standard scientific libraries (NumPy, SciPy, etc.). These are the ground
+   truth that domain scientists trust.
+2. **Rust port** — matches the Python baseline within documented tolerance.
+   Pure Rust, zero C dependencies, ecoBin compliant. This is what ships.
+3. **Primal composition** — matches the Rust port via IPC through the NUCLEUS
+   composition layer. Springs call `validate_parity()` to compare primal
+   results against their local Rust baselines.
+
+For primalSpring, this pattern is recursive: the "science" being validated IS
+the coordination infrastructure. The "Python baseline" is the spec. The "Rust
+port" is the implementation. The "Primal composition" is the live ecosystem.
 
 ## Experiments by Track
 
@@ -36,28 +54,29 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | 13 | Substrate Stress | exp082–084 | Chaos substrate, federation edge cases, provenance adversarial — does the stack survive? |
 | 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | Deployment graph sweep, Tower Atomic LAN probe, L0 routing matrix, L2 dual-tower ionic, L3 covalent mesh backup |
+| 16 | Composition Parity | exp094 | Does full NUCLEUS composition produce correct results via IPC? 19/19 checks. |
 
 ## Current State (v0.9.5)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 72 (15 tracks) |
-| Total tests | **404** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Experiments | 73 (16 tracks) |
+| Total tests | **443** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | **100 deploy graphs + 4 fragments** (18 root + 5 multi-node + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + **4 compositions** + **6 spring deploy** + **17 sketches** + **5 downstream proto-nucleate** + **3 pipeline**), all `[[graph.nodes]]` format, topologically validated |
+| Deploy graphs | **67 deploy graphs + 6 fragments** (9 profiles + 5 multi-node + 13 spring validation + 2 cross-spring + 5 bonding + 2 chaos + 5 spring deploy + 8 downstream proto-nucleate + 4 patterns + 7 root + 1 template), all `[[graph.nodes]]` format, topologically validated |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
-| Primal gap registry | **8 open** (18 resolved, zero critical) — primals only (`docs/PRIMAL_GAPS.md`) |
+| Primal gap registry | All LD-01 through LD-10 RESOLVED. Pre-downstream gaps resolved. |
 | Discovery | Capability-first: 6-tier + Neural API + `discover_by_capability()` + biomeOS `capability.discover` + `topology.rescan` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 72 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 73 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
@@ -69,7 +88,7 @@ the full baseCamp paper documenting primalSpring's validation of ecosystem coord
 | Provenance Readiness | **STRUCTURAL** — 4/4 gates (launch profiles + deploy graph) |
 | Total Gates | **87/87** |
 | Squirrel AI | Composition validated (Tower + Squirrel + Anthropic Claude) |
-| Subsystem validation | C1: 6/6, C3: 8/8, C4: 6/6, C5: **5/5**, C6: 5/5, C7: **10/10** PASS; C2: 3/4 (no local Ollama) |
+| Subsystem validation | C1: 6/6, C2: 4/4, C3: 8/8, C4: 6/6, C5: **5/5**, C6: 5/5, C7: **10/10** PASS |
 | Live pass rate | **43/44 (98%)** — up from 93% → 79% pre-evolution |
 | petalTongue | v1.6.6+ integrated, zero-copy IPC, blake3, RenderingAwareness auto-init, PT-07 server discovery |
 | Nucleated spring deploys | 6 proto graphs: airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring |
@@ -603,23 +622,18 @@ spores (biomeOS1, LiveSpore, ColdSpore), and SoloKey 2.
 
 ## What Remains
 
-### Critical Path (Mobile Deployment)
-- **BearDog TCP server mode** — add `--listen <addr>` flag for TCP-only IPC on Android/mobile (SELinux blocks `sock_file`)
-- **biomeOS mobile transport** — `api`/`nucleus` modes must support TCP when Unix sockets unavailable
-- **biomeOS gate-aware routing** — `capability.call` must honor `gate` parameter to route to specific remote endpoints
-- **aarch64-musl rebuilds** — all primals need fresh static builds from latest evolution waves
+### Structural Debt (plan but don't block handoff)
+- **Bonding experiments (exp030-034)**: 13 skipped live checks requiring benchScale Docker labs with 2+ FAMILY_IDs
+- **benchScale ecoPrimals integration**: 5 gaps in deploy pipeline (`ECOPRIMALS_INTEGRATION.md`)
+- **biomeOS DOWN**: 11/12 primals during testing (Neural API composition validation skips)
 
-### Live Ecosystem
-- **Emergent systems E2E** — RootPulse commit/branch/merge/diff/federate with live trio (ipc::provenance wired, awaiting biomeOS + trio running)
-- **Live multi-node validation** — deploy NUCLEUS on 2+ machines, validate covalent mesh, BondingPolicy enforcement, NAT traversal, data federation
-- **Pipeline + Continuous graph execution** (exp013/014) — awaiting sweetGrass/rhizoCrypt live
-- **Bonding live coordination** — multi-gate covalent mesh, ionic contracts, metallic fleets
-- **Cross-spring integration** — wetSpring genetic lineage via trio, BYOB primal DAG execution
-- **Anchoring + Economics** — sweetGrass anchoring to BTC/ETH, Novel Ferment Transcripts, sunCloud
+### Forward Evolution
+- Live multi-node validation with benchScale Docker topologies
 - Protocol escalation (JSON-RPC -> tarpc sidecar)
-- biomeOS self-composition (biomeOS composes its own graphs at runtime)
-- **ecoBin compliance**: rebuild all primals as static musl for both x86_64 and aarch64
-- **genomeBin packaging**: run sourDough to produce actual .genome self-extractors
+- biomeOS self-composition (runtime graph generation)
+- genomeBin packaging: run sourDough to produce .genome self-extractors
+- ecoBin compliance: rebuild all primals as static musl for both x86_64 and aarch64
+- Anchoring + Economics: sweetGrass anchoring to BTC/ETH
 
 ---
 

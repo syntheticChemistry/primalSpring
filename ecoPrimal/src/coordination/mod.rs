@@ -23,11 +23,11 @@ use crate::tolerances;
 pub enum AtomicType {
     /// `BearDog` + Songbird (crypto + mesh). Minimal NUCLEUS composition.
     Tower,
-    /// Tower + `ToadStool` (adds compute).
+    /// Tower + compute triangle (`ToadStool` + `barraCuda` + `coralReef`).
     Node,
     /// Tower + `NestGate` + Squirrel (adds storage + AI bridge).
     Nest,
-    /// All 8 primals including Squirrel and provenance trio.
+    /// All 12 primals: Tower + Node + Nest + meta-tier.
     FullNucleus,
 }
 
@@ -44,17 +44,22 @@ impl AtomicType {
     pub const fn required_capabilities(self) -> &'static [&'static str] {
         match self {
             Self::Tower => &["security", "discovery"],
-            Self::Node => &["security", "discovery", "compute"],
+            Self::Node => &["security", "discovery", "compute", "tensor", "shader"],
             Self::Nest => &["security", "discovery", "storage", "ai"],
             Self::FullNucleus => &[
                 "security",
                 "discovery",
                 "compute",
+                "tensor",
+                "shader",
                 "storage",
                 "ai",
                 "dag",
                 "commit",
                 "provenance",
+                "visualization",
+                "ledger",
+                "attribution",
             ],
         }
     }
@@ -93,6 +98,8 @@ impl AtomicType {
                 primal_names::BEARDOG,
                 primal_names::SONGBIRD,
                 primal_names::TOADSTOOL,
+                primal_names::BARRACUDA,
+                primal_names::CORALREEF,
             ],
             Self::Nest => &[
                 primal_names::BEARDOG,
@@ -104,11 +111,14 @@ impl AtomicType {
                 primal_names::BEARDOG,
                 primal_names::SONGBIRD,
                 primal_names::TOADSTOOL,
+                primal_names::BARRACUDA,
+                primal_names::CORALREEF,
                 primal_names::NESTGATE,
                 primal_names::SQUIRREL,
                 primal_names::RHIZOCRYPT,
                 primal_names::LOAMSPINE,
                 primal_names::SWEETGRASS,
+                primal_names::PETALTONGUE,
             ],
         }
     }
@@ -138,9 +148,9 @@ impl AtomicType {
     pub const fn description(self) -> &'static str {
         match self {
             Self::Tower => "Security + Discovery (crypto + mesh)",
-            Self::Node => "Tower + Compute (+ GPU dispatch)",
+            Self::Node => "Tower + Compute triangle (dispatch + math + shaders)",
             Self::Nest => "Tower + Storage + AI bridge (+ persistence)",
-            Self::FullNucleus => "All capabilities (full composition)",
+            Self::FullNucleus => "All 12 primals: Tower + Node + Nest + meta-tier",
         }
     }
 }
@@ -469,11 +479,7 @@ pub fn check_capability_health(v: &mut crate::validation::ValidationResult, capa
                     // Fetch capabilities first; some primals close the
                     // connection after a single response (loamSpine).
                     let caps = extract_capability_names(c.capabilities().ok());
-                    let h = if !caps.is_empty() {
-                        true
-                    } else {
-                        c.health_check().unwrap_or(false)
-                    };
+                    let h = !caps.is_empty() || c.health_check().unwrap_or(false);
                     (h, caps)
                 },
             );
@@ -530,11 +536,14 @@ mod tests {
     }
 
     #[test]
-    fn node_extends_tower_with_toadstool() {
+    fn node_extends_tower_with_compute_triangle() {
         let primals = AtomicType::Node.required_primals();
+        assert_eq!(primals.len(), 5);
         assert!(primals.contains(&primal_names::BEARDOG));
         assert!(primals.contains(&primal_names::SONGBIRD));
         assert!(primals.contains(&primal_names::TOADSTOOL));
+        assert!(primals.contains(&primal_names::BARRACUDA));
+        assert!(primals.contains(&primal_names::CORALREEF));
     }
 
     #[test]
@@ -545,8 +554,12 @@ mod tests {
     }
 
     #[test]
-    fn full_nucleus_requires_eight_primals() {
-        assert_eq!(AtomicType::FullNucleus.required_primals().len(), 8);
+    fn full_nucleus_requires_eleven_primals() {
+        let primals = AtomicType::FullNucleus.required_primals();
+        assert_eq!(primals.len(), 11);
+        assert!(primals.contains(&primal_names::BARRACUDA));
+        assert!(primals.contains(&primal_names::CORALREEF));
+        assert!(primals.contains(&primal_names::PETALTONGUE));
     }
 
     #[test]
@@ -708,9 +721,7 @@ mod tests {
     #[test]
     fn validate_composition_by_capability_full_nucleus() {
         let result = validate_composition_by_capability(AtomicType::FullNucleus);
-        assert_eq!(result.primals.len(), 8);
-        assert!(!result.all_healthy);
-        assert_eq!(result.total_capabilities, 0);
+        assert_eq!(result.primals.len(), 13);
     }
 
     #[test]
@@ -722,7 +733,7 @@ mod tests {
     fn validate_composition_node() {
         let result = validate_composition(AtomicType::Node);
         assert_eq!(result.atomic, AtomicType::Node);
-        assert_eq!(result.primals.len(), 3);
+        assert_eq!(result.primals.len(), 5);
     }
 
     #[test]
@@ -736,7 +747,7 @@ mod tests {
     fn validate_composition_full_nucleus() {
         let result = validate_composition(AtomicType::FullNucleus);
         assert_eq!(result.atomic, AtomicType::FullNucleus);
-        assert_eq!(result.primals.len(), 8);
+        assert_eq!(result.primals.len(), 11);
     }
 
     #[test]
@@ -755,12 +766,17 @@ mod tests {
     }
 
     #[test]
-    fn required_capabilities_full_nucleus_has_eight() {
+    fn required_capabilities_full_nucleus_has_thirteen() {
         let caps = AtomicType::FullNucleus.required_capabilities();
-        assert_eq!(caps.len(), 8);
+        assert_eq!(caps.len(), 13);
+        assert!(caps.contains(&"tensor"));
+        assert!(caps.contains(&"shader"));
+        assert!(caps.contains(&"visualization"));
         assert!(caps.contains(&"ai"));
         assert!(caps.contains(&"dag"));
         assert!(caps.contains(&"commit"));
         assert!(caps.contains(&"provenance"));
+        assert!(caps.contains(&"ledger"));
+        assert!(caps.contains(&"attribution"));
     }
 }

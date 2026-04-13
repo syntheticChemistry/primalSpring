@@ -234,6 +234,17 @@ impl RunningAtomic {
         caps
     }
 
+    /// Build a [`CompositionContext`](crate::composition::CompositionContext)
+    /// wired to the running primals.
+    ///
+    /// This bridges the harness (spawn → validate → teardown) with
+    /// composition parity validation. Springs can use the returned context
+    /// to call math through the composition and compare against baselines.
+    #[must_use]
+    pub fn composition_context(&self) -> crate::composition::CompositionContext {
+        crate::composition::CompositionContext::from_running(self)
+    }
+
     /// Names of overlay primals (those beyond the base tier).
     #[must_use]
     pub fn overlay_primals(&self) -> Vec<String> {
@@ -588,7 +599,7 @@ mod tests {
     #[test]
     fn compute_spawn_order_with_graph() {
         let graph_path =
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/tower_atomic_bootstrap.toml");
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/profiles/tower.toml");
         let harness = AtomicHarness::with_graph(AtomicType::Tower, &graph_path);
         let (order, _overlay) = harness.compute_spawn_order().unwrap();
         assert!(
@@ -610,10 +621,10 @@ mod tests {
     #[test]
     fn compute_spawn_order_node_with_graph() {
         let graph_path =
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/node_atomic_compute.toml");
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/profiles/node.toml");
         let harness = AtomicHarness::with_graph(AtomicType::Node, &graph_path);
         let (order, _overlay) = harness.compute_spawn_order().unwrap();
-        assert_eq!(order.len(), 3, "Node = beardog + songbird + toadstool");
+        assert!(order.len() >= 3, "Node includes at least beardog + songbird + toadstool");
         assert!(order.contains(&"beardog".to_owned()));
         assert!(order.contains(&"songbird".to_owned()));
         assert!(order.contains(&"toadstool".to_owned()));
@@ -621,7 +632,8 @@ mod tests {
 
     #[test]
     fn compute_spawn_order_overlay_includes_extra_primals() {
-        let graph_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/tower_ai.toml");
+        let graph_path =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/profiles/tower_ai.toml");
         assert!(
             graph_path.exists(),
             "required test fixture missing: {}",

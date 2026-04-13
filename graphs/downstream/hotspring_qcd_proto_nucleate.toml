@@ -103,8 +103,8 @@ binary = "biomeos"
 order = 0
 required = true
 spawn = false
-health_method = "graph.list"
-by_capability = "orchestration"
+health_method = "health.liveness"
+by_capability = "discovery"
 security_model = "tower_delegated"
 capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 
@@ -121,7 +121,7 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
-capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
 
 [[graph.nodes]]
 name = "songbird"
@@ -133,7 +133,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
-capabilities = ["discovery.find_primals", "discovery.announce"]
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 2: WGSL shader compute primals for physics (spawn = false)
@@ -155,9 +155,9 @@ required = true
 spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "shader_compile"
+by_capability = "shader"
 security_model = "tower_delegated"
-capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.compile.capabilities"]
 
 # Compute dispatch — toadStool routes compiled shader workloads
 # to the GPU fleet. For QCD, this means distributing lattice
@@ -173,7 +173,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "compute"
 security_model = "tower_delegated"
-capabilities = ["compute.dispatch.submit", "compute.execute"]
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities"]
 
 # WGSL tensor shaders — barraCuda's 826 WGSL compute shaders
 # provide the math primitives for QCD: matmul (SU(3) gauge links),
@@ -189,9 +189,16 @@ required = true
 spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "math"
+by_capability = "tensor"
 security_model = "tower_delegated"
-capabilities = ["math.tensor", "math.stats", "math.activation", "math.noise"]
+capabilities = [
+    "tensor.matmul",
+    "tensor.batch.submit",
+    "stats.mean",
+    "stats.std_dev",
+    "noise.perlin2d",
+    "compute.dispatch",
+]
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 2b: Persistence + Provenance (spawn = false)
@@ -212,7 +219,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "storage"
 security_model = "tower_delegated"
-capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists"]
 
 # Provenance trio — CERN-quality science requires every gauge
 # configuration to be reproducible. rhizoCrypt DAG tracks the
@@ -228,7 +235,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "dag"
 security_model = "tower_delegated"
-capabilities = ["dag", "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify"]
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
 
 [[graph.nodes]]
 name = "loamspine"
@@ -240,7 +247,7 @@ depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
 security_model = "tower_delegated"
-capabilities = ["spine.create", "entry.append", "session.commit", "certificate.mint"]
+capabilities = ["spine.create", "entry.append", "certificate.mint"]
 
 [[graph.nodes]]
 name = "sweetgrass"
@@ -252,7 +259,7 @@ depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
 security_model = "tower_delegated"
-capabilities = ["braid.create", "braid.commit", "provenance.graph", "provenance.export_provo", "attribution.chain"]
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 3: AI coordination (optional — composing Squirrel gives
@@ -270,9 +277,9 @@ required = false
 spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
-by_capability = "ai"
+by_capability = "inference"
 security_model = "tower_delegated"
-capabilities = ["inference.complete", "inference.embed", "inference.models"]
+capabilities = ["inference.complete", "inference.embed", "ai.query"]
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 4: hotSpring (spawn = true — built by hotSpring repo)
@@ -306,7 +313,7 @@ required = true
 spawn = true
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
 health_method = "health.liveness"
-by_capability = "physics"
+by_capability = "compute"
 security_model = "tower_delegated"
 capabilities = [
     # QCD domain (WGSL shader compositions)
@@ -335,6 +342,6 @@ required = false
 spawn = false
 depends_on = ["hotspring"]
 health_method = "health.liveness"
-by_capability = "coordination"
+by_capability = "discovery"
 security_model = "tower_delegated"
 capabilities = ["coordination.validate_composition"]

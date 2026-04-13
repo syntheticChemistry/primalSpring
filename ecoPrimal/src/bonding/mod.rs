@@ -246,13 +246,28 @@ pub struct BtspEnforcementDecision {
 ///
 /// This is the canonical enforcement point where the bonding model meets
 /// the socket layer. Tower Atomic calls this to validate connections.
+///
+/// # Current limitations
+///
+/// **`evaluate_connection` performs cipher enforcement only, not access control.**
+/// It always sets `allowed: true` — connections are never denied outright. If the
+/// peer's requested cipher is weaker than the bond policy's minimum, the cipher is
+/// *upgraded* to the policy minimum rather than rejecting the connection. This means:
+///
+/// - Covalent bonds (Null cipher) accept everything as-is.
+/// - Ionic bonds auto-upgrade weak ciphers to ChaCha20Poly1305.
+/// - No bond type ever produces `allowed: false`.
+///
+/// Downstream springs that need connection-level deny semantics (e.g. rejecting
+/// unknown peers on Weak bonds) must implement their own guard on top of this
+/// enforcer until a deny path is added.
 pub struct BtspEnforcer;
 
 impl BtspEnforcer {
     /// Enforcement Point 1: evaluate a connection at handshake time.
     ///
-    /// Called after BTSP handshake succeeds. Determines whether the
-    /// authenticated peer is allowed to connect and which cipher to use.
+    /// Called after BTSP handshake succeeds. Determines which cipher to use
+    /// based on the bond policy. **Never denies** — see struct-level docs.
     #[must_use]
     pub fn evaluate_connection(
         policy: &BondingPolicy,

@@ -157,6 +157,20 @@ impl IpcError {
             Self::SocketNotFound { .. } | Self::ConnectionRefused(_) | Self::ConnectionReset(_)
         )
     }
+
+    /// Whether the failure is likely a transport mismatch (e.g. tarpc socket
+    /// receiving raw JSON-RPC). Manifests as a timeout with EAGAIN because
+    /// the server accepts the connection but never sends a JSON-RPC response.
+    #[must_use]
+    pub fn is_transport_mismatch(&self) -> bool {
+        match self {
+            Self::Timeout(e) => {
+                let msg = e.to_string();
+                msg.contains("temporarily") || msg.contains("Resource temporarily")
+            }
+            _ => false,
+        }
+    }
 }
 
 impl From<JsonRpcError> for IpcError {

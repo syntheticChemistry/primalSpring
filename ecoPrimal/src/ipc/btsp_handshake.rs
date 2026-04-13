@@ -41,7 +41,7 @@ struct ClientHello {
 
 #[derive(Debug, Deserialize)]
 struct ServerHello {
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "deserialized by serde but consumed only for protocol validation")]
     version: u8,
     server_ephemeral_pub: String,
     challenge: String,
@@ -56,14 +56,14 @@ struct ChallengeResponse {
 
 #[derive(Debug, Deserialize)]
 struct HandshakeComplete {
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "deserialized by serde; cipher selection logged but not branched on yet")]
     cipher: String,
     session_id: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct HandshakeError {
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "deserialized by serde; error code reserved for future BTSP Phase 3")]
     error: String,
     reason: String,
 }
@@ -123,7 +123,7 @@ pub fn client_handshake(
     let hello = ClientHello {
         protocol: "btsp".to_owned(),
         version: 1,
-        client_ephemeral_pub: BASE64.encode(&client_pub_bytes),
+        client_ephemeral_pub: BASE64.encode(client_pub_bytes),
     };
     let mut hello_line =
         serde_json::to_string(&hello).map_err(|e| IpcError::SerializationError {

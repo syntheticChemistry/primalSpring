@@ -67,20 +67,22 @@ name = "beardog"
 binary = "beardog"
 order = 1
 required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "security"
-capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
 
 [[graph.nodes]]
 name = "songbird"
 binary = "songbird"
 order = 2
 required = true
+spawn = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
 by_capability = "discovery"
-capabilities = ["discovery.find_primals", "discovery.announce"]
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 # ── Compute Layer ─────────────────────────────────────────────────────
 
@@ -89,20 +91,22 @@ name = "toadstool"
 binary = "toadstool"
 order = 3
 required = false
+spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "compute"
-capabilities = ["compute.dispatch.submit", "compute.execute"]
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities"]
 
 [[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
 order = 4
 required = false
+spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "math"
-capabilities = ["math.stats", "math.tensor"]
+capabilities = ["tensor.matmul", "tensor.batch.submit", "stats.mean", "noise.perlin2d", "compute.dispatch"]
 
 # ── Persistence ───────────────────────────────────────────────────────
 
@@ -111,10 +115,11 @@ name = "nestgate"
 binary = "nestgate"
 order = 5
 required = false
+spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "storage"
-capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists"]
 
 # ── Provenance Trio (WireWitnessRef) ─────────────────────────────────
 
@@ -123,30 +128,33 @@ name = "rhizocrypt"
 binary = "rhizocrypt"
 order = 6
 required = false
+spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "dag"
-capabilities = ["dag", "dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify", "dag.dehydration.trigger", "dag.frontier.get"]
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
 
 [[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
 order = 7
 required = false
+spawn = false
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
-capabilities = ["spine", "entry", "session", "certificate", "commit", "ledger", "spine.create", "entry.append", "session.commit", "certificate.mint"]
+capabilities = ["spine.create", "entry.append", "certificate.mint"]
 
 [[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 8
 required = false
+spawn = false
 depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
-capabilities = ["braid", "attribution", "provenance", "anchoring", "braid.create", "braid.commit", "provenance.graph", "provenance.export_provo", "attribution.chain"]
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
 
 # ── Spring Science ────────────────────────────────────────────────────
 

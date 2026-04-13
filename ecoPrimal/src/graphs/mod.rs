@@ -36,25 +36,6 @@ impl CoordinationPattern {
     }
 }
 
-/// Result of executing a biomeOS graph.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GraphExecutionResult {
-    /// Which coordination pattern was used.
-    pub pattern: CoordinationPattern,
-    /// Name of the executed graph.
-    pub graph_name: String,
-    /// Number of graph nodes that ran successfully.
-    pub nodes_executed: usize,
-    /// Number of graph nodes skipped (by condition or failure).
-    pub nodes_skipped: usize,
-    /// Wall-clock duration of the entire graph execution in milliseconds.
-    pub total_duration_ms: u64,
-    /// Error messages from failed nodes.
-    pub errors: Vec<String>,
-    /// Overall pass/fail.
-    pub success: bool,
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -88,20 +69,4 @@ mod tests {
         }
     }
 
-    #[test]
-    fn graph_result_round_trip_json() {
-        let result = GraphExecutionResult {
-            pattern: CoordinationPattern::Pipeline,
-            graph_name: "test_graph".to_owned(),
-            nodes_executed: 5,
-            nodes_skipped: 1,
-            total_duration_ms: 42,
-            errors: vec![],
-            success: true,
-        };
-        let json = serde_json::to_string(&result).unwrap();
-        let back: GraphExecutionResult = serde_json::from_str(&json).unwrap();
-        assert_eq!(back.pattern, CoordinationPattern::Pipeline);
-        assert!(back.success);
-    }
 }

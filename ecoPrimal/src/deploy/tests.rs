@@ -17,6 +17,10 @@ fn test_node(name: &str, order: u32) -> GraphNode {
         capabilities: vec![],
         condition: None,
         skip_if: None,
+        primal: None,
+        operation: None,
+        constraints: None,
+        output: None,
     }
 }
 
@@ -55,7 +59,7 @@ fn load_coralforge_pipeline() {
 
 #[test]
 fn load_conditional_fallback() {
-    let graph = load_graph(&graphs_path("conditional_fallback.toml")).unwrap();
+    let graph = load_graph(&graphs_path("patterns/conditional_fallback.toml")).unwrap();
     assert_eq!(graph.graph.name, "conditional_fallback");
     let toadstool = graph
         .graph
@@ -152,7 +156,7 @@ fn structural_checks_detect_duplicate_orders() {
 
 #[test]
 fn topological_waves_tower_graph() {
-    let graph = load_graph(&graphs_path("tower_atomic_bootstrap.toml")).unwrap();
+    let graph = load_graph(&graphs_path("profiles/tower.toml")).unwrap();
     let waves = topological_waves(&graph).unwrap();
     assert!(waves.len() >= 2, "tower should have at least 2 waves");
     assert!(
@@ -397,4 +401,23 @@ fn structural_checks_detect_empty_binary() {
     let mut issues = Vec::new();
     structural_checks(&graph, &mut issues);
     assert!(issues.iter().any(|i| i.contains("empty binary")));
+}
+
+#[test]
+fn load_multi_node_basement_hpc_covalent() {
+    let graph = load_graph(&graphs_path("multi_node/basement_hpc_covalent.toml")).unwrap();
+    assert_eq!(graph.graph.name, "basement_hpc_covalent");
+    assert!(!graph.graph.node.is_empty());
+    assert_eq!(graph.graph.node[0].name, "gate_beardog");
+    assert!(graph.graph.node[0].primal.is_some());
+    assert!(graph.graph.node[0].operation.is_some());
+}
+
+#[test]
+fn load_multi_node_data_federation() {
+    let graph = load_graph(&graphs_path("multi_node/data_federation_cross_site.toml")).unwrap();
+    assert!(!graph.graph.node.is_empty());
+    for node in &graph.graph.node {
+        assert!(!node.name.is_empty(), "every multi_node node should have an id alias → name");
+    }
 }

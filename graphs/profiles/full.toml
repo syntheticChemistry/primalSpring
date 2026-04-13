@@ -47,8 +47,8 @@ health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
 capabilities = [
-    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
-    "crypto.verify", "crypto.keygen", "crypto.identity",
+    "crypto.sign", "crypto.verify", "crypto.hash",
+    "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair",
 ]
 
 [[graph.nodes]]
@@ -61,8 +61,8 @@ health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
 capabilities = [
-    "discovery.find_primals", "discovery.announce",
-    "network.tls_connect", "network.http_request",
+    "ipc.resolve", "ipc.register", "ipc.discover",
+    "discovery.peers", "discovery.announce", "http.request",
 ]
 
 [[graph.nodes]]
@@ -75,8 +75,8 @@ health_method = "health.liveness"
 by_capability = "compute"
 security_model = "tower_delegated"
 capabilities = [
-    "compute.dispatch.submit", "compute.dispatch.status",
-    "compute.dispatch.cancel", "compute.execute",
+    "compute.dispatch", "compute.execute", "compute.capabilities",
+    "compute.status",
 ]
 
 [[graph.nodes]]
@@ -89,8 +89,9 @@ health_method = "health.liveness"
 by_capability = "tensor"
 security_model = "tower_delegated"
 capabilities = [
-    "tensor.matmul", "tensor.attention", "tensor.fft",
-    "tensor.df64", "tensor.perlin", "tensor.wfc",
+    "tensor.matmul", "tensor.batch.submit", "tensor.create",
+    "stats.mean", "stats.std_dev", "noise.perlin2d",
+    "compute.dispatch",
 ]
 
 [[graph.nodes]]
@@ -102,7 +103,10 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "shader"
 security_model = "tower_delegated"
-capabilities = ["shader.compile", "shader.list"]
+capabilities = [
+    "shader.compile.wgsl", "shader.compile.spirv",
+    "shader.compile.capabilities", "shader.compile.wgsl.multi",
+]
 
 [[graph.nodes]]
 name = "nestgate"
@@ -114,8 +118,8 @@ health_method = "health.liveness"
 by_capability = "storage"
 security_model = "tower_delegated"
 capabilities = [
-    "storage.put", "storage.get", "storage.list",
-    "storage.exists", "storage.fetch_external",
+    "storage.store", "storage.retrieve", "storage.list",
+    "storage.exists", "storage.delete", "storage.fetch_external",
 ]
 
 [[graph.nodes]]
@@ -128,9 +132,8 @@ health_method = "health.liveness"
 by_capability = "ai"
 security_model = "tower_delegated"
 capabilities = [
-    "ai.query", "ai.complete", "ai.chat",
-    "tool.list", "tool.execute",
-    "context.create", "context.update",
+    "inference.complete", "inference.embed", "inference.models",
+    "ai.query", "ai.complete",
 ]
 
 [[graph.nodes]]
@@ -151,11 +154,11 @@ order = 9
 required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "provenance"
+by_capability = "dag"
 security_model = "tower_delegated"
 capabilities = [
     "dag.session.create", "dag.event.append",
-    "dag.dehydration.trigger", "dag.merkle.root",
+    "dag.dehydration.trigger", "dag.merkle.root", "dag.merkle.proof",
 ]
 
 [[graph.nodes]]
@@ -167,7 +170,10 @@ depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
 security_model = "tower_delegated"
-capabilities = ["session.commit", "entry.append"]
+capabilities = [
+    "spine.create", "spine.get", "spine.seal",
+    "entry.append", "entry.get", "certificate.mint",
+]
 
 [[graph.nodes]]
 name = "sweetgrass"
@@ -179,8 +185,8 @@ health_method = "health.liveness"
 by_capability = "attribution"
 security_model = "tower_delegated"
 capabilities = [
-    "provenance.create_braid", "provenance.lineage",
-    "provenance.graph",
+    "braid.create", "braid.commit", "braid.get",
+    "anchoring.anchor", "anchoring.verify",
 ]
 
 [[graph.nodes]]

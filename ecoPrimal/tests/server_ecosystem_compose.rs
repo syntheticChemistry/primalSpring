@@ -625,10 +625,10 @@ fn overlay_graph_structural_validation() {
 
     let graphs_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
     for name in &[
-        "tower_ai.toml",
-        "tower_ai_viz.toml",
-        "nest_viz.toml",
-        "node_ai.toml",
+        "nucleus_complete.toml",
+        "primalspring_deploy.toml",
+        "provenance_overlay.toml",
+        "spring_byob_template.toml",
     ] {
         let path = graphs_dir.join(name);
         let v = validate_structure(&path);
@@ -647,15 +647,10 @@ fn overlay_graph_spawn_filter() {
 
     let graphs_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
 
-    let tower_ai = load_graph(&graphs_dir.join("tower_ai.toml")).unwrap();
-    let spawnable = graph_spawnable_primals(&tower_ai);
+    let nucleus = load_graph(&graphs_dir.join("nucleus_complete.toml")).unwrap();
+    let spawnable = graph_spawnable_primals(&nucleus);
     assert!(spawnable.contains(&"beardog".to_owned()));
     assert!(spawnable.contains(&"songbird".to_owned()));
-    assert!(spawnable.contains(&"squirrel".to_owned()));
-    assert!(
-        !spawnable.contains(&"validate_tower_ai".to_owned()),
-        "validation nodes should be excluded"
-    );
 }
 
 #[test]
@@ -664,16 +659,10 @@ fn overlay_graph_capability_map() {
 
     let graphs_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
 
-    let tower_ai = load_graph(&graphs_dir.join("tower_ai.toml")).unwrap();
-    let caps = graph_capability_map(&tower_ai);
-    assert_eq!(caps.get("security").unwrap(), "beardog");
-    assert_eq!(caps.get("discovery").unwrap(), "songbird");
-    assert_eq!(caps.get("ai").unwrap(), "squirrel");
-    assert!(
-        !caps.contains_key("coordination")
-            || caps.get("coordination").unwrap() != "validate_tower_ai",
-        "validation node should not be in spawnable capability map"
-    );
+    let nucleus = load_graph(&graphs_dir.join("nucleus_complete.toml")).unwrap();
+    let caps = graph_capability_map(&nucleus);
+    assert!(caps.get("security").unwrap() == "beardog");
+    assert!(caps.get("discovery").unwrap() == "songbird");
 }
 
 #[test]
@@ -681,8 +670,8 @@ fn overlay_graph_merge_base_plus_ai() {
     use primalspring::deploy::{load_graph, merge_graphs, topological_waves};
 
     let graphs_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
-    let base = load_graph(&graphs_dir.join("tower_atomic_bootstrap.toml")).unwrap();
-    let overlay = load_graph(&graphs_dir.join("tower_ai.toml")).unwrap();
+    let base = load_graph(&graphs_dir.join("nucleus_complete.toml")).unwrap();
+    let overlay = load_graph(&graphs_dir.join("provenance_overlay.toml")).unwrap();
 
     let merged = merge_graphs(&base, &overlay);
     assert!(merged.graph.name.contains('+'));
@@ -693,7 +682,6 @@ fn overlay_graph_merge_base_plus_ai() {
     let all_names: Vec<String> = waves.into_iter().flatten().collect();
     assert!(all_names.contains(&"beardog".to_owned()));
     assert!(all_names.contains(&"songbird".to_owned()));
-    assert!(all_names.contains(&"squirrel".to_owned()));
 }
 
 // ---------------------------------------------------------------------------

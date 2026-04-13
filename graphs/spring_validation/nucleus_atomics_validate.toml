@@ -18,8 +18,8 @@
 
 [graph]
 name = "nucleus_atomics_validate"
-description = "Validates NUCLEUS atomics: Tower (electron), Node (proton), Nest (neutron), Full NUCLEUS (atom)"
-version = "0.2.0"
+description = "Validates NUCLEUS atomics: Tower (electron), Node (proton), Nest (neutron), Full NUCLEUS (atom) — 19/19 exp094 aligned"
+version = "0.3.0"
 coordination = "sequential"
 
 # --- Phase 1: Verify biomeOS Neural API substrate ---
@@ -155,9 +155,9 @@ graphs = ["profiles/tower", "profiles/node", "profiles/nest", "profiles/nucleus"
 mode = "structure"
 
 # =============================================================================
-# SUMMARY
+# SUMMARY — aligned with exp094 19/19 PASS (April 13, 2026)
 #
-# This graph validates NUCLEUS atomic deployment tiers (Phase 31 aligned):
+# This graph validates NUCLEUS atomic deployment tiers:
 #   1. biomeOS Neural API substrate is healthy and provides orchestration
 #   2. primalSpring is running and healthy
 #   3. Tower (beardog + songbird) — electron: security + discovery
@@ -167,10 +167,49 @@ mode = "structure"
 #   7. Tower + Squirrel overlay (optional) — meta-tier AI at Tower level
 #   8. Structural validation of canonical atomic profiles + nucleus_complete
 #
-# NUCLEUS atomics (Phase 31):
+# exp094 checks (19/19 PASS):
+#   Tower:   beardog_alive, songbird_alive, crypto_hash_nonempty,
+#            crypto_hash_base64_valid, crypto_hash_deterministic,
+#            resolve_security, resolve_compute, resolve_storage,
+#            songbird_method_catalog
+#   Node:    tensor_stats_mean, shader_supported_archs, shader_wgsl_supported,
+#            compute_dispatch_alive
+#   Nest:    storage_roundtrip_match, dag_alive, ledger_alive, attribution_alive
+#   NUCLEUS: cross_tower_hash, cross_nest_roundtrip
+#
+# Wire methods validated (schemas confirmed April 13, 2026):
+#   BearDog:    crypto.hash {data: base64, algorithm: "blake3"} → {hash: base64(44)}, deterministic
+#   Songbird:   ipc.resolve {capability: str} → {native_endpoint, virtual_endpoint}
+#                ipc.register {primal_id, capabilities[], endpoint} (Phase 5 seeding)
+#                ipc.list → {services[]} (18 capabilities across 10 primals)
+#   barraCuda:  stats.mean {data: [f64]} → {result: f64} (JSON-RPC via BTSP guard)
+#                tensor.create {shape, data} → {tensor_id: str}
+#                noise.perlin2d {x, y} → {result: f64}
+#   coralReef:  shader.compile.capabilities → {supported_archs: [11 archs]}
+#   ToadStool:  compute.capabilities → {compute_units, available_resources} (BTSP auto-detect)
+#   NestGate:   storage.store {key, value}, storage.retrieve {key} → {value}, storage.delete
+#   rhizoCrypt: dag.session.create {label} → UUID, dag.event.append {session_id, event_type: {Variant:{}}, payload}
+#                dag.merkle.root {session_id} → hex hash
+#   loamSpine:  spine.create {name, owner} → {spine_id: UUID, genesis_hash}
+#                health.check {include_details: bool}
+#   sweetGrass: braid.create {data_hash, agent, mime_type, size} → {@id: urn:braid:...}
+#
+# NUCLEUS atomics:
 #   Tower:    [beardog, songbird]
 #   Node:     [beardog, songbird, toadstool, barracuda, coralreef]
 #   Nest:     [beardog, songbird, nestgate, rhizocrypt, loamspine, sweetgrass]
 #   NUCLEUS:  Tower + Node + Nest (9 unique primals)
 #   Meta-tier: [biomeos, squirrel, petaltongue] — cross-atomic, any level
+#
+# Songbird ipc.resolve capability mapping (primal self-reported → graph by_capability):
+#   security, crypto, btsp, ed25519, x25519 → beardog
+#   discovery → songbird
+#   compute, hardware → toadstool
+#   tensor, math, gpu_compute → barracuda
+#   shader → coralreef
+#   storage → nestgate
+#   dag, provenance → rhizocrypt
+#   spine, merkle → loamspine (graph uses "ledger" — not self-reported)
+#   commit, braid → sweetgrass (graph uses "attribution" — not self-reported)
+#   ai, inference → squirrel
 # =============================================================================

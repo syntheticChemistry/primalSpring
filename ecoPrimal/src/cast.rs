@@ -3,9 +3,8 @@
 //! Safe numeric casts for metrics and graph execution.
 //!
 //! Absorbed from airSpring/healthSpring/groundSpring. Avoids `as` casts
-//! that silently truncate or wrap. primalSpring currently only needs
-//! `u128_to_u64` for `Instant::elapsed().as_micros()` results; the other
-//! helpers are included for graph execution metrics in future phases.
+//! that silently truncate or wrap. Part of the shared library surface —
+//! springs and experiments import these for safe metric handling.
 
 /// Saturating cast from `u128` to `u64`.
 #[must_use]

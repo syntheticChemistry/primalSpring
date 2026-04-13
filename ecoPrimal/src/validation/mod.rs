@@ -399,6 +399,137 @@ impl ValidationResult {
         }
     }
 
+    /// Validate composition parity: call a primal via IPC, extract a scalar
+    /// result, and compare against a local baseline within tolerance.
+    ///
+    /// If the IPC call fails (primal not running), records a `check_skip`
+    /// rather than a failure — honest about what couldn't be tested.
+    ///
+    /// The `extractor` closure pulls a numeric value from the JSON-RPC
+    /// result payload, keeping this method schema-agnostic. It receives
+    /// the `result` field of the response (the `serde_json::Value`).
+    #[expect(clippy::too_many_arguments, reason = "domain-driven API: each parameter is semantically distinct")]
+    pub fn check_composition_parity(
+        &mut self,
+        name: &str,
+        client: &mut crate::ipc::client::PrimalClient,
+        method: &str,
+        params: serde_json::Value,
+        extractor: impl FnOnce(&serde_json::Value) -> Option<f64>,
+        expected: f64,
+        tolerance: f64,
+    ) {
+        let response = match client.call(method, params) {
+            Ok(r) => r,
+            Err(e) => {
+                self.check_skip(name, &format!("IPC call failed: {e}"));
+                return;
+            }
+        };
+
+        let Some(ref result_val) = response.result else {
+            let detail = response
+                .error
+                .as_ref()
+                .map_or_else(
+                    || "no result in response".to_owned(),
+                    |e| format!("RPC error: {}", e.message),
+                );
+            self.check_skip(name, &detail);
+            return;
+        };
+
+        match extractor(result_val) {
+            Some(actual) => {
+                let diff = (actual - expected).abs();
+                let ok = diff <= tolerance;
+                let detail = format!(
+                    "composition={actual}, local={expected}, diff={diff:.2e}, tol={tolerance:.2e}"
+                );
+                self.check_bool(name, ok, &detail);
+            }
+            None => {
+                self.check_bool(
+                    name,
+                    false,
+                    &format!("extractor returned None from result: {result_val}"),
+                );
+            }
+        }
+    }
+
+    /// Validate composition parity for a vector of values.
+    ///
+    /// Calls a primal via IPC, extracts a `Vec<f64>` result, and compares
+    /// element-wise against a local baseline within tolerance. All elements
+    /// must match for the check to pass.
+    #[expect(clippy::too_many_arguments, reason = "domain-driven API: each parameter is semantically distinct")]
+    pub fn check_composition_parity_vec(
+        &mut self,
+        name: &str,
+        client: &mut crate::ipc::client::PrimalClient,
+        method: &str,
+        params: serde_json::Value,
+        extractor: impl FnOnce(&serde_json::Value) -> Option<Vec<f64>>,
+        expected: &[f64],
+        tolerance: f64,
+    ) {
+        let response = match client.call(method, params) {
+            Ok(r) => r,
+            Err(e) => {
+                self.check_skip(name, &format!("IPC call failed: {e}"));
+                return;
+            }
+        };
+
+        let Some(ref result_val) = response.result else {
+            let detail = response
+                .error
+                .as_ref()
+                .map_or_else(
+                    || "no result in response".to_owned(),
+                    |e| format!("RPC error: {}", e.message),
+                );
+            self.check_skip(name, &detail);
+            return;
+        };
+
+        match extractor(result_val) {
+            Some(actual) => {
+                if actual.len() != expected.len() {
+                    self.check_bool(
+                        name,
+                        false,
+                        &format!(
+                            "length mismatch: composition={}, local={}",
+                            actual.len(),
+                            expected.len()
+                        ),
+                    );
+                    return;
+                }
+                let max_diff = actual
+                    .iter()
+                    .zip(expected.iter())
+                    .map(|(a, e)| (a - e).abs())
+                    .fold(0.0_f64, f64::max);
+                let ok = max_diff <= tolerance;
+                let detail = format!(
+                    "len={}, max_diff={max_diff:.2e}, tol={tolerance:.2e}",
+                    actual.len()
+                );
+                self.check_bool(name, ok, &detail);
+            }
+            None => {
+                self.check_bool(
+                    name,
+                    false,
+                    &format!("extractor returned None from result: {result_val}"),
+                );
+            }
+        }
+    }
+
     /// All non-skipped checks passed and at least one check was evaluated.
     #[must_use]
     pub const fn all_passed(&self) -> bool {

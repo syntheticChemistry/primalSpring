@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+[package]
+name = "primalspring-exp094"
+version = "0.8.0"
+edition = "2024"
+
+[[bin]]
+name = "exp094_composition_parity"
+path = "src/main.rs"
+
+[dependencies]
+primalspring = { path = "../../ecoPrimal" }
+serde_json = "1"

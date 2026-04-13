@@ -104,8 +104,8 @@ binary = "biomeos"
 order = 0
 required = true
 spawn = false
-health_method = "graph.list"
-by_capability = "orchestration"
+health_method = "health.liveness"
+by_capability = "discovery"
 security_model = "tower_delegated"
 capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 
@@ -118,7 +118,7 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
-capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash", "crypto.encrypt", "crypto.decrypt"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
 
 [[graph.nodes]]
 name = "songbird_a"
@@ -130,7 +130,7 @@ depends_on = ["beardog_a"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
-capabilities = ["discovery.find_primals", "discovery.announce"]
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 # Patient record storage — NestGate A with BondingPolicy egress fence.
 # storage.* calls are ONLY serviced within Tower A's FAMILY_ID.
@@ -146,7 +146,7 @@ depends_on = ["beardog_a"]
 health_method = "health.liveness"
 by_capability = "storage"
 security_model = "tower_delegated"
-capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists"]
 bond_role = "enclave_storage"
 
 # Provenance trio A — regulatory audit trail for patient data access.
@@ -162,7 +162,7 @@ depends_on = ["beardog_a"]
 health_method = "health.liveness"
 by_capability = "dag"
 security_model = "tower_delegated"
-capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root", "dag.merkle.verify"]
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
 
 [[graph.nodes]]
 name = "loamspine_a"
@@ -174,7 +174,7 @@ depends_on = ["beardog_a", "rhizocrypt_a"]
 health_method = "health.liveness"
 by_capability = "ledger"
 security_model = "tower_delegated"
-capabilities = ["spine.create", "entry.append", "session.commit", "certificate.mint"]
+capabilities = ["spine.create", "entry.append", "certificate.mint"]
 
 [[graph.nodes]]
 name = "sweetgrass_a"
@@ -186,7 +186,7 @@ depends_on = ["beardog_a", "loamspine_a"]
 health_method = "health.liveness"
 by_capability = "attribution"
 security_model = "tower_delegated"
-capabilities = ["braid.create", "braid.commit", "provenance.graph", "attribution.chain"]
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
 
 # ═══════════════════════════════════════════════════════════════
 # TOWER B — Analytics / Inference Tower
@@ -205,7 +205,7 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
-capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
 
 [[graph.nodes]]
 name = "songbird_b"
@@ -217,7 +217,7 @@ depends_on = ["beardog_b"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
-capabilities = ["discovery.find_primals", "discovery.announce"]
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 # Clinical AI inference — Squirrel routes inference.complete for
 # diagnostic suggestions, pharmacology analysis, and genomic
@@ -231,12 +231,9 @@ required = true
 spawn = false
 depends_on = ["beardog_b", "songbird_b"]
 health_method = "health.liveness"
-by_capability = "ai"
+by_capability = "inference"
 security_model = "tower_delegated"
-capabilities = [
-    "ai.query", "ai.complete",
-    "inference.complete", "inference.embed", "inference.models",
-]
+capabilities = ["inference.complete", "inference.embed", "ai.query"]
 
 # Model weight + inference result storage — NestGate B holds model
 # weights, clinical knowledge bases, and inference results.
@@ -251,7 +248,7 @@ depends_on = ["beardog_b"]
 health_method = "health.liveness"
 by_capability = "storage"
 security_model = "tower_delegated"
-capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists"]
 
 # Provenance trio B — inference audit trail. Tracks which models
 # were used, what aggregated input was provided, and what clinical
@@ -279,7 +276,7 @@ depends_on = ["beardog_b", "rhizocrypt_b"]
 health_method = "health.liveness"
 by_capability = "attribution"
 security_model = "tower_delegated"
-capabilities = ["provenance.graph", "attribution.chain"]
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
 
 # ═══════════════════════════════════════════════════════════════
 # IONIC BRIDGE — scoped capability sharing between towers
@@ -300,7 +297,7 @@ required = true
 spawn = false
 depends_on = ["songbird_a", "songbird_b"]
 health_method = "health.liveness"
-by_capability = "coordination"
+by_capability = "discovery"
 security_model = "tower_delegated"
 capabilities = ["bonding.propose", "bonding.accept"]
 
@@ -346,7 +343,7 @@ required = true
 spawn = true
 depends_on = ["beardog_a", "songbird_a", "nestgate_a", "ionic_bridge"]
 health_method = "health.liveness"
-by_capability = "health"
+by_capability = "attribution"
 security_model = "tower_delegated"
 capabilities = [
     # Clinical domain
@@ -373,6 +370,6 @@ required = false
 spawn = false
 depends_on = ["healthspring"]
 health_method = "health.liveness"
-by_capability = "coordination"
+by_capability = "discovery"
 security_model = "tower_delegated"
 capabilities = ["coordination.validate_composition"]

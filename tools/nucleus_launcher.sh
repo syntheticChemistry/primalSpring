@@ -235,13 +235,17 @@ cmd_start() {
         log "WARN: songbird binary not found, skipping"
     fi
 
-    # ── Phase 2: Core Services — ToadStool + NestGate + Squirrel ─────
+    # ── Phase 2: Core Services — Node Atomic + NestGate + Squirrel ────
     log "── Phase 2: Core Services (tower_delegated) ──"
-    local toadstool_bin nestgate_bin squirrel_bin
+    local toadstool_bin barracuda_bin coralreef_bin nestgate_bin squirrel_bin
     toadstool_bin="$(find_binary toadstool toadStool)"
+    barracuda_bin="$(find_binary barracuda barraCuda)"
+    coralreef_bin="$(find_binary coralreef coralReef)"
     nestgate_bin="$(find_binary nestgate nestgate)"
     squirrel_bin="$(find_binary squirrel squirrel)"
     local toadstool_sock="$SOCKET_DIR/toadstool-${FAMILY_ID}.sock"
+    local barracuda_sock="$SOCKET_DIR/barracuda-${FAMILY_ID}.sock"
+    local coralreef_sock="$SOCKET_DIR/coralreef-${FAMILY_ID}.sock"
     local nestgate_sock="$SOCKET_DIR/nestgate-${FAMILY_ID}.sock"
     local squirrel_sock="$SOCKET_DIR/squirrel-${FAMILY_ID}.sock"
 
@@ -254,6 +258,33 @@ cmd_start() {
         wait_for_socket "$toadstool_sock" 8 || log "WARN: toadstool socket not ready"
     else
         log "WARN: toadstool binary not found, skipping"
+    fi
+
+    if [[ -n "$barracuda_bin" ]]; then
+        BARRACUDA_FAMILY_ID="$FAMILY_ID" \
+        BEARDOG_SOCKET="$beardog_sock" \
+        SONGBIRD_SOCKET="$songbird_sock" \
+            start_primal barracuda "$barracuda_bin" server || true
+        wait_for_socket "$barracuda_sock" 8 || \
+            wait_for_socket "$SOCKET_DIR/math-${FAMILY_ID}.sock" 5 || \
+            log "WARN: barracuda socket not ready"
+        # barraCuda binds to math-{family}.sock and creates barracuda-{family}.sock symlink
+        if [[ ! -e "$barracuda_sock" && -S "$SOCKET_DIR/math-${FAMILY_ID}.sock" ]]; then
+            ln -sf "math-${FAMILY_ID}.sock" "$barracuda_sock" 2>/dev/null || true
+        fi
+    else
+        log "WARN: barracuda binary not found, skipping"
+    fi
+
+    if [[ -n "$coralreef_bin" ]]; then
+        CORALREEF_FAMILY_ID="$FAMILY_ID" \
+        CORALREEF_SOCKET="$coralreef_sock" \
+        BEARDOG_SOCKET="$beardog_sock" \
+        SONGBIRD_SOCKET="$songbird_sock" \
+            start_primal coralreef "$coralreef_bin" server || true
+        wait_for_socket "$coralreef_sock" 8 || log "WARN: coralreef socket not ready"
+    else
+        log "WARN: coralreef binary not found, skipping"
     fi
 
     if [[ -n "$nestgate_bin" ]]; then
@@ -308,7 +339,10 @@ cmd_start() {
         BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
         BEARDOG_SOCKET="$beardog_sock" \
             start_primal rhizocrypt "$rhizocrypt_bin" server || true
-        wait_for_socket "$rhizocrypt_sock" 8 || log "WARN: rhizocrypt socket not ready"
+        # rhizoCrypt may bind as rhizocrypt.sock (no family suffix)
+        wait_for_socket "$rhizocrypt_sock" 12 || \
+            wait_for_socket "$SOCKET_DIR/rhizocrypt.sock" 4 || \
+            log "WARN: rhizocrypt socket not ready"
     else
         log "WARN: rhizocrypt binary not found, skipping"
     fi
@@ -360,11 +394,16 @@ cmd_start() {
     local -A domain_map=(
         [security]="beardog-${FAMILY_ID}.sock"
         [crypto]="beardog-${FAMILY_ID}.sock"
+        [btsp]="beardog-${FAMILY_ID}.sock"
+        [ed25519]="beardog-${FAMILY_ID}.sock"
+        [x25519]="beardog-${FAMILY_ID}.sock"
         [discovery]="songbird-${FAMILY_ID}.sock"
         [network]="songbird-${FAMILY_ID}.sock"
-        [compute]="toadstool-${FAMILY_ID}.jsonrpc.sock"
+        [compute]="toadstool-${FAMILY_ID}.sock"
+        [tensor]="barracuda-${FAMILY_ID}.sock"
+        [shader]="coralreef-${FAMILY_ID}.sock"
         [storage]="nestgate-${FAMILY_ID}.sock"
-        [ai]="squirrel.sock"
+        [ai]="squirrel-${FAMILY_ID}.sock"
         [dag]="rhizocrypt.sock"
         [spine]="loamspine-${FAMILY_ID}.sock"
         [commit]="sweetgrass-${FAMILY_ID}.sock"
@@ -397,6 +436,59 @@ cmd_start() {
         fi
     done
 
+    # ── Late alias sweep (retry for slow starters) ────────────────
+    sleep 2
+    for domain in "${!domain_map[@]}"; do
+        local target="$SOCKET_DIR/${domain_map[$domain]}"
+        local alias_path="$SOCKET_DIR/${domain}.sock"
+        if [[ -e "$target" || -L "$target" ]] && [[ ! -e "$alias_path" ]]; then
+            ln -sf "$target" "$alias_path" 2>/dev/null && \
+                log "  (late) ${domain}.sock → ${domain_map[$domain]}" || true
+        fi
+    done
+    for alias in "${!primal_alias_map[@]}"; do
+        local target="$SOCKET_DIR/${primal_alias_map[$alias]}.sock"
+        local alias_path="$SOCKET_DIR/${alias}.sock"
+        if [[ -e "$target" ]] && [[ ! -e "$alias_path" ]]; then
+            ln -sf "$target" "$alias_path" 2>/dev/null && \
+                log "  (late) ${alias}.sock → ${primal_alias_map[$alias]}.sock" || true
+        fi
+    done
+
+    # ── Phase 5: Seed Songbird service registry (LD-08 workaround) ──
+    # Songbird auto-discovery scans at startup but other primals aren't ready yet.
+    # Seed the registry so ipc.resolve works for downstream consumers.
+    local songbird_sock="$SOCKET_DIR/songbird-${FAMILY_ID}.sock"
+    if [[ -S "$songbird_sock" ]]; then
+        log "── Phase 5: Seeding Songbird registry ──"
+        local -A registry_seeds=(
+            [beardog]="security,crypto,btsp,ed25519,x25519"
+            [songbird]="discovery"
+            [toadstool]="compute,hardware"
+            [barracuda]="tensor,math,gpu_compute"
+            [coralreef]="shader"
+            [nestgate]="storage"
+            [squirrel]="ai,inference"
+            [rhizocrypt]="dag,provenance"
+            [loamspine]="spine,merkle,ledger"
+            [sweetgrass]="commit,braid,attribution"
+            [petaltongue]="visualization"
+        )
+        for primal_id in "${!registry_seeds[@]}"; do
+            local caps="${registry_seeds[$primal_id]}"
+            local caps_json
+            caps_json="[$(echo "$caps" | sed 's/,/","/g; s/^/"/; s/$/"/' )]"
+            local sock_name="${primal_id}-${FAMILY_ID}.sock"
+            [[ "$primal_id" == "rhizocrypt" ]] && sock_name="rhizocrypt.sock"
+            local primal_sock="$SOCKET_DIR/$sock_name"
+            if [[ -e "$primal_sock" || -L "$primal_sock" ]]; then
+                local payload="{\"jsonrpc\":\"2.0\",\"method\":\"ipc.register\",\"params\":{\"primal_id\":\"$primal_id\",\"capabilities\":$caps_json,\"endpoint\":\"unix://$primal_sock\"},\"id\":1}"
+                echo "$payload" | timeout 2 socat - "UNIX-CONNECT:$songbird_sock" >/dev/null 2>&1 && \
+                    log "  registered $primal_id ($caps)" || true
+            fi
+        done
+    fi
+
     log "╔══════════════════════════════════════════════════════════════╗"
     log "║  NUCLEUS stack launch complete — zero TCP ports bound       ║"
     log "╚══════════════════════════════════════════════════════════════╝"
@@ -406,7 +498,7 @@ cmd_start() {
 
 cmd_stop() {
     log "Stopping NUCLEUS stack (reverse order)..."
-    local primals=(petaltongue sweetgrass loamspine rhizocrypt squirrel nestgate toadstool songbird beardog biomeos)
+    local primals=(petaltongue sweetgrass loamspine rhizocrypt squirrel nestgate coralreef barracuda toadstool songbird beardog biomeos)
     for name in "${primals[@]}"; do
         local pid
         pid="$(read_pid "$name")"
@@ -431,7 +523,9 @@ cmd_status() {
         "biomeOS|0|biomeos-${FAMILY_ID}:neural-api-${FAMILY_ID}|graph.list"
         "BearDog|1|beardog-${FAMILY_ID}|health.liveness"
         "Songbird|1|songbird-${FAMILY_ID}:songbird|health.liveness"
-        "ToadStool|2|toadstool-${FAMILY_ID}.jsonrpc:compute:toadstool.jsonrpc|health.liveness"
+        "ToadStool|2|toadstool-${FAMILY_ID}:compute-${FAMILY_ID}-tarpc:compute:toadstool.jsonrpc|health.liveness"
+        "barraCuda|2|barracuda-${FAMILY_ID}:tensor|health.liveness"
+        "coralReef|2|coralreef-${FAMILY_ID}:shader|health.liveness"
         "NestGate|2|nestgate-${FAMILY_ID}:storage-${FAMILY_ID}|health.liveness"
         "Squirrel|2|squirrel-${FAMILY_ID}:squirrel|health.liveness"
         "rhizoCrypt|3|rhizocrypt-${FAMILY_ID}:rhizocrypt|health.liveness"

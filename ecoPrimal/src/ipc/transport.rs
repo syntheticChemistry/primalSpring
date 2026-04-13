@@ -48,14 +48,15 @@ impl Transport {
 
         match btsp::security_mode_from_env() {
             btsp::SecurityMode::Production => {
-                if let Some(seed) = super::btsp_handshake::family_seed_from_env() {
-                    Self::unix_btsp(path, &seed)
-                } else {
-                    tracing::warn!(
-                        "BTSP production mode but FAMILY_SEED not set — falling back to cleartext"
-                    );
-                    Self::unix(path)
-                }
+                super::btsp_handshake::family_seed_from_env().map_or_else(
+                    || {
+                        tracing::warn!(
+                            "BTSP production mode but FAMILY_SEED not set — falling back to cleartext"
+                        );
+                        Self::unix(path)
+                    },
+                    |seed| Self::unix_btsp(path, &seed),
+                )
             }
             btsp::SecurityMode::Development => Self::unix(path),
         }

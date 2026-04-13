@@ -17,7 +17,7 @@ const MIN_AGGREGATION_PRIMALS: usize = 2;
 
 fn main() {
     ValidationResult::new("primalSpring Exp034 — Capability Aggregation")
-        .with_provenance("exp034_capability_aggregation", "2026-03-24")
+        .with_provenance("exp034_capability_aggregation", "2026-04-13")
         .run(
             "primalSpring Exp034: Plasmodium Routes to Best Gate for Workload",
             |v| {

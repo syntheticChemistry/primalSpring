@@ -30,7 +30,7 @@
 //! (compile-time `include_str!`). Profiles describe per-primal CLI flags,
 //! environment variables, and cross-primal socket wiring.
 
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::time::Duration;
 
 mod biomeos;
@@ -42,20 +42,6 @@ pub use biomeos::spawn_biomeos;
 pub use discovery::{discover_binary, discover_biomeos_binary};
 pub use profiles::{LaunchProfile, load_launch_profiles};
 pub use spawn::{PrimalProcess, SocketNucleation, spawn_primal, wait_for_socket};
-
-/// Legacy alias for [`spawn_biomeos`].
-///
-/// # Errors
-///
-/// Returns [`LaunchError`] on binary-not-found, spawn failure, or socket timeout.
-#[deprecated(note = "use spawn_biomeos() — Neural API is a biomeOS mode, not a separate entity")]
-pub fn spawn_neural_api(
-    family_id: &str,
-    nucleation: &SocketNucleation,
-    graphs_dir: &Path,
-) -> Result<PrimalProcess, LaunchError> {
-    spawn_biomeos(family_id, nucleation, graphs_dir)
-}
 
 // ---------------------------------------------------------------------------
 // Error type

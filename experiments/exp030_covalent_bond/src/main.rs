@@ -143,7 +143,7 @@ fn multi_node_skips(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp030 — Covalent Bond")
-        .with_provenance("exp030_covalent_bond", "2026-03-24")
+        .with_provenance("exp030_covalent_bond", "2026-04-13")
         .run(
             "primalSpring Exp030: Covalent Bond — Family Seed, Mesh Discovery, Graph Metadata",
             |v| {

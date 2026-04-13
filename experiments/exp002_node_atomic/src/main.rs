@@ -11,12 +11,12 @@ use primalspring::validation::ValidationResult;
 
 fn main() {
     ValidationResult::new("primalSpring Exp002 — Node Atomic")
-        .with_provenance("exp002_node_atomic", "2026-03-24")
+        .with_provenance("exp002_node_atomic", "2026-04-13")
         .run(
             "primalSpring Exp002: Node Atomic (security + discovery + compute)",
             |v| {
                 let node_caps = AtomicType::Node.required_capabilities();
-                v.check_count("node_required_caps", node_caps.len(), 3);
+                v.check_count("node_required_caps", node_caps.len(), 5);
 
                 for cap in node_caps {
                     let disc = discover_by_capability(cap);

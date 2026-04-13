@@ -15,12 +15,12 @@ use primalspring::validation::ValidationResult;
 
 fn main() {
     ValidationResult::new("primalSpring Exp004 — Full NUCLEUS")
-        .with_provenance("exp004_full_nucleus", "2026-03-24")
+        .with_provenance("exp004_full_nucleus", "2026-04-13")
         .run(
             "primalSpring Exp004: Full NUCLEUS (all capability domains)",
             |v| {
                 let required = AtomicType::FullNucleus.required_capabilities();
-                v.check_count("full_nucleus_required_caps", required.len(), 8);
+                v.check_count("full_nucleus_required_caps", required.len(), 13);
 
                 let discovered = discover_capabilities_for(required);
                 let found_count = discovered.iter().filter(|d| d.socket.is_some()).count();

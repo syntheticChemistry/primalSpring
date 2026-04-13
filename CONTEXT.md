@@ -44,7 +44,6 @@ back upstream to primals and primalSpring.
 | `coordination` | Atomic composition definitions, health probing |
 | `deploy` | Deploy graph parsing, structural + live validation |
 | `ipc` | JSON-RPC 2.0 client, Neural API bridge, socket discovery, BTSP handshake |
-| `inference` | Vendor-agnostic inference wire types + InferenceClient |
 | `launcher` | Binary discovery, process spawn, socket nucleation |
 | `harness` | Spawn compositions, validate, RAII teardown |
 | `bonding` | Multi-gate bonding models + STUN tiers |
@@ -67,35 +66,24 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.6 Phase 30 — 404 tests, 72 experiments, 93 deploy graphs + 6 atomic-aligned fragments.
+v0.9.14 Phase 41 — 443 tests, 73 experiments, 67 deploy graphs + 6 atomic-aligned fragments.
 
-Live validation: **43/44 (98%)** subsystem, plus live Tower Atomic
-probes (BearDog crypto, Songbird HTTPS, Neural API all LIVE PASS/FAIL).
-6 GAP-MATRIX items documented from live validation matrix run.
+Live validation: **12/12 primals ALIVE**, **19/19 exp094 composition parity PASS**.
+All LD-01 through LD-10 gaps RESOLVED. Full NUCLEUS composition validated
+across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
+13 FullNucleus capabilities. Pre-downstream gap resolution complete:
+Songbird alias registration, validate_parity_vec non-numeric guard,
+BtspEnforcer cipher-only enforcement documented, DeployGraph multi-node
+schema unified, loamSpine health.check auto-param, rhizoCrypt event_type
+reference documented.
 
 Particle model adopted: Tower = electron, Node = proton, Nest = neutron,
 NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →
-L2 (mixed atomics) → L3 (bonding patterns). 12 sketch graphs, 3 new
-experiments (exp091-093).
+L2 (mixed atomics) → L3 (bonding patterns).
 
-Primal gap registry: **8 open** (1 medium, 7 low), zero critical/high
-in primals. 6 GAP-MATRIX items from live ecosystem validation
-(1 critical: Neural API capability registration).
-
-Rewired for latest primal evolution: biomeOS v2.81 (`topology.rescan`),
-toadStool S171 (`ember.*`, `shader.compile` removed), petalTongue
-(awareness init, server discovery), NestGate (crypto delegation),
-Squirrel (local AI endpoint + inference bridge).
-
-April 10: BTSP Phase 2 cascade (11/13 primals enforce handshake), inference
-provider abstraction (`inference.complete`/`embed`/`models`), WGSL shader
-composition model, 5 proto-nucleate graphs (neuralSpring ML, hotSpring QCD,
-healthSpring enclave), 3 pipeline graphs, 93 deploy graphs + 6 fragments with
-`secure_by_default` metadata.
-
-April 9: Graph consolidation — ludoSpring/esotericWebb evolved to pure compositions
-(no spawnable binaries), 4 canonical fragments extracted, 7 graphs deleted, 10 rewritten,
-100% fragment/composition_model metadata annotation, gen4 naming normalized.
+Bonding models validated (structural): Covalent, Ionic, Metallic, Weak,
+OrganoMetalSalt. 13 live multi-node checks skipped (require benchScale
+Docker labs with 2+ FAMILY_IDs).
 
 ## Ecosystem Position
 

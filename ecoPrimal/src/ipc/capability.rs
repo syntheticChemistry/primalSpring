@@ -290,6 +290,7 @@ pub fn extract_capability_names(caps: Option<serde_json::Value>) -> Vec<String> 
 ///
 /// biomeOS returns endpoints as `unix:///run/user/1000/biomeos/foo.sock`;
 /// primalSpring needs the bare path for `std::os::unix::net::UnixStream`.
+#[must_use]
 pub fn strip_unix_uri(endpoint: &str) -> &str {
     endpoint.strip_prefix("unix://").unwrap_or(endpoint)
 }

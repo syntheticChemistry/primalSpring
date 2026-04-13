@@ -5,16 +5,16 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.9 |
+| **Version** | 0.9.14 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 404 (unit + integration + doc-tests + proptest) |
-| **Experiments** | 72 (15 tracks) |
-| **Deploy Graphs** | 96 TOMLs (7 root + 9 profiles + 12 sketches + 5 multi-node + 13 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + 5 spring deploy + 8 downstream proto-nucleate + 3 pipeline + 4 patterns) + 6 fragment definitions |
+| **Tests** | 443 (unit + integration + doc-tests + proptest) |
+| **Experiments** | 73 (16 tracks) |
+| **Deploy Graphs** | 67 TOMLs + 6 fragment definitions (9 profiles + 5 multi-node + 13 spring validation + 2 cross-spring + 5 bonding + 2 chaos + 5 spring deploy + 8 downstream proto-nucleate + 4 patterns + 7 root + 1 template + 6 fragments) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 72 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 73 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
@@ -46,7 +46,6 @@ primalSpring/
 │   │   ├── emergent/              # Emergent system validation (RootPulse, RPGPT, CoralForge)
 │   │   ├── bonding/               # Multi-gate bonding models (Covalent, Metallic, Ionic, Weak, OMS) + graph metadata + STUN tiers
 │   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, capability, error, dispatch, extract, resilience, transport, tcp, methods, probes, provenance, proptest, btsp_handshake
-│   │   ├── inference/             # Vendor-agnostic inference wire types + InferenceClient (inference.complete/embed/models)
 │   │   ├── launcher/              # Primal binary discovery, spawn, profiles, socket nucleation (sync biomeOS port)
 │   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
@@ -55,15 +54,15 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   └── validate_all/          # Meta-validator: runs all 72 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 73 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
 │       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
-├── experiments/                   # 72 validation experiments (15 tracks)
+├── experiments/                   # 73 validation experiments (16 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 93 deploy graph TOMLs + 6 fragment definitions
+├── graphs/                        # 67 deploy graph TOMLs + 6 fragment definitions
 │   ├── profiles/                 # NUCLEUS atomic profiles: tower, node, nest, nucleus, full + meta overlays (9)
 │   ├── patterns/                 # Execution patterns: parallel, conditional, streaming, continuous (4)
 │   ├── fragments/                # Atomic architecture: tower_atomic, node_atomic, nest_atomic, meta_tier, nucleus, provenance_trio (6)
@@ -124,7 +123,7 @@ cargo test --workspace
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 72 experiments (meta-validator)
+# Run all 73 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -192,7 +191,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 93 deploy graph TOMLs + 6 atomic-aligned fragments (all nodes declare `by_capability`):
+primalSpring ships 67 deploy graph TOMLs + 6 atomic-aligned fragments (all nodes declare `by_capability`):
 
 **Single-node graphs (17)**:
 
@@ -224,6 +223,7 @@ primalSpring ships 93 deploy graph TOMLs + 6 atomic-aligned fragments (all nodes
 | `friend_remote_covalent.toml` | Remote friend + NAT traversal | Covalent | GeneticLineage |
 | `idle_compute_federation.toml` | Federated idle compute sharing | Covalent | GeneticLineage |
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
+| `three_node_covalent_cross_network.toml` | 3-node cross-network mesh | Covalent | GeneticLineage |
 
 **Composition subsystem graphs (3)** — `graphs/compositions/`: each subfunction
 decomposed into a separately deployable biomeOS graph with its own validation:

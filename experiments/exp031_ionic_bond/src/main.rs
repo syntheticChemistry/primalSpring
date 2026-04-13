@@ -10,7 +10,7 @@ use primalspring::validation::ValidationResult;
 
 fn main() {
     ValidationResult::new("primalSpring Exp031 — Ionic Bond")
-        .with_provenance("exp031_ionic_bond", "2026-03-24")
+        .with_provenance("exp031_ionic_bond", "2026-04-13")
         .run(
             "primalSpring Exp031: Cross-Family Limited Capability Sharing",
             |v| {

@@ -32,8 +32,8 @@ health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
 capabilities = [
-    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
-    "crypto.verify", "crypto.keygen", "crypto.identity",
+    "crypto.sign", "crypto.verify", "crypto.hash",
+    "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair",
 ]
 
 [[graph.nodes]]
@@ -46,8 +46,8 @@ health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
 capabilities = [
-    "discovery.find_primals", "discovery.announce",
-    "network.tls_connect", "network.http_request",
+    "ipc.resolve", "ipc.register", "ipc.discover",
+    "discovery.peers", "discovery.announce", "http.request",
 ]
 
 [[graph.nodes]]
@@ -60,8 +60,8 @@ health_method = "health.liveness"
 by_capability = "compute"
 security_model = "tower_delegated"
 capabilities = [
-    "compute.dispatch.submit", "compute.dispatch.status",
-    "compute.dispatch.cancel", "compute.execute",
+    "compute.dispatch", "compute.execute", "compute.capabilities",
+    "compute.status",
 ]
 
 [[graph.nodes]]
@@ -74,8 +74,9 @@ health_method = "health.liveness"
 by_capability = "tensor"
 security_model = "tower_delegated"
 capabilities = [
-    "tensor.matmul", "tensor.attention", "tensor.fft",
-    "tensor.df64", "tensor.perlin", "tensor.wfc",
+    "tensor.matmul", "tensor.batch.submit", "tensor.create",
+    "stats.mean", "stats.std_dev", "noise.perlin2d",
+    "compute.dispatch",
 ]
 
 [[graph.nodes]]
@@ -87,7 +88,10 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "shader"
 security_model = "tower_delegated"
-capabilities = ["shader.compile", "shader.list"]
+capabilities = [
+    "shader.compile.wgsl", "shader.compile.spirv",
+    "shader.compile.capabilities", "shader.compile.wgsl.multi",
+]
 
 [[graph.nodes]]
 name = "squirrel"
@@ -98,7 +102,10 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "ai"
 security_model = "tower_delegated"
-capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
+capabilities = [
+    "inference.complete", "inference.embed", "inference.models",
+    "ai.query", "ai.complete",
+]
 
 [[graph.nodes]]
 name = "validate_node_ai"

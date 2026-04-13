@@ -87,8 +87,8 @@ binary = "biomeos"
 order = 0
 required = true
 spawn = false
-health_method = "graph.list"
-by_capability = "orchestration"
+health_method = "health.liveness"
+by_capability = "discovery"
 security_model = "tower_delegated"
 capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 
@@ -105,7 +105,7 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
-capabilities = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.blake3_hash"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
 
 [[graph.nodes]]
 name = "songbird"
@@ -117,7 +117,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
-capabilities = ["discovery.find_primals", "discovery.announce"]
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 2: WGSL shader compute primals (spawn = false)
@@ -140,9 +140,9 @@ required = true
 spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "shader_compile"
+by_capability = "shader"
 security_model = "tower_delegated"
-capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.compile.capabilities"]
 
 # Compute dispatch — toadStool routes compiled shader workloads
 # to GPU/CPU substrates. Manages execution scheduling, substrate
@@ -158,7 +158,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "compute"
 security_model = "tower_delegated"
-capabilities = ["compute.dispatch.submit", "compute.execute"]
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities"]
 
 # WGSL tensor shaders — barraCuda's 826 WGSL compute shaders
 # provide matmul, attention (MHA/GQA/SDPA), softmax, layer_norm,
@@ -174,9 +174,16 @@ required = true
 spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "math"
+by_capability = "tensor"
 security_model = "tower_delegated"
-capabilities = ["math.tensor", "math.stats", "math.activation", "math.noise"]
+capabilities = [
+    "tensor.matmul",
+    "tensor.batch.submit",
+    "stats.mean",
+    "stats.std_dev",
+    "noise.perlin2d",
+    "compute.dispatch",
+]
 
 # Inference routing — Squirrel discovers inference providers and
 # routes inference.complete/embed/models requests. neuralSpring
@@ -190,12 +197,9 @@ required = true
 spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
-by_capability = "ai"
+by_capability = "inference"
 security_model = "tower_delegated"
-capabilities = [
-    "ai.query", "ai.complete", "ai.list_providers",
-    "inference.complete", "inference.embed", "inference.models",
-]
+capabilities = ["inference.complete", "inference.embed", "ai.query"]
 
 # Model weight storage — NestGate caches model weights (safetensors)
 # so shader compositions don't need to re-download between runs.
@@ -209,7 +213,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "storage"
 security_model = "tower_delegated"
-capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists"]
 
 # ═══════════════════════════════════════════════════════════════
 # Phase 4: neuralSpring (spawn = true — built by neuralSpring repo)
@@ -267,6 +271,6 @@ required = false
 spawn = false
 depends_on = ["neuralspring"]
 health_method = "health.liveness"
-by_capability = "coordination"
+by_capability = "discovery"
 security_model = "tower_delegated"
 capabilities = ["coordination.validate_composition"]

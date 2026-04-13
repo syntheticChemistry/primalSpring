@@ -81,13 +81,25 @@ pub struct GraphMeta {
 }
 
 /// A single node in a deploy graph.
+///
+/// Accepts both the standard single-node format (with `name`, `binary`, `order`,
+/// `health_method`) and the multi-node bonding format (with `id` instead of
+/// `name`, and nested `primal`/`operation`/`constraints` sub-tables). The
+/// multi-node sub-tables are captured as opaque TOML values; the standard
+/// deploy pipeline uses only the flat fields.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GraphNode {
     /// Primal name (e.g. `"beardog"`).
+    /// Multi-node graphs use `id` instead — accepted via alias.
+    #[serde(alias = "id", default)]
     pub name: String,
     /// Binary to invoke (e.g. `"beardog_primal"`).
+    /// Not present in multi-node bonding graphs.
+    #[serde(default)]
     pub binary: String,
     /// Startup order (1-indexed).
+    /// Not present in multi-node bonding graphs (order is implicit via `depends_on`).
+    #[serde(default)]
     pub order: u32,
     /// Whether the deployment fails if this node can't start.
     #[serde(default)]
@@ -116,6 +128,18 @@ pub struct GraphNode {
     /// Skip predicate for conditional DAG execution.
     #[serde(default)]
     pub skip_if: Option<String>,
+    /// Multi-node: nested primal sub-table (opaque).
+    #[serde(default)]
+    pub primal: Option<toml::Value>,
+    /// Multi-node: nested operation sub-table (opaque).
+    #[serde(default)]
+    pub operation: Option<toml::Value>,
+    /// Multi-node: nested constraints sub-table (opaque).
+    #[serde(default)]
+    pub constraints: Option<toml::Value>,
+    /// Multi-node: output artifact label.
+    #[serde(default)]
+    pub output: Option<String>,
 }
 
 const fn default_spawn() -> bool {
@@ -343,14 +367,15 @@ fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
     }
 
     let names: Vec<&str> = graph.graph.node.iter().map(|n| n.name.as_str()).collect();
+    let is_multi_node = graph.graph.node.iter().any(|n| n.operation.is_some());
     for node in &graph.graph.node {
         if node.name.is_empty() {
             issues.push(format!("node at order {} has empty name", node.order));
         }
-        if node.binary.is_empty() {
+        if !is_multi_node && node.binary.is_empty() {
             issues.push(format!("node '{}' has empty binary", node.name));
         }
-        if node.health_method.is_empty() {
+        if !is_multi_node && node.health_method.is_empty() {
             issues.push(format!("node '{}' has no health_method", node.name));
         }
         for dep in &node.depends_on {
@@ -366,7 +391,7 @@ fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
     let mut orders: Vec<u32> = graph.graph.node.iter().map(|n| n.order).collect();
     orders.sort_unstable();
     orders.dedup();
-    if orders.len() != graph.graph.node.len() {
+    if !is_multi_node && orders.len() != graph.graph.node.len() {
         issues.push("duplicate order values in graph nodes".to_owned());
     }
 }

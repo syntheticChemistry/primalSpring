@@ -58,7 +58,7 @@ order = 0
 required = true
 spawn = false
 health_method = "health.liveness"
-by_capability = "orchestration"
+by_capability = "discovery"
 security_model = "tower_delegated"
 capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 
@@ -71,7 +71,7 @@ spawn = false
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
 
 [[graph.nodes]]
 name = "songbird"
@@ -83,7 +83,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
-capabilities = ["net.discovery", "net.mesh", "network.http_request"]
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 # ═══════════════════════════════════════════════════════════════
 # AI: narration, MCP tools, DDA
@@ -97,13 +97,9 @@ required = true
 spawn = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
-by_capability = "ai"
+by_capability = "inference"
 security_model = "tower_delegated"
-capabilities = [
-    "ai.query", "ai.complete",
-    "ai.narrate", "ai.constrain_ruleset",
-    "mcp.tools.list", "mcp.tools.call",
-]
+capabilities = ["inference.complete", "inference.embed", "ai.query"]
 
 # ═══════════════════════════════════════════════════════════════
 # Interface: scene rendering + proprioception
@@ -117,7 +113,7 @@ required = true
 spawn = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
-by_capability = "visualization"
+by_capability = "shader"
 security_model = "tower_delegated"
 capabilities = [
     "visualization.render.scene", "visualization.render.dashboard",
@@ -138,7 +134,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "storage"
 security_model = "tower_delegated"
-capabilities = ["storage.store", "storage.retrieve"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists"]
 
 # ═══════════════════════════════════════════════════════════════
 # Provenance Trio: session DAG, creative attribution, anti-cheat
@@ -153,12 +149,9 @@ required = false
 spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "provenance"
+by_capability = "dag"
 security_model = "tower_delegated"
-capabilities = [
-    "dag.session.create", "dag.event.append",
-    "dag.dehydration.trigger", "dag.merkle.root",
-]
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
 
 [[graph.nodes]]
 name = "loamspine"
@@ -170,7 +163,7 @@ depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
 security_model = "tower_delegated"
-capabilities = ["session.commit", "entry.append"]
+capabilities = ["spine.create", "entry.append", "certificate.mint"]
 
 [[graph.nodes]]
 name = "sweetgrass"
@@ -182,7 +175,4 @@ depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
 security_model = "tower_delegated"
-capabilities = [
-    "provenance.create_braid", "provenance.lineage",
-    "provenance.graph",
-]
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]

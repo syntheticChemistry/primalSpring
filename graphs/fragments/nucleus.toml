@@ -32,7 +32,7 @@ required = true
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.identity"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair"]
 
 [[fragment.nodes]]
 name = "songbird"
@@ -43,7 +43,7 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
-capabilities = ["net.discovery", "net.mesh", "network.http_request"]
+capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]
 
 [[fragment.nodes]]
 name = "toadstool"
@@ -54,7 +54,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "compute"
 security_model = "tower_delegated"
-capabilities = ["compute.dispatch.submit", "compute.execute"]
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities", "compute.status"]
 
 [[fragment.nodes]]
 name = "barracuda"
@@ -66,8 +66,8 @@ health_method = "health.liveness"
 by_capability = "tensor"
 security_model = "tower_delegated"
 capabilities = [
-    "tensor.matmul", "tensor.attention", "tensor.fft",
-    "tensor.df64", "tensor.perlin", "tensor.wfc",
+    "tensor.matmul", "tensor.batch.submit", "tensor.create",
+    "stats.mean", "stats.std_dev", "noise.perlin2d", "compute.dispatch",
 ]
 
 [[fragment.nodes]]
@@ -79,7 +79,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "shader"
 security_model = "tower_delegated"
-capabilities = ["shader.compile", "shader.list"]
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.compile.capabilities", "shader.compile.wgsl.multi"]
 
 [[fragment.nodes]]
 name = "nestgate"
@@ -90,7 +90,7 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "storage"
 security_model = "tower_delegated"
-capabilities = ["storage.store", "storage.retrieve"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists", "storage.delete", "storage.fetch_external"]
 
 [[fragment.nodes]]
 name = "rhizocrypt"
@@ -99,11 +99,12 @@ order = 7
 required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
-by_capability = "provenance"
+by_capability = "dag"
 security_model = "tower_delegated"
 capabilities = [
     "dag.session.create", "dag.event.append",
     "dag.dehydration.trigger", "dag.merkle.root",
+    "dag.merkle.proof", "dag.merkle.verify",
 ]
 
 [[fragment.nodes]]
@@ -115,7 +116,7 @@ depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
 by_capability = "ledger"
 security_model = "tower_delegated"
-capabilities = ["session.commit", "entry.append"]
+capabilities = ["spine.create", "spine.get", "spine.seal", "entry.append", "entry.get", "certificate.mint"]
 
 [[fragment.nodes]]
 name = "sweetgrass"
@@ -127,6 +128,6 @@ health_method = "health.liveness"
 by_capability = "attribution"
 security_model = "tower_delegated"
 capabilities = [
-    "provenance.create_braid", "provenance.lineage",
-    "provenance.graph",
+    "braid.create", "braid.commit", "braid.get",
+    "anchoring.anchor", "anchoring.verify",
 ]
