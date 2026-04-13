@@ -252,7 +252,7 @@ Each maps to a specific primal team for resolution.
 | Gap | Affected Springs | Owner | Status |
 |-----|-----------------|-------|--------|
 | **BearDog BTSP server endpoint** — springs need `btsp.server.*` RPC surface | hotSpring, healthSpring, neuralSpring, ludoSpring | **BearDog team** | **RESOLVED** — `btsp.server.create_session`, `.verify`, `.negotiate`, `.status` wired with `BtspSessionStore` (session_store.rs). Legacy `btsp.session.*` aliases maintained. Springs can now connect |
-| **Ionic bond runtime** — `crypto.ionic_bond` / cross-family GPU lease / data egress fence | hotSpring (GAP-HS-005), healthSpring (§2), ludoSpring | **BearDog team** | **PARTIAL** — Wave 34-35: **Real Ed25519 signing on propose**, **real acceptor signature verification on accept** (`verify_ed25519_signature`). Types enriched (hex public keys, terms_hash, domain/state filters). **In-memory only** by design (BearDog is crypto, not storage) — persistent bonds via NestGate `storage.*` / loamSpine ledger. HSM/BTSP Phase 3 signing path stubbed |
+| **Ionic bond runtime** — `crypto.ionic_bond` / cross-family GPU lease / data egress fence | hotSpring (GAP-HS-005), healthSpring (§2), ludoSpring | **BearDog team** | **RESOLVED** — Wave 42: `crypto.ionic_bond.seal` completes propose→accept→seal lifecycle with real Ed25519 verification at each step. Proposal TTL enforcement on accept. In-memory only by design — persistent bonds via NestGate/loamSpine. 100 JSON-RPC methods |
 | **Canonical inference namespace** — springs accept `inference.*` / `model.*` / `ai.*` inconsistently | healthSpring (§4), neuralSpring (Gap 1), ludoSpring (GAP-10) | **primalSpring + Squirrel + neuralSpring** | **RESOLVED** — Songbird Wave 134 declares `inference.*` as canonical with `model.*` / `ai.*` absorption aliases |
 | **TensorSession adoption** — fused multi-op GPU pipelines; springs defer because API unstable | hotSpring (GAP-HS-027), healthSpring, wetSpring | **barraCuda team** | **PARTIAL** — Sprint 40: renamed to `BatchGuard` as stable API, `TensorSession` kept as deprecated alias. Springs should begin adoption against `BatchGuard`. Migration guide pending |
 | **Provenance trio IPC stability** — trio endpoints panic, TCP-only, or unreachable | wetSpring (PG-02), ludoSpring, healthSpring | **rhizoCrypt + loamSpine + sweetGrass teams** | **RESOLVED** — All three now have TCP_NODELAY + flush-after-write on all TCP/UDS paths. rhizoCrypt (S33-34): TCP_NODELAY+flush, +31 tests, feature narrowing. loamSpine: dedicated UDS transport (uds.rs), constants centralization, 8×5 concurrent load test. sweetGrass: BTSP mock BearDog tests, Postgres error-path coverage, module splits. Trio IPC is stable |
@@ -300,16 +300,16 @@ Each maps to a specific primal team for resolution.
 
 | Task | Source | Priority |
 |------|--------|----------|
-| BTSP server endpoint (`btsp.server.*`) | healthSpring §10, hotSpring GAP-HS-006 | **High** |
-| Ionic bond runtime (`crypto.ionic_bond`) | hotSpring GAP-HS-005, healthSpring §2 | Medium |
+| BTSP server endpoint (`btsp.server.*`) | healthSpring §10, hotSpring GAP-HS-006 | **RESOLVED** (Wave 36 — `btsp.server.create_session`, `.verify`, `.negotiate`, `.status`) |
+| Ionic bond runtime (`crypto.ionic_bond`) | hotSpring GAP-HS-005, healthSpring §2 | **RESOLVED** (Wave 42 — propose→accept→seal with Ed25519, proposal TTL) |
 | Signed capability announcements | neuralSpring handoff | Low |
 
 **Squirrel** (reported by: neuralSpring, healthSpring, ludoSpring)
 
 | Task | Source | Priority |
 |------|--------|----------|
-| `inference.register_provider` wire method | neuralSpring Gap 1 | Medium |
-| Stable ecoBin binary for composition deployments | healthSpring §9 | Medium |
+| `inference.register_provider` wire method | neuralSpring Gap 1 | **RESOLVED** (alpha.49 — 5 wire tests, real handler path) |
+| Stable ecoBin binary for composition deployments | healthSpring §9 | **RESOLVED** (alpha.49 — 3.5MB static-pie, stripped, BLAKE3, zero host paths) |
 
 **biomeOS / Songbird** (reported by: wetSpring, healthSpring, ludoSpring)
 
@@ -1008,6 +1008,45 @@ composition integrity confirmed across all 3 atomics.
 | ~~**Medium**~~ | ~~LD-09: loamSpine port 8080 conflict~~ | ~~loamSpine team~~ | **RESOLVED** — TCP opt-in, UDS unconditional |
 | ~~**Low**~~ | ~~LD-10: barraCuda tarpc-only UDS~~ | ~~barraCuda team~~ | **RESOLVED** — Sprint 42 phase 5 replays BTSP guard line to JSON-RPC handler |
 | ~~**Low**~~ | ~~LD-06: rhizoCrypt TCP-only~~ | ~~rhizoCrypt team~~ | **RESOLVED** — S37: UDS unconditional, TCP opt-in. `rhizocrypt_alive` PASS |
+
+---
+
+## Post-Pull Resolution Wave (April 13, 2026 — Phase 41)
+
+After pulling all upstream primals and reviewing commit evolution, the following
+gaps moved to RESOLVED. NestGate needs more time (no new commits).
+
+| Gap | Primal | Resolved In | How |
+|-----|--------|-------------|-----|
+| `inference.register_provider` wire method | Squirrel | alpha.49 | 5 wire tests, real handler path |
+| Stable ecoBin binary | Squirrel | alpha.49 | 3.5MB static-pie, stripped, BLAKE3, zero host paths |
+| Ionic bond lifecycle (`crypto.ionic_bond`) | BearDog | Wave 42 | `seal` step: propose→accept→seal with Ed25519, proposal TTL |
+| BTSP server endpoint (`btsp.server.*`) | BearDog | Wave 36 | `create_session`, `verify`, `negotiate`, `status` wired |
+| `health.check` accepts empty params | loamSpine | deep debt pass | `#[serde(default)]` on `include_details`, null→{} normalization |
+| `EVENT_TYPE_REFERENCE.md` for domain springs | rhizoCrypt | S40 | Canonical 27-variant spec in rhizoCrypt repo |
+| `capability.call` gate routing | biomeOS | v3.05 | Explicit error on unregistered gate, `gate="local"` support |
+| `--port` in api/nucleus modes | biomeOS | v3.05 | TCP listener alongside UDS for mobile/cross-gate |
+| biomeOS DOWN during testing | biomeOS | v3.05 | Neural API co-launch in Nucleus Full mode |
+| LD-10 BTSP guard line consumed | barraCuda | Sprint 42 | Replay consumed line in `BtspOutcome::Degraded` |
+| LD-05 TCP AddrInUse co-deployment | barraCuda | Sprint 42 | Eliminated TCP sidecar in UDS mode |
+
+### Remaining Open Upstream Gaps
+
+| Priority | Gap | Owner | Status |
+|----------|-----|-------|--------|
+| **High** | NG-08: Eliminate `ring` from production build | NestGate | OPEN — no new commits, needs more time |
+| Medium | BC-07: `SovereignDevice` into `Auto::new()` fallback | barraCuda | Possibly resolved Sprint 41 — needs verification |
+| Medium | BC-08: `cpu-shader` default-on | barraCuda | OPEN |
+| Medium | CR-01: `deny.toml` C/FFI ban list | coralReef | OPEN |
+| Medium | `storage.retrieve` for large/streaming tensors | NestGate | OPEN — needs more time |
+| Medium | Cross-spring persistent storage IPC | NestGate | OPEN — needs more time |
+| Medium | Multi-stage ML pipeline `shader.compile.wgsl` | coralReef | Wire contract delivered, pipeline untested |
+| Low | `plasma_dispersion` feature-gate bug | barraCuda | neuralSpring-specific |
+| Low | 29 shader absorption candidates | barraCuda | neuralSpring pipeline |
+| Low | RAWR GPU kernel (CPU-only) | barraCuda | groundSpring-specific |
+| Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific |
+| Low | IPC timing for `shader.compile` | coralReef | Low priority |
+| Low | Signed capability announcements | BearDog | neuralSpring ask |
 
 ---
 
