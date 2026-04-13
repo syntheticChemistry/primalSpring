@@ -267,7 +267,7 @@ Each maps to a specific primal team for resolution.
 |------|--------|----------|
 | ~~BC-07: Wire `SovereignDevice` into `Auto::new()` fallback~~ | primalSpring benchScale audit | ~~Medium~~ **RESOLVED** (Sprint 41) |
 | ~~BC-08: Make `cpu-shader` default-on~~ | primalSpring benchScale audit | ~~Medium~~ **RESOLVED** (Sprint 40) |
-| `TensorSession` stabilization for spring adoption | hotSpring GAP-HS-027, healthSpring | Medium |
+| ~~`TensorSession` stabilization for spring adoption~~ | hotSpring GAP-HS-027, healthSpring | ~~Medium~~ **RESOLVED** (Sprint 40 rename + migration guide in BREAKING_CHANGES.md, Sprint 42 `tensor.batch.submit` IPC) |
 | `plasma_dispersion` feature-gate bug (`domain-lattice` required) | neuralSpring Gap 9 | Low |
 | 29 shader absorption candidates from neuralSpring | neuralSpring Gap 10 | Low |
 | RAWR GPU kernel (currently CPU-only `stats::rawr_mean`) | groundSpring | Low |
@@ -1043,10 +1043,10 @@ gaps moved to RESOLVED. NestGate needs more time (no new commits).
 | ~~Low~~ | ~~`plasma_dispersion` feature-gate bug~~ | ~~barraCuda~~ | **RESOLVED** — Sprint 40: corrected to dual feature gate |
 | Medium | `storage.retrieve` for large/streaming tensors | NestGate | OPEN |
 | Medium | Cross-spring persistent storage IPC | NestGate | OPEN |
-| Medium | `TensorSession`/`BatchGuard` adoption by springs | barraCuda | Sprint 40 renamed, migration guide pending |
-| Low | 29 shader absorption candidates | barraCuda | neuralSpring pipeline |
-| Low | RAWR GPU kernel (CPU-only) | barraCuda | groundSpring-specific |
-| Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific |
+| ~~Medium~~ | ~~`TensorSession`/`BatchGuard` adoption by springs~~ | ~~barraCuda~~ | **RESOLVED** — Sprint 40: renamed, migration guide published in `BREAKING_CHANGES.md` (§TensorSession/BatchGuard Migration Guide). `tensor.batch.submit` IPC method wired (Sprint 42). Spring-side adoption is coordination work |
+| Low | 29 shader absorption candidates | barraCuda | neuralSpring pipeline (they submit PRs per shader) |
+| ~~Low~~ | ~~RAWR GPU kernel (CPU-only)~~ | ~~barraCuda~~ | **RESOLVED** — `RawrWeightedMeanGpu` + `rawr_weighted_mean_f64.wgsl` GPU shader already exist in `barracuda/src/ops/`. CPU `rawr_mean` also available in `stats/bootstrap.rs`. Both paths working |
+| Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific (single-trajectory loop sufficient for now) |
 | Low | IPC timing for `shader.compile` | coralReef | Deployment timing |
 
 ---
