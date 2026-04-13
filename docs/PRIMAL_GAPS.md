@@ -277,8 +277,8 @@ Each maps to a specific primal team for resolution.
 
 | Task | Source | Priority |
 |------|--------|----------|
-| CR-01: Add `deny.toml` C/FFI ban list | primalSpring portability audit | Medium |
-| Multi-stage ML pipeline support via `shader.compile.wgsl` | neuralSpring handoff | Medium |
+| CR-01: Add `deny.toml` C/FFI ban list | primalSpring portability audit | **RESOLVED** (Iter 79 — deny.toml with ecoBin v3 C/FFI ban, cudarc behind feature gate) |
+| Multi-stage ML pipeline support via `shader.compile.wgsl` | neuralSpring handoff | **RESOLVED** (Iter 80+ — 6 end-to-end pipeline composition tests, CompilationInfo IPC) |
 | IPC timing for `shader.compile` in deployment | neuralSpring, healthSpring | Low |
 
 **toadStool** (reported by: wetSpring, neuralSpring, airSpring)
@@ -302,7 +302,7 @@ Each maps to a specific primal team for resolution.
 |------|--------|----------|
 | BTSP server endpoint (`btsp.server.*`) | healthSpring §10, hotSpring GAP-HS-006 | **RESOLVED** (Wave 36 — `btsp.server.create_session`, `.verify`, `.negotiate`, `.status`) |
 | Ionic bond runtime (`crypto.ionic_bond`) | hotSpring GAP-HS-005, healthSpring §2 | **RESOLVED** (Wave 42 — propose→accept→seal with Ed25519, proposal TTL) |
-| Signed capability announcements | neuralSpring handoff | Low |
+| Signed capability announcements | neuralSpring handoff | **RESOLVED** (Wave 45 — SA-01: Ed25519 signed attestation on discover + capability.register) |
 
 **Squirrel** (reported by: neuralSpring, healthSpring, ludoSpring)
 
@@ -1035,18 +1035,19 @@ gaps moved to RESOLVED. NestGate needs more time (no new commits).
 | Priority | Gap | Owner | Status |
 |----------|-----|-------|--------|
 | ~~**High**~~ | ~~NG-08: Eliminate `ring` from production build~~ | ~~NestGate~~ | **RESOLVED** — Session 43: reqwest→ureq 3.3 + rustls-rustcrypto, pure Rust TLS |
-| Medium | BC-07: `SovereignDevice` into `Auto::new()` fallback | barraCuda | Possibly resolved Sprint 41 — needs verification |
-| Medium | BC-08: `cpu-shader` default-on | barraCuda | OPEN |
-| Medium | CR-01: `deny.toml` C/FFI ban list | coralReef | OPEN |
-| Medium | `storage.retrieve` for large/streaming tensors | NestGate | OPEN — needs more time |
-| Medium | Cross-spring persistent storage IPC | NestGate | OPEN — needs more time |
-| Medium | Multi-stage ML pipeline `shader.compile.wgsl` | coralReef | Wire contract delivered, pipeline untested |
-| Low | `plasma_dispersion` feature-gate bug | barraCuda | neuralSpring-specific |
+| ~~Medium~~ | ~~BC-07: `SovereignDevice` into `Auto::new()` fallback~~ | ~~barraCuda~~ | **RESOLVED** — Sprint 41: 3-tier fallback (wgpu GPU → CPU → SovereignDevice IPC) |
+| ~~Medium~~ | ~~BC-08: `cpu-shader` default-on~~ | ~~barraCuda~~ | **RESOLVED** — Sprint 40: default feature, ecoBin computes without wgpu |
+| ~~Medium~~ | ~~CR-01: `deny.toml` C/FFI ban list~~ | ~~coralReef~~ | **RESOLVED** — Iter 79: ecoBin v3 ban list, cudarc behind feature gate |
+| ~~Medium~~ | ~~Multi-stage ML pipeline `shader.compile.wgsl`~~ | ~~coralReef~~ | **RESOLVED** — 6 end-to-end pipeline composition tests, CompilationInfo IPC |
+| ~~Low~~ | ~~Signed capability announcements~~ | ~~BearDog~~ | **RESOLVED** — Wave 45: SA-01, Ed25519 signed attestation |
+| ~~Low~~ | ~~`plasma_dispersion` feature-gate bug~~ | ~~barraCuda~~ | **RESOLVED** — Sprint 40: corrected to dual feature gate |
+| Medium | `storage.retrieve` for large/streaming tensors | NestGate | OPEN |
+| Medium | Cross-spring persistent storage IPC | NestGate | OPEN |
+| Medium | `TensorSession`/`BatchGuard` adoption by springs | barraCuda | Sprint 40 renamed, migration guide pending |
 | Low | 29 shader absorption candidates | barraCuda | neuralSpring pipeline |
 | Low | RAWR GPU kernel (CPU-only) | barraCuda | groundSpring-specific |
 | Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific |
-| Low | IPC timing for `shader.compile` | coralReef | Low priority |
-| Low | Signed capability announcements | BearDog | neuralSpring ask |
+| Low | IPC timing for `shader.compile` | coralReef | Deployment timing |
 
 ---
 
