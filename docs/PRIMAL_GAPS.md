@@ -292,7 +292,7 @@ Each maps to a specific primal team for resolution.
 
 | Task | Source | Priority |
 |------|--------|----------|
-| NG-08: Eliminate `ring` from production build | primalSpring portability audit | **High** |
+| NG-08: Eliminate `ring` from production build | primalSpring portability audit | **RESOLVED** (Session 43 — reqwest→ureq 3.3 + rustls-rustcrypto, ring/openssl/aws-lc-rs fully eliminated) |
 | `storage.retrieve` for large/streaming tensors | neuralSpring, wetSpring PG-04 | Medium |
 | Cross-spring persistent storage IPC | healthSpring, wetSpring | Medium |
 
@@ -1034,7 +1034,7 @@ gaps moved to RESOLVED. NestGate needs more time (no new commits).
 
 | Priority | Gap | Owner | Status |
 |----------|-----|-------|--------|
-| **High** | NG-08: Eliminate `ring` from production build | NestGate | OPEN — no new commits, needs more time |
+| ~~**High**~~ | ~~NG-08: Eliminate `ring` from production build~~ | ~~NestGate~~ | **RESOLVED** — Session 43: reqwest→ureq 3.3 + rustls-rustcrypto, pure Rust TLS |
 | Medium | BC-07: `SovereignDevice` into `Auto::new()` fallback | barraCuda | Possibly resolved Sprint 41 — needs verification |
 | Medium | BC-08: `cpu-shader` default-on | barraCuda | OPEN |
 | Medium | CR-01: `deny.toml` C/FFI ban list | coralReef | OPEN |
