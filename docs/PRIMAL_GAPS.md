@@ -111,7 +111,7 @@ ecosystem-wide. This established the delegation pattern.
 switched to `ureq` + `rustls-no-provider` + `rustls-rustcrypto`. `cargo tree -i ring`
 returns empty across all 13 primals. **13/13 primals are ring-free.**
 
-### Class 2: GPU/Vulkan Dynamic Linking — OPEN (Node Atomic Delegation)
+### Class 2: GPU/Vulkan Dynamic Linking — RESOLVED (Node Atomic Delegation)
 
 The same class of problem as ring but for compute hardware. The dependency chain:
 
@@ -146,8 +146,8 @@ dynamic GPU driver loading.
 | `WgpuDevice` | `barraCuda/device/wgpu_backend.rs` | Done | Implements `GpuBackend` via wgpu (needs dlopen — non-portable) |
 | `SovereignDevice` | `barraCuda/device/sovereign_device.rs` | Wired | Implements `GpuBackend` via IPC to coralReef+toadStool (portable) |
 | `CpuExecutor` | `barraCuda/unified_hardware/cpu_executor.rs` | Done | Native Rust CPU math execution |
-| `cpu-shader` + `naga-exec` | `barracuda-naga-exec` crate | Partial | Interprets WGSL shaders on CPU via naga IR (same math, scalar speed) |
-| `Auto::new()` | `barraCuda/device/mod.rs` | Done | Tries GPU → CPU software rasterizer → `Err`. **Missing**: no fallback to SovereignDevice or cpu-shader |
+| `cpu-shader` + `naga-exec` | `barracuda-naga-exec` crate | **Done** | Default-on (BC-08 resolved Sprint 40). Interprets WGSL shaders on CPU via naga IR |
+| `Auto::new()` | `barraCuda/device/mod.rs` | **Done** | 3-tier fallback: GPU → CPU software rasterizer → SovereignDevice IPC → `Err` (BC-07 resolved Sprint 41) |
 | `coral-gpu` | `coralReef/crates/coral-gpu/` | In progress | Sovereign GPU compute — replaces wgpu for compute. No wgpu dependency in production |
 
 **The resolution pattern (Node Atomic Delegation)** mirrors Tower Atomic:
@@ -162,8 +162,8 @@ dynamic GPU driver loading.
 **Gaps to close** (mapped to BC-06/07/08):
 
 - **BC-06**: Architectural constraint — document, don't fix musl. ecoBin = CPU-only for wgpu path.
-- **BC-07**: Wire `SovereignDevice` into `Auto::new()` fallback chain. The trait exists, the impl exists, the IPC wiring exists — they just aren't connected in the failure path.
-- **BC-08**: Make `cpu-shader` feature default-on. `barracuda-naga-exec` already interprets WGSL on CPU. Batch ops already have `#[cfg(feature = "cpu-shader")]` paths with scalar Rust fallbacks.
+- ~~**BC-07**: Wire `SovereignDevice` into `Auto::new()` fallback chain~~ **RESOLVED** (Sprint 41) — `Auto::new()` returns `DiscoveredDevice` with 3-tier fallback (wgpu GPU → wgpu CPU → SovereignDevice IPC → Err).
+- ~~**BC-08**: Make `cpu-shader` feature default-on~~ **RESOLVED** (Sprint 40) — `cpu-shader` in `default = ["gpu", "domain-models", "cpu-shader"]`.
 
 **Target state**: barraCuda computes on **any** hardware:
 1. wgpu GPU (development, glibc hosts with GPU) — fastest
@@ -265,8 +265,8 @@ Each maps to a specific primal team for resolution.
 
 | Task | Source | Priority |
 |------|--------|----------|
-| BC-07: Wire `SovereignDevice` into `Auto::new()` fallback | primalSpring benchScale audit | Medium |
-| BC-08: Make `cpu-shader` default-on | primalSpring benchScale audit | Medium |
+| ~~BC-07: Wire `SovereignDevice` into `Auto::new()` fallback~~ | primalSpring benchScale audit | ~~Medium~~ **RESOLVED** (Sprint 41) |
+| ~~BC-08: Make `cpu-shader` default-on~~ | primalSpring benchScale audit | ~~Medium~~ **RESOLVED** (Sprint 40) |
 | `TensorSession` stabilization for spring adoption | hotSpring GAP-HS-027, healthSpring | Medium |
 | `plasma_dispersion` feature-gate bug (`domain-lattice` required) | neuralSpring Gap 9 | Low |
 | 29 shader absorption candidates from neuralSpring | neuralSpring Gap 10 | Low |
