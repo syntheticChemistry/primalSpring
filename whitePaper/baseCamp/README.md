@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: April 13, 2026
-**Status**: Phase 41 — Pre-Downstream Gap Resolution (87/87 gates), 73 experiments, 443 tests, 67 deploy graphs + 6 fragments, 43-cell deployment matrix, 7 decomposed subsystem compositions (C1-C7), particle model, layered validation (L0-L3), BTSP Phase 2 (12/12 primals), 13 FullNucleus capabilities, 5 bonding models validated (structural), structured primal gap registry, pre-downstream gap resolution complete
+**Date**: April 14, 2026
+**Status**: Phase 43 — 74 experiments (17 tracks), 443 tests, 67 deploy graphs + 6 fragments, multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, 12/12 primals ALIVE, 19/19 exp094 composition parity, 6/9 cross-arch checks
 
 ---
 
@@ -55,8 +55,9 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | Deployment graph sweep, Tower Atomic LAN probe, L0 routing matrix, L2 dual-tower ionic, L3 covalent mesh backup |
 | 16 | Composition Parity | exp094 | Does full NUCLEUS composition produce correct results via IPC? 19/19 checks. |
+| 17 | Cross-Architecture Deployment | exp095–096 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? 6/9 checks. |
 
-## Current State (v0.9.5)
+## Current State (v0.9.14)
 
 | Metric | Value |
 |--------|-------|
@@ -76,7 +77,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 73 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 74 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
@@ -92,6 +93,42 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | Live pass rate | **43/44 (98%)** — up from 93% → 79% pre-evolution |
 | petalTongue | v1.6.6+ integrated, zero-copy IPC, blake3, RenderingAwareness auto-init, PT-07 server discovery |
 | Nucleated spring deploys | 6 proto graphs: airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring |
+
+## What Changed — Phase 42–43 (Multi-Tier Genetics + Cross-Arch Deployment)
+
+### Multi-Tier Genetics Architecture (April 14, 2026)
+
+The plaintext `FAMILY_SEED` first draft evolved into the dark forest protocol:
+
+| Tier | Genetic Name | Analogy | Role |
+|------|-------------|---------|------|
+| Mito-Beacon | Mitochondrial genetics | Inherited, shared | Group membership, discovery, NAT negotiation |
+| Nuclear (Lineage DNA) | Nuclear genetics | Non-fungible, generational | Permissions, authentication — always spawn + mix, never copy |
+| Tags | Open channels | Hashtags, chat rooms | Derived from plaintext seed heritage, open participation |
+
+Key properties: Grandma can let a cousin know how to reach you without giving away your contacts. A school alum has a mito-beacon for their degree. A gamer has many from guilds. Nuclear genetics are permission-bearing and copy-resistant — lineage tracking ensures generational mixing at every step rather than cloning the nuclear material.
+
+**BTSP Phase 3**: ChaCha20-Poly1305 encrypted post-handshake channel with HKDF-SHA256 key derivation. `BtspEnforcer` evolved with explicit deny semantics per `TrustModel`.
+
+**Ionic Bond Protocol**: Cross-family capability sharing via `IonicBondClient` RPC wiring. `IonicPeerIdentity` + `DiscoveryMethod` types.
+
+**Content Distribution Federation**: 8-phase pipeline graph (`content_distribution_federation.toml`) with 4 bonding tiers and BLAKE3 content addressing. Domain types: `ContentManifest`, `DistributionRole`, `SeederEnrollment`.
+
+### Cross-Architecture Deployment via biomeOS (April 14, 2026)
+
+**biomeOS as composition substrate** — stopped manual primal wiring. biomeOS `neural-api --tcp-only` bootstraps the Tower from `tower_atomic_bootstrap.toml`:
+
+1. Cross-compiled `biomeos-unibin`, BearDog, Songbird for `aarch64-unknown-linux-musl`
+2. Deployed to Pixel (GrapheneOS) via ADB
+3. biomeOS spawned BearDog + Songbird as child processes
+4. Neural API on TCP port 9000, BearDog on TCP 9900
+5. `exp096` validated 6/9 checks through Neural API proxy
+
+**Transport evolution**: `tcp_rpc_multi_protocol` tries raw TCP then HTTP POST fallback. Removed premature `shutdown(Write)` from `tcp_rpc`. Added `http_json_rpc` for Songbird's HTTP transport.
+
+**Upstream biomeOS patch**: `bootstrap.rs` now inherits `BIOMEOS_PLASMID_BIN_DIR`, `ECOPRIMALS_PLASMID_BIN`, `XDG_RUNTIME_DIR`, `FAMILY_SEED` into `ExecutionContext`.
+
+**Remaining upstream gaps**: TCP endpoint propagation in NeuralRouter, graph env variable substitution (`${FAMILY_ID}` etc.).
 
 ## What Changed — Phase 28 (BTSP + Inference Abstraction + Proto-Nucleate Graphs)
 

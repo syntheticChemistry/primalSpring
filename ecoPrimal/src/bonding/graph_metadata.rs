@@ -96,9 +96,16 @@ fn parse_bond_type(s: &str) -> Option<BondType> {
 }
 
 /// Parse a trust model string from graph TOML.
+///
+/// Recognizes the new genetics-aware trust model strings in addition to
+/// the legacy `genetic_lineage` (which is preserved for backward compat).
 fn parse_trust_model(s: &str) -> Option<TrustModel> {
     match s.to_lowercase().replace('-', "_").as_str() {
         "genetic_lineage" | "geneticlineage" => Some(TrustModel::GeneticLineage),
+        "mito_beacon_family" | "mitobeaconfamily" | "mito_beacon" | "mito" => {
+            Some(TrustModel::MitoBeaconFamily)
+        }
+        "nuclear_lineage" | "nuclearlineage" | "nuclear" => Some(TrustModel::NuclearLineage),
         "contractual" | "contract" => Some(TrustModel::Contractual),
         "organizational" | "org" => Some(TrustModel::Organizational),
         "zero_trust" | "zerotrust" => Some(TrustModel::ZeroTrust),
@@ -218,9 +225,9 @@ pub fn validate_graph_bonding(path: &Path) -> GraphBondingMetadata {
     );
 
     if let (Some(BondType::Covalent), Some(tm)) = (internal_bond_type, trust_model) {
-        if tm != TrustModel::GeneticLineage {
+        if !tm.is_nuclear() {
             issues.push(format!(
-                "covalent internal_bond_type requires genetic_lineage trust, got {tm:?}"
+                "covalent internal_bond_type requires nuclear-tier genetics (NuclearLineage or GeneticLineage), got {tm:?}"
             ));
         }
     }
@@ -326,7 +333,7 @@ trust_model = "contractual"
         );
         let meta = validate_graph_bonding(f.path());
         assert!(!meta.issues.is_empty());
-        assert!(meta.issues[0].contains("genetic_lineage"));
+        assert!(meta.issues[0].contains("nuclear"));
     }
 
     #[test]
@@ -388,5 +395,76 @@ internal_bond_type = "hydrogen"
         let meta = validate_graph_bonding(f.path());
         assert!(!meta.issues.is_empty());
         assert!(meta.issues[0].contains("hydrogen"));
+    }
+
+    #[test]
+    fn parse_mito_beacon_trust_model() {
+        let f = write_temp_toml(
+            r#"
+[graph]
+id = "mito_test"
+[graph.metadata]
+internal_bond_type = "metallic"
+trust_model = "mito_beacon_family"
+"#,
+        );
+        let meta = validate_graph_bonding(f.path());
+        assert_eq!(meta.trust_model, Some(TrustModel::MitoBeaconFamily));
+        assert!(meta.issues.is_empty(), "issues: {:?}", meta.issues);
+    }
+
+    #[test]
+    fn parse_nuclear_lineage_trust_model() {
+        let f = write_temp_toml(
+            r#"
+[graph]
+id = "nuclear_test"
+[graph.metadata]
+internal_bond_type = "covalent"
+trust_model = "nuclear_lineage"
+"#,
+        );
+        let meta = validate_graph_bonding(f.path());
+        assert_eq!(meta.trust_model, Some(TrustModel::NuclearLineage));
+        assert!(meta.issues.is_empty(), "issues: {:?}", meta.issues);
+    }
+
+    #[test]
+    fn parse_trust_model_short_aliases() {
+        assert_eq!(parse_trust_model("mito"), Some(TrustModel::MitoBeaconFamily));
+        assert_eq!(parse_trust_model("nuclear"), Some(TrustModel::NuclearLineage));
+        assert_eq!(parse_trust_model("MitoBeaconFamily"), Some(TrustModel::MitoBeaconFamily));
+        assert_eq!(parse_trust_model("NuclearLineage"), Some(TrustModel::NuclearLineage));
+    }
+
+    #[test]
+    fn covalent_with_mito_only_reports_issue() {
+        let f = write_temp_toml(
+            r#"
+[graph]
+id = "cov_mito"
+[graph.metadata]
+internal_bond_type = "covalent"
+trust_model = "mito_beacon_family"
+"#,
+        );
+        let meta = validate_graph_bonding(f.path());
+        assert!(!meta.issues.is_empty());
+        assert!(meta.issues[0].contains("nuclear"));
+    }
+
+    #[test]
+    fn metallic_with_mito_no_issues() {
+        let f = write_temp_toml(
+            r#"
+[graph]
+id = "met_mito"
+[graph.metadata]
+internal_bond_type = "metallic"
+trust_model = "mito_beacon_family"
+"#,
+        );
+        let meta = validate_graph_bonding(f.path());
+        assert!(meta.issues.is_empty(), "issues: {:?}", meta.issues);
     }
 }

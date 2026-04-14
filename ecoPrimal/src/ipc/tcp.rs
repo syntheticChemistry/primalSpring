@@ -80,7 +80,7 @@ pub fn tcp_rpc_with_timeout(
     stream
         .write_all(msg.as_bytes())
         .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
+    stream.flush().map_err(|e| format!("flush: {e}"))?;
 
     let reader = BufReader::new(&stream);
     for line in reader.lines().map_while(Result::ok) {
@@ -149,6 +149,102 @@ pub fn http_health_probe(host: &str, port: u16) -> TcpRpcResult {
         ))
     } else {
         Err("HTTP health: non-OK response".to_owned())
+    }
+}
+
+/// Send a JSON-RPC 2.0 request via HTTP POST to a primal's `/jsonrpc` endpoint.
+///
+/// Some primals (notably Songbird) expose an HTTP server on TCP rather than
+/// raw JSON-RPC framing. This function wraps the request in an HTTP POST to
+/// `/jsonrpc` and parses the JSON-RPC response from the HTTP body.
+///
+/// # Errors
+///
+/// Returns a human-readable `String` on connection failure, timeout, HTTP error,
+/// or JSON-RPC error.
+pub fn http_json_rpc(
+    host: &str,
+    port: u16,
+    method: &str,
+    params: &serde_json::Value,
+) -> TcpRpcResult {
+    let addr = format!("{host}:{port}");
+    let start = Instant::now();
+    let mut stream = TcpStream::connect_timeout(
+        &addr.parse().map_err(|e| format!("parse: {e}"))?,
+        Duration::from_secs(tolerances::TCP_CONNECT_TIMEOUT_SECS),
+    )
+    .map_err(|e| format!("connect {addr}: {e}"))?;
+    stream
+        .set_read_timeout(Some(Duration::from_secs(tolerances::TCP_READ_TIMEOUT_SECS)))
+        .ok();
+    stream
+        .set_write_timeout(Some(Duration::from_secs(
+            tolerances::TCP_WRITE_TIMEOUT_SECS,
+        )))
+        .ok();
+
+    let body = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": params,
+        "id": 1
+    })
+    .to_string();
+
+    let http_req = format!(
+        "POST /jsonrpc HTTP/1.1\r\n\
+         Host: {addr}\r\n\
+         Content-Type: application/json\r\n\
+         Content-Length: {}\r\n\
+         Connection: close\r\n\
+         \r\n\
+         {body}",
+        body.len()
+    );
+    stream
+        .write_all(http_req.as_bytes())
+        .map_err(|e| format!("write: {e}"))?;
+
+    let reader = BufReader::new(&stream);
+    let mut in_body = false;
+    for line in reader.lines().map_while(Result::ok) {
+        if line.is_empty() {
+            in_body = true;
+            continue;
+        }
+        if in_body {
+            if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
+                let elapsed = start.elapsed();
+                if let Some(result) = parsed.get("result") {
+                    return Ok((result.clone(), elapsed));
+                }
+                if let Some(error) = parsed.get("error") {
+                    return Err(format!("RPC error: {error}"));
+                }
+            }
+        }
+    }
+    Err("no HTTP JSON-RPC response".to_owned())
+}
+
+/// Try raw TCP JSON-RPC first, then fall back to HTTP `/jsonrpc`.
+///
+/// Useful when the caller doesn't know whether the target primal uses raw
+/// TCP framing (most primals) or HTTP (Songbird).
+///
+/// # Errors
+///
+/// Returns the HTTP error if both raw TCP and HTTP fail.
+pub fn tcp_rpc_multi_protocol(
+    host: &str,
+    port: u16,
+    method: &str,
+    params: &serde_json::Value,
+) -> TcpRpcResult {
+    match tcp_rpc(host, port, method, params) {
+        ok @ Ok(_) => ok,
+        Err(_raw_err) => http_json_rpc(host, port, method, params),
     }
 }
 

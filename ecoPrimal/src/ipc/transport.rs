@@ -48,6 +48,7 @@ impl Transport {
 
         match btsp::security_mode_from_env() {
             btsp::SecurityMode::Production => {
+                #[expect(deprecated, reason = "backward-compat bridge: new code uses mito_beacon_from_env")]
                 super::btsp_handshake::family_seed_from_env().map_or_else(
                     || {
                         tracing::warn!(

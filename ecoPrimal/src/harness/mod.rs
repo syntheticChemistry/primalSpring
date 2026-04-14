@@ -44,11 +44,14 @@ pub struct RunningAtomic {
     biomeos_process: Option<PrimalProcess>,
     nucleation: SocketNucleation,
     family_id: String,
-    /// BTSP family seed for authenticated client connections.
+    /// Mito-tier BTSP seed for authenticated client connections.
     ///
     /// When `Some`, client connections to BTSP-model primals (e.g. BearDog)
-    /// use this seed for the BTSP handshake instead of cleartext.
-    family_seed: Option<Vec<u8>>,
+    /// use this seed for the BTSP handshake (Phase 1: mito tunnel).
+    mito_seed: Option<Vec<u8>>,
+    /// Test nuclear genetics (Phase 2) for compositions that need
+    /// permission-tier validation. Generated fresh per harness start.
+    nuclear_generation: Option<crate::genetics::NuclearGenetics>,
     runtime_dir: PathBuf,
     atomic: AtomicType,
     /// Dynamic capability-to-primal mapping from graph overlay nodes.
@@ -105,7 +108,7 @@ impl RunningAtomic {
         socket: &Path,
         primal: &str,
     ) -> Result<PrimalClient, crate::ipc::error::IpcError> {
-        if let Some(ref seed) = self.family_seed {
+        if let Some(ref seed) = self.mito_seed {
             if crate::launcher::primal_requires_btsp(primal) {
                 return PrimalClient::connect_btsp(socket, primal, seed);
             }
@@ -225,10 +228,28 @@ impl RunningAtomic {
         self.atomic
     }
 
-    /// The BTSP family seed used for this composition, if any.
+    /// The mito-tier BTSP seed used for this composition, if any.
+    ///
+    /// This is the Phase 1 (mito-beacon) seed for tunnel establishment.
     #[must_use]
+    pub fn mito_seed(&self) -> Option<&[u8]> {
+        self.mito_seed.as_deref()
+    }
+
+    /// The legacy `family_seed` accessor — delegates to [`mito_seed`](Self::mito_seed).
+    #[must_use]
+    #[deprecated(since = "0.10.0", note = "Use mito_seed() — the seed is mito-tier")]
     pub fn family_seed(&self) -> Option<&[u8]> {
-        self.family_seed.as_deref()
+        self.mito_seed()
+    }
+
+    /// The test nuclear genetics for this composition, if generated.
+    ///
+    /// Returns a reference to the Phase 2 (nuclear) genesis identity
+    /// created for test validation of permission-tier operations.
+    #[must_use]
+    pub const fn nuclear_generation(&self) -> Option<&crate::genetics::NuclearGenetics> {
+        self.nuclear_generation.as_ref()
     }
 
     /// Map a capability name to the primal that provides it in this composition.
@@ -371,10 +392,11 @@ impl AtomicHarness {
         ));
         let _ = std::fs::create_dir_all(&runtime_dir);
 
-        let family_seed = generate_harness_seed(family_id);
+        let mito_seed = generate_harness_mito_seed(family_id);
+        let nuclear_generation = generate_harness_nuclear(family_id);
 
         let mut nucleation = SocketNucleation::new(runtime_dir.clone());
-        nucleation.set_family_seed(family_seed.clone());
+        nucleation.set_family_seed(mito_seed.clone());
 
         let primal_refs: Vec<&str> = spawn_order.iter().map(String::as_str).collect();
         nucleation.assign_batch(&primal_refs, family_id);
@@ -403,7 +425,8 @@ impl AtomicHarness {
             biomeos_process: None,
             nucleation,
             family_id: family_id.to_owned(),
-            family_seed: Some(family_seed),
+            mito_seed: Some(mito_seed),
+            nuclear_generation: Some(nuclear_generation),
             runtime_dir,
             atomic: self.atomic,
             overlay_capabilities,
@@ -438,10 +461,11 @@ impl AtomicHarness {
         ));
         let _ = std::fs::create_dir_all(&runtime_dir);
 
-        let family_seed = generate_harness_seed(family_id);
+        let mito_seed = generate_harness_mito_seed(family_id);
+        let nuclear_generation = generate_harness_nuclear(family_id);
 
         let mut nucleation = SocketNucleation::new(runtime_dir.clone());
-        nucleation.set_family_seed(family_seed.clone());
+        nucleation.set_family_seed(mito_seed.clone());
 
         let primal_refs: Vec<&str> = spawn_order.iter().map(String::as_str).collect();
         nucleation.assign_batch(&primal_refs, family_id);
@@ -477,7 +501,8 @@ impl AtomicHarness {
             biomeos_process: Some(biomeos),
             nucleation,
             family_id: family_id.to_owned(),
-            family_seed: Some(family_seed),
+            mito_seed: Some(mito_seed),
+            nuclear_generation: Some(nuclear_generation),
             runtime_dir,
             atomic: self.atomic,
             overlay_capabilities,
@@ -544,14 +569,16 @@ impl AtomicHarness {
     }
 }
 
-/// Derive a deterministic, ASCII-safe BTSP family seed from a family_id.
+/// Derive a deterministic, ASCII-safe mito-tier BTSP seed from a family_id.
 ///
 /// Uses HKDF-SHA256 with a harness-specific salt so the output is unique
 /// per family_id but reproducible. The result is hex-encoded (64 ASCII chars)
 /// so it's safe to pass as an environment variable to BearDog (which reads
 /// `FAMILY_SEED` as raw UTF-8 bytes).
+///
+/// This is the **Phase 1 (mito-beacon)** seed for tunnel establishment.
 #[expect(clippy::expect_used, reason = "HKDF-SHA256 expand to 32 bytes never fails")]
-fn generate_harness_seed(family_id: &str) -> Vec<u8> {
+fn generate_harness_mito_seed(family_id: &str) -> Vec<u8> {
     let hk = Hkdf::<Sha256>::new(Some(b"primalspring-harness-btsp"), family_id.as_bytes());
     let mut okm = [0u8; 32];
     hk.expand(b"family-seed", &mut okm)
@@ -562,6 +589,30 @@ fn generate_harness_seed(family_id: &str) -> Vec<u8> {
         let _ = write!(hex, "{b:02x}");
     }
     hex.into_bytes()
+}
+
+/// Generate test nuclear genetics (Phase 2) for permission-tier validation.
+///
+/// Creates a genesis `NuclearGenetics` with a deterministic key derived
+/// from the `family_id` using a harness-specific HKDF domain. The proof
+/// is a placeholder (harness-only) since BearDog is not available for
+/// real lineage proof generation during local tests.
+#[expect(clippy::expect_used, reason = "HKDF-SHA256 expand to 32 bytes never fails")]
+fn generate_harness_nuclear(family_id: &str) -> crate::genetics::NuclearGenetics {
+    let hk = Hkdf::<Sha256>::new(
+        Some(b"primalspring-harness-nuclear"),
+        family_id.as_bytes(),
+    );
+    let mut okm = [0u8; 32];
+    hk.expand(b"nuclear-genesis", &mut okm)
+        .expect("HKDF expand for harness nuclear");
+
+    let proof_domain = format!("harness-genesis-{family_id}");
+    crate::genetics::NuclearGenetics::genesis(
+        okm.to_vec(),
+        proof_domain.into_bytes(),
+        format!("harness-{family_id}"),
+    )
 }
 
 #[cfg(test)]
@@ -579,7 +630,8 @@ mod tests {
             biomeos_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
-            family_seed: None,
+            mito_seed: None,
+            nuclear_generation: None,
             runtime_dir: dir.clone(),
             atomic: AtomicType::Tower,
             overlay_capabilities: HashMap::new(),
@@ -600,7 +652,8 @@ mod tests {
             biomeos_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
-            family_seed: None,
+            mito_seed: None,
+            nuclear_generation: None,
             runtime_dir: dir,
             atomic: AtomicType::Tower,
             overlay_capabilities: HashMap::new(),
@@ -632,7 +685,8 @@ mod tests {
             biomeos_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
-            family_seed: None,
+            mito_seed: None,
+            nuclear_generation: None,
             runtime_dir: dir,
             atomic: AtomicType::Tower,
             overlay_capabilities: overlay,
@@ -742,27 +796,61 @@ mod tests {
     }
 
     #[test]
-    fn generate_harness_seed_deterministic() {
-        let s1 = generate_harness_seed("test-family-1");
-        let s2 = generate_harness_seed("test-family-1");
+    fn generate_harness_mito_seed_deterministic() {
+        let s1 = generate_harness_mito_seed("test-family-1");
+        let s2 = generate_harness_mito_seed("test-family-1");
         assert_eq!(s1, s2, "same family_id → same seed");
     }
 
     #[test]
-    fn generate_harness_seed_unique_per_family() {
-        let s1 = generate_harness_seed("family-alpha");
-        let s2 = generate_harness_seed("family-bravo");
+    fn generate_harness_mito_seed_unique_per_family() {
+        let s1 = generate_harness_mito_seed("family-alpha");
+        let s2 = generate_harness_mito_seed("family-bravo");
         assert_ne!(s1, s2, "different family_ids → different seeds");
     }
 
     #[test]
-    fn generate_harness_seed_is_hex_ascii() {
-        let seed = generate_harness_seed("exp061-12345");
+    fn generate_harness_mito_seed_is_hex_ascii() {
+        let seed = generate_harness_mito_seed("exp061-12345");
         assert_eq!(seed.len(), 64, "32 bytes hex-encoded = 64 chars");
         assert!(
             seed.iter().all(|&b| b.is_ascii_hexdigit()),
             "all bytes should be ASCII hex digits"
         );
+    }
+
+    #[test]
+    fn generate_harness_nuclear_is_genesis() {
+        let nuc = generate_harness_nuclear("test-family-nuc");
+        assert!(nuc.is_genesis());
+        assert_eq!(nuc.generation(), 0);
+        assert!(!nuc.key_bytes().is_empty());
+    }
+
+    #[test]
+    fn generate_harness_nuclear_deterministic() {
+        let n1 = generate_harness_nuclear("family-det");
+        let n2 = generate_harness_nuclear("family-det");
+        assert_eq!(n1.key_bytes(), n2.key_bytes());
+    }
+
+    #[test]
+    fn generate_harness_nuclear_unique_per_family() {
+        let n1 = generate_harness_nuclear("family-x");
+        let n2 = generate_harness_nuclear("family-y");
+        assert_ne!(n1.key_bytes(), n2.key_bytes());
+    }
+
+    #[test]
+    fn harness_nuclear_child_spawn() {
+        let parent = generate_harness_nuclear("test-spawn");
+        let child = parent.spawn_child(
+            vec![0xCC; 32],
+            b"child-proof".to_vec(),
+            "test-child".to_owned(),
+        );
+        assert_eq!(child.generation(), 1);
+        assert_ne!(child.key_bytes(), parent.key_bytes());
     }
 
     #[test]

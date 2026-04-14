@@ -1,7 +1,7 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
-**Date**: April 10, 2026
-**From**: primalSpring v0.9.8
+**Date**: April 14, 2026
+**From**: primalSpring v0.9.14
 **License**: AGPL-3.0-or-later
 
 ---
@@ -544,9 +544,10 @@ version = "1.0.0"
 
 [graph.metadata]
 particle_model = "balanced"       # proton-heavy | neutron-heavy | balanced
-bonding_primary = "covalent"      # default same-family bonding
+bonding_primary = "covalent"      # default same-family bonding (requires NuclearLineage trust)
 secure_by_default = true
-btsp_phase = 2
+btsp_phase = 2                    # Phase 1 = mito-beacon tunnel, Phase 2 = nuclear session
+genetics_tier = "nuclear"         # nuclear | mito_beacon | tag (determines trust model)
 
 [[graph.nodes]]
 name = "coralreef"
@@ -592,9 +593,11 @@ Tower A (Data Custody)              Tower B (Analytics)
 
 **Key properties**:
 - Different `FAMILY_ID` per tower (ionic bond, not covalent)
+- Ionic bond requires `TrustModel::MitoBeaconFamily` minimum — each tower shares a mito-beacon for discovery but maintains separate nuclear lineages for permissions
 - `capabilities_denied = ["storage.*", "dag.*"]` on the bridge — Tower B cannot access raw data
 - NestGate-A enforces `BondingPolicy` egress fence — data cannot leave Tower A except as de-identified aggregates
 - Both towers carry full provenance trios for regulatory audit trails
+- Nuclear genetics (Tier 2) are never shared across the ionic bridge — each tower spawns its own lineage. Only mito-beacon membership (Tier 1) crosses the boundary
 
 This pattern applies to any spring handling data with compliance requirements.
 See `graphs/downstream/healthspring_enclave_proto_nucleate.toml` and
@@ -643,7 +646,56 @@ See `graphs/fragments/README.md` for the full fragment model.
 
 ---
 
-## 15. Expectations for Composed Primals
+## 15. Three-Tier Genetics Identity (v0.9.14)
+
+Compositions authenticate and authorize through a three-tier genetics model.
+Each tier serves a distinct security function; compositions select the tier
+appropriate to their bonding model.
+
+```
+Tier 1: Mito-Beacon Genetics (discovery, NAT, metadata)
+        Inherited group membership. Freely cloneable. Multiple per system.
+        Dark forest protocol — zero metadata leakage to observers.
+        Sufficient for: Metallic bonds, ionic bridge discovery
+        |
+Tier 2: Nuclear Genetics (permissions, authorization, sessions)
+        Fresh per generation — NEVER copied. Generational DNA mixing.
+        Copy-resistant lineage tracking. ZeroizeOnDrop key material.
+        Required for: Covalent bonds, authenticated sessions
+        |
+Tier 3: Genetic Tags (open participation channels)
+        Legacy FAMILY_SEED transformed. Freely cloneable. No key material.
+        Use for: Public subgroups, chat, hashtag comms within a family
+```
+
+### Two-Phase BTSP Connection
+
+Phase 1 (mito-beacon tunnel) establishes encrypted communication using inherited
+beacon key material. Phase 2 (nuclear session) spawns a fresh generation within
+the tunnel for permission-bearing operations. This separation ensures that
+discovery never exposes authorization credentials.
+
+### Bonding × Genetics
+
+| Bond Type | Minimum Trust Model | Genetics Tier |
+|-----------|-------------------|---------------|
+| Covalent | `NuclearLineage` | Tier 2 (nuclear, !Clone) |
+| Metallic | `MitoBeaconFamily` | Tier 1 (mito-beacon) |
+| Ionic | `MitoBeaconFamily` | Tier 1 (cross-family beacon) |
+
+### For Primals and Springs
+
+- **Covalent compositions** must spawn fresh nuclear genetics at each step.
+  Use `genetics::rpc::derive_lineage_key()` through BearDog.
+- **Ionic bridges** (dual-tower, cross-family) share mito-beacons for
+  discovery but never nuclear credentials across the boundary.
+- **Legacy FAMILY_SEED** is automatically bridged: `GeneticTag::from_legacy_family_seed()`
+  wraps it as a Tier 3 tag. `mito_beacon_from_env()` wraps it as a Tier 1
+  beacon for backward compatibility during migration.
+
+---
+
+## 16. Expectations for Composed Primals
 
 For any primal to participate in primalSpring-validated compositions, it must
 meet these baseline requirements. primalSpring's integration tests and
@@ -676,7 +728,7 @@ actually observed, not what you hope is true.
 
 ---
 
-## 16. Meta-Tier Primals — biomeOS + Squirrel + petalTongue
+## 17. Meta-Tier Primals — biomeOS + Squirrel + petalTongue
 
 Meta-tier primals operate at **any** atomic level. They are not part of Tower,
 Node, or Nest — they overlay any composition.

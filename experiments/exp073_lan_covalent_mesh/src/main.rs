@@ -359,6 +359,187 @@ fn validate_genetic_lineage(
     }
 }
 
+#[allow(clippy::too_many_lines)]
+fn validate_three_tier_genetics(
+    v: &mut ValidationResult,
+    host: &str,
+    beardog_port: u16,
+) {
+    v.section("Three-Tier Genetics (Mito + Nuclear + Lineage Proof)");
+
+    let lineage_seed = "exp073_lan_covalent_test_seed";
+
+    // Tier 1: Mito-beacon key derivation
+    match tcp_rpc_value(
+        host,
+        beardog_port,
+        "genetic.derive_lineage_beacon_key",
+        &serde_json::json!({
+            "lineage_seed": lineage_seed,
+            "domain": "birdsong_beacon_v1"
+        }),
+    ) {
+        Ok(result) => {
+            let has_key = result.get("beacon_key").is_some();
+            let status = if has_key { "derived" } else { "missing" };
+            println!("  Tier 1 mito-beacon key: {status}");
+            v.check_bool(
+                "remote_mito_beacon_derived",
+                has_key,
+                "genetic.derive_lineage_beacon_key on remote BearDog",
+            );
+        }
+        Err(e) => {
+            if e.contains("Method not found") {
+                v.check_skip("remote_mito_beacon_derived", "genetic.derive_lineage_beacon_key not available");
+            } else {
+                v.check_skip("remote_mito_beacon_derived", &format!("mito-beacon: {e}"));
+            }
+            return;
+        }
+    }
+
+    // Tier 2: Nuclear lineage key — genesis (generation 0)
+    let genesis_result = tcp_rpc_value(
+        host,
+        beardog_port,
+        "genetic.derive_lineage_key",
+        &serde_json::json!({
+            "lineage_seed": lineage_seed,
+            "domain": "covalent_mesh_v1",
+            "generation": 0
+        }),
+    );
+
+    let genesis_key_hash = match &genesis_result {
+        Ok(result) => {
+            let has_key = result.get("lineage_key").is_some();
+            let generation = result.get("generation").and_then(serde_json::Value::as_u64).unwrap_or(999);
+            let key_status = if has_key { "derived" } else { "missing" };
+            println!("  Tier 2 nuclear genesis: gen={generation}, key={key_status}");
+            v.check_bool(
+                "remote_nuclear_genesis",
+                has_key && generation == 0,
+                "genetic.derive_lineage_key genesis on remote BearDog",
+            );
+            result.get("lineage_key").and_then(|k| k.as_str()).map(String::from)
+        }
+        Err(e) => {
+            v.check_skip("remote_nuclear_genesis", &format!("nuclear genesis: {e}"));
+            None
+        }
+    };
+
+    // Tier 2: Nuclear lineage key — child (generation 1, with parent hash)
+    if let Some(ref _parent_key) = genesis_key_hash {
+        let child_result = tcp_rpc_value(
+            host,
+            beardog_port,
+            "genetic.derive_lineage_key",
+            &serde_json::json!({
+                "lineage_seed": lineage_seed,
+                "domain": "covalent_mesh_child_v1",
+                "generation": 1,
+                "context_entropy": "lan-covalent-session"
+            }),
+        );
+
+        match child_result {
+            Ok(result) => {
+                let generation = result.get("generation").and_then(serde_json::Value::as_u64).unwrap_or(999);
+                let has_key = result.get("lineage_key").is_some();
+                let key_status = if has_key { "derived" } else { "missing" };
+                println!("  Tier 2 nuclear child:   gen={generation}, key={key_status}");
+                v.check_bool(
+                    "remote_nuclear_child",
+                    has_key && generation == 1,
+                    "genetic.derive_lineage_key child generation on remote BearDog",
+                );
+            }
+            Err(e) => {
+                v.check_skip("remote_nuclear_child", &format!("nuclear child: {e}"));
+            }
+        }
+    }
+
+    // Lineage proof generation + verification round-trip
+    let proof_result = tcp_rpc_value(
+        host,
+        beardog_port,
+        "genetic.generate_lineage_proof",
+        &serde_json::json!({
+            "lineage_seed": lineage_seed,
+            "generation": 0,
+            "context": "covalent_mesh_v1"
+        }),
+    );
+
+    match &proof_result {
+        Ok(result) => {
+            let has_proof = result.get("proof").is_some();
+            println!("  Lineage proof generated: {has_proof}");
+            v.check_bool(
+                "remote_lineage_proof_generated",
+                has_proof,
+                "genetic.generate_lineage_proof on remote BearDog",
+            );
+
+            if let Some(proof) = result.get("proof").and_then(|p| p.as_str()) {
+                match tcp_rpc_value(
+                    host,
+                    beardog_port,
+                    "genetic.verify_lineage",
+                    &serde_json::json!({
+                        "proof": proof,
+                        "claimed_generation": 0,
+                        "context": "covalent_mesh_v1"
+                    }),
+                ) {
+                    Ok(verify) => {
+                        let valid = verify.get("valid").and_then(serde_json::Value::as_bool).unwrap_or(false);
+                        println!("  Lineage proof verified: {valid}");
+                        v.check_bool(
+                            "remote_lineage_proof_verified",
+                            valid,
+                            "genetic.verify_lineage round-trip on remote BearDog",
+                        );
+                    }
+                    Err(e) => {
+                        v.check_skip("remote_lineage_proof_verified", &format!("verify: {e}"));
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            v.check_skip("remote_lineage_proof_generated", &format!("proof: {e}"));
+        }
+    }
+
+    // Entropy mixing
+    match tcp_rpc_value(
+        host,
+        beardog_port,
+        "genetic.mix_entropy",
+        &serde_json::json!({
+            "tiers": ["68756d616e2d656e74726f7079", "73757065727669736564", "6d616368696e65"]
+        }),
+    ) {
+        Ok(result) => {
+            let has_mixed = result.get("mixed").is_some();
+            let status = if has_mixed { "OK" } else { "missing" };
+            println!("  Entropy mixing: {status}");
+            v.check_bool(
+                "remote_entropy_mixing",
+                has_mixed,
+                "genetic.mix_entropy on remote BearDog",
+            );
+        }
+        Err(e) => {
+            v.check_skip("remote_entropy_mixing", &format!("mix_entropy: {e}"));
+        }
+    }
+}
+
 fn validate_tower_https(v: &mut ValidationResult, host: &str, songbird_port: u16) {
     v.section("HTTPS Through Tower Atomic");
 
@@ -426,6 +607,7 @@ fn main() {
             validate_mesh_peers(v, &host, songbird_port);
             validate_birdsong_beacon(v, &host, songbird_port, &family_id);
             validate_genetic_lineage(v, &host, beardog_port, &family_id);
+            validate_three_tier_genetics(v, &host, beardog_port);
             validate_tower_https(v, &host, songbird_port);
             validate_neural_api_routing(v);
             validate_stun(v, &host, songbird_port);

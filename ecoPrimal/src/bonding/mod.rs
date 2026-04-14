@@ -8,8 +8,10 @@
 //!
 //! See `primals/biomeOS/specs/NUCLEUS_BONDING_MODEL.md` for the full specification.
 
+pub mod content_distribution;
 pub mod graph_metadata;
 pub mod ionic;
+pub mod ionic_rpc;
 pub mod stun_tiers;
 
 use serde::{Deserialize, Serialize};
@@ -76,16 +78,63 @@ impl BondType {
 }
 
 /// Trust model governing a bonding interaction.
+///
+/// The genetics tiers split the legacy `GeneticLineage` into two levels:
+/// - [`MitoBeaconFamily`](Self::MitoBeaconFamily): group membership (discovery, NAT).
+/// - [`NuclearLineage`](Self::NuclearLineage): permissions and auth (generational, non-fungible).
+///
+/// The legacy `GeneticLineage` is preserved for serde backward compatibility
+/// and maps to `NuclearLineage` semantically.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TrustModel {
-    /// `BearDog` genetic lineage via shared `.family.seed`.
+    /// **Deprecated alias** — use [`NuclearLineage`](Self::NuclearLineage) or
+    /// [`MitoBeaconFamily`](Self::MitoBeaconFamily) instead.
+    ///
+    /// Legacy `BearDog` genetic lineage via shared `.family.seed`.
+    /// Kept for serde backward compatibility; semantically equivalent
+    /// to `NuclearLineage`.
     GeneticLineage,
+    /// Tier 1 mito-beacon trust: group membership verified via dark forest
+    /// beacon exchange. Sufficient for discovery and organizational bonds
+    /// (Metallic) but **not** for full-trust bonds (Covalent).
+    MitoBeaconFamily,
+    /// Tier 2 nuclear lineage trust: generational, non-fungible permissions.
+    /// Required for Covalent bonds. Each session spawns a child generation
+    /// with mixed DNA — never a copy.
+    NuclearLineage,
     /// API key, OAuth, mutual TLS — contract-verified.
     Contractual,
     /// Cluster membership, LDAP/AD — organizational boundary.
     Organizational,
     /// Assume hostile, disclose nothing.
     ZeroTrust,
+}
+
+impl TrustModel {
+    /// Whether this trust model carries genetic authentication (any tier).
+    #[must_use]
+    pub const fn is_genetic(self) -> bool {
+        matches!(
+            self,
+            Self::GeneticLineage | Self::MitoBeaconFamily | Self::NuclearLineage
+        )
+    }
+
+    /// Whether this trust model satisfies nuclear-tier requirements.
+    #[must_use]
+    pub const fn is_nuclear(self) -> bool {
+        matches!(self, Self::GeneticLineage | Self::NuclearLineage)
+    }
+
+    /// Normalize legacy `GeneticLineage` to the appropriate new variant.
+    /// Returns `NuclearLineage` for `GeneticLineage`, others unchanged.
+    #[must_use]
+    pub const fn normalize(self) -> Self {
+        match self {
+            Self::GeneticLineage => Self::NuclearLineage,
+            other => other,
+        }
+    }
 }
 
 /// Capability-scoped constraint on what a bond may share.
@@ -202,8 +251,16 @@ impl BondingPolicy {
         if self.bond_type == BondType::Weak && !self.constraints.capability_allow.is_empty() {
             errors.push("weak bonds should not declare capability_allow".to_owned());
         }
-        if self.bond_type == BondType::Covalent && self.trust_model != TrustModel::GeneticLineage {
-            errors.push("covalent bonds require GeneticLineage trust model".to_owned());
+        if self.bond_type == BondType::Covalent && !self.trust_model.is_nuclear() {
+            errors.push(
+                "covalent bonds require nuclear-tier genetics (NuclearLineage or GeneticLineage)"
+                    .to_owned(),
+            );
+        }
+        if self.bond_type == BondType::Metallic && !self.trust_model.is_genetic() {
+            errors.push(
+                "metallic bonds require at least mito-beacon-tier genetics".to_owned(),
+            );
         }
         if self.bond_type == BondType::Ionic && self.trust_model == TrustModel::ZeroTrust {
             errors.push("ionic bonds require at least Contractual trust".to_owned());
@@ -247,32 +304,65 @@ pub struct BtspEnforcementDecision {
 /// This is the canonical enforcement point where the bonding model meets
 /// the socket layer. Tower Atomic calls this to validate connections.
 ///
-/// # Current limitations
+/// # Enforcement Behavior
 ///
-/// **`evaluate_connection` performs cipher enforcement only, not access control.**
-/// It always sets `allowed: true` — connections are never denied outright. If the
-/// peer's requested cipher is weaker than the bond policy's minimum, the cipher is
-/// *upgraded* to the policy minimum rather than rejecting the connection. This means:
+/// Connections are evaluated in two dimensions:
 ///
-/// - Covalent bonds (Null cipher) accept everything as-is.
-/// - Ionic bonds auto-upgrade weak ciphers to ChaCha20Poly1305.
-/// - No bond type ever produces `allowed: false`.
+/// 1. **Trust tier**: the peer's authenticated genetics tier must meet the
+///    bonding policy's minimum. Covalent bonds require nuclear-tier trust;
+///    metallic bonds require at least mito-beacon; ionic/weak bonds require
+///    their respective minimum. Connections that fail the trust check are
+///    **denied** (`allowed: false`).
 ///
-/// Downstream springs that need connection-level deny semantics (e.g. rejecting
-/// unknown peers on Weak bonds) must implement their own guard on top of this
-/// enforcer until a deny path is added.
+/// 2. **Cipher suite**: if the peer's requested cipher is weaker than the
+///    bond's minimum, the cipher is upgraded to the policy minimum. If the
+///    peer cannot meet the minimum cipher, the connection is denied.
 pub struct BtspEnforcer;
 
 impl BtspEnforcer {
     /// Enforcement Point 1: evaluate a connection at handshake time.
     ///
-    /// Called after BTSP handshake succeeds. Determines which cipher to use
-    /// based on the bond policy. **Never denies** — see struct-level docs.
+    /// Called after BTSP handshake succeeds. Checks the peer's trust tier
+    /// against the bond policy and determines the effective cipher suite.
+    /// Returns `allowed: false` if the peer's trust tier is insufficient
+    /// for the bond type.
     #[must_use]
     pub fn evaluate_connection(
         policy: &BondingPolicy,
         requested_cipher: crate::btsp::BtspCipherSuite,
     ) -> BtspEnforcementDecision {
+        Self::evaluate_connection_with_trust(policy, requested_cipher, None)
+    }
+
+    /// Enforcement Point 1b: evaluate a connection with an explicit peer trust tier.
+    ///
+    /// When the peer's [`GeneticSecurityMode`](crate::btsp::GeneticSecurityMode)
+    /// is known (from the BTSP handshake metadata or session negotiation),
+    /// pass it here for trust-tier enforcement. If `peer_trust` is `None`,
+    /// trust checking is skipped (backward-compatible with pre-genetics callers).
+    #[must_use]
+    pub fn evaluate_connection_with_trust(
+        policy: &BondingPolicy,
+        requested_cipher: crate::btsp::BtspCipherSuite,
+        peer_trust: Option<TrustModel>,
+    ) -> BtspEnforcementDecision {
+        let bond_label = serde_json::to_string(&policy.bond_type).unwrap_or_default();
+
+        if let Some(peer) = peer_trust {
+            if !trust_meets_policy(peer, policy) {
+                return BtspEnforcementDecision {
+                    allowed: false,
+                    cipher: requested_cipher,
+                    capability_permitted: false,
+                    reason: format!(
+                        "Bond {bond_label} requires {}, peer offers {} — denied",
+                        trust_requirement_description(policy),
+                        serde_json::to_string(&peer).unwrap_or_default(),
+                    ),
+                };
+            }
+        }
+
         let cipher_ok = policy.btsp_cipher_allowed(requested_cipher);
         let effective_cipher = if cipher_ok {
             requested_cipher
@@ -286,14 +376,12 @@ impl BtspEnforcer {
             capability_permitted: true,
             reason: if cipher_ok {
                 format!(
-                    "Bond {} allows {} — granted",
-                    serde_json::to_string(&policy.bond_type).unwrap_or_default(),
+                    "Bond {bond_label} allows {} — granted",
                     requested_cipher.description()
                 )
             } else {
                 format!(
-                    "Bond {} requires minimum {} — upgraded from {}",
-                    serde_json::to_string(&policy.bond_type).unwrap_or_default(),
+                    "Bond {bond_label} requires minimum {} — upgraded from {}",
                     effective_cipher.description(),
                     requested_cipher.description()
                 )
@@ -323,6 +411,31 @@ impl BtspEnforcer {
                 format!("Capability '{capability}' denied by bond constraints")
             },
         }
+    }
+}
+
+/// Check whether a peer's trust model satisfies a bonding policy's requirements.
+const fn trust_meets_policy(peer_trust: TrustModel, policy: &BondingPolicy) -> bool {
+    match policy.bond_type {
+        BondType::Covalent => peer_trust.is_nuclear(),
+        BondType::Metallic | BondType::OrganoMetalSalt => peer_trust.is_genetic(),
+        BondType::Ionic => matches!(
+            peer_trust,
+            TrustModel::NuclearLineage
+                | TrustModel::GeneticLineage
+                | TrustModel::MitoBeaconFamily
+                | TrustModel::Contractual
+        ),
+        BondType::Weak => true,
+    }
+}
+
+const fn trust_requirement_description(policy: &BondingPolicy) -> &'static str {
+    match policy.bond_type {
+        BondType::Covalent => "nuclear-tier genetics (NuclearLineage)",
+        BondType::Metallic | BondType::OrganoMetalSalt => "at least mito-beacon genetics",
+        BondType::Ionic => "at least Contractual trust",
+        BondType::Weak => "any trust model",
     }
 }
 
@@ -424,7 +537,7 @@ mod tests {
     }
 
     #[test]
-    fn policy_validation_catches_inconsistency() {
+    fn policy_validation_catches_covalent_without_nuclear() {
         let p = BondingPolicy {
             bond_type: BondType::Covalent,
             trust_model: TrustModel::Contractual,
@@ -435,7 +548,69 @@ mod tests {
         };
         let errors = p.validate();
         assert!(!errors.is_empty());
-        assert!(errors[0].contains("GeneticLineage"));
+        assert!(errors[0].contains("nuclear"));
+    }
+
+    #[test]
+    fn covalent_accepts_nuclear_lineage() {
+        let p = BondingPolicy {
+            bond_type: BondType::Covalent,
+            trust_model: TrustModel::NuclearLineage,
+            constraints: BondingConstraint::default(),
+            active_windows: Vec::new(),
+            offer_relay: true,
+            label: "nuclear-cov".to_owned(),
+        };
+        assert!(p.validate().is_empty());
+    }
+
+    #[test]
+    fn covalent_accepts_legacy_genetic_lineage() {
+        let p = BondingPolicy::covalent_default();
+        assert!(p.validate().is_empty());
+    }
+
+    #[test]
+    fn covalent_rejects_mito_only() {
+        let p = BondingPolicy {
+            bond_type: BondType::Covalent,
+            trust_model: TrustModel::MitoBeaconFamily,
+            constraints: BondingConstraint::default(),
+            active_windows: Vec::new(),
+            offer_relay: false,
+            label: "mito-only".to_owned(),
+        };
+        let errors = p.validate();
+        assert!(!errors.is_empty());
+        assert!(errors[0].contains("nuclear"));
+    }
+
+    #[test]
+    fn metallic_accepts_mito_beacon() {
+        let p = BondingPolicy {
+            bond_type: BondType::Metallic,
+            trust_model: TrustModel::MitoBeaconFamily,
+            constraints: BondingConstraint::default(),
+            active_windows: Vec::new(),
+            offer_relay: false,
+            label: "metallic-mito".to_owned(),
+        };
+        assert!(p.validate().is_empty());
+    }
+
+    #[test]
+    fn metallic_rejects_contractual() {
+        let p = BondingPolicy {
+            bond_type: BondType::Metallic,
+            trust_model: TrustModel::Contractual,
+            constraints: BondingConstraint::default(),
+            active_windows: Vec::new(),
+            offer_relay: false,
+            label: "bad-metallic".to_owned(),
+        };
+        let errors = p.validate();
+        assert!(!errors.is_empty());
+        assert!(errors[0].contains("mito-beacon"));
     }
 
     #[test]
@@ -482,6 +657,124 @@ mod tests {
     }
 
     #[test]
+    fn btsp_enforcer_denies_covalent_without_nuclear() {
+        use crate::btsp::BtspCipherSuite;
+        let cov = BondingPolicy::covalent_default();
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &cov,
+            BtspCipherSuite::Null,
+            Some(TrustModel::MitoBeaconFamily),
+        );
+        assert!(!decision.allowed, "covalent should deny mito-only peer");
+        assert!(decision.reason.contains("denied"));
+    }
+
+    #[test]
+    fn btsp_enforcer_allows_covalent_with_nuclear() {
+        use crate::btsp::BtspCipherSuite;
+        let cov = BondingPolicy::covalent_default();
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &cov,
+            BtspCipherSuite::Null,
+            Some(TrustModel::NuclearLineage),
+        );
+        assert!(decision.allowed, "covalent should allow nuclear peer");
+    }
+
+    #[test]
+    fn btsp_enforcer_denies_metallic_without_genetics() {
+        use crate::btsp::BtspCipherSuite;
+        let policy = BondingPolicy {
+            bond_type: BondType::Metallic,
+            trust_model: TrustModel::MitoBeaconFamily,
+            constraints: BondingConstraint::default(),
+            active_windows: Vec::new(),
+            offer_relay: false,
+            label: "metallic-test".to_owned(),
+        };
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &policy,
+            BtspCipherSuite::HmacPlain,
+            Some(TrustModel::Contractual),
+        );
+        assert!(!decision.allowed, "metallic should deny non-genetic peer");
+    }
+
+    #[test]
+    fn btsp_enforcer_allows_metallic_with_mito() {
+        use crate::btsp::BtspCipherSuite;
+        let policy = BondingPolicy {
+            bond_type: BondType::Metallic,
+            trust_model: TrustModel::MitoBeaconFamily,
+            constraints: BondingConstraint::default(),
+            active_windows: Vec::new(),
+            offer_relay: false,
+            label: "metallic-test".to_owned(),
+        };
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &policy,
+            BtspCipherSuite::HmacPlain,
+            Some(TrustModel::MitoBeaconFamily),
+        );
+        assert!(decision.allowed, "metallic should allow mito peer");
+    }
+
+    #[test]
+    fn btsp_enforcer_denies_ionic_with_zero_trust() {
+        use crate::btsp::BtspCipherSuite;
+        let ionic = BondingPolicy::ionic_contract(vec!["compute.*".to_owned()]);
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &ionic,
+            BtspCipherSuite::ChaCha20Poly1305,
+            Some(TrustModel::ZeroTrust),
+        );
+        assert!(!decision.allowed, "ionic should deny zero-trust peer");
+    }
+
+    #[test]
+    fn btsp_enforcer_allows_ionic_with_contractual() {
+        use crate::btsp::BtspCipherSuite;
+        let ionic = BondingPolicy::ionic_contract(vec!["compute.*".to_owned()]);
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &ionic,
+            BtspCipherSuite::ChaCha20Poly1305,
+            Some(TrustModel::Contractual),
+        );
+        assert!(decision.allowed, "ionic should allow contractual peer");
+    }
+
+    #[test]
+    fn btsp_enforcer_weak_allows_anything() {
+        use crate::btsp::BtspCipherSuite;
+        let weak = BondingPolicy {
+            bond_type: BondType::Weak,
+            trust_model: TrustModel::ZeroTrust,
+            constraints: BondingConstraint::default(),
+            active_windows: Vec::new(),
+            offer_relay: false,
+            label: "weak-test".to_owned(),
+        };
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &weak,
+            BtspCipherSuite::ChaCha20Poly1305,
+            Some(TrustModel::ZeroTrust),
+        );
+        assert!(decision.allowed, "weak should allow zero-trust peer");
+    }
+
+    #[test]
+    fn btsp_enforcer_no_trust_backward_compat() {
+        use crate::btsp::BtspCipherSuite;
+        let cov = BondingPolicy::covalent_default();
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &cov,
+            BtspCipherSuite::Null,
+            None,
+        );
+        assert!(decision.allowed, "None trust (legacy caller) should still allow");
+    }
+
+    #[test]
     fn btsp_enforcer_request_filtering() {
         use crate::btsp::BtspCipherSuite;
         let policy = BondingPolicy::idle_compute(vec![], 100);
@@ -519,6 +812,8 @@ mod tests {
     fn trust_model_round_trip_json() {
         for tm in [
             TrustModel::GeneticLineage,
+            TrustModel::MitoBeaconFamily,
+            TrustModel::NuclearLineage,
             TrustModel::Contractual,
             TrustModel::Organizational,
             TrustModel::ZeroTrust,
@@ -527,5 +822,31 @@ mod tests {
             let back: TrustModel = serde_json::from_str(&json).unwrap();
             assert_eq!(tm, back);
         }
+    }
+
+    #[test]
+    fn trust_model_is_genetic() {
+        assert!(TrustModel::GeneticLineage.is_genetic());
+        assert!(TrustModel::MitoBeaconFamily.is_genetic());
+        assert!(TrustModel::NuclearLineage.is_genetic());
+        assert!(!TrustModel::Contractual.is_genetic());
+        assert!(!TrustModel::Organizational.is_genetic());
+        assert!(!TrustModel::ZeroTrust.is_genetic());
+    }
+
+    #[test]
+    fn trust_model_is_nuclear() {
+        assert!(TrustModel::GeneticLineage.is_nuclear());
+        assert!(TrustModel::NuclearLineage.is_nuclear());
+        assert!(!TrustModel::MitoBeaconFamily.is_nuclear());
+        assert!(!TrustModel::Contractual.is_nuclear());
+    }
+
+    #[test]
+    fn trust_model_normalize() {
+        assert_eq!(TrustModel::GeneticLineage.normalize(), TrustModel::NuclearLineage);
+        assert_eq!(TrustModel::NuclearLineage.normalize(), TrustModel::NuclearLineage);
+        assert_eq!(TrustModel::MitoBeaconFamily.normalize(), TrustModel::MitoBeaconFamily);
+        assert_eq!(TrustModel::Contractual.normalize(), TrustModel::Contractual);
     }
 }

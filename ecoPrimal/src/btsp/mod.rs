@@ -10,6 +10,8 @@
 //! validation, biomeOS routing, and primal socket listeners. The actual
 //! crypto implementation lives in BearDog (`btsp.session.*` methods).
 
+pub mod phase3;
+
 use serde::{Deserialize, Serialize};
 
 use crate::bonding::BondType;
@@ -62,15 +64,89 @@ impl BtspCipherSuite {
 }
 
 /// Security mode for a primal socket — determined at startup from environment.
+///
+/// This is the legacy flat mode enum. New code should prefer
+/// [`GeneticSecurityMode`] which models the two-phase mito/nuclear protocol.
+/// `SecurityMode::Production` maps to `GeneticSecurityMode::MitoTunnel` for
+/// backward compatibility.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SecurityMode {
-    /// Production: `FAMILY_ID` set. BTSP handshake mandatory on all connections.
-    /// Cipher negotiated post-authentication per `BondingPolicy`.
+    /// Production: mito-beacon identity established (`FAMILY_ID` set).
+    /// BTSP handshake mandatory on all connections. Cipher negotiated
+    /// post-authentication per `BondingPolicy`.
+    ///
+    /// **Deprecation path**: this maps to [`GeneticSecurityMode::MitoTunnel`].
+    /// Future code should use `GeneticSecurityMode` directly.
     Production,
 
     /// Development: `BIOMEOS_INSECURE=1`, no `FAMILY_ID`. Raw cleartext
     /// JSON-RPC, no BTSP. Loud warnings on every connection.
     Development,
+}
+
+/// Genetics-aware security mode for the two-phase BTSP protocol.
+///
+/// The three-tier genetics model introduces a two-phase connection:
+/// 1. **Phase 1 (Mito)**: Mito-beacon establishes the tunnel, proving group
+///    membership. Metadata-level comms are now possible.
+/// 2. **Phase 2 (Nuclear)**: Within the mito tunnel, nuclear genetics spawn
+///    authenticated secure channels. All permissions and data flow through
+///    nuclear genetics (always child generations, never copies).
+///
+/// `TagOpen` covers the legacy `FAMILY_SEED` open-participation tier.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum GeneticSecurityMode {
+    /// Phase 1: mito-beacon tunnel. Proves group membership for dark forest
+    /// discovery, NAT negotiation, and metadata-level comms. No permission
+    /// grants — just tunnel establishment.
+    MitoTunnel,
+
+    /// Phase 2: nuclear session within a mito tunnel. Spawns a fresh
+    /// generation of nuclear genetics for the session. Permissions, auth,
+    /// and secure data flow through the child generation's lineage key.
+    NuclearSession,
+
+    /// Open participation via genetic tags (deprecated `FAMILY_SEED` tier).
+    /// No tunnel authentication — tag is broadcast openly. Suitable for
+    /// chat, hashtag comms, Reddit-style participation channels.
+    TagOpen,
+}
+
+impl GeneticSecurityMode {
+    /// Human-readable description.
+    #[must_use]
+    pub const fn description(self) -> &'static str {
+        match self {
+            Self::MitoTunnel => "Phase 1: mito-beacon tunnel (group membership, dark forest)",
+            Self::NuclearSession => "Phase 2: nuclear session (permissions, auth, generational)",
+            Self::TagOpen => "Open tag participation (legacy FAMILY_SEED tier)",
+        }
+    }
+
+    /// Whether this mode requires BTSP authentication.
+    #[must_use]
+    pub const fn requires_btsp(self) -> bool {
+        matches!(self, Self::MitoTunnel | Self::NuclearSession)
+    }
+
+    /// Which genetics tier this mode operates at.
+    #[must_use]
+    pub const fn genetic_tier(self) -> crate::genetics::GeneticTier {
+        match self {
+            Self::MitoTunnel => crate::genetics::GeneticTier::MitoBeacon,
+            Self::NuclearSession => crate::genetics::GeneticTier::Nuclear,
+            Self::TagOpen => crate::genetics::GeneticTier::Tag,
+        }
+    }
+}
+
+impl From<SecurityMode> for GeneticSecurityMode {
+    fn from(mode: SecurityMode) -> Self {
+        match mode {
+            SecurityMode::Production => Self::MitoTunnel,
+            SecurityMode::Development => Self::TagOpen,
+        }
+    }
 }
 
 /// Determine the security mode from environment variables.
@@ -251,5 +327,61 @@ mod tests {
             let back: BtspCipherSuite = serde_json::from_str(&json).unwrap();
             assert_eq!(suite, back);
         }
+    }
+
+    #[test]
+    fn genetic_security_mode_serde_round_trip() {
+        for mode in [
+            GeneticSecurityMode::MitoTunnel,
+            GeneticSecurityMode::NuclearSession,
+            GeneticSecurityMode::TagOpen,
+        ] {
+            let json = serde_json::to_string(&mode).unwrap();
+            let back: GeneticSecurityMode = serde_json::from_str(&json).unwrap();
+            assert_eq!(mode, back);
+        }
+    }
+
+    #[test]
+    fn genetic_security_mode_btsp_requirements() {
+        assert!(GeneticSecurityMode::MitoTunnel.requires_btsp());
+        assert!(GeneticSecurityMode::NuclearSession.requires_btsp());
+        assert!(!GeneticSecurityMode::TagOpen.requires_btsp());
+    }
+
+    #[test]
+    fn genetic_security_mode_tiers() {
+        use crate::genetics::GeneticTier;
+        assert_eq!(
+            GeneticSecurityMode::MitoTunnel.genetic_tier(),
+            GeneticTier::MitoBeacon
+        );
+        assert_eq!(
+            GeneticSecurityMode::NuclearSession.genetic_tier(),
+            GeneticTier::Nuclear
+        );
+        assert_eq!(
+            GeneticSecurityMode::TagOpen.genetic_tier(),
+            GeneticTier::Tag
+        );
+    }
+
+    #[test]
+    fn security_mode_to_genetic_mode() {
+        assert_eq!(
+            GeneticSecurityMode::from(SecurityMode::Production),
+            GeneticSecurityMode::MitoTunnel
+        );
+        assert_eq!(
+            GeneticSecurityMode::from(SecurityMode::Development),
+            GeneticSecurityMode::TagOpen
+        );
+    }
+
+    #[test]
+    fn genetic_security_mode_descriptions() {
+        assert!(!GeneticSecurityMode::MitoTunnel.description().is_empty());
+        assert!(!GeneticSecurityMode::NuclearSession.description().is_empty());
+        assert!(!GeneticSecurityMode::TagOpen.description().is_empty());
     }
 }

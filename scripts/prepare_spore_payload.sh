@@ -20,7 +20,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SPRING_ROOT="$(dirname "$SCRIPT_DIR")"
-ECO_ROOT="$(dirname "$SPRING_ROOT")"
+ECO_ROOT="$(dirname "$(dirname "$SPRING_ROOT")")"
 STAGING="/tmp/primalspring-deploy"
 ARCH="x86_64"
 

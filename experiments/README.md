@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**73 experiments across 16 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**74 experiments across 17 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -19,18 +19,18 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 73 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 74 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 73 experiments. All 73 use centralized library helpers for TCP RPC,
+across all 74 experiments. All 74 use centralized library helpers for TCP RPC,
 method name constants (`ipc::methods`), and primal name constants (`primal_names`).
 
 ## Running
 
 ```bash
-# Run all 73 experiments via meta-validator
+# Run all 74 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment
@@ -60,6 +60,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 14 | E2E Composition | exp085–088 | **E2E composition** (BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition) |
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | **Structural** (deployment graph sweep, Tower Atomic LAN probe, L0 primal routing matrix, L2 dual-tower ionic, L3 covalent mesh backup) |
 | 16 | Composition Parity | exp094 | Full NUCLEUS composition parity: 19/19 checks via live IPC |
+| 17 | Cross-Architecture Deployment | exp095–096 | **Live validated** (proto-nucleate template, Pixel cross-arch bonding via biomeOS Neural API `--tcp-only`) |
 
 ## Experiment Status Key
 
@@ -112,12 +113,14 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 39 | NUCLEUS Composition PASS | 17/17 exp094, 441 tests |
 | 40 | NUCLEUS Complete | 12/12 ALIVE, 19/19 exp094 PASS, 455 tests |
 | 41 | Pre-Downstream Gap Resolution | 13 FullNucleus caps, 443 tests, gap resolution |
+| 42 | Multi-Tier Genetics + BTSP Phase 3 | Mito-Beacon / Nuclear lineage / Tags architecture, ChaCha20-Poly1305 encrypted channels, BtspEnforcer deny semantics, ionic bond RPC, content distribution federation |
+| 43 | Cross-Architecture Deployment | biomeOS Tower bootstrap on Pixel (aarch64 + GrapheneOS), `tcp_rpc_multi_protocol`, exp096 6/9 cross-arch checks (3 blocked on upstream biomeOS TCP propagation + graph env substitution) |
 
 ## Validation Harness
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 73 experiments use this):
+**Builder API** (preferred — all 74 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit

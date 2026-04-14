@@ -4,8 +4,8 @@
 > This local copy is for primalSpring context. The infra version is the
 > inter-spring reference.
 
-**Date**: April 10, 2026
-**From**: primalSpring v0.9.9
+**Date**: April 14, 2026
+**From**: primalSpring v0.9.14
 **License**: AGPL-3.0-or-later
 
 ---
@@ -24,6 +24,23 @@ propagate to every other spring in the ecosystem.
 | Nest | Neutron | Tower + NestGate + rhizoCrypt + loamSpine + sweetGrass | `nest_atomic` |
 | NUCLEUS | Atom | Tower + Node + Nest (9 unique primals) | `nucleus` |
 | Meta-tier | — | biomeOS + Squirrel + petalTongue | `meta_tier` |
+
+### Genetics Layer
+
+Each atomic inherits a genetics posture from the three-tier identity model:
+
+| Tier | Type | Role | Cloneable | Bond Minimum |
+|------|------|------|-----------|--------------|
+| 1 | Mito-Beacon | Discovery, NAT, metadata | Yes | Metallic, Ionic |
+| 2 | Nuclear | Permissions, auth, sessions | No (spawn fresh) | Covalent |
+| 3 | Tag | Open channels (deprecated FAMILY_SEED) | Yes | — |
+
+All covalent bonds (same-family, same-trust) require **NuclearLineage** trust —
+nuclear genetics must be spawned fresh per generation, never copied. Ionic and
+metallic bonds require at minimum **MitoBeaconFamily** trust — mito-beacon
+membership for discovery without sharing nuclear credentials. The two-phase
+BTSP model (Phase 1: mito-beacon tunnel, Phase 2: nuclear session) ensures
+discovery never exposes authorization material.
 
 ---
 
@@ -212,11 +229,12 @@ healthSpring domain layer
 ```
 
 **What healthSpring evolves for the ecosystem**:
-- Ionic bond runtime enforcement → benefits any spring with trust boundaries
+- Ionic bond runtime enforcement (MitoBeaconFamily trust across towers) → benefits any spring with trust boundaries
 - Data egress fences → benefits any composition handling sensitive data
-- Dual-tower enclave pattern → benefits financial, regulatory, government
+- Dual-tower enclave pattern (separate nuclear lineages per tower, shared mito-beacon for discovery) → benefits financial, regulatory, government
 - `crypto.sign_contract` capability → enables metered capability sharing
 - HIPAA audit trail patterns → enriches provenance trio for compliance
+- Nuclear genetics isolation proof → validates that Tier 2 credentials never cross ionic boundaries
 
 ---
 

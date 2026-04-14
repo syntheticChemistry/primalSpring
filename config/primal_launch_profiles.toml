@@ -13,6 +13,13 @@
 #   cli_sockets      — extra CLI flags whose values are resolved socket paths
 #   security_model   — "btsp" (Tower perimeter) or "tower_delegated" (trusts Tower)
 #
+# DEPRECATION NOTICE (FAMILY_SEED):
+#   FAMILY_SEED is being transitioned to the mito-beacon tier of the
+#   three-tier genetics model. It currently serves as the Phase 1
+#   (mito-beacon) key for BTSP tunnel establishment. New code should
+#   use the genetics module (genetics::MitoBeacon, genetics::NuclearGenetics)
+#   rather than reading FAMILY_SEED directly. See genetics/mod.rs.
+#
 # Absorbed from biomeOS config/primal_launch_profiles.toml (AGPL-3.0-only)
 # Ported to primalSpring coordination domain (AGPL-3.0-or-later)
 

@@ -26,11 +26,11 @@ back upstream to primals and primalSpring.
 
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
-- **experiments/** — 72 validation binaries covering 15 tracks
-- **graphs/** — 93 deploy graph TOMLs + 6 atomic-aligned fragments (9 profiles +
-  4 patterns + 13 spring validation + cross-spring + gen4 + bonding + chaos +
-  science + 5 spring deploy + 12 sketches + 5 downstream proto-nucleate +
-  3 pipeline + 5 multi-node + 7 root-level)
+- **experiments/** — 74 validation binaries covering 17 tracks
+- **graphs/** — 67 deploy graph TOMLs + 6 atomic-aligned fragments (9 profiles +
+  4 patterns + 13 spring validation + cross-spring + bonding + chaos +
+  5 spring deploy + 5 downstream proto-nucleate + 3 pipeline + 5 multi-node +
+  7 root-level + 1 federation)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`)
 - **tools/** — nucleus launcher, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
@@ -46,7 +46,8 @@ back upstream to primals and primalSpring.
 | `ipc` | JSON-RPC 2.0 client, Neural API bridge, socket discovery, BTSP handshake |
 | `launcher` | Binary discovery, process spawn, socket nucleation |
 | `harness` | Spawn compositions, validate, RAII teardown |
-| `bonding` | Multi-gate bonding models + STUN tiers |
+| `bonding` | Multi-gate bonding models + STUN tiers + ionic RPC + content distribution |
+| `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
@@ -60,30 +61,39 @@ back upstream to primals and primalSpring.
 
 ## IPC
 
-JSON-RPC 2.0 over Unix domain sockets (TCP fallback).
+JSON-RPC 2.0 over Unix domain sockets (TCP fallback) and HTTP POST.
+`tcp_rpc_multi_protocol` tries raw TCP then HTTP for transport-agnostic probing.
 Method constants across 20+ primal domains. MCP tool surface for Squirrel AI.
 Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.14 Phase 41 — 443 tests, 73 experiments, 67 deploy graphs + 6 atomic-aligned fragments.
+v0.9.14 Phase 41 — 443 tests, 74 experiments (17 tracks), 67 deploy graphs + 6 atomic-aligned fragments.
 
 Live validation: **12/12 primals ALIVE**, **19/19 exp094 composition parity PASS**.
 All LD-01 through LD-10 gaps RESOLVED. Full NUCLEUS composition validated
 across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
-13 FullNucleus capabilities. Pre-downstream gap resolution complete:
-Songbird alias registration, validate_parity_vec non-numeric guard,
-BtspEnforcer cipher-only enforcement documented, DeployGraph multi-node
-schema unified, loamSpine health.check auto-param, rhizoCrypt event_type
-reference documented.
+13 FullNucleus capabilities. Pre-downstream gap resolution complete.
+
+Multi-tier genetics identity system: Mitochondrial (Mito-Beacon for discovery
+and NAT negotiation), Nuclear (lineage DNA for non-fungible permissions with
+generational mixing), Tags (open participation from plaintext seed heritage).
+Three-tier BTSP: Phase 1 (FAMILY_SEED auth), Phase 2 (secure-by-default
+cascade across 12/12 primals), Phase 3 (ChaCha20-Poly1305 encrypted channel).
+BtspEnforcer with explicit deny semantics per TrustModel.
+
+Cross-architecture validated: biomeOS-managed Tower bootstrap on Pixel
+(aarch64-unknown-linux-musl + GrapheneOS) via Neural API `--tcp-only`.
+6/9 cross-arch checks pass; remaining 3 blocked on upstream biomeOS
+TCP endpoint propagation and graph env substitution.
 
 Particle model adopted: Tower = electron, Node = proton, Nest = neutron,
 NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →
 L2 (mixed atomics) → L3 (bonding patterns).
 
 Bonding models validated (structural): Covalent, Ionic, Metallic, Weak,
-OrganoMetalSalt. 13 live multi-node checks skipped (require benchScale
-Docker labs with 2+ FAMILY_IDs).
+OrganoMetalSalt. Content distribution federation graph with 4 bonding tiers.
+Ionic bond protocol RPC wiring for cross-family capability sharing.
 
 ## Ecosystem Position
 

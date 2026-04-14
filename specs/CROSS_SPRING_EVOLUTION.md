@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 10, 2026
-**Status**: Phase 28 — BTSP Phase 2 (11/13 primals enforce handshake), inference abstraction, WGSL shader composition model, 5 proto-nucleate graphs. 72 experiments, 100 deploy graphs + 4 fragments. Wire Standard: BD L2, SB L2, NG L3, TS L3, BC L2, SQ L2. All ecoBins fresh. GAP-11 pending Run 6 live validation.
+**Status**: Phase 43 — BTSP Phase 1–3 (12/12 primals enforce handshake), multi-tier genetics, cross-arch deployment, content distribution federation. 74 experiments (17 tracks), 67 deploy graphs + 6 fragments, 443 tests.
 
 ---
 
@@ -149,7 +149,7 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.7.0 | 411 | Phase 21 — 87/87 gates, deep ecosystem audit + library consolidation, 63 experiments, 59 deploy graphs |
+| primalSpring | v0.9.14 | 443 | Phase 43 — 74 experiments (17 tracks), 67 deploy graphs + 6 fragments, multi-tier genetics, BTSP Phase 1–3, cross-arch deployment |
 
 ## Modernization Sweep (April 7, 2026)
 

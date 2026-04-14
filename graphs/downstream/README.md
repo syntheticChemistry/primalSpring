@@ -179,28 +179,39 @@ whose value contains the required fields for that variant.
 | `ApprovalRevoke` | governance | `approval_id` |
 | `Custom` | any | `kind`, `data` |
 
+## Content Distribution Federation
+
+For content distribution (game assets, datasets, knowledge bases), see the
+federation graph at `graphs/federation/content_distribution_federation.toml`.
+This composes NestGate content-addressed storage, metallic seeder pools,
+ionic consumer downloads, and Songbird relay for NAT traversal. Supporting
+types are in `primalspring::bonding::content_distribution`.
+
 ## Bonding & BTSP Enforcement
 
 When composing across NUCLEUS families (multi-node / cross-family), bonding
 policies control cipher negotiation at the BTSP layer. Key things downstream
 springs need to know:
 
-**`BtspEnforcer::evaluate_connection` performs cipher upgrade only — it never
-denies a connection.** All bond types (including `Weak`) set `allowed: true`.
-If a peer's cipher is weaker than the bond minimum, the cipher is auto-upgraded;
-the connection always proceeds.
+**`BtspEnforcer::evaluate_connection` performs cipher upgrade.** If a peer's
+cipher is weaker than the bond minimum, the cipher is auto-upgraded.
+
+**`BtspEnforcer::evaluate_connection_with_trust` enforces deny semantics.**
+When a peer's trust tier does not meet the `BondingPolicy` requirements, the
+connection is rejected with `allowed: false`. For example, a `MitoBeaconFamily`
+peer attempting a `Covalent` bond (which requires `NuclearLineage`) will be
+denied at handshake time.
 
 | Bond Type | Min Cipher | Trust Model | Behaviour |
 |-----------|------------|-------------|-----------|
-| Covalent | Null | SharedFamilySeed | Same-family, full trust — everything allowed |
-| Metallic | Aes256Gcm | DelocElectronSea | Org-level trust, strong cipher enforced |
-| Ionic | ChaCha20Poly1305 | ContractBased | Cross-family, metered — cipher upgraded if weak |
-| Weak | ChaCha20Poly1305 | ZeroTrust | Unknown peer — cipher upgraded but **not rejected** |
-| OrganoMetalSalt | ChaCha20Poly1305 | HybridTrust | Hybrid — same upgrade-only semantics |
+| Covalent | Null | SharedFamilySeed | Same-family, full trust — requires NuclearLineage |
+| Metallic | Aes256Gcm | DelocElectronSea | Org-level trust, requires MitoBeaconFamily |
+| Ionic | ChaCha20Poly1305 | ContractBased | Cross-family, metered — requires Contractual |
+| Weak | ChaCha20Poly1305 | ZeroTrust | Unknown peer — cipher upgraded, ZeroTrust accepted |
+| OrganoMetalSalt | ChaCha20Poly1305 | HybridTrust | Hybrid — Contractual minimum |
 
-If your spring needs to **deny** unknown peers (e.g. reject Weak bonds from
-unverified families), you must implement your own guard layer on top of the
-enforcer until a deny path is added upstream.
+Springs that need trust-tier enforcement should use `evaluate_connection_with_trust`
+and pass the peer's authenticated `TrustModel`.
 
 ## Upstream Gap Status (April 13, 2026)
 

@@ -15,7 +15,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PLASMIDBIN_PORTS="$SCRIPT_DIR/../../infra/plasmidBin/ports.env"
+PLASMIDBIN_PORTS="$SCRIPT_DIR/../../../infra/plasmidBin/ports.env"
 
 HOST="${1:-}"
 if [ -z "$HOST" ]; then

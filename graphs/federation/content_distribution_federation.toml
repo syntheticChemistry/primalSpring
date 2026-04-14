@@ -1,0 +1,403 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Content Distribution Federation Graph
+#
+# A Steam-like content distribution network built from NUCLEUS primals.
+# Content-addressed blobs live in NestGate, seeders form metallic pools
+# (same-family trusted fleets), consumers connect via ionic or weak bonds,
+# and Songbird TCP relays handle NAT traversal between peers.
+#
+# ┌─────────────────────────────────────────────────────────────────┐
+# │                     ORIGIN GATE (Publisher)                     │
+# │                                                                 │
+# │  BearDog ─── Songbird ─── NestGate (content blobs)             │
+# │     │           │             │                                 │
+# │     │           │         rhizoCrypt ─ loamSpine ─ sweetGrass   │
+# │     │           │         (provenance trio: content lineage)    │
+# │     │           │                                               │
+# │     └───── BTSP Phase 2+3 ─────────────────────────────┐       │
+# │                 │                                       │       │
+# └─────────────────┼───────────────────────────────────────┼───────┘
+#                   │ Songbird TCP                          │
+#         ┌─────────┴──────────┐                   ┌───────┴───────┐
+#         │  SEEDER POOL       │                   │ SEEDER POOL   │
+#         │  (metallic bond)   │                   │ (metallic)    │
+#         │  NestGate replica  │                   │ NestGate      │
+#         │  same FAMILY_ID    │                   │ same FAMILY   │
+#         └─────────┬──────────┘                   └───────┬───────┘
+#                   │ Songbird relay                       │
+#         ┌─────────┴──────────┐                   ┌───────┴───────┐
+#         │  CONSUMER          │                   │ CONSUMER      │
+#         │  (ionic or weak)   │                   │ (ionic/weak)  │
+#         │  different FAMILY  │                   │ diff FAMILY   │
+#         │  metered download  │                   │ metered       │
+#         └────────────────────┘                   └───────────────┘
+#
+# Bonding Model:
+#   - Origin ↔ Seeders: METALLIC (same family, delocalized storage pool)
+#   - Seeders ↔ Seeders: COVALENT (same family, full trust, mesh replication)
+#   - Seeders ↔ Consumers: IONIC (cross-family, metered, contract-scoped)
+#   - Unknown peers: WEAK (zero-trust, but can retrieve content-addressed
+#     blobs if they present a valid BLAKE3 hash — content integrity is
+#     guaranteed by the hash, not by the bond)
+#
+# Trust Model:
+#   - NuclearLineage for seeder enrollment (anti-sybil: seeders must prove
+#     lineage to the publisher's family)
+#   - MitoBeaconFamily for seeder discovery (dark forest: seeders find
+#     each other via mito-beacons without leaking family identity to
+#     non-family observers)
+#   - Contractual for consumer downloads (ionic bond with metering)
+#   - ZeroTrust for anonymous blob retrieval (weak bond, hash-only auth)
+#
+# Content Integrity:
+#   - Every blob is content-addressed (BLAKE3 hash = storage key)
+#   - rhizoCrypt DAG tracks publication lineage (who published what, when)
+#   - loamSpine commits provide permanent tamper-evident record
+#   - sweetGrass braids attribute content to publishers
+#   - Consumers verify BLAKE3 hash on download — tampered content is
+#     immediately detectable regardless of bond type
+#
+# Streaming:
+#   - NestGate storage.store_blob for large content ingestion
+#   - NestGate storage.retrieve_range for partial/resumable downloads
+#   - Songbird TCP for cross-host streaming between gates
+#
+# Use Cases:
+#   - ludoSpring: game asset distribution (textures, models, levels)
+#   - esotericWebb: knowledge base distribution (graph snapshots)
+#   - wetSpring: dataset distribution (sequence databases)
+#   - Generic: any content distribution where integrity matters
+#
+# Prerequisites:
+#   - Origin gate: full Nest Atomic (Tower + NestGate + provenance trio)
+#   - Seeder gates: Tower + NestGate (provenance optional but recommended)
+#   - Consumer gates: Tower (for discovery + BTSP) — NestGate optional
+#   - Songbird TCP enabled on all gates (--port)
+#
+# Usage:
+#   biomeos atomic deploy graphs/federation/content_distribution_federation.toml \
+#     --env FAMILY_ID=<publisher-family> \
+#     --env CONTENT_NAMESPACE=ludospring:assets \
+#     --env MANIFEST_KEY=release_v1.0.0 \
+#     --env SEEDER_MIN_REPLICAS=2 \
+#     --env XDG_RUNTIME_DIR=/run/user/1000
+
+[graph]
+id = "content-distribution-federation"
+name = "content_distribution_federation"
+version = "1.0.0"
+description = "Content distribution federation: NestGate content-addressed blobs, metallic seeder pool, Songbird relay, provenance integrity"
+coordination = "Sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+federation_transport = "songbird_tcp"
+internal_bond_type = "metallic"
+default_interaction_bond = "ionic"
+trust_model = "multi_tier"
+composition_model = "nucleated"
+fragments = ["nest_atomic"]
+atomic_layout = { origin = "nest_atomic", seeders = "tower_atomic+nestgate", consumers = "tower_atomic" }
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+seeder_pool = "metallic"
+seeder_to_seeder = "covalent"
+consumer_to_seeder = "ionic"
+anonymous_retrieval = "weak"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.seeder_pool = "full"
+encryption_tiers.consumer = "full"
+encryption_tiers.anonymous = "hmac_plain"
+
+[graph.bonding_policy.seeder_constraints]
+capability_allow = ["storage.retrieve", "storage.retrieve_range", "storage.exists", "storage.list"]
+capability_deny = ["storage.store", "storage.delete", "dag.*"]
+bandwidth_limit_mbps = 0
+max_concurrent_requests = 32
+
+[graph.bonding_policy.consumer_constraints]
+capability_allow = ["storage.retrieve", "storage.retrieve_range", "storage.exists"]
+capability_deny = ["storage.store", "storage.delete", "storage.list", "dag.*"]
+bandwidth_limit_mbps = 100
+max_concurrent_requests = 4
+
+# =============================================================================
+# PHASE 1: ORIGIN GATE — Publish content
+#
+# The origin gate holds the authoritative copy of all content. Content
+# is stored as BLAKE3-addressed blobs in NestGate. The provenance trio
+# records the publication event for tamper-evident audit trail.
+# =============================================================================
+
+[[graph.nodes]]
+id = "publish_manifest"
+output = "manifest"
+
+[graph.nodes.primal]
+by_capability = "storage"
+
+[graph.nodes.operation]
+name = "storage.retrieve"
+
+[graph.nodes.operation.params]
+key = "${MANIFEST_KEY}"
+namespace = "${CONTENT_NAMESPACE}"
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+# =============================================================================
+# PHASE 2: BEGIN PROVENANCE SESSION
+#
+# Every distribution run is a witnessed event. rhizoCrypt tracks which
+# content was distributed to whom, sweetGrass attributes the publisher,
+# loamSpine provides the permanent record.
+# =============================================================================
+
+[[graph.nodes]]
+id = "distribution_session"
+depends_on = ["publish_manifest"]
+output = "session_id"
+
+[graph.nodes.primal]
+by_capability = "dag"
+
+[graph.nodes.operation]
+name = "dag.session.create"
+
+[graph.nodes.operation.params]
+source_primal = "primalspring"
+niche = "content_distribution"
+
+[graph.nodes.constraints]
+timeout_ms = 5000
+allow_failure = true
+
+# =============================================================================
+# PHASE 3: DISCOVER SEEDER POOL (metallic bond — same family)
+#
+# Seeders are same-family gates that replicate content from the origin.
+# Discovery uses mito-beacons via Songbird mesh — only family members
+# can see each other (dark forest). Seeder enrollment requires nuclear
+# lineage proof (anti-sybil).
+# =============================================================================
+
+[[graph.nodes]]
+id = "discover_seeders"
+depends_on = ["distribution_session"]
+output = "seeder_peers"
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "discovery.peers"
+
+[graph.nodes.operation.params]
+family_only = true
+capability_filter = "storage"
+min_peers = "${SEEDER_MIN_REPLICAS}"
+
+[graph.nodes.constraints]
+timeout_ms = 15000
+
+# =============================================================================
+# PHASE 4: REPLICATE CONTENT TO SEEDERS
+#
+# Push content blobs from origin NestGate to seeder NestGates via
+# Songbird TCP. Content is addressed by BLAKE3 hash — seeders verify
+# integrity on receipt. This uses the metallic bond: same-family gates
+# in a delocalized storage pool.
+# =============================================================================
+
+[[graph.nodes]]
+id = "replicate_to_seeders"
+depends_on = ["discover_seeders", "publish_manifest"]
+output = "replication_result"
+
+[graph.nodes.primal]
+by_capability = "storage"
+
+[graph.nodes.operation]
+name = "storage.replicate"
+
+[graph.nodes.operation.params]
+target_peers = "${seeder_peers}"
+namespace = "${CONTENT_NAMESPACE}"
+manifest_key = "${MANIFEST_KEY}"
+verify_integrity = true
+content_addressed = true
+
+[graph.nodes.constraints]
+timeout_ms = 600000
+
+# =============================================================================
+# PHASE 5: RECORD DISTRIBUTION IN DAG
+#
+# Every replication event is a DataTransfer in the rhizoCrypt DAG.
+# This creates the tamper-evident record that content was distributed
+# to specific seeders at specific times.
+# =============================================================================
+
+[[graph.nodes]]
+id = "record_distribution"
+depends_on = ["replicate_to_seeders"]
+output = "dag_event"
+
+[graph.nodes.primal]
+by_capability = "dag"
+
+[graph.nodes.operation]
+name = "dag.event.append"
+
+[graph.nodes.operation.params]
+session_id = "${session_id}"
+event_type = { DataTransfer = { data_id = "${MANIFEST_KEY}", target = "${seeder_peers}", description = "Content replicated to seeder pool" } }
+
+[graph.nodes.constraints]
+timeout_ms = 5000
+allow_failure = true
+
+# =============================================================================
+# PHASE 6: ANNOUNCE AVAILABILITY (Songbird mesh broadcast)
+#
+# Once seeders have the content, announce availability on the Songbird
+# mesh. Consumers discover content via mito-beacon broadcasts. The
+# announcement includes the manifest hash and seeder count — consumers
+# can verify before downloading.
+# =============================================================================
+
+[[graph.nodes]]
+id = "announce_content"
+depends_on = ["record_distribution"]
+output = "announcement"
+
+[graph.nodes.primal]
+by_capability = "discovery"
+
+[graph.nodes.operation]
+name = "discovery.announce"
+
+[graph.nodes.operation.params]
+topic = "content:${CONTENT_NAMESPACE}"
+manifest_hash = "${replication_result.content_hash}"
+seeder_count = "${replication_result.peer_count}"
+bond_types_accepted = ["ionic", "weak"]
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+
+# =============================================================================
+# PHASE 7: ATTRIBUTE CONTENT (sweetGrass braid)
+#
+# The publisher is attributed via sweetGrass. This creates the
+# provenance braid that downstream consumers inherit — every download
+# carries the publisher's attribution.
+# =============================================================================
+
+[[graph.nodes]]
+id = "attribute_publication"
+depends_on = ["announce_content"]
+output = "braid_id"
+
+[graph.nodes.primal]
+by_capability = "attribution"
+
+[graph.nodes.operation]
+name = "braid.create"
+
+[graph.nodes.operation.params]
+data_hash = "${replication_result.content_hash}"
+agent = "did:eco:${FAMILY_ID}:origin"
+mime_type = "application/x-content-manifest"
+size = "${replication_result.total_bytes}"
+
+[graph.nodes.constraints]
+timeout_ms = 5000
+allow_failure = true
+
+# =============================================================================
+# PHASE 8: COMMIT TO LOAMSPINE
+#
+# Permanent record of the distribution event. This is the anchor that
+# proves content was published at a specific time with specific integrity.
+# =============================================================================
+
+[[graph.nodes]]
+id = "commit_distribution"
+depends_on = ["attribute_publication"]
+output = "commit_result"
+
+[graph.nodes.primal]
+by_capability = "ledger"
+
+[graph.nodes.operation]
+name = "provenance.commit"
+
+[graph.nodes.operation.params]
+summary = { distribution = "${CONTENT_NAMESPACE}", manifest = "${MANIFEST_KEY}", seeders = "${replication_result.peer_count}", total_bytes = "${replication_result.total_bytes}" }
+content_hash = "${replication_result.content_hash}"
+
+[graph.nodes.constraints]
+timeout_ms = 10000
+allow_failure = true
+
+# =============================================================================
+# CONSUMER RETRIEVAL GRAPH (separate deployment — runs on consumer gate)
+#
+# This section documents the consumer-side flow. In practice, the
+# consumer deploys their own graph or uses primalSpring's composition
+# API to drive downloads. The flow is:
+#
+#   1. Discover seeders via Songbird mesh (mito-beacon topic subscription)
+#   2. Establish ionic bond with best seeder (metered, time-bounded)
+#   3. Retrieve manifest (storage.retrieve via ionic bond)
+#   4. Stream content blobs (storage.retrieve_range for large files)
+#   5. Verify BLAKE3 hash on each blob (content integrity)
+#   6. Record download in local provenance (if provenance trio available)
+#   7. Terminate ionic bond (provenance seal emitted)
+#
+# The consumer does NOT need to trust the seeder beyond the ionic
+# contract. Content integrity is guaranteed by BLAKE3 hashing — if a
+# seeder serves tampered content, the hash won't match and the consumer
+# rejects it. This is the "trust the math, not the peer" principle.
+#
+# For anonymous retrieval (weak bond): the consumer presents only the
+# BLAKE3 hash of the blob they want. No identity exchange, no metering.
+# The seeder serves the blob if it has it. This enables CDN-like edge
+# caching where trust is entirely in the content hash.
+# =============================================================================
+
+# =============================================================================
+# SUMMARY
+# =============================================================================
+#
+# Content Distribution Federation Pipeline:
+#   1. Publish: content stored as BLAKE3-addressed blobs in NestGate
+#   2. Provenance: rhizoCrypt DAG session tracks the distribution
+#   3. Discover: Songbird mesh finds same-family seeders (mito-beacon)
+#   4. Replicate: push content to metallic seeder pool (verified)
+#   5. Record: DataTransfer event in rhizoCrypt DAG
+#   6. Announce: Songbird mesh broadcast for consumer discovery
+#   7. Attribute: sweetGrass braid for publisher provenance
+#   8. Commit: loamSpine permanent record
+#
+# Every distributed blob is:
+#   - Content-addressed (BLAKE3 hash = identity = integrity proof)
+#   - Attributed (sweetGrass braid → publisher DID)
+#   - Witnessed (rhizoCrypt DAG → distribution lineage)
+#   - Committed (loamSpine → permanent tamper-evident record)
+#   - Encrypted in transit (BTSP Phase 3 between gates)
+#
+# Bonding tiers for different trust levels:
+#   - METALLIC: trusted seeder fleet (same family, delocalized storage)
+#   - COVALENT: seeder-to-seeder mesh (same family, full replication)
+#   - IONIC: consumer downloads (cross-family, metered, contract-scoped)
+#   - WEAK: anonymous CDN retrieval (hash-only, zero-trust)
+#
+# =============================================================================

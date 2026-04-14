@@ -8,7 +8,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > and are NOT tracked here. See `graphs/downstream/` for proto-nucleate patterns.
 > Springs/gardens do NOT have binaries in plasmidBin — only primals do.
 >
-> **Last updated**: 2026-04-13 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
+> **Last updated**: 2026-04-14 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -488,7 +488,7 @@ in `infra/wateringHole/` for the full water-cycle model.
 | BM-09 | `capability.call` forwards to tarpc socket instead of JSON-RPC | **RESOLVED** (April 10 — `.jsonrpc.sock` preferred over `.sock` for domain aliases in socket resolution) |
 | BM-11 | ToadStool dual-socket: `build_socket_path` + `resolve_primal_socket` lack explicit JSON-RPC preference | **RESOLVED** (April 10 — `prefers_jsonrpc` flag in `socket.rs`, `.jsonrpc.sock` sibling check in `path_builder.rs`, stale socket cleanup in launcher) |
 
-**Compliance** (v3.00 — April 9 second pull): clippy **CLEAN**, fmt **PASS**, **7,724 tests PASS** ↑, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, SPDX present. Zero `#[allow(`. **BTSP Phase 1 COMPLETE** (v2.98). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_client.rs` expanded to 524+ lines: full server-side handshake (`server_handshake()`) wired into Neural API UDS listener (`handle_connection_with_btsp`), enforce vs warn-only modes, graceful fallback for raw JSON-RPC clients. Wire types: `ClientHello/ServerHello/ChallengeResponse/HandshakeComplete`. BearDog delegation. **v3.00 evolution**: async-trait → native async fn (Edition 2024), `itertools` + `async-trait` removed from 4 crates, license `-only` → `-or-later` across all docs/scripts/LICENSE-ORC, orphan `nucleus_executor.rs` deleted (288 LOC), `/tmp/biomeos` → centralized `runtime_paths`. **Discovery compliance: COMPLETE**.
+**Compliance** (v3.13 — April 14): clippy **CLEAN**, fmt **PASS**, **7,695+ tests PASS** ↑, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, SPDX present. Zero `#[allow(`. **BTSP Phase 1 COMPLETE** (v2.98). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_client.rs` expanded to 524+ lines: full server-side handshake (`server_handshake()`) wired into Neural API UDS listener (`handle_connection_with_btsp`), enforce vs warn-only modes, graceful fallback for raw JSON-RPC clients. Wire types: `ClientHello/ServerHello/ChallengeResponse/HandshakeComplete`. BearDog delegation. **v3.10–v3.13 evolution**: hardcoded primal names → capability constants, `learn_from_event` implemented, topology uses live health probes (not hardcoded "healthy"), `capability.call` prefers Tower Atomic relay, recursive `graph.list`, BTSP handshake failure warnings with socket path, `BIOMEOS_BIND_ADDRESS` for TCP-only bootstrap, `capability.rs` split. **Discovery compliance: COMPLETE**.
 
 ---
 
@@ -542,7 +542,7 @@ barraCuda from fulfilling its role as a hardware-agnostic math primal.
 | SQ-03 | `deprecated-adapters` feature flag docs | **RESOLVED** — documented in `CURRENT_STATUS.md` feature-gates table; intentional retention until v0.3.0 with migration path to `UniversalAiAdapter` + `LOCAL_AI_ENDPOINT` |
 | SQ-04 | `--port` TCP bind hardcoded to `127.0.0.1` | **RESOLVED** (alpha.52) — `--bind` CLI flag + `SQUIRREL_BIND` / `SQUIRREL_IPC_HOST` env vars. Default `127.0.0.1` (secure). Docker: `--bind 0.0.0.0`. Parity with barraCuda BC-09 `resolve_bind_host()` pattern |
 
-**Compliance** (alpha.52 — April 14): Zero `todo!`/`unimplemented!`/`FIXME` in non-test code. fmt **PASS**. clippy **PASS**. **7,203 tests PASS**. `deny.toml` present. Workspace `forbid(unsafe_code)`. **BTSP Phase 1 COMPLETE** (alpha.44). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_handshake.rs` (627 LOC) implements full server-side handshake on UDS accept with BearDog delegation (`btsp.session.create`, `btsp.session.verify`). `maybe_handshake()` called in both abstract+filesystem UDS accept paths in `jsonrpc_server.rs`. Length-prefixed wire framing per standard. `is_btsp_required()` checks `FAMILY_ID` + `BIOMEOS_INSECURE`. Provider discovery: env → manifest scan → well-known `beardog-{fid}.sock`. **Capability Wire Standard L2**. Smart refactoring: session/mod.rs, transport/client.rs, context_state.rs, api.rs all under 600 LOC. Dependency purge: pprof/openai/libloading removed, flate2 → pure Rust backend. **Inference provider bridge** ↑ — `inference.complete`/`embed`/`models` wire methods dispatched via `handlers_inference.rs`, bridging ecoPrimal wire standard to `AiRouter`.
+**Compliance** (alpha.52 — April 14): Zero `todo!`/`unimplemented!`/`FIXME` in non-test code. fmt **PASS**. clippy **PASS**. **7,203 tests PASS** (22 workspace members). `deny.toml` present. Workspace `forbid(unsafe_code)`. **BTSP Phase 1 COMPLETE** (alpha.44). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_handshake.rs` (627 LOC) implements full server-side handshake on UDS accept with BearDog delegation (`btsp.session.create`, `btsp.session.verify`). `maybe_handshake()` called in both abstract+filesystem UDS accept paths in `jsonrpc_server.rs`. Length-prefixed wire framing per standard. `is_btsp_required()` checks `FAMILY_ID` + `BIOMEOS_INSECURE`. Provider discovery: env → manifest scan → well-known `beardog-{fid}.sock`. **BTSP Phase 3 deferred** — `cipher = "null"` after verify; full cipher negotiation via `btsp.negotiate` pending. **SQ-04 RESOLVED** ↑ — `--bind` CLI flag + `SQUIRREL_BIND` / `SQUIRREL_IPC_HOST` env vars. Default `127.0.0.1` (secure). Docker: `--bind 0.0.0.0`. Parity with barraCuda BC-09 `resolve_bind_host()` pattern. **Capability Wire Standard L2**. Smart refactoring: 9 large files split (alpha.52), session/mod.rs/transport/client.rs/context_state.rs/api.rs all under 600 LOC. Dependency purge: pprof/openai/libloading/hostname removed, flate2 → pure Rust backend. **Inference provider bridge** ↑ — `inference.complete`/`embed`/`models` wire methods dispatched via `handlers_inference.rs`, bridging ecoPrimal wire standard to `AiRouter`. Capability-first naming (toadstool→compute, songbird→discovery stems). **Genetics awareness**: `genetic_families` optional wire field; no three-tier type consumption yet — awaits ecoPrimal ≥0.10.0.
 
 ---
 
@@ -572,7 +572,7 @@ barraCuda from fulfilling its role as a hardware-agnostic math primal.
 | NG-07 | aarch64-musl segfault | **RESOLVED** | Static-PIE + musl ≤1.2.2 crash in `_start_c/dlstart.c`. Fixed: `-C relocation-model=static` in `.cargo/config.toml` for both x86_64 and aarch64 targets |
 | NG-08 | `ring` v0.17.14 in production via `rustls` default crypto | **RESOLVED** | April 11 — NestGate eliminated `reqwest` entirely, switched to `ureq` with `rustls-no-provider` + `rustls-rustcrypto`. `cargo tree -i ring` now returns "nothing to print". **13/13 primals ring-free.** |
 
-**Compliance** (April 10 NUCLEUS patterns): Clippy **CLEAN**, fmt **PASS**, **11,856+ tests PASS** ↑. `forbid(unsafe_code)` per-crate + workspace `deny`. `deny.toml` present. SPDX present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_server_handshake.rs` implements full server-side handshake wired into **both** UDS listener paths (`unix_socket_server/mod.rs:handle_connection` and `isomorphic_ipc/server.rs`). Delegates to BearDog `btsp.session.create/verify/negotiate`. `is_btsp_required()` guard. **NG-01 RESOLVED** — `FileMetadataBackend` enforced in production. **NG-03 RESOLVED** — `data.*` wildcard delegation. **NG-06 RESOLVED** ↑ — `--socket` CLI flag wired through dispatch. `uzers` dep removed (replaced by `rustix::process`). 81 hardcoded `base_url` strings → `format!()`. tarpc_server smart-refactored to directory module. Zero TODO/FIXME/HACK in production code. **Capability Wire Standard L3**.
+**Compliance** (Session 43n — April 14): Clippy **CLEAN**, fmt **PASS**, **11,819 tests PASS** ↑. `forbid(unsafe_code)` per-crate + workspace `deny`. `deny.toml` present. SPDX present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_server_handshake.rs` implements full server-side handshake wired into **both** UDS listener paths. Delegates to BearDog `btsp.session.create/verify/negotiate`. `is_btsp_required()` guard. **Session 43n evolution**: Semantic router streaming parity (5 storage streaming methods). Event-driven connection lifecycle (`select!` idle timeout, `connection.closing` notification). Deep debt: zero `dyn Error`, zero `async-trait` in production. `fetch_external` delegated through Tower Atomic (biomeOS `capability.call`), direct TLS removed from nestgate-rpc. **Capability Wire Standard L3**.
 
 ---
 
@@ -599,7 +599,7 @@ All gaps **RESOLVED**.
 | LS-04 | Witness wire evolution | **RESOLVED** (v0.9.16 — `WireWitnessRef` in `trio_types.rs`, witnesses on wire summaries) |
 | LS-05 | `--socket` CLI flag missing | **RESOLVED** | April 10 — `--socket` flag added to `Command::Server`, passed directly to `run_server` (no env mutation, respects `forbid(unsafe_code)`) |
 
-**Compliance** (v0.9.16+ — April 10): clippy clean, fmt **PASS**, `forbid(unsafe_code)` workspace, `deny.toml` present, tests pass. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake()` in `crates/loam-spine-core/src/btsp.rs`, wired into UDS accept loop (`run_jsonrpc_uds_server` → `handle_uds_connection`). **Delegates to BearDog** (`btsp.session.create`, `btsp.session.verify`, `btsp.negotiate`). Tests with mock BearDog + mock client in `btsp_tests.rs`. **`--socket` CLI flag** wired. **Capability Wire Standard L2/L3**.
+**Compliance** (0.9.16+ — April 14): clippy clean, fmt **PASS**, `forbid(unsafe_code)` workspace, `deny.toml` present, **1,396 tests PASS**. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake()` in `crates/loam-spine-core/src/btsp.rs`, wired into UDS accept loop. **BTSP decoupled from BearDog identity** ↑ — `beardog_client.rs` → `provider_client.rs` (any security provider can serve BTSP sessions). `provenance.commit` → `session.commit` alias wired (primalSpring benchScale compat). `certificate.get` capability added. Named constants, `Arc<str>`, `.into()` modernization. **Capability Wire Standard L2/L3**.
 
 ---
 
@@ -612,7 +612,7 @@ All gaps **RESOLVED**.
 | TS-03 | `--socket` CLI flag parsed but not wired | **RESOLVED** | April 10 — `socket_override` param added to `run_server_main`, wired through dispatch. Overrides `get_socket_path()` resolution |
 | TS-04 | `ollama.*`/`inference.*` semantic mappings advertised but not dispatched | **RESOLVED** | April 10 — Removed from `mappings_extended.rs`. Inference is Squirrel's domain via ecoPrimal wire standard. ToadStool is compute substrate, not model serving. |
 
-**Compliance** (S198+ — April 10 NUCLEUS patterns): Clippy **CLEAN**, fmt **PASS**. 21,600+ tests **PASS**. `deny.toml` present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `BtspServer::accept_handshake` wired into JSON-RPC Unix accept (`pure_jsonrpc/connection/unix.rs`) and tarpc accept (`unix_maybe_btsp_before_tarpc`), feature-gated behind `btsp` feature + env check. `BtspClient` in `toadstool_common::btsp`. Fuzz targets added (`fuzz_btsp_framing.rs`). **Capability Wire Standard L3**. **Socket separation COMPLETE** — JSON-RPC and tarpc bind distinct sockets. `--socket` CLI override wired to `run_server_main`.
+**Compliance** (S203i — April 14): Clippy **CLEAN**, fmt **PASS**. 21,600+ tests **PASS**. `deny.toml` present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `BtspServer::accept_handshake` wired into JSON-RPC Unix accept and tarpc accept, feature-gated behind `btsp` feature + env check. `BtspClient` in `toadstool_common::btsp`. Fuzz targets (`fuzz_btsp_framing.rs`). **S203e–S203i evolution**: test extraction from 52 production files, TCP idle timeout (resolves exp082 half-open), BTSP auto-detect (LD-04: binary vs text first byte on accept), `compute.execute` direct route, pipeline methods in `capabilities.list`, network centralization, async GPU discovery. **Capability Wire Standard L3**. **Socket separation COMPLETE** — JSON-RPC and tarpc bind distinct sockets.
 
 ---
 
@@ -651,7 +651,7 @@ All gaps **RESOLVED**. TCP JSON-RPC added, `cargo-deny`, `forbid(unsafe)`.
 | CR-04 | Typed errors (`Result<_, String>` in driver) | **RESOLVED** | Iter 79b — Wave 4 complete: `BootTrace::from_mmiotrace` → `Result<Self, ChannelError>`, `ChannelAllocDiag.result` → `Result<u32, DriverError>`. Zero `Result<_, String>` remaining in coral-driver production code. Test harness still uses `String` errors (acceptable) |
 | CR-05 | `cpu_exec.rs` dead code | **RESOLVED** | Iter 79b — File deleted (365 lines removed). Was orphaned stub not in module tree |
 
-**Compliance** (Iter 78 — April 10): clippy **CLEAN** (pedantic + nursery, 0 warnings), fmt **PASS**, `forbid(unsafe_code)` on coralreef-core + nak-ir-proc + stubs, `deny.toml` present (bans wildcards, yanked-deny). **4,459 tests, 0 failures**, ~153 ignored (HW-gated). SPDX present. **0 files over 1000 LOC** (7 large files split into modules: `nv_metal`, `memory`, `vfio_compute`, `falcon_capability`, `knowledge`, `device`, `codegen/ops`). `coral-driver` opts out of workspace `unsafe_code = "deny"` (ioctl/mmap/MMIO required). **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `guard_connection()` calls `btsp.session.create` on real UDS, parses `session_id`, degrades when provider absent. Wired into Unix JSON-RPC, TCP newline, tarpc accept paths. Full challenge-response + encrypted framing still Phase 3. **Capability Wire Standard L2** ↑ — `capability.list` + `identity.get` with flat `methods`. Uses singular `capability.list` (not `capabilities.list`). **Note**: crypto socket discovery paths differ between core (`config::discovery_dir()`) and ember/glowplug (`XDG_RUNTIME_DIR`) — potential cross-process alignment issue for NUCLEUS. tarpc `Result<_, String>` → `TarpcCompileError` (typed serde-friendly wrapper). `#[allow]` → `#[expect]` lint migration started.
+**Compliance** (Iter 80 — April 14): clippy **CLEAN** (pedantic + nursery, 0 warnings), fmt **PASS**, `forbid(unsafe_code)` on coralreef-core + nak-ir-proc + stubs, `deny.toml` present (bans wildcards, yanked-deny). **4,506 tests, 0 failures**, ~153 ignored (HW-gated). SPDX present. **0 files over 1000 LOC**. `coral-driver` opts out of workspace `unsafe_code = "deny"` (ioctl/mmap/MMIO required). **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `guard_connection()` calls `btsp.session.create` on real UDS, degrades when provider absent. Wired into Unix JSON-RPC, TCP newline, tarpc accept paths. **Iter 79–80 evolution**: `--bind` flag + `CORALREEF_IPC_HOST` for network-facing deployments. Feature-gate VFIO constructors. `#[must_use]` dispatch audit. 6 multi-stage ML pipeline composition tests. Hot-path alloc elimination. `engine_regs` module extraction. `Display` zero-alloc. **Capability Wire Standard L2** ↑ — `capability.list` + `identity.get` with flat `methods`. tarpc `Result<_, String>` → `TarpcCompileError`.
 
 ---
 
@@ -661,7 +661,7 @@ All gaps **RESOLVED**. TCP JSON-RPC added, `cargo-deny`, `forbid(unsafe)`.
 |----|-----|----------|--------|
 | BD-01 | `crypto.verify_ed25519` does not accept `encoding` hint | **RESOLVED** ↑ — Wave 33: per-field `message_encoding`, `signature_encoding`, `public_key_encoding` + global `encoding` default. Semantic aliases `crypto.ed25519.sign`/`crypto.ed25519.verify` added. Tests cover hex/mixed encodings. |
 
-**Compliance** (Wave 33 — April 9 wave 4): clippy clean, fmt clean, `forbid(unsafe_code)` at workspace level, `deny.toml` present. SPDX present. **Coverage 90.51%** (llvm-cov). **14,593+ tests, 0 failures.** **0 files over 1000 LOC** (runtime.rs 1244→360, socket_config.rs 1111→668). `#[allow(` 193→75 (62% reduction), `#[expect(reason` 361→476. **BTSP Phase 2+3 COMPLETE**. **Capability Wire Standard L2**. **Dynamic `ipc.register`** with orchestration registry (non-blocking + heartbeat). **Standalone startup** (`standalone-{uuid}` on missing `NODE_ID`). **BD-01 RESOLVED**. Minor: `capabilities.rs` `operation_dependencies` says `btsp.negotiate` but handler is `btsp.session.negotiate`.
+**Compliance** (Wave 50 — April 14): clippy clean, fmt clean, `forbid(unsafe_code)` at workspace level, `deny.toml` present. SPDX present. **Coverage 90.51%** (llvm-cov). **14,784 tests, 0 failures.** **0 files over 1000 LOC**. `#[allow(` 193→75 (62% reduction), `#[expect(reason` 361→476. **BTSP Phase 2+3 COMPLETE**. **Capability Wire Standard L2**. **TS-01 RESOLVED** ↑ — `transport_security` in `capabilities.list` and `discover_capabilities` (btsp_required, btsp_version, cleartext_available). BTSP rejection now sends JSON-RPC -32600 error (not silent drop). **`genetic.*` RPCs** serve three-tier genetics: `derive_lineage_key`, `derive_lineage_beacon_key`, `mix_entropy`, `generate_lineage_proof`, `verify_lineage`. **Dynamic `ipc.register`** with orchestration registry (non-blocking + heartbeat). **Standalone startup** (`standalone-{uuid}` on missing `NODE_ID`). TCP transport skip when `--port`/`--listen` not passed (UDS-only default). **BD-01 RESOLVED**.
 
 ---
 
@@ -1051,6 +1051,61 @@ gaps moved to RESOLVED. NestGate needs more time (no new commits).
 | ~~Low~~ | ~~RAWR GPU kernel (CPU-only)~~ | ~~barraCuda~~ | **RESOLVED** — `RawrWeightedMeanGpu` + `rawr_weighted_mean_f64.wgsl` GPU shader already exist in `barracuda/src/ops/`. CPU `rawr_mean` also available in `stats/bootstrap.rs`. Both paths working |
 | Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific (single-trajectory loop sufficient for now) |
 | Low | IPC timing for `shader.compile` | coralReef | Deployment timing |
+
+## Post-Pull Resolution Wave (April 14, 2026 — Phase 42)
+
+Pulled all upstream primals. biomeOS, NestGate, loamSpine, toadStool, coralReef,
+BearDog received new commits. Squirrel reviewed locally (alpha.52). barraCuda,
+Songbird, petalTongue, rhizoCrypt, sweetGrass already up to date.
+
+### Key Upstream Evolution
+
+| Primal | Version | Tests | What Changed |
+|--------|---------|-------|--------------|
+| **BearDog** | Wave 50 | 14,784 | **TS-01**: `transport_security` in `capabilities.list` (btsp_required, btsp_version, cleartext_available). BTSP rejection sends JSON-RPC -32600 error. Deep debt (Wave 49: workspace deps, large file refactor). TCP skip when `--port` not passed. |
+| **biomeOS** | v3.13 | 7,695+ | Hardcoded primal names → capability constants. `learn_from_event` implemented. Topology uses live health probes. Composition forwarding via Tower Atomic relay. Recursive `graph.list`. |
+| **NestGate** | Session 43n | 11,819 | Semantic router streaming parity (5 storage streaming methods). Event-driven connection lifecycle (`select!` idle timeout). Deep debt: zero `dyn Error`, zero `async-trait`. |
+| **loamSpine** | 0.9.16+ | 1,396 | **BTSP decoupled from BearDog identity** (`beardog_client.rs` → `provider_client.rs`). `provenance.commit` → `session.commit` alias. Genericized primal references. `certificate.get` capability. |
+| **toadStool** | S203i | 21,600+ | Test extraction from 52 production files. TCP idle timeout (exp082 half-open fix). BTSP auto-detect (LD-04). `compute.execute` direct route. Pipeline methods in capabilities. |
+| **coralReef** | Iter 80 | 4,506 | `--bind` flag + `CORALREEF_IPC_HOST` for network-facing. Feature-gate VFIO constructors. `#[must_use]` audit. Multi-stage ML pipeline tests (6 new). |
+| **Squirrel** | alpha.52 | 7,203 | **SQ-04 RESOLVED**: `--bind` CLI + `SQUIRREL_BIND` / `SQUIRREL_IPC_HOST`. Smart refactoring (9 large files split). Capability-first naming (toadstool→compute stem). `hostname` dep removed. BTSP Phase 2 complete, Phase 3 (cipher negotiation) deferred. |
+
+### New Resolutions
+
+| Gap | Primal | Resolved In | How |
+|-----|--------|-------------|-----|
+| TS-01 Transport security advertisement | BearDog | Wave 48 | `transport_security` block in `capabilities.list` + `discover_capabilities` — btsp_required, version, cleartext_available. Programmatic BTSP detection for biomeOS and AtomicHarness |
+| SQ-04 `--bind` TCP bind hardcoded | Squirrel | alpha.52 | `--bind` CLI flag + `SQUIRREL_BIND` / `SQUIRREL_IPC_HOST` env vars. Default `127.0.0.1`. Docker: `--bind 0.0.0.0` |
+| BTSP provider coupling | loamSpine | 0.9.16+ | BTSP module decoupled from BearDog identity (`beardog_client.rs` → `provider_client.rs`). Any security provider can serve BTSP sessions |
+| TCP idle timeout (exp082 half-open) | toadStool | S203h | Resolves benchScale half-open connection finding from chaos substrate experiments |
+| Composition forwarding gaps | biomeOS | v3.12–v3.13 | Tower Atomic relay for `capability.call`, recursive `graph.list`, BTSP handshake failure warnings with socket path |
+
+### Remaining Open Upstream Gaps (refreshed)
+
+| Priority | Gap | Owner | Status |
+|----------|-----|-------|--------|
+| Medium | `storage.retrieve` for large/streaming tensors | NestGate | OPEN |
+| Medium | Cross-spring persistent storage IPC | NestGate | OPEN |
+| Low | 29 shader absorption candidates | barraCuda | neuralSpring pipeline (submit PRs per shader) |
+| Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific |
+| Low | IPC timing for `shader.compile` | coralReef | Deployment timing |
+| Low | BTSP Phase 3 (encrypted post-handshake channel) | All primals | Deferred — Phase 2 NULL cipher operational everywhere |
+| Low | Genetics three-tier awareness in primals | All primals | primalSpring types/RPCs ready (`ecoPrimal::genetics`). BearDog has `genetic.*` RPCs. No primal has consumed `GeneticSecurityMode` or `MitoBeacon`/`NuclearGenetics` types yet |
+
+### Genetics Posture (April 14, 2026)
+
+primalSpring's `ecoPrimal::genetics` module defines the three-tier model:
+
+| Tier | Type | Where Implemented | Primal Awareness |
+|------|------|------------------|-----------------|
+| 1 | `MitoBeacon` | ecoPrimal + BearDog (`genetic.derive_lineage_beacon_key`) | BearDog serves RPC; no primal consumes yet |
+| 2 | `NuclearGenetics` | ecoPrimal + BearDog (`genetic.derive_lineage_key`, `mix_entropy`, `verify_lineage`) | BearDog serves RPC; no primal consumes yet |
+| 3 | `GeneticTag` | ecoPrimal (`from_legacy_family_seed()`) | Bridge for legacy `FAMILY_SEED` — all primals still use flat seed |
+
+**Next evolution**: As primals pull ecoPrimal ≥0.10.0, they can adopt `mito_beacon_from_env()`
+instead of `family_seed_from_env()`. BearDog's `transport_security` advertisement (TS-01)
+provides the programmatic hook for biomeOS/AtomicHarness to negotiate BTSP tier. loamSpine's
+provider decoupling (`provider_client.rs`) sets the pattern for other primals to follow.
 
 ---
 

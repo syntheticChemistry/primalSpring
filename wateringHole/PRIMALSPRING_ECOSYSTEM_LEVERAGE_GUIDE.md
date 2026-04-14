@@ -1,7 +1,7 @@
 # primalSpring — Ecosystem Leverage Guide
 
-**Date**: April 13, 2026
-**Version**: v1.2.0
+**Date**: April 14, 2026
+**Version**: v1.3.0
 **License**: AGPL-3.0-or-later
 
 ---
@@ -35,7 +35,7 @@ can absorb or compose against.
 | **Deploy graph validation** | `graph.list` / `graph.validate` RPC | CI: ensure deploy TOMLs are structurally valid |
 | **Health probing** | `health.liveness` / `health.readiness` | Kubernetes-style health checks |
 | **MCP tool discovery** | `mcp.tools.list` | Squirrel AI routes coordination requests |
-| **Meta-validation** | `cargo run --bin validate_all` | Run all 72 experiments in sequence |
+| **Meta-validation** | `cargo run --bin validate_all` | Run all 74 experiments in sequence |
 | **Remote gate probe** | `./scripts/validate_remote_gate.sh <host>` | Per-primal TCP health check on any gate |
 | **Musl build** | `./scripts/build_ecosystem_musl.sh` | Static x86_64+aarch64 binaries for deployment |
 | **Spore prep** | `./scripts/prepare_spore_payload.sh <dir>` | USB payload assembly |
@@ -73,7 +73,10 @@ can absorb or compose against.
 | **Transport** | `ipc/transport.rs` | Unified Unix+Tcp transport with `connect_transport()` address parsing |
 | **OnceLock probes** | `ipc/probes.rs` | Cached runtime resource probes for parallel test execution |
 | **Release gate** | `scripts/validate_release.sh` | fmt + clippy + deny + test floor + docs CI gate |
-| **BTSP handshake** | `ipc/btsp_handshake.rs` | Client-side BTSP authentication (FAMILY_ID + nonce + HMAC) for secure socket connections |
+| **BTSP handshake** | `ipc/btsp_handshake.rs` | Client-side BTSP authentication (mito-beacon Phase 1 tunnel). `mito_beacon_from_env()` for genetics-aware path; `family_seed_from_env()` deprecated |
+| **Genetics identity** | `genetics/` | Three-tier genetics: `MitoBeacon` (Tier 1 discovery, Clone), `NuclearGenetics` (Tier 2 permissions, !Clone, generational), `GeneticTag` (Tier 3 open channels). `GeneticIdentity` composite. BearDog RPC wrappers in `genetics/rpc.rs` |
+| **GeneticSecurityMode** | `btsp/mod.rs` | `MitoTunnel` (Phase 1) / `NuclearSession` (Phase 2) / `TagOpen` (legacy). Maps from `SecurityMode::Production` → `MitoTunnel` for backward compat |
+| **TrustModel split** | `bonding/mod.rs` | `MitoBeaconFamily` (Tier 1, sufficient for Metallic bonds) + `NuclearLineage` (Tier 2, required for Covalent). Legacy `GeneticLineage` preserved for serde compat |
 | ~~InferenceClient~~ | ~~inference/~~ | *Archived to fossilRecord Apr 12 — inference is Squirrel/neuralSpring's domain. Wire types documented in wateringHole.* |
 | **CompositionContext** | `composition/mod.rs` | Capability-keyed IPC client set for math parity validation — abstracts discovery, connection, extraction |
 | **validate_parity** | `composition/mod.rs` | One-call scalar comparison: local baseline vs primal composition result with tolerance-gated pass/fail |
@@ -95,7 +98,7 @@ can absorb or compose against.
 | **Meta-Tier** | biomeOS + Squirrel + petalTongue — cross-atomic orchestration, AI, UI |
 | **Graph Execution** | 5 coordination patterns (Sequential, Parallel, DAG, Pipeline, Continuous) |
 | **Emergent Systems** | RootPulse, RPGPT, coralForge pipeline |
-| **Bonding** | Covalent, Ionic, Plasmodium multi-gate |
+| **Bonding** | Covalent (requires NuclearLineage), Ionic (MitoBeaconFamily minimum), Metallic, Plasmodium multi-gate |
 | **Cross-Spring** | Data flow, provenance trio, fieldMouse, petalTongue, Squirrel AI |
 | **WGSL Shader Composition** | Springs compose barraCuda/coralReef/toadStool for domain compute (ML, QCD, biology) |
 | **Proto-Nucleate Graphs** | `graphs/downstream/*.toml` — target compositions for spring evolution |
@@ -228,16 +231,47 @@ checks degrade to `SKIP` — honest about what couldn't be tested.
 - Graceful degradation for provenance (§7)
 - Niche identity with dependencies (§11)
 
-### BTSP Client Handshake Pattern (v0.9.4)
+### BTSP Client Handshake Pattern (v0.9.14 — Two-Phase Genetics Model)
 
-All socket connections to BTSP Phase 2 primals must authenticate:
+All socket connections to BTSP-enabled primals follow the **two-phase genetics model**:
+
+**Phase 1 — Mito-Beacon Tunnel**: Establishes initial encrypted communication using
+inherited mito-beacon key material. This is the "discovery handshake" — it proves
+family membership without leaking permissions metadata. Multiple mito-beacons per
+system support the dark forest protocol (zero metadata leakage to observers).
+
+**Phase 2 — Nuclear Session**: Within the established mito tunnel, a fresh nuclear
+generation is spawned (never copied) for permission-bearing operations. Nuclear
+genetics provide crypto-verifiable lineage tracking through generational DNA mixing.
 
 ```rust
 use primalspring::ipc::btsp_handshake;
-// After connecting to a primal socket:
-btsp_handshake::perform(&mut stream, family_id, nonce)?;
-// Connection is now authenticated — proceed with capability calls
+
+// Phase 1: Mito-beacon tunnel establishment (preferred path)
+let beacon = btsp_handshake::mito_beacon_from_env(); // replaces family_seed_from_env()
+
+// Phase 2: Nuclear session within tunnel (for permission-bearing operations)
+// Nuclear genetics are spawned fresh per session — never cloned
+use primalspring::genetics::{NuclearGenetics, rpc};
+let nuclear = rpc::derive_lineage_key(&mut client, seed, domain, parent, entropy)?;
 ```
+
+**Tier 3 — Tags** (optional): The deprecated `FAMILY_SEED` plaintext becomes a
+`GeneticTag` — an open participation channel within a mito-beacon family (chat,
+hashtag comms, public subgroups). Tags carry no permissions and no key material.
+
+```rust
+use primalspring::genetics::GeneticTag;
+let tag = GeneticTag::from_legacy_family_seed("my-open-channel");
+```
+
+**Security mode mapping** (backward compatibility):
+
+| Old `SecurityMode` | New `GeneticSecurityMode` | Genetics Tier |
+|--------------------|---------------------------|---------------|
+| `Production` | `MitoTunnel` | Tier 1 (mito-beacon) |
+| — | `NuclearSession` | Tier 2 (nuclear) |
+| `Development` | `TagOpen` | Tier 3 (tag / legacy) |
 
 ### Upstream/Downstream Evolution Cycle
 
@@ -302,7 +336,7 @@ any spring handling sensitive data.
 
 ### As a biomeOS Graph Node
 
-primalSpring ships 93 deploy graph TOMLs (all nodes declare `by_capability`).
+primalSpring ships 67 deploy graph TOMLs + 6 fragments (all nodes declare `by_capability`).
 biomeOS orchestrates the niche directly from these graphs. `topological_waves()`
 computes startup ordering. primalSpring participates as a validator node that
 probes other nodes by capability and reports composition health.
@@ -328,7 +362,7 @@ Every pattern above works identically on `x86_64` and `aarch64`.
 1. **musl target**: `cargo build --release --target aarch64-unknown-linux-musl`
 2. **Release profile**: `strip = true`, `lto = true` in `[profile.release]`
 3. **Abstract socket support**: `@biomeos/{primal}` for Android deployment
-4. **Env-first config**: `FAMILY_ID`, `NODE_ID`, `{PRIMAL}_SOCKET` — no filesystem assumptions
+4. **Env-first config**: `FAMILY_ID`, `NODE_ID`, `{PRIMAL}_SOCKET` — no filesystem assumptions. `FAMILY_SEED` is deprecated; new deployments use mito-beacon key material for BTSP Phase 1
 
 ### Reference Documents
 
@@ -484,10 +518,11 @@ primalSpring triages, refines, and routes the gap to the responsible primal.
 - Cross-spring ecology pipeline (data federation)
 
 **healthSpring → BearDog / NestGate**
-- Ionic bond runtime enforcement (cross-family trust negotiation)
+- Ionic bond runtime enforcement (MitoBeaconFamily trust across towers, NuclearLineage isolation within)
 - `crypto.sign_contract` capability for bond establishment
 - Data egress fence implementation in NestGate bonding policy
 - Regulatory audit trail patterns via provenance trio
+- Nuclear genetics boundary enforcement — Tier 2 credentials stay within their tower
 
 **ludoSpring / esotericWebb → petalTongue / Squirrel / barraCuda**
 - 60Hz composition budget: how fast can a graph execute end-to-end?
@@ -503,7 +538,7 @@ primalSpring triages, refines, and routes the gap to the responsible primal.
 | **coralReef** | hotSpring, neuralSpring | Domain-specific shader compilation, pipeline optimization |
 | **toadStool** | hotSpring, ludoSpring | Multi-GPU dispatch, tick-budget scheduling, federation |
 | **NestGate** | healthSpring, wetSpring, groundSpring | Egress fences, time-series storage, geospatial indexing |
-| **BearDog** | healthSpring | Ionic bond contracts, cross-family trust, regulatory crypto |
+| **BearDog** | healthSpring | Ionic bond contracts, cross-family trust, regulatory crypto, `genetic.*` RPCs (derive_lineage_key, mix_entropy, verify_lineage), two-phase BTSP |
 | **Songbird** | all (federation) | NAT traversal improvements, mesh scaling, relay protocols |
 | **Provenance trio** | healthSpring, wetSpring | Audit trail patterns, attribution granularity, federation |
 | **Squirrel** | neuralSpring, ludoSpring | Inference routing, model discovery, real-time AI under latency constraints |

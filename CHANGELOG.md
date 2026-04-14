@@ -3,6 +3,55 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 42–43: Multi-Tier Genetics + Cross-Architecture Deployment (2026-04-14)
+
+### Milestone
+**Multi-tier genetics identity system.** Mito-Beacon (discovery/NAT), Nuclear lineage
+(non-fungible permissions with generational mixing), Tags (open participation from
+plaintext seed heritage). BTSP Phase 3 types (ChaCha20-Poly1305 encrypted channels).
+Cross-architecture Tower bootstrap on Pixel (aarch64 + GrapheneOS) via biomeOS Neural
+API `--tcp-only`. 6/9 cross-arch checks pass (3 blocked on upstream biomeOS gaps).
+
+### Added
+- **BTSP Phase 3 types**: `Phase3Cipher`, `NegotiateRequest`/`NegotiateResponse`,
+  `SessionKeys` with HKDF-SHA256 key derivation and ChaCha20-Poly1305 in
+  `ecoPrimal/src/btsp/phase3.rs`.
+- **BtspEnforcer deny semantics**: Explicit deny per `TrustModel` (NuclearLineage,
+  MitoBeaconFamily, TagOpen) in `bonding/mod.rs`.
+- **Ionic bond protocol**: `IonicBondClient` RPC wrappers, `IonicPeerIdentity`,
+  `DiscoveryMethod` in `bonding/ionic_rpc.rs`.
+- **Content distribution federation**: `content_distribution_federation.toml` graph
+  (8-phase pipeline, 4 bonding tiers, BLAKE3 content addressing). Domain types in
+  `bonding/content_distribution.rs`.
+- **`tcp_rpc_multi_protocol`**: Auto-fallback from raw TCP to HTTP POST in `ipc/tcp.rs`.
+  Added `http_json_rpc` for Songbird HTTP transport.
+- **exp096**: Cross-architecture bonding experiment — biomeOS Neural API health,
+  proxied primal health, capability counts, FAMILY_ID verification, genetics RPC,
+  BTSP Phase 3, HSM probing.
+- **Genetics integration tests**: 4 new `#[ignore]` tests (mito-beacon, nuclear
+  lineage, proof, entropy mixing) in `server_ecosystem.rs`.
+- **Three-tier genetics validation** in exp073 LAN covalent mesh.
+- **biomeOS bootstrap.rs patch**: Environment inheritance for `BIOMEOS_PLASMID_BIN_DIR`,
+  `ECOPRIMALS_PLASMID_BIN`, `XDG_RUNTIME_DIR`, `FAMILY_SEED`.
+
+### Fixed
+- **`tcp_rpc` shutdown(Write)**: Removed premature half-close that prevented server
+  responses. Added `flush()` instead.
+- **`FAMILY_SEED` encoding**: `raw_family_seed_from_env()` now auto-detects hex vs
+  base64 encoding.
+- **`prepare_spore_payload.sh` ECO_ROOT**: Fixed path depth (was one `dirname` short).
+- **`validate_remote_gate.sh` ports.env path**: Fixed relative path to plasmidBin.
+
+### Documentation
+- Updated CONTEXT.md, README.md, experiments/README.md, wateringHole/README.md,
+  whitePaper/baseCamp/README.md with Phase 43 metrics (74 experiments, 17 tracks).
+- New handoff: `wateringHole/PRIMALSPRING_V0914_PHASE43_HANDOFF_APR14_2026.md` —
+  per-primal evolution paths, spring deployment patterns, biomeOS gaps.
+- New blurb: `wateringHole/BIOMEOS_COMPOSITION_GAPS_APR14_2026.md` — 4 upstream
+  gaps with fix paths and validation evidence.
+- Added `fossilRecord/README.md` — archive directory index.
+- Updated specs/PAPER_REVIEW_QUEUE.md, specs/CROSS_SPRING_EVOLUTION.md with Phase 43.
+
 ## [0.9.14] — Phase 41: Pre-Downstream Gap Resolution (2026-04-13)
 
 ### Milestone

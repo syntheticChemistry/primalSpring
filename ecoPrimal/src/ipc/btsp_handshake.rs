@@ -230,19 +230,103 @@ pub fn client_handshake(
 /// Read the family seed from `FAMILY_SEED` environment variable (base64-encoded).
 ///
 /// Returns `None` if the variable is not set.
+///
+/// # Deprecation
+///
+/// This function reads the legacy flat `FAMILY_SEED` which predates the
+/// three-tier genetics model. Use [`mito_beacon_from_env`] for new code,
+/// which wraps the same environment variable into a proper
+/// [`MitoBeacon`](crate::genetics::MitoBeacon) at the discovery tier.
+///
+/// The current BTSP handshake is mito-tier (Phase 1). Nuclear escalation
+/// (Phase 2) will use [`crate::genetics::rpc::derive_lineage_key`] to
+/// spawn a child generation within the mito tunnel.
+#[deprecated(
+    since = "0.10.0",
+    note = "Use mito_beacon_from_env() for the genetics-aware path. \
+            FAMILY_SEED is being transitioned to the mito-beacon tier."
+)]
+#[must_use] 
 pub fn family_seed_from_env() -> Option<Vec<u8>> {
-    let encoded = std::env::var("FAMILY_SEED").ok()?;
-    match BASE64.decode(encoded.trim()) {
-        Ok(seed) if !seed.is_empty() => Some(seed),
+    raw_family_seed_from_env()
+}
+
+/// Internal: read `FAMILY_SEED` bytes from the environment.
+///
+/// Shared implementation between the deprecated [`family_seed_from_env`]
+/// and the new [`mito_beacon_from_env`].
+///
+/// Supports two encodings (auto-detected):
+/// - **Hex** (64 ASCII hex chars → 32 bytes): produced by `AtomicHarness`
+///   and consumed by BearDog as raw UTF-8 bytes.
+/// - **Base64**: legacy encoding from earlier BTSP drafts.
+///
+/// If the value is valid hex (even length, all hex digits), it is used as
+/// **raw UTF-8 bytes** (not hex-decoded) for wire compatibility with
+/// BearDog, which reads `FAMILY_SEED` as raw bytes. If it's not valid hex,
+/// base64 decoding is attempted as fallback.
+fn raw_family_seed_from_env() -> Option<Vec<u8>> {
+    let value = std::env::var("FAMILY_SEED").ok()?;
+    let trimmed = value.trim();
+    if trimmed.is_empty() {
+        warn!("FAMILY_SEED is empty");
+        return None;
+    }
+
+    if is_hex_string(trimmed) {
+        debug!("FAMILY_SEED: using as raw UTF-8 bytes (hex-encoded seed)");
+        return Some(trimmed.as_bytes().to_vec());
+    }
+
+    match BASE64.decode(trimmed) {
+        Ok(seed) if !seed.is_empty() => {
+            debug!("FAMILY_SEED: decoded from base64 ({} bytes)", seed.len());
+            Some(seed)
+        }
         Ok(_) => {
             warn!("FAMILY_SEED is empty after base64 decode");
             None
         }
-        Err(e) => {
-            warn!("FAMILY_SEED base64 decode failed: {e}");
-            None
+        Err(_) => {
+            debug!("FAMILY_SEED: using as raw UTF-8 bytes (not hex, not base64)");
+            Some(trimmed.as_bytes().to_vec())
         }
     }
+}
+
+/// Check whether a string is a plausible hex-encoded seed.
+///
+/// Returns `true` if even length, at least 32 chars, and all ASCII hex digits.
+fn is_hex_string(s: &str) -> bool {
+    s.len() >= 32
+        && s.len().is_multiple_of(2)
+        && s.bytes().all(|b| b.is_ascii_hexdigit())
+}
+
+/// Read the family seed from `FAMILY_SEED` and wrap it as a mito-beacon.
+///
+/// This is the genetics-aware replacement for [`family_seed_from_env`].
+/// The legacy `FAMILY_SEED` environment variable is interpreted as the
+/// mito-beacon tier key material. The `FAMILY_ID` env var (if set) is
+/// used as the beacon group name.
+///
+/// # Two-Phase Intent
+///
+/// The BTSP handshake that uses this beacon key is **Phase 1** (mito-tier):
+/// it proves group membership and establishes a tunnel. Within that tunnel,
+/// **Phase 2** (nuclear) spawns a fresh generation of nuclear genetics for
+/// the actual session (permissions, auth, secure data).
+///
+/// Returns `None` if `FAMILY_SEED` is not set or cannot be decoded.
+#[must_use] 
+pub fn mito_beacon_from_env() -> Option<crate::genetics::MitoBeacon> {
+    let seed = raw_family_seed_from_env()?;
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "unknown".to_owned());
+    Some(crate::genetics::MitoBeacon::new(
+        family_id.clone(),
+        family_id,
+        seed,
+    ))
 }
 
 #[cfg(test)]
@@ -290,8 +374,38 @@ mod tests {
 
     #[test]
     fn family_seed_from_env_none_when_unset() {
-        // In test env, FAMILY_SEED is typically not set
-        // We can't mutate env safely in parallel tests, so just check it doesn't panic
-        let _ = family_seed_from_env();
+        let _ = raw_family_seed_from_env();
+    }
+
+    #[test]
+    fn mito_beacon_from_env_none_when_unset() {
+        let _ = mito_beacon_from_env();
+    }
+
+    #[test]
+    fn is_hex_string_accepts_valid_hex() {
+        let hex64 = "a1b2c3d4e5f6a7b8a1b2c3d4e5f6a7b8a1b2c3d4e5f6a7b8a1b2c3d4e5f6a7b8";
+        assert!(is_hex_string(hex64));
+    }
+
+    #[test]
+    fn is_hex_string_rejects_short() {
+        assert!(!is_hex_string("abcd"));
+    }
+
+    #[test]
+    fn is_hex_string_rejects_odd_length() {
+        assert!(!is_hex_string(&"a".repeat(33)));
+    }
+
+    #[test]
+    fn is_hex_string_rejects_non_hex() {
+        assert!(!is_hex_string(&"zz".repeat(32)));
+    }
+
+    #[test]
+    fn is_hex_string_accepts_uppercase() {
+        let hex = "A1B2C3D4E5F6A7B8A1B2C3D4E5F6A7B8";
+        assert!(is_hex_string(hex));
     }
 }

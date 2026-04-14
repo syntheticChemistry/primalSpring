@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
-**Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **subsystem composition decomposition**  
-**Version**: 0.9.9 (Phase 34 — 87/87 gates, 404 tests, 72 experiments, 93 deploy graphs, BTSP Phase 2 cascade, inference abstraction, WGSL shader composition model, 8 proto-nucleate graphs, 3 pipeline graphs, primal composition validation layer)  
+**Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
+**Version**: 0.9.14 (Phase 43 — 443 tests, 74 experiments, 67 deploy graphs + 6 fragments, BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), biomeOS-managed cross-arch Pixel deployment, content distribution federation)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: April 11, 2026
+**Last Updated**: April 14, 2026
 
 ---
 
@@ -37,33 +37,28 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **404** (unit + integration + doc-tests + proptest, 42 ignored live) |
-| Experiments | 72 (15 tracks) |
+| Tests | **443** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Experiments | 74 (17 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | **93 TOMLs** (18 root + 5 multi-node + 17 spring validation + 2 cross-spring + 10 gen4 + 5 bonding + 2 chaos + 13 science + **4 compositions** + 6 nucleated spring deploy + **17 sketches** (L0/L2/L3)), all `by_capability`, topologically validated |
+| Deploy graphs | **67 TOMLs + 6 fragments** (9 profiles + 5 multi-node + 13 spring validation + 2 cross-spring + 5 bonding + 2 chaos + 5 spring deploy + 8 downstream proto-nucleate + 4 patterns + 7 root + 1 federation), all `by_capability`, topologically validated |
+| Genetics | **Multi-tier**: Mito-Beacon (discovery/NAT), Nuclear (lineage DNA, non-fungible permissions), Tags (open participation) |
+| BTSP | **Phase 1–3**: FAMILY_SEED auth → secure-by-default cascade → ChaCha20-Poly1305 encrypted channel |
+| Bonding | Covalent, Ionic, Metallic, Weak, OrganoMetalSalt + BtspEnforcer deny semantics + ionic RPC + content distribution federation |
+| Cross-arch | biomeOS-managed Tower on Pixel (aarch64 + GrapheneOS) via Neural API `--tcp-only`, 6/9 exp096 checks |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
-| Primal gap registry | **22 gaps** documented (`docs/PRIMAL_GAPS.md`) |
-| Live subsystem validation | C1: 6/6, C3: 8/8, C4: 6/6, C6: 5/5 PASS; C2/C5: documented gaps |
+| Primal gap registry | Active in `docs/PRIMAL_GAPS.md` — portability debt classes, socket resolution tiers, BTSP cascade |
 | RPC endpoints | 17 methods |
 | Discovery | **Capability-first**: `discover_by_capability()` + 6-tier + Neural API |
-| Server mode | JSON-RPC 2.0 over Unix socket |
+| IPC transport | JSON-RPC 2.0: UDS + TCP + HTTP POST (`tcp_rpc_multi_protocol` auto-fallback) |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
-| Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
-| Meta-validator | `validate_all` binary — runs all 69 experiments |
-| Tower Atomic | **STABLE** — 41/41 gates passing (core + full utilization) |
-| Nest Atomic | **VALIDATED** — nestgate storage (8/8 gates) |
-| Node Atomic | **VALIDATED** — toadstool compute (5/5 gates) |
-| NUCLEUS | **VALIDATED** — Tower + Nest + Node (58/58 base gates) |
-| Graph Overlays | **VALIDATED** — tier-independent primals via deploy graphs (14/14) |
-| Squirrel Discovery | **VALIDATED** — cross-primal env_sockets wiring (5/5) |
-| Graph Execution | **LIVE** — 3/5 coordination patterns validated live (6/6) |
-| Provenance Readiness | **STRUCTURAL** — launch profiles + deploy graph ready (4/4) |
-| Total Gates | **87/87** |
+| Meta-validator | `validate_all` binary — runs all 74 experiments |
+| Tower Atomic | **STABLE** — 41/41 gates |
+| NUCLEUS | **VALIDATED** — Tower + Nest + Node, 12/12 primals ALIVE, 19/19 exp094 composition parity |
 
 ### Key Capabilities
 
@@ -71,7 +66,7 @@ primalSpring fills the gap.
   they offer, not who they are. All RPC handlers default to capability-based validation.
 - **Graphs as source of truth**: `topological_waves()` computes startup ordering via
   Kahn's algorithm. `graph_required_capabilities()` extracts capability rosters from
-  graph nodes. All 93 graphs have `by_capability` on every node (enforced by test).
+  graph nodes. All deploy graphs have `by_capability` on every node (enforced by test).
 - **Real IPC**: `probe_primal()`, `validate_composition_by_capability()`, `health_check()`
   connect to live providers via Unix socket JSON-RPC 2.0
 - **IPC resilience stack**: `IpcError` (8 typed variants + `IpcErrorPhase` + `is_recoverable()`),
@@ -93,7 +88,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (15 Tracks, 72 Experiments)
+## Track Structure (17 Tracks, 74 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 
@@ -141,7 +136,7 @@ Multi-gate coordination.
 
 | Exp | What | Validates |
 |-----|------|-----------|
-| 030 | Covalent bond | Shared family seed discovery |
+| 030 | Covalent bond | Mito-beacon discovery + nuclear lineage auth |
 | 031 | Ionic bond | Cross-family capability sharing |
 | 032 | Plasmodium formation | query_collective() |
 | 033 | Gate failure | Graceful degradation |
@@ -256,7 +251,7 @@ End-to-end composition across crypto, genetics, Neural API routing, and storytel
 | Exp | What | Validates | Status |
 |-----|------|-----------|--------|
 | 085 | BearDog crypto lifecycle | Ed25519, Blake3, BirdSong beacon, secrets | **E2E** |
-| 086 | Genetic identity | Mito beacon seed vs nuclear lineage, family scoping | **E2E** |
+| 086 | Genetic identity | Three-tier genetics: mito-beacon (discovery), nuclear (permissions), tags (open channels) | **E2E** |
 | 087 | Neural API routing | Security, discovery, storage, compute, AI domains | **E2E** |
 | 088 | Storytelling composition | ludoSpring + esotericWebb + Squirrel + petalTongue | **E2E** |
 
@@ -268,6 +263,22 @@ Tower Atomic LAN probing, covalent mesh validation, and BirdSong mesh discovery.
 |-----|------|-----------|--------|
 | 089 | Deployment graph structural sweep | All 93 graphs parse, validate, topological waves | **Structural** |
 | 090 | Tower Atomic LAN probe | BirdSong mesh discovery, peer capabilities, HTTPS through Tower, STUN/NAT | **Structural** |
+
+### Track 16: Composition Parity + Proto-Nucleate (exp094–095)
+
+| Exp | What | Validates | Status |
+|-----|------|-----------|--------|
+| 094 | Full NUCLEUS composition parity | 19/19 checks via live IPC across all primals | **Live validated** |
+| 095 | Proto-nucleate template | Starter template for downstream springs (not in workspace — standalone) | **Template** |
+
+### Track 17: Cross-Architecture Deployment (exp096)
+
+biomeOS-managed Tower bootstrap on Pixel (aarch64-unknown-linux-musl + GrapheneOS).
+Validates cross-architecture bonding, genetics, and Neural API routing via `--tcp-only`.
+
+| Exp | What | Validates | Status |
+|-----|------|-----------|--------|
+| 096 | Pixel cross-arch bonding | biomeOS Neural API health, BearDog/Songbird proxied health, capability counts, FAMILY_ID verification, genetics RPC, BTSP Phase 3, HSM probing | **6/9 PASS** (3 blocked on upstream biomeOS TCP propagation + graph env substitution) |
 
 ---
 
@@ -304,10 +315,44 @@ composition.tower_squirrel_health               — Tower + Squirrel composition
 
 ---
 
+## NUCLEUS Deployment via biomeOS Neural API
+
+The canonical deployment pattern for any NUCLEUS composition:
+
+1. **biomeOS** is the composition substrate — never wire primals manually
+2. `biomeos neural-api --tcp-only --port 9000 --graphs-dir ./graphs` bootstraps the Tower
+3. `tower_atomic_bootstrap.toml` is the genesis graph (BearDog + Songbird)
+4. `primal_launch_profiles.toml` defines per-primal CLI args, env, and security models
+5. The Neural API routes `capability.call` RPCs to the correct primal
+6. Cross-architecture: use `--tcp-only` for Android/Windows (no Unix sockets)
+7. `tcp_rpc_multi_protocol` auto-detects raw TCP vs HTTP POST per primal
+
+**Upstream gaps** (tracked in biomeOS, not primalSpring):
+- TCP endpoint propagation: NeuralRouter still registers UDS even in `--tcp-only`
+- Graph env substitution: `${FAMILY_ID}` placeholders not substituted before spawn
+
+**Cross-arch validated**: Pixel (aarch64 + GrapheneOS + Titan M2 HSM), biomeOS-managed
+Tower bootstrap, 6/9 exp096 checks pass, remaining 3 blocked on above upstream gaps.
+
+## Multi-Tier Genetics Identity System
+
+Three genetic tiers eliminate metadata leakage (dark forest protocol):
+
+| Tier | Name | Purpose | Properties |
+|------|------|---------|------------|
+| L0 | **Mito-Beacon** | Group membership, discovery, NAT negotiation | Inherited, multiple per system, shared freely |
+| L1 | **Nuclear (Lineage DNA)** | Permissions, authentication, non-fungible identity | Always new generation (never copied), generational mixing |
+| L2 | **Tags** | Open participation channels | Derived from plaintext seed heritage, public |
+
+The plaintext `FAMILY_SEED` is fully deprecated for external systems — it transforms into
+Tags for open subgroups (chat, reddit, hashtag-style participation). BearDog and NestGate
+hold encrypted-at-rest secrets, enabling zero-knowledge authentication.
+
 ## Active Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.9.14 | This README | Apr 14 | **Phase 43**: Multi-tier genetics, BTSP Phase 3, cross-arch Pixel deployment, biomeOS composition patterns, content distribution federation |
 | v0.9.3 | `PRIMALSPRING_V093_MIXED_COMPOSITION_LIVE_VALIDATION_HANDOFF_APR07_2026.md` | Apr 7 | **Phase 26**: Particle model, layered validation (L0-L3), 17 sketch graphs, exp091-093, live Tower Atomic probes, 6 GAP-MATRIX items, primal team work blurbs |
 
 ## Archived Handoffs
