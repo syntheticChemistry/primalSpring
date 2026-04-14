@@ -14,6 +14,15 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
 > TCP is opt-in only for Songbird federation (`--port 8080` enables covalent mesh).
 >
+> **Cross-Architecture Pixel Deployment (April 14, session 2)**: **11/15 exp096 checks PASS.**
+> biomeOS-managed Tower (BearDog + Songbird) runs on Pixel 8a (aarch64/GrapheneOS/Titan M2).
+> All critical composition gaps RESOLVED:
+> - BearDog: protocol auto-detection on TCP (peek first byte: `{` = JSON-RPC, else BTSP)
+> - biomeOS: TCP cascade in `primal_start_capability`, `tcp_port_registry`, TCP-aware socket wiring
+> - Songbird: `tcp://` scheme parsing in IPC endpoint discovery
+> - Neural API `capability.call` routes crypto/genetic/security/beacon to BearDog over TCP
+> Remaining 4 failures: 3 reporting gaps (capabilities_count, transport_security, generation echo) + 1 expected (HSM/Titan M2)
+>
 > **Live validation (April 10 — NUCLEUS polish, session 2)**:
 > - TCP ports: **0** (was 12 across 8 primals)
 > - UDS sockets: **25** active in `/run/user/$UID/biomeos/`

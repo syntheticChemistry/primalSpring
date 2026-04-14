@@ -244,7 +244,8 @@ pub fn tcp_rpc_multi_protocol(
 ) -> TcpRpcResult {
     match tcp_rpc(host, port, method, params) {
         ok @ Ok(_) => ok,
-        Err(_raw_err) => http_json_rpc(host, port, method, params),
+        Err(ref e) if e.starts_with("RPC error:") => Err(e.clone()),
+        Err(_transport_err) => http_json_rpc(host, port, method, params),
     }
 }
 

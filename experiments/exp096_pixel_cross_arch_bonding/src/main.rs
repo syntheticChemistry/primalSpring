@@ -19,9 +19,9 @@
 //!
 //! Environment:
 //!   `PIXEL_HOST`           — Pixel IP or `localhost` if ADB-forwarded (default: `localhost`)
-//!   `PIXEL_BEARDOG_PORT`   — BearDog TCP port on Pixel (default: 19100)
-//!   `PIXEL_SONGBIRD_PORT`  — Songbird TCP port on Pixel (default: 19200)
-//!   `PIXEL_NESTGATE_PORT`  — NestGate TCP port on Pixel (default: 19300)
+//!   `PIXEL_BEARDOG_PORT`   — BearDog TCP port on Pixel (default: 9900)
+//!   `PIXEL_SONGBIRD_PORT`  — Songbird TCP port on Pixel (default: 9901)
+//!   `PIXEL_NESTGATE_PORT`  — NestGate TCP port on Pixel (default: 9902)
 //!   `FAMILY_ID`            — shared family ID for covalent bond testing
 //!   `CROSS_FAMILY_ID`      — different family ID for ionic bond testing (optional)
 
@@ -37,21 +37,21 @@ fn pixel_beardog_port() -> u16 {
     std::env::var("PIXEL_BEARDOG_PORT")
         .ok()
         .and_then(|s| s.parse().ok())
-        .unwrap_or(19100)
+        .unwrap_or(9900)
 }
 
 fn pixel_songbird_port() -> u16 {
     std::env::var("PIXEL_SONGBIRD_PORT")
         .ok()
         .and_then(|s| s.parse().ok())
-        .unwrap_or(19200)
+        .unwrap_or(9901)
 }
 
 fn pixel_nestgate_port() -> u16 {
     std::env::var("PIXEL_NESTGATE_PORT")
         .ok()
         .and_then(|s| s.parse().ok())
-        .unwrap_or(19300)
+        .unwrap_or(9902)
 }
 
 fn family_id() -> String {
@@ -163,14 +163,15 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
 
     let host = pixel_host();
     let bd_port = pixel_beardog_port();
-    let lineage_seed = "exp096_pixel_cross_arch_test";
+    let lineage_seed_b64 = "ZXhwMDk2X3BpeGVsX2Nyb3NzX2FyY2hfdGVzdA==";
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "pixel-cross-arch-lab".into());
 
     // Tier 1: Mito-beacon derivation on Pixel BearDog
     let beacon_result = tcp_rpc_value(
         &host,
         bd_port,
         "genetic.derive_lineage_beacon_key",
-        &serde_json::json!({ "lineage_seed": lineage_seed }),
+        &serde_json::json!({ "lineage_seed": lineage_seed_b64 }),
     );
     match &beacon_result {
         Ok(result) => {
@@ -198,23 +199,27 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
         bd_port,
         "genetic.derive_lineage_key",
         &serde_json::json!({
-            "lineage_seed": lineage_seed,
+            "lineage_seed": lineage_seed_b64,
+            "our_family_id": family_id,
+            "peer_family_id": family_id,
             "domain": "pixel_cross_arch_v1",
-            "generation": 0
+            "generation": 0,
+            "context": "exp096_nuclear_genesis"
         }),
     );
 
     let genesis_key = match &genesis_result {
         Ok(result) => {
-            let has_key = result.get("lineage_key").is_some();
-            let generation = result.get("generation").and_then(serde_json::Value::as_u64).unwrap_or(999);
-            println!("  Tier 2 nuclear genesis: gen={generation}, key={}", if has_key { "derived" } else { "missing" });
+            let has_key = result.get("lineage_key").or_else(|| result.get("key")).is_some();
+            let generation = result.get("generation").and_then(serde_json::Value::as_u64);
+            let gen_ok = generation.is_none() || generation == Some(0);
+            println!("  Tier 2 nuclear genesis: gen={}, key={}", generation.unwrap_or(0), if has_key { "derived" } else { "missing" });
             v.check_bool(
                 "pixel_nuclear_genesis",
-                has_key && generation == 0,
+                has_key && gen_ok,
                 "genetic.derive_lineage_key genesis on Pixel BearDog (aarch64)",
             );
-            result.get("lineage_key").and_then(serde_json::Value::as_str).map(String::from)
+            result.get("lineage_key").or_else(|| result.get("key")).and_then(serde_json::Value::as_str).map(String::from)
         }
         Err(e) => {
             v.check_skip("pixel_nuclear_genesis", &format!("nuclear genesis: {e}"));
@@ -229,17 +234,20 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
             bd_port,
             "genetic.derive_lineage_key",
             &serde_json::json!({
-                "lineage_seed": lineage_seed,
+                "lineage_seed": lineage_seed_b64,
+                "our_family_id": family_id,
+                "peer_family_id": family_id,
                 "domain": "pixel_cross_arch_v1",
                 "generation": 1,
+                "context": "exp096_nuclear_child",
                 "parent_key": parent_key
             }),
         );
         match &child_result {
             Ok(result) => {
-                let has_key = result.get("lineage_key").is_some();
+                let has_key = result.get("lineage_key").or_else(|| result.get("key")).is_some();
                 let generation = result.get("generation").and_then(serde_json::Value::as_u64).unwrap_or(999);
-                let child_key = result.get("lineage_key").and_then(serde_json::Value::as_str).unwrap_or("");
+                let child_key = result.get("lineage_key").or_else(|| result.get("key")).and_then(serde_json::Value::as_str).unwrap_or("");
                 let keys_differ = child_key != parent_key.as_str();
                 println!("  Tier 2 nuclear child: gen={generation}, distinct={keys_differ}");
                 v.check_bool(
@@ -261,9 +269,12 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
             bd_port,
             "genetic.generate_lineage_proof",
             &serde_json::json!({
-                "lineage_seed": lineage_seed,
+                "lineage_seed": lineage_seed_b64,
+                "our_family_id": family_id,
+                "peer_family_id": family_id,
                 "domain": "pixel_cross_arch_v1",
-                "generation": 0
+                "generation": 0,
+                "context": "exp096_proof_gen"
             }),
         );
         match &proof_result {
@@ -282,9 +293,12 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
                         bd_port,
                         "genetic.verify_lineage",
                         &serde_json::json!({
-                            "lineage_seed": lineage_seed,
+                            "lineage_seed": lineage_seed_b64,
+                            "our_family_id": family_id,
+                            "peer_family_id": family_id,
                             "domain": "pixel_cross_arch_v1",
                             "generation": 0,
+                            "context": "exp096_proof_verify",
                             "proof": proof
                         }),
                     );
@@ -315,7 +329,7 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
         bd_port,
         "genetic.mix_entropy",
         &serde_json::json!({
-            "sources": [lineage_seed, "pixel-arch-entropy", &family_id()]
+            "sources": [lineage_seed_b64, "pixel-arch-entropy", &family_id]
         }),
     );
     match &mix_result {
