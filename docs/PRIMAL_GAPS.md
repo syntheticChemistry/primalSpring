@@ -1029,6 +1029,7 @@ gaps moved to RESOLVED. NestGate needs more time (no new commits).
 | biomeOS DOWN during testing | biomeOS | v3.05 | Neural API co-launch in Nucleus Full mode |
 | LD-10 BTSP guard line consumed | barraCuda | Sprint 42 | Replay consumed line in `BtspOutcome::Degraded` |
 | LD-05 TCP AddrInUse co-deployment | barraCuda | Sprint 42 | Eliminated TCP sidecar in UDS mode |
+| BC-09 `--port` Docker TCP bind | barraCuda | Sprint 42 | `resolve_bind_host()` respects `BARRACUDA_IPC_HOST` for cross-container TCP |
 
 ### Remaining Open Upstream Gaps
 
