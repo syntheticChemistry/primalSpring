@@ -25,22 +25,46 @@ in biomeOS that affect any TCP-only or cross-platform deployment.
 - BearDog advertises 33 capabilities through Neural API
 - `FAMILY_ID` verification passes cross-architecture
 
-## Gap 1: TCP Endpoint Propagation in NeuralRouter
+## Gap 1: TCP Endpoint Propagation in NeuralRouter — RESOLVED (v3.14 + translation_loader patch)
 
-**Symptom**: `capability.call("crypto.sign_ed25519")` fails even though BearDog is alive
-on TCP 127.0.0.1:9900. Neural API returns an error because it routes to a Unix socket
-path that doesn't exist on Android.
+**Original symptom**: NeuralRouter registered UDS paths for primals even in `--tcp-only` mode.
 
-**Root cause**: When biomeOS spawns primals in `--tcp-only` mode, the `NeuralRouter`
-still constructs a Unix socket endpoint for capability routing. It doesn't detect or
-register the TCP endpoint that the primal actually binds.
+**v3.14 fix**: `discovery_init.rs` gained TCP port scanning (9900–9919). However, the scan
+uses plain JSON-RPC which BearDog rejects (BTSP enforcement). The graph-based registration
+in `translation_loader.rs` also used `register_capability_unix` exclusively.
 
-**Fix path**: After primal spawn, NeuralRouter should:
-1. Check if the primal bound a TCP port (from launch profile or process introspection)
-2. Register TCP endpoint `host:port` instead of (or alongside) UDS path
-3. `capability.call` routing should use the registered transport, not assume UDS
+**Supplemental patch**: `translation_loader.rs` now branches on `self.tcp_only` and registers
+`TransportEndpoint::TcpSocket` with deterministic port assignment (beardog→9900, songbird→9901,
+etc.) during graph translation loading. TCP endpoints are now correctly registered.
 
-**Impact**: Blocks all `capability.call` flows on Android, Windows, and any `--tcp-only` deployment.
+**Current state**: Registration works. Forwarding fails (see Gap 5).
+
+## Gap 5: BTSP-Aware TCP Forwarding in NeuralRouter (NEW)
+
+**Symptom**: `capability.call("crypto.sign_ed25519")` routes to `tcp://127.0.0.1:9900`
+(correct) but BearDog rejects the connection because biomeOS sends plain JSON-RPC text
+over TCP while BearDog enforces BTSP binary framing on all TCP connections.
+
+**Root cause**: biomeOS's TCP forwarding path (`Calling method X on tcp://host:port`)
+opens a raw TCP connection and sends newline-delimited JSON-RPC. BearDog interprets
+the first 4 bytes as a BTSP frame length header (`{"js` = 0x7B226A73 = 2065853043 bytes),
+which exceeds the 16MB max frame size.
+
+**BearDog is correct** — BTSP enforcement on TCP is the intended security posture. The
+fix belongs in biomeOS's forwarding path, not in BearDog.
+
+**Fix path**: biomeOS's TCP capability forwarding should:
+1. Perform BTSP Phase 1 handshake before sending JSON-RPC payloads
+2. Use `FAMILY_SEED` from the ExecutionContext for HMAC-SHA256 challenge response
+3. After BTSP auth, send JSON-RPC frames within the authenticated channel
+4. Cache authenticated connections per endpoint for subsequent calls
+
+**Alternative**: BearDog also binds an abstract namespace socket (`@biomeos_beardog_default`)
+which may accept plain JSON-RPC. If biomeOS can connect to abstract namespace sockets
+(Linux-only, same machine), this bypasses the BTSP requirement for local forwarding.
+
+**Impact**: Blocks all `capability.call` forwarding to BearDog via TCP. Songbird (HTTP)
+may work since it doesn't require BTSP on its HTTP endpoint.
 
 ## Gap 2: Graph Environment Variable Substitution
 
@@ -102,10 +126,13 @@ exp096 results against biomeOS Neural API (forwarded port 19000 → Pixel 9000):
 
 ## Recommendation
 
-Gap 1 (TCP endpoint propagation) is the critical path. Once NeuralRouter registers
-TCP endpoints, all 3 failing checks should pass. Gap 2 (env substitution) is important
-for correctness but doesn't block basic capability routing. Gap 4 is quality-of-life
-for operators deploying on non-UDS platforms.
+Gap 5 (BTSP-aware TCP forwarding) is now the critical path. Registration is solved —
+biomeOS correctly routes `capability.call` to `tcp://127.0.0.1:9900`. But the forwarding
+code sends plain JSON-RPC which BearDog's BTSP enforcement rejects. The fix requires
+biomeOS to act as a BTSP client when forwarding to security-enforcing primals.
+
+Gap 2 (env substitution) is landed in v3.14 via two-pass resolution. Gap 3 (bootstrap env
+inheritance) is landed. Gap 4 (`--tcp-only` cascade) is landed. Only Gap 5 remains.
 
 ---
 
