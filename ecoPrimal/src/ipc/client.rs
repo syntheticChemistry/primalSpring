@@ -33,6 +33,21 @@ impl PrimalClient {
         })
     }
 
+    /// Connect with an explicit BTSP seed (bypasses environment lookup).
+    ///
+    /// Used by the harness when connecting to primals that enforce BTSP
+    /// (e.g. BearDog in Production mode).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on connection or BTSP handshake failure.
+    pub fn connect_btsp(socket: &Path, primal: &str, seed: &[u8]) -> Result<Self, IpcError> {
+        Ok(Self {
+            transport: Transport::connect_btsp(socket, seed)?,
+            primal: primal.to_owned(),
+        })
+    }
+
     /// The primal this client is connected to.
     #[must_use]
     pub fn primal(&self) -> &str {

@@ -51,6 +51,7 @@ pub mod composition;
 pub mod coordination;
 pub mod deploy;
 pub mod emergent;
+pub mod genetics;
 pub mod graphs;
 pub mod harness;
 pub mod ipc;

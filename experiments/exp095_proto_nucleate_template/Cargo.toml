@@ -1,0 +1,18 @@
+[package]
+name = "primalspring-exp095"
+version = "0.9.14"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[[bin]]
+name = "exp095_proto_nucleate_template"
+path = "src/main.rs"
+
+[dependencies]
+primalspring = { path = "../../ecoPrimal" }
+serde_json.workspace = true
+
+[lints]
+workspace = true

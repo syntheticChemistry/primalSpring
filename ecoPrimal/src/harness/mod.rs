@@ -29,6 +29,8 @@ use crate::ipc::NeuralBridge;
 use crate::ipc::client::PrimalClient;
 use crate::ipc::discover::extract_capability_names;
 use crate::launcher::{self, LaunchError, PrimalProcess, SocketNucleation};
+use hkdf::Hkdf;
+use sha2::Sha256;
 use tracing::{debug, info};
 
 /// A running atomic composition with RAII lifecycle management.
@@ -42,6 +44,11 @@ pub struct RunningAtomic {
     biomeos_process: Option<PrimalProcess>,
     nucleation: SocketNucleation,
     family_id: String,
+    /// BTSP family seed for authenticated client connections.
+    ///
+    /// When `Some`, client connections to BTSP-model primals (e.g. BearDog)
+    /// use this seed for the BTSP handshake instead of cleartext.
+    family_seed: Option<Vec<u8>>,
     runtime_dir: PathBuf,
     atomic: AtomicType,
     /// Dynamic capability-to-primal mapping from graph overlay nodes.
@@ -72,19 +79,38 @@ impl RunningAtomic {
     /// Connect a [`PrimalClient`] to the provider of `capability`.
     ///
     /// Returns `None` if the capability is not in this composition or
-    /// if the connection fails.
+    /// if the connection fails. Uses BTSP handshake for primals whose
+    /// profile declares `security_model = "btsp"`.
     #[must_use]
     pub fn client_for(&self, capability: &str) -> Option<PrimalClient> {
         let primal = self.capability_to_primal(capability)?;
         let socket = self.nucleation.get(&primal, &self.family_id)?;
-        PrimalClient::connect(socket, &primal).ok()
+        self.connect_client(socket, &primal).ok()
     }
 
     /// Connect a [`PrimalClient`] to a primal by name.
+    ///
+    /// Uses BTSP handshake for primals whose profile declares
+    /// `security_model = "btsp"`.
     #[must_use]
     pub fn client_for_primal(&self, primal: &str) -> Option<PrimalClient> {
         let socket = self.socket_for_primal(primal)?;
-        PrimalClient::connect(socket, primal).ok()
+        self.connect_client(socket, primal).ok()
+    }
+
+    /// Connect to a primal, using BTSP when the primal requires it and
+    /// a family seed is available.
+    fn connect_client(
+        &self,
+        socket: &Path,
+        primal: &str,
+    ) -> Result<PrimalClient, crate::ipc::error::IpcError> {
+        if let Some(ref seed) = self.family_seed {
+            if crate::launcher::primal_requires_btsp(primal) {
+                return PrimalClient::connect_btsp(socket, primal, seed);
+            }
+        }
+        PrimalClient::connect(socket, primal)
     }
 
     /// Run `health.liveness` on every primal in the composition.
@@ -197,6 +223,12 @@ impl RunningAtomic {
     #[must_use]
     pub const fn atomic_type(&self) -> AtomicType {
         self.atomic
+    }
+
+    /// The BTSP family seed used for this composition, if any.
+    #[must_use]
+    pub fn family_seed(&self) -> Option<&[u8]> {
+        self.family_seed.as_deref()
     }
 
     /// Map a capability name to the primal that provides it in this composition.
@@ -322,6 +354,9 @@ impl AtomicHarness {
     /// topological waves (when a graph was provided) or from the static
     /// [`AtomicType::required_primals`] ordering.
     ///
+    /// Generates a BTSP family seed so BearDog can start in Production
+    /// mode and clients can authenticate via the BTSP handshake.
+    ///
     /// # Errors
     ///
     /// Returns [`LaunchError`] if any binary cannot be found, any
@@ -336,7 +371,10 @@ impl AtomicHarness {
         ));
         let _ = std::fs::create_dir_all(&runtime_dir);
 
+        let family_seed = generate_harness_seed(family_id);
+
         let mut nucleation = SocketNucleation::new(runtime_dir.clone());
+        nucleation.set_family_seed(family_seed.clone());
 
         let primal_refs: Vec<&str> = spawn_order.iter().map(String::as_str).collect();
         nucleation.assign_batch(&primal_refs, family_id);
@@ -365,6 +403,7 @@ impl AtomicHarness {
             biomeos_process: None,
             nucleation,
             family_id: family_id.to_owned(),
+            family_seed: Some(family_seed),
             runtime_dir,
             atomic: self.atomic,
             overlay_capabilities,
@@ -399,7 +438,10 @@ impl AtomicHarness {
         ));
         let _ = std::fs::create_dir_all(&runtime_dir);
 
+        let family_seed = generate_harness_seed(family_id);
+
         let mut nucleation = SocketNucleation::new(runtime_dir.clone());
+        nucleation.set_family_seed(family_seed.clone());
 
         let primal_refs: Vec<&str> = spawn_order.iter().map(String::as_str).collect();
         nucleation.assign_batch(&primal_refs, family_id);
@@ -435,6 +477,7 @@ impl AtomicHarness {
             biomeos_process: Some(biomeos),
             nucleation,
             family_id: family_id.to_owned(),
+            family_seed: Some(family_seed),
             runtime_dir,
             atomic: self.atomic,
             overlay_capabilities,
@@ -501,6 +544,26 @@ impl AtomicHarness {
     }
 }
 
+/// Derive a deterministic, ASCII-safe BTSP family seed from a family_id.
+///
+/// Uses HKDF-SHA256 with a harness-specific salt so the output is unique
+/// per family_id but reproducible. The result is hex-encoded (64 ASCII chars)
+/// so it's safe to pass as an environment variable to BearDog (which reads
+/// `FAMILY_SEED` as raw UTF-8 bytes).
+#[expect(clippy::expect_used, reason = "HKDF-SHA256 expand to 32 bytes never fails")]
+fn generate_harness_seed(family_id: &str) -> Vec<u8> {
+    let hk = Hkdf::<Sha256>::new(Some(b"primalspring-harness-btsp"), family_id.as_bytes());
+    let mut okm = [0u8; 32];
+    hk.expand(b"family-seed", &mut okm)
+        .expect("HKDF expand for harness seed");
+    let mut hex = String::with_capacity(64);
+    for b in &okm {
+        use std::fmt::Write;
+        let _ = write!(hex, "{b:02x}");
+    }
+    hex.into_bytes()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -516,6 +579,7 @@ mod tests {
             biomeos_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
+            family_seed: None,
             runtime_dir: dir.clone(),
             atomic: AtomicType::Tower,
             overlay_capabilities: HashMap::new(),
@@ -536,6 +600,7 @@ mod tests {
             biomeos_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
+            family_seed: None,
             runtime_dir: dir,
             atomic: AtomicType::Tower,
             overlay_capabilities: HashMap::new(),
@@ -567,6 +632,7 @@ mod tests {
             biomeos_process: None,
             nucleation: nuc,
             family_id: "test".to_owned(),
+            family_seed: None,
             runtime_dir: dir,
             atomic: AtomicType::Tower,
             overlay_capabilities: overlay,
@@ -673,5 +739,43 @@ mod tests {
             harness.graph_path.as_deref(),
             Some(Path::new("/tmp/test.toml"))
         );
+    }
+
+    #[test]
+    fn generate_harness_seed_deterministic() {
+        let s1 = generate_harness_seed("test-family-1");
+        let s2 = generate_harness_seed("test-family-1");
+        assert_eq!(s1, s2, "same family_id → same seed");
+    }
+
+    #[test]
+    fn generate_harness_seed_unique_per_family() {
+        let s1 = generate_harness_seed("family-alpha");
+        let s2 = generate_harness_seed("family-bravo");
+        assert_ne!(s1, s2, "different family_ids → different seeds");
+    }
+
+    #[test]
+    fn generate_harness_seed_is_hex_ascii() {
+        let seed = generate_harness_seed("exp061-12345");
+        assert_eq!(seed.len(), 64, "32 bytes hex-encoded = 64 chars");
+        assert!(
+            seed.iter().all(|&b| b.is_ascii_hexdigit()),
+            "all bytes should be ASCII hex digits"
+        );
+    }
+
+    #[test]
+    fn nucleation_family_seed_round_trip() {
+        let dir = std::env::temp_dir().join(format!(
+            "primalspring-harness-seed-rt-{}",
+            std::process::id()
+        ));
+        let _ = std::fs::create_dir_all(&dir);
+        let mut nuc = SocketNucleation::new(dir.clone());
+        assert!(nuc.family_seed().is_none());
+        nuc.set_family_seed(b"test-seed".to_vec());
+        assert_eq!(nuc.family_seed(), Some(b"test-seed".as_slice()));
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

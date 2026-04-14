@@ -25,6 +25,7 @@ sha2 = "0.11.0"
 hkdf = "0.13.0"
 base64 = "0.22.1"
 getrandom = "0.4.2"
+zeroize = { version = "1.8.2", features = ["zeroize_derive"] }
 
 [lints]
 workspace = true

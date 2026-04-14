@@ -310,6 +310,7 @@ Each maps to a specific primal team for resolution.
 |------|--------|----------|
 | `inference.register_provider` wire method | neuralSpring Gap 1 | **RESOLVED** (alpha.49 — 5 wire tests, real handler path) |
 | Stable ecoBin binary for composition deployments | healthSpring §9 | **RESOLVED** (alpha.49 — 3.5MB static-pie, stripped, BLAKE3, zero host paths) |
+| SQ-04: `--bind` flag / `SQUIRREL_IPC_HOST` for Docker TCP | primalSpring benchScale exp077 | **RESOLVED** (alpha.52 — `--bind` CLI flag, `SQUIRREL_BIND`/`SQUIRREL_IPC_HOST` env vars, default `127.0.0.1`, Docker uses `--bind 0.0.0.0`) |
 
 **biomeOS / Songbird** (reported by: wetSpring, healthSpring, ludoSpring)
 
@@ -539,8 +540,9 @@ barraCuda from fulfilling its role as a hardware-agnostic math primal.
 | SQ-01 | Abstract-only socket | **RESOLVED** (alpha.25b — `UniversalListener`) |
 | SQ-02 | `LOCAL_AI_ENDPOINT` not wired into `AiRouter` | **RESOLVED** (alpha.27 — step 1.5 discovery, `resolve_local_ai_endpoint()`) |
 | SQ-03 | `deprecated-adapters` feature flag docs | **RESOLVED** — documented in `CURRENT_STATUS.md` feature-gates table; intentional retention until v0.3.0 with migration path to `UniversalAiAdapter` + `LOCAL_AI_ENDPOINT` |
+| SQ-04 | `--port` TCP bind hardcoded to `127.0.0.1` | **RESOLVED** (alpha.52) — `--bind` CLI flag + `SQUIRREL_BIND` / `SQUIRREL_IPC_HOST` env vars. Default `127.0.0.1` (secure). Docker: `--bind 0.0.0.0`. Parity with barraCuda BC-09 `resolve_bind_host()` pattern |
 
-**Compliance** (alpha.46+ — April 9 second pull): Zero `todo!`/`unimplemented!`/`FIXME` in non-test code. fmt **PASS**. clippy **PASS**. **7,203 tests PASS**. `deny.toml` present. Workspace `forbid(unsafe_code)`. **BTSP Phase 1 COMPLETE** (alpha.44). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_handshake.rs` (627 LOC) implements full server-side handshake on UDS accept with BearDog delegation (`btsp.session.create`, `btsp.session.verify`). `maybe_handshake()` called in both abstract+filesystem UDS accept paths in `jsonrpc_server.rs`. Length-prefixed wire framing per standard. `is_btsp_required()` checks `FAMILY_ID` + `BIOMEOS_INSECURE`. Provider discovery: env → manifest scan → well-known `beardog-{fid}.sock`. **Capability Wire Standard L2**. Smart refactoring: session/mod.rs, transport/client.rs, context_state.rs, api.rs all under 600 LOC. Dependency purge: pprof/openai/libloading removed, flate2 → pure Rust backend. **Inference provider bridge** ↑ — `inference.complete`/`embed`/`models` wire methods dispatched via `handlers_inference.rs`, bridging ecoPrimal wire standard to `AiRouter`.
+**Compliance** (alpha.52 — April 14): Zero `todo!`/`unimplemented!`/`FIXME` in non-test code. fmt **PASS**. clippy **PASS**. **7,203 tests PASS**. `deny.toml` present. Workspace `forbid(unsafe_code)`. **BTSP Phase 1 COMPLETE** (alpha.44). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_handshake.rs` (627 LOC) implements full server-side handshake on UDS accept with BearDog delegation (`btsp.session.create`, `btsp.session.verify`). `maybe_handshake()` called in both abstract+filesystem UDS accept paths in `jsonrpc_server.rs`. Length-prefixed wire framing per standard. `is_btsp_required()` checks `FAMILY_ID` + `BIOMEOS_INSECURE`. Provider discovery: env → manifest scan → well-known `beardog-{fid}.sock`. **Capability Wire Standard L2**. Smart refactoring: session/mod.rs, transport/client.rs, context_state.rs, api.rs all under 600 LOC. Dependency purge: pprof/openai/libloading removed, flate2 → pure Rust backend. **Inference provider bridge** ↑ — `inference.complete`/`embed`/`models` wire methods dispatched via `handlers_inference.rs`, bridging ecoPrimal wire standard to `AiRouter`.
 
 ---
 
@@ -884,7 +886,7 @@ needs UDS negotiation. See `graphs/downstream/esotericwebb_proto_nucleate.toml`.
 8. ~~**BC-GPU-PANIC (BC-05)**~~ **RESOLVED** (Sprint 39 — `Auto::new()` → `Err`, health `Degraded`)
 9. ~~**EXP091-REGISTRY**~~ **RESOLVED** (April 10 — `get_family_id()` → `self.family_id`; socket alias mapping)
 10. **EXP-TCP-UDS** — exp085/exp090 hardcode TCP ports; need UDS discovery migration
-11. **BTSP-E2E** — Full end-to-end BTSP test (non-default FAMILY_ID + FAMILY_SEED) not yet validated against live stack
+11. ~~**BTSP-E2E**~~ **RESOLVED** (April 14 — `AtomicHarness` now generates deterministic BTSP seed via HKDF-SHA256, injects `FAMILY_SEED` env on all child primals, uses `PrimalClient::connect_btsp` for BTSP-model primals. BearDog socket timeout unblocked for exp061-068)
 
 **Deferred** (later development cycle):
 - **SD-01/02/03** — sourDough `deny.toml`, musl, genomeBin signing

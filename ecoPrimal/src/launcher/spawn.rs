@@ -28,6 +28,7 @@ use super::profiles::{LaunchProfile, load_launch_profiles};
 pub struct SocketNucleation {
     base_dir: PathBuf,
     assignments: HashMap<String, PathBuf>,
+    family_seed: Option<Vec<u8>>,
 }
 
 impl SocketNucleation {
@@ -42,6 +43,7 @@ impl SocketNucleation {
         Self {
             base_dir,
             assignments: HashMap::new(),
+            family_seed: None,
         }
     }
 
@@ -91,6 +93,20 @@ impl SocketNucleation {
     #[must_use]
     pub fn base_dir(&self) -> &Path {
         &self.base_dir
+    }
+
+    /// Set the BTSP family seed for this composition.
+    ///
+    /// When set, [`spawn_primal`] injects `FAMILY_SEED` into each child
+    /// process so BearDog can start in Production BTSP mode.
+    pub fn set_family_seed(&mut self, seed: Vec<u8>) {
+        self.family_seed = Some(seed);
+    }
+
+    /// The BTSP family seed, if configured.
+    #[must_use]
+    pub fn family_seed(&self) -> Option<&[u8]> {
+        self.family_seed.as_deref()
     }
 }
 
@@ -218,6 +234,9 @@ pub fn spawn_primal(
     }
 
     cmd.env("FAMILY_ID", family_id);
+    if let Some(seed) = nucleation.family_seed() {
+        cmd.env("FAMILY_SEED", String::from_utf8_lossy(seed).as_ref());
+    }
     cmd.env(
         "XDG_RUNTIME_DIR",
         nucleation.base_dir().to_string_lossy().as_ref(),

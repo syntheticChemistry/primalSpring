@@ -62,6 +62,18 @@ impl Transport {
         }
     }
 
+    /// Connect with an explicit BTSP seed, bypassing environment lookup.
+    ///
+    /// Used by the [`AtomicHarness`](crate::harness::AtomicHarness) where
+    /// the seed is generated in-process and not available via `FAMILY_SEED`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on connection failure or BTSP handshake failure.
+    pub fn connect_btsp(path: &Path, seed: &[u8]) -> Result<Self, IpcError> {
+        Self::unix_btsp(path, seed)
+    }
+
     /// Connect via Unix domain socket (cleartext, no handshake).
     ///
     /// # Errors

@@ -1,0 +1,71 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Tower + AI Overlay — Tower Atomic + Squirrel AI routing
+#
+# Extends Tower Atomic with Squirrel for AI/MCP tool coordination.
+# This is the minimal composition for springs that need inference.
+#
+# Usage:
+#   biomeos deploy --graph graphs/tower_ai.toml
+
+[graph]
+name = "tower_ai"
+description = "Tower Atomic + Squirrel AI: security + inference routing"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_preferred"
+tcp_fallback = "tower_routed"
+composition_model = "nucleated"
+fragments = ["tower_atomic", "ai"]
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = ["graph.deploy", "capability.discover"]
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.keygen", "crypto.identity"]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["discovery.find_primals", "discovery.announce", "mesh.relay"]
+
+[[graph.nodes]]
+name = "squirrel"
+binary = "squirrel"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = ["ai.query", "ai.complete", "ai.embed", "ai.models", "mcp.tools.list"]

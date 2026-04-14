@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Tower Atomic Bootstrap — Minimal security perimeter
+#
+# BearDog (crypto/identity) + Songbird (network/discovery).
+# This is the electron — the irreducible unit of ecosystem transport.
+# Every other composition builds on Tower Atomic.
+#
+# biomeOS looks for this graph at startup for bootstrap mode.
+# If present, biomeOS loads capability translations from the graph
+# nodes and populates the route table.
+#
+# Usage:
+#   biomeos deploy --graph graphs/tower_atomic_bootstrap.toml
+
+[graph]
+name = "tower_atomic_bootstrap"
+description = "Tower Atomic: BearDog + Songbird — the irreducible security perimeter"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_preferred"
+tcp_fallback = "tower_routed"
+composition_model = "tower_atomic"
+fragments = ["tower_atomic"]
+secure_by_default = true
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+encryption_tiers.tower = "full"
+
+# ── Phase 0: biomeOS (orchestration substrate, already running) ──────
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = [
+    "graph.deploy", "graph.list", "graph.status",
+    "capability.discover", "capability.route",
+]
+
+# ── Phase 1: BearDog — crypto authority ──────────────────────────────
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt",
+    "crypto.sign", "crypto.sign_ed25519",
+    "crypto.verify", "crypto.verify_ed25519",
+    "crypto.keygen", "crypto.identity",
+    "crypto.hash", "crypto.blake3_hash",
+    "crypto.sha256", "crypto.sha384",
+    "crypto.hmac_sha256",
+    "crypto.chacha20_poly1305_encrypt", "crypto.chacha20_poly1305_decrypt",
+    "crypto.aes256_gcm_encrypt",
+    "crypto.x25519_generate_ephemeral", "crypto.ed25519_generate_keypair",
+    "tls.derive_handshake_secrets", "tls.derive_secrets", "tls.sign_handshake",
+    "genetic.verify_lineage", "genetic.generate_lineage_proof",
+    "beacon.generate", "beacon.try_decrypt",
+    "btsp.handshake",
+]
+
+# ── Phase 2: Songbird — network mesh and discovery ──────────────────
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request", "network.dns_resolve",
+    "mesh.relay", "mesh.peers",
+    "ipc.register", "ipc.resolve",
+    "birdsong.generate_encrypted_beacon", "birdsong.decrypt_beacon",
+]
