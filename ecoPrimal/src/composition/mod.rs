@@ -102,6 +102,49 @@ impl CompositionContext {
         Self { clients }
     }
 
+    /// Build a context by trying UDS discovery first, then falling back to
+    /// TCP probing on well-known ports.
+    ///
+    /// TCP port resolution uses `{PRIMAL}_PORT` env vars (e.g. `BEARDOG_PORT=9100`)
+    /// with sensible defaults from the `plasmidBin` / `nucleus_launcher` convention.
+    /// This makes composition experiments work both in UDS (local development)
+    /// and TCP (containers, cross-arch, benchScale) deployments.
+    #[must_use]
+    pub fn from_live_discovery_with_fallback() -> Self {
+        let cap_to_primal: &[(&str, &str, &str, u16)] = &[
+            ("security",      "beardog",    "BEARDOG_PORT",    9100),
+            ("discovery",     "songbird",   "SONGBIRD_PORT",   9200),
+            ("storage",       "nestgate",   "NESTGATE_PORT",   9300),
+            ("compute",       "toadstool",  "TOADSTOOL_PORT",  9400),
+            ("tensor",        "barracuda",  "BARRACUDA_PORT",  9401),
+            ("shader",        "coralreef",  "CORALREEF_PORT",  9402),
+            ("ai",            "squirrel",   "SQUIRREL_PORT",   9500),
+            ("dag",           "rhizocrypt", "RHIZOCRYPT_PORT", 9301),
+            ("commit",        "sweetgrass", "SWEETGRASS_PORT", 9303),
+            ("provenance",    "loamspine",  "LOAMSPINE_PORT",  9302),
+            ("visualization", "petaltongue","PETALTONGUE_PORT",9600),
+        ];
+
+        let host = std::env::var("PRIMALSPRING_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+
+        let mut clients = HashMap::new();
+        for &(cap, primal, port_env, default_port) in cap_to_primal {
+            if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
+                clients.insert(cap.to_owned(), client);
+                continue;
+            }
+            let port: u16 = std::env::var(port_env)
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(default_port);
+            let addr = format!("{host}:{port}");
+            if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
+                clients.insert(cap.to_owned(), client);
+            }
+        }
+        Self { clients }
+    }
+
     /// Build from an explicit set of capability-to-client mappings.
     #[must_use]
     pub const fn from_clients(clients: HashMap<String, PrimalClient>) -> Self {

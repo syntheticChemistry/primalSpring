@@ -21,7 +21,7 @@ fn main() {
         .run(
             "Exp094: NUCLEUS Composition Parity (Tower + Node + Nest)",
             |v| {
-                let mut ctx = CompositionContext::from_live_discovery();
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
                 let caps = ctx.available_capabilities();
 
                 v.section("Discovery");
@@ -229,19 +229,19 @@ fn nest_storage_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationResult
     let test_key = "exp094_parity_roundtrip";
     let test_value = "nucleus_composition_validation_2026";
 
-    // Try both naming conventions
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
     let store_result = ctx
-        .call("storage", "storage.put", serde_json::json!({"key": test_key, "value": test_value}))
+        .call("storage", "storage.store", serde_json::json!({"family_id": family_id, "key": test_key, "value": test_value}))
         .or_else(|_| {
-            ctx.call("storage", "storage.store", serde_json::json!({"key": test_key, "value": test_value}))
+            ctx.call("storage", "storage.put", serde_json::json!({"family_id": family_id, "key": test_key, "value": test_value}))
         });
 
     match store_result {
         Ok(_) => {
             let retrieve_result = ctx
-                .call("storage", "storage.get", serde_json::json!({"key": test_key}))
+                .call("storage", "storage.retrieve", serde_json::json!({"family_id": family_id, "key": test_key}))
                 .or_else(|_| {
-                    ctx.call("storage", "storage.retrieve", serde_json::json!({"key": test_key}))
+                    ctx.call("storage", "storage.get", serde_json::json!({"family_id": family_id, "key": test_key}))
                 });
             match retrieve_result {
                 Ok(result) => {
@@ -306,19 +306,18 @@ fn nucleus_hash_store_retrieve(ctx: &mut CompositionContext, v: &mut ValidationR
                 &format!("BLAKE3: {}...", &hash_hex[..hash_hex.len().min(16)]),
             );
 
-            // Step 2: Nest — store via NestGate
+            let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
             let store_key = "exp094_cross_atomic_hash";
             match ctx.call(
                 "storage",
                 "storage.store",
-                serde_json::json!({"key": store_key, "value": hash_hex}),
+                serde_json::json!({"family_id": family_id, "key": store_key, "value": hash_hex}),
             ) {
                 Ok(_) => {
-                    // Step 3: Nest — retrieve and verify
                     match ctx.call(
                         "storage",
                         "storage.retrieve",
-                        serde_json::json!({"key": store_key}),
+                        serde_json::json!({"family_id": family_id, "key": store_key}),
                     ) {
                         Ok(retrieved) => {
                             let val = retrieved.get("value").and_then(|v| v.as_str()).unwrap_or("");

@@ -33,6 +33,19 @@ impl PrimalClient {
         })
     }
 
+    /// Connect to a primal at the given TCP address (e.g. `"127.0.0.1:9100"`).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError::ConnectionRefused`] or [`IpcError::Timeout`]
+    /// if the address is unreachable.
+    pub fn connect_tcp(addr: &str, primal: &str) -> Result<Self, IpcError> {
+        Ok(Self {
+            transport: Transport::tcp(addr)?,
+            primal: primal.to_owned(),
+        })
+    }
+
     /// Connect with an explicit BTSP seed (bypasses environment lookup).
     ///
     /// Used by the harness when connecting to primals that enforce BTSP
