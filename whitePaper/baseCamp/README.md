@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: April 14, 2026
-**Status**: Phase 43 — 74 experiments (17 tracks), 443 tests, 67 deploy graphs + 6 fragments, multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, 12/12 primals ALIVE, 19/19 exp094 composition parity, 6/9 cross-arch checks
+**Date**: April 15, 2026
+**Status**: Phase 43 — 74 experiments (17 tracks), 443 tests, 67 deploy graphs + 6 fragments, multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 14/15 cross-arch checks (HSM pending)
 
 ---
 
@@ -61,7 +61,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 73 (16 tracks) |
+| Experiments | 74 (17 tracks) |
 | Total tests | **443** (unit + integration + doc-tests + proptest, 42 ignored live) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |

@@ -12,10 +12,11 @@
 primalSpring validated biomeOS as the composition substrate for cross-architecture
 NUCLEUS deployment. A biomeOS-managed Tower was bootstrapped on a Pixel phone
 (aarch64-unknown-linux-musl + GrapheneOS) using `biomeos neural-api --tcp-only`.
-**11/15 exp096 cross-arch checks pass.** The remaining 4 are reporting gaps (3) and
-an expected upstream evolution (HSM/Titan M2 integration).
+**14/15 exp096 cross-arch checks pass.** The only remaining failure is HSM/Titan M2
+integration (expected upstream evolution in BearDog).
 
-**All critical composition gaps are now RESOLVED** across BearDog, Songbird, and biomeOS.
+**All 7 composition gaps are RESOLVED** across biomeOS, BearDog, Songbird, and NestGate.
+Local NUCLEUS composition is fully validated: exp091 12/12, exp094 19/19.
 
 ## What Works (Full Tower via biomeOS composition)
 
@@ -155,13 +156,27 @@ a Tower (BearDog + Songbird) on Pixel aarch64 via `neural-api --tcp-only`. The o
 remaining failure (`pixel_hsm_backend`) is an expected upstream evolution requiring
 Titan M2 / StrongBox / Keymaster integration in BearDog's key generation backend.
 
-**Additional fix (April 15, `ad4d4490`)**: `--family-id` was not propagated to
-translation defaults/config loading (they called `get_family_id()` independently).
-This caused 4 capability domains (storage, dag, spine, braid) to route to
-`-default.sock` instead of `-nucleus01.sock`. Fixed by threading `family_id`
-through `load_defaults_for_family()` and `load_from_config_for_family()`.
-Graph executor now reports per-node success/failure in `graph.status`.
-`exp091` routing matrix: **11/12** (was 8/12).
+**April 15 fixes (`ad4d4490` + `f1e1da78d`)**: Two critical composition issues resolved:
+
+1. **biomeOS family-ID propagation** (`ad4d4490`): `--family-id` was not propagated to
+   translation defaults/config loading (they called `get_family_id()` independently).
+   This caused 4 capability domains (storage, dag, spine, braid) to route to
+   `-default.sock` instead of `-nucleus01.sock`. Fixed by threading `family_id`
+   through `load_defaults_for_family()` and `load_from_config_for_family()`.
+   Graph executor now reports per-node success/failure in `graph.status`.
+
+2. **NestGate BTSP bypass on UDS** (`f1e1da78d`): NestGate enforced BTSP binary framing
+   on Unix domain socket connections, rejecting plain JSON-RPC from biomeOS with
+   "frame too large" errors. Fixed by implementing first-byte peek in NestGate's
+   UDS handlers (`isomorphic_ipc/server.rs`, `unix_socket_server/mod.rs`). If first
+   byte is `{` (0x7B), BTSP handshake is bypassed and plain JSON-RPC is handled
+   directly. Same pattern as BearDog's TCP auto-detection (Gap 5).
+
+**Validation results after April 15 fixes**:
+- `exp091` routing matrix: **12/12 ALL PASS** (was 8/12 → 11/12 → 12/12)
+- `exp094` composition parity: **19/19 ALL PASS** (was 17/19 with 2 NestGate skips)
+- Storage, DAG, spine, and braid capabilities all route correctly to family-specific sockets
+- NestGate storage round-trips and cross-nest round-trips now succeed via UDS
 
 | Gap | Status | Resolved In |
 |-----|--------|-------------|
@@ -171,6 +186,7 @@ Graph executor now reports per-node success/failure in `graph.status`.
 | Gap 4 (--tcp-only cascade) | **RESOLVED** | primal_start.rs + primal_spawner.rs TCP cascade |
 | Gap 5 (BTSP-aware TCP forwarding) | **RESOLVED** | BearDog protocol auto-detection (peek first byte) |
 | Gap 6 (family-id propagation) | **RESOLVED** | `ad4d4490` — thread family_id through translation loading |
+| Gap 7 (NestGate UDS BTSP bypass) | **RESOLVED** | `f1e1da78d` — first-byte peek in NestGate UDS handlers |
 
 ---
 

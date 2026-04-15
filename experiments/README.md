@@ -33,11 +33,11 @@ method name constants (`ipc::methods`), and primal name constants (`primal_names
 # Run all 74 experiments via meta-validator
 cargo run --release --bin validate_all
 
-# Run a single experiment
-cargo run --release --bin exp001
+# Run a single experiment (use -p with the package name)
+cargo run --release -p primalspring-exp001
 
 # Run with JSON output (for CI)
-PRIMALSPRING_JSON=1 cargo run --release --bin exp001
+PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 ```
 
 ## Track Summary
@@ -114,7 +114,7 @@ PRIMALSPRING_JSON=1 cargo run --release --bin exp001
 | 40 | NUCLEUS Complete | 12/12 ALIVE, 19/19 exp094 PASS, 455 tests |
 | 41 | Pre-Downstream Gap Resolution | 13 FullNucleus caps, 443 tests, gap resolution |
 | 42 | Multi-Tier Genetics + BTSP Phase 3 | Mito-Beacon / Nuclear lineage / Tags architecture, ChaCha20-Poly1305 encrypted channels, BtspEnforcer deny semantics, ionic bond RPC, content distribution federation |
-| 43 | Cross-Architecture Deployment | biomeOS Tower bootstrap on Pixel (aarch64 + GrapheneOS), `tcp_rpc_multi_protocol`, exp096 6/9 cross-arch checks (3 blocked on upstream biomeOS TCP propagation + graph env substitution) |
+| 43 | Cross-Architecture Deployment | biomeOS Tower bootstrap on Pixel (aarch64 + GrapheneOS), `tcp_rpc_multi_protocol`, exp096 14/15 cross-arch checks (HSM pending), exp091 12/12 routing, exp094 19/19 parity. exp095 added to workspace. All biomeOS/NestGate composition gaps RESOLVED |
 
 ## Validation Harness
 

@@ -1,7 +1,7 @@
 # primalSpring — Ecosystem Leverage Guide
 
-**Date**: April 14, 2026
-**Version**: v1.3.0
+**Date**: April 15, 2026
+**Version**: v1.4.0
 **License**: AGPL-3.0-or-later
 
 ---
@@ -11,13 +11,14 @@
 The ecosystem evolves in seasonal cycles. Capabilities flow downhill from
 primals (mountains) through primalSpring to domain springs (delta).
 Gaps discovered by springs evaporate back up through primalSpring to
-primal teams. See **`ECOSYSTEM_EVOLUTION_CYCLE.md`** in
-`infra/wateringHole/` for the full model.
+primal teams.
 
-**Right now**: Primals are closing debt and stabilizing IPC response schemas.
-primalSpring is proving composition parity (Tower, Nest ready; Node blocked
-on barraCuda response schema standardization). Domain springs should prepare
-to elevate from Rust math to primal composition validation.
+**Right now** (April 15, 2026): NUCLEUS composition is fully validated —
+Tower, Nest, and Node atomics all passing (exp094 19/19, exp091 12/12).
+biomeOS family-ID propagation and NestGate UDS protocol auto-detection
+are resolved. Domain springs can deploy full NUCLEUS via `plasmidBin` and
+begin absorbing composition patterns. The remaining frontier is HSM
+integration, BTSP Phase 3 server-side, and internet-scale federation.
 
 ---
 
@@ -224,7 +225,7 @@ only validates that primals produce correct results. When a primal isn't running
 checks degrade to `SKIP` — honest about what couldn't be tested.
 
 **Standardized patterns** for composition validation are documented in
-`infra/wateringHole/SPRING_COMPOSITION_PATTERNS.md`. Every spring MUST adopt:
+`wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md`. Every spring MUST adopt:
 - Method normalization (§1)
 - Capability registration as contract (§2)
 - Tiered socket discovery (§3)

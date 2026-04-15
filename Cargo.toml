@@ -83,6 +83,7 @@ members = [
     "experiments/exp092_dual_tower_ionic",
     "experiments/exp093_covalent_mesh_backup",
     "experiments/exp094_composition_parity",
+    "experiments/exp095_proto_nucleate_template",
     "experiments/exp096_pixel_cross_arch_bonding",
 ]
 

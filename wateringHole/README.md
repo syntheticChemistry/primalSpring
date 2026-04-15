@@ -1,9 +1,9 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
-**Version**: 0.9.14 (Phase 43 — 443 tests, 74 experiments, 67 deploy graphs + 6 fragments, BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), biomeOS-managed cross-arch Pixel deployment, content distribution federation)  
+**Version**: 0.9.14 (Phase 43 — 443 tests, 74 experiments, 67 deploy graphs + 6 fragments, BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), biomeOS-managed cross-arch Pixel deployment, content distribution federation, **NUCLEUS composition 12/12 routing + 19/19 parity**)  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: April 14, 2026
+**Last Updated**: April 15, 2026
 
 ---
 
@@ -49,7 +49,7 @@ primalSpring fills the gap.
 | Genetics | **Multi-tier**: Mito-Beacon (discovery/NAT), Nuclear (lineage DNA, non-fungible permissions), Tags (open participation) |
 | BTSP | **Phase 1–3**: FAMILY_SEED auth → secure-by-default cascade → ChaCha20-Poly1305 encrypted channel |
 | Bonding | Covalent, Ionic, Metallic, Weak, OrganoMetalSalt + BtspEnforcer deny semantics + ionic RPC + content distribution federation |
-| Cross-arch | biomeOS-managed Tower on Pixel (aarch64 + GrapheneOS) via Neural API `--tcp-only`, 6/9 exp096 checks |
+| Cross-arch | biomeOS-managed Tower on Pixel (aarch64 + GrapheneOS) via Neural API `--tcp-only`, 14/15 exp096 checks (HSM pending) |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | Active in `docs/PRIMAL_GAPS.md` — portability debt classes, socket resolution tiers, BTSP cascade |
 | RPC endpoints | 17 methods |
@@ -58,7 +58,7 @@ primalSpring fills the gap.
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Meta-validator | `validate_all` binary — runs all 74 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates |
-| NUCLEUS | **VALIDATED** — Tower + Nest + Node, 12/12 primals ALIVE, 19/19 exp094 composition parity |
+| NUCLEUS | **VALIDATED** — Tower + Nest + Node, 12/12 primals ALIVE, 19/19 exp094 parity, 12/12 exp091 routing |
 
 ### Key Capabilities
 
@@ -278,7 +278,7 @@ Validates cross-architecture bonding, genetics, and Neural API routing via `--tc
 
 | Exp | What | Validates | Status |
 |-----|------|-----------|--------|
-| 096 | Pixel cross-arch bonding | biomeOS Neural API health, BearDog/Songbird proxied health, capability counts, FAMILY_ID verification, genetics RPC, BTSP Phase 3, HSM probing | **6/9 PASS** (3 blocked on upstream biomeOS TCP propagation + graph env substitution) |
+| 096 | Pixel cross-arch bonding | biomeOS Neural API health, BearDog/Songbird proxied health, capability counts, FAMILY_ID verification, genetics RPC, BTSP Phase 3, HSM probing | **14/15 PASS** (HSM/Titan M2 expected upstream) |
 
 ---
 
@@ -327,12 +327,16 @@ The canonical deployment pattern for any NUCLEUS composition:
 6. Cross-architecture: use `--tcp-only` for Android/Windows (no Unix sockets)
 7. `tcp_rpc_multi_protocol` auto-detects raw TCP vs HTTP POST per primal
 
-**Upstream gaps** (tracked in biomeOS, not primalSpring):
-- TCP endpoint propagation: NeuralRouter still registers UDS even in `--tcp-only`
-- Graph env substitution: `${FAMILY_ID}` placeholders not substituted before spawn
-
 **Cross-arch validated**: Pixel (aarch64 + GrapheneOS + Titan M2 HSM), biomeOS-managed
-Tower bootstrap, 6/9 exp096 checks pass, remaining 3 blocked on above upstream gaps.
+Tower bootstrap, 14/15 exp096 checks pass. Only remaining: HSM/Titan M2 hardware
+backend (software crypto backend works, hardware integration is upstream BearDog work).
+
+**All upstream composition gaps RESOLVED** (April 15, 2026):
+- TCP endpoint propagation → v3.14 + translation_loader patch
+- Graph env substitution → v3.14 two-pass resolution
+- Family-ID propagation → `ad4d4490` (thread through translation loading)
+- NestGate UDS BTSP bypass → `f1e1da78d` (first-byte peek)
+- See `wateringHole/BIOMEOS_COMPOSITION_GAPS_APR14_2026.md` for full details.
 
 ## Multi-Tier Genetics Identity System
 

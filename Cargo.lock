@@ -1246,6 +1246,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "primalspring-exp095"
+version = "0.9.14"
+dependencies = [
+ "primalspring",
+ "serde_json",
+]
+
+[[package]]
 name = "primalspring-exp096"
 version = "0.9.14"
 dependencies = [
@@ -1255,7 +1263,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-trio-ops"
-version = "0.8.0"
+version = "0.9.14"
 dependencies = [
  "primalspring",
  "serde_json",

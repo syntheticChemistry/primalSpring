@@ -68,12 +68,12 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.14 Phase 41 — 443 tests, 74 experiments (17 tracks), 67 deploy graphs + 6 atomic-aligned fragments.
+v0.9.14 Phase 43 — 443 tests, 74 experiments (17 tracks), 67 deploy graphs + 6 atomic-aligned fragments.
 
-Live validation: **12/12 primals ALIVE**, **19/19 exp094 composition parity PASS**.
-All LD-01 through LD-10 gaps RESOLVED. Full NUCLEUS composition validated
+Live validation: **12/12 primals ALIVE**, **19/19 exp094 composition parity PASS**,
+**12/12 exp091 routing matrix PASS**, **14/15 exp096 cross-arch PASS** (HSM pending).
+All composition gaps RESOLVED (7/7 biomeOS + NestGate). Full NUCLEUS validated
 across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
-13 FullNucleus capabilities. Pre-downstream gap resolution complete.
 
 Multi-tier genetics identity system: Mitochondrial (Mito-Beacon for discovery
 and NAT negotiation), Nuclear (lineage DNA for non-fungible permissions with
@@ -84,8 +84,7 @@ BtspEnforcer with explicit deny semantics per TrustModel.
 
 Cross-architecture validated: biomeOS-managed Tower bootstrap on Pixel
 (aarch64-unknown-linux-musl + GrapheneOS) via Neural API `--tcp-only`.
-6/9 cross-arch checks pass; remaining 3 blocked on upstream biomeOS
-TCP endpoint propagation and graph env substitution.
+14/15 cross-arch checks pass; only remaining: HSM/Titan M2 hardware backend.
 
 Particle model adopted: Tower = electron, Node = proton, Nest = neutron,
 NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →

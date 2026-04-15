@@ -3,14 +3,16 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Phase 42–43: Multi-Tier Genetics + Cross-Architecture Deployment (2026-04-14)
+## [Unreleased] — Phase 42–43: Multi-Tier Genetics + Cross-Architecture Deployment (2026-04-15)
 
 ### Milestone
 **Multi-tier genetics identity system.** Mito-Beacon (discovery/NAT), Nuclear lineage
 (non-fungible permissions with generational mixing), Tags (open participation from
 plaintext seed heritage). BTSP Phase 3 types (ChaCha20-Poly1305 encrypted channels).
 Cross-architecture Tower bootstrap on Pixel (aarch64 + GrapheneOS) via biomeOS Neural
-API `--tcp-only`. 6/9 cross-arch checks pass (3 blocked on upstream biomeOS gaps).
+API `--tcp-only`. **14/15 cross-arch checks pass** (HSM/Titan M2 pending upstream).
+**NUCLEUS composition fully validated**: exp091 12/12 routing, exp094 19/19 parity.
+All 7 biomeOS/NestGate composition gaps RESOLVED.
 
 ### Added
 - **BTSP Phase 3 types**: `Phase3Cipher`, `NegotiateRequest`/`NegotiateResponse`,
@@ -47,8 +49,16 @@ API `--tcp-only`. 6/9 cross-arch checks pass (3 blocked on upstream biomeOS gaps
   whitePaper/baseCamp/README.md with Phase 43 metrics (74 experiments, 17 tracks).
 - New handoff: `wateringHole/PRIMALSPRING_V0914_PHASE43_HANDOFF_APR14_2026.md` —
   per-primal evolution paths, spring deployment patterns, biomeOS gaps.
-- New blurb: `wateringHole/BIOMEOS_COMPOSITION_GAPS_APR14_2026.md` — 4 upstream
-  gaps with fix paths and validation evidence.
+- New blurb: `wateringHole/BIOMEOS_COMPOSITION_GAPS_APR14_2026.md` — 7 upstream
+  gaps with fix paths and validation evidence (all RESOLVED as of April 15).
+- New doc: `wateringHole/UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` —
+  primal cross-talk protocol (first-byte peek, socket naming, family-ID propagation)
+  and spring/garden absorption patterns (maturity ladder, fragment composition,
+  bonding models, library patterns to absorb).
+- Updated `wateringHole/PRIMALSPRING_ECOSYSTEM_LEVERAGE_GUIDE.md` v1.4.0 —
+  refreshed composition status, fixed broken `infra/wateringHole/` references.
+- Updated `docs/PRIMAL_GAPS.md` — biomeOS routing fix, NestGate BTSP bypass,
+  graph executor error reporting all RESOLVED.
 - Added `fossilRecord/README.md` — archive directory index.
 - Updated specs/PAPER_REVIEW_QUEUE.md, specs/CROSS_SPRING_EVOLUTION.md with Phase 43.
 
