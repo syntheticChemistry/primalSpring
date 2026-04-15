@@ -14,7 +14,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
 > TCP is opt-in only for Songbird federation (`--port 8080` enables covalent mesh).
 >
-> **Cross-Architecture Pixel Deployment (April 14, session 2)**: **11/15 exp096 checks PASS.**
+> **Cross-Architecture Pixel Deployment (April 14–15)**: **14/15 exp096 checks PASS.**
 > biomeOS-managed Tower (BearDog + Songbird) runs on Pixel 8a (aarch64/GrapheneOS/Titan M2).
 > All critical composition gaps RESOLVED:
 > - BearDog: protocol auto-detection on TCP (peek first byte: `{` = JSON-RPC, else BTSP)
@@ -64,8 +64,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >   `self.family_id` for defaults, config, and domain registration.
 > - Graph executor: `ExecutionReport` now carries `completed_nodes` and `failed_nodes`
 >   vectors, and `ExecutionStatus` in `graph.status` reports per-node success/failure.
-> - Validated: `exp091` routing matrix **11/12** (up from 8/12). Only remaining failure
->   is NestGate UDS unresponsiveness (process stale, not a routing issue).
+> - Validated: `exp091` routing matrix **12/12** (up from 8/12). NestGate UDS bypass resolved (April 15).
 >
 > **NUCLEUS deployment patterns (April 10)**:
 > - ToadStool: JSON-RPC socket separated from tarpc (`compute.jsonrpc.sock` vs `compute.sock`),
@@ -854,7 +853,7 @@ Wire Standard L3. The gateway model for all external communication.
 **biomeOS** — Orchestration substrate. BTSP Phase 2 complete, 7,724 tests, registry routing
 fixed (BM-07/08/09 + April 15 family-id propagation), BM-10 method translation + BM-11
 ToadStool dual-socket **RESOLVED**. Graph executor now reports per-node errors in
-`graph.status`. **All composition gaps resolved.** `exp091` 11/12 pass (NestGate UDS stale).
+`graph.status`. **All composition gaps resolved.** `exp091` 12/12 pass, `exp094` 19/19 pass.
 
 **NestGate** — 11,856 tests, BTSP Phase 2 complete, Wire Standard L3. `--socket` wired.
 Fully functional on x86_64.
@@ -1134,6 +1133,93 @@ full verifiable lineage chains.
 instead of `family_seed_from_env()`. BearDog's `transport_security` advertisement (TS-01)
 provides the programmatic hook for biomeOS/AtomicHarness to negotiate BTSP tier. loamSpine's
 provider decoupling (`provider_client.rs`) sets the pattern for other primals to follow.
+
+---
+
+## Next Evolution Targets (April 15, 2026)
+
+Copy-paste blurbs per primal team for the next round of evolution, pattern tightening,
+and hardening. These are NOT blockers — they are the next step after current composition
+validation (exp091 12/12, exp094 19/19, exp096 14/15).
+
+### BearDog
+
+BTSP Phase 3 server-side cipher negotiation (currently NULL cipher after handshake).
+HSM/Titan M2 `crypto.generate_keypair` hardware backend for Pixel cross-arch.
+Bond persistence via NestGate/loamSpine ledger (currently in-memory only).
+UDS first-byte peek missing (TCP has it) — needed for biomeOS composition bypass.
+Generational provenance in `genetic.generate_lineage_proof` / `verify_lineage`.
+
+### Songbird
+
+QUIC/TLS evolution path. Content distribution federation seeder/leecher pattern.
+Transitive `ring` in `Cargo.lock` cleanup (not compiled but stale entry).
+UDS first-byte peek missing — currently always BTSP or always plain based on mode,
+no auto-detection for biomeOS composition bypass on UDS.
+
+### NestGate
+
+Doc drift: 57 methods in STATUS vs 41 in code const — reconcile.
+`data.*` capability inconsistency (accepted but returns delegation stub).
+181 deprecated APIs to clean. Streaming storage for large tensors (neuralSpring/wetSpring).
+Coverage 80% → 90% target.
+
+### biomeOS
+
+Graph-level genetics tier declaration (graphs don't declare which genetic tier they require).
+Tick-loop scheduling (60Hz continuous mode). Deploy class auto-resolution from fragment
+metadata (currently manual). Wire contract for `capability.call` semantic routing.
+
+### toadStool
+
+Coverage 83.6% → 90%. V4L2 ioctl surface. async-trait migration (320 instances — highest
+in ecosystem). JSON-RPC and tarpc socket unification.
+
+### barraCuda
+
+Post-handshake stream encryption (Phase 3). `plasma_dispersion` feature-gate
+(`domain-lattice` required). 29 shader absorption candidates from neuralSpring.
+`BufReader` lifetime edge-case in BTSP handshake relay.
+
+### Squirrel
+
+Three-tier genetics type consumption (awaits ecoPrimal >=0.10.0 with `mito_beacon_from_env()`).
+Content curation via BLAKE3 manifests. Full Phase 3 cipher negotiation.
+
+### petalTongue
+
+BTSP Phase 2 enforcement — currently has real handshake delegation on TCP (with first-byte peek)
+but UDS still lacks peek-based auto-detection for biomeOS composition bypass.
+6 files >700 LOC need splitting.
+
+### Provenance Trio (rhizoCrypt + loamSpine + sweetGrass)
+
+sweetGrass Postgres full-path testing (needs Docker CI). sweetGrass coverage 87% → 90%.
+rhizoCrypt self-sovereign crypto model vs BearDog delegation — decide on canonical pattern.
+
+### coralReef
+
+UDS first-byte peek missing — currently uses `guard_connection()` (out-of-band BearDog session
+check) instead of stream-level peek. This means biomeOS plain JSON-RPC over UDS may trigger
+BTSP rejection. Transitive libc (deferred until mio → rustix, mio#1735).
+
+### skunkBat
+
+BTSP Phase 2 handshake not started on UDS. TCP has first-byte peek.
+Low priority — skunkBat is Phase 1 only.
+
+### Class 4 ecosystem-wide: async-trait migration
+
+Priority order: toadStool(320) > Songbird(~160) > BearDog(~115) > Squirrel(~95) >
+NestGate(587 `Box<dyn Error>`) > biomeOS(72) > petalTongue(46) > others.
+See Class 4 section above for full migration matrix and guidance.
+
+### First-byte peek UDS standardization (cross-primal)
+
+Currently implemented on UDS: NestGate only. Currently on TCP only: BearDog, petalTongue,
+skunkBat. Missing entirely: Songbird, coralReef. Required for all primals accepting UDS
+connections per UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md. Without UDS peek,
+biomeOS composition traffic over UDS triggers BTSP handshake rejection.
 
 ---
 

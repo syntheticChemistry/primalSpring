@@ -1,0 +1,165 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Spring Deploy Template — NUCLEUS base + spring-specific overlays.
+#
+# NUCLEUS is always the base composition. Springs add domain-specific
+# nodes on top. Copy this template and adjust the overlay section for
+# your spring's requirements.
+#
+# Pattern:
+#   1. NUCLEUS base launches biomeOS, Tower (BearDog + Songbird),
+#      Node (toadStool + barraCuda + coralReef), Nest (NestGate),
+#      and Provenance Trio (rhizoCrypt + loamSpine + sweetGrass).
+#   2. Springs add only their domain nodes as overlays.
+#   3. Optional meta_tier nodes (Squirrel) added as needed.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_deploy/<yourspring>_deploy.toml
+
+[graph]
+name = "YOURSPRING_nucleated"
+description = "YOURSPRING — NUCLEUS base + domain overlays"
+version = "3.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+composition_model = "nucleated"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus"]
+
+[graph.bonding_policy]
+bond_type = "Metallic"
+trust_model = "InternalNucleus"
+tower_internal = "covalent"
+tower_to_node = "metallic"
+tower_to_nest = "metallic"
+node_to_nest = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.node = "delegated"
+encryption_tiers.nest = "delegated"
+
+# ── NUCLEUS Base ──────────────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "capability.discover", "topology.rescan"]
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+spawn = false
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
+
+[[graph.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 3
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities"]
+
+[[graph.nodes]]
+name = "barracuda"
+binary = "barracuda"
+order = 4
+required = false
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "tensor"
+capabilities = ["tensor.matmul", "tensor.batch.submit", "stats.mean"]
+
+[[graph.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 5
+required = false
+spawn = false
+depends_on = ["toadstool"]
+health_method = "health.liveness"
+by_capability = "shader_compile"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
+
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 6
+required = false
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+
+[[graph.nodes]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 7
+required = false
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
+
+[[graph.nodes]]
+name = "loamspine"
+binary = "loamspine"
+order = 8
+required = false
+spawn = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = ["spine.create", "entry.append", "certificate.mint"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 9
+required = false
+spawn = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
+
+# ── Spring Domain Overlays (customize below) ─────────────────────────
+
+# [[graph.nodes]]
+# name = "yourspring"
+# binary = "yourspring"
+# order = 10
+# required = true
+# depends_on = ["beardog", "songbird"]
+# health_method = "health.liveness"
+# by_capability = "domain"
+# capabilities = ["domain.your_capability"]

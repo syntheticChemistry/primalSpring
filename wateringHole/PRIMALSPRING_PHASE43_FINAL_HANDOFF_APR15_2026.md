@@ -209,4 +209,53 @@ $XDG_RUNTIME_DIR/biomeos/{primal}-{family_id}.sock
 
 ---
 
+## Spring `deny.toml` Compliance Checklist
+
+All springs consuming NUCLEUS primals should maintain a `deny.toml` that bans
+C/FFI crypto dependencies (`ring`, `openssl`, `native-tls`, `aws-lc-sys`) to
+prevent portability regressions. Springs delegate crypto to BearDog via IPC.
+
+| Spring | `deny.toml`? | `ring` banned? | `openssl` banned? | `native-tls` banned? | `aws-lc-sys` banned? | Action Required |
+|--------|:---:|:---:|:---:|:---:|:---:|------|
+| **hotSpring** | **NO** | N/A | N/A | N/A | N/A | **Create `deny.toml` with full ecoBin v3 C/FFI ban list** |
+| **neuralSpring** | Yes (weak) | **NO** | **NO** | **NO** | **NO** | **Add C/FFI bans** (currently only license/advisory checks) |
+| **wetSpring** | Yes | **NO** | **YES** | Unknown | Unknown | **Add `ring` ban** (openssl banned, ring missing) |
+| **healthSpring** | Yes | Exception | **YES** | Unknown | Unknown | Acceptable — `ring` allowed as `rustls` wrapper with explicit evolution note. **Verify `native-tls`/`aws-lc-sys` banned** |
+| **airSpring** | Yes | Unknown | Unknown | Unknown | Unknown | **Full audit** — verify all 4 C/FFI bans present |
+| **groundSpring** | Yes | Unknown | Unknown | Unknown | Unknown | **Full audit** — verify all 4 C/FFI bans present |
+| **ludoSpring** | Via primalSpring | N/A | N/A | N/A | N/A | Pure composition — inherits primal compliance |
+
+### Recommended `deny.toml` ban section for springs
+
+```toml
+[[bans.deny]]
+name = "ring"
+wrappers = []  # no exceptions — delegate crypto to BearDog IPC
+
+[[bans.deny]]
+name = "openssl"
+
+[[bans.deny]]
+name = "openssl-sys"
+
+[[bans.deny]]
+name = "native-tls"
+
+[[bans.deny]]
+name = "aws-lc-sys"
+
+[[bans.deny]]
+name = "aws-lc-rs"
+```
+
+If a spring has a legitimate transitive `ring` dependency (e.g., via `rustls`), add:
+
+```toml
+[[bans.deny]]
+name = "ring"
+wrappers = ["rustls"]  # allowed only as rustls internal, not direct use
+```
+
+---
+
 **License**: AGPL-3.0-or-later

@@ -1,30 +1,29 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Conditional DAG — GPU dispatch with CPU fallback
+# Parallel Capability Burst — all core services start concurrently
 #
-# toadStool dispatches compute jobs. If barraCuda (GPU) is available,
-# use it. Otherwise fall back to CPU-only toadStool dispatch.
-# coralReef compiles shaders only when GPU is present.
+# Tower Atomic boots first (sequential BearDog → Songbird), then
+# toadStool, NestGate, Squirrel, and barraCuda start in parallel
+# since they only depend on Tower, not each other.
 #
-# This graph demonstrates the conditional_dag coordination pattern:
-# branches in the dependency graph activate based on runtime conditions.
+# Tests the parallel coordination pattern: independent primals
+# can health-check concurrently for faster NUCLEUS startup.
 #
 # Usage:
-#   biomeos deploy --graph graphs/conditional_fallback.toml
+#   biomeos deploy --graph graphs/parallel_capability_burst.toml
 
 [graph]
-name = "conditional_fallback"
-description = "Conditional DAG: GPU primary (barraCuda) with CPU fallback (toadStool)"
+name = "parallel_capability_burst"
+description = "Tower sequential, then 4 core services in parallel"
 version = "1.0.0"
-coordination = "conditional_dag"
+coordination = "parallel"
 
 [graph.metadata]
 security_model = "btsp_enforced"
 transport = "uds_preferred"
 tcp_fallback = "tower_routed"
 composition_model = "nucleated"
-fragments = ["tower_atomic", "node"]
-fallback_strategy = "cpu_only"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -51,7 +50,7 @@ required = true
 health_method = "health.liveness"
 by_capability = "security"
 security_model = "btsp"
-capabilities = ["crypto.sign", "crypto.verify", "crypto.keygen"]
+capabilities = ["crypto.sign", "crypto.verify", "crypto.keygen", "crypto.identity"]
 
 [[graph.nodes]]
 name = "songbird"
@@ -62,9 +61,9 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "discovery"
 security_model = "btsp"
-capabilities = ["discovery.find_primals", "discovery.announce"]
+capabilities = ["discovery.find_primals", "discovery.announce", "mesh.relay"]
 
-# Primary path: toadStool always starts
+# All 4 core services depend only on Tower — they can start in parallel
 [[graph.nodes]]
 name = "toadstool"
 binary = "toadstool"
@@ -74,30 +73,37 @@ depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "compute"
 security_model = "tower_delegated"
-capabilities = ["compute.dispatch.submit", "compute.dispatch.result", "compute.execute"]
+capabilities = ["compute.dispatch.submit", "compute.execute"]
 
-# Conditional: barraCuda starts only if GPU detected
 [[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
 order = 4
 required = false
-depends_on = ["beardog", "songbird", "toadstool"]
+depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
 by_capability = "tensor"
 security_model = "tower_delegated"
-condition = "gpu_available"
-capabilities = ["tensor.matmul", "tensor.add", "stats.mean", "tensor.batch.submit"]
+capabilities = ["tensor.matmul", "stats.mean", "tensor.batch.submit"]
 
-# Conditional: coralReef starts only if GPU detected
 [[graph.nodes]]
-name = "coralreef"
-binary = "coralreef"
+name = "nestgate"
+binary = "nestgate"
 order = 5
-required = false
-depends_on = ["beardog", "songbird", "toadstool"]
+required = true
+depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
-by_capability = "shader"
+by_capability = "storage"
 security_model = "tower_delegated"
-condition = "gpu_available"
-capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.validate"]
+capabilities = ["storage.store", "storage.retrieve"]
+
+[[graph.nodes]]
+name = "squirrel"
+binary = "squirrel"
+order = 6
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = ["ai.query", "mcp.tools.list"]

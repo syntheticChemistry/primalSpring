@@ -1,3 +1,5 @@
+# Source of truth: primalSpring/graphs/spring_deploy/ (validation/structural format with metadata/fragments/bonding)
+# Runtime execution variant: biomeOS/graphs/healthspring_deploy.toml
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # HealthSpring Nucleated Deploy — clinical/biomedical science via NUCLEUS composition.
@@ -38,7 +40,7 @@ witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 particle_profile = "neutron_heavy"
 composition_model = "nucleated"
-fragments = ["tower_atomic", "nest_atomic", "meta_tier"]
+fragments = ["tower_atomic", "nest_atomic", "nucleus", "meta_tier"]
 
 [graph.bonding_policy]
 bond_type = "Ionic"

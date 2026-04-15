@@ -1,3 +1,5 @@
+# Source of truth: primalSpring/graphs/ (validation/structural format with metadata/fragments/bonding)
+# Runtime execution variant: biomeOS/graphs/tower_atomic_bootstrap.toml
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # Tower Atomic Bootstrap — Minimal security perimeter

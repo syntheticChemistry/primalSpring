@@ -19,7 +19,7 @@ security_model = "btsp_enforced"
 transport = "uds_preferred"
 tcp_fallback = "tower_routed"
 composition_model = "nucleated"
-fragments = ["tower_atomic", "ai"]
+fragments = ["tower_atomic", "meta_tier"]
 
 [graph.bonding_policy]
 tower_internal = "covalent"

@@ -1,3 +1,5 @@
+# Source of truth: primalSpring/graphs/spring_deploy/ (validation/structural format with metadata/fragments/bonding)
+# Runtime execution variant: biomeOS/graphs/airspring_deploy.toml
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # AirSpring Nucleated Deploy — weather science via NUCLEUS composition.
@@ -31,7 +33,7 @@ pattern_version = "2026-04-07"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 composition_model = "nucleated"
-fragments = ["tower_atomic"]
+fragments = ["tower_atomic", "nucleus", "provenance_trio", "meta_tier"]
 
 [graph.bonding_policy]
 bond_type = "Metallic"
