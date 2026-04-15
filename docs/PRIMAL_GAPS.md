@@ -8,7 +8,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > and are NOT tracked here. See `graphs/downstream/` for proto-nucleate patterns.
 > Springs/gardens do NOT have binaries in plasmidBin — only primals do.
 >
-> **Last updated**: 2026-04-14 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
+> **Last updated**: 2026-04-15 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -53,17 +53,19 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - `NeuralBridge::discover()` now checks both `neural-api-{family}.sock` and
 >   `biomeos-{family}.sock` — experiments find biomeOS regardless of socket naming.
 >
-> **biomeOS registry routing fix (April 10)**:
+> **biomeOS registry routing fix (April 10, completed April 15)**:
 > - Root cause: `defaults.rs`, `mod.rs` (`load_from_config`), and `translation_startup.rs`
->   called `biomeos_core::family_discovery::get_family_id()` which derives a hex hash from
->   `.family.seed`, producing socket paths like `beardog-8ff3b864a4bc589a.sock`. But primals
->   run with `BIOMEOS_FAMILY_ID=default`, so sockets are `beardog-default.sock`.
-> - Fix: Threaded `family_id: &str` through `load_defaults_into()`, `load_from_config()`,
->   and `load_defaults()` APIs. `NeuralApiServer` passes `self.family_id` ("default") instead.
-> - Socket alias: `resolve_primal_socket_with()` now maps `toadstool→compute` and
->   `nestgate→storage` domain sockets when the domain-based path exists on disk.
-> - Verified: `capability.call("crypto.encrypt")` → BearDog → success.
->   `capability.call("storage.put")` → NestGate → success.
+>   called `biomeos_core::family_discovery::get_family_id()` instead of using the server's
+>   `--family-id` value. When `--family-id nucleus01` was passed, downstream code still
+>   resolved to `"default"` sockets, causing storage/dag/spine/braid routes to fail.
+> - Fix (April 15, `ad4d4490`): Added `load_defaults_for_family()` and
+>   `load_from_config_for_family()` to thread the server's `family_id` through all
+>   translation loading. `NeuralApiServer::load_translations_on_startup` now uses
+>   `self.family_id` for defaults, config, and domain registration.
+> - Graph executor: `ExecutionReport` now carries `completed_nodes` and `failed_nodes`
+>   vectors, and `ExecutionStatus` in `graph.status` reports per-node success/failure.
+> - Validated: `exp091` routing matrix **11/12** (up from 8/12). Only remaining failure
+>   is NestGate UDS unresponsiveness (process stale, not a routing issue).
 >
 > **NUCLEUS deployment patterns (April 10)**:
 > - ToadStool: JSON-RPC socket separated from tarpc (`compute.jsonrpc.sock` vs `compute.sock`),
@@ -850,8 +852,9 @@ Wire Standard L3. The gateway model for all external communication.
 **Inference provider bridge**: `inference.complete`/`embed`/`models` via ecoPrimal wire standard.
 
 **biomeOS** — Orchestration substrate. BTSP Phase 2 complete, 7,724 tests, registry routing
-fixed (BM-07/08/09), BM-10 method translation + BM-11 ToadStool dual-socket **RESOLVED**.
-**All gaps resolved.**
+fixed (BM-07/08/09 + April 15 family-id propagation), BM-10 method translation + BM-11
+ToadStool dual-socket **RESOLVED**. Graph executor now reports per-node errors in
+`graph.status`. **All composition gaps resolved.** `exp091` 11/12 pass (NestGate UDS stale).
 
 **NestGate** — 11,856 tests, BTSP Phase 2 complete, Wire Standard L3. `--socket` wired.
 Fully functional on x86_64.

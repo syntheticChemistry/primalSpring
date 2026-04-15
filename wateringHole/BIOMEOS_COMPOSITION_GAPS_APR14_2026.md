@@ -155,6 +155,14 @@ a Tower (BearDog + Songbird) on Pixel aarch64 via `neural-api --tcp-only`. The o
 remaining failure (`pixel_hsm_backend`) is an expected upstream evolution requiring
 Titan M2 / StrongBox / Keymaster integration in BearDog's key generation backend.
 
+**Additional fix (April 15, `ad4d4490`)**: `--family-id` was not propagated to
+translation defaults/config loading (they called `get_family_id()` independently).
+This caused 4 capability domains (storage, dag, spine, braid) to route to
+`-default.sock` instead of `-nucleus01.sock`. Fixed by threading `family_id`
+through `load_defaults_for_family()` and `load_from_config_for_family()`.
+Graph executor now reports per-node success/failure in `graph.status`.
+`exp091` routing matrix: **11/12** (was 8/12).
+
 | Gap | Status | Resolved In |
 |-----|--------|-------------|
 | Gap 1 (TCP endpoint propagation) | **RESOLVED** | v3.14 + translation_loader patch |
@@ -162,6 +170,7 @@ Titan M2 / StrongBox / Keymaster integration in BearDog's key generation backend
 | Gap 3 (bootstrap env inheritance) | **RESOLVED** | bootstrap.rs env inherit patch |
 | Gap 4 (--tcp-only cascade) | **RESOLVED** | primal_start.rs + primal_spawner.rs TCP cascade |
 | Gap 5 (BTSP-aware TCP forwarding) | **RESOLVED** | BearDog protocol auto-detection (peek first byte) |
+| Gap 6 (family-id propagation) | **RESOLVED** | `ad4d4490` — thread family_id through translation loading |
 
 ---
 
