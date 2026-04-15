@@ -747,7 +747,7 @@ Per `PRIMAL_CAPABILITY_WIRE_STANDARD_APR08_2026.md` v1.0: every primal's
 | ToadStool | **L3** | YES | YES | YES | `handler/core.rs` |
 | Squirrel | **L2** | YES | YES | partial | `handlers_capability.rs` |
 | rhizoCrypt | **L3** | YES | YES | YES | `niche.rs` — full composable |
-| loamSpine | **L2/L3** | YES | YES | partial | Wire Standard sprint complete |
+| loamSpine | **L3** | YES | YES | YES | Full L3: 37 methods, 10 capability groups, bond-ledger, self-knowledge compliant (April 15, 2026) |
 | sweetGrass | **L3** | YES | YES | YES | Full composable |
 | barraCuda | **L2** | YES | YES | partial | Sprint 31 |
 | petalTongue | **L2/L3** | YES | YES | partial | `system.rs` |
