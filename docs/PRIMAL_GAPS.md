@@ -341,7 +341,7 @@ Each maps to a specific primal team for resolution.
 | **Songbird** | Wave 134-136: `capability.resolve`, `inference.*` canonical, CI-01 `cargo deny`, **SB-02 ring-crypto removed**, **SB-03 sled eliminated**, canonical constants | SB-02, SB-03, capability.resolve, inference namespace, CI-01 | QUIC/TLS evolution, transitive `ring` in lockfile (not compiled) |
 | **Provenance Trio** | **All three now have TCP_NODELAY + flush-after-write.** rhizoCrypt S33-34: +31 tests, feature narrowing, primal-agnostic naming, BTSP types module, service_types split. 1,502 tests ~93% cov. loamSpine: dedicated UDS transport (uds.rs), constants.rs centralization, 8×5 concurrent load test. 1,316 tests ~92% cov. sweetGrass: BTSP mock BearDog test pattern, Postgres error-path tests (no Docker), module splits (braids/health/config), sled clone reduction. 1,315 tests ~87% cov | Trio IPC stability (TCP_NODELAY+flush), constants centralization, BTSP types | sweetGrass Postgres full-path (needs Docker CI), sweetGrass coverage 87→90% |
 | **biomeOS** | v3.01-3.03: **`capability.resolve` implemented** (single-step routing), **`lifecycle.composition`** dashboard, **`consumed_capabilities` validation** in graph loader, full **`inference.*` routing** (7 methods incl `register_provider`), anyhow evolution, `#[expect]` migration, hot-path clone elimination. 7,749 tests | capability.resolve, lifecycle.composition, inference.*, consumed_capabilities | Songbird mesh state, gate2/Pixel deploy validation |
-| **petalTongue** | Sprint 5: **PT-06 RESOLVED** (push delivery wired on server startup), 9 new test modules (IPC handlers, provenance trio, engine, animation, audio, SVG, neural graph, primal details), anyhow removed from all production deps, `#[expect]` migration, self-knowledge constants gated, hot-path allocation reduction. ~2,277 tests ~90% cov | PT-06 (push delivery activated), PT-08 (BTSP Phase 1) | PT-09 (BTSP Phase 2 — still policy stub, no real handshake), 6 files >700 LOC |
+| **petalTongue** | Sprint 5: **PT-06 RESOLVED** (push delivery wired on server startup), 9 new test modules (IPC handlers, provenance trio, engine, animation, audio, SVG, neural graph, primal details), anyhow removed from all production deps, `#[expect]` migration, self-knowledge constants gated, hot-path allocation reduction. ~2,277 tests ~90% cov. **BTSP Phase 2 WIRED** (Apr 15): real BearDog handshake delegation on UDS+TCP, TCP first-byte peek for biomeOS bypass | PT-06 (push delivery activated), PT-08 (BTSP Phase 1), **PT-09 (BTSP Phase 2 WIRED)** | 6 files >700 LOC |
 
 ### Full Ecosystem Revalidation (April 12, 2026)
 
@@ -439,9 +439,12 @@ validation" — Level 5 on the maturity ladder.
 
 **What this means for springs**: At the composition validation level (Level 5),
 springs have **no local math** — all computation delegates to primals via IPC.
-Springs use `CompositionContext::from_live_discovery()` + `validate_parity()`
-to confirm that primal compositions produce results matching the original Python
-baselines. The spring's own Rust code (Levels 2-4) served its purpose: it evolved
+Springs use `CompositionContext::from_live_discovery_with_fallback()` (preferred)
+or `from_live_discovery()` + `validate_parity()` to confirm that primal compositions
+produce results matching the original Python baselines. The `_with_fallback` variant
+tries UDS first, then probes TCP ports via `{PRIMAL}_PORT` env vars — enabling
+validation against both UDS and TCP (container, cross-arch) deployments.
+The spring's own Rust code (Levels 2-4) served its purpose: it evolved
 the upstream primals and is now fossil record. When a primal isn't running, checks
 degrade to `SKIP` (honest, not faked). **There are no spring binaries at this level.**
 
@@ -938,9 +941,9 @@ NUCLEUS: 100%.** primalSpring itself: clippy ZERO warnings, fmt PASS, all tests 
 4. **rhizoCrypt**: **BTSP Phase 2 COMPLETE** ↑↑ (S31) — `BtspServer::accept_handshake` in UDS accept. Local crypto (self-sovereign — HKDF/X25519/HMAC-SHA256, no BearDog delegation).
 5. **loamSpine**: **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake` in UDS accept, BearDog delegation (`btsp.session.create/verify/negotiate`). Mock tests.
 6. **sweetGrass**: **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake` in UDS + TCP accept, BearDog delegation. Client `perform_handshake` in integration crate.
-7. **petalTongue**: **BTSP Phase 1 COMPLETE** ↑↑ — new `btsp.rs` module: guard, family-scoped sockets, domain symlinks. Phase 2 stub (warn-only).
+7. **petalTongue**: **BTSP Phase 2 COMPLETE** ↑↑ (Apr 15) — real BearDog handshake delegation: `perform_server_handshake` in UDS+TCP accept, length-prefixed framing, `btsp.session.create/verify/negotiate` provider client. TCP first-byte peek (`{` → plain JSON-RPC for biomeOS). `BtspHandshakeConfig::from_env()` for production gating.
 8. **coralReef**: **BTSP Phase 2 COMPLETE** ↑↑ (Iter 78) — `guard_connection()` in all 3 crates (async core/glowplug, blocking ember). Real UDS RPC to BearDog `btsp.session.create`. Degraded mode when provider absent. **Wire Standard L2** ↑ (`capability.list` + flat `methods`). 7 large files split into modules, typed driver errors (Waves 1–3).
-9. **skunkBat**: **JSON-RPC IPC server from scratch** ↑↑ + **BTSP Phase 1 COMPLETE** + **Wire Standard L2**. Phase 2 not started.
+9. **skunkBat**: **BTSP Phase 2 COMPLETE** ↑↑ (Apr 15) — real BearDog handshake delegation: `perform_server_handshake` in TCP+UDS accept, length-prefixed framing, provider client for `btsp.session.create/verify/negotiate`. TCP first-byte peek. `BtspHandshakeConfig::from_env()`.
 10. **BearDog**: Wave 33 — **BD-01 RESOLVED** (per-field encoding hints + semantic aliases). 90.51% coverage. 14,593+ tests. `#[allow(` 193→75. `runtime.rs` 1244→360 LOC. Dynamic `ipc.register`. Standalone startup (`standalone-{uuid}`). 0 files over 1000 LOC. Minor: `btsp.negotiate` vs `btsp.session.negotiate` metadata inconsistency.
 11. **Squirrel/biomeOS/NestGate**: Phase 2 complete (wave 2, unchanged).
 
