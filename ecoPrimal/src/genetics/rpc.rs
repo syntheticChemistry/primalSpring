@@ -11,13 +11,26 @@
 //!
 //! # RPC Methods
 //!
-//! | Method                            | Tier    | Description                              |
-//! |-----------------------------------|---------|------------------------------------------|
+//! | Method                              | Tier    | Description                                  |
+//! |-------------------------------------|---------|----------------------------------------------|
 //! | `genetic.derive_lineage_beacon_key` | Mito    | Derive a beacon key for dark forest discovery |
-//! | `genetic.derive_lineage_key`      | Nuclear | Derive a lineage key with generational mixing |
-//! | `genetic.mix_entropy`             | Nuclear | Three-tier entropy mixing (human, supervised, machine) |
-//! | `genetic.generate_lineage_proof`  | Nuclear | Generate a cryptographic lineage proof    |
-//! | `genetic.verify_lineage`          | Nuclear | Verify a lineage proof chain              |
+//! | `genetic.derive_lineage_key`        | Nuclear | Derive a lineage key for auth/permissions     |
+//! | `genetic.mix_entropy`               | Nuclear | Three-tier entropy mixing                     |
+//! | `genetic.generate_lineage_proof`    | Nuclear | Generate a cryptographic lineage proof        |
+//! | `genetic.verify_lineage`            | Nuclear | Verify a lineage proof                        |
+//!
+//! # Encoding
+//!
+//! BearDog uses **base64** for `lineage_seed`, `key`, `entropy`, `proof`
+//! parameters and responses. Beacon keys are returned as **hex**. This
+//! module handles the encoding/decoding transparently.
+//!
+//! # Generation Tracking
+//!
+//! BearDog's JSON-RPC API does not track generation numbers or parent
+//! hashes — that provenance chain is maintained locally in
+//! [`NuclearGenetics`]. Different `context` values produce distinct keys
+//! from the same lineage seed, enabling the spawn-not-copy model.
 
 use serde::{Deserialize, Serialize};
 
@@ -27,87 +40,127 @@ use crate::ipc::error::IpcError;
 use super::mito_beacon::MitoBeacon;
 use super::nuclear::NuclearGenetics;
 
+// ── Param types (match BearDog's actual Deserialize structs) ─────────────
+
 /// Parameters for `genetic.derive_lineage_beacon_key`.
+///
+/// BearDog extracts `lineage_seed` directly from the JSON params object.
 #[derive(Debug, Serialize)]
 struct DeriveBeaconKeyParams {
     lineage_seed: String,
-    domain: String,
 }
 
 /// Parameters for `genetic.derive_lineage_key`.
+///
+/// Matches `DeriveLineageKeyRequest` in beardog-tunnel.
 #[derive(Debug, Serialize)]
 struct DeriveLineageKeyParams {
+    our_family_id: String,
+    peer_family_id: String,
+    context: String,
     lineage_seed: String,
-    domain: String,
-    generation: u64,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parent_key_hash: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    context_entropy: Option<String>,
 }
 
 /// Parameters for `genetic.mix_entropy`.
+///
+/// Matches `MixEntropyRequest` — all tiers optional (base64-encoded).
 #[derive(Debug, Serialize)]
 struct MixEntropyParams {
-    tiers: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tier3_human: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tier2_supervised: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tier1_machine: Option<String>,
 }
 
 /// Parameters for `genetic.generate_lineage_proof`.
+///
+/// Matches `GenerateLineageProofRequest` in beardog-tunnel.
 #[derive(Debug, Serialize)]
 struct GenerateProofParams {
+    our_family_id: String,
+    peer_family_id: String,
     lineage_seed: String,
-    generation: u64,
-    parent_key_hash: Option<String>,
-    context: String,
 }
 
 /// Parameters for `genetic.verify_lineage`.
+///
+/// Matches `VerifyLineageRequest` in beardog-tunnel.
 #[derive(Debug, Serialize)]
 struct VerifyLineageParams {
-    proof: String,
-    claimed_generation: u64,
-    claimed_parent_hash: Option<String>,
-    context: String,
+    our_family_id: String,
+    peer_family_id: String,
+    lineage_proof: String,
+    lineage_seed: String,
 }
 
+// ── Response types (match BearDog's actual Serialize structs) ────────────
+
 /// Result from `genetic.derive_lineage_beacon_key`.
+///
+/// BearDog returns `beacon_key` as hex-encoded 32 bytes.
 #[derive(Debug, Deserialize)]
 struct BeaconKeyResult {
     beacon_key: String,
-    beacon_id: String,
+    #[allow(dead_code)]
+    algorithm: Option<String>,
+    #[allow(dead_code)]
+    domain: Option<String>,
 }
 
 /// Result from `genetic.derive_lineage_key`.
+///
+/// Matches `DeriveLineageKeyResponse` — `key` is base64-encoded 32 bytes.
 #[derive(Debug, Deserialize)]
 struct LineageKeyResult {
-    lineage_key: String,
-    generation: u64,
-    parent_hash: Option<String>,
+    key: String,
+    #[allow(dead_code)]
+    method: Option<String>,
+    #[allow(dead_code)]
+    quality_score: Option<f64>,
 }
 
 /// Result from `genetic.mix_entropy`.
+///
+/// Matches `MixEntropyResponse` — `entropy` is base64-encoded.
 #[derive(Debug, Deserialize)]
 struct MixEntropyResult {
-    mixed: String,
+    entropy: String,
+    #[allow(dead_code)]
+    quality_score: Option<f64>,
+    #[allow(dead_code)]
+    tiers_used: Option<u8>,
 }
 
 /// Result from `genetic.generate_lineage_proof`.
+///
+/// Matches `GenerateLineageProofResponse` — `proof` is base64-encoded.
 #[derive(Debug, Deserialize)]
 struct ProofResult {
     proof: String,
+    #[allow(dead_code)]
+    timestamp: Option<u64>,
 }
 
 /// Result from `genetic.verify_lineage`.
+///
+/// Matches `VerifyLineageResponse`.
 #[derive(Debug, Deserialize)]
 struct VerifyResult {
     valid: bool,
 }
 
+// ── Public API ───────────────────────────────────────────────────────────
+
 /// Derive a mito-beacon key from BearDog via `genetic.derive_lineage_beacon_key`.
 ///
-/// The `lineage_seed` is the family's root seed (what was formerly the
-/// plaintext `FAMILY_SEED`). The `domain` scopes the beacon derivation
-/// (e.g. `"birdsong_beacon_v1"`).
+/// The `lineage_seed` is the family's root seed (base64-encoded). BearDog
+/// uses HKDF-SHA256 with domain `birdsong_beacon_v1` to derive a 32-byte
+/// beacon key. All family members with the same seed derive the same key.
+///
+/// `beacon_id` and `group_name` are metadata for the returned [`MitoBeacon`]
+/// — BearDog does not track these.
 ///
 /// # Errors
 ///
@@ -115,12 +168,11 @@ struct VerifyResult {
 pub fn derive_lineage_beacon_key(
     client: &mut PrimalClient,
     lineage_seed: &str,
-    domain: &str,
+    beacon_id: &str,
     group_name: &str,
 ) -> Result<MitoBeacon, IpcError> {
     let params = DeriveBeaconKeyParams {
         lineage_seed: lineage_seed.to_owned(),
-        domain: domain.to_owned(),
     };
     let result: BeaconKeyResult = client.call_extract(
         "genetic.derive_lineage_beacon_key",
@@ -130,7 +182,11 @@ pub fn derive_lineage_beacon_key(
     )?;
 
     let key_bytes = hex_decode(&result.beacon_key)?;
-    Ok(MitoBeacon::new(result.beacon_id, group_name.to_owned(), key_bytes))
+    Ok(MitoBeacon::new(
+        beacon_id.to_owned(),
+        group_name.to_owned(),
+        key_bytes,
+    ))
 }
 
 /// Derive a nuclear lineage key from BearDog via `genetic.derive_lineage_key`.
@@ -138,26 +194,27 @@ pub fn derive_lineage_beacon_key(
 /// For genesis (generation 0), `parent` should be `None`.
 /// For child generations, pass the parent's `NuclearGenetics` reference.
 ///
+/// BearDog's key derivation uses Blake3 KDF seeded by the lineage_seed,
+/// family IDs, and context. Different `context` values produce distinct
+/// keys — this is how the "spawn not copy" model works: each generation
+/// uses a unique context derived from the parent chain.
+///
 /// # Errors
 ///
 /// Returns [`IpcError`] on transport failure or if BearDog reports an error.
 pub fn derive_lineage_key(
     client: &mut PrimalClient,
     lineage_seed: &str,
-    domain: &str,
+    our_family_id: &str,
+    peer_family_id: &str,
+    context: &str,
     parent: Option<&NuclearGenetics>,
-    context_entropy: Option<&[u8]>,
 ) -> Result<NuclearGenetics, IpcError> {
-    let (generation, parent_key_hash) = parent.map_or((0, None), |p| {
-        (p.generation() + 1, Some(hex_encode(p.key_hash())))
-    });
-
     let params = DeriveLineageKeyParams {
         lineage_seed: lineage_seed.to_owned(),
-        domain: domain.to_owned(),
-        generation,
-        parent_key_hash,
-        context_entropy: context_entropy.map(hex_encode_slice),
+        our_family_id: our_family_id.to_owned(),
+        peer_family_id: peer_family_id.to_owned(),
+        context: context.to_owned(),
     };
     let result: LineageKeyResult = client.call_extract(
         "genetic.derive_lineage_key",
@@ -166,38 +223,49 @@ pub fn derive_lineage_key(
         })?,
     )?;
 
-    let lineage_key = hex_decode(&result.lineage_key)?;
+    let lineage_key = b64_decode(&result.key)?;
 
     let proof_bytes = generate_lineage_proof(
         client,
         lineage_seed,
-        result.generation,
-        result.parent_hash.as_deref(),
-        domain,
+        our_family_id,
+        peer_family_id,
     )?;
 
     if let Some(p) = parent {
-        Ok(p.spawn_child(lineage_key, proof_bytes, domain.to_owned()))
+        Ok(p.spawn_child(lineage_key, proof_bytes, context.to_owned()))
     } else {
-        Ok(NuclearGenetics::genesis(lineage_key, proof_bytes, domain.to_owned()))
+        Ok(NuclearGenetics::genesis(
+            lineage_key,
+            proof_bytes,
+            context.to_owned(),
+        ))
     }
 }
 
 /// Mix entropy tiers via BearDog `genetic.mix_entropy`.
 ///
-/// BearDog mixes human, supervised, and machine entropy tiers using
-/// HKDF-SHA256 to produce a combined entropy blob suitable for key
-/// derivation or nonce generation.
+/// BearDog mixes up to three entropy tiers using internal PRNG:
+/// - `tier3_human`: Human lived experience entropy (base64)
+/// - `tier2_supervised`: Human supervised machine entropy (base64)
+/// - `tier1_machine`: Store bought machine entropy (base64)
+///
+/// All tiers are optional. Even with no tiers, BearDog returns machine
+/// entropy from its internal PRNG.
 ///
 /// # Errors
 ///
 /// Returns [`IpcError`] on transport failure or if BearDog reports an error.
 pub fn mix_entropy(
     client: &mut PrimalClient,
-    tiers: &[&[u8]],
+    tier3_human: Option<&[u8]>,
+    tier2_supervised: Option<&[u8]>,
+    tier1_machine: Option<&[u8]>,
 ) -> Result<Vec<u8>, IpcError> {
     let params = MixEntropyParams {
-        tiers: tiers.iter().map(|t| hex_encode_slice(t)).collect(),
+        tier3_human: tier3_human.map(b64_encode),
+        tier2_supervised: tier2_supervised.map(b64_encode),
+        tier1_machine: tier1_machine.map(b64_encode),
     };
     let result: MixEntropyResult = client.call_extract(
         "genetic.mix_entropy",
@@ -205,10 +273,13 @@ pub fn mix_entropy(
             detail: e.to_string(),
         })?,
     )?;
-    hex_decode(&result.mixed)
+    b64_decode(&result.entropy)
 }
 
 /// Generate a lineage proof via BearDog `genetic.generate_lineage_proof`.
+///
+/// The proof is a Blake3 + HMAC commitment binding the lineage_seed to the
+/// family ID pair. BearDog returns a base64-encoded proof blob.
 ///
 /// # Errors
 ///
@@ -216,15 +287,13 @@ pub fn mix_entropy(
 pub fn generate_lineage_proof(
     client: &mut PrimalClient,
     lineage_seed: &str,
-    generation: u64,
-    parent_key_hash: Option<&str>,
-    context: &str,
+    our_family_id: &str,
+    peer_family_id: &str,
 ) -> Result<Vec<u8>, IpcError> {
     let params = GenerateProofParams {
         lineage_seed: lineage_seed.to_owned(),
-        generation,
-        parent_key_hash: parent_key_hash.map(ToOwned::to_owned),
-        context: context.to_owned(),
+        our_family_id: our_family_id.to_owned(),
+        peer_family_id: peer_family_id.to_owned(),
     };
     let result: ProofResult = client.call_extract(
         "genetic.generate_lineage_proof",
@@ -232,26 +301,29 @@ pub fn generate_lineage_proof(
             detail: e.to_string(),
         })?,
     )?;
-    hex_decode(&result.proof)
+    b64_decode(&result.proof)
 }
 
 /// Verify a lineage proof via BearDog `genetic.verify_lineage`.
+///
+/// Returns `true` if the proof is valid for the given family pair and
+/// lineage seed.
 ///
 /// # Errors
 ///
 /// Returns [`IpcError`] on transport failure or if BearDog reports an error.
 pub fn verify_lineage(
     client: &mut PrimalClient,
+    lineage_seed: &str,
+    our_family_id: &str,
+    peer_family_id: &str,
     proof: &[u8],
-    claimed_generation: u64,
-    claimed_parent_hash: Option<&[u8; 32]>,
-    context: &str,
 ) -> Result<bool, IpcError> {
     let params = VerifyLineageParams {
-        proof: hex_encode_slice(proof),
-        claimed_generation,
-        claimed_parent_hash: claimed_parent_hash.map(|h| hex_encode(*h)),
-        context: context.to_owned(),
+        lineage_seed: lineage_seed.to_owned(),
+        our_family_id: our_family_id.to_owned(),
+        peer_family_id: peer_family_id.to_owned(),
+        lineage_proof: b64_encode(proof),
     };
     let result: VerifyResult = client.call_extract(
         "genetic.verify_lineage",
@@ -262,22 +334,20 @@ pub fn verify_lineage(
     Ok(result.valid)
 }
 
-fn hex_encode(data: [u8; 32]) -> String {
-    let mut s = String::with_capacity(64);
-    for b in data {
-        use std::fmt::Write;
-        let _ = write!(s, "{b:02x}");
-    }
-    s
+// ── Encoding helpers ─────────────────────────────────────────────────────
+
+fn b64_encode(data: &[u8]) -> String {
+    use base64::Engine;
+    base64::engine::general_purpose::STANDARD.encode(data)
 }
 
-fn hex_encode_slice(data: &[u8]) -> String {
-    let mut s = String::with_capacity(data.len() * 2);
-    for b in data {
-        use std::fmt::Write;
-        let _ = write!(s, "{b:02x}");
-    }
-    s
+fn b64_decode(s: &str) -> Result<Vec<u8>, IpcError> {
+    use base64::Engine;
+    base64::engine::general_purpose::STANDARD
+        .decode(s)
+        .map_err(|e| IpcError::SerializationError {
+            detail: format!("base64 decode: {e}"),
+        })
 }
 
 fn hex_decode(hex: &str) -> Result<Vec<u8>, IpcError> {
@@ -303,7 +373,11 @@ mod tests {
     #[test]
     fn hex_round_trip() {
         let data = [0xDE, 0xAD, 0xBE, 0xEF];
-        let encoded = hex_encode_slice(&data);
+        let encoded = data.iter().fold(String::new(), |mut s, b| {
+            use std::fmt::Write;
+            let _ = write!(s, "{b:02x}");
+            s
+        });
         assert_eq!(encoded, "deadbeef");
         let decoded = hex_decode(&encoded).unwrap();
         assert_eq!(decoded, data);
@@ -320,42 +394,68 @@ mod tests {
     }
 
     #[test]
-    fn hex_encode_32_bytes() {
-        let data = [0u8; 32];
-        let s = hex_encode(data);
-        assert_eq!(s.len(), 64);
-        assert!(s.chars().all(|c| c == '0'));
+    fn b64_round_trip() {
+        let data = b"test data for base64";
+        let encoded = b64_encode(data);
+        let decoded = b64_decode(&encoded).unwrap();
+        assert_eq!(decoded, data);
     }
 
     #[test]
     fn derive_beacon_params_serialize() {
         let p = DeriveBeaconKeyParams {
-            lineage_seed: "seed".to_owned(),
-            domain: "birdsong_beacon_v1".to_owned(),
+            lineage_seed: "c2VlZA==".to_owned(),
         };
         let v = serde_json::to_value(&p).unwrap();
-        assert_eq!(v["domain"], "birdsong_beacon_v1");
+        assert_eq!(v["lineage_seed"], "c2VlZA==");
+        assert!(v.get("domain").is_none());
     }
 
     #[test]
-    fn derive_lineage_params_skip_none() {
+    fn derive_lineage_params_serialize() {
         let p = DeriveLineageKeyParams {
-            lineage_seed: "seed".to_owned(),
-            domain: "test".to_owned(),
-            generation: 0,
-            parent_key_hash: None,
-            context_entropy: None,
+            lineage_seed: "c2VlZA==".to_owned(),
+            our_family_id: "family-a".to_owned(),
+            peer_family_id: "family-b".to_owned(),
+            context: "test-ctx".to_owned(),
         };
         let v = serde_json::to_value(&p).unwrap();
-        assert!(v.get("parent_key_hash").is_none());
-        assert!(v.get("context_entropy").is_none());
+        assert_eq!(v["our_family_id"], "family-a");
+        assert_eq!(v["context"], "test-ctx");
+    }
+
+    #[test]
+    fn mix_entropy_params_skip_none() {
+        let p = MixEntropyParams {
+            tier3_human: Some("aGVsbG8=".to_owned()),
+            tier2_supervised: None,
+            tier1_machine: None,
+        };
+        let v = serde_json::to_value(&p).unwrap();
+        assert!(v.get("tier3_human").is_some());
+        assert!(v.get("tier2_supervised").is_none());
+        assert!(v.get("tier1_machine").is_none());
     }
 
     #[test]
     fn beacon_key_result_deserialize() {
-        let json = r#"{"beacon_key":"aabb","beacon_id":"test-beacon"}"#;
+        let json = r#"{"beacon_key":"aabb","algorithm":"HKDF-SHA256","domain":"birdsong_beacon_v1"}"#;
         let r: BeaconKeyResult = serde_json::from_str(json).unwrap();
-        assert_eq!(r.beacon_id, "test-beacon");
+        assert_eq!(r.beacon_key, "aabb");
+    }
+
+    #[test]
+    fn lineage_key_result_deserialize() {
+        let json = r#"{"key":"dGVzdA==","method":"Blake3-Lineage-KDF","quality_score":0.8}"#;
+        let r: LineageKeyResult = serde_json::from_str(json).unwrap();
+        assert_eq!(r.key, "dGVzdA==");
+    }
+
+    #[test]
+    fn mix_entropy_result_deserialize() {
+        let json = r#"{"entropy":"dGVzdA==","quality_score":0.7,"tiers_used":2}"#;
+        let r: MixEntropyResult = serde_json::from_str(json).unwrap();
+        assert_eq!(r.entropy, "dGVzdA==");
     }
 
     #[test]
@@ -363,5 +463,12 @@ mod tests {
         let json = r#"{"valid":true}"#;
         let r: VerifyResult = serde_json::from_str(json).unwrap();
         assert!(r.valid);
+    }
+
+    #[test]
+    fn proof_result_deserialize() {
+        let json = r#"{"proof":"cHJvb2Y=","timestamp":1713100000}"#;
+        let r: ProofResult = serde_json::from_str(json).unwrap();
+        assert_eq!(r.proof, "cHJvb2Y=");
     }
 }

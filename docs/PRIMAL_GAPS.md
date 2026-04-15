@@ -894,7 +894,7 @@ needs UDS negotiation. See `graphs/downstream/esotericwebb_proto_nucleate.toml`.
 7. ~~**CR-03**~~ **RESOLVED** (Iter 78 — `guard_connection()` with real BearDog RPC, degraded when absent)
 8. ~~**BC-GPU-PANIC (BC-05)**~~ **RESOLVED** (Sprint 39 — `Auto::new()` → `Err`, health `Degraded`)
 9. ~~**EXP091-REGISTRY**~~ **RESOLVED** (April 10 — `get_family_id()` → `self.family_id`; socket alias mapping)
-10. **EXP-TCP-UDS** — exp085/exp090 hardcode TCP ports; need UDS discovery migration
+10. ~~**EXP-TCP-UDS**~~ — exp085/exp090 use TCP by design (crypto lifecycle, LAN probe). Ports env-configurable via `BEARDOG_PORT`/`SONGBIRD_PORT`. Not a gap — UDS experiments use `CompositionContext`
 11. ~~**BTSP-E2E**~~ **RESOLVED** (April 14 — `AtomicHarness` now generates deterministic BTSP seed via HKDF-SHA256, injects `FAMILY_SEED` env on all child primals, uses `PrimalClient::connect_btsp` for BTSP-model primals. BearDog socket timeout unblocked for exp061-068)
 
 **Deferred** (later development cycle):
@@ -1099,17 +1099,30 @@ Songbird, petalTongue, rhizoCrypt, sweetGrass already up to date.
 | Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific |
 | Low | IPC timing for `shader.compile` | coralReef | Deployment timing |
 | Low | BTSP Phase 3 (encrypted post-handshake channel) | All primals | Deferred — Phase 2 NULL cipher operational everywhere |
-| Low | Genetics three-tier awareness in primals | All primals | primalSpring types/RPCs ready (`ecoPrimal::genetics`). BearDog has `genetic.*` RPCs. No primal has consumed `GeneticSecurityMode` or `MitoBeacon`/`NuclearGenetics` types yet |
+| Low | Genetics three-tier awareness in primals | All primals | **primalSpring RPC client aligned** (April 15). BearDog has `genetic.*` RPCs. ecoPrimal `genetics::rpc` now matches BearDog's actual API. No primal has consumed `GeneticSecurityMode` or `MitoBeacon`/`NuclearGenetics` types yet — adoption awaits ecoPrimal ≥0.10.0 |
 
-### Genetics Posture (April 14, 2026)
+### Genetics Posture (April 15, 2026 — RPC client aligned)
 
 primalSpring's `ecoPrimal::genetics` module defines the three-tier model:
 
 | Tier | Type | Where Implemented | Primal Awareness |
 |------|------|------------------|-----------------|
-| 1 | `MitoBeacon` | ecoPrimal + BearDog (`genetic.derive_lineage_beacon_key`) | BearDog serves RPC; no primal consumes yet |
-| 2 | `NuclearGenetics` | ecoPrimal + BearDog (`genetic.derive_lineage_key`, `mix_entropy`, `verify_lineage`) | BearDog serves RPC; no primal consumes yet |
+| 1 | `MitoBeacon` | ecoPrimal + BearDog (`genetic.derive_lineage_beacon_key`) | **ecoPrimal RPC client aligned** (April 15). BearDog serves RPC; no primal consumes yet |
+| 2 | `NuclearGenetics` | ecoPrimal + BearDog (`genetic.derive_lineage_key`, `mix_entropy`, `verify_lineage`) | **ecoPrimal RPC client aligned** (April 15). BearDog serves RPC; no primal consumes yet |
 | 3 | `GeneticTag` | ecoPrimal (`from_legacy_family_seed()`) | Bridge for legacy `FAMILY_SEED` — all primals still use flat seed |
+
+**April 15 — Genetics RPC client alignment**: `ecoPrimal::genetics::rpc` param/response types
+realigned to BearDog's actual JSON-RPC surface. `DeriveLineageKeyParams` now sends
+`{our_family_id, peer_family_id, context, lineage_seed}` (was fictional `{domain, generation}`).
+`LineageKeyResult` expects `{key}` (was `{lineage_key, generation, parent_hash}`).
+`MixEntropyParams` sends `{tier3_human, tier2_supervised, tier1_machine}` (was `{tiers: [...]}`).
+`VerifyLineageParams` sends `{lineage_proof}` (was `{proof}`). All encodings corrected (base64
+for keys/proofs, hex for beacon keys). exp096 params also aligned.
+
+**Note**: BearDog's `generate_lineage_proof` / `verify_lineage` do not yet support generational
+provenance — the proof is a static commitment given the same lineage_seed + family ID pair.
+Generation tracking remains local to `NuclearGenetics`. Upstream BearDog evolution needed for
+full verifiable lineage chains.
 
 **Next evolution**: As primals pull ecoPrimal ≥0.10.0, they can adopt `mito_beacon_from_env()`
 instead of `family_seed_from_env()`. BearDog's `transport_security` advertisement (TS-01)

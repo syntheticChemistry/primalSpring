@@ -122,28 +122,46 @@ TCP-only deployments. Should be automatic.
 ## Validation Evidence
 
 ```
-exp096 results against biomeOS Neural API (forwarded port 19000 → Pixel 9000):
+exp096 results against biomeOS Neural API (Pixel aarch64 tower, --tcp-only):
 
-[PASS] Neural API alive (health.liveness)
-[PASS] BearDog alive through proxy (primal.health)
-[PASS] Songbird alive through proxy (primal.health)
-[PASS] NestGate recognized (primal.health returns registered)
-[PASS] BearDog capabilities (33 found via capabilities.list proxy)
-[PASS] FAMILY_ID matches (pixel-cross-arch-lab verified cross-arch)
-[FAIL] Genetics RPC via proxy (capability.call routing fails → Gap 1)
-[FAIL] BTSP Phase 3 via proxy (capability.call routing fails → Gap 1)
-[FAIL] HSM probe via proxy (capability.call routing fails → Gap 1)
+Phase 1: Tower Health
+  [PASS] pixel_beardog_alive       — BearDog at 127.0.0.1:9900
+  [PASS] pixel_songbird_alive      — Songbird at 127.0.0.1:9901
+  [PASS] pixel_beardog_capabilities — methods via capabilities.list
+  [PASS] pixel_btsp_detection       — transport_security block present
+
+Phase 2: Three-Tier Genetics
+  [PASS] pixel_mito_beacon_derive  — genetic.derive_lineage_beacon_key (HKDF-SHA256)
+  [PASS] pixel_nuclear_genesis     — genetic.derive_lineage_key genesis (Blake3-KDF)
+  [PASS] pixel_nuclear_child       — distinct key with different context
+  [PASS] pixel_lineage_proof_gen   — genetic.generate_lineage_proof (Blake3+HMAC)
+  [PASS] pixel_lineage_proof_verify— genetic.verify_lineage round-trip
+  [PASS] pixel_entropy_mix         — genetic.mix_entropy (three-tier)
+
+Phase 3: BTSP Phase 3 Cipher Readiness
+  [PASS] pixel_chacha20_poly1305_cap — ChaCha20-Poly1305 advertised
+  [PASS] pixel_hmac_cap              — HMAC advertised
+  [PASS] pixel_blake3_hash           — crypto.hash (BLAKE3) round-trip
+
+Phase 4: HSM
+  [PASS] pixel_keypair_gen         — Ed25519 keypair (software backend)
+  [FAIL] pixel_hsm_backend         — Titan M2 integration not wired (expected)
 ```
 
-## Recommendation
+## Status
 
-Gap 5 (BTSP-aware TCP forwarding) is now the critical path. Registration is solved —
-biomeOS correctly routes `capability.call` to `tcp://127.0.0.1:9900`. But the forwarding
-code sends plain JSON-RPC which BearDog's BTSP enforcement rejects. The fix requires
-biomeOS to act as a BTSP client when forwarding to security-enforcing primals.
+**All 5 gaps RESOLVED.** The biomeOS composition substrate successfully orchestrates
+a Tower (BearDog + Songbird) on Pixel aarch64 via `neural-api --tcp-only`. The only
+remaining failure (`pixel_hsm_backend`) is an expected upstream evolution requiring
+Titan M2 / StrongBox / Keymaster integration in BearDog's key generation backend.
 
-Gap 2 (env substitution) is landed in v3.14 via two-pass resolution. Gap 3 (bootstrap env
-inheritance) is landed. Gap 4 (`--tcp-only` cascade) is landed. Only Gap 5 remains.
+| Gap | Status | Resolved In |
+|-----|--------|-------------|
+| Gap 1 (TCP endpoint propagation) | **RESOLVED** | v3.14 + translation_loader patch |
+| Gap 2 (env var substitution) | **RESOLVED** | v3.14 two-pass resolution |
+| Gap 3 (bootstrap env inheritance) | **RESOLVED** | bootstrap.rs env inherit patch |
+| Gap 4 (--tcp-only cascade) | **RESOLVED** | primal_start.rs + primal_spawner.rs TCP cascade |
+| Gap 5 (BTSP-aware TCP forwarding) | **RESOLVED** | BearDog protocol auto-detection (peek first byte) |
 
 ---
 

@@ -122,29 +122,20 @@ fn validate_pixel_tower_health(v: &mut ValidationResult) {
     match &bd_caps {
         Ok(result) => {
             let cap_count = result
-                .as_array()
+                .get("methods")
+                .and_then(|m| m.as_array())
                 .map(Vec::len)
+                .or_else(|| result.as_array().map(Vec::len))
                 .or_else(|| result.get("capabilities").and_then(|c| c.as_array()).map(Vec::len))
                 .unwrap_or(0);
-            println!("  pixel BearDog capabilities: {cap_count}");
+            println!("  pixel BearDog capabilities: {cap_count} methods");
             v.check_bool(
                 "pixel_beardog_capabilities",
                 cap_count > 0,
-                &format!("{cap_count} capabilities"),
+                &format!("{cap_count} methods via capabilities.list"),
             );
 
-            let has_transport_security = result
-                .get("transport_security")
-                .or_else(|| {
-                    result.as_array().and_then(|arr| {
-                        arr.iter().find(|c| {
-                            c.get("name")
-                                .and_then(serde_json::Value::as_str)
-                                .is_some_and(|n| n.contains("transport_security"))
-                        })
-                    })
-                })
-                .is_some();
+            let has_transport_security = result.get("transport_security").is_some();
             v.check_bool(
                 "pixel_btsp_detection",
                 has_transport_security,
@@ -202,24 +193,21 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
             "lineage_seed": lineage_seed_b64,
             "our_family_id": family_id,
             "peer_family_id": family_id,
-            "domain": "pixel_cross_arch_v1",
-            "generation": 0,
             "context": "exp096_nuclear_genesis"
         }),
     );
 
     let genesis_key = match &genesis_result {
         Ok(result) => {
-            let has_key = result.get("lineage_key").or_else(|| result.get("key")).is_some();
-            let generation = result.get("generation").and_then(serde_json::Value::as_u64);
-            let gen_ok = generation.is_none() || generation == Some(0);
-            println!("  Tier 2 nuclear genesis: gen={}, key={}", generation.unwrap_or(0), if has_key { "derived" } else { "missing" });
+            let has_key = result.get("key").is_some();
+            let method = result.get("method").and_then(serde_json::Value::as_str).unwrap_or("unknown");
+            println!("  Tier 2 nuclear genesis: method={method}, key={}", if has_key { "derived" } else { "missing" });
             v.check_bool(
                 "pixel_nuclear_genesis",
-                has_key && gen_ok,
+                has_key,
                 "genetic.derive_lineage_key genesis on Pixel BearDog (aarch64)",
             );
-            result.get("lineage_key").or_else(|| result.get("key")).and_then(serde_json::Value::as_str).map(String::from)
+            result.get("key").and_then(serde_json::Value::as_str).map(String::from)
         }
         Err(e) => {
             v.check_skip("pixel_nuclear_genesis", &format!("nuclear genesis: {e}"));
@@ -227,7 +215,7 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
         }
     };
 
-    // Tier 2: Nuclear child derivation (generation 1)
+    // Tier 2: Nuclear child derivation (different context = different key)
     if let Some(ref parent_key) = genesis_key {
         let child_result = tcp_rpc_value(
             &host,
@@ -237,23 +225,19 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
                 "lineage_seed": lineage_seed_b64,
                 "our_family_id": family_id,
                 "peer_family_id": family_id,
-                "domain": "pixel_cross_arch_v1",
-                "generation": 1,
-                "context": "exp096_nuclear_child",
-                "parent_key": parent_key
+                "context": "exp096_nuclear_child_gen1"
             }),
         );
         match &child_result {
             Ok(result) => {
-                let has_key = result.get("lineage_key").or_else(|| result.get("key")).is_some();
-                let generation = result.get("generation").and_then(serde_json::Value::as_u64).unwrap_or(999);
-                let child_key = result.get("lineage_key").or_else(|| result.get("key")).and_then(serde_json::Value::as_str).unwrap_or("");
+                let has_key = result.get("key").is_some();
+                let child_key = result.get("key").and_then(serde_json::Value::as_str).unwrap_or("");
                 let keys_differ = child_key != parent_key.as_str();
-                println!("  Tier 2 nuclear child: gen={generation}, distinct={keys_differ}");
+                println!("  Tier 2 nuclear child: distinct={keys_differ}");
                 v.check_bool(
                     "pixel_nuclear_child",
-                    has_key && generation == 1 && keys_differ,
-                    "nuclear child (gen 1) is distinct from genesis on Pixel (aarch64)",
+                    has_key && keys_differ,
+                    "nuclear child (different context) is distinct from genesis on Pixel (aarch64)",
                 );
             }
             Err(e) => v.check_skip("pixel_nuclear_child", &format!("nuclear child: {e}")),
@@ -271,10 +255,7 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
             &serde_json::json!({
                 "lineage_seed": lineage_seed_b64,
                 "our_family_id": family_id,
-                "peer_family_id": family_id,
-                "domain": "pixel_cross_arch_v1",
-                "generation": 0,
-                "context": "exp096_proof_gen"
+                "peer_family_id": family_id
             }),
         );
         match &proof_result {
@@ -296,10 +277,7 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
                             "lineage_seed": lineage_seed_b64,
                             "our_family_id": family_id,
                             "peer_family_id": family_id,
-                            "domain": "pixel_cross_arch_v1",
-                            "generation": 0,
-                            "context": "exp096_proof_verify",
-                            "proof": proof
+                            "lineage_proof": proof
                         }),
                     );
                     match &verify_result {
@@ -323,13 +301,15 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
         }
     }
 
-    // Entropy mixing
+    // Entropy mixing (three tiers: human-lived, human-supervised, machine)
+    // tier3 = lineage seed (already base64), tier1 = static machine entropy
     let mix_result = tcp_rpc_value(
         &host,
         bd_port,
         "genetic.mix_entropy",
         &serde_json::json!({
-            "sources": [lineage_seed_b64, "pixel-arch-entropy", &family_id]
+            "tier3_human": lineage_seed_b64,
+            "tier1_machine": "bWFjaGluZS1lbnRyb3B5LWV4cDA5Ng=="
         }),
     );
     match &mix_result {
