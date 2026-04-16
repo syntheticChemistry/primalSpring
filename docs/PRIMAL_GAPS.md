@@ -239,9 +239,9 @@ if not compiled. **Stadial policy revokes this**: lockfile ghosts are debt.
 
 | Ghost | Primals affected | Action |
 |-------|------------------|--------|
-| `sled` | sweetGrass, loamSpine | Remove from default features, migrate to redb/nestgate |
+| `sled` | sweetGrass | Remove from default features, migrate to redb/nestgate |
 | `reqwest` | Squirrel, petalTongue | Verify dev-only or eliminate |
-| `libsqlite3-sys` | sweetGrass, loamSpine | Trace and eliminate |
+| `libsqlite3-sys` | sweetGrass | Trace and eliminate |
 
 ### Class 4: `dyn` Dispatch + `async-trait` — DEPRECATED (Stadial Gate)
 
@@ -386,7 +386,7 @@ Each maps to a specific primal team for resolution.
 | **NestGate** | Session 35-42: NG-08 ring eliminated (ureq + rustls-rustcrypto), **storage.store/retrieve on UDS** with family-scoped symlinks, ZFS bridge (7 `zfs.*` methods, GAP-MATRIX-04), BTSP Phase 1+2 (server handshake wired), Wire L3 capabilities.list + identity.get, `fetch_external` → Tower Atomic, `#[serial]` eliminated, 11,856 tests ~80% cov | NG-08, storage IPC, ZFS bridge, BTSP Phase 2 | Doc drift (57 methods in STATUS vs 41 in code const), `data.*` capability inconsistency, coverage 80→90%, 181 deprecated APIs to clean |
 | **toadStool** | S199-202: pipeline dispatch stable, capability-based naming (`coral_reef_available` → `shader_compiler_available`), +46 tests, dispatch refactor | PG-05 (dispatch IPC), pipeline scheduling (S199) | D-COVERAGE-GAP (83.6→90%), V4L2 ioctl, async/dyn markers |
 | **Songbird** | Wave 134-136: `capability.resolve`, `inference.*` canonical, CI-01 `cargo deny`, **SB-02 ring-crypto removed**, **SB-03 sled eliminated**, canonical constants | SB-02, SB-03, capability.resolve, inference namespace, CI-01 | QUIC/TLS evolution, transitive `ring` in lockfile (not compiled) |
-| **Provenance Trio** | **All three now have TCP_NODELAY + flush-after-write.** rhizoCrypt S33-34: +31 tests, feature narrowing, primal-agnostic naming, BTSP types module, service_types split. 1,502 tests ~93% cov. loamSpine: dedicated UDS transport (uds.rs), constants.rs centralization, 8×5 concurrent load test. 1,442 tests ~92% cov. sweetGrass: BTSP mock BearDog test pattern, Postgres error-path tests (no Docker), module splits (braids/health/config), sled clone reduction. 1,315 tests ~87% cov | Trio IPC stability (TCP_NODELAY+flush), constants centralization, BTSP types | sweetGrass Postgres full-path (needs Docker CI), sweetGrass coverage 87→90% |
+| **Provenance Trio** | **All three now have TCP_NODELAY + flush-after-write.** rhizoCrypt S33-34: +31 tests, feature narrowing, primal-agnostic naming, BTSP types module, service_types split. 1,502 tests ~93% cov. loamSpine: dedicated UDS transport (uds.rs), constants.rs centralization, 8×5 concurrent load test. 1,442 tests ~92% cov, **178** source files, **stadial gate** (sled + sqlite storage out; hickory-resolver 0.26). sweetGrass: BTSP mock BearDog test pattern, Postgres error-path tests (no Docker), module splits (braids/health/config), sled clone reduction. 1,315 tests ~87% cov | Trio IPC stability (TCP_NODELAY+flush), constants centralization, BTSP types | sweetGrass Postgres full-path (needs Docker CI), sweetGrass coverage 87→90% |
 | **biomeOS** | v3.01-3.03: **`capability.resolve` implemented** (single-step routing), **`lifecycle.composition`** dashboard, **`consumed_capabilities` validation** in graph loader, full **`inference.*` routing** (7 methods incl `register_provider`), anyhow evolution, `#[expect]` migration, hot-path clone elimination. 7,749 tests | capability.resolve, lifecycle.composition, inference.*, consumed_capabilities | Songbird mesh state, gate2/Pixel deploy validation |
 | **petalTongue** | Sprint 5: **PT-06 RESOLVED** (push delivery wired on server startup), 9 new test modules (IPC handlers, provenance trio, engine, animation, audio, SVG, neural graph, primal details), anyhow removed from all production deps, `#[expect]` migration, self-knowledge constants gated, hot-path allocation reduction. ~2,277 tests ~90% cov. **BTSP Phase 2 WIRED** (Apr 15): real BearDog handshake delegation on UDS+TCP, TCP first-byte peek for biomeOS bypass | PT-06 (push delivery activated), PT-08 (BTSP Phase 1), **PT-09 (BTSP Phase 2 WIRED)** | 6 files >700 LOC |
 
@@ -658,7 +658,7 @@ All gaps **RESOLVED**.
 | LS-04 | Witness wire evolution | **RESOLVED** (v0.9.16 — `WireWitnessRef` in `trio_types.rs`, witnesses on wire summaries) |
 | LS-05 | `--socket` CLI flag missing | **RESOLVED** | April 10 — `--socket` flag added to `Command::Server`, passed directly to `run_server` (no env mutation, respects `forbid(unsafe_code)`) |
 
-**Compliance** (0.9.16+ — April 14): clippy clean, fmt **PASS**, `forbid(unsafe_code)` workspace, `deny.toml` present, **1,442 tests PASS**. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake()` in `crates/loam-spine-core/src/btsp.rs`, wired into UDS accept loop. **BTSP decoupled from BearDog identity** ↑ — `beardog_client.rs` → `provider_client.rs` (any security provider can serve BTSP sessions). **`JsonRpcCryptoSigner` / `JsonRpcCryptoVerifier`** — production `Signer`/`Verifier` wire adapters (JSON-RPC to the configured security provider). `provenance.commit` → `session.commit` alias wired (primalSpring benchScale compat). `certificate.get` capability added. Named constants, `Arc<str>`, `.into()` modernization. **Capability Wire Standard L2/L3**.
+**Compliance** (0.9.16+ — April 14): clippy clean, fmt **PASS**, `forbid(unsafe_code)` workspace, `deny.toml` present, **1,442 tests PASS**. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `perform_server_handshake()` in `crates/loam-spine-core/src/btsp.rs`, wired into UDS accept loop. **BTSP decoupled from BearDog identity** ↑ — `beardog_client.rs` → `provider_client.rs` (any security provider can serve BTSP sessions). **`JsonRpcCryptoSigner` / `JsonRpcCryptoVerifier`** — production `Signer`/`Verifier` wire adapters (JSON-RPC to the configured security provider). `provenance.commit` → `session.commit` alias wired (primalSpring benchScale compat). `certificate.get` capability added. Named constants, `Arc<str>`, `.into()` modernization. **Capability Wire Standard L2/L3**. **Stadial parity gate (April 16, 2026):** sled + sqlite/rusqlite storage backends removed; **hickory-resolver** 0.26; lockfile ghosts eliminated (`sled`, `libsqlite3-sys`, `rusqlite`, `instant`, `fxhash`); **`cargo deny`** bans + advisories **PASS**; **178** Rust source files; **0** `#[async_trait]` in-tree; **0** clippy warnings; Edition **2024**; transitive **`async-trait`** via **hickory-net** only (upstream); **`ring`** only in optional features; **`dyn` audit** 72 total (non-blocking).
 
 ---
 
@@ -793,7 +793,7 @@ Per `PRIMAL_CAPABILITY_WIRE_STANDARD_APR08_2026.md` v1.0: every primal's
 | ToadStool | **L3** | YES | YES | YES | `handler/core.rs` |
 | Squirrel | **L2** | YES | YES | partial | `handlers_capability.rs` |
 | rhizoCrypt | **L3** | YES | YES | YES | `niche.rs` — full composable |
-| loamSpine | **L3** | YES | YES | YES | Full L3: 37 methods, 10 capability groups, bond-ledger, self-knowledge compliant (April 16, 2026) |
+| loamSpine | **L3** | YES | YES | YES | Full L3: 37 methods, 10 capability groups, bond-ledger, self-knowledge compliant, **stadial-gate compliant**, 178 source files (April 16, 2026) |
 | sweetGrass | **L3** | YES | YES | YES | Full composable |
 | barraCuda | **L2** | YES | YES | partial | Sprint 31 |
 | petalTongue | **L2/L3** | YES | YES | partial | `system.rs` |
@@ -1128,7 +1128,7 @@ Songbird, petalTongue, rhizoCrypt, sweetGrass already up to date.
 | **BearDog** | Wave 50 | 14,784 | **TS-01**: `transport_security` in `capabilities.list` (btsp_required, btsp_version, cleartext_available). BTSP rejection sends JSON-RPC -32600 error. Deep debt (Wave 49: workspace deps, large file refactor). TCP skip when `--port` not passed. |
 | **biomeOS** | v3.13 | 7,695+ | Hardcoded primal names → capability constants. `learn_from_event` implemented. Topology uses live health probes. Composition forwarding via Tower Atomic relay. Recursive `graph.list`. |
 | **NestGate** | Session 43n | 11,819 | Semantic router streaming parity (5 storage streaming methods). Event-driven connection lifecycle (`select!` idle timeout). Deep debt: zero `dyn Error`, zero `async-trait`. |
-| **loamSpine** | 0.9.16+ | 1,442 | **BTSP decoupled from BearDog identity** (`beardog_client.rs` → `provider_client.rs`). `provenance.commit` → `session.commit` alias. Genericized primal references. `certificate.get` capability. |
+| **loamSpine** | 0.9.16+ | 1,442 | **Stadial gate cleared** — sled + sqlite/rusqlite storage removed; **hickory-resolver** 0.26; lockfile clean except upstream **hickory-net** `async-trait`. BTSP: `provider_client`, `provenance.commit` → `session.commit`, `certificate.get`. |
 | **toadStool** | S203i | 21,600+ | Test extraction from 52 production files. TCP idle timeout (exp082 half-open fix). BTSP auto-detect (LD-04). `compute.execute` direct route. Pipeline methods in capabilities. |
 | **coralReef** | Iter 80 | 4,506 | `--bind` flag + `CORALREEF_IPC_HOST` for network-facing. Feature-gate VFIO constructors. `#[must_use]` audit. Multi-stage ML pipeline tests (6 new). |
 | **Squirrel** | alpha.52 | 7,203 | **SQ-04 RESOLVED**: `--bind` CLI + `SQUIRREL_BIND` / `SQUIRREL_IPC_HOST`. Smart refactoring (9 large files split). Capability-first naming (toadstool→compute stem). `hostname` dep removed. BTSP Phase 2 complete, Phase 3 (cipher negotiation) deferred. |
@@ -1396,7 +1396,7 @@ Coverage: **~90%** line. Tests: **6,100+**.
 ~~sweetGrass entity refactor~~ `entity.rs` → `entity/mod.rs` + `entity/tests.rs` (803→483 LOC).
 sweetGrass NestGate store backend implemented.
 rhizoCrypt: DID vs raw public_key semantic gap still open. Coverage: **93.88%**. Tests: **1,507**.
-loamSpine: **0** async-trait. Coverage: **~90.9%**. Tests: **1,442**.
+loamSpine: **0** `#[async_trait]` in-tree; **178** source files. **Stadial gate cleared** (sled + sqlite out; lockfile clean aside from upstream **hickory-net** `async-trait`). Coverage: **~90.9%**. Tests: **1,442**.
 sweetGrass: async-trait: **22** (5 object-safe traits). Tests: **1,560**.
 
 ### coralReef
