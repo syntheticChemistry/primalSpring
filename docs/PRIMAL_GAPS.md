@@ -223,14 +223,14 @@ if not compiled. **Stadial policy revokes this**: lockfile ghosts are debt.
 |--------|:----------------------:|--------------------|--------|
 | sweetGrass | **yes** | testcontainers → bollard → rustls chain | **STADIAL DEBT** |
 | BearDog | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
-| Songbird | **yes** | ring-crypto feature chain → rustls/webpki | **STADIAL DEBT** |
-| Squirrel | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
+| Songbird | **yes** | ring-crypto feature chain → rustls/webpki | **STADIAL DEBT** (Wave 146 analysis in progress) |
 | petalTongue | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
 | NestGate | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
+| loamSpine | **yes** | new — appeared after hickory-resolver 0.24→0.26 upgrade | **STADIAL DEBT** (regression) |
+| Squirrel | no | **Eliminated** (stadial pass: `169768a8`) | **Clean** |
 | toadStool | no | — | Clean |
 | biomeOS | no | — | Clean |
 | rhizoCrypt | no | — | Clean |
-| loamSpine | no | — | Clean |
 | barraCuda | no | — | Clean |
 | coralReef | no | — | Clean |
 | skunkBat | no | — | Clean |
@@ -240,8 +240,12 @@ if not compiled. **Stadial policy revokes this**: lockfile ghosts are debt.
 | Ghost | Primals affected | Action |
 |-------|------------------|--------|
 | `sled` | sweetGrass | Remove from default features, migrate to redb/nestgate |
-| `reqwest` | Squirrel, petalTongue | Verify dev-only or eliminate |
-| `libsqlite3-sys` | sweetGrass | Trace and eliminate |
+| `reqwest` | petalTongue | Verify dev-only or eliminate |
+| `ring` | sweetGrass, BearDog, Songbird, petalTongue, NestGate, loamSpine | Trace transitive puller, swap or remove |
+
+**Resolved this pass**: Squirrel eliminated ring+reqwest (`169768a8`). loamSpine
+eliminated sled+sqlite backends (`ec19ea0`), but `ring` appeared via hickory-resolver
+upgrade — **regression to trace**.
 
 ### Class 4: `dyn` Dispatch + `async-trait` — DEPRECATED (Stadial Gate)
 
@@ -262,20 +266,20 @@ drop `async-trait` dep → ban in `deny.toml`.**
 | Primal | `#[async_trait]` | `async-trait` dep | Status |
 |--------|:----------------:|:-----------------:|--------|
 | Songbird | **0** | **No** | **COMPLETE** (Wave 145: 141→0) |
-| Squirrel | **0** | **No** | **COMPLETE** (228→0) |
+| Squirrel | **0** | **No** | **COMPLETE** (228→0, ring+reqwest lockfile ghosts eliminated) |
 | biomeOS | **0** | **No** | **COMPLETE** (72→0) |
-| petalTongue | **0** | **No** | **COMPLETE** (Sprint 8: 47→0) |
+| petalTongue | **0** | **No** | **COMPLETE** (Sprint 8: 47→0, dyn elimination) |
 | NestGate | **0** | **No** | **COMPLETE** |
 | rhizoCrypt | **0** | **No** | **COMPLETE** (S43) |
-| loamSpine | **0** | **No** | **COMPLETE** |
+| loamSpine | **0** | **No** | **COMPLETE** (sled+sqlite backends removed) |
 | barraCuda | **0** | **No** | **COMPLETE** |
 | coralReef | **0** | **No** | **COMPLETE** (Iter 83: jsonrpsee removed) |
 | skunkBat | **0** | **No** | **COMPLETE** (Phase 44: 14→0, generics+RPITIT, dep removed) |
+| sweetGrass | **0** | **No** | **COMPLETE** (stadial pass: BraidBackend enum dispatch, RPITIT, dep removed) |
 | toadStool | **~158** | Yes | **STADIAL DEBT** — 32 traits, all with finite implementors, enum dispatch feasible |
 | BearDog | **49** | Yes | **STADIAL DEBT** — ~18 traits, most with ≤6 implementors, 2 intentionally open |
-| sweetGrass | **22** | Yes | **STADIAL DEBT** — 6 traits, all with finite implementors, enum dispatch feasible |
 
-**10/13 primals at zero.** Three remain: toadStool (158), BearDog (49), sweetGrass (22).
+**11/13 primals at zero.** Two remain: toadStool (158), BearDog (49).
 
 **Resolution guidance**:
 - `Box<dyn Trait>` / `Arc<dyn Trait>` with finite implementors → **enum dispatch**
@@ -868,10 +872,10 @@ registration (blocked on biomeOS Neural API), coverage 89.6%→90%, `PeekedStrea
 Compute socket resolution fully functional via BM-11 (`prefers_jsonrpc` flag + `.jsonrpc.sock`
 sibling preference). **All tractable ToadStool gaps resolved.**
 
-**Songbird** — SB-02: `ring` lockfile ghost — **STADIAL DEBT** (not "managed", must be
-eliminated from `Cargo.lock` entirely: trace dependency chain, swap or remove the crate
-pulling it). SB-03: `sled` feature-gated but default-on — **STADIAL DEBT** (must remove
-from default features; NestGate storage API migration is the unlock).
+**Songbird** — Wave 146-147: stadial dyn audit, mock isolation, hardcoded elimination,
+dead feature removal. SB-02: `ring` lockfile ghost — **STADIAL DEBT** (Wave 146 analysis
+in progress, not yet eliminated from `Cargo.lock`). SB-03: `sled` no longer in lockfile.
+Discovery abstraction layer refactored (adapters enum dispatch). `deny.toml` hardened.
 
 **petalTongue** — PT-10 `--socket` **RESOLVED**, PT-11 domain symlinks **RESOLVED** (`ui`, `interaction`, `visualization`).
 Remaining: PT-04 HTML export (partial), PT-06 push delivery (`callback_tx` not activated), PT-09 BTSP Phase 2 stub.
@@ -1396,8 +1400,16 @@ Coverage: **~90%** line. Tests: **6,100+**.
 ~~sweetGrass entity refactor~~ `entity.rs` → `entity/mod.rs` + `entity/tests.rs` (803→483 LOC).
 sweetGrass NestGate store backend implemented.
 rhizoCrypt: DID vs raw public_key semantic gap still open. Coverage: **93.88%**. Tests: **1,507**.
-loamSpine: **0** `#[async_trait]` in-tree; **178** source files. **Stadial gate cleared** (sled + sqlite out; lockfile clean aside from upstream **hickory-net** `async-trait`). Coverage: **~90.9%**. Tests: **1,442**.
-sweetGrass: async-trait: **22** (5 object-safe traits). Tests: **1,560**.
+loamSpine: **0** `#[async_trait]` in-tree; **178** source files. **Stadial gate cleared**
+(sled + sqlite out). Coverage: **~90.9%**. Tests: **1,442**. **Regression**: `ring`
+appeared in `Cargo.lock` via hickory-resolver 0.26 upgrade — needs trace.
+~~sweetGrass async-trait~~ **COMPLETE** — stadial pass: `BraidBackend` enum dispatch
+(Memory/Redb/Postgres/Sled/NestGate), `SigningClientKind`/`PrimalDiscoveryKind` enums,
+all trait methods converted to native RPITIT. `async-trait` dep fully removed.
+Tests: **1,560**. Remaining lockfile debt: `ring` + `sled` ghost stanzas.
+~~loamSpine sled/sqlite~~ **REMOVED** (`ec19ea0`): `sled` and `sqlite` backends deleted.
+~~Squirrel lockfile ghosts~~ **ELIMINATED** (`169768a8`): ring and reqwest removed from
+`Cargo.lock`. Squirrel is fully interstadial-ready.
 
 ### coralReef
 
