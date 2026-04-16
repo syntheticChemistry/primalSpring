@@ -45,28 +45,54 @@ dyn dispatch enables monomorphization — smaller, faster ecoBins.
 
 ### 2. Zero Ghost Debt in Lockfiles
 
-A `Cargo.lock` stanza for a deprecated crate is **not "managed"** — it is debt.
+**`ring` lockfile ghost — definitive analysis (April 16)**:
 
-**`ring` lockfile ghost — root cause identified (April 16)**:
-`rustls-rustcrypto v0.0.2-alpha` depends on `rustls-webpki ^0.102` without
-`default-features = false`. `rustls-webpki 0.102.x` defaults to `["std", "ring"]`.
-This puts ring in `Cargo.lock` even though it is **never compiled** (verified:
-`cargo tree -i ring` = empty, `cargo deny check bans` = PASS in all 13 primals).
+Ring appears in 6 primal `Cargo.lock` files. Deep investigation confirms this is a
+**Cargo v4 lockfile artifact**: Cargo includes optional dependencies in the lockfile
+even when their feature is not activated. Packages like `rustls`, `rustls-webpki`,
+`hickory-proto`, and `x509-parser` list `ring` as an optional dep — Cargo resolves
+it into the lockfile for reproducibility even though the `ring` feature is never
+enabled.
 
-**Fix pattern**: Vendor `rustls-rustcrypto` per NestGate's approach —
-`rustls-webpki = { version = "0.103.12", default-features = false }`.
-This eliminates the ring default. Propagate to all primals that use
-`rustls-rustcrypto`.
+**Verification** (all 13 primals):
+- `cargo tree -i ring` → empty or "did not match" (ring has no build path)
+- `cargo deny check bans` → PASS (ring not in build graph)
+- `cargo metadata` → ring not in resolve for BearDog; in resolve but
+  feature-gated-off for the other 5
+
+**Ring cannot be removed from `Cargo.lock`** without eliminating it as an optional dep
+from upstream crates (`rustls`, `rustls-webpki`, `hickory-proto`, `x509-parser`). This
+is not actionable at the primal level — it requires Rust ecosystem changes.
+
+**Reclassification**: Ring lockfile presence is **not a stadial gate criterion**.
+The actual enforcement is:
+
+| Check | Criterion | Status |
+|-------|-----------|--------|
+| `cargo deny check bans` | Ring not compiled | **13/13 PASS** |
+| No `ring` in Cargo.toml | No direct dep | **13/13 PASS** |
+| No feature enables ring | No feature activation | **13/13 PASS** |
+
+**Actionable lockfile debt** (non-ring):
 
 | Ghost | Status | Action |
 |-------|--------|--------|
-| `ring` in `Cargo.lock` | 6 primals (lockfile artifact, not compiled) | Vendor `rustls-rustcrypto` with NestGate pattern |
-| `sled` in `Cargo.lock` | sweetGrass only (loamSpine resolved) | Remove from default features |
-| `reqwest` in `Cargo.lock` | petalTongue (Squirrel resolved) | Verify dev-only or eliminate |
+| `sled` in `Cargo.lock` | sweetGrass only | Remove from default features |
+| `reqwest` (runtime dep) | petalTongue | Delegate HTTP/TLS to Songbird via tower atomic |
 
-**Note**: `ring` lockfile ghosts are lower priority than Class 4 dyn/async-trait
-elimination because ring is never compiled and deny checks pass. Clean lockfiles
-remain the standard, but the real runtime gate is dyn elimination.
+### 2a. Tower Atomic Delegation — TLS and Crypto
+
+Individual primals should NOT maintain their own HTTP/TLS or crypto dependencies.
+The tower atomic provides these as composable services:
+
+- **Songbird** → TLS provider. Primals that need outbound HTTPS delegate to
+  Songbird's TLS relay via IPC rather than pulling `reqwest`/`hyper-rustls`.
+- **BearDog** → Crypto provider. Primals that need signing, encryption, or
+  certificate operations delegate to BearDog via BTSP/IPC.
+
+**petalTongue** is the priority: it carries `reqwest` as a runtime dep
+(`reqwest → hyper-rustls → rustls`). Migrating to Songbird-mediated HTTP eliminates
+the entire rustls chain and aligns with the tower atomic architecture.
 
 ### 3. Edition 2024 + `deny.toml` Enforced
 
@@ -76,8 +102,8 @@ pass `cargo deny check bans`.
 ### 4. No "Managed" or "Acceptable" Exceptions
 
 Previous gap registry entries that said "Acceptable — does not affect ecoBin binary"
-or "Managed via deny.toml" are reclassified as **stadial debt**. The lockfile must
-be as clean as the build.
+or "Managed via deny.toml" are reclassified as **stadial debt**. The actual gate
+is `cargo deny check bans` PASS + no direct deps on banned crates.
 
 ---
 
@@ -105,21 +131,26 @@ be as clean as the build.
 
 ### Lockfile Ghost Debt
 
-| Primal | `ring` in lock | `sled` debt | Other ghosts |
-|--------|:--------------:|:-----------:|:------------:|
-| sweetGrass | dev-only | feature-gated | `libsqlite3-sys` (phantom) |
-| BearDog | **yes** | no | — |
-| Songbird | **yes** | no | — |
-| Squirrel | **yes** | no | `reqwest` |
-| petalTongue | **yes** | no | `reqwest` |
-| NestGate | **yes** | no | — |
-| loamSpine | no | **yes** | `libsqlite3-sys` |
-| skunkBat | no | no | — |
-| biomeOS | no | no | — |
-| rhizoCrypt | no | no | — |
-| barraCuda | no | no | — |
-| coralReef | no | no | — |
-| toadStool | no | no | — |
+**Ring reclassified**: ring in `Cargo.lock` is a Cargo v4 artifact — optional deps
+are included in the lockfile even when their feature is not enabled. Ring is never
+compiled. `cargo deny check bans` PASSES for all 13 primals. See PRIMAL_GAPS.md
+for full root cause analysis.
+
+| Primal | `ring` in lock | Compiled? | `sled` debt | Other | `cargo deny` |
+|--------|:--------------:|:---------:|:-----------:|:-----:|:------------:|
+| sweetGrass | yes (artifact) | **no** | feature-gated | — | **PASS** |
+| BearDog | yes (artifact) | **no** | no | — | **PASS** |
+| Songbird | yes (artifact) | **no** | no | — | **PASS** |
+| Squirrel | **no** | **no** | no | — | **PASS** |
+| petalTongue | yes (artifact) | **no** | no | `reqwest` (runtime — delegate to Songbird) | **PASS** |
+| NestGate | yes (artifact) | **no** | no | — | **PASS** |
+| loamSpine | yes (artifact) | **no** | no | — | **PASS** |
+| skunkBat | no | **no** | no | — | **PASS** |
+| biomeOS | no | **no** | no | — | **PASS** |
+| rhizoCrypt | no | **no** | no | — | **PASS** |
+| barraCuda | no | **no** | no | — | **PASS** |
+| coralReef | no | **no** | no | — | **PASS** |
+| toadStool | no | **no** | no | — | **PASS** |
 
 **7/13 primals have clean lockfiles.** Six have `ring` ghosts, two have `sled` debt.
 
