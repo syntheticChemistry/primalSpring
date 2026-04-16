@@ -8,6 +8,23 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > and are NOT tracked here. See `graphs/downstream/` for proto-nucleate patterns.
 > Springs/gardens do NOT have binaries in plasmidBin — only primals do.
 >
+> **Evolution Model — Glacial/Stadial/Interstadial (April 16, 2026)**:
+> The ecosystem evolves in phases borrowed from glacial geology:
+> - **Glacial** — archived, fossilized. Old docs/code moved to `fossilRecord/`. Dead patterns.
+> - **Stadial** — cold period, parity gate. **All primals must reach modern parity before
+>   the next interstadial of feature evolution.** No downstream absorption until the gate clears.
+> - **Interstadial** — warm period, active feature development, composition expansion,
+>   spring absorption.
+>
+> **Current phase: STADIAL** — parity gate in effect. Gate criteria:
+> 1. `dyn` dispatch + `async-trait` eliminated (Class 4 — see below)
+> 2. Zero ghost debt in lockfiles (no transitive `ring`, no stale `Cargo.lock` stanzas)
+> 3. All primals Edition 2024, modern async Rust, `deny.toml` enforced
+> 4. No "managed" or "acceptable" exceptions for deprecated patterns
+>
+> The stadial clears when **13/13 primals meet all gate criteria**. Only then do
+> downstream springs begin their next absorption pass.
+>
 > **Last updated**: 2026-04-16 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
@@ -75,12 +92,12 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >   derivation + HMAC-SHA256 challenge response matching BearDog's `crypto.rs`. Auto-detection
 >   in `Transport::connect()` via `security_mode_from_env()`. Both rebuilt to plasmidBin.
 >
-> **BTSP Phase 2 ECOSYSTEM CASCADE (April 9–10)**: **11/13** primals enforce handshake on UDS
-> accept. Songbird Wave 133, ToadStool S198, barraCuda Sprint 39 ↑, coralReef Iter 78 ↑,
-> rhizoCrypt S31, loamSpine, sweetGrass all wired. petalTongue Phase 1 COMPLETE (Phase 2 stub).
-> skunkBat Phase 1 only.
-> coralReef Phase 2 COMPLETE ↑ (Iter 78 — real BearDog RPC, degraded when absent). skunkBat
-> new JSON-RPC IPC server + Phase 1 COMPLETE. **BearDog is the sole handshake provider,
+> **BTSP Phase 2 ECOSYSTEM CASCADE (April 9–16)**: **13/13** primals enforce handshake on UDS
+> accept. Songbird Wave 133→145, ToadStool S198→S203q, barraCuda Sprint 39 ↑, coralReef Iter 78→83,
+> rhizoCrypt S31→S43, loamSpine, sweetGrass all wired. petalTongue Phase 2 COMPLETE (Sprint 8).
+> skunkBat Phase 2 COMPLETE (v0.1.0 — `PeekedStream` UDS peek + BearDog v0.9.0 alignment).
+> coralReef Phase 2 COMPLETE (Iter 78+83 — jsonrpsee removed, pure NDJSON/TCP+UDS).
+> **BearDog is the sole handshake provider,
 > not a consumer — its status as "already complete" is by design.**
 >
 > **Capability Wire Standard v1.0 (April 8)**: Convergence target defined. Flat `methods`
@@ -117,9 +134,12 @@ ecosystem-wide. This established the delegation pattern.
 | barraCuda | Banned in deny.toml | Never had — preemptive ban | Policy |
 | Squirrel | `libloading` (FFI) | Removed (alpha.46) | Direct elimination |
 
-**Class 1 COMPLETE (April 11)**: NestGate NG-08 **RESOLVED** — eliminated `reqwest`,
-switched to `ureq` + `rustls-no-provider` + `rustls-rustcrypto`. `cargo tree -i ring`
-returns empty across all 13 primals. **13/13 primals are ring-free.**
+**Class 1 COMPLETE (April 11, hardened April 16)**: NestGate NG-08 **RESOLVED** —
+eliminated `reqwest`, switched to `ureq` + `rustls-no-provider` + `rustls-rustcrypto`.
+`cargo tree -i ring` returns empty across all 13 primals. **13/13 primals are ring-free
+in builds.** **Stadial policy (April 16)**: ghost entries in `Cargo.lock` are no longer
+"managed" — they are debt. Songbird still has `ring` 0.17.14 as a transitive lockfile
+stanza; this must be eliminated (trace puller, swap or remove).
 
 ### Class 2: GPU/Vulkan Dynamic Linking — RESOLVED (Node Atomic Delegation)
 
@@ -194,60 +214,86 @@ dynamic GPU driver loading.
 | TS-03 | toadStool | `wgpu`/`ash`/`vulkano`/`wasmtime`/`esp-idf-sys` | Low | All feature-gated | Acceptable — core crate does not require wgpu by default |
 | BD-01 | bearDog | `ndk-sys`/`security-framework-sys` | Low | Target-gated (Android/macOS) | Acceptable — Linux ecoBin unaffected |
 
-### Ring Transitive Audit (April 11, 2026 — `cargo tree -i ring --edges normal`)
+### Ring Lockfile Ghost Audit (April 16, 2026 — stadial reclassification)
 
-| Primal | ring in production? | Path | Action |
-|--------|--------------------|----|--------|
-| Squirrel | **No** | Not in tree | Clean |
-| Songbird | **No** | Not in tree (opt-in `ring-crypto` feature not compiled) | Clean |
-| NestGate | **NO** | Eliminated: `reqwest` → `ureq` + `rustls-no-provider` + `rustls-rustcrypto` | **NG-08: RESOLVED** |
-| sweetGrass | **No** (dev only) | `ring` → `rustls` → `bollard` → `testcontainers` (dev-deps) | Clean for ecoBin |
-| barraCuda | **No** | Banned in deny.toml, not in tree | Clean |
-| coralReef | **Unaudited** | No deny.toml ban list (CR-01) | **Audit needed** |
+Previous audit (April 11) classified `ring` stanzas in `Cargo.lock` as "clean"
+if not compiled. **Stadial policy revokes this**: lockfile ghosts are debt.
 
-### Class 4: Pre-Modern Async Rust — OPEN (April 13, 2026)
+| Primal | `ring` in `Cargo.lock` | Path (if present) | Status |
+|--------|:----------------------:|--------------------|--------|
+| sweetGrass | **yes** | testcontainers → bollard → rustls chain | **STADIAL DEBT** |
+| BearDog | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
+| Songbird | **yes** | ring-crypto feature chain → rustls/webpki | **STADIAL DEBT** |
+| Squirrel | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
+| petalTongue | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
+| NestGate | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
+| toadStool | no | — | Clean |
+| biomeOS | no | — | Clean |
+| rhizoCrypt | no | — | Clean |
+| loamSpine | no | — | Clean |
+| barraCuda | no | — | Clean |
+| coralReef | no | — | Clean |
+| skunkBat | no | — | Clean |
 
-`async-trait` crate, `Box<dyn Error>`, `Pin<Box<dyn Future>>`, and excessive `dyn`
-dispatch add dependency weight, prevent monomorphization, and reduce compiler
-optimization. Modern Rust (Edition 2024, rustc 1.75+) supports native `async fn`
-in traits. Resolution pattern: **audit → migrate to native async → replace dyn with
-generics/enums where possible → drop `async-trait` dep → reduce `Box<dyn Error>` to
-concrete types**.
+**7/13 clean lockfiles.** 6 primals still carry `ring` ghost stanzas.
+
+| Ghost | Primals affected | Action |
+|-------|------------------|--------|
+| `sled` | sweetGrass, loamSpine | Remove from default features, migrate to redb/nestgate |
+| `reqwest` | Squirrel, petalTongue | Verify dev-only or eliminate |
+| `libsqlite3-sys` | sweetGrass, loamSpine | Trace and eliminate |
+
+### Class 4: `dyn` Dispatch + `async-trait` — DEPRECATED (Stadial Gate)
+
+**Policy (April 16, 2026)**: `dyn` dispatch and `async-trait` are **ecosystem-deprecated**,
+following the same lifecycle as `ring` in Class 1. There are no "dyn ceilings" or
+"object-safety exceptions" — every `Box<dyn Trait>` / `Arc<dyn Trait>` with a finite
+implementor set is replaced by enum dispatch. Every `#[async_trait]` is replaced by
+native `async fn` in traits (RPITIT, Edition 2024). The `async-trait` crate is removed
+from `Cargo.toml`. This is a **stadial parity gate** — no downstream springs absorb
+until all primals reach modern async Rust parity.
+
+**Resolution pattern (same as Class 1)**:
+**audit → enumerate implementors → create dispatch enum → migrate to native AFIT →
+drop `async-trait` dep → ban in `deny.toml`.**
 
 **Ecosystem-wide modernization matrix**:
 
-| Primal | `#[async_trait]` | `Box<dyn Error>` | `Pin<Box<dyn Future>>` | `#[allow(` | `async-trait` dep | Status |
-|--------|:----------------:|:----------------:|:---------------------:|:----------:|:-----------------:|--------|
-| toadStool | **320** | many | **146** | ~75 | Yes | **HEAVY** |
-| Songbird | **~160** | many | 0 | **200+** | Yes | **HEAVY** |
-| BearDog | **~115** | many | 3 | ~80 | Yes | **HEAVY** |
-| Squirrel | **~95** | **~150+** | **~100+** | mixed | Yes | **HEAVY** |
-| biomeOS | **72** | many | 1 | 1 | Yes | **MEDIUM** (partial migration done) |
-| petalTongue | **46** | some | 0 | 1 | Yes | **MEDIUM** |
-| sweetGrass | **34** | some | 1 | 0 | Yes | **LOW-MEDIUM** |
-| NestGate | **8** | **587** | few | few | Yes (3 crates) | **MEDIUM** (`Box<dyn Error>` main debt) |
-| rhizoCrypt | **6** | 7 | 0 | 0 | Yes (3 lines) | **LOW** |
-| loamSpine | **0** | 44 | 21 | 2 | **No** | **LOW** (already migrated) |
-| barraCuda | **0** | 29 | 1 | 0 | **No** | **CLEAN** |
-| coralReef | **1** | 5 | 0 | 10 | **No** | **CLEAN** |
+| Primal | `#[async_trait]` | `async-trait` dep | Status |
+|--------|:----------------:|:-----------------:|--------|
+| Songbird | **0** | **No** | **COMPLETE** (Wave 145: 141→0) |
+| Squirrel | **0** | **No** | **COMPLETE** (228→0) |
+| biomeOS | **0** | **No** | **COMPLETE** (72→0) |
+| petalTongue | **0** | **No** | **COMPLETE** (Sprint 8: 47→0) |
+| NestGate | **0** | **No** | **COMPLETE** |
+| rhizoCrypt | **0** | **No** | **COMPLETE** (S43) |
+| loamSpine | **0** | **No** | **COMPLETE** |
+| barraCuda | **0** | **No** | **COMPLETE** |
+| coralReef | **0** | **No** | **COMPLETE** (Iter 83: jsonrpsee removed) |
+| skunkBat | **0** | **No** | **COMPLETE** (Phase 44: 14→0, generics+RPITIT, dep removed) |
+| toadStool | **~158** | Yes | **STADIAL DEBT** — 32 traits, all with finite implementors, enum dispatch feasible |
+| BearDog | **49** | Yes | **STADIAL DEBT** — ~18 traits, most with ≤6 implementors, 2 intentionally open |
+| sweetGrass | **22** | Yes | **STADIAL DEBT** — 6 traits, all with finite implementors, enum dispatch feasible |
 
-All primals are Edition 2024. Only Songbird uses `pin-project` (in `songbird-tls`).
-All primals depend on `futures` or `futures-util`.
-
-**Priority order**: toadStool (320) → Songbird (~160) → BearDog (~115) → Squirrel (~95) →
-NestGate (587 `Box<dyn Error>`) → biomeOS (72) → petalTongue (46) → others.
+**10/13 primals at zero.** Three remain: toadStool (158), BearDog (49), sweetGrass (22).
 
 **Resolution guidance**:
-- Replace `#[async_trait]` with native `async fn` where trait is NOT `dyn Trait`.
-- For dyn-required traits, use enum dispatch (finite implementors → no vtable).
-- Replace `Box<dyn Error>` with `thiserror` enum or `anyhow::Error`.
-- Replace `#[allow(...)]` with `#[expect(..., reason = "...")]`.
-- Drop `async-trait` from Cargo.toml once all usages in the crate are removed.
+- `Box<dyn Trait>` / `Arc<dyn Trait>` with finite implementors → **enum dispatch**
+- `#[async_trait]` on trait def → **native `async fn`** or `fn ... -> impl Future<...> + Send`
+- `#[async_trait]` on impl block → **remove** (native async works on concrete types)
+- `Box<dyn Error>` → `thiserror` enum or `anyhow::Error`
+- `#[allow(...)]` → `#[expect(..., reason = "...")]`
+- Drop `async-trait` from Cargo.toml once all usages in the crate are removed
+- For traits with genuinely **unbounded** implementors (plugin registries where
+  external crates may impl): use generics + monomorphization at construction site,
+  or `ErasedProvider`-style type erasure without `async-trait`
 
-**Why this matters**: `async-trait` desugars to `Pin<Box<dyn Future>>` — heap allocation
-per async call. Native async fn compiles to zero-cost state machines. For IPC-heavy
-primals (toadStool, Songbird), this is measurable overhead. Removing dyn dispatch
-enables monomorphization → smaller, faster ecoBins, fewer deps, more portable.
+**Why this is a gate, not a nice-to-have**: `async-trait` desugars to
+`Pin<Box<dyn Future>>` — heap allocation per async call. Native async fn compiles
+to zero-cost state machines. For IPC-heavy primals, this is measurable overhead.
+Removing dyn dispatch enables monomorphization → smaller, faster ecoBins. And
+critically: `async-trait` pulls `syn` (proc-macro), inflating compile times
+across the entire dependency graph.
 
 ---
 
@@ -715,15 +761,15 @@ alignment (Phase 1) and BTSP handshake (Phase 2) when `FAMILY_ID` is set.
 | loamSpine | **YES** ↑↑ (`perform_server_handshake`) | mock only | **COMPLETE** ↑↑ — BearDog delegation |
 | sweetGrass | **YES** ↑↑ (`perform_server_handshake`) | **YES** (`btsp/protocol.rs`) | **COMPLETE** ↑↑ — BearDog delegation |
 | barraCuda | **YES** ↑↑ (`guard_connection`) | **YES** (BearDog relay) | **COMPLETE** ↑↑ — Sprint 39 (full 6-step relay: ClientHello→create→ServerHello→ChallengeResponse→verify→Complete) |
-| petalTongue | stub (warn-only) | no | **STUB** ↑ — Phase 1 done, Phase 2 log-only |
+| petalTongue | **YES** ↑↑ (Sprint 8) | **YES** (BearDog delegation) | **COMPLETE** ↑↑ — Sprint 8 (real delegation, RPITIT) |
 | coralReef | **YES** ↑↑ (`guard_connection`) | **YES** (BearDog session.create) | **COMPLETE** ↑↑ — Iter 78 (real UDS RPC to BearDog, session_id parsed, degraded when provider absent) |
-| skunkBat | no | no | **NOT STARTED** — Phase 1 only |
+| skunkBat | **YES** ↑↑ (`PeekedStream`) | **YES** (BearDog v0.9.0) | **COMPLETE** ↑↑ — v0.1.0 (UDS first-byte peek, BearDog handshake alignment) |
 
-**Phase 2 ecosystem cascade (April 9–10)**: **11/13** primals now enforce BTSP handshake on
+**Phase 2 ecosystem cascade (April 9–16)**: **13/13** primals now enforce BTSP handshake on
 incoming UDS connections: BearDog, Songbird, biomeOS, NestGate, ToadStool, Squirrel,
-rhizoCrypt, loamSpine, sweetGrass, **barraCuda** ↑ (Sprint 39), **coralReef** ↑ (Iter 78).
-**Tower Atomic: 100%.** **Node Atomic: 100%.** **NUCLEUS: 100%.**
-petalTongue has Phase 1 + Phase 2 stub (warn-only). skunkBat Phase 1 only.
+rhizoCrypt, loamSpine, sweetGrass, barraCuda (Sprint 39), coralReef (Iter 78),
+**petalTongue** ↑ (Sprint 8), **skunkBat** ↑ (v0.1.0).
+**Tower Atomic: 100%.** **Node Atomic: 100%.** **NUCLEUS: 100%.** **All primals: 100%.**
 **Note**: Full challenge-response + encrypted framing (Phase 3) not yet applied to
 post-handshake streams in barraCuda or coralReef.
 
@@ -807,7 +853,9 @@ rebuild with Iter 78 changes. **Effort: low-medium.**
 
 ### Deferred (later development cycle)
 
-**skunkBat** — BTSP Phase 2 not started (Phase 1 + Wire L2 done). Deferred to later cycle.
+~~**skunkBat**~~ — **BTSP Phase 2 RESOLVED** (v0.1.0: `PeekedStream` UDS peek + BearDog v0.9.0 alignment).
+Remaining: thymic selection impl (blocked on BearDog `lineage.list`), composable primitives IPC
+registration (blocked on biomeOS Neural API), coverage 89.6%→90%, `PeekedStream` convergence.
 
 **sourDough** — `deny.toml` missing, musl build, genomeBin signing. Scaffolding CLI tool, not IPC primal. Deferred to later cycle.
 
@@ -820,9 +868,10 @@ rebuild with Iter 78 changes. **Effort: low-medium.**
 Compute socket resolution fully functional via BM-11 (`prefers_jsonrpc` flag + `.jsonrpc.sock`
 sibling preference). **All tractable ToadStool gaps resolved.**
 
-**Songbird** — SB-02: `ring` lockfile ghost (not compiled, just stale `Cargo.lock` stanza).
-SB-03: `sled` feature-gated but default-on in orchestrator/sovereign-onion — pending
-NestGate storage API migration. **Effort: low. Polish items, no runtime blockers.**
+**Songbird** — SB-02: `ring` lockfile ghost — **STADIAL DEBT** (not "managed", must be
+eliminated from `Cargo.lock` entirely: trace dependency chain, swap or remove the crate
+pulling it). SB-03: `sled` feature-gated but default-on — **STADIAL DEBT** (must remove
+from default features; NestGate storage API migration is the unlock).
 
 **petalTongue** — PT-10 `--socket` **RESOLVED**, PT-11 domain symlinks **RESOLVED** (`ui`, `interaction`, `visualization`).
 Remaining: PT-04 HTML export (partial), PT-06 push delivery (`callback_tx` not activated), PT-09 BTSP Phase 2 stub.
@@ -891,9 +940,9 @@ needs UDS negotiation. See `graphs/downstream/esotericwebb_proto_nucleate.toml`.
 - ~~**NEURAL-API-DOUBLE-PREFIX**~~ **RESOLVED** (prior session) — `capability.call` strips leading domain prefix from operation parameter.
 - **BTSP-CLIENT** — primalSpring BTSP client handshake implemented (`btsp_handshake.rs`), integrated into `Transport::connect()` with auto-detection via `security_mode_from_env()`.
 
-**Low** (polish, owned by primal teams):
-3. **SB-02** — `ring` lockfile ghost
-4. **SB-03** — `sled` feature-gated but default-on
+**Stadial Debt** (blocks parity gate — must resolve before next interstadial):
+3. **SB-02** — `ring` in Songbird `Cargo.lock` (trace + eliminate transitive puller)
+4. **SB-03** — `sled` default-on in Songbird orchestrator/sovereign-onion (remove from defaults)
 5. **PT-09** — petalTongue Phase 2 stub (warn-only, no enforcement)
 6. ~~**PT-DOMAINS**~~ **RESOLVED** (April 10 — `ui.sock` + `interaction.sock` symlinks added)
 7. ~~**CR-03**~~ **RESOLVED** (Iter 78 — `guard_connection()` with real BearDog RPC, degraded when absent)
@@ -904,7 +953,7 @@ needs UDS negotiation. See `graphs/downstream/esotericwebb_proto_nucleate.toml`.
 
 **Deferred** (later development cycle):
 - **SD-01/02/03** — sourDough `deny.toml`, musl, genomeBin signing
-- **SKUNKBAT-BTSP-P2** — skunkBat BTSP Phase 2 (Phase 1 + Wire L2 done)
+- ~~**SKUNKBAT-BTSP-P2**~~ **RESOLVED** — v0.1.0: `PeekedStream` UDS peek + BearDog v0.9.0 alignment
 
 ---
 
@@ -912,30 +961,30 @@ needs UDS negotiation. See `graphs/downstream/esotericwebb_proto_nucleate.toml`.
 
 | Primal | Clippy | Fmt | `deny.toml` | License | Edition | Tests | BTSP P1 | BTSP P2 | Wire |
 |--------|--------|-----|-------------|---------|---------|-------|---------|---------|------|
-| biomeOS | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (7,724)** ↑ | **PASS** | **PASS** ↑↑ | consumer |
-| BearDog | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (14,593)** ↑ | **PASS** | **PASS** | **L2** |
-| Songbird | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | PASS | **PASS** | **PASS** ↑↑ | **L3** |
+| biomeOS | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (7,801)** ↑ | **PASS** | **PASS** ↑↑ | consumer |
+| BearDog | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (14,787)** ↑ | **PASS** | **PASS** | **L2** |
+| Songbird | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (7,359)** ↑ | **PASS** | **PASS** ↑↑ | **L3** |
 | NestGate | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (11,856)** | **PASS** | **PASS** | **L3** |
-| petalTongue | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (176)** | **PASS** ↑↑ | stub | **L2** |
-| Squirrel | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (7,203)** ↑ | **PASS** | **PASS** ↑↑ | **L2** |
-| toadStool | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (21,600)** | **PASS** | **PASS** ↑↑ | **L3** |
-| sweetGrass | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | PASS | **PASS** | **PASS** ↑↑ | **L3** |
-| rhizoCrypt | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | PASS | **PASS** | **PASS** ↑↑ | **L3** |
-| loamSpine | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | PASS | **PASS** | **PASS** ↑↑ | **L2** |
-| barraCuda | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (3,899)** | **PASS** | partial ↑ | **L2** |
+| petalTongue | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (6,100)** ↑ | **PASS** ↑↑ | **PASS** ↑↑ | **L2** |
+| Squirrel | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (7,160)** ↑ | **PASS** | **PASS** ↑↑ | **L3** ↑ |
+| toadStool | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (21,700)** ↑ | **PASS** | **PASS** ↑↑ | **L3** |
+| sweetGrass | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (1,560)** | **PASS** | **PASS** ↑↑ | **L3** |
+| rhizoCrypt | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (1,507)** | **PASS** | **PASS** ↑↑ | **L3** |
+| loamSpine | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (1,442)** | **PASS** | **PASS** ↑↑ | **L2** |
+| barraCuda | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (4,393)** ↑ | **PASS** | **PASS** ↑↑ | **L2** |
 | sourDough | **CLEAN** | **PASS** | **MISSING** | `-or-later` | 2024 | **PASS (239)** | FAIL | — | NONE |
-| coralReef | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (4,257)** | **PASS** ↑↑ | scaffold | **L2** ↑ |
+| coralReef | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (4,506)** ↑ | **PASS** ↑↑ | **PASS** ↑↑ | **L2** ↑ |
 | bingoCube | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | PASS | N/A | N/A | NONE |
-| skunkBat | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | PASS | **PASS** ↑↑ | — | **L2** ↑ |
+| skunkBat | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (171)** | **PASS** ↑↑ | **PASS** ↑↑ | **L2** ↑ |
 
 **Legend**: ↑ = improved since last audit. BTSP P1 = socket naming + insecure guard. BTSP P2 = handshake on accept/client. Wire = Capability Wire Standard level.
 
 ### Compliance Evolution (April 9 — BTSP Phase 2 ecosystem cascade)
 
-**BTSP Phase 2 rollout effectively complete.** **11/13** primals enforce full handshake on accept
-(+barraCuda Sprint 39, +coralReef Iter 78). 1 has Phase 1 + stub (petalTongue). 1 Phase 1 only (skunkBat).
-All 13 primals have Phase 1 (guard + socket naming). **Tower Atomic: 100%. Node Atomic: 100%.
-NUCLEUS: 100%.** primalSpring itself: clippy ZERO warnings, fmt PASS, all tests PASS.
+**BTSP Phase 2 rollout COMPLETE.** **13/13** primals enforce full handshake on accept.
+All 13 primals have Phase 1 + Phase 2 (guard + socket naming + handshake on accept).
+**Tower Atomic: 100%. Node Atomic: 100%. NUCLEUS: 100%. All primals: 100%.**
+primalSpring itself: clippy ZERO warnings, fmt PASS, all tests PASS.
 
 1. **Songbird**: **BTSP Phase 2 COMPLETE** ↑↑ (Wave 133) — `perform_server_handshake()` in `ipc/btsp.rs`, wired into UDS accept loop, BearDog delegation via `SecurityRpcClient`. `BtspClient` + connection managers.
 2. **ToadStool**: **BTSP Phase 2 COMPLETE** ↑↑ (S198) — `BtspServer::accept_handshake` on JSON-RPC Unix + tarpc paths, feature-gated. `BtspClient`. Fuzz targets (`fuzz_btsp_framing.rs`).
@@ -1094,17 +1143,55 @@ Songbird, petalTongue, rhizoCrypt, sweetGrass already up to date.
 | TCP idle timeout (exp082 half-open) | toadStool | S203h | Resolves benchScale half-open connection finding from chaos substrate experiments |
 | Composition forwarding gaps | biomeOS | v3.12–v3.13 | Tower Atomic relay for `capability.call`, recursive `graph.list`, BTSP handshake failure warnings with socket path |
 
-### Remaining Open Upstream Gaps (refreshed)
+### Post-Pull Resolution Wave (April 16, 2026 — Phase 44)
+
+Pulled all primals except NestGate (still evolving). Reviewed local pushes for
+skunkBat and Squirrel. Massive async-trait progress: **9/13 primals at zero** (was 6/13).
+
+| Gap | Primal | Resolved In | How |
+|-----|--------|-------------|-----|
+| async-trait elimination | Songbird | Wave 145 | 141→0 across 17 crates, full dyn→static dispatch |
+| async-trait elimination | petalTongue | Sprint 8 | 47→0, RPITIT throughout |
+| async-trait elimination | rhizoCrypt | S43 | Crate removed, `ProtocolAdapter` uses manual `BoxFuture` |
+| async-trait elimination | coralReef | Iter 83 | jsonrpsee removed, pure NDJSON/TCP dispatch |
+| dyn→static dispatch | Songbird | Wave 144 | `PeerConnection` enum (6 types), `BtspProviderImpl`, `SecurityProviderImpl` |
+| Content distribution federation | Songbird | Wave 143 | `discovery.content_peers`, `ContentAnnouncementStore` with TTL |
+| syn compile surface | BearDog | Wave 52 | `async-trait` dep removed from 5 crates |
+| BTSP Phase 2 UDS peek | skunkBat | v0.1.0 | `PeekedStream` custom wrapper, BearDog v0.9.0 alignment |
+| Monitoring real impl | toadStool | S203o | `toadstool_sysmon` + rustix `statvfs`, real workload ID |
+| Storage real behavior | toadStool | S203o | RPC failure → `StorageStatus::LocalOnly` |
+| Env interning complete | toadStool | S203p | All `TOADSTOOL_*` → `socket_env::*` (~55 constants) |
+| Resource estimator/optimizer | toadStool | S203p | Topological sort, diamond DAG, cost/allocation tests |
+| capabilities.list L2→L3 | Squirrel | latest | Composable group descriptions from `niche::CAPABILITY_GROUP_DESCRIPTIONS` |
+| Security hardcoding→capability | Squirrel | latest | `SECURITY_SERVICE_ID`, `supports_security_provider`, agnostic naming |
+| Entity module refactor | sweetGrass | latest | `entity.rs` → `entity/mod.rs` + `entity/tests.rs` (803→483 LOC) |
+| jsonrpsee removal | coralReef | Iter 83 | Pure NDJSON/TCP, dropped jsonrpsee + transitive async-trait/hyper/tower |
+| VFIO/nvidia test extraction | coralReef | Iter 82 | `registers_tests.rs`, `nvidia_headers_tests.rs`, firmware parser split |
+| Fractal compute refactor | biomeOS | v3.17 | `fractal/mod.rs` + `leaf.rs` + `parent.rs`, enum-dispatch |
+| Dep pruning + manifest | biomeOS | v3.17 | tokio removed from biomeos-types, placeholder features removed |
+| Crypto model authoritative | rhizoCrypt | S43 | `specs/CRYPTO_MODEL.md` — BearDog delegation canonical |
+| cli_mode refactor | petalTongue | Sprint 8 | `gather.rs`, `output.rs`, `types.rs`, `tests.rs` module split |
+
+### Remaining Open Upstream Gaps (refreshed April 16)
 
 | Priority | Gap | Owner | Status |
 |----------|-----|-------|--------|
-| Medium | `storage.retrieve` for large/streaming tensors | NestGate | OPEN |
-| Medium | Cross-spring persistent storage IPC | NestGate | OPEN |
+| Medium | `storage.retrieve` for large/streaming tensors | NestGate | OPEN (NestGate still evolving) |
+| Medium | Cross-spring persistent storage IPC | NestGate | OPEN (NestGate still evolving) |
+| Medium | Songbird coverage 72%→90% | Songbird | **72.29%** — main remaining quality debt |
+| Medium | coralReef coverage ~65%→90% | coralReef | **~65%** — significant gap |
 | Low | 29 shader absorption candidates | barraCuda | neuralSpring pipeline (submit PRs per shader) |
 | Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific |
 | Low | IPC timing for `shader.compile` | coralReef | Deployment timing |
 | Low | BTSP Phase 3 (encrypted post-handshake channel) | All primals | Deferred — Phase 2 NULL cipher operational everywhere |
 | Low | Genetics three-tier awareness in primals | All primals | **primalSpring RPC client aligned** (April 15). BearDog has `genetic.*` RPCs. ecoPrimal `genetics::rpc` now matches BearDog's actual API. No primal has consumed `GeneticSecurityMode` or `MitoBeacon`/`NuclearGenetics` types yet — adoption awaits ecoPrimal ≥0.10.0 |
+| Low | skunkBat thymic selection impl | skunkBat + BearDog | Blocked on BearDog `lineage.list` + `btsp.session.verify` IPC |
+| Low | skunkBat composable primitives IPC | skunkBat + biomeOS | 5 domains defined, Neural API registration pending |
+| Low | `PeekedStream`/`PrefixedStream` convergence | skunkBat + BearDog | Two independent impls — consolidate to `sourdough-core` |
+| Low | toadStool coverage 83.6%→90% | toadStool | S203p pushed toward, not yet at target |
+| Low | BearDog async-trait 49→0 | BearDog | Continuing syn elimination |
+| Low | sweetGrass async-trait 22→0 | sweetGrass | 5 object-safe traits constrain further reduction |
+| Low | skunkBat async-trait 14→0 | skunkBat | Threat/recon traits |
 
 ### Genetics Posture (April 15, 2026 — RPC client aligned)
 
@@ -1150,15 +1237,21 @@ April 15 — 20+ gaps resolved upstream. Remaining items below validated by code
 | UDS first-byte peek | Songbird | `handle_connection_with_peek` via `BufReader::fill_buf()` (`464dc04f0`) |
 | UDS first-byte peek | coralReef | `BufReader::fill_buf()` + `guard_from_first_byte` (`a5c95df`) |
 | UDS first-byte peek | petalTongue | `BufReader::fill_buf()` on UDS read half (`1f8721e`) |
+| UDS first-byte peek | skunkBat | `PeekedStream` custom wrapper on UDS — auto-detect JSON-RPC vs BTSP (v0.1.0) |
 | BTSP Phase 2 real enforcement | petalTongue | BearDog delegation via `btsp.session.create/verify/negotiate` (`1f8721e`) |
+| BTSP Phase 2 real enforcement | skunkBat | BearDog v0.9.0 handshake alignment, `PeekedStream` on UDS (v0.1.0) |
 | BTSP Phase 3 stream encryption | barraCuda | ChaCha20Poly1305 AEAD + BtspFrameReader/Writer (`6284469e`) |
 | BufReader lifetime edge-case | barraCuda | Single BufReader for handshake, writes via `get_mut()` (`6284469e`) |
 | Genetic RPC → chain proofs | BearDog | `LineageProofManager` wired into RPC handlers with `chain_id` dispatch + Blake3 fallback (Wave 51) |
 | Ring elimination | BearDog | Not in Cargo.lock, banned in deny.toml (Wave 51) |
+| syn compile surface reduction | BearDog | Wave 52: `async-trait` dep removed from 5 crates, `syn` surface reduced |
+| Bond persistence trait | BearDog | `BondPersistence` + `InMemoryBondPersistence` + `with_persistence()` (Wave 51) |
 | Graph-level genetics_tier | biomeOS | `GraphMetadata.genetics_tier: Option<GeneticsTier>` parsed + enforced (`674627bb`) |
 | Deploy class auto-resolution | biomeOS | `resolve_composition()` infers from node capabilities (`674627bb`) |
 | capability.call routing contract | biomeOS | `specs/CAPABILITY_CALL_ROUTING_CONTRACT.md` formalized |
 | async-trait elimination | biomeOS | **0** remaining (was 72→43→0) (`580a9458`) |
+| Fractal compute refactor | biomeOS | `fractal/mod.rs` + `leaf.rs` + `parent.rs`, enum-dispatch, `ResourceInfo::zeroed()` (v3.17) |
+| Dep pruning + manifest hygiene | biomeOS | tokio removed from biomeos-types, placeholder features removed (v3.17) |
 | Bond ledger persistence | loamSpine | Dedicated spine + in-memory index, `bonding.ledger.store/retrieve/list` (`8e1067f`) |
 | Crypto signing via IPC | loamSpine | `JsonRpcCryptoSigner/Verifier` delegates to BearDog UDS (`8f508b7`) |
 | Streaming storage | NestGate | `store_stream`, `store_stream_chunk`, `retrieve_stream`, `retrieve_stream_chunk` (Session 43p) |
@@ -1167,55 +1260,73 @@ April 15 — 20+ gaps resolved upstream. Remaining items below validated by code
 | async-trait + Box\<dyn Error\> | NestGate | **0 / 0** in production |
 | SigningClient wire alignment | rhizoCrypt | `crypto.sign_ed25519` / `crypto.verify_ed25519` field names aligned (`17973d0`) |
 | Crypto model decision | rhizoCrypt | `specs/CRYPTO_MODEL.md` — BearDog delegation canonical (`1046e6f`) |
+| async-trait elimination | rhizoCrypt | **0** — crate removed, `ProtocolAdapter` uses manual `BoxFuture` (S43) |
 | Files >700 LOC | petalTongue | Zero production files >680 LOC (`cf7d264`) |
+| async-trait elimination | petalTongue | **0** — Sprint 8: 47→0, crate removed, RPITIT throughout |
+| async-trait elimination | Songbird | **0** — Wave 145: 141→0 across 17 crates, full dyn→static dispatch |
+| dyn→static dispatch | Songbird | Wave 144: `PeerConnection` enum (6 types), `BtspProviderImpl`, `SecurityProviderImpl`, `ConsentStorage`/`TaskStorage` enums |
+| Content distribution federation | Songbird | Wave 143: `discovery.content_peers`, `ContentAnnouncementStore` with TTL, topic-based announce |
+| async-trait elimination | Squirrel | **0** — 228→0 complete, dep removed |
+| capabilities.list L2→L3 | Squirrel | Composable group descriptions from `niche::CAPABILITY_GROUP_DESCRIPTIONS` |
+| Security hardcoding→capability | Squirrel | `SECURITY_SERVICE_ID`, `supports_security_provider`, agnostic naming |
 | sweetGrass coverage 87→90% | sweetGrass | **91.7%** with Postgres, **90.4%** without (`34736bb`) |
-| Squirrel coverage 86→90% | Squirrel | **90.1%** region coverage, 7,158 tests (`45de7807`) |
+| sweetGrass entity refactor | sweetGrass | `entity.rs` → `entity/mod.rs` + `entity/tests.rs` (803→483 LOC) |
+| Squirrel coverage 86→90% | Squirrel | **90.1%** region coverage, 7,160 tests |
 | deny.toml ring ban | toadStool | Uncommented and active (S203l) |
+| Monitoring real implementations | toadStool | S203o: `toadstool_sysmon` + rustix `statvfs`, real workload ID |
+| Storage real behavior | toadStool | S203o: RPC failure → `StorageStatus::LocalOnly` (not fake success) |
+| Env interning complete | toadStool | S203p: all `TOADSTOOL_*` → `socket_env::*` (~55 constants) |
+| Resource estimator/optimizer | toadStool | S203p: topological sort, diamond DAG, cost/allocation/bottleneck tests |
 | Shader absorption audit | barraCuda | **18/18** per-shader verified (`3cdfa221`) |
 | Postgres multi-statement DDL | sweetGrass | `raw_sql()` for simple query protocol (`bf7190e`) |
+| jsonrpsee removal | coralReef | Iter 83: pure NDJSON/TCP, dropped jsonrpsee + transitive async-trait/hyper/tower |
+| VFIO/nvidia test modules | coralReef | Iter 82: `registers_tests.rs`, `nvidia_headers_tests.rs`, firmware parser split |
 
-### async-trait Scorecard (April 16)
+### async-trait Scorecard (April 16 — refreshed)
 
 | Primal | Before | Now | Status |
 |--------|:---:|:---:|--------|
 | biomeOS | 72 | **0** | **COMPLETE** |
 | barraCuda | unknown | **0** | **COMPLETE** |
-| Squirrel | ~95 | **0** | **COMPLETE** |
+| Squirrel | 228 | **0** | **COMPLETE** (dep removed) |
 | loamSpine | unknown | **0** | **COMPLETE** |
 | NestGate | 587 Box\<dyn Error\> | **0 / 0** | **COMPLETE** (both) |
-| coralReef | unknown | **1** (jsonrpsee) | Effectively zero |
-| BearDog | ~115 | **49** | -57%, continuing |
-| toadStool | 320 | **~158** | -50%, dyn-ceiling (32 dyn-dispatched traits) |
-| Songbird | ~160 | **~108** | -32%, continuing |
-| petalTongue | 46 | **46** | No change |
-| rhizoCrypt | unknown | **6** | Adapter traits only |
-| sweetGrass | unknown | Widely used | Object-safety constraints |
+| Songbird | 141 | **0** | **COMPLETE** (Wave 145: dep removed from 17 crates) |
+| petalTongue | 47 | **0** | **COMPLETE** (Sprint 8: RPITIT throughout) |
+| rhizoCrypt | 6 | **0** | **COMPLETE** (S43: crate removed) |
+| coralReef | unknown | **0** | **COMPLETE** (Iter 83: jsonrpsee removed) |
+| BearDog | ~115 | **49** | -57%, syn surface reduced (Wave 52) |
+| toadStool | 320 | **~158** | -50%, dyn-ceiling (32 dyn-dispatched traits, all `NOTE(async-dyn)`) |
+| sweetGrass | 34 | **22** | 5 object-safe traits documented, rest migrated |
+| skunkBat | unknown | **14** | Threat/recon traits, integrations |
 
 ### BearDog
 
 ~~BTSP Phase 3 server negotiate~~ **RESOLVED** (Wave 42+51).
 ~~UDS first-byte peek~~ **RESOLVED** (Wave 51) — `read_exact` + `PrefixedStream` in
 production UDS path. JSON-RPC detected via `0x7B`, BTSP otherwise.
-~~Genetic RPC chain proofs~~ **RESOLVED** — `generate_lineage_proof` and `verify_lineage`
-use full `LineageProofManager` when `chain_id` is provided, Blake3 fallback for compat.
+~~Genetic RPC chain proofs~~ **RESOLVED** — `LineageProofManager` wired with `chain_id` dispatch + Blake3 fallback.
 ~~Ring elimination~~ **RESOLVED** — not in Cargo.lock, banned in deny.toml.
-Bond persistence: `BondPersistence` trait + `InMemoryBondPersistence` + `with_persistence()`
-hook created. **NestGate/loamSpine wiring not yet implemented** — only architectural
-comments. loamSpine bond ledger is ready upstream.
+~~Bond persistence trait~~ **RESOLVED** — `BondPersistence` + `InMemoryBondPersistence` + `with_persistence()` (Wave 51).
+**NestGate/loamSpine wiring not yet implemented** — loamSpine bond ledger is ready upstream.
+~~syn compile surface~~ Wave 52: `async-trait` dep removed from 5 crates.
 HSM/Titan M2: StrongBox/mobile profiles expanded, Android `generate_key` present.
 **Titan M2 not explicitly wired** as named backend for `crypto.generate_keypair`.
-async-trait: **49** (was ~115). Coverage: **90.51%**. Tests: **14,785+**.
+async-trait: **49** (was ~115). Coverage: **90.51%**. Tests: **14,787+**. 100 JSON-RPC methods.
 
 ### Songbird
 
 ~~UDS first-byte peek~~ **RESOLVED** (`464dc04f0`).
-`ring` in `Cargo.lock` — still present (0.17.14 via rustls chain). **Managed via
-deny.toml ban + lockfile chain documentation** (Wave 140). Default build does not
-compile it; only `--all-features` via kube/hyper-rustls can pull it in.
-Content distribution: `discovery.announce` API with `manifest_hash`/`seeder_count`
-implemented (Wave 140). Deep seeder/leecher networking not yet wired.
+~~async-trait~~ **COMPLETE** — Wave 145: **141→0**, dep removed from 17 crates.
+~~dyn→static dispatch~~ Wave 144: `PeerConnection` enum (6 types), `BtspProviderImpl`,
+`SecurityProviderImpl`, `ConsentStorage`/`TaskStorage` enums. **7 trait impls converted.**
+Content distribution federation (Wave 143): `discovery.content_peers` + `ContentAnnouncementStore`
+with TTL, topic-based announce. Deep seeder/leecher networking not yet wired.
+`ring` in `Cargo.lock` — still present (0.17.14 via rustls chain). **STADIAL DEBT** —
+"managed" status revoked. Must trace the transitive puller and eliminate or swap it.
+Ghost lockfile entries are not acceptable; the lockfile must be clean like the build.
 Mito-beacon provider implemented with graceful fallback — depends on BearDog `beacon.*`.
-async-trait: **~108** (was ~160). Tests: **7,350**.
+Coverage: **72.29%** (target 90% — main remaining debt). Tests: **7,359**.
 
 ### NestGate
 
@@ -1231,18 +1342,23 @@ Tests: **8,534** (lib), **~11,800** (full). Vendored `rustls-rustcrypto` for Web
 ~~genetics_tier~~ **RESOLVED.** ~~Deploy class auto-resolution~~ **RESOLVED.**
 ~~capability.call routing contract~~ **RESOLVED.**
 ~~async-trait~~ **0** (was 72→43→0). **COMPLETE.**
-New: compute node module (`biomeos-compute/src/node/`).
+~~Fractal compute~~ v3.17: `fractal/mod.rs` + `leaf.rs` + `parent.rs`, enum-dispatch, `ResourceInfo::zeroed()`.
+~~Dep pruning~~ v3.17: tokio removed from biomeos-types, placeholder features removed.
 Tick-loop scheduling (60Hz) remains the only major open item.
-Tests: **7,801**.
+Coverage: **≥90%** (region/function/line). Tests: **7,801**.
 
 ### toadStool
 
 async-trait: **~158** remaining (32 dyn-dispatched traits with `NOTE(async-dyn)` markers,
 all justified by object safety). Further reduction requires trait redesign.
 ~~deny.toml ring ban~~ **RESOLVED** — active (S203l).
+~~Monitoring stubs~~ S203o: `toadstool_sysmon` + rustix `statvfs`, real workload ID.
+~~Storage fake success~~ S203o: RPC failure → `StorageStatus::LocalOnly`.
+~~Env interning~~ S203p: all `TOADSTOOL_*` → `socket_env::*` (~55 constants).
+~~Resource estimator/optimizer~~ S203p: topological sort, diamond DAG, cost/allocation tests.
 V4L2 ioctl safe wrappers implemented (8 ioctls via rustix 1.x).
 Real edge discovery (USB sysfs, Bluetooth) and scheduler queuing (`UniversalJobQueue`).
-Coverage 83.6% → 90% target. Tests: **21,600+**.
+Coverage **83.6%** → 90% target. Tests: **21,700+**.
 
 ### barraCuda
 
@@ -1253,51 +1369,71 @@ Coverage 83.6% → 90% target. Tests: **21,600+**.
 ### Squirrel
 
 ~~Coverage 86→90%~~ **RESOLVED** — **90.1%** region coverage.
-**async-trait: 0** (228→0 complete).
+~~async-trait~~ **COMPLETE** — 228→0, dep removed.
+~~capabilities.list L2→L3~~ Composable group descriptions from `niche::CAPABILITY_GROUP_DESCRIPTIONS`.
+~~Security hardcoding~~ `SECURITY_SERVICE_ID`, `supports_security_provider`, agnostic naming.
 Three-tier genetics: prep/annotations only, blocked on ecoPrimal ≥0.10.0.
 Content curation: blocked on NestGate content-addressed storage API.
-Tests: **7,158**.
+Tests: **7,160**. Coverage: **90.1%** region / **89.6%** line.
 
 ### petalTongue
 
 ~~BTSP Phase 2~~ **RESOLVED** (real delegation). ~~UDS peek~~ **RESOLVED.**
 ~~Files >700 LOC~~ **RESOLVED.**
+~~async-trait~~ **COMPLETE** — Sprint 8: 47→0, crate removed, RPITIT throughout.
+`cli_mode` refactored: `gather.rs`, `output.rs`, `types.rs`, `tests.rs` module.
 CHANGELOG doc drift: still says "stub" — should reflect real delegation.
-async-trait: **46** (no change). Tests: ~2,277.
+Coverage: **~90%** line. Tests: **6,100+**.
 
 ### Provenance Trio
 
 ~~rhizoCrypt SigningClient alignment~~ **RESOLVED** (`crypto.sign_ed25519` / `verify_ed25519`).
-~~rhizoCrypt crypto model~~ **DECIDED** — BearDog delegation.
+~~rhizoCrypt crypto model~~ **DECIDED** — BearDog delegation (`specs/CRYPTO_MODEL.md` authoritative).
+~~rhizoCrypt async-trait~~ **COMPLETE** (S43: crate removed, `ProtocolAdapter` uses manual `BoxFuture`).
 ~~loamSpine bond ledger~~ **RESOLVED.** ~~loamSpine crypto delegation~~ **RESOLVED**
 (`JsonRpcCryptoSigner/Verifier`).
 ~~sweetGrass coverage~~ **91.7%** (target exceeded). ~~Postgres DDL~~ **RESOLVED** (`raw_sql()`).
+~~sweetGrass entity refactor~~ `entity.rs` → `entity/mod.rs` + `entity/tests.rs` (803→483 LOC).
 sweetGrass NestGate store backend implemented.
-rhizoCrypt: DID vs raw public_key semantic gap still open. async-trait: **6**.
+rhizoCrypt: DID vs raw public_key semantic gap still open. Coverage: **93.88%**. Tests: **1,507**.
 loamSpine: **0** async-trait. Coverage: **~90.9%**. Tests: **1,442**.
-sweetGrass: Tests: **1,560**.
+sweetGrass: async-trait: **22** (5 object-safe traits). Tests: **1,560**.
 
 ### coralReef
 
-~~UDS first-byte peek~~ **RESOLVED.** async-trait: **1** (jsonrpsee).
-Transitive libc deferred (mio→rustix upstream). Tests: **4,506**.
+~~UDS first-byte peek~~ **RESOLVED.**
+~~async-trait~~ **COMPLETE** — Iter 83: jsonrpsee removed, pure NDJSON/TCP dispatch.
+`primal-rpc-client` gains `TcpLine` / `UnixLine` transports.
+VFIO channel register tests + nvidia header tests extracted (Iter 82).
+Transitive libc deferred (mio→rustix upstream). Coverage: **~65%**. Tests: **4,506**.
 
 ### skunkBat
 
-BTSP Phase 2 on UDS not started. Low priority (Phase 1 only).
+~~BTSP Phase 2~~ **RESOLVED** — v0.1.0: `PeekedStream` custom UDS wrapper for first-byte
+auto-detect (JSON-RPC `0x7B` → biomeOS bypass, else BTSP handshake). BearDog v0.9.0 IPC
+surface alignment. Full JSON-RPC 2.0 compliance (batch + notifications).
+Thymic selection model: design spec complete (`THYMIC_SELECTION_SPEC.md`), implementation
+blocked on BearDog `lineage.list` + `btsp.session.verify` IPC availability.
+Composable primitives: 5 domains (`baseline.*`, `metadata.*`, `response.*`, `lineage.*`,
+`health.*`) defined in spec, IPC registration via biomeOS Neural API pending.
+`PeekedStream` / `PrefixedStream` convergence: skunkBat and BearDog each implemented
+independently — should consolidate into shared `sourdough-core` utility.
+async-trait: **14** (threat/recon traits). Coverage: **89.6%**. Tests: **171**.
 
 ### First-byte peek UDS standardization (cross-primal)
 
 **ALL BTSP-enforcing primals now have UDS peek**: NestGate, BearDog, Songbird,
-coralReef, petalTongue. Only **skunkBat** (Phase 1, low priority) lacks it.
-**This cross-cutting gap is effectively CLOSED.**
+coralReef, petalTongue, **skunkBat** (v0.1.0 `PeekedStream`).
+**This cross-cutting gap is CLOSED.** Two implementation patterns exist:
+BearDog uses `PrefixedStream`; skunkBat uses `PeekedStream`. Should converge
+to a single shared utility in `sourdough-core`.
 
 ### Class 4 ecosystem-wide: async-trait migration
 
-**6 primals at zero**: biomeOS(0), barraCuda(0), Squirrel(0), loamSpine(0),
-NestGate(0+0), coralReef(1 jsonrpsee).
-Remaining: Songbird(~108) > toadStool(~158, dyn-ceiling) > BearDog(49) >
-petalTongue(46) > rhizoCrypt(6) > sweetGrass(widespread, object-safety constrained).
+**9 primals at zero**: biomeOS(0), barraCuda(0), Squirrel(0), loamSpine(0),
+NestGate(0+0), coralReef(0), Songbird(0), petalTongue(0), rhizoCrypt(0).
+Remaining: toadStool(~158, dyn-ceiling) > BearDog(49) > sweetGrass(22, object-safety) >
+skunkBat(14).
 
 ---
 
