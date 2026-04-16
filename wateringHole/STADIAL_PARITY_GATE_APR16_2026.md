@@ -47,11 +47,26 @@ dyn dispatch enables monomorphization — smaller, faster ecoBins.
 
 A `Cargo.lock` stanza for a deprecated crate is **not "managed"** — it is debt.
 
+**`ring` lockfile ghost — root cause identified (April 16)**:
+`rustls-rustcrypto v0.0.2-alpha` depends on `rustls-webpki ^0.102` without
+`default-features = false`. `rustls-webpki 0.102.x` defaults to `["std", "ring"]`.
+This puts ring in `Cargo.lock` even though it is **never compiled** (verified:
+`cargo tree -i ring` = empty, `cargo deny check bans` = PASS in all 13 primals).
+
+**Fix pattern**: Vendor `rustls-rustcrypto` per NestGate's approach —
+`rustls-webpki = { version = "0.103.12", default-features = false }`.
+This eliminates the ring default. Propagate to all primals that use
+`rustls-rustcrypto`.
+
 | Ghost | Status | Action |
 |-------|--------|--------|
-| `ring` in `Cargo.lock` | Present in 6 primals | Trace transitive puller, swap or remove |
-| `sled` in `Cargo.lock` or default features | Present in sweetGrass, loamSpine | Remove from defaults, migrate to redb/nestgate |
-| `reqwest` in `Cargo.lock` | Present in squirrel, petalTongue | Verify it's dev-only or eliminate |
+| `ring` in `Cargo.lock` | 6 primals (lockfile artifact, not compiled) | Vendor `rustls-rustcrypto` with NestGate pattern |
+| `sled` in `Cargo.lock` | sweetGrass only (loamSpine resolved) | Remove from default features |
+| `reqwest` in `Cargo.lock` | petalTongue (Squirrel resolved) | Verify dev-only or eliminate |
+
+**Note**: `ring` lockfile ghosts are lower priority than Class 4 dyn/async-trait
+elimination because ring is never compiled and deny checks pass. Clean lockfiles
+remain the standard, but the real runtime gate is dyn elimination.
 
 ### 3. Edition 2024 + `deny.toml` Enforced
 

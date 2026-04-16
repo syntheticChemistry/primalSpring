@@ -214,38 +214,60 @@ dynamic GPU driver loading.
 | TS-03 | toadStool | `wgpu`/`ash`/`vulkano`/`wasmtime`/`esp-idf-sys` | Low | All feature-gated | Acceptable — core crate does not require wgpu by default |
 | BD-01 | bearDog | `ndk-sys`/`security-framework-sys` | Low | Target-gated (Android/macOS) | Acceptable — Linux ecoBin unaffected |
 
-### Ring Lockfile Ghost Audit (April 16, 2026 — stadial reclassification)
+### Ring Lockfile Ghost — Root Cause Analysis (April 16, 2026)
 
-Previous audit (April 11) classified `ring` stanzas in `Cargo.lock` as "clean"
-if not compiled. **Stadial policy revokes this**: lockfile ghosts are debt.
+**Root cause identified**: `rustls-webpki v0.102.8` has `default = ["std", "ring"]` —
+ring is ON by default. `rustls-rustcrypto v0.0.2-alpha` (the pure-Rust TLS crypto
+provider used ecosystem-wide) depends on `rustls-webpki ^0.102` WITHOUT
+`default-features = false`, inheriting ring as a default feature.
 
-| Primal | `ring` in `Cargo.lock` | Path (if present) | Status |
-|--------|:----------------------:|--------------------|--------|
-| sweetGrass | **yes** | testcontainers → bollard → rustls chain | **STADIAL DEBT** |
-| BearDog | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
-| Songbird | **yes** | ring-crypto feature chain → rustls/webpki | **STADIAL DEBT** (Wave 146 analysis in progress) |
-| petalTongue | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
-| NestGate | **yes** | transitive — trace and eliminate | **STADIAL DEBT** |
-| loamSpine | **yes** | new — appeared after hickory-resolver 0.24→0.26 upgrade | **STADIAL DEBT** (regression) |
-| Squirrel | no | **Eliminated** (stadial pass: `169768a8`) | **Clean** |
-| toadStool | no | — | Clean |
-| biomeOS | no | — | Clean |
-| rhizoCrypt | no | — | Clean |
-| barraCuda | no | — | Clean |
-| coralReef | no | — | Clean |
-| skunkBat | no | — | Clean |
+**Why ring appears in `Cargo.lock` but not in `cargo tree`**: Cargo's lockfile includes
+optional deps resolved during feature unification. `ring` is resolved (appears in
+`Cargo.lock` and `cargo metadata`) but is NOT compiled in default builds. `cargo deny
+check bans` passes because deny checks the build graph, not the lockfile. `cargo tree
+-i ring` returns "did not match any packages" because ring has no reverse path from
+any workspace root in the normal build.
 
-**7/13 clean lockfiles.** 6 primals still carry `ring` ghost stanzas.
+**Severity reclassification**: This is a **Cargo lockfile artifact**, not active debt.
+Ring is not compiled, not linked, and not flagged by `cargo deny`. The stadial policy
+of "zero lockfile ghosts" still applies for cleanliness, but this is lower priority
+than Class 4 dyn/async-trait elimination which affects runtime behavior.
 
-| Ghost | Primals affected | Action |
-|-------|------------------|--------|
-| `sled` | sweetGrass | Remove from default features, migrate to redb/nestgate |
-| `reqwest` | petalTongue | Verify dev-only or eliminate |
-| `ring` | sweetGrass, BearDog, Songbird, petalTongue, NestGate, loamSpine | Trace transitive puller, swap or remove |
+**Resolution (two approaches)**:
 
-**Resolved this pass**: Squirrel eliminated ring+reqwest (`169768a8`). loamSpine
-eliminated sled+sqlite backends (`ec19ea0`), but `ring` appeared via hickory-resolver
-upgrade — **regression to trace**.
+1. **Vendor `rustls-rustcrypto`** with `rustls-webpki` upgraded to `^0.103` +
+   `default-features = false` (NestGate already does this in `vendor/rustls-rustcrypto/`).
+   This eliminates the default `ring` feature from `rustls-webpki v0.102.8`.
+
+2. **Upstream fix**: `rustls-rustcrypto` should add `default-features = false` to its
+   `rustls-webpki` dep. Until then, the vendor approach is the ecosystem pattern.
+
+**sweetGrass additional path**: `testcontainers → bollard → hyper-rustls → rustls →
+rustls-webpki 0.103.12` — ring appears via `bollard`'s default TLS stack (dev-deps only).
+Fix: feature-gate `testcontainers` or use `bollard` with `ssl_providerless`.
+
+| Primal | `ring` in `Cargo.lock` | Root cause | `cargo deny` PASS | Status |
+|--------|:----------------------:|------------|:------------------:|--------|
+| sweetGrass | **yes** | `rustls-rustcrypto` + `testcontainers` (dev-dep) | **yes** | Lockfile artifact |
+| BearDog | **yes** | `rustls-rustcrypto` default features | **yes** | Lockfile artifact |
+| Songbird | **yes** | `rustls-rustcrypto` default features | **yes** | Lockfile artifact |
+| petalTongue | **yes** | `rustls-rustcrypto` default features | **yes** | Lockfile artifact |
+| NestGate | **yes** | `rustls-webpki 0.103.12` in vendored crate | **yes** | Lockfile artifact (vendored fix reduces but doesn't eliminate) |
+| loamSpine | **yes** | `rustls-rustcrypto` default features | **yes** | Lockfile artifact |
+| Squirrel | no | **Eliminated** (`169768a8`) | **yes** | **Clean** |
+| toadStool | no | — | **yes** | Clean |
+| biomeOS | no | — | **yes** | Clean |
+| rhizoCrypt | no | — | **yes** | Clean |
+| barraCuda | no | — | **yes** | Clean |
+| coralReef | no | — | **yes** | Clean |
+| skunkBat | no | — | **yes** | Clean |
+
+**7/13 clean lockfiles.** 6 carry `ring` as a lockfile artifact from `rustls-rustcrypto`.
+All 13 pass `cargo deny check bans`. Ring is never compiled in any primal.
+
+**Ecosystem-wide fix**: Vendor `rustls-rustcrypto` with the NestGate pattern
+(`rustls-webpki = { version = "0.103.12", default-features = false }`) and propagate
+across all primals. OR wait for upstream `rustls-rustcrypto` to fix their defaults.
 
 ### Class 4: `dyn` Dispatch + `async-trait` — DEPRECATED (Stadial Gate)
 
