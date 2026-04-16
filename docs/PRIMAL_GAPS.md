@@ -8,7 +8,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > and are NOT tracked here. See `graphs/downstream/` for proto-nucleate patterns.
 > Springs/gardens do NOT have binaries in plasmidBin — only primals do.
 >
-> **Last updated**: 2026-04-15 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
+> **Last updated**: 2026-04-16 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -1136,90 +1136,168 @@ provider decoupling (`provider_client.rs`) sets the pattern for other primals to
 
 ---
 
-## Next Evolution Targets (April 15, 2026)
+## Next Evolution Targets (April 16, 2026)
 
-Copy-paste blurbs per primal team for the next round of evolution, pattern tightening,
-and hardening. These are NOT blockers — they are the next step after current composition
-validation (exp091 12/12, exp094 19/19, exp096 14/15).
+Refreshed after full upstream pull + code review of all primals. Massive progress since
+April 15 — 20+ gaps resolved upstream. Remaining items below validated by code inspection.
+
+### Resolved Since April 15
+
+| Gap | Primal | Evidence |
+|-----|--------|----------|
+| BTSP Phase 3 server negotiate | BearDog | `btsp.server.negotiate` + ChaCha20Poly1305 session crypto (Wave 42+51) |
+| UDS first-byte peek | BearDog | `read_exact` + `PrefixedStream` in production UDS path (Wave 51, `c6b7f11d0`) |
+| UDS first-byte peek | Songbird | `handle_connection_with_peek` via `BufReader::fill_buf()` (`464dc04f0`) |
+| UDS first-byte peek | coralReef | `BufReader::fill_buf()` + `guard_from_first_byte` (`a5c95df`) |
+| UDS first-byte peek | petalTongue | `BufReader::fill_buf()` on UDS read half (`1f8721e`) |
+| BTSP Phase 2 real enforcement | petalTongue | BearDog delegation via `btsp.session.create/verify/negotiate` (`1f8721e`) |
+| BTSP Phase 3 stream encryption | barraCuda | ChaCha20Poly1305 AEAD + BtspFrameReader/Writer (`6284469e`) |
+| BufReader lifetime edge-case | barraCuda | Single BufReader for handshake, writes via `get_mut()` (`6284469e`) |
+| Genetic RPC → chain proofs | BearDog | `LineageProofManager` wired into RPC handlers with `chain_id` dispatch + Blake3 fallback (Wave 51) |
+| Ring elimination | BearDog | Not in Cargo.lock, banned in deny.toml (Wave 51) |
+| Graph-level genetics_tier | biomeOS | `GraphMetadata.genetics_tier: Option<GeneticsTier>` parsed + enforced (`674627bb`) |
+| Deploy class auto-resolution | biomeOS | `resolve_composition()` infers from node capabilities (`674627bb`) |
+| capability.call routing contract | biomeOS | `specs/CAPABILITY_CALL_ROUTING_CONTRACT.md` formalized |
+| async-trait elimination | biomeOS | **0** remaining (was 72→43→0) (`580a9458`) |
+| Bond ledger persistence | loamSpine | Dedicated spine + in-memory index, `bonding.ledger.store/retrieve/list` (`8e1067f`) |
+| Crypto signing via IPC | loamSpine | `JsonRpcCryptoSigner/Verifier` delegates to BearDog UDS (`8f508b7`) |
+| Streaming storage | NestGate | `store_stream`, `store_stream_chunk`, `retrieve_stream`, `retrieve_stream_chunk` (Session 43p) |
+| Doc drift (method counts) | NestGate | STATUS reconciled: 51 UDS, 23 HTTP, 42 semantic (Session 43q) |
+| `data.*` delegation stub | NestGate | Removed from router entirely, tests guard against re-introduction (Session 43q) |
+| async-trait + Box\<dyn Error\> | NestGate | **0 / 0** in production |
+| SigningClient wire alignment | rhizoCrypt | `crypto.sign_ed25519` / `crypto.verify_ed25519` field names aligned (`17973d0`) |
+| Crypto model decision | rhizoCrypt | `specs/CRYPTO_MODEL.md` — BearDog delegation canonical (`1046e6f`) |
+| Files >700 LOC | petalTongue | Zero production files >680 LOC (`cf7d264`) |
+| sweetGrass coverage 87→90% | sweetGrass | **91.7%** with Postgres, **90.4%** without (`34736bb`) |
+| Squirrel coverage 86→90% | Squirrel | **90.1%** region coverage, 7,158 tests (`45de7807`) |
+| deny.toml ring ban | toadStool | Uncommented and active (S203l) |
+| Shader absorption audit | barraCuda | **18/18** per-shader verified (`3cdfa221`) |
+| Postgres multi-statement DDL | sweetGrass | `raw_sql()` for simple query protocol (`bf7190e`) |
+
+### async-trait Scorecard (April 16)
+
+| Primal | Before | Now | Status |
+|--------|:---:|:---:|--------|
+| biomeOS | 72 | **0** | **COMPLETE** |
+| barraCuda | unknown | **0** | **COMPLETE** |
+| Squirrel | ~95 | **0** | **COMPLETE** |
+| loamSpine | unknown | **0** | **COMPLETE** |
+| NestGate | 587 Box\<dyn Error\> | **0 / 0** | **COMPLETE** (both) |
+| coralReef | unknown | **1** (jsonrpsee) | Effectively zero |
+| BearDog | ~115 | **49** | -57%, continuing |
+| toadStool | 320 | **~158** | -50%, dyn-ceiling (32 dyn-dispatched traits) |
+| Songbird | ~160 | **~108** | -32%, continuing |
+| petalTongue | 46 | **46** | No change |
+| rhizoCrypt | unknown | **6** | Adapter traits only |
+| sweetGrass | unknown | Widely used | Object-safety constraints |
 
 ### BearDog
 
-BTSP Phase 3 server-side cipher negotiation (currently NULL cipher after handshake).
-HSM/Titan M2 `crypto.generate_keypair` hardware backend for Pixel cross-arch.
-Bond persistence via NestGate/loamSpine ledger (currently in-memory only).
-UDS first-byte peek missing (TCP has it) — needed for biomeOS composition bypass.
-Generational provenance in `genetic.generate_lineage_proof` / `verify_lineage`.
+~~BTSP Phase 3 server negotiate~~ **RESOLVED** (Wave 42+51).
+~~UDS first-byte peek~~ **RESOLVED** (Wave 51) — `read_exact` + `PrefixedStream` in
+production UDS path. JSON-RPC detected via `0x7B`, BTSP otherwise.
+~~Genetic RPC chain proofs~~ **RESOLVED** — `generate_lineage_proof` and `verify_lineage`
+use full `LineageProofManager` when `chain_id` is provided, Blake3 fallback for compat.
+~~Ring elimination~~ **RESOLVED** — not in Cargo.lock, banned in deny.toml.
+Bond persistence: `BondPersistence` trait + `InMemoryBondPersistence` + `with_persistence()`
+hook created. **NestGate/loamSpine wiring not yet implemented** — only architectural
+comments. loamSpine bond ledger is ready upstream.
+HSM/Titan M2: StrongBox/mobile profiles expanded, Android `generate_key` present.
+**Titan M2 not explicitly wired** as named backend for `crypto.generate_keypair`.
+async-trait: **49** (was ~115). Coverage: **90.51%**. Tests: **14,785+**.
 
 ### Songbird
 
-QUIC/TLS evolution path. Content distribution federation seeder/leecher pattern.
-Transitive `ring` in `Cargo.lock` cleanup (not compiled but stale entry).
-UDS first-byte peek missing — currently always BTSP or always plain based on mode,
-no auto-detection for biomeOS composition bypass on UDS.
+~~UDS first-byte peek~~ **RESOLVED** (`464dc04f0`).
+`ring` in `Cargo.lock` — still present (0.17.14 via rustls chain). **Managed via
+deny.toml ban + lockfile chain documentation** (Wave 140). Default build does not
+compile it; only `--all-features` via kube/hyper-rustls can pull it in.
+Content distribution: `discovery.announce` API with `manifest_hash`/`seeder_count`
+implemented (Wave 140). Deep seeder/leecher networking not yet wired.
+Mito-beacon provider implemented with graceful fallback — depends on BearDog `beacon.*`.
+async-trait: **~108** (was ~160). Tests: **7,350**.
 
 ### NestGate
 
-Doc drift: 57 methods in STATUS vs 41 in code const — reconcile.
-`data.*` capability inconsistency (accepted but returns delegation stub).
-181 deprecated APIs to clean. Streaming storage for large tensors (neuralSpring/wetSpring).
-Coverage 80% → 90% target.
+~~Doc drift~~ **RESOLVED** — STATUS now says 51 UDS, 23 HTTP, 42 semantic, matching code.
+~~`data.*` stub~~ **RESOLVED** — removed from router, tests guard against re-introduction.
+~~Streaming storage~~ **RESOLVED** — 4 chunk RPC methods implemented.
+~~async-trait~~ **0.** ~~Box\<dyn Error\>~~ **0** in production.
+~176 deprecated APIs remain (down from ~195). Coverage 82.06% → 90% target.
+Tests: **8,534** (lib), **~11,800** (full). Vendored `rustls-rustcrypto` for WebPKI fixes.
 
 ### biomeOS
 
-Graph-level genetics tier declaration (graphs don't declare which genetic tier they require).
-Tick-loop scheduling (60Hz continuous mode). Deploy class auto-resolution from fragment
-metadata (currently manual). Wire contract for `capability.call` semantic routing.
+~~genetics_tier~~ **RESOLVED.** ~~Deploy class auto-resolution~~ **RESOLVED.**
+~~capability.call routing contract~~ **RESOLVED.**
+~~async-trait~~ **0** (was 72→43→0). **COMPLETE.**
+New: compute node module (`biomeos-compute/src/node/`).
+Tick-loop scheduling (60Hz) remains the only major open item.
+Tests: **7,801**.
 
 ### toadStool
 
-Coverage 83.6% → 90%. V4L2 ioctl surface. async-trait migration (320 instances — highest
-in ecosystem). JSON-RPC and tarpc socket unification.
+async-trait: **~158** remaining (32 dyn-dispatched traits with `NOTE(async-dyn)` markers,
+all justified by object safety). Further reduction requires trait redesign.
+~~deny.toml ring ban~~ **RESOLVED** — active (S203l).
+V4L2 ioctl safe wrappers implemented (8 ioctls via rustix 1.x).
+Real edge discovery (USB sysfs, Bluetooth) and scheduler queuing (`UniversalJobQueue`).
+Coverage 83.6% → 90% target. Tests: **21,600+**.
 
 ### barraCuda
 
-Post-handshake stream encryption (Phase 3). `plasma_dispersion` feature-gate
-(`domain-lattice` required). 29 shader absorption candidates from neuralSpring.
-`BufReader` lifetime edge-case in BTSP handshake relay.
+~~BTSP Phase 3~~ **RESOLVED.** ~~BufReader~~ **RESOLVED.** ~~plasma_dispersion~~ Clean.
+~~Shader absorption~~ **18/18** verified per-shader audit.
+**async-trait: 0. Fully clean.** Tests: **4,393**.
 
 ### Squirrel
 
-Three-tier genetics type consumption (awaits ecoPrimal >=0.10.0 with `mito_beacon_from_env()`).
-Content curation via BLAKE3 manifests. Full Phase 3 cipher negotiation.
+~~Coverage 86→90%~~ **RESOLVED** — **90.1%** region coverage.
+**async-trait: 0** (228→0 complete).
+Three-tier genetics: prep/annotations only, blocked on ecoPrimal ≥0.10.0.
+Content curation: blocked on NestGate content-addressed storage API.
+Tests: **7,158**.
 
 ### petalTongue
 
-BTSP Phase 2 enforcement — currently has real handshake delegation on TCP (with first-byte peek)
-but UDS still lacks peek-based auto-detection for biomeOS composition bypass.
-6 files >700 LOC need splitting.
+~~BTSP Phase 2~~ **RESOLVED** (real delegation). ~~UDS peek~~ **RESOLVED.**
+~~Files >700 LOC~~ **RESOLVED.**
+CHANGELOG doc drift: still says "stub" — should reflect real delegation.
+async-trait: **46** (no change). Tests: ~2,277.
 
-### Provenance Trio (rhizoCrypt + loamSpine + sweetGrass)
+### Provenance Trio
 
-sweetGrass Postgres full-path testing (needs Docker CI). sweetGrass coverage 87% → 90%.
-rhizoCrypt self-sovereign crypto model vs BearDog delegation — decide on canonical pattern.
+~~rhizoCrypt SigningClient alignment~~ **RESOLVED** (`crypto.sign_ed25519` / `verify_ed25519`).
+~~rhizoCrypt crypto model~~ **DECIDED** — BearDog delegation.
+~~loamSpine bond ledger~~ **RESOLVED.** ~~loamSpine crypto delegation~~ **RESOLVED**
+(`JsonRpcCryptoSigner/Verifier`).
+~~sweetGrass coverage~~ **91.7%** (target exceeded). ~~Postgres DDL~~ **RESOLVED** (`raw_sql()`).
+sweetGrass NestGate store backend implemented.
+rhizoCrypt: DID vs raw public_key semantic gap still open. async-trait: **6**.
+loamSpine: **0** async-trait. Coverage: **~90.9%**. Tests: **1,442**.
+sweetGrass: Tests: **1,560**.
 
 ### coralReef
 
-UDS first-byte peek missing — currently uses `guard_connection()` (out-of-band BearDog session
-check) instead of stream-level peek. This means biomeOS plain JSON-RPC over UDS may trigger
-BTSP rejection. Transitive libc (deferred until mio → rustix, mio#1735).
+~~UDS first-byte peek~~ **RESOLVED.** async-trait: **1** (jsonrpsee).
+Transitive libc deferred (mio→rustix upstream). Tests: **4,506**.
 
 ### skunkBat
 
-BTSP Phase 2 handshake not started on UDS. TCP has first-byte peek.
-Low priority — skunkBat is Phase 1 only.
-
-### Class 4 ecosystem-wide: async-trait migration
-
-Priority order: toadStool(320) > Songbird(~160) > BearDog(~115) > Squirrel(~95) >
-NestGate(587 `Box<dyn Error>`) > biomeOS(72) > petalTongue(46) > others.
-See Class 4 section above for full migration matrix and guidance.
+BTSP Phase 2 on UDS not started. Low priority (Phase 1 only).
 
 ### First-byte peek UDS standardization (cross-primal)
 
-Currently implemented on UDS: NestGate only. Currently on TCP only: BearDog, petalTongue,
-skunkBat. Missing entirely: Songbird, coralReef. Required for all primals accepting UDS
-connections per UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md. Without UDS peek,
-biomeOS composition traffic over UDS triggers BTSP handshake rejection.
+**ALL BTSP-enforcing primals now have UDS peek**: NestGate, BearDog, Songbird,
+coralReef, petalTongue. Only **skunkBat** (Phase 1, low priority) lacks it.
+**This cross-cutting gap is effectively CLOSED.**
+
+### Class 4 ecosystem-wide: async-trait migration
+
+**6 primals at zero**: biomeOS(0), barraCuda(0), Squirrel(0), loamSpine(0),
+NestGate(0+0), coralReef(1 jsonrpsee).
+Remaining: Songbird(~108) > toadStool(~158, dyn-ceiling) > BearDog(49) >
+petalTongue(46) > rhizoCrypt(6) > sweetGrass(widespread, object-safety constrained).
 
 ---
 
