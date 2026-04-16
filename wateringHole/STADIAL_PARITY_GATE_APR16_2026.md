@@ -82,17 +82,17 @@ be as clean as the build.
 | barraCuda | **No** | 0 | ~109 | **INTERSTADIAL-READY** |
 | coralReef | **No** | 0 | ~137 | **INTERSTADIAL-READY** |
 | skunkBat | **No** | 0 | ~18 | **INTERSTADIAL-READY** |
-| sweetGrass | **Yes** | ~22 | ~132 | **STADIAL DEBT** |
+| sweetGrass | **No** | 0 | 2 | **INTERSTADIAL-READY** |
 | BearDog | **Yes** | ~49 | ~776 | **STADIAL DEBT** |
 | toadStool | **Yes** | ~158 | ~540 | **STADIAL DEBT** |
 
-**10/13 primals have eliminated `async-trait` dep.** Three remain.
+**11/13 primals have eliminated `async-trait` dep.** Two remain.
 
 ### Lockfile Ghost Debt
 
 | Primal | `ring` in lock | `sled` debt | Other ghosts |
 |--------|:--------------:|:-----------:|:------------:|
-| sweetGrass | **yes** | **yes** | `libsqlite3-sys` |
+| sweetGrass | dev-only | feature-gated | `libsqlite3-sys` (phantom) |
 | BearDog | **yes** | no | — |
 | Songbird | **yes** | no | — |
 | Squirrel | **yes** | no | `reqwest` |
@@ -114,10 +114,11 @@ be as clean as the build.
 
 ### Primals with ZERO stadial debt (interstadial-ready)
 
-**rhizoCrypt, barraCuda, coralReef, skunkBat, biomeOS** — clean lockfiles,
-no async-trait, Edition 2024, deny.toml enforced. These primals are ready for
-the next interstadial. Remaining `dyn` usage is non-trait-object (error types,
-`dyn Future` in manual pinning, etc.) and does not block the gate.
+**rhizoCrypt, barraCuda, coralReef, skunkBat, biomeOS, sweetGrass** — no
+async-trait, Edition 2024, deny.toml enforced. sweetGrass cleared Apr 16 via
+enum dispatch (6 backend enums, `QueryEngine<S>` generic). Remaining `dyn`
+usage is non-trait-object (recursive futures, dispatch tables) and does not
+block the gate. sweetGrass lockfile ghosts are dev-dep or phantom only.
 
 ### Primals with lockfile-only debt
 
@@ -127,7 +128,7 @@ but lockfile ghost stanzas remain. Resolution: trace the transitive puller via
 
 ### Primals with full Class 4 + lockfile debt
 
-**sweetGrass** (22 attrs, ring+sled in lock), **BearDog** (49 attrs, ring in lock),
+**BearDog** (49 attrs, ring in lock),
 **toadStool** (158 attrs, clean lock). These are the stadial blockers.
 
 ---
