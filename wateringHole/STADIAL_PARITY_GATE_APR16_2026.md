@@ -77,7 +77,7 @@ The actual enforcement is:
 
 | Ghost | Status | Action |
 |-------|--------|--------|
-| `sled` in `Cargo.lock` | sweetGrass only | Remove from default features |
+| `sled` in `Cargo.lock` | ~~sweetGrass~~ **RESOLVED** | Crate archived, zero lockfile entries |
 | `reqwest` (runtime dep) | petalTongue | Delegate HTTP/TLS to Songbird via tower atomic |
 
 ### 2a. Tower Atomic Delegation — TLS and Crypto
@@ -138,7 +138,7 @@ for full root cause analysis.
 
 | Primal | `ring` in lock | Compiled? | `sled` debt | Other | `cargo deny` |
 |--------|:--------------:|:---------:|:-----------:|:-----:|:------------:|
-| sweetGrass | yes (artifact) | **no** | feature-gated | — | **PASS** |
+| sweetGrass | yes (artifact) | **no** | **eliminated** | — | **PASS** |
 | BearDog | yes (artifact) | **no** | no | — | **PASS** |
 | Songbird | yes (artifact) | **no** | no | — | **PASS** |
 | Squirrel | **no** | **no** | no | — | **PASS** |
