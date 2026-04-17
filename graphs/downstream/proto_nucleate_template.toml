@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Proto-Nucleate Template — NUCLEUS base + domain spring overlay
+#
+# All proto-nucleate graphs share this pattern:
+#   1. NUCLEUS base nodes (biomeOS + Tower + selected Node/Nest primals)
+#   2. Domain spring node (spawn = true, built by the spring's repo)
+#   3. Validation node (primalSpring coordination, spawn = false)
+#
+# Parameters (from downstream_manifest.toml):
+#   {{spring_name}}      — e.g. "airspring", "wetspring"
+#   {{spring_binary}}    — e.g. "airspring_primal", "wetspring_primal"
+#   {{owner}}            — e.g. "airSpring", "wetSpring"
+#   {{domain}}           — e.g. "ecology_agriculture", "life_science"
+#   {{by_capability}}    — e.g. "compute", "biology"
+#   {{particle_profile}} — e.g. "balanced", "neutron_heavy"
+#   {{fragments}}        — e.g. ["tower_atomic", "node_atomic", "nest_atomic"]
+#   {{capabilities}}     — domain-specific capabilities
+#   {{depends_on}}       — domain-specific upstream dependencies
+#
+# Genuinely unique downstream graphs kept as standalone files:
+#   - healthspring_enclave_proto_nucleate.toml (dual-tower ionic bridge)
+#
+# Usage:
+#   biomeOS instantiates this template per downstream spring using the manifest.
+
+[graph]
+name = "{{spring_name}}_proto_nucleate"
+description = "{{owner}} — NUCLEUS base + {{domain}} domain overlays"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+owner = "{{owner}}"
+pattern = "proto_nucleate"
+pattern_version = "2026-04-10"
+witness_wire = "WireWitnessRef"
+encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
+particle_profile = "{{particle_profile}}"
+science_domain = "{{domain}}"
+composition_model = "nucleated"
+fragments = "{{fragments}}"
+
+[graph.bonding_policy]
+bond_type = "Metallic"
+trust_model = "InternalNucleus"
+tower_internal = "covalent"
+tower_to_node = "metallic"
+tower_to_nest = "metallic"
+node_to_nest = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.node = "delegated"
+encryption_tiers.nest = "delegated"
+
+# NUCLEUS base nodes are resolved from fragments at load time.
+# The domain spring overlay is instantiated from manifest parameters.
+
+[[graph.nodes]]
+name = "{{spring_name}}"
+binary = "{{spring_binary}}"
+order = 10
+required = true
+spawn = true
+depends_on = "{{depends_on}}"
+health_method = "health.liveness"
+by_capability = "{{by_capability}}"
+security_model = "tower_delegated"
+capabilities = "{{capabilities}}"
+
+[[graph.nodes]]
+name = "validate_{{spring_name}}"
+binary = "primalspring_primal"
+order = 99
+required = false
+spawn = false
+depends_on = ["{{spring_name}}"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "tower_delegated"
+capabilities = ["coordination.validate_composition"]

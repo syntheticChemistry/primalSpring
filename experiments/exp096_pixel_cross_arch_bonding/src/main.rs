@@ -79,7 +79,12 @@ fn validate_pixel_tower_health(v: &mut ValidationResult) {
 
     println!("  target: {host} (BearDog:{bd_port} Songbird:{sb_port} NestGate:{ng_port})");
 
-    let bd_health = tcp_rpc_value(&host, bd_port, methods::health::LIVENESS, &serde_json::json!({}));
+    let bd_health = tcp_rpc_value(
+        &host,
+        bd_port,
+        methods::health::LIVENESS,
+        &serde_json::json!({}),
+    );
     let bd_ok = bd_health.is_ok();
     v.check_bool(
         "pixel_beardog_alive",
@@ -100,7 +105,13 @@ fn validate_pixel_tower_health(v: &mut ValidationResult) {
         }
     }
 
-    let sb_ok = tcp_rpc_value(&host, sb_port, methods::health::LIVENESS, &serde_json::json!({})).is_ok();
+    let sb_ok = tcp_rpc_value(
+        &host,
+        sb_port,
+        methods::health::LIVENESS,
+        &serde_json::json!({}),
+    )
+    .is_ok();
     v.check_bool(
         "pixel_songbird_alive",
         sb_ok,
@@ -114,7 +125,11 @@ fn validate_pixel_tower_health(v: &mut ValidationResult) {
         &serde_json::json!({}),
     );
     match &ng_result {
-        Ok(_) => v.check_bool("pixel_nestgate_alive", true, &format!("NestGate at {host}:{ng_port}")),
+        Ok(_) => v.check_bool(
+            "pixel_nestgate_alive",
+            true,
+            &format!("NestGate at {host}:{ng_port}"),
+        ),
         Err(e) => v.check_skip("pixel_nestgate_alive", &format!("NestGate: {e}")),
     }
 
@@ -126,7 +141,12 @@ fn validate_pixel_tower_health(v: &mut ValidationResult) {
                 .and_then(|m| m.as_array())
                 .map(Vec::len)
                 .or_else(|| result.as_array().map(Vec::len))
-                .or_else(|| result.get("capabilities").and_then(|c| c.as_array()).map(Vec::len))
+                .or_else(|| {
+                    result
+                        .get("capabilities")
+                        .and_then(|c| c.as_array())
+                        .map(Vec::len)
+                })
                 .unwrap_or(0);
             println!("  pixel BearDog capabilities: {cap_count} methods");
             v.check_bool(
@@ -148,7 +168,10 @@ fn validate_pixel_tower_health(v: &mut ValidationResult) {
 
 // ── Phase 2: Three-Tier Genetics Cross-Architecture ──────────────────────
 
-#[allow(clippy::too_many_lines)]
+#[expect(
+    clippy::too_many_lines,
+    reason = "multi-phase validation is inherently sequential"
+)]
 fn validate_cross_arch_genetics(v: &mut ValidationResult) {
     v.section("Phase 2: Three-Tier Genetics (x86_64 → aarch64)");
 
@@ -167,7 +190,10 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
     match &beacon_result {
         Ok(result) => {
             let has_key = result.get("beacon_key").is_some();
-            println!("  Tier 1 mito-beacon: {}", if has_key { "derived" } else { "missing key" });
+            println!(
+                "  Tier 1 mito-beacon: {}",
+                if has_key { "derived" } else { "missing key" }
+            );
             v.check_bool(
                 "pixel_mito_beacon_derive",
                 has_key,
@@ -176,11 +202,18 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
         }
         Err(e) => {
             if e.contains("Method not found") || e.contains("not found") {
-                v.check_skip("pixel_mito_beacon_derive", "genetic.* RPCs not available on Pixel BearDog");
+                v.check_skip(
+                    "pixel_mito_beacon_derive",
+                    "genetic.* RPCs not available on Pixel BearDog",
+                );
                 println!("  Tier 1: skipped (genetic.* RPCs not available)");
                 return;
             }
-            v.check_bool("pixel_mito_beacon_derive", false, &format!("mito-beacon: {e}"));
+            v.check_bool(
+                "pixel_mito_beacon_derive",
+                false,
+                &format!("mito-beacon: {e}"),
+            );
         }
     }
 
@@ -200,14 +233,23 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
     let genesis_key = match &genesis_result {
         Ok(result) => {
             let has_key = result.get("key").is_some();
-            let method = result.get("method").and_then(serde_json::Value::as_str).unwrap_or("unknown");
-            println!("  Tier 2 nuclear genesis: method={method}, key={}", if has_key { "derived" } else { "missing" });
+            let method = result
+                .get("method")
+                .and_then(serde_json::Value::as_str)
+                .unwrap_or("unknown");
+            println!(
+                "  Tier 2 nuclear genesis: method={method}, key={}",
+                if has_key { "derived" } else { "missing" }
+            );
             v.check_bool(
                 "pixel_nuclear_genesis",
                 has_key,
                 "genetic.derive_lineage_key genesis on Pixel BearDog (aarch64)",
             );
-            result.get("key").and_then(serde_json::Value::as_str).map(String::from)
+            result
+                .get("key")
+                .and_then(serde_json::Value::as_str)
+                .map(String::from)
         }
         Err(e) => {
             v.check_skip("pixel_nuclear_genesis", &format!("nuclear genesis: {e}"));
@@ -231,7 +273,10 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
         match &child_result {
             Ok(result) => {
                 let has_key = result.get("key").is_some();
-                let child_key = result.get("key").and_then(serde_json::Value::as_str).unwrap_or("");
+                let child_key = result
+                    .get("key")
+                    .and_then(serde_json::Value::as_str)
+                    .unwrap_or("");
                 let keys_differ = child_key != parent_key.as_str();
                 println!("  Tier 2 nuclear child: distinct={keys_differ}");
                 v.check_bool(
@@ -261,7 +306,10 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
         match &proof_result {
             Ok(result) => {
                 let has_proof = result.get("proof").is_some();
-                println!("  lineage proof: {}", if has_proof { "generated" } else { "missing" });
+                println!(
+                    "  lineage proof: {}",
+                    if has_proof { "generated" } else { "missing" }
+                );
                 v.check_bool(
                     "pixel_lineage_proof_gen",
                     has_proof,
@@ -282,7 +330,10 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
                     );
                     match &verify_result {
                         Ok(result) => {
-                            let valid = result.get("valid").and_then(serde_json::Value::as_bool).unwrap_or(false);
+                            let valid = result
+                                .get("valid")
+                                .and_then(serde_json::Value::as_bool)
+                                .unwrap_or(false);
                             println!("  lineage verify: {valid}");
                             v.check_bool(
                                 "pixel_lineage_proof_verify",
@@ -290,7 +341,9 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
                                 "genetic.verify_lineage on Pixel BearDog (aarch64)",
                             );
                         }
-                        Err(e) => v.check_skip("pixel_lineage_proof_verify", &format!("verify: {e}")),
+                        Err(e) => {
+                            v.check_skip("pixel_lineage_proof_verify", &format!("verify: {e}"));
+                        }
                     }
                 }
             }
@@ -314,8 +367,12 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
     );
     match &mix_result {
         Ok(result) => {
-            let has_mixed = result.get("mixed_entropy").is_some() || result.get("entropy").is_some();
-            println!("  entropy mixing: {}", if has_mixed { "ok" } else { "missing" });
+            let has_mixed =
+                result.get("mixed_entropy").is_some() || result.get("entropy").is_some();
+            println!(
+                "  entropy mixing: {}",
+                if has_mixed { "ok" } else { "missing" }
+            );
             v.check_bool(
                 "pixel_entropy_mix",
                 has_mixed,
@@ -335,21 +392,18 @@ fn validate_btsp_phase3_readiness(v: &mut ValidationResult) {
     let bd_port = pixel_beardog_port();
 
     // Probe BearDog for cipher capabilities
-    let crypto_caps = tcp_rpc_value(
-        &host,
-        bd_port,
-        "capabilities.list",
-        &serde_json::json!({}),
-    );
+    let crypto_caps = tcp_rpc_value(&host, bd_port, "capabilities.list", &serde_json::json!({}));
 
     let (has_chacha, has_hmac, has_encrypt) =
-        crypto_caps.as_ref().map_or((false, false, false), |result| {
-            let caps_str = serde_json::to_string(result).unwrap_or_default();
-            let chacha = caps_str.contains("chacha20") || caps_str.contains("ChaCha20");
-            let hmac = caps_str.contains("hmac") || caps_str.contains("HMAC");
-            let encrypt = caps_str.contains("encrypt") || caps_str.contains("cipher");
-            (chacha, hmac, encrypt)
-        });
+        crypto_caps
+            .as_ref()
+            .map_or((false, false, false), |result| {
+                let caps_str = serde_json::to_string(result).unwrap_or_default();
+                let chacha = caps_str.contains("chacha20") || caps_str.contains("ChaCha20");
+                let hmac = caps_str.contains("hmac") || caps_str.contains("HMAC");
+                let encrypt = caps_str.contains("encrypt") || caps_str.contains("cipher");
+                (chacha, hmac, encrypt)
+            });
 
     v.check_bool(
         "pixel_chacha20_poly1305_cap",
@@ -374,7 +428,14 @@ fn validate_btsp_phase3_readiness(v: &mut ValidationResult) {
     match &encrypt_result {
         Ok(result) => {
             let has_ciphertext = result.get("ciphertext").is_some();
-            println!("  ChaCha20-Poly1305 encrypt: {}", if has_ciphertext { "ok" } else { "no ciphertext" });
+            println!(
+                "  ChaCha20-Poly1305 encrypt: {}",
+                if has_ciphertext {
+                    "ok"
+                } else {
+                    "no ciphertext"
+                }
+            );
             v.check_bool(
                 "pixel_chacha20_encrypt",
                 has_ciphertext,
@@ -473,7 +534,10 @@ fn validate_hsm_capabilities(v: &mut ValidationResult) {
     match &sign_result {
         Ok(result) => {
             let has_sig = result.get("signature").is_some();
-            println!("  Ed25519 sign: {}", if has_sig { "ok" } else { "no signature" });
+            println!(
+                "  Ed25519 sign: {}",
+                if has_sig { "ok" } else { "no signature" }
+            );
             v.check_bool(
                 "pixel_ed25519_sign",
                 has_sig,
@@ -482,7 +546,9 @@ fn validate_hsm_capabilities(v: &mut ValidationResult) {
 
             if let (Some(sig), Some(pubkey)) = (
                 result.get("signature"),
-                result.get("public_key").or_else(|| keypair.as_ref().ok().and_then(|k| k.get("public_key"))),
+                result
+                    .get("public_key")
+                    .or_else(|| keypair.as_ref().ok().and_then(|k| k.get("public_key"))),
             ) {
                 let verify_result = tcp_rpc_value(
                     &host,
@@ -562,14 +628,19 @@ fn validate_beacon_exchange(v: &mut ValidationResult) {
                             .get("node_id")
                             .and_then(serde_json::Value::as_str)
                             .is_some_and(|n| n == "pixel-grapheneos");
-                        println!("  beacon decrypt: round-trip {}", if has_node_id { "OK" } else { "mismatch" });
+                        println!(
+                            "  beacon decrypt: round-trip {}",
+                            if has_node_id { "OK" } else { "mismatch" }
+                        );
                         v.check_bool(
                             "pixel_beacon_decrypt_roundtrip",
                             has_node_id,
                             "birdsong beacon encrypt→decrypt round-trip on Pixel (aarch64)",
                         );
                     }
-                    Err(e) => v.check_skip("pixel_beacon_decrypt_roundtrip", &format!("decrypt: {e}")),
+                    Err(e) => {
+                        v.check_skip("pixel_beacon_decrypt_roundtrip", &format!("decrypt: {e}"));
+                    }
                 }
             }
         }
@@ -580,12 +651,7 @@ fn validate_beacon_exchange(v: &mut ValidationResult) {
     }
 
     // Mesh discovery — can Pixel Songbird see peers?
-    let mesh_result = tcp_rpc_value(
-        &host,
-        sb_port,
-        "mesh.peers",
-        &serde_json::json!({}),
-    );
+    let mesh_result = tcp_rpc_value(&host, sb_port, "mesh.peers", &serde_json::json!({}));
     match &mesh_result {
         Ok(result) => {
             let peer_count = result.as_array().map_or(0, Vec::len);
@@ -647,7 +713,10 @@ fn validate_bonding_model(v: &mut ValidationResult) {
             let has_propose = serde_json::to_string(result)
                 .unwrap_or_default()
                 .contains("propose");
-            println!("  ionic bond support: {}", if has_propose { "available" } else { "partial" });
+            println!(
+                "  ionic bond support: {}",
+                if has_propose { "available" } else { "partial" }
+            );
             v.check_bool(
                 "pixel_ionic_bond_capable",
                 true,
@@ -687,9 +756,15 @@ fn validate_bonding_model(v: &mut ValidationResult) {
             );
             match &retrieve_result {
                 Ok(result) => {
-                    let value = result.get("value").and_then(serde_json::Value::as_str).unwrap_or("");
+                    let value = result
+                        .get("value")
+                        .and_then(serde_json::Value::as_str)
+                        .unwrap_or("");
                     let integrity_ok = value == test_data;
-                    println!("  cross-arch storage round-trip: {}", if integrity_ok { "PASS" } else { "MISMATCH" });
+                    println!(
+                        "  cross-arch storage round-trip: {}",
+                        if integrity_ok { "PASS" } else { "MISMATCH" }
+                    );
                     v.check_bool(
                         "pixel_storage_roundtrip",
                         integrity_ok,

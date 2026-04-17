@@ -159,7 +159,7 @@ fn validate_mesh_discovery(
         }
     }
 
-    let peers = match tcp_rpc("localhost", sb_port, "mesh.peers", &serde_json::json!({})) {
+    match tcp_rpc("localhost", sb_port, "mesh.peers", &serde_json::json!({})) {
         Ok((resp, _)) => {
             let peer_list = resp
                 .as_array()
@@ -190,9 +190,7 @@ fn validate_mesh_discovery(
             v.check_skip("mesh_peers_discovered", &format!("mesh.peers: {e}"));
             Vec::new()
         }
-    };
-
-    peers
+    }
 }
 
 fn validate_peer_capabilities(v: &mut ValidationResult, peers: &[serde_json::Value]) {
@@ -252,37 +250,34 @@ fn validate_peer_capabilities(v: &mut ValidationResult, peers: &[serde_json::Val
 fn validate_https_through_tower(v: &mut ValidationResult) {
     v.section("HTTPS Through Tower Atomic");
 
-    let bridge = match NeuralBridge::discover() {
-        Some(b) => b,
-        None => {
-            println!("  biomeOS not running — trying direct Songbird TCP");
-            let sb_port = songbird_port();
-            match tcp_rpc(
-                "localhost",
-                sb_port,
-                "http.get",
-                &serde_json::json!({ "url": "https://ifconfig.me/ip" }),
-            ) {
-                Ok((resp, latency)) => {
-                    let status = resp
-                        .get("status_code")
-                        .and_then(|s| s.as_u64())
-                        .unwrap_or(0);
-                    let ms = latency.as_millis();
-                    println!("  HTTPS via direct Songbird: status {status} ({ms}ms)");
-                    v.check_bool(
-                        "tower_https",
-                        status == 200,
-                        &format!("HTTPS status {status}"),
-                    );
-                }
-                Err(e) => {
-                    println!("  HTTPS via Songbird: {e}");
-                    v.check_skip("tower_https", &format!("Songbird HTTPS: {e}"));
-                }
+    let Some(bridge) = NeuralBridge::discover() else {
+        println!("  biomeOS not running — trying direct Songbird TCP");
+        let sb_port = songbird_port();
+        match tcp_rpc(
+            "localhost",
+            sb_port,
+            "http.get",
+            &serde_json::json!({ "url": "https://ifconfig.me/ip" }),
+        ) {
+            Ok((resp, latency)) => {
+                let status = resp
+                    .get("status_code")
+                    .and_then(serde_json::Value::as_u64)
+                    .unwrap_or(0);
+                let ms = latency.as_millis();
+                println!("  HTTPS via direct Songbird: status {status} ({ms}ms)");
+                v.check_bool(
+                    "tower_https",
+                    status == 200,
+                    &format!("HTTPS status {status}"),
+                );
             }
-            return;
+            Err(e) => {
+                println!("  HTTPS via Songbird: {e}");
+                v.check_skip("tower_https", &format!("Songbird HTTPS: {e}"));
+            }
         }
+        return;
     };
 
     let health = bridge.health_check();

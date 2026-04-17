@@ -4,6 +4,7 @@
 name = "primalspring-exp094"
 version = "0.8.0"
 edition = "2024"
+license.workspace = true
 
 [[bin]]
 name = "exp094_composition_parity"

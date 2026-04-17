@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
-**Date**: April 10, 2026  
-**Status**: Phase 43 — 74 experiments, 17 tracks, multi-tier genetics + BTSP Phase 1–3 + cross-arch deployment, 443 tests, 67 deploy graphs + 6 fragments
+**Date**: April 16, 2026  
+**Status**: Phase 43+ — 75 experiments, 17 tracks, multi-tier genetics + BTSP Phase 1–3 + cross-arch deployment + fragment-first graph consolidation, 570 tests, 56 deploy graphs
 
 ---
 

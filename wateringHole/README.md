@@ -1,8 +1,8 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
-**Version**: 0.9.14 (Phase 43+ — 443 tests, 74 experiments, 67 deploy graphs + 6 fragments, BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), biomeOS-managed cross-arch Pixel deployment, content distribution federation, **NUCLEUS composition 12/12 routing + 19/19 parity**)  
-**Phase**: **INTERSTADIAL** — stadial gate cleared April 16, 2026. 13/13 primals at modern async Rust parity.  
+**Version**: 0.9.15 (Phase 43+ — 570 tests, 75 experiments, 56 deploy graphs, BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), biomeOS-managed cross-arch Pixel deployment, content distribution federation, **NUCLEUS composition 12/12 routing + 19/19 parity**, fragment-first graph composition)  
+**Phase**: **INTERSTADIAL** — stadial gate cleared April 16, 2026. 13/13 primals + primalSpring itself at modern async Rust parity.  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: April 16, 2026
 
@@ -38,28 +38,29 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **443** (unit + integration + doc-tests + proptest, 42 ignored live) |
-| Experiments | 74 (17 tracks) |
+| Tests | **570** (unit + integration + doc-tests + proptest, 46 ignored live) |
+| Experiments | 75 (17 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
 | `#![forbid(unsafe_code)]` | workspace-level |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | **67 TOMLs + 6 fragments** (9 profiles + 5 multi-node + 13 spring validation + 2 cross-spring + 5 bonding + 2 chaos + 5 spring deploy + 8 downstream proto-nucleate + 4 patterns + 7 root + 1 federation), all `by_capability`, topologically validated |
+| Deploy graphs | **56 TOMLs** (9 profiles + 6 fragments + 5 multi-node + 4 spring validation (template + manifest + 2 unique) + 2 cross-spring + 5 bonding + 2 chaos + 2 spring deploy (template + manifest) + 3 downstream (template + manifest + 1 unique enclave) + 4 patterns + 11 root + 1 federation), all `by_capability`, topologically validated, fragment-first `resolve = true` composition, 31 graph tests passing |
 | Genetics | **Multi-tier**: Mito-Beacon (discovery/NAT), Nuclear (lineage DNA, non-fungible permissions), Tags (open participation) |
 | BTSP | **Phase 1–3**: FAMILY_SEED auth → secure-by-default cascade → ChaCha20-Poly1305 encrypted channel |
 | Bonding | Covalent, Ionic, Metallic, Weak, OrganoMetalSalt + BtspEnforcer deny semantics + ionic RPC + content distribution federation |
 | Cross-arch | biomeOS-managed Tower on Pixel (aarch64 + GrapheneOS) via Neural API `--tcp-only`, 14/15 exp096 checks (HSM pending) |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | Active in `docs/PRIMAL_GAPS.md` — portability debt classes, socket resolution tiers, BTSP cascade |
-| **Stadial gate** | **CLEARED** — 13/13 primals: zero `async-trait`, enum dispatch, RPITIT, `cargo deny` PASS |
+| **Stadial gate** | **CLEARED** — 13/13 primals + primalSpring: zero `async-trait`, enum dispatch, RPITIT, `cargo deny` PASS |
 | **Interstadial standards** | See `STADIAL_PARITY_GATE_APR16_2026.md` — permanent invariants enforced |
+| **primalSpring own stadial** | `#[allow]` → `#[expect]`, `deny.toml` license fix, clippy clean (0 warnings/errors), 570 tests passing |
 | RPC endpoints | 17 methods |
 | Discovery | **Capability-first**: `discover_by_capability()` + 6-tier + Neural API |
 | IPC transport | JSON-RPC 2.0: UDS + TCP + HTTP POST (`tcp_rpc_multi_protocol` auto-fallback) |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
-| Meta-validator | `validate_all` binary — runs all 74 experiments |
+| Meta-validator | `validate_all` binary — runs all 75 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates |
 | NUCLEUS | **VALIDATED** — Tower + Nest + Node, 12/12 primals ALIVE, 19/19 exp094 parity, 12/12 exp091 routing |
 
@@ -359,9 +360,10 @@ hold encrypted-at-rest secrets, enabling zero-knowledge authentication.
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.9.14+ | `STADIAL_PARITY_GATE_APR16_2026.md` | Apr 16 | **Stadial gate cleared**: 13/13 primals at modern async Rust parity. Interstadial standards defined. |
-| v0.9.14+ | `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` | Apr 16 | Updated: interstadial PR checklist, downstream absorption open |
-| v0.9.14 | This README | Apr 16 | **Phase 43+**: Multi-tier genetics, BTSP Phase 3, cross-arch Pixel deployment, biomeOS composition patterns, stadial gate cleared |
+| v0.9.15 | `GRAPH_CONSOLIDATION_AND_NUCLEUS_DEPLOYMENT_HANDOFF_APR16_2026.md` | Apr 16 | **Graph consolidation handoff**: 78→56 TOMLs, template+manifest, fragment-first `resolve = true`, per-spring action items |
+| v0.9.15 | `STADIAL_PARITY_GATE_APR16_2026.md` | Apr 16 | **Stadial gate cleared**: 13/13 primals at modern async Rust parity. Interstadial standards defined. |
+| v0.9.15 | `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` | Apr 16 | Updated: interstadial PR checklist, downstream absorption open |
+| v0.9.15 | This README | Apr 16 | **Phase 43+**: Multi-tier genetics, BTSP Phase 3, cross-arch Pixel deployment, biomeOS composition patterns, stadial gate cleared, graph consolidation (78→56), fragment-first composition |
 | v0.9.3 | `PRIMALSPRING_V093_MIXED_COMPOSITION_LIVE_VALIDATION_HANDOFF_APR07_2026.md` | Apr 7 | **Phase 26**: Particle model, layered validation (L0-L3), 17 sketch graphs, exp091-093, live Tower Atomic probes, 6 GAP-MATRIX items, primal team work blurbs |
 
 ## Archived Handoffs

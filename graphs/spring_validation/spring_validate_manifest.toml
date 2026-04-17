@@ -1,14 +1,23 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Spring Validation Manifest — parameters for spring_validate_template.toml
+# Spring & Composition Validation Manifest
 #
-# Each [[spring]] entry provides the substitution values for the template.
-# biomeOS reads this manifest to instantiate per-spring validation graphs.
+# Part 1: [[spring]] — parameters for spring_validate_template.toml.
+#   biomeOS reads this manifest to instantiate per-spring validation graphs.
+#
+# Part 2: [[composition]] — composition subsystem validators (C1–C7 + infra).
+#   Each was formerly a separate TOML; now consolidated here as metadata.
+#   All share the same primal set {biomeos, primalspring_primal} with subsystem-
+#   specific check targets. biomeOS instantiates from template + this manifest.
+#
+# Genuinely unique validators kept as standalone files:
+#   - crypto_negative_validate.toml (rejection path / negative testing)
+#   - nucleus_atomics_validate.toml (multi-phase NUCLEUS tier validation)
 
 [manifest]
 template = "spring_validate_template.toml"
-version = "2.0.0"
-description = "Parameter table for the 6 science springs"
+version = "3.0.0"
+description = "Parameter table for 6 science springs + 9 composition subsystems"
 
 [[spring]]
 spring_name = "airspring"
@@ -68,4 +77,119 @@ capabilities = [
     "health.pharmacology",
     "health.genomics",
     "health.clinical",
+]
+
+# =============================================================================
+# Part 2: Composition subsystem validators
+#
+# These replace the former per-subsystem TOML files:
+#   composition_render_validate.toml          (C1)
+#   composition_narration_validate.toml       (C2)
+#   composition_session_validate.toml         (C3)
+#   composition_game_science_validate.toml    (C4)
+#   composition_persistence_validate.toml     (C5)
+#   composition_proprioception_validate.toml  (C6)
+#   composition_interactive_validate.toml     (C7)
+#   rollback_validate.toml                    (infra)
+#   federation_manifest_validate.toml         (infra)
+# =============================================================================
+
+[[composition]]
+id = "C1"
+name = "composition_render_validate"
+description = "Validates C1: petalTongue render — dashboard, export, scene, session awareness"
+target_primal = "petaltongue"
+check_methods = [
+    "visualization.render.dashboard",
+    "visualization.export",
+    "visualization.render.scene",
+    "visualization.session.list",
+]
+
+[[composition]]
+id = "C2"
+name = "composition_narration_validate"
+description = "Validates C2: Squirrel AI narration — query, providers, context management"
+target_primal = "squirrel"
+check_methods = [
+    "squirrel.query",
+    "squirrel.providers",
+    "squirrel.context.push",
+    "squirrel.context.list",
+]
+
+[[composition]]
+id = "C3"
+name = "composition_session_readiness_validate"
+description = "Validates C3: primal-layer readiness for session — substrate, Tower, capability routing"
+target_primal = "primalspring_primal"
+check_methods = [
+    "capability.discover",
+    "capability.route",
+]
+
+[[composition]]
+id = "C4"
+name = "composition_game_science_readiness_validate"
+description = "Validates C4: primal-layer readiness for game science — substrate, Tower, capability routing"
+target_primal = "primalspring_primal"
+check_methods = [
+    "capability.discover",
+    "capability.route",
+]
+
+[[composition]]
+id = "C5"
+name = "composition_persistence_validate"
+description = "Validates C5: NestGate persistence — store, retrieve, list"
+target_primal = "nestgate"
+check_methods = [
+    "storage.store",
+    "storage.retrieve",
+    "storage.list",
+]
+
+[[composition]]
+id = "C6"
+name = "composition_proprioception_validate"
+description = "Validates C6: petalTongue proprioception — subscribe, apply, poll, showing"
+target_primal = "petaltongue"
+check_methods = [
+    "proprioception.subscribe",
+    "proprioception.apply",
+    "proprioception.poll",
+    "proprioception.showing",
+]
+
+[[composition]]
+id = "C7"
+name = "composition_product_readiness_validate"
+description = "Validates C7: full primal-layer readiness — substrate, Tower, owned overlays, capability routing"
+target_primal = "primalspring_primal"
+check_methods = [
+    "capability.discover",
+    "capability.route",
+    "graph.list",
+]
+
+[[composition]]
+id = "infra_rollback"
+name = "rollback_validate"
+description = "Validates biomeOS graph rollback: deploy, checkpoint, rollback lifecycle"
+target_primal = "biomeos"
+check_methods = [
+    "graph.deploy",
+    "graph.status",
+    "graph.rollback",
+]
+
+[[composition]]
+id = "infra_federation"
+name = "federation_manifest_validate"
+description = "Validates biomeOS federation manifest deployment: configure, join, cross-gate health"
+target_primal = "beardog"
+check_methods = [
+    "federation.configure",
+    "federation.join",
+    "federation.health",
 ]

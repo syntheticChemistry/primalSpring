@@ -32,8 +32,8 @@ use serde::{Deserialize, Serialize};
 use crate::ipc::error::IpcError;
 
 use super::ionic::{
-    ContractId, IonicContract, IonicProposal, ProposalResponse, ProvenanceSeal,
-    ScopeModification, TerminationRequest,
+    ContractId, IonicContract, IonicProposal, ProposalResponse, ProvenanceSeal, ScopeModification,
+    TerminationRequest,
 };
 
 /// Cross-family peer identity for ionic bond negotiation.
@@ -160,10 +160,7 @@ impl IonicBondClient {
     ///
     /// Returns [`IpcError`] if BearDog signing fails or the remote gate
     /// is unreachable.
-    pub fn propose(
-        &self,
-        proposal: &IonicProposal,
-    ) -> Result<ProposalResponse, IpcError> {
+    pub fn propose(&self, proposal: &IonicProposal) -> Result<ProposalResponse, IpcError> {
         let errors = proposal.validate();
         if !errors.is_empty() {
             return Err(IpcError::ProtocolError {
@@ -200,10 +197,7 @@ impl IonicBondClient {
     ///
     /// Returns [`IpcError`] if the remote gate is unreachable or rejects
     /// the termination.
-    pub fn terminate(
-        &self,
-        request: &TerminationRequest,
-    ) -> Result<ProvenanceSeal, IpcError> {
+    pub fn terminate(&self, request: &TerminationRequest) -> Result<ProvenanceSeal, IpcError> {
         let params = serde_json::to_value(request).map_err(|e| IpcError::SerializationError {
             detail: e.to_string(),
         })?;
@@ -319,8 +313,8 @@ mod tests {
 
     #[test]
     fn propose_rejects_invalid_proposal() {
-        use super::super::ionic::{AttributionTerms, DataReturnPolicy};
         use super::super::TrustModel;
+        use super::super::ionic::{AttributionTerms, DataReturnPolicy};
 
         let peer = IonicPeerIdentity {
             family_id: "remote".to_owned(),

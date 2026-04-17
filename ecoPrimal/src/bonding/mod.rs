@@ -258,9 +258,7 @@ impl BondingPolicy {
             );
         }
         if self.bond_type == BondType::Metallic && !self.trust_model.is_genetic() {
-            errors.push(
-                "metallic bonds require at least mito-beacon-tier genetics".to_owned(),
-            );
+            errors.push("metallic bonds require at least mito-beacon-tier genetics".to_owned());
         }
         if self.bond_type == BondType::Ionic && self.trust_model == TrustModel::ZeroTrust {
             errors.push("ionic bonds require at least Contractual trust".to_owned());
@@ -766,12 +764,12 @@ mod tests {
     fn btsp_enforcer_no_trust_backward_compat() {
         use crate::btsp::BtspCipherSuite;
         let cov = BondingPolicy::covalent_default();
-        let decision = BtspEnforcer::evaluate_connection_with_trust(
-            &cov,
-            BtspCipherSuite::Null,
-            None,
+        let decision =
+            BtspEnforcer::evaluate_connection_with_trust(&cov, BtspCipherSuite::Null, None);
+        assert!(
+            decision.allowed,
+            "None trust (legacy caller) should still allow"
         );
-        assert!(decision.allowed, "None trust (legacy caller) should still allow");
     }
 
     #[test]
@@ -844,9 +842,18 @@ mod tests {
 
     #[test]
     fn trust_model_normalize() {
-        assert_eq!(TrustModel::GeneticLineage.normalize(), TrustModel::NuclearLineage);
-        assert_eq!(TrustModel::NuclearLineage.normalize(), TrustModel::NuclearLineage);
-        assert_eq!(TrustModel::MitoBeaconFamily.normalize(), TrustModel::MitoBeaconFamily);
+        assert_eq!(
+            TrustModel::GeneticLineage.normalize(),
+            TrustModel::NuclearLineage
+        );
+        assert_eq!(
+            TrustModel::NuclearLineage.normalize(),
+            TrustModel::NuclearLineage
+        );
+        assert_eq!(
+            TrustModel::MitoBeaconFamily.normalize(),
+            TrustModel::MitoBeaconFamily
+        );
         assert_eq!(TrustModel::Contractual.normalize(), TrustModel::Contractual);
     }
 }

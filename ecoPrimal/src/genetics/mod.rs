@@ -191,7 +191,11 @@ mod tests {
 
     #[test]
     fn tier_serde_round_trip() {
-        for tier in [GeneticTier::MitoBeacon, GeneticTier::Nuclear, GeneticTier::Tag] {
+        for tier in [
+            GeneticTier::MitoBeacon,
+            GeneticTier::Nuclear,
+            GeneticTier::Tag,
+        ] {
             let json = serde_json::to_string(&tier).unwrap();
             let back: GeneticTier = serde_json::from_str(&json).unwrap();
             assert_eq!(tier, back);

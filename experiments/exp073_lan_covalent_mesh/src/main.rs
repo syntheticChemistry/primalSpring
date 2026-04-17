@@ -359,12 +359,11 @@ fn validate_genetic_lineage(
     }
 }
 
-#[allow(clippy::too_many_lines)]
-fn validate_three_tier_genetics(
-    v: &mut ValidationResult,
-    host: &str,
-    beardog_port: u16,
-) {
+#[expect(
+    clippy::too_many_lines,
+    reason = "multi-phase validation is inherently sequential"
+)]
+fn validate_three_tier_genetics(v: &mut ValidationResult, host: &str, beardog_port: u16) {
     v.section("Three-Tier Genetics (Mito + Nuclear + Lineage Proof)");
 
     let lineage_seed = "exp073_lan_covalent_test_seed";
@@ -391,7 +390,10 @@ fn validate_three_tier_genetics(
         }
         Err(e) => {
             if e.contains("Method not found") {
-                v.check_skip("remote_mito_beacon_derived", "genetic.derive_lineage_beacon_key not available");
+                v.check_skip(
+                    "remote_mito_beacon_derived",
+                    "genetic.derive_lineage_beacon_key not available",
+                );
             } else {
                 v.check_skip("remote_mito_beacon_derived", &format!("mito-beacon: {e}"));
             }
@@ -414,7 +416,10 @@ fn validate_three_tier_genetics(
     let genesis_key_hash = match &genesis_result {
         Ok(result) => {
             let has_key = result.get("lineage_key").is_some();
-            let generation = result.get("generation").and_then(serde_json::Value::as_u64).unwrap_or(999);
+            let generation = result
+                .get("generation")
+                .and_then(serde_json::Value::as_u64)
+                .unwrap_or(999);
             let key_status = if has_key { "derived" } else { "missing" };
             println!("  Tier 2 nuclear genesis: gen={generation}, key={key_status}");
             v.check_bool(
@@ -422,7 +427,10 @@ fn validate_three_tier_genetics(
                 has_key && generation == 0,
                 "genetic.derive_lineage_key genesis on remote BearDog",
             );
-            result.get("lineage_key").and_then(|k| k.as_str()).map(String::from)
+            result
+                .get("lineage_key")
+                .and_then(|k| k.as_str())
+                .map(String::from)
         }
         Err(e) => {
             v.check_skip("remote_nuclear_genesis", &format!("nuclear genesis: {e}"));
@@ -446,7 +454,10 @@ fn validate_three_tier_genetics(
 
         match child_result {
             Ok(result) => {
-                let generation = result.get("generation").and_then(serde_json::Value::as_u64).unwrap_or(999);
+                let generation = result
+                    .get("generation")
+                    .and_then(serde_json::Value::as_u64)
+                    .unwrap_or(999);
                 let has_key = result.get("lineage_key").is_some();
                 let key_status = if has_key { "derived" } else { "missing" };
                 println!("  Tier 2 nuclear child:   gen={generation}, key={key_status}");
@@ -496,7 +507,10 @@ fn validate_three_tier_genetics(
                     }),
                 ) {
                     Ok(verify) => {
-                        let valid = verify.get("valid").and_then(serde_json::Value::as_bool).unwrap_or(false);
+                        let valid = verify
+                            .get("valid")
+                            .and_then(serde_json::Value::as_bool)
+                            .unwrap_or(false);
                         println!("  Lineage proof verified: {valid}");
                         v.check_bool(
                             "remote_lineage_proof_verified",

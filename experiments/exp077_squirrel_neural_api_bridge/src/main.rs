@@ -112,7 +112,7 @@ fn validate_squirrel_via_biomeos(v: &mut ValidationResult) {
             let path = std::path::PathBuf::from(sock);
             primalspring::ipc::client::PrimalClient::connect(&path, "squirrel").ok()
         })
-        .map_or(false, |mut c| c.health_check().unwrap_or(false));
+        .is_some_and(|mut c| c.health_check().unwrap_or(false));
     v.check_bool(
         "ai_health_routed",
         ai_healthy,

@@ -21,7 +21,7 @@
 [matrix]
 version = "3.0.0"
 description = "NUCLEUS Atomic-Aligned"
-last_updated = "2026-04-10"
+last_updated = "2026-04-16"
 
 [atomics]
 description = "NUCLEUS atomic model — Phase 31 aligned"

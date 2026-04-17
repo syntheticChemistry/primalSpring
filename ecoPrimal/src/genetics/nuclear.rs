@@ -193,11 +193,7 @@ mod tests {
 
     #[test]
     fn genesis_is_generation_zero() {
-        let g = NuclearGenetics::genesis(
-            vec![0xAA; 32],
-            vec![0xBB; 64],
-            "test-genesis".to_owned(),
-        );
+        let g = NuclearGenetics::genesis(vec![0xAA; 32], vec![0xBB; 64], "test-genesis".to_owned());
         assert_eq!(g.generation(), 0);
         assert!(g.is_genesis());
         assert_eq!(g.parent_hash(), &[0u8; 32]);
@@ -206,16 +202,9 @@ mod tests {
 
     #[test]
     fn child_increments_generation() {
-        let parent = NuclearGenetics::genesis(
-            vec![0xAA; 32],
-            vec![0xBB; 64],
-            "parent-context".to_owned(),
-        );
-        let child = parent.spawn_child(
-            vec![0xCC; 32],
-            vec![0xDD; 64],
-            "child-context".to_owned(),
-        );
+        let parent =
+            NuclearGenetics::genesis(vec![0xAA; 32], vec![0xBB; 64], "parent-context".to_owned());
+        let child = parent.spawn_child(vec![0xCC; 32], vec![0xDD; 64], "child-context".to_owned());
         assert_eq!(child.generation(), 1);
         assert!(!child.is_genesis());
         assert_eq!(child.context(), "child-context");
@@ -223,11 +212,7 @@ mod tests {
 
     #[test]
     fn child_records_parent_hash() {
-        let parent = NuclearGenetics::genesis(
-            vec![0xAA; 32],
-            vec![],
-            "parent".to_owned(),
-        );
+        let parent = NuclearGenetics::genesis(vec![0xAA; 32], vec![], "parent".to_owned());
         let expected_hash = blake3_hash(&[0xAA; 32]);
         let child = parent.spawn_child(vec![0xCC; 32], vec![], "child".to_owned());
         assert_eq!(child.parent_hash(), &expected_hash);
@@ -235,11 +220,7 @@ mod tests {
 
     #[test]
     fn child_key_differs_from_parent() {
-        let parent = NuclearGenetics::genesis(
-            vec![0xAA; 32],
-            vec![],
-            "parent".to_owned(),
-        );
+        let parent = NuclearGenetics::genesis(vec![0xAA; 32], vec![], "parent".to_owned());
         let child = parent.spawn_child(vec![0xCC; 32], vec![], "child".to_owned());
         assert_ne!(parent.key_bytes(), child.key_bytes());
     }
@@ -256,11 +237,7 @@ mod tests {
 
     #[test]
     fn lineage_info_strips_key_material() {
-        let g = NuclearGenetics::genesis(
-            vec![0xFF; 32],
-            vec![0xEE; 16],
-            "test".to_owned(),
-        );
+        let g = NuclearGenetics::genesis(vec![0xFF; 32], vec![0xEE; 16], "test".to_owned());
         let info = g.lineage_info();
         assert_eq!(info.generation, 0);
         assert_eq!(info.proof, vec![0xEE; 16]);

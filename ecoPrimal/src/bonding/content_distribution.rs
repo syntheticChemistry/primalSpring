@@ -243,7 +243,10 @@ impl ContentManifest {
         }
         for entry in &self.entries {
             if entry.blake3_hash.is_empty() {
-                errors.push(format!("entry '{}': blake3_hash must not be empty", entry.path));
+                errors.push(format!(
+                    "entry '{}': blake3_hash must not be empty",
+                    entry.path
+                ));
             }
             if entry.path.is_empty() {
                 errors.push("entry path must not be empty".into());
@@ -339,7 +342,11 @@ mod tests {
     fn manifest_detects_total_bytes_mismatch() {
         let mut m = sample_manifest();
         m.total_bytes = 999;
-        assert!(m.validate().iter().any(|e| e.contains("total_bytes mismatch")));
+        assert!(
+            m.validate()
+                .iter()
+                .any(|e| e.contains("total_bytes mismatch"))
+        );
     }
 
     #[test]
@@ -351,8 +358,14 @@ mod tests {
 
     #[test]
     fn bond_tier_maps_correctly() {
-        assert_eq!(DistributionBondTier::Metallic.bond_type(), BondType::Metallic);
-        assert_eq!(DistributionBondTier::Covalent.bond_type(), BondType::Covalent);
+        assert_eq!(
+            DistributionBondTier::Metallic.bond_type(),
+            BondType::Metallic
+        );
+        assert_eq!(
+            DistributionBondTier::Covalent.bond_type(),
+            BondType::Covalent
+        );
         assert_eq!(DistributionBondTier::Ionic.bond_type(), BondType::Ionic);
         assert_eq!(DistributionBondTier::Weak.bond_type(), BondType::Weak);
     }
@@ -410,7 +423,11 @@ mod tests {
             bond_tier: DistributionBondTier::Weak,
             contract_id: None,
         };
-        assert!(req.validate().iter().any(|e| e.contains("invalid byte range")));
+        assert!(
+            req.validate()
+                .iter()
+                .any(|e| e.contains("invalid byte range"))
+        );
     }
 
     #[test]

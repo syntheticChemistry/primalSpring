@@ -84,7 +84,7 @@ bond_role = "albatross_worker"
 # ── biomeOS (orchestrator) ─────────────────────────────────────────────
 [[graph.nodes]]
 name = "biomeos"
-binary = "biomeos_primal"
+binary = "biomeos"
 order = 5
 required = true
 depends_on = ["beardog", "songbird_master"]

@@ -321,7 +321,7 @@ mod tests {
     }
 
     #[test]
-    #[allow(deprecated)]
+    #[expect(deprecated, reason = "testing deprecated fn until removal")]
     fn http_health_fails_gracefully_on_unreachable_host() {
         let result = http_health_probe("127.0.0.1", 1);
         assert!(result.is_err());

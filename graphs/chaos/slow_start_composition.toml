@@ -54,7 +54,7 @@ chaos_delay_range_ms = [0, 30000]
 
 [[graph.nodes]]
 name = "biomeos"
-binary = "biomeos_primal"
+binary = "biomeos"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]

@@ -41,12 +41,12 @@ fn validate_tower_coexistence(v: &mut ValidationResult) {
     v.check_bool(
         "tower_a_caps",
         !required.is_empty(),
-        &format!("Tower A requires {:?}", required),
+        &format!("Tower A requires {required:?}"),
     );
     v.check_bool(
         "tower_b_caps",
         !required.is_empty(),
-        &format!("Tower B requires {:?}", required),
+        &format!("Tower B requires {required:?}"),
     );
     v.check_bool(
         "distinct_families",

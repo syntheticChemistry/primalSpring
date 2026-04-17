@@ -4,7 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
-| 0.9.14+ | Yes       |
+| 0.9.15+ | Yes       |
 | 0.9.x   | Yes       |
 | 0.8.x   | Maintenance |
 

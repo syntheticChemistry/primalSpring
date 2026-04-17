@@ -112,17 +112,17 @@ impl CompositionContext {
     #[must_use]
     pub fn from_live_discovery_with_fallback() -> Self {
         let cap_to_primal: &[(&str, &str, &str, u16)] = &[
-            ("security",      "beardog",    "BEARDOG_PORT",    9100),
-            ("discovery",     "songbird",   "SONGBIRD_PORT",   9200),
-            ("storage",       "nestgate",   "NESTGATE_PORT",   9300),
-            ("compute",       "toadstool",  "TOADSTOOL_PORT",  9400),
-            ("tensor",        "barracuda",  "BARRACUDA_PORT",  9401),
-            ("shader",        "coralreef",  "CORALREEF_PORT",  9402),
-            ("ai",            "squirrel",   "SQUIRREL_PORT",   9500),
-            ("dag",           "rhizocrypt", "RHIZOCRYPT_PORT", 9301),
-            ("commit",        "sweetgrass", "SWEETGRASS_PORT", 9303),
-            ("provenance",    "loamspine",  "LOAMSPINE_PORT",  9302),
-            ("visualization", "petaltongue","PETALTONGUE_PORT",9600),
+            ("security", "beardog", "BEARDOG_PORT", 9100),
+            ("discovery", "songbird", "SONGBIRD_PORT", 9200),
+            ("storage", "nestgate", "NESTGATE_PORT", 9300),
+            ("compute", "toadstool", "TOADSTOOL_PORT", 9400),
+            ("tensor", "barracuda", "BARRACUDA_PORT", 9401),
+            ("shader", "coralreef", "CORALREEF_PORT", 9402),
+            ("ai", "squirrel", "SQUIRREL_PORT", 9500),
+            ("dag", "rhizocrypt", "RHIZOCRYPT_PORT", 9301),
+            ("commit", "sweetgrass", "SWEETGRASS_PORT", 9303),
+            ("provenance", "loamspine", "LOAMSPINE_PORT", 9302),
+            ("visualization", "petaltongue", "PETALTONGUE_PORT", 9600),
         ];
 
         let host = std::env::var("PRIMALSPRING_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
@@ -174,13 +174,11 @@ impl CompositionContext {
                 primal: format!("capability:{capability}"),
             })?;
         let response = client.call(method, params)?;
-        response.result.ok_or_else(|| {
-            IpcError::ProtocolError {
-                detail: response
-                    .error
-                    .as_ref()
-                    .map_or_else(|| "no result".to_owned(), |e| e.message.clone()),
-            }
+        response.result.ok_or_else(|| IpcError::ProtocolError {
+            detail: response
+                .error
+                .as_ref()
+                .map_or_else(|| "no result".to_owned(), |e| e.message.clone()),
         })
     }
 
@@ -335,7 +333,10 @@ fn capability_to_primal(capability: &str) -> &str {
 ///     tolerances::CPU_GPU_PARITY_TOL,
 /// );
 /// ```
-#[expect(clippy::too_many_arguments, reason = "domain-driven API: each parameter is semantically distinct")]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "domain-driven API: each parameter is semantically distinct"
+)]
 pub fn validate_parity(
     ctx: &mut CompositionContext,
     v: &mut ValidationResult,
@@ -360,7 +361,10 @@ pub fn validate_parity(
             v.check_skip(name, &format!("{capability} not available: {e}"));
         }
         Err(e) if e.is_transport_mismatch() => {
-            v.check_skip(name, &format!("{capability} uses non-JSON-RPC transport: {e}"));
+            v.check_skip(
+                name,
+                &format!("{capability} uses non-JSON-RPC transport: {e}"),
+            );
         }
         Err(e) => {
             v.check_bool(name, false, &format!("composition error: {e}"));
@@ -372,7 +376,10 @@ pub fn validate_parity(
 ///
 /// Like [`validate_parity`] but for multi-element results (tensors, arrays).
 /// All elements must match within tolerance for the check to pass.
-#[expect(clippy::too_many_arguments, reason = "domain-driven API: each parameter is semantically distinct")]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "domain-driven API: each parameter is semantically distinct"
+)]
 pub fn validate_parity_vec(
     ctx: &mut CompositionContext,
     v: &mut ValidationResult,
@@ -391,7 +398,10 @@ pub fn validate_parity_vec(
             return;
         }
         Err(e) if e.is_transport_mismatch() => {
-            v.check_skip(name, &format!("{capability} uses non-JSON-RPC transport: {e}"));
+            v.check_skip(
+                name,
+                &format!("{capability} uses non-JSON-RPC transport: {e}"),
+            );
             return;
         }
         Err(e) => {
@@ -400,9 +410,7 @@ pub fn validate_parity_vec(
         }
     };
 
-    let arr = result
-        .get(result_key)
-        .and_then(serde_json::Value::as_array);
+    let arr = result.get(result_key).and_then(serde_json::Value::as_array);
 
     let Some(arr) = arr else {
         v.check_bool(
@@ -601,7 +609,10 @@ mod tests {
                 );
             }
             Err(e) if e.is_connection_error() => {
-                v.check_skip("blake3_hash_nonempty", &format!("security not available: {e}"));
+                v.check_skip(
+                    "blake3_hash_nonempty",
+                    &format!("security not available: {e}"),
+                );
                 v.check_skip("blake3_hash_base64_length", "security not available");
             }
             Err(e) => {
@@ -620,18 +631,31 @@ mod tests {
 
         match ctx.resolve_capability("security") {
             Ok(result) => {
-                let found = result.get("found").and_then(serde_json::Value::as_bool).unwrap_or(false)
+                let found = result
+                    .get("found")
+                    .and_then(serde_json::Value::as_bool)
+                    .unwrap_or(false)
                     || result.get("endpoint").is_some()
                     || result.get("socket").is_some()
                     || result.get("native_endpoint").is_some()
                     || result.get("virtual_endpoint").is_some();
-                v.check_bool("resolve_security_exists", found, &format!("resolved: {result}"));
+                v.check_bool(
+                    "resolve_security_exists",
+                    found,
+                    &format!("resolved: {result}"),
+                );
             }
             Err(e) if e.is_connection_error() => {
-                v.check_skip("resolve_security_exists", &format!("discovery not available: {e}"));
+                v.check_skip(
+                    "resolve_security_exists",
+                    &format!("discovery not available: {e}"),
+                );
             }
             Err(e) => {
-                v.check_skip("resolve_security_exists", &format!("resolve gap (LD-08): {e}"));
+                v.check_skip(
+                    "resolve_security_exists",
+                    &format!("resolve gap (LD-08): {e}"),
+                );
             }
         }
 
@@ -643,7 +667,10 @@ mod tests {
         let mut ctx = CompositionContext::from_live_discovery();
         let mut v = null_result("Tower: health.liveness parity");
 
-        for (name, cap) in [("beardog_alive", "security"), ("songbird_alive", "discovery")] {
+        for (name, cap) in [
+            ("beardog_alive", "security"),
+            ("songbird_alive", "discovery"),
+        ] {
             match ctx.health_check(cap) {
                 Ok(alive) => {
                     v.check_bool(name, alive, &format!("{cap} health normalized"));
@@ -687,10 +714,7 @@ mod tests {
                     serde_json::json!({"key": test_key}),
                 ) {
                     Ok(result) => {
-                        let retrieved = result
-                            .get("value")
-                            .and_then(|v| v.as_str())
-                            .unwrap_or("");
+                        let retrieved = result.get("value").and_then(|v| v.as_str()).unwrap_or("");
                         v.check_bool(
                             "store_retrieve_match",
                             retrieved == test_value,
@@ -698,12 +722,19 @@ mod tests {
                         );
                     }
                     Err(e) => {
-                        v.check_bool("store_retrieve_match", false, &format!("retrieve error: {e}"));
+                        v.check_bool(
+                            "store_retrieve_match",
+                            false,
+                            &format!("retrieve error: {e}"),
+                        );
                     }
                 }
             }
             Err(e) if e.is_connection_error() => {
-                v.check_skip("store_retrieve_match", &format!("storage not available: {e}"));
+                v.check_skip(
+                    "store_retrieve_match",
+                    &format!("storage not available: {e}"),
+                );
             }
             Err(e) => {
                 v.check_bool("store_retrieve_match", false, &format!("store error: {e}"));
@@ -794,7 +825,11 @@ mod tests {
         let mut ctx = CompositionContext::from_live_discovery();
         let mut v = null_result("Node: shader.compile.capabilities parity");
 
-        match ctx.call("shader", "shader.compile.capabilities", serde_json::json!({})) {
+        match ctx.call(
+            "shader",
+            "shader.compile.capabilities",
+            serde_json::json!({}),
+        ) {
             Ok(result) => {
                 let has_archs = result
                     .get("supported_archs")
@@ -807,10 +842,17 @@ mod tests {
                 );
             }
             Err(e) if e.is_connection_error() => {
-                v.check_skip("shader_has_supported_archs", &format!("shader not available: {e}"));
+                v.check_skip(
+                    "shader_has_supported_archs",
+                    &format!("shader not available: {e}"),
+                );
             }
             Err(e) => {
-                v.check_bool("shader_has_supported_archs", false, &format!("shader error: {e}"));
+                v.check_bool(
+                    "shader_has_supported_archs",
+                    false,
+                    &format!("shader error: {e}"),
+                );
             }
         }
 
@@ -876,7 +918,10 @@ mod tests {
                         }
                     }
                     Err(e) if e.is_connection_error() => {
-                        v.check_skip("nest_hash_roundtrip", &format!("storage not available: {e}"));
+                        v.check_skip(
+                            "nest_hash_roundtrip",
+                            &format!("storage not available: {e}"),
+                        );
                     }
                     Err(e) => {
                         v.check_bool("nest_hash_roundtrip", false, &format!("store failed: {e}"));
@@ -884,7 +929,10 @@ mod tests {
                 }
             }
             Err(e) if e.is_connection_error() => {
-                v.check_skip("tower_hash_produced", &format!("security not available: {e}"));
+                v.check_skip(
+                    "tower_hash_produced",
+                    &format!("security not available: {e}"),
+                );
                 v.check_skip("nest_hash_roundtrip", "tower unavailable, skipping nest");
             }
             Err(e) => {

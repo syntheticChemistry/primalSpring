@@ -32,6 +32,7 @@ fn test_graph(name: &str, nodes: Vec<GraphNode>) -> DeployGraph {
             description: String::new(),
             version: String::new(),
             coordination: None,
+            metadata: None,
             node: nodes,
         },
         nodes: Vec::new(),
@@ -43,9 +44,9 @@ fn graphs_path(name: &str) -> std::path::PathBuf {
 }
 
 #[test]
-fn load_primalspring_deploy_graph() {
-    let graph = load_graph(&graphs_path("primalspring_deploy.toml")).unwrap();
-    assert_eq!(graph.graph.name, "primalspring_coordination_niche");
+fn load_nucleus_complete_graph() {
+    let graph = load_graph(&graphs_path("nucleus_complete.toml")).unwrap();
+    assert_eq!(graph.graph.name, "nucleus_complete");
     assert!(!graph.graph.node.is_empty());
     assert_eq!(graph.graph.node[0].name, "biomeos_neural_api");
 }
@@ -71,8 +72,8 @@ fn load_conditional_fallback() {
 }
 
 #[test]
-fn validate_structure_primalspring_deploy() {
-    let result = validate_structure(&graphs_path("primalspring_deploy.toml"));
+fn validate_structure_nucleus_complete() {
+    let result = validate_structure(&graphs_path("nucleus_complete.toml"));
     assert!(result.parsed);
     assert!(result.issues.is_empty(), "issues: {:?}", result.issues);
     assert!(result.required_count >= 2);
@@ -136,8 +137,8 @@ fn validate_live_nonexistent_path_degrades() {
 }
 
 #[test]
-fn validate_live_primalspring_deploy_degrades_gracefully() {
-    let result = validate_live(&graphs_path("primalspring_deploy.toml"));
+fn validate_live_nucleus_complete_degrades_gracefully() {
+    let result = validate_live(&graphs_path("nucleus_complete.toml"));
     assert!(result.structure.parsed);
     assert!(result.structure.issues.is_empty());
     assert!(!result.nodes.is_empty());
@@ -337,6 +338,7 @@ fn merge_graphs_combines_nodes() {
             description: "base graph".to_owned(),
             version: "1.0.0".to_owned(),
             coordination: Some("sequential".to_owned()),
+            metadata: None,
             node: vec![base_node],
         },
         nodes: Vec::new(),
@@ -353,6 +355,7 @@ fn merge_graphs_combines_nodes() {
             description: "AI overlay".to_owned(),
             version: "1.0.0".to_owned(),
             coordination: None,
+            metadata: None,
             node: vec![overlay_node],
         },
         nodes: Vec::new(),
@@ -383,6 +386,7 @@ fn merge_graphs_overlay_overrides_existing() {
             description: String::new(),
             version: "2.0.0".to_owned(),
             coordination: None,
+            metadata: None,
             node: vec![override_node],
         },
         nodes: Vec::new(),
@@ -418,6 +422,9 @@ fn load_multi_node_data_federation() {
     let graph = load_graph(&graphs_path("multi_node/data_federation_cross_site.toml")).unwrap();
     assert!(!graph.graph.node.is_empty());
     for node in &graph.graph.node {
-        assert!(!node.name.is_empty(), "every multi_node node should have an id alias → name");
+        assert!(
+            !node.name.is_empty(),
+            "every multi_node node should have an id alias → name"
+        );
     }
 }

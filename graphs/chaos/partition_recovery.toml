@@ -52,7 +52,7 @@ capabilities = ["net.discovery", "net.mesh"]
 
 [[graph.nodes]]
 name = "biomeos"
-binary = "biomeos_primal"
+binary = "biomeos"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]

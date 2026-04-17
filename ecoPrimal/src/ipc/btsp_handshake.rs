@@ -41,7 +41,10 @@ struct ClientHello {
 
 #[derive(Debug, Deserialize)]
 struct ServerHello {
-    #[expect(dead_code, reason = "deserialized by serde but consumed only for protocol validation")]
+    #[expect(
+        dead_code,
+        reason = "deserialized by serde but consumed only for protocol validation"
+    )]
     version: u8,
     server_ephemeral_pub: String,
     challenge: String,
@@ -56,14 +59,20 @@ struct ChallengeResponse {
 
 #[derive(Debug, Deserialize)]
 struct HandshakeComplete {
-    #[expect(dead_code, reason = "deserialized by serde; cipher selection logged but not branched on yet")]
+    #[expect(
+        dead_code,
+        reason = "deserialized by serde; cipher selection logged but not branched on yet"
+    )]
     cipher: String,
     session_id: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct HandshakeError {
-    #[expect(dead_code, reason = "deserialized by serde; error code reserved for future BTSP Phase 3")]
+    #[expect(
+        dead_code,
+        reason = "deserialized by serde; error code reserved for future BTSP Phase 3"
+    )]
     error: String,
     reason: String,
 }
@@ -71,11 +80,10 @@ struct HandshakeError {
 fn derive_handshake_key(family_seed: &[u8]) -> Result<[u8; 32], IpcError> {
     let hk = Hkdf::<Sha256>::new(Some(b"btsp-v1"), family_seed);
     let mut okm = [0u8; 32];
-    hk.expand(b"handshake", &mut okm).map_err(|e| {
-        IpcError::ProtocolError {
+    hk.expand(b"handshake", &mut okm)
+        .map_err(|e| IpcError::ProtocolError {
             detail: format!("BTSP HKDF derivation failed: {e}"),
-        }
-    })?;
+        })?;
     Ok(okm)
 }
 
@@ -86,11 +94,10 @@ fn compute_challenge_hmac(
     server_pub: &[u8],
 ) -> Result<[u8; 32], IpcError> {
     use hmac::KeyInit;
-    let mut mac = HmacSha256::new_from_slice(handshake_key).map_err(|e| {
-        IpcError::ProtocolError {
+    let mut mac =
+        HmacSha256::new_from_slice(handshake_key).map_err(|e| IpcError::ProtocolError {
             detail: format!("BTSP HMAC init: {e}"),
-        }
-    })?;
+        })?;
     mac.update(challenge);
     mac.update(client_pub);
     mac.update(server_pub);
@@ -105,10 +112,7 @@ fn compute_challenge_hmac(
 ///
 /// Returns `IpcError` on I/O failure, protocol mismatch, or HMAC computation
 /// error.
-pub fn client_handshake(
-    stream: &mut UnixStream,
-    family_seed: &[u8],
-) -> Result<String, IpcError> {
+pub fn client_handshake(stream: &mut UnixStream, family_seed: &[u8]) -> Result<String, IpcError> {
     let handshake_key = derive_handshake_key(family_seed)?;
 
     // Generate 32 random bytes as the client ephemeral "public key".
@@ -156,11 +160,10 @@ pub fn client_handshake(
         });
     }
 
-    let server_hello: ServerHello = serde_json::from_str(server_hello_line.trim()).map_err(
-        |e| IpcError::ProtocolError {
+    let server_hello: ServerHello =
+        serde_json::from_str(server_hello_line.trim()).map_err(|e| IpcError::ProtocolError {
             detail: format!("BTSP ServerHello parse: {e}"),
-        },
-    )?;
+        })?;
 
     debug!(session_id = %server_hello.session_id, "BTSP: ServerHello received");
 
@@ -170,11 +173,12 @@ pub fn client_handshake(
         .map_err(|e| IpcError::ProtocolError {
             detail: format!("BTSP server_ephemeral_pub decode: {e}"),
         })?;
-    let challenge_bytes = BASE64
-        .decode(&server_hello.challenge)
-        .map_err(|e| IpcError::ProtocolError {
-            detail: format!("BTSP challenge decode: {e}"),
-        })?;
+    let challenge_bytes =
+        BASE64
+            .decode(&server_hello.challenge)
+            .map_err(|e| IpcError::ProtocolError {
+                detail: format!("BTSP challenge decode: {e}"),
+            })?;
 
     // Step 3: compute HMAC response and send ChallengeResponse
     let response_hmac = compute_challenge_hmac(
@@ -246,7 +250,7 @@ pub fn client_handshake(
     note = "Use mito_beacon_from_env() for the genetics-aware path. \
             FAMILY_SEED is being transitioned to the mito-beacon tier."
 )]
-#[must_use] 
+#[must_use]
 pub fn family_seed_from_env() -> Option<Vec<u8>> {
     raw_family_seed_from_env()
 }
@@ -298,9 +302,7 @@ fn raw_family_seed_from_env() -> Option<Vec<u8>> {
 ///
 /// Returns `true` if even length, at least 32 chars, and all ASCII hex digits.
 fn is_hex_string(s: &str) -> bool {
-    s.len() >= 32
-        && s.len().is_multiple_of(2)
-        && s.bytes().all(|b| b.is_ascii_hexdigit())
+    s.len() >= 32 && s.len().is_multiple_of(2) && s.bytes().all(|b| b.is_ascii_hexdigit())
 }
 
 /// Read the family seed from `FAMILY_SEED` and wrap it as a mito-beacon.
@@ -318,7 +320,7 @@ fn is_hex_string(s: &str) -> bool {
 /// the actual session (permissions, auth, secure data).
 ///
 /// Returns `None` if `FAMILY_SEED` is not set or cannot be decoded.
-#[must_use] 
+#[must_use]
 pub fn mito_beacon_from_env() -> Option<crate::genetics::MitoBeacon> {
     let seed = raw_family_seed_from_env()?;
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "unknown".to_owned());

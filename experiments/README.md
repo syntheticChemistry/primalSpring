@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**74 experiments across 17 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**75 experiments across 17 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -19,18 +19,18 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 74 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 75 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 74 experiments. All 74 use centralized library helpers for TCP RPC,
+across all 75 experiments. All 75 use centralized library helpers for TCP RPC,
 method name constants (`ipc::methods`), and primal name constants (`primal_names`).
 
 ## Running
 
 ```bash
-# Run all 74 experiments via meta-validator
+# Run all 75 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment (use -p with the package name)
@@ -120,7 +120,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 74 experiments use this):
+**Builder API** (preferred — all 75 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit
@@ -146,7 +146,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.9.14 (workspace), depends on ecoPrimal
+├── Cargo.toml    # version 0.9.15 (workspace), depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

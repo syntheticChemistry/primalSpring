@@ -26,8 +26,14 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Standards are now **permanent interstadial invariants** — regressions are rejected.
 > See `wateringHole/STADIAL_PARITY_GATE_APR16_2026.md` for the full specification.
-> Downstream springs may resume absorption. Only then do
-> downstream springs begin their next absorption pass.
+>
+> **primalSpring own stadial (April 16, 2026)**: primalSpring itself underwent its
+> stadial pass: `deny.toml` license fix (BSD-3-Clause for `subtle`), exp094 license
+> inheritance, all `#[allow(` migrated to `#[expect(` with reasons, clippy 0 warnings,
+> integration test API drift fixed, experiment ID registry updated (67 → 75),
+> 570 tests passing. `Arc<dyn ValidationSink>` justified (open extensibility + generic `NdjsonSink<W>`).
+>
+> Downstream springs may resume absorption.
 >
 > **Last updated**: 2026-04-16 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
@@ -983,10 +989,10 @@ local crypto (self-sovereign), loamSpine/sweetGrass delegate to BearDog.
 ### Downstream (NOT in this registry — reference only)
 
 **ludoSpring** — Spring (not a primal). Binary NOT in plasmidBin. IPC surface: 8 `game.*`
-methods; esotericWebb needs 6 more. See `graphs/downstream/ludospring_proto_nucleate.toml`.
+methods; esotericWebb needs 6 more. See `graphs/downstream/downstream_manifest.toml` (ludospring entry).
 
 **esotericWebb** — Garden/composition (not a primal). Binary NOT in plasmidBin. Transport
-needs UDS negotiation. See `graphs/downstream/esotericwebb_proto_nucleate.toml`.
+needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esotericwebb entry).
 
 ---
 

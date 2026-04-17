@@ -431,10 +431,22 @@ trust_model = "nuclear_lineage"
 
     #[test]
     fn parse_trust_model_short_aliases() {
-        assert_eq!(parse_trust_model("mito"), Some(TrustModel::MitoBeaconFamily));
-        assert_eq!(parse_trust_model("nuclear"), Some(TrustModel::NuclearLineage));
-        assert_eq!(parse_trust_model("MitoBeaconFamily"), Some(TrustModel::MitoBeaconFamily));
-        assert_eq!(parse_trust_model("NuclearLineage"), Some(TrustModel::NuclearLineage));
+        assert_eq!(
+            parse_trust_model("mito"),
+            Some(TrustModel::MitoBeaconFamily)
+        );
+        assert_eq!(
+            parse_trust_model("nuclear"),
+            Some(TrustModel::NuclearLineage)
+        );
+        assert_eq!(
+            parse_trust_model("MitoBeaconFamily"),
+            Some(TrustModel::MitoBeaconFamily)
+        );
+        assert_eq!(
+            parse_trust_model("NuclearLineage"),
+            Some(TrustModel::NuclearLineage)
+        );
     }
 
     #[test]

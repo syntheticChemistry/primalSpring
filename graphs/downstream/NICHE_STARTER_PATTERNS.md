@@ -91,7 +91,7 @@ fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
 }
 ```
 
-**Graph**: `hotspring_qcd_proto_nucleate.toml`
+**Graph**: `downstream_manifest.toml` (hotspring entry)
 **Key capability**: `tensor` (barraCuda), `shader` (coralReef for custom WGSL)
 **What to hand back**: df64 precision requirements, multi-GPU dispatch patterns
 
@@ -137,7 +137,7 @@ fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
 }
 ```
 
-**Graph**: `neuralspring_inference_proto_nucleate.toml`
+**Graph**: `downstream_manifest.toml` (neuralspring entry)
 **Key capability**: `shader` (coralReef), `tensor` (barraCuda), `ai` (Squirrel)
 **What to hand back**: tokenization patterns, attention kernel requirements
 
@@ -205,7 +205,7 @@ fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
 }
 ```
 
-**Graph**: `wetspring_lifescience_proto_nucleate.toml`
+**Graph**: `downstream_manifest.toml` (wetspring entry)
 **Key capability**: `tensor` (barraCuda FFT), `storage` (NestGate for sequence data)
 **What to hand back**: FFT precision requirements, large-tensor streaming patterns
 

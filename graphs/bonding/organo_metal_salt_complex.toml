@@ -58,7 +58,7 @@ bond_role = "covalent_core"
 
 [[graph.nodes]]
 name = "biomeos"
-binary = "biomeos_primal"
+binary = "biomeos"
 order = 3
 required = true
 depends_on = ["beardog", "songbird"]

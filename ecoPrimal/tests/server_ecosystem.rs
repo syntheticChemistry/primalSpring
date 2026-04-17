@@ -812,15 +812,10 @@ fn genetics_mito_beacon_derivation() {
         .client_for("security")
         .expect("should connect to beardog");
 
-    let seed_hex = String::from_utf8_lossy(running.mito_seed().expect("mito seed"))
-        .into_owned();
+    let seed_hex = String::from_utf8_lossy(running.mito_seed().expect("mito seed")).into_owned();
 
-    let beacon = rpc::derive_lineage_beacon_key(
-        &mut client,
-        &seed_hex,
-        "birdsong_beacon_v1",
-        "test-family",
-    );
+    let beacon =
+        rpc::derive_lineage_beacon_key(&mut client, &seed_hex, "birdsong_beacon_v1", "test-family");
 
     match beacon {
         Ok(b) => {
@@ -859,15 +854,15 @@ fn genetics_nuclear_lineage_chain() {
         .client_for("security")
         .expect("should connect to beardog");
 
-    let seed_hex = String::from_utf8_lossy(running.mito_seed().expect("mito seed"))
-        .into_owned();
+    let seed_hex = String::from_utf8_lossy(running.mito_seed().expect("mito seed")).into_owned();
 
     // Generation 0: genesis
     let genesis = match rpc::derive_lineage_key(
         &mut client,
         &seed_hex,
+        &family_id,
+        "test-peer",
         "test-genesis-domain",
-        None,
         None,
     ) {
         Ok(g) => g,
@@ -883,7 +878,10 @@ fn genetics_nuclear_lineage_chain() {
     };
     assert_eq!(genesis.generation(), 0, "genesis should be generation 0");
     assert!(genesis.is_genesis(), "genesis should be marked as genesis");
-    assert!(!genesis.key_bytes().is_empty(), "genesis key should be non-empty");
+    assert!(
+        !genesis.key_bytes().is_empty(),
+        "genesis key should be non-empty"
+    );
     println!(
         "  gen0: {} bytes, proof {} bytes",
         genesis.key_bytes().len(),
@@ -891,13 +889,13 @@ fn genetics_nuclear_lineage_chain() {
     );
 
     // Generation 1: child (mixed with context entropy)
-    let context_entropy = b"child-session-context-entropy-01";
     let child = rpc::derive_lineage_key(
         &mut client,
         &seed_hex,
+        &family_id,
+        "test-peer",
         "test-child-domain",
         Some(&genesis),
-        Some(context_entropy),
     )
     .expect("child derivation should succeed");
 
@@ -923,13 +921,18 @@ fn genetics_nuclear_lineage_chain() {
     let grandchild = rpc::derive_lineage_key(
         &mut client,
         &seed_hex,
+        &family_id,
+        "test-peer",
         "test-grandchild-domain",
         Some(&child),
-        Some(b"grandchild-entropy"),
     )
     .expect("grandchild derivation should succeed");
 
-    assert_eq!(grandchild.generation(), 2, "grandchild should be generation 2");
+    assert_eq!(
+        grandchild.generation(),
+        2,
+        "grandchild should be generation 2"
+    );
     assert_ne!(
         grandchild.key_bytes(),
         child.key_bytes(),
@@ -967,14 +970,14 @@ fn genetics_lineage_proof_verify() {
         .client_for("security")
         .expect("should connect to beardog");
 
-    let seed_hex = String::from_utf8_lossy(running.mito_seed().expect("mito seed"))
-        .into_owned();
+    let seed_hex = String::from_utf8_lossy(running.mito_seed().expect("mito seed")).into_owned();
 
     let genesis = match rpc::derive_lineage_key(
         &mut client,
         &seed_hex,
+        &family_id,
+        "test-peer",
         "proof-test-domain",
-        None,
         None,
     ) {
         Ok(g) => g,
@@ -993,10 +996,10 @@ fn genetics_lineage_proof_verify() {
     // Verify the genesis proof
     let valid = rpc::verify_lineage(
         &mut client,
+        &seed_hex,
+        &family_id,
+        "test-peer",
         genesis.proof(),
-        genesis.generation(),
-        None,
-        genesis.context(),
     );
 
     match valid {
@@ -1005,7 +1008,9 @@ fn genetics_lineage_proof_verify() {
             println!("  genesis proof verified: valid={is_valid}");
         }
         Err(e) => {
-            println!("  lineage verification: error ({e}) — may be expected if BearDog version doesn't support verify_lineage");
+            println!(
+                "  lineage verification: error ({e}) — may be expected if BearDog version doesn't support verify_lineage"
+            );
         }
     }
 
@@ -1013,18 +1018,19 @@ fn genetics_lineage_proof_verify() {
     let child = rpc::derive_lineage_key(
         &mut client,
         &seed_hex,
+        &family_id,
+        "test-peer",
         "proof-child-domain",
         Some(&genesis),
-        None,
     )
     .expect("child derivation should succeed");
 
     let child_valid = rpc::verify_lineage(
         &mut client,
+        &seed_hex,
+        &family_id,
+        "test-peer",
         child.proof(),
-        child.generation(),
-        Some(child.parent_hash()),
-        child.context(),
     );
 
     match child_valid {
@@ -1064,7 +1070,9 @@ fn genetics_entropy_mixing() {
 
     let mixed = rpc::mix_entropy(
         &mut client,
-        &[human_entropy, supervised_entropy, machine_entropy],
+        Some(human_entropy.as_slice()),
+        Some(supervised_entropy.as_slice()),
+        Some(machine_entropy.as_slice()),
     );
 
     match mixed {
@@ -1079,7 +1087,9 @@ fn genetics_entropy_mixing() {
             // Mixing the same inputs should be deterministic
             let mixed2 = rpc::mix_entropy(
                 &mut client,
-                &[human_entropy, supervised_entropy, machine_entropy],
+                Some(human_entropy.as_slice()),
+                Some(supervised_entropy.as_slice()),
+                Some(machine_entropy.as_slice()),
             )
             .expect("second mix should succeed");
             assert_eq!(result, mixed2, "same inputs should produce same output");

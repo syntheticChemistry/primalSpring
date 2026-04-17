@@ -28,7 +28,11 @@ fn main() {
                 v.check_bool(
                     "live_discovery_found_primals",
                     !caps.is_empty(),
-                    &format!("discovered {} capabilities: {}", caps.len(), caps.join(", ")),
+                    &format!(
+                        "discovered {} capabilities: {}",
+                        caps.len(),
+                        caps.join(", ")
+                    ),
                 );
 
                 // ── Tower Atomic ─────────────────────────────────────
@@ -64,7 +68,10 @@ fn main() {
 // ═══════════════════════════════════════════════════════════════════════
 
 fn tower_health(ctx: &mut CompositionContext, v: &mut ValidationResult) {
-    for (name, cap) in [("beardog_alive", "security"), ("songbird_alive", "discovery")] {
+    for (name, cap) in [
+        ("beardog_alive", "security"),
+        ("songbird_alive", "discovery"),
+    ] {
         match ctx.health_check(cap) {
             Ok(alive) => v.check_bool(name, alive, &format!("{cap} health normalized")),
             Err(e) if e.is_connection_error() => {
@@ -85,7 +92,11 @@ fn tower_crypto_hash(ctx: &mut CompositionContext, v: &mut ValidationResult) {
             v.check_bool(
                 "crypto_hash_nonempty",
                 !hash.is_empty(),
-                &format!("BLAKE3: {}... (len={})", &hash[..hash.len().min(16)], hash.len()),
+                &format!(
+                    "BLAKE3: {}... (len={})",
+                    &hash[..hash.len().min(16)],
+                    hash.len()
+                ),
             );
             // BearDog returns base64-encoded BLAKE3 (32 bytes → 44 base64 chars with padding)
             v.check_bool(
@@ -103,7 +114,10 @@ fn tower_crypto_hash(ctx: &mut CompositionContext, v: &mut ValidationResult) {
             );
         }
         Err(e) if e.is_connection_error() => {
-            v.check_skip("crypto_hash_nonempty", &format!("security not available: {e}"));
+            v.check_skip(
+                "crypto_hash_nonempty",
+                &format!("security not available: {e}"),
+            );
             v.check_skip("crypto_hash_base64_valid", "security not available");
             v.check_skip("crypto_hash_deterministic", "security not available");
         }
@@ -121,7 +135,10 @@ fn tower_discovery_resolve(ctx: &mut CompositionContext, v: &mut ValidationResul
         let name = format!("resolve_{cap}");
         match ctx.resolve_capability(cap) {
             Ok(result) => {
-                let found = result.get("found").and_then(|f| f.as_bool()).unwrap_or(false)
+                let found = result
+                    .get("found")
+                    .and_then(|f| f.as_bool())
+                    .unwrap_or(false)
                     || result.get("endpoint").is_some()
                     || result.get("socket").is_some()
                     || result.get("native_endpoint").is_some()
@@ -149,10 +166,17 @@ fn tower_discovery_resolve(ctx: &mut CompositionContext, v: &mut ValidationResul
             );
         }
         Err(e) if e.is_connection_error() => {
-            v.check_skip("songbird_method_catalog", &format!("discovery not available: {e}"));
+            v.check_skip(
+                "songbird_method_catalog",
+                &format!("discovery not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("songbird_method_catalog", false, &format!("discover error: {e}"));
+            v.check_bool(
+                "songbird_method_catalog",
+                false,
+                &format!("discover error: {e}"),
+            );
         }
     }
 }
@@ -179,7 +203,11 @@ fn node_tensor_dot(ctx: &mut CompositionContext, v: &mut ValidationResult) {
 }
 
 fn node_shader_capabilities(ctx: &mut CompositionContext, v: &mut ValidationResult) {
-    match ctx.call("shader", "shader.compile.capabilities", serde_json::json!({})) {
+    match ctx.call(
+        "shader",
+        "shader.compile.capabilities",
+        serde_json::json!({}),
+    ) {
         Ok(result) => {
             let has_archs = result
                 .get("supported_archs")
@@ -188,21 +216,42 @@ fn node_shader_capabilities(ctx: &mut CompositionContext, v: &mut ValidationResu
             v.check_bool(
                 "shader_supported_archs",
                 has_archs,
-                &format!("archs: {}", result.get("supported_archs").unwrap_or(&serde_json::json!([]))),
+                &format!(
+                    "archs: {}",
+                    result
+                        .get("supported_archs")
+                        .unwrap_or(&serde_json::json!([]))
+                ),
             );
 
             let wgsl = result
                 .get("supported_archs")
                 .and_then(|a| a.as_array())
-                .is_some_and(|a| a.iter().any(|v| v.as_str().is_some_and(|s| s.contains("wgsl") || s.contains("WGSL"))));
-            v.check_bool("shader_wgsl_supported", wgsl || has_archs, "WGSL arch present");
+                .is_some_and(|a| {
+                    a.iter().any(|v| {
+                        v.as_str()
+                            .is_some_and(|s| s.contains("wgsl") || s.contains("WGSL"))
+                    })
+                });
+            v.check_bool(
+                "shader_wgsl_supported",
+                wgsl || has_archs,
+                "WGSL arch present",
+            );
         }
         Err(e) if e.is_connection_error() => {
-            v.check_skip("shader_supported_archs", &format!("shader not available: {e}"));
+            v.check_skip(
+                "shader_supported_archs",
+                &format!("shader not available: {e}"),
+            );
             v.check_skip("shader_wgsl_supported", "shader not available");
         }
         Err(e) => {
-            v.check_bool("shader_supported_archs", false, &format!("shader error: {e}"));
+            v.check_bool(
+                "shader_supported_archs",
+                false,
+                &format!("shader error: {e}"),
+            );
             v.check_skip("shader_wgsl_supported", "prior call failed");
         }
     }
@@ -210,12 +259,23 @@ fn node_shader_capabilities(ctx: &mut CompositionContext, v: &mut ValidationResu
 
 fn node_compute_dispatch_health(ctx: &mut CompositionContext, v: &mut ValidationResult) {
     match ctx.health_check("compute") {
-        Ok(alive) => v.check_bool("compute_dispatch_alive", alive, "toadStool health normalized"),
+        Ok(alive) => v.check_bool(
+            "compute_dispatch_alive",
+            alive,
+            "toadStool health normalized",
+        ),
         Err(e) if e.is_connection_error() => {
-            v.check_skip("compute_dispatch_alive", &format!("compute not available: {e}"));
+            v.check_skip(
+                "compute_dispatch_alive",
+                &format!("compute not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("compute_dispatch_alive", false, &format!("compute error: {e}"));
+            v.check_bool(
+                "compute_dispatch_alive",
+                false,
+                &format!("compute error: {e}"),
+            );
         }
     }
 }
@@ -231,17 +291,33 @@ fn nest_storage_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationResult
 
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
     let store_result = ctx
-        .call("storage", "storage.store", serde_json::json!({"family_id": family_id, "key": test_key, "value": test_value}))
+        .call(
+            "storage",
+            "storage.store",
+            serde_json::json!({"family_id": family_id, "key": test_key, "value": test_value}),
+        )
         .or_else(|_| {
-            ctx.call("storage", "storage.put", serde_json::json!({"family_id": family_id, "key": test_key, "value": test_value}))
+            ctx.call(
+                "storage",
+                "storage.put",
+                serde_json::json!({"family_id": family_id, "key": test_key, "value": test_value}),
+            )
         });
 
     match store_result {
         Ok(_) => {
             let retrieve_result = ctx
-                .call("storage", "storage.retrieve", serde_json::json!({"family_id": family_id, "key": test_key}))
+                .call(
+                    "storage",
+                    "storage.retrieve",
+                    serde_json::json!({"family_id": family_id, "key": test_key}),
+                )
                 .or_else(|_| {
-                    ctx.call("storage", "storage.get", serde_json::json!({"family_id": family_id, "key": test_key}))
+                    ctx.call(
+                        "storage",
+                        "storage.get",
+                        serde_json::json!({"family_id": family_id, "key": test_key}),
+                    )
                 });
             match retrieve_result {
                 Ok(result) => {
@@ -262,7 +338,10 @@ fn nest_storage_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationResult
             }
         }
         Err(e) if e.is_connection_error() => {
-            v.check_skip("storage_roundtrip_match", &format!("storage not available: {e}"));
+            v.check_skip(
+                "storage_roundtrip_match",
+                &format!("storage not available: {e}"),
+            );
         }
         Err(e) => {
             v.check_bool(
@@ -320,7 +399,10 @@ fn nucleus_hash_store_retrieve(ctx: &mut CompositionContext, v: &mut ValidationR
                         serde_json::json!({"family_id": family_id, "key": store_key}),
                     ) {
                         Ok(retrieved) => {
-                            let val = retrieved.get("value").and_then(|v| v.as_str()).unwrap_or("");
+                            let val = retrieved
+                                .get("value")
+                                .and_then(|v| v.as_str())
+                                .unwrap_or("");
                             v.check_bool(
                                 "cross_nest_roundtrip",
                                 val == hash_hex,
@@ -328,12 +410,19 @@ fn nucleus_hash_store_retrieve(ctx: &mut CompositionContext, v: &mut ValidationR
                             );
                         }
                         Err(e) => {
-                            v.check_bool("cross_nest_roundtrip", false, &format!("retrieve error: {e}"));
+                            v.check_bool(
+                                "cross_nest_roundtrip",
+                                false,
+                                &format!("retrieve error: {e}"),
+                            );
                         }
                     }
                 }
                 Err(e) if e.is_connection_error() => {
-                    v.check_skip("cross_nest_roundtrip", &format!("storage not available: {e}"));
+                    v.check_skip(
+                        "cross_nest_roundtrip",
+                        &format!("storage not available: {e}"),
+                    );
                 }
                 Err(e) => {
                     v.check_bool("cross_nest_roundtrip", false, &format!("store error: {e}"));

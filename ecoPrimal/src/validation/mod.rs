@@ -408,7 +408,10 @@ impl ValidationResult {
     /// The `extractor` closure pulls a numeric value from the JSON-RPC
     /// result payload, keeping this method schema-agnostic. It receives
     /// the `result` field of the response (the `serde_json::Value`).
-    #[expect(clippy::too_many_arguments, reason = "domain-driven API: each parameter is semantically distinct")]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "domain-driven API: each parameter is semantically distinct"
+    )]
     pub fn check_composition_parity(
         &mut self,
         name: &str,
@@ -428,13 +431,10 @@ impl ValidationResult {
         };
 
         let Some(ref result_val) = response.result else {
-            let detail = response
-                .error
-                .as_ref()
-                .map_or_else(
-                    || "no result in response".to_owned(),
-                    |e| format!("RPC error: {}", e.message),
-                );
+            let detail = response.error.as_ref().map_or_else(
+                || "no result in response".to_owned(),
+                |e| format!("RPC error: {}", e.message),
+            );
             self.check_skip(name, &detail);
             return;
         };
@@ -463,7 +463,10 @@ impl ValidationResult {
     /// Calls a primal via IPC, extracts a `Vec<f64>` result, and compares
     /// element-wise against a local baseline within tolerance. All elements
     /// must match for the check to pass.
-    #[expect(clippy::too_many_arguments, reason = "domain-driven API: each parameter is semantically distinct")]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "domain-driven API: each parameter is semantically distinct"
+    )]
     pub fn check_composition_parity_vec(
         &mut self,
         name: &str,
@@ -483,13 +486,10 @@ impl ValidationResult {
         };
 
         let Some(ref result_val) = response.result else {
-            let detail = response
-                .error
-                .as_ref()
-                .map_or_else(
-                    || "no result in response".to_owned(),
-                    |e| format!("RPC error: {}", e.message),
-                );
+            let detail = response.error.as_ref().map_or_else(
+                || "no result in response".to_owned(),
+                |e| format!("RPC error: {}", e.message),
+            );
             self.check_skip(name, &detail);
             return;
         };

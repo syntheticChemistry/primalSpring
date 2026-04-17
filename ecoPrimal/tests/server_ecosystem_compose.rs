@@ -626,7 +626,6 @@ fn overlay_graph_structural_validation() {
     let graphs_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs");
     for name in &[
         "nucleus_complete.toml",
-        "primalspring_deploy.toml",
         "provenance_overlay.toml",
         "spring_byob_template.toml",
     ] {
@@ -694,7 +693,7 @@ fn squirrel_discovers_sibling_primals() {
     use primalspring::coordination::AtomicType;
     use primalspring::harness::AtomicHarness;
 
-    let graph = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs/full_overlay.toml");
+    let graph = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs/profiles/full.toml");
     let family_id = format!("itest-sqdsc-{}", std::process::id());
     let running = AtomicHarness::with_graph(AtomicType::Tower, &graph)
         .start(&family_id)
@@ -724,7 +723,7 @@ fn squirrel_tool_list_aggregates() {
     use primalspring::coordination::AtomicType;
     use primalspring::harness::AtomicHarness;
 
-    let graph = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs/full_overlay.toml");
+    let graph = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs/profiles/full.toml");
     let family_id = format!("itest-sqtl-{}", std::process::id());
     let running = AtomicHarness::with_graph(AtomicType::Tower, &graph)
         .start(&family_id)
@@ -748,7 +747,7 @@ fn squirrel_context_create() {
     use primalspring::coordination::AtomicType;
     use primalspring::harness::AtomicHarness;
 
-    let graph = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs/full_overlay.toml");
+    let graph = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs/profiles/full.toml");
     let family_id = format!("itest-sqctx-{}", std::process::id());
     let running = AtomicHarness::with_graph(AtomicType::Tower, &graph)
         .start(&family_id)
@@ -783,7 +782,7 @@ fn squirrel_ai_query_routes_via_songbird() {
         return;
     }
 
-    let graph = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs/full_overlay.toml");
+    let graph = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs/profiles/full.toml");
     let family_id = format!("itest-sqai-{}", std::process::id());
     let running = AtomicHarness::with_graph(AtomicType::Tower, &graph)
         .start(&family_id)

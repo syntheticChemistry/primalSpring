@@ -72,9 +72,7 @@ impl GeneticTag {
     /// strings without a `#` prefix or beacon scope.
     #[must_use]
     pub fn is_legacy(&self) -> bool {
-        self.beacon_id.is_none()
-            && !self.tag.starts_with('#')
-            && self.tag.len() > 16
+        self.beacon_id.is_none() && !self.tag.starts_with('#') && self.tag.len() > 16
     }
 }
 
@@ -102,19 +100,14 @@ mod tests {
 
     #[test]
     fn scoped_tag() {
-        let tag = GeneticTag::scoped(
-            "#gpu-cluster".to_owned(),
-            "guild-storm".to_owned(),
-        );
+        let tag = GeneticTag::scoped("#gpu-cluster".to_owned(), "guild-storm".to_owned());
         assert_eq!(tag.beacon_id.as_deref(), Some("guild-storm"));
         assert_eq!(tag.to_string(), "guild-storm:#gpu-cluster");
     }
 
     #[test]
     fn legacy_migration() {
-        let tag = GeneticTag::from_legacy_family_seed(
-            "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
-        );
+        let tag = GeneticTag::from_legacy_family_seed("a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4");
         assert!(tag.is_legacy());
     }
 

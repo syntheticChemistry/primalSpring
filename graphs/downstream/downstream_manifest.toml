@@ -1,0 +1,143 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Downstream Proto-Nucleate Manifest — parameters for proto_nucleate_template.toml
+#
+# Each [[downstream]] entry defines a downstream spring's NUCLEUS-based composition.
+# biomeOS reads this manifest to instantiate per-spring proto-nucleate graphs.
+#
+# Former standalone files consolidated here:
+#   airspring_ecology_proto_nucleate.toml
+#   groundspring_geoscience_proto_nucleate.toml
+#   hotspring_qcd_proto_nucleate.toml
+#   wetspring_lifescience_proto_nucleate.toml
+#   neuralspring_inference_proto_nucleate.toml
+#   ludospring_proto_nucleate.toml
+#   esotericwebb_proto_nucleate.toml
+#
+# Genuinely unique (kept standalone):
+#   healthspring_enclave_proto_nucleate.toml (dual-tower ionic bridge pattern)
+
+[manifest]
+template = "proto_nucleate_template.toml"
+version = "1.0.0"
+description = "NUCLEUS-based proto-nucleate parameters for 7 downstream springs"
+
+[[downstream]]
+spring_name = "airspring"
+spring_binary = "airspring_primal"
+owner = "airSpring"
+domain = "ecology_agriculture"
+by_capability = "compute"
+particle_profile = "balanced"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
+capabilities = [
+    "science.evapotranspiration",
+    "science.atmospheric_diffusion",
+    "science.soil_microbiome",
+    "science.sensor_fusion",
+    "science.crop_water_balance",
+    "compute.pde_solver",
+    "compute.fft_analysis",
+]
+
+[[downstream]]
+spring_name = "groundspring"
+spring_binary = "groundspring_primal"
+owner = "groundSpring"
+domain = "geoscience"
+by_capability = "compute"
+particle_profile = "balanced"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
+capabilities = [
+    "science.geospatial_analysis",
+    "science.soil_composition",
+    "science.subsurface_modeling",
+    "compute.pde_solver",
+    "compute.spatial_interpolation",
+]
+
+[[downstream]]
+spring_name = "hotspring"
+spring_binary = "hotspring_primal"
+owner = "hotSpring"
+domain = "qcd_physics"
+by_capability = "compute"
+particle_profile = "proton_heavy"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda"]
+capabilities = [
+    "science.lattice_qcd",
+    "science.monte_carlo",
+    "science.gauge_fields",
+    "compute.df64_tensor",
+    "compute.metropolis",
+]
+
+[[downstream]]
+spring_name = "wetspring"
+spring_binary = "wetspring_primal"
+owner = "wetSpring"
+domain = "life_science"
+by_capability = "biology"
+particle_profile = "balanced"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate", "squirrel", "petaltongue"]
+capabilities = [
+    "science.sequence_alignment",
+    "science.diversity_index",
+    "science.phylogenetics",
+    "science.ncbi_fetch",
+    "compute.bioinformatics",
+]
+
+[[downstream]]
+spring_name = "neuralspring"
+spring_binary = "neuralspring"
+owner = "neuralSpring"
+domain = "ml_inference"
+by_capability = "inference"
+particle_profile = "proton_heavy"
+fragments = ["tower_atomic", "node_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel"]
+capabilities = [
+    "inference.complete",
+    "inference.embed",
+    "inference.models",
+    "science.spectral_analysis",
+    "science.anderson_localization",
+    "science.hessian_eigen",
+]
+
+[[downstream]]
+spring_name = "ludospring"
+spring_binary = "ludospring_primal"
+owner = "ludoSpring"
+domain = "game_science"
+by_capability = "compute"
+particle_profile = "proton_heavy"
+fragments = ["tower_atomic", "node_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel"]
+capabilities = [
+    "game.physics_sim",
+    "game.procedural_gen",
+    "game.shader_pipeline",
+    "compute.dispatch",
+]
+
+[[downstream]]
+spring_name = "esotericwebb"
+spring_binary = "esotericwebb_primal"
+owner = "esotericWebb"
+domain = "crpg"
+by_capability = "compute"
+particle_profile = "balanced"
+fragments = ["tower_atomic", "nest_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "squirrel", "nestgate"]
+capabilities = [
+    "game.narrative",
+    "game.state_machine",
+    "game.content_gen",
+    "ai.query",
+]

@@ -60,10 +60,7 @@ fn nucleus_base(ctx: &mut CompositionContext, v: &mut ValidationResult) {
             serde_json::json!({"key": "exp095_test"}),
         ) {
             Ok(r) => {
-                let val = r
-                    .get("value")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or_default();
+                let val = r.get("value").and_then(|v| v.as_str()).unwrap_or_default();
                 v.check_bool(
                     "storage_roundtrip",
                     val == "proto_nucleate",
@@ -119,10 +116,7 @@ fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
         serde_json::json!({"data": "niche domain payload", "algorithm": "blake3"}),
     ) {
         Ok(r) => {
-            let hash = r
-                .get("hash")
-                .and_then(|h| h.as_str())
-                .unwrap_or_default();
+            let hash = r.get("hash").and_then(|h| h.as_str()).unwrap_or_default();
             v.check_bool(
                 "cross_atomic_hash",
                 !hash.is_empty(),
@@ -149,7 +143,11 @@ fn main() {
                 v.check_bool(
                     "capabilities_found",
                     !caps.is_empty(),
-                    &format!("discovered {} capabilities: {}", caps.len(), caps.join(", ")),
+                    &format!(
+                        "discovered {} capabilities: {}",
+                        caps.len(),
+                        caps.join(", ")
+                    ),
                 );
 
                 nucleus_base(&mut ctx, v);

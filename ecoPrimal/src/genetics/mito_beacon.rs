@@ -191,11 +191,7 @@ mod tests {
 
     #[test]
     fn beacon_clone_shares_key_material() {
-        let original = MitoBeacon::new(
-            "test".to_owned(),
-            "Test".to_owned(),
-            vec![0x42; 32],
-        );
+        let original = MitoBeacon::new("test".to_owned(), "Test".to_owned(), vec![0x42; 32]);
         let cloned = original.clone();
         assert_eq!(original.key_bytes(), cloned.key_bytes());
     }

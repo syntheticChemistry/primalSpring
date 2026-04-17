@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: April 15, 2026
-**Status**: Phase 43 — 74 experiments (17 tracks), 443 tests, 67 deploy graphs + 6 fragments, multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 14/15 cross-arch checks (HSM pending)
+**Date**: April 16, 2026
+**Status**: Phase 43+ — 75 experiments (17 tracks), 570 tests, 56 deploy graphs (fragment-first composition), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 14/15 cross-arch checks (HSM pending)
 
 ---
 

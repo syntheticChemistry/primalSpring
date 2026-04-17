@@ -16,9 +16,9 @@ yanked = "deny"
 # Only licenses actually used in the resolved dependency graph.
 # Unused allowances removed per cargo-deny audit (Mar 2026).
 allow = [
-    "AGPL-3.0-only",
     "AGPL-3.0-or-later",
     "Apache-2.0",
+    "BSD-3-Clause",
     "MIT",
     "Unicode-3.0",
 ]

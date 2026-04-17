@@ -46,18 +46,19 @@ discovery never exposes authorization material.
 
 ## Spring × Atomic Alignment Matrix
 
-Each spring's proto-nucleate graph lives in `graphs/downstream/`. The matrix
-below shows which atomics each spring exercises and what it evolves.
+Each spring's proto-nucleate graph is parameterized via `graphs/downstream/downstream_manifest.toml`
+using `proto_nucleate_template.toml`. The one exception is `healthspring_enclave_proto_nucleate.toml`,
+which has a unique dual-tower ionic bridge pattern and is kept as a standalone graph.
 
 | Spring | Version | Tests | Primary Atomics | Proto-Nucleate | Particle Profile |
 |--------|---------|-------|-----------------|----------------|------------------|
-| **hotSpring** | 0.6.32 | ~870 | **Node** (proton-heavy) + Nest | `hotspring_qcd_proto_nucleate.toml` | proton_heavy |
-| **neuralSpring** | 0.1.0 | 1,403 | **Node** + Meta | `neuralspring_inference_proto_nucleate.toml` | balanced |
-| **wetSpring** | 0.1.0 | 1,902 | Node + **Nest** + Meta | `wetspring_lifescience_proto_nucleate.toml` | balanced |
-| **airSpring** | 0.10.0 | 986 | Node + **Nest** | `airspring_ecology_proto_nucleate.toml` | balanced |
-| **groundSpring** | 0.1.0 | 1,050+ | Node + **Nest** | `groundspring_geoscience_proto_nucleate.toml` | balanced |
-| **healthSpring** | 0.1.0 | 928 | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_proto_nucleate.toml` | neutron_heavy |
-| **ludoSpring** | 0.1.0 | 222 | Node + **Meta** | `ludospring_proto_nucleate.toml` | balanced |
+| **hotSpring** | 0.6.32 | ~870 | **Node** (proton-heavy) + Nest | `downstream_manifest.toml` (hotspring) | proton_heavy |
+| **neuralSpring** | 0.1.0 | 1,403 | **Node** + Meta | `downstream_manifest.toml` (neuralspring) | balanced |
+| **wetSpring** | 0.1.0 | 1,902 | Node + **Nest** + Meta | `downstream_manifest.toml` (wetspring) | balanced |
+| **airSpring** | 0.10.0 | 986 | Node + **Nest** | `downstream_manifest.toml` (airspring) | balanced |
+| **groundSpring** | 0.1.0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` (groundspring) | balanced |
+| **healthSpring** | 0.1.0 | 928 | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_proto_nucleate.toml` (standalone) | neutron_heavy |
+| **ludoSpring** | 0.1.0 | 222 | Node + **Meta** | `downstream_manifest.toml` (ludospring) | balanced |
 
 ### Key
 

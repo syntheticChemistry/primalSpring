@@ -9,7 +9,7 @@ Metallic, Weak, OrganoMetalSalt).
 ## Schema Differences from Standard Deploy Graphs
 
 Multi-node graphs use a **different TOML dialect** from the single-node
-`DeployGraph` format used by `primalspring_deploy.toml` and friends.
+`DeployGraph` format used by `nucleus_complete.toml` and friends.
 
 | Feature | Standard (`DeployGraph`) | Multi-Node |
 |---------|--------------------------|------------|

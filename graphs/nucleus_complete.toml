@@ -13,6 +13,8 @@
 #   External federation: opt-in Songbird TCP with full encryption
 #
 # This is the canonical reference graph for downstream springs.
+# Also serves as the primalSpring coordination niche deployment
+# (consolidates former primalspring_deploy.toml).
 #
 # Usage:
 #   biomeos deploy --graph graphs/nucleus_complete.toml

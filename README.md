@@ -5,16 +5,16 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.14 |
+| **Version** | 0.9.15 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 443 (unit + integration + doc-tests + proptest) |
-| **Experiments** | 74 (17 tracks) |
-| **Deploy Graphs** | 67 TOMLs + 6 fragment definitions (9 profiles + 5 multi-node + 13 spring validation + 2 cross-spring + 5 bonding + 2 chaos + 5 spring deploy + 8 downstream proto-nucleate + 4 patterns + 7 root + 1 template + 6 fragments) |
+| **Tests** | 570 (unit + integration + doc-tests + proptest) |
+| **Experiments** | 75 (17 tracks) |
+| **Deploy Graphs** | 56 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 4 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + ~11 root) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 74 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 75 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
@@ -54,31 +54,26 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   └── validate_all/          # Meta-validator: runs all 74 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 75 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
 │       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
-├── experiments/                   # 74 validation experiments (17 tracks)
+├── experiments/                   # 75 validation experiments (17 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 67 deploy graph TOMLs + 6 fragment definitions
-│   ├── profiles/                 # NUCLEUS atomic profiles: tower, node, nest, nucleus, full + meta overlays (9)
-│   ├── patterns/                 # Execution patterns: parallel, conditional, streaming, continuous (4)
-│   ├── fragments/                # Atomic architecture: tower_atomic, node_atomic, nest_atomic, meta_tier, nucleus, provenance_trio (6)
-│   ├── sketches/                 # Particle-model validation & mixed composition sketches (12)
-│   │   ├── validation/           # L0 primal routing matrix + ludo/webb validates (5)
-│   │   ├── mixed_atomics/        # L2 dual-tower ionic, dedicated tower, nest enclave (3)
-│   │   └── bonding_patterns/     # L3 covalent mesh backup, ionic lease, organo-metal-salt (3)
-│   ├── bonding/                  # Bonding model graphs: ionic, metallic, OMS, defensive, albatross (5)
-│   ├── chaos/                    # Chaos engineering: partition recovery, slow start (2)
-│   ├── multi_node/               # Multi-node federation graphs (5)
-│   ├── science/                  # Science + showcase graphs: provenance, fieldMouse, gaming, neuro (13)
-│   ├── spring_validation/        # Template + manifest + composition + security validation (13)
-│   ├── cross_spring/             # Cross-spring ecology + full sweep (2)
-│   ├── gen4/                     # gen4: sovereign, science, agentic, storytelling, UI loop (10)
-│   ├── spring_deploy/            # Per-spring science compositions (5)
-│   └── downstream/               # Proto-nucleate graphs for spring evolution (5)
+├── graphs/                        # 56 deploy graph TOMLs (fragment-first composition)
+│   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
+│   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
+│   ├── patterns/                 # 4 coordination patterns: parallel, conditional, streaming, continuous
+│   ├── bonding/                  # 5 bonding model graphs: ionic, metallic, OMS, defensive, albatross
+│   ├── chaos/                    # 2 chaos engineering: partition recovery, slow start
+│   ├── multi_node/               # 5 multi-node federation graphs
+│   ├── spring_validation/        # 4 files: template + manifest + nucleus_atomics + crypto_negative
+│   ├── spring_deploy/            # 2 files: template + manifest (5 springs parameterized)
+│   ├── downstream/               # 3 TOML + 2 docs: template + manifest + healthspring_enclave
+│   ├── cross_spring/             # 2 cross-spring validators
+│   └── federation/               # 1 content distribution
 ├── docs/                          # Structured gap registry and subsystem documentation
 │   └── PRIMAL_GAPS.md            # Per-primal gap inventory with severity and fix paths
 ├── tools/                         # Operational tooling
@@ -123,7 +118,7 @@ cargo test --workspace
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 74 experiments (meta-validator)
+# Run all 75 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -191,9 +186,9 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 67 deploy graph TOMLs + 6 atomic-aligned fragments (all nodes declare `by_capability`):
+primalSpring ships 56 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
 
-**Single-node graphs (17)**:
+**Root-level graphs (11)**:
 
 | Graph | Pattern | Primals |
 |-------|---------|---------|
@@ -205,14 +200,8 @@ primalSpring ships 67 deploy graph TOMLs + 6 atomic-aligned fragments (all nodes
 | `tower_ai.toml` | Sequential | beardog, songbird, squirrel |
 | `nest_viz.toml` | Sequential | beardog, songbird, nestgate, petaltongue |
 | `node_ai.toml` | Sequential | beardog, songbird, toadstool, squirrel |
-| `full_overlay.toml` | Sequential | beardog, songbird, nestgate, toadstool, squirrel |
 | `provenance_overlay.toml` | Sequential | beardog, songbird, rhizocrypt, loamspine, sweetgrass |
-| `parallel_capability_burst.toml` | Parallel | beardog, songbird, nestgate, toadstool |
-| `conditional_fallback.toml` | ConditionalDag | beardog, songbird, toadstool |
-| `streaming_pipeline.toml` | Pipeline | beardog, nestgate, sweetgrass |
-| `continuous_tick.toml` | Continuous | all 7 primals |
 | `coralforge_pipeline.toml` | Pipeline | beardog, songbird, nestgate, toadstool, sweetgrass |
-| `primalspring_deploy.toml` | Sequential | primalspring coordination |
 | `spring_byob_template.toml` | Sequential | template for new springs |
 
 **Multi-node federation graphs (5)** — `graphs/multi_node/`:
@@ -225,18 +214,10 @@ primalSpring ships 67 deploy graph TOMLs + 6 atomic-aligned fragments (all nodes
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
 | `three_node_covalent_cross_network.toml` | 3-node cross-network mesh | Covalent | GeneticLineage |
 
-**Composition subsystem graphs (3)** — `graphs/compositions/`: each subfunction
-decomposed into a separately deployable biomeOS graph with its own validation:
-`narration_ai` (C2: Squirrel), `persistence_standalone` (C5: NestGate),
-`proprioception_loop` (C6: petalTongue interaction).
-
-**Spring validation graphs (17)** — `graphs/spring_validation/`: per-spring validation
-wrappers (7 springs) plus `crypto_negative_validate` (negative security boundary tests),
-`rollback_validate` (biomeOS graph rollback lifecycle), `federation_manifest_validate`
-(federation configure→join→health), `nucleus_atomics_validate` (all 4 NUCLEUS tiers),
-3 product validation (esotericwebb_tower, esotericwebb_composed, ludospring_game),
-7 composition subsystem validation (C1-C7: render, narration, session, game_science,
-persistence, proprioception, interactive).
+**Spring validation graphs (4)** — `graphs/spring_validation/`: a parameterized
+`spring_validate_template.toml` + `spring_validate_manifest.toml` (9 compositions covering
+all 7 springs plus products), `nucleus_atomics_validate.toml` (all 4 NUCLEUS tiers),
+and `crypto_negative_validate.toml` (negative security boundary tests).
 All graphs include biomeOS Neural API as orchestration substrate.
 
 **Cross-spring graphs (2)** — `graphs/cross_spring/`: ecology validation
@@ -249,21 +230,17 @@ Albatross multiplex (Songbird fleet).
 **Chaos engineering graphs (2)** — `graphs/chaos/`: network partition recovery
 and slow-start composition convergence.
 
-**Science + showcase graphs (13)** — `graphs/science/`: coralForge federated, ecology
-provenance, reproducibility audit, fieldMouse ingestion, paper lifecycle, supply chain
-provenance, mixed entropy hierarchy, gaming mesh chimera, neuromorphic classify,
-RPGPT session provenance.
+**Spring deploy graphs (2)** — `graphs/spring_deploy/`: parameterized template +
+manifest covering 5 per-spring science compositions. Each includes biomeOS Phase 0
+substrate, Tower base, optional ToadStool for GPU-compute springs, and the spring
+primal.
 
-**gen4 graphs (10)** — `graphs/gen4/`: sovereign tower, science substrate, agentic tower,
-interactive substrate, spring composition, **agentic substrate** (biomeOS+Squirrel+petalTongue),
-**agentic fieldMouse**, **UI-orchestrator loop**, **storytelling full** (esotericWebb+ludoSpring+Squirrel AI DM),
-**storytelling minimal** (offline play).
+**Downstream graphs (3)** — `graphs/downstream/`: parameterized template + manifest
+for 7 proto-nucleate compositions, plus `healthspring_enclave_proto_nucleate.toml`
+(unique dual-tower ionic bridge pattern).
 
-**Spring science deploy graphs (6)** — `graphs/spring_deploy/`: per-spring compositions
-for deploying domain science as biomeOS compositions. Each includes biomeOS Phase 0
-substrate, Tower base, optional ToadStool for GPU-compute springs (hotSpring, neuralSpring,
-wetSpring, groundSpring), and the spring primal. Springs reference primalSpring's
-wateringHole patterns for composition standards.
+**Patterns (4)** — `graphs/patterns/`: streaming pipeline, continuous tick,
+parallel capability burst, conditional fallback.
 
 All graphs have `by_capability` on every node and are structurally validated +
 topologically sorted at test time. Multi-node graphs include `[graph.metadata]`
@@ -352,6 +329,14 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — modeling end-to-end data flow through primal compositions.
 - **13/13 critical experiments ALL PASS** — 72 total experiments across 15 tracks.
 - **12/12 plasmidBin musl-static ecoBin compliant** — zero C dependencies.
+
+## Fragment-First Graph Consolidation (April 16, 2026)
+
+- **78 → 56 deploy graph TOMLs**: Eliminated isomorphic duplication through template+manifest parameterization and fragment-first `resolve = true` composition.
+- **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
+- **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
+- **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
+- **Zero-regression**: All 570 tests pass, 0 clippy warnings.
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 

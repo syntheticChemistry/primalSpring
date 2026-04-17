@@ -577,7 +577,10 @@ impl AtomicHarness {
 /// `FAMILY_SEED` as raw UTF-8 bytes).
 ///
 /// This is the **Phase 1 (mito-beacon)** seed for tunnel establishment.
-#[expect(clippy::expect_used, reason = "HKDF-SHA256 expand to 32 bytes never fails")]
+#[expect(
+    clippy::expect_used,
+    reason = "HKDF-SHA256 expand to 32 bytes never fails"
+)]
 fn generate_harness_mito_seed(family_id: &str) -> Vec<u8> {
     let hk = Hkdf::<Sha256>::new(Some(b"primalspring-harness-btsp"), family_id.as_bytes());
     let mut okm = [0u8; 32];
@@ -597,12 +600,12 @@ fn generate_harness_mito_seed(family_id: &str) -> Vec<u8> {
 /// from the `family_id` using a harness-specific HKDF domain. The proof
 /// is a placeholder (harness-only) since BearDog is not available for
 /// real lineage proof generation during local tests.
-#[expect(clippy::expect_used, reason = "HKDF-SHA256 expand to 32 bytes never fails")]
+#[expect(
+    clippy::expect_used,
+    reason = "HKDF-SHA256 expand to 32 bytes never fails"
+)]
 fn generate_harness_nuclear(family_id: &str) -> crate::genetics::NuclearGenetics {
-    let hk = Hkdf::<Sha256>::new(
-        Some(b"primalspring-harness-nuclear"),
-        family_id.as_bytes(),
-    );
+    let hk = Hkdf::<Sha256>::new(Some(b"primalspring-harness-nuclear"), family_id.as_bytes());
     let mut okm = [0u8; 32];
     hk.expand(b"nuclear-genesis", &mut okm)
         .expect("HKDF expand for harness nuclear");
@@ -740,11 +743,13 @@ mod tests {
 
     #[test]
     fn compute_spawn_order_node_with_graph() {
-        let graph_path =
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/profiles/node.toml");
+        let graph_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/profiles/node.toml");
         let harness = AtomicHarness::with_graph(AtomicType::Node, &graph_path);
         let (order, _overlay) = harness.compute_spawn_order().unwrap();
-        assert!(order.len() >= 3, "Node includes at least beardog + songbird + toadstool");
+        assert!(
+            order.len() >= 3,
+            "Node includes at least beardog + songbird + toadstool"
+        );
         assert!(order.contains(&"beardog".to_owned()));
         assert!(order.contains(&"songbird".to_owned()));
         assert!(order.contains(&"toadstool".to_owned()));

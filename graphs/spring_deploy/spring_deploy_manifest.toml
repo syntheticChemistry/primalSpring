@@ -1,0 +1,113 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Spring Deploy Manifest — parameters for spring_deploy_template.toml
+#
+# Each [[spring]] entry defines a NUCLEUS-based spring deployment.
+# biomeOS reads this manifest to instantiate per-spring deploy graphs.
+#
+# All springs share the NUCLEUS base (biomeOS + Tower + Node + Nest + Provenance).
+# Each spring selects its fragment set and adds a single domain overlay node.
+#
+# Former standalone files consolidated here:
+#   wetspring_deploy.toml, groundspring_deploy.toml, airspring_deploy.toml,
+#   neuralspring_deploy.toml, healthspring_deploy.toml
+
+[manifest]
+template = "spring_deploy_template.toml"
+version = "3.0.0"
+description = "NUCLEUS-based deploy parameters for 5 science springs"
+
+[[spring]]
+spring_name = "wetspring"
+spring_binary = "wetspring_primal"
+domain = "biology"
+by_capability = "biology"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "provenance_trio"]
+extra_nodes = []
+depends_on = ["beardog", "songbird"]
+order = 9
+capabilities = [
+    "science.anderson",
+    "science.diversity",
+    "science.full_pipeline",
+    "science.ncbi_fetch",
+    "science.qs_model",
+    "science.validation",
+    "calibration.nrs",
+    "community.fastq",
+    "metrics.snapshot",
+]
+
+[[spring]]
+spring_name = "groundspring"
+spring_binary = "groundspring_primal"
+domain = "geology"
+by_capability = "geology"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "provenance_trio"]
+extra_nodes = []
+depends_on = ["beardog", "songbird"]
+order = 9
+capabilities = [
+    "measurement.anderson_validation",
+    "analysis.run",
+    "compute.dispatch",
+    "compute.execute",
+    "compute.submit",
+    "compute.status",
+    "topology.metrics",
+]
+
+[[spring]]
+spring_name = "airspring"
+spring_binary = "airspring_primal"
+domain = "weather"
+by_capability = "weather"
+fragments = ["tower_atomic", "nucleus", "provenance_trio", "meta_tier"]
+extra_nodes = ["squirrel"]
+depends_on = ["beardog", "songbird"]
+order = 8
+capabilities = [
+    "data.weather",
+    "data.cross_spring_weather",
+    "ecology.experiment",
+    "compute.offload",
+]
+
+[[spring]]
+spring_name = "neuralspring"
+spring_binary = "neuralspring"
+domain = "inference"
+by_capability = "inference"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "meta_tier"]
+extra_nodes = ["squirrel", "coralreef"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel"]
+order = 11
+capabilities = [
+    "inference.complete",
+    "inference.embed",
+    "inference.models",
+    "science.spectral_analysis",
+    "science.anderson_localization",
+    "science.hessian_eigen",
+    "science.agent_coordination",
+    "science.ipr",
+]
+
+[[spring]]
+spring_name = "healthspring"
+spring_binary = "healthspring_primal"
+domain = "health"
+by_capability = "health"
+fragments = ["tower_atomic", "nest_atomic", "nucleus", "meta_tier"]
+extra_nodes = ["squirrel"]
+depends_on = ["beardog", "songbird", "squirrel", "nestgate"]
+order = 8
+capabilities = [
+    "health.pharmacology",
+    "health.genomics",
+    "health.clinical",
+    "health.de_identify",
+    "health.aggregate",
+    "data.fetch",
+    "model.inference_route",
+]

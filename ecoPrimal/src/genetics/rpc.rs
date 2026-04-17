@@ -103,9 +103,9 @@ struct VerifyLineageParams {
 #[derive(Debug, Deserialize)]
 struct BeaconKeyResult {
     beacon_key: String,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "protocol field: deserialized for completeness")]
     algorithm: Option<String>,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "protocol field: deserialized for completeness")]
     domain: Option<String>,
 }
 
@@ -115,9 +115,9 @@ struct BeaconKeyResult {
 #[derive(Debug, Deserialize)]
 struct LineageKeyResult {
     key: String,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "protocol field: deserialized for completeness")]
     method: Option<String>,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "protocol field: deserialized for completeness")]
     quality_score: Option<f64>,
 }
 
@@ -139,7 +139,7 @@ struct MixEntropyResult {
 #[derive(Debug, Deserialize)]
 struct ProofResult {
     proof: String,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "protocol field: deserialized for completeness")]
     timestamp: Option<u64>,
 }
 
@@ -225,12 +225,7 @@ pub fn derive_lineage_key(
 
     let lineage_key = b64_decode(&result.key)?;
 
-    let proof_bytes = generate_lineage_proof(
-        client,
-        lineage_seed,
-        our_family_id,
-        peer_family_id,
-    )?;
+    let proof_bytes = generate_lineage_proof(client, lineage_seed, our_family_id, peer_family_id)?;
 
     if let Some(p) = parent {
         Ok(p.spawn_child(lineage_key, proof_bytes, context.to_owned()))
@@ -439,7 +434,8 @@ mod tests {
 
     #[test]
     fn beacon_key_result_deserialize() {
-        let json = r#"{"beacon_key":"aabb","algorithm":"HKDF-SHA256","domain":"birdsong_beacon_v1"}"#;
+        let json =
+            r#"{"beacon_key":"aabb","algorithm":"HKDF-SHA256","domain":"birdsong_beacon_v1"}"#;
         let r: BeaconKeyResult = serde_json::from_str(json).unwrap();
         assert_eq!(r.beacon_key, "aabb");
     }

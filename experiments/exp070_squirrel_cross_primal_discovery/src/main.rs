@@ -6,7 +6,7 @@
 //! AI requests through them.
 //!
 //! Phases:
-//! 1. Graph structural validation of `full_overlay.toml`
+//! 1. Graph structural validation of `profiles/full.toml`
 //! 2. Spawn ordering and capability map verification
 //! 3. Live full overlay start (graceful skip if binaries missing)
 //! 4. Squirrel capability.discover (verify sibling awareness)
@@ -30,37 +30,37 @@ fn graphs_dir() -> PathBuf {
 }
 
 fn validate_graph_structure(v: &mut ValidationResult) {
-    println!("=== Phase 1: full_overlay.toml Structural Validation ===\n");
+    println!("=== Phase 1: profiles/full.toml Structural Validation ===\n");
 
-    let path = graphs_dir().join("full_overlay.toml");
+    let path = graphs_dir().join("profiles/full.toml");
     let result = validate_structure(&path);
     v.check_bool(
-        "parse_full_overlay",
+        "parse_full_profile",
         result.parsed,
-        "full_overlay.toml parses",
+        "profiles/full.toml parses",
     );
     v.check_bool(
-        "clean_full_overlay",
+        "clean_full_profile",
         result.issues.is_empty(),
         &format!("structural issues: {:?}", result.issues),
     );
 
     if result.parsed {
         let Some(graph) = load_graph(&path).ok() else {
-            v.check_bool("load_full_overlay", false, "load_graph full_overlay.toml");
+            v.check_bool("load_full_profile", false, "load_graph profiles/full.toml");
             return;
         };
         let Some(waves) = topological_waves(&graph).ok() else {
             v.check_bool(
-                "full_overlay_topology",
+                "full_profile_topology",
                 false,
-                "topological_waves full_overlay.toml",
+                "topological_waves profiles/full.toml",
             );
             return;
         };
-        v.check_minimum("full_overlay_waves", waves.len(), 2);
+        v.check_minimum("full_profile_waves", waves.len(), 2);
         println!(
-            "  full_overlay.toml: {} nodes, {} waves, {} required",
+            "  profiles/full.toml: {} nodes, {} waves, {} required",
             result.node_count,
             waves.len(),
             result.required_count
@@ -71,12 +71,12 @@ fn validate_graph_structure(v: &mut ValidationResult) {
 fn validate_spawn_and_caps(v: &mut ValidationResult) {
     println!("\n=== Phase 2: Spawn Ordering & Capability Map ===\n");
 
-    let path = graphs_dir().join("full_overlay.toml");
+    let path = graphs_dir().join("profiles/full.toml");
     let Some(graph) = load_graph(&path).ok() else {
         v.check_bool(
-            "load_full_overlay_phase2",
+            "load_full_profile_phase2",
             false,
-            "load_graph full_overlay.toml",
+            "load_graph profiles/full.toml",
         );
         return;
     };
@@ -176,7 +176,7 @@ fn try_squirrel_rpc(
 fn validate_live_overlay(v: &mut ValidationResult) {
     println!("\n=== Phase 3: Live Full Overlay Start ===\n");
 
-    let graph_path = graphs_dir().join("full_overlay.toml");
+    let graph_path = graphs_dir().join("profiles/full.toml");
     let family_id = format!("exp070-{}", std::process::id());
     match AtomicHarness::with_graph(AtomicType::Tower, &graph_path).start(&family_id) {
         Ok(running) => {

@@ -178,13 +178,11 @@ impl PrimalClient {
         result_key: &str,
     ) -> Result<f64, IpcError> {
         let response = self.call(method, params)?;
-        let result = response.result.ok_or_else(|| {
-            IpcError::ProtocolError {
-                detail: response
-                    .error
-                    .as_ref()
-                    .map_or_else(|| "no result".to_owned(), |e| e.message.clone()),
-            }
+        let result = response.result.ok_or_else(|| IpcError::ProtocolError {
+            detail: response
+                .error
+                .as_ref()
+                .map_or_else(|| "no result".to_owned(), |e| e.message.clone()),
         })?;
         result
             .get(result_key)
@@ -209,13 +207,11 @@ impl PrimalClient {
         result_key: &str,
     ) -> Result<Vec<f64>, IpcError> {
         let response = self.call(method, params)?;
-        let result = response.result.ok_or_else(|| {
-            IpcError::ProtocolError {
-                detail: response
-                    .error
-                    .as_ref()
-                    .map_or_else(|| "no result".to_owned(), |e| e.message.clone()),
-            }
+        let result = response.result.ok_or_else(|| IpcError::ProtocolError {
+            detail: response
+                .error
+                .as_ref()
+                .map_or_else(|| "no result".to_owned(), |e| e.message.clone()),
         })?;
         let arr = result
             .get(result_key)

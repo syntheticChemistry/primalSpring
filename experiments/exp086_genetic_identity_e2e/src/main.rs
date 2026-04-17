@@ -203,7 +203,10 @@ fn phase_biomeos_family_registry(v: &mut ValidationResult, host: &str, port: u16
 }
 
 /// Verify lineage chain integrity via generate-then-verify round-trip.
-#[allow(clippy::too_many_lines)]
+#[expect(
+    clippy::too_many_lines,
+    reason = "multi-phase validation is inherently sequential"
+)]
 fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port: u16) {
     use base64::Engine;
     let b64 = base64::engine::general_purpose::STANDARD;

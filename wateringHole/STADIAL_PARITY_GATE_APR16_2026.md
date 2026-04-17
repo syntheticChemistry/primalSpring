@@ -155,8 +155,14 @@ See `PRIMAL_GAPS.md` for root cause analysis.
 
 ## Interstadial Remaining Work
 
-All 13 primals have cleared the stadial gate. The following items are **interstadial
-work** — improvements, not blockers:
+All 13 primals have cleared the stadial gate. **primalSpring itself** has also undergone
+its own stadial pass (April 16, 2026): `deny.toml` license fix (BSD-3-Clause for `subtle`),
+`#[allow(` → `#[expect(` with reasons, clippy 0 warnings, integration test API drift fixed,
+experiment registry updated to 75, 570 tests passing. `Arc<dyn ValidationSink>` is justified
+(open extensibility + generic `NdjsonSink<W>`). plasmidBin (infra scripts) audited: no
+deprecated Rust references, all scripts use `set -euo pipefail`.
+
+The following items are **interstadial work** — improvements, not blockers:
 
 ### petalTongue — `reqwest` delegation
 
@@ -173,7 +179,17 @@ maintain its own TLS stack.
 Justified `dyn` remains in primals with unbounded plugin registries (toadStool:
 24 usages in infant discovery/plugins, BearDog: HSM test mocks). These are
 architecturally correct — unbounded trait objects where the implementor set is
-not known at compile time.
+not known at compile time. primalSpring has 3 `Arc<dyn ValidationSink>` (justified:
+open extensibility for test harnesses + generic `NdjsonSink<W>`).
+
+### plasmidBin — deploy script consistency
+
+Audit identified two functional risks in deploy scripts:
+- `deploy_gate.sh` uses `barracuda server` / `coralreef server` while `start_primal.sh`
+  uses `serve` — CLI subcommand drift between paths
+- NestGate JWT derivation differs between `start_primal.sh` and `deploy_gate.sh` — potential
+  auth inconsistency if both paths are used in the same ecosystem
+- `validate_mesh.sh` hardcodes Songbird/BearDog ports instead of sourcing `ports.env`
 
 ---
 

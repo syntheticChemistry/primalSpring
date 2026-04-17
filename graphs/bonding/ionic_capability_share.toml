@@ -101,7 +101,7 @@ family = "beta"
 # ── Ionic bridge (contract layer) ──────────────────────────────────────
 [[graph.nodes]]
 name = "biomeos_bridge"
-binary = "biomeos_primal"
+binary = "biomeos"
 order = 7
 required = true
 depends_on = ["toadstool_alpha", "neuralspring_beta"]

@@ -36,7 +36,7 @@ can absorb or compose against.
 | **Deploy graph validation** | `graph.list` / `graph.validate` RPC | CI: ensure deploy TOMLs are structurally valid |
 | **Health probing** | `health.liveness` / `health.readiness` | Kubernetes-style health checks |
 | **MCP tool discovery** | `mcp.tools.list` | Squirrel AI routes coordination requests |
-| **Meta-validation** | `cargo run --bin validate_all` | Run all 74 experiments in sequence |
+| **Meta-validation** | `cargo run --bin validate_all` | Run all 75 experiments in sequence |
 | **Remote gate probe** | `./scripts/validate_remote_gate.sh <host>` | Per-primal TCP health check on any gate |
 | **Musl build** | `./scripts/build_ecosystem_musl.sh` | Static x86_64+aarch64 binaries for deployment |
 | **Spore prep** | `./scripts/prepare_spore_payload.sh <dir>` | USB payload assembly |
@@ -337,7 +337,7 @@ any spring handling sensitive data.
 
 ### As a biomeOS Graph Node
 
-primalSpring ships 67 deploy graph TOMLs + 6 fragments (all nodes declare `by_capability`).
+primalSpring ships 56 deploy graph TOMLs (6 fragments, 9 profiles with `resolve = true`, template+manifest families; all nodes declare `by_capability`).
 biomeOS orchestrates the niche directly from these graphs. `topological_waves()`
 computes startup ordering. primalSpring participates as a validator node that
 probes other nodes by capability and reports composition health.

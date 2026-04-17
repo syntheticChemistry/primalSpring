@@ -193,11 +193,11 @@ impl SessionKeys {
         })?;
         let nonce = Nonce::from_slice(&nonce_bytes);
 
-        let ciphertext = cipher.encrypt(nonce, plaintext).map_err(|e| {
-            IpcError::ProtocolError {
+        let ciphertext = cipher
+            .encrypt(nonce, plaintext)
+            .map_err(|e| IpcError::ProtocolError {
                 detail: format!("BTSP Phase 3 encrypt: {e}"),
-            }
-        })?;
+            })?;
 
         let mut frame = Vec::with_capacity(12 + ciphertext.len());
         frame.extend_from_slice(&nonce_bytes);
@@ -227,11 +227,11 @@ impl SessionKeys {
         let cipher = ChaCha20Poly1305::new((&self.decrypt_key).into());
         let nonce = Nonce::from_slice(nonce_bytes);
 
-        cipher.decrypt(nonce, ciphertext).map_err(|e| {
-            IpcError::ProtocolError {
+        cipher
+            .decrypt(nonce, ciphertext)
+            .map_err(|e| IpcError::ProtocolError {
                 detail: format!("BTSP Phase 3 decrypt: {e}"),
-            }
-        })
+            })
     }
 }
 
@@ -254,7 +254,10 @@ mod tests {
 
     #[test]
     fn phase3_cipher_wire_names() {
-        assert_eq!(Phase3Cipher::ChaCha20Poly1305.wire_name(), "chacha20-poly1305");
+        assert_eq!(
+            Phase3Cipher::ChaCha20Poly1305.wire_name(),
+            "chacha20-poly1305"
+        );
         assert_eq!(Phase3Cipher::HmacPlain.wire_name(), "hmac-plain");
         assert_eq!(Phase3Cipher::Null.wire_name(), "null");
     }

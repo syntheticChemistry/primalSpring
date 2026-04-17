@@ -77,15 +77,12 @@ fn main() {
             "primalSpring Exp091: L0 capability routing to all 10 primal domains",
             |v| {
                 v.section("Neural API Discovery");
-                let bridge = match NeuralBridge::discover() {
-                    Some(b) => {
-                        v.check_bool("neural_api", true, "Neural API discovered");
-                        b
-                    }
-                    None => {
-                        v.check_bool("neural_api", false, "Neural API unreachable");
-                        return;
-                    }
+                let bridge = if let Some(b) = NeuralBridge::discover() {
+                    v.check_bool("neural_api", true, "Neural API discovered");
+                    b
+                } else {
+                    v.check_bool("neural_api", false, "Neural API unreachable");
+                    return;
                 };
 
                 for &(domain, method, provider) in DOMAINS {

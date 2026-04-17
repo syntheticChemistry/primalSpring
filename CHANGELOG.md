@@ -3,6 +3,49 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.15] — Phase 43+: Graph Consolidation + Fragment-First Composition (2026-04-16)
+
+### Milestone
+**78 → 56 deploy graph TOMLs.** Fragment-first composition eliminates isomorphic duplication.
+All profiles resolve fragments at load time via `resolve = true`. Template+manifest pattern
+replaces per-spring/per-downstream boilerplate. Stadial parity gate complete: zero `dyn`,
+zero `async-trait`, Edition 2024, `#[expect]` over `#[allow]` everywhere.
+
+### Changed
+- **Fragment-first `load_graph()`**: Graphs declaring `resolve = true` in `[graph.metadata]`
+  inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta
+  nodes. Implemented via `resolve_fragments()` in `ecoPrimal/src/deploy/mod.rs`.
+- **9 profiles trimmed**: All `graphs/profiles/*.toml` reduced from ~40 to ~15 lines each,
+  retaining only unique delta nodes and setting `resolve = true`.
+- **Spring validation consolidated**: 13 → 4 files. `spring_validate_template.toml` +
+  `spring_validate_manifest.toml` (9 parameterized compositions) + 2 unique validators.
+- **Spring deploy consolidated**: 5 → 2 files. `spring_deploy_template.toml` +
+  `spring_deploy_manifest.toml` (5 parameterized springs).
+- **Downstream proto-nucleate consolidated**: 7 → 3 files. `proto_nucleate_template.toml` +
+  `downstream_manifest.toml` (7 parameterized compositions) +
+  `healthspring_enclave_proto_nucleate.toml` (unique dual-tower ionic bridge).
+- **`nucleus_complete.toml`**: Now the canonical NUCLEUS deploy graph (absorbs former
+  `primalspring_deploy.toml`).
+- **`profiles/full.toml`**: Now the canonical full overlay (absorbs former `full_overlay.toml`).
+- **`GraphMeta`**: Added optional `metadata` field with `fragments`, `resolve`, and
+  fragment-resolution support structs.
+
+### Removed
+- **25 redundant graph files**: 9 spring validation wrappers, 5 per-spring deploy files,
+  7 individual proto-nucleate files, `primalspring_deploy.toml`, `full_overlay.toml`,
+  `fossilRecord/graphs/` stale snapshots.
+
+### Documentation
+- Updated README.md, CONTEXT.md, SECURITY.md, CONTRIBUTING.md, CHANGELOG.md with
+  v0.9.15 metrics (570 tests, 75 experiments, 56 deploy graphs).
+- Updated `graphs/README.md` with fragment resolution documentation and revised hierarchy.
+- Updated `wateringHole/` docs with consolidated graph counts.
+- New handoff: `wateringHole/GRAPH_CONSOLIDATION_AND_NUCLEUS_DEPLOYMENT_HANDOFF_APR16_2026.md`.
+- `config/capability_registry.toml` and `deployment_matrix.toml` version/date updated.
+
+### Test Results
+- **primalSpring**: 570 tests PASS, 0 failures, 0 clippy warnings.
+
 ## [Unreleased] — Phase 42–43: Multi-Tier Genetics + Cross-Architecture Deployment (2026-04-15)
 
 ### Milestone

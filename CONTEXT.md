@@ -26,11 +26,11 @@ back upstream to primals and primalSpring.
 
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
   (`primalspring_primal` server, `validate_all` runner)
-- **experiments/** — 74 validation binaries covering 17 tracks
-- **graphs/** — 67 deploy graph TOMLs + 6 atomic-aligned fragments (9 profiles +
-  4 patterns + 13 spring validation + cross-spring + bonding + chaos +
-  5 spring deploy + 5 downstream proto-nucleate + 3 pipeline + 5 multi-node +
-  7 root-level + 1 federation)
+- **experiments/** — 75 validation binaries covering 17 tracks
+- **graphs/** — 56 deploy graph TOMLs using fragment-first composition (6 fragments +
+  9 profiles + 4 patterns + 4 spring validation + 2 cross-spring + 5 bonding +
+  2 chaos + 2 spring deploy + 3 downstream + 5 multi-node + 11 root-level +
+  1 federation)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`)
 - **tools/** — nucleus launcher, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
@@ -68,7 +68,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.14 Phase 43 — 443 tests, 74 experiments (17 tracks), 67 deploy graphs + 6 atomic-aligned fragments.
+v0.9.15 Phase 43+ — 570 tests, 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition).
 
 Live validation: **12/12 primals ALIVE**, **19/19 exp094 composition parity PASS**,
 **12/12 exp091 routing matrix PASS**, **14/15 exp096 cross-arch PASS** (HSM pending).

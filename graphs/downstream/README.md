@@ -34,16 +34,15 @@ own binary is the only `spawn = true` node.
 
 ## Current Graphs
 
-| Graph | Spring | Domain | Key Primals Beyond NUCLEUS |
-|-------|--------|--------|---------------------------|
-| `hotspring_qcd_proto_nucleate.toml` | hotSpring | lattice QCD / HPC physics | metallic GPU pool, df64 precision |
-| `wetspring_lifescience_proto_nucleate.toml` | wetSpring | life science pipelines | sequence analysis, phylogenetics |
-| `groundspring_geoscience_proto_nucleate.toml` | groundSpring | geoscience | spatial analysis, time series |
-| `airspring_ecology_proto_nucleate.toml` | airSpring | ecological monitoring | spectral analysis, spatial stats |
-| `neuralspring_inference_proto_nucleate.toml` | neuralSpring | AI/ML inference | WGSL shader ML, tokenization |
-| `healthspring_enclave_proto_nucleate.toml` | healthSpring | health data enclaves | bonding model, encryption |
-| `ludospring_proto_nucleate.toml` | ludoSpring | procedural generation | noise shaders, WFC |
-| `esotericwebb_proto_nucleate.toml` | esotericWebb | knowledge graphs | semantic analysis |
+Proto-nucleates are consolidated via **template + manifest**. `downstream_manifest.toml`
+parameterizes 7 springs using `proto_nucleate_template.toml`. One standalone graph is
+kept for its unique dual-tower ionic bridge architecture.
+
+| File | Type | Springs/Purpose |
+|------|------|-----------------|
+| `proto_nucleate_template.toml` | Template | Structural skeleton for all proto-nucleates |
+| `downstream_manifest.toml` | Manifest | Parameters for airSpring, groundSpring, hotSpring, wetSpring, neuralSpring, ludoSpring, esotericWebb |
+| `healthspring_enclave_proto_nucleate.toml` | Standalone | Unique dual-tower ionic bridge pattern (healthSpring) |
 
 ## Composition Parity Validation
 

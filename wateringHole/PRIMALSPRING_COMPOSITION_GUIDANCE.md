@@ -571,8 +571,9 @@ Springs absorb these by:
 3. Running primalSpring experiments to validate the composition
 4. Handing gaps and new patterns back to primalSpring
 
-Current proto-nucleates: `neuralspring_inference_proto_nucleate.toml`,
-`hotspring_qcd_proto_nucleate.toml`, `healthspring_enclave_proto_nucleate.toml`.
+Proto-nucleates are now consolidated: `downstream_manifest.toml` parameterizes 7
+springs via `proto_nucleate_template.toml`. The one exception is
+`healthspring_enclave_proto_nucleate.toml` (unique dual-tower ionic bridge, kept standalone).
 
 ---
 
@@ -600,8 +601,8 @@ Tower A (Data Custody)              Tower B (Analytics)
 - Nuclear genetics (Tier 2) are never shared across the ionic bridge — each tower spawns its own lineage. Only mito-beacon membership (Tier 1) crosses the boundary
 
 This pattern applies to any spring handling data with compliance requirements.
-See `graphs/downstream/healthspring_enclave_proto_nucleate.toml` and
-`graphs/sketches/mixed_atomics/dual_tower_ionic.toml`.
+See `graphs/downstream/healthspring_enclave_proto_nucleate.toml` for the canonical
+dual-tower ionic bridge pattern.
 
 ---
 

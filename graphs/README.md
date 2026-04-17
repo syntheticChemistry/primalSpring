@@ -1,7 +1,9 @@
 # primalSpring Graph Deployments
 
-> 78 graph definitions for NUCLEUS composition validation and deployment.
-> Date: April 15, 2026
+> 56 graph definitions for NUCLEUS composition validation and deployment.
+> Fragment-first composition: profiles declare fragments + delta nodes;
+> `load_graph()` resolves `resolve = true` graphs at parse time.
+> Date: April 16, 2026
 
 ## NUCLEUS-First Principle
 
@@ -15,48 +17,54 @@ compose on top of this by adding their domain-specific nodes as graph overlays. 
 ## Graph Hierarchy
 
 ```
-fragments/           Atomic building blocks (tower, node, nest, nucleus, meta, provenance)
-  └─ README.md       Fragment definitions and canonical names
+fragments/           6 canonical building blocks (unchanged)
+  └─ README.md
 
-profiles/            Validated composition profiles (reusable graph patterns)
+profiles/            9 thin compositions (fragment refs + delta nodes, resolve = true)
   ├─ tower.toml      Tower Atomic only
+  ├─ tower_ai.toml   Tower + Squirrel (AI)
+  ├─ tower_viz.toml  Tower + Squirrel + petalTongue
   ├─ node.toml       Tower + Node compute
+  ├─ node_ai.toml    Node + Squirrel (AI)
   ├─ nest.toml       Tower + Nest storage + provenance
+  ├─ nest_viz.toml   Nest + petalTongue
   ├─ nucleus.toml    Full NUCLEUS (Tower + Node + Nest)
   └─ full.toml       NUCLEUS + Meta-tier
 
-(root)               Core composition graphs
+(root)               ~11 core composition graphs
   ├─ tower_atomic_bootstrap.toml     Minimal Tower bootstrap
-  ├─ nucleus_complete.toml           Full NUCLEUS with bonding
+  ├─ nucleus_complete.toml           Full NUCLEUS + coordination
   ├─ node_atomic_compute.toml        Compute-focused composition
   └─ ...pipeline.toml                Domain pipeline graphs
 
-patterns/            Minimal coordination pattern demos
+patterns/            4 coordination pattern demos
   ├─ conditional_fallback.toml       ConditionalDag pattern
   ├─ parallel_capability_burst.toml  Parallel pattern
   ├─ streaming_pipeline.toml         Streaming pattern
   └─ continuous_tick.toml            Tick-loop pattern
 
-spring_deploy/       Production deploy graphs per spring
-  ├─ spring_deploy_template.toml     NUCLEUS-base template (copy this)
-  ├─ neuralspring_deploy.toml        neuralSpring (gold standard)
-  ├─ healthspring_deploy.toml        healthSpring
-  ├─ airspring_deploy.toml           airSpring
-  ├─ groundspring_deploy.toml        groundSpring
-  └─ wetspring_deploy.toml           wetSpring
+spring_deploy/       2 files (template + manifest)
+  ├─ spring_deploy_template.toml     NUCLEUS-base template
+  └─ spring_deploy_manifest.toml     5 spring parameters
 
-downstream/          Proto-nucleate graphs for springs/gardens
-  └─ *_proto_nucleate.toml           Target composition per spring
+downstream/          3 TOML + 2 markdown docs
+  ├─ proto_nucleate_template.toml    NUCLEUS-base template
+  ├─ downstream_manifest.toml        7 downstream parameters
+  ├─ healthspring_enclave_proto_nucleate.toml  (unique dual-tower)
+  ├─ README.md
+  └─ NICHE_STARTER_PATTERNS.md
 
-spring_validation/   Validation suite graphs (exp-driven)
-  └─ *_validate.toml                 Composition health checks
+spring_validation/   4 files (template + manifest + 2 unique)
+  ├─ spring_validate_template.toml   Per-spring validation template
+  ├─ spring_validate_manifest.toml   6 springs + 9 compositions
+  ├─ nucleus_atomics_validate.toml   Multi-phase NUCLEUS validation
+  └─ crypto_negative_validate.toml   Rejection path testing
 
-bonding/             Bonding model graphs (ionic, metallic, covalent)
-multi_node/          Multi-node / multi-gate graphs (LAN, WAN, HPC)
-cross_spring/        Cross-spring sweep graphs
-chaos/               Chaos engineering / fault injection graphs
-federation/          Content distribution / federation graphs
-fossilRecord/        Archived root-level graphs (superseded by patterns/)
+bonding/             5 genuinely unique bonding topologies
+multi_node/          5 multi-gate federation graphs
+cross_spring/        2 cross-spring validators
+chaos/               2 fault injection graphs
+federation/          1 content distribution
 ```
 
 ## Canonical Fragment Names
@@ -115,14 +123,20 @@ health_check = "health.liveness"
 
 ### Ownership
 
-8 graphs exist in both formats. Each has a `# Source of truth:` comment header:
+3 graphs exist in both formats. Each has a `# Source of truth:` comment header:
 
 - **primalSpring owns** the validation/structural variant (with metadata, fragments, bonding)
 - **biomeOS owns** the runtime execution variant (with spawn, health_check)
 
-The duplicates: `tower_atomic_bootstrap`, `nucleus_complete`, `node_atomic_compute`,
-and 5 spring deploy graphs (`neuralspring`, `healthspring`, `airspring`, `groundspring`,
-`wetspring`).
+The duplicates: `tower_atomic_bootstrap`, `nucleus_complete`, `node_atomic_compute`.
+Spring deploy graphs are now consolidated into template + manifest.
+
+## Fragment Resolution (`resolve = true`)
+
+Profiles declare `resolve = true` in `[graph.metadata]`. When `load_graph()` sees this
+flag, it loads each fragment TOML, merges their nodes as the base layer, then overlays
+the graph's own `[[graph.nodes]]` as delta overrides. This keeps profiles thin (~10 lines)
+while fragments remain the canonical source of truth for node definitions.
 
 ## Adding a New Graph
 

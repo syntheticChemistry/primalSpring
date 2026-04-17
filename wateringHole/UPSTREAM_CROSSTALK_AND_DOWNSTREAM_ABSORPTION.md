@@ -243,4 +243,81 @@ primalSpring.
 
 ---
 
+## Part 4: Graph Deployment Subsystem Inventory (April 16, 2026)
+
+primalSpring owns **56 TOML deploy graphs** (consolidated via template+manifest and fragment-first composition) — the standard subsystems for everything
+downstream. All graphs use capability-first routing (`by_capability`), parse cleanly
+(37 graph unit tests + 4 overlay composition tests), and are topologically acyclic.
+
+### Atomic Fragments (6)
+
+The building blocks every composition inherits:
+
+| Fragment | Primals | Role |
+|----------|---------|------|
+| `tower_atomic` | BearDog + Songbird | Security + TLS |
+| `node_atomic` | Tower + compute triangle | Compute capability |
+| `nest_atomic` | Tower + Nest + provenance trio | Storage + provenance |
+| `nucleus` | Full NUCLEUS | All 10+ primals |
+| `provenance_trio` | rhizoCrypt + loamSpine + sweetGrass | Provenance chain |
+| `meta_tier` | biomeOS + Squirrel + petalTongue | Orchestration + AI + dashboard |
+
+### Composition Profiles (9)
+
+Named profiles for `plasmidBin` deployment: tower, node, nest, nucleus, full,
+tower_ai, node_ai, tower_viz, nest_viz.
+
+### NUCLEUS Validation (13 spring_validation graphs)
+
+7 composition subsystem validators (C1–C7: render, narration, session, game science,
+persistence, proprioception, interactive), plus nucleus_atomics, rollback, federation
+manifest, crypto negative, and 2 templates.
+
+### Bonding Models (5 graphs)
+
+All five `BondType` variants represented:
+- **Covalent**: `organo_metal_salt_complex` (full 12-primal composition)
+- **Ionic**: `ionic_capability_share` (cross-gate capability sharing)
+- **Metallic**: `metallic_gpu_pool` (compute pooling)
+- **Weak**: `defensive_mesh` (isolation + defense)
+- **Mixed**: `albatross_multiplex` (multi-Songbird multiplexing)
+
+Validated by exp030 (covalent), exp031 (ionic), exp032 (plasmodium/completeness),
+exp033 (all 5 BondType variants), exp071 (idle compute policies), exp092 (dual tower
+ionic), exp093 (covalent mesh), exp096 (cross-arch covalent+ionic).
+
+### Downstream Proto-Nucleate (8 graphs)
+
+One per downstream spring/garden: ludoSpring, esotericWebb, hotSpring, wetSpring,
+airSpring, groundSpring, neuralSpring, healthSpring (enclave). Template: exp095.
+
+### Multi-Node / Federation (6 graphs)
+
+- `basement_hpc_covalent` — same-LAN high-performance
+- `friend_remote_covalent` — cross-network friends
+- `three_node_covalent_cross_network` — 3-node mesh
+- `data_federation_cross_site` — data sharing
+- `idle_compute_federation` — idle resource pooling
+- `content_distribution_federation` — seeder/consumer model
+
+### Execution Pattern Coverage
+
+| Pattern | Graph | Experiment |
+|---------|-------|------------|
+| Sequential | `tower_atomic_bootstrap.toml` | exp010 |
+| Parallel | `parallel_capability_burst.toml` | exp011 |
+| Conditional DAG | `conditional_fallback.toml` | exp012 |
+| Streaming Pipeline | `streaming_pipeline.toml` | exp013 |
+| Continuous Tick | `continuous_tick.toml` | exp014 |
+| Topological Waves | all graphs via `topological_waves()` | exp006, exp069, exp070 |
+
+### Binary Name Consistency
+
+All 56 graphs use canonical lowercase binary names: `beardog`, `songbird`, `biomeos`,
+`toadstool`, `squirrel`, `nestgate`, `rhizocrypt`, `loamspine`, `sweetgrass`,
+`petaltongue`, `barracuda`, `coralreef`, `skunkbat_primal`, `rootpulse`,
+`primalspring_primal`, and `*spring_primal` for downstream springs.
+
+---
+
 **License**: AGPL-3.0-or-later

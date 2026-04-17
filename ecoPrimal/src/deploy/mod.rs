@@ -74,10 +74,47 @@ pub struct GraphMeta {
     /// Coordination pattern (Sequential, Parallel, etc.).
     #[serde(default)]
     pub coordination: Option<String>,
+    /// Graph metadata sub-table (fragments, security_model, etc.).
+    #[serde(default)]
+    pub metadata: Option<GraphMetadata>,
     /// Ordered list of primal nodes.
     /// Accepts both `[[graph.node]]` (legacy) and `[[graph.nodes]]` (biomeOS native).
     #[serde(default, alias = "nodes")]
     pub node: Vec<GraphNode>,
+}
+
+/// Metadata sub-table of a deploy graph (`[graph.metadata]`).
+///
+/// Only `fragments` + `resolve` are actively used for composition; all
+/// other metadata fields (security_model, transport, etc.) are preserved
+/// as opaque TOML for downstream consumers.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct GraphMetadata {
+    /// Fragment names to resolve at load time (e.g. `["tower_atomic", "node_atomic"]`).
+    /// Each name maps to `fragments/{name}.toml` relative to the graphs root.
+    #[serde(default)]
+    pub fragments: Vec<String>,
+    /// When `true`, fragment nodes are loaded as the base layer and the
+    /// graph's own `[[graph.nodes]]` act as delta overrides. When `false`
+    /// (default), fragments are metadata-only and the graph's nodes are
+    /// used as-is.
+    #[serde(default)]
+    pub resolve: bool,
+}
+
+/// A parsed fragment file (`[fragment]` + `[[fragment.nodes]]`).
+#[derive(Debug, Clone, Deserialize)]
+struct FragmentFile {
+    fragment: FragmentMeta,
+}
+
+/// Fragment metadata and node list.
+#[derive(Debug, Clone, Deserialize)]
+struct FragmentMeta {
+    #[expect(dead_code, reason = "structural completeness; used for diagnostics")]
+    name: String,
+    #[serde(default, alias = "node")]
+    nodes: Vec<GraphNode>,
 }
 
 /// A single node in a deploy graph.
@@ -242,6 +279,11 @@ pub fn validate_live_by_capability(path: &Path) -> LiveGraphValidation {
 /// Handles three node formats: `[[graph.node]]`, `[[graph.nodes]]` (serde
 /// alias), and top-level `[[nodes]]` (merged into `graph.node`).
 ///
+/// If the graph declares `[graph.metadata] fragments = [...]`, each fragment
+/// is loaded from `fragments/{name}.toml` (relative to the graphs root) and
+/// its nodes are merged as the base layer. The graph's own nodes override
+/// any same-name fragment nodes, acting as delta overlays.
+///
 /// # Errors
 ///
 /// Returns a string description if reading or parsing fails.
@@ -253,10 +295,78 @@ pub fn load_graph(path: &Path) -> Result<DeployGraph, String> {
 
     if !graph.nodes.is_empty() {
         graph.graph.node.append(&mut graph.nodes);
-        graph.graph.node.sort_by_key(|n| n.order);
     }
 
+    resolve_fragments(&mut graph, path)?;
+
+    graph.graph.node.sort_by_key(|n| n.order);
     Ok(graph)
+}
+
+/// Resolve fragment references declared in `[graph.metadata].fragments`.
+///
+/// Only runs when `[graph.metadata] resolve = true`. Locates the
+/// `fragments/` directory by searching from the graph file's parent
+/// directory upward. Fragment nodes are merged as the base layer;
+/// the graph's explicit nodes override any same-name fragment node.
+fn resolve_fragments(graph: &mut DeployGraph, graph_path: &Path) -> Result<(), String> {
+    let fragment_names = match &graph.graph.metadata {
+        Some(meta) if meta.resolve && !meta.fragments.is_empty() => meta.fragments.clone(),
+        _ => return Ok(()),
+    };
+
+    let fragments_dir = find_fragments_dir(graph_path).ok_or_else(|| {
+        format!(
+            "graph {} declares fragments but no fragments/ directory found",
+            graph_path.display()
+        )
+    })?;
+
+    let mut base_nodes: Vec<GraphNode> = Vec::new();
+    for frag_name in &fragment_names {
+        let frag_path = fragments_dir.join(format!("{frag_name}.toml"));
+        if !frag_path.is_file() {
+            continue;
+        }
+        let frag_contents = std::fs::read_to_string(&frag_path)
+            .map_err(|e| format!("failed to read fragment {}: {e}", frag_path.display()))?;
+        let frag_file: FragmentFile = toml::from_str(&frag_contents)
+            .map_err(|e| format!("failed to parse fragment {}: {e}", frag_path.display()))?;
+        for frag_node in frag_file.fragment.nodes {
+            if !base_nodes.iter().any(|n| n.name == frag_node.name) {
+                base_nodes.push(frag_node);
+            }
+        }
+    }
+
+    if base_nodes.is_empty() {
+        return Ok(());
+    }
+
+    let delta_nodes = std::mem::take(&mut graph.graph.node);
+    for delta in delta_nodes {
+        if let Some(existing) = base_nodes.iter_mut().find(|n| n.name == delta.name) {
+            *existing = delta;
+        } else {
+            base_nodes.push(delta);
+        }
+    }
+    graph.graph.node = base_nodes;
+
+    Ok(())
+}
+
+/// Walk up from the graph file to find the `fragments/` directory.
+fn find_fragments_dir(graph_path: &Path) -> Option<std::path::PathBuf> {
+    let mut dir = graph_path.parent()?;
+    for _ in 0..3 {
+        let candidate = dir.join("fragments");
+        if candidate.is_dir() {
+            return Some(candidate);
+        }
+        dir = dir.parent()?;
+    }
+    None
 }
 
 /// Structurally validate a deploy graph (no live probing).
@@ -563,6 +673,11 @@ pub fn merge_graphs(base: &DeployGraph, overlay: &DeployGraph) -> DeployGraph {
                 .coordination
                 .clone()
                 .or_else(|| base.graph.coordination.clone()),
+            metadata: overlay
+                .graph
+                .metadata
+                .clone()
+                .or_else(|| base.graph.metadata.clone()),
             node: merged_nodes,
         },
         nodes: Vec::new(),

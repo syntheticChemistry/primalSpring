@@ -23,47 +23,11 @@ transport = "uds_only"
 tcp_ports = 0
 composition_model = "pure"
 fragments = ["tower_atomic", "nest_atomic", "meta_tier"]
+resolve = true
 
-[[graph.nodes]]
-name = "beardog"
-binary = "beardog"
-order = 1
-required = true
-health_method = "health.liveness"
-by_capability = "security"
-security_model = "btsp"
-capabilities = [
-    "crypto.sign", "crypto.verify", "crypto.hash",
-    "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair",
-]
-
-[[graph.nodes]]
-name = "songbird"
-binary = "songbird"
-order = 2
-required = true
-depends_on = ["beardog"]
-health_method = "health.liveness"
-by_capability = "discovery"
-security_model = "btsp"
-capabilities = [
-    "ipc.resolve", "ipc.register", "ipc.discover",
-    "discovery.peers", "discovery.announce", "http.request",
-]
-
-[[graph.nodes]]
-name = "nestgate"
-binary = "nestgate"
-order = 3
-required = true
-depends_on = ["beardog", "songbird"]
-health_method = "health.liveness"
-by_capability = "storage"
-security_model = "tower_delegated"
-capabilities = [
-    "storage.store", "storage.retrieve", "storage.list",
-    "storage.exists", "storage.delete", "storage.fetch_external",
-]
+# Fragments provide: beardog, songbird, nestgate, rhizocrypt, loamspine, sweetgrass,
+#   biomeos_neural_api, squirrel, petaltongue.
+# Delta: override petaltongue order + add validation scaffold.
 
 [[graph.nodes]]
 name = "petaltongue"
