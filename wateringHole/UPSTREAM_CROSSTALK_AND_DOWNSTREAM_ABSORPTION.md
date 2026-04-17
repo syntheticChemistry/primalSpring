@@ -1,7 +1,8 @@
 # Upstream Primal Cross-Talk & Downstream Absorption Patterns
 
-**Date**: April 15, 2026
-**From**: primalSpring v0.9.14 (Phase 43)
+**Date**: April 16, 2026
+**From**: primalSpring v0.9.14 (Phase 43+)
+**Phase**: **INTERSTADIAL** — stadial gate cleared, downstream absorption open
 **License**: AGPL-3.0-or-later
 
 ---
@@ -203,6 +204,42 @@ When your spring or garden discovers a gap:
 2. Propose the wire (JSON-RPC method signature)
 3. Build a primalSpring experiment or graph that tests the gap
 4. Submit via PR — primalSpring triages and routes to the responsible primal
+
+---
+
+## Part 3: Interstadial Standards (April 16, 2026)
+
+The stadial gate has cleared — all 13 primals at modern async Rust parity.
+The following standards are **permanent invariants** enforced going forward.
+See `STADIAL_PARITY_GATE_APR16_2026.md` for the full specification.
+
+### Non-negotiable invariants
+
+- **No `async-trait`** — banned in `deny.toml`, use native `async fn` (RPITIT)
+- **No `Box<dyn Trait>` for finite implementors** — use enum dispatch
+- **`cargo deny check bans` PASS** — C/FFI bans enforced
+- **Edition 2024** — all crates
+- **First-byte peek** — every socket-accepting primal auto-detects JSON-RPC vs BTSP
+- **Tower atomic delegation** — Songbird provides TLS, BearDog provides crypto.
+  Primals do not pull `reqwest`, `hyper-rustls`, or `ring` directly.
+
+### PR review checklist (for upstream primal teams)
+
+- [ ] No `#[async_trait]` introduced
+- [ ] No `Box<dyn T>` for finite-implementor traits
+- [ ] `cargo deny check bans` passes
+- [ ] No new banned crate transitive deps in `Cargo.lock`
+- [ ] `#[expect(...)]` preferred over `#[allow(...)]`
+- [ ] Public APIs use typed errors, not `Box<dyn Error>`
+- [ ] New files < 1000 LOC
+- [ ] Coverage maintained or improved
+
+### Downstream absorption: now open
+
+Springs and gardens may now absorb NUCLEUS patterns. The maturity ladder above
+applies. Start with your proto-nucleate graph, wire IPC via `CompositionContext`,
+validate parity against baselines, then deploy via biomeOS. Hand gaps back to
+primalSpring.
 
 ---
 

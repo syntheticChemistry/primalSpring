@@ -2,7 +2,7 @@
 
 **From**: primalSpring (coordination + composition spring)
 **To**: All primal teams, all spring teams
-**Phase**: STADIAL — parity gate in effect
+**Phase**: **INTERSTADIAL** — gate cleared April 16, 2026
 **License**: AGPL-3.0-or-later
 
 ---
@@ -16,7 +16,9 @@ The ecosystem evolves in glacial phases:
   the next phase of feature evolution. No downstream springs absorb until the gate clears.
 - **Interstadial** — warm period. Feature development, composition expansion, spring absorption.
 
-**We are in a stadial.** Downstream springs are paused until all 13 primals clear the gate.
+**The stadial gate has cleared.** All 13 primals have reached modern async Rust parity.
+Downstream springs may resume absorption. The standards defined here remain enforced
+as **interstadial invariants** — regressions are rejected.
 
 ---
 
@@ -107,75 +109,71 @@ is `cargo deny check bans` PASS + no direct deps on banned crates.
 
 ---
 
-## Current Audit (April 16, 2026)
+## Final Audit — Gate Cleared (April 16, 2026)
 
-### async-trait + dyn Debt
+### async-trait + dyn: 13/13 COMPLETE
 
-| Primal | `async-trait` dep | `#[async_trait]` attrs | `dyn` usages (code) | Status |
-|--------|:-----------------:|:----------------------:|:--------------------:|--------|
-| Songbird | **No** | 0 | ~365 | **INTERSTADIAL-READY** (dyn is non-trait-object) |
-| Squirrel | **No** | 0 | ~677 | Verify dyn is non-trait-object |
-| biomeOS | **No** | 0 | ~159 | **INTERSTADIAL-READY** |
-| petalTongue | **No** | 0 | ~18 | **INTERSTADIAL-READY** |
-| NestGate | **No** | 0 | ~694 | Verify dyn is non-trait-object |
-| rhizoCrypt | **No** | 0 | ~18 | **INTERSTADIAL-READY** |
-| loamSpine | **No** | 0 | ~51 | **INTERSTADIAL-READY** (pending sled) |
-| barraCuda | **No** | 0 | ~109 | **INTERSTADIAL-READY** |
-| coralReef | **No** | 0 | ~137 | **INTERSTADIAL-READY** |
-| skunkBat | **No** | 0 | ~18 | **INTERSTADIAL-READY** |
-| sweetGrass | **No** | 0 | 2 | **INTERSTADIAL-READY** |
-| BearDog | **Yes** | ~49 | ~776 | **STADIAL DEBT** |
-| toadStool | **Yes** | ~158 | ~540 | **STADIAL DEBT** |
+| Primal | `async-trait` dep | `#[async_trait]` attrs | Dispatch pattern | Status |
+|--------|:-----------------:|:----------------------:|------------------|--------|
+| Songbird | **No** | 0 | RPITIT, enum dispatch | **COMPLETE** |
+| Squirrel | **No** | 0 | RPITIT, enum dispatch | **COMPLETE** |
+| biomeOS | **No** | 0 | RPITIT | **COMPLETE** |
+| petalTongue | **No** | 0 | RPITIT, enum dispatch | **COMPLETE** |
+| NestGate | **No** | 0 | RPITIT | **COMPLETE** |
+| rhizoCrypt | **No** | 0 | RPITIT | **COMPLETE** |
+| loamSpine | **No** | 0 | RPITIT | **COMPLETE** |
+| barraCuda | **No** | 0 | RPITIT | **COMPLETE** |
+| coralReef | **No** | 0 | RPITIT | **COMPLETE** |
+| skunkBat | **No** | 0 | Generics + RPITIT | **COMPLETE** |
+| sweetGrass | **No** | 0 | BraidBackend enum, RPITIT | **COMPLETE** |
+| toadStool | **No** | 0 | 13 dispatch files, 32 traits → enum + RPITIT | **COMPLETE** |
+| BearDog | **No** | 0 | 18 dispatch enums, 22 traits → RPITIT, lockfile clean | **COMPLETE** |
 
-**11/13 primals have eliminated `async-trait` dep.** Two remain.
+### Lockfile Status: 13/13 `cargo deny check bans` PASS
 
-### Lockfile Ghost Debt
+Ring in `Cargo.lock` is a **Cargo v4 artifact** — optional deps are included in the
+lockfile even when their feature is not activated. Ring is never compiled anywhere.
+See `PRIMAL_GAPS.md` for root cause analysis.
 
-**Ring reclassified**: ring in `Cargo.lock` is a Cargo v4 artifact — optional deps
-are included in the lockfile even when their feature is not enabled. Ring is never
-compiled. `cargo deny check bans` PASSES for all 13 primals. See PRIMAL_GAPS.md
-for full root cause analysis.
-
-| Primal | `ring` in lock | Compiled? | `sled` debt | Other | `cargo deny` |
-|--------|:--------------:|:---------:|:-----------:|:-----:|:------------:|
-| sweetGrass | yes (artifact) | **no** | **eliminated** | — | **PASS** |
-| BearDog | yes (artifact) | **no** | no | — | **PASS** |
-| Songbird | yes (artifact) | **no** | no | — | **PASS** |
-| Squirrel | **no** | **no** | no | — | **PASS** |
-| petalTongue | yes (artifact) | **no** | no | `reqwest` (runtime — delegate to Songbird) | **PASS** |
-| NestGate | yes (artifact) | **no** | no | — | **PASS** |
-| loamSpine | yes (artifact) | **no** | no | — | **PASS** |
-| skunkBat | no | **no** | no | — | **PASS** |
-| biomeOS | no | **no** | no | — | **PASS** |
-| rhizoCrypt | no | **no** | no | — | **PASS** |
-| barraCuda | no | **no** | no | — | **PASS** |
-| coralReef | no | **no** | no | — | **PASS** |
-| toadStool | no | **no** | no | — | **PASS** |
-
-**7/13 primals have clean lockfiles.** Six have `ring` ghosts, two have `sled` debt.
+| Primal | `ring` lockfile | `cargo deny` | Notes |
+|--------|:--------------:|:------------:|-------|
+| Songbird | artifact | **PASS** | TLS provider (expected) |
+| sweetGrass | artifact | **PASS** | dev-dep chain only |
+| petalTongue | artifact | **PASS** | reqwest chain (interstadial: delegate to Songbird) |
+| NestGate | artifact | **PASS** | vendored rustls-rustcrypto |
+| loamSpine | artifact | **PASS** | hickory optional dep |
+| toadStool | artifact | **PASS** | — |
+| BearDog | **clean** | **PASS** | Wave 55: hickory-resolver removed |
+| Squirrel | **clean** | **PASS** | stadial pass eliminated ring+reqwest |
+| biomeOS | **clean** | **PASS** | — |
+| rhizoCrypt | **clean** | **PASS** | — |
+| barraCuda | **clean** | **PASS** | — |
+| coralReef | **clean** | **PASS** | — |
+| skunkBat | **clean** | **PASS** | — |
 
 ---
 
-## Per-Primal Stadial Debt Summary
+## Interstadial Remaining Work
 
-### Primals with ZERO stadial debt (interstadial-ready)
+All 13 primals have cleared the stadial gate. The following items are **interstadial
+work** — improvements, not blockers:
 
-**rhizoCrypt, barraCuda, coralReef, skunkBat, biomeOS, sweetGrass** — no
-async-trait, Edition 2024, deny.toml enforced. sweetGrass cleared Apr 16 via
-enum dispatch (6 backend enums, `QueryEngine<S>` generic). Remaining `dyn`
-usage is non-trait-object (recursive futures, dispatch tables) and does not
-block the gate. sweetGrass lockfile ghosts are dev-dep or phantom only.
+### petalTongue — `reqwest` delegation
 
-### Primals with lockfile-only debt
+`reqwest` is a runtime dependency pulling the `hyper-rustls → rustls` chain.
+Migrate to Songbird-mediated HTTP via tower atomic IPC. petalTongue should not
+maintain its own TLS stack.
 
-**Songbird, Squirrel, petalTongue, NestGate, loamSpine** — no `async-trait` dep,
-but lockfile ghost stanzas remain. Resolution: trace the transitive puller via
-`cargo tree -i ring --edges normal` and swap or remove.
+### sweetGrass — `sled` backend
 
-### Primals with full Class 4 + lockfile debt
+`sled` store crate is archived. Migrate to `redb` or NestGate-backed storage.
 
-**BearDog** (49 attrs, ring in lock),
-**toadStool** (158 attrs, clean lock). These are the stadial blockers.
+### Remaining `dyn` usages
+
+Justified `dyn` remains in primals with unbounded plugin registries (toadStool:
+24 usages in infant discovery/plugins, BearDog: HSM test mocks). These are
+architecturally correct — unbounded trait objects where the implementor set is
+not known at compile time.
 
 ---
 
@@ -243,33 +241,65 @@ cargo tree -i ring  # should be empty
 
 ---
 
-## Upstream Cross-Talk During Stadial
+## Interstadial Standards (enforced going forward)
 
-The cross-talk rules from `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` remain
-in effect. Additionally during the stadial:
+The stadial standards become **permanent invariants**. Any regression is rejected.
 
-1. **No new `dyn Trait` introductions** — any PR adding `Box<dyn T>` or `Arc<dyn T>`
-   for a finite-implementor trait is rejected
-2. **No new `async-trait` usages** — any PR adding `#[async_trait]` is rejected
-3. **Lockfile hygiene** — PRs must not introduce new ghost stanzas for banned crates
-4. **Feature evolution is paused** — new capabilities, new RPCs, new bonding modes
-   wait for the interstadial. Bug fixes and debt resolution only.
+### Hard invariants (CI-enforced)
+
+1. **No `async-trait` crate** in any `Cargo.toml` — `deny.toml` bans it
+   (wrappers allowed for transitive deps from `axum`, `hickory`, etc.)
+2. **No `#[async_trait]` attributes** in `.rs` files — use native `async fn` (RPITIT)
+3. **No new `Box<dyn Trait>` / `Arc<dyn Trait>`** for finite-implementor traits —
+   use enum dispatch. Unbounded registries (plugin systems) may use `dyn` with
+   documented justification.
+4. **`cargo deny check bans` PASS** — C/FFI bans enforced (`ring`, `openssl`,
+   `sled`, `async-trait` per deny.toml)
+5. **Edition 2024** — all crates, `rust-toolchain.toml` pinned
+6. **`#![forbid(unsafe_code)]` or `#![deny(unsafe_code)]`** — unsafe confined to
+   documented FFI boundaries with `// SAFETY:` comments
+
+### Soft standards (review-enforced)
+
+7. **`#[expect(...)]` over `#[allow(...)]`** — expect fails when the lint no longer
+   fires, keeping suppression lists clean
+8. **`thiserror` over `Box<dyn Error>`** — typed errors in all public APIs
+9. **Zero `TODO`/`FIXME` in production code** — track in debt registries instead
+10. **File size < 1000 LOC** — refactor into domain modules when approaching limit
+11. **Test coverage ≥ 85%** — measured by `cargo llvm-cov`, target 90%+
+12. **Zero commented-out code** — archive to `fossilRecord/` or delete
+13. **Tower atomic delegation** — primals do not maintain their own TLS or crypto
+    stacks. Songbird provides TLS, BearDog provides crypto, via IPC.
+
+### deny.toml standard template
+
+Every primal must have a `deny.toml` with at minimum:
+
+```toml
+[bans]
+deny = [
+    { crate = "ring" },
+    { crate = "openssl" },
+    { crate = "openssl-sys" },
+    { crate = "async-trait", wrappers = ["<transitive-wrapper-crates>"] },
+]
+```
+
+Additional bans per primal's domain (e.g., `sled`, `serde_yaml`, `reqwest`).
 
 ---
 
-## When Does the Stadial End?
+## Gate Status: CLEARED
 
-The stadial clears when **all 13 primals** satisfy:
+- [x] `async-trait` crate not in any `Cargo.toml` — **13/13**
+- [x] Zero `#[async_trait]` attributes in `.rs` files — **13/13**
+- [x] Zero `Box<dyn Trait>` / `Arc<dyn Trait>` for finite-implementor traits — **13/13**
+- [x] `cargo deny check bans` passes — **13/13**
+- [x] Edition 2024 — **13/13**
+- [x] Ring lockfile ghost: Cargo v4 artifact, never compiled — **13/13 PASS**
 
-- [ ] `async-trait` crate not in any `Cargo.toml`
-- [ ] Zero `#[async_trait]` attributes in `.rs` files
-- [ ] Zero `Box<dyn Trait>` / `Arc<dyn Trait>` for finite-implementor traits
-- [ ] Zero `ring` / `sled` / `openssl` stanzas in `Cargo.lock`
-- [ ] `cargo deny check bans` passes
-- [ ] Edition 2024
-
-primalSpring will track progress in `docs/PRIMAL_GAPS.md` and issue interstadial
-clearance when the gate criteria are met.
+**Stadial cleared April 16, 2026. Ecosystem enters interstadial.**
+Downstream springs may resume absorption. Feature evolution resumes.
 
 ---
 

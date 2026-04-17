@@ -1,9 +1,10 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
-**Version**: 0.9.14 (Phase 43 — 443 tests, 74 experiments, 67 deploy graphs + 6 fragments, BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), biomeOS-managed cross-arch Pixel deployment, content distribution federation, **NUCLEUS composition 12/12 routing + 19/19 parity**)  
+**Version**: 0.9.14 (Phase 43+ — 443 tests, 74 experiments, 67 deploy graphs + 6 fragments, BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), biomeOS-managed cross-arch Pixel deployment, content distribution federation, **NUCLEUS composition 12/12 routing + 19/19 parity**)  
+**Phase**: **INTERSTADIAL** — stadial gate cleared April 16, 2026. 13/13 primals at modern async Rust parity.  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: April 15, 2026
+**Last Updated**: April 16, 2026
 
 ---
 
@@ -52,6 +53,8 @@ primalSpring fills the gap.
 | Cross-arch | biomeOS-managed Tower on Pixel (aarch64 + GrapheneOS) via Neural API `--tcp-only`, 14/15 exp096 checks (HSM pending) |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | Active in `docs/PRIMAL_GAPS.md` — portability debt classes, socket resolution tiers, BTSP cascade |
+| **Stadial gate** | **CLEARED** — 13/13 primals: zero `async-trait`, enum dispatch, RPITIT, `cargo deny` PASS |
+| **Interstadial standards** | See `STADIAL_PARITY_GATE_APR16_2026.md` — permanent invariants enforced |
 | RPC endpoints | 17 methods |
 | Discovery | **Capability-first**: `discover_by_capability()` + 6-tier + Neural API |
 | IPC transport | JSON-RPC 2.0: UDS + TCP + HTTP POST (`tcp_rpc_multi_protocol` auto-fallback) |
@@ -356,7 +359,9 @@ hold encrypted-at-rest secrets, enabling zero-knowledge authentication.
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.9.14 | This README | Apr 14 | **Phase 43**: Multi-tier genetics, BTSP Phase 3, cross-arch Pixel deployment, biomeOS composition patterns, content distribution federation |
+| v0.9.14+ | `STADIAL_PARITY_GATE_APR16_2026.md` | Apr 16 | **Stadial gate cleared**: 13/13 primals at modern async Rust parity. Interstadial standards defined. |
+| v0.9.14+ | `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` | Apr 16 | Updated: interstadial PR checklist, downstream absorption open |
+| v0.9.14 | This README | Apr 16 | **Phase 43+**: Multi-tier genetics, BTSP Phase 3, cross-arch Pixel deployment, biomeOS composition patterns, stadial gate cleared |
 | v0.9.3 | `PRIMALSPRING_V093_MIXED_COMPOSITION_LIVE_VALIDATION_HANDOFF_APR07_2026.md` | Apr 7 | **Phase 26**: Particle model, layered validation (L0-L3), 17 sketch graphs, exp091-093, live Tower Atomic probes, 6 GAP-MATRIX items, primal team work blurbs |
 
 ## Archived Handoffs

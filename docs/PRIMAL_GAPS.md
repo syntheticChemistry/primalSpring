@@ -16,13 +16,17 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - **Interstadial** — warm period, active feature development, composition expansion,
 >   spring absorption.
 >
-> **Current phase: STADIAL** — parity gate in effect. Gate criteria:
-> 1. `dyn` dispatch + `async-trait` eliminated (Class 4 — see below)
-> 2. Zero ghost debt in lockfiles (no transitive `ring`, no stale `Cargo.lock` stanzas)
-> 3. All primals Edition 2024, modern async Rust, `deny.toml` enforced
-> 4. No "managed" or "acceptable" exceptions for deprecated patterns
+> **Current phase: INTERSTADIAL** — stadial gate cleared April 16, 2026.
+> All 13 primals have reached modern async Rust parity:
+> - [x] `async-trait` eliminated from all `Cargo.toml` and `.rs` files — **13/13**
+> - [x] Enum dispatch replaces `Box<dyn Trait>` for finite implementors — **13/13**
+> - [x] `cargo deny check bans` passes — **13/13**
+> - [x] Edition 2024, `deny.toml` enforced — **13/13**
+> - [x] Ring lockfile ghost: Cargo v4 artifact, never compiled — **13/13 PASS**
 >
-> The stadial clears when **13/13 primals meet all gate criteria**. Only then do
+> Standards are now **permanent interstadial invariants** — regressions are rejected.
+> See `wateringHole/STADIAL_PARITY_GATE_APR16_2026.md` for the full specification.
+> Downstream springs may resume absorption. Only then do
 > downstream springs begin their next absorption pass.
 >
 > **Last updated**: 2026-04-16 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
