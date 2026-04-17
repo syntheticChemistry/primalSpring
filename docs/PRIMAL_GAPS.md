@@ -280,7 +280,7 @@ should carry TLS or crypto dependencies.
 | Primal | `ring` in lockfile | `cargo deny` PASS | Compiled | Action |
 |--------|:------------------:|:-----------------:|:--------:|--------|
 | sweetGrass | yes | **PASS** | **no** | Lockfile artifact — cosmetic |
-| BearDog | yes | **PASS** | **no** | Lockfile artifact — not even in resolve |
+| BearDog | **no** | **PASS** | **no** | **Clean** (Wave 55: hickory-resolver removed, ring+async-trait gone from lockfile) |
 | Songbird | yes | **PASS** | **no** | Lockfile artifact — Songbird IS the TLS provider |
 | petalTongue | yes | **PASS** | **no** | Delegate HTTP to Songbird, eliminate `reqwest` |
 | NestGate | yes | **PASS** | **no** | Lockfile artifact — vendored rustls-rustcrypto |
@@ -293,8 +293,9 @@ should carry TLS or crypto dependencies.
 | coralReef | no | **PASS** | **no** | Clean |
 | skunkBat | no | **PASS** | **no** | Clean |
 
-**13/13 pass `cargo deny check bans`. 0/13 compile ring. 7 carry ring as Cargo v4
-lockfile artifact. Not actionable ecosystem debt.**
+**13/13 pass `cargo deny check bans`. 0/13 compile ring. 5 carry ring as Cargo v4
+lockfile artifact (BearDog eliminated ring from lockfile in Wave 55). Not actionable
+ecosystem debt.**
 
 ### Class 4: `dyn` Dispatch + `async-trait` — DEPRECATED (Stadial Gate)
 
@@ -326,11 +327,19 @@ drop `async-trait` dep → ban in `deny.toml`.**
 | skunkBat | **0** | **No** | **COMPLETE** (Phase 44: 14→0, generics+RPITIT, dep removed) |
 | sweetGrass | **0** | **No** | **COMPLETE** (stadial pass: BraidBackend enum dispatch, RPITIT, dep removed) |
 | toadStool | **0** | **No** | **COMPLETE** (S203r–S203t: 158→0, 32 traits → enum dispatch + RPITIT, dep removed + banned) |
-| BearDog | **49** | Yes | **STADIAL DEBT** — ~18 traits, most with ≤6 implementors, 2 intentionally open |
+| BearDog | **0** | **No** | **COMPLETE** (Wave 53–55: 49→0, 22 traits → 18 enum dispatch types, RPITIT, dep removed + lockfile clean, banned in deny.toml) |
 
-**12/13 primals at zero.** One remains: BearDog (49).
+**13/13 primals at zero. Stadial gate CLEARED. async-trait fully eliminated ecosystem-wide.**
 
-**Resolution guidance**:
+BearDog Wave 53 created 18 enum dispatch types: `MethodHandlerKind`, `BondPersistenceBackend`,
+`HsmKeyProviderBackend`, `HsmProviderBackend`, `UniversalCryptoBackend`, `CryptoProviderBackend`,
+`KeyManagementBackend`, `ServiceDiscoveryBackend`, `KeystoreTransportBackend`,
+`AttestationTransportBackend`, `HealthMetricsTransportBackend`, `IpcHandlerBackend`,
+`PlatformListenerBackend`, `StorageBackend`, `EncryptionKeyBackend`, `AuditLoggerBackend`,
+`Ctap2TransportBackend`, `HidDeviceBackend`. Wave 55 eliminated `async-trait` from `Cargo.lock`
+entirely (removed hickory-resolver, tarpc, opentelemetry transitive chains).
+
+**Resolution patterns used ecosystem-wide**:
 - `Box<dyn Trait>` / `Arc<dyn Trait>` with finite implementors → **enum dispatch**
 - `#[async_trait]` on trait def → **native `async fn`** or `fn ... -> impl Future<...> + Send`
 - `#[async_trait]` on impl block → **remove** (native async works on concrete types)
