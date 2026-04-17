@@ -286,15 +286,15 @@ should carry TLS or crypto dependencies.
 | NestGate | yes | **PASS** | **no** | Lockfile artifact — vendored rustls-rustcrypto |
 | loamSpine | yes | **PASS** | **no** | Lockfile artifact — hickory optional dep |
 | Squirrel | no | **PASS** | **no** | Clean |
-| toadStool | no | **PASS** | **no** | Clean |
+| toadStool | yes | **PASS** | **no** | Lockfile artifact — Cargo v4 optional dep |
 | biomeOS | no | **PASS** | **no** | Clean |
 | rhizoCrypt | no | **PASS** | **no** | Clean |
 | barraCuda | no | **PASS** | **no** | Clean |
 | coralReef | no | **PASS** | **no** | Clean |
 | skunkBat | no | **PASS** | **no** | Clean |
 
-**13/13 pass `cargo deny check bans`. 0/13 compile ring. Ring lockfile ghost is a
-Cargo v4 artifact, not actionable ecosystem debt.**
+**13/13 pass `cargo deny check bans`. 0/13 compile ring. 7 carry ring as Cargo v4
+lockfile artifact. Not actionable ecosystem debt.**
 
 ### Class 4: `dyn` Dispatch + `async-trait` — DEPRECATED (Stadial Gate)
 
@@ -325,10 +325,10 @@ drop `async-trait` dep → ban in `deny.toml`.**
 | coralReef | **0** | **No** | **COMPLETE** (Iter 83: jsonrpsee removed) |
 | skunkBat | **0** | **No** | **COMPLETE** (Phase 44: 14→0, generics+RPITIT, dep removed) |
 | sweetGrass | **0** | **No** | **COMPLETE** (stadial pass: BraidBackend enum dispatch, RPITIT, dep removed) |
-| toadStool | **~158** | Yes | **STADIAL DEBT** — 32 traits, all with finite implementors, enum dispatch feasible |
+| toadStool | **0** | **No** | **COMPLETE** (S203r–S203t: 158→0, 32 traits → enum dispatch + RPITIT, dep removed + banned) |
 | BearDog | **49** | Yes | **STADIAL DEBT** — ~18 traits, most with ≤6 implementors, 2 intentionally open |
 
-**11/13 primals at zero.** Two remain: toadStool (158), BearDog (49).
+**12/13 primals at zero.** One remains: BearDog (49).
 
 **Resolution guidance**:
 - `Box<dyn Trait>` / `Arc<dyn Trait>` with finite implementors → **enum dispatch**
