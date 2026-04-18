@@ -127,9 +127,9 @@ struct LineageKeyResult {
 #[derive(Debug, Deserialize)]
 struct MixEntropyResult {
     entropy: String,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "protocol field: deserialized for completeness")]
     quality_score: Option<f64>,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "protocol field: deserialized for completeness")]
     tiers_used: Option<u8>,
 }
 

@@ -54,6 +54,7 @@ primalSpring/
 │   │   └── tolerances/            # Named latency and throughput bounds
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
+│   │   ├── primalspring_guidestone/ # guideStone: 6-layer base composition certification
 │   │   └── validate_all/          # Meta-validator: runs all 75 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
@@ -352,7 +353,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
 - **Particle model adopted**: Tower = electron (trust boundary, mediates bonds), Node = proton (compute, fungible), Nest = neutron (data at rest, non-fungible), NUCLEUS = atom. Grounded in Paper 23 (Mass-Energy-Information Equivalence). See `specs/MIXED_COMPOSITION_PATTERNS.md`.
 - **Layered validation framework**: L0 (biomeOS + any primal), L1 (each atomic), L2 (mixed atomics), L3 (bonding patterns on top of atomics). Full NUCLEUS Validation Matrix at `specs/NUCLEUS_VALIDATION_MATRIX.md`.
-- **12 sketch graphs** (`graphs/sketches/`): L0 primal routing matrix, L2 dual-tower ionic / dedicated tower / nest enclave, L3 covalent mesh backup / ionic lease / organo-metal-salt.
+- **12 sketch graphs** (archived to `fossilRecord/stale_graphs_apr12_2026/sketches/`): L0 primal routing matrix, L2 dual-tower ionic / dedicated tower / nest enclave, L3 covalent mesh backup / ionic lease / organo-metal-salt.
 - **3 new experiments** (exp091–093): L0 primal routing matrix, L2 dual-tower ionic structural, L3 covalent mesh backup structural.
 - **Live validation on Eastgate**: Tower Atomic (BearDog + Songbird) fully validated — crypto, HTTPS, discovery all LIVE PASS. Neural API running but capability registration gap identified (GAP-MATRIX-01). See `specs/CROSS_SPRING_EVOLUTION.md` for 6 gap items.
 - **6 GAP-MATRIX items documented**: Neural API capability registration (Critical), biomeOS graph parsing (Medium), Songbird TLS cipher suites (Low), NestGate IPC model (Medium), untested primals (Medium), plasmidBin freshness (Low).
@@ -404,8 +405,9 @@ for the full SELinux gap analysis and per-primal remediation plan.
 
 ## Docs
 
+- `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` — guideStone standard (5 properties, 6 layers, readiness levels)
+- `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance + layered certification
 - `wateringHole/README.md` — Track structure and cross-spring context
-- `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance
 - `wateringHole/handoffs/` — Active + archived evolution handoffs
 - `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–25+ done — includes live validation matrix + 6 GAP-MATRIX items)
 - `specs/NUCLEUS_VALIDATION_MATRIX.md` — NUCLEUS capability validation matrix with particle model

@@ -1247,7 +1247,7 @@ skunkBat and Squirrel. Massive async-trait progress: **9/13 primals at zero** (w
 | Crypto model authoritative | rhizoCrypt | S43 | `specs/CRYPTO_MODEL.md` — BearDog delegation canonical |
 | cli_mode refactor | petalTongue | Sprint 8 | `gather.rs`, `output.rs`, `types.rs`, `tests.rs` module split |
 
-### Remaining Open Upstream Gaps (refreshed April 16)
+### Remaining Open Upstream Gaps (refreshed April 18)
 
 | Priority | Gap | Owner | Status |
 |----------|-----|-------|--------|
@@ -1258,7 +1258,13 @@ skunkBat and Squirrel. Massive async-trait progress: **9/13 primals at zero** (w
 | Low | 29 shader absorption candidates | barraCuda | neuralSpring pipeline (submit PRs per shader) |
 | Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific |
 | Low | IPC timing for `shader.compile` | coralReef | Deployment timing |
+| Medium | `crypto.sign_contract` (ionic bond negotiation) | BearDog | Cross-tower compositions can't negotiate ionic bonds via IPC |
+| Medium | `compute.dispatch` standardization | toadStool | Springs doing GPU compute can't route generically |
+| Medium | 18 barraCuda IPC surface gaps (eigh, Pearson, chi-squared, etc.) | barraCuda | neuralSpring blocked on full self-validation |
 | Low | BTSP Phase 3 (encrypted post-handshake channel) | All primals | Deferred — Phase 2 NULL cipher operational everywhere |
+| Low | Squirrel provider registration protocol | Squirrel | Springs adding Squirrel to compositions can't register as providers |
+| Low | `storage.fetch_external` (cross-spring data) | NestGate | Cross-spring data pipelines need external fetch |
+| Low | loamSpine provenance chain for guideStone receipts | loamSpine | guideStone DAG signing can't trace computation provenance |
 | Low | Genetics three-tier awareness in primals | All primals | **primalSpring RPC client aligned** (April 15). BearDog has `genetic.*` RPCs. ecoPrimal `genetics::rpc` now matches BearDog's actual API. No primal has consumed `GeneticSecurityMode` or `MitoBeacon`/`NuclearGenetics` types yet — adoption awaits ecoPrimal ≥0.10.0 |
 | Low | skunkBat thymic selection impl | skunkBat + BearDog | Blocked on BearDog `lineage.list` + `btsp.session.verify` IPC |
 | Low | skunkBat composable primitives IPC | skunkBat + biomeOS | 5 domains defined, Neural API registration pending |

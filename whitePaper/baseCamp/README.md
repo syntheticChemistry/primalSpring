@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: April 16, 2026
-**Status**: Phase 43+ — 75 experiments (17 tracks), 570 tests, 56 deploy graphs (fragment-first composition), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 14/15 cross-arch checks (HSM pending)
+**Date**: April 18, 2026
+**Status**: Phase 43+ — v0.9.15 — 75 experiments (17 tracks), 570 tests, 56 deploy graphs (fragment-first composition), guideStone composition certification (`primalspring_guidestone` binary: 6-layer base NUCLEUS certification), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 14/15 cross-arch checks (HSM pending)
 
 ---
 
@@ -57,19 +57,19 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 16 | Composition Parity | exp094 | Does full NUCLEUS composition produce correct results via IPC? 19/19 checks. |
 | 17 | Cross-Architecture Deployment | exp095–096 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? 6/9 checks. |
 
-## Current State (v0.9.14)
+## Current State (v0.9.15)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 74 (17 tracks) |
-| Total tests | **443** (unit + integration + doc-tests + proptest, 42 ignored live) |
+| Experiments | 75 (17 tracks) |
+| Total tests | **570** (unit + integration + doc-tests + proptest) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `forbid` |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | **67 deploy graphs + 6 fragments** (9 profiles + 5 multi-node + 13 spring validation + 2 cross-spring + 5 bonding + 2 chaos + 5 spring deploy + 8 downstream proto-nucleate + 4 patterns + 7 root + 1 template), all `[[graph.nodes]]` format, topologically validated |
+| Deploy graphs | **56 TOMLs** (6 fragments + 9 profiles + 5 multi-node + 4 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + ~11 root), fragment-first composition with `resolve = true` |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | All LD-01 through LD-10 RESOLVED. Pre-downstream gaps resolved. |
 | Discovery | Capability-first: 6-tier + Neural API + `discover_by_capability()` + biomeOS `capability.discover` + `topology.rescan` |
@@ -77,7 +77,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 74 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 75 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |
@@ -93,6 +93,41 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | Live pass rate | **43/44 (98%)** — up from 93% → 79% pre-evolution |
 | petalTongue | v1.6.6+ integrated, zero-copy IPC, blake3, RenderingAwareness auto-init, PT-07 server discovery |
 | Nucleated spring deploys | 6 proto graphs: airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring |
+
+## What Changed — Phase 43+ (guideStone Composition Certification)
+
+### guideStone as Base Certification Layer (April 18, 2026)
+
+The **Python → Rust → Primal** validation ladder now has a concrete deployment
+artifact: the **guideStone**. Each spring evolves from a Rust validation binary
+(Level 2, the "Rust proof") to a self-validating NUCLEUS node (Level 5, the
+"primal proof"). primalSpring's own guideStone validates composition correctness
+as the base certification layer.
+
+**primalspring_guidestone binary** — 6-layer NUCLEUS composition certification:
+- **Layer 0 (Bare)**: Deploy graph parsing, fragment resolution, manifest consistency, bonding type well-formedness. Runs on any clean machine without primals.
+- **Layer 1 (Discovery)**: All primals in the graph discoverable via capability-based scan.
+- **Layer 2 (Health)**: Tower, Node, Nest primals respond to `health.liveness`.
+- **Layer 3 (Parity)**: `stats.mean`, `tensor.matmul`, storage roundtrip, shader capabilities via IPC.
+- **Layer 4 (Cross-Atomic)**: Tower hash → Nest store → retrieve → verify (end-to-end proof).
+- **Layer 5 (Bonding)**: All `BondType` variants well-formed, cipher policy ordering, metering.
+- **Layer 6 (BTSP+Crypto)**: `crypto.hash` determinism, BTSP cipher policy, Ed25519 sign/verify roundtrip.
+
+**Layered certification model**: Domain guideStones (hotSpring, healthSpring, etc.)
+inherit the base certification and only validate their own domain science on top.
+If primalSpring's guideStone passes, discovery, health, and crypto are certified.
+
+**Composition API evolution**: `capability_to_primal()`, `method_to_capability_domain()`,
+and `validate_liveness()` now form the canonical API for downstream springs building
+their own guideStone binaries.
+
+**Ecosystem guideStone readiness** (as of April 18, 2026):
+- hotSpring v0.6.32: **Level 5 — Certified** (guideStone-v0.7.0)
+- healthSpring V53, neuralSpring V133, wetSpring V145, ludoSpring V44: **Level 1** (validation exists)
+- airSpring v0.10.0, groundSpring V124: **Level 0** (not started)
+- primalSpring v0.9.15: **Level 1** (6-layer binary implemented, needs live NUCLEUS for full certification)
+
+See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
 
 ## What Changed — Phase 42–43 (Multi-Tier Genetics + Cross-Arch Deployment)
 

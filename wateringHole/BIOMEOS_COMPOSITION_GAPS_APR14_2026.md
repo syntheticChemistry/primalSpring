@@ -1,7 +1,7 @@
 # biomeOS Composition Gaps — From primalSpring Phase 43
 
 **Date**: April 14, 2026
-**From**: primalSpring v0.9.14
+**From**: primalSpring v0.9.15
 **Context**: Cross-architecture Pixel deployment via biomeOS Neural API
 **License**: AGPL-3.0-or-later
 

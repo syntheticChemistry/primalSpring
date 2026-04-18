@@ -3,7 +3,7 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.9.15] — Phase 43+: Graph Consolidation + Fragment-First Composition (2026-04-16)
+## [0.9.15] — Phase 43+: Graph Consolidation + Fragment-First Composition + guideStone (2026-04-16)
 
 ### Milestone
 **78 → 56 deploy graph TOMLs.** Fragment-first composition eliminates isomorphic duplication.
@@ -42,6 +42,22 @@ zero `async-trait`, Edition 2024, `#[expect]` over `#[allow]` everywhere.
 - Updated `wateringHole/` docs with consolidated graph counts.
 - New handoff: `wateringHole/GRAPH_CONSOLIDATION_AND_NUCLEUS_DEPLOYMENT_HANDOFF_APR16_2026.md`.
 - `config/capability_registry.toml` and `deployment_matrix.toml` version/date updated.
+
+### Added
+- **`primalspring_guidestone` binary**: Self-validating deployable that certifies NUCLEUS
+  composition correctness across 6 layers (bare properties, discovery, atomic health,
+  capability parity, cross-atomic pipeline, bonding model, BTSP/crypto). Base certification
+  layer that domain guideStones inherit from.
+- **guideStone Composition Standard**: `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` —
+  ecosystem-wide standard for self-validating deployables (5 properties, 6 readiness levels,
+  bare vs NUCLEUS modes, validation window concept).
+- **Layered certification model**: primalSpring guideStone = base (composition), domain
+  guideStone = domain (science). Domain guideStones can call `primalspring_guidestone` as
+  a pre-flight check.
+- **Composition API evolution**: `capability_to_primal()` made public, new
+  `method_to_capability_domain()` and `validate_liveness()` for downstream springs.
+- **guideStone readiness tracking** in `PRIMAL_GAPS.md`: primalSpring Level 1, hotSpring
+  Level 5 (certified), 4 springs at Level 1, 2 at Level 0.
 
 ### Test Results
 - **primalSpring**: 570 tests PASS, 0 failures, 0 clippy warnings.

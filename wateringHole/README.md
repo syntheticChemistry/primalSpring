@@ -1,10 +1,10 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
-**Version**: 0.9.15 (Phase 43+ — 570 tests, 75 experiments, 56 deploy graphs, BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), biomeOS-managed cross-arch Pixel deployment, content distribution federation, **NUCLEUS composition 12/12 routing + 19/19 parity**, fragment-first graph composition)  
-**Phase**: **INTERSTADIAL** — stadial gate cleared April 16, 2026. 13/13 primals + primalSpring itself at modern async Rust parity.  
+**Version**: 0.9.15 (Phase 43+ — 570 tests, 75 experiments, 56 deploy graphs, guideStone composition certification, BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), biomeOS-managed cross-arch Pixel deployment, content distribution federation, **NUCLEUS composition 12/12 routing + 19/19 parity**, fragment-first graph composition)  
+**Phase**: **INTERSTADIAL** — stadial gate cleared April 16, 2026. 13/13 primals + primalSpring itself at modern async Rust parity. guideStone base certification binary implemented.  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: April 16, 2026
+**Last Updated**: April 18, 2026
 
 ---
 
@@ -92,7 +92,7 @@ primalSpring fills the gap.
 
 ---
 
-## Track Structure (17 Tracks, 74 Experiments)
+## Track Structure (17 Tracks, 75 Experiments)
 
 ### Track 1: Atomic Composition (exp001–006)
 

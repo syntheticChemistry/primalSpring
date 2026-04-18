@@ -24,8 +24,9 @@ back upstream to primals and primalSpring.
 
 ## Architecture
 
-- **ecoPrimal/** — library crate (`primalspring`) + 2 binaries
-  (`primalspring_primal` server, `validate_all` runner)
+- **ecoPrimal/** — library crate (`primalspring`) + 3 binaries
+  (`primalspring_primal` server, `primalspring_guidestone` 6-layer composition
+  certification, `validate_all` runner)
 - **experiments/** — 75 validation binaries covering 17 tracks
 - **graphs/** — 56 deploy graph TOMLs using fragment-first composition (6 fragments +
   9 profiles + 4 patterns + 4 spring validation + 2 cross-spring + 5 bonding +
@@ -89,6 +90,12 @@ Cross-architecture validated: biomeOS-managed Tower bootstrap on Pixel
 Particle model adopted: Tower = electron, Node = proton, Nest = neutron,
 NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →
 L2 (mixed atomics) → L3 (bonding patterns).
+
+guideStone composition certification: `primalspring_guidestone` binary validates
+NUCLEUS composition correctness across 6 layers (bare properties, discovery,
+atomic health, capability parity, cross-atomic pipeline, bonding, BTSP/crypto).
+Domain guideStones (hotSpring, healthSpring, etc.) inherit this base certification
+and only validate their own science. See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md`.
 
 Bonding models validated (structural): Covalent, Ionic, Metallic, Weak,
 OrganoMetalSalt. Content distribution federation graph with 4 bonding tiers.
