@@ -135,12 +135,17 @@ spring_name = "esotericwebb"
 owner = "esotericWebb"
 domain = "crpg"
 particle_profile = "balanced"
-fragments = ["tower_atomic", "nest_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "squirrel", "nestgate"]
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "squirrel", "nestgate", "petaltongue", "toadstool", "rhizocrypt", "loamspine", "sweetgrass"]
 validation_capabilities = [
     "inference.complete",
     "inference.embed",
     "storage.store",
     "storage.retrieve",
     "crypto.hash",
+    "dag.session.create",
+    "dag.event.append",
+    "certificate.mint",
+    "visualization.render.scene",
+    "compute.dispatch.submit",
 ]
