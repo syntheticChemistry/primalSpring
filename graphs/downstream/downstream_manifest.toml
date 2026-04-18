@@ -113,14 +113,18 @@ spring_name = "ludospring"
 owner = "ludoSpring"
 domain = "game_science"
 particle_profile = "balanced"
-fragments = ["tower_atomic", "node_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel"]
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate"]
 validation_capabilities = [
-    "tensor.matmul",
     "compute.dispatch",
     "stats.mean",
+    "tensor.matmul",
     "inference.complete",
     "crypto.hash",
+    "storage.store",
+    "storage.retrieve",
+    "dag.session.create",
+    "dag.event.append",
 ]
 
 [[downstream]]
