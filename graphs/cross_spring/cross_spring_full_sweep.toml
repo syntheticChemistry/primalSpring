@@ -48,7 +48,7 @@ capabilities = ["graph.deploy", "capability.discover"]
 
 [[graph.nodes]]
 name = "groundspring"
-binary = "groundspring_primal"
+binary = "groundspring"
 order = 3
 required = true
 health_method = "health.liveness"
@@ -57,7 +57,7 @@ capabilities = ["measurement.sense"]
 
 [[graph.nodes]]
 name = "wetspring"
-binary = "wetspring_primal"
+binary = "wetspring"
 order = 4
 required = true
 health_method = "health.liveness"

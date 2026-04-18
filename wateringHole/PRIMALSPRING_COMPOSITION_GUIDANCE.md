@@ -1,7 +1,7 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
-**Date**: April 14, 2026
-**From**: primalSpring v0.9.14
+**Date**: April 17, 2026
+**From**: primalSpring v0.9.15
 **License**: AGPL-3.0-or-later
 
 ---
@@ -565,15 +565,58 @@ required = true                   # GPU/CPU math execution
 by_capability = "tensor"
 ```
 
-Springs absorb these by:
-1. Reading the proto-nucleate to understand required primals and capabilities
-2. Wiring their application logic to call those primals via IPC
-3. Running primalSpring experiments to validate the composition
-4. Handing gaps and new patterns back to primalSpring
+### Proto-Nucleate Absorption Workflow (v0.9.15)
 
-Proto-nucleates are now consolidated: `downstream_manifest.toml` parameterizes 7
-springs via `proto_nucleate_template.toml`. The one exception is
-`healthspring_enclave_proto_nucleate.toml` (unique dual-tower ionic bridge, kept standalone).
+How a spring picks up a proto-nucleate graph and evolves against it:
+
+1. **Read** `graphs/downstream/downstream_manifest.toml` — find your `[[downstream]]` entry.
+   (Exception: `healthspring_enclave_proto_nucleate.toml` is standalone — dual-tower ionic bridge pattern.)
+   Template: `proto_nucleate_template.toml`.
+2. **Understand dependencies** — which primals are `required = true` for your domain
+3. **Wire IPC** — use ecoPrimal's `CompositionContext` for capability-based calls (or `PrimalClient` for direct wiring)
+4. **Compose** — build your domain logic as orchestration of primal capability calls
+5. **Validate parity** — use `composition::validate_parity()` to compare local Rust math against primal composition output within named tolerances
+6. **Hand back** — document gaps/patterns discovered (especially response schema issues), hand back to primalSpring
+
+### Three-Tier Composition Validation (Emerged Pattern — April 17, 2026)
+
+Four springs (hotSpring, healthSpring, neuralSpring, wetSpring) have independently
+converged on a three-tier validation structure. This is now the **recommended pattern**
+for any spring entering NUCLEUS composition:
+
+```
+Tier 1: LOCAL_CAPABILITIES (honest local dispatch)
+        Spring owns a set of domain capabilities that can execute locally via Rust code.
+        These are listed in the spring's niche.rs or equivalent.
+        No IPC required. Always passes on the developer's machine.
+        Examples: hotSpring 13 LOCAL_CAPABILITIES, healthSpring niche.rs
+
+Tier 2: IPC-WIRED (live primal delegation with honest skip)
+        Spring attempts IPC calls to NUCLEUS primals (Tower, Node, Nest).
+        Uses `check_skip()` / `check_or_skip()` when primals are absent.
+        Parity comparison: local Rust result vs primal IPC result.
+        Examples: neuralSpring validate_science_composition, wetSpring Exp401/402
+
+Tier 3: FULL NUCLEUS (deployed via biomeOS graph execution)
+        Spring deploy graph is loaded and executed by biomeOS.
+        All primals healthy, all nodes start in topological order.
+        Spring validates end-to-end via graph.execute → composition.health.
+        This is the target state — springs are validated compositions.
+```
+
+**Why three tiers**: Tier 1 is always green and lets the spring CI pass without infrastructure.
+Tier 2 catches composition regressions when primals are running (integration test).
+Tier 3 proves deployment correctness (acceptance test). Springs should NOT skip Tier 2
+and jump to Tier 3 — the honest skip/pass distinction in Tier 2 is critical evidence
+for identifying cross-primal protocol gaps.
+
+**Observed ecosystem blockers** (April 17, 2026) — common across all four delta springs:
+- `crypto.sign_contract` (ionic bond negotiation) — BearDog, affects cross-tower compositions
+- BTSP Phase 3 (encrypted post-handshake channel) — all primals
+- `compute.dispatch` standardization — toadStool, affects springs doing GPU compute
+- Squirrel provider registration — affects springs needing AI capabilities
+- `storage.fetch_external` (cross-spring data) — NestGate, affects cross-spring pipelines
+- barraCuda IPC migration (path dep → capability IPC) — affects springs using barraCuda as library
 
 ---
 

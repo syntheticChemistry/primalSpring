@@ -1,24 +1,33 @@
 # primalSpring — Ecosystem Leverage Guide
 
-**Date**: April 15, 2026
-**Version**: v1.4.0
+**Date**: April 17, 2026
+**Version**: v1.5.0
 **License**: AGPL-3.0-or-later
 
 ---
 
-## Current Season: Mountain → Spring Transition
+## Current Season: Spring → Delta Transition
 
 The ecosystem evolves in seasonal cycles. Capabilities flow downhill from
 primals (mountains) through primalSpring to domain springs (delta).
 Gaps discovered by springs evaporate back up through primalSpring to
 primal teams.
 
-**Right now** (April 15, 2026): NUCLEUS composition is fully validated —
-Tower, Nest, and Node atomics all passing (exp094 19/19, exp091 12/12).
-biomeOS family-ID propagation and NestGate UDS protocol auto-detection
-are resolved. Domain springs can deploy full NUCLEUS via `plasmidBin` and
-begin absorbing composition patterns. The remaining frontier is HSM
-integration, BTSP Phase 3 server-side, and internet-scale federation.
+**Right now** (April 17, 2026): NUCLEUS composition is fully validated and
+stadial gate has cleared across all 13 primals. Four domain springs have
+entered active NUCLEUS composition testing:
+- **hotSpring v0.6.32** — Tier 3 validators, 62/62 suites, 13 LOCAL_CAPABILITIES dispatched
+- **healthSpring V53** — exp119/120/121 live IPC parity, niche.rs, dual-tower ionic bridge
+- **neuralSpring V131** — validate_science_composition, cross-team absorption handoff
+- **wetSpring V144** — Exp401/402 full tier validation, 18 IPC roundtrip tests
+
+Three springs are pre-delta (airSpring v0.10.0, groundSpring V124, ludoSpring V30) —
+stadially clean but not yet wiring NUCLEUS composition.
+
+primalSpring v0.9.15: graph consolidation (78→56 TOMLs), fragment-first composition
+(`resolve = true`), template+manifest pattern. Python → Rust → NUCLEUS pipeline
+proven across four springs. The remaining frontier is ionic bond negotiation, BTSP
+Phase 3 encrypted channels, and compute.dispatch standardization.
 
 ---
 
@@ -549,8 +558,10 @@ primalSpring triages, refines, and routes the gap to the responsible primal.
 ### Starting a Spring Evolution Session
 
 ```
-1. Read your proto-nucleate:
-   graphs/downstream/{yourspring}_*_proto_nucleate.toml
+1. Read your proto-nucleate in the downstream manifest:
+   graphs/downstream/downstream_manifest.toml → find your [[downstream]] entry
+   Template: graphs/downstream/proto_nucleate_template.toml
+   (Exception: healthspring_enclave_proto_nucleate.toml is standalone)
 
 2. Check the deployment matrix for your topology:
    config/deployment_matrix.toml → find cells matching your atomic
@@ -558,16 +569,21 @@ primalSpring triages, refines, and routes the gap to the responsible primal.
 3. Wire your domain logic to primal capabilities via IPC:
    use ecoPrimal::ipc::PrimalClient;
 
-4. Run primalSpring validation experiments:
+4. Follow the three-tier validation pattern (see COMPOSITION_GUIDANCE.md):
+   Tier 1: LOCAL_CAPABILITIES (honest local dispatch, always green)
+   Tier 2: IPC-WIRED (live primal delegation, check_skip for absent primals)
+   Tier 3: FULL NUCLEUS (biomeOS graph execution, all nodes healthy)
+
+5. Run primalSpring validation experiments:
    cargo run --bin validate_all -- --filter {yourspring}
 
-5. Document gaps in primalSpring:
+6. Document gaps in primalSpring:
    docs/PRIMAL_GAPS.md → add your spring's findings
 
-6. Propose new graph patterns:
-   graphs/downstream/ or graphs/science/ → submit via PR
+7. Propose new graph patterns:
+   graphs/downstream/ → submit via PR
 
-7. Hand back patterns to primalSpring for refinement
+8. Hand back patterns to primalSpring for refinement
 ```
 
 Each cycle makes the whole ecosystem stronger. A gap discovered by hotSpring
@@ -578,7 +594,7 @@ are domain laboratories that evolve it.
 
 ---
 
-## Portability Debt: Upstream Handoffs (April 11, 2026)
+## Portability Debt: Upstream Handoffs (April 17, 2026)
 
 primalSpring's benchScale NUCLEUS deployment validation exposed three classes of
 non-portable dependency across the ecosystem. **Class 1 (C crypto via `ring`) is
@@ -587,7 +603,7 @@ Class 2 (GPU/Vulkan via `wgpu` → `dlopen`) is partially addressed via BC-08
 (cpu-shader default-on) and primal-level sovereign probe. Class 3 (remaining C
 surfaces) is largely resolved via deny.toml enforcement (CR-01 closed).
 
-### Active Upstream Handoffs (refreshed April 11, cross-primal evolution review)
+### Active Upstream Handoffs (refreshed April 17, cross-spring composition review)
 
 | ID | Owner | What | Status | Notes |
 |----|-------|------|--------|-------|

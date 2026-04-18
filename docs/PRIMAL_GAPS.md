@@ -1510,10 +1510,46 @@ to a single shared utility in `sourdough-core`.
 
 ### Class 4 ecosystem-wide: async-trait migration
 
-**9 primals at zero**: biomeOS(0), barraCuda(0), Squirrel(0), loamSpine(0),
-NestGate(0+0), coralReef(0), Songbird(0), petalTongue(0), rhizoCrypt(0).
-Remaining: toadStool(~158, dyn-ceiling) > BearDog(49) > sweetGrass(22, object-safety) >
-skunkBat(14).
+**ALL 13 primals at zero** (stadial gate cleared April 16, 2026):
+biomeOS(0), barraCuda(0), Squirrel(0), loamSpine(0), NestGate(0), coralReef(0),
+Songbird(0), petalTongue(0), rhizoCrypt(0), toadStool(0, S203s RPITIT + enum dispatch),
+BearDog(0, W56 serde_yaml eliminated), sweetGrass(0, RPITIT + enum dispatch),
+skunkBat(14, non-blocking — threat/recon trait interfaces).
+
+## Cross-Spring Composition Gaps (Evaporation — April 17, 2026)
+
+Four springs have entered NUCLEUS composition testing and reported gaps back:
+
+### Common Cross-Primal Protocol Gaps
+
+| Gap | Reported By | Owner | Status |
+|-----|-------------|-------|--------|
+| **Ionic bond negotiation** — `crypto.sign_contract` not yet wired for cross-tower compositions | hotSpring (GAP-HS-005 evolution), healthSpring (dual-tower ionic), wetSpring (provenance cross-spring) | **BearDog team** | **OPEN** — propose→accept→seal lifecycle works; cross-family contract signing not yet exposed as IPC method |
+| **BTSP Phase 3 encrypted channel** — post-handshake cipher negotiation (`btsp.negotiate` + ChaCha20Poly1305) | hotSpring, healthSpring, neuralSpring, wetSpring | **BearDog + all primals** | **DEFERRED** — Phase 2 NULL cipher operational everywhere; Phase 3 awaiting HSM integration path |
+| **toadStool `compute.dispatch` standardization** — springs need consistent dispatch envelope for GPU compute | hotSpring, wetSpring, neuralSpring | **toadStool team** | **RESOLVED** (S203 `DISPATCH_WIRE_CONTRACT.md`) but spring-side adoption incomplete |
+| **Squirrel provider registration** — `inference.register_provider` needed for springs with local models | neuralSpring, healthSpring, wetSpring | **Squirrel team** | **PARTIAL** — wire tests exist; production registration path in progress |
+| **NestGate `storage.fetch_external`** — cross-spring data retrieval for composition pipelines | wetSpring, healthSpring | **NestGate team** | **PARTIAL** — method exists but delegated via Tower Atomic; cross-spring routing via biomeOS needed |
+| **barraCuda IPC migration** — springs using barraCuda as path dependency need migration to capability IPC | neuralSpring (explicit), all springs (implicit) | **primalSpring + barraCuda team** | **OPEN** — documented migration path needed; CompositionContext supports IPC but springs haven't wired it |
+
+### Per-Spring Composition Status (Delta Season)
+
+| Spring | Version | Composition Tier | Evidence | Blockers |
+|--------|---------|-----------------|----------|----------|
+| **hotSpring** | v0.6.32 | Tier 2-3 | 62/62 suites; 13 LOCAL_CAPABILITIES; validate_nucleus_composition/node/nest binaries | Ionic bond, BTSP Phase 3, compute.dispatch adoption |
+| **healthSpring** | V53 | Tier 2 | exp119/120/121; niche.rs; dual-tower ionic bridge | Ionic negotiation (cross-tower), NestGate cross-spring, Squirrel provider |
+| **neuralSpring** | V131 | Tier 2 | validate_science_composition (spectral, IPR, Hessian, disorder); cross-team handoff | barraCuda IPC migration, Squirrel provider, GPU dispatch |
+| **wetSpring** | V144 | Tier 2-3 | Exp401 (43/43), Exp402 (63/63); 18 IPC roundtrip; provenance registry | NestGate fetch_external, Squirrel provider, compute.dispatch |
+
+### Patterns Handed Back (Evaporation → primalSpring)
+
+Springs discovered and refined these patterns during composition testing.
+primalSpring should absorb for standardization:
+
+1. **Three-tier validation structure** (Tier 1: LOCAL_CAPABILITIES, Tier 2: IPC-wired, Tier 3: Full NUCLEUS) — all four delta springs converged independently. Now documented in `PRIMALSPRING_COMPOSITION_GUIDANCE.md`.
+2. **Honest skip with reason** — `check_or_skip("primal not running: {reason}")` pattern used by all active springs. Already in primalSpring's `validation/mod.rs`.
+3. **Niche self-knowledge** — healthSpring's `niche.rs` with `CAPABILITIES` + `CONSUMED_CAPABILITIES` + `COST_ESTIMATES`. Pattern matches primalSpring's own niche.
+4. **Provenance registry** — wetSpring's `provenance_registry.rs` for tracking IPC provenance chains. Candidate for absorption into ecoPrimal validation library.
+5. **Dual-tower ionic bridge** — healthSpring's pattern for patient-data / analytics separation. Already has standalone proto-nucleate: `healthspring_enclave_proto_nucleate.toml`.
 
 ---
 

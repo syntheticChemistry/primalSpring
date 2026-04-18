@@ -19,7 +19,7 @@ description = "NUCLEUS-based deploy parameters for 6 science springs"
 
 [[spring]]
 spring_name = "wetspring"
-spring_binary = "wetspring_primal"
+spring_binary = "wetspring"
 domain = "biology"
 by_capability = "biology"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "provenance_trio"]
@@ -40,7 +40,7 @@ capabilities = [
 
 [[spring]]
 spring_name = "groundspring"
-spring_binary = "groundspring_primal"
+spring_binary = "groundspring"
 domain = "geology"
 by_capability = "geology"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "provenance_trio"]

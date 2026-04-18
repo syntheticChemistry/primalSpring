@@ -81,7 +81,7 @@ bond_role = "covalent_core"
 # Core springs
 [[graph.nodes]]
 name = "groundspring"
-binary = "groundspring_primal"
+binary = "groundspring"
 order = 5
 required = true
 depends_on = ["beardog", "songbird"]

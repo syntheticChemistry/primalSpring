@@ -63,7 +63,7 @@ capabilities = ["graph.execution", "ecosystem.coordination"]
 # Groundspring validates health before, during, and after partition
 [[graph.nodes]]
 name = "groundspring"
-binary = "groundspring_primal"
+binary = "groundspring"
 order = 4
 required = true
 depends_on = ["beardog", "songbird"]

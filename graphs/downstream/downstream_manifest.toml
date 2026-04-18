@@ -43,7 +43,7 @@ capabilities = [
 
 [[downstream]]
 spring_name = "groundspring"
-spring_binary = "groundspring_primal"
+spring_binary = "groundspring"
 owner = "groundSpring"
 domain = "geoscience"
 by_capability = "compute"
@@ -77,7 +77,7 @@ capabilities = [
 
 [[downstream]]
 spring_name = "wetspring"
-spring_binary = "wetspring_primal"
+spring_binary = "wetspring"
 owner = "wetSpring"
 domain = "life_science"
 by_capability = "biology"

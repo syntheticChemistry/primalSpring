@@ -65,7 +65,7 @@ chaos_delay_range_ms = [0, 10000]
 
 [[graph.nodes]]
 name = "groundspring"
-binary = "groundspring_primal"
+binary = "groundspring"
 order = 4
 required = true
 depends_on = ["beardog", "songbird"]

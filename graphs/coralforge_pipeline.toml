@@ -66,7 +66,7 @@ capabilities = ["compute.df64", "compute.precision"]
 # ── Node 5: wetSpring (bio-shaders) ────────────────────────────────────
 [[graph.nodes]]
 name = "wetspring"
-binary = "wetspring_primal"
+binary = "wetspring"
 order = 5
 required = true
 depends_on = ["hotspring"]

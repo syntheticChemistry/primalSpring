@@ -9,7 +9,7 @@
 #
 # Parameters (from downstream_manifest.toml):
 #   {{spring_name}}      — e.g. "airspring", "wetspring"
-#   {{spring_binary}}    — e.g. "airspring_primal", "wetspring_primal"
+#   {{spring_binary}}    — e.g. "airspring_primal", "wetspring"
 #   {{owner}}            — e.g. "airSpring", "wetSpring"
 #   {{domain}}           — e.g. "ecology_agriculture", "life_science"
 #   {{by_capability}}    — e.g. "compute", "biology"
