@@ -58,7 +58,7 @@ which has a unique dual-tower ionic bridge pattern and is kept as a standalone g
 | **airSpring** | 0.10.0 | 986 | Node + **Nest** | `downstream_manifest.toml` (airspring) | balanced |
 | **groundSpring** | 0.1.0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` (groundspring) | balanced |
 | **healthSpring** | 0.1.0 | 928 | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_proto_nucleate.toml` (standalone) | neutron_heavy |
-| **ludoSpring** | 0.10.0 | 790+ | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced | Level 5 primal proof (V44) |
+| **ludoSpring** | 0.10.0 | 790+ | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced | Level 5 guideStone (V45) |
 
 ### Key
 
@@ -256,8 +256,8 @@ ludoSpring composition (pure — ludospring ecoBin)
 
 **What ludoSpring evolves for the ecosystem**:
 - 60Hz composition budget → tests graph execution latency limits
-- Four-layer validation stack → canonical Python→Rust→IPC composition→primal proof pattern
-- Level 5 primal proof (V44): `validate_primal_proof` calls 10 barraCuda IPC methods against Python golden values
+- Five-layer validation + guideStone → canonical Python→Rust→IPC composition→`ludospring_guidestone`
+- Level 5 guideStone (V45): `ludospring_guidestone` calls 10 barraCuda IPC methods against Python golden values
 - AI narration under latency → tests Squirrel real-time performance
 - Session lifecycle (create/save/restore/fork) → benefits any stateful composition
 - Composition drift detection → `composition_targets.json` golden chain

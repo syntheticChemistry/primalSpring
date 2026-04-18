@@ -126,9 +126,19 @@ domain = "game_science"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate"]
+guidestone_binary = "ludospring_guidestone"
+guidestone_readiness = 2
 validation_capabilities = [
-    "compute.dispatch",
+    "activation.fitts",
+    "activation.hick",
+    "math.sigmoid",
+    "math.log2",
     "stats.mean",
+    "stats.std_dev",
+    "noise.perlin2d",
+    "rng.uniform",
+    "tensor.create",
+    "compute.dispatch",
     "tensor.matmul",
     "inference.complete",
     "crypto.hash",
