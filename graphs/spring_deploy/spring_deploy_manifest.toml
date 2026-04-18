@@ -15,7 +15,7 @@
 [manifest]
 template = "spring_deploy_template.toml"
 version = "3.0.0"
-description = "NUCLEUS-based deploy parameters for 5 science springs"
+description = "NUCLEUS-based deploy parameters for 6 science springs"
 
 [[spring]]
 spring_name = "wetspring"
@@ -110,4 +110,29 @@ capabilities = [
     "health.aggregate",
     "data.fetch",
     "model.inference_route",
+]
+
+[[spring]]
+spring_name = "hotspring"
+spring_binary = "hotspring_primal"
+domain = "qcd_physics"
+by_capability = "compute"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "provenance_trio"]
+extra_nodes = ["squirrel", "coralreef"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel"]
+order = 10
+capabilities = [
+    "physics.lattice_qcd",
+    "physics.lattice_gauge_update",
+    "physics.hmc_trajectory",
+    "physics.wilson_dirac",
+    "physics.molecular_dynamics",
+    "physics.fluid",
+    "physics.nuclear_eos",
+    "physics.thermal",
+    "physics.radiation",
+    "compute.df64",
+    "compute.cg_solver",
+    "compute.gradient_flow",
+    "compute.f64",
 ]
