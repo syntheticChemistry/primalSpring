@@ -1538,21 +1538,26 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 
 | Spring | Version | Composition Tier | Evidence | Blockers |
 |--------|---------|-----------------|----------|----------|
-| **hotSpring** | v0.6.32 | Tier 2-3 | 62/62 suites; 13 LOCAL_CAPABILITIES; validate_nucleus_composition/node/nest binaries | barraCuda IPC rewiring (spring-side), Ionic bond, BTSP Phase 3 |
-| **healthSpring** | V53 | Tier 2 | exp119/120/121; niche.rs; dual-tower ionic bridge | barraCuda IPC rewiring (spring-side), Ionic negotiation (cross-tower), NestGate cross-spring |
-| **neuralSpring** | V132 | Tier 2 | validate_science_composition (spectral, IPR, Hessian, disorder); cross-team handoff | barraCuda IPC rewiring (spring-side), Squirrel provider, GPU dispatch |
-| **wetSpring** | V144 | Tier 2-3 | Exp401 (43/43), Exp402 (63/63); 18 IPC roundtrip; provenance registry | barraCuda IPC rewiring (spring-side), NestGate fetch_external, Squirrel provider |
+| **hotSpring** | v0.6.32 | Level 5 | 63/63 suites; `validate_primal_proof` (9 IPC probes to barraCuda/BearDog/toadStool); `PRIMAL_PROOF_IPC_MAPPING.md` | Ionic bond, BTSP Phase 3 |
+| **healthSpring** | V53 | Tier 2→5 | exp122 IPC parity; `math_dispatch.rs` feature-gated IPC/lib routing; niche.rs; dual-tower ionic | Ionic negotiation (cross-tower), NestGate cross-spring |
+| **neuralSpring** | V132 | Tier 2 | validate_science_composition (spectral, IPR, Hessian, disorder); proto-nucleate aligned | barraCuda IPC rewiring (spring-side), Squirrel provider, GPU dispatch |
+| **wetSpring** | V145 | Level 5 | Exp403 `validate_primal_parity_v1` (5 primals over IPC); 22 CONSUMED_CAPABILITIES in niche.rs | NestGate fetch_external, Squirrel provider |
 
 ### Patterns Handed Back (Evaporation → primalSpring)
 
 Springs discovered and refined these patterns during composition testing.
-primalSpring should absorb for standardization:
+primalSpring absorbs for standardization:
 
-1. **Three-tier validation structure** (Tier 1: LOCAL_CAPABILITIES, Tier 2: IPC-wired, Tier 3: Full NUCLEUS) — all four delta springs converged independently. Now documented in `PRIMALSPRING_COMPOSITION_GUIDANCE.md`.
-2. **Honest skip with reason** — `check_or_skip("primal not running: {reason}")` pattern used by all active springs. Already in primalSpring's `validation/mod.rs`.
-3. **Niche self-knowledge** — healthSpring's `niche.rs` with `CAPABILITIES` + `CONSUMED_CAPABILITIES` + `COST_ESTIMATES`. Pattern matches primalSpring's own niche.
+1. **Three-tier validation structure** (Tier 1: LOCAL_CAPABILITIES, Tier 2: IPC-wired, Tier 3: Full NUCLEUS) — all four delta springs converged independently. Now documented in `PRIMALSPRING_COMPOSITION_GUIDANCE.md`. **ABSORBED.**
+2. **Honest skip with reason** — `check_or_skip("primal not running: {reason}")` pattern used by all active springs. Already in primalSpring's `validation/mod.rs`. **ABSORBED.**
+3. **Niche self-knowledge** — healthSpring's `niche.rs` with `CAPABILITIES` + `CONSUMED_CAPABILITIES` + `COST_ESTIMATES`. Pattern matches primalSpring's own niche. **ABSORBED.**
 4. **Provenance registry** — wetSpring's `provenance_registry.rs` for tracking IPC provenance chains. Candidate for absorption into ecoPrimal validation library.
-5. **Dual-tower ionic bridge** — healthSpring's pattern for patient-data / analytics separation. Already has standalone proto-nucleate: `healthspring_enclave_proto_nucleate.toml`.
+5. **Dual-tower ionic bridge** — healthSpring's pattern for patient-data / analytics separation. Already has standalone proto-nucleate: `healthspring_enclave_proto_nucleate.toml`. **ABSORBED.**
+6. **`capability_to_primal()` public API** — all three springs built their own domain→primal mapping. Now public in `primalspring::composition`. **ABSORBED Apr 18, 2026.**
+7. **`method_to_capability_domain()` routing** — hotSpring's handoff asked for canonical JSON-RPC method→domain resolution. Now in `primalspring::composition`. **ABSORBED Apr 18, 2026.**
+8. **`validate_liveness()` preamble** — all three springs wrote the same health-check-all-then-exit(2) preamble. Now canonical in `primalspring::composition::validate_liveness()`. **ABSORBED Apr 18, 2026.**
+9. **`validate_primal_proof` binary convention** — hotSpring, wetSpring, ludoSpring all name their Level 5 harness `validate_primal_proof` or `validate_primal_parity`. Canonical pattern documented in PRIMALSPRING_COMPOSITION_GUIDANCE.md. **ABSORBED Apr 18, 2026.**
+10. **Feature-gated IPC routing** — healthSpring's `math_dispatch.rs` uses `#[cfg(feature = "primal-proof")]` to toggle between library and IPC paths. Good pattern for gradual migration. **DOCUMENTED** — not yet absorbed as library code; springs own their dispatch layer.
 
 ---
 

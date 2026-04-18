@@ -287,8 +287,19 @@ impl CompositionContext {
     }
 }
 
-/// Map a capability name to its canonical primal provider.
-fn capability_to_primal(capability: &str) -> &str {
+/// Map a capability domain to its canonical primal provider.
+///
+/// This is the ecosystem's single source of truth for "which primal owns
+/// which capability domain." Springs use this to route IPC calls without
+/// hardcoding primal names.
+///
+/// ```
+/// assert_eq!(primalspring::composition::capability_to_primal("tensor"), "barracuda");
+/// assert_eq!(primalspring::composition::capability_to_primal("crypto"), "beardog");
+/// assert_eq!(primalspring::composition::capability_to_primal("storage"), "nestgate");
+/// ```
+#[must_use]
+pub fn capability_to_primal(capability: &str) -> &str {
     match capability {
         "security" | "crypto" => "beardog",
         "discovery" | "network" => "songbird",
@@ -303,6 +314,42 @@ fn capability_to_primal(capability: &str) -> &str {
         "visualization" => "petaltongue",
         "orchestration" => "biomeos",
         other => other,
+    }
+}
+
+/// Map a JSON-RPC method name to the capability domain that owns it.
+///
+/// Given a method like `"tensor.matmul"` or `"stats.mean"`, returns the
+/// capability domain string that [`CompositionContext`] uses for routing.
+/// Springs use this to determine which `call()` domain to use for a given
+/// method from their `validation_capabilities` manifest entry.
+///
+/// ```
+/// assert_eq!(primalspring::composition::method_to_capability_domain("tensor.matmul"), "tensor");
+/// assert_eq!(primalspring::composition::method_to_capability_domain("stats.mean"), "tensor");
+/// assert_eq!(primalspring::composition::method_to_capability_domain("crypto.hash"), "security");
+/// assert_eq!(primalspring::composition::method_to_capability_domain("storage.store"), "storage");
+/// assert_eq!(primalspring::composition::method_to_capability_domain("compute.dispatch"), "compute");
+/// ```
+#[must_use]
+pub fn method_to_capability_domain(method: &str) -> &str {
+    let prefix = method.split('.').next().unwrap_or(method);
+    match prefix {
+        "crypto" => "security",
+        "ipc" | "discovery" => "discovery",
+        "compute" => "compute",
+        "tensor" | "stats" | "math" | "noise" | "activation" | "rng" | "fhe" | "tolerances"
+        | "validate" | "device" => "tensor",
+        "shader" => "shader",
+        "storage" => "storage",
+        "inference" | "ai" | "squirrel" | "mcp" => "ai",
+        "dag" => "dag",
+        "spine" | "entry" | "certificate" => "ledger",
+        "braid" | "anchoring" => "commit",
+        "visualization" | "viz" | "proprioception" => "visualization",
+        "graph" | "capability" | "lifecycle" | "coordination" => "orchestration",
+        "health" | "identity" | "primal" => "security",
+        _ => prefix,
     }
 }
 
@@ -459,6 +506,58 @@ pub fn validate_parity_vec(
         actual.len()
     );
     v.check_bool(name, ok, &detail);
+}
+
+/// Validate that a set of required capabilities are live in the composition.
+///
+/// This is the standard "preamble" for a primal proof binary: check that
+/// the NUCLEUS primals your science needs are actually running before
+/// attempting math parity checks. Each capability gets a health check;
+/// missing capabilities are recorded as skipped.
+///
+/// Returns the count of capabilities that responded alive. Springs should
+/// `exit(2)` when zero (no NUCLEUS deployed).
+///
+/// ```rust,no_run
+/// # use primalspring::composition::{CompositionContext, validate_liveness};
+/// # use primalspring::validation::ValidationResult;
+/// # let mut ctx = CompositionContext::from_live_discovery();
+/// # let mut v = ValidationResult::new("test");
+/// let alive = validate_liveness(
+///     &mut ctx, &mut v,
+///     &["tensor", "security", "compute"],
+/// );
+/// if alive == 0 {
+///     eprintln!("No NUCLEUS primals discovered.");
+///     std::process::exit(2);
+/// }
+/// ```
+pub fn validate_liveness(
+    ctx: &mut CompositionContext,
+    v: &mut ValidationResult,
+    required_capabilities: &[&str],
+) -> usize {
+    let mut alive = 0;
+    for &cap in required_capabilities {
+        let primal = capability_to_primal(cap);
+        let name = format!("{primal}.liveness");
+        match ctx.health_check(cap) {
+            Ok(true) => {
+                v.check_bool(&name, true, &format!("{primal} alive via {cap}"));
+                alive += 1;
+            }
+            Ok(false) => {
+                v.check_bool(&name, false, &format!("{primal} responded but not alive"));
+            }
+            Err(e) if e.is_connection_error() => {
+                v.check_skip(&name, &format!("{primal} not reachable: {e}"));
+            }
+            Err(e) => {
+                v.check_bool(&name, false, &format!("{primal} health error: {e}"));
+            }
+        }
+    }
+    alive
 }
 
 #[cfg(test)]

@@ -11,6 +11,13 @@
 #   Level 2 (Rust proof):   Spring binary proved Python → Rust parity — DONE
 #   Level 5 (Primal proof): Spring validates same science via NUCLEUS IPC — THIS
 #
+# IMPORTANT: validation_capabilities lists the primal IPC methods the spring
+# CONSUMES over JSON-RPC — NOT the methods the spring serves. For example,
+# hotSpring consumes tensor.matmul (from barraCuda) and crypto.hash (from
+# BearDog), but it serves physics.lattice_qcd locally. Only consumed methods
+# belong here. Use primalspring::composition::method_to_capability_domain()
+# to resolve which capability domain each method routes through.
+#
 # Former standalone files consolidated here:
 #   airspring_ecology_proto_nucleate.toml
 #   groundspring_geoscience_proto_nucleate.toml
@@ -66,15 +73,20 @@ domain = "qcd_physics"
 particle_profile = "proton_heavy"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
+# validation_capabilities = primal IPC methods the spring CONSUMES (not serves).
+# hotSpring's physics.* methods are LOCAL_CAPABILITIES — they are what it proves,
+# not what it calls. For the primal proof, hotSpring calls barraCuda/BearDog/etc.
 validation_capabilities = [
-    "physics.lattice_qcd",
-    "physics.hmc_trajectory",
-    "physics.nuclear_eos",
-    "physics.molecular_dynamics",
-    "compute.df64",
-    "compute.cg_solver",
-    "compute.gradient_flow",
+    "tensor.create",
+    "tensor.matmul",
+    "tensor.scale",
+    "tensor.add",
+    "stats.mean",
+    "stats.std_dev",
+    "compute.dispatch",
     "crypto.hash",
+    "tolerances.get",
+    "validate.gpu_stack",
 ]
 
 [[downstream]]
@@ -136,7 +148,7 @@ owner = "esotericWebb"
 domain = "crpg"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "squirrel", "nestgate", "petaltongue", "toadstool", "rhizocrypt", "loamspine", "sweetgrass"]
+depends_on = ["beardog", "songbird", "squirrel", "nestgate", "petaltongue", "toadstool", "barracuda", "coralreef", "rhizocrypt", "loamspine", "sweetgrass"]
 validation_capabilities = [
     "inference.complete",
     "inference.embed",

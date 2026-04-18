@@ -1,6 +1,6 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
-**Date**: April 17, 2026
+**Date**: April 18, 2026
 **From**: primalSpring v0.9.15
 **License**: AGPL-3.0-or-later
 
@@ -623,13 +623,63 @@ Tier 3 proves deployment correctness (acceptance test). Springs should NOT skip 
 and jump to Tier 3 — the honest skip/pass distinction in Tier 2 is critical evidence
 for identifying cross-primal protocol gaps.
 
-**Observed ecosystem blockers** (April 17, 2026) — common across all four delta springs:
+### The `validate_primal_proof` Pattern (April 18, 2026)
+
+Three springs (hotSpring, healthSpring, wetSpring) independently converged on
+the same harness pattern for Level 5 primal proof. This is now the canonical
+pattern for all springs:
+
+```rust
+use primalspring::composition::{
+    CompositionContext, validate_parity, validate_parity_vec,
+    capability_to_primal, method_to_capability_domain,
+};
+use primalspring::validation::ValidationResult;
+use primalspring::tolerances;
+
+fn main() {
+    let mut ctx = CompositionContext::from_live_discovery();
+    let mut v = ValidationResult::new("myspring primal proof");
+
+    // Exit 2 if no NUCLEUS is running
+    if ctx.available_capabilities().is_empty() {
+        eprintln!("No NUCLEUS primals discovered. Deploy from plasmidBin and rerun.");
+        std::process::exit(2);
+    }
+
+    // For each validation_capability in your manifest entry:
+    validate_parity(
+        &mut ctx, &mut v,
+        "sample_mean",
+        "tensor",           // capability domain — resolves to barraCuda
+        "stats.mean",       // JSON-RPC method on the ecobin primal
+        serde_json::json!({"data": [1.0, 2.0, 3.0, 4.0, 5.0]}),
+        "result",           // key in the JSON-RPC response
+        3.0,                // expected value (from Python baseline)
+        tolerances::CPU_GPU_PARITY_TOL,
+    );
+
+    v.finish();  // exit 0 if all pass, exit 1 if any fail
+}
+```
+
+Key conventions:
+- **Exit 0** = all primal proof checks passed
+- **Exit 1** = at least one check failed (regression)
+- **Exit 2** = no NUCLEUS deployed (all checks skipped)
+- Use `method_to_capability_domain()` to resolve which domain to pass to `call()`
+- Use `capability_to_primal()` to understand which primal serves a domain
+- Use `check_skip()` (not fake passes) when a primal is absent
+- Compare IPC results against Python baselines, not just against library results
+- Binary name: `validate_primal_proof` (convention across all springs)
+
+**Observed ecosystem blockers** (April 18, 2026):
 - `crypto.sign_contract` (ionic bond negotiation) — BearDog, affects cross-tower compositions
 - BTSP Phase 3 (encrypted post-handshake channel) — all primals
 - `compute.dispatch` standardization — toadStool, affects springs doing GPU compute
 - Squirrel provider registration — affects springs needing AI capabilities
 - `storage.fetch_external` (cross-spring data) — NestGate, affects cross-spring pipelines
-- barraCuda IPC rewiring — **spring-side gap** (barraCuda ecobin already exposes 32 JSON-RPC methods including `tensor.matmul`, `stats.mean`, `compute.dispatch` over UDS; springs must drop library dep from primal binaries and call via IPC)
+- barraCuda IPC rewiring — **spring-side, actively in progress**: hotSpring (9 probes wired via `validate_primal_proof`), healthSpring (`math_dispatch.rs` feature-gated routing, exp122 parity), wetSpring (Exp403 `validate_primal_parity_v1` calling 5 primals). Pattern absorbed into `primalspring::composition` as public API (`capability_to_primal`, `method_to_capability_domain`)
 
 ---
 

@@ -16,10 +16,10 @@ primal teams.
 **Right now** (April 17, 2026): NUCLEUS composition is fully validated and
 stadial gate has cleared across all 13 primals. Four domain springs have
 entered active NUCLEUS composition testing:
-- **hotSpring v0.6.32** — Tier 3 validators, 62/62 suites, 13 LOCAL_CAPABILITIES dispatched
-- **healthSpring V53** — exp119/120/121 live IPC parity, niche.rs, dual-tower ionic bridge
+- **hotSpring v0.6.32** — Level 5 primal proof (`validate_primal_proof`, 9 IPC probes), 63/63 suites, 13 LOCAL_CAPABILITIES
+- **healthSpring V53** — exp122 IPC parity harness, `math_dispatch.rs` feature-gated routing, dual-tower ionic bridge
 - **neuralSpring V132** — validate_science_composition, proto-nucleate aligned, primal proof handoff
-- **wetSpring V144** — Exp401/402 full tier validation, 18 IPC roundtrip tests
+- **wetSpring V145** — Exp403 `validate_primal_parity_v1` (5 primals over IPC), 22 `CONSUMED_CAPABILITIES` in niche.rs
 
 Three springs are pre-delta (airSpring v0.10.0, groundSpring V124, ludoSpring V30) —
 stadially clean but not yet wiring NUCLEUS composition.
