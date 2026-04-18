@@ -257,7 +257,9 @@ workflow-specific tagging without changing the primal code.
 ### Novel Patterns
 
 primalSpring validates that springs never import each other — coordination
-happens via shared barraCuda primitives and biomeOS capability discovery.
+happens via biomeOS capability discovery and IPC calls to ecobin primals.
+barraCuda is a full ecobin primal (32 JSON-RPC methods over UDS) — springs
+call `tensor.matmul`, `stats.mean`, etc. by capability, not by library import.
 `coordination.neural_api_status` confirms biomeOS is routing correctly.
 
 ---
@@ -627,7 +629,7 @@ for identifying cross-primal protocol gaps.
 - `compute.dispatch` standardization — toadStool, affects springs doing GPU compute
 - Squirrel provider registration — affects springs needing AI capabilities
 - `storage.fetch_external` (cross-spring data) — NestGate, affects cross-spring pipelines
-- barraCuda IPC migration (path dep → capability IPC) — affects springs using barraCuda as library
+- barraCuda IPC rewiring — **spring-side gap** (barraCuda ecobin already exposes 32 JSON-RPC methods including `tensor.matmul`, `stats.mean`, `compute.dispatch` over UDS; springs must drop library dep from primal binaries and call via IPC)
 
 ---
 

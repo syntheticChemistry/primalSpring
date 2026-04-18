@@ -213,11 +213,17 @@ denied at handshake time.
 Springs that need trust-tier enforcement should use `evaluate_connection_with_trust`
 and pass the peer's authenticated `TrustModel`.
 
-## Upstream Gap Status (April 13, 2026)
+## Upstream Gap Status (Updated April 18, 2026)
 
 All previously identified gaps (LD-01 through LD-10) are **RESOLVED** upstream.
 The NUCLEUS stack runs **12/12 primals ALIVE** with **19/19 exp094 parity checks
-PASS, 0 FAIL, 0 SKIP**.
+PASS, 0 FAIL, 0 SKIP**. All ecobin primals serve JSON-RPC over UDS.
+
+**The remaining gap is spring-side**: springs still link barraCuda as a Rust
+library dependency (path or git) and call math in-process. For the primal proof,
+springs must drop the library dep from primal binaries and call the barraCuda
+ecobin (32 JSON-RPC methods including `tensor.matmul`, `tensor.create`,
+`stats.mean`, `compute.dispatch`) over IPC.
 
 Key resolutions that downstream springs benefit from:
 
@@ -227,9 +233,8 @@ Key resolutions that downstream springs benefit from:
 | ipc.resolve returns `native_endpoint` / `virtual_endpoint` | Songbird | Full programmatic capability discovery works |
 | Persistent UDS connections | NestGate, ToadStool | Multi-request sessions over a single socket |
 | BTSP auto-detect on all transports | ToadStool | Accepts both raw JSON-RPC and BTSP-framed |
-| No port conflict on startup | barraCuda | Binds `math-{family}.sock` without `--unix` override |
+| JSON-RPC (32 methods) over UDS | barraCuda | Full tensor/stats/compute/noise/FHE surface via IPC |
 | UDS socket at `rhizocrypt-{family}.sock` | rhizoCrypt | DAG capability discoverable via standard naming |
-| JSON-RPC over BTSP guard line | barraCuda | Full JSON-RPC wire support alongside tarpc |
 | loamSpine TCP opt-in via `--listen` | loamSpine | UDS-first with opt-in TCP for replication |
 | petalTongue `--socket` flag | petalTongue | Correct UDS path via CLI |
 

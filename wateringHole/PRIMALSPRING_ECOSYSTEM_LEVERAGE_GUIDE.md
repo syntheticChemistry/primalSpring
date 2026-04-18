@@ -18,7 +18,7 @@ stadial gate has cleared across all 13 primals. Four domain springs have
 entered active NUCLEUS composition testing:
 - **hotSpring v0.6.32** — Tier 3 validators, 62/62 suites, 13 LOCAL_CAPABILITIES dispatched
 - **healthSpring V53** — exp119/120/121 live IPC parity, niche.rs, dual-tower ionic bridge
-- **neuralSpring V131** — validate_science_composition, cross-team absorption handoff
+- **neuralSpring V132** — validate_science_composition, proto-nucleate aligned, primal proof handoff
 - **wetSpring V144** — Exp401/402 full tier validation, 18 IPC roundtrip tests
 
 Three springs are pre-delta (airSpring v0.10.0, groundSpring V124, ludoSpring V30) —

@@ -346,7 +346,7 @@ Recommended fix: Songbird should wire the universal-ipc dispatch (Wire Standard 
 ### Resolved in BarraCuda Sprint 33 + Squirrel alpha.43 (April 8, 2026)
 
 - **GAP-MATRIX-10 → FURTHER RESOLVED**: Wire Standard adoption expands:
-  - **BarraCuda (Sprint 33)**: **L2 complete** — `{primal, version, methods, provided_capabilities}` + `identity.get`. Both JSON-RPC dispatch and tarpc `BarraCudaService` paths wired. 31 methods, 4,187 tests. `provided_capability_groups()` derives structured groups from dispatch table — zero hardcoded domain catalog.
+  - **BarraCuda (Sprint 33→42)**: **L2 complete** — `{primal, version, methods, provided_capabilities}` + `identity.get`. JSON-RPC dispatch over UDS (primary) + tarpc (secondary). 32 methods (tensor.matmul, tensor.create, stats.mean, compute.dispatch, noise.perlin2d, fhe.ntt, etc.), 4,187+ tests. `provided_capability_groups()` derives structured groups from dispatch table — zero hardcoded domain catalog. Full ecobin primal ready for spring IPC consumption.
   - **Squirrel (alpha.43)**: **L2 complete** — `capabilities.list`/`identity.get`/`health.liveness` aligned to Wire Standard. `reqwest` banned in `deny.toml` (Tower Atomic pattern). Production mock elimination: 791 lines dead orchestration code removed, SDK MCP `OperationHandler` returns honest errors.
 
 ### Resolved in Latest Sprint (April 8, 2026 — post-Run 5)

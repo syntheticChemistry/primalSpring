@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04-16 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
+> **Last updated**: 2026-04-18 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 19/19 PASS, 0 FAIL, 0 SKIP.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -645,9 +645,11 @@ in `infra/wateringHole/` for the full water-cycle model.
 
 ## barraCuda
 
-BC-01–BC-05 **RESOLVED**. New architectural gaps BC-06–BC-08 identified during benchScale
-NUCLEUS deployment validation (April 11). Math is universal — these gaps block
-barraCuda from fulfilling its role as a hardware-agnostic math primal.
+BC-01–BC-08 **ALL RESOLVED**. barraCuda is a full ecobin primal with 32 JSON-RPC
+methods over UDS (tensor.matmul, tensor.create, stats.mean, compute.dispatch,
+noise.perlin2d, fhe.ntt, etc.). The remaining composition gap is **spring-side**:
+springs still link barraCuda as a Rust library (path/git dep) instead of calling
+the ecobin primal over IPC. See "Cross-Spring Composition Gaps" below.
 
 | ID | Gap | Severity | Status |
 |----|-----|----------|--------|
@@ -1122,14 +1124,15 @@ S203b), LD-05 resolved (barraCuda Sprint 42).
 method catalog (67 methods), capability resolution via Songbird (`ipc.resolve`
 PASS for security, compute, storage after Phase 5 registry seeding).
 
-**Node Atomic**: OPERATIONAL. coralReef shader capabilities work (11 GPU archs).
+**Node Atomic**: FULLY OPERATIONAL. coralReef shader capabilities work (11 GPU archs).
 ToadStool alive with BTSP auto-detect — raw JSON-RPC health PASS (LD-04 resolved).
-barraCuda ALIVE (LD-05 resolved) — tarpc transport, `tensor.dot` gracefully SKIP
-pending JSON-RPC bridge (LD-10).
+barraCuda ALIVE (LD-05 resolved) — JSON-RPC transport with 32 methods including
+`tensor.matmul`, `tensor.create`, `stats.mean`, `compute.dispatch` (LD-10 resolved,
+Sprint 42). All Node primals reachable over UDS.
 
 **Nest Atomic**: FULLY OPERATIONAL. NestGate storage roundtrip PASS (LD-03
 resolved). sweetGrass health PASS. loamSpine ALIVE and health PASS (LD-09
-resolved). rhizoCrypt TCP-only (SKIP — low priority).
+resolved). rhizoCrypt ALIVE on UDS (LD-06 resolved, S37).
 
 **Full NUCLEUS cross-atomic pipeline**: **PASS** — hash (Tower/BearDog) → store
 (Nest/NestGate) → retrieve (Nest/NestGate) → verify matches. End-to-end
@@ -1529,16 +1532,16 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 | **toadStool `compute.dispatch` standardization** — springs need consistent dispatch envelope for GPU compute | hotSpring, wetSpring, neuralSpring | **toadStool team** | **RESOLVED** (S203 `DISPATCH_WIRE_CONTRACT.md`) but spring-side adoption incomplete |
 | **Squirrel provider registration** — `inference.register_provider` needed for springs with local models | neuralSpring, healthSpring, wetSpring | **Squirrel team** | **PARTIAL** — wire tests exist; production registration path in progress |
 | **NestGate `storage.fetch_external`** — cross-spring data retrieval for composition pipelines | wetSpring, healthSpring | **NestGate team** | **PARTIAL** — method exists but delegated via Tower Atomic; cross-spring routing via biomeOS needed |
-| **barraCuda IPC migration** — springs using barraCuda as path dependency need migration to capability IPC | neuralSpring (explicit), all springs (implicit) | **primalSpring + barraCuda team** | **OPEN** — documented migration path needed; CompositionContext supports IPC but springs haven't wired it |
+| **barraCuda IPC migration** — springs still link barraCuda as a Rust library (path/git dep) for domain math; need to rewire to the barraCuda ecobin's 32 JSON-RPC methods (`tensor.matmul`, `stats.mean`, `compute.dispatch`, etc.) over UDS. **The gap is spring-side** — barraCuda already exposes a full primal IPC surface. | neuralSpring (explicit), hotSpring, wetSpring, healthSpring (all implicit) | **Each spring team** (primalSpring documents the pattern) | **OPEN** — barraCuda ecobin is ready; springs must drop library dep from primal binaries and rewire to IPC |
 
 ### Per-Spring Composition Status (Delta Season)
 
 | Spring | Version | Composition Tier | Evidence | Blockers |
 |--------|---------|-----------------|----------|----------|
-| **hotSpring** | v0.6.32 | Tier 2-3 | 62/62 suites; 13 LOCAL_CAPABILITIES; validate_nucleus_composition/node/nest binaries | Ionic bond, BTSP Phase 3, compute.dispatch adoption |
-| **healthSpring** | V53 | Tier 2 | exp119/120/121; niche.rs; dual-tower ionic bridge | Ionic negotiation (cross-tower), NestGate cross-spring, Squirrel provider |
-| **neuralSpring** | V131 | Tier 2 | validate_science_composition (spectral, IPR, Hessian, disorder); cross-team handoff | barraCuda IPC migration, Squirrel provider, GPU dispatch |
-| **wetSpring** | V144 | Tier 2-3 | Exp401 (43/43), Exp402 (63/63); 18 IPC roundtrip; provenance registry | NestGate fetch_external, Squirrel provider, compute.dispatch |
+| **hotSpring** | v0.6.32 | Tier 2-3 | 62/62 suites; 13 LOCAL_CAPABILITIES; validate_nucleus_composition/node/nest binaries | barraCuda IPC rewiring (spring-side), Ionic bond, BTSP Phase 3 |
+| **healthSpring** | V53 | Tier 2 | exp119/120/121; niche.rs; dual-tower ionic bridge | barraCuda IPC rewiring (spring-side), Ionic negotiation (cross-tower), NestGate cross-spring |
+| **neuralSpring** | V132 | Tier 2 | validate_science_composition (spectral, IPR, Hessian, disorder); cross-team handoff | barraCuda IPC rewiring (spring-side), Squirrel provider, GPU dispatch |
+| **wetSpring** | V144 | Tier 2-3 | Exp401 (43/43), Exp402 (63/63); 18 IPC roundtrip; provenance registry | barraCuda IPC rewiring (spring-side), NestGate fetch_external, Squirrel provider |
 
 ### Patterns Handed Back (Evaporation → primalSpring)
 
