@@ -1532,7 +1532,8 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 | **toadStool `compute.dispatch` standardization** — springs need consistent dispatch envelope for GPU compute | hotSpring, wetSpring, neuralSpring | **toadStool team** | **RESOLVED** (S203 `DISPATCH_WIRE_CONTRACT.md`) but spring-side adoption incomplete |
 | **Squirrel provider registration** — `inference.register_provider` needed for springs with local models | neuralSpring, healthSpring, wetSpring | **Squirrel team** | **PARTIAL** — wire tests exist; production registration path in progress |
 | **NestGate `storage.fetch_external`** — cross-spring data retrieval for composition pipelines | wetSpring, healthSpring | **NestGate team** | **PARTIAL** — method exists but delegated via Tower Atomic; cross-spring routing via biomeOS needed |
-| **barraCuda IPC migration** — springs still link barraCuda as a Rust library (path/git dep) for domain math; need to rewire to the barraCuda ecobin's 32 JSON-RPC methods (`tensor.matmul`, `stats.mean`, `compute.dispatch`, etc.) over UDS. **The gap is spring-side** — barraCuda already exposes a full primal IPC surface. | neuralSpring (explicit), hotSpring, wetSpring, healthSpring (all implicit) | **Each spring team** (primalSpring documents the pattern) | **OPEN** — barraCuda ecobin is ready; springs must drop library dep from primal binaries and rewire to IPC |
+| **barraCuda IPC migration** — springs still link barraCuda as a Rust library (path/git dep) for domain math; need to rewire to the barraCuda ecobin's 32 JSON-RPC methods over UDS. **Spring-side actively in progress**: hotSpring (9 probes), healthSpring (2/11 IPC via math_dispatch), neuralSpring V133 (IpcMathClient, 9 methods wired), wetSpring V145 (5 primals). | All delta springs | **Each spring team** (primalSpring documents the pattern) | **IN PROGRESS** — 4/4 delta springs building IPC clients; no spring uses `primalspring::composition` yet |
+| **barraCuda JSON-RPC surface gaps** — neuralSpring V133 documents 18 `barracuda::` library calls with no 1:1 JSON-RPC method: `eigh_householder_qr`, `pearson_correlation`, `chi_squared_statistic`, `empirical_spectral_density`, `shannon_from_frequencies`, `solve_f64_cpu`, `esn_v2::*`, `nn::SimpleMlp`, `belief_propagation_chain`, `graph_laplacian`, `numerical_hessian`, `boltzmann_sampling`, `nautilus::*`, `fit_linear`. These block full Level 5 for neuralSpring. Priority: `linalg.eigh`, `stats.pearson`, `stats.chi_squared`, `stats.shannon` (most-used science paths). | neuralSpring V133 (explicit), other springs (potential) | **barraCuda team** | **OPEN** — hand-back from neuralSpring Gap 11; barraCuda surface expansion needed |
 
 ### Per-Spring Composition Status (Delta Season)
 
@@ -1540,7 +1541,7 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 |--------|---------|-----------------|----------|----------|
 | **hotSpring** | v0.6.32 | Level 5 | 63/63 suites; `validate_primal_proof` (9 IPC probes to barraCuda/BearDog/toadStool); `PRIMAL_PROOF_IPC_MAPPING.md` | Ionic bond, BTSP Phase 3 |
 | **healthSpring** | V53 | Tier 2→5 | exp122 IPC parity; `math_dispatch.rs` feature-gated IPC/lib routing; niche.rs; dual-tower ionic | Ionic negotiation (cross-tower), NestGate cross-spring |
-| **neuralSpring** | V132 | Tier 2 | validate_science_composition (spectral, IPR, Hessian, disorder); proto-nucleate aligned | barraCuda IPC rewiring (spring-side), Squirrel provider, GPU dispatch |
+| **neuralSpring** | V133 | Level 5 | `IpcMathClient` (9 methods), `validate_proto_nucleate_capabilities` binary (7 caps), `deny.toml` stadial bans | **18 barraCuda method gaps** (eigh, Pearson, chi-squared, Shannon, ESN, etc.) |
 | **wetSpring** | V145 | Level 5 | Exp403 `validate_primal_parity_v1` (5 primals over IPC); 22 CONSUMED_CAPABILITIES in niche.rs | NestGate fetch_external, Squirrel provider |
 
 ### Patterns Handed Back (Evaporation → primalSpring)
@@ -1558,6 +1559,10 @@ primalSpring absorbs for standardization:
 8. **`validate_liveness()` preamble** — all three springs wrote the same health-check-all-then-exit(2) preamble. Now canonical in `primalspring::composition::validate_liveness()`. **ABSORBED Apr 18, 2026.**
 9. **`validate_primal_proof` binary convention** — hotSpring, wetSpring, ludoSpring all name their Level 5 harness `validate_primal_proof` or `validate_primal_parity`. Canonical pattern documented in PRIMALSPRING_COMPOSITION_GUIDANCE.md. **ABSORBED Apr 18, 2026.**
 10. **Feature-gated IPC routing** — healthSpring's `math_dispatch.rs` uses `#[cfg(feature = "primal-proof")]` to toggle between library and IPC paths. Good pattern for gradual migration. **DOCUMENTED** — not yet absorbed as library code; springs own their dispatch layer.
+11. **`IpcMathClient` typed dispatch** — neuralSpring V133's `ipc_dispatch.rs` provides a full typed IPC client mirroring the library `Dispatcher` interface. Same math surface, different transport. **DOCUMENTED Apr 18, 2026** — pattern parallel to `CompositionContext`, spring-specific by design.
+12. **`deny.toml` stadial ban list** — neuralSpring V133 first to enforce the full stadial parity gate via `cargo deny` bans (`ring`, `openssl-sys`, `async-trait`, `rustls`, `ed25519-dalek`, `cmake`, `cc`). Template for all springs. **DOCUMENTED Apr 18, 2026.**
+13. **18-method barraCuda gap hand-back** — neuralSpring's IPC migration audit discovered 18 library calls with no JSON-RPC equivalent. These are the first concrete hand-back to barraCuda for surface expansion. **TRACKED** — added to ecosystem-level gaps above.
+14. **Springs not using `primalspring::composition`** — all four delta springs built independent IPC clients. None depend on the `primalspring` crate. This is a design decision (avoids crate coupling) but creates drift risk. **OPEN QUESTION** — should `CompositionContext` become a shared thin crate, or remain opt-in?
 
 ---
 
