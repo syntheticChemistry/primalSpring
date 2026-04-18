@@ -1,17 +1,22 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Proto-Nucleate Template — Pure NUCLEUS Primal Composition
+# Proto-Nucleate Template — Self-Validating NUCLEUS Composition
 #
-# A proto-nucleate graph is a PURE PRIMAL deployment. No spring binaries
-# appear as nodes. Springs are NOT primals — they validate AGAINST this
-# composition externally via `primalspring::composition::validate_parity()`.
+# A proto-nucleate graph is a NUCLEUS deployment with a guideStone node.
+# Primals provide math, crypto, storage, and compute. The guideStone
+# self-validates the composition on startup, then serves domain capabilities.
+#
+# The guideStone pattern (from hotSpring-guideStone-v0.7.0):
+#   - 5 certified properties: deterministic, traceable, self-verifying,
+#     environment-agnostic, tolerance-documented
+#   - Bare guideStone: properties hold without any primals
+#   - NUCLEUS guideStone: additive layer (signing, DAG, reporting)
+#   - Exit codes: 0=pass, 1=fail, 2=skip (no primals discovered)
 #
 # The validation ladder:
-#   Level 2 (Rust proof):   Spring binary proves Python → Rust parity
-#   Level 5 (Primal proof): Spring validates same science via NUCLEUS IPC
-#
-# This template defines the NUCLEUS primal set needed for a domain.
-# biomeOS deploys it. The spring runs its validation harness against it.
+#   Level 2 (Rust proof):  Spring binary proves Python → Rust parity — DONE
+#   Level 5 (guideStone):  Self-validating NUCLEUS node, IPC to primals — THIS
+#   Level 6 (deployment):  biomeOS deploys graph, guideStone validates
 #
 # Parameters (from downstream_manifest.toml):
 #   {{spring_name}}               — e.g. "airspring", "wetspring"
@@ -20,15 +25,18 @@
 #   {{particle_profile}}          — e.g. "balanced", "proton_heavy"
 #   {{fragments}}                 — e.g. ["tower_atomic", "node_atomic", "nest_atomic"]
 #   {{depends_on}}                — which primals must be running
-#   {{validation_capabilities}}   — primal capabilities the spring calls during validation
+#   {{guidestone_binary}}         — the self-validating deployable
+#   {{validation_capabilities}}   — primal IPC methods the guideStone checks on startup
 #
 # Genuinely unique downstream graphs kept as standalone files:
 #   - healthspring_enclave_proto_nucleate.toml (dual-tower ionic bridge)
 #
 # Usage:
 #   biomeOS instantiates this template per domain using the manifest.
-#   The spring then validates against the running composition:
-#     cargo run --bin validate_nucleus_parity
+#   The guideStone node self-validates on startup:
+#     biomeos deploy --graph <spring>_proto_nucleate
+#   Or run standalone for development:
+#     cargo run --bin <guidestone_binary>
 
 [graph]
 name = "{{spring_name}}_proto_nucleate"
@@ -42,7 +50,7 @@ transport = "uds_only"
 tcp_ports = 0
 owner = "{{owner}}"
 pattern = "proto_nucleate"
-pattern_version = "2026-04-17"
+pattern_version = "2026-04-18"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 particle_profile = "{{particle_profile}}"
@@ -51,7 +59,11 @@ composition_model = "pure_nucleus"
 fragments = "{{fragments}}"
 resolve = true
 
-# Who validates against this composition (metadata, not a graph node)
+# guideStone — self-validating domain node
+# Deploys as part of the NUCLEUS. Self-validates on startup, then serves
+# domain capabilities. Runnable standalone for development/CI.
+guidestone_binary = "{{guidestone_binary}}"
+guidestone_standard = "wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md"
 validated_by = "{{spring_name}}"
 validation_capabilities = "{{validation_capabilities}}"
 
@@ -67,6 +79,15 @@ encryption_tiers.tower = "full"
 encryption_tiers.node = "delegated"
 encryption_tiers.nest = "delegated"
 
-# All nodes are resolved from fragments at load time.
-# This graph is pure primals — no spring binaries, no spawn = true.
-# The spring validates externally via IPC against this running composition.
+# All primal nodes are resolved from fragments at load time.
+# The guideStone node is the domain-specific self-validation entry point.
+# It discovers primals, validates IPC parity, then serves domain capabilities.
+# See wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md for the 5 properties.
+
+[[graph.nodes]]
+name = "{{guidestone_binary}}"
+binary = "{{guidestone_binary}}"
+spawn = false
+role = "guidestone"
+capabilities = "{{validation_capabilities}}"
+depends_on = "{{depends_on}}"

@@ -567,28 +567,43 @@ required = true                   # GPU/CPU math execution
 by_capability = "tensor"
 ```
 
-### Proto-Nucleate Absorption Workflow (v0.9.15 — Primal Proof)
+### Proto-Nucleate Absorption Workflow (v0.9.15 — guideStone Pattern)
 
-**Proto-nucleate graphs are pure primal NUCLEUS compositions.** Springs are NOT
-primals — they do not appear as nodes in the graph. The spring runs its validation
-harness *externally* against the deployed primal composition.
+**Proto-nucleate graphs are self-validating NUCLEUS compositions.** Each graph
+includes a **guideStone node** — a domain-specific self-validation entry point
+that discovers primals on startup, runs benchmarks, then serves domain capabilities.
 
 The validation ladder:
 - Level 2 (Rust proof): Spring binary proved Python → Rust parity — DONE
-- Level 5 (Primal proof): Spring validates same science via NUCLEUS IPC — THIS
+- Level 5 (guideStone): Self-validating NUCLEUS node, IPC to primals — THIS
+- Level 6 (deployment): biomeOS deploys graph, guideStone validates and serves
 
-How a spring validates against its proto-nucleate:
+The guideStone pattern (proven by hotSpring-guideStone-v0.7.0):
+- 5 certified properties: deterministic, traceable, self-verifying,
+  environment-agnostic, tolerance-documented
+- Bare guideStone: properties hold without any primals running
+- NUCLEUS guideStone: additive layer (BearDog signing, rhizoCrypt DAG, toadStool reporting)
+- See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
+
+How a spring evolves toward guideStone deployment:
 
 1. **Read** `graphs/downstream/downstream_manifest.toml` — find your `[[downstream]]` entry.
    (Exception: `healthspring_enclave_proto_nucleate.toml` is standalone — dual-tower ionic bridge.)
-   Template: `proto_nucleate_template.toml`. The `validation_capabilities` field lists
-   which primal IPC methods your domain science needs.
-2. **Deploy the NUCLEUS** — `biomeos deploy --graph <your_proto_nucleate>`. All nodes are primals.
-3. **Run your validation harness** — call `validation_capabilities` via IPC, compare results
-   against your Python/Rust baselines using `composition::validate_parity()`
+   Your `guidestone_binary` is the self-validating deployable. Your `validation_capabilities`
+   are the primal IPC methods the guideStone checks on startup.
+2. **Build the guideStone binary** — a standalone executable that satisfies the 5 properties,
+   discovers primals, validates IPC parity, then serves domain capabilities.
+3. **Deploy the NUCLEUS** — `biomeos deploy --graph <your_proto_nucleate>`. The guideStone
+   node starts alongside primals and self-validates.
 4. **Document gaps** — IPC methods that don't exist, response schemas that differ, tolerances
    that fail. Hand back to primalSpring for evaporation to primal teams.
 5. **Iterate** — as primal teams fix gaps, re-validate. The cycle accelerates.
+
+The IPC client each spring currently has (`NucleusContext`, `IpcMathClient`,
+`math_dispatch`, `rpc_call`) is a **validation window** — temporary tooling that
+proves the math works through NUCLEUS. The guideStone binary is the permanent
+deployable that replaces it. Springs keep their `barracuda` library dependency
+for Level 2 comparison; the guideStone uses pure IPC.
 
 ### Three-Tier Composition Validation (Emerged Pattern — April 17, 2026)
 
@@ -610,11 +625,13 @@ Tier 2: IPC-WIRED (live primal delegation with honest skip)
         Examples: neuralSpring validate_science_composition, wetSpring Exp401/402
 
 Tier 3: FULL NUCLEUS (proto-nucleate deployed via biomeOS)
-        Proto-nucleate graph (pure primals) deployed by biomeOS.
+        Proto-nucleate graph deployed by biomeOS with guideStone node.
         All primal nodes healthy, started in topological order.
-        Spring validates externally: IPC calls to primal capabilities,
+        guideStone self-validates on startup: IPC calls to primals,
         results compared against Python baselines.
         This is the primal proof — science runs through NUCLEUS.
+        See wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md for the
+        5 certified properties every guideStone must satisfy.
 ```
 
 **Why three tiers**: Tier 1 is always green and lets the spring CI pass without infrastructure.
@@ -623,11 +640,11 @@ Tier 3 proves deployment correctness (acceptance test). Springs should NOT skip 
 and jump to Tier 3 — the honest skip/pass distinction in Tier 2 is critical evidence
 for identifying cross-primal protocol gaps.
 
-### The `validate_primal_proof` Pattern (April 18, 2026)
+### The guideStone Binary Pattern (April 18, 2026)
 
 Three springs (hotSpring, healthSpring, wetSpring) independently converged on
-the same harness pattern for Level 5 primal proof. This is now the canonical
-pattern for all springs:
+the same harness pattern for Level 5 primal proof. This becomes the **guideStone
+binary** — a self-validating deployable that runs in-graph or standalone:
 
 ```rust
 use primalspring::composition::{
@@ -639,7 +656,7 @@ use primalspring::tolerances;
 
 fn main() {
     let mut ctx = CompositionContext::from_live_discovery();
-    let mut v = ValidationResult::new("myspring primal proof");
+    let mut v = ValidationResult::new("myspring guideStone");
 
     // Exit 2 if no NUCLEUS is running
     if ctx.available_capabilities().is_empty() {
@@ -664,14 +681,16 @@ fn main() {
 ```
 
 Key conventions:
-- **Exit 0** = all primal proof checks passed
-- **Exit 1** = at least one check failed (regression)
-- **Exit 2** = no NUCLEUS deployed (all checks skipped)
+- **Exit 0** = all guideStone checks passed (NUCLEUS is valid)
+- **Exit 1** = at least one check failed (deployment is broken)
+- **Exit 2** = no NUCLEUS deployed (bare guideStone properties still apply)
 - Use `method_to_capability_domain()` to resolve which domain to pass to `call()`
 - Use `capability_to_primal()` to understand which primal serves a domain
 - Use `check_skip()` (not fake passes) when a primal is absent
 - Compare IPC results against Python baselines, not just against library results
-- Binary name: `validate_primal_proof` (convention across all springs)
+- Binary name: `<spring>_guidestone` (e.g. `hotspring_guidestone`, `wetspring_guidestone`)
+- The guideStone satisfies all 5 properties from `GUIDESTONE_COMPOSITION_STANDARD.md`
+- The spring binary (with lib dep) validates the guideStone works; the guideStone deploys
 
 **Observed ecosystem blockers** (April 18, 2026):
 - `crypto.sign_contract` (ionic bond negotiation) — BearDog, affects cross-tower compositions

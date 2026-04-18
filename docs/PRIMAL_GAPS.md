@@ -1562,7 +1562,24 @@ primalSpring absorbs for standardization:
 11. **`IpcMathClient` typed dispatch** — neuralSpring V133's `ipc_dispatch.rs` provides a full typed IPC client mirroring the library `Dispatcher` interface. Same math surface, different transport. **DOCUMENTED Apr 18, 2026** — pattern parallel to `CompositionContext`, spring-specific by design.
 12. **`deny.toml` stadial ban list** — neuralSpring V133 first to enforce the full stadial parity gate via `cargo deny` bans (`ring`, `openssl-sys`, `async-trait`, `rustls`, `ed25519-dalek`, `cmake`, `cc`). Template for all springs. **DOCUMENTED Apr 18, 2026.**
 13. **18-method barraCuda gap hand-back** — neuralSpring's IPC migration audit discovered 18 library calls with no JSON-RPC equivalent. These are the first concrete hand-back to barraCuda for surface expansion. **TRACKED** — added to ecosystem-level gaps above.
-14. **Springs not using `primalspring::composition`** — all four delta springs built independent IPC clients. None depend on the `primalspring` crate. This is a design decision (avoids crate coupling) but creates drift risk. **OPEN QUESTION** — should `CompositionContext` become a shared thin crate, or remain opt-in?
+14. **IPC clients are validation windows** — all four delta springs built independent IPC clients (`NucleusContext`, `IpcMathClient`, `math_dispatch`, `rpc_call`). None depend on the `primalspring` crate. This is **by design**: the IPC client is temporary tooling to prove the math works through NUCLEUS. The permanent deployable is the **guideStone binary** (pure IPC, no library dep on `barracuda`). Springs keep their lib dep for Level 2 parity comparison; the guideStone deploys without it. **RESOLVED** — framed as guideStone pattern in `GUIDESTONE_COMPOSITION_STANDARD.md`.
+15. **guideStone as universal composition pattern** — hotSpring-guideStone-v0.7.0 proved all 5 properties (deterministic, traceable, self-verifying, env-agnostic, tolerance-documented) with cross-substrate parity and NUCLEUS additive layer. Extracted as ecosystem standard. **ABSORBED Apr 18, 2026** — see `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md`.
+
+### guideStone Readiness (April 18, 2026)
+
+| Spring | guideStone Readiness | Evidence | Blockers |
+|--------|---------------------|----------|----------|
+| hotSpring v0.6.32 | **5 — Certified** | guideStone-v0.7.0: all 5 properties, cross-substrate parity (Python/CPU/GPU), NUCLEUS additive (BearDog signing, rhizoCrypt DAG, toadStool reporting) | aarch64 CI |
+| healthSpring V53 | **1 — Validation exists** | exp122 IPC parity, `math_dispatch.rs` feature-gated routing | Property 4 (patient data compliance), 9/11 methods still library-only |
+| neuralSpring V133 | **1 — Validation exists** | `IpcMathClient` (9 methods), `validate_proto_nucleate_capabilities` (7 caps) | 18 barraCuda surface gaps (eigh, Pearson, etc.) |
+| wetSpring V145 | **1 — Validation exists** | Exp403 `validate_primal_parity_v1` (5 primals over IPC) | Needs guideStone packaging (properties, checksums, cross-substrate) |
+| ludoSpring V44 | **1 — Validation exists** | `validate_primal_proof` binary, four-layer validation | Needs guideStone packaging |
+| airSpring v0.10.0 | **0 — Not started** | Pre-delta; 90.56% coverage | No IPC client yet |
+| groundSpring V124 | **0 — Not started** | Pre-delta; 92% coverage | No IPC client yet |
+
+Readiness levels: 0=not started, 1=validation exists, 2=properties documented,
+3=bare guideStone works, 4=NUCLEUS guideStone works, 5=certified.
+See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
 
 ---
 

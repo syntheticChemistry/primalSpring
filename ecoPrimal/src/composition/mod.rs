@@ -335,7 +335,7 @@ pub fn capability_to_primal(capability: &str) -> &str {
 pub fn method_to_capability_domain(method: &str) -> &str {
     let prefix = method.split('.').next().unwrap_or(method);
     match prefix {
-        "crypto" => "security",
+        "crypto" | "health" | "identity" | "primal" => "security",
         "ipc" | "discovery" => "discovery",
         "compute" => "compute",
         "tensor" | "stats" | "math" | "noise" | "activation" | "rng" | "fhe" | "tolerances"
@@ -348,7 +348,6 @@ pub fn method_to_capability_domain(method: &str) -> &str {
         "braid" | "anchoring" => "commit",
         "visualization" | "viz" | "proprioception" => "visualization",
         "graph" | "capability" | "lifecycle" | "coordination" => "orchestration",
-        "health" | "identity" | "primal" => "security",
         _ => prefix,
     }
 }
