@@ -692,6 +692,45 @@ Key conventions:
 - The guideStone satisfies all 5 properties from `GUIDESTONE_COMPOSITION_STANDARD.md`
 - The spring binary (with lib dep) validates the guideStone works; the guideStone deploys
 
+### Layered Certification: Base + Domain (April 2026)
+
+GuideStone certification is **layered**. primalSpring provides the **base
+certification** (composition correctness), and domain springs provide
+**domain certification** (science correctness). A domain guideStone inherits
+the base and only validates its own science on top.
+
+```
+                 ┌─────────────────────────────────┐
+                 │  Domain guideStone (hotSpring,   │
+                 │  healthSpring, wetSpring, ...)   │
+                 │  Validates: domain science       │
+                 │  (QCD, clinical math, hydro)     │
+                 └────────────┬────────────────────┘
+                              │ inherits
+                 ┌────────────▼────────────────────┐
+                 │  primalSpring guideStone         │
+                 │  Validates: composition          │
+                 │  correctness (discovery, health, │
+                 │  IPC parity, cross-atomic,       │
+                 │  bonding, BTSP/crypto)           │
+                 └─────────────────────────────────┘
+```
+
+**For domain guideStone developers**: if the primalSpring guideStone passes
+(exit 0), you can assume discovery works, health checks pass, basic math
+IPC is correct, storage roundtrips, bonding policies are well-formed, and
+crypto produces deterministic results. Your guideStone only needs to
+validate domain-specific science through the IPC methods listed in your
+`validation_capabilities` manifest entry.
+
+**Pre-flight usage**: domain guideStones can optionally run
+`primalspring_guidestone` as a pre-flight check before their own validation.
+Exit 0 means the composition is sound; exit 1 means composition is broken
+(domain validation would be meaningless).
+
+See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full layered
+certification specification and the 6 validation layers.
+
 **Observed ecosystem blockers** (April 18, 2026):
 - `crypto.sign_contract` (ionic bond negotiation) — BearDog, affects cross-tower compositions
 - BTSP Phase 3 (encrypted post-handshake channel) — all primals

@@ -39,6 +39,10 @@ path = "src/bin/primalspring_primal/main.rs"
 name = "validate_all"
 path = "src/bin/validate_all/main.rs"
 
+[[bin]]
+name = "primalspring_guidestone"
+path = "src/bin/primalspring_guidestone/main.rs"
+
 [dev-dependencies]
 proptest = "1.10.0"
 tempfile = "3.27.0"

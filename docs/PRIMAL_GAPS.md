@@ -1569,6 +1569,7 @@ primalSpring absorbs for standardization:
 
 | Spring | guideStone Readiness | Evidence | Blockers |
 |--------|---------------------|----------|----------|
+| **primalSpring v0.9.15** | **1 — Validation exists** | `primalspring_guidestone` binary: 6-layer composition certification (bare properties, discovery, health, capability parity, cross-atomic pipeline, bonding, BTSP+crypto). Base certification layer for all domain guideStones. | Needs live NUCLEUS for Layers 1–4, 6; Properties 2 (tolerance docs) and 3 (checksums) not yet packaged |
 | hotSpring v0.6.32 | **5 — Certified** | guideStone-v0.7.0: all 5 properties, cross-substrate parity (Python/CPU/GPU), NUCLEUS additive (BearDog signing, rhizoCrypt DAG, toadStool reporting) | aarch64 CI |
 | healthSpring V53 | **1 — Validation exists** | exp122 IPC parity, `math_dispatch.rs` feature-gated routing | Property 4 (patient data compliance), 9/11 methods still library-only |
 | neuralSpring V133 | **1 — Validation exists** | `IpcMathClient` (9 methods), `validate_proto_nucleate_capabilities` (7 caps) | 18 barraCuda surface gaps (eigh, Pearson, etc.) |

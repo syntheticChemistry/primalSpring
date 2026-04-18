@@ -214,6 +214,67 @@ interaction, exit code semantics, and serving pattern are the **same**.
 
 ---
 
+## primalSpring guideStone: Base Composition Certification
+
+primalSpring's guideStone validates **composition correctness** — not domain
+science. It certifies that a NUCLEUS deployment is structurally sound,
+IPC-healthy, and cryptographically functional. Domain guideStones (hotSpring,
+healthSpring, etc.) inherit this base certification and only validate their
+own science on top.
+
+### Layered Certification Model
+
+```
+Domain guideStone (hotSpring, healthSpring, ...)
+  └── inherits → primalSpring guideStone (composition correctness)
+                    └── Layer 0: Bare Properties (graph parsing, fragments, manifests)
+                    └── Layer 1: Discovery (all primals discoverable)
+                    └── Layer 2: Atomic Health (Tower, Node, Nest health)
+                    └── Layer 3: Capability Parity (math, storage, shader IPC)
+                    └── Layer 4: Cross-Atomic Pipeline (hash → store → retrieve → verify)
+                    └── Layer 5: Bonding Model (policy enforcement, trust ordering)
+                    └── Layer 6: BTSP + Crypto (hash parity, cipher policy, Ed25519)
+```
+
+If the primalSpring guideStone passes, a downstream domain guideStone can
+skip re-verifying discovery, health, and crypto — it inherits that
+certification and only validates domain science.
+
+### The 6 Layers
+
+| Layer | What It Validates | Bare? |
+|-------|------------------|-------|
+| **0 — Bare Properties** | All deploy graphs parse, fragments resolve, manifest consistent, bonding types well-formed | Yes |
+| **1 — Discovery** | All primals in the graph discoverable via capability scan | No |
+| **2 — Atomic Health** | Tower, Node, Nest primals respond to `health.liveness` | No |
+| **3 — Capability Parity** | `stats.mean`, `tensor.matmul`, `storage.store/retrieve`, `compile.capabilities` | No |
+| **4 — Cross-Atomic Pipeline** | Tower hash → Nest store → retrieve → verify (end-to-end proof) | No |
+| **5 — Bonding Model** | All `BondType` variants well-formed, cipher policy ordering, metering | Yes |
+| **6 — BTSP + Crypto** | `crypto.hash` determinism, BTSP cipher policy, Ed25519 sign/verify roundtrip | Partial |
+
+### Running as a Pre-Flight
+
+Domain guideStones can optionally call the primalSpring guideStone as a
+pre-flight check before their own validation:
+
+```bash
+# Pre-flight: ensure composition is sound
+primalspring_guidestone
+# Exit 0 → proceed with domain validation
+# Exit 1 → composition broken, domain validation meaningless
+# Exit 2 → no primals, bare checks only
+```
+
+### Binary
+
+```bash
+# From plasmidBin or cargo
+cargo run --bin primalspring_guidestone
+PRIMALSPRING_JSON=1 cargo run --bin primalspring_guidestone  # JSON output
+```
+
+---
+
 ## For Downstream Springs
 
 ### Evolving Toward guideStone
