@@ -65,12 +65,15 @@ owner = "hotSpring"
 domain = "qcd_physics"
 particle_profile = "proton_heavy"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
-depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
 validation_capabilities = [
-    "tensor.matmul",
-    "tensor.create",
-    "compute.dispatch",
-    "stats.mean",
+    "physics.lattice_qcd",
+    "physics.hmc_trajectory",
+    "physics.nuclear_eos",
+    "physics.molecular_dynamics",
+    "compute.df64",
+    "compute.cg_solver",
+    "compute.gradient_flow",
     "crypto.hash",
 ]
 

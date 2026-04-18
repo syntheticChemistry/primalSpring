@@ -54,9 +54,19 @@ spring_name = "hotspring"
 spring_binary = "hotspring_primal"
 domain = "physics"
 capabilities = [
-    "physics.thermal",
+    "physics.lattice_qcd",
+    "physics.lattice_gauge_update",
+    "physics.hmc_trajectory",
+    "physics.wilson_dirac",
+    "physics.molecular_dynamics",
     "physics.fluid",
+    "physics.nuclear_eos",
+    "physics.thermal",
     "physics.radiation",
+    "compute.df64",
+    "compute.cg_solver",
+    "compute.gradient_flow",
+    "compute.f64",
 ]
 
 [[spring]]
