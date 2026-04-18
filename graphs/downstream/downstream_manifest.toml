@@ -2,22 +2,14 @@
 #
 # Downstream Proto-Nucleate Manifest — parameters for proto_nucleate_template.toml
 #
-# Each [[downstream]] entry defines a NUCLEUS composition with a guideStone
-# node. The guideStone is a self-validating deployable: it discovers primals
-# on startup, runs domain benchmarks, and serves domain capabilities.
-# Springs validate the guideStone works, then step aside.
+# Each [[downstream]] entry defines a PURE PRIMAL NUCLEUS composition that a
+# domain spring validates against. Springs are NOT primals — they do not appear
+# as nodes in these graphs. The spring runs its validation harness externally
+# against the deployed primal composition (the "primal proof").
 #
 # Validation ladder:
 #   Level 2 (Rust proof):   Spring binary proved Python → Rust parity — DONE
-#   Level 5 (guideStone):   Self-validating NUCLEUS node, IPC to primals — THIS
-#   Level 6 (deployment):   biomeOS deploys, guideStone validates and serves
-#
-# IMPORTANT: validation_capabilities lists the primal IPC methods the spring
-# CONSUMES over JSON-RPC — NOT the methods the spring serves. For example,
-# hotSpring consumes tensor.matmul (from barraCuda) and crypto.hash (from
-# BearDog), but it serves physics.lattice_qcd locally. Only consumed methods
-# belong here. Use primalspring::composition::method_to_capability_domain()
-# to resolve which capability domain each method routes through.
+#   Level 5 (Primal proof): Spring validates same science via NUCLEUS IPC — THIS
 #
 # Former standalone files consolidated here:
 #   airspring_ecology_proto_nucleate.toml
@@ -33,9 +25,8 @@
 
 [manifest]
 template = "proto_nucleate_template.toml"
-version = "3.0.0"
-description = "Self-validating NUCLEUS compositions with guideStone nodes for 7 domains"
-guidestone_standard = "wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md"
+version = "2.0.0"
+description = "Pure-primal NUCLEUS compositions for 7 downstream domain validations"
 
 [[downstream]]
 spring_name = "airspring"
@@ -44,8 +35,6 @@ domain = "ecology_agriculture"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
-guidestone_binary = "airspring_guidestone"
-guidestone_readiness = 0
 validation_capabilities = [
     "tensor.matmul",
     "stats.mean",
@@ -62,8 +51,6 @@ domain = "geoscience"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
-guidestone_binary = "groundspring_guidestone"
-guidestone_readiness = 0
 validation_capabilities = [
     "tensor.matmul",
     "stats.mean",
@@ -81,20 +68,21 @@ fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
 guidestone_binary = "hotspring_guidestone"
 guidestone_readiness = 5
-# validation_capabilities = primal IPC methods the guideStone checks on startup.
-# hotSpring's physics.* methods are LOCAL_CAPABILITIES — they are what it proves,
-# not what it calls. For the primal proof, hotSpring calls barraCuda/BearDog/etc.
+guidestone_properties = { deterministic = true, traceable = true, self_verifying = true, env_agnostic = true, tolerance_documented = true }
+# Primal IPC methods this spring's science needs to call during the primal proof.
+# These are the methods served by NUCLEUS primals (barraCuda, BearDog, toadStool),
+# NOT the spring's own LOCAL_CAPABILITIES (which live in niche.rs).
 validation_capabilities = [
-    "tensor.create",
-    "tensor.matmul",
-    "tensor.scale",
-    "tensor.add",
-    "stats.mean",
-    "stats.std_dev",
-    "compute.dispatch",
-    "crypto.hash",
-    "tolerances.get",
-    "validate.gpu_stack",
+    "tensor.matmul",        # barraCuda — SU(3) gauge field matrix operations
+    "tensor.create",        # barraCuda — tensor allocation for gauge configurations
+    "tensor.add",           # barraCuda — field arithmetic (gauge update, leapfrog)
+    "tensor.scale",         # barraCuda — scalar-field multiplication (HMC momentum)
+    "stats.mean",           # barraCuda — observable averaging (plaquette, Polyakov)
+    "stats.std_dev",        # barraCuda — statistical error on observables
+    "compute.dispatch",     # barraCuda/toadStool — GPU shader execution for HMC/CG
+    "crypto.hash",          # BearDog — blake3 provenance witnesses
+    "tolerances.get",       # barraCuda — tolerance retrieval for parity checks
+    "validate.gpu_stack",   # barraCuda — GPU capability validation
 ]
 
 [[downstream]]
@@ -104,8 +92,6 @@ domain = "life_science"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate", "squirrel", "petaltongue"]
-guidestone_binary = "wetspring_guidestone"
-guidestone_readiness = 1
 validation_capabilities = [
     "tensor.matmul",
     "stats.mean",
@@ -123,8 +109,6 @@ domain = "ml_inference"
 particle_profile = "proton_heavy"
 fragments = ["tower_atomic", "node_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel"]
-guidestone_binary = "neuralspring_guidestone"
-guidestone_readiness = 1
 validation_capabilities = [
     "tensor.matmul",
     "tensor.create",
@@ -142,8 +126,6 @@ domain = "game_science"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate"]
-guidestone_binary = "ludospring_guidestone"
-guidestone_readiness = 1
 validation_capabilities = [
     "compute.dispatch",
     "stats.mean",
@@ -162,9 +144,7 @@ owner = "esotericWebb"
 domain = "crpg"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "squirrel", "nestgate", "petaltongue", "toadstool", "barracuda", "coralreef", "rhizocrypt", "loamspine", "sweetgrass"]
-guidestone_binary = "esotericwebb_guidestone"
-guidestone_readiness = 0
+depends_on = ["beardog", "songbird", "squirrel", "nestgate", "petaltongue", "toadstool", "rhizocrypt", "loamspine", "sweetgrass"]
 validation_capabilities = [
     "inference.complete",
     "inference.embed",
