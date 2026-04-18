@@ -1,27 +1,21 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Proto-Nucleate Graph — healthSpring Dual-Tower Enclave Composition
+# Proto-Nucleate Graph — healthSpring Dual-Tower Enclave (Pure NUCLEUS)
 #
-# healthSpring owns this graph. primalSpring provides the proto-nucleate
-# pattern showing how healthSpring composes NUCLEUS for clinical/health
-# data workflows with the strongest security model in the ecosystem.
+# This graph defines the PURE PRIMAL NUCLEUS topology that healthSpring
+# validates against. Springs are NOT primals — healthSpring does not appear
+# as a node in the NUCLEUS layer. healthSpring validates externally.
 #
-# healthSpring is NEUTRON-HEAVY (data-dominated). Patient records are
-# the most security-sensitive data in the system. The composition uses
-# a dual-tower ionic bond pattern: patient data never leaves Tower A
+# The NUCLEUS layer is a dual-tower ionic bond composition — the strongest
+# security model in the ecosystem. Patient data never leaves Tower A
 # (the HIPAA enclave). Only de-identified aggregates cross the ionic
 # bridge to Tower B (the analytics/inference tower).
 #
-# This pattern evolves the sketch at:
-#   graphs/sketches/mixed_atomics/dual_tower_ionic.toml
-# which specifically names healthSpring as the use case.
-#
-# Architecture:
+# Architecture (all primals, no spring binaries):
 #   Tower A (FAMILY_A) — Patient Data Enclave
 #     BearDog A (identity + encryption for patient records)
 #     Songbird A (discovery within trust boundary)
 #     NestGate A (patient record storage, BondingPolicy egress fence)
-#     healthSpring (ingest, de-identify, aggregate)
 #     Provenance trio A (regulatory audit trail)
 #
 #   Tower B (FAMILY_B) — Analytics/Inference Tower
@@ -38,28 +32,29 @@
 #     data crossing: de-identified aggregates ONLY
 #
 # The BondingPolicy egress fence on NestGate A ensures patient records
-# NEVER leave Tower A. healthSpring's de-identification module
-# transforms patient data into aggregates before crossing the ionic
-# bridge. This is not optional — it is enforced at the composition
-# level by NestGate's BondingPolicy.
+# NEVER leave Tower A. The ionic bridge enforces this at the composition
+# level — storage.* capabilities are explicitly denied across towers.
 #
-# Evolution path:
-#   healthSpring absorbs this graph and evolves:
-#   - Implement dual-tower deployment with separate FAMILY_IDs
-#   - Wire BondingPolicy egress fence on NestGate (data never leaves)
-#   - Compose ionic bond for de-identified aggregate sharing
-#   - Wire Squirrel inference routing for clinical AI
-#   - Provenance: full audit trail for regulatory compliance
-#   - Covalent mesh sharding for clinical data fault tolerance
-#   - Pass back: BondingPolicy enforcement gaps, ionic metering needs
+# healthSpring validates this NUCLEUS by calling primal capabilities via IPC:
+#   - storage.store / storage.retrieve on NestGate A (within Tower A)
+#   - inference.complete via Squirrel B (through ionic bridge)
+#   - dag.session.create / dag.event.append on provenance trio
+#   - crypto.hash / crypto.sign on BearDog A
+#
+# Evolution path (post primal-proof):
+#   Once healthSpring proves the science runs through this NUCLEUS,
+#   a separate APPLICATION graph may add the healthspring binary as a
+#   biomeOS citizen for clinical workflow orchestration. That is a
+#   product-level graph, not a proto-nucleate.
 #
 # Security: dual BTSP perimeters — Tower A and Tower B each have their
 # own BearDog and BTSP handshake. Cross-family traffic is fully
 # encrypted via ionic bond (encryption_tiers.cross_family = "full").
 #
-# Usage (by healthSpring, not primalSpring):
+# Usage:
 #   biomeos deploy --graph graphs/downstream/healthspring_enclave_proto_nucleate.toml \
 #     --env FAMILY_A=<hex> --env FAMILY_B=<hex>
+#   Then healthSpring runs its validation harness against the composition.
 
 [graph]
 name = "healthspring_enclave_proto_nucleate"
@@ -73,14 +68,22 @@ transport = "uds_only"
 tcp_ports = 0
 owner = "healthSpring"
 pattern = "proto_nucleate"
-pattern_version = "2026-04-10"
+pattern_version = "2026-04-17"
 witness_wire = "WireWitnessRef"
 encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 particle_profile = "neutron_heavy"
 layer = "L2"
 particle_model = "two electron shells, ionic bond"
-composition_model = "nucleated"
+composition_model = "pure_nucleus"
 fragments = ["tower_atomic", "nest_atomic"]
+validated_by = "healthspring"
+validation_capabilities = [
+    "storage.store", "storage.retrieve",
+    "inference.complete", "inference.embed",
+    "dag.session.create", "dag.event.append",
+    "crypto.hash", "crypto.sign",
+    "braid.create", "braid.commit",
+]
 
 [graph.bonding_policy]
 tower_internal = "covalent"
@@ -311,65 +314,16 @@ metered = true
 time_window = "session"
 
 # ═══════════════════════════════════════════════════════════════
-# Phase 4: healthSpring (spawn = true — built by healthSpring repo)
+# END OF NUCLEUS LAYER
 #
-# healthSpring is the CLINICAL APPLICATION layer. It runs in
-# Tower A alongside the patient data. It handles:
-#   - Patient record ingestion and validation
-#   - De-identification (PHI removal, k-anonymity)
-#   - Aggregate computation for ionic bridge crossing
-#   - Clinical workflow orchestration
+# This graph is pure primals. No spring binaries appear here.
+# healthSpring validates externally against this running composition
+# via primalspring::composition::validate_parity().
 #
-# healthSpring does NOT do inference — it delegates to Squirrel
-# in Tower B via the ionic bridge (de-identified aggregates only).
-#
-# The binary is NOT in plasmidBin — healthSpring builds it.
-#
-# Evolution targets (healthSpring absorbs and evolves):
-#   - Implement de-identification pipeline (PHI stripping)
-#   - Wire BondingPolicy egress fence enforcement
-#   - Compose ionic bond for aggregate sharing
-#   - Wire clinical workflow: ingest → validate → de-identify →
-#     aggregate → inference (via bridge) → result
-#   - Provenance: every access witnessed for regulatory audit
-#   - Covalent mesh sharding for clinical data replication
+# Post-primal-proof evolution:
+#   Once healthSpring proves that clinical science runs through this
+#   dual-tower NUCLEUS, a separate APPLICATION GRAPH may add the
+#   healthspring binary as a biomeOS citizen for production clinical
+#   workflows (de-identification, aggregate computation, workflow
+#   orchestration). That is a PRODUCT graph — not a proto-nucleate.
 # ═══════════════════════════════════════════════════════════════
-
-[[graph.nodes]]
-name = "healthspring"
-binary = "healthspring_primal"
-order = 30
-required = true
-spawn = true
-depends_on = ["beardog_a", "songbird_a", "nestgate_a", "ionic_bridge"]
-health_method = "health.liveness"
-by_capability = "attribution"
-security_model = "tower_delegated"
-capabilities = [
-    # Clinical domain
-    "health.pharmacology",
-    "health.genomics",
-    "health.clinical",
-    # Data handling (within Tower A enclave)
-    "health.de_identify",
-    "health.aggregate",
-    "data.fetch",
-    "model.inference_route",
-    "compute.offload",
-]
-
-# ═══════════════════════════════════════════════════════════════
-# Phase 5: Validation (spawn = false — primalSpring coordination)
-# ═══════════════════════════════════════════════════════════════
-
-[[graph.nodes]]
-name = "validate_healthspring_enclave"
-binary = "primalspring_primal"
-order = 99
-required = false
-spawn = false
-depends_on = ["healthspring"]
-health_method = "health.liveness"
-by_capability = "discovery"
-security_model = "tower_delegated"
-capabilities = ["coordination.validate_composition"]

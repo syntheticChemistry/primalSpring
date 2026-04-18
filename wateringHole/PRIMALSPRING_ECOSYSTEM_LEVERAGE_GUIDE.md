@@ -558,21 +558,25 @@ primalSpring triages, refines, and routes the gap to the responsible primal.
 ### Starting a Spring Evolution Session
 
 ```
-1. Read your proto-nucleate in the downstream manifest:
+1. Read your proto-nucleate (pure primal NUCLEUS composition):
    graphs/downstream/downstream_manifest.toml → find your [[downstream]] entry
+   Your validation_capabilities list = which primal IPC methods your science needs
    Template: graphs/downstream/proto_nucleate_template.toml
    (Exception: healthspring_enclave_proto_nucleate.toml is standalone)
 
-2. Check the deployment matrix for your topology:
-   config/deployment_matrix.toml → find cells matching your atomic
+2. Deploy the NUCLEUS (pure primals, no spring binaries):
+   biomeos deploy --graph <your_proto_nucleate>
+   All nodes are primals. Your spring is NOT a node — it validates externally.
 
-3. Wire your domain logic to primal capabilities via IPC:
-   use ecoPrimal::ipc::PrimalClient;
+3. Write your primal-proof validation harness:
+   Call validation_capabilities via IPC against the running NUCLEUS.
+   Compare results against your Python/Rust baselines.
+   use primalspring::composition::{CompositionContext, validate_parity};
 
 4. Follow the three-tier validation pattern (see COMPOSITION_GUIDANCE.md):
    Tier 1: LOCAL_CAPABILITIES (honest local dispatch, always green)
    Tier 2: IPC-WIRED (live primal delegation, check_skip for absent primals)
-   Tier 3: FULL NUCLEUS (biomeOS graph execution, all nodes healthy)
+   Tier 3: FULL NUCLEUS (proto-nucleate deployed, spring validates externally)
 
 5. Run primalSpring validation experiments:
    cargo run --bin validate_all -- --filter {yourspring}
@@ -580,7 +584,7 @@ primalSpring triages, refines, and routes the gap to the responsible primal.
 6. Document gaps in primalSpring:
    docs/PRIMAL_GAPS.md → add your spring's findings
 
-7. Propose new graph patterns:
+7. Propose updated validation_capabilities:
    graphs/downstream/ → submit via PR
 
 8. Hand back patterns to primalSpring for refinement

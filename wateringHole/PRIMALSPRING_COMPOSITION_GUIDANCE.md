@@ -565,18 +565,28 @@ required = true                   # GPU/CPU math execution
 by_capability = "tensor"
 ```
 
-### Proto-Nucleate Absorption Workflow (v0.9.15)
+### Proto-Nucleate Absorption Workflow (v0.9.15 — Primal Proof)
 
-How a spring picks up a proto-nucleate graph and evolves against it:
+**Proto-nucleate graphs are pure primal NUCLEUS compositions.** Springs are NOT
+primals — they do not appear as nodes in the graph. The spring runs its validation
+harness *externally* against the deployed primal composition.
+
+The validation ladder:
+- Level 2 (Rust proof): Spring binary proved Python → Rust parity — DONE
+- Level 5 (Primal proof): Spring validates same science via NUCLEUS IPC — THIS
+
+How a spring validates against its proto-nucleate:
 
 1. **Read** `graphs/downstream/downstream_manifest.toml` — find your `[[downstream]]` entry.
-   (Exception: `healthspring_enclave_proto_nucleate.toml` is standalone — dual-tower ionic bridge pattern.)
-   Template: `proto_nucleate_template.toml`.
-2. **Understand dependencies** — which primals are `required = true` for your domain
-3. **Wire IPC** — use ecoPrimal's `CompositionContext` for capability-based calls (or `PrimalClient` for direct wiring)
-4. **Compose** — build your domain logic as orchestration of primal capability calls
-5. **Validate parity** — use `composition::validate_parity()` to compare local Rust math against primal composition output within named tolerances
-6. **Hand back** — document gaps/patterns discovered (especially response schema issues), hand back to primalSpring
+   (Exception: `healthspring_enclave_proto_nucleate.toml` is standalone — dual-tower ionic bridge.)
+   Template: `proto_nucleate_template.toml`. The `validation_capabilities` field lists
+   which primal IPC methods your domain science needs.
+2. **Deploy the NUCLEUS** — `biomeos deploy --graph <your_proto_nucleate>`. All nodes are primals.
+3. **Run your validation harness** — call `validation_capabilities` via IPC, compare results
+   against your Python/Rust baselines using `composition::validate_parity()`
+4. **Document gaps** — IPC methods that don't exist, response schemas that differ, tolerances
+   that fail. Hand back to primalSpring for evaporation to primal teams.
+5. **Iterate** — as primal teams fix gaps, re-validate. The cycle accelerates.
 
 ### Three-Tier Composition Validation (Emerged Pattern — April 17, 2026)
 
@@ -597,11 +607,12 @@ Tier 2: IPC-WIRED (live primal delegation with honest skip)
         Parity comparison: local Rust result vs primal IPC result.
         Examples: neuralSpring validate_science_composition, wetSpring Exp401/402
 
-Tier 3: FULL NUCLEUS (deployed via biomeOS graph execution)
-        Spring deploy graph is loaded and executed by biomeOS.
-        All primals healthy, all nodes start in topological order.
-        Spring validates end-to-end via graph.execute → composition.health.
-        This is the target state — springs are validated compositions.
+Tier 3: FULL NUCLEUS (proto-nucleate deployed via biomeOS)
+        Proto-nucleate graph (pure primals) deployed by biomeOS.
+        All primal nodes healthy, started in topological order.
+        Spring validates externally: IPC calls to primal capabilities,
+        results compared against Python baselines.
+        This is the primal proof — science runs through NUCLEUS.
 ```
 
 **Why three tiers**: Tier 1 is always green and lets the spring CI pass without infrastructure.
@@ -654,19 +665,13 @@ dual-tower ionic bridge pattern.
 When a downstream spring or garden can be expressed entirely as a composition of
 existing NUCLEUS primals, it should NOT have its own binary. The graph IS the product.
 
-**Before** (nucleated model):
-```toml
-[[graph.nodes]]
-name = "ludospring"
-binary = "ludospring"
-spawn = true
-```
-
-**After** (pure composition):
+**All proto-nucleate graphs are now `pure_nucleus`:**
 ```toml
 [graph.metadata]
-composition_model = "pure"
+composition_model = "pure_nucleus"
 fragments = ["tower_atomic", "node_atomic"]
+validated_by = "ludospring"
+validation_capabilities = ["tensor.matmul", "compute.dispatch", "inference.complete"]
 
 [[graph.nodes]]
 name = "barracuda"
@@ -676,15 +681,14 @@ capabilities = ["tensor.fitts", "tensor.perlin", "tensor.wfc"]
 ```
 
 Key properties:
-- `composition_model = "pure"` — no downstream binary spawned
+- `composition_model = "pure_nucleus"` — all nodes are primals, no spring binaries
 - All nodes are `spawn = false` — biomeOS manages the full lifecycle
-- `fragments` lists which canonical patterns the graph includes
-- Game science, narrative, interactive products are ALL pure compositions
-- The previous "binary" work is validation — it proved the composition works
+- `validated_by` names the spring that validates externally (not a graph node)
+- `validation_capabilities` lists primal IPC methods the spring calls
+- The spring's Rust binary was the "Rust proof" — it proved Python → Rust parity
+- The proto-nucleate is the "primal proof" — it proves the science runs through NUCLEUS
 
-This pattern applies whenever capabilities can be mapped entirely to existing primals.
-Springs that still need their own binary (e.g., hotSpring for QCD-specific orchestration,
-healthSpring for compliance workflow) use `composition_model = "nucleated"`.
+This pattern applies to ALL proto-nucleate graphs. Springs never appear as nodes.
 
 See `graphs/fragments/README.md` for the full fragment model.
 

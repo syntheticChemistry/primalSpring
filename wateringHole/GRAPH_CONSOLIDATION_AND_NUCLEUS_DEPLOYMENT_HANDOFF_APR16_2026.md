@@ -122,31 +122,29 @@ biomeos deploy --graph graphs/profiles/full.toml
 3. Return the fully resolved GraphMeta
 ```
 
-### Creating a custom profile for your spring
+### Creating a custom proto-nucleate for your domain
 
-If your spring needs a custom NUCLEUS subset, create a thin profile:
+If your domain needs a custom NUCLEUS subset, create a pure-primal profile.
+**Springs are NOT primals** — your spring does not appear as a node. You define
+which primal composition your domain validates against:
 
 ```toml
 [graph]
-name = "yourspring_custom_profile"
-description = "Custom NUCLEUS profile for yourSpring"
+name = "yourspring_custom_proto_nucleate"
+description = "Custom NUCLEUS composition for yourSpring domain validation"
 pattern = "Sequential"
-version = "1.0.0"
+version = "2.0.0"
 
 [graph.metadata]
 fragments = ["tower_atomic", "node_atomic"]
 resolve = true
-composition_model = "nucleated"
-
-[[graph.nodes]]
-name = "yourspring_domain_overlay"
-binary = "yourspring_primal"
-by_capability = "your_domain"
-order = 20
-capabilities = ["your.capability"]
+composition_model = "pure_nucleus"
+validated_by = "yourspring"
+validation_capabilities = ["tensor.matmul", "compute.dispatch", "stats.mean"]
 ```
 
-The fragment nodes are inherited; you only specify your delta.
+All nodes are primals resolved from fragments. Your spring validates
+externally via `primalspring::composition::validate_parity()`.
 
 ---
 

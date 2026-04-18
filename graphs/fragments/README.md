@@ -50,7 +50,7 @@ composition_model = "pure"
 | Model | Meaning |
 |-------|---------|
 | `pure` | All nodes are NUCLEUS primals (`spawn = false`). The graph IS the product. |
-| `nucleated` | NUCLEUS base + a downstream spring binary (`spawn = true`). The spring discovers primals via IPC. |
+| `pure_nucleus` | Pure primal NUCLEUS composition for domain validation. Springs validate externally via IPC — no spring binaries as nodes. |
 | `validation` | Structural validation graph — primalSpring probes capabilities. |
 
 ## The Composition Principle

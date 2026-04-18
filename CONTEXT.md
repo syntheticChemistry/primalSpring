@@ -99,6 +99,6 @@ Ionic bond protocol RPC wiring for cross-family capability sharing.
 primalSpring validates biomeOS composition patterns so that other
 springs and gen4 products can trust the coordination layer. It
 contributes ValidationSink, deploy graphs, overlays, MCP tools,
-bonding metadata, STUN tier definitions, and nucleated spring deploy
+bonding metadata, STUN tier definitions, and pure-primal proto-nucleate
 graphs back to the ecosystem. Downstream tributaries reference
 `wateringHole/` for patterns and standards.

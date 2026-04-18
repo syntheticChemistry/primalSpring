@@ -1,6 +1,6 @@
 # Downstream Proto-Nucleate Graphs
 
-**Date**: April 13, 2026
+**Date**: April 17, 2026
 **Owner**: primalSpring (intermediary for all springs)
 **License**: AGPL-3.0-or-later
 
@@ -8,16 +8,18 @@
 
 ## What This Directory Contains
 
-Proto-nucleate deployment graphs that downstream springs absorb into their
-own repos. Each graph defines how a spring composes NUCLEUS primals for its
-niche domain.
+Proto-nucleate graphs define **pure primal NUCLEUS compositions** that
+downstream springs validate against. Springs are NOT primals — they do not
+appear as nodes in these graphs. The spring runs its validation harness
+*externally* against the deployed composition.
 
-**Springs do not ship binaries at the composition level.** They validate
-their science by composing primal capabilities via IPC.
+**The validation ladder:**
+- Level 2 (Rust proof): Spring binary proved Python → Rust parity — DONE
+- Level 5 (Primal proof): Spring validates same science via NUCLEUS IPC — THIS
 
 ## The Pattern
 
-Every spring follows the same NUCLEUS base:
+Every proto-nucleate is a pure primal deployment:
 
 ```
 Tower (BearDog + Songbird) → always present
@@ -25,24 +27,23 @@ Tower (BearDog + Songbird) → always present
 Node (barraCuda + coralReef + toadStool) → math/shader/compute
   ↓
 Nest (NestGate + provenance trio) → storage/lineage
-  ↓
-Spring Application (spring-specific binary) → domain composition
 ```
 
-All NUCLEUS nodes have `spawn = false` — they're already running. The spring's
-own binary is the only `spawn = true` node.
+All nodes are primals. All have `spawn = false` (already running via plasmidBin).
+The spring validates externally via `primalspring::composition::validate_parity()`.
 
 ## Current Graphs
 
 Proto-nucleates are consolidated via **template + manifest**. `downstream_manifest.toml`
-parameterizes 7 springs using `proto_nucleate_template.toml`. One standalone graph is
-kept for its unique dual-tower ionic bridge architecture.
+parameterizes 7 domain compositions using `proto_nucleate_template.toml`. One standalone
+graph is kept for its unique dual-tower ionic bridge architecture. All graphs are
+**pure primals** — no spring binaries appear as nodes.
 
-| File | Type | Springs/Purpose |
-|------|------|-----------------|
-| `proto_nucleate_template.toml` | Template | Structural skeleton for all proto-nucleates |
-| `downstream_manifest.toml` | Manifest | Parameters for airSpring, groundSpring, hotSpring, wetSpring, neuralSpring, ludoSpring, esotericWebb |
-| `healthspring_enclave_proto_nucleate.toml` | Standalone | Unique dual-tower ionic bridge pattern (healthSpring) |
+| File | Type | Purpose |
+|------|------|---------|
+| `proto_nucleate_template.toml` | Template | Pure primal NUCLEUS skeleton (fragment-resolved) |
+| `downstream_manifest.toml` | Manifest | NUCLEUS compositions for 7 domains + validation_capabilities each spring calls |
+| `healthspring_enclave_proto_nucleate.toml` | Standalone | Dual-tower ionic bridge (pure primals, healthSpring validates externally) |
 
 ## Composition Parity Validation
 

@@ -2,8 +2,14 @@
 #
 # Downstream Proto-Nucleate Manifest — parameters for proto_nucleate_template.toml
 #
-# Each [[downstream]] entry defines a downstream spring's NUCLEUS-based composition.
-# biomeOS reads this manifest to instantiate per-spring proto-nucleate graphs.
+# Each [[downstream]] entry defines a PURE PRIMAL NUCLEUS composition that a
+# domain spring validates against. Springs are NOT primals — they do not appear
+# as nodes in these graphs. The spring runs its validation harness externally
+# against the deployed primal composition (the "primal proof").
+#
+# Validation ladder:
+#   Level 2 (Rust proof):   Spring binary proved Python → Rust parity — DONE
+#   Level 5 (Primal proof): Spring validates same science via NUCLEUS IPC — THIS
 #
 # Former standalone files consolidated here:
 #   airspring_ecology_proto_nucleate.toml
@@ -19,125 +25,115 @@
 
 [manifest]
 template = "proto_nucleate_template.toml"
-version = "1.0.0"
-description = "NUCLEUS-based proto-nucleate parameters for 7 downstream springs"
+version = "2.0.0"
+description = "Pure-primal NUCLEUS compositions for 7 downstream domain validations"
 
 [[downstream]]
 spring_name = "airspring"
-spring_binary = "airspring_primal"
 owner = "airSpring"
 domain = "ecology_agriculture"
-by_capability = "compute"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
-capabilities = [
-    "science.evapotranspiration",
-    "science.atmospheric_diffusion",
-    "science.soil_microbiome",
-    "science.sensor_fusion",
-    "science.crop_water_balance",
-    "compute.pde_solver",
-    "compute.fft_analysis",
+validation_capabilities = [
+    "tensor.matmul",
+    "stats.mean",
+    "compute.dispatch",
+    "storage.store",
+    "storage.retrieve",
+    "crypto.hash",
 ]
 
 [[downstream]]
 spring_name = "groundspring"
-spring_binary = "groundspring"
 owner = "groundSpring"
 domain = "geoscience"
-by_capability = "compute"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
-capabilities = [
-    "science.geospatial_analysis",
-    "science.soil_composition",
-    "science.subsurface_modeling",
-    "compute.pde_solver",
-    "compute.spatial_interpolation",
+validation_capabilities = [
+    "tensor.matmul",
+    "stats.mean",
+    "compute.dispatch",
+    "storage.store",
+    "crypto.hash",
 ]
 
 [[downstream]]
 spring_name = "hotspring"
-spring_binary = "hotspring_primal"
 owner = "hotSpring"
 domain = "qcd_physics"
-by_capability = "compute"
 particle_profile = "proton_heavy"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda"]
-capabilities = [
-    "science.lattice_qcd",
-    "science.monte_carlo",
-    "science.gauge_fields",
-    "compute.df64_tensor",
-    "compute.metropolis",
+validation_capabilities = [
+    "tensor.matmul",
+    "tensor.create",
+    "compute.dispatch",
+    "stats.mean",
+    "crypto.hash",
 ]
 
 [[downstream]]
 spring_name = "wetspring"
-spring_binary = "wetspring"
 owner = "wetSpring"
 domain = "life_science"
-by_capability = "biology"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate", "squirrel", "petaltongue"]
-capabilities = [
-    "science.sequence_alignment",
-    "science.diversity_index",
-    "science.phylogenetics",
-    "science.ncbi_fetch",
-    "compute.bioinformatics",
+validation_capabilities = [
+    "tensor.matmul",
+    "stats.mean",
+    "compute.dispatch",
+    "storage.store",
+    "storage.retrieve",
+    "inference.complete",
+    "crypto.hash",
 ]
 
 [[downstream]]
 spring_name = "neuralspring"
-spring_binary = "neuralspring"
 owner = "neuralSpring"
 domain = "ml_inference"
-by_capability = "inference"
 particle_profile = "proton_heavy"
-fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel", "nestgate"]
-capabilities = [
+fragments = ["tower_atomic", "node_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel"]
+validation_capabilities = [
+    "tensor.matmul",
+    "tensor.create",
+    "compute.dispatch",
     "inference.complete",
     "inference.embed",
-    "inference.models",
-    "science.spectral_analysis",
-    "science.anderson_localization",
-    "science.hessian_eigen",
+    "stats.mean",
+    "crypto.hash",
 ]
 
 [[downstream]]
 spring_name = "ludospring"
-spring_binary = "ludospring"
 owner = "ludoSpring"
 domain = "game_science"
-by_capability = "compute"
 particle_profile = "balanced"
-fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate"]
-capabilities = [
-    "game.physics_sim",
-    "game.procedural_gen",
-    "game.shader_pipeline",
+fragments = ["tower_atomic", "node_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel"]
+validation_capabilities = [
+    "tensor.matmul",
     "compute.dispatch",
+    "stats.mean",
+    "inference.complete",
+    "crypto.hash",
 ]
 
 [[downstream]]
 spring_name = "esotericwebb"
-spring_binary = "esotericwebb_primal"
 owner = "esotericWebb"
 domain = "crpg"
-by_capability = "compute"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "squirrel", "nestgate"]
-capabilities = [
-    "game.narrative",
-    "game.state_machine",
-    "game.content_gen",
-    "ai.query",
+validation_capabilities = [
+    "inference.complete",
+    "inference.embed",
+    "storage.store",
+    "storage.retrieve",
+    "crypto.hash",
 ]

@@ -146,7 +146,7 @@ Each spring has a `validate_nucleus_*` binary or equivalent. The matrix cells ar
 
 ### Phase A: Graph Format Compliance (columns A + B)
 
-All springs already have nucleated deploy graphs in `primalSpring/graphs/spring_deploy/`. Validate these use canonical `[[graph.nodes]]` format and capability names. This is already done — they were migrated in Phase 25.
+All springs have proto-nucleate graphs (pure primal NUCLEUS compositions) in `primalSpring/graphs/downstream/`. Springs validate *against* these compositions externally — they do not appear as graph nodes. Spring deploy graphs in `spring_deploy/` are for Rust-proof integration testing only.
 
 Action: Each spring team should verify their local graph files (if any) match `[[graph.nodes]]` format.
 
