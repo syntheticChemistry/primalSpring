@@ -211,6 +211,61 @@ fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
 
 ---
 
+### ludoSpring — Game Science / HCI Composition
+
+ludoSpring validates that game science math (Fitts, flow, engagement, noise,
+WFC) produces identical results when composed from NUCLEUS primals via IPC
+vs direct Rust library calls.
+
+```rust
+fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
+    // Fitts's law via barraCuda tensor IPC
+    // Python: fitts_movement_time(100, 10, 50, 150) = 708.847613416814
+    validate_parity(
+        ctx, v,
+        "fitts_mt_d100_w10",
+        "tensor",
+        "tensor.fitts",
+        serde_json::json!({
+            "distance": 100.0, "width": 10.0, "a": 50.0, "b": 150.0
+        }),
+        "movement_time_ms",
+        708.847_613_416_814,
+        tolerances::ANALYTICAL_TOL,
+    );
+
+    // Flow evaluation via game science IPC
+    validate_parity(
+        ctx, v,
+        "flow_balanced",
+        "game",
+        "game.evaluate_flow",
+        serde_json::json!({"challenge": 0.5, "skill": 0.5}),
+        "state",
+        "Flow",
+        tolerances::ANALYTICAL_TOL,
+    );
+
+    // Perlin noise via barraCuda noise ops
+    validate_parity(
+        ctx, v,
+        "perlin_lattice_zero",
+        "tensor",
+        "tensor.perlin_2d",
+        serde_json::json!({"x": 0.0, "y": 0.0}),
+        "value",
+        0.0,
+        tolerances::ANALYTICAL_TOL,
+    );
+}
+```
+
+**Graph**: `downstream_manifest.toml` (ludospring entry)
+**Key capability**: `game` (ludoSpring IPC), `tensor` (barraCuda), `inference` (Squirrel for AI DM)
+**What to hand back**: 60Hz composition budget, `game.*` graph identity (GAP-10), AI narration latency
+
+---
+
 ## Step 3: Hand Back to primalSpring
 
 After evolving your niche composition, hand back:

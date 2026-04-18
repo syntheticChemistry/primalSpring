@@ -17,7 +17,7 @@
 [manifest]
 template = "spring_validate_template.toml"
 version = "3.0.0"
-description = "Parameter table for 6 science springs + 9 composition subsystems"
+description = "Parameter table for 7 science springs + 9 composition subsystems"
 
 [[spring]]
 spring_name = "airspring"
@@ -62,11 +62,11 @@ capabilities = [
 [[spring]]
 spring_name = "neuralspring"
 spring_binary = "neuralspring"
-domain = "neural"
+domain = "science"
 capabilities = [
-    "neural.hamiltonian",
-    "neural.eigensolve",
-    "neural.spectral",
+    "science.spectral_analysis",
+    "science.anderson_localization",
+    "science.hessian_eigen",
 ]
 
 [[spring]]
@@ -77,6 +77,19 @@ capabilities = [
     "health.pharmacology",
     "health.genomics",
     "health.clinical",
+]
+
+[[spring]]
+spring_name = "ludospring"
+spring_binary = "ludospring"
+domain = "game"
+capabilities = [
+    "game.evaluate_flow",
+    "game.fitts_cost",
+    "game.engagement",
+    "game.generate_noise",
+    "game.wfc_step",
+    "game.accessibility",
 ]
 
 # =============================================================================

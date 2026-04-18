@@ -58,7 +58,7 @@ which has a unique dual-tower ionic bridge pattern and is kept as a standalone g
 | **airSpring** | 0.10.0 | 986 | Node + **Nest** | `downstream_manifest.toml` (airspring) | balanced |
 | **groundSpring** | 0.1.0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` (groundspring) | balanced |
 | **healthSpring** | 0.1.0 | 928 | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_proto_nucleate.toml` (standalone) | neutron_heavy |
-| **ludoSpring** | 0.1.0 | 222 | Node + **Meta** | `downstream_manifest.toml` (ludospring) | balanced |
+| **ludoSpring** | 0.10.0 | 790+ | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced |
 
 ### Key
 
@@ -244,20 +244,22 @@ healthSpring domain layer
 **Atomics**: Tower + Node + **Meta** (Squirrel + petalTongue)
 
 ```
-ludoSpring composition (pure — no ludospring binary)
+ludoSpring composition (pure — ludospring ecoBin)
     ├── coralReef: game WGSL (Fitts, Perlin, WFC)
     ├── toadStool: 60Hz tick-budget dispatch
     ├── barraCuda: game math shaders (noise, procedural, physics)
     ├── Squirrel: AI Dungeon Master (narration, NPC dialogue)
     ├── petalTongue: scene rendering, TUI
-    └── NestGate: session persistence
+    ├── NestGate: session persistence
+    └── Three-layer validation: Python→Rust→composition parity
 ```
 
 **What ludoSpring evolves for the ecosystem**:
 - 60Hz composition budget → tests graph execution latency limits
-- Pure composition proof → validates graph-as-product model
+- Three-layer validation stack → canonical Python→Rust→IPC parity pattern
 - AI narration under latency → tests Squirrel real-time performance
 - Session lifecycle (create/save/restore/fork) → benefits any stateful composition
+- Composition drift detection → `composition_targets.json` golden chain
 
 ---
 

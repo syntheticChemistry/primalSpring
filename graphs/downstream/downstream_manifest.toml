@@ -99,8 +99,8 @@ owner = "neuralSpring"
 domain = "ml_inference"
 by_capability = "inference"
 particle_profile = "proton_heavy"
-fragments = ["tower_atomic", "node_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel"]
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel", "nestgate"]
 capabilities = [
     "inference.complete",
     "inference.embed",
@@ -112,13 +112,13 @@ capabilities = [
 
 [[downstream]]
 spring_name = "ludospring"
-spring_binary = "ludospring_primal"
+spring_binary = "ludospring"
 owner = "ludoSpring"
 domain = "game_science"
 by_capability = "compute"
-particle_profile = "proton_heavy"
-fragments = ["tower_atomic", "node_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel"]
+particle_profile = "balanced"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
+depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate"]
 capabilities = [
     "game.physics_sim",
     "game.procedural_gen",
