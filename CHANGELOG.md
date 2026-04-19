@@ -3,6 +3,39 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.17] — Phase 44: Full genomeBin Cross-Architecture Depot (2026-04-19)
+
+### Milestone
+**42 binaries across 6 target triples.** plasmidBin evolved from flat x86_64+aarch64
+layout to full genomeBin `primals/{target-triple}/` directory structure per ecoBin
+Architecture Standard v3.0.
+
+### Added
+- `build_ecosystem_genomeBin.sh` — replaces `build_ecosystem_musl.sh`, full 9-target
+  matrix with tiered build (Tier 1 MUST → Tier 2 SHOULD → Tier 3 NICE), per-target
+  linker configuration, cargo check + full build pipeline
+- armv7-unknown-linux-musleabihf support: 10 primals built (RaspPi/ARM32)
+- x86_64-pc-windows-gnu support: barraCuda built as .exe
+- aarch64-linux-android support: 5 primals built for Pixel/GrapheneOS
+- riscv64gc-unknown-linux-musl: primalSpring linked, all others cargo-check pass
+- macOS (x86_64 + aarch64): 8/14 primals cargo-check pass (proves pure Rust)
+- Backward-compat symlinks: `primals/{binary}` -> `x86_64-unknown-linux-musl/{binary}`
+
+### Changed
+- `plasmidBin/manifest.toml` version 5.0.0 (genomeBin format), full target matrix
+- `plasmidBin/checksums.toml` — BLAKE3 per target triple for all 42 binaries
+- `plasmidBin/start_primal.sh` — auto-detects target triple from `uname`
+- `plasmidBin/deploy_pixel.sh` — resolves from `aarch64-unknown-linux-musl/`
+- `plasmidBin/fetch.sh` — target-triple-aware binary resolution
+- `plasmidBin/harvest.sh` — supports arbitrary target triples
+- `benchScale/deploy-ecoprimals.sh` — resolves from genomeBin layout, symlink-safe
+- `wateringHole/genomeBin/manifest.toml` — v5.0.0 with full coverage matrix
+
+### Documented Gaps
+- nestgate/skunkbat: lib-only on cross-targets (workspace binary structure)
+- toadstool on armv7: 32-bit usize overflow (4GB allocation constant)
+- biomeos on armv7: 32-bit usize overflow (1 << 53 in cast.rs)
+
 ## [0.9.16+] — Phase 44: Deep Debt Evolution + Capability-Based Discovery (2026-04)
 
 ### Evolution

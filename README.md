@@ -5,7 +5,7 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.16 |
+| **Version** | 0.9.17 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 601 (unit + integration + doc-tests + proptest) |
@@ -16,7 +16,7 @@
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 75 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
-| **guideStone** | Level 4 — 67/67 live NUCLEUS, 41/41 bare, P3 CHECKSUMS (BLAKE3) |
+| **guideStone** | Level 4 — 67/67 live NUCLEUS, 41/41 bare, P3 CHECKSUMS (BLAKE3), **42 cross-arch binaries (6 targets)** |
 | **Unsafe** | Workspace-level `forbid` via `[workspace.lints.rust]` |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
