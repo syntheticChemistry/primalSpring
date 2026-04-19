@@ -69,12 +69,15 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.15 Phase 43+ — 570 tests, 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition).
+v0.9.17 Phase 44 — 601 tests, 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition).
+**genomeBin v5.0** — 42 cross-architecture binaries across 6 target triples,
+`build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
 Live validation: **12/12 primals ALIVE**, **19/19 exp094 composition parity PASS**,
 **12/12 exp091 routing matrix PASS**, **14/15 exp096 cross-arch PASS** (HSM pending).
 All composition gaps RESOLVED (7/7 biomeOS + NestGate). Full NUCLEUS validated
 across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
+benchScale Docker lab: 12 binaries deployed and version-verified.
 
 Multi-tier genetics identity system: Mitochondrial (Mito-Beacon for discovery
 and NAT negotiation), Nuclear (lineage DNA for non-fungible permissions with
@@ -83,8 +86,10 @@ Three-tier BTSP: Phase 1 (FAMILY_SEED auth), Phase 2 (secure-by-default
 cascade across 12/12 primals), Phase 3 (ChaCha20-Poly1305 encrypted channel).
 BtspEnforcer with explicit deny semantics per TrustModel.
 
-Cross-architecture validated: biomeOS-managed Tower bootstrap on Pixel
-(aarch64-unknown-linux-musl + GrapheneOS) via Neural API `--tcp-only`.
+Cross-architecture deployment: plasmidBin serves as genomeBin depot per ecoBin
+Architecture Standard v3.0. Tier 1 MUST: x86_64 + aarch64 + armv7 musl-static.
+Tier 2 SHOULD: Windows (barraCuda), Android (5 primals), macOS (8/14 check-pass).
+Tier 3 NICE: RISC-V (all cargo-check pass, primalSpring itself linked).
 14/15 cross-arch checks pass; only remaining: HSM/Titan M2 hardware backend.
 
 Particle model adopted: Tower = electron, Node = proton, Nest = neutron,

@@ -14,7 +14,7 @@
 #   scripts/         — deploy_to_gate.sh, start_tower.sh, validate_remote_gate.sh
 #   .family.seed     — genetics (copied from existing seed if available)
 #
-# Prerequisites: run build_ecosystem_musl.sh first
+# Prerequisites: run build_ecosystem_genomeBin.sh --tier1 first (or legacy build_ecosystem_musl.sh)
 
 set -euo pipefail
 
@@ -56,7 +56,7 @@ copy_arch_binaries() {
         cp "$src"/* "$OUTPUT/primals/$arch/" 2>/dev/null || echo "  (no $arch binaries found in staging)"
         chmod +x "$OUTPUT/primals/$arch"/* 2>/dev/null || true
     else
-        echo "WARNING: No $arch binaries in $src. Run build_ecosystem_musl.sh first."
+        echo "WARNING: No $arch binaries in $src. Run build_ecosystem_genomeBin.sh --tier1 first."
     fi
 }
 

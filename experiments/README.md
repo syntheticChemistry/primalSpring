@@ -146,7 +146,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.9.15 (workspace), depends on ecoPrimal
+├── Cargo.toml    # version 0.9.17 (workspace), depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

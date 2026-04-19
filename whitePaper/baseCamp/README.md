@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: April 20, 2026
-**Status**: Phase 44 — v0.9.16 — 75 experiments (17 tracks), 570 tests, 56 deploy graphs (fragment-first composition), **guideStone Level 4** (67/67 live NUCLEUS, 41/41 bare, BLAKE3 checksums P3), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin depot pattern documented** — downstream springs can pull pre-built ecoBin binaries and deploy live NUCLEUS for primal proof validation, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 14/15 cross-arch checks (HSM pending)
+**Status**: Phase 44 — v0.9.17 — 75 experiments (17 tracks), 601 tests, 56 deploy graphs (fragment-first composition), **guideStone Level 4** (67/67 live NUCLEUS, 41/41 bare, BLAKE3 checksums P3), **genomeBin v5.0** (42 binaries / 6 target triples), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), full cross-architecture deployment (x86_64/aarch64/armv7/windows/android/riscv64), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin is full genomeBin depot** — downstream springs use `build_ecosystem_genomeBin.sh` for any target, 42 binaries shipped, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 14/15 cross-arch checks (HSM pending)
 
 ---
 
@@ -57,7 +57,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 16 | Composition Parity | exp094 | Does full NUCLEUS composition produce correct results via IPC? 19/19 checks. |
 | 17 | Cross-Architecture Deployment | exp095–096 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? 6/9 checks. |
 
-## Current State (v0.9.16)
+## Current State (v0.9.17)
 
 | Metric | Value |
 |--------|-------|
@@ -154,7 +154,7 @@ their own guideStone binaries.
 - hotSpring v0.6.32: **Level 5 — Certified** (guideStone-v0.7.0)
 - healthSpring V53, neuralSpring V133, wetSpring V145, ludoSpring V44: **Level 1** (validation exists)
 - airSpring v0.10.0, groundSpring V124: **Level 0** (not started)
-- primalSpring v0.9.15: **Level 1** (6-layer binary implemented, needs live NUCLEUS for full certification)
+- primalSpring v0.9.17: **Level 4** (67/67 live NUCLEUS, 41/41 bare, BLAKE3 P3, genomeBin v5.0)
 
 See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
 

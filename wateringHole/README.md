@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
-**Version**: 0.9.16 (Phase 44 — 601 tests, 75 experiments, 56 deploy graphs, guideStone Level 4 — 67/67 live NUCLEUS + 41/41 bare, BLAKE3 checksums (P3), BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), capability-based discovery (zero hardcoded primal names), biomeOS-managed cross-arch Pixel deployment, content distribution federation, **NUCLEUS composition 12/12 routing + 19/19 parity**, fragment-first graph composition, plasmidBin depot for downstream live deployments)  
+**Version**: 0.9.17 (Phase 44 — 601 tests, 75 experiments, 56 deploy graphs, guideStone Level 4 — 67/67 live NUCLEUS + 41/41 bare, BLAKE3 checksums (P3), BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), capability-based discovery (zero hardcoded primal names), **genomeBin v5.0 — 42 binaries across 6 target triples** (x86_64/aarch64/armv7/windows/android/riscv64), benchScale Docker validation, fragment-first graph composition, plasmidBin owns full cross-architecture depot)  
 **Phase**: **INTERSTADIAL** — stadial gate cleared April 16, 2026. Deep debt evolution April 2026: all production code references `primal_names::` constants, TCP fallback table centralized in `tolerances::`, test suites extracted to companion files, all files under 800 LOC.  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: April 2026

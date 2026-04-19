@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # build_ecosystem_musl.sh — Build all core primals as musl static binaries
 #
+# SUPERSEDED: Use build_ecosystem_genomeBin.sh for the full 9-target matrix.
+# This script is kept for quick x86_64+aarch64 musl-only builds.
+#
 # Iterates over ecoPrimals primal source directories and builds each for
 # x86_64-unknown-linux-musl and (optionally) aarch64-unknown-linux-musl.
 #

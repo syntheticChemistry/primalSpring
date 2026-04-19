@@ -24,7 +24,7 @@
 #   - ADB installed and Pixel connected via USB (or --lan with Pixel IP)
 #   - NUCLEUS primals running on the Pixel (BearDog + Songbird with --port)
 #   - For --deploy: aarch64 binaries in /tmp/primalspring-deploy/primals/aarch64/
-#     (run: ./scripts/build_ecosystem_musl.sh --aarch64)
+#     (run: ./scripts/build_ecosystem_genomeBin.sh --tier1)
 #
 # Port mapping (ADB forward):
 #   localhost:19100 → Pixel:9100 (BearDog)
@@ -173,7 +173,7 @@ deploy_aarch64_binaries() {
     local staging="/tmp/primalspring-deploy/primals/aarch64"
     if [ ! -d "$staging" ]; then
         echo "  ERROR: No aarch64 binaries found at $staging"
-        echo "  Run: ./scripts/build_ecosystem_musl.sh --aarch64"
+        echo "  Run: ./scripts/build_ecosystem_genomeBin.sh --tier1"
         exit 1
     fi
 

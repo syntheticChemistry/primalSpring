@@ -149,7 +149,7 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.9.16 | 601 | Phase 44 — 75 experiments (17 tracks), 56 deploy graphs (fragment-first), guideStone Level 4, capability-based discovery, plasmidBin depot |
+| primalSpring | v0.9.17 | 601 | Phase 44 — 75 experiments (17 tracks), 56 deploy graphs (fragment-first), guideStone Level 4, genomeBin v5.0 (42 binaries / 6 targets), capability-based discovery |
 
 ## Modernization Sweep (April 7, 2026)
 
