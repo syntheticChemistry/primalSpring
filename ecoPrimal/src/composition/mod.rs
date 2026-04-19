@@ -509,6 +509,51 @@ pub fn validate_parity_vec(
     v.check_bool(name, ok, &detail);
 }
 
+/// Call a primal method, recording PASS on success, SKIP on absent/protocol
+/// errors, and FAIL on unexpected errors.
+///
+/// Returns `Some(result)` on success so callers can chain pipeline steps.
+/// When a step returns `None`, downstream steps should also skip. This is
+/// the standard pattern for multi-primal pipeline validation (e.g.,
+/// hash → store → retrieve → verify).
+///
+/// Absorbed from ludoSpring V46 and healthSpring V56 — both independently
+/// invented this pattern for cross-atomic pipeline validation.
+pub fn call_or_skip(
+    ctx: &mut CompositionContext,
+    v: &mut ValidationResult,
+    check_name: &str,
+    capability: &str,
+    method: &str,
+    params: serde_json::Value,
+) -> Option<serde_json::Value> {
+    match ctx.call(capability, method, params) {
+        Ok(result) => {
+            v.check_bool(check_name, true, "ok");
+            Some(result)
+        }
+        Err(e) if is_skip_error(&e) => {
+            v.check_skip(check_name, &format!("{e}"));
+            None
+        }
+        Err(e) => {
+            v.check_bool(check_name, false, &format!("{e}"));
+            None
+        }
+    }
+}
+
+/// Whether an IPC error should be treated as a graceful skip rather than
+/// a failure. Covers absent primals (connection refused), protocol
+/// mismatches (HTTP-on-UDS), and transport dialect differences (BTSP).
+///
+/// Springs use this to degrade gracefully when primals are absent or speak
+/// a different protocol dialect. A skip means "reachable or expected absent"
+/// — it does not count as a failure.
+pub fn is_skip_error(e: &IpcError) -> bool {
+    e.is_connection_error() || e.is_protocol_error() || e.is_transport_mismatch()
+}
+
 /// Validate that a set of required capabilities are live in the composition.
 ///
 /// This is the standard "preamble" for a primal proof binary: check that

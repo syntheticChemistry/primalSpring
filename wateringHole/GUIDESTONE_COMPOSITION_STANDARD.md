@@ -1,8 +1,8 @@
 # guideStone Composition Standard
 
-**Date**: April 19, 2026
-**Version**: v1.1.0
-**From**: primalSpring v0.9.15
+**Date**: April 20, 2026
+**Version**: v1.2.0
+**From**: primalSpring v0.9.16
 **License**: AGPL-3.0-or-later
 **Reference implementation**: hotSpring-guideStone-v0.7.0
 
@@ -223,14 +223,14 @@ interaction, exit code semantics, and serving pattern are the **same**.
 
 | Spring | Level | Evidence | Blockers |
 |--------|-------|----------|----------|
-| primalSpring v0.9.15 | **3 — Bare works** | 41/41 bare checks pass, P3 CHECKSUMS (BLAKE3, 18 files), all fragments/manifests/bonding validated | Needs live NUCLEUS for Level 4 |
-| hotSpring v0.6.32 | **5 — Certified** | guideStone-v0.7.0: all 5 properties, cross-substrate parity (Python/CPU/GPU), NUCLEUS additive layer (BearDog signing, rhizoCrypt DAG, toadStool reporting) | aarch64 CI |
-| wetSpring V147 | **3 — Bare works** | `wetspring_guidestone`, modular bare/domain split, canonical exit(2) pattern | Needs live NUCLEUS for Level 4 |
-| ludoSpring V45 | **3 — Bare works** | Four-layer validation (Python→Rust→IPC→primal proof), `validate_primal_proof` binary | Needs live NUCLEUS for Level 4 |
-| healthSpring V54 | **2 — Properties documented** | `healthspring_guidestone` with bare.rs/domain.rs split, exp122 IPC parity | Property 4 partially blocked by patient data compliance; dual-tower enclave needed |
-| neuralSpring V134 | **2 — Properties documented** | `neuralspring_guidestone`, `IpcMathClient` (9 methods), 7 caps validated | 18 barraCuda surface gaps block full self-validation |
-| airSpring v0.10.0 | **0 — Not started** | Pre-delta; 90.56% coverage; no NUCLEUS wiring | No IPC client yet |
-| groundSpring V124 | **0 — Not started** | Pre-delta; 92% coverage; no NUCLEUS wiring | No IPC client yet |
+| primalSpring v0.9.16 | **4 — NUCLEUS works** | 67/67 live NUCLEUS, 41/41 bare, P3 BLAKE3 (18 files), family-aware discovery, protocol tolerance | Level 5: cross-substrate parity |
+| hotSpring v0.6.32 | **5 — Certified** | guideStone-v0.7.0: all 5 properties, cross-substrate parity (Python/CPU/GPU), NUCLEUS additive layer, 128 WGSL shaders, reference implementation | aarch64 CI |
+| healthSpring V56 | **4 — NUCLEUS works** | 49/49 live checks, barraCuda RTX 3070 IPC parity (stats.mean 0.00e0 diff), BLAKE3 P3 (17 files), three-tier harness | barraCuda `stats.variance`/`stats.correlation` missing (§19); BearDog BTSP; NestGate egress fence |
+| wetSpring V148 | **4 — NUCLEUS works** | 31/31 live checks (11 skip), barraCuda GPU IPC parity, handle-based tensor.matmul, cross-atomic pipeline (hash→store→verify), BLAKE3 P3 | 6 missing barraCuda methods (PG-13); Squirrel BTSP (PG-14); ToadStool compute.dispatch (PG-15) |
+| ludoSpring V46 | **4 — NUCLEUS works** | 43 checks (20 bare + 15 IPC + 8 cross-atomic), BLAKE3 P3 (11 files), `call_or_skip` pattern, protocol tolerance | barraCuda response schema (activation.fitts/hick formula variants); rhizoCrypt TCP-only; loamSpine startup panic |
+| neuralSpring V135 | **3 — Bare works** | 29/29 bare ALL PASS, BLAKE3 P3 (15 files), structured `v.section()` output, FAMILY_ID | 18 barraCuda surface gaps (Gap 11); needs NUCLEUS deployment for Level 4 |
+| airSpring v0.10.0 | **0 — Not started** | Pre-delta; 1,364 tests, 90.56% coverage; no guideStone binary | No IPC client; no NUCLEUS wiring |
+| groundSpring V124 | **0 — Not started** | Pre-delta; 1,050+ tests, 92% coverage; no guideStone binary | No IPC client; no NUCLEUS wiring |
 
 ---
 
@@ -387,11 +387,46 @@ validation_capabilities = [
 ## Changes in v1.1.0
 
 - **Property 3**: Switched from SHA-256 to BLAKE3 (via `primalspring::checksums`)
-- **primalSpring guideStone**: 41/41 bare checks pass (Level 3 — bare works)
+- **primalSpring guideStone**: 67/67 live NUCLEUS checks pass (Level 4)
 - Added CHECKSUMS integration pattern (generate with `gen_checksums` example,
   verify with `verify_manifest`)
-- Updated readiness table: primalSpring(3), wetSpring(3), ludoSpring(3),
-  healthSpring(2), neuralSpring(2)
+- Updated readiness table: primalSpring(4), hotSpring(5), healthSpring(4),
+  wetSpring(4), ludoSpring(4), neuralSpring(3)
+
+### Changes in v1.2.0
+
+- **Readiness table updated** to reflect downstream evolution (5 springs at L3+)
+- **Tolerance hierarchy published** as ecosystem standard (see below)
+- **`call_or_skip` absorbed** from ludoSpring V46 / healthSpring V56 into
+  `primalspring::composition` — standard for cross-atomic pipeline validation
+- **`is_skip_error` absorbed** — unified skip classification for absent/protocol errors
+- **Domain functions are local compositions** — pattern documented (healthSpring V56):
+  domain-specific science (Hill, Shannon, etc.) composes from generic primitives
+  proven correct via IPC; no per-domain IPC methods needed on barraCuda
+- **Consolidated upstream primal gaps** from 5 spring handoffs
+
+### Tolerance Hierarchy (Ecosystem Standard)
+
+All springs should use these named constants from `primalspring::tolerances` to
+ensure consistent, documented, comparable tolerances across the ecosystem:
+
+```
+EXACT_PARITY_TOL        (0.0)    bit-identical (integer ops, hashes)
+DETERMINISTIC_FLOAT_TOL (1e-15)  same binary, different run
+DF64_PARITY_TOL         (1e-14)  double-float emulation (Dekker/Knuth)
+CPU_GPU_PARITY_TOL      (1e-10)  f64 CPU vs WGSL f32→f64
+IPC_ROUND_TRIP_TOL      (1e-10)  JSON serialization + IPC overhead
+WGSL_SHADER_TOL         (1e-6)   f32 shader vs f64 Rust
+STOCHASTIC_SEED_TOL     (1e-6)   seed-fixed Monte Carlo / HMC
+```
+
+**Ordering invariant** (enforced by tests):
+`EXACT < DETERMINISTIC < DF64 < CPU_GPU <= IPC_ROUND_TRIP < WGSL_SHADER <= STOCHASTIC_SEED`
+
+**Rule**: Use `IPC_ROUND_TRIP_TOL` for IPC parity checks, never `EXACT`.
+JSON-RPC round-trips introduce ~1e-12 noise from f64 serialization.
+Domain-specific tolerances (e.g., SEMF, plaquette) should be documented
+alongside the published reference they derive from.
 
 ---
 

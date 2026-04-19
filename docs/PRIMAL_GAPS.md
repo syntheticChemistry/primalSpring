@@ -1613,6 +1613,43 @@ See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
 | **PG-22** | Validation graphs (`crypto_negative_validate.toml`, `nucleus_atomics_validate.toml`) had invalid TOML: duplicate `[graph.node.operation]` tables. | Bare guideStone validation | primalSpring | **RESOLVED** — migrated to `[graph.nodes.operation]` (per-entry) |
 | **PG-23** | Meta-tier fragment nodes (squirrel, petaltongue) had no `order` field, defaulting to 0. Caused duplicate order values when resolved into profiles. | Bare guideStone validation | primalSpring | **RESOLVED** — added explicit orders 10/11/12 to `meta_tier.toml` |
 
+### Cross-Spring Consolidated Gaps (April 20, 2026)
+
+Gaps reported by downstream springs during guideStone Level 3–4 validation.
+These are **upstream primal evolution requests** — the springs cannot resolve
+them locally. Ordered by ecosystem impact (how many springs are blocked).
+
+| ID | Gap | Primal | Reporter(s) | Severity | Status |
+|----|-----|--------|-------------|----------|--------|
+| **PG-24** | **6 missing JSON-RPC methods**: `stats.variance`, `stats.correlation`, `linalg.solve`, `linalg.eigenvalues`, `spectral.fft`, `spectral.power_spectrum` — in downstream manifest but not on barraCuda ecobin wire surface. | barraCuda | wetSpring PG-13, healthSpring §19, neuralSpring Gap 11 | **CRITICAL** — blocks Level 5 for 3 springs |  **OPEN** |
+| **PG-25** | `activation.fitts` formula variant: barraCuda returns 800 for (d=256,w=32), Python expects 708.85. Shannon formulation `log₂(2D/W + 1)` vs barraCuda's `log₂(D/W)`. | barraCuda | ludoSpring V46 | **HIGH** — wrong science |  **OPEN** |
+| **PG-26** | `activation.hick` formula variant: barraCuda returns 675.49 for (n=8), Python expects 650. `log₂(N+1)` vs `log₂(N)`. | barraCuda | ludoSpring V46 | **HIGH** — wrong science |  **OPEN** |
+| **PG-27** | `noise.perlin3d` lattice invariant violated: `perlin3d(0,0,0)` returns -0.11, should be 0 by gradient noise definition. | barraCuda | ludoSpring V46 | **MEDIUM** | **OPEN** |
+| **PG-28** | Response schema inconsistency: some methods return `{"result": N}`, others `{"mean": N}` or naked values. Springs need `extract_any_scalar()` workaround. | barraCuda | ludoSpring V46, hotSpring | **MEDIUM** — friction for all springs | **OPEN** |
+| **PG-29** | `tensor.matmul` handle-based API: requires `tensor.create` → get handle → `tensor.matmul` with handles → extract shape. No inline-data path. Multiple springs working around this independently. | barraCuda | wetSpring PG-17, ludoSpring V46 | **MEDIUM** — candidate for `primalspring::composition` helper | **OPEN** |
+| **PG-30** | Squirrel BTSP-only socket: plain JSON-RPC clients get connection reset. No fallback to unauthed health check. | Squirrel | wetSpring PG-14 | **MEDIUM** — blocks inference.* validation | **OPEN** |
+| **PG-31** | ToadStool `compute.dispatch` not registered on JSON-RPC socket. tarpc and BTSP sockets exist but JSON-RPC routing missing. | ToadStool | wetSpring PG-15 | **MEDIUM** — blocks compute validation | **OPEN** |
+| **PG-32** | rhizoCrypt TCP-only transport (no UDS). Blocks 4 composition experiments. | rhizoCrypt | ludoSpring V46 | **MEDIUM** | **OPEN** |
+| **PG-33** | loamSpine startup panic: `block_on` inside async runtime. Blocks exp095. | loamSpine | ludoSpring V46 | **HIGH** — crashes | **OPEN** |
+| **PG-34** | biomeOS `biomeos-types` missing `secret` module — source build fails. | biomeOS | wetSpring V148 | **MEDIUM** — blocks source-based NUCLEUS | **OPEN** |
+| **PG-35** | BearDog connection reset without BTSP: no basic JSON-RPC health mode. `crypto.hash` requires active BTSP session. | BearDog | hotSpring, wetSpring, ludoSpring | **LOW** — handled by `is_skip_error()` | **OPEN** |
+| **PG-36** | `stats.std_dev` N-1 vs N convention: barraCuda uses sample (N-1, Bessel's), some springs use population (N). Both correct; needs documented convention. | barraCuda | wetSpring PG-16 | **LOW** — convention, not bug | **OPEN** |
+
+**Impact summary**: barraCuda is the single biggest blocker (PG-24 through PG-29). Resolving PG-24 (6 missing methods) alone unblocks Level 5 for wetSpring, healthSpring, and neuralSpring. PG-25/PG-26 are science-correctness issues that affect ludoSpring's game math parity.
+
+### Absorbed Patterns (April 20, 2026)
+
+Patterns independently invented by 2+ springs, now absorbed into primalSpring:
+
+| Pattern | Absorbed From | Into | API |
+|---------|--------------|------|-----|
+| `call_or_skip` pipeline helper | ludoSpring V46, healthSpring V56 | `primalspring::composition::call_or_skip()` | Returns `Option<Value>`, chains pipeline steps |
+| `is_skip_error` classification | ludoSpring V46, hotSpring, wetSpring | `primalspring::composition::is_skip_error()` | Unified absent/protocol/transport skip |
+| Domain-as-local-composition | healthSpring V56 | Documented in guideStone standard | Domain functions compose from IPC-proven primitives |
+| Tolerance hierarchy | hotSpring v0.6.32 | `primalspring::tolerances` + guideStone standard v1.2.0 | Named constants with ordering invariant |
+| BLAKE3 checksums for P3 | hotSpring v0.7.0 (origin) | `primalspring::checksums` | All 5 springs at L3+ adopted it |
+| `v.section()` structured output | neuralSpring V135 | Documented pattern | `ValidationResult::section()` for machine-readable grouping |
+
 ---
 
 *Resolved gaps, compliance matrices, and historical evolution snapshots are in
