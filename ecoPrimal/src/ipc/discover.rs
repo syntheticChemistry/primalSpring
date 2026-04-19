@@ -64,7 +64,7 @@ pub enum DiscoverySource {
 #[must_use]
 pub fn build_socket_path(base_dir: &Path, primal: &str, family: &str) -> PathBuf {
     base_dir
-        .join("biomeos")
+        .join(crate::primal_names::BIOMEOS)
         .join(format!("{primal}-{family}.sock"))
 }
 
@@ -116,7 +116,7 @@ pub fn discover_from_manifest(primal: &str) -> Option<PathBuf> {
 pub fn discover_from_socket_registry(primal: &str) -> Option<PathBuf> {
     let base = std::env::var("XDG_RUNTIME_DIR").ok()?;
     let registry_path = PathBuf::from(base)
-        .join("biomeos")
+        .join(crate::primal_names::BIOMEOS)
         .join("socket-registry.json");
 
     let contents = std::fs::read_to_string(registry_path).ok()?;
@@ -169,7 +169,7 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
     // Many primals now use plain `{name}.sock` or `{name}-ipc.sock`
     let base =
         std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
-    let biomeos_dir = base.join("biomeos");
+    let biomeos_dir = base.join(crate::primal_names::BIOMEOS);
     for suffix in [".sock", "-ipc.sock"] {
         let plain = biomeos_dir.join(format!("{primal}{suffix}"));
         if plain.exists() {

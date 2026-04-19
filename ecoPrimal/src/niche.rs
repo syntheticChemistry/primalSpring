@@ -37,7 +37,7 @@ pub const NICHE_NAME: &str = crate::PRIMAL_NAME;
 
 /// Default registration target — discovered at runtime, not hardcoded.
 /// Override via `BIOMEOS_PRIMAL` env var for non-standard deployments.
-const REGISTRATION_TARGET: &str = "biomeos";
+const REGISTRATION_TARGET: &str = crate::primal_names::BIOMEOS;
 
 /// Capabilities this binary **locally serves** via `dispatch_request`.
 ///
@@ -91,72 +91,75 @@ pub const LOCAL_CAPABILITIES: &[&str] = &[
 /// should go through `capability.call` or the Neural API.
 ///
 /// Each entry names the canonical provider per `capability_registry.toml`.
-pub const ROUTED_CAPABILITIES: &[(&str, &str)] = &[
-    // ── Lifecycle (biomeOS) ──
-    ("lifecycle.start", "biomeos"),
-    ("lifecycle.stop", "biomeos"),
-    // ── Graph execution (biomeOS) ──
-    ("graph.deploy", "biomeos"),
-    ("graph.status", "biomeos"),
-    ("graph.rollback", "biomeos"),
-    // ── AI (Squirrel) ──
-    ("ai.query", "squirrel"),
-    ("ai.health", "squirrel"),
-    // ── Discovery mesh (Songbird) ──
-    ("discovery.announce", "songbird"),
-    ("discovery.find_primals", "songbird"),
-    // ── Network (Songbird) ──
-    ("network.stun", "songbird"),
-    ("network.nat_type", "songbird"),
-    ("network.birdsong.beacon", "songbird"),
-    ("network.birdsong.decrypt", "songbird"),
-    ("network.onion.start", "songbird"),
-    ("network.onion.status", "songbird"),
-    ("network.tor.status", "songbird"),
-    ("network.federation.peers", "songbird"),
-    // ── Federation (biomeOS v2.78+) ──
-    ("federation.configure", "biomeos"),
-    ("federation.join", "biomeos"),
-    ("federation.health_check", "biomeos"),
-    // ── Topology (biomeOS) ──
-    ("topology.get", "biomeos"),
-    ("topology.proprioception", "biomeos"),
-    // ── Visualization (petalTongue) ──
-    ("visualization.render.dashboard", "petaltongue"),
-    ("visualization.render.grammar", "petaltongue"),
-    // ── Crypto (BearDog) ──
-    ("crypto.sign_ed25519", "beardog"),
-    ("crypto.verify_ed25519", "beardog"),
-    // ── Provenance DAG (rhizoCrypt) ──
-    ("dag.session.create", "rhizocrypt"),
-    ("dag.session.get", "rhizocrypt"),
-    ("dag.session.list", "rhizocrypt"),
-    ("dag.event.append", "rhizocrypt"),
-    ("dag.vertex.get", "rhizocrypt"),
-    ("dag.frontier.get", "rhizocrypt"),
-    ("dag.merkle.root", "rhizocrypt"),
-    ("dag.merkle.proof", "rhizocrypt"),
-    ("dag.merkle.verify", "rhizocrypt"),
-    ("dag.slice.checkout", "rhizocrypt"),
-    ("dag.dehydration.trigger", "rhizocrypt"),
-    // ── Ledger (loamSpine) ──
-    ("spine.create", "loamspine"),
-    ("spine.get", "loamspine"),
-    ("spine.seal", "loamspine"),
-    ("entry.append", "loamspine"),
-    ("entry.get", "loamspine"),
-    ("certificate.mint", "loamspine"),
-    ("session.commit", "loamspine"),
-    // ── Attribution (sweetGrass) ──
-    ("braid.create", "sweetgrass"),
-    ("braid.get", "sweetgrass"),
-    ("braid.commit", "sweetgrass"),
-    ("anchoring.anchor", "sweetgrass"),
-    ("anchoring.verify", "sweetgrass"),
-    ("provenance.graph", "sweetgrass"),
-    ("provenance.export_provo", "sweetgrass"),
-    ("attribution.chain", "sweetgrass"),
-];
+pub const ROUTED_CAPABILITIES: &[(&str, &str)] = {
+    use crate::primal_names as pn;
+    &[
+        // ── Lifecycle (biomeOS) ──
+        ("lifecycle.start", pn::BIOMEOS),
+        ("lifecycle.stop", pn::BIOMEOS),
+        // ── Graph execution (biomeOS) ──
+        ("graph.deploy", pn::BIOMEOS),
+        ("graph.status", pn::BIOMEOS),
+        ("graph.rollback", pn::BIOMEOS),
+        // ── AI (Squirrel) ──
+        ("ai.query", pn::SQUIRREL),
+        ("ai.health", pn::SQUIRREL),
+        // ── Discovery mesh (Songbird) ──
+        ("discovery.announce", pn::SONGBIRD),
+        ("discovery.find_primals", pn::SONGBIRD),
+        // ── Network (Songbird) ──
+        ("network.stun", pn::SONGBIRD),
+        ("network.nat_type", pn::SONGBIRD),
+        ("network.birdsong.beacon", pn::SONGBIRD),
+        ("network.birdsong.decrypt", pn::SONGBIRD),
+        ("network.onion.start", pn::SONGBIRD),
+        ("network.onion.status", pn::SONGBIRD),
+        ("network.tor.status", pn::SONGBIRD),
+        ("network.federation.peers", pn::SONGBIRD),
+        // ── Federation (biomeOS v2.78+) ──
+        ("federation.configure", pn::BIOMEOS),
+        ("federation.join", pn::BIOMEOS),
+        ("federation.health_check", pn::BIOMEOS),
+        // ── Topology (biomeOS) ──
+        ("topology.get", pn::BIOMEOS),
+        ("topology.proprioception", pn::BIOMEOS),
+        // ── Visualization (petalTongue) ──
+        ("visualization.render.dashboard", pn::PETALTONGUE),
+        ("visualization.render.grammar", pn::PETALTONGUE),
+        // ── Crypto (BearDog) ──
+        ("crypto.sign_ed25519", pn::BEARDOG),
+        ("crypto.verify_ed25519", pn::BEARDOG),
+        // ── Provenance DAG (rhizoCrypt) ──
+        ("dag.session.create", pn::RHIZOCRYPT),
+        ("dag.session.get", pn::RHIZOCRYPT),
+        ("dag.session.list", pn::RHIZOCRYPT),
+        ("dag.event.append", pn::RHIZOCRYPT),
+        ("dag.vertex.get", pn::RHIZOCRYPT),
+        ("dag.frontier.get", pn::RHIZOCRYPT),
+        ("dag.merkle.root", pn::RHIZOCRYPT),
+        ("dag.merkle.proof", pn::RHIZOCRYPT),
+        ("dag.merkle.verify", pn::RHIZOCRYPT),
+        ("dag.slice.checkout", pn::RHIZOCRYPT),
+        ("dag.dehydration.trigger", pn::RHIZOCRYPT),
+        // ── Ledger (loamSpine) ──
+        ("spine.create", pn::LOAMSPINE),
+        ("spine.get", pn::LOAMSPINE),
+        ("spine.seal", pn::LOAMSPINE),
+        ("entry.append", pn::LOAMSPINE),
+        ("entry.get", pn::LOAMSPINE),
+        ("certificate.mint", pn::LOAMSPINE),
+        ("session.commit", pn::LOAMSPINE),
+        // ── Attribution (sweetGrass) ──
+        ("braid.create", pn::SWEETGRASS),
+        ("braid.get", pn::SWEETGRASS),
+        ("braid.commit", pn::SWEETGRASS),
+        ("anchoring.anchor", pn::SWEETGRASS),
+        ("anchoring.verify", pn::SWEETGRASS),
+        ("provenance.graph", pn::SWEETGRASS),
+        ("provenance.export_provo", pn::SWEETGRASS),
+        ("attribution.chain", pn::SWEETGRASS),
+    ]
+};
 
 /// All capabilities (local + routed method names) as a flat slice.
 ///

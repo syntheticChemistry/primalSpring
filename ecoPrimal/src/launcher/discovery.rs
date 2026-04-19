@@ -79,5 +79,5 @@ pub fn discover_binary(primal: &str) -> Result<PathBuf, LaunchError> {
 ///
 /// Returns [`LaunchError::BinaryNotFound`] if `biomeos` is not found.
 pub fn discover_biomeos_binary() -> Result<PathBuf, LaunchError> {
-    discover_binary("biomeos")
+    discover_binary(crate::primal_names::BIOMEOS)
 }

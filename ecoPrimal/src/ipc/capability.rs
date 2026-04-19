@@ -99,7 +99,7 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
     // Tier 2: Capability-named socket on filesystem
     let base =
         std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
-    let biomeos_dir = base.join("biomeos");
+    let biomeos_dir = base.join(crate::primal_names::BIOMEOS);
     let family = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
 
     // 2a: {capability}-{family}.sock (multi-tenant convention)
@@ -181,7 +181,7 @@ fn discover_from_socket_registry_by_capability(
 ) -> Option<(PathBuf, Option<String>)> {
     let base = std::env::var("XDG_RUNTIME_DIR").ok()?;
     let registry_path = PathBuf::from(base)
-        .join("biomeos")
+        .join(crate::primal_names::BIOMEOS)
         .join("socket-registry.json");
 
     let contents = std::fs::read_to_string(registry_path).ok()?;

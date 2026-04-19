@@ -41,7 +41,7 @@ pub fn spawn_biomeos(
     let relative_binary = discover_biomeos_binary()?;
     let binary = std::fs::canonicalize(&relative_binary).unwrap_or(relative_binary);
 
-    let biomeos_dir = nucleation.base_dir().join("biomeos");
+    let biomeos_dir = nucleation.base_dir().join(crate::primal_names::BIOMEOS);
     let _ = std::fs::create_dir_all(&biomeos_dir);
     let socket_path = biomeos_dir.join(format!("neural-api-{family_id}.sock"));
     let _ = std::fs::remove_file(&socket_path);
@@ -79,18 +79,18 @@ pub fn spawn_biomeos(
     );
 
     let mut child = cmd.spawn().map_err(|e| LaunchError::SpawnFailed {
-        primal: "biomeos".to_owned(),
+        primal: crate::primal_names::BIOMEOS.to_owned(),
         source: e,
     })?;
 
-    let relay_handle = relay_output(&mut child, "biomeos");
+    let relay_handle = relay_output(&mut child, crate::primal_names::BIOMEOS);
 
     let timeout = Duration::from_secs(tolerances::LAUNCHER_SOCKET_TIMEOUT_SECS);
     if !wait_for_socket(&socket_path, timeout) {
         let _ = child.kill();
         let _ = child.wait();
         return Err(LaunchError::SocketTimeout {
-            primal: "biomeos".to_owned(),
+            primal: crate::primal_names::BIOMEOS.to_owned(),
             socket: socket_path,
             waited: timeout,
         });
@@ -103,7 +103,7 @@ pub fn spawn_biomeos(
     );
 
     Ok(PrimalProcess::with_stderr_relay(
-        "biomeos".to_owned(),
+        crate::primal_names::BIOMEOS.to_owned(),
         socket_path,
         child,
         relay_handle,

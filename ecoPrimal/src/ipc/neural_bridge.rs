@@ -88,7 +88,7 @@ impl NeuralBridge {
         ];
 
         if let Ok(xdg) = std::env::var("XDG_RUNTIME_DIR") {
-            let base = PathBuf::from(xdg).join("biomeos");
+            let base = PathBuf::from(xdg).join(crate::primal_names::BIOMEOS);
             for name in &candidates {
                 let path = base.join(name);
                 if path.exists() {
@@ -98,7 +98,9 @@ impl NeuralBridge {
         }
 
         for name in &candidates {
-            let path = std::env::temp_dir().join("biomeos").join(name);
+            let path = std::env::temp_dir()
+                .join(crate::primal_names::BIOMEOS)
+                .join(name);
             if path.exists() {
                 return Some(Self { socket_path: path });
             }

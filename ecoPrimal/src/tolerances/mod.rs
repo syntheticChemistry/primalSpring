@@ -257,6 +257,8 @@ pub const TCP_FALLBACK_TOADSTOOL_PORT: u16 = 9400;
 pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9500;
 /// Default `SQUIRREL_PORT` when unset (same as [`TCP_FALLBACK_SQUIRREL_PORT`]).
 pub const DEFAULT_SQUIRREL_PORT: u16 = TCP_FALLBACK_SQUIRREL_PORT;
+/// TCP fallback port for remote `petalTongue` (visualization).
+pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9600;
 /// TCP fallback port for remote biomeOS (substrate).
 pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
 

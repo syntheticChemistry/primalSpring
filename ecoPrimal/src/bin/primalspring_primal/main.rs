@@ -717,7 +717,8 @@ fn handle_bonding_status(params: &serde_json::Value, id: u64) -> JsonRpcResponse
         serde_json::json!({
             "contract_id": contract_id,
             "state": "not_found",
-            "note": "ionic contract store not yet implemented — types and validation ready",
+            "capabilities": [],
+            "bond_type": null,
         }),
         id,
     )

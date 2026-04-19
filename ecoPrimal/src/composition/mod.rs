@@ -106,29 +106,17 @@ impl CompositionContext {
     /// TCP probing on well-known ports.
     ///
     /// TCP port resolution uses `{PRIMAL}_PORT` env vars (e.g. `BEARDOG_PORT=9100`)
-    /// with sensible defaults from the `plasmidBin` / `nucleus_launcher` convention.
-    /// This makes composition experiments work both in UDS (local development)
-    /// and TCP (containers, cross-arch, benchScale) deployments.
+    /// with sensible defaults from [`crate::tolerances`]. This makes composition
+    /// experiments work both in UDS (local development) and TCP (containers,
+    /// cross-arch, benchScale) deployments.
     #[must_use]
     pub fn from_live_discovery_with_fallback() -> Self {
-        let cap_to_primal: &[(&str, &str, &str, u16)] = &[
-            ("security", "beardog", "BEARDOG_PORT", 9100),
-            ("discovery", "songbird", "SONGBIRD_PORT", 9200),
-            ("storage", "nestgate", "NESTGATE_PORT", 9300),
-            ("compute", "toadstool", "TOADSTOOL_PORT", 9400),
-            ("tensor", "barracuda", "BARRACUDA_PORT", 9401),
-            ("shader", "coralreef", "CORALREEF_PORT", 9402),
-            ("ai", "squirrel", "SQUIRREL_PORT", 9500),
-            ("dag", "rhizocrypt", "RHIZOCRYPT_PORT", 9301),
-            ("commit", "sweetgrass", "SWEETGRASS_PORT", 9303),
-            ("provenance", "loamspine", "LOAMSPINE_PORT", 9302),
-            ("visualization", "petaltongue", "PETALTONGUE_PORT", 9600),
-        ];
+        let cap_to_primal = tcp_fallback_table();
 
         let host = std::env::var("PRIMALSPRING_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
 
         let mut clients = HashMap::new();
-        for &(cap, primal, port_env, default_port) in cap_to_primal {
+        for &(cap, primal, port_env, default_port) in &cap_to_primal {
             if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
                 clients.insert(cap.to_owned(), client);
                 continue;
@@ -300,19 +288,20 @@ impl CompositionContext {
 /// ```
 #[must_use]
 pub fn capability_to_primal(capability: &str) -> &str {
+    use crate::primal_names as pn;
     match capability {
-        "security" | "crypto" => "beardog",
-        "discovery" | "network" => "songbird",
-        "compute" => "toadstool",
-        "tensor" | "math" => "barracuda",
-        "shader" => "coralreef",
-        "storage" => "nestgate",
-        "ai" | "inference" => "squirrel",
-        "dag" | "provenance" => "rhizocrypt",
-        "ledger" | "spine" | "merkle" => "loamspine",
-        "commit" | "attribution" | "braid" => "sweetgrass",
-        "visualization" => "petaltongue",
-        "orchestration" => "biomeos",
+        "security" | "crypto" => pn::BEARDOG,
+        "discovery" | "network" => pn::SONGBIRD,
+        "compute" => pn::TOADSTOOL,
+        "tensor" | "math" => pn::BARRACUDA,
+        "shader" => pn::CORALREEF,
+        "storage" => pn::NESTGATE,
+        "ai" | "inference" => pn::SQUIRREL,
+        "dag" | "provenance" => pn::RHIZOCRYPT,
+        "ledger" | "spine" | "merkle" => pn::LOAMSPINE,
+        "commit" | "attribution" | "braid" => pn::SWEETGRASS,
+        "visualization" => pn::PETALTONGUE,
+        "orchestration" => pn::BIOMEOS,
         other => other,
     }
 }
@@ -552,6 +541,88 @@ pub fn call_or_skip(
 #[must_use]
 pub fn is_skip_error(e: &IpcError) -> bool {
     e.is_connection_error() || e.is_protocol_error() || e.is_transport_mismatch()
+}
+
+/// Capability → (primal slug, env var, default port) for TCP fallback.
+///
+/// Centralized in one place so the mapping is consistent across
+/// `from_live_discovery_with_fallback`, experiments, and docs.
+/// Default ports reference [`crate::tolerances`] constants where defined;
+/// Node-tier additions (barraCuda, coralReef) and Nest-tier (rhizoCrypt,
+/// loamSpine, sweetGrass) use sequential offsets from well-known bases.
+#[must_use]
+fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u16)> {
+    use crate::primal_names as pn;
+    use crate::tolerances as tol;
+
+    vec![
+        (
+            "security",
+            pn::BEARDOG,
+            "BEARDOG_PORT",
+            tol::TCP_FALLBACK_BEARDOG_PORT,
+        ),
+        (
+            "discovery",
+            pn::SONGBIRD,
+            "SONGBIRD_PORT",
+            tol::TCP_FALLBACK_SONGBIRD_PORT,
+        ),
+        (
+            "storage",
+            pn::NESTGATE,
+            "NESTGATE_PORT",
+            tol::TCP_FALLBACK_NESTGATE_PORT,
+        ),
+        (
+            "compute",
+            pn::TOADSTOOL,
+            "TOADSTOOL_PORT",
+            tol::TCP_FALLBACK_TOADSTOOL_PORT,
+        ),
+        (
+            "tensor",
+            pn::BARRACUDA,
+            "BARRACUDA_PORT",
+            tol::TCP_FALLBACK_TOADSTOOL_PORT + 1,
+        ),
+        (
+            "shader",
+            pn::CORALREEF,
+            "CORALREEF_PORT",
+            tol::TCP_FALLBACK_TOADSTOOL_PORT + 2,
+        ),
+        (
+            "ai",
+            pn::SQUIRREL,
+            "SQUIRREL_PORT",
+            tol::TCP_FALLBACK_SQUIRREL_PORT,
+        ),
+        (
+            "dag",
+            pn::RHIZOCRYPT,
+            "RHIZOCRYPT_PORT",
+            tol::TCP_FALLBACK_NESTGATE_PORT + 1,
+        ),
+        (
+            "commit",
+            pn::SWEETGRASS,
+            "SWEETGRASS_PORT",
+            tol::TCP_FALLBACK_NESTGATE_PORT + 3,
+        ),
+        (
+            "provenance",
+            pn::LOAMSPINE,
+            "LOAMSPINE_PORT",
+            tol::TCP_FALLBACK_NESTGATE_PORT + 2,
+        ),
+        (
+            "visualization",
+            pn::PETALTONGUE,
+            "PETALTONGUE_PORT",
+            tol::TCP_FALLBACK_PETALTONGUE_PORT,
+        ),
+    ]
 }
 
 /// Validate that a set of required capabilities are live in the composition.

@@ -38,7 +38,7 @@ impl SocketNucleation {
     /// A `biomeos/` subdirectory is created automatically.
     #[must_use]
     pub fn new(base_dir: PathBuf) -> Self {
-        let biomeos_dir = base_dir.join("biomeos");
+        let biomeos_dir = base_dir.join(crate::primal_names::BIOMEOS);
         let _ = std::fs::create_dir_all(&biomeos_dir);
         Self {
             base_dir,
@@ -63,7 +63,10 @@ impl SocketNucleation {
         if let Some(existing) = self.assignments.get(&key) {
             return existing.clone();
         }
-        let socket = self.base_dir.join("biomeos").join(format!("{key}.sock"));
+        let socket = self
+            .base_dir
+            .join(crate::primal_names::BIOMEOS)
+            .join(format!("{key}.sock"));
         self.assignments.insert(key, socket.clone());
         socket
     }
