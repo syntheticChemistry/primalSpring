@@ -1259,7 +1259,7 @@ skunkBat and Squirrel. Massive async-trait progress: **9/13 primals at zero** (w
 | Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific |
 | Low | IPC timing for `shader.compile` | coralReef | Deployment timing |
 | Medium | `crypto.sign_contract` (ionic bond negotiation) | BearDog | Cross-tower compositions can't negotiate ionic bonds via IPC |
-| Medium | `compute.dispatch` standardization | toadStool | Springs doing GPU compute can't route generically |
+| Medium | `compute.dispatch` standardization | toadStool | **RESOLVED** — S203 `DISPATCH_WIRE_CONTRACT.md` + PG-31 fix (JSON-RPC routing wired) |
 | Medium | 18 barraCuda IPC surface gaps (eigh, Pearson, chi-squared, etc.) | barraCuda | neuralSpring blocked on full self-validation |
 | Low | BTSP Phase 3 (encrypted post-handshake channel) | All primals | Deferred — Phase 2 NULL cipher operational everywhere |
 | Low | Squirrel provider registration protocol | Squirrel | Springs adding Squirrel to compositions can't register as providers |
@@ -1628,14 +1628,14 @@ them locally. Ordered by ecosystem impact (how many springs are blocked).
 | **PG-28** | Response schema inconsistency: some methods return `{"result": N}`, others `{"mean": N}`. | barraCuda | ludoSpring V46, hotSpring | **MEDIUM** | **RESOLVED** — Sprint 44: all scalar methods now include `"result"` key |
 | **PG-29** | `tensor.matmul` handle-based API friction. | barraCuda | wetSpring PG-17, ludoSpring V46 | **MEDIUM** | **RESOLVED** — Sprint 44: `tensor.matmul_inline` added as convenience path |
 | **PG-30** | Squirrel BTSP-only socket: plain JSON-RPC clients get connection reset. | Squirrel | wetSpring PG-14 | **MEDIUM** | **RESOLVED** — Squirrel 0497648: first-byte peek auto-detects `{` → plain JSON-RPC fallback |
-| **PG-31** | ToadStool `compute.dispatch` not registered on JSON-RPC socket. | ToadStool | wetSpring PG-15 | **MEDIUM** | **OPEN** — toadStool not pulled (no remote `main`) |
+| **PG-31** | ToadStool `compute.dispatch` not registered on JSON-RPC socket. | ToadStool | wetSpring PG-15 | **MEDIUM** | **RESOLVED** — toadStool `de4f3305`: `compute.dispatch` registered as literal JSON-RPC route + 7 sub-routes (`.submit`, `.status`, `.result`, `.forward`, `.capabilities`, `.pipeline.submit`, `.pipeline.status`) |
 | **PG-32** | rhizoCrypt TCP-only transport (no UDS). | rhizoCrypt | ludoSpring V46 | **MEDIUM** | **OPEN** — rhizoCrypt S43.5 added doctor diagnostics but UDS is opt-in |
 | **PG-33** | loamSpine startup panic: `block_on` inside async runtime. | loamSpine | ludoSpring V46 | **HIGH** | **RESOLVED** — loamSpine d34100f: `std::thread::spawn` + `oneshot` replaces `spawn_blocking` |
 | **PG-34** | biomeOS `biomeos-types` missing `secret` module. | biomeOS | wetSpring V148 | **MEDIUM** | **OPEN** — biomeOS not pulled (no remote `main`) |
 | **PG-35** | BearDog connection reset without BTSP. | BearDog | hotSpring, wetSpring, ludoSpring | **LOW** | **RESOLVED** — Wave 56 (353c65f): first-byte `{` auto-detect, cleartext bypass for JSON-RPC clients documented |
 | **PG-36** | `stats.std_dev` N-1 vs N convention. | barraCuda | wetSpring PG-16 | **LOW** | **RESOLVED** — Sprint 44: convention metadata included in response |
 
-**Impact summary (April 20 re-audit)**: barraCuda Sprint 44 resolved PG-24 through PG-29 (6 missing methods + Fitts formula + schema + matmul_inline). Squirrel resolved PG-30 (BTSP auto-detect). BearDog resolved PG-35 (cleartext bypass). loamSpine resolved PG-33 (startup panic). **10 of 13 gaps now RESOLVED.** Remaining: PG-31 (ToadStool), PG-32 (rhizoCrypt UDS), PG-34 (biomeOS types).
+**Impact summary (April 20 re-audit)**: barraCuda Sprint 44 resolved PG-24 through PG-29 (6 missing methods + Fitts formula + schema + matmul_inline). Squirrel resolved PG-30 (BTSP auto-detect). BearDog resolved PG-35 (cleartext bypass). loamSpine resolved PG-33 (startup panic). toadStool resolved PG-31 (`compute.dispatch` JSON-RPC routing, commit `de4f3305`). **11 of 13 gaps now RESOLVED.** Remaining: PG-32 (rhizoCrypt UDS), PG-34 (biomeOS types).
 
 ### Absorbed Patterns (April 20, 2026)
 

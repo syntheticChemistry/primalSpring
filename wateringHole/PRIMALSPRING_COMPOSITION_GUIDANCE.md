@@ -734,7 +734,7 @@ certification specification and the 6 validation layers.
 **Observed ecosystem blockers** (April 18, 2026):
 - `crypto.sign_contract` (ionic bond negotiation) — BearDog, affects cross-tower compositions
 - BTSP Phase 3 (encrypted post-handshake channel) — all primals
-- `compute.dispatch` standardization — toadStool, affects springs doing GPU compute
+- ~~`compute.dispatch` standardization~~ — **RESOLVED** (toadStool S203 wire contract + PG-31 JSON-RPC routing fix)
 - Squirrel provider registration — affects springs needing AI capabilities
 - `storage.fetch_external` (cross-spring data) — NestGate, affects cross-spring pipelines
 - barraCuda IPC rewiring — **spring-side, actively in progress**: hotSpring (9 probes wired via `validate_primal_proof`), healthSpring (`math_dispatch.rs` feature-gated routing, exp122 parity), wetSpring (Exp403 `validate_primal_parity_v1` calling 5 primals). Pattern absorbed into `primalspring::composition` as public API (`capability_to_primal`, `method_to_capability_domain`)
