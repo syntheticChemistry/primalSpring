@@ -415,6 +415,7 @@ Each maps to a specific primal team for resolution.
 |------|--------|----------|
 | Stable `compute.dispatch.submit` / `compute.execute` IPC | wetSpring PG-05, neuralSpring | **RESOLVED** (S199) |
 | Pipeline scheduling for ordered dispatch | neuralSpring handoff | **RESOLVED** (S199 — `compute.dispatch.pipeline.submit` with DAG validation, topological execution, status) |
+| armv7 cross-arch build: `usize` overflow in cpu.rs and universal/capabilities | primalSpring v0.9.17 genomeBin | **RESOLVED** (S174 — `CpuBackend::MAX_ALLOC` gated via `#[cfg(target_pointer_width)]`; `Capabilities::memory_bandwidth` evolved from `usize` to `u64`. `cargo check --workspace --target armv7-unknown-linux-gnueabihf` passes) |
 
 **NestGate** (reported by: wetSpring, neuralSpring, healthSpring)
 
