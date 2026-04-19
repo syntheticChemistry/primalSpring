@@ -58,7 +58,7 @@ which has a unique dual-tower ionic bridge pattern and is kept as a standalone g
 | **airSpring** | 0.10.0 | 0 | 1,364 | Node + **Nest** | `downstream_manifest.toml` (airspring) | balanced |
 | **groundSpring** | V124 | 0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` (groundspring) | balanced |
 | **healthSpring** | V54 | **2** | 940+ | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_proto_nucleate.toml` (standalone) | neutron_heavy |
-| **ludoSpring** | V45 | **3** | 790+ | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced |
+| **ludoSpring** | V46 | **4** | 791 | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced |
 
 ### Key
 
