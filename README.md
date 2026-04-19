@@ -8,7 +8,7 @@
 | **Version** | 0.9.16 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 570 (unit + integration + doc-tests + proptest) |
+| **Tests** | 601 (unit + integration + doc-tests + proptest) |
 | **Experiments** | 75 (17 tracks) |
 | **Deploy Graphs** | 56 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 4 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + ~11 root) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
@@ -329,8 +329,8 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of existing barraCuda WGSL shaders (826 kernels: matmul, attention, FFT, df64) compiled by coralReef and dispatched by toadStool.
 - **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
 - **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — modeling end-to-end data flow through primal compositions.
-- **13/13 critical experiments ALL PASS** — 72 total experiments across 15 tracks.
-- **12/12 plasmidBin musl-static ecoBin compliant** — zero C dependencies.
+- **13/13 critical experiments ALL PASS** — 75 total experiments across 17 tracks.
+- **14/14 plasmidBin musl-static ecoBin compliant** — zero C dependencies.
 
 ## Fragment-First Graph Consolidation (April 16, 2026)
 
@@ -401,8 +401,8 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 `gate: pixel8a` with capabilities [network, discovery, http, mesh, birdsong].
 ADB forwards Pixel TCP 9901 → Eastgate 19901 for JSON-RPC IPC.
 
-See `infra/wateringHole/handoffs/CROSS_GATE_MOBILE_TCP_TRANSPORT_GAP_HANDOFF_MAR28_2026.md`
-for the full SELinux gap analysis and per-primal remediation plan.
+See `wateringHole/handoffs/archive/` for the full cross-gate SELinux gap analysis
+and per-primal remediation plan (archived from March 2026 mobile deployment spike).
 
 ## Docs
 

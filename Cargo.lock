@@ -1312,7 +1312,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-trio-ops"
-version = "0.9.15"
+version = "0.9.16"
 dependencies = [
  "primalspring",
  "serde_json",

@@ -3,6 +3,18 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.16+] — Phase 44: Deep Debt Evolution + Capability-Based Discovery (2026-04)
+
+### Evolution
+**Deep debt elimination.** All production code now references `primal_names::`
+constants — zero hardcoded primal name strings in 11 core modules. TCP fallback
+port table centralized via `tcp_fallback_table()` referencing `tolerances::`
+constants. Test suites extracted from `harness/mod.rs` (874→623 LOC) and
+`bonding/mod.rs` (860→464 LOC) to companion `tests.rs` files. Unified workspace
+`serde_json` in exp094. `handle_bonding_status` evolved from placeholder to typed
+response. Added `TCP_FALLBACK_PETALTONGUE_PORT` constant. **601 tests, zero clippy
+warnings (pedantic+nursery), zero fmt drift.**
+
 ## [0.9.16] — Phase 44: guideStone Level 4 + Live NUCLEUS Validation + plasmidBin Depot (2026-04-20)
 
 ### Milestone
