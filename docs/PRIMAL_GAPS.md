@@ -1630,7 +1630,7 @@ them locally. Ordered by ecosystem impact (how many springs are blocked).
 | **PG-30** | Squirrel BTSP-only socket: plain JSON-RPC clients get connection reset. No fallback to unauthed health check. | Squirrel | wetSpring PG-14 | **MEDIUM** — blocks inference.* validation | **OPEN** |
 | **PG-31** | ToadStool `compute.dispatch` not registered on JSON-RPC socket. tarpc and BTSP sockets exist but JSON-RPC routing missing. | ToadStool | wetSpring PG-15 | **MEDIUM** — blocks compute validation | **OPEN** |
 | **PG-32** | rhizoCrypt TCP-only transport (no UDS). Blocks 4 composition experiments. | rhizoCrypt | ludoSpring V46 | **MEDIUM** | **OPEN** |
-| **PG-33** | loamSpine startup panic: `block_on` inside async runtime. Blocks exp095. | loamSpine | ludoSpring V46 | **HIGH** — crashes | **OPEN** |
+| **PG-33** | loamSpine startup panic: `block_on` inside async runtime. Blocks exp095. | loamSpine | ludoSpring V46 | **HIGH** — crashes | **RESOLVED** (v0.9.16 — mDNS discovery moved to isolated OS threads via `std::thread::spawn`, April 20 2026) |
 | **PG-34** | biomeOS `biomeos-types` missing `secret` module — source build fails. | biomeOS | wetSpring V148 | **MEDIUM** — blocks source-based NUCLEUS | **OPEN** |
 | **PG-35** | BearDog connection reset without BTSP: no basic JSON-RPC health mode. `crypto.hash` requires active BTSP session. | BearDog | hotSpring, wetSpring, ludoSpring | **LOW** — handled by `is_skip_error()` | **OPEN** |
 | **PG-36** | `stats.std_dev` N-1 vs N convention: barraCuda uses sample (N-1, Bessel's), some springs use population (N). Both correct; needs documented convention. | barraCuda | wetSpring PG-16 | **LOW** — convention, not bug | **OPEN** |
