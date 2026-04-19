@@ -2,12 +2,12 @@
 
 //! Exp090: Tower Atomic LAN Probe — discover basement HPC gates and map capabilities.
 //!
-//! Uses biomeOS neural-api + Songbird to probe the LAN via BirdSong UDP
+//! Uses biomeOS neural-api + Songbird to probe the LAN via `BirdSong` UDP
 //! multicast, discover all reachable primals, and build a topology map.
 //!
 //! Flow:
-//!   1. Start Tower Atomic (BearDog + Songbird) on local gate
-//!   2. mesh.init + mesh.auto_discover via BirdSong multicast (239.255.77.77)
+//!   1. Start Tower Atomic (`BearDog` + Songbird) on local gate
+//!   2. mesh.init + `mesh.auto_discover` via `BirdSong` multicast (239.255.77.77)
 //!   3. For each discovered peer, capabilities.list via TCP JSON-RPC
 //!   4. Test HTTPS through Tower: http.get on each discovered Songbird
 //!   5. Report: gate inventory, capabilities per gate, HTTPS status, latency
@@ -16,7 +16,7 @@
 //!   `FAMILY_ID`         — shared family ID for mesh (default: 8ff3b864a4bc589a)
 //!   `NODE_ID`           — this gate's node ID (default: eastgate)
 //!   `SONGBIRD_PORT`     — local Songbird TCP port (default: 9200)
-//!   `BEARDOG_PORT`      — local BearDog TCP port (default: 9100)
+//!   `BEARDOG_PORT`      — local `BearDog` TCP port (default: 9100)
 //!   `NEURAL_API_SOCKET` — biomeOS neural-api socket path (auto-discovered)
 
 use primalspring::ipc::NeuralBridge;

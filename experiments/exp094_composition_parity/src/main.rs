@@ -137,7 +137,7 @@ fn tower_discovery_resolve(ctx: &mut CompositionContext, v: &mut ValidationResul
             Ok(result) => {
                 let found = result
                     .get("found")
-                    .and_then(|f| f.as_bool())
+                    .and_then(serde_json::Value::as_bool)
                     .unwrap_or(false)
                     || result.get("endpoint").is_some()
                     || result.get("socket").is_some()

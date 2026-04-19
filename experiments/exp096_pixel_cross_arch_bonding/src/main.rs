@@ -1,27 +1,27 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 //! Exp096: Pixel Cross-Architecture Bonding — validate BTSP, genetics, and
-//! bonding model enforcement across x86_64 (Eastgate) ↔ aarch64 (Pixel/GrapheneOS).
+//! bonding model enforcement across `x86_64` (Eastgate) ↔ aarch64 (Pixel/GrapheneOS).
 //!
-//! The Pixel runs GrapheneOS with a Titan M2 HSM on aarch64-linux-musl.
+//! The Pixel runs `GrapheneOS` with a Titan M2 HSM on aarch64-linux-musl.
 //! This experiment validates that the full NUCLEUS security stack works
 //! identically across architectures:
 //!
-//! 1. **Cross-arch tower health** — BearDog + Songbird on Pixel reachable via TCP
+//! 1. **Cross-arch tower health** — `BearDog` + Songbird on Pixel reachable via TCP
 //! 2. **Three-tier genetics** — mito-beacon derivation, nuclear lineage chain,
-//!    lineage proof generation/verification across x86_64 → aarch64
+//!    lineage proof generation/verification across `x86_64` → aarch64
 //! 3. **BTSP Phase 3 readiness** — cipher negotiation capability probing
 //! 4. **Bonding model enforcement** — covalent (same family), ionic (cross-family)
 //!    trust tier validation between architectures
-//! 5. **HSM probing** — check if Pixel BearDog supports hardware-backed key ops
-//! 6. **Beacon exchange** — BirdSong encrypted beacon round-trip cross-device
+//! 5. **HSM probing** — check if Pixel `BearDog` supports hardware-backed key ops
+//! 6. **Beacon exchange** — `BirdSong` encrypted beacon round-trip cross-device
 //! 7. **Content integrity** — BLAKE3 hash verification across architectures
 //!
 //! Environment:
 //!   `PIXEL_HOST`           — Pixel IP or `localhost` if ADB-forwarded (default: `localhost`)
-//!   `PIXEL_BEARDOG_PORT`   — BearDog TCP port on Pixel (default: 9900)
+//!   `PIXEL_BEARDOG_PORT`   — `BearDog` TCP port on Pixel (default: 9900)
 //!   `PIXEL_SONGBIRD_PORT`  — Songbird TCP port on Pixel (default: 9901)
-//!   `PIXEL_NESTGATE_PORT`  — NestGate TCP port on Pixel (default: 9902)
+//!   `PIXEL_NESTGATE_PORT`  — `NestGate` TCP port on Pixel (default: 9902)
 //!   `FAMILY_ID`            — shared family ID for covalent bond testing
 //!   `CROSS_FAMILY_ID`      — different family ID for ionic bond testing (optional)
 

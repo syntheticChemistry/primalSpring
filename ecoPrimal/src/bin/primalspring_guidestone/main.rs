@@ -116,15 +116,9 @@ fn validate_checksums(v: &mut ValidationResult) {
 }
 
 fn validate_graph_parsing(v: &mut ValidationResult) {
-    let graph_dirs: &[&str] = &[
-        "graphs/profiles",
-        "graphs/multi_node",
-    ];
+    let graph_dirs: &[&str] = &["graphs/profiles", "graphs/multi_node"];
 
-    let skip_suffixes: &[&str] = &[
-        "_manifest.toml",
-        "_template.toml",
-    ];
+    let skip_suffixes: &[&str] = &["_manifest.toml", "_template.toml"];
 
     let mut total = 0usize;
     let mut clean = 0usize;
@@ -249,9 +243,7 @@ fn validate_fragment_resolution(v: &mut ValidationResult) {
                             v.check_bool(
                                 &format!("bare:fragment:{expected}"),
                                 has_fragment && has_nodes,
-                                &format!(
-                                    "[fragment] section: {has_fragment}, nodes: {has_nodes}"
-                                ),
+                                &format!("[fragment] section: {has_fragment}, nodes: {has_nodes}"),
                             );
                         }
                         Err(e) => {
@@ -355,7 +347,11 @@ fn validate_bonding_type_wellformed(v: &mut ValidationResult) {
     } else {
         errors.join("; ")
     };
-    v.check_bool("bare:bondpolicy:covalent_default_valid", errors.is_empty(), &detail);
+    v.check_bool(
+        "bare:bondpolicy:covalent_default_valid",
+        errors.is_empty(),
+        &detail,
+    );
 
     let ionic = BondingPolicy::ionic_contract(vec!["compute".to_owned()]);
     let errors = ionic.validate();
@@ -364,7 +360,11 @@ fn validate_bonding_type_wellformed(v: &mut ValidationResult) {
     } else {
         errors.join("; ")
     };
-    v.check_bool("bare:bondpolicy:ionic_contract_valid", errors.is_empty(), &detail);
+    v.check_bool(
+        "bare:bondpolicy:ionic_contract_valid",
+        errors.is_empty(),
+        &detail,
+    );
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -596,14 +596,13 @@ fn validate_cross_atomic_pipeline(ctx: &mut CompositionContext, v: &mut Validati
                 "pipeline:tower_hash",
                 &format!("security not available: {e}"),
             );
-            v.check_skip("pipeline:nest_roundtrip", "tower unavailable, skipping nest");
+            v.check_skip(
+                "pipeline:nest_roundtrip",
+                "tower unavailable, skipping nest",
+            );
         }
         Err(e) => {
-            v.check_bool(
-                "pipeline:tower_hash",
-                false,
-                &format!("hash error: {e}"),
-            );
+            v.check_bool("pipeline:tower_hash", false, &format!("hash error: {e}"));
             v.check_skip("pipeline:nest_roundtrip", "tower failed, skipping nest");
         }
     }
@@ -626,7 +625,11 @@ fn validate_bonding_policies(v: &mut ValidationResult) {
         } else {
             errors.join("; ")
         };
-        v.check_bool(&format!("bonding:policy:{bond:?}:valid"), errors.is_empty(), &detail);
+        v.check_bool(
+            &format!("bonding:policy:{bond:?}:valid"),
+            errors.is_empty(),
+            &detail,
+        );
 
         let min_cipher = btsp::min_cipher_for_bond(bond);
         v.check_bool(
@@ -694,7 +697,10 @@ fn validate_crypto(ctx: &mut CompositionContext, v: &mut ValidationResult) {
             }
         }
         Err(e) if e.is_connection_error() => {
-            v.check_skip("crypto:blake3_hash", &format!("security not available: {e}"));
+            v.check_skip(
+                "crypto:blake3_hash",
+                &format!("security not available: {e}"),
+            );
             v.check_skip("crypto:blake3_determinism", "security not available");
         }
         Err(e) => {
@@ -760,11 +766,7 @@ fn validate_ed25519_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationRe
                             .get("valid")
                             .and_then(serde_json::Value::as_bool)
                             .unwrap_or(false);
-                        v.check_bool(
-                            "crypto:ed25519_verify",
-                            valid,
-                            "signature verified",
-                        );
+                        v.check_bool("crypto:ed25519_verify", valid, "signature verified");
                     }
                     Err(e) => {
                         v.check_bool(

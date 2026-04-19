@@ -3,17 +3,17 @@
 //! Exp092: Dual Tower Ionic Bond — L2 mixed atomic validation.
 //!
 //! Validates two independent Tower Atomics (two electron shells) coexisting on
-//! the same host with different FAMILY_IDs, connected by an ionic bond that
+//! the same host with different `FAMILY_IDs`, connected by an ionic bond that
 //! provides scoped capability sharing.
 //!
 //! Particle model: two atoms on the same host. Tower A and Tower B each have
-//! their own BearDog + Songbird. An ionic bond bridges them, allowing Tower B
+//! their own `BearDog` + Songbird. An ionic bond bridges them, allowing Tower B
 //! to call scoped capabilities through Tower A without genetic trust.
 //!
 //! Validation steps (structural):
 //!   1. Validate Tower A and Tower B capability requirements
 //!   2. Validate ionic bond policy (contractual trust, scoped capabilities)
-//!   3. Validate capability isolation via BondingConstraint
+//!   3. Validate capability isolation via `BondingConstraint`
 //!   4. Identify gaps for live dual-Tower validation
 //!
 //! Environment:

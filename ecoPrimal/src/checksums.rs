@@ -100,7 +100,11 @@ pub fn verify_manifest(v: &mut ValidationResult, manifest_path: &str) -> bool {
 
     let entries = parse_manifest(manifest);
     if entries.is_empty() {
-        v.check_bool("p3:checksums_manifest", false, "manifest is empty or unparseable");
+        v.check_bool(
+            "p3:checksums_manifest",
+            false,
+            "manifest is empty or unparseable",
+        );
         return false;
     }
 

@@ -5,10 +5,10 @@
 //! Validates the full covalent bonding pattern between two gates:
 //! - TCP JSON-RPC `health.liveness` on remote beardog + songbird
 //! - `capabilities.list` enumerates remote NUCLEUS capabilities
-//! - `mesh.peers` discovers at least 1 peer via BirdSong UDP
+//! - `mesh.peers` discovers at least 1 peer via `BirdSong` UDP
 //! - `birdsong.generate_encrypted_beacon` + decrypt round-trip
 //! - Neural-api `capability.call` routing to local primals
-//! - `FAMILY_ID` genetic lineage verification via BearDog
+//! - `FAMILY_ID` genetic lineage verification via `BearDog`
 //! - HTTPS validation through Tower Atomic
 //!
 //! Environment:

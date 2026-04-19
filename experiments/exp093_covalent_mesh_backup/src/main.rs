@@ -13,8 +13,8 @@
 //! Validation steps (structural):
 //!   1. Validate covalent bonding policy (genetic trust, full capability share)
 //!   2. Validate shard metadata structure (count, quorum, hash manifest)
-//!   3. Validate BondingConstraint permits storage.* across covalent bond
-//!   4. Validate shard encryption model (AES-256-GCM per shard via BearDog)
+//!   3. Validate `BondingConstraint` permits storage.* across covalent bond
+//!   4. Validate shard encryption model (AES-256-GCM per shard via `BearDog`)
 //!   5. Identify gaps: erasure coding, shard distribution, recovery quorum
 //!
 //! Environment:
