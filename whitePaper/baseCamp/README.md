@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: April 18, 2026
-**Status**: Phase 43+ — v0.9.15 — 75 experiments (17 tracks), 570 tests, 56 deploy graphs (fragment-first composition), guideStone composition certification (`primalspring_guidestone` binary: 6-layer base NUCLEUS certification), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 14/15 cross-arch checks (HSM pending)
+**Date**: April 20, 2026
+**Status**: Phase 44 — v0.9.16 — 75 experiments (17 tracks), 570 tests, 56 deploy graphs (fragment-first composition), **guideStone Level 4** (67/67 live NUCLEUS, 41/41 bare, BLAKE3 checksums P3), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), biomeOS-managed cross-arch deployment (Pixel aarch64 + GrapheneOS), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin depot pattern documented** — downstream springs can pull pre-built ecoBin binaries and deploy live NUCLEUS for primal proof validation, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 14/15 cross-arch checks (HSM pending)
 
 ---
 
@@ -57,7 +57,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 16 | Composition Parity | exp094 | Does full NUCLEUS composition produce correct results via IPC? 19/19 checks. |
 | 17 | Cross-Architecture Deployment | exp095–096 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? 6/9 checks. |
 
-## Current State (v0.9.15)
+## Current State (v0.9.16)
 
 | Metric | Value |
 |--------|-------|
@@ -93,6 +93,35 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | Live pass rate | **43/44 (98%)** — up from 93% → 79% pre-evolution |
 | petalTongue | v1.6.6+ integrated, zero-copy IPC, blake3, RenderingAwareness auto-init, PT-07 server discovery |
 | Nucleated spring deploys | 6 proto graphs: airSpring, groundSpring, healthSpring, hotSpring, neuralSpring, wetSpring |
+
+## What Changed — Phase 44 (Live NUCLEUS Validation + plasmidBin Depot)
+
+### guideStone Level 4 — Live NUCLEUS (April 20, 2026)
+
+The `primalspring_guidestone` binary now validates against a live 12-primal NUCLEUS
+composition deployed from `plasmidBin` ecoBin binaries. **67/67 ALL PASS** (23 skips
+for protocol boundaries: BTSP handshake, HTTP-framed UDS services).
+
+Key evolution this phase:
+- **BLAKE3 checksums (Property 3)**: `primalspring::checksums` module generates and
+  verifies BLAKE3 manifests for all validation-critical source and graph files.
+- **Family-aware discovery**: `discover_by_capability()` resolves
+  `{capability}-{family}.sock` before falling back to plain sockets.
+- **Protocol tolerance**: `IpcError::is_protocol_error()` classifies HTTP-on-UDS as
+  reachable-but-incompatible (SKIP, not FAIL). Downstream springs inherit this.
+- **plasmidBin depot pattern**: Documented for downstream consumption — pull pre-built
+  musl-static ecoBin binaries, deploy NUCLEUS, run `guideStone` externally.
+- **Graph TOML fixes**: Fragment ordering (`meta_tier`), profile deconfliction
+  (`full`, `nest_viz`), validation graph restructuring.
+- **72 clippy warnings eliminated**: All `doc_markdown`, `unwrap_or`, and match
+  destructuring warnings resolved across 14 source files.
+- **9 new gaps documented (PG-16–PG-23)**: 7 resolved in-session, 2 tracked for
+  upstream evolution (BearDog family seed, biomeOS TCP port).
+
+The validation pipeline is now: `Python baseline → Rust proof → guideStone bare →
+guideStone NUCLEUS → primal proof`. Downstream springs can begin Level 5 primal
+proof validation cycles using the plasmidBin depot and the three-tier composition
+pattern (LOCAL → IPC-WIRED → FULL NUCLEUS).
 
 ## What Changed — Phase 43+ (guideStone Composition Certification)
 

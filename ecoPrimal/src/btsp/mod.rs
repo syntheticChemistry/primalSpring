@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! BearDog Secure Tunnel Protocol (BTSP) — types and validation.
+//! `BearDog` Secure Tunnel Protocol (BTSP) — types and validation.
 //!
 //! BTSP is the local IPC encryption protocol for Unix domain sockets.
 //! Every production connection authenticates via BTSP handshake first;
@@ -8,7 +8,7 @@
 //!
 //! This module provides the canonical type definitions used by primalSpring
 //! validation, biomeOS routing, and primal socket listeners. The actual
-//! crypto implementation lives in BearDog (`btsp.session.*` methods).
+//! crypto implementation lives in `BearDog` (`btsp.session.*` methods).
 
 pub mod phase3;
 
@@ -35,7 +35,7 @@ pub enum BtspCipherSuite {
 
     /// Raw plaintext frames. Session is still authenticated (family membership
     /// proven during handshake). Both parties must explicitly opt in AND the
-    /// BondingPolicy must allow it. Same length-prefix framing — just unencrypted.
+    /// `BondingPolicy` must allow it. Same length-prefix framing — just unencrypted.
     Null,
 }
 

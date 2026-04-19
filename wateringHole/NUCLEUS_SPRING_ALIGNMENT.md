@@ -1,10 +1,10 @@
-# NUCLEUS Spring Alignment — Phase 33 (local copy)
+# NUCLEUS Spring Alignment — Phase 45 (local copy)
 
 > **Canonical version**: `ecoPrimals/infra/wateringHole/NUCLEUS_SPRING_ALIGNMENT.md`
 > This local copy is for primalSpring context. The infra version is the
 > inter-spring reference.
 
-**Date**: April 14, 2026
+**Date**: April 19, 2026
 **From**: primalSpring v0.9.15
 **License**: AGPL-3.0-or-later
 
@@ -50,15 +50,15 @@ Each spring's proto-nucleate graph is parameterized via `graphs/downstream/downs
 using `proto_nucleate_template.toml`. The one exception is `healthspring_enclave_proto_nucleate.toml`,
 which has a unique dual-tower ionic bridge pattern and is kept as a standalone graph.
 
-| Spring | Version | Tests | Primary Atomics | Proto-Nucleate | Particle Profile |
-|--------|---------|-------|-----------------|----------------|------------------|
-| **hotSpring** | 0.6.32 | ~870 | **Node** (proton-heavy) + Nest | `downstream_manifest.toml` (hotspring) | proton_heavy |
-| **neuralSpring** | 0.1.0 | 1,403 | **Node** + Meta | `downstream_manifest.toml` (neuralspring) | balanced |
-| **wetSpring** | 0.1.0 | 1,902 | Node + **Nest** + Meta | `downstream_manifest.toml` (wetspring) | balanced |
-| **airSpring** | 0.10.0 | 986 | Node + **Nest** | `downstream_manifest.toml` (airspring) | balanced |
-| **groundSpring** | 0.1.0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` (groundspring) | balanced |
-| **healthSpring** | 0.1.0 | 928 | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_proto_nucleate.toml` (standalone) | neutron_heavy |
-| **ludoSpring** | 0.10.0 | 790+ | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced | Level 5 guideStone (V45) |
+| Spring | Version | gS | Tests | Primary Atomics | Proto-Nucleate | Particle Profile |
+|--------|---------|------|-------|-----------------|----------------|------------------|
+| **hotSpring** | 0.6.32 | **5** | ~985 | **Node** (proton-heavy) + Nest | `downstream_manifest.toml` (hotspring) | proton_heavy |
+| **neuralSpring** | V134 | **2** | 1,403+ | **Node** + Meta | `downstream_manifest.toml` (neuralspring) | proton_heavy |
+| **wetSpring** | V147 | **3** | 1,902+ | Node + **Nest** + Meta | `downstream_manifest.toml` (wetspring) | balanced |
+| **airSpring** | 0.10.0 | 0 | 1,364 | Node + **Nest** | `downstream_manifest.toml` (airspring) | balanced |
+| **groundSpring** | V124 | 0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` (groundspring) | balanced |
+| **healthSpring** | V54 | **2** | 940+ | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_proto_nucleate.toml` (standalone) | neutron_heavy |
+| **ludoSpring** | V45 | **3** | 790+ | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced |
 
 ### Key
 
@@ -292,13 +292,14 @@ spring's composition more capable.
 
 ## Getting Started (for any spring)
 
-1. **Read your proto-nucleate**: `graphs/downstream/{yourspring}_*_proto_nucleate.toml`
-2. **Check atomics**: which fragments does your proto-nucleate declare?
-3. **Wire IPC**: call primals by capability, not identity
-4. **Validate**: run primalSpring experiments for your composition
-5. **Evolve**: push domain-specific WGSL through coralReef, compute through toadStool
-6. **Add Squirrel**: when ready for AI, add `squirrel` to your composition — neuralSpring's inference is immediately available
-7. **Hand back**: document gaps and patterns → primalSpring → primal teams
+1. **Read your manifest entry**: `graphs/downstream/downstream_manifest.toml` or standalone graph
+2. **Build your guideStone**: `<spring>_guidestone` binary using `primalspring::composition` API
+3. **Validate bare**: confirm P1–P5 properties without any primals running (exit 2)
+4. **Deploy NUCLEUS**: `biomeos deploy --graph <your_proto_nucleate>`
+5. **Validate NUCLEUS**: guideStone discovers primals, validates IPC parity, exit 0
+6. **Use `primalspring::checksums`**: generate and verify CHECKSUMS manifest for P3
+7. **Add Squirrel**: when ready for AI, add `squirrel` to your composition
+8. **Hand back**: document gaps and patterns → primalSpring → primal teams
 
 ---
 

@@ -13,7 +13,7 @@
 //! 4. Server → Client:  HandshakeComplete  (cipher, session_id)
 //! ```
 //!
-//! Key derivation matches BearDog `btsp_handshake/crypto.rs`:
+//! Key derivation matches `BearDog` `btsp_handshake/crypto.rs`:
 //! - `handshake_key = HKDF-SHA256(ikm=family_seed, salt="btsp-v1", info="handshake")`
 //! - `response = HMAC-SHA256(key=handshake_key, data=challenge || client_pub || server_pub)`
 
@@ -262,12 +262,12 @@ pub fn family_seed_from_env() -> Option<Vec<u8>> {
 ///
 /// Supports two encodings (auto-detected):
 /// - **Hex** (64 ASCII hex chars → 32 bytes): produced by `AtomicHarness`
-///   and consumed by BearDog as raw UTF-8 bytes.
+///   and consumed by `BearDog` as raw UTF-8 bytes.
 /// - **Base64**: legacy encoding from earlier BTSP drafts.
 ///
 /// If the value is valid hex (even length, all hex digits), it is used as
 /// **raw UTF-8 bytes** (not hex-decoded) for wire compatibility with
-/// BearDog, which reads `FAMILY_SEED` as raw bytes. If it's not valid hex,
+/// `BearDog`, which reads `FAMILY_SEED` as raw bytes. If it's not valid hex,
 /// base64 decoding is attempted as fallback.
 fn raw_family_seed_from_env() -> Option<Vec<u8>> {
     let value = std::env::var("FAMILY_SEED").ok()?;

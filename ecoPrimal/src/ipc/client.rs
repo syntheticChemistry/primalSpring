@@ -49,7 +49,7 @@ impl PrimalClient {
     /// Connect with an explicit BTSP seed (bypasses environment lookup).
     ///
     /// Used by the harness when connecting to primals that enforce BTSP
-    /// (e.g. BearDog in Production mode).
+    /// (e.g. `BearDog` in Production mode).
     ///
     /// # Errors
     ///

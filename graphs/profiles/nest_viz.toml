@@ -32,7 +32,7 @@ resolve = true
 [[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
-order = 4
+order = 7
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"

@@ -3,6 +3,56 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.16] — Phase 44: guideStone Level 4 + Live NUCLEUS Validation + plasmidBin Depot (2026-04-20)
+
+### Milestone
+**guideStone Level 4 — NUCLEUS guideStone works.** 67/67 ALL PASS against live
+12-primal NUCLEUS deployed from plasmidBin. 41/41 bare checks (Level 3).
+BLAKE3 checksums (P3 self-verifying). plasmidBin documented as remote depot
+for downstream live deployments. 72 clippy warnings eliminated (zero remaining).
+9 new gaps discovered and 7 resolved during live validation (PG-16 through PG-23).
+
+### Added
+- **`primalspring::checksums` module**: BLAKE3 file hashing, manifest generation
+  (`generate_manifest()`), and verification (`verify_manifest()`). Used by
+  guideStone Property 3 (self-verifying). Depends on `blake3` crate.
+- **`IpcError::is_protocol_error()`**: Classifies wire-level protocol violations
+  (HTTP-on-UDS) as reachable-but-incompatible. Used by guideStone and
+  `validate_liveness()` for graceful degradation.
+- **Family-aware capability discovery**: `discover_by_capability()` now checks
+  `{capability}-{family}.sock` before falling back to `{capability}.sock`.
+- **`validation/CHECKSUMS`**: BLAKE3 manifest of 18 validation-critical files.
+- **`examples/gen_checksums.rs`**: Generator for CHECKSUMS manifests.
+- **`wateringHole/PLASMINBIN_DEPOT_PATTERN.md`**: Documents plasmidBin as
+  remote binary depot for downstream spring teams.
+
+### Changed
+- **guideStone graph parsing**: Fragments validated as `[fragment]` TOML (not
+  `[graph]`). Manifests/templates skipped. Profiles validated after resolution.
+- **guideStone shader check**: Accepts coralReef's `supported_archs` response
+  format (not just legacy `capabilities` array).
+- **guideStone exit semantics**: Protocol errors treated as SKIP (reachable but
+  mismatched) rather than FAIL, in both `validate_liveness()` and Layer 2.
+- **`validate_liveness()` in `composition/mod.rs`**: Protocol errors increment
+  alive count (primal is reachable, just different protocol dialect).
+- **`meta_tier.toml`**: Added explicit order values (10/11/12) to prevent
+  duplicate-order conflicts in profile resolution.
+- **Profile order fixes**: `full.toml` (12→99), `nest_viz.toml` (4→7).
+- **Validation graph TOML fixes**: `crypto_negative_validate.toml` and
+  `nucleus_atomics_validate.toml` migrated from illegal duplicate
+  `[graph.node.operation]` tables to per-entry `[graph.nodes.operation]`.
+- **72 clippy doc_markdown warnings fixed** across 14 source files via auto-fix.
+
+### Fixed
+- **`start_primal.sh`** (plasmidBin): `serve` → `server` for provenance trio;
+  removed unsupported `--bind` from squirrel case.
+
+### Documentation
+- `PRIMAL_GAPS.md`: primalSpring upgraded to Level 4; 9 new gaps (PG-16–PG-23).
+- `GUIDESTONE_COMPOSITION_STANDARD.md` v1.1.0: BLAKE3 checksums integration
+  pattern, updated readiness table.
+- `NUCLEUS_SPRING_ALIGNMENT.md`: Updated for guideStone Level 4.
+
 ## [0.9.15] — Phase 43+: Graph Consolidation + Fragment-First Composition + guideStone (2026-04-16)
 
 ### Milestone

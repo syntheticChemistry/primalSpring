@@ -6,7 +6,7 @@
 //! This module defines the domain types for a Steam-like content
 //! distribution network built from NUCLEUS primals:
 //!
-//! - **Origin**: publishes content-addressed blobs to NestGate
+//! - **Origin**: publishes content-addressed blobs to `NestGate`
 //! - **Seeder pool**: metallic bond fleet that replicates content
 //! - **Consumers**: ionic/weak bond peers that download content
 //! - **Relay**: Songbird TCP for NAT traversal
@@ -20,7 +20,7 @@ use super::{BondType, TrustModel};
 
 /// A content manifest listing blobs available for distribution.
 ///
-/// The manifest itself is stored in NestGate under a human-readable key
+/// The manifest itself is stored in `NestGate` under a human-readable key
 /// (e.g., `ludospring:assets/release_v1.0.0`). Each entry maps a logical
 /// path to a BLAKE3 content hash.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -114,7 +114,7 @@ pub struct SeederEnrollment {
     pub lineage_proof: String,
     /// Mito-beacon for dark-forest discovery.
     pub mito_beacon: String,
-    /// NestGate storage capacity (bytes) the seeder is willing to commit.
+    /// `NestGate` storage capacity (bytes) the seeder is willing to commit.
     pub storage_capacity_bytes: u64,
     /// Songbird TCP endpoint for cross-host transfers.
     pub songbird_tcp_endpoint: String,

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! BearDog genetic RPC client.
+//! `BearDog` genetic RPC client.
 //!
-//! Typed wrappers around BearDog's `genetic.*` JSON-RPC methods,
+//! Typed wrappers around `BearDog`'s `genetic.*` JSON-RPC methods,
 //! translating raw RPC responses into the three-tier genetics types.
 //!
-//! All cryptographic operations are delegated to BearDog — primalSpring
+//! All cryptographic operations are delegated to `BearDog` — primalSpring
 //! never derives keys itself. This module only marshals parameters and
 //! deserializes results.
 //!
@@ -21,13 +21,13 @@
 //!
 //! # Encoding
 //!
-//! BearDog uses **base64** for `lineage_seed`, `key`, `entropy`, `proof`
+//! `BearDog` uses **base64** for `lineage_seed`, `key`, `entropy`, `proof`
 //! parameters and responses. Beacon keys are returned as **hex**. This
 //! module handles the encoding/decoding transparently.
 //!
 //! # Generation Tracking
 //!
-//! BearDog's JSON-RPC API does not track generation numbers or parent
+//! `BearDog`'s JSON-RPC API does not track generation numbers or parent
 //! hashes — that provenance chain is maintained locally in
 //! [`NuclearGenetics`]. Different `context` values produce distinct keys
 //! from the same lineage seed, enabling the spawn-not-copy model.
@@ -44,7 +44,7 @@ use super::nuclear::NuclearGenetics;
 
 /// Parameters for `genetic.derive_lineage_beacon_key`.
 ///
-/// BearDog extracts `lineage_seed` directly from the JSON params object.
+/// `BearDog` extracts `lineage_seed` directly from the JSON params object.
 #[derive(Debug, Serialize)]
 struct DeriveBeaconKeyParams {
     lineage_seed: String,
@@ -99,7 +99,7 @@ struct VerifyLineageParams {
 
 /// Result from `genetic.derive_lineage_beacon_key`.
 ///
-/// BearDog returns `beacon_key` as hex-encoded 32 bytes.
+/// `BearDog` returns `beacon_key` as hex-encoded 32 bytes.
 #[derive(Debug, Deserialize)]
 struct BeaconKeyResult {
     beacon_key: String,
@@ -153,18 +153,18 @@ struct VerifyResult {
 
 // ── Public API ───────────────────────────────────────────────────────────
 
-/// Derive a mito-beacon key from BearDog via `genetic.derive_lineage_beacon_key`.
+/// Derive a mito-beacon key from `BearDog` via `genetic.derive_lineage_beacon_key`.
 ///
-/// The `lineage_seed` is the family's root seed (base64-encoded). BearDog
+/// The `lineage_seed` is the family's root seed (base64-encoded). `BearDog`
 /// uses HKDF-SHA256 with domain `birdsong_beacon_v1` to derive a 32-byte
 /// beacon key. All family members with the same seed derive the same key.
 ///
 /// `beacon_id` and `group_name` are metadata for the returned [`MitoBeacon`]
-/// — BearDog does not track these.
+/// — `BearDog` does not track these.
 ///
 /// # Errors
 ///
-/// Returns [`IpcError`] on transport failure or if BearDog reports an error.
+/// Returns [`IpcError`] on transport failure or if `BearDog` reports an error.
 pub fn derive_lineage_beacon_key(
     client: &mut PrimalClient,
     lineage_seed: &str,
@@ -189,19 +189,19 @@ pub fn derive_lineage_beacon_key(
     ))
 }
 
-/// Derive a nuclear lineage key from BearDog via `genetic.derive_lineage_key`.
+/// Derive a nuclear lineage key from `BearDog` via `genetic.derive_lineage_key`.
 ///
 /// For genesis (generation 0), `parent` should be `None`.
 /// For child generations, pass the parent's `NuclearGenetics` reference.
 ///
-/// BearDog's key derivation uses Blake3 KDF seeded by the lineage_seed,
+/// `BearDog`'s key derivation uses Blake3 KDF seeded by the `lineage_seed`,
 /// family IDs, and context. Different `context` values produce distinct
 /// keys — this is how the "spawn not copy" model works: each generation
 /// uses a unique context derived from the parent chain.
 ///
 /// # Errors
 ///
-/// Returns [`IpcError`] on transport failure or if BearDog reports an error.
+/// Returns [`IpcError`] on transport failure or if `BearDog` reports an error.
 pub fn derive_lineage_key(
     client: &mut PrimalClient,
     lineage_seed: &str,
@@ -238,19 +238,19 @@ pub fn derive_lineage_key(
     }
 }
 
-/// Mix entropy tiers via BearDog `genetic.mix_entropy`.
+/// Mix entropy tiers via `BearDog` `genetic.mix_entropy`.
 ///
-/// BearDog mixes up to three entropy tiers using internal PRNG:
+/// `BearDog` mixes up to three entropy tiers using internal PRNG:
 /// - `tier3_human`: Human lived experience entropy (base64)
 /// - `tier2_supervised`: Human supervised machine entropy (base64)
 /// - `tier1_machine`: Store bought machine entropy (base64)
 ///
-/// All tiers are optional. Even with no tiers, BearDog returns machine
+/// All tiers are optional. Even with no tiers, `BearDog` returns machine
 /// entropy from its internal PRNG.
 ///
 /// # Errors
 ///
-/// Returns [`IpcError`] on transport failure or if BearDog reports an error.
+/// Returns [`IpcError`] on transport failure or if `BearDog` reports an error.
 pub fn mix_entropy(
     client: &mut PrimalClient,
     tier3_human: Option<&[u8]>,
@@ -271,14 +271,14 @@ pub fn mix_entropy(
     b64_decode(&result.entropy)
 }
 
-/// Generate a lineage proof via BearDog `genetic.generate_lineage_proof`.
+/// Generate a lineage proof via `BearDog` `genetic.generate_lineage_proof`.
 ///
-/// The proof is a Blake3 + HMAC commitment binding the lineage_seed to the
-/// family ID pair. BearDog returns a base64-encoded proof blob.
+/// The proof is a Blake3 + HMAC commitment binding the `lineage_seed` to the
+/// family ID pair. `BearDog` returns a base64-encoded proof blob.
 ///
 /// # Errors
 ///
-/// Returns [`IpcError`] on transport failure or if BearDog reports an error.
+/// Returns [`IpcError`] on transport failure or if `BearDog` reports an error.
 pub fn generate_lineage_proof(
     client: &mut PrimalClient,
     lineage_seed: &str,
@@ -299,14 +299,14 @@ pub fn generate_lineage_proof(
     b64_decode(&result.proof)
 }
 
-/// Verify a lineage proof via BearDog `genetic.verify_lineage`.
+/// Verify a lineage proof via `BearDog` `genetic.verify_lineage`.
 ///
 /// Returns `true` if the proof is valid for the given family pair and
 /// lineage seed.
 ///
 /// # Errors
 ///
-/// Returns [`IpcError`] on transport failure or if BearDog reports an error.
+/// Returns [`IpcError`] on transport failure or if `BearDog` reports an error.
 pub fn verify_lineage(
     client: &mut PrimalClient,
     lineage_seed: &str,

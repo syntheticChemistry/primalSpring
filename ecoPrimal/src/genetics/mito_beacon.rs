@@ -10,7 +10,7 @@
 //! can hear birdsong and find rendezvous points. Grandma can tell a cousin
 //! how to reach you without giving away all your contacts.
 //!
-//! Key derivation is delegated to BearDog via `genetic.derive_lineage_beacon_key`
+//! Key derivation is delegated to `BearDog` via `genetic.derive_lineage_beacon_key`
 //! (HKDF-SHA256, domain `birdsong_beacon_v1`).
 //!
 //! # Inheritance
@@ -35,7 +35,7 @@ pub struct MitoBeacon {
     pub beacon_id: String,
     /// Human-readable name for the group.
     pub group_name: String,
-    /// Derived beacon key material (from BearDog `genetic.derive_lineage_beacon_key`).
+    /// Derived beacon key material (from `BearDog` `genetic.derive_lineage_beacon_key`).
     /// Zeroized on drop to avoid lingering in memory.
     #[serde(skip)]
     key_material: SecretBytes,

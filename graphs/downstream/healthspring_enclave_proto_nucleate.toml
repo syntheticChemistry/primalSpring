@@ -77,6 +77,8 @@ particle_model = "two electron shells, ionic bond"
 composition_model = "pure_nucleus"
 fragments = ["tower_atomic", "nest_atomic"]
 validated_by = "healthspring"
+guidestone_binary = "healthspring_guidestone"
+guidestone_readiness = 2
 validation_capabilities = [
     "storage.store", "storage.retrieve",
     "inference.complete", "inference.embed",

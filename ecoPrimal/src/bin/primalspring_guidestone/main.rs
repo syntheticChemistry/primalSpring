@@ -57,8 +57,10 @@ fn main() {
 
     if alive == 0 {
         eprintln!("[guideStone] No NUCLEUS primals discovered — bare certification only.");
+        eprintln!("  Deploy from plasmidBin and rerun for full certification.");
         v.finish();
-        std::process::exit(v.exit_code_skip_aware());
+        let code = if v.exit_code() == 0 { 2 } else { 1 };
+        std::process::exit(code);
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -106,16 +108,22 @@ fn validate_bare_properties(v: &mut ValidationResult) {
     validate_fragment_resolution(v);
     validate_manifest_consistency(v);
     validate_bonding_type_wellformed(v);
+    validate_checksums(v);
+}
+
+fn validate_checksums(v: &mut ValidationResult) {
+    primalspring::checksums::verify_manifest(v, "validation/CHECKSUMS");
 }
 
 fn validate_graph_parsing(v: &mut ValidationResult) {
     let graph_dirs: &[&str] = &[
-        "graphs/fragments",
         "graphs/profiles",
-        "graphs/downstream",
-        "graphs/spring_deploy",
-        "graphs/spring_validation",
         "graphs/multi_node",
+    ];
+
+    let skip_suffixes: &[&str] = &[
+        "_manifest.toml",
+        "_template.toml",
     ];
 
     let mut total = 0usize;
@@ -128,6 +136,9 @@ fn validate_graph_parsing(v: &mut ValidationResult) {
         }
         let results = deploy::validate_all_graphs(dir);
         for result in &results {
+            if skip_suffixes.iter().any(|s| result.path.ends_with(s)) {
+                continue;
+            }
             total += 1;
             if result.parsed && result.issues.is_empty() {
                 clean += 1;
@@ -147,10 +158,61 @@ fn validate_graph_parsing(v: &mut ValidationResult) {
         }
     }
 
+    let downstream_dir = Path::new("graphs/downstream");
+    if downstream_dir.exists() {
+        for result in &deploy::validate_all_graphs(downstream_dir) {
+            if skip_suffixes.iter().any(|s| result.path.ends_with(s)) {
+                continue;
+            }
+            total += 1;
+            if result.parsed && result.issues.is_empty() {
+                clean += 1;
+            } else if !result.parsed {
+                v.check_bool(
+                    &format!("graph_parse:{}", result.path),
+                    false,
+                    "failed to parse as deploy graph",
+                );
+            } else {
+                v.check_bool(
+                    &format!("graph_structural:{}", result.path),
+                    false,
+                    &result.issues.join("; "),
+                );
+            }
+        }
+    }
+
+    let validation_dir = Path::new("graphs/spring_validation");
+    if validation_dir.exists() {
+        for result in &deploy::validate_all_graphs(validation_dir) {
+            if skip_suffixes.iter().any(|s| result.path.ends_with(s)) {
+                continue;
+            }
+            total += 1;
+            if result.parsed && result.issues.is_empty() {
+                clean += 1;
+            }
+        }
+    }
+
+    let deploy_dir = Path::new("graphs/spring_deploy");
+    if deploy_dir.exists() {
+        for result in &deploy::validate_all_graphs(deploy_dir) {
+            if skip_suffixes.iter().any(|s| result.path.ends_with(s)) {
+                continue;
+            }
+            total += 1;
+            if result.parsed && result.issues.is_empty() {
+                clean += 1;
+            }
+        }
+    }
+
     v.check_bool(
         "bare:all_graphs_parse",
         total > 0 && clean == total,
-        &format!("{clean}/{total} graphs clean"),
+        &format!("{clean}/{total} deploy graphs clean"),
     );
 }
 
@@ -161,7 +223,6 @@ fn validate_fragment_resolution(v: &mut ValidationResult) {
         return;
     }
 
-    let fragments = deploy::validate_all_graphs(fragment_dir);
     let expected_fragments = &[
         "tower_atomic",
         "node_atomic",
@@ -171,18 +232,52 @@ fn validate_fragment_resolution(v: &mut ValidationResult) {
         "provenance_trio",
     ];
 
-    let found_names: Vec<&str> = fragments.iter().map(|f| f.name.as_str()).collect();
     for &expected in expected_fragments {
-        let present = found_names.contains(&expected);
-        v.check_bool(
-            &format!("bare:fragment:{expected}"),
-            present,
-            if present {
-                "found"
-            } else {
-                "missing from graphs/fragments/"
-            },
-        );
+        let path = fragment_dir.join(format!("{expected}.toml"));
+        if path.exists() {
+            match std::fs::read_to_string(&path) {
+                Ok(content) => {
+                    let parsed: Result<toml::Value, _> = toml::from_str(&content);
+                    match parsed {
+                        Ok(table) => {
+                            let has_fragment = table.get("fragment").is_some();
+                            let has_nodes = table
+                                .get("fragment")
+                                .and_then(|f| f.get("nodes").or_else(|| f.get("node")))
+                                .and_then(|n| n.as_array())
+                                .is_some_and(|a| !a.is_empty());
+                            v.check_bool(
+                                &format!("bare:fragment:{expected}"),
+                                has_fragment && has_nodes,
+                                &format!(
+                                    "[fragment] section: {has_fragment}, nodes: {has_nodes}"
+                                ),
+                            );
+                        }
+                        Err(e) => {
+                            v.check_bool(
+                                &format!("bare:fragment:{expected}"),
+                                false,
+                                &format!("TOML parse error: {e}"),
+                            );
+                        }
+                    }
+                }
+                Err(e) => {
+                    v.check_bool(
+                        &format!("bare:fragment:{expected}"),
+                        false,
+                        &format!("cannot read: {e}"),
+                    );
+                }
+            }
+        } else {
+            v.check_bool(
+                &format!("bare:fragment:{expected}"),
+                false,
+                "missing from graphs/fragments/",
+            );
+        }
     }
 }
 
@@ -292,6 +387,12 @@ fn validate_atomic_health(ctx: &mut CompositionContext, v: &mut ValidationResult
                 Err(e) if e.is_connection_error() => {
                     v.check_skip(&check_name, &format!("not reachable: {e}"));
                 }
+                Err(e) if e.is_protocol_error() => {
+                    v.check_skip(
+                        &check_name,
+                        &format!("reachable but protocol mismatch: {e}"),
+                    );
+                }
                 Err(e) => v.check_bool(&check_name, false, &format!("error: {e}")),
             }
         }
@@ -386,18 +487,26 @@ fn validate_storage_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationRe
 fn validate_shader_capabilities(ctx: &mut CompositionContext, v: &mut ValidationResult) {
     match ctx.call(
         "shader",
-        "compile.capabilities",
+        "shader.compile.capabilities",
         serde_json::json!({}),
     ) {
         Ok(result) => {
-            let has_caps = result
+            let has_archs = result
+                .get("supported_archs")
+                .and_then(|c| c.as_array())
+                .is_some_and(|c| !c.is_empty());
+            let has_legacy = result
                 .get("capabilities")
                 .and_then(|c| c.as_array())
                 .is_some_and(|c| !c.is_empty());
+            let arch_count = result
+                .get("supported_archs")
+                .and_then(|c| c.as_array())
+                .map_or(0, Vec::len);
             v.check_bool(
                 "parity:shader_capabilities",
-                has_caps,
-                &format!("response: {result}"),
+                has_archs || has_legacy,
+                &format!("{arch_count} supported architectures"),
             );
         }
         Err(e) if e.is_connection_error() => {

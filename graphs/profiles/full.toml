@@ -32,7 +32,7 @@ resolve = true
 [[graph.nodes]]
 name = "validate_full"
 binary = "primalspring_primal"
-order = 12
+order = 99
 required = true
 spawn = false
 depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate"]

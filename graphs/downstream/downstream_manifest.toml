@@ -92,9 +92,19 @@ domain = "life_science"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate", "squirrel", "petaltongue"]
+guidestone_binary = "wetspring_guidestone"
+guidestone_readiness = 3
 validation_capabilities = [
     "tensor.matmul",
+    "tensor.create",
     "stats.mean",
+    "stats.std_dev",
+    "stats.variance",
+    "stats.correlation",
+    "linalg.solve",
+    "linalg.eigenvalues",
+    "spectral.fft",
+    "spectral.power_spectrum",
     "compute.dispatch",
     "storage.store",
     "storage.retrieve",
@@ -109,6 +119,8 @@ domain = "ml_inference"
 particle_profile = "proton_heavy"
 fragments = ["tower_atomic", "node_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "squirrel"]
+guidestone_binary = "neuralspring_guidestone"
+guidestone_readiness = 2
 validation_capabilities = [
     "tensor.matmul",
     "tensor.create",

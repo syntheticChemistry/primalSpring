@@ -6,7 +6,7 @@
 //! `primalspring` library [`provenance`](primalspring::ipc::provenance) module
 //! stays limited to shared JSON types.
 
-#![allow(clippy::expect_used, clippy::unwrap_used)]
+#![expect(clippy::expect_used, clippy::unwrap_used, reason = "experiment helper — panics acceptable")]
 
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};

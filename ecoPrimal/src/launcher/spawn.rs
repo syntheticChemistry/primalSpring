@@ -98,7 +98,7 @@ impl SocketNucleation {
     /// Set the BTSP family seed for this composition.
     ///
     /// When set, [`spawn_primal`] injects `FAMILY_SEED` into each child
-    /// process so BearDog can start in Production BTSP mode.
+    /// process so `BearDog` can start in Production BTSP mode.
     pub fn set_family_seed(&mut self, seed: Vec<u8>) {
         self.family_seed = Some(seed);
     }

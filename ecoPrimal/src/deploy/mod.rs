@@ -74,7 +74,7 @@ pub struct GraphMeta {
     /// Coordination pattern (Sequential, Parallel, etc.).
     #[serde(default)]
     pub coordination: Option<String>,
-    /// Graph metadata sub-table (fragments, security_model, etc.).
+    /// Graph metadata sub-table (fragments, `security_model`, etc.).
     #[serde(default)]
     pub metadata: Option<GraphMetadata>,
     /// Ordered list of primal nodes.
@@ -86,7 +86,7 @@ pub struct GraphMeta {
 /// Metadata sub-table of a deploy graph (`[graph.metadata]`).
 ///
 /// Only `fragments` + `resolve` are actively used for composition; all
-/// other metadata fields (security_model, transport, etc.) are preserved
+/// other metadata fields (`security_model`, transport, etc.) are preserved
 /// as opaque TOML for downstream consumers.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct GraphMetadata {

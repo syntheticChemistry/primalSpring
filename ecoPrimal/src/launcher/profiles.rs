@@ -28,7 +28,7 @@ pub struct LaunchProfile {
     /// Security model: `"btsp"` (Tower perimeter) or `"tower_delegated"`.
     ///
     /// When `"btsp"`, BTSP handshake is required for client connections
-    /// (e.g. BearDog). The harness uses this to select the right transport.
+    /// (e.g. `BearDog`). The harness uses this to select the right transport.
     #[serde(default)]
     pub security_model: Option<String>,
     /// Static environment variables to set on the child process.
@@ -69,7 +69,7 @@ pub fn load_launch_profiles() -> Result<(LaunchProfile, HashMap<String, LaunchPr
 
 /// Whether a primal uses BTSP (`security_model = "btsp"` in its profile).
 ///
-/// Returns `true` for BearDog and similar perimeter primals; `false` for
+/// Returns `true` for `BearDog` and similar perimeter primals; `false` for
 /// tower-delegated primals that accept cleartext on their UDS socket.
 #[must_use]
 pub fn primal_requires_btsp(primal: &str) -> bool {

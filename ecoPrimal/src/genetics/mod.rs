@@ -7,14 +7,14 @@
 //! - **Tier 1 — Mito-Beacon** ([`mito_beacon`]): Mitochondrial genetics.
 //!   Inherited group membership tokens for dark forest discovery, NAT
 //!   negotiation, and metadata-level comms. Multiple per system. Freely
-//!   cloneable (group membership is shared). BearDog:
+//!   cloneable (group membership is shared). `BearDog`:
 //!   `genetic.derive_lineage_beacon_key`.
 //!
 //! - **Tier 2 — Nuclear** ([`nuclear`]): Lineage DNA. Permissions,
 //!   authentication, secure tunnels. **Never copied, always spawned fresh.**
 //!   Each derivation mixes parent DNA with context entropy. Generation
 //!   counter + parent hash chain enables crypto-verifiable provenance.
-//!   BearDog: `genetic.derive_lineage_key` + `genetic.mix_entropy`.
+//!   `BearDog`: `genetic.derive_lineage_key` + `genetic.mix_entropy`.
 //!
 //! - **Tier 3 — Tags** ([`tag`]): Deprecated plaintext `FAMILY_SEED`
 //!   transformed into open participation channels. Hashtag/chat/Reddit
@@ -30,8 +30,8 @@
 //!
 //! # RPC Delegation
 //!
-//! All cryptographic operations are delegated to BearDog via JSON-RPC.
-//! The [`rpc`] module provides typed wrappers around BearDog's `genetic.*`
+//! All cryptographic operations are delegated to `BearDog` via JSON-RPC.
+//! The [`rpc`] module provides typed wrappers around `BearDog`'s `genetic.*`
 //! methods.
 
 pub mod mito_beacon;

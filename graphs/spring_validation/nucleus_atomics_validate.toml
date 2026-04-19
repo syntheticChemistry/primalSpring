@@ -22,8 +22,6 @@ description = "Validates NUCLEUS atomics: Tower (electron), Node (proton), Nest 
 version = "0.3.0"
 coordination = "sequential"
 
-# --- Phase 1: Verify biomeOS Neural API substrate ---
-
 [graph.metadata]
 security_model = "btsp_enforced"
 transport = "uds_only"
@@ -32,6 +30,8 @@ bond_type = "validation"
 requires_biomeos = ">=2.78"
 composition_model = "validation"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "meta_tier"]
+
+# --- Phase 1: Verify biomeOS Neural API substrate ---
 
 [[graph.nodes]]
 name = "verify_biomeos"
@@ -68,7 +68,7 @@ depends_on = ["verify_primalspring"]
 by_capability = "coordination"
 capabilities = ["composition.tower_health"]
 
-[graph.node.operation]
+[graph.nodes.operation]
 method = "composition.tower_health"
 expect = "healthy"
 
@@ -84,7 +84,7 @@ depends_on = ["validate_tower"]
 by_capability = "coordination"
 capabilities = ["composition.node_health"]
 
-[graph.node.operation]
+[graph.nodes.operation]
 method = "composition.node_health"
 expect = "healthy"
 
@@ -100,7 +100,7 @@ depends_on = ["validate_tower"]
 by_capability = "coordination"
 capabilities = ["composition.nest_health"]
 
-[graph.node.operation]
+[graph.nodes.operation]
 method = "composition.nest_health"
 expect = "healthy"
 
@@ -116,7 +116,7 @@ depends_on = ["validate_node", "validate_nest"]
 by_capability = "coordination"
 capabilities = ["composition.nucleus_health"]
 
-[graph.node.operation]
+[graph.nodes.operation]
 method = "composition.nucleus_health"
 expect = "healthy"
 
@@ -132,7 +132,7 @@ depends_on = ["validate_tower"]
 by_capability = "coordination"
 capabilities = ["composition.tower_squirrel_health"]
 
-[graph.node.operation]
+[graph.nodes.operation]
 method = "composition.tower_squirrel_health"
 
 # --- Phase 8: Graph structural validation ---
@@ -147,10 +147,10 @@ depends_on = ["verify_primalspring"]
 by_capability = "coordination"
 capabilities = ["graph.validate"]
 
-[graph.node.operation]
+[graph.nodes.operation]
 method = "graph.validate"
 
-[graph.node.operation.params]
+[graph.nodes.operation.params]
 graphs = ["profiles/tower", "profiles/node", "profiles/nest", "profiles/nucleus", "nucleus_complete"]
 mode = "structure"
 
@@ -178,21 +178,21 @@ mode = "structure"
 #   NUCLEUS: cross_tower_hash, cross_nest_roundtrip
 #
 # Wire methods validated (schemas confirmed April 13, 2026):
-#   BearDog:    crypto.hash {data: base64, algorithm: "blake3"} → {hash: base64(44)}, deterministic
-#   Songbird:   ipc.resolve {capability: str} → {native_endpoint, virtual_endpoint}
+#   BearDog:    crypto.hash {data: base64, algorithm: "blake3"} -> {hash: base64(44)}, deterministic
+#   Songbird:   ipc.resolve {capability: str} -> {native_endpoint, virtual_endpoint}
 #                ipc.register {primal_id, capabilities[], endpoint} (Phase 5 seeding)
-#                ipc.list → {services[]} (18 capabilities across 10 primals)
-#   barraCuda:  stats.mean {data: [f64]} → {result: f64} (JSON-RPC via BTSP guard)
-#                tensor.create {shape, data} → {tensor_id: str}
-#                noise.perlin2d {x, y} → {result: f64}
-#   coralReef:  shader.compile.capabilities → {supported_archs: [11 archs]}
-#   ToadStool:  compute.capabilities → {compute_units, available_resources} (BTSP auto-detect)
-#   NestGate:   storage.store {key, value}, storage.retrieve {key} → {value}, storage.delete
-#   rhizoCrypt: dag.session.create {label} → UUID, dag.event.append {session_id, event_type: {Variant:{}}, payload}
-#                dag.merkle.root {session_id} → hex hash
-#   loamSpine:  spine.create {name, owner} → {spine_id: UUID, genesis_hash}
+#                ipc.list -> {services[]} (18 capabilities across 10 primals)
+#   barraCuda:  stats.mean {data: [f64]} -> {result: f64} (JSON-RPC via BTSP guard)
+#                tensor.create {shape, data} -> {tensor_id: str}
+#                noise.perlin2d {x, y} -> {result: f64}
+#   coralReef:  shader.compile.capabilities -> {supported_archs: [11 archs]}
+#   ToadStool:  compute.capabilities -> {compute_units, available_resources} (BTSP auto-detect)
+#   NestGate:   storage.store {key, value}, storage.retrieve {key} -> {value}, storage.delete
+#   rhizoCrypt: dag.session.create {label} -> UUID, dag.event.append {session_id, event_type: {Variant:{}}, payload}
+#                dag.merkle.root {session_id} -> hex hash
+#   loamSpine:  spine.create {name, owner} -> {spine_id: UUID, genesis_hash}
 #                health.check {include_details: bool}
-#   sweetGrass: braid.create {data_hash, agent, mime_type, size} → {@id: urn:braid:...}
+#   sweetGrass: braid.create {data_hash, agent, mime_type, size} -> {@id: urn:braid:...}
 #
 # NUCLEUS atomics:
 #   Tower:    [beardog, songbird]
@@ -201,15 +201,15 @@ mode = "structure"
 #   NUCLEUS:  Tower + Node + Nest (9 unique primals)
 #   Meta-tier: [biomeos, squirrel, petaltongue] — cross-atomic, any level
 #
-# Songbird ipc.resolve capability mapping (primal self-reported → graph by_capability):
-#   security, crypto, btsp, ed25519, x25519 → beardog
-#   discovery → songbird
-#   compute, hardware → toadstool
-#   tensor, math, gpu_compute → barracuda
-#   shader → coralreef
-#   storage → nestgate
-#   dag, provenance → rhizocrypt
-#   spine, merkle → loamspine (graph uses "ledger" — not self-reported)
-#   commit, braid → sweetgrass (graph uses "attribution" — not self-reported)
-#   ai, inference → squirrel
+# Songbird ipc.resolve capability mapping (primal self-reported -> graph by_capability):
+#   security, crypto, btsp, ed25519, x25519 -> beardog
+#   discovery -> songbird
+#   compute, hardware -> toadstool
+#   tensor, math, gpu_compute -> barracuda
+#   shader -> coralreef
+#   storage -> nestgate
+#   dag, provenance -> rhizocrypt
+#   spine, merkle -> loamspine (graph uses "ledger" — not self-reported)
+#   commit, braid -> sweetgrass (graph uses "attribution" — not self-reported)
+#   ai, inference -> squirrel
 # =============================================================================

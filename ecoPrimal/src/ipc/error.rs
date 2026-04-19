@@ -158,6 +158,13 @@ impl IpcError {
         )
     }
 
+    /// Whether the failure is a wire-level protocol violation (e.g. HTTP
+    /// response where raw JSON-RPC was expected).
+    #[must_use]
+    pub const fn is_protocol_error(&self) -> bool {
+        matches!(self, Self::ProtocolError { .. })
+    }
+
     /// Whether the failure is likely a transport mismatch (e.g. tarpc socket
     /// receiving raw JSON-RPC). Manifests as a timeout with EAGAIN because
     /// the server accepts the connection but never sends a JSON-RPC response.

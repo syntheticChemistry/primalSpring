@@ -12,7 +12,7 @@
 //!
 //! # Core Role
 //!
-//! - **Start** NUCLEUS compositions (Tower, Node, Nest, FullNucleus) via biomeOS
+//! - **Start** NUCLEUS compositions (Tower, Node, Nest, `FullNucleus`) via biomeOS
 //! - **Validate** that primal compositions produce correct results (parity with baselines)
 //! - **Surface** upstream gaps so primal teams know what to evolve
 //! - **Provide** the composition validation library for downstream springs
@@ -26,6 +26,7 @@
 //! - [`tolerances`] — named bounds for parity, latency, and coordination
 //! - [`deploy`] — deploy graph parsing, structural validation, and live probing
 //! - [`harness`] — spawn compositions, validate, tear down
+//! - [`checksums`] — BLAKE3 manifest generation and verification for guideStone P3 (self-verifying)
 //!
 //! ## Supporting — IPC, discovery, and ecosystem wiring
 //! - [`ipc`] — JSON-RPC 2.0 client, Neural API bridge, 6-tier socket discovery, resilience
@@ -47,6 +48,7 @@ pub const PRIMAL_DOMAIN: &str = "coordination";
 pub mod bonding;
 pub mod btsp;
 pub mod cast;
+pub mod checksums;
 pub mod composition;
 pub mod coordination;
 pub mod deploy;

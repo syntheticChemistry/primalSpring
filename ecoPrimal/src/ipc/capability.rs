@@ -99,7 +99,21 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
     // Tier 2: Capability-named socket on filesystem
     let base =
         std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
-    let cap_sock = base.join("biomeos").join(format!("{capability}.sock"));
+    let biomeos_dir = base.join("biomeos");
+    let family = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
+
+    // 2a: {capability}-{family}.sock (multi-tenant convention)
+    let family_sock = biomeos_dir.join(format!("{capability}-{family}.sock"));
+    if family_sock.exists() {
+        return CapabilityDiscoveryResult {
+            capability: capability.to_owned(),
+            resolved_primal: None,
+            socket: Some(family_sock),
+            source: CapabilityDiscoverySource::CapabilitySocket,
+        };
+    }
+    // 2b: {capability}.sock (single-tenant fallback)
+    let cap_sock = biomeos_dir.join(format!("{capability}.sock"));
     if cap_sock.exists() {
         return CapabilityDiscoveryResult {
             capability: capability.to_owned(),
@@ -141,7 +155,7 @@ pub fn discover_capabilities_for(capabilities: &[&str]) -> Vec<CapabilityDiscove
 
 /// If a `.jsonrpc.sock` sibling exists for a tarpc `.sock`, prefer it.
 ///
-/// Some primals (ToadStool) bind separate tarpc and JSON-RPC sockets.
+/// Some primals (`ToadStool`) bind separate tarpc and JSON-RPC sockets.
 /// biomeOS returns the tarpc socket as `primary_endpoint`, but our IPC
 /// client speaks JSON-RPC. This helper upgrades the path transparently.
 fn prefer_jsonrpc_socket(path: &std::path::Path) -> PathBuf {

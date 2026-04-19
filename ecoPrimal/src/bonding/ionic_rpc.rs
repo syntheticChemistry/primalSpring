@@ -2,7 +2,7 @@
 
 //! Ionic bond RPC client — cross-family trust negotiation protocol.
 //!
-//! Wraps BearDog's `crypto.ionic_bond` methods (propose/accept/seal with
+//! Wraps `BearDog`'s `crypto.ionic_bond` methods (propose/accept/seal with
 //! Ed25519) and Songbird's cross-family discovery into typed client APIs.
 //!
 //! # Protocol Flow
@@ -24,7 +24,7 @@
 //! The transport between gates is Songbird TCP (with BTSP Phase 3 encryption
 //! when available). Cross-family peers discover each other via:
 //! - Explicit `REMOTE_GATE_HOST` configuration
-//! - BirdSong mesh multicast (same LAN)
+//! - `BirdSong` mesh multicast (same LAN)
 //! - STUN/relay for NAT traversal (internet)
 
 use serde::{Deserialize, Serialize};
@@ -58,7 +58,7 @@ pub struct IonicPeerIdentity {
 pub enum DiscoveryMethod {
     /// Explicit configuration (`REMOTE_GATE_HOST` or deploy graph).
     ExplicitConfig,
-    /// BirdSong mesh UDP multicast (LAN discovery).
+    /// `BirdSong` mesh UDP multicast (LAN discovery).
     BirdSongMesh,
     /// STUN/relay (NAT traversal, internet).
     StunRelay,
@@ -66,7 +66,7 @@ pub enum DiscoveryMethod {
     OutOfBand,
 }
 
-/// Request to BearDog's `crypto.ionic_bond.propose`.
+/// Request to `BearDog`'s `crypto.ionic_bond.propose`.
 #[derive(Debug, Serialize)]
 pub struct IonicProposeParams {
     /// Our family identity.
@@ -86,7 +86,7 @@ pub struct IonicProposeResult {
     pub signed_payload: String,
 }
 
-/// Request to BearDog's `crypto.ionic_bond.verify_proposal`.
+/// Request to `BearDog`'s `crypto.ionic_bond.verify_proposal`.
 #[derive(Debug, Serialize)]
 pub struct IonicVerifyParams {
     /// The signed payload received from the proposer.
@@ -106,7 +106,7 @@ pub struct IonicVerifyResult {
     pub proposal: Option<IonicProposal>,
 }
 
-/// Request to BearDog's `crypto.ionic_bond.seal`.
+/// Request to `BearDog`'s `crypto.ionic_bond.seal`.
 #[derive(Debug, Serialize)]
 pub struct IonicSealParams {
     /// Contract to seal.
@@ -128,7 +128,7 @@ pub struct IonicSealResult {
 
 /// High-level ionic bond negotiation client.
 ///
-/// Operates against a remote gate via Songbird TCP. The local BearDog
+/// Operates against a remote gate via Songbird TCP. The local `BearDog`
 /// handles cryptographic operations (signing, verification).
 pub struct IonicBondClient {
     local_family_id: String,
@@ -153,12 +153,12 @@ impl IonicBondClient {
 
     /// Propose an ionic bond to the remote peer.
     ///
-    /// 1. Signs the proposal via local BearDog (`crypto.ionic_bond.propose`)
+    /// 1. Signs the proposal via local `BearDog` (`crypto.ionic_bond.propose`)
     /// 2. Sends the signed proposal to the remote gate via TCP
     ///
     /// # Errors
     ///
-    /// Returns [`IpcError`] if BearDog signing fails or the remote gate
+    /// Returns [`IpcError`] if `BearDog` signing fails or the remote gate
     /// is unreachable.
     pub fn propose(&self, proposal: &IonicProposal) -> Result<ProposalResponse, IpcError> {
         let errors = proposal.validate();

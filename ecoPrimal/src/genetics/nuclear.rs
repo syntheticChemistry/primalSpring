@@ -13,7 +13,7 @@
 //! counter + parent hash chain enables crypto-verifiable provenance: you can
 //! prove the lineage of any nuclear key back to its genesis.
 //!
-//! Key derivation is delegated to BearDog:
+//! Key derivation is delegated to `BearDog`:
 //! - `genetic.derive_lineage_key` — per-domain key derivation with lineage mixing
 //! - `genetic.mix_entropy` — three-tier entropy mixing (human, supervised, machine)
 //! - `genetic.generate_lineage_proof` / `genetic.verify_lineage` — provenance proofs
@@ -43,7 +43,7 @@ pub struct NuclearGenetics {
     /// The derived lineage key for this generation.
     lineage_key: Vec<u8>,
     /// Lineage proof: cryptographic attestation linking this generation
-    /// to its parent (Blake3 + HMAC via BearDog).
+    /// to its parent (Blake3 + HMAC via `BearDog`).
     #[zeroize(skip)]
     proof: Vec<u8>,
     /// Context under which this generation was derived (e.g. `"storage_v1"`,
@@ -82,7 +82,7 @@ impl NuclearGenetics {
     /// Create a genesis (generation 0) nuclear identity.
     ///
     /// The genesis has no parent — its `parent_hash` is all zeros.
-    /// In production, `lineage_key` comes from BearDog `genetic.derive_lineage_key`.
+    /// In production, `lineage_key` comes from `BearDog` `genetic.derive_lineage_key`.
     #[must_use]
     pub const fn genesis(lineage_key: Vec<u8>, proof: Vec<u8>, context: String) -> Self {
         Self {
@@ -99,7 +99,7 @@ impl NuclearGenetics {
     /// This is the **only** way to propagate nuclear genetics. The child:
     /// - Has `generation = parent.generation + 1`
     /// - Records a Blake3 hash of the parent's key as `parent_hash`
-    /// - Receives fresh `lineage_key` derived by BearDog (mixed with context entropy)
+    /// - Receives fresh `lineage_key` derived by `BearDog` (mixed with context entropy)
     /// - Gets its own lineage proof
     ///
     /// The parent's key material is **not** copied to the child — only a

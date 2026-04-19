@@ -25,7 +25,7 @@ node_count = 3
 [[fragment.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
-order = 0
+order = 10
 required = true
 spawn = false
 health_method = "health.liveness"
@@ -36,6 +36,7 @@ capabilities = ["graph.deploy", "capability.discover", "graph.list"]
 [[fragment.nodes]]
 name = "squirrel"
 binary = "squirrel"
+order = 11
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -46,6 +47,7 @@ capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
 [[fragment.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
+order = 12
 required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"

@@ -1541,14 +1541,15 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 | **barraCuda IPC migration** — springs still link barraCuda as a Rust library (path/git dep) for domain math; need to rewire to the barraCuda ecobin's 32 JSON-RPC methods over UDS. **Spring-side actively in progress**: hotSpring (9 probes), healthSpring (2/11 IPC via math_dispatch), neuralSpring V133 (IpcMathClient, 9 methods wired), wetSpring V145 (5 primals). | All delta springs | **Each spring team** (primalSpring documents the pattern) | **IN PROGRESS** — 4/4 delta springs building IPC clients; no spring uses `primalspring::composition` yet |
 | **barraCuda JSON-RPC surface gaps** — neuralSpring V133 documents 18 `barracuda::` library calls with no 1:1 JSON-RPC method: `eigh_householder_qr`, `pearson_correlation`, `chi_squared_statistic`, `empirical_spectral_density`, `shannon_from_frequencies`, `solve_f64_cpu`, `esn_v2::*`, `nn::SimpleMlp`, `belief_propagation_chain`, `graph_laplacian`, `numerical_hessian`, `boltzmann_sampling`, `nautilus::*`, `fit_linear`. These block full Level 5 for neuralSpring. Priority: `linalg.eigh`, `stats.pearson`, `stats.chi_squared`, `stats.shannon` (most-used science paths). | neuralSpring V133 (explicit), other springs (potential) | **barraCuda team** | **OPEN** — hand-back from neuralSpring Gap 11; barraCuda surface expansion needed |
 
-### Per-Spring Composition Status (Delta Season)
+### Per-Spring Composition Status (Delta Season — April 19, 2026)
 
-| Spring | Version | Composition Tier | Evidence | Blockers |
-|--------|---------|-----------------|----------|----------|
-| **hotSpring** | v0.6.32 | Level 5 | 63/63 suites; `validate_primal_proof` (9 IPC probes to barraCuda/BearDog/toadStool); `PRIMAL_PROOF_IPC_MAPPING.md` | Ionic bond, BTSP Phase 3 |
-| **healthSpring** | V53 | Tier 2→5 | exp122 IPC parity; `math_dispatch.rs` feature-gated IPC/lib routing; niche.rs; dual-tower ionic | Ionic negotiation (cross-tower), NestGate cross-spring |
-| **neuralSpring** | V133 | Level 5 | `IpcMathClient` (9 methods), `validate_proto_nucleate_capabilities` binary (7 caps), `deny.toml` stadial bans | **18 barraCuda method gaps** (eigh, Pearson, chi-squared, Shannon, ESN, etc.) |
-| **wetSpring** | V145 | Level 5 | Exp403 `validate_primal_parity_v1` (5 primals over IPC); 22 CONSUMED_CAPABILITIES in niche.rs | NestGate fetch_external, Squirrel provider |
+| Spring | Version | guideStone Level | Composition Tier | Evidence | Blockers |
+|--------|---------|-----------------|-----------------|----------|----------|
+| **hotSpring** | v0.6.32 | 5 (certified) | Level 5 | `hotspring_guidestone` (bare+NUCLEUS), 64/64 suites, `primalspring::composition` API | Exit-code 2 semantics; P2–P4 partial in code |
+| **healthSpring** | V54 | 2 (props documented) | Level 5 | `healthspring_guidestone` (bare.rs/domain.rs), modular split, feature-gated | P3 (CHECKSUMS), ionic bridge, bare_exit_code doc bug |
+| **neuralSpring** | V134 | 2 (props documented) | Level 5 | `neuralspring_guidestone` (4-phase), `GUIDESTONE_PROPERTIES.md`, feature-gated | P3 (CHECKSUMS), 18 barraCuda method gaps, machine-readable provenance |
+| **wetSpring** | V147 | 3 (bare works) | Level 5 | `wetspring_guidestone` (B0/B1+N0–N3), strict exit 2, expanded N2 (linalg/spectral/stats) | Live NUCLEUS for N1–N3, PG-12 legacy convergence |
+| **ludoSpring** | V45 | 3 (bare works) | Level 5 | `ludospring_guidestone` (15 bare + 15 IPC), per wateringHole handoff | Local checkout stale |
 
 ### Patterns Handed Back (Evaporation → primalSpring)
 
@@ -1570,23 +1571,47 @@ primalSpring absorbs for standardization:
 13. **18-method barraCuda gap hand-back** — neuralSpring's IPC migration audit discovered 18 library calls with no JSON-RPC equivalent. These are the first concrete hand-back to barraCuda for surface expansion. **TRACKED** — added to ecosystem-level gaps above.
 14. **IPC clients are validation windows** — all four delta springs built independent IPC clients (`NucleusContext`, `IpcMathClient`, `math_dispatch`, `rpc_call`). None depend on the `primalspring` crate. This is **by design**: the IPC client is temporary tooling to prove the math works through NUCLEUS. The permanent deployable is the **guideStone binary** (pure IPC, no library dep on `barracuda`). Springs keep their lib dep for Level 2 parity comparison; the guideStone deploys without it. **RESOLVED** — framed as guideStone pattern in `GUIDESTONE_COMPOSITION_STANDARD.md`.
 15. **guideStone as universal composition pattern** — hotSpring-guideStone-v0.7.0 proved all 5 properties (deterministic, traceable, self-verifying, env-agnostic, tolerance-documented) with cross-substrate parity and NUCLEUS additive layer. Extracted as ecosystem standard. **ABSORBED Apr 18, 2026** — see `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md`.
+16. **`checksums` module for P3** — every spring's guideStone audit identified P3 (self-verifying) as a universal blocker because no CHECKSUMS infrastructure existed. primalSpring now provides `primalspring::checksums::{generate_manifest, verify_manifest, blake3_file}`. **ABSORBED Apr 19, 2026.**
+17. **Explicit bare-only exit(2) pattern** — wetSpring V147 showed the cleanest bare-only exit semantics: `if v.exit_code() == 0 { 2 } else { 1 }`, reserving exit 0 for full NUCLEUS certification only. Adopted by `primalspring_guidestone`. **ABSORBED Apr 19, 2026.**
+18. **`linalg.*` and `spectral.*` routing** — wetSpring V147 reported PG-10: `method_to_capability_domain()` didn't handle these prefixes, forcing springs to manually pass `"tensor"`. Fixed in composition module. **ABSORBED Apr 19, 2026.**
+19. **Modular bare/domain split** — healthSpring V54's `bare.rs` / `domain.rs` split for guideStone binaries is a clean pattern: properties that need no primals live in `bare.rs`, IPC-dependent checks live in `domain.rs`. **DOCUMENTED Apr 19, 2026** — not absorbed as library code; springs own their layout.
+20. **Feature-gated `guidestone`** — all active springs (healthSpring, neuralSpring, wetSpring, ludoSpring) use `required-features = ["guidestone"]` with `primalspring` as an optional dep. Canonical pattern for guideStone binaries. **DOCUMENTED Apr 19, 2026.**
 
-### guideStone Readiness (April 18, 2026)
+### guideStone Readiness (April 20, 2026)
 
 | Spring | guideStone Readiness | Evidence | Blockers |
 |--------|---------------------|----------|----------|
-| **primalSpring v0.9.15** | **1 — Validation exists** | `primalspring_guidestone` binary: 6-layer composition certification (bare properties, discovery, health, capability parity, cross-atomic pipeline, bonding, BTSP+crypto). Base certification layer for all domain guideStones. | Needs live NUCLEUS for Layers 1–4, 6; Properties 2 (tolerance docs) and 3 (checksums) not yet packaged |
-| hotSpring v0.6.32 | **5 — Certified** | guideStone-v0.7.0: all 5 properties, cross-substrate parity (Python/CPU/GPU), NUCLEUS additive (BearDog signing, rhizoCrypt DAG, toadStool reporting) | aarch64 CI |
-| healthSpring V53 | **1 — Validation exists** | exp122 IPC parity, `math_dispatch.rs` feature-gated routing | Property 4 (patient data compliance), 9/11 methods still library-only |
-| neuralSpring V133 | **1 — Validation exists** | `IpcMathClient` (9 methods), `validate_proto_nucleate_capabilities` (7 caps) | 18 barraCuda surface gaps (eigh, Pearson, etc.) |
-| wetSpring V145 | **1 — Validation exists** | Exp403 `validate_primal_parity_v1` (5 primals over IPC) | Needs guideStone packaging (properties, checksums, cross-substrate) |
-| ludoSpring V44 | **1 — Validation exists** | `validate_primal_proof` binary, four-layer validation | Needs guideStone packaging |
-| airSpring v0.10.0 | **0 — Not started** | Pre-delta; 90.56% coverage | No IPC client yet |
-| groundSpring V124 | **0 — Not started** | Pre-delta; 92% coverage | No IPC client yet |
+| **primalSpring v0.9.15** | **4 — NUCLEUS guideStone works** | 67/67 ALL PASS against live plasmidBin NUCLEUS (12 primals). P3 CHECKSUMS (BLAKE3, 18 files). 41/41 bare. Layers 0–6 validated. Family-aware capability discovery. | Cross-substrate parity for Level 5; BearDog BTSP handshake (connection reset, not failure); tensor discovery gap (symlink naming) |
+| hotSpring v0.6.32 | **5 — Certified** | `hotspring_guidestone`: bare + NUCLEUS, all 5 properties, `primalspring::composition` API. Cross-substrate parity (Python/CPU/GPU). | P2–P4 checks are partial (metadata checks, not deep validation). Exit-code 2 semantics inconsistent with `exit_code_skip_aware()`. |
+| healthSpring V54 | **2 — Properties documented** | `healthspring_guidestone` modular binary (bare.rs/domain.rs). P1/P2/P4/P5 validated. `primalspring::composition` API. Feature-gated `guidestone`. | **P3 missing** (CHECKSUMS); `bare_exit_code` doc comment contradicts implementation; dual-tower ionic bridge untested in guideStone |
+| neuralSpring V134 | **2 — Properties documented** | `neuralspring_guidestone`: 4-phase binary (bare/liveness/parity/additive). `GUIDESTONE_PROPERTIES.md` documents all 5. `primalspring::composition` API. Feature-gated. | **P3 missing** (CHECKSUMS); machine-readable provenance; Gap 11 (18 barraCuda surface methods) |
+| wetSpring V147 | **3 — Bare guideStone works** | `wetspring_guidestone`: B0/B1 bare + N0–N3 NUCLEUS layers. Strict exit semantics (0=full, 2=bare, 1=fail). 9/9 bare checks pass. Expanded N2 (linalg, spectral, stats). Feature-gated. | **PG-10** (spectral/linalg routing — RESOLVED in primalSpring). PG-11 manifest drift. Live NUCLEUS for N1–N3. |
+| ludoSpring V45 | **3 — Bare guideStone works** | `ludospring_guidestone`: 15 bare + 15 domain IPC checks. Readiness 3 per wateringHole handoff. | Local checkout stale (pre-V45); needs fresh pull. |
+| airSpring v0.10.0 | **0 — Not started** | Pre-delta; 90.56% coverage | No IPC client or guideStone yet |
+| groundSpring V124 | **0 — Not started** | Pre-delta; 92% coverage | No IPC client or guideStone yet |
 
 Readiness levels: 0=not started, 1=validation exists, 2=properties documented,
 3=bare guideStone works, 4=NUCLEUS guideStone works, 5=certified.
 See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
+
+### guideStone-Discovered Gaps (April 19, 2026)
+
+| ID | Gap | Reporter | Owner | Status |
+|----|-----|----------|-------|--------|
+| **PG-10** | `method_to_capability_domain()` did not route `spectral.*` or `linalg.*` methods — springs had to pass `"tensor"` manually. | wetSpring V147 | primalSpring | **RESOLVED** — `linalg` and `spectral` prefixes now route to `"tensor"` |
+| **PG-11** | `downstream_manifest.toml` field drift — guideStone readiness and binary fields missing for some springs. | wetSpring V147, neuralSpring V134 | primalSpring | **RESOLVED** — manifest updated for all active springs |
+| **PG-12** | Exp403-style legacy IPC surfaces should converge to guideStone pattern. Springs maintaining both old-style `validate_primal_proof` and new `guideStone` binaries. | wetSpring V147 | Each spring team | **OPEN** — springs should migrate; old binaries remain as historical |
+| **PG-13** | **P3 (self-verifying) universal blocker** — no spring has CHECKSUMS infrastructure. Every guideStone except hotSpring cannot certify P3. | All springs | primalSpring | **RESOLVED** — `primalspring::checksums` module added with `generate_manifest()` / `verify_manifest()` |
+| **PG-14** | Exit code 2 semantics inconsistency — `exit_code_skip_aware()` returns 0 when bare passes and liveness is all-skipped (`passed > 0`). Springs document exit 2 for bare-only. | hotSpring V0.6.32, audit | primalSpring | **RESOLVED** — `primalspring_guidestone` now uses explicit `if v.exit_code() == 0 { 2 } else { 1 }` pattern. `exit_code_skip_aware()` retained for backward compat; guideStones should use the explicit pattern. |
+| **PG-15** | `healthspring_guidestone` `bare_exit_code` doc comment says "2 if any bare check failed" but code returns 2 when bare **succeeded**. | healthSpring V54 audit | healthSpring team | **OPEN** — fix the doc comment |
+| **PG-16** | Capability discovery does not check family-aware socket names (`{cap}-{family}.sock`). Only checks `{cap}.sock` (bare). Blocks tensor/dag/ledger/attribution/commit discovery when `FAMILY_ID` is set. | Live NUCLEUS validation | primalSpring | **RESOLVED** — family-aware tier added to `discover_by_capability()` |
+| **PG-17** | `start_primal.sh` uses `serve` for provenance trio (rhizocrypt, loamspine, sweetgrass) but correct subcommand is `server`. | Live NUCLEUS launch | plasmidBin | **RESOLVED** — fixed in `start_primal.sh` |
+| **PG-18** | Squirrel's `--bind` flag rejected; script passed `--bind` alongside `--port`. | Live NUCLEUS launch | plasmidBin | **RESOLVED** — removed `--bind` from squirrel case in `start_primal.sh` |
+| **PG-19** | BearDog requires `BEARDOG_FAMILY_SEED` or `.family.seed` in production mode. `nucleus_launcher.sh` does not provide it by default. | Live NUCLEUS launch | plasmidBin | **OPEN** — launcher should auto-generate or document seed requirement |
+| **PG-20** | CoralReef `shader.compile.capabilities` returns `supported_archs` not `capabilities` array. guideStone expected `capabilities`. | Live NUCLEUS validation | primalSpring / coralReef | **RESOLVED** — guideStone updated to accept `supported_archs` |
+| **PG-21** | Songbird and petalTongue speak HTTP on UDS. primalSpring's IPC client sends raw JSON-RPC. Protocol mismatch causes `ProtocolError`, not connection failure. | Live NUCLEUS validation | primalSpring | **RESOLVED** — `is_protocol_error()` added, treated as SKIP-with-reachable |
+| **PG-22** | Validation graphs (`crypto_negative_validate.toml`, `nucleus_atomics_validate.toml`) had invalid TOML: duplicate `[graph.node.operation]` tables. | Bare guideStone validation | primalSpring | **RESOLVED** — migrated to `[graph.nodes.operation]` (per-entry) |
+| **PG-23** | Meta-tier fragment nodes (squirrel, petaltongue) had no `order` field, defaulting to 0. Caused duplicate order values when resolved into profiles. | Bare guideStone validation | primalSpring | **RESOLVED** — added explicit orders 10/11/12 to `meta_tier.toml` |
 
 ---
 

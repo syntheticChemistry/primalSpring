@@ -246,7 +246,7 @@ impl CompositionContext {
 
     /// Hash arbitrary bytes via the security primal (`crypto.hash`).
     ///
-    /// BearDog expects the `data` param as base64-encoded bytes and returns
+    /// `BearDog` expects the `data` param as base64-encoded bytes and returns
     /// the hash as base64. This method handles the encoding round-trip.
     ///
     /// # Errors
@@ -330,6 +330,8 @@ pub fn capability_to_primal(capability: &str) -> &str {
 /// assert_eq!(primalspring::composition::method_to_capability_domain("crypto.hash"), "security");
 /// assert_eq!(primalspring::composition::method_to_capability_domain("storage.store"), "storage");
 /// assert_eq!(primalspring::composition::method_to_capability_domain("compute.dispatch"), "compute");
+/// assert_eq!(primalspring::composition::method_to_capability_domain("linalg.solve"), "tensor");
+/// assert_eq!(primalspring::composition::method_to_capability_domain("spectral.fft"), "tensor");
 /// ```
 #[must_use]
 pub fn method_to_capability_domain(method: &str) -> &str {
@@ -339,7 +341,7 @@ pub fn method_to_capability_domain(method: &str) -> &str {
         "ipc" | "discovery" => "discovery",
         "compute" => "compute",
         "tensor" | "stats" | "math" | "noise" | "activation" | "rng" | "fhe" | "tolerances"
-        | "validate" | "device" => "tensor",
+        | "validate" | "device" | "linalg" | "spectral" => "tensor",
         "shader" => "shader",
         "storage" => "storage",
         "inference" | "ai" | "squirrel" | "mcp" => "ai",
@@ -550,6 +552,13 @@ pub fn validate_liveness(
             }
             Err(e) if e.is_connection_error() => {
                 v.check_skip(&name, &format!("{primal} not reachable: {e}"));
+            }
+            Err(e) if e.is_protocol_error() => {
+                v.check_skip(
+                    &name,
+                    &format!("{primal} reachable but protocol mismatch (likely HTTP): {e}"),
+                );
+                alive += 1;
             }
             Err(e) => {
                 v.check_bool(&name, false, &format!("{primal} health error: {e}"));

@@ -8,7 +8,7 @@
 //!
 //! # Protocol Flow
 //!
-//! After BTSP Phase 1 handshake completes (session_id established):
+//! After BTSP Phase 1 handshake completes (`session_id` established):
 //!
 //! ```text
 //! 1. Client → Server:  btsp.negotiate { session_id, ciphers: ["chacha20-poly1305"] }
@@ -176,7 +176,7 @@ impl SessionKeys {
 
     /// Encrypt a plaintext message for transmission.
     ///
-    /// Returns `nonce || ciphertext` (12 + plaintext.len() + 16 bytes).
+    /// Returns `nonce || ciphertext` (12 + `plaintext.len()` + 16 bytes).
     ///
     /// # Errors
     ///

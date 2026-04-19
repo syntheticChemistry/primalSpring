@@ -2,7 +2,7 @@
 
 [package]
 name = "primalspring"
-version = "0.9.15"
+version = "0.9.16"
 edition.workspace = true
 rust-version.workspace = true
 authors = ["ecoPrimals"]
@@ -27,6 +27,7 @@ base64 = "0.22.1"
 getrandom = "0.4.2"
 zeroize = { version = "1.8.2", features = ["zeroize_derive"] }
 chacha20poly1305 = "0.10"
+blake3 = "1"
 
 [lints]
 workspace = true

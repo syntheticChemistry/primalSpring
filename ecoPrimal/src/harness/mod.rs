@@ -46,7 +46,7 @@ pub struct RunningAtomic {
     family_id: String,
     /// Mito-tier BTSP seed for authenticated client connections.
     ///
-    /// When `Some`, client connections to BTSP-model primals (e.g. BearDog)
+    /// When `Some`, client connections to BTSP-model primals (e.g. `BearDog`)
     /// use this seed for the BTSP handshake (Phase 1: mito tunnel).
     mito_seed: Option<Vec<u8>>,
     /// Test nuclear genetics (Phase 2) for compositions that need
@@ -375,7 +375,7 @@ impl AtomicHarness {
     /// topological waves (when a graph was provided) or from the static
     /// [`AtomicType::required_primals`] ordering.
     ///
-    /// Generates a BTSP family seed so BearDog can start in Production
+    /// Generates a BTSP family seed so `BearDog` can start in Production
     /// mode and clients can authenticate via the BTSP handshake.
     ///
     /// # Errors
@@ -569,11 +569,11 @@ impl AtomicHarness {
     }
 }
 
-/// Derive a deterministic, ASCII-safe mito-tier BTSP seed from a family_id.
+/// Derive a deterministic, ASCII-safe mito-tier BTSP seed from a `family_id`.
 ///
 /// Uses HKDF-SHA256 with a harness-specific salt so the output is unique
-/// per family_id but reproducible. The result is hex-encoded (64 ASCII chars)
-/// so it's safe to pass as an environment variable to BearDog (which reads
+/// per `family_id` but reproducible. The result is hex-encoded (64 ASCII chars)
+/// so it's safe to pass as an environment variable to `BearDog` (which reads
 /// `FAMILY_SEED` as raw UTF-8 bytes).
 ///
 /// This is the **Phase 1 (mito-beacon)** seed for tunnel establishment.
@@ -598,7 +598,7 @@ fn generate_harness_mito_seed(family_id: &str) -> Vec<u8> {
 ///
 /// Creates a genesis `NuclearGenetics` with a deterministic key derived
 /// from the `family_id` using a harness-specific HKDF domain. The proof
-/// is a placeholder (harness-only) since BearDog is not available for
+/// is a placeholder (harness-only) since `BearDog` is not available for
 /// real lineage proof generation during local tests.
 #[expect(
     clippy::expect_used,
