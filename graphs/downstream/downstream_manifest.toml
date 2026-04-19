@@ -139,7 +139,7 @@ particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate"]
 guidestone_binary = "ludospring_guidestone"
-guidestone_readiness = 3
+guidestone_readiness = 4
 validation_capabilities = [
     "activation.fitts",
     "activation.hick",

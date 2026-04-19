@@ -257,7 +257,7 @@ ludoSpring composition (pure — ludospring ecoBin)
 **What ludoSpring evolves for the ecosystem**:
 - 60Hz composition budget → tests graph execution latency limits
 - Five-layer validation + guideStone → canonical Python→Rust→IPC composition→`ludospring_guidestone`
-- Level 5 guideStone readiness 3 (V45): `ludospring_guidestone` — 15 bare checks (5 certified properties) + 15 domain IPC checks (13 barraCuda methods)
+- guideStone readiness 4 (V46): `ludospring_guidestone` three-tier — 20 bare + 15 IPC + 8 NUCLEUS cross-atomic (BearDog crypto, NestGate roundtrip, pipeline). BLAKE3 Property 3, protocol tolerance
 - AI narration under latency → tests Squirrel real-time performance
 - Session lifecycle (create/save/restore/fork) → benefits any stateful composition
 - Composition drift detection → `composition_targets.json` golden chain
