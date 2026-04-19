@@ -1621,21 +1621,21 @@ them locally. Ordered by ecosystem impact (how many springs are blocked).
 
 | ID | Gap | Primal | Reporter(s) | Severity | Status |
 |----|-----|--------|-------------|----------|--------|
-| **PG-24** | **6 missing JSON-RPC methods**: `stats.variance`, `stats.correlation`, `linalg.solve`, `linalg.eigenvalues`, `spectral.fft`, `spectral.power_spectrum` — in downstream manifest but not on barraCuda ecobin wire surface. | barraCuda | wetSpring PG-13, healthSpring §19, neuralSpring Gap 11 | **CRITICAL** — blocks Level 5 for 3 springs |  **OPEN** |
-| **PG-25** | `activation.fitts` formula variant: barraCuda returns 800 for (d=256,w=32), Python expects 708.85. Shannon formulation `log₂(2D/W + 1)` vs barraCuda's `log₂(D/W)`. | barraCuda | ludoSpring V46 | **HIGH** — wrong science |  **OPEN** |
-| **PG-26** | `activation.hick` formula variant: barraCuda returns 675.49 for (n=8), Python expects 650. `log₂(N+1)` vs `log₂(N)`. | barraCuda | ludoSpring V46 | **HIGH** — wrong science |  **OPEN** |
-| **PG-27** | `noise.perlin3d` lattice invariant violated: `perlin3d(0,0,0)` returns -0.11, should be 0 by gradient noise definition. | barraCuda | ludoSpring V46 | **MEDIUM** | **OPEN** |
-| **PG-28** | Response schema inconsistency: some methods return `{"result": N}`, others `{"mean": N}` or naked values. Springs need `extract_any_scalar()` workaround. | barraCuda | ludoSpring V46, hotSpring | **MEDIUM** — friction for all springs | **OPEN** |
-| **PG-29** | `tensor.matmul` handle-based API: requires `tensor.create` → get handle → `tensor.matmul` with handles → extract shape. No inline-data path. Multiple springs working around this independently. | barraCuda | wetSpring PG-17, ludoSpring V46 | **MEDIUM** — candidate for `primalspring::composition` helper | **OPEN** |
-| **PG-30** | Squirrel BTSP-only socket: plain JSON-RPC clients get connection reset. No fallback to unauthed health check. | Squirrel | wetSpring PG-14 | **MEDIUM** — blocks inference.* validation | **OPEN** |
-| **PG-31** | ToadStool `compute.dispatch` not registered on JSON-RPC socket. tarpc and BTSP sockets exist but JSON-RPC routing missing. | ToadStool | wetSpring PG-15 | **MEDIUM** — blocks compute validation | **OPEN** |
-| **PG-32** | rhizoCrypt TCP-only transport (no UDS). Blocks 4 composition experiments. | rhizoCrypt | ludoSpring V46 | **MEDIUM** | **OPEN** |
-| **PG-33** | loamSpine startup panic: `block_on` inside async runtime. Blocks exp095. | loamSpine | ludoSpring V46 | **HIGH** — crashes | **RESOLVED** (v0.9.16 — `mdns` 3.0 replaced with `mdns-sd` 0.19; no async-std, no runtime nesting; structurally eliminated, April 20 2026) |
-| **PG-34** | biomeOS `biomeos-types` missing `secret` module — source build fails. | biomeOS | wetSpring V148 | **MEDIUM** — blocks source-based NUCLEUS | **OPEN** |
-| **PG-35** | BearDog connection reset without BTSP: no basic JSON-RPC health mode. `crypto.hash` requires active BTSP session. | BearDog | hotSpring, wetSpring, ludoSpring | **LOW** — handled by `is_skip_error()` | **OPEN** |
-| **PG-36** | `stats.std_dev` N-1 vs N convention: barraCuda uses sample (N-1, Bessel's), some springs use population (N). Both correct; needs documented convention. | barraCuda | wetSpring PG-16 | **LOW** — convention, not bug | **OPEN** |
+| **PG-24** | **6 missing JSON-RPC methods**: `stats.variance`, `stats.correlation`, `linalg.solve`, `linalg.eigenvalues`, `spectral.fft`, `spectral.power_spectrum`. | barraCuda | wetSpring PG-13, healthSpring §19, neuralSpring Gap 11 | **CRITICAL** | **RESOLVED** — Sprint 44 (c7d7d83): all 6 wired + `tensor.matmul_inline` (32→39 methods) |
+| **PG-25** | `activation.fitts` formula variant: Shannon formulation. | barraCuda | ludoSpring V46 | **HIGH** | **RESOLVED** — Sprint 44: corrected to `log₂(D/W + 1)` per MacKenzie 1992 |
+| **PG-26** | `activation.hick` formula variant. | barraCuda | ludoSpring V46 | **HIGH** | **RESOLVED** — Sprint 44: confirmed already uses `log₂(N)` (no change needed) |
+| **PG-27** | `noise.perlin3d` lattice invariant at origin. | barraCuda | ludoSpring V46 | **MEDIUM** | **RESOLVED** — Sprint 44: confirmed already returns 0.0 (no change needed) |
+| **PG-28** | Response schema inconsistency: some methods return `{"result": N}`, others `{"mean": N}`. | barraCuda | ludoSpring V46, hotSpring | **MEDIUM** | **RESOLVED** — Sprint 44: all scalar methods now include `"result"` key |
+| **PG-29** | `tensor.matmul` handle-based API friction. | barraCuda | wetSpring PG-17, ludoSpring V46 | **MEDIUM** | **RESOLVED** — Sprint 44: `tensor.matmul_inline` added as convenience path |
+| **PG-30** | Squirrel BTSP-only socket: plain JSON-RPC clients get connection reset. | Squirrel | wetSpring PG-14 | **MEDIUM** | **RESOLVED** — Squirrel 0497648: first-byte peek auto-detects `{` → plain JSON-RPC fallback |
+| **PG-31** | ToadStool `compute.dispatch` not registered on JSON-RPC socket. | ToadStool | wetSpring PG-15 | **MEDIUM** | **OPEN** — toadStool not pulled (no remote `main`) |
+| **PG-32** | rhizoCrypt TCP-only transport (no UDS). | rhizoCrypt | ludoSpring V46 | **MEDIUM** | **OPEN** — rhizoCrypt S43.5 added doctor diagnostics but UDS is opt-in |
+| **PG-33** | loamSpine startup panic: `block_on` inside async runtime. | loamSpine | ludoSpring V46 | **HIGH** | **RESOLVED** — loamSpine d34100f: `std::thread::spawn` + `oneshot` replaces `spawn_blocking` |
+| **PG-34** | biomeOS `biomeos-types` missing `secret` module. | biomeOS | wetSpring V148 | **MEDIUM** | **OPEN** — biomeOS not pulled (no remote `main`) |
+| **PG-35** | BearDog connection reset without BTSP. | BearDog | hotSpring, wetSpring, ludoSpring | **LOW** | **RESOLVED** — Wave 56 (353c65f): first-byte `{` auto-detect, cleartext bypass for JSON-RPC clients documented |
+| **PG-36** | `stats.std_dev` N-1 vs N convention. | barraCuda | wetSpring PG-16 | **LOW** | **RESOLVED** — Sprint 44: convention metadata included in response |
 
-**Impact summary**: barraCuda is the single biggest blocker (PG-24 through PG-29). Resolving PG-24 (6 missing methods) alone unblocks Level 5 for wetSpring, healthSpring, and neuralSpring. PG-25/PG-26 are science-correctness issues that affect ludoSpring's game math parity.
+**Impact summary (April 20 re-audit)**: barraCuda Sprint 44 resolved PG-24 through PG-29 (6 missing methods + Fitts formula + schema + matmul_inline). Squirrel resolved PG-30 (BTSP auto-detect). BearDog resolved PG-35 (cleartext bypass). loamSpine resolved PG-33 (startup panic). **10 of 13 gaps now RESOLVED.** Remaining: PG-31 (ToadStool), PG-32 (rhizoCrypt UDS), PG-34 (biomeOS types).
 
 ### Absorbed Patterns (April 20, 2026)
 

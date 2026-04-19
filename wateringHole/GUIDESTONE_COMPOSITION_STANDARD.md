@@ -225,10 +225,10 @@ interaction, exit code semantics, and serving pattern are the **same**.
 |--------|-------|----------|----------|
 | primalSpring v0.9.16 | **4 — NUCLEUS works** | 67/67 live NUCLEUS, 41/41 bare, P3 BLAKE3 (18 files), family-aware discovery, protocol tolerance | Level 5: cross-substrate parity |
 | hotSpring v0.6.32 | **5 — Certified** | guideStone-v0.7.0: all 5 properties, cross-substrate parity (Python/CPU/GPU), NUCLEUS additive layer, 128 WGSL shaders, reference implementation | aarch64 CI |
-| healthSpring V56 | **4 — NUCLEUS works** | 49/49 live checks, barraCuda RTX 3070 IPC parity (stats.mean 0.00e0 diff), BLAKE3 P3 (17 files), three-tier harness | barraCuda `stats.variance`/`stats.correlation` missing (§19); BearDog BTSP; NestGate egress fence |
-| wetSpring V148 | **4 — NUCLEUS works** | 31/31 live checks (11 skip), barraCuda GPU IPC parity, handle-based tensor.matmul, cross-atomic pipeline (hash→store→verify), BLAKE3 P3 | 6 missing barraCuda methods (PG-13); Squirrel BTSP (PG-14); ToadStool compute.dispatch (PG-15) |
-| ludoSpring V46 | **4 — NUCLEUS works** | 43 checks (20 bare + 15 IPC + 8 cross-atomic), BLAKE3 P3 (11 files), `call_or_skip` pattern, protocol tolerance | barraCuda response schema (activation.fitts/hick formula variants); rhizoCrypt TCP-only; ~~loamSpine startup panic~~ (PG-33 RESOLVED v0.9.16) |
-| neuralSpring V135 | **3 — Bare works** | 29/29 bare ALL PASS, BLAKE3 P3 (15 files), structured `v.section()` output, FAMILY_ID | 18 barraCuda surface gaps (Gap 11); needs NUCLEUS deployment for Level 4 |
+| healthSpring V56 | **4 — NUCLEUS works** | 49/49 live checks, barraCuda RTX 3070 IPC parity, BLAKE3 P3 (17 files), three-tier harness | NestGate egress fence; barraCuda blockers now RESOLVED (Sprint 44) — re-validate for Level 5 |
+| wetSpring V148 | **4 — NUCLEUS works** | 31/31 live checks (11 skip), cross-atomic pipeline (hash→store→verify), BLAKE3 P3 | barraCuda 6 methods RESOLVED (Sprint 44); Squirrel RESOLVED (PG-30); ToadStool compute.dispatch still OPEN (PG-31) — re-validate for Level 5 |
+| ludoSpring V46 | **4 — NUCLEUS works** | 43 checks (20 bare + 15 IPC + 8 cross-atomic), BLAKE3 P3 (11 files), `call_or_skip` | barraCuda Fitts/schema RESOLVED (Sprint 44); loamSpine RESOLVED (PG-33); rhizoCrypt UDS still OPEN (PG-32) — re-validate for Level 5 |
+| neuralSpring V135 | **3 — Bare works** | 29/29 bare ALL PASS, BLAKE3 P3 (15 files), structured output, FAMILY_ID | barraCuda 6 methods RESOLVED — deploy NUCLEUS from plasmidBin for Level 4 |
 | airSpring v0.10.0 | **0 — Not started** | Pre-delta; 1,364 tests, 90.56% coverage; no guideStone binary | No IPC client; no NUCLEUS wiring |
 | groundSpring V124 | **0 — Not started** | Pre-delta; 1,050+ tests, 92% coverage; no guideStone binary | No IPC client; no NUCLEUS wiring |
 
