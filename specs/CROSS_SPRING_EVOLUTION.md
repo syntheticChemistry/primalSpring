@@ -445,9 +445,9 @@ Phase 11 (done): Provenance Trio Neural API Integration (March 22, 2026)
 Phase 11.1 (done): Live Trio Probing (March 23, 2026)
   → sweetGrass: LIVE — Unix socket + HTTP JSON-RPC, 24 methods, 9 domains, PROV-O response
   → rhizoCrypt: LIVE (TCP only) — HTTP JSON-RPC on :9401/rpc, full DAG lifecycle works
-  → loamSpine: BROKEN — panic in infant_discovery (nested runtime block_on)
+  → loamSpine: ~~BROKEN~~ **RESOLVED** (v0.9.16 — `mdns-sd` migration, April 20 2026)
   → Gap 1: rhizoCrypt TCP-only (no Unix socket, ignores RHIZOCRYPT_SOCKET env var)
-  → Gap 2: loamSpine runtime panic (cannot block_on inside async runtime)
+  → ~~Gap 2: loamSpine runtime panic~~ — **RESOLVED** (v0.9.16): `mdns` → `mdns-sd`, no `block_on`
   → Gap 3: Event type wire format mismatch (struct variants, not strings)
   → Gap 4: braid.create/pipeline.attribute param schemas differ from ipc::provenance
   → Validated: DAG session lifecycle (create → ExperimentStart → Observation → merkle root)
