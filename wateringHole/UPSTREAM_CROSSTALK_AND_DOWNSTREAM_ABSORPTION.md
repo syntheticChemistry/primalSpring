@@ -1,7 +1,7 @@
 # Upstream Primal Cross-Talk & Downstream Absorption Patterns
 
 **Date**: April 16, 2026
-**From**: primalSpring v0.9.15 (Phase 43+)
+**From**: primalSpring v0.9.17 (Phase 45)
 **Phase**: **INTERSTADIAL** — stadial gate cleared, downstream absorption open
 **License**: AGPL-3.0-or-later
 

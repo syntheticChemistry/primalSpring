@@ -1,26 +1,23 @@
-   Compiling primalspring v0.9.15 (/home/eastgate/Development/ecoPrimals/springs/primalSpring/ecoPrimal)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s
-     Running `target/debug/examples/gen_checksums`
 # primalSpring guideStone CHECKSUMS — BLAKE3
-# Generated: 2026-04-18
+# Generated: 2026-04-20
 # Files: 18
 #
 # Verify: primalspring::checksums::verify_manifest()
-c2fd47c891ad3dd7c5eec33ec49e0589cf23a276d8ab9443915fe605b1f1b755  ecoPrimal/src/bin/primalspring_guidestone/main.rs
-8035e0892aca103f1153271e85c67254202992599a9e06c0e362fdac8ae53829  ecoPrimal/src/composition/mod.rs
+890127f634179caed2065bbaf695a0df788c6886dc333f48148b1a991e3480b1  ecoPrimal/src/bin/primalspring_guidestone/main.rs
+d335239aab55d9a72330b6e9db1a2624921161e90657e3bae45a27eec08e61f2  ecoPrimal/src/composition/mod.rs
 6aca6ed37facd99aa731b548a5b9b60cddb04cc192c7dbaa2914c81b6ff4803d  ecoPrimal/src/validation/mod.rs
-7690d190d47137d78d77b01448f1c49426b0296a15b038a5d7f2153b77670be8  ecoPrimal/src/tolerances/mod.rs
+739a67533ad6e08cb8fbdae9c4600c656d504388cfe078791dd58b314cfb8a0f  ecoPrimal/src/tolerances/mod.rs
 d3684263dd357d81a1ad6f5cca02721b13122d2a69dbca75253a5f54dedaa040  ecoPrimal/src/coordination/mod.rs
-000b6d7dc2a7dd530ad3c76b4aac46299b404170113a975575d7c3ebe59674d5  ecoPrimal/src/bonding/mod.rs
+e81c647e105d763f3ea323cf123d18bea1f03a46a6b5864b2b39f4d74439f4fc  ecoPrimal/src/bonding/mod.rs
 cf27ab1adf1763aa7eee43dba409fbf3a8f7dc1b6a8d75a983090c760c9b0ad5  ecoPrimal/src/btsp/mod.rs
 2051e147a7944ec7aefde04575258ae7336a7d6637c626d81dcd84ff7e456c32  ecoPrimal/src/deploy/mod.rs
-863926b7c6b8324e6a4c87ed7cac97be91696d8482cfb9ae7e14e63657a4b273  ecoPrimal/src/checksums.rs
-5250840b7fdec50513bf75c136b60a97538f6e264831b87d73df3fc11cd58e5d  ecoPrimal/Cargo.toml
+2b4bd2e938d738c7822767d7919ff8eeeeeecf3d42625df1fb8b9080c4e512f6  ecoPrimal/src/checksums.rs
+e2a4e75d237cc9f1b363ed60ca4a2823e0edb1c3ebeda2b8aee746d610ec1df4  ecoPrimal/Cargo.toml
 de9357b2d241cf6db89d4dc978ed57db7da32eddb53bd288f09ce7f157af0e7e  graphs/fragments/tower_atomic.toml
 f9dba43fe48a7dd322b448c01c9c8fb5bb0b951a1e5af5220bfca5a9b4bb5ecf  graphs/fragments/node_atomic.toml
 1b7255cc1e336e8da6a142a29b20437c39ecfb58caafe99c4f0a82c5c2c18b75  graphs/fragments/nest_atomic.toml
 2026d37e2c355894f529ae62798ca2019f34717567f524797cc5b6528d2ac846  graphs/fragments/nucleus.toml
 4d0ac417c0ab6b46be57f15153abcb38e85d8799ed378ca8a10925855de340c2  graphs/fragments/meta_tier.toml
 c3025cb87a55bb416a503fa444c23de74660c0b469b8a5591bfad27c6713493d  graphs/fragments/provenance_trio.toml
-e439baaceb050bf6c6d7ecab00bc719a18331f37fea9ee1de6e138c960e6713f  graphs/downstream/downstream_manifest.toml
+2a7d52162e41124774a34b2316953b43d84870e0170e574f379ca85cdd634590  graphs/downstream/downstream_manifest.toml
 8f03b9a6c72825d92c6b7faf0f885f41b809166af79a715ef6d45020b41bdfb3  graphs/downstream/proto_nucleate_template.toml

@@ -178,7 +178,7 @@ if [ "$failed" -gt 0 ]; then
 fi
 
 if $DO_HARVEST; then
-    HARVEST_SCRIPT="$ECO_ROOT/plasmidBin/harvest.sh"
+    HARVEST_SCRIPT="$ECO_ROOT/infra/plasmidBin/harvest.sh"
     if [ -x "$HARVEST_SCRIPT" ]; then
         echo ""
         echo "=== Harvesting into plasmidBin ==="

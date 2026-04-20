@@ -1,7 +1,7 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
 **Date**: April 18, 2026
-**From**: primalSpring v0.9.15
+**From**: primalSpring v0.9.17
 **License**: AGPL-3.0-or-later
 
 ---
@@ -567,7 +567,7 @@ required = true                   # GPU/CPU math execution
 by_capability = "tensor"
 ```
 
-### Proto-Nucleate Absorption Workflow (v0.9.15 — guideStone Pattern)
+### Proto-Nucleate Absorption Workflow (v0.9.17 — guideStone Pattern)
 
 **Proto-nucleate graphs are self-validating NUCLEUS compositions.** Each graph
 includes a **guideStone node** — a domain-specific self-validation entry point

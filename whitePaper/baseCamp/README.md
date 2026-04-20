@@ -55,14 +55,14 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | Deployment graph sweep, Tower Atomic LAN probe, L0 routing matrix, L2 dual-tower ionic, L3 covalent mesh backup |
 | 16 | Composition Parity | exp094 | Does full NUCLEUS composition produce correct results via IPC? 19/19 checks. |
-| 17 | Cross-Architecture Deployment | exp095–096 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? 6/9 checks. |
+| 17 | Cross-Architecture Deployment | exp095–096 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? **15/15 checks.** |
 
 ## Current State (v0.9.17)
 
 | Metric | Value |
 |--------|-------|
 | Experiments | 75 (17 tracks) |
-| Total tests | **570** (unit + integration + doc-tests + proptest) |
+| Total tests | **631** (585 passed + 46 ignored; unit + integration + doc-tests + proptest) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
@@ -154,9 +154,35 @@ their own guideStone binaries.
 - hotSpring v0.6.32: **Level 5 — Certified** (guideStone-v0.7.0)
 - healthSpring V53, neuralSpring V133, wetSpring V145, ludoSpring V44: **Level 1** (validation exists)
 - airSpring v0.10.0, groundSpring V124: **Level 0** (not started)
-- primalSpring v0.9.17: **Level 4** (67/67 live NUCLEUS, 41/41 bare, BLAKE3 P3, genomeBin v5.0)
+- primalSpring v0.9.17: **Level 4** (67/67 live NUCLEUS, 41/41 bare, BLAKE3 P3, genomeBin v5.1)
 
 See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
+
+## What Changed — Phase 45 (Deployment Validation + Upstream Absorption)
+
+### Upstream Evolution Absorbed (April 19–20, 2026)
+
+Pulled and validated all upstream primals. Key fixes absorbed:
+- **toadStool**: armv7 `usize` overflow fixed (cfg `target_pointer_width` gating for 8GB→2GB on 32-bit)
+- **biomeOS**: armv7/aarch64 rebuilt via correct workspace binary target (`biomeos-unibin`)
+- **nestgate**: cross-arch armv7 target restored, JWT secret hardening
+- **coralReef** iter84: CLI changed `--port` → `--rpc-bind`, absorbed into `start_primal.sh`
+- **beardog** HSM session 43: BTSP production mode requires `BEARDOG_FAMILY_SEED` env var
+- **squirrel, songbird, petalTongue**: upstream evolutions pulled and validated
+
+### Full Deployment Validation
+
+| Environment | Result | Notes |
+|-------------|--------|-------|
+| Local NUCLEUS (x86_64) | **12/12 alive** | Fixed beardog FAMILY_SEED, coralreef --rpc-bind |
+| benchScale Docker (x86_64) | **12/12 alive** | Songbird security provider configured, nestgate JWT secret |
+| Remote fetch simulation | **13/13 checksums verified** | Simulated GitHub clone, BLAKE3 all-match |
+| Pixel payload (aarch64) | **13 binaries staged** | ELF 64-bit ARM, statically linked, stripped |
+
+### genomeBin v5.1 Final State
+
+46 binaries across 6 target triples. Tier 1 (must-ship): 39/39 complete.
+`build_ecosystem_genomeBin.sh` is now the canonical build script, replacing `build_ecosystem_musl.sh`.
 
 ## What Changed — Phase 42–43 (Multi-Tier Genetics + Cross-Arch Deployment)
 

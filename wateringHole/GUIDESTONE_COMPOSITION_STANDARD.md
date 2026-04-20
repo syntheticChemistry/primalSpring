@@ -2,7 +2,7 @@
 
 **Date**: April 20, 2026
 **Version**: v1.2.0
-**From**: primalSpring v0.9.16
+**From**: primalSpring v0.9.17
 **License**: AGPL-3.0-or-later
 **Reference implementation**: hotSpring-guideStone-v0.7.0
 
@@ -223,7 +223,7 @@ interaction, exit code semantics, and serving pattern are the **same**.
 
 | Spring | Level | Evidence | Blockers |
 |--------|-------|----------|----------|
-| primalSpring v0.9.16 | **4 — NUCLEUS works** | 67/67 live NUCLEUS, 41/41 bare, P3 BLAKE3 (18 files), family-aware discovery, protocol tolerance | Level 5: cross-substrate parity |
+| primalSpring v0.9.17 | **4 — NUCLEUS works** | 67/67 live NUCLEUS, 41/41 bare, P3 BLAKE3 (18 files), family-aware discovery, protocol tolerance, genomeBin v5.1 (46 binaries / 6 targets) | Level 5: cross-substrate parity |
 | hotSpring v0.6.32 | **5 — Certified** | guideStone-v0.7.0: all 5 properties, cross-substrate parity (Python/CPU/GPU), NUCLEUS additive layer, 128 WGSL shaders, reference implementation | aarch64 CI |
 | healthSpring V56 | **4 — NUCLEUS works** | 49/49 live checks, barraCuda RTX 3070 IPC parity, BLAKE3 P3 (17 files), three-tier harness | NestGate egress fence; barraCuda blockers now RESOLVED (Sprint 44) — re-validate for Level 5 |
 | wetSpring V148 | **4 — NUCLEUS works** | 31/31 live checks (11 skip), cross-atomic pipeline (hash→store→verify), BLAKE3 P3 | **All blockers RESOLVED** — ToadStool PG-31 fixed (S174), barraCuda, Squirrel all clear — re-validate for Level 5 |

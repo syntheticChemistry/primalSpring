@@ -360,10 +360,12 @@ hold encrypted-at-rest secrets, enabling zero-knowledge authentication.
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.9.17 | `handoffs/PRIMALSPRING_PHASE45_DEPLOYMENT_VALIDATION_HANDOFF_APR2026.md` | Apr 20 | **Phase 45**: Deployment validation (local 12/12, benchScale 12/12, remote 13/13), upstream evolution absorbed, CLI audit, composition patterns, neuralAPI deployment |
+| v0.9.17 | `handoffs/PRIMALSPRING_V0917_GENOMBIN_CROSS_ARCH_HANDOFF_APR2026.md` | Apr 19 | **Phase 44→45**: genomeBin v5.1, 46 cross-arch binaries (6 targets, Tier 1 39/39), build_ecosystem_genomeBin.sh |
 | v0.9.15 | `GRAPH_CONSOLIDATION_AND_NUCLEUS_DEPLOYMENT_HANDOFF_APR16_2026.md` | Apr 16 | **Graph consolidation handoff**: 78→56 TOMLs, template+manifest, fragment-first `resolve = true`, per-spring action items |
 | v0.9.15 | `STADIAL_PARITY_GATE_APR16_2026.md` | Apr 16 | **Stadial gate cleared**: 13/13 primals at modern async Rust parity. Interstadial standards defined. |
 | v0.9.15 | `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` | Apr 16 | Updated: interstadial PR checklist, downstream absorption open |
-| v0.9.15 | This README | Apr 16 | **Phase 43+**: Multi-tier genetics, BTSP Phase 3, cross-arch Pixel deployment, biomeOS composition patterns, stadial gate cleared, graph consolidation (78→56), fragment-first composition |
+| v0.9.17 | This README | Apr 20 | **Phase 45**: genomeBin v5.1, deployment validation, upstream absorption, CLI audit |
 | v0.9.3 | `PRIMALSPRING_V093_MIXED_COMPOSITION_LIVE_VALIDATION_HANDOFF_APR07_2026.md` | Apr 7 | **Phase 26**: Particle model, layered validation (L0-L3), 17 sketch graphs, exp091-093, live Tower Atomic probes, 6 GAP-MATRIX items, primal team work blurbs |
 
 ## Archived Handoffs

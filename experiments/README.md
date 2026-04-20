@@ -88,7 +88,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 12 | Multi-Node Bonding + Federation | **Done** (BondType 5 variants, BondingPolicy, 4 multi-node graphs, STUN tiers) |
 | 12.1 | Ecosystem Absorption Wave 1 | **Done** (deny.toml, cast lints, ValidationSink, exit_code_skip_aware, proptest_ipc, primal_names, circuit breaker — 303 tests) |
 | 12.2 | Ecosystem Absorption Wave 2 | **Done** (normalize_method, check_relative, NdjsonSink, is_recoverable, Transport, OnceLock probes, missing_docs deny, release gate — 360 tests) |
-| 13 | Cross-Gate Deployment Tooling | **Done** (build_ecosystem_musl.sh, prepare_spore_payload.sh, validate_remote_gate.sh, exp073, exp074, exp063 cross-device) |
+| 13 | Cross-Gate Deployment Tooling | **Done** (build_ecosystem_musl.sh → superseded by `build_ecosystem_genomeBin.sh` in Phase 44; prepare_spore_payload.sh, validate_remote_gate.sh, exp073, exp074, exp063 cross-device) |
 | 14 | Deep Debt + Builder Pattern + Full Provenance | **Done** (builder `.run()`, all experiments with `with_provenance()`, validation/tests.rs extracted, zero `#[allow()]`, zero `.unwrap()` in experiments) |
 | 15 | Cross-Ecosystem Absorption | **Done** (slug constants, unwrap/expect discipline, launcher smart refactor, CONTRIBUTING.md, SECURITY.md, capability-based env naming) |
 | 16 | Deep Debt Audit + Centralized Tolerances | **Done** (comprehensive audit, centralized trio/port tolerances, deduplicated capability parsing, hardcoding→capability-based evolution) |

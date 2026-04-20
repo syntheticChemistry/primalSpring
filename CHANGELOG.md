@@ -3,12 +3,13 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.9.17] — Phase 44: Full genomeBin Cross-Architecture Depot (2026-04-19)
+## [0.9.17] — Phase 45: genomeBin Cross-Architecture Depot + Deployment Validation (2026-04-20)
 
 ### Milestone
-**42 binaries across 6 target triples.** plasmidBin evolved from flat x86_64+aarch64
-layout to full genomeBin `primals/{target-triple}/` directory structure per ecoBin
-Architecture Standard v3.0.
+**46 binaries across 6 target triples (Tier 1 39/39).** plasmidBin evolved from flat
+x86_64+aarch64 layout to full genomeBin `primals/{target-triple}/` directory structure
+per ecoBin Architecture Standard v3.0. Full deployment validation: local 12/12,
+benchScale Docker 12/12, remote fetch sim 13/13 checksums verified.
 
 ### Added
 - `build_ecosystem_genomeBin.sh` — replaces `build_ecosystem_musl.sh`, full 9-target
@@ -22,8 +23,8 @@ Architecture Standard v3.0.
 - Backward-compat symlinks: `primals/{binary}` -> `x86_64-unknown-linux-musl/{binary}`
 
 ### Changed
-- `plasmidBin/manifest.toml` version 5.0.0 (genomeBin format), full target matrix
-- `plasmidBin/checksums.toml` — BLAKE3 per target triple for all 42 binaries
+- `plasmidBin/manifest.toml` version 5.1.0 (genomeBin format), full target matrix
+- `plasmidBin/checksums.toml` — BLAKE3 per target triple for all 46 binaries
 - `plasmidBin/start_primal.sh` — auto-detects target triple from `uname`
 - `plasmidBin/deploy_pixel.sh` — resolves from `aarch64-unknown-linux-musl/`
 - `plasmidBin/fetch.sh` — target-triple-aware binary resolution
@@ -31,10 +32,25 @@ Architecture Standard v3.0.
 - `benchScale/deploy-ecoprimals.sh` — resolves from genomeBin layout, symlink-safe
 - `wateringHole/genomeBin/manifest.toml` — v5.0.0 with full coverage matrix
 
-### Documented Gaps
-- nestgate/skunkbat: lib-only on cross-targets (workspace binary structure)
-- toadstool on armv7: 32-bit usize overflow (4GB allocation constant)
-- biomeos on armv7: 32-bit usize overflow (1 << 53 in cast.rs)
+### Phase 45 — Upstream Evolution Absorbed
+- toadStool armv7 usize overflow fixed upstream (cfg target_pointer_width gating)
+- biomeOS armv7/aarch64 rebuilt with correct workspace binary target (`biomeos-unibin`)
+- nestgate cross-arch builds restored (armv7 target installed)
+- coralReef iter84 absorbed: `--port` → `--rpc-bind` CLI change
+- beardog HSM session 43: BTSP FAMILY_SEED env var requirement documented
+- squirrel, songbird, petalTongue upstream evolutions pulled and validated
+
+### Phase 45 — Deployment Validation
+- `start_primal.sh`: auto-set BEARDOG_FAMILY_SEED from --family-id, coralreef --rpc-bind
+- Local NUCLEUS: 12/12 primals alive (x86_64-unknown-linux-musl)
+- benchScale Docker: 12/12 primals alive, songbird security provider configured
+- Remote fetch simulation: 13/13 x86_64 binaries, checksums verified
+- Pixel payload staged: 13 aarch64-unknown-linux-musl binaries validated
+
+### Documented Gaps (Reduced)
+- nestgate/skunkbat: lib-only on cross-targets (workspace binary structure — upstream fix needed)
+- macOS: cargo check proves pure Rust, full link requires osxcross
+- RISC-V: cargo check pass, full link requires complete musl sysroot
 
 ## [0.9.16+] — Phase 44: Deep Debt Evolution + Capability-Based Discovery (2026-04)
 

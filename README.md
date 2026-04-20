@@ -330,7 +330,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
 - **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — modeling end-to-end data flow through primal compositions.
 - **13/13 critical experiments ALL PASS** — 75 total experiments across 17 tracks.
-- **42 cross-architecture binaries** (6 target triples) — genomeBin v5.0, zero C dependencies.
+- **46 cross-architecture binaries** (6 target triples, Tier 1 39/39) — genomeBin v5.1, zero C dependencies.
 
 ## Fragment-First Graph Consolidation (April 16, 2026)
 
@@ -338,7 +338,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 601 tests pass, 0 clippy warnings.
+- **Zero-regression**: All 631 tests (585 passed + 46 ignored), 0 clippy warnings.
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 

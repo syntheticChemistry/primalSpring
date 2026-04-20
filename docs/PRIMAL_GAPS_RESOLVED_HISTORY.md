@@ -52,7 +52,7 @@ See `PRIMAL_GAPS.md` for active/open gaps.
 | CR-04 | coralReef | Typed driver errors Waves 1–3 (`PciDiscoveryError`/`ChannelError`/`DevinitError`) | Iter 78 (April 10 pull) |
 | TS-04 | toadStool | `ollama.*`/`inference.*` semantic mappings removed — inference is Squirrel's domain | April 10 (inference abstraction) |
 
-**50 gaps resolved** across the full cycle (includes LS-03 reconciliation, BC-05 GPU panic, CR-03 BTSP Phase 2, TS-04 inference cleanup). **10 open** (0 high, 2 medium, 8 low).
+**50 gaps resolved** across the full cycle (includes LS-03 reconciliation, BC-05 GPU panic, CR-03 BTSP Phase 2, TS-04 inference cleanup). **3 open** (0 high, 0 medium, 3 low — remaining are cross-arch link gaps: nestgate/skunkbat workspace binaries, macOS osxcross, RISC-V sysroot).
 3 downstream items (ludospring-ipc-surface, ludospring-plasmidbin, esotericwebb-transport) reclassified — not NUCLEUS scope.
 10 build/test debt items resolved (April 6). 3 trio witness wire gaps (April 7).
 **April 9 wave 1**: PT-08/PT-09, CR-01/CR-02/CR-03 added.

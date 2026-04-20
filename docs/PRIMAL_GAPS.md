@@ -31,7 +31,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > stadial pass: `deny.toml` license fix (BSD-3-Clause for `subtle`), exp094 license
 > inheritance, all `#[allow(` migrated to `#[expect(` with reasons, clippy 0 warnings,
 > integration test API drift fixed, experiment ID registry updated (67 → 75),
-> 570 tests passing. `Arc<dyn ValidationSink>` justified (open extensibility + generic `NdjsonSink<W>`).
+> 631 tests (585 passed + 46 ignored). `Arc<dyn ValidationSink>` justified (open extensibility + generic `NdjsonSink<W>`).
 >
 > Downstream springs may resume absorption.
 >
@@ -41,14 +41,14 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
 > TCP is opt-in only for Songbird federation (`--port 8080` enables covalent mesh).
 >
-> **Cross-Architecture Pixel Deployment (April 14–15)**: **14/15 exp096 checks PASS.**
+> **Cross-Architecture Pixel Deployment (April 14–15, updated April 20)**: **15/15 exp096 checks PASS.**
 > biomeOS-managed Tower (BearDog + Songbird) runs on Pixel 8a (aarch64/GrapheneOS/Titan M2).
 > All critical composition gaps RESOLVED:
 > - BearDog: protocol auto-detection on TCP (peek first byte: `{` = JSON-RPC, else BTSP)
 > - biomeOS: TCP cascade in `primal_start_capability`, `tcp_port_registry`, TCP-aware socket wiring
 > - Songbird: `tcp://` scheme parsing in IPC endpoint discovery
 > - Neural API `capability.call` routes crypto/genetic/security/beacon to BearDog over TCP
-> Remaining 4 failures: 3 reporting gaps (capabilities_count, transport_security, generation echo) + 1 expected (HSM/Titan M2)
+> Previous 4 failures now resolved: 3 reporting gaps fixed, HSM/Titan M2 cfg-gated upstream (beardog Session 43)
 >
 > **Live validation (April 10 — NUCLEUS polish, session 2)**:
 > - TCP ports: **0** (was 12 across 8 primals)
