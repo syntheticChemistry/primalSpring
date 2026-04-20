@@ -257,7 +257,7 @@ ludoSpring composition (pure — ludospring ecoBin)
 **What ludoSpring evolves for the ecosystem**:
 - 60Hz composition budget → tests graph execution latency limits
 - Three-tier validation + guideStone → canonical Python→Rust→IPC composition→`ludospring_guidestone`
-- guideStone readiness 4 (V47): `ludospring_guidestone` three-tier — 20 bare + 15 IPC + 8 NUCLEUS cross-atomic (BearDog crypto, NestGate roundtrip, pipeline). guideStone standard v1.2.0, upstream `call_or_skip`/`is_skip_error`, v1.2.0 tolerance ordering, BLAKE3 Property 3, genomeBin v5.1. All blockers resolved
+- guideStone readiness 4, **live NUCLEUS validated** (V47): `ludospring_guidestone` three-tier — **54/54 checks, exit 0** (31 bare + 15 IPC + 8 NUCLEUS cross-atomic: BearDog crypto, NestGate roundtrip, pipeline). guideStone standard v1.2.0, upstream `call_or_skip`/`is_skip_error`, v1.2.0 tolerance ordering, BLAKE3 Property 3, genomeBin v5.1. GAP-11 (barraCuda formulation divergence) documented
 - AI narration under latency → tests Squirrel real-time performance
 - Session lifecycle (create/save/restore/fork) → benefits any stateful composition
 - Composition drift detection → `composition_targets.json` golden chain
