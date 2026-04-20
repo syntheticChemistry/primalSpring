@@ -148,8 +148,9 @@ ecosystem-wide. This established the delegation pattern.
 eliminated `reqwest`, switched to `ureq` + `rustls-no-provider` + `rustls-rustcrypto`.
 `cargo tree -i ring` returns empty across all 13 primals. **13/13 primals are ring-free
 in builds.** **Stadial policy (April 16)**: ghost entries in `Cargo.lock` are no longer
-"managed" — they are debt. Songbird still has `ring` 0.17.14 as a transitive lockfile
-stanza; this must be eliminated (trace puller, swap or remove).
+"managed" — they are debt. Songbird has `ring` 0.17.14 as a transitive lockfile
+ghost (via `rustls-webpki` optional dep; NOT compiled in any build config).
+Blocked on upstream `rustls-rustcrypto` crates.io release. See Songbird `deny.toml`.
 
 ### Class 2: GPU/Vulkan Dynamic Linking — RESOLVED (Node Atomic Delegation)
 
@@ -489,7 +490,7 @@ Each maps to a specific primal team for resolution.
 
 **Test failures to investigate**:
 - **barraCuda**: 14 ESN v2 model tests + tensor scalar ops — likely numerical precision or initialization
-- **Songbird**: `songbird-orchestrator` has 3 `E0308` type mismatches in test code — needs test update
+- ~~**Songbird**: `songbird-orchestrator` has 3 `E0308` type mismatches~~ **RESOLVED** (Wave 152 — compiles clean with `--tests`, 7,380 tests passing)
 - **primalSpring**: 5 failures in composition experiments — likely stale expected values after primal evolution
 - **Others**: 1-3 failures each, minor, not blocking deployment
 
@@ -943,9 +944,11 @@ registration (blocked on biomeOS Neural API), coverage 89.6%→90%, `PeekedStrea
 Compute socket resolution fully functional via BM-11 (`prefers_jsonrpc` flag + `.jsonrpc.sock`
 sibling preference). **All tractable ToadStool gaps resolved.**
 
-**Songbird** — Wave 146-147: stadial dyn audit, mock isolation, hardcoded elimination,
-dead feature removal. SB-02: `ring` lockfile ghost — **STADIAL DEBT** (Wave 146 analysis
-in progress, not yet eliminated from `Cargo.lock`). SB-03: `sled` no longer in lockfile.
+**Songbird** — Wave 146-152: stadial dyn audit, mock isolation, hardcoded elimination,
+dead feature removal, PG-21 persistent NDJSON, PG-37 capability-first routing, dead deps
+removed (slab, wasi), yaml feature stripped, env-dependent test fixed, 7,380 tests.
+SB-02: `ring` lockfile ghost — blocked on upstream `rustls-rustcrypto` release (not compiled).
+SB-03: **RESOLVED** (Wave 135 — `sled` fully eliminated from workspace and Cargo.lock).
 Discovery abstraction layer refactored (adapters enum dispatch). `deny.toml` hardened.
 
 **petalTongue** — PT-10 `--socket` **RESOLVED**, PT-11 domain symlinks **RESOLVED** (`ui`, `interaction`, `visualization`).
@@ -1016,8 +1019,8 @@ needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esoteri
 - **BTSP-CLIENT** — primalSpring BTSP client handshake implemented (`btsp_handshake.rs`), integrated into `Transport::connect()` with auto-detection via `security_mode_from_env()`.
 
 **Stadial Debt** (blocks parity gate — must resolve before next interstadial):
-3. **SB-02** — `ring` in Songbird `Cargo.lock` (trace + eliminate transitive puller)
-4. **SB-03** — `sled` default-on in Songbird orchestrator/sovereign-onion (remove from defaults)
+3. **SB-02** — `ring` in Songbird `Cargo.lock` (lockfile ghost only — not compiled; blocked on upstream `rustls-webpki` release)
+4. ~~**SB-03**~~ **RESOLVED** (Wave 135 — `sled` fully eliminated from workspace and Cargo.lock)
 5. **PT-09** — petalTongue Phase 2 stub (warn-only, no enforcement)
 6. ~~**PT-DOMAINS**~~ **RESOLVED** (April 10 — `ui.sock` + `interaction.sock` symlinks added)
 7. ~~**CR-03**~~ **RESOLVED** (Iter 78 — `guard_connection()` with real BearDog RPC, degraded when absent)
