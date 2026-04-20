@@ -1,7 +1,7 @@
 # primalSpring — Composition Guidance for Springs and Primals
 
-**Date**: April 18, 2026
-**From**: primalSpring v0.9.17
+**Date**: April 20, 2026
+**From**: primalSpring v0.9.17 (Phase 45)
 **License**: AGPL-3.0-or-later
 
 ---
@@ -909,6 +909,72 @@ Springs consume meta-tier primals without depending on specific atomic tiers:
 - NUCLEUS + full meta-tier gives the complete platform
 
 This separation ensures springs can start minimal and compose up.
+
+---
+
+## Validated Composition Pipeline (April 20, 2026)
+
+The full pipeline from NUCLEUS certification through spring validation to garden
+deployment has been proven end-to-end:
+
+### Step 1: Certify NUCLEUS (primalSpring)
+
+Deploy all primals from `plasmidBin/primals/{target-triple}/`. Run
+`primalspring_guidestone` — it checks 6 layers: bare properties, discovery,
+atomic health, capability parity, cross-atomic pipeline, and bonding/BTSP.
+
+**Result (v0.9.17):** 84/86 checks pass, 12/12 primals, 11 capabilities.
+
+### Step 2: Validate Domain Science (domain spring)
+
+Each spring runs its guidestone against the live NUCLEUS. The guidestone has
+three tiers:
+
+| Tier | Scope | Dependencies |
+|------|-------|-------------|
+| 1 | Local math (no IPC) | None — always green in CI |
+| 2 | IPC-wired (call primals by capability) | Subset of NUCLEUS |
+| 3 | Full NUCLEUS pipeline | Complete NUCLEUS |
+
+**Result (ludoSpring):** 152/152 local, 30/31 composed, 11/11 pipeline.
+
+### Step 3: Compose Garden Product (garden)
+
+Gardens compose primals into products via biomeOS deploy graphs. They use BYOB
+(Bring Your Own Binary) from `plasmidBin/`. Gardens own UX, degradation, and
+product-level composition logic.
+
+**Result (esotericWebb):** 8 product graphs + 7 proto sketches validated.
+All IPC flows proven: `game.*`, `visualization.*`, `compute.*`.
+
+### Gaming Niche Validation Graph
+
+`gaming_niche_validate.toml` in `graphs/spring_validation/` structurally
+asserts the gaming niche composition: Tower + ludoSpring (game) + petalTongue
+(viz) + optional toadStool (compute/display).
+
+### Discovery Pattern
+
+ludoSpring's `discover_primals()` probes all `.sock` files in
+`$XDG_RUNTIME_DIR/biomeos/` using `lifecycle.status` with `health.check`
+fallback. Capabilities are inferred from the response `capabilities` field
+or from well-known socket name prefixes.
+
+### Known Gaps
+
+| Gap | Status | Resolution / Workaround |
+|-----|--------|-------------------------|
+| barraCuda `tensor.matmul` returns nested arrays | **RESOLVED** | `validate_parity_vec` flattens nested arrays; use `tensor.matmul_inline` with `lhs`/`rhs` params |
+| BearDog `crypto.sign` expects base64 message | **RESOLVED** | Encode raw message with `base64::STANDARD` before sending |
+| barraCuda `math.dot`/`math.l2_norm` don't exist | **RESOLVED** | Use `stats.mean`, `stats.variance`, `activation.fitts` (actual API surface) |
+| Capability symlinks missing after launch | **RESOLVED** | `start_primal.sh` now creates symlinks automatically via `create_capability_symlinks()` |
+| Webb needs `game.record_action/push_scene/query_vertices` | **RESOLVED** | Wired in ludoSpring barracuda IPC handler |
+| Songbird name-resolution | Upstream | Use capability-based discovery, not primal names |
+| BearDog ed25519 sign→verify roundtrip | Upstream | `crypto.sign` uses internal key without exposing `public_key`; recommend adding `crypto.default_public_key` |
+| rhizocrypt/sweetgrass BTSP-first | Upstream | Accept unauthenticated `health.check` before BTSP handshake |
+| loamspine socket naming | Upstream | Use family-qualified naming or register capability symlinks |
+| petalTongue spring format | Upstream | Align `visualization.render` params with `SpringDataAdapter` |
+| biomeOS HTTP-on-UDS | Expected | Classify as reachable-but-incompatible (SKIP, not FAIL) |
 
 ---
 

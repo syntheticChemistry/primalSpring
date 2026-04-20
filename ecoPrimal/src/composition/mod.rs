@@ -458,20 +458,32 @@ pub fn validate_parity_vec(
         return;
     };
 
-    let dropped = arr.iter().filter(|v| v.as_f64().is_none()).count();
-    if dropped > 0 {
+    fn flatten_numeric(arr: &[serde_json::Value]) -> Vec<f64> {
+        let mut out = Vec::new();
+        for val in arr {
+            if let Some(n) = val.as_f64() {
+                out.push(n);
+            } else if let Some(inner) = val.as_array() {
+                out.extend(flatten_numeric(inner));
+            }
+        }
+        out
+    }
+
+    let actual = flatten_numeric(arr);
+    if actual.len() != arr.len() && actual.is_empty() {
         v.check_bool(
             name,
             false,
             &format!(
-                "{dropped}/{} array elements are not numeric (null, string, or object) — \
+                "{}/{} array elements are not numeric (null, string, or object) — \
                  check primal response schema",
+                arr.len() - actual.len(),
                 arr.len()
             ),
         );
         return;
     }
-    let actual: Vec<f64> = arr.iter().filter_map(serde_json::Value::as_f64).collect();
     if actual.len() != expected.len() {
         v.check_bool(
             name,

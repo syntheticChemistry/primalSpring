@@ -1653,5 +1653,43 @@ Patterns independently invented by 2+ springs, now absorbed into primalSpring:
 
 ---
 
+## Gap Refinement — v0.9.17 / Phase 45 (April 20, 2026)
+
+### Resolved Locally
+
+| Gap | Was | Fixed | Validated |
+|-----|-----|-------|-----------|
+| barraCuda `tensor.matmul` returns nested 2D array | guidestone FAIL | `validate_parity_vec` flattens nested arrays | 86/86 guidestone PASS |
+| BearDog `crypto.sign` expects base64-encoded message | guidestone FAIL (symbol 95 at offset 10) | Encode raw message with standard base64 before sending | `crypto:ed25519_sign` PASS |
+| barraCuda `math.dot`/`math.l2_norm` don't exist | exp068 3/6 | Rewired to `stats.mean`, `stats.variance`, `activation.fitts` | exp068 6/6 PASS |
+| exp067 `live_tower_health` uses wrong discovery key | exp067 18/19 SKIP | Query `security`/`crypto` capabilities instead of `health.liveness` | exp067 18/19 (1 expected SKIP) |
+| Capability symlinks not created by `start_primal.sh` | Manual `ln -sf` required for discovery | `create_capability_symlinks()` runs post-launch | 12 capability categories auto-linked |
+| Webb expects `game.record_action`, `game.push_scene`, `game.query_vertices` | Not implemented in ludoSpring | Wired in barracuda IPC handler with session DAG tracking | 22/22 IPC tests pass |
+
+### Remaining Upstream Gaps (Actionable for Primal Teams)
+
+| Primal | Gap | Impact | Recommended Fix |
+|--------|-----|--------|-----------------|
+| **BearDog** | `crypto.sign` uses internal `default_signing_key` whose `public_key` is not exposed | Cannot do sign→verify roundtrip through IPC | Add `crypto.default_public_key` method or include `public_key` in sign response |
+| **BearDog** | URL-safe base64 vs standard base64 in ed25519 responses | Consumers must tolerate both encodings | Standardize on one; recommend standard base64 |
+| **rhizocrypt** | Resets connection without BTSP handshake | `health.check` probes fail with EPIPE/ECONNRESET | Accept unauthenticated `health.check` before BTSP |
+| **sweetgrass** | Same BTSP-first behavior | Same | Same |
+| **loamspine** | Socket naming doesn't follow `{primal}-{family}.sock` pattern | `capability:ledger` discovery fails | Use family-qualified naming or register capability symlinks |
+| **biomeOS** | HTTP-on-UDS transport | JSON-RPC probes get HTTP 400 | Expected; classify as SKIP. Future: JSON-RPC adapter or HTTP-aware probe |
+| **Songbird** | Routes by capability, not primal name | `resolve("beardog")` fails; `resolve("security")` works | Document capability-first routing as the standard |
+| **barraCuda** | `tensor.create`/`tensor.matmul` require GPU (No GPU available) | Handle-based tensor ops fail on headless/CI hosts | Fall back to CPU for small tensors, or document GPU requirement |
+
+### Scorecard After Refinement
+
+| Component | Before | After |
+|-----------|--------|-------|
+| guidestone | 84/86 PASS (2 FAIL) | **86/86 PASS** (6 SKIP — BTSP/loamspine expected) |
+| exp067 | 18/19 (1 SKIP) | **18/19** (1 expected SKIP — game primal not deployed) |
+| exp068 | 3/6 (3 FAIL) | **6/6 PASS** |
+| exp072 | 24/31 (2 FAIL, 5 SKIP) | **24/31** (2 expected FAIL — biomeOS HTTP + ludoSpring not deployed) |
+| ludoSpring game.* methods | 12 methods | **15 methods** (+record_action, push_scene, query_vertices) |
+
+---
+
 *Resolved gaps, compliance matrices, and historical evolution snapshots are in
 [`PRIMAL_GAPS_RESOLVED_HISTORY.md`](PRIMAL_GAPS_RESOLVED_HISTORY.md).*

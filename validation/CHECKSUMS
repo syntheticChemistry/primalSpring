@@ -3,8 +3,8 @@
 # Files: 18
 #
 # Verify: primalspring::checksums::verify_manifest()
-890127f634179caed2065bbaf695a0df788c6886dc333f48148b1a991e3480b1  ecoPrimal/src/bin/primalspring_guidestone/main.rs
-d335239aab55d9a72330b6e9db1a2624921161e90657e3bae45a27eec08e61f2  ecoPrimal/src/composition/mod.rs
+d6c970b3f1144507c4672c43fe7134addfbfeca75b22d7a1c1b84608fe80e78c  ecoPrimal/src/bin/primalspring_guidestone/main.rs
+b2f8fc421c817697daef597822ff2d7cc99cdbb79e54ddc9f1d0fd7b2dc05591  ecoPrimal/src/composition/mod.rs
 6aca6ed37facd99aa731b548a5b9b60cddb04cc192c7dbaa2914c81b6ff4803d  ecoPrimal/src/validation/mod.rs
 739a67533ad6e08cb8fbdae9c4600c656d504388cfe078791dd58b314cfb8a0f  ecoPrimal/src/tolerances/mod.rs
 d3684263dd357d81a1ad6f5cca02721b13122d2a69dbca75253a5f54dedaa040  ecoPrimal/src/coordination/mod.rs

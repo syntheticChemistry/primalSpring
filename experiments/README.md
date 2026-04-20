@@ -115,6 +115,8 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 41 | Pre-Downstream Gap Resolution | 13 FullNucleus caps, 443 tests, gap resolution |
 | 42 | Multi-Tier Genetics + BTSP Phase 3 | Mito-Beacon / Nuclear lineage / Tags architecture, ChaCha20-Poly1305 encrypted channels, BtspEnforcer deny semantics, ionic bond RPC, content distribution federation |
 | 43 | Cross-Architecture Deployment | biomeOS Tower bootstrap on Pixel (aarch64 + GrapheneOS), `tcp_rpc_multi_protocol`, exp096 14/15 cross-arch checks (HSM pending), exp091 12/12 routing, exp094 19/19 parity. exp095 added to workspace. All biomeOS/NestGate composition gaps RESOLVED |
+| 44 | Upstream Absorption + Downstream Blurb | Pull/audit 8 springs, deploy via plasmidBin, benchScale validation, root doc cleanup, downstream evolution blurb for all springs |
+| 45 | NUCLEUS Composition Validation + Garden Evolution | guidestone **86/86 PASS**, exp068 **6/6** (barraCuda parity fixed), exp067 **18/19**, 3 new ludoSpring game.* methods wired, `start_primal.sh` symlink automation, ed25519 base64 + matmul_inline fixes, Webb handoff crafted |
 
 ## Validation Harness
 

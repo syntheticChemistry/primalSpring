@@ -32,7 +32,7 @@ back upstream to primals and primalSpring.
   9 profiles + 4 patterns + 4 spring validation + 2 cross-spring + 5 bonding +
   2 chaos + 2 spring deploy + 3 downstream + 5 multi-node + 11 root-level +
   1 federation)
-- **docs/** — structured gap registry (`PRIMAL_GAPS.md`)
+- **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
 - **tools/** — nucleus launcher, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
@@ -73,10 +73,11 @@ v0.9.17 Phase 45 — 631 tests (585 passed + 46 ignored), 75 experiments (17 tra
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
-Live validation: **12/12 primals ALIVE**, **19/19 exp094 composition parity PASS**,
-**12/12 exp091 routing matrix PASS**, **14/15 exp096 cross-arch PASS** (HSM pending).
-All composition gaps RESOLVED (7/7 biomeOS + NestGate). Full NUCLEUS validated
-across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
+Live validation: **12/12 primals ALIVE**, **86/86 guidestone PASS** (6 expected SKIP —
+BTSP-enforcing primals + loamspine), **15/18 exp094 composition parity** (Songbird
+name-resolution gaps), **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
+(HSM cfg-gated). ludoSpring parity: exp068 **6/6**, exp067 **18/19**, exp072 **24/31**.
+Full NUCLEUS validated across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
 benchScale Docker lab: 12 binaries deployed and version-verified.
 
 Multi-tier genetics identity system: Mitochondrial (Mito-Beacon for discovery
@@ -90,7 +91,7 @@ Cross-architecture deployment: plasmidBin serves as genomeBin depot per ecoBin
 Architecture Standard v3.0. Tier 1 MUST: x86_64 + aarch64 + armv7 musl-static.
 Tier 2 SHOULD: Windows (barraCuda), Android (5 primals), macOS (8/14 check-pass).
 Tier 3 NICE: RISC-V (all cargo-check pass, primalSpring itself linked).
-15/15 cross-arch checks pass (beardog HSM cfg-gated in upstream Session 43).
+14/15 cross-arch checks pass (beardog HSM cfg-gated in upstream Session 43).
 
 Particle model adopted: Tower = electron, Node = proton, Nest = neutron,
 NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →

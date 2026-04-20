@@ -4,8 +4,8 @@
 > This local copy is for primalSpring context. The infra version is the
 > inter-spring reference.
 
-**Date**: April 19, 2026
-**From**: primalSpring v0.9.15
+**Date**: April 20, 2026
+**From**: primalSpring v0.9.17 (Phase 45)
 **License**: AGPL-3.0-or-later
 
 ---
@@ -50,20 +50,21 @@ Each spring's proto-nucleate graph is parameterized via `graphs/downstream/downs
 using `proto_nucleate_template.toml`. The one exception is `healthspring_enclave_proto_nucleate.toml`,
 which has a unique dual-tower ionic bridge pattern and is kept as a standalone graph.
 
-| Spring | Version | gS | Tests | Primary Atomics | Proto-Nucleate | Particle Profile |
-|--------|---------|------|-------|-----------------|----------------|------------------|
-| **hotSpring** | 0.6.32 | **5** | ~985 | **Node** (proton-heavy) + Nest | `downstream_manifest.toml` (hotspring) | proton_heavy |
-| **neuralSpring** | V134 | **2** | 1,403+ | **Node** + Meta | `downstream_manifest.toml` (neuralspring) | proton_heavy |
-| **wetSpring** | V147 | **3** | 1,902+ | Node + **Nest** + Meta | `downstream_manifest.toml` (wetspring) | balanced |
-| **airSpring** | 0.10.0 | 0 | 1,364 | Node + **Nest** | `downstream_manifest.toml` (airspring) | balanced |
-| **groundSpring** | V124 | 0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` (groundspring) | balanced |
-| **healthSpring** | V54 | **2** | 940+ | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_proto_nucleate.toml` (standalone) | neutron_heavy |
-| **ludoSpring** | V47 | **4** | 791 | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced |
+| Spring | Version | gS | Tests | Primary Atomics | Proto-Nucleate | Status |
+|--------|---------|------|-------|-----------------|----------------|--------|
+| **hotSpring** | 0.6.32 | **5** | ~985 | **Node** (proton-heavy) + Nest | `downstream_manifest.toml` | **Pinned** — certified |
+| **neuralSpring** | V134 | **2** | 1,403+ | **Node** + Meta | `downstream_manifest.toml` | **Pinned** — scaffold |
+| **wetSpring** | V147 | **3** | 1,902+ | Node + **Nest** + Meta | `downstream_manifest.toml` | **Pinned** — bare works |
+| **airSpring** | 0.10.0 | 0 | 1,364 | Node + **Nest** | `downstream_manifest.toml` | **Pinned** — paths fixed |
+| **groundSpring** | V124 | 0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` | **Pinned** — paths fixed |
+| **healthSpring** | V54 | **2** | 940+ | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_*` | **Pinned** — scaffold |
+| **ludoSpring** | V47 | **4** | 791 | Node + **Meta** + Nest | `downstream_manifest.toml` | **Active** — evolution partner |
 
 ### Key
 
 - **Bold atomic** = primary domain stress point
-- Particle profile: `proton_heavy` = compute-dominated, `neutron_heavy` = storage/compliance-dominated, `balanced` = even mix
+- **Pinned** = at current guideStone level; science evolution continues independently; composition patterns absorb primalSpring v0.9.17 when ready
+- **Active** = focused evolution bandwidth with primalSpring + esotericWebb
 
 ---
 
@@ -287,6 +288,37 @@ Each arrow represents a pattern that flows from one spring's domain work
 to harden a shared primal. The network is not hierarchical — it's a
 feedback web where every spring solving its problem makes every other
 spring's composition more capable.
+
+---
+
+## Spring Pinning (April 20, 2026)
+
+hotSpring, neuralSpring, wetSpring, airSpring, groundSpring, and healthSpring
+are pinned at their current guideStone levels. This means:
+
+- **Their science evolution continues independently** — they keep building experiments
+- **They absorb primalSpring v0.9.17 patterns when ready** — no urgency
+- **Path dependency fixes from Phase 45 are already applied** (airSpring, groundSpring, healthSpring, wetSpring, hotSpring)
+- **Evolution bandwidth is focused on**: primalSpring (NUCLEUS certification) + ludoSpring (game science) + esotericWebb (garden composition)
+
+Each pinned spring can unpause at any time by:
+1. Pulling latest primalSpring and plasmidBin
+2. Building their guidestone against a live NUCLEUS
+3. Advancing their gS level with the validated composition patterns
+
+### Garden Potential
+
+Each spring may produce its own garden when its science is certified:
+
+| Spring | Potential Garden | Product |
+|--------|-----------------|---------|
+| hotSpring | milcGarden | MILC results dashboard for physicists |
+| wetSpring | labGarden | Environmental sensor monitoring |
+| airSpring | fieldGarden | Agricultural decision support |
+| groundSpring | geoGarden | Geoscience data browser |
+| healthSpring | clinicGarden | Clinical decision support (ionic-fenced) |
+| neuralSpring | inferenceGarden | AI model serving dashboard |
+| ludoSpring | **esotericWebb** | CRPG composition (**active**) |
 
 ---
 
