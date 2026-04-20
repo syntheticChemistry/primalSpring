@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 2026
-**Status**: Phase 44 — BTSP Phase 1–3 (12/12 primals enforce handshake), multi-tier genetics, cross-arch deployment, content distribution federation, guideStone Level 4, capability-based discovery, plasmidBin depot. 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition), 601 tests.
+**Status**: Phase 45 — BTSP Phase 1–3 (12/12 primals enforce handshake), multi-tier genetics, cross-arch deployment, content distribution federation, guideStone Level 4, capability-based discovery, plasmidBin depot. 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition), 631 tests. Tier 1 MUST: 39/39 binaries (13 primals × 3 targets).
 
 ---
 
@@ -149,7 +149,7 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.9.17 | 601 | Phase 44 — 75 experiments (17 tracks), 56 deploy graphs (fragment-first), guideStone Level 4, genomeBin v5.0 (42 binaries / 6 targets), capability-based discovery |
+| primalSpring | v0.9.17 | 631 | Phase 45 — 75 experiments (17 tracks), 56 deploy graphs (fragment-first), guideStone Level 4, genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39), capability-based discovery |
 
 ## Modernization Sweep (April 7, 2026)
 

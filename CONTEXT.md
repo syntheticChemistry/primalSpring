@@ -69,8 +69,8 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.17 Phase 44 — 601 tests, 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition).
-**genomeBin v5.0** — 42 cross-architecture binaries across 6 target triples,
+v0.9.17 Phase 45 — 631 tests (585 passed + 46 ignored), 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition).
+**genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
 Live validation: **12/12 primals ALIVE**, **19/19 exp094 composition parity PASS**,
@@ -90,7 +90,7 @@ Cross-architecture deployment: plasmidBin serves as genomeBin depot per ecoBin
 Architecture Standard v3.0. Tier 1 MUST: x86_64 + aarch64 + armv7 musl-static.
 Tier 2 SHOULD: Windows (barraCuda), Android (5 primals), macOS (8/14 check-pass).
 Tier 3 NICE: RISC-V (all cargo-check pass, primalSpring itself linked).
-14/15 cross-arch checks pass; only remaining: HSM/Titan M2 hardware backend.
+15/15 cross-arch checks pass (beardog HSM cfg-gated in upstream Session 43).
 
 Particle model adopted: Tower = electron, Node = proton, Nest = neutron,
 NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →
