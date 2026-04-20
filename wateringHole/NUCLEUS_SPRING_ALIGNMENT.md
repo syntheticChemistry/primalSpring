@@ -58,7 +58,7 @@ which has a unique dual-tower ionic bridge pattern and is kept as a standalone g
 | **airSpring** | 0.10.0 | 0 | 1,364 | Node + **Nest** | `downstream_manifest.toml` (airspring) | balanced |
 | **groundSpring** | V124 | 0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` (groundspring) | balanced |
 | **healthSpring** | V54 | **2** | 940+ | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_proto_nucleate.toml` (standalone) | neutron_heavy |
-| **ludoSpring** | V46 | **4** | 791 | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced |
+| **ludoSpring** | V47 | **4** | 791 | Node + **Meta** + Nest | `downstream_manifest.toml` (ludospring) | balanced |
 
 ### Key
 
@@ -256,8 +256,8 @@ ludoSpring composition (pure — ludospring ecoBin)
 
 **What ludoSpring evolves for the ecosystem**:
 - 60Hz composition budget → tests graph execution latency limits
-- Five-layer validation + guideStone → canonical Python→Rust→IPC composition→`ludospring_guidestone`
-- guideStone readiness 4 (V46): `ludospring_guidestone` three-tier — 20 bare + 15 IPC + 8 NUCLEUS cross-atomic (BearDog crypto, NestGate roundtrip, pipeline). BLAKE3 Property 3, protocol tolerance
+- Three-tier validation + guideStone → canonical Python→Rust→IPC composition→`ludospring_guidestone`
+- guideStone readiness 4 (V47): `ludospring_guidestone` three-tier — 20 bare + 15 IPC + 8 NUCLEUS cross-atomic (BearDog crypto, NestGate roundtrip, pipeline). guideStone standard v1.2.0, upstream `call_or_skip`/`is_skip_error`, v1.2.0 tolerance ordering, BLAKE3 Property 3, genomeBin v5.1. All blockers resolved
 - AI narration under latency → tests Squirrel real-time performance
 - Session lifecycle (create/save/restore/fork) → benefits any stateful composition
 - Composition drift detection → `composition_targets.json` golden chain

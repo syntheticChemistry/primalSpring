@@ -140,6 +140,7 @@ fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate"]
 guidestone_binary = "ludospring_guidestone"
 guidestone_readiness = 4
+guidestone_properties = { deterministic = true, traceable = true, self_verifying = true, env_agnostic = true, tolerance_documented = true }
 validation_capabilities = [
     "activation.fitts",
     "activation.hick",
