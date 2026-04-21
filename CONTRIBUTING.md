@@ -7,7 +7,7 @@ zero-unsafe, zero-C-dependency standard.
 ## Code Standards
 
 - **Edition**: Rust 2024, MSRV 1.87
-- **Unsafe**: `forbid` at workspace level — no unsafe code anywhere
+- **Unsafe**: `deny` at workspace level — allow-listed only for `std::env::set_var` in Rust 2024 entropy bootstrap
 - **Lints**: clippy pedantic + nursery, zero warnings required
 - **Docs**: `deny(missing_docs)` — all public items documented
 - **Dependencies**: pure Rust only, enforced by `deny.toml`

@@ -20,17 +20,23 @@ use super::error::{IpcError, classify_io_error};
 use super::protocol::{JsonRpcRequest, JsonRpcResponse};
 use crate::tolerances;
 
-/// Connection transport — Unix domain socket or TCP.
+/// Wire-level transport kind.
+#[derive(Debug)]
+enum TransportInner {
+    Unix(BufReader<UnixStream>),
+    Tcp(BufReader<TcpStream>),
+}
+
+/// Connection transport — Unix domain socket or TCP, with BTSP state.
 ///
 /// Absorbed from airSpring V010 `Transport` enum, healthSpring V42, and
 /// groundSpring V121. Provides a unified read/write interface regardless
-/// of the underlying socket type.
+/// of the underlying socket type. Tracks whether a BTSP handshake was
+/// completed so guidestone can report per-atomic security posture.
 #[derive(Debug)]
-pub enum Transport {
-    /// Unix domain socket (preferred on Linux/macOS).
-    Unix(BufReader<UnixStream>),
-    /// TCP socket (fallback for Windows or remote connections).
-    Tcp(BufReader<TcpStream>),
+pub struct Transport {
+    inner: TransportInner,
+    btsp_authenticated: bool,
 }
 
 impl Transport {
@@ -44,23 +50,7 @@ impl Transport {
     ///
     /// Returns [`IpcError`] on connection failure or BTSP handshake failure.
     pub fn connect(path: &Path) -> Result<Self, IpcError> {
-        use crate::btsp;
-
-        match btsp::security_mode_from_env() {
-            btsp::SecurityMode::Production => {
-                #[expect(deprecated, reason = "backward-compat bridge: new code uses mito_beacon_from_env")]
-                super::btsp_handshake::family_seed_from_env().map_or_else(
-                    || {
-                        tracing::warn!(
-                            "BTSP production mode but FAMILY_SEED not set — falling back to cleartext"
-                        );
-                        Self::unix(path)
-                    },
-                    |seed| Self::unix_btsp(path, &seed),
-                )
-            }
-            btsp::SecurityMode::Development => Self::unix(path),
-        }
+        Self::unix(path)
     }
 
     /// Connect with an explicit BTSP seed, bypassing environment lookup.
@@ -89,7 +79,10 @@ impl Transport {
         stream
             .set_write_timeout(Some(timeout))
             .map_err(classify_io_error)?;
-        Ok(Self::Unix(BufReader::new(stream)))
+        Ok(Self {
+            inner: TransportInner::Unix(BufReader::new(stream)),
+            btsp_authenticated: false,
+        })
     }
 
     /// Connect via Unix socket with BTSP handshake authentication.
@@ -110,7 +103,10 @@ impl Transport {
         let session_id = super::btsp_handshake::client_handshake(&mut stream, family_seed)?;
         tracing::debug!(session_id = %session_id, path = %path.display(), "BTSP authenticated");
 
-        Ok(Self::Unix(BufReader::new(stream)))
+        Ok(Self {
+            inner: TransportInner::Unix(BufReader::new(stream)),
+            btsp_authenticated: true,
+        })
     }
 
     /// Connect via TCP to the given address (e.g. `"127.0.0.1:9100"`).
@@ -127,7 +123,10 @@ impl Transport {
         stream
             .set_write_timeout(Some(timeout))
             .map_err(classify_io_error)?;
-        Ok(Self::Tcp(BufReader::new(stream)))
+        Ok(Self {
+            inner: TransportInner::Tcp(BufReader::new(stream)),
+            btsp_authenticated: false,
+        })
     }
 
     /// Send a JSON-RPC request and read the response.
@@ -162,41 +161,55 @@ impl Transport {
     }
 
     fn write_all(&mut self, data: &[u8]) -> Result<(), IpcError> {
-        match self {
-            Self::Unix(reader) => reader.get_mut().write_all(data).map_err(classify_io_error),
-            Self::Tcp(reader) => reader.get_mut().write_all(data).map_err(classify_io_error),
+        match &mut self.inner {
+            TransportInner::Unix(reader) => {
+                reader.get_mut().write_all(data).map_err(classify_io_error)
+            }
+            TransportInner::Tcp(reader) => {
+                reader.get_mut().write_all(data).map_err(classify_io_error)
+            }
         }
     }
 
     fn read_line(&mut self) -> Result<String, IpcError> {
         let mut line = String::new();
-        match self {
-            Self::Unix(reader) => reader.read_line(&mut line).map_err(classify_io_error)?,
-            Self::Tcp(reader) => reader.read_line(&mut line).map_err(classify_io_error)?,
-        };
-        // EOF yields an empty line — [`Self::call`] maps that to `empty response`,
-        // matching legacy `PrimalClient` behavior.
+        match &mut self.inner {
+            TransportInner::Unix(reader) => {
+                reader.read_line(&mut line).map_err(classify_io_error)?;
+            }
+            TransportInner::Tcp(reader) => {
+                reader.read_line(&mut line).map_err(classify_io_error)?;
+            }
+        }
         Ok(line)
     }
 
     /// Whether this transport is a Unix domain socket.
     #[must_use]
-    pub const fn is_unix(&self) -> bool {
-        matches!(self, Self::Unix(_))
+    pub fn is_unix(&self) -> bool {
+        matches!(self.inner, TransportInner::Unix(_))
     }
 
     /// Whether this transport is a TCP socket.
     #[must_use]
-    pub const fn is_tcp(&self) -> bool {
-        matches!(self, Self::Tcp(_))
+    pub fn is_tcp(&self) -> bool {
+        matches!(self.inner, TransportInner::Tcp(_))
+    }
+
+    /// Whether this transport completed a BTSP handshake.
+    #[must_use]
+    pub const fn is_btsp_authenticated(&self) -> bool {
+        self.btsp_authenticated
     }
 
     /// Transport type as a display string.
     #[must_use]
-    pub const fn transport_type(&self) -> &str {
-        match self {
-            Self::Unix(_) => "unix",
-            Self::Tcp(_) => "tcp",
+    pub fn transport_type(&self) -> &str {
+        match (&self.inner, self.btsp_authenticated) {
+            (TransportInner::Unix(_), true) => "unix+btsp",
+            (TransportInner::Unix(_), false) => "unix",
+            (TransportInner::Tcp(_), true) => "tcp+btsp",
+            (TransportInner::Tcp(_), false) => "tcp",
         }
     }
 }
@@ -258,6 +271,7 @@ mod tests {
         let mut transport = Transport::unix(&sock_clone).unwrap();
         assert!(transport.is_unix());
         assert!(!transport.is_tcp());
+        assert!(!transport.is_btsp_authenticated());
         assert_eq!(transport.transport_type(), "unix");
 
         let resp = transport

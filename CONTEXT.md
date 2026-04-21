@@ -73,12 +73,13 @@ v0.9.17 Phase 45 — 631 tests (585 passed + 46 ignored), 75 experiments (17 tra
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
-Live validation: **12/12 primals ALIVE**, **86/86 guidestone PASS** (6 expected SKIP —
-BTSP-enforcing primals + loamspine), **15/18 exp094 composition parity** (Songbird
-name-resolution gaps), **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
+Live validation: **12/12 primals ALIVE**, **161/166 guidestone PASS** (5 expected FAIL —
+upstream BTSP server gaps for BearDog, Songbird, rhizoCrypt, sweetGrass),
+**19/19 exp094 composition parity**, **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
 (HSM cfg-gated). ludoSpring parity: exp068 **6/6**, exp067 **18/19**, exp072 **24/31**.
 Full NUCLEUS validated across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
 benchScale Docker lab: 12 binaries deployed and version-verified.
+biomeOS substrate: Neural API liveness and graph executor validated via guidestone Layer 1.5.
 
 Multi-tier genetics identity system: Mitochondrial (Mito-Beacon for discovery
 and NAT negotiation), Nuclear (lineage DNA for non-fungible permissions with
@@ -98,10 +99,21 @@ NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →
 L2 (mixed atomics) → L3 (bonding patterns).
 
 guideStone composition certification: `primalspring_guidestone` binary validates
-NUCLEUS composition correctness across 6 layers (bare properties, discovery,
-atomic health, capability parity, cross-atomic pipeline, bonding, BTSP/crypto).
+NUCLEUS composition correctness across 9 layers (bare properties, seed provenance,
+discovery, BTSP escalation, atomic health, capability parity, cross-atomic pipeline,
+bonding, BTSP/crypto, cellular deployment). Layer 1.5 reports per-atomic security
+posture (Tower=btsp, Node/Nest=tower_delegated, Provenance=btsp). biomeOS substrate
+health (neural-api liveness + graph.list) validated as first-class check.
 Domain guideStones (hotSpring, healthSpring, etc.) inherit this base certification
 and only validate their own science. See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md`.
+
+Incremental BTSP escalation: cleartext bootstrap → Tower BTSP → Node/Nest delegation
+→ Provenance BTSP → full NUCLEUS encrypted. `upgrade_btsp_clients()` probes cleartext
+first, escalates to BTSP where rejected. Published seed fingerprints prove binary
+authenticity at Layer 0.5. Wire-level BTSP requires upstream primals to implement
+the 4-step handshake server protocol — currently an upstream gap for BearDog,
+Songbird, rhizoCrypt, sweetGrass, and loamSpine. `nucleus_launcher.sh` starts
+biomeOS with `BIOMEOS_BTSP_ENFORCE=0` (cleartext bootstrap before Tower is alive).
 
 Bonding models validated (structural): Covalent, Ionic, Metallic, Weak,
 OrganoMetalSalt. Content distribution federation graph with 4 bonding tiers.

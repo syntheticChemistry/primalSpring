@@ -117,6 +117,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 43 | Cross-Architecture Deployment | biomeOS Tower bootstrap on Pixel (aarch64 + GrapheneOS), `tcp_rpc_multi_protocol`, exp096 14/15 cross-arch checks (HSM pending), exp091 12/12 routing, exp094 19/19 parity. exp095 added to workspace. All biomeOS/NestGate composition gaps RESOLVED |
 | 44 | Upstream Absorption + Downstream Blurb | Pull/audit 8 springs, deploy via plasmidBin, benchScale validation, root doc cleanup, downstream evolution blurb for all springs |
 | 45 | NUCLEUS Composition Validation + Garden Evolution | guidestone **86/86 PASS**, exp068 **6/6** (barraCuda parity fixed), exp067 **18/19**, 3 new ludoSpring game.* methods wired, `start_primal.sh` symlink automation, ed25519 base64 + matmul_inline fixes, Webb handoff crafted |
+| 46 | Cellular Deployment + Live GUI | petalTongue `live` mode (IPC + egui), `game.push_scene` drain to petalTongue, exp078 live GUI composition validation, 8 cell graphs (`graphs/cells/`), **exp098** cellular deployment sweep, guidestone **Layer 7** (cellular), `cell_launcher.sh`, esotericWebb `webb_live_interactive.toml` deploy graph |
 
 ## Validation Harness
 
@@ -153,7 +154,7 @@ experiments/expNNN/
     └── main.rs   # experiment binary
 ```
 
-All experiment crates inherit workspace lints (clippy pedantic+nursery, `forbid(unsafe_code)`).
+All experiment crates inherit workspace lints (clippy pedantic+nursery, `deny(unsafe_code)`).
 
 ---
 

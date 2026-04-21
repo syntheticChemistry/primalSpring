@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
-**Version**: 0.9.17 (Phase 45 — 631 tests, 75 experiments, 56 deploy graphs, guideStone Level 4 — 67/67 live NUCLEUS + 41/41 bare, BLAKE3 checksums (P3), BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), capability-based discovery (zero hardcoded primal names), **genomeBin v5.1 — 46 binaries across 6 target triples (Tier 1: 39/39)** (x86_64/aarch64/armv7/windows/android/riscv64), benchScale Docker validation, fragment-first graph composition, plasmidBin owns full cross-architecture depot)  
+**Version**: 0.9.17 (Phase 45 — 631 tests, 75 experiments, 56 deploy graphs, guideStone Level 4 — 161/166 live NUCLEUS (5 FAIL = upstream BTSP server gaps) + 41/41 bare, BLAKE3 checksums (P3), seed provenance (Layer 0.5), BTSP escalation (Layer 1.5), BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), capability-based discovery (zero hardcoded primal names), **genomeBin v5.1 — 46 binaries across 6 target triples (Tier 1: 39/39)** (x86_64/aarch64/armv7/windows/android/riscv64), benchScale Docker validation, fragment-first graph composition, plasmidBin owns full cross-architecture depot)  
 **Phase**: **INTERSTADIAL** — stadial gate cleared April 16, 2026. Deep debt evolution April 2026: all production code references `primal_names::` constants, TCP fallback table centralized in `tolerances::`, test suites extracted to companion files, all files under 800 LOC.  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: April 2026
@@ -38,31 +38,33 @@ primalSpring fills the gap.
 
 | Metric | Value |
 |--------|-------|
-| Tests | **570** (unit + integration + doc-tests + proptest, 46 ignored live) |
+| Tests | **631** (unit + integration + doc-tests + proptest, 46 ignored live) |
 | Experiments | 75 (17 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
-| `#![forbid(unsafe_code)]` | workspace-level |
+| `#![deny(unsafe_code)]` | workspace-level (allow-listed for `std::env::set_var` in Rust 2024) |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
 | Deploy graphs | **56 TOMLs** (9 profiles + 6 fragments + 5 multi-node + 4 spring validation (template + manifest + 2 unique) + 2 cross-spring + 5 bonding + 2 chaos + 2 spring deploy (template + manifest) + 3 downstream (template + manifest + 1 unique enclave) + 4 patterns + 11 root + 1 federation), all `by_capability`, topologically validated, fragment-first `resolve = true` composition, 31 graph tests passing |
 | Genetics | **Multi-tier**: Mito-Beacon (discovery/NAT), Nuclear (lineage DNA, non-fungible permissions), Tags (open participation) |
-| BTSP | **Phase 1–3**: FAMILY_SEED auth → secure-by-default cascade → ChaCha20-Poly1305 encrypted channel |
+| BTSP | **Phase 1–3**: FAMILY_SEED auth → secure-by-default cascade → ChaCha20-Poly1305 encrypted channel. **Incremental escalation**: cleartext bootstrap → Tower BTSP → tower_delegated Node/Nest → Provenance BTSP. 161/166 guidestone checks pass (5 FAIL = upstream BTSP server gaps) |
 | Bonding | Covalent, Ionic, Metallic, Weak, OrganoMetalSalt + BtspEnforcer deny semantics + ionic RPC + content distribution federation |
 | Cross-arch | biomeOS-managed Tower on Pixel (aarch64 + GrapheneOS) via Neural API `--tcp-only`, 14/15 exp096 checks (HSM pending) |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Primal gap registry | Active in `docs/PRIMAL_GAPS.md` — portability debt classes, socket resolution tiers, BTSP cascade |
 | **Stadial gate** | **CLEARED** — 13/13 primals + primalSpring: zero `async-trait`, enum dispatch, RPITIT, `cargo deny` PASS |
 | **Interstadial standards** | See `STADIAL_PARITY_GATE_APR16_2026.md` — permanent invariants enforced |
-| **primalSpring own stadial** | `#[allow]` → `#[expect]`, `deny.toml` license fix, clippy clean (0 warnings/errors), 570 tests passing |
+| **primalSpring own stadial** | `#[allow]` → `#[expect]`, `deny.toml` license fix, clippy clean (0 warnings/errors), 631 tests passing |
 | RPC endpoints | 17 methods |
 | Discovery | **Capability-first**: `discover_by_capability()` + 6-tier + Neural API |
 | IPC transport | JSON-RPC 2.0: UDS + TCP + HTTP POST (`tcp_rpc_multi_protocol` auto-fallback) |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Meta-validator | `validate_all` binary — runs all 75 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates |
-| NUCLEUS | **VALIDATED** — Tower + Nest + Node, 12/12 primals ALIVE, 19/19 exp094 parity, 12/12 exp091 routing |
+| NUCLEUS | **VALIDATED** — Tower + Nest + Node, 12/12 primals ALIVE, 161/166 guidestone, 19/19 exp094 parity, 12/12 exp091 routing |
+| Seed Provenance | Public BLAKE3 fingerprints in `plasmidBin/manifest.toml` — Layer 0.5 binary authenticity |
+| biomeOS Substrate | Neural API liveness + graph executor validated at Layer 1.5 |
 
 ### Key Capabilities
 

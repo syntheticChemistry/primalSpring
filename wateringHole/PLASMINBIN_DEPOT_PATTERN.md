@@ -122,7 +122,7 @@ FAMILY_ID=my-spring-validation \
   - Phase 3: Start in dependency order (beardog → petaltongue)
   - Phase 4: Health sweep
   - Phase 5: Songbird registry seeding
-- **primalspring_guidestone**: 67/67 ALL PASS against live NUCLEUS
+- **primalspring_guidestone**: 161/166 PASS against live NUCLEUS (5 expected FAIL — upstream BTSP server gaps)
 
 ### Known Issues
 

@@ -1,10 +1,10 @@
 # primalSpring guideStone CHECKSUMS — BLAKE3
-# Generated: 2026-04-20
+# Generated: 2026-04-21
 # Files: 18
 #
 # Verify: primalspring::checksums::verify_manifest()
-d6c970b3f1144507c4672c43fe7134addfbfeca75b22d7a1c1b84608fe80e78c  ecoPrimal/src/bin/primalspring_guidestone/main.rs
-b2f8fc421c817697daef597822ff2d7cc99cdbb79e54ddc9f1d0fd7b2dc05591  ecoPrimal/src/composition/mod.rs
+89f28f5cf9d37d2253e3ea490e49ca91b268a4572cb1c0a31bf6965edf4231e8  ecoPrimal/src/bin/primalspring_guidestone/main.rs
+4ce6f3e2e579b06fda28231cdc5f557ad36324fba5f0ce5cd1ad064d3634bbc5  ecoPrimal/src/composition/mod.rs
 6aca6ed37facd99aa731b548a5b9b60cddb04cc192c7dbaa2914c81b6ff4803d  ecoPrimal/src/validation/mod.rs
 739a67533ad6e08cb8fbdae9c4600c656d504388cfe078791dd58b314cfb8a0f  ecoPrimal/src/tolerances/mod.rs
 d3684263dd357d81a1ad6f5cca02721b13122d2a69dbca75253a5f54dedaa040  ecoPrimal/src/coordination/mod.rs
@@ -19,5 +19,5 @@ f9dba43fe48a7dd322b448c01c9c8fb5bb0b951a1e5af5220bfca5a9b4bb5ecf  graphs/fragmen
 2026d37e2c355894f529ae62798ca2019f34717567f524797cc5b6528d2ac846  graphs/fragments/nucleus.toml
 4d0ac417c0ab6b46be57f15153abcb38e85d8799ed378ca8a10925855de340c2  graphs/fragments/meta_tier.toml
 c3025cb87a55bb416a503fa444c23de74660c0b469b8a5591bfad27c6713493d  graphs/fragments/provenance_trio.toml
-2a7d52162e41124774a34b2316953b43d84870e0170e574f379ca85cdd634590  graphs/downstream/downstream_manifest.toml
+2182ea83e0b6c6f8700bda07620250821e4848b124c58882df1faca17f18ea83  graphs/downstream/downstream_manifest.toml
 8f03b9a6c72825d92c6b7faf0f885f41b809166af79a715ef6d45020b41bdfb3  graphs/downstream/proto_nucleate_template.toml

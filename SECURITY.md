@@ -20,7 +20,8 @@ vulnerability, please report it responsibly:
 
 ## Security Posture
 
-- **Zero unsafe code**: `#![forbid(unsafe_code)]` at workspace level
+- **Zero unsafe code**: `#![deny(unsafe_code)]` at workspace level (allow-listed
+  only for `std::env::set_var` in Rust 2024 where required by the entropy bootstrap)
 - **Zero C dependencies**: enforced by `deny.toml` (ecoBin compliant)
 - **No network listeners by default**: the JSON-RPC server binds to Unix
   domain sockets by default; TCP is available for cross-gate and mobile
@@ -28,6 +29,14 @@ vulnerability, please report it responsibly:
 - **Capability-based discovery**: no hardcoded addresses or credentials
 - **No secrets in source**: API keys are passed via environment variables
   or `testing-secrets/` (gitignored)
+- **Incremental BTSP escalation**: cleartext bootstrap → Tower BTSP →
+  tower-delegated Node/Nest → Provenance BTSP → full NUCLEUS encrypted.
+  `upgrade_btsp_clients()` never forces BTSP on primals that accept cleartext
+- **Seed provenance**: public BLAKE3 fingerprints for each primal published
+  in `plasmidBin/manifest.toml` — Layer 0.5 verifies binary authenticity
+  before any IPC
+- **Entropy hierarchy**: machine-level mito tier (portable/clonable) for CI
+  and automated validation; nuclear tier (future) for sovereign identity
 
 ## Dependency Auditing
 

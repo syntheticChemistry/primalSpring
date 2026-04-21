@@ -36,7 +36,7 @@
 //! );
 //! ```
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64;
@@ -49,10 +49,12 @@ use crate::validation::ValidationResult;
 ///
 /// Abstracts socket discovery and client lifecycle so springs interact with
 /// capabilities ("tensor", "shader", "security") rather than primal names
-/// or socket paths.
+/// or socket paths. Tracks per-capability BTSP authentication state so
+/// guidestone can report security posture per atomic tier.
 #[derive(Debug)]
 pub struct CompositionContext {
     clients: HashMap<String, PrimalClient>,
+    btsp_state: BTreeMap<String, bool>,
 }
 
 impl CompositionContext {
@@ -68,7 +70,14 @@ impl CompositionContext {
                 clients.insert(cap, client);
             }
         }
-        Self { clients }
+        let btsp_state = clients
+            .iter()
+            .map(|(cap, c)| (cap.clone(), c.is_btsp_authenticated()))
+            .collect();
+        Self {
+            clients,
+            btsp_state,
+        }
     }
 
     /// Build a context by live-discovering all primals on the local system.
@@ -91,6 +100,8 @@ impl CompositionContext {
             "commit",
             "provenance",
             "visualization",
+            "ledger",
+            "attribution",
         ];
 
         let mut clients = HashMap::new();
@@ -99,7 +110,14 @@ impl CompositionContext {
                 clients.insert(cap.to_owned(), client);
             }
         }
-        Self { clients }
+        let btsp_state = clients
+            .iter()
+            .map(|(cap, c)| (cap.clone(), c.is_btsp_authenticated()))
+            .collect();
+        Self {
+            clients,
+            btsp_state,
+        }
     }
 
     /// Build a context by trying UDS discovery first, then falling back to
@@ -130,18 +148,45 @@ impl CompositionContext {
                 clients.insert(cap.to_owned(), client);
             }
         }
-        Self { clients }
+
+        let btsp_state = upgrade_btsp_clients(&mut clients);
+        Self {
+            clients,
+            btsp_state,
+        }
     }
 
     /// Build from an explicit set of capability-to-client mappings.
     #[must_use]
-    pub const fn from_clients(clients: HashMap<String, PrimalClient>) -> Self {
-        Self { clients }
+    pub fn from_clients(clients: HashMap<String, PrimalClient>) -> Self {
+        let btsp_state = clients
+            .iter()
+            .map(|(cap, c)| (cap.clone(), c.is_btsp_authenticated()))
+            .collect();
+        Self {
+            clients,
+            btsp_state,
+        }
     }
 
     /// Get a mutable reference to the client for a given capability.
     pub fn client_for(&mut self, capability: &str) -> Option<&mut PrimalClient> {
         self.clients.get_mut(capability)
+    }
+
+    /// Per-capability BTSP authentication state from the last escalation pass.
+    ///
+    /// Returns `Some(true)` if the capability was upgraded to BTSP,
+    /// `Some(false)` if it remained cleartext, `None` if not discovered.
+    #[must_use]
+    pub fn btsp_authenticated(&self, capability: &str) -> Option<bool> {
+        self.btsp_state.get(capability).copied()
+    }
+
+    /// Full BTSP state map (capability -> authenticated).
+    #[must_use]
+    pub fn btsp_state(&self) -> &BTreeMap<String, bool> {
+        &self.btsp_state
     }
 
     /// Call a method on the provider of `capability`.
@@ -555,6 +600,79 @@ pub fn is_skip_error(e: &IpcError) -> bool {
     e.is_connection_error() || e.is_protocol_error() || e.is_transport_mismatch()
 }
 
+/// Escalate discovered clients to BTSP using a two-pass strategy:
+///
+/// **Pass 1 (probe):** Send a cleartext `health.liveness` on each existing
+/// connection. Primals that accept cleartext stay cleartext. Primals that
+/// reject cleartext (connection reset / protocol error) are candidates for
+/// BTSP upgrade. This avoids breaking working cleartext connections —
+/// sending a BTSP ClientHello to a primal that doesn't speak BTSP poisons
+/// the connection (e.g. BearDog treats it as invalid JSON-RPC).
+///
+/// **Pass 2 (upgrade):** For rejected capabilities, open a fresh connection
+/// with the BTSP handshake. On success, the BTSP client replaces the old
+/// one. On failure, the cleartext connection is already gone (rejected),
+/// so we try a fresh cleartext reconnect as fallback.
+///
+/// Published seed fingerprints (Layer 0.5) prove primal authenticity.
+/// Wire-level BTSP requires the server to implement the handshake protocol.
+/// Primals that accept cleartext but don't speak BTSP yet are an upstream
+/// gap — they are reachable and authenticated by fingerprint, but not
+/// encrypted on the wire.
+///
+/// Returns a `BTreeMap<capability, btsp_authenticated>` so guidestone can
+/// report per-atomic security posture without re-probing.
+fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap<String, bool> {
+    let mut state: BTreeMap<String, bool> = clients
+        .keys()
+        .map(|cap| (cap.clone(), false))
+        .collect();
+
+    #[expect(deprecated, reason = "backward-compat bridge")]
+    let seed = match crate::ipc::btsp_handshake::family_seed_from_env() {
+        Some(s) => s,
+        None => return state,
+    };
+
+    // Pass 1: probe cleartext. Collect capabilities that reject cleartext.
+    let caps_to_upgrade: Vec<String> = clients
+        .iter_mut()
+        .filter_map(|(cap, client)| {
+            match client.call("health.liveness", serde_json::json!({})) {
+                Ok(_) => None,
+                Err(e) if e.is_connection_error() || e.is_protocol_error() => {
+                    tracing::debug!(cap, "cleartext rejected, will attempt BTSP");
+                    Some(cap.clone())
+                }
+                Err(_) => None,
+            }
+        })
+        .collect();
+
+    // Pass 2: BTSP upgrade for rejected capabilities.
+    for cap in caps_to_upgrade {
+        let primal = capability_to_primal(&cap);
+        let result = crate::ipc::discover::discover_by_capability(&cap);
+        if let Some(path) = result.socket {
+            match PrimalClient::connect_btsp(&path, primal, &seed) {
+                Ok(btsp_client) => {
+                    tracing::info!(cap, primal, "BTSP authenticated");
+                    clients.insert(cap.clone(), btsp_client);
+                    state.insert(cap, true);
+                }
+                Err(e) => {
+                    tracing::debug!(cap, primal, ?e, "BTSP upgrade failed");
+                    if let Ok(fresh) = PrimalClient::connect(&path, primal) {
+                        clients.insert(cap, fresh);
+                    }
+                }
+            }
+        }
+    }
+
+    state
+}
+
 /// Capability → (primal slug, env var, default port) for TCP fallback.
 ///
 /// Centralized in one place so the mapping is consistent across
@@ -633,6 +751,18 @@ fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u16)> 
             pn::PETALTONGUE,
             "PETALTONGUE_PORT",
             tol::TCP_FALLBACK_PETALTONGUE_PORT,
+        ),
+        (
+            "ledger",
+            pn::LOAMSPINE,
+            "LOAMSPINE_PORT",
+            tol::TCP_FALLBACK_NESTGATE_PORT + 2,
+        ),
+        (
+            "attribution",
+            pn::SWEETGRASS,
+            "SWEETGRASS_PORT",
+            tol::TCP_FALLBACK_NESTGATE_PORT + 3,
         ),
     ]
 }

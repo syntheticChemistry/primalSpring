@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+[package]
+name = "primalspring-exp098"
+version = "0.8.0"
+edition = "2024"
+license.workspace = true
+
+[[bin]]
+name = "exp098_cellular_deployment"
+path = "src/main.rs"
+
+[dependencies]
+primalspring = { path = "../../ecoPrimal" }
+serde_json = { workspace = true }
+toml = "0.8"

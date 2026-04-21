@@ -14,8 +14,8 @@
 
 [manifest]
 template = "spring_deploy_template.toml"
-version = "3.0.0"
-description = "NUCLEUS-based deploy parameters for 6 science springs"
+version = "4.0.0"
+description = "NUCLEUS-based deploy parameters for 8 springs + gardens"
 
 [[spring]]
 spring_name = "wetspring"
@@ -135,4 +135,44 @@ capabilities = [
     "compute.cg_solver",
     "compute.gradient_flow",
     "compute.f64",
+]
+
+[[spring]]
+spring_name = "ludospring"
+spring_binary = "ludospring-barracuda"
+domain = "game_science"
+by_capability = "game"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "provenance_trio", "meta_tier"]
+extra_nodes = ["squirrel", "petaltongue"]
+depends_on = ["beardog", "songbird", "toadstool", "barracuda"]
+order = 12
+capabilities = [
+    "game.evaluate_flow",
+    "game.engagement",
+    "game.push_scene",
+    "game.begin_session",
+    "game.record_action",
+    "game.complete_session",
+    "game.npc_dialogue",
+    "game.narrate_action",
+    "game.voice_check",
+    "game.query_vertices",
+    "game.mint_certificate",
+]
+
+[[spring]]
+spring_name = "esotericwebb"
+spring_binary = "esotericwebb"
+domain = "crpg"
+by_capability = "narrative"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "provenance_trio", "meta_tier"]
+extra_nodes = ["squirrel", "petaltongue", "ludospring-barracuda"]
+depends_on = ["beardog", "songbird", "squirrel", "nestgate", "petaltongue", "toadstool"]
+order = 13
+capabilities = [
+    "webb.scene.current",
+    "webb.narrative.status",
+    "webb.content.list",
+    "tools.list",
+    "tools.call",
 ]

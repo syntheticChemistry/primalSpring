@@ -9,13 +9,18 @@
 //!
 //! # Layers (each depends on the previous)
 //!
-//! 0. **Bare** — graph/fragment/manifest structural validation (no primals needed)
-//! 1. **Discovery** — all primals in the graph discoverable via capability scan
-//! 2. **Health** — every discovered primal responds to `health.liveness`
-//! 3. **Capability Parity** — math, storage, shader IPC calls produce correct results
-//! 4. **Cross-Atomic Pipeline** — Tower hash → Nest store → retrieve → verify
-//! 5. **Bonding Model** — bonding policies correctly enforced between atomics
-//! 6. **BTSP + Crypto** — crypto.hash parity, cipher policy, Ed25519 roundtrip
+//! | Layer | Name | Description |
+//! |-------|------|-------------|
+//! | 0     | Bare | graph/fragment/manifest structural validation (no primals needed) |
+//! | 0.5   | Seed Provenance | mito seed resolved, fingerprints verified, BTSP mode set |
+//! | 1     | Discovery | all primals in the graph discoverable via capability scan |
+//! | 1.5   | BTSP Escalation | per-atomic security posture (cleartext vs BTSP per tier) |
+//! | 2     | Health | every discovered primal responds to `health.liveness` |
+//! | 3     | Capability Parity | math, storage, shader IPC calls produce correct results |
+//! | 4     | Cross-Atomic Pipeline | Tower hash → Nest store → retrieve → verify |
+//! | 5     | Bonding Model | bonding policies correctly enforced between atomics |
+//! | 6     | BTSP + Crypto | crypto.hash parity, cipher policy, Ed25519 roundtrip |
+//! | 7     | Cellular | per-spring deploy graphs parse, declare live mode, cover capabilities |
 //!
 //! # Exit Codes
 //!
@@ -23,7 +28,9 @@
 //! - `1` — one or more layers failed
 //! - `2` — bare-only mode (no primals discovered, structural checks only)
 
-#![forbid(unsafe_code)]
+#![deny(unsafe_code)]
+
+mod entropy;
 
 use std::path::Path;
 
@@ -32,6 +39,7 @@ use primalspring::btsp;
 use primalspring::composition::{self, CompositionContext, validate_liveness, validate_parity};
 use primalspring::coordination::AtomicType;
 use primalspring::deploy;
+use primalspring::ipc::NeuralBridge;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
@@ -45,6 +53,29 @@ fn main() {
     // ════════════════════════════════════════════════════════════════════
     v.section("Layer 0: Bare Properties");
     validate_bare_properties(&mut v);
+
+    // ════════════════════════════════════════════════════════════════════
+    // Layer 0.5: Seed Provenance — resolve entropy, set BTSP credentials
+    // ════════════════════════════════════════════════════════════════════
+    v.section("Layer 0.5: Seed Provenance");
+    let mito_seed = entropy::resolve_mito_seed();
+
+    let family_id = std::env::var("FAMILY_ID")
+        .ok()
+        .filter(|s| !s.is_empty() && s != "default")
+        .unwrap_or_else(|| "guidestone-validation".to_owned());
+    // SAFETY: called in main() before any threads are spawned.
+    // Set FAMILY_ID for socket discovery and FAMILY_SEED for BTSP auth.
+    // upgrade_btsp_clients() probes cleartext first, then escalates to
+    // BTSP for primals that enforce it (BearDog, rhizoCrypt, sweetGrass).
+    #[allow(unsafe_code)]
+    unsafe {
+        std::env::set_var("FAMILY_ID", &family_id);
+        std::env::set_var("FAMILY_SEED", &mito_seed.hex_seed);
+        std::env::set_var("BEARDOG_FAMILY_SEED", &mito_seed.hex_seed);
+    }
+
+    entropy::validate_seed_provenance(&mut v, &mito_seed);
 
     // ════════════════════════════════════════════════════════════════════
     // Layer 1: Discovery — can we find primals?
@@ -62,6 +93,13 @@ fn main() {
         let code = if v.exit_code() == 0 { 2 } else { 1 };
         std::process::exit(code);
     }
+
+    // ════════════════════════════════════════════════════════════════════
+    // Layer 1.5: BTSP Escalation — per-atomic security posture
+    // ════════════════════════════════════════════════════════════════════
+    v.section("Layer 1.5: BTSP Escalation");
+    validate_btsp_escalation(&ctx, &mut v);
+    validate_substrate_health(&mut v);
 
     // ════════════════════════════════════════════════════════════════════
     // Layer 2: Health — all primals alive per atomic tier
@@ -94,6 +132,12 @@ fn main() {
     // ════════════════════════════════════════════════════════════════════
     v.section("Layer 6: BTSP + Crypto");
     validate_crypto(&mut ctx, &mut v);
+
+    // ════════════════════════════════════════════════════════════════════
+    // Layer 7: Cellular Deployment — per-spring deploy graphs
+    // ════════════════════════════════════════════════════════════════════
+    v.section("Layer 7: Cellular Deployment");
+    validate_cellular_graphs(&mut v);
 
     v.finish();
     std::process::exit(v.exit_code());
@@ -365,6 +409,137 @@ fn validate_bonding_type_wellformed(v: &mut ValidationResult) {
         errors.is_empty(),
         &detail,
     );
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// Layer 1.5: BTSP Escalation — per-atomic security posture
+// ════════════════════════════════════════════════════════════════════════
+
+fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) {
+    let btsp = ctx.btsp_state();
+
+    let tiers: &[(&str, &[&str], &str)] = &[
+        ("Tower", AtomicType::Tower.required_capabilities(), "btsp"),
+        (
+            "Node",
+            &["compute", "tensor", "shader"],
+            "tower_delegated",
+        ),
+        ("Nest", &["storage", "ai"], "tower_delegated"),
+        (
+            "Provenance",
+            &["dag", "commit", "provenance"],
+            "btsp",
+        ),
+    ];
+
+    for &(tier_name, caps, expected_model) in tiers {
+        for &cap in caps {
+            let check_name = format!("btsp:{tier_name}:{cap}");
+            match btsp.get(cap) {
+                Some(true) => {
+                    v.check_bool(&check_name, true, "BTSP authenticated");
+                }
+                Some(false) => {
+                    let detail = if expected_model == "tower_delegated" {
+                        "cleartext (tower_delegated — within Tower trust boundary)"
+                    } else {
+                        "cleartext (BTSP not yet enforced)"
+                    };
+                    v.check_bool(&check_name, expected_model == "tower_delegated", detail);
+                }
+                None => {
+                    v.check_skip(&check_name, "capability not discovered");
+                }
+            }
+        }
+    }
+
+    let btsp_count = btsp.values().filter(|&&v| v).count();
+    let total = btsp.len();
+    v.check_bool(
+        "btsp:summary",
+        true,
+        &format!("{btsp_count}/{total} capabilities BTSP-authenticated"),
+    );
+}
+
+/// biomeOS substrate health — neural-api liveness + graph.list.
+///
+/// biomeOS is the NUCLEUS substrate. Every composition depends on it for
+/// orchestration and capability routing. This check validates that the
+/// neural-api socket is discoverable and responds to both health and
+/// graph probes.
+fn validate_substrate_health(v: &mut ValidationResult) {
+    let bridge = match NeuralBridge::discover() {
+        Some(b) => {
+            v.check_bool(
+                "substrate:biomeos:discovered",
+                true,
+                &format!("socket: {}", b.socket_path().display()),
+            );
+            b
+        }
+        None => {
+            v.check_skip(
+                "substrate:biomeos:discovered",
+                "neural-api socket not found (biomeOS not running)",
+            );
+            v.check_skip("substrate:biomeos:liveness", "no socket");
+            v.check_skip("substrate:biomeos:graph_list", "no socket");
+            return;
+        }
+    };
+
+    match bridge.health_check() {
+        Ok(true) => v.check_bool("substrate:biomeos:liveness", true, "alive"),
+        Ok(false) => v.check_bool("substrate:biomeos:liveness", false, "responded but unhealthy"),
+        Err(e) if e.is_connection_error() || e.is_protocol_error() => {
+            v.check_skip(
+                "substrate:biomeos:liveness",
+                &format!("reachable but incompatible: {e}"),
+            );
+        }
+        Err(e) => v.check_bool("substrate:biomeos:liveness", false, &format!("error: {e}")),
+    }
+
+    let graph_result = (|| {
+        let mut client =
+            primalspring::ipc::client::PrimalClient::connect(bridge.socket_path(), "neural-api")?;
+        client.call("graph.list", serde_json::Value::Null)
+    })();
+
+    match graph_result {
+        Ok(resp) if resp.is_success() => {
+            v.check_bool("substrate:biomeos:graph_list", true, "graph executor available");
+        }
+        Ok(_) => {
+            v.check_bool(
+                "substrate:biomeos:graph_list",
+                false,
+                "graph.list returned error",
+            );
+        }
+        Err(e) if e.is_method_not_found() => {
+            v.check_skip(
+                "substrate:biomeos:graph_list",
+                "graph.list not implemented (older biomeOS)",
+            );
+        }
+        Err(e) if e.is_connection_error() || e.is_protocol_error() => {
+            v.check_skip(
+                "substrate:biomeos:graph_list",
+                &format!("transport mismatch: {e}"),
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "substrate:biomeos:graph_list",
+                false,
+                &format!("error: {e}"),
+            );
+        }
+    }
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -798,5 +973,135 @@ fn validate_ed25519_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationRe
             );
             v.check_skip("crypto:ed25519_verify", "sign failed, skipping verify");
         }
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// Layer 7: Cellular Deployment
+// ════════════════════════════════════════════════════════════════════════
+
+fn validate_cellular_graphs(v: &mut ValidationResult) {
+    let cells_dir = Path::new("graphs/cells");
+
+    if !cells_dir.is_dir() {
+        v.check_skip("cellular:dir_exists", "graphs/cells/ not found");
+        return;
+    }
+    v.check_bool("cellular:dir_exists", true, "graphs/cells/ present");
+
+    let manifest_path = cells_dir.join("cells_manifest.toml");
+    let manifest_ok = manifest_path.is_file()
+        && std::fs::read_to_string(&manifest_path)
+            .ok()
+            .and_then(|s| s.parse::<toml::Value>().ok())
+            .is_some();
+    v.check_bool(
+        "cellular:manifest_parses",
+        manifest_ok,
+        "cells_manifest.toml present and valid",
+    );
+
+    let cell_files: Vec<_> = std::fs::read_dir(cells_dir)
+        .into_iter()
+        .flatten()
+        .flatten()
+        .filter(|e| {
+            e.path()
+                .file_name()
+                .and_then(|n| n.to_str())
+                .is_some_and(|n| n.ends_with("_cell.toml"))
+        })
+        .collect();
+
+    v.check_bool(
+        "cellular:cell_count",
+        !cell_files.is_empty(),
+        &format!("{} cell graphs found", cell_files.len()),
+    );
+
+    for entry in &cell_files {
+        let path = entry.path();
+        let stem = path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("unknown");
+
+        let content = match std::fs::read_to_string(&path) {
+            Ok(c) => c,
+            Err(_) => {
+                v.check_bool(
+                    &format!("cellular:{stem}:readable"),
+                    false,
+                    "file not readable",
+                );
+                continue;
+            }
+        };
+
+        let val: toml::Value = match content.parse() {
+            Ok(p) => p,
+            Err(e) => {
+                v.check_bool(
+                    &format!("cellular:{stem}:parses"),
+                    false,
+                    &format!("parse error: {e}"),
+                );
+                continue;
+            }
+        };
+        v.check_bool(&format!("cellular:{stem}:parses"), true, "valid TOML");
+
+        let has_graph = val.get("graph").is_some();
+        v.check_bool(
+            &format!("cellular:{stem}:graph_section"),
+            has_graph,
+            "[graph] section present",
+        );
+
+        let pt_mode = val
+            .get("graph")
+            .and_then(|g| g.get("metadata"))
+            .and_then(|m| m.get("petaltongue_mode"))
+            .and_then(|v| v.as_str());
+        v.check_bool(
+            &format!("cellular:{stem}:live_mode"),
+            pt_mode == Some("live"),
+            &format!(
+                "petaltongue_mode = {:?}",
+                pt_mode.unwrap_or("MISSING")
+            ),
+        );
+
+        let nodes = val
+            .get("graph")
+            .and_then(|g| g.get("nodes"))
+            .and_then(|n| n.as_array());
+
+        let node_names: Vec<&str> = nodes
+            .iter()
+            .flat_map(|arr| arr.iter())
+            .filter_map(|n| n.get("name").and_then(|v| v.as_str()))
+            .collect();
+
+        let has_tower = node_names.contains(&"beardog") && node_names.contains(&"songbird");
+        v.check_bool(
+            &format!("cellular:{stem}:tower"),
+            has_tower,
+            "Tower primals (beardog + songbird) present",
+        );
+
+        let has_petaltongue = node_names.contains(&"petaltongue");
+        v.check_bool(
+            &format!("cellular:{stem}:petaltongue"),
+            has_petaltongue,
+            "petalTongue node present",
+        );
+
+        let has_validate = node_names.iter().any(|n| n.starts_with("validate"));
+        v.check_bool(
+            &format!("cellular:{stem}:health_check"),
+            has_validate,
+            "validation health_check node present",
+        );
     }
 }

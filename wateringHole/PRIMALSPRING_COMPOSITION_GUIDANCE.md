@@ -980,4 +980,70 @@ or from well-known socket name prefixes.
 
 ---
 
+## 18. Cellular Deployment Model
+
+A **cell** is a self-contained biomeOS deploy graph: NUCLEUS base + domain
+overlay + petalTongue in `live` mode. Every spring and garden has a cell
+graph in `graphs/cells/`.
+
+### What a Cell Contains
+
+```
+NUCLEUS base (biomeOS, Tower, Node, Nest, Provenance)
+  + petalTongue live (IPC server + native egui window)
+  + domain overlay (the spring's or garden's primal)
+  + validation health_check node
+```
+
+### Cell Graphs
+
+| Cell | Domain | Graph |
+|------|--------|-------|
+| hotSpring | QCD physics | `graphs/cells/hotspring_cell.toml` |
+| wetSpring | Life science | `graphs/cells/wetspring_cell.toml` |
+| neuralSpring | ML inference | `graphs/cells/neuralspring_cell.toml` |
+| ludoSpring | Game science | `graphs/cells/ludospring_cell.toml` |
+| airSpring | Weather/ecology | `graphs/cells/airspring_cell.toml` |
+| groundSpring | Geoscience | `graphs/cells/groundspring_cell.toml` |
+| healthSpring | Clinical | `graphs/cells/healthspring_cell.toml` |
+| esotericWebb | CRPG (garden) | `graphs/cells/esotericwebb_cell.toml` |
+
+### How to Deploy a Cell
+
+```bash
+# Via biomeOS (preferred)
+biomeos deploy --graph graphs/cells/ludospring_cell.toml
+
+# Via cell_launcher.sh
+./tools/cell_launcher.sh ludospring start
+./tools/cell_launcher.sh ludospring status
+./tools/cell_launcher.sh list
+```
+
+### For Gardens
+
+Gardens consume validated cell graphs directly. Instead of hand-writing
+primal node declarations, reference the spring's cell graph:
+
+```bash
+# esotericWebb uses the ludospring cell as its science base
+biomeos deploy --graph graphs/cells/esotericwebb_cell.toml
+```
+
+### guidestone Layer 7
+
+guidestone now validates cellular deployment at Layer 7:
+- Each cell graph parses as valid TOML
+- `[graph.metadata].petaltongue_mode = "live"` is declared
+- Tower primals (beardog + songbird) are present
+- petalTongue node exists with `params.mode = "live"`
+- Validation health_check node is present
+
+### Experiment: exp098
+
+`exp098_cellular_deployment` validates all cell graphs structurally
+and optionally submits them to biomeOS for dry-run deployment.
+
+---
+
 **License**: AGPL-3.0-or-later

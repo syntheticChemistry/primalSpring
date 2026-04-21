@@ -92,6 +92,27 @@ BIN_DIR="$(detect_bin_dir)"
 FAMILY_ID="$(detect_family_id)"
 GRAPHS_DIR="$(detect_graphs_dir)"
 
+resolve_family_seed() {
+    if [[ -n "${BEARDOG_FAMILY_SEED:-}" ]]; then
+        echo "$BEARDOG_FAMILY_SEED"
+        return
+    fi
+    if [[ -n "${FAMILY_SEED:-}" ]]; then
+        echo "$FAMILY_SEED"
+        return
+    fi
+    if [[ -f "$SOCKET_DIR/.family.seed" ]]; then
+        cat "$SOCKET_DIR/.family.seed"
+        return
+    fi
+    head -c 32 /dev/urandom | xxd -p | tr -d '\n'
+}
+
+FAMILY_SEED="$(resolve_family_seed)"
+export FAMILY_SEED
+export BEARDOG_FAMILY_SEED="$FAMILY_SEED"
+export FAMILY_ID
+
 log() { echo "[nucleus] $(date +%H:%M:%S) $*"; }
 err() { echo "[nucleus] ERROR: $*" >&2; }
 
@@ -175,14 +196,22 @@ cmd_start() {
     log "  bin_dir:    ${BIN_DIR:-<release targets>}"
     log "  family_id:  $FAMILY_ID"
     log "  socket_dir: $SOCKET_DIR"
+    log "  seed:       ${FAMILY_SEED:0:16}... (${#FAMILY_SEED} chars)"
     log "  security:   Tower=BTSP, NUCLEUS=tower_delegated, TCP=disabled"
     if [[ -n "${SONGBIRD_FEDERATION_PORT:-}" ]]; then
         log "  federation: Songbird TCP port $SONGBIRD_FEDERATION_PORT (opt-in)"
     fi
     mkdir -p "$SOCKET_DIR"
 
-    # ── Phase 0: biomeOS Neural API ──────────────────────────────────
-    log "── Phase 0: biomeOS Neural API ──"
+    echo "$FAMILY_SEED" > "$SOCKET_DIR/.family.seed"
+    chmod 600 "$SOCKET_DIR/.family.seed"
+    log "  seed:       persisted to $SOCKET_DIR/.family.seed"
+
+    # ── Phase 0: biomeOS Neural API (cleartext bootstrap) ────────────
+    # biomeOS starts BEFORE Tower (BearDog), so it cannot enforce BTSP yet.
+    # BIOMEOS_BTSP_ENFORCE=0 keeps it in cleartext mode. After Tower is
+    # confirmed healthy (Phase 1), biomeOS can be signalled to escalate.
+    log "── Phase 0: biomeOS Neural API (cleartext bootstrap) ──"
     local biomeos_bin
     biomeos_bin="$(find_binary biomeos biomeOS)"
     if [[ -z "$biomeos_bin" ]]; then
@@ -191,9 +220,11 @@ cmd_start() {
     fi
     local neural_sock="$SOCKET_DIR/neural-api-${FAMILY_ID}.sock"
     if ! pgrep -f "biomeos.*neural-api.*${FAMILY_ID}" >/dev/null 2>&1; then
-        local biomeos_args=(neural-api --socket "$neural_sock" --family-id "$FAMILY_ID" --log-level "$NUCLEUS_LOG_LEVEL")
+        local biomeos_args=(neural-api --socket "$neural_sock" --family-id default --log-level "$NUCLEUS_LOG_LEVEL")
         [[ -n "$GRAPHS_DIR" ]] && biomeos_args+=(--graphs-dir "$GRAPHS_DIR")
-        setsid "$biomeos_bin" "${biomeos_args[@]}" > /tmp/nucleus-biomeos.log 2>&1 &
+        setsid env -u FAMILY_ID -u FAMILY_SEED -u BEARDOG_FAMILY_SEED \
+            BIOMEOS_BTSP_ENFORCE=0 \
+            "$biomeos_bin" "${biomeos_args[@]}" > /tmp/nucleus-biomeos.log 2>&1 &
         local bm_pid=$!
         disown "$bm_pid" 2>/dev/null || true
         save_pid biomeos "$bm_pid"
@@ -435,6 +466,18 @@ cmd_start() {
                 log "  ${alias}.sock → ${primal_alias_map[$alias]}.sock" || true
         fi
     done
+
+    # ── petalTongue neural-api alias ──────────────────────────────
+    # petalTongue discovers biomeOS at $XDG_RUNTIME_DIR/biomeos-neural-api-{family}.sock
+    # (one directory above SOCKET_DIR). Create the alias so petalTongue web/ui
+    # can connect to biomeOS's neural-api for live graph and capability data.
+    local xdg_dir
+    xdg_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    local neural_alias="$xdg_dir/biomeos-neural-api-${FAMILY_ID}.sock"
+    if [[ -S "$neural_sock" ]] && [[ ! -e "$neural_alias" ]]; then
+        ln -sf "$neural_sock" "$neural_alias" 2>/dev/null && \
+            log "  petalTongue alias: $neural_alias → $neural_sock" || true
+    fi
 
     # ── Late alias sweep (retry for slow starters) ────────────────
     sleep 2

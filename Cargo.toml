@@ -85,6 +85,7 @@ members = [
     "experiments/exp094_composition_parity",
     "experiments/exp095_proto_nucleate_template",
     "experiments/exp096_pixel_cross_arch_bonding",
+    "experiments/exp098_cellular_deployment",
 ]
 
 [workspace.package]
@@ -102,7 +103,7 @@ clap = { version = "4", features = ["derive"] }
 thiserror = "2"
 
 [workspace.lints.rust]
-unsafe_code = "forbid"
+unsafe_code = "deny"
 missing_docs = "deny"
 
 [workspace.lints.clippy]

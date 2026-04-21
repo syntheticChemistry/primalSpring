@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: April 20, 2026
-**Status**: Phase 45 — v0.9.17 — 75 experiments (17 tracks), 631 tests, 56 deploy graphs (fragment-first composition), **guideStone Level 4** (67/67 live NUCLEUS, 41/41 bare, BLAKE3 checksums P3), **genomeBin v5.1** (46 binaries / 6 target triples, Tier 1: 39/39), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), full cross-architecture deployment (x86_64/aarch64/armv7/windows/android/riscv64), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin is full genomeBin depot** — downstream springs use `build_ecosystem_genomeBin.sh` for any target, 46 binaries shipped, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, 15/15 cross-arch checks
+**Status**: Phase 45 — v0.9.17 — 75 experiments (17 tracks), 631 tests, 56 deploy graphs (fragment-first composition), **guideStone Level 4** (161/166 live NUCLEUS, 41/41 bare, BLAKE3 checksums P3, **incremental BTSP escalation** with per-atomic security reporting), **genomeBin v5.1** (46 binaries / 6 target triples, Tier 1: 39/39), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), **seed provenance** (public BLAKE3 fingerprints in plasmidBin/manifest.toml), full cross-architecture deployment (x86_64/aarch64/armv7/windows/android/riscv64), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin is full genomeBin depot** — downstream springs use `build_ecosystem_genomeBin.sh` for any target, 46 binaries shipped, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, **biomeOS substrate validated** (Neural API liveness + graph executor)
 
 ---
 
@@ -67,7 +67,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
-| unsafe_code | Workspace-level `forbid` |
+| unsafe_code | Workspace-level `deny` (allow-listed for `std::env::set_var` in Rust 2024 entropy bootstrap) |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
 | Deploy graphs | **56 TOMLs** (6 fragments + 9 profiles + 5 multi-node + 4 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + ~11 root), fragment-first composition with `resolve = true` |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
@@ -99,8 +99,9 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 ### guideStone Level 4 — Live NUCLEUS (April 20, 2026)
 
 The `primalspring_guidestone` binary now validates against a live 12-primal NUCLEUS
-composition deployed from `plasmidBin` ecoBin binaries. **67/67 ALL PASS** (23 skips
-for protocol boundaries: BTSP handshake, HTTP-framed UDS services).
+composition deployed from `plasmidBin` ecoBin binaries. **161/166 PASS** (5 expected FAIL —
+upstream BTSP server gaps for BearDog, Songbird, rhizoCrypt, sweetGrass, loamSpine).
+Layers now include 0.5 (seed provenance), 1.5 (BTSP escalation + biomeOS substrate).
 
 Key evolution this phase:
 - **BLAKE3 checksums (Property 3)**: `primalspring::checksums` module generates and
@@ -133,9 +134,11 @@ artifact: the **guideStone**. Each spring evolves from a Rust validation binary
 "primal proof"). primalSpring's own guideStone validates composition correctness
 as the base certification layer.
 
-**primalspring_guidestone binary** — 6-layer NUCLEUS composition certification:
+**primalspring_guidestone binary** — 9-layer NUCLEUS composition certification:
 - **Layer 0 (Bare)**: Deploy graph parsing, fragment resolution, manifest consistency, bonding type well-formedness. Runs on any clean machine without primals.
+- **Layer 0.5 (Seed Provenance)**: Public BLAKE3 fingerprints verified against `plasmidBin/manifest.toml`. Binary authenticity before any IPC.
 - **Layer 1 (Discovery)**: All primals in the graph discoverable via capability-based scan.
+- **Layer 1.5 (BTSP Escalation)**: Per-atomic security posture — Tower (btsp), Node/Nest (tower_delegated), Provenance (btsp). biomeOS substrate health (Neural API + graph executor).
 - **Layer 2 (Health)**: Tower, Node, Nest primals respond to `health.liveness`.
 - **Layer 3 (Parity)**: `stats.mean`, `tensor.matmul`, storage roundtrip, shader capabilities via IPC.
 - **Layer 4 (Cross-Atomic)**: Tower hash → Nest store → retrieve → verify (end-to-end proof).
@@ -154,9 +157,64 @@ their own guideStone binaries.
 - hotSpring v0.6.32: **Level 5 — Certified** (guideStone-v0.7.0)
 - healthSpring V53, neuralSpring V133, wetSpring V145, ludoSpring V44: **Level 1** (validation exists)
 - airSpring v0.10.0, groundSpring V124: **Level 0** (not started)
-- primalSpring v0.9.17: **Level 4** (67/67 live NUCLEUS, 41/41 bare, BLAKE3 P3, genomeBin v5.1)
+- primalSpring v0.9.17: **Level 4** (161/166 live NUCLEUS, 41/41 bare, BLAKE3 P3, BTSP escalation, genomeBin v5.1)
 
 See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
+
+## What Changed — Phase 45b (Entropy Hierarchy + BTSP Escalation)
+
+### Guidestone Entropy Hierarchy (April 2026)
+
+Implemented machine-level (mito tier) entropy for portable validation:
+- **MitoSeed**: deterministic, clonable seed from `FAMILY_SEED` or `.family.seed` file.
+  Proves group membership. Used for BTSP Phase 1 handshake key derivation.
+- **Public seed fingerprints**: BLAKE3 hash of each primal's canonical crypto parameters
+  published in `plasmidBin/manifest.toml`. Layer 0.5 verifies binary authenticity before
+  any IPC occurs — untampered primals safe for use.
+- **Nuclear tier** (future): human entropy mixed in, connection clipped — sovereign
+  non-clonable identity. Mito + nuclear = eukaryotic envelope model.
+
+### Incremental BTSP Escalation
+
+The escalation model builds security incrementally from cleartext:
+
+| Phase | State | What Changes |
+|-------|-------|--------------|
+| Bootstrap | Cleartext | biomeOS starts with `BIOMEOS_BTSP_ENFORCE=0` before Tower |
+| Tower BTSP | Encrypted | BearDog + Songbird authenticate via 4-step handshake |
+| Node/Nest | Delegated | ToadStool, barraCuda, coralReef, NestGate trust Tower's auth |
+| Provenance | Encrypted | rhizoCrypt, sweetGrass, loamSpine authenticate directly |
+| Full NUCLEUS | Encrypted | All capabilities authenticated or tower-delegated |
+
+`upgrade_btsp_clients()` implements a reactive two-pass strategy:
+1. **Pass 1 (probe)**: cleartext `health.liveness` — capabilities that respond stay cleartext
+2. **Pass 2 (escalate)**: capabilities that reject cleartext get fresh BTSP connection
+
+**Layer 1.5** in guidestone reports per-atomic security posture:
+- `btsp:Tower:security` — BTSP expected (upstream gap: BearDog server handshake)
+- `btsp:Tower:discovery` — BTSP expected (upstream gap: Songbird server handshake)
+- `btsp:Node:*` — tower_delegated (cleartext OK)
+- `btsp:Nest:*` — tower_delegated (cleartext OK)
+- `btsp:Provenance:*` — BTSP expected (upstream gap: rhizoCrypt, sweetGrass)
+
+**biomeOS substrate** validated: Neural API liveness + `graph.list` executor checked.
+
+### Upstream BTSP Server Gaps Exposed
+
+The 5 FAILs in 161/166 are **legitimate upstream gaps** — these primals do not yet
+implement the 4-step BTSP server handshake (ClientHello → ServerHello →
+ChallengeResponse → HandshakeComplete) on their primary JSON-RPC sockets:
+
+| Primal | Behavior | Impact |
+|--------|----------|--------|
+| BearDog | Treats ClientHello as invalid JSON-RPC, returns Parse error, closes connection | Tower security not BTSP-authenticated |
+| Songbird | Same pattern — HTTP-framed UDS, no BTSP listener | Tower discovery not BTSP-authenticated |
+| rhizoCrypt | No BTSP server implementation on DAG socket | Provenance DAG not BTSP-authenticated |
+| sweetGrass | No BTSP server implementation on commit socket | Provenance commit not BTSP-authenticated |
+| loamSpine | No BTSP server implementation on provenance socket | Provenance attestation not BTSP-authenticated |
+
+All 5 primals pass cleartext validation and seed fingerprint verification.
+Their binaries are authentic — the gap is wire-level BTSP handshake support.
 
 ## What Changed — Phase 45 (Deployment Validation + Upstream Absorption)
 
