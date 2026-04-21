@@ -1669,28 +1669,33 @@ Patterns independently invented by 2+ springs, now absorbed into primalSpring:
 | Capability symlinks not created by `start_primal.sh` | Manual `ln -sf` required for discovery | `create_capability_symlinks()` runs post-launch | 12 capability categories auto-linked |
 | Webb expects `game.record_action`, `game.push_scene`, `game.query_vertices` | Not implemented in ludoSpring | Wired in barracuda IPC handler with session DAG tracking | 22/22 IPC tests pass |
 
-### Remaining Upstream Gaps (Actionable for Primal Teams)
+### Upstream Gaps — ALL RESOLVED (Audit April 21, 2026)
 
-| Primal | Gap | Impact | Recommended Fix |
-|--------|-----|--------|-----------------|
-| **BearDog** | `crypto.sign` uses internal `default_signing_key` whose `public_key` is not exposed | Cannot do sign→verify roundtrip through IPC | Add `crypto.default_public_key` method or include `public_key` in sign response |
-| **BearDog** | URL-safe base64 vs standard base64 in ed25519 responses | Consumers must tolerate both encodings | Standardize on one; recommend standard base64 |
-| **rhizocrypt** | Resets connection without BTSP handshake | `health.check` probes fail with EPIPE/ECONNRESET | Accept unauthenticated `health.check` before BTSP |
-| **sweetgrass** | Same BTSP-first behavior | Same | Same |
-| **loamspine** | Socket naming doesn't follow `{primal}-{family}.sock` pattern | `capability:ledger` discovery fails | Use family-qualified naming or register capability symlinks |
-| **biomeOS** | HTTP-on-UDS transport | JSON-RPC probes get HTTP 400 | Expected; classify as SKIP. Future: JSON-RPC adapter or HTTP-aware probe |
-| **Songbird** | Routes by capability, not primal name | `resolve("beardog")` fails; `resolve("security")` works | Document capability-first routing as the standard |
-| **barraCuda** | `tensor.create`/`tensor.matmul` require GPU (No GPU available) | Handle-based tensor ops fail on headless/CI hosts | Fall back to CPU for small tensors, or document GPU requirement |
+All 8 upstream gaps flagged in Phase 45 have been **resolved by the primal teams**.
+Each primal was pulled and audited against the specific debt item.
 
-### Scorecard After Refinement
+| Primal | Gap (was) | Resolution | Verified In |
+|--------|-----------|------------|-------------|
+| **BearDog** | `crypto.sign` didn't expose `public_key` | Wave 62 (BD-PG-01): `public_key` (standard base64) in sign response. Roundtrip test added. | `asymmetric_tests.rs` |
+| **BearDog** | Mixed URL-safe / standard base64 | Wave 62 (BD-PG-02): Ed25519 outputs standardized to standard base64. Verify accepts legacy. | `asymmetric_tests.rs` |
+| **rhizoCrypt** | BTSP connection reset on `health.check` | S45.1: First-byte `{` auto-detect on UDS. `UNAUTHENTICATED_METHODS` allowlist. | `newline.rs` tests |
+| **sweetGrass** | Same BTSP connection reset | `PeekedStream` first-byte auto-detect on UDS + TCP. | `uds/tests/autodetect.rs` |
+| **loamSpine** | Socket naming / `discover_by_capability("ledger")` | v0.9.16 (GAP-MATRIX-12): `{primal}-{family}.sock` adopted. `ledger.sock` symlink at runtime. | STATUS.md: PASS |
+| **Songbird** | Routes by capability only, name fails | Wave 151 (PG-37): capability-first with primal-name fallback. `ipc.resolve_by_name` alias. | `ipc_registry.rs` |
+| **barraCuda** | Handle-based tensor ops fail without GPU | Sprint 44c: CPU fallback for 7 handle-based ops. `"backend": "cpu"` on headless. | `TENSOR_WIRE_CONTRACT.md` |
+| **biomeOS** | HTTP-on-UDS, JSON-RPC probes get HTTP 400 | v3.22: Dual-protocol auto-detect on UDS. First byte `{` → NDJSON handler. | `unix_server.rs` |
 
-| Component | Before | After |
-|-----------|--------|-------|
-| guidestone | 84/86 PASS (2 FAIL) | **86/86 PASS** (6 SKIP — BTSP/loamspine expected) |
-| exp067 | 18/19 (1 SKIP) | **18/19** (1 expected SKIP — game primal not deployed) |
-| exp068 | 3/6 (3 FAIL) | **6/6 PASS** |
-| exp072 | 24/31 (2 FAIL, 5 SKIP) | **24/31** (2 expected FAIL — biomeOS HTTP + ludoSpring not deployed) |
-| ludoSpring game.* methods | 12 methods | **15 methods** (+record_action, push_scene, query_vertices) |
+**Zero open upstream gaps remain as of April 21, 2026.**
+
+### Scorecard After Full Resolution
+
+| Component | Phase 45 Start | After Local Fix | Expected After Revalidation |
+|-----------|---------------|-----------------|----------------------------|
+| guidestone | 84/86 (2 FAIL) | **86/86 PASS** (6 SKIP) | 86/86 PASS (≤3 SKIP — BTSP primals now probed) |
+| exp067 | 18/19 (1 SKIP) | **18/19** | 18/19 (1 SKIP — ludoSpring not deployed as primal) |
+| exp068 | 3/6 (3 FAIL) | **6/6 PASS** | 6/6 PASS |
+| exp072 | 24/31 | **24/31** | ≥27/31 (biomeOS JSON-RPC + tensor CPU fallback now work) |
+| ludoSpring game.* | 12 methods | **15 methods** | 15 methods |
 
 ---
 

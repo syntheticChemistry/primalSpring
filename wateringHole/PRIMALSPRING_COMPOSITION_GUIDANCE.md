@@ -969,12 +969,14 @@ or from well-known socket name prefixes.
 | barraCuda `math.dot`/`math.l2_norm` don't exist | **RESOLVED** | Use `stats.mean`, `stats.variance`, `activation.fitts` (actual API surface) |
 | Capability symlinks missing after launch | **RESOLVED** | `start_primal.sh` now creates symlinks automatically via `create_capability_symlinks()` |
 | Webb needs `game.record_action/push_scene/query_vertices` | **RESOLVED** | Wired in ludoSpring barracuda IPC handler |
-| Songbird name-resolution | Upstream | Use capability-based discovery, not primal names |
-| BearDog ed25519 sign→verify roundtrip | Upstream | `crypto.sign` uses internal key without exposing `public_key`; recommend adding `crypto.default_public_key` |
-| rhizocrypt/sweetgrass BTSP-first | Upstream | Accept unauthenticated `health.check` before BTSP handshake |
-| loamspine socket naming | Upstream | Use family-qualified naming or register capability symlinks |
-| petalTongue spring format | Upstream | Align `visualization.render` params with `SpringDataAdapter` |
-| biomeOS HTTP-on-UDS | Expected | Classify as reachable-but-incompatible (SKIP, not FAIL) |
+| Songbird name-resolution | **RESOLVED** | Wave 151: `ipc.resolve` does capability-first with primal-name fallback. `ipc.resolve_by_name` alias added. |
+| BearDog ed25519 sign→verify roundtrip | **RESOLVED** | Wave 62 (BD-PG-01): `public_key` now included in `crypto.sign` response. Roundtrip test added. |
+| rhizoCrypt BTSP-first | **RESOLVED** | S45.1: First-byte `{` auto-detect on UDS. `UNAUTHENTICATED_METHODS` allowlist for `health.check`. |
+| sweetGrass BTSP-first | **RESOLVED** | `PeekedStream` first-byte auto-detect on UDS + TCP. `autodetect.rs` test suite. |
+| loamSpine socket naming | **RESOLVED** | v0.9.16 (GAP-MATRIX-12): `{primal}-{family}.sock` adopted. `ledger.sock` capability symlink at runtime. |
+| barraCuda tensor GPU-only | **RESOLVED** | Sprint 44c: CPU fallback for 7 handle-based ops. `"backend": "cpu"` on headless hosts. |
+| biomeOS HTTP-on-UDS | **RESOLVED** | v3.22: Dual-protocol auto-detect on UDS. First byte `{` routes to NDJSON handler. |
+| petalTongue spring format | Upstream | Align `visualization.render` params with `SpringDataAdapter` (only remaining gap) |
 
 ---
 
