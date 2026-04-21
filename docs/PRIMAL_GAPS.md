@@ -1064,7 +1064,7 @@ All 13 primals have Phase 1 + Phase 2 (guard + socket naming + handshake on acce
 **Tower Atomic: 100%. Node Atomic: 100%. NUCLEUS: 100%. All primals: 100%.**
 primalSpring itself: clippy ZERO warnings, fmt PASS, all tests PASS.
 
-1. **Songbird**: **BTSP Phase 2 COMPLETE** ↑↑ (Wave 133) — `perform_server_handshake()` in `ipc/btsp.rs`, wired into UDS accept loop, BearDog delegation via `SecurityRpcClient`. `BtspClient` + connection managers.
+1. **Songbird**: **BTSP Phase 2 COMPLETE** ↑↑ (Wave 133, **NDJSON wire-format Wave 153**) — `perform_server_handshake()` (length-prefix) + `perform_server_handshake_ndjson()` (JSON-line) in `ipc/btsp.rs`; first-line auto-detect: `"protocol":"btsp"` → NDJSON BTSP handshake then NDJSON JSON-RPC; BearDog delegation via `SecurityRpcClient`. `BtspClient` + connection managers.
 2. **ToadStool**: **BTSP Phase 2 COMPLETE** ↑↑ (S198) — `BtspServer::accept_handshake` on JSON-RPC Unix + tarpc paths, feature-gated. `BtspClient`. Fuzz targets (`fuzz_btsp_framing.rs`).
 3. **barraCuda**: **BTSP Phase 2 COMPLETE** ↑↑ (Sprint 39) — `guard_connection()` full 6-step handshake relay in all 3 accept loops. BearDog delegation via capability-based `crypto` socket discovery. Legacy clients degrade (2s timeout).
 4. **rhizoCrypt**: **BTSP Phase 2 COMPLETE** ↑↑ (S31) — `BtspServer::accept_handshake` in UDS accept. Local crypto (self-sovereign — HKDF/X25519/HMAC-SHA256, no BearDog delegation).
