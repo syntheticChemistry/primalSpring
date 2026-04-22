@@ -73,8 +73,8 @@ v0.9.17 Phase 45 — 631 tests (585 passed + 46 ignored), 75 experiments (17 tra
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
-Live validation: **12/12 primals ALIVE**, **161/166 guidestone PASS** (5 expected FAIL —
-upstream BTSP server gaps for BearDog, Songbird, rhizoCrypt, sweetGrass),
+Live validation: **12/12 primals ALIVE**, **162/166 guidestone PASS** (4 FAIL —
+BTSP cleartext on Songbird, rhizoCrypt, loamSpine, sweetGrass; BearDog BTSP confirmed),
 **19/19 exp094 composition parity**, **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
 (HSM cfg-gated). ludoSpring parity: exp068 **6/6**, exp067 **18/19**, exp072 **24/31**.
 Full NUCLEUS validated across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.

@@ -16,7 +16,7 @@
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 75 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
-| **guideStone** | Level 4 — **161/166 live NUCLEUS** (5 expected FAIL — upstream BTSP server gaps), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP escalation (Layer 1.5), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
+| **guideStone** | Level 4 — **162/166 live NUCLEUS** (4 FAIL — BTSP cleartext on Songbird/rhizoCrypt/loamSpine/sweetGrass; BearDog BTSP confirmed), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP escalation (Layer 1.5), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` (allow-listed for `std::env::set_var` in Rust 2024) |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 

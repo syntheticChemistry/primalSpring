@@ -252,7 +252,7 @@ cmd_start() {
     fi
 
     if [[ -n "$songbird_bin" ]]; then
-        local songbird_args=(server --socket "$songbird_sock" --beardog-socket "$beardog_sock")
+        local songbird_args=(server --socket "$songbird_sock" --beardog-socket "$beardog_sock" --security-socket "$beardog_sock")
         if [[ -n "${SONGBIRD_FEDERATION_PORT:-}" ]]; then
             songbird_args+=(--port "$SONGBIRD_FEDERATION_PORT")
             log "  Songbird: TCP federation on port $SONGBIRD_FEDERATION_PORT"
@@ -260,6 +260,9 @@ cmd_start() {
         SONGBIRD_SECURITY_PROVIDER="$beardog_sock" \
         SONGBIRD_DISCOVERY_MODE="disabled" \
         FAMILY_ID="$FAMILY_ID" \
+        FAMILY_SEED="${FAMILY_SEED:-}" \
+        BEARDOG_FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+        BTSP_PROVIDER_SOCKET="$beardog_sock" \
             start_primal songbird "$songbird_bin" "${songbird_args[@]}" || true
         wait_for_socket "$songbird_sock" 8 || log "WARN: songbird socket not ready"
     else
@@ -369,6 +372,9 @@ cmd_start() {
         RHIZOCRYPT_SOCKET="$rhizocrypt_sock" \
         BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
         BEARDOG_SOCKET="$beardog_sock" \
+        FAMILY_SEED="${FAMILY_SEED:-}" \
+        BEARDOG_FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+        BTSP_PROVIDER_SOCKET="$beardog_sock" \
             start_primal rhizocrypt "$rhizocrypt_bin" server || true
         # rhizoCrypt may bind as rhizocrypt.sock (no family suffix)
         wait_for_socket "$rhizocrypt_sock" 12 || \
@@ -383,6 +389,10 @@ cmd_start() {
         BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
         BEARDOG_SOCKET="$beardog_sock" \
         RHIZOCRYPT_SOCKET="$rhizocrypt_sock" \
+        FAMILY_SEED="${FAMILY_SEED:-}" \
+        BEARDOG_FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+        BTSP_PROVIDER_SOCKET="$beardog_sock" \
+        BIOMEOS_FAMILY_ID="$FAMILY_ID" \
             start_primal loamspine "$loamspine_bin" server || true
         wait_for_socket "$loamspine_sock" 8 || log "WARN: loamspine socket not ready"
     else
@@ -393,6 +403,9 @@ cmd_start() {
         SWEETGRASS_SOCKET="$sweetgrass_sock" \
         BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
         BEARDOG_SOCKET="$beardog_sock" \
+        FAMILY_SEED="${FAMILY_SEED:-}" \
+        BEARDOG_FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+        BTSP_PROVIDER_SOCKET="$beardog_sock" \
             start_primal sweetgrass "$sweetgrass_bin" server || true
         wait_for_socket "$sweetgrass_sock" 8 || log "WARN: sweetgrass socket not ready"
     else

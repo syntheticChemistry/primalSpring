@@ -4,7 +4,7 @@
 #
 # Verify: primalspring::checksums::verify_manifest()
 89f28f5cf9d37d2253e3ea490e49ca91b268a4572cb1c0a31bf6965edf4231e8  ecoPrimal/src/bin/primalspring_guidestone/main.rs
-4ce6f3e2e579b06fda28231cdc5f557ad36324fba5f0ce5cd1ad064d3634bbc5  ecoPrimal/src/composition/mod.rs
+15ae5ed82b865ac1f1875cbf29305a33cfb5d9313238b48cbcc0df4b4ce83d14  ecoPrimal/src/composition/mod.rs
 6aca6ed37facd99aa731b548a5b9b60cddb04cc192c7dbaa2914c81b6ff4803d  ecoPrimal/src/validation/mod.rs
 739a67533ad6e08cb8fbdae9c4600c656d504388cfe078791dd58b314cfb8a0f  ecoPrimal/src/tolerances/mod.rs
 d3684263dd357d81a1ad6f5cca02721b13122d2a69dbca75253a5f54dedaa040  ecoPrimal/src/coordination/mod.rs

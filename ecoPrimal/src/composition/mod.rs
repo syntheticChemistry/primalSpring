@@ -634,36 +634,54 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
         None => return state,
     };
 
-    // Pass 1: probe cleartext. Collect capabilities that reject cleartext.
-    let caps_to_upgrade: Vec<String> = clients
-        .iter_mut()
-        .filter_map(|(cap, client)| {
-            match client.call("health.liveness", serde_json::json!({})) {
-                Ok(_) => None,
-                Err(e) if e.is_connection_error() || e.is_protocol_error() => {
-                    tracing::debug!(cap, "cleartext rejected, will attempt BTSP");
-                    Some(cap.clone())
-                }
-                Err(_) => None,
-            }
-        })
-        .collect();
+    // Hybrid: proactive BTSP for Tower-tier primals (BearDog confirmed),
+    // safe cleartext-first for others. Proactive BTSP on primals whose
+    // handshake relay isn't fully wired poisons the connection, so we
+    // only escalate where the handshake is known to complete end-to-end.
+    const PROACTIVE_CAPS: &[&str] = &["security"];
 
-    // Pass 2: BTSP upgrade for rejected capabilities.
-    for cap in caps_to_upgrade {
-        let primal = capability_to_primal(&cap);
-        let result = crate::ipc::discover::discover_by_capability(&cap);
+    let all_caps: Vec<String> = clients.keys().cloned().collect();
+
+    for cap in &all_caps {
+        let primal = capability_to_primal(cap);
+        let result = crate::ipc::discover::discover_by_capability(cap);
         if let Some(path) = result.socket {
-            match PrimalClient::connect_btsp(&path, primal, &seed) {
-                Ok(btsp_client) => {
-                    tracing::info!(cap, primal, "BTSP authenticated");
-                    clients.insert(cap.clone(), btsp_client);
-                    state.insert(cap, true);
+            if PROACTIVE_CAPS.contains(&cap.as_str()) {
+                match PrimalClient::connect_btsp(&path, primal, &seed) {
+                    Ok(btsp_client) => {
+                        tracing::info!(cap, primal, "BTSP authenticated (proactive)");
+                        clients.insert(cap.clone(), btsp_client);
+                        state.insert(cap.clone(), true);
+                    }
+                    Err(e) => {
+                        tracing::debug!(cap, primal, ?e, "BTSP upgrade failed, keeping cleartext");
+                    }
                 }
-                Err(e) => {
-                    tracing::debug!(cap, primal, ?e, "BTSP upgrade failed");
-                    if let Ok(fresh) = PrimalClient::connect(&path, primal) {
-                        clients.insert(cap, fresh);
+            } else {
+                // Reactive: probe cleartext first, only escalate if rejected.
+                let client = clients.get_mut(cap.as_str());
+                let rejected = client
+                    .map(|c| {
+                        matches!(
+                            c.call("health.liveness", serde_json::json!({})),
+                            Err(e) if e.is_connection_error() || e.is_protocol_error()
+                        )
+                    })
+                    .unwrap_or(false);
+
+                if rejected {
+                    match PrimalClient::connect_btsp(&path, primal, &seed) {
+                        Ok(btsp_client) => {
+                            tracing::info!(cap, primal, "BTSP authenticated (reactive)");
+                            clients.insert(cap.clone(), btsp_client);
+                            state.insert(cap.clone(), true);
+                        }
+                        Err(e) => {
+                            tracing::debug!(cap, primal, ?e, "reactive BTSP failed, reconnecting cleartext");
+                            if let Ok(fresh) = PrimalClient::connect(&path, primal) {
+                                clients.insert(cap.clone(), fresh);
+                            }
+                        }
                     }
                 }
             }
