@@ -45,6 +45,27 @@ use crate::ipc::IpcError;
 use crate::ipc::client::PrimalClient;
 use crate::validation::ValidationResult;
 
+/// All NUCLEUS capabilities that primalSpring discovers and authenticates.
+///
+/// Single source of truth for `from_live_discovery`, `PROACTIVE_CAPS` in
+/// `upgrade_btsp_clients`, and the TCP fallback table. Capabilities that
+/// are aliases for the same primal socket (e.g. `dag` and `provenance`
+/// both → rhizoCrypt) appear once each so guidestone reports per-capability.
+const ALL_CAPS: &[&str] = &[
+    "security", "discovery", "compute", "tensor", "shader",
+    "storage", "ai", "dag", "commit", "provenance",
+    "visualization", "ledger", "attribution",
+];
+
+/// Extended capability aliases for BTSP proactive escalation.
+///
+/// Includes names that map to the same primal sockets as [`ALL_CAPS`]
+/// (e.g. `inference` → Squirrel, `spine`/`merkle` → loamSpine) to ensure
+/// BTSP coverage even when a client was connected under an alias name.
+const BTSP_EXTRA_CAPS: &[&str] = &[
+    "inference", "spine", "merkle", "braid",
+];
+
 /// A capability-keyed set of IPC clients for a running primal composition.
 ///
 /// Abstracts socket discovery and client lifecycle so springs interact with
@@ -88,24 +109,8 @@ impl CompositionContext {
     /// the test harness.
     #[must_use]
     pub fn from_live_discovery() -> Self {
-        let capabilities = &[
-            "security",
-            "discovery",
-            "compute",
-            "tensor",
-            "shader",
-            "storage",
-            "ai",
-            "dag",
-            "commit",
-            "provenance",
-            "visualization",
-            "ledger",
-            "attribution",
-        ];
-
         let mut clients = HashMap::new();
-        for &cap in capabilities {
+        for &cap in ALL_CAPS {
             if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
                 clients.insert(cap.to_owned(), client);
             }
@@ -600,25 +605,21 @@ pub fn is_skip_error(e: &IpcError) -> bool {
     e.is_connection_error() || e.is_protocol_error() || e.is_transport_mismatch()
 }
 
-/// Escalate discovered clients to BTSP using a two-pass strategy:
+/// Escalate discovered clients to BTSP.
 ///
-/// **Pass 1 (probe):** Send a cleartext `health.liveness` on each existing
-/// connection. Primals that accept cleartext stay cleartext. Primals that
-/// reject cleartext (connection reset / protocol error) are candidates for
-/// BTSP upgrade. This avoids breaking working cleartext connections —
-/// sending a BTSP ClientHello to a primal that doesn't speak BTSP poisons
-/// the connection (e.g. BearDog treats it as invalid JSON-RPC).
+/// BTSP is the default for the entire NUCLEUS. Every capability in
+/// [`ALL_CAPS`] + [`BTSP_EXTRA_CAPS`] gets a proactive handshake. On success the
+/// authenticated client replaces the cleartext one. On failure the original
+/// cleartext client is kept and the capability is marked as non-BTSP —
+/// guidestone reports this as FAIL.
 ///
-/// **Pass 2 (upgrade):** For rejected capabilities, open a fresh connection
-/// with the BTSP handshake. On success, the BTSP client replaces the old
-/// one. On failure, the cleartext connection is already gone (rejected),
-/// so we try a fresh cleartext reconnect as fallback.
+/// Capabilities not in the proactive set use a reactive fallback: probe
+/// cleartext first, only escalate if the server rejects cleartext.
 ///
 /// Published seed fingerprints (Layer 0.5) prove primal authenticity.
 /// Wire-level BTSP requires the server to implement the handshake protocol.
-/// Primals that accept cleartext but don't speak BTSP yet are an upstream
-/// gap — they are reachable and authenticated by fingerprint, but not
-/// encrypted on the wire.
+/// Primals that don't yet speak BTSP are upstream debt (petalTongue,
+/// loamSpine as of Phase 45c).
 ///
 /// Returns a `BTreeMap<capability, btsp_authenticated>` so guidestone can
 /// report per-atomic security posture without re-probing.
@@ -634,15 +635,7 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
         None => return state,
     };
 
-    // BTSP is the default for the entire NUCLEUS. Every capability gets
-    // a proactive handshake attempt. Shared-lineage cleartext is a future
-    // policy relaxation, not the starting point.
-    const PROACTIVE_CAPS: &[&str] = &[
-        "security", "discovery", "compute", "tensor", "shader",
-        "storage", "ai", "dag", "commit", "provenance",
-        "visualization", "ledger", "attribution", "inference",
-        "spine", "merkle", "braid",
-    ];
+    let proactive: Vec<&str> = ALL_CAPS.iter().chain(BTSP_EXTRA_CAPS.iter()).copied().collect();
 
     let all_caps: Vec<String> = clients.keys().cloned().collect();
 
@@ -650,7 +643,7 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
         let primal = capability_to_primal(cap);
         let result = crate::ipc::discover::discover_by_capability(cap);
         if let Some(path) = result.socket {
-            if PROACTIVE_CAPS.contains(&cap.as_str()) {
+            if proactive.contains(&cap.as_str()) {
                 match PrimalClient::connect_btsp(&path, primal, &seed) {
                     Ok(btsp_client) => {
                         tracing::info!(cap, primal, "BTSP authenticated (proactive)");
@@ -663,15 +656,14 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
                 }
             } else {
                 // Reactive: probe cleartext first, only escalate if rejected.
-                let client = clients.get_mut(cap.as_str());
-                let rejected = client
-                    .map(|c| {
+                let rejected = clients
+                    .get_mut(cap.as_str())
+                    .is_some_and(|c| {
                         matches!(
                             c.call("health.liveness", serde_json::json!({})),
                             Err(e) if e.is_connection_error() || e.is_protocol_error()
                         )
-                    })
-                    .unwrap_or(false);
+                    });
 
                 if rejected {
                     match PrimalClient::connect_btsp(&path, primal, &seed) {
@@ -764,9 +756,9 @@ fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u16)> 
         ),
         (
             "provenance",
-            pn::LOAMSPINE,
-            "LOAMSPINE_PORT",
-            tol::TCP_FALLBACK_NESTGATE_PORT + 2,
+            pn::RHIZOCRYPT,
+            "RHIZOCRYPT_PORT",
+            tol::TCP_FALLBACK_NESTGATE_PORT + 1,
         ),
         (
             "visualization",

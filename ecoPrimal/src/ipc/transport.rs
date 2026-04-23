@@ -40,15 +40,15 @@ pub struct Transport {
 }
 
 impl Transport {
-    /// Connect to a primal at the given Unix domain socket path.
+    /// Connect to a primal at the given Unix domain socket path (cleartext).
     ///
-    /// When `FAMILY_ID` is set (production mode) and `FAMILY_SEED` is available,
-    /// performs a BTSP handshake before returning the transport. In development
-    /// mode (`FAMILY_ID` absent or `"default"`), connects with cleartext JSON-RPC.
+    /// This is a plain JSON-RPC connection with no BTSP handshake. For
+    /// BTSP-authenticated connections, use [`connect_btsp`](Self::connect_btsp)
+    /// or let [`upgrade_btsp_clients`](crate::composition) handle escalation.
     ///
     /// # Errors
     ///
-    /// Returns [`IpcError`] on connection failure or BTSP handshake failure.
+    /// Returns [`IpcError`] on connection failure.
     pub fn connect(path: &Path) -> Result<Self, IpcError> {
         Self::unix(path)
     }

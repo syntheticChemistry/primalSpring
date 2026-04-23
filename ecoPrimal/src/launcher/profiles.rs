@@ -69,15 +69,17 @@ pub fn load_launch_profiles() -> Result<(LaunchProfile, HashMap<String, LaunchPr
 
 /// Whether a primal uses BTSP (`security_model = "btsp"` in its profile).
 ///
-/// Returns `true` for `BearDog` and similar perimeter primals; `false` for
-/// tower-delegated primals that accept cleartext on their UDS socket.
+/// Checks the primal-specific profile first, then falls back to the
+/// `[default]` section. Returns `true` for BTSP (the default for all
+/// primals in the NUCLEUS).
 #[must_use]
 pub fn primal_requires_btsp(primal: &str) -> bool {
-    let Ok((_defaults, profiles)) = load_launch_profiles() else {
+    let Ok((defaults, profiles)) = load_launch_profiles() else {
         return false;
     };
     profiles
         .get(primal)
         .and_then(|p| p.security_model.as_deref())
+        .or(defaults.security_model.as_deref())
         .is_some_and(|m| m == "btsp")
 }

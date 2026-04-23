@@ -66,8 +66,7 @@ fn main() {
         .unwrap_or_else(|| "guidestone-validation".to_owned());
     // SAFETY: called in main() before any threads are spawned.
     // Set FAMILY_ID for socket discovery and FAMILY_SEED for BTSP auth.
-    // upgrade_btsp_clients() probes cleartext first, then escalates to
-    // BTSP for primals that enforce it (BearDog, rhizoCrypt, sweetGrass).
+    // upgrade_btsp_clients() attempts proactive BTSP on all capabilities.
     #[allow(unsafe_code)]
     unsafe {
         std::env::set_var("FAMILY_ID", &family_id);
@@ -418,18 +417,14 @@ fn validate_bonding_type_wellformed(v: &mut ValidationResult) {
 fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) {
     let btsp = ctx.btsp_state();
 
-    let tiers: &[(&str, &[&str], &str)] = &[
-        ("Tower", AtomicType::Tower.required_capabilities(), "btsp"),
-        ("Node", &["compute", "tensor", "shader"], "btsp"),
-        ("Nest", &["storage", "ai"], "btsp"),
-        (
-            "Provenance",
-            &["dag", "commit", "provenance"],
-            "btsp",
-        ),
+    let tiers: &[(&str, &[&str])] = &[
+        ("Tower", AtomicType::Tower.required_capabilities()),
+        ("Node", &["compute", "tensor", "shader"]),
+        ("Nest", &["storage", "ai"]),
+        ("Provenance", &["dag", "commit", "provenance"]),
     ];
 
-    for &(tier_name, caps, _expected_model) in tiers {
+    for &(tier_name, caps) in tiers {
         for &cap in caps {
             let check_name = format!("btsp:{tier_name}:{cap}");
             match btsp.get(cap) {

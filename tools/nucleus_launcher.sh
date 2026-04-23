@@ -197,7 +197,7 @@ cmd_start() {
     log "  family_id:  $FAMILY_ID"
     log "  socket_dir: $SOCKET_DIR"
     log "  seed:       ${FAMILY_SEED:0:16}... (${#FAMILY_SEED} chars)"
-    log "  security:   Tower=BTSP, NUCLEUS=tower_delegated, TCP=disabled"
+    log "  security:   Tower=BTSP, NUCLEUS=BTSP-default (UDS), TCP=disabled"
     if [[ -n "${SONGBIRD_FEDERATION_PORT:-}" ]]; then
         log "  federation: Songbird TCP port $SONGBIRD_FEDERATION_PORT (opt-in)"
     fi
@@ -270,7 +270,7 @@ cmd_start() {
     fi
 
     # ── Phase 2: Core Services — Node Atomic + NestGate + Squirrel ────
-    log "── Phase 2: Core Services (tower_delegated) ──"
+    log "── Phase 2: Core Services (BTSP via Tower) ──"
     local toadstool_bin barracuda_bin coralreef_bin nestgate_bin squirrel_bin
     toadstool_bin="$(find_binary toadstool toadStool)"
     barracuda_bin="$(find_binary barracuda barraCuda)"
@@ -360,7 +360,7 @@ cmd_start() {
     fi
 
     # ── Phase 3: Provenance — rhizoCrypt + loamSpine + sweetGrass ────
-    log "── Phase 3: Provenance Trio (tower_delegated) ──"
+    log "── Phase 3: Provenance Trio (BTSP via Tower) ──"
     local rhizocrypt_bin loamspine_bin sweetgrass_bin
     rhizocrypt_bin="$(find_binary rhizocrypt rhizoCrypt)"
     loamspine_bin="$(find_binary loamspine loamSpine)"
@@ -414,7 +414,7 @@ cmd_start() {
     fi
 
     # ── Phase 4: Interface — petalTongue (server mode, UDS) ──────────
-    log "── Phase 4: Interface (tower_delegated) ──"
+    log "── Phase 4: Interface (BTSP via Tower) ──"
     local petaltongue_bin
     petaltongue_bin="$(find_binary petaltongue petalTongue)"
     [[ -z "$petaltongue_bin" ]] && petaltongue_bin="$ECO_ROOT/primals/petalTongue/target/release/petaltongue"
@@ -459,6 +459,7 @@ cmd_start() {
         [merkle]="loamspine-${FAMILY_ID}.sock"
         [visualization]="petaltongue-${FAMILY_ID}.sock"
         [inference]="squirrel-${FAMILY_ID}.sock"
+        [orchestration]="neural-api-${FAMILY_ID}.sock"
     )
     for domain in "${!domain_map[@]}"; do
         local target="$SOCKET_DIR/${domain_map[$domain]}"

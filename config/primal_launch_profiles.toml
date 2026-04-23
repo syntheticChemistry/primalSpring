@@ -1,8 +1,8 @@
 # Primal Launch Profiles — Zero-Port Tower Atomic Standard
 #
 # All primals run UDS-only by default. TCP is opt-in only via explicit --port.
-# Tower primals (beardog, songbird) enforce BTSP at the perimeter.
-# NUCLEUS primals trust the Tower boundary and may use lower encryption.
+# BTSP is the default security model for all primals. Shared-lineage
+# cleartext is a future policy relaxation, not the starting point.
 #
 # Fields:
 #   socket_flag      — CLI flag name for passing socket path (default: "--socket")
@@ -11,7 +11,7 @@
 #   extra_env        — static environment variables to set
 #   env_sockets      — env vars whose values are resolved socket paths of other primals
 #   cli_sockets      — extra CLI flags whose values are resolved socket paths
-#   security_model   — "btsp" (Tower perimeter) or "tower_delegated" (trusts Tower)
+#   security_model   — "btsp" (default, all primals) or "cleartext" (dev/debug only)
 #
 # DEPRECATION NOTICE (FAMILY_SEED):
 #   FAMILY_SEED is being transitioned to the mito-beacon tier of the
@@ -27,7 +27,7 @@
 socket_flag = "--socket"
 pass_family_id = true
 env_socket = "PRIMAL_SOCKET"
-security_model = "tower_delegated"
+security_model = "btsp"
 
 [profiles.beardog]
 security_model = "btsp"
