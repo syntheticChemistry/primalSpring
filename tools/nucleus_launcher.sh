@@ -252,7 +252,7 @@ cmd_start() {
     fi
 
     if [[ -n "$songbird_bin" ]]; then
-        local songbird_args=(server --socket "$songbird_sock" --beardog-socket "$beardog_sock" --security-socket "$beardog_sock")
+        local songbird_args=(server --socket "$songbird_sock" --security-socket "$beardog_sock")
         if [[ -n "${SONGBIRD_FEDERATION_PORT:-}" ]]; then
             songbird_args+=(--port "$SONGBIRD_FEDERATION_PORT")
             log "  Songbird: TCP federation on port $SONGBIRD_FEDERATION_PORT"
@@ -312,6 +312,7 @@ cmd_start() {
 
     if [[ -n "$coralreef_bin" ]]; then
         CORALREEF_FAMILY_ID="$FAMILY_ID" \
+        BIOMEOS_FAMILY_ID="$FAMILY_ID" \
         CORALREEF_SOCKET="$coralreef_sock" \
         BEARDOG_SOCKET="$beardog_sock" \
         SONGBIRD_SOCKET="$songbird_sock" \
@@ -448,11 +449,16 @@ cmd_start() {
         [shader]="coralreef-${FAMILY_ID}.sock"
         [storage]="nestgate-${FAMILY_ID}.sock"
         [ai]="squirrel-${FAMILY_ID}.sock"
-        [dag]="rhizocrypt.sock"
+        [dag]="rhizocrypt-${FAMILY_ID}.sock"
         [spine]="loamspine-${FAMILY_ID}.sock"
         [commit]="sweetgrass-${FAMILY_ID}.sock"
         [braid]="sweetgrass-${FAMILY_ID}.sock"
-        [provenance]="sweetgrass-${FAMILY_ID}.sock"
+        [provenance]="rhizocrypt-${FAMILY_ID}.sock"
+        [attribution]="sweetgrass-${FAMILY_ID}.sock"
+        [ledger]="loamspine-${FAMILY_ID}.sock"
+        [merkle]="loamspine-${FAMILY_ID}.sock"
+        [visualization]="petaltongue-${FAMILY_ID}.sock"
+        [inference]="squirrel-${FAMILY_ID}.sock"
     )
     for domain in "${!domain_map[@]}"; do
         local target="$SOCKET_DIR/${domain_map[$domain]}"

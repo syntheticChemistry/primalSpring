@@ -48,7 +48,8 @@ struct ServerHello {
     version: u8,
     server_ephemeral_pub: String,
     challenge: String,
-    session_id: String,
+    #[serde(default)]
+    session_id: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -165,7 +166,7 @@ pub fn client_handshake(stream: &mut UnixStream, family_seed: &[u8]) -> Result<S
             detail: format!("BTSP ServerHello parse: {e}"),
         })?;
 
-    debug!(session_id = %server_hello.session_id, "BTSP: ServerHello received");
+    debug!(session_id = ?server_hello.session_id, "BTSP: ServerHello received");
 
     // Decode server's ephemeral public key and challenge
     let server_pub_bytes = BASE64

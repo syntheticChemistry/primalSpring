@@ -29,9 +29,11 @@ vulnerability, please report it responsibly:
 - **Capability-based discovery**: no hardcoded addresses or credentials
 - **No secrets in source**: API keys are passed via environment variables
   or `testing-secrets/` (gitignored)
-- **Incremental BTSP escalation**: cleartext bootstrap → Tower BTSP →
-  tower-delegated Node/Nest → Provenance BTSP → full NUCLEUS encrypted.
-  `upgrade_btsp_clients()` never forces BTSP on primals that accept cleartext
+- **BTSP default on all tiers**: guidestone expects BTSP authentication on
+  every capability (Tower, Node, Nest, Provenance). 11/13 capabilities
+  authenticated, 2 upstream (petalTongue, loamSpine). Cleartext connections
+  are functional but reported as FAIL in guidestone — the target is full
+  BTSP across the NUCLEUS before granular per-deployment policy control
 - **Seed provenance**: public BLAKE3 fingerprints for each primal published
   in `plasmidBin/manifest.toml` — Layer 0.5 verifies binary authenticity
   before any IPC

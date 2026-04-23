@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 2026
-**Status**: Phase 45 — BTSP Phase 1–3 (12/12 primals enforce handshake), multi-tier genetics, cross-arch deployment, content distribution federation, guideStone Level 4, capability-based discovery, plasmidBin depot. 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition), 631 tests. Tier 1 MUST: 39/39 binaries (13 primals × 3 targets).
+**Status**: Phase 45c — BTSP default on all tiers (11/13 capabilities authenticated), multi-tier genetics, cross-arch deployment, content distribution federation, guideStone Level 4 (163/168), capability-based discovery, plasmidBin depot. 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition), 631 tests. Tier 1 MUST: 39/39 binaries (13 primals × 3 targets).
 
 ---
 
@@ -542,7 +542,7 @@ Phase 17: gen4 Deployment Evolution — biomeOS Substrate Validation
   → Cross-spring ecology graph validated: 9 nodes, ET₀ → diversity → spectral pipeline
   → New experiments: exp075 (biomeOS live), exp076 (cross-gate), exp077 (Squirrel bridge),
     exp078 (petalTongue viz), exp079 (spring sweep), exp080 (cross-spring ecology)
-  → New graph templates: graphs/spring_validation/ (7), graphs/cross_spring/ (2), graphs/gen4/ (4)
+  → New graph templates: graphs/spring_validation/ (7), graphs/cross_spring/ (2), gen4 prototypes (4, archived to fossilRecord/)
   → gen4 prototypes: sovereign tower, science substrate, agentic tower, interactive substrate
   → Known gaps: Squirrel uses abstract sockets (biomeOS routes to filesystem sockets),
     no aarch64 biomeOS binary for Pixel substrate deployment (biomeOS-scope work)

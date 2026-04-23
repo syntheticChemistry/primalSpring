@@ -140,6 +140,14 @@ pub const STOCHASTIC_SEED_TOL: f64 = 1e-6;
 /// Used by: `ipc::client::PrimalClient`, `ipc::transport::Transport`.
 pub const IPC_SOCKET_TIMEOUT_SECS: u64 = 5;
 
+/// Maximum time for the BTSP handshake phase (relay primals call BearDog).
+///
+/// Source: Relay primals (barraCuda, coralReef, NestGate) forward the BTSP
+/// handshake to BearDog via JSON-RPC, adding a round-trip. 15 seconds
+/// allows for contention when many primals bootstrap simultaneously.
+/// After the handshake, the socket reverts to `IPC_SOCKET_TIMEOUT_SECS`.
+pub const BTSP_HANDSHAKE_TIMEOUT_SECS: u64 = 15;
+
 /// Maximum time to wait for a primal's socket file to appear after spawn.
 ///
 /// Source: 30 seconds covers slow-starting primals (model loading, etc.).

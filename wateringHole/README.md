@@ -1,7 +1,7 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
-**Version**: 0.9.17 (Phase 45b — 631 tests, 75 experiments, 56 deploy graphs, guideStone Level 4 — 162/166 live NUCLEUS (4 FAIL = BTSP cleartext on Songbird/rhizoCrypt/loamSpine/sweetGrass; BearDog BTSP confirmed) + 41/41 bare, BLAKE3 checksums (P3), seed provenance (Layer 0.5), BTSP escalation (Layer 1.5), BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), capability-based discovery (zero hardcoded primal names), **genomeBin v5.1 — 46 binaries across 6 target triples (Tier 1: 39/39)** (x86_64/aarch64/armv7/windows/android/riscv64), benchScale Docker validation, fragment-first graph composition, plasmidBin owns full cross-architecture depot)  
+**Version**: 0.9.17 (Phase 45c — 631 tests, 75 experiments, 56 deploy graphs, guideStone Level 4 — 163/168 live NUCLEUS (11/13 BTSP authenticated; 2 upstream debt: petalTongue + loamSpine) + 41/41 bare, BLAKE3 checksums (P3), seed provenance (Layer 0.5), **BTSP default on all tiers** (Layer 1.5), BTSP Phase 1–3, multi-tier genetics (Mito-Beacon / Nuclear / Tags), capability-based discovery (zero hardcoded primal names), **genomeBin v5.1 — 46 binaries across 6 target triples (Tier 1: 39/39)** (x86_64/aarch64/armv7/windows/android/riscv64), benchScale Docker validation, fragment-first graph composition, plasmidBin owns full cross-architecture depot)  
 **Phase**: **INTERSTADIAL** — stadial gate cleared April 16, 2026. Deep debt evolution April 2026: all production code references `primal_names::` constants, TCP fallback table centralized in `tolerances::`, test suites extracted to companion files, all files under 800 LOC.  
 **License**: AGPL-3.0-or-later  
 **Last Updated**: April 2026
@@ -48,7 +48,7 @@ primalSpring fills the gap.
 | Files over 1000 LOC | 0 |
 | Deploy graphs | **56 TOMLs** (9 profiles + 6 fragments + 5 multi-node + 4 spring validation (template + manifest + 2 unique) + 2 cross-spring + 5 bonding + 2 chaos + 2 spring deploy (template + manifest) + 3 downstream (template + manifest + 1 unique enclave) + 4 patterns + 11 root + 1 federation), all `by_capability`, topologically validated, fragment-first `resolve = true` composition, 31 graph tests passing |
 | Genetics | **Multi-tier**: Mito-Beacon (discovery/NAT), Nuclear (lineage DNA, non-fungible permissions), Tags (open participation) |
-| BTSP | **Phase 1–3**: FAMILY_SEED auth → secure-by-default cascade → ChaCha20-Poly1305 encrypted channel. **Incremental escalation**: cleartext bootstrap → Tower BTSP → tower_delegated Node/Nest → Provenance BTSP. 162/166 guidestone checks pass (4 FAIL = BTSP cleartext on provenance/discovery tier — crypto relay gap). BearDog BTSP confirmed via proactive handshake |
+| BTSP | **Phase 1–3**: FAMILY_SEED auth → secure-by-default cascade → ChaCha20-Poly1305 encrypted channel. **BTSP default on all tiers**: guidestone expects BTSP on Tower, Node, Nest, Provenance. 11/13 BTSP authenticated (163/168 checks). 2 upstream debt: petalTongue (no BTSP server), loamSpine (incomplete handshake). JSON-line BTSP auto-detect wired in ToadStool, barraCuda, coralReef, NestGate, Squirrel. 15s relay handshake timeout |
 | Bonding | Covalent, Ionic, Metallic, Weak, OrganoMetalSalt + BtspEnforcer deny semantics + ionic RPC + content distribution federation |
 | Cross-arch | biomeOS-managed Tower on Pixel (aarch64 + GrapheneOS) via Neural API `--tcp-only`, 14/15 exp096 checks (HSM pending) |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
@@ -62,7 +62,7 @@ primalSpring fills the gap.
 | MCP tools | 8 typed tools via `mcp.tools.list` |
 | Meta-validator | `validate_all` binary — runs all 75 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates |
-| NUCLEUS | **VALIDATED** — Tower + Nest + Node, 12/12 primals ALIVE, 162/166 guidestone, 19/19 exp094 parity, 12/12 exp091 routing |
+| NUCLEUS | **VALIDATED** — Tower + Nest + Node, 12/12 primals ALIVE, 163/168 guidestone (11/13 BTSP), 19/19 exp094 parity, 12/12 exp091 routing |
 | Seed Provenance | Public BLAKE3 fingerprints in `plasmidBin/manifest.toml` — Layer 0.5 binary authenticity |
 | biomeOS Substrate | Neural API liveness + graph executor validated at Layer 1.5 |
 

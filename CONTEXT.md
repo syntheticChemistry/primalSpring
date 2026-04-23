@@ -73,8 +73,8 @@ v0.9.17 Phase 45 — 631 tests (585 passed + 46 ignored), 75 experiments (17 tra
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
-Live validation: **12/12 primals ALIVE**, **162/166 guidestone PASS** (4 FAIL —
-BTSP cleartext on Songbird, rhizoCrypt, loamSpine, sweetGrass; BearDog BTSP confirmed),
+Live validation: **12/12 primals ALIVE**, **163/168 guidestone PASS** (11/13 BTSP
+authenticated; 2 upstream debt: petalTongue + loamSpine),
 **19/19 exp094 composition parity**, **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
 (HSM cfg-gated). ludoSpring parity: exp068 **6/6**, exp067 **18/19**, exp072 **24/31**.
 Full NUCLEUS validated across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
@@ -102,7 +102,7 @@ guideStone composition certification: `primalspring_guidestone` binary validates
 NUCLEUS composition correctness across 9 layers (bare properties, seed provenance,
 discovery, BTSP escalation, atomic health, capability parity, cross-atomic pipeline,
 bonding, BTSP/crypto, cellular deployment). Layer 1.5 reports per-atomic security
-posture (Tower=btsp, Node/Nest=tower_delegated, Provenance=btsp). biomeOS substrate
+posture (BTSP default on all tiers — cleartext is FAIL). biomeOS substrate
 health (neural-api liveness + graph.list) validated as first-class check.
 Domain guideStones (hotSpring, healthSpring, etc.) inherit this base certification
 and only validate their own science. See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md`.

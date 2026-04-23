@@ -634,11 +634,15 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
         None => return state,
     };
 
-    // Hybrid: proactive BTSP for Tower-tier primals (BearDog confirmed),
-    // safe cleartext-first for others. Proactive BTSP on primals whose
-    // handshake relay isn't fully wired poisons the connection, so we
-    // only escalate where the handshake is known to complete end-to-end.
-    const PROACTIVE_CAPS: &[&str] = &["security"];
+    // BTSP is the default for the entire NUCLEUS. Every capability gets
+    // a proactive handshake attempt. Shared-lineage cleartext is a future
+    // policy relaxation, not the starting point.
+    const PROACTIVE_CAPS: &[&str] = &[
+        "security", "discovery", "compute", "tensor", "shader",
+        "storage", "ai", "dag", "commit", "provenance",
+        "visualization", "ledger", "attribution", "inference",
+        "spine", "merkle", "braid",
+    ];
 
     let all_caps: Vec<String> = clients.keys().cloned().collect();
 

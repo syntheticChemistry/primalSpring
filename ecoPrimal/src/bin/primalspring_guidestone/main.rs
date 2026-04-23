@@ -420,12 +420,8 @@ fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) 
 
     let tiers: &[(&str, &[&str], &str)] = &[
         ("Tower", AtomicType::Tower.required_capabilities(), "btsp"),
-        (
-            "Node",
-            &["compute", "tensor", "shader"],
-            "tower_delegated",
-        ),
-        ("Nest", &["storage", "ai"], "tower_delegated"),
+        ("Node", &["compute", "tensor", "shader"], "btsp"),
+        ("Nest", &["storage", "ai"], "btsp"),
         (
             "Provenance",
             &["dag", "commit", "provenance"],
@@ -433,7 +429,7 @@ fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) 
         ),
     ];
 
-    for &(tier_name, caps, expected_model) in tiers {
+    for &(tier_name, caps, _expected_model) in tiers {
         for &cap in caps {
             let check_name = format!("btsp:{tier_name}:{cap}");
             match btsp.get(cap) {
@@ -441,12 +437,11 @@ fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) 
                     v.check_bool(&check_name, true, "BTSP authenticated");
                 }
                 Some(false) => {
-                    let detail = if expected_model == "tower_delegated" {
-                        "cleartext (tower_delegated — within Tower trust boundary)"
-                    } else {
-                        "cleartext (BTSP not yet enforced)"
-                    };
-                    v.check_bool(&check_name, expected_model == "tower_delegated", detail);
+                    v.check_bool(
+                        &check_name,
+                        false,
+                        "cleartext (BTSP not yet enforced)",
+                    );
                 }
                 None => {
                     v.check_skip(&check_name, "capability not discovered");
@@ -949,14 +944,46 @@ fn validate_ed25519_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationRe
                 &format!("signature: {}...", &signature[..signature.len().min(16)]),
             );
 
-            // BearDog crypto.sign uses an internal key_id ("default_signing_key")
-            // whose public_key is not exposed through any API endpoint.
-            // crypto.verify requires public_key, so a full sign→verify roundtrip
-            // is blocked. This is an upstream BearDog gap — filed for evolution.
-            v.check_skip(
-                "crypto:ed25519_verify",
-                "UPSTREAM GAP: crypto.sign uses internal key without exposing public_key for verify",
-            );
+            let public_key = sign_result
+                .get("public_key")
+                .and_then(|s| s.as_str())
+                .unwrap_or("");
+            if public_key.is_empty() {
+                v.check_skip(
+                    "crypto:ed25519_verify",
+                    "UPSTREAM GAP: crypto.sign does not expose public_key",
+                );
+            } else {
+                match ctx.call(
+                    "security",
+                    "crypto.verify",
+                    serde_json::json!({
+                        "message": test_message,
+                        "signature": signature,
+                        "public_key": public_key,
+                        "algorithm": "ed25519"
+                    }),
+                ) {
+                    Ok(verify_result) => {
+                        let valid = verify_result
+                            .get("valid")
+                            .and_then(|v| v.as_bool())
+                            .unwrap_or(false);
+                        v.check_bool(
+                            "crypto:ed25519_verify",
+                            valid,
+                            "sign→verify roundtrip",
+                        );
+                    }
+                    Err(e) => {
+                        v.check_bool(
+                            "crypto:ed25519_verify",
+                            false,
+                            &format!("verify call failed: {e}"),
+                        );
+                    }
+                }
+            }
         }
         Err(e) if e.is_connection_error() => {
             v.check_skip(

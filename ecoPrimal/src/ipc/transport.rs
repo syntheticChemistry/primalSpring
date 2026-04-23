@@ -91,17 +91,25 @@ impl Transport {
     ///
     /// Returns [`IpcError`] on connection or handshake failure.
     pub fn unix_btsp(path: &Path, family_seed: &[u8]) -> Result<Self, IpcError> {
-        let timeout = Duration::from_secs(tolerances::IPC_SOCKET_TIMEOUT_SECS);
+        let handshake_timeout = Duration::from_secs(tolerances::BTSP_HANDSHAKE_TIMEOUT_SECS);
+        let ipc_timeout = Duration::from_secs(tolerances::IPC_SOCKET_TIMEOUT_SECS);
         let mut stream = UnixStream::connect(path).map_err(classify_io_error)?;
         stream
-            .set_read_timeout(Some(timeout))
+            .set_read_timeout(Some(handshake_timeout))
             .map_err(classify_io_error)?;
         stream
-            .set_write_timeout(Some(timeout))
+            .set_write_timeout(Some(handshake_timeout))
             .map_err(classify_io_error)?;
 
         let session_id = super::btsp_handshake::client_handshake(&mut stream, family_seed)?;
         tracing::debug!(session_id = %session_id, path = %path.display(), "BTSP authenticated");
+
+        stream
+            .set_read_timeout(Some(ipc_timeout))
+            .map_err(classify_io_error)?;
+        stream
+            .set_write_timeout(Some(ipc_timeout))
+            .map_err(classify_io_error)?;
 
         Ok(Self {
             inner: TransportInner::Unix(BufReader::new(stream)),

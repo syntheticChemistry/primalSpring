@@ -3,6 +3,44 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.17+] — Phase 45c: BTSP Default Everywhere + Upstream Relay Fixes (2026-04)
+
+### Milestone
+**BTSP authentication default on all tiers.** 11/13 capabilities BTSP-authenticated
+(was 5/13). JSON-line BTSP auto-detection and full handshake relay wired into 5
+upstream primals. guidestone expects BTSP on Tower, Node, Nest, and Provenance —
+cleartext is a FAIL, not a pass.
+
+### Changed
+- `PROACTIVE_CAPS` expanded to all 17 capabilities (security, discovery, compute,
+  tensor, shader, storage, ai, dag, commit, provenance, visualization, ledger,
+  attribution, inference, spine, merkle, braid)
+- guidestone `tiers` updated: Node and Nest expect `"btsp"` (was `"tower_delegated"`)
+- `tower_delegated` pass-through logic removed — cleartext always FAILs
+- `BTSP_HANDSHAKE_TIMEOUT_SECS` (15s) for relay primals calling BearDog during handshake
+- `Transport::unix_btsp()` uses handshake timeout then reverts to IPC timeout (5s)
+- `nucleus_launcher.sh`: family-scoped symlinks for attribution/ledger/merkle/visualization/inference capabilities, `crypto-{family}.sock` symlink, `BIOMEOS_FAMILY_ID` for coralReef
+
+### Upstream BTSP Fixes Driven by primalSpring
+- **ToadStool**: JSON-line BTSP sub-detection in `0x7B` path, `relay_json_line_handshake`
+- **barraCuda**: `is_btsp_client_hello` detects `"protocol":"btsp"`, `session_verify_rpc` passes `client_ephemeral_pub` + `preferred_cipher`
+- **coralReef**: full `relay_json_line_handshake`, `b64_encode` helper (no `rand` dep), `BtspSessionError` made pub, `BIOMEOS_FAMILY_ID` wiring
+- **NestGate**: `resolve_security_socket_path` env-var priority, JSON-line framing in `perform_handshake`, `session_token`/`response` field alignment
+- **Squirrel**: `json_line_mode` in `btsp_handshake_after_client_hello`, `write_json_line`/`read_json_line_msg` helpers, BearDog challenge extraction
+
+### Common fixes across all 5 relay primals
+- `btsp.session.create`: send `family_seed` (base64-encoded) instead of `family_seed_ref`
+- `btsp.session.verify`: `session_token` (not `session_id`), `response` (not `client_response`)
+- Challenge sourced from BearDog's `btsp.session.create` response (not locally generated)
+- `session_id` / `session_token` fallback parsing
+
+### Remaining Upstream Debt (2 of 13)
+- **petalTongue**: no BTSP server — closes connection on ClientHello
+- **loamSpine**: initiates handshake but does not send HandshakeComplete
+
+### Known Issues
+- 5 `seed:fingerprint:MISMATCH` in guidestone — expected after source modifications, requires plasmidBin reharvest
+
 ## [0.9.17] — Phase 45: genomeBin Cross-Architecture Depot + Deployment Validation (2026-04-20)
 
 ### Milestone

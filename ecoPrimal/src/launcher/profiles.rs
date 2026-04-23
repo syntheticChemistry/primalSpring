@@ -25,7 +25,7 @@ pub struct LaunchProfile {
     pub pass_family_id: Option<bool>,
     /// Env var name for socket path fallback (e.g. `"PRIMAL_SOCKET"`).
     pub env_socket: Option<String>,
-    /// Security model: `"btsp"` (Tower perimeter) or `"tower_delegated"`.
+    /// Security model: `"btsp"` (default — all tiers).
     ///
     /// When `"btsp"`, BTSP handshake is required for client connections
     /// (e.g. `BearDog`). The harness uses this to select the right transport.

@@ -3,10 +3,10 @@
 # Files: 18
 #
 # Verify: primalspring::checksums::verify_manifest()
-89f28f5cf9d37d2253e3ea490e49ca91b268a4572cb1c0a31bf6965edf4231e8  ecoPrimal/src/bin/primalspring_guidestone/main.rs
-15ae5ed82b865ac1f1875cbf29305a33cfb5d9313238b48cbcc0df4b4ce83d14  ecoPrimal/src/composition/mod.rs
+31438a0f9baee642d41514dee2b377c5c87a3f84eb1469c0e25ec7d3c7c3e5c5  ecoPrimal/src/bin/primalspring_guidestone/main.rs
+27a9892041ae6931c5d4dafde0d07c2733dc917cab4b41e1238149f7bce6712b  ecoPrimal/src/composition/mod.rs
 6aca6ed37facd99aa731b548a5b9b60cddb04cc192c7dbaa2914c81b6ff4803d  ecoPrimal/src/validation/mod.rs
-739a67533ad6e08cb8fbdae9c4600c656d504388cfe078791dd58b314cfb8a0f  ecoPrimal/src/tolerances/mod.rs
+f34a172cfa7040d75d356f86c374c425dabb43eab1e1db2f8427155ab3ec853b  ecoPrimal/src/tolerances/mod.rs
 d3684263dd357d81a1ad6f5cca02721b13122d2a69dbca75253a5f54dedaa040  ecoPrimal/src/coordination/mod.rs
 e81c647e105d763f3ea323cf123d18bea1f03a46a6b5864b2b39f4d74439f4fc  ecoPrimal/src/bonding/mod.rs
 cf27ab1adf1763aa7eee43dba409fbf3a8f7dc1b6a8d75a983090c760c9b0ad5  ecoPrimal/src/btsp/mod.rs

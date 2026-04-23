@@ -16,7 +16,7 @@
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 75 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
-| **guideStone** | Level 4 — **162/166 live NUCLEUS** (4 FAIL — BTSP cleartext on Songbird/rhizoCrypt/loamSpine/sweetGrass; BearDog BTSP confirmed), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP escalation (Layer 1.5), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
+| **guideStone** | Level 4 — **163/168 live NUCLEUS** (11/13 BTSP authenticated; 2 upstream: petalTongue no BTSP server, loamSpine incomplete handshake; 5 seed fingerprint mismatches pending plasmidBin reharvest), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` (allow-listed for `std::env::set_var` in Rust 2024) |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -309,10 +309,11 @@ with 24 capability domains and 39 deploy graphs. Cross-gate routing to Pixel
 via ADB-forwarded TCP. Squirrel AI primal validated. Spring deploy sweep confirms
 all 7 sibling springs' biomeOS graphs load correctly.
 
-**gen4 prototypes** (graphs/gen4/): sovereign tower (Dark Forest ready), science
-substrate (multi-spring pipeline), agentic tower (AI-orchestrated), interactive
-substrate (full UI + AI + crypto + mesh surface), **spring composition**
-(Tower + biomeOS + 5 spring primals + cross-spring capability routing).
+**gen4 prototypes** (archived to `fossilRecord/stale_graphs_apr12_2026/gen4/`):
+sovereign tower (Dark Forest ready), science substrate (multi-spring pipeline),
+agentic tower (AI-orchestrated), interactive substrate (full UI + AI + crypto +
+mesh surface), **spring composition** (Tower + biomeOS + 5 spring primals +
+cross-spring capability routing).
 
 **Spring Gen4 Scaffolding** (Phase 19): 5 of 6 spring primal binaries built
 and deployed to `plasmidBin/springs/` (groundspring, healthspring_primal,
@@ -324,7 +325,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 ## BTSP, Inference Abstraction, and Proto-Nucleate Graphs (April 10, 2026)
 
 - **Zero-Port Tower Atomic achieved**: 0 TCP ports across all 10+ primals. Pure Unix domain socket IPC with BTSP handshake authentication.
-- **BTSP Phase 2 ecosystem cascade**: 11/13 primals enforce `btsp.handshake` on connection. Client-side `ipc::btsp_handshake` module added to ecoPrimal. All deploy graphs carry `secure_by_default = true` metadata.
+- **BTSP Phase 2 ecosystem cascade**: 11/13 primals enforce `btsp.handshake` on connection (was 5/13 pre-escalation). JSON-line BTSP auto-detection wired in ToadStool, barraCuda, coralReef, NestGate, Squirrel. Remaining 2: petalTongue (no BTSP server), loamSpine (incomplete HandshakeComplete). Client-side `ipc::btsp_handshake` module with 15-second relay timeout. All deploy graphs carry `secure_by_default = true` metadata.
 - **Inference provider abstraction**: Vendor-agnostic `inference.complete`/`embed`/`models` wire standard in ecoPrimal. Squirrel bridge routes through `AiRouter` (Ollama as OpenAI-compatible HTTP endpoint). No vendor lock-in to CUDA or Ollama.
 - **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of existing barraCuda WGSL shaders (826 kernels: matmul, attention, FFT, df64) compiled by coralReef and dispatched by toadStool.
 - **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
