@@ -73,8 +73,8 @@ v0.9.17 Phase 45c — 631 tests (585 passed + 46 ignored), 75 experiments (17 tr
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
-Live validation: **12/12 primals ALIVE**, **171/171 guidestone ALL PASS** (**13/13 BTSP
-authenticated** — full NUCLEUS BTSP convergence achieved),
+Live validation: **12/12 primals ALIVE**, **187/187 guidestone ALL PASS** (**13/13 BTSP
+authenticated** — full NUCLEUS BTSP convergence achieved, 8 cellular graphs BTSP-enforced),
 **19/19 exp094 composition parity**, **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
 (HSM cfg-gated). ludoSpring parity: exp068 **6/6**, exp067 **18/19**, exp072 **24/31**.
 Full NUCLEUS validated across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.

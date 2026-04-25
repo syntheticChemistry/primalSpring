@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04-24 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 171/171 guidestone ALL PASS (13/13 BTSP authenticated).**
+> **Last updated**: 2026-04-25 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 187/187 guidestone ALL PASS (13/13 BTSP authenticated, 8 cellular graphs BTSP-enforced). biomeOS v3.25 absorbed.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -102,9 +102,9 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >   derivation + HMAC-SHA256 challenge response matching BearDog's `crypto.rs`. Auto-detection
 >   in `Transport::connect()` via `security_mode_from_env()`. Both rebuilt to plasmidBin.
 >
-> **BTSP Phase 2 ECOSYSTEM CASCADE (April 9–16, escalated Phase 45c)**: **11/13** capabilities
-> BTSP-authenticated (was 5/13 pre-escalation). JSON-line BTSP auto-detection and full
-> handshake relay wired into ToadStool, barraCuda, coralReef, NestGate, Squirrel during
+> **BTSP Phase 2 ECOSYSTEM CASCADE (April 9–16, escalated Phase 45c)**: *Historically 11/13 at
+> mid-cascade, now* **13/13 BTSP-authenticated** *(fully converged April 24, 2026)*.
+> JSON-line BTSP auto-detection and full handshake relay wired into ToadStool, barraCuda, coralReef, NestGate, Squirrel during
 > Phase 45c. Songbird Wave 133→156, ToadStool S198→S203q, barraCuda Sprint 39→44,
 > coralReef Iter 78→84+, rhizoCrypt S31→S43, sweetGrass wired.
 > skunkBat Phase 2 COMPLETE (v0.1.0 — `PeekedStream` UDS peek + BearDog v0.9.0 alignment).
@@ -1587,7 +1587,7 @@ primalSpring absorbs for standardization:
 
 | Spring | guideStone Readiness | Evidence | Blockers |
 |--------|---------------------|----------|----------|
-| **primalSpring v0.9.15** | **4 — NUCLEUS guideStone works** | 67/67 ALL PASS against live plasmidBin NUCLEUS (12 primals). P3 CHECKSUMS (BLAKE3, 18 files). 41/41 bare. Layers 0–6 validated. Family-aware capability discovery. | Cross-substrate parity for Level 5; BearDog BTSP handshake (connection reset, not failure); tensor discovery gap (symlink naming) |
+| **primalSpring v0.9.17** | **4 — NUCLEUS guideStone works** | **187/187 ALL PASS** (13/13 BTSP, 8 cellular BTSP-enforced) against live plasmidBin NUCLEUS (12 primals). P3 CHECKSUMS (BLAKE3, 18 files). 41/41 bare. Layers 0–7 validated. biomeOS v3.25 absorbed. *(was 67/67 at v0.9.15)* | Cross-substrate parity for Level 5 |
 | hotSpring v0.6.32 | **5 — Certified** | `hotspring_guidestone`: bare + NUCLEUS, all 5 properties, `primalspring::composition` API. Cross-substrate parity (Python/CPU/GPU). | P2–P4 checks are partial (metadata checks, not deep validation). Exit-code 2 semantics inconsistent with `exit_code_skip_aware()`. |
 | healthSpring V54 | **2 — Properties documented** | `healthspring_guidestone` modular binary (bare.rs/domain.rs). P1/P2/P4/P5 validated. `primalspring::composition` API. Feature-gated `guidestone`. | **P3 missing** (CHECKSUMS); `bare_exit_code` doc comment contradicts implementation; dual-tower ionic bridge untested in guideStone |
 | neuralSpring V134 | **2 — Properties documented** | `neuralspring_guidestone`: 4-phase binary (bare/liveness/parity/additive). `GUIDESTONE_PROPERTIES.md` documents all 5. `primalspring::composition` API. Feature-gated. | **P3 missing** (CHECKSUMS); machine-readable provenance; Gap 11 (18 barraCuda surface methods) |

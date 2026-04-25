@@ -23,6 +23,7 @@ petaltongue_mode = "live"
 
 [[graph.nodes]]
 name = "biomeos_neural_api"
+security_model = "btsp"
 binary = "biomeos"
 order = 0
 required = true
@@ -33,6 +34,7 @@ capabilities = ["graph.deploy", "capability.discover", "topology.rescan"]
 
 [[graph.nodes]]
 name = "beardog"
+security_model = "btsp"
 binary = "beardog"
 order = 1
 required = true
@@ -44,6 +46,7 @@ capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
 
 [[graph.nodes]]
 name = "songbird"
+security_model = "btsp"
 binary = "songbird"
 order = 2
 required = true
@@ -55,6 +58,7 @@ capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 [[graph.nodes]]
 name = "nestgate"
+security_model = "btsp"
 binary = "nestgate"
 order = 6
 required = true
@@ -68,6 +72,7 @@ capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
 [[graph.nodes]]
 name = "squirrel"
+security_model = "btsp"
 binary = "squirrel"
 order = 10
 required = false
@@ -79,6 +84,7 @@ capabilities = ["ai.chat", "ai.inference"]
 
 [[graph.nodes]]
 name = "petaltongue"
+security_model = "btsp"
 binary = "petaltongue"
 order = 11
 required = true
@@ -95,6 +101,7 @@ mode = "live"
 
 [[graph.nodes]]
 name = "healthspring"
+security_model = "btsp"
 binary = "healthspring_primal"
 order = 12
 required = true
@@ -107,6 +114,7 @@ capabilities = ["health.pharmacology", "health.genomics", "health.clinical", "he
 
 [[graph.nodes]]
 name = "validate_cell"
+security_model = "btsp"
 order = 99
 depends_on = ["healthspring", "petaltongue"]
 

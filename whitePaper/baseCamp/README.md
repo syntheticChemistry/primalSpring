@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: April 2026
-**Status**: Phase 45c — v0.9.17 — 75 experiments (17 tracks), 631 tests, 56 deploy graphs (fragment-first composition), **guideStone Level 4** (**171/171 live NUCLEUS ALL PASS, 13/13 BTSP authenticated**, 41/41 bare, BLAKE3 checksums P3, **BTSP default on all tiers** with per-atomic security reporting), **genomeBin v5.1** (46 binaries / 6 target triples, Tier 1: 39/39), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), **seed provenance** (public BLAKE3 fingerprints in plasmidBin/manifest.toml), full cross-architecture deployment (x86_64/aarch64/armv7/windows/android/riscv64), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin is full genomeBin depot** — downstream springs use `build_ecosystem_genomeBin.sh` for any target, 46 binaries shipped, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, **biomeOS substrate validated** (Neural API liveness + graph executor)
+**Status**: Phase 45c — v0.9.17 — 75 experiments (17 tracks), 631 tests, 56 deploy graphs (fragment-first composition), **guideStone Level 4** (**187/187 live NUCLEUS ALL PASS, 13/13 BTSP authenticated**, 41/41 bare, BLAKE3 checksums P3, **BTSP default on all tiers** with per-atomic security reporting), **genomeBin v5.1** (46 binaries / 6 target triples, Tier 1: 39/39), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), **seed provenance** (public BLAKE3 fingerprints in plasmidBin/manifest.toml), full cross-architecture deployment (x86_64/aarch64/armv7/windows/android/riscv64), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin is full genomeBin depot** — downstream springs use `build_ecosystem_genomeBin.sh` for any target, 46 binaries shipped, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, **biomeOS substrate validated** (Neural API liveness + graph executor)
 
 ---
 
@@ -99,8 +99,9 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 ### guideStone Level 4 — Live NUCLEUS (April 20, 2026)
 
 The `primalspring_guidestone` binary now validates against a live 12-primal NUCLEUS
-composition deployed from `plasmidBin` ecoBin binaries. Now at **171/171 ALL PASS**
-(**13/13 BTSP authenticated**) after Phase 45c full convergence.
+composition deployed from `plasmidBin` ecoBin binaries. Now at **187/187 ALL PASS**
+(**13/13 BTSP authenticated**, 8 cellular graphs BTSP-enforced) after Phase 45c full convergence.
+biomeOS v3.25 absorbed graph bootstrap pre-registration and BTSP runtime escalation.
 Layers now include 0.5 (seed provenance), 1.5 (BTSP escalation + biomeOS substrate).
 
 Key evolution this phase:
@@ -157,7 +158,7 @@ their own guideStone binaries.
 - hotSpring v0.6.32: **Level 5 — Certified** (guideStone-v0.7.0)
 - healthSpring V53, neuralSpring V133, wetSpring V145, ludoSpring V44: **Level 1** (validation exists)
 - airSpring v0.10.0, groundSpring V124: **Level 0** (not started)
-- primalSpring v0.9.17: **Level 4** (**171/171 live NUCLEUS ALL PASS, 13/13 BTSP authenticated**, 41/41 bare, BLAKE3 P3, BTSP default everywhere, genomeBin v5.1)
+- primalSpring v0.9.17: **Level 4** (**187/187 live NUCLEUS ALL PASS, 13/13 BTSP authenticated**, 41/41 bare, BLAKE3 P3, BTSP default everywhere, Layer 7 cellular (8 cells), genomeBin v5.1)
 
 See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
 

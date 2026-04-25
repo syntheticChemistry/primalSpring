@@ -23,6 +23,7 @@ petaltongue_mode = "live"
 
 [[graph.nodes]]
 name = "biomeos_neural_api"
+security_model = "btsp"
 binary = "biomeos"
 order = 0
 required = true
@@ -33,6 +34,7 @@ capabilities = ["graph.deploy", "capability.discover", "topology.rescan"]
 
 [[graph.nodes]]
 name = "beardog"
+security_model = "btsp"
 binary = "beardog"
 order = 1
 required = true
@@ -44,6 +46,7 @@ capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
 
 [[graph.nodes]]
 name = "songbird"
+security_model = "btsp"
 binary = "songbird"
 order = 2
 required = true
@@ -55,6 +58,7 @@ capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 [[graph.nodes]]
 name = "toadstool"
+security_model = "btsp"
 binary = "toadstool"
 order = 3
 required = true
@@ -66,6 +70,7 @@ capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities", "
 
 [[graph.nodes]]
 name = "barracuda"
+security_model = "btsp"
 binary = "barracuda"
 order = 4
 required = false
@@ -77,6 +82,7 @@ capabilities = ["tensor.matmul", "stats.mean"]
 
 [[graph.nodes]]
 name = "nestgate"
+security_model = "btsp"
 binary = "nestgate"
 order = 6
 required = true
@@ -88,6 +94,7 @@ capabilities = ["storage.store", "storage.retrieve", "storage.list"]
 
 [[graph.nodes]]
 name = "rhizocrypt"
+security_model = "btsp"
 binary = "rhizocrypt"
 order = 7
 required = false
@@ -99,6 +106,7 @@ capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
 
 [[graph.nodes]]
 name = "loamspine"
+security_model = "btsp"
 binary = "loamspine"
 order = 8
 required = false
@@ -110,6 +118,7 @@ capabilities = ["spine.create", "entry.append", "certificate.mint"]
 
 [[graph.nodes]]
 name = "sweetgrass"
+security_model = "btsp"
 binary = "sweetgrass"
 order = 9
 required = false
@@ -123,6 +132,7 @@ capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
 
 [[graph.nodes]]
 name = "squirrel"
+security_model = "btsp"
 binary = "squirrel"
 order = 10
 required = false
@@ -134,6 +144,7 @@ capabilities = ["ai.chat", "ai.inference", "inference.complete", "inference.embe
 
 [[graph.nodes]]
 name = "petaltongue"
+security_model = "btsp"
 binary = "petaltongue"
 order = 11
 required = true
@@ -150,6 +161,7 @@ mode = "live"
 
 [[graph.nodes]]
 name = "ludospring"
+security_model = "btsp"
 binary = "ludospring-barracuda"
 order = 12
 required = true
@@ -160,6 +172,7 @@ capabilities = ["game.evaluate_flow", "game.push_scene", "game.begin_session", "
 
 [[graph.nodes]]
 name = "esotericwebb"
+security_model = "btsp"
 binary = "esotericwebb"
 order = 13
 required = true
@@ -172,6 +185,7 @@ capabilities = ["webb.scene.current", "webb.narrative.status", "webb.content.lis
 
 [[graph.nodes]]
 name = "validate_cell"
+security_model = "btsp"
 order = 99
 depends_on = ["esotericwebb", "petaltongue"]
 

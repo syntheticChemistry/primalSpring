@@ -7,7 +7,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Milestone
 **BTSP authentication default on all tiers — 13/13 converged.** guidestone reports
-**171/171 ALL PASS**, **13/13 capabilities BTSP-authenticated** (was 5/13 pre-Phase 45c).
+**187/187 ALL PASS**, **13/13 capabilities BTSP-authenticated** (was 5/13 pre-Phase 45c).
+Layer 7 cellular deployment: 8 cell graphs with per-node `security_model = "btsp"`.
+biomeOS v3.25 absorbed: graph bootstrap pre-registration + BTSP runtime escalation.
 JSON-line BTSP auto-detection and full handshake relay wired into all 12 upstream primals.
 Cleartext is a FAIL, not a pass. Full NUCLEUS BTSP convergence achieved April 24, 2026.
 
