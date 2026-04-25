@@ -287,6 +287,24 @@ domain = "bonding"
 # ── Visualization capabilities (petalTongue) ──
 
 [[capabilities]]
+method = "visualization.render"
+description = "Top-level render dispatch to petalTongue"
+domain = "visualization"
+provider = "petaltongue"
+
+[[capabilities]]
+method = "visualization.render.scene"
+description = "Push a game/domain scene for live rendering"
+domain = "visualization"
+provider = "petaltongue"
+
+[[capabilities]]
+method = "visualization.render.stream"
+description = "Push streaming metric updates for live display"
+domain = "visualization"
+provider = "petaltongue"
+
+[[capabilities]]
 method = "visualization.render.dashboard"
 description = "Render a Tower health dashboard via petalTongue"
 domain = "visualization"
@@ -296,6 +314,20 @@ provider = "petaltongue"
 method = "visualization.render.grammar"
 description = "Render a Grammar-of-Graphics expression via petalTongue"
 domain = "visualization"
+provider = "petaltongue"
+
+# ── Interaction capabilities (petalTongue) ──
+
+[[capabilities]]
+method = "interaction.subscribe"
+description = "Subscribe to user interaction events from petalTongue"
+domain = "interaction"
+provider = "petaltongue"
+
+[[capabilities]]
+method = "interaction.poll"
+description = "Poll for pending user interaction events"
+domain = "interaction"
 provider = "petaltongue"
 
 # ── Provenance trio (rhizoCrypt + loamSpine + sweetGrass) ──

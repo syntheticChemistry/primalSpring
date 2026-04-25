@@ -1,14 +1,20 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Cellular deployment graph: esotericWebb (garden)
+# Cellular deployment graph: esotericWebb (garden) — pure primal composition
 #
 # Full NUCLEUS + CRPG narrative domain + petalTongue live mode.
 # This is the garden cell — the playable interactive product.
+#
+# Architecture: No spring binaries deploy. Game science (ludoSpring validated)
+# is served by barraCuda (math/activation/stats) and petalTongue (viz + interaction).
+# Narrative intelligence is served by Squirrel (inference) and NestGate (storage).
+# The provenance trio (rhizoCrypt → loamSpine → sweetGrass) records sessions.
+#
 # Deploy: biomeos deploy --graph graphs/cells/esotericwebb_cell.toml
 
 [graph]
 name = "esotericwebb_cell"
-description = "esotericWebb — NUCLEUS + CRPG + live visualization (garden)"
-version = "1.0.0"
+description = "esotericWebb — pure primal CRPG garden + live visualization"
+version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
@@ -16,8 +22,9 @@ cell_type = "garden"
 domain = "crpg"
 security_model = "btsp_enforced"
 transport = "uds_only"
-composition_model = "nucleated"
+composition_model = "pure"
 petaltongue_mode = "live"
+tick_hz = 60
 
 # ── NUCLEUS Base ─────────────────────────────────────────────────────
 
@@ -73,12 +80,12 @@ name = "barracuda"
 security_model = "btsp"
 binary = "barracuda"
 order = 4
-required = false
+required = true
 spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "tensor"
-capabilities = ["tensor.matmul", "stats.mean"]
+capabilities = ["tensor.matmul", "tensor.create", "stats.mean", "stats.std_dev", "stats.variance", "activation.fitts", "activation.hick", "math.sigmoid", "math.log2", "noise.perlin2d", "rng.uniform"]
 
 [[graph.nodes]]
 name = "nestgate"
@@ -152,45 +159,26 @@ spawn = false
 depends_on = ["songbird"]
 health_method = "health.liveness"
 by_capability = "visualization"
-capabilities = ["visualization.render", "visualization.render.scene", "visualization.render.stream", "interaction.subscribe", "interaction.poll"]
+capabilities = ["visualization.render", "visualization.render.scene", "visualization.render.stream", "visualization.render.dashboard", "visualization.render.grammar", "interaction.subscribe", "interaction.poll"]
 
 [graph.nodes.params]
 mode = "live"
 
-# ── Domain Overlay (ludoSpring game science + Webb narrative) ────────
-
-[[graph.nodes]]
-name = "ludospring"
-security_model = "btsp"
-binary = "ludospring-barracuda"
-order = 12
-required = true
-depends_on = ["beardog", "songbird", "toadstool"]
-health_method = "health.liveness"
-by_capability = "game"
-capabilities = ["game.evaluate_flow", "game.push_scene", "game.begin_session", "game.record_action"]
-
-[[graph.nodes]]
-name = "esotericwebb"
-security_model = "btsp"
-binary = "esotericwebb"
-order = 13
-required = true
-depends_on = ["ludospring", "petaltongue", "squirrel"]
-health_method = "webb.liveness"
-by_capability = "narrative"
-capabilities = ["webb.scene.current", "webb.narrative.status", "webb.content.list", "tools.list", "tools.call"]
-
 # ── Validation ───────────────────────────────────────────────────────
+# No spring or garden binary nodes deploy. Game science is served by
+# barraCuda (activation, stats, noise, tensor). Narrative intelligence
+# by Squirrel (inference) + NestGate (storage). petalTongue renders
+# scenes and receives user interaction. The provenance trio records
+# immutable session DAGs and mints certificates.
 
 [[graph.nodes]]
 name = "validate_cell"
 security_model = "btsp"
 order = 99
-depends_on = ["esotericwebb", "petaltongue"]
+depends_on = ["barracuda", "petaltongue", "squirrel"]
 
 [graph.nodes.operation]
 name = "health_check"
 
 [graph.nodes.operation.params]
-targets = ["beardog", "songbird", "petaltongue", "ludospring", "esotericwebb"]
+targets = ["beardog", "songbird", "toadstool", "barracuda", "nestgate", "petaltongue", "squirrel"]

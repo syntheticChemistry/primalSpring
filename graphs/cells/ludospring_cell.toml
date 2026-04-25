@@ -1,14 +1,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Cellular deployment graph: ludoSpring
+# Cellular deployment graph: ludoSpring — pure primal composition
 #
-# NUCLEUS base + game science domain + petalTongue live mode.
-# This is the cell that esotericWebb consumes for its interactive garden.
+# Game science via composing existing primals (no spring binary deploys).
+# barraCuda provides math/stats/activation; petalTongue renders + receives
+# interaction; the provenance trio records sessions.
+#
+# Architecture: springs validate science (tier 2 Rust), compositions
+# deploy via cell graph (tier 3). This is the cell esotericWebb activates.
+#
 # Deploy: biomeos deploy --graph graphs/cells/ludospring_cell.toml
 
 [graph]
 name = "ludospring_cell"
-description = "ludoSpring — NUCLEUS + game science + live visualization"
-version = "1.0.0"
+description = "ludoSpring — pure primal composition for game science + live viz"
+version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
@@ -16,8 +21,9 @@ cell_type = "spring"
 domain = "game_science"
 security_model = "btsp_enforced"
 transport = "uds_only"
-composition_model = "nucleated"
+composition_model = "pure"
 petaltongue_mode = "live"
+tick_hz = 60
 
 # ── NUCLEUS Base ─────────────────────────────────────────────────────
 
@@ -169,30 +175,21 @@ capabilities = ["visualization.render", "visualization.render.scene", "visualiza
 [graph.nodes.params]
 mode = "live"
 
-# ── Domain Overlay ───────────────────────────────────────────────────
-
-[[graph.nodes]]
-name = "ludospring"
-security_model = "btsp"
-binary = "ludospring"
-order = 12
-required = true
-spawn = false
-depends_on = ["beardog", "songbird", "toadstool", "barracuda", "petaltongue"]
-health_method = "health.liveness"
-by_capability = "game"
-capabilities = ["game.evaluate_flow", "game.engagement", "game.push_scene", "game.begin_session", "game.record_action", "game.complete_session", "game.session_state", "game.tick_health", "game.difficulty_adjustment", "game.npc_dialogue", "game.narrate_action"]
-
 # ── Validation ───────────────────────────────────────────────────────
+# No spring binary node — game science is served by composing the primals
+# above. barraCuda provides activation.fitts, math.sigmoid, stats.mean,
+# noise.perlin2d, etc. petalTongue provides visualization.render.scene +
+# interaction.poll. The spring validates in Rust (tier 2); the composition
+# IS the deployment (tier 3).
 
 [[graph.nodes]]
 name = "validate_cell"
 security_model = "btsp"
 order = 99
-depends_on = ["ludospring", "petaltongue"]
+depends_on = ["barracuda", "petaltongue"]
 
 [graph.nodes.operation]
 name = "health_check"
 
 [graph.nodes.operation.params]
-targets = ["beardog", "songbird", "toadstool", "barracuda", "nestgate", "petaltongue", "ludospring"]
+targets = ["beardog", "songbird", "toadstool", "barracuda", "nestgate", "petaltongue"]

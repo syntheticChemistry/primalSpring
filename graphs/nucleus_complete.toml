@@ -114,7 +114,7 @@ capabilities = ["compute.dispatch.submit", "compute.execute"]
 [[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 3
+order = 4
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -128,7 +128,7 @@ capabilities = [
 [[graph.nodes]]
 name = "coralreef"
 binary = "coralreef"
-order = 3
+order = 5
 required = false
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -139,7 +139,7 @@ capabilities = ["shader.compile.wgsl", "shader.dispatch"]
 [[graph.nodes]]
 name = "nestgate"
 binary = "nestgate"
-order = 4
+order = 6
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -155,7 +155,7 @@ capabilities = [
 [[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
-order = 5
+order = 7
 required = true
 depends_on = ["beardog", "songbird", "toadstool", "nestgate"]
 health_method = "health.liveness"
@@ -170,7 +170,7 @@ capabilities = ["ai.query", "ai.complete", "mcp.tools.list"]
 [[graph.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
-order = 6
+order = 8
 required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
@@ -184,7 +184,7 @@ capabilities = [
 [[graph.nodes]]
 name = "loamspine"
 binary = "loamspine"
-order = 7
+order = 9
 required = false
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
@@ -195,7 +195,7 @@ capabilities = ["session.commit", "entry.append"]
 [[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
-order = 8
+order = 10
 required = false
 depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
@@ -213,7 +213,7 @@ capabilities = [
 [[graph.nodes]]
 name = "petaltongue"
 binary = "petaltongue"
-order = 9
+order = 11
 required = false
 depends_on = ["biomeos_neural_api"]
 health_method = "health.liveness"
@@ -221,8 +221,11 @@ by_capability = "visualization"
 security_model = "btsp"
 args = ["server"]
 capabilities = [
-    "visualization.render.scene", "visualization.render.dashboard",
-    "visualization.export", "visualization.session.list",
+    "visualization.render", "visualization.render.scene",
+    "visualization.render.stream", "visualization.render.dashboard",
+    "visualization.render.grammar", "visualization.export",
+    "visualization.session.list",
+    "interaction.subscribe", "interaction.poll",
 ]
 
 # ═══════════════════════════════════════════════════════════════
@@ -232,7 +235,7 @@ capabilities = [
 [[graph.nodes]]
 name = "primalspring"
 binary = "primalspring_primal"
-order = 10
+order = 12
 required = true
 spawn = false
 depends_on = ["biomeos_neural_api", "beardog", "songbird", "nestgate", "toadstool", "squirrel"]

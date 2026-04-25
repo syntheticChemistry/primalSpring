@@ -137,10 +137,12 @@ owner = "ludoSpring"
 domain = "game_science"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate"]
-guidestone_binary = "ludospring_guidestone"
+depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate", "petaltongue"]
+guidestone_validation = "composition"
 guidestone_readiness = 4
 guidestone_properties = { deterministic = true, traceable = true, self_verifying = true, env_agnostic = true, tolerance_documented = true }
+cell_graph = "graphs/cells/ludospring_cell.toml"
+composition_model = "pure"
 validation_capabilities = [
     "activation.fitts",
     "activation.hick",
@@ -161,6 +163,8 @@ validation_capabilities = [
     "storage.retrieve",
     "dag.session.create",
     "dag.event.append",
+    "visualization.render.scene",
+    "interaction.poll",
 ]
 
 [[downstream]]
@@ -169,8 +173,19 @@ owner = "esotericWebb"
 domain = "crpg"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "squirrel", "nestgate", "petaltongue", "toadstool", "rhizocrypt", "loamspine", "sweetgrass"]
+depends_on = ["beardog", "songbird", "squirrel", "nestgate", "petaltongue", "toadstool", "barracuda", "rhizocrypt", "loamspine", "sweetgrass"]
+guidestone_validation = "composition"
+cell_graph = "graphs/cells/esotericwebb_cell.toml"
+composition_model = "pure"
 validation_capabilities = [
+    "activation.fitts",
+    "activation.hick",
+    "math.sigmoid",
+    "noise.perlin2d",
+    "rng.uniform",
+    "stats.mean",
+    "stats.std_dev",
+    "tensor.matmul",
     "inference.complete",
     "inference.embed",
     "storage.store",
@@ -180,5 +195,8 @@ validation_capabilities = [
     "dag.event.append",
     "certificate.mint",
     "visualization.render.scene",
-    "compute.dispatch.submit",
+    "visualization.render.dashboard",
+    "interaction.subscribe",
+    "interaction.poll",
+    "compute.dispatch",
 ]
