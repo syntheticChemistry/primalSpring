@@ -23,7 +23,7 @@ use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-fn probe_health(host: &str, port: u16) -> Result<Duration, String> {
+fn probe_health(host: &str, port: u16) -> Result<Duration, primalspring::ipc::IpcError> {
     tcp_rpc(
         host,
         port,

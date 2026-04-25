@@ -63,7 +63,7 @@ fn tcp_rpc_value(
     port: u16,
     method: &str,
     params: &serde_json::Value,
-) -> Result<serde_json::Value, String> {
+) -> Result<serde_json::Value, primalspring::ipc::IpcError> {
     tcp_rpc_multi_protocol(host, port, method, params).map(|(v, _)| v)
 }
 
@@ -201,7 +201,7 @@ fn validate_cross_arch_genetics(v: &mut ValidationResult) {
             );
         }
         Err(e) => {
-            if e.contains("Method not found") || e.contains("not found") {
+            if e.is_method_not_found() {
                 v.check_skip(
                     "pixel_mito_beacon_derive",
                     "genetic.* RPCs not available on Pixel BearDog",
@@ -724,7 +724,7 @@ fn validate_bonding_model(v: &mut ValidationResult) {
             );
         }
         Err(e) => {
-            if e.contains("Method not found") || e.contains("not found") {
+            if e.is_method_not_found() {
                 v.check_skip("pixel_ionic_bond_capable", "ionic bond RPCs not available");
             } else {
                 v.check_skip("pixel_ionic_bond_capable", &format!("ionic probe: {e}"));

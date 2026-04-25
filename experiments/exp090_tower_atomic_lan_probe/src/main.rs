@@ -131,7 +131,7 @@ fn validate_mesh_discovery(
         }
         Err(e) => {
             println!("  mesh.init: {e}");
-            let acceptable = e.contains("Method not found");
+            let acceptable = e.is_method_not_found();
             if acceptable {
                 v.check_skip(
                     "mesh_init",

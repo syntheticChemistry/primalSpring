@@ -14,10 +14,12 @@ use std::io::{BufRead, BufReader, Write};
 use std::net::TcpStream;
 use std::time::{Duration, Instant};
 
+use super::error::{IpcError, classify_io_error};
+use super::protocol::JsonRpcError;
 use crate::tolerances;
 
 /// Result of a TCP JSON-RPC call: the parsed result value and round-trip latency.
-pub type TcpRpcResult = Result<(serde_json::Value, Duration), String>;
+pub type TcpRpcResult = Result<(serde_json::Value, Duration), IpcError>;
 
 /// Send a single JSON-RPC 2.0 request over TCP and return the result.
 ///
@@ -28,8 +30,9 @@ pub type TcpRpcResult = Result<(serde_json::Value, Duration), String>;
 ///
 /// # Errors
 ///
-/// Returns a human-readable `String` on connection failure, timeout, write
-/// error, or if the response contains a JSON-RPC error object.
+/// Returns [`IpcError`] with semantic classification: `ConnectionRefused` /
+/// `Timeout` for transport failures, `ApplicationError` / `MethodNotFound`
+/// for JSON-RPC errors, `ProtocolError` for malformed responses.
 pub fn tcp_rpc(host: &str, port: u16, method: &str, params: &serde_json::Value) -> TcpRpcResult {
     tcp_rpc_with_timeout(
         host,
@@ -57,10 +60,14 @@ pub fn tcp_rpc_with_timeout(
     let addr = format!("{host}:{port}");
     let start = Instant::now();
     let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
+        &addr
+            .parse()
+            .map_err(|e| IpcError::ProtocolError {
+                detail: format!("invalid address {addr}: {e}"),
+            })?,
         connect_timeout,
     )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
+    .map_err(classify_io_error)?;
     stream
         .set_read_timeout(Some(Duration::from_secs(tolerances::TCP_READ_TIMEOUT_SECS)))
         .ok();
@@ -79,8 +86,8 @@ pub fn tcp_rpc_with_timeout(
     let msg = format!("{req}\n");
     stream
         .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    stream.flush().map_err(|e| format!("flush: {e}"))?;
+        .map_err(classify_io_error)?;
+    stream.flush().map_err(classify_io_error)?;
 
     let reader = BufReader::new(&stream);
     for line in reader.lines().map_while(Result::ok) {
@@ -89,12 +96,21 @@ pub fn tcp_rpc_with_timeout(
             if let Some(result) = parsed.get("result") {
                 return Ok((result.clone(), elapsed));
             }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
+            if let Some(err_val) = parsed.get("error") {
+                if let Ok(rpc_err) = serde_json::from_value::<JsonRpcError>(err_val.clone()) {
+                    return Err(IpcError::from(rpc_err));
+                }
+                return Err(IpcError::ApplicationError {
+                    code: -1,
+                    message: err_val.to_string(),
+                    data: None,
+                });
             }
         }
     }
-    Err("no response".to_owned())
+    Err(IpcError::ProtocolError {
+        detail: format!("no JSON-RPC response from {addr}"),
+    })
 }
 
 /// HTTP health probe for primals that serve HTTP (e.g. Songbird).
@@ -103,7 +119,7 @@ pub fn tcp_rpc_with_timeout(
 ///
 /// # Errors
 ///
-/// Returns an error string on connection failure or non-OK response.
+/// Returns [`IpcError`] on connection failure or non-OK response.
 #[deprecated(
     since = "0.71.0",
     note = "All primals expose JSON-RPC `health.liveness`. Use `tcp_rpc(host, port, \"health.liveness\", &json!({}))` instead. Songbird no longer exposes HTTP /health on a port — Tower Atomic owns all HTTP."
@@ -112,10 +128,14 @@ pub fn http_health_probe(host: &str, port: u16) -> TcpRpcResult {
     let addr = format!("{host}:{port}");
     let start = Instant::now();
     let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
+        &addr
+            .parse()
+            .map_err(|e| IpcError::ProtocolError {
+                detail: format!("invalid address {addr}: {e}"),
+            })?,
         Duration::from_secs(tolerances::TCP_CONNECT_TIMEOUT_SECS),
     )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
+    .map_err(classify_io_error)?;
     stream
         .set_read_timeout(Some(Duration::from_secs(tolerances::TCP_READ_TIMEOUT_SECS)))
         .ok();
@@ -128,7 +148,7 @@ pub fn http_health_probe(host: &str, port: u16) -> TcpRpcResult {
     let http_req = format!("GET /health HTTP/1.1\r\nHost: {addr}\r\nConnection: close\r\n\r\n");
     stream
         .write_all(http_req.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
+        .map_err(classify_io_error)?;
 
     let mut buf = String::new();
     let reader = BufReader::new(&stream);
@@ -148,7 +168,9 @@ pub fn http_health_probe(host: &str, port: u16) -> TcpRpcResult {
             elapsed,
         ))
     } else {
-        Err("HTTP health: non-OK response".to_owned())
+        Err(IpcError::ProtocolError {
+            detail: format!("HTTP health: non-OK response from {addr}"),
+        })
     }
 }
 
@@ -160,8 +182,8 @@ pub fn http_health_probe(host: &str, port: u16) -> TcpRpcResult {
 ///
 /// # Errors
 ///
-/// Returns a human-readable `String` on connection failure, timeout, HTTP error,
-/// or JSON-RPC error.
+/// Returns [`IpcError`] on connection failure, timeout, HTTP error, or
+/// JSON-RPC error.
 pub fn http_json_rpc(
     host: &str,
     port: u16,
@@ -171,10 +193,14 @@ pub fn http_json_rpc(
     let addr = format!("{host}:{port}");
     let start = Instant::now();
     let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| format!("parse: {e}"))?,
+        &addr
+            .parse()
+            .map_err(|e| IpcError::ProtocolError {
+                detail: format!("invalid address {addr}: {e}"),
+            })?,
         Duration::from_secs(tolerances::TCP_CONNECT_TIMEOUT_SECS),
     )
-    .map_err(|e| format!("connect {addr}: {e}"))?;
+    .map_err(classify_io_error)?;
     stream
         .set_read_timeout(Some(Duration::from_secs(tolerances::TCP_READ_TIMEOUT_SECS)))
         .ok();
@@ -204,7 +230,7 @@ pub fn http_json_rpc(
     );
     stream
         .write_all(http_req.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
+        .map_err(classify_io_error)?;
 
     let reader = BufReader::new(&stream);
     let mut in_body = false;
@@ -219,13 +245,22 @@ pub fn http_json_rpc(
                 if let Some(result) = parsed.get("result") {
                     return Ok((result.clone(), elapsed));
                 }
-                if let Some(error) = parsed.get("error") {
-                    return Err(format!("RPC error: {error}"));
+                if let Some(err_val) = parsed.get("error") {
+                    if let Ok(rpc_err) = serde_json::from_value::<JsonRpcError>(err_val.clone()) {
+                        return Err(IpcError::from(rpc_err));
+                    }
+                    return Err(IpcError::ApplicationError {
+                        code: -1,
+                        message: err_val.to_string(),
+                        data: None,
+                    });
                 }
             }
         }
     }
-    Err("no HTTP JSON-RPC response".to_owned())
+    Err(IpcError::ProtocolError {
+        detail: format!("no HTTP JSON-RPC response from {addr}"),
+    })
 }
 
 /// Try raw TCP JSON-RPC first, then fall back to HTTP `/jsonrpc`.
@@ -235,7 +270,9 @@ pub fn http_json_rpc(
 ///
 /// # Errors
 ///
-/// Returns the HTTP error if both raw TCP and HTTP fail.
+/// Returns the HTTP [`IpcError`] if both raw TCP and HTTP fail. If the raw
+/// TCP attempt returned a semantic RPC error (application/method-not-found),
+/// that error is returned immediately without HTTP fallback.
 pub fn tcp_rpc_multi_protocol(
     host: &str,
     port: u16,
@@ -244,7 +281,9 @@ pub fn tcp_rpc_multi_protocol(
 ) -> TcpRpcResult {
     match tcp_rpc(host, port, method, params) {
         ok @ Ok(_) => ok,
-        Err(ref e) if e.starts_with("RPC error:") => Err(e.clone()),
+        Err(e) if e.is_method_not_found() || matches!(e, IpcError::ApplicationError { .. }) => {
+            Err(e)
+        }
         Err(_transport_err) => http_json_rpc(host, port, method, params),
     }
 }
@@ -267,7 +306,7 @@ pub fn env_port(key: &str, default: u16) -> u16 {
 ///
 /// # Errors
 ///
-/// Returns an error string on connection/timeout failure or if the Neural API
+/// Returns [`IpcError`] on connection/timeout failure or if the Neural API
 /// returns an RPC error.
 pub fn neural_api_capability_call(
     host: &str,
@@ -293,7 +332,7 @@ pub fn neural_api_capability_call(
 ///
 /// # Errors
 ///
-/// Returns an error string on connection failure or RPC error.
+/// Returns [`IpcError`] on connection failure or RPC error.
 pub fn neural_api_capability_discover(host: &str, port: u16, domain: &str) -> TcpRpcResult {
     let params = serde_json::json!({ "domain": domain });
     tcp_rpc(

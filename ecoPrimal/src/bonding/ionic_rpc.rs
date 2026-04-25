@@ -181,10 +181,7 @@ impl IonicBondClient {
             extract_port(&self.remote_peer.tcp_address),
             "bonding.propose",
             &propose_params,
-        )
-        .map_err(|e| IpcError::ProtocolError {
-            detail: format!("ionic propose to {}: {e}", self.remote_peer.tcp_address),
-        })?;
+        )?;
 
         serde_json::from_value(signed.0).map_err(|e| IpcError::SerializationError {
             detail: format!("ionic propose response: {e}"),
@@ -207,10 +204,7 @@ impl IonicBondClient {
             extract_port(&self.remote_peer.tcp_address),
             "bonding.terminate",
             &params,
-        )
-        .map_err(|e| IpcError::ProtocolError {
-            detail: format!("ionic terminate: {e}"),
-        })?;
+        )?;
 
         serde_json::from_value(result.0).map_err(|e| IpcError::SerializationError {
             detail: format!("ionic terminate response: {e}"),
@@ -237,10 +231,7 @@ impl IonicBondClient {
             extract_port(&self.remote_peer.tcp_address),
             "bonding.modify_scope",
             &params,
-        )
-        .map_err(|e| IpcError::ProtocolError {
-            detail: format!("ionic modify_scope: {e}"),
-        })?;
+        )?;
 
         serde_json::from_value(result.0).map_err(|e| IpcError::SerializationError {
             detail: format!("ionic modify_scope response: {e}"),

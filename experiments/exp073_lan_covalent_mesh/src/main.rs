@@ -28,7 +28,7 @@ fn tcp_rpc_value(
     port: u16,
     method: &str,
     params: &serde_json::Value,
-) -> Result<serde_json::Value, String> {
+) -> Result<serde_json::Value, primalspring::ipc::IpcError> {
     tcp_rpc(host, port, method, params).map(|(v, _)| v)
 }
 
@@ -144,7 +144,7 @@ fn validate_mesh_peers(v: &mut ValidationResult, host: &str, songbird_port: u16)
         }
         Err(e) => {
             println!("  mesh.peers: {e}");
-            let acceptable = e.contains("Method not found") || e.contains("not found");
+            let acceptable = e.is_method_not_found();
             if acceptable {
                 v.check_skip(
                     "mesh_peers_discovered",
@@ -249,7 +249,7 @@ fn validate_birdsong_beacon(
         }
         Err(e) => {
             println!("  remote beacon generation: {e}");
-            let method_missing = e.contains("Method not found");
+            let method_missing = e.is_method_not_found();
             if method_missing {
                 v.check_skip(
                     "remote_beacon_generated",
@@ -389,7 +389,7 @@ fn validate_three_tier_genetics(v: &mut ValidationResult, host: &str, beardog_po
             );
         }
         Err(e) => {
-            if e.contains("Method not found") {
+            if e.is_method_not_found() {
                 v.check_skip(
                     "remote_mito_beacon_derived",
                     "genetic.derive_lineage_beacon_key not available",
