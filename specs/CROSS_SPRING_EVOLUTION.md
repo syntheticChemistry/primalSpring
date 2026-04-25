@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 2026
-**Status**: Phase 45c — BTSP default on all tiers (11/13 capabilities authenticated), multi-tier genetics, cross-arch deployment, content distribution federation, guideStone Level 4 (163/168), capability-based discovery, plasmidBin depot. 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition), 631 tests. Tier 1 MUST: 39/39 binaries (13 primals × 3 targets).
+**Status**: Phase 45c — BTSP default on all tiers (**13/13 capabilities authenticated, 171/171 ALL PASS**), multi-tier genetics, cross-arch deployment, content distribution federation, guideStone Level 4, capability-based discovery, plasmidBin depot. 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition), 631 tests. Tier 1 MUST: 39/39 binaries (13 primals × 3 targets).
 
 ---
 

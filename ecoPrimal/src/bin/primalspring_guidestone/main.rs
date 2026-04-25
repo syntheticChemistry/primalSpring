@@ -447,11 +447,21 @@ fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) 
 
     let btsp_count = btsp.values().filter(|&&v| v).count();
     let total = btsp.len();
-    v.check_bool(
-        "btsp:summary",
-        true,
-        &format!("{btsp_count}/{total} capabilities BTSP-authenticated"),
-    );
+
+    let cleartext_caps: Vec<&String> = btsp
+        .iter()
+        .filter(|&(_, &auth)| !auth)
+        .map(|(cap, _)| cap)
+        .collect();
+    let detail = if cleartext_caps.is_empty() {
+        format!("{btsp_count}/{total} capabilities BTSP-authenticated")
+    } else {
+        format!(
+            "{btsp_count}/{total} capabilities BTSP-authenticated (cleartext: {})",
+            cleartext_caps.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", "),
+        )
+    };
+    v.check_bool("btsp:summary", btsp_count == total, &detail);
 }
 
 /// biomeOS substrate health — neural-api liveness + graph.list.

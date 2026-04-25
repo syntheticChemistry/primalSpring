@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 163/168 guidestone (11/13 BTSP authenticated).**
+> **Last updated**: 2026-04-24 — **FULL NUCLEUS REVALIDATION: 12/12 ALIVE, 171/171 guidestone ALL PASS (13/13 BTSP authenticated).**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -108,8 +108,8 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > Phase 45c. Songbird Wave 133→156, ToadStool S198→S203q, barraCuda Sprint 39→44,
 > coralReef Iter 78→84+, rhizoCrypt S31→S43, sweetGrass wired.
 > skunkBat Phase 2 COMPLETE (v0.1.0 — `PeekedStream` UDS peek + BearDog v0.9.0 alignment).
-> **Remaining 2 upstream**: petalTongue (no BTSP server, closes on ClientHello),
-> loamSpine (initiates handshake but omits HandshakeComplete).
+> ~~Remaining 2 upstream: petalTongue, loamSpine~~ — **ALL RESOLVED** (April 24, 2026).
+> 13/13 BTSP authenticated. See CHANGELOG Phase 45c final convergence fixes.
 > **BearDog is the sole handshake provider,
 > not a consumer — its status as "already complete" is by design.**
 >
@@ -1062,9 +1062,8 @@ needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esoteri
 
 ### Compliance Evolution (April 9 — BTSP Phase 2 ecosystem cascade)
 
-**BTSP Phase 2 rollout — 11/13 authenticated.** 11/13 capabilities BTSP-authenticated
-after Phase 45c relay fixes. Remaining 2: petalTongue (no BTSP server), loamSpine
-(incomplete handshake). **Tower: 100%. Node: 100%. Nest: 100%. Provenance: 80% (dag/commit/provenance PASS, ledger FAIL).**
+**BTSP Phase 2→3 rollout — 13/13 authenticated (CONVERGED).** All capabilities BTSP-authenticated
+after Phase 45c full convergence. **Tower: 100%. Node: 100%. Nest: 100%. Provenance: 100%.**
 primalSpring itself: clippy ZERO warnings, fmt PASS, all tests PASS.
 
 1. **Songbird**: **BTSP Phase 2 COMPLETE** ↑↑ (Wave 133, **NDJSON wire-format Wave 153**) — `perform_server_handshake()` (length-prefix) + `perform_server_handshake_ndjson()` (JSON-line) in `ipc/btsp.rs`; first-line auto-detect: `"protocol":"btsp"` → NDJSON BTSP handshake then NDJSON JSON-RPC; BearDog delegation via `SecurityRpcClient`. `BtspClient` + connection managers.

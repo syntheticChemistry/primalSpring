@@ -223,7 +223,7 @@ interaction, exit code semantics, and serving pattern are the **same**.
 
 | Spring | Level | Evidence | Blockers |
 |--------|-------|----------|----------|
-| primalSpring v0.9.17 | **4 — NUCLEUS works** | 163/168 live NUCLEUS (11/13 BTSP authenticated), 41/41 bare, P3 BLAKE3, seed provenance (Layer 0.5), BTSP default all tiers (Layer 1.5), genomeBin v5.1 (46 binaries / 6 targets) | Level 5: cross-substrate parity |
+| primalSpring v0.9.17 | **4 — NUCLEUS works** | **171/171 live NUCLEUS ALL PASS (13/13 BTSP authenticated)**, 41/41 bare, P3 BLAKE3, seed provenance (Layer 0.5), BTSP default all tiers (Layer 1.5), genomeBin v5.1 (46 binaries / 6 targets) | Level 5: cross-substrate parity |
 | hotSpring v0.6.32 | **5 — Certified** | guideStone-v0.7.0: all 5 properties, cross-substrate parity (Python/CPU/GPU), NUCLEUS additive layer, 128 WGSL shaders, reference implementation | aarch64 CI |
 | healthSpring V56 | **4 — NUCLEUS works** | 49/49 live checks, barraCuda RTX 3070 IPC parity, BLAKE3 P3 (17 files), three-tier harness | NestGate egress fence; barraCuda blockers now RESOLVED (Sprint 44) — re-validate for Level 5 |
 | wetSpring V148 | **4 — NUCLEUS works** | 31/31 live checks (11 skip), cross-atomic pipeline (hash→store→verify), BLAKE3 P3 | **All blockers RESOLVED** — ToadStool PG-31 fixed (S174), barraCuda, Squirrel all clear — re-validate for Level 5 |
@@ -387,7 +387,7 @@ validation_capabilities = [
 ## Changes in v1.1.0
 
 - **Property 3**: Switched from SHA-256 to BLAKE3 (via `primalspring::checksums`)
-- **primalSpring guideStone**: 163/168 live NUCLEUS checks pass (Level 4, 11/13 BTSP authenticated; 2 upstream debt: petalTongue + loamSpine)
+- **primalSpring guideStone**: **171/171 live NUCLEUS ALL PASS** (Level 4, **13/13 BTSP authenticated**)
 - Added CHECKSUMS integration pattern (generate with `gen_checksums` example,
   verify with `verify_manifest`)
 - Updated readiness table: primalSpring(4), hotSpring(5), healthSpring(4),

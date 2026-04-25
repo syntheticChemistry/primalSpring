@@ -69,12 +69,12 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.17 Phase 45 — 631 tests (585 passed + 46 ignored), 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition).
+v0.9.17 Phase 45c — 631 tests (585 passed + 46 ignored), 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition).
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
-Live validation: **12/12 primals ALIVE**, **163/168 guidestone PASS** (11/13 BTSP
-authenticated; 2 upstream debt: petalTongue + loamSpine),
+Live validation: **12/12 primals ALIVE**, **171/171 guidestone ALL PASS** (**13/13 BTSP
+authenticated** — full NUCLEUS BTSP convergence achieved),
 **19/19 exp094 composition parity**, **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
 (HSM cfg-gated). ludoSpring parity: exp068 **6/6**, exp067 **18/19**, exp072 **24/31**.
 Full NUCLEUS validated across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
@@ -107,12 +107,13 @@ health (neural-api liveness + graph.list) validated as first-class check.
 Domain guideStones (hotSpring, healthSpring, etc.) inherit this base certification
 and only validate their own science. See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md`.
 
-Incremental BTSP escalation: cleartext bootstrap → Tower BTSP → Node/Nest delegation
-→ Provenance BTSP → full NUCLEUS encrypted. `upgrade_btsp_clients()` probes cleartext
-first, escalates to BTSP where rejected. Published seed fingerprints prove binary
-authenticity at Layer 0.5. Wire-level BTSP requires upstream primals to implement
-the 4-step handshake server protocol — currently an upstream gap for BearDog,
-Songbird, rhizoCrypt, sweetGrass, and loamSpine. `nucleus_launcher.sh` starts
+BTSP convergence achieved: 13/13 capabilities BTSP-authenticated across all NUCLEUS
+tiers. `upgrade_btsp_clients()` uses a two-pass strategy — cleartext probe first,
+then BTSP-first for enforcing primals that reject cleartext. Published seed fingerprints
+prove binary authenticity at Layer 0.5. All upstream primals now implement the 4-step
+handshake server protocol. Key convergence fixes: Songbird `SecurityRpcClient::new_direct()`
+(Wave 169), ToadStool post-handshake connection persistence, loamSpine `btsp.negotiate`
+non-fatal fallback, petalTongue BearDog field alignment. `nucleus_launcher.sh` starts
 biomeOS with `BIOMEOS_BTSP_ENFORCE=0` (cleartext bootstrap before Tower is alive).
 
 Bonding models validated (structural): Covalent, Ionic, Metallic, Weak,

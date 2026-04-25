@@ -30,10 +30,10 @@ vulnerability, please report it responsibly:
 - **No secrets in source**: API keys are passed via environment variables
   or `testing-secrets/` (gitignored)
 - **BTSP default on all tiers**: guidestone expects BTSP authentication on
-  every capability (Tower, Node, Nest, Provenance). 11/13 capabilities
-  authenticated, 2 upstream (petalTongue, loamSpine). Cleartext connections
-  are functional but reported as FAIL in guidestone — the target is full
-  BTSP across the NUCLEUS before granular per-deployment policy control
+  every capability (Tower, Node, Nest, Provenance). **13/13 capabilities
+  BTSP-authenticated** — full NUCLEUS convergence achieved. Cleartext
+  connections are reported as FAIL in guidestone. Next phase: granular
+  per-deployment policy control based on trust model and lineage
 - **Seed provenance**: public BLAKE3 fingerprints for each primal published
   in `plasmidBin/manifest.toml` — Layer 0.5 verifies binary authenticity
   before any IPC

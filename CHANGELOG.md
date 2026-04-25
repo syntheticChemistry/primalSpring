@@ -3,13 +3,13 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.9.17+] — Phase 45c: BTSP Default Everywhere + Upstream Relay Fixes (2026-04)
+## [0.9.17+] — Phase 45c: BTSP Default Everywhere + Full NUCLEUS Convergence (2026-04)
 
 ### Milestone
-**BTSP authentication default on all tiers.** 11/13 capabilities BTSP-authenticated
-(was 5/13). JSON-line BTSP auto-detection and full handshake relay wired into 5
-upstream primals. guidestone expects BTSP on Tower, Node, Nest, and Provenance —
-cleartext is a FAIL, not a pass.
+**BTSP authentication default on all tiers — 13/13 converged.** guidestone reports
+**171/171 ALL PASS**, **13/13 capabilities BTSP-authenticated** (was 5/13 pre-Phase 45c).
+JSON-line BTSP auto-detection and full handshake relay wired into all 12 upstream primals.
+Cleartext is a FAIL, not a pass. Full NUCLEUS BTSP convergence achieved April 24, 2026.
 
 ### Changed
 - `PROACTIVE_CAPS` expanded to all 17 capabilities (security, discovery, compute,
@@ -34,12 +34,16 @@ cleartext is a FAIL, not a pass.
 - Challenge sourced from BearDog's `btsp.session.create` response (not locally generated)
 - `session_id` / `session_token` fallback parsing
 
-### Remaining Upstream Debt (2 of 13)
-- **petalTongue**: no BTSP server — closes connection on ClientHello
-- **loamSpine**: initiates handshake but does not send HandshakeComplete
+### Final Convergence Fixes (April 24, 2026)
+- **Songbird** (Wave 169): `SecurityRpcClient::new()` → `new_direct()` in `bin_interface/server.rs` (lines 436, 468) — discovery capability was routing BTSP through Neural API instead of direct BearDog
+- **ToadStool**: Post-handshake connection kept alive for NDJSON RPC (was dropping after successful handshake)
+- **loamSpine**: `btsp.negotiate` made non-fatal in `handshake.rs` — BearDog doesn't implement this method; loamSpine now defaults to client's preferred cipher
+- **petalTongue**: BearDog field alignment, BTSP server fully converged
+- **primalSpring**: `upgrade_btsp_clients()` second pass — BTSP-first connection for capabilities with discoverable sockets but no existing client (covers BTSP-enforcing primals that reject cleartext)
 
-### Known Issues
-- 5 `seed:fingerprint:MISMATCH` in guidestone — expected after source modifications, requires plasmidBin reharvest
+### Resolved
+- All 13/13 capabilities BTSP-authenticated — zero upstream BTSP debt remaining
+- All seed fingerprint mismatches resolved via plasmidBin reharvest
 
 ## [0.9.17] — Phase 45: genomeBin Cross-Architecture Depot + Deployment Validation (2026-04-20)
 

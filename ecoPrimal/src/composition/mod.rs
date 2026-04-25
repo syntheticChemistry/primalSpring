@@ -616,10 +616,11 @@ pub fn is_skip_error(e: &IpcError) -> bool {
 /// Capabilities not in the proactive set use a reactive fallback: probe
 /// cleartext first, only escalate if the server rejects cleartext.
 ///
-/// Published seed fingerprints (Layer 0.5) prove primal authenticity.
-/// Wire-level BTSP requires the server to implement the handshake protocol.
-/// Primals that don't yet speak BTSP are upstream debt (petalTongue,
-/// loamSpine as of Phase 45c).
+/// Primals that enforce BTSP may reject the initial cleartext connection
+/// in `from_live_discovery_with_fallback`, leaving no client for that
+/// capability. After upgrading existing clients, this function performs a
+/// second pass over `ALL_CAPS` to BTSP-connect any capabilities that have
+/// discoverable sockets but no client yet.
 ///
 /// Returns a `BTreeMap<capability, btsp_authenticated>` so guidestone can
 /// report per-atomic security posture without re-probing.
@@ -679,6 +680,28 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    // Second pass: BTSP-first for capabilities with discoverable sockets but
+    // no client (e.g. BTSP-enforcing primals that rejected cleartext connect).
+    for &cap in ALL_CAPS {
+        if clients.contains_key(cap) {
+            continue;
+        }
+        let result = crate::ipc::discover::discover_by_capability(cap);
+        if let Some(path) = result.socket {
+            let primal = capability_to_primal(cap);
+            match PrimalClient::connect_btsp(&path, primal, &seed) {
+                Ok(btsp_client) => {
+                    tracing::info!(cap, primal, "BTSP authenticated (BTSP-first, no cleartext client)");
+                    clients.insert(cap.to_owned(), btsp_client);
+                    state.insert(cap.to_owned(), true);
+                }
+                Err(e) => {
+                    tracing::debug!(cap, primal, ?e, "BTSP-first connection failed");
                 }
             }
         }
