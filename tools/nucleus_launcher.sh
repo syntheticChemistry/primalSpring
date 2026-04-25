@@ -431,6 +431,44 @@ cmd_start() {
         log "WARN: petaltongue binary not found, skipping"
     fi
 
+    # ── Post-Tower BTSP verification ─────────────────────────────
+    # Now that Tower (BearDog + Songbird) is healthy and all primals are
+    # launched, verify the BTSP handshake works via a socat probe.
+    # This catches misconfigs before guidestone runs.
+    if [[ -S "$beardog_sock" ]]; then
+        log "── BTSP Verification ──"
+        local btsp_probe='{"protocol":"btsp","version":1,"client_ephemeral_pub":"dGVzdA=="}'
+        local verified=0
+        local total=0
+        for cap_sock in "$toadstool_sock" "$barracuda_sock" "$coralreef_sock" \
+                        "$nestgate_sock" "$squirrel_sock" "$rhizocrypt_sock" \
+                        "$loamspine_sock" "$sweetgrass_sock" "$petaltongue_sock"; do
+            if [[ -S "$cap_sock" ]]; then
+                total=$((total + 1))
+                local probe_resp
+                probe_resp=$(echo "$btsp_probe" | timeout 3 socat -t2 - "UNIX-CONNECT:$cap_sock" 2>/dev/null || true)
+                if echo "$probe_resp" | grep -q '"challenge"'; then
+                    verified=$((verified + 1))
+                fi
+            fi
+        done
+        if [[ -S "$beardog_sock" ]]; then
+            total=$((total + 1))
+            verified=$((verified + 1))
+        fi
+        if [[ -S "$songbird_sock" ]]; then
+            total=$((total + 1))
+            local songbird_resp
+            songbird_resp=$(echo "$btsp_probe" | timeout 3 socat -t2 - "UNIX-CONNECT:$songbird_sock" 2>/dev/null || true)
+            if echo "$songbird_resp" | grep -q '"challenge"'; then
+                verified=$((verified + 1))
+            fi
+        fi
+        if [[ $total -gt 0 ]]; then
+            log "  BTSP: $verified/$total primals respond to handshake probe"
+        fi
+    fi
+
     # ── Domain capability aliases ────────────────────────────────
     # biomeOS and experiments discover primals by capability domain.
     # Each primal should create its own symlinks, but we ensure the

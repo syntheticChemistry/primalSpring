@@ -415,16 +415,18 @@ fn validate_bonding_type_wellformed(v: &mut ValidationResult) {
 // ════════════════════════════════════════════════════════════════════════
 
 fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) {
+    use primalspring::bonding::{BtspEnforcer, TrustModel};
+
     let btsp = ctx.btsp_state();
 
-    let tiers: &[(&str, &[&str])] = &[
-        ("Tower", AtomicType::Tower.required_capabilities()),
-        ("Node", &["compute", "tensor", "shader"]),
-        ("Nest", &["storage", "ai"]),
-        ("Provenance", &["dag", "commit", "provenance"]),
+    let tiers: &[(&str, &[&str], BondType)] = &[
+        ("Tower", AtomicType::Tower.required_capabilities(), BondType::Covalent),
+        ("Node", &["compute", "tensor", "shader"], BondType::Metallic),
+        ("Nest", &["storage", "ai"], BondType::Metallic),
+        ("Provenance", &["dag", "commit", "provenance"], BondType::Metallic),
     ];
 
-    for &(tier_name, caps) in tiers {
+    for &(tier_name, caps, bond) in tiers {
         for &cap in caps {
             let check_name = format!("btsp:{tier_name}:{cap}");
             match btsp.get(cap) {
@@ -443,6 +445,38 @@ fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) 
                 }
             }
         }
+
+        let min_cipher = btsp::min_cipher_for_bond(bond);
+        let trust_req = match bond {
+            BondType::Covalent => "nuclear-tier genetics",
+            BondType::Metallic | BondType::OrganoMetalSalt => "mito-beacon genetics",
+            BondType::Ionic => "contractual",
+            BondType::Weak => "any",
+        };
+        v.check_bool(
+            &format!("btsp:policy:{tier_name}"),
+            true,
+            &format!("{bond:?} bond, min cipher {min_cipher:?}, trust requires {trust_req}"),
+        );
+
+        let policy = BondingPolicy::covalent_default();
+        let peer_trust = match bond {
+            BondType::Covalent => TrustModel::NuclearLineage,
+            _ => TrustModel::MitoBeaconFamily,
+        };
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &BondingPolicy {
+                bond_type: bond,
+                ..policy
+            },
+            min_cipher,
+            Some(peer_trust),
+        );
+        v.check_bool(
+            &format!("btsp:enforcer:{tier_name}"),
+            decision.allowed,
+            &decision.reason,
+        );
     }
 
     let btsp_count = btsp.values().filter(|&&v| v).count();
@@ -1134,6 +1168,24 @@ fn validate_cellular_graphs(v: &mut ValidationResult) {
             &format!("cellular:{stem}:health_check"),
             has_validate,
             "validation health_check node present",
+        );
+
+        let security_models: Vec<&str> = nodes
+            .iter()
+            .flat_map(|arr| arr.iter())
+            .filter_map(|n| n.get("security_model").and_then(|v| v.as_str()))
+            .collect();
+        let all_btsp = !security_models.is_empty()
+            && security_models.iter().all(|&m| m == "btsp" || m == "btsp_enforced");
+        let btsp_count = security_models.iter().filter(|&&m| m == "btsp" || m == "btsp_enforced").count();
+        v.check_bool(
+            &format!("cellular:{stem}:btsp_default"),
+            all_btsp,
+            &format!(
+                "{}/{} nodes declare btsp security_model",
+                btsp_count,
+                security_models.len()
+            ),
         );
     }
 }
