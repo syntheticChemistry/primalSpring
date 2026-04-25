@@ -58,7 +58,7 @@ which has a unique dual-tower ionic bridge pattern and is kept as a standalone g
 | **airSpring** | 0.10.0 | 0 | 1,364 | Node + **Nest** | `downstream_manifest.toml` | **Pinned** — paths fixed |
 | **groundSpring** | V124 | 0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` | **Pinned** — paths fixed |
 | **healthSpring** | V54 | **2** | 940+ | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_*` | **Pinned** — scaffold |
-| **ludoSpring** | V48 | **4** | 798 | Node + **Meta** + Nest | `downstream_manifest.toml` | **Active** — BTSP relay wired, cell graph ready |
+| **ludoSpring** | V49 | **4** | 799 | Node + **Meta** + Nest | `downstream_manifest.toml` | **Active** — deep debt resolved, MCP 15/15, typed errors |
 
 ### Key
 
