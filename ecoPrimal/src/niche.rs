@@ -124,8 +124,13 @@ pub const ROUTED_CAPABILITIES: &[(&str, &str)] = {
         ("topology.get", pn::BIOMEOS),
         ("topology.proprioception", pn::BIOMEOS),
         // ── Visualization (petalTongue) ──
+        ("visualization.render", pn::PETALTONGUE),
+        ("visualization.render.scene", pn::PETALTONGUE),
+        ("visualization.render.stream", pn::PETALTONGUE),
         ("visualization.render.dashboard", pn::PETALTONGUE),
         ("visualization.render.grammar", pn::PETALTONGUE),
+        ("interaction.subscribe", pn::PETALTONGUE),
+        ("interaction.poll", pn::PETALTONGUE),
         // ── Crypto (BearDog) ──
         ("crypto.sign_ed25519", pn::BEARDOG),
         ("crypto.verify_ed25519", pn::BEARDOG),

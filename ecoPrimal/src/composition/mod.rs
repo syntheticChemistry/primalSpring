@@ -323,6 +323,79 @@ impl CompositionContext {
             serde_json::json!({"primal_id": primal_id}),
         )
     }
+
+    // ── Visualization convenience (petalTongue live pipeline) ──────────
+
+    /// Push a scene to petalTongue for live rendering.
+    ///
+    /// This is the typed equivalent of ludoSpring's
+    /// `PetalTonguePushClient::push_scene` — routed through the
+    /// composition layer with `IpcError` semantics and BTSP enforcement.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the `visualization` capability is absent or
+    /// the render call fails.
+    pub fn push_scene(
+        &mut self,
+        session_id: &str,
+        title: &str,
+        data: &serde_json::Value,
+    ) -> Result<serde_json::Value, IpcError> {
+        self.call(
+            "visualization",
+            crate::ipc::methods::visualization::RENDER_SCENE,
+            serde_json::json!({
+                "session_id": session_id,
+                "title": title,
+                "domain": "game",
+                "scene": data,
+            }),
+        )
+    }
+
+    /// Push a streaming metric update to petalTongue.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the `visualization` capability is absent or
+    /// the render call fails.
+    pub fn push_stream(
+        &mut self,
+        session_id: &str,
+        action: &str,
+        payload: &serde_json::Value,
+    ) -> Result<serde_json::Value, IpcError> {
+        self.call(
+            "visualization",
+            crate::ipc::methods::visualization::RENDER_STREAM,
+            serde_json::json!({
+                "session_id": session_id,
+                "action": action,
+                "data": payload,
+            }),
+        )
+    }
+
+    /// Poll petalTongue for pending user interaction events.
+    ///
+    /// Returns the raw interaction payload from petalTongue. Empty
+    /// `events` array means no pending input.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the `visualization` capability is absent or
+    /// the poll call fails.
+    pub fn poll_interactions(
+        &mut self,
+        session_id: &str,
+    ) -> Result<serde_json::Value, IpcError> {
+        self.call(
+            "visualization",
+            crate::ipc::methods::interaction::POLL,
+            serde_json::json!({ "session_id": session_id }),
+        )
+    }
 }
 
 /// Map a capability domain to its canonical primal provider.

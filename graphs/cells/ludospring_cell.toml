@@ -164,7 +164,7 @@ spawn = false
 depends_on = ["songbird"]
 health_method = "health.liveness"
 by_capability = "visualization"
-capabilities = ["visualization.render", "visualization.render.scene", "visualization.render.stream", "interaction.subscribe", "interaction.poll"]
+capabilities = ["visualization.render", "visualization.render.scene", "visualization.render.stream", "visualization.render.dashboard", "visualization.render.grammar", "interaction.subscribe", "interaction.poll"]
 
 [graph.nodes.params]
 mode = "live"
@@ -174,13 +174,14 @@ mode = "live"
 [[graph.nodes]]
 name = "ludospring"
 security_model = "btsp"
-binary = "ludospring-barracuda"
+binary = "ludospring"
 order = 12
 required = true
-depends_on = ["beardog", "songbird", "toadstool", "barracuda"]
+spawn = false
+depends_on = ["beardog", "songbird", "toadstool", "barracuda", "petaltongue"]
 health_method = "health.liveness"
 by_capability = "game"
-capabilities = ["game.evaluate_flow", "game.engagement", "game.push_scene", "game.begin_session", "game.record_action", "game.complete_session", "game.npc_dialogue", "game.narrate_action"]
+capabilities = ["game.evaluate_flow", "game.engagement", "game.push_scene", "game.begin_session", "game.record_action", "game.complete_session", "game.session_state", "game.tick_health", "game.difficulty_adjustment", "game.npc_dialogue", "game.narrate_action"]
 
 # ── Validation ───────────────────────────────────────────────────────
 

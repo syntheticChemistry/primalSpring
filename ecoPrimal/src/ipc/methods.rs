@@ -122,6 +122,28 @@ pub mod composition {
     pub const NUCLEUS_HEALTH: &str = "composition.nucleus_health";
 }
 
+/// Visualization domain — petalTongue live rendering.
+pub mod visualization {
+    /// Push a render payload to the viz layer.
+    pub const RENDER: &str = "visualization.render";
+    /// Push a composed scene (game state, dashboard, etc.).
+    pub const RENDER_SCENE: &str = "visualization.render.scene";
+    /// Append a streaming update (time-series, live metrics).
+    pub const RENDER_STREAM: &str = "visualization.render.stream";
+    /// Push a science dashboard layout.
+    pub const RENDER_DASHBOARD: &str = "visualization.render.dashboard";
+    /// Push a grammar-of-graphics specification.
+    pub const RENDER_GRAMMAR: &str = "visualization.render.grammar";
+}
+
+/// Interaction domain — petalTongue user input.
+pub mod interaction {
+    /// Subscribe to user interaction events (clicks, keys, gestures).
+    pub const SUBSCRIBE: &str = "interaction.subscribe";
+    /// Poll for pending user interaction events.
+    pub const POLL: &str = "interaction.poll";
+}
+
 /// MCP tool discovery.
 pub mod mcp {
     /// List MCP tools available from a primal.
@@ -169,6 +191,13 @@ mod tests {
             topology::RESCAN,
             route::REGISTER,
             composition::NUCLEUS_HEALTH,
+            visualization::RENDER,
+            visualization::RENDER_SCENE,
+            visualization::RENDER_STREAM,
+            visualization::RENDER_DASHBOARD,
+            visualization::RENDER_GRAMMAR,
+            interaction::SUBSCRIBE,
+            interaction::POLL,
             mcp::TOOLS_LIST,
         ];
         for method in all {
@@ -196,6 +225,9 @@ mod tests {
             topology::RESCAN,
             route::REGISTER,
             composition::NUCLEUS_HEALTH,
+            visualization::RENDER,
+            visualization::RENDER_SCENE,
+            interaction::SUBSCRIBE,
             mcp::TOOLS_LIST,
         ];
         for method in all {
