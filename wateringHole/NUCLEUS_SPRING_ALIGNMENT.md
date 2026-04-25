@@ -58,7 +58,7 @@ which has a unique dual-tower ionic bridge pattern and is kept as a standalone g
 | **airSpring** | 0.10.0 | 0 | 1,364 | Node + **Nest** | `downstream_manifest.toml` | **Pinned** — paths fixed |
 | **groundSpring** | V124 | 0 | 1,050+ | Node + **Nest** | `downstream_manifest.toml` | **Pinned** — paths fixed |
 | **healthSpring** | V54 | **2** | 940+ | **Nest** (neutron-heavy) + Meta | `healthspring_enclave_*` | **Pinned** — scaffold |
-| **ludoSpring** | V47 | **4** | 791 | Node + **Meta** + Nest | `downstream_manifest.toml` | **Active** — evolution partner |
+| **ludoSpring** | V48 | **4** | 798 | Node + **Meta** + Nest | `downstream_manifest.toml` | **Active** — BTSP relay wired, cell graph ready |
 
 ### Key
 
@@ -258,7 +258,7 @@ ludoSpring composition (pure — ludospring ecoBin)
 **What ludoSpring evolves for the ecosystem**:
 - 60Hz composition budget → tests graph execution latency limits
 - Three-tier validation + guideStone → canonical Python→Rust→IPC composition→`ludospring_guidestone`
-- guideStone readiness 4, **live NUCLEUS validated** (V47): `ludospring_guidestone` three-tier — **54/54 checks, exit 0** (31 bare + 15 IPC + 8 NUCLEUS cross-atomic: BearDog crypto, NestGate roundtrip, pipeline). guideStone standard v1.2.0, upstream `call_or_skip`/`is_skip_error`, v1.2.0 tolerance ordering, BLAKE3 Property 3, genomeBin v5.1. GAP-11 (barraCuda formulation divergence) documented
+- guideStone readiness 4, **live NUCLEUS validated** (V47→V48): `ludospring_guidestone` three-tier — **54/54 checks, exit 0**. V48 adds **BTSP relay** (`ipc/btsp.rs`, 4-step BearDog handshake), `interaction.poll` (petalTongue feedback loop), honest `push_scene` error reporting. Cell graph ready (`ludospring_cell.toml`, 14 nodes all BTSP). 798 tests.
 - AI narration under latency → tests Squirrel real-time performance
 - Session lifecycle (create/save/restore/fork) → benefits any stateful composition
 - Composition drift detection → `composition_targets.json` golden chain
