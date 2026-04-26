@@ -1138,15 +1138,22 @@ fn validate_cellular_graphs(v: &mut ValidationResult) {
             ),
         );
 
+        // Support both primalSpring schema ([[graph.nodes]] + name) and
+        // biomeOS schema ([[nodes]] + id)
         let nodes = val
             .get("graph")
             .and_then(|g| g.get("nodes"))
-            .and_then(|n| n.as_array());
+            .and_then(|n| n.as_array())
+            .or_else(|| val.get("nodes").and_then(|n| n.as_array()));
 
         let node_names: Vec<&str> = nodes
             .iter()
             .flat_map(|arr| arr.iter())
-            .filter_map(|n| n.get("name").and_then(|v| v.as_str()))
+            .filter_map(|n| {
+                n.get("name")
+                    .and_then(|v| v.as_str())
+                    .or_else(|| n.get("id").and_then(|v| v.as_str()))
+            })
             .collect();
 
         let has_tower = node_names.contains(&"beardog") && node_names.contains(&"songbird");
@@ -1163,7 +1170,9 @@ fn validate_cellular_graphs(v: &mut ValidationResult) {
             "petalTongue node present",
         );
 
-        let has_validate = node_names.iter().any(|n| n.starts_with("validate"));
+        let has_validate = node_names
+            .iter()
+            .any(|n| n.starts_with("validate") || n.starts_with("validate-"));
         v.check_bool(
             &format!("cellular:{stem}:health_check"),
             has_validate,

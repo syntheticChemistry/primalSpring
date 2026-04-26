@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04-25 — **Round 2 upstream audit: rhizoCrypt GAP-06 RESOLVED (UDS+BTSP+health.liveness), loamSpine GAP-07 RESOLVED (no startup panic), toadStool health.liveness STANDARD, barraCuda GAP-11 DOCUMENTED (variant defaults). PG-19 RESOLVED (seed auto-gen). 187/187 guidestone ALL PASS.**
+> **Last updated**: 2026-04-26 — **Graphics Node analysis: PG-42 (toadStool Display Phase 2), PG-43 (petalTongue Texture Primitive), PG-44 (coralReef Phase D). Collectible composition pattern defined. Cell graphs expanded with full provenance trio capabilities. 187/187 guidestone ALL PASS.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -1689,7 +1689,91 @@ Each primal was pulled and audited against the specific debt item.
 | **barraCuda** | Handle-based tensor ops fail without GPU | Sprint 44c: CPU fallback for 7 handle-based ops. `"backend": "cpu"` on headless. | `TENSOR_WIRE_CONTRACT.md` |
 | **biomeOS** | HTTP-on-UDS, JSON-RPC probes get HTTP 400 | v3.22: Dual-protocol auto-detect on UDS. First byte `{` → NDJSON handler. | `unix_server.rs` |
 
-**Zero open upstream gaps remain as of April 21, 2026.**
+---
+
+### PG-39: Graph Schema Incompatibility (primalSpring vs biomeOS)
+
+**Status:** MITIGATED locally — upstream alignment pending
+**Component:** primalSpring cell graphs, biomeOS deploy parser, cell_launcher.sh
+**Discovered:** April 26, 2026 (ludoSpring V53 audit)
+
+primalSpring cell graphs use `[[graph.nodes]]` with `name`, `binary`, `by_capability`,
+`order`, `spawn`, `security_model` fields. biomeOS deploy parser (`neural_graph::Graph`)
+expects either `[[nodes]]` with `id` + `[nodes.primal]` + `[nodes.operation]`, or
+`[[graph.nodes]]` via `convert_deployment_node` which reads `id`, `capability`,
+`config.primal`.
+
+Key mismatches:
+- `name` (primalSpring) vs `id` (biomeOS) — biomeOS requires `id`
+- `binary` field — biomeOS has no binary field, resolves via `by_capability`
+- `security_model` — primalSpring-only, biomeOS ignores
+- `order` / `spawn` — primalSpring-only, biomeOS uses `depends_on` DAG
+
+**Local mitigation (April 26):**
+- `primalspring_guidestone` cell validator reads `name` OR `id` for node identity
+- `cell_launcher.sh` parser handles both `[[graph.nodes]]` and `[[nodes]]` formats
+- ludoSpring maintains biomeOS-compatible cell graph (`[[nodes]]` + `id`) alongside
+
+**Upstream action:** biomeOS team to consider accepting primalSpring's `[[graph.nodes]]`
+with `name` + `binary` fields in `convert_deployment_node`, or primalSpring to migrate
+all cell graphs to biomeOS `[[nodes]]` format. Recommend the latter since biomeOS is
+the runtime orchestrator.
+
+---
+
+**Open upstream gaps as of April 26, 2026: PG-39 + PG-42/43/44 (Graphics Node).**
+
+---
+
+## Graphics Node Gaps — Phase 45c (April 26, 2026)
+
+Three upstream evolutions identified for petalTongue as full graphics system.
+These are architectural evolution requests, not bugs.
+
+### PG-42: toadStool Display Phase 2 — petalTongue Integration
+
+**Status:** UPSTREAM — toadStool team
+**Component:** toadStool display backend (`crates/runtime/display/`)
+**Priority:** CRITICAL (prerequisite for PG-43)
+
+toadStool display backend has 5/8 JSON-RPC methods wired in `ipc/dispatch.rs`.
+Three remain unimplemented: `display.present`, `display.subscribe_input`,
+`display.poll_events`. petalTongue currently uses winit/eframe directly.
+Phase 2 replaces winit with toadStool-provisioned display surfaces (DRM/KMS
+framebuffer + evdev input via JSON-RPC IPC).
+
+**Handoff:** `wateringHole/handoffs/TOADSTOOL_DISPLAY_PHASE2_GRAPHICS_NODE_HANDOFF_APR26_2026.md`
+
+### PG-43: petalTongue Texture Primitive
+
+**Status:** UPSTREAM — petalTongue team
+**Component:** `petal-tongue-scene` SceneGraph `Primitive` enum
+**Priority:** CRITICAL (enables game content rendering)
+
+The `Primitive` enum has 8 vector types (Point, Line, Rect, Text, Polygon,
+Arc, BezierPath, Mesh) but no raster/texture support. The existing
+`Sprite`/`GameScene` model in `sprite.rs` defines `texture_id` but is not
+connected to the SceneGraph → scene_bridge → egui render pipeline. Adding
+a `Texture` variant enables sprite rendering, external engine frame
+embedding, and game asset display.
+
+**Handoff:** `wateringHole/handoffs/PETALTONGUE_TEXTURE_PRIMITIVE_OVERLAY_HANDOFF_APR26_2026.md`
+
+### PG-44: coralReef Phase D — Mixed Command Streams
+
+**Status:** UPSTREAM — coralReef team
+**Component:** `coral-gpu`, toadStool dispatch
+**Priority:** LOW (longest pole, CPU path works for moderate frame rates)
+
+toadStool `NEXT_STEPS.md` lists Phase D (draw + compute + framebuffer mixed
+command streams) as planned but blocked on coralReef/FECS. Needed for
+zero-copy GPU compute → display (e.g., barraCuda physics → framebuffer
+without CPU readback). The CPU-based path works today for dashboards and
+moderate-complexity visualization.
+
+**Handoff:** `wateringHole/handoffs/CORALREEF_PHASE_D_MIXED_COMMANDS_HANDOFF_APR26_2026.md`
+
+---
 
 ### Scorecard After Full Resolution
 

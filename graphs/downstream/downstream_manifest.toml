@@ -137,7 +137,7 @@ owner = "ludoSpring"
 domain = "game_science"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
-depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate", "petaltongue"]
+depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "nestgate", "petaltongue", "rhizocrypt", "loamspine", "sweetgrass"]
 guidestone_validation = "composition"
 guidestone_readiness = 4
 guidestone_properties = { deterministic = true, traceable = true, self_verifying = true, env_agnostic = true, tolerance_documented = true }
@@ -163,6 +163,13 @@ validation_capabilities = [
     "storage.retrieve",
     "dag.session.create",
     "dag.event.append",
+    "dag.merkle.proof",
+    "certificate.mint",
+    "certificate.transfer",
+    "certificate.get",
+    "provenance.graph",
+    "attribution.chain",
+    "contribution.record",
     "visualization.render.scene",
     "interaction.poll",
 ]
@@ -193,7 +200,17 @@ validation_capabilities = [
     "crypto.hash",
     "dag.session.create",
     "dag.event.append",
+    "dag.merkle.proof",
+    "dag.merkle.verify",
     "certificate.mint",
+    "certificate.transfer",
+    "certificate.loan",
+    "certificate.return",
+    "certificate.get",
+    "provenance.graph",
+    "provenance.export_provo",
+    "attribution.chain",
+    "contribution.record",
     "visualization.render.scene",
     "visualization.render.dashboard",
     "interaction.subscribe",
