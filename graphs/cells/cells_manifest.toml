@@ -7,8 +7,8 @@
 # gardens can consume directly.
 #
 # Usage:
-#   ./tools/cell_launcher.sh <spring_name> start
-#   biomeos deploy --graph graphs/cells/<spring>_cell.toml
+#   ./cell_launcher.sh <spring_name> start          (plasmidBin)
+#   biomeos deploy --graph graphs/cells/<spring>_cell.toml  (primalSpring)
 
 [manifest]
 version = "1.0.0"
@@ -44,7 +44,7 @@ petaltongue_mode = "live"
 spring = "ludospring"
 graph = "ludospring_cell.toml"
 domain = "game_science"
-binary = "ludospring-barracuda"
+composition_model = "pure"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "squirrel", "petaltongue"]
 petaltongue_mode = "live"
 
@@ -76,6 +76,6 @@ petaltongue_mode = "live"
 spring = "esotericwebb"
 graph = "esotericwebb_cell.toml"
 domain = "crpg"
-binary = "esotericwebb"
+composition_model = "pure"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "nestgate", "squirrel", "petaltongue", "rhizocrypt", "loamspine", "sweetgrass"]
 petaltongue_mode = "live"

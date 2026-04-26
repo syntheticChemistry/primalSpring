@@ -10,7 +10,7 @@
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 631 (585 passed + 46 ignored; unit + integration + doc-tests + proptest) |
 | **Experiments** | 75 (17 tracks) |
-| **Deploy Graphs** | 56 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 4 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + ~11 root) |
+| **Deploy Graphs** | 66 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 9 cell graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
@@ -188,9 +188,9 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 56 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
+primalSpring ships 66 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
 
-**Root-level graphs (11)**:
+**Root-level graphs (13)**:
 
 | Graph | Pattern | Primals |
 |-------|---------|---------|
