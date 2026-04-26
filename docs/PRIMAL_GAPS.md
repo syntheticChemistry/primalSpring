@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04-26 — **Graphics Node analysis: PG-42 (toadStool Display Phase 2), PG-43 (petalTongue Texture Primitive), PG-44 (coralReef Phase D). Collectible composition pattern defined. Cell graphs expanded with full provenance trio capabilities. 187/187 guidestone ALL PASS.**
+> **Last updated**: 2026-04-26 — **PG-42 RESOLVED (toadStool S204), PG-43 RESOLVED (petalTongue texture commit). PG-44 (coralReef Phase D) remains LOW. bearDog lineage IPC resolved (Wave 69). barraCuda 18-method expansion resolved (Sprint 45). rhizoCrypt DID alignment resolved (S48). nestgate streaming storage resolved (Session 46). biomeOS cellular deploy resolved (v3.27). 187/187 guidestone ALL PASS.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -1721,7 +1721,9 @@ the runtime orchestrator.
 
 ---
 
-**Open upstream gaps as of April 26, 2026: PG-39 + PG-42/43/44 (Graphics Node).**
+**Open upstream gaps as of April 26, 2026: PG-44 (coralReef Phase D — LOW).**
+**Resolved this cycle: PG-42 (toadStool S204), PG-43 (petalTongue PG-43 commit), PG-39 (biomeOS v3.26).**
+**Also resolved: bearDog lineage IPC (Wave 69), barraCuda 18-method expansion (Sprint 45), rhizoCrypt DID alignment (S48), nestgate streaming storage (Session 46), biomeOS cellular deploy (v3.27).**
 
 ---
 
@@ -1732,30 +1734,26 @@ These are architectural evolution requests, not bugs.
 
 ### PG-42: toadStool Display Phase 2 — petalTongue Integration
 
-**Status:** UPSTREAM — toadStool team
+**Status:** RESOLVED — toadStool S204 (`d2a327be6`)
 **Component:** toadStool display backend (`crates/runtime/display/`)
-**Priority:** CRITICAL (prerequisite for PG-43)
 
-toadStool display backend has 5/8 JSON-RPC methods wired in `ipc/dispatch.rs`.
-Three remain unimplemented: `display.present`, `display.subscribe_input`,
-`display.poll_events`. petalTongue currently uses winit/eframe directly.
-Phase 2 replaces winit with toadStool-provisioned display surfaces (DRM/KMS
-framebuffer + evdev input via JSON-RPC IPC).
-
-**Handoff:** `wateringHole/handoffs/TOADSTOOL_DISPLAY_PHASE2_GRAPHICS_NODE_HANDOFF_APR26_2026.md`
+`display.present`, `display.subscribe_input`, `display.poll_events` now wired
+in `ipc/dispatch.rs` with `DisplayClient` wrapper in `client/operations.rs`.
+Tests cover all three methods. **Remaining**: `display.composite` (multi-layer)
+and `transport.bridge` (external process gateway) are not yet implemented.
 
 ### PG-43: petalTongue Texture Primitive
 
-**Status:** UPSTREAM — petalTongue team
+**Status:** RESOLVED (core) — petalTongue commit `94f6068`
 **Component:** `petal-tongue-scene` SceneGraph `Primitive` enum
-**Priority:** CRITICAL (enables game content rendering)
 
-The `Primitive` enum has 8 vector types (Point, Line, Rect, Text, Polygon,
-Arc, BezierPath, Mesh) but no raster/texture support. The existing
-`Sprite`/`GameScene` model in `sprite.rs` defines `texture_id` but is not
-connected to the SceneGraph → scene_bridge → egui render pipeline. Adding
-a `Texture` variant enables sprite rendering, external engine frame
-embedding, and game asset display.
+`Texture` variant added to `Primitive` with `texture_id`, dimensions, UV rect,
+opacity, tint. `TextureRegistry` in visualization state. IPC methods
+`visualization.texture.upload` (base64 RGBA8) and `visualization.texture.attach`
+(placeholder — real memfd pending toadStool Phase 2 compositing). `From<Sprite>`
+bridge maps game sprites to `Primitive::Texture`. **Remaining**: egui
+`TextureResolver` for live pixel display, overlay mode (Wayland layer-shell),
+real shared-memory attach path.
 
 **Handoff:** `wateringHole/handoffs/PETALTONGUE_TEXTURE_PRIMITIVE_OVERLAY_HANDOFF_APR26_2026.md`
 
