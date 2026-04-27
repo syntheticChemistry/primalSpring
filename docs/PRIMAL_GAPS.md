@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04-27 — **Cross-spring convergence absorbed (Phase 46). 5 springs deployed composition library. Common gaps converged: PG-49 socat dependency (LOCAL FIX: python3/nc fallback), PG-50 nestgate/squirrel missing from PRIMAL_LIST (LOCAL FIX: added defaults + EXTRA_PRIMALS), PG-51 Songbird crypto provider discovery (UPSTREAM), PG-52 provenance trio UDS empty responses (UPSTREAM, cross-spring: hot/wet/neural/health all report). PG-45 rhizoCrypt UDS (reconfirmed by 4 springs). PG-42 RESOLVED. PG-43 RESOLVED. PG-44 (coralReef Phase D) remains LOW. 187/187 guidestone ALL PASS.**
+> **Last updated**: 2026-04-27 — **Upstream evolution audit complete. PG-49 RESOLVED LOCAL (socat fallback). PG-50 RESOLVED LOCAL (nestgate/squirrel defaults). PG-51 RESOLVED UPSTREAM (Songbird wave173 discovery). PG-52 RESOLVED UPSTREAM (trio UDS: rhizoCrypt liveness gate, loamSpine double-BufReader, sweetGrass EOF handling — all three fixed with tests). PG-53 RESOLVED UPSTREAM (petalTongue proprioception handler). PG-48 petalTongue musl winit ADDRESSED (any_thread). Remaining: PG-48 needs plasmidBin rebuild+verify, PG-54 adaptive polling DEFERRED. plasmidBin rebuild required for trio fixes.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -1927,49 +1927,55 @@ compositions that needed storage or AI to require manual env overrides.
 nestgate, squirrel, toadstool, barracuda, rhizocrypt, loamspine, sweetgrass,
 petaltongue. Added `EXTRA_PRIMALS` env var for additional primals beyond defaults.
 
-#### PG-51: Songbird Crypto Provider Discovery Failure — UPSTREAM
+#### PG-51: Songbird Crypto Provider Discovery Failure — RESOLVED UPSTREAM
 
-**Status:** UPSTREAM — Songbird team
+**Status:** RESOLVED — Songbird wave173 (April 27, 2026)
 **Component:** Songbird startup / BearDog socket resolution
 **Priority:** MEDIUM
 **Reported by:** healthSpring (#24), wetSpring (PG-22)
 
-Songbird fails with "No Crypto provider" even when BearDog socket exists. Socket
-naming convention `security-{FAMILY_ID}.sock` vs `beardog-{FAMILY_ID}.sock` causes
-discovery mismatch. healthSpring used symlink workaround.
+Songbird now has family-scoped BearDog discovery: `security-{fid}.sock` →
+`beardog-{fid}.sock` (legacy) → `BEARDOG_SOCKET` env fallback. CLI flag
+`--security-socket` is canonical with `--beardog-socket` as alias.
 
-**Fix path:** Songbird should resolve crypto provider via capability-based discovery
-(`security-{fid}.sock` fallback chain), not hardcoded primal name.
+**Verification:** Pull songbird, rebuild, and confirm no symlink workaround needed.
 
-#### PG-52: Provenance Trio UDS Empty Responses — UPSTREAM
+#### PG-52: Provenance Trio UDS Empty Responses — RESOLVED UPSTREAM
 
-**Status:** UPSTREAM — rhizoCrypt, loamSpine, sweetGrass teams
+**Status:** RESOLVED — all three primals evolved (April 27, 2026)
 **Component:** Trio JSON-RPC handlers on UDS
 **Priority:** HIGH (cross-spring: 4 springs affected)
 **Reported by:** healthSpring (#23), wetSpring (PG-18), neuralSpring (Gap 14), hotSpring (PG-45 family)
 
-All three provenance primals accept UDS connections but return empty or reset
-responses to JSON-RPC calls. `dag.session.create` (rhizoCrypt), `spine.create`
-(loamSpine), and `braid.create` (sweetGrass) all exhibit this pattern.
-Compositions degrade gracefully but lose DAG/ledger/provenance functionality.
+Root cause identified independently by all three teams:
+- **rhizoCrypt (S49):** Liveness gate routed all `{`-prefixed JSON to `handle_liveness_connection`,
+  blocking `dag.*` methods. Fix: plain JSON-RPC on UDS now routes to `handle_newline_connection`
+  (full handler). PG-52 repro test: `test_plain_jsonrpc_data_methods_on_btsp_uds`.
+- **loamSpine:** Double-`BufReader` on post-BTSP paths caused empty reads. Fix: removed duplicate
+  buffering. UDS trio lifecycle test: `uds_trio_lifecycle_create_append_seal`.
+  Note: plasmidBin binary needs rebuild to pick up fix.
+- **sweetGrass:** EOF without trailing newline treated as I/O error in `detect_protocol`.
+  Fix: EOF is valid line-end; `Unknown` protocol returns JSON-RPC error instead of silent close.
+  7 new UDS tests including `braid.create` roundtrip. Callers need `\n`-terminated requests
+  and >=10s read timeout.
 
-This is the most common cross-spring blocker. Ties to existing PG-06/PG-45.
+**Verification:** Pull all three, rebuild plasmidBin binaries, reharvest. This also resolves
+PG-06 and PG-45.
 
-**Fix path:** Trio teams need to verify JSON-RPC handler registration on UDS
-accept paths. The BTSP handshake may be interfering with plain JSON-RPC routing.
+#### PG-53: petalTongue Server Mode Proprioception — RESOLVED UPSTREAM
 
-#### PG-53: petalTongue Server Mode Proprioception — UPSTREAM
-
-**Status:** UPSTREAM — petalTongue team
+**Status:** RESOLVED — petalTongue (April 27, 2026)
 **Component:** `proprioception.get` in `server` mode
 **Priority:** LOW
 **Reported by:** healthSpring (#25)
 
-`proprioception.get` returns no `frame_rate` field when petalTongue runs in
-`server` mode (headless). Compositions can't determine rendering cadence.
+New handler `system/proprioception.rs` returns complete JSON with `frame_rate`,
+`active_scenes`, `total_frames`, `user_interactivity`, `mode`, `uptime_secs`,
+and `window` fields. Dispatched via `dispatch.rs`. Tests:
+`proprioception_get_server_mode_returns_zero_fps`.
 
-**Fix path:** Synthetic proprioception snapshot for server mode (0 fps, no
-window dimensions, but valid JSON structure).
+**Note:** Production `UnixSocketServer` always sets `rendering_awareness: Some(...)`,
+so the "0 fps server" shape may only appear in test paths. Monitor in live compositions.
 
 #### PG-54: Adaptive Sensor Polling — LOCAL (future)
 
