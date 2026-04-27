@@ -173,6 +173,39 @@ cmd_start() {
         fi
     fi
 
+    # ── Phase 1b: Nest Atomic (NestGate + Squirrel) ──
+    if wants_primal nestgate; then
+        local nestgate_bin
+        nestgate_bin="$(find_binary nestgate)"
+        if [[ -n "$nestgate_bin" ]]; then
+            NESTGATE_SOCKET="$(sock nestgate)" \
+            BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
+            BEARDOG_SOCKET="$(sock beardog)" \
+            BTSP_PROVIDER_SOCKET="$(sock beardog)" \
+            FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+                start_primal nestgate "$nestgate_bin" server || log "WARN: nestgate failed"
+            wait_for_socket "$(sock nestgate)" 8 || log "WARN: nestgate socket not ready"
+        else
+            log "WARN: nestgate binary not found"
+        fi
+    fi
+
+    if wants_primal squirrel; then
+        local squirrel_bin
+        squirrel_bin="$(find_binary squirrel)"
+        if [[ -n "$squirrel_bin" ]]; then
+            SQUIRREL_SOCKET="$(sock squirrel)" \
+            BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
+            BEARDOG_SOCKET="$(sock beardog)" \
+            BTSP_PROVIDER_SOCKET="$(sock beardog)" \
+            FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+                start_primal squirrel "$squirrel_bin" server || log "WARN: squirrel failed"
+            wait_for_socket "$(sock squirrel)" 8 || log "WARN: squirrel socket not ready"
+        else
+            log "WARN: squirrel binary not found"
+        fi
+    fi
+
     # ── Phase 2: Compute ──
     if wants_primal toadstool || wants_primal barracuda; then
         log "── Phase 2: Compute Services ──"
@@ -225,6 +258,7 @@ cmd_start() {
             BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
             BEARDOG_SOCKET="$(sock beardog)" \
             BTSP_PROVIDER_SOCKET="$(sock beardog)" \
+            FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
                 start_primal rhizocrypt "$rhizocrypt_bin" server || log "WARN: rhizocrypt failed"
             wait_for_socket "$(sock rhizocrypt)" 12 || \
                 wait_for_socket "$SOCKET_DIR/rhizocrypt.sock" 4 || \
@@ -326,6 +360,9 @@ cmd_start() {
         [ledger]="loamspine-${FAMILY_ID}.sock"
         [attribution]="sweetgrass-${FAMILY_ID}.sock"
         [visualization]="petaltongue-${FAMILY_ID}.sock"
+        [storage]="nestgate-${FAMILY_ID}.sock"
+        [ai]="squirrel-${FAMILY_ID}.sock"
+        [inference]="squirrel-${FAMILY_ID}.sock"
     )
     for domain in "${!domain_map[@]}"; do
         local target="${domain_map[$domain]}"
@@ -365,7 +402,7 @@ cmd_start() {
 cmd_stop() {
     log "Stopping NUCLEUS $COMPOSITION_NAME..."
     local stop_order=""
-    for name in petaltongue sweetgrass loamspine rhizocrypt barracuda toadstool songbird beardog; do
+    for name in petaltongue sweetgrass loamspine rhizocrypt barracuda toadstool squirrel nestgate songbird beardog; do
         wants_primal "$name" && stop_order="$stop_order $name"
     done
     for name in $stop_order; do
