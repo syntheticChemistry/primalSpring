@@ -166,12 +166,14 @@ Hand back via your wateringHole handoff docs. primalSpring will absorb, abstract
 
 ## Known Gaps (So You Don't Hit Them)
 
-| Gap | What | Workaround |
-|-----|------|-----------|
-| PG-45 | rhizoCrypt UDS accepts but no JSON-RPC response | DAG features gracefully degrade; composition still works without DAG |
-| PG-46 | toadStool slow on short timeouts | Use >=10s socat timeout (lib defaults to 5s) |
+| Gap | What | Status |
+|-----|------|--------|
+| PG-45/52 | rhizoCrypt UDS empty responses | **RESOLVED** — rebuilt binary + FAMILY_SEED env var |
+| PG-46 | toadStool slow on short timeouts | Use >=10s timeout (lib defaults to 5s) |
 | PG-47 | barraCuda missing `stats.entropy` | Skip or compute locally |
-| PG-48 | petalTongue plasmidBin musl + winit threading | Use local build for live mode (composition_nucleus.sh handles this) |
+| PG-48 | petalTongue musl + winit threading | **ADDRESSED** — `any_thread` fix in rebuilt binary |
+| PG-51 | Songbird crypto provider discovery | **RESOLVED** — family-scoped BearDog fallback chain |
+| PG-53 | petalTongue proprioception in server mode | **RESOLVED** — new handler returns complete JSON |
 | PG-39 | Graph schema mismatch (primalSpring vs biomeOS) | Use shell compositions for now; graph alignment is upstream |
 
 ## Key References

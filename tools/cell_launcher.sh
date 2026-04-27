@@ -163,8 +163,14 @@ case "$ACTION" in
             for sock in "$SOCKET_DIR"/*.sock; do
                 [ -S "$sock" ] || continue
                 echo "  Sending shutdown to $sock"
-                echo '{"jsonrpc":"2.0","method":"lifecycle.shutdown","params":{},"id":1}' | \
-                    timeout 2 socat - UNIX-CONNECT:"$sock" 2>/dev/null || true
+                local payload='{"jsonrpc":"2.0","method":"lifecycle.shutdown","params":{},"id":1}'
+                if command -v socat &>/dev/null; then
+                    echo "$payload" | timeout 2 socat - UNIX-CONNECT:"$sock" 2>/dev/null || true
+                elif command -v python3 &>/dev/null; then
+                    python3 -c "import socket,sys;s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);s.settimeout(2);s.connect('$sock');s.sendall(b'$payload\n');s.close()" 2>/dev/null || true
+                elif command -v nc &>/dev/null; then
+                    echo "$payload" | timeout 2 nc -U "$sock" 2>/dev/null || true
+                fi
             done
         fi
         ;;
@@ -176,8 +182,16 @@ case "$ACTION" in
             for sock in "$SOCKET_DIR"/*.sock; do
                 [ -S "$sock" ] || continue
                 name=$(basename "$sock" .sock)
-                response=$(echo '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":1}' | \
-                    timeout 2 socat - UNIX-CONNECT:"$sock" 2>/dev/null || echo "UNREACHABLE")
+                local hpayload='{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":1}'
+                if command -v socat &>/dev/null; then
+                    response=$(echo "$hpayload" | timeout 2 socat - UNIX-CONNECT:"$sock" 2>/dev/null || echo "UNREACHABLE")
+                elif command -v python3 &>/dev/null; then
+                    response=$(python3 -c "import socket,sys;s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);s.settimeout(2);s.connect('$sock');s.sendall(b'$hpayload\n');print(s.recv(65536).decode());s.close()" 2>/dev/null || echo "UNREACHABLE")
+                elif command -v nc &>/dev/null; then
+                    response=$(echo "$hpayload" | timeout 2 nc -U "$sock" 2>/dev/null || echo "UNREACHABLE")
+                else
+                    response="UNREACHABLE"
+                fi
                 if echo "$response" | grep -q '"result"'; then
                     echo "  ALIVE  $name"
                 else

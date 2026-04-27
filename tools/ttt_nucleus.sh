@@ -47,8 +47,21 @@ wait_for_socket() {
 
 health_check() {
     local sock="$1" method="${2:-health.liveness}"
-    echo "{\"jsonrpc\":\"2.0\",\"method\":\"$method\",\"id\":1}" | \
-        timeout 3 socat - "UNIX-CONNECT:$sock" 2>/dev/null
+    local payload="{\"jsonrpc\":\"2.0\",\"method\":\"$method\",\"id\":1}"
+    if command -v socat &>/dev/null; then
+        echo "$payload" | timeout 3 socat - "UNIX-CONNECT:$sock" 2>/dev/null
+    elif command -v python3 &>/dev/null; then
+        python3 -c "
+import socket,sys
+s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);s.settimeout(3)
+try:
+    s.connect('$sock');s.sendall(b'$payload\n');d=s.recv(65536);sys.stdout.buffer.write(d)
+except: pass
+finally: s.close()
+" 2>/dev/null
+    elif command -v nc &>/dev/null; then
+        echo "$payload" | timeout 3 nc -U "$sock" 2>/dev/null
+    fi
 }
 
 save_pid() {
