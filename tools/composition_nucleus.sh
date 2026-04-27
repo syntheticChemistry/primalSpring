@@ -15,7 +15,8 @@
 # Configuration (env vars):
 #   COMPOSITION_NAME  — identifier (default: "composition")
 #   FAMILY_ID         — socket namespace (default: $COMPOSITION_NAME)
-#   PRIMAL_LIST       — space-separated primals to start (default: all)
+#   PRIMAL_LIST       — space-separated primals to start (default: full NUCLEUS)
+#   EXTRA_PRIMALS     — additional primals to append to PRIMAL_LIST (e.g. "skunkbat")
 #   PETALTONGUE_LIVE  — "true" to start petalTongue in live GUI mode (default: true)
 #   ECOPRIMALS_PLASMID_BIN — path to plasmidBin (default: auto-detect)
 
@@ -33,7 +34,8 @@ PLASMID_BIN="${ECOPRIMALS_PLASMID_BIN:-$ECO_ROOT/infra/plasmidBin}"
 BIN_DIR="$PLASMID_BIN/primals"
 
 PETALTONGUE_LIVE="${PETALTONGUE_LIVE:-true}"
-PRIMAL_LIST="${PRIMAL_LIST:-beardog songbird toadstool barracuda rhizocrypt loamspine sweetgrass petaltongue}"
+PRIMAL_LIST="${PRIMAL_LIST:-beardog songbird nestgate squirrel toadstool barracuda rhizocrypt loamspine sweetgrass petaltongue}"
+PRIMAL_LIST="$PRIMAL_LIST ${EXTRA_PRIMALS:-}"
 
 export FAMILY_ID
 export BEARDOG_FAMILY_SEED="${BEARDOG_FAMILY_SEED:-$(head -c 32 /dev/urandom | xxd -p | tr -d '\n')}"
@@ -61,8 +63,27 @@ wait_for_socket() {
 
 health_check() {
     local sock="$1" method="${2:-health.liveness}"
-    echo "{\"jsonrpc\":\"2.0\",\"method\":\"$method\",\"id\":1}" | \
-        timeout 3 socat - "UNIX-CONNECT:$sock" 2>/dev/null
+    local payload="{\"jsonrpc\":\"2.0\",\"method\":\"$method\",\"id\":1}"
+    if command -v socat &>/dev/null; then
+        echo "$payload" | timeout 3 socat - "UNIX-CONNECT:$sock" 2>/dev/null
+    elif command -v python3 &>/dev/null; then
+        python3 -c "
+import socket,sys
+s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+s.settimeout(3)
+try:
+    s.connect('$sock')
+    s.sendall(b'$payload')
+    d=s.recv(65536)
+    sys.stdout.buffer.write(d)
+except: pass
+finally: s.close()
+" 2>/dev/null
+    elif command -v nc &>/dev/null; then
+        echo "$payload" | timeout 3 nc -U "$sock" 2>/dev/null
+    else
+        return 1
+    fi
 }
 
 save_pid() {

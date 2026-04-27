@@ -5,7 +5,7 @@
 #
 # Source this library from a domain-specific composition script to get:
 #   - Capability discovery (family-aware UDS resolution)
-#   - JSON-RPC transport (socat over UDS)
+#   - JSON-RPC transport (socat → python3 → nc fallback over UDS)
 #   - petalTongue motor/visualization/interaction/proprioception
 #   - rhizoCrypt DAG session management
 #   - loamSpine ledger spine + entry + seal
@@ -139,13 +139,49 @@ cap_available() {
 }
 
 # ── JSON-RPC Transport ────────────────────────────────────────────────
+#
+# Attempts socat first, then python3 socket, then nc (ncat/netcat).
+# Springs without socat installed can still operate via the fallbacks.
+
+_uds_send() {
+    local sock="$1" payload="$2"
+    if command -v socat &>/dev/null; then
+        echo "$payload" | timeout 5 socat - "UNIX-CONNECT:$sock" 2>/dev/null || true
+    elif command -v python3 &>/dev/null; then
+        python3 -c "
+import socket, sys, json
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+s.settimeout(5)
+try:
+    s.connect('$sock')
+    s.sendall(sys.stdin.buffer.read())
+    chunks = []
+    while True:
+        try:
+            d = s.recv(65536)
+            if not d: break
+            chunks.append(d)
+        except socket.timeout: break
+    sys.stdout.buffer.write(b''.join(chunks))
+except Exception:
+    pass
+finally:
+    s.close()
+" <<< "$payload" 2>/dev/null || true
+    elif command -v nc &>/dev/null; then
+        echo "$payload" | timeout 5 nc -U "$sock" 2>/dev/null || true
+    else
+        warn "no UDS transport available (install socat, python3, or nc)"
+        return 1
+    fi
+}
 
 send_rpc() {
     local sock="$1" method="$2" params="$3"
     local id=$((RANDOM % 9999 + 1))
     local payload
     payload=$(printf '{"jsonrpc":"2.0","method":"%s","params":%s,"id":%d}' "$method" "$params" "$id")
-    echo "$payload" | timeout 5 socat - "UNIX-CONNECT:$sock" 2>/dev/null || true
+    _uds_send "$sock" "$payload"
 }
 
 send_rpc_quiet() {
