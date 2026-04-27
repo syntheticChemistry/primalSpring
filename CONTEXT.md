@@ -28,12 +28,12 @@ back upstream to primals and primalSpring.
   (`primalspring_primal` server, `primalspring_guidestone` 6-layer composition
   certification, `validate_all` runner)
 - **experiments/** — 75 validation binaries covering 17 tracks
-- **graphs/** — 56 deploy graph TOMLs using fragment-first composition (6 fragments +
-  9 profiles + 4 patterns + 4 spring validation + 2 cross-spring + 5 bonding +
-  2 chaos + 2 spring deploy + 3 downstream + 5 multi-node + 11 root-level +
-  1 federation)
+- **graphs/** — 67 deploy graph TOMLs using fragment-first composition (6 fragments +
+  9 profiles + 4 patterns + 5 spring validation + 2 cross-spring + 5 bonding +
+  2 chaos + 2 spring deploy + 3 downstream + 5 multi-node + 13 root-level +
+  1 federation + 10 cell graphs)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
-- **tools/** — nucleus launcher, thin WS gateway, composition validator
+- **tools/** — nucleus launcher, composition library + template, TTT reference implementation, Godot bridge, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -69,7 +69,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.17 Phase 45c — 631 tests (585 passed + 46 ignored), 75 experiments (17 tracks), 56 deploy graphs (fragment-first composition).
+v0.9.17 Phase 46 — 631 tests (585 passed + 46 ignored), 75 experiments (17 tracks), 67 deploy graphs (fragment-first composition).
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
@@ -120,11 +120,26 @@ Bonding models validated (structural): Covalent, Ionic, Metallic, Weak,
 OrganoMetalSalt. Content distribution federation graph with 4 bonding tiers.
 Ionic bond protocol RPC wiring for cross-family capability sharing.
 
+## Shell Composition Library
+
+`tools/nucleus_composition_lib.sh` — 41 reusable bash functions for interactive
+NUCLEUS composition via IPC. Covers capability discovery, JSON-RPC transport,
+petalTongue motor/scene/interaction/proprioception, rhizoCrypt DAG, loamSpine
+ledger, sweetGrass braids, discrete sensor event isolation (click vs hover vs
+keypress), and startup/teardown lifecycle. Springs source this library and
+implement domain hooks. `tools/composition_template.sh` is the minimal starter,
+`tools/ttt_composition.sh` is the reference implementation with branching game
+states, and `tools/composition_nucleus.sh` is the parameterized NUCLEUS launcher.
+
 ## Ecosystem Position
 
 primalSpring validates biomeOS composition patterns so that other
 springs and gen4 products can trust the coordination layer. It
 contributes ValidationSink, deploy graphs, overlays, MCP tools,
-bonding metadata, STUN tier definitions, and pure-primal proto-nucleate
-graphs back to the ecosystem. Downstream tributaries reference
-`wateringHole/` for patterns and standards.
+bonding metadata, STUN tier definitions, pure-primal proto-nucleate
+graphs, and the shell composition library back to the ecosystem.
+Downstream tributaries reference `wateringHole/` for patterns and
+standards. Per-spring exploration lanes guide convergent evolution:
+ludoSpring (interaction fidelity), hotSpring (async compute/DAG
+memoization), wetSpring (data visualization), neuralSpring (agentic
+composition).

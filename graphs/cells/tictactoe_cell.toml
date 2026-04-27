@@ -1,0 +1,150 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Cellular deployment graph: Tic-Tac-Toe — full NUCLEUS composition demo
+#
+# A turn-based game composed entirely from existing primals:
+#   beardog    — signs each move (tamper-proof game record)
+#   songbird   — discovers all primals by capability
+#   toadstool  — dispatches compute for AI move evaluation
+#   barraCuda  — evaluates board positions (minimax via tensor ops)
+#   petalTongue — renders board, captures user clicks
+#   rhizoCrypt  — DAG session for move history
+#   loamSpine   — commits finished game to permanent ledger
+#   sweetGrass  — provenance certificate for completed game
+#
+# Deploy: biomeos deploy --graph graphs/cells/tictactoe_cell.toml
+# Manual: ./tools/ttt_nucleus.sh start && ./tools/ttt_composition.sh
+
+[graph]
+name = "tictactoe_cell"
+description = "Tic-Tac-Toe — full NUCLEUS composition exercising all primal capabilities"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+cell_type = "composition_demo"
+domain = "game"
+security_model = "btsp_enforced"
+transport = "uds_only"
+composition_model = "pure"
+petaltongue_mode = "live"
+tick_hz = 1
+
+# ── Tower Atomic ──────────────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "beardog"
+security_model = "btsp"
+binary = "beardog"
+order = 1
+required = true
+spawn = true
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
+
+[[graph.nodes]]
+name = "songbird"
+security_model = "btsp"
+binary = "songbird"
+order = 2
+required = true
+spawn = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
+
+# ── Compute ───────────────────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "toadstool"
+security_model = "btsp"
+binary = "toadstool"
+order = 3
+required = false
+spawn = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = ["compute.dispatch", "compute.execute"]
+
+[[graph.nodes]]
+name = "barracuda"
+security_model = "btsp"
+binary = "barracuda"
+order = 4
+required = false
+spawn = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "tensor"
+capabilities = ["tensor.matmul", "tensor.create", "stats.entropy"]
+
+# ── Provenance Trio ───────────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "rhizocrypt"
+security_model = "btsp"
+binary = "rhizocrypt"
+order = 5
+required = false
+spawn = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
+
+[[graph.nodes]]
+name = "loamspine"
+security_model = "btsp"
+binary = "loamspine"
+order = 6
+required = false
+spawn = true
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = ["spine.create", "entry.append", "permanence.commit_session"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+security_model = "btsp"
+binary = "sweetgrass"
+order = 7
+required = false
+spawn = true
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+capabilities = ["provenance.certify", "braid.create", "braid.commit"]
+
+# ── Interface ─────────────────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "petaltongue"
+security_model = "btsp"
+binary = "petaltongue"
+order = 8
+required = true
+spawn = true
+depends_on = ["songbird"]
+health_method = "health.liveness"
+by_capability = "visualization"
+capabilities = ["visualization.render.scene", "interaction.poll", "interaction.subscribe"]
+
+[graph.nodes.params]
+mode = "live"
+
+# ── Validation ────────────────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "validate_cell"
+security_model = "btsp"
+order = 99
+depends_on = ["beardog", "petaltongue"]
+
+[graph.nodes.operation]
+name = "health_check"
+
+[graph.nodes.operation.params]
+targets = ["beardog", "songbird", "toadstool", "barracuda", "rhizocrypt", "loamspine", "sweetgrass", "petaltongue"]

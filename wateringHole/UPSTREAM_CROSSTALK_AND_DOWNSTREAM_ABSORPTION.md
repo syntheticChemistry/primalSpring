@@ -197,6 +197,42 @@ Gardens (esotericWebb, helixVision) follow the pure composition model:
 - No garden binary ships — the graph IS the product
 - The garden is a deploy graph + configuration, not a codebase
 
+### Shell Composition Path (Interactive Exploration)
+
+For rapid interactive exploration before committing to graph-based deployment,
+springs can use the **shell composition library**:
+
+```bash
+# Copy the template, fill in domain hooks
+cp primalSpring/tools/composition_template.sh my_composition.sh
+
+# Launch NUCLEUS from plasmidBin
+COMPOSITION_NAME=myspring primalSpring/tools/composition_nucleus.sh start
+
+# Run your composition
+COMPOSITION_NAME=myspring bash my_composition.sh
+```
+
+The shell composition library (`tools/nucleus_composition_lib.sh`) provides
+the same capability stack as the Rust `CompositionContext`: discovery,
+JSON-RPC transport, DAG sessions, ledger spines, braid provenance, and
+petalTongue interaction — but in bash, with immediate feedback.
+
+See `wateringHole/DOWNSTREAM_COMPOSITION_EXPLORER_GUIDE.md` for per-spring
+exploration lanes and the convergent evolution model.
+
+### Convergent Evolution Model
+
+Springs explore complementary aspects of the composition pattern:
+- **ludoSpring**: interaction fidelity, real-time feedback, petalTongue stress
+- **hotSpring**: async computation, DAG memoization, scientific provenance
+- **wetSpring**: data visualization, large-state navigation, storage integration
+- **neuralSpring**: agentic composition, inference pipeline, AI provenance
+
+Each spring discovers domain-specific patterns. primalSpring absorbs and
+abstracts proven patterns back into the library for cross-domain reuse.
+This is structured convergent evolution — messy but powerfully robust.
+
 ### What to Hand Back
 
 When your spring or garden discovers a gap:
@@ -204,6 +240,8 @@ When your spring or garden discovers a gap:
 2. Propose the wire (JSON-RPC method signature)
 3. Build a primalSpring experiment or graph that tests the gap
 4. Submit via PR — primalSpring triages and routes to the responsible primal
+5. Document discovered patterns — tick rates, interaction models, visualization
+   approaches that worked for your domain (candidates for lib promotion)
 
 ---
 

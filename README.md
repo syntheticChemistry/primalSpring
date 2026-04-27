@@ -10,7 +10,7 @@
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 631 (585 passed + 46 ignored; unit + integration + doc-tests + proptest) |
 | **Experiments** | 75 (17 tracks) |
-| **Deploy Graphs** | 66 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 9 cell graphs) |
+| **Deploy Graphs** | 67 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 10 cell graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
@@ -64,7 +64,7 @@ primalSpring/
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
 ├── experiments/                   # 75 validation experiments (17 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 56 deploy graph TOMLs (fragment-first composition)
+├── graphs/                        # 67 deploy graph TOMLs (fragment-first composition)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
 │   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
 │   ├── patterns/                 # 4 coordination patterns: parallel, conditional, streaming, continuous
@@ -79,7 +79,13 @@ primalSpring/
 ├── docs/                          # Structured gap registry and subsystem documentation
 │   └── PRIMAL_GAPS.md            # Per-primal gap inventory with severity and fix paths
 ├── tools/                         # Operational tooling
+│   ├── nucleus_composition_lib.sh # Reusable NUCLEUS composition library (source from domain scripts)
+│   ├── composition_template.sh   # Minimal starter skeleton for spring compositions
+│   ├── composition_nucleus.sh    # Parameterized NUCLEUS launcher (replaces ad-hoc startup)
+│   ├── ttt_composition.sh        # Reference implementation: Tic-Tac-Toe with full NUCLEUS
+│   ├── ttt_nucleus.sh            # TTT-specific NUCLEUS launcher (uses composition_nucleus.sh pattern)
 │   ├── nucleus_launcher.sh       # Start/stop/restart full NUCLEUS stack
+│   ├── cell_launcher.sh          # Cell-graph deployment launcher
 │   ├── ws_gateway.py             # Thin WebSocket-to-IPC bridge (no business logic)
 │   └── validate_compositions.py  # Live subsystem composition validator (C1-C7)
 ├── web/

@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04-26 — **PG-42 RESOLVED (toadStool S204), PG-43 RESOLVED (petalTongue texture commit). PG-44 (coralReef Phase D) remains LOW. bearDog lineage IPC resolved (Wave 69). barraCuda 18-method expansion resolved (Sprint 45). rhizoCrypt DID alignment resolved (S48). nestgate streaming storage resolved (Session 46). biomeOS cellular deploy resolved (v3.27). 187/187 guidestone ALL PASS.**
+> **Last updated**: 2026-04-27 — **TTT Composition validated 10/10 E2E. PG-45 rhizoCrypt UDS no-response (reconfirmed GAP-06). PG-46 toadStool slow socket. PG-47 barraCuda stats.entropy missing. PG-48 petalTongue plasmidBin winit threading. PG-42 RESOLVED. PG-43 RESOLVED. PG-44 (coralReef Phase D) remains LOW. 187/187 guidestone ALL PASS.**
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -1782,6 +1782,116 @@ moderate-complexity visualization.
 | exp068 | 3/6 (3 FAIL) | **6/6 PASS** | 6/6 PASS |
 | exp072 | 24/31 | **24/31** | ≥27/31 (biomeOS JSON-RPC + tensor CPU fallback now work) |
 | ludoSpring game.* | 12 methods | **15 methods** | 15 methods |
+
+---
+
+---
+
+## TTT Composition Validation — April 27, 2026
+
+Full NUCLEUS Tic-Tac-Toe composition (`FAMILY_ID=ttt`) exercised all primals
+from plasmidBin in a capability-routed game loop. This is the first interactive
+composition to route through the full NUCLEUS stack by capability discovery.
+
+### E2E Results: 10/10 PASS (after protocol corrections)
+
+| Primal | Method | Result | Notes |
+|--------|--------|--------|-------|
+| beardog | `health.liveness` | PASS | |
+| beardog | `crypto.sign` | PASS | Ed25519, returns signature + public_key |
+| songbird | `health.liveness` | PASS | |
+| toadstool | `health.liveness` | PASS | Needs longer socat timeout (>5s) |
+| barraCuda | `tensor.create` | PASS | Returns tensor_id for downstream ops |
+| barraCuda | `tensor.matmul` | PASS | Requires `lhs_id`/`rhs_id` (not inline data) |
+| loamSpine | `spine.create` | PASS | Requires `name` + `owner` + `description` |
+| loamSpine | `entry.append` | PASS | `entry_type` is struct variant (e.g. `{"MetadataUpdate":{"field":"...","value":"..."}}`) + `committer` |
+| petalTongue | `visualization.render.scene` | PASS | SceneGraph with nodes map + root_id |
+| petalTongue | `interaction.subscribe` | PASS | Requires `subscriber_id` |
+| petalTongue | `interaction.poll` | PASS | Requires `subscriber_id` (not session_id) |
+| petalTongue | `proprioception.get` | PASS | Returns full ProprioceptionSnapshot |
+
+### Gaps Discovered
+
+#### PG-45: rhizoCrypt UDS — No JSON-RPC Response (GAP-06 reconfirmed)
+
+**Status:** UPSTREAM — rhizoCrypt team
+**Component:** `rhizocrypt` UDS server
+**Priority:** MEDIUM
+
+rhizoCrypt binds its socket (`rhizocrypt-ttt.sock`) but does not respond to any
+JSON-RPC including `health.liveness`. The socket accepts connections but returns
+no data. This blocks DAG session creation for provenance recording in all
+interactive compositions. Confirmed across both `nucleus01` and `ttt` families.
+
+**Impact:** Game move DAG recording disabled; provenance chain incomplete.
+
+#### PG-46: toadStool — Slow Socket Response / BTSP Blocking
+
+**Status:** UPSTREAM — toadStool team
+**Component:** `toadstool` UDS server
+**Priority:** LOW
+
+toadStool socket (`toadstool-ttt.sock`, permissions `srw-------`) sometimes
+returns empty on short timeouts. With `timeout 10 -t5 socat` it responds
+correctly. This may be BTSP handshake overhead or slow initial connection
+negotiation. The restrictive socket permissions (`0600` vs `0660` for others)
+suggest a different socket creation path.
+
+**Impact:** Transient — works with longer timeouts. Composition scripts should
+use ≥10s timeout for toadStool.
+
+#### PG-47: barraCuda — `stats.entropy` Method Not Found
+
+**Status:** UPSTREAM — barraCuda team
+**Component:** `barracuda` method registry
+**Priority:** LOW
+
+`stats.entropy` returns "Unknown method". barraCuda supports `tensor.create`,
+`tensor.matmul`, `stats.mean`, `stats.std_dev`, `stats.variance`, etc. but
+does not have a general entropy calculation. Composition scripts should compute
+entropy from tensor data or skip.
+
+**Impact:** Workaround available (compute from raw tensor values).
+
+#### PG-48: petalTongue plasmidBin Binary — winit Threading Panic
+
+**Status:** UPSTREAM — petalTongue team
+**Component:** `petaltongue` musl binary in plasmidBin
+**Priority:** HIGH
+
+The plasmidBin musl binary panics on `live` mode with:
+```
+Initializing the event loop outside of the main thread
+```
+The locally-built `target/release/petaltongue` works correctly (eframe/winit
+runs on thread 01). The musl binary routes the event loop through
+`tokio-rt-worker` threads, causing the panic. This blocks plasmidBin-only
+deployments from using live desktop mode.
+
+**Workaround:** Use locally-built petaltongue binary for `live` mode.
+**Fix:** petalTongue musl build needs `--features ui` with correct winit
+backend (X11 `any_thread` or ensure main-thread dispatch).
+
+#### Protocol Notes for Composition Scripts
+
+- **beardog `crypto.verify`**: expects valid base64 public_key (32 bytes Ed25519), not string
+- **barraCuda `tensor.matmul`**: two-step — `tensor.create` first, then `tensor.matmul` with `lhs_id`/`rhs_id`
+- **loamSpine `entry.append`**: `entry_type` must be struct variant enum (e.g. `{"MetadataUpdate":{...}}`), requires `committer` field
+- **petalTongue `interaction.poll`**: requires prior `interaction.subscribe` with `subscriber_id`
+- **sweetGrass**: responds to health but needs longer timeout; has limited composition API surface
+- **DISPLAY**: Must match actual X server (`:1` on this system, not `:0`)
+
+### Files Created
+
+- `tools/ttt_nucleus.sh` — NUCLEUS launcher for game cell
+- `tools/ttt_composition.sh` — game loop routing through NUCLEUS by capability
+- `graphs/cells/tictactoe_cell.toml` — pure composition cell graph
+
+### Template Value
+
+This composition validates the pattern for all future interactive compositions
+(ludoSpring, esotericWebb). The capability discovery, graceful fallback, and
+multi-primal routing patterns are directly reusable.
 
 ---
 

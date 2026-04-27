@@ -135,6 +135,37 @@ FAMILY_ID=my-spring-validation \
 - **aarch64** gaps: nestgate, rhizocrypt, petaltongue, barracuda, coralreef
   have no aarch64 binaries in checksums.
 
+### For Interactive Compositions (Shell)
+
+primalSpring provides `composition_nucleus.sh` — a parameterized launcher
+that replaces ad-hoc primal startup for interactive development:
+
+```bash
+# Launch a full NUCLEUS for your domain from plasmidBin
+COMPOSITION_NAME=myspring \
+ECOPRIMALS_PLASMID_BIN=/path/to/plasmidBin \
+    primalSpring/tools/composition_nucleus.sh start
+
+# Check status
+COMPOSITION_NAME=myspring primalSpring/tools/composition_nucleus.sh status
+
+# Run your domain composition
+COMPOSITION_NAME=myspring bash my_composition.sh
+
+# Shut down
+COMPOSITION_NAME=myspring primalSpring/tools/composition_nucleus.sh stop
+```
+
+`composition_nucleus.sh` handles:
+- Dependency-ordered primal startup (same as nucleus_launcher.sh)
+- Family-aware socket naming and capability alias symlinks
+- petalTongue live mode (GUI) or server mode (headless)
+- Configurable primal list via `PRIMAL_LIST` env var
+- Health check summary on startup
+
+See `wateringHole/DOWNSTREAM_COMPOSITION_EXPLORER_GUIDE.md` for the full
+composition library API and per-spring exploration guidance.
+
 ### For CI Pipelines
 
 ```bash

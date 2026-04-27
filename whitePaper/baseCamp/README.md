@@ -816,6 +816,36 @@ spores (biomeOS1, LiveSpore, ColdSpore), and SoloKey 2.
 - biomeOS `route.register` to register remote Pixel capabilities on Eastgate
 - biomeOS aarch64 binary cross-compiles and starts (fails only at socket bind)
 
+## What Changed — Phase 46 (Composition Template Abstraction)
+
+### Shell Composition Library (April 27, 2026)
+
+Extracted the reusable NUCLEUS composition wiring from the TTT reference
+implementation into a generic library that any spring can source:
+
+**New artifacts**:
+- `tools/nucleus_composition_lib.sh` — 41 reusable functions: capability discovery,
+  JSON-RPC transport, petalTongue motor/scene/interaction/proprioception, rhizoCrypt
+  DAG sessions, loamSpine ledger spines, sweetGrass braid provenance, sensor stream
+  with discrete event isolation, pluggable hit testing, startup personality, teardown
+- `tools/composition_template.sh` — minimal "hello world" composition with documented
+  hooks: `domain_init`, `domain_render`, `domain_on_key`, `domain_on_click`, `domain_on_tick`
+- `tools/composition_nucleus.sh` — parameterized NUCLEUS launcher replacing ad-hoc
+  startup. Configurable via `COMPOSITION_NAME`, `FAMILY_ID`, `PRIMAL_LIST`, `PETALTONGUE_LIVE`
+- `tools/ttt_composition.sh` — refactored to source the lib, now contains only TTT
+  domain logic (game state, rendering, AI, branching DAG visualization)
+
+**Downstream guidance**:
+- `wateringHole/DOWNSTREAM_COMPOSITION_EXPLORER_GUIDE.md` — per-spring exploration
+  lanes (ludoSpring: interaction fidelity, hotSpring: async computation/DAG memoization,
+  wetSpring: data visualization, neuralSpring: agentic composition). Full API reference.
+- Updated `PRIMALSPRING_COMPOSITION_GUIDANCE.md` (Section 19), `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` (convergent evolution model), `PLASMINBIN_DEPOT_PATTERN.md` (interactive composition path)
+
+**The Python → Rust → Primal pipeline now has a parallel shell exploration path**:
+springs can use the bash composition library for rapid interactive prototyping against
+live NUCLEUS primals, discovering interaction patterns and primal gaps before committing
+to graph-based deployments.
+
 ## What Remains
 
 ### Structural Debt (plan but don't block handoff)

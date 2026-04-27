@@ -142,6 +142,7 @@ case "$ACTION" in
             PT_BIN="$PLASMIDBIN/primals/petaltongue"
             [ -x "$PT_BIN" ] || PT_BIN="$(command -v petaltongue 2>/dev/null || true)"
             if [ -n "$PT_BIN" ] && [ -x "$PT_BIN" ]; then
+                export AWAKENING_ENABLED=false
                 exec "$PT_BIN" live --socket "$SOCKET_DIR/petaltongue-${FAMILY_ID}.sock"
             else
                 echo "ERROR: petaltongue binary not found"

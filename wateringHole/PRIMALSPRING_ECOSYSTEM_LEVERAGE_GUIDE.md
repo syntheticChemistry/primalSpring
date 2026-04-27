@@ -346,7 +346,7 @@ any spring handling sensitive data.
 
 ### As a biomeOS Graph Node
 
-primalSpring ships 56 deploy graph TOMLs (6 fragments, 9 profiles with `resolve = true`, template+manifest families; all nodes declare `by_capability`).
+primalSpring ships 67 deploy graph TOMLs (6 fragments, 9 profiles with `resolve = true`, 10 cell graphs, template+manifest families; all nodes declare `by_capability`).
 biomeOS orchestrates the niche directly from these graphs. `topological_waves()`
 computes startup ordering. primalSpring participates as a validator node that
 probes other nodes by capability and reports composition health.

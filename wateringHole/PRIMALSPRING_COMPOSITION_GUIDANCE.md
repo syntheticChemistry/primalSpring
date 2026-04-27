@@ -1046,4 +1046,56 @@ and optionally submits them to biomeOS for dry-run deployment.
 
 ---
 
+## 19. Shell Composition Library (April 2026)
+
+For springs that need live interactive compositions without Rust scaffolding,
+primalSpring provides a **bash-native composition library** that wraps the
+full NUCLEUS stack:
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `tools/nucleus_composition_lib.sh` | Reusable library — source this from your script |
+| `tools/composition_template.sh` | Minimal starter skeleton — copy and fill in hooks |
+| `tools/composition_nucleus.sh` | Parameterized launcher — starts primals from plasmidBin |
+| `tools/ttt_composition.sh` | Reference implementation (Tic-Tac-Toe with full NUCLEUS) |
+
+### How It Relates to Graph-Based Composition
+
+Shell compositions and TOML graph compositions serve different roles:
+
+| Aspect | Shell Composition | Graph Composition |
+|--------|-------------------|-------------------|
+| **Execution** | Direct bash, socat over UDS | biomeOS Neural API graph executor |
+| **Use case** | Interactive apps, prototyping, rapid iteration | Deployed production systems |
+| **State management** | In-process bash vars + DAG/ledger | biomeOS graph state |
+| **When to use** | Exploring primal interactions, live UI, agentic testing | Certified deployments |
+
+Shell compositions are the **exploration substrate**. Springs use them to
+discover interaction patterns, validate primal APIs, and build interactive
+demos. Patterns that prove themselves in shell compositions get promoted
+to graph-based compositions for deployment.
+
+### The Hook Model
+
+Domain scripts source `nucleus_composition_lib.sh` and override hooks:
+
+```bash
+COMPOSITION_NAME="myspring"
+source nucleus_composition_lib.sh
+
+hit_test_fn()      { ... }   # pixel → logical target mapping
+domain_init()      { ... }   # setup state, DAG, ledger
+domain_render()    { ... }   # build + push petalTongue scene
+domain_on_key()    { ... }   # keyboard input handler
+domain_on_click()  { ... }   # mouse click handler
+domain_on_tick()   { ... }   # idle tick (proprioception, convergence)
+```
+
+See `wateringHole/DOWNSTREAM_COMPOSITION_EXPLORER_GUIDE.md` for per-spring
+exploration lanes and the full API reference.
+
+---
+
 **License**: AGPL-3.0-or-later
