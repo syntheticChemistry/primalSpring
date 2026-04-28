@@ -76,11 +76,14 @@ deployment patterns validated.
   (BLAKE3 is deterministic/keyless, 1000x IPC penalty, signature already covers hash)
 - ~~sweetGrass: local hashing, not delegating to Tower~~ **RESOLVED v0.7.28** — braid
   signing via `crypto.sign` Ed25519 shipped. Anchor signing incremental (P3)
+- ~~BearDog: purpose-key RPC~~ **RESOLVED W74** — lazy purpose-key derivation in
+  `secrets.retrieve` + `crypto.encrypt`/`crypto.decrypt` with `purpose` param.
+  End-to-end encryption unblocked for NestGate storage + Squirrel inference.
+- ~~barraCuda: DISCOVERY_SOCKET self-registration~~ **RESOLVED Sprint 47** — Songbird
+  self-registration with 11 capability tags on all startup paths
 - loamSpine: BTSP encrypted tunnels (ecosystem frontier, no primal does this yet).
   Tower signing shipped v0.9.16
-- BearDog: `secrets.retrieve` lazy purpose-key derivation + `crypto.encrypt`/
-  `crypto.decrypt` with purpose param (P1, blocks end-to-end encryption)
-- ToadStool/barraCuda: DISCOVERY_SOCKET self-registration at startup (P5, trivial)
+- ToadStool: DISCOVERY_SOCKET self-registration at startup (P5, trivial)
 
 ## [0.9.17+] — Phase 45c: BTSP Default Everywhere + Full NUCLEUS Convergence (2026-04)
 

@@ -51,12 +51,12 @@ Socket: `beardog-{family_id}.sock`
 
 | Namespace | Key Methods |
 |-----------|------------|
-| `crypto.*` | `blake3_hash`, `sha3_256`, `sha256`, `sha512`, `hmac_sha256`, `sign`, `verify`, `encrypt`, `decrypt`, `ed25519_generate_keypair`, `sign_ed25519`, `verify_ed25519`, `x25519_generate_ephemeral`, `x25519_derive_secret`, `chacha20_poly1305_encrypt/decrypt`, `aes256_gcm_encrypt/decrypt`, `argon2id_hash/verify` |
+| `crypto.*` | `blake3_hash`, `sha3_256`, `sha256`, `sha512`, `hmac_sha256`, `sign`, `verify`, `encrypt` (+ purpose-key routing W74), `decrypt` (+ purpose-key routing W74), `derive_purpose_key` (W72), `sign_registration` (W72), `ed25519_generate_keypair`, `sign_ed25519`, `verify_ed25519`, `x25519_generate_ephemeral`, `x25519_derive_secret`, `chacha20_poly1305_encrypt/decrypt`, `aes256_gcm_encrypt/decrypt`, `argon2id_hash/verify` |
 | `btsp.*` | `session.create`, `session.negotiate`, `session.verify`, `tunnel.establish`, `tunnel.encrypt`, `tunnel.decrypt`, `tunnel.status`, `tunnel.close`, `contact.exchange`, `verify_peer` |
 | `beacon.*` | `generate`, `get_id`, `list_known`, `add_known`, `encrypt`, `try_decrypt` |
 | `birdsong.*` | `encrypt`, `decrypt`, `generate_encrypted_beacon` |
 | `genetic.*` | `derive_device_seed`, `derive_lineage_key`, `mix_entropy`, `generate_challenge`, `verify_lineage` |
-| `secrets.*` | `store`, `retrieve`, `list`, `delete` |
+| `secrets.*` | `store`, `retrieve` (+ lazy purpose-key derivation W74), `list`, `delete` |
 | `tls.*` | `derive_handshake_secrets`, `derive_application_secrets`, `sign_handshake`, `verify_certificate` |
 | `graph.*` | `validate_template`, `audit_origin`, `authorize_modification` |
 | Meta | `rpc.methods`, `primal.info`, `capabilities.list`, `identity.get`, `health.*` |
