@@ -71,11 +71,16 @@ deployment patterns validated.
 ### Upstream Gaps (status as of 0.9.21)
 - ~~NestGate: no native encrypt-at-rest~~ **RESOLVED v0.4.70 S48** (ChaCha20-Poly1305)
 - ~~Squirrel: DISCOVERY_SOCKET not used for capability resolution~~ **RESOLVED session AN**
-- rhizoCrypt/sweetGrass: local hashing, not delegating to Tower crypto.sign
-- loamSpine: BTSP declared but no active channels
-- BearDog: `secrets.retrieve` + `crypto.encrypt`/`crypto.decrypt` purpose-key RPC
-  needed server-side (Squirrel + NestGate both have client stubs ready)
-- ToadStool/barraCuda: no self-registration via DISCOVERY_SOCKET at startup
+- ~~rhizoCrypt: local hashing, not delegating to Tower~~ **RESOLVED S54** — vertex
+  signing via `crypto.sign_ed25519` shipped S52. Hash delegation correctly declined
+  (BLAKE3 is deterministic/keyless, 1000x IPC penalty, signature already covers hash)
+- ~~sweetGrass: local hashing, not delegating to Tower~~ **RESOLVED v0.7.28** — braid
+  signing via `crypto.sign` Ed25519 shipped. Anchor signing incremental (P3)
+- loamSpine: BTSP encrypted tunnels (ecosystem frontier, no primal does this yet).
+  Tower signing shipped v0.9.16
+- BearDog: `secrets.retrieve` lazy purpose-key derivation + `crypto.encrypt`/
+  `crypto.decrypt` with purpose param (P1, blocks end-to-end encryption)
+- ToadStool/barraCuda: DISCOVERY_SOCKET self-registration at startup (P5, trivial)
 
 ## [0.9.17+] — Phase 45c: BTSP Default Everywhere + Full NUCLEUS Convergence (2026-04)
 
