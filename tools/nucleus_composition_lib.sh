@@ -388,10 +388,11 @@ except: pass
 
 # ── Encrypted Storage (composition-level encrypt-at-rest) ────────────
 #
-# Until NestGate evolves native encrypt-at-rest, the composition layer
-# encrypts before storing and decrypts after retrieval. The storage
-# purpose key is derived by nucleus_crypto_bootstrap.sh and stored in
-# BearDog secrets.
+# NestGate v0.4.70 S48 now has native encrypt-at-rest (ChaCha20-Poly1305)
+# that auto-encrypts storage.store/retrieve when a key is available via
+# NESTGATE_ENCRYPTION_KEY or BearDog secrets.retrieve. These composition-
+# level helpers remain as a fallback for older NestGate versions or for
+# encrypting data before it reaches NestGate (double encryption).
 
 STORAGE_PURPOSE_KEY=""
 

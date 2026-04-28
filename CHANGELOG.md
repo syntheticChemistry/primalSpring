@@ -3,6 +3,43 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.21] — Phase 55b: Upstream Harvest + Guidance (2026-04-28)
+
+### Absorbed
+- **NestGate v0.4.70 S48**: Native encrypt-at-rest (ChaCha20-Poly1305) with
+  BearDog key delegation. `NESTGATE_AUTH_MODE=beardog` JWT bypass implemented.
+  8,840 tests, zero debt markers. Directly resolves our Phase 55 crypto ask.
+- **biomeOS v3.30**: Deep debt cleanup — `events.rs` smart refactor (831→385 LOC),
+  `RpcExtractionError` thiserror migration, JWT secret hardened to per-family,
+  `/tmp` centralized, `skip_signature_check` plumbing, `#[expect(reason)]` policy.
+  7,814+ tests.
+- **Songbird W178**: 20+ `Result<_, String>` → `anyhow::Result` across 6 crates,
+  infallible functions simplified, hardcoded NodeId → env-driven. 7,692 tests.
+- **Squirrel session AN**: HTTP provider support (`inference.register_provider`
+  with `endpoint` for Ollama), `DISCOVERY_SOCKET` capability resolution
+  (`discovery.find_provider` as Method 2), inference payload encryption
+  foundation (`SecurityProviderClient` with purpose-key RPC surface).
+  7,182 tests, 90.1% coverage.
+- **Squirrel session AO**: Lying stub elimination — 6 functions now return honest
+  errors instead of fabricating success. Fake marketplace data removed.
+
+### Updated
+- `docs/NUCLEUS_IPC_METHOD_MAP.md`: NestGate encrypt-at-rest docs, Squirrel
+  HTTP providers + discovery resolution + crypto foundation
+- Upstream gaps narrowed: NestGate encrypt-at-rest RESOLVED, Squirrel discovery
+  RESOLVED. Remaining: BearDog purpose-key RPC server-side, rhizoCrypt/sweetGrass
+  Tower crypto delegation, loamSpine BTSP active channels
+
+### Upstream Guidance
+- BearDog: ship `secrets.retrieve` and `crypto.encrypt`/`crypto.decrypt` with
+  purpose-key semantics — lights up Squirrel inference encryption + NestGate
+  key delegation end-to-end
+- rhizoCrypt: delegate hashing to `crypto.sign` via Tower (currently local)
+- sweetGrass: delegate hashing to `crypto.sign` via Tower (currently local)
+- loamSpine: activate BTSP channels (declared but not active)
+- ToadStool: wire `DISCOVERY_SOCKET` self-registration at startup
+- barraCuda: wire `DISCOVERY_SOCKET` self-registration at startup
+
 ## [0.9.20] — Phase 55: Two-Tier Crypto Architecture + Live Desktop Compositions (2026-04-28)
 
 ### Milestone
@@ -31,11 +68,14 @@ deployment patterns validated.
 - All Nest primals (rhizoCrypt, loamSpine, sweetGrass): added DISCOVERY_SOCKET
 - Cell graph `nucleus_desktop_cell.toml`: added NESTGATE_AUTH_MODE
 
-### Upstream Gaps Exposed
-- NestGate: no native encrypt-at-rest (composition-level workaround implemented)
+### Upstream Gaps (status as of 0.9.21)
+- ~~NestGate: no native encrypt-at-rest~~ **RESOLVED v0.4.70 S48** (ChaCha20-Poly1305)
+- ~~Squirrel: DISCOVERY_SOCKET not used for capability resolution~~ **RESOLVED session AN**
 - rhizoCrypt/sweetGrass: local hashing, not delegating to Tower crypto.sign
 - loamSpine: BTSP declared but no active channels
-- BearDog: genetic.derive_lineage_key needs peer_family_id (no self-derivation)
+- BearDog: `secrets.retrieve` + `crypto.encrypt`/`crypto.decrypt` purpose-key RPC
+  needed server-side (Squirrel + NestGate both have client stubs ready)
+- ToadStool/barraCuda: no self-registration via DISCOVERY_SOCKET at startup
 
 ## [0.9.17+] — Phase 45c: BTSP Default Everywhere + Full NUCLEUS Convergence (2026-04)
 

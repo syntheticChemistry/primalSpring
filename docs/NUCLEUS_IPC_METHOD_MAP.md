@@ -1,7 +1,10 @@
 # NUCLEUS IPC Method Map
 
-> Verified live against Desktop NUCLEUS (Phase 48, April 2026).
+> Verified live against Desktop NUCLEUS (Phase 55b, April 28, 2026).
 > Every method below was confirmed via JSON-RPC over UDS.
+> Upstream absorbed: NestGate v0.4.70 S48 (encrypt-at-rest, auth bypass),
+> biomeOS v3.30 (deep debt), Songbird W178 (anyhow), Squirrel AN (HTTP providers,
+> DISCOVERY_SOCKET resolution, crypto foundation).
 
 All primals respond to `health.liveness` (status: "alive").
 Discovery: most expose `primal.capabilities` or `capabilities.list` or `rpc.methods`.
@@ -135,6 +138,18 @@ Socket: `nestgate-{family_id}.sock`
 | `storage.*` | `store`, `retrieve`, `exists`, `delete`, `list`, `stats`, `store_blob`, `retrieve_blob`, `retrieve_range`, `store_stream`, `store_stream_chunk`, `retrieve_stream`, `retrieve_stream_chunk` |
 | Meta | `capabilities.list`, `identity.get`, `discover_capabilities`, `health.*` |
 
+**Encrypt-at-rest** (v0.4.70 S48): `storage.store`/`retrieve`/`store_blob`/`retrieve_blob`
+auto-encrypt/decrypt transparently when a key is available. Key resolution:
+1. `NESTGATE_ENCRYPTION_KEY` env (hex-64 or base64-44)
+2. BearDog `secrets.retrieve("nucleus:{family}:purpose:storage")` via `BEARDOG_SOCKET`
+3. None — standalone mode, plaintext (backward compat)
+
+Envelope: `{"v":1,"ct":"<b64>","n":"<b64>","alg":"chacha20-poly1305"}`. Unencrypted
+data on disk detected and returned as-is (migration-safe).
+
+**Auth bypass** (v0.4.70 S48): `NESTGATE_AUTH_MODE=beardog` skips JWT validation at
+startup — delegates auth to BearDog within NUCLEUS compositions.
+
 ### rhizoCrypt — Working Memory (DAG)
 
 Socket: `rhizocrypt-{family_id}.sock`
@@ -208,6 +223,20 @@ Socket: `squirrel-{family_id}.sock`
 | `discovery.*` | `peers` |
 | `lifecycle.*` | `register`, `status` |
 | Meta | `capabilities.list`, `identity.get`, `system.*`, `health.*` |
+
+**HTTP provider support** (session AN): `inference.register_provider` accepts
+`endpoint` param (`http://host:port`) for HTTP-based providers (e.g. Ollama).
+Transport: lightweight raw TCP HTTP/1.1 to Ollama REST (`/api/generate`,
+`/api/embeddings`). Health: TCP connect probe. No new deps (Tower Atomic).
+
+**Discovery resolution** (session AN): `discover_capability()` now queries
+`DISCOVERY_SOCKET` via `discovery.find_provider` as Method 2 (after explicit
+env vars, before registry + socket scan). Graceful fallthrough.
+
+**Crypto foundation** (session AN): `SecurityProviderClient` extended with
+`retrieve_purpose_key(purpose)`, `encrypt_with_purpose(data, purpose)`,
+`decrypt_with_purpose(envelope, purpose)` — wires to BearDog `secrets.retrieve`,
+`crypto.encrypt`, `crypto.decrypt`. Awaiting BearDog server-side support.
 
 ### petalTongue — Visualization / Desktop UI
 

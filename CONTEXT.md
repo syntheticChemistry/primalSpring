@@ -69,7 +69,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.20 Phase 55 — 631 tests (585 passed + 46 ignored), 76 experiments (17 tracks), 69 deploy graphs (fragment-first composition). **Desktop NUCLEUS**: 12/12 musl-static primals from plasmidBin, petalTongue live desktop UI, **12/12 IPC validated** via `desktop_nucleus.sh validate`. **Two-tier crypto architecture**: published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys. Composition-level encrypt-at-rest via BearDog delegation. Full IPC method map (`docs/NUCLEUS_IPC_METHOD_MAP.md`). Crypto bootstrap (`tools/nucleus_crypto_bootstrap.sh`).
+v0.9.21 Phase 55b — 631 tests (585 passed + 46 ignored), 76 experiments (17 tracks), 69 deploy graphs (fragment-first composition). **Desktop NUCLEUS**: 12/12 musl-static primals from plasmidBin, petalTongue live desktop UI, **12/12 IPC validated** via `desktop_nucleus.sh validate`. **Two-tier crypto architecture**: published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys. **Upstream absorbed**: NestGate v0.4.70 native encrypt-at-rest (ChaCha20-Poly1305) + auth bypass, biomeOS v3.30 deep debt, Songbird W178 anyhow migration, Squirrel AN HTTP providers + discovery resolution + crypto foundation. Full IPC method map (`docs/NUCLEUS_IPC_METHOD_MAP.md`). Crypto bootstrap (`tools/nucleus_crypto_bootstrap.sh`).
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
