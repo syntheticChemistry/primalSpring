@@ -183,6 +183,7 @@ cmd_start() {
             BEARDOG_SOCKET="$(sock beardog)" \
             BTSP_PROVIDER_SOCKET="$(sock beardog)" \
             FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+            NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-$(head -c 48 /dev/urandom | base64)}" \
                 start_primal nestgate "$nestgate_bin" server || log "WARN: nestgate failed"
             wait_for_socket "$(sock nestgate)" 8 || log "WARN: nestgate socket not ready"
         else
