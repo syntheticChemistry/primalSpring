@@ -323,7 +323,8 @@ cmd_start() {
     fi
 
     if [[ -n "$nestgate_bin" ]]; then
-        NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-dev-only-primalspring-jwt-override}" \
+        NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-nucleus-beardog-delegated-auth}" \
+        NESTGATE_AUTH_MODE="${NESTGATE_AUTH_MODE:-beardog}" \
         NESTGATE_SOCKET="$nestgate_sock" \
         NESTGATE_FAMILY_ID="$FAMILY_ID" \
             start_primal nestgate "$nestgate_bin" daemon --socket-only --dev || true

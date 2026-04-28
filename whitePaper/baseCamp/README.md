@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: April 2026
-**Status**: Phase 45c — v0.9.17 — 75 experiments (17 tracks), 631 tests, 56 deploy graphs (fragment-first composition), **guideStone Level 4** (**187/187 live NUCLEUS ALL PASS, 13/13 BTSP authenticated**, 41/41 bare, BLAKE3 checksums P3, **BTSP default on all tiers** with per-atomic security reporting), **genomeBin v5.1** (46 binaries / 6 target triples, Tier 1: 39/39), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), **seed provenance** (public BLAKE3 fingerprints in plasmidBin/manifest.toml), full cross-architecture deployment (x86_64/aarch64/armv7/windows/android/riscv64), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, graph consolidation (78→56 via template+manifest + fragment resolution), stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin is full genomeBin depot** — downstream springs use `build_ecosystem_genomeBin.sh` for any target, 46 binaries shipped, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, **biomeOS substrate validated** (Neural API liveness + graph executor)
+**Status**: Phase 55 — v0.9.20 — 76 experiments (17 tracks), 631 tests, 69 deploy graphs (fragment-first composition, 12 cell graphs), **guideStone Level 4** (**187/187 live NUCLEUS ALL PASS, 13/13 BTSP authenticated**, 41/41 bare, BLAKE3 checksums P3, **BTSP default on all tiers** with per-atomic security reporting), **two-tier crypto architecture** (published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys, composition-level encrypt-at-rest), **genomeBin v5.1** (46 binaries / 6 target triples, Tier 1: 39/39), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), **seed provenance** (public BLAKE3 fingerprints in plasmidBin/manifest.toml), full cross-architecture deployment (x86_64/aarch64/armv7/windows/android/riscv64), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin is full genomeBin depot** — downstream springs use `build_ecosystem_genomeBin.sh` for any target, 46 binaries shipped, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, **biomeOS substrate validated** (Neural API liveness + graph executor), **live desktop compositions** (petalTongue GUI, branching DAG state, braid provenance, biomeOS cellular deployment)
 
 ---
 
@@ -55,13 +55,13 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 14 | E2E Composition | exp085–088 | BearDog crypto lifecycle, genetic identity E2E, Neural API routing, storytelling composition |
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | Deployment graph sweep, Tower Atomic LAN probe, L0 routing matrix, L2 dual-tower ionic, L3 covalent mesh backup |
 | 16 | Composition Parity | exp094 | Does full NUCLEUS composition produce correct results via IPC? 19/19 checks. |
-| 17 | Cross-Architecture Deployment | exp095–096 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? **15/15 checks.** |
+| 17 | Cross-Architecture + Cellular Deployment | exp095–096, exp098 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? **15/15 checks.** Does cellular deployment from cell graphs validate? |
 
-## Current State (v0.9.17)
+## Current State (v0.9.20)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 75 (17 tracks) |
+| Experiments | 76 (17 tracks) |
 | Total tests | **631** (585 passed + 46 ignored; unit + integration + doc-tests + proptest) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
@@ -69,10 +69,11 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `deny` (allow-listed for `std::env::set_var` in Rust 2024 entropy bootstrap) |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | **56 TOMLs** (6 fragments + 9 profiles + 5 multi-node + 4 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + ~11 root), fragment-first composition with `resolve = true` |
+| Deploy graphs | **69 TOMLs** (6 fragments + 9 profiles + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 12 cell graphs), fragment-first composition with `resolve = true` |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
+| Crypto architecture | Two-tier: published seed DNA → family keys → per-atomic purpose keys. Composition-level encrypt-at-rest. JWT deprecated within NUCLEUS (BearDog auth). |
 | Primal gap registry | All LD-01 through LD-10 RESOLVED. Pre-downstream gaps resolved. |
-| Discovery | Capability-first: 6-tier + Neural API + `discover_by_capability()` + biomeOS `capability.discover` + `topology.rescan` |
+| Discovery | Capability-first: 6-tier + Neural API + `discover_by_capability()` + Songbird service mesh (port-free) + biomeOS `capability.discover` + `topology.rescan` |
 | RPC endpoints | 17 methods (including `graph.waves`, `graph.capabilities`) |
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
@@ -846,19 +847,48 @@ springs can use the bash composition library for rapid interactive prototyping a
 live NUCLEUS primals, discovering interaction patterns and primal gaps before committing
 to graph-based deployments.
 
+## What Changed — Phase 47 (Desktop NUCLEUS Composition)
+
+### 12/12 musl-static primals from plasmidBin (April 28, 2026)
+
+Rebuilt barraCuda and toadStool as musl-static, achieving 12/12 deployable
+primals from plasmidBin with zero C dependencies:
+
+**New artifacts**:
+- `graphs/cells/nucleus_desktop_cell.toml` — canonical 12-primal desktop cell graph
+  with biomeOS as coordinator primal, petalTongue in `live` mode, `coordination = "continuous"`
+- `graphs/cells/nucleus_desktop_overlay_template.toml` — template for springs to define
+  domain overlays on the running Desktop NUCLEUS (connect, don't launch)
+- `tools/desktop_nucleus.sh` — Desktop NUCLEUS launcher with biomeOS deploy and
+  composition_nucleus.sh fallback
+- `nucleus_composition_lib.sh` additions: `biomeos_is_available()`, `biomeos_register_graph()`,
+  `biomeos_deploy()`, `biomeos_nucleus_start()`
+- `composition_nucleus.sh` additions: coralReef startup (12th primal), `shader` capability alias
+
+**Architecture clarification**:
+- NUCLEUS = exactly 12 primals: Tower (beardog + songbird) + Node (toadstool + barracuda +
+  coralreef) + Nest (nestgate + rhizocrypt + loamspine + sweetgrass) + Meta (biomeos +
+  squirrel + petaltongue)
+- `primalspring_primal` and `primalspring_guidestone` are dev validation artifacts, NOT primals
+- Spring binaries are Rust science validation, NOT composition nodes
+- A spring IS a composition of the 12 primals, defined by a cell graph
+
+**Validated**: All 12 primals healthy from plasmidBin. Tower crypto, Node compute,
+Nest DAG/ledger/attribution, Meta AI/visualization all responding via UDS JSON-RPC.
+
 ## What Remains
 
 ### Structural Debt (plan but don't block handoff)
 - **Bonding experiments (exp030-034)**: 13 skipped live checks requiring benchScale Docker labs with 2+ FAMILY_IDs
 - **benchScale ecoPrimals integration**: 5 gaps in deploy pipeline (`ECOPRIMALS_INTEGRATION.md`)
-- **biomeOS DOWN**: 11/12 primals during testing (Neural API composition validation skips)
+- **coralReef health check**: Uses tarpc transport, JSON-RPC health check via `coralreef-core-default.sock` (not family-namespaced)
 
 ### Forward Evolution
+- biomeOS native `nucleus --mode full` to launch all 12 primals (currently launches 5)
 - Live multi-node validation with benchScale Docker topologies
 - Protocol escalation (JSON-RPC -> tarpc sidecar)
 - biomeOS self-composition (runtime graph generation)
 - genomeBin packaging: run sourDough to produce .genome self-extractors
-- ecoBin compliance: rebuild all primals as static musl for both x86_64 and aarch64
 - Anchoring + Economics: sweetGrass anchoring to BTC/ETH
 
 ---

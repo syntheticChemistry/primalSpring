@@ -1,0 +1,249 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Template: Desktop NUCLEUS Domain Overlay
+#
+# This template shows how a spring composes ON TOP of the running
+# Desktop NUCLEUS. Springs do NOT launch primals — they connect to
+# the 12-primal NUCLEUS via capability sockets and add domain logic.
+#
+# A spring IS a composition of the NUCLEUS primals. The cell graph
+# defines which capabilities the spring uses, how it wires UI, DAG,
+# ledger, compute, and AI for its domain.
+#
+# To create your spring's cell graph:
+#   1. Copy this template to graphs/cells/<yourspring>_cell.toml
+#   2. Replace YOURSPRING_* placeholders
+#   3. Adjust capability requirements (mark unused as required = false)
+#   4. Define your domain's scene sessions, interaction subscriptions,
+#      DAG sessions, and braid provenance patterns
+#
+# Deploy on a running Desktop NUCLEUS:
+#   ./tools/desktop_nucleus.sh start    # ensures 12/12 primals are live
+#   biomeos deploy --graph graphs/cells/<yourspring>_cell.toml
+#
+# Or use the composition lib in your domain script:
+#   source tools/nucleus_composition_lib.sh
+#   discover_capabilities
+#   # ... your domain logic using send_rpc / petaltongue_* / dag_* / braid_*
+
+# ═══════════════════════════════════════════════════════════════════════
+# Graph Metadata
+# ═══════════════════════════════════════════════════════════════════════
+
+[graph]
+name = "YOURSPRING_cell"
+description = "YOURSPRING — domain overlay on Desktop NUCLEUS"
+version = "1.0.0"
+coordination = "continuous"
+
+[graph.metadata]
+cell_type = "spring"
+domain = "YOURDOMAIN"
+security_model = "btsp_enforced"
+transport = "uds_only"
+composition_model = "pure"
+petaltongue_mode = "live"
+base_graph = "nucleus_desktop"
+
+# ═══════════════════════════════════════════════════════════════════════
+# NUCLEUS Base — All 12 primals (inherited from Desktop NUCLEUS)
+#
+# Include ALL primals that your spring needs. biomeOS is always present
+# as the coordinator primal (spawn = false). Set required = false for
+# capabilities your domain can function without.
+# ═══════════════════════════════════════════════════════════════════════
+
+# ── Tower (always required) ──
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+security_model = "btsp"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "graph.execute", "capability.discover"]
+
+[[graph.nodes]]
+name = "beardog"
+security_model = "btsp"
+binary = "beardog"
+order = 1
+required = true
+spawn = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash"]
+
+[[graph.nodes]]
+name = "songbird"
+security_model = "btsp"
+binary = "songbird"
+order = 2
+required = true
+spawn = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers"]
+
+# ── Node (compute — adjust required per domain) ──
+
+[[graph.nodes]]
+name = "toadstool"
+security_model = "btsp"
+binary = "toadstool"
+order = 3
+required = true                    # SET false if your domain doesn't dispatch compute
+spawn = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = ["compute.dispatch", "compute.execute"]
+
+[[graph.nodes]]
+name = "barracuda"
+security_model = "btsp"
+binary = "barracuda"
+order = 4
+required = true                    # SET false if your domain doesn't use tensors/math
+spawn = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "tensor"
+capabilities = ["tensor.matmul", "tensor.create", "stats.mean", "stats.std_dev"]
+
+[[graph.nodes]]
+name = "coralreef"
+security_model = "btsp"
+binary = "coralreef"
+order = 5
+required = false                   # Shader compiler — only for GPU pipeline domains
+spawn = true
+depends_on = ["toadstool"]
+health_method = "health.liveness"
+by_capability = "shader"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
+
+# ── Nest (storage + provenance — adjust per domain) ──
+
+[[graph.nodes]]
+name = "nestgate"
+security_model = "btsp"
+binary = "nestgate"
+order = 6
+required = true                    # SET false if your domain is stateless
+spawn = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+
+[[graph.nodes]]
+name = "rhizocrypt"
+security_model = "btsp"
+binary = "rhizocrypt"
+order = 7
+required = false                   # DAG — for branching state, session lineage
+spawn = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
+
+[[graph.nodes]]
+name = "loamspine"
+security_model = "btsp"
+binary = "loamspine"
+order = 8
+required = false                   # Ledger — for permanent records, certificates
+spawn = true
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = ["spine.create", "entry.append", "certificate.mint"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+security_model = "btsp"
+binary = "sweetgrass"
+order = 9
+required = false                   # Attribution — for provenance braids
+spawn = true
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
+
+# ── Meta (AI + UI) ──
+
+[[graph.nodes]]
+name = "squirrel"
+security_model = "btsp"
+binary = "squirrel"
+order = 10
+required = false                   # SET true if your domain uses AI/inference
+spawn = true
+depends_on = ["songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = ["inference.complete", "inference.models", "ai.query"]
+
+[[graph.nodes]]
+name = "petaltongue"
+security_model = "btsp"
+binary = "petaltongue"
+order = 11
+required = true                    # Desktop UI — always required for desktop compositions
+spawn = true
+depends_on = ["songbird"]
+health_method = "health.liveness"
+by_capability = "visualization"
+capabilities = [
+    "visualization.render.scene", "interaction.subscribe",
+    "interaction.poll", "proprioception.get",
+]
+
+[graph.nodes.params]
+mode = "live"
+
+# ═══════════════════════════════════════════════════════════════════════
+# Domain Overlay Pattern
+#
+# Your spring's domain logic composes the primals above. Examples:
+#
+# Game science (ludoSpring):
+#   - Push scenes via visualization.render.scene
+#   - Poll input via interaction.poll + sensor_stream
+#   - Record game state via dag.event.append
+#   - Commit sessions to ledger via permanence.commit_session
+#   - Use AI opponents via inference.complete
+#
+# Physics (hotSpring):
+#   - Dispatch GPU compute via compute.dispatch
+#   - Use tensor math via tensor.matmul
+#   - Record experiment provenance via braid.create
+#   - Visualize results via visualization.render.scene
+#
+# Biology (wetSpring):
+#   - Use DAG for branching state exploration
+#   - Store data via storage.store
+#   - Visualize genomes via visualization.render.scene
+#
+# ML (neuralSpring):
+#   - Register as inference provider via inference.register_provider
+#   - Use tensor for training via tensor.matmul
+#   - Visualize training dashboards
+#
+# Your domain script (sourcing nucleus_composition_lib.sh):
+#
+#   COMPOSITION_NAME="yourspring"
+#   REQUIRED_CAPS="visualization tensor"
+#   OPTIONAL_CAPS="dag ledger attribution ai compute"
+#   source tools/nucleus_composition_lib.sh
+#   discover_capabilities
+#   # ... domain logic ...
+# ═══════════════════════════════════════════════════════════════════════

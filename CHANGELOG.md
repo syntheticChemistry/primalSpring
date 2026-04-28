@@ -3,6 +3,40 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.20] — Phase 55: Two-Tier Crypto Architecture + Live Desktop Compositions (2026-04-28)
+
+### Milestone
+**Two-tier crypto architecture operational.** Published seed fingerprints (Tier 0: public DNA)
+→ HKDF base keys → family keys with FAMILY_SEED (Tier 1: deployment isolation) → per-atomic
+purpose keys. Composition-level encrypt-at-rest via BearDog delegation. NestGate JWT deprecated
+within NUCLEUS compositions (NESTGATE_AUTH_MODE=beardog). Full Tower wiring for all 12 primals
+including ToadStool (was missing BEARDOG_SOCKET/BTSP_PROVIDER_SOCKET). Live desktop compositions
+with petalTongue GUI, branching state exploration via DAG+ledger+braid, and biomeOS cellular
+deployment patterns validated.
+
+### Added
+- `tools/nucleus_crypto_bootstrap.sh` — derives and stores two-tier purpose keys via BearDog
+- Crypto tier validation in `desktop_nucleus.sh validate` (seed fingerprints, HMAC derivation,
+  BTSP session, sign/verify round-trip, secrets store/retrieve)
+- Composition-level encrypted storage helpers in `nucleus_composition_lib.sh`
+  (`tower_encrypt`, `tower_decrypt`, `encrypted_store`, `encrypted_retrieve`)
+- `NESTGATE_AUTH_MODE=beardog` env var for NUCLEUS compositions (JWT bypass)
+- `DISCOVERY_SOCKET` wired to all 12 primals for Songbird capability resolution
+- `infra/wateringHole/NUCLEUS_TWO_TIER_CRYPTO_MODEL.md` — full crypto architecture docs
+
+### Changed
+- ToadStool startup: added BEARDOG_SOCKET, BTSP_PROVIDER_SOCKET, FAMILY_SEED, DISCOVERY_SOCKET
+- barraCuda, coralReef, petalTongue: added DISCOVERY_SOCKET and FAMILY_SEED to startup
+- NestGate JWT secret changed from random to sentinel value in NUCLEUS compositions
+- All Nest primals (rhizoCrypt, loamSpine, sweetGrass): added DISCOVERY_SOCKET
+- Cell graph `nucleus_desktop_cell.toml`: added NESTGATE_AUTH_MODE
+
+### Upstream Gaps Exposed
+- NestGate: no native encrypt-at-rest (composition-level workaround implemented)
+- rhizoCrypt/sweetGrass: local hashing, not delegating to Tower crypto.sign
+- loamSpine: BTSP declared but no active channels
+- BearDog: genetic.derive_lineage_key needs peer_family_id (no self-derivation)
+
 ## [0.9.17+] — Phase 45c: BTSP Default Everywhere + Full NUCLEUS Convergence (2026-04)
 
 ### Milestone

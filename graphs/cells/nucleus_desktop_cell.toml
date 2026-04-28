@@ -1,0 +1,225 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Cellular deployment graph: Desktop NUCLEUS — all 12 primals, petalTongue live
+#
+# The canonical desktop deployment: biomeOS (coordinator primal) launches the
+# full NUCLEUS with petalTongue in `live` mode as the desktop UI surface.
+# All binaries deploy from plasmidBin — zero compilation required.
+#
+# Springs compose ON TOP of this graph via cell graphs. No spring binaries
+# are part of NUCLEUS. A spring IS a composition of these 12 primals.
+#
+# Atomic structure:
+#   Tower (electron): beardog + songbird
+#   Node  (proton):   toadstool + barracuda + coralreef
+#   Nest  (neutron):  nestgate + rhizocrypt + loamspine + sweetgrass
+#   Meta  (cross):    biomeos + squirrel + petaltongue
+#
+# Deploy:
+#   biomeos deploy --graph graphs/cells/nucleus_desktop_cell.toml
+#   OR: ./tools/desktop_nucleus.sh start
+
+[graph]
+name = "nucleus_desktop"
+description = "Desktop NUCLEUS — 12 primals from plasmidBin, petalTongue live desktop"
+version = "2.0.0"
+coordination = "continuous"
+
+[graph.metadata]
+cell_type = "nucleus"
+domain = "desktop"
+security_model = "btsp_enforced"
+transport = "uds_only"
+composition_model = "pure"
+petaltongue_mode = "live"
+primal_count = 12
+
+[graph.environment]
+FAMILY_ID = "${FAMILY_ID:-nucleus-desktop}"
+BEARDOG_FAMILY_SEED = "${BEARDOG_FAMILY_SEED}"
+FAMILY_SEED = "${FAMILY_SEED:-$BEARDOG_FAMILY_SEED}"
+NESTGATE_JWT_SECRET = "${NESTGATE_JWT_SECRET:-nucleus-beardog-delegated-auth}"
+NESTGATE_AUTH_MODE = "${NESTGATE_AUTH_MODE:-beardog}"
+
+# ── Tower Atomic (electron) ─────────────────────────────────────────
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+security_model = "btsp"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = ["graph.deploy", "graph.execute", "graph.status", "capability.discover", "capability.route", "topology.rescan"]
+
+[[graph.nodes]]
+name = "beardog"
+security_model = "btsp"
+binary = "beardog"
+order = 1
+required = true
+spawn = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair", "crypto.identity"]
+
+[[graph.nodes]]
+name = "songbird"
+security_model = "btsp"
+binary = "songbird"
+order = 2
+required = true
+spawn = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]
+
+# ── Node Atomic (proton) ────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "toadstool"
+security_model = "btsp"
+binary = "toadstool"
+order = 3
+required = true
+spawn = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities", "compute.status"]
+
+[[graph.nodes]]
+name = "barracuda"
+security_model = "btsp"
+binary = "barracuda"
+order = 4
+required = true
+spawn = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "tensor"
+capabilities = [
+    "tensor.matmul", "tensor.batch.submit", "tensor.create",
+    "stats.mean", "stats.std_dev", "stats.variance",
+    "noise.perlin2d", "rng.uniform", "compute.dispatch",
+]
+
+[[graph.nodes]]
+name = "coralreef"
+security_model = "btsp"
+binary = "coralreef"
+order = 5
+required = true
+spawn = true
+depends_on = ["toadstool"]
+health_method = "health.liveness"
+by_capability = "shader"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.compile.capabilities", "shader.compile.wgsl.multi"]
+
+# ── Nest Atomic (neutron) ───────────────────────────────────────────
+
+[[graph.nodes]]
+name = "nestgate"
+security_model = "btsp"
+binary = "nestgate"
+order = 6
+required = true
+spawn = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.exists", "storage.delete", "storage.fetch_external"]
+
+[[graph.nodes]]
+name = "rhizocrypt"
+security_model = "btsp"
+binary = "rhizocrypt"
+order = 7
+required = false
+spawn = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = [
+    "dag.session.create", "dag.event.append", "dag.event.append_batch",
+    "dag.vertex.get", "dag.vertex.query",
+    "dag.dehydration.trigger", "dag.merkle.root",
+    "dag.merkle.proof", "dag.merkle.verify",
+]
+
+[[graph.nodes]]
+name = "loamspine"
+security_model = "btsp"
+binary = "loamspine"
+order = 8
+required = false
+spawn = true
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = [
+    "spine.create", "spine.get", "spine.seal",
+    "entry.append", "entry.get",
+    "certificate.mint", "certificate.transfer",
+    "proof.generate_inclusion", "permanence.commit_session",
+]
+
+[[graph.nodes]]
+name = "sweetgrass"
+security_model = "btsp"
+binary = "sweetgrass"
+order = 9
+required = false
+spawn = true
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+capabilities = [
+    "braid.create", "braid.commit", "braid.get",
+    "anchoring.anchor", "anchoring.verify",
+    "provenance.graph", "attribution.chain",
+]
+
+# ── Meta Tier (cross-atomic) ────────────────────────────────────────
+
+[[graph.nodes]]
+name = "squirrel"
+security_model = "btsp"
+binary = "squirrel"
+order = 10
+required = false
+spawn = true
+depends_on = ["songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = [
+    "inference.register_provider", "inference.models", "inference.embed",
+    "inference.complete", "ai.chat", "ai.query",
+    "mcp.tools.list",
+]
+
+[[graph.nodes]]
+name = "petaltongue"
+security_model = "btsp"
+binary = "petaltongue"
+order = 11
+required = true
+spawn = true
+depends_on = ["songbird"]
+health_method = "health.liveness"
+by_capability = "visualization"
+capabilities = [
+    "visualization.render", "visualization.render.scene",
+    "visualization.render.stream", "visualization.render.dashboard",
+    "visualization.render.grammar", "visualization.export",
+    "interaction.subscribe", "interaction.poll",
+    "interaction.sensor_stream.poll",
+    "motor.panel.create", "motor.panel.update",
+    "proprioception.get",
+]
+
+[graph.nodes.params]
+mode = "live"

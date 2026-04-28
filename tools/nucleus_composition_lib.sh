@@ -338,6 +338,154 @@ sign_payload() {
     fi
 }
 
+# ── Security: Encrypt/Decrypt via Tower ───────────────────────────────
+
+tower_encrypt() {
+    local key="$1" plaintext_b64="$2"
+    cap_available security || return
+    local resp
+    resp=$(send_rpc "$(cap_socket security)" "crypto.chacha20_poly1305_encrypt" \
+        "{\"key\":\"$key\",\"plaintext\":\"$plaintext_b64\"}")
+    echo "$resp"
+}
+
+tower_decrypt() {
+    local key="$1" ciphertext="$2" nonce="$3"
+    cap_available security || return
+    local resp
+    resp=$(send_rpc "$(cap_socket security)" "crypto.chacha20_poly1305_decrypt" \
+        "{\"key\":\"$key\",\"ciphertext\":\"$ciphertext\",\"nonce\":\"$nonce\"}")
+    echo "$resp"
+}
+
+tower_derive_key() {
+    local parent_key="$1" purpose="$2"
+    cap_available security || return
+    local info_hex
+    info_hex=$(printf '%s' "purpose-v1:$purpose" | xxd -p | tr -d '\n')
+    local resp
+    resp=$(send_rpc "$(cap_socket security)" "crypto.hmac_sha256" \
+        "{\"key\":\"$parent_key\",\"message\":\"$info_hex\"}")
+    echo "$resp" | grep -oP '"result"\s*:\s*"\K[^"]+' | head -1 || true
+}
+
+tower_retrieve_purpose_key() {
+    local purpose="$1"
+    local family="${FAMILY_ID:-$COMPOSITION_NAME}"
+    cap_available security || return
+    local resp
+    resp=$(send_rpc "$(cap_socket security)" "secrets.retrieve" \
+        "{\"id\":\"nucleus:${family}:purpose:${purpose}\"}")
+    echo "$resp" | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    r=d.get('result',d)
+    print(r.get('value','') if isinstance(r,dict) else '')
+except: pass
+" 2>/dev/null || true
+}
+
+# ── Encrypted Storage (composition-level encrypt-at-rest) ────────────
+#
+# Until NestGate evolves native encrypt-at-rest, the composition layer
+# encrypts before storing and decrypts after retrieval. The storage
+# purpose key is derived by nucleus_crypto_bootstrap.sh and stored in
+# BearDog secrets.
+
+STORAGE_PURPOSE_KEY=""
+
+storage_init_encryption() {
+    STORAGE_PURPOSE_KEY=$(tower_retrieve_purpose_key "storage")
+    if [[ -n "$STORAGE_PURPOSE_KEY" ]]; then
+        ok "storage encryption: key loaded (${STORAGE_PURPOSE_KEY:0:16}...)"
+    else
+        warn "storage encryption: no purpose key — data stored in plaintext"
+        warn "  run: tools/nucleus_crypto_bootstrap.sh to derive keys"
+    fi
+}
+
+encrypted_store() {
+    local key_name="$1" value="$2"
+    cap_available storage || return
+
+    if [[ -n "$STORAGE_PURPOSE_KEY" ]]; then
+        local pt_b64
+        pt_b64=$(printf '%s' "$value" | base64 -w0)
+        local enc_resp
+        enc_resp=$(tower_encrypt "$STORAGE_PURPOSE_KEY" "$pt_b64")
+
+        local ciphertext nonce
+        ciphertext=$(echo "$enc_resp" | grep -oP '"ciphertext"\s*:\s*"\K[^"]+' | head -1 || true)
+        nonce=$(echo "$enc_resp" | grep -oP '"nonce"\s*:\s*"\K[^"]+' | head -1 || true)
+
+        if [[ -n "$ciphertext" && -n "$nonce" ]]; then
+            local envelope
+            envelope=$(printf '{"v":1,"ct":"%s","n":"%s","alg":"chacha20-poly1305"}' \
+                "$ciphertext" "$nonce")
+            local env_b64
+            env_b64=$(printf '%s' "$envelope" | base64 -w0)
+            send_rpc_quiet "$(cap_socket storage)" "storage.store" \
+                "{\"key\":\"$key_name\",\"value\":\"$env_b64\",\"metadata\":{\"encrypted\":true}}"
+            return 0
+        fi
+        warn "encryption failed — storing plaintext"
+    fi
+
+    send_rpc_quiet "$(cap_socket storage)" "storage.store" \
+        "{\"key\":\"$key_name\",\"value\":\"$(printf '%s' "$value" | base64 -w0)\"}"
+}
+
+encrypted_retrieve() {
+    local key_name="$1"
+    cap_available storage || return
+
+    local resp
+    resp=$(send_rpc "$(cap_socket storage)" "storage.retrieve" \
+        "{\"key\":\"$key_name\"}")
+
+    local stored_val
+    stored_val=$(echo "$resp" | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    r=d.get('result',d)
+    print(r.get('value','') if isinstance(r,dict) else r if isinstance(r,str) else '')
+except: pass
+" 2>/dev/null || true)
+
+    if [[ -z "$stored_val" ]]; then
+        return 1
+    fi
+
+    local decoded
+    decoded=$(echo "$stored_val" | base64 -d 2>/dev/null || true)
+
+    if echo "$decoded" | grep -q '"v":1.*"alg":"chacha20-poly1305"' 2>/dev/null; then
+        if [[ -z "$STORAGE_PURPOSE_KEY" ]]; then
+            warn "encrypted data but no purpose key"
+            return 1
+        fi
+        local ct n
+        ct=$(echo "$decoded" | grep -oP '"ct"\s*:\s*"\K[^"]+' || true)
+        n=$(echo "$decoded" | grep -oP '"n"\s*:\s*"\K[^"]+' || true)
+        local dec_resp
+        dec_resp=$(tower_decrypt "$STORAGE_PURPOSE_KEY" "$ct" "$n")
+        local plaintext_b64
+        plaintext_b64=$(echo "$dec_resp" | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    r=d.get('result',d)
+    print(r.get('plaintext','') if isinstance(r,dict) else '')
+except: pass
+" 2>/dev/null || true)
+        echo "$plaintext_b64" | base64 -d 2>/dev/null || true
+    else
+        echo "$decoded"
+    fi
+}
+
 # ── rhizoCrypt: DAG Session Management ────────────────────────────────
 
 DAG_SESSION=""
@@ -757,4 +905,152 @@ composition_summary() {
         scenes=$(echo "$proprio" | grep -oP '"active_scenes"\s*:\s*\K[0-9]+' | head -1 || echo "?")
         log "  Proprioception: fps=$fps active_scenes=$scenes"
     fi
+}
+
+# ── biomeOS Integration ──────────────────────────────────────────────
+#
+# biomeOS is the coordinator primal — part of the 12-primal NUCLEUS.
+# These helpers let compositions register with Neural API and check
+# biomeOS availability for graph-based deployment.
+
+BIOMEOS_BIN="${BIOMEOS_BIN:-}"
+
+_find_biomeos() {
+    if [[ -n "$BIOMEOS_BIN" && -x "$BIOMEOS_BIN" ]]; then
+        echo "$BIOMEOS_BIN"
+        return
+    fi
+    local eco_root
+    eco_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+    local plasmid="$eco_root/infra/plasmidBin/primals/x86_64-unknown-linux-musl/biomeos"
+    [[ -x "$plasmid" ]] && echo "$plasmid" && return
+    which biomeos 2>/dev/null || true
+}
+
+biomeos_is_available() {
+    local b
+    b="$(_find_biomeos)"
+    [[ -n "$b" && -x "$b" ]]
+}
+
+biomeos_register_graph() {
+    local graph_file="$1"
+    local b
+    b="$(_find_biomeos)"
+    if [[ -z "$b" ]]; then
+        warn "biomeOS not found — skipping graph registration"
+        return 1
+    fi
+    if [[ ! -f "$graph_file" ]]; then
+        err "Graph file not found: $graph_file"
+        return 1
+    fi
+    log "Registering graph with biomeOS: $graph_file"
+    "$b" deploy "$graph_file" --validate-only 2>/dev/null && \
+        ok "Graph validated: $graph_file" || \
+        warn "Graph validation returned non-zero (may be expected)"
+}
+
+biomeos_deploy() {
+    local graph_file="$1"
+    local b
+    b="$(_find_biomeos)"
+    if [[ -z "$b" ]]; then
+        err "biomeOS not found — cannot deploy"
+        return 1
+    fi
+    log "Deploying via biomeOS: $graph_file"
+    "$b" deploy "$graph_file"
+}
+
+biomeos_nucleus_start() {
+    local mode="${1:-full}"
+    local b
+    b="$(_find_biomeos)"
+    if [[ -z "$b" ]]; then
+        err "biomeOS not found — cannot start NUCLEUS"
+        return 1
+    fi
+    log "Starting NUCLEUS via biomeOS (mode=$mode)"
+    FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+        "$b" nucleus \
+            --mode "$mode" \
+            --node-id "${NODE_ID:-$(hostname)}" \
+            --family-id "$FAMILY_ID"
+}
+
+# ── AI via Songbird HTTP Bridge ──────────────────────────────────────
+# Squirrel's ollama probe can fail at startup. Songbird http.post is
+# a reliable fallback for local AI through the NUCLEUS.
+
+OLLAMA_ENDPOINT="${OLLAMA_ENDPOINT:-http://127.0.0.1:11434}"
+AI_MODEL="${AI_MODEL:-tinyllama:latest}"
+
+ai_complete() {
+    local prompt="$1"
+    local model="${2:-$AI_MODEL}"
+    local max_tokens="${3:-256}"
+    local discovery_sock
+    discovery_sock="$(resolve_capability discovery songbird)"
+    if [[ -z "$discovery_sock" ]]; then
+        err "No discovery socket (Songbird) for AI bridge"
+        return 1
+    fi
+    local body
+    body=$(python3 -c "
+import json
+print(json.dumps({
+    'model': '$model',
+    'prompt': $(python3 -c "import json; print(json.dumps('$prompt'))"),
+    'stream': False,
+    'options': {'num_predict': $max_tokens}
+}))
+" 2>/dev/null)
+    local resp
+    resp=$(python3 -c "
+import socket, json, sys
+req = {
+    'jsonrpc': '2.0',
+    'method': 'http.post',
+    'params': {
+        'url': '${OLLAMA_ENDPOINT}/api/generate',
+        'body': '''$body''',
+        'content_type': 'application/json'
+    },
+    'id': 1
+}
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+s.settimeout(30)
+try:
+    s.connect('$discovery_sock')
+    s.sendall(json.dumps(req).encode() + b'\n')
+    chunks = []
+    while True:
+        chunk = s.recv(65536)
+        if not chunk:
+            break
+        chunks.append(chunk)
+        try:
+            json.loads(b''.join(chunks).decode())
+            break
+        except json.JSONDecodeError:
+            continue
+    s.close()
+    d = json.loads(b''.join(chunks).decode())
+    r = d.get('result', d.get('error', {}))
+    if isinstance(r, dict) and 'body' in r:
+        body = json.loads(r['body']) if isinstance(r['body'], str) else r['body']
+        print(body.get('response', ''))
+    else:
+        print(json.dumps(r), file=sys.stderr)
+except Exception as e:
+    print(str(e), file=sys.stderr)
+" 2>/dev/null)
+    echo "$resp"
+}
+
+ai_available() {
+    local discovery_sock
+    discovery_sock="$(resolve_capability discovery songbird)"
+    [[ -n "$discovery_sock" ]] && [[ -S "$discovery_sock" ]]
 }

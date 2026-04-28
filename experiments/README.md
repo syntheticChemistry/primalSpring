@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**75 experiments across 17 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**76 experiments across 17 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -60,7 +60,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 14 | E2E Composition | exp085–088 | **E2E composition** (BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition) |
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | **Structural** (deployment graph sweep, Tower Atomic LAN probe, L0 primal routing matrix, L2 dual-tower ionic, L3 covalent mesh backup) |
 | 16 | Composition Parity | exp094 | Full NUCLEUS composition parity: 19/19 checks via live IPC |
-| 17 | Cross-Architecture Deployment | exp095–096 | **Live validated** (proto-nucleate template, Pixel cross-arch bonding via biomeOS Neural API `--tcp-only`) |
+| 17 | Cross-Architecture + Cellular Deployment | exp095–096, exp098 | **Live validated** (proto-nucleate template, Pixel cross-arch bonding via biomeOS Neural API `--tcp-only`, cellular deployment from cell graphs) |
 
 ## Experiment Status Key
 

@@ -25,15 +25,15 @@ back upstream to primals and primalSpring.
 ## Architecture
 
 - **ecoPrimal/** — library crate (`primalspring`) + 3 binaries
-  (`primalspring_primal` server, `primalspring_guidestone` 6-layer composition
-  certification, `validate_all` runner)
-- **experiments/** — 75 validation binaries covering 17 tracks
-- **graphs/** — 67 deploy graph TOMLs using fragment-first composition (6 fragments +
+  (`primalspring_primal` server, `primalspring_guidestone` 9-layer composition
+  certification (Layers 0–7 + 0.5 + 1.5), `validate_all` runner)
+- **experiments/** — 76 validation binaries covering 17 tracks
+- **graphs/** — 69 deploy graph TOMLs using fragment-first composition (6 fragments +
   9 profiles + 4 patterns + 5 spring validation + 2 cross-spring + 5 bonding +
   2 chaos + 2 spring deploy + 3 downstream + 5 multi-node + 13 root-level +
-  1 federation + 10 cell graphs)
+  1 federation + 12 cell graphs including Desktop NUCLEUS)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
-- **tools/** — nucleus launcher, composition library + template, TTT reference implementation, Godot bridge, thin WS gateway, composition validator
+- **tools/** — desktop NUCLEUS launcher, nucleus launcher, composition library + template, TTT reference implementation, Godot bridge, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -69,7 +69,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.17 Phase 46 — 631 tests (585 passed + 46 ignored), 75 experiments (17 tracks), 67 deploy graphs (fragment-first composition).
+v0.9.20 Phase 55 — 631 tests (585 passed + 46 ignored), 76 experiments (17 tracks), 69 deploy graphs (fragment-first composition). **Desktop NUCLEUS**: 12/12 musl-static primals from plasmidBin, petalTongue live desktop UI, **12/12 IPC validated** via `desktop_nucleus.sh validate`. **Two-tier crypto architecture**: published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys. Composition-level encrypt-at-rest via BearDog delegation. Full IPC method map (`docs/NUCLEUS_IPC_METHOD_MAP.md`). Crypto bootstrap (`tools/nucleus_crypto_bootstrap.sh`).
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 

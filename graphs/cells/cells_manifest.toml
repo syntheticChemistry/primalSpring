@@ -11,10 +11,19 @@
 #   biomeos deploy --graph graphs/cells/<spring>_cell.toml  (primalSpring)
 
 [manifest]
-version = "1.0.0"
-description = "Cellular deployment index — one cell per spring, each a deployable biomeOS graph"
+version = "1.1.0"
+description = "Cellular deployment index — NUCLEUS base + one cell per spring, each a deployable biomeOS graph"
 template_base = "../spring_deploy/spring_deploy_template.toml"
 petaltongue_mode = "live"
+
+[[cell]]
+spring = "nucleus_desktop"
+graph = "nucleus_desktop_cell.toml"
+domain = "desktop"
+composition_model = "pure"
+requires = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "squirrel", "petaltongue", "biomeos"]
+petaltongue_mode = "live"
+is_base = true
 
 [[cell]]
 spring = "hotspring"

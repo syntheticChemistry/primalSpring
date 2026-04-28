@@ -79,7 +79,7 @@ socket_flag = "__skip__"
 pass_family_id = false
 extra_args = ["--socket-only", "--dev"]
 [profiles.nestgate.extra_env]
-NESTGATE_JWT_SECRET = "dev-only-primalspring-jwt-override-via-NESTGATE_JWT_SECRET-env"
+NESTGATE_JWT_SECRET = "nucleus-beardog-delegated-auth"
 [profiles.nestgate.env_sockets]
 NESTGATE_SOCKET = "nestgate"
 NESTGATE_FAMILY_ID = "$family_id"

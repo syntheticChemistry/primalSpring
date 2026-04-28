@@ -34,7 +34,7 @@ PLASMID_BIN="${ECOPRIMALS_PLASMID_BIN:-$ECO_ROOT/infra/plasmidBin}"
 BIN_DIR="$PLASMID_BIN/primals"
 
 PETALTONGUE_LIVE="${PETALTONGUE_LIVE:-true}"
-PRIMAL_LIST="${PRIMAL_LIST:-beardog songbird nestgate squirrel toadstool barracuda rhizocrypt loamspine sweetgrass petaltongue}"
+PRIMAL_LIST="${PRIMAL_LIST:-beardog songbird nestgate squirrel toadstool barracuda coralreef rhizocrypt loamspine sweetgrass petaltongue}"
 PRIMAL_LIST="$PRIMAL_LIST ${EXTRA_PRIMALS:-}"
 
 export FAMILY_ID
@@ -183,7 +183,9 @@ cmd_start() {
             BEARDOG_SOCKET="$(sock beardog)" \
             BTSP_PROVIDER_SOCKET="$(sock beardog)" \
             FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
-            NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-$(head -c 48 /dev/urandom | base64)}" \
+            DISCOVERY_SOCKET="$(sock songbird)" \
+            NESTGATE_JWT_SECRET="${NESTGATE_JWT_SECRET:-nucleus-beardog-delegated-auth}" \
+            NESTGATE_AUTH_MODE="${NESTGATE_AUTH_MODE:-beardog}" \
                 start_primal nestgate "$nestgate_bin" server || log "WARN: nestgate failed"
             wait_for_socket "$(sock nestgate)" 8 || log "WARN: nestgate socket not ready"
         else
@@ -200,6 +202,8 @@ cmd_start() {
             BEARDOG_SOCKET="$(sock beardog)" \
             BTSP_PROVIDER_SOCKET="$(sock beardog)" \
             FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+            LOCAL_AI_ENDPOINT="${LOCAL_AI_ENDPOINT:-http://127.0.0.1:11434}" \
+            OLLAMA_ENDPOINT="${OLLAMA_ENDPOINT:-http://127.0.0.1:11434}" \
                 start_primal squirrel "$squirrel_bin" server || log "WARN: squirrel failed"
             wait_for_socket "$(sock squirrel)" 8 || log "WARN: squirrel socket not ready"
         else
@@ -220,6 +224,11 @@ cmd_start() {
             TOADSTOOL_FAMILY_ID="$FAMILY_ID" \
             TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED="1" \
             NESTGATE_SOCKET="$(sock nestgate)" \
+            BEARDOG_SOCKET="$(sock beardog)" \
+            BTSP_PROVIDER_SOCKET="$(sock beardog)" \
+            FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+            BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
+            DISCOVERY_SOCKET="$(sock songbird)" \
                 start_primal toadstool "$toadstool_bin" server || log "WARN: toadstool failed"
             wait_for_socket "$(sock toadstool)" 8 || log "WARN: toadstool socket not ready"
         else
@@ -233,7 +242,11 @@ cmd_start() {
         if [[ -n "$barracuda_bin" ]]; then
             BARRACUDA_FAMILY_ID="$FAMILY_ID" \
             BEARDOG_SOCKET="$(sock beardog)" \
+            BTSP_PROVIDER_SOCKET="$(sock beardog)" \
             SONGBIRD_SOCKET="$(sock songbird)" \
+            DISCOVERY_SOCKET="$(sock songbird)" \
+            FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+            BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
                 start_primal barracuda "$barracuda_bin" server || log "WARN: barracuda failed"
             wait_for_socket "$SOCKET_DIR/barracuda-${FAMILY_ID}.sock" 8 || \
                 wait_for_socket "$SOCKET_DIR/math-${FAMILY_ID}.sock" 5 || \
@@ -243,6 +256,29 @@ cmd_start() {
             fi
         else
             log "WARN: barracuda binary not found"
+        fi
+    fi
+
+    if wants_primal coralreef; then
+        local coralreef_bin
+        coralreef_bin="$(find_binary coralreef)"
+        if [[ -n "$coralreef_bin" ]]; then
+            CORALREEF_FAMILY_ID="$FAMILY_ID" \
+            BEARDOG_SOCKET="$(sock beardog)" \
+            BTSP_PROVIDER_SOCKET="$(sock beardog)" \
+            FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+            DISCOVERY_SOCKET="$(sock songbird)" \
+            BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
+                start_primal coralreef "$coralreef_bin" server \
+                    --tarpc-bind "unix://$(sock coralreef)" || log "WARN: coralreef failed"
+            wait_for_socket "$(sock coralreef)" 8 || \
+                wait_for_socket "$SOCKET_DIR/coralreef.sock" 5 || \
+                log "WARN: coralreef socket not ready"
+            if [[ ! -e "$(sock coralreef)" && -S "$SOCKET_DIR/coralreef.sock" ]]; then
+                ln -sf "coralreef.sock" "$(sock coralreef)" 2>/dev/null || true
+            fi
+        else
+            log "WARN: coralreef binary not found"
         fi
     fi
 
@@ -260,6 +296,7 @@ cmd_start() {
             BEARDOG_SOCKET="$(sock beardog)" \
             BTSP_PROVIDER_SOCKET="$(sock beardog)" \
             FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+            DISCOVERY_SOCKET="$(sock songbird)" \
                 start_primal rhizocrypt "$rhizocrypt_bin" server || log "WARN: rhizocrypt failed"
             wait_for_socket "$(sock rhizocrypt)" 12 || \
                 wait_for_socket "$SOCKET_DIR/rhizocrypt.sock" 4 || \
@@ -278,6 +315,8 @@ cmd_start() {
             BEARDOG_SOCKET="$(sock beardog)" \
             RHIZOCRYPT_SOCKET="$(sock rhizocrypt)" \
             BTSP_PROVIDER_SOCKET="$(sock beardog)" \
+            FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+            DISCOVERY_SOCKET="$(sock songbird)" \
             BIOMEOS_FAMILY_ID="$FAMILY_ID" \
                 start_primal loamspine "$loamspine_bin" server || log "WARN: loamspine failed"
             wait_for_socket "$(sock loamspine)" 8 || log "WARN: loamspine socket not ready"
@@ -294,6 +333,8 @@ cmd_start() {
             BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
             BEARDOG_SOCKET="$(sock beardog)" \
             BTSP_PROVIDER_SOCKET="$(sock beardog)" \
+            FAMILY_SEED="${BEARDOG_FAMILY_SEED:-}" \
+            DISCOVERY_SOCKET="$(sock songbird)" \
                 start_primal sweetgrass "$sweetgrass_bin" server || log "WARN: sweetgrass failed"
             wait_for_socket "$(sock sweetgrass)" 8 || log "WARN: sweetgrass socket not ready"
         else
@@ -319,6 +360,10 @@ cmd_start() {
                 PETALTONGUE_SOCKET="$(sock petaltongue)" \
                 FAMILY_ID="$FAMILY_ID" \
                 BEARDOG_FAMILY_SEED="$BEARDOG_FAMILY_SEED" \
+                BEARDOG_SOCKET="$(sock beardog)" \
+                BTSP_PROVIDER_SOCKET="$(sock beardog)" \
+                DISCOVERY_SOCKET="$(sock songbird)" \
+                BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
                 AWAKENING_ENABLED=false \
                     "$petaltongue_bin" live --socket "$(sock petaltongue)" > "$pt_logfile" 2>&1 &
                 local pt_pid=$!
@@ -328,6 +373,10 @@ cmd_start() {
                 PETALTONGUE_SOCKET="$(sock petaltongue)" \
                 FAMILY_ID="$FAMILY_ID" \
                 BEARDOG_FAMILY_SEED="$BEARDOG_FAMILY_SEED" \
+                BEARDOG_SOCKET="$(sock beardog)" \
+                BTSP_PROVIDER_SOCKET="$(sock beardog)" \
+                DISCOVERY_SOCKET="$(sock songbird)" \
+                BIOMEOS_SOCKET_DIR="$SOCKET_DIR" \
                 AWAKENING_ENABLED=false \
                     start_primal petaltongue "$petaltongue_bin" server \
                         --socket "$(sock petaltongue)" || { err "petaltongue failed"; return 1; }
@@ -362,6 +411,7 @@ cmd_start() {
         [attribution]="sweetgrass-${FAMILY_ID}.sock"
         [visualization]="petaltongue-${FAMILY_ID}.sock"
         [storage]="nestgate-${FAMILY_ID}.sock"
+        [shader]="coralreef-${FAMILY_ID}.sock"
         [ai]="squirrel-${FAMILY_ID}.sock"
         [inference]="squirrel-${FAMILY_ID}.sock"
     )
@@ -397,13 +447,53 @@ cmd_start() {
         fi
     done
     log "── Result: $healthy/$total primals healthy ──"
+
+    # ── Service Mesh Registration ──
+    # Register all running primals with Songbird so the Tower provides
+    # port-free discovery. Primals don't know it's Songbird — they just
+    # need a discovery capability. This is the composition layer's job
+    # until primals evolve self-registration via a generic discovery probe.
+    local songbird_sock="$(sock songbird)"
+    if [[ -S "$songbird_sock" ]]; then
+        log "── Registering primals with discovery (Tower) ──"
+        local -A primal_caps=(
+            [beardog]='["security","crypto","btsp","encryption","genetic","secrets","tls"]'
+            [songbird]='["discovery","ipc","http","stun","igd","mesh","relay","onion","punch"]'
+            [toadstool]='["compute"]'
+            [barracuda]='["tensor","math","stats","linalg","spectral","activation","ml","fhe","noise"]'
+            [coralreef]='["shader","gpu_compile"]'
+            [nestgate]='["storage"]'
+            [rhizocrypt]='["dag","merkle","provenance"]'
+            [loamspine]='["ledger","certificate","bonding","anchor","proof"]'
+            [sweetgrass]='["attribution","braid","provenance","compression","contribution"]'
+            [squirrel]='["ai","inference","context","tool","graph"]'
+            [petaltongue]='["visualization","motor","sensor","interaction","modality","audio"]'
+        )
+        local registered=0
+        for primal in $PRIMAL_LIST; do
+            local caps="${primal_caps[$primal]:-[]}"
+            local primal_sock="$(sock "$primal")"
+            if [[ -S "$primal_sock" ]] && [[ "$primal" != "songbird" ]]; then
+                local payload="{\"jsonrpc\":\"2.0\",\"method\":\"ipc.register\",\"params\":{\"primal_id\":\"$primal\",\"capabilities\":$caps,\"endpoint\":\"unix://$primal_sock\"},\"id\":1}"
+                local resp
+                resp=$(echo "$payload" | timeout 2 socat - "UNIX-CONNECT:$songbird_sock" 2>/dev/null || true)
+                if [[ -n "$resp" ]] && echo "$resp" | grep -q '"result"'; then
+                    registered=$((registered + 1))
+                fi
+            fi
+        done
+        ok "Registered $registered primals with Tower discovery"
+    else
+        log "No Songbird socket — standalone mode (filesystem discovery)"
+    fi
+
     ok "NUCLEUS ready. Run your composition script."
 }
 
 cmd_stop() {
     log "Stopping NUCLEUS $COMPOSITION_NAME..."
     local stop_order=""
-    for name in petaltongue sweetgrass loamspine rhizocrypt barracuda toadstool squirrel nestgate songbird beardog; do
+    for name in petaltongue sweetgrass loamspine rhizocrypt coralreef barracuda toadstool squirrel nestgate songbird beardog; do
         wants_primal "$name" && stop_order="$stop_order $name"
     done
     for name in $stop_order; do
