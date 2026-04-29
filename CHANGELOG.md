@@ -3,7 +3,7 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.9.24] — Phase 56: Local Debt Pass (2026-04-29)
+## [0.9.24] — Phase 56: Local Debt + Upstream Pull Wave (2026-04-29)
 
 ### Fixed
 - `desktop_nucleus.sh`: 13 capability-aliased symlinks via `create_capability_symlinks()`
@@ -14,9 +14,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   resolves GAP-18 from experiment side
 - `desktop_nucleus.sh validate`: NestGate `storage.list` call includes `family_id`
 
+### Resolved Upstream (pulled April 29)
+- **biomeOS v3.31**: GAP-13 (capability routing), GAP-14 (graph parser unification),
+  GAP-15 (continuous executor), GAP-16 (node dispatch) — all four RESOLVED
+- **petalTongue**: GAP-01 (`DISCOVERY_SOCKET` env + backoff), motor P0 (channel wired
+  to GUI via `motor_state.rs`), GAP-17 (`visualization-{family}.sock` symlink at startup)
+- **NestGate S49**: GAP-21 (`family_id` optional, falls back to server default)
+- **BearDog W76**: GAP-23 reclassified (UDS audit: zero path-dependent behavior),
+  IONIC-RUNTIME confirmed wired since W42, blake3_hash error messages improved
+- **barraCuda Sprint 48**: BTSP-BARRACUDA-WIRE RESOLVED (full 7-step relay since Sprint 44)
+- **ToadStool S207**: Self-registration via `DISCOVERY_SOCKET` + `ipc.register`
+- **Squirrel**: GAP-03 RESOLVED LOCAL (HTTP inference transport pushed)
+- **rhizoCrypt S55**: GAP-22 reclassified (UDS audit confirms no path-dependent behavior)
+
 ### Updated
-- Gap report refreshed: GAP-17/18/19/20/21 marked **MITIGATED LOCAL** with fix details
-- Upstream handoff notes updated with local vs. upstream fix boundaries
+- Gap report refreshed: 13/23 gaps now RESOLVED UPSTREAM, 5 mitigated local, 2
+  reclassified to primalSpring diagnostic (startup ordering), 3 remaining minor
+- `PRIMAL_GAPS.md`: BTSP-BARRACUDA-WIRE + IONIC-RUNTIME marked RESOLVED UPSTREAM
+- Priority order: 0 HIGH, 0 MEDIUM (was 2), 7 LOW
 
 ## [0.9.23] — Phase 56: Desktop Substrate + The Rhizome (2026-04-28)
 

@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04-27 — **Upstream evolution audit complete. PG-49 RESOLVED LOCAL (socat fallback). PG-50 RESOLVED LOCAL (nestgate/squirrel defaults). PG-51 RESOLVED UPSTREAM (Songbird wave173 discovery). PG-52 RESOLVED UPSTREAM (trio UDS: rhizoCrypt liveness gate, loamSpine double-BufReader, sweetGrass EOF handling — all three fixed with tests). PG-53 RESOLVED UPSTREAM (petalTongue proprioception handler). PG-48 petalTongue musl winit ADDRESSED (any_thread). Remaining: PG-48 needs plasmidBin rebuild+verify, PG-54 adaptive polling DEFERRED. plasmidBin rebuild required for trio fixes.**
+> **Last updated**: 2026-04-29 — **Phase 56 upstream pull wave.** biomeOS v3.31: GAP-13/14/15/16 all RESOLVED (capability routing, graph parser unification, continuous executor, node dispatch). petalTongue: GAP-01 RESOLVED (DISCOVERY_SOCKET env), motor P0 RESOLVED (channel wired to GUI), GAP-17 RESOLVED (visualization symlink at startup). NestGate S49: GAP-21 RESOLVED (family_id optional). BearDog W76: GAP-23 reclassified (not BearDog — UDS audit confirms zero path-dependent behavior), IONIC-RUNTIME confirmed wired since W42. barraCuda Sprint 48: BTSP-BARRACUDA-WIRE RESOLVED (full 7-step relay since Sprint 44). ToadStool S207: self-registration via ipc.register. Squirrel: GAP-03 RESOLVED LOCAL (pushed). GAP-22/23 reclassified to primalSpring (startup ordering diagnostic). Remaining: PG-48 plasmidBin rebuild, PG-54 adaptive polling DEFERRED, GAP-06/12/18/19/20 minor.
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.
@@ -1007,13 +1007,13 @@ needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esoteri
 
 ## Priority Order
 
-**0 HIGH blockers. 2 MEDIUM. 7 LOW. Zero runtime blockers.** (sourDough + skunkBat deferred)
+**0 HIGH blockers. 0 MEDIUM (both resolved upstream). 7 LOW. Zero runtime blockers.** (sourDough + skunkBat deferred)
 
 **High**: ~~PLASMIBIN-STALE~~ **RESOLVED** (April 10 — full musl-static rebuild, 12/12 ecoBin).
 
 **Medium** (degrades composition/experiment quality):
-1. **BTSP-BARRACUDA-WIRE** — barraCuda `guard_connection()` does session creation but not full X25519 challenge-response on client stream
-2. **IONIC-RUNTIME** — Ionic bond propose→accept→seal needs BearDog `crypto.sign_contract`
+1. ~~**BTSP-BARRACUDA-WIRE**~~ **RESOLVED UPSTREAM** (Sprint 48) — full 7-step BTSP relay implemented since Sprint 44h-44i. tarpc keyed-cipher enforcement added. 26 BTSP compliance tests.
+2. ~~**IONIC-RUNTIME**~~ **RESOLVED UPSTREAM** (BearDog Wave 76) — `crypto.sign_contract` confirmed wired and tested since Wave 42.
 
 **Resolved this session (April 10 NUCLEUS patterns)**:
 - ~~**NESTGATE-UDS**~~ **RESOLVED** — `--socket` CLI flag added and wired through dispatch → `NESTGATE_SOCKET` env var → `SocketConfig` tier-1 resolution. C5 now PASS (5/5).

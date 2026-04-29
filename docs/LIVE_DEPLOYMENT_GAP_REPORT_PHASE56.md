@@ -1,6 +1,6 @@
 # Live Desktop NUCLEUS — Deployment Gap Report (Phase 56)
 
-**Date**: April 29, 2026 (refreshed — local debt pass)
+**Date**: April 29, 2026 (refreshed — upstream pull wave)
 **Deployment**: `desktop_nucleus.sh start` + biomeOS `neural-api` (family=desktop-nucleus)
 **Primals deployed**: 12 spawned + biomeOS Neural API coordinator
 **Health**: 10/10 JSON-RPC primals healthy (coralReef excluded — tarpc)
@@ -319,29 +319,29 @@ Rust serde struct variants that differ from the simplified spec format.
 
 | Gap | Owner | Priority | Status | Action |
 |-----|-------|----------|--------|--------|
-| GAP-01 | petalTongue team | P1 | **Mitigated** | Read `DISCOVERY_SOCKET` env; add heartbeat backoff |
-| GAP-02 | biomeOS team | P1 | **Resolved** | Neural API online; `NucleusMode::Desktop` still needed for native launch |
-| GAP-03 | Squirrel team | P0 | Open | HTTP transport in inference router |
+| GAP-01 | petalTongue | P1 | **RESOLVED UPSTREAM** | petalTongue reads `DISCOVERY_SOCKET` env var + exponential backoff (commit `4afeb84`) |
+| GAP-02 | biomeOS | P1 | **Resolved** | Neural API online; `NucleusMode::Desktop` still needed for native launch |
+| GAP-03 | Squirrel | P0 | **RESOLVED LOCAL** | Squirrel pushed locally — HTTP transport in inference router |
 | GAP-04 | primalSpring | Cosmetic | Known | Skip coralReef in JSON-RPC validation |
-| GAP-05 | ToadStool | Cosmetic | Known | Register domain-level `compute` capability |
-| GAP-06 | Squirrel team | P2 | Known | `discovery.register` → `ipc.register` |
+| GAP-05 | ToadStool | Cosmetic | **RESOLVED UPSTREAM** | ToadStool S207: self-registration via `DISCOVERY_SOCKET` + `ipc.register` at startup |
+| GAP-06 | Squirrel | P2 | Known | `discovery.register` → `ipc.register` |
 | GAP-07 | primalSpring docs | P1 | **Resolved** | rhizoCrypt Custom event_type documented above |
 | GAP-08 | primalSpring docs | P1 | **Resolved** | loamSpine entry.append schema documented above |
 | GAP-09 | primalSpring docs | P1 | **Resolved** | sweetGrass braid.create schema documented above |
 | GAP-10 | primalSpring docs | P1 | **Resolved** | sweetGrass contribution.record schema documented above |
 | GAP-11 | primalSpring docs | P1 | **Resolved** | sweetGrass attribution.chain param name documented |
 | GAP-12 | primalSpring docs | P1 | Open | petalTongue dashboard full param schema needed |
-| GAP-13 | biomeOS team | P1 | New | `storage` capability routes to `compute` (ToadStool) not NestGate |
-| GAP-14 | biomeOS team | P1 | New | Graph parser inconsistency (3 parsers with different schemas) |
-| GAP-15 | biomeOS team | P1 | New | `graph.start_continuous` fails for runtime-injected graphs |
-| GAP-16 | biomeOS team | P2 | New | `graph.execute` node dispatch: nodes skip as "unknown type" |
-| GAP-17 | Discovery | P1 | **Mitigated** | petalTongue not discoverable via `visualization` capability — symlink in `desktop_nucleus.sh` |
-| GAP-18 | Discovery | P1 | **Mitigated** | biomeOS not discoverable via primal name `biomeos` — symlink + exp106 multi-name fallback |
+| GAP-13 | biomeOS | P1 | **RESOLVED UPSTREAM** | biomeOS v3.31: `capability.call` prefers translation registry provider (commit `d2280b29`) |
+| GAP-14 | biomeOS | P1 | **RESOLVED UPSTREAM** | biomeOS v3.31: unified dual-parse loader for all graph paths (commit `d2280b29`) |
+| GAP-15 | biomeOS | P1 | **RESOLVED UPSTREAM** | biomeOS v3.31: `graph.start_continuous` works for runtime-injected graphs (commit `d2280b29`) |
+| GAP-16 | biomeOS | P2 | **RESOLVED UPSTREAM** | biomeOS v3.31: `register_only` + capability-bearing fallback in executor dispatch (commit `d2280b29`) |
+| GAP-17 | petalTongue | P1 | **RESOLVED UPSTREAM** | petalTongue creates `visualization-{family}.sock` symlink at startup (confirmed in btsp/types.rs) |
+| GAP-18 | Discovery | P1 | **Mitigated** | biomeOS `capability.resolve` is authoritative per v3.31; local symlink + exp106 fallback remain |
 | GAP-19 | Discovery | P1 | **Mitigated** | ludoSpring not discoverable via `game_science` capability — symlink in `desktop_nucleus.sh` |
 | GAP-20 | Discovery | P2 | **Mitigated** | `FAMILY_ID` exported in `desktop_nucleus.sh`; experiments read env |
-| GAP-21 | NestGate | P2 | **Mitigated** | `storage.store` needs `family_id` param — added in exp094/exp105/exp106/exp101 |
-| GAP-22 | primalSpring | P2 | **Reclassified** | `dag.session.create` error on symlink — NOT rhizoCrypt. See diagnostic below |
-| GAP-23 | BearDog | P2 | New | `crypto.blake3_hash` returns error response via capability socket (exp105) |
+| GAP-21 | NestGate | P2 | **RESOLVED UPSTREAM** | NestGate S49: `family_id` optional — falls back to server's `NESTGATE_FAMILY_ID` (commit `7a4b9556a`) |
+| GAP-22 | primalSpring | P2 | **Reclassified** | NOT rhizoCrypt — startup ordering or stale binary. rhizoCrypt S55 + BearDog W76b audits confirm |
+| GAP-23 | primalSpring | P2 | **Reclassified** | NOT BearDog — same class as GAP-22. BearDog W76b audit: zero path-dependent behavior |
 
 ---
 
