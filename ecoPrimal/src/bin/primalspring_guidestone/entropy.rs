@@ -332,7 +332,11 @@ pub fn validate_seed_provenance(v: &mut ValidationResult, seed: &MitoSeed) {
 
 fn resolve_plasmin_bin() -> String {
     std::env::var("ECOPRIMALS_PLASMID_BIN").unwrap_or_else(|_| {
-        "../../infra/plasmidBin".to_owned()
+        let base = std::env::var("XDG_DATA_HOME").unwrap_or_else(|_| {
+            let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".to_owned());
+            format!("{home}/.local/share")
+        });
+        format!("{base}/ecoPrimals/plasmidBin")
     })
 }
 

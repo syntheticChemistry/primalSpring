@@ -1,10 +1,10 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
-**Version**: 0.9.23 (Phase 56 — 631 tests, 84 experiments (18 tracks), 71 deploy graphs, guideStone Level 4 — 187/187 ALL PASS, 13/13 BTSP, **Desktop NUCLEUS live** (12 primals, 11/12 healthy, `desktop_nucleus.sh`), **The Rhizome micro-game** (roguelike on NUCLEUS), **micro-desktop shell** (biomeOS routing + health bar), **23 live gaps documented**, **provenance trio E2E resolved**, 4 desktop app deploy graphs, **biomeOS Neural API** (605 capabilities, semantic routing), two-tier crypto, genomeBin v5.1, multi-tier genetics, BTSP Phase 1–3, shell composition library, per-spring exploration lanes)  
-**Phase**: **INTERSTADIAL → DESKTOP SUBSTRATE** — Phase 56 desktop deployment (April 28, 2026). Live NUCLEUS with petalTongue GUI + game applications. Full 12-primal stack operational.  
+**Version**: 0.9.24 (Phase 56c — 631 tests, 84 experiments (18 tracks), 71 deploy graphs, guideStone Level 4 — 187/187 ALL PASS, 13/13 BTSP, **Desktop NUCLEUS live** (12 primals, 11/12 healthy, `desktop_nucleus.sh`), **The Rhizome micro-game** (roguelike on NUCLEUS), **micro-desktop shell** (biomeOS routing + health bar), **23 live gaps documented**, **provenance trio E2E resolved**, 4 desktop app deploy graphs, **biomeOS Neural API** (605 capabilities, semantic routing), two-tier crypto, genomeBin v5.1, multi-tier genetics, BTSP Phase 1–3, shell composition library, per-spring exploration lanes, **plasmidBin decoupled** (standard consumer pattern + CI/CD auto-harvest))  
+**Phase**: **INTERSTADIAL → DESKTOP SUBSTRATE** — Phase 56c (April 29, 2026). plasmidBin decoupled: standard consumer pattern via GitHub Releases + XDG cache. CI/CD auto-harvest pipeline live. GAP-27 resolved.  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: April 28, 2026
+**Last Updated**: April 29, 2026
 
 ---
 
@@ -362,18 +362,18 @@ hold encrypted-at-rest secrets, enabling zero-knowledge authentication.
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
-| v0.9.17 | `handoffs/PRIMALSPRING_PHASE45_DEPLOYMENT_VALIDATION_HANDOFF_APR2026.md` | Apr 20 | **Phase 45**: Deployment validation (local 12/12, benchScale 12/12, remote 13/13), upstream evolution absorbed, CLI audit, composition patterns, neuralAPI deployment |
-| v0.9.17 | `handoffs/PRIMALSPRING_V0917_GENOMBIN_CROSS_ARCH_HANDOFF_APR2026.md` | Apr 19 | **Phase 44→45**: genomeBin v5.1, 46 cross-arch binaries (6 targets, Tier 1 39/39), build_ecosystem_genomeBin.sh |
-| v0.9.15 | `GRAPH_CONSOLIDATION_AND_NUCLEUS_DEPLOYMENT_HANDOFF_APR16_2026.md` | Apr 16 | **Graph consolidation handoff**: 78→56 TOMLs, template+manifest, fragment-first `resolve = true`, per-spring action items |
-| v0.9.15 | `STADIAL_PARITY_GATE_APR16_2026.md` | Apr 16 | **Stadial gate cleared**: 13/13 primals at modern async Rust parity. Interstadial standards defined. |
-| v0.9.15 | `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` | Apr 16 | Updated: interstadial PR checklist, downstream absorption open |
-| v0.9.17 | This README | Apr 20 | **Phase 45**: genomeBin v5.1, deployment validation, upstream absorption, CLI audit |
-| v0.9.3 | `PRIMALSPRING_V093_MIXED_COMPOSITION_LIVE_VALIDATION_HANDOFF_APR07_2026.md` | Apr 7 | **Phase 26**: Particle model, layered validation (L0-L3), 17 sketch graphs, exp091-093, live Tower Atomic probes, 6 GAP-MATRIX items, primal team work blurbs |
+| v0.9.24 | `handoffs/PRIMALSPRING_V0924_PLASMIDBIN_DECOUPLING_HANDOFF_APR2026.md` | Apr 29 | **Phase 56c**: plasmidBin decoupled (20 files), CI/CD auto-harvest pipeline, standard consumer pattern (`fetch_primals.sh` + XDG + env), GAP-27 resolved, NUCLEUS composition via Neural API, primal + spring team guidance |
+| v0.9.24 | `handoffs/PHASE56_DESKTOP_SUBSTRATE_HANDOFF_APR28_2026.md` | Apr 28 | **Phase 56**: Desktop NUCLEUS (12 primals, petalTongue GUI), The Rhizome, micro-desktop shell, 8 new experiments (exp099–exp106), 23 live gaps |
+| v0.9.24 | `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` | Apr 16 | Updated: interstadial PR checklist, downstream absorption open |
+| v0.9.24 | This README | Apr 29 | **Phase 56c**: plasmidBin decoupled, CI/CD pipeline, standard consumer pattern |
 
 ## Archived Handoffs
 
 | Version | File | Date | Scope |
 |---------|------|------|-------|
+| v0.9.15 | `archive/GRAPH_CONSOLIDATION_AND_NUCLEUS_DEPLOYMENT_HANDOFF_APR16_2026.md` | Apr 16 | Graph consolidation handoff (superseded by Phase 56 desktop substrate) |
+| v0.9.15 | `archive/STADIAL_PARITY_GATE_APR16_2026.md` | Apr 16 | Stadial gate cleared (superseded by Phase 56c) |
+| v0.9.3 | `archive/PRIMALSPRING_V093_MIXED_COMPOSITION_LIVE_VALIDATION_HANDOFF_APR07_2026.md` | Apr 7 | Phase 26 particle model + layered validation (superseded by Phase 56) |
 | v0.9.2 | `archive/PRIMALSPRING_V092_MODERNIZATION_SWEEP_HANDOFF_APR07_2026.md` | Apr 7 | Phase 25 modernization sweep (superseded by v0.9.3) |
 | v0.8.0 | `archive/PRIMALSPRING_V080_ECOSYSTEM_DEBT_RESOLUTION_HANDOFF_MAR29_2026.md` | Mar 29 | Phase 23 debt resolution (superseded by v0.9.2 modernization sweep) |
 | v0.8.0 | `archive/PRIMALSPRING_V080_GAP_MAP_MAR29_2026.md` | Mar 29 | Comprehensive gap map (superseded by v0.9.2) |

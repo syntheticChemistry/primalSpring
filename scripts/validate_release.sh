@@ -94,7 +94,7 @@ else
 fi
 
 step "plasmidBin health check"
-PLASMID_DIR="$(dirname "$WORKSPACE_ROOT")/plasmidBin"
+PLASMID_DIR="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
 if [ -d "$PLASMID_DIR" ] && [ -f "$PLASMID_DIR/checksums.toml" ]; then
     PLASMID_OK=true
     CORE_PRIMALS=$(ls "$PLASMID_DIR/primals/" 2>/dev/null | grep -v '^archive$' | head -20)

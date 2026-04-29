@@ -49,17 +49,12 @@ find_plasmid_bin() {
         echo "$ECOPRIMALS_PLASMID_BIN"
         return
     fi
-    local candidates=(
-        "$SPRING_ROOT/../../../infra/plasmidBin"
-        "$SPRING_ROOT/../../infra/plasmidBin"
-    )
-    for c in "${candidates[@]}"; do
-        if [[ -d "$c/primals" ]]; then
-            echo "$(cd "$c" && pwd)"
-            return
-        fi
-    done
-    err "Cannot find plasmidBin. Set ECOPRIMALS_PLASMID_BIN."
+    local default="${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin"
+    if [[ -d "$default/primals" ]]; then
+        echo "$default"
+        return
+    fi
+    err "Cannot find plasmidBin. Run ./tools/fetch_primals.sh or set ECOPRIMALS_PLASMID_BIN."
     exit 1
 }
 

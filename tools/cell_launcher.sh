@@ -28,7 +28,7 @@ PRIMALSPRING_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ECO_ROOT="$(cd "$PRIMALSPRING_ROOT/../.." && pwd)"
 
 CELLS_DIR="$PRIMALSPRING_ROOT/graphs/cells"
-PLASMIDBIN="${ECOPRIMALS_PLASMID_BIN:-$ECO_ROOT/infra/plasmidBin}"
+PLASMIDBIN="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
 FAMILY_ID="${FAMILY_ID:-}"
 
 usage() {

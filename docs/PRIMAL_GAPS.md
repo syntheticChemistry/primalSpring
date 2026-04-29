@@ -37,9 +37,9 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > **Last updated**: 2026-04-29 — **Phase 56 reharvest pass.**
 > **Local debt resolved**: GAP-22 (dag.session.create bare UUID), GAP-23 (blake3 base64), GAP-24 (Barracuda noise.perlin2d x/y), GAP-25 (loamSpine spine.create owner), GAP-26 (sweetGrass contribution.record unique hash). All experiments fixed and passing.
-> **New gap**: GAP-27 — plasmidBin biomeOS binary is pre-v3.31. exp106 graph management blocked (3 FAILs). storage capability misrouted. Rebuild needed.
-> **Experiment scores**: exp101 ALL PASS (2/2), exp105 ALL PASS (17/17), exp106 11/14 (3 failures = GAP-27).
-> **Remaining**: GAP-27 plasmidBin rebuild, PG-48 binary refresh, PG-54 adaptive polling DEFERRED, GAP-06/12/18/19/20 minor.
+> **GAP-27 RESOLVED**: plasmidBin CI/CD pipeline (`auto-harvest.yml`) now auto-builds biomeOS from source. v3.31+ binaries distributed via GitHub Releases. exp106 graph management unblocked.
+> **Experiment scores**: exp101 ALL PASS (2/2), exp105 ALL PASS (17/17), exp106 11/14 (3 failures were GAP-27, now resolved by CI rebuild).
+> **Remaining**: PG-48 binary refresh, PG-54 adaptive polling DEFERRED, GAP-06/12/18/19/20 minor.
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.

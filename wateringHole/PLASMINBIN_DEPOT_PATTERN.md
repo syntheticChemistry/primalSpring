@@ -1,7 +1,7 @@
 # plasmidBin Depot Pattern — Remote NUCLEUS Deployment
 
-**Date**: April 20, 2026
-**From**: primalSpring v0.9.17
+**Date**: April 29, 2026
+**From**: primalSpring v0.9.24
 **License**: AGPL-3.0-or-later
 
 ---
@@ -9,67 +9,111 @@
 ## What plasmidBin Is
 
 `plasmidBin` is the binary distribution channel for ecoPrimals. It
-contains static musl ELF binaries for all NUCLEUS primals — stripped,
-cross-compiled, and verified via BLAKE3 checksums. Any machine that
-clones plasmidBin can launch a NUCLEUS without compiling anything.
+distributes static musl ELF binaries for all 12 NUCLEUS primals —
+stripped, cross-compiled, and verified via BLAKE3 checksums. Binaries
+are published as GitHub Releases and fetched on demand. No compilation
+and no git clone required.
 
 ```
-plasmidBin/
-├── primals/           # 14 static ELF binaries (13 primals + primalspring_primal)
-│   ├── beardog        # 7.5M — Tower: crypto spine
-│   ├── songbird       # 17M  — Tower: discovery + HTTP
-│   ├── toadstool      # 11M  — Node: compute dispatch
-│   ├── barracuda      # 5.0M — Node: GPU math (WGSL shaders)
-│   ├── coralreef      # 6.8M — Node: shader compiler
-│   ├── nestgate       # 7.9M — Nest: content-addressed storage
-│   ├── rhizocrypt     # 5.8M — Nest: DAG lineage
-│   ├── loamspine      # 4.8M — Nest: permanent ledger
-│   ├── sweetgrass     # 6.1M — Nest: semantic attribution
-│   ├── biomeos        # 14M  — Meta: orchestrator
-│   ├── squirrel       # 4.6M — Meta: AI coordination
-│   ├── petaltongue    # 27M  — Meta: UI/visualization
-│   ├── skunkbat       # 2.2M — Defense: threat detection
-│   └── primalspring_primal  # 2.0M — Coordination
-├── manifest.toml      # Ecosystem genome: primals, springs, atomics
-├── checksums.toml     # BLAKE3 hashes per primal per target triple
-├── sources.toml       # Repo map for building from source
-├── ports.env          # Canonical TCP port assignments + compositions
-├── nucleus_launcher.sh  # Dependency-ordered startup + Phase 5 seeding
-├── start_primal.sh    # Per-primal startup wrapper (CLI audit map)
-├── stop_gate.sh       # Kill all running primals
-├── validate_composition.sh  # Post-deployment composition check
-├── validate_gate.sh   # Remote gate validation
-├── deploy_gate.sh     # SSH/SCP remote deployment
-├── deploy_pixel.sh    # ADB deployment (Android/Pixel)
-├── fetch.sh           # Download binaries from GitHub Releases
-├── harvest.sh         # Build from local source
-└── doctor.sh          # Diagnostic tool
+~/.local/share/ecoPrimals/plasmidBin/    (XDG default)
+├── primals/
+│   └── x86_64-unknown-linux-musl/
+│       ├── beardog        # Tower: crypto spine
+│       ├── songbird       # Tower: discovery + HTTP
+│       ├── toadstool      # Node: compute dispatch
+│       ├── barracuda      # Node: GPU math (WGSL shaders)
+│       ├── coralreef      # Node: shader compiler
+│       ├── nestgate       # Nest: content-addressed storage
+│       ├── rhizocrypt     # Nest: DAG lineage
+│       ├── loamspine      # Nest: permanent ledger
+│       ├── sweetgrass     # Nest: semantic attribution
+│       ├── biomeos        # Meta: orchestrator
+│       ├── squirrel       # Meta: AI coordination
+│       ├── petaltongue    # Meta: UI/visualization
+│       └── skunkbat       # Defense: threat detection
+└── checksums.toml         # BLAKE3 hashes per primal per target triple
 ```
 
-## The Depot Pattern
+The plasmidBin GitHub repository also contains:
+- `sources.toml` — central registry mapping primals to source repos
+- `checksums.toml` — BLAKE3 hashes per primal per target triple
+- `manifest.toml` — ecosystem genome: primals, springs, atomics
+- `ports.env` — canonical TCP port assignments + compositions
+- `fetch.sh` — download binaries from GitHub Releases (used by consumers)
+- `harvest.sh` — build from local source and publish to Releases
+- `build-primal.sh` — clone + build a single primal from source
+- `nucleus_launcher.sh` — dependency-ordered startup + Phase 5 seeding
+- `start_primal.sh`, `stop_gate.sh`, `doctor.sh` — operational scripts
 
-### For Downstream Springs
+**Note**: `primalspring_primal` and `esotericWebb` are NOT primals and
+are NOT distributed via plasmidBin. Spring binaries are Rust validation
+artifacts. A spring IS a composition of the 12 primals.
 
-Springs clone plasmidBin as a **binary depot** — a local cache of
-pre-built primals. No compilation needed. The workflow:
+## Acquiring Binaries
+
+### For Downstream Springs (Recommended)
+
+Springs use `fetch_primals.sh` or `fetch.sh` to download pre-built
+binaries from GitHub Releases into a standard XDG cache location:
 
 ```bash
-# 1. Clone the depot (one-time)
-git clone https://github.com/ecoPrimals/plasmidBin.git
-cd plasmidBin
+# Option A: primalSpring's fetch_primals.sh (any spring can copy this)
+./tools/fetch_primals.sh
 
-# 2. Launch a NUCLEUS for your spring's niche
-./nucleus_launcher.sh \
-    --family-id my-spring-validation \
-    --composition full
+# Option B: plasmidBin's fetch.sh (from the repo directly)
+curl -sSL https://raw.githubusercontent.com/ecoPrimals/plasmidBin/main/fetch.sh | bash
 
-# 3. Run your guideStone against the live NUCLEUS
-FAMILY_ID=my-spring-validation \
-    cargo run --bin myspring_guidestone
-
-# 4. Stop when done
-./stop_gate.sh
+# Binaries land in $XDG_DATA_HOME/ecoPrimals/plasmidBin/primals/{triple}/
+# Override location: export ECOPRIMALS_PLASMID_BIN=/custom/path
 ```
+
+### Binary Discovery Order
+
+All primalSpring tools and Rust code use the same 3-tier search:
+
+1. `$ECOPRIMALS_PLASMID_BIN` — explicit override (set by user or CI)
+2. `$BIOMEOS_PLASMID_BIN_DIR` — biomeOS-provided path
+3. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` — default (`~/.local/share/...`)
+
+Within each base directory, the `primals/{target-triple}/{name}` layout
+is tried first (matching `fetch.sh` output), then flat `primals/{name}`
+as fallback.
+
+### For CI Pipelines
+
+```bash
+# Minimal CI validation loop:
+./tools/fetch_primals.sh                          # download binaries
+export BEARDOG_FAMILY_SEED="ci-$(date +%s)"
+./tools/composition_nucleus.sh start              # launch NUCLEUS
+FAMILY_ID=ci-run primalspring_guidestone           # pre-flight
+FAMILY_ID=ci-run myspring_guidestone               # domain validation
+./tools/composition_nucleus.sh stop
+```
+
+## CI/CD Auto-Harvest Pipeline
+
+plasmidBin binaries are automatically rebuilt when primals push to `main`:
+
+```
+Primal repo push → notify-plasmidbin.yml (repository_dispatch)
+                  → auto-harvest.yml (clone, build musl-static, publish Release)
+```
+
+**Components** (in `ecoPrimals/plasmidBin`):
+- `.github/workflows/auto-harvest.yml` — triggered by `repository_dispatch`,
+  `workflow_dispatch` (manual), and weekly `schedule`
+- `build-primal.sh` — clones a primal, builds musl-static, stages to
+  `/tmp/primalspring-deploy/`. Supports `build_args` (e.g. biomeOS workspace
+  `-p biomeos-unibin`) and `needs_sibling` (e.g. skunkBat needs sourDough)
+- `templates/notify-plasmidbin.yml` — drop-in workflow for primal repos
+- `sources.toml` — maps primal names to GitHub repos with build metadata
+
+**For primal teams**: Copy `templates/notify-plasmidbin.yml` to
+`.github/workflows/` in your repo. On push to `main`, it fires a
+`repository_dispatch` event to plasmidBin which triggers a rebuild.
+
+## The Depot Pattern
 
 ### Family Isolation
 
@@ -111,39 +155,14 @@ FAMILY_ID=my-spring-validation \
 # Exit 2 → bare checks only, no primals discovered
 ```
 
-## Current State (April 20, 2026)
-
-### Validated
-
-- **14/14 binaries** present and executable (x86_64 musl-static, stripped)
-- **nucleus_launcher.sh**: full 5-phase deployment tested
-  - Phase 1: Runtime preparation
-  - Phase 2: Stop existing primals
-  - Phase 3: Start in dependency order (beardog → petaltongue)
-  - Phase 4: Health sweep
-  - Phase 5: Songbird registry seeding
-- **primalspring_guidestone**: **187/187 ALL PASS** against live NUCLEUS (**13/13 BTSP authenticated**, 8 cellular graphs BTSP-enforced — full convergence)
-
-### Known Issues
-
-- **BearDog** requires `BEARDOG_FAMILY_SEED` env var in production mode.
-  Launcher should document or auto-generate this. (PG-19)
-- **Songbird/petalTongue** speak HTTP on UDS; raw JSON-RPC IPC clients get
-  protocol errors. They're reachable but need HTTP framing.
-- **BarraCuda** runs degraded without GPU (`cpu-shader only`). This is
-  correct behavior on headless/CI machines.
-- **aarch64** gaps: nestgate, rhizocrypt, petaltongue, barracuda, coralreef
-  have no aarch64 binaries in checksums.
-
 ### For Interactive Compositions (Shell)
 
 primalSpring provides `composition_nucleus.sh` — a parameterized launcher
 that replaces ad-hoc primal startup for interactive development:
 
 ```bash
-# Launch a full NUCLEUS for your domain from plasmidBin
+# Launch a full NUCLEUS for your domain
 COMPOSITION_NAME=myspring \
-ECOPRIMALS_PLASMID_BIN=/path/to/plasmidBin \
     primalSpring/tools/composition_nucleus.sh start
 
 # Check status
@@ -166,22 +185,21 @@ COMPOSITION_NAME=myspring primalSpring/tools/composition_nucleus.sh stop
 See `wateringHole/DOWNSTREAM_COMPOSITION_EXPLORER_GUIDE.md` for the full
 composition library API and per-spring exploration guidance.
 
-### For CI Pipelines
+## Known Issues
 
-```bash
-# Minimal CI validation loop:
-git clone --depth 1 https://github.com/ecoPrimals/plasmidBin.git
-cd plasmidBin
-export BEARDOG_FAMILY_SEED="ci-$(date +%s)"
-./nucleus_launcher.sh --family-id ci-run --composition nucleus
-FAMILY_ID=ci-run primalspring_guidestone  # pre-flight
-FAMILY_ID=ci-run myspring_guidestone      # domain validation
-./stop_gate.sh
-```
+- **BearDog** requires `BEARDOG_FAMILY_SEED` env var in production mode.
+  Launcher should document or auto-generate this. (PG-19)
+- **Songbird/petalTongue** speak HTTP on UDS; raw JSON-RPC IPC clients get
+  protocol errors. They're reachable but need HTTP framing.
+- **BarraCuda** runs degraded without GPU (`cpu-shader only`). This is
+  correct behavior on headless/CI machines.
+- **BTSP enforcement**: biomeOS `nucleus` mode enforces BTSP authentication.
+  primalSpring's `NeuralBridge` does not yet authenticate — use `api` mode
+  for composition validation until BTSP client support is added.
 
 ---
 
-*plasmidBin is the clean-machine deployment path. Pull the repo, launch
-the NUCLEUS, validate with your guideStone. No compilation, no package
-managers, no network dependencies at runtime. The binaries are the
-deployment.*
+*plasmidBin is the clean-machine deployment path. Fetch the binaries,
+launch the NUCLEUS, validate with your guideStone. No compilation, no
+git clone required, no network dependencies at runtime. The binaries
+are the deployment.*

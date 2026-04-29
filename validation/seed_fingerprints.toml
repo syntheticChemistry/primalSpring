@@ -2,7 +2,7 @@
 # Generated: 2026-04-28
 #
 # Each fingerprint = BLAKE3("primal-seed-v1" || primal_name || version || binary_blake3_checksum)
-# Binary checksums sourced from /home/eastgate/Development/ecoPrimals/infra/plasmidBin/primals/x86_64-unknown-linux-musl/
+# Binary checksums sourced from $ECOPRIMALS_PLASMID_BIN/primals/x86_64-unknown-linux-musl/
 #
 # Verify: primalspring_guidestone Layer 0.5 (Seed Provenance)
 # Regenerate: tools/gen_seed_fingerprints.sh
@@ -26,4 +26,4 @@ algorithm = "BLAKE3"
 domain_separator = "primal-seed-v1"
 input_format = "domain_separator || primal_name || version || binary_blake3_checksum"
 arch = "x86_64-unknown-linux-musl"
-source = "infra/plasmidBin/primals/x86_64-unknown-linux-musl/"
+source = "$ECOPRIMALS_PLASMID_BIN/primals/x86_64-unknown-linux-musl/"

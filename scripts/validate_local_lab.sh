@@ -45,14 +45,10 @@ for candidate in \
     fi
 done
 
-for candidate in \
-    "$PRIMALSPRING_ROOT/../../infra/plasmidBin" \
-    "$PRIMALSPRING_ROOT/../../../infra/plasmidBin"; do
-    if [ -f "$candidate/ports.env" ]; then
-        PLASMIDBIN_DIR="$(cd "$candidate" && pwd)"
-        break
-    fi
-done
+PLASMIDBIN_DIR="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
+if [[ ! -d "$PLASMIDBIN_DIR" ]]; then
+    PLASMIDBIN_DIR=""
+fi
 
 usage() {
     cat << EOF
@@ -111,7 +107,7 @@ if [ -z "$BENCHSCALE_DIR" ]; then
 fi
 
 if [ -z "$PLASMIDBIN_DIR" ]; then
-    echo -e "${RED}Cannot find plasmidBin. Set --plasmidbin <path> or ensure infra/plasmidBin/ exists.${NC}"
+    echo -e "${RED}Cannot find plasmidBin. Run ./tools/fetch_primals.sh or set ECOPRIMALS_PLASMID_BIN.${NC}"
     exit 1
 fi
 

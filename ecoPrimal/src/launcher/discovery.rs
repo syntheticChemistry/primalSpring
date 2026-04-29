@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 //! Binary discovery and resolution for primal executables.
+//!
+//! Binaries are resolved via the standard consumer pattern — the same
+//! one used by downstream springs, compositions, and deployments:
+//!
+//! 1. `$ECOPRIMALS_PLASMID_BIN` (explicit override)
+//! 2. `$BIOMEOS_PLASMID_BIN_DIR` (biomeOS override)
+//! 3. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` (XDG standard cache,
+//!    populated by `tools/fetch_primals.sh`)
+//!
+//! No relative filesystem traversal into sibling repos or `../../infra/`.
 
 use std::path::PathBuf;
 
@@ -12,45 +22,61 @@ pub const ENV_PLASMID_BIN: &str = "ECOPRIMALS_PLASMID_BIN";
 /// Env var: biomeOS plasmid bin directory.
 pub const ENV_BIOMEOS_BIN_DIR: &str = "BIOMEOS_PLASMID_BIN_DIR";
 
-/// Relative fallback paths for plasmidBin (tiers 3-5 of binary discovery).
-pub const RELATIVE_PLASMID_TIERS: &[&str] = &["./plasmidBin", "../plasmidBin", "../../plasmidBin"];
+/// XDG-compliant default location for fetched primal binaries.
+fn xdg_plasmid_bin() -> PathBuf {
+    if let Ok(xdg) = std::env::var("XDG_DATA_HOME") {
+        PathBuf::from(xdg)
+    } else if let Ok(home) = std::env::var("HOME") {
+        PathBuf::from(home).join(".local/share")
+    } else {
+        PathBuf::from("/tmp")
+    }
+    .join("ecoPrimals/plasmidBin")
+}
 
-/// Search for a primal binary using the 5-tier directory search and
-/// 6 binary-name patterns (same algorithm as biomeOS `discover_primal_binary`).
+/// Detect the Rust-style target triple for the current host.
+fn host_target_triple() -> String {
+    let arch = std::env::consts::ARCH;
+    let os = std::env::consts::OS;
+    match os {
+        "linux" => format!("{arch}-unknown-linux-musl"),
+        "macos" => format!("{arch}-apple-darwin"),
+        _ => format!("{arch}-unknown-{os}"),
+    }
+}
+
+/// Search for a primal binary using the 3-tier directory search.
+///
+/// Within each base directory, patterns are tried in order:
+/// 1. `primals/{target-triple}/{primal}` (fetch.sh canonical layout)
+/// 2. `primals/{primal}` (flat layout)
+/// 3. `{primal}` (bare binary in base dir)
 ///
 /// # Errors
 ///
 /// Returns [`LaunchError::BinaryNotFound`] if no matching executable is
 /// found after exhausting all directories and patterns.
 pub fn discover_binary(primal: &str) -> Result<PathBuf, LaunchError> {
-    let env_overrides: Vec<Option<PathBuf>> = vec![
+    let base_dirs: Vec<PathBuf> = [
         std::env::var(ENV_PLASMID_BIN).ok().map(PathBuf::from),
         std::env::var(ENV_BIOMEOS_BIN_DIR).ok().map(PathBuf::from),
-    ];
-    let base_dirs: Vec<Option<PathBuf>> = env_overrides
-        .into_iter()
-        .chain(
-            RELATIVE_PLASMID_TIERS
-                .iter()
-                .map(|p| Some(PathBuf::from(p))),
-        )
-        .collect();
+        Some(xdg_plasmid_bin()),
+    ]
+    .into_iter()
+    .flatten()
+    .collect();
 
-    let arch = std::env::consts::ARCH;
-    let os = std::env::consts::OS;
+    let triple = host_target_triple();
 
     let patterns = [
-        format!("{primal}_{arch}_{os}_musl/{primal}"),
-        format!("{primal}_{arch}_{os}/{primal}"),
-        format!("primals/{primal}/{primal}"),
+        format!("primals/{triple}/{primal}"),
         format!("primals/{primal}"),
-        format!("{primal}/{primal}"),
         primal.to_string(),
     ];
 
     let mut searched = Vec::new();
 
-    for base in base_dirs.iter().filter_map(Option::as_ref) {
+    for base in &base_dirs {
         if !base.exists() {
             continue;
         }

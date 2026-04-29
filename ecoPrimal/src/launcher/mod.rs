@@ -7,16 +7,15 @@
 //!
 //! # Binary Discovery
 //!
-//! [`discover_binary`] resolves a primal binary using the same 5-tier
-//! search order as biomeOS:
+//! [`discover_binary`] resolves a primal binary using the standard
+//! consumer pattern (same as downstream springs and deployments):
 //!
 //! 1. `$ECOPRIMALS_PLASMID_BIN`
 //! 2. `$BIOMEOS_PLASMID_BIN_DIR`
-//! 3. `./plasmidBin`
-//! 4. `../plasmidBin`
-//! 5. `../../plasmidBin`
+//! 3. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` (populated by `tools/fetch_primals.sh`)
 //!
-//! Within each base directory, 6 binary-name patterns are tried.
+//! Within each base directory, the `primals/{target-triple}/{name}` layout
+//! (produced by `fetch.sh`) is tried first, then flat fallbacks.
 //!
 //! # Socket Nucleation
 //!

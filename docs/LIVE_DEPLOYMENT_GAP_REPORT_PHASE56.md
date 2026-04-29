@@ -346,7 +346,7 @@ Rust serde struct variants that differ from the simplified spec format.
 | GAP-24 | Barracuda | P2 | **RESOLVED LOCAL** | `noise.perlin2d` params changed: `width`/`height` → `x`/`y`. Response changed: `{"data":[...]}` → `{"result":0.0}`. Fixed in experiments. |
 | GAP-25 | loamSpine | P2 | **RESOLVED LOCAL** | `spine.create` now requires `owner` field. Added to experiments. |
 | GAP-26 | sweetGrass | P2 | **RESOLVED LOCAL** | `contribution.record` with `content_hash` matching existing braid `data_hash` returns "Braid already exists". Use unique contribution hash. |
-| GAP-27 | biomeOS | P1 | **Stale binary** | biomeOS binary in plasmidBin is pre-v3.31. `graph.list`/`graph.status`/`graph.save` return 0/error. `capability.discover("storage")` misroutes to ToadStool. Rebuild needed. |
+| GAP-27 | biomeOS | P1 | **RESOLVED** | plasmidBin CI/CD pipeline (`auto-harvest.yml`) now auto-builds biomeOS from source. v3.31+ binaries distributed via GitHub Releases. `graph.list`/`graph.status`/`graph.save` and storage routing unblocked. |
 
 ---
 
@@ -420,15 +420,16 @@ Rust serde struct variants that differ from the simplified spec format.
 
 ### Upstream Handoff Notes
 
-**P1 — Stale biomeOS Binary (GAP-27)** — **BLOCKING 3 exp106 checks**:
-The `plasmidBin/primals/x86_64-unknown-linux-musl/biomeos` binary is pre-v3.31.
-v3.31 (pulled, in source tree) fixes:
+**P1 — Stale biomeOS Binary (GAP-27)** — **RESOLVED (April 29, 2026)**:
+plasmidBin CI/CD pipeline (`auto-harvest.yml`) now auto-builds biomeOS from source
+on push to `main`. v3.31+ binaries are distributed via GitHub Releases. The fixes:
 - `capability.discover("storage")` misrouting to ToadStool instead of NestGate
 - `graph.list` / `graph.status` / `graph.save` returning empty/error
 - Unified dual-parse TOML loader for all graph paths
 
-**Action**: Rebuild biomeOS from pulled source and restart NUCLEUS. All 3 exp106
-failures and the `route_storage` skip should resolve.
+**Resolution**: `build-primal.sh` with `build_args = "-p biomeos-unibin"` handles
+the biomeOS workspace build. Downstream consumers run `fetch_primals.sh` to get
+the updated binary.
 
 **P1 — Socket Naming Gaps (GAP-17, 18, 19)** — **MITIGATED LOCAL**:
 `desktop_nucleus.sh` creates 13 capability-aliased symlinks. petalTongue (upstream)

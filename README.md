@@ -123,14 +123,17 @@ cargo build --workspace
 # Run all tests (auto + ignored live tests)
 cargo test --workspace
 
-# Run live atomic tests (requires plasmidBin binaries)
-ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
+# Fetch primal binaries from plasmidBin GitHub Releases (first time only)
+./tools/fetch_primals.sh
+
+# Run live atomic tests (requires fetched binaries)
+cargo test --ignored
 
 # Run all 84 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
-ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo run --bin exp001_tower_atomic
+cargo run --bin exp001_tower_atomic
 
 # Start the primalSpring JSON-RPC server
 cargo run --bin primalspring_primal -- server
@@ -293,8 +296,9 @@ pure synchronous Rust (`std::process` + `std::thread`, no tokio).
 | `launcher/` | `discover_binary()`, `spawn_primal()`, `spawn_biomeos()`, `wait_for_socket()`, `SocketNucleation`, `LaunchProfile`, `LaunchError` (incl. `HealthCheckFailed`) |
 | `harness/` | `AtomicHarness::new()` / `::with_graph()`, `.start()` (topological waves), `.start_with_neural_api()`, `RunningAtomic` (capability-based `socket_for` / `client_for`, RAII lifecycle, NeuralBridge) |
 
-Set `ECOPRIMALS_PLASMID_BIN` to point at `ecoPrimals/plasmidBin/` to enable
-live primal spawning. Without it, experiments fall back to discovering
+Run `./tools/fetch_primals.sh` to bootstrap primal binaries into
+`~/.local/share/ecoPrimals/plasmidBin/`. Override with `ECOPRIMALS_PLASMID_BIN`
+if needed. Without fetched binaries, experiments fall back to discovering
 whatever is already running.
 
 ## gen4 Deployment Evolution

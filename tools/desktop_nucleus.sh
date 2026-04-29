@@ -23,7 +23,7 @@ ECO_ROOT="$(cd "$PROJECT_ROOT/../.." && pwd)"
 COMPOSITION_NAME="${COMPOSITION_NAME:-desktop}"
 FAMILY_ID="${FAMILY_ID:-desktop-nucleus}"
 SOCKET_DIR="${XDG_RUNTIME_DIR:-/tmp}/biomeos"
-PLASMID_BIN="${ECOPRIMALS_PLASMID_BIN:-$ECO_ROOT/infra/plasmidBin}"
+PLASMID_BIN="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
 BIN_DIR="$PLASMID_BIN/primals/x86_64-unknown-linux-musl"
 CELL_GRAPH="$PROJECT_ROOT/graphs/cells/nucleus_desktop_cell.toml"
 

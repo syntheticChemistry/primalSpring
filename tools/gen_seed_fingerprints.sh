@@ -6,7 +6,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SPRING_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PLASMIN_BIN="${ECOPRIMALS_PLASMID_BIN:-$(cd "$SPRING_ROOT/../../infra/plasmidBin" && pwd)}"
+PLASMIN_BIN="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
 MANIFEST="$PLASMIN_BIN/manifest.toml"
 ARCH="x86_64-unknown-linux-musl"
 BIN_DIR="$PLASMIN_BIN/primals/$ARCH"
@@ -63,7 +63,7 @@ done < "$MANIFEST"
     echo "domain_separator = \"$DOMAIN\""
     echo "input_format = \"domain_separator || primal_name || version || binary_blake3_checksum\""
     echo "arch = \"$ARCH\""
-    echo "source = \"infra/plasmidBin/primals/$ARCH/\""
+    echo "source = \"\$ECOPRIMALS_PLASMID_BIN/primals/$ARCH/\""
 } > "$OUT"
 
 echo "Wrote $(grep -c '=' "$OUT") entries to $OUT"

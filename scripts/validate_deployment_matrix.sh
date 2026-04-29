@@ -41,14 +41,10 @@ for candidate in \
     fi
 done
 
-for candidate in \
-    "$PRIMALSPRING_ROOT/../../infra/plasmidBin" \
-    "$PRIMALSPRING_ROOT/../../../infra/plasmidBin"; do
-    if [ -f "$candidate/ports.env" ]; then
-        PLASMIDBIN_DIR="$(cd "$candidate" && pwd)"
-        break
-    fi
-done
+PLASMIDBIN_DIR="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
+if [[ ! -d "$PLASMIDBIN_DIR" ]]; then
+    PLASMIDBIN_DIR=""
+fi
 
 MODE=""         # cell, tier, all, list
 CELL_ID=""

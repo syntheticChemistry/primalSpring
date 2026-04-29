@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: April 2026
-**Status**: Phase 56 — v0.9.23 — 84 experiments (18 tracks), 631 tests, 71 deploy graphs, **Desktop NUCLEUS live** (12 primals, 11/12 healthy on heartbeat, `desktop_nucleus.sh`), **The Rhizome micro-game** (roguelike on NUCLEUS — Barracuda noise, game loop, petalTongue scenes, provenance trio), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **23 live gaps documented** (`LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md`), **provenance trio E2E resolved** (corrected wire schemas for rhizoCrypt, loamSpine, sweetGrass), **guideStone Level 4** (187/187, 13/13 BTSP), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), multi-tier genetics, BTSP Phase 1–3, **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), 4 desktop app deploy graphs
+**Status**: Phase 56c — v0.9.24 — 84 experiments (18 tracks), 631 tests, 71 deploy graphs, **Desktop NUCLEUS live** (12 primals, 11/12 healthy on heartbeat, `desktop_nucleus.sh`), **The Rhizome micro-game** (roguelike on NUCLEUS — Barracuda noise, game loop, petalTongue scenes, provenance trio), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **23 live gaps documented** (`LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md`), **provenance trio E2E resolved** (corrected wire schemas for rhizoCrypt, loamSpine, sweetGrass), **guideStone Level 4** (187/187, 13/13 BTSP), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), multi-tier genetics, BTSP Phase 1–3, **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), 4 desktop app deploy graphs, **plasmidBin decoupled** (standard consumer pattern via GitHub Releases + XDG cache)
 
 ---
 
@@ -876,6 +876,36 @@ primals from plasmidBin with zero C dependencies:
 
 **Validated**: All 12 primals healthy from plasmidBin. Tower crypto, Node compute,
 Nest DAG/ledger/attribution, Meta AI/visualization all responding via UDS JSON-RPC.
+
+## What Changed — Phase 56c (plasmidBin Decoupling + CI/CD Pipeline)
+
+### Standard Consumer Pattern (April 29, 2026)
+
+Removed all direct filesystem coupling between primalSpring and the
+`plasmidBin` repository (20 files modified). primalSpring now consumes
+primal binaries the same way any downstream spring or deployment would:
+
+**New artifacts**:
+- `tools/fetch_primals.sh` — self-contained bootstrap that downloads primal
+  binaries from GitHub Releases into `$XDG_DATA_HOME/ecoPrimals/plasmidBin/`,
+  verifies BLAKE3 checksums, and reports the `ECOPRIMALS_PLASMID_BIN` path
+- `discovery.rs` rewritten — 3-tier search: `$ECOPRIMALS_PLASMID_BIN` →
+  `$BIOMEOS_PLASMID_BIN_DIR` → XDG default. `primals/{target-triple}/{name}`
+  layout tried first, then flat fallbacks. No relative `../plasmidBin` traversal.
+
+**plasmidBin CI/CD pipeline** (deployed to `ecoPrimals/plasmidBin`):
+- `auto-harvest.yml` — GitHub Actions workflow triggered by `repository_dispatch`
+  (primal push), `workflow_dispatch` (manual), and weekly `schedule`
+- `build-primal.sh` — clones, builds (`musl` static), and stages primals.
+  Supports `build_args` (biomeOS workspace) and `needs_sibling` (skunkBat)
+- `notify-plasmidbin.yml` — template pushed to primal repos; fires
+  `repository_dispatch` to plasmidBin on push to `main`
+- `sources.toml` — central registry of 12 primals (excludes `primalspring_primal`
+  and `esotericWebb` which are not primals)
+
+**GAP-27 resolved**: biomeOS binary in plasmidBin is now auto-harvested
+from source. The stale pre-v3.31 binary that blocked exp106 graph management
+is replaced by CI builds.
 
 ## What Remains
 

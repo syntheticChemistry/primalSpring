@@ -23,7 +23,7 @@ ECO_ROOT="$(cd "$PROJECT_ROOT/../.." && pwd)"
 FAMILY_ID="${FAMILY_ID:-ttt}"
 SOCKET_DIR="${XDG_RUNTIME_DIR:-/tmp}/biomeos"
 PID_DIR="/tmp/nucleus-ttt-pids"
-PLASMID_BIN="${ECOPRIMALS_PLASMID_BIN:-$ECO_ROOT/infra/plasmidBin}"
+PLASMID_BIN="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
 BIN_DIR="$PLASMID_BIN/primals"
 
 export FAMILY_ID

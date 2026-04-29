@@ -351,7 +351,7 @@ fi
 # ── Harvest ──────────────────────────────────────────────────────────────────
 
 if $DO_HARVEST; then
-    HARVEST_SCRIPT="$ECO_ROOT/infra/plasmidBin/harvest.sh"
+    HARVEST_SCRIPT="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}/harvest.sh"
     if [[ -x "$HARVEST_SCRIPT" ]]; then
         echo ""
         echo "=== Harvesting into plasmidBin ==="

@@ -15,7 +15,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PLASMIDBIN_PORTS="$SCRIPT_DIR/../../../infra/plasmidBin/ports.env"
+PLASMIDBIN_PORTS="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}/ports.env"
 
 HOST="${1:-}"
 if [ -z "$HOST" ]; then
@@ -38,7 +38,7 @@ done
 
 # Source shared port definitions from plasmidBin if available
 if [[ -f "$PLASMIDBIN_PORTS" ]]; then
-    # shellcheck source=../../infra/plasmidBin/ports.env
+    # shellcheck disable=SC1091
     source "$PLASMIDBIN_PORTS"
 else
     BEARDOG_PORT="${BEARDOG_PORT:-9100}"

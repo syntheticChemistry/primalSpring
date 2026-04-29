@@ -53,7 +53,7 @@ detect_bin_dir() {
         echo "$NUCLEUS_BIN_DIR"
         return
     fi
-    local plasmid="$ECO_ROOT/infra/plasmidBin/primals"
+    local plasmid="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}/primals"
     if [[ -d "$plasmid" ]]; then
         echo "$plasmid"
         return

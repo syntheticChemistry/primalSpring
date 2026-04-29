@@ -8,8 +8,8 @@
 //! 3. `visualization.render.grammar` with a Grammar-of-Graphics expression
 //! 4. Headless SVG/JSON export
 //!
-//! petalTongue must be in `plasmidBin/primals/` and its launch profile in
-//! `config/primal_launch_profiles.toml`.
+//! petalTongue must be fetchable via `discover_binary()` and its launch
+//! profile must be in `config/primal_launch_profiles.toml`.
 
 use std::io::{BufRead, BufReader, Write};
 use std::os::unix::net::UnixStream;
@@ -58,17 +58,7 @@ fn rpc_call(
 }
 
 fn find_petaltongue_binary() -> Option<PathBuf> {
-    let mut candidates = Vec::new();
-
-    if let Ok(plasmid) = std::env::var("ECOPRIMALS_PLASMID_BIN") {
-        candidates.push(PathBuf::from(plasmid).join("primals/petaltongue"));
-    }
-
-    candidates.push(
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../plasmidBin/primals/petaltongue"),
-    );
-
-    candidates.into_iter().find(|p| p.exists())
+    primalspring::launcher::discover_binary(primal_names::PETALTONGUE).ok()
 }
 
 fn spawn_petaltongue(
@@ -213,11 +203,11 @@ fn main() {
             "primalSpring Exp065: Tower health visualization via petalTongue",
             |v| {
                 let Some(pt_binary) = find_petaltongue_binary() else {
-                    println!("  [SKIP] petaltongue binary not found in plasmidBin/primals/");
+                    println!("  [SKIP] petaltongue binary not found");
                     v.check_bool(
                         "petaltongue_binary_found",
                         false,
-                        "petaltongue not in plasmidBin — build and copy first",
+                        "petaltongue not found — run tools/fetch_primals.sh",
                     );
                     return;
                 };

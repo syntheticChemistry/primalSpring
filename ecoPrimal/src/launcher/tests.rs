@@ -69,27 +69,21 @@ fn discover_binary_returns_error_when_not_found() {
 }
 
 #[test]
-fn discover_binary_searches_relative_plasmid_bin() {
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let workspace = manifest_dir.parent().expect("parent");
-    let plasmid_beardog = workspace.join("plasmidBin/primals/beardog");
-    if !plasmid_beardog.is_file() {
-        return;
-    }
-    let arch = std::env::consts::ARCH;
-    let os = std::env::consts::OS;
-    let patterns = [
-        format!("beardog_{arch}_{os}_musl/beardog"),
-        format!("beardog_{arch}_{os}/beardog"),
-        "primals/beardog/beardog".to_owned(),
-        "primals/beardog".to_owned(),
-        "beardog/beardog".to_owned(),
-        "beardog".to_owned(),
-    ];
-    let found = patterns
+fn discover_binary_returns_not_found_without_relative_traversal() {
+    let result = discover_binary("nonexistent_primal_for_test");
+    let Err(LaunchError::BinaryNotFound { searched, .. }) = result else {
+        panic!("expected BinaryNotFound for nonexistent primal");
+    };
+    let has_relative_traversal = searched
         .iter()
-        .any(|p| workspace.join("plasmidBin").join(p).is_file());
-    assert!(found, "at least one pattern should match in plasmidBin");
+        .any(|p| {
+            let s = p.to_string_lossy();
+            s.contains("../plasmidBin") || s.contains("../../plasmidBin")
+        });
+    assert!(
+        !has_relative_traversal,
+        "discovery should NOT traverse into relative ../plasmidBin paths"
+    );
 }
 
 #[test]
