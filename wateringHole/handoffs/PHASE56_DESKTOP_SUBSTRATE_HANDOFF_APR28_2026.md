@@ -1,7 +1,7 @@
 # Phase 56: Desktop Substrate + The Rhizome — Primal & Spring Team Handoff
 
-**Date**: April 28, 2026
-**Version**: 0.9.23
+**Date**: April 29, 2026 (updated — local debt pass)
+**Version**: 0.9.24
 **From**: primalSpring (coordination and composition validation)
 **To**: All primal teams + spring teams + garden teams
 
@@ -56,13 +56,13 @@ absorb to make the desktop substrate production-ready.
 | GAP-14 | P1 | Three graph parsers with different schema requirements | Unify `neural-api`, `deploy`, `continuous` parsers |
 | GAP-15 | P1 | `graph.start_continuous` fails for runtime-injected graphs | Fix continuous graph executor |
 | GAP-16 | P2 | `graph.execute` skips nodes as "unknown type" | Implement node dispatch for all node types |
-| GAP-18 | P1 | biomeOS not discoverable as `biomeos` — socket is `neural-api-*` | Register `biomeos-{family}.sock` symlink/alias |
+| GAP-18 | P1 | biomeOS not discoverable as `biomeos` — socket is `neural-api-*` | Register `biomeos-{family}.sock` symlink/alias **(locally mitigated: symlink + exp106 multi-name fallback)** |
 
 ### petalTongue
 | Gap | Priority | Description | Fix |
 |-----|----------|-------------|-----|
 | GAP-01 | P1 | Hardcodes heartbeat to `discovery-service.sock` ignoring env | Read `DISCOVERY_SOCKET` env var |
-| GAP-17 | P1 | Not discoverable via `visualization` capability | Register `visualization-{family}.sock` alongside `petaltongue-*` |
+| GAP-17 | P1 | Not discoverable via `visualization` capability | Register `visualization-{family}.sock` alongside `petaltongue-*` **(locally mitigated: symlink)** |
 | motor P0 | P0 | `motor.panel.update` logged but not routed to GUI | Wire motor channel commands to egui |
 
 ### Squirrel
@@ -73,7 +73,7 @@ absorb to make the desktop substrate production-ready.
 ### NestGate
 | Gap | Priority | Description | Fix |
 |-----|----------|-------------|-----|
-| GAP-21 | P2 | `storage.store` returns error on capability-named socket | Verify param schema matches on `storage-{family}.sock` |
+| GAP-21 | P2 | `storage.store` returns error on capability-named socket | Verify param schema matches on `storage-{family}.sock` **(locally mitigated: `family_id` param added to all storage calls)** |
 
 ### rhizoCrypt
 | Gap | Priority | Description | Fix |
@@ -92,7 +92,7 @@ absorb to make the desktop substrate production-ready.
 ### ludoSpring
 | Gap | Priority | Description | Fix |
 |-----|----------|-------------|-----|
-| GAP-19 | P1 | Not discoverable via `game_science` capability | Register `game_science-{family}.sock` or expose socket under capability name |
+| GAP-19 | P1 | Not discoverable via `game_science` capability | Register `game_science-{family}.sock` or expose socket under capability name **(locally mitigated: symlink)** |
 
 ---
 

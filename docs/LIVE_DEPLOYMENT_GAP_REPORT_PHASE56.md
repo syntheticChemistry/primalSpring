@@ -1,6 +1,6 @@
 # Live Desktop NUCLEUS — Deployment Gap Report (Phase 56)
 
-**Date**: April 28, 2026 (refreshed 22:45 EDT — exp105/exp106 results)
+**Date**: April 29, 2026 (refreshed — local debt pass)
 **Deployment**: `desktop_nucleus.sh start` + biomeOS `neural-api` (family=desktop-nucleus)
 **Primals deployed**: 12 spawned + biomeOS Neural API coordinator
 **Health**: 10/10 JSON-RPC primals healthy (coralReef excluded — tarpc)
@@ -335,11 +335,11 @@ Rust serde struct variants that differ from the simplified spec format.
 | GAP-14 | biomeOS team | P1 | New | Graph parser inconsistency (3 parsers with different schemas) |
 | GAP-15 | biomeOS team | P1 | New | `graph.start_continuous` fails for runtime-injected graphs |
 | GAP-16 | biomeOS team | P2 | New | `graph.execute` node dispatch: nodes skip as "unknown type" |
-| GAP-17 | Discovery | P1 | New | petalTongue not discoverable via `visualization` capability (exp105/106) |
-| GAP-18 | Discovery | P1 | New | biomeOS not discoverable via primal name `biomeos` — socket is `neural-api-*` |
-| GAP-19 | Discovery | P1 | New | ludoSpring not discoverable via `game_science` capability |
-| GAP-20 | Discovery | P2 | New | `FAMILY_ID` env var must be set — defaults to `default` not runtime family |
-| GAP-21 | NestGate | P2 | New | `storage.store` returns error response on direct IPC (params may need family_id) |
+| GAP-17 | Discovery | P1 | **Mitigated** | petalTongue not discoverable via `visualization` capability — symlink in `desktop_nucleus.sh` |
+| GAP-18 | Discovery | P1 | **Mitigated** | biomeOS not discoverable via primal name `biomeos` — symlink + exp106 multi-name fallback |
+| GAP-19 | Discovery | P1 | **Mitigated** | ludoSpring not discoverable via `game_science` capability — symlink in `desktop_nucleus.sh` |
+| GAP-20 | Discovery | P2 | **Mitigated** | `FAMILY_ID` exported in `desktop_nucleus.sh`; experiments read env |
+| GAP-21 | NestGate | P2 | **Mitigated** | `storage.store` needs `family_id` param — added in exp094/exp105/exp106/exp101 |
 | GAP-22 | rhizoCrypt | P2 | New | `dag.session.create` returns error response via capability socket (exp105) |
 | GAP-23 | BearDog | P2 | New | `crypto.blake3_hash` returns error response via capability socket (exp105) |
 
@@ -399,7 +399,7 @@ family sockets. Only petalTongue missing (no `visualization-*` socket alias).
 
 ### Upstream Handoff Notes
 
-**P1 — Socket Naming Gaps (GAP-17, 18, 19)**:
+**P1 — Socket Naming Gaps (GAP-17, 18, 19)** — **MITIGATED LOCAL**:
 The capability-based discovery (`discover_by_capability`) finds sockets named
 `{capability}-{family}.sock`. Three primals register sockets by primal name instead
 of capability name:
@@ -407,21 +407,27 @@ of capability name:
 - biomeOS → `neural-api-desktop-nucleus.sock` (not `biomeos-*` or `orchestration-*`)
 - ludoSpring → no socket found (possibly not started or registered as different cap)
 
-**Fix options** (ascending effort):
-1. **Symlink** (bash): Create `visualization-desktop-nucleus.sock → petaltongue-desktop-nucleus.sock` etc. in `desktop_nucleus.sh`
-2. **Socket registry**: Register dual names at primal startup
-3. **Primal fix**: Have each primal register capability-aliased sockets alongside primal-named ones
+**Local mitigation (April 29)**: `desktop_nucleus.sh` now creates 13 capability-aliased
+symlinks via `create_capability_symlinks()` after primal startup. exp106 also tries
+`neural-api` and `orchestration` as fallback discovery names for biomeOS.
 
-**P2 — FAMILY_ID Default (GAP-20)**:
+**Upstream fix**: Each primal should register capability-aliased sockets alongside
+primal-named ones at startup (`visualization-{family}.sock` etc.).
+
+**P2 — FAMILY_ID Default (GAP-20)** — **MITIGATED LOCAL**:
 `discover_by_capability` defaults `FAMILY_ID` to `"default"`, but the running NUCLEUS uses
-family `desktop-nucleus`. All experiments must set `FAMILY_ID=desktop-nucleus` or discovery
-fails. The startup script should export this env var to child processes.
+family `desktop-nucleus`. `desktop_nucleus.sh` already exports `FAMILY_ID` (line 30).
+Experiments read `FAMILY_ID` from env and thread it into IPC calls.
 
-**P2 — IPC Error Responses (GAP-21, 22, 23)**:
-Several primals accept the TCP connection and respond to heartbeat, but return JSON-RPC
-error responses for data methods. Likely causes:
-- NestGate `storage.store` may need `family_id` parameter (seen in earlier exp066/exp094)
-- rhizoCrypt `dag.session.create` may have a different schema on the `dag-*` capability socket vs. the `rhizocrypt-*` primal socket
-- BearDog `crypto.blake3_hash` may need different parameter encoding (`data` as bytes vs. string)
+**Upstream fix**: `discover_by_capability()` should read `FAMILY_ID` from a primal
+manifest or biomeOS runtime state, not just env vars.
+
+**P2 — IPC Error Responses (GAP-21, 22, 23)** — **GAP-21 MITIGATED LOCAL**:
+NestGate `storage.store` requires `family_id` parameter — confirmed by exp094 pattern.
+Added `family_id` to all NestGate calls in exp101, exp105, exp106.
+
+Remaining:
+- rhizoCrypt `dag.session.create` may have a different schema on the `dag-*` capability socket vs. the `rhizocrypt-*` primal socket (GAP-22)
+- BearDog `crypto.blake3_hash` may need different parameter encoding (`data` as bytes vs. string) (GAP-23)
 
 These require parameter fuzzing against each primal's actual wire format on the capability-named sockets.

@@ -69,6 +69,36 @@ verify_plasmidbin() {
     ok "12/12 primals present in plasmidBin"
 }
 
+create_capability_symlinks() {
+    # Map capability names to primal socket names so discover_by_capability()
+    # finds primals whose socket name doesn't match their capability domain.
+    local -A cap_map=(
+        [visualization]="petaltongue"
+        [orchestration]="neural-api"
+        [game_science]="ludospring"
+        [shader]="coralreef"
+        [math]="barracuda"
+        [crypto]="beardog"
+        [discovery]="songbird"
+        [compute]="toadstool"
+        [storage]="nestgate"
+        [dag]="rhizocrypt"
+        [ledger]="loamspine"
+        [attribution]="sweetgrass"
+        [ai]="squirrel"
+    )
+
+    for cap in "${!cap_map[@]}"; do
+        local primal="${cap_map[$cap]}"
+        local primal_sock="$SOCKET_DIR/${primal}-${FAMILY_ID}.sock"
+        local cap_sock="$SOCKET_DIR/${cap}-${FAMILY_ID}.sock"
+        if [[ -S "$primal_sock" ]] && [[ ! -e "$cap_sock" ]]; then
+            ln -sf "$primal_sock" "$cap_sock" 2>/dev/null && \
+                log "  symlink: $cap → $primal" || true
+        fi
+    done
+}
+
 cmd_start() {
     log "============================================"
     log "  Desktop NUCLEUS Deployment"
@@ -144,6 +174,12 @@ start_via_composition() {
     if [[ -S "$songbird_sock" ]]; then
         ln -sf "$songbird_sock" "$SOCKET_DIR/discovery-service.sock" 2>/dev/null
     fi
+
+    # Capability-aliased symlinks: discover_by_capability() looks for
+    # {capability}-{family}.sock but primals register as {primal}-{family}.sock.
+    # These symlinks bridge the gap so experiments and springs discover primals
+    # by capability name. (GAP-17, GAP-18, GAP-19 local mitigation)
+    create_capability_symlinks
 
     print_connection_info
 }
@@ -302,7 +338,7 @@ cmd_validate() {
     check "coralReef" "$cr" "health.check"
 
     log "Nest (neutron)"
-    check "NestGate"  "$ng" "storage.list" '{"prefix":"validate-"}'
+    check "NestGate"  "$ng" "storage.list" "{\"family_id\":\"$FAMILY_ID\",\"prefix\":\"validate-\"}"
     check "rhizoCrypt" "$rz" "dag.session.create" '{"name":"validate-test"}'
     check "loamSpine" "$ls" "primal.capabilities"
     check "sweetGrass" "$sw" "capabilities.list"

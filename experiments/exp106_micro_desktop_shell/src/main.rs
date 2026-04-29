@@ -21,9 +21,37 @@ fn phase_biomeos_connection(v: &mut ValidationResult) -> Option<PrimalClient> {
     v.section("biomeOS Neural API Connection");
 
     let bio = discover_primal("biomeos");
-    let Some(bio_sock) = bio.socket.as_ref() else {
-        v.check_skip("biomeos_connect", "biomeOS not discovered");
-        return None;
+    let bio_sock_ref = bio.socket.as_ref();
+
+    let fallback;
+    let bio_sock_ref = if bio_sock_ref.is_some() {
+        bio_sock_ref
+    } else {
+        fallback = discover_primal("neural-api");
+        fallback.socket.as_ref()
+    };
+
+    let Some(bio_sock) = bio_sock_ref else {
+        let orchestration = discover_by_capability("orchestration");
+        let Some(bio_sock) = orchestration.socket.as_ref() else {
+            v.check_skip("biomeos_connect", "biomeOS not discovered (tried biomeos, neural-api, orchestration)");
+            return None;
+        };
+        match PrimalClient::connect(bio_sock, "biomeos") {
+            Ok(mut client) => {
+                let health = client.health_check();
+                v.check_bool(
+                    "biomeos_connect",
+                    health.is_ok_and(|h| h),
+                    "biomeOS connected via orchestration capability",
+                );
+                return Some(client);
+            }
+            Err(e) => {
+                v.check_skip("biomeos_connect", &format!("biomeOS connection failed: {e}"));
+                return None;
+            }
+        }
     };
 
     match PrimalClient::connect(bio_sock, "biomeos") {
@@ -189,12 +217,13 @@ fn phase_capability_routing(v: &mut ValidationResult, biomeos: &mut Option<Prima
         );
     }
 
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
     let storage_resp = client.call(
         "capability.call",
         serde_json::json!({
             "capability": "storage",
             "operation": "storage.store",
-            "params": {"key": "exp106-shell-test", "value": "desktop-test"}
+            "params": {"family_id": family_id, "key": "exp106-shell-test", "value": "desktop-test"}
         }),
     );
 
@@ -521,9 +550,11 @@ fn phase_direct_fallbacks(v: &mut ValidationResult) {
     let ng = discover_by_capability("storage");
     if let Some(ng_sock) = ng.socket.as_ref() {
         if let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") {
+            let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
             let resp = client.call(
                 "storage.store",
                 serde_json::json!({
+                    "family_id": family_id,
                     "key": "exp106-direct-test",
                     "value": "desktop-shell-direct-fallback",
                 }),

@@ -26,9 +26,11 @@ fn phase_storage_ingest(v: &mut ValidationResult) {
         return;
     };
 
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
     let resp = client.call(
         "storage.store",
         serde_json::json!({
+            "family_id": family_id,
             "key": "fieldmouse/frame/exp101-test",
             "value": "{\"ph\":7.2,\"moisture\":0.45,\"temp_c\":22.1}",
         }),

@@ -3,6 +3,21 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.24] — Phase 56: Local Debt Pass (2026-04-29)
+
+### Fixed
+- `desktop_nucleus.sh`: 13 capability-aliased symlinks via `create_capability_symlinks()`
+  bridging GAP-17/18/19 (visualization, orchestration, game_science → primal sockets)
+- NestGate `storage.store/get` calls in exp101, exp105, exp106 now include `family_id`
+  parameter (GAP-21 local mitigation)
+- exp106 biomeOS discovery: multi-name fallback (biomeos → neural-api → orchestration)
+  resolves GAP-18 from experiment side
+- `desktop_nucleus.sh validate`: NestGate `storage.list` call includes `family_id`
+
+### Updated
+- Gap report refreshed: GAP-17/18/19/20/21 marked **MITIGATED LOCAL** with fix details
+- Upstream handoff notes updated with local vs. upstream fix boundaries
+
 ## [0.9.23] — Phase 56: Desktop Substrate + The Rhizome (2026-04-28)
 
 ### Added

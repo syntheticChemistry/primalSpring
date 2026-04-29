@@ -5,7 +5,7 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.23 |
+| **Version** | 0.9.24 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 631 (585 passed + 46 ignored; unit + integration + doc-tests + proptest) |

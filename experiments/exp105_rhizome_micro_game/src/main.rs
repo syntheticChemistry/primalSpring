@@ -796,9 +796,11 @@ fn save_to_nestgate(v: &mut ValidationResult, key: &str, toml_data: &str) -> boo
         return false;
     };
 
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
     let resp = client.call(
         "storage.store",
         serde_json::json!({
+            "family_id": family_id,
             "key": key,
             "value": toml_data,
         }),
@@ -1014,9 +1016,11 @@ fn phase_load_game(v: &mut ValidationResult, dag_session: Option<&str>) {
         return;
     };
 
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
     let resp = client.call(
         "storage.get",
         serde_json::json!({
+            "family_id": family_id,
             "key": save_key,
         }),
     );
