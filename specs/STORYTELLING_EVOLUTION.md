@@ -1,9 +1,10 @@
 # Storytelling Evolution — ludoSpring + esotericWebb
 
-**Status**: EVOLUTION GUIDANCE  
-**Date**: March 28, 2026  
+**Status**: EVOLUTION GUIDANCE (updated Phase 56)  
+**Date**: April 28, 2026 (originally March 28, 2026)  
 **Source**: primalSpring substrate validation, leverage guides, experiment gaps, EVOLUTION_GAPS.md  
-**Scope**: Evolution recommendations to get ludoSpring and esotericWebb online, visualized, and interactable with an AI DM for storytelling
+**Scope**: Evolution recommendations to get ludoSpring and esotericWebb online, visualized, and interactable with an AI DM for storytelling  
+**Related specs**: `DESKTOP_SESSION_MODEL.md`, `LIVE_GUI_COMPOSITION_PATTERN.md`
 
 ---
 
@@ -24,14 +25,17 @@ The storytelling loop: **player input → scene resolution → game science → 
 
 ## ludoSpring Evolution Guidance
 
-### Current State (v14, workspace 82 members)
+### Current State (V53, Phase 55c)
 
-- `ludospring-barracuda` core: game science library + 8 IPC methods
-- IPC surface: `game.evaluate_flow`, `game.fitts_cost`, `game.engagement`, `game.analyze_ui`, `game.accessibility`, `game.wfc_step`, `game.difficulty_adjustment`, `game.generate_noise`
+- **Pure composition model**: 12-node cell graph, 30 capabilities, BTSP-enforced
 - 60Hz tick budget with `TickBudget` and `SessionPhase` state machine
+- 817 tests, zero clippy
+- IPC surface: `game.evaluate_flow`, `game.fitts_cost`, `game.engagement`, `game.analyze_ui`, `game.accessibility`, `game.wfc_step`, `game.difficulty_adjustment`, `game.generate_noise`
 - petalTongue push client (runtime, no crate dependency)
 - barraCuda math dependency, optional wgpu GPU
 - RPGPT architecture sketch in specs/
+- Discovery self-registration via `DISCOVERY_SOCKET`
+- esotericWebb bridge wiring present
 
 ### P0: Expand IPC Surface for esotericWebb
 
@@ -92,14 +96,19 @@ The storytelling loop: **player input → scene resolution → game science → 
 
 ## esotericWebb Evolution Guidance
 
-### Current State (gardens/esotericWebb, V4)
+### Current State (gardens/esotericWebb, V7)
 
+- 342 tests, ~91% coverage
 - CRPG substrate: YAML content (worlds, NPCs, abilities, scenes, narrative graphs)
 - Runtime loop: input → scene → predicates/effects → provenance → narration → viz → flow/DDA
 - IPC bridges: ludospring.rs, squirrel.rs, petaltongue.rs, provenance.rs
-- TCP-first transport (vs biomeOS UDS-first)
-- 5 internal experiments (narrative reachability → autoplay coverage)
-- EVOLUTION_GAPS.md with 10 open gaps
+- **PrimalBridge**: 7 primal domains consumed via capability discovery, all degrading gracefully
+- 4 degradation patterns: `call_or_default`, `call_fire`, `call_extract_id`, `call_passthrough`
+- Deploy graphs compose from NUCLEUS fragments (`tower_atomic`, `node_atomic`, `nest_atomic`, `meta_tier`)
+- Game science absorbed locally — no spring runtime dependencies
+- Neural API fallback provides transparent AI evolution
+- TCP-first transport (vs biomeOS UDS-first) — UDS fallback when `PRIMAL_TRANSPORT=uds`
+- EVOLUTION_GAPS.md with gaps (several resolved by Phase 55c upstream work)
 
 ### P0: ludoSpring IPC Alignment
 
@@ -178,30 +187,33 @@ The storytelling loop: **player input → scene resolution → game science → 
 
 ## Cross-Cutting: The Storytelling Loop End-to-End
 
-### What Works Today
+### What Works Today (Phase 55c)
 
-1. esotericWebb has the runtime loop coded: input → scene → narration → viz → flow
-2. ludoSpring has 8 game science methods working over IPC
-3. Squirrel ai.chat provides AI narration with context windows
-4. petalTongue renders dashboards and basic scenes
+1. esotericWebb V7 has the full runtime loop with PrimalBridge + graceful degradation
+2. ludoSpring V53 has 8 game science methods + pure composition model + 60Hz tick
+3. Squirrel `ai.chat` provides AI narration with context windows + HTTP provider support
+4. petalTongue renders dashboards and basic scenes, `live` mode validated
 5. rhizoCrypt DAG session wiring exists in esotericWebb
+6. All 12 NUCLEUS primals resolved — full Desktop NUCLEUS operational
+7. Provenance trio: loamSpine ships Tower-signed entries, sweetGrass ships braid+anchor signing delegation
+8. Two-tier crypto architecture operational (seed fingerprints -> HKDF -> purpose keys)
 
 ### What Doesn't Work Yet
 
-1. **ludoSpring missing 6 methods** that esotericWebb calls (game.narrate_action, etc.)
-2. **Transport mismatch**: Webb TCP-first vs biomeOS UDS-first
+1. **ludoSpring missing 6 methods** that esotericWebb calls (game.narrate_action, etc.) — see `LUDOSPRING_IPC_EXPANSION_PHASE56_APR28_2026.md`
+2. **Transport mismatch**: Webb TCP-first vs biomeOS UDS-first (partially resolved: Webb has UDS fallback)
 3. **petalTongue lacks dialogue-tree scene type** — scenes render but aren't narrative-specific
 4. **Squirrel narration ignores game mechanics** — free-form text vs constrained by rules
-5. **Provenance trio untested E2E** in a real session
-6. **ludoSpring not in plasmidBin** — can't be provisioned by benchScale
+5. **Provenance trio untested E2E** in a real storytelling session (individual primals validated)
+6. **No desktop application session model** — esotericWebb runs standalone, not as a biomeOS-managed session (see `DESKTOP_SESSION_MODEL.md`)
 
 ### Recommended New Experiments
 
 | ID | Name | What It Validates |
 |----|------|-------------------|
-| exp088 | `storytelling_session_loop` | Full loop: Webb → ludoSpring → Squirrel → petalTongue → provenance |
-| exp089 | `ludospring_expanded_ipc` | New ludoSpring IPC methods (narrate_action, npc_dialogue, etc.) |
-| exp090 | `rpgpt_provenance_replay` | Session record → DAG → replay with verification |
+| exp102 | `storytelling_session_loop` | Full loop: Webb → ludoSpring → Squirrel → petalTongue → provenance |
+| exp103 | `ludospring_expanded_ipc` | New ludoSpring IPC methods (narrate_action, npc_dialogue, etc.) |
+| exp104 | `rpgpt_provenance_replay` | Session record → DAG → replay with verification |
 
 ---
 
@@ -215,14 +227,25 @@ The storytelling loop: **player input → scene resolution → game science → 
 
 ---
 
-## Deployment Readiness
+## Deployment Readiness (Phase 55c / Phase 56)
 
 | Component | Ready? | Blocker |
 |-----------|--------|---------|
-| esotericWebb binary | Yes (CLI `serve`) | Transport mismatch with biomeOS |
-| ludoSpring binary | Partial (8 of 14 methods) | Missing Webb-required methods |
-| Squirrel AI DM | Yes (`ai.chat` + context) | Abstract socket routing (biomeOS P2) |
-| petalTongue scenes | Partial (dashboards work) | Missing dialogue-tree scene type |
-| biomeOS orchestration | Partial | TCP-only mode not implemented |
-| Provenance trio | Wired but untested E2E | Needs live trio + session |
-| plasmidBin ludoSpring | Not deployed | Build + register + strip |
+| esotericWebb binary | Yes (CLI `serve`, PrimalBridge V7) | Transport mismatch partially resolved (UDS fallback) |
+| ludoSpring binary | Partial (8 of 14 methods) | Missing 6 Webb-required methods |
+| Squirrel AI DM | Yes (`ai.chat` + context + HTTP providers) | Socket alignment partially resolved (DISCOVERY_SOCKET) |
+| petalTongue scenes | Partial (dashboards + live mode work) | Missing dialogue-tree scene type |
+| biomeOS orchestration | **Improved** (Desktop NUCLEUS validated) | `--mode desktop` native launch pending (Phase 56) |
+| Provenance trio | **Improved** (all 3 validated individually, Tower-signed) | Untested E2E in real storytelling session |
+| plasmidBin ludoSpring | **RESOLVED** — pure composition model | No spring binary needed (composes NUCLEUS primals) |
+| Desktop session model | **NEW** (Phase 56) | `app.launch` API not yet implemented in biomeOS |
+
+### Phase 56 Desktop Application Target
+
+esotericWebb becomes the **first desktop application** running on the
+biomeOS substrate via `app.launch`. The application graph
+(`app_esotericwebb.toml`) composes esotericWebb + ludoSpring on top of
+the running 12-primal NUCLEUS. A `ContinuousSession` at 60Hz drives the
+game loop, with petalTongue providing the display surface.
+
+See `DESKTOP_SESSION_MODEL.md` for the full application lifecycle spec.

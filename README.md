@@ -5,16 +5,16 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.21 |
+| **Version** | 0.9.23 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 631 (585 passed + 46 ignored; unit + integration + doc-tests + proptest) |
-| **Experiments** | 76 (17 tracks) |
-| **Deploy Graphs** | 69 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 12 cell graphs) |
+| **Experiments** | 84 (18 tracks) |
+| **Deploy Graphs** | 71 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 12 cell graphs + 4 desktop app graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 76 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 84 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **guideStone** | Level 4 — **187/187 live NUCLEUS ALL PASS** (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 8 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` (allow-listed for `std::env::set_var` in Rust 2024) |
@@ -56,15 +56,15 @@ primalSpring/
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
 │   │   ├── primalspring_guidestone/ # guideStone: 9-layer composition certification (0–7 + 0.5 + 1.5)
-│   │   └── validate_all/          # Meta-validator: runs all 76 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 84 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
 │       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
-├── experiments/                   # 75 validation experiments (17 tracks)
+├── experiments/                   # 84 validation experiments (18 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 69 deploy graph TOMLs (fragment-first composition)
+├── graphs/                        # 71 deploy graph TOMLs (fragment-first composition)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
 │   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
 │   ├── patterns/                 # 4 coordination patterns: parallel, conditional, streaming, continuous
@@ -126,7 +126,7 @@ cargo test --workspace
 # Run live atomic tests (requires plasmidBin binaries)
 ECOPRIMALS_PLASMID_BIN=../plasmidBin cargo test --ignored
 
-# Run all 75 experiments (meta-validator)
+# Run all 84 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -194,7 +194,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 69 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
+primalSpring ships 71 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
 
 **Root-level graphs (13)**:
 
@@ -328,6 +328,23 @@ deploy biomeOS as substrate. Launch profiles added for all 6 springs.
 
 See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
+## Phase 56: Desktop Substrate + The Rhizome (April 28, 2026)
+
+- **8 new experiments** (exp099–exp106) across Track 18 — Desktop Substrate:
+  - exp099: Agentic loop substrate (petalTongue ↔ biomeOS ↔ Squirrel feedback loop)
+  - exp100: MCP ecosystem tools (Squirrel `tool.list` across springs)
+  - exp101: fieldMouse AI triage (sensor → NestGate → Squirrel → petalTongue)
+  - exp102: Storytelling session loop (esotericWebb → ludoSpring → Squirrel → petalTongue → trio)
+  - exp103: ludoSpring expanded IPC (14 IPC methods esotericWebb needs)
+  - exp104: RPGPT provenance replay (DAG → ledger → replay verification)
+  - exp105: **The Rhizome micro-game** — full roguelike loop on NUCLEUS (Barracuda noise, game loop, save/load, provenance, narration)
+  - exp106: **Micro-desktop shell** — desktop composition wrapping The Rhizome (biomeOS routing, 11/12 primal health bar, multi-session petalTongue, provenance sidebar)
+- **4 desktop app deploy graphs**: `desktop_shell.toml`, `app_esotericwebb.toml`, `app_system_monitor.toml`, `app_rhizome.toml` — biomeOS-managed desktop applications with continuous coordination
+- **`desktop_nucleus.sh`**: 12-primal NUCLEUS launcher with auto-symlink for petalTongue discovery, FAMILY_ID management, validate mode
+- **Live gap harvesting**: 23 gaps documented in `docs/LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md` — socket naming, capability routing, IPC parameter schemas, biomeOS graph parser inconsistencies
+- **Provenance trio E2E fully resolved**: rhizoCrypt DAG + loamSpine ledger + sweetGrass attribution — all parameter schemas documented and corrected
+- **The Rhizome**: Procedural roguelike game running on NUCLEUS — Barracuda Perlin noise for biome generation, deterministic floor layout, 5 biome types, creature/item systems, TOML save format, gap-tolerant validation
+
 ## BTSP, Inference Abstraction, and Proto-Nucleate Graphs (April 10, 2026)
 
 - **Zero-Port Tower Atomic achieved**: 0 TCP ports across all 10+ primals. Pure Unix domain socket IPC with BTSP handshake authentication.
@@ -427,6 +444,11 @@ and per-primal remediation plan (archived from March 2026 mobile deployment spik
 - `specs/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (indirect only)
 - `specs/AGENTIC_TRIO_EVOLUTION.md` — biomeOS + Squirrel + petalTongue evolution guidance for the agentic loop
 - `specs/STORYTELLING_EVOLUTION.md` — ludoSpring + esotericWebb evolution for AI DM storytelling
+- `specs/RHIZOME_MICRO_GAME.md` — The Rhizome roguelike game spec: world gen, biomes, tile rendering, save format, primal usage
+- `specs/MICRO_DESKTOP_COMPOSITION.md` — Micro-desktop shell: layout, session model, provenance sidebar
+- `specs/DESKTOP_NUCLEUS_DEPLOYMENT.md` — Desktop NUCLEUS deployment spec
+- `specs/DESKTOP_SESSION_MODEL.md` — Desktop session model (petalTongue + biomeOS)
+- `specs/LIVE_GUI_COMPOSITION_PATTERN.md` — Live GUI composition patterns
 - `specs/SHOWCASE_MINING_REPORT.md` — Showcase patterns mined from primals for substrate validation
 - `config/deployment_matrix.toml` — 43-cell deployment validation matrix
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer

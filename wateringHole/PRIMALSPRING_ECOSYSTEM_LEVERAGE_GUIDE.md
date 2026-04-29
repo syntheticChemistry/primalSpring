@@ -25,7 +25,7 @@ Three springs are pre-delta (airSpring v0.10.0, groundSpring V124, ludoSpring V3
 stadially clean but not yet wiring NUCLEUS composition.
 
 primalSpring v0.9.17: 46 cross-arch binaries (6 targets, Tier 1 39/39), genomeBin v5.1,
-631 tests, fragment-first composition (56 TOMLs, `resolve = true`). Python → Rust → NUCLEUS pipeline
+631 tests, fragment-first composition (71 TOMLs, `resolve = true`). Python → Rust → NUCLEUS pipeline
 proven across four springs. The remaining frontier is ionic bond negotiation, BTSP
 Phase 3 encrypted channels, and compute.dispatch standardization.
 
@@ -45,7 +45,7 @@ can absorb or compose against.
 | **Deploy graph validation** | `graph.list` / `graph.validate` RPC | CI: ensure deploy TOMLs are structurally valid |
 | **Health probing** | `health.liveness` / `health.readiness` | Kubernetes-style health checks |
 | **MCP tool discovery** | `mcp.tools.list` | Squirrel AI routes coordination requests |
-| **Meta-validation** | `cargo run --bin validate_all` | Run all 75 experiments in sequence |
+| **Meta-validation** | `cargo run --bin validate_all` | Run all 84 experiments in sequence |
 | **Remote gate probe** | `./scripts/validate_remote_gate.sh <host>` | Per-primal TCP health check on any gate |
 | **genomeBin build** | `./scripts/build_ecosystem_genomeBin.sh` | 9-target cross-arch matrix (Tier 1/2/3) |
 | **Spore prep** | `./scripts/prepare_spore_payload.sh <dir>` | USB payload assembly |

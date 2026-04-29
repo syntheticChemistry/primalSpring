@@ -283,7 +283,7 @@ primalSpring.
 
 ## Part 4: Graph Deployment Subsystem Inventory (April 16, 2026)
 
-primalSpring owns **56 TOML deploy graphs** (consolidated via template+manifest and fragment-first composition) — the standard subsystems for everything
+primalSpring owns **71 TOML deploy graphs** (consolidated via template+manifest and fragment-first composition) — the standard subsystems for everything
 downstream. All graphs use capability-first routing (`by_capability`), parse cleanly
 (37 graph unit tests + 4 overlay composition tests), and are topologically acyclic.
 
@@ -351,7 +351,7 @@ airSpring, groundSpring, neuralSpring, healthSpring (enclave). Template: exp095.
 
 ### Binary Name Consistency
 
-All 56 graphs use canonical lowercase binary names: `beardog`, `songbird`, `biomeos`,
+All 71 graphs use canonical lowercase binary names: `beardog`, `songbird`, `biomeos`,
 `toadstool`, `squirrel`, `nestgate`, `rhizocrypt`, `loamspine`, `sweetgrass`,
 `petaltongue`, `barracuda`, `coralreef`, `skunkbat_primal`, `rootpulse`,
 `primalspring_primal`, and `*spring_primal` for downstream springs.

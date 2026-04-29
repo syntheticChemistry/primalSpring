@@ -1,0 +1,147 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Application: esotericWebb — Disco Elysium-style CRPG on NUCLEUS substrate
+#
+# The first desktop application on the biomeOS substrate. Composes
+# esotericWebb (narrative engine) + ludoSpring (game science) on top of
+# the running 12-primal Desktop NUCLEUS.
+#
+# NUCLEUS primals are NOT included — they are consumed from the substrate.
+# This graph only declares the application-level binaries.
+#
+# The game loop runs as a ContinuousSession at 60Hz. Each tick:
+#   1. Poll petalTongue for player input (sensor events)
+#   2. esotericWebb resolves scene logic (predicates, effects)
+#   3. ludoSpring evaluates game science (flow, DDA, engagement)
+#   4. Squirrel generates AI narration (via capability.call)
+#   5. Push scene to petalTongue for rendering
+#   6. Optionally append to rhizoCrypt DAG for provenance
+#
+# Launch:
+#   Via biomeOS Neural API: {"method":"app.launch","params":{"graph":"esotericwebb_game"}}
+#   Or direct: biomeos deploy graphs/desktop/app_esotericwebb.toml
+#
+# See: specs/DESKTOP_SESSION_MODEL.md, specs/STORYTELLING_EVOLUTION.md
+
+[graph]
+id = "esotericwebb-game"
+name = "esotericwebb_game"
+description = "Disco Elysium-style CRPG — DAG-traced narrative with AI DM"
+version = "1.0.0"
+coordination = "continuous"
+
+[graph.metadata]
+cell_type = "garden"
+domain = "storytelling"
+security_model = "btsp_enforced"
+transport = "uds_only"
+
+[graph.metadata.application]
+name = "Esoteric Webb"
+category = "game"
+entry_capability = "game.begin_session"
+display_mode = "fullscreen_session"
+tick_hz = 60
+icon = "esotericwebb.png"
+
+[graph.environment]
+WEBB_CONTENT_DIR = "${ESOTERICWEBB_CONTENT:-content}"
+WEBB_SAVE_DIR = "${ESOTERICWEBB_SAVES:-saves}"
+
+# ── Application Binaries ────────────────────────────────────────
+
+[[graph.nodes]]
+id = "esotericwebb"
+name = "esotericwebb"
+binary = "esotericwebb"
+order = 1
+required = true
+spawn = true
+health_method = "health.liveness"
+by_capability = "game"
+security_model = "btsp_enforced"
+capabilities = [
+    "game.begin_session", "game.complete_session",
+    "game.narrate_action", "game.npc_dialogue",
+    "game.voice_check", "game.push_scene",
+]
+
+[graph.nodes.env]
+BEARDOG_SOCKET = "${BEARDOG_SOCKET}"
+DISCOVERY_SOCKET = "${DISCOVERY_SOCKET}"
+FAMILY_SEED = "${FAMILY_SEED}"
+
+[[graph.nodes]]
+id = "ludospring"
+name = "ludospring"
+binary = "ludospring"
+order = 2
+required = false
+spawn = true
+health_method = "health.liveness"
+by_capability = "game_science"
+security_model = "btsp_enforced"
+capabilities = [
+    "game.evaluate_flow", "game.fitts_cost",
+    "game.engagement", "game.difficulty_adjustment",
+    "game.wfc_step", "game.generate_noise",
+    "game.analyze_ui", "game.accessibility",
+]
+
+[graph.nodes.env]
+BEARDOG_SOCKET = "${BEARDOG_SOCKET}"
+DISCOVERY_SOCKET = "${DISCOVERY_SOCKET}"
+
+# ── NUCLEUS Capability Consumption ──────────────────────────────
+# These nodes are NOT spawned — they represent capabilities consumed
+# from the running Desktop NUCLEUS substrate.
+
+[[graph.nodes]]
+id = "ai_narration"
+name = "ai_narration"
+order = 10
+required = false
+spawn = false
+by_capability = "ai"
+capabilities = ["ai.chat", "ai.query", "context.create"]
+description = "Squirrel AI narration via NUCLEUS substrate"
+
+[[graph.nodes]]
+id = "scene_rendering"
+name = "scene_rendering"
+order = 11
+required = true
+spawn = false
+by_capability = "visualization"
+capabilities = ["visualization.render.scene", "visualization.session.create", "interaction.sensor_stream.poll"]
+description = "petalTongue scene rendering via NUCLEUS substrate"
+
+[[graph.nodes]]
+id = "session_provenance"
+name = "session_provenance"
+order = 12
+required = false
+spawn = false
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append"]
+description = "rhizoCrypt DAG provenance via NUCLEUS substrate"
+
+[[graph.nodes]]
+id = "session_ledger"
+name = "session_ledger"
+order = 13
+required = false
+spawn = false
+by_capability = "ledger"
+capabilities = ["entry.append", "session.commit"]
+description = "loamSpine ledger entries via NUCLEUS substrate"
+
+[[graph.nodes]]
+id = "session_attribution"
+name = "session_attribution"
+order = 14
+required = false
+spawn = false
+by_capability = "attribution"
+capabilities = ["braid.create"]
+description = "sweetGrass attribution via NUCLEUS substrate"

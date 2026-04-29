@@ -27,11 +27,11 @@ back upstream to primals and primalSpring.
 - **ecoPrimal/** — library crate (`primalspring`) + 3 binaries
   (`primalspring_primal` server, `primalspring_guidestone` 9-layer composition
   certification (Layers 0–7 + 0.5 + 1.5), `validate_all` runner)
-- **experiments/** — 76 validation binaries covering 17 tracks
-- **graphs/** — 69 deploy graph TOMLs using fragment-first composition (6 fragments +
+- **experiments/** — 84 validation binaries covering 18 tracks
+- **graphs/** — 71 deploy graph TOMLs using fragment-first composition (6 fragments +
   9 profiles + 4 patterns + 5 spring validation + 2 cross-spring + 5 bonding +
   2 chaos + 2 spring deploy + 3 downstream + 5 multi-node + 13 root-level +
-  1 federation + 12 cell graphs including Desktop NUCLEUS)
+  1 federation + 12 cell graphs + 4 desktop app graphs)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
 - **tools/** — desktop NUCLEUS launcher, nucleus launcher, composition library + template, TTT reference implementation, Godot bridge, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
@@ -69,7 +69,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.21 Phase 55b — 631 tests (585 passed + 46 ignored), 76 experiments (17 tracks), 69 deploy graphs (fragment-first composition). **Desktop NUCLEUS**: 12/12 musl-static primals from plasmidBin, petalTongue live desktop UI, **12/12 IPC validated** via `desktop_nucleus.sh validate`. **Two-tier crypto architecture**: published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys. **Upstream absorbed**: NestGate v0.4.70 native encrypt-at-rest (ChaCha20-Poly1305) + auth bypass, biomeOS v3.30 deep debt, Songbird W178 anyhow migration, Squirrel AN HTTP providers + discovery resolution + crypto foundation. Full IPC method map (`docs/NUCLEUS_IPC_METHOD_MAP.md`). Crypto bootstrap (`tools/nucleus_crypto_bootstrap.sh`).
+v0.9.23 Phase 56 — 631 tests (585 passed + 46 ignored), 84 experiments (18 tracks), 71 deploy graphs (fragment-first composition). **Desktop NUCLEUS**: 12-primal live substrate with `desktop_nucleus.sh`, 11/12 healthy on heartbeat, 4 desktop app graphs (shell, system monitor, esotericWebb, The Rhizome). **Phase 56 Desktop Substrate**: 8 new experiments (exp099–exp106) including The Rhizome roguelike micro-game and micro-desktop shell composition. **Live gap harvest**: 23 gaps documented (LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md). **Provenance trio E2E fully resolved**: corrected parameter schemas for rhizoCrypt, loamSpine, sweetGrass. **Two-tier crypto architecture**: published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys. **All 12 primals resolved** — zero upstream asks remaining. Upstream absorbed: NestGate v0.4.70 S48 (encrypt-at-rest), biomeOS v3.30 (deep debt), Songbird W178 (anyhow), Squirrel AN (HTTP providers + discovery + crypto), BearDog W75 (purpose-key module extraction), barraCuda Sprint 47b (self-registration + role-based naming), sweetGrass v0.7.28 (braid + anchor signing delegation), loamSpine (Tower-signed ledger entries), ToadStool S205-S208 (encrypted dispatch + self-registration + deep debt). Full IPC method map (`docs/NUCLEUS_IPC_METHOD_MAP.md`). Crypto bootstrap (`tools/nucleus_crypto_bootstrap.sh`).
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 

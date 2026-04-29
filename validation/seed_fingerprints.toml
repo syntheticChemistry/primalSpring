@@ -1,5 +1,5 @@
 # primalSpring Seed Fingerprints — BLAKE3
-# Generated: 2026-04-24
+# Generated: 2026-04-28
 #
 # Each fingerprint = BLAKE3("primal-seed-v1" || primal_name || version || binary_blake3_checksum)
 # Binary checksums sourced from /home/eastgate/Development/ecoPrimals/infra/plasmidBin/primals/x86_64-unknown-linux-musl/
@@ -8,18 +8,18 @@
 # Regenerate: tools/gen_seed_fingerprints.sh
 
 [fingerprints]
-barracuda       = "17cb8b51a4b538003d70b73b7bf3f1b5b338d90d9ee28b2a3245edd4b8bf3128"
-beardog         = "bf9ae3cb8bd88594564edc0599decf6df0fee36586ac6ef927aa13fd4b143195"
+barracuda       = "60cccf707d26996c88b4b1e1f92f0033c2aae02f9e902e425c940d6b99b615ad"
+beardog         = "199dbaea67e5a3b9f795aa93e97de7dc49b2a07ee4c504571c158cb4c8e6c107"
 biomeos         = "3040b197f942b36053ac82b7997f097aec33a61279b31244eb52f545937c8343"
-coralreef       = "0e7e20900e2875f140a191a386a9a8965bb340fcaefa59a280a05e2c5cf92e2e"
-loamspine       = "85bf8fa5488c51f32377f7e064ea415b0718f0cb385f2719aa9a2e2ae854b1a1"
-nestgate        = "7c6bb105f94e54361414b8e881e9d55e9c9ca4192b01655126196e841b9d4cc8"
-petaltongue     = "d76fd4eab877e1a8b4d2fe3090a32c5dd00822827513b7b3b718f2bac7ac22b3"
-rhizocrypt      = "079b31bd20b7f1603d81b883bbfd3ecea7b6e50c7c98edf39767fd19b6a0616a"
-songbird        = "a01c473899aa3706c79e28abe6d188cea15b689eed3f53a0c3b269e3a03ef772"
-squirrel        = "3d7cbd58fa6f308805f55908844ce2aedf58c2186def71d4d26b24ae63c2958f"
-sweetgrass      = "80087072cf42a496af5a37f6319823c476e6ca7245228e9b6a62946432d120db"
-toadstool       = "e07ad55b775a708edd2a27cf229979711f9da3d96eaddcdaa154f071a52ec848"
+coralreef       = "8bd96224c0129c0231cca5aa94776821cedf8df8f3e6b289653ed4c12e442e39"
+loamspine       = "5117f580c364c70bd43c4a34681bcff38b29330c7ad61a1d5b1c4b4ff595db75"
+nestgate        = "3286202d7f3ac2ccc947ca5a74794f27e42be9ab833246df38b666841a350bca"
+petaltongue     = "8df778d70d66b30afcb925821205aaefd1a3ff408fb1b1f410a736f9beece0f2"
+rhizocrypt      = "18339ccb8b3a66724a333a3f136ca4e4b303c7596e8140b5f4e1a3dc8e1a620f"
+songbird        = "44c213bf5eed0dde201a192736155ec73c8ae7bd9c89f4708dd708fbc2195284"
+squirrel        = "8f370d4755214a08f618feb381c9b2c7f3b602c03bd7d0c1d22be7fd8bf54789"
+sweetgrass      = "5288edf3119a957c3a44127afff4ecfffff4e7e4144fa5cc18286f999c4c48de"
+toadstool       = "7b69bc06870327efb3d127ebb64fe420e43c3d1267a0641423ac674b816b5885"
 
 [meta]
 algorithm = "BLAKE3"

@@ -1,0 +1,180 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Application: The Rhizome — ecoPrimals roguelike on NUCLEUS substrate
+#
+# A procedurally-generated roguelike micro-game that exercises all 12
+# NUCLEUS primals end-to-end. The player is a Fieldmouse navigating
+# underground biome caverns, each themed after a primal domain.
+#
+# NUCLEUS primals are NOT included — they are consumed from the substrate.
+# This graph declares application-level nodes and their substrate dependencies.
+#
+# The game loop runs as a ContinuousSession at 10Hz. Each tick:
+#   1. Poll petalTongue for player input (sensor events)
+#   2. Update game state (movement, encounters, visibility)
+#   3. ludoSpring evaluates game science (flow, DDA)
+#   4. Push tile grid to petalTongue via visualization.render.scene
+#   5. On events: Squirrel AI narration (degraded if unavailable)
+#   6. On saves: NestGate store + provenance trio seal
+#
+# Launch:
+#   Via biomeOS Neural API: {"method":"app.launch","params":{"graph":"rhizome_game"}}
+#   Or direct: biomeos deploy graphs/desktop/app_rhizome.toml
+#
+# See: specs/RHIZOME_MICRO_GAME.md, specs/MICRO_DESKTOP_COMPOSITION.md
+
+[graph]
+id = "rhizome-game"
+name = "rhizome_game"
+description = "The Rhizome — ecoPrimals roguelike micro-game"
+version = "1.0.0"
+coordination = "continuous"
+
+[graph.metadata]
+cell_type = "garden"
+domain = "game"
+security_model = "btsp_enforced"
+transport = "uds_only"
+
+[graph.metadata.application]
+name = "The Rhizome"
+category = "game"
+entry_capability = "game.begin_session"
+display_mode = "windowed_session"
+tick_hz = 10
+icon = "rhizome.png"
+
+[graph.environment]
+RHIZOME_SAVE_NS = "rhizome"
+RHIZOME_MAP_WIDTH = "40"
+RHIZOME_MAP_HEIGHT = "25"
+
+# ── Application Node ────────────────────────────────────────────
+# The game engine itself; spawned by this graph.
+
+[[graph.nodes]]
+id = "rhizome_engine"
+name = "rhizome_engine"
+binary = "exp105_rhizome_micro_game"
+order = 1
+required = true
+spawn = true
+health_method = "health.liveness"
+by_capability = "game"
+security_model = "btsp_enforced"
+capabilities = [
+    "game.begin_session", "game.tick",
+    "game.save", "game.load",
+]
+
+[graph.nodes.env]
+BEARDOG_SOCKET = "${BEARDOG_SOCKET}"
+DISCOVERY_SOCKET = "${DISCOVERY_SOCKET}"
+FAMILY_SEED = "${FAMILY_SEED}"
+
+# ── NUCLEUS Capability Consumption ──────────────────────────────
+# These nodes are NOT spawned — they represent capabilities consumed
+# from the running Desktop NUCLEUS substrate.
+
+[[graph.nodes]]
+id = "world_gen_math"
+name = "world_gen_math"
+order = 10
+required = true
+spawn = false
+by_capability = "math"
+capabilities = ["noise.perlin2d", "rng.uniform", "stats.mean", "tensor.create"]
+description = "Barracuda math/noise for world generation and combat"
+
+[[graph.nodes]]
+id = "game_science"
+name = "game_science"
+order = 11
+required = false
+spawn = false
+by_capability = "game_science"
+capabilities = [
+    "game.evaluate_flow", "game.difficulty_adjustment",
+    "game.wfc_step", "game.generate_noise",
+]
+description = "ludoSpring game science for WFC, DDA, flow state"
+
+[[graph.nodes]]
+id = "scene_rendering"
+name = "scene_rendering"
+order = 12
+required = true
+spawn = false
+by_capability = "visualization"
+capabilities = ["visualization.render.scene", "visualization.session.create", "interaction.sensor_stream.poll"]
+description = "petalTongue scene rendering for tile grid display"
+
+[[graph.nodes]]
+id = "save_storage"
+name = "save_storage"
+order = 13
+required = true
+spawn = false
+by_capability = "storage"
+capabilities = ["storage.store", "storage.get"]
+description = "NestGate save file storage (TOML world state)"
+
+[[graph.nodes]]
+id = "ai_narration"
+name = "ai_narration"
+order = 14
+required = false
+spawn = false
+by_capability = "ai"
+capabilities = ["ai.chat"]
+description = "Squirrel AI narration for encounters (degraded if unavailable)"
+
+[[graph.nodes]]
+id = "save_provenance"
+name = "save_provenance"
+order = 15
+required = false
+spawn = false
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
+description = "rhizoCrypt DAG for save chain provenance"
+
+[[graph.nodes]]
+id = "session_ledger"
+name = "session_ledger"
+order = 16
+required = false
+spawn = false
+by_capability = "ledger"
+capabilities = ["spine.create", "entry.append"]
+description = "loamSpine ledger for session play events"
+
+[[graph.nodes]]
+id = "session_attribution"
+name = "session_attribution"
+order = 17
+required = false
+spawn = false
+by_capability = "attribution"
+capabilities = ["braid.create", "contribution.record"]
+description = "sweetGrass attribution for play credit"
+
+[[graph.nodes]]
+id = "save_crypto"
+name = "save_crypto"
+order = 18
+required = false
+spawn = false
+by_capability = "crypto"
+capabilities = ["crypto.blake3_hash"]
+description = "BearDog crypto for save integrity hashing"
+
+[[graph.nodes]]
+id = "service_discovery"
+name = "service_discovery"
+order = 19
+required = true
+spawn = false
+by_capability = "discovery"
+capabilities = ["ipc.list", "ipc.heartbeat"]
+description = "Songbird discovery mesh for primal location"

@@ -86,6 +86,14 @@ members = [
     "experiments/exp095_proto_nucleate_template",
     "experiments/exp096_pixel_cross_arch_bonding",
     "experiments/exp098_cellular_deployment",
+    "experiments/exp099_agentic_loop_substrate",
+    "experiments/exp100_mcp_ecosystem_tools",
+    "experiments/exp101_fieldmouse_ai_triage",
+    "experiments/exp102_storytelling_session_loop",
+    "experiments/exp103_ludospring_expanded_ipc",
+    "experiments/exp104_rpgpt_provenance_replay",
+    "experiments/exp105_rhizome_micro_game",
+    "experiments/exp106_micro_desktop_shell",
 ]
 
 [workspace.package]

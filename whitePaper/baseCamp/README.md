@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: April 2026
-**Status**: Phase 55 — v0.9.20 — 76 experiments (17 tracks), 631 tests, 69 deploy graphs (fragment-first composition, 12 cell graphs), **guideStone Level 4** (**187/187 live NUCLEUS ALL PASS, 13/13 BTSP authenticated**, 41/41 bare, BLAKE3 checksums P3, **BTSP default on all tiers** with per-atomic security reporting), **two-tier crypto architecture** (published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys, composition-level encrypt-at-rest), **genomeBin v5.1** (46 binaries / 6 target triples, Tier 1: 39/39), multi-tier genetics identity (Mito-Beacon / Nuclear / Tags), BTSP Phase 1–3 (ChaCha20-Poly1305), **seed provenance** (public BLAKE3 fingerprints in plasmidBin/manifest.toml), full cross-architecture deployment (x86_64/aarch64/armv7/windows/android/riscv64), content distribution federation, ionic bond RPC, BtspEnforcer deny semantics, stadial parity (zero dyn, zero async-trait, Edition 2024), **plasmidBin is full genomeBin depot** — downstream springs use `build_ecosystem_genomeBin.sh` for any target, 46 binaries shipped, 12/12 primals ALIVE, 19/19 exp094 composition parity, 12/12 exp091 routing matrix, **biomeOS substrate validated** (Neural API liveness + graph executor), **live desktop compositions** (petalTongue GUI, branching DAG state, braid provenance, biomeOS cellular deployment)
+**Status**: Phase 56 — v0.9.23 — 84 experiments (18 tracks), 631 tests, 71 deploy graphs, **Desktop NUCLEUS live** (12 primals, 11/12 healthy on heartbeat, `desktop_nucleus.sh`), **The Rhizome micro-game** (roguelike on NUCLEUS — Barracuda noise, game loop, petalTongue scenes, provenance trio), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **23 live gaps documented** (`LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md`), **provenance trio E2E resolved** (corrected wire schemas for rhizoCrypt, loamSpine, sweetGrass), **guideStone Level 4** (187/187, 13/13 BTSP), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), multi-tier genetics, BTSP Phase 1–3, **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), 4 desktop app deploy graphs
 
 ---
 
@@ -56,12 +56,13 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | Deployment graph sweep, Tower Atomic LAN probe, L0 routing matrix, L2 dual-tower ionic, L3 covalent mesh backup |
 | 16 | Composition Parity | exp094 | Does full NUCLEUS composition produce correct results via IPC? 19/19 checks. |
 | 17 | Cross-Architecture + Cellular Deployment | exp095–096, exp098 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? **15/15 checks.** Does cellular deployment from cell graphs validate? |
+| 18 | Desktop Substrate | exp099–exp106 | Does the full desktop stack work? Agentic loop, MCP tools, AI triage, storytelling, ludoSpring IPC, provenance replay, **The Rhizome roguelike**, **micro-desktop shell** |
 
-## Current State (v0.9.20)
+## Current State (v0.9.23)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 76 (17 tracks) |
+| Experiments | 84 (18 tracks) |
 | Total tests | **631** (585 passed + 46 ignored; unit + integration + doc-tests + proptest) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
@@ -69,7 +70,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `deny` (allow-listed for `std::env::set_var` in Rust 2024 entropy bootstrap) |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | **69 TOMLs** (6 fragments + 9 profiles + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 12 cell graphs), fragment-first composition with `resolve = true` |
+| Deploy graphs | **71 TOMLs** (6 fragments + 9 profiles + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 12 cell graphs + 4 desktop app graphs), fragment-first composition with `resolve = true` |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Crypto architecture | Two-tier: published seed DNA → family keys → per-atomic purpose keys. Composition-level encrypt-at-rest. JWT deprecated within NUCLEUS (BearDog auth). |
 | Primal gap registry | All LD-01 through LD-10 RESOLVED. Pre-downstream gaps resolved. |
@@ -78,7 +79,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 75 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 84 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |

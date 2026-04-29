@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**76 experiments across 17 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**84 experiments across 18 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -19,18 +19,18 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 75 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 84 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 75 experiments. All 75 use centralized library helpers for TCP RPC,
+across all 84 experiments. All 84 use centralized library helpers for TCP RPC,
 method name constants (`ipc::methods`), and primal name constants (`primal_names`).
 
 ## Running
 
 ```bash
-# Run all 75 experiments via meta-validator
+# Run all 84 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment (use -p with the package name)
@@ -61,6 +61,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | **Structural** (deployment graph sweep, Tower Atomic LAN probe, L0 primal routing matrix, L2 dual-tower ionic, L3 covalent mesh backup) |
 | 16 | Composition Parity | exp094 | Full NUCLEUS composition parity: 19/19 checks via live IPC |
 | 17 | Cross-Architecture + Cellular Deployment | exp095–096, exp098 | **Live validated** (proto-nucleate template, Pixel cross-arch bonding via biomeOS Neural API `--tcp-only`, cellular deployment from cell graphs) |
+| 18 | Desktop Substrate | exp099–exp106 | **Live validated** (agentic loop, MCP tools, AI triage, storytelling session, ludoSpring IPC, provenance replay, The Rhizome micro-game 8/13, micro-desktop shell 2/4 + 11/12 health bar) |
 
 ## Experiment Status Key
 
@@ -118,12 +119,13 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 44 | Upstream Absorption + Downstream Blurb | Pull/audit 8 springs, deploy via plasmidBin, benchScale validation, root doc cleanup, downstream evolution blurb for all springs |
 | 45 | NUCLEUS Composition Validation + Garden Evolution | guidestone **187/187 ALL PASS** (was 86/86 at Phase 45 entry), exp068 **6/6** (barraCuda parity fixed), exp067 **18/19**, 3 new ludoSpring game.* methods wired, `start_primal.sh` symlink automation, ed25519 base64 + matmul_inline fixes, Webb handoff crafted, **13/13 BTSP authenticated**, 8 cellular graphs BTSP-enforced, biomeOS v3.25 absorbed |
 | 46 | Cellular Deployment + Live GUI | petalTongue `live` mode (IPC + egui), `game.push_scene` drain to petalTongue, exp078 live GUI composition validation, 8 cell graphs (`graphs/cells/`), **exp098** cellular deployment sweep, guidestone **Layer 7** (cellular), `cell_launcher.sh`, esotericWebb `webb_live_interactive.toml` deploy graph |
+| 56 | Desktop Substrate + The Rhizome | 8 experiments (exp099–exp106): agentic loop, MCP, AI triage, storytelling, ludoSpring IPC, provenance replay, **The Rhizome** roguelike micro-game, **micro-desktop shell**. 4 desktop app deploy graphs. `desktop_nucleus.sh` symlink fix. 23 gaps documented. Provenance trio schemas fully resolved. |
 
 ## Validation Harness
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 75 experiments use this):
+**Builder API** (preferred — all 84 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit

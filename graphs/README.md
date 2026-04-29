@@ -1,9 +1,9 @@
 # primalSpring Graph Deployments
 
-> 56 graph definitions for NUCLEUS composition validation and deployment.
+> 71 graph definitions for NUCLEUS composition validation and deployment.
 > Fragment-first composition: profiles declare fragments + delta nodes;
 > `load_graph()` resolves `resolve = true` graphs at parse time.
-> Date: April 16, 2026
+> Date: April 28, 2026
 
 ## NUCLEUS-First Principle
 

@@ -3,6 +3,86 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.23] — Phase 56: Desktop Substrate + The Rhizome (2026-04-28)
+
+### Added
+- **8 new experiments** (exp099–exp106): Track 18 — Desktop Substrate
+  - exp099: Agentic loop substrate (petalTongue ↔ biomeOS ↔ Squirrel feedback)
+  - exp100: MCP ecosystem tools (Squirrel `tool.list` across springs)
+  - exp101: fieldMouse AI triage (sensor → NestGate → Squirrel → petalTongue)
+  - exp102: Storytelling session loop (full pipeline on Desktop NUCLEUS)
+  - exp103: ludoSpring expanded IPC (14 methods for esotericWebb)
+  - exp104: RPGPT provenance replay (session DAG → ledger → replay)
+  - exp105: **The Rhizome micro-game** — roguelike on NUCLEUS (Barracuda noise,
+    game loop, petalTongue scenes, NestGate saves, provenance trio)
+  - exp106: **Micro-desktop shell** — desktop composition (biomeOS routing,
+    11/12 primal health bar, multi-session petalTongue, provenance sidebar)
+- **4 desktop app deploy graphs**: `desktop_shell.toml`, `app_esotericwebb.toml`,
+  `app_system_monitor.toml`, `app_rhizome.toml` — continuous coordination
+- **3 new specs**: `RHIZOME_MICRO_GAME.md` (game design), `MICRO_DESKTOP_COMPOSITION.md`
+  (desktop shell), `DESKTOP_NUCLEUS_DEPLOYMENT.md` + `DESKTOP_SESSION_MODEL.md` +
+  `LIVE_GUI_COMPOSITION_PATTERN.md` (desktop patterns)
+- `docs/LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md`: 23 gaps documented from live NUCLEUS
+  deployment — socket naming, capability routing, IPC parameters, biomeOS parsers
+
+### Fixed
+- Provenance trio IPC schemas fully resolved (GAP-07 through GAP-11):
+  rhizoCrypt `Custom` event needs `event_name` + `domain`, loamSpine payload inside
+  variant, sweetGrass `braid.create` needs `mime_type` + `size`
+- `desktop_nucleus.sh`: Auto-creates petalTongue discovery symlink (GAP-01 mitigation)
+- Desktop graph TOMLs: dual `id`/`name` fields + lowercase `coordination` for
+  biomeOS's three graph parsers (GAP-14 workaround)
+
+### Updated
+- Version bumped to 0.9.23
+- Experiment count: 76 → 84 (18 tracks)
+- Deploy graph count: 69 → 71 (4 desktop app graphs added)
+- `wateringHole/` handoff docs refreshed for Phase 56 evolution
+- `whitePaper/baseCamp/README.md` updated to v0.9.23 with Phase 56 status
+
+## [0.9.22] — Phase 55c: Full Harvest — 12/12 Primals Resolved (2026-04-28)
+
+### Absorbed
+- **BearDog W75**: Deep debt — purpose-key module extraction (`aliases_and_beardog.rs`
+  927→452 LOC), workspace dependency drift normalized, stale `dns-sd` feature gate removed,
+  date-stamped test files renamed. Zero wire protocol changes. Still 101 CryptoHandler +
+  9 IonicBondHandler methods.
+- **barraCuda Sprint 47b**: Role-based naming (`register_with_songbird`→`register_with_discovery`,
+  `songbird_capability_domains`→`discovery_capability_domains`), `naga-exec` silent fallbacks
+  replaced with typed `NagaExecError::TypeMismatch` errors, autotune.rs observability added.
+  12-axis deep debt audit clean. 272+ tests, 50 IPC methods.
+- **sweetGrass v0.7.28**: Braid signing delegation to BearDog `crypto.sign` Ed25519 via
+  `CryptoDelegate` module — `braid.create` carries Tower-level `Witness::from_tower_ed25519`
+  witnesses. Anchor signing also delegated (`anchoring.anchor`). `hostname` crate eliminated
+  for pure Rust. 1,462 tests. **Resolves Phase 55b P3 ask.**
+- **loamSpine v0.9.16 (Apr 28)**: Tower-signed ledger entries — `entry.append` and
+  `session.commit` sign via BearDog `crypto.sign_ed25519`, storing `tower_signature` in
+  entry metadata. Chain hash commits to signed entry. Standalone mode continues unsigned.
+  `prepare_entry()` + `append_prepared_entry()` split for signing between creation and
+  chain append. BTSP tunnel consumption documented as next frontier. 1,509 tests.
+  **Resolves Phase 55b P4 ask (signing delegation).**
+- **ToadStool S205–S208**: Encrypted compute dispatch (`secrets.retrieve` purpose key +
+  `crypto.encrypt`/`decrypt` on dispatch payloads via BearDog), `DISCOVERY_SOCKET`
+  integration (highest-precedence tier for all capability resolution), self-registration
+  via `register_with_discovery()` at startup (`ipc.register` with capabilities
+  `["compute.dispatch","compute.capabilities"]`), deep debt (all `#[allow]` → `reason=`,
+  workspace dep unification, stale feature removal, `expect` → `Result`, zero files >800L,
+  all 49 unsafe blocks SAFETY-documented). 7,842 tests. **Resolves Phase 55b P5 ask.**
+
+### Updated
+- `docs/NUCLEUS_IPC_METHOD_MAP.md`: sweetGrass signing delegation, ToadStool encrypted
+  dispatch + self-registration details
+- Version bumped to 0.9.22
+- **All 12 primals resolved** — zero remaining upstream asks from Phase 55/55b
+
+### Desktop NUCLEUS Readiness
+- **12/12 plasmidBin binaries present** (musl-static, symlinked at `primals/`)
+- `desktop_nucleus.sh` and `composition_nucleus.sh` both operational
+- Two launch paths: biomeOS coordinator and shell-managed composition
+- All 12 primals: full env wiring, signing delegation, discovery self-registration
+- Crypto stack complete: seed fingerprints → HKDF → family keys → purpose keys →
+  per-primal encrypt/decrypt + Tower-signed operations across all three atomics
+
 ## [0.9.21] — Phase 55b: Upstream Harvest + Guidance (2026-04-28)
 
 ### Absorbed
@@ -30,15 +110,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   RESOLVED. Remaining: BearDog purpose-key RPC server-side, rhizoCrypt/sweetGrass
   Tower crypto delegation, loamSpine BTSP active channels
 
-### Upstream Guidance
-- BearDog: ship `secrets.retrieve` and `crypto.encrypt`/`crypto.decrypt` with
-  purpose-key semantics — lights up Squirrel inference encryption + NestGate
-  key delegation end-to-end
-- rhizoCrypt: delegate hashing to `crypto.sign` via Tower (currently local)
-- sweetGrass: delegate hashing to `crypto.sign` via Tower (currently local)
-- loamSpine: activate BTSP channels (declared but not active)
-- ToadStool: wire `DISCOVERY_SOCKET` self-registration at startup
-- barraCuda: wire `DISCOVERY_SOCKET` self-registration at startup
+### Upstream Guidance (all resolved as of Phase 55c)
+- ~~BearDog: purpose-key RPC~~ **RESOLVED W74**
+- ~~rhizoCrypt: signing delegation~~ **RESOLVED S54**
+- ~~sweetGrass: signing delegation~~ **RESOLVED v0.7.28**
+- ~~loamSpine: Tower-signed entries~~ **RESOLVED** (Apr 28) — `entry.append` + `session.commit` via `crypto.sign_ed25519`
+- ~~ToadStool: self-registration + encrypted dispatch~~ **RESOLVED S205–S208**
+- ~~barraCuda: self-registration~~ **RESOLVED Sprint 47**
 
 ## [0.9.20] — Phase 55: Two-Tier Crypto Architecture + Live Desktop Compositions (2026-04-28)
 
@@ -68,22 +146,20 @@ deployment patterns validated.
 - All Nest primals (rhizoCrypt, loamSpine, sweetGrass): added DISCOVERY_SOCKET
 - Cell graph `nucleus_desktop_cell.toml`: added NESTGATE_AUTH_MODE
 
-### Upstream Gaps (status as of 0.9.21)
+### Upstream Gaps (ALL RESOLVED as of 0.9.22 Phase 55c)
 - ~~NestGate: no native encrypt-at-rest~~ **RESOLVED v0.4.70 S48** (ChaCha20-Poly1305)
 - ~~Squirrel: DISCOVERY_SOCKET not used for capability resolution~~ **RESOLVED session AN**
 - ~~rhizoCrypt: local hashing, not delegating to Tower~~ **RESOLVED S54** — vertex
   signing via `crypto.sign_ed25519` shipped S52. Hash delegation correctly declined
   (BLAKE3 is deterministic/keyless, 1000x IPC penalty, signature already covers hash)
 - ~~sweetGrass: local hashing, not delegating to Tower~~ **RESOLVED v0.7.28** — braid
-  signing via `crypto.sign` Ed25519 shipped. Anchor signing incremental (P3)
-- ~~BearDog: purpose-key RPC~~ **RESOLVED W74** — lazy purpose-key derivation in
-  `secrets.retrieve` + `crypto.encrypt`/`crypto.decrypt` with `purpose` param.
-  End-to-end encryption unblocked for NestGate storage + Squirrel inference.
-- ~~barraCuda: DISCOVERY_SOCKET self-registration~~ **RESOLVED Sprint 47** — Songbird
-  self-registration with 11 capability tags on all startup paths
-- loamSpine: BTSP encrypted tunnels (ecosystem frontier, no primal does this yet).
-  Tower signing shipped v0.9.16
-- ToadStool: DISCOVERY_SOCKET self-registration at startup (P5, trivial)
+  + anchor signing via `crypto.sign` Ed25519 shipped
+- ~~BearDog: purpose-key RPC~~ **RESOLVED W74** — lazy purpose-key derivation +
+  purpose encrypt/decrypt
+- ~~barraCuda: DISCOVERY_SOCKET self-registration~~ **RESOLVED Sprint 47**
+- ~~loamSpine: Tower signing~~ **RESOLVED** (Apr 28) — `entry.append` + `session.commit`
+  via `crypto.sign_ed25519`. BTSP tunnels documented as next frontier
+- ~~ToadStool: self-registration + encrypted dispatch~~ **RESOLVED S205-S208**
 
 ## [0.9.17+] — Phase 45c: BTSP Default Everywhere + Full NUCLEUS Convergence (2026-04)
 

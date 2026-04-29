@@ -1,10 +1,10 @@
 # primalSpring — Coordination and Composition Spring
 
 **Domain**: Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation, **multi-tier genetics identity**, **cross-architecture deployment**  
-**Version**: 0.9.20 (Phase 55 — 631 tests, 76 experiments, 69 deploy graphs, guideStone Level 4 — **187/187 live NUCLEUS ALL PASS (13/13 BTSP authenticated, 12 cellular graphs)** + 41/41 bare, BLAKE3 checksums (P3), seed provenance (Layer 0.5), **BTSP default on all tiers** (Layer 1.5), cellular deployment (Layer 7), BTSP Phase 1–3, **two-tier crypto architecture** (published seed DNA → family keys → per-atomic purpose keys), composition-level encrypt-at-rest, **live desktop compositions** (petalTongue GUI, branching DAG, braid provenance), multi-tier genetics (Mito-Beacon / Nuclear / Tags), capability-based discovery (Songbird service mesh, zero hardcoded primal names), **genomeBin v5.1 — 46 binaries across 6 target triples (Tier 1: 39/39)**, shell composition library, composition template + reference implementation, per-spring exploration lanes)  
-**Phase**: **INTERSTADIAL** — stadial gate cleared April 16, 2026. Two-tier crypto architecture April 28, 2026. JWT deprecated within NUCLEUS (BearDog auth). Full Tower wiring for all 12 primals.  
+**Version**: 0.9.23 (Phase 56 — 631 tests, 84 experiments (18 tracks), 71 deploy graphs, guideStone Level 4 — 187/187 ALL PASS, 13/13 BTSP, **Desktop NUCLEUS live** (12 primals, 11/12 healthy, `desktop_nucleus.sh`), **The Rhizome micro-game** (roguelike on NUCLEUS), **micro-desktop shell** (biomeOS routing + health bar), **23 live gaps documented**, **provenance trio E2E resolved**, 4 desktop app deploy graphs, **biomeOS Neural API** (605 capabilities, semantic routing), two-tier crypto, genomeBin v5.1, multi-tier genetics, BTSP Phase 1–3, shell composition library, per-spring exploration lanes)  
+**Phase**: **INTERSTADIAL → DESKTOP SUBSTRATE** — Phase 56 desktop deployment (April 28, 2026). Live NUCLEUS with petalTongue GUI + game applications. Full 12-primal stack operational.  
 **License**: AGPL-3.0-or-later  
-**Last Updated**: April 2026
+**Last Updated**: April 28, 2026
 
 ---
 
@@ -39,14 +39,14 @@ primalSpring fills the gap.
 | Metric | Value |
 |--------|-------|
 | Tests | **631** (unit + integration + doc-tests + proptest, 46 ignored live) |
-| Experiments | 75 (17 tracks) |
+| Experiments | 84 (18 tracks) |
 | Proptest fuzz tests | 22 (protocol, extract, capability, cross-cutting pipeline) |
 | Clippy (pedantic + nursery) | **0 warnings** |
 | `cargo fmt` | **clean** |
 | `#![deny(unsafe_code)]` | workspace-level (allow-listed for `std::env::set_var` in Rust 2024) |
 | C dependencies | 0 (`deny.toml` enforced) |
 | Files over 1000 LOC | 0 |
-| Deploy graphs | **56 TOMLs** (9 profiles + 6 fragments + 5 multi-node + 4 spring validation (template + manifest + 2 unique) + 2 cross-spring + 5 bonding + 2 chaos + 2 spring deploy (template + manifest) + 3 downstream (template + manifest + 1 unique enclave) + 4 patterns + 11 root + 1 federation), all `by_capability`, topologically validated, fragment-first `resolve = true` composition, 31 graph tests passing |
+| Deploy graphs | **71 TOMLs** (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 cross-spring + 5 bonding + 2 chaos + 2 spring deploy + 3 downstream + 4 patterns + 13 root + 1 federation + 12 cell graphs + 4 desktop app graphs), all `by_capability`, topologically validated, fragment-first `resolve = true` composition |
 | Genetics | **Multi-tier**: Mito-Beacon (discovery/NAT), Nuclear (lineage DNA, non-fungible permissions), Tags (open participation) |
 | BTSP | **Phase 1–3 (CONVERGED)**: FAMILY_SEED auth → secure-by-default cascade → ChaCha20-Poly1305 encrypted channel. **BTSP default on all tiers**: guidestone expects BTSP on Tower, Node, Nest, Provenance. **13/13 BTSP authenticated (187/187 checks ALL PASS, 8 cellular graphs BTSP-enforced)**. JSON-line BTSP auto-detect wired in all relay primals. 15s relay handshake timeout. Two-pass `upgrade_btsp_clients()`. biomeOS `btsp.escalate` runtime escalation (v3.25) |
 | Bonding | Covalent, Ionic, Metallic, Weak, OrganoMetalSalt + BtspEnforcer deny semantics + ionic RPC + content distribution federation |
@@ -60,7 +60,7 @@ primalSpring fills the gap.
 | Discovery | **Capability-first**: `discover_by_capability()` + 6-tier + Neural API |
 | IPC transport | JSON-RPC 2.0: UDS + TCP + HTTP POST (`tcp_rpc_multi_protocol` auto-fallback) |
 | MCP tools | 8 typed tools via `mcp.tools.list` |
-| Meta-validator | `validate_all` binary — runs all 75 experiments |
+| Meta-validator | `validate_all` binary — runs all 84 experiments |
 | Tower Atomic | **STABLE** — 41/41 gates |
 | NUCLEUS | **VALIDATED** — Tower + Nest + Node, 12/12 primals ALIVE, **187/187 guidestone ALL PASS (13/13 BTSP, 8 cellular BTSP-enforced)**, 19/19 exp094 parity, 12/12 exp091 routing |
 | Seed Provenance | Public BLAKE3 fingerprints in `plasmidBin/manifest.toml` — Layer 0.5 binary authenticity |

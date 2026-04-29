@@ -1,9 +1,10 @@
 # Agentic Trio Evolution — biomeOS, petalTongue, Squirrel
 
-**Status**: EVOLUTION GUIDANCE  
-**Date**: March 28, 2026  
+**Status**: EVOLUTION GUIDANCE (updated Phase 56)  
+**Date**: April 28, 2026 (originally March 28, 2026)  
 **Source**: primalSpring substrate validation, leverage guides, experiment gaps  
-**Scope**: Specific evolution recommendations to make biomeOS, petalTongue, and Squirrel more leverageable as the agentic coordination layer for the ecoPrimals ecosystem
+**Scope**: Specific evolution recommendations to make biomeOS, petalTongue, and Squirrel more leverageable as the agentic coordination layer for the ecoPrimals ecosystem  
+**Related specs**: `DESKTOP_NUCLEUS_DEPLOYMENT.md`, `LIVE_GUI_COMPOSITION_PATTERN.md`, `DESKTOP_SESSION_MODEL.md`
 
 ---
 
@@ -21,13 +22,17 @@ The loop: **petalTongue observes → human/agent decides → Squirrel acts → b
 
 ## biomeOS Evolution Guidance
 
-### Current State (v2.70+)
+### Current State (v3.30, Phase 55c)
 
 - 285+ semantic methods across 26 domains
 - 5 graph coordination patterns (Sequential, Parallel, ConditionalDag, Pipeline, Continuous)
 - Neural API routing via `capability.call`, `capability.discover`
 - `TransportEndpoint` abstraction (UDS, TCP, HTTP, filesystem)
 - Chimera codegen (stub → capability-based IPC forwarding)
+- Deep debt cleanup (v3.30): JWT hardening, module extraction
+- `biomeos nucleus --mode full` launches 5 primals + Neural API
+- Coordination key caching (v3.29): `coordination` purpose key from BearDog
+- **Phase 56 target**: `biomeos nucleus --mode desktop` launches all 12 primals (see `DESKTOP_NUCLEUS_DEPLOYMENT.md`)
 
 ### P0: TCP-Only API Mode
 
@@ -84,18 +89,22 @@ The loop: **petalTongue observes → human/agent decides → Squirrel acts → b
 
 ## Squirrel Evolution Guidance
 
-### Current State (v0.1.0-alpha.25)
+### Current State (v0.1.0 session AN, Phase 55c)
 
-- 452k LOC, 22 workspace crates, 6,839 tests, 86.5% coverage
+- 452k LOC, 22 workspace crates, 7,182 tests, 90.1% coverage
 - AI inference: `ai.query`, `ai.complete`, `ai.chat` with vendor-agnostic routing
 - MCP: `tool.execute`, `tool.list` with JSON Schema
 - Context: `context.create`, `context.update`, `context.summarize` (DashMap, NestGate persistence)
 - Peer discovery: `discovery.peers`, `capabilities.list`
 - DignityEvaluator on all AI operations
+- **AN session**: HTTP provider support (`inference.register_provider` with `endpoint`), `DISCOVERY_SOCKET` resolution, crypto foundation (`SecurityProviderClient` methods to BearDog)
+- 0 `#[async_trait]` (64 removed), 0 C deps, 0 unsafe, 0 lying stubs, `#[expect(reason)]` policy
 
 ### P0: Socket Transport Alignment
 
 **Gap**: Squirrel defaults to abstract UDS `@squirrel` which biomeOS cannot route to.
+
+**Partial resolution (AN session)**: Squirrel now honors `DISCOVERY_SOCKET` env var for Songbird resolution. However, Squirrel's own listen socket still defaults to abstract namespace.
 
 **Evolution**:
 - Default to filesystem socket at `$XDG_RUNTIME_DIR/ecoPrimals/squirrel.sock` (matching biomeOS discovery)
@@ -139,13 +148,18 @@ The loop: **petalTongue observes → human/agent decides → Squirrel acts → b
 
 ## petalTongue Evolution Guidance
 
-### Current State (v1.6.6)
+### Current State (v1.6.7+, Phase 55c)
 
 - Grammar of Graphics, declarative scene graph, dashboard layout engine
 - Multi-modal: egui, TUI (ratatui), web (axum), headless, server (JSON-RPC IPC)
 - SSE client for biomeOS ecosystem events
 - Songbird discovery and topology visualization wired
 - Squirrel adapter in frame loop
+- `live` mode: egui + IPC in single process (1400x900 window, shared `VisualizationState`)
+- reqwest+ring+rustls eliminated (v1.6.7), LocalHttpClient via hyper
+- `BackendCapabilities.multi_window` hook exists (currently `false`)
+- **Known gap**: `motor.*` IPC commands in `live` mode reach a logging thread, not the GUI (see `LIVE_GUI_COMPOSITION_PATTERN.md`)
+- **Phase 56 target**: Multi-surface desktop shell (see `PETALTONGUE_DESKTOP_SHELL_PHASE56_APR28_2026.md`)
 
 ### P0: biomeOS SSE Robustness
 
@@ -208,27 +222,69 @@ The loop: **petalTongue observes → human/agent decides → Squirrel acts → b
 
 ## Cross-Cutting: The Agentic Loop
 
-### What Works Today
+### What Works Today (Phase 55c)
 
 1. biomeOS discovers primals and routes `capability.call` to them
 2. Squirrel responds to `ai.query` via biomeOS Neural API (exp061)
 3. petalTongue renders dashboards and topology (exp043, exp065, exp078)
 4. primalSpring exposes MCP tools to Squirrel (exp044)
+5. Desktop NUCLEUS runs all 12 primals with full crypto tiers (28/30 validation checks)
+6. Squirrel honors `DISCOVERY_SOCKET` for Songbird resolution (AN session)
+7. All 12 primals resolved — zero upstream asks for Phase 55 items
 
 ### What Doesn't Work Yet
 
-1. **biomeOS → Squirrel routing fails** due to abstract socket mismatch (exp077)
+1. **biomeOS → Squirrel routing**: partially resolved (Squirrel honors `DISCOVERY_SOCKET`) but Squirrel's listen socket still uses abstract namespace in some configurations
 2. **petalTongue → Squirrel intent feedback** not validated (no experiment)
 3. **Squirrel → petalTongue render request** not validated (no experiment)
-4. **Full loop**: human clicks petalTongue → biomeOS routes intent → Squirrel decides → biomeOS executes graph → springs act → petalTongue renders — **no end-to-end experiment**
+4. **petalTongue motor channel**: `motor.*` IPC commands in `live` mode reach a logging thread, not the GUI
+5. **Full loop**: human clicks petalTongue → biomeOS routes intent → Squirrel decides → biomeOS executes graph → springs act → petalTongue renders — **no end-to-end experiment**
+
+### The Desktop Application Loop (Phase 56)
+
+The agentic loop extends to desktop applications via the session model
+(see `DESKTOP_SESSION_MODEL.md`):
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Desktop Application Loop                      │
+│                                                                  │
+│  petalTongue                biomeOS              Squirrel        │
+│  ┌──────────┐          ┌──────────────┐      ┌───────────┐     │
+│  │ egui     │ sensor   │ Neural API   │ ai.  │ inference │     │
+│  │ window   │──events─▶│ capability   │─chat─▶│ context   │     │
+│  │          │          │ routing      │      │ tools     │     │
+│  │          │◀─render──│              │◀─────│           │     │
+│  └──────────┘  scene   │ ContinuousSession   └───────────┘     │
+│                        │ (60Hz tick)  │                         │
+│                        └──────┬───────┘                         │
+│                               │                                  │
+│                     ┌─────────┴──────────┐                      │
+│                     │  Application       │                      │
+│                     │  (deploy graph)    │                      │
+│                     │  esotericWebb      │                      │
+│                     │  + ludoSpring      │                      │
+│                     └────────────────────┘                      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+Each tick of a continuous application session:
+1. **Input**: Poll petalTongue sensor/intent events
+2. **Logic**: Application graph nodes execute (game logic, AI inference)
+3. **Render**: Push scene graph to petalTongue session
+4. **Provenance**: Optionally append events to rhizoCrypt DAG
+
+The `app.launch` / `app.suspend` / `app.resume` / `app.terminate` API
+manages application lifecycle. The session binds a `ContinuousSession`
+(biomeOS tick loop) to a petalTongue visualization session.
 
 ### Recommended New Experiments
 
 | ID | Name | What It Validates |
 |----|------|-------------------|
-| exp085 | `agentic_loop_substrate` | Full three-way loop: petalTongue → biomeOS → Squirrel → biomeOS → springs → petalTongue |
-| exp086 | `mcp_ecosystem_tools` | Squirrel `tool.list` with multiple springs announcing tools |
-| exp087 | `fieldmouse_ai_triage` | fieldMouse frame → NestGate → Squirrel classify → petalTongue alert |
+| exp099 | `agentic_loop_substrate` | Full three-way loop: petalTongue → biomeOS → Squirrel → biomeOS → springs → petalTongue |
+| exp100 | `mcp_ecosystem_tools` | Squirrel `tool.list` with multiple springs announcing tools |
+| exp101 | `fieldmouse_ai_triage` | fieldMouse frame → NestGate → Squirrel classify → petalTongue alert |
 
 ### Deployment Matrix Cells
 
@@ -240,13 +296,16 @@ These cells validate the agentic trio in different substrate conditions:
 | `agentic-x86-basement-uds` | agentic_tower | Full loop on HPC (lowest latency) |
 | `agentic-x86-homelan-tcp` | agentic_tower | TCP-only (biomeOS --port gap exposed) |
 | `agentic-fm-x86-homelan-uds` | agentic_fieldmouse | AI-guided sensor orchestration |
+| `desktop-x86-homelan-uds` | desktop_nucleus | Desktop application session lifecycle |
 
 ---
 
-## Priority Summary
+## Priority Summary (Updated Phase 56)
 
 | Priority | biomeOS | Squirrel | petalTongue |
 |----------|---------|----------|-------------|
-| **P0** | TCP-only `--port`, cross-gate `gate` param | Socket transport alignment | SSE reconnection robustness |
-| **P1** | Standalone lab mode, health method aliases | Capability canonicalization, MCP tool expansion | ToadStool frame path, Provenance trio |
-| **P2** | Abstract socket routing | Agentic graph integration | skunkBat defense viz, fieldMouse dashboards |
+| **P0** | `NucleusMode::Desktop` (12 primals), Songbird registration loop | Socket transport alignment (listen socket) | Motor channel fix in `live_mode.rs` |
+| **P0** | TCP-only `--port`, cross-gate `gate` param | (unchanged) | SSE reconnection robustness |
+| **P1** | Application session API (`app.launch`, etc.), family seed persistence | Capability canonicalization, MCP tool expansion | Session-aware rendering, desktop shell chrome |
+| **P2** | Capability domain symlinks | Agentic graph integration | Multi-viewport Phase A (egui), sensor intent broadcasting |
+| **P3** | (unchanged) | (unchanged) | DisplayManager Phase B, ToadStool `display.*` Phase C |

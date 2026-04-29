@@ -1,10 +1,12 @@
 # NUCLEUS IPC Method Map
 
-> Verified live against Desktop NUCLEUS (Phase 55b, April 28, 2026).
+> Verified live against Desktop NUCLEUS (Phase 55c, April 28, 2026).
 > Every method below was confirmed via JSON-RPC over UDS.
 > Upstream absorbed: NestGate v0.4.70 S48 (encrypt-at-rest, auth bypass),
 > biomeOS v3.30 (deep debt), Songbird W178 (anyhow), Squirrel AN (HTTP providers,
-> DISCOVERY_SOCKET resolution, crypto foundation).
+> DISCOVERY_SOCKET resolution, crypto foundation), BearDog W75 (purpose-key module
+> extraction), barraCuda Sprint 47b (role-based naming, self-registration),
+> sweetGrass v0.7.28 (braid + anchor signing delegation).
 
 All primals respond to `health.liveness` (status: "alive").
 Discovery: most expose `primal.capabilities` or `capabilities.list` or `rpc.methods`.
@@ -94,6 +96,17 @@ Socket: `toadstool-{family_id}.sock`
 | `compute.dispatch` | Submit a compute job |
 | Meta | `health.*`, `capabilities.list`, `identity.get` |
 
+**Encrypted dispatch** (S205): `compute.dispatch.submit` encrypts payloads via BearDog
+when `BEARDOG_SOCKET` is available. Purpose key retrieved lazily via
+`secrets.retrieve("nucleus:{family}:purpose:compute")`, cached after first call.
+Payload encrypted with `crypto.encrypt` (ChaCha20-Poly1305), result decrypted with
+`crypto.decrypt`. Standalone mode: plaintext (zero behavioral change).
+
+**Self-registration** (S207): At startup, calls `register_with_discovery()` via
+`DISCOVERY_SOCKET` — sends `ipc.register` with `primal_id: "toadstool"`,
+capabilities `["compute.dispatch","compute.capabilities"]`. Fire-and-forget.
+Both `run_server_main` and `DaemonServer` startup paths covered.
+
 ### barraCuda — Tensor / Math Engine
 
 Socket: `barracuda-{family_id}.sock`
@@ -181,6 +194,14 @@ Socket: `loamspine-{family_id}.sock`
 | `braid.*` | `commit` |
 | Meta | `primal.capabilities`, `capability.list`, `health.check` |
 
+**Tower-signed entries** (Apr 28): `entry.append` and `session.commit` sign entries
+via BearDog `crypto.sign_ed25519` when `BEARDOG_SOCKET` is set. Entry metadata carries
+`tower_signature` (base64 Ed25519) and `tower_signature_alg`. Chain hash commits to
+the signed entry. `prepare_entry()` + `append_prepared_entry()` split enables signing
+between creation and chain append. Standalone mode (no BearDog) produces unsigned entries.
+BTSP tunnel consumption documented as next frontier — loamSpine completes the 4-step
+handshake but does not yet use tunnels for encrypted replication. 1,509 tests.
+
 ### sweetGrass — Provenance
 
 Socket: `sweetgrass-{family_id}.sock`
@@ -196,6 +217,14 @@ Socket: `sweetgrass-{family_id}.sock`
 | `pipeline.*` | `attribute` |
 | `composition.*` | `tower_health`, `node_health`, `nest_health`, `nucleus_health` |
 | Meta | `capabilities.list`, `identity.get`, `health.*`, `tools.list`, `tools.call` |
+
+**Signing delegation** (v0.7.28): `braid.create` delegates signing to BearDog
+`crypto.sign` (Ed25519 over UDS JSON-RPC) via `CryptoDelegate` module. Braids carry
+`Witness::from_tower_ed25519` with `tier: "tower"` and `did:key:z6Mk...` agent DID
+constructed from BearDog's public key. `anchoring.anchor` also delegates signing.
+Graceful degradation: unsigned `tier: "open"` witnesses when BearDog is unavailable.
+Socket resolution: `BEARDOG_SOCKET` → `SECURITY_PROVIDER_SOCKET` →
+`BIOMEOS_SOCKET_DIR/security.sock` → `XDG_RUNTIME_DIR/biomeos/security.sock`.
 
 ---
 

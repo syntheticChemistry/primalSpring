@@ -611,7 +611,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring"
-version = "0.9.17"
+version = "0.9.23"
 dependencies = [
  "base64",
  "blake3",
@@ -1317,6 +1317,78 @@ dependencies = [
  "primalspring",
  "serde_json",
  "toml",
+]
+
+[[package]]
+name = "primalspring-exp099"
+version = "0.9.23"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp100"
+version = "0.9.23"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp101"
+version = "0.9.23"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp102"
+version = "0.9.23"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp103"
+version = "0.9.23"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp104"
+version = "0.9.23"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp105"
+version = "0.9.23"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp106"
+version = "0.9.23"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

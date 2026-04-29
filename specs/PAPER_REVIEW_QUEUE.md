@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: April 16, 2026  
-**Status**: Phase 45 — 75 experiments, 17 tracks, multi-tier genetics + BTSP Phase 1–3 + cross-arch deployment + fragment-first graph consolidation, 631 tests, 56 deploy graphs, genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39)
+**Status**: Phase 56 — 84 experiments, 18 tracks, Desktop NUCLEUS live, The Rhizome micro-game, 631 tests, 71 deploy graphs, 23 live gaps documented
 
 ---
 
