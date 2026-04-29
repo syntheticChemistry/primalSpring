@@ -1377,6 +1377,7 @@ dependencies = [
 name = "primalspring-exp105"
 version = "0.9.23"
 dependencies = [
+ "base64",
  "primalspring",
  "serde",
  "serde_json",
@@ -1386,6 +1387,7 @@ dependencies = [
 name = "primalspring-exp106"
 version = "0.9.23"
 dependencies = [
+ "base64",
  "primalspring",
  "serde",
  "serde_json",

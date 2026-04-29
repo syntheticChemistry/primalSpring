@@ -9,6 +9,7 @@
 //!
 //! Phase 56 — Desktop Substrate (MICRO_DESKTOP_COMPOSITION.md)
 
+use base64::Engine as _;
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover::{discover_by_capability, discover_primal};
 use primalspring::validation::ValidationResult;
@@ -171,7 +172,7 @@ fn phase_capability_routing(v: &mut ValidationResult, biomeos: &mut Option<Prima
             serde_json::json!({
                 "capability": "crypto",
                 "operation": "crypto.blake3_hash",
-                "params": {"data": "desktop-shell-test"}
+                "params": {"data": base64::engine::general_purpose::STANDARD.encode(b"desktop-shell-test")}
             }),
             "crypto.blake3_hash via biomeOS",
         ),
@@ -323,10 +324,11 @@ fn phase_provenance_sidebar(v: &mut ValidationResult) -> Option<String> {
         serde_json::json!({"name": "exp106-provenance-sidebar"}),
     );
 
-    let session_id = session_resp
-        .ok()
-        .and_then(|r| r.result)
-        .and_then(|r| r.get("session_id").and_then(|s| s.as_str()).map(String::from));
+    let session_id = session_resp.ok().and_then(|r| r.result).and_then(|v| {
+        v.as_str()
+            .map(String::from)
+            .or_else(|| v.get("session_id").and_then(|s| s.as_str()).map(String::from))
+    });
 
     let Some(ref sid) = session_id else {
         v.check_skip("prov_sidebar", "dag.session.create failed");
@@ -547,23 +549,29 @@ fn build_game_placeholder_scene() -> serde_json::Value {
 fn phase_direct_fallbacks(v: &mut ValidationResult) {
     v.section("Direct Primal Fallbacks");
 
-    let ng = discover_by_capability("storage");
+    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
+    let store_params = serde_json::json!({
+        "family_id": family_id,
+        "key": "exp106-direct-test",
+        "value": "desktop-shell-direct-fallback",
+    });
+
+    let ng = discover_primal("nestgate");
     if let Some(ng_sock) = ng.socket.as_ref() {
         if let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") {
-            let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
-            let resp = client.call(
-                "storage.store",
-                serde_json::json!({
-                    "family_id": family_id,
-                    "key": "exp106-direct-test",
-                    "value": "desktop-shell-direct-fallback",
-                }),
-            );
-            v.check_bool(
-                "direct_nestgate",
-                resp.is_ok_and(|r| r.result.is_some()),
-                "Direct NestGate storage (bypasses GAP-13 biomeOS misroute)",
-            );
+            let resp = client.call("storage.store", store_params);
+            match &resp {
+                Ok(r) if r.result.is_some() => {
+                    v.check_bool("direct_nestgate", true, "Direct NestGate storage");
+                }
+                Ok(r) => {
+                    let msg = r.error.as_ref().map_or("no result".to_owned(), |e| e.message.clone());
+                    v.check_bool("direct_nestgate", false, &format!("NestGate error: {msg}"));
+                }
+                Err(e) => {
+                    v.check_bool("direct_nestgate", false, &format!("NestGate transport: {e}"));
+                }
+            }
         } else {
             v.check_skip("direct_nestgate", "NestGate connection failed");
         }
@@ -571,23 +579,34 @@ fn phase_direct_fallbacks(v: &mut ValidationResult) {
         v.check_skip("direct_nestgate", "NestGate not discovered");
     }
 
-    let barr = discover_by_capability("math");
-    if let Some(barr_sock) = barr.socket.as_ref() {
+    let barr = discover_primal("barracuda");
+    let barr_fb;
+    let barr_sock = match barr.socket.as_ref() {
+        Some(s) => Some(s),
+        None => {
+            barr_fb = discover_by_capability("math");
+            barr_fb.socket.as_ref()
+        }
+    };
+
+    if let Some(barr_sock) = barr_sock {
         if let Ok(mut client) = PrimalClient::connect(barr_sock, "barracuda") {
             let resp = client.call(
                 "noise.perlin2d",
-                serde_json::json!({
-                    "width": 2,
-                    "height": 2,
-                    "scale": 1.0,
-                    "seed": 106
-                }),
+                serde_json::json!({"x": 2, "y": 2, "scale": 1.0, "seed": 106}),
             );
-            v.check_bool(
-                "direct_barracuda",
-                resp.is_ok_and(|r| r.result.is_some()),
-                "Direct Barracuda noise (desktop health check)",
-            );
+            match &resp {
+                Ok(r) if r.result.is_some() => {
+                    v.check_bool("direct_barracuda", true, "Direct Barracuda noise");
+                }
+                Ok(r) => {
+                    let msg = r.error.as_ref().map_or("no result".to_owned(), |e| e.message.clone());
+                    v.check_bool("direct_barracuda", false, &format!("Barracuda error: {msg}"));
+                }
+                Err(e) => {
+                    v.check_bool("direct_barracuda", false, &format!("Barracuda transport: {e}"));
+                }
+            }
         } else {
             v.check_skip("direct_barracuda", "Barracuda connection failed");
         }

@@ -9,16 +9,26 @@
 //! Phase 56 — Desktop Substrate (AGENTIC_TRIO_EVOLUTION.md)
 
 use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover::discover_by_capability;
+use primalspring::ipc::discover::{discover_by_capability, discover_primal};
 use primalspring::validation::ValidationResult;
 
 fn phase_storage_ingest(v: &mut ValidationResult) {
     v.section("Sensor Data Ingest (NestGate)");
 
     let ng = discover_by_capability("storage");
-    let Some(ng_sock) = ng.socket.as_ref() else {
-        v.check_skip("storage_ingest", "NestGate not discovered");
-        return;
+    let ng_fallback;
+    let ng_sock = match ng.socket.as_ref() {
+        Some(s) => s,
+        None => {
+            ng_fallback = discover_primal("nestgate");
+            match ng_fallback.socket.as_ref() {
+                Some(s) => s,
+                None => {
+                    v.check_skip("storage_ingest", "NestGate not discovered");
+                    return;
+                }
+            }
+        }
     };
 
     let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") else {
@@ -27,20 +37,30 @@ fn phase_storage_ingest(v: &mut ValidationResult) {
     };
 
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
-    let resp = client.call(
-        "storage.store",
-        serde_json::json!({
-            "family_id": family_id,
-            "key": "fieldmouse/frame/exp101-test",
-            "value": "{\"ph\":7.2,\"moisture\":0.45,\"temp_c\":22.1}",
-        }),
-    );
+    let store_params = serde_json::json!({
+        "family_id": family_id,
+        "key": "fieldmouse/frame/exp101-test",
+        "value": "{\"ph\":7.2,\"moisture\":0.45,\"temp_c\":22.1}",
+    });
+    let resp = client.call("storage.store", store_params.clone());
 
-    v.check_bool(
-        "storage_ingest",
-        resp.is_ok_and(|r| r.result.is_some()),
-        "Sensor frame stored in NestGate",
-    );
+    let ok = resp.is_ok_and(|r| r.result.is_some());
+    if ok {
+        v.check_bool("storage_ingest", true, "Sensor frame stored in NestGate");
+    } else if let Some(fb_sock) = discover_primal("nestgate").socket {
+        if let Ok(mut fb) = PrimalClient::connect(&fb_sock, "nestgate") {
+            let fb_resp = fb.call("storage.store", store_params);
+            v.check_bool(
+                "storage_ingest",
+                fb_resp.is_ok_and(|r| r.result.is_some()),
+                "Sensor frame stored in NestGate (via fallback — biomeOS misrouted)",
+            );
+            return;
+        }
+        v.check_bool("storage_ingest", false, "NestGate fallback connection failed");
+    } else {
+        v.check_bool("storage_ingest", false, "NestGate storage.store failed");
+    }
 }
 
 fn phase_ai_classification(v: &mut ValidationResult) {

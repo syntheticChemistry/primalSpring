@@ -1,10 +1,11 @@
 # Live Desktop NUCLEUS — Deployment Gap Report (Phase 56)
 
-**Date**: April 29, 2026 (refreshed — upstream pull wave)
+**Date**: April 29, 2026 (reharvest pass — local debt resolution)
 **Deployment**: `desktop_nucleus.sh start` + biomeOS `neural-api` (family=desktop-nucleus)
-**Primals deployed**: 12 spawned + biomeOS Neural API coordinator
-**Health**: 10/10 JSON-RPC primals healthy (coralReef excluded — tarpc)
-**biomeOS**: Online — 605 registered capabilities, 3078 auto-discovered from 36 sockets
+**Primals deployed**: 11 running + biomeOS Neural API coordinator (petalTongue not started)
+**Health**: 11/12 healthy (petalTongue process absent, coralReef tarpc-only)
+**biomeOS**: Online — 605 registered capabilities from 36 sockets
+**Experiments**: exp101 ALL PASS, exp105 ALL PASS (17/17), exp106 11/14 (3 failures = stale biomeOS binary)
 
 ---
 
@@ -340,112 +341,112 @@ Rust serde struct variants that differ from the simplified spec format.
 | GAP-19 | Discovery | P1 | **Mitigated** | ludoSpring not discoverable via `game_science` capability — symlink in `desktop_nucleus.sh` |
 | GAP-20 | Discovery | P2 | **Mitigated** | `FAMILY_ID` exported in `desktop_nucleus.sh`; experiments read env |
 | GAP-21 | NestGate | P2 | **RESOLVED UPSTREAM** | NestGate S49: `family_id` optional — falls back to server's `NESTGATE_FAMILY_ID` (commit `7a4b9556a`) |
-| GAP-22 | primalSpring | P2 | **Reclassified** | NOT rhizoCrypt — startup ordering or stale binary. rhizoCrypt S55 + BearDog W76b audits confirm |
-| GAP-23 | primalSpring | P2 | **Reclassified** | NOT BearDog — same class as GAP-22. BearDog W76b audit: zero path-dependent behavior |
+| GAP-22 | primalSpring | P2 | **RESOLVED LOCAL** | Root cause: `dag.session.create` returns bare UUID, not `{"session_id":"..."}`. Fixed response parsing in experiments. |
+| GAP-23 | primalSpring | P2 | **RESOLVED LOCAL** | Root cause: BearDog `crypto.blake3_hash` expects base64-encoded `data`. Fixed to base64-encode in experiments. |
+| GAP-24 | Barracuda | P2 | **RESOLVED LOCAL** | `noise.perlin2d` params changed: `width`/`height` → `x`/`y`. Response changed: `{"data":[...]}` → `{"result":0.0}`. Fixed in experiments. |
+| GAP-25 | loamSpine | P2 | **RESOLVED LOCAL** | `spine.create` now requires `owner` field. Added to experiments. |
+| GAP-26 | sweetGrass | P2 | **RESOLVED LOCAL** | `contribution.record` with `content_hash` matching existing braid `data_hash` returns "Braid already exists". Use unique contribution hash. |
+| GAP-27 | biomeOS | P1 | **Stale binary** | biomeOS binary in plasmidBin is pre-v3.31. `graph.list`/`graph.status`/`graph.save` return 0/error. `capability.discover("storage")` misroutes to ToadStool. Rebuild needed. |
 
 ---
 
-## Experiment Results: Micro-Desktop + The Rhizome (Phase 56)
+## Experiment Results: Micro-Desktop + The Rhizome (Phase 56, Reharvest)
+
+### exp101 — fieldMouse AI Triage
+
+**Run**: `FAMILY_ID=desktop-nucleus cargo run -p primalspring-exp101`
+**Result**: **ALL PASS** — 2/2 passed, 1 skipped
+
+| Phase | Check | Result | Notes |
+|-------|-------|--------|-------|
+| Storage | storage_ingest (NestGate) | **PASS** | Via primal-name fallback (biomeOS misroutes to ToadStool — GAP-27) |
+| AI | ai_models_available (Squirrel) | **PASS** | Inference models available |
+| Rendering | alert_render (petalTongue) | SKIP | petalTongue process not running |
 
 ### exp105 — The Rhizome Micro-Game
 
 **Run**: `FAMILY_ID=desktop-nucleus cargo run -p primalspring-exp105`
-**Result**: 8/13 passed, 7 skipped, 5 failures
+**Result**: **ALL PASS** — 17/17 passed, 4 skipped
 
 | Phase | Check | Result | Notes |
 |-------|-------|--------|-------|
-| World Gen | biome_noise (Barracuda) | **PASS** | Perlin noise → Rhizome Network biome |
-| World Gen | wfc_floor (ludoSpring) | SKIP | ludoSpring not discoverable via `game_science` (GAP-19) |
+| World Gen | biome_noise (Barracuda) | **PASS** | Perlin noise via `x`/`y` params (GAP-24 fixed) → Rhizome Network |
+| World Gen | wfc_floor (ludoSpring) | SKIP | ludoSpring not deployed |
 | World Gen | creature_spawn | **PASS** | 2 creatures placed deterministically |
 | World Gen | item_spawn | **PASS** | 5 items placed deterministically |
-| Rendering | scene_render (petalTongue) | SKIP | petalTongue not discoverable via `visualization` (GAP-17) |
-| Game Loop | turns_simulated | **PASS** | 10 turns completed, movement + combat working |
-| Game Loop | flow_eval (ludoSpring) | SKIP | ludoSpring not discoverable (GAP-19) |
+| Rendering | scene_render (petalTongue) | SKIP | petalTongue process not running |
+| Game Loop | turns_simulated | **PASS** | 10 turns, movement + combat |
+| Game Loop | flow_eval (ludoSpring) | SKIP | ludoSpring not deployed |
 | Game Loop | damage_calc (Barracuda) | **PASS** | `stats.mean([5,1,8])` → 4.7 |
-| Save | nestgate_store | FAIL | Connected but error response (GAP-21) |
-| Save | dag_session (rhizoCrypt) | FAIL | Error on capability socket — reclassified, see GAP-22 diagnostic |
-| Save | braid_create (sweetGrass) | **PASS** | W3C PROV-O braid created |
-| Save | contribution_record | FAIL | Braid created but contribution record errored |
-| Load | load_game (NestGate) | FAIL | Connected but error response |
+| Save | nestgate_store (NestGate) | **PASS** | Via primal-name fallback (biomeOS misroute — GAP-27) |
+| Save | dag_session (rhizoCrypt) | **PASS** | Bare UUID parsed (GAP-22 fixed) |
+| Save | dag_seal (rhizoCrypt) | **PASS** | Custom event sealed in DAG |
+| Save | ledger_entry (loamSpine) | **PASS** | With `owner` param (GAP-25 fixed) |
+| Save | braid_create (sweetGrass) | **PASS** | W3C PROV-O braid, unique hash per run |
+| Save | contribution_record (sweetGrass) | **PASS** | Unique contribution hash (GAP-26 fixed) |
+| Save | save_complete | **PASS** | Full save pipeline E2E |
+| Load | load_game (NestGate) | **PASS** | Round-trip via primal-name fallback |
+| Load | merkle_verify (rhizoCrypt) | **PASS** | Merkle root verified (bare string parsed) |
 | Narration | ai_narrate (Squirrel) | **PASS** | AI chat responded |
-| Crypto | crypto_hash (BearDog) | FAIL | Connected but error response (GAP-23) |
+| Crypto | crypto_hash (BearDog) | **PASS** | BLAKE3 hash with base64 data (GAP-23 fixed) |
 | Discovery | discovery_list (Songbird) | **PASS** | 10 primals in service mesh |
 
-**Working end-to-end**: World generation (Barracuda noise), game loop (10 turns with combat),
-Squirrel AI narration, sweetGrass braid creation, Songbird discovery.
-
-**stdout fallback render** produces correct ASCII roguelike map with rooms, corridors,
-creatures, items, and player movement.
+**Full roguelike pipeline validated**: world gen → render (stdout fallback) → 10-turn game loop
+→ save (NestGate + provenance trio) → load → merkle verify → AI narrate → crypto hash.
 
 ### exp106 — Micro-Desktop Shell
 
 **Run**: `FAMILY_ID=desktop-nucleus cargo run -p primalspring-exp106`
-**Result**: 2/4 passed, 5 skipped, 2 failures
+**Result**: 11/14 passed, 2 skipped, 3 failures (all biomeOS stale binary — GAP-27)
 
 | Phase | Check | Result | Notes |
 |-------|-------|--------|-------|
-| biomeOS | biomeos_connect | SKIP | biomeOS not discoverable (GAP-18) |
-| Health | healthy_primals | **PASS** | 11/12 primals healthy (petalTongue missing) |
-| Health | health_bar_format | **PASS** | System bar shown with per-primal indicators |
-| Routing | capability.call tests | SKIP | biomeOS not connected (GAP-18) |
-| Graphs | graph management | SKIP | biomeOS not connected (GAP-18) |
-| Provenance | sidebar DAG | SKIP | dag.session.create failed (GAP-22) |
-| Rendering | multi-session | SKIP | petalTongue not discoverable (GAP-17) |
-| Fallback | direct_nestgate | FAIL | Connected but error response (GAP-21) |
-| Fallback | direct_barracuda | FAIL | Connected but error response |
-
-**System health bar** confirms 11/12 primals responsive to heartbeat on `desktop-nucleus`
-family sockets. Only petalTongue missing (no `visualization-*` socket alias).
+| biomeOS | biomeos_connect | **PASS** | Multi-name fallback: biomeos → neural-api → orchestration |
+| Health | healthy_primals | **PASS** | 11/12 healthy (petalTongue not running) |
+| Health | health_bar_format | **PASS** | `[Bio✓] [Song✓] [Nest✓] ... [Petal✗]` |
+| Routing | route_crypto (biomeOS) | **PASS** | blake3_hash with base64 via capability.call |
+| Routing | route_dag (biomeOS) | **PASS** | dag.session.create via capability.call |
+| Routing | route_stats (biomeOS) | **PASS** | stats.mean via capability.call |
+| Routing | route_discovery (biomeOS) | **PASS** | ipc.list via capability.call |
+| Routing | route_storage (biomeOS) | SKIP | Misroutes to ToadStool (GAP-27 — stale binary) |
+| Graphs | graph_list | **FAIL** | Returns 0 graphs — stale biomeOS binary (GAP-27) |
+| Graphs | graph_status | **FAIL** | Not accessible — stale biomeOS binary (GAP-27) |
+| Graphs | graph_save | **FAIL** | Not functional — stale biomeOS binary (GAP-27) |
+| Provenance | prov_session (rhizoCrypt) | **PASS** | DAG session created |
+| Provenance | prov_merkle (rhizoCrypt) | **PASS** | Merkle root computed |
+| Rendering | multi_render (petalTongue) | SKIP | petalTongue not running |
+| Fallback | direct_nestgate | **PASS** | Direct NestGate storage via primal name |
+| Fallback | direct_barracuda | **PASS** | `noise.perlin2d` with `x`/`y` params |
 
 ### Upstream Handoff Notes
 
+**P1 — Stale biomeOS Binary (GAP-27)** — **BLOCKING 3 exp106 checks**:
+The `plasmidBin/primals/x86_64-unknown-linux-musl/biomeos` binary is pre-v3.31.
+v3.31 (pulled, in source tree) fixes:
+- `capability.discover("storage")` misrouting to ToadStool instead of NestGate
+- `graph.list` / `graph.status` / `graph.save` returning empty/error
+- Unified dual-parse TOML loader for all graph paths
+
+**Action**: Rebuild biomeOS from pulled source and restart NUCLEUS. All 3 exp106
+failures and the `route_storage` skip should resolve.
+
 **P1 — Socket Naming Gaps (GAP-17, 18, 19)** — **MITIGATED LOCAL**:
-The capability-based discovery (`discover_by_capability`) finds sockets named
-`{capability}-{family}.sock`. Three primals register sockets by primal name instead
-of capability name:
-- petalTongue → `petaltongue-desktop-nucleus.sock` (not `visualization-*`)
-- biomeOS → `neural-api-desktop-nucleus.sock` (not `biomeos-*` or `orchestration-*`)
-- ludoSpring → no socket found (possibly not started or registered as different cap)
+`desktop_nucleus.sh` creates 13 capability-aliased symlinks. petalTongue (upstream)
+now creates `visualization-{family}.sock` at startup. biomeOS found via multi-name
+fallback in exp106. ludoSpring binary not deployed.
 
-**Local mitigation (April 29)**: `desktop_nucleus.sh` now creates 13 capability-aliased
-symlinks via `create_capability_symlinks()` after primal startup. exp106 also tries
-`neural-api` and `orchestration` as fallback discovery names for biomeOS.
+**P2 — Resolved Local Debt (GAP-22 through GAP-26)**:
+All five gaps were caller-side issues in primalSpring experiments:
+- GAP-22: `dag.session.create` returns bare UUID, not `{"session_id":"..."}`
+- GAP-23: `crypto.blake3_hash` expects base64-encoded `data`
+- GAP-24: `noise.perlin2d` params changed `width`/`height` → `x`/`y`
+- GAP-25: `spine.create` now requires `owner` field
+- GAP-26: `contribution.record` `content_hash` must differ from braid's `data_hash`
 
-**Upstream fix**: Each primal should register capability-aliased sockets alongside
-primal-named ones at startup (`visualization-{family}.sock` etc.).
+These represent **upstream API evolution** — primalSpring experiments were calling
+stale schemas. All fixed in this reharvest pass.
 
-**P2 — FAMILY_ID Default (GAP-20)** — **MITIGATED LOCAL**:
-`discover_by_capability` defaults `FAMILY_ID` to `"default"`, but the running NUCLEUS uses
-family `desktop-nucleus`. `desktop_nucleus.sh` already exports `FAMILY_ID` (line 30).
-Experiments read `FAMILY_ID` from env and thread it into IPC calls.
-
-**Upstream fix**: `discover_by_capability()` should read `FAMILY_ID` from a primal
-manifest or biomeOS runtime state, not just env vars.
-
-**P2 — IPC Error Responses (GAP-21, 22, 23)** — **GAP-21 MITIGATED LOCAL**:
-NestGate `storage.store` requires `family_id` parameter — confirmed by exp094 pattern.
-Added `family_id` to all NestGate calls in exp101, exp105, exp106.
-
-Remaining:
-- BearDog `crypto.blake3_hash` may need different parameter encoding (`data` as bytes vs. string) (GAP-23)
-
-**GAP-22 Reclassified (April 29)** — rhizoCrypt team performed exhaustive UDS accept path
-audit. Zero path-dependent behavior found: `listener.accept()` discards peer address,
-BTSP handshake carries no socket path, three-way auto-detect branches on first byte only,
-`FAMILY_ID` used only for bind-path construction, no socket name validation anywhere.
-A symlink produces the exact same `UnixStream` — kernel resolves at `connect()` time.
-
-Three hypotheses to investigate on primalSpring side:
-1. **Startup ordering** — symlink created before rhizoCrypt finishes binding → dangling
-   symlink → connection refused (not an RPC error)
-2. **Stale binary** — pre-S49 rhizocrypt has liveness-gate bug returning `-32000 FORBIDDEN`
-   for `dag.*` methods on UDS. Fixed in S49. Check binary version in plasmidBin.
-3. **Proxy layer** — if Neural API or another component is listening on `dag-*` socket
-   (not a symlink but a separate listener), it returns different errors.
-
-**Diagnostic**: Capture the exact JSON-RPC error response from `dag-{family}.sock`.
-- `-32000` with "BTSP authentication required" → binary is pre-S49
-- Connection refused → symlink target doesn't exist at connect time
-- Other error → something else is listening on that path
-
-These require parameter fuzzing against each primal's actual wire format on the capability-named sockets.
+**P2 — biomeOS Tier 1 Discovery Workaround**:
+Even with biomeOS running, `discover_by_capability("storage")` routes to ToadStool.
+Experiments now use `discover_primal("nestgate")` as fallback when Tier 1 returns
+a misrouted socket. This workaround should be removable once biomeOS binary is rebuilt.

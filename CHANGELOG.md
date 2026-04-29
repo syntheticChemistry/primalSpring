@@ -3,35 +3,51 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.9.24] — Phase 56: Local Debt + Upstream Pull Wave (2026-04-29)
+## [0.9.24] — Phase 56: Local Debt + Upstream Pull Wave + Reharvest (2026-04-29)
 
-### Fixed
+### Fixed (Reharvest Pass)
+- **GAP-22 RESOLVED**: `dag.session.create` returns bare UUID string — experiments
+  were looking for `{"session_id":"..."}` wrapper. Fixed response parsing in exp105/106.
+- **GAP-23 RESOLVED**: `crypto.blake3_hash` expects base64-encoded `data` param.
+  Experiments were sending raw text. Added base64 crate + encoding to exp105/106.
+- **GAP-24 NEW+RESOLVED**: Barracuda `noise.perlin2d` API changed: `width`/`height` → `x`/`y`,
+  response `{"data":[...]}` → `{"result":0.0}`. Fixed in exp105/106. Previous PASS was
+  false positive (used `unwrap_or(0.0)` on missing field).
+- **GAP-25 NEW+RESOLVED**: loamSpine `spine.create` now requires `owner` field. Added to exp105.
+- **GAP-26 NEW+RESOLVED**: sweetGrass `contribution.record` with `content_hash` matching
+  braid `data_hash` returns "Braid already exists". Use unique contribution hash per call.
+- **GAP-27 NEW (blocking)**: biomeOS binary in plasmidBin is pre-v3.31. `graph.list/status/save`
+  return 0/error. `capability.discover("storage")` misroutes to ToadStool. Rebuild needed.
+- NestGate storage fallback: experiments now use `discover_primal("nestgate")` when
+  biomeOS Tier 1 discovery misroutes `storage` to ToadStool
+- exp105: false positive in `biome_noise` fixed — now checks `r.result.is_some()` before
+  reporting PASS; proper error reporting on all RPC failures
+
+### Fixed (Prior — symlinks + family_id)
 - `desktop_nucleus.sh`: 13 capability-aliased symlinks via `create_capability_symlinks()`
   bridging GAP-17/18/19 (visualization, orchestration, game_science → primal sockets)
-- NestGate `storage.store/get` calls in exp101, exp105, exp106 now include `family_id`
-  parameter (GAP-21 local mitigation)
+- NestGate `storage.store/get` calls include `family_id` (GAP-21 local mitigation)
 - exp106 biomeOS discovery: multi-name fallback (biomeos → neural-api → orchestration)
-  resolves GAP-18 from experiment side
-- `desktop_nucleus.sh validate`: NestGate `storage.list` call includes `family_id`
 
 ### Resolved Upstream (pulled April 29)
-- **biomeOS v3.31**: GAP-13 (capability routing), GAP-14 (graph parser unification),
-  GAP-15 (continuous executor), GAP-16 (node dispatch) — all four RESOLVED
-- **petalTongue**: GAP-01 (`DISCOVERY_SOCKET` env + backoff), motor P0 (channel wired
-  to GUI via `motor_state.rs`), GAP-17 (`visualization-{family}.sock` symlink at startup)
-- **NestGate S49**: GAP-21 (`family_id` optional, falls back to server default)
-- **BearDog W76**: GAP-23 reclassified (UDS audit: zero path-dependent behavior),
-  IONIC-RUNTIME confirmed wired since W42, blake3_hash error messages improved
-- **barraCuda Sprint 48**: BTSP-BARRACUDA-WIRE RESOLVED (full 7-step relay since Sprint 44)
-- **ToadStool S207**: Self-registration via `DISCOVERY_SOCKET` + `ipc.register`
-- **Squirrel**: GAP-03 RESOLVED LOCAL (HTTP inference transport pushed)
-- **rhizoCrypt S55**: GAP-22 reclassified (UDS audit confirms no path-dependent behavior)
+- **biomeOS v3.31**: GAP-13/14/15/16 all RESOLVED
+- **petalTongue**: GAP-01 + motor P0 + GAP-17 RESOLVED
+- **NestGate S49**: GAP-21 RESOLVED
+- **BearDog W76**: IONIC-RUNTIME confirmed, blake3 error messages improved
+- **barraCuda Sprint 48**: BTSP-BARRACUDA-WIRE RESOLVED
+- **ToadStool S207**: Self-registration via `ipc.register`
+- **Squirrel**: GAP-03 RESOLVED LOCAL
+- **rhizoCrypt S55**: UDS audit confirms no path-dependent behavior
+
+### Experiment Scores (Post-Reharvest)
+- exp101 fieldMouse AI Triage: **ALL PASS** (2/2, 1 skip)
+- exp105 The Rhizome: **ALL PASS** (17/17, 4 skips)
+- exp106 Micro-Desktop Shell: **11/14** (3 fails = GAP-27 stale biomeOS binary, 2 skips)
 
 ### Updated
-- Gap report refreshed: 13/23 gaps now RESOLVED UPSTREAM, 5 mitigated local, 2
-  reclassified to primalSpring diagnostic (startup ordering), 3 remaining minor
-- `PRIMAL_GAPS.md`: BTSP-BARRACUDA-WIRE + IONIC-RUNTIME marked RESOLVED UPSTREAM
-- Priority order: 0 HIGH, 0 MEDIUM (was 2), 7 LOW
+- Gap report: 20/27 gaps RESOLVED (13 upstream + 7 local), 1 blocking (GAP-27), 6 minor
+- `PRIMAL_GAPS.md` header refreshed with reharvest results
+- Priority order: 0 HIGH, 1 MEDIUM (GAP-27), 6 LOW
 
 ## [0.9.23] — Phase 56: Desktop Substrate + The Rhizome (2026-04-28)
 

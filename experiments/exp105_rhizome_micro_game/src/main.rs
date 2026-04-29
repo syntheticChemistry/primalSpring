@@ -242,23 +242,18 @@ fn generate_biome(v: &mut ValidationResult) -> Biome {
 
     let resp = client.call(
         "noise.perlin2d",
-        serde_json::json!({
-            "width": 4,
-            "height": 4,
-            "scale": 1.0,
-            "seed": 42
-        }),
+        serde_json::json!({"x": 4, "y": 4, "scale": 1.0, "seed": 42}),
     );
 
     match resp {
-        Ok(r) => {
+        Ok(r) if r.result.is_some() => {
             let noise_val = r
                 .result
                 .as_ref()
-                .and_then(|r| r.get("data"))
-                .and_then(|d| d.as_array())
-                .and_then(|a| a.first())
-                .and_then(|v| v.as_f64())
+                .and_then(|v| {
+                    v.get("result").and_then(|r| r.as_f64())
+                        .or_else(|| v.get("data").and_then(|d| d.as_array()).and_then(|a| a.first()).and_then(|v| v.as_f64()))
+                })
                 .unwrap_or(0.0);
 
             let biome = Biome::from_noise(noise_val);
@@ -268,6 +263,11 @@ fn generate_biome(v: &mut ValidationResult) -> Biome {
                 &format!("Biome determined via Perlin noise: {}", biome.name()),
             );
             biome
+        }
+        Ok(r) => {
+            let msg = r.error.as_ref().map_or("no result".to_owned(), |e| e.message.clone());
+            v.check_skip("biome_noise", &format!("noise.perlin2d error: {msg} — using default biome"));
+            Biome::Rhizome
         }
         Err(e) => {
             v.check_skip(
@@ -786,9 +786,19 @@ fn phase_save_game(v: &mut ValidationResult, world: &World) -> Option<String> {
 
 fn save_to_nestgate(v: &mut ValidationResult, key: &str, toml_data: &str) -> bool {
     let ng = discover_by_capability("storage");
-    let Some(ng_sock) = ng.socket.as_ref() else {
-        v.check_skip("nestgate_store", "NestGate not discovered");
-        return false;
+    let ng_fallback;
+    let ng_sock = match ng.socket.as_ref() {
+        Some(s) => s,
+        None => {
+            ng_fallback = discover_primal("nestgate");
+            match ng_fallback.socket.as_ref() {
+                Some(s) => s,
+                None => {
+                    v.check_skip("nestgate_store", "NestGate not discovered");
+                    return false;
+                }
+            }
+        }
     };
 
     let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") else {
@@ -806,9 +816,34 @@ fn save_to_nestgate(v: &mut ValidationResult, key: &str, toml_data: &str) -> boo
         }),
     );
 
-    let ok = resp.is_ok_and(|r| r.result.is_some());
-    v.check_bool("nestgate_store", ok, "Save TOML stored in NestGate");
-    ok
+    match &resp {
+        Ok(r) if r.result.is_some() => {
+            v.check_bool("nestgate_store", true, "Save TOML stored in NestGate");
+            true
+        }
+        Ok(r) => {
+            let err_msg = r.error.as_ref().map_or("unknown".to_owned(), |e| e.message.clone());
+            let fallback = discover_primal("nestgate");
+            if let Some(fb_sock) = fallback.socket.as_ref() {
+                if let Ok(mut fb_client) = PrimalClient::connect(fb_sock, "nestgate") {
+                    let fb_resp = fb_client.call(
+                        "storage.store",
+                        serde_json::json!({"family_id": family_id, "key": key, "value": toml_data}),
+                    );
+                    if fb_resp.is_ok_and(|r| r.result.is_some()) {
+                        v.check_bool("nestgate_store", true, "Save TOML stored via NestGate fallback (biomeOS misrouted)");
+                        return true;
+                    }
+                }
+            }
+            v.check_bool("nestgate_store", false, &format!("NestGate store failed: {err_msg}"));
+            false
+        }
+        Err(e) => {
+            v.check_bool("nestgate_store", false, &format!("NestGate store error: {e}"));
+            false
+        }
+    }
 }
 
 fn create_provenance_session(v: &mut ValidationResult) -> Option<String> {
@@ -830,12 +865,11 @@ fn create_provenance_session(v: &mut ValidationResult) -> Option<String> {
 
     match resp {
         Ok(r) => {
-            let session_id = r
-                .result
-                .as_ref()
-                .and_then(|r| r.get("session_id"))
-                .and_then(|s| s.as_str())
-                .map(String::from);
+            let session_id = r.result.as_ref().and_then(|v| {
+                v.as_str()
+                    .map(String::from)
+                    .or_else(|| v.get("session_id").and_then(|s| s.as_str()).map(String::from))
+            });
             v.check_bool(
                 "dag_session",
                 session_id.is_some(),
@@ -898,7 +932,7 @@ fn record_ledger_entry(v: &mut ValidationResult, toml_data: &str) {
 
     let spine_resp = client.call(
         "spine.create",
-        serde_json::json!({"name": "exp105-rhizome-session"}),
+        serde_json::json!({"name": "exp105-rhizome-session", "owner": "primalspring"}),
     );
 
     let spine_id = spine_resp
@@ -948,7 +982,10 @@ fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
         return;
     };
 
-    let data_hash = format!("{:016x}", hash_simple(toml_data));
+    let ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0u128, |d| d.as_nanos());
+    let data_hash = format!("{:016x}{:016x}", hash_simple(toml_data), ts);
 
     let braid_resp = client.call(
         "braid.create",
@@ -962,26 +999,43 @@ fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
     );
 
     let braid_ok = braid_resp.as_ref().is_ok_and(|r| r.result.is_some());
-    v.check_bool("braid_create", braid_ok, "Attribution braid created for save");
+    match &braid_resp {
+        Ok(r) if r.result.is_some() => {
+            v.check_bool("braid_create", true, "Attribution braid created for save");
+        }
+        Ok(r) => {
+            let msg = r.error.as_ref().map_or("no result".to_owned(), |e| format!("{}: {}", e.code, e.message));
+            v.check_bool("braid_create", false, &format!("braid.create RPC error: {msg}"));
+        }
+        Err(e) => {
+            v.check_bool("braid_create", false, &format!("braid.create transport error: {e}"));
+        }
+    }
 
     if braid_ok {
-        let braid_id = format!("urn:braid:{data_hash}");
+        let contrib_hash = format!("contrib-{}", &data_hash[..data_hash.len().min(32)]);
         let contrib_resp = client.call(
             "contribution.record",
             serde_json::json!({
-                "braid_id": braid_id,
+                "braid_id": format!("urn:braid:{data_hash}"),
                 "agent": "rhizome-player",
                 "role": "Creator",
-                "content_hash": data_hash,
-                "description": "Game save from The Rhizome exp105"
+                "content_hash": contrib_hash,
             }),
         );
 
-        v.check_bool(
-            "contribution_record",
-            contrib_resp.is_ok_and(|r| r.result.is_some()),
-            "Play contribution recorded in sweetGrass",
-        );
+        match &contrib_resp {
+            Ok(r) if r.result.is_some() => {
+                v.check_bool("contribution_record", true, "Play contribution recorded in sweetGrass");
+            }
+            Ok(r) => {
+                let msg = r.error.as_ref().map_or("no result".to_owned(), |e| e.message.clone());
+                v.check_bool("contribution_record", false, &format!("contribution.record error: {msg}"));
+            }
+            Err(e) => {
+                v.check_bool("contribution_record", false, &format!("contribution.record transport: {e}"));
+            }
+        }
     } else {
         v.check_skip("contribution_record", "No braid — skipping contribution");
     }
@@ -1006,9 +1060,19 @@ fn phase_load_game(v: &mut ValidationResult, dag_session: Option<&str>) {
     let save_key = "save:rhizome:exp105-validation";
 
     let ng = discover_by_capability("storage");
-    let Some(ng_sock) = ng.socket.as_ref() else {
-        v.check_skip("load_game", "NestGate not discovered");
-        return;
+    let ng_fallback;
+    let ng_sock = match ng.socket.as_ref() {
+        Some(s) => s,
+        None => {
+            ng_fallback = discover_primal("nestgate");
+            match ng_fallback.socket.as_ref() {
+                Some(s) => s,
+                None => {
+                    v.check_skip("load_game", "NestGate not discovered");
+                    return;
+                }
+            }
+        }
     };
 
     let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") else {
@@ -1017,13 +1081,22 @@ fn phase_load_game(v: &mut ValidationResult, dag_session: Option<&str>) {
     };
 
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
-    let resp = client.call(
-        "storage.get",
-        serde_json::json!({
-            "family_id": family_id,
-            "key": save_key,
-        }),
-    );
+    let get_params = serde_json::json!({"family_id": family_id, "key": save_key});
+    let resp = client.call("storage.get", get_params.clone());
+
+    let resp = if resp.as_ref().is_ok_and(|r| r.error.is_some()) {
+        if let Some(fb_sock) = discover_primal("nestgate").socket {
+            if let Ok(mut fb) = PrimalClient::connect(&fb_sock, "nestgate") {
+                fb.call("storage.get", get_params)
+            } else {
+                resp
+            }
+        } else {
+            resp
+        }
+    } else {
+        resp
+    };
 
     match resp {
         Ok(r) => {
@@ -1069,16 +1142,18 @@ fn verify_merkle_root(v: &mut ValidationResult, dag_session: Option<&str>) {
 
     match resp {
         Ok(r) => {
-            let has_root = r
-                .result
-                .as_ref()
-                .and_then(|r| r.get("root"))
-                .and_then(|s| s.as_str())
-                .is_some();
+            let root = r.result.as_ref().and_then(|v| {
+                v.as_str()
+                    .map(String::from)
+                    .or_else(|| v.get("root").and_then(|s| s.as_str()).map(String::from))
+            });
             v.check_bool(
                 "merkle_verify",
-                has_root,
-                "Save chain merkle root verified",
+                root.is_some(),
+                &format!(
+                    "Save chain merkle root: {}",
+                    root.as_deref().unwrap_or("none")
+                ),
             );
         }
         Err(e) => {
@@ -1149,9 +1224,11 @@ fn phase_crypto_hash(v: &mut ValidationResult, world: &World) {
     };
 
     let save_data = world.to_save_toml();
+    use base64::Engine as _;
+    let encoded = base64::engine::general_purpose::STANDARD.encode(save_data.as_bytes());
     let resp = client.call(
         "crypto.blake3_hash",
-        serde_json::json!({"data": save_data}),
+        serde_json::json!({"data": encoded}),
     );
 
     v.check_bool(

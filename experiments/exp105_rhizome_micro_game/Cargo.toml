@@ -12,6 +12,7 @@ name = "exp105_rhizome_micro_game"
 path = "src/main.rs"
 
 [dependencies]
+base64 = "0.22"
 primalspring = { path = "../../ecoPrimal" }
 serde = { workspace = true }
 serde_json = { workspace = true }
