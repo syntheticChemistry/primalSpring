@@ -75,10 +75,11 @@ absorb to make the desktop substrate production-ready.
 |-----|----------|-------------|-----|
 | GAP-21 | P2 | `storage.store` returns error on capability-named socket | Verify param schema matches on `storage-{family}.sock` **(locally mitigated: `family_id` param added to all storage calls)** |
 
-### rhizoCrypt
-| Gap | Priority | Description | Fix |
-|-----|----------|-------------|-----|
-| GAP-22 | P2 | `dag.session.create` errors on `dag-{family}.sock` | Verify param schema on capability socket vs primal socket |
+### rhizoCrypt — NO ACTION NEEDED
+GAP-22 **reclassified** (April 29). rhizoCrypt team confirmed zero path-dependent behavior
+in UDS accept path. Symlink produces identical `UnixStream`. Error is likely startup
+ordering (dangling symlink), stale binary (pre-S49 liveness gate), or proxy interception.
+Diagnostic owned by primalSpring.
 
 ### BearDog
 | Gap | Priority | Description | Fix |

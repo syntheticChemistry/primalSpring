@@ -340,7 +340,7 @@ Rust serde struct variants that differ from the simplified spec format.
 | GAP-19 | Discovery | P1 | **Mitigated** | ludoSpring not discoverable via `game_science` capability — symlink in `desktop_nucleus.sh` |
 | GAP-20 | Discovery | P2 | **Mitigated** | `FAMILY_ID` exported in `desktop_nucleus.sh`; experiments read env |
 | GAP-21 | NestGate | P2 | **Mitigated** | `storage.store` needs `family_id` param — added in exp094/exp105/exp106/exp101 |
-| GAP-22 | rhizoCrypt | P2 | New | `dag.session.create` returns error response via capability socket (exp105) |
+| GAP-22 | primalSpring | P2 | **Reclassified** | `dag.session.create` error on symlink — NOT rhizoCrypt. See diagnostic below |
 | GAP-23 | BearDog | P2 | New | `crypto.blake3_hash` returns error response via capability socket (exp105) |
 
 ---
@@ -363,7 +363,7 @@ Rust serde struct variants that differ from the simplified spec format.
 | Game Loop | flow_eval (ludoSpring) | SKIP | ludoSpring not discoverable (GAP-19) |
 | Game Loop | damage_calc (Barracuda) | **PASS** | `stats.mean([5,1,8])` → 4.7 |
 | Save | nestgate_store | FAIL | Connected but error response (GAP-21) |
-| Save | dag_session (rhizoCrypt) | FAIL | Connected but error response (GAP-22) |
+| Save | dag_session (rhizoCrypt) | FAIL | Error on capability socket — reclassified, see GAP-22 diagnostic |
 | Save | braid_create (sweetGrass) | **PASS** | W3C PROV-O braid created |
 | Save | contribution_record | FAIL | Braid created but contribution record errored |
 | Load | load_game (NestGate) | FAIL | Connected but error response |
@@ -427,7 +427,25 @@ NestGate `storage.store` requires `family_id` parameter — confirmed by exp094 
 Added `family_id` to all NestGate calls in exp101, exp105, exp106.
 
 Remaining:
-- rhizoCrypt `dag.session.create` may have a different schema on the `dag-*` capability socket vs. the `rhizocrypt-*` primal socket (GAP-22)
 - BearDog `crypto.blake3_hash` may need different parameter encoding (`data` as bytes vs. string) (GAP-23)
+
+**GAP-22 Reclassified (April 29)** — rhizoCrypt team performed exhaustive UDS accept path
+audit. Zero path-dependent behavior found: `listener.accept()` discards peer address,
+BTSP handshake carries no socket path, three-way auto-detect branches on first byte only,
+`FAMILY_ID` used only for bind-path construction, no socket name validation anywhere.
+A symlink produces the exact same `UnixStream` — kernel resolves at `connect()` time.
+
+Three hypotheses to investigate on primalSpring side:
+1. **Startup ordering** — symlink created before rhizoCrypt finishes binding → dangling
+   symlink → connection refused (not an RPC error)
+2. **Stale binary** — pre-S49 rhizocrypt has liveness-gate bug returning `-32000 FORBIDDEN`
+   for `dag.*` methods on UDS. Fixed in S49. Check binary version in plasmidBin.
+3. **Proxy layer** — if Neural API or another component is listening on `dag-*` socket
+   (not a symlink but a separate listener), it returns different errors.
+
+**Diagnostic**: Capture the exact JSON-RPC error response from `dag-{family}.sock`.
+- `-32000` with "BTSP authentication required" → binary is pre-S49
+- Connection refused → symlink target doesn't exist at connect time
+- Other error → something else is listening on that path
 
 These require parameter fuzzing against each primal's actual wire format on the capability-named sockets.
