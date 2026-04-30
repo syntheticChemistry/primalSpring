@@ -1291,11 +1291,11 @@ skunkBat and Squirrel. Massive async-trait progress: **9/13 primals at zero** (w
 | Low | Genetics three-tier awareness in primals | All primals | **primalSpring RPC client aligned** (April 15). BearDog has `genetic.*` RPCs. ecoPrimal `genetics::rpc` now matches BearDog's actual API. No primal has consumed `GeneticSecurityMode` or `MitoBeacon`/`NuclearGenetics` types yet — adoption awaits ecoPrimal ≥0.10.0 |
 | Low | skunkBat thymic selection impl | skunkBat + BearDog | Blocked on BearDog `lineage.list` + `btsp.session.verify` IPC |
 | Low | skunkBat composable primitives IPC | skunkBat + biomeOS | 5 domains defined, Neural API registration pending |
-| Low | `PeekedStream`/`PrefixedStream` convergence | skunkBat + BearDog | Two independent impls — consolidate to `sourdough-core` |
+| ~~Low~~ | ~~`PeekedStream`/`PrefixedStream` convergence~~ | ~~skunkBat + BearDog~~ | **RESOLVED** — sourDough v0.2.0 provides canonical `PeekedStream` in `sourdough-core`; existing impls functionally equivalent; new primals use canonical |
 | Low | toadStool coverage 83.6%→90% | toadStool | S203p pushed toward, not yet at target |
 | Low | BearDog async-trait 49→0 | BearDog | Continuing syn elimination |
 | Low | sweetGrass async-trait 22→0 | sweetGrass | 5 object-safe traits constrain further reduction |
-| Low | skunkBat async-trait 14→0 | skunkBat | Threat/recon traits |
+| ~~Low~~ | ~~skunkBat async-trait 14→0~~ | ~~skunkBat~~ | **RESOLVED** (April 30) — 14→0, fully eliminated. 205 tests |
 
 ### Genetics Posture (April 15, 2026 — RPC client aligned)
 
