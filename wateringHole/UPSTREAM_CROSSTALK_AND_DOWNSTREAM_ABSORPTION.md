@@ -1,7 +1,7 @@
 # Upstream Primal Cross-Talk & Downstream Absorption Patterns
 
-**Date**: April 16, 2026
-**From**: primalSpring v0.9.17 (Phase 45)
+**Date**: April 30, 2026 (updated — GAP-28 resolved, sourDough v0.2.0 scaffold evolution)
+**From**: primalSpring v0.9.24 (Phase 56c)
 **Phase**: **INTERSTADIAL** — stadial gate cleared, downstream absorption open
 **License**: AGPL-3.0-or-later
 
@@ -26,6 +26,29 @@ Primals never import each other. All cross-primal interaction happens via:
 - JSON-RPC 2.0 over UDS or TCP (capability-routed by biomeOS Neural API)
 - biomeOS graph execution (`graph.execute` sequences capability calls)
 - Environment variable conventions for socket discovery
+
+### sourDough Graduation (Build Independence)
+
+Every primal MUST be independently buildable — `cargo build` from a clean clone with
+no sibling repos present. sourDough is the ecosystem's "starter culture": it scaffolds
+new primals with inlined traits (`PrimalLifecycle`, `PrimalHealth`, `PrimalError`,
+`CommonConfig`), CI workflows, JSON-RPC server boilerplate, and `deny.toml`. Once a
+primal is scaffolded, it **buds** — all shared types are copied into the primal's own
+`primal_foundation` module, and the `sourdough-core` dependency is removed.
+
+**Status (April 30, 2026)**: All 13 primals are fully standalone. ~~skunkBat was the
+sole remaining violation (GAP-28)~~ — **RESOLVED** by commit `ef821eb` which internalized
+6 types into `skunk-bat-core/src/primal_foundation/`. `needs_sibling` removed from
+`plasmidBin/sources.toml`. plasmidBin can now build all 13 primals without sibling clones.
+
+**sourDough v0.2.0 scaffold evolution**: Generated primals now include:
+- Dual-crate layout (`{name}-core` + `{name}-server`)
+- `ci.yml` + `notify-plasmidbin.yml` CI workflows
+- `deny.toml` with license + ecoBin-style C-sys bans
+- JSON-RPC 2.0 server with capability wire handlers
+- First-byte peek routing (JSON-RPC vs BTSP)
+- XDG-compliant socket naming under `$XDG_RUNTIME_DIR/biomeos/`
+- `PeekedStream` reference impl in `sourdough-core` (`transport.rs`)
 
 ### Protocol Auto-Detection (Required)
 

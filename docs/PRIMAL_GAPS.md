@@ -39,6 +39,9 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Local debt resolved**: GAP-22 (dag.session.create bare UUID), GAP-23 (blake3 base64), GAP-24 (Barracuda noise.perlin2d x/y), GAP-25 (loamSpine spine.create owner), GAP-26 (sweetGrass contribution.record unique hash). All experiments fixed and passing.
 > **GAP-27 RESOLVED**: plasmidBin CI/CD pipeline (`auto-harvest.yml`) now auto-builds biomeOS from source. v3.31+ binaries distributed via GitHub Releases. exp106 graph management unblocked.
 > **Experiment scores**: exp101 ALL PASS (2/2), exp105 ALL PASS (17/17), exp106 11/14 (3 failures were GAP-27, now resolved by CI rebuild).
+> **GAP-28 RESOLVED**: skunkBat `sourdough-core` path coupling — commit `ef821eb` internalized 6 types
+> into `primal_foundation` module. Zero cross-repo path deps. `needs_sibling` removed from `plasmidBin/sources.toml`.
+> 205 tests, standalone build confirmed. All 13 primals now fully standalone.
 > **Remaining**: PG-48 binary refresh, PG-54 adaptive polling DEFERRED, GAP-06/12/18/19/20 minor.
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
@@ -775,11 +778,20 @@ All gaps **RESOLVED**. TCP JSON-RPC added, `cargo-deny`, `forbid(unsafe)`.
 
 | ID | Gap | Severity | Status |
 |----|-----|----------|--------|
-| SD-01 | Missing `deny.toml` | Low | Open — cargo-deny not configured |
+| ~~SD-01~~ | ~~Missing `deny.toml`~~ | ~~Low~~ | **RESOLVED** (April 30) — `deny.toml` added at repo root + scaffolded into generated primals |
 | SD-02 | musl cross-compilation | Low | Open — binary builds not yet wired for ecoBin |
 | SD-03 | genomeBin signing | Low | Open — sequoia-openpgp not implemented |
 
-**Compliance** (v0.1.0 — f1cc802): clippy **CLEAN** (`all` + `pedantic` + `nursery`), fmt **PASS**, `forbid(unsafe_code)` at workspace level, `deny.toml` **MISSING**, SPDX AGPL-3.0-or-later in Cargo.toml. **239 tests, 0 failures** (unit + integration + e2e + doctests), coverage 96%+. Edition 2024, workspace lints centralized. Zero `TODO`/`FIXME`/`HACK`/`unimplemented!` in source. **Discovery compliance: NEAR-CLEAN** — 1 BearDog string in CLI genomebin.rs (cosmetic). Scaffold independence confirmed: generated primals have no runtime dependency on sourDough.
+**Compliance** (v0.2.0-dev — 3aca9ec): clippy **CLEAN** (`all` + `pedantic` + `nursery`), fmt **PASS**, `forbid(unsafe_code)` at workspace level, `deny.toml` **PRESENT** (license + ecoBin-style C-sys bans), SPDX AGPL-3.0-or-later in Cargo.toml. **247 tests, 0 failures** (unit + integration + e2e + doctests), coverage 95%+. Edition 2024, workspace lints centralized. Zero `TODO`/`FIXME`/`HACK`/`unimplemented!` in source.
+
+**v0.2.0 scaffold evolution** (April 30): Scaffold now generates **core + server** dual-crate layout.
+Generated primals include: `ci.yml` + `notify-plasmidbin.yml` CI workflows, `deny.toml`,
+JSON-RPC 2.0 server with capability wire (`health.liveness`, `health.readiness`,
+`capabilities.list`), first-byte peek routing (`0x7B` = JSON-RPC, else BTSP placeholder),
+XDG-compliant socket naming (`$XDG_RUNTIME_DIR/biomeos/{primal}-{fid}.sock`).
+`sourdough-core` now provides canonical `PeekedStream`/`peek_protocol` for ecosystem reference.
+Templates split into `templates/{mod,core,server,infra}.rs` for maintainability.
+CONVENTIONS updated: JSON-RPC 2.0 primary IPC, tarpc secondary.
 
 ---
 
@@ -940,7 +952,7 @@ rebuild with Iter 78 changes. **Effort: low-medium.**
 Remaining: thymic selection impl (blocked on BearDog `lineage.list`), composable primitives IPC
 registration (blocked on biomeOS Neural API), coverage 89.6%→90%, `PeekedStream` convergence.
 
-**sourDough** — `deny.toml` missing, musl build, genomeBin signing. Scaffolding CLI tool, not IPC primal. Deferred to later cycle.
+**sourDough** — ~~`deny.toml` missing~~ **RESOLVED**. musl build, genomeBin signing still open. v0.2.0 scaffold evolution shipped (server crate, CI, capability wire, peek, socket naming). Deferred: SD-02 musl, SD-03 signing.
 
 ### Primals With Tractable Local Fixes
 
@@ -1011,7 +1023,7 @@ needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esoteri
 
 ## Priority Order
 
-**0 HIGH blockers. 0 MEDIUM (both resolved upstream). 7 LOW. Zero runtime blockers.** (sourDough + skunkBat deferred)
+**0 HIGH blockers. 0 MEDIUM (all resolved). 6 LOW. Zero runtime blockers.** (sourDough SD-02/03 deferred, skunkBat GAP-28 RESOLVED)
 
 **High**: ~~PLASMIBIN-STALE~~ **RESOLVED** (April 10 — full musl-static rebuild, 12/12 ecoBin).
 
@@ -1037,7 +1049,8 @@ needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esoteri
 11. ~~**BTSP-E2E**~~ **RESOLVED** (April 14 — `AtomicHarness` now generates deterministic BTSP seed via HKDF-SHA256, injects `FAMILY_SEED` env on all child primals, uses `PrimalClient::connect_btsp` for BTSP-model primals. BearDog socket timeout unblocked for exp061-068)
 
 **Deferred** (later development cycle):
-- **SD-01/02/03** — sourDough `deny.toml`, musl, genomeBin signing
+- ~~**SD-01**~~ **RESOLVED** — sourDough `deny.toml` added
+- **SD-02/03** — sourDough musl, genomeBin signing
 - ~~**SKUNKBAT-BTSP-P2**~~ **RESOLVED** — v0.1.0: `PeekedStream` UDS peek + BearDog v0.9.0 alignment
 
 ---
@@ -1057,7 +1070,7 @@ needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esoteri
 | rhizoCrypt | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (1,507)** | **PASS** | **PASS** ↑↑ | **L3** |
 | loamSpine | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (1,442)** | **PASS** | **PASS** ↑↑ | **L2** |
 | barraCuda | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (4,393)** ↑ | **PASS** | **PASS** ↑↑ | **L2** |
-| sourDough | **CLEAN** | **PASS** | **MISSING** | `-or-later` | 2024 | **PASS (239)** | FAIL | — | NONE |
+| sourDough | **CLEAN** | **PASS** | **YES** ↑ | `-or-later` | 2024 | **PASS (247)** ↑ | FAIL | — | NONE |
 | coralReef | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (4,506)** ↑ | **PASS** ↑↑ | **PASS** ↑↑ | **L2** ↑ |
 | bingoCube | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | PASS | N/A | N/A | NONE |
 | skunkBat | **CLEAN** | **PASS** | YES | `-or-later` | 2024 | **PASS (171)** | **PASS** ↑↑ | **PASS** ↑↑ | **L2** ↑ |
@@ -1515,9 +1528,16 @@ Thymic selection model: design spec complete (`THYMIC_SELECTION_SPEC.md`), imple
 blocked on BearDog `lineage.list` + `btsp.session.verify` IPC availability.
 Composable primitives: 5 domains (`baseline.*`, `metadata.*`, `response.*`, `lineage.*`,
 `health.*`) defined in spec, IPC registration via biomeOS Neural API pending.
-`PeekedStream` / `PrefixedStream` convergence: skunkBat and BearDog each implemented
-independently — should consolidate into shared `sourdough-core` utility.
-async-trait: **14** (threat/recon traits). Coverage: **89.6%**. Tests: **171**.
+~~`sourdough-core` path coupling (GAP-28)~~ **RESOLVED** (April 30, 2026):
+Commit `ef821eb` internalized 6 types (`PrimalLifecycle`, `PrimalState`, `PrimalError`,
+`PrimalHealth`, `HealthReport`, `HealthStatus`, `CommonConfig`) into `primal_foundation`
+module in `skunk-bat-core`. Zero cross-repo path deps. `needs_sibling` removed from
+`plasmidBin/sources.toml`. Post-GAP-28 evolution: self-knowledge consolidation, platform
+util dedup, config-driven bind, deny+doc CI gates. Tests: **205**. Coverage: **~90%**.
+async-trait: **0** (was 14 — fully eliminated).
+~~`PeekedStream` / `PrefixedStream` convergence~~: skunkBat and BearDog each implemented
+independently — sourDough now provides canonical `PeekedStream` in `sourdough-core` for
+future primals. Existing impls are functionally equivalent; convergence is low priority.
 
 ### First-byte peek UDS standardization (cross-primal)
 
