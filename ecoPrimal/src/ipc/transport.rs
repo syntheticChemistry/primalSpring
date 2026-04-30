@@ -414,4 +414,33 @@ mod tests {
         let result = connect_transport("127.0.0.1:1");
         assert!(result.is_err());
     }
+
+    /// Integration test: BTSP-authenticated Transport against live BearDog.
+    ///
+    /// Verifies the full connect_btsp → Phase 3 negotiate → health.liveness
+    /// round-trip with the Transport layer (NULL cipher fallback).
+    #[test]
+    #[ignore = "requires live BearDog server at /tmp/beardog-phase3test.sock"]
+    fn phase3_transport_full_roundtrip() {
+        let sock = std::path::Path::new("/tmp/beardog-phase3test.sock");
+        if !sock.exists() {
+            eprintln!("SKIP: BearDog not running");
+            return;
+        }
+
+        #[expect(deprecated, reason = "test uses legacy path for simplicity")]
+        let seed = crate::ipc::btsp_handshake::family_seed_from_env();
+        let seed = seed.expect("FAMILY_SEED must be set");
+
+        let mut transport = Transport::unix_btsp(sock, &seed).expect("BTSP connect");
+        assert!(transport.is_btsp_authenticated());
+        eprintln!("transport_type: {}", transport.transport_type());
+        eprintln!("is_encrypted: {}", transport.is_encrypted());
+
+        let resp = transport
+            .call("health.liveness", serde_json::json!({}))
+            .expect("health.liveness");
+        assert!(resp.is_success(), "health.liveness failed: {resp:?}");
+        eprintln!("health.liveness: {resp:?}");
+    }
 }

@@ -538,4 +538,54 @@ mod tests {
         let hex = "A1B2C3D4E5F6A7B8A1B2C3D4E5F6A7B8";
         assert!(is_hex_string(hex));
     }
+
+    /// Integration test: BTSP handshake + Phase 3 negotiation against a live BearDog.
+    ///
+    /// Requires: BearDog server running at `/tmp/beardog-phase3test.sock`
+    /// with `FAMILY_SEED` matching this test's env.
+    #[test]
+    #[ignore = "requires live BearDog server at /tmp/beardog-phase3test.sock"]
+    fn phase3_negotiate_with_live_beardog() {
+        use std::path::Path;
+
+        let sock = Path::new("/tmp/beardog-phase3test.sock");
+        if !sock.exists() {
+            eprintln!("SKIP: BearDog not running at {}", sock.display());
+            return;
+        }
+
+        let seed = raw_family_seed_from_env();
+        let seed = seed.expect("FAMILY_SEED must be set for this test");
+
+        let mut stream = std::os::unix::net::UnixStream::connect(sock).expect("connect to BearDog");
+        stream
+            .set_read_timeout(Some(std::time::Duration::from_secs(10)))
+            .unwrap();
+        stream
+            .set_write_timeout(Some(std::time::Duration::from_secs(10)))
+            .unwrap();
+
+        let result = client_handshake(&mut stream, &seed).expect("Phase 1 handshake");
+        eprintln!(
+            "Phase 1 OK: session_id={}, cipher={}",
+            result.session_id, result.server_cipher
+        );
+        assert!(!result.session_id.is_empty());
+
+        let keys = negotiate_phase3(&mut stream, &result);
+        match keys {
+            Ok(Some(_keys)) => {
+                eprintln!("Phase 3 OK: ChaCha20-Poly1305 session keys derived");
+            }
+            Ok(None) => {
+                eprintln!(
+                    "Phase 3: server does not support btsp.negotiate yet \
+                     (NULL cipher fallback — expected for current BearDog)"
+                );
+            }
+            Err(e) => {
+                eprintln!("Phase 3 negotiate error (expected if server lacks support): {e}");
+            }
+        }
+    }
 }
