@@ -60,10 +60,6 @@ struct ChallengeResponse {
 
 #[derive(Debug, Deserialize)]
 struct HandshakeComplete {
-    #[expect(
-        dead_code,
-        reason = "deserialized by serde; cipher selection logged but not branched on yet"
-    )]
     cipher: String,
     session_id: String,
 }
@@ -72,10 +68,24 @@ struct HandshakeComplete {
 struct HandshakeError {
     #[expect(
         dead_code,
-        reason = "deserialized by serde; error code reserved for future BTSP Phase 3"
+        reason = "deserialized by serde; error code reserved for future classification"
     )]
     error: String,
     reason: String,
+}
+
+/// Result of a successful BTSP Phase 1 handshake.
+///
+/// Carries enough state to proceed to Phase 3 cipher negotiation
+/// without re-deriving the handshake key.
+#[derive(Debug)]
+pub struct HandshakeResult {
+    /// Session ID assigned by the server.
+    pub session_id: String,
+    /// Cipher the server selected (typically `"null"` for Phase 1).
+    pub server_cipher: String,
+    /// The HKDF-derived handshake key (retained for Phase 3 key derivation).
+    pub handshake_key: [u8; 32],
 }
 
 fn derive_handshake_key(family_seed: &[u8]) -> Result<[u8; 32], IpcError> {
@@ -107,13 +117,20 @@ fn compute_challenge_hmac(
 
 /// Perform the BTSP client handshake on an already-connected Unix stream.
 ///
-/// On success the stream is ready for normal JSON-RPC request/response.
+/// On success the stream is ready for JSON-RPC (if `cipher = "null"`) or
+/// for Phase 3 cipher negotiation (if upgrading to encrypted channel).
+///
+/// Returns a [`HandshakeResult`] carrying the session ID, server-selected
+/// cipher, and handshake key material needed for Phase 3 key derivation.
 ///
 /// # Errors
 ///
 /// Returns `IpcError` on I/O failure, protocol mismatch, or HMAC computation
 /// error.
-pub fn client_handshake(stream: &mut UnixStream, family_seed: &[u8]) -> Result<String, IpcError> {
+pub fn client_handshake(
+    stream: &mut UnixStream,
+    family_seed: &[u8],
+) -> Result<HandshakeResult, IpcError> {
     let handshake_key = derive_handshake_key(family_seed)?;
 
     // Generate 32 random bytes as the client ephemeral "public key".
@@ -228,8 +245,118 @@ pub fn client_handshake(stream: &mut UnixStream, family_seed: &[u8]) -> Result<S
             detail: format!("BTSP HandshakeComplete parse: {e}"),
         })?;
 
-    debug!(session_id = %complete.session_id, "BTSP: handshake complete");
-    Ok(complete.session_id)
+    debug!(
+        session_id = %complete.session_id,
+        cipher = %complete.cipher,
+        "BTSP: handshake complete"
+    );
+    Ok(HandshakeResult {
+        session_id: complete.session_id,
+        server_cipher: complete.cipher,
+        handshake_key,
+    })
+}
+
+/// Negotiate a Phase 3 encrypted cipher on an already-authenticated stream.
+///
+/// After `client_handshake` returns a [`HandshakeResult`], this function
+/// sends a `btsp.negotiate` JSON-RPC request offering the client's preferred
+/// ciphers. The server selects a cipher and returns a nonce. Both sides then
+/// derive [`SessionKeys`](crate::btsp::phase3::SessionKeys) via HKDF.
+///
+/// If the server does not support Phase 3 or rejects negotiation, this returns
+/// `Ok(None)` and the stream continues in plaintext (NULL cipher fallback).
+///
+/// # Errors
+///
+/// Returns [`IpcError`] on I/O or serialization failure.
+pub fn negotiate_phase3(
+    stream: &mut UnixStream,
+    handshake: &HandshakeResult,
+) -> Result<Option<crate::btsp::phase3::SessionKeys>, IpcError> {
+    use crate::btsp::phase3::{NegotiateResponse, Phase3Cipher, SessionKeys, generate_nonce};
+
+    let client_nonce = generate_nonce()?;
+    let client_nonce_b64 = BASE64.encode(client_nonce);
+
+    let negotiate_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "btsp.negotiate",
+        "params": {
+            "session_id": handshake.session_id,
+            "ciphers": [Phase3Cipher::ChaCha20Poly1305.wire_name()],
+            "client_nonce": client_nonce_b64,
+        },
+        "id": 1
+    });
+
+    let mut line =
+        serde_json::to_string(&negotiate_req).map_err(|e| IpcError::SerializationError {
+            detail: e.to_string(),
+        })?;
+    line.push('\n');
+    stream
+        .write_all(line.as_bytes())
+        .map_err(classify_io_error)?;
+
+    debug!("BTSP Phase 3: negotiate request sent");
+
+    let mut reader = BufReader::new(stream.try_clone().map_err(classify_io_error)?);
+    let mut resp_line = String::new();
+    reader
+        .read_line(&mut resp_line)
+        .map_err(classify_io_error)?;
+
+    if resp_line.is_empty() {
+        debug!("BTSP Phase 3: server closed connection during negotiate — falling back to null");
+        return Ok(None);
+    }
+
+    let resp: serde_json::Value =
+        serde_json::from_str(resp_line.trim()).map_err(|e| IpcError::ProtocolError {
+            detail: format!("BTSP Phase 3 negotiate response parse: {e}"),
+        })?;
+
+    if resp.get("error").is_some() {
+        let msg = resp["error"]["message"]
+            .as_str()
+            .or_else(|| resp["error"].as_str())
+            .unwrap_or("unknown");
+        debug!(
+            reason = msg,
+            "BTSP Phase 3: server rejected negotiate — falling back to null"
+        );
+        return Ok(None);
+    }
+
+    let result = resp.get("result").ok_or_else(|| IpcError::ProtocolError {
+        detail: "BTSP Phase 3: negotiate response missing 'result'".to_owned(),
+    })?;
+
+    let negotiate_resp: NegotiateResponse =
+        serde_json::from_value(result.clone()).map_err(|e| IpcError::ProtocolError {
+            detail: format!("BTSP Phase 3 NegotiateResponse parse: {e}"),
+        })?;
+
+    if negotiate_resp.cipher == Phase3Cipher::Null {
+        debug!("BTSP Phase 3: server selected null cipher — staying plaintext");
+        return Ok(None);
+    }
+
+    let server_nonce =
+        BASE64
+            .decode(&negotiate_resp.server_nonce)
+            .map_err(|e| IpcError::ProtocolError {
+                detail: format!("BTSP Phase 3 server_nonce decode: {e}"),
+            })?;
+
+    let keys = SessionKeys::derive(&handshake.handshake_key, &client_nonce, &server_nonce, true)?;
+
+    debug!(
+        cipher = negotiate_resp.cipher.wire_name(),
+        "BTSP Phase 3: encrypted channel established"
+    );
+    Ok(Some(keys))
 }
 
 /// Read the family seed from `FAMILY_SEED` environment variable (base64-encoded).

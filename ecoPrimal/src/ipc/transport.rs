@@ -18,6 +18,7 @@ use std::time::Duration;
 
 use super::error::{IpcError, classify_io_error};
 use super::protocol::{JsonRpcRequest, JsonRpcResponse};
+use crate::btsp::phase3::SessionKeys;
 use crate::tolerances;
 
 /// Wire-level transport kind.
@@ -33,10 +34,15 @@ enum TransportInner {
 /// groundSpring V121. Provides a unified read/write interface regardless
 /// of the underlying socket type. Tracks whether a BTSP handshake was
 /// completed so guidestone can report per-atomic security posture.
+///
+/// When Phase 3 cipher negotiation succeeds, `session_keys` holds the
+/// derived encryption keys and all `call()` traffic is encrypted with
+/// length-prefixed ChaCha20-Poly1305 frames.
 #[derive(Debug)]
 pub struct Transport {
     inner: TransportInner,
     btsp_authenticated: bool,
+    session_keys: Option<SessionKeys>,
 }
 
 impl Transport {
@@ -82,6 +88,7 @@ impl Transport {
         Ok(Self {
             inner: TransportInner::Unix(BufReader::new(stream)),
             btsp_authenticated: false,
+            session_keys: None,
         })
     }
 
@@ -101,8 +108,28 @@ impl Transport {
             .set_write_timeout(Some(handshake_timeout))
             .map_err(classify_io_error)?;
 
-        let session_id = super::btsp_handshake::client_handshake(&mut stream, family_seed)?;
-        tracing::debug!(session_id = %session_id, path = %path.display(), "BTSP authenticated");
+        let handshake = super::btsp_handshake::client_handshake(&mut stream, family_seed)?;
+        tracing::debug!(
+            session_id = %handshake.session_id,
+            path = %path.display(),
+            "BTSP authenticated"
+        );
+
+        let session_keys = super::btsp_handshake::negotiate_phase3(&mut stream, &handshake)
+            .unwrap_or_else(|e| {
+                tracing::debug!(
+                    err = %e,
+                    "BTSP Phase 3 negotiate failed — continuing with null cipher"
+                );
+                None
+            });
+
+        if session_keys.is_some() {
+            tracing::info!(
+                path = %path.display(),
+                "BTSP Phase 3: encrypted channel active (ChaCha20-Poly1305)"
+            );
+        }
 
         stream
             .set_read_timeout(Some(ipc_timeout))
@@ -114,6 +141,7 @@ impl Transport {
         Ok(Self {
             inner: TransportInner::Unix(BufReader::new(stream)),
             btsp_authenticated: true,
+            session_keys,
         })
     }
 
@@ -134,14 +162,22 @@ impl Transport {
         Ok(Self {
             inner: TransportInner::Tcp(BufReader::new(stream)),
             btsp_authenticated: false,
+            session_keys: None,
         })
     }
 
     /// Send a JSON-RPC request and read the response.
     ///
+    /// When Phase 3 session keys are active, the request is encrypted as a
+    /// length-prefixed frame: `[4 bytes: len (BE u32)] [encrypted payload]`.
+    /// The response is read and decrypted using the same framing.
+    ///
+    /// When no session keys are present (NULL cipher), uses plaintext
+    /// newline-delimited JSON as before.
+    ///
     /// # Errors
     ///
-    /// Returns [`IpcError`] on serialization, I/O, or parse failure.
+    /// Returns [`IpcError`] on serialization, I/O, encryption, or parse failure.
     pub fn call(
         &mut self,
         method: &str,
@@ -154,16 +190,46 @@ impl Transport {
                 detail: e.to_string(),
             })?;
 
-        self.write_all(line.as_bytes())?;
-        let response_line = self.read_line()?;
+        if self.session_keys.is_some() {
+            self.call_encrypted(&line)
+        } else {
+            self.write_all(line.as_bytes())?;
+            let response_line = self.read_line()?;
 
-        if response_line.is_empty() {
-            return Err(IpcError::ProtocolError {
-                detail: "empty response".to_owned(),
-            });
+            if response_line.is_empty() {
+                return Err(IpcError::ProtocolError {
+                    detail: "empty response".to_owned(),
+                });
+            }
+
+            JsonRpcResponse::from_line(&response_line).map_err(|e| IpcError::ProtocolError {
+                detail: e.to_string(),
+            })
         }
+    }
 
-        JsonRpcResponse::from_line(&response_line).map_err(|e| IpcError::ProtocolError {
+    #[expect(
+        clippy::expect_used,
+        reason = "session_keys presence verified by caller (is_some check in call())"
+    )]
+    fn call_encrypted(&mut self, json_line: &str) -> Result<JsonRpcResponse, IpcError> {
+        let keys = self.session_keys.as_ref().expect("Phase 3 keys required");
+        let encrypted = keys.encrypt(json_line.trim_end().as_bytes())?;
+        let len = u32::try_from(encrypted.len()).map_err(|_| IpcError::ProtocolError {
+            detail: "BTSP Phase 3: frame too large".to_owned(),
+        })?;
+
+        self.write_all(&len.to_be_bytes())?;
+        self.write_all(&encrypted)?;
+        let resp_frame = self.read_encrypted_frame()?;
+
+        let keys = self.session_keys.as_ref().expect("Phase 3 keys required");
+        let decrypted = keys.decrypt(&resp_frame)?;
+        let response_str = String::from_utf8(decrypted).map_err(|e| IpcError::ProtocolError {
+            detail: format!("BTSP Phase 3 decrypted response not UTF-8: {e}"),
+        })?;
+
+        JsonRpcResponse::from_line(&response_str).map_err(|e| IpcError::ProtocolError {
             detail: e.to_string(),
         })
     }
@@ -177,6 +243,28 @@ impl Transport {
                 reader.get_mut().write_all(data).map_err(classify_io_error)
             }
         }
+    }
+
+    fn read_exact(&mut self, buf: &mut [u8]) -> Result<(), IpcError> {
+        use std::io::Read;
+        match &mut self.inner {
+            TransportInner::Unix(reader) => reader.read_exact(buf).map_err(classify_io_error),
+            TransportInner::Tcp(reader) => reader.read_exact(buf).map_err(classify_io_error),
+        }
+    }
+
+    fn read_encrypted_frame(&mut self) -> Result<Vec<u8>, IpcError> {
+        let mut len_buf = [0u8; 4];
+        self.read_exact(&mut len_buf)?;
+        let len = u32::from_be_bytes(len_buf) as usize;
+        if len > 16 * 1024 * 1024 {
+            return Err(IpcError::ProtocolError {
+                detail: format!("BTSP Phase 3: frame too large ({len} bytes)"),
+            });
+        }
+        let mut frame = vec![0u8; len];
+        self.read_exact(&mut frame)?;
+        Ok(frame)
     }
 
     fn read_line(&mut self) -> Result<String, IpcError> {
@@ -210,14 +298,26 @@ impl Transport {
         self.btsp_authenticated
     }
 
+    /// Whether this transport has an active Phase 3 encrypted channel.
+    #[must_use]
+    pub const fn is_encrypted(&self) -> bool {
+        self.session_keys.is_some()
+    }
+
     /// Transport type as a display string.
     #[must_use]
     pub const fn transport_type(&self) -> &str {
-        match (&self.inner, self.btsp_authenticated) {
-            (TransportInner::Unix(_), true) => "unix+btsp",
-            (TransportInner::Unix(_), false) => "unix",
-            (TransportInner::Tcp(_), true) => "tcp+btsp",
-            (TransportInner::Tcp(_), false) => "tcp",
+        match (
+            &self.inner,
+            self.btsp_authenticated,
+            self.session_keys.is_some(),
+        ) {
+            (TransportInner::Unix(_), true, true) => "unix+btsp+chacha20",
+            (TransportInner::Unix(_), true, false) => "unix+btsp",
+            (TransportInner::Unix(_), false, _) => "unix",
+            (TransportInner::Tcp(_), true, true) => "tcp+btsp+chacha20",
+            (TransportInner::Tcp(_), true, false) => "tcp+btsp",
+            (TransportInner::Tcp(_), false, _) => "tcp",
         }
     }
 }

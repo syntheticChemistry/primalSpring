@@ -73,7 +73,13 @@ impl PrimalClient {
         self.transport.is_btsp_authenticated()
     }
 
-    /// Transport description (e.g. `"unix"`, `"unix+btsp"`, `"tcp"`).
+    /// Whether the transport has an active Phase 3 encrypted channel.
+    #[must_use]
+    pub const fn is_encrypted(&self) -> bool {
+        self.transport.is_encrypted()
+    }
+
+    /// Transport description (e.g. `"unix"`, `"unix+btsp"`, `"unix+btsp+chacha20"`).
     #[must_use]
     pub const fn transport_type(&self) -> &str {
         self.transport.transport_type()
