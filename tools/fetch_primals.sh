@@ -200,7 +200,16 @@ for primal in "${primals_to_fetch[@]}"; do
         continue
     fi
 
-    if ! download_asset "$TAG" "$primal" "$local_path"; then
+    # genomeBin asset naming: {name}-{triple} (multi-arch releases)
+    # Falls back to plain {name} for backward compatibility with older releases
+    got_it=false
+    if download_asset "$TAG" "${primal}-${ARCH}" "$local_path"; then
+        got_it=true
+    elif download_asset "$TAG" "$primal" "$local_path"; then
+        got_it=true
+    fi
+
+    if ! $got_it; then
         echo "FAIL  could not download"
         FAILED=$((FAILED + 1))
         continue
