@@ -145,7 +145,7 @@ fetch_checksum() {
     local checksums_cache
     checksums_cache="$DEST_DIR/.checksums-${tag}.toml"
 
-    if [[ ! -f "$checksums_cache" ]]; then
+    if [[ ! -f "$checksums_cache" ]] || $FORCE; then
         curl -sfL --max-time 30 -o "$checksums_cache" "$checksums_url" 2>/dev/null || true
     fi
 
