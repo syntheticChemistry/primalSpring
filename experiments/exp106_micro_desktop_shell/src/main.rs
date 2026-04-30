@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 #![forbid(unsafe_code)]
+#![allow(clippy::cast_precision_loss, clippy::option_if_let_else)]
 
 //! exp106 — Micro-Desktop Shell
 //!
@@ -35,7 +36,10 @@ fn phase_biomeos_connection(v: &mut ValidationResult) -> Option<PrimalClient> {
     let Some(bio_sock) = bio_sock_ref else {
         let orchestration = discover_by_capability("orchestration");
         let Some(bio_sock) = orchestration.socket.as_ref() else {
-            v.check_skip("biomeos_connect", "biomeOS not discovered (tried biomeos, neural-api, orchestration)");
+            v.check_skip(
+                "biomeos_connect",
+                "biomeOS not discovered (tried biomeos, neural-api, orchestration)",
+            );
             return None;
         };
         match PrimalClient::connect(bio_sock, "biomeos") {
@@ -49,7 +53,10 @@ fn phase_biomeos_connection(v: &mut ValidationResult) -> Option<PrimalClient> {
                 return Some(client);
             }
             Err(e) => {
-                v.check_skip("biomeos_connect", &format!("biomeOS connection failed: {e}"));
+                v.check_skip(
+                    "biomeos_connect",
+                    &format!("biomeOS connection failed: {e}"),
+                );
                 return None;
             }
         }
@@ -161,7 +168,10 @@ fn phase_capability_routing(v: &mut ValidationResult, biomeos: &mut Option<Prima
     v.section("biomeOS Capability Routing");
 
     let Some(client) = biomeos.as_mut() else {
-        v.check_skip("cap_routing", "biomeOS not connected — skipping routing tests");
+        v.check_skip(
+            "cap_routing",
+            "biomeOS not connected — skipping routing tests",
+        );
         return;
     };
 
@@ -211,11 +221,7 @@ fn phase_capability_routing(v: &mut ValidationResult, biomeos: &mut Option<Prima
     for (check_name, _method, params, detail) in test_cases {
         let resp = client.call("capability.call", params.clone());
 
-        v.check_bool(
-            check_name,
-            resp.is_ok_and(|r| r.result.is_some()),
-            detail,
-        );
+        v.check_bool(check_name, resp.is_ok_and(|r| r.result.is_some()), detail);
     }
 
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
@@ -325,9 +331,11 @@ fn phase_provenance_sidebar(v: &mut ValidationResult) -> Option<String> {
     );
 
     let session_id = session_resp.ok().and_then(|r| r.result).and_then(|v| {
-        v.as_str()
-            .map(String::from)
-            .or_else(|| v.get("session_id").and_then(|s| s.as_str()).map(String::from))
+        v.as_str().map(String::from).or_else(|| {
+            v.get("session_id")
+                .and_then(|s| s.as_str())
+                .map(String::from)
+        })
     });
 
     let Some(ref sid) = session_id else {
@@ -354,10 +362,7 @@ fn phase_provenance_sidebar(v: &mut ValidationResult) -> Option<String> {
         );
     }
 
-    let root_resp = client.call(
-        "dag.merkle.root",
-        serde_json::json!({"session_id": sid}),
-    );
+    let root_resp = client.call("dag.merkle.root", serde_json::json!({"session_id": sid}));
 
     match root_resp {
         Ok(r) => {
@@ -386,10 +391,7 @@ fn phase_provenance_sidebar(v: &mut ValidationResult) -> Option<String> {
 // Phase 6: Multi-Session petalTongue Rendering
 // ═══════════════════════════════════════════════════════════════════════
 
-fn phase_multi_session_rendering(
-    v: &mut ValidationResult,
-    health: &[PrimalHealth],
-) {
+fn phase_multi_session_rendering(v: &mut ValidationResult, health: &[PrimalHealth]) {
     v.section("Multi-Session Rendering (petalTongue)");
 
     let pt = discover_by_capability("visualization");
@@ -565,11 +567,18 @@ fn phase_direct_fallbacks(v: &mut ValidationResult) {
                     v.check_bool("direct_nestgate", true, "Direct NestGate storage");
                 }
                 Ok(r) => {
-                    let msg = r.error.as_ref().map_or("no result".to_owned(), |e| e.message.clone());
+                    let msg = r
+                        .error
+                        .as_ref()
+                        .map_or_else(|| "no result".to_owned(), |e| e.message.clone());
                     v.check_bool("direct_nestgate", false, &format!("NestGate error: {msg}"));
                 }
                 Err(e) => {
-                    v.check_bool("direct_nestgate", false, &format!("NestGate transport: {e}"));
+                    v.check_bool(
+                        "direct_nestgate",
+                        false,
+                        &format!("NestGate transport: {e}"),
+                    );
                 }
             }
         } else {
@@ -581,12 +590,11 @@ fn phase_direct_fallbacks(v: &mut ValidationResult) {
 
     let barr = discover_primal("barracuda");
     let barr_fb;
-    let barr_sock = match barr.socket.as_ref() {
-        Some(s) => Some(s),
-        None => {
-            barr_fb = discover_by_capability("math");
-            barr_fb.socket.as_ref()
-        }
+    let barr_sock = if let Some(s) = barr.socket.as_ref() {
+        Some(s)
+    } else {
+        barr_fb = discover_by_capability("math");
+        barr_fb.socket.as_ref()
     };
 
     if let Some(barr_sock) = barr_sock {
@@ -600,11 +608,22 @@ fn phase_direct_fallbacks(v: &mut ValidationResult) {
                     v.check_bool("direct_barracuda", true, "Direct Barracuda noise");
                 }
                 Ok(r) => {
-                    let msg = r.error.as_ref().map_or("no result".to_owned(), |e| e.message.clone());
-                    v.check_bool("direct_barracuda", false, &format!("Barracuda error: {msg}"));
+                    let msg = r
+                        .error
+                        .as_ref()
+                        .map_or_else(|| "no result".to_owned(), |e| e.message.clone());
+                    v.check_bool(
+                        "direct_barracuda",
+                        false,
+                        &format!("Barracuda error: {msg}"),
+                    );
                 }
                 Err(e) => {
-                    v.check_bool("direct_barracuda", false, &format!("Barracuda transport: {e}"));
+                    v.check_bool(
+                        "direct_barracuda",
+                        false,
+                        &format!("Barracuda transport: {e}"),
+                    );
                 }
             }
         } else {
@@ -622,16 +641,13 @@ fn phase_direct_fallbacks(v: &mut ValidationResult) {
 fn main() {
     ValidationResult::new("primalSpring Exp106 — Micro-Desktop Shell")
         .with_provenance("exp106_micro_desktop_shell", "2026-04-28")
-        .run(
-            "Exp106: Desktop composition on NUCLEUS substrate",
-            |v| {
-                let mut biomeos = phase_biomeos_connection(v);
-                let health = phase_system_health(v);
-                phase_capability_routing(v, &mut biomeos);
-                phase_graph_management(v, &mut biomeos);
-                let _dag_session = phase_provenance_sidebar(v);
-                phase_multi_session_rendering(v, &health);
-                phase_direct_fallbacks(v);
-            },
-        );
+        .run("Exp106: Desktop composition on NUCLEUS substrate", |v| {
+            let mut biomeos = phase_biomeos_connection(v);
+            let health = phase_system_health(v);
+            phase_capability_routing(v, &mut biomeos);
+            phase_graph_management(v, &mut biomeos);
+            let _dag_session = phase_provenance_sidebar(v);
+            phase_multi_session_rendering(v, &health);
+            phase_direct_fallbacks(v);
+        });
 }

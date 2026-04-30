@@ -24,14 +24,11 @@ pub const ENV_BIOMEOS_BIN_DIR: &str = "BIOMEOS_PLASMID_BIN_DIR";
 
 /// XDG-compliant default location for fetched primal binaries.
 fn xdg_plasmid_bin() -> PathBuf {
-    if let Ok(xdg) = std::env::var("XDG_DATA_HOME") {
-        PathBuf::from(xdg)
-    } else if let Ok(home) = std::env::var("HOME") {
-        PathBuf::from(home).join(".local/share")
-    } else {
-        PathBuf::from("/tmp")
-    }
-    .join("ecoPrimals/plasmidBin")
+    std::env::var("XDG_DATA_HOME")
+        .map(PathBuf::from)
+        .or_else(|_| std::env::var("HOME").map(|h| PathBuf::from(h).join(".local/share")))
+        .unwrap_or_else(|_| PathBuf::from("/tmp"))
+        .join("ecoPrimals/plasmidBin")
 }
 
 /// Detect the Rust-style target triple for the current host.

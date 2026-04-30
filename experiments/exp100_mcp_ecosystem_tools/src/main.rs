@@ -34,8 +34,7 @@ fn phase_primalspring_tools(v: &mut ValidationResult) {
                 .as_ref()
                 .and_then(|r| r.get("tools"))
                 .and_then(|t| t.as_array())
-                .map(|a| a.len())
-                .unwrap_or(0);
+                .map_or(0, Vec::len);
             v.check_bool(
                 "ps_tools",
                 tools >= 8,
@@ -70,8 +69,7 @@ fn phase_squirrel_aggregation(v: &mut ValidationResult) {
                 .as_ref()
                 .and_then(|r| r.get("tools"))
                 .and_then(|t| t.as_array())
-                .map(|a| a.len())
-                .unwrap_or(0);
+                .map_or(0, Vec::len);
             v.check_bool(
                 "sq_tool_count",
                 tools > 0,

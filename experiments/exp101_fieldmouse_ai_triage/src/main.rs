@@ -16,19 +16,17 @@ fn phase_storage_ingest(v: &mut ValidationResult) {
     v.section("Sensor Data Ingest (NestGate)");
 
     let ng = discover_by_capability("storage");
+    #[allow(clippy::single_match_else)]
     let ng_fallback;
-    let ng_sock = match ng.socket.as_ref() {
-        Some(s) => s,
-        None => {
-            ng_fallback = discover_primal("nestgate");
-            match ng_fallback.socket.as_ref() {
-                Some(s) => s,
-                None => {
-                    v.check_skip("storage_ingest", "NestGate not discovered");
-                    return;
-                }
-            }
-        }
+    let ng_sock = if let Some(s) = ng.socket.as_ref() {
+        s
+    } else {
+        ng_fallback = discover_primal("nestgate");
+        let Some(s) = ng_fallback.socket.as_ref() else {
+            v.check_skip("storage_ingest", "NestGate not discovered");
+            return;
+        };
+        s
     };
 
     let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") else {
@@ -57,7 +55,11 @@ fn phase_storage_ingest(v: &mut ValidationResult) {
             );
             return;
         }
-        v.check_bool("storage_ingest", false, "NestGate fallback connection failed");
+        v.check_bool(
+            "storage_ingest",
+            false,
+            "NestGate fallback connection failed",
+        );
     } else {
         v.check_bool("storage_ingest", false, "NestGate storage.store failed");
     }

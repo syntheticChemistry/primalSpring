@@ -27,22 +27,33 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > Standards are now **permanent interstadial invariants** — regressions are rejected.
 > See `wateringHole/STADIAL_PARITY_GATE_APR16_2026.md` for the full specification.
 >
-> **primalSpring own stadial (April 16, 2026)**: primalSpring itself underwent its
-> stadial pass: `deny.toml` license fix (BSD-3-Clause for `subtle`), exp094 license
-> inheritance, all `#[allow(` migrated to `#[expect(` with reasons, clippy 0 warnings,
-> integration test API drift fixed, experiment ID registry updated (67 → 75),
-> 631 tests (585 passed + 46 ignored). `Arc<dyn ValidationSink>` justified (open extensibility + generic `NdjsonSink<W>`).
+> **primalSpring own stadial (April 16–30, 2026)**: primalSpring stadial pass complete.
+> `deny.toml` license fix, exp094 license inheritance, `#[allow(` → `#[expect(` with reasons,
+> `cargo clippy` **0 warnings** (all 62 resolved), `cargo fmt` **0 violations** (76 fixed),
+> **561 tests passing**. `Arc<dyn ValidationSink>` justified (open extensibility + generic `NdjsonSink<W>`).
+> Experiment ID registry updated (67 → 75). All local debt eliminated.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04-29 — **Phase 56 reharvest pass.**
-> **Local debt resolved**: GAP-22 (dag.session.create bare UUID), GAP-23 (blake3 base64), GAP-24 (Barracuda noise.perlin2d x/y), GAP-25 (loamSpine spine.create owner), GAP-26 (sweetGrass contribution.record unique hash). All experiments fixed and passing.
-> **GAP-27 RESOLVED**: plasmidBin CI/CD pipeline (`auto-harvest.yml`) now auto-builds biomeOS from source. v3.31+ binaries distributed via GitHub Releases. exp106 graph management unblocked.
-> **Experiment scores**: exp101 ALL PASS (2/2), exp105 ALL PASS (17/17), exp106 11/14 (3 failures were GAP-27, now resolved by CI rebuild).
-> **GAP-28 RESOLVED**: skunkBat `sourdough-core` path coupling — commit `ef821eb` internalized 6 types
-> into `primal_foundation` module. Zero cross-repo path deps. `needs_sibling` removed from `plasmidBin/sources.toml`.
-> 205 tests, standalone build confirmed. All 13 primals now fully standalone.
-> **Remaining**: PG-48 binary refresh, PG-54 adaptive polling DEFERRED, GAP-06/12/18/19/20 minor.
+> **Last updated**: 2026-04-30 — **Local debt zero.**
+>
+> **primalSpring local quality gate**: `cargo clippy` 0 warnings, `cargo fmt` 0 violations,
+> 561 tests passing, all compositions validated.
+>
+> **All local GAPs resolved**: GAP-22–28 closed. See resolved history below.
+>
+> **Remaining items are all UPSTREAM or DEFERRED-BY-DESIGN**:
+> - PG-45/GAP-06: rhizoCrypt UDS silent — **UPSTREAM** (rhizoCrypt team)
+> - PG-46: toadStool slow socket — **UPSTREAM** (toadStool team, works with ≥10s timeout)
+> - PG-47: barraCuda `stats.entropy` missing — **UPSTREAM** (barraCuda team, workaround exists)
+> - PG-48: petalTongue musl `winit` panic — **UPSTREAM** (petalTongue team, local build works)
+> - PG-54: adaptive sensor polling — **DEFERRED-BY-DESIGN** (composition library future enhancement)
+> - GAP-06: Squirrel `discovery.register` naming — **UPSTREAM** (Squirrel/Songbird protocol)
+> - GAP-12: petalTongue dashboard param schema — **UPSTREAM** (petalTongue docs)
+> - GAP-18/19/20: discovery/family resolution — **MITIGATED** (biomeOS v3.31 + env/symlink fallbacks)
+>
+> **Zero local debt.** primalSpring is ready to serve as the Phase 3 composition reference.
+>
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
 > to make TCP opt-in via explicit `--port` flag. Same biomeOS graph deploys on any hardware/arch.

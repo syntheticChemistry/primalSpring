@@ -110,14 +110,14 @@ fn generate_machine_seed() -> String {
         hasher.update(mid.trim().as_bytes());
     }
 
-    if let Ok(hostname) = std::env::var("HOSTNAME")
-        .or_else(|_| hostname_from_file())
-    {
+    if let Ok(hostname) = std::env::var("HOSTNAME").or_else(|_| hostname_from_file()) {
         hasher.update(hostname.trim().as_bytes());
     }
 
     let mut os_entropy = [0u8; 32];
-    getrandom::fill(&mut os_entropy).expect("OS entropy unavailable");
+    let Ok(()) = getrandom::fill(&mut os_entropy) else {
+        panic!("OS entropy unavailable");
+    };
     hasher.update(&os_entropy);
 
     let hash = hasher.finalize();
@@ -125,8 +125,7 @@ fn generate_machine_seed() -> String {
 }
 
 fn hostname_from_file() -> Result<String, std::env::VarError> {
-    std::fs::read_to_string("/etc/hostname")
-        .map_err(|_| std::env::VarError::NotPresent)
+    std::fs::read_to_string("/etc/hostname").map_err(|_| std::env::VarError::NotPresent)
 }
 
 /// Fingerprint verification result for a single primal.
@@ -149,19 +148,16 @@ pub fn verify_seed_fingerprints(
 ) -> HashMap<String, FingerprintStatus> {
     let mut results = HashMap::new();
 
-    let content = match std::fs::read_to_string(fingerprints_path) {
-        Ok(c) => c,
-        Err(_) => return results,
+    let Ok(content) = std::fs::read_to_string(fingerprints_path) else {
+        return results;
     };
 
-    let table: toml::Value = match content.parse() {
-        Ok(t) => t,
-        Err(_) => return results,
+    let Ok(table) = content.parse::<toml::Value>() else {
+        return results;
     };
 
-    let fingerprints = match table.get("fingerprints").and_then(|f| f.as_table()) {
-        Some(f) => f,
-        None => return results,
+    let Some(fingerprints) = table.get("fingerprints").and_then(|f| f.as_table()) else {
+        return results;
     };
 
     let arch = "x86_64-unknown-linux-musl";
@@ -171,17 +167,15 @@ pub fn verify_seed_fingerprints(
     let versions = read_primal_versions(&manifest_path);
 
     for (name, expected_fp) in fingerprints {
-        let expected = match expected_fp.as_str() {
-            Some(s) => s,
-            None => continue,
+        let Some(expected) = expected_fp.as_str() else {
+            continue;
         };
 
-        let version = match versions.get(name.as_str()) {
-            Some(v) => v.clone(),
-            None => {
-                results.insert(name.clone(), FingerprintStatus::NoPublished);
-                continue;
-            }
+        let version = if let Some(v) = versions.get(name.as_str()) {
+            v.clone()
+        } else {
+            results.insert(name.clone(), FingerprintStatus::NoPublished);
+            continue;
         };
 
         let bin_path = bin_dir.join(name);
@@ -190,12 +184,9 @@ pub fn verify_seed_fingerprints(
             continue;
         }
 
-        let binary_checksum = match compute_binary_blake3(&bin_path) {
-            Some(c) => c,
-            None => {
-                results.insert(name.clone(), FingerprintStatus::NoBinary);
-                continue;
-            }
+        let Some(binary_checksum) = compute_binary_blake3(&bin_path) else {
+            results.insert(name.clone(), FingerprintStatus::NoBinary);
+            continue;
         };
 
         let computed = compute_seed_fingerprint(name, &version, &binary_checksum);
@@ -230,14 +221,12 @@ fn compute_binary_blake3(path: &Path) -> Option<String> {
 
 fn read_primal_versions(manifest_path: &Path) -> HashMap<String, String> {
     let mut versions = HashMap::new();
-    let content = match std::fs::read_to_string(manifest_path) {
-        Ok(c) => c,
-        Err(_) => return versions,
+    let Ok(content) = std::fs::read_to_string(manifest_path) else {
+        return versions;
     };
 
-    let table: toml::Value = match content.parse() {
-        Ok(t) => t,
-        Err(_) => return versions,
+    let Ok(table) = content.parse::<toml::Value>() else {
+        return versions;
     };
 
     if let Some(primals) = table.get("primals").and_then(|p| p.as_table()) {
@@ -263,7 +252,8 @@ pub fn validate_seed_provenance(v: &mut ValidationResult, seed: &MitoSeed) {
     v.check_bool(
         "seed:btsp_mode",
         true,
-        &format!("{mode:?} ({})",
+        &format!(
+            "{mode:?} ({})",
             if matches!(mode, primalspring::btsp::SecurityMode::Production) {
                 "BTSP authenticated connections"
             } else {

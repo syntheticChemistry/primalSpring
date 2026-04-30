@@ -165,22 +165,19 @@ fn phase_ledger_commit(v: &mut ValidationResult) {
 fn main() {
     ValidationResult::new("primalSpring Exp104 — RPGPT Provenance Replay")
         .with_provenance("exp104_rpgpt_provenance_replay", "2026-04-28")
-        .run(
-            "Exp104: Session provenance chain for storytelling",
-            |v| {
-                let session_id = phase_create_session(v);
+        .run("Exp104: Session provenance chain for storytelling", |v| {
+            let session_id = phase_create_session(v);
 
-                if let Some(ref sid) = session_id {
-                    phase_append_events(v, sid);
-                    phase_merkle_verification(v, sid);
-                } else {
-                    v.section("Event Append");
-                    v.check_skip("events", "No DAG session — skipping events");
-                    v.section("Merkle Verification");
-                    v.check_skip("merkle", "No DAG session — skipping merkle");
-                }
+            if let Some(ref sid) = session_id {
+                phase_append_events(v, sid);
+                phase_merkle_verification(v, sid);
+            } else {
+                v.section("Event Append");
+                v.check_skip("events", "No DAG session — skipping events");
+                v.section("Merkle Verification");
+                v.check_skip("merkle", "No DAG session — skipping merkle");
+            }
 
-                phase_ledger_commit(v);
-            },
-        );
+            phase_ledger_commit(v);
+        });
 }

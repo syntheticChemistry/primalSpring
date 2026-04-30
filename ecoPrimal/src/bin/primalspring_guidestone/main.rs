@@ -420,10 +420,18 @@ fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) 
     let btsp = ctx.btsp_state();
 
     let tiers: &[(&str, &[&str], BondType)] = &[
-        ("Tower", AtomicType::Tower.required_capabilities(), BondType::Covalent),
+        (
+            "Tower",
+            AtomicType::Tower.required_capabilities(),
+            BondType::Covalent,
+        ),
         ("Node", &["compute", "tensor", "shader"], BondType::Metallic),
         ("Nest", &["storage", "ai"], BondType::Metallic),
-        ("Provenance", &["dag", "commit", "provenance"], BondType::Metallic),
+        (
+            "Provenance",
+            &["dag", "commit", "provenance"],
+            BondType::Metallic,
+        ),
     ];
 
     for &(tier_name, caps, bond) in tiers {
@@ -434,11 +442,7 @@ fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) 
                     v.check_bool(&check_name, true, "BTSP authenticated");
                 }
                 Some(false) => {
-                    v.check_bool(
-                        &check_name,
-                        false,
-                        "cleartext (BTSP not yet enforced)",
-                    );
+                    v.check_bool(&check_name, false, "cleartext (BTSP not yet enforced)");
                 }
                 None => {
                     v.check_skip(&check_name, "capability not discovered");
@@ -492,7 +496,11 @@ fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) 
     } else {
         format!(
             "{btsp_count}/{total} capabilities BTSP-authenticated (cleartext: {})",
-            cleartext_caps.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", "),
+            cleartext_caps
+                .iter()
+                .map(|c| c.as_str())
+                .collect::<Vec<_>>()
+                .join(", "),
         )
     };
     v.check_bool("btsp:summary", btsp_count == total, &detail);
@@ -505,29 +513,30 @@ fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResult) 
 /// neural-api socket is discoverable and responds to both health and
 /// graph probes.
 fn validate_substrate_health(v: &mut ValidationResult) {
-    let bridge = match NeuralBridge::discover() {
-        Some(b) => {
-            v.check_bool(
-                "substrate:biomeos:discovered",
-                true,
-                &format!("socket: {}", b.socket_path().display()),
-            );
-            b
-        }
-        None => {
-            v.check_skip(
-                "substrate:biomeos:discovered",
-                "neural-api socket not found (biomeOS not running)",
-            );
-            v.check_skip("substrate:biomeos:liveness", "no socket");
-            v.check_skip("substrate:biomeos:graph_list", "no socket");
-            return;
-        }
+    let bridge = if let Some(b) = NeuralBridge::discover() {
+        v.check_bool(
+            "substrate:biomeos:discovered",
+            true,
+            &format!("socket: {}", b.socket_path().display()),
+        );
+        b
+    } else {
+        v.check_skip(
+            "substrate:biomeos:discovered",
+            "neural-api socket not found (biomeOS not running)",
+        );
+        v.check_skip("substrate:biomeos:liveness", "no socket");
+        v.check_skip("substrate:biomeos:graph_list", "no socket");
+        return;
     };
 
     match bridge.health_check() {
         Ok(true) => v.check_bool("substrate:biomeos:liveness", true, "alive"),
-        Ok(false) => v.check_bool("substrate:biomeos:liveness", false, "responded but unhealthy"),
+        Ok(false) => v.check_bool(
+            "substrate:biomeos:liveness",
+            false,
+            "responded but unhealthy",
+        ),
         Err(e) if e.is_connection_error() || e.is_protocol_error() => {
             v.check_skip(
                 "substrate:biomeos:liveness",
@@ -545,7 +554,11 @@ fn validate_substrate_health(v: &mut ValidationResult) {
 
     match graph_result {
         Ok(resp) if resp.is_success() => {
-            v.check_bool("substrate:biomeos:graph_list", true, "graph executor available");
+            v.check_bool(
+                "substrate:biomeos:graph_list",
+                true,
+                "graph executor available",
+            );
         }
         Ok(_) => {
             v.check_bool(
@@ -945,14 +958,25 @@ fn validate_ed25519_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationRe
     let raw_message = b"guidestone_ed25519_roundtrip_2026";
     let test_message = base64::engine::general_purpose::STANDARD.encode(raw_message);
 
+    validate_ed25519_keygen(ctx, v);
+    validate_ed25519_sign_and_verify(ctx, v, &test_message);
+}
+
+fn validate_ed25519_keygen(ctx: &mut CompositionContext, v: &mut ValidationResult) {
     match ctx.call(
         "security",
         "crypto.ed25519_generate_keypair",
         serde_json::json!({}),
     ) {
         Ok(keygen_result) => {
-            let has_pub = keygen_result.get("public_key").and_then(|s| s.as_str()).is_some();
-            let has_sec = keygen_result.get("secret_key").and_then(|s| s.as_str()).is_some();
+            let has_pub = keygen_result
+                .get("public_key")
+                .and_then(|s| s.as_str())
+                .is_some();
+            let has_sec = keygen_result
+                .get("secret_key")
+                .and_then(|s| s.as_str())
+                .is_some();
             v.check_bool(
                 "crypto:ed25519_keygen",
                 has_pub && has_sec,
@@ -960,13 +984,26 @@ fn validate_ed25519_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationRe
             );
         }
         Err(e) if e.is_connection_error() => {
-            v.check_skip("crypto:ed25519_keygen", &format!("security not available: {e}"));
+            v.check_skip(
+                "crypto:ed25519_keygen",
+                &format!("security not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("crypto:ed25519_keygen", false, &format!("keygen failed: {e}"));
+            v.check_bool(
+                "crypto:ed25519_keygen",
+                false,
+                &format!("keygen failed: {e}"),
+            );
         }
     }
+}
 
+fn validate_ed25519_sign_and_verify(
+    ctx: &mut CompositionContext,
+    v: &mut ValidationResult,
+    test_message: &str,
+) {
     match ctx.call(
         "security",
         "crypto.sign",
@@ -993,35 +1030,7 @@ fn validate_ed25519_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationRe
                     "UPSTREAM GAP: crypto.sign does not expose public_key",
                 );
             } else {
-                match ctx.call(
-                    "security",
-                    "crypto.verify",
-                    serde_json::json!({
-                        "message": test_message,
-                        "signature": signature,
-                        "public_key": public_key,
-                        "algorithm": "ed25519"
-                    }),
-                ) {
-                    Ok(verify_result) => {
-                        let valid = verify_result
-                            .get("valid")
-                            .and_then(|v| v.as_bool())
-                            .unwrap_or(false);
-                        v.check_bool(
-                            "crypto:ed25519_verify",
-                            valid,
-                            "sign→verify roundtrip",
-                        );
-                    }
-                    Err(e) => {
-                        v.check_bool(
-                            "crypto:ed25519_verify",
-                            false,
-                            &format!("verify call failed: {e}"),
-                        );
-                    }
-                }
+                validate_ed25519_verify(ctx, v, test_message, signature, public_key);
             }
         }
         Err(e) if e.is_connection_error() => {
@@ -1038,6 +1047,40 @@ fn validate_ed25519_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationRe
                 &format!("sign call failed: {e}"),
             );
             v.check_skip("crypto:ed25519_verify", "sign failed, skipping verify");
+        }
+    }
+}
+
+fn validate_ed25519_verify(
+    ctx: &mut CompositionContext,
+    v: &mut ValidationResult,
+    test_message: &str,
+    signature: &str,
+    public_key: &str,
+) {
+    match ctx.call(
+        "security",
+        "crypto.verify",
+        serde_json::json!({
+            "message": test_message,
+            "signature": signature,
+            "public_key": public_key,
+            "algorithm": "ed25519"
+        }),
+    ) {
+        Ok(verify_result) => {
+            let valid = verify_result
+                .get("valid")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
+            v.check_bool("crypto:ed25519_verify", valid, "sign→verify roundtrip");
+        }
+        Err(e) => {
+            v.check_bool(
+                "crypto:ed25519_verify",
+                false,
+                &format!("verify call failed: {e}"),
+            );
         }
     }
 }
@@ -1092,16 +1135,13 @@ fn validate_cellular_graphs(v: &mut ValidationResult) {
             .and_then(|s| s.to_str())
             .unwrap_or("unknown");
 
-        let content = match std::fs::read_to_string(&path) {
-            Ok(c) => c,
-            Err(_) => {
-                v.check_bool(
-                    &format!("cellular:{stem}:readable"),
-                    false,
-                    "file not readable",
-                );
-                continue;
-            }
+        let Ok(content) = std::fs::read_to_string(&path) else {
+            v.check_bool(
+                &format!("cellular:{stem}:readable"),
+                false,
+                "file not readable",
+            );
+            continue;
         };
 
         let val: toml::Value = match content.parse() {
@@ -1115,86 +1155,92 @@ fn validate_cellular_graphs(v: &mut ValidationResult) {
                 continue;
             }
         };
-        v.check_bool(&format!("cellular:{stem}:parses"), true, "valid TOML");
-
-        let has_graph = val.get("graph").is_some();
-        v.check_bool(
-            &format!("cellular:{stem}:graph_section"),
-            has_graph,
-            "[graph] section present",
-        );
-
-        let pt_mode = val
-            .get("graph")
-            .and_then(|g| g.get("metadata"))
-            .and_then(|m| m.get("petaltongue_mode"))
-            .and_then(|v| v.as_str());
-        v.check_bool(
-            &format!("cellular:{stem}:live_mode"),
-            pt_mode == Some("live"),
-            &format!(
-                "petaltongue_mode = {:?}",
-                pt_mode.unwrap_or("MISSING")
-            ),
-        );
-
-        // Support both primalSpring schema ([[graph.nodes]] + name) and
-        // biomeOS schema ([[nodes]] + id)
-        let nodes = val
-            .get("graph")
-            .and_then(|g| g.get("nodes"))
-            .and_then(|n| n.as_array())
-            .or_else(|| val.get("nodes").and_then(|n| n.as_array()));
-
-        let node_names: Vec<&str> = nodes
-            .iter()
-            .flat_map(|arr| arr.iter())
-            .filter_map(|n| {
-                n.get("name")
-                    .and_then(|v| v.as_str())
-                    .or_else(|| n.get("id").and_then(|v| v.as_str()))
-            })
-            .collect();
-
-        let has_tower = node_names.contains(&"beardog") && node_names.contains(&"songbird");
-        v.check_bool(
-            &format!("cellular:{stem}:tower"),
-            has_tower,
-            "Tower primals (beardog + songbird) present",
-        );
-
-        let has_petaltongue = node_names.contains(&"petaltongue");
-        v.check_bool(
-            &format!("cellular:{stem}:petaltongue"),
-            has_petaltongue,
-            "petalTongue node present",
-        );
-
-        let has_validate = node_names
-            .iter()
-            .any(|n| n.starts_with("validate") || n.starts_with("validate-"));
-        v.check_bool(
-            &format!("cellular:{stem}:health_check"),
-            has_validate,
-            "validation health_check node present",
-        );
-
-        let security_models: Vec<&str> = nodes
-            .iter()
-            .flat_map(|arr| arr.iter())
-            .filter_map(|n| n.get("security_model").and_then(|v| v.as_str()))
-            .collect();
-        let all_btsp = !security_models.is_empty()
-            && security_models.iter().all(|&m| m == "btsp" || m == "btsp_enforced");
-        let btsp_count = security_models.iter().filter(|&&m| m == "btsp" || m == "btsp_enforced").count();
-        v.check_bool(
-            &format!("cellular:{stem}:btsp_default"),
-            all_btsp,
-            &format!(
-                "{}/{} nodes declare btsp security_model",
-                btsp_count,
-                security_models.len()
-            ),
-        );
+        validate_cell_graph_toml_checks(v, stem, &val);
     }
+}
+
+fn validate_cell_graph_toml_checks(v: &mut ValidationResult, stem: &str, val: &toml::Value) {
+    v.check_bool(&format!("cellular:{stem}:parses"), true, "valid TOML");
+
+    let has_graph = val.get("graph").is_some();
+    v.check_bool(
+        &format!("cellular:{stem}:graph_section"),
+        has_graph,
+        "[graph] section present",
+    );
+
+    let pt_mode = val
+        .get("graph")
+        .and_then(|g| g.get("metadata"))
+        .and_then(|m| m.get("petaltongue_mode"))
+        .and_then(|v| v.as_str());
+    v.check_bool(
+        &format!("cellular:{stem}:live_mode"),
+        pt_mode == Some("live"),
+        &format!("petaltongue_mode = {:?}", pt_mode.unwrap_or("MISSING")),
+    );
+
+    // Support both primalSpring schema ([[graph.nodes]] + name) and
+    // biomeOS schema ([[nodes]] + id)
+    let nodes = val
+        .get("graph")
+        .and_then(|g| g.get("nodes"))
+        .and_then(|n| n.as_array())
+        .or_else(|| val.get("nodes").and_then(|n| n.as_array()));
+
+    let node_names: Vec<&str> = nodes
+        .iter()
+        .flat_map(|arr| arr.iter())
+        .filter_map(|n| {
+            n.get("name")
+                .and_then(|v| v.as_str())
+                .or_else(|| n.get("id").and_then(|v| v.as_str()))
+        })
+        .collect();
+
+    let has_tower = node_names.contains(&"beardog") && node_names.contains(&"songbird");
+    v.check_bool(
+        &format!("cellular:{stem}:tower"),
+        has_tower,
+        "Tower primals (beardog + songbird) present",
+    );
+
+    let has_petaltongue = node_names.contains(&"petaltongue");
+    v.check_bool(
+        &format!("cellular:{stem}:petaltongue"),
+        has_petaltongue,
+        "petalTongue node present",
+    );
+
+    let has_validate = node_names
+        .iter()
+        .any(|n| n.starts_with("validate") || n.starts_with("validate-"));
+    v.check_bool(
+        &format!("cellular:{stem}:health_check"),
+        has_validate,
+        "validation health_check node present",
+    );
+
+    let security_models: Vec<&str> = nodes
+        .iter()
+        .flat_map(|arr| arr.iter())
+        .filter_map(|n| n.get("security_model").and_then(|v| v.as_str()))
+        .collect();
+    let all_btsp = !security_models.is_empty()
+        && security_models
+            .iter()
+            .all(|&m| m == "btsp" || m == "btsp_enforced");
+    let btsp_count = security_models
+        .iter()
+        .filter(|&&m| m == "btsp" || m == "btsp_enforced")
+        .count();
+    v.check_bool(
+        &format!("cellular:{stem}:btsp_default"),
+        all_btsp,
+        &format!(
+            "{}/{} nodes declare btsp security_model",
+            btsp_count,
+            security_models.len()
+        ),
+    );
 }

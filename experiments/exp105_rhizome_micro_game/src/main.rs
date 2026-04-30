@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 #![forbid(unsafe_code)]
+#![allow(
+    clippy::cast_precision_loss,
+    clippy::option_if_let_else,
+    clippy::or_fun_call,
+    clippy::cast_sign_loss
+)]
 
 //! exp105 — The Rhizome Micro-Game
 //!
@@ -138,6 +144,7 @@ impl World {
     }
 
     fn to_save_toml(&self) -> String {
+        use std::fmt::Write;
         let items_str: Vec<String> = self
             .player_items
             .iter()
@@ -182,16 +189,18 @@ item_count = {ic}
         );
 
         for c in &self.creatures {
-            toml.push_str(&format!(
+            let _ = write!(
+                toml,
                 "\n[[save.creatures]]\nkind = \"{}\"\nx = {}\ny = {}\nhp = {}\n",
                 c.kind, c.x, c.y, c.hp
-            ));
+            );
         }
         for item in &self.items {
-            toml.push_str(&format!(
+            let _ = write!(
+                toml,
                 "\n[[save.items]]\nkind = \"{}\"\nx = {}\ny = {}\n",
                 item.kind, item.x, item.y
-            ));
+            );
         }
         toml
     }
@@ -251,8 +260,14 @@ fn generate_biome(v: &mut ValidationResult) -> Biome {
                 .result
                 .as_ref()
                 .and_then(|v| {
-                    v.get("result").and_then(|r| r.as_f64())
-                        .or_else(|| v.get("data").and_then(|d| d.as_array()).and_then(|a| a.first()).and_then(|v| v.as_f64()))
+                    v.get("result")
+                        .and_then(serde_json::Value::as_f64)
+                        .or_else(|| {
+                            v.get("data")
+                                .and_then(|d| d.as_array())
+                                .and_then(|a| a.first())
+                                .and_then(serde_json::Value::as_f64)
+                        })
                 })
                 .unwrap_or(0.0);
 
@@ -265,8 +280,14 @@ fn generate_biome(v: &mut ValidationResult) -> Biome {
             biome
         }
         Ok(r) => {
-            let msg = r.error.as_ref().map_or("no result".to_owned(), |e| e.message.clone());
-            v.check_skip("biome_noise", &format!("noise.perlin2d error: {msg} — using default biome"));
+            let msg = r
+                .error
+                .as_ref()
+                .map_or("no result".to_owned(), |e| e.message.clone());
+            v.check_skip(
+                "biome_noise",
+                &format!("noise.perlin2d error: {msg} — using default biome"),
+            );
             Biome::Rhizome
         }
         Err(e) => {
@@ -301,7 +322,11 @@ fn generate_floor_structure(v: &mut ValidationResult) -> Vec<Tile> {
             );
 
             if wfc_ok {
-                v.check_bool("wfc_floor_usable", true, "WFC result received (using fallback layout for determinism)");
+                v.check_bool(
+                    "wfc_floor_usable",
+                    true,
+                    "WFC result received (using fallback layout for determinism)",
+                );
             }
         } else {
             v.check_skip("wfc_floor", "ludoSpring connection failed");
@@ -560,7 +585,7 @@ fn build_scene_graph(world: &World) -> serde_json::Value {
             "font_size": 12,
             "color": {"r": 0.2, "g": 1.0, "b": 0.2, "a": 1.0},
             "anchor": "TopLeft",
-            "transform": {"tx": 0.0, "ty": MAP_HEIGHT as f64 * CELL_HEIGHT + 4.0}
+            "transform": {"tx": 0.0, "ty": (MAP_HEIGHT as f64).mul_add(CELL_HEIGHT, 4.0)}
         }
     }));
 
@@ -570,7 +595,7 @@ fn build_scene_graph(world: &World) -> serde_json::Value {
             "font_size": 12,
             "color": {"r": 0.8, "g": 0.8, "b": 0.8, "a": 1.0},
             "anchor": "TopLeft",
-            "transform": {"tx": 150.0, "ty": MAP_HEIGHT as f64 * CELL_HEIGHT + 4.0}
+            "transform": {"tx": 150.0, "ty": (MAP_HEIGHT as f64).mul_add(CELL_HEIGHT, 4.0)}
         }
     }));
 
@@ -580,7 +605,7 @@ fn build_scene_graph(world: &World) -> serde_json::Value {
             "font_size": 12,
             "color": {"r": 0.9, "g": 0.9, "b": 0.5, "a": 1.0},
             "anchor": "TopLeft",
-            "transform": {"tx": 0.0, "ty": MAP_HEIGHT as f64 * CELL_HEIGHT + 20.0}
+            "transform": {"tx": 0.0, "ty": (MAP_HEIGHT as f64).mul_add(CELL_HEIGHT, 20.0)}
         }
     }));
 
@@ -644,16 +669,11 @@ fn phase_game_loop(v: &mut ValidationResult, world: &mut World) {
         let ny = (i32::try_from(world.player_y).unwrap_or(0) + dy).max(0) as usize;
 
         if nx < MAP_WIDTH && ny < MAP_HEIGHT && world.tile(nx, ny) != Tile::Wall {
-            if let Some(ci) = world
-                .creatures
-                .iter()
-                .position(|c| c.x == nx && c.y == ny)
-            {
+            if let Some(ci) = world.creatures.iter().position(|c| c.x == nx && c.y == ny) {
                 world.creatures[ci].hp -= 10;
-                world.messages.push(format!(
-                    "Hit {} for 10 damage!",
-                    world.creatures[ci].kind
-                ));
+                world
+                    .messages
+                    .push(format!("Hit {} for 10 damage!", world.creatures[ci].kind));
                 if world.creatures[ci].hp <= 0 {
                     let name = world.creatures[ci].kind;
                     world.messages.push(format!("{name} defeated!"));
@@ -663,8 +683,7 @@ fn phase_game_loop(v: &mut ValidationResult, world: &mut World) {
                 world.player_x = nx;
                 world.player_y = ny;
 
-                if let Some(ii) = world.items.iter().position(|it| it.x == nx && it.y == ny)
-                {
+                if let Some(ii) = world.items.iter().position(|it| it.x == nx && it.y == ny) {
                     let item_name = world.items[ii].kind.to_owned();
                     world.player_items.push(item_name.clone());
                     world.items.remove(ii);
@@ -725,10 +744,7 @@ fn phase_damage_calc(v: &mut ValidationResult) {
         return;
     };
 
-    let resp = client.call(
-        "stats.mean",
-        serde_json::json!({"data": [5.0, 1.0, 8.0]}),
-    );
+    let resp = client.call("stats.mean", serde_json::json!({"data": [5.0, 1.0, 8.0]}));
 
     match resp {
         Ok(r) => {
@@ -736,7 +752,7 @@ fn phase_damage_calc(v: &mut ValidationResult) {
                 .result
                 .as_ref()
                 .and_then(|r| r.get("result"))
-                .and_then(|v| v.as_f64());
+                .and_then(serde_json::Value::as_f64);
             v.check_bool(
                 "damage_calc",
                 result.is_some(),
@@ -787,17 +803,15 @@ fn phase_save_game(v: &mut ValidationResult, world: &World) -> Option<String> {
 fn save_to_nestgate(v: &mut ValidationResult, key: &str, toml_data: &str) -> bool {
     let ng = discover_by_capability("storage");
     let ng_fallback;
-    let ng_sock = match ng.socket.as_ref() {
-        Some(s) => s,
-        None => {
-            ng_fallback = discover_primal("nestgate");
-            match ng_fallback.socket.as_ref() {
-                Some(s) => s,
-                None => {
-                    v.check_skip("nestgate_store", "NestGate not discovered");
-                    return false;
-                }
-            }
+    let ng_sock = if let Some(s) = ng.socket.as_ref() {
+        s
+    } else {
+        ng_fallback = discover_primal("nestgate");
+        if let Some(s) = ng_fallback.socket.as_ref() {
+            s
+        } else {
+            v.check_skip("nestgate_store", "NestGate not discovered");
+            return false;
         }
     };
 
@@ -822,7 +836,10 @@ fn save_to_nestgate(v: &mut ValidationResult, key: &str, toml_data: &str) -> boo
             true
         }
         Ok(r) => {
-            let err_msg = r.error.as_ref().map_or("unknown".to_owned(), |e| e.message.clone());
+            let err_msg = r
+                .error
+                .as_ref()
+                .map_or("unknown".to_owned(), |e| e.message.clone());
             let fallback = discover_primal("nestgate");
             if let Some(fb_sock) = fallback.socket.as_ref() {
                 if let Ok(mut fb_client) = PrimalClient::connect(fb_sock, "nestgate") {
@@ -831,16 +848,28 @@ fn save_to_nestgate(v: &mut ValidationResult, key: &str, toml_data: &str) -> boo
                         serde_json::json!({"family_id": family_id, "key": key, "value": toml_data}),
                     );
                     if fb_resp.is_ok_and(|r| r.result.is_some()) {
-                        v.check_bool("nestgate_store", true, "Save TOML stored via NestGate fallback (biomeOS misrouted)");
+                        v.check_bool(
+                            "nestgate_store",
+                            true,
+                            "Save TOML stored via NestGate fallback (biomeOS misrouted)",
+                        );
                         return true;
                     }
                 }
             }
-            v.check_bool("nestgate_store", false, &format!("NestGate store failed: {err_msg}"));
+            v.check_bool(
+                "nestgate_store",
+                false,
+                &format!("NestGate store failed: {err_msg}"),
+            );
             false
         }
         Err(e) => {
-            v.check_bool("nestgate_store", false, &format!("NestGate store error: {e}"));
+            v.check_bool(
+                "nestgate_store",
+                false,
+                &format!("NestGate store error: {e}"),
+            );
             false
         }
     }
@@ -866,9 +895,11 @@ fn create_provenance_session(v: &mut ValidationResult) -> Option<String> {
     match resp {
         Ok(r) => {
             let session_id = r.result.as_ref().and_then(|v| {
-                v.as_str()
-                    .map(String::from)
-                    .or_else(|| v.get("session_id").and_then(|s| s.as_str()).map(String::from))
+                v.as_str().map(String::from).or_else(|| {
+                    v.get("session_id")
+                        .and_then(|s| s.as_str())
+                        .map(String::from)
+                })
             });
             v.check_bool(
                 "dag_session",
@@ -1004,11 +1035,21 @@ fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
             v.check_bool("braid_create", true, "Attribution braid created for save");
         }
         Ok(r) => {
-            let msg = r.error.as_ref().map_or("no result".to_owned(), |e| format!("{}: {}", e.code, e.message));
-            v.check_bool("braid_create", false, &format!("braid.create RPC error: {msg}"));
+            let msg = r.error.as_ref().map_or("no result".to_owned(), |e| {
+                format!("{}: {}", e.code, e.message)
+            });
+            v.check_bool(
+                "braid_create",
+                false,
+                &format!("braid.create RPC error: {msg}"),
+            );
         }
         Err(e) => {
-            v.check_bool("braid_create", false, &format!("braid.create transport error: {e}"));
+            v.check_bool(
+                "braid_create",
+                false,
+                &format!("braid.create transport error: {e}"),
+            );
         }
     }
 
@@ -1026,14 +1067,29 @@ fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
 
         match &contrib_resp {
             Ok(r) if r.result.is_some() => {
-                v.check_bool("contribution_record", true, "Play contribution recorded in sweetGrass");
+                v.check_bool(
+                    "contribution_record",
+                    true,
+                    "Play contribution recorded in sweetGrass",
+                );
             }
             Ok(r) => {
-                let msg = r.error.as_ref().map_or("no result".to_owned(), |e| e.message.clone());
-                v.check_bool("contribution_record", false, &format!("contribution.record error: {msg}"));
+                let msg = r
+                    .error
+                    .as_ref()
+                    .map_or("no result".to_owned(), |e| e.message.clone());
+                v.check_bool(
+                    "contribution_record",
+                    false,
+                    &format!("contribution.record error: {msg}"),
+                );
             }
             Err(e) => {
-                v.check_bool("contribution_record", false, &format!("contribution.record transport: {e}"));
+                v.check_bool(
+                    "contribution_record",
+                    false,
+                    &format!("contribution.record transport: {e}"),
+                );
             }
         }
     } else {
@@ -1061,17 +1117,15 @@ fn phase_load_game(v: &mut ValidationResult, dag_session: Option<&str>) {
 
     let ng = discover_by_capability("storage");
     let ng_fallback;
-    let ng_sock = match ng.socket.as_ref() {
-        Some(s) => s,
-        None => {
-            ng_fallback = discover_primal("nestgate");
-            match ng_fallback.socket.as_ref() {
-                Some(s) => s,
-                None => {
-                    v.check_skip("load_game", "NestGate not discovered");
-                    return;
-                }
-            }
+    let ng_sock = if let Some(s) = ng.socket.as_ref() {
+        s
+    } else {
+        ng_fallback = discover_primal("nestgate");
+        if let Some(s) = ng_fallback.socket.as_ref() {
+            s
+        } else {
+            v.check_skip("load_game", "NestGate not discovered");
+            return;
         }
     };
 
@@ -1171,12 +1225,18 @@ fn phase_narration(v: &mut ValidationResult, world: &World) {
 
     let sq = discover_by_capability("ai");
     let Some(sq_sock) = sq.socket.as_ref() else {
-        v.check_skip("ai_narrate", "Squirrel not discovered — using template text");
+        v.check_skip(
+            "ai_narrate",
+            "Squirrel not discovered — using template text",
+        );
         return;
     };
 
     let Ok(mut client) = PrimalClient::connect(sq_sock, "squirrel") else {
-        v.check_skip("ai_narrate", "Squirrel connection failed — using template text");
+        v.check_skip(
+            "ai_narrate",
+            "Squirrel connection failed — using template text",
+        );
         return;
     };
 
@@ -1210,6 +1270,7 @@ fn phase_narration(v: &mut ValidationResult, world: &World) {
 // ═══════════════════════════════════════════════════════════════════════
 
 fn phase_crypto_hash(v: &mut ValidationResult, world: &World) {
+    use base64::Engine as _;
     v.section("Save Integrity Hash (BearDog)");
 
     let bd = discover_by_capability("crypto");
@@ -1224,12 +1285,8 @@ fn phase_crypto_hash(v: &mut ValidationResult, world: &World) {
     };
 
     let save_data = world.to_save_toml();
-    use base64::Engine as _;
     let encoded = base64::engine::general_purpose::STANDARD.encode(save_data.as_bytes());
-    let resp = client.call(
-        "crypto.blake3_hash",
-        serde_json::json!({"data": encoded}),
-    );
+    let resp = client.call("crypto.blake3_hash", serde_json::json!({"data": encoded}));
 
     v.check_bool(
         "crypto_hash",
@@ -1281,18 +1338,15 @@ fn phase_discovery(v: &mut ValidationResult) {
 fn main() {
     ValidationResult::new("primalSpring Exp105 — The Rhizome Micro-Game")
         .with_provenance("exp105_rhizome_micro_game", "2026-04-28")
-        .run(
-            "Exp105: Full roguelike game loop on Desktop NUCLEUS",
-            |v| {
-                let mut world = phase_world_gen(v);
-                phase_render_scene(v, &world);
-                phase_game_loop(v, &mut world);
-                phase_render_scene(v, &world);
-                let dag_session = phase_save_game(v, &world);
-                phase_load_game(v, dag_session.as_deref());
-                phase_narration(v, &world);
-                phase_crypto_hash(v, &world);
-                phase_discovery(v);
-            },
-        );
+        .run("Exp105: Full roguelike game loop on Desktop NUCLEUS", |v| {
+            let mut world = phase_world_gen(v);
+            phase_render_scene(v, &world);
+            phase_game_loop(v, &mut world);
+            phase_render_scene(v, &world);
+            let dag_session = phase_save_game(v, &world);
+            phase_load_game(v, dag_session.as_deref());
+            phase_narration(v, &world);
+            phase_crypto_hash(v, &world);
+            phase_discovery(v);
+        });
 }

@@ -101,11 +101,9 @@ fn validate_manifest(v: &mut ValidationResult, base: &Path) {
         );
 
         if let Some(arr) = val.get("cell").and_then(|c| c.as_array()) {
-            let all_live = arr.iter().all(|c| {
-                c.get("petaltongue_mode")
-                    .and_then(|m| m.as_str())
-                    == Some("live")
-            });
+            let all_live = arr
+                .iter()
+                .all(|c| c.get("petaltongue_mode").and_then(|m| m.as_str()) == Some("live"));
             v.check_bool(
                 "cells_manifest_all_live_mode",
                 all_live,
@@ -147,9 +145,7 @@ fn validate_cell_structure(v: &mut ValidationResult, base: &Path, cell_file: &st
         "[graph] section present",
     );
 
-    let meta = val
-        .get("graph")
-        .and_then(|g| g.get("metadata"));
+    let meta = val.get("graph").and_then(|g| g.get("metadata"));
     let pt_mode = meta
         .and_then(|m| m.get("petaltongue_mode"))
         .and_then(|v| v.as_str());
@@ -182,9 +178,9 @@ fn validate_cell_structure(v: &mut ValidationResult, base: &Path, cell_file: &st
     }
 
     // petalTongue node exists with live mode params
-    let pt_node = nodes.iter().find(|n| {
-        n.get("name").and_then(|v| v.as_str()) == Some("petaltongue")
-    });
+    let pt_node = nodes
+        .iter()
+        .find(|n| n.get("name").and_then(|v| v.as_str()) == Some("petaltongue"));
     let pt_live = pt_node
         .and_then(|n| n.get("params"))
         .and_then(|p| p.get("mode"))
@@ -206,21 +202,34 @@ fn validate_cell_structure(v: &mut ValidationResult, base: &Path, cell_file: &st
 
     // Domain overlay node exists (not a base primal)
     let base_primals = [
-        "biomeos_neural_api", "beardog", "songbird", "toadstool", "barracuda",
-        "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
-        "squirrel", "petaltongue",
+        "biomeos_neural_api",
+        "beardog",
+        "songbird",
+        "toadstool",
+        "barracuda",
+        "coralreef",
+        "nestgate",
+        "rhizocrypt",
+        "loamspine",
+        "sweetgrass",
+        "squirrel",
+        "petaltongue",
     ];
     let domain_nodes: Vec<&String> = node_names
         .iter()
-        .filter(|n| {
-            !base_primals.contains(&n.as_str())
-                && !n.starts_with("validate")
-        })
+        .filter(|n| !base_primals.contains(&n.as_str()) && !n.starts_with("validate"))
         .collect();
     v.check_bool(
         &format!("{stem}_has_domain_overlay"),
         !domain_nodes.is_empty(),
-        &format!("domain node(s): {}", domain_nodes.iter().map(|s| s.as_str()).collect::<Vec<_>>().join(", ")),
+        &format!(
+            "domain node(s): {}",
+            domain_nodes
+                .iter()
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
     );
 }
 
@@ -234,7 +243,10 @@ fn validate_capability_coverage(v: &mut ValidationResult, base: &Path) {
     let content = std::fs::read_to_string(&downstream_path).unwrap_or_default();
     let parsed: Result<toml::Value, _> = content.parse();
     let Some(dm) = parsed.ok() else {
-        v.check_skip("capability_coverage", "downstream_manifest.toml parse failed");
+        v.check_skip(
+            "capability_coverage",
+            "downstream_manifest.toml parse failed",
+        );
         return;
     };
 
@@ -256,7 +268,9 @@ fn validate_capability_coverage(v: &mut ValidationResult, base: &Path) {
 
         let cell_content = std::fs::read_to_string(&cell_path).unwrap_or_default();
         let cell_parsed: Result<toml::Value, _> = cell_content.parse();
-        let Some(cell_val) = cell_parsed.ok() else { continue };
+        let Some(cell_val) = cell_parsed.ok() else {
+            continue;
+        };
 
         let cell_caps: Vec<String> = cell_val
             .get("graph")
@@ -279,7 +293,11 @@ fn validate_capability_coverage(v: &mut ValidationResult, base: &Path) {
         let required_caps: Vec<String> = ds
             .get("validation_capabilities")
             .and_then(|c| c.as_array())
-            .map(|a| a.iter().filter_map(|c| c.as_str().map(String::from)).collect())
+            .map(|a| {
+                a.iter()
+                    .filter_map(|c| c.as_str().map(String::from))
+                    .collect()
+            })
             .unwrap_or_default();
 
         let missing: Vec<&String> = required_caps
@@ -288,13 +306,21 @@ fn validate_capability_coverage(v: &mut ValidationResult, base: &Path) {
             .collect();
 
         let detail = if missing.is_empty() {
-            format!("{}/{} validation capabilities covered", required_caps.len(), required_caps.len())
+            format!(
+                "{}/{} validation capabilities covered",
+                required_caps.len(),
+                required_caps.len()
+            )
         } else {
             format!(
                 "{}/{} covered, missing: {}",
                 required_caps.len() - missing.len(),
                 required_caps.len(),
-                missing.iter().map(|s| s.as_str()).collect::<Vec<_>>().join(", ")
+                missing
+                    .iter()
+                    .map(|s| s.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
             )
         };
         v.check_bool(
@@ -306,7 +332,8 @@ fn validate_capability_coverage(v: &mut ValidationResult, base: &Path) {
 }
 
 fn validate_biomeos_deployment(v: &mut ValidationResult, base: &Path) {
-    let mut ctx = primalspring::composition::CompositionContext::from_live_discovery_with_fallback();
+    let mut ctx =
+        primalspring::composition::CompositionContext::from_live_discovery_with_fallback();
     let caps = ctx.available_capabilities();
 
     if caps.is_empty() {
@@ -317,7 +344,9 @@ fn validate_biomeos_deployment(v: &mut ValidationResult, base: &Path) {
         return;
     }
 
-    let has_orchestration = caps.iter().any(|c| c.contains("graph") || c.contains("orchestration"));
+    let has_orchestration = caps
+        .iter()
+        .any(|c| c.contains("graph") || c.contains("orchestration"));
     if !has_orchestration {
         v.check_skip(
             "biomeos_graph_execute",
@@ -336,10 +365,7 @@ fn validate_biomeos_deployment(v: &mut ValidationResult, base: &Path) {
         let stem = cell_file.trim_end_matches("_cell.toml");
         let cell_path = base.join(CELLS_DIR).join(cell_file);
         if !cell_path.is_file() {
-            v.check_skip(
-                &format!("{stem}_deploy"),
-                &format!("{cell_file} not found"),
-            );
+            v.check_skip(&format!("{stem}_deploy"), &format!("{cell_file} not found"));
             continue;
         }
 

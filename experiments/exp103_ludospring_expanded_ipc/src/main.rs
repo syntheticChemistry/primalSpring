@@ -28,12 +28,30 @@ fn phase_existing_methods(v: &mut ValidationResult) {
     };
 
     let methods: &[(&str, serde_json::Value)] = &[
-        ("game.evaluate_flow", serde_json::json!({"engagement": 0.7, "challenge": 0.5})),
-        ("game.fitts_cost", serde_json::json!({"distance": 100.0, "width": 20.0})),
-        ("game.engagement", serde_json::json!({"session_duration_secs": 600})),
-        ("game.difficulty_adjustment", serde_json::json!({"player_skill": 0.6, "current_difficulty": 0.5})),
-        ("game.wfc_step", serde_json::json!({"grid_width": 4, "grid_height": 4})),
-        ("game.generate_noise", serde_json::json!({"width": 8, "height": 8, "seed": 42})),
+        (
+            "game.evaluate_flow",
+            serde_json::json!({"engagement": 0.7, "challenge": 0.5}),
+        ),
+        (
+            "game.fitts_cost",
+            serde_json::json!({"distance": 100.0, "width": 20.0}),
+        ),
+        (
+            "game.engagement",
+            serde_json::json!({"session_duration_secs": 600}),
+        ),
+        (
+            "game.difficulty_adjustment",
+            serde_json::json!({"player_skill": 0.6, "current_difficulty": 0.5}),
+        ),
+        (
+            "game.wfc_step",
+            serde_json::json!({"grid_width": 4, "grid_height": 4}),
+        ),
+        (
+            "game.generate_noise",
+            serde_json::json!({"width": 8, "height": 8, "seed": 42}),
+        ),
         ("game.analyze_ui", serde_json::json!({"elements": []})),
         ("game.accessibility", serde_json::json!({"mode": "check"})),
     ];
@@ -66,7 +84,11 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "provenance": false
         }),
     );
-    v.check_bool("begin_session", resp.is_ok_and(|r| r.result.is_some()), "game.begin_session");
+    v.check_bool(
+        "begin_session",
+        resp.is_ok_and(|r| r.result.is_some()),
+        "game.begin_session",
+    );
 
     let resp = client.call(
         "game.narrate_action",
@@ -80,7 +102,11 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "dice_result": null
         }),
     );
-    v.check_bool("narrate_action", resp.is_ok_and(|r| r.result.is_some()), "game.narrate_action");
+    v.check_bool(
+        "narrate_action",
+        resp.is_ok_and(|r| r.result.is_some()),
+        "game.narrate_action",
+    );
 
     let resp = client.call(
         "game.npc_dialogue",
@@ -94,7 +120,11 @@ fn phase_new_methods(v: &mut ValidationResult) {
             ]
         }),
     );
-    v.check_bool("npc_dialogue", resp.is_ok_and(|r| r.result.is_some()), "game.npc_dialogue");
+    v.check_bool(
+        "npc_dialogue",
+        resp.is_ok_and(|r| r.result.is_some()),
+        "game.npc_dialogue",
+    );
 
     let resp = client.call(
         "game.voice_check",
@@ -106,7 +136,11 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "context": {"fitts_distance": 0.2, "time_pressure": false, "previous_attempts": 0}
         }),
     );
-    v.check_bool("voice_check", resp.is_ok_and(|r| r.result.is_some()), "game.voice_check");
+    v.check_bool(
+        "voice_check",
+        resp.is_ok_and(|r| r.result.is_some()),
+        "game.voice_check",
+    );
 
     let resp = client.call(
         "game.push_scene",
@@ -116,7 +150,11 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "overlays": {"flow_indicator": 0.7}
         }),
     );
-    v.check_bool("push_scene", resp.is_ok_and(|r| r.result.is_some()), "game.push_scene");
+    v.check_bool(
+        "push_scene",
+        resp.is_ok_and(|r| r.result.is_some()),
+        "game.push_scene",
+    );
 
     let resp = client.call(
         "game.complete_session",
@@ -126,7 +164,11 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "stats": {"duration_secs": 10, "scenes_visited": 1, "choices_made": 0}
         }),
     );
-    v.check_bool("complete_session", resp.is_ok_and(|r| r.result.is_some()), "game.complete_session");
+    v.check_bool(
+        "complete_session",
+        resp.is_ok_and(|r| r.result.is_some()),
+        "game.complete_session",
+    );
 }
 
 fn main() {

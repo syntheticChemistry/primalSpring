@@ -60,11 +60,9 @@ pub fn tcp_rpc_with_timeout(
     let addr = format!("{host}:{port}");
     let start = Instant::now();
     let mut stream = TcpStream::connect_timeout(
-        &addr
-            .parse()
-            .map_err(|e| IpcError::ProtocolError {
-                detail: format!("invalid address {addr}: {e}"),
-            })?,
+        &addr.parse().map_err(|e| IpcError::ProtocolError {
+            detail: format!("invalid address {addr}: {e}"),
+        })?,
         connect_timeout,
     )
     .map_err(classify_io_error)?;
@@ -128,11 +126,9 @@ pub fn http_health_probe(host: &str, port: u16) -> TcpRpcResult {
     let addr = format!("{host}:{port}");
     let start = Instant::now();
     let mut stream = TcpStream::connect_timeout(
-        &addr
-            .parse()
-            .map_err(|e| IpcError::ProtocolError {
-                detail: format!("invalid address {addr}: {e}"),
-            })?,
+        &addr.parse().map_err(|e| IpcError::ProtocolError {
+            detail: format!("invalid address {addr}: {e}"),
+        })?,
         Duration::from_secs(tolerances::TCP_CONNECT_TIMEOUT_SECS),
     )
     .map_err(classify_io_error)?;
@@ -193,11 +189,9 @@ pub fn http_json_rpc(
     let addr = format!("{host}:{port}");
     let start = Instant::now();
     let mut stream = TcpStream::connect_timeout(
-        &addr
-            .parse()
-            .map_err(|e| IpcError::ProtocolError {
-                detail: format!("invalid address {addr}: {e}"),
-            })?,
+        &addr.parse().map_err(|e| IpcError::ProtocolError {
+            detail: format!("invalid address {addr}: {e}"),
+        })?,
         Duration::from_secs(tolerances::TCP_CONNECT_TIMEOUT_SECS),
     )
     .map_err(classify_io_error)?;

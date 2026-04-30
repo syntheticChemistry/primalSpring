@@ -52,9 +52,19 @@ use crate::validation::ValidationResult;
 /// are aliases for the same primal socket (e.g. `dag` and `provenance`
 /// both → rhizoCrypt) appear once each so guidestone reports per-capability.
 const ALL_CAPS: &[&str] = &[
-    "security", "discovery", "compute", "tensor", "shader",
-    "storage", "ai", "dag", "commit", "provenance",
-    "visualization", "ledger", "attribution",
+    "security",
+    "discovery",
+    "compute",
+    "tensor",
+    "shader",
+    "storage",
+    "ai",
+    "dag",
+    "commit",
+    "provenance",
+    "visualization",
+    "ledger",
+    "attribution",
 ];
 
 /// Extended capability aliases for BTSP proactive escalation.
@@ -62,9 +72,7 @@ const ALL_CAPS: &[&str] = &[
 /// Includes names that map to the same primal sockets as [`ALL_CAPS`]
 /// (e.g. `inference` → Squirrel, `spine`/`merkle` → loamSpine) to ensure
 /// BTSP coverage even when a client was connected under an alias name.
-const BTSP_EXTRA_CAPS: &[&str] = &[
-    "inference", "spine", "merkle", "braid",
-];
+const BTSP_EXTRA_CAPS: &[&str] = &["inference", "spine", "merkle", "braid"];
 
 /// A capability-keyed set of IPC clients for a running primal composition.
 ///
@@ -190,7 +198,7 @@ impl CompositionContext {
 
     /// Full BTSP state map (capability -> authenticated).
     #[must_use]
-    pub fn btsp_state(&self) -> &BTreeMap<String, bool> {
+    pub const fn btsp_state(&self) -> &BTreeMap<String, bool> {
         &self.btsp_state
     }
 
@@ -386,10 +394,7 @@ impl CompositionContext {
     ///
     /// Returns [`IpcError`] if the `visualization` capability is absent or
     /// the poll call fails.
-    pub fn poll_interactions(
-        &mut self,
-        session_id: &str,
-    ) -> Result<serde_json::Value, IpcError> {
+    pub fn poll_interactions(&mut self, session_id: &str) -> Result<serde_json::Value, IpcError> {
         self.call(
             "visualization",
             crate::ipc::methods::interaction::POLL,
@@ -532,6 +537,18 @@ pub fn validate_parity(
     }
 }
 
+fn flatten_numeric_json_values(arr: &[serde_json::Value]) -> Vec<f64> {
+    let mut out = Vec::new();
+    for val in arr {
+        if let Some(n) = val.as_f64() {
+            out.push(n);
+        } else if let Some(inner) = val.as_array() {
+            out.extend(flatten_numeric_json_values(inner));
+        }
+    }
+    out
+}
+
 /// Validate vector parity between a local baseline and a primal composition.
 ///
 /// Like [`validate_parity`] but for multi-element results (tensors, arrays).
@@ -581,19 +598,7 @@ pub fn validate_parity_vec(
         return;
     };
 
-    fn flatten_numeric(arr: &[serde_json::Value]) -> Vec<f64> {
-        let mut out = Vec::new();
-        for val in arr {
-            if let Some(n) = val.as_f64() {
-                out.push(n);
-            } else if let Some(inner) = val.as_array() {
-                out.extend(flatten_numeric(inner));
-            }
-        }
-        out
-    }
-
-    let actual = flatten_numeric(arr);
+    let actual = flatten_numeric_json_values(arr);
     if actual.len() != arr.len() && actual.is_empty() {
         v.check_bool(
             name,
@@ -698,18 +703,19 @@ pub fn is_skip_error(e: &IpcError) -> bool {
 /// Returns a `BTreeMap<capability, btsp_authenticated>` so guidestone can
 /// report per-atomic security posture without re-probing.
 fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap<String, bool> {
-    let mut state: BTreeMap<String, bool> = clients
-        .keys()
-        .map(|cap| (cap.clone(), false))
-        .collect();
+    let mut state: BTreeMap<String, bool> =
+        clients.keys().map(|cap| (cap.clone(), false)).collect();
 
     #[expect(deprecated, reason = "backward-compat bridge")]
-    let seed = match crate::ipc::btsp_handshake::family_seed_from_env() {
-        Some(s) => s,
-        None => return state,
+    let Some(seed) = crate::ipc::btsp_handshake::family_seed_from_env() else {
+        return state;
     };
 
-    let proactive: Vec<&str> = ALL_CAPS.iter().chain(BTSP_EXTRA_CAPS.iter()).copied().collect();
+    let proactive: Vec<&str> = ALL_CAPS
+        .iter()
+        .chain(BTSP_EXTRA_CAPS.iter())
+        .copied()
+        .collect();
 
     let all_caps: Vec<String> = clients.keys().cloned().collect();
 
@@ -730,14 +736,12 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
                 }
             } else {
                 // Reactive: probe cleartext first, only escalate if rejected.
-                let rejected = clients
-                    .get_mut(cap.as_str())
-                    .is_some_and(|c| {
-                        matches!(
-                            c.call("health.liveness", serde_json::json!({})),
-                            Err(e) if e.is_connection_error() || e.is_protocol_error()
-                        )
-                    });
+                let rejected = clients.get_mut(cap.as_str()).is_some_and(|c| {
+                    matches!(
+                        c.call("health.liveness", serde_json::json!({})),
+                        Err(e) if e.is_connection_error() || e.is_protocol_error()
+                    )
+                });
 
                 if rejected {
                     match PrimalClient::connect_btsp(&path, primal, &seed) {
@@ -747,7 +751,12 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
                             state.insert(cap.clone(), true);
                         }
                         Err(e) => {
-                            tracing::debug!(cap, primal, ?e, "reactive BTSP failed, reconnecting cleartext");
+                            tracing::debug!(
+                                cap,
+                                primal,
+                                ?e,
+                                "reactive BTSP failed, reconnecting cleartext"
+                            );
                             if let Ok(fresh) = PrimalClient::connect(&path, primal) {
                                 clients.insert(cap.clone(), fresh);
                             }
@@ -769,7 +778,11 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
             let primal = capability_to_primal(cap);
             match PrimalClient::connect_btsp(&path, primal, &seed) {
                 Ok(btsp_client) => {
-                    tracing::info!(cap, primal, "BTSP authenticated (BTSP-first, no cleartext client)");
+                    tracing::info!(
+                        cap,
+                        primal,
+                        "BTSP authenticated (BTSP-first, no cleartext client)"
+                    );
                     clients.insert(cap.to_owned(), btsp_client);
                     state.insert(cap.to_owned(), true);
                 }

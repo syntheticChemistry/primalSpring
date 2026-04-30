@@ -194,13 +194,13 @@ impl Transport {
 
     /// Whether this transport is a Unix domain socket.
     #[must_use]
-    pub fn is_unix(&self) -> bool {
+    pub const fn is_unix(&self) -> bool {
         matches!(self.inner, TransportInner::Unix(_))
     }
 
     /// Whether this transport is a TCP socket.
     #[must_use]
-    pub fn is_tcp(&self) -> bool {
+    pub const fn is_tcp(&self) -> bool {
         matches!(self.inner, TransportInner::Tcp(_))
     }
 
@@ -212,7 +212,7 @@ impl Transport {
 
     /// Transport type as a display string.
     #[must_use]
-    pub fn transport_type(&self) -> &str {
+    pub const fn transport_type(&self) -> &str {
         match (&self.inner, self.btsp_authenticated) {
             (TransportInner::Unix(_), true) => "unix+btsp",
             (TransportInner::Unix(_), false) => "unix",

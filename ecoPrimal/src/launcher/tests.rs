@@ -74,12 +74,10 @@ fn discover_binary_returns_not_found_without_relative_traversal() {
     let Err(LaunchError::BinaryNotFound { searched, .. }) = result else {
         panic!("expected BinaryNotFound for nonexistent primal");
     };
-    let has_relative_traversal = searched
-        .iter()
-        .any(|p| {
-            let s = p.to_string_lossy();
-            s.contains("../plasmidBin") || s.contains("../../plasmidBin")
-        });
+    let has_relative_traversal = searched.iter().any(|p| {
+        let s = p.to_string_lossy();
+        s.contains("../plasmidBin") || s.contains("../../plasmidBin")
+    });
     assert!(
         !has_relative_traversal,
         "discovery should NOT traverse into relative ../plasmidBin paths"

@@ -69,13 +69,13 @@ impl PrimalClient {
 
     /// Whether the underlying transport completed a BTSP handshake.
     #[must_use]
-    pub fn is_btsp_authenticated(&self) -> bool {
+    pub const fn is_btsp_authenticated(&self) -> bool {
         self.transport.is_btsp_authenticated()
     }
 
     /// Transport description (e.g. `"unix"`, `"unix+btsp"`, `"tcp"`).
     #[must_use]
-    pub fn transport_type(&self) -> &str {
+    pub const fn transport_type(&self) -> &str {
         self.transport.transport_type()
     }
 
