@@ -1274,27 +1274,27 @@ skunkBat and Squirrel. Massive async-trait progress: **9/13 primals at zero** (w
 
 | Priority | Gap | Owner | Status |
 |----------|-----|-------|--------|
-| Medium | `storage.retrieve` for large/streaming tensors | NestGate | OPEN (NestGate still evolving) |
-| Medium | Cross-spring persistent storage IPC | NestGate | OPEN (NestGate still evolving) |
-| Medium | Songbird coverage 72%→90% | Songbird | **72.29%** — main remaining quality debt |
-| Medium | coralReef coverage ~65%→90% | coralReef | **~65%** — significant gap |
+| ~~Medium~~ | ~~`storage.retrieve` for large/streaming tensors~~ | ~~NestGate~~ | **RESOLVED** (Session 50) — streaming registry + semantic router dispatch |
+| ~~Medium~~ | ~~Cross-spring persistent storage IPC~~ | ~~NestGate~~ | **RESOLVED** (Session 50) — `shared` namespace + `fetch_external` wired to all dispatch paths |
+| Medium | Songbird coverage 72%→90% | Songbird | **73.4%** ↑ (Wave 179: +92 tests → 7,784). I/O-heavy paths hard to cover |
+| Medium | coralReef coverage ~65%→90% | coralReef | **~65%** (Iter 88: 4,639 tests). CR-04 typed errors **RESOLVED**. Coverage still gap |
 | Low | 29 shader absorption candidates | barraCuda | neuralSpring pipeline (submit PRs per shader) |
 | Low | Batched `OdeRK45F64` for Richards PDE | barraCuda | airSpring-specific |
 | Low | IPC timing for `shader.compile` | coralReef | Deployment timing |
-| Medium | `crypto.sign_contract` (ionic bond negotiation) | BearDog | Cross-tower compositions can't negotiate ionic bonds via IPC |
+| ~~Medium~~ | ~~`crypto.sign_contract` (ionic bond negotiation)~~ | ~~BearDog~~ | **RESOLVED** (Wave 78 confirmed) — `IonicBondHandler` dispatches `crypto.sign_contract` + `crypto.verify_contract`, wired since Wave 42 |
 | Medium | `compute.dispatch` standardization | toadStool | **RESOLVED** — S203 `DISPATCH_WIRE_CONTRACT.md` + PG-31 fix (JSON-RPC routing wired) |
-| Medium | 18 barraCuda IPC surface gaps (eigh, Pearson, chi-squared, etc.) | barraCuda | neuralSpring blocked on full self-validation |
+| Medium | ~~18~~ ~12 barraCuda IPC surface gaps | barraCuda | **PARTIAL** (Sprint 49: +6 methods → 56 total). `eigh` enhanced. ~12 remaining |
 | Low | BTSP Phase 3 (encrypted post-handshake channel) | All primals | Deferred — Phase 2 NULL cipher operational everywhere |
-| Low | Squirrel provider registration protocol | Squirrel | Springs adding Squirrel to compositions can't register as providers |
-| Low | `storage.fetch_external` (cross-spring data) | NestGate | Cross-spring data pipelines need external fetch |
-| Low | loamSpine provenance chain for guideStone receipts | loamSpine | guideStone DAG signing can't trace computation provenance |
+| ~~Low~~ | ~~Squirrel provider registration protocol~~ | ~~Squirrel~~ | **RESOLVED** — `provider.register`/`list`/`deregister` RPC + lying stubs eliminated |
+| ~~Low~~ | ~~`storage.fetch_external` (cross-spring data)~~ | ~~NestGate~~ | **RESOLVED** (Session 50) — wired in semantic router + isomorphic IPC + unix dispatch |
+| ~~Low~~ | ~~loamSpine provenance chain for guideStone receipts~~ | ~~loamSpine~~ | **RESOLVED** — self-contained provenance receipts (`CommitSessionResponse` + `get_provenance_chain()`) |
 | Low | Genetics three-tier awareness in primals | All primals | **primalSpring RPC client aligned** (April 15). BearDog has `genetic.*` RPCs. ecoPrimal `genetics::rpc` now matches BearDog's actual API. No primal has consumed `GeneticSecurityMode` or `MitoBeacon`/`NuclearGenetics` types yet — adoption awaits ecoPrimal ≥0.10.0 |
-| Low | skunkBat thymic selection impl | skunkBat + BearDog | Blocked on BearDog `lineage.list` + `btsp.session.verify` IPC |
+| Low | skunkBat thymic selection impl | skunkBat + BearDog | **PARTIAL** — BearDog lineage integration done (`RemoteLineageVerifier` → `lineage.list`/`verify`). BTSP delegation to `btsp.server.verify`. Full thymic model still spec/design |
 | Low | skunkBat composable primitives IPC | skunkBat + biomeOS | 5 domains defined, Neural API registration pending |
 | ~~Low~~ | ~~`PeekedStream`/`PrefixedStream` convergence~~ | ~~skunkBat + BearDog~~ | **RESOLVED** — sourDough v0.2.0 provides canonical `PeekedStream` in `sourdough-core`; existing impls functionally equivalent; new primals use canonical |
 | Low | toadStool coverage 83.6%→90% | toadStool | S203p pushed toward, not yet at target |
-| Low | BearDog async-trait 49→0 | BearDog | Continuing syn elimination |
-| Low | sweetGrass async-trait 22→0 | sweetGrass | 5 object-safe traits constrain further reduction |
+| ~~Low~~ | ~~BearDog async-trait 49→0~~ | ~~BearDog~~ | **RESOLVED** (Wave 78) — 0 in production, dep removed from workspace |
+| ~~Low~~ | ~~sweetGrass async-trait 22→0~~ | ~~sweetGrass~~ | **RESOLVED** — 22→0, crate removed from all 7 Cargo.toml. `cargo deny check` in CI |
 | ~~Low~~ | ~~skunkBat async-trait 14→0~~ | ~~skunkBat~~ | **RESOLVED** (April 30) — 14→0, fully eliminated. 205 tests |
 
 ### Genetics Posture (April 15, 2026 — RPC client aligned)
