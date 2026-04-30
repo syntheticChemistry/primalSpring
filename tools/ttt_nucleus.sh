@@ -90,8 +90,6 @@ find_binary() {
         echo "$triple_path"
         return
     fi
-    local release="$ECO_ROOT/primals/$name/target/release/$name"
-    [[ -x "$release" ]] && echo "$release" && return
     which "$name" 2>/dev/null || true
 }
 

@@ -112,17 +112,6 @@ find_binary() {
         echo "$triple_path"
         return
     fi
-    local release="$ECO_ROOT/primals/$name/target/release/$name"
-    [[ -x "$release" ]] && echo "$release" && return
-    # CamelCase variant (e.g. petalTongue/target/release/petaltongue)
-    for d in "$ECO_ROOT/primals"/*/; do
-        local lc
-        lc=$(basename "$d" | tr '[:upper:]' '[:lower:]')
-        if [[ "$lc" = "$name" ]] && [[ -x "$d/target/release/$name" ]]; then
-            echo "$d/target/release/$name"
-            return
-        fi
-    done
     which "$name" 2>/dev/null || true
 }
 

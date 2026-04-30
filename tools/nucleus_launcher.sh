@@ -80,11 +80,6 @@ detect_graphs_dir() {
         echo "$BIOMEOS_GRAPHS_DIR"
         return
     fi
-    local biome_graphs="$ECO_ROOT/primals/biomeOS/graphs"
-    if [[ -d "$biome_graphs" ]]; then
-        echo "$biome_graphs"
-        return
-    fi
     echo ""
 }
 
@@ -160,7 +155,6 @@ detect_host_triple() {
 
 find_binary() {
     local name="$1"
-    local primal_dir="${2:-$name}"
     if [[ -n "$BIN_DIR" && -x "$BIN_DIR/$name" ]]; then
         echo "$BIN_DIR/$name"
         return
@@ -171,11 +165,6 @@ find_binary() {
             echo "$triple_path"
             return
         fi
-    fi
-    local target="$ECO_ROOT/primals/$primal_dir/target/release/$name"
-    if [[ -x "$target" ]]; then
-        echo "$target"
-        return
     fi
     which "$name" 2>/dev/null || true
 }
@@ -230,7 +219,7 @@ cmd_start() {
     # confirmed healthy (Phase 1), biomeOS can be signalled to escalate.
     log "── Phase 0: biomeOS Neural API (cleartext bootstrap) ──"
     local biomeos_bin
-    biomeos_bin="$(find_binary biomeos biomeOS)"
+    biomeos_bin="$(find_binary biomeos)"
     if [[ -z "$biomeos_bin" ]]; then
         err "biomeos binary not found"
         return 1
@@ -254,8 +243,8 @@ cmd_start() {
     # ── Phase 1: Tower Atomic — BearDog + Songbird ───────────────────
     log "── Phase 1: Tower Atomic (BTSP enforced) ──"
     local beardog_bin songbird_bin
-    beardog_bin="$(find_binary beardog beardog)"
-    songbird_bin="$(find_binary songbird songbird)"
+    beardog_bin="$(find_binary beardog)"
+    songbird_bin="$(find_binary songbird)"
     local beardog_sock="$SOCKET_DIR/beardog-${FAMILY_ID}.sock"
     local songbird_sock="$SOCKET_DIR/songbird-${FAMILY_ID}.sock"
 
@@ -289,11 +278,11 @@ cmd_start() {
     # ── Phase 2: Core Services — Node Atomic + NestGate + Squirrel ────
     log "── Phase 2: Core Services (BTSP via Tower) ──"
     local toadstool_bin barracuda_bin coralreef_bin nestgate_bin squirrel_bin
-    toadstool_bin="$(find_binary toadstool toadStool)"
-    barracuda_bin="$(find_binary barracuda barraCuda)"
-    coralreef_bin="$(find_binary coralreef coralReef)"
-    nestgate_bin="$(find_binary nestgate nestgate)"
-    squirrel_bin="$(find_binary squirrel squirrel)"
+    toadstool_bin="$(find_binary toadstool)"
+    barracuda_bin="$(find_binary barracuda)"
+    coralreef_bin="$(find_binary coralreef)"
+    nestgate_bin="$(find_binary nestgate)"
+    squirrel_bin="$(find_binary squirrel)"
     local toadstool_sock="$SOCKET_DIR/toadstool-${FAMILY_ID}.sock"
     local barracuda_sock="$SOCKET_DIR/barracuda-${FAMILY_ID}.sock"
     local coralreef_sock="$SOCKET_DIR/coralreef-${FAMILY_ID}.sock"
@@ -380,9 +369,9 @@ cmd_start() {
     # ── Phase 3: Provenance — rhizoCrypt + loamSpine + sweetGrass ────
     log "── Phase 3: Provenance Trio (BTSP via Tower) ──"
     local rhizocrypt_bin loamspine_bin sweetgrass_bin
-    rhizocrypt_bin="$(find_binary rhizocrypt rhizoCrypt)"
-    loamspine_bin="$(find_binary loamspine loamSpine)"
-    sweetgrass_bin="$(find_binary sweetgrass sweetGrass)"
+    rhizocrypt_bin="$(find_binary rhizocrypt)"
+    loamspine_bin="$(find_binary loamspine)"
+    sweetgrass_bin="$(find_binary sweetgrass)"
     local rhizocrypt_sock="$SOCKET_DIR/rhizocrypt-${FAMILY_ID}.sock"
     local loamspine_sock="$SOCKET_DIR/loamspine-${FAMILY_ID}.sock"
     local sweetgrass_sock="$SOCKET_DIR/sweetgrass-${FAMILY_ID}.sock"
@@ -434,7 +423,7 @@ cmd_start() {
     # ── Phase 4: Interface — petalTongue (server mode, UDS) ──────────
     log "── Phase 4: Interface (BTSP via Tower) ──"
     local petaltongue_bin
-    petaltongue_bin="$(find_binary petaltongue petalTongue)"
+    petaltongue_bin="$(find_binary petaltongue)"
     local petaltongue_sock="$SOCKET_DIR/petaltongue-${FAMILY_ID}.sock"
 
     if [[ -x "$petaltongue_bin" ]]; then
