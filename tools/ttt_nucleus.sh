@@ -69,10 +69,25 @@ save_pid() {
     echo "$2" > "$PID_DIR/$1.pid"
 }
 
+detect_host_triple() {
+    local machine kernel
+    machine=$(uname -m); kernel=$(uname -s | tr '[:upper:]' '[:lower:]')
+    case "$kernel" in
+        linux)  echo "${machine}-unknown-linux-musl" ;;
+        darwin) [[ "$machine" = "arm64" ]] && echo "aarch64-apple-darwin" || echo "${machine}-apple-darwin" ;;
+        *)      echo "${machine}-unknown-${kernel}" ;;
+    esac
+}
+
 find_binary() {
     local name="$1"
     if [[ -x "$BIN_DIR/$name" ]]; then
         echo "$BIN_DIR/$name"
+        return
+    fi
+    local triple_path="$BIN_DIR/$(detect_host_triple)/$name"
+    if [[ -x "$triple_path" ]]; then
+        echo "$triple_path"
         return
     fi
     local release="$ECO_ROOT/primals/$name/target/release/$name"
@@ -219,9 +234,7 @@ cmd_start() {
     # for the event loop. We background it directly instead.
     log "── Phase 4: petalTongue (live UI) ──"
     local petaltongue_bin
-    # Prefer local build: plasmidBin musl binary has winit threading issues
-    petaltongue_bin="$ECO_ROOT/primals/petalTongue/target/release/petaltongue"
-    [[ -x "$petaltongue_bin" ]] || petaltongue_bin="$(find_binary petaltongue)"
+    petaltongue_bin="$(find_binary petaltongue)"
 
     if [[ -x "$petaltongue_bin" ]]; then
         local pt_logfile="/tmp/nucleus-ttt-petaltongue.log"
