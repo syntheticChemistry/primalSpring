@@ -1,8 +1,8 @@
 # Upstream Primal Cross-Talk & Downstream Absorption Patterns
 
-**Date**: April 30, 2026 (updated — GAP-28 resolved, sourDough v0.2.0 scaffold evolution)
-**From**: primalSpring v0.9.24 (Phase 56c)
-**Phase**: **INTERSTADIAL** — stadial gate cleared, downstream absorption open
+**Date**: May 1, 2026 (updated — BTSP Phase 3 landed, upstream gaps closing)
+**From**: primalSpring v0.9.24 (Phase 56d)
+**Phase**: **INTERSTADIAL** — stadial gate cleared, Phase 3 encrypted channel active
 **License**: AGPL-3.0-or-later
 
 ---
@@ -120,14 +120,24 @@ When a primal receives `--family-id` via CLI, it MUST:
 `--family-id` to its `CapabilityTranslationRegistry`, causing 4 capability
 domains to route to `-default.sock`. The fix was explicit parameter threading.
 
-### BTSP Two-Phase Genetics
+### BTSP Three-Phase Genetics
 
-Cross-primal connections requiring authentication follow the two-phase model:
+Cross-primal connections follow the three-phase model:
 
-| Phase | Purpose | Genetics Tier | When |
-|-------|---------|---------------|------|
-| Phase 1 | Mito-beacon tunnel (discovery) | Tier 1 (inherited, cloneable) | Always (establishes encrypted channel) |
-| Phase 2 | Nuclear session (permissions) | Tier 2 (spawned fresh, !Clone) | Permission-bearing operations only |
+| Phase | Purpose | Genetics Tier | When | Status |
+|-------|---------|---------------|------|--------|
+| Phase 1 | Mito-beacon tunnel (discovery) | Tier 1 (inherited, cloneable) | Always (HMAC handshake) | **13/13 primals** |
+| Phase 2 | Nuclear session (permissions) | Tier 2 (spawned fresh, !Clone) | Permission-bearing operations | **13/13 primals** |
+| Phase 3 | Encrypted channel (ChaCha20-Poly1305) | Session keys via HKDF | Post-handshake cipher negotiation | **1/13** (petalTongue) |
+
+Phase 3 upgrade path (May 2026):
+1. After Phase 1 handshake, client sends `btsp.negotiate` JSON-RPC with preferred ciphers
+2. Server selects cipher, returns server nonce
+3. Both sides derive `SessionKeys` via `HKDF-SHA256(handshake_key, client_nonce || server_nonce)`
+4. All subsequent frames: `[4B len (BE u32)][12B nonce][ciphertext + Poly1305 tag]`
+
+primalSpring implements the client side — servers that don't support `btsp.negotiate`
+get graceful NULL cipher fallback (authenticated but unencrypted, same as Phase 2).
 
 Phase 1 never exposes Phase 2 credentials. Primals MUST NOT mix these tiers.
 

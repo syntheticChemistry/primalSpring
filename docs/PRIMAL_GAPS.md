@@ -35,24 +35,33 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-04-30 — **Local debt zero.**
+> **Last updated**: 2026-05-01 — **Phase 3 active. Upstream gaps closing.**
 >
 > **primalSpring local quality gate**: `cargo clippy` 0 warnings, `cargo fmt` 0 violations,
-> 561 tests passing, all compositions validated.
+> 563 tests (561 + 2 ignored integration), all compositions validated.
 >
-> **All local GAPs resolved**: GAP-22–28 closed. See resolved history below.
+> **BTSP Phase 3 landed**: `negotiate_phase3()` + ChaCha20-Poly1305 encrypted framing
+> wired into Transport. Backward-compatible NULL cipher fallback when server lacks
+> `btsp.negotiate`. Validated against live BearDog from plasmidBin.
 >
-> **Remaining items are all UPSTREAM or DEFERRED-BY-DESIGN**:
-> - PG-45/GAP-06: rhizoCrypt UDS silent — **UPSTREAM** (rhizoCrypt team)
-> - PG-46: toadStool slow socket — **UPSTREAM** (toadStool team, works with ≥10s timeout)
-> - PG-47: barraCuda `stats.entropy` missing — **UPSTREAM** (barraCuda team, workaround exists)
-> - PG-48: petalTongue musl `winit` panic — **UPSTREAM** (petalTongue team, local build works)
-> - PG-54: adaptive sensor polling — **DEFERRED-BY-DESIGN** (composition library future enhancement)
-> - GAP-06: Squirrel `discovery.register` naming — **UPSTREAM** (Squirrel/Songbird protocol)
-> - GAP-12: petalTongue dashboard param schema — **UPSTREAM** (petalTongue docs)
-> - GAP-18/19/20: discovery/family resolution — **MITIGATED** (biomeOS v3.31 + env/symlink fallbacks)
+> **Upstream gaps resolved by teams (May 1, 2026)**:
+> - PG-45/GAP-06: rhizoCrypt UDS silent — **RESOLVED UPSTREAM** (S49 routing fix, S58 doc accuracy; `health.liveness` + `dag.session.create` confirmed live)
+> - PG-47: barraCuda `stats.entropy` — **RESOLVED UPSTREAM** (Sprint 50: alias to `stats.shannon`, returns `{"result":1.01..,"unit":"nats"}`)
+> - PG-48: petalTongue musl `winit` panic — **RESOLVED UPSTREAM** (`with_any_thread(true)` for X11+Wayland; needs musl binary re-validation)
+> - GAP-12: petalTongue dashboard param schema — **RESOLVED UPSTREAM** (wire-level JSON-RPC docs in `dashboard.rs`)
 >
-> **Zero local debt.** primalSpring is ready to serve as the Phase 3 composition reference.
+> **Phase 3 readiness across primals**:
+> - petalTongue: **implements `btsp.negotiate`** on both framed + JSON-line paths (PT-09)
+> - BearDog: **does not yet implement `btsp.negotiate`** — NULL cipher fallback; server-side crypto scaffold exists
+> - All others: NULL cipher (Phase 2 authenticated, no Phase 3 yet)
+>
+> **Remaining items**:
+> - PG-46: toadStool slow socket — **UPSTREAM** (needs more time, works with ≥10s timeout)
+> - PG-54: adaptive sensor polling — **DEFERRED-BY-DESIGN**
+> - GAP-06: Squirrel `discovery.register` naming — **UPSTREAM** (cosmetic)
+> - GAP-18/19/20: discovery/family resolution — **MITIGATED**
+>
+> **Zero local debt.** primalSpring is the Phase 3 composition reference.
 >
 > All 10 primals running UDS-only. `ss -tlnp | grep plasmidBin` returns **empty**.
 > 7 primals modified (BearDog, Songbird, Squirrel, ToadStool, rhizoCrypt, sweetGrass, loamSpine)
