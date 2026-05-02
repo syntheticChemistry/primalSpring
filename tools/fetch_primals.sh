@@ -123,6 +123,16 @@ resolve_release_tag() {
     fi
 }
 
+list_recent_releases() {
+    if has_gh; then
+        gh release list --repo "$GITHUB_REPO" --limit 5 2>/dev/null \
+            | awk -F'\t' '{print $3}' | head -5 || true
+    else
+        curl -sf --max-time 10 "https://api.github.com/repos/$GITHUB_REPO/releases?per_page=5" 2>/dev/null \
+            | grep -oP '"tag_name"\s*:\s*"\K[^"]+' || true
+    fi
+}
+
 download_asset() {
     local tag="$1" asset="$2" dest="$3"
     local url="https://github.com/$GITHUB_REPO/releases/download/$tag/$asset"
@@ -200,14 +210,22 @@ for primal in "${primals_to_fetch[@]}"; do
         continue
     fi
 
+    # Remove existing binary first — curl can't overwrite a running executable (CURLE_WRITE_ERROR)
+    rm -f "$local_path"
+
     # genomeBin asset naming: {name}-{triple} (multi-arch releases)
-    # Falls back to plain {name} for backward compatibility with older releases
+    # Falls back to plain {name} for backward compatibility with older releases.
+    # If the primal isn't in the requested release (single-primal harvests only
+    # include the triggering primal), cascade through recent releases.
     got_it=false
-    if download_asset "$TAG" "${primal}-${ARCH}" "$local_path"; then
-        got_it=true
-    elif download_asset "$TAG" "$primal" "$local_path"; then
-        got_it=true
-    fi
+    got_tag=""
+    for try_tag in "$TAG" $(list_recent_releases | grep -v "^${TAG}$" | head -4); do
+        if download_asset "$try_tag" "${primal}-${ARCH}" "$local_path"; then
+            got_it=true; got_tag="$try_tag"; break
+        elif download_asset "$try_tag" "$primal" "$local_path"; then
+            got_it=true; got_tag="$try_tag"; break
+        fi
+    done
 
     if ! $got_it; then
         echo "FAIL  could not download"
@@ -221,11 +239,15 @@ for primal in "${primals_to_fetch[@]}"; do
     fi
 
     if has_b3sum; then
-        expected=$(fetch_checksum "$TAG" "$primal" "$ARCH")
+        expected=$(fetch_checksum "$got_tag" "$primal" "$ARCH")
         if [[ -n "${expected:-}" ]]; then
             actual=$(b3sum --no-names "$local_path")
             if [[ "$actual" == "$expected" ]]; then
-                echo "OK  checksum verified"
+                if [[ "$got_tag" != "$TAG" ]]; then
+                    echo "OK  checksum verified (from $got_tag)"
+                else
+                    echo "OK  checksum verified"
+                fi
                 VERIFIED=$((VERIFIED + 1))
             else
                 echo "FAIL  checksum mismatch (removing)"
