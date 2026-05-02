@@ -128,7 +128,7 @@ Cross-primal connections follow the three-phase model:
 |-------|---------|---------------|------|--------|
 | Phase 1 | Mito-beacon tunnel (discovery) | Tier 1 (inherited, cloneable) | Always (HMAC handshake) | **13/13 primals** |
 | Phase 2 | Nuclear session (permissions) | Tier 2 (spawned fresh, !Clone) | Permission-bearing operations | **13/13 primals** |
-| Phase 3 | Encrypted channel (ChaCha20-Poly1305) | Session keys via HKDF | Post-handshake cipher negotiation | **8/13** (BearDog, rhizoCrypt, barraCuda, petalTongue, toadStool, sweetGrass, Squirrel, loamSpine†) |
+| Phase 3 | Encrypted channel (ChaCha20-Poly1305) | Session keys via HKDF | Post-handshake cipher negotiation | **12/13** (all except NestGate; 6 full AEAD, 6 negotiate+null) |
 
 Phase 3 upgrade path (May 2026):
 1. After Phase 1 handshake, client sends `btsp.negotiate` JSON-RPC with preferred ciphers

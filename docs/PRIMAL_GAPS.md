@@ -35,41 +35,41 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-05-02 — **Phase 3 convergence. 8/13 primals implement `btsp.negotiate`.**
+> **Last updated**: 2026-05-02 (PM) — **Phase 3: 12/13 primals implement `btsp.negotiate`. Only NestGate remains.**
 >
 > **primalSpring local quality gate**: `cargo clippy` 0 warnings, `cargo fmt` 0 violations,
 > 563 tests (561 + 2 ignored integration), all compositions validated.
 >
-> **BTSP Phase 3 convergence** (May 2, 2026):
-> 8 primals now implement `btsp.negotiate` server-side. BearDog confirmed live
-> from plasmidBin returning `cipher: "chacha20-poly1305"` + `server_nonce`.
+> **BTSP Phase 3 near-complete** (May 2, 2026 PM):
+> 12 of 13 primals now implement `btsp.negotiate` server-side.
+> NestGate is the sole remaining primal (team needs more time).
 >
-> **Phase 3 readiness — live from plasmidBin binaries**:
-> - BearDog v0.9.0: **FULL** — returns `chacha20-poly1305` + server_nonce on all capability sockets (confirmed live)
-> - sweetGrass v0.7.29: **FULL** — negotiate in BTSP transport layer (UDS+TCP), correctly returns method-not-found on plaintext
-> - petalTongue v1.6.6: **FULL** — negotiate on both framed + JSON-line paths
-> - Squirrel v0.1.0: **FULL** — validates session_id (returns -32602 on invalid, correct)
+> **Phase 3 — full encrypted framing (negotiate + HKDF + ChaCha20-Poly1305 AEAD on wire)**:
+> - BearDog: **FULL** — returns `chacha20-poly1305` + server_nonce (live confirmed)
+> - rhizoCrypt S59: **FULL** — encrypted loop in `serve_after_handshake` + 16 tests
+> - barraCuda Sprint 51: **FULL** — transport-layer intercept + typed NegotiateError
+> - petalTongue: **FULL** — both framed + JSON-line paths
+> - toadStool S215: **FULL** — JSON-line relay + encrypted framing
+> - sweetGrass v0.7.29: **FULL** — transport refactor, UDS+TCP encrypted frame loop
 >
-> **Phase 3 implemented in code, awaiting plasmidBin binary rebuild**:
-> - rhizoCrypt S59: **FULL** — negotiate + HKDF + ChaCha20 encrypted framing + 16 tests (binary on disk is S58)
-> - barraCuda Sprint 51: **FULL** — negotiate at transport layer + typed NegotiateError (binary on disk is Sprint 50)
-> - toadStool S215: **FULL** — negotiate + encrypted framing + PG-46 fix (binary on disk is pre-S215)
-> - loamSpine: **NULL-ONLY** — handler wired, always returns `cipher: "null"` (needs BTSP key export)
+> **Phase 3 — negotiate handler + crypto primitives (wire framing not yet connected)**:
+> - biomeOS v3.38: **PARTIAL** — full HKDF + ChaCha20 + zeroize in btsp_negotiate.rs, connection loop still NDJSON
+> - Squirrel: **FULL negotiate** — validates session_id, cipher response correct
+> - skunkBat: **PARTIAL** — negotiate + HKDF + AEAD library, no handshake key in SessionRegistry yet
+> - coralReef: **NULL-ONLY** — handler wired + session registry, returns `cipher: "null"` (needs key export)
+> - loamSpine: **NULL-ONLY** — handler wired, returns `cipher: "null"` (needs key export)
+> - Songbird: **NULL-ONLY** — negotiate handler present (from earlier evolution)
 >
-> **Remaining primals without Phase 3**:
-> - NestGate, Songbird, coralReef, skunkBat, biomeOS — need `btsp.negotiate` implementation
+> **Remaining without Phase 3**:
+> - NestGate — needs more time
 >
-> **Previously resolved upstream gaps (confirmed May 1)**:
-> - PG-45/GAP-06: rhizoCrypt UDS — RESOLVED (S49)
-> - PG-47: barraCuda stats.entropy — RESOLVED (Sprint 50)
-> - PG-48: petalTongue musl winit — RESOLVED (with_any_thread)
-> - GAP-12: petalTongue dashboard params — RESOLVED
-> - PG-46: toadStool slow socket — **RESOLVED** (S214: connection reuse via ConnectedJsonRpcClient)
+> **All previous upstream gaps RESOLVED**:
+> - PG-45/46/47/48, GAP-06/12 — all closed
 >
 > **Remaining items**:
 > - PG-54: adaptive sensor polling — **DEFERRED-BY-DESIGN**
-> - GAP-06: Squirrel `discovery.register` naming — **UPSTREAM** (cosmetic)
-> - GAP-18/19/20: discovery/family resolution — **MITIGATED**
+> - GAP-06: Squirrel `discovery.register` naming — cosmetic
+> - GAP-18/19/20: discovery/family resolution — mitigated
 >
 > **Zero local debt.** primalSpring is the Phase 3 composition reference.
 >
