@@ -52,11 +52,11 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - toadStool S215: **FULL** — JSON-line relay + encrypted framing
 > - sweetGrass v0.7.29: **FULL** — transport refactor, UDS+TCP encrypted frame loop
 > - Songbird Wave 184: **FULL** — binary-framed + NDJSON paths, BearDog key export, 28 tests
+> - Squirrel: **FULL** — encrypted frame loop in jsonrpc_server, handshake key from verify, HKDF compatible
+> - skunkBat: **FULL** — handshake key stored in registry, run_encrypted_frame_loop wired, E2E test
 >
 > **Phase 3 — negotiate handler + crypto primitives (wire framing not yet connected)**:
 > - biomeOS v3.38: **PARTIAL** — full HKDF + ChaCha20 + zeroize in btsp_negotiate.rs, connection loop still NDJSON
-> - Squirrel: **FULL negotiate** — validates session_id, cipher response correct
-> - skunkBat: **PARTIAL** — negotiate + HKDF + AEAD library, no handshake key in SessionRegistry yet
 > - coralReef: **NULL-ONLY** — handler wired + session registry, returns `cipher: "null"` (needs key export)
 > - loamSpine: **NULL-ONLY** — handler wired, returns `cipher: "null"` (needs key export)
 >
