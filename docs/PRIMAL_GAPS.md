@@ -35,28 +35,38 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-05-01 — **Phase 3 active. Upstream gaps closing.**
+> **Last updated**: 2026-05-02 — **Phase 3 convergence. 8/13 primals implement `btsp.negotiate`.**
 >
 > **primalSpring local quality gate**: `cargo clippy` 0 warnings, `cargo fmt` 0 violations,
 > 563 tests (561 + 2 ignored integration), all compositions validated.
 >
-> **BTSP Phase 3 landed**: `negotiate_phase3()` + ChaCha20-Poly1305 encrypted framing
-> wired into Transport. Backward-compatible NULL cipher fallback when server lacks
-> `btsp.negotiate`. Validated against live BearDog from plasmidBin.
+> **BTSP Phase 3 convergence** (May 2, 2026):
+> 8 primals now implement `btsp.negotiate` server-side. BearDog confirmed live
+> from plasmidBin returning `cipher: "chacha20-poly1305"` + `server_nonce`.
 >
-> **Upstream gaps resolved by teams (May 1, 2026)**:
-> - PG-45/GAP-06: rhizoCrypt UDS silent — **RESOLVED UPSTREAM** (S49 routing fix, S58 doc accuracy; `health.liveness` + `dag.session.create` confirmed live)
-> - PG-47: barraCuda `stats.entropy` — **RESOLVED UPSTREAM** (Sprint 50: alias to `stats.shannon`, returns `{"result":1.01..,"unit":"nats"}`)
-> - PG-48: petalTongue musl `winit` panic — **RESOLVED UPSTREAM** (`with_any_thread(true)` for X11+Wayland; needs musl binary re-validation)
-> - GAP-12: petalTongue dashboard param schema — **RESOLVED UPSTREAM** (wire-level JSON-RPC docs in `dashboard.rs`)
+> **Phase 3 readiness — live from plasmidBin binaries**:
+> - BearDog v0.9.0: **FULL** — returns `chacha20-poly1305` + server_nonce on all capability sockets (confirmed live)
+> - sweetGrass v0.7.29: **FULL** — negotiate in BTSP transport layer (UDS+TCP), correctly returns method-not-found on plaintext
+> - petalTongue v1.6.6: **FULL** — negotiate on both framed + JSON-line paths
+> - Squirrel v0.1.0: **FULL** — validates session_id (returns -32602 on invalid, correct)
 >
-> **Phase 3 readiness across primals**:
-> - petalTongue: **implements `btsp.negotiate`** on both framed + JSON-line paths (PT-09)
-> - BearDog: **does not yet implement `btsp.negotiate`** — NULL cipher fallback; server-side crypto scaffold exists
-> - All others: NULL cipher (Phase 2 authenticated, no Phase 3 yet)
+> **Phase 3 implemented in code, awaiting plasmidBin binary rebuild**:
+> - rhizoCrypt S59: **FULL** — negotiate + HKDF + ChaCha20 encrypted framing + 16 tests (binary on disk is S58)
+> - barraCuda Sprint 51: **FULL** — negotiate at transport layer + typed NegotiateError (binary on disk is Sprint 50)
+> - toadStool S215: **FULL** — negotiate + encrypted framing + PG-46 fix (binary on disk is pre-S215)
+> - loamSpine: **NULL-ONLY** — handler wired, always returns `cipher: "null"` (needs BTSP key export)
+>
+> **Remaining primals without Phase 3**:
+> - NestGate, Songbird, coralReef, skunkBat, biomeOS — need `btsp.negotiate` implementation
+>
+> **Previously resolved upstream gaps (confirmed May 1)**:
+> - PG-45/GAP-06: rhizoCrypt UDS — RESOLVED (S49)
+> - PG-47: barraCuda stats.entropy — RESOLVED (Sprint 50)
+> - PG-48: petalTongue musl winit — RESOLVED (with_any_thread)
+> - GAP-12: petalTongue dashboard params — RESOLVED
+> - PG-46: toadStool slow socket — **RESOLVED** (S214: connection reuse via ConnectedJsonRpcClient)
 >
 > **Remaining items**:
-> - PG-46: toadStool slow socket — **UPSTREAM** (needs more time, works with ≥10s timeout)
 > - PG-54: adaptive sensor polling — **DEFERRED-BY-DESIGN**
 > - GAP-06: Squirrel `discovery.register` naming — **UPSTREAM** (cosmetic)
 > - GAP-18/19/20: discovery/family resolution — **MITIGATED**
