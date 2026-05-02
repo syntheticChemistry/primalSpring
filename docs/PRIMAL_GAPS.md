@@ -51,6 +51,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - petalTongue: **FULL** — both framed + JSON-line paths
 > - toadStool S215: **FULL** — JSON-line relay + encrypted framing
 > - sweetGrass v0.7.29: **FULL** — transport refactor, UDS+TCP encrypted frame loop
+> - Songbird Wave 184: **FULL** — binary-framed + NDJSON paths, BearDog key export, 28 tests
 >
 > **Phase 3 — negotiate handler + crypto primitives (wire framing not yet connected)**:
 > - biomeOS v3.38: **PARTIAL** — full HKDF + ChaCha20 + zeroize in btsp_negotiate.rs, connection loop still NDJSON
@@ -58,7 +59,6 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - skunkBat: **PARTIAL** — negotiate + HKDF + AEAD library, no handshake key in SessionRegistry yet
 > - coralReef: **NULL-ONLY** — handler wired + session registry, returns `cipher: "null"` (needs key export)
 > - loamSpine: **NULL-ONLY** — handler wired, returns `cipher: "null"` (needs key export)
-> - Songbird: **NULL-ONLY** — negotiate handler present (from earlier evolution)
 >
 > **Remaining without Phase 3**:
 > - NestGate — needs more time
