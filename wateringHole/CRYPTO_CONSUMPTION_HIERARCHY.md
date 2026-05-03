@@ -36,18 +36,18 @@ Three layers exist:
 | **Songbird** | Networking / orchestration | — | BearDog-delegated | Full AEAD |
 | **biomeOS** | Orchestration / federation | — | BearDog-delegated | Full AEAD |
 | **rhizoCrypt** | Ephemeral DAG | Blake3 (vertex ID, Merkle) | Self-derived HKDF | Full AEAD |
-| **loamSpine** | Permanent ledger | Blake3 (entry hash, chain link, Merkle) | BearDog-delegated | **Null only** |
+| **loamSpine** | Permanent ledger | Blake3 (entry hash, chain link, Merkle) | BearDog-delegated | Full AEAD |
 | **sweetGrass** | Semantic provenance | SHA-256 (content hash, braids) | BearDog-delegated | Full AEAD |
-| **NestGate** | Sovereign storage | — | Self-derived HKDF | Module pending |
+| **NestGate** | Sovereign storage | — | Self-derived HKDF | Full AEAD |
 | **Squirrel** | AI coordination | — | BearDog-delegated | Full AEAD |
 | **skunkBat** | Defensive security | — | BearDog-delegated | Full AEAD |
 | **toadStool** | Compute scheduling | — | BearDog-delegated | Full AEAD |
 | **barraCuda** | GPU math engine | — | BearDog-delegated | Full AEAD |
-| **coralReef** | Shader compiler | — | BearDog-delegated | Crypto-ready, wire pending |
+| **coralReef** | Shader compiler | — | BearDog-delegated | Full AEAD |
 | **petalTongue** | Desktop UI | — | BearDog-delegated | Full AEAD |
 
-**Observation**: loamSpine already does Blake3 locally for content addressing,
-chain linking, and Merkle proofs. This is cryptographic integrity — the
+**Observation (historical, now resolved)**: loamSpine already did Blake3 locally for content addressing,
+chain linking, and Merkle proofs. This was cryptographic integrity — the
 highest-stakes local crypto operation in its domain. Yet it declines to do
 HKDF+AEAD, which has strictly lower failure consequences.
 
@@ -260,7 +260,7 @@ an artificial one that creates real composition gaps.
 The same paradox applies to any primal doing local hashing:
 - rhizoCrypt: Blake3 for vertex IDs and Merkle trees (resolved — full AEAD)
 - sweetGrass: SHA-256 for content hashes and braids (resolved — full AEAD)
-- NestGate: pending (module exists, needs wiring)
+- NestGate: full AEAD (module wired, deps added, transport connected)
 
 ---
 
@@ -295,9 +295,9 @@ transport security:
 
 | Primal | Core domain | Crypto consumption |
 |--------|-------------|-------------------|
-| **loamSpine** | Permanent ledger | Blake3 integrity + **must add AEAD** |
-| **NestGate** | Sovereign storage | Must wire existing Phase 3 module |
-| **coralReef** | Shader compiler | Must wire existing crypto to transport |
+| **loamSpine** | Permanent ledger | Blake3 integrity + Full AEAD (resolved) |
+| **NestGate** | Sovereign storage | Full AEAD (module wired, resolved) |
+| **coralReef** | Shader compiler | Full AEAD (transport wired, resolved) |
 | **petalTongue** | Desktop UI | Full AEAD (done) |
 | **toadStool** | Compute scheduling | Full AEAD (done) |
 | **barraCuda** | GPU math engine | Full AEAD (done) |
@@ -335,70 +335,45 @@ encrypt, destroying the primal's ability to function.
 
 ---
 
-## Part 7 — Resolution Paths
+## Part 7 — Resolution Status (ALL RESOLVED — May 2, 2026)
 
-### loamSpine — Reclassified from "null-by-design" to "ionic-bond-blocking"
+All three primals shipped full Phase 3 AEAD. 13/13 NUCLEUS primals are now
+at full encrypted framing, completing ecosystem convergence.
 
-**Current state**: `btsp.negotiate` handler wired, returns `cipher: "null"`.
-4 tests cover the handler. Blake3 integrity crypto runs locally.
-BearDog provides handshake key material via Pattern B, but loamSpine
-discards it.
+### loamSpine — RESOLVED (`3dcd6b7`)
 
-**Problem**: Cannot participate in ionic or weak bond compositions.
-Blocks healthSpring dual-tower enclave, cross-family data federation,
-and anchoring pipeline transport integrity.
+**Was**: `IONIC-BOND-BLOCKING` — `cipher: "null"`, discarded Tower key.
 
-**Resolution (Pattern B, minimal change)**:
-1. Stop discarding `session_key` from `btsp.session.verify` response
-2. Add `chacha20poly1305`, `hkdf`, `sha2`, `zeroize` to `loam-spine-core`
-3. Create `btsp/phase3.rs` with `SessionKeys` (mirror primalSpring pattern)
-4. Update `negotiate_btsp` to derive keys from `handshake_key` + nonces,
-   return `cipher: "chacha20-poly1305"` + base64 server nonce
-5. Wrap post-negotiate I/O with `[4B len][12B nonce][ciphertext + tag]`
+**Shipped**: `crates/loam-spine-core/src/btsp/phase3.rs` (382 LOC) with
+full `SessionKeys` (HKDF-SHA256 + ChaCha20-Poly1305 + zeroize on drop).
+Pattern B Tower-provided key accepted from BearDog's `btsp.session.verify`
+response via `decode_session_key()`. `negotiate_btsp` returns
+`cipher: "chacha20-poly1305"` when handshake key present, null cipher
+graceful fallback otherwise. Async `read_encrypted_frame`/`write_encrypted_frame`
+transport with standard `[4B len][12B nonce][ciphertext + tag]` wire format.
+Deps added: `chacha20poly1305` 0.10, `hkdf` 0.13, `zeroize` 1.8.2.
+Consistent with loamSpine's delegation principle — key material from Tower,
+primal performs symmetric expansion and framing only.
 
-This does NOT require self-deriving from `FAMILY_SEED`. The key material
-comes from BearDog (Tower) — consistent with loamSpine's delegation
-principle. The primal only performs symmetric expansion and framing.
+### coralReef — RESOLVED (`f2d6bcf`)
 
-### coralReef — Wire transport upgrade
+**Was**: `CRYPTO-READY` — crypto implemented but transport not wired.
 
-**Current state**: Full `SessionKeys` with HKDF + ChaCha20 + zeroize +
-encrypt/decrypt in `btsp_negotiate.rs` (631 LOC, 10 tests). Handshake
-key extracted from BearDog. Keys derived and stored via
-`take_negotiated_keys()`.
+**Shipped**: `unix_jsonrpc.rs` fully upgraded with `handle_connection`
+that checks first line for `btsp.negotiate`, calls `take_negotiated_keys(sid)`,
+then enters `process_encrypted_frames` loop with 8 MiB frame guard.
+`btsp_negotiate.rs` upgraded from null-only to real AEAD key derivation.
+`dead_code` annotations removed. Full transport path connected.
 
-**Problem**: `unix_jsonrpc.rs` still calls `process_newline_reader_writer`
-unconditionally. No post-negotiate check switches to encrypted frames.
-`encrypt`/`decrypt` carry `#[allow(dead_code)]`.
+### NestGate — RESOLVED (`ef3ac568f`)
 
-**Resolution**:
-1. After `btsp::guard_from_first_byte` + BTSP handshake, check first
-   line for `btsp.negotiate`
-2. If negotiate succeeds, call `take_negotiated_keys(session_id)`
-3. Enter encrypted frame loop (read/write length-prefixed ChaCha20 frames)
-4. Remove `dead_code` annotations from `SessionKeys::encrypt`/`decrypt`
+**Was**: `MODULE-PENDING` — code on disk, not compiled or wired.
 
-biomeOS's commit `370a3b9f` is the reference implementation — same gap,
-same resolution.
-
-### NestGate — Module declaration + deps + wiring
-
-**Current state**: `btsp_phase3/mod.rs` (505 LOC, 20 tests) +
-`transport.rs` (509 LOC, 8 async tests) exist on disk with full HKDF +
-ChaCha20 + SessionKeys + `run_encrypted_frame_loop` +
-`try_phase3_negotiate`.
-
-**Problem**: Three wiring gaps:
-1. `pub mod btsp_phase3;` not in `rpc/mod.rs` — module not compiled
-2. `hkdf` + `zeroize` missing from workspace `Cargo.toml`
-3. Server accept loop not calling transport functions
-
-**Resolution**:
-1. Add `pub mod btsp_phase3;` to `code/crates/nestgate-rpc/src/rpc/mod.rs`
-2. Add `hkdf = "0.12"` and `zeroize = { version = "1", features = ["derive"] }`
-   to workspace `Cargo.toml`
-3. Wire `try_phase3_negotiate` + `run_encrypted_frame_loop` into
-   `unix_socket_server` and/or `isomorphic_ipc` accept paths
+**Shipped**: `pub mod btsp_phase3;` declared in `rpc/mod.rs`. `hkdf` 0.12 +
+`zeroize` 1 (with `derive` feature) added to workspace `Cargo.toml`.
+`try_phase3_negotiate` + `run_encrypted_frame_loop` wired into both
+`unix_socket_server/mod.rs` and `isomorphic_ipc/server/mod.rs` accept
+paths. All three original gaps (module declaration, deps, wiring) closed.
 
 ---
 

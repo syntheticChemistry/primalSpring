@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
 **Version**: 0.9.24 (Phase 56c)
-**Last Updated**: April 30, 2026
+**Last Updated**: May 2, 2026
 **License**: AGPL-3.0-or-later
 
 ---
@@ -12,7 +12,7 @@ The wateringHole is primalSpring's outward-facing guidance surface for upstream
 primal teams and downstream spring/garden consumers. It defines the patterns
 that make the ecosystem composable.
 
-Three documents. Nothing else belongs here — historical handoffs live in
+Four documents. Nothing else belongs here — historical handoffs live in
 `fossilRecord/`.
 
 ---
@@ -22,6 +22,7 @@ Three documents. Nothing else belongs here — historical handoffs live in
 | File | Audience | What It Covers |
 |------|----------|----------------|
 | **UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md** | Primal teams + spring teams | How primals interact without coupling (JSON-RPC, first-byte peek, capability wire, socket naming). How springs absorb NUCLEUS patterns. sourDough graduation standard. |
+| **CRYPTO_CONSUMPTION_HIERARCHY.md** | Primal teams + spring teams | Crypto posture per primal role: key acquisition patterns (self-derive vs Tower-provided), bonding escalation hierarchy, composition contexts, recommended AEAD posture. Phase 3 convergence standard. |
 | **PLASMINBIN_DEPOT_PATTERN.md** | All consumers | How to fetch primal binaries from plasmidBin GitHub Releases. `fetch_primals.sh`, `ECOPRIMALS_PLASMID_BIN` env, XDG cache, checksum verification. The standard consumer pattern. |
 | This README | Everyone | Index and context. |
 
@@ -31,7 +32,7 @@ Three documents. Nothing else belongs here — historical handoffs live in
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40 release assets)
-- **Zero HIGH blockers** — remaining debt is coverage and BTSP Phase 3
+- **Zero HIGH blockers** — BTSP Phase 3 converged (13/13 FULL AEAD, May 2, 2026)
 - **plasmidBin CI/CD** auto-harvests on every primal push to main
 - **All primals** have `ci.yml` (lean single-job) + `notify-plasmidbin.yml`
 - **sourDough v0.2.0** scaffold generates ecosystem-compliant primals
@@ -46,7 +47,7 @@ Three documents. Nothing else belongs here — historical handoffs live in
 | Deploy graphs | `graphs/` (71 TOMLs) |
 | Binary fetch script | `tools/fetch_primals.sh` |
 | NUCLEUS launcher | `tools/composition_nucleus.sh` |
-| Composition library | `scripts/nucleus_composition_lib.sh` |
+| Composition library | `tools/nucleus_composition_lib.sh` |
 | Fossil record | `fossilRecord/` (archived handoffs, stale code, historical docs) |
 
 ---

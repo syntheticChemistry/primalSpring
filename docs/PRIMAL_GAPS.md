@@ -35,14 +35,14 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-05-02 (PM) — **Phase 3: 12/13 primals implement `btsp.negotiate`. Only NestGate remains.**
+> **Last updated**: 2026-05-02 (late PM) — **Phase 3: 13/13 primals FULL AEAD on wire. BTSP Phase 3 COMPLETE.**
 >
 > **primalSpring local quality gate**: `cargo clippy` 0 warnings, `cargo fmt` 0 violations,
 > 563 tests (561 + 2 ignored integration), all compositions validated.
 >
-> **BTSP Phase 3 near-complete** (May 2, 2026 PM):
-> 12 of 13 primals now implement `btsp.negotiate` server-side.
-> NestGate is the sole remaining primal (team needs more time).
+> **BTSP Phase 3 COMPLETE** (May 2, 2026 late PM):
+> **13 of 13 primals** now implement `btsp.negotiate` server-side with full ChaCha20-Poly1305 AEAD.
+> All ionic/weak bond compositions are unblocked. Ecosystem convergence achieved.
 >
 > **Phase 3 — full encrypted framing (negotiate + HKDF + ChaCha20-Poly1305 AEAD on wire)**:
 > - BearDog: **FULL** — returns `chacha20-poly1305` + server_nonce (live confirmed)
@@ -55,15 +55,9 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - Squirrel: **FULL** — encrypted frame loop in jsonrpc_server, handshake key from verify, HKDF compatible
 > - skunkBat: **FULL** — handshake key stored in registry, run_encrypted_frame_loop wired, E2E test
 > - biomeOS: **FULL** — encrypted framing wired into connection loop, handle_encrypted_stream + try_phase3_negotiate, 16MB frame guard
->
-> **Phase 3 — crypto ready, wire framing not yet connected (transport upgrade pending)**:
-> - coralReef: **CRYPTO-READY** — full HKDF + ChaCha20 + zeroize + SessionKeys + encrypt/decrypt in btsp_negotiate.rs (631 LOC, 10 tests), handshake_key extracted from BearDog, keys derived and stored via take_negotiated_keys(). Wire gap: unix_jsonrpc.rs still calls process_newline_reader_writer — no post-negotiate encrypted frame loop yet
->
-> **Phase 3 — negotiate handler wired, null cipher blocks ionic compositions**:
-> - loamSpine: **IONIC-BOND-BLOCKING** — handler wired + 4 tests, returns `cipher: "null"`. Blocks ionic/weak bond compositions (healthSpring enclave, cross-family federation, anchoring pipeline). Already does Blake3 locally for integrity. Resolution: Pattern B — accept `session_key` from BearDog verify, add hkdf+chacha20poly1305+zeroize, wire encrypted frame loop. See `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` Part 7
->
-> **Phase 3 — code on disk, not yet compiled into module tree**:
-> - NestGate: **MODULE-PENDING** — `btsp_phase3/mod.rs` (505 LOC, 20 tests) + `transport.rs` (509 LOC, 8 async tests) exist on disk with full HKDF + ChaCha20 + SessionKeys + run_encrypted_frame_loop + try_phase3_negotiate. Missing: `pub mod btsp_phase3;` in `rpc/mod.rs`, `hkdf` + `zeroize` deps in workspace Cargo.toml. Wire gap: unix_socket_server / isomorphic_ipc not yet calling transport functions
+> - loamSpine: **FULL** — Phase 3 shipped (`3dcd6b7`): `phase3.rs` (382 LOC) with SessionKeys (HKDF-SHA256 + ChaCha20-Poly1305 + zeroize), Pattern B Tower-provided key from BearDog verify, `read_encrypted_frame`/`write_encrypted_frame` async transport, `negotiate_btsp` returns `cipher: "chacha20-poly1305"` when handshake key present, null cipher graceful fallback. Deps: chacha20poly1305 0.10, hkdf 0.13, zeroize 1.8.2. Ionic bond blocker resolved
+> - coralReef: **FULL** — Phase 3 shipped (`f2d6bcf`): `btsp_negotiate.rs` upgraded to real AEAD key derivation with SessionKeys (HKDF + ChaCha20-Poly1305 + zeroize on drop), `take_negotiated_keys()` registry. `unix_jsonrpc.rs` now wires `handle_connection` → negotiate check → `process_encrypted_frames` loop with 8 MiB frame guard. Full transport path connected
+> - NestGate: **FULL** — Phase 3 shipped (`ef3ac568f`): `pub mod btsp_phase3;` declared in `rpc/mod.rs`, `hkdf` 0.12 + `zeroize` 1 added to workspace Cargo.toml. `try_phase3_negotiate` + `run_encrypted_frame_loop` wired into both `unix_socket_server/mod.rs` and `isomorphic_ipc/server/mod.rs` accept paths
 >
 > **All previous upstream gaps RESOLVED**:
 > - PG-45/46/47/48, GAP-06/12 — all closed
@@ -719,7 +713,7 @@ the ecobin primal over IPC. See "Cross-Spring Composition Gaps" below.
 | SQ-03 | `deprecated-adapters` feature flag docs | **RESOLVED** — documented in `CURRENT_STATUS.md` feature-gates table; intentional retention until v0.3.0 with migration path to `UniversalAiAdapter` + `LOCAL_AI_ENDPOINT` |
 | SQ-04 | `--port` TCP bind hardcoded to `127.0.0.1` | **RESOLVED** (alpha.52) — `--bind` CLI flag + `SQUIRREL_BIND` / `SQUIRREL_IPC_HOST` env vars. Default `127.0.0.1` (secure). Docker: `--bind 0.0.0.0`. Parity with barraCuda BC-09 `resolve_bind_host()` pattern |
 
-**Compliance** (alpha.52 — April 14): Zero `todo!`/`unimplemented!`/`FIXME` in non-test code. fmt **PASS**. clippy **PASS**. **7,203 tests PASS** (22 workspace members). `deny.toml` present. Workspace `forbid(unsafe_code)`. **BTSP Phase 1 COMPLETE** (alpha.44). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_handshake.rs` (627 LOC) implements full server-side handshake on UDS accept with BearDog delegation (`btsp.session.create`, `btsp.session.verify`). `maybe_handshake()` called in both abstract+filesystem UDS accept paths in `jsonrpc_server.rs`. Length-prefixed wire framing per standard. `is_btsp_required()` checks `FAMILY_ID` + `BIOMEOS_INSECURE`. Provider discovery: env → manifest scan → well-known `beardog-{fid}.sock`. **BTSP Phase 3 deferred** — `cipher = "null"` after verify; full cipher negotiation via `btsp.negotiate` pending. **SQ-04 RESOLVED** ↑ — `--bind` CLI flag + `SQUIRREL_BIND` / `SQUIRREL_IPC_HOST` env vars. Default `127.0.0.1` (secure). Docker: `--bind 0.0.0.0`. Parity with barraCuda BC-09 `resolve_bind_host()` pattern. **Capability Wire Standard L2**. Smart refactoring: 9 large files split (alpha.52), session/mod.rs/transport/client.rs/context_state.rs/api.rs all under 600 LOC. Dependency purge: pprof/openai/libloading/hostname removed, flate2 → pure Rust backend. **Inference provider bridge** ↑ — `inference.complete`/`embed`/`models` wire methods dispatched via `handlers_inference.rs`, bridging ecoPrimal wire standard to `AiRouter`. Capability-first naming (toadstool→compute, songbird→discovery stems). **Genetics awareness**: `genetic_families` optional wire field; no three-tier type consumption yet — awaits ecoPrimal ≥0.10.0.
+**Compliance** (alpha.52 — April 14): Zero `todo!`/`unimplemented!`/`FIXME` in non-test code. fmt **PASS**. clippy **PASS**. **7,203 tests PASS** (22 workspace members). `deny.toml` present. Workspace `forbid(unsafe_code)`. **BTSP Phase 1 COMPLETE** (alpha.44). **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_handshake.rs` (627 LOC) implements full server-side handshake on UDS accept with BearDog delegation (`btsp.session.create`, `btsp.session.verify`). `maybe_handshake()` called in both abstract+filesystem UDS accept paths in `jsonrpc_server.rs`. Length-prefixed wire framing per standard. `is_btsp_required()` checks `FAMILY_ID` + `BIOMEOS_INSECURE`. Provider discovery: env → manifest scan → well-known `beardog-{fid}.sock`. **BTSP Phase 3 COMPLETE** — full ChaCha20-Poly1305 encrypted framing shipped (May 2, 2026). **SQ-04 RESOLVED** ↑ — `--bind` CLI flag + `SQUIRREL_BIND` / `SQUIRREL_IPC_HOST` env vars. Default `127.0.0.1` (secure). Docker: `--bind 0.0.0.0`. Parity with barraCuda BC-09 `resolve_bind_host()` pattern. **Capability Wire Standard L2**. Smart refactoring: 9 large files split (alpha.52), session/mod.rs/transport/client.rs/context_state.rs/api.rs all under 600 LOC. Dependency purge: pprof/openai/libloading/hostname removed, flate2 → pure Rust backend. **Inference provider bridge** ↑ — `inference.complete`/`embed`/`models` wire methods dispatched via `handlers_inference.rs`, bridging ecoPrimal wire standard to `AiRouter`. Capability-first naming (toadstool→compute, songbird→discovery stems). **Genetics awareness**: `genetic_families` optional wire field; no three-tier type consumption yet — awaits ecoPrimal ≥0.10.0.
 
 ---
 
@@ -897,8 +891,8 @@ incoming UDS connections: BearDog, Songbird, biomeOS, NestGate, ToadStool, Squir
 rhizoCrypt, loamSpine, sweetGrass, barraCuda (Sprint 39), coralReef (Iter 78),
 **petalTongue** ↑ (Sprint 8), **skunkBat** ↑ (v0.1.0).
 **Tower Atomic: 100%.** **Node Atomic: 100%.** **NUCLEUS: 100%.** **All primals: 100%.**
-**Note**: Full challenge-response + encrypted framing (Phase 3) not yet applied to
-post-handshake streams in barraCuda or coralReef.
+**Note**: Full encrypted framing (Phase 3) now applied to all 13 primals including
+barraCuda (Sprint 51) and coralReef (wire transport wired May 2, 2026).
 
 **plasmidBin validation (April 10)**: Full musl-static rebuild confirms all BTSP Phase 1+2
 code is now in the deployed binaries. Previous plasmidBin binaries (Apr 8) predated the
@@ -1596,7 +1590,7 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 | Gap | Reported By | Owner | Status |
 |-----|-------------|-------|--------|
 | **Ionic bond negotiation** — `crypto.sign_contract` not yet wired for cross-tower compositions | hotSpring (GAP-HS-005 evolution), healthSpring (dual-tower ionic), wetSpring (provenance cross-spring) | **BearDog team** | **OPEN** — propose→accept→seal lifecycle works; cross-family contract signing not yet exposed as IPC method |
-| **BTSP Phase 3 encrypted channel** — post-handshake cipher negotiation (`btsp.negotiate` + ChaCha20Poly1305) | hotSpring, healthSpring, neuralSpring, wetSpring | **BearDog + all primals** | **DEFERRED** — Phase 2 NULL cipher operational everywhere; Phase 3 awaiting HSM integration path |
+| **BTSP Phase 3 encrypted channel** — post-handshake cipher negotiation (`btsp.negotiate` + ChaCha20Poly1305) | hotSpring, healthSpring, neuralSpring, wetSpring | **BearDog + all primals** | **RESOLVED** (May 2, 2026) — 13/13 primals ship full AEAD on wire. All bond types (ionic, weak, organo-metal-salt) unblocked |
 | **toadStool `compute.dispatch` standardization** — springs need consistent dispatch envelope for GPU compute | hotSpring, wetSpring, neuralSpring | **toadStool team** | **RESOLVED** (S203 `DISPATCH_WIRE_CONTRACT.md`) but spring-side adoption incomplete |
 | **Squirrel provider registration** — `inference.register_provider` needed for springs with local models | neuralSpring, healthSpring, wetSpring | **Squirrel team** | **PARTIAL** — wire tests exist; production registration path in progress |
 | **NestGate `storage.fetch_external`** — cross-spring data retrieval for composition pipelines | wetSpring, healthSpring | **NestGate team** | **PARTIAL** — method exists but delegated via Tower Atomic; cross-spring routing via biomeOS needed |

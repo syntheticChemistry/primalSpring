@@ -89,7 +89,8 @@ Multi-tier genetics identity system: Mitochondrial (Mito-Beacon for discovery
 and NAT negotiation), Nuclear (lineage DNA for non-fungible permissions with
 generational mixing), Tags (open participation from plaintext seed heritage).
 Three-tier BTSP: Phase 1 (FAMILY_SEED auth), Phase 2 (secure-by-default
-cascade across 12/12 primals), Phase 3 (ChaCha20-Poly1305 encrypted channel).
+cascade across 13/13 primals), Phase 3 (ChaCha20-Poly1305 encrypted channel —
+13/13 FULL AEAD, converged May 2, 2026).
 BtspEnforcer with explicit deny semantics per TrustModel.
 
 Cross-architecture deployment: plasmidBin serves as genomeBin depot per ecoBin

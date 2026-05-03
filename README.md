@@ -357,7 +357,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of existing barraCuda WGSL shaders (826 kernels: matmul, attention, FFT, df64) compiled by coralReef and dispatched by toadStool.
 - **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
 - **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — modeling end-to-end data flow through primal compositions.
-- **13/13 critical experiments ALL PASS** — 75 total experiments across 17 tracks.
+- **13/13 critical experiments ALL PASS** — 84 total experiments across 18 tracks.
 - **46 cross-architecture binaries** (6 target triples, Tier 1 39/39) — genomeBin v5.1, zero C dependencies.
 
 ## Fragment-First Graph Consolidation (April 16, 2026)

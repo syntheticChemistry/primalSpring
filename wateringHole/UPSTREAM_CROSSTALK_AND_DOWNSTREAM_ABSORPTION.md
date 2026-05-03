@@ -128,7 +128,7 @@ Cross-primal connections follow the three-phase model:
 |-------|---------|---------------|------|--------|
 | Phase 1 | Mito-beacon tunnel (discovery) | Tier 1 (inherited, cloneable) | Always (HMAC handshake) | **13/13 primals** |
 | Phase 2 | Nuclear session (permissions) | Tier 2 (spawned fresh, !Clone) | Permission-bearing operations | **13/13 primals** |
-| Phase 3 | Encrypted channel (ChaCha20-Poly1305) | Session keys via HKDF | Post-handshake cipher negotiation | **13/13 negotiate aware** (10 full AEAD, 1 crypto-ready/wire-pending — coralReef, 1 module-pending — NestGate, 1 ionic-bond-blocking — loamSpine) |
+| Phase 3 | Encrypted channel (ChaCha20-Poly1305) | Session keys via HKDF | Post-handshake cipher negotiation | **13/13 FULL AEAD** — all primals ship `btsp.negotiate` + ChaCha20-Poly1305 encrypted framing (converged May 2, 2026) |
 
 Phase 3 upgrade path (May 2026):
 1. After Phase 1 handshake, client sends `btsp.negotiate` JSON-RPC with preferred ciphers
@@ -141,9 +141,9 @@ get graceful NULL cipher fallback (authenticated but unencrypted, same as Phase 
 
 Phase 1 never exposes Phase 2 credentials. Primals MUST NOT mix these tiers.
 
-**Crypto consumption hierarchy**: Primals returning `cipher: "null"` cannot
-participate in ionic or weak bond compositions (`min_cipher_for_bond` in
-`ecoPrimal/src/btsp/mod.rs`). See `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md`
+**Crypto consumption hierarchy**: All 13 primals now return `cipher: "chacha20-poly1305"`
+when handshake key material is available, enabling all bond types (ionic, weak,
+organo-metal-salt). See `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md`
 for the full standard covering primal crypto profiles, key acquisition patterns,
 bonding escalation, and composition context requirements.
 

@@ -9,7 +9,7 @@
 ## What plasmidBin Is
 
 `plasmidBin` is the binary distribution channel for ecoPrimals. It
-distributes static musl ELF binaries for all 12 NUCLEUS primals —
+distributes static musl ELF binaries for all 13 NUCLEUS primals —
 stripped, cross-compiled, and verified via BLAKE3 checksums. Binaries
 are published as GitHub Releases and fetched on demand. No compilation
 and no git clone required.

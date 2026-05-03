@@ -1,7 +1,7 @@
 # BearDog Crypto Wire Contract
 
 > Interface specification for downstream springs coding against BearDog's JSON-RPC surfaces.
-> Date: April 15, 2026 | BTSP Phase: 2 (Phase 3 in progress)
+> Date: May 2, 2026 | BTSP Phase: 3 (13/13 FULL AEAD — ChaCha20-Poly1305 encrypted framing)
 
 ## Transport
 
