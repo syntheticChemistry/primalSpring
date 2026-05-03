@@ -44,6 +44,28 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **13 of 13 primals** now implement `btsp.negotiate` server-side with full ChaCha20-Poly1305 AEAD.
 > All ionic/weak bond compositions are unblocked. Ecosystem convergence achieved.
 >
+> **Live NUCLEUS Validation** (May 2, 2026 night — eastGate, plasmidBin v2026.05.03):
+> 13/13 primals ALIVE on UDS (NestGate requires `NESTGATE_JWT_SECRET` — standalone
+> auth gate, unused within eco where BearDog provides all auth via BTSP).
+> guidestone: **157/170 passed** (20 skipped, 13 failures). Key findings:
+> - **Phase 3 client-server interop gap**: primalSpring client negotiates
+>   `cipher: "chacha20-poly1305"` with BearDog, derives keys, sends encrypted
+>   frames — but BearDog responds in **plaintext** (`0x7B226A73` = `{"js`
+>   interpreted as 2 GB frame length). Server-side negotiate advertises AEAD
+>   but does not enter encrypted frame loop. Same pattern expected for other
+>   primals where server-side Phase 3 was recently wired. This is the next
+>   interop gap: servers need to verify they actually switch transport after
+>   negotiate, not just return the cipher in the response.
+> - **Cleartext fallback routes**: 5/12 capabilities (shader, ai, dag, ledger,
+>   visualization) connect via capability aliases without BTSP. Guidestone
+>   discovery routing needs to resolve BTSP-aware sockets for all paths.
+> - **NestGate JWT gate**: `NESTGATE_JWT_SECRET` required even in NUCLEUS
+>   socket-only mode. Upstream gap: NestGate should skip JWT when BTSP
+>   is the auth layer (eco deployments never use JWT).
+> - Bonding model validation: ALL PASS (Covalent, Metallic, Ionic, Weak,
+>   OrganoMetalSalt policies, cipher floors, trust ordering)
+> - Cellular deployment: 9/10 cell graphs fully validated (BTSP-enforced)
+>
 > **Phase 3 — full encrypted framing (negotiate + HKDF + ChaCha20-Poly1305 AEAD on wire)**:
 > - BearDog: **FULL** — returns `chacha20-poly1305` + server_nonce (live confirmed)
 > - rhizoCrypt S59: **FULL** — encrypted loop in `serve_after_handshake` + 16 tests

@@ -136,6 +136,22 @@ implement domain hooks. `tools/composition_template.sh` is the minimal starter,
 `tools/ttt_composition.sh` is the reference implementation with branching game
 states, and `tools/composition_nucleus.sh` is the parameterized NUCLEUS launcher.
 
+## Development Systems
+
+| Gate | Role | Springs/Primals |
+|------|------|-----------------|
+| **eastGate** | Primary dev — primalSpring, plasmidBin, upstream coordination | Most complex subprojects, BTSP convergence, assists all remote teams |
+| **ironGate** | Sister dev — clean deployment validation, composition testing | primalSpring (shared), ludoSpring, groundSpring |
+
+primalSpring development is shared between eastGate and ironGate. ironGate
+provides clean deployment validation — fresh NUCLEUS bootstraps via
+`fetch_primals.sh` without pre-existing state. eastGate handles the
+bottleneck work: BTSP convergence, plasmidBin CI/CD, upstream primal
+coordination, and ecosystem-wide Phase 3 rollout.
+
+See `infra/whitePaper/gen3/about/HARDWARE.md` for full cluster topology
+(11 towers, 4 HBM2 cards, 3 NPUs, ~1 TB aggregate RAM).
+
 ## Ecosystem Position
 
 primalSpring validates biomeOS composition patterns so that other
