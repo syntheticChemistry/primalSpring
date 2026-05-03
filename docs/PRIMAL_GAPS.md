@@ -54,14 +54,16 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - Songbird Wave 184: **FULL** — binary-framed + NDJSON paths, BearDog key export, 28 tests
 > - Squirrel: **FULL** — encrypted frame loop in jsonrpc_server, handshake key from verify, HKDF compatible
 > - skunkBat: **FULL** — handshake key stored in registry, run_encrypted_frame_loop wired, E2E test
+> - biomeOS: **FULL** — encrypted framing wired into connection loop, handle_encrypted_stream + try_phase3_negotiate, 16MB frame guard
 >
-> **Phase 3 — negotiate handler + crypto primitives (wire framing not yet connected)**:
-> - biomeOS v3.38: **PARTIAL** — full HKDF + ChaCha20 + zeroize in btsp_negotiate.rs, connection loop still NDJSON
-> - coralReef: **NULL-ONLY** — handler wired + session registry, returns `cipher: "null"` (needs key export)
-> - loamSpine: **NULL-ONLY** — handler wired, returns `cipher: "null"` (needs key export)
+> **Phase 3 — crypto ready, wire framing not yet connected (transport upgrade pending)**:
+> - coralReef: **CRYPTO-READY** — full HKDF + ChaCha20 + zeroize + SessionKeys + encrypt/decrypt in btsp_negotiate.rs (631 LOC, 10 tests), handshake_key extracted from BearDog, keys derived and stored via take_negotiated_keys(). Wire gap: unix_jsonrpc.rs still calls process_newline_reader_writer — no post-negotiate encrypted frame loop yet
 >
-> **Remaining without Phase 3**:
-> - NestGate — needs more time
+> **Phase 3 — negotiate handler wired, null cipher blocks ionic compositions**:
+> - loamSpine: **IONIC-BOND-BLOCKING** — handler wired + 4 tests, returns `cipher: "null"`. Blocks ionic/weak bond compositions (healthSpring enclave, cross-family federation, anchoring pipeline). Already does Blake3 locally for integrity. Resolution: Pattern B — accept `session_key` from BearDog verify, add hkdf+chacha20poly1305+zeroize, wire encrypted frame loop. See `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` Part 7
+>
+> **Phase 3 — code on disk, not yet compiled into module tree**:
+> - NestGate: **MODULE-PENDING** — `btsp_phase3/mod.rs` (505 LOC, 20 tests) + `transport.rs` (509 LOC, 8 async tests) exist on disk with full HKDF + ChaCha20 + SessionKeys + run_encrypted_frame_loop + try_phase3_negotiate. Missing: `pub mod btsp_phase3;` in `rpc/mod.rs`, `hkdf` + `zeroize` deps in workspace Cargo.toml. Wire gap: unix_socket_server / isomorphic_ipc not yet calling transport functions
 >
 > **All previous upstream gaps RESOLVED**:
 > - PG-45/46/47/48, GAP-06/12 — all closed
