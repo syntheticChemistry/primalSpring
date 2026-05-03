@@ -77,8 +77,9 @@ auto-harvests on primal push via `repository_dispatch`. GAP-27 (stale biomeOS) r
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
-Live validation: **12/12 primals ALIVE**, **187/187 guidestone ALL PASS** (**13/13 BTSP
-authenticated** — full NUCLEUS BTSP convergence achieved, 8 cellular graphs BTSP-enforced),
+Live validation: **13/13 primals ALIVE** (plasmidBin v2026.05.03 on eastGate),
+**157/170 guidestone** (20 skipped, 13 failures — Phase 3 interop gap + discovery routing),
+**13/13 BTSP authenticated**, 8 cellular graphs BTSP-enforced, bonding model ALL PASS,
 **19/19 exp094 composition parity**, **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
 (HSM cfg-gated). ludoSpring parity: exp068 **6/6**, exp067 **18/19**, exp072 **24/31**.
 Full NUCLEUS validated across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.

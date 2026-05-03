@@ -3,6 +3,42 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 57: BTSP Phase 3 Convergence + NUCLEUS Validation (2026-05-02)
+
+### Milestone
+- **BTSP Phase 3 COMPLETE — 13/13 FULL AEAD**: All 13 NUCLEUS primals ship
+  `btsp.negotiate` + ChaCha20-Poly1305 encrypted framing. Final three primals
+  converged May 2: loamSpine (`3dcd6b7`), coralReef (`f2d6bcf`), NestGate
+  (`ef3ac568f`). Ecosystem-wide ionic/weak bond compositions unblocked.
+
+### Added
+- `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — new standard defining crypto
+  posture per primal role: key acquisition patterns (self-derive vs Tower-provided),
+  bonding escalation hierarchy, composition contexts, recommended AEAD posture.
+- Development system topology in `CONTEXT.md` — eastGate (primary dev, BTSP
+  convergence, plasmidBin CI/CD) and ironGate (sister dev, clean deploys,
+  ludoSpring + groundSpring).
+- Live NUCLEUS validation pass on eastGate with plasmidBin v2026.05.03 binaries.
+
+### Changed
+- `PRIMAL_GAPS.md` Phase 3 scoreboard: 13/13 COMPLETE with per-primal commit refs.
+- `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` Phase 3 table: 13/13 FULL AEAD.
+- `CRYPTO_WIRE_CONTRACT.md` header: Phase 2 → Phase 3.
+- `PLASMINBIN_DEPOT_PATTERN.md`: 12 → 13 NUCLEUS primals.
+- `wateringHole/README.md`: 3 → 4 documents, fixed composition lib path, cleared
+  Phase 3 from remaining debt.
+- `CHECKSUMS`: regenerated (2 files drifted since April).
+
+### Discovered
+- **Phase 3 client-server interop gap**: primalSpring client negotiates
+  `chacha20-poly1305`, derives SessionKeys, sends encrypted frames — servers
+  respond in plaintext (`0x7B226A73` = `{"js` read as 2GB frame). Servers
+  advertise AEAD but don't switch transport. Next interop step for all teams.
+- **NestGate JWT gate**: `NESTGATE_JWT_SECRET` required even in NUCLEUS
+  socket-only mode. Upstream gap: skip JWT when BTSP is the auth layer.
+- **guidestone 157/170** (20 skipped, 13 failures): bonding model ALL PASS,
+  cellular 69/70, Phase 3 interop and discovery routing account for failures.
+
 ## [0.9.24] — Phase 56: Local Debt + Upstream Pull Wave + Reharvest (2026-04-29)
 
 ### Fixed (Reharvest Pass)

@@ -114,12 +114,13 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 39 | NUCLEUS Composition PASS | 17/17 exp094, 441 tests |
 | 40 | NUCLEUS Complete | 12/12 ALIVE, 19/19 exp094 PASS, 455 tests |
 | 41 | Pre-Downstream Gap Resolution | 13 FullNucleus caps, 443 tests, gap resolution |
-| 42 | Multi-Tier Genetics + BTSP Phase 3 | Mito-Beacon / Nuclear lineage / Tags architecture, ChaCha20-Poly1305 encrypted channels, BtspEnforcer deny semantics, ionic bond RPC, content distribution federation |
+| 42 | Multi-Tier Genetics + BTSP Phase 3 | Mito-Beacon / Nuclear lineage / Tags architecture, ChaCha20-Poly1305 encrypted channels, BtspEnforcer deny semantics, ionic bond RPC, content distribution federation. **Phase 3 converged May 2, 2026 — 13/13 FULL AEAD** |
 | 43 | Cross-Architecture Deployment | biomeOS Tower bootstrap on Pixel (aarch64 + GrapheneOS), `tcp_rpc_multi_protocol`, exp096 14/15 cross-arch checks (HSM pending), exp091 12/12 routing, exp094 19/19 parity. exp095 added to workspace. All biomeOS/NestGate composition gaps RESOLVED |
 | 44 | Upstream Absorption + Downstream Blurb | Pull/audit 8 springs, deploy via plasmidBin, benchScale validation, root doc cleanup, downstream evolution blurb for all springs |
 | 45 | NUCLEUS Composition Validation + Garden Evolution | guidestone **187/187 ALL PASS** (was 86/86 at Phase 45 entry), exp068 **6/6** (barraCuda parity fixed), exp067 **18/19**, 3 new ludoSpring game.* methods wired, `start_primal.sh` symlink automation, ed25519 base64 + matmul_inline fixes, Webb handoff crafted, **13/13 BTSP authenticated**, 8 cellular graphs BTSP-enforced, biomeOS v3.25 absorbed |
 | 46 | Cellular Deployment + Live GUI | petalTongue `live` mode (IPC + egui), `game.push_scene` drain to petalTongue, exp078 live GUI composition validation, 8 cell graphs (`graphs/cells/`), **exp098** cellular deployment sweep, guidestone **Layer 7** (cellular), `cell_launcher.sh`, esotericWebb `webb_live_interactive.toml` deploy graph |
 | 56 | Desktop Substrate + The Rhizome | 8 experiments (exp099–exp106): agentic loop, MCP, AI triage, storytelling, ludoSpring IPC, provenance replay, **The Rhizome** roguelike micro-game, **micro-desktop shell**. 4 desktop app deploy graphs. `desktop_nucleus.sh` symlink fix. 23 gaps documented. Provenance trio schemas fully resolved. |
+| 57 | BTSP Phase 3 Convergence + NUCLEUS Validation | 13/13 FULL AEAD converged (loamSpine, coralReef, NestGate shipped Phase 3). Live NUCLEUS validation via plasmidBin: **157/170 guidestone** (bonding ALL PASS, cellular 69/70). Phase 3 interop gap discovered (server advertise→transport switch). `CRYPTO_CONSUMPTION_HIERARCHY.md` published. |
 
 ## Validation Harness
 
@@ -157,6 +158,9 @@ experiments/expNNN/
 ```
 
 All experiment crates inherit workspace lints (clippy pedantic+nursery, `deny(unsafe_code)`).
+
+> **Numbering note**: exp097 is intentionally unassigned (reserved during Track 17 sprint,
+> never materialized). Numbering continues at exp098.
 
 ---
 

@@ -1,5 +1,11 @@
 # Live Desktop NUCLEUS — Deployment Gap Report (Phase 56)
 
+> **Update (May 3, 2026)**: GAP-27 (stale biomeOS binary) is **RESOLVED** — plasmidBin
+> CI/CD auto-builds biomeOS v3.31+ from source. BTSP Phase 3 has converged (13/13 FULL
+> AEAD) and live NUCLEUS validation has been re-run on eastGate with results documented
+> in `PRIMAL_GAPS.md` and the Phase 3 convergence handoff at
+> `infra/wateringHole/handoffs/PRIMALSPRING_PHASE3_CONVERGENCE_NUCLEUS_VALIDATION_HANDOFF_MAY02_2026.md`.
+
 **Date**: April 29, 2026 (reharvest pass — local debt resolution)
 **Deployment**: `desktop_nucleus.sh start` + biomeOS `neural-api` (family=desktop-nucleus)
 **Primals deployed**: 11 running + biomeOS Neural API coordinator (petalTongue not started)

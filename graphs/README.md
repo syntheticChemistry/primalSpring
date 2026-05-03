@@ -54,11 +54,12 @@ downstream/          3 TOML + 2 markdown docs
   ├─ README.md
   └─ NICHE_STARTER_PATTERNS.md
 
-spring_validation/   4 files (template + manifest + 2 unique)
+spring_validation/   5 files (template + manifest + 3 unique)
   ├─ spring_validate_template.toml   Per-spring validation template
   ├─ spring_validate_manifest.toml   6 springs + 9 compositions
   ├─ nucleus_atomics_validate.toml   Multi-phase NUCLEUS validation
-  └─ crypto_negative_validate.toml   Rejection path testing
+  ├─ crypto_negative_validate.toml   Rejection path testing
+  └─ gaming_niche_validate.toml      Gaming niche composition validation
 
 bonding/             5 genuinely unique bonding topologies
 multi_node/          5 multi-gate federation graphs
