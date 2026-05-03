@@ -241,13 +241,54 @@ impl CompositionContext {
         params: serde_json::Value,
         key: &str,
     ) -> Result<f64, IpcError> {
+        self.call_f64_flex(capability, method, params, &[key])
+    }
+
+    /// Like [`call_f64`](Self::call_f64) but tries multiple candidate keys
+    /// in order, returning the first that resolves to a number.
+    ///
+    /// Handles cross-primal response schema divergence (e.g. barraCuda
+    /// returns `{"mean": N}` while the canonical key is `"result"`).
+    pub fn call_f64_flex(
+        &mut self,
+        capability: &str,
+        method: &str,
+        params: serde_json::Value,
+        keys: &[&str],
+    ) -> Result<f64, IpcError> {
         let result = self.call(capability, method, params)?;
-        result
-            .get(key)
-            .and_then(serde_json::Value::as_f64)
-            .ok_or_else(|| IpcError::SerializationError {
-                detail: format!("key '{key}' not found or not a number in {result}"),
-            })
+        for key in keys {
+            if let Some(v) = result.get(*key).and_then(serde_json::Value::as_f64) {
+                return Ok(v);
+            }
+        }
+        Err(IpcError::SerializationError {
+            detail: format!(
+                "none of keys {keys:?} found as number in {result}"
+            ),
+        })
+    }
+
+    /// Like [`call`](Self::call) but tries multiple candidate keys for an
+    /// array result, returning the first that resolves.
+    pub fn call_array_flex(
+        &mut self,
+        capability: &str,
+        method: &str,
+        params: serde_json::Value,
+        keys: &[&str],
+    ) -> Result<(String, Vec<serde_json::Value>), IpcError> {
+        let result = self.call(capability, method, params)?;
+        for key in keys {
+            if let Some(arr) = result.get(*key).and_then(serde_json::Value::as_array) {
+                return Ok(((*key).to_owned(), arr.clone()));
+            }
+        }
+        Err(IpcError::SerializationError {
+            detail: format!(
+                "none of keys {keys:?} found as array in {result}"
+            ),
+        })
     }
 
     /// All capability names that have live clients in this context.
@@ -537,6 +578,120 @@ pub fn validate_parity(
     }
 }
 
+/// Like [`validate_parity`] but tries multiple candidate response keys.
+#[expect(
+    clippy::too_many_arguments,
+    reason = "domain-driven API: each parameter is semantically distinct"
+)]
+pub fn validate_parity_flex(
+    ctx: &mut CompositionContext,
+    v: &mut ValidationResult,
+    name: &str,
+    capability: &str,
+    method: &str,
+    params: serde_json::Value,
+    result_keys: &[&str],
+    expected: f64,
+    tolerance: f64,
+) {
+    match ctx.call_f64_flex(capability, method, params, result_keys) {
+        Ok(actual) => {
+            let diff = (actual - expected).abs();
+            let ok = diff <= tolerance;
+            let detail = format!(
+                "composition={actual}, local={expected}, diff={diff:.2e}, tol={tolerance:.2e}"
+            );
+            v.check_bool(name, ok, &detail);
+        }
+        Err(e) if e.is_connection_error() => {
+            v.check_skip(name, &format!("{capability} not available: {e}"));
+        }
+        Err(e) if e.is_transport_mismatch() => {
+            v.check_skip(
+                name,
+                &format!("{capability} uses non-JSON-RPC transport: {e}"),
+            );
+        }
+        Err(e) => {
+            v.check_bool(name, false, &format!("composition error: {e}"));
+        }
+    }
+}
+
+/// Like [`validate_parity_vec`] but tries multiple candidate response keys.
+#[expect(
+    clippy::too_many_arguments,
+    reason = "domain-driven API: each parameter is semantically distinct"
+)]
+pub fn validate_parity_vec_flex(
+    ctx: &mut CompositionContext,
+    v: &mut ValidationResult,
+    name: &str,
+    capability: &str,
+    method: &str,
+    params: serde_json::Value,
+    result_keys: &[&str],
+    expected: &[f64],
+    tolerance: f64,
+) {
+    let (resolved_key, arr) = match ctx.call_array_flex(capability, method, params, result_keys) {
+        Ok(pair) => pair,
+        Err(e) if e.is_connection_error() => {
+            v.check_skip(name, &format!("{capability} not available: {e}"));
+            return;
+        }
+        Err(e) if e.is_transport_mismatch() => {
+            v.check_skip(
+                name,
+                &format!("{capability} uses non-JSON-RPC transport: {e}"),
+            );
+            return;
+        }
+        Err(e) => {
+            v.check_bool(name, false, &format!("composition error: {e}"));
+            return;
+        }
+    };
+
+    let actual = flatten_numeric_json_values(&arr);
+    if actual.len() != arr.len() && actual.is_empty() {
+        v.check_bool(
+            name,
+            false,
+            &format!(
+                "{}/{} array elements are not numeric (null, string, or object) — \
+                 check primal response schema (key: '{resolved_key}')",
+                arr.len() - actual.len(),
+                arr.len()
+            ),
+        );
+        return;
+    }
+    if actual.len() != expected.len() {
+        v.check_bool(
+            name,
+            false,
+            &format!(
+                "length mismatch: composition={}, local={} (key: '{resolved_key}')",
+                actual.len(),
+                expected.len()
+            ),
+        );
+        return;
+    }
+    let max_diff = actual
+        .iter()
+        .zip(expected.iter())
+        .map(|(a, e)| (a - e).abs())
+        .fold(0.0_f64, f64::max);
+    let ok = max_diff <= tolerance;
+    let detail = format!(
+        "max_diff={max_diff:.2e}, tol={tolerance:.2e}, len={} (key: '{resolved_key}')",
+        actual.len()
+    );
+    v.check_bool(name, ok, &detail);
+}
+
 fn flatten_numeric_json_values(arr: &[serde_json::Value]) -> Vec<f64> {
     let mut out = Vec::new();
     for val in arr {
@@ -702,6 +857,35 @@ pub fn is_skip_error(e: &IpcError) -> bool {
 ///
 /// Returns a `BTreeMap<capability, btsp_authenticated>` so guidestone can
 /// report per-atomic security posture without re-probing.
+fn resolve_btsp_socket(
+    discovered: &std::path::Path,
+    primal: &str,
+) -> std::path::PathBuf {
+    let name = discovered
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or("");
+    let family = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
+    let family_marker = format!("{primal}-{family}");
+
+    if name.contains(&family_marker) {
+        return discovered.to_path_buf();
+    }
+
+    let family_path = crate::ipc::discover::socket_path(primal);
+    if family_path.exists() {
+        tracing::debug!(
+            %primal,
+            alias = %discovered.display(),
+            family = %family_path.display(),
+            "BTSP: preferring family-scoped socket over alias"
+        );
+        return family_path;
+    }
+
+    discovered.to_path_buf()
+}
+
 fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap<String, bool> {
     let mut state: BTreeMap<String, bool> =
         clients.keys().map(|cap| (cap.clone(), false)).collect();
@@ -722,7 +906,8 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
     for cap in &all_caps {
         let primal = capability_to_primal(cap);
         let result = crate::ipc::discover::discover_by_capability(cap);
-        if let Some(path) = result.socket {
+        if let Some(discovered_path) = result.socket {
+            let path = resolve_btsp_socket(&discovered_path, primal);
             if proactive.contains(&cap.as_str()) {
                 match PrimalClient::connect_btsp(&path, primal, &seed) {
                     Ok(btsp_client) => {
@@ -731,7 +916,10 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
                         state.insert(cap.clone(), true);
                     }
                     Err(e) => {
-                        tracing::debug!(cap, primal, ?e, "BTSP upgrade failed, keeping cleartext");
+                        tracing::debug!(cap, primal, ?e, "BTSP upgrade failed, re-establishing cleartext");
+                        if let Ok(fresh) = PrimalClient::connect(&discovered_path, primal) {
+                            clients.insert(cap.clone(), fresh);
+                        }
                     }
                 }
             } else {
@@ -774,8 +962,9 @@ fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap
             continue;
         }
         let result = crate::ipc::discover::discover_by_capability(cap);
-        if let Some(path) = result.socket {
+        if let Some(discovered_path) = result.socket {
             let primal = capability_to_primal(cap);
+            let path = resolve_btsp_socket(&discovered_path, primal);
             match PrimalClient::connect_btsp(&path, primal, &seed) {
                 Ok(btsp_client) => {
                     tracing::info!(

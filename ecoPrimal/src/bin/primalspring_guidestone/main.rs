@@ -36,7 +36,7 @@ use std::path::Path;
 
 use primalspring::bonding::{BondType, BondingPolicy};
 use primalspring::btsp;
-use primalspring::composition::{self, CompositionContext, validate_liveness, validate_parity};
+use primalspring::composition::{self, CompositionContext, validate_liveness};
 use primalspring::coordination::AtomicType;
 use primalspring::deploy;
 use primalspring::ipc::NeuralBridge;
@@ -626,19 +626,19 @@ fn validate_atomic_health(ctx: &mut CompositionContext, v: &mut ValidationResult
 // ════════════════════════════════════════════════════════════════════════
 
 fn validate_math_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
-    validate_parity(
+    composition::validate_parity_flex(
         ctx,
         v,
         "parity:stats.mean",
         "tensor",
         "stats.mean",
         serde_json::json!({"data": [1.0, 2.0, 3.0, 4.0, 5.0]}),
-        "result",
+        &["result", "mean", "output", "data", "value"],
         3.0,
         tolerances::IPC_ROUND_TRIP_TOL,
     );
 
-    composition::validate_parity_vec(
+    composition::validate_parity_vec_flex(
         ctx,
         v,
         "parity:tensor.matmul_identity",
@@ -648,7 +648,7 @@ fn validate_math_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) 
             "lhs": [[1.0, 0.0], [0.0, 1.0]],
             "rhs": [[3.0, 7.0], [2.0, 5.0]]
         }),
-        "result",
+        &["result", "data", "output", "matrix"],
         &[3.0, 7.0, 2.0, 5.0],
         tolerances::IPC_ROUND_TRIP_TOL,
     );

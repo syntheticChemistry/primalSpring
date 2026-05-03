@@ -223,3 +223,23 @@ capabilities = [
 
 [graph.nodes.params]
 mode = "live"
+
+# ── Validation ─────────────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "validate_cell"
+security_model = "btsp"
+order = 99
+depends_on = ["beardog", "petaltongue"]
+
+[graph.nodes.operation]
+name = "health_check"
+
+[graph.nodes.operation.params]
+targets = [
+    "beardog", "songbird",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "squirrel", "petaltongue",
+    "biomeos_neural_api",
+]
