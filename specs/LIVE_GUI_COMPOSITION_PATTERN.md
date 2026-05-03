@@ -12,7 +12,7 @@
 petalTongue's `live` mode merges a native egui/eframe desktop window with
 a JSON-RPC IPC server in a single process. This is the canonical pattern
 for Desktop NUCLEUS deployments — the NUCLEUS runs as a background
-composition of 12 primals, and petalTongue `live` provides the human
+composition of 13 primals, and petalTongue `live` provides the human
 interface.
 
 This spec documents how the live GUI integrates with the NUCLEUS

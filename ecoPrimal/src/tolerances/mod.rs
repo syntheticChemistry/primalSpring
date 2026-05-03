@@ -267,6 +267,8 @@ pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9500;
 pub const DEFAULT_SQUIRREL_PORT: u16 = TCP_FALLBACK_SQUIRREL_PORT;
 /// TCP fallback port for remote `petalTongue` (visualization).
 pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9600;
+/// TCP fallback port for remote skunkBat (defense/recon).
+pub const TCP_FALLBACK_SKUNKBAT_PORT: u16 = 9750;
 /// TCP fallback port for remote biomeOS (substrate).
 pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
 
@@ -389,6 +391,7 @@ mod tests {
             TCP_FALLBACK_NESTGATE_PORT,
             TCP_FALLBACK_TOADSTOOL_PORT,
             TCP_FALLBACK_SQUIRREL_PORT,
+            TCP_FALLBACK_SKUNKBAT_PORT,
             TCP_FALLBACK_BIOMEOS_PORT,
         ] {
             assert!(port >= 1024, "port {port} below unprivileged range");
@@ -404,6 +407,7 @@ mod tests {
             TCP_FALLBACK_NESTGATE_PORT,
             TCP_FALLBACK_TOADSTOOL_PORT,
             TCP_FALLBACK_SQUIRREL_PORT,
+            TCP_FALLBACK_SKUNKBAT_PORT,
             TCP_FALLBACK_BIOMEOS_PORT,
         ];
         let mut sorted = ports.to_vec();

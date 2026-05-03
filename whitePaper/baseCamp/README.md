@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: April 2026
-**Status**: Phase 56c — v0.9.24 — 84 experiments (18 tracks), 631 tests, 71 deploy graphs, **Desktop NUCLEUS live** (12 primals, 11/12 healthy on heartbeat, `desktop_nucleus.sh`), **The Rhizome micro-game** (roguelike on NUCLEUS — Barracuda noise, game loop, petalTongue scenes, provenance trio), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **23 live gaps documented** (`LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md`), **provenance trio E2E resolved** (corrected wire schemas for rhizoCrypt, loamSpine, sweetGrass), **guideStone Level 4** (187/187, 13/13 BTSP), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), multi-tier genetics, BTSP Phase 1–3, **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), 4 desktop app deploy graphs, **plasmidBin decoupled** (standard consumer pattern via GitHub Releases + XDG cache)
+**Status**: Phase 56c — v0.9.24 — 84 experiments (18 tracks), 631 tests, 71 deploy graphs, **Desktop NUCLEUS live** (13 primals, 12/13 healthy on heartbeat, `desktop_nucleus.sh`), **The Rhizome micro-game** (roguelike on NUCLEUS — Barracuda noise, game loop, petalTongue scenes, provenance trio), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **23 live gaps documented** (`LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md`), **provenance trio E2E resolved** (corrected wire schemas for rhizoCrypt, loamSpine, sweetGrass), **guideStone Level 4** (187/187, 13/13 BTSP), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), multi-tier genetics, BTSP Phase 1–3, **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), 4 desktop app deploy graphs, **plasmidBin decoupled** (standard consumer pattern via GitHub Releases + XDG cache)
 
 ---
 
@@ -100,7 +100,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 
 ### guideStone Level 4 — Live NUCLEUS (April 20, 2026)
 
-The `primalspring_guidestone` binary now validates against a live 12-primal NUCLEUS
+The `primalspring_guidestone` binary now validates against a live 13-primal NUCLEUS
 composition deployed from `plasmidBin` ecoBin binaries. Now at **187/187 ALL PASS**
 (**13/13 BTSP authenticated**, 8 cellular graphs BTSP-enforced) after Phase 45c full convergence.
 biomeOS v3.25 absorbed graph bootstrap pre-registration and BTSP runtime escalation.
@@ -246,7 +246,7 @@ Pulled and validated all upstream primals. Key fixes absorbed:
 | Environment | Result | Notes |
 |-------------|--------|-------|
 | Local NUCLEUS (x86_64) | **12/12 alive** | Fixed beardog FAMILY_SEED, coralreef --rpc-bind |
-| benchScale Docker (x86_64) | **12/12 alive** | Songbird security provider configured, nestgate JWT secret |
+| benchScale Docker (x86_64) | **13/13 alive** | Songbird security provider configured, nestgate JWT secret |
 | Remote fetch simulation | **13/13 checksums verified** | Simulated GitHub clone, BLAKE3 all-match |
 | Pixel payload (aarch64) | **13 binaries staged** | ELF 64-bit ARM, statically linked, stripped |
 
@@ -325,7 +325,7 @@ Key properties: Grandma can let a cousin know how to reach you without giving aw
 
 **ToadStool Semantic Cleanup** — Removed unimplemented `ollama.*` and `inference.*` method mappings. ToadStool is compute substrate, not inference provider.
 
-**Metrics**: 404 tests, 72 experiments (15 tracks), 100 deploy graphs + 4 fragments. 12/12 plasmidBin ecoBin compliant.
+**Metrics**: 404 tests, 72 experiments (15 tracks), 100 deploy graphs + 4 fragments. 13/13 plasmidBin ecoBin compliant.
 
 ## What Changed — Phase 26 (Mixed Composition + Live Validation Matrix)
 
@@ -850,13 +850,13 @@ to graph-based deployments.
 
 ## What Changed — Phase 47 (Desktop NUCLEUS Composition)
 
-### 12/12 musl-static primals from plasmidBin (April 28, 2026)
+### 13/13 musl-static primals from plasmidBin (April 28, 2026)
 
-Rebuilt barraCuda and toadStool as musl-static, achieving 12/12 deployable
+Rebuilt barraCuda and toadStool as musl-static, achieving 13/13 deployable
 primals from plasmidBin with zero C dependencies:
 
 **New artifacts**:
-- `graphs/cells/nucleus_desktop_cell.toml` — canonical 12-primal desktop cell graph
+- `graphs/cells/nucleus_desktop_cell.toml` — canonical 13-primal desktop cell graph
   with biomeOS as coordinator primal, petalTongue in `live` mode, `coordination = "continuous"`
 - `graphs/cells/nucleus_desktop_overlay_template.toml` — template for springs to define
   domain overlays on the running Desktop NUCLEUS (connect, don't launch)
@@ -867,14 +867,14 @@ primals from plasmidBin with zero C dependencies:
 - `composition_nucleus.sh` additions: coralReef startup (12th primal), `shader` capability alias
 
 **Architecture clarification**:
-- NUCLEUS = exactly 12 primals: Tower (beardog + songbird) + Node (toadstool + barracuda +
+- NUCLEUS = exactly 13 primals: Tower (beardog + songbird) + Node (toadstool + barracuda +
   coralreef) + Nest (nestgate + rhizocrypt + loamspine + sweetgrass) + Meta (biomeos +
   squirrel + petaltongue)
 - `primalspring_primal` and `primalspring_guidestone` are dev validation artifacts, NOT primals
 - Spring binaries are Rust science validation, NOT composition nodes
-- A spring IS a composition of the 12 primals, defined by a cell graph
+- A spring IS a composition of the 13 primals, defined by a cell graph
 
-**Validated**: All 12 primals healthy from plasmidBin. Tower crypto, Node compute,
+**Validated**: All 13 primals healthy from plasmidBin. Tower crypto, Node compute,
 Nest DAG/ledger/attribution, Meta AI/visualization all responding via UDS JSON-RPC.
 
 ## What Changed — Phase 56c (plasmidBin Decoupling + CI/CD Pipeline)
@@ -900,7 +900,7 @@ primal binaries the same way any downstream spring or deployment would:
   Supports `build_args` (biomeOS workspace) and `needs_sibling` (skunkBat)
 - `notify-plasmidbin.yml` — template pushed to primal repos; fires
   `repository_dispatch` to plasmidBin on push to `main`
-- `sources.toml` — central registry of 12 primals (excludes `primalspring_primal`
+- `sources.toml` — central registry of 13 primals (excludes `primalspring_primal`
   and `esotericWebb` which are not primals)
 
 **GAP-27 resolved**: biomeOS binary in plasmidBin is now auto-harvested
@@ -915,7 +915,7 @@ is replaced by CI builds.
 - **coralReef health check**: Uses tarpc transport, JSON-RPC health check via `coralreef-core-default.sock` (not family-namespaced)
 
 ### Forward Evolution
-- biomeOS native `nucleus --mode full` to launch all 12 primals (currently launches 5)
+- biomeOS native `nucleus --mode full` to launch all 13 primals (currently launches 5)
 - Live multi-node validation with benchScale Docker topologies
 - Protocol escalation (JSON-RPC -> tarpc sidecar)
 - biomeOS self-composition (runtime graph generation)

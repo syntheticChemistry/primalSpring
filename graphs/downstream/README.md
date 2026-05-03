@@ -216,7 +216,7 @@ and pass the peer's authenticated `TrustModel`.
 ## Upstream Gap Status (Updated April 18, 2026)
 
 All previously identified gaps (LD-01 through LD-10) are **RESOLVED** upstream.
-The NUCLEUS stack runs **12/12 primals ALIVE** with **19/19 exp094 parity checks
+The NUCLEUS stack runs **13/13 primals ALIVE** with **19/19 exp094 parity checks
 PASS, 0 FAIL, 0 SKIP**. All ecobin primals serve JSON-RPC over UDS.
 
 **The remaining gap is spring-side**: springs still link barraCuda as a Rust

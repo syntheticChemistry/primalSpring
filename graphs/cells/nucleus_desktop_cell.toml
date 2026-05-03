@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Cellular deployment graph: Desktop NUCLEUS — all 12 primals, petalTongue live
+# Cellular deployment graph: Desktop NUCLEUS — all 13 primals, petalTongue live
 #
 # The canonical desktop deployment: biomeOS (coordinator primal) launches the
 # full NUCLEUS with petalTongue in `live` mode as the desktop UI surface.
 # All binaries deploy from plasmidBin — zero compilation required.
 #
 # Springs compose ON TOP of this graph via cell graphs. No spring binaries
-# are part of NUCLEUS. A spring IS a composition of these 12 primals.
+# are part of NUCLEUS. A spring IS a composition of these 13 primals.
 #
 # Atomic structure:
 #   Tower (electron): beardog + songbird
 #   Node  (proton):   toadstool + barracuda + coralreef
 #   Nest  (neutron):  nestgate + rhizocrypt + loamspine + sweetgrass
-#   Meta  (cross):    biomeos + squirrel + petaltongue
+#   Meta  (cross):    biomeos + squirrel + petaltongue + skunkbat
 #
 # Deploy:
 #   biomeos deploy --graph graphs/cells/nucleus_desktop_cell.toml
@@ -20,7 +20,7 @@
 
 [graph]
 name = "nucleus_desktop"
-description = "Desktop NUCLEUS — 12 primals from plasmidBin, petalTongue live desktop"
+description = "Desktop NUCLEUS — 13 primals from plasmidBin, petalTongue live desktop"
 version = "2.0.0"
 coordination = "continuous"
 
@@ -31,7 +31,7 @@ security_model = "btsp_enforced"
 transport = "uds_only"
 composition_model = "pure"
 petaltongue_mode = "live"
-primal_count = 12
+primal_count = 13
 
 [graph.environment]
 FAMILY_ID = "${FAMILY_ID:-nucleus-desktop}"
@@ -202,10 +202,27 @@ capabilities = [
 ]
 
 [[graph.nodes]]
+name = "skunkbat"
+security_model = "btsp"
+binary = "skunkbat"
+order = 11
+required = false
+spawn = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "defense"
+capabilities = [
+    "baseline.observe", "baseline.anomaly",
+    "metadata.scan", "metadata.compare",
+    "response.graduated", "lineage.challenge",
+    "health.liveness",
+]
+
+[[graph.nodes]]
 name = "petaltongue"
 security_model = "btsp"
 binary = "petaltongue"
-order = 11
+order = 12
 required = true
 spawn = true
 depends_on = ["songbird"]
@@ -240,6 +257,6 @@ targets = [
     "beardog", "songbird",
     "toadstool", "barracuda", "coralreef",
     "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
-    "squirrel", "petaltongue",
+    "squirrel", "skunkbat", "petaltongue",
     "biomeos_neural_api",
 ]

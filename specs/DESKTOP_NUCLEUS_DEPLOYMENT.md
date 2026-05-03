@@ -2,8 +2,8 @@
 
 **Status**: Design Spec (Phase 56)
 **Date**: April 28, 2026
-**Origin**: primalSpring v0.9.22 Phase 55c — all 12 primals resolved
-**Scope**: Evolve `biomeos nucleus` from a 5-primal coordinator to the full 12-primal desktop substrate
+**Origin**: primalSpring v0.9.22 Phase 55c — all 13 primals resolved
+**Scope**: Evolve `biomeos nucleus` from a 5-primal coordinator to the full 13-primal desktop substrate
 
 ---
 
@@ -87,7 +87,7 @@ biomeos nucleus --mode desktop [--node-id <id>] [--family-id <id>] [--port <n>] 
                                [--graphs-dir <path>]
 ```
 
-### Primal List (12 primals, ordered)
+### Primal List (13 primals, ordered)
 
 The `Desktop` mode extends `Full` by adding Compute, Provenance, and Meta
 tier primals. The full launch list:
@@ -341,7 +341,7 @@ instead of `--mode full` once the biomeOS evolution is complete.
 
 ### `nucleus_desktop_cell.toml`
 
-The cell graph already defines the 12-primal desktop topology. biomeOS
+The cell graph already defines the 13-primal desktop topology. biomeOS
 `--mode desktop` should use this graph as its source of truth for primal
 ordering, capabilities, and dependency relationships — either by loading
 it directly or by encoding the same information in

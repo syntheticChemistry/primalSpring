@@ -62,7 +62,7 @@ auto-discovered 3,078 capabilities from 36 sockets (primals + symlinks).
 - `storage` domain routes to `compute` (ToadStool) not NestGate — capability registry bug
 - biomeOS not auto-started by `desktop_nucleus.sh` — needs manual launch or script update
 
-**Remaining fix (biomeOS team)**: `NucleusMode::Desktop` for native 12-primal launch,
+**Remaining fix (biomeOS team)**: `NucleusMode::Desktop` for native 13-primal launch,
 consistent graph parser, `capability.call` dispatch in continuous nodes.
 
 ### GAP-03: Squirrel HTTP provider routing NOT implemented

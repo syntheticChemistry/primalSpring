@@ -194,7 +194,7 @@ The storytelling loop: **player input → scene resolution → game science → 
 3. Squirrel `ai.chat` provides AI narration with context windows + HTTP provider support
 4. petalTongue renders dashboards and basic scenes, `live` mode validated
 5. rhizoCrypt DAG session wiring exists in esotericWebb
-6. All 12 NUCLEUS primals resolved — full Desktop NUCLEUS operational
+6. All 13 NUCLEUS primals resolved — full Desktop NUCLEUS operational
 7. Provenance trio: loamSpine ships Tower-signed entries, sweetGrass ships braid+anchor signing delegation
 8. Two-tier crypto architecture operational (seed fingerprints -> HKDF -> purpose keys)
 
@@ -245,7 +245,7 @@ The storytelling loop: **player input → scene resolution → game science → 
 esotericWebb becomes the **first desktop application** running on the
 biomeOS substrate via `app.launch`. The application graph
 (`app_esotericwebb.toml`) composes esotericWebb + ludoSpring on top of
-the running 12-primal NUCLEUS. A `ContinuousSession` at 60Hz drives the
+the running 13-primal NUCLEUS. A `ContinuousSession` at 60Hz drives the
 game loop, with petalTongue providing the display surface.
 
 See `DESKTOP_SESSION_MODEL.md` for the full application lifecycle spec.

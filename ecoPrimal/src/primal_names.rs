@@ -32,6 +32,8 @@ pub const BIOMEOS: &str = "biomeos";
 pub const BARRACUDA: &str = "barracuda";
 /// Discovery slug for coralReef.
 pub const CORALREEF: &str = "coralreef";
+/// Discovery slug for skunkBat.
+pub const SKUNKBAT: &str = "skunkbat";
 /// Discovery slug for fieldMouse.
 pub const FIELDMOUSE: &str = "fieldmouse";
 

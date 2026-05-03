@@ -4,7 +4,7 @@
 #
 # This template shows how a spring composes ON TOP of the running
 # Desktop NUCLEUS. Springs do NOT launch primals — they connect to
-# the 12-primal NUCLEUS via capability sockets and add domain logic.
+# the 13-primal NUCLEUS via capability sockets and add domain logic.
 #
 # A spring IS a composition of the NUCLEUS primals. The cell graph
 # defines which capabilities the spring uses, how it wires UI, DAG,
@@ -18,7 +18,7 @@
 #      DAG sessions, and braid provenance patterns
 #
 # Deploy on a running Desktop NUCLEUS:
-#   ./tools/desktop_nucleus.sh start    # ensures 12/12 primals are live
+#   ./tools/desktop_nucleus.sh start    # ensures 13/13 primals are live
 #   biomeos deploy --graph graphs/cells/<yourspring>_cell.toml
 #
 # Or use the composition lib in your domain script:
@@ -46,7 +46,7 @@ petaltongue_mode = "live"
 base_graph = "nucleus_desktop"
 
 # ═══════════════════════════════════════════════════════════════════════
-# NUCLEUS Base — All 12 primals (inherited from Desktop NUCLEUS)
+# NUCLEUS Base — All 13 primals (inherited from Desktop NUCLEUS)
 #
 # Include ALL primals that your spring needs. biomeOS is always present
 # as the coordinator primal (spawn = false). Set required = false for

@@ -47,7 +47,7 @@ The plasmidBin GitHub repository also contains:
 
 **Note**: `primalspring_primal` and `esotericWebb` are NOT primals and
 are NOT distributed via plasmidBin. Spring binaries are Rust validation
-artifacts. A spring IS a composition of the 12 primals.
+artifacts. A spring IS a composition of the 13 primals.
 
 ## Acquiring Binaries
 

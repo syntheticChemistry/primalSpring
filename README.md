@@ -342,9 +342,9 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
   - exp103: ludoSpring expanded IPC (14 IPC methods esotericWebb needs)
   - exp104: RPGPT provenance replay (DAG → ledger → replay verification)
   - exp105: **The Rhizome micro-game** — full roguelike loop on NUCLEUS (Barracuda noise, game loop, save/load, provenance, narration)
-  - exp106: **Micro-desktop shell** — desktop composition wrapping The Rhizome (biomeOS routing, 11/12 primal health bar, multi-session petalTongue, provenance sidebar)
+  - exp106: **Micro-desktop shell** — desktop composition wrapping The Rhizome (biomeOS routing, 12/13 primal health bar, multi-session petalTongue, provenance sidebar)
 - **4 desktop app deploy graphs**: `desktop_shell.toml`, `app_esotericwebb.toml`, `app_system_monitor.toml`, `app_rhizome.toml` — biomeOS-managed desktop applications with continuous coordination
-- **`desktop_nucleus.sh`**: 12-primal NUCLEUS launcher with auto-symlink for petalTongue discovery, FAMILY_ID management, validate mode
+- **`desktop_nucleus.sh`**: 13-primal NUCLEUS launcher with auto-symlink for petalTongue discovery, FAMILY_ID management, validate mode
 - **Live gap harvesting**: 23 gaps documented in `docs/LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md` — socket naming, capability routing, IPC parameter schemas, biomeOS graph parser inconsistencies
 - **Provenance trio E2E fully resolved**: rhizoCrypt DAG + loamSpine ledger + sweetGrass attribution — all parameter schemas documented and corrected
 - **The Rhizome**: Procedural roguelike game running on NUCLEUS — Barracuda Perlin noise for biome generation, deterministic floor layout, 5 biome types, creature/item systems, TOML save format, gap-tolerant validation

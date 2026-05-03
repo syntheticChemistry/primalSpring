@@ -910,7 +910,7 @@ composition_summary() {
 
 # ── biomeOS Integration ──────────────────────────────────────────────
 #
-# biomeOS is the coordinator primal — part of the 12-primal NUCLEUS.
+# biomeOS is the coordinator primal — part of the 13-primal NUCLEUS.
 # These helpers let compositions register with Neural API and check
 # biomeOS availability for graph-based deployment.
 

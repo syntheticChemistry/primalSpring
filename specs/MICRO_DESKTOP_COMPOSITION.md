@@ -22,7 +22,7 @@ rendering, and capability routing in a real composition scenario.
 
 ```
 +---------------------------------------------------------------+
-|  [System Monitor Bar]            HP:12/12  Session:active  |F1|
+|  [System Monitor Bar]            HP:13/13  Session:active  |F1|
 +---------------------------------------------------------------+
 |                                          |  Provenance      |
 |                                          |  Sidebar         |

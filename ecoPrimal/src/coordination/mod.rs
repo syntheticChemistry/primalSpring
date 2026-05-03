@@ -27,7 +27,7 @@ pub enum AtomicType {
     Node,
     /// Tower + `NestGate` + Squirrel (adds storage + AI bridge).
     Nest,
-    /// All 12 primals: Tower + Node + Nest + meta-tier.
+    /// All 13 primals: Tower + Node + Nest + meta-tier.
     FullNucleus,
 }
 
@@ -60,6 +60,7 @@ impl AtomicType {
                 "visualization",
                 "ledger",
                 "attribution",
+                "defense",
             ],
         }
     }
@@ -119,6 +120,7 @@ impl AtomicType {
                 primal_names::LOAMSPINE,
                 primal_names::SWEETGRASS,
                 primal_names::PETALTONGUE,
+                primal_names::SKUNKBAT,
             ],
         }
     }
@@ -150,7 +152,7 @@ impl AtomicType {
             Self::Tower => "Security + Discovery (crypto + mesh)",
             Self::Node => "Tower + Compute triangle (dispatch + math + shaders)",
             Self::Nest => "Tower + Storage + AI bridge (+ persistence)",
-            Self::FullNucleus => "All 12 primals: Tower + Node + Nest + meta-tier",
+            Self::FullNucleus => "All 13 primals: Tower + Node + Nest + meta-tier",
         }
     }
 }
@@ -554,12 +556,13 @@ mod tests {
     }
 
     #[test]
-    fn full_nucleus_requires_eleven_primals() {
+    fn full_nucleus_requires_twelve_primals() {
         let primals = AtomicType::FullNucleus.required_primals();
-        assert_eq!(primals.len(), 11);
+        assert_eq!(primals.len(), 12);
         assert!(primals.contains(&primal_names::BARRACUDA));
         assert!(primals.contains(&primal_names::CORALREEF));
         assert!(primals.contains(&primal_names::PETALTONGUE));
+        assert!(primals.contains(&primal_names::SKUNKBAT));
     }
 
     #[test]
@@ -721,7 +724,7 @@ mod tests {
     #[test]
     fn validate_composition_by_capability_full_nucleus() {
         let result = validate_composition_by_capability(AtomicType::FullNucleus);
-        assert_eq!(result.primals.len(), 13);
+        assert_eq!(result.primals.len(), 14);
     }
 
     #[test]
@@ -747,7 +750,7 @@ mod tests {
     fn validate_composition_full_nucleus() {
         let result = validate_composition(AtomicType::FullNucleus);
         assert_eq!(result.atomic, AtomicType::FullNucleus);
-        assert_eq!(result.primals.len(), 11);
+        assert_eq!(result.primals.len(), 12);
     }
 
     #[test]
@@ -766,9 +769,9 @@ mod tests {
     }
 
     #[test]
-    fn required_capabilities_full_nucleus_has_thirteen() {
+    fn required_capabilities_full_nucleus_has_fourteen() {
         let caps = AtomicType::FullNucleus.required_capabilities();
-        assert_eq!(caps.len(), 13);
+        assert_eq!(caps.len(), 14);
         assert!(caps.contains(&"tensor"));
         assert!(caps.contains(&"shader"));
         assert!(caps.contains(&"visualization"));

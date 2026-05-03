@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: April 2026
-**Status**: Phase 56 — Desktop Substrate (**12 primals live**, 11/12 healthy, The Rhizome micro-game, micro-desktop shell), 23 live gaps documented, provenance trio E2E resolved, BTSP 13/13, 187/187 ALL PASS. 84 experiments (18 tracks), 71 deploy graphs, 631 tests. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing).
+**Status**: Phase 56 — Desktop Substrate (**13 primals live**, 12/13 healthy, The Rhizome micro-game, micro-desktop shell), 23 live gaps documented, provenance trio E2E resolved, BTSP 13/13, 187/187 ALL PASS. 84 experiments (18 tracks), 71 deploy graphs, 631 tests. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing).
 
 ---
 

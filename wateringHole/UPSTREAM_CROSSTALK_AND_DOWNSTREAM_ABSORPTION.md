@@ -353,7 +353,7 @@ manifest, crypto negative, and 2 templates.
 ### Bonding Models (5 graphs)
 
 All five `BondType` variants represented:
-- **Covalent**: `organo_metal_salt_complex` (full 12-primal composition)
+- **Covalent**: `organo_metal_salt_complex` (full 13-primal composition)
 - **Ionic**: `ionic_capability_share` (cross-gate capability sharing)
 - **Metallic**: `metallic_gpu_pool` (compute pooling)
 - **Weak**: `defensive_mesh` (isolation + defense)

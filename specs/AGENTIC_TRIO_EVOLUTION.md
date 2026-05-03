@@ -228,9 +228,9 @@ The loop: **petalTongue observes → human/agent decides → Squirrel acts → b
 2. Squirrel responds to `ai.query` via biomeOS Neural API (exp061)
 3. petalTongue renders dashboards and topology (exp043, exp065, exp078)
 4. primalSpring exposes MCP tools to Squirrel (exp044)
-5. Desktop NUCLEUS runs all 12 primals with full crypto tiers (28/30 validation checks)
+5. Desktop NUCLEUS runs all 13 primals with full crypto tiers (28/30 validation checks)
 6. Squirrel honors `DISCOVERY_SOCKET` for Songbird resolution (AN session)
-7. All 12 primals resolved — zero upstream asks for Phase 55 items
+7. All 13 primals resolved — zero upstream asks for Phase 55 items
 
 ### What Doesn't Work Yet
 
@@ -304,7 +304,7 @@ These cells validate the agentic trio in different substrate conditions:
 
 | Priority | biomeOS | Squirrel | petalTongue |
 |----------|---------|----------|-------------|
-| **P0** | `NucleusMode::Desktop` (12 primals), Songbird registration loop | Socket transport alignment (listen socket) | Motor channel fix in `live_mode.rs` |
+| **P0** | `NucleusMode::Desktop` (13 primals), Songbird registration loop | Socket transport alignment (listen socket) | Motor channel fix in `live_mode.rs` |
 | **P0** | TCP-only `--port`, cross-gate `gate` param | (unchanged) | SSE reconnection robustness |
 | **P1** | Application session API (`app.launch`, etc.), family seed persistence | Capability canonicalization, MCP tool expansion | Session-aware rendering, desktop shell chrome |
 | **P2** | Capability domain symlinks | Agentic graph integration | Multi-viewport Phase A (egui), sensor intent broadcasting |

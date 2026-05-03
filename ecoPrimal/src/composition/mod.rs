@@ -65,6 +65,7 @@ const ALL_CAPS: &[&str] = &[
     "visualization",
     "ledger",
     "attribution",
+    "defense",
 ];
 
 /// Extended capability aliases for BTSP proactive escalation.
@@ -72,7 +73,7 @@ const ALL_CAPS: &[&str] = &[
 /// Includes names that map to the same primal sockets as [`ALL_CAPS`]
 /// (e.g. `inference` → Squirrel, `spine`/`merkle` → loamSpine) to ensure
 /// BTSP coverage even when a client was connected under an alias name.
-const BTSP_EXTRA_CAPS: &[&str] = &["inference", "spine", "merkle", "braid"];
+const BTSP_EXTRA_CAPS: &[&str] = &["inference", "spine", "merkle", "braid", "recon", "threat", "lineage"];
 
 /// A capability-keyed set of IPC clients for a running primal composition.
 ///
@@ -470,6 +471,7 @@ pub fn capability_to_primal(capability: &str) -> &str {
         "ledger" | "spine" | "merkle" => pn::LOAMSPINE,
         "commit" | "attribution" | "braid" => pn::SWEETGRASS,
         "visualization" => pn::PETALTONGUE,
+        "defense" | "recon" | "threat" => pn::SKUNKBAT,
         "orchestration" => pn::BIOMEOS,
         other => other,
     }
@@ -1075,6 +1077,12 @@ fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u16)> 
             pn::SWEETGRASS,
             "SWEETGRASS_PORT",
             tol::TCP_FALLBACK_NESTGATE_PORT + 3,
+        ),
+        (
+            "defense",
+            pn::SKUNKBAT,
+            "SKUNKBAT_PORT",
+            tol::TCP_FALLBACK_SKUNKBAT_PORT,
         ),
     ]
 }

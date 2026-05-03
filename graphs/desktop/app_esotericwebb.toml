@@ -4,7 +4,7 @@
 #
 # The first desktop application on the biomeOS substrate. Composes
 # esotericWebb (narrative engine) + ludoSpring (game science) on top of
-# the running 12-primal Desktop NUCLEUS.
+# the running 13-primal Desktop NUCLEUS.
 #
 # NUCLEUS primals are NOT included — they are consumed from the substrate.
 # This graph only declares the application-level binaries.

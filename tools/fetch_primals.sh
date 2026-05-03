@@ -11,7 +11,7 @@
 # downstream projects (hotSpring, esotericWebb, etc.) would.
 #
 # Usage:
-#   ./tools/fetch_primals.sh                  # Fetch all 12 NUCLEUS primals
+#   ./tools/fetch_primals.sh                  # Fetch all 13 NUCLEUS primals
 #   ./tools/fetch_primals.sh --primal beardog # Fetch a single primal
 #   ./tools/fetch_primals.sh --force          # Re-download even if present
 #   ./tools/fetch_primals.sh --dry-run        # Show what would be fetched
@@ -33,10 +33,10 @@ GITHUB_REPO="ecoPrimals/plasmidBin"
 NUCLEUS_PRIMALS=(
     beardog songbird toadstool barracuda coralreef
     nestgate rhizocrypt loamspine sweetgrass
-    biomeos squirrel petaltongue
+    biomeos squirrel skunkbat petaltongue
 )
 
-DEFENSE_PRIMALS=(skunkbat)
+DEFENSE_PRIMALS=()
 
 DRY_RUN=false
 FORCE=false

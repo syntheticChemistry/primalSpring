@@ -9,7 +9,7 @@
 
 ## Overview
 
-A Desktop NUCLEUS deployment provides 12 primals as a capability substrate.
+A Desktop NUCLEUS deployment provides 13 primals as a capability substrate.
 **Applications** are compositions that run **on top of** the substrate — they
 are deploy graphs executed by biomeOS with petalTongue providing the display
 surface.

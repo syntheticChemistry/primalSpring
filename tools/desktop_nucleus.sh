@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# desktop_nucleus.sh — Deploy the 12-primal NUCLEUS as a desktop system
+# desktop_nucleus.sh — Deploy the 13-primal NUCLEUS as a desktop system
 #
 # Primary path: biomeOS deploy (coordinator primal handles lifecycle)
 # Fallback path: composition_nucleus.sh (shell-managed)
 #
-# All 12 primals deploy from plasmidBin. No spring binaries.
+# All 13 primals deploy from plasmidBin. No spring binaries.
 # petalTongue runs in `live` mode (egui desktop window).
 #
 # Usage:
 #   ./tools/desktop_nucleus.sh start    # deploy desktop NUCLEUS
 #   ./tools/desktop_nucleus.sh stop     # graceful shutdown
-#   ./tools/desktop_nucleus.sh status   # health check all 12
+#   ./tools/desktop_nucleus.sh status   # health check all 13
 
 set -euo pipefail
 
@@ -38,7 +38,7 @@ err()  { echo "[desktop-nucleus] ERROR: $*" >&2; }
 ok()   { echo "[desktop-nucleus] OK: $*"; }
 warn() { echo "[desktop-nucleus] WARN: $*"; }
 
-SPAWNED_PRIMALS="beardog songbird toadstool barracuda coralreef nestgate rhizocrypt loamspine sweetgrass squirrel petaltongue"
+SPAWNED_PRIMALS="beardog songbird toadstool barracuda coralreef nestgate rhizocrypt loamspine sweetgrass squirrel skunkbat petaltongue"
 PRIMALS="$SPAWNED_PRIMALS biomeos"
 
 biomeos_bin() {
@@ -66,7 +66,7 @@ verify_plasmidbin() {
         err "$missing primals missing from plasmidBin"
         return 1
     fi
-    ok "12/12 primals present in plasmidBin"
+    ok "13/13 primals present in plasmidBin"
 }
 
 create_capability_symlinks() {
@@ -86,6 +86,7 @@ create_capability_symlinks() {
         [ledger]="loamspine"
         [attribution]="sweetgrass"
         [ai]="squirrel"
+        [defense]="skunkbat"
     )
 
     for cap in "${!cap_map[@]}"; do
@@ -109,7 +110,7 @@ cmd_start() {
 
     verify_plasmidbin || return 1
 
-    log "Deploying 12-primal NUCLEUS via composition launcher"
+    log "Deploying 13-primal NUCLEUS via composition launcher"
     start_via_composition
 }
 
@@ -264,7 +265,7 @@ cmd_status() {
         healthy=$((healthy + 1))
     fi
 
-    log "── Result: $healthy/12 primals (11 spawned + 1 coordinator) ──"
+    log "── Result: $healthy/13 primals (12 spawned + 1 coordinator) ──"
 }
 
 print_connection_info() {
