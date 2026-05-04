@@ -398,7 +398,7 @@ pub fn family_seed_from_env() -> Option<Vec<u8>> {
 /// `BearDog`, which reads `FAMILY_SEED` as raw bytes. If it's not valid hex,
 /// base64 decoding is attempted as fallback.
 fn raw_family_seed_from_env() -> Option<Vec<u8>> {
-    let value = std::env::var("FAMILY_SEED").ok()?;
+    let value = std::env::var(crate::env_keys::FAMILY_SEED).ok()?;
     let trimmed = value.trim();
     if trimmed.is_empty() {
         warn!("FAMILY_SEED is empty");
@@ -451,7 +451,7 @@ fn is_hex_string(s: &str) -> bool {
 #[must_use]
 pub fn mito_beacon_from_env() -> Option<crate::genetics::MitoBeacon> {
     let seed = raw_family_seed_from_env()?;
-    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "unknown".to_owned());
+    let family_id = std::env::var(crate::env_keys::FAMILY_ID).unwrap_or_else(|_| "unknown".to_owned());
     Some(crate::genetics::MitoBeacon::new(
         family_id.clone(),
         family_id,

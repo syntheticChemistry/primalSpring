@@ -578,7 +578,7 @@ impl ValidationResult {
 
     /// Print summary, choosing JSON or human format based on `PRIMALSPRING_JSON` env.
     pub fn finish(&self) {
-        if std::env::var("PRIMALSPRING_JSON").is_ok() {
+        if std::env::var(crate::env_keys::PRIMALSPRING_JSON).is_ok() {
             if let Ok(json) = self.to_json() {
                 println!("{json}");
             } else {

@@ -274,7 +274,7 @@ pub fn coordination_semantic_mappings() -> serde_json::Value {
 /// Degrades gracefully if biomeOS is unreachable — coordination must not
 /// depend on registration success.
 pub fn register_with_target(our_socket: &Path) {
-    let target = std::env::var("BIOMEOS_PRIMAL").unwrap_or_else(|_| REGISTRATION_TARGET.to_owned());
+    let target = std::env::var(crate::env_keys::BIOMEOS_PRIMAL).unwrap_or_else(|_| REGISTRATION_TARGET.to_owned());
     let discovery = discover_primal(&target);
     let Some(biomeos_path) = discovery.socket else {
         info!(target: "niche", primal = %target, "registration target not discovered — deferred");

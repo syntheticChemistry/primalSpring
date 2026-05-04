@@ -70,7 +70,7 @@ fn server_socket_path() -> PathBuf {
 /// Priority: `PRIMALSPRING_GRAPHS_DIR` env var, then the binary's sibling
 /// `graphs/` directory, then the build-time `CARGO_MANIFEST_DIR` fallback.
 fn resolve_graphs_dir() -> PathBuf {
-    if let Ok(dir) = std::env::var("PRIMALSPRING_GRAPHS_DIR") {
+    if let Ok(dir) = std::env::var(primalspring::env_keys::PRIMALSPRING_GRAPHS_DIR) {
         return PathBuf::from(dir);
     }
     if let Ok(exe) = std::env::current_exe() {
@@ -209,8 +209,8 @@ fn dispatch_request(line: &str) -> JsonRpcResponse {
                 "version": env!("CARGO_PKG_VERSION"),
                 "capabilities": primalspring::niche::LOCAL_CAPABILITIES,
                 "phase": "running",
-                "family_id": std::env::var("FAMILY_ID")
-                    .or_else(|_| std::env::var("BIOMEOS_FAMILY_ID"))
+                "family_id": std::env::var(primalspring::env_keys::FAMILY_ID)
+                    .or_else(|_| std::env::var(primalspring::env_keys::BIOMEOS_FAMILY_ID))
                     .unwrap_or_else(|_| "default".to_owned()),
             }),
             id,
@@ -476,7 +476,7 @@ fn handle_tower_squirrel_health(id: u64) -> JsonRpcResponse {
     let tower = primalspring::coordination::validate_composition_by_capability(AtomicType::Tower);
     let ai_disc = primalspring::ipc::discover::discover_by_capability("ai");
     let ai_ok = ai_disc.socket.as_ref().is_some_and(|sock| {
-        primalspring::ipc::client::PrimalClient::connect(sock, "squirrel")
+        primalspring::ipc::client::PrimalClient::connect(sock, primalspring::primal_names::SQUIRREL)
             .is_ok_and(|mut c| c.health_check().unwrap_or(false))
     });
     let all_healthy = tower.all_healthy && ai_ok;
@@ -632,7 +632,7 @@ fn handle_graph_waves(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let path = std::path::Path::new(path_str);
     let graph = match primalspring::deploy::load_graph(path) {
         Ok(g) => g,
-        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &e, id),
+        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &format!("{e}"), id),
     };
     match primalspring::deploy::topological_waves(&graph) {
         Ok(waves) => success_response(
@@ -643,7 +643,7 @@ fn handle_graph_waves(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
             }),
             id,
         ),
-        Err(e) => error_response(error_codes::INTERNAL_ERROR, &e, id),
+        Err(e) => error_response(error_codes::INTERNAL_ERROR, &format!("{e}"), id),
     }
 }
 
@@ -658,7 +658,7 @@ fn handle_graph_capabilities(params: &serde_json::Value, id: u64) -> JsonRpcResp
     let path = std::path::Path::new(path_str);
     let graph = match primalspring::deploy::load_graph(path) {
         Ok(g) => g,
-        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &e, id),
+        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &format!("{e}"), id),
     };
     let caps = primalspring::deploy::graph_required_capabilities(&graph);
     success_response(

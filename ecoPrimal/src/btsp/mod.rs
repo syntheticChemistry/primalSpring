@@ -157,7 +157,7 @@ impl From<SecurityMode> for GeneticSecurityMode {
 /// - Both → invalid (see [`validate_insecure_guard`])
 #[must_use]
 pub fn security_mode_from_env() -> SecurityMode {
-    let has_family = std::env::var("FAMILY_ID")
+    let has_family = std::env::var(crate::env_keys::FAMILY_ID)
         .map(|v| !v.is_empty() && v != "default")
         .unwrap_or(false);
 
@@ -168,24 +168,31 @@ pub fn security_mode_from_env() -> SecurityMode {
     }
 }
 
+/// Error returned when the BTSP security guard detects conflicting env config.
+#[derive(Debug, thiserror::Error)]
+#[error("{0}")]
+pub struct BtspGuardError(pub String);
+
 /// Validate that `FAMILY_ID` and `BIOMEOS_INSECURE` are not both set.
 ///
 /// # Errors
 ///
-/// Returns a human-readable error message when both are set.
-pub fn validate_insecure_guard() -> Result<(), String> {
-    let has_family = std::env::var("FAMILY_ID")
+/// Returns [`BtspGuardError`] when both are set.
+pub fn validate_insecure_guard() -> Result<(), BtspGuardError> {
+    let has_family = std::env::var(crate::env_keys::FAMILY_ID)
         .map(|v| !v.is_empty() && v != "default")
         .unwrap_or(false);
-    let insecure = std::env::var("BIOMEOS_INSECURE")
+    let insecure = std::env::var(crate::env_keys::BIOMEOS_INSECURE)
         .map(|v| v == "1" || v == "true")
         .unwrap_or(false);
 
     if has_family && insecure {
-        return Err("FATAL: FAMILY_ID and BIOMEOS_INSECURE=1 cannot coexist. \
+        return Err(BtspGuardError(
+            "FATAL: FAMILY_ID and BIOMEOS_INSECURE=1 cannot coexist. \
              Production mode (FAMILY_ID set) requires BTSP authentication. \
              Remove BIOMEOS_INSECURE to run in production, or unset FAMILY_ID for development."
-            .to_owned());
+                .to_owned(),
+        ));
     }
     Ok(())
 }

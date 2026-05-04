@@ -38,6 +38,23 @@ use serde::{Deserialize, Serialize};
 
 use crate::coordination::probe_primal;
 
+/// Typed errors for deploy graph operations.
+#[derive(Debug, thiserror::Error)]
+pub enum DeployError {
+    /// Failed to read a file from disk.
+    #[error("IO: {0}")]
+    Io(#[from] std::io::Error),
+    /// TOML parsing failed.
+    #[error("graph parse: {0}")]
+    Parse(String),
+    /// Fragment resolution failed.
+    #[error("fragment resolution: {0}")]
+    FragmentResolution(String),
+    /// Topological ordering is impossible (cycle or missing node).
+    #[error("topological sort: {0}")]
+    TopologicalSort(String),
+}
+
 /// A parsed biomeOS deploy graph.
 ///
 /// Accepts three TOML node formats:
@@ -286,12 +303,11 @@ pub fn validate_live_by_capability(path: &Path) -> LiveGraphValidation {
 ///
 /// # Errors
 ///
-/// Returns a string description if reading or parsing fails.
-pub fn load_graph(path: &Path) -> Result<DeployGraph, String> {
-    let contents = std::fs::read_to_string(path)
-        .map_err(|e| format!("failed to read {}: {e}", path.display()))?;
+/// Returns [`DeployError`] if reading or parsing fails.
+pub fn load_graph(path: &Path) -> Result<DeployGraph, DeployError> {
+    let contents = std::fs::read_to_string(path)?;
     let mut graph: DeployGraph = toml::from_str(&contents)
-        .map_err(|e| format!("failed to parse {}: {e}", path.display()))?;
+        .map_err(|e| DeployError::Parse(format!("{}: {e}", path.display())))?;
 
     if !graph.nodes.is_empty() {
         graph.graph.node.append(&mut graph.nodes);
@@ -309,17 +325,17 @@ pub fn load_graph(path: &Path) -> Result<DeployGraph, String> {
 /// `fragments/` directory by searching from the graph file's parent
 /// directory upward. Fragment nodes are merged as the base layer;
 /// the graph's explicit nodes override any same-name fragment node.
-fn resolve_fragments(graph: &mut DeployGraph, graph_path: &Path) -> Result<(), String> {
+fn resolve_fragments(graph: &mut DeployGraph, graph_path: &Path) -> Result<(), DeployError> {
     let fragment_names = match &graph.graph.metadata {
         Some(meta) if meta.resolve && !meta.fragments.is_empty() => meta.fragments.clone(),
         _ => return Ok(()),
     };
 
     let fragments_dir = find_fragments_dir(graph_path).ok_or_else(|| {
-        format!(
+        DeployError::FragmentResolution(format!(
             "graph {} declares fragments but no fragments/ directory found",
             graph_path.display()
-        )
+        ))
     })?;
 
     let mut base_nodes: Vec<GraphNode> = Vec::new();
@@ -328,10 +344,9 @@ fn resolve_fragments(graph: &mut DeployGraph, graph_path: &Path) -> Result<(), S
         if !frag_path.is_file() {
             continue;
         }
-        let frag_contents = std::fs::read_to_string(&frag_path)
-            .map_err(|e| format!("failed to read fragment {}: {e}", frag_path.display()))?;
+        let frag_contents = std::fs::read_to_string(&frag_path)?;
         let frag_file: FragmentFile = toml::from_str(&frag_contents)
-            .map_err(|e| format!("failed to parse fragment {}: {e}", frag_path.display()))?;
+            .map_err(|e| DeployError::Parse(format!("fragment {}: {e}", frag_path.display())))?;
         for frag_node in frag_file.fragment.nodes {
             if !base_nodes.iter().any(|n| n.name == frag_node.name) {
                 base_nodes.push(frag_node);
@@ -389,7 +404,7 @@ pub fn validate_structure(path: &Path) -> GraphValidation {
             path: path.display().to_string(),
             name: String::new(),
             parsed: false,
-            issues: vec![e],
+            issues: vec![e.to_string()],
             node_count: 0,
             required_count: 0,
         },
@@ -523,7 +538,7 @@ fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
 /// Given Tower (`beardog` order=1) → Songbird (order=2, `depends_on`=`beardog`):
 /// - Wave 0: `["beardog"]`
 /// - Wave 1: `["songbird"]`
-pub fn topological_waves(graph: &DeployGraph) -> Result<Vec<Vec<String>>, String> {
+pub fn topological_waves(graph: &DeployGraph) -> Result<Vec<Vec<String>>, DeployError> {
     use std::collections::{HashMap, VecDeque};
 
     let nodes = &graph.graph.node;
@@ -543,10 +558,10 @@ pub fn topological_waves(graph: &DeployGraph) -> Result<Vec<Vec<String>>, String
     for (i, node) in nodes.iter().enumerate() {
         for dep in &node.depends_on {
             let Some(&dep_idx) = name_set.get(dep.as_str()) else {
-                return Err(format!(
+                return Err(DeployError::TopologicalSort(format!(
                     "node '{}' depends on '{}' which is not in the graph",
                     node.name, dep
-                ));
+                )));
             };
             in_degree[i] += 1;
             dependents[dep_idx].push(i);
@@ -583,7 +598,9 @@ pub fn topological_waves(graph: &DeployGraph) -> Result<Vec<Vec<String>>, String
     }
 
     if processed != nodes.len() {
-        return Err("graph contains a dependency cycle".to_owned());
+        return Err(DeployError::TopologicalSort(
+            "graph contains a dependency cycle".to_owned(),
+        ));
     }
 
     Ok(waves)

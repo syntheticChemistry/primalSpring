@@ -51,7 +51,7 @@ impl SocketNucleation {
     #[must_use]
     pub fn from_env() -> Self {
         let base =
-            std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+            std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
         Self::new(base)
     }
 

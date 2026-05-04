@@ -53,6 +53,7 @@ pub mod composition;
 pub mod coordination;
 pub mod deploy;
 pub mod emergent;
+pub mod env_keys;
 pub mod genetics;
 pub mod graphs;
 pub mod harness;

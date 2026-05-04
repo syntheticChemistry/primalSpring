@@ -247,7 +247,7 @@ fn extract_host(addr: &str) -> String {
 fn extract_port(addr: &str) -> u16 {
     addr.rsplit_once(':')
         .and_then(|(_, port)| port.parse().ok())
-        .unwrap_or(9100)
+        .unwrap_or(crate::tolerances::TCP_FALLBACK_BEARDOG_PORT)
 }
 
 #[cfg(test)]

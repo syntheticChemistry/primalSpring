@@ -201,7 +201,7 @@ fn topological_waves_detects_missing_dependency() {
     let graph = test_graph("bad_dep", vec![node]);
     let result = topological_waves(&graph);
     assert!(result.is_err());
-    assert!(result.unwrap_err().contains("ghost"));
+    assert!(result.unwrap_err().to_string().contains("ghost"));
 }
 
 #[test]
@@ -216,7 +216,7 @@ fn topological_waves_detects_cycle() {
     let graph = test_graph("cycle", vec![alpha, beta]);
     let result = topological_waves(&graph);
     assert!(result.is_err());
-    assert!(result.unwrap_err().contains("cycle"));
+    assert!(result.unwrap_err().to_string().contains("cycle"));
 }
 
 #[test]

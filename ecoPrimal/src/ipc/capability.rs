@@ -98,9 +98,9 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
 
     // Tier 2: Capability-named socket on filesystem
     let base =
-        std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+        std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
     let biomeos_dir = base.join(crate::primal_names::BIOMEOS);
-    let family = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
+    let family = std::env::var(crate::env_keys::FAMILY_ID).unwrap_or_else(|_| "default".to_owned());
 
     // 2a: {capability}-{family}.sock (multi-tenant convention)
     let family_sock = biomeos_dir.join(format!("{capability}-{family}.sock"));
@@ -179,7 +179,7 @@ fn prefer_jsonrpc_socket(path: &std::path::Path) -> PathBuf {
 fn discover_from_socket_registry_by_capability(
     capability: &str,
 ) -> Option<(PathBuf, Option<String>)> {
-    let base = std::env::var("XDG_RUNTIME_DIR").ok()?;
+    let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR).ok()?;
     let registry_path = PathBuf::from(base)
         .join(crate::primal_names::BIOMEOS)
         .join("socket-registry.json");

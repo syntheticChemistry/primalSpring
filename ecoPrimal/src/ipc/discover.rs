@@ -75,8 +75,8 @@ pub fn build_socket_path(base_dir: &Path, primal: &str, family: &str) -> PathBuf
 #[must_use]
 pub fn socket_path(primal: &str) -> PathBuf {
     let base =
-        std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
-    let family = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
+        std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+    let family = std::env::var(crate::env_keys::FAMILY_ID).unwrap_or_else(|_| "default".to_owned());
     build_socket_path(&base, primal, &family)
 }
 
@@ -94,7 +94,7 @@ pub fn socket_env_var(primal: &str) -> Option<PathBuf> {
 /// Pattern absorbed from biomeOS v2.50 `PrimalManifest`.
 #[must_use]
 pub fn discover_from_manifest(primal: &str) -> Option<PathBuf> {
-    let base = std::env::var("XDG_RUNTIME_DIR").ok()?;
+    let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR).ok()?;
     let manifest_path = PathBuf::from(base)
         .join("ecoPrimals")
         .join("manifests")
@@ -114,7 +114,7 @@ pub fn discover_from_manifest(primal: &str) -> Option<PathBuf> {
 /// Pattern absorbed from Squirrel alpha.12.
 #[must_use]
 pub fn discover_from_socket_registry(primal: &str) -> Option<PathBuf> {
-    let base = std::env::var("XDG_RUNTIME_DIR").ok()?;
+    let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR).ok()?;
     let registry_path = PathBuf::from(base)
         .join(crate::primal_names::BIOMEOS)
         .join("socket-registry.json");
@@ -154,7 +154,7 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
 
     let conv_path = socket_path(primal);
     if conv_path.exists() {
-        let source = if std::env::var("XDG_RUNTIME_DIR").is_ok() {
+        let source = if std::env::var(crate::env_keys::XDG_RUNTIME_DIR).is_ok() {
             DiscoverySource::XdgConvention
         } else {
             DiscoverySource::TempFallback
@@ -168,7 +168,7 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
 
     // Many primals now use plain `{name}.sock` or `{name}-ipc.sock`
     let base =
-        std::env::var("XDG_RUNTIME_DIR").map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+        std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
     let biomeos_dir = base.join(crate::primal_names::BIOMEOS);
     for suffix in [".sock", "-ipc.sock"] {
         let plain = biomeos_dir.join(format!("{primal}{suffix}"));

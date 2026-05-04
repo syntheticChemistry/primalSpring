@@ -70,7 +70,7 @@ impl NeuralBridge {
             }
         }
 
-        if let Ok(explicit) = std::env::var("NEURAL_API_SOCKET") {
+        if let Ok(explicit) = std::env::var(crate::env_keys::NEURAL_API_SOCKET) {
             let path = PathBuf::from(&explicit);
             if path.exists() {
                 return Some(Self { socket_path: path });
@@ -79,7 +79,7 @@ impl NeuralBridge {
 
         let family = family_hint
             .map(String::from)
-            .or_else(|| std::env::var("FAMILY_ID").ok())
+            .or_else(|| std::env::var(crate::env_keys::FAMILY_ID).ok())
             .unwrap_or_else(|| "default".to_owned());
 
         let candidates = [
@@ -87,7 +87,7 @@ impl NeuralBridge {
             format!("biomeos-{family}.sock"),
         ];
 
-        if let Ok(xdg) = std::env::var("XDG_RUNTIME_DIR") {
+        if let Ok(xdg) = std::env::var(crate::env_keys::XDG_RUNTIME_DIR) {
             let base = PathBuf::from(xdg).join(crate::primal_names::BIOMEOS);
             for name in &candidates {
                 let path = base.join(name);

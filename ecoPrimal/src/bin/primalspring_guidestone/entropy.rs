@@ -90,9 +90,12 @@ fn read_env_seed(var: &str) -> Option<String> {
 }
 
 fn read_seed_file() -> Option<String> {
-    let socket_dir = std::env::var("SOCKET_DIR")
+    let socket_dir = std::env::var(primalspring::env_keys::SOCKET_DIR)
         .ok()
-        .unwrap_or_else(|| "/tmp/ecoprimals".to_owned());
+        .unwrap_or_else(|| {
+            std::env::var(primalspring::env_keys::XDG_RUNTIME_DIR)
+                .map_or_else(|_| "/tmp/ecoprimals".to_owned(), |xdg| format!("{xdg}/ecoprimals"))
+        });
     let seed_path = Path::new(&socket_dir).join(".family.seed");
     let content = std::fs::read_to_string(&seed_path).ok()?;
     let trimmed = content.trim().to_owned();
@@ -110,7 +113,7 @@ fn generate_machine_seed() -> String {
         hasher.update(mid.trim().as_bytes());
     }
 
-    if let Ok(hostname) = std::env::var("HOSTNAME").or_else(|_| hostname_from_file()) {
+    if let Ok(hostname) = std::env::var(primalspring::env_keys::HOSTNAME).or_else(|_| hostname_from_file()) {
         hasher.update(hostname.trim().as_bytes());
     }
 
@@ -321,9 +324,9 @@ pub fn validate_seed_provenance(v: &mut ValidationResult, seed: &MitoSeed) {
 }
 
 fn resolve_plasmin_bin() -> String {
-    std::env::var("ECOPRIMALS_PLASMID_BIN").unwrap_or_else(|_| {
-        let base = std::env::var("XDG_DATA_HOME").unwrap_or_else(|_| {
-            let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".to_owned());
+    std::env::var(primalspring::env_keys::ECOPRIMALS_PLASMID_BIN).unwrap_or_else(|_| {
+        let base = std::env::var(primalspring::env_keys::XDG_DATA_HOME).unwrap_or_else(|_| {
+            let home = std::env::var(primalspring::env_keys::HOME).unwrap_or_else(|_| "/tmp".to_owned());
             format!("{home}/.local/share")
         });
         format!("{base}/ecoPrimals/plasmidBin")

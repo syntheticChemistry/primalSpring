@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+use std::collections::HashMap;
+use std::sync::Arc;
+
 use super::*;
 use crate::tolerances;
 use crate::validation::{NullSink, ValidationResult};
-use std::sync::Arc;
 
 fn null_result(name: &str) -> ValidationResult {
     ValidationResult::new(name).with_sink(Arc::new(NullSink))

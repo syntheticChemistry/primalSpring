@@ -13,6 +13,11 @@ use std::path::Path;
 
 use serde::Deserialize;
 
+const DEFAULT_TIER_TIMEOUT_SECS: u64 = 5;
+const DEFAULT_MAX_LINEAGE_HOPS: u32 = 3;
+const DEFAULT_RELAY_BANDWIDTH_MBPS: u64 = 100;
+const DEFAULT_MAX_CONCURRENT_RELAYS: u32 = 10;
+
 /// Parsed STUN multi-tier configuration.
 #[derive(Debug, Clone)]
 pub struct StunTierConfig {
@@ -209,16 +214,26 @@ fn convert_server(raw: &RawServer) -> StunServer {
     }
 }
 
+/// Typed errors for STUN tier configuration loading.
+#[derive(Debug, thiserror::Error)]
+pub enum StunConfigError {
+    /// Failed to read the config file.
+    #[error("IO: {0}")]
+    Io(#[from] std::io::Error),
+    /// TOML parsing failed.
+    #[error("parse: {0}")]
+    Parse(String),
+}
+
 /// Load and parse the STUN multi-tier config from a TOML file.
 ///
 /// # Errors
 ///
-/// Returns a description if reading or parsing fails.
-pub fn load_stun_config(path: &Path) -> Result<StunTierConfig, String> {
-    let contents = std::fs::read_to_string(path)
-        .map_err(|e| format!("failed to read {}: {e}", path.display()))?;
+/// Returns [`StunConfigError`] if reading or parsing fails.
+pub fn load_stun_config(path: &Path) -> Result<StunTierConfig, StunConfigError> {
+    let contents = std::fs::read_to_string(path)?;
     let raw: RawStunConfig = toml::from_str(&contents)
-        .map_err(|e| format!("failed to parse {}: {e}", path.display()))?;
+        .map_err(|e| StunConfigError::Parse(format!("{}: {e}", path.display())))?;
 
     Ok(StunTierConfig {
         enabled: raw.general.enabled,
@@ -226,13 +241,19 @@ pub fn load_stun_config(path: &Path) -> Result<StunTierConfig, String> {
             .general
             .strategy
             .unwrap_or_else(|| "sovereignty-first".to_owned()),
-        tier_timeout_secs: raw.general.tier_timeout_secs.unwrap_or(5),
+        tier_timeout_secs: raw.general.tier_timeout_secs.unwrap_or(DEFAULT_TIER_TIMEOUT_SECS),
         lineage: LineageTier {
             enabled: raw.lineage.enabled,
             prefer_lineage: raw.lineage.prefer_lineage,
-            max_lineage_hops: raw.lineage.max_lineage_hops.unwrap_or(3),
-            relay_bandwidth_limit_mbps: raw.lineage.relay_bandwidth_limit_mbps.unwrap_or(100),
-            max_concurrent_relays: raw.lineage.max_concurrent_relays.unwrap_or(10),
+            max_lineage_hops: raw.lineage.max_lineage_hops.unwrap_or(DEFAULT_MAX_LINEAGE_HOPS),
+            relay_bandwidth_limit_mbps: raw
+                .lineage
+                .relay_bandwidth_limit_mbps
+                .unwrap_or(DEFAULT_RELAY_BANDWIDTH_MBPS),
+            max_concurrent_relays: raw
+                .lineage
+                .max_concurrent_relays
+                .unwrap_or(DEFAULT_MAX_CONCURRENT_RELAYS),
         },
         user_provided: raw.user_provided.iter().map(convert_server).collect(),
         public_stun: PublicStunTier {

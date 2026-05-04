@@ -115,61 +115,6 @@ pub fn tcp_rpc_with_timeout(
 ///
 /// Sends `GET /health HTTP/1.1` and checks for a 200 OK response.
 ///
-/// # Errors
-///
-/// Returns [`IpcError`] on connection failure or non-OK response.
-#[deprecated(
-    since = "0.71.0",
-    note = "All primals expose JSON-RPC `health.liveness`. Use `tcp_rpc(host, port, \"health.liveness\", &json!({}))` instead. Songbird no longer exposes HTTP /health on a port — Tower Atomic owns all HTTP."
-)]
-pub fn http_health_probe(host: &str, port: u16) -> TcpRpcResult {
-    let addr = format!("{host}:{port}");
-    let start = Instant::now();
-    let mut stream = TcpStream::connect_timeout(
-        &addr.parse().map_err(|e| IpcError::ProtocolError {
-            detail: format!("invalid address {addr}: {e}"),
-        })?,
-        Duration::from_secs(tolerances::TCP_CONNECT_TIMEOUT_SECS),
-    )
-    .map_err(classify_io_error)?;
-    stream
-        .set_read_timeout(Some(Duration::from_secs(tolerances::TCP_READ_TIMEOUT_SECS)))
-        .ok();
-    stream
-        .set_write_timeout(Some(Duration::from_secs(
-            tolerances::TCP_WRITE_TIMEOUT_SECS,
-        )))
-        .ok();
-
-    let http_req = format!("GET /health HTTP/1.1\r\nHost: {addr}\r\nConnection: close\r\n\r\n");
-    stream
-        .write_all(http_req.as_bytes())
-        .map_err(classify_io_error)?;
-
-    let mut buf = String::new();
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        buf.push_str(&line);
-        buf.push('\n');
-    }
-    let elapsed = start.elapsed();
-
-    if buf.contains("200 OK")
-        || buf.contains("200 Ok")
-        || buf.contains("\nOK\n")
-        || buf.ends_with("OK\n")
-    {
-        Ok((
-            serde_json::json!({"status": "alive", "protocol": "http"}),
-            elapsed,
-        ))
-    } else {
-        Err(IpcError::ProtocolError {
-            detail: format!("HTTP health: non-OK response from {addr}"),
-        })
-    }
-}
-
 /// Send a JSON-RPC 2.0 request via HTTP POST to a primal's `/jsonrpc` endpoint.
 ///
 /// Some primals (notably Songbird) expose an HTTP server on TCP rather than
@@ -350,13 +295,6 @@ mod tests {
     #[test]
     fn tcp_rpc_fails_gracefully_on_unreachable_host() {
         let result = tcp_rpc("127.0.0.1", 1, "health.liveness", &serde_json::json!({}));
-        assert!(result.is_err());
-    }
-
-    #[test]
-    #[expect(deprecated, reason = "testing deprecated fn until removal")]
-    fn http_health_fails_gracefully_on_unreachable_host() {
-        let result = http_health_probe("127.0.0.1", 1);
         assert!(result.is_err());
     }
 
