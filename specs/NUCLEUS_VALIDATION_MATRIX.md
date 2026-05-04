@@ -1,5 +1,10 @@
 # NUCLEUS Validation Matrix
 
+> **Frozen artifact** — Phase 45 snapshot. Current ecosystem state is Phase 58
+> (13 primals, skunkBat wired, BTSP Phase 3 converged). This matrix remains
+> valid as a structural reference; live validation is tracked in
+> `wateringHole/PHASE58_COMPOSITION_HANDOFF_MAY03_2026.md`.
+
 **Date**: April 20, 2026  
 **Phase**: 45 (13 primals, Tier 1 39/39 cross-arch binaries, guideStone Level 4, genomeBin v5.1)  
 **Purpose**: Define the validation matrix for NUCLEUS composition patterns across downstream springs and sporeGarden products, based on gen4 architecture (`infra/whitePaper/gen4/architecture/COMPOSITION_PATTERNS.md`) and primalSpring's Phase 45 deployment validation results.

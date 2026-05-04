@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: April 2026
-**Status**: Phase 56c — v0.9.24 — 84 experiments (18 tracks), 631 tests, 71 deploy graphs, **Desktop NUCLEUS live** (13 primals, 12/13 healthy on heartbeat, `desktop_nucleus.sh`), **The Rhizome micro-game** (roguelike on NUCLEUS — Barracuda noise, game loop, petalTongue scenes, provenance trio), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **23 live gaps documented** (`LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md`), **provenance trio E2E resolved** (corrected wire schemas for rhizoCrypt, loamSpine, sweetGrass), **guideStone Level 4** (187/187, 13/13 BTSP), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), multi-tier genetics, BTSP Phase 1–3, **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), 4 desktop app deploy graphs, **plasmidBin decoupled** (standard consumer pattern via GitHub Releases + XDG cache)
+**Date**: May 2026
+**Status**: Phase 58 — v0.9.24 — 84 experiments (18 tracks), 631 tests, 71 deploy graphs, **Desktop NUCLEUS live** (13 primals, 13/13 healthy on heartbeat, `desktop_nucleus.sh`), skunkBat wired as 13th primal (meta-tier, defense/recon), **The Rhizome micro-game** (roguelike on NUCLEUS — Barracuda noise, game loop, petalTongue scenes, provenance trio), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **provenance trio E2E resolved** (corrected wire schemas for rhizoCrypt, loamSpine, sweetGrass), **guideStone Level 4** (BTSP alias routing + flex key fixes shipped), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), multi-tier genetics, **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), 4 desktop app deploy graphs, **plasmidBin CI hub** (sole paid Actions repo, per-primal concurrency, signing roadmap)
 
 ---
 
@@ -58,7 +58,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 17 | Cross-Architecture + Cellular Deployment | exp095–096, exp098 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? **15/15 checks.** Does cellular deployment from cell graphs validate? |
 | 18 | Desktop Substrate | exp099–exp106 | Does the full desktop stack work? Agentic loop, MCP tools, AI triage, storytelling, ludoSpring IPC, provenance replay, **The Rhizome roguelike**, **micro-desktop shell** |
 
-## Current State (v0.9.23)
+## Current State (v0.9.24)
 
 | Metric | Value |
 |--------|-------|

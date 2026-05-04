@@ -398,11 +398,11 @@ cmd_validate() {
             val="${line#*=}"; val="$(echo "$val" | xargs | tr -d '"')"
             [[ -n "$key" && ${#val} -eq 64 ]] && fp_count=$((fp_count + 1))
         done < "$seed_fp"
-        if (( fp_count >= 12 )); then
-            ok "  seed fingerprints: $fp_count/12 present"
+        if (( fp_count >= 13 )); then
+            ok "  seed fingerprints: $fp_count/13 present"
             pass=$((pass + 1))
         else
-            err "  seed fingerprints: only $fp_count/12"
+            err "  seed fingerprints: only $fp_count/13"
             fail=$((fail + 1))
         fi
     else

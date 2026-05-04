@@ -3,7 +3,48 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Phase 57: BTSP Phase 3 Convergence + NUCLEUS Validation (2026-05-02)
+## [Unreleased] — Phase 58: skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub (2026-05-03)
+
+### Milestone
+- **skunkBat wired as 13th NUCLEUS primal** (meta-tier, defense/recon): composition
+  layer, desktop cell graph, deployment scripts, and fetch all updated 12 → 13.
+  Tier 1 binaries available via plasmidBin (GAP-28 resolved).
+- **Guidestone hardening**: BTSP alias routing (`resolve_btsp_socket`) prefers
+  family-scoped sockets over capability aliases. Flex key resolution
+  (`call_f64_flex`, `call_array_flex`) handles barraCuda response format
+  variations. Desktop cell health node added. Squirrel reconnect-on-failed-probe.
+- **plasmidBin CI hub architecture documented**: sole paid Actions repo,
+  per-primal concurrency, signing roadmap, future distribution channels.
+
+### Added
+- `primal_names::SKUNKBAT` constant and TCP fallback port 9750.
+- `resolve_btsp_socket` helper — prefer family-scoped sockets for BTSP handshakes.
+- `call_f64_flex` / `call_array_flex` — multi-key JSON-RPC response parsing.
+- `validate_parity_flex` / `validate_parity_vec_flex` — flexible validation helpers.
+- `"defense"` capability in `ALL_CAPS`; `"recon"`, `"threat"`, `"lineage"` in
+  `BTSP_EXTRA_CAPS`.
+- skunkBat node in `nucleus_desktop_cell.toml` (order 11, meta-tier).
+- `plasmidBin/CONTEXT.md` CI hub architecture section: pipeline, concurrency,
+  cost model, distribution channels, signing roadmap, fetch contract.
+
+### Changed
+- NUCLEUS primal count: 12 → 13 across 25+ files (Rust code, graphs, tools, specs,
+  whitePaper/baseCamp, wateringHole docs).
+- `desktop_nucleus.sh`: skunkBat in `SPAWNED_PRIMALS`, capability symlinks, health
+  check denominator, seed fingerprint threshold.
+- `fetch_primals.sh`: skunkBat moved from `DEFENSE_PRIMALS` to `NUCLEUS_PRIMALS`.
+- `FullNucleus` in `coordination/mod.rs`: 13 primals, 13+ capabilities.
+- `plasmidBin/README.md`: skunkBat coverage lib-only → FULL, removed from gaps.
+- Squirrel BTSP probe: re-establish cleartext client on upgrade failure.
+
+### Fixed
+- BTSP alias routing: capability sockets (e.g. `shader.sock`) now resolved to
+  family-scoped primal sockets where BTSP listeners are active.
+- barraCuda parity checks: flex keys handle `result`, `mean`, `data`, `matrix`,
+  `output`, `value` response shapes.
+- Desktop cell graph: `validate_cell` node with health check targets added.
+
+## Phase 57: BTSP Phase 3 Convergence + NUCLEUS Validation (2026-05-02)
 
 ### Milestone
 - **BTSP Phase 3 COMPLETE — 13/13 FULL AEAD**: All 13 NUCLEUS primals ship

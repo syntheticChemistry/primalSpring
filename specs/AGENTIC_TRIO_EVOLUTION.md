@@ -32,7 +32,7 @@ The loop: **petalTongue observes → human/agent decides → Squirrel acts → b
 - Deep debt cleanup (v3.30): JWT hardening, module extraction
 - `biomeos nucleus --mode full` launches 5 primals + Neural API
 - Coordination key caching (v3.29): `coordination` purpose key from BearDog
-- **Phase 56 target**: `biomeos nucleus --mode desktop` launches all 12 primals (see `DESKTOP_NUCLEUS_DEPLOYMENT.md`)
+- **Phase 58 target**: `biomeos nucleus --mode desktop` launches all 13 primals (see `DESKTOP_NUCLEUS_DEPLOYMENT.md`)
 
 ### P0: TCP-Only API Mode
 

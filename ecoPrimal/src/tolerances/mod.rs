@@ -66,8 +66,7 @@ pub const TICK_BUDGET_60HZ_SLACK_US: u64 = 1;
 /// Pipeline streaming throughput floor (items per second).
 ///
 /// Source: 100 items/sec is a conservative baseline for IPC pipelines.
-/// Validated: Phase 9 pipeline pattern structural checks pass; live
-/// streaming measurement pending Phase 18 (sweetGrass + continuous tick).
+/// Validated: Phase 9 pipeline pattern structural checks pass.
 pub const PIPELINE_THROUGHPUT_MIN: usize = 100;
 
 // ── Composition parity tolerances ──

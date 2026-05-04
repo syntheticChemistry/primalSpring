@@ -1,7 +1,8 @@
 # NUCLEUS IPC Method Map
 
-> Verified live against Desktop NUCLEUS (Phase 55c, April 28, 2026).
+> Verified live against Desktop NUCLEUS (Phase 58, May 3, 2026).
 > Every method below was confirmed via JSON-RPC over UDS.
+> Phase 58: skunkBat wired as 13th NUCLEUS primal (defense/recon meta-tier).
 > Upstream absorbed: NestGate v0.4.70 S48 (encrypt-at-rest, auth bypass),
 > biomeOS v3.30 (deep debt), Songbird W178 (anyhow), Squirrel AN (HTTP providers,
 > DISCOVERY_SOCKET resolution, crypto foundation), BearDog W75 (purpose-key module
@@ -305,3 +306,22 @@ Socket: `petaltongue-{family_id}.sock`
 ```
 
 Primitive types: `Text`, `Rect`, `Point`, `Line`, `Polygon`, `Arc`, `Path`, `Image`, `Mesh3D`, `Sprite`.
+
+### skunkBat — Defense / Recon (Phase 58)
+
+Socket: `skunkbat-{family_id}.sock`  
+TCP fallback: `9750`  
+`required = false` (meta-tier enhancer)
+
+| Namespace | Key Methods |
+|-----------|------------|
+| `defense.*` | `baseline_observe`, `status`, `alert` |
+| `recon.*` | `metadata_scan`, `peers`, `topology` |
+| `threat.*` | `assess`, `report` |
+| `lineage.*` | `verify`, `chain` |
+| `btsp.*` | `negotiate` |
+| Meta | `health.liveness`, `capabilities.list`, `identity.get` |
+
+skunkBat participates passively in all bonding contexts. It monitors connection
+patterns, validates lineage chains, and flags anomalies. It does not gate
+connections — primals function identically with or without it.

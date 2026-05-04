@@ -1,6 +1,11 @@
 # Live Desktop NUCLEUS — Deployment Gap Report (Phase 56)
 
-> **Update (May 3, 2026)**: GAP-27 (stale biomeOS binary) is **RESOLVED** — plasmidBin
+> **Update (May 3, 2026 — Phase 58)**: NUCLEUS is now 13 primals (skunkBat wired as
+> 13th, meta-tier defense/recon). Guidestone hardened with BTSP alias routing and flex
+> key resolution. Gap report body below is a Phase 56 snapshot; current state documented
+> in `wateringHole/PHASE58_COMPOSITION_HANDOFF_MAY03_2026.md`.
+>
+> **Prior update (May 3, 2026)**: GAP-27 (stale biomeOS binary) is **RESOLVED** — plasmidBin
 > CI/CD auto-builds biomeOS v3.31+ from source. BTSP Phase 3 has converged (13/13 FULL
 > AEAD) and live NUCLEUS validation has been re-run on eastGate with results documented
 > in `PRIMAL_GAPS.md` and the Phase 3 convergence handoff at

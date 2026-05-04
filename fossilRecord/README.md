@@ -11,3 +11,4 @@ Each subdirectory has its own README with context for what was archived and why.
 | `stale_graphs_apr12_2026/` | Deploy graphs consolidated during graph schema unification | April 12, 2026 |
 | `inference_module_apr12_2026/` | Inference module moved to Squirrel AI composition model | April 12, 2026 |
 | `pre-tower-atomic-apr2026/` | Pre-Tower-Atomic launcher and scripts before biomeOS composition | April 2026 |
+| `wateringHole_phase56_apr2026/` | 66 historical wateringHole handoffs (v0.1.0 through v0.9.24) archived during Phase 56c cleanup | April 2026 |
