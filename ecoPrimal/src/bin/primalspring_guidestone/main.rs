@@ -69,7 +69,7 @@ fn main() {
 
     // Layer 1: Discovery — can we find primals?
     v.section("Layer 1: Discovery");
-    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let mut ctx = CompositionContext::discover();
 
     let full_caps = AtomicType::FullNucleus.required_capabilities();
     let alive = validate_liveness(&mut ctx, &mut v, full_caps);

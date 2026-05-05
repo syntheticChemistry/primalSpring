@@ -20,7 +20,7 @@
 //! use primalspring::validation::ValidationResult;
 //! use primalspring::tolerances;
 //!
-//! let mut ctx = CompositionContext::from_live_discovery();
+//! let mut ctx = CompositionContext::discover();
 //! let mut v = ValidationResult::new("hotSpring Composition Parity");
 //!
 //! // stats.mean: param key is "data", result key is "result"

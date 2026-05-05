@@ -84,3 +84,7 @@ pub const PETALTONGUE_PORT: &str = "PETALTONGUE_PORT";
 pub const LOAMSPINE_PORT: &str = "LOAMSPINE_PORT";
 /// TCP port override for skunkBat.
 pub const SKUNKBAT_PORT: &str = "SKUNKBAT_PORT";
+/// TCP port override for biomeOS.
+pub const BIOMEOS_PORT: &str = "BIOMEOS_PORT";
+/// TCP port override for fieldMouse.
+pub const FIELDMOUSE_PORT: &str = "FIELDMOUSE_PORT";

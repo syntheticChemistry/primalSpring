@@ -1,8 +1,32 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 //! [`CompositionContext`] — capability-keyed client management for NUCLEUS compositions.
+//!
+//! # Discovery Escalation Hierarchy
+//!
+//! Primals are organisms. Compositions are ecosystems. Some have a full Tower
+//! Atomic with Songbird routing everything. Some have three primals on a
+//! Raspberry Pi. Some run in containers with only TCP. The system doesn't ask
+//! why — it watches with curiosity and uses whatever's available.
+//!
+//! The [`CompositionContext::discover`] constructor implements the full
+//! escalation in tier order:
+//!
+//! | Tier | Mechanism | Scope |
+//! |------|-----------|-------|
+//! | 1 | Songbird routing (`ipc.resolve`) | Full NUCLEUS, cross-gate, transport-agnostic |
+//! | 2 | biomeOS Neural API (`capability.discover`) | Local orchestration |
+//! | 3 | UDS filesystem convention (`primal-family.sock`) | Local machine |
+//! | 4 | Socket registry / primal manifests | Self-registered primals |
+//! | 5 | TCP probing on well-known ports | Containers, scripts, no UDS |
+//!
+//! Every tier is a valid deployment model. No tier is deprecated. Partial
+//! constructors ([`CompositionContext::from_live_discovery`] = tiers 2-4,
+//! [`CompositionContext::from_live_discovery_with_fallback`] = tiers 2-5)
+//! remain valid for callers that know their deployment context.
 
 use std::collections::{BTreeMap, HashMap};
+use std::path::PathBuf;
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64;
@@ -48,7 +72,119 @@ impl CompositionContext {
         }
     }
 
-    /// Build a context by live-discovering all primals on the local system.
+    /// Discover a composition using the full escalation hierarchy.
+    ///
+    /// Tries every discovery tier in order:
+    ///
+    /// 1. **Songbird routing** — if the `discovery` capability is reachable,
+    ///    asks Songbird to resolve every other capability via `ipc.resolve`.
+    ///    This is the highest-fidelity path: transport-agnostic, cross-gate,
+    ///    and Songbird-managed.
+    /// 2. **Tiers 2-4** (Neural API, UDS, registry) — fills any gaps that
+    ///    Songbird didn't cover, or covers everything if Tower isn't running.
+    /// 3. **Tier 5** (TCP probing) — for capabilities still undiscovered,
+    ///    probes well-known ports from [`crate::tolerances`].
+    ///
+    /// Finally, attempts BTSP escalation on all discovered clients.
+    ///
+    /// This is the recommended entry point. If you know your deployment
+    /// context, use [`from_live_discovery`](Self::from_live_discovery)
+    /// (tiers 2-4) or [`from_live_discovery_with_fallback`](Self::from_live_discovery_with_fallback)
+    /// (tiers 2-5) directly.
+    #[must_use]
+    pub fn discover() -> Self {
+        let mut clients = HashMap::new();
+
+        // ── Tier 1: Songbird routing ──
+        //
+        // If we can reach the "discovery" capability (Songbird), ask it to
+        // resolve every other capability. Songbird decides the transport.
+        if let Ok(songbird) = crate::ipc::client::connect_by_capability("discovery") {
+            clients.insert("discovery".to_owned(), songbird);
+
+            let caps_to_resolve: Vec<&str> = ALL_CAPS
+                .iter()
+                .copied()
+                .filter(|&c| c != "discovery")
+                .collect();
+
+            for cap in caps_to_resolve {
+                let primal = capability_to_primal(cap);
+                let resolve_result = clients
+                    .get_mut("discovery")
+                    .and_then(|sb| {
+                        sb.call(
+                            "ipc.resolve",
+                            serde_json::json!({"primal_id": primal}),
+                        )
+                        .ok()
+                    })
+                    .and_then(|resp| resp.result);
+
+                if let Some(result) = resolve_result {
+                    let socket_path = result
+                        .get("socket")
+                        .or_else(|| result.get("native_endpoint"))
+                        .or_else(|| result.get("endpoint"))
+                        .and_then(serde_json::Value::as_str)
+                        .map(PathBuf::from);
+
+                    if let Some(path) = socket_path {
+                        if let Ok(client) = PrimalClient::connect(&path, primal) {
+                            tracing::debug!(cap, primal, tier = 1, "discovered via Songbird");
+                            clients.insert(cap.to_owned(), client);
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── Tiers 2-4: Neural API, UDS convention, registry ──
+        //
+        // Fill any gaps that Songbird didn't cover (or everything if Tower
+        // isn't running). This is the same path as from_live_discovery().
+        for &cap in ALL_CAPS {
+            if clients.contains_key(cap) {
+                continue;
+            }
+            if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
+                tracing::debug!(cap, tier = "2-4", "discovered via UDS/Neural API");
+                clients.insert(cap.to_owned(), client);
+            }
+        }
+
+        // ── Tier 5: TCP probing ──
+        //
+        // For capabilities still undiscovered, probe well-known TCP ports.
+        // Valid for containers, architectures without UDS, and standalone
+        // compositions that choose not to run Tower.
+        let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
+            .unwrap_or_else(|_| "127.0.0.1".to_owned());
+        for &(cap, primal, port_env, default_port) in &tcp_fallback_table() {
+            if clients.contains_key(cap) {
+                continue;
+            }
+            let port: u16 = std::env::var(port_env)
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(default_port);
+            let addr = format!("{host}:{port}");
+            if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
+                tracing::debug!(cap, primal, %addr, tier = 5, "discovered via TCP");
+                clients.insert(cap.to_owned(), client);
+            }
+        }
+
+        // ── BTSP escalation ──
+        let btsp_state = upgrade_btsp_clients(&mut clients);
+        Self {
+            clients,
+            btsp_state,
+        }
+    }
+
+    /// Build a context by live-discovering all primals on the local system
+    /// (tiers 2-4 only: Neural API, UDS convention, socket registry).
     ///
     /// Uses the filesystem/socket discovery layer to find whatever primals
     /// are currently running. This is the entry point for springs that launch
@@ -72,8 +208,11 @@ impl CompositionContext {
         }
     }
 
-    /// Build a context by trying UDS discovery first, then falling back to
-    /// TCP probing on well-known ports.
+    /// Build a context using tiers 2-5 (Neural API, UDS, registry, TCP).
+    ///
+    /// Skips tier 1 (Songbird routing) — use [`discover`](Self::discover)
+    /// for the full escalation. This constructor is appropriate when you
+    /// know Tower is not available or want to avoid the Songbird probe.
     ///
     /// TCP port resolution uses `{PRIMAL}_PORT` env vars (e.g. `BEARDOG_PORT=9100`)
     /// with sensible defaults from [`crate::tolerances`]. This makes composition

@@ -15,6 +15,8 @@ fn test_node(name: &str, order: u32) -> GraphNode {
         health_method: "health".to_owned(),
         by_capability: None,
         capabilities: vec![],
+        security_model: None,
+        args: vec![],
         condition: None,
         skip_if: None,
         primal: None,
@@ -33,6 +35,7 @@ fn test_graph(name: &str, nodes: Vec<GraphNode>) -> DeployGraph {
             version: String::new(),
             coordination: None,
             metadata: None,
+            bonding_policy: None,
             node: nodes,
         },
         nodes: Vec::new(),
@@ -49,6 +52,43 @@ fn load_nucleus_complete_graph() {
     assert_eq!(graph.graph.name, "nucleus_complete");
     assert!(!graph.graph.node.is_empty());
     assert_eq!(graph.graph.node[0].name, "biomeos_neural_api");
+}
+
+#[test]
+fn nucleus_complete_preserves_bonding_policy() {
+    let graph = load_graph(&graphs_path("nucleus_complete.toml")).unwrap();
+    assert!(
+        graph.graph.bonding_policy.is_some(),
+        "bonding_policy should be preserved from nucleus_complete.toml"
+    );
+    let bp = graph.graph.bonding_policy.as_ref().unwrap();
+    assert!(bp.is_table(), "bonding_policy should be a TOML table");
+}
+
+#[test]
+fn nucleus_complete_preserves_metadata_fields() {
+    let graph = load_graph(&graphs_path("nucleus_complete.toml")).unwrap();
+    let meta = graph.graph.metadata.as_ref().unwrap();
+    assert_eq!(meta.security_model.as_deref(), Some("btsp_enforced"));
+    assert_eq!(meta.transport.as_deref(), Some("uds_only"));
+    assert_eq!(meta.composition_model.as_deref(), Some("nucleated"));
+}
+
+#[test]
+fn nucleus_complete_preserves_node_security_model() {
+    let graph = load_graph(&graphs_path("nucleus_complete.toml")).unwrap();
+    let beardog = graph.graph.node.iter().find(|n| n.name == "beardog").unwrap();
+    assert_eq!(beardog.security_model.as_deref(), Some("btsp"));
+}
+
+#[test]
+fn nucleus_complete_preserves_node_args() {
+    let graph = load_graph(&graphs_path("nucleus_complete.toml")).unwrap();
+    let petaltongue = graph.graph.node.iter().find(|n| n.name == "petaltongue").unwrap();
+    assert_eq!(petaltongue.args, vec!["server"]);
+
+    let primalspring = graph.graph.node.iter().find(|n| n.name == "primalspring").unwrap();
+    assert_eq!(primalspring.args, vec!["server"]);
 }
 
 #[test]
@@ -339,6 +379,7 @@ fn merge_graphs_combines_nodes() {
             version: "1.0.0".to_owned(),
             coordination: Some("sequential".to_owned()),
             metadata: None,
+            bonding_policy: None,
             node: vec![base_node],
         },
         nodes: Vec::new(),
@@ -356,6 +397,7 @@ fn merge_graphs_combines_nodes() {
             version: "1.0.0".to_owned(),
             coordination: None,
             metadata: None,
+            bonding_policy: None,
             node: vec![overlay_node],
         },
         nodes: Vec::new(),
@@ -387,6 +429,7 @@ fn merge_graphs_overlay_overrides_existing() {
             version: "2.0.0".to_owned(),
             coordination: None,
             metadata: None,
+            bonding_policy: None,
             node: vec![override_node],
         },
         nodes: Vec::new(),

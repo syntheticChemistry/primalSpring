@@ -2,7 +2,7 @@
 
 **Version**: 0.9.24 (Phase 58)
 **Last Updated**: May 3, 2026
-**License**: AGPL-3.0-or-later
+**License**: AGPL-3.0-or-later  
 
 ---
 

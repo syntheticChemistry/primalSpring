@@ -242,34 +242,59 @@ pub const TCP_READ_TIMEOUT_SECS: u64 = 10;
 /// Source: 5 seconds matches connect timeout for symmetric behavior.
 pub const TCP_WRITE_TIMEOUT_SECS: u64 = 5;
 
-// ── Remote gate TCP fallback ports ──
+// ── Discovery Tier 5: TCP fallback ports ──
 //
-// Fallback ports for cross-gate TCP probing (ADB forwarding, WAN firewalls).
-// On the same machine, primals use Unix/abstract sockets discovered by biomeOS
-// SocketDiscoveryEngine — no ports needed. These are ONLY used when a script
-// or experiment explicitly needs a TCP endpoint and the environment variable
-// override is not set.
+// Part of the discovery escalation hierarchy:
 //
+//   Tier 1 — Songbird routing (full NUCLEUS, cross-gate, transport-agnostic)
+//   Tier 2 — biomeOS Neural API (capability.discover)
+//   Tier 3 — UDS filesystem convention (primal-family.sock)
+//   Tier 4 — Socket registry / primal manifests
+//   Tier 5 — TCP probing on well-known ports (THIS SECTION)
+//
+// Every tier is a valid deployment model. Tier 5 serves containers,
+// architectures without UDS, shell scripts, and standalone compositions
+// that choose not to run Tower. The system doesn't ask why.
+//
+// Port assignments confirmed against ironGate live deployment (2026-05-04).
 // Canonical source: plasmidBin/ports.env
 
 /// TCP fallback port for remote `BearDog` (security).
 pub const TCP_FALLBACK_BEARDOG_PORT: u16 = 9100;
 /// TCP fallback port for remote Songbird (discovery/mesh).
 pub const TCP_FALLBACK_SONGBIRD_PORT: u16 = 9200;
-/// TCP fallback port for remote `NestGate` (storage).
-pub const TCP_FALLBACK_NESTGATE_PORT: u16 = 9300;
-/// TCP fallback port for remote `ToadStool` (compute).
-pub const TCP_FALLBACK_TOADSTOOL_PORT: u16 = 9400;
 /// TCP fallback port for remote Squirrel (AI).
-pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9500;
+pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9300;
 /// Default `SQUIRREL_PORT` when unset (same as [`TCP_FALLBACK_SQUIRREL_PORT`]).
 pub const DEFAULT_SQUIRREL_PORT: u16 = TCP_FALLBACK_SQUIRREL_PORT;
-/// TCP fallback port for remote `petalTongue` (visualization).
-pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9600;
+/// TCP fallback port for remote `ToadStool` (compute).
+pub const TCP_FALLBACK_TOADSTOOL_PORT: u16 = 9400;
+/// TCP fallback port for remote `NestGate` (storage).
+/// Confirmed live on ironGate at 9500 (2026-05-04).
+pub const TCP_FALLBACK_NESTGATE_PORT: u16 = 9500;
+/// TCP fallback port for remote rhizoCrypt JSON-RPC (ephemeral DAG).
+/// tarpc on 9600, JSON-RPC on 9601; this is the JSON-RPC port.
+pub const TCP_FALLBACK_RHIZOCRYPT_PORT: u16 = 9601;
+/// TCP fallback port for remote loamSpine JSON-RPC (permanent ledger).
+/// Confirmed live on ironGate at 9700 (2026-05-04).
+pub const TCP_FALLBACK_LOAMSPINE_PORT: u16 = 9700;
+/// TCP fallback port for remote coralReef (shader compilation).
+/// Confirmed live on ironGate at 9730 (2026-05-04).
+pub const TCP_FALLBACK_CORALREEF_PORT: u16 = 9730;
+/// TCP fallback port for remote barraCuda (GPU compute).
+/// Confirmed live on ironGate at 9740 (2026-05-04).
+pub const TCP_FALLBACK_BARRACUDA_PORT: u16 = 9740;
 /// TCP fallback port for remote skunkBat (defense/recon).
 pub const TCP_FALLBACK_SKUNKBAT_PORT: u16 = 9750;
 /// TCP fallback port for remote biomeOS (substrate).
 pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
+/// TCP fallback port for remote sweetGrass (attribution braids).
+/// ironGate HTTP endpoint on 39085; TCP at 9800 requires BTSP.
+pub const TCP_FALLBACK_SWEETGRASS_PORT: u16 = 9850;
+/// TCP fallback port for remote `petalTongue` (visualization).
+pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9900;
+/// TCP fallback port for remote fieldMouse (ecosystem intelligence).
+pub const TCP_FALLBACK_FIELDMOUSE_PORT: u16 = 9950;
 
 // ── Niche cost-estimate parameters ──
 //
@@ -387,11 +412,18 @@ mod tests {
         for port in [
             TCP_FALLBACK_BEARDOG_PORT,
             TCP_FALLBACK_SONGBIRD_PORT,
-            TCP_FALLBACK_NESTGATE_PORT,
-            TCP_FALLBACK_TOADSTOOL_PORT,
             TCP_FALLBACK_SQUIRREL_PORT,
+            TCP_FALLBACK_TOADSTOOL_PORT,
+            TCP_FALLBACK_NESTGATE_PORT,
+            TCP_FALLBACK_RHIZOCRYPT_PORT,
+            TCP_FALLBACK_LOAMSPINE_PORT,
+            TCP_FALLBACK_CORALREEF_PORT,
+            TCP_FALLBACK_BARRACUDA_PORT,
             TCP_FALLBACK_SKUNKBAT_PORT,
             TCP_FALLBACK_BIOMEOS_PORT,
+            TCP_FALLBACK_SWEETGRASS_PORT,
+            TCP_FALLBACK_PETALTONGUE_PORT,
+            TCP_FALLBACK_FIELDMOUSE_PORT,
         ] {
             assert!(port >= 1024, "port {port} below unprivileged range");
             assert!(port <= 49151, "port {port} above registered range");
@@ -403,11 +435,18 @@ mod tests {
         let ports = [
             TCP_FALLBACK_BEARDOG_PORT,
             TCP_FALLBACK_SONGBIRD_PORT,
-            TCP_FALLBACK_NESTGATE_PORT,
-            TCP_FALLBACK_TOADSTOOL_PORT,
             TCP_FALLBACK_SQUIRREL_PORT,
+            TCP_FALLBACK_TOADSTOOL_PORT,
+            TCP_FALLBACK_NESTGATE_PORT,
+            TCP_FALLBACK_RHIZOCRYPT_PORT,
+            TCP_FALLBACK_LOAMSPINE_PORT,
+            TCP_FALLBACK_CORALREEF_PORT,
+            TCP_FALLBACK_BARRACUDA_PORT,
             TCP_FALLBACK_SKUNKBAT_PORT,
             TCP_FALLBACK_BIOMEOS_PORT,
+            TCP_FALLBACK_SWEETGRASS_PORT,
+            TCP_FALLBACK_PETALTONGUE_PORT,
+            TCP_FALLBACK_FIELDMOUSE_PORT,
         ];
         let mut sorted = ports.to_vec();
         sorted.sort_unstable();

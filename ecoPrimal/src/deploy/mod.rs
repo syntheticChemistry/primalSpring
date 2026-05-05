@@ -94,6 +94,13 @@ pub struct GraphMeta {
     /// Graph metadata sub-table (fragments, `security_model`, etc.).
     #[serde(default)]
     pub metadata: Option<GraphMetadata>,
+    /// Bonding policy sub-table (`[graph.bonding_policy]`).
+    ///
+    /// Preserved as opaque TOML so consumers (biomeOS, deploy tooling,
+    /// bonding validation) can inspect or forward it without primalSpring
+    /// needing to model every bonding field.
+    #[serde(default)]
+    pub bonding_policy: Option<toml::Value>,
     /// Ordered list of primal nodes.
     /// Accepts both `[[graph.node]]` (legacy) and `[[graph.nodes]]` (biomeOS native).
     #[serde(default, alias = "nodes")]
@@ -102,9 +109,9 @@ pub struct GraphMeta {
 
 /// Metadata sub-table of a deploy graph (`[graph.metadata]`).
 ///
-/// Only `fragments` + `resolve` are actively used for composition; all
-/// other metadata fields (`security_model`, transport, etc.) are preserved
-/// as opaque TOML for downstream consumers.
+/// `fragments` + `resolve` drive composition; the remaining fields
+/// (`security_model`, `transport`, `composition_model`) are preserved
+/// for downstream deployers and validators.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct GraphMetadata {
     /// Fragment names to resolve at load time (e.g. `["tower_atomic", "node_atomic"]`).
@@ -117,6 +124,15 @@ pub struct GraphMetadata {
     /// used as-is.
     #[serde(default)]
     pub resolve: bool,
+    /// Graph-level security model (e.g. `"btsp_enforced"`).
+    #[serde(default)]
+    pub security_model: Option<String>,
+    /// Transport mode (e.g. `"uds_only"`, `"tcp"`, `"mixed"`).
+    #[serde(default)]
+    pub transport: Option<String>,
+    /// Composition model (e.g. `"nucleated"`, `"federated"`).
+    #[serde(default)]
+    pub composition_model: Option<String>,
 }
 
 /// A parsed fragment file (`[fragment]` + `[[fragment.nodes]]`).
@@ -176,6 +192,18 @@ pub struct GraphNode {
     /// Capabilities this node provides.
     #[serde(default)]
     pub capabilities: Vec<String>,
+    /// Per-node security model (e.g. `"btsp"`, `"tower_delegated"`).
+    ///
+    /// Preserved from the graph TOML so downstream deployers and validators
+    /// can enforce bonding/BTSP policy without re-parsing the file.
+    #[serde(default)]
+    pub security_model: Option<String>,
+    /// Startup arguments for the primal binary (e.g. `["server"]`).
+    ///
+    /// Encoded in graph TOMLs as `args = ["server"]`. Deploy tooling
+    /// combines these with launch profile data to build the full CLI.
+    #[serde(default)]
+    pub args: Vec<String>,
     /// Condition predicate for conditional DAG execution.
     #[serde(default)]
     pub condition: Option<String>,
@@ -519,6 +547,35 @@ fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
     if !is_multi_node && orders.len() != graph.graph.node.len() {
         issues.push("duplicate order values in graph nodes".to_owned());
     }
+
+    let has_bonding_policy = graph.graph.bonding_policy.is_some();
+    let has_btsp_nodes = graph
+        .graph
+        .node
+        .iter()
+        .any(|n| n.security_model.as_deref() == Some("btsp"));
+    if has_btsp_nodes && !has_bonding_policy {
+        issues.push(
+            "nodes declare security_model=\"btsp\" but graph has no [graph.bonding_policy]"
+                .to_owned(),
+        );
+    }
+
+    let transport = graph
+        .graph
+        .metadata
+        .as_ref()
+        .and_then(|m| m.transport.as_deref());
+    if transport == Some("uds_only") {
+        for node in &graph.graph.node {
+            if node.by_capability.is_none() && !node.name.is_empty() && node.spawn {
+                issues.push(format!(
+                    "transport=uds_only but node '{}' has no by_capability (needed for UDS discovery)",
+                    node.name
+                ));
+            }
+        }
+    }
 }
 
 /// Compute topological startup waves from a deploy graph.
@@ -695,6 +752,11 @@ pub fn merge_graphs(base: &DeployGraph, overlay: &DeployGraph) -> DeployGraph {
                 .metadata
                 .clone()
                 .or_else(|| base.graph.metadata.clone()),
+            bonding_policy: overlay
+                .graph
+                .bonding_policy
+                .clone()
+                .or_else(|| base.graph.bonding_policy.clone()),
             node: merged_nodes,
         },
         nodes: Vec::new(),
@@ -716,6 +778,131 @@ pub fn validate_all_graphs(dir: &Path) -> Vec<GraphValidation> {
     }
     results.sort_by(|a, b| a.path.cmp(&b.path));
     results
+}
+
+mod profiles;
+
+pub use profiles::{PrimalDeployProfile, deploy_profiles};
+
+/// A single readiness issue for a graph node or the graph as a whole.
+#[derive(Debug, Clone, Serialize)]
+pub struct ReadinessIssue {
+    /// Which node this issue applies to (empty string for graph-level issues).
+    pub node: String,
+    /// Issue category.
+    pub category: ReadinessCategory,
+    /// Human-readable description.
+    pub detail: String,
+}
+
+/// Categories of deployment readiness issues.
+#[derive(Debug, Clone, Serialize)]
+pub enum ReadinessCategory {
+    /// Graph structure issue (from `structural_checks`).
+    Structure,
+    /// Binary not found via `launcher::discover_binary`.
+    BinaryMissing,
+    /// Required environment variable is not set.
+    EnvMissing,
+    /// Bonding policy inconsistency.
+    BondingInconsistent,
+}
+
+/// Result of a deployment readiness check.
+#[derive(Debug, Clone, Serialize)]
+pub struct DeploymentReadiness {
+    /// Whether the graph is ready to deploy (no blocking issues).
+    pub ready: bool,
+    /// Graph name.
+    pub graph_name: String,
+    /// Total spawnable nodes.
+    pub spawnable_count: usize,
+    /// Nodes with binaries found.
+    pub binaries_found: usize,
+    /// All issues found (empty = ready).
+    pub issues: Vec<ReadinessIssue>,
+}
+
+/// Check whether a deploy graph is ready to deploy on this system.
+///
+/// Combines:
+/// - Structural validation (graph parses, nodes are well-formed)
+/// - Binary discovery (each spawnable node's binary exists via `launcher::discover_binary`)
+/// - Environment checks (`FAMILY_ID` and `XDG_RUNTIME_DIR` are set)
+/// - Bonding consistency (security_model vs bonding_policy)
+///
+/// # Errors
+///
+/// Returns [`DeployError`] if the graph cannot be loaded at all.
+pub fn validate_deployment_readiness(path: &Path) -> Result<DeploymentReadiness, DeployError> {
+    let graph = load_graph(path)?;
+    let mut issues = Vec::new();
+
+    let mut structural_issues = Vec::new();
+    structural_checks(&graph, &mut structural_issues);
+    for issue in structural_issues {
+        issues.push(ReadinessIssue {
+            node: String::new(),
+            category: ReadinessCategory::Structure,
+            detail: issue,
+        });
+    }
+
+    for key in [crate::env_keys::FAMILY_ID, crate::env_keys::XDG_RUNTIME_DIR] {
+        if std::env::var(key).is_err() {
+            issues.push(ReadinessIssue {
+                node: String::new(),
+                category: ReadinessCategory::EnvMissing,
+                detail: format!("required env var {key} is not set"),
+            });
+        }
+    }
+
+    let spawnable: Vec<&GraphNode> = graph.graph.node.iter().filter(|n| n.spawn).collect();
+    let spawnable_count = spawnable.len();
+    let mut binaries_found = 0;
+
+    for node in &spawnable {
+        if node.binary.is_empty() {
+            continue;
+        }
+        match crate::launcher::discover_binary(&node.name) {
+            Ok(_) => binaries_found += 1,
+            Err(_) => {
+                issues.push(ReadinessIssue {
+                    node: node.name.clone(),
+                    category: ReadinessCategory::BinaryMissing,
+                    detail: format!(
+                        "binary '{}' for node '{}' not found in plasmidBin or XDG paths",
+                        node.binary, node.name
+                    ),
+                });
+            }
+        }
+    }
+
+    let has_btsp_nodes = graph
+        .graph
+        .node
+        .iter()
+        .any(|n| n.security_model.as_deref() == Some("btsp"));
+    if has_btsp_nodes && graph.graph.bonding_policy.is_none() {
+        issues.push(ReadinessIssue {
+            node: String::new(),
+            category: ReadinessCategory::BondingInconsistent,
+            detail: "nodes require BTSP but no bonding_policy is declared".to_owned(),
+        });
+    }
+
+    let ready = issues.is_empty();
+
+    Ok(DeploymentReadiness {
+        ready,
+        graph_name: graph.graph.name,
+        spawnable_count,
+        binaries_found,
+        issues,
+    })
 }
 
 #[cfg(test)]

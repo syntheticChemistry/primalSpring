@@ -147,10 +147,15 @@ pub fn upgrade_btsp_clients(
     state
 }
 
-/// Capability → (primal slug, env var, default port) for TCP fallback.
+/// Capability → (primal slug, env var, default port) for tier 5 TCP probing.
 ///
-/// Centralized in one place so the mapping is consistent across
-/// `from_live_discovery_with_fallback`, experiments, and docs.
+/// Part of the discovery escalation hierarchy (tier 5). Centralized here
+/// so the mapping is consistent across `discover`, `from_live_discovery_with_fallback`,
+/// experiments, and docs. Capabilities that alias the same primal socket
+/// (e.g. `dag` and `provenance` both → rhizoCrypt) appear separately so
+/// the probe covers both capability names.
+///
+/// Port assignments confirmed against ironGate live deployment (2026-05-04).
 #[must_use]
 pub fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u16)> {
     use crate::env_keys as ek;
@@ -158,89 +163,19 @@ pub fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u1
     use crate::tolerances as tol;
 
     vec![
-        (
-            "security",
-            pn::BEARDOG,
-            ek::BEARDOG_PORT,
-            tol::TCP_FALLBACK_BEARDOG_PORT,
-        ),
-        (
-            "discovery",
-            pn::SONGBIRD,
-            ek::SONGBIRD_PORT,
-            tol::TCP_FALLBACK_SONGBIRD_PORT,
-        ),
-        (
-            "storage",
-            pn::NESTGATE,
-            ek::NESTGATE_PORT,
-            tol::TCP_FALLBACK_NESTGATE_PORT,
-        ),
-        (
-            "compute",
-            pn::TOADSTOOL,
-            ek::TOADSTOOL_PORT,
-            tol::TCP_FALLBACK_TOADSTOOL_PORT,
-        ),
-        (
-            "tensor",
-            pn::BARRACUDA,
-            ek::BARRACUDA_PORT,
-            tol::TCP_FALLBACK_TOADSTOOL_PORT + 1,
-        ),
-        (
-            "shader",
-            pn::CORALREEF,
-            ek::CORALREEF_PORT,
-            tol::TCP_FALLBACK_TOADSTOOL_PORT + 2,
-        ),
-        (
-            "ai",
-            pn::SQUIRREL,
-            ek::SQUIRREL_PORT,
-            tol::TCP_FALLBACK_SQUIRREL_PORT,
-        ),
-        (
-            "dag",
-            pn::RHIZOCRYPT,
-            ek::RHIZOCRYPT_PORT,
-            tol::TCP_FALLBACK_NESTGATE_PORT + 1,
-        ),
-        (
-            "commit",
-            pn::SWEETGRASS,
-            ek::SWEETGRASS_PORT,
-            tol::TCP_FALLBACK_NESTGATE_PORT + 3,
-        ),
-        (
-            "provenance",
-            pn::RHIZOCRYPT,
-            ek::RHIZOCRYPT_PORT,
-            tol::TCP_FALLBACK_NESTGATE_PORT + 1,
-        ),
-        (
-            "visualization",
-            pn::PETALTONGUE,
-            ek::PETALTONGUE_PORT,
-            tol::TCP_FALLBACK_PETALTONGUE_PORT,
-        ),
-        (
-            "ledger",
-            pn::LOAMSPINE,
-            ek::LOAMSPINE_PORT,
-            tol::TCP_FALLBACK_NESTGATE_PORT + 2,
-        ),
-        (
-            "attribution",
-            pn::SWEETGRASS,
-            ek::SWEETGRASS_PORT,
-            tol::TCP_FALLBACK_NESTGATE_PORT + 3,
-        ),
-        (
-            "defense",
-            pn::SKUNKBAT,
-            ek::SKUNKBAT_PORT,
-            tol::TCP_FALLBACK_SKUNKBAT_PORT,
-        ),
+        ("security", pn::BEARDOG, ek::BEARDOG_PORT, tol::TCP_FALLBACK_BEARDOG_PORT),
+        ("discovery", pn::SONGBIRD, ek::SONGBIRD_PORT, tol::TCP_FALLBACK_SONGBIRD_PORT),
+        ("storage", pn::NESTGATE, ek::NESTGATE_PORT, tol::TCP_FALLBACK_NESTGATE_PORT),
+        ("compute", pn::TOADSTOOL, ek::TOADSTOOL_PORT, tol::TCP_FALLBACK_TOADSTOOL_PORT),
+        ("tensor", pn::BARRACUDA, ek::BARRACUDA_PORT, tol::TCP_FALLBACK_BARRACUDA_PORT),
+        ("shader", pn::CORALREEF, ek::CORALREEF_PORT, tol::TCP_FALLBACK_CORALREEF_PORT),
+        ("ai", pn::SQUIRREL, ek::SQUIRREL_PORT, tol::TCP_FALLBACK_SQUIRREL_PORT),
+        ("dag", pn::RHIZOCRYPT, ek::RHIZOCRYPT_PORT, tol::TCP_FALLBACK_RHIZOCRYPT_PORT),
+        ("provenance", pn::RHIZOCRYPT, ek::RHIZOCRYPT_PORT, tol::TCP_FALLBACK_RHIZOCRYPT_PORT),
+        ("ledger", pn::LOAMSPINE, ek::LOAMSPINE_PORT, tol::TCP_FALLBACK_LOAMSPINE_PORT),
+        ("commit", pn::SWEETGRASS, ek::SWEETGRASS_PORT, tol::TCP_FALLBACK_SWEETGRASS_PORT),
+        ("attribution", pn::SWEETGRASS, ek::SWEETGRASS_PORT, tol::TCP_FALLBACK_SWEETGRASS_PORT),
+        ("visualization", pn::PETALTONGUE, ek::PETALTONGUE_PORT, tol::TCP_FALLBACK_PETALTONGUE_PORT),
+        ("defense", pn::SKUNKBAT, ek::SKUNKBAT_PORT, tol::TCP_FALLBACK_SKUNKBAT_PORT),
     ]
 }
