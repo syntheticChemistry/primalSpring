@@ -137,14 +137,43 @@ Meta-tier enhancer pattern established.
 
 ---
 
+---
+
+## NEW: `--bind` Flag Standardization (PG-55 — HIGH)
+
+**From**: projectNUCLEUS Phase 2a pen testing on ironGate (13-primal live NUCLEUS)
+
+All 13 primals bind `0.0.0.0` by default. 7 have bind control (6 different
+flag names), 6 hardcode the bind address and only accept `--port`.
+
+**Primals that need `--bind` flag added** (one-line CLI parser change each):
+
+| Primal | Port | Risk | Notes |
+|--------|------|------|-------|
+| **Songbird** | 9200 | HIGH | `--listen` is for IPC socket, not HTTP server |
+| **ToadStool** | 9400 | MEDIUM | LAN exposure → workload submission |
+| **skunkBat** | 9140 | LOW-MEDIUM | Defense primal exposing security posture |
+| **biomeOS** | 9800 | MEDIUM | Neural API orchestration layer |
+| **sweetGrass** | 9850 | MEDIUM | Main TCP listener; `--http-address` only covers HTTP |
+| **petalTongue** | 9900 | LOW | UI, minimal sensitive data |
+
+**Pattern**: Follow barraCuda's `--bind host:port` — overrides `--port`,
+defaults to `127.0.0.1`.
+
+**Also**: NestGate `storage.list` is accessible without BTSP handshake (PG-56,
+MEDIUM). Needs BTSP scoping or capability token gating.
+
+---
+
 ## Ecosystem State
 
 - **13/13** primals BTSP Phase 3 FULL AEAD
-- **0 HIGH**, **0 MEDIUM**, **6 LOW** gaps
+- **1 HIGH** (PG-55 `--bind` flag), **2 MEDIUM** (PG-56 NestGate auth, PG-57 skunkBat baseline), **8 LOW**
 - **Zero runtime blockers**
 - Discovery escalation hierarchy live (5 tiers)
 - Foundation layer validated through IPC (exp107)
+- Pen test baseline: all primals survived input fuzzing, no hidden admin methods
 - 85 experiments, 661 tests, 74 deploy graphs
 
-**Next cycle focus**: foundation sediment pipeline live validation against
-running primals, spring-side library-to-binary rewiring completion.
+**Next cycle focus**: `--bind` flag standardization, foundation sediment pipeline
+live validation, spring-side library-to-binary rewiring.

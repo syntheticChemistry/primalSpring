@@ -3,7 +3,7 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Phase 59: Foundation Absorption + Discovery Escalation + projectNUCLEUS Handback (2026-05-06)
+## [Unreleased] — Phase 59: Foundation Absorption + Security Hardening + projectNUCLEUS Phase 2a (2026-05-06)
 
 ### Milestone
 - **Foundation layer absorption**: primalSpring as "validation pressure" for
@@ -33,7 +33,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   preserved as routing alias to `"dag"`. 8 graph TOMLs standardized to `by_capability = "dag"`.
 - `CompositionContext::discover()` as canonical entry point with escalation hierarchy.
 - Module splits: `deploy/validation.rs` (structural checks), `coordination/probes.rs`.
+- `PrimalDeployProfile.bind_flag` — per-primal bind address CLI flag knowledge (PG-55).
+- `GraphMetadata.bind_policy` — composition-level bind intent (`"localhost"`, `"lan"`, `"any"`).
 - 661 tests (613 passed + 48 ignored), 85 experiments (19 tracks), 74 deploy graphs.
+
+### Security (projectNUCLEUS Phase 2a handback)
+- **PG-55**: 6 primals hardcode `0.0.0.0` bind — need `--bind` flag (HIGH).
+  Songbird (HTTP), ToadStool, skunkBat, biomeOS, sweetGrass (main TCP), petalTongue.
+- **PG-56**: NestGate `storage.list` accessible without BTSP (MEDIUM).
+- **PG-57**: skunkBat detected 0 threats during pen test — needs baseline (MEDIUM).
+- **Positive**: All primals survived input fuzzing (7 malformed JSON-RPC each).
+  No crashes, no hidden admin methods. Rust serde provides strong default resilience.
+- Bind flag table added to `docs/NUCLEUS_IPC_METHOD_MAP.md`.
 
 ## [0.9.24] — Phase 58: skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub (2026-05-03)
 

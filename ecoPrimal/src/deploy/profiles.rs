@@ -53,6 +53,11 @@ pub struct PrimalDeployProfile {
     /// Values like `"uds_only"`, `"songbird"`, or `"tcp"` hint at the
     /// deployment's intended transport.
     pub discovery_tier: Option<String>,
+    /// CLI flag this primal accepts for bind address control.
+    ///
+    /// `None` means the primal has no bind control and hardcodes `0.0.0.0`.
+    /// See PG-55 for the UniBin `--bind` standardization proposal.
+    pub bind_flag: Option<&'static str>,
 }
 
 /// Map primal names to their tier 5 TCP fallback ports from tolerances.
@@ -93,6 +98,24 @@ fn port_env_key(name: &str) -> Option<&'static str> {
         "biomeos" => Some(env_keys::BIOMEOS_PORT),
         "sweetgrass" => Some(env_keys::SWEETGRASS_PORT),
         "petaltongue" => Some(env_keys::PETALTONGUE_PORT),
+        _ => None,
+    }
+}
+
+/// Map primal names to their CLI bind address flag.
+///
+/// From projectNUCLEUS Phase 2a security validation (May 6, 2026).
+/// 7 primals have bind control, 6 hardcode `0.0.0.0` (PG-55).
+fn bind_flag(name: &str) -> Option<&'static str> {
+    match name {
+        "beardog" => Some("--listen"),
+        "squirrel" | "nestgate" | "barracuda" => Some("--bind"),
+        "loamspine" => Some("--bind-address"),
+        "rhizocrypt" => Some("--host"),
+        "coralreef" => Some("--rpc-bind"),
+        "sweetgrass" => Some("--http-address"),
+        // PG-55: these primals need --bind added upstream
+        // "songbird" | "toadstool" | "skunkbat" | "biomeos" | "petaltongue" => None,
         _ => None,
     }
 }
@@ -198,6 +221,7 @@ pub fn deploy_profiles(graph: &DeployGraph) -> Vec<PrimalDeployProfile> {
                 spawn: node.spawn,
                 by_capability: node.by_capability.clone(),
                 discovery_tier,
+                bind_flag: bind_flag(&node.name),
             }
         })
         .collect()

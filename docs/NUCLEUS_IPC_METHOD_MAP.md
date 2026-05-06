@@ -325,3 +325,28 @@ TCP fallback: `9140`
 skunkBat participates passively in all bonding contexts. It monitors connection
 patterns, validates lineage chains, and flags anomalies. It does not gate
 connections — primals function identically with or without it.
+
+---
+
+## Bind Address Control (PG-55, May 6, 2026)
+
+From projectNUCLEUS Phase 2a penetration testing. 7 primals have bind control,
+6 primals hardcode `0.0.0.0` and need upstream `--bind` flag.
+
+| Primal | Has Bind Control | Flag | Status |
+|--------|-----------------|------|--------|
+| BearDog | Yes | `--listen host:port` | OK |
+| Songbird | **No** (HTTP server) | needs `--bind` | PG-55 |
+| Squirrel | Yes | `--bind host` | OK |
+| ToadStool | **No** | needs `--bind` | PG-55 |
+| NestGate | Yes | `--bind host` | OK |
+| rhizoCrypt | Yes | `--host host` | OK |
+| loamSpine | Yes | `--bind-address host` | OK |
+| coralReef | Yes | `--rpc-bind host:port` | OK |
+| barraCuda | Yes | `--bind host:port` | OK |
+| skunkBat | **No** | needs `--bind` | PG-55 |
+| biomeOS | **No** | needs `--bind` | PG-55 |
+| sweetGrass | Partial | `--http-address host:port` (HTTP only; main TCP needs `--bind`) | PG-55/59 |
+| petalTongue | **No** | needs `--bind` | PG-55 |
+
+**Proposal**: UniBin v1.1 `--bind <host:port>` as universal standard. Default `127.0.0.1`.

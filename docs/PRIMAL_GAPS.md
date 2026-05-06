@@ -38,6 +38,25 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Last updated**: 2026-05-06 — **Phase 3: 13/13 primals FULL AEAD on wire. Discovery escalation hierarchy live.**
 > **All blurbed upstream debt resolved.** Wire Standard L3 at 13/13. BufReader audit at 13/13.
 >
+> **projectNUCLEUS Phase 2a Security Handback (May 6, 2026)** — penetration testing on live 13-primal composition:
+> - **PG-55 `--bind` flag standardization** — HIGH: 6 primals bind `0.0.0.0` by default, need `--bind` flag
+>   for localhost binding. Songbird (HTTP), ToadStool, skunkBat, biomeOS, sweetGrass (main TCP), petalTongue.
+>   7 primals already have bind control (6 different flag names). Propose UniBin v1.1 `--bind <host:port>`.
+> - **PG-56 NestGate `storage.list` unauthenticated** — MEDIUM: accessible without BTSP handshake.
+>   Needs BTSP scoping or capability token gating.
+> - **PG-57 skunkBat baseline learning** — MEDIUM: detected 0 threats during pen test (no baseline yet).
+>   Fuzz/enumeration patterns available as training data.
+> - **PG-58 Songbird `--listen` semantics** — LOW: `--listen` controls IPC socket, not HTTP server.
+>   HTTP server needs its own bind address flag.
+> - **PG-59 sweetGrass `--http-address` undocumented format** — LOW: requires `host:port`, not just `host`.
+>   Main TCP listener has no bind control at all.
+> - **POSITIVE**: All primals survived input fuzzing (7 malformed payloads each). No crashes, no hidden
+>   admin methods. Rust serde + type system provides strong default resilience.
+> - **POSITIVE**: sweetGrass and rhizoCrypt correctly reject plaintext on BTSP-enforced ports.
+> - **Notebook Elevation Contract**: CLI → notebook → JSON-RPC → petalTongue dashboards.
+>   Springs emitting structured `[OK]/[FAIL]` output get automatic notebook visualization.
+> - **ABG Tiered Access**: `abg-observer`/`abg-compute`/`abg-admin` with resource limits per user.
+>
 > **Foundation Absorption (May 6, 2026)** — primalSpring as validation pressure:
 > - `GraphNode.fallback: Option<String>` added for graceful degradation (`"skip"` on optional nodes)
 > - `GraphMetadata.purpose: Option<String>` added for composition intent (`"validation"`, `"foundation"`)
@@ -1104,7 +1123,19 @@ needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esoteri
 
 ## Priority Order
 
-**0 HIGH blockers. 0 MEDIUM (all resolved). 6 LOW. Zero runtime blockers.** (sourDough SD-02/03 deferred, skunkBat GAP-28 RESOLVED)
+**1 HIGH (PG-55 `--bind` flag), 2 MEDIUM (PG-56 NestGate auth, PG-57 skunkBat baseline), 8 LOW. Zero runtime blockers.**
+
+### projectNUCLEUS Phase 2a Security Gaps (May 6, 2026)
+
+| PG | Issue | Owner | Priority | Status |
+|----|-------|-------|----------|--------|
+| **PG-55** | 6 primals bind `0.0.0.0` — need `--bind` flag: Songbird (HTTP), ToadStool, skunkBat, biomeOS, sweetGrass (main TCP), petalTongue | Each primal team + UniBin standard | **HIGH** | OPEN |
+| **PG-56** | NestGate `storage.list` accessible without BTSP handshake | NestGate team | **MEDIUM** | OPEN |
+| **PG-57** | skunkBat detected 0 threats during pen test — needs baseline learning from fuzz/enumeration data | skunkBat team | **MEDIUM** | OPEN |
+| **PG-58** | Songbird `--listen` controls IPC socket, not HTTP server — HTTP needs own bind flag | Songbird team | **LOW** | OPEN |
+| **PG-59** | sweetGrass `--http-address` requires `host:port` (undocumented), main TCP has no bind control | sweetGrass team | **LOW** | OPEN |
+
+### Previous priorities (all resolved or deferred)
 
 **High**: ~~PLASMIBIN-STALE~~ **RESOLVED** (April 10 — full musl-static rebuild, 12/12 ecoBin).
 
