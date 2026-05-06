@@ -35,33 +35,36 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-05-02 (late PM) — **Phase 3: 13/13 primals FULL AEAD on wire. BTSP Phase 3 COMPLETE.**
+> **Last updated**: 2026-05-06 — **Phase 3: 13/13 primals FULL AEAD on wire. Discovery escalation hierarchy live.**
 >
 > **primalSpring local quality gate**: `cargo clippy` 0 warnings, `cargo fmt` 0 violations,
 > 563 tests (561 + 2 ignored integration), all compositions validated.
 >
-> **BTSP Phase 3 COMPLETE** (May 2, 2026 late PM):
+> **BTSP Phase 3 COMPLETE** (May 2, 2026 — confirmed May 6 with upstream pulls):
 > **13 of 13 primals** now implement `btsp.negotiate` server-side with full ChaCha20-Poly1305 AEAD.
 > All ionic/weak bond compositions are unblocked. Ecosystem convergence achieved.
+>
+> **Upstream absorption round (May 5–6, 2026)** — 12/13 primals pulled (toadStool pending):
+> - **Songbird W189**: Added `socket` field to `ipc.resolve` for primalSpring tier-1 discovery
+> - **biomeOS v3.43**: `registry_queries` reads live Neural API format (`primary_endpoint` + `primals[].name`)
+> - **NestGate S54**: Wire Standard L3 — `protocol` + `transport` on all `capabilities.list` surfaces
+> - **Provenance trio Gap 9 RESOLVED**: loamSpine + rhizoCrypt both accept hex strings for hash fields
+>   (loamSpine serde `ContentHash`/`EntryHash`; rhizoCrypt `parse_hash32` on all DAG handlers)
+> - **sweetGrass v0.7.30**: Double-response fix, whitespace-tolerant TCP autodetect
+> - **petalTongue**: Port 9900 aligned, discovery escalation hierarchy docs
+> - **coralReef Iter 91**: Zero-alloc `Cow` aperture, marker-byte BufReader fix
+> - **barraCuda Sprint 53**: `submit_and_poll` → `submit_and_map<T>` breaking change documented
+> - **BearDog W86-88**: TCP IPC port aligned to 9100 (metrics 9190), crossterm 0.29 dedup
+>
+> **Discovery Escalation Hierarchy** (implemented May 5, committed `f7856d1`):
+> `CompositionContext::discover()` is the canonical entry point — tries tiers 1-5 in order:
+> Songbird routing → Neural API → UDS convention → Socket registry → TCP probing.
+> Every tier is a valid deployment model. fieldMouse reclassified as deployment class (not primal).
 >
 > **Live NUCLEUS Validation** (May 2, 2026 night — eastGate, plasmidBin v2026.05.03):
 > 13/13 primals ALIVE on UDS (NestGate requires `NESTGATE_JWT_SECRET` — standalone
 > auth gate, unused within eco where BearDog provides all auth via BTSP).
-> guidestone: **157/170 passed** (20 skipped, 13 failures). Key findings:
-> - **Phase 3 client-server interop gap**: primalSpring client negotiates
->   `cipher: "chacha20-poly1305"` with BearDog, derives keys, sends encrypted
->   frames — but BearDog responds in **plaintext** (`0x7B226A73` = `{"js`
->   interpreted as 2 GB frame length). Server-side negotiate advertises AEAD
->   but does not enter encrypted frame loop. Same pattern expected for other
->   primals where server-side Phase 3 was recently wired. This is the next
->   interop gap: servers need to verify they actually switch transport after
->   negotiate, not just return the cipher in the response.
-> - **Cleartext fallback routes**: 5/12 capabilities (shader, ai, dag, ledger,
->   visualization) connect via capability aliases without BTSP. Guidestone
->   discovery routing needs to resolve BTSP-aware sockets for all paths.
-> - **NestGate JWT gate**: `NESTGATE_JWT_SECRET` required even in NUCLEUS
->   socket-only mode. Upstream gap: NestGate should skip JWT when BTSP
->   is the auth layer (eco deployments never use JWT).
+> guidestone: **157/170 passed** (20 skipped, 13 failures).
 > - Bonding model validation: ALL PASS (Covalent, Metallic, Ionic, Weak,
 >   OrganoMetalSalt policies, cipher floors, trust ordering)
 > - Cellular deployment: 9/10 cell graphs fully validated (BTSP-enforced)

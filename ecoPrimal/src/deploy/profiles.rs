@@ -73,7 +73,6 @@ fn tcp_fallback_port(name: &str) -> Option<u16> {
         "biomeos" => Some(tolerances::TCP_FALLBACK_BIOMEOS_PORT),
         "sweetgrass" => Some(tolerances::TCP_FALLBACK_SWEETGRASS_PORT),
         "petaltongue" => Some(tolerances::TCP_FALLBACK_PETALTONGUE_PORT),
-        "fieldmouse" => Some(tolerances::TCP_FALLBACK_FIELDMOUSE_PORT),
         _ => None,
     }
 }
@@ -94,7 +93,6 @@ fn port_env_key(name: &str) -> Option<&'static str> {
         "biomeos" => Some(env_keys::BIOMEOS_PORT),
         "sweetgrass" => Some(env_keys::SWEETGRASS_PORT),
         "petaltongue" => Some(env_keys::PETALTONGUE_PORT),
-        "fieldmouse" => Some(env_keys::FIELDMOUSE_PORT),
         _ => None,
     }
 }

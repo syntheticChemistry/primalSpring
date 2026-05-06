@@ -293,8 +293,6 @@ pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
 pub const TCP_FALLBACK_SWEETGRASS_PORT: u16 = 9850;
 /// TCP fallback port for remote `petalTongue` (visualization).
 pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9900;
-/// TCP fallback port for remote fieldMouse (ecosystem intelligence).
-pub const TCP_FALLBACK_FIELDMOUSE_PORT: u16 = 9950;
 
 // ── Niche cost-estimate parameters ──
 //
@@ -423,7 +421,6 @@ mod tests {
             TCP_FALLBACK_BIOMEOS_PORT,
             TCP_FALLBACK_SWEETGRASS_PORT,
             TCP_FALLBACK_PETALTONGUE_PORT,
-            TCP_FALLBACK_FIELDMOUSE_PORT,
         ] {
             assert!(port >= 1024, "port {port} below unprivileged range");
             assert!(port <= 49151, "port {port} above registered range");
@@ -446,7 +443,6 @@ mod tests {
             TCP_FALLBACK_BIOMEOS_PORT,
             TCP_FALLBACK_SWEETGRASS_PORT,
             TCP_FALLBACK_PETALTONGUE_PORT,
-            TCP_FALLBACK_FIELDMOUSE_PORT,
         ];
         let mut sorted = ports.to_vec();
         sorted.sort_unstable();

@@ -12,13 +12,14 @@ use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-/// Primals participating in the edge ingestion pipeline.
+/// Primals / deployment classes participating in the edge ingestion pipeline.
 ///
 /// Source: `PRIMAL_REGISTRY.md` + `CROSS_SPRING_DATA_FLOW_STANDARD.md`.
-/// fieldMouse is the edge sensor primal (post-NUCLEUS, may not be running).
+/// fieldMouse is a **deployment class** (biomeOS chimera for edge/IoT), not a primal.
 /// `NestGate` stores artifacts, sweetGrass records attribution.
+const FIELDMOUSE_SLUG: &str = "fieldmouse";
 const INGEST_PRIMALS: &[&str] = &[
-    primal_names::FIELDMOUSE,
+    FIELDMOUSE_SLUG,
     primal_names::NESTGATE,
     primal_names::SWEETGRASS,
 ];

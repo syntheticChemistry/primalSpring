@@ -34,8 +34,6 @@ pub const BARRACUDA: &str = "barracuda";
 pub const CORALREEF: &str = "coralreef";
 /// Discovery slug for skunkBat.
 pub const SKUNKBAT: &str = "skunkbat";
-/// Discovery slug for fieldMouse.
-pub const FIELDMOUSE: &str = "fieldmouse";
 
 /// Lowercase discovery slug → mixed-case display name.
 ///
@@ -66,7 +64,6 @@ pub fn display_name(slug: &str) -> &str {
         "airspring" => "airSpring",
         "healthspring" => "healthSpring",
         "ludospring" => "ludoSpring",
-        "fieldmouse" => "fieldMouse",
         _ => slug,
     }
 }
@@ -100,7 +97,6 @@ pub fn discovery_slug(display: &str) -> &str {
         "airSpring" => "airspring",
         "healthSpring" => "healthspring",
         "ludoSpring" => "ludospring",
-        "fieldMouse" => "fieldmouse",
         _ => display,
     }
 }
