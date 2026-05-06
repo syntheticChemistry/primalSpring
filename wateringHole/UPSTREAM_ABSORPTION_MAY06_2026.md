@@ -15,17 +15,17 @@ with `cargo check`, `cargo clippy`, `cargo test` — zero warnings, zero failure
 | Primal | Version/Wave | Key Changes |
 |--------|-------------|-------------|
 | BearDog | W86-88 | TCP IPC port aligned to **9100** (was 9900), metrics to **9190**. crossterm 0.29 (mio dedup). Typed config errors |
-| Songbird | W189-190 | **`socket` field on `ipc.resolve`** for primalSpring tier-1 discovery. Hardcoded literal cleanup, robust endpoint parsing (`parse_endpoint()` for IPv6) |
+| Songbird | W189-192 | **`socket` field on `ipc.resolve`**, `ipc.register` identity verification (probe → hard-reject mismatch, TOFU if unreachable), whitespace-tolerant UDS detection, sovereign-onion 16 MiB frame guard |
 | NestGate | S54 | **Wire Standard L3**: `protocol` + `transport` on all four `capabilities.list` surfaces. `consumed_capabilities` naming aligned to `capability_registry.toml` |
 | loamSpine | Gap 9 | **Hex string acceptance** for `ContentHash`/`EntryHash` (`[u8; 32]`). Optional `committer` in `AppendEntryRequest`. 14 new tests, 1,504 total |
 | rhizoCrypt | S60 | **`parse_hash32` dual-format** (hex + byte array) on all DAG/Merkle handlers. Duplicate tempfile dev-dep removed. 1,573 tests |
 | sweetGrass | v0.7.30 | BTSP **double-response fix** (`ServerHello` missing `session_id`). **Whitespace-tolerant TCP autodetect** (`detect_protocol` skips leading ASCII whitespace). `--http-port` flag |
-| petalTongue | — | TCP port aligned to **9900**. Discovery escalation hierarchy docs (5-tier). Last 2 hardcoded primal names evolved |
-| coralReef | Iter 91 | **Zero-alloc `Cow` aperture names**, `write_rpc_line` prealloc, Vec capacity hints. Marker-byte BufReader consumption fix for post-negotiate I/O |
+| petalTongue | — | Tier-1 Songbird registration (`transports` map in `ipc.register` with UDS + optional TCP), BufReader split-path fix (TCP JSON-line BTSP), whitespace-tolerant detection. Dead `png` dep removed. TCP port 9900 aligned |
+| coralReef | Iter 91-92 | Zero-alloc `Cow` aperture, marker-byte BufReader fix, **Wire Standard L3** (`protocol` + `transport` on `CapabilityListResponse`), `coral_probe` typed errors, 6 env-overridable device paths |
 | barraCuda | Sprint 53 | `submit_and_poll` → **`submit_and_map<T>`** breaking change documented. Discovery escalation hierarchy docs |
 | biomeOS | v3.43 | **`registry_queries` reads live Neural API format** (`primary_endpoint` + `primals[].name`) with fallback for legacy `primary_socket` + `provider` |
 | Squirrel | — | Already up to date (local) |
-| skunkBat | — | Already up to date (local), TCP port corrected 9750→9140 |
+| skunkBat | — | BufReader post-negotiate audit (unbuffered inner reader + leftover warn), L3 `protocol`+`transport` on `capabilities.list`, Songbird socket probe registration, discovery hierarchy docs, 338 tests. TCP port corrected 9750→9140 |
 | toadStool | S222-S223 | btsp module split (negotiate.rs + relay.rs), sandbox working_dir, env expansion, sleep elimination. 22,833 workspace tests |
 
 ---
@@ -135,18 +135,20 @@ TCP probing to miss a default-config skunkBat instance.
 
 ### Cross-Primal
 
-- **BufReader post-negotiate buffering**: barraCuda (Sprint 51b) and coralReef (Iter 90)
-  both independently found and fixed the same class of bug — leftover bytes in
-  `BufReader` after BTSP negotiate. Any primal that wraps its accept stream in
-  `BufReader` before negotiate should audit for this.
+- **BufReader post-negotiate buffering**: RESOLVED across ecosystem. barraCuda, coralReef,
+  petalTongue (split-path), skunkBat (unbuffered inner reader + leftover warn), Songbird
+  (safety docs) all audited. Pattern: `buf_reader.into_inner()` after negotiate or
+  split reader/writer before handshake.
 
-- **Whitespace-tolerant TCP detection**: sweetGrass's `detect_protocol` now skips leading
-  ASCII whitespace before classifying frames. Other primals with TCP multiplexers
-  should consider the same tolerance.
+- **Whitespace-tolerant detection**: RESOLVED. sweetGrass, Songbird (UDS peek),
+  petalTongue (TCP peek + UDS fill_buf) all skip leading ASCII whitespace.
 
-- **Songbird tier-1 registration**: petalTongue docs note that tier-1 Songbird
-  `ipc.resolve` is still "future" on their side. Primals that want to be discoverable
-  via tier-1 should register with Songbird when TCP is active.
+- **Songbird tier-1 registration**: RESOLVED. petalTongue includes `transports` map
+  in `ipc.register`. skunkBat probes Songbird socket at startup. Songbird W191
+  validates registrant identity via `identity.get` probe.
+
+- **Wire Standard L3**: RESOLVED at 13/13. coralReef (Iter 92) was the last —
+  `protocol` + `transport` now on `CapabilityListResponse`.
 
 ---
 

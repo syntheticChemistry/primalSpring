@@ -36,29 +36,35 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > Downstream springs may resume absorption.
 >
 > **Last updated**: 2026-05-06 — **Phase 3: 13/13 primals FULL AEAD on wire. Discovery escalation hierarchy live.**
+> **All blurbed upstream debt resolved.** Wire Standard L3 at 13/13. BufReader audit at 13/13.
 >
-> **primalSpring local quality gate**: `cargo clippy` 0 warnings, `cargo fmt` 0 violations,
-> 563 tests (561 + 2 ignored integration), all compositions validated.
-> `deploy/mod.rs` split — validation logic extracted to `deploy/validation.rs` (909→523 lines).
+> **primalSpring local quality gate**: `cargo clippy` 0 warnings (full workspace), `cargo fmt` 0 violations,
+> 568 lib + 10 integration + 10 doc = 588 tests, all compositions validated.
+> Module splits: `deploy/validation.rs` (909→523), `coordination/probes.rs` (785→469).
 >
 > **BTSP Phase 3 COMPLETE** (May 2, 2026 — confirmed May 6 with upstream pulls):
 > **13 of 13 primals** now implement `btsp.negotiate` server-side with full ChaCha20-Poly1305 AEAD.
 > All ionic/weak bond compositions are unblocked. Ecosystem convergence achieved.
 >
 > **Upstream absorption round (May 5–6, 2026)** — 13/13 primals pulled:
-> - **Songbird W189**: Added `socket` field to `ipc.resolve` for primalSpring tier-1 discovery
+> - **Songbird W189-192**: `socket` field on `ipc.resolve`, `ipc.register` identity verification
+>   (probe → hard-reject mismatch, TOFU if unreachable), whitespace-tolerant UDS detection,
+>   sovereign-onion 16 MiB frame guard
 > - **biomeOS v3.43**: `registry_queries` reads live Neural API format (`primary_endpoint` + `primals[].name`)
 > - **NestGate S54**: Wire Standard L3 — `protocol` + `transport` on all `capabilities.list` surfaces
 > - **Provenance trio Gap 9 RESOLVED**: loamSpine + rhizoCrypt both accept hex strings for hash fields
->   (loamSpine serde `ContentHash`/`EntryHash`; rhizoCrypt `parse_hash32` on all DAG handlers)
 > - **sweetGrass v0.7.30**: Double-response fix, whitespace-tolerant TCP autodetect
-> - **petalTongue**: Port 9900 aligned, discovery escalation hierarchy docs
-> - **coralReef Iter 91**: Zero-alloc `Cow` aperture, marker-byte BufReader fix
+> - **petalTongue**: Tier-1 Songbird registration (`transports` map in `ipc.register`),
+>   BufReader split-path fix (TCP JSON-line BTSP), whitespace-tolerant detection, dead `png` dep removed
+> - **coralReef Iter 92**: Wire Standard L3 (`protocol` + `transport` on `CapabilityListResponse`),
+>   `coral_probe` typed errors, 6 env-overridable device paths
 > - **barraCuda Sprint 53**: `submit_and_poll` → `submit_and_map<T>` breaking change documented
 > - **BearDog W86-88**: TCP IPC port aligned to 9100 (metrics 9190), crossterm 0.29 dedup
 > - **toadStool S222-S223**: btsp module split (negotiate.rs + relay.rs), sandbox working_dir,
->   env expansion in workload TOMLs, sleep elimination, test speed (22,833 workspace tests)
-> - **skunkBat port fix**: TCP_FALLBACK_SKUNKBAT_PORT corrected 9750→9140 to match actual default
+>   env expansion in workload TOMLs, sleep elimination (22,833 workspace tests)
+> - **skunkBat**: BufReader post-negotiate audit (unbuffered inner reader + leftover warn),
+>   L3 on `capabilities.list`, Songbird socket probe, discovery hierarchy docs, 338 tests.
+>   TCP_FALLBACK_SKUNKBAT_PORT corrected 9750→9140
 >
 > **Discovery Escalation Hierarchy** (implemented May 5, committed `f7856d1`):
 > `CompositionContext::discover()` is the canonical entry point — tries tiers 1-5 in order:
