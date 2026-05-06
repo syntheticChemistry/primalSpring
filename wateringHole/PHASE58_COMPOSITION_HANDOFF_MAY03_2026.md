@@ -20,7 +20,7 @@ now formally integrated into the NUCLEUS composition:
 - **`required = false`** — NUCLEUS functions without skunkBat but gains defense
   observability when present
 - **Depends on**: BearDog (crypto keys), Songbird (discovery)
-- **TCP fallback port**: 9750
+- **TCP fallback port**: 9140 (corrected May 6 — was 9750)
 
 **What primal teams need to do**: Nothing. skunkBat discovery is automatic via
 Songbird `capability.discover`. Primals that want defense observability can call
