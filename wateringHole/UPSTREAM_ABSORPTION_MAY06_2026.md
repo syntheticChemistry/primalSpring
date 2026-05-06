@@ -9,7 +9,7 @@
 
 ## What Was Pulled
 
-12 of 13 NUCLEUS primals pulled (toadStool pending). All code changes verified
+13 of 13 NUCLEUS primals pulled and reviewed. All code changes verified
 with `cargo check`, `cargo clippy`, `cargo test` — zero warnings, zero failures.
 
 | Primal | Version/Wave | Key Changes |
@@ -25,8 +25,8 @@ with `cargo check`, `cargo clippy`, `cargo test` — zero warnings, zero failure
 | barraCuda | Sprint 53 | `submit_and_poll` → **`submit_and_map<T>`** breaking change documented. Discovery escalation hierarchy docs |
 | biomeOS | v3.43 | **`registry_queries` reads live Neural API format** (`primary_endpoint` + `primals[].name`) with fallback for legacy `primary_socket` + `provider` |
 | Squirrel | — | Already up to date (local) |
-| skunkBat | — | Already up to date (local) |
-| **toadStool** | — | **Not yet pushed** |
+| skunkBat | — | Already up to date (local), TCP port corrected 9750→9140 |
+| toadStool | S222-S223 | btsp module split (negotiate.rs + relay.rs), sandbox working_dir, env expansion, sleep elimination. 22,833 workspace tests |
 
 ---
 
@@ -63,7 +63,7 @@ These upstream changes were reviewed against primalSpring code — all already a
    | loamSpine | 9700 | operator config | ✓ |
    | coralReef | 9730 | — | ✓ |
    | barraCuda | 9740 | 9740 (Sprint 53) | ✓ |
-   | skunkBat | 9750 | — | ✓ |
+   | skunkBat | 9140 | 9140 (DEFAULT_PORT) | ✓ (was 9750) |
    | biomeOS | 9800 | — | ✓ |
    | sweetGrass | 9850 | 9850 | ✓ |
    | petalTongue | 9900 | 9900 | ✓ |
@@ -96,8 +96,8 @@ This is now **stale** — every primal that pushed has shipped full encrypted fr
 - coralReef Iter 90: marker-byte BufReader fix
 - barraCuda Sprint 51b: `buf_reader.into_inner()` fix for pipelined bytes
 
-**toadStool** is the only primal that hasn't pushed this round. Their Phase 3 was
-previously marked FULL (S215) — status unknown for latest evolution.
+**toadStool** (S222-S223) confirmed Phase 3 FULL — btsp module split into negotiate.rs +
+relay.rs, sandbox working_dir hardening, env expansion, 22,833 workspace tests.
 
 ---
 
@@ -119,15 +119,19 @@ fieldMouse sits alongside these as a deployment architecture pattern.
 
 ## Remaining Upstream Debt
 
-### toadStool — Not Pushed
+### toadStool — RESOLVED
 
-toadStool is the only primal that hasn't pushed this evolution round. Known debt
-from primalSpring's perspective:
+toadStool S222-S223 absorbed. Phase 3 confirmed FULL. Wire Standard L3 on `capabilities.list`
+(`protocol: jsonrpc-2.0`, `transport: ["uds","tcp"]`) confirmed in identity.rs handler.
+Discovery escalation docs present in CONTEXT.md (tiers 1–4; tier 5 intentionally excluded
+for UDS-first local IPC). `DEBT.md` shows legacy items RESOLVED. L3 status banner still
+says "partial" in NEXT_STEPS.md — cosmetic staleness vs actual code surface.
 
-- Confirm Phase 3 interop (encrypted frame loop after negotiate)
-- `submit_and_poll` → `submit_and_map<T>` migration (if not already shipped)
-- Wire Standard L3 alignment (`protocol` + `transport` on `capabilities.list`)
-- Discovery escalation hierarchy docs
+### skunkBat — Port Fix
+
+TCP_FALLBACK_SKUNKBAT_PORT corrected from 9750 to **9140** to match skunkBat's actual
+`DEFAULT_PORT` constant. This was a day-one misalignment that would have caused tier-5
+TCP probing to miss a default-config skunkBat instance.
 
 ### Cross-Primal
 

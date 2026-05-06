@@ -39,12 +39,13 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > **primalSpring local quality gate**: `cargo clippy` 0 warnings, `cargo fmt` 0 violations,
 > 563 tests (561 + 2 ignored integration), all compositions validated.
+> `deploy/mod.rs` split — validation logic extracted to `deploy/validation.rs` (909→523 lines).
 >
 > **BTSP Phase 3 COMPLETE** (May 2, 2026 — confirmed May 6 with upstream pulls):
 > **13 of 13 primals** now implement `btsp.negotiate` server-side with full ChaCha20-Poly1305 AEAD.
 > All ionic/weak bond compositions are unblocked. Ecosystem convergence achieved.
 >
-> **Upstream absorption round (May 5–6, 2026)** — 12/13 primals pulled (toadStool pending):
+> **Upstream absorption round (May 5–6, 2026)** — 13/13 primals pulled:
 > - **Songbird W189**: Added `socket` field to `ipc.resolve` for primalSpring tier-1 discovery
 > - **biomeOS v3.43**: `registry_queries` reads live Neural API format (`primary_endpoint` + `primals[].name`)
 > - **NestGate S54**: Wire Standard L3 — `protocol` + `transport` on all `capabilities.list` surfaces
@@ -55,6 +56,9 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - **coralReef Iter 91**: Zero-alloc `Cow` aperture, marker-byte BufReader fix
 > - **barraCuda Sprint 53**: `submit_and_poll` → `submit_and_map<T>` breaking change documented
 > - **BearDog W86-88**: TCP IPC port aligned to 9100 (metrics 9190), crossterm 0.29 dedup
+> - **toadStool S222-S223**: btsp module split (negotiate.rs + relay.rs), sandbox working_dir,
+>   env expansion in workload TOMLs, sleep elimination, test speed (22,833 workspace tests)
+> - **skunkBat port fix**: TCP_FALLBACK_SKUNKBAT_PORT corrected 9750→9140 to match actual default
 >
 > **Discovery Escalation Hierarchy** (implemented May 5, committed `f7856d1`):
 > `CompositionContext::discover()` is the canonical entry point — tries tiers 1-5 in order:

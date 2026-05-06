@@ -244,6 +244,8 @@ fn extract_host(addr: &str) -> String {
         .map_or_else(|| addr.to_owned(), |(host, _)| host.to_owned())
 }
 
+/// Ionic bonds negotiate through BearDog on the remote gate, so the
+/// default port is BearDog's TCP fallback when the address has no port.
 fn extract_port(addr: &str) -> u16 {
     addr.rsplit_once(':')
         .and_then(|(_, port)| port.parse().ok())

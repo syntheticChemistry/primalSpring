@@ -285,7 +285,7 @@ pub const TCP_FALLBACK_CORALREEF_PORT: u16 = 9730;
 /// Confirmed live on ironGate at 9740 (2026-05-04).
 pub const TCP_FALLBACK_BARRACUDA_PORT: u16 = 9740;
 /// TCP fallback port for remote skunkBat (defense/recon).
-pub const TCP_FALLBACK_SKUNKBAT_PORT: u16 = 9750;
+pub const TCP_FALLBACK_SKUNKBAT_PORT: u16 = 9140;
 /// TCP fallback port for remote biomeOS (substrate).
 pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
 /// TCP fallback port for remote sweetGrass (attribution braids).
