@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**84 experiments across 18 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**85 experiments across 19 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
 
 ---
 
@@ -19,18 +19,18 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 84 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 85 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 84 experiments. All 84 use centralized library helpers for TCP RPC,
+across all 85 experiments. All 85 use centralized library helpers for TCP RPC,
 method name constants (`ipc::methods`), and primal name constants (`primal_names`).
 
 ## Running
 
 ```bash
-# Run all 84 experiments via meta-validator
+# Run all 85 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment (use -p with the package name)
@@ -62,6 +62,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 16 | Composition Parity | exp094 | Full NUCLEUS composition parity: 19/19 checks via live IPC |
 | 17 | Cross-Architecture + Cellular Deployment | exp095–096, exp098 | **Live validated** (proto-nucleate template, Pixel cross-arch bonding via biomeOS Neural API `--tcp-only`, cellular deployment from cell graphs) |
 | 18 | Desktop Substrate | exp099–exp106 | **Live validated** (agentic loop, MCP tools, AI triage, storytelling session, ludoSpring IPC, provenance replay, The Rhizome micro-game 8/13, micro-desktop shell 2/4 + 11/12 health bar) |
+| 19 | Foundation Validation | exp107 | **Structural + IPC** (8-phase sediment pipeline: structural → discovery → health → provenance → storage → compute → ledger → attribution; validates foundation composition through NUCLEUS primals via Rust IPC) |
 
 ## Experiment Status Key
 

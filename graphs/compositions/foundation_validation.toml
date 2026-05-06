@@ -1,0 +1,180 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Composition: Foundation Validation — Full NUCLEUS for scientific validation
+#
+# The minimum NUCLEUS composition that can execute foundation's sediment
+# pipeline: health → provenance session → fetch/register → workload →
+# commit → braid → report.
+#
+# Requires: Tower (trust), Node (compute), Nest (storage + provenance trio).
+# Optional: petalTongue (visualization), squirrel (AI), coralReef (shader).
+#
+# Origin: sporeGarden/foundation/graphs/foundation_validation.toml
+# Adapted to primalSpring deploy graph conventions for structural validation.
+#
+# Usage:
+#   primalspring_guidestone --graph graphs/compositions/foundation_validation.toml
+
+[graph]
+name = "foundation_validation"
+description = "Scientific validation composition: NUCLEUS + provenance trio for sediment deposition"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+composition_model = "nucleated"
+purpose = "foundation"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
+# ── Phase 0: biomeOS Neural API ──────────────────────────────────────────────
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+
+# ── Phase 1–2: Tower Atomic (BearDog + Songbird) ────────────────────────────
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305"]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api", "beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = ["ipc.resolve", "ipc.register", "discovery.peers", "http.request"]
+
+# ── Phase 3–5: Node Atomic (ToadStool + barraCuda + coralReef) ──────────────
+
+[[graph.nodes]]
+name = "toadstool"
+binary = "toadstool"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+security_model = "tower_delegated"
+capabilities = ["compute.submit", "compute.status", "compute.health"]
+
+[[graph.nodes]]
+name = "barracuda"
+binary = "barracuda"
+order = 4
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "tensor"
+security_model = "tower_delegated"
+capabilities = ["tensor.execute", "stats.mean", "stats.std"]
+
+[[graph.nodes]]
+name = "coralreef"
+binary = "coralreef"
+order = 5
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "shader"
+security_model = "tower_delegated"
+capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
+fallback = "skip"
+
+# ── Phase 6–9: Nest Atomic (NestGate + Provenance Trio) ─────────────────────
+
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 6
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "tower_delegated"
+capabilities = ["storage.store", "storage.get", "storage.list", "storage.exists"]
+
+[[graph.nodes]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 7
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+security_model = "tower_delegated"
+capabilities = ["dag.session.create", "dag.event.append", "dag.session.complete"]
+
+[[graph.nodes]]
+name = "loamspine"
+binary = "loamspine"
+order = 8
+required = true
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+security_model = "tower_delegated"
+capabilities = ["spine.create", "entry.append", "spine.seal"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 9
+required = true
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "tower_delegated"
+capabilities = ["braid.create", "braid.get", "pipeline.attribute"]
+
+# ── Phase 10–11: Meta-Tier (optional) ───────────────────────────────────────
+
+[[graph.nodes]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 10
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "visualization"
+security_model = "tower_delegated"
+capabilities = ["viz.render", "viz.dashboard"]
+fallback = "skip"
+
+[[graph.nodes]]
+name = "squirrel"
+binary = "squirrel"
+order = 11
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "ai"
+security_model = "tower_delegated"
+capabilities = ["ai.query", "ai.complete"]
+fallback = "skip"

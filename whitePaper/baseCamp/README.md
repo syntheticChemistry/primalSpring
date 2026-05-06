@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: May 2026
-**Status**: Phase 58 — v0.9.24 — 84 experiments (18 tracks), 631 tests, 71 deploy graphs, **Desktop NUCLEUS live** (13 primals, 13/13 healthy on heartbeat, `desktop_nucleus.sh`), skunkBat wired as 13th primal (meta-tier, defense/recon), **The Rhizome micro-game** (roguelike on NUCLEUS — Barracuda noise, game loop, petalTongue scenes, provenance trio), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **provenance trio E2E resolved** (corrected wire schemas for rhizoCrypt, loamSpine, sweetGrass), **guideStone Level 4** (BTSP alias routing + flex key fixes shipped), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), multi-tier genetics, **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), 4 desktop app deploy graphs, **plasmidBin CI hub** (sole paid Actions repo, per-primal concurrency, signing roadmap)
+**Status**: Phase 59 — v0.9.24 — 85 experiments (19 tracks), 661 tests, 74 deploy graphs, **Foundation absorption** (primalSpring as validation pressure for `sporeGarden/foundation` sediment pipeline), **Discovery Escalation Hierarchy** (5-tier: Songbird → Neural API → UDS → socket registry → TCP), **Desktop NUCLEUS live** (13 primals, 13/13 healthy on heartbeat, `desktop_nucleus.sh`), skunkBat wired as 13th primal (meta-tier, defense/recon), **The Rhizome micro-game** (roguelike on NUCLEUS), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **guideStone Level 4** (BTSP alias routing + flex key fixes shipped), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), **plasmidBin CI hub** (sole paid Actions repo, per-primal concurrency, signing roadmap)
 
 ---
 
@@ -57,20 +57,21 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 16 | Composition Parity | exp094 | Does full NUCLEUS composition produce correct results via IPC? 19/19 checks. |
 | 17 | Cross-Architecture + Cellular Deployment | exp095–096, exp098 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? **15/15 checks.** Does cellular deployment from cell graphs validate? |
 | 18 | Desktop Substrate | exp099–exp106 | Does the full desktop stack work? Agentic loop, MCP tools, AI triage, storytelling, ludoSpring IPC, provenance replay, **The Rhizome roguelike**, **micro-desktop shell** |
+| 19 | Foundation Validation | exp107 | Does the foundation sediment pipeline run through NUCLEUS via Rust IPC? 8-phase validation (structural → discovery → health → provenance → storage → compute → ledger → attribution) |
 
 ## Current State (v0.9.24)
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 84 (18 tracks) |
-| Total tests | **631** (585 passed + 46 ignored; unit + integration + doc-tests + proptest) |
+| Experiments | 85 (19 tracks) |
+| Total tests | **661** (613 passed + 48 ignored; unit + integration + doc-tests + proptest) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
 | unsafe_code | Workspace-level `deny` (allow-listed for `std::env::set_var` in Rust 2024 entropy bootstrap) |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
-| Deploy graphs | **71 TOMLs** (6 fragments + 9 profiles + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 12 cell graphs + 4 desktop app graphs), fragment-first composition with `resolve = true` |
+| Deploy graphs | **74 TOMLs** (6 fragments + 9 profiles + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 1 composition + 13 root + 12 cell graphs + 4 desktop app graphs), fragment-first composition with `resolve = true` |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
 | Crypto architecture | Two-tier: published seed DNA → family keys → per-atomic purpose keys. Composition-level encrypt-at-rest. JWT deprecated within NUCLEUS (BearDog auth). |
 | Primal gap registry | All LD-01 through LD-10 RESOLVED. Pre-downstream gaps resolved. |
@@ -245,7 +246,7 @@ Pulled and validated all upstream primals. Key fixes absorbed:
 
 | Environment | Result | Notes |
 |-------------|--------|-------|
-| Local NUCLEUS (x86_64) | **12/12 alive** | Fixed beardog FAMILY_SEED, coralreef --rpc-bind |
+| Local NUCLEUS (x86_64) | **13/13 alive** | Fixed beardog FAMILY_SEED, coralreef --rpc-bind, skunkBat wired as 13th |
 | benchScale Docker (x86_64) | **13/13 alive** | Songbird security provider configured, nestgate JWT secret |
 | Remote fetch simulation | **13/13 checksums verified** | Simulated GitHub clone, BLAKE3 all-match |
 | Pixel payload (aarch64) | **13 binaries staged** | ELF 64-bit ARM, statically linked, stripped |

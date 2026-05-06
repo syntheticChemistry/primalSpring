@@ -310,7 +310,7 @@ Primitive types: `Text`, `Rect`, `Point`, `Line`, `Polygon`, `Arc`, `Path`, `Ima
 ### skunkBat — Defense / Recon (Phase 58)
 
 Socket: `skunkbat-{family_id}.sock`  
-TCP fallback: `9750`  
+TCP fallback: `9140`  
 `required = false` (meta-tier enhancer)
 
 | Namespace | Key Methods |

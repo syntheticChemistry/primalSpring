@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: April 16, 2026  
-**Status**: Phase 56 — 84 experiments, 18 tracks, Desktop NUCLEUS live, The Rhizome micro-game, 631 tests, 71 deploy graphs, 23 live gaps documented
+**Status**: Phase 59 — 85 experiments, 19 tracks, Desktop NUCLEUS live, foundation absorption, 661 tests, 74 deploy graphs, 13/13 BTSP FULL AEAD
 
 ---
 

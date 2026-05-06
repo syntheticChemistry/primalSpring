@@ -3,7 +3,39 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Phase 58: skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub (2026-05-03)
+## [Unreleased] — Phase 59: Foundation Absorption + Discovery Escalation + projectNUCLEUS Handback (2026-05-06)
+
+### Milestone
+- **Foundation layer absorption**: primalSpring as "validation pressure" for
+  `sporeGarden/foundation`. Graph schema extended (`fallback`, `purpose`),
+  structural checks evolved (fallback consistency, provenance trio requirement
+  for validation graphs), foundation validation graph in catalog.
+- **exp107_foundation_validation**: 8-phase Rust experiment validating the full
+  foundation sediment pipeline through live IPC (structural → discovery → health →
+  provenance → storage → compute → ledger → attribution).
+- **Discovery Escalation Hierarchy**: 5-tier mechanism (Songbird → biomeOS Neural
+  API → UDS → socket registry → TCP probing) implemented in `CompositionContext`.
+- **projectNUCLEUS Phase 59 handback resolved**: 5 gaps (checksums, operation nodes,
+  bonding policy, dag/provenance taxonomy, sweetGrass port).
+- **fieldMouse reclassified** as deployment class (biomeOS chimera for edge/IoT).
+
+### Added
+- `GraphNode.fallback: Option<String>` for graceful degradation (`"skip"`).
+- `GraphMetadata.purpose: Option<String>` for composition intent (`"validation"`, `"foundation"`).
+- `graphs/compositions/foundation_validation.toml` — 12-node NUCLEUS for sediment pipeline.
+- `experiments/exp107_foundation_validation/` — foundation validation via IPC.
+- `wateringHole/FOUNDATION_ABSORPTION_MAY06_2026.md` — downstream handoff.
+- Structural checks: `fallback="skip"` requires `required=false`; validation-purpose
+  graphs require provenance trio capabilities (`dag`, `ledger`, `attribution`).
+
+### Changed
+- Capability taxonomy: `"provenance"` removed from `ALL_CAPS` and TCP fallback table;
+  preserved as routing alias to `"dag"`. 8 graph TOMLs standardized to `by_capability = "dag"`.
+- `CompositionContext::discover()` as canonical entry point with escalation hierarchy.
+- Module splits: `deploy/validation.rs` (structural checks), `coordination/probes.rs`.
+- 661 tests (613 passed + 48 ignored), 85 experiments (19 tracks), 74 deploy graphs.
+
+## [0.9.24] — Phase 58: skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub (2026-05-03)
 
 ### Milestone
 - **skunkBat wired as 13th NUCLEUS primal** (meta-tier, defense/recon): composition

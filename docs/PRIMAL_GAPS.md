@@ -38,6 +38,16 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Last updated**: 2026-05-06 — **Phase 3: 13/13 primals FULL AEAD on wire. Discovery escalation hierarchy live.**
 > **All blurbed upstream debt resolved.** Wire Standard L3 at 13/13. BufReader audit at 13/13.
 >
+> **Foundation Absorption (May 6, 2026)** — primalSpring as validation pressure:
+> - `GraphNode.fallback: Option<String>` added for graceful degradation (`"skip"` on optional nodes)
+> - `GraphMetadata.purpose: Option<String>` added for composition intent (`"validation"`, `"foundation"`)
+> - Structural checks: `fallback="skip"` requires `required=false`; validation/foundation graphs
+>   require provenance trio capabilities (`dag`, `ledger`, `attribution`)
+> - `graphs/compositions/foundation_validation.toml` — full NUCLEUS graph for sediment pipeline
+> - `exp107_foundation_validation` — Rust IPC experiment validating the 8-phase sediment pipeline
+>   (structural → discovery → health → provenance → storage → compute → ledger → attribution)
+> - CHECKSUMS regenerated (1/18 changed: `deploy/mod.rs`)
+>
 > **projectNUCLEUS handback (Phase 59)** — 5 gaps handed up from ironGate downstream:
 > - **U1 CHECKSUMS stale** — RESOLVED: regenerated `validation/CHECKSUMS` with b3sum (7/18 changed).
 > - **U2 operation nodes missing by_capability** — RESOLVED: structural_checks now skips operation-only
@@ -49,7 +59,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >   legacy HTTP. Comment in `tolerances/mod.rs` updated. Upstream sweetGrass team should bind HTTP on 9850.
 >
 > **primalSpring local quality gate**: `cargo clippy` 0 warnings (full workspace), `cargo fmt` 0 violations,
-> 568 lib + 10 integration + 10 doc = 588 tests, all compositions validated.
+> 661 tests (613 passed + 48 ignored), 85 experiments (19 tracks), 74 deploy graphs.
 > Module splits: `deploy/validation.rs` (909→523), `coordination/probes.rs` (785→469).
 >
 > **BTSP Phase 3 COMPLETE** (May 2, 2026 — confirmed May 6 with upstream pulls):

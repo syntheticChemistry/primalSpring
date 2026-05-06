@@ -1,9 +1,9 @@
 # primalSpring Graph Deployments
 
-> 71 graph definitions for NUCLEUS composition validation and deployment.
+> 74 graph definitions for NUCLEUS composition validation and deployment.
 > Fragment-first composition: profiles declare fragments + delta nodes;
 > `load_graph()` resolves `resolve = true` graphs at parse time.
-> Date: April 28, 2026
+> Date: May 6, 2026
 
 ## NUCLEUS-First Principle
 
@@ -60,6 +60,9 @@ spring_validation/   5 files (template + manifest + 3 unique)
   ├─ nucleus_atomics_validate.toml   Multi-phase NUCLEUS validation
   ├─ crypto_negative_validate.toml   Rejection path testing
   └─ gaming_niche_validate.toml      Gaming niche composition validation
+
+compositions/        1 purpose-driven composition graph
+  └─ foundation_validation.toml    Foundation sediment pipeline (12 nodes, fallback=skip on optional)
 
 bonding/             5 genuinely unique bonding topologies
 multi_node/          5 multi-gate federation graphs

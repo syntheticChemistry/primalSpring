@@ -8,13 +8,13 @@
 | **Version** | 0.9.24 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 631 (585 passed + 46 ignored; unit + integration + doc-tests + proptest) |
-| **Experiments** | 84 (18 tracks) |
-| **Deploy Graphs** | 71 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 13 root + 12 cell graphs + 4 desktop app graphs) |
+| **Tests** | 661 (613 passed + 48 ignored; unit + integration + doc-tests + proptest) |
+| **Experiments** | 85 (19 tracks) |
+| **Deploy Graphs** | 74 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 1 composition + 13 root + 12 cell graphs + 4 desktop app graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 84 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 85 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **guideStone** | Level 4 — **live NUCLEUS** (13/13 BTSP authenticated, BTSP alias routing + flex key resolution shipped), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 8 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` (allow-listed for `std::env::set_var` in Rust 2024) |
@@ -56,15 +56,15 @@ primalSpring/
 │   ├── src/bin/
 │   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
 │   │   ├── primalspring_guidestone/ # guideStone: 9-layer composition certification (0–7 + 0.5 + 1.5)
-│   │   └── validate_all/          # Meta-validator: runs all 84 experiments
+│   │   └── validate_all/          # Meta-validator: runs all 85 experiments
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
 │       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
 │       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
-├── experiments/                   # 84 validation experiments (18 tracks)
+├── experiments/                   # 85 validation experiments (19 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 71 deploy graph TOMLs (fragment-first composition)
+├── graphs/                        # 74 deploy graph TOMLs (fragment-first composition)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
 │   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
 │   ├── patterns/                 # 4 coordination patterns: parallel, conditional, streaming, continuous
@@ -129,7 +129,7 @@ cargo test --workspace
 # Run live atomic tests (requires fetched binaries)
 cargo test --ignored
 
-# Run all 84 experiments (meta-validator)
+# Run all 85 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -197,7 +197,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 71 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
+primalSpring ships 74 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
 
 **Root-level graphs (13)**:
 
@@ -225,11 +225,16 @@ primalSpring ships 71 deploy graph TOMLs using fragment-first composition (all n
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
 | `three_node_covalent_cross_network.toml` | 3-node cross-network mesh | Covalent | GeneticLineage |
 
-**Spring validation graphs (4)** — `graphs/spring_validation/`: a parameterized
+**Spring validation graphs (5)** — `graphs/spring_validation/`: a parameterized
 `spring_validate_template.toml` + `spring_validate_manifest.toml` (9 compositions covering
 all 7 springs plus products), `nucleus_atomics_validate.toml` (all 4 NUCLEUS tiers),
-and `crypto_negative_validate.toml` (negative security boundary tests).
+`crypto_negative_validate.toml` (negative security boundary tests),
+and `gaming_niche_validate.toml` (ludoSpring gaming niche validation).
 All graphs include biomeOS Neural API as orchestration substrate.
+
+**Composition graphs (1)** — `graphs/compositions/`: `foundation_validation.toml` —
+full NUCLEUS composition for scientific validation via the foundation sediment pipeline
+(12 nodes, 3 optional with `fallback = "skip"`). Purpose: `"foundation"`.
 
 **Cross-spring graphs (2)** — `graphs/cross_spring/`: ecology validation
 (ET₀ → diversity → spectral) and full sweep across all springs.
@@ -357,7 +362,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of existing barraCuda WGSL shaders (826 kernels: matmul, attention, FFT, df64) compiled by coralReef and dispatched by toadStool.
 - **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
 - **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — modeling end-to-end data flow through primal compositions.
-- **13/13 critical experiments ALL PASS** — 84 total experiments across 18 tracks.
+- **13/13 critical experiments ALL PASS** — 85 total experiments across 19 tracks.
 - **46 cross-architecture binaries** (6 target triples, Tier 1 39/39) — genomeBin v5.1, zero C dependencies.
 
 ## Fragment-First Graph Consolidation (April 16, 2026)
@@ -412,7 +417,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 | C6: Proprioception (petalTongue) | **5/5 PASS** | Subscribe, apply, poll, showing |
 | C7: Full Interactive | **10/10 PASS** | Full cross-subsystem: session→render→export, game science, Squirrel health, NestGate |
 
-**43/44 (98%)** — up from 93%. See `docs/PRIMAL_GAPS.md` for the structured gap registry (8 open, zero critical).
+**43/44 (98%)** — up from 93%. See `docs/PRIMAL_GAPS.md` for the structured gap registry (6 LOW, zero critical).
 
 ## Live Integration Status (March 28, 2026)
 
@@ -434,10 +439,11 @@ and per-primal remediation plan (archived from March 2026 mobile deployment spik
 
 ## Docs
 
-- `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` — guideStone standard (5 properties, 6 layers, readiness levels)
-- `wateringHole/PRIMALSPRING_COMPOSITION_GUIDANCE.md` — Composition guidance + layered certification
-- `wateringHole/README.md` — Track structure and cross-spring context
-- `wateringHole/handoffs/` — Active + archived evolution handoffs
+- `wateringHole/README.md` — Outward-facing guidance index (7 living documents)
+- `wateringHole/FOUNDATION_ABSORPTION_MAY06_2026.md` — Foundation layer absorption handoff
+- `wateringHole/UPSTREAM_ABSORPTION_MAY06_2026.md` — 13/13 primal upstream absorption
+- `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role
+- `wateringHole/UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` — IPC patterns + downstream absorption
 - `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–25+ done — includes live validation matrix + 6 GAP-MATRIX items)
 - `specs/NUCLEUS_VALIDATION_MATRIX.md` — NUCLEUS capability validation matrix with particle model
 - `specs/MIXED_COMPOSITION_PATTERNS.md` — Particle model, layered validation (L0-L3), gap inventory, spring specialization guide

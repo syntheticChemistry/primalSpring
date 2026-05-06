@@ -417,4 +417,35 @@ pub(super) fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
             }
         }
     }
+
+    for node in &graph.graph.node {
+        if node.fallback.as_deref() == Some("skip") && node.required {
+            issues.push(format!(
+                "node '{}' has fallback=\"skip\" but is marked required",
+                node.name
+            ));
+        }
+    }
+
+    let purpose = graph
+        .graph
+        .metadata
+        .as_ref()
+        .and_then(|m| m.purpose.as_deref());
+    if matches!(purpose, Some("validation" | "foundation")) {
+        let node_caps: Vec<&str> = graph
+            .graph
+            .node
+            .iter()
+            .filter_map(|n| n.by_capability.as_deref())
+            .collect();
+        for required_cap in ["dag", "ledger", "attribution"] {
+            if !node_caps.contains(&required_cap) {
+                issues.push(format!(
+                    "purpose={} graph missing provenance capability '{required_cap}'",
+                    purpose.unwrap_or("validation"),
+                ));
+            }
+        }
+    }
 }

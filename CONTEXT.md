@@ -27,8 +27,8 @@ back upstream to primals and primalSpring.
 - **ecoPrimal/** — library crate (`primalspring`) + 3 binaries
   (`primalspring_primal` server, `primalspring_guidestone` 9-layer composition
   certification (Layers 0–7 + 0.5 + 1.5), `validate_all` runner)
-- **experiments/** — 84 validation binaries covering 18 tracks
-- **graphs/** — 71 deploy graph TOMLs using fragment-first composition (6 fragments +
+- **experiments/** — 85 validation binaries covering 19 tracks
+- **graphs/** — 74 deploy graph TOMLs using fragment-first composition (6 fragments +
   9 profiles + 4 patterns + 5 spring validation + 2 cross-spring + 5 bonding +
   2 chaos + 2 spring deploy + 3 downstream + 5 multi-node + 13 root-level +
   1 federation + 12 cell graphs + 4 desktop app graphs)
@@ -69,7 +69,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.24 Phase 58 — 631 tests (585 passed + 46 ignored), 84 experiments (18 tracks), 71 deploy graphs (fragment-first composition). **Desktop NUCLEUS**: 13-primal live substrate with `desktop_nucleus.sh`, 13/13 healthy on heartbeat, 4 desktop app graphs (shell, system monitor, esotericWebb, The Rhizome). **Phase 56 Desktop Substrate**: 8 new experiments (exp099–exp106) including The Rhizome roguelike micro-game and micro-desktop shell composition. **Live gap harvest**: 23 gaps documented (LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md). **Provenance trio E2E fully resolved**: corrected parameter schemas for rhizoCrypt, loamSpine, sweetGrass. **Two-tier crypto architecture**: published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys. **All 13 primals resolved** — zero upstream asks remaining. Upstream absorbed: NestGate v0.4.70 S48 (encrypt-at-rest), biomeOS v3.30 (deep debt), Songbird W178 (anyhow), Squirrel AN (HTTP providers + discovery + crypto), BearDog W75 (purpose-key module extraction), barraCuda Sprint 47b (self-registration + role-based naming), sweetGrass v0.7.28 (braid + anchor signing delegation), loamSpine (Tower-signed ledger entries), ToadStool S205-S208 (encrypted dispatch + self-registration + deep debt). Full IPC method map (`docs/NUCLEUS_IPC_METHOD_MAP.md`). Crypto bootstrap (`tools/nucleus_crypto_bootstrap.sh`).
+v0.9.24 Phase 59 — 661 tests (613 passed + 48 ignored), 85 experiments (19 tracks), 74 deploy graphs (fragment-first composition). **Desktop NUCLEUS**: 13-primal live substrate with `desktop_nucleus.sh`, 13/13 healthy on heartbeat, 4 desktop app graphs (shell, system monitor, esotericWebb, The Rhizome). **Phase 56 Desktop Substrate**: 8 new experiments (exp099–exp106) including The Rhizome roguelike micro-game and micro-desktop shell composition. **Live gap harvest**: 23 gaps documented (LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md). **Provenance trio E2E fully resolved**: corrected parameter schemas for rhizoCrypt, loamSpine, sweetGrass. **Two-tier crypto architecture**: published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys. **All 13 primals resolved** — zero upstream asks remaining. Upstream absorbed: NestGate v0.4.70 S48 (encrypt-at-rest), biomeOS v3.30 (deep debt), Songbird W178 (anyhow), Squirrel AN (HTTP providers + discovery + crypto), BearDog W75 (purpose-key module extraction), barraCuda Sprint 47b (self-registration + role-based naming), sweetGrass v0.7.28 (braid + anchor signing delegation), loamSpine (Tower-signed ledger entries), ToadStool S205-S208 (encrypted dispatch + self-registration + deep debt). Full IPC method map (`docs/NUCLEUS_IPC_METHOD_MAP.md`). Crypto bootstrap (`tools/nucleus_crypto_bootstrap.sh`).
 **plasmidBin decoupled** — all direct filesystem coupling to `../plasmidBin` removed (20 files).
 Binary discovery standardized: `$ECOPRIMALS_PLASMID_BIN` → `$XDG_DATA_HOME/ecoPrimals/plasmidBin`.
 `tools/fetch_primals.sh` bootstraps binaries from GitHub Releases. plasmidBin CI/CD

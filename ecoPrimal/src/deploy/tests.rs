@@ -23,6 +23,7 @@ fn test_node(name: &str, order: u32) -> GraphNode {
         operation: None,
         constraints: None,
         output: None,
+        fallback: None,
     }
 }
 
@@ -469,5 +470,129 @@ fn load_multi_node_data_federation() {
             !node.name.is_empty(),
             "every multi_node node should have an id alias → name"
         );
+    }
+}
+
+#[test]
+fn structural_checks_fallback_skip_required_inconsistency() {
+    let mut node = test_node("petaltongue", 10);
+    node.required = true;
+    node.fallback = Some("skip".to_owned());
+    let graph = test_graph("test", vec![node]);
+    let mut issues = Vec::new();
+    structural_checks(&graph, &mut issues);
+    assert!(issues
+        .iter()
+        .any(|i| i.contains("fallback=\"skip\"") && i.contains("required")));
+}
+
+#[test]
+fn structural_checks_fallback_skip_not_required_is_clean() {
+    let mut node = test_node("petaltongue", 1);
+    node.required = false;
+    node.fallback = Some("skip".to_owned());
+    let graph = test_graph("test", vec![node]);
+    let mut issues = Vec::new();
+    structural_checks(&graph, &mut issues);
+    assert!(
+        !issues.iter().any(|i| i.contains("fallback")),
+        "no fallback issues expected: {issues:?}"
+    );
+}
+
+#[test]
+fn structural_checks_validation_purpose_requires_provenance_trio() {
+    let mut node = test_node("beardog", 1);
+    node.by_capability = Some("security".to_owned());
+    let graph = DeployGraph {
+        graph: GraphMeta {
+            id: None,
+            name: "test_validation".to_owned(),
+            description: String::new(),
+            version: String::new(),
+            coordination: None,
+            metadata: Some(GraphMetadata {
+                purpose: Some("validation".to_owned()),
+                ..Default::default()
+            }),
+            bonding_policy: None,
+            node: vec![node],
+        },
+        nodes: Vec::new(),
+    };
+    let mut issues = Vec::new();
+    structural_checks(&graph, &mut issues);
+    assert!(issues.iter().any(|i| i.contains("'dag'")));
+    assert!(issues.iter().any(|i| i.contains("'ledger'")));
+    assert!(issues.iter().any(|i| i.contains("'attribution'")));
+}
+
+#[test]
+fn structural_checks_validation_purpose_with_trio_is_clean() {
+    let caps = ["security", "discovery", "dag", "ledger", "attribution"];
+    let nodes: Vec<GraphNode> = caps
+        .iter()
+        .enumerate()
+        .map(|(i, cap)| {
+            let mut n = test_node(cap, (i + 1) as u32);
+            n.by_capability = Some((*cap).to_owned());
+            n
+        })
+        .collect();
+    let graph = DeployGraph {
+        graph: GraphMeta {
+            id: None,
+            name: "test_validation_clean".to_owned(),
+            description: String::new(),
+            version: String::new(),
+            coordination: None,
+            metadata: Some(GraphMetadata {
+                purpose: Some("validation".to_owned()),
+                ..Default::default()
+            }),
+            bonding_policy: None,
+            node: nodes,
+        },
+        nodes: Vec::new(),
+    };
+    let mut issues = Vec::new();
+    structural_checks(&graph, &mut issues);
+    assert!(
+        !issues.iter().any(|i| i.contains("provenance")),
+        "no provenance issues expected: {issues:?}"
+    );
+}
+
+#[test]
+fn load_foundation_validation_graph() {
+    let graph =
+        load_graph(&graphs_path("compositions/foundation_validation.toml")).unwrap();
+    assert_eq!(graph.graph.name, "foundation_validation");
+    assert!(!graph.graph.node.is_empty());
+    let purpose = graph
+        .graph
+        .metadata
+        .as_ref()
+        .and_then(|m| m.purpose.as_deref());
+    assert_eq!(purpose, Some("foundation"));
+    let skip_nodes: Vec<&str> = graph
+        .graph
+        .node
+        .iter()
+        .filter(|n| n.fallback.as_deref() == Some("skip"))
+        .map(|n| n.name.as_str())
+        .collect();
+    assert!(
+        !skip_nodes.is_empty(),
+        "foundation graph should have fallback=skip nodes"
+    );
+    for node in &graph.graph.node {
+        if node.fallback.as_deref() == Some("skip") {
+            assert!(
+                !node.required,
+                "fallback=skip node '{}' should not be required",
+                node.name
+            );
+        }
     }
 }

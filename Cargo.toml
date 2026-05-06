@@ -94,6 +94,7 @@ members = [
     "experiments/exp104_rpgpt_provenance_replay",
     "experiments/exp105_rhizome_micro_game",
     "experiments/exp106_micro_desktop_shell",
+    "experiments/exp107_foundation_validation",
 ]
 
 [workspace.package]

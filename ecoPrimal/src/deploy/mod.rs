@@ -131,6 +131,12 @@ pub struct GraphMetadata {
     /// Composition model (e.g. `"nucleated"`, `"federated"`).
     #[serde(default)]
     pub composition_model: Option<String>,
+    /// Graph purpose (e.g. `"deployment"`, `"validation"`, `"foundation"`).
+    ///
+    /// Validation-purpose graphs have stricter structural requirements
+    /// (e.g. provenance trio nodes must be present and required).
+    #[serde(default)]
+    pub purpose: Option<String>,
 }
 
 /// A parsed fragment file (`[fragment]` + `[[fragment.nodes]]`).
@@ -220,6 +226,13 @@ pub struct GraphNode {
     /// Multi-node: output artifact label.
     #[serde(default)]
     pub output: Option<String>,
+    /// Graceful degradation for optional nodes (e.g. `"skip"`).
+    ///
+    /// Foundation-style graphs mark non-critical primals (petalTongue,
+    /// squirrel, coralReef) with `fallback = "skip"` so the composition
+    /// proceeds without them.
+    #[serde(default)]
+    pub fallback: Option<String>,
 }
 
 const fn default_spawn() -> bool {
