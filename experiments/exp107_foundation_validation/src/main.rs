@@ -128,7 +128,7 @@ fn phase_structural(v: &mut ValidationResult) {
     );
 }
 
-fn phase_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
     let caps = ctx.available_capabilities();
     v.check_bool(
         "discovery_found_primals",
@@ -394,7 +394,7 @@ fn main() {
 
                 v.section("Phase 2: Discovery");
                 let mut ctx = CompositionContext::from_live_discovery_with_fallback();
-                phase_discovery(v, &mut ctx);
+                phase_discovery(v, &ctx);
 
                 v.section("Phase 3: Health");
                 phase_health(v);

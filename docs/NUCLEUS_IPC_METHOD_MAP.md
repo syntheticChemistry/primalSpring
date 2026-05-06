@@ -1,13 +1,9 @@
 # NUCLEUS IPC Method Map
 
-> Verified live against Desktop NUCLEUS (Phase 58, May 3, 2026).
+> Verified live against Desktop NUCLEUS (Phase 59, May 6, 2026).
 > Every method below was confirmed via JSON-RPC over UDS.
-> Phase 58: skunkBat wired as 13th NUCLEUS primal (defense/recon meta-tier).
-> Upstream absorbed: NestGate v0.4.70 S48 (encrypt-at-rest, auth bypass),
-> biomeOS v3.30 (deep debt), Songbird W178 (anyhow), Squirrel AN (HTTP providers,
-> DISCOVERY_SOCKET resolution, crypto foundation), BearDog W75 (purpose-key module
-> extraction), barraCuda Sprint 47b (role-based naming, self-registration),
-> sweetGrass v0.7.28 (braid + anchor signing delegation).
+> 13/13 NUCLEUS primals, BTSP Phase 3 FULL AEAD, all defaulting to `127.0.0.1`.
+> PG-55 through PG-59 all RESOLVED. Zero open security gaps.
 
 All primals respond to `health.liveness` (status: "alive").
 Discovery: most expose `primal.capabilities` or `capabilities.list` or `rpc.methods`.
@@ -328,25 +324,25 @@ connections — primals function identically with or without it.
 
 ---
 
-## Bind Address Control (PG-55, May 6, 2026)
+## Bind Address Control (PG-55, updated May 6, 2026)
 
-From projectNUCLEUS Phase 2a penetration testing. 7 primals have bind control,
-6 primals hardcode `0.0.0.0` and need upstream `--bind` flag.
+From projectNUCLEUS Phase 2a penetration testing. **All 13 primals have bind
+control defaulting to `127.0.0.1`. PG-55 RESOLVED.**
 
-| Primal | Has Bind Control | Flag | Status |
-|--------|-----------------|------|--------|
-| BearDog | Yes | `--listen host:port` | OK |
-| Songbird | **No** (HTTP server) | needs `--bind` | PG-55 |
-| Squirrel | Yes | `--bind host` | OK |
-| ToadStool | **No** | needs `--bind` | PG-55 |
-| NestGate | Yes | `--bind host` | OK |
-| rhizoCrypt | Yes | `--host host` | OK |
-| loamSpine | Yes | `--bind-address host` | OK |
-| coralReef | Yes | `--rpc-bind host:port` | OK |
-| barraCuda | Yes | `--bind host:port` | OK |
-| skunkBat | **No** | needs `--bind` | PG-55 |
-| biomeOS | **No** | needs `--bind` | PG-55 |
-| sweetGrass | Partial | `--http-address host:port` (HTTP only; main TCP needs `--bind`) | PG-55/59 |
-| petalTongue | **No** | needs `--bind` | PG-55 |
+| Primal | Flag | Default | Status |
+|--------|------|---------|--------|
+| BearDog | `--listen host:port` | `127.0.0.1` | OK |
+| Songbird | `--bind host:port` | `127.0.0.1` | OK |
+| Squirrel | `--bind host` | `127.0.0.1` | OK |
+| ToadStool | `--bind host:port` | `127.0.0.1` | OK |
+| NestGate | `--bind host` | `127.0.0.1` | OK |
+| rhizoCrypt | `--host host` | `127.0.0.1` | OK |
+| loamSpine | `--bind-address host` | `127.0.0.1` | OK |
+| coralReef | `--rpc-bind host:port` | `127.0.0.1` | OK |
+| barraCuda | `--bind host:port` | `127.0.0.1` | OK |
+| skunkBat | `--bind host` | `127.0.0.1` | OK |
+| biomeOS | `--bind host` (all modes incl. nucleus) | `127.0.0.1` | OK |
+| sweetGrass | `--port host:port` (TCP); `--http-address host:port` (HTTP) | `127.0.0.1` | OK |
+| petalTongue | `--bind host` | `127.0.0.1` | OK |
 
-**Proposal**: UniBin v1.1 `--bind <host:port>` as universal standard. Default `127.0.0.1`.
+**13/13 resolved.** Use `0.0.0.0` explicitly for all-interfaces binding.

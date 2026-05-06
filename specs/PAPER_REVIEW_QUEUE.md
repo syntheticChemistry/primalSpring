@@ -1,6 +1,6 @@
 # primalSpring — Paper Review Queue
 
-**Date**: April 16, 2026  
+**Date**: May 6, 2026  
 **Status**: Phase 59 — 85 experiments, 19 tracks, Desktop NUCLEUS live, foundation absorption, 661 tests, 74 deploy graphs, 13/13 BTSP FULL AEAD
 
 ---

@@ -55,8 +55,8 @@ pub struct PrimalDeployProfile {
     pub discovery_tier: Option<String>,
     /// CLI flag this primal accepts for bind address control.
     ///
-    /// `None` means the primal has no bind control and hardcodes `0.0.0.0`.
-    /// See PG-55 for the UniBin `--bind` standardization proposal.
+    /// All 13 primals now have bind control defaulting to `127.0.0.1` (PG-55 resolved).
+    /// `None` here means the primal uses `--port host:port` instead of a dedicated flag.
     pub bind_flag: Option<&'static str>,
 }
 
@@ -104,18 +104,17 @@ fn port_env_key(name: &str) -> Option<&'static str> {
 
 /// Map primal names to their CLI bind address flag.
 ///
-/// From projectNUCLEUS Phase 2a security validation (May 6, 2026).
-/// 7 primals have bind control, 6 hardcode `0.0.0.0` (PG-55).
+/// PG-55 resolved: all 13 primals default to `127.0.0.1`.
+/// sweetGrass uses `--port host:port` (returns `--http-address` for HTTP endpoint).
 fn bind_flag(name: &str) -> Option<&'static str> {
     match name {
         "beardog" => Some("--listen"),
-        "squirrel" | "nestgate" | "barracuda" => Some("--bind"),
+        "songbird" | "toadstool" | "skunkbat" | "biomeos" | "petaltongue" | "squirrel"
+        | "nestgate" | "barracuda" => Some("--bind"),
         "loamspine" => Some("--bind-address"),
         "rhizocrypt" => Some("--host"),
         "coralreef" => Some("--rpc-bind"),
         "sweetgrass" => Some("--http-address"),
-        // PG-55: these primals need --bind added upstream
-        // "songbird" | "toadstool" | "skunkbat" | "biomeos" | "petaltongue" => None,
         _ => None,
     }
 }

@@ -2,6 +2,9 @@
 
 //! Generate the CHECKSUMS manifest for `primalspring_guidestone` P3 verification.
 //!
+//! Prefer `tools/regenerate_checksums.sh` (uses `b3sum`, no compile step).
+//! This Rust example is kept as a library-API reference for `checksums::generate_manifest`.
+//!
 //! Usage: `cargo run --example gen_checksums > validation/CHECKSUMS`
 
 fn main() {

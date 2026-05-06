@@ -1,6 +1,6 @@
 # primalSpring — Cross-Spring Evolution
 
-**Date**: April 2026
+**Date**: May 2026
 **Status**: Phase 59 — Foundation Absorption + Discovery Escalation (**13 primals live**, 13/13 healthy, BTSP 13/13 FULL AEAD). 85 experiments (19 tracks), 74 deploy graphs, 661 tests. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing).
 
 ---

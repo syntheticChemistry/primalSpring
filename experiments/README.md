@@ -128,7 +128,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 84 experiments use this):
+**Builder API** (preferred — all 85 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit
@@ -154,7 +154,7 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.9.17 (workspace), depends on ecoPrimal
+├── Cargo.toml    # version 0.9.24 (workspace), depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```

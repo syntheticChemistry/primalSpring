@@ -139,9 +139,8 @@ pub struct GraphMetadata {
     pub purpose: Option<String>,
     /// Bind policy for primals in this composition (e.g. `"localhost"`, `"lan"`, `"any"`).
     ///
-    /// From projectNUCLEUS Phase 2a: production compositions should use
-    /// `"localhost"` (default `127.0.0.1`). PG-55 tracks the `--bind` flag
-    /// standardization across primals.
+    /// Production compositions should use `"localhost"` (default `127.0.0.1`).
+    /// PG-55 resolved: all 13 primals support bind address control.
     #[serde(default)]
     pub bind_policy: Option<String>,
 }

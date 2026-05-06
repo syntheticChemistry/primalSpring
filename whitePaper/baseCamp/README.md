@@ -80,7 +80,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 84 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 85 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |

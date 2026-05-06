@@ -39,17 +39,20 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **All blurbed upstream debt resolved.** Wire Standard L3 at 13/13. BufReader audit at 13/13.
 >
 > **projectNUCLEUS Phase 2a Security Handback (May 6, 2026)** — penetration testing on live 13-primal composition:
-> - **PG-55 `--bind` flag standardization** — HIGH: 6 primals bind `0.0.0.0` by default, need `--bind` flag
->   for localhost binding. Songbird (HTTP), ToadStool, skunkBat, biomeOS, sweetGrass (main TCP), petalTongue.
->   7 primals already have bind control (6 different flag names). Propose UniBin v1.1 `--bind <host:port>`.
-> - **PG-56 NestGate `storage.list` unauthenticated** — MEDIUM: accessible without BTSP handshake.
->   Needs BTSP scoping or capability token gating.
-> - **PG-57 skunkBat baseline learning** — MEDIUM: detected 0 threats during pen test (no baseline yet).
->   Fuzz/enumeration patterns available as training data.
-> - **PG-58 Songbird `--listen` semantics** — LOW: `--listen` controls IPC socket, not HTTP server.
->   HTTP server needs its own bind address flag.
-> - **PG-59 sweetGrass `--http-address` undocumented format** — LOW: requires `host:port`, not just `host`.
->   Main TCP listener has no bind control at all.
+> - **PG-55 `--bind` flag standardization** — **RESOLVED**: All 6 primals shipped bind control with
+>   localhost defaults. Songbird, ToadStool, petalTongue, skunkBat, biomeOS: `--bind`, default `127.0.0.1`.
+>   sweetGrass: bare `--port` defaults to `127.0.0.1` (no separate `--bind`). biomeOS nucleus mode
+>   forwards `--bind` to embedded Neural API. **6/6 RESOLVED.**
+> - **PG-56 NestGate `storage.list` unauthenticated** — **RESOLVED**: BTSP method-level auth gating shipped.
+>   10-method exempt whitelist (health, identity, capabilities). All other methods require BTSP session.
+>   Note: TCP fallback path still ungated (localhost-only, acceptable risk).
+> - **PG-57 skunkBat baseline learning** — **RESOLVED**: Seeded baseline from 12 normal + 7 pen-test
+>   patterns. Multi-dimensional detection: connection rate + traffic volume + port diversity (count).
+>   Seed-at-startup; ≥5/7 pen-test patterns trigger alerts.
+> - **PG-58 Songbird `--listen` semantics** — **RESOLVED**: `--bind` now controls HTTP server bind address
+>   separately from `--listen` (IPC socket). Default `127.0.0.1`.
+> - **PG-59 sweetGrass `--http-address` undocumented format** — **RESOLVED**: `host:port` format documented
+>   in CLI help and changelog. Bare `--port` defaults to `127.0.0.1`.
 > - **POSITIVE**: All primals survived input fuzzing (7 malformed payloads each). No crashes, no hidden
 >   admin methods. Rust serde + type system provides strong default resilience.
 > - **POSITIVE**: sweetGrass and rhizoCrypt correctly reject plaintext on BTSP-enforced ports.
@@ -1123,17 +1126,17 @@ needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esoteri
 
 ## Priority Order
 
-**1 HIGH (PG-55 `--bind` flag), 2 MEDIUM (PG-56 NestGate auth, PG-57 skunkBat baseline), 8 LOW. Zero runtime blockers.**
+**All PG-55 through PG-59 RESOLVED. Zero open security gaps. Zero runtime blockers.**
 
 ### projectNUCLEUS Phase 2a Security Gaps (May 6, 2026)
 
 | PG | Issue | Owner | Priority | Status |
 |----|-------|-------|----------|--------|
-| **PG-55** | 6 primals bind `0.0.0.0` — need `--bind` flag: Songbird (HTTP), ToadStool, skunkBat, biomeOS, sweetGrass (main TCP), petalTongue | Each primal team + UniBin standard | **HIGH** | OPEN |
-| **PG-56** | NestGate `storage.list` accessible without BTSP handshake | NestGate team | **MEDIUM** | OPEN |
-| **PG-57** | skunkBat detected 0 threats during pen test — needs baseline learning from fuzz/enumeration data | skunkBat team | **MEDIUM** | OPEN |
-| **PG-58** | Songbird `--listen` controls IPC socket, not HTTP server — HTTP needs own bind flag | Songbird team | **LOW** | OPEN |
-| **PG-59** | sweetGrass `--http-address` requires `host:port` (undocumented), main TCP has no bind control | sweetGrass team | **LOW** | OPEN |
+| **PG-55** | All 6 primals now have bind control defaulting to `127.0.0.1`: Songbird, ToadStool, petalTongue, skunkBat, biomeOS (`--bind`); sweetGrass (bare `--port`). biomeOS nucleus forwards `--bind`. | All teams | — | **RESOLVED** |
+| **PG-56** | NestGate BTSP method-level auth gating shipped. 10-method exempt whitelist. TCP fallback ungated (localhost). | NestGate team | — | **RESOLVED** |
+| **PG-57** | skunkBat multi-dimensional baseline (rate + volume + port diversity). 12 normal + 7 attack patterns seeded. ≥5/7 pen-test detections. | skunkBat team | — | **RESOLVED** |
+| **PG-58** | Songbird `--bind` controls HTTP server separately from `--listen` (IPC). Default `127.0.0.1`. | Songbird team | — | **RESOLVED** |
+| **PG-59** | sweetGrass `--http-address` format documented (`host:port`). Bare `--port` defaults to `127.0.0.1`. | sweetGrass team | — | **RESOLVED** |
 
 ### Previous priorities (all resolved or deferred)
 

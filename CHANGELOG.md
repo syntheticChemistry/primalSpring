@@ -37,14 +37,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `GraphMetadata.bind_policy` — composition-level bind intent (`"localhost"`, `"lan"`, `"any"`).
 - 661 tests (613 passed + 48 ignored), 85 experiments (19 tracks), 74 deploy graphs.
 
-### Security (projectNUCLEUS Phase 2a handback)
-- **PG-55**: 6 primals hardcode `0.0.0.0` bind — need `--bind` flag (HIGH).
-  Songbird (HTTP), ToadStool, skunkBat, biomeOS, sweetGrass (main TCP), petalTongue.
-- **PG-56**: NestGate `storage.list` accessible without BTSP (MEDIUM).
-- **PG-57**: skunkBat detected 0 threats during pen test — needs baseline (MEDIUM).
+### Security (projectNUCLEUS Phase 2a handback — ALL RESOLVED)
+- **PG-55 RESOLVED**: All 13 primals now default to `127.0.0.1`. Songbird, ToadStool,
+  skunkBat, biomeOS, petalTongue shipped `--bind`; sweetGrass defaults bare `--port`
+  to localhost. biomeOS nucleus forwards `--bind`.
+- **PG-56 RESOLVED**: NestGate BTSP method-level auth gating. 10-method exempt whitelist.
+- **PG-57 RESOLVED**: skunkBat multi-dimensional baseline (rate + volume + port diversity).
+- **PG-58 RESOLVED**: Songbird `--bind` for HTTP, `--listen` for IPC (documented).
+- **PG-59 RESOLVED**: sweetGrass `--http-address` and `--port` formats documented.
 - **Positive**: All primals survived input fuzzing (7 malformed JSON-RPC each).
   No crashes, no hidden admin methods. Rust serde provides strong default resilience.
-- Bind flag table added to `docs/NUCLEUS_IPC_METHOD_MAP.md`.
+- Bind flag table in `docs/NUCLEUS_IPC_METHOD_MAP.md` — 13/13 OK.
+- `tools/regenerate_checksums.sh` — automated BLAKE3 checksum generation.
 
 ## [0.9.24] — Phase 58: skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub (2026-05-03)
 
