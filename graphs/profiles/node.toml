@@ -26,6 +26,13 @@ composition_model = "validation"
 fragments = ["tower_atomic", "node_atomic"]
 resolve = true
 
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 # Fragments provide: beardog, songbird, toadstool, barracuda, coralreef.
 # Delta: validation scaffold only.
 

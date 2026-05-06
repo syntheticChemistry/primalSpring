@@ -25,6 +25,15 @@ composition_model = "validation"
 fragments = ["nucleus", "meta_tier"]
 resolve = true
 
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+meta_tier = "tower_delegated"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+encryption_tiers.meta = "tower_delegated"
+
 # Fragment nucleus provides all 9 NUCLEUS primals.
 # Fragment meta_tier provides biomeos_neural_api, squirrel, petaltongue.
 # Delta: validation scaffold only.

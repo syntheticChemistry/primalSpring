@@ -85,7 +85,7 @@ depends_on = ["discover_remote"]
 output = "session_id"
 
 [graph.nodes.primal]
-by_capability = "provenance"
+by_capability = "dag"
 
 [graph.nodes.operation]
 name = "dag.session.create"
@@ -154,7 +154,7 @@ depends_on = ["replicate_data"]
 output = "dag_event"
 
 [graph.nodes.primal]
-by_capability = "provenance"
+by_capability = "dag"
 
 [graph.nodes.operation]
 name = "dag.event.append"
@@ -177,7 +177,7 @@ depends_on = ["record_replication"]
 output = "dag_federated"
 
 [graph.nodes.primal]
-by_capability = "provenance"
+by_capability = "dag"
 
 [graph.nodes.operation]
 name = "rootpulse.federate"

@@ -109,7 +109,7 @@ order = 7
 required = false
 depends_on = ["beardog"]
 health_method = "health"
-by_capability = "provenance"
+by_capability = "dag"
 capabilities = ["provenance.session", "provenance.merkle_root"]
 bond_role = "covalent_core"
 

@@ -38,6 +38,16 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > **Last updated**: 2026-05-06 — **Phase 3: 13/13 primals FULL AEAD on wire. Discovery escalation hierarchy live.**
 > **All blurbed upstream debt resolved.** Wire Standard L3 at 13/13. BufReader audit at 13/13.
 >
+> **projectNUCLEUS handback (Phase 59)** — 5 gaps handed up from ironGate downstream:
+> - **U1 CHECKSUMS stale** — RESOLVED: regenerated `validation/CHECKSUMS` with b3sum (7/18 changed).
+> - **U2 operation nodes missing by_capability** — RESOLVED: structural_checks now skips operation-only
+>   nodes (RPC calls) and checks `by_capability` inside nested `[graph.nodes.primal]` sub-tables.
+> - **U3 profile graphs missing bonding_policy** — RESOLVED: added `[graph.bonding_policy]` to 8 profiles.
+> - **U4 dag vs provenance taxonomy** — RESOLVED: standardized 8 graph refs from `provenance` to `dag`;
+>   removed `provenance` from `ALL_CAPS`, TCP fallback table, guidestone tiers. Routing alias preserved.
+> - **U5 sweetGrass port 39085 vs 9850** — RESOLVED: 9850 is canonical BTSP TCP. 39085 is deprecated
+>   legacy HTTP. Comment in `tolerances/mod.rs` updated. Upstream sweetGrass team should bind HTTP on 9850.
+>
 > **primalSpring local quality gate**: `cargo clippy` 0 warnings (full workspace), `cargo fmt` 0 violations,
 > 568 lib + 10 integration + 10 doc = 588 tests, all compositions validated.
 > Module splits: `deploy/validation.rs` (909→523), `coordination/probes.rs` (785→469).

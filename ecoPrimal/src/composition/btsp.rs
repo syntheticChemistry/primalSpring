@@ -171,7 +171,6 @@ pub fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u1
         ("shader", pn::CORALREEF, ek::CORALREEF_PORT, tol::TCP_FALLBACK_CORALREEF_PORT),
         ("ai", pn::SQUIRREL, ek::SQUIRREL_PORT, tol::TCP_FALLBACK_SQUIRREL_PORT),
         ("dag", pn::RHIZOCRYPT, ek::RHIZOCRYPT_PORT, tol::TCP_FALLBACK_RHIZOCRYPT_PORT),
-        ("provenance", pn::RHIZOCRYPT, ek::RHIZOCRYPT_PORT, tol::TCP_FALLBACK_RHIZOCRYPT_PORT),
         ("ledger", pn::LOAMSPINE, ek::LOAMSPINE_PORT, tol::TCP_FALLBACK_LOAMSPINE_PORT),
         ("commit", pn::SWEETGRASS, ek::SWEETGRASS_PORT, tol::TCP_FALLBACK_SWEETGRASS_PORT),
         ("attribution", pn::SWEETGRASS, ek::SWEETGRASS_PORT, tol::TCP_FALLBACK_SWEETGRASS_PORT),

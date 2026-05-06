@@ -289,7 +289,8 @@ pub const TCP_FALLBACK_SKUNKBAT_PORT: u16 = 9140;
 /// TCP fallback port for remote biomeOS (substrate).
 pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
 /// TCP fallback port for remote sweetGrass (attribution braids).
-/// ironGate HTTP endpoint on 39085; TCP at 9800 requires BTSP.
+/// Canonical BTSP TCP port is 9850. The legacy HTTP endpoint (39085) is
+/// deprecated; downstream consumers should use 9850 for all JSON-RPC.
 pub const TCP_FALLBACK_SWEETGRASS_PORT: u16 = 9850;
 /// TCP fallback port for remote `petalTongue` (visualization).
 pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9900;

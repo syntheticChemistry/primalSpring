@@ -399,7 +399,17 @@ pub(super) fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
         .and_then(|m| m.transport.as_deref());
     if transport == Some("uds_only") {
         for node in &graph.graph.node {
-            if node.by_capability.is_none() && !node.name.is_empty() && node.spawn {
+            let is_operation_only = node.operation.is_some() && node.primal.is_none();
+            if is_operation_only {
+                continue;
+            }
+            let has_by_capability = node.by_capability.is_some()
+                || node
+                    .primal
+                    .as_ref()
+                    .and_then(|p| p.get("by_capability"))
+                    .is_some();
+            if !has_by_capability && !node.name.is_empty() && node.spawn {
                 issues.push(format!(
                     "transport=uds_only but node '{}' has no by_capability (needed for UDS discovery)",
                     node.name

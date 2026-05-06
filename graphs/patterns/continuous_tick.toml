@@ -48,7 +48,7 @@ order = 3
 required = false
 depends_on = ["beardog"]
 health_method = "dag.health"
-by_capability = "provenance"
+by_capability = "dag"
 capabilities = ["dag.session.create", "health.liveness"]
 
 # ── Node 4: loamSpine ─────────────────────────────────────────────────

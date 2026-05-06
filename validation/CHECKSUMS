@@ -1,16 +1,16 @@
 # primalSpring guideStone CHECKSUMS — BLAKE3
-# Generated: 2026-05-02
+# Generated: 2026-05-06
 # Files: 18
 #
 # Verify: primalspring::checksums::verify_manifest()
-539784a9cd7b0577a82a36aa23933e6320b73fce2a7ca09b9f418d0d93ff877d  ecoPrimal/src/bin/primalspring_guidestone/main.rs
-d091878751a1f680753433198a6fa05e017b8070fbdc5f6cf5d0dcde658ee4d4  ecoPrimal/src/composition/mod.rs
-6aca6ed37facd99aa731b548a5b9b60cddb04cc192c7dbaa2914c81b6ff4803d  ecoPrimal/src/validation/mod.rs
-f34a172cfa7040d75d356f86c374c425dabb43eab1e1db2f8427155ab3ec853b  ecoPrimal/src/tolerances/mod.rs
-d3684263dd357d81a1ad6f5cca02721b13122d2a69dbca75253a5f54dedaa040  ecoPrimal/src/coordination/mod.rs
+ad7346912120bc6b2ad16da567072e8f61d363a3350515452c7e1c9495fa8a90  ecoPrimal/src/bin/primalspring_guidestone/main.rs
+d04fa83bcde95036d5cd03b801a907ffefa5b8577bd41ca359e48d93998e7420  ecoPrimal/src/composition/mod.rs
+76f8a6ea0302a6f623ae326ff3e909cf0cf026c5060568769b3b6e15b1c3cc28  ecoPrimal/src/validation/mod.rs
+b8200d4c1042d30c1bd1a5c691529e5787646b2f2db9dd8aab3eaaf6c232b6a7  ecoPrimal/src/tolerances/mod.rs
+de7cdbe0ae86960156750375a26c0eaa741b8dd3b8e5f02872e01179c27f119d  ecoPrimal/src/coordination/mod.rs
 e81c647e105d763f3ea323cf123d18bea1f03a46a6b5864b2b39f4d74439f4fc  ecoPrimal/src/bonding/mod.rs
-cf27ab1adf1763aa7eee43dba409fbf3a8f7dc1b6a8d75a983090c760c9b0ad5  ecoPrimal/src/btsp/mod.rs
-2051e147a7944ec7aefde04575258ae7336a7d6637c626d81dcd84ff7e456c32  ecoPrimal/src/deploy/mod.rs
+875b3254a21ceeacb2e20cc7c625875063e8681b01d0cdc7387381a4092271e0  ecoPrimal/src/btsp/mod.rs
+fcfeced3c5294f54541506001617006f64aa4975693247da25065d72624d72dd  ecoPrimal/src/deploy/mod.rs
 2b4bd2e938d738c7822767d7919ff8eeeeeecf3d42625df1fb8b9080c4e512f6  ecoPrimal/src/checksums.rs
 51444920040aed44c03eae5cc1d65e99d738a1cb06ffca777f88437f7514ab03  ecoPrimal/Cargo.toml
 de9357b2d241cf6db89d4dc978ed57db7da32eddb53bd288f09ce7f157af0e7e  graphs/fragments/tower_atomic.toml

@@ -22,7 +22,7 @@ pub fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResu
         ("Nest", &["storage", "ai"], BondType::Metallic),
         (
             "Provenance",
-            &["dag", "commit", "provenance"],
+            &["dag", "commit"],
             BondType::Metallic,
         ),
     ];

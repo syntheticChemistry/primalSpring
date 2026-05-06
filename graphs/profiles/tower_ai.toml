@@ -25,6 +25,13 @@ composition_model = "pure"
 fragments = ["tower_atomic", "meta_tier"]
 resolve = true
 
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_external = "ionic"
+meta_tier = "tower_delegated"
+encryption_tiers.tower = "full"
+encryption_tiers.meta = "tower_delegated"
+
 # Fragments provide: beardog, songbird, biomeos_neural_api, squirrel, petaltongue.
 # Delta: override squirrel order + add validation scaffold.
 

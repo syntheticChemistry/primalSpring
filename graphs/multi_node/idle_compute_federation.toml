@@ -113,7 +113,7 @@ depends_on = ["query_peer_capabilities"]
 output = "session_id"
 
 [graph.nodes.primal]
-by_capability = "provenance"
+by_capability = "dag"
 
 [graph.nodes.operation]
 name = "dag.session.create"
@@ -159,7 +159,7 @@ depends_on = ["dispatch_workload"]
 output = "dag_event"
 
 [graph.nodes.primal]
-by_capability = "provenance"
+by_capability = "dag"
 
 [graph.nodes.operation]
 name = "dag.event.append"

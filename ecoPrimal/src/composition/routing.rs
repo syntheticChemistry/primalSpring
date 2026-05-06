@@ -5,9 +5,11 @@
 /// All NUCLEUS capabilities that primalSpring discovers and authenticates.
 ///
 /// Single source of truth for `discover`, `from_live_discovery`, `PROACTIVE_CAPS`
-/// in `upgrade_btsp_clients`, and the TCP fallback table. Capabilities that
-/// are aliases for the same primal socket (e.g. `dag` and `provenance`
-/// both → rhizoCrypt) appear once each so guidestone reports per-capability.
+/// in `upgrade_btsp_clients`, and the TCP fallback table. Each entry is
+/// the *primary* capability domain for a primal. Aliases like `"provenance"`
+/// (→ rhizoCrypt, same as `"dag"`) are handled by the routing match in
+/// `capability_to_primal()` but do not appear here to avoid duplicate
+/// discovery attempts against the same socket.
 pub const ALL_CAPS: &[&str] = &[
     "security",
     "discovery",
@@ -18,7 +20,6 @@ pub const ALL_CAPS: &[&str] = &[
     "ai",
     "dag",
     "commit",
-    "provenance",
     "visualization",
     "ledger",
     "attribution",

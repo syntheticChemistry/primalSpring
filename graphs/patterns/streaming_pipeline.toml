@@ -60,5 +60,5 @@ order = 4
 required = false
 depends_on = ["primalspring"]
 health_method = "provenance.health"
-by_capability = "provenance"
+by_capability = "dag"
 capabilities = ["provenance.create_braid", "provenance.attribute"]

@@ -60,7 +60,6 @@ impl AtomicType {
                 "ai",
                 "dag",
                 "commit",
-                "provenance",
                 "visualization",
                 "ledger",
                 "attribution",
@@ -420,7 +419,7 @@ mod tests {
     #[test]
     fn validate_composition_by_capability_full_nucleus() {
         let result = validate_composition_by_capability(AtomicType::FullNucleus);
-        assert_eq!(result.primals.len(), 14);
+        assert_eq!(result.primals.len(), 13);
     }
 
     #[test]
@@ -455,14 +454,13 @@ mod tests {
     #[test]
     fn required_capabilities_full_nucleus_has_fourteen() {
         let caps = AtomicType::FullNucleus.required_capabilities();
-        assert_eq!(caps.len(), 14);
+        assert_eq!(caps.len(), 13);
         assert!(caps.contains(&"tensor"));
         assert!(caps.contains(&"shader"));
         assert!(caps.contains(&"visualization"));
         assert!(caps.contains(&"ai"));
         assert!(caps.contains(&"dag"));
         assert!(caps.contains(&"commit"));
-        assert!(caps.contains(&"provenance"));
         assert!(caps.contains(&"ledger"));
         assert!(caps.contains(&"attribution"));
     }

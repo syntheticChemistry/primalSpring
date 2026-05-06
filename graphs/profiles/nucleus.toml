@@ -25,6 +25,13 @@ composition_model = "validation"
 fragments = ["nucleus"]
 resolve = true
 
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nucleus = "metallic"
+nucleus_internal = "weak"
+encryption_tiers.tower = "full"
+encryption_tiers.nucleus = "hmac_plain"
+
 # Fragment nucleus provides all 9 NUCLEUS primals.
 # Delta: validation scaffold only.
 
