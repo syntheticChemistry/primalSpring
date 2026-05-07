@@ -1138,6 +1138,25 @@ needs UDS negotiation. See `graphs/downstream/downstream_manifest.toml` (esoteri
 | **PG-58** | Songbird `--bind` controls HTTP server separately from `--listen` (IPC). Default `127.0.0.1`. | Songbird team | — | **RESOLVED** |
 | **PG-59** | sweetGrass `--http-address` format documented (`host:port`). Bare `--port` defaults to `127.0.0.1`. | sweetGrass team | — | **RESOLVED** |
 
+### hotSpring V0.6.32 Handoff Gaps (May 7, 2026)
+
+Source: `infra/wateringHole/handoffs/HOTSPRING_V0632_PAPER_NOTEBOOKS_LOCAL_DEBT_HANDOFF_MAY07_2026.md`
+
+hotSpring shipped 12 paper notebooks (22 papers), 993/993 tests, and found 3 method name drifts
+in their validators. primalSpring method constants are clean (audited: `dag.session.create`,
+`braid.create`, `shader.compile.capabilities` — all correct in `niche.rs` and `composition/tests.rs`).
+
+| PG | Issue | Owner | Priority | Status |
+|----|-------|-------|----------|--------|
+| **PG-60** | rhizoCrypt silent timeout on UDS connect — accepts socket then hangs instead of returning error when not ready | rhizoCrypt team | P1 | **OPEN** |
+| **PG-61** | barraCuda missing `stats.entropy` — hotSpring QCD needs `stats.entropy(data) -> f64` as IPC-routable method | barraCuda team | P2 | **OPEN** |
+| **PG-62** | toadStool short timeout sensitivity — health.liveness fast-path requested, minimum recommended timeout undocumented | toadStool team | P2 | **OPEN** |
+| **PG-63** | Matplotlib Agg guidance conflict — `CONTENT_GUIDE.md` says "don't set Agg", `SPRING_EVOLUTION_TARGETS.md` says "use Agg" | sporePrint / wateringHole | P2 | **OPEN** |
+| **PG-64** | sporePrint notebook rendering pipeline missing — `render_notebooks.sh` not implemented, `auto-refresh.yml` absent, paper notebooks at `notebooks/papers/` not discoverable by glob | sporePrint team | P1 | **OPEN** |
+| **PG-65** | Method string drift risk — validator binaries use string literals that can silently drift from capability registry. Phase 60+ recommendation: CI check validating all `validate_capability()` and `ctx.call()` strings against `config/capability_registry.toml` | primalSpring / ecosystem | P2 | **OPEN** |
+
+**Local resolution**: `downstream_manifest.toml` hotSpring entry updated — added `rhizocrypt`, `loamspine`, `sweetgrass` to `depends_on` (provenance trio was missing).
+
 ### Previous priorities (all resolved or deferred)
 
 **High**: ~~PLASMIBIN-STALE~~ **RESOLVED** (April 10 — full musl-static rebuild, 12/12 ecoBin).

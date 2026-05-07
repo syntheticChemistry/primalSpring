@@ -58,6 +58,7 @@ available, notebooks can also call primals directly (see Tier 2 stubs).
 ## Visualization Standards
 
 - Use `matplotlib` (available everywhere, renders to static PNG)
+- Do NOT set `matplotlib.use('Agg')` — breaks inline rendering in JupyterHub and nbconvert CI
 - Save figures to `/tmp/primalspring_<notebook>_<chart>.png`
 - Color palette: `#2ecc71` (pass/ok), `#e74c3c` (fail), `#3498db` (info)
 - Always include chart titles with key numbers

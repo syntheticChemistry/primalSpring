@@ -65,7 +65,7 @@ owner = "hotSpring"
 domain = "qcd_physics"
 particle_profile = "proton_heavy"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
-depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
+depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
 guidestone_binary = "hotspring_guidestone"
 guidestone_readiness = 5
 guidestone_properties = { deterministic = true, traceable = true, self_verifying = true, env_agnostic = true, tolerance_documented = true }

@@ -37,6 +37,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   graphs require provenance trio capabilities (`dag`, `ledger`, `attribution`).
 
 ### Changed
+- `downstream_manifest.toml`: hotSpring `depends_on` now includes provenance trio
+  (`rhizocrypt`, `loamspine`, `sweetgrass`) — was missing, reported by hotSpring V0.6.32 handoff.
+- `NOTEBOOK_PATTERN.md`: corrected Matplotlib Agg guidance — do NOT set `matplotlib.use('Agg')`
+  (breaks inline rendering in JupyterHub/nbconvert CI). Tracks PG-63 upstream conflict.
+- `PRIMAL_GAPS.md`: absorbed 6 new gaps (PG-60–PG-65) from hotSpring handoff — rhizoCrypt
+  silent timeout, barraCuda `stats.entropy`, toadStool timeout sensitivity, sporePrint rendering
+  pipeline, Matplotlib Agg conflict, method string drift CI recommendation.
 - Capability taxonomy: `"provenance"` removed from `ALL_CAPS` and TCP fallback table;
   preserved as routing alias to `"dag"`. 8 graph TOMLs standardized to `by_capability = "dag"`.
 - `CompositionContext::discover()` as canonical entry point with escalation hierarchy.
