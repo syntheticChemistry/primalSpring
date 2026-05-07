@@ -1153,7 +1153,7 @@ in their validators. primalSpring method constants are clean (audited: `dag.sess
 | **PG-62** | toadStool short timeout sensitivity — health.liveness fast-path requested, minimum recommended timeout undocumented | toadStool team | P2 | **OPEN** |
 | **PG-63** | Matplotlib Agg guidance conflict — `CONTENT_GUIDE.md` says "don't set Agg", `SPRING_EVOLUTION_TARGETS.md` says "use Agg" | sporePrint / wateringHole | P2 | **OPEN** |
 | **PG-64** | sporePrint notebook rendering pipeline missing — `render_notebooks.sh` not implemented, `auto-refresh.yml` absent, paper notebooks at `notebooks/papers/` not discoverable by glob | sporePrint team | P1 | **OPEN** |
-| **PG-65** | Method string drift risk — validator binaries use string literals that can silently drift from capability registry. Phase 60+ recommendation: CI check validating all `validate_capability()` and `ctx.call()` strings against `config/capability_registry.toml` | primalSpring / ecosystem | P2 | **OPEN** |
+| **PG-65** | Method string drift CI check — `tools/check_method_strings.sh` validates 208 method strings against `config/capability_registry.toml`. Zero drift at ship. Pattern available for other springs. | primalSpring | P2 | **RESOLVED** |
 
 **Local resolution**: `downstream_manifest.toml` hotSpring entry updated — added `rhizocrypt`, `loamspine`, `sweetgrass` to `depends_on` (provenance trio was missing).
 

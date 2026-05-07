@@ -44,6 +44,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `PRIMAL_GAPS.md`: absorbed 6 new gaps (PG-60–PG-65) from hotSpring handoff — rhizoCrypt
   silent timeout, barraCuda `stats.entropy`, toadStool timeout sensitivity, sporePrint rendering
   pipeline, Matplotlib Agg conflict, method string drift CI recommendation.
+- PG-65 RESOLVED: `config/capability_registry.toml` (208 methods, per-domain ownership) +
+  `tools/check_method_strings.sh` CI script validates all method strings in source against
+  the registry. Zero drift at ship. Pattern available for other springs to absorb.
 - Capability taxonomy: `"provenance"` removed from `ALL_CAPS` and TCP fallback table;
   preserved as routing alias to `"dag"`. 8 graph TOMLs standardized to `by_capability = "dag"`.
 - `CompositionContext::discover()` as canonical entry point with escalation hierarchy.
