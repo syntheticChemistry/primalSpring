@@ -259,6 +259,12 @@ pub const TCP_WRITE_TIMEOUT_SECS: u64 = 5;
 // Port assignments confirmed against ironGate live deployment (2026-05-04).
 // Canonical source: plasmidBin/ports.env
 
+/// Default host for TCP fallback discovery (Tier 5).
+///
+/// Used when `PRIMALSPRING_HOST` is not set. Loopback-only by default;
+/// containers and remote compositions override via env var.
+pub const DEFAULT_HOST: &str = "127.0.0.1";
+
 /// TCP fallback port for remote `BearDog` (security).
 pub const TCP_FALLBACK_BEARDOG_PORT: u16 = 9100;
 /// TCP fallback port for remote Songbird (discovery/mesh).

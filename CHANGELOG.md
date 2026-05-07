@@ -3,6 +3,34 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 60: Upstream Absorption + Deep Debt + Registry Evolution (2026-05-07)
+
+### Added
+- **Capability registry expansion** — 290 → 366 registered methods across 50+ domains.
+  New domains: `content.*` (NestGate CAS), `viz.*` (petalTongue), `beacon.*`/`lineage.*`/`tls.*`
+  (BearDog), `math.*`/`rng.*` (barraCuda), `ionic.*`/`tools.*` (primalSpring), plus
+  `crypto.did_from_key`, `network.beacon_exchange`, `storage.list_blobs`/`storage.blob_exists`.
+- **Graph validator spring-domain exclusion** — `check_graph_methods.sh` rewritten with
+  `--strict` mode. Spring-domain capabilities (91 advisory) separated from primal drift (0).
+  Zero false positives in default mode.
+- **All 14 upstream sovereignty gaps absorbed** — PT-1→PT-5 (petalTongue), NG-1→NG-4 (NestGate),
+  RP-1→RP-5 (biomeOS+LoamSpine+BearDog), PG-60 (rhizoCrypt), PG-62 (toadStool) all resolved
+  by primal teams. Registry and gap docs updated to reflect closures.
+
+### Changed
+- **Deep debt evolution** — `primalspring_primal` binary modularized (762L → 5 modules),
+  probe cache generalized, profile registry centralized, `blake3` pure Rust, deploy warnings,
+  2 experiments refactored (exp096: 1352L→547L, exp105: 1327L→510L).
+- **PRIMAL_GAPS.md** — comprehensive update: 14 sovereignty gaps marked RESOLVED, barraCuda
+  shader absorption and `stats.entropy` marked RESOLVED per handoff.
+- `check_graph_methods.sh` — spring-domain exclusion filter for 91 advisory methods.
+- Version bumped to **0.9.25**.
+
+### Metrics
+- **662 tests** (614 passed + 48 ignored), **0 clippy warnings**, **0 primal drift**.
+- **208/208** source method strings validated, **366** registered, **353** graph refs checked.
+- **85 experiments**, **74 deploy graphs**, **18 checksummed files**.
+
 ## [Unreleased] — Phase 59: Foundation Absorption + Security Hardening + projectNUCLEUS Phase 2a (2026-05-06)
 
 ### Milestone

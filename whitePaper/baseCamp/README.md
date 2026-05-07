@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: May 2026
-**Status**: Phase 59 — v0.9.24 — 85 experiments (19 tracks), 661 tests, 74 deploy graphs, **Foundation absorption** (primalSpring as validation pressure for `sporeGarden/foundation` sediment pipeline), **Discovery Escalation Hierarchy** (5-tier: Songbird → Neural API → UDS → socket registry → TCP), **Desktop NUCLEUS live** (13 primals, 13/13 healthy on heartbeat, `desktop_nucleus.sh`), skunkBat wired as 13th primal (meta-tier, defense/recon), **The Rhizome micro-game** (roguelike on NUCLEUS), **micro-desktop shell** (biomeOS routing, health bar, multi-session petalTongue), **guideStone Level 4** (BTSP alias routing + flex key fixes shipped), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **two-tier crypto architecture** (seed → family → purpose keys), **genomeBin v5.1** (46 binaries / 6 targets), **biomeOS Neural API** (605 capabilities, semantic routing, graph execution), **plasmidBin CI hub** (sole paid Actions repo, per-primal concurrency, signing roadmap)
+**Date**: May 7, 2026
+**Status**: Phase 60 — v0.9.25 — 85 experiments (19 tracks), 662 tests, 74 deploy graphs, **366 registered capability methods** across 50+ domains, **All 14 upstream sovereignty gaps resolved** (PT-1→PT-5 petalTongue, NG-1→NG-4 NestGate, RP-1→RP-5 biomeOS/LoamSpine/BearDog, PG-60 rhizoCrypt, PG-62 toadStool), **Deep debt evolution** (binary modularization, probe cache, profile registry, blake3 pure Rust, 2 experiment refactors), **Graph validator** with spring-domain exclusion (0 primal drift, 91 advisory), **Content-addressed storage** (NestGate 8 new methods), **RootPulse workflow** fully executable (6/6 phases), **Desktop NUCLEUS live** (13 primals, 13/13 healthy), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **genomeBin v5.1** (46 binaries / 6 targets), **biomeOS Neural API** (605+ capabilities, semantic routing, graph execution, standalone executor)
 
 ---
 

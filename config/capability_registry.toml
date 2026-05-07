@@ -3,8 +3,12 @@
 # Canonical Capability Registry — primalSpring
 #
 # Every JSON-RPC method string used in primalSpring source code (library,
-# guidestone, experiments) must appear in this registry. The CI check
-# `tools/check_method_strings.sh` verifies this invariant.
+# guidestone, experiments) AND referenced in canonical graph TOML files
+# must appear in this registry.
+#
+# CI checks:
+#   tools/check_method_strings.sh — validates Rust source against this file
+#   tools/check_graph_methods.sh  — validates graph TOML capabilities (advisory)
 #
 # Structure: [domain] with `methods = [...]` listing all known methods in
 # that domain. `owner` names the primal that serves them. `test_fixtures`
@@ -18,6 +22,8 @@ owner = "all"
 methods = [
     "health.check",
     "health.liveness",
+    "health.monitor",
+    "health.probe",
     "health.readiness",
 ]
 
@@ -51,6 +57,7 @@ methods = [
     "coordination.neural_api_status",
     "coordination.probe_capability",
     "coordination.probe_primal",
+    "coordination.transform",
     "coordination.validate_composition",
     "coordination.validate_composition_by_capability",
 ]
@@ -58,9 +65,15 @@ methods = [
 [composition]
 owner = "primalspring"
 methods = [
+    "composition.full_health",
+    "composition.gaming_niche_health",
     "composition.nest_health",
+    "composition.nest_viz_health",
+    "composition.node_ai_health",
     "composition.node_health",
     "composition.nucleus_health",
+    "composition.provenance_health",
+    "composition.tower_ai_health",
     "composition.tower_health",
     "composition.tower_squirrel_health",
 ]
@@ -72,6 +85,7 @@ methods = [
     "graph.continuous",
     "graph.deploy",
     "graph.execute",
+    "graph.execution",
     "graph.list",
     "graph.pipeline",
     "graph.rollback",
@@ -84,6 +98,7 @@ methods = [
 [nucleus]
 owner = "biomeos"
 methods = [
+    "nucleus.health_poll",
     "nucleus.start",
     "nucleus.stop",
 ]
@@ -92,6 +107,7 @@ methods = [
 owner = "biomeos"
 methods = [
     "federation.configure",
+    "federation.health",
     "federation.health_check",
     "federation.join",
 ]
@@ -100,6 +116,7 @@ methods = [
 owner = "biomeos"
 methods = [
     "topology.get",
+    "topology.metrics",
     "topology.proprioception",
     "topology.rescan",
 ]
@@ -119,6 +136,7 @@ methods = [
     "discovery.discover_all",
     "discovery.find_primals",
     "discovery.https_probe",
+    "discovery.peers",
     "discovery.protocols",
 ]
 
@@ -127,12 +145,16 @@ owner = "songbird"
 methods = [
     "network.birdsong.beacon",
     "network.birdsong.decrypt",
+    "network.beacon_exchange",
+    "network.dns_resolve",
     "network.federation.peers",
+    "network.http_request",
     "network.nat_type",
     "network.onion.start",
     "network.onion.status",
     "network.stun",
     "network.tls",
+    "network.tls_connect",
     "network.tor.status",
 ]
 
@@ -146,7 +168,10 @@ methods = [
 [ipc]
 owner = "songbird"
 methods = [
+    "ipc.discover",
+    "ipc.heartbeat",
     "ipc.list",
+    "ipc.register",
     "ipc.resolve",
 ]
 
@@ -154,30 +179,49 @@ methods = [
 owner = "songbird"
 methods = [
     "http.get",
+    "http.post",
+    "http.request",
 ]
 
 [ai]
 owner = "squirrel"
 methods = [
     "ai.chat",
+    "ai.complete",
+    "ai.coordinate",
+    "ai.embed",
     "ai.health",
+    "ai.infer",
+    "ai.inference",
+    "ai.list_providers",
+    "ai.models",
     "ai.query",
 ]
 
 [crypto]
 owner = "beardog"
 methods = [
+    "crypto.decrypt",
+    "crypto.did_from_key",
+    "crypto.encrypt",
+    "crypto.family_seed",
     "crypto.generate_keypair",
     "crypto.hash",
+    "crypto.identity",
     "crypto.ionic_bond.capabilities",
+    "crypto.keygen",
     "crypto.sign",
+    "crypto.sign_ed25519",
     "crypto.verify",
+    "crypto.verify_ed25519",
 ]
 
 [btsp]
 owner = "beardog"
 methods = [
+    "btsp.handshake",
     "btsp.negotiate",
+    "btsp.server.status",
 ]
 
 [genetic]
@@ -188,6 +232,27 @@ methods = [
     "genetic.generate_lineage_proof",
     "genetic.mix_entropy",
     "genetic.verify_lineage",
+]
+
+[beacon]
+owner = "beardog"
+methods = [
+    "beacon.generate",
+    "beacon.try_decrypt",
+]
+
+[lineage]
+owner = "beardog"
+methods = [
+    "lineage.challenge",
+]
+
+[tls]
+owner = "beardog"
+methods = [
+    "tls.derive_handshake_secrets",
+    "tls.derive_secrets",
+    "tls.sign_handshake",
 ]
 
 [birdsong]
@@ -213,26 +278,38 @@ methods = [
 [bonding]
 owner = "primalspring"
 methods = [
+    "bonding.accept",
     "bonding.modify_scope",
     "bonding.propose",
     "bonding.status",
     "bonding.terminate",
 ]
 
+[ionic]
+owner = "primalspring"
+methods = [
+    "ionic.meter",
+]
+
 [visualization]
 owner = "petaltongue"
 methods = [
+    "visualization.capabilities",
+    "visualization.export",
     "visualization.render",
     "visualization.render.dashboard",
     "visualization.render.grammar",
     "visualization.render.scene",
     "visualization.render.stream",
+    "visualization.session.create",
+    "visualization.session.list",
 ]
 
 [interaction]
 owner = "petaltongue"
 methods = [
     "interaction.poll",
+    "interaction.sensor_stream.poll",
     "interaction.subscribe",
 ]
 
@@ -242,12 +319,23 @@ methods = [
     "render.dashboard",
 ]
 
+[viz]
+owner = "petaltongue"
+methods = [
+    "viz.dashboard",
+    "viz.query",
+    "viz.render",
+    "viz.stream",
+]
+
 [dag]
 owner = "rhizocrypt"
 methods = [
     "dag.dehydration.trigger",
     "dag.event.append",
+    "dag.event.append_batch",
     "dag.frontier.get",
+    "dag.health",
     "dag.merkle.proof",
     "dag.merkle.root",
     "dag.merkle.verify",
@@ -256,7 +344,9 @@ methods = [
     "dag.session.get",
     "dag.session.list",
     "dag.slice.checkout",
+    "dag.slice.get",
     "dag.vertex.get",
+    "dag.vertex.query",
 ]
 
 [spine]
@@ -291,7 +381,29 @@ methods = [
 [certificate]
 owner = "loamspine"
 methods = [
+    "certificate.get",
+    "certificate.loan",
     "certificate.mint",
+    "certificate.return",
+    "certificate.transfer",
+]
+
+[permanence]
+owner = "loamspine"
+methods = [
+    "permanence.commit_session",
+]
+
+[proof]
+owner = "loamspine"
+methods = [
+    "proof.generate_inclusion",
+]
+
+[anchor]
+owner = "loamspine"
+methods = [
+    "anchor.publish",
 ]
 
 [braid]
@@ -300,6 +412,7 @@ methods = [
     "braid.commit",
     "braid.create",
     "braid.get",
+    "braid.sync",
 ]
 
 [anchoring]
@@ -312,16 +425,25 @@ methods = [
 [provenance]
 owner = "sweetgrass"
 methods = [
+    "provenance.attribute",
+    "provenance.braid",
+    "provenance.certify",
     "provenance.commit",
     "provenance.event.append",
     "provenance.export_provo",
     "provenance.graph",
+    "provenance.health",
+    "provenance.lineage",
+    "provenance.merkle_root",
+    "provenance.session",
     "provenance.session.create",
+    "provenance.verify",
 ]
 
 [attribution]
 owner = "sweetgrass"
 methods = [
+    "attribution.calculate_rewards",
     "attribution.chain",
     "attribution.claim",
     "attribution.resolve",
@@ -333,15 +455,42 @@ methods = [
     "contribution.record",
 ]
 
+[content]
+owner = "nestgate"
+methods = [
+    "content.collections",
+    "content.exists",
+    "content.get",
+    "content.list",
+    "content.promote",
+    "content.publish",
+    "content.put",
+    "content.resolve",
+]
+
 [storage]
 owner = "nestgate"
 methods = [
+    "storage.blob_exists",
+    "storage.delete",
     "storage.exists",
+    "storage.fetch",
+    "storage.fetch_external",
     "storage.get",
+    "storage.health",
     "storage.list",
+    "storage.list_blobs",
+    "storage.namespaces.list",
+    "storage.object.size",
     "storage.put",
+    "storage.replicate",
     "storage.retrieve",
+    "storage.retrieve_blob",
+    "storage.retrieve_range",
+    "storage.retrieve_stream",
     "storage.store",
+    "storage.store_blob",
+    "storage.store_stream",
 ]
 
 [secrets]
@@ -355,7 +504,19 @@ methods = [
 owner = "toadstool"
 methods = [
     "compute.admin",
+    "compute.capabilities",
+    "compute.cg_solver",
+    "compute.cpu_fallback",
     "compute.dispatch",
+    "compute.dispatch.result",
+    "compute.dispatch.submit",
+    "compute.execute",
+    "compute.gpu",
+    "compute.gradient_flow",
+    "compute.health",
+    "compute.offload",
+    "compute.pool",
+    "compute.precision",
     "compute.status",
     "compute.submit",
 ]
@@ -383,21 +544,48 @@ methods = [
 [tensor]
 owner = "barracuda"
 methods = [
+    "tensor.add",
     "tensor.batch.submit",
+    "tensor.create",
+    "tensor.execute",
     "tensor.matmul",
     "tensor.matmul_inline",
+    "tensor.scale",
+]
+
+[math]
+owner = "barracuda"
+methods = [
+    "math.activation",
+    "math.cholesky",
+    "math.matvec",
+    "math.sigmoid",
+    "math.stats",
+    "math.tensor",
+]
+
+[rng]
+owner = "barracuda"
+methods = [
+    "rng.uniform",
 ]
 
 [stats]
 owner = "barracuda"
 methods = [
+    "stats.correlation",
+    "stats.entropy",
     "stats.mean",
+    "stats.median",
+    "stats.std",
     "stats.std_dev",
+    "stats.variance",
 ]
 
 [linalg]
 owner = "barracuda"
 methods = [
+    "linalg.eigenvalues",
     "linalg.solve",
 ]
 
@@ -405,18 +593,27 @@ methods = [
 owner = "barracuda"
 methods = [
     "spectral.fft",
+    "spectral.power_spectrum",
 ]
 
 [shader]
-owner = "barracuda"
+owner = "coralreef"
 methods = [
+    "shader.bio",
     "shader.compile.capabilities",
+    "shader.compile.spirv",
+    "shader.compile.wgsl",
+    "shader.compile.wgsl.multi",
+    "shader.dispatch",
+    "shader.health",
+    "shader.validate",
 ]
 
 [stun]
 owner = "songbird"
 methods = [
     "stun.detect_nat_type",
+    "stun.discover",
     "stun.get_public_address",
 ]
 
@@ -437,9 +634,13 @@ methods = [
 [mesh]
 owner = "songbird"
 methods = [
+    "mesh.announce",
     "mesh.auto_discover",
+    "mesh.connect",
+    "mesh.find_path",
     "mesh.init",
     "mesh.peers",
+    "mesh.relay",
 ]
 
 [mcp]
@@ -451,7 +652,15 @@ methods = [
 [tool]
 owner = "primalspring"
 methods = [
+    "tool.execute",
     "tool.list",
+]
+
+[tools]
+owner = "primalspring"
+methods = [
+    "tools.call",
+    "tools.list",
 ]
 
 [rpc]
@@ -469,7 +678,11 @@ methods = [
 [proprioception]
 owner = "biomeos"
 methods = [
+    "proprioception.apply",
     "proprioception.get",
+    "proprioception.poll",
+    "proprioception.showing",
+    "proprioception.subscribe",
 ]
 
 [primal]
@@ -494,7 +707,19 @@ methods = [
 [inference]
 owner = "squirrel"
 methods = [
+    "inference.complete",
+    "inference.embed",
     "inference.models",
+    "inference.register_provider",
+]
+
+[squirrel]
+owner = "squirrel"
+methods = [
+    "squirrel.context.list",
+    "squirrel.context.push",
+    "squirrel.providers",
+    "squirrel.query",
 ]
 
 [game]
@@ -520,7 +745,9 @@ methods = [
 [webb]
 owner = "esotericwebb"
 methods = [
+    "webb.content.list",
     "webb.liveness",
+    "webb.narrative.status",
     "webb.scene.current",
 ]
 

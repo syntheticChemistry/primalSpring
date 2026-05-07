@@ -306,6 +306,11 @@ fn resolve_fragments(graph: &mut DeployGraph, graph_path: &Path) -> Result<(), D
     for frag_name in &fragment_names {
         let frag_path = fragments_dir.join(format!("{frag_name}.toml"));
         if !frag_path.is_file() {
+            tracing::warn!(
+                fragment = %frag_name,
+                expected_path = %frag_path.display(),
+                "declared fragment has no matching file, skipping"
+            );
             continue;
         }
         let frag_contents = std::fs::read_to_string(&frag_path)?;
@@ -319,6 +324,10 @@ fn resolve_fragments(graph: &mut DeployGraph, graph_path: &Path) -> Result<(), D
     }
 
     if base_nodes.is_empty() {
+        tracing::warn!(
+            graph = %graph_path.display(),
+            "all declared fragments resolved to zero nodes"
+        );
         return Ok(());
     }
 

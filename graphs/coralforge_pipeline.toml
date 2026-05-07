@@ -72,7 +72,7 @@ required = true
 depends_on = ["hotspring"]
 health_method = "shader.health"
 by_capability = "shader"
-capabilities = ["shader.bio", "shader.compile"]
+capabilities = ["shader.bio", "shader.compile.wgsl"]
 
 # ── Node 6: ToadStool (GPU dispatch) ───────────────────────────────────
 [[graph.nodes]]

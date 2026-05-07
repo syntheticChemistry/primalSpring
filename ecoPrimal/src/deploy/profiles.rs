@@ -11,7 +11,56 @@ use std::collections::HashMap;
 
 use super::DeployGraph;
 use crate::launcher::{LaunchProfile, load_launch_profiles};
-use crate::{env_keys, tolerances};
+use crate::{env_keys, primal_names, tolerances};
+
+// ── Primal profile registry ─────────────────────────────────────────
+//
+// Single source of truth for per-primal operational knowledge:
+// TCP fallback port, port env var, and CLI bind flag.
+// Adding a 14th primal is a single entry here.
+
+struct PrimalProfileEntry {
+    name: &'static str,
+    tcp_port: u16,
+    port_env: &'static str,
+    bind_flag: &'static str,
+}
+
+/// All 13 NUCLEUS primals with their operational metadata.
+///
+/// Port assignments confirmed against ironGate live deployment (2026-05-04).
+/// PG-55 resolved: all 13 primals default to `127.0.0.1`.
+static PRIMAL_REGISTRY: &[PrimalProfileEntry] = &[
+    PrimalProfileEntry { name: primal_names::BEARDOG,     tcp_port: tolerances::TCP_FALLBACK_BEARDOG_PORT,     port_env: env_keys::BEARDOG_PORT,     bind_flag: "--listen" },
+    PrimalProfileEntry { name: primal_names::SONGBIRD,    tcp_port: tolerances::TCP_FALLBACK_SONGBIRD_PORT,    port_env: env_keys::SONGBIRD_PORT,    bind_flag: "--bind" },
+    PrimalProfileEntry { name: primal_names::SQUIRREL,    tcp_port: tolerances::TCP_FALLBACK_SQUIRREL_PORT,    port_env: env_keys::SQUIRREL_PORT,    bind_flag: "--bind" },
+    PrimalProfileEntry { name: primal_names::TOADSTOOL,   tcp_port: tolerances::TCP_FALLBACK_TOADSTOOL_PORT,   port_env: env_keys::TOADSTOOL_PORT,   bind_flag: "--bind" },
+    PrimalProfileEntry { name: primal_names::NESTGATE,    tcp_port: tolerances::TCP_FALLBACK_NESTGATE_PORT,    port_env: env_keys::NESTGATE_PORT,    bind_flag: "--bind" },
+    PrimalProfileEntry { name: primal_names::RHIZOCRYPT,  tcp_port: tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT,  port_env: env_keys::RHIZOCRYPT_PORT,  bind_flag: "--host" },
+    PrimalProfileEntry { name: primal_names::LOAMSPINE,   tcp_port: tolerances::TCP_FALLBACK_LOAMSPINE_PORT,   port_env: env_keys::LOAMSPINE_PORT,   bind_flag: "--bind-address" },
+    PrimalProfileEntry { name: primal_names::CORALREEF,   tcp_port: tolerances::TCP_FALLBACK_CORALREEF_PORT,   port_env: env_keys::CORALREEF_PORT,   bind_flag: "--rpc-bind" },
+    PrimalProfileEntry { name: primal_names::BARRACUDA,   tcp_port: tolerances::TCP_FALLBACK_BARRACUDA_PORT,   port_env: env_keys::BARRACUDA_PORT,   bind_flag: "--bind" },
+    PrimalProfileEntry { name: primal_names::SKUNKBAT,    tcp_port: tolerances::TCP_FALLBACK_SKUNKBAT_PORT,    port_env: env_keys::SKUNKBAT_PORT,    bind_flag: "--bind" },
+    PrimalProfileEntry { name: primal_names::BIOMEOS,     tcp_port: tolerances::TCP_FALLBACK_BIOMEOS_PORT,     port_env: env_keys::BIOMEOS_PORT,     bind_flag: "--bind" },
+    PrimalProfileEntry { name: primal_names::SWEETGRASS,  tcp_port: tolerances::TCP_FALLBACK_SWEETGRASS_PORT,  port_env: env_keys::SWEETGRASS_PORT,  bind_flag: "--http-address" },
+    PrimalProfileEntry { name: primal_names::PETALTONGUE, tcp_port: tolerances::TCP_FALLBACK_PETALTONGUE_PORT, port_env: env_keys::PETALTONGUE_PORT, bind_flag: "--bind" },
+];
+
+fn lookup(name: &str) -> Option<&'static PrimalProfileEntry> {
+    PRIMAL_REGISTRY.iter().find(|e| e.name == name)
+}
+
+fn tcp_fallback_port(name: &str) -> Option<u16> {
+    lookup(name).map(|e| e.tcp_port)
+}
+
+fn port_env_key(name: &str) -> Option<&'static str> {
+    lookup(name).map(|e| e.port_env)
+}
+
+fn bind_flag(name: &str) -> Option<&'static str> {
+    lookup(name).map(|e| e.bind_flag)
+}
 
 /// Actionable deploy profile for a single primal node.
 ///
@@ -58,65 +107,6 @@ pub struct PrimalDeployProfile {
     /// All 13 primals now have bind control defaulting to `127.0.0.1` (PG-55 resolved).
     /// `None` here means the primal uses `--port host:port` instead of a dedicated flag.
     pub bind_flag: Option<&'static str>,
-}
-
-/// Map primal names to their tier 5 TCP fallback ports from tolerances.
-///
-/// Port assignments confirmed against ironGate live deployment (2026-05-04).
-fn tcp_fallback_port(name: &str) -> Option<u16> {
-    match name {
-        "beardog" => Some(tolerances::TCP_FALLBACK_BEARDOG_PORT),
-        "songbird" => Some(tolerances::TCP_FALLBACK_SONGBIRD_PORT),
-        "squirrel" => Some(tolerances::TCP_FALLBACK_SQUIRREL_PORT),
-        "toadstool" => Some(tolerances::TCP_FALLBACK_TOADSTOOL_PORT),
-        "nestgate" => Some(tolerances::TCP_FALLBACK_NESTGATE_PORT),
-        "rhizocrypt" => Some(tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT),
-        "loamspine" => Some(tolerances::TCP_FALLBACK_LOAMSPINE_PORT),
-        "coralreef" => Some(tolerances::TCP_FALLBACK_CORALREEF_PORT),
-        "barracuda" => Some(tolerances::TCP_FALLBACK_BARRACUDA_PORT),
-        "skunkbat" => Some(tolerances::TCP_FALLBACK_SKUNKBAT_PORT),
-        "biomeos" => Some(tolerances::TCP_FALLBACK_BIOMEOS_PORT),
-        "sweetgrass" => Some(tolerances::TCP_FALLBACK_SWEETGRASS_PORT),
-        "petaltongue" => Some(tolerances::TCP_FALLBACK_PETALTONGUE_PORT),
-        _ => None,
-    }
-}
-
-/// Map primal names to the env var name for their TCP port override.
-fn port_env_key(name: &str) -> Option<&'static str> {
-    match name {
-        "beardog" => Some(env_keys::BEARDOG_PORT),
-        "songbird" => Some(env_keys::SONGBIRD_PORT),
-        "squirrel" => Some(env_keys::SQUIRREL_PORT),
-        "toadstool" => Some(env_keys::TOADSTOOL_PORT),
-        "nestgate" => Some(env_keys::NESTGATE_PORT),
-        "rhizocrypt" => Some(env_keys::RHIZOCRYPT_PORT),
-        "loamspine" => Some(env_keys::LOAMSPINE_PORT),
-        "coralreef" => Some(env_keys::CORALREEF_PORT),
-        "barracuda" => Some(env_keys::BARRACUDA_PORT),
-        "skunkbat" => Some(env_keys::SKUNKBAT_PORT),
-        "biomeos" => Some(env_keys::BIOMEOS_PORT),
-        "sweetgrass" => Some(env_keys::SWEETGRASS_PORT),
-        "petaltongue" => Some(env_keys::PETALTONGUE_PORT),
-        _ => None,
-    }
-}
-
-/// Map primal names to their CLI bind address flag.
-///
-/// PG-55 resolved: all 13 primals default to `127.0.0.1`.
-/// sweetGrass uses `--port host:port` (returns `--http-address` for HTTP endpoint).
-fn bind_flag(name: &str) -> Option<&'static str> {
-    match name {
-        "beardog" => Some("--listen"),
-        "songbird" | "toadstool" | "skunkbat" | "biomeos" | "petaltongue" | "squirrel"
-        | "nestgate" | "barracuda" => Some("--bind"),
-        "loamspine" => Some("--bind-address"),
-        "rhizocrypt" => Some("--host"),
-        "coralreef" => Some("--rpc-bind"),
-        "sweetgrass" => Some("--http-address"),
-        _ => None,
-    }
 }
 
 /// Merge a graph node with its launch profile.

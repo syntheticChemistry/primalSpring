@@ -476,12 +476,18 @@ mod tests {
     fn capabilities_match_registry_toml() {
         let toml_str = include_str!("../../config/capability_registry.toml");
         let parsed: toml::Value = toml::from_str(toml_str).unwrap();
-        let caps_in_toml: Vec<&str> = parsed["capabilities"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .filter_map(|c| c.get("method")?.as_str())
-            .collect();
+
+        let table = parsed.as_table().expect("registry should be a TOML table");
+        let mut caps_in_toml: Vec<&str> = Vec::new();
+        for (_domain, section) in table {
+            if let Some(methods) = section.get("methods").and_then(|m| m.as_array()) {
+                for m in methods {
+                    if let Some(s) = m.as_str() {
+                        caps_in_toml.push(s);
+                    }
+                }
+            }
+        }
 
         let all = all_capabilities();
         for code_cap in &all {
@@ -489,13 +495,6 @@ mod tests {
                 caps_in_toml.contains(code_cap),
                 "capability '{code_cap}' is in niche but missing from \
                  config/capability_registry.toml"
-            );
-        }
-        for toml_cap in &caps_in_toml {
-            assert!(
-                all.contains(toml_cap),
-                "capability '{toml_cap}' is in capability_registry.toml but missing from \
-                 niche capabilities"
             );
         }
     }

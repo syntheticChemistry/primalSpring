@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! `OnceLock`-cached runtime resource probes for test parallelism.
+//! Cached runtime resource probes for test parallelism.
 //!
 //! Absorbed from hotSpring V0.6.32, neuralSpring V122, and groundSpring V121.
 //! When many tests need to know whether the Neural API or a specific primal
 //! is reachable, performing one probe per test wastes time and creates
 //! flaky race conditions. These probes run once per process, cache the
-//! result in a `OnceLock`, and return the cached value for all subsequent
-//! callers — safe for parallel `#[test]` execution.
+//! result, and return the cached value for all subsequent callers — safe
+//! for parallel `#[test]` execution.
 //!
 //! # Usage
 //!
@@ -19,7 +19,8 @@
 //! }
 //! ```
 
-use std::sync::OnceLock;
+use std::collections::HashMap;
+use std::sync::{Mutex, OnceLock};
 
 use super::discover;
 use crate::primal_names;
@@ -27,14 +28,20 @@ use crate::primal_names;
 /// Cached result of `neural_api_healthy()`.
 static NEURAL_API_PROBE: OnceLock<bool> = OnceLock::new();
 
-/// Cached result of `discover_primal("beardog")`.
-static BEARDOG_PROBE: OnceLock<bool> = OnceLock::new();
+/// Generic primal reachability cache — replaces per-primal `OnceLock` statics.
+///
+/// The `Mutex` is only held briefly during the `HashMap` insert; the probe
+/// itself (socket discovery) runs inside `or_insert_with` so contention is
+/// minimal after the first call for each primal.
+static PRIMAL_PROBE_CACHE: OnceLock<Mutex<HashMap<&'static str, bool>>> = OnceLock::new();
 
-/// Cached result of `discover_primal("songbird")`.
-static SONGBIRD_PROBE: OnceLock<bool> = OnceLock::new();
-
-/// Cached result of `discover_primal("toadstool")`.
-static TOADSTOOL_PROBE: OnceLock<bool> = OnceLock::new();
+fn primal_reachable_cached(name: &'static str) -> bool {
+    let cache = PRIMAL_PROBE_CACHE.get_or_init(|| Mutex::new(HashMap::new()));
+    let mut map = cache.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    *map.entry(name).or_insert_with(|| {
+        discover::discover_primal(name).socket.is_some()
+    })
+}
 
 /// Whether the Neural API is reachable (cached once per process).
 #[must_use]
@@ -45,31 +52,19 @@ pub fn neural_api_reachable() -> bool {
 /// Whether `BearDog` has a reachable socket (cached once per process).
 #[must_use]
 pub fn beardog_reachable() -> bool {
-    *BEARDOG_PROBE.get_or_init(|| {
-        discover::discover_primal(primal_names::BEARDOG)
-            .socket
-            .is_some()
-    })
+    primal_reachable_cached(primal_names::BEARDOG)
 }
 
 /// Whether Songbird has a reachable socket (cached once per process).
 #[must_use]
 pub fn songbird_reachable() -> bool {
-    *SONGBIRD_PROBE.get_or_init(|| {
-        discover::discover_primal(primal_names::SONGBIRD)
-            .socket
-            .is_some()
-    })
+    primal_reachable_cached(primal_names::SONGBIRD)
 }
 
 /// Whether `ToadStool` has a reachable socket (cached once per process).
 #[must_use]
 pub fn toadstool_reachable() -> bool {
-    *TOADSTOOL_PROBE.get_or_init(|| {
-        discover::discover_primal(primal_names::TOADSTOOL)
-            .socket
-            .is_some()
-    })
+    primal_reachable_cached(primal_names::TOADSTOOL)
 }
 
 /// Whether a Tower atomic composition is plausibly reachable
@@ -87,7 +82,8 @@ pub fn node_reachable() -> bool {
 }
 
 /// Probe an arbitrary primal by name (NOT cached — use named probes above
-/// for frequently checked primals).
+/// for frequently checked primals, or pass a `&'static str` to get caching
+/// via the generic registry).
 #[must_use]
 pub fn primal_reachable(name: &str) -> bool {
     discover::discover_primal(name).socket.is_some()
@@ -159,5 +155,12 @@ mod tests {
     #[test]
     fn capability_reachable_returns_false_for_nonexistent() {
         assert!(!capability_reachable("definitely_not_a_real_capability"));
+    }
+
+    #[test]
+    fn cached_probe_returns_consistent_results() {
+        let a = primal_reachable_cached(primal_names::BEARDOG);
+        let b = primal_reachable_cached(primal_names::BEARDOG);
+        assert_eq!(a, b, "cached probe must return same value on repeated calls");
     }
 }

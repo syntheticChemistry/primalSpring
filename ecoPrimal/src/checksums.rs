@@ -48,9 +48,10 @@ pub fn generate_manifest(root: &Path, relative_paths: &[&str]) -> String {
     let mut lines = Vec::new();
     for &rel in relative_paths {
         let full = root.join(rel);
-        match blake3_file(&full) {
-            Some(hex) => lines.push(format!("{hex}  {rel}")),
-            None => eprintln!("[checksums] warning: cannot read {rel}, skipping"),
+        if let Some(hex) = blake3_file(&full) {
+            lines.push(format!("{hex}  {rel}"));
+        } else {
+            tracing::warn!(file = %rel, "cannot read file, skipping checksum");
         }
     }
     lines.join("\n")

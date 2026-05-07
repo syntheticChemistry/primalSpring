@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.24 (Phase 59)
-**Last Updated**: May 6, 2026
+**Version**: 0.9.25 (Phase 60)
+**Last Updated**: May 7, 2026
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -12,8 +12,7 @@ The wateringHole is primalSpring's outward-facing guidance surface for upstream
 primal teams and downstream spring/garden consumers. It defines the patterns
 that make the ecosystem composable.
 
-Nine documents. Nothing else belongs here — historical handoffs live in
-`fossilRecord/`.
+Historical handoffs live in `fossilRecord/`.
 
 ---
 
@@ -22,13 +21,15 @@ Nine documents. Nothing else belongs here — historical handoffs live in
 | File | Audience | What It Covers |
 |------|----------|----------------|
 | **UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md** | Primal teams + spring teams | How primals interact without coupling (JSON-RPC, first-byte peek, capability wire, socket naming). How springs absorb NUCLEUS patterns. sourDough graduation standard. |
-| **CRYPTO_CONSUMPTION_HIERARCHY.md** | Primal teams + spring teams | Crypto posture per primal role: key acquisition patterns (self-derive vs Tower-provided), bonding escalation hierarchy, composition contexts, recommended AEAD posture. Phase 3 convergence standard. |
-| **PLASMINBIN_DEPOT_PATTERN.md** | All consumers | How to fetch primal binaries from plasmidBin GitHub Releases. `fetch_primals.sh`, `ECOPRIMALS_PLASMID_BIN` env, XDG cache, checksum verification. The standard consumer pattern. |
-| **PHASE58_COMPOSITION_HANDOFF_MAY03_2026.md** | All teams | Phase 58 evolution: skunkBat as 13th NUCLEUS primal, guidestone hardening (BTSP alias routing, flex keys, cell health), plasmidBin CI hub architecture, composition patterns for downstream, remaining debt. |
-| **UPSTREAM_ABSORPTION_MAY06_2026.md** | All teams | 13/13 primals pulled: toadStool S222-S223, skunkBat port fix (9750→9140), fieldMouse reclassification, Provenance Trio Gap 9 resolved, Phase 3 interop confirmed across ecosystem. deploy/validation.rs split. |
-| **FOUNDATION_ABSORPTION_MAY06_2026.md** | Spring + garden teams | Foundation layer absorption: graph schema extensions (`fallback`, `purpose`), structural checks for validation compositions, foundation validation graph, exp107 sediment pipeline IPC validation. |
-| **UPSTREAM_BLURBS_PHASE59_MAY06_2026.md** | Primal teams | Per-primal debt status: 13/13 CLEAN, PG-55–PG-59 all RESOLVED, zero open gaps. Discovery escalation, capability taxonomy, foundation graph patterns. |
-| **DOWNSTREAM_HANDOFF_PHASE59_MAY06_2026.md** | projectNUCLEUS + foundation + spring teams | Phase 59 security convergence handoff: all PGs resolved, bind defaults, foundation validation, discovery hierarchy, rewiring priorities. |
+| **CRYPTO_CONSUMPTION_HIERARCHY.md** | Primal teams + spring teams | Crypto posture per primal role: key acquisition patterns, bonding hierarchy, Phase 3 convergence. |
+| **PLASMINBIN_DEPOT_PATTERN.md** | All consumers | How to fetch primal binaries from plasmidBin GitHub Releases. |
+| **PHASE58_COMPOSITION_HANDOFF_MAY03_2026.md** | All teams | Phase 58: skunkBat as 13th primal, guidestone hardening, plasmidBin CI hub. |
+| **UPSTREAM_ABSORPTION_MAY06_2026.md** | All teams | 13/13 pull: toadStool, skunkBat, Provenance Trio, Phase 3 interop. |
+| **FOUNDATION_ABSORPTION_MAY06_2026.md** | Spring + garden teams | Foundation layer: graph schema extensions, exp107 sediment pipeline. |
+| **UPSTREAM_BLURBS_PHASE59_MAY06_2026.md** | Primal teams | Per-primal debt: 13/13 CLEAN, PG-55–PG-59 RESOLVED. |
+| **DOWNSTREAM_HANDOFF_PHASE59_MAY06_2026.md** | projectNUCLEUS + springs | Phase 59 security convergence handoff. |
+| **PHASE60_DEEP_DEBT_SOVEREIGNTY_HANDOFF_MAY07_2026.md** | All teams | Phase 60: deep debt evolution (9 tasks), 14/14 sovereignty gaps absorbed, registry 290→366, graph validator rewrite. |
+| **DOWNSTREAM_HANDOFF_PHASE60_MAY07_2026.md** | Springs + gardens | Phase 60 downstream: registry patterns, content-addressed storage, RootPulse workflow, shader rewire, notebook pipeline, deep debt patterns. |
 | This README | Everyone | Index and context. |
 
 ---
@@ -37,21 +38,22 @@ Nine documents. Nothing else belongs here — historical handoffs live in
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
-- **skunkBat** wired as 13th NUCLEUS primal (meta-tier, defense/recon) — Phase 58
-- **Zero open security gaps** — PG-55–PG-59 all RESOLVED, 13/13 BTSP FULL AEAD, 13/13 default `127.0.0.1`
-- **plasmidBin CI hub** — sole paid Actions repo, per-primal concurrency,
-  signing roadmap documented
-- **All primals** have `ci.yml` (lean single-job) + `notify-plasmidbin.yml`
+- **Zero open P1 upstream gaps** — all 14 sovereignty gaps RESOLVED
+- **366 registered capability methods** across 50+ domains
+- **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
+- **RootPulse commit workflow** fully executable (6/6 phases)
+- **NestGate content-addressed storage** live (8 `content.*` methods)
+- **Graph method validator** — 0 primal drift, 91 spring-domain advisory
 - **sourDough v0.2.0** scaffold generates ecosystem-compliant primals
-  (server crate, CI, deny.toml, capability wire, first-byte peek, socket naming)
-- **Guidestone hardened** — BTSP alias routing, flex key resolution, desktop
-  cell health, Squirrel reconnect-on-failed-probe
 
 ## Key References (outside wateringHole)
 
 | What | Where |
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
+| Capability registry | `config/capability_registry.toml` (366 methods) |
+| Method string validator | `tools/check_method_strings.sh` |
+| Graph method validator | `tools/check_graph_methods.sh` |
 | Experiment tracks | `experiments/` (85 experiments, 19 tracks) |
 | Deploy graphs | `graphs/` (74 TOMLs) |
 | Checksum tool | `tools/regenerate_checksums.sh` |
@@ -64,6 +66,6 @@ Nine documents. Nothing else belongs here — historical handoffs live in
 
 ## Fossil Record
 
-All historical handoffs (66 files, v0.1.0 through v0.9.24) are preserved in
+All historical handoffs (66+ files, v0.1.0 through v0.9.24) are preserved in
 `fossilRecord/wateringHole_phase56_apr2026/`. Git history retains full
 provenance at their original paths.

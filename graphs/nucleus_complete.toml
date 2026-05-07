@@ -202,7 +202,7 @@ health_method = "health.liveness"
 by_capability = "attribution"
 security_model = "btsp"
 capabilities = [
-    "provenance.create_braid", "provenance.lineage",
+    "braid.create", "provenance.lineage",
     "provenance.graph",
 ]
 

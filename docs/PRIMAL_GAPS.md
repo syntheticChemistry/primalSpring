@@ -35,8 +35,42 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-05-06 — **Phase 3: 13/13 primals FULL AEAD on wire. Discovery escalation hierarchy live.**
+> **Last updated**: 2026-05-07 — **Phase 3: 13/13 primals FULL AEAD on wire. Discovery escalation hierarchy live.**
 > **All blurbed upstream debt resolved.** Wire Standard L3 at 13/13. BufReader audit at 13/13.
+>
+> **Upstream Evolution Absorbed (May 7, 2026)** — All 14 sovereignty gaps resolved by primal teams:
+> - **PT-1→PT-5 (petalTongue)**: ALL RESOLVED. `--docroot` static file catch-all via `ServeDir` (PT-1),
+>   `WebServeConfig` schema with filesystem|nestgate backend (PT-3), `--ipc` dual-port mode (PT-4),
+>   `--workers` wired to tokio runtime (PT-5). +338/-31 lines, 7 new tests.
+> - **NG-1→NG-4 (NestGate)**: ALL RESOLVED. Content-addressed storage with BLAKE3 auto-key and 2-char
+>   prefix directories (NG-1), versioned content manifests with `content.publish`/`content.promote` (NG-2),
+>   `storage.list_blobs`/`storage.blob_exists` namespace visibility (NG-3), streaming wire protocol docs (NG-4).
+>   8 new `content.*` methods, +2543/-1060 lines, 19 new tests. Method count 51 → 63.
+> - **RP-1→RP-5 (RootPulse)**: ALL RESOLVED. biomeOS aligned all 6 rootpulse graphs to primalSpring
+>   `capability_registry.toml` — `commit.session` → `session.commit`, `provenance.create_braid` →
+>   `braid.create`, `crypto.sign` param `data` → `message` (RP-1). `spine.create` prerequisite
+>   documented by LoamSpine (RP-2). Hex string acceptance already resolved (RP-3). Standalone
+>   `biomeos graph execute` CLI added (RP-4). Entry signing contract documented by LoamSpine,
+>   `crypto.did_from_key` added by BearDog (RP-5). +395/-112 biomeOS, +134/-2 LoamSpine, +282/-44 BearDog.
+> - **rhizoCrypt PG-60**: RESOLVED. Readiness gate returns `-32002 not-ready` on cold UDS connect.
+>   Health probes bypass the gate. No more silent timeouts.
+> - **toadStool PG-62**: RESOLVED. `health.liveness` fast-path returns `{"status":"starting"}` during
+>   init. Timeout constants documented: dispatch 5s, workload 300s, TCP idle 300s. All overridable.
+> - **primalSpring actions**: Registry expanded to 366 methods (+76 this round). `content.*` (8),
+>   `crypto.did_from_key`, `network.beacon_exchange`, `storage.list_blobs`/`storage.blob_exists` absorbed.
+>   Graph validator upgraded with spring-domain exclusion (91 advisory, 0 primal drift).
+>
+> **projectNUCLEUS Sovereignty Handoff (May 7, 2026)** — RootPulse commit workflow tested, 14 gaps routed:
+> *(All 14 gaps now resolved — see "Upstream Evolution Absorbed" above.)*
+> - **primalSpring actions**: Capability registry evolved (+82 methods, 290 total). Graph method
+>   validator created (`tools/check_graph_methods.sh`). Stale `provenance.create_braid` refs fixed
+>   in 2 live graphs. `shader.compile` → `shader.compile.wgsl` in `coralforge_pipeline.toml`.
+> - **Deep Debt Evolution completed**: 9-task plan executed — `primalspring_primal` binary modularized
+>   (762L → 5 modules), probe cache generalized, profile registry centralized, `blake3` pure Rust,
+>   `unsafe` annotated, hardcoded host centralized, deploy warnings added, 2 experiments refactored
+>   (1352L and 839L). 574 tests passing, clippy clean, 208/208 method strings verified.
+> - **Recommendation absorbed**: Graph validation CI step that checks TOML method names against
+>   `capability_registry.toml` — implemented as `tools/check_graph_methods.sh`.
 >
 > **projectNUCLEUS Phase 2a Security Handback (May 6, 2026)** — penetration testing on live 13-primal composition:
 > - **PG-55 `--bind` flag standardization** — **RESOLVED**: All 6 primals shipped bind control with
@@ -754,17 +788,26 @@ in `infra/wateringHole/` for the full water-cycle model.
 | PT-10 | `--socket` CLI flag missing | **RESOLVED** | April 10 — `--socket` flag added to `Commands::Server`, plumbed via `UnixSocketServer::with_socket_path()` |
 | PT-11 | Only `visualization` domain symlink | **RESOLVED** | April 10 — now creates `visualization.sock`, `ui.sock`, `interaction.sock` symlinks (create+drop) |
 
+| PT-12 | `web` mode needs catch-all static file route (`ServeDir` fallback) | High | **RESOLVED** (May 7, v1.6.6) — `--docroot` CLI flag + `PETALTONGUE_DOCROOT` env. `tower_http::ServeDir` fallback with `append_index_html_on_directories(true)`. API routes take precedence. **PT-1.** |
+| PT-13 | No NestGate backend integration for content-addressed serving | High | Open — `WebServeConfig.backend` field exists (`"filesystem"` default), NestGate integration deferred. Filesystem `--docroot` is the current path. **PT-2.** |
+| PT-14 | `petaltongue_web.toml` config schema missing | Medium | **RESOLVED** (May 7, v1.6.6) — `WebServeConfig` struct: `docroot`, `backend`, `index_file`, `cache_ttl_secs`. Config `[web]` section + env + CLI override chain. **PT-3.** |
+| PT-15 | Deploy mode alignment — NUCLEUS needs both HTTP + IPC | Medium | **RESOLVED** (May 7, v1.6.6) — `--ipc` flag co-starts UDS JSON-RPC alongside HTTP. Optional `--ipc-port` for TCP. **PT-4.** |
+| PT-16 | `--workers` flag accepted but not applied | Low | **RESOLVED** (May 7, v1.6.6) — wired to `tokio::runtime::Builder::worker_threads(n)`. **PT-5.** |
+
 **Compliance** (v1.6.6+ — April 10): clippy **CLEAN**, fmt **PASS**, `forbid(unsafe_code)` per-crate, `deny.toml` present, SPDX present. Zero `todo!`/`unimplemented!`/`FIXME`. Tests **ALL PASS**. **BTSP Phase 1 COMPLETE** ↑↑. **BTSP Phase 2 STUB** — `handshake_policy` logs but does not enforce. **`--socket` CLI flag** wired via `with_socket_path()`. **Domain symlinks**: `visualization`, `ui`, `interaction`. **Capability Wire Standard L2/L3**.
 
 ---
 
 ## barraCuda
 
-BC-01–BC-08 **ALL RESOLVED**. barraCuda is a full ecobin primal with 32 JSON-RPC
-methods over UDS (tensor.matmul, tensor.create, stats.mean, compute.dispatch,
-noise.perlin2d, fhe.ntt, etc.). The remaining composition gap is **spring-side**:
-springs still link barraCuda as a Rust library (path/git dep) instead of calling
-the ecobin primal over IPC. See "Cross-Spring Composition Gaps" below.
+BC-01–BC-08 **ALL RESOLVED**. barraCuda is a full ecobin primal with 59 JSON-RPC
+methods over UDS (tensor.matmul, tensor.create, stats.mean, stats.entropy,
+compute.dispatch, noise.perlin2d, fhe.ntt, activation.softmax, ml.attention, etc.).
+**stats.entropy RESOLVED** (Sprint 50 — dispatches to `stats.shannon`).
+**Shader absorption RESOLVED** (Sprint 43 — 18/18 targeted candidates upstream).
+Springs rewire from local deps to IPC: Tier A (inline JSON-RPC) for small data,
+Tier B (tensor pipeline) for >10K elements. See rewire guide in
+`wateringHole/handoffs/BARRACUDA_V0312_STALE_AUDIT_TRIAGE_SHADER_REWIRE_GUIDE_MAY07_2026.md`.
 
 | ID | Gap | Severity | Status |
 |----|-----|----------|--------|
@@ -820,7 +863,12 @@ the ecobin primal over IPC. See "Cross-Spring Composition Gaps" below.
 | NG-07 | aarch64-musl segfault | **RESOLVED** | Static-PIE + musl ≤1.2.2 crash in `_start_c/dlstart.c`. Fixed: `-C relocation-model=static` in `.cargo/config.toml` for both x86_64 and aarch64 targets |
 | NG-08 | `ring` v0.17.14 in production via `rustls` default crypto | **RESOLVED** | April 11 — NestGate eliminated `reqwest` entirely, switched to `ureq` with `rustls-no-provider` + `rustls-rustcrypto`. `cargo tree -i ring` now returns "nothing to print". **13/13 primals ring-free.** |
 
-**Compliance** (Session 43n — April 14): Clippy **CLEAN**, fmt **PASS**, **11,819 tests PASS** ↑. `forbid(unsafe_code)` per-crate + workspace `deny`. `deny.toml` present. SPDX present. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — `btsp_server_handshake.rs` implements full server-side handshake wired into **both** UDS listener paths. Delegates to BearDog `btsp.session.create/verify/negotiate`. `is_btsp_required()` guard. **Session 43n evolution**: Semantic router streaming parity (5 storage streaming methods). Event-driven connection lifecycle (`select!` idle timeout, `connection.closing` notification). Deep debt: zero `dyn Error`, zero `async-trait` in production. `fetch_external` delegated through Tower Atomic (biomeOS `capability.call`), direct TLS removed from nestgate-rpc. **Capability Wire Standard L3**.
+| NG-09 | No `content.put` / `content.get` — content-addressed storage | High | **RESOLVED** (May 7, S57) — 8 new `content.*` methods. BLAKE3 auto-key with 2-char prefix dirs, `.meta.json` sidecars, encrypt-at-rest. 51→63 methods. **NG-1.** |
+| NG-10 | No collection/manifest for versioned releases | Medium | **RESOLVED** (May 7, S57) — `content.publish`/`content.promote`/`content.resolve`/`content.collections`. Referential integrity on publish. **NG-2.** |
+| NG-11 | Blob store namespace invisible to `storage.list` | Medium | **RESOLVED** (May 7, S57) — `storage.list_blobs` + `storage.blob_exists` added. Param differences documented. **NG-3.** |
+| NG-12 | Streaming wire protocol unclear | Low | **RESOLVED** (May 7, S57) — Full streaming docs: 4 MiB chunks, 1-hour TTL, UUID v4 stream IDs, usage sequence diagrams. **NG-4.** |
+
+**Compliance** (Session 58 — May 7): Clippy **CLEAN** (pedantic+nursery, 0 warnings), fmt **PASS**, **12,353 tests PASS** ↑. `forbid(unsafe_code)` per-crate + workspace `deny`. `deny.toml` present. SPDX present. Zero files >800L in production. Zero mocks in production. **63 UDS methods** (51→63 via NG-1/NG-2/NG-3). **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE**. **BTSP Phase 3 COMPLETE**. Deep debt S58: connection.rs extracted (720→395L mod.rs), test extraction (storage_handlers 836→345L, content_handlers 806→510L), constants consolidated. **Capability Wire Standard L3**.
 
 ---
 
@@ -874,6 +922,22 @@ All gaps **RESOLVED**. TCP JSON-RPC added, `cargo-deny`, `forbid(unsafe)`.
 | SG-02 | `--socket` CLI flag missing | **RESOLVED** | April 10 — `--socket` flag added to `Commands::Server`, plumbed via `start_uds_listener_at()` / `cleanup_socket_at()` |
 
 **Compliance** (v0.7.27+ — April 10): clippy clean, fmt clean, `deny(unsafe_code)` workspace + `forbid` per-crate, `deny.toml` present, tests pass. **BTSP Phase 1 COMPLETE**. **BTSP Phase 2 COMPLETE** ↑↑ — new `sweet-grass-service/src/btsp/` module (mod.rs, protocol.rs, server.rs): `perform_server_handshake()` wired into UDS accept (`handle_uds_connection_btsp` in `uds.rs`) + TCP (`tcp_jsonrpc.rs`). **Delegates to BearDog** (`btsp.session.create/verify/negotiate`). Client: `perform_handshake()` in `sweet-grass-integration/src/btsp/protocol.rs`. **`--socket` CLI flag** wired. **Capability Wire Standard L3**.
+
+---
+
+## RootPulse Commit Workflow (Cross-Primal — May 7, 2026)
+
+Gaps discovered by projectNUCLEUS executing `rootpulse_commit.toml` against live 13-primal NUCLEUS
+composition on ironGate. The workflow is 80% executable (Phases 1-4, 6 work; Phase 5 blocked).
+See `projectNUCLEUS/validation/ROOTPULSE_GAPS_HANDBACK.md` for full test results.
+
+| ID | Gap | Severity | Owner | Status |
+|----|-----|----------|-------|--------|
+| RP-1 | Graph method/param name mismatches | High | biomeOS + primal teams | **RESOLVED** (May 7, v3.45) — All 6 rootpulse graphs realigned: `commit.session`→`session.commit`, `provenance.create_braid`→`braid.create`, `crypto.sign` param `data`→`message`, `dag.dehydrate`→`dag.dehydration.trigger`, stale `did` param removed. |
+| RP-2 | Missing `spine.create` lifecycle in graph | High | biomeOS + LoamSpine | **RESOLVED** (May 7) — All commit-path graphs document `${SPINE_ID}` prerequisite. LoamSpine: `permanence.commit_session` auto-creates spine per DID. `spine.create`→`session.commit` lifecycle documented in API spec. |
+| RP-3 | Graph schema lacks type information | Medium | biomeOS | **RESOLVED** (May 7, v3.45) — All graphs document required input variables with types (string, integer). LoamSpine accepts hex strings for hashes (Gap 9, `d5ed0c6`). |
+| RP-4 | No standalone graph executor | Medium | biomeOS | **RESOLVED** (May 7, v3.45) — `biomeos graph execute <graph_id_or_path> --param KEY=VALUE [--dry-run]`. Sends `graph.execute` JSON-RPC to Neural API server. |
+| RP-5 | Entry signing lifecycle unclear | Medium | LoamSpine + BearDog | **RESOLVED** (May 7) — LoamSpine: signing is internal (calls BearDog `crypto.sign_ed25519` when `BEARDOG_SOCKET` set). BearDog: `crypto.did_from_key` added for committer DID derivation. Cross-primal workflow documented in `PRIMAL_CONTRACTS.md`. |
 
 ---
 

@@ -5,10 +5,10 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.24 |
+| **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 661 (613 passed + 48 ignored; unit + integration + doc-tests + proptest) |
+| **Tests** | 662 (614 passed + 48 ignored; unit + integration + doc-tests + proptest) |
 | **Experiments** | 85 (19 tracks) |
 | **Deploy Graphs** | 74 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 1 composition + 13 root + 12 cell graphs + 4 desktop app graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |

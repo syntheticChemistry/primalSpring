@@ -58,7 +58,9 @@ fn main() {
     // Rust 2024 marks set_var as unsafe due to data races in multithreaded
     // programs. This binary is single-threaded at this point — no async
     // runtime has been started and no std::thread::spawn has been called.
-    #[allow(unsafe_code)]
+    // DEBT: evolve to SeedConfig struct passed through the call chain,
+    // with env var writes localized to a launcher pre-exec helper.
+    #[expect(unsafe_code, reason = "pre-thread env::set_var — see SAFETY comment above")]
     unsafe {
         std::env::set_var(primalspring::env_keys::FAMILY_ID, &family_id);
         std::env::set_var(primalspring::env_keys::FAMILY_SEED, &mito_seed.hex_seed);

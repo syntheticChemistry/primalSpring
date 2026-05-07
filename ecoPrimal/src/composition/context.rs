@@ -159,7 +159,7 @@ impl CompositionContext {
         // Valid for containers, architectures without UDS, and standalone
         // compositions that choose not to run Tower.
         let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
-            .unwrap_or_else(|_| "127.0.0.1".to_owned());
+            .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
         for &(cap, primal, port_env, default_port) in &tcp_fallback_table() {
             if clients.contains_key(cap) {
                 continue;
@@ -222,7 +222,8 @@ impl CompositionContext {
     pub fn from_live_discovery_with_fallback() -> Self {
         let cap_to_primal = tcp_fallback_table();
 
-        let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST).unwrap_or_else(|_| "127.0.0.1".to_owned());
+        let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
+            .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
 
         let mut clients = HashMap::new();
         for &(cap, primal, port_env, default_port) in &cap_to_primal {
