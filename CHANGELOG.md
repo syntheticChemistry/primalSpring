@@ -20,6 +20,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **fieldMouse reclassified** as deployment class (biomeOS chimera for edge/IoT).
 
 ### Added
+- `notebooks/` directory with 5 public notebooks following the wetSpring exemplar pattern:
+  - `01-composition-validation.ipynb` — flagship: deploy graphs, bonds, profiles, discovery
+  - `02-benchmark-comparison.ipynb` — Rust vs Python timing, energy, guidestone phases
+  - `03-ecosystem-evidence.ipynb` — 85 experiments, gap resolution, security timeline
+  - `04-cross-spring-connections.ipynb` — primal consumption matrix, ecosystem flows
+  - `05-btsp-security-deep-dive.ipynb` — per-primal posture, convergence arc, discovery
+- `notebooks/NOTEBOOK_PATTERN.md` — pattern doc for other springs to replicate.
+- `experiments/results/*.json` — 6 frozen validation data files for notebook reproducibility.
 - `GraphNode.fallback: Option<String>` for graceful degradation (`"skip"`).
 - `GraphMetadata.purpose: Option<String>` for composition intent (`"validation"`, `"foundation"`).
 - `graphs/compositions/foundation_validation.toml` — 12-node NUCLEUS for sediment pipeline.

@@ -1,0 +1,94 @@
+{
+  "generated": "2026-05-06T22:00:00Z",
+  "spring": "primalSpring",
+  "total_experiments": 85,
+  "categories": {
+    "tower_atomic": {
+      "experiments": ["exp001", "exp002", "exp003", "exp004", "exp005", "exp006"],
+      "count": 6,
+      "focus": "Atomic tower compositions and startup ordering"
+    },
+    "graph_patterns": {
+      "experiments": ["exp010", "exp011", "exp012", "exp013", "exp014", "exp015"],
+      "count": 6,
+      "focus": "Sequential, parallel, conditional DAG, streaming, tick, pathway learning"
+    },
+    "rootpulse_provenance": {
+      "experiments": ["exp020", "exp021", "exp022", "exp023", "exp024", "exp025"],
+      "count": 6,
+      "focus": "Provenance commits, branching, diffing, RPGPT sessions"
+    },
+    "bonding_chemistry": {
+      "experiments": ["exp030", "exp031", "exp032", "exp033", "exp034"],
+      "count": 5,
+      "focus": "Covalent, ionic, plasmodium, gate failure, capability aggregation"
+    },
+    "cross_spring_data": {
+      "experiments": ["exp040", "exp041", "exp042", "exp043", "exp044"],
+      "count": 5,
+      "focus": "Data flow, provenance trio, fieldmouse ingestion, viz, AI coordination"
+    },
+    "compute_discovery": {
+      "experiments": ["exp050", "exp051", "exp052", "exp053", "exp054", "exp055"],
+      "count": 6,
+      "focus": "Compute triangle, socket sweep, protocol escalation, lifecycle, auth, health"
+    },
+    "federation": {
+      "experiments": ["exp056", "exp057", "exp058", "exp059"],
+      "count": 4,
+      "focus": "Cross-tower federation, supply chain provenance, semantic attribution, weak force"
+    },
+    "biomeos_integration": {
+      "experiments": ["exp060", "exp061", "exp062", "exp063", "exp064", "exp065"],
+      "count": 6,
+      "focus": "biomeOS deploy, Squirrel composition, subsystem sweep, pixel rendezvous, NestGate, petalTongue"
+    },
+    "full_nucleus": {
+      "experiments": ["exp066", "exp067", "exp068", "exp069", "exp070"],
+      "count": 5,
+      "focus": "Full NUCLEUS compositions, graph overlay, cross-primal discovery"
+    },
+    "policy_federation": {
+      "experiments": ["exp071", "exp072", "exp073", "exp074"],
+      "count": 4,
+      "focus": "Idle compute policy, data federation, LAN covalent mesh, cross-gate health"
+    },
+    "neural_api": {
+      "experiments": ["exp075", "exp076", "exp077", "exp078"],
+      "count": 4,
+      "focus": "biomeOS neural API, cross-gate neural routing, Squirrel bridge, petalTongue viz"
+    },
+    "deployment_sweep": {
+      "experiments": ["exp079", "exp080", "exp081", "exp082", "exp083", "exp084"],
+      "count": 6,
+      "focus": "Spring deploy sweep, ecology live, matrix sweep, chaos, federation edge, adversarial"
+    },
+    "identity_security": {
+      "experiments": ["exp085", "exp086", "exp087"],
+      "count": 3,
+      "focus": "BearDog crypto lifecycle, genetic identity E2E, neural API routing E2E"
+    },
+    "composition_advanced": {
+      "experiments": ["exp088", "exp089", "exp090", "exp091", "exp092", "exp093", "exp094", "exp095", "exp096"],
+      "count": 9,
+      "focus": "Storytelling, witness roundtrip, LAN probe, routing matrix, dual ionic, mesh backup, parity, template, cross-arch"
+    },
+    "frontier": {
+      "experiments": ["exp098", "exp099", "exp100", "exp101", "exp102", "exp103", "exp104", "exp105", "exp106", "exp107"],
+      "count": 10,
+      "focus": "Cellular deploy, agentic loop, MCP tools, fieldmouse triage, storytelling session, ludoSpring IPC, rpGPT replay, rhizome game, micro desktop, foundation validation"
+    }
+  },
+  "timeline": {
+    "phase_40_50": { "experiments_added": 25, "period": "Feb–Mar 2026" },
+    "phase_50_55": { "experiments_added": 30, "period": "Mar–Apr 2026" },
+    "phase_55_59": { "experiments_added": 30, "period": "Apr–May 2026" }
+  },
+  "gap_resolution_experiments": {
+    "PG-55": ["exp079", "exp081"],
+    "PG-56": ["exp064"],
+    "PG-57": ["exp082"],
+    "PG-58": ["exp087"],
+    "PG-59": ["exp075"]
+  }
+}

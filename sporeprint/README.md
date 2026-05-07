@@ -16,6 +16,12 @@ the sporePrint auto-refresh CI pipeline.
 - Additional `.md` pages with Zola-compatible front matter
 - Results, benchmarks, or experiment summaries you want visible on primals.eco
 
+## Notebooks
+
+Notebooks live in `notebooks/` (sibling to this directory) and are rendered
+separately by sporePrint's `render_notebooks.sh`. See `notebooks/NOTEBOOK_PATTERN.md`
+for the full pattern. Frozen data lives in `experiments/results/*.json`.
+
 ## Front matter requirements
 
 Every `.md` file needs Zola TOML front matter with `[taxonomies]` for cross-referencing:

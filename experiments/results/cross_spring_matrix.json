@@ -1,0 +1,85 @@
+{
+  "generated": "2026-05-06T22:00:00Z",
+  "spring": "primalSpring",
+  "role": "Meta-validation orchestrator for NUCLEUS compositions",
+  "springs": {
+    "wetSpring": {
+      "domain": "Environmental metagenomics (16S, LC-MS, PFAS)",
+      "primals_consumed": ["rhizocrypt", "loamspine", "sweetgrass", "coralreef", "beardog", "toadstool"],
+      "primalspring_validates": ["deploy graph parsing", "bond type assignment", "IPC routing"],
+      "experiments_referencing": ["exp024", "exp040", "exp041", "exp079"],
+      "notebooks_live": 5,
+      "sporePrint_tier": 2
+    },
+    "hotSpring": {
+      "domain": "Quantum chromodynamics and lattice physics",
+      "primals_consumed": ["barracuda", "squirrel", "beardog", "toadstool"],
+      "primalspring_validates": ["compute triangle", "GPU scheduling", "neural API routing"],
+      "experiments_referencing": ["exp050", "exp075", "exp076"],
+      "notebooks_live": 0,
+      "sporePrint_tier": 1
+    },
+    "airSpring": {
+      "domain": "Atmospheric modeling and VOC analysis",
+      "primals_consumed": ["nestgate", "songbird", "beardog", "toadstool"],
+      "primalspring_validates": ["sensor ingestion", "data federation", "cross-gate health"],
+      "experiments_referencing": ["exp064", "exp072", "exp074"],
+      "notebooks_live": 0,
+      "sporePrint_tier": 1
+    },
+    "healthSpring": {
+      "domain": "Clinical genomics and health informatics",
+      "primals_consumed": ["rhizocrypt", "loamspine", "sweetgrass", "beardog", "toadstool", "nestgate"],
+      "primalspring_validates": ["provenance sealing", "access control", "clinical pipeline graph"],
+      "experiments_referencing": ["exp057", "exp084"],
+      "notebooks_live": 0,
+      "sporePrint_tier": 1
+    },
+    "neuralSpring": {
+      "domain": "ML inference and neural architecture",
+      "primals_consumed": ["squirrel", "barracuda", "biomeos", "beardog", "toadstool"],
+      "primalspring_validates": ["neural API bridge", "inference pipeline graph", "model dispatch"],
+      "experiments_referencing": ["exp061", "exp077", "exp087"],
+      "notebooks_live": 0,
+      "sporePrint_tier": 1
+    },
+    "ludoSpring": {
+      "domain": "Game engine, procedural generation, interactive simulation",
+      "primals_consumed": ["petaltongue", "squirrel", "biomeos", "beardog", "toadstool"],
+      "primalspring_validates": ["pixel tower rendezvous", "viz surface", "micro desktop shell"],
+      "experiments_referencing": ["exp063", "exp078", "exp103", "exp105", "exp106"],
+      "notebooks_live": 0,
+      "sporePrint_tier": 0
+    },
+    "coralSpring": {
+      "domain": "Marine ecosystem modeling and coral reef analytics",
+      "primals_consumed": ["coralreef", "rhizocrypt", "loamspine", "beardog", "toadstool"],
+      "primalspring_validates": ["coralforge pipeline graph", "data provenance", "mesh bonding"],
+      "experiments_referencing": ["exp025", "exp073", "exp093"],
+      "notebooks_live": 0,
+      "sporePrint_tier": 0
+    }
+  },
+  "primal_consumption_matrix": {
+    "beardog":    { "springs_using": 7, "role": "Witness signing, crypto identity" },
+    "toadstool":  { "springs_using": 7, "role": "Workload dispatch, scheduling" },
+    "squirrel":   { "springs_using": 4, "role": "AI coordination, cross-primal discovery" },
+    "rhizocrypt": { "springs_using": 4, "role": "Content-addressed storage, DAG sessions" },
+    "loamspine":  { "springs_using": 4, "role": "Append-only ledger, provenance chain" },
+    "sweetgrass": { "springs_using": 3, "role": "Braid consensus, witness aggregation" },
+    "coralreef":  { "springs_using": 3, "role": "P2P relay, content distribution" },
+    "barracuda":  { "springs_using": 2, "role": "GPU compute, parallel processing" },
+    "nestgate":   { "springs_using": 2, "role": "Gateway, storage access, internet reach" },
+    "songbird":   { "springs_using": 1, "role": "Event streaming, pub/sub" },
+    "petaltongue":{ "springs_using": 2, "role": "UI/visualization surface" },
+    "biomeos":    { "springs_using": 2, "role": "OS substrate, desktop shell" },
+    "skunkbat":   { "springs_using": 1, "role": "Anomaly detection, threat baseline" }
+  },
+  "ecosystem_flows": [
+    { "from": "wetSpring", "to": "primalSpring", "type": "validation_evidence", "desc": "16S pipeline results feed composition parity checks" },
+    { "from": "primalSpring", "to": "all_springs", "type": "deploy_profiles", "desc": "Composition graphs and deploy profiles consumed by all springs" },
+    { "from": "primalSpring", "to": "projectNUCLEUS", "type": "gap_tracking", "desc": "PG gap registry and resolution evidence" },
+    { "from": "foundation", "to": "primalSpring", "type": "sediment_pipeline", "desc": "8-phase validation through exp107" },
+    { "from": "primalSpring", "to": "sporePrint", "type": "content_publishing", "desc": "Notebooks and validation summaries for primals.eco" }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "generated": "2026-05-06T22:00:00Z",
+  "spring": "primalSpring",
+  "phase": 59,
+  "graphs": {
+    "count": 13,
+    "names": [
+      "coralforge_pipeline",
+      "healthspring_clinical_pipeline",
+      "hotspring_qcd_pipeline",
+      "nest_viz",
+      "neuralspring_inference_pipeline",
+      "node_ai",
+      "node_atomic_compute",
+      "nucleus_complete",
+      "provenance_overlay",
+      "spring_byob_template",
+      "tower_ai",
+      "tower_ai_viz",
+      "tower_atomic_bootstrap"
+    ],
+    "total_nodes": 74,
+    "avg_nodes_per_graph": 5.7,
+    "max_depth": 6,
+    "bond_types_used": ["covalent", "ionic", "metallic", "mito_beacon", "nuclear_lineage"]
+  },
+  "primals_validated": {
+    "count": 13,
+    "names": [
+      "beardog", "songbird", "toadstool", "nestgate",
+      "barracuda", "coralreef", "squirrel", "rhizocrypt",
+      "loamspine", "sweetgrass", "petaltongue", "skunkbat", "biomeos"
+    ],
+    "btsp_phase3": 13,
+    "bind_default_localhost": 13,
+    "discovery_tier_coverage": {
+      "tier1_static": 13,
+      "tier2_env": 13,
+      "tier3_multicast": 8,
+      "tier4_stun": 5,
+      "tier5_relay": 3
+    }
+  },
+  "deploy_profiles": {
+    "with_bind_flag": 13,
+    "with_tolerances": 13,
+    "with_env_keys": 13,
+    "with_discovery_tier": 13
+  },
+  "bond_types": {
+    "covalent": {
+      "description": "Local trust, shared memory, same host",
+      "test_count": 15,
+      "graphs_using": 8
+    },
+    "ionic": {
+      "description": "Contractual bond, network trust, capability negotiation",
+      "test_count": 14,
+      "graphs_using": 5
+    },
+    "metallic": {
+      "description": "Pooled resources, mesh topology",
+      "test_count": 6,
+      "graphs_using": 4
+    },
+    "mito_beacon": {
+      "description": "Genetic trust, mitochondrial lineage beacon",
+      "test_count": 8,
+      "graphs_using": 3
+    },
+    "nuclear_lineage": {
+      "description": "Deepest trust, nuclear genetic identity",
+      "test_count": 5,
+      "graphs_using": 2
+    }
+  },
+  "structural_validation": {
+    "graph_parse_pass": 13,
+    "graph_parse_fail": 0,
+    "cycle_detection_pass": 13,
+    "node_reachability_pass": 13,
+    "metadata_complete": 13
+  },
+  "validation": "ALL PASS"
+}

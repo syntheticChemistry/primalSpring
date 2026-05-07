@@ -1,0 +1,82 @@
+{
+  "generated": "2026-05-06T22:00:00Z",
+  "spring": "primalSpring",
+  "btsp": {
+    "phase": 3,
+    "cipher": "ChaCha20-Poly1305",
+    "key_exchange": "X25519",
+    "aead": true,
+    "primals_phase3": 13,
+    "primals_total": 13,
+    "coverage_pct": 100.0,
+    "per_primal": {
+      "beardog":    { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" },
+      "songbird":   { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" },
+      "toadstool":  { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" },
+      "nestgate":   { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" },
+      "barracuda":  { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" },
+      "coralreef":  { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" },
+      "squirrel":   { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" },
+      "rhizocrypt": { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--port" },
+      "loamspine":  { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--port" },
+      "sweetgrass": { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--http-address" },
+      "petaltongue":{ "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" },
+      "skunkbat":   { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" },
+      "biomeos":    { "phase": 3, "bind_default": "127.0.0.1", "bind_flag": "--bind" }
+    }
+  },
+  "gaps": {
+    "PG-55": {
+      "title": "UniBin --bind flag standardization",
+      "severity": "HIGH",
+      "status": "RESOLVED",
+      "resolved_date": "2026-05-06",
+      "primals_resolved": 13,
+      "primals_total": 13,
+      "resolution": "All 13 primals default to 127.0.0.1 with CLI bind control"
+    },
+    "PG-56": {
+      "title": "NestGate storage.list authentication",
+      "severity": "HIGH",
+      "status": "RESOLVED",
+      "resolved_date": "2026-05-05",
+      "resolution": "BTSP method-level auth gating on storage.list"
+    },
+    "PG-57": {
+      "title": "skunkBat baseline learning",
+      "severity": "MEDIUM",
+      "status": "RESOLVED",
+      "resolved_date": "2026-05-04",
+      "resolution": "Multi-dimensional anomaly detection seeded with baseline profiles"
+    },
+    "PG-58": {
+      "title": "Songbird --listen semantics",
+      "severity": "MEDIUM",
+      "status": "RESOLVED",
+      "resolved_date": "2026-05-05",
+      "resolution": "Dedicated --bind for HTTP, --listen reserved for IPC"
+    },
+    "PG-59": {
+      "title": "sweetGrass --http-address documentation",
+      "severity": "LOW",
+      "status": "RESOLVED",
+      "resolved_date": "2026-05-06",
+      "resolution": "Documented host:port format, main TCP listener defaults to localhost"
+    }
+  },
+  "discovery_hierarchy": {
+    "tiers": 5,
+    "tier_names": ["static_config", "env_override", "multicast_lan", "stun_nat", "relay_federation"],
+    "primals_with_tier1": 13,
+    "primals_with_tier3_plus": 8,
+    "primals_with_tier5": 3
+  },
+  "security_timeline": [
+    { "date": "2026-03-15", "event": "BTSP Phase 1 — plaintext JSON-RPC", "primals": 13 },
+    { "date": "2026-04-01", "event": "BTSP Phase 2 — HMAC-SHA256 auth", "primals": 13 },
+    { "date": "2026-04-15", "event": "BTSP Phase 2a — audit findings (PG-55–59)", "primals": 0 },
+    { "date": "2026-04-20", "event": "BTSP Phase 3 — ChaCha20-Poly1305 AEAD", "primals": 8 },
+    { "date": "2026-05-01", "event": "Phase 3 convergence — 11/13 primals", "primals": 11 },
+    { "date": "2026-05-06", "event": "Full convergence — 13/13 Phase 3, all gaps closed", "primals": 13 }
+  ]
+}

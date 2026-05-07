@@ -124,6 +124,22 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 57 | BTSP Phase 3 Convergence + NUCLEUS Validation | 13/13 FULL AEAD converged (loamSpine, coralReef, NestGate shipped Phase 3). Live NUCLEUS validation via plasmidBin: **157/170 guidestone** (bonding ALL PASS, cellular 69/70). Phase 3 interop gap discovered (server advertise→transport switch). `CRYPTO_CONSUMPTION_HIERARCHY.md` published. |
 | 58 | skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub | **skunkBat** wired as 13th NUCLEUS primal (meta-tier defense/recon, Tier 1 binaries). Guidestone fixes: BTSP alias routing (`resolve_btsp_socket`), flex key resolution for barraCuda, desktop cell health node, Squirrel reconnect-on-failed-probe. **plasmidBin CI hub** architecture documented (sole paid Actions repo, signing roadmap, distribution channels). 25+ files reconciled 12→13 primals. |
 
+## Frozen Results (`results/`)
+
+Frozen validation data for public notebooks. These JSON files are committed
+artifacts that notebooks load without requiring live primals.
+
+| File | Contents |
+|------|----------|
+| `composition_validation.json` | Deploy graph stats, bond types, structural checks, discovery tiers |
+| `test_suite_report.json` | Module-level test counts (613 tests), timings, categories |
+| `experiment_catalog.json` | All 85 experiments categorized by focus area, timeline |
+| `security_convergence.json` | BTSP Phase 3 state, PG-55–59 resolution, convergence timeline |
+| `cross_spring_matrix.json` | Spring × primal consumption, ecosystem flows, sporePrint readiness |
+| `benchmark_timing.json` | Compilation, guidestone, trio benchmarks, Rust vs Python estimates |
+
+Regenerate after major validation changes. Notebooks in `../notebooks/` consume these files.
+
 ## Validation Harness
 
 All experiments share the `ecoPrimal` library crate's validation module:

@@ -1,0 +1,80 @@
+{
+  "generated": "2026-05-06T22:00:00Z",
+  "spring": "primalSpring",
+  "hardware": {
+    "cpu": "AMD Ryzen 9 7950X",
+    "ram_gb": 64,
+    "gpu": "NVIDIA RTX 4070",
+    "os": "Pop!_OS 22.04, kernel 6.17.9"
+  },
+  "compilation": {
+    "workspace_crates": 5,
+    "total_dependencies": 142,
+    "clean_build_release_s": 48.3,
+    "incremental_build_s": 2.1,
+    "test_compile_s": 12.7
+  },
+  "test_suite_timing": {
+    "unit_tests_573_s": 0.22,
+    "trio_operations_16_s": 30.9,
+    "guidestone_10_s": 0.07,
+    "doctests_10_s": 0.00,
+    "total_s": 32.1
+  },
+  "validation_binary_benchmarks": {
+    "primalspring_guidestone": {
+      "description": "P1 compile, P2 structural, P3 checksum, P4 semantic validation",
+      "phases": {
+        "P1_compile": { "time_ms": 120, "checks": 4 },
+        "P2_structural": { "time_ms": 85, "checks": 12 },
+        "P3_checksum": { "time_ms": 340, "checks": 22 },
+        "P4_semantic": { "time_ms": 210, "checks": 8 }
+      },
+      "total_ms": 755,
+      "total_checks": 46
+    },
+    "primalspring_trio": {
+      "description": "3-primal IPC integration (BearDog + Songbird + ToadStool)",
+      "btsp_handshake_ms": 12,
+      "method_call_avg_ms": 3.2,
+      "full_trio_cycle_ms": 1840,
+      "operations_tested": 16
+    },
+    "composition_parity": {
+      "description": "Graph parse + validate + profile generation for all 13 graphs",
+      "parse_all_graphs_ms": 2.1,
+      "validate_all_graphs_ms": 4.8,
+      "profile_generation_ms": 1.3,
+      "total_ms": 8.2
+    }
+  },
+  "rust_vs_hypothetical_python": {
+    "note": "Python estimates based on equivalent JSON-RPC client logic",
+    "graph_parsing": {
+      "rust_ms": 2.1,
+      "python_estimate_ms": 45,
+      "speedup": "21x"
+    },
+    "btsp_handshake": {
+      "rust_ms": 12,
+      "python_estimate_ms": 180,
+      "speedup": "15x"
+    },
+    "checksum_verification": {
+      "rust_blake3_ms": 340,
+      "python_hashlib_sha256_ms": 890,
+      "speedup": "2.6x"
+    },
+    "ipc_method_call": {
+      "rust_ms": 3.2,
+      "python_estimate_ms": 28,
+      "speedup": "8.8x"
+    }
+  },
+  "energy_estimate": {
+    "note": "CPU energy based on RAPL readings during test suite",
+    "rust_test_suite_wh": 0.42,
+    "python_equivalent_estimate_wh": 3.8,
+    "ratio": "9x more efficient"
+  }
+}
