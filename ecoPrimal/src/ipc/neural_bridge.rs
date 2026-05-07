@@ -77,10 +77,7 @@ impl NeuralBridge {
             }
         }
 
-        let family = family_hint
-            .map(String::from)
-            .or_else(|| std::env::var(crate::env_keys::FAMILY_ID).ok())
-            .unwrap_or_else(|| "default".to_owned());
+        let family = family_hint.map_or_else(crate::env_keys::resolve_family_id, String::from);
 
         let candidates = [
             format!("neural-api-{family}.sock"),

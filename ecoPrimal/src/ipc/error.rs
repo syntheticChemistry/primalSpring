@@ -79,6 +79,18 @@ pub enum IpcError {
         /// Human-readable description of the serialization failure.
         detail: String,
     },
+    /// Caller lacks permission to invoke the requested method.
+    ///
+    /// Returned when the `MethodGate` rejects a call because the caller's
+    /// capability token does not authorize the method, or no token was
+    /// presented for a protected method.
+    #[error("permission denied for '{method}': {reason}")]
+    PermissionDenied {
+        /// The method the caller attempted to invoke.
+        method: String,
+        /// Why access was denied.
+        reason: String,
+    },
 }
 
 /// An [`IpcError`] annotated with the [`IpcErrorPhase`] where it occurred.
@@ -165,6 +177,12 @@ impl IpcError {
         matches!(self, Self::ProtocolError { .. })
     }
 
+    /// Whether the server rejected the call due to insufficient permissions.
+    #[must_use]
+    pub const fn is_permission_denied(&self) -> bool {
+        matches!(self, Self::PermissionDenied { .. })
+    }
+
     /// Whether the failure is likely a transport mismatch (e.g. tarpc socket
     /// receiving raw JSON-RPC). Manifests as a timeout with EAGAIN because
     /// the server accepts the connection but never sends a JSON-RPC response.
@@ -182,16 +200,25 @@ impl IpcError {
 
 impl From<JsonRpcError> for IpcError {
     fn from(err: JsonRpcError) -> Self {
-        if err.code == error_codes::METHOD_NOT_FOUND {
-            Self::MethodNotFound {
+        match err.code {
+            error_codes::METHOD_NOT_FOUND => Self::MethodNotFound {
                 method: err.message,
-            }
-        } else {
-            Self::ApplicationError {
+            },
+            error_codes::PERMISSION_DENIED | error_codes::UNAUTHORIZED => Self::PermissionDenied {
+                method: err
+                    .data
+                    .as_ref()
+                    .and_then(|d| d.get("method"))
+                    .and_then(serde_json::Value::as_str)
+                    .unwrap_or("unknown")
+                    .to_owned(),
+                reason: err.message,
+            },
+            _ => Self::ApplicationError {
                 code: err.code,
                 message: err.message,
                 data: err.data,
-            }
+            },
         }
     }
 }
@@ -444,6 +471,10 @@ mod tests {
             IpcError::SerializationError {
                 detail: "s".to_owned(),
             },
+            IpcError::PermissionDenied {
+                method: "compute.submit".to_owned(),
+                reason: "no token".to_owned(),
+            },
         ];
         for v in &variants {
             assert!(!v.to_string().is_empty());
@@ -558,5 +589,61 @@ mod tests {
             detail: "bad".to_owned(),
         };
         assert!(!err.is_recoverable());
+    }
+
+    // ── PermissionDenied tests ──
+
+    #[test]
+    fn permission_denied_queries() {
+        let err = IpcError::PermissionDenied {
+            method: "compute.submit".to_owned(),
+            reason: "no token".to_owned(),
+        };
+        assert!(err.is_permission_denied());
+        assert!(!err.is_retriable());
+        assert!(!err.is_recoverable());
+        assert!(!err.is_connection_error());
+        assert!(!err.is_method_not_found());
+    }
+
+    #[test]
+    fn from_jsonrpc_permission_denied() {
+        let rpc_err = JsonRpcError {
+            code: error_codes::PERMISSION_DENIED,
+            message: "capability token missing".to_owned(),
+            data: Some(serde_json::json!({"method": "compute.submit"})),
+        };
+        let err = IpcError::from(rpc_err);
+        assert!(err.is_permission_denied());
+        if let IpcError::PermissionDenied { method, reason } = &err {
+            assert_eq!(method, "compute.submit");
+            assert_eq!(reason, "capability token missing");
+        }
+    }
+
+    #[test]
+    fn from_jsonrpc_unauthorized() {
+        let rpc_err = JsonRpcError {
+            code: error_codes::UNAUTHORIZED,
+            message: "identity unknown".to_owned(),
+            data: None,
+        };
+        let err = IpcError::from(rpc_err);
+        assert!(err.is_permission_denied());
+        if let IpcError::PermissionDenied { method, .. } = &err {
+            assert_eq!(method, "unknown");
+        }
+    }
+
+    #[test]
+    fn display_permission_denied() {
+        let err = IpcError::PermissionDenied {
+            method: "storage.put".to_owned(),
+            reason: "scope insufficient".to_owned(),
+        };
+        let s = err.to_string();
+        assert!(s.contains("permission denied"));
+        assert!(s.contains("storage.put"));
+        assert!(s.contains("scope insufficient"));
     }
 }

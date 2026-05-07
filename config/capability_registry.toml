@@ -275,6 +275,14 @@ methods = [
     "security.authenticate",
 ]
 
+[auth]
+owner = "primalspring"
+methods = [
+    "auth.check",
+    "auth.mode",
+    "auth.peer_info",
+]
+
 [bonding]
 owner = "primalspring"
 methods = [

@@ -68,9 +68,7 @@ pub fn dispatch_request(line: &str) -> JsonRpcResponse {
                 "version": env!("CARGO_PKG_VERSION"),
                 "capabilities": primalspring::niche::LOCAL_CAPABILITIES,
                 "phase": "running",
-                "family_id": std::env::var(primalspring::env_keys::FAMILY_ID)
-                    .or_else(|_| std::env::var(primalspring::env_keys::BIOMEOS_FAMILY_ID))
-                    .unwrap_or_else(|_| "default".to_owned()),
+                "family_id": primalspring::env_keys::resolve_family_id(),
             }),
             id,
         ),

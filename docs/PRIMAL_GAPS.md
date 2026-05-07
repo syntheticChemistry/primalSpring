@@ -72,6 +72,20 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - **Recommendation absorbed**: Graph validation CI step that checks TOML method names against
 >   `capability_registry.toml` — implemented as `tools/check_graph_methods.sh`.
 >
+> **projectNUCLEUS Multi-User Hardening Handoff (May 7, 2026)** — live multi-user pentest from
+> authenticated JupyterHub session on ironGate. **Critical finding**: convention-based access
+> control (env vars) had zero enforcement. Fixed locally with 4 hardening layers. 8 patterns
+> abstracted, **5 new upstream gaps (JH-0 through JH-5)**:
+> - **JH-0 (CRITICAL)**: RPC dispatcher capability check — every primal accepts unauthenticated
+>   localhost calls. Blocks Step 2b. primalSpring must codify "enforcement at the gate" pattern.
+> - **JH-1 (High)**: BearDog identity management — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic`.
+> - **JH-2 (High)**: Token-carried resource envelope in biomeOS/ToadStool neuralAPI.
+> - **JH-3 (Medium)**: biomeOS `composition.reload` for per-primal hot-swap.
+> - **JH-4 (Medium)**: Token issuance UX for non-technical users.
+> - **JH-5 (Medium)**: skunkBat log aggregation + provenance pipeline.
+> - **Binding note**: 5 primals on `0.0.0.0` in deploy.sh — primal code has `--bind 127.0.0.1`
+>   default (PG-55 RESOLVED), deploy script needs to stop overriding.
+>
 > **projectNUCLEUS Phase 2a Security Handback (May 6, 2026)** — penetration testing on live 13-primal composition:
 > - **PG-55 `--bind` flag standardization** — **RESOLVED**: All 6 primals shipped bind control with
 >   localhost defaults. Songbird, ToadStool, petalTongue, skunkBat, biomeOS: `--bind`, default `127.0.0.1`.
@@ -602,8 +616,8 @@ Each maps to a specific primal team for resolution.
 | Primal | Key Evolution Since Handoff | Resolved Gaps | Remaining |
 |--------|---------------------------|---------------|-----------|
 | **barraCuda** | Sprint 39-41: **BC-07 RESOLVED** — `Auto::new()` returns `DiscoveredDevice` with 3-tier fallback (wgpu GPU → wgpu CPU → SovereignDevice IPC). BC-06 documented (README deployment matrix). TensorSession migration guide in BREAKING_CHANGES.md. Capability-based naming (no hardcoded primal names) | BC-05, BC-06, BC-07, BC-08, TensorSession | Sovereign pipeline readback, DF64 NVK verification, coverage →90% |
-| **coralReef** | Iter 79-79c: **CR-04 RESOLVED** (Wave 4 complete, zero `Result<_, String>` in production driver), **CR-05 RESOLVED** (cpu_exec.rs deleted), deny.toml bans, IPC latency doc, `#[allow]` audit, 4,467 tests | CR-01, CR-04, CR-05 | Transitive libc (deferred until mio→rustix, mio#1735) |
-| **BearDog** | Wave 34-35: **Real Ed25519 signing** on ionic bond propose+accept, placeholder elimination, real `/proc` metrics, self-knowledge module split, BTSP server live | BTSP server, ionic bond signatures (real Ed25519 verify) | Bond persistence (NestGate/loamSpine), HSM/BTSP Phase 3 signing |
+| **coralReef** | Iter 79-93: **CR-04 RESOLVED**, **CR-05 RESOLVED**, deny.toml bans, **Wire Standard L3** (protocol + transport in `capability.list`), zero `Result<_, String>` in production (ProbeError enum), all paths env-overridable, SovereignBootSequence trait, PRI/PGOB coverage expansion. **4,704 tests**, 0 clippy warnings | CR-01, CR-04, CR-05, Wire L3, typed errors | Transitive libc (deferred until mio→rustix, mio#1735), IPC timing for `shader.compile` (Low) |
+| **BearDog** | Wave 34-91: **Real Ed25519 signing**, ionic bond lifecycle, BTSP server live, `crypto.did_from_key` (Wave 89), **Wave 91: typed errors** — `BondPersistenceError` enum (5 variants) + `SslKeylogError` enum (2 variants), zero `Result<_, String>` in persistence/TLS modules. 24 tests, 0 clippy warnings | BTSP server, ionic bond, crypto.did_from_key, typed errors | Bond persistence NestGate/loamSpine wiring (coordination) |
 | **NestGate** | Session 35-42: NG-08 ring eliminated (ureq + rustls-rustcrypto), **storage.store/retrieve on UDS** with family-scoped symlinks, ZFS bridge (7 `zfs.*` methods, GAP-MATRIX-04), BTSP Phase 1+2 (server handshake wired), Wire L3 capabilities.list + identity.get, `fetch_external` → Tower Atomic, `#[serial]` eliminated, 11,856 tests ~80% cov | NG-08, storage IPC, ZFS bridge, BTSP Phase 2 | Doc drift (57 methods in STATUS vs 41 in code const), `data.*` capability inconsistency, coverage 80→90%, 181 deprecated APIs to clean |
 | **toadStool** | S199-202: pipeline dispatch stable, capability-based naming (`coral_reef_available` → `shader_compiler_available`), +46 tests, dispatch refactor | PG-05 (dispatch IPC), pipeline scheduling (S199) | D-COVERAGE-GAP (83.6→90%), V4L2 ioctl, async/dyn markers |
 | **Songbird** | Wave 134-151: `capability.resolve`, `inference.*` canonical, CI-01 `cargo deny`, **SB-02 ring-crypto removed**, **SB-03 sled eliminated**, canonical constants, **PG-37 (Phase 45) capability-first routing**: `ipc.resolve` now has primal-name fallback when capability lookup fails + `ipc.resolve_by_name` alias + `name` param alias, 7,380 tests | SB-02, SB-03, capability.resolve, inference namespace, CI-01, **PG-37** | QUIC/TLS evolution, transitive `ring` in lockfile (not compiled) |
@@ -951,8 +965,8 @@ See `projectNUCLEUS/validation/ROOTPULSE_GAPS_HANDBACK.md` for full test results
 | ID | Gap | Severity | Status |
 |----|-----|----------|--------|
 | ~~SD-01~~ | ~~Missing `deny.toml`~~ | ~~Low~~ | **RESOLVED** (April 30) — `deny.toml` added at repo root + scaffolded into generated primals |
-| SD-02 | musl cross-compilation | Low | Open — binary builds not yet wired for ecoBin |
-| SD-03 | genomeBin signing | Low | Open — sequoia-openpgp not implemented |
+| SD-02 | musl cross-compilation | Low | **RESOLVED** (May 7, v0.2.0) — Scaffold generates `release.yml` with Tier 1 musl cross-compilation (x86_64, aarch64, armv7). BLAKE3 checksums via `b3sum`. GitHub Release publishing. |
+| SD-03 | genomeBin signing | Low | **RESOLVED** (May 7, v0.2.0) — `sourdough-genomebin::signing` module: Ed25519 detached signatures via `ed25519-dalek` (pure Rust, zero C deps). API: `generate_keypair`, `sign_file`, `verify_file`. 8 new tests. |
 
 **Compliance** (v0.2.0-dev — 3aca9ec): clippy **CLEAN** (`all` + `pedantic` + `nursery`), fmt **PASS**, `forbid(unsafe_code)` at workspace level, `deny.toml` **PRESENT** (license + ecoBin-style C-sys bans), SPDX AGPL-3.0-or-later in Cargo.toml. **247 tests, 0 failures** (unit + integration + e2e + doctests), coverage 95%+. Edition 2024, workspace lints centralized. Zero `TODO`/`FIXME`/`HACK`/`unimplemented!` in source.
 
@@ -1217,12 +1231,35 @@ in their validators. primalSpring method constants are clean (audited: `dag.sess
 
 | PG | Issue | Owner | Priority | Status |
 |----|-------|-------|----------|--------|
-| **PG-60** | rhizoCrypt silent timeout on UDS connect — accepts socket then hangs instead of returning error when not ready | rhizoCrypt team | P1 | **OPEN** |
-| **PG-61** | barraCuda missing `stats.entropy` — hotSpring QCD needs `stats.entropy(data) -> f64` as IPC-routable method | barraCuda team | P2 | **OPEN** |
-| **PG-62** | toadStool short timeout sensitivity — health.liveness fast-path requested, minimum recommended timeout undocumented | toadStool team | P2 | **OPEN** |
+| **PG-60** | rhizoCrypt silent timeout on UDS connect — accepts socket then hangs instead of returning error when not ready | rhizoCrypt team | P1 | **RESOLVED** — readiness gate returns `-32002 not-ready` on cold UDS connect. Health probes bypass the gate |
+| **PG-61** | barraCuda missing `stats.entropy` — hotSpring QCD needs `stats.entropy(data) -> f64` as IPC-routable method | barraCuda team | P2 | **RESOLVED** — Sprint 50, dispatches to `stats.shannon` |
+| **PG-62** | toadStool short timeout sensitivity — health.liveness fast-path requested, minimum recommended timeout undocumented | toadStool team | P2 | **RESOLVED** — `health.liveness` fast-path returns `{"status":"starting"}` during init. Timeout constants documented: dispatch 5s, workload 300s, TCP idle 300s |
 | **PG-63** | Matplotlib Agg guidance conflict — `CONTENT_GUIDE.md` says "don't set Agg", `SPRING_EVOLUTION_TARGETS.md` says "use Agg" | sporePrint / wateringHole | P2 | **OPEN** |
 | **PG-64** | sporePrint notebook rendering pipeline — `render_notebooks.sh` (153 LOC) and `auto-refresh.yml` now exist. Recursive notebook glob added to handle `notebooks/papers/` subdirectories. | sporePrint / primalSpring | P1 | **RESOLVED** |
 | **PG-65** | Method string drift CI check — `tools/check_method_strings.sh` validates 208 method strings against `config/capability_registry.toml`. Zero drift at ship. Pattern available for other springs. | primalSpring | P2 | **RESOLVED** |
+
+### projectNUCLEUS Multi-User Hardening Handoff (May 7, 2026)
+
+Live multi-user security pentest from authenticated JupyterHub session on ironGate.
+Critical finding: convention-based access control (`NUCLEUS_READONLY=1` env var) had
+zero enforcement — reviewer-tier users could execute arbitrary code. Fixed locally with
+4 hardening layers (hidepid=2, iptables outbound block, JupyterLab server flags,
+shared notebook immutability). 8 patterns abstracted, 5 new upstream gaps:
+
+| Gap | Issue | Owner | Severity | Status |
+|-----|-------|-------|----------|--------|
+| **JH-0** | RPC dispatcher capability check — every primal's JSON-RPC dispatcher accepts unauthenticated calls from any localhost process. Multi-user compositions are vulnerable until dispatchers check capability tokens before executing methods. Blocks Step 2b (BTSP auth inside tunnel). **primalSpring leads**: `MethodGate` pattern implemented (permissive default), `auth.check`/`auth.mode`/`auth.peer_info` methods live, guidestone validation layer wired, CI tool advisory. | All primal teams + primalSpring (pattern) | **Critical** | **IN PROGRESS** |
+| **JH-1** | BearDog identity management — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` methods needed. PAM case-sensitivity bugs prove identity must be primal-native. DID-based canonical identity with capability-scoped tokens. | BearDog team | High | **OPEN** |
+| **JH-2** | Token-carried resource envelope — ionic tokens need resource envelope fields (mem, cpu, method allowlist) that composition-aware spawners (ToadStool, biomeOS/neuralAPI) enforce. | biomeOS + ToadStool | High | **OPEN** |
+| **JH-3** | Composition hot-reload — `composition.reload` for swapping a single primal without full composition restart. Currently requires `systemctl restart` which tears down the full stack. | biomeOS team | Medium | **OPEN** |
+| **JH-4** | Token issuance UX — end-to-end token delivery mechanism for non-technical researchers. BearDog needs a path that doesn't require CLI skills. | BearDog + primalSpring | Medium | **OPEN** |
+| **JH-5** | Log aggregation + provenance pipeline — skunkBat needs to consume heterogeneous sources (systemd journal, primal JSON-RPC logs, tunnel logs) and feed security-relevant events into rhizoCrypt DAG + sweetGrass provenance braids. | skunkBat team | Medium | **OPEN** |
+
+**Binding exposure note**: projectNUCLEUS reports 5 primals (skunkBat, ToadStool, petalTongue, biomeOS, sweetGrass) still on `0.0.0.0` in their live deployment — mitigated by UFW. This is a **deploy.sh configuration issue**, not a primal code gap: all 6 primals ship `--bind` with `127.0.0.1` default (PG-55 RESOLVED). The deploy script needs to omit the `--bind 0.0.0.0` override or use localhost. Not a new upstream gap.
+
+**Sovereignty wiring**: JH-0 → JH-1 → JH-4 are prerequisites for Step 2b (BTSP auth replaces PAM). JH-2 follows immediately. JH-3 and JH-5 are parallel improvements. Pattern 3 (shared workspace) cross-references NG-2 (NestGate collections). Pattern 4 (trust boundary) is implicit in Step 3b.
+
+See: `wateringHole/handoffs/PROJECTNUCLEUS_MULTIUSER_HARDENING_HANDOFF_MAY07_2026.md`, `projectNUCLEUS/validation/JUPYTERHUB_PATTERNS_HANDBACK.md`.
 
 **Local resolution**: `downstream_manifest.toml` hotSpring entry updated — added `rhizocrypt`, `loamspine`, `sweetgrass` to `depends_on` (provenance trio was missing).
 
@@ -1769,10 +1806,16 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 | **Ionic bond negotiation** — `crypto.sign_contract` not yet wired for cross-tower compositions | hotSpring (GAP-HS-005 evolution), healthSpring (dual-tower ionic), wetSpring (provenance cross-spring) | **BearDog team** | **OPEN** — propose→accept→seal lifecycle works; cross-family contract signing not yet exposed as IPC method |
 | **BTSP Phase 3 encrypted channel** — post-handshake cipher negotiation (`btsp.negotiate` + ChaCha20Poly1305) | hotSpring, healthSpring, neuralSpring, wetSpring | **BearDog + all primals** | **RESOLVED** (May 2, 2026) — 13/13 primals ship full AEAD on wire. All bond types (ionic, weak, organo-metal-salt) unblocked |
 | **toadStool `compute.dispatch` standardization** — springs need consistent dispatch envelope for GPU compute | hotSpring, wetSpring, neuralSpring | **toadStool team** | **RESOLVED** (S203 `DISPATCH_WIRE_CONTRACT.md`) but spring-side adoption incomplete |
-| **Squirrel provider registration** — `inference.register_provider` needed for springs with local models | neuralSpring, healthSpring, wetSpring | **Squirrel team** | **PARTIAL** — wire tests exist; production registration path in progress |
+| **Squirrel provider registration** — `inference.register_provider` needed for springs with local models | neuralSpring, healthSpring, wetSpring | **Squirrel team** | **RESOLVED** (May 7) — Squirrel E2E inference pipeline fully functional (15 wire tests). Remaining gap is neuralSpring-side: needs `inference.register_provider` endpoint. Not blocking NUCLEUS deployment |
 | **NestGate `storage.fetch_external`** — cross-spring data retrieval for composition pipelines | wetSpring, healthSpring | **NestGate team** | **PARTIAL** — method exists but delegated via Tower Atomic; cross-spring routing via biomeOS needed |
 | **barraCuda IPC migration** — springs still link barraCuda as a Rust library (path/git dep) for domain math; need to rewire to the barraCuda ecobin's 32 JSON-RPC methods over UDS. **Spring-side actively in progress**: hotSpring (9 probes), healthSpring (2/11 IPC via math_dispatch), neuralSpring V133 (IpcMathClient, 9 methods wired), wetSpring V145 (5 primals). | All delta springs | **Each spring team** (primalSpring documents the pattern) | **IN PROGRESS** — 4/4 delta springs building IPC clients; no spring uses `primalspring::composition` yet |
 | **barraCuda JSON-RPC surface gaps (GAP-11)** — 14/18 closed (Sprints 44–50). Remaining 4 (ESN v2, Nautilus, batched ODE, SimpleMlp) are **NOT blocked on infrastructure** per barraCuda advisory (May 7). Two architecture paths: **Path A (stateless snapshots)** for ODE + ESN single-shot, **Path B (server sessions)** via toadStool `job_id` pattern for ESN streaming + Nautilus. Building blocks exist in both primals. `SimpleMlp` training is a **library gap** (no `train` method), not IPC. Sprint ordering: `ode.step` → `esn.predict` → session methods → `nautilus.*`. See `wateringHole/handoffs/BARRACUDA_STATEFUL_API_ARCHITECTURE_ADVISORY_MAY07_2026.md`. | neuralSpring, hotSpring, airSpring | **barraCuda team** | **UNBLOCKED** — architecture paths documented, no new infra needed, incremental sprints planned |
+| **JH-0: RPC dispatcher capability check** — every primal's JSON-RPC dispatcher accepts unauthenticated calls from any localhost process. Multi-user compositions are vulnerable until dispatchers check capability tokens (ionic) before executing methods. Blocks Step 2b. | projectNUCLEUS multi-user pentest | **All primal teams + primalSpring** | **IN PROGRESS** — Critical. primalSpring: `MethodGate` pattern wired (permissive default), `auth.*` methods live, guidestone validation + CI tool. Next: upstream primals adopt pattern |
+| **JH-1: BearDog identity management** — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` needed for primal-native identity replacing PAM. | projectNUCLEUS (JupyterHub) | **BearDog team** | **OPEN** — High. Prerequisite for Step 2b (BTSP auth) |
+| **JH-2: Token-carried resource envelope** — ionic tokens need resource fields (mem, cpu, method allowlist) that biomeOS/ToadStool enforce. | projectNUCLEUS (JupyterHub) | **biomeOS + ToadStool** | **OPEN** — High. neuralAPI enforcement |
+| **JH-3: Composition hot-reload** — `composition.reload` for per-primal hot-swap without full restart. | projectNUCLEUS (JupyterHub) | **biomeOS team** | **OPEN** — Medium |
+| **JH-4: Token issuance UX** — delivery mechanism for non-technical researchers. | projectNUCLEUS (JupyterHub) | **BearDog + primalSpring** | **OPEN** — Medium |
+| **JH-5: Log aggregation + provenance** — heterogeneous source consumption (systemd, primal logs, tunnel) into rhizoCrypt DAG + sweetGrass braids. | projectNUCLEUS (JupyterHub) | **skunkBat team** | **OPEN** — Medium |
 
 ### Per-Spring Composition Status (Delta Season — April 19, 2026)
 

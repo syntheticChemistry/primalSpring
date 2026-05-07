@@ -100,7 +100,7 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
     let base =
         std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
     let biomeos_dir = base.join(crate::primal_names::BIOMEOS);
-    let family = std::env::var(crate::env_keys::FAMILY_ID).unwrap_or_else(|_| "default".to_owned());
+    let family = crate::env_keys::resolve_family_id();
 
     // 2a: {capability}-{family}.sock (multi-tenant convention)
     let family_sock = biomeos_dir.join(format!("{capability}-{family}.sock"));

@@ -76,7 +76,7 @@ pub fn build_socket_path(base_dir: &Path, primal: &str, family: &str) -> PathBuf
 pub fn socket_path(primal: &str) -> PathBuf {
     let base =
         std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
-    let family = std::env::var(crate::env_keys::FAMILY_ID).unwrap_or_else(|_| "default".to_owned());
+    let family = crate::env_keys::resolve_family_id();
     build_socket_path(&base, primal, &family)
 }
 

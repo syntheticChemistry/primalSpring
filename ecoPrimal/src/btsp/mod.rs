@@ -157,9 +157,8 @@ impl From<SecurityMode> for GeneticSecurityMode {
 /// - Both → invalid (see [`validate_insecure_guard`])
 #[must_use]
 pub fn security_mode_from_env() -> SecurityMode {
-    let has_family = std::env::var(crate::env_keys::FAMILY_ID)
-        .map(|v| !v.is_empty() && v != "default")
-        .unwrap_or(false);
+    let family = crate::env_keys::resolve_family_id();
+    let has_family = !family.is_empty() && family != "default";
 
     if has_family {
         SecurityMode::Production
@@ -179,9 +178,8 @@ pub struct BtspGuardError(pub String);
 ///
 /// Returns [`BtspGuardError`] when both are set.
 pub fn validate_insecure_guard() -> Result<(), BtspGuardError> {
-    let has_family = std::env::var(crate::env_keys::FAMILY_ID)
-        .map(|v| !v.is_empty() && v != "default")
-        .unwrap_or(false);
+    let family = crate::env_keys::resolve_family_id();
+    let has_family = !family.is_empty() && family != "default";
     let insecure = std::env::var(crate::env_keys::BIOMEOS_INSECURE)
         .map(|v| v == "1" || v == "true")
         .unwrap_or(false);

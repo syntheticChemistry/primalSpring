@@ -120,7 +120,7 @@ impl std::fmt::Display for JsonRpcError {
 
 impl std::error::Error for JsonRpcError {}
 
-/// Standard JSON-RPC 2.0 error codes.
+/// Standard JSON-RPC 2.0 error codes plus ecosystem security extensions.
 pub mod error_codes {
     /// Invalid JSON was received by the server.
     pub const PARSE_ERROR: i64 = -32_700;
@@ -132,6 +132,19 @@ pub mod error_codes {
     pub const INVALID_PARAMS: i64 = -32_602;
     /// Internal server error.
     pub const INTERNAL_ERROR: i64 = -32_603;
+
+    // ── Ecosystem security codes (server-defined range: -32000 to -32099) ──
+
+    /// Caller lacks a valid capability token or the token does not grant
+    /// access to the requested method. Returned by the pre-dispatch
+    /// `MethodGate` when enforcement is active.
+    pub const PERMISSION_DENIED: i64 = -32_001;
+    /// Caller identity could not be established (missing or malformed
+    /// credentials). Distinct from `PERMISSION_DENIED` which implies
+    /// identity was established but scopes are insufficient.
+    pub const UNAUTHORIZED: i64 = -32_000;
+    /// Primal is not ready to accept requests (cold start, initializing).
+    pub const NOT_READY: i64 = -32_002;
 }
 
 #[cfg(test)]

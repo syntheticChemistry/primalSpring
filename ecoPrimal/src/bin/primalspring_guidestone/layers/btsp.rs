@@ -368,3 +368,145 @@ fn validate_ed25519_verify(
         }
     }
 }
+
+/// Validate that the method gate (JH-0) is wired into the primalSpring
+/// dispatcher. Calls `auth.mode` and `auth.peer_info` to verify the gate
+/// is active and reports its configuration.
+#[expect(
+    clippy::too_many_lines,
+    reason = "validation function with sequential IPC checks; splitting loses narrative"
+)]
+pub fn validate_method_gate(v: &mut ValidationResult) {
+    use primalspring::ipc::client::PrimalClient;
+    use primalspring::ipc::discover;
+
+    let sock = discover::socket_path("primalspring");
+    if !sock.exists() {
+        v.check_skip(
+            "security:method_gate:wired",
+            "primalspring socket not found — server not running",
+        );
+        v.check_skip("security:method_gate:mode", "server not running");
+        v.check_skip("security:method_gate:peer_info", "server not running");
+        v.check_skip("security:method_gate:whitelist", "server not running");
+        return;
+    }
+
+    let mut client = match PrimalClient::connect(&sock, "primalspring") {
+        Ok(c) => c,
+        Err(e) => {
+            v.check_bool(
+                "security:method_gate:wired",
+                false,
+                &format!("cannot connect to primalspring: {e}"),
+            );
+            v.check_skip("security:method_gate:mode", "connection failed");
+            v.check_skip("security:method_gate:peer_info", "connection failed");
+            v.check_skip("security:method_gate:whitelist", "connection failed");
+            return;
+        }
+    };
+
+    // auth.mode — verify gate responds
+    match client.call("auth.mode", serde_json::Value::Null) {
+        Ok(resp) if resp.is_success() => {
+            let mode = resp
+                .result
+                .as_ref()
+                .and_then(|r| r.get("mode"))
+                .and_then(serde_json::Value::as_str)
+                .unwrap_or("unknown");
+            v.check_bool(
+                "security:method_gate:wired",
+                true,
+                "auth.mode responds — gate is wired",
+            );
+            v.check_bool(
+                "security:method_gate:mode",
+                true,
+                &format!("enforcement mode: {mode}"),
+            );
+        }
+        Ok(_) => {
+            v.check_bool(
+                "security:method_gate:wired",
+                false,
+                "auth.mode returned error",
+            );
+            v.check_skip("security:method_gate:mode", "auth.mode error");
+        }
+        Err(e) if e.is_method_not_found() => {
+            v.check_bool(
+                "security:method_gate:wired",
+                false,
+                "auth.mode not found — gate not wired",
+            );
+            v.check_skip("security:method_gate:mode", "gate not wired");
+        }
+        Err(e) => {
+            v.check_bool(
+                "security:method_gate:wired",
+                false,
+                &format!("auth.mode call failed: {e}"),
+            );
+            v.check_skip("security:method_gate:mode", "call failed");
+        }
+    }
+
+    // auth.peer_info — verify peer credential extraction
+    match client.call("auth.peer_info", serde_json::Value::Null) {
+        Ok(resp) if resp.is_success() => {
+            let origin = resp
+                .result
+                .as_ref()
+                .and_then(|r| r.get("origin"))
+                .and_then(serde_json::Value::as_str)
+                .unwrap_or("unknown");
+            v.check_bool(
+                "security:method_gate:peer_info",
+                true,
+                &format!("connection origin: {origin}"),
+            );
+        }
+        Ok(_) => {
+            v.check_bool(
+                "security:method_gate:peer_info",
+                false,
+                "auth.peer_info returned error",
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "security:method_gate:peer_info",
+                false,
+                &format!("peer_info call failed: {e}"),
+            );
+        }
+    }
+
+    // Whitelist validation: public methods should be accessible,
+    // verify health.check still works through the gate
+    match client.call("health.check", serde_json::Value::Null) {
+        Ok(resp) if resp.is_success() => {
+            v.check_bool(
+                "security:method_gate:whitelist",
+                true,
+                "health.check passes through gate (public method)",
+            );
+        }
+        Ok(_) => {
+            v.check_bool(
+                "security:method_gate:whitelist",
+                false,
+                "health.check blocked — whitelist misconfigured",
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "security:method_gate:whitelist",
+                false,
+                &format!("health.check failed: {e}"),
+            );
+        }
+    }
+}

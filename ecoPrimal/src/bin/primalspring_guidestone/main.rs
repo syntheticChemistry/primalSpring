@@ -35,6 +35,7 @@ mod layers;
 
 use primalspring::composition::{CompositionContext, validate_liveness};
 use primalspring::coordination::AtomicType;
+use primalspring::env_keys::{SeedConfig, init_seed_config};
 use primalspring::validation::ValidationResult;
 
 fn main() {
@@ -54,18 +55,11 @@ fn main() {
         .ok()
         .filter(|s| !s.is_empty() && s != "default")
         .unwrap_or_else(|| "guidestone-validation".to_owned());
-    // SAFETY: called in main() before any threads are spawned.
-    // Rust 2024 marks set_var as unsafe due to data races in multithreaded
-    // programs. This binary is single-threaded at this point — no async
-    // runtime has been started and no std::thread::spawn has been called.
-    // DEBT: evolve to SeedConfig struct passed through the call chain,
-    // with env var writes localized to a launcher pre-exec helper.
-    #[expect(unsafe_code, reason = "pre-thread env::set_var — see SAFETY comment above")]
-    unsafe {
-        std::env::set_var(primalspring::env_keys::FAMILY_ID, &family_id);
-        std::env::set_var(primalspring::env_keys::FAMILY_SEED, &mito_seed.hex_seed);
-        std::env::set_var(primalspring::env_keys::BEARDOG_FAMILY_SEED, &mito_seed.hex_seed);
-    }
+
+    let _ = init_seed_config(SeedConfig {
+        family_id,
+        hex_seed: mito_seed.hex_seed.clone(),
+    });
 
     entropy::validate_seed_provenance(&mut v, &mito_seed);
 
@@ -88,6 +82,10 @@ fn main() {
     v.section("Layer 1.5: BTSP Escalation");
     layers::btsp::validate_btsp_escalation(&ctx, &mut v);
     layers::btsp::validate_substrate_health(&mut v);
+
+    // Layer 1.6: Method Gate (JH-0) — pre-dispatch capability check
+    v.section("Layer 1.6: Method Gate (JH-0)");
+    layers::btsp::validate_method_gate(&mut v);
 
     // Layer 2: Atomic Health
     v.section("Layer 2: Atomic Health");

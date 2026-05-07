@@ -21,7 +21,7 @@ pub fn resolve_btsp_socket(
         .file_name()
         .and_then(|n| n.to_str())
         .unwrap_or("");
-    let family = std::env::var(crate::env_keys::FAMILY_ID).unwrap_or_else(|_| "default".to_owned());
+    let family = crate::env_keys::resolve_family_id();
     let family_marker = format!("{primal}-{family}");
 
     if name.contains(&family_marker) {

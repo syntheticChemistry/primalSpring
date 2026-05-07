@@ -1,10 +1,18 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Centralized environment variable name constants.
+//! Centralized environment variable name constants and seed configuration.
 //!
 //! Every `std::env::var("...")` call in the codebase should reference a
 //! constant from this module instead of a bare string literal. This makes
 //! typos impossible and env-var usage greppable from one location.
+//!
+//! [`SeedConfig`] provides thread-safe in-process storage for identity and
+//! seed values, eliminating the need for `unsafe { env::set_var }` in
+//! single-binary contexts (guidestone, harness). Library code should use
+//! [`resolve_family_id`] and [`resolve_family_seed`] instead of reading
+//! env vars directly.
+
+use std::sync::OnceLock;
 
 // ── Identity & genetics ──────────────────────────────────────────────
 
@@ -14,6 +22,59 @@ pub const FAMILY_ID: &str = "FAMILY_ID";
 pub const FAMILY_SEED: &str = "FAMILY_SEED";
 /// BearDog-specific alias for the family seed.
 pub const BEARDOG_FAMILY_SEED: &str = "BEARDOG_FAMILY_SEED";
+
+// ── SeedConfig: thread-safe in-process identity storage ─────────────
+
+static SEED_CONFIG: OnceLock<SeedConfig> = OnceLock::new();
+
+/// In-process identity and seed configuration.
+///
+/// Replaces `unsafe { env::set_var }` for binaries that need to propagate
+/// identity to library code within the same process. External processes
+/// still receive env vars via `Command::env()` in the launcher.
+#[derive(Debug, Clone)]
+pub struct SeedConfig {
+    /// Family group identifier.
+    pub family_id: String,
+    /// Hex-encoded family seed for BTSP key material.
+    pub hex_seed: String,
+}
+
+/// Initialize the global seed config. Call once in `main()` before any
+/// library code that resolves family identity.
+///
+/// # Errors
+///
+/// Returns the `SeedConfig` back if already initialized.
+pub fn init_seed_config(config: SeedConfig) -> Result<(), SeedConfig> {
+    SEED_CONFIG.set(config)
+}
+
+/// Resolve the family ID: checks [`SeedConfig`] first, then env vars
+/// (`FAMILY_ID`, `BIOMEOS_FAMILY_ID`), then falls back to `"default"`.
+#[must_use]
+pub fn resolve_family_id() -> String {
+    if let Some(cfg) = SEED_CONFIG.get() {
+        if !cfg.family_id.is_empty() && cfg.family_id != "default" {
+            return cfg.family_id.clone();
+        }
+    }
+    std::env::var(FAMILY_ID)
+        .or_else(|_| std::env::var(BIOMEOS_FAMILY_ID))
+        .unwrap_or_else(|_| "default".to_owned())
+}
+
+/// Resolve the family seed hex string: checks [`SeedConfig`] first,
+/// then `FAMILY_SEED` env var.
+#[must_use]
+pub fn resolve_family_seed() -> Option<String> {
+    if let Some(cfg) = SEED_CONFIG.get() {
+        if !cfg.hex_seed.is_empty() {
+            return Some(cfg.hex_seed.clone());
+        }
+    }
+    std::env::var(FAMILY_SEED).ok().filter(|s| !s.is_empty())
+}
 
 // ── XDG / OS paths ──────────────────────────────────────────────────
 
