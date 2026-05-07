@@ -1152,7 +1152,7 @@ in their validators. primalSpring method constants are clean (audited: `dag.sess
 | **PG-61** | barraCuda missing `stats.entropy` — hotSpring QCD needs `stats.entropy(data) -> f64` as IPC-routable method | barraCuda team | P2 | **OPEN** |
 | **PG-62** | toadStool short timeout sensitivity — health.liveness fast-path requested, minimum recommended timeout undocumented | toadStool team | P2 | **OPEN** |
 | **PG-63** | Matplotlib Agg guidance conflict — `CONTENT_GUIDE.md` says "don't set Agg", `SPRING_EVOLUTION_TARGETS.md` says "use Agg" | sporePrint / wateringHole | P2 | **OPEN** |
-| **PG-64** | sporePrint notebook rendering pipeline missing — `render_notebooks.sh` not implemented, `auto-refresh.yml` absent, paper notebooks at `notebooks/papers/` not discoverable by glob | sporePrint team | P1 | **OPEN** |
+| **PG-64** | sporePrint notebook rendering pipeline — `render_notebooks.sh` (153 LOC) and `auto-refresh.yml` now exist. Recursive notebook glob added to handle `notebooks/papers/` subdirectories. | sporePrint / primalSpring | P1 | **RESOLVED** |
 | **PG-65** | Method string drift CI check — `tools/check_method_strings.sh` validates 208 method strings against `config/capability_registry.toml`. Zero drift at ship. Pattern available for other springs. | primalSpring | P2 | **RESOLVED** |
 
 **Local resolution**: `downstream_manifest.toml` hotSpring entry updated — added `rhizocrypt`, `loamspine`, `sweetgrass` to `depends_on` (provenance trio was missing).
