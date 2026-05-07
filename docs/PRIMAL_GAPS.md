@@ -808,6 +808,11 @@ compute.dispatch, noise.perlin2d, fhe.ntt, activation.softmax, ml.attention, etc
 Springs rewire from local deps to IPC: Tier A (inline JSON-RPC) for small data,
 Tier B (tensor pipeline) for >10K elements. See rewire guide in
 `wateringHole/handoffs/BARRACUDA_V0312_STALE_AUDIT_TRIAGE_SHADER_REWIRE_GUIDE_MAY07_2026.md`.
+**GAP-11 stateful APIs UNBLOCKED** (May 7 advisory) — 4 remaining items (ESN v2,
+Nautilus, batched ODE, SimpleMlp) have viable architecture paths using existing
+toadStool `job_id` patterns and barraCuda serialization. No new infrastructure needed.
+Sprint plan: `ode.step` (Path A) → `esn.predict` (Path A) → session methods (Path B) →
+`nautilus.*` (Path B). See advisory in wateringHole.
 
 | ID | Gap | Severity | Status |
 |----|-----|----------|--------|
@@ -1767,7 +1772,7 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 | **Squirrel provider registration** — `inference.register_provider` needed for springs with local models | neuralSpring, healthSpring, wetSpring | **Squirrel team** | **PARTIAL** — wire tests exist; production registration path in progress |
 | **NestGate `storage.fetch_external`** — cross-spring data retrieval for composition pipelines | wetSpring, healthSpring | **NestGate team** | **PARTIAL** — method exists but delegated via Tower Atomic; cross-spring routing via biomeOS needed |
 | **barraCuda IPC migration** — springs still link barraCuda as a Rust library (path/git dep) for domain math; need to rewire to the barraCuda ecobin's 32 JSON-RPC methods over UDS. **Spring-side actively in progress**: hotSpring (9 probes), healthSpring (2/11 IPC via math_dispatch), neuralSpring V133 (IpcMathClient, 9 methods wired), wetSpring V145 (5 primals). | All delta springs | **Each spring team** (primalSpring documents the pattern) | **IN PROGRESS** — 4/4 delta springs building IPC clients; no spring uses `primalspring::composition` yet |
-| **barraCuda JSON-RPC surface gaps** — neuralSpring V133 documents 18 `barracuda::` library calls with no 1:1 JSON-RPC method: `eigh_householder_qr`, `pearson_correlation`, `chi_squared_statistic`, `empirical_spectral_density`, `shannon_from_frequencies`, `solve_f64_cpu`, `esn_v2::*`, `nn::SimpleMlp`, `belief_propagation_chain`, `graph_laplacian`, `numerical_hessian`, `boltzmann_sampling`, `nautilus::*`, `fit_linear`. These block full Level 5 for neuralSpring. Priority: `linalg.eigh`, `stats.pearson`, `stats.chi_squared`, `stats.shannon` (most-used science paths). | neuralSpring V133 (explicit), other springs (potential) | **barraCuda team** | **OPEN** — hand-back from neuralSpring Gap 11; barraCuda surface expansion needed |
+| **barraCuda JSON-RPC surface gaps (GAP-11)** — 14/18 closed (Sprints 44–50). Remaining 4 (ESN v2, Nautilus, batched ODE, SimpleMlp) are **NOT blocked on infrastructure** per barraCuda advisory (May 7). Two architecture paths: **Path A (stateless snapshots)** for ODE + ESN single-shot, **Path B (server sessions)** via toadStool `job_id` pattern for ESN streaming + Nautilus. Building blocks exist in both primals. `SimpleMlp` training is a **library gap** (no `train` method), not IPC. Sprint ordering: `ode.step` → `esn.predict` → session methods → `nautilus.*`. See `wateringHole/handoffs/BARRACUDA_STATEFUL_API_ARCHITECTURE_ADVISORY_MAY07_2026.md`. | neuralSpring, hotSpring, airSpring | **barraCuda team** | **UNBLOCKED** — architecture paths documented, no new infra needed, incremental sprints planned |
 
 ### Per-Spring Composition Status (Delta Season — April 19, 2026)
 
