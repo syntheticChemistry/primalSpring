@@ -266,6 +266,7 @@ methods = [
 [identity]
 owner = "beardog"
 methods = [
+    "identity.create",
     "identity.get",
 ]
 
@@ -279,8 +280,10 @@ methods = [
 owner = "primalspring"
 methods = [
     "auth.check",
+    "auth.issue_ionic",
     "auth.mode",
     "auth.peer_info",
+    "auth.verify_ionic",
 ]
 
 [bonding]
@@ -582,6 +585,18 @@ methods = [
 owner = "barracuda"
 methods = [
     "ml.esn_predict",
+    "ml.mlp_train",
+]
+
+[nautilus]
+owner = "barracuda"
+methods = [
+    "nautilus.create",
+    "nautilus.export",
+    "nautilus.import",
+    "nautilus.observe",
+    "nautilus.predict",
+    "nautilus.train",
 ]
 
 [rng]

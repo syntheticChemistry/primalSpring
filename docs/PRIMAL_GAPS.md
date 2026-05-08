@@ -822,10 +822,10 @@ compute.dispatch, noise.perlin2d, fhe.ntt, activation.softmax, ml.attention, etc
 Springs rewire from local deps to IPC: Tier A (inline JSON-RPC) for small data,
 Tier B (tensor pipeline) for >10K elements. See rewire guide in
 `wateringHole/handoffs/BARRACUDA_V0312_STALE_AUDIT_TRIAGE_SHADER_REWIRE_GUIDE_MAY07_2026.md`.
-**GAP-11 stateful APIs** — 2 of 4 shipped (May 8, Sprint 54): **`ode.step`** (Path A
-stateless RK4, client holds state) and **`ml.esn_predict`** (Path A, frozen weights +
-client-managed reservoir state). Remaining: Nautilus (server sessions via toadStool
-`job_id`), SimpleMlp training (library gap, no `train` method). 64 methods total.
+**GAP-11 FULLY CLOSED (18/18)** — Sprint 55 (May 8): **`ml.mlp_train`** (SGD backprop),
+**6 `nautilus.*` methods** (Path B server sessions: create/observe/train/predict/export/import).
+Sprint 54: `ode.step` (Path A stateless RK4), `ml.esn_predict` (Path A frozen weights).
+71 methods total.
 Sprint plan: `ode.step` (Path A) → `esn.predict` (Path A) → session methods (Path B) →
 `nautilus.*` (Path B). See advisory in wateringHole.
 
@@ -1250,7 +1250,7 @@ shared notebook immutability). 8 patterns abstracted, 5 new upstream gaps:
 | Gap | Issue | Owner | Severity | Status |
 |-----|-------|-------|----------|--------|
 | **JH-0** | RPC dispatcher capability check. **13/13 primals adopted** (May 8). All ship `auth.check`/`auth.mode`/`auth.peer_info` + permissive default + `-32001 PERMISSION_DENIED`. ToadStool and coralReef fixed their divergences (ToadStool: -32006→-32001; coralReef: added `GateDenied` phase for correct wire code). 3 primals extract bearer tokens from params (barraCuda `_auth.bearer`, biomeOS `_bearer_token`, petalTongue `with_token_from_params`). No primal validates token scopes yet (presence-only). Minor cross-primal whitelist variance (some include `tools.list`/`mcp.tools.list`, some use `auth.*` prefix vs explicit). | All primal teams + primalSpring (pattern) | **Critical** | **ADOPTED** (13/13) — token validation pending JH-1 |
-| **JH-1** | BearDog identity management — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` methods needed. PAM case-sensitivity bugs prove identity must be primal-native. DID-based canonical identity with capability-scoped tokens. | BearDog team | High | **OPEN** |
+| **JH-1** | BearDog identity management — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic`. **RESOLVED** (Wave 94, May 8): Ed25519-signed ionic tokens with scope patterns, expiry, JTI. MethodGate validates signature + expiry + scope. 117 BearDog methods. | BearDog team | High | **RESOLVED** |
 | **JH-2** | Token-carried resource envelope — ionic tokens need resource envelope fields (mem, cpu, method allowlist) that composition-aware spawners (ToadStool, biomeOS/neuralAPI) enforce. | biomeOS + ToadStool | High | **OPEN** |
 | **JH-3** | Composition hot-reload — `composition.reload` for swapping a single primal without full composition restart. Currently requires `systemctl restart` which tears down the full stack. | biomeOS team | Medium | **OPEN** |
 | **JH-4** | Token issuance UX — end-to-end token delivery mechanism for non-technical researchers. BearDog needs a path that doesn't require CLI skills. | BearDog + primalSpring | Medium | **OPEN** |
@@ -1810,9 +1810,9 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 | **Squirrel provider registration** — `inference.register_provider` needed for springs with local models | neuralSpring, healthSpring, wetSpring | **Squirrel team** | **RESOLVED** (May 7) — Squirrel E2E inference pipeline fully functional (15 wire tests). Remaining gap is neuralSpring-side: needs `inference.register_provider` endpoint. Not blocking NUCLEUS deployment |
 | **NestGate `storage.fetch_external`** — cross-spring data retrieval for composition pipelines | wetSpring, healthSpring | **NestGate team** | **PARTIAL** — method exists but delegated via Tower Atomic; cross-spring routing via biomeOS needed |
 | **barraCuda IPC migration** — springs still link barraCuda as a Rust library (path/git dep) for domain math; need to rewire to the barraCuda ecobin's 32 JSON-RPC methods over UDS. **Spring-side actively in progress**: hotSpring (9 probes), healthSpring (2/11 IPC via math_dispatch), neuralSpring V133 (IpcMathClient, 9 methods wired), wetSpring V145 (5 primals). | All delta springs | **Each spring team** (primalSpring documents the pattern) | **IN PROGRESS** — 4/4 delta springs building IPC clients; no spring uses `primalspring::composition` yet |
-| **barraCuda JSON-RPC surface gaps (GAP-11)** — **16/18 closed** (Sprint 54, May 8): `ode.step` + `ml.esn_predict` shipped (Path A stateless). Remaining 2: Nautilus (server sessions via toadStool `job_id`), SimpleMlp training (library gap). 64 methods total. See `BARRACUDA_STATEFUL_API_ARCHITECTURE_ADVISORY_MAY07_2026.md`. | neuralSpring, hotSpring, airSpring | **barraCuda team** | **UNBLOCKED** — 16/18 closed, 2 remaining (Nautilus sessions, SimpleMlp training) |
+| **barraCuda JSON-RPC surface gaps (GAP-11)** — **18/18 CLOSED** (Sprint 55, May 8): `ml.mlp_train` (SGD backprop) + 6 `nautilus.*` server-session methods (Path B). Sprint 54: `ode.step` + `ml.esn_predict` (Path A). 71 methods total. | neuralSpring, hotSpring, airSpring | **barraCuda team** | **RESOLVED** — 18/18 closed |
 | **JH-0: RPC dispatcher capability check** — **13/13 adopted** (May 8). All ship `auth.*` trio + permissive default + `-32001`. ToadStool/coralReef divergences fixed. 3 primals extract bearer tokens (barraCuda, biomeOS, petalTongue). Token scope validation deferred to JH-1. Minor whitelist variance across primals (acceptable). | projectNUCLEUS multi-user pentest | **All primal teams + primalSpring** | **ADOPTED** (13/13) — Critical resolved. Token validation pending JH-1 |
-| **JH-1: BearDog identity management** — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` needed for primal-native identity replacing PAM. | projectNUCLEUS (JupyterHub) | **BearDog team** | **OPEN** — High. Prerequisite for Step 2b (BTSP auth) |
+| **JH-1: BearDog identity management** — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic`. Ed25519 ionic tokens with scope patterns + expiry + JTI. MethodGate validates signature + scope. | projectNUCLEUS (JupyterHub) | **BearDog team** | **RESOLVED** (Wave 94, May 8) |
 | **JH-2: Token-carried resource envelope** — ionic tokens need resource fields (mem, cpu, method allowlist) that biomeOS/ToadStool enforce. | projectNUCLEUS (JupyterHub) | **biomeOS + ToadStool** | **OPEN** — High. neuralAPI enforcement |
 | **JH-3: Composition hot-reload** — `composition.reload` for per-primal hot-swap without full restart. | projectNUCLEUS (JupyterHub) | **biomeOS team** | **OPEN** — Medium |
 | **JH-4: Token issuance UX** — delivery mechanism for non-technical researchers. | projectNUCLEUS (JupyterHub) | **BearDog + primalSpring** | **OPEN** — Medium |
