@@ -1,4 +1,5 @@
 /target/
+.vscode/
 plasmidBin/primals/
 audit.log
 ecoPrimal/audit.log

@@ -48,14 +48,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - PT-09 (petalTongue BTSP Phase 2) and PT-13 (NestGate CAS backend) marked RESOLVED
   in PRIMAL_GAPS.md per petalTongue v1.6.6 handoff.
 
-### Absorbed (May 8 — upstream JH-0 adoption wave)
-- **7/13 primals adopted JH-0 MethodGate**: BearDog W93, ToadStool S229, barraCuda S54,
-  biomeOS v3.46, coralReef I94, skunkBat, primalSpring (reference).
-- **barraCuda Sprint 54** shipped `ode.step` (Path A stateless RK4) and `ml.esn_predict`
-  (Path A frozen weights). GAP-11 now 16/18 closed.
+### Absorbed (May 8 — upstream JH-0 adoption waves)
+- **13/13 primals adopted JH-0 MethodGate** — full ecosystem coverage:
+  - Wave 1 (7): BearDog W93, ToadStool S229, barraCuda S54, biomeOS v3.46,
+    coralReef I94, skunkBat, primalSpring (reference).
+  - Wave 2 (6): NestGate, Songbird, rhizoCrypt, loamSpine, sweetGrass, petalTongue.
+  - ToadStool fixed `-32006`→`-32001`; coralReef added `GateDenied` phase for correct wire code.
+  - 3 primals extract bearer tokens: barraCuda (`_auth.bearer`), biomeOS (`_bearer_token`),
+    petalTongue (`with_token_from_params`).
+- **barraCuda Sprint 54** shipped `ode.step` + `ml.esn_predict` (Path A stateless). GAP-11 16/18.
 - Registry expanded 369 → 371 (+`ode.step`, +`ml.esn_predict`).
-- **Divergences flagged**: ToadStool uses `-32006` (should be `-32001`); coralReef wire
-  bug emits `-32000` for gate denial. NestGate not yet adopted.
 
 ### Metrics
 - **666 tests** (618 passed + 48 ignored), **0 clippy warnings**, **0 primal drift**.
