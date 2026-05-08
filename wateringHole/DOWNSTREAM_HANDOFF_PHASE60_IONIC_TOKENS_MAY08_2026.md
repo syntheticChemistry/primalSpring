@@ -58,7 +58,7 @@ All 18 JSON-RPC surface gaps are now closed. New in Sprint 55:
 **barraCuda now has 71 JSON-RPC methods** including full `ode.step`, `ml.esn_predict`,
 `ml.mlp_train`, and 6 `nautilus.*` session methods.
 
-### Registry: 381 Methods Across 82 Domains
+### Registry: 383 Methods Across 82 Domains
 
 New since last handoff:
 - `identity.create` (BearDog JH-1)
@@ -182,7 +182,7 @@ tools/desktop_nucleus.sh
 ```bash
 cd springs/primalSpring && git pull --rebase origin main
 # Key files:
-# - config/capability_registry.toml (381 methods)
+# - config/capability_registry.toml (383 methods)
 # - wateringHole/METHOD_GATE_STANDARD.md (ecosystem standard)
 # - wateringHole/DOWNSTREAM_HANDOFF_PHASE60_IONIC_TOKENS_MAY08_2026.md (this file)
 # - docs/PRIMAL_GAPS.md (JH-0 13/13, JH-1 resolved, GAP-11 18/18)

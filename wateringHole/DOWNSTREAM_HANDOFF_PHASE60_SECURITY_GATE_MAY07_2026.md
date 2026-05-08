@@ -32,9 +32,9 @@ compositions should adopt.
 
 Guide: `primalSpring/wateringHole/METHOD_GATE_STANDARD.md`
 
-### Registry: 381 Methods Across 82 Domains
+### Registry: 383 Methods Across 82 Domains
 
-The capability registry now tracks 381 methods across 82 domain sections, owned
+The capability registry now tracks 383 methods across 82 domain sections, owned
 by 13 primals + primalSpring + 2 downstream products. New since last handoff:
 - `auth.check`, `auth.mode`, `auth.peer_info` (primalSpring gate introspection)
 - All existing domains fully reconciled with upstream primal evolution
@@ -57,7 +57,7 @@ by 13 primals + primalSpring + 2 downstream products. New since last handoff:
 ### Metrics
 
 - **666 tests** (618 passed + 48 ignored)
-- **381 registered capability methods**
+- **383 registered capability methods**
 - **0 clippy errors**, 0 primal drift
 - **211/211** source method strings validated
 - **353** graph method references checked
@@ -216,5 +216,5 @@ cd infra && git pull --rebase origin main
 # - wateringHole/METHOD_GATE_STANDARD.md (ecosystem standard)
 # - wateringHole/DOWNSTREAM_HANDOFF_PHASE60_SECURITY_GATE_MAY07_2026.md (this file)
 # - ecoPrimal/src/ipc/method_gate.rs (reference implementation)
-# - config/capability_registry.toml (381 methods, auth.* + nautilus.* sections)
+# - config/capability_registry.toml (383 methods, auth.* + nautilus.* sections)
 ```

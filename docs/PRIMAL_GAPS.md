@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-05-08 — **JH-0 13/13 adopted, JH-1 RESOLVED (ionic tokens), GAP-11 CLOSED (18/18), 381 methods.**
+> **Last updated**: 2026-05-08 — **JH-0 13/13 adopted, JH-1 RESOLVED (ionic tokens), GAP-11 CLOSED (18/18), 383 methods.**
 > **All blurbed upstream debt resolved.** Wire Standard L3 at 13/13. BufReader audit at 13/13.
 >
 > **Upstream Evolution Absorbed (May 7, 2026)** — All 14 sovereignty gaps resolved by primal teams:
@@ -56,8 +56,8 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >   Health probes bypass the gate. No more silent timeouts.
 > - **toadStool PG-62**: RESOLVED. `health.liveness` fast-path returns `{"status":"starting"}` during
 >   init. Timeout constants documented: dispatch 5s, workload 300s, TCP idle 300s. All overridable.
-> - **primalSpring actions**: Registry expanded to 369 methods (+79 this round). `content.*` (8), `auth.*` (3),
->   `crypto.did_from_key`, `network.beacon_exchange`, `storage.list_blobs`/`storage.blob_exists` absorbed.
+> - **primalSpring actions**: Registry expanded to 383 methods. `content.*` (8), `auth.*` (5),
+>   `nautilus.*` (6), `ml.mlp_train`, `ode.step`, `ml.esn_predict`, streaming chunk methods absorbed.
 >   Graph validator upgraded with spring-domain exclusion (91 advisory, 0 primal drift).
 >
 > **projectNUCLEUS Sovereignty Handoff (May 7, 2026)** — RootPulse commit workflow tested, 14 gaps routed:
