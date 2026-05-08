@@ -69,7 +69,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
 | `#[allow()]` in production | 0 |
-| unsafe_code | Workspace-level `deny` (allow-listed for `std::env::set_var` in Rust 2024 entropy bootstrap) |
+| unsafe_code | Workspace-level `deny` — zero unsafe blocks (`SeedConfig` + `OnceLock` replaced `env::set_var`) |
 | C dependencies | 0 (pure Rust, ecoBin compliant, `deny.toml` enforced) |
 | Deploy graphs | **74 TOMLs** (6 fragments + 9 profiles + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 1 composition + 13 root + 12 cell graphs + 4 desktop app graphs), fragment-first composition with `resolve = true` |
 | Composition subsystems | **7** (C1: Render, C2: Narration, C3: Session, C4: Game Science, C5: Persistence, C6: Proprioception, C7: Full Interactive) |
@@ -161,7 +161,7 @@ their own guideStone binaries.
 - hotSpring v0.6.32: **Level 5 — Certified** (guideStone-v0.7.0)
 - healthSpring V53, neuralSpring V133, wetSpring V145, ludoSpring V44: **Level 1** (validation exists)
 - airSpring v0.10.0, groundSpring V124: **Level 0** (not started)
-- primalSpring v0.9.17: **Level 4** (**187/187 live NUCLEUS ALL PASS, 13/13 BTSP authenticated**, 41/41 bare, BLAKE3 P3, BTSP default everywhere, Layer 7 cellular (8 cells), genomeBin v5.1)
+- primalSpring v0.9.25: **Level 4** (**13/13 BTSP authenticated**, 41/41 bare, BLAKE3 P3, BTSP default everywhere, Layer 7 cellular (8 cells), genomeBin v5.1, JH-0 13/13 adopted, 389 registered methods, exp094 NUCLEUS composition parity)
 
 See `wateringHole/GUIDESTONE_COMPOSITION_STANDARD.md` for the full standard.
 
@@ -912,8 +912,8 @@ is replaced by CI builds.
 
 ### Structural Debt (plan but don't block handoff)
 - **Bonding experiments (exp030-034)**: 13 skipped live checks requiring benchScale Docker labs with 2+ FAMILY_IDs
-- **benchScale ecoPrimals integration**: 5 gaps in deploy pipeline (`ECOPRIMALS_INTEGRATION.md`)
-- **coralReef health check**: Uses tarpc transport, JSON-RPC health check via `coralreef-core-default.sock` (not family-namespaced)
+- **benchScale ecoPrimals integration**: gaps in deploy pipeline (`ECOPRIMALS_INTEGRATION.md`)
+- **barraCuda path dep**: all springs still link barraCuda as Rust library dep; sovereign IPC migration underway (4/7 springs building IPC clients)
 
 ### Forward Evolution
 - biomeOS native `nucleus --mode full` to launch all 13 primals (currently launches 5)
@@ -922,6 +922,8 @@ is replaced by CI builds.
 - biomeOS self-composition (runtime graph generation)
 - genomeBin packaging: run sourDough to produce .genome self-extractors
 - Anchoring + Economics: sweetGrass anchoring to BTC/ETH
+- Full sporePrint integration: auto-refresh metric sync + content PRs from sporeprint/ directory
+- Cross-spring `CompositionContext` adoption: universal IPC client pattern for all springs
 
 ---
 

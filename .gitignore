@@ -1,5 +1,6 @@
 /target/
 .vscode/
+.cursor/
 plasmidBin/primals/
 audit.log
 ecoPrimal/audit.log

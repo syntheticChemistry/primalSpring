@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
 **Version**: 0.9.25 (Phase 60)
-**Last Updated**: May 8, 2026
+**Last Updated**: May 9, 2026
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -28,6 +28,7 @@ Historical handoffs live in `fossilRecord/`.
 | **DOWNSTREAM_HANDOFF_PHASE60_SECURITY_GATE_MAY07_2026.md** | Springs + gardens + projectNUCLEUS | Phase 60 security gate: method gate pattern, `auth.*` methods, `PermissionDenied` handling, `SeedConfig`, composition patterns for NUCLEUS deployment via Neural API. |
 | **DOWNSTREAM_HANDOFF_PHASE60_IONIC_TOKENS_MAY08_2026.md** | Springs + gardens + projectNUCLEUS | JH-1 ionic tokens (BearDog Ed25519), GAP-11 18/18 closure (nautilus sessions, ml.mlp_train), token flow in compositions, registry 389 methods. |
 | **CROSS_SPRING_PARITY_HANDOFF_MAY08_2026.md** | All spring teams + downstream | Cross-spring composition parity audit: per-spring scorecard (8 axes), evolution targets, universal gaps, 8,737+ total tests across 8 springs, 112 deploy graphs. |
+| **PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md** | Upstream primals + spring teams + products | Comprehensive evolution handoff: primal consumption review, upstream debt, per-spring absorption targets, NUCLEUS composition patterns, Neural API deployment, downstream product guidance, lessons learned. |
 | This README | Everyone | Index and context. |
 
 ---
