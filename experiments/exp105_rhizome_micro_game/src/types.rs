@@ -2,15 +2,15 @@
 
 use std::fmt::Write;
 
-pub(crate) const MAP_WIDTH: usize = 40;
-pub(crate) const MAP_HEIGHT: usize = 25;
-pub(crate) const CELL_WIDTH: f64 = 10.0;
-pub(crate) const CELL_HEIGHT: f64 = 16.0;
+pub const MAP_WIDTH: usize = 40;
+pub const MAP_HEIGHT: usize = 25;
+pub const CELL_WIDTH: f64 = 10.0;
+pub const CELL_HEIGHT: f64 = 16.0;
 
 // ─── Biome types ────────────────────────────────────────────────────
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) enum Biome {
+pub enum Biome {
     Rhizome,
     TensorCaves,
     CryptoTunnels,
@@ -57,7 +57,7 @@ impl Biome {
 // ─── Tile types ─────────────────────────────────────────────────────
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Tile {
+pub enum Tile {
     Wall,
     Floor,
     StairsDown,
@@ -81,7 +81,7 @@ impl Tile {
 // ─── Creature ───────────────────────────────────────────────────────
 
 #[derive(Clone)]
-pub(crate) struct Creature {
+pub struct Creature {
     pub(crate) kind: &'static str,
     pub(crate) glyph: &'static str,
     pub(crate) x: usize,
@@ -92,7 +92,7 @@ pub(crate) struct Creature {
 // ─── Item ───────────────────────────────────────────────────────────
 
 #[derive(Clone)]
-pub(crate) struct Item {
+pub struct Item {
     pub(crate) kind: &'static str,
     pub(crate) x: usize,
     pub(crate) y: usize,
@@ -100,7 +100,7 @@ pub(crate) struct Item {
 
 // ─── World state ────────────────────────────────────────────────────
 
-pub(crate) struct World {
+pub struct World {
     pub(crate) tiles: Vec<Tile>,
     pub(crate) biome: Biome,
     pub(crate) creatures: Vec<Creature>,
@@ -188,7 +188,7 @@ item_count = {ic}
     }
 }
 
-pub(crate) fn hash_simple(data: &str) -> u64 {
+pub fn hash_simple(data: &str) -> u64 {
     let mut h: u64 = 0xcbf2_9ce4_8422_2325;
     for b in data.bytes() {
         h ^= u64::from(b);

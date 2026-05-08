@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use crate::config::*;
+use crate::config::{pixel_host, pixel_beardog_port, pixel_songbird_port, pixel_nestgate_port, tcp_rpc_value, family_id};
 use primalspring::ipc::methods;
 use primalspring::validation::ValidationResult;
 
 // ── Phase 1: Cross-Architecture Tower Health ─────────────────────────────
 
-pub(crate) fn validate_pixel_tower_health(v: &mut ValidationResult) {
+pub fn validate_pixel_tower_health(v: &mut ValidationResult) {
     v.section("Phase 1: Pixel Tower Health (aarch64)");
 
     let host = pixel_host();
@@ -109,7 +109,7 @@ pub(crate) fn validate_pixel_tower_health(v: &mut ValidationResult) {
     clippy::too_many_lines,
     reason = "multi-phase validation is inherently sequential"
 )]
-pub(crate) fn validate_cross_arch_genetics(v: &mut ValidationResult) {
+pub fn validate_cross_arch_genetics(v: &mut ValidationResult) {
     v.section("Phase 2: Three-Tier Genetics (x86_64 → aarch64)");
 
     let host = pixel_host();
@@ -322,7 +322,7 @@ pub(crate) fn validate_cross_arch_genetics(v: &mut ValidationResult) {
 
 // ── Phase 3: BTSP Phase 3 Readiness ─────────────────────────────────────
 
-pub(crate) fn validate_btsp_phase3_readiness(v: &mut ValidationResult) {
+pub fn validate_btsp_phase3_readiness(v: &mut ValidationResult) {
     v.section("Phase 3: BTSP Phase 3 Cipher Readiness (aarch64)");
 
     let host = pixel_host();
@@ -412,7 +412,7 @@ pub(crate) fn validate_btsp_phase3_readiness(v: &mut ValidationResult) {
 
 // ── Phase 4: HSM Probing ─────────────────────────────────────────────────
 
-pub(crate) fn validate_hsm_capabilities(v: &mut ValidationResult) {
+pub fn validate_hsm_capabilities(v: &mut ValidationResult) {
     v.section("Phase 4: HSM / Hardware Security Probing (Titan M2)");
 
     let host = pixel_host();
@@ -521,7 +521,7 @@ pub(crate) fn validate_hsm_capabilities(v: &mut ValidationResult) {
 
 // ── Phase 5: Cross-Device Beacon Exchange ────────────────────────────────
 
-pub(crate) fn validate_beacon_exchange(v: &mut ValidationResult) {
+pub fn validate_beacon_exchange(v: &mut ValidationResult) {
     v.section("Phase 5: BirdSong Beacon Exchange (x86_64 ↔ aarch64)");
 
     let host = pixel_host();
@@ -605,7 +605,7 @@ pub(crate) fn validate_beacon_exchange(v: &mut ValidationResult) {
 
 // ── Phase 6: Bonding Model Cross-Arch Verification ───────────────────────
 
-pub(crate) fn validate_bonding_model(v: &mut ValidationResult) {
+pub fn validate_bonding_model(v: &mut ValidationResult) {
     v.section("Phase 6: Bonding Model Verification (cross-arch)");
 
     let host = pixel_host();
@@ -717,7 +717,7 @@ pub(crate) fn validate_bonding_model(v: &mut ValidationResult) {
 
 // ── Phase 7: STUN / NAT Discovery ───────────────────────────────────────
 
-pub(crate) fn validate_stun_nat(v: &mut ValidationResult) {
+pub fn validate_stun_nat(v: &mut ValidationResult) {
     v.section("Phase 7: STUN / NAT (Pixel network posture)");
 
     let host = pixel_host();

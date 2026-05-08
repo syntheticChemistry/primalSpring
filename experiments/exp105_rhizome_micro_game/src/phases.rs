@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use crate::types::*;
+use crate::types::{World, MAP_WIDTH, MAP_HEIGHT, Tile, hash_simple};
 
 use base64::Engine as _;
 use primalspring::ipc::client::PrimalClient;
@@ -11,7 +11,7 @@ use primalspring::validation::ValidationResult;
 // Phase 3: Game Loop Simulation
 // ═══════════════════════════════════════════════════════════════════════
 
-pub(crate) fn phase_game_loop(v: &mut ValidationResult, world: &mut World) {
+pub fn phase_game_loop(v: &mut ValidationResult, world: &mut World) {
     v.section("Game Loop Simulation (10 turns)");
 
     let moves: [(i32, i32); 10] = [
@@ -66,7 +66,7 @@ pub(crate) fn phase_game_loop(v: &mut ValidationResult, world: &mut World) {
     phase_damage_calc(v);
 }
 
-pub(crate) fn phase_flow_tracking(v: &mut ValidationResult) {
+pub fn phase_flow_tracking(v: &mut ValidationResult) {
     let ls = discover_primal("ludospring");
     let Some(ls_sock) = ls.socket.as_ref() else {
         v.check_skip("flow_eval", "ludoSpring not discovered");
@@ -96,7 +96,7 @@ pub(crate) fn phase_flow_tracking(v: &mut ValidationResult) {
     );
 }
 
-pub(crate) fn phase_damage_calc(v: &mut ValidationResult) {
+pub fn phase_damage_calc(v: &mut ValidationResult) {
     let barr = discover_by_capability("math");
     let Some(barr_sock) = barr.socket.as_ref() else {
         v.check_skip("damage_calc", "Barracuda not discovered");
@@ -136,7 +136,7 @@ pub(crate) fn phase_damage_calc(v: &mut ValidationResult) {
 // Phase 4: Save Game
 // ═══════════════════════════════════════════════════════════════════════
 
-pub(crate) fn phase_save_game(v: &mut ValidationResult, world: &World) -> Option<String> {
+pub fn phase_save_game(v: &mut ValidationResult, world: &World) -> Option<String> {
     v.section("Save Game (NestGate + Provenance Trio)");
 
     let toml_save = world.to_save_toml();
@@ -465,7 +465,7 @@ fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
 // Phase 5: Load Game
 // ═══════════════════════════════════════════════════════════════════════
 
-pub(crate) fn phase_load_game(v: &mut ValidationResult, dag_session: Option<&str>) {
+pub fn phase_load_game(v: &mut ValidationResult, dag_session: Option<&str>) {
     v.section("Load Game (NestGate + Merkle Verify)");
 
     let save_key = "save:rhizome:exp105-validation";
@@ -575,7 +575,7 @@ fn verify_merkle_root(v: &mut ValidationResult, dag_session: Option<&str>) {
 // Phase 6: AI Narration (Optional)
 // ═══════════════════════════════════════════════════════════════════════
 
-pub(crate) fn phase_narration(v: &mut ValidationResult, world: &World) {
+pub fn phase_narration(v: &mut ValidationResult, world: &World) {
     v.section("AI Narration (Squirrel — optional)");
 
     let sq = discover_by_capability("ai");
@@ -624,7 +624,7 @@ pub(crate) fn phase_narration(v: &mut ValidationResult, world: &World) {
 // Phase 7: Crypto Hash (BearDog)
 // ═══════════════════════════════════════════════════════════════════════
 
-pub(crate) fn phase_crypto_hash(v: &mut ValidationResult, world: &World) {
+pub fn phase_crypto_hash(v: &mut ValidationResult, world: &World) {
     v.section("Save Integrity Hash (BearDog)");
 
     let bd = discover_by_capability("crypto");
@@ -653,7 +653,7 @@ pub(crate) fn phase_crypto_hash(v: &mut ValidationResult, world: &World) {
 // Phase 8: Discovery Mesh Validation
 // ═══════════════════════════════════════════════════════════════════════
 
-pub(crate) fn phase_discovery(v: &mut ValidationResult) {
+pub fn phase_discovery(v: &mut ValidationResult) {
     v.section("Service Discovery (Songbird)");
 
     let sb = discover_primal("songbird");

@@ -534,7 +534,7 @@ fn structural_checks_validation_purpose_with_trio_is_clean() {
         .iter()
         .enumerate()
         .map(|(i, cap)| {
-            let mut n = test_node(cap, (i + 1) as u32);
+            let mut n = test_node(cap, u32::try_from(i + 1).expect("test index fits u32"));
             n.by_capability = Some((*cap).to_owned());
             n
         })
@@ -575,15 +575,8 @@ fn load_foundation_validation_graph() {
         .as_ref()
         .and_then(|m| m.purpose.as_deref());
     assert_eq!(purpose, Some("foundation"));
-    let skip_nodes: Vec<&str> = graph
-        .graph
-        .node
-        .iter()
-        .filter(|n| n.fallback.as_deref() == Some("skip"))
-        .map(|n| n.name.as_str())
-        .collect();
     assert!(
-        !skip_nodes.is_empty(),
+        graph.graph.node.iter().any(|n| n.fallback.as_deref() == Some("skip")),
         "foundation graph should have fallback=skip nodes"
     );
     for node in &graph.graph.node {

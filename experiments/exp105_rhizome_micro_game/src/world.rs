@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use crate::types::*;
+use crate::types::{World, Biome, Tile, MAP_WIDTH, MAP_HEIGHT, Creature, Item, CELL_WIDTH, CELL_HEIGHT};
 
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::discover::{discover_by_capability, discover_primal};
@@ -10,7 +10,7 @@ use primalspring::validation::ValidationResult;
 // Phase 1: World Generation
 // ═══════════════════════════════════════════════════════════════════════
 
-pub(crate) fn phase_world_gen(v: &mut ValidationResult) -> World {
+pub fn phase_world_gen(v: &mut ValidationResult) -> World {
     v.section("World Generation (Barracuda + ludoSpring)");
 
     let biome = generate_biome(v);
@@ -256,7 +256,7 @@ fn populate_items(v: &mut ValidationResult, tiles: &[Tile]) -> Vec<Item> {
 // Phase 2: Scene Rendering
 // ═══════════════════════════════════════════════════════════════════════
 
-pub(crate) fn phase_render_scene(v: &mut ValidationResult, world: &World) {
+pub fn phase_render_scene(v: &mut ValidationResult, world: &World) {
     v.section("Scene Rendering (petalTongue)");
 
     let pt = discover_by_capability("visualization");
