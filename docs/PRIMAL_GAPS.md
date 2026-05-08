@@ -128,9 +128,28 @@ Each entry links to the composition that exposes it and proposes a fix path.
 > - **U5 sweetGrass port 39085 vs 9850** — RESOLVED: 9850 is canonical BTSP TCP. 39085 is deprecated
 >   legacy HTTP. Comment in `tolerances/mod.rs` updated. Upstream sweetGrass team should bind HTTP on 9850.
 >
+> **projectNUCLEUS Phase 60 handback (May 8, 2026)** — 265 PASS, 0 FAIL, 0 KNOWN_GAP:
+> - **DF-2 toadStool auth.mode** — **RESOLVED**: `JsonRpcHandler` hardcoded `MethodGate::permissive()`,
+>   ignoring `TOADSTOOL_AUTH_MODE` env var. Fixed: reads env at startup, "enforced" → `GateMode::Enforcing`.
+>   Pushed to `ecoPrimals/toadStool` main.
+> - **DF-3 songbird/squirrel TCP auth.mode** — **DOCUMENTED**: these primals don't implement MethodGate.
+>   `auth.mode` is UDS-only (or absent). petaltongue correctly rejects all unauthed TCP via BTSP PT-09.
+>   Upstream teams to decide whether to wire TCP auth.mode or document as UDS-only.
+> - **U1 CHECKSUMS stale** — **RESOLVED**: regenerated `validation/CHECKSUMS` with b3sum (3/18 changed).
+> - **U2 operation nodes missing by_capability** — **RESOLVED**: added `by_capability = "discovery"` to
+>   all songbird-targeted operation nodes in 3 multi-node graphs (basement_hpc, friend_remote, three_node).
+> - **U3 profile graphs missing bonding_policy** — **RESOLVED**: added `[graph.bonding_policy]` with
+>   `bond_type = "Ionic"`, `trust_model = "MethodGate"` to 34 graphs (cells, patterns, fragments, desktop, etc.).
+> - **U5 sweetGrass port 39085 vs 9850** — already resolved (Phase 59). Upstream sweetGrass team only.
+> - **JH-11 cross-primal token federation** — **FLAGGED**: deferred until Tier 1-2 clear. Each MethodGate
+>   validates independently; biomeOS composition forwarding is the workaround.
+> - **Tier 3 primal deep debt** — documented for upstream teams: coralReef eprintln→tracing, barraCuda/nestGate
+>   unwrap→?, biomeOS mock helpers in production, bearDog HSM mock not feature-gated, petalTongue bare #[allow],
+>   squirrel 1105-line test file.
+>
 > **primalSpring local quality gate**: `cargo clippy` 0 warnings (full workspace), `cargo fmt` 0 violations,
-> 661 tests (613 passed + 48 ignored), 85 experiments (19 tracks), 74 deploy graphs.
-> Module splits: `deploy/validation.rs` (909→523), `coordination/probes.rs` (785→469).
+> `cargo deny` all-pass, 614 tests (594 lib + 20 exp, 0 failed, 48 ignored), 85 experiments (19 tracks),
+> 74 deploy graphs. Zero TODO/FIXME/HACK/DEBT markers. Zero unsafe. Zero #[allow()].
 >
 > **BTSP Phase 3 COMPLETE** (May 2, 2026 — confirmed May 6 with upstream pulls):
 > **13 of 13 primals** now implement `btsp.negotiate` server-side with full ChaCha20-Poly1305 AEAD.

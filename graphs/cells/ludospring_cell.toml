@@ -27,6 +27,10 @@ tick_hz = 60
 
 # ── NUCLEUS Base ─────────────────────────────────────────────────────
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 name = "biomeos_neural_api"
 security_model = "btsp"

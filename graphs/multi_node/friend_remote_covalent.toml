@@ -133,6 +133,7 @@ output = "mesh_state"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "mesh.init"
@@ -150,6 +151,7 @@ output = "public_address"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "stun.discover"
@@ -168,6 +170,7 @@ output = "nat_type"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "stun.detect_nat_type"
@@ -186,6 +189,7 @@ output = "punch_result"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "punch.request"
@@ -204,6 +208,7 @@ output = "relay_result"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "relay.allocate"
@@ -223,6 +228,7 @@ output = "peers_discovered"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "mesh.auto_discover"
@@ -291,6 +297,7 @@ output = "announced"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "mesh.announce"

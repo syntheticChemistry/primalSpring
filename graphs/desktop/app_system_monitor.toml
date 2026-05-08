@@ -26,6 +26,10 @@ composition_model = "pure"
 
 # ── Health Polling ──────────────────────────────────────────────
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 id = "composition_health"
 name = "composition_health"

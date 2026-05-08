@@ -33,6 +33,10 @@ fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "meta_tier
 
 # --- Phase 1: Verify biomeOS Neural API substrate ---
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 name = "verify_biomeos"
 binary = "biomeos"

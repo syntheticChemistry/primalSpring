@@ -34,6 +34,10 @@ proven_by = "ludoSpring (exp033, exp067, exp072)"
 
 # --- Phase 1: Tower Atomic ---
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 name = "verify_tower_security"
 binary = "beardog"

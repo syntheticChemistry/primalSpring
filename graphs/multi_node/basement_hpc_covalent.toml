@@ -131,6 +131,7 @@ output = "mesh_state"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "mesh.init"
@@ -147,6 +148,7 @@ output = "peers_discovered"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "mesh.auto_discover"
@@ -269,6 +271,7 @@ output = "https_validated"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "http.get"
@@ -285,6 +288,7 @@ output = "announced"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "mesh.announce"

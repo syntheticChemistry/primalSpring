@@ -33,6 +33,10 @@ composition_model = "pure"
 petaltongue_mode = "live"
 primal_count = 13
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [graph.environment]
 FAMILY_ID = "${FAMILY_ID:-nucleus-desktop}"
 BEARDOG_FAMILY_SEED = "${BEARDOG_FAMILY_SEED}"

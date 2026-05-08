@@ -55,6 +55,10 @@ base_graph = "nucleus_desktop"
 
 # ── Tower (always required) ──
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 name = "biomeos_neural_api"
 security_model = "btsp"

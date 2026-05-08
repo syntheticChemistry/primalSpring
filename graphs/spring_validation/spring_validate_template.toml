@@ -39,6 +39,10 @@ encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 composition_model = "validation"
 fragments = ["tower_atomic"]
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"

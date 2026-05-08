@@ -25,6 +25,10 @@ fragments = ["tower_atomic"]
 
 # --- Phase 1: Tower Health ---
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 name = "verify_tower"
 binary = "primalspring_primal"

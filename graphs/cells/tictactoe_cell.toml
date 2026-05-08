@@ -31,6 +31,10 @@ tick_hz = 1
 
 # ── Tower Atomic ──────────────────────────────────────────────────────
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 name = "beardog"
 security_model = "btsp"

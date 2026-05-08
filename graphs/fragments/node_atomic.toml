@@ -39,6 +39,10 @@ by_capability = "security"
 security_model = "btsp"
 capabilities = ["crypto.sign", "crypto.verify", "crypto.hash", "crypto.encrypt_chacha20_poly1305", "crypto.generate_keypair"]
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[fragment.nodes]]
 name = "songbird"
 binary = "songbird"

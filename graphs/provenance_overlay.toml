@@ -44,6 +44,10 @@ fragments = ["tower_atomic", "provenance_trio"]
 
 # ── Phase 1: Tower base ──
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 name = "beardog"
 binary = "beardog"

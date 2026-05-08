@@ -20,6 +20,10 @@ composition_model = "pure"
 fragments = ["tower_atomic"]
 
 # ── Node 1: BearDog ───────────────────────────────────────────────────
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [[graph.nodes]]
 name = "beardog"
 binary = "beardog"

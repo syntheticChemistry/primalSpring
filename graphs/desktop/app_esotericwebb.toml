@@ -36,6 +36,10 @@ domain = "storytelling"
 security_model = "btsp_enforced"
 transport = "uds_only"
 
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
 [graph.metadata.application]
 name = "Esoteric Webb"
 category = "game"

@@ -273,6 +273,7 @@ output = "dev_beacon"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "birdsong.generate_encrypted_beacon"
@@ -293,6 +294,7 @@ output = "pixel_sees_dev"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "birdsong.decrypt_beacon"
@@ -317,6 +319,7 @@ output = "lan_peers"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "mesh.auto_discover"
@@ -337,6 +340,7 @@ output = "flock_connected"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "mesh.connect"
@@ -362,6 +366,7 @@ output = "flock_lineage"
 [graph.nodes.operation]
 name = "rpc_call"
 target = "songbird"
+by_capability = "discovery"
 
 [graph.nodes.operation.params]
 method = "birdsong.verify_lineage"
