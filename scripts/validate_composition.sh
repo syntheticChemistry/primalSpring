@@ -42,6 +42,7 @@ COMPOSITION_EXPERIMENTS=(
     "exp086_genetic_identity_e2e:primalspring-exp086:Genetic Identity E2E"
     "exp087_neural_api_routing_e2e:primalspring-exp087:Neural API Routing E2E"
     "exp088_storytelling_composition:primalspring-exp088:Storytelling Composition"
+    "exp094_composition_parity:primalspring-exp094:NUCLEUS Composition Parity (Tower+Node+Nest+Cross-Atomic)"
 )
 
 usage() {
