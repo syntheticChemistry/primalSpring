@@ -32,6 +32,7 @@ Historical handoffs live in `fossilRecord/`.
 | **DOWNSTREAM_HANDOFF_PHASE60_MAY07_2026.md** | Springs + gardens | Phase 60 downstream: registry patterns, content-addressed storage, RootPulse workflow, shader rewire, notebook pipeline, deep debt patterns. |
 | **METHOD_GATE_STANDARD.md** | All primal teams | JH-0 ecosystem standard: pre-dispatch capability authorization, exempt whitelist, error codes (-32000/-32001/-32002), enforcement modes, peer credential extraction, adoption path. |
 | **DOWNSTREAM_HANDOFF_PHASE60_SECURITY_GATE_MAY07_2026.md** | Springs + gardens + projectNUCLEUS | Phase 60 security gate: method gate pattern, `auth.*` methods, `PermissionDenied` handling, `SeedConfig`, composition patterns for NUCLEUS deployment via Neural API. |
+| **DOWNSTREAM_HANDOFF_PHASE60_IONIC_TOKENS_MAY08_2026.md** | Springs + gardens + projectNUCLEUS | JH-1 ionic tokens (BearDog Ed25519), GAP-11 18/18 closure (nautilus sessions, ml.mlp_train), token flow in compositions, registry 381 methods. |
 | This README | Everyone | Index and context. |
 
 ---
@@ -41,7 +42,7 @@ Historical handoffs live in `fossilRecord/`.
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
 - **Zero open P1 upstream gaps** — all 14 sovereignty gaps RESOLVED
-- **369 registered capability methods** across 50+ domains (including `auth.*` gate introspection)
+- **381 registered capability methods** across 82 domains (including `auth.*`, `nautilus.*`, ionic token methods)
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
 - **RootPulse commit workflow** fully executable (6/6 phases)
 - **NestGate content-addressed storage** live (8 `content.*` methods)
@@ -53,7 +54,7 @@ Historical handoffs live in `fossilRecord/`.
 | What | Where |
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
-| Capability registry | `config/capability_registry.toml` (369 methods) |
+| Capability registry | `config/capability_registry.toml` (381 methods) |
 | Method gate CI | `tools/check_method_gate.sh` |
 | Method string validator | `tools/check_method_strings.sh` |
 | Graph method validator | `tools/check_graph_methods.sh` |

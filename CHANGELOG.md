@@ -18,7 +18,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `auth.check`, `auth.mode`, `auth.peer_info` — new introspection methods
   - `guidestone/layers/btsp.rs` — Layer 1.6 validation: method gate wiring, mode, whitelist
   - `tools/check_method_gate.sh` — CI validator (advisory-only)
-- **Capability registry expansion** — 290 → 369 registered methods across 50+ domains.
+- **Capability registry expansion** — 290 → 381 registered methods across 82 domains.
   New domains: `content.*` (NestGate CAS), `viz.*` (petalTongue), `beacon.*`/`lineage.*`/`tls.*`
   (BearDog), `math.*`/`rng.*` (barraCuda), `ionic.*`/`tools.*` (primalSpring), `auth.*`
   (primalSpring gate introspection), plus `crypto.did_from_key`, `network.beacon_exchange`,
@@ -57,11 +57,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - 3 primals extract bearer tokens: barraCuda (`_auth.bearer`), biomeOS (`_bearer_token`),
     petalTongue (`with_token_from_params`).
 - **barraCuda Sprint 54** shipped `ode.step` + `ml.esn_predict` (Path A stateless). GAP-11 16/18.
-- Registry expanded 369 → 371 (+`ode.step`, +`ml.esn_predict`).
+- **BearDog Wave 94** (JH-1): `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` —
+  Ed25519-signed ionic tokens with scope patterns, expiry, JTI. **JH-1 RESOLVED**.
+- **barraCuda Sprint 55** (GAP-11 closure): `ml.mlp_train` (Path A, SGD backprop) +
+  6 `nautilus.*` session methods (Path B, server-side state). **GAP-11 FULLY CLOSED (18/18)**.
+- Registry expanded 369 → 381 (+ionic tokens, +nautilus, +mlp_train, +ode.step, +esn_predict).
 
 ### Metrics
 - **666 tests** (618 passed + 48 ignored), **0 clippy warnings**, **0 primal drift**.
-- **211/211** source method strings validated, **371** registered, **353** graph refs checked.
+- **211/211** source method strings validated, **381** registered, **353** graph refs checked.
 - **85 experiments**, **74 deploy graphs**, **18 checksummed files**.
 - **Zero DEBT/TODO/FIXME/HACK markers** in production code.
 

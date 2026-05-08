@@ -1,7 +1,7 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 666 tests, 85 experiments, 13/13 BTSP Phase 3, JH-0 method gate, zero DEBT markers"
-date = 2026-05-07
+description = "Meta-validation orchestrator — 666 tests, 85 experiments, 381 capabilities, JH-0 13/13, JH-1 resolved, GAP-11 closed, zero DEBT"
+date = 2026-05-08
 
 [taxonomies]
 primals = ["biomeos", "barracuda", "toadstool", "nestgate", "beardog", "songbird", "squirrel", "rhizocrypt", "loamspine", "sweetgrass", "petaltongue", "skunkbat", "coralreef"]
@@ -14,8 +14,8 @@ springs = ["primalspring"]
 - **85 experiments** across 15 categories (tower atomic → frontier)
 - **13 deploy graphs** validated (74 total nodes, 5 bond types)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`
-- **Zero open security gaps** (PG-55–PG-62 RESOLVED, JH-0 IN PROGRESS — reference impl complete)
-- **369 registered capability methods** (including `auth.*` gate introspection)
+- **JH-0 ADOPTED** (13/13 primals), **JH-1 RESOLVED** (ionic tokens), **GAP-11 CLOSED** (18/18 methods)
+- **381 registered capability methods** (including `auth.*`, ionic tokens, `nautilus.*`)
 - **Zero DEBT markers**, zero unsafe blocks (`SeedConfig` + `OnceLock`)
 - **5-tier discovery hierarchy** validated across all primals
 
