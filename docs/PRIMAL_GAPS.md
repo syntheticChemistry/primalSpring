@@ -745,10 +745,10 @@ in `infra/wateringHole/` for the full water-cycle model.
 
 | # | Sprint Item | Depends On | Status |
 |---|-------------|------------|--------|
-| 1 | **Tower composition parity**: launch BearDog + Songbird, call `crypto.hash` + `discovery.resolve`, compare against known values | Nothing — schemas stable | **IN PROGRESS** |
-| 2 | **Nest composition parity**: add NestGate + provenance trio, call `storage.store` + `storage.retrieve` round-trip, verify data integrity | Nothing — storage IPC stable | **IN PROGRESS** |
-| 3 | **Node composition parity**: add barraCuda + coralReef + toadStool, call `tensor.matmul` / `tensor.dot`, compare against Python baseline | Wire contracts delivered (Sprint 42 / Iter 80 / S203) | **UNBLOCKED** |
-| 4 | **Full NUCLEUS parity**: combine Tower + Node + Nest, run cross-atomic composition (encrypt → compute → store → retrieve → verify) | Items 1-3 | **IN PROGRESS** |
+| 1 | **Tower composition parity**: launch BearDog + Songbird, call `crypto.hash` + `discovery.resolve`, compare against known values | Nothing — schemas stable | **IMPLEMENTED** (exp094 Tower Atomic) |
+| 2 | **Nest composition parity**: add NestGate + provenance trio, call `storage.store` + `storage.retrieve` round-trip, verify data integrity | Nothing — storage IPC stable | **IMPLEMENTED** (exp094 Nest Atomic) |
+| 3 | **Node composition parity**: add barraCuda + coralReef + toadStool, call `stats.mean` via IPC, compare against Python baseline | Wire contracts delivered (Sprint 42 / Iter 80 / S203) | **IMPLEMENTED** (exp094 Node Atomic) |
+| 4 | **Full NUCLEUS parity**: combine Tower + Node + Nest, run cross-atomic composition (hash → store → retrieve → verify) | Items 1-3 | **IMPLEMENTED** (exp094 Cross-Atomic Pipeline) |
 | 5 | **Chimera compositions**: multi-niche compositions via biomeOS graph execution | biomeOS v3.04 `nucleus_composition_e2e.rs` + Item 4 | **CLOSER** |
 | 6 | **Downstream proto-nucleate parity harness**: template experiment for springs to plug in their Python baseline and validate composition | Item 4 + spring response schema docs | **FUTURE** |
 
