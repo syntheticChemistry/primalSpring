@@ -572,6 +572,18 @@ methods = [
     "math.tensor",
 ]
 
+[ode]
+owner = "barracuda"
+methods = [
+    "ode.step",
+]
+
+[ml]
+owner = "barracuda"
+methods = [
+    "ml.esn_predict",
+]
+
 [rng]
 owner = "barracuda"
 methods = [
