@@ -2,7 +2,7 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 8, 2026 — Phase 60 (v0.9.25)
+**Last updated**: May 9, 2026 — Phase 60+ (v0.9.25)
 **Audited by**: primalSpring composition audit
 **Method**: Pulled all 8 springs to HEAD, assessed each across 8 axes
 
@@ -17,13 +17,13 @@
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
 | **primalSpring** | 666 | None (validates, doesn't consume) | N/A (is primalSpring) | L5 (6 layers) | **G** 389 methods, sync-tested | **G** 74 graphs | **G** 85 exp crates, 4 use CompositionContext | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
-| **hotSpring** | 993 | **Y** path dep + IPC | **G** unconditional | **G** L5 (reference impl) | **G** local TOML + sync test | **Y** 1 graph | **Y** exp bins (not crates), CompositionContext in guidestone | **G** 17 (paper-linked) | **G** bans openssl, ring via rustls |
-| **healthSpring** | 948+ | **Y** path dep + typed IPC clients | **Y** feature-gated | **G** L5 (Tier 1-3) | **Y** Rust constants, no TOML | **G** 7 graphs | **G** 94 exp crates, live IPC in exp117-122 | **R** 0 .ipynb (54 Python scripts) | **G** bans openssl, ring via rustls |
-| **wetSpring** | 1,594 | **Y** path dep + IPC feature | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **Y** TOML at root, no cross-sync | **G** 7 graphs | **R** 0 exp crates (CompositionContext in guidestone) | **G** 19 (tiered) | **Y** bans openssl, ring not banned |
-| **neuralSpring** | 1,387 | **Y** path dep + IpcMathClient | **Y** feature-gated | **Y** L3 (L4-L5 pending) | **G** local TOML + sync test | **Y** 1 graph | **R** 0 exp crates (IPC in playGround) | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
+| **hotSpring** | 1,002 | **Y** path dep + IPC | **G** unconditional | **G** L5 (reference impl) | **G** local TOML + sync test | **G** 5 graphs | **Y** exp bins (not crates), CompositionContext in guidestone | **G** 17 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
+| **healthSpring** | 892 | **Y** path dep + typed IPC clients | **Y** feature-gated | **G** L5 (Tier 1-3) | **R** no TOML registry, no Phase 60 response | **G** 7 graphs | **G** 94 exp crates, live IPC in exp117-122 | **R** 0 .ipynb (54 Python scripts) | **G** bans openssl, ring via rustls |
+| **wetSpring** | 1,209 | **Y** path dep + IPC feature (barracuda-lib) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **Y** TOML at root + cross-sync script | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl (Phase 60 absorption) |
+| **neuralSpring** | 1,432 | **Y** path dep + IpcMathClient | **Y** feature-gated | **Y** L3 (L4-L5 pending) | **G** local TOML + sync test | **G** 4 graphs (3 new Phase 60) | **G** exp094 parity crate, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
 | **ludoSpring** | 820 | **Y** path dep + IPC feature | **Y** feature-gated | **G** L5 (Tier 1-3) | **Y** TOML + internal sync, no cross-sync | **G** 12 graphs | **G** 100 exp crates, many with IPC | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
-| **groundSpring** | 965+ | **Y** path dep (optional, default) | **Y** feature-gated | **Y** L3 | **Y** TOML at root, no sync test | **G** 6 graphs | **R** 0 exp crates (CompositionContext in guidestone) | **G** 34 (paper-linked) | **G** bans ring/openssl |
-| **airSpring** | 1,364 | **Y** path dep + some IPC wiring | **R** absent | **R** L1 (P1-P5 only) | **R** no registry file | **Y** 4 graphs | **R** 0 exp crates | **G** 25 (paper-linked) | **Y** sub-crate deny, bans ring/openssl |
+| **groundSpring** | 965+ | **Y** path dep (optional, default) | **Y** feature-gated | **G** L4 (guidestone + composition crates) | **G** 16 MCP tools + 6 registry sync tests | **G** 6 graphs | **G** 2 exp crates (exp094/exp095 use CompositionContext) | **G** 34 (paper-linked) | **G** bans ring/openssl |
+| **airSpring** | 1,364 | **Y** path dep + some IPC wiring | **Y** feature-gated (guidestone) | **Y** L2 (IPC-wired, 3 composition crates) | **G** 44 capabilities in TOML | **Y** 4 graphs | **G** 3 exp crates (exp001-003) | **G** 25 (paper-linked) | **Y** sub-crate deny, bans ring/openssl (aws-lc-sys not banned) |
 
 ## Summary by Axis
 
@@ -36,8 +36,7 @@
 ### 2. primalSpring Integration
 
 - **hotSpring**: Only spring with **unconditional** primalSpring dependency (reference implementation pattern)
-- **5 springs**: Feature-gated via `guidestone` feature (healthSpring, wetSpring, neuralSpring, ludoSpring, groundSpring)
-- **airSpring**: No Rust dependency at all (filesystem path references only)
+- **6 springs**: Feature-gated via `guidestone` feature (healthSpring, wetSpring, neuralSpring, ludoSpring, groundSpring, airSpring)
 
 ### 3. Guidestone Level
 
@@ -45,15 +44,15 @@
 |-------|---------|
 | L5 | primalSpring, hotSpring, healthSpring, ludoSpring |
 | L4 | wetSpring |
-| L3 | neuralSpring, groundSpring |
-| L1 | airSpring |
+| L4 | groundSpring |
+| L3 | neuralSpring |
+| L2 | airSpring |
 
 ### 4. Capability Registry
 
-- **Sync-tested** (highest maturity): primalSpring (canonical), hotSpring, neuralSpring
-- **TOML present, internal sync**: ludoSpring, wetSpring, groundSpring
+- **Sync-tested** (highest maturity): primalSpring (canonical 389), hotSpring, neuralSpring, groundSpring (16 MCP tools + 6 sync tests)
+- **TOML present, internal sync**: ludoSpring, wetSpring, airSpring (44 caps)
 - **Rust constants only**: healthSpring
-- **Absent**: airSpring
 
 ### 5. Deploy Graphs
 
@@ -64,8 +63,8 @@ Total across ecosystem: **74** (primalSpring) + **1** (hotSpring) + **7** (healt
 | Tier | Springs |
 |------|---------|
 | Deep (50+ exp crates) | primalSpring (85), ludoSpring (100), healthSpring (94) |
-| Moderate (exp bins/IPC) | hotSpring (src/bin exp files) |
-| Minimal (guidestone only) | wetSpring, neuralSpring, groundSpring, airSpring |
+| Moderate (exp bins/crates) | hotSpring (src/bin exp files), groundSpring (2: exp094/095 w/ CompositionContext), airSpring (3: exp001-003), wetSpring (1: exp400) |
+| Minimal (guidestone/playground only) | neuralSpring (IPC in playGround) |
 
 ### 7. Paper Baselines
 
@@ -77,23 +76,23 @@ Total across ecosystem: **74** (primalSpring) + **1** (hotSpring) + **7** (healt
 
 ### 8. Security Posture (deny.toml)
 
-All 8 springs have `deny.toml` (or sub-crate deny). All ban `openssl`/`openssl-sys`. Most ban `ring` outright; healthSpring and hotSpring allow `ring` only as a transitive via `rustls`. wetSpring does not explicitly ban `ring`.
+All 8 springs have `deny.toml` (or sub-crate deny). All ban `openssl`/`openssl-sys`. All now ban `ring` (wetSpring added in Phase 60 absorption). hotSpring also bans `aws-lc-sys`. airSpring's bans are in sub-crate deny files (no workspace-root `deny.toml`); `aws-lc-sys` not explicitly banned there.
 
 ## Critical Path to Full Parity
 
 1. **barraCuda IPC migration**: All springs need `barracuda` as `optional = true` with IPC-first defaults
-2. **airSpring bootstrap**: Needs primalSpring feature-gated dep, registry TOML, guidestone upgrade to L3+
-3. **Registry cross-sync**: Only hotSpring and neuralSpring auto-test against their local TOML; no spring tests against primalSpring's canonical 389-method registry
-4. **wetSpring ring ban**: Should align with ecosystem posture
+2. **healthSpring Phase 60 response**: Still at V59 (Apr 27) — no capability_registry.toml, no Phase 60 parity absorption, still pinned to primalSpring v0.9.17. Needs most evolution time of all springs.
+3. **airSpring aws-lc-sys ban**: Workspace-root `deny.toml` missing (only sub-crate deny files); `aws-lc-sys` not explicitly banned — should align with ecosystem posture
+4. **Registry cross-sync**: groundSpring (6 tests), hotSpring, neuralSpring auto-test against local TOML; need universal CI testing against primalSpring canonical 389
 5. **Notebook gap**: healthSpring and ludoSpring have Python baselines as scripts, not notebooks — functionally equivalent but different artifact form
 
 ## Aggregate Metrics
 
 | Metric | Value |
 |--------|-------|
-| Total tests across 8 springs | **8,737+** |
-| Total deploy graphs | **112** |
-| Total experiment crates | **279** (primalSpring 85 + ludoSpring 100 + healthSpring 94) |
-| Total paper notebooks | **110** |
+| Total tests across 8 springs | **9,624+** (primalSpring 666 + hotSpring 993 + healthSpring 892 + wetSpring 1,594 + neuralSpring 1,432 + ludoSpring 820 + groundSpring 965 + airSpring 1,364) |
+| Total deploy graphs | **119** (primalSpring 74 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4) |
+| Total experiment crates | **288** (primalSpring 85 + ludoSpring 100 + healthSpring 94 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
+| Total paper notebooks | **145+** (groundSpring 34 + airSpring 25 + wetSpring 19 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + healthSpring scripts + ludoSpring baselines) |
 | Registered capability methods | **389** (primalSpring canonical) |
 | Primals in plasmidBin release | **13/13** (all architectures) |
