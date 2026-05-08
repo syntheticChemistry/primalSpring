@@ -1,7 +1,7 @@
 # plasmidBin Depot Pattern — Remote NUCLEUS Deployment
 
 **Date**: April 29, 2026
-**From**: primalSpring v0.9.24
+**From**: primalSpring v0.9.25
 **License**: AGPL-3.0-or-later
 
 ---

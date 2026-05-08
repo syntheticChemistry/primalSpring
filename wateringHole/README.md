@@ -29,6 +29,7 @@ Historical handoffs live in `fossilRecord/`.
 | **DOWNSTREAM_HANDOFF_PHASE60_IONIC_TOKENS_MAY08_2026.md** | Springs + gardens + projectNUCLEUS | JH-1 ionic tokens (BearDog Ed25519), GAP-11 18/18 closure (nautilus sessions, ml.mlp_train), token flow in compositions, registry 389 methods. |
 | **CROSS_SPRING_PARITY_HANDOFF_MAY08_2026.md** | All spring teams + downstream | Cross-spring composition parity audit: per-spring scorecard (8 axes), evolution targets, universal gaps, 8,737+ total tests across 8 springs, 112 deploy graphs. |
 | **PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md** | Upstream primals + spring teams + products | Comprehensive evolution handoff: primal consumption review, upstream debt, per-spring absorption targets, NUCLEUS composition patterns, Neural API deployment, downstream product guidance, lessons learned. |
+| **PHASE60_COMPLETION_HANDOFF_MAY09_2026.md** | Downstream products + spring teams | Phase 60 completion: 13/13 primals clean, resolved gaps table, composition patterns for NUCLEUS via Neural API, per-spring absorption targets, quality gate. |
 | This README | Everyone | Index and context. |
 
 ---
@@ -37,7 +38,7 @@ Historical handoffs live in `fossilRecord/`.
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
-- **Zero open P1 upstream gaps** — all 14 sovereignty gaps RESOLVED
+- **Zero open upstream gaps** — 13/13 primals at zero debt (Phase 60 complete)
 - **389 registered capability methods** across 82 domains (including `auth.*`, `nautilus.*`, ionic token methods)
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
 - **RootPulse commit workflow** fully executable (6/6 phases)

@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 #![forbid(unsafe_code)]
-#![allow(
+#![expect(
     clippy::cast_precision_loss,
     clippy::option_if_let_else,
     clippy::or_fun_call,
-    clippy::cast_sign_loss
+    clippy::cast_sign_loss,
+    reason = "game logic uses f64 casts and fallible option patterns extensively"
 )]
 
 //! exp105 — The Rhizome Micro-Game

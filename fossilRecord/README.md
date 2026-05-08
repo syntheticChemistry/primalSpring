@@ -13,3 +13,4 @@ Each subdirectory has its own README with context for what was archived and why.
 | `pre-tower-atomic-apr2026/` | Pre-Tower-Atomic launcher and scripts before biomeOS composition | April 2026 |
 | `wateringHole_phase56_apr2026/` | 66 historical wateringHole handoffs (v0.1.0 through v0.9.24) archived during Phase 56c cleanup | April 2026 |
 | `wateringHole_phase58_59_may2026/` | Phase 58–59 handoffs: foundation absorption, composition guidance, cross-spring connections, downstream standards | May 2026 |
+| `primal_gaps_phase60_may2026/` | Full 2,290-line PRIMAL_GAPS.md history (April 9 – May 9, 2026) archived after Phase 60 cleanup; reduced to ~160-line living doc | May 2026 |

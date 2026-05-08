@@ -371,7 +371,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests (585 passed + 46 ignored), 0 clippy warnings.
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 666 tests (618 passed + 48 ignored).
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 
@@ -434,16 +434,16 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 `gate: pixel8a` with capabilities [network, discovery, http, mesh, birdsong].
 ADB forwards Pixel TCP 9901 → Eastgate 19901 for JSON-RPC IPC.
 
-See `wateringHole/handoffs/archive/` for the full cross-gate SELinux gap analysis
+See `fossilRecord/wateringHole_phase58_59_may2026/` for the full cross-gate SELinux gap analysis
 and per-primal remediation plan (archived from March 2026 mobile deployment spike).
 
 ## Docs
 
-- `wateringHole/README.md` — Outward-facing guidance index (7 living documents)
-- `wateringHole/FOUNDATION_ABSORPTION_MAY06_2026.md` — Foundation layer absorption handoff
-- `wateringHole/UPSTREAM_ABSORPTION_MAY06_2026.md` — 13/13 primal upstream absorption
+- `wateringHole/README.md` — Outward-facing guidance index
+- `wateringHole/PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md` — v0.9.25 evolution handoff (primals, springs, NUCLEUS)
+- `wateringHole/CROSS_SPRING_PARITY_HANDOFF_MAY08_2026.md` — Cross-spring parity audit
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role
-- `wateringHole/UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` — IPC patterns + downstream absorption
+- `wateringHole/METHOD_GATE_STANDARD.md` — MethodGate pre-dispatch authorization standard (JH-0)
 - `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–25+ done — includes live validation matrix + 6 GAP-MATRIX items)
 - `specs/NUCLEUS_VALIDATION_MATRIX.md` — NUCLEUS capability validation matrix with particle model
 - `specs/MIXED_COMPOSITION_PATTERNS.md` — Particle model, layered validation (L0-L3), gap inventory, spring specialization guide

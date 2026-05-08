@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: May 6, 2026  
-**Status**: Phase 59 — 85 experiments, 19 tracks, Desktop NUCLEUS live, foundation absorption, 661 tests, 74 deploy graphs, 13/13 BTSP FULL AEAD
+**Status**: Phase 60 — 85 experiments, 19 tracks, Desktop NUCLEUS live, 666 tests, 74 deploy graphs, 13/13 BTSP FULL AEAD, JH-0 MethodGate (13/13), 389 capability methods
 
 ---
 

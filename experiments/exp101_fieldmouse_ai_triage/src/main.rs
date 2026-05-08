@@ -16,7 +16,7 @@ fn phase_storage_ingest(v: &mut ValidationResult) {
     v.section("Sensor Data Ingest (NestGate)");
 
     let ng = discover_by_capability("storage");
-    #[allow(clippy::single_match_else)]
+    #[allow(clippy::single_match_else, reason = "fallback logic reads clearer with match")]
     let ng_fallback;
     let ng_sock = if let Some(s) = ng.socket.as_ref() {
         s

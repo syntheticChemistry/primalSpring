@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 #![forbid(unsafe_code)]
-#![allow(clippy::cast_precision_loss, clippy::option_if_let_else)]
+#![allow(
+    clippy::cast_precision_loss,
+    clippy::option_if_let_else,
+    reason = "desktop shell uses f64 casts for layout math"
+)]
 
 //! exp106 — Micro-Desktop Shell
 //!
@@ -87,10 +91,10 @@ fn phase_biomeos_connection(v: &mut ValidationResult) -> Option<PrimalClient> {
 // ═══════════════════════════════════════════════════════════════════════
 
 struct PrimalHealth {
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "used for structured logging, not rendered in TUI")]
     name: &'static str,
     abbrev: &'static str,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "used for structured logging, not rendered in TUI")]
     capability: &'static str,
     healthy: bool,
 }

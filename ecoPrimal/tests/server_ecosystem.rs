@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-#![allow(clippy::unwrap_used, clippy::expect_used)]
+#![expect(clippy::unwrap_used, clippy::expect_used, reason = "integration tests — panics are the failure signal")]
 
 //! Live ecosystem integration tests requiring plasmidBin binaries. Run with `cargo test --ignored`.
 

@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: May 2026
-**Status**: Phase 59 — Foundation Absorption + Discovery Escalation (**13 primals live**, 13/13 healthy, BTSP 13/13 FULL AEAD). 85 experiments (19 tracks), 74 deploy graphs, 661 tests. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing).
+**Status**: Phase 60 — 13/13 primals at zero debt, JH-0 MethodGate adopted (13/13), BTSP Phase 3 (13/13), ionic tokens live. 85 experiments (19 tracks), 74 deploy graphs, 666 tests. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing). 389 registered capability methods.
 
 ---
 
@@ -149,7 +149,7 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.9.24 | 661 | Phase 59 — 85 experiments (19 tracks), 74 deploy graphs, guideStone Level 4, foundation absorption, discovery escalation hierarchy, 13/13 BTSP FULL AEAD |
+| primalSpring | v0.9.25 | 666 | Phase 60 — 85 experiments (19 tracks), 74 deploy graphs, guideStone Level 5, JH-0 MethodGate (13/13), ionic tokens, 389 capability methods, 13/13 BTSP FULL AEAD |
 
 ## Modernization Sweep (April 7, 2026)
 
