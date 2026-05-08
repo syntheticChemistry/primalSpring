@@ -41,6 +41,6 @@ Not yet created — contribute to `projectNUCLEUS/workloads/primalspring/`.
 
 ## See Also
 
-- [Spring Catalog](https://primals.eco/architecture/spring-catalog-status-science-and-evolution/) on primals.eco
+- [Spring Catalog](@/architecture/SPRING_CATALOG.md) on primals.eco
 - [Lab Notebooks](https://primals.eco/lab/notebooks/) for rendered notebook views
 - [baseCamp Papers 23, 26](https://primals.eco/science/)
