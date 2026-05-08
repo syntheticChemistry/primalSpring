@@ -212,6 +212,9 @@ methods = [
     "crypto.ionic_bond.capabilities",
     "crypto.keygen",
     "crypto.sign",
+    "crypto.contract.countersign",
+    "crypto.contract.propose",
+    "crypto.contract.verify",
     "crypto.sign_ed25519",
     "crypto.verify",
     "crypto.verify_ed25519",
@@ -274,6 +277,7 @@ methods = [
 [security]
 owner = "beardog"
 methods = [
+    "security.audit_log",  # skunkBat JH-5: cursor-based audit event polling
     "security.authenticate",
 ]
 
@@ -282,6 +286,7 @@ owner = "primalspring"
 methods = [
     "auth.check",
     "auth.issue_ionic",
+    "auth.issue_session",  # BearDog JH-4: purpose-based token issuance
     "auth.mode",
     "auth.peer_info",
     "auth.verify_ionic",

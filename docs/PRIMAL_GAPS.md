@@ -35,7 +35,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >
 > Downstream springs may resume absorption.
 >
-> **Last updated**: 2026-05-08 — **JH-0 13/13, JH-1 RESOLVED, JH-2 partial, JH-3 RESOLVED, GAP-11 CLOSED (18/18), 384 methods.**
+> **Last updated**: 2026-05-08 — **JH-0 13/13, JH-1 RESOLVED, JH-2 partial, JH-3 RESOLVED, JH-4 RESOLVED, JH-5 Phase 1, GAP-11 CLOSED (18/18), 389 methods.**
 > **All blurbed upstream debt resolved.** Wire Standard L3 at 13/13. BufReader audit at 13/13.
 >
 > **Upstream Evolution Absorbed (May 7, 2026)** — All 14 sovereignty gaps resolved by primal teams:
@@ -56,7 +56,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >   Health probes bypass the gate. No more silent timeouts.
 > - **toadStool PG-62**: RESOLVED. `health.liveness` fast-path returns `{"status":"starting"}` during
 >   init. Timeout constants documented: dispatch 5s, workload 300s, TCP idle 300s. All overridable.
-> - **primalSpring actions**: Registry expanded to 384 methods. `content.*` (8), `auth.*` (5),
+> - **primalSpring actions**: Registry expanded to 389 methods. `content.*` (8), `auth.*` (5),
 >   `nautilus.*` (6), `ml.mlp_train`, `ode.step`, `ml.esn_predict`, streaming chunk methods absorbed.
 >   Graph validator upgraded with spring-domain exclusion (91 advisory, 0 primal drift).
 >
@@ -617,7 +617,7 @@ Each maps to a specific primal team for resolution.
 |--------|---------------------------|---------------|-----------|
 | **barraCuda** | Sprint 39-41: **BC-07 RESOLVED** — `Auto::new()` returns `DiscoveredDevice` with 3-tier fallback (wgpu GPU → wgpu CPU → SovereignDevice IPC). BC-06 documented (README deployment matrix). TensorSession migration guide in BREAKING_CHANGES.md. Capability-based naming (no hardcoded primal names) | BC-05, BC-06, BC-07, BC-08, TensorSession | Sovereign pipeline readback, DF64 NVK verification, coverage →90% |
 | **coralReef** | Iter 79-93: **CR-04 RESOLVED**, **CR-05 RESOLVED**, deny.toml bans, **Wire Standard L3** (protocol + transport in `capability.list`), zero `Result<_, String>` in production (ProbeError enum), all paths env-overridable, SovereignBootSequence trait, PRI/PGOB coverage expansion. **4,704 tests**, 0 clippy warnings | CR-01, CR-04, CR-05, Wire L3, typed errors | Transitive libc (deferred until mio→rustix, mio#1735), IPC timing for `shader.compile` (Low) |
-| **BearDog** | Wave 34-94: **Wave 94: JH-1 RESOLVED** — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic` (Ed25519 ionic tokens, scope patterns, expiry, JTI), 117 methods. **Wave 93: JH-0 MethodGate** — pre-dispatch auth on UDS+TCP, `BEARDOG_AUTH_MODE`, `-32001/-32000/-32002` error codes, `auth.check`/`auth.mode`/`auth.peer_info`. Wave 91: typed errors. Wave 89: `crypto.did_from_key`. Ionic bond lifecycle, BTSP server live. | BTSP server, ionic bond, crypto.did_from_key, JH-0 MethodGate, JH-1 ionic tokens | Bond persistence NestGate wiring |
+| **BearDog** | Wave 34-97: **W97: JH-4 RESOLVED** — `auth.issue_session` (purpose presets), cross-family contract signing (`crypto.contract.propose/countersign/verify`), 14,883+ tests. **W94: JH-1** — ionic tokens. **W93: JH-0** — MethodGate. W91: typed errors. W89: `crypto.did_from_key`. BTSP server live. | JH-0, JH-1, JH-4, cross-family contracts, BTSP | Bond persistence NestGate wiring |
 | **NestGate** | Session 35-42: NG-08 ring eliminated (ureq + rustls-rustcrypto), **storage.store/retrieve on UDS** with family-scoped symlinks, ZFS bridge (7 `zfs.*` methods, GAP-MATRIX-04), BTSP Phase 1+2 (server handshake wired), Wire L3 capabilities.list + identity.get, `fetch_external` → Tower Atomic, `#[serial]` eliminated, 11,856 tests ~80% cov | NG-08, storage IPC, ZFS bridge, BTSP Phase 2 | Doc drift (57 methods in STATUS vs 41 in code const), `data.*` capability inconsistency, coverage 80→90%, 181 deprecated APIs to clean |
 | **toadStool** | S199-231: **S231: JH-2** — `enforce_envelope` on `compute.dispatch.submit`: `mem_mb` check (`-32004 RESOURCE_EXHAUSTED`), `method_allowlist` in gate. **S229-230: JH-0** MethodGate adopted, error codes aligned to ecosystem standard. Pipeline dispatch stable, capability-based naming. 21,600+ tests | JH-0, JH-2 (partial), PG-05, pipeline scheduling | `cpu`/`timeout` envelope enforcement, pipeline internal stage bypass, `shader.dispatch` envelope |
 | **Songbird** | Wave 134-151: `capability.resolve`, `inference.*` canonical, CI-01 `cargo deny`, **SB-02 ring-crypto removed**, **SB-03 sled eliminated**, canonical constants, **PG-37 (Phase 45) capability-first routing**: `ipc.resolve` now has primal-name fallback when capability lookup fails + `ipc.resolve_by_name` alias + `name` param alias, 7,380 tests | SB-02, SB-03, capability.resolve, inference namespace, CI-01, **PG-37** | QUIC/TLS evolution, transitive `ring` in lockfile (not compiled) |
@@ -643,7 +643,7 @@ Each maps to a specific primal team for resolution.
 | **loamSpine** | static-pie, stripped | 4.6M | 6 | 6 | 0 | CLEAN |
 | **sweetGrass** | static-pie, stripped | 5.8M | 57 | 57 | 0 | CLEAN |
 | **petalTongue** | static-pie, stripped | 26M | 173 | 172 | 0 | CLEAN (1 ignored) |
-| **skunkBat** | static-pie, stripped | 2.2M | 84 | 81 | 3 | Minor (96.4% pass) |
+| **skunkBat** | static-pie, stripped | 2.2M | 362 | 362 | 0 | CLEAN — JH-0 + JH-5 Phase 1 (`security.audit_log`) |
 | **primalSpring** | static-pie, stripped | 1.9M | 431 | 426 | 5 | Minor (98.8% pass) |
 
 **Note**: Test counts above are `--lib --bins` only (unit + lib tests). Full `--all-targets` counts are higher
@@ -1253,8 +1253,8 @@ shared notebook immutability). 8 patterns abstracted, 5 new upstream gaps:
 | **JH-1** | BearDog identity management — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic`. **RESOLVED** (Wave 94, May 8): Ed25519-signed ionic tokens with scope patterns, expiry, JTI. MethodGate validates signature + expiry + scope. 117 BearDog methods. | BearDog team | High | **RESOLVED** |
 | **JH-2** | Token-carried resource envelope. **PARTIALLY SHIPPED** (May 8): biomeOS v3.47 parses `ResourceEnvelope` (mem, cpu, method_allowlist) from ionic tokens, enforces **method_allowlist + scope + expiry** at pre-dispatch. ToadStool S231 enforces **mem_mb** on `compute.dispatch.submit` (`-32004 RESOURCE_EXHAUSTED`). **Remaining**: `cpu`/`timeout_ms` not enforced at dispatch; pipeline internal stages bypass envelope; biomeOS numeric caps informational only. | biomeOS + ToadStool | High | **PARTIALLY SHIPPED** |
 | **JH-3** | Composition hot-reload — **RESOLVED** (biomeOS v3.47, May 8). `composition.reload` wired: apoptosis → 250ms drain → re-register socket → health check. Returns `{ reloaded, name, socket_path, healthy }`. | biomeOS team | Medium | **RESOLVED** |
-| **JH-4** | Token issuance UX — end-to-end token delivery mechanism for non-technical researchers. BearDog needs a path that doesn't require CLI skills. | BearDog + primalSpring | Medium | **OPEN** |
-| **JH-5** | Log aggregation + provenance pipeline — skunkBat needs to consume heterogeneous sources (systemd journal, primal JSON-RPC logs, tunnel logs) and feed security-relevant events into rhizoCrypt DAG + sweetGrass provenance braids. | skunkBat team | Medium | **OPEN** |
+| **JH-4** | Token issuance UX. **RESOLVED** (BearDog W97, May 8): `auth.issue_session` — purpose-based presets (`jupyterhub`, `desktop`, `admin`), TTL in hours, `usage` hint string. Wraps `issue_ionic_token` with opinionated defaults. Public method (no token needed to obtain token). | BearDog + primalSpring | Medium | **RESOLVED** |
+| **JH-5** | Log aggregation + provenance pipeline. **PHASE 1** (skunkBat, May 8): `AuditLog` ring buffer (1024 events), `security.audit_log` RPC (cursor-based polling via `since_seq` + `limit`). Gate rejections + permissive-allows recorded automatically. **Remaining**: rhizoCrypt DAG + sweetGrass braid forwarding; non-gate event kinds (threat, BTSP, lifecycle) not yet emitted from live code paths. | skunkBat team | Medium | **PHASE 1** |
 
 **Binding exposure note**: projectNUCLEUS reports 5 primals (skunkBat, ToadStool, petalTongue, biomeOS, sweetGrass) still on `0.0.0.0` in their live deployment — mitigated by UFW. This is a **deploy.sh configuration issue**, not a primal code gap: all 6 primals ship `--bind` with `127.0.0.1` default (PG-55 RESOLVED). The deploy script needs to omit the `--bind 0.0.0.0` override or use localhost. Not a new upstream gap.
 
@@ -1804,7 +1804,7 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 
 | Gap | Reported By | Owner | Status |
 |-----|-------------|-------|--------|
-| **Ionic bond negotiation** — `crypto.sign_contract` not yet wired for cross-tower compositions | hotSpring (GAP-HS-005 evolution), healthSpring (dual-tower ionic), wetSpring (provenance cross-spring) | **BearDog team** | **OPEN** — propose→accept→seal lifecycle works; cross-family contract signing not yet exposed as IPC method |
+| **Ionic bond negotiation** — **RESOLVED** (BearDog W97, May 8): `crypto.contract.propose`, `crypto.contract.countersign`, `crypto.contract.verify` — cross-family bilateral contract signing with TTL, dual Ed25519 verification. 14,883+ tests. | hotSpring (GAP-HS-005 evolution), healthSpring (dual-tower ionic), wetSpring (provenance cross-spring) | **BearDog team** | **RESOLVED** |
 | **BTSP Phase 3 encrypted channel** — post-handshake cipher negotiation (`btsp.negotiate` + ChaCha20Poly1305) | hotSpring, healthSpring, neuralSpring, wetSpring | **BearDog + all primals** | **RESOLVED** (May 2, 2026) — 13/13 primals ship full AEAD on wire. All bond types (ionic, weak, organo-metal-salt) unblocked |
 | **toadStool `compute.dispatch` standardization** — springs need consistent dispatch envelope for GPU compute | hotSpring, wetSpring, neuralSpring | **toadStool team** | **RESOLVED** (S203 `DISPATCH_WIRE_CONTRACT.md`) but spring-side adoption incomplete |
 | **Squirrel provider registration** — `inference.register_provider` needed for springs with local models | neuralSpring, healthSpring, wetSpring | **Squirrel team** | **RESOLVED** (May 7) — Squirrel E2E inference pipeline fully functional (15 wire tests). Remaining gap is neuralSpring-side: needs `inference.register_provider` endpoint. Not blocking NUCLEUS deployment |
@@ -1815,8 +1815,8 @@ Four springs have entered NUCLEUS composition testing and reported gaps back:
 | **JH-1: BearDog identity management** — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic`. Ed25519 ionic tokens with scope patterns + expiry + JTI. MethodGate validates signature + scope. | projectNUCLEUS (JupyterHub) | **BearDog team** | **RESOLVED** (Wave 94, May 8) |
 | **JH-2: Token-carried resource envelope** — biomeOS v3.47 + ToadStool S231: method_allowlist enforced at gate, `mem_mb` enforced at dispatch (`-32004`). `cpu`/`timeout` deferred. | projectNUCLEUS (JupyterHub) | **biomeOS + ToadStool** | **PARTIALLY SHIPPED** (May 8) — allowlist+mem yes, cpu/timeout deferred |
 | **JH-3: Composition hot-reload** — biomeOS v3.47: `composition.reload` wired (apoptosis → re-register → health check). | projectNUCLEUS (JupyterHub) | **biomeOS team** | **RESOLVED** (May 8) |
-| **JH-4: Token issuance UX** — delivery mechanism for non-technical researchers. | projectNUCLEUS (JupyterHub) | **BearDog + primalSpring** | **OPEN** — Medium |
-| **JH-5: Log aggregation + provenance** — heterogeneous source consumption (systemd, primal logs, tunnel) into rhizoCrypt DAG + sweetGrass braids. | projectNUCLEUS (JupyterHub) | **skunkBat team** | **OPEN** — Medium |
+| **JH-4: Token issuance UX** — BearDog W97: `auth.issue_session` (purpose presets, TTL hours, usage hint). | projectNUCLEUS (JupyterHub) | **BearDog + primalSpring** | **RESOLVED** (May 8) |
+| **JH-5: Log aggregation + provenance** — skunkBat Phase 1: `security.audit_log` ring buffer + cursor polling. Gate events recorded. rhizoCrypt/sweetGrass forwarding pending. | projectNUCLEUS (JupyterHub) | **skunkBat team** | **PHASE 1** (May 8) |
 
 ### Per-Spring Composition Status (Delta Season — April 19, 2026)
 
