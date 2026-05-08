@@ -584,8 +584,8 @@ Each maps to a specific primal team for resolution.
 | Task | Source | Priority |
 |------|--------|----------|
 | NG-08: Eliminate `ring` from production build | primalSpring portability audit | **RESOLVED** (Session 43 — reqwest→ureq 3.3 + rustls-rustcrypto, ring/openssl/aws-lc-rs fully eliminated) |
-| `storage.retrieve` for large/streaming tensors | neuralSpring, wetSpring PG-04 | Medium |
-| Cross-spring persistent storage IPC | healthSpring, wetSpring | Medium |
+| ~~`storage.retrieve` for large/streaming tensors~~ | neuralSpring, wetSpring PG-04 | **RESOLVED** (Session 43p) — streaming methods implemented |
+| ~~Cross-spring persistent storage IPC~~ | healthSpring, wetSpring | **RESOLVED** (Session 55+) — `family_id` cross-family scoping |
 
 **BearDog** (reported by: hotSpring, healthSpring, neuralSpring, ludoSpring)
 
@@ -1446,8 +1446,8 @@ gaps moved to RESOLVED. NestGate needs more time (no new commits).
 | ~~Medium~~ | ~~Multi-stage ML pipeline `shader.compile.wgsl`~~ | ~~coralReef~~ | **RESOLVED** — 6 end-to-end pipeline composition tests, CompilationInfo IPC |
 | ~~Low~~ | ~~Signed capability announcements~~ | ~~BearDog~~ | **RESOLVED** — Wave 45: SA-01, Ed25519 signed attestation |
 | ~~Low~~ | ~~`plasma_dispersion` feature-gate bug~~ | ~~barraCuda~~ | **RESOLVED** — Sprint 40: corrected to dual feature gate |
-| Medium | `storage.retrieve` for large/streaming tensors | NestGate | OPEN |
-| Medium | Cross-spring persistent storage IPC | NestGate | OPEN |
+| ~~Medium~~ | ~~`storage.retrieve` for large/streaming tensors~~ | ~~NestGate~~ | **RESOLVED** (Session 43p) — 5 streaming methods (`store_stream`, `store_stream_chunk`, `retrieve_stream`, `retrieve_stream_chunk`, `object.size`) implemented and registered |
+| ~~Medium~~ | ~~Cross-spring persistent storage IPC~~ | ~~NestGate~~ | **RESOLVED** (Session 55+) — `family_id` parameter on all storage calls enables cross-family scoping; namespace isolation complete |
 | ~~Medium~~ | ~~`TensorSession`/`BatchGuard` adoption by springs~~ | ~~barraCuda~~ | **RESOLVED** — Sprint 40: renamed, migration guide published in `BREAKING_CHANGES.md` (§TensorSession/BatchGuard Migration Guide). `tensor.batch.submit` IPC method wired (Sprint 42). Spring-side adoption is coordination work |
 | Low | 29 shader absorption candidates | barraCuda | neuralSpring pipeline (they submit PRs per shader) |
 | ~~Low~~ | ~~RAWR GPU kernel (CPU-only)~~ | ~~barraCuda~~ | **RESOLVED** — `RawrWeightedMeanGpu` + `rawr_weighted_mean_f64.wgsl` GPU shader already exist in `barracuda/src/ops/`. CPU `rawr_mean` also available in `stats/bootstrap.rs`. Both paths working |

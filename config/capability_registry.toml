@@ -499,9 +499,11 @@ methods = [
     "storage.retrieve_blob",
     "storage.retrieve_range",
     "storage.retrieve_stream",
+    "storage.retrieve_stream_chunk",
     "storage.store",
     "storage.store_blob",
     "storage.store_stream",
+    "storage.store_stream_chunk",
 ]
 
 [secrets]
