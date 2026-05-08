@@ -18,7 +18,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `auth.check`, `auth.mode`, `auth.peer_info` — new introspection methods
   - `guidestone/layers/btsp.rs` — Layer 1.6 validation: method gate wiring, mode, whitelist
   - `tools/check_method_gate.sh` — CI validator (advisory-only)
-- **Capability registry expansion** — 290 → 383 registered methods across 82 domains.
+- **Capability registry expansion** — 290 → 384 registered methods across 82 domains.
   New domains: `content.*` (NestGate CAS), `viz.*` (petalTongue), `beacon.*`/`lineage.*`/`tls.*`
   (BearDog), `math.*`/`rng.*` (barraCuda), `ionic.*`/`tools.*` (primalSpring), `auth.*`
   (primalSpring gate introspection), plus `crypto.did_from_key`, `network.beacon_exchange`,
@@ -61,11 +61,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Ed25519-signed ionic tokens with scope patterns, expiry, JTI. **JH-1 RESOLVED**.
 - **barraCuda Sprint 55** (GAP-11 closure): `ml.mlp_train` (Path A, SGD backprop) +
   6 `nautilus.*` session methods (Path B, server-side state). **GAP-11 FULLY CLOSED (18/18)**.
-- Registry expanded 369 → 383 (+ionic tokens, +nautilus, +mlp_train, +ode.step, +esn_predict).
+- Registry expanded 369 → 384 (+ionic tokens, +nautilus, +mlp_train, +ode.step, +esn_predict,
+  +streaming chunks, +composition.reload).
+- **biomeOS v3.47** (JH-2 + JH-3): `ResourceEnvelope` parsing + method_allowlist enforcement at
+  gate. `composition.reload` wired (JH-3 **RESOLVED**). 7,911 tests.
+- **ToadStool S231** (JH-2): `enforce_envelope` on `compute.dispatch.submit` — `mem_mb` check
+  (`-32004 RESOURCE_EXHAUSTED`), method_allowlist at gate.
+- **rhizoCrypt S63**: DID semantic alignment — `signer_did`/`attester_did` type rename with
+  wire compat `#[serde(rename)]`. DID gap **RESOLVED**.
 
 ### Metrics
 - **666 tests** (618 passed + 48 ignored), **0 clippy warnings**, **0 primal drift**.
-- **211/211** source method strings validated, **383** registered, **353** graph refs checked.
+- **211/211** source method strings validated, **384** registered, **353** graph refs checked.
 - **85 experiments**, **74 deploy graphs**, **18 checksummed files**.
 - **Zero DEBT/TODO/FIXME/HACK markers** in production code.
 

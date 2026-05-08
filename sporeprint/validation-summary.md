@@ -1,6 +1,6 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 666 tests, 85 experiments, 383 capabilities, JH-0 13/13, JH-1 resolved, GAP-11 closed, zero DEBT"
+description = "Meta-validation orchestrator — 666 tests, 85 experiments, 384 capabilities, JH-0 13/13, JH-1 resolved, GAP-11 closed, zero DEBT"
 date = 2026-05-08
 
 [taxonomies]
@@ -15,7 +15,7 @@ springs = ["primalspring"]
 - **13 deploy graphs** validated (74 total nodes, 5 bond types)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`
 - **JH-0 ADOPTED** (13/13 primals), **JH-1 RESOLVED** (ionic tokens), **GAP-11 CLOSED** (18/18 methods)
-- **383 registered capability methods** (including `auth.*`, ionic tokens, `nautilus.*`)
+- **384 registered capability methods** (including `auth.*`, ionic tokens, `nautilus.*`)
 - **Zero DEBT markers**, zero unsafe blocks (`SeedConfig` + `OnceLock`)
 - **5-tier discovery hierarchy** validated across all primals
 

@@ -66,6 +66,7 @@ methods = [
 owner = "primalspring"
 methods = [
     "composition.full_health",
+    "composition.reload",  # biomeOS JH-3: hot-swap single primal
     "composition.gaming_niche_health",
     "composition.nest_health",
     "composition.nest_viz_health",
