@@ -66,12 +66,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   +security.audit_log).
 - **BearDog W97** (JH-4): `auth.issue_session` (purpose presets, TTL hours). Cross-family
   contract signing: `crypto.contract.propose/countersign/verify`. 14,883+ tests. **JH-4 RESOLVED**.
-- **skunkBat** (JH-5 Phase 1): `AuditLog` ring buffer (1024 events), `security.audit_log` RPC
-  (cursor-based polling). Gate events recorded automatically. 362 tests.
-- **biomeOS v3.47** (JH-2 + JH-3): `ResourceEnvelope` parsing + method_allowlist enforcement at
-  gate. `composition.reload` wired (JH-3 **RESOLVED**). 7,911 tests.
-- **ToadStool S231** (JH-2): `enforce_envelope` on `compute.dispatch.submit` — `mem_mb` check
-  (`-32004 RESOURCE_EXHAUSTED`), method_allowlist at gate.
+- **skunkBat** (JH-5 Phase 2): All 7 event kinds instrumented (gate, threat, defense, BTSP,
+  lifecycle). `capabilities.list` L3 fixed. 363 tests. Local audit complete.
+- **biomeOS v3.48** (JH-2 complete): `timeout_ms` enforced on forwarding, `_resource_envelope`
+  forwarded to downstream. **JH-2 RESOLVED**. 7,919 tests.
+- **ToadStool S232** (JH-2 complete): Full envelope enforcement (`mem_mb`, `cpu_cores`,
+  `max_timeout_ms`) on all dispatch paths incl. pipeline stages + `shader.dispatch`.
+  `CallerContext` propagated through pipeline. `-32004 RESOURCE_EXHAUSTED`. **JH-2 RESOLVED**.
 - **rhizoCrypt S63**: DID semantic alignment — `signer_did`/`attester_did` type rename with
   wire compat `#[serde(rename)]`. DID gap **RESOLVED**.
 
