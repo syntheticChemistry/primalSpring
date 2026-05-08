@@ -8,7 +8,7 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 662 (614 passed + 48 ignored; unit + integration + doc-tests + proptest) |
+| **Tests** | 666 (618 passed + 48 ignored; unit + integration + doc-tests + proptest) |
 | **Experiments** | 85 (19 tracks) |
 | **Deploy Graphs** | 74 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 1 composition + 13 root + 12 cell graphs + 4 desktop app graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
@@ -17,7 +17,7 @@
 | **Provenance** | All 85 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
 | **guideStone** | Level 4 — **live NUCLEUS** (13/13 BTSP authenticated, BTSP alias routing + flex key resolution shipped), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 8 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
-| **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` (allow-listed for `std::env::set_var` in Rust 2024) |
+| **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` — zero unsafe blocks (SeedConfig + OnceLock replaced `env::set_var`) |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
 ---

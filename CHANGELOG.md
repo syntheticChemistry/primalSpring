@@ -40,10 +40,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Guidestone evolved: Layer 1.6 (Method Gate) added after Layer 1.5 (BTSP Escalation).
 - Version bumped to **0.9.25**.
 
+### Fixed
+- **Zero unsafe code** — `SeedConfig` + `OnceLock` in `env_keys.rs` replaces
+  `unsafe { env::set_var }`. All 8 library reader sites migrated to
+  `resolve_family_id()` / `resolve_family_seed()`. The `#[expect(unsafe_code)]`
+  annotation and last `unsafe` block eliminated from guidestone `main.rs`.
+- PT-09 (petalTongue BTSP Phase 2) and PT-13 (NestGate CAS backend) marked RESOLVED
+  in PRIMAL_GAPS.md per petalTongue v1.6.6 handoff.
+
 ### Metrics
-- **662 tests** (614 passed + 48 ignored), **0 clippy warnings**, **0 primal drift**.
-- **208/208** source method strings validated, **369** registered, **353** graph refs checked.
+- **666 tests** (618 passed + 48 ignored), **0 clippy warnings**, **0 primal drift**.
+- **211/211** source method strings validated, **369** registered, **353** graph refs checked.
 - **85 experiments**, **74 deploy graphs**, **18 checksummed files**.
+- **Zero DEBT/TODO/FIXME/HACK markers** in production code.
 
 ## [Unreleased] — Phase 59: Foundation Absorption + Security Hardening + projectNUCLEUS Phase 2a (2026-05-06)
 

@@ -20,8 +20,9 @@ vulnerability, please report it responsibly:
 
 ## Security Posture
 
-- **Zero unsafe code**: `#![deny(unsafe_code)]` at workspace level (allow-listed
-  only for `std::env::set_var` in Rust 2024 where required by the entropy bootstrap)
+- **Zero unsafe code**: `#![deny(unsafe_code)]` at workspace level with zero
+  allow-listed exceptions. `SeedConfig` + `OnceLock` replaced `env::set_var`
+  (Rust 2024 marks it `unsafe`) — no `unsafe` blocks remain in any binary
 - **Zero C dependencies**: enforced by `deny.toml` (ecoBin compliant)
 - **No network listeners by default**: the JSON-RPC server binds to Unix
   domain sockets by default; TCP is available for cross-gate and mobile
@@ -39,6 +40,10 @@ vulnerability, please report it responsibly:
   before any IPC
 - **Entropy hierarchy**: machine-level mito tier (portable/clonable) for CI
   and automated validation; nuclear tier (future) for sovereign identity
+- **Method gate (JH-0)**: pre-dispatch capability authorization on JSON-RPC
+  dispatchers. Public methods (health, identity, capabilities) are exempt;
+  all other methods require a capability token when enforcement is active.
+  Default: `Permissive` (log-only). See `wateringHole/METHOD_GATE_STANDARD.md`
 
 ## Dependency Auditing
 

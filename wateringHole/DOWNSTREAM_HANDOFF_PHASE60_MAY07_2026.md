@@ -8,7 +8,7 @@
 
 ## What Springs Should Absorb
 
-### 1. Capability Registry (366 methods, 50+ domains)
+### 1. Capability Registry (369 methods, 50+ domains)
 
 `config/capability_registry.toml` is the canonical source of truth for all JSON-RPC
 method strings in the ecosystem. Springs should validate their method strings against it.
@@ -107,9 +107,9 @@ Push to main — `notify-sporeprint.yml` fires automatically.
 | BTSP Phase 3 | 13/13 FULL AEAD |
 | Localhost default | 13/13 |
 | Capability wire standard | 13/13 L2+ |
-| Registered methods | 366 |
+| Registered methods | 369 |
 | Open upstream gaps | 0 (P1), 2 (P2), 6 (P3) |
-| primalSpring tests | 662 (0 failures) |
+| primalSpring tests | 666 (618 passed + 48 ignored, 0 failures) |
 | Clippy warnings | 0 |
 
 ## Pull

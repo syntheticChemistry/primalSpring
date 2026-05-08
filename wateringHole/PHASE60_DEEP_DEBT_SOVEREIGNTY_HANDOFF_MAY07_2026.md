@@ -30,7 +30,7 @@ and ready for downstream handoff.
    construction for graph validation warnings.
 8. **Experiment refactoring** — exp096 (1352L→547L) and exp105 (1327L→510L) extracted
    into phase modules. Both under 800L threshold.
-9. **Method string validation** — 208/208 source strings, 366 registered methods,
+9. **Method string validation** — 211/211 source strings, 369 registered methods,
    353 graph refs checked with 0 primal drift.
 
 ## Upstream Sovereignty Absorption (14/14 gaps resolved)
@@ -52,7 +52,7 @@ All primals responded to our audit blurbs and shipped fixes:
 
 | Metric | Before | After |
 |--------|--------|-------|
-| Registered methods | 290 | 366 |
+| Registered methods | 290 | 369 |
 | Source strings validated | 208/208 | 208/208 |
 | Graph refs checked | 217 drift | 0 primal drift (91 spring-domain advisory) |
 | Domains | ~35 | 50+ |
@@ -71,7 +71,7 @@ New domains: `content.*`, `viz.*`, `beacon.*`, `lineage.*`, `tls.*`, `math.*`,
 
 ## Validation
 
-- **662 tests** (614 passed + 48 ignored), 0 failed
+- **666 tests** (618 passed + 48 ignored), 0 failed
 - **0 clippy warnings** (pedantic + nursery)
 - **cargo check --workspace** clean
 - **208/208** source method strings in registry

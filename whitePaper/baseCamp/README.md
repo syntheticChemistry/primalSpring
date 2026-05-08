@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: May 7, 2026
-**Status**: Phase 60 — v0.9.25 — 85 experiments (19 tracks), 662 tests, 74 deploy graphs, **366 registered capability methods** across 50+ domains, **All 14 upstream sovereignty gaps resolved** (PT-1→PT-5 petalTongue, NG-1→NG-4 NestGate, RP-1→RP-5 biomeOS/LoamSpine/BearDog, PG-60 rhizoCrypt, PG-62 toadStool), **Deep debt evolution** (binary modularization, probe cache, profile registry, blake3 pure Rust, 2 experiment refactors), **Graph validator** with spring-domain exclusion (0 primal drift, 91 advisory), **Content-addressed storage** (NestGate 8 new methods), **RootPulse workflow** fully executable (6/6 phases), **Desktop NUCLEUS live** (13 primals, 13/13 healthy), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **genomeBin v5.1** (46 binaries / 6 targets), **biomeOS Neural API** (605+ capabilities, semantic routing, graph execution, standalone executor)
+**Status**: Phase 60 — v0.9.25 — 85 experiments (19 tracks), 666 tests, 74 deploy graphs, **369 registered capability methods** across 50+ domains, **Security gate (JH-0)**: `MethodGate` pattern wired with Permissive/Enforced modes + `auth.*` introspection methods + guidestone Layer 1.6 validation + CI tool, **Zero DEBT markers / zero unsafe blocks** (`SeedConfig` + `OnceLock` replaced `env::set_var`), **All 14 upstream sovereignty gaps resolved** (PT-1→PT-5, NG-1→NG-4, RP-1→RP-5, PG-60, PG-62), **Deep debt evolution** (binary modularization, probe cache, profile registry, blake3 pure Rust, 2 experiment refactors), **Graph validator** with spring-domain exclusion (0 primal drift, 91 advisory), **Content-addressed storage** (NestGate 8 new methods), **RootPulse workflow** fully executable (6/6 phases), **Desktop NUCLEUS live** (13 primals, 13/13 healthy), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **genomeBin v5.1** (46 binaries / 6 targets), **biomeOS Neural API** (605+ capabilities, semantic routing, graph execution, standalone executor)
 
 ---
 
@@ -59,12 +59,12 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 18 | Desktop Substrate | exp099–exp106 | Does the full desktop stack work? Agentic loop, MCP tools, AI triage, storytelling, ludoSpring IPC, provenance replay, **The Rhizome roguelike**, **micro-desktop shell** |
 | 19 | Foundation Validation | exp107 | Does the foundation sediment pipeline run through NUCLEUS via Rust IPC? 8-phase validation (structural → discovery → health → provenance → storage → compute → ledger → attribution) |
 
-## Current State (v0.9.24)
+## Current State (v0.9.25)
 
 | Metric | Value |
 |--------|-------|
 | Experiments | 85 (19 tracks) |
-| Total tests | **661** (613 passed + 48 ignored; unit + integration + doc-tests + proptest) |
+| Total tests | **666** (618 passed + 48 ignored; unit + integration + doc-tests + proptest) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |

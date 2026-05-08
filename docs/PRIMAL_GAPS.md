@@ -56,7 +56,7 @@ Each entry links to the composition that exposes it and proposes a fix path.
 >   Health probes bypass the gate. No more silent timeouts.
 > - **toadStool PG-62**: RESOLVED. `health.liveness` fast-path returns `{"status":"starting"}` during
 >   init. Timeout constants documented: dispatch 5s, workload 300s, TCP idle 300s. All overridable.
-> - **primalSpring actions**: Registry expanded to 366 methods (+76 this round). `content.*` (8),
+> - **primalSpring actions**: Registry expanded to 369 methods (+79 this round). `content.*` (8), `auth.*` (3),
 >   `crypto.did_from_key`, `network.beacon_exchange`, `storage.list_blobs`/`storage.blob_exists` absorbed.
 >   Graph validator upgraded with spring-domain exclusion (91 advisory, 0 primal drift).
 >
@@ -798,12 +798,12 @@ in `infra/wateringHole/` for the full water-cycle model.
 | PT-06 | `callback_method` poll-only dispatch | **RESOLVED** | Sprint 5 — `UnixSocketServer::new()` now spawns push delivery and assigns `callback_tx` on `RpcHandlers` at startup. `callback_sender()` exposed for UI consumers. Test asserts wiring on construction. Intentionally push-free in non-server modes (headless/TUI/web) |
 | PT-07 | No external event source in server mode | **RESOLVED** — periodic discovery refresh wired |
 | PT-08 | No BTSP Phase 1 (`BIOMEOS_INSECURE` guard) | **RESOLVED** ↑ — `btsp.rs` module: `validate_insecure_guard()`, family-scoped sockets, domain symlinks |
-| PT-09 | BTSP Phase 2 (handshake integration) | Low | Phase 2 stub — `handshake_policy` logs warning, connections accepted without handshake |
+| PT-09 | BTSP Phase 2 (handshake integration) | Low | **RESOLVED** (May 7, v1.6.6) — full BTSP Phase 2 handshake wired per petalTongue Phase 60 handoff |
 | PT-10 | `--socket` CLI flag missing | **RESOLVED** | April 10 — `--socket` flag added to `Commands::Server`, plumbed via `UnixSocketServer::with_socket_path()` |
 | PT-11 | Only `visualization` domain symlink | **RESOLVED** | April 10 — now creates `visualization.sock`, `ui.sock`, `interaction.sock` symlinks (create+drop) |
 
 | PT-12 | `web` mode needs catch-all static file route (`ServeDir` fallback) | High | **RESOLVED** (May 7, v1.6.6) — `--docroot` CLI flag + `PETALTONGUE_DOCROOT` env. `tower_http::ServeDir` fallback with `append_index_html_on_directories(true)`. API routes take precedence. **PT-1.** |
-| PT-13 | No NestGate backend integration for content-addressed serving | High | Open — `WebServeConfig.backend` field exists (`"filesystem"` default), NestGate integration deferred. Filesystem `--docroot` is the current path. **PT-2.** |
+| PT-13 | No NestGate backend integration for content-addressed serving | High | **RESOLVED** (May 7, v1.6.6) — NestGate CAS backend integration wired per petalTongue Phase 60 handoff. **PT-2.** |
 | PT-14 | `petaltongue_web.toml` config schema missing | Medium | **RESOLVED** (May 7, v1.6.6) — `WebServeConfig` struct: `docroot`, `backend`, `index_file`, `cache_ttl_secs`. Config `[web]` section + env + CLI override chain. **PT-3.** |
 | PT-15 | Deploy mode alignment — NUCLEUS needs both HTTP + IPC | Medium | **RESOLVED** (May 7, v1.6.6) — `--ipc` flag co-starts UDS JSON-RPC alongside HTTP. Optional `--ipc-port` for TCP. **PT-4.** |
 | PT-16 | `--workers` flag accepted but not applied | Low | **RESOLVED** (May 7, v1.6.6) — wired to `tokio::runtime::Builder::worker_threads(n)`. **PT-5.** |
@@ -1157,8 +1157,8 @@ SB-03: **RESOLVED** (Wave 135 — `sled` fully eliminated from workspace and Car
 Discovery abstraction layer refactored (adapters enum dispatch). `deny.toml` hardened.
 
 **petalTongue** — PT-10 `--socket` **RESOLVED**, PT-11 domain symlinks **RESOLVED** (`ui`, `interaction`, `visualization`).
-Remaining: PT-04 HTML export (partial), PT-06 push delivery (`callback_tx` not activated), PT-09 BTSP Phase 2 stub.
-**Effort: low-medium. Functional for NUCLEUS.**
+Remaining: PT-04 HTML export (partial). PT-06 RESOLVED, PT-09 RESOLVED (Phase 60), PT-13 RESOLVED (Phase 60).
+**Effort: low. Functional for NUCLEUS.**
 
 **NestGate** — aarch64-musl segfault **RESOLVED** (static-PIE + musl ≤1.2.2 root cause;
 `-C relocation-model=static` in `.cargo/config.toml` for both x86_64 and aarch64 targets).
@@ -1280,7 +1280,7 @@ See: `wateringHole/handoffs/PROJECTNUCLEUS_MULTIUSER_HARDENING_HANDOFF_MAY07_202
 **Stadial Debt** (blocks parity gate — must resolve before next interstadial):
 3. **SB-02** — `ring` in Songbird `Cargo.lock` (lockfile ghost only — not compiled; blocked on upstream `rustls-webpki` release)
 4. ~~**SB-03**~~ **RESOLVED** (Wave 135 — `sled` fully eliminated from workspace and Cargo.lock)
-5. **PT-09** — petalTongue Phase 2 stub (warn-only, no enforcement)
+5. ~~**PT-09**~~ **RESOLVED** (May 7, v1.6.6 — BTSP Phase 2 wired)
 6. ~~**PT-DOMAINS**~~ **RESOLVED** (April 10 — `ui.sock` + `interaction.sock` symlinks added)
 7. ~~**CR-03**~~ **RESOLVED** (Iter 78 — `guard_connection()` with real BearDog RPC, degraded when absent)
 8. ~~**BC-GPU-PANIC (BC-05)**~~ **RESOLVED** (Sprint 39 — `Auto::new()` → `Err`, health `Degraded`)
