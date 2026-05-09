@@ -17,6 +17,10 @@ use crate::primal_names;
 
 mod probes;
 
+#[allow(
+    deprecated,
+    reason = "re-exports deprecated probes for backward compatibility"
+)]
 pub use probes::{
     PrimalHealth, SubstrateHealth, check_capability_health, check_primal_health, health_check,
     health_check_within_tolerance, probe_primal, probe_primal_at_socket, probe_substrate,
@@ -167,6 +171,14 @@ impl AtomicType {
 /// It asks the Neural API (or filesystem) who provides each capability,
 /// then probes whatever primal responds.
 #[must_use]
+#[deprecated(
+    since = "0.9.25",
+    note = "use CompositionContext::from_live_discovery_with_fallback() for live NUCLEUS validation"
+)]
+#[allow(
+    deprecated,
+    reason = "deprecated validation function calls other deprecated coordination APIs"
+)]
 pub fn validate_composition_by_capability(atomic: AtomicType) -> CompositionResult {
     let capabilities = atomic.required_capabilities();
     let results: Vec<_> = capabilities
@@ -178,15 +190,14 @@ pub fn validate_composition_by_capability(atomic: AtomicType) -> CompositionResu
                 .unwrap_or_else(|| format!("capability:{cap}"));
             if let Some(ref socket) = disc.socket {
                 let start = Instant::now();
-                let (health_ok, caps) = PrimalClient::connect(socket, &primal_name)
-                    .map_or_else(
-                        |_| (false, Vec::new()),
-                        |mut c: PrimalClient| {
-                            let h = c.health_check().unwrap_or(false);
-                            let caps = extract_capability_names(c.capabilities().ok());
-                            (h, caps)
-                        },
-                    );
+                let (health_ok, caps) = PrimalClient::connect(socket, &primal_name).map_or_else(
+                    |_| (false, Vec::new()),
+                    |mut c: PrimalClient| {
+                        let h = c.health_check().unwrap_or(false);
+                        let caps = extract_capability_names(c.capabilities().ok());
+                        (h, caps)
+                    },
+                );
                 PrimalHealth {
                     name: primal_name,
                     socket_found: true,
@@ -242,10 +253,17 @@ pub struct CompositionResult {
     pub total_capabilities: usize,
 }
 
-
 /// Validate an entire atomic composition by probing all its required primals
 /// and the biomeOS Neural API substrate.
 #[must_use]
+#[deprecated(
+    since = "0.9.25",
+    note = "use CompositionContext::from_live_discovery_with_fallback() for live NUCLEUS validation"
+)]
+#[allow(
+    deprecated,
+    reason = "deprecated validation function calls other deprecated coordination APIs"
+)]
 pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
     let required = atomic.required_primals();
     let discovery = discover_for(required);
@@ -272,6 +290,10 @@ pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
 use probes::extract_capability_names;
 
 #[cfg(test)]
+#[allow(
+    deprecated,
+    reason = "tests exercise deprecated coordination APIs for backward compatibility"
+)]
 mod tests {
     use super::*;
 

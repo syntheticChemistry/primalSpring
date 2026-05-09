@@ -794,6 +794,19 @@ methods = [
     "webb.scene.current",
 ]
 
+[defense]
+owner = "skunkbat"
+methods = [
+    "defense.audit",
+    "defense.events",
+    "defense.log",
+    "defense.policy",
+    "defense.status",
+    "recon.scan",
+    "threat.assess",
+    "threat.mitigate",
+]
+
 [biomeos]
 owner = "biomeos"
 methods = [

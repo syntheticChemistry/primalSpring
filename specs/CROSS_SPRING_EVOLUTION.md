@@ -1,7 +1,7 @@
 # primalSpring — Cross-Spring Evolution
 
 **Date**: May 2026
-**Status**: Phase 60 — 13/13 primals at zero debt, JH-0 MethodGate adopted (13/13), BTSP Phase 3 (13/13), ionic tokens live. 85 experiments (19 tracks), 74 deploy graphs, 666 tests. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing). 389 registered capability methods.
+**Status**: Phase 60 — 13/13 primals at zero debt, JH-0 MethodGate adopted (13/13), BTSP Phase 3 (13/13), ionic tokens live. 89 experiments (20 tracks), 74 deploy graphs, 680 workspace tests (632 passed + 48 ignored; 664 package tests: 616 passed + 48 ignored). genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing). 389 registered capability methods.
 
 ---
 

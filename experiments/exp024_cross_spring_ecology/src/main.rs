@@ -1,63 +1,52 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp024: Cross-Spring Ecology — validates `cross_spring_ecology.toml` with airSpring + wetSpring data.
+//! Exp024: Cross-spring ecology — EmergentSystem graphs and composition discovery.
 
+use primalspring::composition::CompositionContext;
 use primalspring::emergent::EmergentSystem;
-use primalspring::ipc::discover::discover_primal;
 use primalspring::validation::ValidationResult;
+
+fn phase_structural(v: &mut ValidationResult) {
+    let graphs = EmergentSystem::CrossSpringEcology.required_graphs();
+    v.check_bool(
+        "cross_spring_ecology_graphs_non_empty",
+        !graphs.is_empty(),
+        &format!("EmergentSystem::CrossSpringEcology.required_graphs() is non-empty: {graphs:?}"),
+    );
+}
+
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    let caps = ctx.available_capabilities();
+    let joined = caps.join(", ");
+    v.check_bool(
+        "discover_airspring",
+        caps.iter().any(|c| c.contains("air")),
+        &format!("airspring is a spring (not a primal); capabilities: {joined}"),
+    );
+    v.check_bool(
+        "discover_wetspring",
+        caps.iter().any(|c| c.contains("wet")),
+        &format!("wetspring is a spring (not a primal); capabilities: {joined}"),
+    );
+    v.check_bool(
+        "discover_neuralspring",
+        caps.iter().any(|c| c.contains("neural")),
+        &format!("neuralspring is a spring (not a primal); capabilities: {joined}"),
+    );
+}
 
 fn main() {
     ValidationResult::new("primalSpring Exp024 — Cross-Spring Ecology")
-        .with_provenance("exp024_cross_spring_ecology", "2026-03-24")
+        .with_provenance("exp024_cross_spring_ecology", "2026-05-09")
         .run(
             "primalSpring Exp024: cross_spring_ecology.toml with airSpring + wetSpring Data",
             |v| {
-                let graphs = EmergentSystem::CrossSpringEcology.required_graphs();
-                v.check_bool(
-                    "cross_spring_ecology_graphs_non_empty",
-                    !graphs.is_empty(),
-                    &format!("EmergentSystem::CrossSpringEcology.required_graphs() is non-empty: {graphs:?}"),
-                );
+                v.section("Phase 1: Structural");
+                phase_structural(v);
 
-                let airspring = discover_primal("airspring");
-                v.check_bool(
-                    "discover_airspring",
-                    airspring.primal == "airspring",
-                    &format!(
-                        "discover airspring (cross-spring ecology): socket {}",
-                        if airspring.socket.is_some() {
-                            "found"
-                        } else {
-                            "not found"
-                        }
-                    ),
-                );
-                let wetspring = discover_primal("wetspring");
-                v.check_bool(
-                    "discover_wetspring",
-                    wetspring.primal == "wetspring",
-                    &format!(
-                        "discover wetspring (cross-spring ecology): socket {}",
-                        if wetspring.socket.is_some() {
-                            "found"
-                        } else {
-                            "not found"
-                        }
-                    ),
-                );
-                let neuralspring = discover_primal("neuralspring");
-                v.check_bool(
-                    "discover_neuralspring",
-                    neuralspring.primal == "neuralspring",
-                    &format!(
-                        "discover neuralspring (cross-spring ecology): socket {}",
-                        if neuralspring.socket.is_some() {
-                            "found"
-                        } else {
-                            "not found"
-                        }
-                    ),
-                );
+                v.section("Phase 2: Composition Discovery");
+                let ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_discovery(v, &ctx);
 
                 v.check_skip(
                     "cross_spring_pipeline",

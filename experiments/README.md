@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**85 experiments across 19 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem.
+**89 experiments across 20 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25).
 
 ---
 
@@ -19,18 +19,19 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 85 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 89 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 85 experiments. All 85 use centralized library helpers for TCP RPC,
-method name constants (`ipc::methods`), and primal name constants (`primal_names`).
+across all 89 experiments. All 89 use centralized library helpers, primal name
+constants (`primal_names`), and the modern `CompositionContext` for capability
+discovery and IPC.
 
 ## Running
 
 ```bash
-# Run all 85 experiments via meta-validator
+# Run all 89 experiments via meta-validator
 cargo run --release --bin validate_all
 
 # Run a single experiment (use -p with the package name)
@@ -63,12 +64,24 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 17 | Cross-Architecture + Cellular Deployment | exp095–096, exp098 | **Live validated** (proto-nucleate template, Pixel cross-arch bonding via biomeOS Neural API `--tcp-only`, cellular deployment from cell graphs) |
 | 18 | Desktop Substrate | exp099–exp106 | **Live validated** (agentic loop, MCP tools, AI triage, storytelling session, ludoSpring IPC, provenance replay, The Rhizome micro-game 8/13, micro-desktop shell 2/4 + 11/12 health bar) |
 | 19 | Foundation Validation | exp107 | **Structural + IPC** (8-phase sediment pipeline: structural → discovery → health → provenance → storage → compute → ledger → attribution; validates foundation composition through NUCLEUS primals via Rust IPC) |
+| 20 | Later-Term Evolution | exp108–111 | **IPC** (token federation, composition lifecycle, audit pipeline, gate routing — pressure-tests JH-11, JH-3, JH-5 against upstream primals) |
 
 ## Experiment Status Key
 
-- **IPC wired**: Uses real `probe_primal()` with Unix socket JSON-RPC 2.0
-- **Discovery wired**: Uses `discover_primal()` with 6-tier fallback; skips honestly if primal unavailable
+- **IPC wired**: Uses `CompositionContext` for live IPC (Unix socket JSON-RPC 2.0); legacy `probe_primal()` remains available only where parity experiments still exercise deprecated APIs (see Phase 60)
+- **Discovery wired**: Capability-first discovery via `CompositionContext::from_live_discovery_with_fallback()` with 5-tier escalation; skips honestly if primal unavailable
 - **Structural**: Validates graph structure, deploy patterns, or composition logic without requiring live primals
+
+## UniBin eukaryotic transition
+
+Twenty absorbed experiment crates are now **validation scenarios** under
+`ecoPrimal/src/validation/scenarios/` and are run through the UniBin binary
+`primalspring_unibin` — e.g. `cargo run -p primalspring --bin primalspring_unibin -- validate`
+(with `certify`, `serve`, `status`, `version` as sibling subcommands).
+The **prokaryotic-era** sources for those 20 experiments are preserved under
+`fossilRecord/experiments_prokaryotic_may2026/`; the living experiment crates
+remain in the workspace during the transition. See that directory’s README for
+the experiment → scenario module mapping.
 
 ## Phase Progression
 
@@ -123,6 +136,8 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 56 | Desktop Substrate + The Rhizome | 8 experiments (exp099–exp106): agentic loop, MCP, AI triage, storytelling, ludoSpring IPC, provenance replay, **The Rhizome** roguelike micro-game, **micro-desktop shell**. 4 desktop app deploy graphs. `desktop_nucleus.sh` symlink fix. 23 gaps documented. Provenance trio schemas fully resolved. |
 | 57 | BTSP Phase 3 Convergence + NUCLEUS Validation | 13/13 FULL AEAD converged (loamSpine, coralReef, NestGate shipped Phase 3). Live NUCLEUS validation via plasmidBin: **157/170 guidestone** (bonding ALL PASS, cellular 69/70). Phase 3 interop gap discovered (server advertise→transport switch). `CRYPTO_CONSUMPTION_HIERARCHY.md` published. |
 | 58 | skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub | **skunkBat** wired as 13th NUCLEUS primal (meta-tier defense/recon, Tier 1 binaries). Guidestone fixes: BTSP alias routing (`resolve_btsp_socket`), flex key resolution for barraCuda, desktop cell health node, Squirrel reconnect-on-failed-probe. **plasmidBin CI hub** architecture documented (sole paid Actions repo, signing roadmap, distribution channels). 25+ files reconciled 12→13 primals. |
+| 59 | Later-Term Evolution | exp108–111 (token federation, composition lifecycle, audit pipeline, gate routing). JH-11 `TokenVerifier` trait + `BearDogVerifier`, `CompositionContext::call_authenticated`, stub primal harness, guidestone Layer 8 lifecycle. |
+| 60 | **Interstadial Rewire** | **All 89 experiments** rewired to modern `CompositionContext` pattern (v0.9.25). Old patterns (`discover_primal`, `PrimalClient`, `AtomicHarness`, `discover_by_capability`) replaced with `CompositionContext::from_live_discovery_with_fallback()` + `ctx.call()`. Pre-rewire sources fossilized in `fossilRecord/experiments_pre_interstadial_may2026/`. Zero clippy warnings, **680** workspace lib+integration tests (`664` in `primalspring` package) measured 2026-05-09. |
 
 ## Frozen Results (`results/`)
 
@@ -132,8 +147,8 @@ artifacts that notebooks load without requiring live primals.
 | File | Contents |
 |------|----------|
 | `composition_validation.json` | Deploy graph stats, bond types, structural checks, discovery tiers |
-| `test_suite_report.json` | Module-level test counts (613 tests), timings, categories |
-| `experiment_catalog.json` | All 85 experiments categorized by focus area, timeline |
+| `test_suite_report.json` | Module-level test counts (**664** `primalspring` lib+integration tests as of 2026-05-09), timings, categories |
+| `experiment_catalog.json` | All 89 experiments categorized by focus area, timeline |
 | `security_convergence.json` | BTSP Phase 3 state, PG-55–59 resolution, convergence timeline |
 | `cross_spring_matrix.json` | Spring × primal consumption, ecosystem flows, sporePrint readiness |
 | `benchmark_timing.json` | Compilation, guidestone, trio benchmarks, Rust vs Python estimates |
@@ -144,7 +159,7 @@ Regenerate after major validation changes. Notebooks in `../notebooks/` consume 
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 85 experiments use this):
+**Builder API** (preferred — all 89 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit
@@ -170,12 +185,14 @@ All experiments share the `ecoPrimal` library crate's validation module:
 Each experiment crate has:
 ```
 experiments/expNNN/
-├── Cargo.toml    # version 0.9.25 (workspace), depends on ecoPrimal
+├── Cargo.toml    # version 0.9.25, depends on ecoPrimal
 └── src/
     └── main.rs   # experiment binary
 ```
 
 All experiment crates inherit workspace lints (clippy pedantic+nursery, `deny(unsafe_code)`).
+All 89 experiments are at version 0.9.25 following the Interstadial rewire (May 9, 2026).
+Pre-rewire sources preserved in `fossilRecord/experiments_pre_interstadial_may2026/`.
 
 > **Numbering note**: exp097 is intentionally unassigned (reserved during Track 17 sprint,
 > never materialized). Numbering continues at exp098.

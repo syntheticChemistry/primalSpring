@@ -33,6 +33,10 @@ use super::spawn::{PrimalProcess, SocketNucleation, relay_output, wait_for_socke
 /// # Errors
 ///
 /// Returns [`LaunchError`] on binary-not-found, spawn failure, or socket timeout.
+#[deprecated(
+    since = "0.9.25",
+    note = "use plasmidBin ecoBin deployment via biomeOS instead of direct biomeOS spawning"
+)]
 pub fn spawn_biomeos(
     family_id: &str,
     nucleation: &SocketNucleation,

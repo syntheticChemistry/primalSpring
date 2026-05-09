@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: May 7, 2026
-**Status**: Phase 60 — v0.9.25 — 85 experiments (19 tracks), 666 tests, 74 deploy graphs, **389 registered capability methods** across 82 domains, **Security gate (JH-0)**: 13/13 primals adopted `MethodGate` pattern. **JH-1 RESOLVED**: BearDog ionic tokens (Ed25519-signed, scoped, expiry). **GAP-11 CLOSED** (18/18): barraCuda 71 methods incl. `nautilus.*` server sessions + `ml.mlp_train`. **Zero DEBT markers / zero unsafe blocks** (`SeedConfig` + `OnceLock` replaced `env::set_var`), **All 14 upstream sovereignty gaps resolved** (PT-1→PT-5, NG-1→NG-4, RP-1→RP-5, PG-60, PG-62), **Deep debt evolution** (binary modularization, probe cache, profile registry, blake3 pure Rust, 2 experiment refactors), **Graph validator** with spring-domain exclusion (0 primal drift, 91 advisory), **Content-addressed storage** (NestGate 8 new methods), **RootPulse workflow** fully executable (6/6 phases), **Desktop NUCLEUS live** (13 primals, 13/13 healthy), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **genomeBin v5.1** (46 binaries / 6 targets), **biomeOS Neural API** (605+ capabilities, semantic routing, graph execution, standalone executor)
+**Status**: Phase 60 — v0.9.25 — 89 experiments (20 tracks), 680 workspace tests (632 passed + 48 ignored; 664 package: 616 passed + 48 ignored), 74 deploy graphs, **389 registered capability methods** across 82 domains, **Security gate (JH-0)**: 13/13 primals adopted `MethodGate` pattern. **JH-1 RESOLVED**: BearDog ionic tokens (Ed25519-signed, scoped, expiry). **GAP-11 CLOSED** (18/18): barraCuda 71 methods incl. `nautilus.*` server sessions + `ml.mlp_train`. **Zero DEBT markers / zero unsafe blocks** (`SeedConfig` + `OnceLock` replaced `env::set_var`), **All 14 upstream sovereignty gaps resolved** (PT-1→PT-5, NG-1→NG-4, RP-1→RP-5, PG-60, PG-62), **Deep debt evolution** (binary modularization, probe cache, profile registry, blake3 pure Rust, 2 experiment refactors), **Graph validator** with spring-domain exclusion (0 primal drift, 91 advisory), **Content-addressed storage** (NestGate 8 new methods), **RootPulse workflow** fully executable (6/6 phases), **Desktop NUCLEUS live** (13 primals, 13/13 healthy), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **genomeBin v5.1** (46 binaries / 6 targets), **biomeOS Neural API** (605+ capabilities, semantic routing, graph execution, standalone executor)
 
 ---
 
@@ -63,8 +63,8 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 
 | Metric | Value |
 |--------|-------|
-| Experiments | 85 (19 tracks) |
-| Total tests | **666** (618 passed + 48 ignored; unit + integration + doc-tests + proptest) |
+| Experiments | 89 (20 tracks) |
+| Total tests | **680** workspace (632 passed + 48 ignored; unit + integration + doc-tests + proptest); **664** package (616 passed + 48 ignored) |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |
@@ -80,7 +80,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | Niche self-knowledge | `niche.rs` — 47 capabilities, semantic mappings, cost estimates |
 | MCP tools | 8 typed tools via `mcp.tools.list` for Squirrel AI |
 | Validation harness | Builder `.run()`, `check_bool`, `check_skip`, `check_or_skip`, `check_relative`, `check_abs_or_rel`, `with_provenance()`, `NdjsonSink` |
-| Provenance coverage | **100%** — all 85 experiments carry `with_provenance()` metadata |
+| Provenance coverage | **100%** — all 89 experiments carry `with_provenance()` metadata |
 | Dishonest scaffolding | 0 (all experiments use honest skip or real validation) |
 | Tower Atomic | **FULLY UTILIZED** — 41/41 gates (24 core + 17 full utilization) |
 | Nest Atomic | **VALIDATED** — 8/8 gates (nestgate storage, model cache) |

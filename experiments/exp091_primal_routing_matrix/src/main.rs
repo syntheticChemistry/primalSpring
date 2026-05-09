@@ -1,16 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! Exp091: Primal Routing Matrix — L0 validation of all 10 primal capability domains.
-//!
-//! Drives the `primal_routing_matrix.toml` sketch graph. For each of the 10
-//! capability domains, issues a `capability.call` through the Neural API and
-//! verifies that biomeOS routes to the correct provider primal.
-//!
-//! Particle model context: this is pre-atomic (L0). Individual particles
-//! before they form compositions. Each domain is tested independently.
-//!
-//! Environment:
-//!   `NEURAL_API_SOCKET` — biomeOS neural-api socket (auto-discovered)
+//! Exp091: Primal Routing Matrix
 
 use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
@@ -70,35 +59,48 @@ fn validate_domain(
     }
 }
 
+fn phase_neural_discovery(v: &mut ValidationResult) -> Option<NeuralBridge> {
+    v.section("Phase 1: Neural API discovery");
+    if let Some(b) = NeuralBridge::discover() {
+        v.check_bool("neural_api", true, "Neural API discovered");
+        Some(b)
+    } else {
+        v.check_bool("neural_api", false, "Neural API unreachable");
+        None
+    }
+}
+
+fn phase_l0_domain_routes(v: &mut ValidationResult, bridge: &NeuralBridge) {
+    v.section("Phase 2: L0 domain routes");
+    for &(domain, method, provider) in DOMAINS {
+        validate_domain(v, bridge, domain, method, provider);
+    }
+}
+
+fn phase_summary(v: &mut ValidationResult) {
+    v.section("Phase 3: Summary");
+    v.check_bool(
+        "routing_matrix_complete",
+        true,
+        &format!(
+            "Tested {}/{} capability domains",
+            DOMAINS.len(),
+            DOMAINS.len()
+        ),
+    );
+}
+
 fn main() {
     ValidationResult::new("primalSpring Exp091 — Primal Routing Matrix (L0)")
-        .with_provenance("exp091_primal_routing_matrix", "2026-04-07")
+        .with_provenance("exp091_primal_routing_matrix", "2026-05-09")
         .run(
             "primalSpring Exp091: L0 capability routing to all 10 primal domains",
             |v| {
-                v.section("Neural API Discovery");
-                let bridge = if let Some(b) = NeuralBridge::discover() {
-                    v.check_bool("neural_api", true, "Neural API discovered");
-                    b
-                } else {
-                    v.check_bool("neural_api", false, "Neural API unreachable");
+                let Some(bridge) = phase_neural_discovery(v) else {
                     return;
                 };
-
-                for &(domain, method, provider) in DOMAINS {
-                    validate_domain(v, &bridge, domain, method, provider);
-                }
-
-                v.section("Summary");
-                v.check_bool(
-                    "routing_matrix_complete",
-                    true,
-                    &format!(
-                        "Tested {}/{} capability domains",
-                        DOMAINS.len(),
-                        DOMAINS.len()
-                    ),
-                );
+                phase_l0_domain_routes(v, &bridge);
+                phase_summary(v);
             },
         );
 }

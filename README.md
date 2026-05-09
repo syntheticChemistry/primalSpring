@@ -8,15 +8,15 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 666 (618 passed + 48 ignored; unit + integration + doc-tests + proptest) |
-| **Experiments** | 85 (19 tracks) |
+| **Tests** | 680 (632 passed + 48 ignored; unit + integration + doc-tests + proptest) |
+| **Experiments** | 89 (20 tracks) — 20 absorbed as UniBin validation scenarios |
 | **Deploy Graphs** | 74 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 5 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 1 composition + 13 root + 12 cell graphs + 4 desktop app graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 85 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 89 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings (pedantic + nursery + cast discipline + unwrap/expect discipline) |
-| **guideStone** | Level 4 — **live NUCLEUS** (13/13 BTSP authenticated, BTSP alias routing + flex key resolution shipped), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 8 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
+| **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated, BTSP alias routing + flex key resolution shipped), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 8 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` — zero unsafe blocks (SeedConfig + OnceLock replaced `env::set_var`) |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -52,11 +52,14 @@ primalSpring/
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
-│   │   └── tolerances/            # Named latency and throughput bounds
+│   │   ├── tolerances/            # Named latency and throughput bounds
+│   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
+│   │   ├── validation/scenarios/  # 20 absorbed experiment scenarios (9 tracks)
 │   ├── src/bin/
-│   │   ├── primalspring_primal/   # UniBin: JSON-RPC 2.0 server with niche registration
-│   │   ├── primalspring_guidestone/ # guideStone: 9-layer composition certification (0–7 + 0.5 + 1.5)
-│   │   └── validate_all/          # Meta-validator: runs all 85 experiments
+│   │   ├── primalspring/          # UniBin: certify + validate + serve + status + version
+│   │   ├── primalspring_primal/   # Legacy RPC server (transitioning → primalspring serve)
+│   │   ├── primalspring_guidestone/ # Legacy certification (transitioning → primalspring certify)
+│   │   └── validate_all/          # Legacy meta-validator (transitioning → primalspring validate)
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
@@ -65,7 +68,7 @@ primalSpring/
 │       ├── server_ecosystem_genetics.rs  # Three-tier genetics (#[ignore])
 │       ├── server_ecosystem_compose.rs   # Nest/Node composition (#[ignore])
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
-├── experiments/                   # 85 validation experiments (19 tracks)
+├── experiments/                   # 89 validation experiments (20 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
 ├── graphs/                        # 74 deploy graph TOMLs (fragment-first composition)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
@@ -132,7 +135,7 @@ cargo test --workspace
 # Run live atomic tests (requires fetched binaries)
 cargo test --ignored
 
-# Run all 85 experiments (meta-validator)
+# Run all 89 experiments (meta-validator)
 cargo run --release --bin validate_all
 
 # Run exp001 with live primals (harness auto-starts them)
@@ -143,6 +146,23 @@ cargo run --bin primalspring_primal -- server
 
 # Show ecosystem status
 cargo run --bin primalspring_primal -- status
+
+# === UniBin (eukaryotic) ===
+# Run certification (absorbed guidestone)
+cargo run --bin primalspring_unibin -- certify
+
+# Run bare certification (no primals needed)
+cargo run --bin primalspring_unibin -- certify --bare
+
+# Run all validation scenarios (absorbed experiments)
+cargo run --bin primalspring_unibin -- validate
+
+# List available scenarios
+cargo run --bin primalspring_unibin -- validate --list
+
+# Filter by track or tier
+cargo run --bin primalspring_unibin -- validate --track atomic-composition
+cargo run --bin primalspring_unibin -- validate --tier rust
 ```
 
 ### Code coverage ([cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov))
@@ -365,7 +385,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of existing barraCuda WGSL shaders (826 kernels: matmul, attention, FFT, df64) compiled by coralReef and dispatched by toadStool.
 - **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
 - **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — modeling end-to-end data flow through primal compositions.
-- **13/13 critical experiments ALL PASS** — 85 total experiments across 19 tracks.
+- **13/13 critical experiments ALL PASS** — 89 total experiments across 19 tracks.
 - **46 cross-architecture binaries** (6 target triples, Tier 1 39/39) — genomeBin v5.1, zero C dependencies.
 
 ## Fragment-First Graph Consolidation (April 16, 2026)
@@ -443,6 +463,7 @@ and per-primal remediation plan (archived from March 2026 mobile deployment spik
 ## Docs
 
 - `wateringHole/README.md` — Outward-facing guidance index
+- `ARCHITECTURE.md` — UniBin cell model, two-tier validation, organelle map
 - `wateringHole/PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md` — v0.9.25 evolution handoff (primals, springs, NUCLEUS)
 - `wateringHole/CROSS_SPRING_PARITY_HANDOFF_MAY08_2026.md` — Cross-spring parity audit
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role

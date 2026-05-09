@@ -1,20 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp062: Tower Subsystem Sweep — probe songbird JSON-RPC methods via composition discovery.
 
-//! Exp062: Tower Subsystem Sweep — probe every songbird JSON-RPC method.
-//!
-//! Spawns a Tower atomic via the harness and systematically calls every
-//! known songbird subsystem method (Tor, STUN, `BirdSong`, Onion,
-//! Federation, Discovery). Reports each subsystem as UP / DEGRADED / DOWN
-//! with latency. Like exp051 (socket discovery sweep) but for RPC methods.
-
-use std::io::{BufRead, BufReader, Write};
-use std::os::unix::net::UnixStream;
-use std::path::Path;
 use std::time::{Duration, Instant};
 
-use primalspring::coordination::AtomicType;
-use primalspring::harness::AtomicHarness;
-use primalspring::primal_names;
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::IpcError;
 use primalspring::validation::ValidationResult;
 
 struct ProbeResult {
@@ -41,49 +31,14 @@ impl ProbeStatus {
     }
 }
 
-fn rpc_call(
-    socket: &Path,
-    method: &str,
-    params: &serde_json::Value,
-) -> Result<serde_json::Value, String> {
-    let mut stream = UnixStream::connect(socket).map_err(|e| format!("connect: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(10))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let msg = format!("{req}\n");
-    stream
-        .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
-
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
-            if let Some(result) = parsed.get("result") {
-                return Ok(result.clone());
-            }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
-            }
-        }
-    }
-    Err("no response".to_owned())
-}
-
 fn probe(
-    socket: &Path,
+    ctx: &mut CompositionContext,
     method: &'static str,
     subsystem: &'static str,
-    params: &serde_json::Value,
+    params: serde_json::Value,
 ) -> ProbeResult {
     let start = Instant::now();
-    let result = rpc_call(socket, method, params);
+    let result = ctx.call("discovery", method, params);
     let latency = start.elapsed();
 
     match result {
@@ -94,7 +49,7 @@ fn probe(
             latency,
             detail: v.to_string().chars().take(120).collect(),
         },
-        Err(e) if e.contains("Method not found") => ProbeResult {
+        Err(e) if e.is_method_not_found() || degraded_message(&e) => ProbeResult {
             method,
             subsystem,
             status: ProbeStatus::Degraded,
@@ -106,9 +61,13 @@ fn probe(
             subsystem,
             status: ProbeStatus::Down,
             latency,
-            detail: e.chars().take(120).collect(),
+            detail: format!("{e}").chars().take(120).collect(),
         },
     }
+}
+
+fn degraded_message(e: &IpcError) -> bool {
+    format!("{e}").contains("Method not found")
 }
 
 const PROBES: &[(&str, &str, &str)] = &[
@@ -133,31 +92,21 @@ const PROBES: &[(&str, &str, &str)] = &[
 ];
 
 fn main() {
-    let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
-    let family_id = format!("exp062-sweep-{}", std::process::id());
-
     ValidationResult::new("primalSpring Exp062 — Tower Subsystem Sweep")
-        .with_provenance("exp062_tower_subsystem_sweep", "2026-03-24")
+        .with_provenance("exp062_tower_subsystem_sweep", "2026-05-09")
         .run(
             "primalSpring Exp062: Comprehensive songbird subsystem capability probe",
             |v| {
-                let running = match AtomicHarness::new(AtomicType::Tower)
-                    .start_with_neural_api(&family_id, &graphs_dir)
-                {
-                    Ok(r) => r,
-                    Err(e) => {
-                        v.check_bool("harness_start", false, &format!("failed to start: {e}"));
-                        return;
-                    }
-                };
+                v.section("Phase 1: Discovery capability sweep");
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
 
-                let Some(songbird_socket) = running
-                    .socket_for("discovery")
-                    .or_else(|| running.socket_for_primal(primal_names::SONGBIRD))
-                else {
-                    v.check_bool("songbird_socket", false, "songbird socket not found");
+                if !ctx.has_capability("discovery") {
+                    v.check_skip(
+                        "tower_subsystem_sweep_ran",
+                        "discovery capability not connected",
+                    );
                     return;
-                };
+                }
 
                 let mut results = Vec::new();
                 for &(method, subsystem, params_str) in PROBES {
@@ -172,7 +121,7 @@ fn main() {
                             return;
                         }
                     };
-                    results.push(probe(songbird_socket, method, subsystem, &params));
+                    results.push(probe(&mut ctx, method, subsystem, params));
                 }
 
                 let up_count = results
@@ -190,8 +139,8 @@ fn main() {
 
                 println!("\n  ╔══════════════════════════════════════════════════════════════╗");
                 println!(
-                "  ║  Tower Subsystem Sweep — {up_count} UP / {degraded} DEGRADED / {down} DOWN  ║"
-            );
+                    "  ║  Tower Subsystem Sweep — {up_count} UP / {degraded} DEGRADED / {down} DOWN  ║"
+                );
                 println!("  ╚══════════════════════════════════════════════════════════════╝\n");
 
                 for r in &results {

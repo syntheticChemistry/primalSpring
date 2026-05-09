@@ -20,11 +20,7 @@ pub fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResu
         ),
         ("Node", &["compute", "tensor", "shader"], BondType::Metallic),
         ("Nest", &["storage", "ai"], BondType::Metallic),
-        (
-            "Provenance",
-            &["dag", "commit"],
-            BondType::Metallic,
-        ),
+        ("Provenance", &["dag", "commit"], BondType::Metallic),
     ];
 
     for &(tier_name, caps, bond) in tiers {
@@ -506,6 +502,74 @@ pub fn validate_method_gate(v: &mut ValidationResult) {
                 "security:method_gate:whitelist",
                 false,
                 &format!("health.check failed: {e}"),
+            );
+        }
+    }
+
+    // auth.check enrichment — verify scope/verified fields in response
+    // (JH-11 evolution: auth.check now returns scope detail when token present)
+    match client.call("auth.check", serde_json::Value::Null) {
+        Ok(resp) if resp.is_success() => {
+            let result = resp.result.as_ref();
+            let has_authenticated = result
+                .and_then(|r| r.get("authenticated"))
+                .and_then(serde_json::Value::as_bool)
+                .is_some();
+            let has_enforcement = result
+                .and_then(|r| r.get("enforcement"))
+                .and_then(serde_json::Value::as_str)
+                .is_some();
+            let has_verified = result
+                .and_then(|r| r.get("verified"))
+                .and_then(serde_json::Value::as_bool)
+                .is_some();
+
+            v.check_bool(
+                "security:method_gate:auth_check_shape",
+                has_authenticated && has_enforcement && has_verified,
+                &format!(
+                    "authenticated={has_authenticated}, enforcement={has_enforcement}, verified={has_verified}"
+                ),
+            );
+        }
+        Ok(_) => {
+            v.check_bool(
+                "security:method_gate:auth_check_shape",
+                false,
+                "auth.check returned error",
+            );
+        }
+        Err(e) => {
+            v.check_skip(
+                "security:method_gate:auth_check_shape",
+                &format!("auth.check failed: {e}"),
+            );
+        }
+    }
+
+    // Token-gated call validation — verify PERMISSION_DENIED for protected
+    // method in enforced mode without token
+    match client.call("coordination.validate_composition", serde_json::Value::Null) {
+        Ok(resp) if resp.is_success() => {
+            v.check_bool(
+                "security:method_gate:protected_accessible",
+                true,
+                "protected method accessible (permissive mode or no gate)",
+            );
+        }
+        Ok(resp) => {
+            let code = resp.error.as_ref().map(|e| e.code);
+            let is_denied = code == Some(-32001);
+            v.check_bool(
+                "security:method_gate:enforced_denial",
+                is_denied,
+                &format!("error code: {code:?} (expected -32001 in enforced mode)"),
+            );
+        }
+        Err(e) => {
+            v.check_skip(
+                "security:method_gate:protected_accessible",
+                &format!("protected method call failed: {e}"),
             );
         }
     }

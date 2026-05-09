@@ -14,3 +14,6 @@ Each subdirectory has its own README with context for what was archived and why.
 | `wateringHole_phase56_apr2026/` | 66 historical wateringHole handoffs (v0.1.0 through v0.9.24) archived during Phase 56c cleanup | April 2026 |
 | `wateringHole_phase58_59_may2026/` | Phase 58–59 handoffs: foundation absorption, composition guidance, cross-spring connections, downstream standards | May 2026 |
 | `primal_gaps_phase60_may2026/` | Full 2,290-line PRIMAL_GAPS.md history (April 9 – May 9, 2026) archived after Phase 60 cleanup; reduced to ~160-line living doc | May 2026 |
+| `experiments_prokaryotic_may2026/` | Twenty absorbed experiment crate snapshots before scenario extraction into `ecoPrimal/src/validation/scenarios/` (UniBin `primalspring_unibin validate`); see subdirectory README for experiment → scenario mapping | May 2026 |
+| `experiments_pre_interstadial_may2026/` | Source snapshots of all 85 pre-interstadial experiment patterns before rewire to modern CompositionContext (v0.9.25) | May 9, 2026 |
+| `harness_launcher_pre_interstadial_may2026/` | AtomicHarness, launcher, and server_ecosystem integration tests — deprecated direct-spawn infrastructure superseded by plasmidBin ecoBin deployment via biomeOS | May 9, 2026 |

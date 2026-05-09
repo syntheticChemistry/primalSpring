@@ -1,24 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! Exp092: Dual Tower Ionic Bond — L2 mixed atomic validation.
-//!
-//! Validates two independent Tower Atomics (two electron shells) coexisting on
-//! the same host with different `FAMILY_IDs`, connected by an ionic bond that
-//! provides scoped capability sharing.
-//!
-//! Particle model: two atoms on the same host. Tower A and Tower B each have
-//! their own `BearDog` + Songbird. An ionic bond bridges them, allowing Tower B
-//! to call scoped capabilities through Tower A without genetic trust.
-//!
-//! Validation steps (structural):
-//!   1. Validate Tower A and Tower B capability requirements
-//!   2. Validate ionic bond policy (contractual trust, scoped capabilities)
-//!   3. Validate capability isolation via `BondingConstraint`
-//!   4. Identify gaps for live dual-Tower validation
-//!
-//! Environment:
-//!   `FAMILY_A` — first Tower's family ID (default: auto-generated)
-//!   `FAMILY_B` — second Tower's family ID (default: auto-generated)
+//! Exp092: Dual Tower Ionic Bond
 
 use primalspring::bonding::{BondType, BondingConstraint, BondingPolicy, TrustModel};
 use primalspring::coordination::AtomicType;
@@ -29,8 +10,6 @@ fn env_or(key: &str, default: &str) -> String {
 }
 
 fn validate_tower_coexistence(v: &mut ValidationResult) {
-    v.section("L2: Dual Tower Coexistence");
-
     let family_a = env_or("FAMILY_A", "a1b2c3d4e5f60001");
     let family_b = env_or("FAMILY_B", "a1b2c3d4e5f60002");
 
@@ -56,8 +35,6 @@ fn validate_tower_coexistence(v: &mut ValidationResult) {
 }
 
 fn validate_ionic_bridge(v: &mut ValidationResult) {
-    v.section("L2: Ionic Bond Proposal");
-
     let policy = BondingPolicy::ionic_contract(vec![
         "compute.submit".to_owned(),
         "compute.status".to_owned(),
@@ -97,8 +74,6 @@ fn validate_ionic_bridge(v: &mut ValidationResult) {
 }
 
 fn validate_capability_isolation(v: &mut ValidationResult) {
-    v.section("L2: Capability Isolation");
-
     let constraint = BondingConstraint {
         capability_allow: vec!["compute.*".to_owned()],
         capability_deny: vec![
@@ -132,8 +107,6 @@ fn validate_capability_isolation(v: &mut ValidationResult) {
 }
 
 fn identify_gaps(v: &mut ValidationResult) {
-    v.section("L2: Gap Assessment");
-
     v.check_bool(
         "gap_simultaneous_towers",
         true,
@@ -153,13 +126,17 @@ fn identify_gaps(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp092 — Dual Tower Ionic Bond (L2)")
-        .with_provenance("exp092_dual_tower_ionic", "2026-04-07")
+        .with_provenance("exp092_dual_tower_ionic", "2026-05-09")
         .run(
             "primalSpring Exp092: L2 dual tower coexistence + ionic bond + isolation",
             |v| {
+                v.section("Phase 1: Dual tower coexistence");
                 validate_tower_coexistence(v);
+                v.section("Phase 2: Ionic bond proposal");
                 validate_ionic_bridge(v);
+                v.section("Phase 3: Capability isolation");
                 validate_capability_isolation(v);
+                v.section("Phase 4: Gap assessment");
                 identify_gaps(v);
             },
         );

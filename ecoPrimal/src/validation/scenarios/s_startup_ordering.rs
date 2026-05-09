@@ -1,0 +1,86 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//! Scenario: Startup Ordering — absorbed from exp006.
+
+use crate::composition::CompositionContext;
+use crate::coordination::AtomicType;
+use crate::deploy::{load_graph, topological_waves};
+use crate::validation::ValidationResult;
+use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
+use std::path::Path;
+
+/// Scenario metadata and entry point.
+pub const SCENARIO: Scenario = Scenario {
+    meta: ScenarioMeta {
+        id: "startup-ordering",
+        track: Track::AtomicComposition,
+        tier: Tier::Rust,
+        provenance_crate: "exp006_startup_ordering",
+        provenance_date: "2026-05-09",
+        description: "Startup ordering — deploy-graph germination waves (structural)",
+    },
+    run,
+};
+
+/// Run this validation scenario.
+pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let _ = ctx;
+    v.section("Phase 1: Capability containment");
+    phase_capability_containment(v);
+
+    v.section("Phase 2: Topological waves");
+    phase_topological_waves(v);
+}
+
+fn phase_capability_containment(v: &mut ValidationResult) {
+    let tower_caps = AtomicType::Tower.required_capabilities();
+    let node_caps = AtomicType::Node.required_capabilities();
+    let tower_subset_node = tower_caps.iter().all(|c| node_caps.contains(c));
+    v.check_bool(
+        "tower_caps_subset_of_node",
+        tower_subset_node,
+        "Tower capabilities are subset of Node",
+    );
+
+    let full_caps = AtomicType::FullNucleus.required_capabilities();
+    let node_subset_full = node_caps.iter().all(|c| full_caps.contains(c));
+    v.check_bool(
+        "node_caps_subset_of_full_nucleus",
+        node_subset_full,
+        "Node capabilities are subset of FullNucleus",
+    );
+}
+
+fn phase_topological_waves(v: &mut ValidationResult) {
+    let graphs_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs");
+
+    for (name, expected_min_waves) in [
+        ("tower_atomic_bootstrap.toml", 2),
+        ("node_atomic_compute.toml", 3),
+        ("nucleus_complete.toml", 4),
+    ] {
+        let path = graphs_dir.join(name);
+        match load_graph(&path) {
+            Ok(graph) => match topological_waves(&graph) {
+                Ok(waves) => {
+                    v.check_minimum(&format!("waves_{name}"), waves.len(), expected_min_waves);
+                    let first_wave = &waves[0];
+                    v.check_bool(
+                        &format!("wave0_has_root_{name}"),
+                        !first_wave.is_empty(),
+                        &format!("{name} wave 0 contains {} root node(s)", first_wave.len()),
+                    );
+                }
+                Err(e) => {
+                    v.check_bool(
+                        &format!("waves_{name}"),
+                        false,
+                        &format!("{name} topological sort failed: {e}"),
+                    );
+                }
+            },
+            Err(e) => {
+                v.check_skip(&format!("waves_{name}"), &format!("{name} not found: {e}"));
+            }
+        }
+    }
+}

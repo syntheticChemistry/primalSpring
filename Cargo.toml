@@ -95,6 +95,10 @@ members = [
     "experiments/exp105_rhizome_micro_game",
     "experiments/exp106_micro_desktop_shell",
     "experiments/exp107_foundation_validation",
+    "experiments/exp108_token_federation",
+    "experiments/exp109_composition_lifecycle",
+    "experiments/exp110_audit_pipeline",
+    "experiments/exp111_gate_routing",
 ]
 
 [workspace.package]

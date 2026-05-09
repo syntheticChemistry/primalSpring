@@ -1,10 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! Exp056: Cross-Tower Federation — validates BYOB manifest, NAT traversal
-//! graph structure, gossip federation metadata, and STUN tier escalation.
-//!
-//! Phase 1 (structural): `AtomicType` superset, friend graph bonding metadata.
-//! Phase 2 (live, when available): gossip federation flow, STUN tier probing.
+//! Exp056: Cross-Tower Federation — BYOB manifest, graph bonding metadata, live federation (skipped).
 
 use std::path::Path;
 
@@ -154,14 +149,19 @@ fn live_federation_skips(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp056 — Cross Tower Federation")
-        .with_provenance("exp056_cross_tower_federation", "2026-03-24")
+        .with_provenance("exp056_cross_tower_federation", "2026-05-09")
         .run(
             "primalSpring Exp056: Cross-Tower Federation — BYOB, NAT, Gossip",
             |v| {
+                v.section("Phase 1: Atomic Type Structure");
                 atomic_type_structural(v);
+
+                v.section("Phase 2: Federation Graphs");
                 friend_remote_covalent_graph_metadata(v);
                 idle_compute_federation_graph_metadata(v);
                 data_federation_graph_metadata(v);
+
+                v.section("Phase 3: Live Federation");
                 live_federation_skips(v);
             },
         );

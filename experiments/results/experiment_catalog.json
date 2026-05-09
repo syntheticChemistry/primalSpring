@@ -1,7 +1,7 @@
 {
-  "generated": "2026-05-06T22:00:00Z",
+  "generated": "2026-05-09T13:30:00Z",
   "spring": "primalSpring",
-  "total_experiments": 85,
+  "total_experiments": 89,
   "categories": {
     "tower_atomic": {
       "experiments": ["exp001", "exp002", "exp003", "exp004", "exp005", "exp006"],
@@ -77,12 +77,19 @@
       "experiments": ["exp098", "exp099", "exp100", "exp101", "exp102", "exp103", "exp104", "exp105", "exp106", "exp107"],
       "count": 10,
       "focus": "Cellular deploy, agentic loop, MCP tools, fieldmouse triage, storytelling session, ludoSpring IPC, rpGPT replay, rhizome game, micro desktop, foundation validation"
+    },
+    "later_term": {
+      "experiments": ["exp108", "exp109", "exp110", "exp111"],
+      "count": 4,
+      "focus": "Token federation, composition lifecycle, audit pipeline, gate routing"
     }
   },
   "timeline": {
     "phase_40_50": { "experiments_added": 25, "period": "Feb–Mar 2026" },
     "phase_50_55": { "experiments_added": 30, "period": "Mar–Apr 2026" },
-    "phase_55_59": { "experiments_added": 30, "period": "Apr–May 2026" }
+    "phase_55_59": { "experiments_added": 30, "period": "Apr–May 2026" },
+    "phase_60_interstadial": { "experiments_added": 4, "period": "May 2026", "note": "Interstadial transition: all 89 experiments rewired to CompositionContext + v0.9.25" },
+    "phase_60_unibin": { "period": "May 2026", "note": "20 experiments absorbed into ecoPrimal validation scenarios; run via primalspring_unibin validate" }
   },
   "gap_resolution_experiments": {
     "PG-55": ["exp079", "exp081"],

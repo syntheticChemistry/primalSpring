@@ -6,29 +6,33 @@
 //! domain (security, discovery, storage, compute, ai) is routed to
 //! the correct primal and returns real results.
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::{methods, tcp};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-fn main() {
-    ValidationResult::new("Neural API Routing E2E")
-        .with_provenance("exp087_neural_api_routing_e2e", "2026-03-29")
-        .run("capability routing validation", |v| {
-            let bm_port = tcp::env_port("BIOMEOS_PORT", 9800);
-            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
-
-            phase_capability_discovery(v, &host, bm_port);
-            phase_security_routing(v, &host, bm_port);
-            phase_discovery_routing(v, &host, bm_port);
-            phase_storage_routing(v, &host, bm_port);
-            phase_compute_routing(v, &host, bm_port);
-            phase_ai_routing(v, &host, bm_port);
-            phase_graph_operations(v, &host, bm_port);
-        });
+fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Phase 1: Composition discovery");
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "composition_capabilities_non_empty",
+        !caps.is_empty(),
+        &format!("{} capabilities: {}", caps.len(), caps.join(", ")),
+    );
+    v.check_bool(
+        "has_security_capability_path",
+        ctx.has_capability("security"),
+        "security capability path",
+    );
+    v.check_bool(
+        "has_discovery_capability_path",
+        ctx.has_capability("discovery"),
+        "discovery capability path",
+    );
 }
 
 fn phase_capability_discovery(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Capability Discovery");
+    v.section("Phase 2: Capability discovery (TCP)");
 
     for domain in &["security", "discovery", "storage", "compute", "ai"] {
         let result = tcp::neural_api_capability_discover(host, port, domain);
@@ -52,7 +56,7 @@ fn phase_capability_discovery(v: &mut ValidationResult, host: &str, port: u16) {
 }
 
 fn phase_security_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Security Domain -> BearDog");
+    v.section("Phase 3: Security domain → BearDog");
 
     let result = tcp::neural_api_capability_call(
         host,
@@ -83,7 +87,7 @@ fn phase_security_routing(v: &mut ValidationResult, host: &str, port: u16) {
 }
 
 fn phase_discovery_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Discovery Domain -> Songbird");
+    v.section("Phase 4: Discovery domain → Songbird");
 
     let result = tcp::neural_api_capability_call(
         host,
@@ -111,7 +115,7 @@ fn phase_discovery_routing(v: &mut ValidationResult, host: &str, port: u16) {
 }
 
 fn phase_storage_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Storage Domain -> NestGate");
+    v.section("Phase 5: Storage domain → NestGate");
 
     let store = tcp::neural_api_capability_call(
         host,
@@ -158,7 +162,7 @@ fn phase_storage_routing(v: &mut ValidationResult, host: &str, port: u16) {
 }
 
 fn phase_compute_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Compute Domain -> ToadStool");
+    v.section("Phase 6: Compute domain → ToadStool");
 
     let result = tcp::neural_api_capability_call(
         host,
@@ -181,7 +185,7 @@ fn phase_compute_routing(v: &mut ValidationResult, host: &str, port: u16) {
 }
 
 fn phase_ai_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("AI Domain -> Squirrel");
+    v.section("Phase 7: AI domain → Squirrel");
 
     let result =
         tcp::neural_api_capability_call(host, port, "ai", "ai.health", &serde_json::json!({}));
@@ -213,7 +217,7 @@ fn phase_ai_routing(v: &mut ValidationResult, host: &str, port: u16) {
 }
 
 fn phase_graph_operations(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Graph Operations");
+    v.section("Phase 8: Graph operations");
 
     let graphs = tcp::tcp_rpc(host, port, methods::graph::LIST, &serde_json::json!({}));
     match graphs {
@@ -227,4 +231,24 @@ fn phase_graph_operations(v: &mut ValidationResult, host: &str, port: u16) {
         }
         Err(e) => v.check_skip("graph list", &format!("biomeOS not reachable: {e}")),
     }
+}
+
+fn main() {
+    ValidationResult::new("primalSpring Exp087 — Neural API Routing E2E")
+        .with_provenance("exp087_neural_api_routing_e2e", "2026-05-09")
+        .run("capability routing validation", |v| {
+            let ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_composition_discovery(v, &ctx);
+
+            let bm_port = tcp::env_port("BIOMEOS_PORT", 9800);
+            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+
+            phase_capability_discovery(v, &host, bm_port);
+            phase_security_routing(v, &host, bm_port);
+            phase_discovery_routing(v, &host, bm_port);
+            phase_storage_routing(v, &host, bm_port);
+            phase_compute_routing(v, &host, bm_port);
+            phase_ai_routing(v, &host, bm_port);
+            phase_graph_operations(v, &host, bm_port);
+        });
 }

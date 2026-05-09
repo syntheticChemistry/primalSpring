@@ -1,11 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! Exp071: Idle Compute Policy — validates `BondingPolicy` capability masks,
-//! time windows, bandwidth limits, and graph metadata for idle compute
-//! federation scenarios.
-//!
-//! Validates the friend/family idle compute pattern: covalent trust,
-//! compute-only sharing, time-windowed availability, bandwidth caps.
+//! Exp071: Idle Compute Policy
 
 use std::path::Path;
 
@@ -253,15 +247,26 @@ fn graph_metadata_validation(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp071 — Idle Compute Policy")
-        .with_provenance("exp071_idle_compute_policy", "2026-03-24")
+        .with_provenance("exp071_idle_compute_policy", "2026-05-09")
         .run(
             "primalSpring Exp071: BondingPolicy — Capability Masks, Time Windows, Bandwidth",
             |v| {
+                v.section("Phase 1: Constraint filtering");
                 constraint_filtering(v);
+
+                v.section("Phase 2: Idle compute preset");
                 idle_compute_preset(v);
+
+                v.section("Phase 3: Covalent default");
                 covalent_default(v);
+
+                v.section("Phase 4: Ionic contract");
                 ionic_contract(v);
+
+                v.section("Phase 5: Inconsistency detection");
                 inconsistency_detection(v);
+
+                v.section("Phase 6: Graph metadata");
                 graph_metadata_validation(v);
             },
         );

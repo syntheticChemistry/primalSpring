@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#[allow(
+    deprecated,
+    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
+)]
 use primalspring::coordination::{
     AtomicType, validate_composition, validate_composition_by_capability,
 };
@@ -9,6 +13,10 @@ use primalspring::ipc::protocol::{JsonRpcResponse, error_codes};
 use crate::dispatch::{error_response, parse_atomic_type, success_response};
 use crate::server::resolve_graphs_dir;
 
+#[allow(
+    deprecated,
+    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
+)]
 pub fn handle_validate_composition(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let atomic_str = params["atomic"].as_str().unwrap_or("Tower");
     let Some(atomic) = parse_atomic_type(atomic_str) else {
@@ -78,6 +86,10 @@ pub fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRes
     }
 }
 
+#[allow(
+    deprecated,
+    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
+)]
 pub fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let name = params["primal"]
         .as_str()
@@ -93,6 +105,10 @@ pub fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcRespon
     }
 }
 
+#[allow(
+    deprecated,
+    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
+)]
 pub fn handle_deploy_atomic(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let atomic_str = params["atomic"].as_str().unwrap_or("Tower");
     let Some(atomic) = parse_atomic_type(atomic_str) else {
@@ -160,6 +176,10 @@ pub fn handle_bonding_test(params: &serde_json::Value, id: u64) -> JsonRpcRespon
     )
 }
 
+#[allow(
+    deprecated,
+    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
+)]
 pub fn handle_composition_health_by_capability(atomic: AtomicType, id: u64) -> JsonRpcResponse {
     let result = primalspring::coordination::validate_composition_by_capability(atomic);
     match serde_json::to_value(result) {
@@ -173,6 +193,10 @@ pub fn handle_composition_health_by_capability(atomic: AtomicType, id: u64) -> J
 }
 
 /// Tower + Squirrel overlay health — Tower capabilities plus AI bridge.
+#[allow(
+    deprecated,
+    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
+)]
 pub fn handle_tower_squirrel_health(id: u64) -> JsonRpcResponse {
     let tower = primalspring::coordination::validate_composition_by_capability(AtomicType::Tower);
     let ai_disc = primalspring::ipc::discover::discover_by_capability("ai");
@@ -189,6 +213,10 @@ pub fn handle_tower_squirrel_health(id: u64) -> JsonRpcResponse {
     success_response(combined, id)
 }
 
+#[allow(
+    deprecated,
+    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
+)]
 pub fn handle_validate_composition_by_capability(
     params: &serde_json::Value,
     id: u64,
@@ -213,6 +241,10 @@ pub fn handle_validate_composition_by_capability(
     }
 }
 
+#[allow(
+    deprecated,
+    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
+)]
 pub fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let capability = params["capability"].as_str().unwrap_or("security");
     let disc = primalspring::ipc::discover::discover_by_capability(capability);

@@ -78,17 +78,32 @@ fn nucleus_complete_preserves_metadata_fields() {
 #[test]
 fn nucleus_complete_preserves_node_security_model() {
     let graph = load_graph(&graphs_path("nucleus_complete.toml")).unwrap();
-    let beardog = graph.graph.node.iter().find(|n| n.name == "beardog").unwrap();
+    let beardog = graph
+        .graph
+        .node
+        .iter()
+        .find(|n| n.name == "beardog")
+        .unwrap();
     assert_eq!(beardog.security_model.as_deref(), Some("btsp"));
 }
 
 #[test]
 fn nucleus_complete_preserves_node_args() {
     let graph = load_graph(&graphs_path("nucleus_complete.toml")).unwrap();
-    let petaltongue = graph.graph.node.iter().find(|n| n.name == "petaltongue").unwrap();
+    let petaltongue = graph
+        .graph
+        .node
+        .iter()
+        .find(|n| n.name == "petaltongue")
+        .unwrap();
     assert_eq!(petaltongue.args, vec!["server"]);
 
-    let primalspring = graph.graph.node.iter().find(|n| n.name == "primalspring").unwrap();
+    let primalspring = graph
+        .graph
+        .node
+        .iter()
+        .find(|n| n.name == "primalspring")
+        .unwrap();
     assert_eq!(primalspring.args, vec!["server"]);
 }
 
@@ -481,9 +496,11 @@ fn structural_checks_fallback_skip_required_inconsistency() {
     let graph = test_graph("test", vec![node]);
     let mut issues = Vec::new();
     structural_checks(&graph, &mut issues);
-    assert!(issues
-        .iter()
-        .any(|i| i.contains("fallback=\"skip\"") && i.contains("required")));
+    assert!(
+        issues
+            .iter()
+            .any(|i| i.contains("fallback=\"skip\"") && i.contains("required"))
+    );
 }
 
 #[test]
@@ -565,8 +582,7 @@ fn structural_checks_validation_purpose_with_trio_is_clean() {
 
 #[test]
 fn load_foundation_validation_graph() {
-    let graph =
-        load_graph(&graphs_path("compositions/foundation_validation.toml")).unwrap();
+    let graph = load_graph(&graphs_path("compositions/foundation_validation.toml")).unwrap();
     assert_eq!(graph.graph.name, "foundation_validation");
     assert!(!graph.graph.node.is_empty());
     let purpose = graph
@@ -576,7 +592,11 @@ fn load_foundation_validation_graph() {
         .and_then(|m| m.purpose.as_deref());
     assert_eq!(purpose, Some("foundation"));
     assert!(
-        graph.graph.node.iter().any(|n| n.fallback.as_deref() == Some("skip")),
+        graph
+            .graph
+            .node
+            .iter()
+            .any(|n| n.fallback.as_deref() == Some("skip")),
         "foundation graph should have fallback=skip nodes"
     );
     for node in &graph.graph.node {

@@ -50,8 +50,8 @@ impl SocketNucleation {
     /// Create a nucleation coordinator using the default XDG runtime dir.
     #[must_use]
     pub fn from_env() -> Self {
-        let base =
-            std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+        let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR)
+            .map_or_else(|_| std::env::temp_dir(), PathBuf::from);
         Self::new(base)
     }
 
@@ -199,6 +199,10 @@ impl fmt::Debug for PrimalProcess {
 ///
 /// Returns [`LaunchError`] on binary-not-found, spawn failure, or
 /// socket timeout.
+#[deprecated(
+    since = "0.9.25",
+    note = "use plasmidBin ecoBin deployment via biomeOS instead of direct primal spawning"
+)]
 pub fn spawn_primal(
     primal: &str,
     family_id: &str,

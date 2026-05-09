@@ -37,8 +37,8 @@ fn discover_experiments() -> Vec<String> {
         .flatten()
         .filter_map(|pkg| {
             let name = pkg.get("name")?.as_str()?;
-            let is_experiment = name.starts_with("primalspring-exp")
-                || name.starts_with("primalspring-trio");
+            let is_experiment =
+                name.starts_with("primalspring-exp") || name.starts_with("primalspring-trio");
             is_experiment.then(|| name.to_owned())
         })
         .collect();

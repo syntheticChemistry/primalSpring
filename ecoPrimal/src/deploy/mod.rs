@@ -247,13 +247,13 @@ const fn default_spawn() -> bool {
 
 mod validation;
 
+#[cfg(test)]
+use validation::structural_checks;
 pub use validation::{
     DeploymentReadiness, GraphValidation, LiveGraphValidation, NodeHealth, ReadinessCategory,
     ReadinessIssue, validate_all_graphs, validate_deployment_readiness, validate_live,
     validate_live_by_capability, validate_structure,
 };
-#[cfg(test)]
-use validation::structural_checks;
 
 /// Load a deploy graph from a TOML file path.
 ///
@@ -356,7 +356,6 @@ fn find_fragments_dir(graph_path: &Path) -> Option<std::path::PathBuf> {
     }
     None
 }
-
 
 /// Compute topological startup waves from a deploy graph.
 ///

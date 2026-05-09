@@ -8,78 +8,70 @@
 //!
 //! Phase 56 — Desktop Substrate (AGENTIC_TRIO_EVOLUTION.md)
 
-use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover::{discover_by_capability, discover_primal};
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::IpcError;
 use primalspring::validation::ValidationResult;
+
+fn orchestration_route(
+    ctx: &mut CompositionContext,
+    capability: &str,
+    operation: &str,
+    args: &serde_json::Value,
+) -> Result<serde_json::Value, IpcError> {
+    ctx.call(
+        "orchestration",
+        "capability.call",
+        serde_json::json!({
+            "capability": capability,
+            "operation": operation,
+            "args": args,
+        }),
+    )
+}
 
 fn phase_storage_ingest(v: &mut ValidationResult) {
     v.section("Sensor Data Ingest (NestGate)");
 
-    let ng = discover_by_capability("storage");
-    #[allow(clippy::single_match_else, reason = "fallback logic reads clearer with match")]
-    let ng_fallback;
-    let ng_sock = if let Some(s) = ng.socket.as_ref() {
-        s
-    } else {
-        ng_fallback = discover_primal("nestgate");
-        let Some(s) = ng_fallback.socket.as_ref() else {
-            v.check_skip("storage_ingest", "NestGate not discovered");
-            return;
-        };
-        s
-    };
-
-    let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") else {
-        v.check_skip("storage_ingest", "NestGate connection failed");
-        return;
-    };
-
+    let mut ctx = CompositionContext::discover();
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
     let store_params = serde_json::json!({
         "family_id": family_id,
         "key": "fieldmouse/frame/exp101-test",
         "value": "{\"ph\":7.2,\"moisture\":0.45,\"temp_c\":22.1}",
     });
-    let resp = client.call("storage.store", store_params.clone());
 
-    let ok = resp.is_ok_and(|r| r.result.is_some());
+    let ok = ctx
+        .call("storage", "storage.store", store_params.clone())
+        .is_ok();
     if ok {
         v.check_bool("storage_ingest", true, "Sensor frame stored in NestGate");
-    } else if let Some(fb_sock) = discover_primal("nestgate").socket {
-        if let Ok(mut fb) = PrimalClient::connect(&fb_sock, "nestgate") {
-            let fb_resp = fb.call("storage.store", store_params);
-            v.check_bool(
-                "storage_ingest",
-                fb_resp.is_ok_and(|r| r.result.is_some()),
-                "Sensor frame stored in NestGate (via fallback — biomeOS misrouted)",
-            );
-            return;
-        }
+        return;
+    }
+
+    if ctx.has_capability("orchestration")
+        && orchestration_route(&mut ctx, "storage", "storage.store", &store_params).is_ok()
+    {
         v.check_bool(
             "storage_ingest",
-            false,
-            "NestGate fallback connection failed",
+            true,
+            "Sensor frame stored in NestGate (via fallback — biomeOS misrouted)",
         );
-    } else {
-        v.check_bool("storage_ingest", false, "NestGate storage.store failed");
+        return;
     }
+
+    v.check_bool("storage_ingest", false, "NestGate storage.store failed");
 }
 
 fn phase_ai_classification(v: &mut ValidationResult) {
     v.section("AI Classification (Squirrel)");
 
-    let sq = discover_by_capability("ai");
-    let Some(sq_sock) = sq.socket.as_ref() else {
+    let mut ctx = CompositionContext::discover();
+    if !ctx.has_capability("ai") {
         v.check_skip("ai_classify", "Squirrel not discovered via ai capability");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(sq_sock, "squirrel") else {
-        v.check_skip("ai_classify", "Squirrel connection failed");
-        return;
-    };
-
-    let resp = client.call("inference.models", serde_json::json!({}));
+    let resp = ctx.call("ai", "inference.models", serde_json::json!({}));
     v.check_bool(
         "ai_models_available",
         resp.is_ok(),
@@ -90,18 +82,14 @@ fn phase_ai_classification(v: &mut ValidationResult) {
 fn phase_alert_rendering(v: &mut ValidationResult) {
     v.section("Alert Rendering (petalTongue)");
 
-    let pt = discover_by_capability("visualization");
-    let Some(pt_sock) = pt.socket.as_ref() else {
+    let mut ctx = CompositionContext::discover();
+    if !ctx.has_capability("visualization") {
         v.check_skip("alert_render", "petalTongue not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(pt_sock, "petaltongue") else {
-        v.check_skip("alert_render", "petalTongue connection failed");
-        return;
-    };
-
-    let resp = client.call(
+    let resp = ctx.call(
+        "visualization",
         "visualization.render.dashboard",
         serde_json::json!({
             "session": "exp101-fieldmouse",
@@ -115,14 +103,14 @@ fn phase_alert_rendering(v: &mut ValidationResult) {
 
     v.check_bool(
         "alert_render",
-        resp.is_ok_and(|r| r.result.is_some()),
+        resp.is_ok(),
         "Alert dashboard rendered to petalTongue",
     );
 }
 
 fn main() {
     ValidationResult::new("primalSpring Exp101 — fieldMouse AI Triage")
-        .with_provenance("exp101_fieldmouse_ai_triage", "2026-04-28")
+        .with_provenance("exp101_fieldmouse_ai_triage", "2026-05-09")
         .run(
             "Exp101: Sensor ingest → AI classify → alert render",
             |v| {

@@ -1,5 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-#![expect(clippy::unwrap_used, clippy::expect_used, reason = "integration tests — panics are the failure signal")]
+#![allow(
+    deprecated,
+    reason = "integration test uses deprecated harness/launcher APIs"
+)]
+#![expect(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    reason = "integration tests — panics are the failure signal"
+)]
 
 //! Nest and node atomic integration tests. Run with `cargo test --ignored`.
 

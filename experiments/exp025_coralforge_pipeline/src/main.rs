@@ -1,67 +1,68 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp025: `CoralForge` Pipeline — validates pipeline graph over neuralSpring + wetSpring + toadStool.
+//! Exp025: CoralForge pipeline graph and composition readiness.
 
-use primalspring::coordination::probe_primal;
+use primalspring::composition::CompositionContext;
 use primalspring::emergent::EmergentSystem;
-use primalspring::ipc::discover::{discover_primal, socket_path};
-use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
+
+fn phase_structural(v: &mut ValidationResult) {
+    let graphs = EmergentSystem::CoralForge.required_graphs();
+    let has_pipeline = graphs.contains(&"coralforge_pipeline");
+    v.check_bool(
+        "coralforge_has_pipeline_graph",
+        has_pipeline,
+        &format!(
+            "EmergentSystem::CoralForge.required_graphs() contains coralforge_pipeline: {graphs:?}"
+        ),
+    );
+}
+
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    for cap in ["compute", "shader", "storage"] {
+        v.check_bool(
+            &format!("has_{cap}"),
+            ctx.has_capability(cap),
+            &format!("{cap} capability for CoralForge pipeline"),
+        );
+    }
+}
+
+fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    for cap in ["compute", "shader", "storage"] {
+        if !ctx.has_capability(cap) {
+            v.check_skip(&format!("health_{cap}"), &format!("{cap} not resolved"));
+            continue;
+        }
+        match ctx.call(cap, "health.liveness", serde_json::json!({})) {
+            Ok(_) => v.check_bool(
+                &format!("health_{cap}"),
+                true,
+                &format!("{cap} health.liveness"),
+            ),
+            Err(e) if e.is_connection_error() => {
+                v.check_skip(&format!("health_{cap}"), &format!("{cap}: {e}"));
+            }
+            Err(e) => v.check_bool(&format!("health_{cap}"), false, &format!("error: {e}")),
+        }
+    }
+}
 
 fn main() {
     ValidationResult::new("primalSpring Exp025 — CoralForge Pipeline")
-        .with_provenance("exp025_coralforge_pipeline", "2026-03-24")
+        .with_provenance("exp025_coralforge_pipeline", "2026-05-09")
         .run(
             "primalSpring Exp025: Pipeline Graph over neuralSpring + wetSpring + toadStool",
             |v| {
-                let graphs = EmergentSystem::CoralForge.required_graphs();
-                let has_pipeline = graphs.contains(&"coralforge_pipeline");
-                v.check_bool(
-                    "coralforge_has_pipeline_graph",
-                    has_pipeline,
-                    &format!(
-                        "EmergentSystem::CoralForge.required_graphs() contains coralforge_pipeline: {graphs:?}"
-                    ),
-                );
+                v.section("Phase 1: Structural");
+                phase_structural(v);
 
-                let toadstool = discover_primal(primal_names::TOADSTOOL);
-                let path = socket_path(primal_names::TOADSTOOL);
-                v.check_bool(
-                    "discover_toadstool_socket_path",
-                    toadstool.primal == primal_names::TOADSTOOL
-                        && path.to_string_lossy().contains(primal_names::TOADSTOOL),
-                    "discover toadstool socket path",
-                );
+                v.section("Phase 2: Discovery");
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_discovery(v, &ctx);
 
-                let coralreef = discover_primal(primal_names::CORALREEF);
-                let nestgate = discover_primal(primal_names::NESTGATE);
-                for (name, discovery) in [
-                    ("toadstool", toadstool),
-                    ("coralreef", coralreef),
-                    ("nestgate", nestgate),
-                ] {
-                    v.check_or_skip(
-                        &format!("probe_{name}"),
-                        discovery.socket.as_ref(),
-                        &format!("{name} socket not found"),
-                        |_, v| {
-                            let health = probe_primal(name);
-                            v.check_bool(
-                                &format!("{name}_health"),
-                                health.health_ok,
-                                &format!(
-                                    "health ok: {}, latency: {}µs",
-                                    health.health_ok, health.latency_us
-                                ),
-                            );
-                            v.check_bool(
-                                &format!("{name}_capabilities"),
-                                !health.capabilities.is_empty(),
-                                &format!("capabilities: {:?}", health.capabilities),
-                            );
-                        },
-                    );
-                }
+                v.section("Phase 3: Health");
+                phase_health(v, &mut ctx);
 
                 v.check_skip(
                     "actual_pipeline_execution",

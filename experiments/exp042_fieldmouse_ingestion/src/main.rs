@@ -1,116 +1,132 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp042: `FieldMouse` Ingestion — edge frames → NestGate → sweetGrass (capability discovery).
 
-//! Exp042: `FieldMouse` Ingestion — fieldMouse frames → `NestGate` → sweetGrass.
-//!
-//! Validates edge data ingestion: fieldMouse captures frames, `NestGate` stores
-//! artifacts, sweetGrass records attribution. This tests the ingest pipeline
-//! that every edge sensor primal will follow.
+use std::time::Instant;
 
-use primalspring::coordination::probe_primal;
-use primalspring::ipc::discover::{discover_for, neural_api_healthy, socket_path};
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::discover::extract_capability_names;
 use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-/// Primals / deployment classes participating in the edge ingestion pipeline.
-///
-/// Source: `PRIMAL_REGISTRY.md` + `CROSS_SPRING_DATA_FLOW_STANDARD.md`.
-/// fieldMouse is a **deployment class** (biomeOS chimera for edge/IoT), not a primal.
-/// `NestGate` stores artifacts, sweetGrass records attribution.
-const FIELDMOUSE_SLUG: &str = "fieldmouse";
-const INGEST_PRIMALS: &[&str] = &[
-    FIELDMOUSE_SLUG,
-    primal_names::NESTGATE,
-    primal_names::SWEETGRASS,
-];
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "ingest_context_capabilities",
+        !caps.is_empty(),
+        &format!("capabilities: {}", caps.join(", ")),
+    );
+    v.check_bool(
+        "nestgate_storage_capability",
+        ctx.has_capability("storage"),
+        "NestGate maps to storage capability",
+    );
+    v.check_bool(
+        "sweetgrass_commit_or_attribution",
+        ctx.has_capability("commit") || ctx.has_capability("attribution"),
+        "sweetGrass maps to commit or attribution",
+    );
+    v.check_skip(
+        "fieldmouse_deployment_class",
+        "fieldMouse is an edge deployment class; not a single ALL_CAPS domain",
+    );
+}
+
+fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let nest_ok = ctx.has_capability("storage");
+    let grass_ok = ctx.has_capability("commit") || ctx.has_capability("attribution");
+    let pipeline_online = nest_ok && grass_ok;
+
+    if !pipeline_online {
+        v.check_skip(
+            "ingest_primals_discoverable",
+            &format!(
+                "need storage + (commit or attribution) for NestGate + sweetGrass — {}",
+                ctx.available_capabilities().join(", ")
+            ),
+        );
+        return;
+    }
+
+    v.check_bool(
+        "ingest_primals_discoverable",
+        true,
+        "storage and sweetGrass capability aliases in context",
+    );
+
+    let mut probes: Vec<(&str, &str)> = vec![("storage", primal_names::NESTGATE)];
+    if ctx.has_capability("commit") {
+        probes.push(("commit", primal_names::SWEETGRASS));
+    } else if ctx.has_capability("attribution") {
+        probes.push(("attribution", primal_names::SWEETGRASS));
+    }
+
+    for (cap, label) in probes {
+        let start = Instant::now();
+        let health_ok = ctx.health_check(cap).unwrap_or(false);
+        let latency_us = u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX);
+        let n_caps = ctx
+            .call(cap, "capabilities.list", serde_json::json!({}))
+            .ok()
+            .map_or(0, |j| extract_capability_names(Some(j)).len());
+        v.check_bool(
+            &format!("health_{label}"),
+            health_ok,
+            &format!("{label} health check"),
+        );
+        v.check_latency(
+            &format!("latency_{label}"),
+            latency_us,
+            tolerances::HEALTH_CHECK_MAX_US,
+        );
+        v.check_minimum(&format!("caps_{label}"), n_caps, 1);
+    }
+}
+
+fn phase_pipeline_skips(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let orch_ok = ctx.has_capability("orchestration")
+        && ctx
+            .call("orchestration", "health.liveness", serde_json::json!({}))
+            .is_ok();
+
+    if orch_ok {
+        v.check_bool(
+            "orchestration_reachable",
+            true,
+            "orchestration health.liveness ok",
+        );
+        v.check_skip(
+            "fieldmouse_ingest_e2e",
+            "end-to-end ingestion needs fieldMouse frames + NestGate + sweetGrass live",
+        );
+    } else {
+        v.check_skip(
+            "orchestration_reachable",
+            "orchestration capability not available for substrate health",
+        );
+        v.check_skip(
+            "fieldmouse_ingest_e2e",
+            "needs live ingest primals + orchestration for pipeline validation",
+        );
+    }
+}
 
 fn main() {
     ValidationResult::new("primalSpring Exp042 — FieldMouse Ingestion")
-        .with_provenance("exp042_fieldmouse_ingestion", "2026-03-24")
+        .with_provenance("exp042_fieldmouse_ingestion", "2026-05-09")
         .run(
             "primalSpring Exp042: FieldMouse Ingestion — fieldMouse → NestGate → sweetGrass",
             |v| {
-                for &name in INGEST_PRIMALS {
-                    let path = socket_path(name);
-                    let valid = path.to_string_lossy().contains("biomeos")
-                        && path.to_string_lossy().contains(name)
-                        && path.to_string_lossy().ends_with(".sock");
-                    v.check_bool(
-                        &format!("socket_path_{name}"),
-                        valid,
-                        &format!("socket_path({name}) = {}", path.display()),
-                    );
-                }
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
 
-                let results = discover_for(INGEST_PRIMALS);
-                v.check_count(
-                    "ingest_discovery_count",
-                    results.len(),
-                    INGEST_PRIMALS.len(),
-                );
+                v.section("Phase 1: Discovery");
+                phase_discovery(v, &ctx);
 
-                let reachable: Vec<_> = results.iter().filter(|r| r.socket.is_some()).collect();
-                let pipeline_online = reachable.len() == INGEST_PRIMALS.len();
+                v.section("Phase 2: Health");
+                phase_health(v, &mut ctx);
 
-                if pipeline_online {
-                    v.check_bool(
-                        "ingest_primals_discoverable",
-                        true,
-                        "NestGate + sweetGrass both have sockets",
-                    );
-
-                    for &name in INGEST_PRIMALS {
-                        let health = probe_primal(name);
-                        v.check_bool(
-                            &format!("health_{name}"),
-                            health.health_ok,
-                            &format!("{name} health.check"),
-                        );
-                        v.check_latency(
-                            &format!("latency_{name}"),
-                            health.latency_us,
-                            tolerances::HEALTH_CHECK_MAX_US,
-                        );
-                        v.check_minimum(&format!("caps_{name}"), health.capabilities.len(), 1);
-                    }
-                } else {
-                    v.check_skip(
-                        "ingest_primals_discoverable",
-                        &format!(
-                            "{}/{} ingest primals reachable — need both running",
-                            reachable.len(),
-                            INGEST_PRIMALS.len()
-                        ),
-                    );
-                    for &name in INGEST_PRIMALS {
-                        let disc = results.iter().find(|r| r.primal == name);
-                        if disc.is_none_or(|d| d.socket.is_none()) {
-                            v.check_skip(
-                                &format!("health_{name}"),
-                                &format!("{name} not reachable"),
-                            );
-                            v.check_skip(
-                                &format!("latency_{name}"),
-                                &format!("{name} not reachable"),
-                            );
-                            v.check_skip(&format!("caps_{name}"), &format!("{name} not reachable"));
-                        }
-                    }
-                }
-
-                if neural_api_healthy() {
-                    v.check_bool("neural_api", true, "Neural API reachable");
-                    v.check_skip(
-                        "fieldmouse_ingest_e2e",
-                        "end-to-end ingestion needs fieldMouse frames + NestGate + sweetGrass live",
-                    );
-                } else {
-                    v.check_skip("neural_api", "Neural API not running");
-                    v.check_skip(
-                        "fieldmouse_ingest_e2e",
-                        "needs live ingest primals + Neural API for pipeline validation",
-                    );
-                }
+                v.section("Phase 3: Pipeline (skips)");
+                phase_pipeline_skips(v, &mut ctx);
             },
         );
 }

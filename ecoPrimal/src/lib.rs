@@ -55,6 +55,7 @@ pub const PRIMAL_DOMAIN: &str = "coordination";
 pub mod bonding;
 pub mod btsp;
 pub mod cast;
+pub mod certification;
 pub mod checksums;
 pub mod composition;
 pub mod coordination;

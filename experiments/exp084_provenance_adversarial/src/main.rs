@@ -14,11 +14,11 @@
 //!   `LOAMSPINE_PORT`        — `LoamSpine` port (default 9610)
 //!   `SWEETGRASS_PORT`       — sweetGrass port (default 9620)
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::methods;
 use primalspring::ipc::tcp::{env_port, tcp_rpc};
 use primalspring::validation::ValidationResult;
 
-/// RPC method names for the provenance trio (owned by those primals).
 const PROVENANCE_SESSION_CREATE: &str = "provenance.session.create";
 const PROVENANCE_EVENT_APPEND: &str = "provenance.event.append";
 const PROVENANCE_COMMIT: &str = "provenance.commit";
@@ -29,6 +29,21 @@ const DEFAULT_RHIZOCRYPT_PORT: u16 = 9600;
 const DEFAULT_LOAMSPINE_PORT: u16 = 9610;
 const DEFAULT_SWEETGRASS_PORT: u16 = 9620;
 
+fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Phase 1: Composition discovery (local)");
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "composition_capabilities_non_empty",
+        !caps.is_empty(),
+        &format!("{} capabilities: {}", caps.len(), caps.join(", ")),
+    );
+    v.check_bool(
+        "context_dag_ledger_paths",
+        ctx.has_capability("dag") || ctx.has_capability("ledger"),
+        "dag/ledger capability paths when trio sockets registered",
+    );
+}
+
 fn trio_health_baseline(
     v: &mut ValidationResult,
     host: &str,
@@ -36,7 +51,7 @@ fn trio_health_baseline(
     loam_port: u16,
     sweet_port: u16,
 ) -> (bool, bool, bool, bool) {
-    v.section("Provenance Trio Health");
+    v.section("Phase 2: Provenance trio health");
     let rhizo_ok = tcp_rpc(
         host,
         rhizo_port,
@@ -95,9 +110,8 @@ fn trio_health_baseline(
 }
 
 fn scenario_tampered_dag(v: &mut ValidationResult, host: &str, rhizo_port: u16) {
-    v.section("Tampered DAG Injection");
+    v.section("Phase 3: Tampered DAG injection");
 
-    // Step 1: create a legitimate session
     let session = tcp_rpc(
         host,
         rhizo_port,
@@ -110,7 +124,6 @@ fn scenario_tampered_dag(v: &mut ValidationResult, host: &str, rhizo_port: u16) 
             println!("  Created test session: {session_data}");
             v.check_bool("tamper_session_created", true, "test session created");
 
-            // Step 2: attempt to inject a modified event with wrong hash
             let tampered = tcp_rpc(
                 host,
                 rhizo_port,
@@ -159,9 +172,8 @@ fn scenario_tampered_dag(v: &mut ValidationResult, host: &str, rhizo_port: u16) 
 }
 
 fn scenario_replay_attack(v: &mut ValidationResult, host: &str, loam_port: u16) {
-    v.section("Replay Attack");
+    v.section("Phase 4: Replay attack");
 
-    // Attempt to commit the same provenance record twice
     let commit_params = serde_json::json!({
         "session_id": "replay-test-session-001",
         "merkle_root": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
@@ -197,9 +209,8 @@ fn scenario_replay_attack(v: &mut ValidationResult, host: &str, loam_port: u16) 
 }
 
 fn scenario_attribution_dispute(v: &mut ValidationResult, host: &str, sweet_port: u16) {
-    v.section("Attribution Dispute");
+    v.section("Phase 5: Attribution dispute");
 
-    // Two agents claim the same computation
     let claim_a = tcp_rpc(
         host,
         sweet_port,
@@ -265,7 +276,7 @@ fn scenario_attribution_dispute(v: &mut ValidationResult, host: &str, sweet_port
 }
 
 fn provenance_assessment(v: &mut ValidationResult, trio_live: bool, scenario: &str) {
-    v.section("Provenance Integrity Assessment");
+    v.section("Phase 6: Provenance integrity assessment");
     println!(
         "  Trio status:  {}",
         if trio_live { "COMPLETE" } else { "INCOMPLETE" }
@@ -291,8 +302,11 @@ fn main() {
     let sweet_port = env_port("SWEETGRASS_PORT", DEFAULT_SWEETGRASS_PORT);
 
     ValidationResult::new("primalSpring Exp084 — Provenance Adversarial")
-        .with_provenance("exp084_provenance_adversarial", "2026-03-28")
+        .with_provenance("exp084_provenance_adversarial", "2026-05-09")
         .run(&format!("Provenance scenario: {scenario}"), |v| {
+            let ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_composition_discovery(v, &ctx);
+
             if host.is_empty() {
                 println!("  REMOTE_GATE_HOST not set — running structural validation only.");
                 v.check_skip("remote_gate_configured", "REMOTE_GATE_HOST not set");
@@ -322,7 +336,7 @@ fn main() {
 }
 
 fn structural_checks(v: &mut ValidationResult) {
-    v.section("Structural Validation (Offline)");
+    v.section("Phase 2: Structural validation (offline)");
 
     v.check_bool(
         "trio_ports_defined",

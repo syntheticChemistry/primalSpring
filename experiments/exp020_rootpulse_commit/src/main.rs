@@ -1,24 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp020: `RootPulse` Full Commit — validates the 6-phase commit pipeline
-//! via Neural API `capability.call`.
-//!
-//! Phases: health → dehydrate → sign → store → commit → attribute.
-//!
-//! When the provenance trio is running, exercises real capability routing.
-//! When unavailable, phases degrade to SKIP — no false failures.
+//! Exp020: RootPulse full commit — validates the commit pipeline against live composition.
 
-use primalspring::coordination::probe_primal;
+use primalspring::composition::CompositionContext;
 use primalspring::emergent::EmergentSystem;
-use primalspring::ipc::discover::{discover_primal, neural_api_healthy};
 use primalspring::ipc::provenance::ProvenanceStatus;
-use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 use primalspring_trio_ops::{
-    begin_experiment_session, complete_experiment, record_experiment_step, trio_health,
+    begin_experiment_session, complete_experiment, record_experiment_step,
 };
 
-fn rootpulse_required_graphs(v: &mut ValidationResult) {
+fn phase_structural(v: &mut ValidationResult) {
     let graphs = EmergentSystem::RootPulse.required_graphs();
     v.check_bool(
         "rootpulse_has_five_required_graphs",
@@ -30,67 +22,66 @@ fn rootpulse_required_graphs(v: &mut ValidationResult) {
     );
 }
 
-fn provenance_trio_discovery(v: &mut ValidationResult) {
-    for &name in &[
-        primal_names::RHIZOCRYPT,
-        primal_names::LOAMSPINE,
-        primal_names::SWEETGRASS,
-    ] {
-        let disc = discover_primal(name);
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    for cap in ["dag", "ledger", "attribution"] {
         v.check_bool(
-            &format!("discover_{name}"),
-            disc.primal == name,
-            &format!("discover {name} (provenance trio)"),
-        );
-        v.check_or_skip(
-            &format!("probe_{name}"),
-            disc.socket.as_ref(),
-            &format!("{name} socket not found"),
-            |_, v| {
-                let health = probe_primal(name);
-                v.check_bool(
-                    &format!("{name}_health"),
-                    health.health_ok,
-                    &format!(
-                        "health ok: {}, latency: {}µs",
-                        health.health_ok, health.latency_us
-                    ),
-                );
-                v.check_bool(
-                    &format!("{name}_capabilities"),
-                    !health.capabilities.is_empty(),
-                    &format!("capabilities: {:?}", health.capabilities),
-                );
-            },
+            &format!("discover_{cap}"),
+            ctx.has_capability(cap),
+            &format!("{cap} capability resolved (provenance trio)"),
         );
     }
 }
 
-fn commit_phase_health(
-    v: &mut ValidationResult,
-    trio_all_healthy: bool,
-    trio_health: &[(&'static str, bool)],
-) {
-    v.check_or_skip(
-        "phase_1_health",
-        trio_all_healthy.then_some(()),
-        "trio not available for health phase",
-        |(), v| {
-            for (domain, healthy) in trio_health {
+fn phase_trio_health(v: &mut ValidationResult, ctx: &mut CompositionContext) -> bool {
+    let orch = ctx.has_capability("orchestration");
+    if orch {
+        v.check_bool(
+            "orchestration_routable",
+            true,
+            "orchestration capability resolved",
+        );
+    } else {
+        v.check_skip(
+            "orchestration_routable",
+            "orchestration capability not resolved",
+        );
+    }
+
+    let mut all_ok = orch;
+    for cap in ["dag", "ledger", "attribution"] {
+        if !ctx.has_capability(cap) {
+            v.check_skip(
+                &format!("trio_health_{cap}"),
+                &format!("{cap} not resolved"),
+            );
+            all_ok = false;
+            continue;
+        }
+        match ctx.call(cap, "health.liveness", serde_json::json!({})) {
+            Ok(_) => {
                 v.check_bool(
-                    &format!("trio_health_{domain}"),
-                    *healthy,
-                    &format!("{domain} domain health via capability.call"),
+                    &format!("trio_health_{cap}"),
+                    true,
+                    &format!("{cap} health.liveness"),
                 );
             }
-        },
-    );
+            Err(e) if e.is_connection_error() => {
+                v.check_skip(&format!("trio_health_{cap}"), &format!("{cap}: {e}"));
+                all_ok = false;
+            }
+            Err(e) => {
+                v.check_bool(&format!("trio_health_{cap}"), false, &format!("error: {e}"));
+                all_ok = false;
+            }
+        }
+    }
+    all_ok
 }
 
-fn commit_phase_dehydrate(v: &mut ValidationResult, trio_all_healthy: bool) {
+fn commit_phase_dehydrate(v: &mut ValidationResult, trio_ready: bool) {
     v.check_or_skip(
         "phase_2_dehydrate",
-        trio_all_healthy.then_some(()),
+        trio_ready.then_some(()),
         "trio not available for dehydrate phase",
         |(), v| {
             let session = begin_experiment_session("exp020-rootpulse-commit");
@@ -120,33 +111,30 @@ fn commit_phase_dehydrate(v: &mut ValidationResult, trio_all_healthy: bool) {
     );
 }
 
-fn commit_phase_sign(v: &mut ValidationResult, neural_api_live: bool) {
+fn commit_phase_sign(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.check_or_skip(
         "phase_3_sign",
-        neural_api_live.then_some(()),
-        "Neural API not available for sign phase",
-        |(), v| {
-            let sign_result = primalspring::ipc::discover::capability_call(
-                "crypto",
-                "sign",
-                &serde_json::json!({
-                    "data": "exp020-rootpulse-commit-validation",
-                    "algorithm": "ed25519",
-                }),
-            );
-            v.check_bool(
-                "crypto_sign",
-                sign_result.is_some(),
-                "beardog crypto.sign via capability.call",
-            );
+        ctx.has_capability("orchestration").then_some(()),
+        "orchestration not available for sign phase",
+        |(), v| match ctx.call(
+            "security",
+            "crypto.sign",
+            serde_json::json!({
+                "data": "exp020-rootpulse-commit-validation",
+                "algorithm": "ed25519",
+            }),
+        ) {
+            Ok(_) => v.check_bool("crypto_sign", true, "security crypto.sign"),
+            Err(e) if e.is_connection_error() => v.check_skip("crypto_sign", &format!("{e}")),
+            Err(e) => v.check_bool("crypto_sign", false, &format!("error: {e}")),
         },
     );
 }
 
-fn commit_phase_store_commit(v: &mut ValidationResult, trio_all_healthy: bool) {
+fn commit_phase_store_commit(v: &mut ValidationResult, trio_ready: bool) {
     v.check_or_skip(
         "phase_4_5_store_commit",
-        trio_all_healthy.then_some(()),
+        trio_ready.then_some(()),
         "trio not available for store/commit phase",
         |(), v| {
             let session = begin_experiment_session("exp020-commit-pipeline");
@@ -170,10 +158,10 @@ fn commit_phase_store_commit(v: &mut ValidationResult, trio_all_healthy: bool) {
     );
 }
 
-fn commit_phase_attribute(v: &mut ValidationResult, trio_all_healthy: bool) {
+fn phase_attribution(v: &mut ValidationResult, trio_ready: bool) {
     v.check_or_skip(
         "phase_6_attribute",
-        trio_all_healthy.then_some(()),
+        trio_ready.then_some(()),
         "trio not available for attribute phase",
         |(), v| {
             let session = begin_experiment_session("exp020-attribution");
@@ -194,19 +182,24 @@ fn commit_phase_attribute(v: &mut ValidationResult, trio_all_healthy: bool) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp020 — RootPulse Full Commit")
-        .with_provenance("exp020_rootpulse_commit", "2026-03-24")
+        .with_provenance("exp020_rootpulse_commit", "2026-05-09")
         .run("primalSpring Exp020: RootPulse Full 6-Phase Commit", |v| {
-            rootpulse_required_graphs(v);
-            provenance_trio_discovery(v);
+            v.section("Phase 1: Structural");
+            phase_structural(v);
 
-            let neural_api_live = neural_api_healthy();
-            let trio_health = trio_health();
-            let trio_all_healthy = neural_api_live && trio_health.iter().all(|(_domain, ok)| *ok);
+            v.section("Phase 2: Discovery");
+            let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_discovery(v, &ctx);
 
-            commit_phase_health(v, trio_all_healthy, &trio_health);
-            commit_phase_dehydrate(v, trio_all_healthy);
-            commit_phase_sign(v, neural_api_live);
-            commit_phase_store_commit(v, trio_all_healthy);
-            commit_phase_attribute(v, trio_all_healthy);
+            v.section("Phase 3: Health");
+            let trio_ready = phase_trio_health(v, &mut ctx);
+
+            v.section("Phase 4: Commit Pipeline");
+            commit_phase_dehydrate(v, trio_ready);
+            commit_phase_sign(v, &mut ctx);
+            commit_phase_store_commit(v, trio_ready);
+
+            v.section("Phase 5: Attribution");
+            phase_attribution(v, trio_ready);
         });
 }

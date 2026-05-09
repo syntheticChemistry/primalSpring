@@ -33,6 +33,12 @@ Historical handoffs live in `fossilRecord/`.
 | **PRIMALSPRING_V0925_PHASE60_DEEP_DEBT_CLOSURE_HANDOFF_MAY09_2026.md** | Delta spring teams + products | Phase 60+ deep debt closure: graph `by_capability` alignment (7 graphs), integration test decomposition (2→5 files), `validate_all` broadened, capability naming harmonized, zero `#[allow]` without reason. |
 | This README | Everyone | Index and context. |
 
+### UniBin handoffs
+
+| Topic | Document | Date |
+|-------|----------|------|
+| UniBin Eukaryotic Evolution | `PRIMALSPRING_V0925_UNIBIN_EUKARYOTIC_HANDOFF_MAY09_2026.md` | May 9, 2026 |
+
 ---
 
 ## Current Ecosystem State
@@ -56,7 +62,7 @@ Historical handoffs live in `fossilRecord/`.
 | Method gate CI | `tools/check_method_gate.sh` |
 | Method string validator | `tools/check_method_strings.sh` |
 | Graph method validator | `tools/check_graph_methods.sh` |
-| Experiment tracks | `experiments/` (85 experiments, 19 tracks) |
+| Experiment tracks | `experiments/` (89 experiments, 20 tracks) |
 | Deploy graphs | `graphs/` (74 TOMLs) |
 | Checksum tool | `tools/regenerate_checksums.sh` |
 | Binary fetch script | `tools/fetch_primals.sh` |

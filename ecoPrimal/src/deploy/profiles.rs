@@ -31,19 +31,84 @@ struct PrimalProfileEntry {
 /// Port assignments confirmed against ironGate live deployment (2026-05-04).
 /// PG-55 resolved: all 13 primals default to `127.0.0.1`.
 static PRIMAL_REGISTRY: &[PrimalProfileEntry] = &[
-    PrimalProfileEntry { name: primal_names::BEARDOG,     tcp_port: tolerances::TCP_FALLBACK_BEARDOG_PORT,     port_env: env_keys::BEARDOG_PORT,     bind_flag: "--listen" },
-    PrimalProfileEntry { name: primal_names::SONGBIRD,    tcp_port: tolerances::TCP_FALLBACK_SONGBIRD_PORT,    port_env: env_keys::SONGBIRD_PORT,    bind_flag: "--bind" },
-    PrimalProfileEntry { name: primal_names::SQUIRREL,    tcp_port: tolerances::TCP_FALLBACK_SQUIRREL_PORT,    port_env: env_keys::SQUIRREL_PORT,    bind_flag: "--bind" },
-    PrimalProfileEntry { name: primal_names::TOADSTOOL,   tcp_port: tolerances::TCP_FALLBACK_TOADSTOOL_PORT,   port_env: env_keys::TOADSTOOL_PORT,   bind_flag: "--bind" },
-    PrimalProfileEntry { name: primal_names::NESTGATE,    tcp_port: tolerances::TCP_FALLBACK_NESTGATE_PORT,    port_env: env_keys::NESTGATE_PORT,    bind_flag: "--bind" },
-    PrimalProfileEntry { name: primal_names::RHIZOCRYPT,  tcp_port: tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT,  port_env: env_keys::RHIZOCRYPT_PORT,  bind_flag: "--host" },
-    PrimalProfileEntry { name: primal_names::LOAMSPINE,   tcp_port: tolerances::TCP_FALLBACK_LOAMSPINE_PORT,   port_env: env_keys::LOAMSPINE_PORT,   bind_flag: "--bind-address" },
-    PrimalProfileEntry { name: primal_names::CORALREEF,   tcp_port: tolerances::TCP_FALLBACK_CORALREEF_PORT,   port_env: env_keys::CORALREEF_PORT,   bind_flag: "--rpc-bind" },
-    PrimalProfileEntry { name: primal_names::BARRACUDA,   tcp_port: tolerances::TCP_FALLBACK_BARRACUDA_PORT,   port_env: env_keys::BARRACUDA_PORT,   bind_flag: "--bind" },
-    PrimalProfileEntry { name: primal_names::SKUNKBAT,    tcp_port: tolerances::TCP_FALLBACK_SKUNKBAT_PORT,    port_env: env_keys::SKUNKBAT_PORT,    bind_flag: "--bind" },
-    PrimalProfileEntry { name: primal_names::BIOMEOS,     tcp_port: tolerances::TCP_FALLBACK_BIOMEOS_PORT,     port_env: env_keys::BIOMEOS_PORT,     bind_flag: "--bind" },
-    PrimalProfileEntry { name: primal_names::SWEETGRASS,  tcp_port: tolerances::TCP_FALLBACK_SWEETGRASS_PORT,  port_env: env_keys::SWEETGRASS_PORT,  bind_flag: "--http-address" },
-    PrimalProfileEntry { name: primal_names::PETALTONGUE, tcp_port: tolerances::TCP_FALLBACK_PETALTONGUE_PORT, port_env: env_keys::PETALTONGUE_PORT, bind_flag: "--bind" },
+    PrimalProfileEntry {
+        name: primal_names::BEARDOG,
+        tcp_port: tolerances::TCP_FALLBACK_BEARDOG_PORT,
+        port_env: env_keys::BEARDOG_PORT,
+        bind_flag: "--listen",
+    },
+    PrimalProfileEntry {
+        name: primal_names::SONGBIRD,
+        tcp_port: tolerances::TCP_FALLBACK_SONGBIRD_PORT,
+        port_env: env_keys::SONGBIRD_PORT,
+        bind_flag: "--bind",
+    },
+    PrimalProfileEntry {
+        name: primal_names::SQUIRREL,
+        tcp_port: tolerances::TCP_FALLBACK_SQUIRREL_PORT,
+        port_env: env_keys::SQUIRREL_PORT,
+        bind_flag: "--bind",
+    },
+    PrimalProfileEntry {
+        name: primal_names::TOADSTOOL,
+        tcp_port: tolerances::TCP_FALLBACK_TOADSTOOL_PORT,
+        port_env: env_keys::TOADSTOOL_PORT,
+        bind_flag: "--bind",
+    },
+    PrimalProfileEntry {
+        name: primal_names::NESTGATE,
+        tcp_port: tolerances::TCP_FALLBACK_NESTGATE_PORT,
+        port_env: env_keys::NESTGATE_PORT,
+        bind_flag: "--bind",
+    },
+    PrimalProfileEntry {
+        name: primal_names::RHIZOCRYPT,
+        tcp_port: tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT,
+        port_env: env_keys::RHIZOCRYPT_PORT,
+        bind_flag: "--host",
+    },
+    PrimalProfileEntry {
+        name: primal_names::LOAMSPINE,
+        tcp_port: tolerances::TCP_FALLBACK_LOAMSPINE_PORT,
+        port_env: env_keys::LOAMSPINE_PORT,
+        bind_flag: "--bind-address",
+    },
+    PrimalProfileEntry {
+        name: primal_names::CORALREEF,
+        tcp_port: tolerances::TCP_FALLBACK_CORALREEF_PORT,
+        port_env: env_keys::CORALREEF_PORT,
+        bind_flag: "--rpc-bind",
+    },
+    PrimalProfileEntry {
+        name: primal_names::BARRACUDA,
+        tcp_port: tolerances::TCP_FALLBACK_BARRACUDA_PORT,
+        port_env: env_keys::BARRACUDA_PORT,
+        bind_flag: "--bind",
+    },
+    PrimalProfileEntry {
+        name: primal_names::SKUNKBAT,
+        tcp_port: tolerances::TCP_FALLBACK_SKUNKBAT_PORT,
+        port_env: env_keys::SKUNKBAT_PORT,
+        bind_flag: "--bind",
+    },
+    PrimalProfileEntry {
+        name: primal_names::BIOMEOS,
+        tcp_port: tolerances::TCP_FALLBACK_BIOMEOS_PORT,
+        port_env: env_keys::BIOMEOS_PORT,
+        bind_flag: "--bind",
+    },
+    PrimalProfileEntry {
+        name: primal_names::SWEETGRASS,
+        tcp_port: tolerances::TCP_FALLBACK_SWEETGRASS_PORT,
+        port_env: env_keys::SWEETGRASS_PORT,
+        bind_flag: "--http-address",
+    },
+    PrimalProfileEntry {
+        name: primal_names::PETALTONGUE,
+        tcp_port: tolerances::TCP_FALLBACK_PETALTONGUE_PORT,
+        port_env: env_keys::PETALTONGUE_PORT,
+        bind_flag: "--bind",
+    },
 ];
 
 fn lookup(name: &str) -> Option<&'static PrimalProfileEntry> {
@@ -135,7 +200,11 @@ fn merge_profile_env(
 }
 
 /// Build CLI args from graph node args + launch profile.
-fn build_args(node_args: &[String], profile: &LaunchProfile, defaults: &LaunchProfile) -> Vec<String> {
+fn build_args(
+    node_args: &[String],
+    profile: &LaunchProfile,
+    defaults: &LaunchProfile,
+) -> Vec<String> {
     let mut args = Vec::new();
 
     let subcommand = profile

@@ -11,6 +11,7 @@
 //! witness serialization round-trip (struct → JSON → struct) and exits
 //! with pass for the offline portion, skip for the live crypto portion.
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::tcp;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
@@ -19,24 +20,23 @@ const CRYPTO_GENERATE_KEYPAIR: &str = "crypto.generate_keypair";
 const CRYPTO_SIGN_ED25519: &str = "crypto.sign_ed25519";
 const CRYPTO_VERIFY_ED25519: &str = "crypto.verify_ed25519";
 
-fn main() {
-    ValidationResult::new("BearDog Witness Round-Trip")
-        .with_provenance("exp089_beardog_witness_roundtrip", "2026-04-07")
-        .run("witness wire type validation", |v| {
-            phase_offline_witness_roundtrip(v);
-            phase_non_crypto_witness(v);
-
-            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
-            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
-
-            phase_live_sign_to_witness(v, &host, bd_port);
-        });
+fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Phase 1: Composition discovery");
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "composition_capabilities_non_empty",
+        !caps.is_empty(),
+        &format!("{} capabilities: {}", caps.len(), caps.join(", ")),
+    );
+    v.check_bool(
+        "has_security_capability_path",
+        ctx.has_capability("security"),
+        "security capability for live BearDog TCP path",
+    );
 }
 
-/// Offline: build a `WireWitnessRef`-shaped JSON, serialize, deserialize,
-/// and verify all fields survive the round-trip.
 fn phase_offline_witness_roundtrip(v: &mut ValidationResult) {
-    v.section("Offline Witness Serialization Round-Trip");
+    v.section("Phase 2: Offline witness serialization round-trip");
 
     let witness = serde_json::json!({
         "agent": "did:key:z6MkTest",
@@ -102,9 +102,8 @@ fn phase_offline_witness_roundtrip(v: &mut ValidationResult) {
     );
 }
 
-/// Non-crypto witnesses: checkpoint, marker, hash, timestamp.
 fn phase_non_crypto_witness(v: &mut ValidationResult) {
-    v.section("Non-Crypto Witness Variants");
+    v.section("Phase 3: Non-crypto witness variants");
 
     let cases = [
         ("checkpoint", "game:tick:4200", "none", "open"),
@@ -144,9 +143,8 @@ fn phase_non_crypto_witness(v: &mut ValidationResult) {
     }
 }
 
-/// Live: sign via `BearDog`, wrap into witness, verify via `BearDog`.
 fn phase_live_sign_to_witness(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Live BearDog Sign → Witness → Verify");
+    v.section("Phase 4: Live BearDog sign → witness → verify");
 
     let Some(pub_key) = generate_keypair(host, port) else {
         v.check_skip(
@@ -272,4 +270,21 @@ fn verify_witness_evidence(
 
 fn str_field<'a>(val: &'a serde_json::Value, key: &str) -> Option<&'a str> {
     val.get(key).and_then(serde_json::Value::as_str)
+}
+
+fn main() {
+    ValidationResult::new("primalSpring Exp089 — BearDog Witness Round-Trip")
+        .with_provenance("exp089_beardog_witness_roundtrip", "2026-05-09")
+        .run("witness wire type validation", |v| {
+            let ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_composition_discovery(v, &ctx);
+
+            phase_offline_witness_roundtrip(v);
+            phase_non_crypto_witness(v);
+
+            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
+            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+
+            phase_live_sign_to_witness(v, &host, bd_port);
+        });
 }

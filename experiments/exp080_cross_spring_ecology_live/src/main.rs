@@ -1,20 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! Exp080: Cross-Spring Ecology Live — validate cross-spring capability
-//! routing through biomeOS substrate.
-//!
-//! When biomeOS is running with spring primals registered, this experiment
-//! validates that the `cross_spring_ecology.toml` graph's capabilities
-//! can be discovered and routed: airSpring (ecology), wetSpring (science),
-//! and neuralSpring (`neural_science`) domains.
-//!
-//! Falls back to structural graph validation when spring primals are not
-//! running.
+//! Exp080: Cross-Spring Ecology Live
 
 use std::path::PathBuf;
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
-use primalspring::ipc::client::PrimalClient;
 use primalspring::validation::ValidationResult;
 
 fn discover_cross_spring_graph() -> Option<PathBuf> {
@@ -38,7 +28,8 @@ fn discover_cross_spring_graph() -> Option<PathBuf> {
     None
 }
 
-fn validate_graph_structure(v: &mut ValidationResult) {
+fn phase_graph_structure(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.section("Phase 1: Cross-spring graph structure");
     let graph_path = discover_cross_spring_graph();
     v.check_bool(
         "cross_spring_file_exists",
@@ -46,33 +37,29 @@ fn validate_graph_structure(v: &mut ValidationResult) {
         "cross_spring_ecology.toml found on disk",
     );
 
-    let Some(bridge) = NeuralBridge::discover() else {
+    if !ctx.has_capability("orchestration") {
         v.check_skip(
             "cross_spring_loaded",
-            "biomeOS not running — cannot validate graph loading",
+            "orchestration capability not available — cannot validate graph loading",
         );
         return;
-    };
+    }
 
-    let mut client = match PrimalClient::connect(bridge.socket_path(), "biomeos") {
-        Ok(c) => c,
-        Err(e) => {
-            v.check_bool("biomeos_connect", false, &format!("{e}"));
-            return;
-        }
-    };
-
-    let resp = client.call("graph.list", serde_json::json!({}));
-    let graphs: Vec<serde_json::Value> = match resp {
-        Ok(r) => r
-            .result
-            .and_then(|v| serde_json::from_value(v).ok())
-            .unwrap_or_default(),
-        Err(e) => {
-            v.check_bool("graph_list", false, &format!("{e}"));
-            return;
-        }
-    };
+    let graphs: Vec<serde_json::Value> =
+        match ctx.call("orchestration", "graph.list", serde_json::json!({})) {
+            Ok(v) => match v {
+                serde_json::Value::Array(a) => a,
+                v => serde_json::from_value(v).unwrap_or_default(),
+            },
+            Err(e) if e.is_connection_error() => {
+                v.check_skip("cross_spring_loaded", &format!("{e}"));
+                return;
+            }
+            Err(e) => {
+                v.check_bool("graph_list", false, &format!("error: {e}"));
+                return;
+            }
+        };
 
     let ecology = graphs
         .iter()
@@ -108,7 +95,8 @@ fn validate_graph_structure(v: &mut ValidationResult) {
     }
 }
 
-fn validate_live_routing(v: &mut ValidationResult) {
+fn phase_live_routing(v: &mut ValidationResult) {
+    v.section("Phase 2: Live capability routing");
     let Some(bridge) = NeuralBridge::discover() else {
         v.check_skip(
             "cross_spring_live",
@@ -142,12 +130,13 @@ fn validate_live_routing(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp080 — Cross-Spring Ecology Live")
-        .with_provenance("exp080_cross_spring_ecology_live", "2026-03-27")
+        .with_provenance("exp080_cross_spring_ecology_live", "2026-05-09")
         .run(
             "primalSpring Exp080: Cross-spring ecology validation (structural + live routing)",
             |v| {
-                validate_graph_structure(v);
-                validate_live_routing(v);
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_graph_structure(v, &mut ctx);
+                phase_live_routing(v);
             },
         );
 }

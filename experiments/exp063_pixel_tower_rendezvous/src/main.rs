@@ -1,77 +1,21 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp063: Pixel ↔ Tower Rendezvous — BirdSong and connectivity via CompositionContext.
 
-//! Exp063: Pixel ↔ Tower Rendezvous — replicate the biomeOS beacon exchange.
-//!
-//! Validates the local half of the Pixel 8a deployment flow demonstrated
-//! by biomeOS: spawn Tower, generate an encrypted `BirdSong` beacon, POST
-//! it to the rendezvous endpoint, and verify the exchange.
-//!
-//! Supports two modes:
-//! - **Local** (default): spawn Tower locally, validate beacon on local Songbird
-//! - **Cross-device**: set `PIXEL_SONGBIRD_HOST` + `PIXEL_SONGBIRD_PORT` to
-//!   also probe a remote Pixel's Songbird and exchange beacons cross-device
-//!
-//! The full Pixel replication requires running the mobile side from
-//! `biomeOS/pixel8a-deploy/start_nucleus_mobile.sh` on a physical device
-//! connected via hotspot. This experiment validates the server-side path
-//! and optionally the cross-device beacon exchange.
-
-use std::io::{BufRead, BufReader, Write};
-use std::os::unix::net::UnixStream;
-use std::path::Path;
-use std::time::Duration;
-
-use primalspring::coordination::AtomicType;
-use primalspring::harness::AtomicHarness;
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::methods;
 use primalspring::ipc::tcp;
-use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
-fn rpc_call(
-    socket: &Path,
-    method: &str,
-    params: &serde_json::Value,
-) -> Result<serde_json::Value, String> {
-    let mut stream = UnixStream::connect(socket).map_err(|e| format!("connect: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(10))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let msg = format!("{req}\n");
-    stream
-        .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
-
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
-            if let Some(result) = parsed.get("result") {
-                return Ok(result.clone());
-            }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
-            }
-        }
+fn phase_beacon(v: &mut ValidationResult, ctx: &mut CompositionContext, family_id: &str) {
+    if !ctx.has_capability("discovery") {
+        v.check_skip("beacon_generated", "discovery capability not connected");
+        return;
     }
-    Err("no response".to_owned())
-}
 
-fn validate_beacon(
-    v: &mut primalspring::validation::ValidationResult,
-    socket: &Path,
-    family_id: &str,
-) {
-    let beacon_result = rpc_call(
-        socket,
+    let beacon_result = ctx.call(
+        "discovery",
         "birdsong.generate_encrypted_beacon",
-        &serde_json::json!({
+        serde_json::json!({
             "family_id": family_id,
             "node_id": family_id,
             "capabilities": ["security", "discovery", "network.tls"],
@@ -92,10 +36,10 @@ fn validate_beacon(
                 .get("encrypted_beacon")
                 .and_then(|v| v.as_str())
                 .unwrap_or_default();
-            let decrypt = rpc_call(
-                socket,
+            let decrypt = ctx.call(
+                "discovery",
                 "birdsong.decrypt_beacon",
-                &serde_json::json!({ "encrypted_beacon": enc_str }),
+                serde_json::json!({ "encrypted_beacon": enc_str }),
             );
             match &decrypt {
                 Ok(plain) => {
@@ -114,24 +58,30 @@ fn validate_beacon(
         }
         Err(e) => {
             println!("  beacon generation: {e}");
+            let msg = format!("{e}");
             v.check_bool(
                 "beacon_generated",
-                e.contains("Method not found"),
+                msg.contains("Method not found") || e.is_method_not_found(),
                 &format!("birdsong.generate_encrypted_beacon: {e}"),
             );
         }
     }
 }
 
-fn validate_connectivity(
-    v: &mut primalspring::validation::ValidationResult,
-    socket: &Path,
-    family_id: &str,
-) {
-    let onion = rpc_call(
-        socket,
+fn phase_connectivity(v: &mut ValidationResult, ctx: &mut CompositionContext, family_id: &str) {
+    if !ctx.has_capability("discovery") {
+        v.check_skip("onion_started", "discovery capability not connected");
+        v.check_skip(
+            "stun_address_obtained",
+            "discovery capability not connected",
+        );
+        return;
+    }
+
+    let onion = ctx.call(
+        "discovery",
         "onion.start",
-        &serde_json::json!({ "family_id": family_id }),
+        serde_json::json!({ "family_id": family_id }),
     );
     match &onion {
         Ok(resp) => {
@@ -144,15 +94,20 @@ fn validate_connectivity(
         }
         Err(e) => {
             println!("  onion.start: {e}");
+            let msg = format!("{e}");
             v.check_bool(
                 "onion_started",
-                e.contains("Method not found"),
+                msg.contains("Method not found") || e.is_method_not_found(),
                 &format!("onion: {e}"),
             );
         }
     }
 
-    let stun = rpc_call(socket, "stun.get_public_address", &serde_json::json!({}));
+    let stun = ctx.call(
+        "discovery",
+        "stun.get_public_address",
+        serde_json::json!({}),
+    );
     match &stun {
         Ok(addr) => {
             println!("  STUN public address: {addr}");
@@ -164,23 +119,24 @@ fn validate_connectivity(
         }
         Err(e) => {
             println!("  STUN: {e}");
+            let msg = format!("{e}");
             v.check_bool(
                 "stun_address_obtained",
-                e.contains("Method not found"),
+                msg.contains("Method not found") || e.is_method_not_found(),
                 &format!("STUN: {e}"),
             );
         }
     }
 }
 
-fn cross_device_exchange(
+fn phase_cross_device(
     v: &mut ValidationResult,
-    songbird_socket: &Path,
+    ctx: &mut CompositionContext,
     family_id: &str,
     host: &str,
     pixel_port: u16,
 ) {
-    v.section("Cross-Device Beacon Exchange");
+    v.section("Phase 3: Cross-Device Beacon Exchange");
     println!("  Pixel host: {host}:{pixel_port}");
 
     match tcp::tcp_rpc(
@@ -199,10 +155,15 @@ fn cross_device_exchange(
         }
     }
 
-    let local_beacon = rpc_call(
-        songbird_socket,
+    if !ctx.has_capability("discovery") {
+        v.check_skip("cross_device_beacon", "discovery capability not connected");
+        return;
+    }
+
+    let local_beacon = ctx.call(
+        "discovery",
         "birdsong.generate_encrypted_beacon",
-        &serde_json::json!({
+        serde_json::json!({
             "family_id": family_id,
             "node_id": "tower_local",
             "capabilities": ["security", "discovery"],
@@ -239,34 +200,19 @@ fn cross_device_exchange(
 }
 
 fn main() {
-    let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
     let family_id = format!("e063-{}", std::process::id());
 
     ValidationResult::new("primalSpring Exp063 — Pixel Tower Rendezvous")
-        .with_provenance("exp063_pixel_tower_rendezvous", "2026-03-24")
+        .with_provenance("exp063_pixel_tower_rendezvous", "2026-05-09")
         .run(
             "primalSpring Exp063: BirdSong beacon generation + rendezvous exchange",
             |v| {
-                let running = match AtomicHarness::new(AtomicType::Tower)
-                    .start_with_neural_api(&family_id, &graphs_dir)
-                {
-                    Ok(r) => r,
-                    Err(e) => {
-                        v.check_bool("harness_start", false, &format!("failed to start: {e}"));
-                        return;
-                    }
-                };
+                v.section("Phase 1: BirdSong beacon");
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_beacon(v, &mut ctx, &family_id);
 
-                let Some(songbird_socket) = running
-                    .socket_for("discovery")
-                    .or_else(|| running.socket_for_primal(primal_names::SONGBIRD))
-                else {
-                    v.check_bool("songbird_socket", false, "songbird socket not found");
-                    return;
-                };
-
-                validate_beacon(v, songbird_socket, &family_id);
-                validate_connectivity(v, songbird_socket, &family_id);
+                v.section("Phase 2: Connectivity");
+                phase_connectivity(v, &mut ctx, &family_id);
 
                 let pixel_host = std::env::var("PIXEL_SONGBIRD_HOST").ok();
                 let pixel_port = tcp::env_port(
@@ -275,7 +221,7 @@ fn main() {
                 );
 
                 if let Some(ref host) = pixel_host {
-                    cross_device_exchange(v, songbird_socket, &family_id, host, pixel_port);
+                    phase_cross_device(v, &mut ctx, &family_id, host, pixel_port);
                 }
 
                 println!("\n  === Rendezvous Flow Summary ===");

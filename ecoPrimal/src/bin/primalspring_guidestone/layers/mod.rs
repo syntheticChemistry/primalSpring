@@ -7,3 +7,4 @@ pub mod bonding;
 pub mod btsp;
 pub mod cellular;
 pub mod health;
+pub mod lifecycle;

@@ -21,6 +21,10 @@
 use std::path::Path;
 
 use primalspring::composition::CompositionContext;
+#[allow(
+    deprecated,
+    reason = "experiment uses deprecated probe_primal for foundation validation"
+)]
 use primalspring::coordination::probe_primal;
 use primalspring::deploy::{load_graph, validate_structure};
 use primalspring::primal_names as pn;
@@ -136,7 +140,15 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
         &format!("{} capabilities: {}", caps.len(), caps.join(", ")),
     );
 
-    for cap in ["security", "discovery", "compute", "storage", "dag", "ledger", "attribution"] {
+    for cap in [
+        "security",
+        "discovery",
+        "compute",
+        "storage",
+        "dag",
+        "ledger",
+        "attribution",
+    ] {
         v.check_bool(
             &format!("has_{cap}"),
             ctx.has_capability(cap),
@@ -153,6 +165,10 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
     );
 }
 
+#[allow(
+    deprecated,
+    reason = "experiment uses deprecated probe_primal for foundation validation"
+)]
 fn phase_health(v: &mut ValidationResult) {
     for &name in FOUNDATION_PRIMALS {
         let health = probe_primal(name);
@@ -160,13 +176,14 @@ fn phase_health(v: &mut ValidationResult) {
             v.check_bool(
                 &format!("health_{name}"),
                 true,
-                &format!("{name} healthy, {}us, {} caps", health.latency_us, health.capabilities.len()),
+                &format!(
+                    "{name} healthy, {}us, {} caps",
+                    health.latency_us,
+                    health.capabilities.len()
+                ),
             );
         } else {
-            v.check_skip(
-                &format!("health_{name}"),
-                &format!("{name} not reachable"),
-            );
+            v.check_skip(&format!("health_{name}"), &format!("{name} not reachable"));
         }
     }
 }
@@ -188,7 +205,10 @@ fn phase_provenance(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             .unwrap_or("")
             .to_owned(),
         Err(ref e) if e.is_connection_error() => {
-            v.check_skip("dag_session_create", &format!("rhizoCrypt not available: {e}"));
+            v.check_skip(
+                "dag_session_create",
+                &format!("rhizoCrypt not available: {e}"),
+            );
             v.check_skip("dag_event_append", "no session");
             v.check_skip("dag_session_complete", "no session");
             return;
@@ -311,7 +331,10 @@ fn phase_ledger(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             .unwrap_or("")
             .to_owned(),
         Err(ref e) if e.is_connection_error() => {
-            v.check_skip("ledger_spine_create", &format!("loamSpine not available: {e}"));
+            v.check_skip(
+                "ledger_spine_create",
+                &format!("loamSpine not available: {e}"),
+            );
             v.check_skip("ledger_entry_append", "no spine");
             return;
         }

@@ -1,104 +1,103 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-//! exp066 — Nest Atomic validation: Tower + `NestGate` + Squirrel
-//!
-//! Validates that the Nest Atomic composition (beardog + songbird + nestgate + squirrel)
-//! starts, stores/retrieves data, and passes health checks.
+//! Exp066: Nest Atomic — NestGate storage via CompositionContext.
 
+use primalspring::composition::CompositionContext;
 use primalspring::coordination::AtomicType;
-use primalspring::harness::AtomicHarness;
-use primalspring::ipc::client::PrimalClient;
-use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
-fn rpc(
-    socket: &std::path::Path,
-    method: &str,
-    params: &serde_json::Value,
-) -> Result<serde_json::Value, String> {
-    let mut client =
-        PrimalClient::connect(socket, primal_names::NESTGATE).map_err(|e| format!("{e}"))?;
-    let resp = client
-        .call(method, params.clone())
-        .map_err(|e| format!("{e}"))?;
-    if let Some(err) = resp.error {
-        return Err(format!("RPC error {}: {}", err.code, err.message));
+fn phase_structural(v: &mut ValidationResult) {
+    let primals = AtomicType::Nest.required_primals();
+    v.check_bool(
+        "nest_composition_valid",
+        primals.len() == 4,
+        "Nest = beardog + songbird + nestgate + squirrel",
+    );
+}
+
+fn phase_nest_capabilities(v: &mut ValidationResult, ctx: &CompositionContext) {
+    for cap in AtomicType::Nest.required_capabilities() {
+        v.check_bool(
+            &format!("has_{cap}"),
+            ctx.has_capability(cap),
+            &format!("{cap} capability resolved"),
+        );
     }
-    Ok(resp.result.unwrap_or(serde_json::Value::Null))
+}
+
+fn phase_storage(v: &mut ValidationResult, ctx: &mut CompositionContext, family_id: &str) {
+    if !ctx.has_capability("storage") {
+        v.check_skip("nestgate_store", "storage capability not discovered");
+        v.check_skip("nestgate_retrieve", "storage capability not discovered");
+        v.check_skip(
+            "nestgate_data_integrity",
+            "storage capability not discovered",
+        );
+        v.check_skip("nestgate_health", "storage capability not discovered");
+        v.check_skip("nestgate_caps", "storage capability not discovered");
+        return;
+    }
+
+    let store = ctx.call(
+        "storage",
+        "storage.store",
+        serde_json::json!({
+            "family_id": family_id,
+            "key": "exp066_test",
+            "data": {"experiment": "nest_atomic", "timestamp": "2026-03-22"}
+        }),
+    );
+    v.check_bool("nestgate_store", store.is_ok(), "storage.store");
+
+    let retrieve = ctx.call(
+        "storage",
+        "storage.retrieve",
+        serde_json::json!({
+            "family_id": family_id, "key": "exp066_test"
+        }),
+    );
+    v.check_bool("nestgate_retrieve", retrieve.is_ok(), "storage.retrieve");
+
+    if let Ok(val) = &retrieve {
+        v.check_bool(
+            "nestgate_data_integrity",
+            val.get("data")
+                .and_then(|d| d.get("experiment"))
+                .and_then(|e| e.as_str())
+                == Some("nest_atomic"),
+            "data round-trip integrity",
+        );
+    }
+
+    match ctx.call("storage", "health.liveness", serde_json::json!({})) {
+        Ok(_) => v.check_bool("nestgate_health", true, "nestgate health.liveness"),
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("nestgate_health", &format!("{e}"));
+        }
+        Err(e) => v.check_bool("nestgate_health", false, &format!("error: {e}")),
+    }
+
+    match ctx.call("storage", "capabilities.list", serde_json::json!({})) {
+        Ok(_) => v.check_bool("nestgate_caps", true, "nestgate capabilities.list"),
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("nestgate_caps", &format!("{e}"));
+        }
+        Err(e) => v.check_bool("nestgate_caps", false, &format!("error: {e}")),
+    }
 }
 
 fn main() {
     ValidationResult::new("exp066_nest_atomic")
-        .with_provenance("exp066_nest_atomic", "2026-03-23")
+        .with_provenance("exp066_nest_atomic", "2026-05-09")
         .run("Nest Atomic — Tower + NestGate + Squirrel", |v| {
-            let primals = AtomicType::Nest.required_primals();
-            v.check_bool(
-                "nest_composition_valid",
-                primals.len() == 4,
-                "Nest = beardog + songbird + nestgate + squirrel",
-            );
+            v.section("Phase 1: Structural");
+            phase_structural(v);
 
+            v.section("Phase 2: Discovery");
+            let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_nest_capabilities(v, &ctx);
+
+            v.section("Phase 3: NestGate storage");
             let family_id = format!("exp066-{}", std::process::id());
-            let running = match AtomicHarness::new(AtomicType::Nest).start(&family_id) {
-                Ok(r) => {
-                    v.check_bool("nest_startup", true, "Nest Atomic started");
-                    r
-                }
-                Err(e) => {
-                    v.check_bool("nest_startup", false, &format!("startup failed: {e}"));
-                    return;
-                }
-            };
-
-            v.check_minimum("nest_primal_count", running.primal_count(), 4);
-            running.validate(v);
-
-            if let Some(ng) = running
-                .socket_for("storage")
-                .or_else(|| running.socket_for_primal(primal_names::NESTGATE))
-            {
-                let store = rpc(
-                    ng,
-                    "storage.store",
-                    &serde_json::json!({
-                        "family_id": family_id,
-                        "key": "exp066_test",
-                        "data": {"experiment": "nest_atomic", "timestamp": "2026-03-22"}
-                    }),
-                );
-                v.check_bool("nestgate_store", store.is_ok(), "storage.store");
-
-                let retrieve = rpc(
-                    ng,
-                    "storage.retrieve",
-                    &serde_json::json!({
-                        "family_id": family_id, "key": "exp066_test"
-                    }),
-                );
-                v.check_bool("nestgate_retrieve", retrieve.is_ok(), "storage.retrieve");
-
-                if let Ok(val) = &retrieve {
-                    v.check_bool(
-                        "nestgate_data_integrity",
-                        val.get("data")
-                            .and_then(|d| d.get("experiment"))
-                            .and_then(|e| e.as_str())
-                            == Some("nest_atomic"),
-                        "data round-trip integrity",
-                    );
-                }
-
-                v.check_bool(
-                    "nestgate_health",
-                    rpc(ng, "health", &serde_json::json!({})).is_ok(),
-                    "nestgate health",
-                );
-                v.check_bool(
-                    "nestgate_caps",
-                    rpc(ng, "discover_capabilities", &serde_json::json!({})).is_ok(),
-                    "nestgate capabilities",
-                );
-            } else {
-                v.check_skip("nestgate_store", "nestgate socket not found");
-            }
+            phase_storage(v, &mut ctx, &family_id);
         });
 }

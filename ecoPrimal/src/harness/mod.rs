@@ -6,6 +6,9 @@
 //! respecting topological startup ordering from a deploy graph, and
 //! tears them down on drop.
 //!
+//! **Deprecated**: Use plasmidBin ecoBin deployment via biomeOS +
+//! `CompositionContext` instead of direct primal spawning.
+//!
 //! # Usage
 //!
 //! ```rust,no_run
@@ -37,6 +40,10 @@ use tracing::{debug, info};
 ///
 /// Holds live [`PrimalProcess`] instances. When dropped, primals are
 /// killed in reverse startup order and sockets are cleaned up.
+#[deprecated(
+    since = "0.9.25",
+    note = "use plasmidBin ecoBin deployment via biomeOS + CompositionContext instead of direct primal spawning"
+)]
 pub struct RunningAtomic {
     processes: Vec<PrimalProcess>,
     /// biomeOS running in neural-api mode (graph orchestration + capability routing).
@@ -62,6 +69,10 @@ pub struct RunningAtomic {
     overlay_capabilities: HashMap<String, String>,
 }
 
+#[allow(
+    deprecated,
+    reason = "impl block for deprecated AtomicHarness/RunningAtomic"
+)]
 impl RunningAtomic {
     /// Get the socket path for a capability (e.g. `"security"` → beardog's socket).
     ///
@@ -310,6 +321,10 @@ impl RunningAtomic {
     }
 }
 
+#[allow(
+    deprecated,
+    reason = "impl block for deprecated AtomicHarness/RunningAtomic"
+)]
 impl Drop for RunningAtomic {
     fn drop(&mut self) {
         if let Some(biomeos) = self.biomeos_process.take() {
@@ -339,11 +354,19 @@ impl Drop for RunningAtomic {
 /// [`topological_waves`](crate::deploy::topological_waves) to determine
 /// startup ordering. Without a graph, primals start in the static order
 /// from [`AtomicType::required_primals`].
+#[deprecated(
+    since = "0.9.25",
+    note = "use plasmidBin ecoBin deployment via biomeOS + CompositionContext instead of direct primal spawning"
+)]
 pub struct AtomicHarness {
     atomic: AtomicType,
     graph_path: Option<PathBuf>,
 }
 
+#[allow(
+    deprecated,
+    reason = "impl block for deprecated AtomicHarness/RunningAtomic"
+)]
 impl AtomicHarness {
     /// Create a harness for the given composition (no graph-driven ordering).
     #[must_use]

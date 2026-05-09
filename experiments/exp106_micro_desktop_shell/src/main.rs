@@ -15,80 +15,39 @@
 //! Phase 56 — Desktop Substrate (MICRO_DESKTOP_COMPOSITION.md)
 
 use base64::Engine as _;
-use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover::{discover_by_capability, discover_primal};
+use primalspring::composition::CompositionContext;
 use primalspring::validation::ValidationResult;
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 1: biomeOS Neural API Connection
-// ═══════════════════════════════════════════════════════════════════════
-
-fn phase_biomeos_connection(v: &mut ValidationResult) -> Option<PrimalClient> {
+fn phase_biomeos_connection(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("biomeOS Neural API Connection");
 
-    let bio = discover_primal("biomeos");
-    let bio_sock_ref = bio.socket.as_ref();
+    if !ctx.has_capability("orchestration") {
+        v.check_skip(
+            "biomeos_connect",
+            "biomeOS not discovered (tried biomeos, neural-api, orchestration)",
+        );
+        return;
+    }
 
-    let fallback;
-    let bio_sock_ref = if bio_sock_ref.is_some() {
-        bio_sock_ref
-    } else {
-        fallback = discover_primal("neural-api");
-        fallback.socket.as_ref()
-    };
-
-    let Some(bio_sock) = bio_sock_ref else {
-        let orchestration = discover_by_capability("orchestration");
-        let Some(bio_sock) = orchestration.socket.as_ref() else {
-            v.check_skip(
-                "biomeos_connect",
-                "biomeOS not discovered (tried biomeos, neural-api, orchestration)",
-            );
-            return None;
-        };
-        match PrimalClient::connect(bio_sock, "biomeos") {
-            Ok(mut client) => {
-                let health = client.health_check();
-                v.check_bool(
-                    "biomeos_connect",
-                    health.is_ok_and(|h| h),
-                    "biomeOS connected via orchestration capability",
-                );
-                return Some(client);
-            }
-            Err(e) => {
-                v.check_skip(
-                    "biomeos_connect",
-                    &format!("biomeOS connection failed: {e}"),
-                );
-                return None;
-            }
-        }
-    };
-
-    match PrimalClient::connect(bio_sock, "biomeos") {
-        Ok(mut client) => {
-            let health = client.health_check();
+    match ctx.health_check("orchestration") {
+        Ok(true) => {
             v.check_bool(
                 "biomeos_connect",
-                health.is_ok_and(|h| h),
+                true,
                 "biomeOS Neural API connected and healthy",
             );
-            Some(client)
+        }
+        Ok(false) => {
+            v.check_skip("biomeos_connect", "biomeOS orchestration not healthy");
         }
         Err(e) => {
             v.check_skip(
                 "biomeos_connect",
                 &format!("biomeOS connection failed: {e}"),
             );
-            None
         }
     }
 }
-
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 2: System Health Polling (Songbird Discovery)
-// ═══════════════════════════════════════════════════════════════════════
 
 struct PrimalHealth {
     #[expect(dead_code, reason = "used for structured logging, not rendered in TUI")]
@@ -99,7 +58,10 @@ struct PrimalHealth {
     healthy: bool,
 }
 
-fn phase_system_health(v: &mut ValidationResult) -> Vec<PrimalHealth> {
+fn phase_system_health(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+) -> Vec<PrimalHealth> {
     v.section("System Health Polling (Songbird)");
 
     let primals: &[(&str, &str, &str)] = &[
@@ -107,9 +69,9 @@ fn phase_system_health(v: &mut ValidationResult) -> Vec<PrimalHealth> {
         ("Songbird", "Song", "discovery"),
         ("NestGate", "Nest", "storage"),
         ("Squirrel", "Squi", "ai"),
-        ("BearDog", "Bear", "crypto"),
+        ("BearDog", "Bear", "security"),
         ("ToadStool", "Toad", "compute"),
-        ("Barracuda", "Barr", "math"),
+        ("Barracuda", "Barr", "tensor"),
         ("CoralReef", "Coral", "shader"),
         ("rhizoCrypt", "Rz", "dag"),
         ("loamSpine", "Loam", "ledger"),
@@ -121,13 +83,8 @@ fn phase_system_health(v: &mut ValidationResult) -> Vec<PrimalHealth> {
     let mut healthy_count = 0;
 
     for &(name, abbrev, capability) in primals {
-        let disc = discover_by_capability(capability);
-        let healthy = disc.socket.as_ref().is_some_and(|sock| {
-            PrimalClient::connect(sock, &name.to_lowercase())
-                .ok()
-                .and_then(|mut c| c.health_check().ok())
-                .unwrap_or(false)
-        });
+        let healthy =
+            ctx.has_capability(capability) && ctx.health_check(capability).unwrap_or(false);
 
         if healthy {
             healthy_count += 1;
@@ -164,20 +121,16 @@ fn phase_system_health(v: &mut ValidationResult) -> Vec<PrimalHealth> {
     health_results
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 3: biomeOS Capability Routing
-// ═══════════════════════════════════════════════════════════════════════
-
-fn phase_capability_routing(v: &mut ValidationResult, biomeos: &mut Option<PrimalClient>) {
+fn phase_capability_routing(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("biomeOS Capability Routing");
 
-    let Some(client) = biomeos.as_mut() else {
+    if !ctx.has_capability("orchestration") {
         v.check_skip(
             "cap_routing",
             "biomeOS not connected — skipping routing tests",
         );
         return;
-    };
+    }
 
     let test_cases: &[(&str, &str, serde_json::Value, &str)] = &[
         (
@@ -223,13 +176,14 @@ fn phase_capability_routing(v: &mut ValidationResult, biomeos: &mut Option<Prima
     ];
 
     for (check_name, _method, params, detail) in test_cases {
-        let resp = client.call("capability.call", params.clone());
+        let resp = ctx.call("orchestration", "capability.call", params.clone());
 
-        v.check_bool(check_name, resp.is_ok_and(|r| r.result.is_some()), detail);
+        v.check_bool(check_name, resp.is_ok(), detail);
     }
 
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
-    let storage_resp = client.call(
+    let storage_resp = ctx.call(
+        "orchestration",
         "capability.call",
         serde_json::json!({
             "capability": "storage",
@@ -238,7 +192,7 @@ fn phase_capability_routing(v: &mut ValidationResult, biomeos: &mut Option<Prima
         }),
     );
 
-    let storage_ok = storage_resp.is_ok_and(|r| r.result.is_some());
+    let storage_ok = storage_resp.is_ok();
     if storage_ok {
         v.check_bool(
             "route_storage",
@@ -253,25 +207,19 @@ fn phase_capability_routing(v: &mut ValidationResult, biomeos: &mut Option<Prima
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 4: Graph Execution
-// ═══════════════════════════════════════════════════════════════════════
-
-fn phase_graph_management(v: &mut ValidationResult, biomeos: &mut Option<PrimalClient>) {
+fn phase_graph_management(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("biomeOS Graph Management");
 
-    let Some(client) = biomeos.as_mut() else {
+    if !ctx.has_capability("orchestration") {
         v.check_skip("graph_mgmt", "biomeOS not connected — skipping graph tests");
         return;
-    };
+    }
 
-    let list_resp = client.call("graph.list", serde_json::json!({}));
+    let list_resp = ctx.call("orchestration", "graph.list", serde_json::json!({}));
     match list_resp {
         Ok(r) => {
             let count = r
-                .result
-                .as_ref()
-                .and_then(|r| r.get("graphs"))
+                .get("graphs")
                 .and_then(|g| g.as_array())
                 .map_or(0, Vec::len);
             v.check_bool(
@@ -285,14 +233,15 @@ fn phase_graph_management(v: &mut ValidationResult, biomeos: &mut Option<PrimalC
         }
     }
 
-    let status_resp = client.call("graph.status", serde_json::json!({}));
+    let status_resp = ctx.call("orchestration", "graph.status", serde_json::json!({}));
     v.check_bool(
         "graph_status",
-        status_resp.is_ok_and(|r| r.result.is_some()),
+        status_resp.is_ok(),
         "biomeOS graph.status accessible",
     );
 
-    let save_resp = client.call(
+    let save_resp = ctx.call(
+        "orchestration",
         "graph.save",
         serde_json::json!({
             "name": "rhizome_game",
@@ -306,35 +255,29 @@ fn phase_graph_management(v: &mut ValidationResult, biomeos: &mut Option<PrimalC
 
     v.check_bool(
         "graph_save",
-        save_resp.is_ok_and(|r| r.result.is_some()),
+        save_resp.is_ok(),
         "biomeOS graph.save for rhizome game",
     );
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 5: Provenance Sidebar Data
-// ═══════════════════════════════════════════════════════════════════════
-
-fn phase_provenance_sidebar(v: &mut ValidationResult) -> Option<String> {
+fn phase_provenance_sidebar(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+) -> Option<String> {
     v.section("Provenance Sidebar (rhizoCrypt DAG)");
 
-    let rz = discover_by_capability("dag");
-    let Some(rz_sock) = rz.socket.as_ref() else {
+    if !ctx.has_capability("dag") {
         v.check_skip("prov_sidebar", "rhizoCrypt not discovered");
         return None;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(rz_sock, "rhizocrypt") else {
-        v.check_skip("prov_sidebar", "rhizoCrypt connection failed");
-        return None;
-    };
-
-    let session_resp = client.call(
+    let session_resp = ctx.call(
+        "dag",
         "dag.session.create",
         serde_json::json!({"name": "exp106-provenance-sidebar"}),
     );
 
-    let session_id = session_resp.ok().and_then(|r| r.result).and_then(|v| {
+    let session_id = session_resp.ok().and_then(|v| {
         v.as_str().map(String::from).or_else(|| {
             v.get("session_id")
                 .and_then(|s| s.as_str())
@@ -350,7 +293,8 @@ fn phase_provenance_sidebar(v: &mut ValidationResult) -> Option<String> {
     v.check_bool("prov_session", true, "DAG session for sidebar created");
 
     for label in &["session_start", "game_save_turn_100", "game_save_turn_200"] {
-        let _ = client.call(
+        let _ = ctx.call(
+            "dag",
             "dag.event.append",
             serde_json::json!({
                 "session_id": sid,
@@ -366,16 +310,15 @@ fn phase_provenance_sidebar(v: &mut ValidationResult) -> Option<String> {
         );
     }
 
-    let root_resp = client.call("dag.merkle.root", serde_json::json!({"session_id": sid}));
+    let root_resp = ctx.call(
+        "dag",
+        "dag.merkle.root",
+        serde_json::json!({"session_id": sid}),
+    );
 
     match root_resp {
         Ok(r) => {
-            let root = r
-                .result
-                .as_ref()
-                .and_then(|r| r.get("root"))
-                .and_then(|s| s.as_str())
-                .unwrap_or("unknown");
+            let root = r.get("root").and_then(|s| s.as_str()).unwrap_or("unknown");
             let short_root = &root[..root.len().min(12)];
             v.check_bool(
                 "prov_merkle",
@@ -391,26 +334,21 @@ fn phase_provenance_sidebar(v: &mut ValidationResult) -> Option<String> {
     session_id
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 6: Multi-Session petalTongue Rendering
-// ═══════════════════════════════════════════════════════════════════════
-
-fn phase_multi_session_rendering(v: &mut ValidationResult, health: &[PrimalHealth]) {
+fn phase_multi_session_rendering(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+    health: &[PrimalHealth],
+) {
     v.section("Multi-Session Rendering (petalTongue)");
 
-    let pt = discover_by_capability("visualization");
-    let Some(pt_sock) = pt.socket.as_ref() else {
+    if !ctx.has_capability("visualization") {
         v.check_skip("multi_render", "petalTongue not discovered");
         return;
-    };
-
-    let Ok(mut client) = PrimalClient::connect(pt_sock, "petaltongue") else {
-        v.check_skip("multi_render", "petalTongue connection failed");
-        return;
-    };
+    }
 
     let shell_scene = build_shell_scene(health);
-    let shell_resp = client.call(
+    let shell_resp = ctx.call(
+        "visualization",
         "visualization.render.scene",
         serde_json::json!({
             "session": "desktop-shell",
@@ -418,7 +356,7 @@ fn phase_multi_session_rendering(v: &mut ValidationResult, health: &[PrimalHealt
         }),
     );
 
-    let shell_ok = shell_resp.is_ok_and(|r| r.result.is_some());
+    let shell_ok = shell_resp.is_ok();
     v.check_bool(
         "shell_scene",
         shell_ok,
@@ -426,7 +364,8 @@ fn phase_multi_session_rendering(v: &mut ValidationResult, health: &[PrimalHealt
     );
 
     let game_scene = build_game_placeholder_scene();
-    let game_resp = client.call(
+    let game_resp = ctx.call(
+        "visualization",
         "visualization.render.scene",
         serde_json::json!({
             "session": "rhizome-game",
@@ -434,7 +373,7 @@ fn phase_multi_session_rendering(v: &mut ValidationResult, health: &[PrimalHealt
         }),
     );
 
-    let game_ok = game_resp.is_ok_and(|r| r.result.is_some());
+    let game_ok = game_resp.is_ok();
     v.check_bool(
         "game_scene",
         game_ok,
@@ -548,11 +487,7 @@ fn build_game_placeholder_scene() -> serde_json::Value {
     })
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 7: Direct Primal Fallbacks (when biomeOS routing fails)
-// ═══════════════════════════════════════════════════════════════════════
-
-fn phase_direct_fallbacks(v: &mut ValidationResult) {
+fn phase_direct_fallbacks(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Direct Primal Fallbacks");
 
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
@@ -562,96 +497,56 @@ fn phase_direct_fallbacks(v: &mut ValidationResult) {
         "value": "desktop-shell-direct-fallback",
     });
 
-    let ng = discover_primal("nestgate");
-    if let Some(ng_sock) = ng.socket.as_ref() {
-        if let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") {
-            let resp = client.call("storage.store", store_params);
-            match &resp {
-                Ok(r) if r.result.is_some() => {
-                    v.check_bool("direct_nestgate", true, "Direct NestGate storage");
-                }
-                Ok(r) => {
-                    let msg = r
-                        .error
-                        .as_ref()
-                        .map_or_else(|| "no result".to_owned(), |e| e.message.clone());
-                    v.check_bool("direct_nestgate", false, &format!("NestGate error: {msg}"));
-                }
-                Err(e) => {
-                    v.check_bool(
-                        "direct_nestgate",
-                        false,
-                        &format!("NestGate transport: {e}"),
-                    );
-                }
+    if ctx.has_capability("storage") {
+        match ctx.call("storage", "storage.store", store_params) {
+            Ok(_) => {
+                v.check_bool("direct_nestgate", true, "Direct NestGate storage");
             }
-        } else {
-            v.check_skip("direct_nestgate", "NestGate connection failed");
+            Err(e) => {
+                v.check_bool(
+                    "direct_nestgate",
+                    false,
+                    &format!("NestGate transport: {e}"),
+                );
+            }
         }
     } else {
         v.check_skip("direct_nestgate", "NestGate not discovered");
     }
 
-    let barr = discover_primal("barracuda");
-    let barr_fb;
-    let barr_sock = if let Some(s) = barr.socket.as_ref() {
-        Some(s)
-    } else {
-        barr_fb = discover_by_capability("math");
-        barr_fb.socket.as_ref()
-    };
-
-    if let Some(barr_sock) = barr_sock {
-        if let Ok(mut client) = PrimalClient::connect(barr_sock, "barracuda") {
-            let resp = client.call(
-                "noise.perlin2d",
-                serde_json::json!({"x": 2, "y": 2, "scale": 1.0, "seed": 106}),
-            );
-            match &resp {
-                Ok(r) if r.result.is_some() => {
-                    v.check_bool("direct_barracuda", true, "Direct Barracuda noise");
-                }
-                Ok(r) => {
-                    let msg = r
-                        .error
-                        .as_ref()
-                        .map_or_else(|| "no result".to_owned(), |e| e.message.clone());
-                    v.check_bool(
-                        "direct_barracuda",
-                        false,
-                        &format!("Barracuda error: {msg}"),
-                    );
-                }
-                Err(e) => {
-                    v.check_bool(
-                        "direct_barracuda",
-                        false,
-                        &format!("Barracuda transport: {e}"),
-                    );
-                }
+    if ctx.has_capability("tensor") {
+        match ctx.call(
+            "tensor",
+            "noise.perlin2d",
+            serde_json::json!({"x": 2, "y": 2, "scale": 1.0, "seed": 106}),
+        ) {
+            Ok(_) => {
+                v.check_bool("direct_barracuda", true, "Direct Barracuda noise");
             }
-        } else {
-            v.check_skip("direct_barracuda", "Barracuda connection failed");
+            Err(e) => {
+                v.check_bool(
+                    "direct_barracuda",
+                    false,
+                    &format!("Barracuda transport: {e}"),
+                );
+            }
         }
     } else {
         v.check_skip("direct_barracuda", "Barracuda not discovered");
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Main
-// ═══════════════════════════════════════════════════════════════════════
-
 fn main() {
     ValidationResult::new("primalSpring Exp106 — Micro-Desktop Shell")
-        .with_provenance("exp106_micro_desktop_shell", "2026-04-28")
+        .with_provenance("exp106_micro_desktop_shell", "2026-05-09")
         .run("Exp106: Desktop composition on NUCLEUS substrate", |v| {
-            let mut biomeos = phase_biomeos_connection(v);
-            let health = phase_system_health(v);
-            phase_capability_routing(v, &mut biomeos);
-            phase_graph_management(v, &mut biomeos);
-            let _dag_session = phase_provenance_sidebar(v);
-            phase_multi_session_rendering(v, &health);
-            phase_direct_fallbacks(v);
+            let mut ctx = CompositionContext::discover();
+            phase_biomeos_connection(v, &mut ctx);
+            let health = phase_system_health(v, &mut ctx);
+            phase_capability_routing(v, &mut ctx);
+            phase_graph_management(v, &mut ctx);
+            let _dag_session = phase_provenance_sidebar(v, &mut ctx);
+            phase_multi_session_rendering(v, &mut ctx, &health);
+            phase_direct_fallbacks(v, &mut ctx);
         });
 }

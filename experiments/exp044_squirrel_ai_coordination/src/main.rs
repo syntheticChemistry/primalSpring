@@ -1,22 +1,49 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp044: Squirrel AI Coordination — MCP tools and routing via the `ai` capability (Squirrel).
 
-//! Exp044: Squirrel AI Coordination
-//!
-//! Validates MCP tool discovery and AI routing via Squirrel.
-//! When Squirrel is live, queries `mcp.tools.list` to discover
-//! available tools and verifies `tool.list` routing.
-//! Gracefully degrades when Squirrel is not running.
-
-use primalspring::coordination::probe_primal;
-use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover::{discover_primal, socket_path};
-use primalspring::primal_names;
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::discover::extract_capability_names;
 use primalspring::validation::ValidationResult;
 
-fn probe_squirrel_rpc(v: &mut ValidationResult, client: &mut PrimalClient) {
-    match client.call("mcp.tools.list", serde_json::json!({})) {
-        Ok(resp) => {
-            let result = resp.result.unwrap_or_default();
+const SQUIRREL_CAP: &str = "ai";
+
+fn phase_discovery_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability(SQUIRREL_CAP) {
+        v.check_skip("squirrel_health", "ai capability not in context");
+        v.check_skip("squirrel_caps", "ai capability not in context");
+        return;
+    }
+
+    match ctx.health_check(SQUIRREL_CAP) {
+        Ok(h) => v.check_bool(
+            "squirrel_health",
+            h,
+            "squirrel (ai capability) health.liveness normalized",
+        ),
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("squirrel_health", &format!("{e}"));
+        }
+        Err(e) => v.check_bool("squirrel_health", false, &format!("{e}")),
+    }
+
+    match ctx.call(SQUIRREL_CAP, "capabilities.list", serde_json::json!({})) {
+        Ok(j) => {
+            let n = extract_capability_names(Some(j)).len();
+            v.check_minimum("squirrel_caps", n, 1);
+        }
+        Err(e) if e.is_connection_error() => v.check_skip("squirrel_caps", &format!("{e}")),
+        Err(e) => v.check_bool("squirrel_caps", false, &format!("{e}")),
+    }
+}
+
+fn phase_mcp_tools(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability(SQUIRREL_CAP) {
+        v.check_skip("mcp_tools_discovered", "ai capability not in context");
+        return;
+    }
+
+    match ctx.call(SQUIRREL_CAP, "mcp.tools.list", serde_json::json!({})) {
+        Ok(result) => {
             let tool_count = result
                 .get("tool_count")
                 .and_then(serde_json::Value::as_u64)
@@ -39,31 +66,36 @@ fn probe_squirrel_rpc(v: &mut ValidationResult, client: &mut PrimalClient) {
                 }
             }
         }
-        Err(e) => {
-            v.check_skip(
-                "mcp_tools_discovered",
-                &format!("mcp.tools.list failed: {e}"),
-            );
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("mcp_tools_discovered", &format!("{e}"));
         }
+        Err(e) => v.check_skip(
+            "mcp_tools_discovered",
+            &format!("mcp.tools.list failed: {e}"),
+        ),
+    }
+}
+
+fn phase_ai_routing(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability(SQUIRREL_CAP) {
+        v.check_skip("squirrel_system_status", "ai capability not in context");
+        v.check_skip("tool_list_available", "ai capability not in context");
+        return;
     }
 
-    match client.call("system.status", serde_json::json!({})) {
-        Ok(resp) => {
-            let result = resp.result.unwrap_or_default();
+    match ctx.call(SQUIRREL_CAP, "system.status", serde_json::json!({})) {
+        Ok(result) => {
             v.check_bool(
                 "squirrel_system_status",
                 result.get("status").is_some(),
                 "system.status returns status field",
             );
         }
-        Err(_) => {
-            v.check_skip("squirrel_system_status", "system.status not available");
-        }
+        Err(_) => v.check_skip("squirrel_system_status", "system.status not available"),
     }
 
-    match client.call("tool.list", serde_json::json!({})) {
-        Ok(resp) => {
-            let result = resp.result.unwrap_or_default();
+    match ctx.call(SQUIRREL_CAP, "tool.list", serde_json::json!({})) {
+        Ok(result) => {
             let count = result
                 .get("tools")
                 .and_then(|t| t.as_array())
@@ -71,54 +103,23 @@ fn probe_squirrel_rpc(v: &mut ValidationResult, client: &mut PrimalClient) {
             v.check_minimum("tool_list_available", count, 0);
             println!("  Squirrel tool.list: {count} tools");
         }
-        Err(_) => {
-            v.check_skip("tool_list_available", "tool.list not available");
-        }
+        Err(_) => v.check_skip("tool_list_available", "tool.list not available"),
     }
 }
 
 fn main() {
     ValidationResult::new("primalSpring Exp044 — Squirrel AI Coordination")
-        .with_provenance("exp044_squirrel_ai_coordination", "2026-03-24")
+        .with_provenance("exp044_squirrel_ai_coordination", "2026-05-09")
         .run("primalSpring Exp044: Squirrel AI Coordination", |v| {
-            let squirrel = discover_primal(primal_names::SQUIRREL);
-            v.check_bool(
-                "discover_squirrel",
-                squirrel.primal == primal_names::SQUIRREL,
-                "discover squirrel",
-            );
+            let mut ctx = CompositionContext::from_live_discovery_with_fallback();
 
-            let path = socket_path(primal_names::SQUIRREL);
-            v.check_bool(
-                "squirrel_socket_path_valid",
-                path.to_string_lossy().contains(primal_names::SQUIRREL),
-                "squirrel socket path contains 'squirrel'",
-            );
+            v.section("Phase 1: Discovery + Health");
+            phase_discovery_health(v, &mut ctx);
 
-            let health = probe_primal(primal_names::SQUIRREL);
-            if health.socket_found {
-                v.check_bool(
-                    "squirrel_health",
-                    health.health_ok,
-                    "squirrel health.liveness",
-                );
-                v.check_minimum("squirrel_caps", health.capabilities.len(), 1);
+            v.section("Phase 2: MCP Tools");
+            phase_mcp_tools(v, &mut ctx);
 
-                if let Some(ref sock) = squirrel.socket {
-                    if let Ok(mut client) = PrimalClient::connect(sock, primal_names::SQUIRREL) {
-                        probe_squirrel_rpc(v, &mut client);
-                    } else {
-                        v.check_skip("mcp_tools_discovered", "cannot connect to squirrel");
-                        v.check_skip("squirrel_system_status", "cannot connect");
-                        v.check_skip("tool_list_available", "cannot connect");
-                    }
-                }
-            } else {
-                v.check_skip("squirrel_health", "squirrel not reachable");
-                v.check_skip("squirrel_caps", "squirrel not reachable");
-                v.check_skip("mcp_tools_discovered", "squirrel not reachable");
-                v.check_skip("squirrel_system_status", "squirrel not reachable");
-                v.check_skip("tool_list_available", "squirrel not reachable");
-            }
+            v.section("Phase 3: AI Routing");
+            phase_ai_routing(v, &mut ctx);
         });
 }

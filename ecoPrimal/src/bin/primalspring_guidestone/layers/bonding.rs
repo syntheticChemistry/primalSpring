@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Layer 5: Bonding model verification.
+//! Layer 5: Bonding model verification — structural + live ionic bond attempt.
 
 use primalspring::bonding::{BondType, BondingPolicy};
 use primalspring::btsp;
+use primalspring::composition::CompositionContext;
 use primalspring::validation::ValidationResult;
 
 pub fn validate_bonding_policies(v: &mut ValidationResult) {
@@ -55,4 +56,69 @@ pub fn validate_bonding_policies(v: &mut ValidationResult) {
         BondType::Ionic.is_metered() && !BondType::Covalent.is_metered(),
         "only Ionic is metered",
     );
+}
+
+/// Live ionic bond negotiation — attempt `bonding.propose` via BearDog.
+///
+/// This pressures BearDog to implement runtime bond signing. Until
+/// then, this documents the gap with a graceful skip.
+pub fn validate_live_ionic_bond(ctx: &mut CompositionContext, v: &mut ValidationResult) {
+    if !ctx.has_capability("security") {
+        v.check_skip(
+            "bonding:live_ionic:propose",
+            "BearDog not available — live ionic bond requires Tower",
+        );
+        return;
+    }
+
+    let propose_result = ctx.call(
+        "security",
+        "bonding.propose",
+        serde_json::json!({
+            "bond_type": "ionic",
+            "requester": "primalspring",
+            "target_capability": "compute",
+            "scope": "tensor.*",
+        }),
+    );
+
+    match propose_result {
+        Ok(resp) => {
+            let accepted = resp
+                .get("accepted")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
+            let bond_id = resp
+                .get("bond_id")
+                .and_then(serde_json::Value::as_str)
+                .unwrap_or("none");
+            v.check_bool(
+                "bonding:live_ionic:propose",
+                accepted,
+                &format!("bond_id={bond_id}, accepted={accepted}"),
+            );
+        }
+        Err(e) if e.is_method_not_found() => {
+            v.check_skip(
+                "bonding:live_ionic:propose",
+                &format!(
+                    "UPSTREAM GAP: bonding.propose not implemented in BearDog — \
+                     runtime bond signing deferred ({e})"
+                ),
+            );
+        }
+        Err(e) if e.is_connection_error() => {
+            v.check_skip(
+                "bonding:live_ionic:propose",
+                &format!("security not reachable: {e}"),
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "bonding:live_ionic:propose",
+                false,
+                &format!("bonding.propose failed: {e}"),
+            );
+        }
+    }
 }

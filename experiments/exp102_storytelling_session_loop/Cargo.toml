@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 [package]
 name = "primalspring-exp102"
-version = "0.9.23"
+version = "0.9.25"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true

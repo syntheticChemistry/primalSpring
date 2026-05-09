@@ -3,6 +3,59 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — UniBin eukaryotic evolution (2026-05-09)
+
+### Added
+- **Certification engine** absorbed from guidestone — **8 layers** wired into the
+  UniBin / library certification path (replacing ad-hoc guidestone-only orchestration
+  for packaged validation).
+- **20 validation scenarios** absorbed from experiment crates into
+  `ecoPrimal/src/validation/scenarios/` as library modules, callable from
+  **`primalspring_unibin validate`** alongside existing harness flows.
+- **UniBin CLI** — `primalspring_unibin` (crate `primalspring`) consolidated
+  first-class subcommands: **`certify`**, **`validate`**, **`serve`**, **`status`**,
+  **`version`** (single entry surface for certification, scenario validation,
+  observability, and build identity).
+
+### Changed
+- **Deprecation annotations** — all **29** bare `#[allow(deprecated)]` sites now
+  carry explicit `reason = "..."` (or were migrated), eliminating undocumented
+  suppressions across experiments and library call sites.
+- **Prokaryotic experiment sources fossilized** under
+  `fossilRecord/experiments_prokaryotic_may2026/` — snapshots of the 20 absorbed
+  experiment crate sources before scenario extraction (paired with README mapping
+  to scenario module names).
+
+### Metrics
+- **`cargo test --workspace --lib --tests`** (2026-05-09): **680** tests
+  (**632** passed + **48** ignored). **`cargo test -p primalspring --lib --tests`**:
+  **664** tests (**616** passed + **48** ignored).
+
+## [Unreleased] — Phase 60+ INTERSTADIAL: Experiment Evolution + Fossilization (2026-05-09)
+
+### Changed
+- **Interstadial experiment rewire** — all 89 experiments (85 pre-existing + 4 later-term)
+  rewired to modern `CompositionContext` pattern. Old APIs replaced:
+  `discover_primal` / `discover_by_capability` → `ctx.has_capability()`,
+  `PrimalClient::connect()` → `ctx.call(cap, method, params)`,
+  `AtomicHarness` → `CompositionContext::from_live_discovery_with_fallback()`,
+  `neural_api_healthy()` → `ctx.has_capability("orchestration")`.
+  All experiments now use `v.section()` phased structure with extracted `fn phase_*()`.
+  All at version 0.9.25 with provenance date 2026-05-09.
+- **Fossil record** — pre-interstadial experiment sources archived to
+  `fossilRecord/experiments_pre_interstadial_may2026/` (85 experiment source snapshots).
+- **Experiment catalog** updated to 89 experiments, 20 tracks, added `later_term` category
+  (exp108–111) and `phase_60_interstadial` timeline entry.
+
+### Metrics
+- **89 experiments**, **20 tracks**, **`primalspring` 664 tests** (616 passed + 48 ignored),
+  **workspace 680** lib+integration tests (632 passed + 48 ignored, measured 2026-05-09),
+  **0 clippy warnings** on scoped targets.
+- All experiment crates at version **0.9.25**.
+- **85 pre-interstadial experiment source snapshots** in
+  `fossilRecord/experiments_pre_interstadial_may2026/` (distinct from the 20-entry
+  prokaryotic scenario fossil under `experiments_prokaryotic_may2026/`).
+
 ## [Unreleased] — Phase 60+: Deep Debt Closure + Graph Hygiene + Integration Refactor (2026-05-09)
 
 ### Changed
@@ -10,7 +63,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `server_ecosystem_compose.rs` (807L → 411L) split into domain-focused modules:
   `server_ecosystem_songbird.rs` (Songbird IPC, 309L), `server_ecosystem_genetics.rs`
   (three-tier genetics, 327L), `server_ecosystem_overlay.rs` (graph-driven overlays, 407L).
-  All test files now under 500 LOC. Zero test loss (666 stable).
+  All test files now under 500 LOC. Zero test loss (counts reconciled to
+  **664** `primalspring` package / **680** workspace lib+integration, 2026-05-09).
 - **`CompositionContext::discover()`** now materializes biomeOS as an `orchestration`
   client — `orchestration` added to `ALL_CAPS` in `routing.rs`.
 - **`validate_all`** filter broadened to include `primalspring-trio*` crates alongside
@@ -32,7 +86,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `capabilities.list` — both singular and plural forms now registered with biomeOS.
 
 ### Metrics
-- **666 tests** (618 passed + 48 ignored), **0 clippy warnings**, **0 unsafe blocks**.
+- **664 tests** in `primalspring` (**616** passed + **48** ignored, measured 2026-05-09),
+  **680** workspace lib+integration (**632** + **48** ignored),
+  **0 clippy warnings**, **0 unsafe blocks**.
 - All integration test files under 500 LOC. All library source files under 700 LOC.
 - `cargo deny check`: advisories ok, bans ok, licenses ok, sources ok.
 
@@ -110,9 +166,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   wire compat `#[serde(rename)]`. DID gap **RESOLVED**.
 
 ### Metrics
-- **666 tests** (618 passed + 48 ignored), **0 clippy warnings**, **0 primal drift**.
+- **664 primalspring-package tests** (**616** passed + **48** ignored, 2026-05-09 rebaseline),
+  **0 clippy warnings**, **0 primal drift**.
 - **211/211** source method strings validated, **389** registered, **353** graph refs checked.
-- **85 experiments**, **74 deploy graphs**, **18 checksummed files**.
+- **89 experiments** (after later-term exp108–111 landed; **85** at this sprint’s start),
+  **74 deploy graphs**, **18 checksummed files**.
 - **Zero DEBT/TODO/FIXME/HACK markers** in production code.
 
 ## [Unreleased] — Phase 59: Foundation Absorption + Security Hardening + projectNUCLEUS Phase 2a (2026-05-06)
@@ -165,7 +223,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Module splits: `deploy/validation.rs` (structural checks), `coordination/probes.rs`.
 - `PrimalDeployProfile.bind_flag` — per-primal bind address CLI flag knowledge (PG-55).
 - `GraphMetadata.bind_policy` — composition-level bind intent (`"localhost"`, `"lan"`, `"any"`).
-- 661 tests (613 passed + 48 ignored), 85 experiments (19 tracks), 74 deploy graphs.
+- 661 tests (613 passed + 48 ignored), 85 experiments (19 tracks), 74 deploy graphs (metrics at Phase 59 ship; rebaselined 2026-05-09: 664 package / 680 workspace lib+integration).
 
 ### Security (projectNUCLEUS Phase 2a handback — ALL RESOLVED)
 - **PG-55 RESOLVED**: All 13 primals now default to `127.0.0.1`. Songbird, ToadStool,

@@ -10,6 +10,10 @@ use std::path::Path;
 
 use serde::Serialize;
 
+#[allow(
+    deprecated,
+    reason = "deploy validation calls deprecated probes — will migrate to CompositionContext"
+)]
 use crate::coordination::probe_primal;
 
 use super::{DeployError, DeployGraph, GraphNode, load_graph};
@@ -319,6 +323,10 @@ pub fn validate_deployment_readiness(path: &Path) -> Result<DeploymentReadiness,
 ///
 /// This is the loose coupling bridge: graph nodes that declare their
 /// capability domain are discovered by what they provide, not who they are.
+#[allow(
+    deprecated,
+    reason = "deploy validation calls deprecated probes — will migrate to CompositionContext"
+)]
 fn probe_graph_node(node: &GraphNode) -> NodeHealth {
     let health = node.by_capability.as_ref().map_or_else(
         || probe_primal(&node.name),

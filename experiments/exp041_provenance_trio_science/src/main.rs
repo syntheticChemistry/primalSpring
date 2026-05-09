@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
 //! Exp041: Provenance Trio Science — rhizoCrypt + loamSpine + sweetGrass.
-//!
-//! Validates that the provenance trio primals are discoverable, compose
-//! correctly, and can execute a full provenance chain: begin session →
-//! record steps → dehydrate → commit → attribute.
-//!
-//! When trio is running, exercises the full chain via Neural API.
-//! When unavailable, validates structural properties and skips live IPC.
 
-use primalspring::coordination::probe_primal;
-use primalspring::ipc::discover::{discover_for, discover_primal, neural_api_healthy, socket_path};
+use std::time::Instant;
+
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::discover::extract_capability_names;
 use primalspring::ipc::provenance::ProvenanceStatus;
 use primalspring::primal_names;
 use primalspring::tolerances;
@@ -19,14 +13,126 @@ use primalspring_trio_ops::{
     begin_experiment_session, complete_experiment, record_experiment_step, trio_health,
 };
 
-const TRIO_PRIMALS: &[&str] = &[
-    primal_names::RHIZOCRYPT,
-    primal_names::LOAMSPINE,
-    primal_names::SWEETGRASS,
-];
+fn sweetgrass_cap(ctx: &CompositionContext) -> Option<&'static str> {
+    if ctx.has_capability("commit") {
+        Some("commit")
+    } else if ctx.has_capability("attribution") {
+        Some("attribution")
+    } else {
+        None
+    }
+}
+
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    let present = [
+        ctx.has_capability("dag"),
+        ctx.has_capability("ledger"),
+        sweetgrass_cap(ctx).is_some(),
+    ]
+    .iter()
+    .filter(|&&x| x)
+    .count();
+    v.check_count("trio_capabilities_present", present, 3);
+}
+
+fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let trio_ok =
+        ctx.has_capability("dag") && ctx.has_capability("ledger") && sweetgrass_cap(ctx).is_some();
+
+    if !trio_ok {
+        v.check_skip(
+            "trio_all_discoverable",
+            &format!(
+                "need dag, ledger, and commit or attribution — have {}: {}",
+                ctx.available_capabilities().len(),
+                ctx.available_capabilities().join(", ")
+            ),
+        );
+        return;
+    }
+
+    v.check_bool(
+        "trio_all_discoverable",
+        true,
+        "dag, ledger, and sweetGrass-cap aliases present in context",
+    );
+
+    let sg = sweetgrass_cap(ctx).unwrap_or("commit");
+    let probes: [(&str, &str); 3] = [
+        ("dag", primal_names::RHIZOCRYPT),
+        ("ledger", primal_names::LOAMSPINE),
+        (sg, primal_names::SWEETGRASS),
+    ];
+
+    for (cap, display_name) in probes {
+        let start = Instant::now();
+        let health_ok = ctx.health_check(cap).unwrap_or(false);
+        let latency_us = u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX);
+        let n_caps = ctx
+            .call(cap, "capabilities.list", serde_json::json!({}))
+            .ok()
+            .map_or(0, |j| extract_capability_names(Some(j)).len());
+
+        v.check_bool(
+            &format!("health_{display_name}"),
+            health_ok,
+            &format!("{display_name} health check"),
+        );
+        v.check_latency(
+            &format!("latency_{display_name}"),
+            latency_us,
+            tolerances::HEALTH_CHECK_MAX_US,
+        );
+        v.check_minimum(&format!("caps_{display_name}"), n_caps, 1);
+    }
+}
+
+fn phase_orchestration_and_trio_api(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+) -> bool {
+    let orchestration_ok = if ctx.has_capability("orchestration") {
+        ctx.call("orchestration", "health.liveness", serde_json::json!({}))
+            .is_ok()
+    } else {
+        false
+    };
+
+    v.check_or_skip(
+        "orchestration",
+        orchestration_ok.then_some(()),
+        "orchestration capability not healthy",
+        |(), v| {
+            v.check_bool(
+                "orchestration_reachable",
+                true,
+                "orchestration health.liveness ok",
+            );
+        },
+    );
+
+    let trio_api = trio_health();
+    let trio_caps_healthy = orchestration_ok && trio_api.iter().all(|(_d, ok)| *ok);
+
+    v.check_or_skip(
+        "trio_capability_health",
+        trio_caps_healthy.then_some(()),
+        "trio capabilities not all healthy via Neural API",
+        |(), v| {
+            for (domain, healthy) in &trio_api {
+                v.check_bool(
+                    &format!("cap_health_{domain}"),
+                    *healthy,
+                    &format!("{domain} capability domain healthy"),
+                );
+            }
+        },
+    );
+
+    trio_caps_healthy
+}
 
 fn validate_e2e_chain(v: &mut ValidationResult) {
-    // Step 1: Begin session
     let session = begin_experiment_session("exp041-trio-science");
     v.check_bool(
         "chain_begin_session",
@@ -40,7 +146,6 @@ fn validate_e2e_chain(v: &mut ValidationResult) {
         return;
     }
 
-    // Step 2: Record experiment steps
     let steps = [
         serde_json::json!({ "action": "discover_trio", "result": "3/3 found" }),
         serde_json::json!({ "action": "health_check", "result": "all healthy" }),
@@ -60,7 +165,6 @@ fn validate_e2e_chain(v: &mut ValidationResult) {
     }
     v.check_count("chain_record_steps", steps_ok, steps.len());
 
-    // Step 3: Complete pipeline (dehydrate → commit → attribute)
     let pipeline = complete_experiment(&session.id);
     v.check_bool(
         "chain_dehydrate",
@@ -88,112 +192,22 @@ fn validate_e2e_chain(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp041 — Provenance Trio Science")
-        .with_provenance("exp041_provenance_trio_science", "2026-03-24")
+        .with_provenance("exp041_provenance_trio_science", "2026-05-09")
         .run(
             "primalSpring Exp041: Provenance Trio Science — rhizoCrypt + loamSpine + sweetGrass",
             |v| {
-                // ── Structural: socket path conventions ──
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
 
-                for &name in TRIO_PRIMALS {
-                    let path = socket_path(name);
-                    let valid = path.to_string_lossy().contains("biomeos")
-                        && path.to_string_lossy().contains(name)
-                        && path.to_string_lossy().ends_with(".sock");
-                    v.check_bool(
-                        &format!("socket_path_{name}"),
-                        valid,
-                        &format!("socket_path({name}) = {}", path.display()),
-                    );
-                }
+                v.section("Phase 1: Discovery");
+                phase_discovery(v, &ctx);
 
-                // ── Discovery: trio reachability ──
+                v.section("Phase 2: Health");
+                phase_health(v, &mut ctx);
 
-                let results = discover_for(TRIO_PRIMALS);
-                v.check_count("trio_discovery_count", results.len(), TRIO_PRIMALS.len());
+                v.section("Phase 3: Trio Capability Health");
+                let trio_caps_healthy = phase_orchestration_and_trio_api(v, &mut ctx);
 
-                let reachable: Vec<_> = results.iter().filter(|r| r.socket.is_some()).collect();
-                let trio_online = reachable.len() == TRIO_PRIMALS.len();
-
-                if trio_online {
-                    v.check_bool(
-                        "trio_all_discoverable",
-                        true,
-                        "all three provenance primals have sockets",
-                    );
-
-                    for &name in TRIO_PRIMALS {
-                        let health = probe_primal(name);
-                        v.check_bool(
-                            &format!("health_{name}"),
-                            health.health_ok,
-                            &format!("{name} health.check"),
-                        );
-                        v.check_latency(
-                            &format!("latency_{name}"),
-                            health.latency_us,
-                            tolerances::HEALTH_CHECK_MAX_US,
-                        );
-                        v.check_minimum(&format!("caps_{name}"), health.capabilities.len(), 1);
-                    }
-                } else {
-                    v.check_skip(
-                        "trio_all_discoverable",
-                        &format!(
-                            "{}/{} trio primals reachable — need all three running",
-                            reachable.len(),
-                            TRIO_PRIMALS.len()
-                        ),
-                    );
-                    for &name in TRIO_PRIMALS {
-                        let disc = discover_primal(name);
-                        if disc.socket.is_none() {
-                            v.check_skip(
-                                &format!("health_{name}"),
-                                &format!("{name} not reachable"),
-                            );
-                            v.check_skip(
-                                &format!("latency_{name}"),
-                                &format!("{name} not reachable"),
-                            );
-                            v.check_skip(&format!("caps_{name}"), &format!("{name} not reachable"));
-                        }
-                    }
-                }
-
-                // ── Neural API health ──
-
-                let neural_live = neural_api_healthy();
-                v.check_or_skip(
-                    "neural_api",
-                    neural_live.then_some(()),
-                    "Neural API not running",
-                    |(), v| {
-                        v.check_bool("neural_api_reachable", true, "Neural API reachable");
-                    },
-                );
-
-                // ── Trio capability health via Neural API ──
-
-                let trio_health = trio_health();
-                let trio_caps_healthy = neural_live && trio_health.iter().all(|(_d, ok)| *ok);
-
-                v.check_or_skip(
-                    "trio_capability_health",
-                    trio_caps_healthy.then_some(()),
-                    "trio capabilities not all healthy via Neural API",
-                    |(), v| {
-                        for (domain, healthy) in &trio_health {
-                            v.check_bool(
-                                &format!("cap_health_{domain}"),
-                                *healthy,
-                                &format!("{domain} capability domain healthy"),
-                            );
-                        }
-                    },
-                );
-
-                // ── E2E Provenance Chain ──
-
+                v.section("Phase 4: E2E Provenance Chain");
                 v.check_or_skip(
                     "provenance_chain_e2e",
                     trio_caps_healthy.then_some(()),

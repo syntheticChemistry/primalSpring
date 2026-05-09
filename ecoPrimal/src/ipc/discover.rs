@@ -74,8 +74,8 @@ pub fn build_socket_path(base_dir: &Path, primal: &str, family: &str) -> PathBuf
 /// Respects `$FAMILY_ID` for multi-tenant socket paths.
 #[must_use]
 pub fn socket_path(primal: &str) -> PathBuf {
-    let base =
-        std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+    let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR)
+        .map_or_else(|_| std::env::temp_dir(), PathBuf::from);
     let family = crate::env_keys::resolve_family_id();
     build_socket_path(&base, primal, &family)
 }
@@ -167,8 +167,8 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
     }
 
     // Many primals now use plain `{name}.sock` or `{name}-ipc.sock`
-    let base =
-        std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+    let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR)
+        .map_or_else(|_| std::env::temp_dir(), PathBuf::from);
     let biomeos_dir = base.join(crate::primal_names::BIOMEOS);
     for suffix in [".sock", "-ipc.sock"] {
         let plain = biomeos_dir.join(format!("{primal}{suffix}"));

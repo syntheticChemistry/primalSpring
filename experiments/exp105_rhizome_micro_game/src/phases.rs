@@ -1,17 +1,47 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use crate::types::{World, MAP_WIDTH, MAP_HEIGHT, Tile, hash_simple};
+use crate::types::{MAP_HEIGHT, MAP_WIDTH, Tile, World, hash_simple};
 
 use base64::Engine as _;
-use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover::{discover_by_capability, discover_primal};
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::IpcError;
 use primalspring::validation::ValidationResult;
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 3: Game Loop Simulation
-// ═══════════════════════════════════════════════════════════════════════
+fn orchestration_route(
+    ctx: &mut CompositionContext,
+    capability: &str,
+    operation: &str,
+    args: &serde_json::Value,
+) -> Result<serde_json::Value, IpcError> {
+    ctx.call(
+        "orchestration",
+        "capability.call",
+        serde_json::json!({
+            "capability": capability,
+            "operation": operation,
+            "args": args,
+        }),
+    )
+}
 
-pub fn phase_game_loop(v: &mut ValidationResult, world: &mut World) {
+fn call_game(
+    ctx: &mut CompositionContext,
+    method: &str,
+    params: serde_json::Value,
+) -> Result<serde_json::Value, IpcError> {
+    if ctx.has_capability("game") {
+        ctx.call("game", method, params)
+    } else if ctx.has_capability("orchestration") {
+        let op = method.strip_prefix("game.").unwrap_or(method);
+        orchestration_route(ctx, "game", op, &params)
+    } else {
+        Err(IpcError::SocketNotFound {
+            primal: "game".to_owned(),
+        })
+    }
+}
+
+pub fn phase_game_loop(v: &mut ValidationResult, world: &mut World, ctx: &mut CompositionContext) {
     v.section("Game Loop Simulation (10 turns)");
 
     let moves: [(i32, i32); 10] = [
@@ -29,8 +59,14 @@ pub fn phase_game_loop(v: &mut ValidationResult, world: &mut World) {
 
     let mut turns_completed = 0;
     for &(dx, dy) in &moves {
-        let nx = (i32::try_from(world.player_x).unwrap_or(0) + dx).max(0) as usize;
-        let ny = (i32::try_from(world.player_y).unwrap_or(0) + dy).max(0) as usize;
+        let nx = {
+            let step = i32::try_from(world.player_x).unwrap_or(0) + dx;
+            usize::try_from(step.max(0)).unwrap_or(0)
+        };
+        let ny = {
+            let step = i32::try_from(world.player_y).unwrap_or(0) + dy;
+            usize::try_from(step.max(0)).unwrap_or(0)
+        };
 
         if nx < MAP_WIDTH && ny < MAP_HEIGHT && world.tile(nx, ny) != Tile::Wall {
             if let Some(ci) = world.creatures.iter().position(|c| c.x == nx && c.y == ny) {
@@ -62,23 +98,18 @@ pub fn phase_game_loop(v: &mut ValidationResult, world: &mut World) {
 
     v.check_count("turns_simulated", turns_completed, 10);
 
-    phase_flow_tracking(v);
-    phase_damage_calc(v);
+    phase_flow_tracking(v, ctx);
+    phase_damage_calc(v, ctx);
 }
 
-pub fn phase_flow_tracking(v: &mut ValidationResult) {
-    let ls = discover_primal("ludospring");
-    let Some(ls_sock) = ls.socket.as_ref() else {
+pub fn phase_flow_tracking(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("game") && !ctx.has_capability("orchestration") {
         v.check_skip("flow_eval", "ludoSpring not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(ls_sock, "ludospring") else {
-        v.check_skip("flow_eval", "ludoSpring connection failed");
-        return;
-    };
-
-    let resp = client.call(
+    let resp = call_game(
+        ctx,
         "game.evaluate_flow",
         serde_json::json!({
             "player_skill": 0.5,
@@ -91,38 +122,32 @@ pub fn phase_flow_tracking(v: &mut ValidationResult) {
 
     v.check_bool(
         "flow_eval",
-        resp.is_ok_and(|r| r.result.is_some()),
+        resp.is_ok(),
         "ludoSpring game.evaluate_flow for DDA",
     );
 }
 
-pub fn phase_damage_calc(v: &mut ValidationResult) {
-    let barr = discover_by_capability("math");
-    let Some(barr_sock) = barr.socket.as_ref() else {
+pub fn phase_damage_calc(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("tensor") {
         v.check_skip("damage_calc", "Barracuda not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(barr_sock, "barracuda") else {
-        v.check_skip("damage_calc", "Barracuda connection failed");
-        return;
-    };
-
-    let resp = client.call("stats.mean", serde_json::json!({"data": [5.0, 1.0, 8.0]}));
+    let resp = ctx.call(
+        "tensor",
+        "stats.mean",
+        serde_json::json!({"data": [5.0, 1.0, 8.0]}),
+    );
 
     match resp {
         Ok(r) => {
-            let result = r
-                .result
-                .as_ref()
-                .and_then(|r| r.get("result"))
-                .and_then(serde_json::Value::as_f64);
+            let result = r.get("result").and_then(serde_json::Value::as_f64);
             v.check_bool(
                 "damage_calc",
                 result.is_some(),
                 &format!(
                     "Damage via stats.mean = {}",
-                    result.map_or("N/A".to_owned(), |v| format!("{v:.1}"))
+                    result.map_or_else(|| "N/A".to_owned(), |v| format!("{v:.1}"))
                 ),
             );
         }
@@ -132,28 +157,28 @@ pub fn phase_damage_calc(v: &mut ValidationResult) {
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 4: Save Game
-// ═══════════════════════════════════════════════════════════════════════
-
-pub fn phase_save_game(v: &mut ValidationResult, world: &World) -> Option<String> {
+pub fn phase_save_game(
+    v: &mut ValidationResult,
+    world: &World,
+    ctx: &mut CompositionContext,
+) -> Option<String> {
     v.section("Save Game (NestGate + Provenance Trio)");
 
     let toml_save = world.to_save_toml();
     let save_key = "save:rhizome:exp105-validation";
 
-    let stored = save_to_nestgate(v, save_key, &toml_save);
+    let stored = save_to_nestgate(v, save_key, &toml_save, ctx);
 
-    let dag_session = create_provenance_session(v);
+    let dag_session = create_provenance_session(v, ctx);
 
     if let Some(ref sid) = dag_session {
-        seal_save_event(v, sid, save_key);
+        seal_save_event(v, sid, save_key, ctx);
     } else {
         v.check_skip("dag_seal", "No DAG session — skipping provenance seal");
     }
 
-    record_ledger_entry(v, &toml_save);
-    record_attribution(v, &toml_save);
+    record_ledger_entry(v, &toml_save, ctx);
+    record_attribution(v, &toml_save, ctx);
 
     if stored {
         v.check_bool("save_complete", true, "Full save pipeline completed");
@@ -164,107 +189,63 @@ pub fn phase_save_game(v: &mut ValidationResult, world: &World) -> Option<String
     dag_session
 }
 
-fn save_to_nestgate(v: &mut ValidationResult, key: &str, toml_data: &str) -> bool {
-    let ng = discover_by_capability("storage");
-    let ng_fallback;
-    let ng_sock = if let Some(s) = ng.socket.as_ref() {
-        s
-    } else {
-        ng_fallback = discover_primal("nestgate");
-        if let Some(s) = ng_fallback.socket.as_ref() {
-            s
-        } else {
-            v.check_skip("nestgate_store", "NestGate not discovered");
-            return false;
-        }
-    };
-
-    let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") else {
-        v.check_skip("nestgate_store", "NestGate connection failed");
-        return false;
-    };
-
+fn save_to_nestgate(
+    v: &mut ValidationResult,
+    key: &str,
+    toml_data: &str,
+    ctx: &mut CompositionContext,
+) -> bool {
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
-    let resp = client.call(
-        "storage.store",
-        serde_json::json!({
-            "family_id": family_id,
-            "key": key,
-            "value": toml_data,
-        }),
-    );
+    let store_params = serde_json::json!({
+        "family_id": family_id,
+        "key": key,
+        "value": toml_data,
+    });
 
-    match &resp {
-        Ok(r) if r.result.is_some() => {
-            v.check_bool("nestgate_store", true, "Save TOML stored in NestGate");
-            true
-        }
-        Ok(r) => {
-            let err_msg = r
-                .error
-                .as_ref()
-                .map_or("unknown".to_owned(), |e| e.message.clone());
-            let fallback = discover_primal("nestgate");
-            if let Some(fb_sock) = fallback.socket.as_ref() {
-                if let Ok(mut fb_client) = PrimalClient::connect(fb_sock, "nestgate") {
-                    let fb_resp = fb_client.call(
-                        "storage.store",
-                        serde_json::json!({"family_id": family_id, "key": key, "value": toml_data}),
-                    );
-                    if fb_resp.is_ok_and(|r| r.result.is_some()) {
-                        v.check_bool(
-                            "nestgate_store",
-                            true,
-                            "Save TOML stored via NestGate fallback (biomeOS misrouted)",
-                        );
-                        return true;
-                    }
-                }
-            }
-            v.check_bool(
-                "nestgate_store",
-                false,
-                &format!("NestGate store failed: {err_msg}"),
-            );
-            false
-        }
-        Err(e) => {
-            v.check_bool(
-                "nestgate_store",
-                false,
-                &format!("NestGate store error: {e}"),
-            );
-            false
-        }
+    if ctx
+        .call("storage", "storage.store", store_params.clone())
+        .is_ok()
+    {
+        v.check_bool("nestgate_store", true, "Save TOML stored in NestGate");
+        return true;
     }
+
+    if ctx.has_capability("orchestration")
+        && orchestration_route(ctx, "storage", "storage.store", &store_params).is_ok()
+    {
+        v.check_bool(
+            "nestgate_store",
+            true,
+            "Save TOML stored via NestGate fallback (biomeOS misrouted)",
+        );
+        return true;
+    }
+
+    v.check_bool("nestgate_store", false, "NestGate storage.store failed");
+    false
 }
 
-fn create_provenance_session(v: &mut ValidationResult) -> Option<String> {
-    let rz = discover_by_capability("dag");
-    let Some(rz_sock) = rz.socket.as_ref() else {
+fn create_provenance_session(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+) -> Option<String> {
+    if !ctx.has_capability("dag") {
         v.check_skip("dag_session", "rhizoCrypt not discovered");
         return None;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(rz_sock, "rhizocrypt") else {
-        v.check_skip("dag_session", "rhizoCrypt connection failed");
-        return None;
-    };
-
-    let resp = client.call(
+    let resp = ctx.call(
+        "dag",
         "dag.session.create",
         serde_json::json!({"name": "exp105-rhizome-game"}),
     );
 
     match resp {
         Ok(r) => {
-            let session_id = r.result.as_ref().and_then(|v| {
-                v.as_str().map(String::from).or_else(|| {
-                    v.get("session_id")
-                        .and_then(|s| s.as_str())
-                        .map(String::from)
-                })
-            });
+            let session_id = r
+                .get("session_id")
+                .and_then(|s| s.as_str())
+                .map(String::from);
             v.check_bool(
                 "dag_session",
                 session_id.is_some(),
@@ -279,19 +260,19 @@ fn create_provenance_session(v: &mut ValidationResult) -> Option<String> {
     }
 }
 
-fn seal_save_event(v: &mut ValidationResult, session_id: &str, save_key: &str) {
-    let rz = discover_by_capability("dag");
-    let Some(rz_sock) = rz.socket.as_ref() else {
+fn seal_save_event(
+    v: &mut ValidationResult,
+    session_id: &str,
+    save_key: &str,
+    ctx: &mut CompositionContext,
+) {
+    if !ctx.has_capability("dag") {
         v.check_skip("dag_seal", "rhizoCrypt not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(rz_sock, "rhizocrypt") else {
-        v.check_skip("dag_seal", "rhizoCrypt connection failed");
-        return;
-    };
-
-    let resp = client.call(
+    let resp = ctx.call(
+        "dag",
         "dag.event.append",
         serde_json::json!({
             "session_id": session_id,
@@ -308,31 +289,25 @@ fn seal_save_event(v: &mut ValidationResult, session_id: &str, save_key: &str) {
 
     v.check_bool(
         "dag_seal",
-        resp.is_ok_and(|r| r.result.is_some()),
+        resp.is_ok(),
         "Save event sealed in rhizoCrypt DAG",
     );
 }
 
-fn record_ledger_entry(v: &mut ValidationResult, toml_data: &str) {
-    let ls = discover_by_capability("ledger");
-    let Some(ls_sock) = ls.socket.as_ref() else {
+fn record_ledger_entry(v: &mut ValidationResult, toml_data: &str, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("ledger") {
         v.check_skip("ledger_entry", "loamSpine not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(ls_sock, "loamspine") else {
-        v.check_skip("ledger_entry", "loamSpine connection failed");
-        return;
-    };
-
-    let spine_resp = client.call(
+    let spine_resp = ctx.call(
+        "ledger",
         "spine.create",
         serde_json::json!({"name": "exp105-rhizome-session", "owner": "primalspring"}),
     );
 
     let spine_id = spine_resp
         .ok()
-        .and_then(|r| r.result)
         .and_then(|r| r.get("spine_id").and_then(|s| s.as_str()).map(String::from));
 
     let Some(spine_id) = spine_id else {
@@ -342,7 +317,8 @@ fn record_ledger_entry(v: &mut ValidationResult, toml_data: &str) {
 
     let payload_bytes: Vec<u8> = toml_data.as_bytes().iter().copied().take(128).collect();
 
-    let resp = client.call(
+    let resp = ctx.call(
+        "ledger",
         "entry.append",
         serde_json::json!({
             "spine_id": spine_id,
@@ -360,29 +336,24 @@ fn record_ledger_entry(v: &mut ValidationResult, toml_data: &str) {
 
     v.check_bool(
         "ledger_entry",
-        resp.is_ok_and(|r| r.result.is_some()),
+        resp.is_ok(),
         "Save event recorded in loamSpine ledger",
     );
 }
 
-fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
-    let sg = discover_by_capability("attribution");
-    let Some(sg_sock) = sg.socket.as_ref() else {
+fn record_attribution(v: &mut ValidationResult, toml_data: &str, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("attribution") {
         v.check_skip("attribution", "sweetGrass not discovered");
         return;
-    };
-
-    let Ok(mut client) = PrimalClient::connect(sg_sock, "sweetgrass") else {
-        v.check_skip("attribution", "sweetGrass connection failed");
-        return;
-    };
+    }
 
     let ts = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_or(0u128, |d| d.as_nanos());
     let data_hash = format!("{:016x}{:016x}", hash_simple(toml_data), ts);
 
-    let braid_resp = client.call(
+    let braid_resp = ctx.call(
+        "attribution",
         "braid.create",
         serde_json::json!({
             "name": "exp105-rhizome-save",
@@ -393,20 +364,10 @@ fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
         }),
     );
 
-    let braid_ok = braid_resp.as_ref().is_ok_and(|r| r.result.is_some());
+    let braid_ok = braid_resp.is_ok();
     match &braid_resp {
-        Ok(r) if r.result.is_some() => {
+        Ok(_) => {
             v.check_bool("braid_create", true, "Attribution braid created for save");
-        }
-        Ok(r) => {
-            let msg = r.error.as_ref().map_or("no result".to_owned(), |e| {
-                format!("{}: {}", e.code, e.message)
-            });
-            v.check_bool(
-                "braid_create",
-                false,
-                &format!("braid.create RPC error: {msg}"),
-            );
         }
         Err(e) => {
             v.check_bool(
@@ -419,7 +380,8 @@ fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
 
     if braid_ok {
         let contrib_hash = format!("contrib-{}", &data_hash[..data_hash.len().min(32)]);
-        let contrib_resp = client.call(
+        let contrib_resp = ctx.call(
+            "attribution",
             "contribution.record",
             serde_json::json!({
                 "braid_id": format!("urn:braid:{data_hash}"),
@@ -430,22 +392,11 @@ fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
         );
 
         match &contrib_resp {
-            Ok(r) if r.result.is_some() => {
+            Ok(_) => {
                 v.check_bool(
                     "contribution_record",
                     true,
                     "Play contribution recorded in sweetGrass",
-                );
-            }
-            Ok(r) => {
-                let msg = r
-                    .error
-                    .as_ref()
-                    .map_or("no result".to_owned(), |e| e.message.clone());
-                v.check_bool(
-                    "contribution_record",
-                    false,
-                    &format!("contribution.record error: {msg}"),
                 );
             }
             Err(e) => {
@@ -461,64 +412,36 @@ fn record_attribution(v: &mut ValidationResult, toml_data: &str) {
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 5: Load Game
-// ═══════════════════════════════════════════════════════════════════════
-
-pub fn phase_load_game(v: &mut ValidationResult, dag_session: Option<&str>) {
+pub fn phase_load_game(
+    v: &mut ValidationResult,
+    dag_session: Option<&str>,
+    ctx: &mut CompositionContext,
+) {
     v.section("Load Game (NestGate + Merkle Verify)");
 
     let save_key = "save:rhizome:exp105-validation";
 
-    let ng = discover_by_capability("storage");
-    let ng_fallback;
-    let ng_sock = if let Some(s) = ng.socket.as_ref() {
-        s
-    } else {
-        ng_fallback = discover_primal("nestgate");
-        if let Some(s) = ng_fallback.socket.as_ref() {
-            s
-        } else {
-            v.check_skip("load_game", "NestGate not discovered");
-            return;
-        }
-    };
-
-    let Ok(mut client) = PrimalClient::connect(ng_sock, "nestgate") else {
-        v.check_skip("load_game", "NestGate connection failed");
+    if !ctx.has_capability("storage") {
+        v.check_skip("load_game", "NestGate not discovered");
         return;
-    };
+    }
 
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "default".to_owned());
     let get_params = serde_json::json!({"family_id": family_id, "key": save_key});
-    let resp = client.call("storage.get", get_params.clone());
 
-    let resp = if resp.as_ref().is_ok_and(|r| r.error.is_some()) {
-        if let Some(fb_sock) = discover_primal("nestgate").socket {
-            if let Ok(mut fb) = PrimalClient::connect(&fb_sock, "nestgate") {
-                fb.call("storage.get", get_params)
-            } else {
-                resp
-            }
-        } else {
-            resp
-        }
-    } else {
-        resp
-    };
+    let mut resp = ctx.call("storage", "storage.get", get_params.clone());
+
+    if resp.is_err() && ctx.has_capability("orchestration") {
+        resp = orchestration_route(ctx, "storage", "storage.get", &get_params);
+    }
 
     match resp {
         Ok(r) => {
-            let has_value = r
-                .result
-                .as_ref()
-                .and_then(|r| r.get("value"))
-                .and_then(|v| v.as_str())
-                .is_some();
+            let has_value = r.get("value").and_then(|v| v.as_str()).is_some();
             v.check_bool("load_game", has_value, "Save TOML loaded from NestGate");
 
             if has_value {
-                verify_merkle_root(v, dag_session);
+                verify_merkle_root(v, dag_session, ctx);
             }
         }
         Err(e) => {
@@ -527,35 +450,33 @@ pub fn phase_load_game(v: &mut ValidationResult, dag_session: Option<&str>) {
     }
 }
 
-fn verify_merkle_root(v: &mut ValidationResult, dag_session: Option<&str>) {
+fn verify_merkle_root(
+    v: &mut ValidationResult,
+    dag_session: Option<&str>,
+    ctx: &mut CompositionContext,
+) {
     let Some(session_id) = dag_session else {
         v.check_skip("merkle_verify", "No DAG session — skipping merkle verify");
         return;
     };
 
-    let rz = discover_by_capability("dag");
-    let Some(rz_sock) = rz.socket.as_ref() else {
+    if !ctx.has_capability("dag") {
         v.check_skip("merkle_verify", "rhizoCrypt not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(rz_sock, "rhizocrypt") else {
-        v.check_skip("merkle_verify", "rhizoCrypt connection failed");
-        return;
-    };
-
-    let resp = client.call(
+    let resp = ctx.call(
+        "dag",
         "dag.merkle.root",
         serde_json::json!({"session_id": session_id}),
     );
 
     match resp {
         Ok(r) => {
-            let root = r.result.as_ref().and_then(|v| {
-                v.as_str()
-                    .map(String::from)
-                    .or_else(|| v.get("root").and_then(|s| s.as_str()).map(String::from))
-            });
+            let root = r
+                .as_str()
+                .map(String::from)
+                .or_else(|| r.get("root").and_then(|s| s.as_str()).map(String::from));
             v.check_bool(
                 "merkle_verify",
                 root.is_some(),
@@ -571,29 +492,16 @@ fn verify_merkle_root(v: &mut ValidationResult, dag_session: Option<&str>) {
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 6: AI Narration (Optional)
-// ═══════════════════════════════════════════════════════════════════════
-
-pub fn phase_narration(v: &mut ValidationResult, world: &World) {
+pub fn phase_narration(v: &mut ValidationResult, world: &World, ctx: &mut CompositionContext) {
     v.section("AI Narration (Squirrel — optional)");
 
-    let sq = discover_by_capability("ai");
-    let Some(sq_sock) = sq.socket.as_ref() else {
+    if !ctx.has_capability("ai") {
         v.check_skip(
             "ai_narrate",
             "Squirrel not discovered — using template text",
         );
         return;
-    };
-
-    let Ok(mut client) = PrimalClient::connect(sq_sock, "squirrel") else {
-        v.check_skip(
-            "ai_narrate",
-            "Squirrel connection failed — using template text",
-        );
-        return;
-    };
+    }
 
     let prompt = format!(
         "You are narrator for a roguelike game called The Rhizome. \
@@ -603,7 +511,8 @@ pub fn phase_narration(v: &mut ValidationResult, world: &World) {
         world.floor
     );
 
-    let resp = client.call(
+    let resp = ctx.call(
+        "ai",
         "ai.chat",
         serde_json::json!({
             "messages": [
@@ -620,61 +529,43 @@ pub fn phase_narration(v: &mut ValidationResult, world: &World) {
     );
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 7: Crypto Hash (BearDog)
-// ═══════════════════════════════════════════════════════════════════════
-
-pub fn phase_crypto_hash(v: &mut ValidationResult, world: &World) {
+pub fn phase_crypto_hash(v: &mut ValidationResult, world: &World, ctx: &mut CompositionContext) {
     v.section("Save Integrity Hash (BearDog)");
 
-    let bd = discover_by_capability("crypto");
-    let Some(bd_sock) = bd.socket.as_ref() else {
+    if !ctx.has_capability("security") {
         v.check_skip("crypto_hash", "BearDog not discovered");
         return;
-    };
-
-    let Ok(mut client) = PrimalClient::connect(bd_sock, "beardog") else {
-        v.check_skip("crypto_hash", "BearDog connection failed");
-        return;
-    };
+    }
 
     let save_data = world.to_save_toml();
     let encoded = base64::engine::general_purpose::STANDARD.encode(save_data.as_bytes());
-    let resp = client.call("crypto.blake3_hash", serde_json::json!({"data": encoded}));
+    let resp = ctx.call(
+        "security",
+        "crypto.blake3_hash",
+        serde_json::json!({"data": encoded}),
+    );
 
     v.check_bool(
         "crypto_hash",
-        resp.is_ok_and(|r| r.result.is_some()),
+        resp.is_ok(),
         "BLAKE3 hash of save data via BearDog",
     );
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// Phase 8: Discovery Mesh Validation
-// ═══════════════════════════════════════════════════════════════════════
-
-pub fn phase_discovery(v: &mut ValidationResult) {
+pub fn phase_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Service Discovery (Songbird)");
 
-    let sb = discover_primal("songbird");
-    let Some(sb_sock) = sb.socket.as_ref() else {
+    if !ctx.has_capability("discovery") {
         v.check_skip("discovery_list", "Songbird not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(sb_sock, "songbird") else {
-        v.check_skip("discovery_list", "Songbird connection failed");
-        return;
-    };
-
-    let resp = client.call("ipc.list", serde_json::json!({}));
+    let resp = ctx.call("discovery", "ipc.list", serde_json::json!({}));
 
     match resp {
         Ok(r) => {
             let count = r
-                .result
-                .as_ref()
-                .and_then(|r| r.get("services"))
+                .get("services")
                 .and_then(|s| s.as_array())
                 .map_or(0, Vec::len);
             v.check_minimum("discovery_list", count, 8);

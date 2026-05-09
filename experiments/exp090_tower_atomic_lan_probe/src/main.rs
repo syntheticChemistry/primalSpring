@@ -19,6 +19,7 @@
 //!   `BEARDOG_PORT`      — local `BearDog` TCP port (default: 9100)
 //!   `NEURAL_API_SOCKET` — biomeOS neural-api socket path (auto-discovered)
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
 use primalspring::ipc::methods;
 use primalspring::ipc::tcp::tcp_rpc;
@@ -43,8 +44,28 @@ fn beardog_port() -> u16 {
         .unwrap_or(tolerances::TCP_FALLBACK_BEARDOG_PORT)
 }
 
+fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Phase 1: Composition discovery (local)");
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "composition_capabilities_non_empty",
+        !caps.is_empty(),
+        &format!("{} capabilities: {}", caps.len(), caps.join(", ")),
+    );
+    v.check_bool(
+        "has_security_capability_path",
+        ctx.has_capability("security"),
+        "security capability path",
+    );
+    v.check_bool(
+        "has_discovery_capability_path",
+        ctx.has_capability("discovery"),
+        "discovery capability path",
+    );
+}
+
 fn validate_local_tower(v: &mut ValidationResult) {
-    v.section("Local Tower Atomic Health");
+    v.section("Phase 2: Local Tower Atomic health");
 
     let bd_port = beardog_port();
     let sb_port = songbird_port();
@@ -111,7 +132,7 @@ fn validate_mesh_discovery(
     family_id: &str,
     node_id: &str,
 ) -> Vec<serde_json::Value> {
-    v.section("BirdSong Mesh Discovery");
+    v.section("Phase 3: BirdSong mesh discovery");
 
     let sb_port = songbird_port();
 
@@ -194,7 +215,7 @@ fn validate_mesh_discovery(
 }
 
 fn validate_peer_capabilities(v: &mut ValidationResult, peers: &[serde_json::Value]) {
-    v.section("Peer Capability Enumeration");
+    v.section("Phase 4: Peer capability enumeration");
 
     if peers.is_empty() {
         println!("  No peers discovered — skipping capability enumeration.");
@@ -248,7 +269,7 @@ fn validate_peer_capabilities(v: &mut ValidationResult, peers: &[serde_json::Val
 }
 
 fn validate_https_through_tower(v: &mut ValidationResult) {
-    v.section("HTTPS Through Tower Atomic");
+    v.section("Phase 5: HTTPS through Tower Atomic");
 
     let Some(bridge) = NeuralBridge::discover() else {
         println!("  biomeOS not running — trying direct Songbird TCP");
@@ -313,7 +334,7 @@ fn validate_https_through_tower(v: &mut ValidationResult) {
 }
 
 fn validate_stun(v: &mut ValidationResult) {
-    v.section("STUN / NAT Discovery");
+    v.section("Phase 6: STUN / NAT discovery");
 
     let sb_port = songbird_port();
     match tcp_rpc(
@@ -350,10 +371,13 @@ fn main() {
     let node_id = env_or("NODE_ID", "eastgate");
 
     ValidationResult::new("primalSpring Exp090 — Tower Atomic LAN Probe")
-        .with_provenance("exp090_tower_atomic_lan_probe", "2026-04-06")
+        .with_provenance("exp090_tower_atomic_lan_probe", "2026-05-09")
         .run(
-            "primalSpring Exp090: LAN discovery + capability topology + HTTPS via Tower Atomic",
+            "LAN discovery + capability topology + HTTPS via Tower Atomic",
             |v| {
+                let ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_composition_discovery(v, &ctx);
+
                 println!("  Node ID:   {node_id}");
                 println!("  Family ID: {family_id}");
                 println!("  BearDog:   localhost:{}", beardog_port());
@@ -370,7 +394,7 @@ fn main() {
 
                 validate_stun(v);
 
-                v.section("Topology Summary");
+                v.section("Phase 7: Topology summary");
                 let peer_count = peers.len();
                 let total_gates = peer_count + 1;
                 println!("  Local gate:  {node_id}");

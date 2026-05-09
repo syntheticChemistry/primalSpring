@@ -1,62 +1,168 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp004: Full NUCLEUS — validate all 8 capability domains.
+//! Exp004: Full NUCLEUS — validate all 13 capability domains.
 //!
-//! Discovers providers by capability, validates health and latency for
-//! each, then runs the full capability-based composition validation.
-//! Gracefully degrades when providers are not running.
+//! Phases:
+//!   1. Structural — Full Nucleus capability count
+//!   2. Discovery — `CompositionContext` resolves each domain
+//!   3. Health — `health.liveness` per required capability
+//!   4. Composition parity — discovery, substrate, capability breadth, aggregate probe latency
 
-use primalspring::coordination::{
-    AtomicType, check_capability_health, validate_composition_by_capability,
-};
-use primalspring::ipc::discover::{discover_capabilities_for, neural_api_healthy};
+use primalspring::composition::CompositionContext;
+#[allow(
+    deprecated,
+    reason = "experiment uses deprecated probe_primal for composition parity"
+)]
+use primalspring::coordination::{AtomicType, probe_primal, probe_substrate};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
+fn capability_count_from_list_value(val: &serde_json::Value) -> usize {
+    if let Some(a) = val.as_array() {
+        return a.len();
+    }
+    val.as_object().map_or(0, serde_json::Map::len)
+}
+
+fn phase_structural(v: &mut ValidationResult) {
+    let required = AtomicType::FullNucleus.required_capabilities();
+    v.check_count("full_nucleus_required_caps", required.len(), 13);
+}
+
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    let required = AtomicType::FullNucleus.required_capabilities();
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "discovery_found_capabilities",
+        !caps.is_empty(),
+        &format!("{} capabilities: {}", caps.len(), caps.join(", ")),
+    );
+    for cap in required {
+        v.check_bool(
+            &format!("has_{cap}"),
+            ctx.has_capability(cap),
+            &format!("{cap} capability resolved"),
+        );
+    }
+}
+
+fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let required = AtomicType::FullNucleus.required_capabilities();
+    for cap in required {
+        match ctx.call(cap, "health.liveness", serde_json::json!({})) {
+            Ok(_) => v.check_bool(
+                &format!("health_liveness_{cap}"),
+                true,
+                &format!("{cap} health.liveness ok"),
+            ),
+            Err(e) if e.is_connection_error() => v.check_skip(
+                &format!("health_liveness_{cap}"),
+                &format!("{cap} not reachable: {e}"),
+            ),
+            Err(e) => v.check_bool(
+                &format!("health_liveness_{cap}"),
+                false,
+                &format!("{cap} health.liveness error: {e}"),
+            ),
+        }
+    }
+}
+
+#[allow(
+    deprecated,
+    reason = "experiment uses deprecated probe_primal for composition parity"
+)]
+fn phase_composition_parity(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let required = AtomicType::FullNucleus.required_capabilities();
+    let substrate = probe_substrate();
+
+    let Some(s) = substrate.as_ref() else {
+        let msg = "Neural API substrate not discoverable";
+        v.check_skip("composition_discovery_ok", msg);
+        v.check_skip("composition_substrate", msg);
+        v.check_skip("composition_all_healthy", msg);
+        v.check_skip("composition_total_caps", msg);
+        v.check_skip("composition_aggregate_latency", msg);
+        return;
+    };
+
+    let discovery_ok = required.iter().all(|&cap| ctx.has_capability(cap));
+    v.check_bool(
+        "composition_discovery_ok",
+        discovery_ok,
+        "each Full Nucleus capability has a client in context",
+    );
+
+    let mut primal_health_ok = true;
+    for cap in required {
+        if !ctx.has_capability(cap) {
+            primal_health_ok = false;
+            continue;
+        }
+        match ctx.call(cap, "health.liveness", serde_json::json!({})) {
+            Ok(_) => {}
+            Err(e) if e.is_connection_error() => {
+                primal_health_ok = false;
+            }
+            Err(_) => {
+                primal_health_ok = false;
+            }
+        }
+    }
+
+    let substrate_ok = s.health_ok;
+    v.check_bool(
+        "composition_substrate",
+        substrate_ok,
+        &format!("Neural API substrate, {}us", s.latency_us),
+    );
+
+    v.check_bool(
+        "composition_all_healthy",
+        primal_health_ok && substrate_ok,
+        "primal liveness parity and substrate health",
+    );
+
+    let mut total_caps = 0usize;
+    for cap in required {
+        if let Some(client) = ctx.client_for(cap) {
+            if let Ok(j) = client.capabilities() {
+                total_caps += capability_count_from_list_value(&j);
+            }
+        }
+    }
+    v.check_minimum("composition_total_caps", total_caps, 8);
+
+    let aggregate_us: u64 = AtomicType::FullNucleus
+        .required_primals()
+        .iter()
+        .map(|p| probe_primal(p).latency_us)
+        .sum();
+    v.check_latency(
+        "composition_aggregate_latency",
+        aggregate_us,
+        tolerances::NUCLEUS_STARTUP_MAX_US,
+    );
+}
+
 fn main() {
     ValidationResult::new("primalSpring Exp004 — Full NUCLEUS")
-        .with_provenance("exp004_full_nucleus", "2026-04-13")
+        .with_provenance("exp004_full_nucleus", "2026-05-09")
         .run(
             "primalSpring Exp004: Full NUCLEUS (all capability domains)",
             |v| {
-                let required = AtomicType::FullNucleus.required_capabilities();
-                v.check_count("full_nucleus_required_caps", required.len(), 13);
+                v.section("Phase 1: Structural");
+                phase_structural(v);
 
-                let discovered = discover_capabilities_for(required);
-                let found_count = discovered.iter().filter(|d| d.socket.is_some()).count();
-                println!(
-                    "  [INFO] discovered {found_count}/{} capability providers",
-                    required.len()
-                );
+                v.section("Phase 2: Discovery");
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_discovery(v, &ctx);
 
-                for cap in required {
-                    check_capability_health(v, cap);
-                }
+                v.section("Phase 3: Health");
+                phase_health(v, &mut ctx);
 
-                if neural_api_healthy() {
-                    let comp = validate_composition_by_capability(AtomicType::FullNucleus);
-                    v.check_bool(
-                        "composition_all_healthy",
-                        comp.all_healthy,
-                        "all capability providers healthy",
-                    );
-                    v.check_bool(
-                        "composition_discovery_ok",
-                        comp.discovery_ok,
-                        "all capabilities discovered",
-                    );
-                    v.check_minimum("composition_total_caps", comp.total_capabilities, 8);
-                    v.check_latency(
-                        "composition_aggregate_latency",
-                        comp.primals.iter().map(|p| p.latency_us).sum(),
-                        tolerances::NUCLEUS_STARTUP_MAX_US,
-                    );
-                } else {
-                    v.check_skip("composition_all_healthy", "Neural API not reachable");
-                    v.check_skip("composition_discovery_ok", "Neural API not reachable");
-                    v.check_skip("composition_total_caps", "Neural API not reachable");
-                    v.check_skip("composition_aggregate_latency", "Neural API not reachable");
-                }
+                v.section("Phase 4: Composition parity");
+                phase_composition_parity(v, &mut ctx);
             },
         );
 }

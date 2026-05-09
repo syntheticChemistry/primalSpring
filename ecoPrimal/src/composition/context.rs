@@ -35,7 +35,7 @@ use crate::ipc::IpcError;
 use crate::ipc::client::PrimalClient;
 
 use super::btsp::{tcp_fallback_table, upgrade_btsp_clients};
-use super::routing::{capability_to_primal, ALL_CAPS};
+use super::routing::{ALL_CAPS, capability_to_primal};
 
 /// A capability-keyed set of IPC clients for a running primal composition.
 ///
@@ -43,10 +43,15 @@ use super::routing::{capability_to_primal, ALL_CAPS};
 /// capabilities ("tensor", "shader", "security") rather than primal names
 /// or socket paths. Tracks per-capability BTSP authentication state so
 /// guidestone can report security posture per atomic tier.
+///
+/// Supports optional bearer token threading for JH-11 token federation:
+/// when a bearer token is set, `call_authenticated` injects it as
+/// `_bearer_token` in JSON-RPC params for scope-checked dispatch.
 #[derive(Debug)]
 pub struct CompositionContext {
     clients: HashMap<String, PrimalClient>,
     btsp_state: BTreeMap<String, bool>,
+    bearer_token: Option<String>,
 }
 
 impl CompositionContext {
@@ -55,6 +60,14 @@ impl CompositionContext {
     /// Connects to each capability provider in the [`crate::harness::RunningAtomic`]
     /// and stores the clients keyed by capability name.
     #[must_use]
+    #[deprecated(
+        since = "0.9.25",
+        note = "use CompositionContext::from_live_discovery_with_fallback() against deployed ecoBins instead"
+    )]
+    #[allow(
+        deprecated,
+        reason = "from_running bridges deprecated RunningAtomic to CompositionContext"
+    )]
     pub fn from_running(running: &crate::harness::RunningAtomic) -> Self {
         let mut clients = HashMap::new();
         for cap in running.all_capabilities() {
@@ -69,6 +82,7 @@ impl CompositionContext {
         Self {
             clients,
             btsp_state,
+            bearer_token: None,
         }
     }
 
@@ -113,11 +127,8 @@ impl CompositionContext {
                 let resolve_result = clients
                     .get_mut("discovery")
                     .and_then(|sb| {
-                        sb.call(
-                            "ipc.resolve",
-                            serde_json::json!({"primal_id": primal}),
-                        )
-                        .ok()
+                        sb.call("ipc.resolve", serde_json::json!({"primal_id": primal}))
+                            .ok()
                     })
                     .and_then(|resp| resp.result);
 
@@ -180,6 +191,7 @@ impl CompositionContext {
         Self {
             clients,
             btsp_state,
+            bearer_token: None,
         }
     }
 
@@ -205,6 +217,7 @@ impl CompositionContext {
         Self {
             clients,
             btsp_state,
+            bearer_token: None,
         }
     }
 
@@ -245,6 +258,7 @@ impl CompositionContext {
         Self {
             clients,
             btsp_state,
+            bearer_token: None,
         }
     }
 
@@ -258,7 +272,70 @@ impl CompositionContext {
         Self {
             clients,
             btsp_state,
+            bearer_token: None,
         }
+    }
+
+    // ── Bearer token management (JH-11 preparation) ────────────────────
+
+    /// Set a bearer token that will be threaded through authenticated calls.
+    ///
+    /// Once set, [`call_authenticated`](Self::call_authenticated) will inject
+    /// `_bearer_token` into JSON-RPC params for scope-checked dispatch on
+    /// the receiving primal's MethodGate.
+    pub fn set_bearer_token(&mut self, token: impl Into<String>) {
+        self.bearer_token = Some(token.into());
+    }
+
+    /// Clear any previously set bearer token.
+    pub fn clear_bearer_token(&mut self) {
+        self.bearer_token = None;
+    }
+
+    /// Whether a bearer token is currently set for authenticated calls.
+    #[must_use]
+    pub const fn has_bearer_token(&self) -> bool {
+        self.bearer_token.is_some()
+    }
+
+    // ── Composition lifecycle ───────────────────────────────────────────
+
+    /// Request a composition reload via biomeOS Neural API.
+    ///
+    /// Sends `composition.reload` to the `orchestration` capability,
+    /// then re-discovers all capabilities and refreshes BTSP state.
+    /// This validates the hot-reload contract (JH-3).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the orchestration capability is absent,
+    /// the reload call fails, or re-discovery finds fewer capabilities.
+    pub fn reload(&mut self) -> Result<serde_json::Value, IpcError> {
+        let result = self.call("orchestration", "composition.reload", serde_json::json!({}))?;
+        self.rediscover();
+        Ok(result)
+    }
+
+    /// Re-discover all capabilities, reconnecting to any that changed
+    /// sockets after a topology event (primal restart, graph hot-reload).
+    ///
+    /// Preserves existing live connections and adds newly discoverable
+    /// capabilities. Updates BTSP state for all clients.
+    pub fn rediscover(&mut self) {
+        for &cap in ALL_CAPS {
+            if self.clients.contains_key(cap) {
+                if let Some(client) = self.clients.get_mut(cap) {
+                    if client.health_check().unwrap_or(false) {
+                        continue;
+                    }
+                }
+            }
+            if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
+                tracing::info!(cap, "rediscovered capability after topology change");
+                self.clients.insert(cap.to_owned(), client);
+            }
+        }
+        self.btsp_state = upgrade_btsp_clients(&mut self.clients);
     }
 
     /// Get a mutable reference to the client for a given capability.
@@ -307,6 +384,31 @@ impl CompositionContext {
         })
     }
 
+    /// Call a method with the context's bearer token injected.
+    ///
+    /// If a bearer token is set (via [`set_bearer_token`](Self::set_bearer_token)),
+    /// it is added as `_bearer_token` in the JSON-RPC params. This enables
+    /// scope-checked dispatch on the receiving primal's MethodGate.
+    ///
+    /// Falls back to a bare call if no bearer token is set.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the capability has no client or the call fails.
+    pub fn call_authenticated(
+        &mut self,
+        capability: &str,
+        method: &str,
+        mut params: serde_json::Value,
+    ) -> Result<serde_json::Value, IpcError> {
+        if let Some(ref token) = self.bearer_token {
+            if let Some(obj) = params.as_object_mut() {
+                obj.insert("_bearer_token".to_owned(), serde_json::json!(token));
+            }
+        }
+        self.call(capability, method, params)
+    }
+
     /// Call a method and extract a single `f64` from the result by key.
     ///
     /// # Errors
@@ -346,9 +448,7 @@ impl CompositionContext {
             }
         }
         Err(IpcError::SerializationError {
-            detail: format!(
-                "none of keys {keys:?} found as number in {result}"
-            ),
+            detail: format!("none of keys {keys:?} found as number in {result}"),
         })
     }
 
@@ -372,9 +472,7 @@ impl CompositionContext {
             }
         }
         Err(IpcError::SerializationError {
-            detail: format!(
-                "none of keys {keys:?} found as array in {result}"
-            ),
+            detail: format!("none of keys {keys:?} found as array in {result}"),
         })
     }
 

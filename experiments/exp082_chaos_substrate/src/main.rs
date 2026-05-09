@@ -17,6 +17,7 @@
 use std::net::TcpStream;
 use std::time::Duration;
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::methods;
 use primalspring::ipc::tcp::{env_port, tcp_rpc, tcp_rpc_with_timeout};
 use primalspring::primal_names;
@@ -45,10 +46,8 @@ fn half_open_test(host: &str, port: u16, hold_secs: u64) -> Result<String, Strin
         .set_read_timeout(Some(Duration::from_secs(hold_secs + 5)))
         .ok();
 
-    // Hold the connection open without sending anything
     std::thread::sleep(Duration::from_secs(hold_secs));
 
-    // Check if the server closed us
     let mut buf = [0u8; 1];
     match std::io::Read::read(&mut &stream, &mut buf) {
         Ok(0) => Ok("server closed connection (good — timeout works)".to_owned()),
@@ -68,8 +67,6 @@ fn half_open_test(host: &str, port: u16, hold_secs: u64) -> Result<String, Strin
 }
 
 fn port_collision_test(host: &str, port: u16) -> Result<String, String> {
-    // Try to connect twice in quick succession — the second should still work
-    // (this validates the primal handles concurrent connections)
     let r1 = probe_health(host, port);
     let r2 = probe_health(host, port);
     match (r1, r2) {
@@ -106,12 +103,32 @@ fn targets(host: &str) -> Vec<ChaosTarget> {
     ]
 }
 
+fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Phase 1: Composition discovery (local)");
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "composition_context_nonempty",
+        !caps.is_empty(),
+        &format!("{} capabilities", caps.len()),
+    );
+    v.check_bool(
+        "has_security_path",
+        ctx.has_capability("security"),
+        "security in CompositionContext",
+    );
+    v.check_bool(
+        "has_discovery_path",
+        ctx.has_capability("discovery"),
+        "discovery in CompositionContext",
+    );
+}
+
 fn scenario_baseline_health(
     v: &mut ValidationResult,
     host: &str,
     targets: &[ChaosTarget],
 ) -> Vec<&'static str> {
-    v.section("Baseline Health");
+    v.section("Phase 2: Baseline health");
     let mut live: Vec<&'static str> = Vec::new();
     for t in targets {
         if host.is_empty() {
@@ -146,7 +163,7 @@ fn scenario_half_open(
     targets: &[ChaosTarget],
     live: &[&str],
 ) {
-    v.section("Half-Open Connections");
+    v.section("Phase 3: Half-open connections");
     for t in targets {
         if !live.contains(&t.name) {
             v.check_skip(
@@ -183,7 +200,7 @@ fn scenario_port_collision(
     targets: &[ChaosTarget],
     live: &[&str],
 ) {
-    v.section("Port Collision / Concurrent Connections");
+    v.section("Phase 4: Port collision / concurrent connections");
     for t in targets {
         if !live.contains(&t.name) {
             v.check_skip(
@@ -219,7 +236,7 @@ fn scenario_rapid_reconnection(
     targets: &[ChaosTarget],
     live: &[&str],
 ) {
-    v.section("Rapid Reconnection (Kill Simulation)");
+    v.section("Phase 5: Rapid reconnection (kill simulation)");
     println!("  Sending 10 rapid health probes to stress connection handling...");
     for t in targets {
         if !live.contains(&t.name) {
@@ -252,7 +269,7 @@ fn scenario_timeout_resilience(
     targets: &[ChaosTarget],
     live: &[&str],
 ) {
-    v.section("Timeout Resilience");
+    v.section("Phase 6: Timeout resilience");
     for t in targets {
         if !live.contains(&t.name) {
             v.check_skip(
@@ -261,7 +278,6 @@ fn scenario_timeout_resilience(
             );
             continue;
         }
-        // Use a very short timeout to test server behavior
         let result = tcp_rpc_with_timeout(
             host,
             t.port,
@@ -300,7 +316,7 @@ fn scenario_summary_assessment(
     targets: &[ChaosTarget],
     live: &[&str],
 ) {
-    v.section("Chaos Assessment");
+    v.section("Phase 7: Chaos assessment");
     println!("  Scenarios tested: {scenario}");
     println!("  Live primals:     {}/{}", live.len(), targets.len());
     if host.is_empty() {
@@ -315,8 +331,11 @@ fn main() {
     let scenario = std::env::var("CHAOS_SCENARIO").unwrap_or_else(|_| "all".to_owned());
 
     ValidationResult::new("primalSpring Exp082 — Chaos Substrate")
-        .with_provenance("exp082_chaos_substrate", "2026-03-28")
+        .with_provenance("exp082_chaos_substrate", "2026-05-09")
         .run(&format!("Chaos scenario: {scenario}"), |v| {
+            let ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_composition_discovery(v, &ctx);
+
             if host.is_empty() {
                 println!("  REMOTE_GATE_HOST not set — running structural validation only.");
                 v.check_skip("remote_gate_configured", "REMOTE_GATE_HOST not set");

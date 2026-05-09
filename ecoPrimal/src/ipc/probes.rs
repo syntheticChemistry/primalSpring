@@ -37,10 +37,11 @@ static PRIMAL_PROBE_CACHE: OnceLock<Mutex<HashMap<&'static str, bool>>> = OnceLo
 
 fn primal_reachable_cached(name: &'static str) -> bool {
     let cache = PRIMAL_PROBE_CACHE.get_or_init(|| Mutex::new(HashMap::new()));
-    let mut map = cache.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
-    *map.entry(name).or_insert_with(|| {
-        discover::discover_primal(name).socket.is_some()
-    })
+    let mut map = cache
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    *map.entry(name)
+        .or_insert_with(|| discover::discover_primal(name).socket.is_some())
 }
 
 /// Whether the Neural API is reachable (cached once per process).
@@ -161,6 +162,9 @@ mod tests {
     fn cached_probe_returns_consistent_results() {
         let a = primal_reachable_cached(primal_names::BEARDOG);
         let b = primal_reachable_cached(primal_names::BEARDOG);
-        assert_eq!(a, b, "cached probe must return same value on repeated calls");
+        assert_eq!(
+            a, b,
+            "cached probe must return same value on repeated calls"
+        );
     }
 }

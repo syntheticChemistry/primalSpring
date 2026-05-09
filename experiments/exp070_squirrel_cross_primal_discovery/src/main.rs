@@ -1,27 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-//! exp070 — Squirrel Cross-Primal Discovery
+//! exp070 — Squirrel Cross-Primal Discovery via CompositionContext.
 //!
-//! Validates that Squirrel discovers sibling primals in a full overlay
-//! composition (Tower + Nest + Node + Squirrel), then routes tool and
-//! AI requests through them.
-//!
-//! Phases:
-//! 1. Graph structural validation of `profiles/full.toml`
-//! 2. Spawn ordering and capability map verification
-//! 3. Live full overlay start (graceful skip if binaries missing)
-//! 4. Squirrel capability.discover (verify sibling awareness)
-//! 5. Squirrel tool.list (aggregated tools from multiple primals)
-//! 6. Squirrel context.create (context management via storage)
-//! 7. Squirrel ai.query (cloud AI routing — skip if no API key)
+//! Validates graph structure and live Squirrel routing against a discovered
+//! full NUCLEUS-style composition.
 
 use std::path::{Path, PathBuf};
 
-use primalspring::coordination::AtomicType;
+use primalspring::composition::CompositionContext;
 use primalspring::deploy::{
     graph_capability_map, graph_spawnable_primals, load_graph, topological_waves,
     validate_structure,
 };
-use primalspring::harness::{AtomicHarness, RunningAtomic};
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
@@ -146,117 +135,110 @@ fn validate_spawn_and_caps(v: &mut ValidationResult) {
     println!("  capability map: {caps:?}");
 }
 
-fn try_squirrel_rpc(
-    running: &RunningAtomic,
+fn try_ai_rpc(
     v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
     check_name: &str,
     method: &str,
     params: serde_json::Value,
 ) {
-    if let Some(mut client) = running.client_for("ai") {
-        match client.call(method, params) {
-            Ok(r) if r.is_success() => {
-                println!("  {method} response: {:?}", r.result);
-                v.check_bool(check_name, true, &format!("{method} succeeded"));
-            }
-            Ok(r) => {
-                println!("  {method} returned: {:?}", r.error);
-                v.check_skip(check_name, &format!("{method} error: {:?}", r.error));
-            }
-            Err(e) => {
-                println!("  {method} IPC error: {e}");
-                v.check_skip(check_name, &format!("IPC error: {e}"));
-            }
+    if !ctx.has_capability("ai") {
+        v.check_skip(check_name, "ai capability not available");
+        return;
+    }
+    match ctx.call("ai", method, params) {
+        Ok(r) => {
+            println!("  {method} response: {r:?}");
+            v.check_bool(check_name, true, &format!("{method} succeeded"));
         }
-    } else {
-        v.check_skip(check_name, "squirrel not available");
+        Err(e) if e.is_connection_error() => {
+            println!("  {method} IPC error: {e}");
+            v.check_skip(check_name, &format!("{e}"));
+        }
+        Err(e) => {
+            println!("  {method} IPC error: {e}");
+            v.check_skip(check_name, &format!("error: {e}"));
+        }
     }
 }
 
 fn validate_live_overlay(v: &mut ValidationResult) {
-    println!("\n=== Phase 3: Live Full Overlay Start ===\n");
+    println!("\n=== Phase 3: Live Full Overlay ===\n");
 
-    let graph_path = graphs_dir().join("profiles/full.toml");
-    let family_id = format!("exp070-{}", std::process::id());
-    match AtomicHarness::with_graph(AtomicType::Tower, &graph_path).start(&family_id) {
-        Ok(running) => {
-            v.check_bool("overlay_start", true, "full overlay started");
-            v.check_minimum("overlay_primal_count", running.primal_count(), 2);
+    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let avail = ctx.available_capabilities();
+    println!("  live capabilities: {avail:?}");
 
-            let overlay_primals = running.overlay_primals();
-            println!("  overlay primals: {overlay_primals:?}");
-
-            let all_caps = running.all_capabilities();
-            println!("  all capabilities: {all_caps:?}");
-            v.check_bool(
-                "has_security",
-                all_caps.contains(&"security".to_owned()),
-                "has security",
-            );
-            v.check_bool(
-                "has_discovery",
-                all_caps.contains(&"discovery".to_owned()),
-                "has discovery",
-            );
-
-            running.validate(v);
-
-            println!("\n=== Phase 4: Squirrel capability.discover ===\n");
-            try_squirrel_rpc(
-                &running,
-                v,
-                "squirrel_discover",
-                "capability.discover",
-                serde_json::json!({}),
-            );
-
-            println!("\n=== Phase 5: Squirrel tool.list ===\n");
-            try_squirrel_rpc(
-                &running,
-                v,
-                "squirrel_tool_list",
-                "tool.list",
-                serde_json::json!({}),
-            );
-
-            println!("\n=== Phase 6: Squirrel context.create ===\n");
-            try_squirrel_rpc(
-                &running,
-                v,
-                "squirrel_context_create",
-                "context.create",
-                serde_json::json!({
-                    "name": "exp070-test-context",
-                    "description": "Cross-primal discovery experiment context"
-                }),
-            );
-
-            validate_ai_query(&running, v);
-        }
-        Err(e) => {
-            println!("  full overlay start failed (expected if binaries missing): {e}");
-            v.check_skip(
-                "overlay_start",
-                &format!("full overlay could not start: {e}"),
-            );
-            v.check_skip("squirrel_discover", "overlay not started");
-            v.check_skip("squirrel_tool_list", "overlay not started");
-            v.check_skip("squirrel_context_create", "overlay not started");
-            v.check_skip("squirrel_ai_query", "overlay not started");
-        }
+    if !ctx.has_capability("security") || !ctx.has_capability("discovery") {
+        println!("  full overlay not reachable via discovery");
+        v.check_skip("overlay_start", "security/discovery not discovered");
+        v.check_skip("overlay_primal_count", "overlay not started");
+        v.check_skip("has_security", "overlay not started");
+        v.check_skip("has_discovery", "overlay not started");
+        v.check_skip("squirrel_discover", "overlay not started");
+        v.check_skip("squirrel_tool_list", "overlay not started");
+        v.check_skip("squirrel_context_create", "overlay not started");
+        v.check_skip("squirrel_ai_query", "overlay not started");
+        return;
     }
+
+    v.check_bool("overlay_start", true, "full overlay reachable");
+    v.check_minimum("overlay_primal_count", avail.len(), 2);
+
+    v.check_bool(
+        "has_security",
+        ctx.has_capability("security"),
+        "has security",
+    );
+    v.check_bool(
+        "has_discovery",
+        ctx.has_capability("discovery"),
+        "has discovery",
+    );
+
+    println!("\n=== Phase 4: Squirrel capability.discover ===\n");
+    try_ai_rpc(
+        v,
+        &mut ctx,
+        "squirrel_discover",
+        "capability.discover",
+        serde_json::json!({}),
+    );
+
+    println!("\n=== Phase 5: Squirrel tool.list ===\n");
+    try_ai_rpc(
+        v,
+        &mut ctx,
+        "squirrel_tool_list",
+        "tool.list",
+        serde_json::json!({}),
+    );
+
+    println!("\n=== Phase 6: Squirrel context.create ===\n");
+    try_ai_rpc(
+        v,
+        &mut ctx,
+        "squirrel_context_create",
+        "context.create",
+        serde_json::json!({
+            "name": "exp070-test-context",
+            "description": "Cross-primal discovery experiment context"
+        }),
+    );
+
+    validate_ai_query(v, &mut ctx);
 }
 
-fn validate_ai_query(running: &RunningAtomic, v: &mut ValidationResult) {
-    println!("\n=== Phase 7: Squirrel ai.query (skip if no API key) ===\n");
+fn validate_ai_query(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    println!("\n=== Phase 7: Squirrel ai.query ===\n");
 
     let has_api_key =
         std::env::var("ANTHROPIC_API_KEY").is_ok() || std::env::var("OPENAI_API_KEY").is_ok();
 
     if has_api_key {
-        try_squirrel_rpc(
-            running,
+        try_ai_rpc(
             v,
+            ctx,
             "squirrel_ai_query",
             "ai.query",
             serde_json::json!({
@@ -275,10 +257,13 @@ fn validate_ai_query(running: &RunningAtomic, v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("exp070_squirrel_cross_primal_discovery")
-        .with_provenance("exp070_squirrel_cross_primal_discovery", "2026-03-24")
+        .with_provenance("exp070_squirrel_cross_primal_discovery", "2026-05-09")
         .run("Squirrel Cross-Primal Discovery", |v| {
+            v.section("Phase 1: Graph structure (profiles/full.toml)");
             validate_graph_structure(v);
+            v.section("Phase 2: Spawn ordering and capability map");
             validate_spawn_and_caps(v);
+            v.section("Phase 3–7: Live overlay and Squirrel routing");
             validate_live_overlay(v);
         });
 }

@@ -241,11 +241,17 @@ pub fn load_stun_config(path: &Path) -> Result<StunTierConfig, StunConfigError> 
             .general
             .strategy
             .unwrap_or_else(|| "sovereignty-first".to_owned()),
-        tier_timeout_secs: raw.general.tier_timeout_secs.unwrap_or(DEFAULT_TIER_TIMEOUT_SECS),
+        tier_timeout_secs: raw
+            .general
+            .tier_timeout_secs
+            .unwrap_or(DEFAULT_TIER_TIMEOUT_SECS),
         lineage: LineageTier {
             enabled: raw.lineage.enabled,
             prefer_lineage: raw.lineage.prefer_lineage,
-            max_lineage_hops: raw.lineage.max_lineage_hops.unwrap_or(DEFAULT_MAX_LINEAGE_HOPS),
+            max_lineage_hops: raw
+                .lineage
+                .max_lineage_hops
+                .unwrap_or(DEFAULT_MAX_LINEAGE_HOPS),
             relay_bandwidth_limit_mbps: raw
                 .lineage
                 .relay_bandwidth_limit_mbps

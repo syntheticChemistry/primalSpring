@@ -105,11 +105,12 @@ fn handle_connection(
     Ok(())
 }
 
-/// Pre-dispatch gate: extract the method name, run `MethodGate::check`,
-/// then delegate to `dispatch_request` if allowed.
+/// Pre-dispatch gate: extract the method name, parse bearer token from
+/// params, run `MethodGate::check` with scope validation, then delegate
+/// to `dispatch_request` if allowed.
 fn dispatch_request_gated(
     line: &str,
-    caller: &CallerContext,
+    base_caller: &CallerContext,
     gate: &MethodGate,
 ) -> JsonRpcResponse {
     let parsed: Result<serde_json::Value, _> = serde_json::from_str(line.trim());
@@ -125,7 +126,18 @@ fn dispatch_request_gated(
         .and_then(|v| v["id"].as_u64())
         .unwrap_or(0);
 
-    if let Err(err) = gate.check(normalized, caller) {
+    let params = parsed
+        .as_ref()
+        .ok()
+        .and_then(|v| v.get("params"))
+        .cloned()
+        .unwrap_or(serde_json::Value::Null);
+
+    let caller = base_caller
+        .clone()
+        .with_params_token(&params, gate.verifier());
+
+    if let Err(err) = gate.check(normalized, &caller) {
         return JsonRpcResponse {
             jsonrpc: JSONRPC_VERSION.to_owned(),
             result: None,
@@ -134,7 +146,6 @@ fn dispatch_request_gated(
         };
     }
 
-    // Handle auth introspection methods here (they need gate/caller context).
     match normalized {
         "auth.mode" => JsonRpcResponse {
             jsonrpc: JSONRPC_VERSION.to_owned(),
@@ -146,12 +157,24 @@ fn dispatch_request_gated(
         },
         "auth.check" => {
             let has_token = caller.bearer_token.is_some();
+            let verified = caller.verified.is_some();
+            let mut result = serde_json::json!({
+                "authenticated": has_token,
+                "verified": verified,
+                "enforcement": gate.mode().as_str(),
+            });
+            if let Some(ref v) = caller.verified {
+                result["scopes"] = serde_json::json!(v.scopes);
+                if let Some(ref sub) = v.subject {
+                    result["subject"] = serde_json::json!(sub);
+                }
+                if let Some(exp) = v.expires_in {
+                    result["expires_in"] = serde_json::json!(exp);
+                }
+            }
             JsonRpcResponse {
                 jsonrpc: JSONRPC_VERSION.to_owned(),
-                result: Some(serde_json::json!({
-                    "authenticated": has_token,
-                    "enforcement": gate.mode().as_str(),
-                })),
+                result: Some(result),
                 error: None,
                 id,
             }

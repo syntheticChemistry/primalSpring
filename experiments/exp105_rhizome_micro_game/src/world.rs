@@ -1,20 +1,21 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use crate::types::{World, Biome, Tile, MAP_WIDTH, MAP_HEIGHT, Creature, Item, CELL_WIDTH, CELL_HEIGHT};
+use crate::types::{
+    Biome, CELL_HEIGHT, CELL_WIDTH, Creature, Item, MAP_HEIGHT, MAP_WIDTH, Tile, World,
+};
 
-use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover::{discover_by_capability, discover_primal};
+use primalspring::composition::CompositionContext;
 use primalspring::validation::ValidationResult;
 
 // ═══════════════════════════════════════════════════════════════════════
 // Phase 1: World Generation
 // ═══════════════════════════════════════════════════════════════════════
 
-pub fn phase_world_gen(v: &mut ValidationResult) -> World {
+pub fn phase_world_gen(v: &mut ValidationResult, ctx: &mut CompositionContext) -> World {
     v.section("World Generation (Barracuda + ludoSpring)");
 
-    let biome = generate_biome(v);
-    let tiles = generate_floor_structure(v);
+    let biome = generate_biome(v, ctx);
+    let tiles = generate_floor_structure(v, ctx);
     let creatures = populate_creatures(v, &tiles);
     let items = populate_items(v, &tiles);
 
@@ -37,37 +38,23 @@ pub fn phase_world_gen(v: &mut ValidationResult) -> World {
     }
 }
 
-fn generate_biome(v: &mut ValidationResult) -> Biome {
-    let barr = discover_by_capability("math");
-    let Some(barr_sock) = barr.socket.as_ref() else {
-        v.check_skip("biome_noise", "Barracuda not discovered");
-        return Biome::Rhizome;
-    };
-
-    let Ok(mut client) = PrimalClient::connect(barr_sock, "barracuda") else {
-        v.check_skip("biome_noise", "Barracuda connection failed");
-        return Biome::Rhizome;
-    };
-
-    let resp = client.call(
+fn generate_biome(v: &mut ValidationResult, ctx: &mut CompositionContext) -> Biome {
+    let resp = ctx.call(
+        "math",
         "noise.perlin2d",
         serde_json::json!({"x": 4, "y": 4, "scale": 1.0, "seed": 42}),
     );
 
     match resp {
-        Ok(r) if r.result.is_some() => {
+        Ok(r) => {
             let noise_val = r
-                .result
-                .as_ref()
-                .and_then(|v| {
-                    v.get("result")
+                .get("result")
+                .and_then(serde_json::Value::as_f64)
+                .or_else(|| {
+                    r.get("data")
+                        .and_then(|d| d.as_array())
+                        .and_then(|a| a.first())
                         .and_then(serde_json::Value::as_f64)
-                        .or_else(|| {
-                            v.get("data")
-                                .and_then(|d| d.as_array())
-                                .and_then(|a| a.first())
-                                .and_then(serde_json::Value::as_f64)
-                        })
                 })
                 .unwrap_or(0.0);
 
@@ -79,17 +66,6 @@ fn generate_biome(v: &mut ValidationResult) -> Biome {
             );
             biome
         }
-        Ok(r) => {
-            let msg = r
-                .error
-                .as_ref()
-                .map_or("no result".to_owned(), |e| e.message.clone());
-            v.check_skip(
-                "biome_noise",
-                &format!("noise.perlin2d error: {msg} — using default biome"),
-            );
-            Biome::Rhizome
-        }
         Err(e) => {
             v.check_skip(
                 "biome_noise",
@@ -100,39 +76,34 @@ fn generate_biome(v: &mut ValidationResult) -> Biome {
     }
 }
 
-fn generate_floor_structure(v: &mut ValidationResult) -> Vec<Tile> {
-    let ls = discover_primal("ludospring");
-    if let Some(ls_sock) = ls.socket.as_ref() {
-        if let Ok(mut client) = PrimalClient::connect(ls_sock, "ludospring") {
-            let resp = client.call(
-                "game.wfc_step",
-                serde_json::json!({
-                    "grid_width": MAP_WIDTH,
-                    "grid_height": MAP_HEIGHT,
-                    "tile_types": ["wall", "floor", "door"],
-                    "seed": 42
-                }),
-            );
+fn generate_floor_structure(v: &mut ValidationResult, ctx: &mut CompositionContext) -> Vec<Tile> {
+    let resp = ctx.call(
+        "game",
+        "game.wfc_step",
+        serde_json::json!({
+            "grid_width": MAP_WIDTH,
+            "grid_height": MAP_HEIGHT,
+            "tile_types": ["wall", "floor", "door"],
+            "seed": 42
+        }),
+    );
 
-            let wfc_ok = resp.as_ref().is_ok_and(|r| r.result.is_some());
+    match resp {
+        Ok(_) => {
             v.check_bool(
                 "wfc_floor",
-                wfc_ok,
+                true,
                 "Floor structure via ludoSpring game.wfc_step",
             );
-
-            if wfc_ok {
-                v.check_bool(
-                    "wfc_floor_usable",
-                    true,
-                    "WFC result received (using fallback layout for determinism)",
-                );
-            }
-        } else {
-            v.check_skip("wfc_floor", "ludoSpring connection failed");
+            v.check_bool(
+                "wfc_floor_usable",
+                true,
+                "WFC result received (using fallback layout for determinism)",
+            );
         }
-    } else {
-        v.check_skip("wfc_floor", "ludoSpring not discovered");
+        Err(e) => {
+            v.check_skip("wfc_floor", &format!("game.wfc_step: {e}"));
+        }
     }
 
     fallback_floor_layout()
@@ -256,25 +227,13 @@ fn populate_items(v: &mut ValidationResult, tiles: &[Tile]) -> Vec<Item> {
 // Phase 2: Scene Rendering
 // ═══════════════════════════════════════════════════════════════════════
 
-pub fn phase_render_scene(v: &mut ValidationResult, world: &World) {
+pub fn phase_render_scene(v: &mut ValidationResult, world: &World, ctx: &mut CompositionContext) {
     v.section("Scene Rendering (petalTongue)");
-
-    let pt = discover_by_capability("visualization");
-    let Some(pt_sock) = pt.socket.as_ref() else {
-        v.check_skip("scene_render", "petalTongue not discovered");
-        render_stdout_fallback(world);
-        return;
-    };
-
-    let Ok(mut client) = PrimalClient::connect(pt_sock, "petaltongue") else {
-        v.check_skip("scene_render", "petalTongue connection failed");
-        render_stdout_fallback(world);
-        return;
-    };
 
     let scene = build_scene_graph(world);
 
-    let resp = client.call(
+    let resp = ctx.call(
+        "visualization",
         "visualization.render.scene",
         serde_json::json!({
             "session": "rhizome-game",
@@ -283,10 +242,10 @@ pub fn phase_render_scene(v: &mut ValidationResult, world: &World) {
     );
 
     match resp {
-        Ok(r) => {
+        Ok(_) => {
             v.check_bool(
                 "scene_render",
-                r.result.is_some(),
+                true,
                 &format!(
                     "Tile grid rendered: {}x{} map + {} creatures + HUD",
                     MAP_WIDTH,
@@ -296,15 +255,13 @@ pub fn phase_render_scene(v: &mut ValidationResult, world: &World) {
             );
         }
         Err(e) => {
-            v.check_skip(
-                "scene_render",
-                &format!("visualization.render.scene failed: {e}"),
-            );
+            v.check_skip("scene_render", &format!("visualization.render.scene: {e}"));
             render_stdout_fallback(world);
         }
     }
 }
 
+#[allow(clippy::cast_precision_loss)]
 fn build_scene_graph(world: &World) -> serde_json::Value {
     let mut nodes = Vec::new();
     let (br, bg, bb) = world.biome.glyph_color();

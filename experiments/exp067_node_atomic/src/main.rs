@@ -1,96 +1,95 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-//! exp067 — Node Atomic validation: Tower + `ToadStool` compute
-//!
-//! Validates that the Node Atomic composition (beardog + songbird + toadstool)
-//! starts, reports capabilities, and responds to compute health.
+//! Exp067: Node Atomic — ToadStool compute via CompositionContext.
 
 use primalspring::cast::u64_to_usize;
+use primalspring::composition::CompositionContext;
 use primalspring::coordination::AtomicType;
-use primalspring::harness::AtomicHarness;
-use primalspring::ipc::client::PrimalClient;
-use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
-fn rpc(
-    socket: &std::path::Path,
-    method: &str,
-    params: &serde_json::Value,
-) -> Result<serde_json::Value, String> {
-    let mut client =
-        PrimalClient::connect(socket, primal_names::TOADSTOOL).map_err(|e| format!("{e}"))?;
-    let resp = client
-        .call(method, params.clone())
-        .map_err(|e| format!("{e}"))?;
-    if let Some(err) = resp.error {
-        return Err(format!("RPC error {}: {}", err.code, err.message));
+fn phase_structural(v: &mut ValidationResult) {
+    let primals = AtomicType::Node.required_primals();
+    v.check_bool(
+        "node_composition_valid",
+        primals.len() == 5,
+        "Node compute triangle (beardog + songbird + toadstool + barracuda + coralreef)",
+    );
+}
+
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    for cap in AtomicType::Node.required_capabilities() {
+        v.check_bool(
+            &format!("has_{cap}"),
+            ctx.has_capability(cap),
+            &format!("{cap} capability resolved"),
+        );
     }
-    Ok(resp.result.unwrap_or(serde_json::Value::Null))
+}
+
+fn phase_toadstool(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("compute") {
+        v.check_skip("toadstool_health", "compute capability not discovered");
+        v.check_skip("toadstool_caps", "compute capability not discovered");
+        v.check_skip(
+            "toadstool_workload_types",
+            "compute capability not discovered",
+        );
+        v.check_skip("toadstool_cpu_cores", "compute capability not discovered");
+        v.check_skip("toadstool_version", "compute capability not discovered");
+        return;
+    }
+
+    let health = ctx.call("compute", "toadstool.health", serde_json::json!({}));
+    v.check_bool(
+        "toadstool_health",
+        health.as_ref().is_ok_and(|v| v["healthy"] == true),
+        "toadstool.health",
+    );
+
+    let caps = ctx.call(
+        "compute",
+        "toadstool.query_capabilities",
+        serde_json::json!({}),
+    );
+    v.check_bool(
+        "toadstool_caps",
+        caps.as_ref()
+            .is_ok_and(|v| v["supported_workload_types"].is_array()),
+        "toadstool capabilities",
+    );
+
+    if let Ok(c) = &caps {
+        let types = c["supported_workload_types"].as_array().map_or(0, Vec::len);
+        v.check_minimum("toadstool_workload_types", types, 1);
+        let cores = u64_to_usize(
+            c["available_resources"]["total_cpu_cores"]
+                .as_u64()
+                .unwrap_or(0),
+        );
+        v.check_minimum("toadstool_cpu_cores", cores, 1);
+        println!("  toadstool: {types} workload types, {cores} CPU cores");
+    }
+
+    match ctx.call("compute", "toadstool.version", serde_json::json!({})) {
+        Ok(_) => v.check_bool("toadstool_version", true, "toadstool.version"),
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("toadstool_version", &format!("{e}"));
+        }
+        Err(e) => v.check_bool("toadstool_version", false, &format!("error: {e}")),
+    }
 }
 
 fn main() {
     ValidationResult::new("exp067_node_atomic")
-        .with_provenance("exp067_node_atomic", "2026-03-23")
+        .with_provenance("exp067_node_atomic", "2026-05-09")
         .run("Node Atomic — Tower + ToadStool compute", |v| {
-            let primals = AtomicType::Node.required_primals();
-            v.check_bool(
-                "node_composition_valid",
-                primals.len() == 3,
-                "Node = beardog + songbird + toadstool",
-            );
+            v.section("Phase 1: Structural");
+            phase_structural(v);
 
-            let family_id = format!("exp067-{}", std::process::id());
-            let running = match AtomicHarness::new(AtomicType::Node).start(&family_id) {
-                Ok(r) => {
-                    v.check_bool("node_startup", true, "Node Atomic started");
-                    r
-                }
-                Err(e) => {
-                    v.check_bool("node_startup", false, &format!("{e}"));
-                    return;
-                }
-            };
+            v.section("Phase 2: Discovery");
+            let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_discovery(v, &ctx);
 
-            v.check_minimum("node_primal_count", running.primal_count(), 3);
-            running.validate(v);
-
-            if let Some(ts) = running
-                .socket_for("compute")
-                .or_else(|| running.socket_for_primal(primal_names::TOADSTOOL))
-            {
-                let health = rpc(ts, "toadstool.health", &serde_json::json!({}));
-                v.check_bool(
-                    "toadstool_health",
-                    health.as_ref().is_ok_and(|v| v["healthy"] == true),
-                    "toadstool.health",
-                );
-
-                let caps = rpc(ts, "toadstool.query_capabilities", &serde_json::json!({}));
-                v.check_bool(
-                    "toadstool_caps",
-                    caps.as_ref()
-                        .is_ok_and(|v| v["supported_workload_types"].is_array()),
-                    "toadstool capabilities",
-                );
-
-                if let Ok(c) = &caps {
-                    let types = c["supported_workload_types"].as_array().map_or(0, Vec::len);
-                    v.check_minimum("toadstool_workload_types", types, 1);
-                    let cores = u64_to_usize(
-                        c["available_resources"]["total_cpu_cores"]
-                            .as_u64()
-                            .unwrap_or(0),
-                    );
-                    v.check_minimum("toadstool_cpu_cores", cores, 1);
-                    println!("  toadstool: {types} workload types, {cores} CPU cores");
-                }
-
-                v.check_bool(
-                    "toadstool_version",
-                    rpc(ts, "toadstool.version", &serde_json::json!({})).is_ok(),
-                    "toadstool.version",
-                );
-            } else {
-                v.check_skip("toadstool_health", "toadstool socket not found");
-            }
+            v.section("Phase 3: ToadStool");
+            phase_toadstool(v, &mut ctx);
         });
 }

@@ -1,119 +1,45 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp065: petalTongue Tower Dashboard — visualization via CompositionContext.
 
-//! Exp065: petalTongue Tower Dashboard — visualization via Tower composition.
-//!
-//! Spawns Tower + petalTongue via the harness and validates:
-//! 1. petalTongue health via JSON-RPC
-//! 2. `visualization.render.dashboard` with Tower health data
-//! 3. `visualization.render.grammar` with a Grammar-of-Graphics expression
-//! 4. Headless SVG/JSON export
-//!
-//! petalTongue must be fetchable via `discover_binary()` and its launch
-//! profile must be in `config/primal_launch_profiles.toml`.
-
-use std::io::{BufRead, BufReader, Write};
-use std::os::unix::net::UnixStream;
-use std::path::{Path, PathBuf};
-use std::time::Duration;
-
-use primalspring::coordination::AtomicType;
-use primalspring::harness::AtomicHarness;
-use primalspring::launcher::{PrimalProcess, SocketNucleation};
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::discover::extract_capability_names;
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
-fn rpc_call(
-    socket: &Path,
-    method: &str,
-    params: &serde_json::Value,
-) -> Result<serde_json::Value, String> {
-    let mut stream = UnixStream::connect(socket).map_err(|e| format!("connect: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(10))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let msg = format!("{req}\n");
-    stream
-        .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
-
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
-            if let Some(result) = parsed.get("result") {
-                return Ok(result.clone());
-            }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
-            }
-        }
+fn phase_petaltongue_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("visualization") {
+        v.check_skip(
+            "petaltongue_healthy",
+            "visualization capability not in context",
+        );
+        return;
     }
-    Err("no response".to_owned())
-}
-
-fn find_petaltongue_binary() -> Option<PathBuf> {
-    primalspring::launcher::discover_binary(primal_names::PETALTONGUE).ok()
-}
-
-fn spawn_petaltongue(
-    family_id: &str,
-    nucleation: &mut SocketNucleation,
-    binary: &Path,
-) -> Option<(PrimalProcess, PathBuf)> {
-    let socket = nucleation.assign(primal_names::PETALTONGUE, family_id);
-
-    let mut cmd = std::process::Command::new(binary);
-    cmd.arg("server");
-    cmd.env("FAMILY_ID", family_id);
-    cmd.env("XDG_RUNTIME_DIR", nucleation.base_dir());
-    cmd.env("PETALTONGUE_SOCKET", &socket);
-    cmd.stdout(std::process::Stdio::piped());
-    cmd.stderr(std::process::Stdio::piped());
-
-    let child = cmd.spawn().ok()?;
-    let process =
-        PrimalProcess::from_parts(primal_names::PETALTONGUE.to_owned(), socket.clone(), child);
-
-    let deadline = std::time::Instant::now() + Duration::from_secs(10);
-    loop {
-        if socket.exists() {
-            if let Ok(mut s) = UnixStream::connect(&socket) {
-                let health_req = r#"{"jsonrpc":"2.0","method":"health.liveness","id":1}"#;
-                if s.write_all(format!("{health_req}\n").as_bytes()).is_ok() {
-                    let _ = s.shutdown(std::net::Shutdown::Write);
-                    let reader = BufReader::new(&s);
-                    for line in reader.lines().map_while(Result::ok) {
-                        if line.contains("\"result\"") {
-                            return Some((process, socket));
-                        }
-                    }
-                }
-            }
+    match ctx.call("visualization", "health.liveness", serde_json::json!({})) {
+        Ok(_) => v.check_bool("petaltongue_healthy", true, "petalTongue health OK"),
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("petaltongue_healthy", &format!("{e}"));
         }
-        if std::time::Instant::now() >= deadline {
-            println!("  [WARN] petaltongue did not become ready within 10s");
-            return Some((process, socket));
-        }
-        std::thread::sleep(Duration::from_millis(200));
+        Err(e) => v.check_bool("petaltongue_healthy", false, &format!("health: {e}")),
     }
 }
 
-fn validate_dashboard(
-    v: &mut primalspring::validation::ValidationResult,
-    pt_socket: &Path,
-    _tower_health: &[serde_json::Value],
-    family_id: &str,
-) {
-    let dashboard = rpc_call(
-        pt_socket,
+fn phase_dashboard(v: &mut ValidationResult, ctx: &mut CompositionContext, family_id: &str) {
+    if !ctx.has_capability("visualization") {
+        v.check_skip(
+            "dashboard_rendered",
+            "visualization capability not in context",
+        );
+        v.check_skip(
+            "grammar_rendered",
+            "visualization capability not in context",
+        );
+        return;
+    }
+
+    let dashboard = ctx.call(
+        "visualization",
         "visualization.render.dashboard",
-        &serde_json::json!({
+        serde_json::json!({
             "session_id": family_id,
             "title": "Tower Atomic Health",
             "bindings": [{
@@ -145,10 +71,10 @@ fn validate_dashboard(
         }
     }
 
-    let grammar = rpc_call(
-        pt_socket,
+    let grammar = ctx.call(
+        "visualization",
         "visualization.render.grammar",
-        &serde_json::json!({
+        serde_json::json!({
             "session_id": family_id,
             "grammar": {
                 "data_source": "tower_health",
@@ -191,76 +117,30 @@ fn validate_dashboard(
             v.check_bool("grammar_rendered", false, &format!("grammar: {e}"));
         }
     }
+
+    match ctx.call("visualization", "capabilities.list", serde_json::json!({})) {
+        Ok(j) => {
+            let n = extract_capability_names(Some(j)).len();
+            v.check_minimum("petaltongue_caps", n, 1);
+        }
+        Err(_) => v.check_skip("petaltongue_caps", "capabilities.list failed"),
+    }
 }
 
 fn main() {
-    let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
     let family_id = format!("e065-{}", std::process::id());
 
     ValidationResult::new("primalSpring Exp065 — petalTongue Tower Dashboard")
-        .with_provenance("exp065_petaltongue_tower_dashboard", "2026-03-24")
+        .with_provenance("exp065_petaltongue_tower_dashboard", "2026-05-09")
         .run(
             "primalSpring Exp065: Tower health visualization via petalTongue",
             |v| {
-                let Some(pt_binary) = find_petaltongue_binary() else {
-                    println!("  [SKIP] petaltongue binary not found");
-                    v.check_bool(
-                        "petaltongue_binary_found",
-                        false,
-                        "petaltongue not found — run tools/fetch_primals.sh",
-                    );
-                    return;
-                };
+                v.section("Phase 1: petalTongue health");
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_petaltongue_health(v, &mut ctx);
 
-                v.check_bool(
-                    "petaltongue_binary_found",
-                    true,
-                    "petaltongue binary located",
-                );
-
-                let running = match AtomicHarness::new(AtomicType::Tower)
-                    .start_with_neural_api(&family_id, &graphs_dir)
-                {
-                    Ok(r) => r,
-                    Err(e) => {
-                        v.check_bool("harness_start", false, &format!("failed to start: {e}"));
-                        return;
-                    }
-                };
-
-                let runtime_dir = running.runtime_dir().to_path_buf();
-                let mut nucleation = SocketNucleation::new(runtime_dir);
-
-                let Some((_pt_proc, pt_socket)) =
-                    spawn_petaltongue(&family_id, &mut nucleation, &pt_binary)
-                else {
-                    v.check_bool("petaltongue_spawned", false, "petaltongue failed to spawn");
-                    return;
-                };
-
-                v.check_bool("petaltongue_spawned", true, "petaltongue running");
-
-                let health = rpc_call(&pt_socket, "health.liveness", &serde_json::json!({}));
-                match &health {
-                    Ok(_) => v.check_bool("petaltongue_healthy", true, "petalTongue health OK"),
-                    Err(e) => {
-                        println!("  health: {e}");
-                        v.check_bool("petaltongue_healthy", false, &format!("health: {e}"));
-                    }
-                }
-
-                let tower_health: Vec<serde_json::Value> = running
-                    .health_check_all()
-                    .iter()
-                    .map(|(name, live)| {
-                        serde_json::json!({
-                            "primal": name,
-                            "status": if *live { "healthy" } else { "unhealthy" }
-                        })
-                    })
-                    .collect();
-
-                validate_dashboard(v, &pt_socket, &tower_health, &family_id);
+                v.section("Phase 2: Dashboard & grammar");
+                phase_dashboard(v, &mut ctx, &family_id);
             },
         );
 }

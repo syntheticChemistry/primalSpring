@@ -1,5 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-#![expect(clippy::unwrap_used, clippy::expect_used, reason = "integration tests — panics are the failure signal")]
+#![allow(
+    deprecated,
+    reason = "integration test uses deprecated harness/launcher APIs"
+)]
+#![expect(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    reason = "integration tests — panics are the failure signal"
+)]
 
 //! Tower atomic and Squirrel AI composition integration tests.
 //!
@@ -14,9 +22,7 @@
 )]
 mod integration;
 
-use integration::{
-    SquirrelGuard, load_anthropic_key, process_alive, spawn_squirrel_for_test,
-};
+use integration::{SquirrelGuard, load_anthropic_key, process_alive, spawn_squirrel_for_test};
 use std::path::PathBuf;
 use std::time::Duration;
 

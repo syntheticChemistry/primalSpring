@@ -1,58 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp064: Nestgate Internet Reach — connectivity paths via CompositionContext.
 
-//! Exp064: Nestgate Internet Reach — test full internet deployment paths.
-//!
-//! Spawns Tower and exercises every connectivity path: STUN public address,
-//! HTTPS probe, sovereign onion service, and Tor status. Reports which
-//! paths are available for the Pixel 8a / USB / nestgate.io deployment model.
-//!
-//! Environment:
-//!   `NESTGATE_ENDPOINT` — HTTPS endpoint to probe (default: `https://api.nestgate.io`)
+use std::time::Instant;
 
-use std::io::{BufRead, BufReader, Write};
-use std::os::unix::net::UnixStream;
-use std::path::Path;
-use std::time::{Duration, Instant};
-
-use primalspring::coordination::AtomicType;
-use primalspring::harness::AtomicHarness;
-use primalspring::primal_names;
+use primalspring::composition::CompositionContext;
 use primalspring::validation::ValidationResult;
-
-fn rpc_call(
-    socket: &Path,
-    method: &str,
-    params: &serde_json::Value,
-) -> Result<serde_json::Value, String> {
-    let mut stream = UnixStream::connect(socket).map_err(|e| format!("connect: {e}"))?;
-    stream.set_read_timeout(Some(Duration::from_secs(15))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let msg = format!("{req}\n");
-    stream
-        .write_all(msg.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    let _ = stream.shutdown(std::net::Shutdown::Write);
-
-    let reader = BufReader::new(&stream);
-    for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
-            if let Some(result) = parsed.get("result") {
-                return Ok(result.clone());
-            }
-            if let Some(error) = parsed.get("error") {
-                return Err(format!("RPC error: {error}"));
-            }
-        }
-    }
-    Err("no response".to_owned())
-}
 
 struct PathReport {
     available: Vec<&'static str>,
@@ -70,18 +22,18 @@ impl PathReport {
     }
 }
 
-fn probe_https(
-    v: &mut primalspring::validation::ValidationResult,
-    socket: &Path,
+fn phase_https(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
     endpoint: &str,
     report: &mut PathReport,
 ) {
     println!("  [1/5] HTTPS probe to {endpoint}");
     let start = Instant::now();
-    let result = rpc_call(
-        socket,
+    let result = ctx.call(
+        "discovery",
         "discovery.https_probe",
-        &serde_json::json!({ "url": endpoint }),
+        serde_json::json!({ "url": endpoint }),
     );
     let lat = start.elapsed();
     match &result {
@@ -99,7 +51,8 @@ fn probe_https(
         }
         Err(e) => {
             println!("    FAIL ({lat:?}): {e}");
-            let is_not_wired = e.contains("Unknown method");
+            let msg = format!("{e}");
+            let is_not_wired = msg.contains("Unknown method");
             v.check_bool(
                 "https_nestgate_reachable",
                 is_not_wired,
@@ -109,14 +62,18 @@ fn probe_https(
     }
 }
 
-fn probe_stun_and_nat(
-    v: &mut primalspring::validation::ValidationResult,
-    socket: &Path,
+fn phase_stun_and_nat(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
     report: &mut PathReport,
 ) {
     println!("  [2/5] STUN public address");
     let start = Instant::now();
-    let result = rpc_call(socket, "stun.get_public_address", &serde_json::json!({}));
+    let result = ctx.call(
+        "discovery",
+        "stun.get_public_address",
+        serde_json::json!({}),
+    );
     let lat = start.elapsed();
     match &result {
         Ok(addr) => {
@@ -131,7 +88,7 @@ fn probe_stun_and_nat(
     }
 
     println!("  [3/5] NAT type detection");
-    let nat = rpc_call(socket, "stun.detect_nat_type", &serde_json::json!({}));
+    let nat = ctx.call("discovery", "stun.detect_nat_type", serde_json::json!({}));
     match &nat {
         Ok(n) => {
             println!("    NAT type: {n}");
@@ -144,17 +101,17 @@ fn probe_stun_and_nat(
     }
 }
 
-fn probe_onion_and_tor(
-    v: &mut primalspring::validation::ValidationResult,
-    socket: &Path,
+fn phase_onion_and_tor(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
     family_id: &str,
     report: &mut PathReport,
 ) {
     println!("  [4/5] Sovereign onion service");
-    let onion = rpc_call(
-        socket,
+    let onion = ctx.call(
+        "discovery",
         "onion.start",
-        &serde_json::json!({ "family_id": family_id }),
+        serde_json::json!({ "family_id": family_id }),
     );
     match &onion {
         Ok(r) => {
@@ -173,7 +130,7 @@ fn probe_onion_and_tor(
     }
 
     println!("  [5/5] Tor relay status");
-    let tor = rpc_call(socket, "tor.status", &serde_json::json!({}));
+    let tor = ctx.call("discovery", "tor.status", serde_json::json!({}));
     match &tor {
         Ok(s) => {
             println!("    Tor: {s}");
@@ -188,39 +145,28 @@ fn probe_onion_and_tor(
 }
 
 fn main() {
-    let graphs_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
     let family_id = format!("e064-{}", std::process::id());
     let endpoint =
         std::env::var("NESTGATE_ENDPOINT").unwrap_or_else(|_| "https://api.nestgate.io".to_owned());
 
     ValidationResult::new("primalSpring Exp064 — Nestgate Internet Reach")
-        .with_provenance("exp064_nestgate_internet_reach", "2026-03-24")
+        .with_provenance("exp064_nestgate_internet_reach", "2026-05-09")
         .run(
             "primalSpring Exp064: Full internet deployment path validation",
             |v| {
-                let running = match AtomicHarness::new(AtomicType::Tower)
-                    .start_with_neural_api(&family_id, &graphs_dir)
-                {
-                    Ok(r) => r,
-                    Err(e) => {
-                        v.check_bool("harness_start", false, &format!("failed to start: {e}"));
-                        return;
-                    }
-                };
+                v.section("Phase 1: Internet reach probes");
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
 
-                let Some(songbird_socket) = running
-                    .socket_for("discovery")
-                    .or_else(|| running.socket_for_primal(primal_names::SONGBIRD))
-                else {
-                    v.check_bool("songbird_socket", false, "songbird socket not found");
+                if !ctx.has_capability("discovery") {
+                    v.check_bool("songbird_socket", false, "discovery capability not found");
                     return;
-                };
+                }
 
                 let mut report = PathReport::new();
 
-                probe_https(v, songbird_socket, &endpoint, &mut report);
-                probe_stun_and_nat(v, songbird_socket, &mut report);
-                probe_onion_and_tor(v, songbird_socket, &family_id, &mut report);
+                phase_https(v, &mut ctx, &endpoint, &mut report);
+                phase_stun_and_nat(v, &mut ctx, &mut report);
+                phase_onion_and_tor(v, &mut ctx, &family_id, &mut report);
 
                 println!("\n  ╔══════════════════════════════════════════════════════╗");
                 println!(

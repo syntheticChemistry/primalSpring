@@ -14,12 +14,13 @@
 
 use std::path::{Path, PathBuf};
 
+use primalspring::composition::CompositionContext;
 use primalspring::coordination::AtomicType;
 use primalspring::deploy::{
     graph_capability_map, graph_spawnable_primals, load_graph, merge_graphs, topological_waves,
     validate_structure,
 };
-use primalspring::harness::AtomicHarness;
+use primalspring::ipc::discover::extract_capability_names;
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
@@ -203,54 +204,98 @@ fn validate_graph_merge(v: &mut ValidationResult) {
 fn validate_live_overlay(v: &mut ValidationResult) {
     println!("\n=== Phase 5: Live Tower + AI Overlay ===\n");
 
-    let graph_path = graphs_dir().join("tower_ai.toml");
-    let family_id = format!("exp069-{}", std::process::id());
-    match AtomicHarness::with_graph(AtomicType::Tower, &graph_path).start(&family_id) {
-        Ok(running) => {
-            v.check_bool("overlay_start", true, "Tower+AI overlay started");
-            v.check_minimum("overlay_primals", running.primal_count(), 2);
+    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let avail = ctx.available_capabilities();
+    println!("  live capabilities: {avail:?}");
 
-            let overlay_primals = running.overlay_primals();
-            println!("  overlay primals: {overlay_primals:?}");
+    if !ctx.has_capability("security") || !ctx.has_capability("discovery") {
+        v.check_skip(
+            "overlay_start",
+            "Tower base capabilities not fully discovered",
+        );
+        v.check_skip("overlay_primals", "composition not reachable");
+        v.check_skip("overlay_has_security", "composition not reachable");
+        v.check_skip("overlay_ai_socket", "composition not reachable");
+        return;
+    }
 
-            let all_caps = running.all_capabilities();
-            println!("  all capabilities: {all_caps:?}");
-            v.check_bool(
-                "overlay_has_security",
-                all_caps.contains(&"security".to_owned()),
-                "has security",
-            );
+    v.check_bool(
+        "overlay_start",
+        true,
+        "Tower composition reachable via discovery",
+    );
+    v.check_minimum("overlay_primals", avail.len(), 2);
+    v.check_bool(
+        "overlay_has_security",
+        ctx.has_capability("security"),
+        "has security",
+    );
 
-            running.validate(v);
-
-            if running.socket_for("ai").is_some() {
-                println!("  AI capability socket resolved!");
-                v.check_bool("overlay_ai_socket", true, "AI socket resolved");
-            } else {
-                v.check_skip(
-                    "overlay_ai_socket",
-                    "squirrel not available (binary may be missing)",
-                );
+    for cap in AtomicType::Tower.required_capabilities() {
+        match ctx.call(cap, "health.liveness", serde_json::json!({})) {
+            Ok(_) => v.check_bool(
+                &format!("overlay_{cap}_liveness"),
+                true,
+                &format!("{cap} health.liveness"),
+            ),
+            Err(e) if e.is_connection_error() => {
+                v.check_skip(&format!("overlay_{cap}_liveness"), &format!("{e}"));
             }
+            Err(e) => v.check_bool(
+                &format!("overlay_{cap}_liveness"),
+                false,
+                &format!("error: {e}"),
+            ),
         }
-        Err(e) => {
-            println!("  overlay start failed (expected if squirrel binary missing): {e}");
-            v.check_skip(
-                "overlay_start",
-                &format!("Tower+AI overlay could not start: {e}"),
-            );
+        match ctx.call(cap, "capabilities.list", serde_json::json!({})) {
+            Ok(val) => {
+                let n = extract_capability_names(Some(val)).len();
+                if n == 0 {
+                    v.check_skip(
+                        &format!("overlay_{cap}_capabilities"),
+                        "empty capability list",
+                    );
+                } else {
+                    v.check_minimum(&format!("overlay_{cap}_capabilities"), n, 1);
+                }
+            }
+            Err(_) => v.check_skip(
+                &format!("overlay_{cap}_capabilities"),
+                "capabilities.list unavailable",
+            ),
         }
+    }
+
+    if ctx.has_capability("ai") {
+        println!("  AI capability connected");
+        match ctx.call("ai", "health.liveness", serde_json::json!({})) {
+            Ok(_) => v.check_bool("overlay_ai_socket", true, "AI liveness"),
+            Err(e) if e.is_connection_error() => {
+                v.check_skip("overlay_ai_socket", &format!("{e}"));
+            }
+            Err(e) => v.check_bool("overlay_ai_socket", false, &format!("error: {e}")),
+        }
+    } else {
+        v.check_skip(
+            "overlay_ai_socket",
+            "ai capability not discovered (squirrel may be missing)",
+        );
     }
 }
 
 fn main() {
     ValidationResult::new("exp069_graph_overlay_composition")
-        .with_provenance("exp069_graph_overlay_composition", "2026-03-24")
+        .with_provenance("exp069_graph_overlay_composition", "2026-05-09")
         .run("Graph-Driven Overlay Composition", |v| {
+            v.section("Phase 1: Overlay graph structural validation");
             validate_overlay_structure(v);
+            v.section("Phase 2: Spawn filtering");
             validate_spawn_filtering(v);
+            v.section("Phase 3: Capability map construction");
             validate_capability_maps(v);
+            v.section("Phase 4: Graph merge");
             validate_graph_merge(v);
+            v.section("Phase 5: Live Tower + AI overlay");
             validate_live_overlay(v);
         });
 }

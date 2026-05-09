@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 [package]
 name = "primalspring-exp061"
-version = "0.8.0"
+version = "0.9.25"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
@@ -13,7 +13,6 @@ path = "src/main.rs"
 
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
-serde = { workspace = true }
 serde_json = { workspace = true }
 toml = "0.8"
 

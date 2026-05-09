@@ -10,6 +10,7 @@
 
 use std::time::Duration;
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::methods;
 use primalspring::ipc::tcp::{env_port, tcp_rpc};
 use primalspring::primal_names;
@@ -70,8 +71,28 @@ fn measure_latency_pair(host_a: &str, host_b: &str) -> (Duration, Duration) {
     (a_to_b, b_to_a)
 }
 
+fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Phase 1: Composition discovery (local)");
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "composition_capabilities_non_empty",
+        !caps.is_empty(),
+        &format!("{} capabilities: {}", caps.len(), caps.join(", ")),
+    );
+    v.check_bool(
+        "has_security_capability_path",
+        ctx.has_capability("security"),
+        "security present in CompositionContext",
+    );
+    v.check_bool(
+        "has_discovery_capability_path",
+        ctx.has_capability("discovery"),
+        "discovery present in CompositionContext",
+    );
+}
+
 fn run_gate_health_survey<'a>(v: &mut ValidationResult, hosts: &'a [&'a str]) -> Vec<&'a str> {
-    v.section("Gate Health Survey");
+    v.section("Phase 2: Gate health survey");
     let mut live_gates: Vec<&str> = Vec::new();
     for gate in hosts {
         let (bd, sg, latency) = probe_gate(gate);
@@ -98,7 +119,7 @@ fn run_asymmetric_latency_scenario(v: &mut ValidationResult, live_gates: &[&str]
     if !enabled || live_gates.len() < 2 {
         return;
     }
-    v.section("Asymmetric Latency");
+    v.section("Phase 3: Asymmetric latency");
     for i in 0..live_gates.len() {
         for j in (i + 1)..live_gates.len() {
             let a = live_gates[i];
@@ -133,7 +154,7 @@ fn run_partial_mesh_scenario(v: &mut ValidationResult, live_gates: &[&str], enab
     if !enabled || live_gates.len() < 2 {
         return;
     }
-    v.section("Partial Mesh Reachability");
+    v.section("Phase 4: Partial mesh reachability");
     let biomeos_port = env_port("BIOMEOS_PORT", tolerances::TCP_FALLBACK_BIOMEOS_PORT);
     let nestgate_port = env_port("NESTGATE_PORT", tolerances::TCP_FALLBACK_NESTGATE_PORT);
 
@@ -194,7 +215,7 @@ fn run_cross_gate_capabilities(
     if !enabled {
         return;
     }
-    v.section("Cross-Gate Capabilities");
+    v.section("Phase 5: Cross-gate capabilities");
     let biomeos_port = env_port("BIOMEOS_PORT", tolerances::TCP_FALLBACK_BIOMEOS_PORT);
     let mut total_caps = 0usize;
     for gate in live_gates {
@@ -238,7 +259,7 @@ fn run_federation_assessment(
     live_gates: &[&str],
     scenario: &str,
 ) {
-    v.section("Federation Assessment");
+    v.section("Phase 6: Federation assessment");
     println!("  Live gates:   {}/{}", live_gates.len(), hosts.len());
     println!("  Scenario:     {scenario}");
     v.check_bool(
@@ -268,8 +289,11 @@ fn main() {
         .collect();
 
     ValidationResult::new("primalSpring Exp083 — Federation Edge Cases")
-        .with_provenance("exp083_federation_edge_cases", "2026-03-28")
+        .with_provenance("exp083_federation_edge_cases", "2026-05-09")
         .run(&format!("Edge scenario: {scenario}"), |v| {
+            let ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_composition_discovery(v, &ctx);
+
             if hosts.is_empty() {
                 println!("  GATE_HOSTS not set — running structural validation only.");
                 v.check_skip("gate_hosts_configured", "GATE_HOSTS not set");
@@ -295,7 +319,7 @@ fn main() {
 }
 
 fn structural_checks(v: &mut ValidationResult) {
-    v.section("Structural Validation");
+    v.section("Phase 2: Structural validation");
 
     v.check_bool(
         "federation_graph_exists",

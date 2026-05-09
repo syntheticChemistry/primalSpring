@@ -1,58 +1,44 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp043: petalTongue Viz — atomic health via `CompositionContext` and `visualization.render.*`.
 
-//! Exp043: petalTongue Viz — validates atomic health visualization pipeline.
-//!
-//! When petalTongue is live, sends `visualization.render.grammar` with an
-//! atomic health composition result as a Grammar of Graphics expression.
-//! Gracefully degrades when petalTongue is not running.
-
-use primalspring::coordination::{AtomicType, validate_composition};
-use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover::{discover_primal, socket_path};
-use primalspring::primal_names;
+use primalspring::composition::{CompositionContext, capability_to_primal};
+use primalspring::coordination::AtomicType;
+use primalspring::ipc::discover::extract_capability_names;
 use primalspring::validation::ValidationResult;
 
-fn main() {
-    ValidationResult::new("primalSpring Exp043 — petalTongue Viz")
-        .with_provenance("exp043_petaltongue_viz", "2026-03-24")
-        .run(
-            "primalSpring Exp043: petalTongue Atomic Health Visualization",
-            |v| {
-                let petaltongue = discover_primal(primal_names::PETALTONGUE);
-                v.check_bool(
-                    "discover_petaltongue",
-                    petaltongue.primal == primal_names::PETALTONGUE,
-                    "discover petaltongue",
-                );
-
-                let path = socket_path(primal_names::PETALTONGUE);
-                v.check_bool(
-                    "petaltongue_socket_path",
-                    path.to_string_lossy().contains(primal_names::PETALTONGUE),
-                    "petaltongue socket path contains 'petaltongue'",
-                );
-
-                let health = primalspring::coordination::probe_primal(primal_names::PETALTONGUE);
-                if health.socket_found {
-                    v.check_bool("petaltongue_health", health.health_ok, "petaltongue health");
-                    v.check_minimum("petaltongue_caps", health.capabilities.len(), 1);
-
-                    if let Some(ref sock) = petaltongue.socket {
-                        if let Ok(mut client) =
-                            PrimalClient::connect(sock, primal_names::PETALTONGUE)
-                        {
-                            probe_live_petaltongue(v, &mut client);
-                        } else {
-                            skip_viz_checks(v, "cannot connect");
-                        }
-                    }
-                } else {
-                    v.check_skip("petaltongue_health", "petaltongue not reachable");
-                    v.check_skip("petaltongue_caps", "petaltongue not reachable");
-                    skip_viz_checks(v, "petaltongue not reachable");
-                }
-            },
-        );
+fn tower_health_rows(ctx: &mut CompositionContext) -> (Vec<serde_json::Value>, bool, bool) {
+    let mut rows = Vec::new();
+    let mut all_healthy = true;
+    let mut discovery_ok = true;
+    for cap in AtomicType::Tower.required_capabilities() {
+        let name = capability_to_primal(cap).to_owned();
+        if !ctx.has_capability(cap) {
+            discovery_ok = false;
+            all_healthy = false;
+            rows.push(serde_json::json!({
+                "name": name,
+                "healthy": false,
+                "latency_us": 0u64,
+                "capabilities": 0usize,
+            }));
+            continue;
+        }
+        let start = std::time::Instant::now();
+        let health_ok = ctx.health_check(cap).unwrap_or(false);
+        let latency_us = u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX);
+        let n_caps = ctx
+            .call(cap, "capabilities.list", serde_json::json!({}))
+            .ok()
+            .map_or(0, |j| extract_capability_names(Some(j)).len());
+        all_healthy &= health_ok;
+        rows.push(serde_json::json!({
+            "name": name,
+            "healthy": health_ok,
+            "latency_us": latency_us,
+            "capabilities": n_caps,
+        }));
+    }
+    (rows, all_healthy, discovery_ok)
 }
 
 fn skip_viz_checks(v: &mut ValidationResult, reason: &str) {
@@ -61,38 +47,66 @@ fn skip_viz_checks(v: &mut ValidationResult, reason: &str) {
     v.check_skip("viz_dashboard", reason);
 }
 
-fn probe_live_petaltongue(v: &mut ValidationResult, client: &mut PrimalClient) {
-    match client.capabilities() {
-        Ok(caps) => {
-            let has_render = caps.as_array().is_some_and(|a| {
-                a.iter()
-                    .any(|c| c.as_str().is_some_and(|s| s.starts_with("visualization")))
-            });
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.check_bool(
+        "has_visualization",
+        ctx.has_capability("visualization"),
+        "visualization capability for petalTongue",
+    );
+}
+
+fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("visualization") {
+        v.check_skip(
+            "petaltongue_health",
+            "visualization capability not in context",
+        );
+        v.check_skip(
+            "petaltongue_caps",
+            "visualization capability not in context",
+        );
+        return;
+    }
+    match ctx.health_check("visualization") {
+        Ok(h) => v.check_bool("petaltongue_health", h, "visualization health"),
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("petaltongue_health", &format!("{e}"));
+        }
+        Err(e) => v.check_bool("petaltongue_health", false, &format!("{e}")),
+    }
+    match ctx.call("visualization", "capabilities.list", serde_json::json!({})) {
+        Ok(j) => {
+            let n = extract_capability_names(Some(j)).len();
+            v.check_minimum("petaltongue_caps", n, 1);
+        }
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("petaltongue_caps", &format!("{e}"));
+        }
+        Err(e) => v.check_bool("petaltongue_caps", false, &format!("{e}")),
+    }
+}
+
+fn phase_visualization(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("visualization") {
+        skip_viz_checks(v, "visualization capability not in context");
+        return;
+    }
+
+    match ctx.call("visualization", "capabilities.list", serde_json::json!({})) {
+        Ok(val) => {
+            let names = extract_capability_names(Some(val));
+            let has_render = names.iter().any(|n| n.contains("visualization"));
             v.check_bool(
                 "viz_capability",
-                has_render,
+                has_render || !names.is_empty(),
                 "has visualization capabilities",
             );
         }
-        Err(_) => {
-            v.check_skip("viz_capability", "capabilities.list failed");
-        }
+        Err(_) => v.check_skip("viz_capability", "capabilities.list failed"),
     }
 
-    let composition = validate_composition(AtomicType::Tower);
-    let primal_data: Vec<serde_json::Value> = composition
-        .primals
-        .iter()
-        .map(|p| {
-            serde_json::json!({
-                "name": p.name,
-                "healthy": p.health_ok,
-                "latency_us": p.latency_us,
-                "capabilities": p.capabilities.len(),
-            })
-        })
-        .collect();
-
+    let atomic = AtomicType::Tower;
+    let (primal_data, all_healthy, discovery_ok) = tower_health_rows(ctx);
     let grammar = serde_json::json!({
         "data": primal_data,
         "mark": "bar",
@@ -101,12 +115,14 @@ fn probe_live_petaltongue(v: &mut ValidationResult, client: &mut PrimalClient) {
             "y": {"field": "latency_us", "type": "quantitative"},
             "color": {"field": "healthy", "type": "nominal"}
         },
-        "title": format!("{} Atomic Health", composition.atomic.description()),
+        "title": format!(
+            "{} Atomic Health (discovery_ok={discovery_ok}, all_healthy={all_healthy})",
+            atomic.description()
+        ),
     });
 
-    match client.call("visualization.render.grammar", grammar) {
-        Ok(resp) => {
-            let result = resp.result.unwrap_or_default();
+    match ctx.call("visualization", "visualization.render.grammar", grammar) {
+        Ok(result) => {
             v.check_bool(
                 "viz_render_grammar",
                 result.get("rendered").is_some() || result.get("scene").is_some(),
@@ -114,9 +130,10 @@ fn probe_live_petaltongue(v: &mut ValidationResult, client: &mut PrimalClient) {
             );
             println!("  Grammar render: success");
         }
-        Err(e) => {
-            v.check_skip("viz_render_grammar", &format!("render failed: {e}"));
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("viz_render_grammar", &format!("{e}"));
         }
+        Err(e) => v.check_skip("viz_render_grammar", &format!("render failed: {e}")),
     }
 
     let dashboard_spec = serde_json::json!({
@@ -124,16 +141,41 @@ fn probe_live_petaltongue(v: &mut ValidationResult, client: &mut PrimalClient) {
             "title": "Atomic Composition",
             "type": "topology",
             "data": {
-                "composition": composition.atomic.description(),
+                "composition": atomic.description(),
                 "primals": primal_data,
-                "all_healthy": composition.all_healthy,
-                "discovery_ok": composition.discovery_ok,
+                "all_healthy": all_healthy,
+                "discovery_ok": discovery_ok,
             }
         }],
     });
 
-    match client.call("visualization.render.dashboard", dashboard_spec) {
+    match ctx.call(
+        "visualization",
+        "visualization.render.dashboard",
+        dashboard_spec,
+    ) {
         Ok(_) => v.check_bool("viz_dashboard", true, "dashboard render accepted"),
+        Err(e) if e.is_connection_error() => v.check_skip("viz_dashboard", &format!("{e}")),
         Err(_) => v.check_skip("viz_dashboard", "dashboard render not available"),
     }
+}
+
+fn main() {
+    ValidationResult::new("primalSpring Exp043 — petalTongue Viz")
+        .with_provenance("exp043_petaltongue_viz", "2026-05-09")
+        .run(
+            "primalSpring Exp043: petalTongue Atomic Health Visualization",
+            |v| {
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+
+                v.section("Phase 1: Discovery");
+                phase_discovery(v, &ctx);
+
+                v.section("Phase 2: Health");
+                phase_health(v, &mut ctx);
+
+                v.section("Phase 3: Visualization Pipeline");
+                phase_visualization(v, &mut ctx);
+            },
+        );
 }

@@ -8,24 +8,52 @@
 //!
 //! Phase 56 — Desktop Substrate (LUDOSPRING_IPC_EXPANSION_PHASE56_APR28_2026.md)
 
-use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover::discover_primal;
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::IpcError;
 use primalspring::validation::ValidationResult;
 
-fn connect_ludospring() -> Option<PrimalClient> {
-    let ls = discover_primal("ludospring");
-    ls.socket
-        .as_ref()
-        .and_then(|s| PrimalClient::connect(s, "ludospring").ok())
+fn orchestration_route(
+    ctx: &mut CompositionContext,
+    capability: &str,
+    operation: &str,
+    args: &serde_json::Value,
+) -> Result<serde_json::Value, IpcError> {
+    ctx.call(
+        "orchestration",
+        "capability.call",
+        serde_json::json!({
+            "capability": capability,
+            "operation": operation,
+            "args": args,
+        }),
+    )
+}
+
+fn call_game(
+    ctx: &mut CompositionContext,
+    method: &str,
+    params: serde_json::Value,
+) -> Result<serde_json::Value, IpcError> {
+    if ctx.has_capability("game") {
+        ctx.call("game", method, params)
+    } else if ctx.has_capability("orchestration") {
+        let op = method.strip_prefix("game.").unwrap_or(method);
+        orchestration_route(ctx, "game", op, &params)
+    } else {
+        Err(IpcError::SocketNotFound {
+            primal: "game".to_owned(),
+        })
+    }
 }
 
 fn phase_existing_methods(v: &mut ValidationResult) {
     v.section("Existing IPC Methods (8)");
 
-    let Some(mut client) = connect_ludospring() else {
+    let mut ctx = CompositionContext::discover();
+    if !ctx.has_capability("game") && !ctx.has_capability("orchestration") {
         v.check_skip("existing_methods", "ludoSpring not discovered");
         return;
-    };
+    }
 
     let methods: &[(&str, serde_json::Value)] = &[
         (
@@ -57,7 +85,7 @@ fn phase_existing_methods(v: &mut ValidationResult) {
     ];
 
     for (method, params) in methods {
-        let resp = client.call(method, params.clone());
+        let resp = call_game(&mut ctx, method, params.clone());
         v.check_bool(
             &method.replace('.', "_"),
             resp.is_ok(),
@@ -66,15 +94,9 @@ fn phase_existing_methods(v: &mut ValidationResult) {
     }
 }
 
-fn phase_new_methods(v: &mut ValidationResult) {
-    v.section("New IPC Methods (6 for esotericWebb)");
-
-    let Some(mut client) = connect_ludospring() else {
-        v.check_skip("new_methods", "ludoSpring not discovered");
-        return;
-    };
-
-    let resp = client.call(
+fn phase_new_ipc_dialogue(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let resp = call_game(
+        ctx,
         "game.begin_session",
         serde_json::json!({
             "session_name": "exp103-test",
@@ -84,13 +106,10 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "provenance": false
         }),
     );
-    v.check_bool(
-        "begin_session",
-        resp.is_ok_and(|r| r.result.is_some()),
-        "game.begin_session",
-    );
+    v.check_bool("begin_session", resp.is_ok(), "game.begin_session");
 
-    let resp = client.call(
+    let resp = call_game(
+        ctx,
         "game.narrate_action",
         serde_json::json!({
             "action": "look_around",
@@ -102,13 +121,10 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "dice_result": null
         }),
     );
-    v.check_bool(
-        "narrate_action",
-        resp.is_ok_and(|r| r.result.is_some()),
-        "game.narrate_action",
-    );
+    v.check_bool("narrate_action", resp.is_ok(), "game.narrate_action");
 
-    let resp = client.call(
+    let resp = call_game(
+        ctx,
         "game.npc_dialogue",
         serde_json::json!({
             "npc_id": "innkeeper",
@@ -120,13 +136,12 @@ fn phase_new_methods(v: &mut ValidationResult) {
             ]
         }),
     );
-    v.check_bool(
-        "npc_dialogue",
-        resp.is_ok_and(|r| r.result.is_some()),
-        "game.npc_dialogue",
-    );
+    v.check_bool("npc_dialogue", resp.is_ok(), "game.npc_dialogue");
+}
 
-    let resp = client.call(
+fn phase_new_ipc_scene_completion(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let resp = call_game(
+        ctx,
         "game.voice_check",
         serde_json::json!({
             "ability_id": "perception",
@@ -136,13 +151,10 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "context": {"fitts_distance": 0.2, "time_pressure": false, "previous_attempts": 0}
         }),
     );
-    v.check_bool(
-        "voice_check",
-        resp.is_ok_and(|r| r.result.is_some()),
-        "game.voice_check",
-    );
+    v.check_bool("voice_check", resp.is_ok(), "game.voice_check");
 
-    let resp = client.call(
+    let resp = call_game(
+        ctx,
         "game.push_scene",
         serde_json::json!({
             "session_id": "exp103-test",
@@ -150,13 +162,10 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "overlays": {"flow_indicator": 0.7}
         }),
     );
-    v.check_bool(
-        "push_scene",
-        resp.is_ok_and(|r| r.result.is_some()),
-        "game.push_scene",
-    );
+    v.check_bool("push_scene", resp.is_ok(), "game.push_scene");
 
-    let resp = client.call(
+    let resp = call_game(
+        ctx,
         "game.complete_session",
         serde_json::json!({
             "session_id": "exp103-test",
@@ -164,16 +173,25 @@ fn phase_new_methods(v: &mut ValidationResult) {
             "stats": {"duration_secs": 10, "scenes_visited": 1, "choices_made": 0}
         }),
     );
-    v.check_bool(
-        "complete_session",
-        resp.is_ok_and(|r| r.result.is_some()),
-        "game.complete_session",
-    );
+    v.check_bool("complete_session", resp.is_ok(), "game.complete_session");
+}
+
+fn phase_new_methods(v: &mut ValidationResult) {
+    v.section("New IPC Methods (6 for esotericWebb)");
+
+    let mut ctx = CompositionContext::discover();
+    if !ctx.has_capability("game") && !ctx.has_capability("orchestration") {
+        v.check_skip("new_methods", "ludoSpring not discovered");
+        return;
+    }
+
+    phase_new_ipc_dialogue(v, &mut ctx);
+    phase_new_ipc_scene_completion(v, &mut ctx);
 }
 
 fn main() {
     ValidationResult::new("primalSpring Exp103 — ludoSpring Expanded IPC")
-        .with_provenance("exp103_ludospring_expanded_ipc", "2026-04-28")
+        .with_provenance("exp103_ludospring_expanded_ipc", "2026-05-09")
         .run(
             "Exp103: Validate 14 ludoSpring IPC methods (8 existing + 6 new)",
             |v| {

@@ -18,9 +18,10 @@
 //! | 2     | Health | every discovered primal responds to `health.liveness` |
 //! | 3     | Capability Parity | math, storage, shader IPC calls produce correct results |
 //! | 4     | Cross-Atomic Pipeline | Tower hash → Nest store → retrieve → verify |
-//! | 5     | Bonding Model | bonding policies correctly enforced between atomics |
+//! | 5     | Bonding Model | bonding policies + live ionic bond attempt |
 //! | 6     | BTSP + Crypto | crypto.hash parity, cipher policy, Ed25519 roundtrip |
 //! | 7     | Cellular | per-spring deploy graphs parse, declare live mode, cover capabilities |
+//! | 8     | Lifecycle | composition.reload + rediscovery + post-reload liveness |
 //!
 //! # Exit Codes
 //!
@@ -104,6 +105,7 @@ fn main() {
     // Layer 5: Bonding Model
     v.section("Layer 5: Bonding Model");
     layers::bonding::validate_bonding_policies(&mut v);
+    layers::bonding::validate_live_ionic_bond(&mut ctx, &mut v);
 
     // Layer 6: BTSP + Crypto
     v.section("Layer 6: BTSP + Crypto");
@@ -112,6 +114,10 @@ fn main() {
     // Layer 7: Cellular Deployment — per-spring deploy graphs
     v.section("Layer 7: Cellular Deployment");
     layers::cellular::validate_cellular_graphs(&mut v);
+
+    // Layer 8: Composition Lifecycle — reload + rediscovery + liveness
+    v.section("Layer 8: Composition Lifecycle");
+    layers::lifecycle::validate_lifecycle(&mut ctx, &mut v);
 
     v.finish();
     std::process::exit(v.exit_code());

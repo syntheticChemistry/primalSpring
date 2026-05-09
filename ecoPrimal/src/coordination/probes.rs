@@ -54,6 +54,10 @@ pub struct SubstrateHealth {
 /// Returns a [`PrimalHealth`] with whatever information could be gathered.
 /// Gracefully degrades: socket not found → `health_ok: false`.
 #[must_use]
+#[deprecated(
+    since = "0.9.25",
+    note = "use CompositionContext::from_live_discovery_with_fallback() and ctx.call() instead of direct probing"
+)]
 pub fn probe_primal(name: &str) -> PrimalHealth {
     let discovery = discover_primal(name);
     let Some(socket) = discovery.socket else {
@@ -183,6 +187,10 @@ pub fn health_check_within_tolerance(primal: &str) -> Option<bool> {
 /// Reduces boilerplate across experiments: each primal probe produces 3 checks
 /// (`health_{name}`, `latency_{name}`, `caps_{name}`), either as PASS/FAIL
 /// when the primal is reachable or SKIP when it is not.
+#[allow(
+    deprecated,
+    reason = "check_primal_health wraps deprecated probe_primal for backward compatibility"
+)]
 pub fn check_primal_health(v: &mut crate::validation::ValidationResult, primal: &str) {
     let health = probe_primal(primal);
     if health.socket_found {
@@ -219,6 +227,10 @@ pub fn check_primal_health(v: &mut crate::validation::ValidationResult, primal: 
 /// Capability-based analog of [`check_primal_health`]: discovers whatever
 /// primal provides the given capability at runtime, then records health,
 /// latency, and capabilities checks. Never hardcodes primal names.
+#[deprecated(
+    since = "0.9.25",
+    note = "use CompositionContext::from_live_discovery_with_fallback() and ctx.call() instead of direct probing"
+)]
 pub fn check_capability_health(v: &mut crate::validation::ValidationResult, capability: &str) {
     let disc = crate::ipc::discover::discover_by_capability(capability);
     let provider = disc.resolved_primal.as_deref().unwrap_or("unresolved");
@@ -268,6 +280,10 @@ pub fn extract_capability_names(caps: Option<serde_json::Value>) -> Vec<String> 
 }
 
 #[cfg(test)]
+#[allow(
+    deprecated,
+    reason = "tests exercise deprecated probes for backward compatibility"
+)]
 mod tests {
     use super::*;
 

@@ -21,6 +21,7 @@
 //! [`StdoutSink`].
 
 pub mod or_exit;
+pub mod scenarios;
 
 pub use or_exit::OrExit;
 

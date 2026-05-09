@@ -1,12 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 #![forbid(unsafe_code)]
-#![expect(
-    clippy::cast_precision_loss,
-    clippy::option_if_let_else,
-    clippy::or_fun_call,
-    clippy::cast_sign_loss,
-    reason = "game logic uses f64 casts and fallible option patterns extensively"
-)]
 
 //! exp105 — The Rhizome Micro-Game
 //!
@@ -16,29 +9,39 @@
 //!
 //! Phase 56 — Desktop Substrate (RHIZOME_MICRO_GAME.md)
 
+mod phases;
 mod types;
 mod world;
-mod phases;
 
 use phases::{
     phase_crypto_hash, phase_discovery, phase_game_loop, phase_load_game, phase_narration,
     phase_save_game,
 };
+use primalspring::composition::CompositionContext;
 use primalspring::validation::ValidationResult;
 use world::{phase_render_scene, phase_world_gen};
 
 fn main() {
     ValidationResult::new("primalSpring Exp105 — The Rhizome Micro-Game")
-        .with_provenance("exp105_rhizome_micro_game", "2026-04-28")
+        .with_provenance("exp105_rhizome_micro_game", "2026-05-09")
         .run("Exp105: Full roguelike game loop on Desktop NUCLEUS", |v| {
-            let mut world = phase_world_gen(v);
-            phase_render_scene(v, &world);
-            phase_game_loop(v, &mut world);
-            phase_render_scene(v, &world);
-            let dag_session = phase_save_game(v, &world);
-            phase_load_game(v, dag_session.as_deref());
-            phase_narration(v, &world);
-            phase_crypto_hash(v, &world);
-            phase_discovery(v);
+            let mut ctx = CompositionContext::discover();
+
+            v.section("Phase 1: World / Scene Setup");
+            let mut world = phase_world_gen(v, &mut ctx);
+            phase_render_scene(v, &world, &mut ctx);
+
+            v.section("Phase 2: Game Loop");
+            phase_game_loop(v, &mut world, &mut ctx);
+            phase_render_scene(v, &world, &mut ctx);
+
+            v.section("Phase 3: Save / Provenance");
+            let dag_session = phase_save_game(v, &world, &mut ctx);
+            phase_load_game(v, dag_session.as_deref(), &mut ctx);
+
+            v.section("Phase 4: Narration / Integrity / Discovery");
+            phase_narration(v, &world, &mut ctx);
+            phase_crypto_hash(v, &world, &mut ctx);
+            phase_discovery(v, &mut ctx);
         });
 }

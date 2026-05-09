@@ -1,19 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! Exp072: Data Federation — validates cross-node `NestGate` replication
-//! with provenance trio tracking (rhizoCrypt DAG, sweetGrass braids,
-//! loamSpine commits).
-//!
-//! Phase 1 (structural): Graph metadata, provenance pipeline structure.
-//! Phase 2 (live, when available): `NestGate` storage probe, trio federation.
+//! Exp072: Data Federation
 
 use std::path::Path;
 
 use primalspring::bonding::graph_metadata::validate_graph_bonding;
 use primalspring::bonding::{BondType, TrustModel};
-use primalspring::coordination::probe_primal;
-use primalspring::ipc::discover::discover_primal;
-use primalspring::primal_names;
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::methods;
 use primalspring::validation::ValidationResult;
 
 fn data_federation_graph_metadata(v: &mut ValidationResult) {
@@ -43,54 +36,72 @@ fn data_federation_graph_metadata(v: &mut ValidationResult) {
     );
 }
 
-fn nestgate_storage_discovery(v: &mut ValidationResult) {
-    let nestgate = discover_primal(primal_names::NESTGATE);
-    v.check_bool(
-        "discover_nestgate",
-        nestgate.primal == primal_names::NESTGATE,
-        "discover_primal returns DiscoveryResult for nestgate",
-    );
-    v.check_or_skip(
-        "probe_nestgate",
-        nestgate.socket.as_ref(),
-        "nestgate socket not found (storage primitive for federation)",
-        |_, v| {
-            let health = probe_primal(primal_names::NESTGATE);
-            v.check_bool(
-                "nestgate_health",
-                health.health_ok,
-                &format!(
-                    "nestgate health ok: {}, latency: {}µs",
-                    health.health_ok, health.latency_us
-                ),
-            );
-        },
-    );
+fn sweetgrass_cap(ctx: &CompositionContext) -> Option<&'static str> {
+    if ctx.has_capability("commit") {
+        Some("commit")
+    } else if ctx.has_capability("attribution") {
+        Some("attribution")
+    } else {
+        None
+    }
 }
 
-fn provenance_trio_discovery(v: &mut ValidationResult) {
-    for (name, capability) in [
-        (primal_names::SWEETGRASS, "attribution"),
-        (primal_names::RHIZOCRYPT, "dag"),
-        (primal_names::LOAMSPINE, "commit"),
-    ] {
-        let disc = discover_primal(name);
-        v.check_or_skip(
-            &format!("probe_{name}"),
-            disc.socket.as_ref(),
-            &format!("{name} socket not found ({capability} primitive)"),
-            |_, v| {
-                let health = probe_primal(name);
-                v.check_bool(
-                    &format!("{name}_health"),
-                    health.health_ok,
-                    &format!(
-                        "{name} health ok: {}, latency: {}µs",
-                        health.health_ok, health.latency_us
-                    ),
-                );
-            },
+fn nestgate_storage_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.check_bool(
+        "discover_nestgate",
+        ctx.has_capability("storage"),
+        "storage capability (NestGate) discoverable in composition context",
+    );
+
+    if !ctx.has_capability("storage") {
+        v.check_skip(
+            "nestgate_health",
+            "storage capability not discovered (NestGate socket)",
         );
+        return;
+    }
+
+    match ctx.call("storage", methods::health::LIVENESS, serde_json::json!({})) {
+        Ok(_) => v.check_bool("nestgate_health", true, "NestGate health.liveness"),
+        Err(e) if e.is_connection_error() => {
+            v.check_skip("nestgate_health", &format!("connection: {e}"));
+        }
+        Err(e) => v.check_bool("nestgate_health", false, &format!("error: {e}")),
+    }
+}
+
+fn probe_cap_health(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+    check_key: &str,
+    cap: &str,
+    label: &str,
+) {
+    if !ctx.has_capability(cap) {
+        v.check_skip(
+            check_key,
+            &format!("{label} — capability {cap} not in context"),
+        );
+        return;
+    }
+
+    match ctx.call(cap, methods::health::LIVENESS, serde_json::json!({})) {
+        Ok(_) => v.check_bool(check_key, true, &format!("{label} health.liveness")),
+        Err(e) if e.is_connection_error() => v.check_skip(check_key, &format!("connection: {e}")),
+        Err(e) => v.check_bool(check_key, false, &format!("error: {e}")),
+    }
+}
+
+fn provenance_trio_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    probe_cap_health(v, ctx, "rhizoCrypt_health", "dag", "rhizoCrypt DAG");
+    probe_cap_health(v, ctx, "loamSpine_health", "ledger", "loamSpine ledger");
+
+    match sweetgrass_cap(ctx) {
+        Some(cap) => probe_cap_health(v, ctx, "sweetGrass_health", cap, "sweetGrass braid/commit"),
+        None => v.check_skip(
+            "sweetGrass_health",
+            "neither commit nor attribution capability for sweetGrass",
+        ),
     }
 }
 
@@ -133,14 +144,22 @@ fn live_federation_skips(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp072 — Data Federation")
-        .with_provenance("exp072_data_federation", "2026-03-24")
+        .with_provenance("exp072_data_federation", "2026-05-09")
         .run(
             "primalSpring Exp072: Cross-Node Data Federation with Provenance Trio",
             |v| {
+                v.section("Phase 1: Graph metadata");
                 data_federation_graph_metadata(v);
-                nestgate_storage_discovery(v);
-                provenance_trio_discovery(v);
+
+                v.section("Phase 2: Live discovery and health");
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                nestgate_storage_discovery(v, &mut ctx);
+                provenance_trio_discovery(v, &mut ctx);
+
+                v.section("Phase 3: Pipeline structure");
                 federation_pipeline_structural(v);
+
+                v.section("Phase 4: Deferred live checks");
                 live_federation_skips(v);
             },
         );

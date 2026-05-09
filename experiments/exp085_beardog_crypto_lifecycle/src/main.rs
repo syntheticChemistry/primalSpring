@@ -6,11 +6,11 @@
 //! IPC and Neural API routing: Ed25519 sign/verify, `BirdSong` beacon
 //! round-trip, Blake3 hashing, and secrets store/retrieve.
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::tcp;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-/// `BearDog` / Songbird RPC names (owned by those primals).
 const CRYPTO_GENERATE_KEYPAIR: &str = "crypto.generate_keypair";
 const CRYPTO_SIGN_ED25519: &str = "crypto.sign_ed25519";
 const CRYPTO_VERIFY_ED25519: &str = "crypto.verify_ed25519";
@@ -21,22 +21,19 @@ const BIRDSONG_DECRYPT_BEACON: &str = "birdsong.decrypt_beacon";
 const SECRETS_STORE: &str = "secrets.store";
 const SECRETS_RETRIEVE: &str = "secrets.retrieve";
 
-fn main() {
-    ValidationResult::new("BearDog Crypto Lifecycle E2E")
-        .with_provenance("exp085_beardog_crypto_lifecycle", "2026-03-29")
-        .run("crypto lifecycle validation", |v| {
-            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
-            let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::TCP_FALLBACK_SONGBIRD_PORT);
-            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
-
-            let keys = phase_ed25519_generate(v, &host, bd_port);
-            if let Some((pub_key, _)) = &keys {
-                phase_ed25519_sign_verify(v, &host, bd_port, pub_key);
-            }
-            phase_hashing(v, &host, bd_port);
-            phase_birdsong_beacon(v, &host, sg_port);
-            phase_secrets(v, &host, bd_port);
-        });
+fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Phase 1: Composition discovery");
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "composition_capabilities_non_empty",
+        !caps.is_empty(),
+        &format!("{} capabilities: {}", caps.len(), caps.join(", ")),
+    );
+    v.check_bool(
+        "has_security_capability_path",
+        ctx.has_capability("security"),
+        "security capability for BearDog TCP path",
+    );
 }
 
 fn phase_ed25519_generate(
@@ -44,7 +41,7 @@ fn phase_ed25519_generate(
     host: &str,
     port: u16,
 ) -> Option<(String, String)> {
-    v.section("Ed25519 Keypair Generation");
+    v.section("Phase 2: Ed25519 keypair generation");
 
     let keypair = tcp::tcp_rpc(
         host,
@@ -84,7 +81,7 @@ fn phase_ed25519_generate(
 }
 
 fn phase_ed25519_sign_verify(v: &mut ValidationResult, host: &str, port: u16, pub_key: &str) {
-    v.section("Ed25519 Sign + Verify");
+    v.section("Phase 3: Ed25519 sign + verify");
 
     let test_payload = "primalSpring exp085 crypto lifecycle test";
     let sign_result = tcp::tcp_rpc(
@@ -169,7 +166,7 @@ fn phase_ed25519_sign_verify(v: &mut ValidationResult, host: &str, port: u16, pu
 }
 
 fn phase_hashing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Hashing");
+    v.section("Phase 4: Hashing");
 
     let hash_result = tcp::tcp_rpc(
         host,
@@ -213,7 +210,7 @@ fn phase_hashing(v: &mut ValidationResult, host: &str, port: u16) {
 }
 
 fn phase_birdsong_beacon(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("BirdSong Beacon Round-Trip");
+    v.section("Phase 5: BirdSong beacon round-trip");
 
     let beacon_gen = tcp::tcp_rpc(
         host,
@@ -273,7 +270,7 @@ fn phase_birdsong_beacon(v: &mut ValidationResult, host: &str, port: u16) {
 }
 
 fn phase_secrets(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Secrets Store/Retrieve");
+    v.section("Phase 6: Secrets store/retrieve");
 
     let store_result = tcp::tcp_rpc(
         host,
@@ -319,4 +316,25 @@ fn phase_secrets(v: &mut ValidationResult, host: &str, port: u16) {
         }
         Err(e) => v.check_skip("secrets retrieve", &format!("retrieve failed: {e}")),
     }
+}
+
+fn main() {
+    ValidationResult::new("primalSpring Exp085 — BearDog Crypto Lifecycle E2E")
+        .with_provenance("exp085_beardog_crypto_lifecycle", "2026-05-09")
+        .run("crypto lifecycle validation", |v| {
+            let ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_composition_discovery(v, &ctx);
+
+            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
+            let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::TCP_FALLBACK_SONGBIRD_PORT);
+            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+
+            let keys = phase_ed25519_generate(v, &host, bd_port);
+            if let Some((pub_key, _)) = &keys {
+                phase_ed25519_sign_verify(v, &host, bd_port, pub_key);
+            }
+            phase_hashing(v, &host, bd_port);
+            phase_birdsong_beacon(v, &host, sg_port);
+            phase_secrets(v, &host, bd_port);
+        });
 }

@@ -97,8 +97,8 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
     }
 
     // Tier 2: Capability-named socket on filesystem
-    let base =
-        std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(|_| std::env::temp_dir(), PathBuf::from);
+    let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR)
+        .map_or_else(|_| std::env::temp_dir(), PathBuf::from);
     let biomeos_dir = base.join(crate::primal_names::BIOMEOS);
     let family = crate::env_keys::resolve_family_id();
 

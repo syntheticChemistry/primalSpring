@@ -1,13 +1,20 @@
 {
-  "generated": "2026-05-06T22:00:00Z",
+  "generated": "2026-05-09T14:00:00Z",
   "spring": "primalSpring",
-  "workspace_version": "0.9.24",
+  "workspace_version": "0.9.25",
   "rust_version": "1.87.0",
-  "total_tests": 613,
-  "passed": 613,
+  "scope_note": "Top-level counts: primalspring package lib+integration (cargo test -p primalspring --lib --tests, 2026-05-09). Module/category breakdown below is not resummed and may lag; regenerate before notebook hard-dependencies.",
+  "total_tests": 664,
+  "passed": 616,
   "failed": 0,
   "ignored": 48,
   "total_time_s": 32.1,
+  "workspace_lib_integration": {
+    "total": 680,
+    "passed": 632,
+    "ignored": 48,
+    "command": "cargo test --workspace --lib --tests"
+  },
   "modules": {
     "validation": { "tests": 52, "passed": 52, "time_ms": 18 },
     "deploy": { "tests": 39, "passed": 39, "time_ms": 12 },
@@ -49,11 +56,11 @@
     "doctests": { "tests": 10, "passed": 10, "time_ms": 70 }
   },
   "crate_breakdown": {
-    "primalspring": { "tests": 573, "ignored": 2 },
-    "primalspring_trio": { "tests": 4, "ignored": 23 },
-    "primalspring_guidestone": { "tests": 10, "ignored": 0 },
-    "trio_operations": { "tests": 16, "ignored": 0 },
-    "doctests": { "tests": 10, "ignored": 0 }
+    "primalspring": { "passed": 616, "ignored": 48, "total": 664 },
+    "primalspring_trio": { "passed": 4, "ignored": 23 },
+    "primalspring_guidestone": { "passed": 10, "ignored": 0 },
+    "trio_operations": { "passed": 16, "ignored": 0 },
+    "doctests": { "passed": 10, "ignored": 0 }
   },
   "key_categories": {
     "ipc_protocol": { "tests": 122, "pct": 19.9 },

@@ -6,11 +6,11 @@
 //! end-to-end: lineage key derivation, beacon-scoped encryption, family
 //! identity in capability registry, and cross-gate isolation.
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::{methods, tcp};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
-/// `BearDog` / Songbird genetic & beacon RPC names (owned by those primals).
 const GENETIC_DERIVE_LINEAGE_BEACON_KEY: &str = "genetic.derive_lineage_beacon_key";
 const GENETIC_DERIVE_LINEAGE_KEY: &str = "genetic.derive_lineage_key";
 const GENETIC_GENERATE_LINEAGE_PROOF: &str = "genetic.generate_lineage_proof";
@@ -19,20 +19,24 @@ const BIRDSONG_GENERATE_ENCRYPTED_BEACON: &str = "birdsong.generate_encrypted_be
 const BIRDSONG_DECRYPT_BEACON: &str = "birdsong.decrypt_beacon";
 const BIRDSONG_VERIFY_LINEAGE: &str = "birdsong.verify_lineage";
 
-fn main() {
-    ValidationResult::new("Genetic Identity E2E")
-        .with_provenance("exp086_genetic_identity_e2e", "2026-03-29")
-        .run("mito vs nuclear genetics validation", |v| {
-            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
-            let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::TCP_FALLBACK_SONGBIRD_PORT);
-            let biomeos_port = tcp::env_port("BIOMEOS_PORT", 9800);
-            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
-
-            phase_lineage_key_derivation(v, &host, bd_port);
-            phase_beacon_family_scoping(v, &host, sg_port);
-            phase_biomeos_family_registry(v, &host, biomeos_port);
-            phase_genetic_lineage_verification(v, &host, bd_port);
-        });
+fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Phase 1: Composition discovery");
+    let caps = ctx.available_capabilities();
+    v.check_bool(
+        "composition_capabilities_non_empty",
+        !caps.is_empty(),
+        &format!("{} capabilities: {}", caps.len(), caps.join(", ")),
+    );
+    v.check_bool(
+        "has_security_capability_path",
+        ctx.has_capability("security"),
+        "security in CompositionContext",
+    );
+    v.check_bool(
+        "has_discovery_capability_path",
+        ctx.has_capability("discovery"),
+        "discovery in CompositionContext",
+    );
 }
 
 /// Nuclear genetics: derive keys from family/lineage seed.
@@ -40,7 +44,7 @@ fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16)
     use base64::Engine;
     let b64 = base64::engine::general_purpose::STANDARD;
 
-    v.section("Lineage Key Derivation (Nuclear)");
+    v.section("Phase 2: Lineage key derivation (nuclear)");
 
     let lineage_seed = b64.encode(b"primalSpring_exp086_test_seed!!");
 
@@ -98,7 +102,7 @@ fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16)
 
 /// Mito genetics: beacon encryption is family-scoped.
 fn phase_beacon_family_scoping(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Beacon Family Scoping (Mito)");
+    v.section("Phase 3: Beacon family scoping (mito)");
 
     let beacon = tcp::tcp_rpc(
         host,
@@ -162,7 +166,7 @@ fn phase_beacon_family_scoping(v: &mut ValidationResult, host: &str, port: u16) 
 
 /// Verify biomeOS registers family identity in capability routing.
 fn phase_biomeos_family_registry(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("biomeOS Family Registry");
+    v.section("Phase 4: biomeOS family registry");
 
     let caps = tcp::tcp_rpc(
         host,
@@ -211,13 +215,12 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
     use base64::Engine;
     let b64 = base64::engine::general_purpose::STANDARD;
 
-    v.section("Lineage Verification");
+    v.section("Phase 5: Lineage verification");
 
     let lineage_seed = b64.encode(b"primalSpring_exp086_test_seed!!");
     let our_family = "exp086-family-alpha";
     let peer_family = "exp086-family-beta";
 
-    // Step 1: generate a lineage proof
     let proof_result = tcp::tcp_rpc(
         host,
         port,
@@ -255,7 +258,6 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
         return;
     };
 
-    // Step 2: verify with correct seed (should pass)
     let verify_ok = tcp::tcp_rpc(
         host,
         port,
@@ -285,7 +287,6 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
         ),
     }
 
-    // Step 3: verify with wrong seed (should fail — negative test)
     let wrong_seed = b64.encode(b"WRONG_seed_not_the_real_one!!!!");
     let verify_bad = tcp::tcp_rpc(
         host,
@@ -317,7 +318,6 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
         ),
     }
 
-    // Step 4: birdsong.verify_lineage (challenge step 1 — returns challenge, not boolean)
     let birdsong_lineage = tcp::tcp_rpc(
         host,
         port,
@@ -342,4 +342,23 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
             &format!("Songbird lineage not reachable: {e}"),
         ),
     }
+}
+
+fn main() {
+    ValidationResult::new("primalSpring Exp086 — Genetic Identity E2E")
+        .with_provenance("exp086_genetic_identity_e2e", "2026-05-09")
+        .run("mito vs nuclear genetics validation", |v| {
+            let ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_composition_discovery(v, &ctx);
+
+            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
+            let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::TCP_FALLBACK_SONGBIRD_PORT);
+            let biomeos_port = tcp::env_port("BIOMEOS_PORT", 9800);
+            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+
+            phase_lineage_key_derivation(v, &host, bd_port);
+            phase_beacon_family_scoping(v, &host, sg_port);
+            phase_biomeos_family_registry(v, &host, biomeos_port);
+            phase_genetic_lineage_verification(v, &host, bd_port);
+        });
 }

@@ -16,7 +16,7 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 666 | None (validates, doesn't consume) | N/A (is primalSpring) | L5 (6 layers) | **G** 389 methods, sync-tested | **G** 74 graphs | **G** 85 exp crates, 4 use CompositionContext | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **primalSpring** | 680 | None (validates, doesn't consume) | N/A (is primalSpring) | L5 (6 layers) | **G** 389 methods, sync-tested | **G** 74 graphs | **G** 89 exp crates, CompositionContext throughout | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
 | **hotSpring** | 1,002 | **Y** path dep + IPC | **G** unconditional | **G** L5 (reference impl) | **G** local TOML + sync test | **G** 5 graphs | **Y** exp bins (not crates), CompositionContext in guidestone | **G** 17 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
 | **healthSpring** | 1,002 | **Y** path dep + IPC feature (barracuda-lib) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 389 | **G** 7 graphs | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,209 | **Y** path dep + IPC feature (barracuda-lib) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **Y** TOML at root + cross-sync script | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl (Phase 60 absorption) |
@@ -61,7 +61,7 @@ Total across ecosystem: **74** (primalSpring) + **1** (hotSpring) + **7** (healt
 
 | Tier | Springs |
 |------|---------|
-| Deep (50+ exp crates) | primalSpring (85), ludoSpring (100), healthSpring (94) |
+| Deep (50+ exp crates) | primalSpring (89), ludoSpring (100), healthSpring (94) |
 | Moderate (exp bins/crates) | hotSpring (src/bin exp files), groundSpring (2: exp094/095 w/ CompositionContext), airSpring (3: exp001-003), wetSpring (1: exp400) |
 | Minimal (guidestone/playground only) | neuralSpring (IPC in playGround) |
 
@@ -89,9 +89,9 @@ All 8 springs have `deny.toml` (or sub-crate deny). All ban `openssl`/`openssl-s
 
 | Metric | Value |
 |--------|-------|
-| Total tests across 8 springs | **9,857+** (primalSpring 666 + hotSpring 1,002 + healthSpring 1,002 + wetSpring 1,209 + neuralSpring 1,432 + ludoSpring 820 + groundSpring 965 + airSpring 1,364 + metalForge/integration suites) |
+| Total tests across 8 springs | **9,871+** (primalSpring 680 + hotSpring 1,002 + healthSpring 1,002 + wetSpring 1,209 + neuralSpring 1,432 + ludoSpring 820 + groundSpring 965 + airSpring 1,364 + metalForge/integration suites) |
 | Total deploy graphs | **119** (primalSpring 74 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4) |
-| Total experiment crates | **289** (primalSpring 85 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
+| Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |
 | Registered capability methods | **389** (primalSpring canonical) |
 | Primals in plasmidBin release | **13/13** (all architectures) |

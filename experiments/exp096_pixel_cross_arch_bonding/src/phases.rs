@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use crate::config::{pixel_host, pixel_beardog_port, pixel_songbird_port, pixel_nestgate_port, tcp_rpc_value, family_id};
+use crate::config::{
+    family_id, pixel_beardog_port, pixel_host, pixel_nestgate_port, pixel_songbird_port,
+    tcp_rpc_value,
+};
 use primalspring::ipc::methods;
 use primalspring::validation::ValidationResult;
 

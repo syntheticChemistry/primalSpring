@@ -1,25 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! Exp093: Covalent Mesh Backup — L3 bonding pattern validation.
-//!
-//! Validates the "player-owned Steam" pattern: data sharded, encrypted
-//! client-side, and replicated across covalently bonded peer Nests.
-//!
-//! Particle model: covalent molecule with shared electron cloud. Each gate
-//! contributes its Tower (electron) to mesh discovery. Each gate's Nest
-//! (neutron) stores encrypted shards of collective data. Recovery requires
-//! K-of-N shards from the mesh.
-//!
-//! Validation steps (structural):
-//!   1. Validate covalent bonding policy (genetic trust, full capability share)
-//!   2. Validate shard metadata structure (count, quorum, hash manifest)
-//!   3. Validate `BondingConstraint` permits storage.* across covalent bond
-//!   4. Validate shard encryption model (AES-256-GCM per shard via `BearDog`)
-//!   5. Identify gaps: erasure coding, shard distribution, recovery quorum
-//!
-//! Environment:
-//!   `SHARD_COUNT`      — number of shards to distribute (default: 3)
-//!   `RECOVERY_QUORUM`  — minimum shards for recovery (default: 2)
+//! Exp093: Covalent Mesh Backup
 
 use primalspring::bonding::{BondType, BondingPolicy, TrustModel};
 use primalspring::validation::ValidationResult;
@@ -32,8 +12,6 @@ fn env_or_parse<T: std::str::FromStr>(key: &str, default: T) -> T {
 }
 
 fn validate_covalent_policy(v: &mut ValidationResult) {
-    v.section("L3: Covalent Bonding Policy");
-
     let policy = BondingPolicy::covalent_default();
     let errors = policy.validate();
 
@@ -70,8 +48,6 @@ fn validate_covalent_policy(v: &mut ValidationResult) {
 }
 
 fn validate_shard_model(v: &mut ValidationResult) {
-    v.section("L3: Shard Distribution Model");
-
     let shard_count: usize = env_or_parse("SHARD_COUNT", 3);
     let recovery_quorum: usize = env_or_parse("RECOVERY_QUORUM", 2);
 
@@ -98,8 +74,6 @@ fn validate_shard_model(v: &mut ValidationResult) {
 }
 
 fn validate_storage_across_bond(v: &mut ValidationResult) {
-    v.section("L3: Storage Capability Across Covalent Bond");
-
     let policy = BondingPolicy::covalent_default();
 
     for cap in &[
@@ -117,8 +91,6 @@ fn validate_storage_across_bond(v: &mut ValidationResult) {
 }
 
 fn validate_encryption_model(v: &mut ValidationResult) {
-    v.section("L3: Client-Side Shard Encryption");
-
     v.check_bool(
         "encrypt_algorithm",
         true,
@@ -142,8 +114,6 @@ fn validate_encryption_model(v: &mut ValidationResult) {
 }
 
 fn identify_gaps(v: &mut ValidationResult) {
-    v.section("L3: Gap Inventory");
-
     v.check_bool(
         "gap_erasure_coding",
         true,
@@ -178,14 +148,19 @@ fn identify_gaps(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp093 — Covalent Mesh Backup (L3)")
-        .with_provenance("exp093_covalent_mesh_backup", "2026-04-07")
+        .with_provenance("exp093_covalent_mesh_backup", "2026-05-09")
         .run(
             "primalSpring Exp093: L3 covalent mesh backup — shard model + policy validation",
             |v| {
+                v.section("Phase 1: Covalent bonding policy");
                 validate_covalent_policy(v);
+                v.section("Phase 2: Shard distribution model");
                 validate_shard_model(v);
+                v.section("Phase 3: Storage across covalent bond");
                 validate_storage_across_bond(v);
+                v.section("Phase 4: Client-side shard encryption");
                 validate_encryption_model(v);
+                v.section("Phase 5: Gap inventory");
                 identify_gaps(v);
             },
         );

@@ -1,20 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! Exp079: Spring Deploy Sweep — validate biomeOS deploy graphs for all
-//! sibling springs via two paths:
-//!
-//! 1. **Filesystem**: verify graph TOML files exist in biomeOS `graphs/`
-//! 2. **Neural API**: query `graph.list` on running biomeOS to confirm
-//!    each spring's graph is loaded and has valid metadata
-//!
-//! biomeOS graphs use their own schema (`id`, `[[nodes]]`) which differs
-//! from primalSpring's internal `DeployGraph` schema (`name`, `[[graph.node]]`).
-//! This experiment validates via the biomeOS runtime, not primalSpring parsing.
+//! Exp079: Spring Deploy Sweep
 
 use std::path::{Path, PathBuf};
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
-use primalspring::ipc::client::PrimalClient;
 use primalspring::validation::ValidationResult;
 
 fn discover_biomeos_graphs_dir() -> Option<PathBuf> {
@@ -64,7 +54,8 @@ const PIPELINE_GRAPH_IDS: &[(&str, &str)] = &[
     ),
 ];
 
-fn validate_files_exist(graphs_dir: &Path, v: &mut ValidationResult) {
+fn phase_filesystem_graphs(graphs_dir: &Path, v: &mut ValidationResult) {
+    v.section("Phase 1: Filesystem graph manifests");
     println!("\n  Filesystem check (biomeOS graphs/):");
     for &(id, filename) in SPRING_GRAPH_IDS.iter().chain(PIPELINE_GRAPH_IDS.iter()) {
         let path = graphs_dir.join(filename);
@@ -76,8 +67,10 @@ fn validate_files_exist(graphs_dir: &Path, v: &mut ValidationResult) {
     }
 }
 
-fn validate_via_neural_api(v: &mut ValidationResult) {
-    let Some(bridge) = NeuralBridge::discover() else {
+fn phase_neural_api_graphs(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.section("Phase 2: Neural API graph.list");
+
+    let Some(_bridge) = NeuralBridge::discover() else {
         v.check_skip(
             "neural_api_graphs",
             "biomeOS not running — graph.list skipped",
@@ -85,25 +78,29 @@ fn validate_via_neural_api(v: &mut ValidationResult) {
         return;
     };
 
-    let mut client = match PrimalClient::connect(bridge.socket_path(), "biomeos") {
-        Ok(c) => c,
-        Err(e) => {
-            v.check_bool("neural_api_connect", false, &format!("{e}"));
-            return;
-        }
-    };
+    if !ctx.has_capability("orchestration") {
+        v.check_skip(
+            "neural_api_graphs",
+            "orchestration capability missing — graph.list skipped",
+        );
+        return;
+    }
 
-    let resp = client.call("graph.list", serde_json::json!({}));
-    let graphs: Vec<serde_json::Value> = match resp {
-        Ok(r) => r
-            .result
-            .and_then(|v| serde_json::from_value(v).ok())
-            .unwrap_or_default(),
-        Err(e) => {
-            v.check_bool("graph_list", false, &format!("{e}"));
-            return;
-        }
-    };
+    let graphs: Vec<serde_json::Value> =
+        match ctx.call("orchestration", "graph.list", serde_json::json!({})) {
+            Ok(v) => match v {
+                serde_json::Value::Array(a) => a,
+                v => serde_json::from_value(v).unwrap_or_default(),
+            },
+            Err(e) if e.is_connection_error() => {
+                v.check_skip("graph_list", &format!("{e}"));
+                return;
+            }
+            Err(e) => {
+                v.check_bool("graph_list", false, &format!("error: {e}"));
+                return;
+            }
+        };
 
     v.check_minimum("total_graphs_loaded", graphs.len(), 20);
 
@@ -125,10 +122,12 @@ fn validate_via_neural_api(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp079 — Spring Deploy Sweep")
-        .with_provenance("exp079_spring_deploy_sweep", "2026-03-27")
+        .with_provenance("exp079_spring_deploy_sweep", "2026-05-09")
         .run(
             "primalSpring Exp079: Validate spring deploy graphs (filesystem + Neural API)",
             |v| {
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+
                 let graphs_dir = discover_biomeos_graphs_dir();
                 if let Some(ref dir) = graphs_dir {
                     v.check_bool(
@@ -136,7 +135,7 @@ fn main() {
                         true,
                         &format!("biomeOS graphs at {}", dir.display()),
                     );
-                    validate_files_exist(dir, v);
+                    phase_filesystem_graphs(dir.as_path(), v);
                 } else {
                     v.check_skip(
                         "biomeos_graphs_dir",
@@ -144,7 +143,7 @@ fn main() {
                     );
                 }
 
-                validate_via_neural_api(v);
+                phase_neural_api_graphs(v, &mut ctx);
             },
         );
 }

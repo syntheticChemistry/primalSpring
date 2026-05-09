@@ -37,9 +37,17 @@ mod discovery;
 mod profiles;
 mod spawn;
 
+#[allow(
+    deprecated,
+    reason = "re-exports deprecated launcher for backward compatibility"
+)]
 pub use biomeos::spawn_biomeos;
 pub use discovery::{discover_binary, discover_biomeos_binary};
 pub use profiles::{LaunchProfile, load_launch_profiles, primal_requires_btsp};
+#[allow(
+    deprecated,
+    reason = "re-exports deprecated launcher for backward compatibility"
+)]
 pub use spawn::{PrimalProcess, SocketNucleation, spawn_primal, wait_for_socket};
 
 // ---------------------------------------------------------------------------

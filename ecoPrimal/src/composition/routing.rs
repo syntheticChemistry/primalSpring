@@ -32,8 +32,15 @@ pub const ALL_CAPS: &[&str] = &[
 /// Includes names that map to the same primal sockets as [`ALL_CAPS`]
 /// (e.g. `inference` → Squirrel, `spine`/`merkle` → loamSpine) to ensure
 /// BTSP coverage even when a client was connected under an alias name.
-pub const BTSP_EXTRA_CAPS: &[&str] =
-    &["inference", "spine", "merkle", "braid", "recon", "threat", "lineage"];
+pub const BTSP_EXTRA_CAPS: &[&str] = &[
+    "inference",
+    "spine",
+    "merkle",
+    "braid",
+    "recon",
+    "threat",
+    "lineage",
+];
 
 /// Map a capability domain to its canonical primal provider.
 ///

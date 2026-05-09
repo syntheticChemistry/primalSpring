@@ -1,26 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! Exp077: Squirrel Neural API Bridge — validate AI capability routing
-//! through biomeOS substrate.
-//!
-//! Connects to a running Squirrel primal (directly or via biomeOS routing)
-//! and validates the `ai.*` capability domain: health, query, discovery,
-//! tool execution, and provider listing.
-//!
-//! Expects:
-//! - Squirrel running (discovered via standard socket or `SQUIRREL_SOCKET`)
-//! - Optional: biomeOS neural-api running for capability routing validation
+//! Exp077: Squirrel Neural API Bridge
 
 use std::io::{BufRead, BufReader, Write};
 use std::os::linux::net::SocketAddrExt;
 use std::os::unix::net::UnixStream;
 use std::time::Duration;
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
 
-/// Connect to Squirrel via abstract socket `@squirrel` (Squirrel uses
-/// abstract sockets by default, not filesystem sockets).
 fn squirrel_abstract_rpc(method: &str, params: &serde_json::Value) -> Option<serde_json::Value> {
     let addr = std::os::unix::net::SocketAddr::from_abstract_name(b"squirrel").ok()?;
     let stream = UnixStream::connect_addr(&addr).ok()?;
@@ -47,7 +36,8 @@ fn squirrel_abstract_rpc(method: &str, params: &serde_json::Value) -> Option<ser
     serde_json::from_str(&line).ok()
 }
 
-fn validate_squirrel_direct(v: &mut ValidationResult) -> bool {
+fn phase_squirrel_direct(v: &mut ValidationResult) -> bool {
+    v.section("Phase 1: Direct Squirrel");
     let health = squirrel_abstract_rpc("health.check", &serde_json::json!({}));
     let alive = health
         .as_ref()
@@ -84,8 +74,9 @@ fn validate_squirrel_direct(v: &mut ValidationResult) -> bool {
     true
 }
 
-fn validate_squirrel_via_biomeos(v: &mut ValidationResult) {
-    let Some(bridge) = NeuralBridge::discover() else {
+fn phase_squirrel_via_biomeos(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.section("Phase 2: biomeOS AI routing");
+    let Some(_bridge) = NeuralBridge::discover() else {
         v.check_skip(
             "squirrel_biomeos_routing",
             "biomeOS not running — ai routing not tested",
@@ -93,42 +84,34 @@ fn validate_squirrel_via_biomeos(v: &mut ValidationResult) {
         return;
     };
 
-    let ai_discover = bridge.discover_capability("ai");
     v.check_bool(
         "ai_domain_registered",
-        ai_discover.is_ok(),
-        "ai capability domain discoverable via biomeOS",
+        ctx.has_capability("ai"),
+        "ai capability discoverable via composition context",
     );
 
-    // Squirrel's health method is "health.check", not "ai.health".
-    // Use direct health probe on the discovered AI socket.
-    let ai_disc = bridge.discover_capability("ai");
-    let ai_healthy = ai_disc
-        .as_ref()
-        .ok()
-        .and_then(|r| r.get("primary_endpoint").and_then(|e| e.as_str()))
-        .and_then(|ep| {
-            let sock = primalspring::ipc::capability::strip_unix_uri(ep);
-            let path = std::path::PathBuf::from(sock);
-            primalspring::ipc::client::PrimalClient::connect(&path, "squirrel").ok()
-        })
-        .is_some_and(|mut c| c.health_check().unwrap_or(false));
+    if !ctx.has_capability("ai") {
+        v.check_skip("ai_health_routed", "ai capability not in context");
+        v.check_skip("ai_query_routed", "ai capability not in context");
+        return;
+    }
+
+    let ai_healthy = ctx.health_check("ai").unwrap_or(false);
     v.check_bool(
         "ai_health_routed",
         ai_healthy,
-        "ai domain health routed through biomeOS -> Squirrel",
+        "ai domain health via CompositionContext",
     );
 
-    let ai_query = bridge.capability_call(
+    match ctx.call(
         "ai",
         "query",
-        &serde_json::json!({"prompt": "echo test", "max_tokens": 10}),
-    );
-    match ai_query {
+        serde_json::json!({"prompt": "echo test", "max_tokens": 10}),
+    ) {
         Ok(r) => v.check_bool(
             "ai_query_routed",
-            !r.value.is_null(),
-            "ai.query routed through biomeOS -> Squirrel",
+            !r.is_null(),
+            "ai.query routed through CompositionContext",
         ),
         Err(e) => {
             let msg = format!("{e}");
@@ -147,13 +130,14 @@ fn validate_squirrel_via_biomeos(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp077 — Squirrel Neural API Bridge")
-        .with_provenance("exp077_squirrel_neural_api_bridge", "2026-03-27")
+        .with_provenance("exp077_squirrel_neural_api_bridge", "2026-05-09")
         .run(
             "primalSpring Exp077: AI capability routing through biomeOS substrate",
             |v| {
-                let squirrel_live = validate_squirrel_direct(v);
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                let squirrel_live = phase_squirrel_direct(v);
                 if squirrel_live {
-                    validate_squirrel_via_biomeos(v);
+                    phase_squirrel_via_biomeos(v, &mut ctx);
                 } else {
                     v.check_skip(
                         "squirrel_biomeos_routing",

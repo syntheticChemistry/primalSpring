@@ -1,22 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-
-//! exp095 — Proto-Nucleate Parity Template
-//!
-//! Starter experiment for downstream springs to validate their domain science
-//! as primal compositions. Copy this crate, rename, and replace the niche
-//! section with your domain-specific parity checks.
-//!
-//! This template demonstrates:
-//!   - NUCLEUS base validation (Tower alive, Node compute, Nest storage)
-//!   - Scalar parity via `validate_parity` (local baseline vs primal result)
-//!   - Vector parity via `validate_parity_vec`
-//!   - Graceful skip when primals aren't running
-//!   - biomeOS gateway routing for Docker/benchScale mode
-//!
-//! Environment:
-//!   `REMOTE_GATE_HOST` — enables TCP/gateway mode (e.g. Docker lab)
-//!   `BIOMEOS_PORT`     — biomeOS TCP port (default 9800)
-//!   `FAMILY_ID`        — primal family for socket scoping
+//! Exp095: Proto-Nucleate Parity Template
 
 use primalspring::composition::{CompositionContext, validate_parity};
 use primalspring::tolerances;
@@ -74,15 +57,9 @@ fn nucleus_base(ctx: &mut CompositionContext, v: &mut ValidationResult) {
     }
 }
 
-/// Replace this with your spring's domain-specific parity checks.
-///
-/// Pattern: for each domain operation, compute the expected result locally
-/// (your Rust baseline, matching your Python baseline), then compare against
-/// the primal composition result via `validate_parity` or `validate_parity_vec`.
 fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
     v.section("Niche — Domain Parity (replace with your science)");
 
-    // Example: scalar parity — Python: np.mean([1, 2, 3, 4, 5]) = 3.0
     validate_parity(
         ctx,
         v,
@@ -95,8 +72,6 @@ fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
         tolerances::EXACT_PARITY_TOL,
     );
 
-    // barraCuda stats.std_dev uses ddof=1 (sample std dev)
-    // Python: np.std([2, 4, 4, 4, 5, 5, 7, 9], ddof=1) ≈ 2.1381
     validate_parity(
         ctx,
         v,
@@ -109,7 +84,6 @@ fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
         1e-6,
     );
 
-    // Example: cross-atomic — hash data with Tower, store with Nest
     match ctx.call(
         "security",
         "crypto.hash",
@@ -131,15 +105,15 @@ fn niche_parity(ctx: &mut CompositionContext, v: &mut ValidationResult) {
 }
 
 fn main() {
-    ValidationResult::new("Proto-Nucleate Parity Template")
-        .with_provenance("exp095_proto_nucleate_template", "2026-04-09")
+    ValidationResult::new("primalSpring Exp095 — Proto-Nucleate Parity Template")
+        .with_provenance("exp095_proto_nucleate_template", "2026-05-09")
         .run(
             "NUCLEUS base + niche domain parity (template — replace niche section)",
             |v| {
                 let mut ctx = CompositionContext::from_live_discovery_with_fallback();
                 let caps = ctx.available_capabilities();
 
-                v.section("Discovery");
+                v.section("Phase 1: Discovery");
                 v.check_bool(
                     "capabilities_found",
                     !caps.is_empty(),
@@ -150,7 +124,9 @@ fn main() {
                     ),
                 );
 
+                v.section("Phase 2: NUCLEUS base");
                 nucleus_base(&mut ctx, v);
+                v.section("Phase 3: Niche domain parity");
                 niche_parity(&mut ctx, v);
             },
         );

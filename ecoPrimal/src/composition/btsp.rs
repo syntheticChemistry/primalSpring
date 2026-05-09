@@ -6,17 +6,14 @@ use std::collections::{BTreeMap, HashMap};
 
 use crate::ipc::client::PrimalClient;
 
-use super::routing::{capability_to_primal, ALL_CAPS, BTSP_EXTRA_CAPS};
+use super::routing::{ALL_CAPS, BTSP_EXTRA_CAPS, capability_to_primal};
 
 /// Prefer family-scoped sockets over capability aliases for BTSP handshakes.
 ///
 /// Capability aliases (e.g. `shader.sock`) may point to symlinks without
 /// active BTSP listeners. Family-scoped sockets (`coralreef-default.sock`)
 /// are the canonical endpoint where BTSP listeners are bound.
-pub fn resolve_btsp_socket(
-    discovered: &std::path::Path,
-    primal: &str,
-) -> std::path::PathBuf {
+pub fn resolve_btsp_socket(discovered: &std::path::Path, primal: &str) -> std::path::PathBuf {
     let name = discovered
         .file_name()
         .and_then(|n| n.to_str())
@@ -49,9 +46,7 @@ pub fn resolve_btsp_socket(
 /// On failure the original cleartext client is re-established.
 ///
 /// Returns a `BTreeMap<capability, btsp_authenticated>` for guidestone reporting.
-pub fn upgrade_btsp_clients(
-    clients: &mut HashMap<String, PrimalClient>,
-) -> BTreeMap<String, bool> {
+pub fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap<String, bool> {
     let mut state: BTreeMap<String, bool> =
         clients.keys().map(|cap| (cap.clone(), false)).collect();
 
@@ -81,7 +76,12 @@ pub fn upgrade_btsp_clients(
                         state.insert(cap.clone(), true);
                     }
                     Err(e) => {
-                        tracing::debug!(cap, primal, ?e, "BTSP upgrade failed, re-establishing cleartext");
+                        tracing::debug!(
+                            cap,
+                            primal,
+                            ?e,
+                            "BTSP upgrade failed, re-establishing cleartext"
+                        );
                         if let Ok(fresh) = PrimalClient::connect(&discovered_path, primal) {
                             clients.insert(cap.clone(), fresh);
                         }
@@ -163,18 +163,83 @@ pub fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u1
     use crate::tolerances as tol;
 
     vec![
-        ("security", pn::BEARDOG, ek::BEARDOG_PORT, tol::TCP_FALLBACK_BEARDOG_PORT),
-        ("discovery", pn::SONGBIRD, ek::SONGBIRD_PORT, tol::TCP_FALLBACK_SONGBIRD_PORT),
-        ("storage", pn::NESTGATE, ek::NESTGATE_PORT, tol::TCP_FALLBACK_NESTGATE_PORT),
-        ("compute", pn::TOADSTOOL, ek::TOADSTOOL_PORT, tol::TCP_FALLBACK_TOADSTOOL_PORT),
-        ("tensor", pn::BARRACUDA, ek::BARRACUDA_PORT, tol::TCP_FALLBACK_BARRACUDA_PORT),
-        ("shader", pn::CORALREEF, ek::CORALREEF_PORT, tol::TCP_FALLBACK_CORALREEF_PORT),
-        ("ai", pn::SQUIRREL, ek::SQUIRREL_PORT, tol::TCP_FALLBACK_SQUIRREL_PORT),
-        ("dag", pn::RHIZOCRYPT, ek::RHIZOCRYPT_PORT, tol::TCP_FALLBACK_RHIZOCRYPT_PORT),
-        ("ledger", pn::LOAMSPINE, ek::LOAMSPINE_PORT, tol::TCP_FALLBACK_LOAMSPINE_PORT),
-        ("commit", pn::SWEETGRASS, ek::SWEETGRASS_PORT, tol::TCP_FALLBACK_SWEETGRASS_PORT),
-        ("attribution", pn::SWEETGRASS, ek::SWEETGRASS_PORT, tol::TCP_FALLBACK_SWEETGRASS_PORT),
-        ("visualization", pn::PETALTONGUE, ek::PETALTONGUE_PORT, tol::TCP_FALLBACK_PETALTONGUE_PORT),
-        ("defense", pn::SKUNKBAT, ek::SKUNKBAT_PORT, tol::TCP_FALLBACK_SKUNKBAT_PORT),
+        (
+            "security",
+            pn::BEARDOG,
+            ek::BEARDOG_PORT,
+            tol::TCP_FALLBACK_BEARDOG_PORT,
+        ),
+        (
+            "discovery",
+            pn::SONGBIRD,
+            ek::SONGBIRD_PORT,
+            tol::TCP_FALLBACK_SONGBIRD_PORT,
+        ),
+        (
+            "storage",
+            pn::NESTGATE,
+            ek::NESTGATE_PORT,
+            tol::TCP_FALLBACK_NESTGATE_PORT,
+        ),
+        (
+            "compute",
+            pn::TOADSTOOL,
+            ek::TOADSTOOL_PORT,
+            tol::TCP_FALLBACK_TOADSTOOL_PORT,
+        ),
+        (
+            "tensor",
+            pn::BARRACUDA,
+            ek::BARRACUDA_PORT,
+            tol::TCP_FALLBACK_BARRACUDA_PORT,
+        ),
+        (
+            "shader",
+            pn::CORALREEF,
+            ek::CORALREEF_PORT,
+            tol::TCP_FALLBACK_CORALREEF_PORT,
+        ),
+        (
+            "ai",
+            pn::SQUIRREL,
+            ek::SQUIRREL_PORT,
+            tol::TCP_FALLBACK_SQUIRREL_PORT,
+        ),
+        (
+            "dag",
+            pn::RHIZOCRYPT,
+            ek::RHIZOCRYPT_PORT,
+            tol::TCP_FALLBACK_RHIZOCRYPT_PORT,
+        ),
+        (
+            "ledger",
+            pn::LOAMSPINE,
+            ek::LOAMSPINE_PORT,
+            tol::TCP_FALLBACK_LOAMSPINE_PORT,
+        ),
+        (
+            "commit",
+            pn::SWEETGRASS,
+            ek::SWEETGRASS_PORT,
+            tol::TCP_FALLBACK_SWEETGRASS_PORT,
+        ),
+        (
+            "attribution",
+            pn::SWEETGRASS,
+            ek::SWEETGRASS_PORT,
+            tol::TCP_FALLBACK_SWEETGRASS_PORT,
+        ),
+        (
+            "visualization",
+            pn::PETALTONGUE,
+            ek::PETALTONGUE_PORT,
+            tol::TCP_FALLBACK_PETALTONGUE_PORT,
+        ),
+        (
+            "defense",
+            pn::SKUNKBAT,
+            ek::SKUNKBAT_PORT,
+            tol::TCP_FALLBACK_SKUNKBAT_PORT,
+        ),
     ]
 }

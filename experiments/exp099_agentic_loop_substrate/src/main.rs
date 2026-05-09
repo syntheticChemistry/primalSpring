@@ -8,31 +8,47 @@
 //!
 //! Phase 56 — Desktop Substrate (AGENTIC_TRIO_EVOLUTION.md)
 
-use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover::{discover_by_capability, discover_primal};
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::IpcError;
 use primalspring::validation::ValidationResult;
+
+fn orchestration_route(
+    ctx: &mut CompositionContext,
+    capability: &str,
+    operation: &str,
+    args: &serde_json::Value,
+) -> Result<serde_json::Value, IpcError> {
+    ctx.call(
+        "orchestration",
+        "capability.call",
+        serde_json::json!({
+            "capability": capability,
+            "operation": operation,
+            "args": args,
+        }),
+    )
+}
 
 fn phase_trio_discovery(v: &mut ValidationResult) {
     v.section("Agentic Trio Discovery");
 
-    let biomeos = discover_by_capability("orchestration");
+    let ctx = CompositionContext::discover();
+
     v.check_bool(
         "biomeos_discovered",
-        biomeos.socket.is_some(),
+        ctx.has_capability("orchestration"),
         "biomeOS Neural API discovered via orchestration capability",
     );
 
-    let squirrel = discover_primal("squirrel");
     v.check_bool(
         "squirrel_discovered",
-        squirrel.socket.is_some(),
+        ctx.has_capability("ai"),
         "Squirrel discovered",
     );
 
-    let petaltongue = discover_by_capability("visualization");
     v.check_bool(
         "petaltongue_discovered",
-        petaltongue.socket.is_some(),
+        ctx.has_capability("visualization"),
         "petalTongue discovered via visualization capability",
     );
 }
@@ -40,21 +56,16 @@ fn phase_trio_discovery(v: &mut ValidationResult) {
 fn phase_sensor_to_intent(v: &mut ValidationResult) {
     v.section("Sensor to Intent (petalTongue afferent)");
 
-    let pt = discover_by_capability("visualization");
-    let Some(pt_sock) = pt.socket.as_ref() else {
+    let mut ctx = CompositionContext::discover();
+    if !ctx.has_capability("visualization") {
         v.check_skip("sensor_stream", "petalTongue not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(pt_sock, "petaltongue") else {
-        v.check_skip("sensor_stream", "petalTongue connection failed");
-        return;
-    };
-
-    let resp = client.call("proprioception.get", serde_json::json!({}));
+    let resp = ctx.call("visualization", "proprioception.get", serde_json::json!({}));
     v.check_bool(
         "proprioception",
-        resp.is_ok_and(|r| r.result.is_some()),
+        resp.is_ok(),
         "petalTongue proprioception.get responds",
     );
 }
@@ -62,31 +73,19 @@ fn phase_sensor_to_intent(v: &mut ValidationResult) {
 fn phase_intent_routing(v: &mut ValidationResult) {
     v.section("Intent Routing (biomeOS to Squirrel)");
 
-    let biomeos = discover_by_capability("orchestration");
-    let Some(bio_sock) = biomeos.socket.as_ref() else {
+    let mut ctx = CompositionContext::discover();
+    if !ctx.has_capability("orchestration") {
         v.check_skip("ai_routing", "biomeOS not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(bio_sock, "biomeos") else {
-        v.check_skip("ai_routing", "biomeOS connection failed");
-        return;
-    };
-
-    let resp = client.call(
-        "capability.call",
-        serde_json::json!({
-            "capability": "ai",
-            "operation": "models",
-            "args": {}
-        }),
-    );
+    let resp = orchestration_route(&mut ctx, "ai", "models", &serde_json::json!({}));
 
     match resp {
-        Ok(r) => {
+        Ok(_) => {
             v.check_bool(
                 "ai_routing",
-                r.result.is_some(),
+                true,
                 "biomeOS routes ai.models to Squirrel via capability.call",
             );
         }
@@ -102,39 +101,32 @@ fn phase_intent_routing(v: &mut ValidationResult) {
 fn phase_render_feedback(v: &mut ValidationResult) {
     v.section("Render Feedback (Squirrel to petalTongue)");
 
-    let biomeos = discover_by_capability("orchestration");
-    let Some(bio_sock) = biomeos.socket.as_ref() else {
+    let mut ctx = CompositionContext::discover();
+    if !ctx.has_capability("orchestration") {
         v.check_skip("render_feedback", "biomeOS not discovered");
         return;
-    };
+    }
 
-    let Ok(mut client) = PrimalClient::connect(bio_sock, "biomeos") else {
-        v.check_skip("render_feedback", "biomeOS connection failed");
-        return;
-    };
-
-    let resp = client.call(
-        "capability.call",
-        serde_json::json!({
-            "capability": "visualization",
-            "operation": "render.dashboard",
-            "args": {
-                "session": "exp099-test",
-                "data": {"title": "Agentic Loop Test", "status": "validating"}
-            }
+    let resp = orchestration_route(
+        &mut ctx,
+        "visualization",
+        "render.dashboard",
+        &serde_json::json!({
+            "session": "exp099-test",
+            "data": {"title": "Agentic Loop Test", "status": "validating"}
         }),
     );
 
     v.check_bool(
         "render_feedback",
-        resp.is_ok_and(|r| r.result.is_some()),
+        resp.is_ok(),
         "biomeOS routes visualization.render.dashboard to petalTongue",
     );
 }
 
 fn main() {
     ValidationResult::new("primalSpring Exp099 — Agentic Loop Substrate")
-        .with_provenance("exp099_agentic_loop_substrate", "2026-04-28")
+        .with_provenance("exp099_agentic_loop_substrate", "2026-05-09")
         .run(
             "Exp099: Full three-way agentic loop on Desktop NUCLEUS",
             |v| {

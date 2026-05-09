@@ -1,6 +1,6 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 666 tests, 85 experiments, 389 capabilities, JH-0 13/13, JH-1 resolved, GAP-11 closed, zero DEBT"
+description = "Meta-validation orchestrator — 680 workspace tests, 89 experiments, 389 capabilities, JH-0 13/13, JH-1 resolved, GAP-11 closed, zero DEBT"
 date = 2026-05-08
 
 [taxonomies]
@@ -10,8 +10,8 @@ springs = ["primalspring"]
 
 ## Status
 
-- **666 tests** passing (618 passed + 48 ignored), 0 failed
-- **85 experiments** across 19 tracks (tower atomic → frontier)
+- **680 workspace tests** (632 passed + 48 ignored; **664 package tests**: 616 passed + 48 ignored), 0 failed
+- **89 experiments** across 20 tracks (tower atomic → frontier)
 - **13 deploy graphs** validated (74 total nodes, 5 bond types)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`
 - **JH-0 ADOPTED** (13/13 primals), **JH-1 RESOLVED** (ionic tokens), **GAP-11 CLOSED** (18/18 methods)
@@ -31,7 +31,7 @@ springs = ["primalspring"]
 |---|----------|-------|
 | 01 | Composition Validation | Deploy graphs, bond types, profiles, discovery tiers |
 | 02 | Benchmark Comparison | Rust vs Python timing, energy, guidestone phases |
-| 03 | Ecosystem Evidence | 85 experiments, gap resolution, security timeline |
+| 03 | Ecosystem Evidence | 89 experiments, gap resolution, security timeline |
 | 04 | Cross-Spring Connections | Primal consumption matrix, ecosystem flows, sporePrint readiness |
 | 05 | BTSP Security Deep Dive | Per-primal posture, convergence arc, discovery hierarchy |
 

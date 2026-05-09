@@ -1,18 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp074: Cross-Gate Health
 
-//! Exp074: Cross-Gate Health — validate remote NUCLEUS health via TCP.
-//!
-//! Probes all primals on a remote gate via TCP JSON-RPC and reports
-//! per-primal health, capabilities, and federation readiness.
-//!
-//! Environment:
-//!   `REMOTE_GATE_HOST` — hostname or IP of the remote gate (required)
-//!   `BEARDOG_PORT`  — TCP fallback (default 9100, only for cross-gate)
-//!   `SONGBIRD_PORT` — TCP fallback (default 9200, only for cross-gate)
-//!   `NESTGATE_PORT` — TCP fallback (default 9300, only for cross-gate)
-//!   `TOADSTOOL_PORT` — TCP fallback (default 9400, only for cross-gate)
-//!   `SQUIRREL_PORT` — TCP fallback (default 9500, only for cross-gate)
-
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::methods;
 use primalspring::ipc::tcp::tcp_rpc;
 use primalspring::primal_names;
@@ -58,6 +47,23 @@ fn port_for(probe: &PrimalProbe) -> u16 {
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(probe.default_port)
+}
+
+fn phase_local_composition(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Local Composition Discovery");
+    let caps = ctx.available_capabilities();
+    if caps.is_empty() {
+        v.check_skip(
+            "local_composition_discovered",
+            "no local capabilities in CompositionContext",
+        );
+    } else {
+        v.check_bool(
+            "local_composition_discovered",
+            true,
+            &format!("capabilities: {}", caps.join(", ")),
+        );
+    }
 }
 
 fn probe_primal_health(v: &mut ValidationResult, host: &str, primal: &PrimalProbe) {
@@ -133,10 +139,13 @@ fn main() {
     let host = std::env::var("REMOTE_GATE_HOST").unwrap_or_default();
 
     ValidationResult::new("primalSpring Exp074 — Cross-Gate Health")
-        .with_provenance("exp074_cross_gate_health", "2026-03-24")
+        .with_provenance("exp074_cross_gate_health", "2026-05-09")
         .run(
             "primalSpring Exp074: Remote NUCLEUS per-primal health + capabilities via TCP",
             |v| {
+            let ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_local_composition(v, &ctx);
+
             if host.is_empty() {
                 println!("  REMOTE_GATE_HOST not set — skipping all remote checks.");
                 println!(
@@ -151,7 +160,7 @@ fn main() {
 
             v.check_bool("remote_gate_configured", true, "REMOTE_GATE_HOST is set");
 
-            v.section("Health Probes");
+            v.section("Phase 1: Health probes");
             let mut live_count: u32 = 0;
             for primal in PRIMALS {
                 let port = port_for(primal);
@@ -168,12 +177,12 @@ fn main() {
                 probe_primal_health(v, &host, primal);
             }
 
-            v.section("Capability Enumeration");
+            v.section("Phase 2: Capability enumeration");
             for primal in PRIMALS {
                 probe_primal_capabilities(v, &host, primal);
             }
 
-            v.section("Composition Assessment");
+            v.section("Phase 3: Composition assessment");
             let composition = match live_count {
                 0 => "NO NUCLEUS",
                 1..=2 => "TOWER ATOMIC (partial)",

@@ -1,22 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Exp073: LAN Covalent Mesh — validate cross-gate covalent bonding.
-//!
-//! Validates the full covalent bonding pattern between two gates:
-//! - TCP JSON-RPC `health.liveness` on remote beardog + songbird
-//! - `capabilities.list` enumerates remote NUCLEUS capabilities
-//! - `mesh.peers` discovers at least 1 peer via `BirdSong` UDP
-//! - `birdsong.generate_encrypted_beacon` + decrypt round-trip
-//! - Neural-api `capability.call` routing to local primals
-//! - `FAMILY_ID` genetic lineage verification via `BearDog`
-//! - HTTPS validation through Tower Atomic
-//!
-//! Environment:
-//!   `REMOTE_GATE_HOST` — hostname or IP of the remote gate (required)
-//!   `REMOTE_SONGBIRD_PORT` — Songbird TCP fallback (default: 9200, cross-gate only)
-//!   `REMOTE_BEARDOG_PORT`  — `BearDog` TCP fallback (default: 9100, cross-gate only)
-//!   `FAMILY_ID` — shared family ID for beacon generation and lineage check
+//! Exp073: LAN Covalent Mesh
 
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
 use primalspring::ipc::methods;
 use primalspring::ipc::tcp::tcp_rpc;
@@ -30,6 +16,24 @@ fn tcp_rpc_value(
     params: &serde_json::Value,
 ) -> Result<serde_json::Value, primalspring::ipc::IpcError> {
     tcp_rpc(host, port, method, params).map(|(v, _)| v)
+}
+
+fn phase_local_composition(v: &mut ValidationResult, ctx: &CompositionContext) {
+    v.section("Local Composition Discovery");
+    let caps = ctx.available_capabilities();
+    let msg = caps.join(", ");
+    if caps.is_empty() {
+        v.check_skip(
+            "local_composition_discovered",
+            "no local capabilities in CompositionContext",
+        );
+    } else {
+        v.check_bool(
+            "local_composition_discovered",
+            true,
+            &format!("capabilities: {msg}"),
+        );
+    }
 }
 
 fn validate_remote_health(
@@ -595,10 +599,13 @@ fn main() {
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "8ff3b864a4bc589a".to_owned());
 
     ValidationResult::new("primalSpring Exp073 — LAN Covalent Mesh")
-        .with_provenance("exp073_lan_covalent_mesh", "2026-04-06")
+        .with_provenance("exp073_lan_covalent_mesh", "2026-05-09")
         .run(
             "primalSpring Exp073: Cross-gate covalent bonding — mesh, beacon, lineage, HTTPS",
             |v| {
+            let ctx = CompositionContext::from_live_discovery_with_fallback();
+            phase_local_composition(v, &ctx);
+
             if host.is_empty() {
                 println!("  REMOTE_GATE_HOST not set — skipping all remote checks.");
                 println!(

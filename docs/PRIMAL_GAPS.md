@@ -51,9 +51,13 @@ Each primal's MethodGate validates ionic tokens independently. BearDog-issued to
 cannot currently be verified by other primals without shared key distribution. biomeOS
 composition forwarding (`_resource_envelope` in v3.48) is the production workaround.
 
-**Prerequisite**: All primals must implement JH-0 token scope validation (currently
-presence-only, not scope-checked). bearDog's `auth.verify_ionic` exists but no primal
-calls it on inbound requests yet.
+**primalSpring status**: primalSpring's MethodGate now implements full scope-checked
+token validation (`TokenVerifier` trait, `BearDogVerifier` calls `auth.verify_ionic`
+via IPC, `scope_permits_method()` pattern matching). This is the reference implementation
+for other primals. `CompositionContext::call_authenticated()` threads bearer tokens
+through multi-capability graphs. Experiments exp108-exp111 pressure-test the federation
+contract. Remaining blocker: bearDog key distribution and biomeOS forwarding-path
+token propagation.
 
 ---
 

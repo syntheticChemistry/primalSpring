@@ -1,0 +1,123 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+//! Exp001: Tower Atomic — security + discovery capability validation.
+//!
+//! Validates the minimal NUCLEUS composition by **capability** rather than
+//! primal identity. Discovers whoever provides "security" and "discovery"
+//! at runtime, probes health, and validates the composition via the
+//! capability-based path.
+//!
+//! When `ECOPRIMALS_PLASMID_BIN` is set, the experiment spawns live
+//! primals **and** the Neural API server via [`AtomicHarness`], then
+//! validates through both direct IPC and the Neural API bridge.
+//! Without it, falls back to discovering whatever is already running.
+
+use std::path::PathBuf;
+
+use primalspring::coordination::{
+    AtomicType, check_capability_health, validate_composition_by_capability,
+};
+use primalspring::harness::AtomicHarness;
+use primalspring::harness::RunningAtomic;
+use primalspring::ipc::discover::{discover_by_capability, neural_api_healthy};
+use primalspring::validation::ValidationResult;
+
+fn try_start_harness(v: &mut ValidationResult) -> Option<RunningAtomic> {
+    if std::env::var("ECOPRIMALS_PLASMID_BIN").is_err() {
+        v.check_skip(
+            "harness_start",
+            "ECOPRIMALS_PLASMID_BIN not set — using discovery",
+        );
+        return None;
+    }
+
+    let family = format!("exp001-{}", std::process::id());
+    let graphs = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../graphs");
+
+    match AtomicHarness::new(AtomicType::Tower).start_with_neural_api(&family, &graphs) {
+        Ok(running) => {
+            v.check_bool(
+                "harness_start",
+                true,
+                &format!(
+                    "live Tower + Neural API ({} primals)",
+                    running.primal_count()
+                ),
+            );
+            running.validate(v);
+            if let Some(bridge) = running.neural_bridge() {
+                let health = bridge.health_check();
+                v.check_bool(
+                    "neural_bridge_health",
+                    health.is_ok(),
+                    "Neural API bridge health check via live harness",
+                );
+            }
+            Some(running)
+        }
+        Err(e) => {
+            v.check_bool("harness_start", false, &format!("harness failed: {e}"));
+            None
+        }
+    }
+}
+
+fn main() {
+    ValidationResult::new("primalSpring Exp001 — Tower Atomic")
+        .with_provenance("exp001_tower_atomic", "2026-03-24")
+        .run(
+            "primalSpring Exp001: Tower Atomic (security + discovery capabilities)",
+            |v| {
+                let _running = try_start_harness(v);
+
+                let tower_caps = AtomicType::Tower.required_capabilities();
+                v.check_count("tower_required_caps", tower_caps.len(), 2);
+
+                for cap in tower_caps {
+                    let disc = discover_by_capability(cap);
+                    v.check_or_skip(
+                        &format!("discover_{cap}"),
+                        disc.socket.as_ref(),
+                        &format!("{cap} provider not discovered — not running"),
+                        |path, v| {
+                            let provider = disc.resolved_primal.as_deref().unwrap_or("unknown");
+                            v.check_bool(
+                                &format!("discover_{cap}"),
+                                true,
+                                &format!("{cap} provided by {provider} at {}", path.display()),
+                            );
+                        },
+                    );
+                }
+
+                for cap in tower_caps {
+                    check_capability_health(v, cap);
+                }
+
+                let neural_ok = neural_api_healthy();
+                if neural_ok {
+                    v.check_bool("neural_api", true, "Neural API reachable");
+                    let comp = validate_composition_by_capability(AtomicType::Tower);
+                    v.check_bool(
+                        "composition_healthy",
+                        comp.all_healthy,
+                        "Tower composition all healthy (capability-based)",
+                    );
+                    v.check_bool(
+                        "composition_discovery",
+                        comp.discovery_ok,
+                        "Tower discovery complete (capability-based)",
+                    );
+                    v.check_minimum("composition_caps", comp.total_capabilities, 2);
+                } else {
+                    v.check_skip(
+                        "neural_api",
+                        "Neural API not reachable — biomeOS not running",
+                    );
+                    v.check_skip("composition_healthy", "requires Neural API");
+                    v.check_skip("composition_discovery", "requires Neural API");
+                    v.check_skip("composition_caps", "requires Neural API");
+                }
+            },
+        );
+}

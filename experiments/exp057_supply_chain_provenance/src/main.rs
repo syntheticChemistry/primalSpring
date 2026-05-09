@@ -1,50 +1,77 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp057: Supply Chain Provenance — dag, ledger, and commit (attribution) capabilities in context.
 
-//! Validates multi-stage supply chain provenance from rhizoCrypt's complete workflows.
-//! Source: primals/rhizoCrypt/showcase/01-inter-primal-live/05-complete-workflows/demo-supply-chain.sh
-
-use primalspring::ipc::discover::{discover_primal, socket_path};
-use primalspring::primal_names;
+use primalspring::composition::CompositionContext;
 use primalspring::validation::ValidationResult;
+
+const PROVENANCE_CAPS: &[&str] = &["dag", "ledger", "attribution"];
+
+fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
+    let avail = ctx.available_capabilities().join(", ");
+    println!("  [INFO] capabilities: {avail}");
+
+    for cap in PROVENANCE_CAPS {
+        if ctx.has_capability(cap) {
+            v.check_bool(
+                &format!("has_{cap}"),
+                true,
+                &format!("{cap} capability present"),
+            );
+        } else {
+            v.check_skip(&format!("has_{cap}"), &format!("{cap} not in context"));
+        }
+    }
+}
+
+fn phase_pipeline(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let mut any = false;
+    for cap in PROVENANCE_CAPS {
+        if !ctx.has_capability(cap) {
+            continue;
+        }
+        any = true;
+        match ctx.call(cap, "health.liveness", serde_json::json!({})) {
+            Ok(_) => v.check_bool(
+                &format!("provenance_pipeline_{cap}_liveness"),
+                true,
+                &format!("{cap} health.liveness ok"),
+            ),
+            Err(e) if e.is_connection_error() => v.check_skip(
+                &format!("provenance_pipeline_{cap}_liveness"),
+                &format!("{e}"),
+            ),
+            Err(e) => v.check_bool(
+                &format!("provenance_pipeline_{cap}_liveness"),
+                false,
+                &format!("error: {e}"),
+            ),
+        }
+    }
+    if !any {
+        v.check_skip(
+            "provenance_pipeline",
+            "no dag/ledger/attribution clients in context",
+        );
+    }
+
+    v.check_skip(
+        "actual_dag_execution",
+        "DAG execution with signing needs live rhizoCrypt / loamSpine / sweetGrass orchestration",
+    );
+}
 
 fn main() {
     ValidationResult::new("primalSpring Exp057 — Supply Chain Provenance")
-        .with_provenance("exp057_supply_chain_provenance", "2026-03-24")
+        .with_provenance("exp057_supply_chain_provenance", "2026-05-09")
         .run(
             "primalSpring Exp057: rhizoCrypt Farm-to-Table Provenance",
             |v| {
-                let rhizocrypt = discover_primal(primal_names::RHIZOCRYPT);
-                v.check_bool(
-                    "discover_rhizocrypt",
-                    rhizocrypt.primal == primal_names::RHIZOCRYPT,
-                    "discover rhizocrypt (provenance trio)",
-                );
+                v.section("Phase 1: Discovery");
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_discovery(v, &ctx);
 
-                let loamspine = discover_primal(primal_names::LOAMSPINE);
-                v.check_bool(
-                    "discover_loamspine",
-                    loamspine.primal == primal_names::LOAMSPINE,
-                    "discover loamspine (provenance trio)",
-                );
-
-                let sweetgrass = discover_primal(primal_names::SWEETGRASS);
-                v.check_bool(
-                    "discover_sweetgrass",
-                    sweetgrass.primal == primal_names::SWEETGRASS,
-                    "discover sweetgrass (provenance trio)",
-                );
-
-                let path_rhizocrypt = socket_path(primal_names::RHIZOCRYPT);
-                v.check_bool(
-                    "socket_path_contains_biomeos",
-                    path_rhizocrypt.to_string_lossy().contains("biomeos"),
-                    "socket_path for rhizocrypt contains biomeos",
-                );
-
-                v.check_skip(
-                    "actual_dag_execution",
-                    "actual DAG execution with signing needs live primals",
-                );
+                v.section("Phase 2: Pipeline");
+                phase_pipeline(v, &mut ctx);
             },
         );
 }

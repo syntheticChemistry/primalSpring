@@ -1,24 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+//! Exp076: Cross-Gate Neural Routing
 
-//! Exp076: Cross-Gate Neural Routing — validate biomeOS capability routing
-//! across the Eastgate/Pixel boundary.
-//!
-//! Connects to a live biomeOS neural-api and validates that capabilities
-//! can be routed to primals on a remote gate (Pixel) via TCP. Also tests
-//! birdsong beacon exchange between local and remote Songbird instances,
-//! and mesh initialization/announcement via the Neural API.
-//!
-//! Expects:
-//! - biomeOS neural-api running on localhost (Unix socket)
-//! - Pixel `BearDog` reachable at `PIXEL_BEARDOG_TCP` (default `localhost:19100`)
-//! - Pixel Songbird reachable at `PIXEL_SONGBIRD_TCP` (default `localhost:19200`)
-
+use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
-use primalspring::ipc::client::PrimalClient;
-use primalspring::ipc::discover;
 use primalspring::ipc::methods;
 use primalspring::ipc::tcp::tcp_rpc;
-use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn pixel_beardog_host_port() -> (String, u16) {
@@ -43,7 +29,8 @@ fn local_songbird_port() -> u16 {
         .unwrap_or(primalspring::tolerances::TCP_FALLBACK_SONGBIRD_PORT)
 }
 
-fn validate_pixel_tower(v: &mut ValidationResult) {
+fn phase_pixel_tower(v: &mut ValidationResult) {
+    v.section("Phase 1: Pixel tower TCP");
     let (bd_host, bd_port) = pixel_beardog_host_port();
     let songbird_port = pixel_songbird_port();
 
@@ -79,7 +66,8 @@ fn validate_pixel_tower(v: &mut ValidationResult) {
     );
 }
 
-fn validate_cross_gate_crypto(v: &mut ValidationResult) {
+fn phase_cross_gate_crypto(v: &mut ValidationResult) {
+    v.section("Phase 2: Cross-gate crypto");
     let (bd_host, bd_port) = pixel_beardog_host_port();
     let resp = tcp_rpc(
         &bd_host,
@@ -99,28 +87,28 @@ fn validate_cross_gate_crypto(v: &mut ValidationResult) {
     );
 }
 
-fn validate_cross_gate_beacon_exchange(v: &mut ValidationResult) {
-    let songbird = discover::discover_primal(primal_names::SONGBIRD);
-    let local_beacon = songbird
-        .socket
-        .and_then(|s| PrimalClient::connect(&s, primal_names::SONGBIRD).ok())
-        .and_then(|mut c| {
-            c.call(
+fn phase_cross_gate_beacon_exchange(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.section("Phase 3: Beacon exchange");
+
+    let local_beacon = ctx
+        .has_capability("discovery")
+        .then(|| {
+            ctx.call(
+                "discovery",
                 "birdsong.generate_encrypted_beacon",
                 serde_json::json!({
                     "node_id": "eastgate-exp076",
                     "capabilities": ["security", "discovery"]
                 }),
             )
-            .ok()
+            .map_or(None, |val| val.get("encrypted_beacon").cloned())
         })
-        .and_then(|r| r.result)
-        .and_then(|v| v.get("encrypted_beacon").cloned());
+        .flatten();
 
     v.check_bool(
         "local_beacon_generated",
         local_beacon.is_some(),
-        "Eastgate Songbird birdsong beacon via Unix socket",
+        "Eastgate Songbird birdsong beacon via CompositionContext",
     );
 
     let local_songbird = local_songbird_port();
@@ -159,7 +147,8 @@ fn validate_cross_gate_beacon_exchange(v: &mut ValidationResult) {
     );
 }
 
-fn validate_neural_api_substrate(v: &mut ValidationResult) {
+fn phase_neural_api_substrate(v: &mut ValidationResult) {
+    v.section("Phase 4: Neural API substrate");
     let Some(bridge) = NeuralBridge::discover() else {
         v.check_skip("neural_api_substrate", "biomeOS not running");
         return;
@@ -182,14 +171,15 @@ fn validate_neural_api_substrate(v: &mut ValidationResult) {
 
 fn main() {
     ValidationResult::new("primalSpring Exp076 — Cross-Gate Neural Routing")
-        .with_provenance("exp076_cross_gate_neural_routing", "2026-03-27")
+        .with_provenance("exp076_cross_gate_neural_routing", "2026-05-09")
         .run(
             "primalSpring Exp076: Cross-gate capability routing via biomeOS substrate",
             |v| {
-                validate_pixel_tower(v);
-                validate_cross_gate_crypto(v);
-                validate_cross_gate_beacon_exchange(v);
-                validate_neural_api_substrate(v);
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_pixel_tower(v);
+                phase_cross_gate_crypto(v);
+                phase_cross_gate_beacon_exchange(v, &mut ctx);
+                phase_neural_api_substrate(v);
             },
         );
 }

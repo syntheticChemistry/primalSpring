@@ -121,7 +121,10 @@ impl World {
         self.tiles[y * MAP_WIDTH + x]
     }
 
-    #[expect(dead_code, reason = "used in interactive mode, not in validation-only path")]
+    #[expect(
+        dead_code,
+        reason = "used in interactive mode, not in validation-only path"
+    )]
     pub(crate) fn set_tile(&mut self, x: usize, y: usize, tile: Tile) {
         self.tiles[y * MAP_WIDTH + x] = tile;
     }
