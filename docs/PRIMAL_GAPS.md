@@ -42,9 +42,9 @@ Structured inventory of known gaps per primal that block or degrade composable d
 ## Next Interstadial Wave — Evolution Goals
 
 These items are the active evolution targets for the next stadial push.
-Delta springs and projectNUCLEUS should absorb the current interstadial
-patterns (UniBin, two-tier validation, `CompositionContext`, deprecated
-harness fossilization) while these goals mature upstream.
+Delta springs have completed the interstadial primordial extinction (8/8
+eukaryotic UniBin, May 9, 2026). projectNUCLEUS and downstream products
+should absorb the current patterns while these goals mature upstream.
 
 ### Wave 1: JH-11 — Cross-Primal Token Federation
 
@@ -96,31 +96,29 @@ ludoSpring, groundSpring, airSpring)
 **Priority**: HIGH — the primary interstadial work for delta teams
 **Target**: Before next stadial gate
 
-Delta springs must undergo the primordial extinction that primalSpring completed:
+**COMPLETED** (May 9, 2026) — All 8 springs have completed the primordial extinction:
 
-1. **UniBin consolidation**: Absorb experiment bins into a single unibin per spring.
-   primalSpring's `ScenarioRegistry` + `ScenarioMeta` + `Tier`/`Track` taxonomy
-   is the template. Fossilize prokaryotic binaries.
-2. **Guidestone absorption**: Absorb guidestone layers as library organelles
-   (certification engine pattern from primalSpring `certification/` module).
-3. **CompositionContext migration**: Replace `PrimalClient`, `AtomicHarness`,
-   `discover_primal()`, `spawn_primal()` with `CompositionContext` throughout.
-4. **Deprecated API cleanup**: All `#[allow(deprecated)]` must carry `reason = "..."`.
-   Zero bare suppressions.
-5. **primalSpring v0.9.25 pin**: All springs must pin to v0.9.25 for UniBin,
-   `CompositionContext`, and two-tier validation support.
-6. **Fossil record**: Snapshot pre-extinction patterns to `fossilRecord/` with
-   dated provenance READMEs.
+1. **UniBin consolidation**: 8/8 — all springs have single unified binaries with
+   `certify`/`validate`/`status`/`version` subcommands (most also have `serve`).
+2. **Guidestone absorption**: 8/8 — certification engine absorbed as library organelle.
+3. **Deprecated API cleanup**: 8/8 — zero bare `#[allow(deprecated)]` suppressions.
+4. **primalSpring v0.9.25 pin**: 7/8 pinned (ludoSpring pinned, healthSpring upgraded).
+5. **Fossil record**: 8/8 — `fossilRecord/` with dated provenance READMEs.
+6. **Zero debt**: 8/8 — zero TODO/FIXME/HACK, zero clippy warnings, zero test failures.
 
-| Spring | Current State | Target |
-|--------|--------------|--------|
-| healthSpring | Tier 3, gS L5, pinned to v0.9.17 | Pin v0.9.25, UniBin, Tier 4 |
-| ludoSpring | Tier 3, gS L4, 100 exp crates | UniBin, Tier 4, make `ipc` default |
-| hotSpring | Tier 2, gS L5, no `src/ipc/` | Create `src/ipc/`, UniBin, Tier 3 |
-| wetSpring | Tier 2, gS L4+, 15 IPC handlers | Route compute through ecobin, UniBin |
-| airSpring | Tier 2, gS L2, pre-delta | Unpause delta, UniBin, gS L4+ |
-| neuralSpring | Tier 2, gS L3, no `src/ipc/` | Create `src/ipc/`, UniBin, latency-aware |
-| groundSpring | Tier 1, gS L4, minimal IPC | Create `src/ipc/`, UniBin, Tier 2 |
+| Spring | Post-Evolution State | Next Target |
+|--------|---------------------|-------------|
+| healthSpring | V61, gS L5, UniBin, 999+ tests, 0 clippy | Tier 4 (JH-11 blocked) |
+| ludoSpring | V58, gS L4, UniBin, 665+ tests, 100 exps fossilized | Tier 4, `CompositionContext` |
+| hotSpring | latest, gS L5, UniBin, 1,002 tests | `serve` on UniBin, Tier 3 |
+| wetSpring | V155, gS L4, UniBin, 1,209 tests | Tier 3 → 4 |
+| airSpring | v0.10.0, gS L2, UniBin, 1,364 tests | gS L4+, Tier 3 |
+| neuralSpring | S195, gS L3, UniBin, 1,432 tests | gS L4+, latency-aware |
+| groundSpring | V127, gS L4, UniBin, 965+ tests | `serve` on UniBin, Tier 2 |
+
+**Remaining for Wave 3**: `CompositionContext` full migration (PrimalClient still
+encapsulated), Tier 4 rewiring (blocked by JH-11 token federation), barraCuda
+version alignment across springs.
 
 ---
 

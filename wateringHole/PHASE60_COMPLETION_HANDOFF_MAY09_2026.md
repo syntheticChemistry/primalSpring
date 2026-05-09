@@ -113,7 +113,7 @@ let gate = match std::env::var("MY_SPRING_AUTH_MODE").as_deref() {
 | Spring | Key Evolution Target | Details |
 |--------|---------------------|---------|
 | hotSpring | Experiment convention | Move exp bins from `src/bin/` to `experiments/expNNN_*/` crates |
-| healthSpring | primalSpring pin v0.9.25 | guidestone pinned to v0.9.17 — upgrade |
+| healthSpring | primalSpring pin v0.9.25 | **DONE** — V61 eukaryotic UniBin, zero debt |
 | wetSpring | L5 guidestone | Currently L4 — needs full primal proof with NUCLEUS cross-atomic |
 | neuralSpring | L4-L5 guidestone | Currently L3 — biggest gap relative to peers |
 | ludoSpring | Notebooks | Zero `.ipynb` — convert Python baselines to notebooks for sporePrint |

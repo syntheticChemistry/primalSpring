@@ -1,6 +1,6 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Phase 60)
+**Version**: 0.9.25 (Phase 60+ post-interstadial)
 **Last Updated**: May 9, 2026
 **License**: AGPL-3.0-or-later  
 
@@ -12,32 +12,34 @@ The wateringHole is primalSpring's outward-facing guidance surface for upstream
 primal teams and downstream spring/garden consumers. It defines the patterns
 that make the ecosystem composable.
 
-Historical handoffs live in `fossilRecord/`.
+Historical handoffs live in `archive/` and `fossilRecord/`.
 
 ---
 
 ## Documents
 
+### Living Standards
+
 | File | Audience | What It Covers |
 |------|----------|----------------|
 | **CRYPTO_CONSUMPTION_HIERARCHY.md** | Primal teams + spring teams | Crypto posture per primal role: key acquisition patterns, bonding hierarchy, Phase 3 convergence. |
 | **PLASMINBIN_DEPOT_PATTERN.md** | All consumers | How to fetch primal binaries from plasmidBin GitHub Releases. |
-| **METHOD_GATE_STANDARD.md** | All primal teams | JH-0 ecosystem standard: pre-dispatch capability authorization, exempt whitelist, error codes (-32000/-32001/-32002), enforcement modes, peer credential extraction, adoption path. |
-| **PHASE60_DEEP_DEBT_SOVEREIGNTY_HANDOFF_MAY07_2026.md** | All teams | Phase 60: deep debt evolution (9 tasks), 14/14 sovereignty gaps absorbed, registry 290→384, graph validator rewrite. |
-| **DOWNSTREAM_HANDOFF_PHASE60_MAY07_2026.md** | Springs + gardens | Phase 60 downstream: registry patterns, content-addressed storage, RootPulse workflow, shader rewire, notebook pipeline, deep debt patterns. |
-| **DOWNSTREAM_HANDOFF_PHASE60_SECURITY_GATE_MAY07_2026.md** | Springs + gardens + projectNUCLEUS | Phase 60 security gate: method gate pattern, `auth.*` methods, `PermissionDenied` handling, `SeedConfig`, composition patterns for NUCLEUS deployment via Neural API. |
-| **DOWNSTREAM_HANDOFF_PHASE60_IONIC_TOKENS_MAY08_2026.md** | Springs + gardens + projectNUCLEUS | JH-1 ionic tokens (BearDog Ed25519), GAP-11 18/18 closure (nautilus sessions, ml.mlp_train), token flow in compositions, registry 389 methods. |
-| **CROSS_SPRING_PARITY_HANDOFF_MAY08_2026.md** | All spring teams + downstream | Cross-spring composition parity audit: per-spring scorecard (8 axes), evolution targets, universal gaps, 8,737+ total tests across 8 springs, 112 deploy graphs. |
-| **PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md** | Upstream primals + spring teams + products | Comprehensive evolution handoff: primal consumption review, upstream debt, per-spring absorption targets, NUCLEUS composition patterns, Neural API deployment, downstream product guidance, lessons learned. |
-| **PHASE60_COMPLETION_HANDOFF_MAY09_2026.md** | Downstream products + spring teams | Phase 60 completion: 13/13 primals clean, resolved gaps table, composition patterns for NUCLEUS via Neural API, per-spring absorption targets, quality gate. |
-| **PRIMALSPRING_V0925_PHASE60_DEEP_DEBT_CLOSURE_HANDOFF_MAY09_2026.md** | Delta spring teams + products | Phase 60+ deep debt closure: graph `by_capability` alignment (7 graphs), integration test decomposition (2→5 files), `validate_all` broadened, capability naming harmonized, zero `#[allow]` without reason. |
-| This README | Everyone | Index and context. |
+| **METHOD_GATE_STANDARD.md** | All primal teams | JH-0 ecosystem standard: pre-dispatch capability authorization, exempt whitelist, error codes, enforcement modes. |
 
-### UniBin handoffs
+### Current Handoffs
 
-| Topic | Document | Date |
-|-------|----------|------|
-| UniBin Eukaryotic Evolution | `PRIMALSPRING_V0925_UNIBIN_EUKARYOTIC_HANDOFF_MAY09_2026.md` | May 9, 2026 |
+| File | Audience | What It Covers |
+|------|----------|----------------|
+| **PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md** | Upstream primals + spring teams + products | Comprehensive evolution handoff: primal consumption, upstream debt, per-spring targets, NUCLEUS composition, Neural API deployment, downstream guidance. |
+| **PRIMALSPRING_V0925_UNIBIN_EUKARYOTIC_HANDOFF_MAY09_2026.md** | All teams | UniBin eukaryotic evolution: cell model, CLI surface, two-tier validation, certification organelle, scenario registry. |
+| **PHASE60_COMPLETION_HANDOFF_MAY09_2026.md** | Downstream products + spring teams | Phase 60 completion: 13/13 primals clean, composition patterns for NUCLEUS via Neural API. |
+| **INTERSTADIAL_FOSSILIZATION_HANDOFF.md** | Spring teams | Interstadial fossilization patterns: what to preserve, how to date, provenance READMEs. |
+
+### Archived (resolved, in `archive/`)
+
+Phase-specific handoffs from May 7-9 that are now absorbed into the current
+handoffs above: phase 60 deep debt, security gate, ionic tokens, cross-spring
+parity audit, sovereignty. Git history preserves full provenance.
 
 ---
 
