@@ -77,13 +77,30 @@ Total across ecosystem: **74** (primalSpring) + **1** (hotSpring) + **7** (healt
 
 All 8 springs have `deny.toml` (or sub-crate deny). All ban `openssl`/`openssl-sys`. All now ban `ring` (wetSpring added in Phase 60 absorption). hotSpring and healthSpring also ban `aws-lc-sys`/`aws-lc-rs`. airSpring's bans are in sub-crate deny files (no workspace-root `deny.toml`); `aws-lc-sys` not explicitly banned there.
 
-## Critical Path to Full Parity
+## Critical Path to Full Parity — Next Interstadial Wave
 
-1. **barraCuda IPC migration**: All springs need `barracuda` as `optional = true` with IPC-first defaults
-2. **healthSpring primalSpring pin**: V60 delivered (registry, exp123, 53 notebooks, CI sync), but still pinned to primalSpring v0.9.17 in guidestone — should upgrade to v0.9.25.
-3. **airSpring aws-lc-sys ban**: Workspace-root `deny.toml` missing (only sub-crate deny files); `aws-lc-sys` not explicitly banned — should align with ecosystem posture
-4. **Registry cross-sync**: groundSpring (6 tests), hotSpring, neuralSpring auto-test against local TOML; need universal CI testing against primalSpring canonical 389
-5. **Notebook gap**: healthSpring and ludoSpring have Python baselines as scripts, not notebooks — functionally equivalent but different artifact form
+These are the primordial extinction targets for delta springs. primalSpring has
+completed its eukaryotic evolution (UniBin, two-tier validation, full
+`CompositionContext` migration, fossil record). Delta springs must now absorb
+and undergo the same evolutionary pressure.
+
+1. **Primordial extinction → UniBin**: Every spring absorbs its experiment bins
+   into a single unibin per spring. Guidestone absorbed as certification organelle.
+   primalSpring's `ScenarioRegistry` + `ScenarioMeta` is the template.
+2. **primalSpring v0.9.25 pin**: All springs must pin to v0.9.25 for `CompositionContext`,
+   UniBin certification, and two-tier validation. healthSpring still at v0.9.17.
+3. **barraCuda IPC migration**: All springs need `barracuda` as `optional = true`
+   with IPC-first defaults. Tier 3 → Tier 4 rewiring.
+4. **airSpring aws-lc-sys ban**: Workspace-root `deny.toml` missing (only sub-crate
+   deny files); `aws-lc-sys` not explicitly banned — must align with ecosystem posture.
+5. **Registry cross-sync CI**: All springs must CI-test local capability methods
+   against primalSpring canonical 389 (`config/capability_registry.toml`).
+6. **`CompositionContext` migration**: Replace all `PrimalClient`, `AtomicHarness`,
+   `discover_primal()`, `spawn_primal()` with `CompositionContext` patterns.
+7. **Fossil record**: Snapshot pre-extinction patterns to `fossilRecord/` with
+   dated provenance before evolving.
+8. **Notebook gap**: healthSpring and ludoSpring have Python baselines as scripts,
+   not notebooks — functionally equivalent but different artifact form.
 
 ## Aggregate Metrics
 
