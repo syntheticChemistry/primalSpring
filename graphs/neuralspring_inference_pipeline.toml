@@ -108,7 +108,7 @@ order = 5
 required = true
 depends_on = ["neuralspring"]
 health_method = "health"
-by_capability = "shader_compile"
+by_capability = "shader"
 capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
 
 # ── Node 6: toadStool (compute dispatch) ──────────────────────────────

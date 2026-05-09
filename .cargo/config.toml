@@ -12,3 +12,6 @@ panic = "abort"
 inherits = "release"
 strip = false
 debug = true
+
+[alias]
+coverage = "llvm-cov --workspace --ignore-filename-regex tests/"

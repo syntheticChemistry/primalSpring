@@ -24,6 +24,7 @@ pub const ALL_CAPS: &[&str] = &[
     "ledger",
     "attribution",
     "defense",
+    "orchestration",
 ];
 
 /// Extended capability aliases for BTSP proactive escalation.

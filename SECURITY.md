@@ -50,4 +50,4 @@ vulnerability, please report it responsibly:
 Dependencies are audited via `cargo deny check` which enforces:
 - License allowlist (AGPL-compatible only)
 - Advisory database checks
-- C dependency ban list (14 crates banned for ecoBin compliance)
+- C dependency ban list (18 crates banned for ecoBin compliance)

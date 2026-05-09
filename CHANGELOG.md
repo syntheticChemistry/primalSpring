@@ -3,6 +3,39 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Phase 60+: Deep Debt Closure + Graph Hygiene + Integration Refactor (2026-05-09)
+
+### Changed
+- **Integration test decomposition** — `server_ecosystem.rs` (1,106L → 498L) and
+  `server_ecosystem_compose.rs` (807L → 411L) split into domain-focused modules:
+  `server_ecosystem_songbird.rs` (Songbird IPC, 309L), `server_ecosystem_genetics.rs`
+  (three-tier genetics, 327L), `server_ecosystem_overlay.rs` (graph-driven overlays, 407L).
+  All test files now under 500 LOC. Zero test loss (666 stable).
+- **`CompositionContext::discover()`** now materializes biomeOS as an `orchestration`
+  client — `orchestration` added to `ALL_CAPS` in `routing.rs`.
+- **`validate_all`** filter broadened to include `primalspring-trio*` crates alongside
+  `primalspring-exp*` experiments.
+- **`cargo coverage`** alias wired in `.cargo/config.toml` (was documented in README
+  but previously required manual `cargo llvm-cov` invocation).
+
+### Fixed
+- **`lib.rs` `#![cfg_attr(test, allow(...))]`** migrated to
+  `#![cfg_attr(test, expect(..., reason = "..."))]` — zero `#[allow]` without reason
+  in entire codebase.
+- **`by_capability` consistency** — guideStone node in `proto_nucleate_template.toml`
+  now has `by_capability = "coordination"` matching all other primal nodes.
+- **`shader_compile` → `shader`** in 7 deploy graphs (4 cell graphs, 2 pipelines,
+  1 spring deploy template) — aligned with canonical fragments (`node_atomic.toml`,
+  `nucleus.toml`) and `routing.rs`.
+- **`SECURITY.md`** banned crate count corrected (14 → 18, matching `deny.toml`).
+- **`capability.list`** added to `LOCAL_CAPABILITIES` in `niche.rs` alongside
+  `capabilities.list` — both singular and plural forms now registered with biomeOS.
+
+### Metrics
+- **666 tests** (618 passed + 48 ignored), **0 clippy warnings**, **0 unsafe blocks**.
+- All integration test files under 500 LOC. All library source files under 700 LOC.
+- `cargo deny check`: advisories ok, bans ok, licenses ok, sources ok.
+
 ## [Unreleased] — Phase 60: Upstream Absorption + Deep Debt + Registry Evolution + Security Gate (2026-05-07/08)
 
 ### Added

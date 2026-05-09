@@ -89,5 +89,6 @@ name = "{{guidestone_binary}}"
 binary = "{{guidestone_binary}}"
 spawn = false
 role = "guidestone"
+by_capability = "coordination"
 capabilities = "{{validation_capabilities}}"
 depends_on = "{{depends_on}}"

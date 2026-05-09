@@ -70,6 +70,7 @@ pub const LOCAL_CAPABILITIES: &[&str] = &[
     "health.readiness",
     // ── Capability advertisement ──
     "capabilities.list",
+    "capability.list",
     // ── Graph coordination ──
     "graph.validate",
     "graph.list",

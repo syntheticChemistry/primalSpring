@@ -95,7 +95,7 @@ order = 4
 required = true
 depends_on = ["hotspring"]
 health_method = "health"
-by_capability = "shader_compile"
+by_capability = "shader"
 capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
 
 # ── Node 5: toadStool (GPU fleet dispatch) ────────────────────────────

@@ -30,6 +30,7 @@ Historical handoffs live in `fossilRecord/`.
 | **CROSS_SPRING_PARITY_HANDOFF_MAY08_2026.md** | All spring teams + downstream | Cross-spring composition parity audit: per-spring scorecard (8 axes), evolution targets, universal gaps, 8,737+ total tests across 8 springs, 112 deploy graphs. |
 | **PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md** | Upstream primals + spring teams + products | Comprehensive evolution handoff: primal consumption review, upstream debt, per-spring absorption targets, NUCLEUS composition patterns, Neural API deployment, downstream product guidance, lessons learned. |
 | **PHASE60_COMPLETION_HANDOFF_MAY09_2026.md** | Downstream products + spring teams | Phase 60 completion: 13/13 primals clean, resolved gaps table, composition patterns for NUCLEUS via Neural API, per-spring absorption targets, quality gate. |
+| **PRIMALSPRING_V0925_PHASE60_DEEP_DEBT_CLOSURE_HANDOFF_MAY09_2026.md** | Delta spring teams + products | Phase 60+ deep debt closure: graph `by_capability` alignment (7 graphs), integration test decomposition (2→5 files), `validate_all` broadened, capability naming harmonized, zero `#[allow]` without reason. |
 | This README | Everyone | Index and context. |
 
 ---

@@ -6,6 +6,9 @@ under 1000 lines.
 
 See `PRIMAL_GAPS.md` for active/open gaps.
 
+> **Full archive**: `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
+> contains the monolithic historical snapshot through Phase 60.
+
 ---
 
 ## Resolved Gaps Summary

@@ -60,8 +60,11 @@ primalSpring/
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
-│       ├── server_ecosystem.rs    # Tower-related live tests (#[ignore])
-│       └── server_ecosystem_compose.rs  # Nest/Node/Overlay/Squirrel live tests (#[ignore])
+│       ├── server_ecosystem.rs    # Tower atomic + Squirrel AI (#[ignore])
+│       ├── server_ecosystem_songbird.rs  # Songbird IPC surface (#[ignore])
+│       ├── server_ecosystem_genetics.rs  # Three-tier genetics (#[ignore])
+│       ├── server_ecosystem_compose.rs   # Nest/Node composition (#[ignore])
+│       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
 ├── experiments/                   # 85 validation experiments (19 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
 ├── graphs/                        # 74 deploy graph TOMLs (fragment-first composition)

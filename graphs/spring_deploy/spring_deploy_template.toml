@@ -105,7 +105,7 @@ required = false
 spawn = false
 depends_on = ["toadstool"]
 health_method = "health.liveness"
-by_capability = "shader_compile"
+by_capability = "shader"
 capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
 
 [[graph.nodes]]
