@@ -394,7 +394,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 666 tests (618 passed + 48 ignored).
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 680 tests (632 passed + 48 ignored).
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 
@@ -412,8 +412,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Layered validation framework**: L0 (biomeOS + any primal), L1 (each atomic), L2 (mixed atomics), L3 (bonding patterns on top of atomics). Full NUCLEUS Validation Matrix at `specs/NUCLEUS_VALIDATION_MATRIX.md`.
 - **12 sketch graphs** (archived to `fossilRecord/stale_graphs_apr12_2026/sketches/`): L0 primal routing matrix, L2 dual-tower ionic / dedicated tower / nest enclave, L3 covalent mesh backup / ionic lease / organo-metal-salt.
 - **3 new experiments** (exp091–093): L0 primal routing matrix, L2 dual-tower ionic structural, L3 covalent mesh backup structural.
-- **Live validation on Eastgate**: Tower Atomic (BearDog + Songbird) fully validated — crypto, HTTPS, discovery all LIVE PASS. Neural API running but capability registration gap identified (GAP-MATRIX-01). See `specs/CROSS_SPRING_EVOLUTION.md` for 6 gap items.
-- **6 GAP-MATRIX items documented**: Neural API capability registration (Critical), biomeOS graph parsing (Medium), Songbird TLS cipher suites (Low), NestGate IPC model (Medium), untested primals (Medium), plasmidBin freshness (Low).
+- **Live validation on Eastgate**: Tower Atomic (BearDog + Songbird) fully validated — crypto, HTTPS, discovery all LIVE PASS. Neural API running, capability registration resolved (GAP-09 shipped in biomeOS v3.51 `method.register`). All 6 GAP-MATRIX items from Phase 56 are now resolved or superseded by eukaryotic architecture.
 
 ## Modernization Sweep (April 7, 2026)
 
@@ -468,7 +467,7 @@ and per-primal remediation plan (archived from March 2026 mobile deployment spik
 - `wateringHole/CROSS_SPRING_PARITY_HANDOFF_MAY08_2026.md` — Cross-spring parity audit
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role
 - `wateringHole/METHOD_GATE_STANDARD.md` — MethodGate pre-dispatch authorization standard (JH-0)
-- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–25+ done — includes live validation matrix + 6 GAP-MATRIX items)
+- `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–25+ done — live validation matrix, GAP-MATRIX items all resolved)
 - `specs/NUCLEUS_VALIDATION_MATRIX.md` — NUCLEUS capability validation matrix with particle model
 - `specs/MIXED_COMPOSITION_PATTERNS.md` — Particle model, layered validation (L0-L3), gap inventory, spring specialization guide
 - `specs/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression

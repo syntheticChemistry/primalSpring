@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
 **Version**: 0.9.25 (Phase 60+ post-interstadial)
-**Last Updated**: May 9, 2026
+**Last Updated**: May 10, 2026
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -47,8 +47,8 @@ parity audit, sovereignty. Git history preserves full provenance.
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
-- **Zero open upstream gaps** — 13/13 primals at zero debt (Phase 60 complete)
-- **389 registered capability methods** across 82 domains (including `auth.*`, `nautilus.*`, ionic token methods)
+- **Zero open upstream gaps** — 13/13 primals at zero debt, JH-11 resolved (May 10), all sovereignty horizons advancing
+- **403 registered capability methods** across 82 domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods)
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
 - **RootPulse commit workflow** fully executable (6/6 phases)
 - **NestGate content-addressed storage** live (8 `content.*` methods)
@@ -60,7 +60,7 @@ parity audit, sovereignty. Git history preserves full provenance.
 | What | Where |
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
-| Capability registry | `config/capability_registry.toml` (389 methods) |
+| Capability registry | `config/capability_registry.toml` (403 methods, zero drift) |
 | Method gate CI | `tools/check_method_gate.sh` |
 | Method string validator | `tools/check_method_strings.sh` |
 | Graph method validator | `tools/check_graph_methods.sh` |
