@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-09
+> **Last updated**: 2026-05-10
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -55,14 +55,31 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | U2 | 5 deploy graphs missing `by_capability` | **FALSE POSITIVE** — only manifests (parameter tables, not node-bearing graphs) lack field; all actual `[[graph.nodes]]` graphs have `by_capability` |
 | U3 | 8 profile graphs missing `bonding_policy` | **RESOLVED** — 9/9 profile graphs already have `bonding_policy` |
 
-### Still Open (not primalSpring-owned)
+### Resolved (upstream evolution wave May 10, 2026)
 
-| ID | Owner | Severity | What | primalSpring posture |
-|----|-------|----------|------|---------------------|
-| JH-11 | bearDog/biomeOS | **HIGH** | Cross-primal token federation | Ready — `TokenVerifier`, scenarios, exp108-111 |
-| GAP-06 | rhizoCrypt | MEDIUM | No UDS transport | Blocks 4 ludoSpring provenance experiments |
-| GAP-03 | biomeOS | MEDIUM | Cell graph live deploy not tested | Need `composition.deploy(graph)` E2E test |
-| GAP-09 | biomeOS | MEDIUM | Neural API registration endpoint | New spring methods need registration path |
+| ID | Owner | What | Resolution |
+|----|-------|------|------------|
+| JH-11 | bearDog/biomeOS | Cross-primal token federation | **RESOLVED** — bearDog Wave 99 `auth.public_key` (Ed25519 key distribution) + biomeOS v3.51 `BearDogVerifier` (IPC-based cross-primal verification) |
+| GAP-06 | rhizoCrypt | No UDS transport | **RESOLVED** — S66 confirms UDS operational since S23, provenance trio integration test added |
+| GAP-03 | biomeOS | Cell graph live deploy not tested | **RESOLVED** — biomeOS v3.51 `composition.deploy` route alias for `graph.execute` |
+| GAP-09 | biomeOS | Neural API registration endpoint | **RESOLVED** — biomeOS v3.51 `method.register` endpoint for spring method registration |
+
+Also resolved by upstream teams (not previously tracked as gaps):
+
+| What | Resolution |
+|------|------------|
+| `composition.status` method | biomeOS v3.51 — `{ active_users, primal_health, resource_pressure }` |
+| bearDog TLS + rate limiting (H2-10/H2-11) | bearDog Wave 100 — rustls X.509 termination + per-IP sliding-window rate limiter |
+| petalTongue PT-1 through PT-5 (sovereignty) | All resolved — `--docroot`, `WebServeConfig`, `--ipc`, `--workers`, NestGate content backend (PT-13) |
+| petalTongue notebook rendering | `.ipynb` → HTML with `metadata.title` + `strip_sources` |
+| songbird NAT traversal (H2-13 through H2-16) | Wave 196-197 — STUN wire-compliant, RFC 5766 TURN client, Cloudflare DDNS, 5-tier `ConnectionFallbackChain` all live |
+| biomeOS token forwarding | v3.50 — `_bearer_token` propagated through all capability routing paths |
+
+### Zero open upstream gaps
+
+All upstream gaps from the projectNUCLEUS audit are now resolved. Remaining items are
+hardening and future-horizon work (Tor relay, QUIC multi-path, full `cloudflared`
+orchestration, TURN refresh lifecycle) — none blocking current interstadial goals.
 
 ### Tier 3 Code Quality (primal team backlogs — coordination tracking)
 
@@ -87,40 +104,29 @@ should absorb the current patterns while these goals mature upstream.
 
 ### Wave 1: JH-11 — Cross-Primal Token Federation
 
-**Owner**: bearDog + biomeOS (ecosystem architecture)
-**Priority**: HIGH — unlocks JH-5, cross-atomic auth, and Tier 4 rewiring for all springs
-**Target**: Next stadial gate
+**RESOLVED** (May 10, 2026)
 
-Each primal's MethodGate validates ionic tokens independently. BearDog-issued tokens
-cannot currently be verified by other primals without shared key distribution. biomeOS
-composition forwarding (`_resource_envelope` in v3.48) is the production workaround.
+- bearDog Wave 99: `auth.public_key` endpoint — Ed25519 verifying key in base64/hex/DID
+  formats. Any primal can call once, cache key, verify ionic tokens locally.
+- biomeOS v3.50: `_bearer_token` propagated through all capability routing paths.
+- biomeOS v3.51: `BearDogVerifier` for IPC-based cross-primal token verification.
+  Degrades gracefully to local parsing when bearDog unreachable.
+- primalSpring: `TokenVerifier` trait, `scope_permits_method()`, `call_authenticated()`,
+  scenarios `s_bearer_token`/`s_gate_failure`/`s_gate_routing`, experiments exp108-111.
 
-**primalSpring readiness**: Full scope-checked token validation reference implementation
-(`TokenVerifier` trait, `BearDogVerifier` calls `auth.verify_ionic` via IPC,
-`scope_permits_method()` pattern matching). `CompositionContext::call_authenticated()`
-threads bearer tokens through multi-capability graphs. UniBin scenarios
-`s_bearer_token`, `s_gate_failure`, `s_gate_routing` pressure-test the federation
-contract. Experiments exp108-exp111 cover the full auth surface.
-
-**Remaining blockers**:
-- bearDog: key distribution API for cross-primal shared verification
-- biomeOS: forwarding-path token propagation through composition routing
-- primalSpring: ready to validate once bearDog + biomeOS ship
-
-**Delta spring impact**: Springs at Tier 3+ rewiring will need authenticated IPC
-for Tier 4 (binary-only). JH-11 is the gate.
+**JH-5 (audit forwarding) and Tier 4 rewiring are now unblocked.**
 
 ---
 
 ### Wave 2: JH-5 — Cross-Primal Audit Log Forwarding
 
 **Owner**: skunkBat + rhizoCrypt + sweetGrass
-**Priority**: MEDIUM — blocked by JH-11
-**Target**: Post JH-11 delivery
+**Priority**: MEDIUM — **UNBLOCKED** (JH-11 resolved May 10, 2026)
+**Target**: Next coordination pass
 
 skunkBat Phase 2 (local event instrumentation) is complete — all 7 event kinds emit
 from live code paths. Phase 3 (forwarding security events to rhizoCrypt DAG +
-sweetGrass braid) requires cross-primal IPC with authenticated tokens (JH-11).
+sweetGrass braid) via authenticated cross-primal IPC is now unblocked.
 
 **Delta spring impact**: Once JH-5 ships, every spring gains cross-primal audit
 logging for free via biomeOS composition routing. Springs should prepare by

@@ -91,9 +91,9 @@ All 8 springs have completed the interstadial eukaryotic evolution:
 ### Remaining Coordination Targets (Next Stadial Gate)
 
 1. **barraCuda IPC migration (Tier 4)**: Springs need `barracuda` as `optional = true`
-   with IPC-first defaults. Blocked by JH-11 token federation.
+   with IPC-first defaults. **JH-11 resolved** (May 10) — Tier 4 now unblocked.
 2. **`CompositionContext` full migration**: `PrimalClient` still encapsulated inside
-   `CompositionContext` in primalSpring (by design). Full elimination blocked by Tier 4.
+   `CompositionContext` in primalSpring (by design). Tier 4 now unblocked by JH-11.
 3. **airSpring aws-lc-sys ban**: Workspace-root `deny.toml` missing (only sub-crate
    deny files); `aws-lc-sys` not explicitly banned — minor alignment target.
 4. **Registry cross-sync CI**: All springs should CI-test local capability methods
