@@ -1,5 +1,5 @@
 # primalSpring guideStone CHECKSUMS — BLAKE3
-# Generated: 2026-05-09
+# Generated: 2026-05-10
 # Files: 25
 #
 # Verify: primalspring::checksums::verify_manifest()
@@ -10,7 +10,7 @@ cc0e26265f6c60eece2dc4cf0232369da1db56d7ff9405674f4f670a8ba3c1a0  ecoPrimal/src/
 df0901a933784918ab06fb6d2d8ac4207cf0f01cdc09712d9801db4fe6bfaa28  ecoPrimal/src/certification/mod.rs
 d04fa83bcde95036d5cd03b801a907ffefa5b8577bd41ca359e48d93998e7420  ecoPrimal/src/composition/mod.rs
 2856c0fcb9373639b0ac253cf24cd9fcc67039daa9f97788453cf168079d7237  ecoPrimal/src/validation/mod.rs
-08f9e0c664d48abd6ce0c2b0b0f6df3d158efc9fb199450826a7bf1b9a514fc1  ecoPrimal/src/validation/scenarios/mod.rs
+89553ab669de6fc58855c45a0b5b2675901982de3df41af05d0644ada04545ee  ecoPrimal/src/validation/scenarios/mod.rs
 772c6a4c3c4b9b858ea057154382d1ea8355ba9b6e2c3b1630dcf6115736f87e  ecoPrimal/src/validation/scenarios/registry.rs
 e4aa3aa3ea82a442f432e9db77025da4826d749da266dc26c6cf01ca2b76902f  ecoPrimal/src/tolerances/mod.rs
 1dbf12b24e27a05cb9046248e7d6cca38e41e0447c1767b08f38b875ef915a8f  ecoPrimal/src/coordination/mod.rs

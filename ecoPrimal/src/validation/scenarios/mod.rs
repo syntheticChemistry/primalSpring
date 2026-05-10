@@ -12,9 +12,9 @@
 //! ```rust,no_run
 //! use primalspring::validation::scenarios::{ScenarioRegistry, Tier};
 //!
-//! let registry = ScenarioRegistry::all();
+//! let registry = ScenarioRegistry::new();
 //! for scenario in registry.filter_by_tier(Tier::Rust) {
-//!     println!("{}: {}", scenario.id, scenario.track);
+//!     println!("{}: {}", scenario.meta.id, scenario.meta.track);
 //! }
 //! ```
 
