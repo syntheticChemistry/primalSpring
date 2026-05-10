@@ -16,9 +16,9 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 680 | None (validates, doesn't consume) | N/A (is primalSpring) | L5 (6 layers) | **G** 403 methods, sync-tested, zero drift | **G** 74 graphs | **G** 89 exp crates, CompositionContext throughout | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **primalSpring** | 680 | None (validates, doesn't consume) | N/A (is primalSpring) | L5 (6 layers) | **G** 413 methods, sync-tested, zero drift | **G** 74 graphs | **G** 89 exp crates, CompositionContext throughout | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
 | **hotSpring** | 1,002 | **Y** path dep + IPC | **G** unconditional | **G** L5 (reference impl) | **G** local TOML + sync test | **G** 5 graphs | **Y** exp bins (not crates), CompositionContext in guidestone | **G** 17 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
-| **healthSpring** | 1,002 | **Y** path dep + IPC feature (barracuda-lib) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 403 | **G** 7 graphs | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
+| **healthSpring** | 1,002 | **Y** path dep + IPC feature (barracuda-lib) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 413 | **G** 7 graphs | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,209 | **Y** path dep + IPC feature (barracuda-lib) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **Y** TOML at root + cross-sync script | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl (Phase 60 absorption) |
 | **neuralSpring** | 1,432 | **Y** path dep + IpcMathClient | **Y** feature-gated | **Y** L3 (L4-L5 pending) | **G** local TOML + sync test | **G** 4 graphs (3 new Phase 60) | **G** exp094 parity crate, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
 | **ludoSpring** | 665+ | **Y** path dep + IPC feature (default) | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **Y** TOML + 15 domain modules, internal sync | **G** 12 graphs | **G** 100 exp fossilized, 5 scenarios absorbed | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
@@ -50,7 +50,7 @@
 
 ### 4. Capability Registry
 
-- **Sync-tested** (highest maturity): primalSpring (canonical 403), hotSpring, neuralSpring, groundSpring (16 MCP + 6 sync tests), healthSpring (118 methods + CI cross-sync vs canonical)
+- **Sync-tested** (highest maturity): primalSpring (canonical 413), hotSpring, neuralSpring, groundSpring (16 MCP + 6 sync tests), healthSpring (118 methods + CI cross-sync vs canonical)
 - **TOML present, internal sync**: ludoSpring, wetSpring, airSpring (44 caps)
 
 ### 5. Deploy Graphs
@@ -97,8 +97,8 @@ All 8 springs have completed the interstadial eukaryotic evolution:
 3. **airSpring aws-lc-sys ban**: Workspace-root `deny.toml` missing (only sub-crate
    deny files); `aws-lc-sys` not explicitly banned — minor alignment target.
 4. **Registry cross-sync CI**: All springs should CI-test local capability methods
-   against primalSpring canonical 403 (`config/capability_registry.toml`).
-5. **GAP-12**: ~~RESOLVED~~ — 18 `game.*` methods registered (403 total methods, zero drift).
+   against primalSpring canonical 413 (`config/capability_registry.toml`).
+5. **GAP-12**: ~~RESOLVED~~ — 28 `game.*` methods registered (413 total methods, zero drift).
 6. **barraCuda version alignment**: Springs show mild skew (air v0.3.7, ludo v0.3.11,
    health v0.3.13). Worth aligning in next coordination pass.
 7. **Notebook gap**: ludoSpring has Python baselines as scripts, not notebooks —
@@ -112,5 +112,5 @@ All 8 springs have completed the interstadial eukaryotic evolution:
 | Total deploy graphs | **119** (primalSpring 74 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4) |
 | Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |
-| Registered capability methods | **403** (primalSpring canonical, zero drift) |
+| Registered capability methods | **413** (primalSpring canonical, zero drift) |
 | Primals in plasmidBin release | **13/13** (all architectures) |

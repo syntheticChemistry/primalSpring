@@ -1,4 +1,4 @@
-# primalSpring CHECKSUMS — BLAKE3
+# primalSpring guideStone CHECKSUMS — BLAKE3
 # Generated: 2026-05-10
 # Files: 25
 #
@@ -19,7 +19,7 @@ e81c647e105d763f3ea323cf123d18bea1f03a46a6b5864b2b39f4d74439f4fc  ecoPrimal/src/
 01cd929521a8de8ded37f63a361611d08ef12c7f4548f8b52119ff34c1efbbea  ecoPrimal/src/deploy/mod.rs
 a8ad16830351b978e47ad1fc6f3dafec7f256f057c356fde2f77804bdc92a709  ecoPrimal/src/checksums.rs
 cacd3673e01190619bd5d09d05984d272f15b268277df027982a1683a49b0ce2  ecoPrimal/Cargo.toml
-3c0bea4ef2356b4fe0cf23ec42091bcf4552be92ccb85625bff636e9ffd8c0ef  config/capability_registry.toml
+1f9dd58076332915f9678f91009fec7efba8d5af13c32225cd4d3927a23b0d78  config/capability_registry.toml
 c19d0029496f2d7338bc61279b6726fa74cdcdd8efc1ac2ac0118b88c7b00fe8  graphs/fragments/tower_atomic.toml
 79c5b431263c85339130da054e625501afd4ba6724966aea146898a9459d8b14  graphs/fragments/node_atomic.toml
 b32824cd0c78f37472846451378e3b894b7b3fd1f892f907915118ae6fa1d764  graphs/fragments/nest_atomic.toml
