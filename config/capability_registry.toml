@@ -58,6 +58,7 @@ methods = [
     "coordination.probe_capability",
     "coordination.probe_primal",
     "coordination.transform",
+    "coordination.status",
     "coordination.validate_composition",
     "coordination.validate_composition_by_capability",
 ]
@@ -464,6 +465,7 @@ methods = [
     "attribution.chain",
     "attribution.claim",
     "attribution.resolve",
+    "attribution.witness",
 ]
 
 [contribution]
@@ -777,9 +779,12 @@ methods = [
     "game.evaluate_flow",
     "game.fitts_cost",
     "game.generate_noise",
+    "game.mint_certificate",
     "game.narrate_action",
     "game.npc_dialogue",
     "game.push_scene",
+    "game.query_vertices",
+    "game.record_action",
     "game.tick",
     "game.voice_check",
     "game.wfc_step",
@@ -825,6 +830,7 @@ methods = [
     "method.name",
     "nonexistent.tool",
     "object.method",
+    "statistics.mean",
     "test.method",
 ]
 

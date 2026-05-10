@@ -39,6 +39,45 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ---
 
+## Upstream Gap Reconciliation (projectNUCLEUS May 9, 2026)
+
+Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
+
+### Resolved
+
+| ID | What | Resolution |
+|----|------|------------|
+| DF-2 | toadStool `TOADSTOOL_AUTH_MODE` env | toadStool S233 — `auth.mode` env + `eprintln` → `tracing` |
+| DF-3 | songbird/squirrel silent on `auth.mode` TCP | songbird — `CallerContext` wired (TCP transport-aware) |
+| U5 | sweetGrass port 39085 vs 9850 | sweetGrass v0.7.32 — port 9850 canonical |
+| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 18 `game.*` methods in `config/capability_registry.toml` (403 total, zero drift) |
+| U1 | CHECKSUMS stale after Phase 59 refactoring | **RESOLVED** — regenerated with 25 tracked files (UniBin, certification, scenarios, registry) |
+| U2 | 5 deploy graphs missing `by_capability` | **FALSE POSITIVE** — only manifests (parameter tables, not node-bearing graphs) lack field; all actual `[[graph.nodes]]` graphs have `by_capability` |
+| U3 | 8 profile graphs missing `bonding_policy` | **RESOLVED** — 9/9 profile graphs already have `bonding_policy` |
+
+### Still Open (not primalSpring-owned)
+
+| ID | Owner | Severity | What | primalSpring posture |
+|----|-------|----------|------|---------------------|
+| JH-11 | bearDog/biomeOS | **HIGH** | Cross-primal token federation | Ready — `TokenVerifier`, scenarios, exp108-111 |
+| GAP-06 | rhizoCrypt | MEDIUM | No UDS transport | Blocks 4 ludoSpring provenance experiments |
+| GAP-03 | biomeOS | MEDIUM | Cell graph live deploy not tested | Need `composition.deploy(graph)` E2E test |
+| GAP-09 | biomeOS | MEDIUM | Neural API registration endpoint | New spring methods need registration path |
+
+### Tier 3 Code Quality (primal team backlogs — coordination tracking)
+
+| Priority | Primal | Issue | Status |
+|----------|--------|-------|--------|
+| 1 | coralReef | `eprintln!` → `tracing` | Done (Iter 95) |
+| 2 | barraCuda | `unwrap()` → `?` in session/ops | Confirmed false positive (optional dep) |
+| 3 | nestGate | `unwrap()` → `?` in rpc/discovery | Confirmed false positive (S59) |
+| 4 | biomeOS | Mock helpers mixed with production code | Done (v3.49 `#[cfg(test)]` isolation) |
+| 5 | bearDog | HSM mock not feature-gated | Done (Wave 98 `#[cfg(test)]`) |
+| 6 | petalTongue | Bare `#[allow]` without reason | Done (P6 `#[expect(reason)]`) |
+| 7 | squirrel | 1105-line test file | Done (P7 inference dispatch split) |
+
+---
+
 ## Next Interstadial Wave — Evolution Goals
 
 These items are the active evolution targets for the next stadial push.

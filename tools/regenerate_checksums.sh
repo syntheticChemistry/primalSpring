@@ -15,9 +15,15 @@ cd "$(git rev-parse --show-toplevel)"
 MANIFEST="validation/CHECKSUMS"
 
 TRACKED_FILES=(
+  ecoPrimal/src/bin/primalspring/main.rs
+  ecoPrimal/src/bin/primalspring/cli.rs
   ecoPrimal/src/bin/primalspring_guidestone/main.rs
+  ecoPrimal/src/bin/primalspring_primal/main.rs
+  ecoPrimal/src/certification/mod.rs
   ecoPrimal/src/composition/mod.rs
   ecoPrimal/src/validation/mod.rs
+  ecoPrimal/src/validation/scenarios/mod.rs
+  ecoPrimal/src/validation/scenarios/registry.rs
   ecoPrimal/src/tolerances/mod.rs
   ecoPrimal/src/coordination/mod.rs
   ecoPrimal/src/bonding/mod.rs
@@ -25,6 +31,7 @@ TRACKED_FILES=(
   ecoPrimal/src/deploy/mod.rs
   ecoPrimal/src/checksums.rs
   ecoPrimal/Cargo.toml
+  config/capability_registry.toml
   graphs/fragments/tower_atomic.toml
   graphs/fragments/node_atomic.toml
   graphs/fragments/nest_atomic.toml

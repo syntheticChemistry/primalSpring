@@ -97,8 +97,8 @@ All 8 springs have completed the interstadial eukaryotic evolution:
 3. **airSpring aws-lc-sys ban**: Workspace-root `deny.toml` missing (only sub-crate
    deny files); `aws-lc-sys` not explicitly banned — minor alignment target.
 4. **Registry cross-sync CI**: All springs should CI-test local capability methods
-   against primalSpring canonical 389 (`config/capability_registry.toml`).
-5. **GAP-12**: 15 ludoSpring IPC methods need canonical registration in primalSpring.
+   against primalSpring canonical 403 (`config/capability_registry.toml`).
+5. **GAP-12**: ~~RESOLVED~~ — 18 `game.*` methods registered (403 total methods, zero drift).
 6. **barraCuda version alignment**: Springs show mild skew (air v0.3.7, ludo v0.3.11,
    health v0.3.13). Worth aligning in next coordination pass.
 7. **Notebook gap**: ludoSpring has Python baselines as scripts, not notebooks —
