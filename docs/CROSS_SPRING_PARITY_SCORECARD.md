@@ -98,25 +98,41 @@ All 8 springs have completed the interstadial eukaryotic evolution:
 - **Zero debt markers**: 8/8 springs at zero TODO/FIXME/HACK, zero clippy warnings
 - **primalSpring v0.9.25 pin**: 7/8 (healthSpring upgraded; ludoSpring pinned)
 
-### Remaining Coordination Targets (Next Stadial Gate)
+### Remaining Coordination Targets — Interstadial / Stadial Tagging
 
-1. **barraCuda IPC migration (Tier 4)**: Springs need `barracuda` as `optional = true`
-   with IPC-first defaults. ludoSpring exemplar (V61). wetSpring has handler-level
-   `primal-proof` wiring (V159). **UNBLOCKED** by JH-11. Owner: **spring teams (L3)**.
-2. **`CompositionContext` full migration**: `PrimalClient` still encapsulated inside
-   `CompositionContext` in primalSpring (by design). Owner: **primalSpring (L2)**.
-3. ~~**airSpring aws-lc-sys ban**~~: **FALSE GAP** — workspace-root `deny.toml` exists
-   and bans `aws-lc-sys`. Confirmed May 11.
-4. ~~**Registry cross-sync CI**~~: **COMPLETED** — 8/8 springs CI-validated against 413.
-5. ~~**GAP-12**~~: **RESOLVED** — 28 `game.*` methods (413 total, zero drift).
-6. **barraCuda version alignment**: Springs show mild skew (air v0.3.7, ludo v0.3.11,
-   health v0.3.13). Low priority. Owner: **spring teams (L3)**.
-7. **Notebook gap**: ludoSpring has Python baselines as scripts, not notebooks —
-   functionally equivalent but different artifact form. Owner: **ludoSpring (L3)**.
-8. **Guidestone level convergence**: airSpring (L2+) and neuralSpring (L3) below
-   ecosystem median (L4). Owner: **spring teams (L3)**.
-9. **Foundation seeding**: airSpring (Thread 6 validated), hotSpring (Thread 2 seeded),
-   neuralSpring (Threads 5+7 documented). Remaining springs to contribute. Owner: **spring teams (L3) + foundation (L5)**.
+Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
+
+**INTERSTADIAL** (pre-wire — exit gate items):
+
+1. **barraCuda IPC migration (Tier 4)** — `INTERSTADIAL P5`: Springs need `barracuda`
+   as `optional = true` with IPC-first defaults. Target: 4+ springs. ludoSpring, wetSpring,
+   neuralSpring done; airSpring + groundSpring + healthSpring/hotSpring remaining.
+   Owner: **spring teams (L3)**.
+2. **`CompositionContext` full migration** — `INTERSTADIAL P5`: `PrimalClient`
+   encapsulated inside `CompositionContext` (by design). L2 coordination pass.
+   Owner: **primalSpring (L2)**.
+3. **Guidestone level convergence** — `INTERSTADIAL P5`: airSpring (L2+) and
+   neuralSpring (L3) below median (L4). Both → gS L4. Owner: **spring teams (L3)**.
+4. **wetSpring PG gaps** — `INTERSTADIAL P5`: 8 open (PG-02,03,04,05,06,10,17,18).
+   Target: below 5 open. Owner: **wetSpring (L3)**.
+5. **Foundation seeding** — `INTERSTADIAL P5`: 5/10 threads active. Target: 7+/10 with
+   sources/targets (seed Threads 3, 5, 8, 10). Owner: **spring teams (L3) + foundation (L5)**.
+6. **LTEE paper queue progress** — `INTERSTADIAL P4`: 36 items queued across 6 springs.
+   Begin B1/B2/B3 reproductions. Critical path: groundSpring B2 → ltee-fitness.
+   Owner: **spring teams (L3)**.
+
+**STADIAL** (external validation — deferred to stadial cycle):
+
+7. **barraCuda version alignment**: Mild skew (air v0.3.7 → health v0.3.13). Low
+   priority. Owner: **spring teams (L3)**.
+8. **Notebook gap**: ludoSpring Python baselines as scripts, not notebooks. Owner: **ludoSpring (L3)**.
+9. **Framework parity benchmarks**: Per-spring vs Kokkos/LAMMPS/SciPy. Owner: **spring teams (L3)**.
+10. **Upstream crate extraction**: wgsl-precision, proc-sysinfo → crates.io. Owner: **primal teams (L1)**.
+
+**RESOLVED**:
+- ~~airSpring aws-lc-sys ban~~: FALSE GAP — workspace deny.toml exists
+- ~~Registry cross-sync CI~~: 8/8 springs CI-validated against 413
+- ~~GAP-12~~: 28 `game.*` methods (413 total, zero drift)
 
 ## Aggregate Metrics
 

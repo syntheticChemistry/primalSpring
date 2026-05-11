@@ -356,7 +356,35 @@ Handoff: `infra/wateringHole/handoffs/LTEE_GUIDESTONE_SUBSYSTEM_HANDOFF_MAY11_20
 ### Wave 6 Milestones
 
 - [x] Phase 1: Architecture + queue seeding (THIS UPDATE)
-- [ ] Phase 2: Spring reproductions (L3)
-- [ ] Phase 3: Binary bundle + data assembly (L2 + L4)
-- [ ] Phase 4: Integration + deployment testing (L4)
-- [ ] Phase 5: External deployment to Barrick Lab (L4)
+- [ ] Phase 2: Spring reproductions (L3) — **INTERSTADIAL**
+- [ ] Phase 3: Binary bundle + data assembly (L2 + L4) — **INTERSTADIAL**
+- [ ] Phase 4: Integration + deployment testing (L4) — **STADIAL**
+- [ ] Phase 5: External deployment to Barrick Lab (L4) — **STADIAL**
+
+---
+
+## Interstadial Exit Criteria (May 11, 2026)
+
+The interstadial ends when sovereignty capabilities are structurally wired and
+shadow runs can begin. Five pillars define the exit gate. Full details:
+`infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
+
+### Interstadial Targets by Layer
+
+| Layer | Interstadial Target | Gate Condition |
+|-------|-------------------|----------------|
+| **L1 (Primals)** | MethodGate parity 13/13 (toadStool + Squirrel) | MethodGate shipped for all primals |
+| **L2 (primalSpring)** | CompositionContext coordination pass, lithoSpore standard | 2+ lithoSpore modules PASS Tier 1 |
+| **L3 (Springs)** | 4+ springs `optional=true`, gS convergence (air/neural → L4), LTEE reproductions begin | wetSpring < 5 PG gaps, 2+ foundation threads seeded |
+| **L4 (Products)** | H2 shadow runs (TLS/NAT/NestGate/BTSP auth), ABG WCM compositions | H2-2b/3a/3b/3c in shadow-run state |
+| **L5 (Foundation)** | Threads 3, 5, 8, 10 sources/targets, LTEE data anchoring | 7+/10 threads with sources |
+
+### Stadial Targets by Layer
+
+| Layer | Stadial Target | External Driver |
+|-------|---------------|-----------------|
+| **L1 (Primals)** | Upstream crate extraction (wgsl-precision, proc-sysinfo) | crates.io community |
+| **L2 (primalSpring)** | Framework parity benchmarks | Kokkos, LAMMPS, SciPy |
+| **L3 (Springs)** | lithoSpore Phases 4-5, all springs Tier 4 | Barrick Lab USB, peer validation |
+| **L4 (Products)** | H2 cutover (Cloudflare → sovereign), H3 begin | Cloudflare baselines, GitHub → Forgejo |
+| **L5 (Foundation)** | All threads with validated targets, ABG in production | ABG users, faculty network |
