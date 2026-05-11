@@ -9,15 +9,15 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-10
+> **Last updated**: 2026-05-11
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (May 9, 2026)
+## Ecosystem Status (May 11, 2026)
 
-**265 PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60 validation complete.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -153,17 +153,18 @@ ludoSpring, groundSpring, airSpring)
 
 | Spring | Post-Evolution State | Next Target |
 |--------|---------------------|-------------|
-| healthSpring | V61, gS L5, UniBin, 999+ tests, 0 clippy | Tier 4 (JH-11 blocked) |
-| ludoSpring | V58, gS L4, UniBin, 665+ tests, 100 exps fossilized | Tier 4, `CompositionContext` |
-| hotSpring | latest, gS L5, UniBin, 1,002 tests | `serve` on UniBin, Tier 3 |
-| wetSpring | V155, gS L4, UniBin, 1,209 tests | Tier 3 → 4 |
-| airSpring | v0.10.0, gS L2, UniBin, 1,364 tests | gS L4+, Tier 3 |
-| neuralSpring | S195, gS L3, UniBin, 1,432 tests | gS L4+, latency-aware |
-| groundSpring | V127, gS L4, UniBin, 965+ tests | `serve` on UniBin, Tier 2 |
+| healthSpring | V62, gS L5, UniBin, 999 tests, skunkBat in graphs | Tier 4 rewiring |
+| ludoSpring | V61, gS L4, UniBin, 854 tests, skunkBat IPC, optional barraCuda | foundation seeding, plasmidBin |
+| hotSpring | v0.6.32+, gS L6, UniBin, 1,025 tests, 188 experiments | sovereign GPU barriers |
+| wetSpring | V159, gS L4, UniBin, 1,962 tests, barraCuda IPC routing | 8 open gaps (was 15) |
+| airSpring | v0.10.0, gS L2+, UniBin, 1,327 tests, 9 scenarios | gS L4+, Tier 4 |
+| neuralSpring | S199/V149, gS L3, UniBin, 1,450 tests, compute.dispatch | gS L4+, foundation Threads 5+7 |
+| groundSpring | V131, gS L4, UniBin, 1,101 tests, guidestone modularized | plasmidBin, Tier 4 |
 
-**Remaining for Wave 3**: `CompositionContext` full migration (PrimalClient still
-encapsulated), Tier 4 rewiring (blocked by JH-11 token federation), barraCuda
-version alignment across springs.
+**Wave 3 COMPLETED** (May 9). Post-interstadial push (May 10-11) achieved:
+8/8 skunkBat Rust IPC, 8/8 `method.register`, 8/8 CI cross-sync 413,
+8/8 `composition.status`, 8/8 NUCLEUS workload TOMLs. Tier 4 rewiring
+and `CompositionContext` migration now **UNBLOCKED** by JH-11.
 
 ---
 
@@ -243,3 +244,78 @@ Key per-primal handoffs in `infra/wateringHole/handoffs/`:
 | nestgate | `NESTGATE_V470_SESSION59_JH0_METHOD_GATE_MAY08_2026.md` |
 | petalTongue | `PETALTONGUE_V166_JH0_METHOD_GATE_HANDOFF_MAY08_2026.md` |
 | skunkBat | `SKUNKBAT_V020DEV_JH5_AUDIT_LOG_HANDOFF_MAY08_2026.md` |
+
+---
+
+## Evolution Cycle Ownership Model
+
+Every gap in the ecosystem belongs to exactly one layer of the evolution cycle.
+When a gap is identified, it should be tagged with its owner layer. This prevents
+ambiguity about who acts on what, and which gaps block downstream work.
+
+### Layer 1: Upstream Primals (13 core primals)
+
+**Owner**: Individual primal teams (bearDog, songbird, toadStool, etc.)
+**Scope**: Primal-internal code quality, capability correctness, IPC contracts
+**Current**: **Zero open gaps** — 13/13 clean (May 11, 2026)
+
+### Layer 2: primalSpring (coordination + validation)
+
+**Owner**: primalSpring team
+**Scope**: Canonical capability registry, deploy graph library, composition validation,
+gap registry maintenance, `CompositionContext` API, two-tier validation harness
+**Current**: 413 methods, 680 tests, zero debt. Active coordination targets:
+- PG-54: Adaptive composition tick model (LOW, deferred post-Tier 4)
+- PG-63: Matplotlib Agg guidance reconciliation (LOW, docs)
+
+### Layer 3: River Delta (8 springs)
+
+**Owner**: Individual spring teams
+**Scope**: Domain science, spring-internal debt, barraCuda coupling, gS levels,
+foundation seeding, plasmidBin release readiness
+**Current**: Post-interstadial targets all green (8/8 on 5 axes). Per-spring:
+
+| Spring | Open Gaps | Owner-Layer Items |
+|--------|-----------|-------------------|
+| wetSpring | 8 (PG-01–PG-22, 14 closed) | barraCuda IPC expansion, remaining PG gaps |
+| hotSpring | 0 local | sovereign GPU barriers (coralReef), GAP-HS-030 renumber |
+| neuralSpring | 0 local | gS L3→L4, foundation Threads 5+7 |
+| airSpring | 0 local | gS L2→L4 |
+| ludoSpring | 0 local | foundation seeding, plasmidBin release |
+| groundSpring | 0 local | plasmidBin release, PRNG Phase 2b (barraCuda) |
+| healthSpring | 0 local | none identified |
+
+### Layer 4: Downstream Products (projectNUCLEUS, gardens)
+
+**Owner**: Product teams
+**Scope**: Gate deployment, sovereignty horizons, composition absorption,
+workload validation, foundation integration
+**Current** (projectNUCLEUS):
+- Horizon 1: **COMPLETE** — external security, darkforest v0.2.1
+- Horizon 2: **70%** — 2a done, 2b ready, 3a intermediate (cell membrane live), 3b/3c upstream shipped, 4 intermediate (DoT)
+- Horizon 3: **20%** — H3-07/H3-08 unblocked, rest future
+- Absorption targets: `composition.deploy(graph)`, Tier 4 rewiring, skunkBat in smaller compositions, MethodGate parity (toadStool + squirrel)
+
+### Layer 5: Foundation (sporeGarden/foundation)
+
+**Owner**: Foundation team + contributing springs
+**Scope**: Public data anchoring, provenance validation, thread coverage
+**Current**: 10 domain threads, 100+ data sources. Springs seeding:
+- airSpring: Thread 6 (ag) — 36/36 targets validated
+- hotSpring: Thread 2 seeded
+- neuralSpring: Threads 5+7 documented, ready for contribution
+- groundSpring: Thread 7 (Anderson) index fixed
+
+### Gap Flow
+
+```
+Foundation (L5) exposes science data gaps
+  ↑ feeds
+Springs (L3) expose composition/IPC gaps
+  ↑ feeds
+primalSpring (L2) exposes primal capability gaps
+  ↑ feeds
+Primals (L1) evolve capabilities
+  ↓ flows
+Products (L4) absorb patterns and expose deployment gaps
+```
