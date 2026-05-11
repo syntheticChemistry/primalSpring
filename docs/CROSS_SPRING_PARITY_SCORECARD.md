@@ -2,7 +2,7 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 11, 2026 — Phase 60+ (v0.9.25, zero upstream gaps, JH-11 resolved, post-interstadial targets all green)
+**Last updated**: May 11, 2026 — Phase 60+ (v0.9.25, zero upstream gaps, 8/8 Tier 4 IPC-first, LTEE reproductions active, Pillar 5 gate met, Wave 7 contract testing shipped, Wave 8 compute trio composition shipped)
 **Audited by**: primalSpring composition audit
 **Method**: Pulled all 8 springs to HEAD, assessed each across 9 axes
 
@@ -16,22 +16,20 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 680 | None (validates, doesn't consume) | N/A (is primalSpring) | L5 (6 layers) | **G** 413 methods, sync-tested, zero drift | **G** 74 graphs | **G** 89 exp crates, CompositionContext throughout | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
-| **hotSpring** | 1,025 | **Y** path dep + IPC | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **Y** exp bins (not crates), CompositionContext in guidestone | **G** 17 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
-| **healthSpring** | 999 | **Y** path dep + IPC feature (barracuda-lib) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 413 | **G** 7 graphs, skunkBat node | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
-| **wetSpring** | 1,962 | **Y** path dep + IPC feature (barracuda-lib) + barraCuda IPC routing | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 413 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
-| **neuralSpring** | 1,450 | **Y** path dep + IpcMathClient | **Y** feature-gated | **Y** L3 (L4-L5 pending) | **G** 34 capabilities, TOML + sync test | **G** 4 graphs (3 new Phase 60) | **G** exp094 parity crate, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
-| **ludoSpring** | 854 | **G** optional=true, IPC-first default | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **G** 28 game.* + cross-sync 413 | **G** 12 graphs, skunkBat node | **G** 100 exp fossilized, 8 scenarios | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
-| **groundSpring** | 1,101 | **Y** path dep (optional, default) | **Y** feature-gated | **G** L4 (modularized 5-layer guidestone) | **G** 16 MCP tools + 6 registry sync tests | **G** 6 graphs | **G** 2 exp crates (exp094/exp095 use CompositionContext) | **G** 34 (paper-linked) | **G** bans ring/openssl |
-| **airSpring** | 1,327 | **Y** path dep + some IPC wiring | **Y** feature-gated (guidestone) | **Y** L2+ (IPC-wired, 9 scenarios, method.register) | **G** 46 capabilities in TOML + cross-sync 413 | **Y** 4 graphs | **G** 3 exp crates (exp001-003) | **G** 25 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
+| **primalSpring** | 687 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 413 methods, sync-tested, zero drift | **G** 76 graphs | **G** 89 exp crates + 21 scenarios + Wave 7+8 contracts | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **hotSpring** | 1,025 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
+| **healthSpring** | 999 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 413 | **G** 7 graphs, skunkBat node | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
+| **wetSpring** | 1,613 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 413 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
+| **neuralSpring** | 1,453 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (19 certification tests) | **G** 34 capabilities, TOML + sync test | **G** 4 graphs (3 new Phase 60) | **G** exp094 parity crate, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
+| **ludoSpring** | 854 | **G** optional=true, IPC-first default (`default=["ipc"]`) | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **G** 28 game.* + cross-sync 413 | **G** 12 graphs, skunkBat node | **G** 100 exp fossilized, 8 scenarios | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
+| **groundSpring** | 1,125 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (modularized 5-layer guidestone) | **G** 16 MCP tools + 6 registry sync tests | **G** 6 graphs | **G** LTEE B2+B1 reproductions (control/ + validate bins) | **G** 34 (paper-linked) | **G** bans ring/openssl |
+| **airSpring** | 1,389 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated (guidestone) | **G** L4 (7 deploy graphs, 10 scenarios) | **G** 46 capabilities in TOML + cross-sync 413 | **G** 7 graphs | **G** 3 exp crates (exp001-003) | **G** 25 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
 
 ## Summary by Axis
 
 ### 1. barraCuda Coupling
 
-**Evolving**: ludoSpring leads with `barracuda` as `optional = true` and IPC-first default — the Tier 4 exemplar. wetSpring added `barraCuda IPC routing` (V159) with handler-level `#[cfg(feature = "primal-proof")]` wiring. Other springs still use barraCuda as a library path dependency. This is the primary Tier 4 evolution target.
-
-**Evolution target**: Springs should evolve toward `barracuda` as an **optional** dependency (ludoSpring pattern), with IPC-first paths as the default for NUCLEUS deployment. Now **UNBLOCKED** by JH-11 resolution.
+**COMPLETE**: All 8 springs now have `barracuda` as `optional = true` with IPC-first defaults (`default = []` or `default = ["ipc"]`). This was the primary Tier 4 evolution target and is now **achieved across the entire river delta** (May 11, 2026). ludoSpring was the exemplar; wetSpring (V162b), neuralSpring (S201), hotSpring, healthSpring, airSpring, and groundSpring all followed the pattern.
 
 ### 2. primalSpring Integration
 
@@ -42,11 +40,10 @@
 
 | Level | Springs |
 |-------|---------|
-| L5 | primalSpring, hotSpring, healthSpring, ludoSpring |
-| L4 | wetSpring |
-| L4 | groundSpring |
-| L3 | neuralSpring |
-| L2 | airSpring |
+| L8 | primalSpring (absorbed) |
+| L6 | hotSpring (certified) |
+| L5 | neuralSpring, healthSpring |
+| L4 | wetSpring, groundSpring, ludoSpring, airSpring |
 
 ### 4. Capability Registry
 
@@ -55,7 +52,7 @@
 
 ### 5. Deploy Graphs
 
-Total across ecosystem: **74** (primalSpring) + **5** (hotSpring) + **7** (healthSpring) + **7** (wetSpring) + **4** (neuralSpring) + **12** (ludoSpring) + **6** (groundSpring) + **4** (airSpring) = **119 deploy graphs**
+Total across ecosystem: **76** (primalSpring) + **5** (hotSpring) + **7** (healthSpring) + **7** (wetSpring) + **4** (neuralSpring) + **12** (ludoSpring) + **6** (groundSpring) + **4** (airSpring) = **121 deploy graphs**
 
 ### 6. Composition Experiments
 
@@ -87,6 +84,52 @@ airSpring had "graphs only") is now **RESOLVED**:
 - All modules follow the exemplar pattern: `emit_audit_event()`, socket discovery cascade,
   fire-and-forget semantics, graceful degradation when skunkBat is absent
 
+### 10. Contract Testing (NEW — Wave 7, May 11)
+
+**primalSpring only** — Wave 7 evolved the gate from structural to semantic contract testing:
+
+| Item | Status | What |
+|------|--------|------|
+| W7-01 | **DONE** | `content` in `ALL_CAPS` + `capability_to_primal` routing |
+| W7-02 | **DONE** | `s_nestgate_content_pipeline` scenario (put/get/exists/list/resolve) |
+| W7-03 | **DONE** | Content Gate 1-3 in `server_ecosystem_compose.rs` |
+| W7-04 | **DONE** | `content_pipeline_smoke.toml` deploy graph |
+| W7-06 | **DONE** | `check_method_coverage.sh` inverse drift detection (125/413 uncovered) |
+| W7-05 | OPEN | `content.resolve` petalTongue validation (blocked on NestGate) |
+| W7-07 | OPEN | NestGate transport parity verification (NestGate must wire) |
+
+**gen4 sketch**: `whitePaper/gen4/architecture/CONTRACT_TESTING_THESIS_SKETCH.md` connects
+Wave 7 to the gen4 "wire format IS the contract" thesis — including NFT pipeline implications,
+PrimalBridge degradation tiers, and the transport parity matrix pattern.
+
+**Springs impact**: Once NestGate ships transport parity (W7-07), springs should adopt
+`by_capability = "content"` in their deploy graphs alongside `"storage"`.
+
+### 11. Compute Trio Composition (NEW — Wave 8, May 11)
+
+**primalSpring only** — Wave 8 sketched the compute trio (coralReef + toadStool +
+barraCuda) as the Node atomic's sovereign compute pipeline:
+
+| Item | Status | What |
+|------|--------|------|
+| W8-01 | **DONE** | `docs/COMPUTE_TRIO_EVOLUTION.md` — HOW/WHERE/WHAT domain split, IPC contracts, absorption path |
+| W8-02 | **DONE** | `s_compute_triangle` evolved to 5-phase sovereign dispatch contract test |
+| W8-03 | **DONE** | Inverse drift audit — 5 compute aliases uncovered, critical path exercised |
+| W8-04 | **DONE** | Compute trio gate tests 1-4 in `server_ecosystem_compose.rs` |
+| W8-05 | **DONE** | `compute_trio_smoke.toml` deploy graph (6-phase trio health+capabilities+math) |
+| W8-06 | **DONE** | gen4 `SOVEREIGN_COMPUTE_TRIO_SKETCH.md` — composition pattern + warm-catch sovereignty |
+| W8-07 | OPEN | toadStool ember/glowplug absorption (upstream) |
+| W8-08 | OPEN | coralReef domain boundary cleanup (upstream) |
+| W8-09 | OPEN | barraCuda sovereign dispatch E2E wiring (upstream) |
+
+**gen4 sketch**: `whitePaper/gen4/architecture/SOVEREIGN_COMPUTE_TRIO_SKETCH.md` connects
+the compute trio to the HOW/WHERE/WHAT composition principle, warm-catch sovereignty pattern,
+and era-agnostic compute (SM35 through SM120 + GFX10 + Akida NPU).
+
+**Springs impact**: Springs that compose Node atomic (neuralSpring for ML, hotSpring for
+QCD, ludoSpring for games, wetSpring for bio) will gain sovereign compute dispatch when
+toadStool completes the ember/glowplug absorption (W8-07).
+
 ## Primordial Extinction Wave — COMPLETED (May 9, 2026)
 
 All 8 springs have completed the interstadial eukaryotic evolution:
@@ -104,21 +147,22 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 
 **INTERSTADIAL** (pre-wire — exit gate items):
 
-1. **barraCuda IPC migration (Tier 4)** — `INTERSTADIAL P5`: Springs need `barracuda`
-   as `optional = true` with IPC-first defaults. Target: 4+ springs. ludoSpring, wetSpring,
-   neuralSpring done; airSpring + groundSpring + healthSpring/hotSpring remaining.
-   Owner: **spring teams (L3)**.
+1. ~~**barraCuda IPC migration (Tier 4)**~~ — `INTERSTADIAL P5`: **DONE** — **8/8 springs**
+   now have `barracuda` as `optional = true` with IPC-first defaults.
+   Owner: **spring teams (L3)** — COMPLETED May 11, 2026.
 2. **`CompositionContext` full migration** — `INTERSTADIAL P5`: `PrimalClient`
    encapsulated inside `CompositionContext` (by design). L2 coordination pass.
    Owner: **primalSpring (L2)**.
-3. **Guidestone level convergence** — `INTERSTADIAL P5`: airSpring (L2+) and
-   neuralSpring (L3) below median (L4). Both → gS L4. Owner: **spring teams (L3)**.
-4. **wetSpring PG gaps** — `INTERSTADIAL P5`: 8 open (PG-02,03,04,05,06,10,17,18).
-   Target: below 5 open. Owner: **wetSpring (L3)**.
+3. ~~**Guidestone level convergence**~~ — `INTERSTADIAL P5`: **DONE** — airSpring **L4**,
+   neuralSpring **L5** (exceeded L4 target). Owner: **spring teams (L3)** — COMPLETED May 11, 2026.
+4. ~~**wetSpring PG gaps**~~ — `INTERSTADIAL P5`: **DONE** — 4 open (PG-02, PG-03,
+   PG-04, PG-05 — all external/upstream). Closed PG-06, PG-10, PG-17, PG-18.
+   Owner: **wetSpring (L3)** — COMPLETED May 11, 2026.
 5. **Foundation seeding** — `INTERSTADIAL P5`: 5/10 threads active. Target: 7+/10 with
    sources/targets (seed Threads 3, 5, 8, 10). Owner: **spring teams (L3) + foundation (L5)**.
-6. **LTEE paper queue progress** — `INTERSTADIAL P4`: 36 items queued across 6 springs.
-   Begin B1/B2/B3 reproductions. Critical path: groundSpring B2 → ltee-fitness.
+6. **LTEE paper queue progress** — `INTERSTADIAL P4`: **ACTIVE** — 4 springs reproducing.
+   groundSpring B2+B1 **COMPLETE** (Python+Rust PASS), hotSpring B2 STARTED,
+   wetSpring B7 STARTED, neuralSpring B1 STARTED. Critical path cleared.
    Owner: **spring teams (L3)**.
 
 **STADIAL** (external validation — deferred to stadial cycle):
@@ -138,8 +182,8 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 
 | Metric | Value |
 |--------|-------|
-| Total tests across 8 springs | **12,900+** (primalSpring 680 + hotSpring 1,025 + healthSpring 999 + wetSpring 1,962 + neuralSpring 1,450 + ludoSpring 854 + groundSpring 1,101 + airSpring 1,327 + metalForge/integration/Python suites) |
-| Total deploy graphs | **119** (primalSpring 74 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4) |
+| Total tests across 8 springs | **13,100+** (primalSpring 687 + hotSpring 1,025 + healthSpring 999 + wetSpring 1,613 + neuralSpring 1,453 + ludoSpring 854 + groundSpring 1,125 + airSpring 1,389 + metalForge/integration/Python suites) |
+| Total deploy graphs | **121** (primalSpring 76 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4) |
 | Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |
 | Registered capability methods | **413** (primalSpring canonical, zero drift) |

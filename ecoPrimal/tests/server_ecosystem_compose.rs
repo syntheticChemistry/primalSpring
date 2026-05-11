@@ -17,6 +17,7 @@
 )]
 mod integration;
 
+use base64::Engine;
 use integration::direct_rpc_call;
 
 // ===========================================================================
@@ -416,4 +417,344 @@ fn node_toadstool_capabilities() {
     let result = caps.unwrap();
     assert!(result["supported_workload_types"].is_array());
     println!("  toadstool capabilities: {result}");
+}
+
+// ===========================================================================
+// Compute Trio Gate Tests (Wave 8: Node atomic sovereign dispatch)
+//
+// These gates validate the compute trio composition: coralReef (shader
+// compile), toadStool (compute dispatch), barraCuda (math/physics).
+// The trio forms the Node atomic's sovereign compute pipeline.
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Compute Trio Gate 1: coralReef shader.compile.capabilities
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn compute_trio_coralreef_capabilities() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-crcap-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Node)
+        .start(&family_id)
+        .expect("node atomic should start");
+
+    let coralreef_socket = running
+        .socket_for("shader")
+        .or_else(|| running.socket_for_primal("coralreef"))
+        .expect("coralreef socket");
+
+    let caps = direct_rpc_call(
+        coralreef_socket,
+        "shader.compile.capabilities",
+        &serde_json::json!({}),
+    );
+    assert!(
+        caps.is_ok(),
+        "shader.compile.capabilities should succeed: {caps:?}"
+    );
+    let result = caps.unwrap();
+    assert!(
+        result["targets"].is_array(),
+        "should return supported target architectures"
+    );
+    println!("  coralReef compile targets: {result}");
+}
+
+// ---------------------------------------------------------------------------
+// Compute Trio Gate 2: toadStool compute.capabilities hardware info
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn compute_trio_toadstool_capabilities() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-tscaps-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Node)
+        .start(&family_id)
+        .expect("node atomic should start");
+
+    let toadstool_socket = running
+        .socket_for("compute")
+        .or_else(|| running.socket_for_primal("toadstool"))
+        .expect("toadstool socket");
+
+    let caps = direct_rpc_call(
+        toadstool_socket,
+        "compute.capabilities",
+        &serde_json::json!({}),
+    );
+    assert!(
+        caps.is_ok(),
+        "compute.capabilities should succeed: {caps:?}"
+    );
+    let result = caps.unwrap();
+    let has_hw_info = result["backends"].is_array()
+        || result["devices"].is_array()
+        || result["capabilities"].is_object();
+    assert!(has_hw_info, "should return hardware/backend info: {result}");
+    println!("  toadStool compute capabilities: {result}");
+}
+
+// ---------------------------------------------------------------------------
+// Compute Trio Gate 3: barraCuda stats.mean CPU fallback round-trip
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn compute_trio_barracuda_stats_mean() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-bcmean-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Node)
+        .start(&family_id)
+        .expect("node atomic should start");
+
+    let barracuda_socket = running
+        .socket_for("tensor")
+        .or_else(|| running.socket_for_primal("barracuda"))
+        .expect("barracuda socket");
+
+    let result = direct_rpc_call(
+        barracuda_socket,
+        "stats.mean",
+        &serde_json::json!({ "data": [2.0_f64, 4.0, 6.0, 8.0] }),
+    );
+    assert!(result.is_ok(), "stats.mean should succeed: {result:?}");
+    let resp = result.unwrap();
+    let mean = resp["mean"]
+        .as_f64()
+        .or_else(|| resp["result"].as_f64())
+        .expect("should return numeric mean");
+    assert!(
+        (mean - 5.0).abs() < 1e-9,
+        "stats.mean([2,4,6,8]) should be 5.0, got {mean}"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Compute Trio Gate 4: Sovereign E2E — shader.compile.wgsl + dispatch
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries + GPU (run with --ignored)"]
+fn compute_trio_sovereign_e2e() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-sove2e-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Node)
+        .start(&family_id)
+        .expect("node atomic should start");
+
+    let coralreef_socket = running
+        .socket_for("shader")
+        .or_else(|| running.socket_for_primal("coralreef"))
+        .expect("coralreef socket");
+
+    let toadstool_socket = running
+        .socket_for("compute")
+        .or_else(|| running.socket_for_primal("toadstool"))
+        .expect("toadstool socket");
+
+    let trivial_wgsl = r#"@compute @workgroup_size(1)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+}"#;
+
+    let compile = direct_rpc_call(
+        coralreef_socket,
+        "shader.compile.wgsl",
+        &serde_json::json!({
+            "source": trivial_wgsl,
+            "target": "sm70",
+            "entry_point": "main",
+            "workgroup_size": [1, 1, 1]
+        }),
+    );
+    assert!(
+        compile.is_ok(),
+        "shader.compile.wgsl should succeed: {compile:?}"
+    );
+    let compile_resp = compile.unwrap();
+    let binary_b64 = compile_resp["binary_b64"]
+        .as_str()
+        .expect("should return binary_b64");
+    assert!(!binary_b64.is_empty(), "compiled binary should be non-empty");
+
+    let dispatch = direct_rpc_call(
+        toadstool_socket,
+        "compute.dispatch.submit",
+        &serde_json::json!({
+            "binary_b64": binary_b64,
+            "shader_info": compile_resp.get("shader_info").unwrap_or(&serde_json::json!({
+                "gprs": 32, "shared_memory": 0, "barriers": 0,
+                "workgroup": [1, 1, 1], "wave_size": 32
+            })),
+            "dispatch_dims": [1, 1, 1],
+            "buffers": []
+        }),
+    );
+    assert!(
+        dispatch.is_ok(),
+        "compute.dispatch.submit should succeed: {dispatch:?}"
+    );
+    let dispatch_resp = dispatch.unwrap();
+    let has_result = dispatch_resp.get("dispatch_id").is_some()
+        || dispatch_resp.get("status").is_some();
+    assert!(has_result, "dispatch should return id or status: {dispatch_resp}");
+}
+
+// ===========================================================================
+// NestGate Content Pipeline Tests (Wave 7: semantic contract gates)
+//
+// These gates validate `content.*` methods — the capability domain that was
+// registered in the 413-method registry but never exercised, allowing the
+// NestGate transport parity gap to reach projectNUCLEUS uncaught.
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Content Gate 1: content.put stores bytes, returns BLAKE3 hash
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn nestgate_content_put_returns_hash() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-cput-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Nest)
+        .start(&family_id)
+        .expect("nest atomic should start");
+
+    let nestgate_socket = running
+        .socket_for("content")
+        .or_else(|| running.socket_for("storage"))
+        .or_else(|| running.socket_for_primal("nestgate"))
+        .expect("nestgate socket");
+
+    let data_b64 = base64::engine::general_purpose::STANDARD
+        .encode(b"primalSpring content gate test");
+    let put = direct_rpc_call(
+        nestgate_socket,
+        "content.put",
+        &serde_json::json!({
+            "data": data_b64,
+            "content_type": "text/plain",
+            "family_id": family_id,
+        }),
+    );
+    assert!(put.is_ok(), "content.put should succeed: {put:?}");
+    let result = put.unwrap();
+    let hash = result["hash"].as_str().expect("should return hash");
+    assert_eq!(hash.len(), 64, "BLAKE3 hex hash should be 64 chars");
+}
+
+// ---------------------------------------------------------------------------
+// Content Gate 2: content.get retrieves by hash, matches original
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn nestgate_content_get_roundtrip() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-cget-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Nest)
+        .start(&family_id)
+        .expect("nest atomic should start");
+
+    let nestgate_socket = running
+        .socket_for("content")
+        .or_else(|| running.socket_for("storage"))
+        .or_else(|| running.socket_for_primal("nestgate"))
+        .expect("nestgate socket");
+
+    let original = b"wave7 content roundtrip test bytes";
+    let data_b64 = base64::engine::general_purpose::STANDARD.encode(original);
+
+    let put = direct_rpc_call(
+        nestgate_socket,
+        "content.put",
+        &serde_json::json!({
+            "data": data_b64,
+            "content_type": "application/octet-stream",
+            "family_id": family_id,
+        }),
+    )
+    .expect("content.put should succeed");
+    let hash = put["hash"].as_str().expect("should return hash");
+
+    let get = direct_rpc_call(
+        nestgate_socket,
+        "content.get",
+        &serde_json::json!({ "hash": hash, "family_id": family_id }),
+    )
+    .expect("content.get should succeed");
+
+    let retrieved_b64 = get["data"].as_str().expect("should return data");
+    assert_eq!(
+        retrieved_b64, data_b64,
+        "content.get should return identical base64 data"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Content Gate 3: content.list includes stored hash
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn nestgate_content_list_includes_stored() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-clst-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Nest)
+        .start(&family_id)
+        .expect("nest atomic should start");
+
+    let nestgate_socket = running
+        .socket_for("content")
+        .or_else(|| running.socket_for("storage"))
+        .or_else(|| running.socket_for_primal("nestgate"))
+        .expect("nestgate socket");
+
+    let data_b64 = base64::engine::general_purpose::STANDARD
+        .encode(b"content list gate test");
+    let put = direct_rpc_call(
+        nestgate_socket,
+        "content.put",
+        &serde_json::json!({
+            "data": data_b64,
+            "content_type": "text/plain",
+            "family_id": family_id,
+        }),
+    )
+    .expect("content.put should succeed");
+    let hash = put["hash"].as_str().expect("should return hash");
+
+    let list = direct_rpc_call(
+        nestgate_socket,
+        "content.list",
+        &serde_json::json!({ "family_id": family_id }),
+    )
+    .expect("content.list should succeed");
+
+    let items = list["items"].as_array().expect("items should be array");
+    let hashes: Vec<&str> = items
+        .iter()
+        .filter_map(|item| item.as_str().or_else(|| item["hash"].as_str()))
+        .collect();
+    assert!(
+        hashes.contains(&hash),
+        "content.list should include stored hash {hash}, got: {hashes:?}"
+    );
 }

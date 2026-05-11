@@ -1,0 +1,134 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Wave 8 — Compute trio smoke test graph.
+#
+# Validates the Node atomic's compute pipeline: coralReef (shader compile),
+# toadStool (compute dispatch), barraCuda (math/tensor). This graph exercises
+# the sovereign dispatch path that the Wave 8 compute trio evolution defines.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/compute_trio_smoke.toml
+
+[graph]
+name = "compute_trio_smoke"
+description = "coralReef + toadStool + barraCuda compute trio smoke (Wave 8)"
+version = "0.1.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+bond_type = "validation"
+composition_model = "contract_test"
+wave = "8"
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
+
+# --- Phase 1: coralReef health via shader capability ---
+
+[[graph.nodes]]
+name = "coralreef_health"
+binary = "coralreef"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "shader"
+capabilities = ["shader.compile.wgsl", "shader.compile.capabilities"]
+
+# --- Phase 2: toadStool health via compute capability ---
+
+[[graph.nodes]]
+name = "toadstool_health"
+binary = "toadstool"
+order = 2
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = ["compute.dispatch", "compute.capabilities"]
+
+# --- Phase 3: barraCuda health via tensor capability ---
+
+[[graph.nodes]]
+name = "barracuda_health"
+binary = "barracuda"
+order = 3
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "tensor"
+capabilities = ["tensor.create", "stats.mean"]
+
+# --- Phase 4: shader.compile.capabilities on coralReef ---
+
+[[graph.nodes]]
+name = "shader_capabilities"
+binary = "coralreef"
+order = 4
+required = true
+spawn = false
+depends_on = ["coralreef_health"]
+by_capability = "shader"
+capabilities = ["shader.compile.capabilities"]
+
+[graph.nodes.operation]
+method = "shader.compile.capabilities"
+
+# --- Phase 5: compute.capabilities on toadStool ---
+
+[[graph.nodes]]
+name = "compute_capabilities"
+binary = "toadstool"
+order = 5
+required = true
+spawn = false
+depends_on = ["toadstool_health"]
+by_capability = "compute"
+capabilities = ["compute.capabilities"]
+
+[graph.nodes.operation]
+method = "compute.capabilities"
+
+# --- Phase 6: stats.mean round-trip on barraCuda ---
+
+[[graph.nodes]]
+name = "barracuda_math"
+binary = "barracuda"
+order = 6
+required = true
+spawn = false
+depends_on = ["barracuda_health"]
+by_capability = "tensor"
+capabilities = ["stats.mean"]
+
+[graph.nodes.operation]
+method = "stats.mean"
+
+[graph.nodes.operation.params]
+data = [2.0, 4.0, 6.0, 8.0]
+
+# =============================================================================
+# SUMMARY — Wave 8 compute trio smoke test
+#
+# This graph validates the compute trio's health and basic capabilities:
+#   1. coralReef health via shader capability domain
+#   2. toadStool health via compute capability domain
+#   3. barraCuda health via tensor capability domain
+#   4. shader.compile.capabilities returns supported target architectures
+#   5. compute.capabilities returns available hardware/backends
+#   6. stats.mean([2,4,6,8]) = 5.0 (math round-trip, CPU fallback always works)
+#
+# Wire methods validated:
+#   coralReef:  shader.compile.capabilities {} -> {targets: [...]}
+#   toadStool:  compute.capabilities {} -> {backends/devices: [...]}
+#   barraCuda:  stats.mean {data: [f64]} -> {mean: f64}
+#
+# Routing:
+#   by_capability = "shader"  -> coralreef  (routing.rs)
+#   by_capability = "compute" -> toadstool  (routing.rs)
+#   by_capability = "tensor"  -> barracuda  (routing.rs)
+# =============================================================================

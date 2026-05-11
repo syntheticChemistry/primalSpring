@@ -17,6 +17,7 @@ pub const ALL_CAPS: &[&str] = &[
     "tensor",
     "shader",
     "storage",
+    "content",
     "ai",
     "dag",
     "commit",
@@ -52,6 +53,7 @@ pub const BTSP_EXTRA_CAPS: &[&str] = &[
 /// assert_eq!(primalspring::composition::capability_to_primal("tensor"), "barracuda");
 /// assert_eq!(primalspring::composition::capability_to_primal("crypto"), "beardog");
 /// assert_eq!(primalspring::composition::capability_to_primal("storage"), "nestgate");
+/// assert_eq!(primalspring::composition::capability_to_primal("content"), "nestgate");
 /// ```
 #[must_use]
 pub fn capability_to_primal(capability: &str) -> &str {
@@ -62,7 +64,7 @@ pub fn capability_to_primal(capability: &str) -> &str {
         "compute" => pn::TOADSTOOL,
         "tensor" | "math" => pn::BARRACUDA,
         "shader" => pn::CORALREEF,
-        "storage" => pn::NESTGATE,
+        "storage" | "content" => pn::NESTGATE,
         "ai" | "inference" => pn::SQUIRREL,
         "dag" | "provenance" => pn::RHIZOCRYPT,
         "ledger" | "spine" | "merkle" => pn::LOAMSPINE,
@@ -86,6 +88,7 @@ pub fn capability_to_primal(capability: &str) -> &str {
 /// assert_eq!(primalspring::composition::method_to_capability_domain("stats.mean"), "tensor");
 /// assert_eq!(primalspring::composition::method_to_capability_domain("crypto.hash"), "security");
 /// assert_eq!(primalspring::composition::method_to_capability_domain("storage.store"), "storage");
+/// assert_eq!(primalspring::composition::method_to_capability_domain("content.put"), "content");
 /// assert_eq!(primalspring::composition::method_to_capability_domain("compute.dispatch"), "compute");
 /// assert_eq!(primalspring::composition::method_to_capability_domain("linalg.solve"), "tensor");
 /// assert_eq!(primalspring::composition::method_to_capability_domain("spectral.fft"), "tensor");
@@ -101,6 +104,7 @@ pub fn method_to_capability_domain(method: &str) -> &str {
         | "validate" | "device" | "linalg" | "spectral" => "tensor",
         "shader" => "shader",
         "storage" => "storage",
+        "content" => "content",
         "inference" | "ai" | "squirrel" | "mcp" => "ai",
         "dag" => "dag",
         "spine" | "entry" | "certificate" => "ledger",

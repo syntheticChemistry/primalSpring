@@ -1,0 +1,110 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Wave 7 — NestGate content pipeline smoke test graph.
+#
+# Validates content.put → content.get round-trip via the `content` capability
+# domain (routing.rs W7-01). This graph exercises the content pipeline that
+# was registered in the 413-method registry but never referenced in any
+# deploy graph — the gap class that Wave 7 closes.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/content_pipeline_smoke.toml
+
+[graph]
+name = "content_pipeline_smoke"
+description = "NestGate content.put → content.get round-trip (Wave 7 semantic gate)"
+version = "0.1.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+bond_type = "validation"
+composition_model = "contract_test"
+wave = "7"
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
+
+# --- Phase 1: Verify NestGate is healthy ---
+
+[[graph.nodes]]
+name = "nestgate_health"
+binary = "nestgate"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "content"
+capabilities = ["content.put", "content.get", "content.exists", "content.list"]
+
+# --- Phase 2: content.put — store test bytes ---
+
+[[graph.nodes]]
+name = "content_put"
+binary = "nestgate"
+order = 2
+required = true
+spawn = false
+depends_on = ["nestgate_health"]
+by_capability = "content"
+capabilities = ["content.put"]
+
+[graph.nodes.operation]
+method = "content.put"
+
+[graph.nodes.operation.params]
+data = "cHJpbWFsU3ByaW5nIFdhdmUgNyBncmFwaCBzbW9rZSB0ZXN0"
+content_type = "text/plain"
+
+# --- Phase 3: content.get — retrieve by hash from Phase 2 ---
+
+[[graph.nodes]]
+name = "content_get"
+binary = "nestgate"
+order = 3
+required = true
+spawn = false
+depends_on = ["content_put"]
+by_capability = "content"
+capabilities = ["content.get"]
+
+[graph.nodes.operation]
+method = "content.get"
+
+[graph.nodes.operation.params]
+hash = "${content_put.result.hash}"
+
+# --- Phase 4: content.list — verify stored item appears ---
+
+[[graph.nodes]]
+name = "content_list"
+binary = "nestgate"
+order = 4
+required = false
+spawn = false
+depends_on = ["content_put"]
+by_capability = "content"
+capabilities = ["content.list"]
+
+[graph.nodes.operation]
+method = "content.list"
+
+# =============================================================================
+# SUMMARY — Wave 7 content pipeline smoke test
+#
+# This graph validates the NestGate content CAS pipeline:
+#   1. NestGate health via content capability domain
+#   2. content.put stores base64 data, returns BLAKE3 hash
+#   3. content.get retrieves by hash, verifies byte fidelity
+#   4. content.list confirms stored hash appears in listing
+#
+# Wire methods validated:
+#   NestGate: content.put {data: base64, content_type: str} -> {hash: hex(64)}
+#             content.get {hash: hex} -> {data: base64}
+#             content.list {} -> {items: [...]}
+#
+# Routing: by_capability = "content" -> nestgate (routing.rs W7-01)
+# =============================================================================

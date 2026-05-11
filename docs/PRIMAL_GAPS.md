@@ -75,13 +75,86 @@ Also resolved by upstream teams (not previously tracked as gaps):
 | songbird NAT traversal (H2-13 through H2-16) | Wave 196-197 — STUN wire-compliant, RFC 5766 TURN client, Cloudflare DDNS, 5-tier `ConnectionFallbackChain` all live |
 | biomeOS token forwarding | v3.50 — `_bearer_token` propagated through all capability routing paths |
 
-### Zero open upstream gaps
+### Downstream-Surfaced Primal Debt (projectNUCLEUS May 11, 2026)
 
-All upstream gaps from the projectNUCLEUS audit are now resolved. Remaining items are
-hardening and future-horizon work (Tor relay, QUIC multi-path, full `cloudflared`
-orchestration, TURN refresh lifecycle) — none blocking current interstadial goals.
+The deep debt sweep and sovereignty pre-wire exposed gaps that only become visible
+when primals are composed in production. This is the sentinel-stadial model working:
+downstream pressure propagates upward to expose primal gaps at the gate.
 
-### Tier 3 Code Quality (primal team backlogs — coordination tracking)
+#### NestGate content.put — Transport Parity Gap (CRITICAL)
+
+**Corrected finding (primal audit May 11):** NestGate **does implement**
+`content.put`, `content.get`, `content.exists`, `content.list`, `content.publish`,
+`content.resolve`, `content.promote`, `content.collections` in
+`content_handlers.rs` on the **primary unix_socket_server dispatch path** (NG-1/NG-2).
+BLAKE3 CAS with dedup, sidecar metadata, manifest-based collections — all present.
+
+**The actual gap is transport/router parity:**
+
+| Transport | `content.*` available? |
+|-----------|----------------------|
+| Primary `unix_socket_server/dispatch.rs` | **YES** — full NG-1/NG-2 |
+| `SemanticRouter::call_method` | **NO** — only `storage.*`, health, session, crypto |
+| Isomorphic IPC `UnixSocketRpcHandler` | **NO** — dispatch ends before `content.*` |
+| `nestgate-api` `NestGateRpcHandler` (HTTP) | **NO** — narrow `storage.*` + legacy subset |
+
+So `content.put` returns "Method not found" when called through routers that
+don't forward to the primary dispatch path. **projectNUCLEUS's `publish_sporeprint.sh`
+likely hits a transport path that lacks `content.*` routing.**
+
+**Resolution**: NestGate must wire `content.*` through **all** transport/router
+paths (SemanticRouter, isomorphic IPC, HTTP API) for composition parity.
+
+Additionally: `lifecycle.status` is classified public in `method_gate.rs` but has
+**no handler** in `dispatch.rs` — returns "Method not found" on all paths.
+
+#### Other Per-Primal Composition Debt
+
+| Priority | Primal | Finding | Status | Blocks |
+|----------|--------|---------|--------|--------|
+| LOW | NestGate | `storage.list` accessible without auth (opaque hashes — low risk) | Open | BTSP Phase 2b |
+| ~~MEDIUM~~ | toadStool | ~~IPC callers see no env var expansion~~ | **RESOLVED** (S234 — IPC contract documented as pre-resolved only) | — |
+| ~~MEDIUM~~ | squirrel | ~~`LocalProcessProvider` dev stub, delegation not wired~~ | **RESOLVED** (`RemoteComputeProvider` for toadStool IPC delegation shipped) | — |
+| ~~LOW~~ | barraCuda | ~~Embedded crypto deps for BTSP framing~~ | **RESOLVED** (bearDog Wave 101 `crypto.hkdf_sha256` + `crypto.hmac_verify` IPC surface) | — |
+| ~~MEDIUM~~ | loamSpine | ~~`session.commit` API contract mismatch~~ | **RESOLVED** (method aliases + hex hash acceptance confirmed) | — |
+| LOW | petalTongue | SPA catch-all + CORS shipped. `backend=nestgate` still blocked on NestGate transport parity. | Partially resolved | Blocked on NestGate routing |
+
+#### primalSpring Validation Gap — Why This Wasn't Caught
+
+**This gap propagated to projectNUCLEUS because primalSpring's gate validates
+structural consistency (methods registered, health alive) but not semantic
+correctness (methods actually work across transports).** Specific failures:
+
+1. ~~**`content` not in `ALL_CAPS` routing table**~~ — **FIXED (W7-01)**: `content`
+   added to `ALL_CAPS` and wired to NestGate in `capability_to_primal()`.
+
+2. ~~**Zero `content.*` scenarios**~~ — **FIXED (W7-02)**: `s_nestgate_content_pipeline`
+   exercises `content.put` → `content.get` round-trip (BLAKE3 hash match),
+   `content.exists`, `content.list`, and `content.resolve`.
+
+3. ~~**Zero `content.*` tests in `server_ecosystem_compose.rs`**~~ — **FIXED (W7-03)**:
+   Content Gate 1-3 tests added (put/hash, get/roundtrip, list/includes).
+
+4. **Composition parity scenario** (`s_composition_parity`) tests `storage.store` →
+   `storage.retrieve` round-trip — different API surface from `content.*`.
+   (Not a bug — storage and content are different domains.)
+
+5. ~~**413-method registry unexercised**~~ — **FIXED (W7-06)**: `check_method_coverage.sh`
+   (inverse drift detection) reports 125/413 methods registered but never referenced in
+   any scenario, test, or graph. CI-gatable. `content.put/get/exists/list/resolve` are
+   now exercised; `content.collections/promote/publish` remain unexercised.
+
+6. ~~**No deploy graph steps invoke `content.*`**~~ — **FIXED (W7-04)**:
+   `content_pipeline_smoke.toml` uses `by_capability = "content"` for
+   put + get + list round-trip.
+
+**Root cause**: The primalSpring gate is a **structural** gate (methods enumerated,
+health alive, graphs coherent) but lacks **contract tests** for the full NestGate
+capability surface. The `content` domain was registered but never exercised.
+
+**Required primalSpring evolution** (see Wave 7 below).
+
+### Previously Resolved Gaps (for reference)
 
 | Priority | Primal | Issue | Status |
 |----------|--------|-------|--------|
@@ -120,17 +193,16 @@ should absorb the current patterns while these goals mature upstream.
 
 ### Wave 2: JH-5 — Cross-Primal Audit Log Forwarding
 
-**Owner**: skunkBat + rhizoCrypt + sweetGrass
-**Priority**: MEDIUM — **UNBLOCKED** (JH-11 resolved May 10, 2026)
-**Target**: Next coordination pass
+**RESOLVED** (May 11, 2026)
 
-skunkBat Phase 2 (local event instrumentation) is complete — all 7 event kinds emit
-from live code paths. Phase 3 (forwarding security events to rhizoCrypt DAG +
-sweetGrass braid) via authenticated cross-primal IPC is now unblocked.
+- skunkBat Phase 3: cross-primal audit event forwarding shipped (`forwarding.rs` —
+  308 lines, forwards security events to rhizoCrypt + sweetGrass via IPC).
+- rhizoCrypt S67: composition readiness + payload_ref wiring + pipeline tests.
+- sweetGrass v0.7.34: composition readiness + provenance trio pipeline validation.
+- All 8 springs wired with skunkBat Rust IPC modules.
 
-**Delta spring impact**: Once JH-5 ships, every spring gains cross-primal audit
-logging for free via biomeOS composition routing. Springs should prepare by
-wiring skunkBat into their deploy graphs now.
+**JH-5 is fully shipped. The provenance trio pipeline (skunkBat → rhizoCrypt →
+sweetGrass) is operational.**
 
 ---
 
@@ -153,13 +225,13 @@ ludoSpring, groundSpring, airSpring)
 
 | Spring | Post-Evolution State | Next Target |
 |--------|---------------------|-------------|
-| healthSpring | V62, gS L5, UniBin, 999 tests, skunkBat in graphs | Tier 4 rewiring |
-| ludoSpring | V61, gS L4, UniBin, 854 tests, skunkBat IPC, optional barraCuda | foundation seeding, plasmidBin |
-| hotSpring | v0.6.32+, gS L6, UniBin, 1,025 tests, 188 experiments | sovereign GPU barriers |
-| wetSpring | V159, gS L4, UniBin, 1,962 tests, barraCuda IPC routing | 8 open gaps (was 15) |
-| airSpring | v0.10.0, gS L2+, UniBin, 1,327 tests, 9 scenarios | gS L4+, Tier 4 |
-| neuralSpring | S199/V149, gS L3, UniBin, 1,450 tests, compute.dispatch | gS L4+, foundation Threads 5+7 |
-| groundSpring | V131, gS L4, UniBin, 1,101 tests, guidestone modularized | plasmidBin, Tier 4 |
+| healthSpring | V63, gS L5, UniBin, 999 tests, Tier 4 (`default=[]`), Thread 3 seeded | LTEE B5/E2/E4, Thread 7+, NestGate wiring |
+| ludoSpring | V63, gS L4, UniBin, 854 tests, Tier 4 (`default=["ipc"]`), SPDX | coralReef IPC, domain parity |
+| hotSpring | v0.6.32, gS L6, UniBin, 1,025 tests, Tier 4 (`default=[]`), LTEE B2, 3-GPU sovereign | Titan V FECS, K80 livepatch |
+| wetSpring | V163, gS L4, UniBin, 1,613 tests, Tier 4 (`default=[]`), LTEE B7, 4 PG open | close PG-02–05 (external), L5 |
+| airSpring | v0.10.0, gS L4, UniBin, 1,389 tests, Tier 4 (`default=[]`), barraCuda 0.3.13 | LTEE E3, NestGate/Squirrel wiring, L5+ |
+| neuralSpring | S201b, gS L5, UniBin, 1,453 tests, Tier 4 (`default=[]`), LTEE B1 | Gap 11 (18 RPC methods), NestGate weights |
+| groundSpring | V135, gS L4, UniBin, 1,125 tests, Tier 4 (`default=[]`), LTEE B2+B1 **DONE** | lithoSpore integration, coralReef IPC |
 
 **Wave 3 COMPLETED** (May 9). Post-interstadial push (May 10-11) achieved:
 8/8 skunkBat Rust IPC, 8/8 `method.register`, 8/8 CI cross-sync 413,
@@ -285,13 +357,15 @@ primal capabilities into compositions and deployments.
 **Owner**: Individual primal teams (bearDog, songbird, toadStool, etc.)
 **Scope**: Primal-internal code quality, capability correctness, IPC contracts
 **Phase**: **Stadial** — capabilities shipped, responding to gate pressure
-**Current**: **13/13 passing the primalSpring gate.** Zero upstream debt.
-All primals: MethodGate (JH-0 + JH-2), BTSP Phase 3 AEAD, Edition 2024,
-deny.toml (ring + openssl banned), plasmidBin musl-static ecoBin.
+**Current**: **13/13 passing the primalSpring gate** on structural invariants
+(MethodGate, BTSP, Edition 2024, deny.toml, plasmidBin). **One critical
+transport parity gap**: NestGate `content.*` implemented on primary dispatch but
+not routed on SemanticRouter/IPC/HTTP — blocks Pillars 1-3.
+See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 
 **Stadial pressure on primals** (primalSpring as gate):
 - 413-method canonical registry — drift is rejected
-- MethodGate enforcement — 12/13, squirrel remaining
+- MethodGate enforcement — **13/13 DONE**
 - Deploy graph coherence — all primals must compose cleanly
 - Guidestone certification — primals participate in spring gS levels
 - Upstream crate extraction (stadial external) — wgsl-precision, proc-sysinfo
@@ -306,7 +380,8 @@ validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 413 methods, 680 tests, zero debt. Active coordination targets:
+**Current**: 413 methods, 687 tests, zero debt. Active coordination targets:
+- Wave 8: Compute trio composition (Node atomic E2E — 6/9 items DONE locally)
 - PG-54: Adaptive composition tick model (LOW, deferred post-Tier 4)
 - PG-63: Matplotlib Agg guidance reconciliation (LOW, docs)
 
@@ -318,15 +393,15 @@ foundation seeding, plasmidBin release readiness
 **Phase**: **Interstadial** — absorbing primal capabilities, pre-wiring compositions
 **Current**: Post-interstadial targets all green (8/8 on 5 axes). Per-spring:
 
-| Spring | Open Gaps | Owner-Layer Items |
-|--------|-----------|-------------------|
-| wetSpring | 8 (PG-01–PG-22, 14 closed) | barraCuda IPC expansion, remaining PG gaps |
-| hotSpring | 0 local | sovereign GPU barriers (coralReef), GAP-HS-030 renumber |
-| neuralSpring | 0 local | gS L3→L4, foundation Threads 5+7 |
-| airSpring | 0 local | gS L2→L4 |
-| ludoSpring | 0 local | foundation seeding, plasmidBin release |
-| groundSpring | 0 local | plasmidBin release, PRNG Phase 2b (barraCuda) |
-| healthSpring | 0 local | none identified |
+| Spring | Version | gS | Tier 4 | Open Gaps | LTEE | Next Target |
+|--------|---------|:--:|:------:|-----------|------|-------------|
+| wetSpring | V163 | L4 | Done | 4 (PG-02,03,04,05 — external) | B7 started | close external PGs, gS L5 |
+| hotSpring | v0.6.32 | L6 | Done | Titan V FECS, K80 livepatch | B2 started | GPU sovereign completion |
+| neuralSpring | S201b | L5 | Done | Gap 11 (18 RPC methods) | B1 started | close gap 11, NestGate weights |
+| airSpring | v0.10.0 | L4 | Done | AG-001 manifest, NestGate/Squirrel | E3 queued | LTEE E3, gS L5+ |
+| ludoSpring | V63 | L4 | Done | coralReef IPC (GAP-01), domain parity (GAP-02) | N/A | coralReef wiring |
+| groundSpring | V135 | L4 | Done | coralReef IPC, PRNG Phase 2b | **B2+B1 DONE** | lithoSpore integration |
+| healthSpring | V63 | L5 | Done | ionic bridge (upstream) | B5/E2/E4 queued | Thread 7+ seed, LTEE |
 
 ### Layer 4: Downstream Products — Interstadial (projectNUCLEUS, gardens)
 
@@ -419,6 +494,84 @@ Handoff: `infra/wateringHole/handoffs/LTEE_GUIDESTONE_SUBSYSTEM_HANDOFF_MAY11_20
 - [ ] Phase 3: Binary bundle + data assembly (L2 + L4) — **INTERSTADIAL**
 - [ ] Phase 4: Integration + deployment testing (L4) — **STADIAL**
 - [ ] Phase 5: External deployment to Barrick Lab (L4) — **STADIAL**
+
+---
+
+## Wave 7: Contract Testing — Semantic Gate Evolution (May 11, 2026)
+
+**Owner**: primalSpring team
+**Priority**: HIGH — exposed by NestGate transport parity gap
+**Target**: Before stadial (prevents this class of gap from recurring)
+
+The NestGate `content.put` transport parity gap reached projectNUCLEUS because
+primalSpring's gate validates **structural** consistency (methods registered, health
+alive, graphs coherent) but not **semantic** correctness (methods actually serve
+correct responses across all transports). This wave evolves the gate from structural
+to contract-level validation.
+
+### Wave 7 Items
+
+| ID | What | Owner | Status |
+|----|------|-------|--------|
+| W7-01 | Add `content` to `ALL_CAPS` in `composition/routing.rs` and wire `capability_to_primal("content") → "nestgate"` | primalSpring | **DONE** (May 11) |
+| W7-02 | New scenario `s_nestgate_content_pipeline`: `content.put` → `content.get` round-trip (BLAKE3 hash match), `content.list`, `content.exists`, `content.resolve`. SKIP when NestGate unreachable, FAIL when methods error. | primalSpring | **DONE** (May 11) |
+| W7-03 | Extend `server_ecosystem_compose.rs` Gate tests: `content.put` stores bytes returns hash, `content.get` retrieves by hash matches original, `content.list` includes stored hash (Content Gate 1-3) | primalSpring | **DONE** (May 11) |
+| W7-04 | Deploy graph `content_pipeline_smoke.toml`: `content.put` + `content.get` + `content.list` round-trip via `by_capability = "content"` | primalSpring | **DONE** (May 11) |
+| W7-05 | Validate `content.resolve` for petalTongue backend: ensure NestGate path resolution returns correct content + MIME type (petalTongue `backend=nestgate` depends on this) | primalSpring | **OPEN** (blocked on NestGate transport parity) |
+| W7-06 | Inverse drift detection: `tools/check_method_coverage.sh` flags methods registered in 413-registry but **never referenced** in any scenario, test, or graph. Currently shows 125/413 uncovered. CI-gatable. | primalSpring | **DONE** (May 11) |
+| W7-07 | NestGate transport parity: verify `content.*` methods are reachable on SemanticRouter, isomorphic IPC adapter, and HTTP API — not just primary unix_socket_server dispatch | primalSpring + NestGate | **OPEN** (NestGate must wire routing) |
+
+### Lesson: Structural vs Semantic Gates
+
+The primalSpring gate currently validates:
+- **Structural**: methods enumerated in registry, deploy graphs reference correct capabilities, health checks pass, `storage.*` round-trips work
+- **NEW (Wave 7)**: `content.*` contract tests (scenario, gate tests, deploy graph), inverse drift detection (125/413 methods uncovered — CI-gatable tool shipped)
+- **Still missing**: contract tests for remaining domains (`secrets.*`, `bonding.*`, `spine.*`, `braid.*`, etc.), transport parity verification (W7-07 blocked on NestGate)
+
+The sentinel-stadial model correctly surfaced this gap — downstream composition
+pressure (projectNUCLEUS trying to publish content) exposed that the upstream
+sentinel (NestGate) had implemented the capability on one transport path but not
+others, and the gate (primalSpring) was not testing the capability semantically.
+
+**Wave 7 closes this gap class permanently.** After Wave 7, any method registered
+in the 413-method registry that lacks a contract test or is unreachable on any
+transport will be flagged by primalSpring's gate.
+
+---
+
+## Wave 8: Compute Trio Composition — Node Atomic Evolution (May 11, 2026)
+
+**Owner**: primalSpring team + upstream compute trio teams
+**Priority**: HIGH — extends Node atomic from structural to semantic validation
+**Target**: Before stadial (enables sovereign compute E2E in compositions)
+
+The compute trio (coralReef + toadStool + barraCuda) forms the Node atomic's
+compute layer. hotSpring's sovereign compute breakthrough (3 GPUs, warm-catch
+pipeline, pure Rust) and the wateringHole handoff define a clear domain split:
+coralReef (HOW — compiler), toadStool (WHERE — hardware), barraCuda (WHAT — math).
+
+Wave 8 sketches the architecture locally and hands upstream to primal teams.
+
+### Wave 8 Items
+
+| ID | What | Owner | Status |
+|----|------|-------|--------|
+| W8-01 | Architecture document `docs/COMPUTE_TRIO_EVOLUTION.md` — HOW/WHERE/WHAT domain split, IPC contracts (`shader.compile.wgsl`, `compute.dispatch.submit`), 6-phase ember/glowplug absorption path, degradation tiers, upstream handoff matrix | primalSpring | **DONE** (May 11) |
+| W8-02 | Evolve `s_compute_triangle` scenario — 5-phase validation: discovery, coralReef capabilities, toadStool capabilities, barraCuda math round-trip, sovereign dispatch E2E contract (compile → dispatch response shapes) | primalSpring | **DONE** (May 11) |
+| W8-03 | Inverse drift audit — compute/tensor/shader domains: 5 compute-related methods uncovered (aliases/admin), critical dispatch path exercised | primalSpring | **DONE** (May 11) |
+| W8-04 | Compute trio gate tests in `server_ecosystem_compose.rs` — Gate 1: coralReef `shader.compile.capabilities`, Gate 2: toadStool `compute.capabilities`, Gate 3: barraCuda `stats.mean` round-trip, Gate 4: sovereign E2E compile+dispatch | primalSpring | **DONE** (May 11) |
+| W8-05 | Deploy graph `compute_trio_smoke.toml` — 6-phase health + capabilities + math round-trip for all three primals | primalSpring | **DONE** (May 11) |
+| W8-06 | gen4 sketch `SOVEREIGN_COMPUTE_TRIO_SKETCH.md` — HOW/WHERE/WHAT as gen4 composition pattern, warm-catch as sovereignty pattern, era-agnostic compute, budding/absorption model | primalSpring | **DONE** (May 11) |
+| W8-07 | toadStool ember/glowplug absorption (Phases 1-6) — absorb coral-ember (228 tests) + coral-glowplug (436 tests) + coral-driver hardware, validate on Akida/AMD, generalize cylinder, serve `compute.dispatch.execute` | toadStool | **OPEN** (upstream) |
+| W8-08 | coralReef domain boundary cleanup — extract hardware code to toadStool, retain compiler domain only (`shader.compile.*`) | coralReef | **OPEN** (upstream, depends on W8-07) |
+| W8-09 | barraCuda sovereign dispatch E2E wiring — wire `SovereignDevice` through trio IPC (compile + dispatch), absorb bearDog crypto IPC (Wave 101) | barraCuda | **OPEN** (upstream) |
+
+### Upstream Handoff
+
+primalSpring provides: architecture doc, IPC contracts, gate tests, deploy graphs, gen4 sketch.
+Upstream teams implement: absorption (toadStool), domain cleanup (coralReef), E2E wiring (barraCuda).
+
+See `docs/COMPUTE_TRIO_EVOLUTION.md` for full architecture and handoff matrix.
 
 ---
 

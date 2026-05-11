@@ -39,6 +39,7 @@ pub mod s_full_nucleus;
 pub mod s_gate_failure;
 pub mod s_ionic_bond;
 pub mod s_nest_atomic;
+pub mod s_nestgate_content_pipeline;
 pub mod s_node_atomic;
 pub mod s_sequential_graph;
 pub mod s_socket_discovery;
@@ -67,6 +68,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_biomeos_neural_api::SCENARIO);
     r.register(s_deployment_matrix::SCENARIO);
     r.register(s_composition_parity::SCENARIO);
+    r.register(s_nestgate_content_pipeline::SCENARIO);
     r.register(s_cellular_deployment::SCENARIO);
     r.register(s_token_federation::SCENARIO);
     r.register(s_composition_lifecycle::SCENARIO);

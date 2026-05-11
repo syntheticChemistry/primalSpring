@@ -3,6 +3,85 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Wave 8: Compute Trio Composition — Node Atomic Evolution (2026-05-11)
+
+### Added
+- **`docs/COMPUTE_TRIO_EVOLUTION.md`** — architecture document defining the HOW/WHERE/WHAT
+  domain split (coralReef/toadStool/barraCuda), IPC contracts (`shader.compile.wgsl`,
+  `compute.dispatch.submit`), 6-phase ember/glowplug absorption path into toadStool,
+  sovereign dispatch E2E path, degradation tiers, and upstream handoff matrix (W8-01).
+- **`s_compute_triangle` scenario evolved** to 5-phase sovereign dispatch contract test:
+  Phase 1 discovery, Phase 2 coralReef `shader.compile.capabilities`, Phase 3 toadStool
+  `compute.capabilities`, Phase 4 barraCuda `tensor.create` + `stats.mean` round-trip,
+  Phase 5 sovereign E2E (`shader.compile.wgsl` → `compute.dispatch.submit` response
+  shape validation). SKIP on connection error, FAIL on method error (W8-02).
+- **Compute trio gate tests** in `server_ecosystem_compose.rs` — 4 new `#[ignore]` gate
+  tests: Gate 1 (coralReef `shader.compile.capabilities`), Gate 2 (toadStool
+  `compute.capabilities`), Gate 3 (barraCuda `stats.mean` round-trip), Gate 4 (sovereign
+  E2E compile+dispatch). Validates trio composition, not individual primals (W8-04).
+- **`compute_trio_smoke.toml` deploy graph** — 6-phase compute trio smoke test: coralReef
+  health → toadStool health → barraCuda health → shader capabilities → compute
+  capabilities → stats.mean round-trip. All via `by_capability` routing (W8-05).
+- **gen4 sovereign compute thesis sketch** in
+  `whitePaper/gen4/architecture/SOVEREIGN_COMPUTE_TRIO_SKETCH.md` — connects compute trio
+  to HOW/WHERE/WHAT composition pattern, warm-catch as sovereignty pattern, era-agnostic
+  compute (SM35-SM120 + GFX10 + Akida), budding/absorption model (W8-06).
+
+### Changed
+- **`PRIMAL_GAPS.md`** — added "Wave 8: Compute Trio Composition" section with 9 items
+  (6 DONE locally, 3 OPEN upstream). primalSpring test count updated to 687.
+- **`CROSS_SPRING_PARITY_SCORECARD.md`** — added Section 11 "Compute Trio Composition
+  (Wave 8)", primalSpring graph count 75 → 76, scenario count 20 → 21, test count
+  683 → 687, total ecosystem deploy graphs 120 → 121.
+- **Inverse drift audit** (W8-03): compute/tensor/shader domains show 5 remaining
+  uncovered methods (aliases/admin), all critical dispatch path methods exercised.
+
+### Metrics
+- **687 tests** (workspace, lib+tests), **76 deploy graphs**, **21 scenarios**,
+  **413 registered methods** (120/413 uncovered by inverse drift — 5 fewer than Wave 7
+  baseline due to new compute trio test coverage).
+- Wave 8: **6/9 items DONE** locally, 3 OPEN upstream (toadStool absorption,
+  coralReef cleanup, barraCuda E2E wiring).
+
+## [Unreleased] — Wave 7: Contract Testing — Semantic Gate Evolution (2026-05-11)
+
+### Added
+- **`content` capability domain** wired in `composition/routing.rs` — `ALL_CAPS` and
+  `capability_to_primal("content") → "nestgate"`. Unblocks `CompositionContext.call("content", ...)`
+  for all downstream consumers (W7-01).
+- **`s_nestgate_content_pipeline` scenario** — live contract test for NestGate `content.*`
+  methods: `content.put` → `content.get` round-trip (BLAKE3 hash match), `content.exists`,
+  `content.list`, `content.resolve`. SKIP on connection error, FAIL on method error or
+  data mismatch (W7-02).
+- **Content Gate tests** in `server_ecosystem_compose.rs` — 3 new `#[ignore]` gate tests:
+  Content Gate 1 (put returns hash), Content Gate 2 (get round-trip), Content Gate 3
+  (list includes stored hash). Mirrors existing `storage.store/retrieve` gates (W7-03).
+- **`content_pipeline_smoke.toml` deploy graph** — minimal NestGate content pipeline
+  smoke test: health → `content.put` → `content.get` → `content.list`, all via
+  `by_capability = "content"` (W7-04).
+- **`tools/check_method_coverage.sh`** — inverse drift detection: reports methods
+  registered in 413-registry but never referenced in scenarios, tests, or graphs.
+  Currently 125/413 uncovered. Supports `--domains` (grouped output) and `--warn-only`
+  (advisory exit 0). CI-gatable with non-zero exit on gaps (W7-06).
+- **gen4 contract testing thesis sketch** in
+  `whitePaper/gen4/architecture/CONTRACT_TESTING_THESIS_SKETCH.md` — connects Wave 7 to
+  gen4 "wire format IS the contract" thesis, NFT pipeline implications, transport parity
+  matrix pattern, and future per-domain contract suite priorities.
+
+### Changed
+- **`PRIMAL_GAPS.md`** Wave 7 items W7-01 through W7-04 and W7-06 marked **DONE**.
+  "primalSpring Validation Gap" section updated to reflect fixes. Lesson section
+  updated with new Wave 7 coverage and remaining gaps.
+- **`CROSS_SPRING_PARITY_SCORECARD.md`** — added Section 10 "Contract Testing (Wave 7)",
+  primalSpring graph count updated to 75, test count to 683.
+- primalSpring deploy graph count: 74 → **75** (+ `content_pipeline_smoke.toml`).
+- primalSpring scenario count: 20 → **21** (+ `s_nestgate_content_pipeline`).
+
+### Metrics
+- **683 tests** (workspace, lib+tests), **75 deploy graphs**, **21 scenarios**,
+  **413 registered methods** (125 uncovered by inverse drift check — first baseline).
+- Wave 7: **5/7 items DONE**, 2 OPEN (W7-05 blocked on NestGate, W7-07 requires NestGate transport parity).
+
 ## [Unreleased] — UniBin eukaryotic evolution (2026-05-09)
 
 ### Added
