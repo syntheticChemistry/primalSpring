@@ -25,7 +25,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
 | toadStool | 22,833+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-2 auth.mode env + eprintln→tracing (S233) |
 | biomeOS | 7,919 | **ADOPTED** | FULL | consumer | **CLEAN** — test helpers gated `#[cfg(test)]` (v3.49) |
-| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — content.* transport parity (S60), NG-13/14/15 false positives (S59) |
+| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — dep hygiene + hardcode cleanup (S61), content.* transport parity (S60) |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — unwrap false positive confirmed, optional dep supported |
 | petalTongue | varies | **ADOPTED** | FULL | L2/L3 | **CLEAN** — all `#[allow]` → `#[expect(reason)]` (P6) |
@@ -241,7 +241,7 @@ Key per-primal handoffs in `infra/wateringHole/handoffs/`:
 | barraCuda | `BARRACUDA_V0313_SPRINT56_AUDIT_TRIAGE_MAY08_2026.md` |
 | rhizoCrypt | (S64 in wateringHole) |
 | sweetGrass | `SWEETGRASS_V0732_JH0_METHOD_GATE_HANDOFF_MAY08_2026.md` |
-| nestgate | `NESTGATE_V470_SESSION60_CONTENT_TRANSPORT_PARITY_MAY11_2026.md` |
+| nestgate | `NESTGATE_V470_SESSION61_DEEP_DEBT_HYGIENE_MAY11_2026.md` |
 | petalTongue | `PETALTONGUE_V166_JH0_METHOD_GATE_HANDOFF_MAY08_2026.md` |
 | skunkBat | `SKUNKBAT_V020DEV_JH5_AUDIT_LOG_HANDOFF_MAY08_2026.md` |
 
