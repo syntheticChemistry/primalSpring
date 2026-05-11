@@ -203,7 +203,7 @@ All 13 primals share these invariants (regressions are rejected):
 | Enum dispatch (finite implementors) | **13/13** |
 | `cargo deny check bans` (ring/openssl/aws-lc-sys banned) | **13/13** |
 | Edition 2024 | **13/13** |
-| JH-0 MethodGate pre-dispatch authorization | **12/13** (squirrel pending) |
+| JH-0 MethodGate pre-dispatch authorization | **13/13** |
 | BTSP Phase 3 (ChaCha20-Poly1305 AEAD) | **13/13** |
 | Capability Wire Standard L2+ | **13/13** |
 | `--bind` / localhost-default (PG-55) | **13/13** |
@@ -285,10 +285,9 @@ primal capabilities into compositions and deployments.
 **Owner**: Individual primal teams (bearDog, songbird, toadStool, etc.)
 **Scope**: Primal-internal code quality, capability correctness, IPC contracts
 **Phase**: **Stadial** — capabilities shipped, responding to gate pressure
-**Current**: 12/13 passing the primalSpring gate. One gap at the gate:
-- **squirrel**: Missing MethodGate pre-dispatch (JH-0). No `method_gate.rs`,
-  no `classify_method`, no `MethodVisibility` in any crate. **Blocks 13/13.**
-  (toadStool shipped full JH-0 + JH-2 resource envelopes — 14 tests.)
+**Current**: **13/13 passing the primalSpring gate.** Zero upstream debt.
+All primals: MethodGate (JH-0 + JH-2), BTSP Phase 3 AEAD, Edition 2024,
+deny.toml (ring + openssl banned), plasmidBin musl-static ecoBin.
 
 **Stadial pressure on primals** (primalSpring as gate):
 - 413-method canonical registry — drift is rejected
@@ -339,7 +338,7 @@ workload validation, foundation integration
 - Horizon 1: **COMPLETE** — external security, darkforest v0.2.1
 - Horizon 2: **70%** — 2a done, 2b ready, 3a intermediate (cell membrane live), 3b/3c upstream shipped, 4 intermediate (DoT)
 - Horizon 3: **20%** — H3-07/H3-08 unblocked, rest future
-- Absorption targets: `composition.deploy(graph)`, Tier 4 rewiring, skunkBat in smaller compositions, MethodGate parity (squirrel remaining)
+- Absorption targets: `composition.deploy(graph)`, Tier 4 rewiring, skunkBat in smaller compositions
 
 ### Layer 5: Foundation (sporeGarden/foundation)
 
@@ -433,7 +432,7 @@ shadow runs can begin. Five pillars define the exit gate. Full details:
 
 | Layer | Interstadial Target | Gate Condition |
 |-------|-------------------|----------------|
-| **L1 (Primals)** | MethodGate parity 13/13 (squirrel remaining — toadStool done) | MethodGate shipped for all primals |
+| **L1 (Primals)** | MethodGate parity 13/13 | MethodGate shipped for all primals |
 | **L2 (primalSpring)** | CompositionContext coordination pass, lithoSpore standard | 2+ lithoSpore modules PASS Tier 1 |
 | **L3 (Springs)** | 4+ springs `optional=true`, gS convergence (air/neural → L4), LTEE reproductions begin | wetSpring < 5 PG gaps, 2+ foundation threads seeded |
 | **L4 (Products)** | H2 shadow runs (TLS/NAT/NestGate/BTSP auth), ABG WCM compositions | H2-2b/3a/3b/3c in shadow-run state |
