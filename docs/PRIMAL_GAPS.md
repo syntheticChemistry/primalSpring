@@ -203,7 +203,7 @@ All 13 primals share these invariants (regressions are rejected):
 | Enum dispatch (finite implementors) | **13/13** |
 | `cargo deny check bans` (ring/openssl/aws-lc-sys banned) | **13/13** |
 | Edition 2024 | **13/13** |
-| JH-0 MethodGate pre-dispatch authorization | **13/13** |
+| JH-0 MethodGate pre-dispatch authorization | **12/13** (squirrel pending) |
 | BTSP Phase 3 (ChaCha20-Poly1305 AEAD) | **13/13** |
 | Capability Wire Standard L2+ | **13/13** |
 | `--bind` / localhost-default (PG-55) | **13/13** |
@@ -253,26 +253,70 @@ Every gap in the ecosystem belongs to exactly one layer of the evolution cycle.
 When a gap is identified, it should be tagged with its owner layer. This prevents
 ambiguity about who acts on what, and which gaps block downstream work.
 
-### Layer 1: Upstream Primals (13 core primals)
+### Sentinel-Stadial Model (May 11, 2026)
+
+Primals are **sentinels** — the least composed, most climate-responsive entities
+in the ecosystem. They feel shifts first and respond first. They are already in
+their own **stadial cycle**, with primalSpring as their **external validation
+gate**. This is analogous to how Cloudflare/Barrick are stadial gates for
+downstream products.
+
+```
+L1 (Primals — sentinel-stadial)
+  │ validated against
+  ▼
+L2 (primalSpring — stadial gate for primals)
+  │ 413 registry, MethodGate enforcement, deploy graph coherence,
+  │ guidestone certification, CompositionContext contracts
+  │
+  │ patterns flow downstream
+  ▼
+L3 (Springs — interstadial) → L4 (Products — interstadial) → L5 (Foundation)
+```
+
+The key distinction: **primals are ahead of the ecosystem**. They have shipped
+their capabilities. primalSpring is the **pressure** that validates quality — any
+primal not passing the gate creates upstream debt that blocks everything
+downstream. The river delta and products are still interstadial, absorbing
+primal capabilities into compositions and deployments.
+
+### Layer 1: Upstream Primals — Sentinel-Stadial (13 core primals)
 
 **Owner**: Individual primal teams (bearDog, songbird, toadStool, etc.)
 **Scope**: Primal-internal code quality, capability correctness, IPC contracts
-**Current**: **Zero open gaps** — 13/13 clean (May 11, 2026)
+**Phase**: **Stadial** — capabilities shipped, responding to gate pressure
+**Current**: 12/13 passing the primalSpring gate. One gap at the gate:
+- **squirrel**: Missing MethodGate pre-dispatch (JH-0). No `method_gate.rs`,
+  no `classify_method`, no `MethodVisibility` in any crate. **Blocks 13/13.**
+  (toadStool shipped full JH-0 + JH-2 resource envelopes — 14 tests.)
 
-### Layer 2: primalSpring (coordination + validation)
+**Stadial pressure on primals** (primalSpring as gate):
+- 413-method canonical registry — drift is rejected
+- MethodGate enforcement — 12/13, squirrel remaining
+- Deploy graph coherence — all primals must compose cleanly
+- Guidestone certification — primals participate in spring gS levels
+- Upstream crate extraction (stadial external) — wgsl-precision, proc-sysinfo
+- Framework parity (stadial external) — Kokkos, LAMMPS, SciPy benchmarks
+
+### Layer 2: primalSpring — The Stadial Gate
 
 **Owner**: primalSpring team
-**Scope**: Canonical capability registry, deploy graph library, composition validation,
-gap registry maintenance, `CompositionContext` API, two-tier validation harness
+**Scope**: Canonical capability registry (413 methods), deploy graph library,
+composition validation, gap registry, `CompositionContext` API, two-tier
+validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification
+**Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
+graph coherence, and guidestone layers are the validation pressure that
+primals must pass. Patterns validated here flow downstream to springs/products.
 **Current**: 413 methods, 680 tests, zero debt. Active coordination targets:
 - PG-54: Adaptive composition tick model (LOW, deferred post-Tier 4)
 - PG-63: Matplotlib Agg guidance reconciliation (LOW, docs)
 
-### Layer 3: River Delta (8 springs)
+### Layer 3: River Delta — Interstadial (8 springs)
 
 **Owner**: Individual spring teams
 **Scope**: Domain science, spring-internal debt, barraCuda coupling, gS levels,
 foundation seeding, plasmidBin release readiness
+**Phase**: **Interstadial** — absorbing primal capabilities, pre-wiring compositions
 **Current**: Post-interstadial targets all green (8/8 on 5 axes). Per-spring:
 
 | Spring | Open Gaps | Owner-Layer Items |
@@ -285,16 +329,17 @@ foundation seeding, plasmidBin release readiness
 | groundSpring | 0 local | plasmidBin release, PRNG Phase 2b (barraCuda) |
 | healthSpring | 0 local | none identified |
 
-### Layer 4: Downstream Products (projectNUCLEUS, gardens)
+### Layer 4: Downstream Products — Interstadial (projectNUCLEUS, gardens)
 
 **Owner**: Product teams
 **Scope**: Gate deployment, sovereignty horizons, composition absorption,
 workload validation, foundation integration
+**Phase**: **Interstadial** — pre-wiring sovereignty, shadow runs not yet started
 **Current** (projectNUCLEUS):
 - Horizon 1: **COMPLETE** — external security, darkforest v0.2.1
 - Horizon 2: **70%** — 2a done, 2b ready, 3a intermediate (cell membrane live), 3b/3c upstream shipped, 4 intermediate (DoT)
 - Horizon 3: **20%** — H3-07/H3-08 unblocked, rest future
-- Absorption targets: `composition.deploy(graph)`, Tier 4 rewiring, skunkBat in smaller compositions, MethodGate parity (toadStool + squirrel)
+- Absorption targets: `composition.deploy(graph)`, Tier 4 rewiring, skunkBat in smaller compositions, MethodGate parity (squirrel remaining)
 
 ### Layer 5: Foundation (sporeGarden/foundation)
 
@@ -306,19 +351,34 @@ workload validation, foundation integration
 - neuralSpring: Threads 5+7 documented, ready for contribution
 - groundSpring: Thread 7 (Anderson) index fixed
 
-### Gap Flow
+### Gap Flow — Sentinel Model
 
 ```
-Foundation (L5) exposes science data gaps
-  ↑ feeds
-Springs (L3) expose composition/IPC gaps
-  ↑ feeds
-primalSpring (L2) exposes primal capability gaps
-  ↑ feeds
-Primals (L1) evolve capabilities
-  ↓ flows
-Products (L4) absorb patterns and expose deployment gaps
+L1 (Primals — sentinels, stadial-first)
+  │
+  │ validated against ↓
+  │
+L2 (primalSpring — stadial gate)
+  │ 413 registry, MethodGate, deploy graphs, guidestone cert
+  │
+  │ patterns flow downstream ↓
+  │
+L3 (Springs — interstadial, absorbing primal capabilities)
+  │ domain science, IPC rewiring, foundation seeding
+  │
+  │ compositions flow downstream ↓
+  │
+L4 (Products — interstadial, pre-wiring sovereignty)
+  │ shadow runs, deployment, external-facing artifacts
+  │
+  │ data anchoring ↓
+  │
+L5 (Foundation — knowledge layer, thread coverage)
 ```
+
+Gaps propagate **upward** (springs expose primal gaps → primalSpring gates them
+→ primals resolve). Patterns propagate **downward** (primals ship capabilities
+→ primalSpring validates → springs absorb → products deploy).
 
 ---
 
@@ -373,7 +433,7 @@ shadow runs can begin. Five pillars define the exit gate. Full details:
 
 | Layer | Interstadial Target | Gate Condition |
 |-------|-------------------|----------------|
-| **L1 (Primals)** | MethodGate parity 13/13 (toadStool + Squirrel) | MethodGate shipped for all primals |
+| **L1 (Primals)** | MethodGate parity 13/13 (squirrel remaining — toadStool done) | MethodGate shipped for all primals |
 | **L2 (primalSpring)** | CompositionContext coordination pass, lithoSpore standard | 2+ lithoSpore modules PASS Tier 1 |
 | **L3 (Springs)** | 4+ springs `optional=true`, gS convergence (air/neural → L4), LTEE reproductions begin | wetSpring < 5 PG gaps, 2+ foundation threads seeded |
 | **L4 (Products)** | H2 shadow runs (TLS/NAT/NestGate/BTSP auth), ABG WCM compositions | H2-2b/3a/3b/3c in shadow-run state |
