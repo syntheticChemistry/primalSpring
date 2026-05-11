@@ -319,3 +319,44 @@ Primals (L1) evolve capabilities
   ↓ flows
 Products (L4) absorb patterns and expose deployment gaps
 ```
+
+---
+
+## Wave 6: Targeted GuideStone (LTEE) — May 11, 2026
+
+The ecosystem's first **deployable subsystem**: a self-contained, USB-portable
+artifact that leaves ecosystem possession. The LTEE guideStone reproduces
+Barrick/Lenski LTEE papers and generates new predictions via the Anderson
+disorder framework. This is a **projectNUCLEUS subsystem**.
+
+Standard: `infra/wateringHole/TARGETED_GUIDESTONE_STANDARD.md`
+Handoff: `infra/wateringHole/handoffs/LTEE_GUIDESTONE_SUBSYSTEM_HANDOFF_MAY11_2026.md`
+
+### Wave 6 Ownership
+
+| Layer | Responsibility | Status |
+|-------|---------------|--------|
+| L2 (primalSpring) | Targeted GuideStone standard, scope graph schema, validation harness pattern | **DONE** — standard defined |
+| L3 (springs) | LTEE paper queue items (36 assignments across 6 springs), binary builds, scenario implementations | **SEEDED** — queues populated, reproduction work begins |
+| L4 (projectNUCLEUS) | Integration as subsystem, workload TOMLs, deployment testing, USB packaging | **ARCHITECTURE** — handoff created, phases 2-5 pending |
+| L5 (foundation) | Thread 04 (enviro genomics) + Thread 02 (plasma physics) data anchoring for LTEE datasets | **PENDING** — awaiting spring reproductions |
+
+### Wave 6 Paper-Spring Assignments
+
+| Spring | Papers | Count |
+|--------|--------|------:|
+| wetSpring | B1–B8, E1, E5 | 10 |
+| neuralSpring | B1–B4, B6–B9, E2–E5 | 12 |
+| groundSpring | B1–B4, B6–B9 | 8 |
+| hotSpring | B2, B9 | 2 |
+| healthSpring | B5, E2, E4 | 3 |
+| airSpring | E3 | 1 |
+| **Total** | | **36** |
+
+### Wave 6 Milestones
+
+- [x] Phase 1: Architecture + queue seeding (THIS UPDATE)
+- [ ] Phase 2: Spring reproductions (L3)
+- [ ] Phase 3: Binary bundle + data assembly (L2 + L4)
+- [ ] Phase 4: Integration + deployment testing (L4)
+- [ ] Phase 5: External deployment to Barrick Lab (L4)
