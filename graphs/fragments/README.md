@@ -10,17 +10,17 @@ complete graphs; fragments show which canonical patterns each graph includes.
 
 ## The Three Atomics
 
-| Fragment | Particle | Primals | Description |
-|----------|----------|---------|-------------|
-| `tower_atomic` | Electron | BearDog + Songbird | Trust boundary — crypto, discovery, mesh |
-| `node_atomic` | Proton | Tower + ToadStool + barraCuda + coralReef | Compute substrate — dispatch, execute, compile |
-| `nest_atomic` | Neutron | Tower + NestGate + provenance trio | Storage + provenance — content-addressed data + lineage |
+| Fragment | Particle | Primals | Count | Description |
+|----------|----------|---------|------:|-------------|
+| `tower_atomic` | Electron | BearDog + Songbird + skunkBat | 3 | Trust boundary — crypto, discovery, defense |
+| `node_atomic` | Proton | Tower + ToadStool + barraCuda + coralReef | 6 | Compute substrate — dispatch, execute, compile |
+| `nest_atomic` | Neutron | Tower + NestGate + provenance trio | 7 | Storage + provenance — content-addressed data + lineage |
 
 ## Supporting Patterns
 
 | Fragment | Primals | Description |
 |----------|---------|-------------|
-| `nucleus` | Tower + Node + Nest (9 primals) | Full NUCLEUS — all three atomics bound together |
+| `nucleus` | Tower + Node + Nest (10 primals) | Full NUCLEUS — all three atomics bound together |
 | `meta_tier` | biomeOS + Squirrel + petalTongue | Cross-atomic primals — orchestration, AI, UI |
 | `provenance_trio` | rhizoCrypt + loamSpine + sweetGrass | Sub-pattern within Nest — DAG + ledger + attribution |
 

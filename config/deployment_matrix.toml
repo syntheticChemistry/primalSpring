@@ -28,22 +28,22 @@ description = "NUCLEUS atomic model — Phase 31 aligned"
 
 [atomics.tower]
 particle = "electron"
-primals = ["beardog", "songbird"]
-description = "Trust boundary — crypto + discovery"
+primals = ["beardog", "songbird", "skunkbat"]
+description = "Trust boundary — crypto + discovery + defense"
 
 [atomics.node]
 particle = "proton"
-primals = ["beardog", "songbird", "toadstool", "barracuda", "coralreef"]
-description = "Compute substrate — dispatch + execute + compile"
+primals = ["beardog", "songbird", "skunkbat", "toadstool", "barracuda", "coralreef"]
+description = "Compute substrate — Tower + dispatch + execute + compile"
 
 [atomics.nest]
 particle = "neutron"
-primals = ["beardog", "songbird", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
-description = "Storage + provenance — content-addressed data + lineage"
+primals = ["beardog", "songbird", "skunkbat", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+description = "Storage + provenance — Tower + content-addressed data + lineage"
 
 [atomics.nucleus]
-primals = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
-description = "Full atom — Tower + Node + Nest"
+primals = ["beardog", "songbird", "skunkbat", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+description = "Full atom — Tower + Node + Nest (10 domain primals)"
 
 [atomics.meta_tier]
 primals = ["biomeos", "squirrel", "petaltongue"]
@@ -423,7 +423,7 @@ transport = "uds_first"
 experiments = "core"
 priority = "P0"
 status = "untested"
-notes = "Full NUCLEUS — includes NestGate, ToadStool, Squirrel"
+notes = "Full NUCLEUS — 10 core + 3 meta primals. First nucleus cell to advance to pass (interstadial target)."
 
 [[cells]]
 id = "nucleus-x86-mobile-uds"

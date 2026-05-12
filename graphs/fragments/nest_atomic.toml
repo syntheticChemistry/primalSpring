@@ -18,10 +18,10 @@
 
 [fragment]
 name = "nest_atomic"
-description = "Tower + NestGate (storage) + provenance trio (rhizoCrypt + loamSpine + sweetGrass) — the neutron"
-version = "2.0.0"
+description = "Tower (BearDog + Songbird + skunkBat) + NestGate (storage) + provenance trio (rhizoCrypt + loamSpine + sweetGrass) — the neutron"
+version = "3.0.0"
 particle = "neutron"
-node_count = 6
+node_count = 7
 includes = ["tower_atomic", "provenance_trio"]
 
 [[fragment.nodes]]
@@ -50,9 +50,20 @@ security_model = "btsp"
 capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]
 
 [[fragment.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 3
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+capabilities = ["defense.audit", "defense.recon", "defense.threat", "defense.alert"]
+
+[[fragment.nodes]]
 name = "nestgate"
 binary = "nestgate"
-order = 3
+order = 4
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -63,7 +74,7 @@ capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.ex
 [[fragment.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
-order = 4
+order = 5
 required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
@@ -78,7 +89,7 @@ capabilities = [
 [[fragment.nodes]]
 name = "loamspine"
 binary = "loamspine"
-order = 5
+order = 6
 required = false
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
@@ -89,7 +100,7 @@ capabilities = ["spine.create", "spine.get", "spine.seal", "entry.append", "entr
 [[fragment.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
-order = 6
+order = 7
 required = false
 depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"

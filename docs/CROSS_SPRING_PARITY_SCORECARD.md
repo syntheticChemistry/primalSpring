@@ -2,7 +2,7 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 11, 2026 — Phase 60+ (v0.9.25, zero upstream gaps, 8/8 Tier 4 IPC-first, LTEE reproductions active, Pillar 5 gate met, Wave 7 contract testing shipped, Wave 8 compute trio composition shipped)
+**Last updated**: May 12, 2026 — Phase 32 atomic model (skunkBat in Tower, Nest reconciled with provenance trio, Wave 8 upstream progress: barraCuda v0.4.0 stadial gate, toadStool Phase A+B complete, coralReef soft-deprecated absorbed crates)
 **Audited by**: primalSpring composition audit
 **Method**: Pulled all 8 springs to HEAD, assessed each across 9 axes
 
@@ -118,9 +118,9 @@ barraCuda) as the Node atomic's sovereign compute pipeline:
 | W8-04 | **DONE** | Compute trio gate tests 1-4 in `server_ecosystem_compose.rs` |
 | W8-05 | **DONE** | `compute_trio_smoke.toml` deploy graph (6-phase trio health+capabilities+math) |
 | W8-06 | **DONE** | gen4 `SOVEREIGN_COMPUTE_TRIO_SKETCH.md` — composition pattern + warm-catch sovereignty |
-| W8-07 | OPEN | toadStool ember/glowplug absorption (upstream) |
-| W8-08 | OPEN | coralReef domain boundary cleanup (upstream) |
-| W8-09 | OPEN | barraCuda sovereign dispatch E2E wiring (upstream) |
+| W8-07 | **IN PROGRESS** | toadStool Phase A+B absorbed; **Phase C (coral-driver) pending** |
+| W8-08 | **IN PROGRESS** | coralReef coral-ember/glowplug soft-deprecated; Phase C/D markers |
+| W8-09 | **DONE** | barraCuda v0.4.0 stadial gate — 15-tier PrecisionTier, 71/71 IPC |
 
 **gen4 sketch**: `whitePaper/gen4/architecture/SOVEREIGN_COMPUTE_TRIO_SKETCH.md` connects
 the compute trio to the HOW/WHERE/WHAT composition principle, warm-catch sovereignty pattern,
@@ -181,7 +181,17 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | 9 | Gaming / Creative | **NO** | YES | YES | Needs expression (ludoSpring) |
 | 10 | Provenance / Economics | **NO** | **NO** | **NO** | **EMPTY** (ludoSpring + primalSpring) |
 
-**Foundation seeding**: 5/10 threads fully active. Thread 5 elevated from EMPTY → ACTIVE (this wave). Threads 3, 4, 8, 9 need expressions. Thread 10 needs full seeding.
+**Foundation seeding**: 5/10 threads fully active. Thread 5 elevated from EMPTY → ACTIVE (Wave 10). Threads 3, 4, 8, 9 need expressions. Thread 10 needs full seeding.
+
+### Spring → Thread Ownership for Remaining Seeding
+
+| Thread | Name | Owner Spring | Action Needed |
+|--------|------|-------------|---------------|
+| 3 | Immunology | **healthSpring** | Add expression mapping (immune pathway models → thread targets) |
+| 4 | Environmental Genomics | **wetSpring** | Add expression + define targets (metagenomic diversity metrics) |
+| 8 | Human Health | **healthSpring** | Add expression mapping (PK/PD models → clinical targets) |
+| 9 | Gaming / Creative | **ludoSpring** | Add expression (game science patterns → creative economy targets) |
+| 10 | Provenance / Economics | **ludoSpring** + **primalSpring** | Full seeding: sources, targets, expression (NFT/attestation models) |
 
 ### projectNUCLEUS Tier Status
 
@@ -210,6 +220,51 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | **airSpring** | N/A | **G** T6 active | **G** Tier 1 | T6 36 targets → foundation |
 | **ludoSpring** | N/A | **Y** T9+T10 need seed | **Y** Tier 1 partial | T9 expression + T10 seeding |
 | **primalSpring** | N/A | **Y** T10 co-owner | **G** coordination | T10 seeding + validation graphs |
+
+## Phase 32: Composition Gap Sweep (May 12, 2026)
+
+### neuralSpring Nest Decision
+
+neuralSpring's proto-nucleate intentionally **excludes `nest_atomic`** — weight storage
+via NestGate IPC is absent from the upstream proof. The spring-deploy graph includes
+Nest + provenance trio for richer local validation.
+
+**Decision**: This is **intentional dual representation**. neuralSpring's proto-nucleate
+validates the ML inference pipeline (Tower + Node + Meta) without storage dependencies.
+The spring-deploy graph adds Nest for lab completeness. Both are correct for their scope.
+
+**Action**: neuralSpring should document this split in its `PRIMAL_GAPS.md` as a design
+decision, not a gap. If weight storage via NestGate IPC becomes a production requirement
+(e.g., lithoSpore ML modules need model persistence), the proto-nucleate should evolve.
+
+### healthSpring BTSP Transport Negotiation
+
+healthSpring's `FAMILY_SEED` configuration causes unconditional BTSP negotiation attempts
+to all peers, breaking mixed deployments where some primals don't support BTSP server mode.
+
+**Root cause**: healthSpring's dual-tower ionic pattern uses a `FAMILY_SEED` env var that
+triggers BTSP client attempts to every discovered primal. Primals without BTSP server
+endpoints reject these connections.
+
+**Coordination needed** (primalSpring L2):
+1. primalSpring should define a `btsp.capabilities` method for primals to advertise BTSP
+   server support (already implied by `btsp.negotiate` but not explicitly queryable)
+2. healthSpring should probe `btsp.capabilities` before attempting negotiation
+3. This aligns with the `capability.resolve` pattern Songbird will ship
+
+### Per-Spring Composition Gap Summary (Phase 32)
+
+| Spring | Open Gaps | Phase 32 Action |
+|--------|-----------|-----------------|
+| hotSpring | GAP-HS-087 (trio rewire), GAP-HS-005 (ionic) | Trio rewire active; ionic awaits BearDog `crypto.sign_contract` |
+| wetSpring | PG-02 (trio live), PG-03 (capability.resolve), PG-04 (NestGate live), PG-05 (sovereignty) | Awaits Songbird `capability.resolve` + lab infra |
+| groundSpring | GAP-GS-008 (ionic), GAP-GS-009 (BTSP/barraCuda) | Awaits upstream ionic + BTSP wire |
+| airSpring | AG-005 through AG-012 | Per-gap: Squirrel science path, coralReef compile, opaque dispatch, NestGate weather, petalTongue, TensorSession, Anderson shader, toadStool live API |
+| healthSpring | Ionic bridge, NestGate egress fence, BTSP interop | See BTSP coordination above |
+| neuralSpring | Nest weight IPC, BTSP session | See Nest decision above |
+| ludoSpring | GAP-01 (coralReef SM), GAP-02 (barraCuda domain), GAP-04 (TensorSession) | Awaits coralReef SM rebuild + upstream barraCuda domain methods |
+
+---
 
 ## Primordial Extinction Wave — COMPLETED (May 9, 2026)
 

@@ -7,9 +7,9 @@
 # Node (proton) provides the compute substrate.
 # Nest (neutron) provides storage and provenance.
 #
-# NUCLEUS = Tower + Node + Nest = BearDog + Songbird + ToadStool +
-#           barraCuda + coralReef + NestGate + rhizoCrypt +
-#           loamSpine + sweetGrass (9 domain primals)
+# NUCLEUS = Tower + Node + Nest = BearDog + Songbird + skunkBat +
+#           ToadStool + barraCuda + coralReef + NestGate + rhizoCrypt +
+#           loamSpine + sweetGrass (10 domain primals)
 #
 # Meta-tier primals (biomeOS, Squirrel, petalTongue) layer on top
 # of NUCLEUS at any level. nucleus_complete.toml is NUCLEUS + meta.
@@ -20,8 +20,8 @@
 [fragment]
 name = "nucleus"
 description = "Tower (electron) + Node (proton) + Nest (neutron) — the full atom"
-version = "2.0.0"
-node_count = 9
+version = "3.0.0"
+node_count = 10
 includes = ["tower_atomic", "node_atomic", "nest_atomic"]
 
 [[fragment.nodes]]
@@ -50,9 +50,20 @@ security_model = "btsp"
 capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers", "discovery.announce", "http.request"]
 
 [[fragment.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 3
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+capabilities = ["defense.audit", "defense.recon", "defense.threat", "defense.alert"]
+
+[[fragment.nodes]]
 name = "toadstool"
 binary = "toadstool"
-order = 3
+order = 4
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -63,7 +74,7 @@ capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities", "
 [[fragment.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 4
+order = 5
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -77,7 +88,7 @@ capabilities = [
 [[fragment.nodes]]
 name = "coralreef"
 binary = "coralreef"
-order = 5
+order = 6
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -88,7 +99,7 @@ capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.compile.c
 [[fragment.nodes]]
 name = "nestgate"
 binary = "nestgate"
-order = 6
+order = 7
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -99,7 +110,7 @@ capabilities = ["storage.store", "storage.retrieve", "storage.list", "storage.ex
 [[fragment.nodes]]
 name = "rhizocrypt"
 binary = "rhizocrypt"
-order = 7
+order = 8
 required = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
@@ -114,7 +125,7 @@ capabilities = [
 [[fragment.nodes]]
 name = "loamspine"
 binary = "loamspine"
-order = 8
+order = 9
 required = false
 depends_on = ["beardog", "rhizocrypt"]
 health_method = "health.liveness"
@@ -125,7 +136,7 @@ capabilities = ["spine.create", "spine.get", "spine.seal", "entry.append", "entr
 [[fragment.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
-order = 9
+order = 10
 required = false
 depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"

@@ -12,10 +12,10 @@ The ecosystem's atomic patterns are maturing into well-defined composition tiers
 
 | Atomic | Particle | Primals | Capabilities |
 |--------|----------|---------|-------------|
-| **Tower** | Electron | bearDog + songbird | security, discovery |
-| **Node** | Proton | Tower + toadStool + barraCuda + coralReef | + compute, tensor, shader |
-| **Nest** | Neutron | Tower + NestGate + squirrel | + storage, ai |
-| **NUCLEUS** | Atom | Tower + Node + Nest + meta-tier | all 13 domains |
+| **Tower** | Electron | bearDog + songbird + skunkBat (3) | security, discovery, defense |
+| **Node** | Proton | Tower + toadStool + barraCuda + coralReef (6) | + compute, tensor, shader |
+| **Nest** | Neutron | Tower + NestGate + provenance trio (7) | + storage, dag, ledger, attribution |
+| **NUCLEUS** | Atom | Tower + Node + Nest (10 core) + meta-tier (3) = 13 | all 13 domains |
 
 The **provenance trio** (rhizoCrypt + loamSpine + sweetGrass) recently shipped
 composition readiness (S67, v0.7.34, JH-5 Phase 3). The **compute trio**

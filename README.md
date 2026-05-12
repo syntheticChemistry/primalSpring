@@ -8,7 +8,7 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 689+ (635+ passed + 54 ignored; unit + integration + doc-tests + proptest) |
+| **Tests** | 602+ lib (602 passed + 2 ignored; unit + integration + doc-tests + proptest) |
 | **Experiments** | 89 (20 tracks) — 21 absorbed as UniBin validation scenarios |
 | **Deploy Graphs** | 77 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 8 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 1 composition + 13 root + 12 cell graphs + 4 desktop app graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
@@ -226,11 +226,11 @@ primalSpring ships 76 deploy graph TOMLs using fragment-first composition (all n
 
 | Graph | Pattern | Primals |
 |-------|---------|---------|
-| `tower_atomic_bootstrap.toml` | Sequential | beardog, songbird |
-| `tower_full_capability.toml` | Sequential | beardog, songbird (full caps) |
-| `nest_deploy.toml` | Sequential | beardog, songbird, nestgate, squirrel |
+| `tower_atomic_bootstrap.toml` | Sequential | beardog, songbird, skunkbat |
+| `tower_full_capability.toml` | Sequential | beardog, songbird, skunkbat (full caps) |
+| `nest_deploy.toml` | Sequential | beardog, songbird, skunkbat, nestgate (+provenance trio) |
 | `node_atomic_compute.toml` | Sequential | beardog, songbird, toadstool |
-| `nucleus_complete.toml` | Sequential | biomeos, beardog, songbird, nestgate, toadstool, squirrel (+trio) |
+| `nucleus_complete.toml` | Sequential | biomeos, beardog, songbird, skunkbat, nestgate, toadstool, squirrel (+compute trio +provenance trio) |
 | `tower_ai.toml` | Sequential | beardog, songbird, squirrel |
 | `nest_viz.toml` | Sequential | beardog, songbird, nestgate, petaltongue |
 | `node_ai.toml` | Sequential | beardog, songbird, toadstool, squirrel |

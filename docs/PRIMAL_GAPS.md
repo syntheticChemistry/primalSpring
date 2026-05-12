@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-11
+> **Last updated**: 2026-05-12 (Phase 32 atomic model — skunkBat in Tower, Nest reconciled with provenance trio)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -567,9 +567,9 @@ Wave 8 sketches the architecture locally and hands upstream to primal teams.
 | W8-04 | Compute trio gate tests in `server_ecosystem_compose.rs` — Gate 1: coralReef `shader.compile.capabilities`, Gate 2: toadStool `compute.capabilities`, Gate 3: barraCuda `stats.mean` round-trip, Gate 4: sovereign E2E compile+dispatch | primalSpring | **DONE** (May 11) |
 | W8-05 | Deploy graph `compute_trio_smoke.toml` — 6-phase health + capabilities + math round-trip for all three primals | primalSpring | **DONE** (May 11) |
 | W8-06 | gen4 sketch `SOVEREIGN_COMPUTE_TRIO_SKETCH.md` — HOW/WHERE/WHAT as gen4 composition pattern, warm-catch as sovereignty pattern, era-agnostic compute, budding/absorption model | primalSpring | **DONE** (May 11) |
-| W8-07 | toadStool ember/glowplug absorption (Phases 1-6) — absorb coral-ember (228 tests) + coral-glowplug (436 tests) + coral-driver hardware, validate on Akida/AMD, generalize cylinder, serve `compute.dispatch.execute` | toadStool | **OPEN** (upstream) |
-| W8-08 | coralReef domain boundary cleanup — extract hardware code to toadStool, retain compiler domain only (`shader.compile.*`) | coralReef | **OPEN** (upstream, depends on W8-07) |
-| W8-09 | barraCuda sovereign dispatch E2E wiring — wire `SovereignDevice` through trio IPC (compile + dispatch), absorb bearDog crypto IPC (Wave 101) | barraCuda | **OPEN** (upstream) |
+| W8-07 | toadStool ember/glowplug absorption (Phases 1-6) — absorb coral-ember + coral-glowplug + coral-driver hardware | toadStool | **IN PROGRESS** — Phase A+B complete (ember+glowplug absorbed), S243-S244 deep debt done. **Phase C (coral-driver) pending** — VFIO, AMD/NVIDIA hw, DRM, device abstraction. |
+| W8-08 | coralReef domain boundary cleanup — extract hardware code to toadStool, retain compiler domain only (`shader.compile.*`) | coralReef | **IN PROGRESS** — coral-ember/glowplug soft-deprecated (crate-level deprecation docs). RDNA2 atomics fix shipped. Phase C/D transition markers in place. |
+| W8-09 | barraCuda sovereign dispatch E2E wiring — wire `SovereignDevice` through trio IPC (compile + dispatch) | barraCuda | **DONE** (v0.4.0) — 15-tier PrecisionTier, sovereign dispatch wire extracted, IPC coverage sweep (71/71 methods), bearDog crypto audit confirmed non-redundant. Stadial gate release. |
 
 ### Upstream Handoff
 
@@ -580,7 +580,35 @@ See `docs/COMPUTE_TRIO_EVOLUTION.md` for full architecture and handoff matrix.
 
 ---
 
-## Interstadial Exit Criteria (May 11, 2026)
+## Wave 10: Phase 32 Atomic Model Evolution + Temporal Review (May 12, 2026)
+
+**Owner**: primalSpring team
+**Priority**: HIGH — structural model alignment before stadial
+**Status**: **DONE** (May 12)
+
+The temporal ecosystem review identified structural drift between the Rust
+`AtomicType` model and the graph fragment definitions. Phase 32 resolves this:
+
+| Change | Before | After |
+|--------|--------|-------|
+| **Tower** | bearDog + songbird (2) | bearDog + songbird + **skunkBat** (3) |
+| **Tower capabilities** | security, discovery | security, discovery, **defense** |
+| **Node** | Tower(2) + compute trio (5) | Tower(3) + compute trio (**6**) |
+| **Nest primals** | bearDog, songbird, nestGate, **squirrel** (4) | bearDog, songbird, **skunkBat**, nestGate, **rhizoCrypt, loamSpine, sweetGrass** (7) |
+| **Nest capabilities** | security, discovery, storage, **ai** | security, discovery, **defense**, storage, **dag, ledger, attribution** |
+| **NUCLEUS core** | 9 primals | **10** primals |
+| **Fragment versions** | 2.0.0 | **3.0.0** |
+
+### Artifacts
+
+- `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` — full ecosystem temporal review
+- `docs/LIVE_SCIENCE_API.md` — Tier 2 wire contract (toadstool.validate, list_workloads)
+- Updated: `config/deployment_matrix.toml`, all `graphs/fragments/*.toml`
+- Updated: `ecoPrimal/src/coordination/mod.rs` (AtomicType + 602 tests pass)
+
+---
+
+## Interstadial Exit Criteria (May 12, 2026)
 
 The interstadial ends when sovereignty capabilities are structurally wired and
 shadow runs can begin. Five pillars define the exit gate. Full details:

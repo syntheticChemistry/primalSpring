@@ -29,11 +29,11 @@ pub use probes::{
 /// Atomic composition layer — each represents a testable deployment target.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AtomicType {
-    /// `BearDog` + Songbird (crypto + mesh). Minimal NUCLEUS composition.
+    /// `BearDog` + Songbird + skunkBat (crypto + mesh + defense). The electron shell.
     Tower,
-    /// Tower + compute triangle (`ToadStool` + `barraCuda` + `coralReef`).
+    /// Tower + compute trio (`ToadStool` + `barraCuda` + `coralReef`). 6 primals.
     Node,
-    /// Tower + `NestGate` + Squirrel (adds storage + AI bridge).
+    /// Tower + `NestGate` + provenance trio (`rhizoCrypt` + `LoamSpine` + `sweetGrass`). 7 primals.
     Nest,
     /// All 13 primals: Tower + Node + Nest + meta-tier.
     FullNucleus,
@@ -51,12 +51,21 @@ impl AtomicType {
     #[must_use]
     pub const fn required_capabilities(self) -> &'static [&'static str] {
         match self {
-            Self::Tower => &["security", "discovery"],
-            Self::Node => &["security", "discovery", "compute", "tensor", "shader"],
-            Self::Nest => &["security", "discovery", "storage", "ai"],
+            Self::Tower => &["security", "discovery", "defense"],
+            Self::Node => &["security", "discovery", "defense", "compute", "tensor", "shader"],
+            Self::Nest => &[
+                "security",
+                "discovery",
+                "defense",
+                "storage",
+                "dag",
+                "ledger",
+                "attribution",
+            ],
             Self::FullNucleus => &[
                 "security",
                 "discovery",
+                "defense",
                 "compute",
                 "tensor",
                 "shader",
@@ -67,7 +76,6 @@ impl AtomicType {
                 "visualization",
                 "ledger",
                 "attribution",
-                "defense",
             ],
         }
     }
@@ -101,10 +109,15 @@ impl AtomicType {
     #[must_use]
     pub const fn required_primals(self) -> &'static [&'static str] {
         match self {
-            Self::Tower => &[primal_names::BEARDOG, primal_names::SONGBIRD],
+            Self::Tower => &[
+                primal_names::BEARDOG,
+                primal_names::SONGBIRD,
+                primal_names::SKUNKBAT,
+            ],
             Self::Node => &[
                 primal_names::BEARDOG,
                 primal_names::SONGBIRD,
+                primal_names::SKUNKBAT,
                 primal_names::TOADSTOOL,
                 primal_names::BARRACUDA,
                 primal_names::CORALREEF,
@@ -112,12 +125,16 @@ impl AtomicType {
             Self::Nest => &[
                 primal_names::BEARDOG,
                 primal_names::SONGBIRD,
+                primal_names::SKUNKBAT,
                 primal_names::NESTGATE,
-                primal_names::SQUIRREL,
+                primal_names::RHIZOCRYPT,
+                primal_names::LOAMSPINE,
+                primal_names::SWEETGRASS,
             ],
             Self::FullNucleus => &[
                 primal_names::BEARDOG,
                 primal_names::SONGBIRD,
+                primal_names::SKUNKBAT,
                 primal_names::TOADSTOOL,
                 primal_names::BARRACUDA,
                 primal_names::CORALREEF,
@@ -127,7 +144,6 @@ impl AtomicType {
                 primal_names::LOAMSPINE,
                 primal_names::SWEETGRASS,
                 primal_names::PETALTONGUE,
-                primal_names::SKUNKBAT,
             ],
         }
     }
@@ -156,9 +172,9 @@ impl AtomicType {
     #[must_use]
     pub const fn description(self) -> &'static str {
         match self {
-            Self::Tower => "Security + Discovery (crypto + mesh)",
-            Self::Node => "Tower + Compute triangle (dispatch + math + shaders)",
-            Self::Nest => "Tower + Storage + AI bridge (+ persistence)",
+            Self::Tower => "Security + Discovery + Defense (crypto + mesh + audit)",
+            Self::Node => "Tower + Compute trio (dispatch + math + shaders)",
+            Self::Nest => "Tower + Storage + Provenance trio (content + DAG + ledger + attribution)",
             Self::FullNucleus => "All 13 primals: Tower + Node + Nest + meta-tier",
         }
     }
@@ -298,46 +314,47 @@ mod tests {
     use super::*;
 
     #[test]
-    fn tower_requires_two_primals() {
-        assert_eq!(AtomicType::Tower.required_primals().len(), 2);
-        assert!(
-            AtomicType::Tower
-                .required_primals()
-                .contains(&primal_names::BEARDOG)
-        );
-        assert!(
-            AtomicType::Tower
-                .required_primals()
-                .contains(&primal_names::SONGBIRD)
-        );
+    fn tower_requires_three_primals() {
+        let primals = AtomicType::Tower.required_primals();
+        assert_eq!(primals.len(), 3);
+        assert!(primals.contains(&primal_names::BEARDOG));
+        assert!(primals.contains(&primal_names::SONGBIRD));
+        assert!(primals.contains(&primal_names::SKUNKBAT));
     }
 
     #[test]
-    fn node_extends_tower_with_compute_triangle() {
+    fn node_extends_tower_with_compute_trio() {
         let primals = AtomicType::Node.required_primals();
-        assert_eq!(primals.len(), 5);
+        assert_eq!(primals.len(), 6);
         assert!(primals.contains(&primal_names::BEARDOG));
         assert!(primals.contains(&primal_names::SONGBIRD));
+        assert!(primals.contains(&primal_names::SKUNKBAT));
         assert!(primals.contains(&primal_names::TOADSTOOL));
         assert!(primals.contains(&primal_names::BARRACUDA));
         assert!(primals.contains(&primal_names::CORALREEF));
     }
 
     #[test]
-    fn nest_extends_tower_with_nestgate_and_squirrel() {
+    fn nest_extends_tower_with_nestgate_and_provenance_trio() {
         let primals = AtomicType::Nest.required_primals();
+        assert_eq!(primals.len(), 7);
+        assert!(primals.contains(&primal_names::BEARDOG));
+        assert!(primals.contains(&primal_names::SONGBIRD));
+        assert!(primals.contains(&primal_names::SKUNKBAT));
         assert!(primals.contains(&primal_names::NESTGATE));
-        assert!(primals.contains(&primal_names::SQUIRREL));
+        assert!(primals.contains(&primal_names::RHIZOCRYPT));
+        assert!(primals.contains(&primal_names::LOAMSPINE));
+        assert!(primals.contains(&primal_names::SWEETGRASS));
     }
 
     #[test]
     fn full_nucleus_requires_twelve_primals() {
         let primals = AtomicType::FullNucleus.required_primals();
         assert_eq!(primals.len(), 12);
+        assert!(primals.contains(&primal_names::SKUNKBAT));
         assert!(primals.contains(&primal_names::BARRACUDA));
         assert!(primals.contains(&primal_names::CORALREEF));
         assert!(primals.contains(&primal_names::PETALTONGUE));
-        assert!(primals.contains(&primal_names::SKUNKBAT));
     }
 
     #[test]
@@ -425,7 +442,7 @@ mod tests {
     fn validate_composition_graceful_when_nothing_running() {
         let result = validate_composition(AtomicType::Tower);
         assert_eq!(result.atomic, AtomicType::Tower);
-        assert_eq!(result.primals.len(), 2);
+        assert_eq!(result.primals.len(), 3);
         assert!(!result.discovery_ok);
         assert!(!result.all_healthy);
     }
@@ -434,7 +451,7 @@ mod tests {
     fn validate_composition_by_capability_graceful_when_nothing_running() {
         let result = validate_composition_by_capability(AtomicType::Tower);
         assert_eq!(result.atomic, AtomicType::Tower);
-        assert_eq!(result.primals.len(), 2);
+        assert_eq!(result.primals.len(), 3);
         assert!(!result.all_healthy);
     }
 
@@ -448,14 +465,14 @@ mod tests {
     fn validate_composition_node() {
         let result = validate_composition(AtomicType::Node);
         assert_eq!(result.atomic, AtomicType::Node);
-        assert_eq!(result.primals.len(), 5);
+        assert_eq!(result.primals.len(), 6);
     }
 
     #[test]
     fn validate_composition_nest() {
         let result = validate_composition(AtomicType::Nest);
         assert_eq!(result.atomic, AtomicType::Nest);
-        assert_eq!(result.primals.len(), 4);
+        assert_eq!(result.primals.len(), 7);
     }
 
     #[test]
@@ -466,17 +483,19 @@ mod tests {
     }
 
     #[test]
-    fn required_capabilities_tower_has_security_and_discovery() {
+    fn required_capabilities_tower_has_security_discovery_defense() {
         let caps = AtomicType::Tower.required_capabilities();
         assert!(caps.contains(&"security"));
         assert!(caps.contains(&"discovery"));
-        assert_eq!(caps.len(), 2);
+        assert!(caps.contains(&"defense"));
+        assert_eq!(caps.len(), 3);
     }
 
     #[test]
-    fn required_capabilities_full_nucleus_has_fourteen() {
+    fn required_capabilities_full_nucleus_has_thirteen() {
         let caps = AtomicType::FullNucleus.required_capabilities();
         assert_eq!(caps.len(), 13);
+        assert!(caps.contains(&"defense"));
         assert!(caps.contains(&"tensor"));
         assert!(caps.contains(&"shader"));
         assert!(caps.contains(&"visualization"));

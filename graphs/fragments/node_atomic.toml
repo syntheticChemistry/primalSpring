@@ -23,10 +23,10 @@
 
 [fragment]
 name = "node_atomic"
-description = "Tower + ToadStool (dispatch) + barraCuda (execute) + coralReef (compile) — the proton"
-version = "2.0.0"
+description = "Tower (BearDog + Songbird + skunkBat) + ToadStool (dispatch) + barraCuda (execute) + coralReef (compile) — the proton"
+version = "3.0.0"
 particle = "proton"
-node_count = 5
+node_count = 6
 includes = ["tower_atomic"]
 
 [[fragment.nodes]]
@@ -57,7 +57,7 @@ capabilities = ["ipc.resolve", "ipc.register", "ipc.discover", "discovery.peers"
 [[fragment.nodes]]
 name = "toadstool"
 binary = "toadstool"
-order = 3
+order = 4
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -68,7 +68,7 @@ capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities", "
 [[fragment.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 4
+order = 5
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -82,7 +82,7 @@ capabilities = [
 [[fragment.nodes]]
 name = "coralreef"
 binary = "coralreef"
-order = 5
+order = 6
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"

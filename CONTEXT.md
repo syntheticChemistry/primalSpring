@@ -71,7 +71,16 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Phase 60+ (post-interstadial, eukaryotic UniBin) — 680 workspace tests (632 passed + 48 ignored; 664 package tests: 616 passed + 48 ignored), 89 experiments (20 tracks), 74 deploy graphs (fragment-first composition), 413 registered capability methods. **Security gate (JH-0)**: `MethodGate` adopted by **13/13 primals**. **JH-1 RESOLVED** (BearDog W94): Ed25519-signed ionic tokens with scope patterns, expiry, JTI — `identity.create`, `auth.issue_ionic`, `auth.verify_ionic`. MethodGate validates signature + scope. 3 primals extract bearer tokens. **GAP-11 CLOSED** (18/18, barraCuda S55): `ml.mlp_train` + 6 `nautilus.*` server-session methods. Zero DEBT markers, zero unsafe blocks (`SeedConfig` + `OnceLock` replaced `env::set_var`). **Desktop NUCLEUS**: 13-primal live substrate with `desktop_nucleus.sh`, 13/13 healthy on heartbeat, 4 desktop app graphs (shell, system monitor, esotericWebb, The Rhizome). **Phase 56 Desktop Substrate**: 8 new experiments (exp099–exp106) including The Rhizome roguelike micro-game and micro-desktop shell composition. **Live gap harvest**: 23 gaps documented (LIVE_DEPLOYMENT_GAP_REPORT_PHASE56.md). **Provenance trio E2E fully resolved**: corrected parameter schemas for rhizoCrypt, loamSpine, sweetGrass. **Two-tier crypto architecture**: published seed fingerprints → HKDF base keys → family keys → per-atomic purpose keys. **All 13 primals resolved** — zero upstream asks remaining. Upstream absorbed: NestGate v0.4.70 S48 (encrypt-at-rest), biomeOS v3.30 (deep debt), Songbird W178 (anyhow), Squirrel AN (HTTP providers + discovery + crypto), BearDog W75 (purpose-key module extraction), barraCuda Sprint 47b (self-registration + role-based naming), sweetGrass v0.7.28 (braid + anchor signing delegation), loamSpine (Tower-signed ledger entries), ToadStool S205-S208 (encrypted dispatch + self-registration + deep debt). Full IPC method map (`docs/NUCLEUS_IPC_METHOD_MAP.md`). Crypto bootstrap (`tools/nucleus_crypto_bootstrap.sh`).
+v0.9.25 Phase 32 atomic model (May 12, 2026) — 602 library tests (all passing),
+89 experiments (20 tracks), 77 deploy graphs, 413 registered capability methods
+(301 exercised, 72%). Phase 32 atomic evolution: Tower = 3 primals (bearDog +
+songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7 (Tower +
+nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
+**Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
+**Waves 7/8/9 complete locally**, 3 upstream Wave 8 items tracked (W8-07/08/09).
+Zero DEBT markers, zero unsafe blocks. 22 scenarios, `LIVE_SCIENCE_API.md`
+formalizes Tier 2 wire contract. All 13 primals at zero debt.
+See `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` for full ecosystem audit.
 **plasmidBin decoupled** — all direct filesystem coupling to `../plasmidBin` removed (20 files).
 Binary discovery standardized: `$ECOPRIMALS_PLASMID_BIN` → `$XDG_DATA_HOME/ecoPrimals/plasmidBin`.
 `tools/fetch_primals.sh` bootstraps binaries from GitHub Releases. plasmidBin CI/CD
