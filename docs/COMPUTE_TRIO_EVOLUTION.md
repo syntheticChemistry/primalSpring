@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE (May 12, 2026 — Phase 32 atomic model)
 **Owner**: primalSpring (L2 gate) — defines contracts, hands upstream to primal teams
-**Phase**: Interstadial — ember/glowplug Phases A+B absorbed, Phase C batches 1-4 LANDED (S245-S249), integration + Phase D pending
+**Phase**: Interstadial — Phase C **COMPLETE** (S245-S250, batches 1-7), Phase D plumbing IN (S250), `toadstool.validate` **IMPLEMENTED** (S250)
 
 ---
 
@@ -263,13 +263,21 @@ toadStool S245-S249 absorbed the coral-driver hardware layer into the new
 `println!` → `tracing`. `RegisterAccess`/`ApplyError` localized in `mapped_bar`
 to drop `gsp` coupling.
 
-**Remaining (integration + deferred pieces)**:
-- VFIO channel orchestration (devinit, glowplug, HBM2, diagnostics)
-- Sovereign init / stages (`sovereign_init`, `sovereign_stages`)
-- NVIDIA: `bar0`, `probe`, FECS-adjacent (blocked on gsp/firmware boundary)
-- `nv/vfio_compute` + full `NvDevice` (orchestration across probe/bar0/GEM/pushbuf/QMD)
-- `pcie.rs` (coral-gpu) — needs local `GpuTarget` or adapter
-- QMD / `DRIVER_CBUF_INDEX` must stay aligned with coralReef (documented contract)
+**Phase C COMPLETE** (S250, batches 5-7): VFIO channel tree (~68 files: pfifo,
+registers, page_tables, oracle, kepler_channel, mmu_fault, mmu_oracle, bar2_init,
+channel_layout, devinit + script interpreter, glowplug, HBM2 training, diagnostics),
+`sovereign_init.rs`, `sovereign_stages.rs`, `nv/bar0.rs`, `nv/falcon_pio.rs`,
+`nv/gsp_bridge.rs`, `nv/hardware_guard.rs`. 520 cylinder tests, 8,809 workspace.
+
+**Phase D plumbing IN** (S250): `LocalDeviceFactory`, `try_local_dispatch()`,
+`toadstool-server` depends on `toadstool-cylinder`. Default path still forwards
+to coralReef (factory not hooked in production wiring — E2E sovereign dispatch
+awaits VFIO PBDMA + coralReef FECS). `probe.rs` and `vfio_compute/` stay in
+coralReef behind `GspBridge` trait boundary (deliberate).
+
+**`toadstool.validate` IMPLEMENTED** (S250): workload pre-flight validation
+routed in handler, returns `valid`, `gpu_available`, `precision_tier`,
+`estimated_dispatch_time_ms`, `warnings`, `required_capabilities`.
 
 ### Phase 4: Validate with Akida NPU + AMD
 
@@ -363,7 +371,7 @@ GPU hardware dispatch awaits toadStool Phase C (coral-driver absorption).
 | `s_node_atomic` | node-atomic | Structural + discovery + health for Node (6 primals) | **LIVE** |
 | `s_composition_parity` | composition-parity | Cross-atomic pipeline (tensor.stats.mean) | **LIVE** |
 
-**Next**: Full E2E GPU execution proof (toadStool Phase C batches 1-4 landed; remaining: VFIO channel integration + Phase D local dispatch wiring).
+**Next**: Full E2E GPU execution proof (Phase C complete, Phase D plumbing in; remaining: factory hook-up + VFIO PBDMA + coralReef FECS — stadial work).
 
 ---
 
@@ -371,7 +379,7 @@ GPU hardware dispatch awaits toadStool Phase C (coral-driver absorption).
 
 | Team | primalSpring Provides | Team Action |
 |------|----------------------|-------------|
-| **toadStool** | Architecture doc, IPC contracts, gate tests, deploy graph with `compute.dispatch.execute` | **Phase C batches 1-4 LANDED** (S245-S249, cylinder crate 415 tests). Remaining: VFIO channel integration, sovereign init, NvDevice, pcie.rs. **Phase D**: wire local dispatch, stop coralReef forwarding. |
+| **toadStool** | Architecture doc, IPC contracts, gate tests, deploy graph with `compute.dispatch.execute` | **Phase C COMPLETE** (S245-S250, 7 batches, 520 cylinder tests). Phase D plumbing in (local dispatch path, factory abstraction). `toadstool.validate` IMPLEMENTED. E2E sovereign awaits factory hook-up + VFIO PBDMA. |
 | **coralReef** | Domain split boundary, `shader.compile.*` contract shape expectations | Keep compiler domain, extract hardware code, serve `shader.compile.*` only |
 | **barraCuda** | Sovereign dispatch E2E contract, `stats.mean` gate test expectations | Absorb bearDog crypto IPC (Wave 101), wire sovereign dispatch E2E through trio |
 | **hotSpring** | Compute trio smoke graph, validation scenarios | Continue dispatch validation (Titan V, K80), exercise `sovereign-dispatch` on warm GPUs |
@@ -413,8 +421,9 @@ care whether toadStool dispatches via VFIO or DRM — it calls
 | 2 | + JSON-RPC via toadStool (`toadstool.validate`) | `--format json` + Tier 2 API |
 | 3 | + petalTongue live dashboards | Nothing new from springs |
 
-All 8 springs are at Tier 1. `toadstool.list_workloads` is **WIRED** (S245+).
-Tier 2 is blocked on `toadstool.validate` only (specified in `LIVE_SCIENCE_API.md`).
+All 8 springs are at Tier 1. `toadstool.validate` is **IMPLEMENTED** (S250).
+`toadstool.list_workloads` is **WIRED** (S245+). **Tier 2 is UNBLOCKED** —
+springs can now wire `--format json` + `toadstool.validate` for Tier 2 convergence.
 
 ---
 

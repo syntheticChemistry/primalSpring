@@ -3,7 +3,7 @@
 **Version**: 1.0.0
 **Date**: May 12, 2026
 **Owner**: primalSpring (L2) + toadStool (L1)
-**Status**: SPECIFICATION — partially implemented (toadstool.list_workloads wired S245+)
+**Status**: ACTIVE — `toadstool.validate` IMPLEMENTED (S250), `toadstool.list_workloads` WIRED (S245+)
 
 ---
 
@@ -178,7 +178,7 @@ anchor attribution.
 
 | Method | Owner | Status | Blocks |
 |--------|-------|--------|--------|
-| `toadstool.validate` | toadStool | **NOT IMPLEMENTED** | All Tier 2 downstream |
+| `toadstool.validate` | toadStool | **IMPLEMENTED** (S250) | — |
 | `toadstool.list_workloads` | toadStool | **WIRED** (S245+) | — |
 | `compute.dispatch.submit` | toadStool | **WIRED** (Wave 8) | — |
 | `barracuda.precision.route` | barraCuda | **NOT IMPLEMENTED** | hotSpring precision routing |
@@ -190,7 +190,7 @@ anchor attribution.
 
 ## Adoption Path
 
-1. **toadStool implements `toadstool.validate`** — post-Phase C (list_workloads already wired S245+)
+1. ~~**toadStool implements `toadstool.validate`**~~ — **DONE** (S250) + list_workloads (S245+)
 2. **primalSpring adds gate tests** for the new methods (Wave 8 closure: W8-07)
 3. **projectNUCLEUS wires Tier 2** notebooks to use JSON-RPC instead of CLI
 4. **lithoSpore modules** gain live validation via `toadstool.validate`

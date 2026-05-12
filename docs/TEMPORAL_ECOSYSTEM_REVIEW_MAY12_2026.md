@@ -52,14 +52,15 @@ but not operationally validated**.
 
 | Primal | Coverage | Debt | Critical Path |
 |--------|----------|------|---------------|
-| toadStool | ~85%+ | MEDIUM | **Phase C batches 1-4 LANDED** (S245-S249, cylinder 415 tests). Remaining: VFIO channels, sovereign init, NvDevice, Phase D |
+| toadStool | ~85%+ | LOW | **Phase C COMPLETE** (S245-S250, 520 cylinder tests, 8,809 workspace). Phase D plumbing in. `toadstool.validate` IMPLEMENTED. |
 | barraCuda | v0.4.0 | LOW | VFIO Titan V revalidation, DF64 NVK E2E, 90% coverage |
 | coralReef | ~65% | MEDIUM-HIGH | `bind_stat` timeout, FECS/GPCCS cold silicon, `naga::Module` direct ingest |
 
-**toadStool Phase C batches 1-4 landed** (S245-S249, +20,090 lines, cylinder
-crate 415 tests). `toadstool.list_workloads` is now **WIRED**. Remaining
-integration (VFIO channels, NvDevice, Phase D local dispatch) still blocks
-`toadstool.validate` and compute sovereignty E2E.
+**toadStool Phase C COMPLETE** (S245-S250, +42,000 lines, 520 cylinder tests,
+8,809 workspace). `toadstool.validate` **IMPLEMENTED** (S250). `toadstool.list_workloads`
+**WIRED** (S245+). Phase D plumbing in (local dispatch path, factory abstraction).
+E2E sovereign dispatch awaits factory hook-up + VFIO PBDMA (stadial work).
+**Tier 2 Science API is UNBLOCKED.**
 
 ### Nest (neutron) — Provenance Ready, Extracellular Pending
 
@@ -132,7 +133,7 @@ the validation infrastructure needs to execute.
 
 ### Immediate (sentinel convergence)
 
-1. **toadStool Phase C integration** — batches 1-4 LANDED (S245-S249); remaining: VFIO channels, NvDevice, Phase D
+1. ~~**toadStool Phase C**~~ — **COMPLETE** (S245-S250). `toadstool.validate` IMPLEMENTED. Phase D plumbing in.
 2. **coralReef VFIO/FECS** — silicon init alignment
 3. **songbird `capability.resolve` + coverage** — unblocks springs
 4. **skunkBat integration hardening** — rate-limits JH-5 pipeline

@@ -23,7 +23,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — HSM mock `#[cfg(test)]` (Wave 98) |
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
-| toadStool | 8,704+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-2 auth.mode env + eprintln→tracing (S233). Phase C cylinder crate: 415 tests (S245-S249) |
+| toadStool | 8,809+ | **ADOPTED** | FULL | L3 | **CLEAN** — Phase C complete (S245-S250, cylinder 520 tests). `toadstool.validate` IMPLEMENTED. Phase D plumbing in. |
 | biomeOS | 7,919 | **ADOPTED** | FULL | consumer | **CLEAN** — test helpers gated `#[cfg(test)]` (v3.49) |
 | nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — dep hygiene + hardcode cleanup (S61), content.* transport parity (S60) |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
@@ -567,7 +567,7 @@ Wave 8 sketches the architecture locally and hands upstream to primal teams.
 | W8-04 | Compute trio gate tests in `server_ecosystem_compose.rs` — Gate 1: coralReef `shader.compile.capabilities`, Gate 2: toadStool `compute.capabilities`, Gate 3: barraCuda `stats.mean` round-trip, Gate 4: sovereign E2E compile+dispatch | primalSpring | **DONE** (May 11) |
 | W8-05 | Deploy graph `compute_trio_smoke.toml` — 6-phase health + capabilities + math round-trip for all three primals | primalSpring | **DONE** (May 11) |
 | W8-06 | gen4 sketch `SOVEREIGN_COMPUTE_TRIO_SKETCH.md` — HOW/WHERE/WHAT as gen4 composition pattern, warm-catch as sovereignty pattern, era-agnostic compute, budding/absorption model | primalSpring | **DONE** (May 11) |
-| W8-07 | toadStool ember/glowplug absorption (Phases 1-6) — absorb coral-ember + coral-glowplug + coral-driver hardware | toadStool | **MAJOR PROGRESS** — Phases A+B complete. **Phase C batches 1-4 LANDED** (S245-S249): `toadstool-cylinder` crate (+20,090 lines, 415 tests, 8,704 workspace tests). DRM, AMD, NV, VFIO foundation absorbed. Remaining: VFIO channels, sovereign init, NvDevice, pcie.rs. Phase D (local dispatch) pending. `toadstool.list_workloads` **WIRED**. |
+| W8-07 | toadStool ember/glowplug absorption (Phases 1-6) — absorb coral-ember + coral-glowplug + coral-driver hardware | toadStool | **DONE** — Phase C **COMPLETE** (S245-S250, batches 1-7, 520 cylinder tests, 8,809 workspace). Phase D plumbing in (local dispatch path, factory abstraction). `toadstool.validate` **IMPLEMENTED** (S250). `toadstool.list_workloads` **WIRED** (S245+). E2E sovereign dispatch awaits factory hook-up + coralReef FECS (stadial work). |
 | W8-08 | coralReef domain boundary cleanup — extract hardware code to toadStool, retain compiler domain only (`shader.compile.*`) | coralReef | **IN PROGRESS** — coral-ember/glowplug soft-deprecated (crate-level deprecation docs). RDNA2 atomics fix shipped. Phase C/D transition markers in place. |
 | W8-09 | barraCuda sovereign dispatch E2E wiring — wire `SovereignDevice` through trio IPC (compile + dispatch) | barraCuda | **DONE** (v0.4.0) — 15-tier PrecisionTier, sovereign dispatch wire extracted, IPC coverage sweep (71/71 methods), bearDog crypto audit confirmed non-redundant. Stadial gate release. |
 

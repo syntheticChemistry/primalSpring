@@ -146,9 +146,9 @@ paper = "B2"
 | **primalSpring** | 689+ | N/A | coordination | 5 (meta) | YES | coordination | coordination |
 | **wetSpring** | 1,613 | 1 | YES | 5 + papers | YES | B7 STARTED | 4 |
 
-**All 8 springs are at Tier 1.** `toadstool.list_workloads` is **WIRED** (S245+).
-Tier 2 requires `toadstool.validate`, which is specified in `LIVE_SCIENCE_API.md`
-but not yet implemented upstream (blocked on toadStool Phase C integration + Phase D).
+**All 8 springs are at Tier 1.** `toadstool.validate` is **IMPLEMENTED** (S250).
+`toadstool.list_workloads` is **WIRED** (S245+). **Tier 2 is UNBLOCKED** —
+springs can wire `--format json` + `toadstool.validate` for Tier 2 convergence now.
 
 ### What projectNUCLEUS Needs Next
 
