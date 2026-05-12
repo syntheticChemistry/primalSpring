@@ -272,8 +272,10 @@ channel_layout, devinit + script interpreter, glowplug, HBM2 training, diagnosti
 **Phase D plumbing IN** (S250): `LocalDeviceFactory`, `try_local_dispatch()`,
 `toadstool-server` depends on `toadstool-cylinder`. Default path still forwards
 to coralReef (factory not hooked in production wiring — E2E sovereign dispatch
-awaits VFIO PBDMA + coralReef FECS). `probe.rs` and `vfio_compute/` stay in
-coralReef behind `GspBridge` trait boundary (deliberate).
+awaits VFIO PBDMA). coralReef FECS **STABILITY PROOF SHIPPED** (Sprint 7 —
+`boot_gr_falcons_with_recovery`, 3× retry + PMC GR reset, 4790 tests).
+`probe.rs` and `vfio_compute/` stay in coralReef behind `GspBridge` trait
+boundary (deliberate).
 
 **`toadstool.validate` IMPLEMENTED** (S250): workload pre-flight validation
 routed in handler, returns `valid`, `gpu_available`, `precision_tier`,
@@ -371,7 +373,7 @@ GPU hardware dispatch awaits toadStool Phase C (coral-driver absorption).
 | `s_node_atomic` | node-atomic | Structural + discovery + health for Node (6 primals) | **LIVE** |
 | `s_composition_parity` | composition-parity | Cross-atomic pipeline (tensor.stats.mean) | **LIVE** |
 
-**Next**: Full E2E GPU execution proof (Phase C complete, Phase D plumbing in; remaining: factory hook-up + VFIO PBDMA + coralReef FECS — stadial work).
+**Next**: Full E2E GPU execution proof (Phase C complete, Phase D plumbing in, coralReef FECS stability proof shipped; remaining: factory hook-up + VFIO PBDMA — stadial work).
 
 ---
 

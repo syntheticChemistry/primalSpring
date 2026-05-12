@@ -40,7 +40,7 @@ All 13 primals pass the structural gate: **13/13 MethodGate, 13/13 BTSP AEAD,
 | Primal | Coverage | Debt | Horizon Gaps |
 |--------|----------|------|--------------|
 | bearDog | 90.5% | LOW | `crypto.sign_contract` ionic lease (H2), purpose-key derivation (H2), federation (H3) |
-| songbird | 73% | MEDIUM | `capability.resolve` (H2), coverage 73→90% (H2), Tor/TLS delegation (H2), VPS relay (H3) |
+| songbird | 73% | LOW | ~~VPS relay~~ **OPS-READY** (Wave 202). `capability.resolve` (H2), coverage 73→90% (H2), Tor/TLS delegation (H2) |
 | skunkBat | ~338 tests | HIGH (integration) | BearDog live lineage (H2), network enforcement (H2), NestGate data protection (H2), federation tests (H3) |
 
 **Cascade risk**: skunkBat's HIGH integration debt propagates to every atomic
@@ -54,7 +54,7 @@ but not operationally validated**.
 |--------|----------|------|---------------|
 | toadStool | ~85%+ | LOW | **Phase C COMPLETE** (S245-S250, 520 cylinder tests, 8,809 workspace). Phase D plumbing in. `toadstool.validate` IMPLEMENTED. |
 | barraCuda | v0.4.0 | LOW | VFIO Titan V revalidation, DF64 NVK E2E, 90% coverage |
-| coralReef | ~65% | MEDIUM-HIGH | `bind_stat` timeout, FECS/GPCCS cold silicon, `naga::Module` direct ingest |
+| coralReef | ~65% | LOW | ~~FECS/GPCCS~~ **STABILITY PROOF SHIPPED** (Sprint 7 — 4,790 tests). `bind_stat` timeout (minor), `naga::Module` direct ingest (H2) |
 
 **toadStool Phase C COMPLETE** (S245-S250, +42,000 lines, 520 cylinder tests,
 8,809 workspace). `toadstool.validate` **IMPLEMENTED** (S250). `toadstool.list_workloads`
@@ -118,35 +118,35 @@ E2E sovereign dispatch awaits factory hook-up + VFIO PBDMA (stadial work).
 
 | Pillar | Status | Blocking Items |
 |--------|--------|----------------|
-| 1. Primal Sovereignty | PARTIAL | BearDog TLS shadow, Songbird NAT+VPS, BTSP dual-auth |
-| 2. projectNUCLEUS Deploys | NOT YET | H2-2b/3a/3b/3c shadow runs |
+| 1. Primal Sovereignty | **SENTINELS RESOLVED** | ~~Songbird VPS~~ OPS-READY (W202), ~~coralReef FECS~~ SHIPPED (Sprint 7). BearDog TLS + BTSP dual-auth remain (projectNUCLEUS) |
+| 2. projectNUCLEUS Deploys | NOT STARTED | H2-2b/3a/3b/3c shadow runs — all upstream ready |
 | 3. ABG Hosting | PARTIAL | WCM compositions through Nest+Node |
-| 4. lithoSpore | NOT YET | 2+ modules Tier 1 with real data |
+| 4. lithoSpore | **GATE MET** | Module 1+2 PASS Tier 1+2 with BLAKE3 (May 12) |
 | 5. River Delta | **GATE MET** | 8/8 Tier 4, PG thresholds |
 
-**Transition requires shadow runs more than new code** — the wiring exists,
-the validation infrastructure needs to execute.
+**Zero upstream code blockers remain.** Transition requires shadow run execution
+(projectNUCLEUS owns). plasmidBin checksum desync needs resolution.
 
 ---
 
 ## Temporal Priority Stack
 
-### Immediate (sentinel convergence)
+### RESOLVED (sentinel convergence — all complete)
 
-1. ~~**toadStool Phase C**~~ — **COMPLETE** (S245-S250). `toadstool.validate` IMPLEMENTED. Phase D plumbing in.
-2. **coralReef VFIO/FECS** — silicon init alignment
-3. **songbird `capability.resolve` + coverage** — unblocks springs
-4. **skunkBat integration hardening** — rate-limits JH-5 pipeline
+1. ~~**toadStool Phase C**~~ — **COMPLETE** (S245-S250). `toadstool.validate` IMPLEMENTED.
+2. ~~**coralReef FECS/GPCCS**~~ — **STABILITY PROOF SHIPPED** (Sprint 7, 4790 tests).
+3. ~~**Songbird VPS relay**~~ — **OPS-READY** (Wave 202 — systemd + credentials + deployment guide).
+4. ~~**lithoSpore Tier 1**~~ — **PASS** (Module 1+2 Tier 1+2 with BLAKE3).
+5. ~~**Foundation threads**~~ — **10/10 active**, all expressions authored.
 
-### Near-term (gate + delta)
+### Immediate (execution + infrastructure)
 
-5. **LIVE_SCIENCE_API.md** — formalize Tier 2 methods
-6. **Spring composition gap sweep** — drive PG-* resolution
-7. **Foundation threads 3, 4, 8, 9, 10** — expression + seeding
-8. **Nucleus cell testing** — move matrix from `untested` to `pass`
+6. **plasmidBin checksum sync** — Songbird + coralReef binaries desynced
+7. **projectNUCLEUS shadow runs** (H2-2b/3a/3b/3c) — all upstream ready, deploy immediately
+8. **skunkBat E2E operational validation** — JH-5 Phase 3 shipped, exercise through deploy graphs
+9. **Ionic runtime** — cross-spring RPC, CompositionContext L2 pass
 
-### Stadial entry (shadow runs)
+### Stadial entry
 
-9. **projectNUCLEUS shadow runs** (H2-2b/3a/3b/3c)
-10. **lithoSpore Tier 1** with real Dryad/NCBI data
-11. **ABG WCM compositions** through full deploy graphs
+10. **ABG WCM compositions** through full deploy graphs + provenance trio
+11. **Upstream crate extraction** (wgsl-precision, proc-sysinfo) — community engagement
