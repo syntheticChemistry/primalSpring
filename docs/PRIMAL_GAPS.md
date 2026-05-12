@@ -221,7 +221,7 @@ ludoSpring, groundSpring, airSpring)
 
 | Spring | Post-Evolution State | Next Target |
 |--------|---------------------|-------------|
-| healthSpring | V63, gS L5, UniBin, 999 tests, Tier 4 (`default=[]`), Thread 3 seeded | LTEE B5/E2/E4, Thread 7+, NestGate wiring |
+| healthSpring | V64, gS L5, UniBin, 999 tests, Tier 4 (`default=[]`), B5 COMPLETE, Threads 3+5+8 active, `--format json`, 17 scenarios | LTEE E2/E4, Thread 7+, NestGate wiring |
 | ludoSpring | V63, gS L4, UniBin, 854 tests, Tier 4 (`default=["ipc"]`), SPDX | coralReef IPC, domain parity |
 | hotSpring | v0.6.32, gS L6, UniBin, 1,025 tests, Tier 4 (`default=[]`), LTEE B2, 3-GPU sovereign | Titan V FECS, K80 livepatch |
 | wetSpring | V163, gS L4, UniBin, 1,613 tests, Tier 4 (`default=[]`), LTEE B7, 4 PG open | close PG-02–05 (external), L5 |
@@ -402,7 +402,7 @@ foundation seeding, plasmidBin release readiness
 | airSpring | v0.10.0 | L4 | Done | AG-001 manifest, NestGate/Squirrel | E3 queued | LTEE E3, gS L5+ |
 | ludoSpring | V63 | L4 | Done | coralReef IPC (GAP-01), domain parity (GAP-02) | N/A | coralReef wiring |
 | groundSpring | V135 | L4 | Done | coralReef IPC, PRNG Phase 2b | **B2+B1 DONE** | lithoSpore integration |
-| healthSpring | V63 | L5 | Done | ionic bridge (upstream) | B5/E2/E4 queued | Thread 7+ seed, LTEE |
+| healthSpring | V64 | L5 | Done | ionic bridge (upstream) | B5 COMPLETE, E2/E4 queued | Thread 7+ seed, LTEE E2/E4 |
 
 ### Layer 4: Downstream Products — Interstadial (projectNUCLEUS, gardens)
 

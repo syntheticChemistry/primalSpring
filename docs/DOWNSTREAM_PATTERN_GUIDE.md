@@ -49,7 +49,7 @@ Each LTEE reproduction follows a standard pattern:
 | **groundSpring** | B2 (Wiser 2013 — fitness dynamics) | **COMPLETE** Py 9/9 + Rust 10/10 | `control/ltee_fitness/expected_values.json` | Module 2: ltee-fitness |
 | **groundSpring** | B3 (Good 2017 — clonal interference) | **COMPLETE** (V136) | `control/ltee_clonal/` | Module 3: ltee-clonal |
 | **hotSpring** | B2 (Anderson/Wiser — fitness) | **COMPLETE** Tier 1+2 | `experiments/results/ltee/ltee_b2_anderson_expected.json` | Module 7: ltee-anderson |
-| **healthSpring** | B5 (Leonard 2024 — symbiont PK/PD) | **BASELINE DONE** (V63) | `control/ltee_symbiont_pkpd/expected_values.json` | Module: ltee-symbiont-pk |
+| **healthSpring** | B5 (Leonard 2024 — symbiont PK/PD) | **COMPLETE** Py 8/8 + Rust 8/8 (V64) + `--format json` | `control/ltee_symbiont_pkpd/expected_values.json` + `bin/validate_ltee_b5` | Module: ltee-symbiont-pk |
 | **neuralSpring** | B1 (mutation accumulation ML) | **Py 8/8 + Rust binary DONE** (S201b) | `control/ltee_mutation_accumulation/` + `src/bin/validate_ltee_b1_*` | ML surrogate modules |
 | **wetSpring** | B7 (Tenaillon 2016 — 264 genomes) | **STARTED** (Exp380 documented) | `experiments/380_ltee_b7_tenaillon_mutation_accumulation.md` | Module 6: ltee-genomics |
 
@@ -61,7 +61,7 @@ Each LTEE reproduction follows a standard pattern:
 - **groundSpring B1-B3** outputs are ready for integration into `ltee-mutation`, `ltee-fitness`, `ltee-clonal` modules
 - **hotSpring B2** ready for `ltee-anderson` module integration
 - **neuralSpring** Rust binary `validate_ltee_b1_mutation_accumulation` now exists (S201b) — ready for lithoSpore ML modules
-- **healthSpring** B5 (symbiont PK/PD) `expected_values.json` ready — new lithoSpore module candidate
+- **healthSpring** B5 (symbiont PK/PD) **COMPLETE** — `expected_values.json` + Rust binary `validate_ltee_b5` (8/8 checks, `--format json`) ready for lithoSpore ingestion
 - **wetSpring B7** is in progress — feeds `ltee-genomics` when 264-genome pipeline completes
 - **All 7 modules** are scaffold/SKIP until upstream data flows in
 
@@ -78,12 +78,12 @@ Foundation threads have three components: **expression** (the question), **data 
 |--------|------|---------------|:----------:|:-------:|:-------:|--------|
 | 1 | Whole-Cell Modeling | hotSpring, wetSpring, healthSpring | YES | YES (27) | YES (24) | **ACTIVE** |
 | 2 | Plasma Physics / QCD | hotSpring | YES | YES | YES | **ACTIVE** |
-| 3 | Immunology / Drug Discovery | wetSpring, airSpring, healthSpring | **NO** | YES | YES | **Needs expression** |
+| 3 | Immunology / Drug Discovery | wetSpring, airSpring, healthSpring | YES (V64) | YES | YES | **ACTIVE** |
 | 4 | Environmental Genomics | wetSpring, airSpring | **NO** | YES | **NO** | **Needs expression + targets** |
 | 5 | Evolutionary Biology / LTEE | groundSpring, neuralSpring, wetSpring, hotSpring | YES | YES (12) | YES (18) | **ACTIVE** (seeded May 11) |
 | 6 | Agricultural Science | airSpring, groundSpring, wetSpring | YES | YES | YES | **ACTIVE** |
 | 7 | Anderson Mathematics | hotSpring, groundSpring, wetSpring, neuralSpring | YES | YES | YES | **ACTIVE** |
-| 8 | Human Health / Clinical | healthSpring | **NO** | YES | YES | **Needs expression** |
+| 8 | Human Health / Clinical | healthSpring | YES (V64) | YES | YES | **ACTIVE** |
 | 9 | Gaming / Creative | ludoSpring | **NO** | YES | YES | **Needs expression** |
 | 10 | Provenance / Economics | ludoSpring, primalSpring | **NO** | **NO** | **NO** | **Empty** |
 
@@ -94,7 +94,7 @@ Thread 5 was the critical empty backbone for lithoSpore. Now seeded with:
 - **Data sources**: 12 NCBI/Dryad accessions (`data/sources/thread05_ltee.toml`)
 - **Data targets**: 18 validation targets (`data/targets/thread05_ltee_targets.toml`) — 14 validated (groundSpring B1-B3, hotSpring B2, neuralSpring B1-ML), 4 pending (wetSpring B7)
 
-**Remaining empty threads**: 3 (Immunology), 4 (Environmental Genomics — needs expression + targets), 8 (Human Health), 9 (Gaming), 10 (Provenance)
+**Remaining empty threads**: 4 (Environmental Genomics — needs expression + targets), 9 (Gaming), 10 (Provenance)
 
 ### Foundation Seed Pattern
 
