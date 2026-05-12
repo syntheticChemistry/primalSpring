@@ -52,13 +52,14 @@ but not operationally validated**.
 
 | Primal | Coverage | Debt | Critical Path |
 |--------|----------|------|---------------|
-| toadStool | 83.6% | MEDIUM-HIGH | **Phase C** (coral-driver absorption): VFIO, AMD/NVIDIA hw, DRM, device abstraction |
+| toadStool | ~85%+ | MEDIUM | **Phase C batches 1-4 LANDED** (S245-S249, cylinder 415 tests). Remaining: VFIO channels, sovereign init, NvDevice, Phase D |
 | barraCuda | v0.4.0 | LOW | VFIO Titan V revalidation, DF64 NVK E2E, 90% coverage |
 | coralReef | ~65% | MEDIUM-HIGH | `bind_stat` timeout, FECS/GPCCS cold silicon, `naga::Module` direct ingest |
 
-**toadStool Phase C** is the single highest-leverage upstream work item. It
-unblocks: compute sovereignty E2E, hotSpring hardware validation, and downstream
-Tier 2 APIs (`toadstool.validate`, `toadstool.list_workloads`).
+**toadStool Phase C batches 1-4 landed** (S245-S249, +20,090 lines, cylinder
+crate 415 tests). `toadstool.list_workloads` is now **WIRED**. Remaining
+integration (VFIO channels, NvDevice, Phase D local dispatch) still blocks
+`toadstool.validate` and compute sovereignty E2E.
 
 ### Nest (neutron) — Provenance Ready, Extracellular Pending
 
@@ -131,7 +132,7 @@ the validation infrastructure needs to execute.
 
 ### Immediate (sentinel convergence)
 
-1. **toadStool Phase C** — coral-driver absorption (highest leverage)
+1. **toadStool Phase C integration** — batches 1-4 LANDED (S245-S249); remaining: VFIO channels, NvDevice, Phase D
 2. **coralReef VFIO/FECS** — silicon init alignment
 3. **songbird `capability.resolve` + coverage** — unblocks springs
 4. **skunkBat integration hardening** — rate-limits JH-5 pipeline

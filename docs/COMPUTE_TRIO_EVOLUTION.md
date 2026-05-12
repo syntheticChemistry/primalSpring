@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE (May 12, 2026 — Phase 32 atomic model)
 **Owner**: primalSpring (L2 gate) — defines contracts, hands upstream to primal teams
-**Phase**: Interstadial — ember/glowplug Phases A+B absorbed, Phase C (coral-driver) pending
+**Phase**: Interstadial — ember/glowplug Phases A+B absorbed, Phase C batches 1-4 LANDED (S245-S249), integration + Phase D pending
 
 ---
 
@@ -21,16 +21,24 @@ The **provenance trio** (rhizoCrypt + loamSpine + sweetGrass) shipped
 composition readiness (S67, v0.7.34, JH-5 Phase 3). The **compute trio**
 (toadStool + barraCuda + coralReef) has infrastructure and contract-shape
 validation (Wave 8), with `s_compute_triangle` exercising the full 5-phase
-compile→dispatch pipeline shape. E2E hardware dispatch proof awaits Phase C
-(coral-driver absorption into toadStool).
+compile→dispatch pipeline shape. toadStool Phase C batches 1-4 (S245-S249)
+absorbed the coral-driver hardware layer into a new `toadstool-cylinder` crate
+(415 tests). Integration pieces (VFIO channels, sovereign init, NvDevice) and
+Phase D (local dispatch without coralReef forwarding) remain.
 
 **Temporal shift (May 12, 2026)**: The ember/glowplug interface has been
-absorbed into toadStool (Phases A+B done, S243-S244 debt resolved). The
-remaining hardware layer (coral-driver: VFIO, AMD/NVIDIA, DRM, device
-abstraction) is the final cutover. Downstream springs validate via
-composition patterns — Python → Rust lib → IPC composition — and never
-interact with ember/glowplug directly. coralReef keeps the compiler domain
-(`shader.compile.*`); toadStool absorbs all hardware lifecycle.
+absorbed into toadStool (Phases A+B done, S243-S244 debt resolved). Phase C
+batches 1-4 landed in S245-S249 (+20,090 lines), creating the `toadstool-cylinder`
+crate with DRM, AMD (full ioctl/PM4/GEM/shader_binary), NVIDIA (identity,
+generation, pushbuf, ioctl, QMD builders), and VFIO (types, ioctl, DMA, PCI
+discovery, device layer, BAR cartography, vendor metal, memory topology, ember
+client/gate). 415 cylinder tests. Remaining integration: VFIO channels,
+sovereign init/stages, NvDevice orchestration, `pcie.rs` GpuTarget adapter.
+Phase D (local dispatch — stop forwarding to coralReef's `compute.dispatch.execute`)
+is the final cutover. Downstream springs validate via composition patterns —
+Python → Rust lib → IPC composition — and never interact with ember/glowplug
+directly. coralReef keeps the compiler domain (`shader.compile.*`); toadStool
+absorbs all hardware lifecycle.
 
 The hotSpring team's sovereign compute breakthrough (3 GPUs, warm-catch
 pipeline, pure Rust ELF patching) and the wateringHole
@@ -238,13 +246,30 @@ coral-glowplug RPC methods that become toadStool's hardware surface:
 `device.register_dump`, `device.dispatch`, `device.compute_info`,
 `device.quota`, `device.lend`, `device.reclaim`, `mailbox.*`, `ring.*`
 
-### Phase 3: Absorb coral-driver hardware access — **PENDING** (highest leverage)
+### Phase 3: Absorb coral-driver hardware access — **MAJOR PROGRESS** (S245-S249)
 
-coral-driver (~50k+ LOC) hardware layer:
-- BAR0/MMIO register access → toadStool driver layer
-- VFIO channel creation, GPFIFO/pushbuf submission → toadStool dispatch
-- Sovereign init stages → toadStool device lifecycle
-- DRM ioctl wrappers (nouveau EXEC, amdgpu CS) → toadStool driver layer
+toadStool S245-S249 absorbed the coral-driver hardware layer into the new
+`toadstool-cylinder` crate (+20,090 lines, 415 tests, 8,704 workspace tests):
+
+| Session | Theme | Tests |
+|---------|-------|------:|
+| S245 | Cylinder foundation: DRM, linux_paths, hardware, error, ComputeDevice trait | 60 |
+| S246 | MMIO + full AMD path (ioctl, PM4, GEM, generation, shader_binary) | 141 |
+| S247 | NVIDIA non-GSP (identity, generation, pushbuf, ioctl, QMD builders) | 294 |
+| S248 | VFIO foundation (~40 files: types, ioctl, DMA, PCI discovery, device layer, BAR cartography, vendor metal, memory, ember client/gate) | 415 |
+| S249 | Deep debt: ~55 Duration constants, 3 dead deprecated attrs, audit clean | 415 |
+
+**`CORALREEF_*` env vars → `TOADSTOOL_*`** with legacy fallback. Last prod
+`println!` → `tracing`. `RegisterAccess`/`ApplyError` localized in `mapped_bar`
+to drop `gsp` coupling.
+
+**Remaining (integration + deferred pieces)**:
+- VFIO channel orchestration (devinit, glowplug, HBM2, diagnostics)
+- Sovereign init / stages (`sovereign_init`, `sovereign_stages`)
+- NVIDIA: `bar0`, `probe`, FECS-adjacent (blocked on gsp/firmware boundary)
+- `nv/vfio_compute` + full `NvDevice` (orchestration across probe/bar0/GEM/pushbuf/QMD)
+- `pcie.rs` (coral-gpu) — needs local `GpuTarget` or adapter
+- QMD / `DRIVER_CBUF_INDEX` must stay aligned with coralReef (documented contract)
 
 ### Phase 4: Validate with Akida NPU + AMD
 
@@ -338,7 +363,7 @@ GPU hardware dispatch awaits toadStool Phase C (coral-driver absorption).
 | `s_node_atomic` | node-atomic | Structural + discovery + health for Node (6 primals) | **LIVE** |
 | `s_composition_parity` | composition-parity | Cross-atomic pipeline (tensor.stats.mean) | **LIVE** |
 
-**Next**: Full E2E GPU execution proof (requires toadStool Phase C — coral-driver absorption, real hardware dispatch).
+**Next**: Full E2E GPU execution proof (toadStool Phase C batches 1-4 landed; remaining: VFIO channel integration + Phase D local dispatch wiring).
 
 ---
 
@@ -346,7 +371,7 @@ GPU hardware dispatch awaits toadStool Phase C (coral-driver absorption).
 
 | Team | primalSpring Provides | Team Action |
 |------|----------------------|-------------|
-| **toadStool** | Architecture doc, IPC contracts, gate tests, deploy graph with `compute.dispatch.execute` | **Phase C**: absorb coral-driver (VFIO, DRM, device abstraction), wire `compute.dispatch.execute`, validate on Akida/AMD. Phases 1-2 (ember+glowplug) DONE. |
+| **toadStool** | Architecture doc, IPC contracts, gate tests, deploy graph with `compute.dispatch.execute` | **Phase C batches 1-4 LANDED** (S245-S249, cylinder crate 415 tests). Remaining: VFIO channel integration, sovereign init, NvDevice, pcie.rs. **Phase D**: wire local dispatch, stop coralReef forwarding. |
 | **coralReef** | Domain split boundary, `shader.compile.*` contract shape expectations | Keep compiler domain, extract hardware code, serve `shader.compile.*` only |
 | **barraCuda** | Sovereign dispatch E2E contract, `stats.mean` gate test expectations | Absorb bearDog crypto IPC (Wave 101), wire sovereign dispatch E2E through trio |
 | **hotSpring** | Compute trio smoke graph, validation scenarios | Continue dispatch validation (Titan V, K80), exercise `sovereign-dispatch` on warm GPUs |
@@ -388,9 +413,8 @@ care whether toadStool dispatches via VFIO or DRM — it calls
 | 2 | + JSON-RPC via toadStool (`toadstool.validate`) | `--format json` + Tier 2 API |
 | 3 | + petalTongue live dashboards | Nothing new from springs |
 
-All 8 springs are at Tier 1. Tier 2 is blocked on `toadstool.validate` +
-`toadstool.list_workloads` (specified in `LIVE_SCIENCE_API.md`, not yet
-implemented upstream).
+All 8 springs are at Tier 1. `toadstool.list_workloads` is **WIRED** (S245+).
+Tier 2 is blocked on `toadstool.validate` only (specified in `LIVE_SCIENCE_API.md`).
 
 ---
 
