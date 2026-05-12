@@ -1,8 +1,8 @@
 # Compute Trio Evolution — Node Atomic Domain Split + Absorption
 
-**Status**: SKETCH (May 11, 2026)
+**Status**: ACTIVE (May 12, 2026 — Phase 32 atomic model)
 **Owner**: primalSpring (L2 gate) — defines contracts, hands upstream to primal teams
-**Phase**: Interstadial — pre-wiring sovereign compute composition
+**Phase**: Interstadial — ember/glowplug Phases A+B absorbed, Phase C (coral-driver) pending
 
 ---
 
@@ -17,10 +17,20 @@ The ecosystem's atomic patterns are maturing into well-defined composition tiers
 | **Nest** | Neutron | Tower + NestGate + provenance trio (7) | + storage, dag, ledger, attribution |
 | **NUCLEUS** | Atom | Tower + Node + Nest (10 core) + meta-tier (3) = 13 | all 13 domains |
 
-The **provenance trio** (rhizoCrypt + loamSpine + sweetGrass) recently shipped
+The **provenance trio** (rhizoCrypt + loamSpine + sweetGrass) shipped
 composition readiness (S67, v0.7.34, JH-5 Phase 3). The **compute trio**
-(toadStool + barraCuda + coralReef) has the infrastructure but the E2E
-sovereign dispatch path is not yet wired or tested in composition.
+(toadStool + barraCuda + coralReef) has infrastructure and contract-shape
+validation (Wave 8), with `s_compute_triangle` exercising the full 5-phase
+compile→dispatch pipeline shape. E2E hardware dispatch proof awaits Phase C
+(coral-driver absorption into toadStool).
+
+**Temporal shift (May 12, 2026)**: The ember/glowplug interface has been
+absorbed into toadStool (Phases A+B done, S243-S244 debt resolved). The
+remaining hardware layer (coral-driver: VFIO, AMD/NVIDIA, DRM, device
+abstraction) is the final cutover. Downstream springs validate via
+composition patterns — Python → Rust lib → IPC composition — and never
+interact with ember/glowplug directly. coralReef keeps the compiler domain
+(`shader.compile.*`); toadStool absorbs all hardware lifecycle.
 
 The hotSpring team's sovereign compute breakthrough (3 GPUs, warm-catch
 pipeline, pure Rust ELF patching) and the wateringHole
@@ -185,11 +195,17 @@ Response:
 
 ## Ember/Glowplug Absorption into toadStool
 
-The wateringHole handoff documents a 6-phase absorption path. toadStool
-already has the trait surface waiting — these are the implementations
-that fill the traits.
+The wateringHole handoff documents a 6-phase absorption path. Phases 1-2 are
+**DONE** (S243-S244 deep debt resolved). Phase 3 (coral-driver) is the
+remaining hardware layer — VFIO, AMD/NVIDIA, DRM, device abstraction.
 
-### Phase 1: Absorb coral-ember implementations
+The key temporal insight: ember and glowplug are **implementation details of
+toadStool's hardware domain**. Downstream springs never import or call
+ember/glowplug — they compose via `compute.dispatch.submit` (JSON-RPC over
+IPC). The absorption simplifies toadStool from "three internal crates" to
+"one primal with a unified driver layer."
+
+### Phase 1: Absorb coral-ember implementations — **DONE**
 
 coral-ember (228 tests, ~9-12k LOC) provides:
 
@@ -206,7 +222,7 @@ coral-ember RPC methods that move to toadStool:
 `ember.ring_meta.*`, `mmio.*`, `ember.sovereign.init`, `ember.devinit.*`,
 `ember.vbios.read`, `ember.kmod.*`
 
-### Phase 2: Absorb coral-glowplug implementations
+### Phase 2: Absorb coral-glowplug implementations — **DONE**
 
 coral-glowplug (436 tests, ~12-18k LOC) provides:
 
@@ -222,7 +238,7 @@ coral-glowplug RPC methods that become toadStool's hardware surface:
 `device.register_dump`, `device.dispatch`, `device.compute_info`,
 `device.quota`, `device.lend`, `device.reclaim`, `mailbox.*`, `ring.*`
 
-### Phase 3: Absorb coral-driver hardware access
+### Phase 3: Absorb coral-driver hardware access — **PENDING** (highest leverage)
 
 coral-driver (~50k+ LOC) hardware layer:
 - BAR0/MMIO register access → toadStool driver layer
@@ -260,9 +276,9 @@ dispatch entry point.
 | **Pattern** | Event → Certificate → Attribution | Compile → Dispatch → Compute |
 | **Primals** | rhizoCrypt + loamSpine + sweetGrass | coralReef + toadStool + barraCuda |
 | **Data flow** | `dag.event.append` → `session.commit` → `braid.create` | `shader.compile.wgsl` → `compute.dispatch.submit` → `tensor.*` results |
-| **Composition status** | Shipped (S67 + v0.7.34 + JH-5 Phase 3) | Infrastructure exists, E2E not wired |
+| **Composition status** | Shipped (S67 + v0.7.34 + JH-5 Phase 3) | Contract-shape validated (Wave 8); hardware E2E awaits Phase C |
 | **Domain split** | WHO (rhizoCrypt: events) / WHAT (loamSpine: certificates) / WHY (sweetGrass: attribution) | HOW (coralReef: compile) / WHERE (toadStool: hardware) / WHAT (barraCuda: math) |
-| **Absorption** | None needed (clean domain boundaries) | ember/glowplug → toadStool (hardware migration) |
+| **Absorption** | None needed (clean domain boundaries) | ember/glowplug Phases A+B **DONE** → toadStool; Phase C pending |
 
 ---
 
@@ -293,11 +309,11 @@ capability_to_primal("tensor")  → barracuda
 capability_to_primal("shader")  → coralreef
 ```
 
-### Node Atomic Definition
+### Node Atomic Definition (Phase 32)
 
 ```rust
-AtomicType::Node.required_capabilities() = ["security", "discovery", "compute", "tensor", "shader"]
-AtomicType::Node.required_primals()      = ["beardog", "songbird", "toadstool", "barracuda", "coralreef"]
+AtomicType::Node.required_capabilities() = ["security", "discovery", "defense", "compute", "tensor", "shader"]
+AtomicType::Node.required_primals()      = ["beardog", "songbird", "skunkbat", "toadstool", "barracuda", "coralreef"]
 ```
 
 ### Registry Coverage (413 methods)
@@ -309,19 +325,20 @@ AtomicType::Node.required_primals()      = ["beardog", "songbird", "toadstool", 
 | shader | coralreef | 8 | Partial (compile.capabilities) |
 | stats | barracuda | 6+ | Partial (mean, std_dev) |
 
-Key gap: `compute.dispatch.submit` → `compute.dispatch.result` E2E path
-is **registered but never exercised** — the exact gap class Wave 7 closes
-for content.
+The `compute.dispatch.submit` path is **registered and contract-shape
+exercised** in `s_compute_triangle` Phase 5. The IPC contract shape
+(binary_b64 + shader_info → dispatch_id + status) is validated; actual
+GPU hardware dispatch awaits toadStool Phase C (coral-driver absorption).
 
 ### Validation Scenarios
 
 | Scenario | ID | What It Tests | Status |
 |----------|----|----|--------|
-| `s_compute_triangle` | compute-triangle | Discovery + health for 3 capabilities | **LIVE** (compile+dispatch is SKIP placeholder) |
-| `s_node_atomic` | node-atomic | Structural + discovery + health for Node | **LIVE** |
+| `s_compute_triangle` | compute-triangle | 5-phase: discovery, coralReef health+caps, toadStool health+caps, barraCuda tensor+stats, **sovereign dispatch contract shape** (compile→dispatch E2E) | **LIVE** — Phase 5 exercises `shader.compile.wgsl` → `compute.dispatch.submit` (SKIP on unimplemented, FAIL on real errors) |
+| `s_node_atomic` | node-atomic | Structural + discovery + health for Node (6 primals) | **LIVE** |
 | `s_composition_parity` | composition-parity | Cross-atomic pipeline (tensor.stats.mean) | **LIVE** |
 
-**Missing**: Sovereign dispatch contract test (Wave 8 target).
+**Next**: Full E2E GPU execution proof (requires toadStool Phase C — coral-driver absorption, real hardware dispatch).
 
 ---
 
@@ -329,10 +346,51 @@ for content.
 
 | Team | primalSpring Provides | Team Action |
 |------|----------------------|-------------|
-| **toadStool** | Architecture doc, IPC contracts, gate tests, deploy graph with `compute.dispatch.execute` | Absorb ember/glowplug (Phases 1-3), wire `compute.dispatch.execute`, validate on Akida/AMD |
+| **toadStool** | Architecture doc, IPC contracts, gate tests, deploy graph with `compute.dispatch.execute` | **Phase C**: absorb coral-driver (VFIO, DRM, device abstraction), wire `compute.dispatch.execute`, validate on Akida/AMD. Phases 1-2 (ember+glowplug) DONE. |
 | **coralReef** | Domain split boundary, `shader.compile.*` contract shape expectations | Keep compiler domain, extract hardware code, serve `shader.compile.*` only |
 | **barraCuda** | Sovereign dispatch E2E contract, `stats.mean` gate test expectations | Absorb bearDog crypto IPC (Wave 101), wire sovereign dispatch E2E through trio |
 | **hotSpring** | Compute trio smoke graph, validation scenarios | Continue dispatch validation (Titan V, K80), exercise `sovereign-dispatch` on warm GPUs |
+
+---
+
+## Downstream Validation Pattern (Python → Rust → Composition)
+
+Springs and products never interact with ember, glowplug, or coral-driver
+directly. The downstream path is a three-tier stack where each layer
+validates through the one above it:
+
+```
+Python notebooks / scripts (science)
+  │  validates expected_values.json against LTEE ground truth
+  │
+  └──► Rust validation binary (spring/target/release/validate_ltee_*)
+        │  Rust lib validates math, correctness, reproducibility
+        │  --format json flag enables structured output for Tier 2
+        │
+        └──► IPC composition (biomeOS + primalSpring patterns)
+              │  JSON-RPC: tensor.*, stats.*, shader.compile.*, compute.dispatch.*
+              │  Degradation tiers: Full → Partial → Minimal → Standalone
+              │
+              └──► toadStool (hardware dispatch — absorbs ember/glowplug/coral-driver)
+```
+
+**Key principle**: downstream validates *composition behavior*, not
+implementation internals. A spring's LTEE reproduction doesn't know or
+care whether toadStool dispatches via VFIO or DRM — it calls
+`compute.dispatch.submit` with a compiled binary and expects results.
+
+### Convergence Tiers (from DOWNSTREAM_PATTERN_GUIDE.md)
+
+| Tier | Stack | Spring Requirement |
+|------|-------|-------------------|
+| 0 | CLI binary → `[OK]/[FAIL]` | Rust validation binary |
+| 1 | + notebook + frozen data + sporePrint | Python notebooks + `experiments/results/` |
+| 2 | + JSON-RPC via toadStool (`toadstool.validate`) | `--format json` + Tier 2 API |
+| 3 | + petalTongue live dashboards | Nothing new from springs |
+
+All 8 springs are at Tier 1. Tier 2 is blocked on `toadstool.validate` +
+`toadstool.list_workloads` (specified in `LIVE_SCIENCE_API.md`, not yet
+implemented upstream).
 
 ---
 

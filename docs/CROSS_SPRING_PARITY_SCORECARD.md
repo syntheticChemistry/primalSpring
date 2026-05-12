@@ -164,7 +164,7 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | **neuralSpring** | B1-ML (LSTM/ESN/HMM) | 8/8 | **NO** | YES | ML surrogates |
 | **wetSpring** | B7 (Tenaillon 2016) | STARTED | **NO** | **NO** | 6: ltee-genomics |
 
-**lithoSpore integration**: 4/6 reproductions ready for module ingestion. Remaining: neuralSpring Rust binary, wetSpring B7 pipeline.
+**lithoSpore integration**: 5/6 reproductions ready for module ingestion (neuralSpring Rust binary DONE — S201b `validate_ltee_b1_mutation_accumulation`). Remaining: wetSpring B7 pipeline.
 
 ### Foundation Thread Seeding Status
 
@@ -216,7 +216,7 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | **hotSpring** | **G** B2 done | **G** T2 active | **G** Tier 1 | GPU ladder → NUCLEUS workloads |
 | **healthSpring** | N/A | **Y** T3+T8 need expr | **G** Tier 1 | Thread 3+8 expressions |
 | **wetSpring** | **Y** B7 started | **Y** T4 needs expr+tgt | **G** Tier 1 | B7 pipeline + T4 seeding |
-| **neuralSpring** | **Y** Py done | **Y** T5 seeded | **G** Tier 1 | Rust validation binary |
+| **neuralSpring** | **G** Py+Rust done (S201b) | **Y** T5 seeded | **G** Tier 1 | lithoSpore ML module integration |
 | **airSpring** | N/A | **G** T6 active | **G** Tier 1 | T6 36 targets → foundation |
 | **ludoSpring** | N/A | **Y** T9+T10 need seed | **Y** Tier 1 partial | T9 expression + T10 seeding |
 | **primalSpring** | N/A | **Y** T10 co-owner | **G** coordination | T10 seeding + validation graphs |
