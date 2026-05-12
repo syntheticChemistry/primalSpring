@@ -16,7 +16,7 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 687 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 413 methods, sync-tested, zero drift | **G** 76 graphs | **G** 89 exp crates + 21 scenarios + Wave 7+8 contracts | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **primalSpring** | 689+ | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 413 methods, sync-tested, 72% exercised | **G** 77 graphs | **G** 89 exp crates + 22 scenarios + Wave 7+8+9 contracts | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
 | **hotSpring** | 1,025 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
 | **healthSpring** | 999 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 413 | **G** 7 graphs, skunkBat node | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,613 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 413 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
@@ -129,6 +129,25 @@ and era-agnostic compute (SM35 through SM120 + GFX10 + Akida NPU).
 **Springs impact**: Springs that compose Node atomic (neuralSpring for ML, hotSpring for
 QCD, ludoSpring for games, wetSpring for bio) will gain sovereign compute dispatch when
 toadStool completes the ember/glowplug absorption (W8-07).
+
+## 12. Wave 9: Domain Contract Sweep + Low-Priority Debt Closure (May 11, 2026)
+
+**primalSpring** — closes all remaining LOW/deferred gaps:
+
+| Item | Status | What |
+|------|--------|------|
+| PG-63 | **DONE** | Matplotlib Agg guidance — already reconciled (4 refs aligned) |
+| PG-54 | **DONE** | Adaptive tick model — 3 modes (fixed/adaptive/event) in `nucleus_composition_lib.sh` |
+| NestGate `storage.list` | **DONE** | Gate tests confirm opaque BLAKE3 hashes; auth scoping validated as low-risk by design |
+| W9-01 | **DONE** | `s_domain_contract_sweep` scenario — 7-phase contract test (secrets, bonding, defense, discovery, provenance, spine, network) |
+| W9-02 | **DONE** | `domain_contract_sweep.toml` deploy graph — 7-phase domain coverage |
+| W9-03 | **DONE** | Auth boundary gate tests (`nestgate_storage_list_returns_opaque_hashes`, `nestgate_storage_list_content_addressed`) |
+| W7-05 | **DONE** | `content.resolve` for petalTongue — NestGate Session 60 shipped transport parity |
+| W7-07 | **DONE** | NestGate transport parity verified — all 4 surfaces |
+
+**Metrics**: 22 scenarios, 77 deploy graphs, 301/413 methods exercised (72% coverage,
+up from 69%). Remaining 112 uncovered are test fixtures, domain-specific (game/nautilus/ml),
+or require external infrastructure — not primalSpring gate debt.
 
 ## Primordial Extinction Wave — COMPLETED (May 9, 2026)
 

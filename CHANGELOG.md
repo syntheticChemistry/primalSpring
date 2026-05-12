@@ -3,6 +3,40 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Wave 9: Domain Contract Sweep + Zero Local Debt (2026-05-11)
+
+### Added
+- **`s_domain_contract_sweep` scenario** — 7-phase contract test covering secrets,
+  bonding, defense, discovery, provenance, spine/ledger, and network domains. Exercises
+  `secrets.store`, `secrets.retrieve`, `bonding.status`, `defense.status`, `defense.events`,
+  `discovery.discover`, `discovery.protocols`, `provenance.session.create`,
+  `provenance.event.append`, `session.create`, `session.state`, `network.nat_type`,
+  `network.stun` with proper SKIP/FAIL on connection or method-not-found.
+- **`domain_contract_sweep.toml` deploy graph** — 7-phase graph validating health and
+  capabilities across bearDog, biomeOS, skunkBat, songbird, rhizoCrypt, loamSpine.
+- **Storage auth boundary gate tests** — `nestgate_storage_list_returns_opaque_hashes`
+  and `nestgate_storage_list_content_addressed` validate BLAKE3 content-addressing and
+  no metadata leakage from `storage.list`.
+- **Adaptive composition tick model (PG-54)** — `nucleus_composition_lib.sh` now supports
+  three tick modes: `fixed` (backward-compatible), `adaptive` (scales between TICK_MIN
+  and TICK_MAX based on activity), and `event` (no polling). Domain scripts set
+  `TICK_MODE`/`TICK_MIN`/`TICK_MAX` and call `tick_sleep`/`tick_mark_active`/`tick_mark_idle`.
+
+### Changed
+- **PG-63 confirmed RESOLVED** — all 4 Agg guidance references already aligned.
+- **NestGate `storage.list` auth scoping** — validated as low-risk by design (opaque
+  BLAKE3 hashes). Gate tests confirm no metadata leak. BTSP scoping remains Phase 2b stretch.
+- **`PRIMAL_GAPS.md`** — PG-54, PG-63, NestGate `storage.list` all marked RESOLVED.
+  Wave 9 contract domain sweep added. Coverage 288/413 → 301/413 (72%).
+- **`CROSS_SPRING_PARITY_SCORECARD.md`** — Section 12 (Wave 9) added, primalSpring metrics
+  updated to 22 scenarios, 77 graphs, 72% method coverage.
+
+### Status
+- **Zero local debt** — all LOW/deferred items resolved
+- **Zero critical upstream gaps** — NestGate transport parity resolved
+- **Compute trio** continuing in parallel (W8-07/08/09 upstream)
+- **Ready to hand back to projectNUCLEUS**
+
 ## [Unreleased] — NestGate Transport Parity Resolution + Zero Upstream Debt (2026-05-11)
 
 ### Changed

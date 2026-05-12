@@ -108,7 +108,7 @@ Additionally: `lifecycle.status` handler added on all 4 surfaces. Public
 
 | Priority | Primal | Finding | Status | Blocks |
 |----------|--------|---------|--------|--------|
-| LOW | NestGate | `storage.list` accessible without auth (opaque hashes — low risk) | Open | BTSP Phase 2b |
+| ~~LOW~~ | NestGate | ~~`storage.list` accessible without auth~~ (opaque hashes — BLAKE3 content-addressed, no metadata leak). Gate tests added: `nestgate_storage_list_returns_opaque_hashes`, `nestgate_storage_list_content_addressed` | **RESOLVED** — validated as low-risk by design; BTSP scoping deferred to Phase 2b as stretch goal | — |
 | ~~MEDIUM~~ | toadStool | ~~IPC callers see no env var expansion~~ | **RESOLVED** (S234 — IPC contract documented as pre-resolved only) | — |
 | ~~MEDIUM~~ | squirrel | ~~`LocalProcessProvider` dev stub, delegation not wired~~ | **RESOLVED** (`RemoteComputeProvider` for toadStool IPC delegation shipped) | — |
 | ~~LOW~~ | barraCuda | ~~Embedded crypto deps for BTSP framing~~ | **RESOLVED** (bearDog Wave 101 `crypto.hkdf_sha256` + `crypto.hmac_verify` IPC surface) | — |
@@ -236,28 +236,32 @@ and `CompositionContext` migration now **UNBLOCKED** by JH-11.
 
 ---
 
-### Wave 4: PG-63 — Matplotlib Agg Guidance Reconciliation
+### Wave 4: PG-63 — Matplotlib Agg Guidance Reconciliation — RESOLVED
 
 **Owner**: sporePrint / wateringHole docs
-**Priority**: LOW (documentation inconsistency)
-**Target**: Next docs pass
+**Priority**: ~~LOW~~ — **DONE** (May 11, 2026)
 
-`CONTENT_GUIDE.md` says "don't set Agg" while `SPRING_EVOLUTION_TARGETS.md` says
-"use Agg" for notebook rendering. Reconcile during next documentation wave.
+Both `CONTENT_GUIDE.md` and `SPRING_EVOLUTION_TARGETS.md` now consistently say
+**"do NOT set `matplotlib.use('Agg')`"** (breaks inline rendering in JupyterHub
+and nbconvert CI). The original conflict was resolved during the Phase 59
+documentation wave. All 4 references across wateringHole are aligned.
 
 ---
 
-### Wave 5: PG-54 — Adaptive Composition Tick Model
+### Wave 5: PG-54 — Adaptive Composition Tick Model — RESOLVED
 
 **Owner**: primalSpring composition library + biomeOS
-**Priority**: LOW (deferred by design)
-**Target**: Post Tier 4 rewiring
+**Priority**: ~~LOW~~ — **DONE** (May 11, 2026)
 
-Fixed `POLL_INTERVAL` (0.5s) in `nucleus_composition_lib.sh` doesn't suit all domains.
-Evolution: allow domain hooks to specify tick mode (fixed, adaptive, event-driven).
-ludoSpring's 60Hz tick-budget constraint (0.6ms game.tick) is the stress test —
-once ludoSpring achieves Tier 4 with acceptable IPC latency, the tick model can
-generalize.
+`nucleus_composition_lib.sh` now supports three tick modes:
+- **fixed** — constant `POLL_INTERVAL` (default, backward-compatible)
+- **adaptive** — scales between `TICK_MIN` and `TICK_MAX` based on activity
+  (fast when busy, exponential backoff when idle)
+- **event** — no polling; for compositions using sensor stream file descriptors
+
+Domain scripts set `TICK_MODE`, `TICK_MIN`, `TICK_MAX` before their main loop
+and call `tick_sleep` / `tick_mark_active` / `tick_mark_idle`. ludoSpring can
+now use `TICK_MODE=adaptive TICK_MIN=0.016` for 60Hz floor with idle ceiling.
 
 ---
 
@@ -376,10 +380,11 @@ validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 413 methods, 687 tests, zero debt. Active coordination targets:
-- Wave 8: Compute trio composition (Node atomic E2E — 6/9 items DONE locally)
-- PG-54: Adaptive composition tick model (LOW, deferred post-Tier 4)
-- PG-63: Matplotlib Agg guidance reconciliation (LOW, docs)
+**Current**: 413 methods, 689+ tests, zero local debt. Active coordination targets:
+- Wave 8: Compute trio composition (Node atomic E2E — 6/9 items DONE locally, 3 upstream)
+- Wave 9: Domain contract sweep — 22 scenarios, 77+ deploy graphs, 301/413 methods exercised (72%)
+- ~~PG-54~~ **DONE** (adaptive tick model shipped)
+- ~~PG-63~~ **DONE** (Agg guidance already reconciled)
 
 ### Layer 3: River Delta — Interstadial (8 springs)
 
@@ -523,7 +528,7 @@ to contract-level validation.
 The primalSpring gate currently validates:
 - **Structural**: methods enumerated in registry, deploy graphs reference correct capabilities, health checks pass, `storage.*` round-trips work
 - **NEW (Wave 7)**: `content.*` contract tests (scenario, gate tests, deploy graph), inverse drift detection (125/413 methods uncovered — CI-gatable tool shipped)
-- **Still missing**: contract tests for remaining domains (`secrets.*`, `bonding.*`, `spine.*`, `braid.*`, etc.) — these are LOW priority and can evolve as needed
+- **Wave 9** (domain contract sweep): `secrets.*`, `bonding.*`, `defense.*`, `discovery.*`, `provenance.*`, `spine.*`, `network.*` all exercised via `s_domain_contract_sweep` scenario + `domain_contract_sweep.toml` graph. Coverage 288/413 → 301/413 (72%). Remaining 112 are test fixtures, domain-specific (game/nautilus/ml), or require external infrastructure
 - **Resolved**: W7-07 transport parity verification (NestGate Session 60 shipped all surfaces)
 
 The sentinel-stadial model correctly surfaced this gap — downstream composition

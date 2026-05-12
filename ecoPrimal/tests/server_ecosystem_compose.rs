@@ -758,3 +758,100 @@ fn nestgate_content_list_includes_stored() {
         "content.list should include stored hash {hash}, got: {hashes:?}"
     );
 }
+
+// ===========================================================================
+// Storage Auth Boundary Gate (NestGate storage.list scoping — BTSP Phase 2b)
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Auth Gate 1: storage.list returns opaque hashes (no metadata leak)
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn nestgate_storage_list_returns_opaque_hashes() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-slst-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Nest)
+        .start(&family_id)
+        .expect("nest atomic should start");
+
+    let nestgate_socket = running
+        .socket_for("storage")
+        .or_else(|| running.socket_for_primal("nestgate"))
+        .expect("nestgate socket");
+
+    let store = direct_rpc_call(
+        nestgate_socket,
+        "storage.store",
+        &serde_json::json!({
+            "key": format!("auth-boundary-test-{}", std::process::id()),
+            "value": base64::engine::general_purpose::STANDARD.encode(b"sensitive data"),
+        }),
+    );
+    assert!(store.is_ok(), "storage.store should succeed: {store:?}");
+
+    let list = direct_rpc_call(
+        nestgate_socket,
+        "storage.list",
+        &serde_json::json!({}),
+    )
+    .expect("storage.list should succeed");
+
+    let keys = list["keys"]
+        .as_array()
+        .or_else(|| list["items"].as_array());
+    assert!(keys.is_some(), "storage.list should return keys or items array");
+
+    let keys = keys.unwrap();
+    for key in keys {
+        let key_str = key.as_str().unwrap_or_default();
+        assert!(
+            !key_str.contains("sensitive"),
+            "storage.list should return opaque keys, not plaintext — leaked: {key_str}"
+        );
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Auth Gate 2: storage.list is content-addressed (BLAKE3 hashes)
+// ---------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires plasmidBin binaries (run with --ignored)"]
+fn nestgate_storage_list_content_addressed() {
+    use primalspring::coordination::AtomicType;
+    use primalspring::harness::AtomicHarness;
+
+    let family_id = format!("itest-sca-{}", std::process::id());
+    let running = AtomicHarness::new(AtomicType::Nest)
+        .start(&family_id)
+        .expect("nest atomic should start");
+
+    let nestgate_socket = running
+        .socket_for("content")
+        .or_else(|| running.socket_for("storage"))
+        .or_else(|| running.socket_for_primal("nestgate"))
+        .expect("nestgate socket");
+
+    let data_b64 = base64::engine::general_purpose::STANDARD
+        .encode(b"blake3 content addressing test");
+    let put = direct_rpc_call(
+        nestgate_socket,
+        "content.put",
+        &serde_json::json!({
+            "data": data_b64,
+            "content_type": "text/plain",
+            "family_id": family_id,
+        }),
+    )
+    .expect("content.put should succeed");
+    let hash = put["hash"].as_str().expect("should return hash");
+
+    assert!(
+        hash.len() == 64 && hash.chars().all(|c| c.is_ascii_hexdigit()),
+        "content hash should be 64 hex chars (BLAKE3), got: {hash}"
+    );
+}

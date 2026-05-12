@@ -35,6 +35,7 @@ pub mod s_compute_triangle;
 pub mod s_covalent_bond;
 pub mod s_cross_spring_data_flow;
 pub mod s_deployment_matrix;
+pub mod s_domain_contract_sweep;
 pub mod s_full_nucleus;
 pub mod s_gate_failure;
 pub mod s_ionic_bond;
@@ -72,5 +73,6 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_cellular_deployment::SCENARIO);
     r.register(s_token_federation::SCENARIO);
     r.register(s_composition_lifecycle::SCENARIO);
+    r.register(s_domain_contract_sweep::SCENARIO);
     r
 }

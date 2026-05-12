@@ -30,7 +30,7 @@ back upstream to primals and primalSpring.
   `primalspring_guidestone` (legacy certification, transitioning → `primalspring certify`),
   `validate_all` (legacy runner, transitioning → `primalspring validate`)
 - **experiments/** — 89 validation binaries covering 20 tracks
-- **graphs/** — 76 deploy graph TOMLs using fragment-first composition (6 fragments +
+- **graphs/** — 77 deploy graph TOMLs using fragment-first composition (6 fragments +
   9 profiles + 4 patterns + 7 spring validation + 2 cross-spring + 5 bonding +
   2 chaos + 2 spring deploy + 3 downstream + 5 multi-node + 13 root-level +
   1 federation + 12 cell graphs + 4 desktop app graphs)

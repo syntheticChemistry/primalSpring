@@ -30,9 +30,72 @@ fi
 
 FAMILY_ID="${FAMILY_ID:-$COMPOSITION_NAME}"
 SOCKET_DIR="${XDG_RUNTIME_DIR:-/tmp}/biomeos"
-POLL_INTERVAL="${POLL_INTERVAL:-0.5}"
 REQUIRED_CAPS="${REQUIRED_CAPS:-visualization security}"
 OPTIONAL_CAPS="${OPTIONAL_CAPS:-compute tensor dag ledger attribution}"
+
+# ── Adaptive Tick Model (PG-54) ───────────────────────────────────
+#
+# Three tick modes:
+#   fixed     — constant interval (default, backward-compatible)
+#   adaptive  — scales interval based on activity (fast when busy, slow when idle)
+#   event     — no polling; relies on sensor stream / file descriptor events
+#
+# Domain scripts set TICK_MODE and optionally TICK_MIN / TICK_MAX before
+# starting their main loop. ludoSpring uses adaptive with 16ms floor (60Hz).
+#
+# Usage in domain script:
+#   TICK_MODE="adaptive"
+#   TICK_MIN=0.016        # 60Hz floor
+#   TICK_MAX=0.5          # idle ceiling
+#   while true; do
+#       process_frame
+#       tick_sleep
+#   done
+
+TICK_MODE="${TICK_MODE:-fixed}"
+TICK_MIN="${TICK_MIN:-0.016}"
+TICK_MAX="${TICK_MAX:-0.5}"
+POLL_INTERVAL="${POLL_INTERVAL:-0.5}"
+
+_TICK_CURRENT="${POLL_INTERVAL}"
+_TICK_IDLE_COUNT=0
+_TICK_IDLE_THRESHOLD=10
+
+tick_sleep() {
+    case "$TICK_MODE" in
+        fixed)
+            sleep "$POLL_INTERVAL"
+            ;;
+        adaptive)
+            sleep "$_TICK_CURRENT"
+            ;;
+        event)
+            return 0
+            ;;
+        *)
+            sleep "$POLL_INTERVAL"
+            ;;
+    esac
+}
+
+tick_mark_active() {
+    _TICK_IDLE_COUNT=0
+    if [[ "$TICK_MODE" == "adaptive" ]]; then
+        _TICK_CURRENT="$TICK_MIN"
+    fi
+}
+
+tick_mark_idle() {
+    if [[ "$TICK_MODE" != "adaptive" ]]; then return; fi
+    _TICK_IDLE_COUNT=$((_TICK_IDLE_COUNT + 1))
+    if (( _TICK_IDLE_COUNT >= _TICK_IDLE_THRESHOLD )); then
+        _TICK_CURRENT=$(python3 -c "
+mn, mx, cur = $TICK_MIN, $TICK_MAX, $_TICK_CURRENT
+nxt = min(cur * 1.5, mx)
+print(f'{nxt:.4f}')
+" 2>/dev/null || echo "$TICK_MAX")
+    fi
+}
 
 # ── Logging ───────────────────────────────────────────────────────────
 

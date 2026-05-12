@@ -1,0 +1,92 @@
+# Wave 9: Domain contract sweep — exercises remaining registered-but-untested domains
+#
+# This graph validates that all primary capability domains have reachable methods
+# across the NUCLEUS composition. Each phase targets a specific primal and its
+# domain, matching the s_domain_contract_sweep scenario.
+
+[metadata]
+name = "domain-contract-sweep"
+description = "Contract sweep for secrets, bonding, defense, discovery, provenance, spine, network"
+version = "1.0.0"
+wave = "9"
+
+[bonding]
+policy = "best_effort"
+family_id_prefix = "sweep"
+
+# --- Phase 1: bearDog secrets.store + secrets.retrieve ---
+[[graph.nodes]]
+name = "secrets_store"
+binary = "beardog"
+order = 1
+required = false
+spawn = false
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["secrets.store", "secrets.retrieve"]
+
+# --- Phase 2: biomeOS bonding.status ---
+[[graph.nodes]]
+name = "bonding_status"
+binary = "biomeos"
+order = 2
+required = false
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+capabilities = ["bonding.status"]
+
+# --- Phase 3: skunkBat defense.status + defense.events ---
+[[graph.nodes]]
+name = "defense_status"
+binary = "skunkbat"
+order = 3
+required = false
+spawn = false
+health_method = "health.liveness"
+by_capability = "defense"
+capabilities = ["defense.status", "defense.events"]
+
+# --- Phase 4: songbird discovery.discover + discovery.protocols ---
+[[graph.nodes]]
+name = "discovery_probe"
+binary = "songbird"
+order = 4
+required = false
+spawn = false
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["discovery.discover", "discovery.protocols"]
+
+# --- Phase 5: rhizoCrypt provenance.session.create ---
+[[graph.nodes]]
+name = "provenance_session"
+binary = "rhizocrypt"
+order = 5
+required = false
+spawn = false
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = ["provenance.session.create", "provenance.event.append"]
+
+# --- Phase 6: loamSpine session.create + session.state ---
+[[graph.nodes]]
+name = "spine_session"
+binary = "loamspine"
+order = 6
+required = false
+spawn = false
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = ["session.create", "session.state"]
+
+# --- Phase 7: songbird network.nat_type + network.stun ---
+[[graph.nodes]]
+name = "network_probe"
+binary = "songbird"
+order = 7
+required = false
+spawn = false
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["network.nat_type", "network.stun"]
