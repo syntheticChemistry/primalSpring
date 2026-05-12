@@ -110,7 +110,7 @@ E2E sovereign dispatch awaits factory hook-up + VFIO PBDMA (stadial work).
 2. **`capability.resolve`** — pending Songbird (wetSpring, others)
 3. **Live provenance trio** — UDS handlers exist, trio not running in lab
 4. **BTSP transport negotiation** — healthSpring `FAMILY_SEED` breaks mixed deploys
-5. **`toadstool.validate`/`list_workloads`** — blocking Tier 2 downstream
+5. ~~**`toadstool.validate`/`list_workloads`**~~ — **IMPLEMENTED** (S250/S245+), Tier 2 UNBLOCKED
 
 ---
 
@@ -125,7 +125,7 @@ E2E sovereign dispatch awaits factory hook-up + VFIO PBDMA (stadial work).
 | 5. River Delta | **GATE MET** | 8/8 Tier 4, PG thresholds |
 
 **Zero upstream code blockers remain.** Transition requires shadow run execution
-(projectNUCLEUS owns). plasmidBin checksum desync needs resolution.
+(projectNUCLEUS owns). ~~plasmidBin checksum desync~~ **RESOLVED** (pipeline hardened May 12).
 
 ---
 
