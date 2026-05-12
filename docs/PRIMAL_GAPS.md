@@ -221,7 +221,7 @@ ludoSpring, groundSpring, airSpring)
 
 | Spring | Post-Evolution State | Next Target |
 |--------|---------------------|-------------|
-| healthSpring | V64, gS L5, UniBin, 1,011 tests, Tier 4 (`default=[]`), B5 COMPLETE, Threads 3+5+8 active, `--format json`, 17 scenarios, ionic bridge stubs | LTEE E2/E4, Thread 7+, NestGate wiring |
+| healthSpring | V64e, gS L5, UniBin, 1,014 tests, Tier 4 (`default=[]`), B5 COMPLETE, Threads 3+5+8 active, `--format json`, 17 scenarios, ionic bridge stubs, Tier 2 wired (`toadstool.validate` + `precision.route`), 88 capabilities | LTEE E2/E4, Thread 7+, NestGate wiring |
 | ludoSpring | V63, gS L4, UniBin, 854 tests, Tier 4 (`default=["ipc"]`), SPDX | coralReef IPC, domain parity |
 | hotSpring | v0.6.32, gS L6, UniBin, 1,025 tests, Tier 4 (`default=[]`), LTEE B2, 3-GPU sovereign | Titan V FECS, K80 livepatch |
 | wetSpring | V163, gS L4, UniBin, 1,613 tests, Tier 4 (`default=[]`), LTEE B7, 4 PG open | close PG-02–05 (external), L5 |

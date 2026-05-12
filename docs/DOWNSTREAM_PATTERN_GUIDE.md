@@ -139,7 +139,7 @@ paper = "B2"
 |--------|------:|:----:|:--------------:|:---------:|:----------:|:----:|:------------------:|
 | **airSpring** | 1,389 | 1 | YES (thread06_ag) | 5 + 20 papers | YES | E3 queued | 6 |
 | **groundSpring** | 1,125 | 1 | YES | 5 + 29 baselines | YES | **B1-B3 DONE** | 5, 7 |
-| **healthSpring** | 1,011 | 1 | YES (PK models) | 53 scripts | YES | B5 COMPLETE, E2/E4 queued | 3, 5, 8 |
+| **healthSpring** | 1,014 | 1 | YES (PK models + Tier 2 wired) | 53 scripts | YES | B5 COMPLETE, E2/E4 queued | 3, 5, 8 |
 | **hotSpring** | 1,025 | 1 | YES | 5 + 12 papers | YES | **B2 DONE** | 2 |
 | **ludoSpring** | 854 | 1 | YES (2 TOMLs) | 3 notebooks (V64) + whitePaper/ | YES | N/A | 9, 10 |
 | **neuralSpring** | 1,453 | 1 | YES | 5 + 8 papers | YES | B1 Python DONE | 5, 7 |
