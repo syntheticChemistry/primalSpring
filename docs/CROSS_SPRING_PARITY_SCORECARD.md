@@ -218,7 +218,7 @@ All 8 springs have completed the interstadial eukaryotic evolution:
 - **UniBin consolidation**: 8/8 springs have single unified binaries
 - **Guidestone absorption**: 8/8 springs have certification organelles
 - **Scenario registry**: 8/8 springs have `validation/scenarios/` with `ScenarioMeta`
-- **Fossil record**: 8/8 springs have `fossilRecord/` with dated provenance
+- **Fossil record**: 8/8 springs consolidated to `github.com/ecoPrimals/fossilRecord` (canonical archive)
 - **Zero debt markers**: 8/8 springs at zero TODO/FIXME/HACK, zero clippy warnings
 - **primalSpring v0.9.25 pin**: 7/8 (healthSpring upgraded; ludoSpring pinned)
 
