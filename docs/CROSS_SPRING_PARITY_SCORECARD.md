@@ -149,6 +149,68 @@ toadStool completes the ember/glowplug absorption (W8-07).
 up from 69%). Remaining 112 uncovered are test fixtures, domain-specific (game/nautilus/ml),
 or require external infrastructure — not primalSpring gate debt.
 
+## 13. Downstream Readiness (NEW — Wave 10 Pattern Handoff, May 11, 2026)
+
+Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS, and lithoSpore.
+
+### LTEE Reproduction Status → lithoSpore
+
+| Spring | Paper | Python | Rust | `expected_values.json` | lithoSpore Module |
+|--------|-------|:------:|:----:|:----------------------:|-------------------|
+| **groundSpring** | B1 (Barrick 2009) | 8/8 | 8/8 | YES | 1: ltee-mutation |
+| **groundSpring** | B2 (Wiser 2013) | 9/9 | 10/10 | YES | 2: ltee-fitness |
+| **groundSpring** | B3 (Good 2017) | DONE | DONE | YES | 3: ltee-clonal |
+| **hotSpring** | B2 (Anderson/Wiser) | N/A | Tier 1+2 | YES | 7: ltee-anderson |
+| **neuralSpring** | B1-ML (LSTM/ESN/HMM) | 8/8 | **NO** | YES | ML surrogates |
+| **wetSpring** | B7 (Tenaillon 2016) | STARTED | **NO** | **NO** | 6: ltee-genomics |
+
+**lithoSpore integration**: 4/6 reproductions ready for module ingestion. Remaining: neuralSpring Rust binary, wetSpring B7 pipeline.
+
+### Foundation Thread Seeding Status
+
+| Thread | Name | Expression | Sources | Targets | Status |
+|--------|------|:----------:|:-------:|:-------:|--------|
+| 1 | Whole-Cell Modeling | YES | 27 | 24 | **ACTIVE** |
+| 2 | Plasma Physics / QCD | YES | YES | YES | **ACTIVE** |
+| 3 | Immunology | **NO** | YES | YES | Needs expression (healthSpring) |
+| 4 | Environmental Genomics | **NO** | YES | **NO** | Needs expression + targets (wetSpring) |
+| 5 | LTEE / Evolution | **YES** | **12** | **18** | **ACTIVE** (seeded May 11) |
+| 6 | Agricultural Science | YES | YES | YES | **ACTIVE** |
+| 7 | Anderson Mathematics | YES | YES | YES | **ACTIVE** |
+| 8 | Human Health | **NO** | YES | YES | Needs expression (healthSpring) |
+| 9 | Gaming / Creative | **NO** | YES | YES | Needs expression (ludoSpring) |
+| 10 | Provenance / Economics | **NO** | **NO** | **NO** | **EMPTY** (ludoSpring + primalSpring) |
+
+**Foundation seeding**: 5/10 threads fully active. Thread 5 elevated from EMPTY → ACTIVE (this wave). Threads 3, 4, 8, 9 need expressions. Thread 10 needs full seeding.
+
+### projectNUCLEUS Tier Status
+
+| Spring | Tier 0 (CLI) | Tier 1 (notebook+sporePrint) | Tier 2 (JSON-RPC) | Workload TOMLs | Notebooks |
+|--------|:------------:|:----------------------------:|:------------------:|:--------------:|:---------:|
+| **groundSpring** | YES | YES | **NO** | YES | 34 |
+| **hotSpring** | YES | YES | **NO** | YES | 17 |
+| **healthSpring** | YES | YES | **NO** | YES | 53 |
+| **wetSpring** | YES | YES | **NO** | YES | 20 |
+| **neuralSpring** | YES | YES | **NO** | YES | 10 |
+| **airSpring** | YES | YES | **NO** | YES | 25 |
+| **ludoSpring** | YES | PARTIAL | **NO** | YES (2) | 0 (scripts) |
+| **primalSpring** | N/A | N/A | N/A | coordination | 5 |
+
+**Tier 2 blocker**: `toadstool.validate` + `toadstool.list_workloads` JSON-RPC methods not yet implemented upstream. All springs ready once wired.
+
+### Per-Spring Downstream Readiness Summary
+
+| Spring | lithoSpore | foundation | projectNUCLEUS | Highest Leverage |
+|--------|:----------:|:----------:|:--------------:|-----------------|
+| **groundSpring** | **G** B1-B3 done | **Y** T5+T7 seeded | **G** Tier 1 | LTEE data → lithoSpore modules 1-3 |
+| **hotSpring** | **G** B2 done | **G** T2 active | **G** Tier 1 | GPU ladder → NUCLEUS workloads |
+| **healthSpring** | N/A | **Y** T3+T8 need expr | **G** Tier 1 | Thread 3+8 expressions |
+| **wetSpring** | **Y** B7 started | **Y** T4 needs expr+tgt | **G** Tier 1 | B7 pipeline + T4 seeding |
+| **neuralSpring** | **Y** Py done | **Y** T5 seeded | **G** Tier 1 | Rust validation binary |
+| **airSpring** | N/A | **G** T6 active | **G** Tier 1 | T6 36 targets → foundation |
+| **ludoSpring** | N/A | **Y** T9+T10 need seed | **Y** Tier 1 partial | T9 expression + T10 seeding |
+| **primalSpring** | N/A | **Y** T10 co-owner | **G** coordination | T10 seeding + validation graphs |
+
 ## Primordial Extinction Wave — COMPLETED (May 9, 2026)
 
 All 8 springs have completed the interstadial eukaryotic evolution:
@@ -201,8 +263,8 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 
 | Metric | Value |
 |--------|-------|
-| Total tests across 8 springs | **13,100+** (primalSpring 687 + hotSpring 1,025 + healthSpring 999 + wetSpring 1,613 + neuralSpring 1,453 + ludoSpring 854 + groundSpring 1,125 + airSpring 1,389 + metalForge/integration/Python suites) |
-| Total deploy graphs | **121** (primalSpring 76 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4) |
+| Total tests across 8 springs | **13,100+** (primalSpring 689+ + hotSpring 1,025 + healthSpring 999 + wetSpring 1,613 + neuralSpring 1,453 + ludoSpring 854 + groundSpring 1,125 + airSpring 1,389 + metalForge/integration/Python suites) |
+| Total deploy graphs | **122** (primalSpring 77 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4) |
 | Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |
 | Registered capability methods | **413** (primalSpring canonical, zero drift) |
