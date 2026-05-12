@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 11, 2026 (Wave 9 — zero local debt)
+**Last updated**: May 12, 2026 (Wave 10 — downstream pattern handoff)
 
 ---
 
@@ -47,10 +47,11 @@ Each LTEE reproduction follows a standard pattern:
 |--------|-------|--------|-----------------|-------------------|
 | **groundSpring** | B1 (Barrick 2009 — neutral mutation) | **COMPLETE** Py 8/8 + Rust 8/8 | `control/ltee_neutral/expected_values.json` | Module 1: ltee-mutation |
 | **groundSpring** | B2 (Wiser 2013 — fitness dynamics) | **COMPLETE** Py 9/9 + Rust 10/10 | `control/ltee_fitness/expected_values.json` | Module 2: ltee-fitness |
-| **groundSpring** | B3 (Good 2017 — clonal interference) | **COMPLETE** | `control/ltee_clonal/` | Module 3: ltee-clonal |
+| **groundSpring** | B3 (Good 2017 — clonal interference) | **COMPLETE** (V136) | `control/ltee_clonal/` | Module 3: ltee-clonal |
 | **hotSpring** | B2 (Anderson/Wiser — fitness) | **COMPLETE** Tier 1+2 | `experiments/results/ltee/ltee_b2_anderson_expected.json` | Module 7: ltee-anderson |
-| **neuralSpring** | B1 (mutation accumulation ML) | **Python DONE** 8/8 | `control/ltee_mutation_accumulation/` | ML surrogate modules |
-| **wetSpring** | B7 (Tenaillon 2016 — 264 genomes) | **STARTED** | `experiments/ltee/` (in progress) | Module 6: ltee-genomics |
+| **healthSpring** | B5 (Leonard 2024 — symbiont PK/PD) | **BASELINE DONE** (V63) | `control/ltee_symbiont_pkpd/expected_values.json` | Module: ltee-symbiont-pk |
+| **neuralSpring** | B1 (mutation accumulation ML) | **Py 8/8 + Rust binary DONE** (S201b) | `control/ltee_mutation_accumulation/` + `src/bin/validate_ltee_b1_*` | ML surrogate modules |
+| **wetSpring** | B7 (Tenaillon 2016 — 264 genomes) | **STARTED** (Exp380 documented) | `experiments/380_ltee_b7_tenaillon_mutation_accumulation.md` | Module 6: ltee-genomics |
 
 **Convention**: lithoSpore modules consume `expected_values.json` from springs via
 `fetch_and_hash.sh` scripts that BLAKE3-anchor the data into NestGate content storage.
@@ -59,7 +60,8 @@ Each LTEE reproduction follows a standard pattern:
 
 - **groundSpring B1-B3** outputs are ready for integration into `ltee-mutation`, `ltee-fitness`, `ltee-clonal` modules
 - **hotSpring B2** ready for `ltee-anderson` module integration
-- **neuralSpring** needs Rust validation binary (Python baseline done, Rust not yet)
+- **neuralSpring** Rust binary `validate_ltee_b1_mutation_accumulation` now exists (S201b) — ready for lithoSpore ML modules
+- **healthSpring** B5 (symbiont PK/PD) `expected_values.json` ready — new lithoSpore module candidate
 - **wetSpring B7** is in progress — feeds `ltee-genomics` when 264-genome pipeline completes
 - **All 7 modules** are scaffold/SKIP until upstream data flows in
 
@@ -78,23 +80,21 @@ Foundation threads have three components: **expression** (the question), **data 
 | 2 | Plasma Physics / QCD | hotSpring | YES | YES | YES | **ACTIVE** |
 | 3 | Immunology / Drug Discovery | wetSpring, airSpring, healthSpring | **NO** | YES | YES | **Needs expression** |
 | 4 | Environmental Genomics | wetSpring, airSpring | **NO** | YES | **NO** | **Needs expression + targets** |
-| 5 | Evolutionary Biology / LTEE | groundSpring, neuralSpring, wetSpring | **NO** | **NO** | **NO** | **CRITICAL — empty** |
+| 5 | Evolutionary Biology / LTEE | groundSpring, neuralSpring, wetSpring, hotSpring | YES | YES (12) | YES (18) | **ACTIVE** (seeded May 11) |
 | 6 | Agricultural Science | airSpring, groundSpring, wetSpring | YES | YES | YES | **ACTIVE** |
 | 7 | Anderson Mathematics | hotSpring, groundSpring, wetSpring, neuralSpring | YES | YES | YES | **ACTIVE** |
 | 8 | Human Health / Clinical | healthSpring | **NO** | YES | YES | **Needs expression** |
 | 9 | Gaming / Creative | ludoSpring | **NO** | YES | YES | **Needs expression** |
 | 10 | Provenance / Economics | ludoSpring, primalSpring | **NO** | **NO** | **NO** | **Empty** |
 
-### Critical Gap: Thread 5 (LTEE/Evolution)
+### Thread 5 (LTEE/Evolution) — SEEDED (May 11)
 
-Thread 5 is the backbone thread for lithoSpore — every LTEE reproduction feeds through it.
-Yet it has zero foundation content. Springs must seed:
+Thread 5 was the critical empty backbone for lithoSpore. Now seeded with:
+- **Expression**: `expressions/LTEE_EVOLUTIONARY_DYNAMICS.md` — connects Barrick/Wiser/Good/Tenaillon papers
+- **Data sources**: 12 NCBI/Dryad accessions (`data/sources/thread05_ltee.toml`)
+- **Data targets**: 18 validation targets (`data/targets/thread05_ltee_targets.toml`) — 14 validated (groundSpring B1-B3, hotSpring B2, neuralSpring B1-ML), 4 pending (wetSpring B7)
 
-- **Expression**: document connecting LTEE papers (Barrick 2009, Wiser 2013, Good 2017, Tenaillon 2016) to the evolutionary biology questions they answer
-- **Data sources**: Dryad/NCBI accessions for LTEE datasets (groundSpring + wetSpring paper queues have these)
-- **Data targets**: `expected_values.json` outputs from completed B1-B3 reproductions
-
-**Ownership**: groundSpring (primary, 3 complete reproductions) + neuralSpring (ML surrogate) + wetSpring (genomics pipeline)
+**Remaining empty threads**: 3 (Immunology), 4 (Environmental Genomics — needs expression + targets), 8 (Human Health), 9 (Gaming), 10 (Provenance)
 
 ### Foundation Seed Pattern
 
@@ -141,7 +141,7 @@ paper = "B2"
 | **groundSpring** | 1,125 | 1 | YES | 5 + 29 baselines | YES | **B1-B3 DONE** | 5, 7 |
 | **healthSpring** | 999 | 1 | YES (PK models) | 53 scripts | YES | B5/E2/E4 queued | 3, 8 |
 | **hotSpring** | 1,025 | 1 | YES | 5 + 12 papers | YES | **B2 DONE** | 2 |
-| **ludoSpring** | 854 | 1 | YES (2 TOMLs) | whitePaper/ | YES | N/A | 9, 10 |
+| **ludoSpring** | 854 | 1 | YES (2 TOMLs) | 3 notebooks (V64) + whitePaper/ | YES | N/A | 9, 10 |
 | **neuralSpring** | 1,453 | 1 | YES | 5 + 8 papers | YES | B1 Python DONE | 5, 7 |
 | **primalSpring** | 689+ | N/A | coordination | 5 (meta) | YES | coordination | coordination |
 | **wetSpring** | 1,613 | 1 | YES | 5 + papers | YES | B7 STARTED | 4 |
