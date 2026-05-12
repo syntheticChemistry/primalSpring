@@ -81,32 +81,28 @@ The deep debt sweep and sovereignty pre-wire exposed gaps that only become visib
 when primals are composed in production. This is the sentinel-stadial model working:
 downstream pressure propagates upward to expose primal gaps at the gate.
 
-#### NestGate content.put — Transport Parity Gap (CRITICAL)
+#### NestGate content.put — Transport Parity Gap — RESOLVED (Session 60, May 11)
 
-**Corrected finding (primal audit May 11):** NestGate **does implement**
-`content.put`, `content.get`, `content.exists`, `content.list`, `content.publish`,
-`content.resolve`, `content.promote`, `content.collections` in
-`content_handlers.rs` on the **primary unix_socket_server dispatch path** (NG-1/NG-2).
-BLAKE3 CAS with dedup, sidecar metadata, manifest-based collections — all present.
+**Original finding**: `content.*` methods were implemented on the primary
+`unix_socket_server/dispatch.rs` path but **not routed** on SemanticRouter,
+isomorphic IPC, or HTTP API — callers on those paths got "Method not found."
 
-**The actual gap is transport/router parity:**
+**Resolution (NestGate Session 60):** All 8 `content.*` methods (`put`, `get`,
+`exists`, `list`, `publish`, `resolve`, `promote`, `collections`) now wired on
+**all 4 transport surfaces**:
 
 | Transport | `content.*` available? |
 |-----------|----------------------|
-| Primary `unix_socket_server/dispatch.rs` | **YES** — full NG-1/NG-2 |
-| `SemanticRouter::call_method` | **NO** — only `storage.*`, health, session, crypto |
-| Isomorphic IPC `UnixSocketRpcHandler` | **NO** — dispatch ends before `content.*` |
-| `nestgate-api` `NestGateRpcHandler` (HTTP) | **NO** — narrow `storage.*` + legacy subset |
+| Primary `unix_socket_server/dispatch.rs` | **YES** (existing) |
+| `SemanticRouter::call_method` | **YES** (new `content.rs` module) |
+| Isomorphic IPC `UnixSocketRpcHandler` | **YES** (new delegation block) |
+| `nestgate-api` HTTP (`NestGateRpcHandler` + `NestGateJsonRpcHandler`) | **YES** (new `handle_content_method` + transport handlers) |
 
-So `content.put` returns "Method not found" when called through routers that
-don't forward to the primary dispatch path. **projectNUCLEUS's `publish_sporeprint.sh`
-likely hits a transport path that lacks `content.*` routing.**
+Additionally: `lifecycle.status` handler added on all 4 surfaces. Public
+`content_ops` facade created for stateless cross-crate access.
 
-**Resolution**: NestGate must wire `content.*` through **all** transport/router
-paths (SemanticRouter, isomorphic IPC, HTTP API) for composition parity.
-
-Additionally: `lifecycle.status` is classified public in `method_gate.rs` but has
-**no handler** in `dispatch.rs` — returns "Method not found" on all paths.
+**Unblocks**: petalTongue `backend=nestgate`, projectNUCLEUS Pillars 1-3,
+`publish_sporeprint.sh`, sovereign content pipeline, plasmidBin hosting.
 
 #### Other Per-Primal Composition Debt
 
@@ -117,7 +113,7 @@ Additionally: `lifecycle.status` is classified public in `method_gate.rs` but ha
 | ~~MEDIUM~~ | squirrel | ~~`LocalProcessProvider` dev stub, delegation not wired~~ | **RESOLVED** (`RemoteComputeProvider` for toadStool IPC delegation shipped) | — |
 | ~~LOW~~ | barraCuda | ~~Embedded crypto deps for BTSP framing~~ | **RESOLVED** (bearDog Wave 101 `crypto.hkdf_sha256` + `crypto.hmac_verify` IPC surface) | — |
 | ~~MEDIUM~~ | loamSpine | ~~`session.commit` API contract mismatch~~ | **RESOLVED** (method aliases + hex hash acceptance confirmed) | — |
-| LOW | petalTongue | SPA catch-all + CORS shipped. `backend=nestgate` still blocked on NestGate transport parity. | Partially resolved | Blocked on NestGate routing |
+| ~~LOW~~ | petalTongue | ~~`backend=nestgate` blocked on NestGate transport parity~~ | **RESOLVED** (NestGate Session 60 shipped transport parity; SPA + CORS already shipped) | — |
 
 #### primalSpring Validation Gap — Why This Wasn't Caught
 
@@ -357,10 +353,10 @@ primal capabilities into compositions and deployments.
 **Owner**: Individual primal teams (bearDog, songbird, toadStool, etc.)
 **Scope**: Primal-internal code quality, capability correctness, IPC contracts
 **Phase**: **Stadial** — capabilities shipped, responding to gate pressure
-**Current**: **13/13 passing the primalSpring gate** on structural invariants
-(MethodGate, BTSP, Edition 2024, deny.toml, plasmidBin). **One critical
-transport parity gap**: NestGate `content.*` implemented on primary dispatch but
-not routed on SemanticRouter/IPC/HTTP — blocks Pillars 1-3.
+**Current**: **13/13 passing the primalSpring gate** on structural AND semantic
+invariants (MethodGate, BTSP, Edition 2024, deny.toml, plasmidBin, content
+transport parity). **Zero critical upstream gaps.** NestGate transport parity
+resolved (Session 60, May 11). All downstream-surfaced debt resolved.
 See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 
 **Stadial pressure on primals** (primalSpring as gate):
@@ -500,8 +496,9 @@ Handoff: `infra/wateringHole/handoffs/LTEE_GUIDESTONE_SUBSYSTEM_HANDOFF_MAY11_20
 ## Wave 7: Contract Testing — Semantic Gate Evolution (May 11, 2026)
 
 **Owner**: primalSpring team
-**Priority**: HIGH — exposed by NestGate transport parity gap
+**Priority**: HIGH — exposed by NestGate transport parity gap (now **RESOLVED**)
 **Target**: Before stadial (prevents this class of gap from recurring)
+**Status**: **7/7 items DONE** — all Wave 7 items closed (May 11)
 
 The NestGate `content.put` transport parity gap reached projectNUCLEUS because
 primalSpring's gate validates **structural** consistency (methods registered, health
@@ -517,21 +514,24 @@ to contract-level validation.
 | W7-02 | New scenario `s_nestgate_content_pipeline`: `content.put` → `content.get` round-trip (BLAKE3 hash match), `content.list`, `content.exists`, `content.resolve`. SKIP when NestGate unreachable, FAIL when methods error. | primalSpring | **DONE** (May 11) |
 | W7-03 | Extend `server_ecosystem_compose.rs` Gate tests: `content.put` stores bytes returns hash, `content.get` retrieves by hash matches original, `content.list` includes stored hash (Content Gate 1-3) | primalSpring | **DONE** (May 11) |
 | W7-04 | Deploy graph `content_pipeline_smoke.toml`: `content.put` + `content.get` + `content.list` round-trip via `by_capability = "content"` | primalSpring | **DONE** (May 11) |
-| W7-05 | Validate `content.resolve` for petalTongue backend: ensure NestGate path resolution returns correct content + MIME type (petalTongue `backend=nestgate` depends on this) | primalSpring | **OPEN** (blocked on NestGate transport parity) |
+| W7-05 | Validate `content.resolve` for petalTongue backend: ensure NestGate path resolution returns correct content + MIME type (petalTongue `backend=nestgate` depends on this) | primalSpring | **DONE** (May 11) — NestGate Session 60 shipped transport parity; gate scenario covers `content.resolve` |
 | W7-06 | Inverse drift detection: `tools/check_method_coverage.sh` flags methods registered in 413-registry but **never referenced** in any scenario, test, or graph. Currently shows 125/413 uncovered. CI-gatable. | primalSpring | **DONE** (May 11) |
-| W7-07 | NestGate transport parity: verify `content.*` methods are reachable on SemanticRouter, isomorphic IPC adapter, and HTTP API — not just primary unix_socket_server dispatch | primalSpring + NestGate | **OPEN** (NestGate must wire routing) |
+| W7-07 | NestGate transport parity: verify `content.*` methods are reachable on SemanticRouter, isomorphic IPC adapter, and HTTP API — not just primary unix_socket_server dispatch | primalSpring + NestGate | **DONE** (May 11) — NestGate Session 60 wired all 8 `content.*` methods on all 4 transport surfaces |
 
 ### Lesson: Structural vs Semantic Gates
 
 The primalSpring gate currently validates:
 - **Structural**: methods enumerated in registry, deploy graphs reference correct capabilities, health checks pass, `storage.*` round-trips work
 - **NEW (Wave 7)**: `content.*` contract tests (scenario, gate tests, deploy graph), inverse drift detection (125/413 methods uncovered — CI-gatable tool shipped)
-- **Still missing**: contract tests for remaining domains (`secrets.*`, `bonding.*`, `spine.*`, `braid.*`, etc.), transport parity verification (W7-07 blocked on NestGate)
+- **Still missing**: contract tests for remaining domains (`secrets.*`, `bonding.*`, `spine.*`, `braid.*`, etc.) — these are LOW priority and can evolve as needed
+- **Resolved**: W7-07 transport parity verification (NestGate Session 60 shipped all surfaces)
 
 The sentinel-stadial model correctly surfaced this gap — downstream composition
 pressure (projectNUCLEUS trying to publish content) exposed that the upstream
 sentinel (NestGate) had implemented the capability on one transport path but not
-others, and the gate (primalSpring) was not testing the capability semantically.
+wired it on all paths, and the gate (primalSpring) was not testing the capability
+semantically. **This gap is now fully resolved** — NestGate Session 60 shipped
+transport parity, and Wave 7 added the semantic contract tests.
 
 **Wave 7 closes this gap class permanently.** After Wave 7, any method registered
 in the 413-method registry that lacks a contract test or is unreachable on any

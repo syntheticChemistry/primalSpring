@@ -95,8 +95,8 @@ airSpring had "graphs only") is now **RESOLVED**:
 | W7-03 | **DONE** | Content Gate 1-3 in `server_ecosystem_compose.rs` |
 | W7-04 | **DONE** | `content_pipeline_smoke.toml` deploy graph |
 | W7-06 | **DONE** | `check_method_coverage.sh` inverse drift detection (125/413 uncovered) |
-| W7-05 | OPEN | `content.resolve` petalTongue validation (blocked on NestGate) |
-| W7-07 | OPEN | NestGate transport parity verification (NestGate must wire) |
+| W7-05 | **DONE** | `content.resolve` petalTongue validation — NestGate Session 60 shipped transport parity |
+| W7-07 | **DONE** | NestGate transport parity verified — Session 60 wired all 4 surfaces |
 
 **gen4 sketch**: `whitePaper/gen4/architecture/CONTRACT_TESTING_THESIS_SKETCH.md` connects
 Wave 7 to the gen4 "wire format IS the contract" thesis — including NFT pipeline implications,

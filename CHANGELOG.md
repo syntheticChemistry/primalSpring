@@ -3,6 +3,29 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — NestGate Transport Parity Resolution + Zero Upstream Debt (2026-05-11)
+
+### Changed
+- **NestGate `content.*` transport parity — RESOLVED** (Session 60). All 8 `content.*`
+  methods wired on all 4 transport surfaces. `lifecycle.status` added. This was the last
+  critical L1 upstream debt item — unblocks projectNUCLEUS Pillars 1-3, petalTongue
+  `backend=nestgate`, and sovereign content pipeline.
+- **Wave 7 fully closed**: W7-05 (`content.resolve` for petalTongue) and W7-07
+  (NestGate transport parity verification) both marked DONE. All 7/7 Wave 7 items closed.
+- **`PRIMAL_GAPS.md`** — NestGate critical section updated from CRITICAL to RESOLVED,
+  petalTongue debt marked RESOLVED, L1 status updated to "zero critical upstream gaps."
+- **`CROSS_SPRING_PARITY_SCORECARD.md`** — W7-05 and W7-07 marked DONE.
+- **`wateringHole/README.md`** — ecosystem state updated: NestGate critical gap removed,
+  Pillar 1 gate marked MET, L1 ownership updated to CLEAN, projectNUCLEUS marked ready
+  for re-ingestion. primalSpring test count 680 → 687.
+- **NestGate Session 60 handoff** created in wateringHole.
+
+### Status
+- **L1 Primals**: CLEAN — 13/13 structural + semantic, zero critical gaps
+- **primalSpring local**: Zero debt (2 LOW deferred: PG-54, PG-63)
+- **Compute trio**: Continuing in parallel (upstream teams: W8-07/08/09)
+- **Ready to hand back downstream to projectNUCLEUS**
+
 ## [Unreleased] — Wave 8: Compute Trio Composition — Node Atomic Evolution (2026-05-11)
 
 ### Added
@@ -80,7 +103,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Metrics
 - **683 tests** (workspace, lib+tests), **75 deploy graphs**, **21 scenarios**,
   **413 registered methods** (125 uncovered by inverse drift check — first baseline).
-- Wave 7: **5/7 items DONE**, 2 OPEN (W7-05 blocked on NestGate, W7-07 requires NestGate transport parity).
+- Wave 7: **7/7 items DONE** — W7-05 and W7-07 closed after NestGate Session 60 shipped transport parity.
 
 ## [Unreleased] — UniBin eukaryotic evolution (2026-05-09)
 
