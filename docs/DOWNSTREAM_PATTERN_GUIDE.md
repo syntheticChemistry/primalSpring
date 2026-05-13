@@ -146,9 +146,10 @@ paper = "B2"
 | **primalSpring** | 689+ | N/A | coordination | 5 (meta) | YES | coordination | coordination |
 | **wetSpring** | 1,613 | 1 | YES | 5 + papers | YES | B7 STARTED | 4 |
 
-**All 8 springs are at Tier 1.** `toadstool.validate` is **IMPLEMENTED** (S250).
-`toadstool.list_workloads` is **WIRED** (S245+). **Tier 2 is UNBLOCKED** —
-springs can wire `--format json` + `toadstool.validate` for Tier 2 convergence now.
+**All 8 springs at Tier 1+.** healthSpring and ludoSpring at Tier 2 (atomic niche wired).
+`toadstool.validate` **IMPLEMENTED** (S250), Phase D **FACTORY WIRED** (S254 — AMD live).
+`compute.dispatch.submit` **LIVE** for AMD, FECS-gated for NV. 7/7 springs Tier 2 wired.
+Provenance trio **GAP-36 RESOLVED** — all wire aliases normalized upstream.
 
 ### What projectNUCLEUS Needs Next
 

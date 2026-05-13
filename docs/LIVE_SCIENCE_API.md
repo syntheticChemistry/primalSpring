@@ -1,9 +1,9 @@
 # Live Science API — Tier 2 Wire Contract
 
-**Version**: 1.1.0
+**Version**: 1.2.0
 **Date**: May 13, 2026
 **Owner**: primalSpring (L2) + toadStool (L1) + barraCuda (L1)
-**Status**: ACTIVE — All Tier 2 methods IMPLEMENTED. 7/7 delta springs wired.
+**Status**: ACTIVE — All Tier 2 methods IMPLEMENTED. 7/7 delta springs wired. Upstream GAP-36 RESOLVED.
 
 ---
 
@@ -197,9 +197,9 @@ anchor attribution.
 
 | Method | Owner | Status | Blocks |
 |--------|-------|--------|--------|
-| `toadstool.validate` | toadStool | **IMPLEMENTED** (S250) | — |
+| `toadstool.validate` | toadStool | **IMPLEMENTED** (S250, 74 methods, Phase D wired) | — |
 | `toadstool.list_workloads` | toadStool | **WIRED** (S245+) | — |
-| `compute.dispatch.submit` | toadStool | **WIRED** (Wave 8) | — |
+| `compute.dispatch.submit` | toadStool | **LIVE** (S254 — AMD dispatch, NV FECS-gated) | — |
 | `barracuda.precision.route` | barraCuda | **IMPLEMENTED** (v0.4.0, 649 tests) | — |
 | `shader.compile.wgsl` | coralReef | **WIRED** (Wave 8) | — |
 | `content.put/get` | nestGate | **SHIPPED** (Session 60, 4-surface parity) | — |

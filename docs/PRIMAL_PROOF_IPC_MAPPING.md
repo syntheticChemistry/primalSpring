@@ -3,7 +3,7 @@
 # primalSpring — Primal Proof IPC Mapping
 
 **Date**: May 13, 2026
-**Version**: v0.9.25 (Phase 32 — Tier 2 converged)
+**Version**: v0.9.25 (Phase 32 — Tier 2 converged, GAP-36 resolved, Phase D wired)
 **Role**: Coordination spring — validates compositions, does not perform domain science
 
 ---
@@ -67,11 +67,12 @@ validation scenarios.
 | `session.create` | loamSpine | `s_domain_contract_sweep.rs` | Ledger session on `ledger` capability |
 | `session.state` | loamSpine | `s_domain_contract_sweep.rs` | Ledger session state query |
 
-> **Wire name note**: `content.*` (nestGate CAS) and `storage.*` (generic blob
-> API) are distinct domains in the capability registry. `provenance.*` is the
-> sweep's wire name; `dag.*` is the canonical alias in rhizoCrypt. loamSpine's
-> registry entry is `entry.append`/`entry.get`, but the sweep exercises
-> `session.create`/`session.state` on the `ledger` capability.
+> **Wire name note (GAP-34/35/36 — all RESOLVED upstream May 13)**:
+> `content.*` (nestGate CAS) and `storage.*` (generic blob API) are distinct
+> domains — confirmed intentional by biomeOS v3.53 (GAP-34). `provenance.*` is
+> the sweep's wire name; `dag.*` is canonical in rhizoCrypt — S68 `normalize_method`
+> maps both (GAP-36). loamSpine v0.9.16 aliases `session.*` → `spine.*` (GAP-35/36).
+> sweetGrass v0.7.35 aliases `braid.attribution.create` → `braid.create` (GAP-36).
 
 ### Tower + Defense + Orchestration
 

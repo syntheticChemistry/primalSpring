@@ -1,7 +1,7 @@
 # Temporal Ecosystem Review — Debt, Horizons, and Stadial Transition
 
-**Date**: May 12, 2026
-**Phase**: INTERSTADIAL — Sovereignty Pre-Wire
+**Date**: May 13, 2026 (refreshed from May 12 baseline)
+**Phase**: INTERSTADIAL — Sovereignty Pre-Wire → Niche Convergence
 **Scope**: Full ecosystem stack audit — upstream sentinels through downstream products
 
 ---
@@ -39,45 +39,43 @@ All 13 primals pass the structural gate: **13/13 MethodGate, 13/13 BTSP AEAD,
 
 | Primal | Coverage | Debt | Horizon Gaps |
 |--------|----------|------|--------------|
-| bearDog | 90.5% | LOW | `crypto.sign_contract` ionic lease (H2), purpose-key derivation (H2), federation (H3) |
-| songbird | 73% | LOW | ~~VPS relay~~ **OPS-READY** (Wave 202). `capability.resolve` (H2), coverage 73→90% (H2), Tor/TLS delegation (H2) |
-| skunkBat | ~338 tests | HIGH (integration) | BearDog live lineage (H2), network enforcement (H2), NestGate data protection (H2), federation tests (H3) |
+| bearDog | 90.5% | LOW | ~~ionic lease~~ **DONE** (W102), ~~purpose-key~~ **DONE**. `crypto.seed_fingerprint` shipped. Federation (H3) |
+| songbird | 73% | LOW | ~~VPS relay~~ **OPS-READY** (W202). ~~`capability.resolve`~~ **DONE** (W199-201). `mesh.*` on UDS (W204). Coverage 73→90% (H2), Tor/TLS (H2) |
+| skunkBat | ~363 tests | MEDIUM | ~~live lineage~~ ~~enforcement~~ ~~NestGate protection~~ **H2 niche shipped**. Federation tests (H3) |
 
-**Cascade risk**: skunkBat's HIGH integration debt propagates to every atomic
-tier. The JH-5 audit pipeline (skunkBat → rhizoCrypt → sweetGrass) is operational
-but its defense-layer gaps mean audit-grade deployments are **structurally wired
-but not operationally validated**.
+**Tower atomic niche**: ludoSpring wired (9 checks, 5 capabilities). bearDog
+`crypto.seed_fingerprint` + songbird `mesh.*` on UDS unblock live validation.
+GAP-16 addressable — remaining step is local deployment of all three.
 
 ### Node (proton) — Compute Trio Convergence
 
 | Primal | Coverage | Debt | Critical Path |
 |--------|----------|------|---------------|
-| toadStool | ~85%+ | LOW | **Phase C COMPLETE** (S245-S250, 520 cylinder tests, 8,809 workspace). Phase D plumbing in. `toadstool.validate` IMPLEMENTED. |
-| barraCuda | v0.4.0 | LOW | VFIO Titan V revalidation, DF64 NVK E2E, 90% coverage |
-| coralReef | ~65% | LOW | ~~FECS/GPCCS~~ **STABILITY PROOF SHIPPED** (Sprint 7 — 4,790 tests). `bind_stat` timeout (minor), `naga::Module` direct ingest (H2) |
+| toadStool | ~85%+ | LOW | **Phase D WIRED** (S254, 74 methods, 22,900+ tests). AMD live dispatch. NV FECS-gated. |
+| barraCuda | v0.4.0 | LOW | ~~DF64 NVK E2E~~ **GPU tests shipped** (Sprint 63). LAMMPS + SciPy + Kokkos benches live. NVK hardware remains. |
+| coralReef | ~65% | LOW | ~~FECS/GPCCS~~ **STABILITY PROOF SHIPPED** (Sprint 7). ~~`naga::Module`~~ **`compile_module` DONE**. PTX SM120 (H2). |
 
-**toadStool Phase C COMPLETE** (S245-S250, +42,000 lines, 520 cylinder tests,
-8,809 workspace). `toadstool.validate` **IMPLEMENTED** (S250). `toadstool.list_workloads`
-**WIRED** (S245+). Phase D plumbing in (local dispatch path, factory abstraction).
-E2E sovereign dispatch awaits factory hook-up + VFIO PBDMA (stadial work).
-**Tier 2 Science API is UNBLOCKED.**
+**toadStool Phase D FACTORY WIRED** (S254). AMD sovereign dispatch **LIVE** via
+`LocalDeviceFactory`. NV VFIO dispatch FECS-gated (`NvVfioComputeDevice` skeleton).
+74 JSON-RPC methods, 22,900+ workspace tests. FECS firmware bridge is sole remaining
+NV blocker (coralReef `GspBridge` contract). **Tier 2 Science API fully operational.**
 
 ### Nest (neutron) — Provenance Ready, Extracellular Pending
 
 | Primal | Coverage | Debt | Horizon Gaps |
 |--------|----------|------|--------------|
-| nestGate | 84% | MEDIUM | Extracellular content distribution (H3, depends Songbird VPS relay) |
-| rhizoCrypt | 93.9% | LOW | Trio integration rate-limited by skunkBat maturity |
-| loamSpine | 90.9% | LOW | PostgreSQL/RocksDB backends (v1 target) |
-| sweetGrass | ~LOW-MED | LOW-MEDIUM | Depends on skunkBat audit completeness for H3 |
+| nestGate | 84% | LOW | ~~transport parity~~ **DONE** (S60-61). Extracellular content distribution (H3) |
+| rhizoCrypt | 93.9% | LOW | ~~GAP-36~~ **RESOLVED** (S68 — `normalize_method`, 1,637 tests). `dag.*` canonical, `provenance.*` alias |
+| loamSpine | 90.9% | LOW | ~~GAP-36~~ **RESOLVED** (v0.9.16 — `session.*` aliased to `spine.*`, 1,522 tests). Postgres/RocksDB (v1) |
+| sweetGrass | 91.7% | LOW | ~~GAP-36~~ **RESOLVED** (v0.7.35 — `braid.attribution.create` aliased, 1,549 tests). Auth verify (H3) |
 
 ### Meta + Scaffold
 
 | Primal | Debt | Notes |
 |--------|------|-------|
-| biomeOS | LOW | Production validated, zero bypasses |
-| squirrel | LOW | 90% coverage, 7.2k tests |
-| petalTongue | MEDIUM | Spec-heavy, needs NestGate backend |
+| biomeOS | LOW | v3.53 — `composition.deploy.shadow` shipped, GAP-34 confirmed intentional |
+| squirrel | LOW | Inference wiring + NestGate env unification shipped |
+| petalTongue | LOW | v1.6.6 — ~~`backend=nestgate`~~ **WIRED** (`content.resolve`), live dashboard SSE |
 | sourDough | LOW-MEDIUM | Scaffold JH-0/BTSP, needs musl cross-build |
 
 ---
@@ -85,10 +83,11 @@ E2E sovereign dispatch awaits factory hook-up + VFIO PBDMA (stadial work).
 ## primalSpring Stadial Gate (L2)
 
 - **Registry**: 413 methods, 301 exercised (72%)
-- **Waves 7/8/9**: All local items DONE. 3 upstream Wave 8 items open (W8-07/08/09)
+- **Waves 7/8/9**: All DONE. Wave 8 upstream items **ALL RESOLVED** (W8-07/08/09).
 - **22 scenarios**, **77 deploy graphs**, **602 library tests** (all passing)
 - **Phase 32 atomic evolution**: skunkBat in Tower, Nest reconciled with provenance trio
-- **Downstream Tier 2 gap**: `LIVE_SCIENCE_API.md` needed for `toadstool.validate`/`list_workloads`
+- **Tier 2 Science API**: LIVE_SCIENCE_API v1.1.0 — all methods IMPLEMENTED, 7/7 springs wired
+- **Wire name reconciliation**: GAP-34/35/36 all resolved upstream, docs aligned
 
 ---
 
@@ -107,10 +106,11 @@ E2E sovereign dispatch awaits factory hook-up + VFIO PBDMA (stadial work).
 ### Cross-cutting Blockers
 
 1. **Ionic runtime** — not implemented (hotSpring, groundSpring, healthSpring)
-2. **`capability.resolve`** — pending Songbird (wetSpring, others)
-3. **Live provenance trio** — UDS handlers exist, trio not running in lab
+2. ~~**`capability.resolve`**~~ — **DONE** (songbird Wave 199-201)
+3. ~~**Live provenance trio**~~ — **GAP-36 RESOLVED** (all 3 primals now normalize wire aliases)
 4. **BTSP transport negotiation** — healthSpring `FAMILY_SEED` breaks mixed deploys
 5. ~~**`toadstool.validate`/`list_workloads`**~~ — **IMPLEMENTED** (S250/S245+), Tier 2 UNBLOCKED
+6. **FECS firmware bridge** — sole NV sovereign dispatch blocker (coralReef `GspBridge` contract)
 
 ---
 
@@ -133,11 +133,13 @@ E2E sovereign dispatch awaits factory hook-up + VFIO PBDMA (stadial work).
 
 ### RESOLVED (sentinel convergence — all complete)
 
-1. ~~**toadStool Phase C**~~ — **COMPLETE** (S245-S250). `toadstool.validate` IMPLEMENTED.
-2. ~~**coralReef FECS/GPCCS**~~ — **STABILITY PROOF SHIPPED** (Sprint 7, 4790 tests).
-3. ~~**Songbird VPS relay**~~ — **OPS-READY** (Wave 202 — systemd + credentials + deployment guide).
+1. ~~**toadStool Phase C+D**~~ — Phase C **COMPLETE** (S250), Phase D **FACTORY WIRED** (S254). AMD live. 74 methods, 22,900+ tests.
+2. ~~**coralReef FECS/GPCCS**~~ — **STABILITY PROOF SHIPPED** (Sprint 7). `compile_module` (naga::Module direct ingest) DONE.
+3. ~~**Songbird VPS relay**~~ — **OPS-READY** (Wave 202). `capability.resolve` DONE (W199-201). `mesh.*` UDS (W204).
 4. ~~**lithoSpore Tier 1**~~ — **PASS** (Module 1+2 Tier 1+2 with BLAKE3).
 5. ~~**Foundation threads**~~ — **10/10 active**, all expressions authored.
+6. ~~**GAP-36 provenance trio**~~ — **RESOLVED** across all 3: rhizoCrypt S68, loamSpine v0.9.16, sweetGrass v0.7.35.
+7. ~~**barraCuda parity benchmarks**~~ — LAMMPS + SciPy + Kokkos benches live (Sprint 63). DF64 GPU E2E tests shipped.
 
 ### Immediate (execution + infrastructure)
 

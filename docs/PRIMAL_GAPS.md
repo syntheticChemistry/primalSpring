@@ -23,7 +23,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — HSM mock `#[cfg(test)]` (Wave 98) |
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
-| toadStool | 8,809+ | **ADOPTED** | FULL | L3 | **CLEAN** — Phase C complete (S245-S250, cylinder 520 tests). `toadstool.validate` IMPLEMENTED. Phase D plumbing in. |
+| toadStool | 22,900+ | **ADOPTED** | FULL | L3 | **CLEAN** — Phase D factory wired (S254). AMD live, NV FECS-gated. 74 JSON-RPC methods. |
 | biomeOS | 7,919 | **ADOPTED** | FULL | consumer | **CLEAN** — test helpers gated `#[cfg(test)]` (v3.49) |
 | nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — dep hygiene + hardcode cleanup (S61), content.* transport parity (S60) |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
@@ -63,6 +63,24 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | GAP-06 | rhizoCrypt | No UDS transport | **RESOLVED** — S66 confirms UDS operational since S23, provenance trio integration test added |
 | GAP-03 | biomeOS | Cell graph live deploy not tested | **RESOLVED** — biomeOS v3.51 `composition.deploy` route alias for `graph.execute` |
 | GAP-09 | biomeOS | Neural API registration endpoint | **RESOLVED** — biomeOS v3.51 `method.register` endpoint for spring method registration |
+
+### Resolved (glacial debt escalation May 13, 2026)
+
+| ID | Owner | What | Resolution |
+|----|-------|------|------------|
+| GAP-36 | rhizoCrypt | `provenance.*` methods returned -32601 | **RESOLVED** — S68 `normalize_method()` maps 21 `provenance.*` → `dag.*` aliases. 1,637 tests. |
+| GAP-36 | loamSpine | `session.*` methods returned -32601 | **RESOLVED** — v0.9.16 `normalize_method` aliases `session.*` → `spine.*`. Handoff shipped. 1,522 tests. |
+| GAP-36 | sweetGrass | `braid.attribution.create` returned -32601 | **RESOLVED** — v0.7.35 alias table, `dispatch_classified()`. 1,549 tests, 91.7% coverage. |
+| GAP-35 | loamSpine | `entry.append` vs `session.create` | **RESOLVED** — both coexist: `entry.*` = entry CRUD, `spine.*` = ledger lifecycle, `session.*` = aliases. |
+| GAP-34 | biomeOS/nestGate | `content.*` vs `storage.*` naming | **CONFIRMED INTENTIONAL** — distinct domains (CAS vs blob). biomeOS v3.53. |
+| GAP-16 | Tower primals | Tower not deployed locally | **ADDRESSABLE** — bearDog `crypto.seed_fingerprint` (W102), songbird `mesh.*` UDS (W204). Deploy step remains. |
+| — | toadStool | Phase D factory not wired | **RESOLVED** — S254 `LocalDeviceFactory` wired. AMD live, NV FECS-gated. 74 methods, 22,900+ tests. |
+| — | barraCuda | Framework parity benchmarks | **RESOLVED** — Sprint 63: LAMMPS + SciPy + Kokkos benches, DF64 GPU E2E tests. |
+| — | coralReef | `naga::Module` direct ingest | **RESOLVED** — `compile_module`/`compile_module_full` shipped. 3,129 tests. |
+| — | biomeOS | Shadow deploy preflight | **RESOLVED** — v3.53 `composition.deploy.shadow` (dry-run validation, 3 routing tests). |
+| — | petalTongue | `backend=nestgate` | **RESOLVED** — v1.6.6 `GET /` → `content.resolve("/")` + live dashboard SSE. |
+| — | bearDog | Ionic lease (H2) | **RESOLVED** — Wave 102 `ttl_seconds`/`expires_at` on `sign_contract`/`verify_contract`. |
+| — | songbird | `capability.resolve` (H2) | **RESOLVED** — Wave 199-201 wire parity. |
 
 Also resolved by upstream teams (not previously tracked as gaps):
 
