@@ -1,8 +1,8 @@
 # Compute Trio Evolution — Node Atomic Domain Split + Absorption
 
-**Status**: ACTIVE (May 12, 2026 — Phase 32 atomic model)
-**Owner**: primalSpring (L2 gate) — defines contracts, hands upstream to primal teams
-**Phase**: Interstadial — Phase C **COMPLETE** (S245-S250, batches 1-7), Phase D plumbing IN (S250), `toadstool.validate` **IMPLEMENTED** (S250)
+**Status**: ACTIVE (May 13, 2026 — Phase 32 atomic model)
+**Owner**: primalSpring (L2 gate, contracts) + **hotSpring on biomeGate** (sovereign compute execution owner, GPU hardware)
+**Phase**: Interstadial — Phase C **COMPLETE** (S245-S250, batches 1-7), Phase D plumbing IN (S250), `toadstool.validate` **IMPLEMENTED** (S250). Remaining sovereign dispatch + VFIO PBDMA execution owned by hotSpring/biomeGate.
 
 ---
 
