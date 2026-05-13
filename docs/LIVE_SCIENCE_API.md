@@ -1,9 +1,9 @@
 # Live Science API — Tier 2 Wire Contract
 
-**Version**: 1.0.0
-**Date**: May 12, 2026
-**Owner**: primalSpring (L2) + toadStool (L1)
-**Status**: ACTIVE — `toadstool.validate` IMPLEMENTED (S250), `toadstool.list_workloads` WIRED (S245+)
+**Version**: 1.1.0
+**Date**: May 13, 2026
+**Owner**: primalSpring (L2) + toadStool (L1) + barraCuda (L1)
+**Status**: ACTIVE — All Tier 2 methods IMPLEMENTED. 7/7 delta springs wired.
 
 ---
 
@@ -114,12 +114,17 @@ contract (Wave 8). Included here for completeness.
 
 #### `barracuda.precision.route`
 
-Query the precision routing advice for a given physics domain and hardware.
+Query the optimal precision strategy for a given operation class and
+tolerance requirements. Returns the recommended precision tier, shader
+name, and whether the compiler (coralReef) is required.
 
 ```json
 {
   "method": "barracuda.precision.route",
   "params": {
+    "operation": "stats.mean",
+    "input_range": "normal",
+    "tolerance": "1e-9",
     "domain": "lattice_qcd",
     "hardware_hint": "compute"
   }
@@ -131,6 +136,9 @@ Query the precision routing advice for a given physics domain and hardware.
 ```json
 {
   "result": {
+    "strategy": "f64",
+    "shader": "stats_mean_f64",
+    "precision_tier": 7,
     "recommended_tier": "DF64",
     "fma_safe": false,
     "requires_compiler": true,
@@ -181,7 +189,7 @@ anchor attribution.
 | `toadstool.validate` | toadStool | **IMPLEMENTED** (S250) | — |
 | `toadstool.list_workloads` | toadStool | **WIRED** (S245+) | — |
 | `compute.dispatch.submit` | toadStool | **WIRED** (Wave 8) | — |
-| `barracuda.precision.route` | barraCuda | **NOT IMPLEMENTED** | hotSpring precision routing |
+| `barracuda.precision.route` | barraCuda | **IMPLEMENTED** (v0.4.0, 649 tests) | — |
 | `shader.compile.wgsl` | coralReef | **WIRED** (Wave 8) | — |
 | `content.put/get` | nestGate | **SHIPPED** (Session 60) | — |
 | `dag.session.create` | rhizoCrypt | **SHIPPED** | — |
@@ -191,7 +199,8 @@ anchor attribution.
 ## Adoption Path
 
 1. ~~**toadStool implements `toadstool.validate`**~~ — **DONE** (S250) + list_workloads (S245+)
-2. **primalSpring adds gate tests** for the new methods (Wave 8 closure: W8-07)
-3. **projectNUCLEUS wires Tier 2** notebooks to use JSON-RPC instead of CLI
-4. **lithoSpore modules** gain live validation via `toadstool.validate`
-5. **Foundation threads** can consume live provenance chains for reproducibility
+2. ~~**barraCuda implements `precision.route`**~~ — **DONE** (v0.4.0, 649 tests)
+3. ~~**Delta springs wire Tier 2**~~ — **DONE** (7/7 springs wired, May 13)
+4. **projectNUCLEUS wires Tier 2** notebooks to use JSON-RPC instead of CLI
+5. **lithoSpore modules** gain live validation via `toadstool.validate`
+6. **Foundation threads** can consume live provenance chains for reproducibility

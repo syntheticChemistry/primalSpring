@@ -31,7 +31,14 @@ fn main() {
             ref scenario,
             ref tier,
             list,
-        } => cmd_validate(track.as_deref(), scenario.as_deref(), tier.as_deref(), list),
+            ref format,
+        } => cmd_validate(
+            track.as_deref(),
+            scenario.as_deref(),
+            tier.as_deref(),
+            list,
+            format.as_deref() == Some("json"),
+        ),
         cli::Commands::Serve => cmd_serve(),
         cli::Commands::Status => cmd_status(),
         cli::Commands::Version => cmd_version(),
@@ -49,7 +56,13 @@ fn cmd_certify(layer: Option<u8>, bare: bool) {
     std::process::exit(result.exit_code());
 }
 
-fn cmd_validate(track: Option<&str>, scenario_id: Option<&str>, tier: Option<&str>, list: bool) {
+fn cmd_validate(
+    track: Option<&str>,
+    scenario_id: Option<&str>,
+    tier: Option<&str>,
+    list: bool,
+    json: bool,
+) {
     use primalspring::validation::scenarios::{Tier, Track, build_registry};
 
     let registry = build_registry();
@@ -131,7 +144,15 @@ fn cmd_validate(track: Option<&str>, scenario_id: Option<&str>, tier: Option<&st
         std::process::exit(1);
     }
 
-    v.finish();
+    if json {
+        if let Ok(j) = v.to_json() {
+            println!("{j}");
+        } else {
+            v.finish();
+        }
+    } else {
+        v.finish();
+    }
     std::process::exit(v.exit_code());
 }
 

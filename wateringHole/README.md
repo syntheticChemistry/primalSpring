@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Phase 60+ post-interstadial)
-**Last Updated**: May 10, 2026
+**Version**: 0.9.25 (Phase 32 — Tier 2 converged)
+**Last Updated**: May 13, 2026
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -26,20 +26,19 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | **PLASMINBIN_DEPOT_PATTERN.md** | All consumers | How to fetch primal binaries from plasmidBin GitHub Releases. |
 | **METHOD_GATE_STANDARD.md** | All primal teams | JH-0 ecosystem standard: pre-dispatch capability authorization, exempt whitelist, error codes, enforcement modes. |
 
-### Current Handoffs
+### Living Handoff
 
 | File | Audience | What It Covers |
 |------|----------|----------------|
-| **PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md** | Upstream primals + spring teams + products | Comprehensive evolution handoff: primal consumption, upstream debt, per-spring targets, NUCLEUS composition, Neural API deployment, downstream guidance. |
-| **PRIMALSPRING_V0925_UNIBIN_EUKARYOTIC_HANDOFF_MAY09_2026.md** | All teams | UniBin eukaryotic evolution: cell model, CLI surface, two-tier validation, certification organelle, scenario registry. |
-| **PHASE60_COMPLETION_HANDOFF_MAY09_2026.md** | Downstream products + spring teams | Phase 60 completion: 13/13 primals clean, composition patterns for NUCLEUS via Neural API. |
 | **INTERSTADIAL_FOSSILIZATION_HANDOFF.md** | Spring teams | Interstadial fossilization patterns: what to preserve, how to date, provenance READMEs. |
 
-### Archived (resolved, in `archive/`)
+### Archived Handoffs (`handoffs/archive/`)
 
-Phase-specific handoffs from May 7-9 that are now absorbed into the current
-handoffs above: phase 60 deep debt, security gate, ionic tokens, cross-spring
-parity audit, sovereignty. Git history preserves full provenance.
+| File | Date | Summary |
+|------|------|---------|
+| `PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md` | May 9 | Primal consumption, upstream debt, per-spring targets |
+| `PRIMALSPRING_V0925_UNIBIN_EUKARYOTIC_HANDOFF_MAY09_2026.md` | May 9 | UniBin cell model, CLI surface, two-tier validation |
+| `PHASE60_COMPLETION_HANDOFF_MAY09_2026.md` | May 9 | Phase 60 completion, 13/13 primals clean |
 
 ---
 

@@ -43,6 +43,9 @@ pub enum Commands {
         /// List all available scenarios without running them.
         #[arg(long, default_value_t = false)]
         list: bool,
+        /// Emit JSON output instead of human-readable text.
+        #[arg(long)]
+        format: Option<String>,
     },
     /// Start the JSON-RPC 2.0 IPC server (cell membrane).
     Serve,
