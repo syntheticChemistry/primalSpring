@@ -11,7 +11,7 @@ the core ecoPrimal library now route through `CompositionContext` for primal
 interactions. Direct-spawn infrastructure (`AtomicHarness`, `spawn_primal`) and
 low-level probing (`probe_primal`, `validate_composition`) are `#[deprecated]`
 with forwarding notes pointing to the modern patterns. Pre-interstadial code is
-preserved in `fossilRecord/`.
+preserved in the [fossilRecord repository](https://github.com/ecoPrimals/fossilRecord) under `springs/primalSpring/`.
 
 This handoff defines the **two-tier validation architecture** and provides
 per-spring inventories and checklists for replicating the transition.
@@ -77,7 +77,7 @@ let result = ctx.call("capability", "method.name", params)?;
 | `ecoPrimal/src/launcher/spawn.rs` — `spawn_primal` | `#[deprecated]` |
 | `ecoPrimal/src/launcher/biomeos.rs` — `spawn_biomeos` | `#[deprecated]` |
 | `ecoPrimal/src/composition/context.rs` — `from_running()` | `#[deprecated]` |
-| Fossil record | `fossilRecord/harness_launcher_pre_interstadial_may2026/` |
+| Fossil record | [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/harness_launcher_pre_interstadial_may2026/` |
 
 ### Coordination Probes (PrimalClient-based)
 
@@ -92,7 +92,7 @@ let result = ctx.call("capability", "method.name", params)?;
 
 | Item | Status |
 |---|---|
-| 85 pre-interstadial experiment sources | `fossilRecord/experiments_pre_interstadial_may2026/` |
+| 85 pre-interstadial experiment sources | [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/experiments_pre_interstadial_may2026/` |
 | All 89 experiments rewired to `CompositionContext` | Complete |
 | `exp105 world.rs` — last `PrimalClient` holdout | Rewired |
 
@@ -102,7 +102,7 @@ let result = ctx.call("capability", "method.name", params)?;
 
 These primal-based subdirectories in sibling springs represent pre-absorption
 shader evolution and primal-specific code. Each spring should fossilize these
-to its own `fossilRecord/` and evolve to IPC via `CompositionContext`.
+to its own fossilRecord (local or [shared repo](https://github.com/ecoPrimals/fossilRecord)) and evolve to IPC via `CompositionContext`.
 
 | Spring | Primal Subdir | Content | WGSL Count | Action |
 |---|---|---|---|---|
@@ -138,7 +138,7 @@ but behavioral calls must go through IPC (Tier 2).
 Each spring follows this pattern for pre-absorption code:
 
 1. **Snapshot** — Copy `src/` of the target subdir into
-   `fossilRecord/{name}_pre_interstadial_may2026/` with a README explaining
+   `fossilRecord/{name}_pre_interstadial_may2026/` (local or shared repo) with a README explaining
    provenance and what supersedes it.
 
 2. **Deprecate** — Add `#[deprecated(since = "...", note = "...")]` to public
@@ -162,7 +162,7 @@ For local WGSL shaders in any spring:
 - [ ] For each shader with upstream equivalent:
   - [ ] Validate parity (output tolerance ≤ documented threshold)
   - [ ] Switch to `barraCuda::{domain}::{op}` call
-  - [ ] Snapshot local shader to `fossilRecord/`
+  - [ ] Snapshot local shader to fossilRecord (local or shared repo)
   - [ ] Remove local shader source
 - [ ] For shaders without upstream equivalent:
   - [ ] File handoff to barraCuda team: `BARRACUDA_SHADER_ABSORPTION_{DOMAIN}_HANDOFF.md`
@@ -190,7 +190,7 @@ For each `path = "../../primals/..."` dependency:
 | Document | Location |
 |---|---|
 | Validation Tiers architecture | `docs/VALIDATION_TIERS.md` |
-| Fossil record index | `fossilRecord/README.md` |
+| Fossil record | `fossilRecord/README.md` (local redirect → [shared repo](https://github.com/ecoPrimals/fossilRecord)) |
 | Experiment catalog | `experiments/results/experiment_catalog.json` |
 | Capability registry | `config/capability_registry.toml` (389 methods) |
 | CompositionContext docs | `ecoPrimal/src/composition/context.rs` |

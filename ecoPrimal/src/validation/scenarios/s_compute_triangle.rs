@@ -253,14 +253,14 @@ fn phase_barracuda_math(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             let mean = resp
                 .get("mean")
                 .or_else(|| resp.get("result"))
-                .and_then(|m| m.as_f64());
-            let correct = mean.map_or(false, |m| (m - 5.0).abs() < 1e-9);
+                .and_then(serde_json::Value::as_f64);
+            let correct = mean.is_some_and(|m| (m - 5.0).abs() < 1e-9);
             v.check_bool(
                 "stats_mean_roundtrip",
                 correct,
                 &format!(
                     "stats.mean([2,4,6,8]) = {} (expected 5.0)",
-                    mean.map_or("N/A".to_owned(), |m| format!("{m}"))
+                    mean.map_or_else(|| "N/A".to_owned(), |m| format!("{m}"))
                 ),
             );
         }
@@ -286,6 +286,7 @@ fn phase_barracuda_math(v: &mut ValidationResult, ctx: &mut CompositionContext) 
 ///
 /// Both calls SKIP on connection error (primal not running).
 /// This validates the IPC contract, not the GPU result.
+#[expect(clippy::too_many_lines, reason = "cohesive 5-check validation phase")]
 fn phase_sovereign_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let has_shader = ctx.has_capability("shader");
     let has_compute = ctx.has_capability("compute");
@@ -302,9 +303,9 @@ fn phase_sovereign_dispatch(v: &mut ValidationResult, ctx: &mut CompositionConte
         return;
     }
 
-    let trivial_wgsl = r#"@compute @workgroup_size(1)
+    let trivial_wgsl = r"@compute @workgroup_size(1)
 fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
-}"#;
+}";
 
     let compile_result = ctx.call(
         "shader",

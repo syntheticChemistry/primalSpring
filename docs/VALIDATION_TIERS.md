@@ -119,9 +119,9 @@ These patterns belong to the pre-interstadial direct-spawn era and are
 | `PrimalClient::connect(socket, name)` | `ctx.call(capability, method, params)` |
 | `discover_primal(name)` / `discover_by_capability(cap)` | Implicit in `CompositionContext` construction |
 
-Fossilized code is preserved in:
-- `fossilRecord/harness_launcher_pre_interstadial_may2026/`
-- `fossilRecord/experiments_pre_interstadial_may2026/`
+Fossilized code is preserved in [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/`:
+- `harness_launcher_pre_interstadial_may2026/`
+- `experiments_pre_interstadial_may2026/`
 
 ---
 

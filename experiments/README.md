@@ -79,7 +79,7 @@ Twenty absorbed experiment crates are now **validation scenarios** under
 `primalspring_unibin` — e.g. `cargo run -p primalspring --bin primalspring_unibin -- validate`
 (with `certify`, `serve`, `status`, `version` as sibling subcommands).
 The **prokaryotic-era** sources for those 20 experiments are preserved under
-`fossilRecord/experiments_prokaryotic_may2026/`; the living experiment crates
+[fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/experiments_prokaryotic_may2026/`; the living experiment crates
 remain in the workspace during the transition. See that directory’s README for
 the experiment → scenario module mapping.
 

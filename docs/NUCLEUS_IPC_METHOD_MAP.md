@@ -1,6 +1,7 @@
 # NUCLEUS IPC Method Map
 
-> Verified live against Desktop NUCLEUS (Phase 59, May 6, 2026).
+> Verified live against Desktop NUCLEUS (projectNUCLEUS Phase 59, May 6, 2026).
+> Wire contracts stable through Phase 32 atomic evolution (May 12, 2026).
 > Every method below was confirmed via JSON-RPC over UDS.
 > 13/13 NUCLEUS primals, BTSP Phase 3 FULL AEAD, all defaulting to `127.0.0.1`.
 > PG-55 through PG-59 all RESOLVED. Zero open security gaps.

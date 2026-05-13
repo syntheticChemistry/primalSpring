@@ -92,18 +92,18 @@ fn phase_content_put(v: &mut ValidationResult, ctx: &mut CompositionContext) -> 
                 &format!("expected 64 hex chars, got {}", hash.len()),
             );
 
-            let stored = resp.get("stored").and_then(|s| s.as_bool()).unwrap_or(false);
-            let dedup = resp.get("deduplicated").and_then(|d| d.as_bool()).unwrap_or(false);
+            let stored = resp.get("stored").and_then(serde_json::Value::as_bool).unwrap_or(false);
+            let dedup = resp.get("deduplicated").and_then(serde_json::Value::as_bool).unwrap_or(false);
             v.check_bool(
                 "content_put_stored_or_dedup",
                 stored || dedup,
                 &format!("stored={stored}, deduplicated={dedup}"),
             );
 
-            if !hash.is_empty() {
-                Some(hash.to_owned())
-            } else {
+            if hash.is_empty() {
                 None
+            } else {
+                Some(hash.to_owned())
             }
         }
         Err(e) if e.is_connection_error() => {
@@ -191,7 +191,7 @@ fn phase_content_exists_list(
         serde_json::json!({ "hash": hash, "family_id": family_id }),
     ) {
         Ok(resp) => {
-            let exists = resp.get("exists").and_then(|e| e.as_bool()).unwrap_or(false);
+            let exists = resp.get("exists").and_then(serde_json::Value::as_bool).unwrap_or(false);
             v.check_bool(
                 "content_exists_confirms_hash",
                 exists,

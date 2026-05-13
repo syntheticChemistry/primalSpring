@@ -12,7 +12,7 @@ The wateringHole is primalSpring's outward-facing guidance surface for upstream
 primal teams and downstream spring/garden consumers. It defines the patterns
 that make the ecosystem composable.
 
-Historical handoffs live in `archive/` and `fossilRecord/`.
+Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilRecord) (consolidated May 12, 2026).
 
 ---
 
@@ -65,19 +65,20 @@ parity audit, sovereignty. Git history preserves full provenance.
 | Method string validator | `tools/check_method_strings.sh` |
 | Graph method validator | `tools/check_graph_methods.sh` |
 | Experiment tracks | `experiments/` (89 experiments, 20 tracks) |
-| Deploy graphs | `graphs/` (74 TOMLs) |
+| Deploy graphs | `graphs/` (77 TOMLs) |
 | Checksum tool | `tools/regenerate_checksums.sh` |
 | Binary fetch script | `tools/fetch_primals.sh` |
 | NUCLEUS launcher | `tools/composition_nucleus.sh` |
 | Composition library | `tools/nucleus_composition_lib.sh` |
-| Fossil record | `fossilRecord/` (archived handoffs, stale code, historical docs) |
+| Fossil record | [fossilRecord repo](https://github.com/ecoPrimals/fossilRecord) (consolidated May 12, 2026) |
 
 ---
 
 ## Fossil Record
 
-Historical handoffs are preserved in `fossilRecord/`:
+Historical handoffs are preserved in the [fossilRecord repository](https://github.com/ecoPrimals/fossilRecord) under `springs/primalSpring/`:
 - `wateringHole_phase56_apr2026/` — v0.1.0 through Phase 56 (66+ files)
 - `wateringHole_phase58_59_may2026/` — Phase 58–59 handoffs (6 files)
 
-Git history retains full provenance at their original paths.
+Git history in this repo retains full provenance at their original paths.
+A local redirect stub exists at `fossilRecord/README.md`.

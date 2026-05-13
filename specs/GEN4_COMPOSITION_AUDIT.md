@@ -1,7 +1,11 @@
 # gen4 Composition Audit — primalSpring vs esotericWebb
 
+> **Historical snapshot** — Phase 17 / March 2026. Capability counts (47)
+> and graph references are deeply stale. Current: 413 methods, 77 graphs,
+> Phase 32 atomic model. Retained as fossil record of early gen4 gap analysis.
+
 **Date**: March 24, 2026
-**Status**: Active — Phase 17 planning
+**Status**: Historical — Phase 17 snapshot (superseded by Phase 32 evolution)
 **Context**: esotericWebb (sporeGarden) is the first gen4 product consuming
 primals via IPC. This audit identifies gaps between what primalSpring validates
 (gen3) and what gen4 products actually need.

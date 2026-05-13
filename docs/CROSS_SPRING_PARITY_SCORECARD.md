@@ -119,7 +119,7 @@ barraCuda) as the Node atomic's sovereign compute pipeline:
 | W8-05 | **DONE** | `compute_trio_smoke.toml` deploy graph (6-phase trio health+capabilities+math) |
 | W8-06 | **DONE** | gen4 `SOVEREIGN_COMPUTE_TRIO_SKETCH.md` — composition pattern + warm-catch sovereignty |
 | W8-07 | **DONE** | Phase C COMPLETE (S245-S250, 7 batches, 520 cylinder tests). Phase D plumbing in. `toadstool.validate` IMPLEMENTED (S250). |
-| W8-08 | **IN PROGRESS** | coralReef coral-ember/glowplug soft-deprecated; Phase C/D markers |
+| W8-08 | **DONE** | coralReef Sprint 7 FECS stability proof shipped (`boot_gr_falcons_with_recovery`, 3x retry + PMC GR reset, 4790 tests). coral-ember/glowplug soft-deprecated. |
 | W8-09 | **DONE** | barraCuda v0.4.0 stadial gate — 15-tier PrecisionTier, 71/71 IPC |
 
 **gen4 sketch**: `whitePaper/gen4/architecture/SOVEREIGN_COMPUTE_TRIO_SKETCH.md` connects

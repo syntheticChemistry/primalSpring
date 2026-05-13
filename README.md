@@ -10,7 +10,7 @@
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 602+ lib (602 passed + 2 ignored; unit + integration + doc-tests + proptest) |
 | **Experiments** | 89 (20 tracks) — 21 absorbed as UniBin validation scenarios |
-| **Deploy Graphs** | 77 TOMLs — fragment-first composition with `resolve = true` (9 profiles + 6 fragments + 5 multi-node + 8 spring validation + 2 spring deploy + 3 downstream + 5 bonding + 2 chaos + 2 cross-spring + 4 patterns + 1 federation + 1 composition + 13 root + 12 cell graphs + 4 desktop app graphs) |
+| **Deploy Graphs** | 77 TOMLs — fragment-first composition with `resolve = true` (13 root + 9 profiles + 6 fragments + 8 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 federation + 1 composition + 12 cell graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
@@ -70,14 +70,14 @@ primalSpring/
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
 ├── experiments/                   # 89 validation experiments (20 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 76 deploy graph TOMLs (fragment-first composition)
+├── graphs/                        # 77 deploy graph TOMLs (fragment-first composition)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
 │   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
 │   ├── patterns/                 # 4 coordination patterns: parallel, conditional, streaming, continuous
 │   ├── bonding/                  # 5 bonding model graphs: ionic, metallic, OMS, defensive, albatross
 │   ├── chaos/                    # 2 chaos engineering: partition recovery, slow start
 │   ├── multi_node/               # 5 multi-node federation graphs
-│   ├── spring_validation/        # 7 files: template + manifest + nucleus_atomics + crypto_negative + gaming_niche + content_pipeline_smoke + compute_trio_smoke
+│   ├── spring_validation/        # 8 files: template + manifest + nucleus_atomics + crypto_negative + gaming_niche + domain_contract_sweep + content_pipeline_smoke + compute_trio_smoke
 │   ├── spring_deploy/            # 2 files: template + manifest (5 springs parameterized)
 │   ├── downstream/               # 3 TOML + 2 docs: template + manifest + healthspring_enclave
 │   ├── cross_spring/             # 2 cross-spring validators
@@ -173,7 +173,7 @@ Install the tool (`cargo install cargo-llvm-cov --locked` or a release binary) a
 cargo coverage
 ```
 
-This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report, and fails if **line** coverage is below **90%**. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
+This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report. Release gate (`scripts/validate_release.sh`) enforces a **70%** floor. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
 
 ## Server Mode
 
@@ -220,22 +220,24 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 76 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
+primalSpring ships 77 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
 
 **Root-level graphs (13)**:
 
 | Graph | Pattern | Primals |
 |-------|---------|---------|
 | `tower_atomic_bootstrap.toml` | Sequential | beardog, songbird, skunkbat |
-| `tower_full_capability.toml` | Sequential | beardog, songbird, skunkbat (full caps) |
-| `nest_deploy.toml` | Sequential | beardog, songbird, skunkbat, nestgate (+provenance trio) |
-| `node_atomic_compute.toml` | Sequential | beardog, songbird, toadstool |
-| `nucleus_complete.toml` | Sequential | biomeos, beardog, songbird, skunkbat, nestgate, toadstool, squirrel (+compute trio +provenance trio) |
 | `tower_ai.toml` | Sequential | beardog, songbird, squirrel |
-| `nest_viz.toml` | Sequential | beardog, songbird, nestgate, petaltongue |
+| `tower_ai_viz.toml` | Sequential | beardog, songbird, squirrel, petaltongue |
+| `node_atomic_compute.toml` | Sequential | beardog, songbird, toadstool |
 | `node_ai.toml` | Sequential | beardog, songbird, toadstool, squirrel |
+| `nest_viz.toml` | Sequential | beardog, songbird, nestgate, petaltongue |
+| `nucleus_complete.toml` | Sequential | biomeos, beardog, songbird, skunkbat, nestgate, toadstool, squirrel (+compute trio +provenance trio) |
 | `provenance_overlay.toml` | Sequential | beardog, songbird, rhizocrypt, loamspine, sweetgrass |
 | `coralforge_pipeline.toml` | Pipeline | beardog, songbird, nestgate, toadstool, sweetgrass |
+| `hotspring_qcd_pipeline.toml` | Pipeline | hotSpring QCD composition |
+| `neuralspring_inference_pipeline.toml` | Pipeline | neuralSpring ML inference composition |
+| `healthspring_clinical_pipeline.toml` | Pipeline | healthSpring clinical composition |
 | `spring_byob_template.toml` | Sequential | template for new springs |
 
 **Multi-node federation graphs (5)** — `graphs/multi_node/`:
@@ -248,11 +250,14 @@ primalSpring ships 76 deploy graph TOMLs using fragment-first composition (all n
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
 | `three_node_covalent_cross_network.toml` | 3-node cross-network mesh | Covalent | GeneticLineage |
 
-**Spring validation graphs (5)** — `graphs/spring_validation/`: a parameterized
+**Spring validation graphs (8)** — `graphs/spring_validation/`: parameterized
 `spring_validate_template.toml` + `spring_validate_manifest.toml` (9 compositions covering
 all 7 springs plus products), `nucleus_atomics_validate.toml` (all 4 NUCLEUS tiers),
 `crypto_negative_validate.toml` (negative security boundary tests),
-and `gaming_niche_validate.toml` (ludoSpring gaming niche validation).
+`gaming_niche_validate.toml` (ludoSpring gaming niche validation),
+`domain_contract_sweep.toml` (cross-domain method exercise),
+`content_pipeline_smoke.toml` (NestGate content round-trip),
+and `compute_trio_smoke.toml` (compute trio health + capabilities + math + sovereign dispatch).
 All graphs include biomeOS Neural API as orchestration substrate.
 
 **Composition graphs (1)** — `graphs/compositions/`: `foundation_validation.toml` —
@@ -456,7 +461,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 `gate: pixel8a` with capabilities [network, discovery, http, mesh, birdsong].
 ADB forwards Pixel TCP 9901 → Eastgate 19901 for JSON-RPC IPC.
 
-See `fossilRecord/wateringHole_phase58_59_may2026/` for the full cross-gate SELinux gap analysis
+See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/wateringHole_phase58_59_may2026/` for the full cross-gate SELinux gap analysis
 and per-primal remediation plan (archived from March 2026 mobile deployment spike).
 
 ## Docs
@@ -486,18 +491,39 @@ and per-primal remediation plan (archived from March 2026 mobile deployment spik
 - `config/deployment_matrix.toml` — 43-cell deployment validation matrix
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer
 
-## Deployment Scripts
+## Scripts and Tools
+
+**`scripts/`** (11 files) — build, validation, and deployment:
 
 | Script | Purpose |
 |--------|---------|
+| `scripts/validate_release.sh` | Release quality gate: fmt + clippy + deny + test floor (400+) + docs |
 | `scripts/validate_deployment_matrix.sh` | Run deployment matrix cells: topology × arch × preset × transport validation |
-| `scripts/chaos-inject.sh` | Inject chaos conditions (partition, kill, disk-fill, slow DNS, clock drift) into benchScale labs |
+| `scripts/validate_composition.sh` | Validate NUCLEUS composition health and binary presence |
 | `scripts/validate_local_lab.sh` | Quick local lab validation for benchScale topologies |
+| `scripts/validate_remote_gate.sh` | Probe a remote gate's NUCLEUS health via TCP JSON-RPC |
 | `scripts/build_ecosystem_genomeBin.sh` | Build all primals across the full genomeBin target matrix (9 targets, 3 tiers) |
 | `scripts/build_ecosystem_musl.sh` | Legacy musl-only build (x86_64 + aarch64); superseded by genomeBin script |
 | `scripts/prepare_spore_payload.sh` | Assemble USB spore deployment payload (binaries + graphs + scripts + genetics) |
-| `scripts/validate_remote_gate.sh` | Probe a remote gate's NUCLEUS health via TCP JSON-RPC |
-| `scripts/validate_release.sh` | Release quality gate: fmt + clippy + deny + test floor + docs |
+| `scripts/chaos-inject.sh` | Inject chaos conditions (partition, kill, disk-fill, slow DNS, clock drift) |
+| `scripts/pixel_cross_arch_lab.sh` | Cross-arch validation lab for Pixel/Android targets |
+| `scripts/lan_covalent_lab.sh` | LAN covalent bonding lab for multi-node federation |
+
+**`tools/`** (24 files) — operational tooling for NUCLEUS composition, method auditing, and desktop:
+
+| Tool | Purpose |
+|------|---------|
+| `tools/nucleus_composition_lib.sh` | Reusable NUCLEUS composition library (sourced by domain scripts) |
+| `tools/nucleus_launcher.sh` | Start/stop/restart full NUCLEUS stack |
+| `tools/desktop_nucleus.sh` | 13-primal NUCLEUS launcher with auto-symlink for petalTongue discovery |
+| `tools/check_method_coverage.sh` | Inverse drift: flag 413-registry methods never exercised in scenarios/tests/graphs |
+| `tools/check_method_gate.sh` | Verify MethodGate pre-dispatch authorization compliance |
+| `tools/check_method_strings.sh` | Audit method string literals against canonical registry |
+| `tools/check_graph_methods.sh` | Verify deploy graph nodes reference valid registry methods |
+| `tools/fetch_primals.sh` | Bootstrap primal binaries from plasmidBin GitHub Releases |
+| `tools/regenerate_checksums.sh` | Regenerate BLAKE3 checksums for local validation assets |
+| `tools/validate_compositions.py` | Live subsystem composition validator (C1-C7) |
+| `tools/ws_gateway.py` | Thin WebSocket-to-IPC bridge (no business logic) |
 
 ---
 

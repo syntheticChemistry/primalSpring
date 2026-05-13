@@ -157,7 +157,7 @@ These patterns are deprecated and will be removed in the next stadial:
 
 ## Fossil Record
 
-Historical snapshots are preserved in `fossilRecord/`:
+Historical snapshots are preserved in the [fossilRecord repository](https://github.com/ecoPrimals/fossilRecord) under `springs/primalSpring/`:
 
 | Snapshot | Contents |
 |----------|----------|

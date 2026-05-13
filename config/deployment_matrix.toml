@@ -21,10 +21,10 @@
 [matrix]
 version = "3.0.0"
 description = "NUCLEUS Atomic-Aligned"
-last_updated = "2026-04-18"
+last_updated = "2026-05-13"
 
 [atomics]
-description = "NUCLEUS atomic model — Phase 31 aligned"
+description = "NUCLEUS atomic model — Phase 32 aligned"
 
 [atomics.tower]
 particle = "electron"

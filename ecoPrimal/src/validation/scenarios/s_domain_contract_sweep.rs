@@ -265,10 +265,10 @@ fn phase_provenance(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 "provenance.session.create returned session",
             );
             resp.get("session_id")
-                .or(resp.get("result"))
+                .or_else(|| resp.get("result"))
                 .and_then(|v| v.as_str())
                 .map(String::from)
-                .or_else(|| if !sid.is_empty() { Some(sid) } else { None })
+                .or_else(|| (!sid.is_empty()).then_some(sid))
         }
         Err(e) if e.is_connection_error() => {
             v.check_skip("provenance_session_create_responds", &format!("rhizoCrypt not reachable: {e}"));

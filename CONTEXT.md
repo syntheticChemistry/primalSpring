@@ -30,10 +30,10 @@ back upstream to primals and primalSpring.
   `primalspring_guidestone` (legacy certification, transitioning → `primalspring certify`),
   `validate_all` (legacy runner, transitioning → `primalspring validate`)
 - **experiments/** — 89 validation binaries covering 20 tracks
-- **graphs/** — 77 deploy graph TOMLs using fragment-first composition (6 fragments +
-  9 profiles + 4 patterns + 7 spring validation + 2 cross-spring + 5 bonding +
-  2 chaos + 2 spring deploy + 3 downstream + 5 multi-node + 13 root-level +
-  1 federation + 12 cell graphs + 4 desktop app graphs)
+- **graphs/** — 77 deploy graph TOMLs using fragment-first composition (13 root +
+  9 profiles + 6 fragments + 8 spring validation + 5 multi-node + 5 bonding +
+  4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
+  2 cross-spring + 1 federation + 1 composition + 12 cell graphs)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
 - **tools/** — desktop NUCLEUS launcher, nucleus launcher, composition library + template, TTT reference implementation, Godot bridge, thin WS gateway, composition validator
 - **config/** — capability registry, launch profiles
@@ -77,7 +77,7 @@ v0.9.25 Phase 32 atomic model (May 12, 2026) — 602 library tests (all passing)
 songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7 (Tower +
 nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
-**Waves 7/8/9 complete locally**, 3 upstream Wave 8 items tracked (W8-07/08/09).
+**Waves 7/8/9/10 complete**, all Wave 8 upstream items DONE (W8-07/08/09 resolved May 12).
 Zero DEBT markers, zero unsafe blocks. 22 scenarios, `LIVE_SCIENCE_API.md`
 formalizes Tier 2 wire contract. All 13 primals at zero debt.
 See `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` for full ecosystem audit.
@@ -122,7 +122,7 @@ bonding, BTSP/crypto, cellular deployment). Layer 1.5 reports per-atomic securit
 posture (BTSP default on all tiers — cleartext is FAIL). biomeOS substrate
 health (neural-api liveness + graph.list) validated as first-class check.
 Domain guideStones (hotSpring, healthSpring, etc.) inherit this base certification
-and only validate their own science. See `fossilRecord/wateringHole_phase56_apr2026/GUIDESTONE_COMPOSITION_STANDARD.md`.
+and only validate their own science. See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/wateringHole_phase56_apr2026/GUIDESTONE_COMPOSITION_STANDARD.md`.
 
 BTSP convergence achieved: 13/13 capabilities BTSP-authenticated across all NUCLEUS
 tiers. `upgrade_btsp_clients()` uses a two-pass strategy — cleartext probe first,
