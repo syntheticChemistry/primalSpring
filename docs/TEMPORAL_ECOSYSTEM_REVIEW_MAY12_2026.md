@@ -141,7 +141,7 @@ E2E sovereign dispatch awaits factory hook-up + VFIO PBDMA (stadial work).
 
 ### Immediate (execution + infrastructure)
 
-6. **plasmidBin checksum sync** — Songbird + coralReef binaries desynced
+6. ~~**plasmidBin checksum sync**~~ — **RESOLVED** (pipeline hardened May 12, auto-harvest + post-harvest validation)
 7. **projectNUCLEUS shadow runs** (H2-2b/3a/3b/3c) — all upstream ready, deploy immediately
 8. **skunkBat E2E operational validation** — JH-5 Phase 3 shipped, exercise through deploy graphs
 9. **Ionic runtime** — cross-spring RPC, CompositionContext L2 pass

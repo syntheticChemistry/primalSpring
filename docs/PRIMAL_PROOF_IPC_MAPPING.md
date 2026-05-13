@@ -57,23 +57,35 @@ validation scenarios.
 
 | Method | Primal | Module | Purpose |
 |--------|--------|--------|---------|
-| `content.put` | nestGate | `s_nestgate_content_pipeline.rs` | Content storage |
-| `content.get` | nestGate | `s_nestgate_content_pipeline.rs` | Content retrieval |
+| `content.put` | nestGate | `s_nestgate_content_pipeline.rs` | Content-addressed storage (CAS) |
+| `content.get` | nestGate | `s_nestgate_content_pipeline.rs` | Content retrieval by BLAKE3 hash |
 | `content.exists` | nestGate | `s_nestgate_content_pipeline.rs` | Content existence check |
-| `dag.session.create` | rhizoCrypt | `s_domain_contract_sweep.rs` | DAG session |
-| `dag.event.append` | rhizoCrypt | `s_domain_contract_sweep.rs` | DAG event |
-| `ledger.entry.append` | loamSpine | `s_domain_contract_sweep.rs` | Ledger append |
-| `braid.attribution.create` | sweetGrass | `s_domain_contract_sweep.rs` | Attribution braid |
+| `content.list` | nestGate | `s_nestgate_content_pipeline.rs` | Enumerate stored content hashes |
+| `content.resolve` | nestGate | `s_nestgate_content_pipeline.rs` | Resolve content path + MIME type |
+| `provenance.session.create` | rhizoCrypt | `s_domain_contract_sweep.rs` | DAG session (alias: `dag.session.create`) |
+| `provenance.event.append` | rhizoCrypt | `s_domain_contract_sweep.rs` | DAG event (alias: `dag.event.append`) |
+| `session.create` | loamSpine | `s_domain_contract_sweep.rs` | Ledger session on `ledger` capability |
+| `session.state` | loamSpine | `s_domain_contract_sweep.rs` | Ledger session state query |
 
-### Tower
+> **Wire name note**: `content.*` (nestGate CAS) and `storage.*` (generic blob
+> API) are distinct domains in the capability registry. `provenance.*` is the
+> sweep's wire name; `dag.*` is the canonical alias in rhizoCrypt. loamSpine's
+> registry entry is `entry.append`/`entry.get`, but the sweep exercises
+> `session.create`/`session.state` on the `ledger` capability.
+
+### Tower + Defense + Orchestration
 
 | Method | Primal | Module | Purpose |
 |--------|--------|--------|---------|
-| `crypto.seed_fingerprint` | bearDog | `s_domain_contract_sweep.rs` | Seed provenance |
-| `crypto.sign` | bearDog | `s_domain_contract_sweep.rs` | Signing |
-| `btsp.negotiate` | bearDog | `btsp_handshake.rs` | BTSP Phase 3 handshake |
-| `mesh.peers` | songbird | `s_domain_contract_sweep.rs` | Peer discovery |
-| `defense.audit` | skunkBat | `s_domain_contract_sweep.rs` | Audit forwarding |
+| `secrets.store` | bearDog | `s_domain_contract_sweep.rs` | Key vault store |
+| `secrets.retrieve` | bearDog | `s_domain_contract_sweep.rs` | Key vault retrieve |
+| `defense.status` | skunkBat | `s_domain_contract_sweep.rs` | Defense policy state |
+| `defense.events` | skunkBat | `s_domain_contract_sweep.rs` | Recent audit events |
+| `discovery.discover` | songbird | `s_domain_contract_sweep.rs` | Capability-based endpoint discovery |
+| `discovery.protocols` | songbird | `s_domain_contract_sweep.rs` | Supported protocol enumeration |
+| `network.nat_type` | songbird | `s_domain_contract_sweep.rs` | NAT classification |
+| `network.stun` | songbird | `s_domain_contract_sweep.rs` | STUN binding request |
+| `bonding.status` | biomeOS | `s_domain_contract_sweep.rs` | Bond state query |
 
 ---
 

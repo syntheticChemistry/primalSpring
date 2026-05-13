@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 12, 2026 (Wave 10 — downstream pattern handoff)
+**Last updated**: May 13, 2026 (reconciled LTEE/version with spring handoffs)
 
 ---
 
@@ -111,7 +111,7 @@ expression = "expressions/LTEE_EVOLUTIONARY_DYNAMICS.md"
 id = "dryad_wiser_2013"
 database = "Dryad"
 description = "Wiser et al. 2013 fitness trajectory data (50,000 generations)"
-accessions = ["doi:10.5061/dryad.XXX"]
+accessions = ["doi:10.5061/dryad.234"]
 url = "https://datadryad.org/..."
 format = "csv"
 blake3 = ""
@@ -139,10 +139,10 @@ paper = "B2"
 |--------|------:|:----:|:--------------:|:---------:|:----------:|:----:|:------------------:|
 | **airSpring** | 1,389 | 1 | YES (thread06_ag) | 5 + 20 papers | YES | E3 queued | 6 |
 | **groundSpring** | 1,125 | 1 | YES | 5 + 29 baselines | YES | **B1-B3 DONE** | 5, 7 |
-| **healthSpring** | 1,014 | 1 | YES (PK models + Tier 2 wired) | 53 scripts | YES | B5 COMPLETE, E2/E4 queued | 3, 5, 8 |
-| **hotSpring** | 1,025 | 1 | YES | 5 + 12 papers | YES | **B2 DONE** | 2 |
-| **ludoSpring** | 854 | 1 | YES (2 TOMLs) | 3 notebooks (V64) + whitePaper/ | YES | N/A | 9, 10 |
-| **neuralSpring** | 1,453 | 1 | YES | 5 + 8 papers | YES | B1 Python DONE | 5, 7 |
+| **healthSpring** | 1,014+ | 2 | YES (PK models + Tier 2 + Nest atomic) | 53 scripts | YES | B5 COMPLETE, Nest atomic COMPLETE | 3, 5, 8 |
+| **hotSpring** | 1,025 | 1 | YES | 5 + 12 papers | YES | **B2 DONE** (thermal niche) | 2 |
+| **ludoSpring** | 854+ | 2 | YES (2 TOMLs + Tower atomic) | 3 notebooks + whitePaper/ | YES | Tower atomic COMPLETE | 9, 10 |
+| **neuralSpring** | 1,453 | 1 | YES | 5 + 8 papers | YES | **B1 DONE** (S201b) | 5, 7 |
 | **primalSpring** | 689+ | N/A | coordination | 5 (meta) | YES | coordination | coordination |
 | **wetSpring** | 1,613 | 1 | YES | 5 + papers | YES | B7 STARTED | 4 |
 

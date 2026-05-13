@@ -169,16 +169,27 @@ IPC contract (Wave 8).
 
 #### `content.put` / `content.get`
 
-Store and retrieve content-addressed data. Shipped in NestGate Session 60
-with full transport parity.
+Store and retrieve content-addressed data (CAS). Shipped in NestGate Session 60
+with full transport parity across all 4 surfaces (UDS, SemanticRouter,
+isomorphic IPC, HTTP).
+
+> **Note**: `content.*` (CAS — BLAKE3-addressed, immutable) and `storage.*`
+> (generic blob API — mutable, keyed) are **separate** domains in the
+> capability registry. Both are owned by nestGate but serve different roles.
+> See `config/capability_registry.toml` for the full method listings.
 
 ### Provenance trio (DAG + ledger + attribution)
 
-#### `dag.session.create` → `dag.event.append` → `spine.seal`
+#### `provenance.session.create` → `provenance.event.append` → `spine.seal`
 
 The provenance pipeline for workload attestation. Each compute dispatch can
 emit a blake3 hash witness through the DAG, commit it to the ledger, and
 anchor attribution.
+
+> **Wire name aliases**: `provenance.session.create` and `dag.session.create`
+> are aliases — rhizoCrypt accepts both. loamSpine's ledger surface uses
+> `session.create`/`session.state` on the `ledger` capability, while the
+> registry also defines `entry.append`/`entry.get` under the `entry` domain.
 
 ---
 
@@ -191,8 +202,9 @@ anchor attribution.
 | `compute.dispatch.submit` | toadStool | **WIRED** (Wave 8) | — |
 | `barracuda.precision.route` | barraCuda | **IMPLEMENTED** (v0.4.0, 649 tests) | — |
 | `shader.compile.wgsl` | coralReef | **WIRED** (Wave 8) | — |
-| `content.put/get` | nestGate | **SHIPPED** (Session 60) | — |
-| `dag.session.create` | rhizoCrypt | **SHIPPED** | — |
+| `content.put/get` | nestGate | **SHIPPED** (Session 60, 4-surface parity) | — |
+| `provenance.session.create` | rhizoCrypt | **SHIPPED** (alias: `dag.session.create`) | — |
+| `session.create` / `entry.append` | loamSpine | **SHIPPED** (ledger + entry domains) | — |
 
 ---
 

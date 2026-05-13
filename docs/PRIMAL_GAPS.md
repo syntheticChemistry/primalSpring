@@ -9,13 +9,13 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-12 (Phase 32 atomic model — skunkBat in Tower, Nest reconciled with provenance trio)
+> **Last updated**: 2026-05-13 (Phase 32 — reconciled L3 LTEE status with spring handoffs)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (May 11, 2026)
+## Ecosystem Status (May 13, 2026)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1.
 
@@ -397,12 +397,12 @@ foundation seeding, plasmidBin release readiness
 | Spring | Version | gS | Tier 4 | Open Gaps | LTEE | Next Target |
 |--------|---------|:--:|:------:|-----------|------|-------------|
 | wetSpring | V163 | L4 | Done | 4 (PG-02,03,04,05 — external) | B7 started | close external PGs, gS L5 |
-| hotSpring | v0.6.32 | L6 | Done | Titan V FECS, K80 livepatch | B2 started | GPU sovereign completion |
-| neuralSpring | S201b | L5 | Done | Gap 11 (18 RPC methods) | B1 started | close gap 11, NestGate weights |
+| hotSpring | v0.6.32 | L6 | Done | Titan V FECS, K80 livepatch | **B2 DONE** | GPU sovereign completion (thermal niche) |
+| neuralSpring | S201b | L5 | Done | Gap 11 (18 RPC methods) | **B1 DONE** (S201b) | close gap 11, NestGate weights |
 | airSpring | v0.10.0 | L4 | Done | AG-001 manifest, NestGate/Squirrel | E3 queued | LTEE E3, gS L5+ |
-| ludoSpring | V63 | L4 | Done | coralReef IPC (GAP-01), domain parity (GAP-02) | N/A | coralReef wiring |
+| ludoSpring | V69 | L4 | Done | coralReef IPC (GAP-01), Tower live validation (GAP-16) | Tower atomic COMPLETE | Tower niche depth, coralReef wiring |
 | groundSpring | V135 | L4 | Done | coralReef IPC, PRNG Phase 2b | **B2+B1 DONE** | lithoSpore integration |
-| healthSpring | V64 | L5 | Done | ionic bridge (upstream) | B5 COMPLETE, E2/E4 queued | Thread 7+ seed, LTEE E2/E4 |
+| healthSpring | V64i | L5 | Done | ionic bridge (upstream), Provenance trio payloads (GAP-36) | B5 COMPLETE, Nest atomic COMPLETE | Nest niche depth, LTEE E2/E4 |
 
 ### Layer 4: Downstream Products — Interstadial (projectNUCLEUS, gardens)
 
