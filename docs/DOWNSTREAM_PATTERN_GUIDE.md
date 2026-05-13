@@ -49,7 +49,7 @@ Each LTEE reproduction follows a standard pattern:
 | **groundSpring** | B2 (Wiser 2013 — fitness dynamics) | **COMPLETE** Py 9/9 + Rust 10/10 | `control/ltee_fitness/expected_values.json` | Module 2: ltee-fitness |
 | **groundSpring** | B3 (Good 2017 — clonal interference) | **COMPLETE** (V136) | `control/ltee_clonal/` | Module 3: ltee-clonal |
 | **hotSpring** | B2 (Anderson/Wiser — fitness) | **COMPLETE** Tier 1+2 | `experiments/results/ltee/ltee_b2_anderson_expected.json` | Module 7: ltee-anderson |
-| **healthSpring** | B5 (Leonard 2024 — symbiont PK/PD) | **COMPLETE** Py 8/8 + Rust 8/8 (V64) + `--format json` | `control/ltee_symbiont_pkpd/expected_values.json` + `bin/validate_ltee_b5` | Module: ltee-symbiont-pk |
+| **healthSpring** | B5 (Leonard 2024 — symbiont PK/PD) | **COMPLETE** Py 8/8 + Rust 8/8 (V64f) + `--format json` + `tolerances.toml` | `control/ltee_symbiont_pkpd/` (full lithoSpore module candidate) + `bin/validate_ltee_b5` | Module: ltee-symbiont-pk |
 | **neuralSpring** | B1 (mutation accumulation ML) | **Py 8/8 + Rust binary DONE** (S201b) | `control/ltee_mutation_accumulation/` + `src/bin/validate_ltee_b1_*` | ML surrogate modules |
 | **wetSpring** | B7 (Tenaillon 2016 — 264 genomes) | **STARTED** (Exp380 documented) | `experiments/380_ltee_b7_tenaillon_mutation_accumulation.md` | Module 6: ltee-genomics |
 
@@ -61,7 +61,7 @@ Each LTEE reproduction follows a standard pattern:
 - **groundSpring B1-B3** outputs are ready for integration into `ltee-mutation`, `ltee-fitness`, `ltee-clonal` modules
 - **hotSpring B2** ready for `ltee-anderson` module integration
 - **neuralSpring** Rust binary `validate_ltee_b1_mutation_accumulation` now exists (S201b) — ready for lithoSpore ML modules
-- **healthSpring** B5 (symbiont PK/PD) **COMPLETE** — `expected_values.json` + Rust binary `validate_ltee_b5` (8/8 checks, `--format json`) ready for lithoSpore ingestion
+- **healthSpring** B5 (symbiont PK/PD) **COMPLETE** — full lithoSpore module candidate (`expected_values.json` + `tolerances.toml` + `LITHO_MODULE_README.md` + Rust `validate_ltee_b5` 8/8, `--format json`) ready for BLAKE3 ingestion
 - **wetSpring B7** is in progress — feeds `ltee-genomics` when 264-genome pipeline completes
 - **All 7 modules** are scaffold/SKIP until upstream data flows in
 
@@ -111,8 +111,8 @@ expression = "expressions/LTEE_EVOLUTIONARY_DYNAMICS.md"
 id = "dryad_wiser_2013"
 database = "Dryad"
 description = "Wiser et al. 2013 fitness trajectory data (50,000 generations)"
-accessions = ["doi:10.5061/dryad.234"]
-url = "https://datadryad.org/stash/dataset/doi:10.5061/dryad.234"
+accessions = ["doi:10.5061/dryad.XXX"]
+url = "https://datadryad.org/..."
 format = "csv"
 blake3 = ""
 retrieved = ""

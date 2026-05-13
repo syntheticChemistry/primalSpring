@@ -11,11 +11,11 @@ Structured inventory of known gaps per primal that block or degrade composable d
 >
 > **Last updated**: 2026-05-12 (Phase 32 atomic model — skunkBat in Tower, Nest reconciled with provenance trio)
 >
-> **Full history**: archived in [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
+> **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (May 12, 2026)
+## Ecosystem Status (May 11, 2026)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1.
 
@@ -300,7 +300,7 @@ All 13 primals share these invariants (regressions are rejected):
 Detailed per-primal gap tables, BTSP compliance matrices, capability wire standard
 levels, plasmidBin binary inventory, and historical resolution logs are archived in:
 
-[fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
+`fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 Key per-primal handoffs in `infra/wateringHole/handoffs/`:
 
