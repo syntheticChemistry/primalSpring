@@ -71,15 +71,16 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Phase 32 atomic model (May 14, 2026) — 641 tests (616 lib + 25 integration),
-89 experiments (20 tracks), 77 deploy graphs, 427 registered capability methods
+v0.9.25 Phase 32 atomic model (May 14, 2026) — 651+ tests (624 lib + 27 integration/doc),
+89 experiments (20 tracks), 78 deploy graphs, 427 registered capability methods
 (313 exercised, 73.3%). Phase 32 atomic evolution: Tower = 3 primals (bearDog +
 songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7 (Tower +
 nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
-**Waves 7-12 complete**, all Wave 8 upstream items DONE (W8-07/08/09 resolved May 12).
-Zero DEBT markers, zero unsafe blocks, zero panics in production paths. 27 scenarios
-(24 + tier2-science-api + barracuda-precision + coralreef-shader-targets).
+**Waves 7-14 complete**, all Wave 8 upstream items DONE (W8-07/08/09 resolved May 12).
+Zero DEBT markers, zero unsafe blocks, zero panics in production paths. 29 scenarios
+(27 + dark-forest-gate + deployment-pipeline). **Dark Forest Glacial Gate**: 5-pillar
+security invariant standard (metadata, ports, network, BTSP, enclave).
 `LIVE_SCIENCE_API.md` formalizes Tier 2 wire contract. All 13 primals at zero debt.
 **Wave 12 deep debt sweep**: All `panic!`/`expect` in production replaced with
 `Result`/`Option`. Hardcoded socket paths replaced with `resolve_socket_dir()`.

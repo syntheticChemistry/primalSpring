@@ -34,6 +34,8 @@ pub mod s_composition_lifecycle;
 pub mod s_composition_parity;
 pub mod s_compute_triangle;
 pub mod s_coralreef_shader_targets;
+pub mod s_dark_forest_gate;
+pub mod s_deployment_pipeline;
 pub mod s_covalent_bond;
 pub mod s_cross_spring_data_flow;
 pub mod s_deployment_matrix;
@@ -84,5 +86,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_tier2_science_api::SCENARIO);
     r.register(s_barracuda_precision::SCENARIO);
     r.register(s_coralreef_shader_targets::SCENARIO);
+    r.register(s_dark_forest_gate::SCENARIO);
+    r.register(s_deployment_pipeline::SCENARIO);
     r
 }

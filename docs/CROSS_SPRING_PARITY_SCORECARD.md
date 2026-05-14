@@ -16,7 +16,7 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 641 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 427 methods, sync-tested, 73.3% exercised | **G** 77 graphs | **G** 89 exp crates + 27 scenarios + Waves 1-13 complete | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **primalSpring** | 651+ | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 427 methods, sync-tested, 73.3% exercised | **G** 78 graphs | **G** 89 exp crates + 29 scenarios + Waves 1-14 complete, Dark Forest gate + deployment pipeline | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
 | **hotSpring** | 1,042 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
 | **healthSpring** | 1,018 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 427 | **G** 7 graphs, skunkBat + Tower atomic (V64n) | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,962 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 427 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
@@ -52,7 +52,7 @@
 
 ### 5. Deploy Graphs
 
-Total across ecosystem: **77** (primalSpring) + **5** (hotSpring) + **7** (healthSpring) + **7** (wetSpring) + **4** (neuralSpring) + **12** (ludoSpring) + **6** (groundSpring) + **4** (airSpring) = **122 deploy graphs**
+Total across ecosystem: **78** (primalSpring) + **5** (hotSpring) + **7** (healthSpring) + **7** (wetSpring) + **4** (neuralSpring) + **12** (ludoSpring) + **6** (groundSpring) + **4** (airSpring) = **122 deploy graphs**
 
 ### 6. Composition Experiments
 
@@ -320,12 +320,27 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 - ~~Registry cross-sync CI~~: 8/8 springs CI-validated against 418
 - ~~GAP-12~~: 28 `game.*` methods (418 total, zero drift)
 
+## Wave 14: Dark Forest Glacial Gate + Deployment Pipeline (May 14, 2026)
+
+**primalSpring** — formalizes security invariants and validates deployment pipeline:
+
+| Item | Status | What |
+|------|--------|------|
+| W14-01 | **DONE** | `specs/DARK_FOREST_GLACIAL_GATE.md` — 5-pillar gate standard (metadata, ports, network, BTSP, enclave) |
+| W14-02 | **DONE** | `s_dark_forest_gate` scenario — structural validation of all 5 pillars (Tier::Rust) |
+| W14-03 | **DONE** | `s_deployment_pipeline` scenario — 5-stage build/harvest/compose/deploy/verify validation |
+| W14-04 | **DONE** | `deploy_pipeline_smoke.toml` — 5-phase deploy graph modeling the pipeline |
+| W14-05 | **DONE** | sourDough v0.3.0 evolution absorbed — sign/verify, validate ecobin, scaffold systemd, layout |
+
+**sourDough v0.3.0** capabilities now tracked in plasmidBin manifest: scaffold, validate,
+genomebin, doctor, sign, verify, layout, systemd.
+
 ## Aggregate Metrics
 
 | Metric | Value |
 |--------|-------|
-| Total tests across 8 springs | **13,750+** (primalSpring 641 + hotSpring 1,042 + healthSpring 1,018 + wetSpring 1,962 + neuralSpring 1,453 + ludoSpring 862 + groundSpring 1,123 + airSpring 1,389 + metalForge/integration/Python suites) |
-| Total deploy graphs | **122** (primalSpring 77 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4 = 122) |
+| Total tests across 8 springs | **13,760+** (primalSpring 651 + hotSpring 1,042 + healthSpring 1,018 + wetSpring 1,962 + neuralSpring 1,453 + ludoSpring 862 + groundSpring 1,123 + airSpring 1,389 + metalForge/integration/Python suites) |
+| Total deploy graphs | **123** (primalSpring 78 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4 = 123) |
 | Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |
 | Registered capability methods | **427** (primalSpring canonical, zero drift) |

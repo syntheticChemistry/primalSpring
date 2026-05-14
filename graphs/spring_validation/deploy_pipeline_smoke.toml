@@ -1,0 +1,103 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Deploy Pipeline Smoke — validates the build→harvest→compose→deploy→verify
+# lifecycle as a 5-phase sequential graph.
+#
+# This graph models the plasmidBin deployment pipeline stages structurally.
+# Each node represents a pipeline stage; the graph validates that all stages
+# can be evaluated in order.
+#
+# Usage:
+#   biomeos deploy --graph graphs/spring_validation/deploy_pipeline_smoke.toml
+
+[graph]
+name = "deploy_pipeline_smoke"
+description = "plasmidBin deployment pipeline smoke (build→harvest→compose→deploy→verify)"
+version = "0.1.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+bond_type = "validation"
+composition_model = "contract_test"
+wave = "14"
+
+[graph.bonding_policy]
+bond_type = "Ionic"
+trust_model = "MethodGate"
+
+# --- Stage 1: Build — primal binary compilation ---
+
+[[graph.nodes]]
+name = "pipeline_build"
+binary = "primalspring_primal"
+order = 1
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "validation"
+capabilities = ["validation.scenario"]
+
+# --- Stage 2: Harvest — checksum + publish ---
+
+[[graph.nodes]]
+name = "pipeline_harvest"
+binary = "primalspring_primal"
+order = 2
+required = true
+spawn = false
+depends_on = ["pipeline_build"]
+by_capability = "validation"
+capabilities = ["validation.scenario"]
+
+# --- Stage 3: Compose — atomic validation ---
+
+[[graph.nodes]]
+name = "pipeline_compose"
+binary = "primalspring_primal"
+order = 3
+required = true
+spawn = false
+depends_on = ["pipeline_harvest"]
+by_capability = "validation"
+capabilities = ["validation.scenario"]
+
+# --- Stage 4: Deploy — graph deployment ---
+
+[[graph.nodes]]
+name = "pipeline_deploy"
+binary = "primalspring_primal"
+order = 4
+required = true
+spawn = false
+depends_on = ["pipeline_compose"]
+by_capability = "validation"
+capabilities = ["validation.scenario"]
+
+# --- Stage 5: Verify — niche coverage ---
+
+[[graph.nodes]]
+name = "pipeline_verify"
+binary = "primalspring_primal"
+order = 5
+required = true
+spawn = false
+depends_on = ["pipeline_deploy"]
+by_capability = "validation"
+capabilities = ["validation.scenario"]
+
+# =============================================================================
+# SUMMARY — Deploy pipeline smoke test
+#
+# This graph models the 5-stage deployment pipeline:
+#   1. Build    — primal compilation from sources.toml
+#   2. Harvest  — BLAKE3 checksum generation, staging
+#   3. Compose  — atomic composition validation (tower/node/nest/nucleus)
+#   4. Deploy   — graph deployment to gate
+#   5. Verify   — niche composition coverage check
+#
+# All stages use primalSpring as the validation binary (spawn = false).
+# The graph is structural — it validates pipeline ordering, not live builds.
+# =============================================================================

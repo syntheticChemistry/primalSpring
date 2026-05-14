@@ -8,9 +8,9 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 641 (616 lib + 25 integration; unit + integration + proptest) |
-| **Experiments** | 89 (20 tracks) — 27 validation scenarios |
-| **Deploy Graphs** | 77 TOMLs — fragment-first composition with `resolve = true` (13 root + 9 profiles + 6 fragments + 8 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 federation + 1 composition + 12 cell graphs) |
+| **Tests** | 651+ (624 lib + 27 integration/doc; unit + integration + proptest) |
+| **Experiments** | 89 (20 tracks) — 29 validation scenarios |
+| **Deploy Graphs** | 78 TOMLs — fragment-first composition with `resolve = true` (13 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 federation + 1 composition + 12 cell graphs) |
 | **Coverage** | 73.3% method coverage (313/427); line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
@@ -54,7 +54,7 @@ primalSpring/
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
-│   │   ├── validation/scenarios/  # 24 absorbed experiment scenarios (9 tracks)
+│   │   ├── validation/scenarios/  # 29 absorbed experiment scenarios (10 tracks)
 │   ├── src/bin/
 │   │   ├── primalspring/          # UniBin: certify + validate + serve + status + version
 │   │   ├── primalspring_primal/   # Legacy RPC server (transitioning → primalspring serve)

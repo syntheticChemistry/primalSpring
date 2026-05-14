@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 14, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 27 scenarios, 427 methods (313 exercised, 73.3%), 641 tests. All springs pulled to HEAD: 13,750+ total tests across 8 springs.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 29 scenarios (+ Dark Forest gate, deployment pipeline), 427 methods (313 exercised, 73.3%), 651+ tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). All springs pulled to HEAD: 13,750+ total tests across 8 springs.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — eprintln→tracing in 5 driver files (Iter 95) |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-13 complete. 27 scenarios, 427 methods. Zero panics in production.**
+**13/13 at zero debt. Waves 1-14 complete. 29 scenarios, 427 methods. Zero panics in production. Dark Forest Glacial Gate: 5-pillar security invariant standard.**
 
 ---
 

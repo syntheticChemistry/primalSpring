@@ -310,3 +310,36 @@ Full pull of all springs, gardens, and infra repos to HEAD. Reconciled scorecard
 - All spring versions and evolution statuses reconciled
 - Registry: 427 methods (was 419; +7 methods from ecosystem Wave 13 — toadstool.validate, toadstool.list_workloads, barracuda.precision.route, security.audit_event, linalg.dot, shader.compile.gemm, shader.compile.module)
 - Total ecosystem tests: **13,750+** across 8 springs
+
+## May 14 Addendum — Dark Forest Glacial Gate + Deployment Pipeline (Wave 14)
+
+### Dark Forest Glacial Gate Standard
+
+Formalized the **Dark Forest Glacial Gate** as a five-pillar security invariant standard (`specs/DARK_FOREST_GLACIAL_GATE.md`):
+
+1. **Zero Metadata Leakage** — stripped binaries, encrypted BirdSong beacons, no DNS identity leaks
+2. **Zero Port Exposure** — UDS-only default, Tier 5 TCP opt-in, configurable ports
+3. **Songbird as Sole Network Surface** — all external traffic via Songbird, no direct TCP listeners
+4. **BTSP Crypto Integrity** — 13/13 handshakes, ChaCha20-Poly1305 AEAD, HKDF-SHA256, no cleartext fallback
+5. **Enclave Computing** — dual-tower ionic pattern, content-addressed opaque storage, opaque provenance
+
+New scenario `s_dark_forest_gate` validates all five pillars structurally (Tier::Rust).
+
+### Deployment Pipeline Validation
+
+New scenario `s_deployment_pipeline` validates the plasmidBin pipeline across five stages:
+
+1. **Build** — 13 primals with metadata in manifest
+2. **Harvest** — BLAKE3 checksums, stripped/static binary matrix
+3. **Compose** — atomic model consistency (Tower/Node/Nest/NUCLEUS)
+4. **Deploy** — graph structure validation (secure_by_default, fragments)
+5. **Verify** — niche composition coverage (tower base, descriptions)
+
+New deploy graph `graphs/spring_validation/deploy_pipeline_smoke.toml` models the 5-stage pipeline.
+
+### Metrics Update
+
+- Scenarios: 27 → **29** (+ `s_dark_forest_gate`, `s_deployment_pipeline`)
+- Tests: 641 → **651+** (624 lib + 27 integration/doc)
+- Deploy graphs: 77 → **78** (+ `deploy_pipeline_smoke.toml`)
+- Waves: 1-13 → **1-14**
