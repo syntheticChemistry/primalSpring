@@ -1,6 +1,6 @@
 # Temporal Ecosystem Review — Debt, Horizons, and Stadial Transition
 
-**Date**: May 13, 2026 (full pull: L3 V71/V64m/V167/V159 + node atomic, L4 H2-12 TLS shadow LIVE + DoT 10/10, L5 CATHEDRAL 6/7 Tier 2)
+**Date**: May 14, 2026 (full pull: L3 V71/V64n/V168/V160 + node atomic, L4 H2-12 TLS shadow LIVE + DoT 10/10, L5 CATHEDRAL 6/7 Tier 2)
 **Phase**: INTERSTADIAL — Niche Convergence → Atomic Deployment
 **Scope**: Full ecosystem stack audit — upstream sentinels through downstream products
 
@@ -267,3 +267,46 @@ Comprehensive audit + code evolution pass covering safety, idioms, and discovery
 - Zero unsafe blocks, zero production mocks, zero `todo!()`/`unimplemented!()`, zero `Box<dyn Error>`
 - All files under 800 lines (largest ~702L)
 - All dependencies pure Rust (BLAKE3 `pure` feature, RustCrypto stack, no C/FFI)
+
+---
+
+## May 14 Addendum — Ecosystem Wave Absorption (Wave 13)
+
+Full pull of all springs, gardens, and infra repos to HEAD. Reconciled scorecard, manifest, and temporal status.
+
+### Spring Evolution Summary
+
+| Spring | Version | Tests | Key Changes |
+|--------|---------|------:|-------------|
+| hotSpring | V168+ | 1,042 | Compute trio rewire: compile-then-dispatch, circuit breaker, FusedSubmitReport, tiered validation (smoke/nucleus/silicon), `wgsl_source` param |
+| wetSpring | V168 | 1,962 | barraCuda 0.3.12→0.4.0, coralReef v0.1.0, LTEE B7 mutation accumulation, plasmidBin re-verified |
+| healthSpring | V64n | 1,018 | Tower atomic in all deploy graphs (+ skunkBat), capability renames to canonical wire names, niche sync |
+| neuralSpring | V160 | 1,453 | Triple-first Tower + skunkBat, `content.get` rename, coralReef universal compile routing, Rust 1.94 clippy |
+| ludoSpring | V71 | 862 | Compute trio in cell graphs, coralReef compile+validate, barraCuda health.version, Foundation T9+T10 |
+| groundSpring | V142 | 1,123 | Compute trio deepened (17→20 IPC methods), `shader.compile.gemm`, `health.version` on trio, GAPs GS-015/16/17 filed |
+| airSpring | v0.10.0 | 1,389 | Zero actionable debt, 10 scenarios, 49 capabilities, `/tmp/` fallback eliminated |
+
+### Downstream Evolution
+
+- **projectNUCLEUS**: TLS baselines (H2-12/H2-13), provenance manifests, workload TOML with `checksum_sha256`
+- **lithoSpore**: USB spore pipeline with `litho deploy`, provenance JSON, sporePrint stubs
+- **sporeGarden**: esotericWebb V5-V6, Rust-native `esoteric-core`, braided provenance, primal composition stub
+
+### Cross-Cutting GAPs Filed Against primalSpring
+
+| GAP | Source | What | Status |
+|-----|--------|------|--------|
+| GS-015 | groundSpring V142 | `cargo check --workspace` fails in multi-spring workspaces | **EXTERNAL** — spring workspace config, not primalSpring code |
+| GS-016 | groundSpring V142 | Missing skunkBat BLAKE3 checksums in manifest | **plasmidBin** — needs checksum regen |
+| GS-017 | groundSpring V142 | barraCuda `health.version` standalone RPC | **EXTERNAL** — barraCuda wire contract, not primalSpring |
+| — | hotSpring V168 | `wgsl_source` param in `shader.compile` | **EXTERNAL** — coralReef wire evolution |
+| — | ludoSpring V71 | Compute trio ports missing from `ports.env` | **plasmidBin** — needs trio ports |
+| — | ecosystem | sourDough migration backlog growing | **DEFERRED** — sourDough P4 |
+| — | ecosystem | Wire contract shifts (content.get rename, capability renames) | **ABSORBED** — btsp.capabilities (419th method) covers |
+
+### Manifest Reconciliation
+
+- plasmidBin `manifest.toml` updated to v5.4.0 with fresh test counts and spring notes
+- All spring versions and evolution statuses reconciled
+- Registry: 419 methods (was 418; `btsp.capabilities` added Wave 12)
+- Total ecosystem tests: **13,750+** across 8 springs

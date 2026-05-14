@@ -15,9 +15,9 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ---
 
-## Ecosystem Status (May 13, 2026)
+## Ecosystem Status (May 14, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 27 scenarios, 419 methods, 641 tests.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 27 scenarios, 419 methods, 641 tests. All springs pulled to HEAD: 13,750+ total tests across 8 springs.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
