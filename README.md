@@ -8,8 +8,8 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 689+ (unit + integration + doc-tests + proptest) |
-| **Experiments** | 89 (20 tracks) — 21 absorbed as UniBin validation scenarios |
+| **Tests** | 711 (654 passed + 57 ignored; unit + integration + doc-tests + proptest) |
+| **Experiments** | 89 (20 tracks) — 23 absorbed as UniBin validation scenarios |
 | **Deploy Graphs** | 77 TOMLs — fragment-first composition with `resolve = true` (13 root + 9 profiles + 6 fragments + 8 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 federation + 1 composition + 12 cell graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
@@ -54,7 +54,7 @@ primalSpring/
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
-│   │   ├── validation/scenarios/  # 22 absorbed experiment scenarios (9 tracks)
+│   │   ├── validation/scenarios/  # 23 absorbed experiment scenarios (9 tracks)
 │   ├── src/bin/
 │   │   ├── primalspring/          # UniBin: certify + validate + serve + status + version
 │   │   ├── primalspring_primal/   # Legacy RPC server (transitioning → primalspring serve)
@@ -399,7 +399,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 687 tests (635 passed + 52 ignored).
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 711 tests (654 passed + 57 ignored).
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 
@@ -516,7 +516,7 @@ and per-primal remediation plan (archived from March 2026 mobile deployment spik
 | `tools/nucleus_composition_lib.sh` | Reusable NUCLEUS composition library (sourced by domain scripts) |
 | `tools/nucleus_launcher.sh` | Start/stop/restart full NUCLEUS stack |
 | `tools/desktop_nucleus.sh` | 13-primal NUCLEUS launcher with auto-symlink for petalTongue discovery |
-| `tools/check_method_coverage.sh` | Inverse drift: flag 413-registry methods never exercised in scenarios/tests/graphs |
+| `tools/check_method_coverage.sh` | Inverse drift: flag 418-registry methods never exercised in scenarios/tests/graphs |
 | `tools/check_method_gate.sh` | Verify MethodGate pre-dispatch authorization compliance |
 | `tools/check_method_strings.sh` | Audit method string literals against canonical registry |
 | `tools/check_graph_methods.sh` | Verify deploy graph nodes reference valid registry methods |

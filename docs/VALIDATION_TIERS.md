@@ -31,7 +31,7 @@ use primalspring::bonding::BondType;
 use primalspring::validation::ValidationResult;
 
 let graph = load_graph("graphs/fragments/tower_atomic.toml")?;
-assert_eq!(graph.nodes.len(), 2);
+assert_eq!(graph.nodes.len(), 3); // bearDog + songbird + skunkBat (Phase 32)
 assert!(graph.bonding_policy.bond_type == BondType::Covalent);
 ```
 

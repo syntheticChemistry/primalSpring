@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-13 (full pull: L3 V71/V64m/V167/V159, L4 H2-12 LIVE + DoT FIXED, L5 CATHEDRAL 6/7 Tier 2)
+> **Last updated**: 2026-05-14 (cellMembrane VPS operational, lithoSpore 6/7 Tier 2, Foundation 10/10, 23 scenarios, RustDesk + multi-gate SSH deployed)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -404,7 +404,7 @@ graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
 **Current**: 418 methods, 689+ tests, zero local debt. Active coordination targets:
 - Wave 8: Compute trio composition (Node atomic E2E — 6/9 items DONE locally, 3 upstream)
-- Wave 9: Domain contract sweep — 22 scenarios, 77+ deploy graphs, 302/418 methods exercised (73%)
+- Wave 9: Domain contract sweep — 23 scenarios, 77 deploy graphs, 302/418 methods exercised (73%)
 - ~~PG-54~~ **DONE** (adaptive tick model shipped)
 - ~~PG-63~~ **DONE** (Agg guidance already reconciled)
 

@@ -89,7 +89,7 @@ validation of the full compute trio composition against both GPU vendors.
 
 - **Registry**: 418 methods, 302 exercised (73%) — `biomeos.spring_status` added
 - **Waves 7/8/9**: All DONE. Wave 8 upstream items **ALL RESOLVED** (W8-07/08/09).
-- **22 scenarios**, **77 deploy graphs**, **604 library tests** (all passing)
+- **23 scenarios**, **77 deploy graphs**, **613 library tests** (all passing)
 - **Phase 32 atomic evolution**: skunkBat in Tower, Nest reconciled with provenance trio
 - **Tier 2 Science API**: LIVE_SCIENCE_API v1.3.0 — all methods IMPLEMENTED, 7/7 springs wired, `biomeos.spring_status` + content provenance metadata SHIPPED
 - **Wire name reconciliation**: GAP-34/35/36 all resolved upstream, docs aligned
@@ -158,3 +158,37 @@ validation of the full compute trio composition against both GPU vendors.
 
 10. **ABG WCM compositions** through full deploy graphs + provenance trio
 11. **Upstream crate extraction** (wgsl-precision, proc-sysinfo) — community engagement
+
+---
+
+## May 14 Addendum — cellMembrane, RustDesk, lithoSpore USB, SoloKey
+
+### cellMembrane VPS (fieldMouse)
+
+- **Songbird relay OPERATIONAL** on DigitalOcean VPS (157.230.3.183)
+- **RustDesk relay co-hosted** (hbbs + hbbr) for sovereign remote desktop
+- **Multi-gate SSH** management via `deploy_membrane.sh keys` (ironGate authorized)
+- VPS hardened: fail2ban, droplet-agent purged, exim4 purged, journald persistent
+- Firewall: 22/tcp + 3478/udp+tcp + 21115-21117/tcp+udp (RustDesk)
+- Classification: cellMembrane fieldMouse (Tower on external substrate, Dark Forest principles)
+- Ownership transferred to projectNUCLEUS (ironGate team)
+
+### lithoSpore USB Deployment (Hypogeal Cotyledon)
+
+- Spore taxonomy defined: ColdSpore (static USB) → LiveSpore (+ provenance tracking) → lithoSpore (+ embedded runtime)
+- Three operating modes: Standalone (Tier 1 Python), LAN-connected (Tier 2 Rust + UDS), Geo-delocalized (Tier 2 Rust + Songbird TURN via cellMembrane)
+- sporePrint return path: lithoSpore → Foundation validation thread → sporePrint (primals.eco) auditable journal
+- Document: `wateringHole/LITHOSPORE_USB_DEPLOYMENT.md`
+
+### SoloKey / FIDO2 Integration Path
+
+- SoloKey 2 devices on ironGate + eastGate for future BTSP Phase 4 hardware attestation
+- BTSP evolution: Phase 3 (current, AEAD) → Phase 3.5 (SoloKey SSH MFA) → Phase 4 (hardware-attested identity)
+- Documented in `MEMBRANE_CHANNEL_ARCHITECTURE.md` and `CELLMEMBRANE_FIELDMOUSE_DEPLOYMENT.md`
+
+### Geo-Delocalization
+
+- Architecture supports remote gates at arbitrary physical locations
+- cellMembrane VPS serves as the geo-delocalized relay hub
+- `deploy_membrane.sh` supports multi-gate SSH key management for distributed teams
+- `DOWNSTREAM_PATTERN_GUIDE.md` updated with geo-delocalized validation paths

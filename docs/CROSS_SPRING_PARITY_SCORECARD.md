@@ -2,7 +2,7 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 12, 2026 — Phase 32 atomic model (skunkBat in Tower, Nest reconciled with provenance trio, Wave 8 upstream progress: barraCuda v0.4.0 stadial gate, toadStool Phase A+B complete, coralReef soft-deprecated absorbed crates)
+**Last updated**: May 14, 2026 — Phase 32 atomic model complete. cellMembrane VPS operational (Songbird relay + RustDesk), lithoSpore 6/7 Tier 2, Foundation 10/10, 23 scenarios, Songbird relay OPERATIONAL
 **Audited by**: primalSpring composition audit
 **Method**: Pulled all 8 springs to HEAD, assessed each across 9 axes
 
@@ -16,8 +16,8 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 689+ | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 418 methods, sync-tested, 73% exercised | **G** 77 graphs | **G** 89 exp crates + 22 scenarios + Wave 7+8+9 contracts | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
-| **hotSpring** | 1,025 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
+| **primalSpring** | 711 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 418 methods, sync-tested, 73% exercised | **G** 77 graphs | **G** 89 exp crates + 23 scenarios + Wave 7+8+9 contracts | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **hotSpring** | 1,042 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
 | **healthSpring** | 1,014 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 418 | **G** 7 graphs, skunkBat node | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,613 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 418 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
 | **neuralSpring** | 1,453 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (19 certification tests) | **G** 34 capabilities, TOML + sync test | **G** 4 graphs (3 new Phase 60) | **G** exp094 parity crate, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
@@ -52,7 +52,7 @@
 
 ### 5. Deploy Graphs
 
-Total across ecosystem: **76** (primalSpring) + **5** (hotSpring) + **7** (healthSpring) + **7** (wetSpring) + **4** (neuralSpring) + **12** (ludoSpring) + **6** (groundSpring) + **4** (airSpring) = **121 deploy graphs**
+Total across ecosystem: **77** (primalSpring) + **5** (hotSpring) + **7** (healthSpring) + **7** (wetSpring) + **4** (neuralSpring) + **12** (ludoSpring) + **6** (groundSpring) + **4** (airSpring) = **122 deploy graphs**
 
 ### 6. Composition Experiments
 
@@ -119,7 +119,7 @@ barraCuda) as the Node atomic's sovereign compute pipeline:
 | W8-05 | **DONE** | `compute_trio_smoke.toml` deploy graph (6-phase trio health+capabilities+math) |
 | W8-06 | **DONE** | gen4 `SOVEREIGN_COMPUTE_TRIO_SKETCH.md` — composition pattern + warm-catch sovereignty |
 | W8-07 | **DONE** | Phase C COMPLETE (S245-S250, 7 batches, 520 cylinder tests). Phase D plumbing in. `toadstool.validate` IMPLEMENTED (S250). |
-| W8-08 | **IN PROGRESS** | coralReef coral-ember/glowplug soft-deprecated; Phase C/D markers |
+| W8-08 | **DONE** | coralReef diesel engine excised (Sprint 9: coral-ember/glowplug/driver/gpu deleted, pure compiler primal) |
 | W8-09 | **DONE** | barraCuda v0.4.0 stadial gate — 15-tier PrecisionTier, 71/71 IPC |
 
 **gen4 sketch**: `whitePaper/gen4/architecture/SOVEREIGN_COMPUTE_TRIO_SKETCH.md` connects
@@ -145,8 +145,8 @@ toadStool completes the ember/glowplug absorption (W8-07).
 | W7-05 | **DONE** | `content.resolve` for petalTongue — NestGate Session 60 shipped transport parity |
 | W7-07 | **DONE** | NestGate transport parity verified — all 4 surfaces |
 
-**Metrics**: 22 scenarios, 77 deploy graphs, 302/418 methods exercised (73% coverage,
-up from 69%). Remaining 112 uncovered are test fixtures, domain-specific (game/nautilus/ml),
+**Metrics**: 23 scenarios, 77 deploy graphs, 302/418 methods exercised (73% coverage,
+up from 69%). Remaining 116 uncovered are test fixtures, domain-specific (game/nautilus/ml),
 or require external infrastructure — not primalSpring gate debt.
 
 ## 13. Downstream Readiness (NEW — Wave 10 Pattern Handoff, May 11, 2026)
@@ -206,7 +206,7 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | **ludoSpring** | YES | PARTIAL | **NO** | YES (2) | 0 (scripts) |
 | **primalSpring** | N/A | N/A | N/A | coordination | 5 |
 
-**Tier 2 blocker**: `toadstool.validate` + `toadstool.list_workloads` JSON-RPC methods not yet implemented upstream. All springs ready once wired.
+**Tier 2 status**: ~~`toadstool.validate` + `toadstool.list_workloads`~~ **IMPLEMENTED** (S250/S245+). Tier 2 Science API fully operational. All springs can wire Tier 2.
 
 ### Per-Spring Downstream Readiness Summary
 
@@ -257,11 +257,11 @@ endpoints reject these connections.
 | Spring | Open Gaps | Phase 32 Action |
 |--------|-----------|-----------------|
 | hotSpring | GAP-HS-087 (trio rewire), GAP-HS-005 (ionic) | Trio rewire active; ionic awaits BearDog `crypto.sign_contract` |
-| wetSpring | PG-02 (trio live), PG-03 (capability.resolve), PG-04 (NestGate live), PG-05 (sovereignty) | Awaits Songbird `capability.resolve` + lab infra |
+| wetSpring | PG-02 (trio live), ~~PG-03~~ (capability.resolve **DONE** W199-201), PG-04 (NestGate live), PG-05 (sovereignty) | Lab infra + NestGate extracellular |
 | groundSpring | GAP-GS-008 (ionic), GAP-GS-009 (BTSP/barraCuda) | Awaits upstream ionic + BTSP wire |
 | airSpring | AG-005 through AG-012 | Per-gap: Squirrel science path, coralReef compile, opaque dispatch, NestGate weather, petalTongue, TensorSession, Anderson shader, toadStool live API |
 | healthSpring | Ionic bridge, NestGate egress fence, BTSP interop | See BTSP coordination above |
-| neuralSpring | Nest weight IPC, BTSP session | See Nest decision above |
+| neuralSpring | ~~Nest weight IPC~~ **WIRED** (NestGate weight persistence), BTSP session | See Nest decision above |
 | ludoSpring | GAP-01 (coralReef SM), GAP-02 (barraCuda domain), GAP-04 (TensorSession) | Awaits coralReef SM rebuild + upstream barraCuda domain methods |
 
 ---
@@ -294,8 +294,8 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 4. ~~**wetSpring PG gaps**~~ — `INTERSTADIAL P5`: **DONE** — 4 open (PG-02, PG-03,
    PG-04, PG-05 — all external/upstream). Closed PG-06, PG-10, PG-17, PG-18.
    Owner: **wetSpring (L3)** — COMPLETED May 11, 2026.
-5. **Foundation seeding** — `INTERSTADIAL P5`: 5/10 threads active. Target: 7+/10 with
-   sources/targets (seed Threads 3, 5, 8, 10). Owner: **spring teams (L3) + foundation (L5)**.
+5. ~~**Foundation seeding**~~ — `INTERSTADIAL P5`: **10/10 threads active** (EXCEEDED). Threads 9+10 seeded by ludoSpring V71 + healthSpring V64m.
+   Owner: **spring teams (L3) + foundation (L5)** — **COMPLETED** May 13, 2026.
 6. **LTEE paper queue progress** — `INTERSTADIAL P4`: **ACTIVE** — 4 springs reproducing.
    groundSpring B2+B1 **COMPLETE** (Python+Rust PASS), hotSpring B2 STARTED,
    wetSpring B7 STARTED, neuralSpring B1 STARTED. Critical path cleared.
@@ -318,8 +318,8 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 
 | Metric | Value |
 |--------|-------|
-| Total tests across 8 springs | **13,100+** (primalSpring 689+ + hotSpring 1,025 + healthSpring 1,014 + wetSpring 1,613 + neuralSpring 1,453 + ludoSpring 854 + groundSpring 1,125 + airSpring 1,389 + metalForge/integration/Python suites) |
-| Total deploy graphs | **122** (primalSpring 77 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4) |
+| Total tests across 8 springs | **13,200+** (primalSpring 711 + hotSpring 1,042 + healthSpring 999 + wetSpring 1,613 + neuralSpring 1,453 + ludoSpring 854 + groundSpring 1,125 + airSpring 1,389 + metalForge/integration/Python suites) |
+| Total deploy graphs | **122** (primalSpring 77 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4 = 122) |
 | Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |
 | Registered capability methods | **418** (primalSpring canonical, zero drift) |
