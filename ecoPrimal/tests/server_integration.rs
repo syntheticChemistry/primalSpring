@@ -131,9 +131,10 @@ fn discovery_sweep_returns_capabilities() {
     assert!(resp["error"].is_null());
     assert_eq!(resp["result"]["mode"], "capability");
     let caps = resp["result"]["capabilities"].as_array().unwrap();
-    assert_eq!(caps.len(), 2);
+    assert_eq!(caps.len(), 3);
     assert_eq!(caps[0]["capability"], "security");
     assert_eq!(caps[1]["capability"], "discovery");
+    assert_eq!(caps[2]["capability"], "defense");
 }
 
 #[test]
@@ -149,9 +150,10 @@ fn discovery_sweep_identity_mode_returns_primals() {
     assert!(resp["error"].is_null());
     assert_eq!(resp["result"]["mode"], "identity");
     let primals = resp["result"]["primals"].as_array().unwrap();
-    assert_eq!(primals.len(), 2);
+    assert_eq!(primals.len(), 3);
     assert_eq!(primals[0]["primal"], "beardog");
     assert_eq!(primals[1]["primal"], "songbird");
+    assert_eq!(primals[2]["primal"], "skunkbat");
 }
 
 #[test]

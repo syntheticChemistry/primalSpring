@@ -351,7 +351,7 @@ AtomicType::Node.required_capabilities() = ["security", "discovery", "defense", 
 AtomicType::Node.required_primals()      = ["beardog", "songbird", "skunkbat", "toadstool", "barracuda", "coralreef"]
 ```
 
-### Registry Coverage (413 methods)
+### Registry Coverage (418 methods)
 
 | Domain | Owner | Registered Methods | Exercised in Tests |
 |--------|-------|-------------------|--------------------|

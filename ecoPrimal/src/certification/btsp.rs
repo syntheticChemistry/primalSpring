@@ -286,10 +286,12 @@ fn validate_ed25519_sign_and_verify(
     v: &mut ValidationResult,
     test_message: &str,
 ) {
+    use base64::Engine;
+    let encoded = base64::engine::general_purpose::STANDARD.encode(test_message.as_bytes());
     match ctx.call(
         "security",
         "crypto.sign",
-        serde_json::json!({"message": test_message, "algorithm": "ed25519"}),
+        serde_json::json!({"message": encoded, "purpose": "btsp_validation"}),
     ) {
         Ok(sign_result) => {
             let signature = sign_result
@@ -340,14 +342,15 @@ fn validate_ed25519_verify(
     signature: &str,
     public_key: &str,
 ) {
+    use base64::Engine;
+    let encoded = base64::engine::general_purpose::STANDARD.encode(test_message.as_bytes());
     match ctx.call(
         "security",
         "crypto.verify",
         serde_json::json!({
-            "message": test_message,
+            "message": encoded,
             "signature": signature,
             "public_key": public_key,
-            "algorithm": "ed25519"
         }),
     ) {
         Ok(verify_result) => {

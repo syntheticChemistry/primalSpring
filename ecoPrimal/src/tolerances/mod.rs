@@ -11,7 +11,7 @@
 //! Initial values were chosen from first-principles analysis of Unix socket
 //! IPC timing, then validated through 15 phases of live NUCLEUS deployment
 //! testing (March 2–28, 2026). All values have proven stable across 87/87
-//! gates, 63 experiments, and 403 tests. Individual provenance notes below.
+//! gates, 63 experiments, and 689+ tests. Individual provenance notes below.
 
 /// Maximum acceptable latency for a health check round-trip (microseconds).
 ///

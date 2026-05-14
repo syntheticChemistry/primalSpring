@@ -1,9 +1,9 @@
 # Live Science API — Tier 2 Wire Contract
 
-**Version**: 1.2.0
-**Date**: May 13, 2026
+**Version**: 1.3.0
+**Date**: May 13, 2026 (primal response wave: biomeOS v3.54, nestGate S62, rhizoCrypt S68, barraCuda Sprint 68)
 **Owner**: primalSpring (L2) + toadStool (L1) + barraCuda (L1)
-**Status**: ACTIVE — All Tier 2 methods IMPLEMENTED. 7/7 delta springs wired. Upstream GAP-36 RESOLVED.
+**Status**: ACTIVE — All Tier 2 methods IMPLEMENTED. 7/7 delta springs wired. Upstream GAP-36 RESOLVED. `biomeos.spring_status` SHIPPED. Content provenance metadata SHIPPED.
 
 ---
 
@@ -205,6 +205,9 @@ anchor attribution.
 | `content.put/get` | nestGate | **SHIPPED** (Session 60, 4-surface parity) | — |
 | `provenance.session.create` | rhizoCrypt | **SHIPPED** (alias: `dag.session.create`) | — |
 | `session.create` / `entry.append` | loamSpine | **SHIPPED** (ledger + entry domains) | — |
+| `biomeos.spring_status` | biomeOS | **IMPLEMENTED** (v3.54 — binary discovery, workload counts, topology version) | — |
+| `content.get` (provenance metadata) | nestGate | **SHIPPED** (Session 62 — `source`, `pipeline`, `stored_by` fields in response) | — |
+| `dag.session.get` (enriched summary) | rhizoCrypt | **SHIPPED** (S68 — `agents`, `genesis`, `frontier` fields) | — |
 
 ---
 

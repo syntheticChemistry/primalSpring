@@ -152,7 +152,7 @@ pub fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTre
 /// Part of the discovery escalation hierarchy (tier 5). Centralized here
 /// so the mapping is consistent across `discover`, `from_live_discovery_with_fallback`,
 /// experiments, and docs. Capabilities that alias the same primal socket
-/// (e.g. `dag` and `provenance` both → rhizoCrypt) appear separately so
+/// (e.g. `dag` → rhizoCrypt, `provenance` → sweetGrass) appear separately so
 /// the probe covers both capability names.
 ///
 /// Port assignments confirmed against ironGate live deployment (2026-05-04).

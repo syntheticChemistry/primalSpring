@@ -14,10 +14,16 @@
 pub mod health {
     /// Basic health check (returns status + version).
     pub const CHECK: &str = "health.check";
+    /// Graceful drain: stop accepting new work, wait for in-flight dispatches,
+    /// return "ready to shutdown" when drained. Configurable timeout via params.
+    pub const DRAIN: &str = "health.drain";
     /// Liveness probe (minimal latency, for monitoring).
     pub const LIVENESS: &str = "health.liveness";
     /// Readiness probe (are all subsystems ready to serve?).
     pub const READINESS: &str = "health.readiness";
+    /// Build version info: returns build hash, session number, compile timestamp.
+    /// Upgrade scripts use this to verify the new binary is actually running.
+    pub const VERSION: &str = "health.version";
 }
 
 /// Capability domain — discovering what a primal can do.

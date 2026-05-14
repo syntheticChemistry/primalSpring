@@ -1,7 +1,7 @@
 # Temporal Ecosystem Review — Debt, Horizons, and Stadial Transition
 
-**Date**: May 13, 2026 (refreshed from May 12 baseline)
-**Phase**: INTERSTADIAL — Sovereignty Pre-Wire → Niche Convergence
+**Date**: May 13, 2026 (full pull: L3 V71/V64m/V167/V159 + node atomic, L4 H2-12 TLS shadow LIVE + DoT 10/10, L5 CATHEDRAL 6/7 Tier 2)
+**Phase**: INTERSTADIAL — Niche Convergence → Atomic Deployment
 **Scope**: Full ecosystem stack audit — upstream sentinels through downstream products
 
 ---
@@ -60,6 +60,11 @@ GAP-16 addressable — remaining step is local deployment of all three.
 74 JSON-RPC methods, 22,900+ workspace tests. FECS firmware bridge is sole remaining
 NV blocker (coralReef `GspBridge` contract). **Tier 2 Science API fully operational.**
 
+**hotSpring dual-team deployment** (May 13): biomeGate continues sovereign dispatch
+subproblem (FECS warm dispatch, kernel-level). strandGate (AMD + NVIDIA hardware)
+stands up a secondary hotSpring team for **Node atomic deployment testing** — live
+validation of the full compute trio composition against both GPU vendors.
+
 ### Nest (neutron) — Provenance Ready, Extracellular Pending
 
 | Primal | Coverage | Debt | Horizon Gaps |
@@ -73,7 +78,7 @@ NV blocker (coralReef `GspBridge` contract). **Tier 2 Science API fully operatio
 
 | Primal | Debt | Notes |
 |--------|------|-------|
-| biomeOS | LOW | v3.53 — `composition.deploy.shadow` shipped, GAP-34 confirmed intentional |
+| biomeOS | LOW | v3.54 — `biomeos.spring_status` IMPLEMENTED (Tier 2 notebooks). `composition.deploy.shadow` shipped (v3.53). GAP-34 confirmed intentional |
 | squirrel | LOW | Inference wiring + NestGate env unification shipped |
 | petalTongue | LOW | v1.6.6 — ~~`backend=nestgate`~~ **WIRED** (`content.resolve`), live dashboard SSE |
 | sourDough | LOW-MEDIUM | Scaffold JH-0/BTSP, needs musl cross-build |
@@ -82,11 +87,11 @@ NV blocker (coralReef `GspBridge` contract). **Tier 2 Science API fully operatio
 
 ## primalSpring Stadial Gate (L2)
 
-- **Registry**: 413 methods, 301 exercised (72%)
+- **Registry**: 418 methods, 302 exercised (73%) — `biomeos.spring_status` added
 - **Waves 7/8/9**: All DONE. Wave 8 upstream items **ALL RESOLVED** (W8-07/08/09).
-- **22 scenarios**, **77 deploy graphs**, **602 library tests** (all passing)
+- **22 scenarios**, **77 deploy graphs**, **604 library tests** (all passing)
 - **Phase 32 atomic evolution**: skunkBat in Tower, Nest reconciled with provenance trio
-- **Tier 2 Science API**: LIVE_SCIENCE_API v1.1.0 — all methods IMPLEMENTED, 7/7 springs wired
+- **Tier 2 Science API**: LIVE_SCIENCE_API v1.3.0 — all methods IMPLEMENTED, 7/7 springs wired, `biomeos.spring_status` + content provenance metadata SHIPPED
 - **Wire name reconciliation**: GAP-34/35/36 all resolved upstream, docs aligned
 
 ---
@@ -95,13 +100,13 @@ NV blocker (coralReef `GspBridge` contract). **Tier 2 Science API fully operatio
 
 | Spring | Proto-nucleate | gS | Open Gaps | Highest Leverage |
 |--------|---------------|:--:|-----------|------------------|
-| hotSpring | Tower+Node+Nest | L6 | Compute trio rewire, ionic lease | GPU sovereign E2E |
-| wetSpring | Tower+Node+Nest+Meta | L4 | `capability.resolve`, live trio | Close PG-02–05, L5 |
-| groundSpring | Tower+Node+Nest | L4 | Ionic upstream, Squirrel | lithoSpore integration |
-| airSpring | Tower+Node+Nest | L4 | AG-005–012, L6 unchecked | LTEE E3, L5+ |
-| healthSpring | Dual-Tower Ionic | L5 | NestGate egress, BTSP interop | Thread 3+8 expressions |
-| neuralSpring | Tower+Node+Meta | L5 | Nest weight IPC, BTSP session | Rust binary, Nest decision |
-| ludoSpring | Tower+Node+Nest+Meta | L4 | coralReef SM, barraCuda domain | T9+T10 seeding |
+| hotSpring | Tower+Node+Nest | L6 | FECS NV blocker | `s_node_atomic` scenario added. strandGate (AMD+NV), biomeGate (sovereign dispatch) |
+| wetSpring | Tower+Node+Nest+Meta | **L5** | PG-02,04 (deploy-only) | Niche depth, B7 Tier 2 COMPLETE |
+| groundSpring | Tower+Node+Nest | L4 | coralReef IPC, PRNG 2b | lithoSpore B3+B4 **INGESTED** |
+| airSpring | Tower+Node+Nest | L4 | ~~AG-005~~ **RESOLVED** | LTEE E3, gS L5+ |
+| healthSpring | Dual-Tower Ionic | L5 | ionic bridge (upstream) | NestComposition facade, cell.toml, Foundation T10 |
+| neuralSpring | Tower+Node+Meta | L5 | Squirrel provider reg | NestGate weight persistence WIRED, Squirrel inference COMPLETE |
+| ludoSpring | Tower+Node+Nest+Meta | L4 | coralReef IPC (GAP-01) | V71: MDA + matchmaking + chat. Foundation T9+T10 seeded |
 
 ### Cross-cutting Blockers
 
@@ -110,7 +115,8 @@ NV blocker (coralReef `GspBridge` contract). **Tier 2 Science API fully operatio
 3. ~~**Live provenance trio**~~ — **GAP-36 RESOLVED** (all 3 primals now normalize wire aliases)
 4. **BTSP transport negotiation** — healthSpring `FAMILY_SEED` breaks mixed deploys
 5. ~~**`toadstool.validate`/`list_workloads`**~~ — **IMPLEMENTED** (S250/S245+), Tier 2 UNBLOCKED
-6. **FECS firmware bridge** — sole NV sovereign dispatch blocker (coralReef `GspBridge` contract)
+6. **FECS firmware bridge** — sole NV sovereign dispatch blocker. biomeGate team owns resolution. strandGate team validates Node atomic on AMD (working) + NV (FECS-gated)
+7. ~~**Tower live validation (GAP-16)**~~ — **RESOLVED** (ludoSpring V70 — 6/6 LIVE against running primals)
 
 ---
 
@@ -119,9 +125,9 @@ NV blocker (coralReef `GspBridge` contract). **Tier 2 Science API fully operatio
 | Pillar | Status | Blocking Items |
 |--------|--------|----------------|
 | 1. Primal Sovereignty | **SENTINELS RESOLVED** | ~~Songbird VPS~~ OPS-READY (W202), ~~coralReef FECS~~ SHIPPED (Sprint 7). BearDog TLS + BTSP dual-auth remain (projectNUCLEUS) |
-| 2. projectNUCLEUS Deploys | NOT STARTED | H2-2b/3a/3b/3c shadow runs — all upstream ready |
+| 2. projectNUCLEUS Deploys | **ACTIVE** | **H2-12 BearDog TLS shadow LIVE** (10ms vs 120ms tunnel). DoT 10/10 FIXED. H2-2b/3a/3b/3c ready |
 | 3. ABG Hosting | PARTIAL | WCM compositions through Nest+Node |
-| 4. lithoSpore | **GATE MET** | Module 1+2 PASS Tier 1+2 with BLAKE3 (May 12) |
+| 4. lithoSpore | **GATE EXCEEDED** | **6/7 modules Tier 2 LIVE** (was 4/7). ecoBin pure Rust BLAKE3. `litho-core` library extracted |
 | 5. River Delta | **GATE MET** | 8/8 Tier 4, PG thresholds |
 
 **Zero upstream code blockers remain.** Transition requires shadow run execution

@@ -57,4 +57,4 @@ depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "defense"
 security_model = "btsp"
-capabilities = ["defense.audit", "defense.recon", "defense.threat", "defense.alert"]
+capabilities = ["defense.audit", "defense.status", "defense.events", "security.audit_log", "recon.scan", "threat.assess", "threat.mitigate"]

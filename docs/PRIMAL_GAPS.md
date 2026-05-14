@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-13 (Phase 32 — reconciled L3 LTEE status with spring handoffs)
+> **Last updated**: 2026-05-13 (full pull: L3 V71/V64m/V167/V159, L4 H2-12 LIVE + DoT FIXED, L5 CATHEDRAL 6/7 Tier 2)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -24,12 +24,12 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — HSM mock `#[cfg(test)]` (Wave 98) |
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
 | toadStool | 22,900+ | **ADOPTED** | FULL | L3 | **CLEAN** — Phase D factory wired (S254). AMD live, NV FECS-gated. 74 JSON-RPC methods. |
-| biomeOS | 7,919 | **ADOPTED** | FULL | consumer | **CLEAN** — test helpers gated `#[cfg(test)]` (v3.49) |
-| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — content provenance metadata (S62), dep hygiene (S61), transport parity (S60) |
+| biomeOS | 7,919+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.54: `biomeos.spring_status` IMPLEMENTED (binary discovery + workload counts for Tier 2 notebooks) |
+| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — Session 62: content provenance metadata (`source`, `pipeline`, `stored_by` in `content.put/get`). `artifact_query` covered by enriched `content.get`. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
-| barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — unwrap false positive confirmed, optional dep supported |
+| barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 68: 72-method coverage, TensorSession `sub`/`negate` (GAP-HS-027), registry assertion softened to `>= 70` |
 | petalTongue | varies | **ADOPTED** | FULL | L2/L3 | **CLEAN** — all `#[allow]` → `#[expect(reason)]` (P6) |
-| rhizoCrypt | 1,602 | **ADOPTED** | FULL | L3 | **CLEAN** — canonical "dag" domain clarified (S64) |
+| rhizoCrypt | 1,637+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68: `dag.session.get` enriched with `agents`/`genesis`/`frontier` (covers `dag_summary` proposal). GAP-36 aliases shipped. |
 | loamSpine | 1,442+ | **ADOPTED** | FULL | L3 | **CLEAN** |
 | sweetGrass | 1,522 | **ADOPTED** | FULL | L3 | **CLEAN** — JH-0 gate + port 9850 canonical |
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — eprintln→tracing in 5 driver files (Iter 95) |
@@ -73,7 +73,7 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | GAP-36 | sweetGrass | `braid.attribution.create` returned -32601 | **RESOLVED** — v0.7.35 alias table, `dispatch_classified()`. 1,549 tests, 91.7% coverage. |
 | GAP-35 | loamSpine | `entry.append` vs `session.create` | **RESOLVED** — both coexist: `entry.*` = entry CRUD, `spine.*` = ledger lifecycle, `session.*` = aliases. |
 | GAP-34 | biomeOS/nestGate | `content.*` vs `storage.*` naming | **CONFIRMED INTENTIONAL** — distinct domains (CAS vs blob). biomeOS v3.53. |
-| GAP-16 | Tower primals | Tower not deployed locally | **ADDRESSABLE** — bearDog `crypto.seed_fingerprint` (W102), songbird `mesh.*` UDS (W204). Deploy step remains. |
+| GAP-16 | Tower primals | Tower not deployed locally | **RESOLVED** — ludoSpring V70 live-validated 6/6 Tower capabilities (crypto fingerprint/sign/verify/hash, mesh peers, audit log) against running bearDog + songbird + skunkBat. Wire corrections: bearDog uses base64 `message` param, skunkBat routes via `security.audit_log`. |
 | — | toadStool | Phase D factory not wired | **RESOLVED** — S254 `LocalDeviceFactory` wired. AMD live, NV FECS-gated. 74 methods, 22,900+ tests. |
 | — | barraCuda | Framework parity benchmarks | **RESOLVED** — Sprint 63: LAMMPS + SciPy + Kokkos benches, DF64 GPU E2E tests. |
 | — | coralReef | `naga::Module` direct ingest | **RESOLVED** — `compile_module`/`compile_module_full` shipped. 3,129 tests. |
@@ -85,6 +85,10 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 Also resolved by upstream teams (not previously tracked as gaps):
 
 | What | Resolution |
+| `biomeos.spring_status` (projectNUCLEUS proposal) | **IMPLEMENTED** — biomeOS v3.54: binary discovery, workload counts, topology version. 3 tests. |
+| `nestgate.artifact_query` (projectNUCLEUS proposal) | **COVERED** — NestGate Session 62: `content.get`/`content.exists` return provenance metadata (`source`, `pipeline`, `stored_by`). No separate method needed. |
+| `rhizocrypt.dag_summary` (projectNUCLEUS proposal) | **COVERED** — rhizoCrypt S68: `dag.session.get` enriched with `agents`, `genesis`, `frontier` fields. Serves as canonical session summary. |
+| barraCuda registry test off-by-one | **RESOLVED** — Sprint 68: assertion softened to `>= 70` (was exact `== 71`), covers 72-method registry including `precision.route`. |
 |------|------------|
 | `composition.status` method | biomeOS v3.51 — `{ active_users, primal_health, resource_pressure }` |
 | bearDog TLS + rate limiting (H2-10/H2-11) | bearDog Wave 100 — rustls X.509 termination + per-IP sliding-window rate limiter |
@@ -239,13 +243,13 @@ ludoSpring, groundSpring, airSpring)
 
 | Spring | Post-Evolution State | Next Target |
 |--------|---------------------|-------------|
-| healthSpring | V64e, gS L5, UniBin, 1,014 tests, Tier 4 (`default=[]`), B5 COMPLETE, Threads 3+5+8 active, `--format json`, 17 scenarios, ionic bridge stubs, Tier 2 wired (`toadstool.validate` + `precision.route`), 88 capabilities | LTEE E2/E4, Thread 7+, NestGate wiring |
-| ludoSpring | V63, gS L4, UniBin, 854 tests, Tier 4 (`default=["ipc"]`), SPDX | coralReef IPC, domain parity |
-| hotSpring | v0.6.32, gS L6, UniBin, 1,025 tests, Tier 4 (`default=[]`), LTEE B2, 3-GPU sovereign | Titan V FECS, K80 livepatch |
-| wetSpring | V163, gS L4, UniBin, 1,613 tests, Tier 4 (`default=[]`), LTEE B7, 4 PG open | close PG-02–05 (external), L5 |
-| airSpring | v0.10.0, gS L4, UniBin, 1,389 tests, Tier 4 (`default=[]`), barraCuda 0.3.13 | LTEE E3, NestGate/Squirrel wiring, L5+ |
-| neuralSpring | S201b, gS L5, UniBin, 1,453 tests, Tier 4 (`default=[]`), LTEE B1 | Gap 11 (18 RPC methods), NestGate weights |
-| groundSpring | V135, gS L4, UniBin, 1,125 tests, Tier 4 (`default=[]`), LTEE B2+B1 **DONE** | lithoSpore integration, coralReef IPC |
+| healthSpring | V64k, gS L5, UniBin, 1,014+ tests, Tier 4 (`default=[]`), B5 COMPLETE, Nest atomic COMPLETE, GAP-36 RESOLVED both sides, Tier 2 wired | Nest niche depth, Nest deploy |
+| ludoSpring | V70, gS L4, UniBin, 858 tests, Tier 4 (`default=["ipc"]`), **Tower atomic LIVE** (6/6) | Tower niche depth, coralReef wiring |
+| hotSpring | v0.6.32, gS L6, UniBin, 591 tests, Tier 4 (`default=[]`), LTEE B2, 3-GPU sovereign | Node atomic deployment (strandGate + biomeGate) |
+| wetSpring | V166b, gS L4, UniBin, 1,962 tests, Tier 4 (`default=[]`), LTEE B7 Tier 2, PG-03/05 RESOLVED | close PG-02/04 (deployment), gS L5 |
+| airSpring | v0.10.0, gS L4, UniBin, 1,429 tests, Tier 4 (`default=[]`), NestGate+Squirrel IPC wired | LTEE E3, gS L5+ |
+| neuralSpring | S204, gS L5, UniBin, 907 tests, Tier 4 (`default=[]`), LTEE B1, ~~Gap 11~~ CLOSED | NestGate weights, Tier 2 depth |
+| groundSpring | V140, gS L4, UniBin, 1,123 tests, Tier 4 (`default=[]`), LTEE B1-B4 **DONE** | lithoSpore integration, coralReef IPC |
 
 **Wave 3 COMPLETED** (May 9). Post-interstadial push (May 10-11) achieved:
 8/8 skunkBat Rust IPC, 8/8 `method.register`, 8/8 CI cross-sync 413,
@@ -382,7 +386,7 @@ resolved (Session 60, May 11). All downstream-surfaced debt resolved.
 See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 
 **Stadial pressure on primals** (primalSpring as gate):
-- 413-method canonical registry — drift is rejected
+- 418-method canonical registry — drift is rejected
 - MethodGate enforcement — **13/13 DONE**
 - Deploy graph coherence — all primals must compose cleanly
 - Guidestone certification — primals participate in spring gS levels
@@ -392,15 +396,15 @@ See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 ### Layer 2: primalSpring — The Stadial Gate
 
 **Owner**: primalSpring team
-**Scope**: Canonical capability registry (413 methods), deploy graph library,
+**Scope**: Canonical capability registry (418 methods), deploy graph library,
 composition validation, gap registry, `CompositionContext` API, two-tier
 validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 413 methods, 689+ tests, zero local debt. Active coordination targets:
+**Current**: 418 methods, 689+ tests, zero local debt. Active coordination targets:
 - Wave 8: Compute trio composition (Node atomic E2E — 6/9 items DONE locally, 3 upstream)
-- Wave 9: Domain contract sweep — 22 scenarios, 77+ deploy graphs, 301/413 methods exercised (72%)
+- Wave 9: Domain contract sweep — 22 scenarios, 77+ deploy graphs, 302/418 methods exercised (73%)
 - ~~PG-54~~ **DONE** (adaptive tick model shipped)
 - ~~PG-63~~ **DONE** (Agg guidance already reconciled)
 
@@ -414,35 +418,42 @@ foundation seeding, plasmidBin release readiness
 
 | Spring | Version | gS | Tier 4 | Open Gaps | LTEE | Next Target |
 |--------|---------|:--:|:------:|-----------|------|-------------|
-| wetSpring | V163 | L4 | Done | 4 (PG-02,03,04,05 — external) | B7 started | close external PGs, gS L5 |
-| hotSpring | v0.6.32 | L6 | Done | Titan V FECS, K80 livepatch | **B2 DONE** | GPU sovereign completion (thermal niche) |
-| neuralSpring | S201b | L5 | Done | Gap 11 (18 RPC methods) | **B1 DONE** (S201b) | close gap 11, NestGate weights |
-| airSpring | v0.10.0 | L4 | Done | AG-001 manifest, NestGate/Squirrel | E3 queued | LTEE E3, gS L5+ |
-| ludoSpring | V69 | L4 | Done | coralReef IPC (GAP-01), Tower live validation (GAP-16) | Tower atomic COMPLETE | Tower niche depth, coralReef wiring |
-| groundSpring | V135 | L4 | Done | coralReef IPC, PRNG Phase 2b | **B2+B1 DONE** | lithoSpore integration |
-| healthSpring | V64i | L5 | Done | ionic bridge (upstream), Provenance trio payloads (GAP-36) | B5 COMPLETE, Nest atomic COMPLETE | Nest niche depth, LTEE E2/E4 |
+| wetSpring | V167 | **L5** | Done | 2 (PG-02,04 — deployment-only) | **B7 Tier 2 COMPLETE** | close PG-02/04, niche depth |
+| hotSpring | v0.6.32 | L6 | Done | Titan V FECS, K80 livepatch | **B2 DONE** | Node atomic (`s_node_atomic` added). strandGate AMD+NV, biomeGate sovereign dispatch |
+| neuralSpring | V159 | L5 | Done | Squirrel provider reg (upstream) | **B1 DONE** | NestGate weight persistence WIRED, Squirrel inference pipeline COMPLETE |
+| airSpring | v0.10.0 | L4 | Done | ~~AG-005~~ **RESOLVED**. NestGate/Squirrel IPC wired | E3 queued | LTEE E3, gS L5+ |
+| ludoSpring | V71 | L4 | Done | coralReef IPC (GAP-01) | **Tower atomic LIVE** (6/6) | MDA framework + BM-004/005 implemented. Foundation T9+T10 seeded |
+| groundSpring | V141 | L4 | Done | coralReef IPC, PRNG Phase 2b | **B1-B4 DONE** | lithoSpore integration (B3+B4 INGESTED) |
+| healthSpring | V64m | L5 | Done | ionic bridge (upstream) | B5 COMPLETE, Nest atomic COMPLETE | NestComposition facade, cell.toml deployed, Foundation T10 gap |
 
 ### Layer 4: Downstream Products — Interstadial (projectNUCLEUS, gardens)
 
 **Owner**: Product teams
 **Scope**: Gate deployment, sovereignty horizons, composition absorption,
 workload validation, foundation integration
-**Phase**: **Interstadial** — pre-wiring sovereignty, shadow runs not yet started
+**Phase**: **Interstadial** — shadow runs ACTIVE, sovereignty calibration underway
 **Current** (projectNUCLEUS):
 - Horizon 1: **COMPLETE** — external security, darkforest v0.2.1
-- Horizon 2: **70%** — 2a done, 2b ready, 3a intermediate (cell membrane live), 3b/3c upstream shipped, 4 intermediate (DoT)
+- Horizon 2: **80%** — 2a done, 2b ready, 3a cell membrane live, 3b/3c upstream shipped, **H2-12 BearDog TLS shadow LIVE** (10ms vs 120ms tunnel), **DoT 10/10 FIXED**, tunnel baseline clarified
 - Horizon 3: **20%** — H3-07/H3-08 unblocked, rest future
 - Absorption targets: `composition.deploy(graph)`, Tier 4 rewiring, skunkBat in smaller compositions
+
+**Current** (lithoSpore/CATHEDRAL):
+- **6/7 modules Tier 2 LIVE** (was 4/7). Modules 3+4 promoted via groundSpring B3+B4.
+- ecoBin compliant: BLAKE3 `features = ["pure", "std"]`, zero C deps. `litho-core` library extracted (discovery, harness, stats).
+- **14 debt items resolved** in single CATHEDRAL session. Pillar 4 interstadial gate **EXCEEDED**.
 
 ### Layer 5: Foundation (sporeGarden/foundation)
 
 **Owner**: Foundation team + contributing springs
 **Scope**: Public data anchoring, provenance validation, thread coverage
-**Current**: 10 domain threads, 100+ data sources. Springs seeding:
+**Current**: 10 domain threads, 100+ data sources. CI thread-index validation functional. Springs seeding:
 - airSpring: Thread 6 (ag) — 36/36 targets validated
 - hotSpring: Thread 2 seeded
 - neuralSpring: Threads 5+7 documented, ready for contribution
 - groundSpring: Thread 7 (Anderson) index fixed
+- ludoSpring: Threads 9+10 seeded with expressions + targets
+- healthSpring: Thread 10 (provenance) gap documented
 
 ### Gap Flow — Sentinel Model
 
@@ -452,7 +463,7 @@ L1 (Primals — sentinels, stadial-first)
   │ validated against ↓
   │
 L2 (primalSpring — stadial gate)
-  │ 413 registry, MethodGate, deploy graphs, guidestone cert
+  │ 415 registry, MethodGate, deploy graphs, guidestone cert
   │
   │ patterns flow downstream ↓
   │

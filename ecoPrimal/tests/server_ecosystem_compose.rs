@@ -563,9 +563,9 @@ fn compute_trio_sovereign_e2e() {
         .or_else(|| running.socket_for_primal("toadstool"))
         .expect("toadstool socket");
 
-    let trivial_wgsl = r#"@compute @workgroup_size(1)
+    let trivial_wgsl = r"@compute @workgroup_size(1)
 fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
-}"#;
+}";
 
     let compile = direct_rpc_call(
         coralreef_socket,
@@ -587,15 +587,16 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
         .expect("should return binary_b64");
     assert!(!binary_b64.is_empty(), "compiled binary should be non-empty");
 
+    let default_shader_info = serde_json::json!({
+        "gprs": 32, "shared_memory": 0, "barriers": 0,
+        "workgroup": [1, 1, 1], "wave_size": 32
+    });
     let dispatch = direct_rpc_call(
         toadstool_socket,
         "compute.dispatch.submit",
         &serde_json::json!({
             "binary_b64": binary_b64,
-            "shader_info": compile_resp.get("shader_info").unwrap_or(&serde_json::json!({
-                "gprs": 32, "shared_memory": 0, "barriers": 0,
-                "workgroup": [1, 1, 1], "wave_size": 32
-            })),
+            "shader_info": compile_resp.get("shader_info").unwrap_or(&default_shader_info),
             "dispatch_dims": [1, 1, 1],
             "buffers": []
         }),

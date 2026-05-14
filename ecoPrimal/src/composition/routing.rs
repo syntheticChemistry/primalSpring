@@ -2,14 +2,17 @@
 
 //! Capability routing tables — maps capabilities to primals and methods to domains.
 
+use crate::primal_names::Primal;
+
 /// All NUCLEUS capabilities that primalSpring discovers and authenticates.
 ///
 /// Single source of truth for `discover`, `from_live_discovery`, `PROACTIVE_CAPS`
 /// in `upgrade_btsp_clients`, and the TCP fallback table. Each entry is
-/// the *primary* capability domain for a primal. Aliases like `"provenance"`
-/// (→ rhizoCrypt, same as `"dag"`) are handled by the routing match in
-/// `capability_to_primal()` but do not appear here to avoid duplicate
-/// discovery attempts against the same socket.
+/// the *primary* capability domain for a primal.
+///
+/// Routing consistency is enforced by `s_routing_consistency` which verifies
+/// that every method in `capability_registry.toml` routes through
+/// `method_to_capability_domain` + `capability_to_primal` to its declared owner.
 pub const ALL_CAPS: &[&str] = &[
     "security",
     "discovery",
@@ -57,22 +60,36 @@ pub const BTSP_EXTRA_CAPS: &[&str] = &[
 /// ```
 #[must_use]
 pub fn capability_to_primal(capability: &str) -> &str {
-    use crate::primal_names as pn;
+    match capability_to_primal_typed(capability) {
+        Some(p) => p.slug(),
+        None => match capability {
+            "tool" | "primalspring" => "primalspring",
+            "webb" => "esotericwebb",
+            "game" => "ludospring",
+            other => other,
+        },
+    }
+}
+
+/// Typed version — returns `None` for non-primal targets (springs, unknown).
+#[must_use]
+pub fn capability_to_primal_typed(capability: &str) -> Option<Primal> {
+    use Primal::*;
     match capability {
-        "security" | "crypto" => pn::BEARDOG,
-        "discovery" | "network" => pn::SONGBIRD,
-        "compute" => pn::TOADSTOOL,
-        "tensor" | "math" => pn::BARRACUDA,
-        "shader" => pn::CORALREEF,
-        "storage" | "content" => pn::NESTGATE,
-        "ai" | "inference" => pn::SQUIRREL,
-        "dag" | "provenance" => pn::RHIZOCRYPT,
-        "ledger" | "spine" | "merkle" => pn::LOAMSPINE,
-        "commit" | "attribution" | "braid" => pn::SWEETGRASS,
-        "visualization" => pn::PETALTONGUE,
-        "defense" | "recon" | "threat" => pn::SKUNKBAT,
-        "orchestration" => pn::BIOMEOS,
-        other => other,
+        "security" | "crypto" => Some(BearDog),
+        "discovery" | "network" => Some(Songbird),
+        "compute" => Some(ToadStool),
+        "tensor" | "math" => Some(BarraCuda),
+        "shader" => Some(CoralReef),
+        "storage" | "content" => Some(NestGate),
+        "ai" | "inference" => Some(Squirrel),
+        "dag" => Some(RhizoCrypt),
+        "provenance" | "commit" | "attribution" | "braid" => Some(SweetGrass),
+        "ledger" | "spine" | "merkle" => Some(LoamSpine),
+        "visualization" => Some(PetalTongue),
+        "defense" | "recon" | "threat" | "audit" => Some(SkunkBat),
+        "orchestration" | "federation" => Some(BiomeOS),
+        _ => None,
     }
 }
 
@@ -95,23 +112,40 @@ pub fn capability_to_primal(capability: &str) -> &str {
 /// ```
 #[must_use]
 pub fn method_to_capability_domain(method: &str) -> &str {
+    // Full-method overrides for cross-domain methods where the prefix
+    // doesn't match the owning primal's domain.
+    match method {
+        "security.audit_log" | "security.audit_event" => return "defense",
+        _ => {}
+    }
     let prefix = method.split('.').next().unwrap_or(method);
     match prefix {
-        "crypto" | "health" | "identity" | "primal" => "security",
-        "ipc" | "discovery" => "discovery",
-        "compute" => "compute",
+        "crypto" | "health" | "identity" | "primal" | "tls" | "btsp" | "beacon" | "genetic"
+        | "birdsong" | "lineage" => "security",
+        "ipc" | "discovery" | "tor" | "relay" | "http" | "dns" | "stun" | "turn" | "network"
+        | "mesh" | "onion" => "discovery",
+        "compute" | "dispatch" | "workload" => "compute",
         "tensor" | "stats" | "math" | "noise" | "activation" | "rng" | "fhe" | "tolerances"
-        | "validate" | "device" | "linalg" | "spectral" => "tensor",
+        | "validate" | "device" | "linalg" | "spectral" | "nautilus" | "ml" | "ode" | "nn"
+        | "ops" => "tensor",
         "shader" => "shader",
-        "storage" => "storage",
+        "storage" | "secrets" => "storage",
         "content" => "content",
-        "inference" | "ai" | "squirrel" | "mcp" => "ai",
-        "dag" => "dag",
-        "spine" | "entry" | "certificate" => "ledger",
-        "braid" | "anchoring" => "commit",
-        "visualization" | "viz" | "proprioception" => "visualization",
-        "defense" | "recon" | "threat" | "lineage" => "defense",
-        "graph" | "capability" | "lifecycle" | "coordination" => "orchestration",
+        "inference" | "ai" | "squirrel" => "ai",
+        "dag" | "event" | "merkle" | "vertex" | "dehydration" | "slice" => "dag",
+        "spine" | "entry" | "certificate" | "session" | "permanence" | "anchor" | "proof" => {
+            "ledger"
+        }
+        "braid" | "anchoring" | "contribution" => "commit",
+        "visualization" | "viz" | "render" | "interaction" => "visualization",
+        "defense" | "recon" | "threat" | "audit" => "defense",
+        "graph" | "capability" | "lifecycle" | "topology" | "federation" | "route" | "system"
+        | "biomeos" | "nucleus" | "membrane" | "cell" | "proprioception" => "orchestration",
+        "tool" | "tools" | "auth" | "primalspring" | "bonding" | "composition" | "context"
+        | "ionic" | "mcp" | "coordination" => "tool",
+        "webb" | "esotericwebb" => "webb",
+        "game" => "game",
+        "provenance" => "provenance",
         _ => prefix,
     }
 }

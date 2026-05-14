@@ -88,6 +88,15 @@ validation scenarios.
 | `network.stun` | songbird | `s_domain_contract_sweep.rs` | STUN binding request |
 | `bonding.status` | biomeOS | `s_domain_contract_sweep.rs` | Bond state query |
 
+> **Wire name note (Tower live validation — ludoSpring V70, May 13)**:
+> skunkBat's primary audit method is `security.audit_log` (not `defense.audit`).
+> The `defense.status` and `defense.events` methods are separate admin endpoints.
+> ludoSpring wires `security.audit_log` for runtime audit trail; primalSpring's
+> sweep tests `defense.status`/`defense.events` for policy + event admin queries.
+> Both domains are valid — `security.*` for data-plane audit, `defense.*` for
+> control-plane policy. bearDog expects base64-encoded `message` param (not raw
+> string `data`) for signing operations.
+
 ---
 
 ## Inbound IPC — Methods Served by primalSpring

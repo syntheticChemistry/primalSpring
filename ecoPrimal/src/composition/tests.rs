@@ -66,7 +66,7 @@ fn capability_to_primal_maps_correctly() {
     assert_eq!(super::capability_to_primal("discovery"), "songbird");
     assert_eq!(super::capability_to_primal("ai"), "squirrel");
     assert_eq!(super::capability_to_primal("dag"), "rhizocrypt");
-    assert_eq!(super::capability_to_primal("provenance"), "rhizocrypt");
+    assert_eq!(super::capability_to_primal("provenance"), "sweetgrass");
     assert_eq!(super::capability_to_primal("commit"), "sweetgrass");
     assert_eq!(super::capability_to_primal("attribution"), "sweetgrass");
     assert_eq!(super::capability_to_primal("braid"), "sweetgrass");

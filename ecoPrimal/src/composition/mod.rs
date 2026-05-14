@@ -46,7 +46,7 @@ pub use parity::{
     call_or_skip, is_skip_error, validate_liveness, validate_parity, validate_parity_flex,
     validate_parity_vec, validate_parity_vec_flex,
 };
-pub use routing::{capability_to_primal, method_to_capability_domain};
+pub use routing::{capability_to_primal, capability_to_primal_typed, method_to_capability_domain};
 
 #[cfg(test)]
 #[path = "tests.rs"]

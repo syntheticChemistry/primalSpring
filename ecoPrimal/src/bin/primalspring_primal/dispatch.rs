@@ -78,7 +78,7 @@ pub fn dispatch_request(line: &str) -> JsonRpcResponse {
             let routed: Vec<serde_json::Value> = primalspring::niche::ROUTED_CAPABILITIES
                 .iter()
                 .map(|(method, provider)| {
-                    serde_json::json!({ "method": method, "provider": provider })
+                    serde_json::json!({ "method": method, "provider": provider.slug() })
                 })
                 .collect();
             success_response(

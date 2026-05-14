@@ -2,6 +2,9 @@
 
 //! Niche deployment self-knowledge for primalSpring.
 //!
+//! Uses the typed [`Primal`] enum for routed capabilities — the compiler
+//! enforces that every routing target is a real primal.
+//!
 //! A Spring is a niche validation domain. primalSpring's domain is
 //! coordination itself: atomic composition, graph execution, emergent
 //! systems, bonding, and cross-spring interaction patterns.
@@ -31,6 +34,7 @@ use tracing::{info, warn};
 
 use crate::ipc::client::PrimalClient;
 use crate::ipc::discover::discover_primal;
+use crate::primal_names::Primal;
 
 /// Niche identity — delegates to the canonical [`crate::PRIMAL_NAME`].
 pub const NICHE_NAME: &str = crate::PRIMAL_NAME;
@@ -92,78 +96,78 @@ pub const LOCAL_CAPABILITIES: &[&str] = &[
 /// should go through `capability.call` or the Neural API.
 ///
 /// Each entry names the canonical provider per `capability_registry.toml`.
-pub const ROUTED_CAPABILITIES: &[(&str, &str)] = {
-    use crate::primal_names as pn;
+pub const ROUTED_CAPABILITIES: &[(&str, Primal)] = {
+    use Primal::*;
     &[
         // ── Lifecycle (biomeOS) ──
-        ("lifecycle.start", pn::BIOMEOS),
-        ("lifecycle.stop", pn::BIOMEOS),
+        ("lifecycle.start", BiomeOS),
+        ("lifecycle.stop", BiomeOS),
         // ── Graph execution (biomeOS) ──
-        ("graph.deploy", pn::BIOMEOS),
-        ("graph.status", pn::BIOMEOS),
-        ("graph.rollback", pn::BIOMEOS),
+        ("graph.deploy", BiomeOS),
+        ("graph.status", BiomeOS),
+        ("graph.rollback", BiomeOS),
         // ── AI (Squirrel) ──
-        ("ai.query", pn::SQUIRREL),
-        ("ai.health", pn::SQUIRREL),
+        ("ai.query", Squirrel),
+        ("ai.health", Squirrel),
         // ── Discovery mesh (Songbird) ──
-        ("discovery.announce", pn::SONGBIRD),
-        ("discovery.find_primals", pn::SONGBIRD),
+        ("discovery.announce", Songbird),
+        ("discovery.find_primals", Songbird),
         // ── Network (Songbird) ──
-        ("network.stun", pn::SONGBIRD),
-        ("network.nat_type", pn::SONGBIRD),
-        ("network.birdsong.beacon", pn::SONGBIRD),
-        ("network.birdsong.decrypt", pn::SONGBIRD),
-        ("network.onion.start", pn::SONGBIRD),
-        ("network.onion.status", pn::SONGBIRD),
-        ("network.tor.status", pn::SONGBIRD),
-        ("network.federation.peers", pn::SONGBIRD),
+        ("network.stun", Songbird),
+        ("network.nat_type", Songbird),
+        ("network.birdsong.beacon", Songbird),
+        ("network.birdsong.decrypt", Songbird),
+        ("network.onion.start", Songbird),
+        ("network.onion.status", Songbird),
+        ("network.tor.status", Songbird),
+        ("network.federation.peers", Songbird),
         // ── Federation (biomeOS v2.78+) ──
-        ("federation.configure", pn::BIOMEOS),
-        ("federation.join", pn::BIOMEOS),
-        ("federation.health_check", pn::BIOMEOS),
+        ("federation.configure", BiomeOS),
+        ("federation.join", BiomeOS),
+        ("federation.health_check", BiomeOS),
         // ── Topology (biomeOS) ──
-        ("topology.get", pn::BIOMEOS),
-        ("topology.proprioception", pn::BIOMEOS),
+        ("topology.get", BiomeOS),
+        ("topology.proprioception", BiomeOS),
         // ── Visualization (petalTongue) ──
-        ("visualization.render", pn::PETALTONGUE),
-        ("visualization.render.scene", pn::PETALTONGUE),
-        ("visualization.render.stream", pn::PETALTONGUE),
-        ("visualization.render.dashboard", pn::PETALTONGUE),
-        ("visualization.render.grammar", pn::PETALTONGUE),
-        ("interaction.subscribe", pn::PETALTONGUE),
-        ("interaction.poll", pn::PETALTONGUE),
+        ("visualization.render", PetalTongue),
+        ("visualization.render.scene", PetalTongue),
+        ("visualization.render.stream", PetalTongue),
+        ("visualization.render.dashboard", PetalTongue),
+        ("visualization.render.grammar", PetalTongue),
+        ("interaction.subscribe", PetalTongue),
+        ("interaction.poll", PetalTongue),
         // ── Crypto (BearDog) ──
-        ("crypto.sign_ed25519", pn::BEARDOG),
-        ("crypto.verify_ed25519", pn::BEARDOG),
+        ("crypto.sign_ed25519", BearDog),
+        ("crypto.verify_ed25519", BearDog),
         // ── Provenance DAG (rhizoCrypt) ──
-        ("dag.session.create", pn::RHIZOCRYPT),
-        ("dag.session.get", pn::RHIZOCRYPT),
-        ("dag.session.list", pn::RHIZOCRYPT),
-        ("dag.event.append", pn::RHIZOCRYPT),
-        ("dag.vertex.get", pn::RHIZOCRYPT),
-        ("dag.frontier.get", pn::RHIZOCRYPT),
-        ("dag.merkle.root", pn::RHIZOCRYPT),
-        ("dag.merkle.proof", pn::RHIZOCRYPT),
-        ("dag.merkle.verify", pn::RHIZOCRYPT),
-        ("dag.slice.checkout", pn::RHIZOCRYPT),
-        ("dag.dehydration.trigger", pn::RHIZOCRYPT),
+        ("dag.session.create", RhizoCrypt),
+        ("dag.session.get", RhizoCrypt),
+        ("dag.session.list", RhizoCrypt),
+        ("dag.event.append", RhizoCrypt),
+        ("dag.vertex.get", RhizoCrypt),
+        ("dag.frontier.get", RhizoCrypt),
+        ("dag.merkle.root", RhizoCrypt),
+        ("dag.merkle.proof", RhizoCrypt),
+        ("dag.merkle.verify", RhizoCrypt),
+        ("dag.slice.checkout", RhizoCrypt),
+        ("dag.dehydration.trigger", RhizoCrypt),
         // ── Ledger (loamSpine) ──
-        ("spine.create", pn::LOAMSPINE),
-        ("spine.get", pn::LOAMSPINE),
-        ("spine.seal", pn::LOAMSPINE),
-        ("entry.append", pn::LOAMSPINE),
-        ("entry.get", pn::LOAMSPINE),
-        ("certificate.mint", pn::LOAMSPINE),
-        ("session.commit", pn::LOAMSPINE),
+        ("spine.create", LoamSpine),
+        ("spine.get", LoamSpine),
+        ("spine.seal", LoamSpine),
+        ("entry.append", LoamSpine),
+        ("entry.get", LoamSpine),
+        ("certificate.mint", LoamSpine),
+        ("session.commit", LoamSpine),
         // ── Attribution (sweetGrass) ──
-        ("braid.create", pn::SWEETGRASS),
-        ("braid.get", pn::SWEETGRASS),
-        ("braid.commit", pn::SWEETGRASS),
-        ("anchoring.anchor", pn::SWEETGRASS),
-        ("anchoring.verify", pn::SWEETGRASS),
-        ("provenance.graph", pn::SWEETGRASS),
-        ("provenance.export_provo", pn::SWEETGRASS),
-        ("attribution.chain", pn::SWEETGRASS),
+        ("braid.create", SweetGrass),
+        ("braid.get", SweetGrass),
+        ("braid.commit", SweetGrass),
+        ("anchoring.anchor", SweetGrass),
+        ("anchoring.verify", SweetGrass),
+        ("provenance.graph", SweetGrass),
+        ("provenance.export_provo", SweetGrass),
+        ("attribution.chain", SweetGrass),
     ]
 };
 
@@ -369,7 +373,7 @@ pub fn register_with_target(our_socket: &Path) {
                 "capability": cap,
                 "socket": &sock_str,
                 "served_locally": false,
-                "canonical_provider": provider,
+                "canonical_provider": provider.slug(),
             }),
         );
     }
@@ -431,11 +435,11 @@ mod tests {
     }
 
     #[test]
-    fn routed_capabilities_have_providers() {
+    fn routed_capabilities_have_valid_providers() {
         for (method, provider) in ROUTED_CAPABILITIES {
             assert!(
-                !provider.is_empty(),
-                "routed capability '{method}' has empty provider"
+                !provider.slug().is_empty(),
+                "routed capability '{method}' has empty provider slug"
             );
         }
     }

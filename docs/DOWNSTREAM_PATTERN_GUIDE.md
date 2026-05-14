@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 13, 2026 (reconciled LTEE/version with spring handoffs)
+**Last updated**: May 13, 2026 (full pull: V71/V64m/V167/V159, CATHEDRAL 6/7 Tier 2, H2-12 TLS shadow LIVE)
 
 ---
 
@@ -48,22 +48,23 @@ Each LTEE reproduction follows a standard pattern:
 | **groundSpring** | B1 (Barrick 2009 — neutral mutation) | **COMPLETE** Py 8/8 + Rust 8/8 | `control/ltee_neutral/expected_values.json` | Module 1: ltee-mutation |
 | **groundSpring** | B2 (Wiser 2013 — fitness dynamics) | **COMPLETE** Py 9/9 + Rust 10/10 | `control/ltee_fitness/expected_values.json` | Module 2: ltee-fitness |
 | **groundSpring** | B3 (Good 2017 — clonal interference) | **COMPLETE** (V136) | `control/ltee_clonal/` | Module 3: ltee-clonal |
+| **groundSpring** | B4 (Blount 2008/2012 — citrate) | **COMPLETE** (V140) | `control/ltee_citrate/` | Module 4: ltee-citrate |
 | **hotSpring** | B2 (Anderson/Wiser — fitness) | **COMPLETE** Tier 1+2 | `experiments/results/ltee/ltee_b2_anderson_expected.json` | Module 7: ltee-anderson |
 | **healthSpring** | B5 (Leonard 2024 — symbiont PK/PD) | **COMPLETE** Py 8/8 + Rust 8/8 (V64f) + `--format json` + `tolerances.toml` | `control/ltee_symbiont_pkpd/` (full lithoSpore module candidate) + `bin/validate_ltee_b5` | Module: ltee-symbiont-pk |
 | **neuralSpring** | B1 (mutation accumulation ML) | **Py 8/8 + Rust binary DONE** (S201b) | `control/ltee_mutation_accumulation/` + `src/bin/validate_ltee_b1_*` | ML surrogate modules |
-| **wetSpring** | B7 (Tenaillon 2016 — 264 genomes) | **STARTED** (Exp380 documented) | `experiments/380_ltee_b7_tenaillon_mutation_accumulation.md` | Module 6: ltee-genomics |
+| **wetSpring** | B7 (Tenaillon 2016 — 264 genomes) | **Tier 2 COMPLETE** (27/27 PASS) | `experiments/results/ltee_b7_expected_values.json` | Module 6: ltee-breseq (Tier 2 PASS) |
 
 **Convention**: lithoSpore modules consume `expected_values.json` from springs via
 `fetch_and_hash.sh` scripts that BLAKE3-anchor the data into NestGate content storage.
 
 ### What lithoSpore Needs Next
 
-- **groundSpring B1-B3** outputs are ready for integration into `ltee-mutation`, `ltee-fitness`, `ltee-clonal` modules
-- **hotSpring B2** ready for `ltee-anderson` module integration
-- **neuralSpring** Rust binary `validate_ltee_b1_mutation_accumulation` now exists (S201b) — ready for lithoSpore ML modules
-- **healthSpring** B5 (symbiont PK/PD) **COMPLETE** — full lithoSpore module candidate (`expected_values.json` + `tolerances.toml` + `LITHO_MODULE_README.md` + Rust `validate_ltee_b5` 8/8, `--format json`) ready for BLAKE3 ingestion
-- **wetSpring B7** is in progress — feeds `ltee-genomics` when 264-genome pipeline completes
-- **All 7 modules** are scaffold/SKIP until upstream data flows in
+- **groundSpring B1-B4** INGESTED — lithoSpore modules 3+4 promoted to Tier 2 (B3 Good 2017, B4 Blount 2008/2012)
+- **hotSpring B2** ready for `ltee-anderson` module integration (module 7 already Tier 2 PASS)
+- **neuralSpring** ML surrogates additive to modules 3+4 (not blocking)
+- **healthSpring** B5 (symbiont PK/PD) **COMPLETE** — full lithoSpore module candidate
+- **wetSpring B7** Tier 2 COMPLETE — feeds `ltee-breseq` (module 6 Tier 2 PASS)
+- **6/7 modules Tier 2 LIVE** — only module 5 (biobricks) remains scaffold (DOI pending)
 
 ---
 
@@ -84,8 +85,8 @@ Foundation threads have three components: **expression** (the question), **data 
 | 6 | Agricultural Science | airSpring, groundSpring, wetSpring | YES | YES | YES | **ACTIVE** |
 | 7 | Anderson Mathematics | hotSpring, groundSpring, wetSpring, neuralSpring | YES | YES | YES | **ACTIVE** |
 | 8 | Human Health / Clinical | healthSpring | YES (V64) | YES | YES | **ACTIVE** |
-| 9 | Gaming / Creative | ludoSpring | **NO** | YES | YES | **Needs expression** |
-| 10 | Provenance / Economics | ludoSpring, primalSpring | **NO** | **NO** | **NO** | **Empty** |
+| 9 | Gaming / Creative | ludoSpring | **YES** (V71) | YES (13) | YES | **ACTIVE** (ludoSpring T9 seeded) |
+| 10 | Provenance / Economics | ludoSpring, primalSpring, healthSpring | **YES** (V71) | YES | YES | **ACTIVE** (ludoSpring T10 seeded, healthSpring gap documented) |
 
 ### Thread 5 (LTEE/Evolution) — SEEDED (May 11)
 
@@ -94,7 +95,7 @@ Thread 5 was the critical empty backbone for lithoSpore. Now seeded with:
 - **Data sources**: 12 NCBI/Dryad accessions (`data/sources/thread05_ltee.toml`)
 - **Data targets**: 18 validation targets (`data/targets/thread05_ltee_targets.toml`) — 14 validated (groundSpring B1-B3, hotSpring B2, neuralSpring B1-ML), 4 pending (wetSpring B7)
 
-**Remaining empty threads**: 4 (Environmental Genomics — needs expression + targets), 9 (Gaming), 10 (Provenance)
+**Remaining partial threads**: 4 (Environmental Genomics — partial, lithoSpore T4 integration active), 9 (Gaming — ludoSpring T9 seeded), 10 (Provenance — ludoSpring T10 seeded)
 
 ### Foundation Seed Pattern
 
@@ -137,16 +138,16 @@ paper = "B2"
 
 | Spring | Tests | Tier | Workload TOMLs | Notebooks | sporePrint | LTEE | Foundation Threads |
 |--------|------:|:----:|:--------------:|:---------:|:----------:|:----:|:------------------:|
-| **airSpring** | 1,389 | 1 | YES (thread06_ag) | 5 + 20 papers | YES | E3 queued | 6 |
-| **groundSpring** | 1,125 | 1 | YES | 5 + 29 baselines | YES | **B1-B3 DONE** | 5, 7 |
-| **healthSpring** | 1,014+ | 2 | YES (PK models + Tier 2 + Nest atomic) | 53 scripts | YES | B5 COMPLETE, Nest atomic COMPLETE | 3, 5, 8 |
-| **hotSpring** | 1,025 | 1 | YES | 5 + 12 papers | YES | **B2 DONE** (thermal niche) | 2 |
-| **ludoSpring** | 854+ | 2 | YES (2 TOMLs + Tower atomic) | 3 notebooks + whitePaper/ | YES | Tower atomic COMPLETE | 9, 10 |
-| **neuralSpring** | 1,453 | 1 | YES | 5 + 8 papers | YES | **B1 DONE** (S201b) | 5, 7 |
+| **airSpring** | 1,429 | 1 | YES (thread06_ag) | 5 + 20 papers | YES | E3 queued | 6 |
+| **groundSpring** | 1,123 | 1 | YES | 5 + 29 baselines | YES | **B1-B4 DONE** | 5, 7 |
+| **healthSpring** | 1,018 | 2 | YES (PK + Nest atomic + cell.toml) | 95 experiments | YES | V64m: NestComposition facade, cell.toml | 3, 5, 8, 10 |
+| **hotSpring** | 592 | 1 | YES | 5 + 12 papers | YES | `s_node_atomic` added, base64 extracted | 2 |
+| **ludoSpring** | 896 | 2 | YES (2 TOMLs + Tower atomic) | MDA + matchmaking + chat | YES | V71: **Tower LIVE** (6/6), Foundation T9+T10 | 9, 10 |
+| **neuralSpring** | 910 | 1 | YES (7 IPC modules) | 397 baselines + 27 papers | YES | V159: NestGate weights WIRED, Squirrel inference COMPLETE | 5, 7 |
 | **primalSpring** | 689+ | N/A | coordination | 5 (meta) | YES | coordination | coordination |
-| **wetSpring** | 1,613 | 1 | YES | 5 + papers | YES | B7 STARTED | 4 |
+| **wetSpring** | 1,962 | 1 | YES | 384 experiments + papers | YES | V167: gS **L5**, B7 Tier 2 COMPLETE | 4 |
 
-**All 8 springs at Tier 1+.** healthSpring and ludoSpring at Tier 2 (atomic niche wired).
+**All 8 springs at Tier 1+.** healthSpring and ludoSpring at Tier 2 (atomic niche wired). wetSpring promoted to gS L5.
 `toadstool.validate` **IMPLEMENTED** (S250), Phase D **FACTORY WIRED** (S254 — AMD live).
 `compute.dispatch.submit` **LIVE** for AMD, FECS-gated for NV. 7/7 springs Tier 2 wired.
 Provenance trio **GAP-36 RESOLVED** — all wire aliases normalized upstream.

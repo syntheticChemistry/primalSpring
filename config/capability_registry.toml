@@ -21,10 +21,12 @@
 owner = "all"
 methods = [
     "health.check",
+    "health.drain",
     "health.liveness",
     "health.monitor",
     "health.probe",
     "health.readiness",
+    "health.version",
 ]
 
 [capabilities]
@@ -206,6 +208,7 @@ methods = [
     "crypto.decrypt",
     "crypto.did_from_key",
     "crypto.encrypt",
+    "crypto.encrypt_chacha20_poly1305",
     "crypto.family_seed",
     "crypto.generate_keypair",
     "crypto.hash",
@@ -278,7 +281,6 @@ methods = [
 [security]
 owner = "beardog"
 methods = [
-    "security.audit_log",  # skunkBat JH-5: cursor-based audit event polling
     "security.authenticate",
 ]
 
@@ -641,6 +643,12 @@ methods = [
     "spectral.power_spectrum",
 ]
 
+[noise]
+owner = "barracuda"
+methods = [
+    "noise.perlin2d",
+]
+
 [shader]
 owner = "coralreef"
 methods = [
@@ -818,6 +826,7 @@ methods = [
     "defense.policy",
     "defense.status",
     "recon.scan",
+    "security.audit_log",
     "threat.assess",
     "threat.mitigate",
 ]
@@ -826,6 +835,7 @@ methods = [
 owner = "biomeos"
 methods = [
     "biomeos.lifecycle.status",
+    "biomeos.spring_status",
 ]
 
 # Test fixtures — synthetic method names used in unit tests only.
