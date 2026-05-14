@@ -14,6 +14,15 @@ pub fn server_socket_path() -> PathBuf {
     primalspring::ipc::discover::socket_path(PRIMAL_NAME)
 }
 
+/// Reads `PRIMALSPRING_SOCKET_MODE` env var (octal string, e.g. `"0660"`).
+/// Falls back to `PRIMAL_SOCKET_MODE` for generic convention (SP-01).
+fn resolve_socket_mode() -> Option<u32> {
+    let raw = std::env::var("PRIMALSPRING_SOCKET_MODE")
+        .or_else(|_| std::env::var("PRIMAL_SOCKET_MODE"))
+        .ok()?;
+    u32::from_str_radix(raw.trim_start_matches('0'), 8).ok()
+}
+
 /// Resolve the deploy graphs directory at runtime.
 ///
 /// Priority: `PRIMALSPRING_GRAPHS_DIR` env var, then the binary's sibling
@@ -57,6 +66,16 @@ pub fn run_server() {
             std::process::exit(1);
         }
     };
+
+    if let Some(mode) = resolve_socket_mode() {
+        use std::os::unix::fs::PermissionsExt;
+        if let Err(e) = std::fs::set_permissions(&sock_path, std::fs::Permissions::from_mode(mode))
+        {
+            tracing::warn!(error = %e, mode = format!("{mode:04o}"), "failed to set socket permissions");
+        } else {
+            tracing::info!(mode = format!("{mode:04o}"), "socket permissions set");
+        }
+    }
 
     tracing::info!("listening for JSON-RPC 2.0 connections");
 

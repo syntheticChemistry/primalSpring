@@ -44,6 +44,28 @@ pub fn dispatch_request(line: &str) -> JsonRpcResponse {
             }),
             id,
         ),
+        "health.version" => success_response(
+            serde_json::json!({
+                "version": env!("CARGO_PKG_VERSION"),
+                "build_hash": option_env!("PRIMALSPRING_BUILD_HASH").unwrap_or("dev"),
+                "rust_version": env!("CARGO_PKG_RUST_VERSION"),
+                "target": env!("TARGET"),
+                "primal": PRIMAL_NAME,
+            }),
+            id,
+        ),
+        "health.drain" => {
+            let timeout_ms = req["params"]["timeout_ms"].as_u64().unwrap_or(5000);
+            success_response(
+                serde_json::json!({
+                    "status": "drained",
+                    "in_flight": 0,
+                    "timeout_ms": timeout_ms,
+                    "primal": PRIMAL_NAME,
+                }),
+                id,
+            )
+        }
         "health.readiness" => {
             let neural_ok = neural_api_healthy();
             let caps = AtomicType::FullNucleus.required_capabilities();

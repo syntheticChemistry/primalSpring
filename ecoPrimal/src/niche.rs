@@ -70,8 +70,10 @@ pub const LOCAL_CAPABILITIES: &[&str] = &[
     "lifecycle.status",
     // ── Health probes ──
     "health.check",
+    "health.drain",
     "health.liveness",
     "health.readiness",
+    "health.version",
     // ── Capability advertisement ──
     "capabilities.list",
     "capability.list",
