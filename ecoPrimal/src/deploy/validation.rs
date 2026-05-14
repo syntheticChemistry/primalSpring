@@ -10,11 +10,7 @@ use std::path::Path;
 
 use serde::Serialize;
 
-#[allow(
-    deprecated,
-    reason = "deploy validation calls deprecated probes — will migrate to CompositionContext"
-)]
-use crate::coordination::probe_primal;
+use crate::composition::CompositionContext;
 
 use super::{DeployError, DeployGraph, GraphNode, load_graph};
 
@@ -103,13 +99,27 @@ pub struct DeploymentReadiness {
 }
 
 /// Validate a deploy graph's live health using capability-based discovery
-/// for nodes that declare `by_capability`, falling back to identity only
-/// when no capability is declared.
+/// via a shared [`CompositionContext`].
 ///
 /// This is the graph-as-source-of-truth path: the graph defines what
 /// capabilities are needed, and this function discovers providers at runtime.
+/// A single CompositionContext is used for all nodes, avoiding redundant
+/// socket discovery.
 #[must_use]
 pub fn validate_live_by_capability(path: &Path) -> LiveGraphValidation {
+    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    validate_live_with_context(path, &mut ctx)
+}
+
+/// Validate a deploy graph's live health against an existing [`CompositionContext`].
+///
+/// Preferred over [`validate_live_by_capability`] when the caller already
+/// holds a context (avoids duplicate discovery).
+#[must_use]
+pub fn validate_live_with_context(
+    path: &Path,
+    ctx: &mut CompositionContext,
+) -> LiveGraphValidation {
     let structure = validate_structure(path);
     if !structure.parsed {
         return LiveGraphValidation {
@@ -136,7 +146,12 @@ pub fn validate_live_by_capability(path: &Path) -> LiveGraphValidation {
         }
     };
 
-    let nodes: Vec<NodeHealth> = graph.graph.node.iter().map(probe_graph_node).collect();
+    let nodes: Vec<NodeHealth> = graph
+        .graph
+        .node
+        .iter()
+        .map(|n| probe_graph_node_with_context(n, ctx))
+        .collect();
     let healthy_count = nodes.iter().filter(|n| n.health_ok).count();
     let all_required_healthy = nodes.iter().filter(|n| n.required).all(|n| n.health_ok);
 
@@ -175,48 +190,13 @@ pub fn validate_structure(path: &Path) -> GraphValidation {
     }
 }
 
-/// Validate a deploy graph against running primals.
+/// Validate a deploy graph against running primals using live discovery.
 ///
-/// Returns structural validation only (with an issue note) if the graph
-/// file changes between the structural parse and the live-probe parse.
+/// Delegates to [`validate_live_by_capability`] which uses a shared
+/// [`CompositionContext`] for all node probes.
 #[must_use]
 pub fn validate_live(path: &Path) -> LiveGraphValidation {
-    let structure = validate_structure(path);
-    if !structure.parsed {
-        return LiveGraphValidation {
-            structure,
-            nodes: Vec::new(),
-            healthy_count: 0,
-            all_required_healthy: false,
-        };
-    }
-
-    let graph = match load_graph(path) {
-        Ok(g) => g,
-        Err(e) => {
-            let mut degraded = structure;
-            degraded
-                .issues
-                .push(format!("graph changed between parse passes: {e}"));
-            return LiveGraphValidation {
-                structure: degraded,
-                nodes: Vec::new(),
-                healthy_count: 0,
-                all_required_healthy: false,
-            };
-        }
-    };
-    let nodes: Vec<NodeHealth> = graph.graph.node.iter().map(probe_graph_node).collect();
-
-    let healthy_count = nodes.iter().filter(|n| n.health_ok).count();
-    let all_required_healthy = nodes.iter().filter(|n| n.required).all(|n| n.health_ok);
-
-    LiveGraphValidation {
-        structure,
-        nodes,
-        healthy_count,
-        all_required_healthy,
-    }
+    validate_live_by_capability(path)
 }
 
 /// Discover and validate all deploy graphs in a directory.
@@ -318,35 +298,37 @@ pub fn validate_deployment_readiness(path: &Path) -> Result<DeploymentReadiness,
     })
 }
 
-/// Probe a graph node using capability-first discovery when `by_capability`
-/// is set, falling back to identity-based discovery via `node.name`.
+/// Probe a graph node against a live [`CompositionContext`].
 ///
-/// This is the loose coupling bridge: graph nodes that declare their
-/// capability domain are discovered by what they provide, not who they are.
-#[allow(
-    deprecated,
-    reason = "deploy validation calls deprecated probes — will migrate to CompositionContext"
-)]
-fn probe_graph_node(node: &GraphNode) -> NodeHealth {
-    let health = node.by_capability.as_ref().map_or_else(
-        || probe_primal(&node.name),
-        |cap| {
-            let disc = crate::ipc::discover::discover_by_capability(cap);
-            if disc.socket.is_some() {
-                let name = disc.resolved_primal.unwrap_or_else(|| node.name.clone());
-                probe_primal(&name)
-            } else {
-                probe_primal(&node.name)
-            }
-        },
-    );
+/// Uses capability-first lookup when `by_capability` is set. The context
+/// already holds discovered clients, so this avoids redundant socket
+/// probing across nodes that share the same provider.
+fn probe_graph_node_with_context(node: &GraphNode, ctx: &mut CompositionContext) -> NodeHealth {
+    let cap_key = node
+        .by_capability
+        .as_deref()
+        .unwrap_or_else(|| &node.name);
+
+    let has_client = ctx.has_capability(cap_key);
+    let health_ok = if has_client {
+        ctx.health_check(cap_key).unwrap_or(false)
+    } else {
+        false
+    };
 
     NodeHealth {
         name: node.name.clone(),
         required: node.required,
-        socket_found: health.socket_found,
-        health_ok: health.health_ok,
-        capabilities: health.capabilities,
+        socket_found: has_client,
+        health_ok,
+        capabilities: if has_client {
+            ctx.available_capabilities()
+                .iter()
+                .map(|s| (*s).to_owned())
+                .collect()
+        } else {
+            Vec::new()
+        },
     }
 }
 

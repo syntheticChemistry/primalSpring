@@ -210,16 +210,9 @@ impl FromStr for Primal {
 }
 
 /// Error returned when a string doesn't match any known primal.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, thiserror::Error)]
+#[error("unknown primal: '{0}'")]
 pub struct UnknownPrimal(pub String);
-
-impl fmt::Display for UnknownPrimal {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "unknown primal: '{}'", self.0)
-    }
-}
-
-impl std::error::Error for UnknownPrimal {}
 
 impl Spring {
     /// Lowercase discovery slug.

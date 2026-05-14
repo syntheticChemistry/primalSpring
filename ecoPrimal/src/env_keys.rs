@@ -119,6 +119,16 @@ pub const BIOMEOS_FAMILY_ID: &str = "BIOMEOS_FAMILY_ID";
 /// Override directory for `plasmidBin` binary distribution cache.
 pub const ECOPRIMALS_PLASMID_BIN: &str = "ECOPRIMALS_PLASMID_BIN";
 
+// ── Tier 5 TCP discovery control ────────────────────────────────────
+
+/// When `"1"` or `"true"`, enables Tier 5 TCP port probing in `discover()`.
+///
+/// Tier 5 exposes well-known TCP ports per primal, which is a metadata leak:
+/// an observer can infer which primals are running by probing ports. The
+/// zero-port Tower Atomic standard (UDS-only) avoids this. Tier 5 remains
+/// valid for containers, cross-arch, and legacy deployments that opt in.
+pub const PRIMALSPRING_TCP_TIER5: &str = "PRIMALSPRING_TCP_TIER5";
+
 // ── Per-primal TCP port overrides ───────────────────────────────────
 
 /// TCP port override for BearDog.

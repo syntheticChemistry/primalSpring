@@ -303,6 +303,64 @@ pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
     }
 }
 
+/// Validate an atomic composition using a [`CompositionContext`].
+///
+/// Replaces the deprecated [`validate_composition`] with a context-aware
+/// path that reuses discovered clients rather than probing each primal
+/// individually. Maps capability domains back to primal names for the
+/// result's `primals` field.
+#[must_use]
+pub fn validate_composition_ctx(atomic: AtomicType) -> CompositionResult {
+    use crate::composition::{CompositionContext, capability_to_primal};
+
+    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let caps = atomic.required_capabilities();
+
+    let primals: Vec<PrimalHealth> = caps
+        .iter()
+        .map(|cap| {
+            let start = Instant::now();
+            let primal_name = capability_to_primal(cap).to_owned();
+            let has_client = ctx.has_capability(cap);
+            let health_ok = if has_client {
+                ctx.health_check(cap).unwrap_or(false)
+            } else {
+                false
+            };
+            PrimalHealth {
+                name: primal_name,
+                socket_found: has_client,
+                health_ok,
+                capabilities: if has_client {
+                    ctx.available_capabilities()
+                        .iter()
+                        .map(|s| (*s).to_owned())
+                        .collect()
+                } else {
+                    Vec::new()
+                },
+                latency_us: cast::micros_u64(start.elapsed()),
+            }
+        })
+        .collect();
+
+    let substrate = probe_substrate();
+    let primal_healthy = primals.iter().all(|p| p.health_ok);
+    let substrate_healthy = substrate.as_ref().is_some_and(|s| s.health_ok);
+    let all_healthy = primal_healthy && substrate_healthy;
+    let discovery_ok = primals.iter().all(|p| p.socket_found);
+    let total_capabilities: usize = primals.iter().map(|p| p.capabilities.len()).sum();
+
+    CompositionResult {
+        atomic,
+        primals,
+        substrate,
+        all_healthy,
+        discovery_ok,
+        total_capabilities,
+    }
+}
+
 use probes::extract_capability_names;
 
 #[cfg(test)]

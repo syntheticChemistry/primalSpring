@@ -3,6 +3,59 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Wave 12: Deep Debt Sweep + Safety (2026-05-14)
+
+### Changed
+- **Zero panics in production**: `panic!("OS entropy unavailable")` in
+  `certification/entropy.rs` and `bin/primalspring_guidestone/entropy.rs` replaced
+  with `Option<String>` graceful fallback. `.expect("Phase 3 keys required")` in
+  `ipc/transport.rs` → `.ok_or(IpcError::ProtocolError)`. Harness HKDF expects
+  → silent fallbacks.
+- **Discovery-first**: hardcoded `/tmp/ecoprimals` → `ipc::discover::resolve_socket_dir()`
+  (env-first). `BearDogVerifier::discover()` now tries `discover_by_capability("security")`
+  before conventional fallback. Hardcoded `x86_64-unknown-linux-musl` arch →
+  `current_target_triple()` compile-time dispatch.
+- **Idiomatic Rust**: `Vec<&String>` → `Vec<&str>` in certification/btsp.rs.
+  `JsonRpcError` and `UnknownPrimal` → `#[derive(thiserror::Error)]`.
+  `DeployError::Parse(String)` → `Parse { context, source: toml::de::Error }`.
+- **Deprecated bridge removed**: `composition/btsp.rs` `upgrade_btsp_clients` migrated
+  from `#[expect(deprecated)]` `family_seed_from_env()` to
+  `mito_beacon_from_env().key_bytes()`.
+
+### Added
+- **`ipc::discover::resolve_socket_dir()`** — canonical env-first socket directory
+  resolution: `$ECOPRIMALS_SOCKET_DIR` → `$XDG_RUNTIME_DIR/ecoprimals` →
+  `<temp_dir>/ecoprimals`.
+- **`current_target_triple()`** — compile-time target triple dispatch for fingerprint
+  verification across x86_64, aarch64, armv7.
+
+## [Unreleased] — Wave 10: Zero-Port Standard + Pipeline Fix (2026-05-14)
+
+### Added
+- **`s_zero_port_standard` scenario** — validates Tier 5 TCP opt-in (off by default),
+  port SSOT consistency (tolerances ↔ tcp_fallback_table), no port collisions, and
+  deployment matrix alignment (UDS-only default, TCP deprecated). 3 unit tests.
+- **`PRIMALSPRING_TCP_TIER5` env var** — gates Tier 5 TCP port probing in `discover()`.
+  Zero-port Tower Atomic standard: UDS-only is the default, TCP is opt-in for containers.
+- **`tcp_fallback_table()` re-exported** from `composition` module for scenario access.
+- **plasmidBin CI carry-forward** — `auto-harvest.yml` now copies forward unchanged
+  binaries from the previous release, preventing incomplete releases for partial builds.
+
+### Fixed
+- **NestGate/Squirrel port swap** — `validate_local_lab.sh`, `validate_remote_gate.sh`,
+  and `pixel_cross_arch_lab.sh` had NestGate=9300 and Squirrel=9500 (swapped vs the
+  Rust SSOT in `tolerances/mod.rs`). Fixed to NestGate=9500, Squirrel=9300.
+- **`ports.env` sync** — plasmidBin `ports.env` aligned to match `tolerances/mod.rs`:
+  NestGate→9500, Squirrel→9300, rhizoCrypt→9601, sweetGrass→9850, skunkBat→9140,
+  petalTongue→9900. Organized by atomic tier.
+
+### Changed
+- **Tier 5 TCP discovery** now opt-in in `CompositionContext::discover()`. Previous
+  behavior: always probed well-known ports. New behavior: skipped unless
+  `PRIMALSPRING_TCP_TIER5=1`. `from_live_discovery_with_fallback()` is unaffected.
+- **Scenario count**: 24 (was 23). Method coverage: 302/418 (73%).
+- **Test count**: 618 lib tests (616 passed + 2 ignored), 11 doc-tests, 10 integration.
+
 ## [Unreleased] — Wave 9: Domain Contract Sweep + Zero Local Debt (2026-05-11)
 
 ### Added

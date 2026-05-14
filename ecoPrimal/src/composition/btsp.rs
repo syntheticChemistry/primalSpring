@@ -39,21 +39,41 @@ pub fn resolve_btsp_socket(discovered: &std::path::Path, primal: &str) -> std::p
     discovered.to_path_buf()
 }
 
+/// Probe a cleartext client for `btsp.capabilities` to check whether the
+/// primal advertises BTSP server support before attempting a handshake.
+///
+/// Returns `true` if the primal responds with a capabilities object that
+/// includes a truthy `server` field, or if the method returns any non-error
+/// result (indicating BTSP awareness). Returns `false` if the call fails
+/// or the primal does not support the method (-32601).
+fn supports_btsp(client: &mut PrimalClient) -> bool {
+    match client.call("btsp.capabilities", serde_json::json!({})) {
+        Ok(resp) => resp
+            .result
+            .as_ref()
+            .and_then(|v| v.get("server"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(resp.is_success()),
+        Err(_) => false,
+    }
+}
+
 /// Escalate discovered clients to BTSP.
 ///
-/// Every capability in [`ALL_CAPS`] + [`BTSP_EXTRA_CAPS`] gets a proactive
-/// handshake. On success the authenticated client replaces the cleartext one.
-/// On failure the original cleartext client is re-established.
+/// For each capability, probes `btsp.capabilities` on the cleartext client
+/// first. If the primal does not advertise BTSP server support, the
+/// handshake is skipped (fixing the healthSpring mixed-deployment issue
+/// where unconditional negotiation broke peers without BTSP listeners).
 ///
 /// Returns a `BTreeMap<capability, btsp_authenticated>` for guidestone reporting.
 pub fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTreeMap<String, bool> {
     let mut state: BTreeMap<String, bool> =
         clients.keys().map(|cap| (cap.clone(), false)).collect();
 
-    #[expect(deprecated, reason = "backward-compat bridge")]
-    let Some(seed) = crate::ipc::btsp_handshake::family_seed_from_env() else {
+    let Some(beacon) = crate::ipc::btsp_handshake::mito_beacon_from_env() else {
         return state;
     };
+    let seed = beacon.key_bytes().to_vec();
 
     let proactive: Vec<&str> = ALL_CAPS
         .iter()
@@ -68,6 +88,16 @@ pub fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTre
         let result = crate::ipc::discover::discover_by_capability(cap);
         if let Some(discovered_path) = result.socket {
             let path = resolve_btsp_socket(&discovered_path, primal);
+
+            let btsp_supported = clients
+                .get_mut(cap.as_str())
+                .is_some_and(|c| supports_btsp(c));
+
+            if !btsp_supported {
+                tracing::debug!(cap, primal, "btsp.capabilities: not supported, skipping BTSP upgrade");
+                continue;
+            }
+
             if proactive.contains(&cap.as_str()) {
                 match PrimalClient::connect_btsp(&path, primal, &seed) {
                     Ok(btsp_client) => {

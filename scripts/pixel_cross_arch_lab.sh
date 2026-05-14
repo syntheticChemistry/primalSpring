@@ -29,7 +29,7 @@
 # Port mapping (ADB forward):
 #   localhost:19100 → Pixel:9100 (BearDog)
 #   localhost:19200 → Pixel:9200 (Songbird)
-#   localhost:19300 → Pixel:9300 (NestGate)
+#   localhost:19500 → Pixel:9500 (NestGate)
 
 set -euo pipefail
 
@@ -44,12 +44,12 @@ PIXEL_DEPLOY_DIR="/data/local/tmp/nucleus"
 # Pixel-side ports (what the primals listen on inside the Pixel)
 PIXEL_INTERNAL_BEARDOG=9100
 PIXEL_INTERNAL_SONGBIRD=9200
-PIXEL_INTERNAL_NESTGATE=9300
+PIXEL_INTERNAL_NESTGATE=9500
 
 # Host-side forwarded ports (what exp096/exp076 connect to)
 HOST_BEARDOG=19100
 HOST_SONGBIRD=19200
-HOST_NESTGATE=19300
+HOST_NESTGATE=19500
 
 FAMILY_ID="${FAMILY_ID:-pixel-cross-arch-lab}"
 

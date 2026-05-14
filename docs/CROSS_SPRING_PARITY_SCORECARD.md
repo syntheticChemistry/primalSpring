@@ -2,7 +2,7 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 14, 2026 — Phase 32 atomic model complete. cellMembrane VPS operational (Songbird relay + RustDesk), lithoSpore 6/7 Tier 2, Foundation 10/10, 23 scenarios, Songbird relay OPERATIONAL
+**Last updated**: May 14, 2026 — Wave 12 deep debt sweep complete (zero panics, expect→Result, thiserror, discovery-first). Waves 1-12 done. 27 scenarios, 419 methods (307 exercised, 73.3%), Thread 10 SEEDED, compute trio released back, Foundation 6/10 active
 **Audited by**: primalSpring composition audit
 **Method**: Pulled all 8 springs to HEAD, assessed each across 9 axes
 
@@ -16,7 +16,7 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 711 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 418 methods, sync-tested, 73% exercised | **G** 77 graphs | **G** 89 exp crates + 23 scenarios + Wave 7+8+9 contracts | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **primalSpring** | 641 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 419 methods, sync-tested, 73.3% exercised | **G** 77 graphs | **G** 89 exp crates + 27 scenarios + Waves 1-12 complete | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
 | **hotSpring** | 1,042 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
 | **healthSpring** | 1,014 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 418 | **G** 7 graphs, skunkBat node | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,613 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 418 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
@@ -145,7 +145,7 @@ toadStool completes the ember/glowplug absorption (W8-07).
 | W7-05 | **DONE** | `content.resolve` for petalTongue — NestGate Session 60 shipped transport parity |
 | W7-07 | **DONE** | NestGate transport parity verified — all 4 surfaces |
 
-**Metrics**: 23 scenarios, 77 deploy graphs, 302/418 methods exercised (73% coverage,
+**Metrics**: 24 scenarios (incl. zero-port standard), 77 deploy graphs, 302/418 methods exercised (73% coverage,
 up from 69%). Remaining 116 uncovered are test fixtures, domain-specific (game/nautilus/ml),
 or require external infrastructure — not primalSpring gate debt.
 
@@ -164,7 +164,10 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | **neuralSpring** | B1-ML (LSTM/ESN/HMM) | 8/8 | **NO** | YES | ML surrogates |
 | **wetSpring** | B7 (Tenaillon 2016) | STARTED | **NO** | **NO** | 6: ltee-genomics |
 
-**lithoSpore integration**: 5/6 reproductions ready for module ingestion (neuralSpring Rust binary DONE — S201b `validate_ltee_b1_mutation_accumulation`). Remaining: wetSpring B7 pipeline.
+**lithoSpore integration**: **6/7 modules Tier 2 PASS (51/51 checks)** — VM-validated via
+benchScale + agentReagents on fresh libvirt VM. Module 5 (biobricks) SKIP (DOI pending).
+Modules 3+4 promoted via groundSpring B3/B4 ingestion. CATHEDRAL owns pipeline going forward.
+Upstream blockers: Songbird TURN client (UB-1), BearDog FIDO2 (UB-2), genomeBin Tier 3 (UB-3), sporePrint (UB-4).
 
 ### Foundation Thread Seeding Status
 
@@ -179,9 +182,9 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | 7 | Anderson Mathematics | YES | YES | YES | **ACTIVE** |
 | 8 | Human Health | **NO** | YES | YES | Needs expression (healthSpring) |
 | 9 | Gaming / Creative | **NO** | YES | YES | Needs expression (ludoSpring) |
-| 10 | Provenance / Economics | **NO** | **NO** | **NO** | **EMPTY** (ludoSpring + primalSpring) |
+| 10 | Provenance / Economics | **YES** | **YES** | **YES** | **SEEDED** (primalSpring + ludoSpring) |
 
-**Foundation seeding**: 5/10 threads fully active. Thread 5 elevated from EMPTY → ACTIVE (Wave 10). Threads 3, 4, 8, 9 need expressions. Thread 10 needs full seeding.
+**Foundation seeding**: 6/10 threads fully active. Thread 5 elevated from EMPTY → ACTIVE (Wave 10). Thread 10 seeded (Wave 11, May 14). Threads 3, 4, 8, 9 need expressions.
 
 ### Spring → Thread Ownership for Remaining Seeding
 
@@ -191,7 +194,7 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | 4 | Environmental Genomics | **wetSpring** | Add expression + define targets (metagenomic diversity metrics) |
 | 8 | Human Health | **healthSpring** | Add expression mapping (PK/PD models → clinical targets) |
 | 9 | Gaming / Creative | **ludoSpring** | Add expression (game science patterns → creative economy targets) |
-| 10 | Provenance / Economics | **ludoSpring** + **primalSpring** | Full seeding: sources, targets, expression (NFT/attestation models) |
+| 10 | Provenance / Economics | **ludoSpring** + **primalSpring** | **SEEDED** (May 14): provenance trio pipeline as expression, BLAKE3/CAS targets, NFT/attestation models |
 
 ### projectNUCLEUS Tier Status
 
@@ -286,9 +289,12 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 1. ~~**barraCuda IPC migration (Tier 4)**~~ — `INTERSTADIAL P5`: **DONE** — **8/8 springs**
    now have `barracuda` as `optional = true` with IPC-first defaults.
    Owner: **spring teams (L3)** — COMPLETED May 11, 2026.
-2. **`CompositionContext` full migration** — `INTERSTADIAL P5`: `PrimalClient`
-   encapsulated inside `CompositionContext` (by design). L2 coordination pass.
-   Owner: **primalSpring (L2)**.
+2. ~~**`CompositionContext` full migration**~~ — `INTERSTADIAL P5`: **DONE** (May 14).
+   `deploy/validation.rs` and all RPC handlers migrated from deprecated `probe_primal` to
+   `CompositionContext`-based probing. New `validate_composition_ctx()` replaces deprecated
+   `validate_composition` / `validate_composition_by_capability`. `btsp.capabilities` method
+   (419th) added to registry; `upgrade_btsp_clients` probes before handshake.
+   Owner: **primalSpring (L2)** — COMPLETED May 14, 2026.
 3. ~~**Guidestone level convergence**~~ — `INTERSTADIAL P5`: **DONE** — airSpring **L4**,
    neuralSpring **L5** (exceeded L4 target). Owner: **spring teams (L3)** — COMPLETED May 11, 2026.
 4. ~~**wetSpring PG gaps**~~ — `INTERSTADIAL P5`: **DONE** — 4 open (PG-02, PG-03,

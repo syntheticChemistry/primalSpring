@@ -81,10 +81,16 @@ pub fn resolve_mito_seed() -> MitoSeed {
         };
     }
 
-    MitoSeed {
-        hex_seed: generate_machine_seed(),
-        source: SeedSource::Generated,
-    }
+    generate_machine_seed().map_or(
+        MitoSeed {
+            hex_seed: String::new(),
+            source: SeedSource::Generated,
+        },
+        |seed| MitoSeed {
+            hex_seed: seed,
+            source: SeedSource::Generated,
+        },
+    )
 }
 
 fn read_env_seed(var: &str) -> Option<String> {
@@ -97,14 +103,7 @@ fn read_env_seed(var: &str) -> Option<String> {
 }
 
 fn read_seed_file() -> Option<String> {
-    let socket_dir = std::env::var(crate::env_keys::SOCKET_DIR)
-        .ok()
-        .unwrap_or_else(|| {
-            std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(
-                |_| "/tmp/ecoprimals".to_owned(),
-                |xdg| format!("{xdg}/ecoprimals"),
-            )
-        });
+    let socket_dir = crate::ipc::discover::resolve_socket_dir();
     let seed_path = Path::new(&socket_dir).join(".family.seed");
     let content = std::fs::read_to_string(&seed_path).ok()?;
     let trimmed = content.trim().to_owned();
@@ -114,7 +113,7 @@ fn read_seed_file() -> Option<String> {
     Some(trimmed)
 }
 
-fn generate_machine_seed() -> String {
+fn generate_machine_seed() -> Option<String> {
     let mut hasher = blake3::Hasher::new();
     hasher.update(MITO_DOMAIN.as_bytes());
 
@@ -128,13 +127,11 @@ fn generate_machine_seed() -> String {
     }
 
     let mut os_entropy = [0u8; 32];
-    let Ok(()) = getrandom::fill(&mut os_entropy) else {
-        panic!("OS entropy unavailable");
-    };
+    getrandom::fill(&mut os_entropy).ok()?;
     hasher.update(&os_entropy);
 
     let hash = hasher.finalize();
-    hex::encode(hash.as_bytes())
+    Some(hex::encode(hash.as_bytes()))
 }
 
 fn hostname_from_file() -> Result<String, std::env::VarError> {
@@ -183,7 +180,7 @@ pub fn verify_seed_fingerprints(
         return results;
     };
 
-    let arch = "x86_64-unknown-linux-musl";
+    let arch = current_target_triple();
     let bin_dir = plasmin_bin.join("primals").join(arch);
 
     let manifest_path = plasmin_bin.join("manifest.toml");
@@ -228,6 +225,21 @@ pub fn verify_seed_fingerprints(
     }
 
     results
+}
+
+fn current_target_triple() -> &'static str {
+    #[cfg(all(target_arch = "x86_64", target_os = "linux"))]
+    return "x86_64-unknown-linux-musl";
+    #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
+    return "aarch64-unknown-linux-musl";
+    #[cfg(all(target_arch = "arm", target_os = "linux"))]
+    return "armv7-unknown-linux-musleabihf";
+    #[cfg(not(any(
+        all(target_arch = "x86_64", target_os = "linux"),
+        all(target_arch = "aarch64", target_os = "linux"),
+        all(target_arch = "arm", target_os = "linux"),
+    )))]
+    return "x86_64-unknown-linux-musl";
 }
 
 fn compute_seed_fingerprint(name: &str, version: &str, binary_checksum: &str) -> String {

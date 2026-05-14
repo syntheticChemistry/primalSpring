@@ -118,10 +118,14 @@ impl BearDogVerifier {
         Self { beardog_socket }
     }
 
-    /// Attempt to create a verifier by discovering BearDog via the
-    /// standard socket convention.
+    /// Attempt to create a verifier by discovering the security capability
+    /// provider at runtime, falling back to the BearDog socket convention.
     #[must_use]
     pub fn discover() -> Option<Self> {
+        let disc = crate::ipc::discover::discover_by_capability("security");
+        if let Some(socket) = disc.socket {
+            return Some(Self::new(socket));
+        }
         let path = crate::ipc::discover::socket_path(crate::primal_names::BEARDOG);
         if path.exists() {
             Some(Self::new(path))
@@ -133,8 +137,9 @@ impl BearDogVerifier {
 
 impl TokenVerifier for BearDogVerifier {
     fn verify(&self, token: &str) -> Option<VerifiedToken> {
+        let label = crate::primal_names::BEARDOG;
         let mut client =
-            crate::ipc::client::PrimalClient::connect(&self.beardog_socket, "beardog").ok()?;
+            crate::ipc::client::PrimalClient::connect(&self.beardog_socket, label).ok()?;
         let response = client
             .call("auth.verify_ionic", serde_json::json!({ "token": token }))
             .ok()?;

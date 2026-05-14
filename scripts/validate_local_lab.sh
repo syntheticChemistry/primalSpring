@@ -318,9 +318,9 @@ run_experiment() {
     REMOTE_SONGBIRD_PORT="${SONGBIRD_PORT:-9200}" \
     BEARDOG_PORT="${BEARDOG_PORT:-9100}" \
     SONGBIRD_PORT="${SONGBIRD_PORT:-9200}" \
-    NESTGATE_PORT="${NESTGATE_PORT:-9300}" \
+    NESTGATE_PORT="${NESTGATE_PORT:-9500}" \
     TOADSTOOL_PORT="${TOADSTOOL_PORT:-9400}" \
-    SQUIRREL_PORT="${SQUIRREL_PORT:-9500}" \
+    SQUIRREL_PORT="${SQUIRREL_PORT:-9300}" \
     FAMILY_ID="$TOPO_FAMILY_ID" \
     timeout 60 cargo run $pkg_flag --bin "$bin_name" --manifest-path "$PRIMALSPRING_ROOT/Cargo.toml" \
         > "$RESULTS_DIR/${bin_name}.log" 2>&1 || exit_code=$?

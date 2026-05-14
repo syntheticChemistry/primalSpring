@@ -227,6 +227,7 @@ methods = [
 [btsp]
 owner = "beardog"
 methods = [
+    "btsp.capabilities",
     "btsp.handshake",
     "btsp.negotiate",
     "btsp.server.status",

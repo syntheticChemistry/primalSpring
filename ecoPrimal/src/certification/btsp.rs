@@ -76,21 +76,17 @@ pub fn validate_btsp_escalation(ctx: &CompositionContext, v: &mut ValidationResu
     let btsp_count = btsp_map.values().filter(|&&v| v).count();
     let total = btsp_map.len();
 
-    let cleartext_caps: Vec<&String> = btsp_map
+    let cleartext_caps: Vec<&str> = btsp_map
         .iter()
         .filter(|&(_, &auth)| !auth)
-        .map(|(cap, _)| cap)
+        .map(|(cap, _)| cap.as_str())
         .collect();
     let detail = if cleartext_caps.is_empty() {
         format!("{btsp_count}/{total} capabilities BTSP-authenticated")
     } else {
         format!(
             "{btsp_count}/{total} capabilities BTSP-authenticated (cleartext: {})",
-            cleartext_caps
-                .iter()
-                .map(|c| c.as_str())
-                .collect::<Vec<_>>()
-                .join(", "),
+            cleartext_caps.join(", "),
         )
     };
     v.check_bool("btsp:summary", btsp_count == total, &detail);

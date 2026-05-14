@@ -37,6 +37,17 @@ use crate::ipc::client::PrimalClient;
 use super::btsp::{tcp_fallback_table, upgrade_btsp_clients};
 use super::routing::{ALL_CAPS, capability_to_primal};
 
+/// Returns `true` when Tier 5 TCP port probing is explicitly enabled.
+///
+/// The zero-port Tower Atomic standard treats TCP port exposure as metadata
+/// leakage. Tier 5 is off by default; set `PRIMALSPRING_TCP_TIER5=1` for
+/// containers, Android, or deployments without Unix domain sockets.
+fn tcp_tier5_enabled() -> bool {
+    std::env::var(crate::env_keys::PRIMALSPRING_TCP_TIER5)
+        .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+        .unwrap_or(false)
+}
+
 /// A capability-keyed set of IPC clients for a running primal composition.
 ///
 /// Abstracts socket discovery and client lifecycle so springs interact with
@@ -96,8 +107,9 @@ impl CompositionContext {
     ///    and Songbird-managed.
     /// 2. **Tiers 2-4** (Neural API, UDS, registry) — fills any gaps that
     ///    Songbird didn't cover, or covers everything if Tower isn't running.
-    /// 3. **Tier 5** (TCP probing) — for capabilities still undiscovered,
-    ///    probes well-known ports from [`crate::tolerances`].
+    /// 3. **Tier 5** (TCP probing, opt-in) — requires `PRIMALSPRING_TCP_TIER5=1`.
+    ///    Well-known TCP ports are a metadata leak in the zero-port Tower
+    ///    Atomic standard. Only enabled for containers and legacy deployments.
     ///
     /// Finally, attempts BTSP escalation on all discovered clients.
     ///
@@ -164,25 +176,28 @@ impl CompositionContext {
             }
         }
 
-        // ── Tier 5: TCP probing ──
+        // ── Tier 5: TCP probing (opt-in) ──
         //
-        // For capabilities still undiscovered, probe well-known TCP ports.
-        // Valid for containers, architectures without UDS, and standalone
-        // compositions that choose not to run Tower.
-        let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
-            .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
-        for &(cap, primal, port_env, default_port) in &tcp_fallback_table() {
-            if clients.contains_key(cap) {
-                continue;
-            }
-            let port: u16 = std::env::var(port_env)
-                .ok()
-                .and_then(|v| v.parse().ok())
-                .unwrap_or(default_port);
-            let addr = format!("{host}:{port}");
-            if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
-                tracing::debug!(cap, primal, %addr, tier = 5, "discovered via TCP");
-                clients.insert(cap.to_owned(), client);
+        // Well-known TCP ports are a metadata leak: an observer can infer which
+        // primals are running by probing. The zero-port Tower Atomic standard
+        // (UDS-only) avoids this. Tier 5 is gated behind PRIMALSPRING_TCP_TIER5=1
+        // for containers, cross-arch, and legacy deployments that explicitly opt in.
+        if tcp_tier5_enabled() {
+            let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
+                .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
+            for &(cap, primal, port_env, default_port) in &tcp_fallback_table() {
+                if clients.contains_key(cap) {
+                    continue;
+                }
+                let port: u16 = std::env::var(port_env)
+                    .ok()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(default_port);
+                let addr = format!("{host}:{port}");
+                if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
+                    tracing::debug!(cap, primal, %addr, tier = 5, "discovered via TCP");
+                    clients.insert(cap.to_owned(), client);
+                }
             }
         }
 

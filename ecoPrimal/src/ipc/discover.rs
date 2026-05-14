@@ -58,6 +58,25 @@ pub enum DiscoverySource {
     NotFound,
 }
 
+/// Resolve the base socket directory for the ecoPrimals runtime.
+///
+/// Priority: `$ECOPRIMALS_SOCKET_DIR` → `$XDG_RUNTIME_DIR/ecoprimals` →
+/// `<temp_dir>/ecoprimals`. This is the canonical directory for seed files,
+/// socket discovery, and runtime state.
+#[must_use]
+pub fn resolve_socket_dir() -> String {
+    if let Ok(dir) = std::env::var(crate::env_keys::SOCKET_DIR) {
+        return dir;
+    }
+    std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(
+        |_| {
+            let tmp = std::env::temp_dir();
+            format!("{}/ecoprimals", tmp.display())
+        },
+        |xdg| format!("{xdg}/ecoprimals"),
+    )
+}
+
 /// Build the conventional socket path from explicit base and family.
 ///
 /// Pure function for testability — no env reads.

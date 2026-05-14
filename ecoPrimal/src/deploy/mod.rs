@@ -42,9 +42,14 @@ pub enum DeployError {
     /// Failed to read a file from disk.
     #[error("IO: {0}")]
     Io(#[from] std::io::Error),
-    /// TOML parsing failed.
-    #[error("graph parse: {0}")]
-    Parse(String),
+    /// TOML parsing failed (wraps the parse source for error chain).
+    #[error("graph parse ({context}): {source}")]
+    Parse {
+        /// Which file or graph was being parsed.
+        context: String,
+        /// Underlying TOML deserialization error.
+        source: toml::de::Error,
+    },
     /// Fragment resolution failed.
     #[error("fragment resolution: {0}")]
     FragmentResolution(String),
@@ -252,7 +257,7 @@ use validation::structural_checks;
 pub use validation::{
     DeploymentReadiness, GraphValidation, LiveGraphValidation, NodeHealth, ReadinessCategory,
     ReadinessIssue, validate_all_graphs, validate_deployment_readiness, validate_live,
-    validate_live_by_capability, validate_structure,
+    validate_live_by_capability, validate_live_with_context, validate_structure,
 };
 
 /// Load a deploy graph from a TOML file path.
@@ -270,8 +275,10 @@ pub use validation::{
 /// Returns [`DeployError`] if reading or parsing fails.
 pub fn load_graph(path: &Path) -> Result<DeployGraph, DeployError> {
     let contents = std::fs::read_to_string(path)?;
-    let mut graph: DeployGraph = toml::from_str(&contents)
-        .map_err(|e| DeployError::Parse(format!("{}: {e}", path.display())))?;
+    let mut graph: DeployGraph = toml::from_str(&contents).map_err(|source| DeployError::Parse {
+        context: path.display().to_string(),
+        source,
+    })?;
 
     if !graph.nodes.is_empty() {
         graph.graph.node.append(&mut graph.nodes);
@@ -314,8 +321,11 @@ fn resolve_fragments(graph: &mut DeployGraph, graph_path: &Path) -> Result<(), D
             continue;
         }
         let frag_contents = std::fs::read_to_string(&frag_path)?;
-        let frag_file: FragmentFile = toml::from_str(&frag_contents)
-            .map_err(|e| DeployError::Parse(format!("fragment {}: {e}", frag_path.display())))?;
+        let frag_file: FragmentFile =
+            toml::from_str(&frag_contents).map_err(|source| DeployError::Parse {
+                context: format!("fragment {}", frag_path.display()),
+                source,
+            })?;
         for frag_node in frag_file.fragment.nodes {
             if !base_nodes.iter().any(|n| n.name == frag_node.name) {
                 base_nodes.push(frag_node);

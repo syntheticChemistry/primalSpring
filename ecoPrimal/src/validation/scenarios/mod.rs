@@ -25,6 +25,7 @@ pub use registry::{Scenario, ScenarioMeta, ScenarioRegistry, Tier, Track};
 // ───────────────────────────────────────────────────────────────────
 // Absorbed scenario modules (one per track representative)
 // ───────────────────────────────────────────────────────────────────
+pub mod s_barracuda_precision;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
 pub mod s_biomeos_tower_deploy;
@@ -32,6 +33,7 @@ pub mod s_cellular_deployment;
 pub mod s_composition_lifecycle;
 pub mod s_composition_parity;
 pub mod s_compute_triangle;
+pub mod s_coralreef_shader_targets;
 pub mod s_covalent_bond;
 pub mod s_cross_spring_data_flow;
 pub mod s_deployment_matrix;
@@ -46,8 +48,10 @@ pub mod s_node_atomic;
 pub mod s_sequential_graph;
 pub mod s_socket_discovery;
 pub mod s_startup_ordering;
+pub mod s_tier2_science_api;
 pub mod s_token_federation;
 pub mod s_tower_atomic;
+pub mod s_zero_port_standard;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
 #[must_use]
@@ -76,5 +80,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_composition_lifecycle::SCENARIO);
     r.register(s_domain_contract_sweep::SCENARIO);
     r.register(s_routing_consistency::SCENARIO);
+    r.register(s_zero_port_standard::SCENARIO);
+    r.register(s_tier2_science_api::SCENARIO);
+    r.register(s_barracuda_precision::SCENARIO);
+    r.register(s_coralreef_shader_targets::SCENARIO);
     r
 }

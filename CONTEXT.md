@@ -71,15 +71,26 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Phase 32 atomic model (May 12, 2026) — 602 library tests (all passing),
-89 experiments (20 tracks), 77 deploy graphs, 413 registered capability methods
-(301 exercised, 72%). Phase 32 atomic evolution: Tower = 3 primals (bearDog +
+v0.9.25 Phase 32 atomic model (May 14, 2026) — 641 tests (616 lib + 25 integration),
+89 experiments (20 tracks), 77 deploy graphs, 419 registered capability methods
+(302+ exercised). Phase 32 atomic evolution: Tower = 3 primals (bearDog +
 songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7 (Tower +
 nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
-**Waves 7/8/9/10 complete**, all Wave 8 upstream items DONE (W8-07/08/09 resolved May 12).
-Zero DEBT markers, zero unsafe blocks. 22 scenarios, `LIVE_SCIENCE_API.md`
-formalizes Tier 2 wire contract. All 13 primals at zero debt.
+**Waves 7-12 complete**, all Wave 8 upstream items DONE (W8-07/08/09 resolved May 12).
+Zero DEBT markers, zero unsafe blocks, zero panics in production paths. 27 scenarios
+(24 + tier2-science-api + barracuda-precision + coralreef-shader-targets).
+`LIVE_SCIENCE_API.md` formalizes Tier 2 wire contract. All 13 primals at zero debt.
+**Wave 12 deep debt sweep**: All `panic!`/`expect` in production replaced with
+`Result`/`Option`. Hardcoded socket paths replaced with `resolve_socket_dir()`.
+`BearDogVerifier` upgraded to `discover_by_capability("security")` fallback chain.
+`Vec<&String>` → `Vec<&str>`. `JsonRpcError`/`UnknownPrimal` → `thiserror` derives.
+`DeployError::Parse` now wraps `toml::de::Error` source for error chains. Deprecated
+`family_seed_from_env()` → `mito_beacon_from_env().key_bytes()`. Hardcoded arch
+triple → `current_target_triple()` compile-time dispatch.
+**Zero-port Tower Atomic standard**: Tier 5 TCP discovery gated behind
+`PRIMALSPRING_TCP_TIER5=1` (opt-in). UDS-only is the default. NestGate/Squirrel
+port-swap bug fixed in scripts and `ports.env`.
 See `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` for full ecosystem audit.
 **plasmidBin decoupled** — all direct filesystem coupling to `../plasmidBin` removed (20 files).
 Binary discovery standardized: `$ECOPRIMALS_PLASMID_BIN` → `$XDG_DATA_HOME/ecoPrimals/plasmidBin`.

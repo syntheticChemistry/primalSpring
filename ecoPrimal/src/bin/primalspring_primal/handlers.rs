@@ -1,22 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-#[allow(
-    deprecated,
-    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
-)]
-use primalspring::coordination::{
-    AtomicType, validate_composition, validate_composition_by_capability,
-};
+use primalspring::coordination::{AtomicType, validate_composition_ctx};
 use primalspring::ipc::discover::{discover_capabilities_for, discover_for};
 use primalspring::ipc::protocol::{JsonRpcResponse, error_codes};
 
 use crate::dispatch::{error_response, parse_atomic_type, success_response};
 use crate::server::resolve_graphs_dir;
 
-#[allow(
-    deprecated,
-    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
-)]
 pub fn handle_validate_composition(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let atomic_str = params["atomic"].as_str().unwrap_or("Tower");
     let Some(atomic) = parse_atomic_type(atomic_str) else {
@@ -27,12 +17,7 @@ pub fn handle_validate_composition(params: &serde_json::Value, id: u64) -> JsonR
         );
     };
 
-    let mode = params["mode"].as_str().unwrap_or("capability");
-    let result = if mode == "identity" {
-        validate_composition(atomic)
-    } else {
-        validate_composition_by_capability(atomic)
-    };
+    let result = validate_composition_ctx(atomic);
     match serde_json::to_value(result) {
         Ok(val) => success_response(val, id),
         Err(e) => error_response(
@@ -86,29 +71,29 @@ pub fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRes
     }
 }
 
-#[allow(
-    deprecated,
-    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
-)]
 pub fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let name = params["primal"]
         .as_str()
         .unwrap_or(primalspring::primal_names::BEARDOG);
-    let health = primalspring::coordination::probe_primal(name);
-    match serde_json::to_value(health) {
-        Ok(val) => success_response(val, id),
-        Err(e) => error_response(
-            error_codes::INTERNAL_ERROR,
-            &format!("serialization: {e}"),
-            id,
-        ),
-    }
+
+    use primalspring::composition::CompositionContext;
+    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let has = ctx.has_capability(name);
+    let health_ok = if has {
+        ctx.health_check(name).unwrap_or(false)
+    } else {
+        false
+    };
+    let result = serde_json::json!({
+        "name": name,
+        "socket_found": has,
+        "health_ok": health_ok,
+        "capabilities": ctx.available_capabilities(),
+        "latency_us": 0,
+    });
+    success_response(result, id)
 }
 
-#[allow(
-    deprecated,
-    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
-)]
 pub fn handle_deploy_atomic(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let atomic_str = params["atomic"].as_str().unwrap_or("Tower");
     let Some(atomic) = parse_atomic_type(atomic_str) else {
@@ -129,7 +114,7 @@ pub fn handle_deploy_atomic(params: &serde_json::Value, id: u64) -> JsonRpcRespo
         None
     };
 
-    let composition = validate_composition_by_capability(atomic);
+    let composition = validate_composition_ctx(atomic);
     success_response(
         serde_json::json!({
             "atomic": atomic_str,
@@ -241,45 +226,29 @@ pub fn handle_validate_composition_by_capability(
     }
 }
 
-#[allow(
-    deprecated,
-    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
-)]
 pub fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let capability = params["capability"].as_str().unwrap_or("security");
-    let disc = primalspring::ipc::discover::discover_by_capability(capability);
 
-    let resolved = disc.resolved_primal.as_deref().unwrap_or("unknown");
+    use primalspring::composition::{CompositionContext, capability_to_primal};
 
-    let health = match &disc.socket {
-        Some(sock) => {
-            if disc.resolved_primal.is_some() {
-                primalspring::coordination::probe_primal(resolved)
-            } else {
-                primalspring::coordination::probe_primal_at_socket(
-                    &format!("capability:{capability}"),
-                    sock,
-                )
-            }
-        }
-        None => primalspring::coordination::PrimalHealth {
-            name: format!("capability:{capability}"),
-            socket_found: false,
-            health_ok: false,
-            capabilities: Vec::new(),
-            latency_us: 0,
-        },
+    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let resolved = capability_to_primal(capability);
+    let has = ctx.has_capability(capability);
+    let health_ok = if has {
+        ctx.health_check(capability).unwrap_or(false)
+    } else {
+        false
     };
 
     success_response(
         serde_json::json!({
             "capability": capability,
             "resolved_primal": resolved,
-            "socket_found": health.socket_found,
-            "source": format!("{:?}", disc.source),
-            "health_ok": health.health_ok,
-            "capabilities": health.capabilities,
-            "latency_us": health.latency_us,
+            "socket_found": has,
+            "source": "CompositionContext",
+            "health_ok": health_ok,
+            "capabilities": ctx.available_capabilities(),
+            "latency_us": 0,
         }),
         id,
     )

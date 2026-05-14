@@ -75,7 +75,7 @@ pub fn resolve_mito_seed() -> MitoSeed {
     }
 
     MitoSeed {
-        hex_seed: generate_machine_seed(),
+        hex_seed: generate_machine_seed().unwrap_or_default(),
         source: SeedSource::Generated,
     }
 }
@@ -90,14 +90,7 @@ fn read_env_seed(var: &str) -> Option<String> {
 }
 
 fn read_seed_file() -> Option<String> {
-    let socket_dir = std::env::var(primalspring::env_keys::SOCKET_DIR)
-        .ok()
-        .unwrap_or_else(|| {
-            std::env::var(primalspring::env_keys::XDG_RUNTIME_DIR).map_or_else(
-                |_| "/tmp/ecoprimals".to_owned(),
-                |xdg| format!("{xdg}/ecoprimals"),
-            )
-        });
+    let socket_dir = primalspring::ipc::discover::resolve_socket_dir();
     let seed_path = Path::new(&socket_dir).join(".family.seed");
     let content = std::fs::read_to_string(&seed_path).ok()?;
     let trimmed = content.trim().to_owned();
@@ -107,7 +100,7 @@ fn read_seed_file() -> Option<String> {
     Some(trimmed)
 }
 
-fn generate_machine_seed() -> String {
+fn generate_machine_seed() -> Option<String> {
     let mut hasher = blake3::Hasher::new();
     hasher.update(MITO_DOMAIN.as_bytes());
 
@@ -122,13 +115,11 @@ fn generate_machine_seed() -> String {
     }
 
     let mut os_entropy = [0u8; 32];
-    let Ok(()) = getrandom::fill(&mut os_entropy) else {
-        panic!("OS entropy unavailable");
-    };
+    getrandom::fill(&mut os_entropy).ok()?;
     hasher.update(&os_entropy);
 
     let hash = hasher.finalize();
-    hex::encode(hash.as_bytes())
+    Some(hex::encode(hash.as_bytes()))
 }
 
 fn hostname_from_file() -> Result<String, std::env::VarError> {

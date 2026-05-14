@@ -101,7 +101,8 @@ impl JsonRpcResponse {
 }
 
 /// JSON-RPC 2.0 error object.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, thiserror::Error)]
+#[error("JSON-RPC error {code}: {message}")]
 pub struct JsonRpcError {
     /// Numeric error code (negative for protocol errors).
     pub code: i64,
@@ -111,14 +112,6 @@ pub struct JsonRpcError {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<serde_json::Value>,
 }
-
-impl std::fmt::Display for JsonRpcError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "JSON-RPC error {}: {}", self.code, self.message)
-    }
-}
-
-impl std::error::Error for JsonRpcError {}
 
 /// Standard JSON-RPC 2.0 error codes plus ecosystem security extensions.
 pub mod error_codes {

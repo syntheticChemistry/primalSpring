@@ -600,15 +600,12 @@ impl AtomicHarness {
 /// `FAMILY_SEED` as raw UTF-8 bytes).
 ///
 /// This is the **Phase 1 (mito-beacon)** seed for tunnel establishment.
-#[expect(
-    clippy::expect_used,
-    reason = "HKDF-SHA256 expand to 32 bytes never fails"
-)]
 fn generate_harness_mito_seed(family_id: &str) -> Vec<u8> {
     let hk = Hkdf::<Sha256>::new(Some(b"primalspring-harness-btsp"), family_id.as_bytes());
     let mut okm = [0u8; 32];
-    hk.expand(b"family-seed", &mut okm)
-        .expect("HKDF expand for harness seed");
+    if hk.expand(b"family-seed", &mut okm).is_err() {
+        return Vec::new();
+    }
     let mut hex = String::with_capacity(64);
     for b in &okm {
         use std::fmt::Write;
@@ -623,15 +620,10 @@ fn generate_harness_mito_seed(family_id: &str) -> Vec<u8> {
 /// from the `family_id` using a harness-specific HKDF domain. The proof
 /// is a placeholder (harness-only) since `BearDog` is not available for
 /// real lineage proof generation during local tests.
-#[expect(
-    clippy::expect_used,
-    reason = "HKDF-SHA256 expand to 32 bytes never fails"
-)]
 fn generate_harness_nuclear(family_id: &str) -> crate::genetics::NuclearGenetics {
     let hk = Hkdf::<Sha256>::new(Some(b"primalspring-harness-nuclear"), family_id.as_bytes());
     let mut okm = [0u8; 32];
-    hk.expand(b"nuclear-genesis", &mut okm)
-        .expect("HKDF expand for harness nuclear");
+    let _ = hk.expand(b"nuclear-genesis", &mut okm);
 
     let proof_domain = format!("harness-genesis-{family_id}");
     crate::genetics::NuclearGenetics::genesis(

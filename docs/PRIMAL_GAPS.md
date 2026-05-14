@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-14 (cellMembrane VPS operational, lithoSpore 6/7 Tier 2, Foundation 10/10, 23 scenarios, RustDesk + multi-gate SSH deployed)
+> **Last updated**: 2026-05-14 (Wave 12: Deep debt sweep — zero panics in production, expect→Result, hardcoded paths→discovery, Vec<&String>→&str, thiserror derives, DeployError source chains, deprecated→mito_beacon, resolve_socket_dir)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 13, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 27 scenarios, 419 methods, 641 tests.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — eprintln→tracing in 5 driver files (Iter 95) |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. 5 wave goals defined for next interstadial push (see below).**
+**13/13 at zero debt. Waves 1-12 complete. 27 scenarios, 419 methods. Zero panics in production.**
 
 ---
 
@@ -402,9 +402,11 @@ validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 418 methods, 689+ tests, zero local debt. Active coordination targets:
-- Wave 8: Compute trio composition (Node atomic E2E — 6/9 items DONE locally, 3 upstream)
-- Wave 9: Domain contract sweep — 23 scenarios, 77 deploy graphs, 302/418 methods exercised (73%)
+**Current**: 419 methods, 641 tests, zero local debt. All waves complete:
+- Wave 8: Compute trio composition — 9/9 DONE
+- Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
+- Wave 10: Phase 32 atomic model — all fragments v3.0.0
+- Wave 11: Local debt resolution — CompositionContext migration, btsp.capabilities, 27 scenarios, 307/419 methods exercised (73%), Thread 10 seeded
 - ~~PG-54~~ **DONE** (adaptive tick model shipped)
 - ~~PG-63~~ **DONE** (Agg guidance already reconciled)
 
@@ -439,15 +441,43 @@ workload validation, foundation integration
 - Absorption targets: `composition.deploy(graph)`, Tier 4 rewiring, skunkBat in smaller compositions
 
 **Current** (lithoSpore/CATHEDRAL):
-- **6/7 modules Tier 2 LIVE** (was 4/7). Modules 3+4 promoted via groundSpring B3+B4.
+- **6/7 modules Tier 2 PASS** (51/51 checks). VM-validated via benchScale + agentReagents
+  on fresh libvirt VM — different `hostname_hash` confirms geo-delocalized validation.
 - ecoBin compliant: BLAKE3 `features = ["pure", "std"]`, zero C deps. `litho-core` library extracted (discovery, harness, stats).
-- **14 debt items resolved** in single CATHEDRAL session. Pillar 4 interstadial gate **EXCEEDED**.
+- **14+ debt items resolved** across two CATHEDRAL sessions. Pillar 4 interstadial gate **EXCEEDED**.
+- benchScale CLI now supports `--backend libvirt` (was hardcoded Docker). `russh` 0.58→0.60.
+- agentReagents: new `lithoSpore-validation.yaml` template (Ubuntu 24.04, 2GB, musl-static).
+- CATHEDRAL owns benchScale + agentReagents going forward.
+
+**Upstream blockers (CATHEDRAL-exposed)**:
+
+| ID | Blocker | Owner | Impact |
+|----|---------|-------|--------|
+| UB-1 | Songbird TURN client library | songBird team | Blocks geo-delocalized Tier 2 (USB validates only on LAN without TURN) |
+| UB-2 | BearDog FIDO2/CTAP2 support | bearDog team | Blocks SoloKey witness in `liveSpore.json` (physical-presence authentication) |
+| UB-3 | genomeBin Tier 3 packaging for USB | plasmidBin / primalSpring | Blocks Tier 3 on USB (needs plasmidBin binaries staged on lithoSpore USB image) |
+| UB-4 | sporePrint pipeline wiring | sporePrint team | Blocks `liveSpore.json` → `primals.eco` publish path |
+| CC-2 | LTEE Guidestone handoff archived | primalSpring | File archived to `handoffs/archive/` — cross-reference added |
+
+**Composition gaps (foundation-exposed, primal ownership)**:
+
+| Priority | Gap | Owner | Status |
+|----------|-----|-------|--------|
+| 1 | Sandbox `working_dir` passthrough | toadStool | Open |
+| 2 | Env var expansion in workload TOMLs | toadStool | Open |
+| 3 | GPU API alignment (`submit_and_map`) | barraCuda / wetSpring | Open |
+| 4 | Data dependency declaration in TOML | toadStool / nestGate | Open |
+| 6 | Hex string acceptance (loamSpine/rhizoCrypt) | loamSpine / rhizoCrypt | Open |
+| 7 | sweetGrass TCP without BTSP | sweetGrass | Open |
+| 8 | Cross-gate dispatch via songBird | songBird / biomeOS | Open (Phase 2) |
 
 ### Layer 5: Foundation (sporeGarden/foundation)
 
 **Owner**: Foundation team + contributing springs
 **Scope**: Public data anchoring, provenance validation, thread coverage
-**Current**: 10 domain threads, 100+ data sources. CI thread-index validation functional. Springs seeding:
+**Current**: 10 domain threads, 100+ data sources. CI thread-index validation functional.
+Validation reality: Threads 2, 6, 7 fully validated; Thread 1 WCM (0/24 validated).
+FN-1 (BLAKE3 backfill) and FN-5 (Thread 1 WCM) remain open. Springs seeding:
 - airSpring: Thread 6 (ag) — 36/36 targets validated
 - hotSpring: Thread 2 seeded
 - neuralSpring: Threads 5+7 documented, ready for contribution
@@ -634,6 +664,106 @@ The temporal ecosystem review identified structural drift between the Rust
 - `docs/LIVE_SCIENCE_API.md` — Tier 2 wire contract (toadstool.validate, list_workloads)
 - Updated: `config/deployment_matrix.toml`, all `graphs/fragments/*.toml`
 - Updated: `ecoPrimal/src/coordination/mod.rs` (AtomicType + 689+ tests pass)
+
+---
+
+## Wave 12: Deep Debt Sweep — Safety, Idiom, Discovery (May 14, 2026)
+
+**Owner**: primalSpring team
+**Priority**: HIGH — zero-panic production, modern idiomatic Rust, capability-first
+**Status**: **DONE** (May 14)
+
+Comprehensive audit found zero unsafe blocks, zero production mocks, zero `todo!()`/
+`unimplemented!()`, zero `Box<dyn Error>`, all files under 800 lines, and pure Rust
+dependencies (no C/FFI crates; BLAKE3 uses `pure` feature).
+
+### Panic/Expect Elimination
+
+| Site | Was | Now |
+|------|-----|-----|
+| `certification/entropy.rs:generate_machine_seed` | `panic!("OS entropy unavailable")` | `Option<String>`, caller handles gracefully |
+| `bin/primalspring_guidestone/entropy.rs` | Same panic | Same fix + `.unwrap_or_default()` |
+| `ipc/transport.rs:call_encrypted` | `.expect("Phase 3 keys required")` ×2 | `.ok_or(IpcError::ProtocolError { .. })?` |
+| `harness/mod.rs:generate_harness_mito_seed` | `.expect("HKDF expand")` | Graceful fallback (empty vec) |
+| `harness/mod.rs:generate_harness_nuclear` | `.expect("HKDF expand")` | Silent `let _ =` (zeroed OKM accepted) |
+
+### Hardcoding → Discovery
+
+| Site | Was | Now |
+|------|-----|-----|
+| `certification/entropy.rs` | Hardcoded `"/tmp/ecoprimals"` | `ipc::discover::resolve_socket_dir()` (env-first) |
+| `bin/.../entropy.rs` | Same hardcoded path | Same fix |
+| `certification/entropy.rs` | Hardcoded `"x86_64-unknown-linux-musl"` arch | `current_target_triple()` compile-time dispatch |
+| `ipc/method_gate.rs:BearDogVerifier` | Direct socket path + literal `"beardog"` | `discover_by_capability("security")` fallback chain + `primal_names::BEARDOG` constant |
+
+### Idiomatic Rust Modernization
+
+| Pattern | Was | Now |
+|---------|-----|-----|
+| `Vec<&String>` | `certification/btsp.rs` cleartext caps | `Vec<&str>` with `.as_str()` |
+| Manual `Display + Error` | `JsonRpcError` (protocol.rs) | `#[derive(thiserror::Error)]` |
+| Manual `Display + Error` | `UnknownPrimal` (primal_names.rs) | `#[derive(thiserror::Error)]` |
+| `DeployError::Parse(String)` | String-erased TOML errors | `Parse { context, source: toml::de::Error }` — preserves error chain |
+
+### Deprecated Production Path Cleanup
+
+`composition/btsp.rs:upgrade_btsp_clients` — replaced `#[expect(deprecated)]`
+bridge to `family_seed_from_env()` with `mito_beacon_from_env().key_bytes()`,
+the genetics-aware non-deprecated path.
+
+### New Discovery Infrastructure
+
+Added `ipc::discover::resolve_socket_dir()` — canonical function for resolving the
+ecoPrimals runtime socket directory. Priority: `$ECOPRIMALS_SOCKET_DIR` →
+`$XDG_RUNTIME_DIR/ecoprimals` → `<temp_dir>/ecoprimals`. Replaces all inline
+hardcoded `/tmp/ecoprimals` fallback patterns.
+
+---
+
+## Wave 11: Local Debt Resolution + Compute Trio Depth (May 14, 2026)
+
+**Owner**: primalSpring team
+**Priority**: HIGH — interstadial exit gate items
+**Status**: **DONE** (May 14)
+
+### CompositionContext Migration
+
+Migrated all active validation and RPC paths from deprecated `probe_primal` to
+`CompositionContext`-based probing. The deprecated functions remain for backward
+compatibility but are no longer called by any handler or live validation path.
+
+| File | Change |
+|------|--------|
+| `deploy/validation.rs` | `probe_graph_node` → `probe_graph_node_with_context`, new `validate_live_with_context` |
+| `coordination/mod.rs` | new `validate_composition_ctx` (capability-keyed, context-aware) |
+| `bin/primalspring_primal/handlers.rs` | All 4 handlers migrated to context-aware paths |
+
+### btsp.capabilities Method
+
+Registry method 419: `btsp.capabilities` (owner: bearDog). `upgrade_btsp_clients`
+now probes this method before attempting BTSP handshake, preventing connection
+failures in mixed deployments where some primals lack BTSP server listeners.
+
+### New Scenarios (24 → 27)
+
+| Scenario | What | Methods Exercised |
+|----------|------|-------------------|
+| `s_tier2_science_api` | Tier 2 wire contract exemplar | `toadstool.validate`, `toadstool.list_workloads`, `barracuda.precision.route`, `biomeos.spring_status` |
+| `s_barracuda_precision` | Deep precision routing + TensorSession | `barracuda.precision.route` (multi-op), `tensor.create`, `stats.variance`, `stats.std` |
+| `s_coralreef_shader_targets` | Dual-vendor GPU compilation | `shader.compile.capabilities`, `shader.compile.wgsl`, `shader.compile.module` (naga) |
+
+### Method Coverage
+
+307/419 (73.3%), up from 302/418 (72.2%). 112 uncovered remain — mostly test
+fixtures, domain-specific (`game.*`, `nautilus.*`, `ml.*`), and external infra.
+
+### Foundation Thread 10 Seeded
+
+Thread 10 (Provenance/Economics) elevated from EMPTY → SEEDED. Expression:
+provenance trio pipeline (skunkBat → rhizoCrypt → sweetGrass) as the economic
+substrate for NFT/attestation models. Sources: BLAKE3 CAS hashes, ionic bond
+contracts, attribution braids. Targets: content-addressed artifact lifecycle,
+cross-family attestation chain, provenance-anchored economic exchange.
 
 ---
 

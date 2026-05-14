@@ -8,10 +8,10 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 711 (654 passed + 57 ignored; unit + integration + doc-tests + proptest) |
-| **Experiments** | 89 (20 tracks) — 23 absorbed as UniBin validation scenarios |
+| **Tests** | 641 (616 lib + 25 integration; unit + integration + proptest) |
+| **Experiments** | 89 (20 tracks) — 27 absorbed as UniBin validation scenarios |
 | **Deploy Graphs** | 77 TOMLs — fragment-first composition with `resolve = true` (13 root + 9 profiles + 6 fragments + 8 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 federation + 1 composition + 12 cell graphs) |
-| **Coverage** | 72.5% library line coverage (llvm-cov) |
+| **Coverage** | 73.3% method coverage (307/419); line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 89 experiments carry structured `with_provenance()` metadata |
@@ -54,7 +54,7 @@ primalSpring/
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
-│   │   ├── validation/scenarios/  # 23 absorbed experiment scenarios (9 tracks)
+│   │   ├── validation/scenarios/  # 24 absorbed experiment scenarios (9 tracks)
 │   ├── src/bin/
 │   │   ├── primalspring/          # UniBin: certify + validate + serve + status + version
 │   │   ├── primalspring_primal/   # Legacy RPC server (transitioning → primalspring serve)
@@ -399,7 +399,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 711 tests (654 passed + 57 ignored).
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 718 tests (657 passed + 57 ignored + 4 integration).
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 
@@ -444,32 +444,39 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 | C6: Proprioception (petalTongue) | **5/5 PASS** | Subscribe, apply, poll, showing |
 | C7: Full Interactive | **10/10 PASS** | Full cross-subsystem: session→render→export, game science, Squirrel health, NestGate |
 
-**43/44 (98%)** — up from 93%. See `docs/PRIMAL_GAPS.md` for the structured gap registry (6 LOW, zero critical).
+**43/44 (98%)** — up from 93%. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1-12 complete).
 
-## Live Integration Status (March 28, 2026)
+## Live Integration Status (May 14, 2026)
 
-| Primal | Eastgate | Pixel (ADB) | Notes |
-|--------|----------|-------------|-------|
-| BearDog | healthy v0.9.0 (Unix socket) | **BLOCKED** (no TCP mode) | Needs `--listen` for Android SELinux |
-| Songbird | healthy v0.2.1 (Unix socket + mesh) | healthy v0.1.0 (TCP :9901) | `--listen` works on Android |
-| NestGate | healthy (Unix socket, store/retrieve) | not deployed | Needs `--listen` for Android |
-| Squirrel | alive v0.1.0 (abstract `@squirrel`) | not deployed | Abstract sockets TBD on Android |
-| biomeOS | neural-api (39+ graphs, route.register) | **BLOCKED** (forces Unix socket) | `api --port` ignored |
-| ToadStool | structural | not deployed | CLI-only, no server |
+**13/13 primals ALIVE** on eastGate (plasmidBin v2026.05.03). All at zero debt,
+13/13 BTSP Phase 3 FULL AEAD, 13/13 MethodGate adopted. Zero-port Tower Atomic
+standard: UDS-only default, TCP opt-in via `PRIMALSPRING_TCP_TIER5=1`.
 
-**Cross-gate federation**: Pixel Songbird registered on Eastgate biomeOS as
-`gate: pixel8a` with capabilities [network, discovery, http, mesh, birdsong].
-ADB forwards Pixel TCP 9901 → Eastgate 19901 for JSON-RPC IPC.
+| Primal | Status | Notes |
+|--------|--------|-------|
+| BearDog | healthy (Unix socket + TCP) | `--listen` available, TCP unblocked since Wave 8 |
+| Songbird | healthy (Unix socket + TCP + mesh) | Cross-gate federation operational |
+| NestGate | healthy (Unix socket + TCP) | Content-addressed storage, 8 `content.*` methods |
+| Squirrel | healthy (abstract socket) | AI inference dispatch |
+| biomeOS | healthy (neural-api, 39+ graphs) | `api --port` supported |
+| ToadStool | healthy (compute dispatch) | AMD live, NV FECS-gated |
+| barraCuda | healthy (precision routing) | v0.4.0, TensorSession, 72 methods |
+| coralReef | healthy (shader compilation) | Dual-vendor GPU (PTX + RDNA) |
+| skunkBat | healthy (defense + audit) | JH-5 Phase 2 event instrumentation |
+| rhizoCrypt | healthy (DAG provenance) | `dag.session.get` enriched |
+| loamSpine | healthy (Merkle ledger) | Zero debt |
+| sweetGrass | healthy (attribution braids) | JH-0 gate + port 9850 canonical |
+| petalTongue | healthy (viz + rendering) | `#[expect(reason)]` complete |
 
-See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/wateringHole_phase58_59_may2026/` for the full cross-gate SELinux gap analysis
-and per-primal remediation plan (archived from March 2026 mobile deployment spike).
+See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/wateringHole_phase58_59_may2026/` for historical cross-gate analysis.
 
 ## Docs
 
 - `wateringHole/README.md` — Outward-facing guidance index
 - `ARCHITECTURE.md` — UniBin cell model, two-tier validation, organelle map
-- `wateringHole/PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md` — v0.9.25 evolution handoff (primals, springs, NUCLEUS)
-- `wateringHole/CROSS_SPRING_PARITY_HANDOFF_MAY08_2026.md` — Cross-spring parity audit
+- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1-12, 13/13 zero debt)
+- `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` — Full ecosystem audit with Wave 12 addendum
+- `docs/CROSS_SPRING_PARITY_SCORECARD.md` — Cross-spring parity scorecard
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role
 - `wateringHole/METHOD_GATE_STANDARD.md` — MethodGate pre-dispatch authorization standard (JH-0)
 - `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–25+ done — live validation matrix, GAP-MATRIX items all resolved)

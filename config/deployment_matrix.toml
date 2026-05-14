@@ -273,6 +273,17 @@ description = "Offline AI DM: esotericWebb + ludoSpring + Squirrel + petalTongue
 bond_type = "covalent"
 deployment_class = "minimal"
 
+# ── CATHEDRAL topologies ──────────────────────────────────────────────
+
+[topologies.lithospore_usb_vm]
+file = "ecoprimals-lithospore-usb-vm"
+nodes = 1
+primals = ["beardog", "songbird"]
+atomic = "tower_partial"
+composition = "lithoSpore USB (VM-validated)"
+description = "musl-static lithoSpore CLI on fresh VM via benchScale/agentReagents — validates zero-dependency USB artifact"
+deployment_class = "lithospore"
+
 # ── Network Presets ─────────────────────────────────────────────────────
 
 [presets.basement_lan]
@@ -880,6 +891,19 @@ experiments = "storytelling"
 priority = "P2"
 status = "untested"
 notes = "Storytelling on HPC — lowest latency for 60Hz continuous coordination with AI DM"
+
+# ── CATHEDRAL cells ───────────────────────────────────────────────────
+
+[[cells]]
+id = "lithospore-x86-vm-uds"
+topology = "lithospore_usb_vm"
+arch = "x86_64"
+preset = "localhost"
+transport = "uds_first"
+experiments = "core"
+priority = "P1"
+status = "pass"
+notes = "lithoSpore USB on fresh VM — 6/7 modules, 51/51 checks, geo-delocalized hostname_hash (May 14, 2026)"
 
 # ── Known Blockers ──────────────────────────────────────────────────────
 #

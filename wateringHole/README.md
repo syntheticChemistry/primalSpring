@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Phase 32 — Tier 2 converged)
-**Last Updated**: May 13, 2026
+**Version**: 0.9.25 (Phase 32 — Tier 2 converged, Wave 12 deep debt complete)
+**Last Updated**: May 14, 2026
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -46,8 +46,8 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
-- **Zero open upstream gaps** — 13/13 primals at zero debt, JH-11 resolved (May 10), all sovereignty horizons advancing
-- **413 registered capability methods** across 84 domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods)
+- **Zero open upstream gaps** — 13/13 primals at zero debt, Waves 1-12 complete, zero panics in production
+- **419 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`)
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
 - **RootPulse commit workflow** fully executable (6/6 phases)
 - **NestGate content-addressed storage** live (8 `content.*` methods)
@@ -59,7 +59,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | What | Where |
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
-| Capability registry | `config/capability_registry.toml` (413 methods, zero drift) |
+| Capability registry | `config/capability_registry.toml` (419 methods, zero drift) |
 | Method gate CI | `tools/check_method_gate.sh` |
 | Method string validator | `tools/check_method_strings.sh` |
 | Graph method validator | `tools/check_graph_methods.sh` |

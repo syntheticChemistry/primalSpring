@@ -89,7 +89,7 @@ validation of the full compute trio composition against both GPU vendors.
 
 - **Registry**: 418 methods, 302 exercised (73%) — `biomeos.spring_status` added
 - **Waves 7/8/9**: All DONE. Wave 8 upstream items **ALL RESOLVED** (W8-07/08/09).
-- **23 scenarios**, **77 deploy graphs**, **613 library tests** (all passing)
+- **24 scenarios** (incl. zero-port standard), **77 deploy graphs**, **618 library tests** (616 passed + 2 ignored)
 - **Phase 32 atomic evolution**: skunkBat in Tower, Nest reconciled with provenance trio
 - **Tier 2 Science API**: LIVE_SCIENCE_API v1.3.0 — all methods IMPLEMENTED, 7/7 springs wired, `biomeos.spring_status` + content provenance metadata SHIPPED
 - **Wire name reconciliation**: GAP-34/35/36 all resolved upstream, docs aligned
@@ -175,9 +175,15 @@ validation of the full compute trio composition against both GPU vendors.
 
 ### lithoSpore USB Deployment (Hypogeal Cotyledon)
 
+- **VM-validated**: 6/7 modules Tier 2 PASS (51/51 checks) on fresh libvirt VM via
+  benchScale + agentReagents. Different `hostname_hash` confirms geo-delocalized validation.
 - Spore taxonomy defined: ColdSpore (static USB) → LiveSpore (+ provenance tracking) → lithoSpore (+ embedded runtime)
 - Three operating modes: Standalone (Tier 1 Python), LAN-connected (Tier 2 Rust + UDS), Geo-delocalized (Tier 2 Rust + Songbird TURN via cellMembrane)
 - sporePrint return path: lithoSpore → Foundation validation thread → sporePrint (primals.eco) auditable journal
+- benchScale CLI wired for `--backend libvirt` (was Docker-only). `russh` 0.58→0.60.
+- agentReagents: `lithoSpore-validation.yaml` template (Ubuntu 24.04, 2GB, SSH + curl only)
+- CATHEDRAL owns benchScale + agentReagents going forward
+- Upstream blockers: Songbird TURN client, BearDog FIDO2/CTAP2, genomeBin Tier 3, sporePrint pipeline
 - Document: `wateringHole/LITHOSPORE_USB_DEPLOYMENT.md`
 
 ### SoloKey / FIDO2 Integration Path
@@ -192,3 +198,72 @@ validation of the full compute trio composition against both GPU vendors.
 - cellMembrane VPS serves as the geo-delocalized relay hub
 - `deploy_membrane.sh` supports multi-gate SSH key management for distributed teams
 - `DOWNSTREAM_PATTERN_GUIDE.md` updated with geo-delocalized validation paths
+
+---
+
+## May 14 Addendum — primalSpring Local Debt Resolution
+
+### plasmidBin Deployment Evolution (COMPLETED)
+
+- `ports.env` COMP_TOWER/NODE/NEST/NUCLEUS/FULL: skunkBat added to all compositions
+- `validate_composition.sh`: triple-first layout fallback (`primals/<triple>/<name>`)
+- `build-primal.sh`: `build_args` variable leak fixed (local scoping)
+- `deploy_membrane.sh`: composition verification in status, `--validate` post-deploy flag, RustDesk version from manifest.toml
+- sourDough internalization roadmap: `docs/SOURDOUGH_DEPLOYMENT_INTERNALIZATION.md`
+
+### CompositionContext Migration (COMPLETED)
+
+- `deploy/validation.rs`: migrated from `probe_primal` to `CompositionContext`-based probing via `validate_live_with_context`
+- `bin/primalspring_primal/handlers.rs`: `handle_validate_composition`, `handle_probe_primal`, `handle_probe_capability`, `handle_deploy_atomic` all migrated to `validate_composition_ctx` / `CompositionContext`
+- `coordination/mod.rs`: new `validate_composition_ctx` uses capability-keyed context
+- Zero deprecated coordination paths remain in active handlers
+
+### btsp.capabilities Method (NEW)
+
+- 419th method in capability registry: `btsp.capabilities` (owner: bearDog)
+- `upgrade_btsp_clients` now probes `btsp.capabilities` before attempting BTSP handshake
+- Fixes healthSpring mixed-deployment issue (unconditional FAMILY_SEED negotiation)
+
+### New Validation Scenarios (27 total)
+
+- `s_tier2_science_api`: Tier 2 wire contract (toadstool.validate, list_workloads, precision.route, spring_status)
+- `s_barracuda_precision`: deep barraCuda depth (multi-op routing, TensorSession, stats suite)
+- `s_coralreef_shader_targets`: dual-vendor GPU coverage (NVIDIA PTX + AMD RDNA, WGSL compile, naga ingest)
+
+### Compute Trio Release
+
+- barraCuda (v0.4.0) released back for spring system absorption
+- coralReef released back as pure sovereign shader compiler
+- strandGate hardware (3090 + 6950) is the dual-vendor testbed
+- biomeGate team continues NVIDIA GPU / NV FECS firmware bridge work
+
+---
+
+## May 14 Addendum — Wave 12: Deep Debt Sweep
+
+Comprehensive audit + code evolution pass covering safety, idioms, and discovery:
+
+### Safety
+
+- **Zero panics**: `panic!("OS entropy unavailable")` in both `certification/entropy.rs`
+  and `bin/primalspring_guidestone/entropy.rs` replaced with `Option<String>` graceful fallback
+- **Zero expects**: `transport.rs` Phase 3 `.expect()` → `.ok_or(IpcError::ProtocolError)`; harness HKDF expects → graceful fallbacks
+- **Deprecated bridge removed**: `composition/btsp.rs` upgraded from `#[expect(deprecated)]` `family_seed_from_env()` to `mito_beacon_from_env().key_bytes()`
+
+### Discovery & Hardcoding
+
+- New `ipc::discover::resolve_socket_dir()` — canonical env-first socket dir resolution, replaces all hardcoded `/tmp/ecoprimals`
+- `BearDogVerifier::discover()` now tries `discover_by_capability("security")` before conventional socket path fallback
+- `verify_seed_fingerprints` uses `current_target_triple()` compile-time dispatch instead of hardcoded `x86_64-unknown-linux-musl`
+
+### Idiomatic Rust
+
+- `Vec<&String>` → `Vec<&str>` in certification/btsp.rs
+- `JsonRpcError` and `UnknownPrimal` → `#[derive(thiserror::Error)]`
+- `DeployError::Parse(String)` → `Parse { context, source: toml::de::Error }` with proper error chain
+
+### Audit Results (Clean)
+
+- Zero unsafe blocks, zero production mocks, zero `todo!()`/`unimplemented!()`, zero `Box<dyn Error>`
+- All files under 800 lines (largest ~702L)
+- All dependencies pure Rust (BLAKE3 `pure` feature, RustCrypto stack, no C/FFI)

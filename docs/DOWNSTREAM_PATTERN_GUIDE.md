@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 14, 2026 (geo-delocalized lithoSpore via cellMembrane, CATHEDRAL 6/7 Tier 2, SoloKey on ironGate+eastGate)
+**Last updated**: May 14, 2026 — CompositionContext migration, btsp.capabilities (419 methods), Tier 2 Science API exemplar (`s_tier2_science_api` scenario), barraCuda + coralReef scenarios added, Thread 10 seeded, plasmidBin deployment evolution complete
 
 ---
 
@@ -149,7 +149,7 @@ paper = "B2"
 
 ## 3. Workload + Notebook Pipeline (springs → projectNUCLEUS)
 
-### Convergence Tiers (per SPRING_EVOLUTION_TARGETS.md)
+### Convergence Tiers (per ecoPrimals wateringHole SPRING_EVOLUTION_TARGETS.md)
 
 | Tier | What | Spring Requirement |
 |------|------|-------------------|
@@ -184,6 +184,22 @@ Provenance trio **GAP-36 RESOLVED** — all wire aliases normalized upstream.
 3. **Notebook execution** — sporePrint CI (`notify-sporeprint.yml` with `content: "true"`) runs `nbconvert --execute` on push
 4. **Foundation thread coverage** — Threads 5, 8, 10 need full seeding before foundation can validate them
 5. **Geo-delocalized workload dispatch** — remote gates via cellMembrane relay can run Tier 2 workloads; `liveSpore.json` provenance feeds back to sporePrint for auditable publication
+
+### CATHEDRAL Ownership (May 14, 2026)
+
+CATHEDRAL (lithoSpore + Foundation) now owns:
+- **benchScale** — VM provisioning CLI (`--backend libvirt` wired, `russh` 0.60)
+- **agentReagents** — VM image templates (`lithoSpore-validation.yaml` for musl-static validation)
+- Rust evolution of bash scripts is on their roadmap
+
+**USB pipeline VM-validated**: 6/7 lithoSpore modules Tier 2 PASS (51/51 checks) on fresh
+VM with different `hostname_hash`, confirming geo-delocalized validation works.
+
+**Upstream blockers for CATHEDRAL**:
+- Songbird TURN client library (geo-delocalized Tier 2 without LAN)
+- BearDog FIDO2/CTAP2 (SoloKey witness in `liveSpore.json`)
+- genomeBin Tier 3 packaging for lithoSpore USB
+- sporePrint pipeline wiring (`liveSpore.json` → `primals.eco`)
 
 ---
 
