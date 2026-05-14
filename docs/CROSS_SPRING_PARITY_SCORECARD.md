@@ -18,12 +18,12 @@
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
 | **primalSpring** | 689+ | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 418 methods, sync-tested, 73% exercised | **G** 77 graphs | **G** 89 exp crates + 22 scenarios + Wave 7+8+9 contracts | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
 | **hotSpring** | 1,025 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
-| **healthSpring** | 1,014 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 413 | **G** 7 graphs, skunkBat node | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
-| **wetSpring** | 1,613 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 413 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
+| **healthSpring** | 1,014 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 418 | **G** 7 graphs, skunkBat node | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
+| **wetSpring** | 1,613 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 418 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
 | **neuralSpring** | 1,453 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (19 certification tests) | **G** 34 capabilities, TOML + sync test | **G** 4 graphs (3 new Phase 60) | **G** exp094 parity crate, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
-| **ludoSpring** | 854 | **G** optional=true, IPC-first default (`default=["ipc"]`) | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **G** 28 game.* + cross-sync 413 | **G** 12 graphs, skunkBat node | **G** 100 exp fossilized, 8 scenarios | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
+| **ludoSpring** | 854 | **G** optional=true, IPC-first default (`default=["ipc"]`) | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **G** 28 game.* + cross-sync 418 | **G** 12 graphs, skunkBat node | **G** 100 exp fossilized, 8 scenarios | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
 | **groundSpring** | 1,125 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (modularized 5-layer guidestone) | **G** 16 MCP tools + 6 registry sync tests | **G** 6 graphs | **G** LTEE B2+B1 reproductions (control/ + validate bins) | **G** 34 (paper-linked) | **G** bans ring/openssl |
-| **airSpring** | 1,389 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated (guidestone) | **G** L4 (7 deploy graphs, 10 scenarios) | **G** 46 capabilities in TOML + cross-sync 413 | **G** 7 graphs | **G** 3 exp crates (exp001-003) | **G** 25 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
+| **airSpring** | 1,389 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated (guidestone) | **G** L4 (7 deploy graphs, 10 scenarios) | **G** 46 capabilities in TOML + cross-sync 418 | **G** 7 graphs | **G** 3 exp crates (exp001-003) | **G** 25 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
 
 ## Summary by Axis
 
@@ -47,8 +47,8 @@
 
 ### 4. Capability Registry
 
-- **Sync-tested** (highest maturity): primalSpring (canonical 413), hotSpring, neuralSpring (34 caps), groundSpring (16 MCP + 6 sync tests), healthSpring (118 methods + CI cross-sync), ludoSpring (28 game.* + cross-sync 413), wetSpring (cross-sync 413), airSpring (46 caps + cross-sync 413)
-- All 8 springs CI-validated against canonical 413 (May 11)
+- **Sync-tested** (highest maturity): primalSpring (canonical 418), hotSpring, neuralSpring (34 caps), groundSpring (16 MCP + 6 sync tests), healthSpring (118 methods + CI cross-sync), ludoSpring (28 game.* + cross-sync 418), wetSpring (cross-sync 418), airSpring (46 caps + cross-sync 418)
+- All 8 springs CI-validated against canonical 418 (May 11)
 
 ### 5. Deploy Graphs
 
@@ -94,7 +94,7 @@ airSpring had "graphs only") is now **RESOLVED**:
 | W7-02 | **DONE** | `s_nestgate_content_pipeline` scenario (put/get/exists/list/resolve) |
 | W7-03 | **DONE** | Content Gate 1-3 in `server_ecosystem_compose.rs` |
 | W7-04 | **DONE** | `content_pipeline_smoke.toml` deploy graph |
-| W7-06 | **DONE** | `check_method_coverage.sh` inverse drift detection (125/413 uncovered) |
+| W7-06 | **DONE** | `check_method_coverage.sh` inverse drift detection (125/418 uncovered) |
 | W7-05 | **DONE** | `content.resolve` petalTongue validation — NestGate Session 60 shipped transport parity |
 | W7-07 | **DONE** | NestGate transport parity verified — Session 60 wired all 4 surfaces |
 
@@ -311,8 +311,8 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 
 **RESOLVED**:
 - ~~airSpring aws-lc-sys ban~~: FALSE GAP — workspace deny.toml exists
-- ~~Registry cross-sync CI~~: 8/8 springs CI-validated against 413
-- ~~GAP-12~~: 28 `game.*` methods (413 total, zero drift)
+- ~~Registry cross-sync CI~~: 8/8 springs CI-validated against 418
+- ~~GAP-12~~: 28 `game.*` methods (418 total, zero drift)
 
 ## Aggregate Metrics
 
@@ -322,5 +322,5 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 | Total deploy graphs | **122** (primalSpring 77 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4) |
 | Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |
-| Registered capability methods | **413** (primalSpring canonical, zero drift) |
+| Registered capability methods | **418** (primalSpring canonical, zero drift) |
 | Primals in plasmidBin release | **13/13** (all architectures) |

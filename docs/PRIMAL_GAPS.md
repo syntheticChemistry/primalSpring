@@ -50,7 +50,7 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | DF-2 | toadStool `TOADSTOOL_AUTH_MODE` env | toadStool S233 — `auth.mode` env + `eprintln` → `tracing` |
 | DF-3 | songbird/squirrel silent on `auth.mode` TCP | songbird — `CallerContext` wired (TCP transport-aware) |
 | U5 | sweetGrass port 39085 vs 9850 | sweetGrass v0.7.32 — port 9850 canonical |
-| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (413 total, zero drift) |
+| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (418 total, zero drift) |
 | U1 | CHECKSUMS stale after Phase 59 refactoring | **RESOLVED** — regenerated with 25 tracked files (UniBin, certification, scenarios, registry) |
 | U2 | 5 deploy graphs missing `by_capability` | **FALSE POSITIVE** — only manifests (parameter tables, not node-bearing graphs) lack field; all actual `[[graph.nodes]]` graphs have `by_capability` |
 | U3 | 8 profile graphs missing `bonding_policy` | **RESOLVED** — 9/9 profile graphs already have `bonding_policy` |
@@ -157,8 +157,8 @@ correctness (methods actually work across transports).** Specific failures:
    `storage.retrieve` round-trip — different API surface from `content.*`.
    (Not a bug — storage and content are different domains.)
 
-5. ~~**413-method registry unexercised**~~ — **FIXED (W7-06)**: `check_method_coverage.sh`
-   (inverse drift detection) reports 125/413 methods registered but never referenced in
+5. ~~**418-method registry unexercised**~~ — **FIXED (W7-06)**: `check_method_coverage.sh`
+   (inverse drift detection) reports 125/418 methods registered but never referenced in
    any scenario, test, or graph. CI-gatable. `content.put/get/exists/list/resolve` are
    now exercised; `content.collections/promote/publish` remain unexercised.
 
@@ -252,7 +252,7 @@ ludoSpring, groundSpring, airSpring)
 | groundSpring | V140, gS L4, UniBin, 1,123 tests, Tier 4 (`default=[]`), LTEE B1-B4 **DONE** | lithoSpore integration, coralReef IPC |
 
 **Wave 3 COMPLETED** (May 9). Post-interstadial push (May 10-11) achieved:
-8/8 skunkBat Rust IPC, 8/8 `method.register`, 8/8 CI cross-sync 413,
+8/8 skunkBat Rust IPC, 8/8 `method.register`, 8/8 CI cross-sync 418,
 8/8 `composition.status`, 8/8 NUCLEUS workload TOMLs. Tier 4 rewiring
 and `CompositionContext` migration now **UNBLOCKED** by JH-11.
 
@@ -360,7 +360,7 @@ L1 (Primals — sentinel-stadial)
   │ validated against
   ▼
 L2 (primalSpring — stadial gate for primals)
-  │ 413 registry, MethodGate enforcement, deploy graph coherence,
+  │ 418 registry, MethodGate enforcement, deploy graph coherence,
   │ guidestone certification, CompositionContext contracts
   │
   │ patterns flow downstream
@@ -463,7 +463,7 @@ L1 (Primals — sentinels, stadial-first)
   │ validated against ↓
   │
 L2 (primalSpring — stadial gate)
-  │ 415 registry, MethodGate, deploy graphs, guidestone cert
+  │ 418 registry, MethodGate, deploy graphs, guidestone cert
   │
   │ patterns flow downstream ↓
   │
@@ -549,15 +549,15 @@ to contract-level validation.
 | W7-03 | Extend `server_ecosystem_compose.rs` Gate tests: `content.put` stores bytes returns hash, `content.get` retrieves by hash matches original, `content.list` includes stored hash (Content Gate 1-3) | primalSpring | **DONE** (May 11) |
 | W7-04 | Deploy graph `content_pipeline_smoke.toml`: `content.put` + `content.get` + `content.list` round-trip via `by_capability = "content"` | primalSpring | **DONE** (May 11) |
 | W7-05 | Validate `content.resolve` for petalTongue backend: ensure NestGate path resolution returns correct content + MIME type (petalTongue `backend=nestgate` depends on this) | primalSpring | **DONE** (May 11) — NestGate Session 60 shipped transport parity; gate scenario covers `content.resolve` |
-| W7-06 | Inverse drift detection: `tools/check_method_coverage.sh` flags methods registered in 413-registry but **never referenced** in any scenario, test, or graph. Currently shows 125/413 uncovered. CI-gatable. | primalSpring | **DONE** (May 11) |
+| W7-06 | Inverse drift detection: `tools/check_method_coverage.sh` flags methods registered in 418-registry but **never referenced** in any scenario, test, or graph. Currently shows 125/418 uncovered. CI-gatable. | primalSpring | **DONE** (May 11) |
 | W7-07 | NestGate transport parity: verify `content.*` methods are reachable on SemanticRouter, isomorphic IPC adapter, and HTTP API — not just primary unix_socket_server dispatch | primalSpring + NestGate | **DONE** (May 11) — NestGate Session 60 wired all 8 `content.*` methods on all 4 transport surfaces |
 
 ### Lesson: Structural vs Semantic Gates
 
 The primalSpring gate currently validates:
 - **Structural**: methods enumerated in registry, deploy graphs reference correct capabilities, health checks pass, `storage.*` round-trips work
-- **NEW (Wave 7)**: `content.*` contract tests (scenario, gate tests, deploy graph), inverse drift detection (125/413 methods uncovered — CI-gatable tool shipped)
-- **Wave 9** (domain contract sweep): `secrets.*`, `bonding.*`, `defense.*`, `discovery.*`, `provenance.*`, `spine.*`, `network.*` all exercised via `s_domain_contract_sweep` scenario + `domain_contract_sweep.toml` graph. Coverage 288/413 → 301/413 (72%). Remaining 112 are test fixtures, domain-specific (game/nautilus/ml), or require external infrastructure
+- **NEW (Wave 7)**: `content.*` contract tests (scenario, gate tests, deploy graph), inverse drift detection (125/418 methods uncovered — CI-gatable tool shipped)
+- **Wave 9** (domain contract sweep): `secrets.*`, `bonding.*`, `defense.*`, `discovery.*`, `provenance.*`, `spine.*`, `network.*` all exercised via `s_domain_contract_sweep` scenario + `domain_contract_sweep.toml` graph. Coverage 288/418 → 302/418 (72%). Remaining 116 are test fixtures, domain-specific (game/nautilus/ml), or require external infrastructure
 - **Resolved**: W7-07 transport parity verification (NestGate Session 60 shipped all surfaces)
 
 The sentinel-stadial model correctly surfaced this gap — downstream composition
@@ -568,7 +568,7 @@ semantically. **This gap is now fully resolved** — NestGate Session 60 shipped
 transport parity, and Wave 7 added the semantic contract tests.
 
 **Wave 7 closes this gap class permanently.** After Wave 7, any method registered
-in the 413-method registry that lacks a contract test or is unreachable on any
+in the 418-method registry that lacks a contract test or is unreachable on any
 transport will be flagged by primalSpring's gate.
 
 ---
@@ -633,7 +633,7 @@ The temporal ecosystem review identified structural drift between the Rust
 - `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` — full ecosystem temporal review
 - `docs/LIVE_SCIENCE_API.md` — Tier 2 wire contract (toadstool.validate, list_workloads)
 - Updated: `config/deployment_matrix.toml`, all `graphs/fragments/*.toml`
-- Updated: `ecoPrimal/src/coordination/mod.rs` (AtomicType + 602 tests pass)
+- Updated: `ecoPrimal/src/coordination/mod.rs` (AtomicType + 689+ tests pass)
 
 ---
 

@@ -8,7 +8,7 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 602+ lib (602 passed + 2 ignored; unit + integration + doc-tests + proptest) |
+| **Tests** | 689+ lib (unit + integration + doc-tests + proptest) |
 | **Experiments** | 89 (20 tracks) — 21 absorbed as UniBin validation scenarios |
 | **Deploy Graphs** | 77 TOMLs — fragment-first composition with `resolve = true` (13 root + 9 profiles + 6 fragments + 8 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 federation + 1 composition + 12 cell graphs) |
 | **Coverage** | 72.5% library line coverage (llvm-cov) |
