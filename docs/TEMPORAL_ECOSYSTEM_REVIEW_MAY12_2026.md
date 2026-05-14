@@ -308,5 +308,5 @@ Full pull of all springs, gardens, and infra repos to HEAD. Reconciled scorecard
 
 - plasmidBin `manifest.toml` updated to v5.4.0 with fresh test counts and spring notes
 - All spring versions and evolution statuses reconciled
-- Registry: 419 methods (was 418; `btsp.capabilities` added Wave 12)
+- Registry: 427 methods (was 419; +7 methods from ecosystem Wave 13 — toadstool.validate, toadstool.list_workloads, barracuda.precision.route, security.audit_event, linalg.dot, shader.compile.gemm, shader.compile.module)
 - Total ecosystem tests: **13,750+** across 8 springs

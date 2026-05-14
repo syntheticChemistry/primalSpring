@@ -72,8 +72,8 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 ## Status
 
 v0.9.25 Phase 32 atomic model (May 14, 2026) — 641 tests (616 lib + 25 integration),
-89 experiments (20 tracks), 77 deploy graphs, 419 registered capability methods
-(302+ exercised). Phase 32 atomic evolution: Tower = 3 primals (bearDog +
+89 experiments (20 tracks), 77 deploy graphs, 427 registered capability methods
+(313 exercised, 73.3%). Phase 32 atomic evolution: Tower = 3 primals (bearDog +
 songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7 (Tower +
 nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.

@@ -555,7 +555,9 @@ methods = [
 owner = "toadstool"
 methods = [
     "toadstool.health",
+    "toadstool.list_workloads",
     "toadstool.query_capabilities",
+    "toadstool.validate",
     "toadstool.version",
 ]
 
@@ -563,6 +565,7 @@ methods = [
 owner = "barracuda"
 methods = [
     "barracuda.compute.submit",
+    "barracuda.precision.route",
 ]
 
 [tensor]
@@ -633,6 +636,7 @@ methods = [
 [linalg]
 owner = "barracuda"
 methods = [
+    "linalg.dot",
     "linalg.eigenvalues",
     "linalg.solve",
 ]
@@ -655,6 +659,8 @@ owner = "coralreef"
 methods = [
     "shader.bio",
     "shader.compile.capabilities",
+    "shader.compile.gemm",
+    "shader.compile.module",
     "shader.compile.spirv",
     "shader.compile.wgsl",
     "shader.compile.wgsl.multi",
@@ -827,6 +833,7 @@ methods = [
     "defense.policy",
     "defense.status",
     "recon.scan",
+    "security.audit_event",
     "security.audit_log",
     "threat.assess",
     "threat.mitigate",
@@ -860,6 +867,7 @@ methods = [
 [false_positives]
 owner = "none"
 methods = [
+    "index.html",
     "manifest.toml",
     "test.sock",
     "tests.rs",

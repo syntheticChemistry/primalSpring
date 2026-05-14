@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 14, 2026 — CompositionContext migration, btsp.capabilities (419 methods), Tier 2 Science API exemplar (`s_tier2_science_api` scenario), barraCuda + coralReef scenarios added, Thread 10 seeded, plasmidBin deployment evolution complete
+**Last updated**: May 14, 2026 — Wave 13 ecosystem reconciliation (427 methods), Tier 2 Science API exemplar, 7 new methods from spring evolution (toadstool.validate, barracuda.precision.route, shader.compile.gemm, etc.)
 
 ---
 
