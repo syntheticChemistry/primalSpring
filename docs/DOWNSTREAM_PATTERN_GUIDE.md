@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 13, 2026 (full pull: V71/V64m/V167/V159, CATHEDRAL 6/7 Tier 2, H2-12 TLS shadow LIVE)
+**Last updated**: May 14, 2026 (geo-delocalized lithoSpore via cellMembrane, CATHEDRAL 6/7 Tier 2, SoloKey on ironGate+eastGate)
 
 ---
 
@@ -65,6 +65,31 @@ Each LTEE reproduction follows a standard pattern:
 - **healthSpring** B5 (symbiont PK/PD) **COMPLETE** — full lithoSpore module candidate
 - **wetSpring B7** Tier 2 COMPLETE — feeds `ltee-breseq` (module 6 Tier 2 PASS)
 - **6/7 modules Tier 2 LIVE** — only module 5 (biobricks) remains scaffold (DOI pending)
+
+### Geo-Delocalized lithoSpore Validation (via cellMembrane)
+
+lithoSpore guideStone USBs can now validate at remote gates through the
+cellMembrane relay. The USB carries its own data and runtime (hypogeal
+cotyledon pattern — see `wateringHole/LITHOSPORE_USB_DEPLOYMENT.md`):
+
+```
+lithoSpore USB at remote gate
+  → ./validate detects SONGBIRD_TURN_SERVER
+  → primal IPC via Songbird TURN (:3478) through cellMembrane
+  → Tier 2 validation against NUCLEUS compute primals
+  → liveSpore.json appended (provenance entry)
+  → spring absorbs results → sporePrint publishes
+```
+
+Three operating modes per USB:
+1. **Standalone**: Tier 1 Python-only (no network required)
+2. **LAN**: Tier 2 Rust + primal IPC via Unix sockets
+3. **Geo-delocalized**: Tier 2 via Songbird TURN through cellMembrane
+
+Cross-hardware validation across geographic locations (AMD at strandGate,
+CPU-only at friend gates, NVIDIA at biomeGate) produces the stadial
+evidence for interstadial exit — published as auditable journal entries
+on sporePrint (primals.eco).
 
 ---
 
@@ -158,6 +183,7 @@ Provenance trio **GAP-36 RESOLVED** — all wire aliases normalized upstream.
 2. **`--format json` flag** — springs add structured JSON output to validation binaries (additive, doesn't break CLI)
 3. **Notebook execution** — sporePrint CI (`notify-sporeprint.yml` with `content: "true"`) runs `nbconvert --execute` on push
 4. **Foundation thread coverage** — Threads 5, 8, 10 need full seeding before foundation can validate them
+5. **Geo-delocalized workload dispatch** — remote gates via cellMembrane relay can run Tier 2 workloads; `liveSpore.json` provenance feeds back to sporePrint for auditable publication
 
 ---
 
