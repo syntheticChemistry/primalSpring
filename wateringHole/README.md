@@ -189,10 +189,21 @@ Forgejo Actions CI porting.
 ### CATHEDRAL (lithoSpore + foundation)
 
 **lithoSpore** — First Targeted GuideStone (hypogeal cotyledon):
-- **7/7 modules PASS** at Tier 2 (75/75 checks), chaos tested
-- Ingested primalSpring patterns: capability registry, Dark Forest graphs
-- Deep evolution: UDS RPC implemented, monoliths refactored, USB pipeline hardened
-- Interactive SceneGraph handback complete (6/6 phases via petalTongue)
+- **7/7 modules PASS** at Tier 2 (75/75 checks), chaos tested, deployment-validated
+- **Bash-to-Rust elevation COMPLETE**: all 8 shell scripts replaced with pure
+  Rust CLI subcommands (`litho fetch/assemble/validate/verify/chaos-test/deploy-test`).
+  Only `scripts/build-container.sh` remains as shell.
+- **Cross-platform validation**: musl-static Linux (5.1 MB), Windows cross-compiled
+  via `x86_64-pc-windows-gnu` (7.9 MB litho.exe tested via Wine 11). Deployment
+  matrix: Ubuntu airgap, VPS, Alpine chroot, read-only FS — all PASS.
+- **USB recreation**: `litho assemble` builds portable USB artifacts (replaces
+  `assemble-usb.sh`). argv[0] symlink detection: `validate`, `verify`, `refresh`,
+  `spore` are all symlinks to `bin/litho`. `.biomeos-spore` marker for layout detection.
+- **Discovery chain evolved**: env → UDS → TURN → standalone, with `probe_operating_mode()`
+  and `liveSpore.json` provenance recording discovery path and TURN relay.
+- **Module lib.rs pattern**: each module exposes `run_validation()` for in-process
+  dispatch — no subprocesses. Single `litho` binary replaces 7 separate binaries.
+- Ingested primalSpring patterns: capability registry, Dark Forest graphs, `graph_checks` module
 - Needs from upstream: Songbird TURN client library, genomeBin Tier 3 USB,
   neuralSpring ML surrogates for B3/B4/B6
 
@@ -201,7 +212,7 @@ Forgejo Actions CI porting.
   Thread 7 Anderson **18/18 PASS**
 - Thread 1 WCM: fetch infra ok, **RPC upstream-blocked** (0/24 pending review)
 - Data integrity: many `blake3 = ""` in source TOMLs — needs fetch + backfill
-- Upstream audit prep delivered (May 15)
+- lithoSpore added to relationships doc, validation handback index updated
 - Needs from upstream: RPC stack for Thread 1, neuralSpring ML sources (Thread 5)
 
 ### esotericWebb

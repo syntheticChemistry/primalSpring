@@ -55,16 +55,26 @@ Each LTEE reproduction follows a standard pattern:
 | **wetSpring** | B7 (Tenaillon 2016 — 264 genomes) | **Tier 2 COMPLETE** (27/27 PASS) | `experiments/results/ltee_b7_expected_values.json` | Module 6: ltee-breseq (Tier 2 PASS) |
 
 **Convention**: lithoSpore modules consume `expected_values.json` from springs via
-`fetch_and_hash.sh` scripts that BLAKE3-anchor the data into NestGate content storage.
+`litho fetch` (pure Rust, replaces 7 bash fetch scripts) that BLAKE3-anchor
+the data into NestGate content storage.
 
-### What lithoSpore Needs Next
+### lithoSpore Status (May 15, 2026)
 
-- **groundSpring B1-B4** INGESTED — lithoSpore modules 3+4 promoted to Tier 2 (B3 Good 2017, B4 Blount 2008/2012)
-- **hotSpring B2** ready for `ltee-anderson` module integration (module 7 already Tier 2 PASS)
-- **neuralSpring** ML surrogates additive to modules 3+4 (not blocking)
-- **healthSpring** B5 (symbiont PK/PD) **COMPLETE** — full lithoSpore module candidate
-- **wetSpring B7** Tier 2 COMPLETE — feeds `ltee-breseq` (module 6 Tier 2 PASS)
-- **6/7 modules Tier 2 LIVE** — only module 5 (biobricks) remains scaffold (DOI pending)
+- **7/7 modules Tier 2 PASS** (75/75 checks) — module 5 (biobricks) promoted
+  with metabolic burden validation (6/6)
+- **Bash-to-Rust elevation COMPLETE** — all 8 shell scripts replaced with pure
+  Rust CLI subcommands in the `litho` binary
+- **Cross-platform deployment matrix**: musl-static Linux (5.1 MB), Windows
+  cross-compiled via `x86_64-pc-windows-gnu` (7.9 MB, tested via Wine 11).
+  Validated on Ubuntu airgap, VPS, Alpine chroot, read-only FS.
+- **USB recreation**: `litho assemble` builds portable artifacts per
+  `LITHOSPORE_USB_DEPLOYMENT.md`. argv[0] symlink detection for entry points.
+- **Module lib.rs pattern**: each module exposes `run_validation()` for
+  in-process dispatch — single binary replaces 7 separate module binaries.
+- **Discovery chain**: env → UDS → TURN → standalone, with mode detection
+  and `liveSpore.json` provenance recording.
+- **Needs from upstream**: Songbird TURN client library, genomeBin Tier 3 USB,
+  neuralSpring ML surrogates for B3/B4/B6
 
 ### Geo-Delocalized lithoSpore Validation (via cellMembrane)
 
