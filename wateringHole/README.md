@@ -80,45 +80,41 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 ## Upstream Primal Debt and Evolution Status (May 15, 2026)
 
 Post-Neural API evolution (biomeOS v3.55–v3.57, squirrel `signal_plan`,
-`primal.announce` protocol), several primals carry merge conflict debt from
-upstream pushes. These are merge conflicts (UU markers) from stashed local
-work colliding with upstream evolution — they need resolution before the
-next ecosystem pull.
+`primal.announce` protocol). All primals are at `origin/main` HEAD — remote
+is canonical and all pushed work is preserved. Stale merge artifacts on
+eastGate have been cleaned (7 primals reset to `origin/main`).
 
-### Clean (pushed, ready for cross-repo pull)
+### All 13 Primals (current HEAD)
 
-| Primal | HEAD | Notes |
-|--------|------|-------|
-| biomeOS | v3.57 (`75209fc`) | Neural API evolution complete: signal dispatch, announce protocol, metrics tagging |
-| squirrel | `db3db3a` | `signal_plan` mode for `ai.query` — composition collapse |
-| barraCuda | Sprint 69 (`10473ba`) | `health.version` standalone RPC |
-| bearDog | Wave 102 (`103982c`) | Ionic lease on `crypto.sign_contract` (but see conflict debt below) |
-| skunkBat | H2 niche (`85ee1e0`) | Live lineage, enforcement, NestGate protection |
-| sourDough | v0.3.0 (`1b744b2`) | Scaffold docs updated |
+| Primal | HEAD | Latest |
+|--------|------|--------|
+| biomeOS | `75209fc` | v3.57: Neural API evolution — announce protocol, metrics tagging, signal wiring |
+| squirrel | `db3db3a` | Signal plan mode for `ai.query` — Neural API composition collapse |
+| bearDog | `103982c` | Wave 102: ionic lease on `crypto.sign_contract` + `crypto.seed_fingerprint` |
+| songbird | `237f7e2` | Wave 204: GAP-16 Tower Atomic — `mesh.*` on canonical UDS |
+| toadStool | `ccd9243` | S262: expose `device.gr.init` IPC + coralReef shader metadata aliases |
+| barraCuda | `10473ba` | Sprint 69: add `health.version` standalone RPC for trio consistency |
+| coralReef | `d9d681c` | Sprint 12: synchronize all root docs, 3,181 tests |
+| nestGate | `737660d` | Session 62: content provenance metadata (`artifact_query`) |
+| skunkBat | `85ee1e0` | H2 niche evolution — live lineage, enforcement, NestGate protection |
+| rhizoCrypt | `d52c527` | S68: enrich `dag.session.get` with agents/genesis/frontier |
+| loamSpine | `606acbf` | GAP-36 provenance trio wire reconciliation — session aliases |
+| sweetGrass | `925ed25` | v0.7.35: GAP-36 wire-name reconciliation + `lifecycle.status` |
+| sourDough | `1b744b2` | v0.3.0: scaffold docs updated |
 
-### Merge Conflict Debt (UU markers — needs team resolution)
+### Uncommitted Local Work (eastGate — review and push upstream)
 
-| Primal | UU Files | Conflict Domain | Severity |
-|--------|---------|-----------------|----------|
-| **beardog** | **38** | HSM management, self-discovery, ecosystem spawner, BTSP handlers, crypto handler, types/capabilities, constraints, production config | **HIGH** — deep structural evolution collided with upstream; blocks next bearDog wave |
-| **rhizoCrypt** | 5 | Cargo.lock, niche.rs, niche_tests.rs, rhizocrypt_tests.rs | MEDIUM — niche/test alignment |
-| **petalTongue** | 3 | IPC dispatch, motor handlers, paint primitives | MEDIUM — UI + IPC evolution |
-| **coralReef** | 1 | `newline_jsonrpc.rs` IPC framing | LOW — single file |
-| **loamSpine** | 1 | `btsp/handshake.rs` | LOW — BTSP alignment |
-| **songbird** | 1 (DU) | `env_config.rs` deleted upstream, modified locally | LOW — delete/modify conflict |
-| **sweetGrass** | 1 | `bin/service.rs` | LOW — service entry point |
+These are real uncommitted changes on eastGate that need upstream team review:
 
-### Modified (no conflicts, uncommitted)
+| Primal | Files | What | Action |
+|--------|-------|------|--------|
+| nestGate | `run.rs`, `subcommands.rs` (+15 lines) | Adds `--socket` CLI flag for explicit socket path override, matching BearDog/ToadStool convention | Commit and push — useful feature |
+| toadStool | `mappings_extended.rs` (-12/+9 lines) | Removes 8 false `inference.*`/`ollama.*` capability advertisements (S169). Inference is Squirrel's domain, not compute substrate | Commit and push — correct cleanup |
+| bingoCube | `Cargo.toml` (2 lines) | Downgrades egui/eframe 0.29 -> 0.28 (compat fix) | Review — may be intentional pin |
 
-| Primal | Changes | Notes |
-|--------|---------|-------|
-| nestGate | 2 modified (`run.rs`, `subcommands.rs`) | CLI subcommand evolution — review and commit |
-| toadStool | 1 modified (`mappings_extended.rs`) | Semantic method mappings — review and commit |
-| bingoCube | 1 modified (`Cargo.toml`) | Dependency update — review and commit |
+### Evolution Targets (all primals)
 
-### Evolution Targets (post-conflict resolution)
-
-Once merge conflicts are resolved, each primal should:
+With biomeOS v3.57 live, each primal should:
 
 1. **Adopt `primal.announce`**: Replace separate `lifecycle.register` +
    `capability.register` + `method.register` startup calls with a single
@@ -131,14 +127,14 @@ Once merge conflicts are resolved, each primal should:
    is now live — verify transparent composition collapse doesn't break
    existing call patterns.
 
-### Infra Repos (separate push scope)
+### Infra Repos
 
 | Repo | State | Action |
 |------|-------|--------|
 | infra/wateringHole | Clean | Consider syncing `PRIMAL_ANNOUNCE_PROTOCOL.md` |
-| infra/whitePaper | 3 modified neuralAPI chapters (00, 01, 03) | Push by whitePaper maintainer |
-| infra/benchScale | 1 modified spec + 1 untracked topology | Push when reviewed |
-| neuralSpring | 1 untracked `inference.rs` | Minor — add or gitignore |
+| infra/whitePaper | 3 modified neuralAPI chapters (00, 01, 03) | Review and push |
+| infra/benchScale | 1 modified spec + 1 untracked topology | Review and push |
+| neuralSpring | 1 untracked `inference.rs` | Add or gitignore |
 
 ---
 
