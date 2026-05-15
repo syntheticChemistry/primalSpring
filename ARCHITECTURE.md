@@ -16,9 +16,9 @@ contains all validation, certification, and coordination capabilities.
 │  │  Engine           │  │  Scenarios       │  │  (membrane)  │  │
 │  │  (mitochondria)   │  │  (ribosomes)     │  │              │  │
 │  │                   │  │                  │  │  JSON-RPC    │  │
-│  │  L0: Bare         │  │  32 absorbed     │  │  2.0 over    │  │
+│  │  L0: Bare         │  │  35 absorbed     │  │  2.0 over    │  │
 │  │  L0.5: Seed       │  │  experiments     │  │  Unix socket │  │
-│  │  L1: Discovery    │  │  across 9 tracks │  │              │  │
+│  │  L1: Discovery    │  │  across 10 tracks│  │              │  │
 │  │  L1.5: BTSP       │  │                  │  │  MethodGate  │  │
 │  │  L2: Health       │  │  Tier 1: Rust    │  │  (JH-0)      │  │
 │  │  L3: Parity       │  │  Tier 2: Live/   │  │              │  │
@@ -90,7 +90,7 @@ Runs with `biomeOS` orchestrating the full composition.
 | `certification/entropy.rs` | Seed provenance, fingerprint verification |
 | `validation/` | `ValidationResult` harness, check_bool/check_skip/section API |
 | `validation/helpers.rs` | Shared graph parsing, Dark Forest invariants, capability cross-ref |
-| `validation/scenarios/` | 32 absorbed experiment scenarios (9 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios/` | 35 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `validation/scenarios/registry.rs` | `ScenarioMeta`, `ScenarioRegistry`, `Tier`, `Track` |
 | `composition/` | `CompositionContext` — 5-tier discovery, IPC calls, BTSP |
 | `coordination/` | `AtomicType`, deprecated probes (→ `CompositionContext`) |
@@ -123,6 +123,7 @@ Runs with `biomeOS` orchestrating the full composition.
 | biomeos-deploy | biomeOS deployment, Neural API | biomeos-tower-deploy |
 | infrastructure | Deployment matrix, cellular graphs | deployment-matrix |
 | lifecycle | Composition reload, parity, federation | composition-lifecycle |
+| sovereignty | Membrane composition, routing, content sovereignty | membrane-composition, sovereignty-parity |
 
 ## IPC Discovery
 
@@ -147,6 +148,32 @@ a single atomic RPC.
   13/13 primals enforcing.
 - **Ionic tokens**: BearDog Ed25519-signed capability scoped tokens.
 - **Binding**: `--bind` defaults to `127.0.0.1` (PG-55, 13/13).
+
+## Membrane Composition (VPS Sovereignty Boundary)
+
+`graphs/membrane/tower_membrane.toml` defines the VPS inner membrane:
+
+```
+                    ┌── VPS Membrane ──────────────────────────┐
+                    │                                          │
+Channel 3 (Surface) │  ┌──────────┐    ┌──────────┐           │
+TLS public HTTPS ───┤  │ Songbird │────│ BearDog  │           │
+                    │  │ (network)│    │ (crypto) │           │
+                    │  └─────┬────┘    └─────┬────┘           │
+                    │        │               │                │
+                    │  ┌─────┴────┐    ┌─────┴────┐           │
+                    │  │ SkunkBat │    │ NestGate │           │
+                    │  │ (defense)│    │ (cache)  │           │
+                    │  └──────────┘    └──────────┘           │
+                    │                                          │
+Channel 2 (Relay)   │  BTSP tunnel ─────────── gate hardware  │
+Channel 1 (Signal)  │  UDS ─── primal-to-primal IPC           │
+                    └──────────────────────────────────────────┘
+```
+
+Content-aware routing (`config/routing_config_reference.toml`) decides per-request:
+gate (btsp_tunnel) vs VPS cache (local_filesystem) vs peer (songbird_p2p) vs
+fallback (http_proxy), scoped by bonding trust tier.
 
 ## Deprecated Patterns (Fossilized)
 
@@ -184,4 +211,5 @@ Python baseline
             → primal composition (proto-nucleate graph)
               → NUCLEUS deployment (biomeOS Neural API)
               → composition collapse (signal.dispatch + primal.announce)
+                → sovereignty layer (membrane composition + content routing)
 ```

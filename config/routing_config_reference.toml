@@ -1,0 +1,174 @@
+# routing_config_reference.toml — Canonical schema for membrane content-aware routing
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# primalSpring owns this schema. Downstream membrane deployments (e.g.
+# projectNUCLEUS deploy/routing_config.toml) must conform to it.
+#
+# s_sovereignty_parity.rs validates this structurally.
+#
+# Schema version tracks breaking changes to the routing contract.
+# Downstream instances declare which version they target.
+
+[routing]
+version = "0.1.0"
+default_backend = "gate"
+
+# ─── Backend Definitions ─────────────────────────────────────────────────────
+# Each backend has: type, description, auth_required, latency_class.
+# Valid types: btsp_tunnel, local_filesystem, songbird_p2p, http_proxy.
+# Latency classes: fast, variable.
+
+[routing.backends.gate]
+type = "btsp_tunnel"
+endpoint = "127.0.0.1:9100"
+description = "Gate hardware via BearDog BTSP tunnel"
+auth_required = true
+latency_class = "variable"
+
+[routing.backends.vps_cache]
+type = "local_filesystem"
+root = "/var/cache/membrane/nestgate"
+description = "NestGate content cache on VPS"
+auth_required = false
+latency_class = "fast"
+max_cacheable_size_mb = 10
+
+[routing.backends.peer]
+type = "songbird_p2p"
+discovery_socket = "/run/membrane/songbird.sock"
+description = "Direct P2P via Songbird NAT traversal"
+auth_required = true
+latency_class = "fast"
+
+[routing.backends.fallback]
+type = "http_proxy"
+endpoint = "https://primals.eco"
+description = "CDN fallback (outer membrane)"
+auth_required = false
+latency_class = "fast"
+
+# ─── Routing Rules ───────────────────────────────────────────────────────────
+# Evaluated in order; first match wins.
+# Each rule requires: name, match, backend, reason.
+# Optional: fallback (backend name for cache miss / failure).
+#
+# Match predicates (all optional, combined with AND):
+#   path_prefix  — string prefix on request path
+#   path_regex   — regex match on request path
+#   host         — exact host header match
+#   content_type — MIME type match
+#   header       — presence check for named header
+#   min_size_mb  — minimum content size threshold
+
+[[routing.rules]]
+name = "acme_challenge"
+match = { path_prefix = "/.well-known/acme-challenge/" }
+backend = "vps_cache"
+reason = "ACME HTTP-01 challenges must be served locally"
+
+[[routing.rules]]
+name = "health"
+match = { path_prefix = "/health" }
+backend = "vps_cache"
+reason = "Health checks served locally for uptime monitoring"
+
+[[routing.rules]]
+name = "static_pages"
+match = { host = "primals.eco", path_prefix = "/", content_type = "text/html" }
+backend = "vps_cache"
+fallback = "gate"
+reason = "HTML pages cached locally, miss -> gate"
+
+[[routing.rules]]
+name = "static_assets"
+match = { path_regex = "\\.(css|js|png|jpg|svg|woff2|ico)$" }
+backend = "vps_cache"
+fallback = "gate"
+reason = "Static assets cached locally"
+
+[[routing.rules]]
+name = "git_operations"
+match = { host = "git.primals.eco" }
+backend = "gate"
+reason = "Git operations require gate compute + storage"
+
+[[routing.rules]]
+name = "jupyter_sessions"
+match = { host = "lab.primals.eco" }
+backend = "gate"
+reason = "JupyterHub sessions are long-lived, need gate compute"
+
+[[routing.rules]]
+name = "api_calls"
+match = { path_prefix = "/api/" }
+backend = "gate"
+reason = "All API calls route to gate primals"
+
+[[routing.rules]]
+name = "authenticated"
+match = { header = "Authorization" }
+backend = "gate"
+reason = "Any BTSP-authenticated request goes to gate"
+
+[[routing.rules]]
+name = "large_downloads"
+match = { path_prefix = "/releases/", min_size_mb = 10 }
+backend = "peer"
+fallback = "gate"
+reason = "Large files prefer Songbird P2P to avoid VPS bandwidth costs"
+
+[[routing.rules]]
+name = "default"
+match = { path_prefix = "/" }
+backend = "gate"
+reason = "Everything else routes to gate"
+
+# ─── Cache Policy ────────────────────────────────────────────────────────────
+
+[cache]
+max_size_mb = 256
+ttl_default_seconds = 3600
+ttl_static_seconds = 86400
+invalidation = "webhook"
+sync_interval_seconds = 300
+
+# ─── Cost Awareness ─────────────────────────────────────────────────────────
+
+[cost]
+vps_bandwidth_limit_gb = 1000
+prefer_peer_above_mb = 50
+metered = true
+
+# ─── Trust Routing (bonding model alignment) ─────────────────────────────────
+# Maps bonding tiers to backend access and content scope.
+# Must align with graph.bonding_policy in the membrane deploy graph.
+
+[trust]
+
+[trust.covalent]
+allowed_backends = ["gate", "peer", "vps_cache"]
+content_scope = "all"
+
+[trust.ionic]
+allowed_backends = ["gate", "vps_cache"]
+content_scope = "public,shared"
+
+[trust.metallic]
+allowed_backends = ["gate"]
+content_scope = "public,compute"
+
+[trust.weak]
+allowed_backends = ["vps_cache", "fallback"]
+content_scope = "public"
+
+# ─── Telemetry (sovereignty shadow) ──────────────────────────────────────────
+# Continuous parity monitoring aligned with calibrate→shadow→cutover protocol.
+
+[telemetry]
+enabled = true
+shadow_mode = "permanent"
+collection_interval_s = 900
+retention_days = 90
+skunkbat_correlation = true
+cutover_gate_days = 7

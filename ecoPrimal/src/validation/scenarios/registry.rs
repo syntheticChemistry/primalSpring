@@ -47,6 +47,8 @@ pub enum Track {
     Infrastructure,
     /// Composition lifecycle: reload, federation, parity.
     Lifecycle,
+    /// Sovereignty: membrane composition, content routing, parity protocol.
+    Sovereignty,
 }
 
 impl std::fmt::Display for Track {
@@ -61,6 +63,7 @@ impl std::fmt::Display for Track {
             Self::BiomeosDeploy => write!(f, "biomeos-deploy"),
             Self::Infrastructure => write!(f, "infrastructure"),
             Self::Lifecycle => write!(f, "lifecycle"),
+            Self::Sovereignty => write!(f, "sovereignty"),
         }
     }
 }
@@ -79,6 +82,7 @@ impl Track {
             "biomeos-deploy" | "biomeos" => Some(Self::BiomeosDeploy),
             "infrastructure" | "infra" => Some(Self::Infrastructure),
             "lifecycle" => Some(Self::Lifecycle),
+            "sovereignty" | "sovereign" => Some(Self::Sovereignty),
             _ => None,
         }
     }

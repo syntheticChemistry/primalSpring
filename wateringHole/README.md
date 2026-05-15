@@ -27,11 +27,12 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | **METHOD_GATE_STANDARD.md** | All primal teams | JH-0 ecosystem standard: pre-dispatch capability authorization, exempt whitelist, error codes, enforcement modes. |
 | **PRIMAL_ANNOUNCE_PROTOCOL.md** | All primal teams | `primal.announce` atomic self-registration: wire format, field reference, registration order, signal-tier membership, backward compatibility. Replaces separate `lifecycle.register` + `capability.register` + `method.register` calls (biomeOS v3.57+). |
 
-### Living Handoff
+### Living Handoffs
 
 | File | Audience | What It Covers |
 |------|----------|----------------|
 | **INTERSTADIAL_FOSSILIZATION_HANDOFF.md** | Spring teams | Interstadial fossilization patterns: what to preserve, how to date, provenance READMEs. |
+| **handoffs/PRIMALSPRING_SOVEREIGNTY_LAYER4_EVOLUTION_MAY15_2026.md** | All teams | Sovereignty track (3 scenarios), membrane deploy graph, routing config schema, 4-layer model. |
 
 ### Archived Handoffs (`handoffs/archive/`)
 
@@ -49,7 +50,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
 - **Zero open upstream gaps** — 13/13 primals at zero debt, Waves 1-12 complete, zero panics in production
 - **441 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`)
-- **32 validation scenarios** (9 tracks, 3 tiers: Rust/Live/Both) with shared `validation::helpers`
+- **35 validation scenarios** (10 tracks, 3 tiers: Rust/Live/Both) with shared `validation::helpers`; sovereignty track validates membrane composition, routing parity, content sovereignty
 - **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
 - **RootPulse commit workflow** fully executable (6/6 phases)
@@ -63,11 +64,13 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
 | Capability registry | `config/capability_registry.toml` (441 methods, zero drift) |
+| Routing config schema | `config/routing_config_reference.toml` (canonical membrane routing) |
+| Membrane deploy graph | `graphs/membrane/tower_membrane.toml` (VPS sovereignty boundary) |
 | Method gate CI | `tools/check_method_gate.sh` |
 | Method string validator | `tools/check_method_strings.sh` |
 | Graph method validator | `tools/check_graph_methods.sh` |
 | Experiment tracks | `experiments/` (89 experiments, 20 tracks) |
-| Deploy graphs | `graphs/` (79 deploy TOMLs + 14 atomic signal graphs) |
+| Deploy graphs | `graphs/` (80 deploy TOMLs + 14 atomic signal graphs) |
 | Signal tools | `config/signal_tools.toml` (14 atomic signals for Squirrel AI) |
 | Checksum tool | `tools/regenerate_checksums.sh` |
 | Binary fetch script | `tools/fetch_primals.sh` |
@@ -123,6 +126,9 @@ With biomeOS v3.57 live, each primal should:
    payload so biomeOS can route atomic signals through the correct graphs.
 3. **Validate against 441 methods**: Ensure niche capability counts align
    with `config/capability_registry.toml`.
+4. **Validate membrane compositions**: Downstream membrane deployments must conform
+   to `config/routing_config_reference.toml` schema (backend types, trust tiers,
+   telemetry). Use `graphs/membrane/tower_membrane.toml` as canonical VPS graph.
 4. **Test with biomeOS v3.57**: Signal-tier interception in `capability.call`
    is now live — verify transparent composition collapse doesn't break
    existing call patterns.
@@ -154,7 +160,7 @@ delta. Every spring has completed deep debt sweeps and is at zero debt.
 | ludoSpring | 910 | V72 | health.version + health.drain, 418-method registry alignment |
 | primalSpring | 767 | — | Neural API evolution, signal dispatch, primal.announce, doc reconciliation |
 
-**Convergence state**: All springs CI-validated against canonical 441 methods.
+**Convergence state**: All springs CI-validated against canonical 441 methods. 35 scenarios across 10 tracks.
 All implement BYOB niche model, deploy graphs, and Tier 1/2 validation.
 Fragment-first graph composition adopted ecosystem-wide.
 

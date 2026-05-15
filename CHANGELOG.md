@@ -3,6 +3,40 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased] — Wave 15: Sovereignty Layer 4 Evolution (2026-05-15)
+
+### Added
+- **Sovereignty validation track** — 10th track (`Track::Sovereignty`) with 3 new
+  scenarios (32 → 35 total):
+  - `s_membrane_composition` (Tier::Rust): 4-pillar structural validation of
+    `graphs/membrane/tower_membrane.toml` — graph metadata, tower node
+    completeness, bonding policy, telemetry contract.
+  - `s_sovereignty_parity` (Tier::Both): routing config schema validation
+    (backend types, trust tiers, telemetry) + live membrane boundary health
+    checks (Tower primal liveness, biomeOS capability.discover).
+  - `s_content_sovereignty` (Tier::Live): content pipeline through sovereign
+    routing — BLAKE3 round-trip, sovereign backend resolution, trust-tier
+    alignment, SkunkBat audit correlation.
+- **`graphs/membrane/tower_membrane.toml`** — VPS membrane deploy graph: Tower
+  boundary (BearDog + Songbird + SkunkBat) + NestGate cache-only mode. 3-channel
+  architecture (Signal/Relay/Surface), `composition_model = "membrane"`,
+  `secure_by_default = true`, telemetry contract with shadow mode and cutover gates.
+- **`config/routing_config_reference.toml`** — canonical content-aware routing
+  schema owned by primalSpring. 4 backend types (`btsp_tunnel`, `local_filesystem`,
+  `songbird_p2p`, `http_proxy`), 10 routing rules, 4 trust tiers (covalent/ionic/
+  metallic/weak), cache/cost/telemetry sections. Downstream membrane deployments
+  (e.g. projectNUCLEUS) must conform to this schema.
+
+### Changed
+- Sovereignty Validation Patterns section added to `DOWNSTREAM_PATTERN_GUIDE.md`
+  with 4-layer model table, membrane composition docs, routing schema docs, and
+  calibrate-shadow-cutover protocol reference.
+- Layer 4 in `PRIMAL_GAPS.md` reframed from "Downstream Products" to "Sovereignty
+  Composition" with concrete primalSpring validation artifacts.
+- Membrane composition diagram and sovereignty track added to `ARCHITECTURE.md`.
+- Scenario/track counts updated across all root docs, CONTEXT, wateringHole README,
+  CROSS_SPRING_PARITY_SCORECARD, VALIDATION_TIERS.
+
 ## [Unreleased] — Wave 12: Deep Debt Sweep + Safety (2026-05-14)
 
 ### Changed

@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 15, 2026 — Wave 14+: Dark Forest Glacial Gate standard published, deployment pipeline validated, niche Phase 32 sync (skunkBat in all 7 niches). 441 methods, 32 scenarios (9 tracks, 3 tiers), 14 atomic signal graphs.
+**Last updated**: May 15, 2026 — Wave 14+: Dark Forest Glacial Gate standard published, deployment pipeline validated, niche Phase 32 sync (skunkBat in all 7 niches). Sovereignty track added (membrane composition, parity, content sovereignty). 441 methods, 35 scenarios (10 tracks, 3 tiers), 14 atomic signal graphs.
 
 ---
 
@@ -267,6 +267,57 @@ mod dark_forest {
 spring's graph directory, providing a single CLI command for Dark Forest compliance.
 This converges with `sourdough validate composition` (v0.3.0) and the plasmidBin
 `validate_composition.sh` script.
+
+---
+
+## 6. Sovereignty Validation Patterns (primalSpring ↔ projectNUCLEUS)
+
+The sovereignty track validates the 4-layer model from `PRIMAL_VS_SOVEREIGNTY_GOALS.md`:
+
+| Layer | What | primalSpring Validation |
+|-------|------|------------------------|
+| 1. Primal Capabilities | 441 methods, 13 primals | Existing: `composition-parity`, `domain-contract-sweep` |
+| 2. Security Validation | BTSP, MethodGate, Dark Forest | Existing: `dark-forest-gate`, `bearer-token-auth` |
+| 3. Sovereignty Deployment | VPS membrane, content routing | **NEW**: `membrane-composition`, `sovereignty-parity` |
+| 4. Sovereign Composition | All atomics self-hosted | **NEW**: `content-sovereignty` |
+
+### Membrane Composition (`graphs/membrane/tower_membrane.toml`)
+
+The VPS membrane graph defines the inner boundary: Tower primals (BearDog +
+Songbird + SkunkBat) plus NestGate in cache-only mode. Three channels:
+
+- **Channel 1 (Signal)**: UDS — primal-to-primal IPC on VPS
+- **Channel 2 (Relay)**: BTSP tunnel — VPS to gate encrypted relay
+- **Channel 3 (Surface)**: TLS — public HTTPS on `membrane.primals.eco`
+
+`s_membrane_composition` (Tier::Rust) validates this graph structurally:
+`secure_by_default`, `composition_model = "membrane"`, bonding policy,
+telemetry contract.
+
+### Content-Aware Routing (`config/routing_config_reference.toml`)
+
+primalSpring owns the canonical routing schema; projectNUCLEUS owns instances.
+The schema defines:
+
+- **Backend types**: `btsp_tunnel`, `local_filesystem`, `songbird_p2p`, `http_proxy`
+- **Match predicates**: `path_prefix`, `path_regex`, `host`, `content_type`, `header`, `min_size_mb`
+- **Trust tiers**: `covalent` (all access), `ionic` (scoped), `metallic` (compute), `weak` (public only)
+- **Telemetry**: shadow mode, cutover gate days, SkunkBat correlation
+
+`s_sovereignty_parity` (Tier::Both) validates the schema structurally and
+probes membrane health live.
+
+### Calibrate-Shadow-Cutover Protocol
+
+Sovereignty transitions follow `SOVEREIGNTY_STANDARDS.md`:
+
+1. **Calibrate**: Baseline current metrics (latency, uptime, TLS, content hash parity)
+2. **Shadow**: Run sovereign path in parallel, collect telemetry, compare parity
+3. **Cutover**: After `cutover_gate_days` (>= 7) consecutive parity, switch primary
+
+`s_content_sovereignty` (Tier::Live) validates the content pipeline through
+the sovereign routing layer, verifying BLAKE3 round-trip fidelity and
+SkunkBat audit correlation.
 
 ---
 

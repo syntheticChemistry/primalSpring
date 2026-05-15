@@ -118,7 +118,7 @@ Dark Forest invariant checking, and capability registry cross-referencing.
 New scenarios should use these helpers instead of reimplementing locally.
 
 **Registry meta-test** in `scenarios/mod.rs` validates:
-- `build_registry()` returns exactly 32 scenarios
+- `build_registry()` returns exactly 35 scenarios
 - No duplicate scenario IDs
 - Every `Track` variant has at least one scenario
 - All `Tier::Rust` scenarios pass structurally
@@ -130,7 +130,7 @@ New scenarios should use these helpers instead of reimplementing locally.
 | Both | 5 | Test structural phase or verify no panics |
 | Live | 19 | Verify scenario runs to completion (failures expected without primals) |
 
-`cargo test --lib` exercises all 32 scenarios — the single authoritative CI gate.
+`cargo test --lib` exercises all 35 scenarios — the single authoritative CI gate.
 
 ---
 

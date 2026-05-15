@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 15, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 32 scenarios (9 tracks, 3 tiers), 441 methods, 708 tests (666 lib + 42 experiment). Dark Forest Glacial Gate standard formalized (5-pillar security invariants). 14 atomic signal graphs. All springs pulled to HEAD: 13,750+ total tests across 8 springs.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 35 scenarios (10 tracks, 3 tiers), 441 methods, 708 tests (666 lib + 42 experiment). Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. All springs pulled to HEAD: 13,750+ total tests across 8 springs.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — eprintln→tracing in 5 driver files (Iter 95) |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-14 complete. 32 scenarios (9 tracks), 441 methods. Zero panics in production. Dark Forest Glacial Gate: 5-pillar security invariant standard. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
+**13/13 at zero debt. Waves 1-14 complete. 35 scenarios (10 tracks), 441 methods. Zero panics in production. Dark Forest Glacial Gate: 5-pillar security invariant standard. Sovereignty track: membrane composition + parity + content sovereignty. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
 
 ---
 
@@ -439,17 +439,29 @@ foundation seeding, plasmidBin release readiness
 | groundSpring | V141 | L4 | Done | coralReef IPC, PRNG Phase 2b | **B1-B4 DONE** | lithoSpore integration (B3+B4 INGESTED) |
 | healthSpring | V64m | L5 | Done | ionic bridge (upstream) | B5 COMPLETE, Nest atomic COMPLETE | NestComposition facade, cell.toml deployed, Foundation T10 gap |
 
-### Layer 4: Downstream Products — Interstadial (projectNUCLEUS, gardens)
+### Layer 4: Sovereignty Composition — Interstadial (projectNUCLEUS, gardens)
 
-**Owner**: Product teams
-**Scope**: Gate deployment, sovereignty horizons, composition absorption,
-workload validation, foundation integration
+**Owner**: Product teams + primalSpring (schema ownership)
+**Scope**: Membrane composition, content-aware routing, sovereignty parity,
+calibrate-shadow-cutover protocol, darkforest alignment
 **Phase**: **Interstadial** — shadow runs ACTIVE, sovereignty calibration underway
+
+**primalSpring sovereignty track** (3 new scenarios):
+- `membrane-composition` (Rust): structural validation of `graphs/membrane/tower_membrane.toml`
+- `sovereignty-parity` (Both): routing config schema + live membrane boundary health
+- `content-sovereignty` (Live): content pipeline through sovereign routing + SkunkBat audit
+
+**primalSpring owns**:
+- Canonical routing config schema: `config/routing_config_reference.toml`
+- Membrane deploy graph: `graphs/membrane/tower_membrane.toml`
+- 4-layer sovereignty validation (Layers 1-2 existing, Layers 3-4 new sovereignty track)
+
 **Current** (projectNUCLEUS):
 - Horizon 1: **COMPLETE** — external security, darkforest v0.2.1
 - Horizon 2: **80%** — 2a done, 2b ready, 3a cell membrane live, 3b/3c upstream shipped, **H2-12 BearDog TLS shadow LIVE** (10ms vs 120ms tunnel), **DoT 10/10 FIXED**, tunnel baseline clarified
 - Horizon 3: **20%** — H3-07/H3-08 unblocked, rest future
 - Absorption targets: `composition.deploy(graph)`, Tier 4 rewiring, skunkBat in smaller compositions
+- Forgejo as primary git host, membrane telemetry pipeline (`membrane_telemetry.sh`, `membrane_7day.toml`)
 
 **Current** (lithoSpore/CATHEDRAL):
 - **6/7 modules Tier 2 PASS** (51/51 checks). VM-validated via benchScale + agentReagents

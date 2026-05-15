@@ -55,6 +55,7 @@ pub mod s_cellular_deployment;
 pub mod s_composition_lifecycle;
 pub mod s_composition_parity;
 pub mod s_compute_triangle;
+pub mod s_content_sovereignty;
 pub mod s_coralreef_shader_targets;
 pub mod s_dark_forest_gate;
 pub mod s_deployment_pipeline;
@@ -66,12 +67,14 @@ pub mod s_full_nucleus;
 pub mod s_routing_consistency;
 pub mod s_gate_failure;
 pub mod s_ionic_bond;
+pub mod s_membrane_composition;
 pub mod s_meta_tier_signals;
 pub mod s_nest_atomic;
 pub mod s_nestgate_content_pipeline;
 pub mod s_node_atomic;
 pub mod s_sequential_graph;
 pub mod s_socket_discovery;
+pub mod s_sovereignty_parity;
 pub mod s_startup_ordering;
 pub mod s_tier2_science_api;
 pub mod s_token_federation;
@@ -114,6 +117,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_atomic_signals::SCENARIO);
     r.register(s_meta_tier_signals::SCENARIO);
     r.register(s_agentic_tower::SCENARIO);
+    r.register(s_membrane_composition::SCENARIO);
+    r.register(s_sovereignty_parity::SCENARIO);
+    r.register(s_content_sovereignty::SCENARIO);
     r
 }
 
@@ -124,7 +130,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 32;
+    const EXPECTED_SCENARIO_COUNT: usize = 35;
 
     #[test]
     fn registry_scenario_count() {
@@ -164,6 +170,7 @@ mod tests {
             "biomeos-deploy",
             "infrastructure",
             "lifecycle",
+            "sovereignty",
         ];
         for track in &expected {
             assert!(

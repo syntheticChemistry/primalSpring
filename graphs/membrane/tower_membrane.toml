@@ -1,0 +1,145 @@
+# Source of truth: primalSpring/graphs/ (canonical membrane composition)
+# Runtime execution: biomeOS deploy --graph graphs/membrane/tower_membrane.toml
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Tower Membrane — VPS Sovereignty Boundary
+#
+# The inner membrane composition: Tower primals deployed on VPS as the
+# security/routing boundary between gate hardware and the public internet.
+# NestGate runs in cache-only mode, serving content-aware routing decisions
+# via the routing_config.toml schema.
+#
+# This graph is a subset of nucleus_complete — it represents the VPS
+# touchpoint layer that projectNUCLEUS deploys via membrane_telemetry.sh
+# and validates via darkforest --suite pentest.
+#
+# Channel architecture (from SOVEREIGNTY_STANDARDS.md):
+#   Channel 1 (Signal):  UDS — primal-to-primal IPC on VPS
+#   Channel 2 (Relay):   BTSP tunnel — VPS ↔ gate encrypted relay
+#   Channel 3 (Surface): TLS — public HTTPS on membrane.primals.eco
+#
+# Security model:
+#   All primals: BTSP authenticated
+#   Tower boundary (BearDog + Songbird + SkunkBat): BTSP enforced, full encryption
+#   NestGate cache: BTSP authenticated, read-heavy cache role
+#   External surface: Songbird-only, TLS-terminated
+#
+# Usage:
+#   biomeos deploy --graph graphs/membrane/tower_membrane.toml
+
+[graph]
+name = "tower_membrane"
+description = "VPS membrane: Tower boundary + NestGate cache + content-aware routing"
+version = "1.0.0"
+coordination = "sequential"
+bonding_default = "btsp_required"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+secure_by_default = true
+transport = "uds_only"
+tcp_ports = 0
+composition_model = "membrane"
+fragments = ["tower_atomic"]
+channels = ["signal", "relay", "surface"]
+routing_config_schema = "config/routing_config_reference.toml"
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_gate = "ionic"
+cache_to_tower = "metallic"
+surface_to_tower = "ionic"
+encryption_tiers.tower = "full"
+encryption_tiers.cache = "btsp_authenticated"
+encryption_tiers.surface = "tls_terminated"
+
+[graph.telemetry]
+enabled = true
+shadow_mode = "permanent"
+collection_interval_s = 900
+cutover_gate_days = 7
+skunkbat_correlation = true
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 0: biomeOS Neural API — orchestration substrate
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = [
+    "graph.deploy",
+    "graph.status",
+    "capability.discover",
+    "capability.route",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 1: Tower Atomic — BTSP enforced security perimeter
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
+    "crypto.verify", "crypto.keygen", "crypto.identity",
+]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request",
+]
+
+[[graph.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+capabilities = [
+    "defense.audit", "defense.events", "defense.log",
+    "defense.policy", "defense.status",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 2: NestGate — cache-only mode for content-aware routing
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "content"
+security_model = "btsp"
+args = ["--cache-only"]
+capabilities = [
+    "content.get", "content.exists", "content.resolve",
+    "content.list",
+]

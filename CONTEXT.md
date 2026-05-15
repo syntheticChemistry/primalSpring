@@ -30,7 +30,7 @@ back upstream to primals and primalSpring.
   `primalspring_guidestone` (legacy certification, transitioning → `primalspring certify`),
   `validate_all` (legacy runner, transitioning → `primalspring validate`)
 - **experiments/** — 89 validation binaries covering 20 tracks
-- **graphs/** — 79 deploy graph TOMLs + 14 atomic signal graphs using fragment-first
+- **graphs/** — 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 8 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
   2 cross-spring + 1 federation + 1 composition + 12 cell graphs + `signals/` tier)
@@ -53,7 +53,7 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 32 absorbed experiment scenarios (9 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 35 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
 
@@ -74,15 +74,16 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 ## Status
 
 v0.9.25 Phase 32 atomic model (May 15, 2026) — 708 tests (666 lib + 42 experiment),
-89 experiments (20 tracks), 79 deploy graphs + 14 atomic signal graphs,
+89 experiments (20 tracks), 80 deploy graphs + 14 atomic signal graphs,
 441 registered capability methods. Phase 32 atomic evolution: Tower = 3 primals (bearDog +
 songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7 (Tower +
 nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
 **Waves 7-14 complete**, all Wave 8 upstream items DONE (W8-07/08/09 resolved May 12).
-Zero DEBT markers, zero unsafe blocks, zero panics in production paths. 32 validation
-scenarios (9 tracks, 3 tiers) including atomic-signal, meta-tier-signal, and agentic-tower
-scenarios with shared `validation::helpers` for graph parsing and Dark Forest cross-ref.
+Zero DEBT markers, zero unsafe blocks, zero panics in production paths. 35 validation
+scenarios (10 tracks, 3 tiers) including atomic-signal, meta-tier-signal, agentic-tower,
+and sovereignty scenarios (membrane composition, parity, content sovereignty) with shared
+`validation::helpers` for graph parsing and Dark Forest cross-ref.
 **Dark Forest Glacial Gate**: 5-pillar
 security invariant standard (metadata, ports, network, BTSP, enclave).
 `LIVE_SCIENCE_API.md` formalizes Tier 2 wire contract. All 13 primals at zero debt.

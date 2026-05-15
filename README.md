@@ -9,8 +9,8 @@
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 708 (666 lib + 42 experiment), 57 ignored |
-| **Experiments** | 89 (20 tracks) — 32 validation scenarios (9 tracks) |
-| **Deploy Graphs** | 79 deploy TOMLs + 14 atomic signal graphs — fragment-first composition with `resolve = true` (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 federation + 1 composition + 12 cell graphs) |
+| **Experiments** | 89 (20 tracks) — 35 validation scenarios (10 tracks) |
+| **Deploy Graphs** | 80 deploy TOMLs + 14 atomic signal graphs — fragment-first composition with `resolve = true` (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 membrane + 1 federation + 1 composition + 12 cell graphs) |
 | **Coverage** | Method coverage against 441 registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
@@ -53,7 +53,7 @@ primalSpring/
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)
-│   │   ├── validation/scenarios/  # 32 absorbed experiment scenarios (9 tracks, 3 tiers: Rust/Live/Both)
+│   │   ├── validation/scenarios/  # 35 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/
@@ -71,7 +71,7 @@ primalSpring/
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
 ├── experiments/                   # 89 validation experiments (20 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry, signal tools
-├── graphs/                        # 79 deploy graph TOMLs + 14 atomic signal graphs
+├── graphs/                        # 80 deploy graph TOMLs + 14 atomic signal graphs
 │   ├── signals/                  # 14 atomic signal graphs (tower/node/nest/meta tiers, incl. bootstrap)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
 │   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
@@ -222,7 +222,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 79 deploy graph TOMLs + 14 atomic signal graphs using fragment-first composition (all nodes declare `by_capability`):
+primalSpring ships 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first composition (all nodes declare `by_capability`):
 
 **Root-level graphs (14)**:
 
