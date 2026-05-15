@@ -218,6 +218,18 @@ Since the original handoff (May 9), primalSpring has undergone significant evolu
   cold-start sequence (static Phase 1, graph-driven Phase 2)
 - **`validate_all` binary deprecated** in favor of `primalspring validate`
 
+**Neural API evolution** (biomeOS v3.55–v3.57):
+- `signal.dispatch` is now the preferred dispatch path for atomic signals;
+  `CompositionContext::signal()` uses it with `capability.call` fallback
+- `capability.call` transparently intercepts signal-tier requests and executes
+  the backing graph (composition collapse)
+- `primal.announce` atomic self-registration replaces separate `lifecycle.register`
+  + `capability.register` + `method.register` calls — see `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md`
+- Squirrel `signal_plan` mode decomposes natural-language intent into structured
+  atomic signal step sequences via `config/signal_tools.toml`
+- Tier 2 validation dynamically checks `signal.list` counts and `signal.schema`
+  tool definitions (no hardcoded signal counts)
+
 Springs consuming this handoff should reference `docs/VALIDATION_TIERS.md` for
 the current eukaryotic validation pattern and `config/signal_tools.toml` for
 the atomic signal tool surface.

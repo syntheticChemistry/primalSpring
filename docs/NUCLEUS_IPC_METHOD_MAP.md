@@ -5,6 +5,11 @@
 > Every method below was confirmed via JSON-RPC over UDS.
 > 13/13 NUCLEUS primals, BTSP Phase 3 FULL AEAD, all defaulting to `127.0.0.1`.
 > PG-55 through PG-59 all RESOLVED. Zero open security gaps.
+>
+> **Post-map additions (May 15, 2026)**: biomeOS v3.55–v3.57 added `signal.dispatch`,
+> `signal.list`, `signal.schema` (composition collapse layer) and `primal.announce`
+> (atomic self-registration replacing separate lifecycle/capability/method registration).
+> See `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` and `docs/LIVE_SCIENCE_API.md`.
 
 All primals respond to `health.liveness` (status: "alive").
 Discovery: most expose `primal.capabilities` or `capabilities.list` or `rpc.methods`.

@@ -313,6 +313,15 @@ the running Tower. See `infra/whitePaper/neuralAPI/02_ARCHITECTURE.md`.
 
 Signal tool definitions for Squirrel AI consumption live in `config/signal_tools.toml`.
 
+**Composition collapse**: `CompositionContext::signal()` dispatches atomic signals
+via `signal.dispatch` (preferred) with `capability.call` fallback for older biomeOS
+versions. biomeOS v3.55–v3.57 intercepts `capability.call` transparently when the
+target matches a signal tier, enabling seamless graph-backed execution.
+`primal.announce` provides atomic self-registration (lifecycle + capabilities +
+translations + signal-tier membership in a single RPC). Squirrel's `signal_plan`
+mode decomposes natural-language intent into structured signal step sequences.
+See `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` for the wire format.
+
 ## IPC Resilience
 
 Converged IPC resilience stack absorbed from 7 sibling springs: `IpcError` (8
@@ -496,8 +505,9 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 ## Docs
 
 - `wateringHole/README.md` — Outward-facing guidance index
+- `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` — `primal.announce` atomic self-registration wire format
 - `ARCHITECTURE.md` — UniBin cell model, two-tier validation, organelle map
-- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1-12, 13/13 zero debt)
+- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1-14, 13/13 zero debt)
 - `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` — Full ecosystem audit with Wave 12 addendum
 - `docs/CROSS_SPRING_PARITY_SCORECARD.md` — Cross-spring parity scorecard
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role

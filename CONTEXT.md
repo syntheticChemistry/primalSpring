@@ -105,13 +105,19 @@ auto-harvests on primal push via `repository_dispatch`. GAP-27 (stale biomeOS) r
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
 Live validation: **13/13 primals ALIVE** (plasmidBin v2026.05.03 on eastGate),
-**guidestone Level 4** (BTSP alias routing + flex key fixes shipped Phase 58; 13 failures resolved),
+**guidestone Level 8** (BTSP alias routing + flex key fixes shipped Phase 58; 13 failures resolved),
 **13/13 BTSP authenticated**, 8 cellular graphs BTSP-enforced, bonding model ALL PASS,
 **19/19 exp094 composition parity**, **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
 (HSM cfg-gated). ludoSpring parity: exp068 **6/6**, exp067 **18/19**, exp072 **24/31**.
 Full NUCLEUS validated across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
 benchScale Docker lab: 13 binaries deployed and version-verified.
 biomeOS substrate: Neural API liveness and graph executor validated via guidestone Layer 1.5.
+**Neural API evolution** (biomeOS v3.55–v3.57): `signal.dispatch` as preferred atomic
+signal dispatch path (composition collapse), `capability.call` signal-tier interception,
+`primal.announce` atomic self-registration protocol, metrics tagging with signal
+namespaces, Squirrel `signal_plan` mode for intent-to-signal decomposition. Tier 2
+validation dynamically checks `signal.list` counts and `signal.schema` tool definitions.
+See `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md`.
 
 Multi-tier genetics identity system: Mitochondrial (Mito-Beacon for discovery
 and NAT negotiation), Nuclear (lineage DNA for non-fungible permissions with

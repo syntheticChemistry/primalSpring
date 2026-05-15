@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-14 (Wave 12: Deep debt sweep — zero panics in production, expect→Result, hardcoded paths→discovery, Vec<&String>→&str, thiserror derives, DeployError source chains, deprecated→mito_beacon, resolve_socket_dir)
+> **Last updated**: 2026-05-15 (Wave 14+: Neural API evolution — biomeOS v3.55–v3.57 signal dispatch, primal.announce, squirrel signal_plan. Wave 12 deep debt sweep complete.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -24,7 +24,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — HSM mock `#[cfg(test)]` (Wave 98) |
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
 | toadStool | 22,900+ | **ADOPTED** | FULL | L3 | **CLEAN** — Phase D factory wired (S254). AMD live, NV FECS-gated. 74 JSON-RPC methods. |
-| biomeOS | 7,919+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.54: `biomeos.spring_status` IMPLEMENTED (binary discovery + workload counts for Tier 2 notebooks) |
+| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.57: Neural API evolution complete. `signal.dispatch` composition collapse, `primal.announce` atomic self-registration, metrics tagging with signal namespaces, `capability.call` signal-tier interception. v3.54 `biomeos.spring_status` for Tier 2. |
 | nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — Session 62: content provenance metadata (`source`, `pipeline`, `stored_by` in `content.put/get`). `artifact_query` covered by enriched `content.get`. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 68: 72-method coverage, TensorSession `sub`/`negate` (GAP-HS-027), registry assertion softened to `>= 70` |
@@ -81,6 +81,16 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | — | petalTongue | `backend=nestgate` | **RESOLVED** — v1.6.6 `GET /` → `content.resolve("/")` + live dashboard SSE. |
 | — | bearDog | Ionic lease (H2) | **RESOLVED** — Wave 102 `ttl_seconds`/`expires_at` on `sign_contract`/`verify_contract`. |
 | — | songbird | `capability.resolve` (H2) | **RESOLVED** — Wave 199-201 wire parity. |
+
+### Resolved (Neural API evolution May 15, 2026 — biomeOS v3.55–v3.57)
+
+| ID | Owner | What | Resolution |
+|----|-------|------|------------|
+| — | biomeOS | Merge conflicts from upstream evolution | **RESOLVED** — v3.55: 5 conflict files resolved (capability_translation, capability handler, path_builder). `cargo check` clean. |
+| — | biomeOS | Signal dispatch not wired | **RESOLVED** — v3.56: `signal.dispatch`/`signal.list`/`signal.schema` routes + `capability.call` signal-tier interception. 7 integration tests. Composition collapse active. |
+| — | biomeOS | Metrics lack signal context | **RESOLVED** — v3.57: `GraphExecutor` tags metrics with signal namespace, extracts primal_id/operation from graph nodes. `PathwayLearner` signal-aware. |
+| — | biomeOS | No atomic self-registration | **RESOLVED** — v3.57: `primal.announce` single-RPC registration (lifecycle + capabilities + translations + signal tiers). See `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md`. |
+| — | squirrel | No signal planning mode | **RESOLVED** — `signal_plan` mode for `ai.query`: ingests `signal_tools.toml`, decomposes intent into structured signal step sequences. |
 
 Also resolved by upstream teams (not previously tracked as gaps):
 

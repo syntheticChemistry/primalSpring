@@ -2,8 +2,8 @@
 
 # primalSpring — Primal Proof IPC Mapping
 
-**Date**: May 13, 2026
-**Version**: v0.9.25 (Phase 32 — Tier 2 converged, GAP-36 resolved, Phase D wired)
+**Date**: May 15, 2026
+**Version**: v0.9.25 (Phase 32 — Tier 2 converged, GAP-36 resolved, Phase D wired, Neural API evolution v3.55–v3.57)
 **Role**: Coordination spring — validates compositions, does not perform domain science
 
 ---
@@ -23,7 +23,7 @@ validates) and its inbound IPC surface (methods it serves to consumers).
 ## Outbound IPC — Primals Called During Validation
 
 primalSpring calls primals via `CompositionContext::call()` during
-composition validation. These are the methods exercised across 22
+composition validation. These are the methods exercised across 32
 validation scenarios.
 
 ### Pre-flight (Tier 2 Science API)
@@ -87,6 +87,14 @@ validation scenarios.
 | `network.nat_type` | songbird | `s_domain_contract_sweep.rs` | NAT classification |
 | `network.stun` | songbird | `s_domain_contract_sweep.rs` | STUN binding request |
 | `bonding.status` | biomeOS | `s_domain_contract_sweep.rs` | Bond state query |
+
+### Orchestration Signals (Neural API v3.55+)
+
+| Method | Primal | Module | Purpose |
+|--------|--------|--------|---------|
+| `signal.dispatch` | biomeOS | `s_atomic_signals.rs` | Preferred atomic signal dispatch (composition collapse) |
+| `signal.list` | biomeOS | `s_atomic_signals.rs` | Enumerate registered signal graphs — Tier 2 count validation |
+| `signal.schema` | biomeOS | `s_atomic_signals.rs` | Signal tool schema for Squirrel AI — Tier 2 structure validation |
 
 > **Wire name note (Tower live validation — ludoSpring V70, May 13)**:
 > skunkBat's primary audit method is `security.audit_log` (not `defense.audit`).

@@ -20,7 +20,7 @@
 | **hotSpring** | 1,042 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
 | **healthSpring** | 1,018 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 441 | **G** 7 graphs, skunkBat + Tower atomic (V64n) | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,962 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 441 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
-| **neuralSpring** | 1,453 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (19 certification tests) | **G** 34 capabilities, TOML + sync test vs 427 | **G** 4 graphs (V160 Tower + coralReef routing) | **G** exp094 parity crate, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
+| **neuralSpring** | 1,453 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (19 certification tests) | **G** 34 capabilities, TOML + sync test vs 441 | **G** 4 graphs (V160 Tower + coralReef routing) | **G** exp094 parity crate, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
 | **ludoSpring** | 862 | **G** optional=true, IPC-first default (`default=["ipc"]`) | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **G** 28 game.* + cross-sync 441 | **G** 12 graphs, compute trio in cells (V71) | **G** 100 exp fossilized, 8 scenarios | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
 | **groundSpring** | 1,123 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (modularized 5-layer guidestone) | **G** 16 MCP tools + 6 registry sync tests | **G** 6 graphs | **G** LTEE B2+B1+B3+B4 reproductions + compute trio IPC | **G** 34 (paper-linked) | **G** bans ring/openssl |
 | **airSpring** | 1,389 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated (guidestone) | **G** L4 (7 deploy graphs, 10 scenarios) | **G** 46 capabilities in TOML + cross-sync 441 | **G** 7 graphs | **G** 3 exp crates (exp001-003) | **G** 25 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
@@ -47,8 +47,8 @@
 
 ### 4. Capability Registry
 
-- **Sync-tested** (highest maturity): primalSpring (canonical 427), hotSpring, neuralSpring (34 caps), groundSpring (16 MCP + 6 sync tests), healthSpring (118 methods + CI cross-sync), ludoSpring (28 game.* + cross-sync 441), wetSpring (cross-sync 441), airSpring (46 caps + cross-sync 441)
-- All 8 springs CI-validated against canonical 427 (May 14)
+- **Sync-tested** (highest maturity): primalSpring (canonical 441), hotSpring, neuralSpring (34 caps), groundSpring (16 MCP + 6 sync tests), healthSpring (118 methods + CI cross-sync), ludoSpring (28 game.* + cross-sync 441), wetSpring (cross-sync 441), airSpring (46 caps + cross-sync 441)
+- All 8 springs CI-validated against canonical 441 (May 15)
 
 ### 5. Deploy Graphs
 

@@ -129,10 +129,15 @@ Runs with `biomeOS` orchestrating the full composition.
 `CompositionContext::discover()` uses 5-tier escalation:
 
 1. **Songbird routing** — `ipc.resolve` via the discovery primal
-2. **Neural API** — `capability.call` via biomeOS
+2. **Neural API** — `capability.call` via biomeOS (signal-tier calls transparently dispatch graph execution since v3.55)
 3. **UDS convention** — `$XDG_RUNTIME_DIR/biomeos/{primal}-{fid}.sock`
 4. **Socket registry scan** — enumerate known socket paths
 5. **TCP probing** — opt-in, covalent mesh only
+
+Atomic signals use `signal.dispatch` (biomeOS v3.55+) as the preferred path,
+with `capability.call` fallback. `primal.announce` (v3.57) replaces separate
+`lifecycle.register` + `capability.register` + `method.register` calls with
+a single atomic RPC.
 
 ## Security Model
 
@@ -178,4 +183,5 @@ Python baseline
           → sovereign dispatch (coralReef)
             → primal composition (proto-nucleate graph)
               → NUCLEUS deployment (biomeOS Neural API)
+              → composition collapse (signal.dispatch + primal.announce)
 ```

@@ -3,6 +3,11 @@
 > Interface specification for downstream springs coding against Songbird's IPC/discovery
 > and biomeOS Neural API's capability routing surfaces.
 > Date: April 15, 2026
+>
+> **Update (May 15, 2026)**: biomeOS v3.57 introduced `primal.announce` for atomic
+> self-registration (replaces separate `lifecycle.register` + `capability.register` +
+> `method.register` calls) and `signal.dispatch` for composition collapse. See
+> `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` for the announce wire format.
 
 ## Overview
 
