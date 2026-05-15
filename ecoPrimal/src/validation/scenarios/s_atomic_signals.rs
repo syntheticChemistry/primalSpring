@@ -8,7 +8,8 @@
 //! patterns consistent with their declared intent, and respect Dark Forest
 //! security invariants (secure_by_default, btsp_enforced).
 //!
-//! All checks are Tier::Rust — no live primals required.
+//! Tier 1 checks are Tier::Rust — no live primals required.
+//! Tier 2 checks validate live signal dispatch when biomeOS is available.
 
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
@@ -183,10 +184,76 @@ fn validate_context_signal_method(v: &mut ValidationResult) {
     );
 }
 
+/// Tier 2 (Live) validation: if a biomeOS/orchestration capability is
+/// reachable, verify that `signal.list` and `signal.schema` respond correctly.
+fn validate_live_signal_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let biomeos_available = ctx.has_capability("orchestration");
+
+    v.check_bool(
+        "live:biomeos_available",
+        true,
+        &format!(
+            "biomeOS availability check ({})",
+            if biomeos_available { "live" } else { "offline — skipping Tier 2" }
+        ),
+    );
+
+    if !biomeos_available {
+        return;
+    }
+
+    // signal.list should return all 14 signals
+    match ctx.call("orchestration", "signal.list", serde_json::json!({})) {
+        Ok(response) => {
+            let count = response
+                .get("count")
+                .and_then(|c| c.as_u64())
+                .unwrap_or(0);
+            v.check_bool(
+                "live:signal.list:responds",
+                true,
+                "biomeOS signal.list responds",
+            );
+            v.check_bool(
+                "live:signal.list:count",
+                count == 14,
+                &format!("signal.list reports {count} signals (expected 14)"),
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "live:signal.list:responds",
+                false,
+                &format!("biomeOS signal.list failed: {e}"),
+            );
+        }
+    }
+
+    // signal.schema should load the tools definition
+    match ctx.call("orchestration", "signal.schema", serde_json::json!({})) {
+        Ok(response) => {
+            let has_tools = response.get("tools").is_some();
+            v.check_bool(
+                "live:signal.schema:has_tools",
+                has_tools,
+                "signal.schema returns tools definition",
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "live:signal.schema:responds",
+                false,
+                &format!("biomeOS signal.schema failed: {e}"),
+            );
+        }
+    }
+}
+
 /// Run the atomic signals validation scenario.
-pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
+pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let registry_caps = helpers::load_registry_capabilities();
 
+    // Tier 1 (Rust): structural validation
     for &(signal_name, _path, content) in SIGNAL_GRAPHS {
         let tier = signal_name.split('.').next().unwrap_or("unknown");
 
@@ -202,6 +269,9 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 
     validate_registry_section(v);
     validate_context_signal_method(v);
+
+    // Tier 2 (Live): signal dispatch via biomeOS
+    validate_live_signal_dispatch(v, ctx);
 }
 
 #[cfg(test)]
