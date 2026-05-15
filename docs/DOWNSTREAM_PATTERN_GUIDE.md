@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 14, 2026 — Wave 13 ecosystem reconciliation (427 methods), Tier 2 Science API exemplar, 7 new methods from spring evolution (toadstool.validate, barracuda.precision.route, shader.compile.gemm, etc.)
+**Last updated**: May 14, 2026 — Wave 14: Dark Forest Glacial Gate standard published, deployment pipeline validated, niche Phase 32 sync (skunkBat in all 7 niches). 427 methods, 29 scenarios.
 
 ---
 
@@ -200,6 +200,73 @@ VM with different `hostname_hash`, confirming geo-delocalized validation works.
 - BearDog FIDO2/CTAP2 (SoloKey witness in `liveSpore.json`)
 - genomeBin Tier 3 packaging for lithoSpore USB
 - sporePrint pipeline wiring (`liveSpore.json` → `primals.eco`)
+
+---
+
+## 4. Dark Forest Gate Adoption (springs → security compliance)
+
+The **Dark Forest Glacial Gate Standard** (`wateringHole/DARK_FOREST_GLACIAL_GATE_STANDARD.md`)
+defines five security invariants every deployment must satisfy. primalSpring validates these
+structurally via the `s_dark_forest_gate` scenario. Each spring should adopt the standard
+through their `guidestone` feature gate.
+
+### What Springs Must Validate
+
+| Pillar | Spring CI Check |
+|--------|----------------|
+| 1. Zero Metadata | Verify `stripped = true` in plasmidBin manifest for all consumed primals |
+| 2. Zero Port | Verify no hardcoded TCP ports in spring deploy graphs; `transport = "uds_only"` in graph metadata |
+| 3. Songbird Network | Verify no non-songbird nodes advertise `http.*` or `tls.*` capabilities in deploy graphs |
+| 4. BTSP Crypto | Verify all deploy graphs carry `secure_by_default = true` in `[graph.metadata]` |
+| 5. Enclave | Verify `trust_model = "MethodGate"` in bonding policy; content capabilities route to NestGate |
+
+### Adoption Pattern (via guidestone feature gate)
+
+Springs already CI-validate against the 427-method registry. Dark Forest checks
+are an additional axis in the same `#[cfg(feature = "guidestone")]` test module:
+
+```rust
+#[cfg(feature = "guidestone")]
+mod dark_forest {
+    #[test]
+    fn deploy_graphs_secure_by_default() {
+        // Parse all graphs in graphs/ directory
+        // Assert [graph.metadata] secure_by_default = true
+    }
+
+    #[test]
+    fn no_direct_network_in_graphs() {
+        // For each graph node: if name != "songbird",
+        // assert no http.* or tls.* in capabilities
+    }
+
+    #[test]
+    fn tower_base_in_all_compositions() {
+        // Assert beardog + songbird + skunkbat present
+        // in every composition that includes tower_atomic
+    }
+}
+```
+
+### Adoption Status
+
+| Spring | Registry Sync | Dark Forest Gate | Notes |
+|--------|:------------:|:----------------:|-------|
+| hotSpring | **G** | **PENDING** | Has `secure_by_default` in graphs already |
+| neuralSpring | **G** | **PENDING** | Tower + skunkBat in V160 |
+| wetSpring | **G** | **PENDING** | Composed — pure primal, minimal surface |
+| healthSpring | **G** | **PENDING** | Dual-tower enclave — Pillar 5 critical path |
+| ludoSpring | **G** | **PENDING** | Pure composition — minimal surface |
+| groundSpring | **G** | **PENDING** | 6 deploy graphs need audit |
+| airSpring | **G** | **PENDING** | 7 graphs, 10 scenarios — good foundation |
+| primalSpring | **G** | **DONE** | `s_dark_forest_gate` scenario (29 checks) |
+
+### sourDough Convergence (v0.4.0 roadmap)
+
+`sourdough validate dark-forest <graph-dir>` will wrap the 5-pillar checks for any
+spring's graph directory, providing a single CLI command for Dark Forest compliance.
+This converges with `sourdough validate composition` (v0.3.0) and the plasmidBin
+`validate_composition.sh` script.
 
 ---
 

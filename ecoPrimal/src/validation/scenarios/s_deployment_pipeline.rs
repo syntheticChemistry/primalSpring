@@ -423,23 +423,14 @@ fn stage_verify(v: &mut ValidationResult, manifest: &toml::Value) {
                     .map(|arr| arr.iter().filter_map(|v| v.as_str()).collect())
                     .unwrap_or_default();
 
-                let has_beardog = primals.contains(&"beardog");
-                let has_songbird = primals.contains(&"songbird");
+                let has_tower = TOWER_PRIMALS.iter().all(|t| primals.contains(t));
                 v.check_bool(
                     &format!("verify:niche:{niche_name}:tower_base"),
-                    has_beardog && has_songbird,
+                    has_tower,
                     &format!(
-                        "{niche_name}: beardog={has_beardog}, songbird={has_songbird} (tower base)"
+                        "{niche_name} includes full Phase 32 tower (BearDog+Songbird+skunkBat)"
                     ),
                 );
-
-                let has_skunkbat = primals.contains(&"skunkbat");
-                if !has_skunkbat {
-                    v.check_skip(
-                        &format!("verify:niche:{niche_name}:skunkbat"),
-                        &format!("{niche_name} niche pre-dates Phase 32 tower (skunkBat not listed)"),
-                    );
-                }
 
                 let has_desc = niche
                     .get("description")
