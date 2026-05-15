@@ -202,7 +202,8 @@ fn validate_live_signal_dispatch(v: &mut ValidationResult, ctx: &mut Composition
         return;
     }
 
-    // signal.list should return all 14 signals
+    // signal.list should return signals matching our structural count
+    let expected_count = SIGNAL_GRAPHS.len() as u64;
     match ctx.call("orchestration", "signal.list", serde_json::json!({})) {
         Ok(response) => {
             let count = response
@@ -216,8 +217,10 @@ fn validate_live_signal_dispatch(v: &mut ValidationResult, ctx: &mut Composition
             );
             v.check_bool(
                 "live:signal.list:count",
-                count == 14,
-                &format!("signal.list reports {count} signals (expected 14)"),
+                count == expected_count,
+                &format!(
+                    "signal.list reports {count} signals (expected {expected_count} per structural validation)"
+                ),
             );
         }
         Err(e) => {

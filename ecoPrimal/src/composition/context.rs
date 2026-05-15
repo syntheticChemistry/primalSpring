@@ -348,18 +348,30 @@ impl CompositionContext {
         signal_name: &str,
         params: serde_json::Value,
     ) -> Result<serde_json::Value, IpcError> {
-        let signal_params = serde_json::json!({
-            "capability": tier,
-            "operation": signal_name,
-            "args": params,
-        });
-
-        if self.clients.contains_key("orchestration") {
-            self.call("orchestration", "capability.call", signal_params)
-        } else {
-            Err(IpcError::SocketNotFound {
+        if !self.clients.contains_key("orchestration") {
+            return Err(IpcError::SocketNotFound {
                 primal: format!("orchestration (for signal {tier}.{signal_name})"),
-            })
+            });
+        }
+
+        // Prefer signal.dispatch (direct graph execution) over capability.call
+        // (which requires biomeOS v3.56+ signal-tier interception).
+        let dispatch_params = serde_json::json!({
+            "signal": format!("{tier}.{signal_name}"),
+            "params": params,
+        });
+        match self.call("orchestration", "signal.dispatch", dispatch_params) {
+            Ok(result) => Ok(result),
+            Err(_) => {
+                // Fallback to capability.call for older biomeOS versions
+                // where signal.dispatch is not yet available.
+                let cap_params = serde_json::json!({
+                    "capability": tier,
+                    "operation": signal_name,
+                    "args": params,
+                });
+                self.call("orchestration", "capability.call", cap_params)
+            }
         }
     }
 
@@ -385,7 +397,7 @@ impl CompositionContext {
         context: serde_json::Value,
     ) -> Result<serde_json::Value, IpcError> {
         let plan_params = serde_json::json!({
-            "query": intent,
+            "prompt": intent,
             "context": context,
             "mode": "signal_plan",
             "tool_schema": "config/signal_tools.toml",
