@@ -92,7 +92,7 @@ eastGate have been cleaned (7 primals reset to `origin/main`).
 | squirrel | `db3db3a` | Signal plan mode for `ai.query` — Neural API composition collapse |
 | bearDog | `103982c` | Wave 102: ionic lease on `crypto.sign_contract` + `crypto.seed_fingerprint` |
 | songbird | `237f7e2` | Wave 204: GAP-16 Tower Atomic — `mesh.*` on canonical UDS |
-| toadStool | `ccd9243` | S262: expose `device.gr.init` IPC + coralReef shader metadata aliases |
+| toadStool | `cf7e212` | S263: CPUCTL_ALIAS breakthrough — FECS alive through warm handoff, Titan V dispatch |
 | barraCuda | `10473ba` | Sprint 69: add `health.version` standalone RPC for trio consistency |
 | coralReef | `d9d681c` | Sprint 12: synchronize all root docs, 3,181 tests |
 | nestGate | `737660d` | Session 62: content provenance metadata (`artifact_query`) |
@@ -135,6 +135,77 @@ With biomeOS v3.57 live, each primal should:
 | infra/whitePaper | 3 modified neuralAPI chapters (00, 01, 03) | Review and push |
 | infra/benchScale | 1 modified spec + 1 untracked topology | Review and push |
 | neuralSpring | 1 untracked `inference.rs` | Add or gitignore |
+
+---
+
+## River Delta (Springs) — Evolution Summary (May 15, 2026)
+
+All 8 springs pulled to HEAD. Combined: **10,218 `#[test]` markers** across the
+delta. Every spring has completed deep debt sweeps and is at zero debt.
+
+| Spring | Tests | HEAD | Recent Evolution |
+|--------|------:|------|------------------|
+| wetSpring | 2,064 | V168 | Live NUCLEUS guideStone 30/31, barraCuda v0.4.0 absorbed, coralReef niche |
+| neuralSpring | 1,556 | S206 | Compute trio wave, skunkBat triple-first Tower, inference pipeline |
+| airSpring | 1,468 | — | Tower triple-first, atomic deployment handoff, AG-005 inference resolved |
+| groundSpring | 1,286 | V142 | Compute trio wave, shader.compile.gemm, 3 upstream gaps |
+| hotSpring | 1,148 | — | Sovereign dispatch validated on Titan V, CPUCTL_ALIAS breakthrough, Blackwell gaps |
+| healthSpring | 1,019 | V64n | Tower atomic, deploy graph canonicalization, barraCuda v0.4.0 |
+| ludoSpring | 910 | V72 | health.version + health.drain, 418-method registry alignment |
+| primalSpring | 767 | — | Neural API evolution, signal dispatch, primal.announce, doc reconciliation |
+
+**Convergence state**: All springs CI-validated against canonical 441 methods.
+All implement BYOB niche model, deploy graphs, and Tier 1/2 validation.
+Fragment-first graph composition adopted ecosystem-wide.
+
+---
+
+## Downstream Products (Gardens) — Evolution Summary (May 15, 2026)
+
+### projectNUCLEUS — Sovereignty Evolution
+
+projectNUCLEUS has driven massive sovereignty infrastructure evolution:
+
+- **Forgejo PRIMARY**: 32 repos, 3 orgs, dual-push mirror to GitHub
+- **VPS Tower LIVE**: DigitalOcean 2GB, Songbird TURN :3478, RustDesk,
+  BearDog, SkunkBat, Caddy — hardened membrane posture
+- **Channel 3 TLS**: `membrane.primals.eco` with DNS grey-cloud, ACME
+  (Let's Encrypt E8), sporePrint served from VPS cache, HTTP parity PASS
+- **Membrane telemetry**: Continuous sovereignty shadow, rolling
+  `membrane_7day.toml` baselines, `darkforest` v0.2.1 membrane audit
+- **Interstadial exit gate CLEARED**: Dark Forest PASS, 13/13 primals LIVE
+- **BearDog TLS shadow**: :8443, 11ms RPC vs 188ms Cloudflare
+
+**Still in progress**: BTSP JupyterHub cutover (dual-auth shadow active),
+petalTongue extracellular wiring, sovereign DNS (knot-dns, H2-17–H2-20),
+Forgejo Actions CI porting.
+
+### CATHEDRAL (lithoSpore + foundation)
+
+**lithoSpore** — First Targeted GuideStone (hypogeal cotyledon):
+- **7/7 modules PASS** at Tier 2 (75/75 checks), chaos tested
+- Ingested primalSpring patterns: capability registry, Dark Forest graphs
+- Deep evolution: UDS RPC implemented, monoliths refactored, USB pipeline hardened
+- Interactive SceneGraph handback complete (6/6 phases via petalTongue)
+- Needs from upstream: Songbird TURN client library, genomeBin Tier 3 USB,
+  neuralSpring ML surrogates for B3/B4/B6
+
+**foundation** — Validated scientific lineage (10 domain threads):
+- Thread 2 Plasma **12/12 PASS**, Thread 6 Agricultural **36/36 PASS**,
+  Thread 7 Anderson **18/18 PASS**
+- Thread 1 WCM: fetch infra ok, **RPC upstream-blocked** (0/24 pending review)
+- Data integrity: many `blake3 = ""` in source TOMLs — needs fetch + backfill
+- Upstream audit prep delivered (May 15)
+- Needs from upstream: RPC stack for Thread 1, neuralSpring ML sources (Thread 5)
+
+### esotericWebb
+
+At V7 — self-composed via primal composition (ludoSpring decomposed).
+Neural API routing wired in PrimalBridge. Clean.
+
+### blueFish
+
+Remote repo not found (`404`). Either renamed, private, or not yet created.
 
 ---
 
