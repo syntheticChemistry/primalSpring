@@ -161,3 +161,16 @@ fn validate_graph_list(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         Err(e) => v.check_bool("graph_list", false, &format!("error: {e}")),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn biomeos_neural_api_no_panic() {
+        let mut v = ValidationResult::new("biomeos-neural-api");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

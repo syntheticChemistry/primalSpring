@@ -84,3 +84,20 @@ fn phase_topological_waves(v: &mut ValidationResult) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn startup_ordering_pass() {
+        let mut v = ValidationResult::new("startup-ordering");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert_eq!(
+            v.failed, 0,
+            "startup ordering scenario had {} failures (use --nocapture for details)",
+            v.failed
+        );
+    }
+}

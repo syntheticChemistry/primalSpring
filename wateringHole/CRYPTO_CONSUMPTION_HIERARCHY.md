@@ -5,9 +5,9 @@
 > contexts escalate cipher requirements, and the recommended posture for
 > crypto-consuming primals.
 >
-> **Canonical source**: `infra/wateringHole/` (this is the primalSpring
-> local copy for spring context; the canonical version lives in the
-> ecosystem-wide wateringHole).
+> **Canonical source**: `ecoPrimals/infra/wateringHole/` (this is the
+> primalSpring local copy for spring context; the canonical version lives
+> in the ecosystem-wide wateringHole at the infra repo root).
 >
 > **Date**: May 2, 2026
 > **Phase**: BTSP Phase 3 (ChaCha20-Poly1305 AEAD) convergence

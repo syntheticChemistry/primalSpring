@@ -179,3 +179,19 @@ fn phase_composition_parity(v: &mut ValidationResult, ctx: &mut CompositionConte
         tolerances::NUCLEUS_STARTUP_MAX_US,
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn full_nucleus_structural_pass() {
+        let mut v = ValidationResult::new("full-nucleus");
+        phase_structural(&mut v);
+        assert_eq!(
+            v.failed, 0,
+            "full nucleus structural phase had {} failures",
+            v.failed
+        );
+    }
+}

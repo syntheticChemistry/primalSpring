@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: nest.retrieve
+#
+# Parallel retrieval: fetch content from NestGate, session from rhizoCrypt,
+# and provenance from sweetGrass simultaneously.
+
+[graph]
+id = "nest_retrieve"
+name = "Nest Retrieve Signal"
+description = "Parallel: content.get + dag.session.get + provenance.query."
+version = "1.0.0"
+coordination = "parallel"
+signal_tier = "nest"
+signal_name = "retrieve"
+
+[graph.metadata]
+particle = "neutron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+
+[[graph.nodes]]
+name = "get_content"
+binary = "nestgate"
+order = 1
+required = true
+spawn = false
+by_capability = "content"
+capabilities = ["content.get"]
+
+[[graph.nodes]]
+name = "get_session"
+binary = "rhizocrypt"
+order = 1
+required = false
+spawn = false
+by_capability = "dag"
+capabilities = ["session.state"]
+
+[[graph.nodes]]
+name = "get_provenance"
+binary = "sweetgrass"
+order = 1
+required = false
+spawn = false
+by_capability = "commit"
+capabilities = ["provenance.attribute"]

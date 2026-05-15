@@ -16,7 +16,7 @@ Rust library interactions — no running primals required.
 
 - Deploy graph TOML parsing and schema validation
 - Bonding policy rule checks (`BondType`, `TrustModel`)
-- Capability registry string matching against canonical 418
+- Capability registry string matching against canonical 441 methods
 - BTSP protocol frame serialization round-trips
 - Tolerance constant assertions (documented thresholds)
 - `ValidationResult` harness structural tests
@@ -100,6 +100,37 @@ match ctx.call("math", "stats.mean", params) {
 The `check_skip` pattern ensures validation runs are always informative — SKIP
 is not FAIL. The experiment catalog records which primals were available for
 each run.
+
+---
+
+## Scenario Infrastructure (Eukaryotic)
+
+The validation infrastructure has evolved from standalone experiment binaries
+(prokaryotic era: exp001–exp111) into 32 absorbed scenarios in
+`ecoPrimal/src/validation/scenarios/`. Every scenario has:
+
+- A `pub const SCENARIO: Scenario` with metadata (id, track, tier, provenance)
+- A `pub fn run(v, ctx)` performing validation checks via `ValidationResult`
+- A `#[cfg(test)] mod tests` block exercised by `cargo test --lib`
+
+**Shared helpers** (`validation::helpers`) provide reusable graph TOML parsing,
+Dark Forest invariant checking, and capability registry cross-referencing.
+New scenarios should use these helpers instead of reimplementing locally.
+
+**Registry meta-test** in `scenarios/mod.rs` validates:
+- `build_registry()` returns exactly 32 scenarios
+- No duplicate scenario IDs
+- Every `Track` variant has at least one scenario
+- All `Tier::Rust` scenarios pass structurally
+- All provenance dates are valid ISO 8601
+
+| Tier | Count | `cargo test` strategy |
+|------|------:|----------------------|
+| Rust | 8 | Assert `v.failed == 0` (full structural pass) |
+| Both | 5 | Test structural phase or verify no panics |
+| Live | 19 | Verify scenario runs to completion (failures expected without primals) |
+
+`cargo test --lib` exercises all 32 scenarios — the single authoritative CI gate.
 
 ---
 

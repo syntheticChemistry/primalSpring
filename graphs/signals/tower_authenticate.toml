@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: tower.authenticate
+#
+# Negotiates BTSP auth via BearDog and verifies lineage via skunkBat.
+# The fundamental trust handshake for any composition.
+
+[graph]
+id = "tower_authenticate"
+name = "Tower Authenticate Signal"
+description = "BTSP negotiate → verify lineage. Establishes trust between primals."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "tower"
+signal_name = "authenticate"
+
+[graph.metadata]
+particle = "electron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+
+[[graph.nodes]]
+name = "negotiate"
+binary = "beardog"
+order = 1
+required = true
+spawn = false
+by_capability = "security"
+capabilities = ["btsp.negotiate"]
+
+[[graph.nodes]]
+name = "verify_lineage"
+binary = "skunkbat"
+order = 2
+required = true
+spawn = false
+depends_on = ["negotiate"]
+by_capability = "defense"
+capabilities = ["defense.audit"]

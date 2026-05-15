@@ -92,3 +92,16 @@ fn phase_composition(v: &mut ValidationResult, ctx: &CompositionContext) {
         &format!("{btsp_count}/{} BTSP authenticated", btsp.len()),
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tower_atomic_no_panic() {
+        let mut v = ValidationResult::new("tower-atomic");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

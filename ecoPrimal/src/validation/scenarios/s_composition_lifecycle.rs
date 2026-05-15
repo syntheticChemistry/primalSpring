@@ -136,3 +136,16 @@ fn phase_btsp_continuity(v: &mut ValidationResult, ctx: &CompositionContext) {
         &format!("{authenticated}/{total} BTSP authenticated"),
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn composition_lifecycle_no_panic() {
+        let mut v = ValidationResult::new("composition-lifecycle");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: meta.health
+#
+# Parallel health check of all 3 meta-tier primals. Returns composed
+# health state of the orchestration + AI + UI layer.
+
+[graph]
+id = "meta_health"
+name = "Meta Health Signal"
+description = "Parallel liveness check on biomeOS + squirrel + petalTongue."
+version = "1.0.0"
+coordination = "parallel"
+signal_tier = "meta"
+signal_name = "health"
+
+[graph.metadata]
+particle = "meta"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+
+[[graph.nodes]]
+name = "biomeos_health"
+binary = "biomeos"
+order = 1
+required = true
+spawn = false
+by_capability = "orchestration"
+capabilities = ["health.liveness"]
+
+[[graph.nodes]]
+name = "squirrel_health"
+binary = "squirrel"
+order = 1
+required = false
+spawn = false
+by_capability = "ai"
+capabilities = ["health.liveness"]
+
+[[graph.nodes]]
+name = "petaltongue_health"
+binary = "petaltongue"
+order = 1
+required = false
+spawn = false
+by_capability = "visualization"
+capabilities = ["health.liveness"]

@@ -16,12 +16,12 @@ contains all validation, certification, and coordination capabilities.
 │  │  Engine           │  │  Scenarios       │  │  (membrane)  │  │
 │  │  (mitochondria)   │  │  (ribosomes)     │  │              │  │
 │  │                   │  │                  │  │  JSON-RPC    │  │
-│  │  L0: Bare         │  │  20 absorbed     │  │  2.0 over    │  │
+│  │  L0: Bare         │  │  32 absorbed     │  │  2.0 over    │  │
 │  │  L0.5: Seed       │  │  experiments     │  │  Unix socket │  │
 │  │  L1: Discovery    │  │  across 9 tracks │  │              │  │
 │  │  L1.5: BTSP       │  │                  │  │  MethodGate  │  │
 │  │  L2: Health       │  │  Tier 1: Rust    │  │  (JH-0)      │  │
-│  │  L3: Parity       │  │  Tier 2: Live    │  │              │  │
+│  │  L3: Parity       │  │  Tier 2: Live/   │  │              │  │
 │  │  L4: Pipeline     │  │                  │  │  capability  │  │
 │  │  L5: Bonding      │  │  ScenarioMeta    │  │  discovery   │  │
 │  │  L6: Crypto       │  │  + provenance    │  │  + routing   │  │
@@ -89,7 +89,8 @@ Runs with `biomeOS` orchestrating the full composition.
 | `certification/lifecycle.rs` | L8: composition reload + rediscovery |
 | `certification/entropy.rs` | Seed provenance, fingerprint verification |
 | `validation/` | `ValidationResult` harness, check_bool/check_skip/section API |
-| `validation/scenarios/` | Absorbed experiment patterns (20 scenarios, 9 tracks) |
+| `validation/helpers.rs` | Shared graph parsing, Dark Forest invariants, capability cross-ref |
+| `validation/scenarios/` | 32 absorbed experiment scenarios (9 tracks, 3 tiers: Rust/Live/Both) |
 | `validation/scenarios/registry.rs` | `ScenarioMeta`, `ScenarioRegistry`, `Tier`, `Track` |
 | `composition/` | `CompositionContext` — 5-tier discovery, IPC calls, BTSP |
 | `coordination/` | `AtomicType`, deprecated probes (→ `CompositionContext`) |

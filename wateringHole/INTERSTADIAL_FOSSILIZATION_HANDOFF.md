@@ -192,11 +192,35 @@ For each `path = "../../primals/..."` dependency:
 | Validation Tiers architecture | `docs/VALIDATION_TIERS.md` |
 | Fossil record | `fossilRecord/README.md` (local redirect → [shared repo](https://github.com/ecoPrimals/fossilRecord)) |
 | Experiment catalog | `experiments/results/experiment_catalog.json` |
-| Capability registry | `config/capability_registry.toml` (389 methods) |
+| Capability registry | `config/capability_registry.toml` (441 methods) |
 | CompositionContext docs | `ecoPrimal/src/composition/context.rs` |
 | plasmidBin depot pattern | `wateringHole/PLASMINBIN_DEPOT_PATTERN.md` |
 | Method Gate standard | `wateringHole/METHOD_GATE_STANDARD.md` |
 | Crypto consumption hierarchy | `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` |
+
+---
+
+## Post-Interstadial Evolution Delta (May 15, 2026)
+
+Since the original handoff (May 9), primalSpring has undergone significant evolution:
+
+- **32 validation scenarios** (was 20 at handoff) — added `s_atomic_signals`,
+  `s_meta_tier_signals`, `s_agentic_tower`, `s_dark_forest_gate`,
+  `s_deployment_pipeline`, and several others
+- **441 capability methods** (was 389) — signal names, meta-tier methods, and
+  agentic tower capabilities added to registry
+- **Eukaryotic validation infrastructure** — shared `validation::helpers` module
+  extracts graph parsing, Dark Forest invariants, and capability cross-referencing
+  from duplicated scenario code. Registry meta-tests validate scenario consistency.
+- **14 atomic signal graphs** (`graphs/signals/`) define the Neural API
+  composition collapse layer: tower/node/nest/meta tiers
+- **`tower.bootstrap` signal** resolves the bootstrap paradox with a two-phase
+  cold-start sequence (static Phase 1, graph-driven Phase 2)
+- **`validate_all` binary deprecated** in favor of `primalspring validate`
+
+Springs consuming this handoff should reference `docs/VALIDATION_TIERS.md` for
+the current eukaryotic validation pattern and `config/signal_tools.toml` for
+the atomic signal tool surface.
 
 ---
 

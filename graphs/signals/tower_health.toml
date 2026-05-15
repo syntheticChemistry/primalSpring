@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: tower.health
+#
+# Parallel health check of all 3 Tower primals. Returns composed
+# health state of the trust boundary.
+
+[graph]
+id = "tower_health"
+name = "Tower Health Signal"
+description = "Parallel liveness check on bearDog + songbird + skunkBat."
+version = "1.0.0"
+coordination = "parallel"
+signal_tier = "tower"
+signal_name = "health"
+
+[graph.metadata]
+particle = "electron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+
+[[graph.nodes]]
+name = "beardog_health"
+binary = "beardog"
+order = 1
+required = true
+spawn = false
+by_capability = "security"
+capabilities = ["health.liveness"]
+
+[[graph.nodes]]
+name = "songbird_health"
+binary = "songbird"
+order = 1
+required = true
+spawn = false
+by_capability = "discovery"
+capabilities = ["health.liveness"]
+
+[[graph.nodes]]
+name = "skunkbat_health"
+binary = "skunkbat"
+order = 1
+required = true
+spawn = false
+by_capability = "defense"
+capabilities = ["health.liveness"]

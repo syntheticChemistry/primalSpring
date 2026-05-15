@@ -82,3 +82,16 @@ fn phase_reachability(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn socket_discovery_no_panic() {
+        let mut v = ValidationResult::new("socket-discovery");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

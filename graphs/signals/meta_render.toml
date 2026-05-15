@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: meta.render
+#
+# Results flow back from biomeOS graph execution through squirrel
+# for AI narration/summarization, then to petalTongue for visual
+# rendering. Closes the agentic loop — user sees composed output,
+# never individual primal results.
+
+[graph]
+id = "meta_render"
+name = "Meta Render Signal"
+description = "Graph status → AI summarize → viz render. Closes the agentic loop with narrated output."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "meta"
+signal_name = "render"
+
+[graph.metadata]
+particle = "meta"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+
+[[graph.nodes]]
+name = "collect_results"
+binary = "biomeos"
+order = 1
+required = true
+spawn = false
+by_capability = "orchestration"
+capabilities = ["graph.status"]
+
+[[graph.nodes]]
+name = "summarize"
+binary = "squirrel"
+order = 2
+required = true
+spawn = false
+depends_on = ["collect_results"]
+by_capability = "ai"
+capabilities = ["ai.complete"]
+
+[[graph.nodes]]
+name = "render_output"
+binary = "petaltongue"
+order = 3
+required = true
+spawn = false
+depends_on = ["summarize"]
+by_capability = "visualization"
+capabilities = ["viz.render"]

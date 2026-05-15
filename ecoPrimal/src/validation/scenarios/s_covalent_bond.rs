@@ -152,3 +152,20 @@ fn phase_multi_node_skips(v: &mut ValidationResult) {
         "needs live Plasmodium routing between gates",
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn covalent_bond_pass() {
+        let mut v = ValidationResult::new("covalent-bond");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert_eq!(
+            v.failed, 0,
+            "covalent bond scenario had {} failures (use --nocapture for details)",
+            v.failed
+        );
+    }
+}

@@ -20,6 +20,7 @@
 //! (e.g. to a test harness capture buffer instead of stdout). Default is
 //! [`StdoutSink`].
 
+pub mod helpers;
 pub mod or_exit;
 pub mod scenarios;
 

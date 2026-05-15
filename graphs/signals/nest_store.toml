@@ -1,0 +1,61 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: nest.store
+#
+# Full provenance store: content into NestGate, event into rhizoCrypt DAG,
+# commit to loamSpine ledger, attribution braid via sweetGrass.
+
+[graph]
+id = "nest_store"
+name = "Nest Store Signal"
+description = "Store → DAG append → commit → attribute. Full provenance pipeline."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "nest"
+signal_name = "store"
+
+[graph.metadata]
+particle = "neutron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+fragments = ["tower_atomic"]
+
+[[graph.nodes]]
+name = "store_content"
+binary = "nestgate"
+order = 1
+required = true
+spawn = false
+by_capability = "storage"
+capabilities = ["content.put"]
+
+[[graph.nodes]]
+name = "dag_append"
+binary = "rhizocrypt"
+order = 2
+required = true
+spawn = false
+depends_on = ["store_content"]
+by_capability = "dag"
+capabilities = ["event.append"]
+
+[[graph.nodes]]
+name = "commit"
+binary = "loamspine"
+order = 3
+required = true
+spawn = false
+depends_on = ["dag_append"]
+by_capability = "ledger"
+capabilities = ["session.commit"]
+
+[[graph.nodes]]
+name = "attribute"
+binary = "sweetgrass"
+order = 4
+required = false
+spawn = false
+depends_on = ["commit"]
+by_capability = "commit"
+capabilities = ["braid.create"]

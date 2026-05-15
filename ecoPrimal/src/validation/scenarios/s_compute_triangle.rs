@@ -425,3 +425,16 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
         "sovereign dispatch contract shape validated (compile -> dispatch path exists)",
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn compute_triangle_no_panic() {
+        let mut v = ValidationResult::new("compute-triangle");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

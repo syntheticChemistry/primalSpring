@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: tower.discover
+#
+# Discovers peers via Songbird, verifies their identity via BearDog,
+# and logs the discovery event via skunkBat.
+
+[graph]
+id = "tower_discover"
+name = "Tower Discover Signal"
+description = "Find peers → verify identity → audit. Authenticated peer discovery."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "tower"
+signal_name = "discover"
+
+[graph.metadata]
+particle = "electron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+
+[[graph.nodes]]
+name = "find_peers"
+binary = "songbird"
+order = 1
+required = true
+spawn = false
+by_capability = "discovery"
+capabilities = ["discovery.peers"]
+
+[[graph.nodes]]
+name = "verify_peer"
+binary = "beardog"
+order = 2
+required = true
+spawn = false
+depends_on = ["find_peers"]
+by_capability = "security"
+capabilities = ["crypto.verify"]
+
+[[graph.nodes]]
+name = "audit"
+binary = "skunkbat"
+order = 3
+required = true
+spawn = false
+depends_on = ["verify_peer"]
+by_capability = "defense"
+capabilities = ["security.audit_event"]

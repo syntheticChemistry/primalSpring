@@ -15,9 +15,9 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ---
 
-## Ecosystem Status (May 14, 2026)
+## Ecosystem Status (May 15, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 29 scenarios (+ Dark Forest gate, deployment pipeline), 427 methods (313 exercised, 73.3%), 651+ tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). All springs pulled to HEAD: 13,750+ total tests across 8 springs.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 32 scenarios (9 tracks, 3 tiers), 441 methods, 708 tests (666 lib + 42 experiment). Dark Forest Glacial Gate standard formalized (5-pillar security invariants). 14 atomic signal graphs. All springs pulled to HEAD: 13,750+ total tests across 8 springs.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — eprintln→tracing in 5 driver files (Iter 95) |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-14 complete. 29 scenarios, 427 methods. Zero panics in production. Dark Forest Glacial Gate: 5-pillar security invariant standard.**
+**13/13 at zero debt. Waves 1-14 complete. 32 scenarios (9 tracks), 441 methods. Zero panics in production. Dark Forest Glacial Gate: 5-pillar security invariant standard. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
 
 ---
 
@@ -396,13 +396,14 @@ See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 ### Layer 2: primalSpring — The Stadial Gate
 
 **Owner**: primalSpring team
-**Scope**: Canonical capability registry (418 methods), deploy graph library,
+**Scope**: Canonical capability registry (441 methods), deploy graph library,
 composition validation, gap registry, `CompositionContext` API, two-tier
-validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification
+validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification,
+atomic signal graphs, eukaryotic validation scenarios with shared helpers
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 427 methods (313 exercised, 73.3%), 641 tests, zero local debt. All waves complete:
+**Current**: 441 methods, 708 tests (666 lib + 42 experiment), zero local debt. All waves complete:
 - Wave 8: Compute trio composition — 9/9 DONE
 - Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
 - Wave 10: Phase 32 atomic model — all fragments v3.0.0

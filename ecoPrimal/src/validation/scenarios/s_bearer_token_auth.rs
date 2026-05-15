@@ -143,3 +143,16 @@ fn phase_authenticated_call(v: &mut ValidationResult, ctx: &mut CompositionConte
         ),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bearer_token_auth_no_panic() {
+        let mut v = ValidationResult::new("bearer-token-auth");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

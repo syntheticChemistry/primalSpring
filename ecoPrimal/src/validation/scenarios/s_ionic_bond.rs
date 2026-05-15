@@ -77,3 +77,20 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ionic_bond_pass() {
+        let mut v = ValidationResult::new("ionic-bond");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert_eq!(
+            v.failed, 0,
+            "ionic bond scenario had {} failures (use --nocapture for details)",
+            v.failed
+        );
+    }
+}

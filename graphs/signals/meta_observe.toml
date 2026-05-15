@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: meta.observe
+#
+# User opens a view — petalTongue creates a visualization session,
+# squirrel pushes ecosystem context, biomeOS provides graph state.
+# The result is a context-rich observation that grounds further
+# agentic planning.
+
+[graph]
+id = "meta_observe"
+name = "Meta Observe Signal"
+description = "Session create → context push → graph list. Grounded observation for agentic planning."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "meta"
+signal_name = "observe"
+
+[graph.metadata]
+particle = "meta"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+
+[[graph.nodes]]
+name = "create_session"
+binary = "petaltongue"
+order = 1
+required = true
+spawn = false
+by_capability = "visualization"
+capabilities = ["visualization.session.create"]
+
+[[graph.nodes]]
+name = "push_context"
+binary = "squirrel"
+order = 2
+required = true
+spawn = false
+depends_on = ["create_session"]
+by_capability = "ai"
+capabilities = ["squirrel.context.push"]
+
+[[graph.nodes]]
+name = "list_graphs"
+binary = "biomeos"
+order = 3
+required = true
+spawn = false
+depends_on = ["push_context"]
+by_capability = "orchestration"
+capabilities = ["graph.list"]

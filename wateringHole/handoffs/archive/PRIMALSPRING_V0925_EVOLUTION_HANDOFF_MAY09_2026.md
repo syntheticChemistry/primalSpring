@@ -1,3 +1,5 @@
+> **SUPERSEDED** (May 15, 2026): This is a fossil-record snapshot. For current metrics and patterns, see `wateringHole/README.md` and the root `README.md`.
+
 # primalSpring v0.9.25 Evolution Handoff — May 9, 2026
 
 **From**: primalSpring (syntheticChemistry)

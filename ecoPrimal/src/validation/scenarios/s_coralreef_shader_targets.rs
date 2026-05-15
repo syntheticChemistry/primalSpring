@@ -177,3 +177,16 @@ fn phase_naga_ingest(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn coralreef_shader_targets_no_panic() {
+        let mut v = ValidationResult::new("coralreef-shader-targets");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

@@ -213,3 +213,20 @@ fn phase_sequential_ordering(v: &mut ValidationResult, ctx: &mut CompositionCont
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sequential_graph_pass() {
+        let mut v = ValidationResult::new("sequential-graph");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert_eq!(
+            v.failed, 0,
+            "sequential graph scenario had {} failures (use --nocapture for details)",
+            v.failed
+        );
+    }
+}

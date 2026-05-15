@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 14, 2026 — Wave 14: Dark Forest Glacial Gate standard published, deployment pipeline validated, niche Phase 32 sync (skunkBat in all 7 niches). 427 methods, 29 scenarios.
+**Last updated**: May 15, 2026 — Wave 14+: Dark Forest Glacial Gate standard published, deployment pipeline validated, niche Phase 32 sync (skunkBat in all 7 niches). 441 methods, 32 scenarios (9 tracks, 3 tiers), 14 atomic signal graphs.
 
 ---
 

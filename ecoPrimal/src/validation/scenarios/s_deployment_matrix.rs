@@ -282,3 +282,18 @@ fn phase_composition_assessment(
         &format!("{composition}: {live}/5 primals, {total_capabilities} capabilities; arch={arch} transport={transport} cell={cell}"),
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deployment_matrix_no_panic() {
+        let mut v = ValidationResult::new("deployment-matrix");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        // Live scenario: failures expected without primals/REMOTE_GATE_HOST.
+        // This test validates no panics and that the scenario runs to completion.
+        assert!(v.evaluated() > 0, "deployment matrix should produce at least one check");
+    }
+}

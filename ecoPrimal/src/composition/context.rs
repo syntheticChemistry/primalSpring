@@ -313,6 +313,139 @@ impl CompositionContext {
         self.bearer_token.is_some()
     }
 
+    // ── Atomic signals ──────────────────────────────────────────────────
+
+    /// Atomic tier names recognized by [`signal`](Self::signal).
+    const SIGNAL_TIERS: &[&str] = &["tower", "node", "nest", "nucleus", "meta"];
+
+    /// Send an atomic signal to a composition tier.
+    ///
+    /// Signals are compound operations addressed to atomic tiers (Tower, Node,
+    /// Nest, NUCLEUS) rather than individual capability domains. When biomeOS
+    /// Neural API is available, the signal is dispatched as a graph execution
+    /// via `capability.call` with the tier as capability and the signal name
+    /// as the operation. When the Neural API is unavailable, the signal falls
+    /// back to the `orchestration` domain.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// # use primalspring::composition::CompositionContext;
+    /// # fn example(ctx: &mut CompositionContext) -> Result<(), Box<dyn std::error::Error>> {
+    /// let result = ctx.signal("tower", "publish", serde_json::json!({"data": "hello"}))?;
+    /// // biomeOS decomposes: bearDog.sign → songbird.announce → skunkBat.audit
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the orchestration capability is absent or the
+    /// signal dispatch fails.
+    pub fn signal(
+        &mut self,
+        tier: &str,
+        signal_name: &str,
+        params: serde_json::Value,
+    ) -> Result<serde_json::Value, IpcError> {
+        let signal_params = serde_json::json!({
+            "capability": tier,
+            "operation": signal_name,
+            "args": params,
+        });
+
+        if self.clients.contains_key("orchestration") {
+            self.call("orchestration", "capability.call", signal_params)
+        } else {
+            Err(IpcError::SocketNotFound {
+                primal: format!("orchestration (for signal {tier}.{signal_name})"),
+            })
+        }
+    }
+
+    /// Whether the given tier name is a recognized atomic signal tier.
+    #[must_use]
+    pub fn is_signal_tier(tier: &str) -> bool {
+        Self::SIGNAL_TIERS.contains(&tier)
+    }
+
+    /// Ask squirrel to plan a multi-signal workflow from user intent.
+    ///
+    /// Sends the intent to the `ai` capability via `ai.query` with
+    /// the signal tool schema context, expecting squirrel to return
+    /// an ordered list of `(tier, signal_name, params)` tuples.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the `ai` capability is absent or the
+    /// query fails.
+    pub fn signal_plan(
+        &mut self,
+        intent: &str,
+        context: serde_json::Value,
+    ) -> Result<serde_json::Value, IpcError> {
+        let plan_params = serde_json::json!({
+            "query": intent,
+            "context": context,
+            "mode": "signal_plan",
+            "tool_schema": "config/signal_tools.toml",
+        });
+        self.call("ai", "ai.query", plan_params)
+    }
+
+    /// Execute a signal plan — an ordered sequence of atomic signals.
+    ///
+    /// Takes a plan (as returned by [`signal_plan`](Self::signal_plan) or
+    /// constructed manually) and dispatches each step sequentially through
+    /// [`signal`](Self::signal). Collects results into a JSON array.
+    ///
+    /// The plan should be a JSON array of objects, each with `tier`,
+    /// `signal`, and `params` fields.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on the first signal that fails. Completed
+    /// steps are included in the partial results.
+    pub fn execute_plan(
+        &mut self,
+        plan: &serde_json::Value,
+    ) -> Result<serde_json::Value, IpcError> {
+        let steps = plan.as_array().ok_or_else(|| IpcError::ProtocolError {
+            detail: "signal plan must be a JSON array".to_owned(),
+        })?;
+
+        let mut results = Vec::with_capacity(steps.len());
+
+        for (i, step) in steps.iter().enumerate() {
+            let tier = step
+                .get("tier")
+                .and_then(serde_json::Value::as_str)
+                .ok_or_else(|| IpcError::ProtocolError {
+                    detail: format!("plan step {i} missing 'tier' field"),
+                })?;
+            let signal_name = step
+                .get("signal")
+                .and_then(serde_json::Value::as_str)
+                .ok_or_else(|| IpcError::ProtocolError {
+                    detail: format!("plan step {i} missing 'signal' field"),
+                })?;
+            let params = step
+                .get("params")
+                .cloned()
+                .unwrap_or(serde_json::json!({}));
+
+            let result = self.signal(tier, signal_name, params)?;
+            results.push(serde_json::json!({
+                "step": i,
+                "tier": tier,
+                "signal": signal_name,
+                "result": result,
+            }));
+        }
+
+        Ok(serde_json::Value::Array(results))
+    }
+
     // ── Composition lifecycle ───────────────────────────────────────────
 
     /// Request a composition reload via biomeOS Neural API.

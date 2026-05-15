@@ -60,9 +60,20 @@ security_model = "btsp"
 capabilities = ["discovery.find_primals", "discovery.announce", "mesh.relay"]
 
 [[graph.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 3
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+capabilities = ["defense.audit", "defense.status", "security.audit_log", "threat.assess"]
+
+[[graph.nodes]]
 name = "toadstool"
 binary = "toadstool"
-order = 3
+order = 4
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"
@@ -73,7 +84,7 @@ capabilities = ["compute.dispatch.submit", "compute.dispatch.result", "compute.e
 [[graph.nodes]]
 name = "barracuda"
 binary = "barracuda"
-order = 4
+order = 5
 required = false
 depends_on = ["beardog", "songbird", "toadstool"]
 health_method = "health.liveness"
@@ -88,7 +99,7 @@ capabilities = [
 [[graph.nodes]]
 name = "coralreef"
 binary = "coralreef"
-order = 5
+order = 6
 required = false
 depends_on = ["beardog", "songbird", "toadstool"]
 health_method = "health.liveness"
@@ -99,7 +110,7 @@ capabilities = ["shader.compile.wgsl", "shader.compile.spirv", "shader.validate"
 [[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
-order = 6
+order = 7
 required = true
 depends_on = ["beardog", "songbird"]
 health_method = "health.liveness"

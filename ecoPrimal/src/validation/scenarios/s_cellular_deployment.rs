@@ -395,3 +395,16 @@ fn validate_biomeos_deployment(
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cellular_deployment_no_panic() {
+        let mut v = ValidationResult::new("cellular-deployment");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

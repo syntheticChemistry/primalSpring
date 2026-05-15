@@ -82,3 +82,16 @@ fn phase_crypto_routing(v: &mut ValidationResult, ctx: &mut CompositionContext) 
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn biomeos_tower_deploy_no_panic() {
+        let mut v = ValidationResult::new("biomeos-tower-deploy");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

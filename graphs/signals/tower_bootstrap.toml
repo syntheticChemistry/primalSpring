@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: tower.bootstrap
+#
+# Two-phase cold-start sequence for a Tower atomic. Phase 1 is static
+# (no biomeOS required) — bearDog provides crypto identity, songbird
+# brings up discovery, skunkBat begins audit. Phase 2 is graph-driven
+# expansion once biomeOS discovers the running Tower.
+#
+# This graph documents the canonical bootstrap ordering. A minimal
+# bootstrap binary or script can parse this TOML to derive dependency
+# order without requiring biomeOS to already be running.
+
+[graph]
+id = "tower_bootstrap"
+name = "Tower Bootstrap Signal"
+description = "Two-phase cold start: static Tower startup then graph-driven expansion. Resolves the bootstrap paradox."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "tower"
+signal_name = "bootstrap"
+
+[graph.metadata]
+particle = "electron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+bootstrap = true
+
+# ─── Phase 1: Static startup (no biomeOS) ────────────────────────────
+# bearDog is the root — no dependencies. It provides crypto identity
+# and BTSP for all subsequent primals.
+
+[[graph.nodes]]
+name = "beardog_identity"
+binary = "beardog"
+order = 1
+required = true
+spawn = true
+phase = 1
+by_capability = "security"
+capabilities = ["crypto.identity", "btsp.handshake"]
+
+# songbird depends on bearDog for authenticated discovery registration.
+
+[[graph.nodes]]
+name = "songbird_discovery"
+binary = "songbird"
+order = 2
+required = true
+spawn = true
+phase = 1
+depends_on = ["beardog_identity"]
+by_capability = "discovery"
+capabilities = ["ipc.register", "discovery.announce"]
+
+# skunkBat depends on bearDog for signed audit log integrity.
+
+[[graph.nodes]]
+name = "skunkbat_audit"
+binary = "skunkbat"
+order = 3
+required = true
+spawn = true
+phase = 1
+depends_on = ["beardog_identity"]
+by_capability = "defense"
+capabilities = ["security.audit_event", "defense.status"]
+
+# ─── Phase 2: Graph-driven expansion (biomeOS available) ─────────────
+# biomeOS discovers the running Tower via songbird, seeds the registry,
+# and verifies health. From this point forward, all operations are
+# graph-driven.
+
+[[graph.nodes]]
+name = "biomeos_discover"
+binary = "biomeos"
+order = 4
+required = false
+spawn = false
+phase = 2
+depends_on = ["songbird_discovery"]
+by_capability = "orchestration"
+capabilities = ["graph.list", "topology.rescan"]
+
+[[graph.nodes]]
+name = "registry_seed"
+binary = "songbird"
+order = 5
+required = false
+spawn = false
+phase = 2
+depends_on = ["biomeos_discover"]
+by_capability = "discovery"
+capabilities = ["ipc.register"]
+
+[[graph.nodes]]
+name = "health_verify"
+binary = "biomeos"
+order = 6
+required = false
+spawn = false
+phase = 2
+depends_on = ["registry_seed"]
+by_capability = "orchestration"
+capabilities = ["health.liveness"]

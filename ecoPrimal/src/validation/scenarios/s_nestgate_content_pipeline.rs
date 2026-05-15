@@ -265,3 +265,16 @@ fn phase_content_resolve(v: &mut ValidationResult, ctx: &mut CompositionContext)
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn nestgate_content_pipeline_no_panic() {
+        let mut v = ValidationResult::new("nestgate-content-pipeline");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

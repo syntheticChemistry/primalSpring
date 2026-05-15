@@ -846,6 +846,57 @@ methods = [
     "biomeos.spring_status",
 ]
 
+# =============================================================================
+# ATOMIC SIGNALS — Phase 32 composition collapse
+# =============================================================================
+#
+# Signals are compound operations addressed to atomic tiers (Tower, Node, Nest,
+# NUCLEUS) that biomeOS decomposes into primal-level capability calls via small
+# TOML graphs. Springs call signal("tower", "publish", ...) instead of 3
+# individual primal calls.
+#
+# Each signal maps to a graph file in graphs/signals/. The scenario
+# s_atomic_signals validates that all signal graphs parse, reference valid
+# capabilities, and respect Dark Forest invariants.
+
+[signals.tower]
+tier = "electron"
+primals = ["beardog", "songbird", "skunkbat"]
+signals = [
+    { name = "publish", graph = "graphs/signals/tower_publish.toml", coordination = "sequential", nodes = 3 },
+    { name = "authenticate", graph = "graphs/signals/tower_authenticate.toml", coordination = "sequential", nodes = 2 },
+    { name = "discover", graph = "graphs/signals/tower_discover.toml", coordination = "sequential", nodes = 3 },
+    { name = "health", graph = "graphs/signals/tower_health.toml", coordination = "parallel", nodes = 3 },
+    { name = "bootstrap", graph = "graphs/signals/tower_bootstrap.toml", coordination = "sequential", nodes = 6 },
+]
+
+[signals.node]
+tier = "proton"
+primals = ["beardog", "songbird", "skunkbat", "toadstool", "barracuda", "coralreef"]
+signals = [
+    { name = "compute", graph = "graphs/signals/node_compute.toml", coordination = "sequential", nodes = 3 },
+]
+
+[signals.nest]
+tier = "neutron"
+primals = ["beardog", "songbird", "skunkbat", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+signals = [
+    { name = "store", graph = "graphs/signals/nest_store.toml", coordination = "sequential", nodes = 4 },
+    { name = "commit", graph = "graphs/signals/nest_commit.toml", coordination = "sequential", nodes = 5 },
+    { name = "retrieve", graph = "graphs/signals/nest_retrieve.toml", coordination = "parallel", nodes = 3 },
+]
+
+[signals.meta]
+tier = "meta"
+primals = ["biomeos", "squirrel", "petaltongue", "skunkbat"]
+signals = [
+    { name = "observe", graph = "graphs/signals/meta_observe.toml", coordination = "sequential", nodes = 3 },
+    { name = "intent", graph = "graphs/signals/meta_intent.toml", coordination = "sequential", nodes = 3 },
+    { name = "render", graph = "graphs/signals/meta_render.toml", coordination = "sequential", nodes = 3 },
+    { name = "health", graph = "graphs/signals/meta_health.toml", coordination = "parallel", nodes = 3 },
+    { name = "deploy", graph = "graphs/signals/meta_deploy.toml", coordination = "sequential", nodes = 3 },
+]
+
 # Test fixtures — synthetic method names used in unit tests only.
 # These are excluded from drift checking.
 [test_fixtures]
@@ -869,6 +920,20 @@ owner = "none"
 methods = [
     "index.html",
     "manifest.toml",
+    "meta.deploy",
+    "meta.health",
+    "meta.intent",
+    "meta.observe",
+    "meta.render",
+    "nest.commit",
+    "nest.retrieve",
+    "nest.store",
+    "node.compute",
     "test.sock",
     "tests.rs",
+    "tower.authenticate",
+    "tower.bootstrap",
+    "tower.discover",
+    "tower.health",
+    "tower.publish",
 ]

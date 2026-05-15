@@ -408,3 +408,16 @@ fn nucleus_hash_store_retrieve(ctx: &mut CompositionContext, v: &mut ValidationR
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn composition_parity_no_panic() {
+        let mut v = ValidationResult::new("composition-parity");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

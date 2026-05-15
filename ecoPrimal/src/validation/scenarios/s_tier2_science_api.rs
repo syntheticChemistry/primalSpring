@@ -172,3 +172,16 @@ fn phase_spring_status(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tier2_science_api_no_panic() {
+        let mut v = ValidationResult::new("tier2-science-api");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

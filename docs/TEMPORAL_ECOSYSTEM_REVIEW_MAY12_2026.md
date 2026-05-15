@@ -1,3 +1,5 @@
+> **Point-in-time snapshot** (May 12-14, 2026). For current state, see the root `README.md` and `docs/VALIDATION_TIERS.md`. Key metrics have since evolved: 441 methods (was 418-427), 32 scenarios (was 24-29), 708 tests (was 618-651).
+
 # Temporal Ecosystem Review — Debt, Horizons, and Stadial Transition
 
 **Date**: May 14, 2026 (full pull: L3 V71/V64n/V168/V160 + node atomic, L4 H2-12 TLS shadow LIVE + DoT 10/10, L5 CATHEDRAL 6/7 Tier 2)

@@ -1,0 +1,263 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal Tool Schema — squirrel's view of the composition surface
+#
+# This file maps every atomic signal into a tool-use schema that squirrel
+# can ingest via squirrel.context.push. Instead of reasoning over 427
+# individual primal methods, squirrel sees ~12 composable signals addressed
+# to atomic tiers. biomeOS decomposes each signal into primal-level calls.
+#
+# Schema contract:
+#   name        — "tier.signal" identifier, matches [signals.*] in capability_registry.toml
+#   tier        — atomic tier (tower/node/nest/meta)
+#   description — human/LLM-readable summary of what the signal does
+#   graph       — path to the TOML graph biomeOS executes
+#   coordination — sequential | parallel
+#   parameters  — named inputs the signal accepts
+#   returns     — description of composed output
+#   primals     — which primals participate (squirrel never calls these directly)
+#
+# Usage: squirrel reads this schema to plan multi-signal workflows
+# from user intent. Springs can also use it for documentation and
+# capability introspection via mcp.tools.list.
+
+# ─── Tower Signals (electron) ─────────────────────────────────────────
+
+[[tools]]
+name = "tower.publish"
+tier = "tower"
+description = "Sign content via bearDog, announce via songbird mesh, audit via skunkBat. Authenticated broadcast."
+graph = "graphs/signals/tower_publish.toml"
+coordination = "sequential"
+primals = ["beardog", "songbird", "skunkbat"]
+
+[tools.parameters]
+data = { type = "bytes", required = true, description = "Content to sign and publish" }
+metadata = { type = "object", required = false, description = "Optional metadata attached to the announcement" }
+
+[tools.returns]
+signature = "Ed25519 signature of the content"
+beacon_id = "Songbird beacon announcement identifier"
+audit_event = "skunkBat audit event ID"
+
+[[tools]]
+name = "tower.authenticate"
+tier = "tower"
+description = "Establish BTSP trust between primals. Negotiate crypto handshake, verify lineage."
+graph = "graphs/signals/tower_authenticate.toml"
+coordination = "sequential"
+primals = ["beardog", "skunkbat"]
+
+[tools.parameters]
+peer_id = { type = "string", required = true, description = "Identity of the peer to authenticate" }
+
+[tools.returns]
+session_key = "Derived BTSP session key"
+lineage_verified = "Whether the peer's lineage passed defense audit"
+
+[[tools]]
+name = "tower.discover"
+tier = "tower"
+description = "Find peers via songbird, verify their identity via bearDog crypto, audit the discovery."
+graph = "graphs/signals/tower_discover.toml"
+coordination = "sequential"
+primals = ["songbird", "beardog", "skunkbat"]
+
+[tools.parameters]
+capability = { type = "string", required = false, description = "Capability domain to discover peers for" }
+scope = { type = "string", required = false, description = "Discovery scope: local | mesh | federation" }
+
+[tools.returns]
+peers = "List of verified peer endpoints"
+audit_event = "skunkBat audit event ID"
+
+[[tools]]
+name = "tower.health"
+tier = "tower"
+description = "Parallel health check of all Tower primals (bearDog, songbird, skunkBat)."
+graph = "graphs/signals/tower_health.toml"
+coordination = "parallel"
+primals = ["beardog", "songbird", "skunkbat"]
+
+[tools.parameters]
+
+[tools.returns]
+beardog = "Liveness status"
+songbird = "Liveness status"
+skunkbat = "Liveness status"
+
+[[tools]]
+name = "tower.bootstrap"
+tier = "tower"
+description = "Two-phase cold start: Phase 1 spawns bearDog (identity root), songbird (discovery), skunkBat (audit) with no biomeOS. Phase 2 lets biomeOS discover the Tower, seed the registry, and verify health. Resolves the bootstrap paradox."
+graph = "graphs/signals/tower_bootstrap.toml"
+coordination = "sequential"
+primals = ["beardog", "songbird", "skunkbat", "biomeos"]
+
+[tools.parameters]
+family_seed = { type = "string", required = false, description = "Pre-generated family seed for fleet enrollment (omit for local entropy)" }
+phase = { type = "integer", required = false, description = "Run only phase 1 or 2 (omit for full bootstrap)" }
+
+[tools.returns]
+beardog_identity = "bearDog crypto identity (DID)"
+songbird_endpoint = "songbird discovery endpoint"
+skunkbat_status = "skunkBat audit readiness"
+registry_seeded = "Whether Phase 2 registry seeding completed"
+health = "Composed Tower health after bootstrap"
+
+# ─── Node Signals (proton) ────────────────────────────────────────────
+
+[[tools]]
+name = "node.compute"
+tier = "node"
+description = "Full compute pipeline: dispatch work via toadStool, compile shaders via coralReef, execute via barraCuda."
+graph = "graphs/signals/node_compute.toml"
+coordination = "sequential"
+primals = ["toadstool", "coralreef", "barracuda"]
+
+[tools.parameters]
+workload = { type = "object", required = true, description = "Compute workload specification" }
+shader = { type = "string", required = false, description = "Shader source or module ID for coralReef" }
+
+[tools.returns]
+result = "Compute result from barraCuda execution"
+dispatch_id = "toadStool dispatch tracking ID"
+
+# ─── Nest Signals (neutron) ───────────────────────────────────────────
+
+[[tools]]
+name = "nest.store"
+tier = "nest"
+description = "Full provenance store: content into NestGate, event into rhizoCrypt DAG, commit to loamSpine ledger, attribution via sweetGrass."
+graph = "graphs/signals/nest_store.toml"
+coordination = "sequential"
+primals = ["nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+
+[tools.parameters]
+content = { type = "bytes", required = true, description = "Content to store with provenance" }
+author = { type = "string", required = false, description = "Author identity for attribution braid" }
+metadata = { type = "object", required = false, description = "Content metadata" }
+
+[tools.returns]
+content_cid = "NestGate content-addressed identifier"
+dag_event = "rhizoCrypt DAG event hash"
+session_commit = "loamSpine ledger session commit"
+braid_id = "sweetGrass attribution braid ID (if author provided)"
+
+[[tools]]
+name = "nest.commit"
+tier = "nest"
+description = "RootPulse temporal collapse: dehydrate DAG, sign, store, commit to ledger, attribute. Ephemeral to permanent."
+graph = "graphs/signals/nest_commit.toml"
+coordination = "sequential"
+primals = ["rhizocrypt", "beardog", "nestgate", "loamspine", "sweetgrass"]
+
+[tools.parameters]
+session_id = { type = "string", required = true, description = "rhizoCrypt session to dehydrate and commit" }
+
+[tools.returns]
+dehydrated_hash = "rhizoCrypt dehydrated DAG hash"
+signature = "bearDog signature of the dehydrated DAG"
+content_cid = "NestGate storage CID (optional)"
+session_commit = "loamSpine ledger commit"
+braid_id = "sweetGrass attribution braid (optional)"
+
+[[tools]]
+name = "nest.retrieve"
+tier = "nest"
+description = "Parallel retrieval: fetch content from NestGate, session state from loamSpine, provenance from sweetGrass."
+graph = "graphs/signals/nest_retrieve.toml"
+coordination = "parallel"
+primals = ["nestgate", "loamspine", "sweetgrass"]
+
+[tools.parameters]
+content_cid = { type = "string", required = true, description = "Content identifier to retrieve" }
+include_provenance = { type = "bool", required = false, description = "Whether to fetch provenance attribution" }
+
+[tools.returns]
+content = "Raw content bytes"
+session_state = "loamSpine session state (if active)"
+provenance = "sweetGrass provenance attribution (if requested)"
+
+# ─── Meta Signals (orchestration + AI + UI) ───────────────────────────
+
+[[tools]]
+name = "meta.observe"
+tier = "meta"
+description = "Open observation: petalTongue creates session, squirrel loads context, biomeOS provides graph state. Grounds agentic planning."
+graph = "graphs/signals/meta_observe.toml"
+coordination = "sequential"
+primals = ["petaltongue", "squirrel", "biomeos"]
+
+[tools.parameters]
+domain = { type = "string", required = false, description = "Domain to observe (e.g. 'compute', 'storage', 'network')" }
+
+[tools.returns]
+session_id = "petalTongue visualization session"
+context = "squirrel context snapshot"
+graphs = "biomeOS deployed graph list"
+
+[[tools]]
+name = "meta.intent"
+tier = "meta"
+description = "Agentic intent loop: petalTongue captures user interaction, squirrel plans signal sequence, biomeOS dispatches. Human intent to mechanical execution."
+graph = "graphs/signals/meta_intent.toml"
+coordination = "sequential"
+primals = ["petaltongue", "squirrel", "biomeos"]
+
+[tools.parameters]
+action = { type = "string", required = true, description = "What the user wants to do (natural language or structured)" }
+context = { type = "object", required = false, description = "Additional context for planning" }
+
+[tools.returns]
+plan = "Signal sequence squirrel planned"
+execution_result = "biomeOS graph execution result"
+
+[[tools]]
+name = "meta.render"
+tier = "meta"
+description = "Close the agentic loop: biomeOS collects results, squirrel summarizes/narrates, petalTongue renders to user."
+graph = "graphs/signals/meta_render.toml"
+coordination = "sequential"
+primals = ["biomeos", "squirrel", "petaltongue"]
+
+[tools.parameters]
+execution_id = { type = "string", required = true, description = "biomeOS execution ID to collect results for" }
+style = { type = "string", required = false, description = "Rendering style: dashboard | narrative | table" }
+
+[tools.returns]
+summary = "squirrel AI narration of results"
+rendered = "petalTongue rendered output"
+
+[[tools]]
+name = "meta.health"
+tier = "meta"
+description = "Parallel health check of all meta-tier primals (biomeOS, squirrel, petalTongue)."
+graph = "graphs/signals/meta_health.toml"
+coordination = "parallel"
+primals = ["biomeos", "squirrel", "petaltongue"]
+
+[tools.parameters]
+
+[tools.returns]
+biomeos = "Liveness status"
+squirrel = "Liveness status"
+petaltongue = "Liveness status"
+
+[[tools]]
+name = "meta.deploy"
+tier = "meta"
+description = "Agentic deployment: squirrel plans a composition deployment, biomeOS executes it, skunkBat audits. The tower agent's ability to grow the ecosystem."
+graph = "graphs/signals/meta_deploy.toml"
+coordination = "sequential"
+primals = ["squirrel", "biomeos", "skunkbat"]
+
+[tools.parameters]
+target = { type = "string", required = true, description = "What to deploy: node | nest | nucleus | spring name" }
+config = { type = "object", required = false, description = "Deployment configuration overrides" }
+approval = { type = "string", required = false, description = "Approval mode: suggest | policy | autonomous" }
+
+[tools.returns]
+plan = "Signal sequence squirrel planned for the deployment"
+deployment_id = "biomeOS graph deployment tracking ID"
+audit_event = "skunkBat audit event ID for the deployment action"

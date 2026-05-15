@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: node.compute
+#
+# Full compute pipeline: authenticate via Tower, dispatch via toadStool,
+# compile shaders via coralReef, execute math via barraCuda.
+
+[graph]
+id = "node_compute"
+name = "Node Compute Signal"
+description = "Authenticate → dispatch → compile → execute. Full compute pipeline."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "node"
+signal_name = "compute"
+
+[graph.metadata]
+particle = "proton"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+fragments = ["tower_atomic"]
+
+[[graph.nodes]]
+name = "dispatch"
+binary = "toadstool"
+order = 1
+required = true
+spawn = false
+by_capability = "compute"
+capabilities = ["compute.dispatch"]
+
+[[graph.nodes]]
+name = "compile"
+binary = "coralreef"
+order = 2
+required = true
+spawn = false
+depends_on = ["dispatch"]
+by_capability = "shader"
+capabilities = ["shader.compile.wgsl"]
+
+[[graph.nodes]]
+name = "execute"
+binary = "barracuda"
+order = 3
+required = true
+spawn = false
+depends_on = ["compile"]
+by_capability = "tensor"
+capabilities = ["tensor.matmul"]

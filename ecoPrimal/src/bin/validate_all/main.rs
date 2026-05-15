@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Meta-validator that runs all primalSpring experiment binaries in sequence.
+//! **DEPRECATED**: Use `primalspring validate` instead.
 //!
+//! This binary predates the absorbed scenario registry (`build_registry()`).
+//! All experiment binaries have been absorbed into `ecoPrimal/src/validation/scenarios/`
+//! as `s_*.rs` modules with `#[cfg(test)]` coverage. Use `cargo test --lib` for
+//! structural validation and `primalspring validate` for the full scenario runner.
+//!
+//! Meta-validator that runs all primalSpring experiment binaries in sequence.
 //! Auto-discovers experiment packages from `cargo metadata` rather than
 //! maintaining a hardcoded list. Any workspace member whose package name
 //! starts with `primalspring-exp` is treated as an experiment.

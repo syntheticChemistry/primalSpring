@@ -299,3 +299,16 @@ fn phase_authenticated_composition(v: &mut ValidationResult, ctx: &mut Compositi
         ),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn token_federation_no_panic() {
+        let mut v = ValidationResult::new("token-federation");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

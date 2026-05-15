@@ -182,8 +182,8 @@ COMPOSITION_NAME=myspring primalSpring/tools/composition_nucleus.sh stop
 - Configurable primal list via `PRIMAL_LIST` env var
 - Health check summary on startup
 
-See `wateringHole/DOWNSTREAM_COMPOSITION_EXPLORER_GUIDE.md` for the full
-composition library API and per-spring exploration guidance.
+See `tools/nucleus_composition_lib.sh` for the full composition library API.
+(`DOWNSTREAM_COMPOSITION_EXPLORER_GUIDE.md` has been consolidated into `infra/wateringHole/`.)
 
 ## Known Issues
 

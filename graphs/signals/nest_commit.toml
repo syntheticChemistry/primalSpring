@@ -1,0 +1,71 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: nest.commit
+#
+# RootPulse-style commit flow: dehydrate DAG → sign → store → commit → attribute.
+# The full temporal collapse from ephemeral to permanent.
+
+[graph]
+id = "nest_commit"
+name = "Nest Commit Signal"
+description = "Dehydrate → sign → store → commit → attribute. RootPulse temporal collapse."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "nest"
+signal_name = "commit"
+
+[graph.metadata]
+particle = "neutron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+fragments = ["tower_atomic"]
+
+[[graph.nodes]]
+name = "dehydrate"
+binary = "rhizocrypt"
+order = 1
+required = true
+spawn = false
+by_capability = "dag"
+capabilities = ["event.append"]
+
+[[graph.nodes]]
+name = "sign"
+binary = "beardog"
+order = 2
+required = true
+spawn = false
+depends_on = ["dehydrate"]
+by_capability = "security"
+capabilities = ["crypto.sign"]
+
+[[graph.nodes]]
+name = "store"
+binary = "nestgate"
+order = 3
+required = false
+spawn = false
+depends_on = ["sign"]
+by_capability = "storage"
+capabilities = ["content.put"]
+
+[[graph.nodes]]
+name = "commit"
+binary = "loamspine"
+order = 4
+required = true
+spawn = false
+depends_on = ["sign"]
+by_capability = "ledger"
+capabilities = ["session.commit"]
+
+[[graph.nodes]]
+name = "attribute"
+binary = "sweetgrass"
+order = 5
+required = false
+spawn = false
+depends_on = ["commit"]
+by_capability = "commit"
+capabilities = ["braid.create"]

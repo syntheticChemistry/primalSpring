@@ -75,3 +75,16 @@ fn phase_gate_failure_skips(v: &mut ValidationResult) {
         "needs live gate drop to test degradation",
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn gate_failure_no_panic() {
+        let mut v = ValidationResult::new("gate-failure");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+    }
+}

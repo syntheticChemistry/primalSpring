@@ -8,10 +8,10 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 651+ (624 lib + 27 integration/doc; unit + integration + proptest) |
-| **Experiments** | 89 (20 tracks) — 29 validation scenarios |
-| **Deploy Graphs** | 78 TOMLs — fragment-first composition with `resolve = true` (13 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 federation + 1 composition + 12 cell graphs) |
-| **Coverage** | 73.3% method coverage (313/427); line coverage via llvm-cov |
+| **Tests** | 708 (666 lib + 42 experiment), 57 ignored |
+| **Experiments** | 89 (20 tracks) — 32 validation scenarios (9 tracks) |
+| **Deploy Graphs** | 79 deploy TOMLs + 14 atomic signal graphs — fragment-first composition with `resolve = true` (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 federation + 1 composition + 12 cell graphs) |
+| **Coverage** | Method coverage against 441 registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 89 experiments carry structured `with_provenance()` metadata |
@@ -52,9 +52,10 @@ primalSpring/
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
+│   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)
+│   │   ├── validation/scenarios/  # 32 absorbed experiment scenarios (9 tracks, 3 tiers: Rust/Live/Both)
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
-│   │   ├── validation/scenarios/  # 29 absorbed experiment scenarios (10 tracks)
 │   ├── src/bin/
 │   │   ├── primalspring/          # UniBin: certify + validate + serve + status + version
 │   │   ├── primalspring_primal/   # Legacy RPC server (transitioning → primalspring serve)
@@ -69,8 +70,9 @@ primalSpring/
 │       ├── server_ecosystem_compose.rs   # Nest/Node composition (#[ignore])
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
 ├── experiments/                   # 89 validation experiments (20 tracks)
-├── config/                        # Launch profiles, deployment matrix, capability registry
-├── graphs/                        # 77 deploy graph TOMLs (fragment-first composition)
+├── config/                        # Launch profiles, deployment matrix, capability registry, signal tools
+├── graphs/                        # 79 deploy graph TOMLs + 14 atomic signal graphs
+│   ├── signals/                  # 14 atomic signal graphs (tower/node/nest/meta tiers, incl. bootstrap)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
 │   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
 │   ├── patterns/                 # 4 coordination patterns: parallel, conditional, streaming, continuous
@@ -220,9 +222,9 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 77 deploy graph TOMLs using fragment-first composition (all nodes declare `by_capability`):
+primalSpring ships 79 deploy graph TOMLs + 14 atomic signal graphs using fragment-first composition (all nodes declare `by_capability`):
 
-**Root-level graphs (13)**:
+**Root-level graphs (14)**:
 
 | Graph | Pattern | Primals |
 |-------|---------|---------|
@@ -238,6 +240,7 @@ primalSpring ships 77 deploy graph TOMLs using fragment-first composition (all n
 | `hotspring_qcd_pipeline.toml` | Pipeline | hotSpring QCD composition |
 | `neuralspring_inference_pipeline.toml` | Pipeline | neuralSpring ML inference composition |
 | `healthspring_clinical_pipeline.toml` | Pipeline | healthSpring clinical composition |
+| `tower_agent.toml` | Sequential | beardog, songbird, skunkbat, squirrel (agentic Tower) |
 | `spring_byob_template.toml` | Sequential | template for new springs |
 
 **Multi-node federation graphs (5)** — `graphs/multi_node/`:
@@ -289,6 +292,26 @@ parallel capability burst, conditional fallback.
 All graphs have `by_capability` on every node and are structurally validated +
 topologically sorted at test time. Multi-node graphs include `[graph.metadata]`
 and `[graph.bonding_policy]` sections validated by `graph_metadata.rs`.
+
+## Atomic Signal Graphs
+
+primalSpring ships 14 atomic signal graphs under `graphs/signals/` that define
+the Neural API composition collapse layer. Each signal maps a high-level operation
+(e.g. `tower.publish`, `nest.store`, `meta.deploy`) to a graph of primal
+capabilities, enabling biomeOS to decompose semantic intent into concrete IPC calls.
+
+Signals are organized by tier:
+- **Tower** (4): `publish`, `authenticate`, `discover`, `health`, `bootstrap`
+- **Node** (1): `compute`
+- **Nest** (3): `store`, `commit`, `retrieve`
+- **Meta** (5): `observe`, `intent`, `render`, `health`, `deploy`
+
+The `tower.bootstrap` signal defines the two-phase cold-start sequence that
+resolves the bootstrap paradox: Phase 1 (static, no biomeOS) brings up BearDog,
+Songbird, and SkunkBat; Phase 2 (graph-driven) lets biomeOS discover and seed
+the running Tower. See `infra/whitePaper/neuralAPI/02_ARCHITECTURE.md`.
+
+Signal tool definitions for Squirrel AI consumption live in `config/signal_tools.toml`.
 
 ## IPC Resilience
 
@@ -399,7 +422,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 718 tests (657 passed + 57 ignored + 4 integration).
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 708 tests (666 lib + 42 experiment), 57 ignored.
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 
@@ -523,7 +546,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `tools/nucleus_composition_lib.sh` | Reusable NUCLEUS composition library (sourced by domain scripts) |
 | `tools/nucleus_launcher.sh` | Start/stop/restart full NUCLEUS stack |
 | `tools/desktop_nucleus.sh` | 13-primal NUCLEUS launcher with auto-symlink for petalTongue discovery |
-| `tools/check_method_coverage.sh` | Inverse drift: flag 418-registry methods never exercised in scenarios/tests/graphs |
+| `tools/check_method_coverage.sh` | Inverse drift: flag registry methods never exercised in scenarios/tests/graphs |
 | `tools/check_method_gate.sh` | Verify MethodGate pre-dispatch authorization compliance |
 | `tools/check_method_strings.sh` | Audit method string literals against canonical registry |
 | `tools/check_graph_methods.sh` | Verify deploy graph nodes reference valid registry methods |

@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: meta.intent
+#
+# User expresses intent — petalTongue captures interaction, squirrel
+# plans a signal sequence from the tool schema, biomeOS dispatches
+# the composed capability call. This is the core agentic loop: human
+# intent → AI planning → mechanical execution.
+
+[graph]
+id = "meta_intent"
+name = "Meta Intent Signal"
+description = "Poll interaction → AI query/plan → capability dispatch. The agentic intent loop."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "meta"
+signal_name = "intent"
+
+[graph.metadata]
+particle = "meta"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+
+[[graph.nodes]]
+name = "capture_intent"
+binary = "petaltongue"
+order = 1
+required = true
+spawn = false
+by_capability = "visualization"
+capabilities = ["interaction.poll"]
+
+[[graph.nodes]]
+name = "plan_signals"
+binary = "squirrel"
+order = 2
+required = true
+spawn = false
+depends_on = ["capture_intent"]
+by_capability = "ai"
+capabilities = ["ai.query"]
+
+[[graph.nodes]]
+name = "dispatch"
+binary = "biomeos"
+order = 3
+required = true
+spawn = false
+depends_on = ["plan_signals"]
+by_capability = "orchestration"
+capabilities = ["graph.execute"]

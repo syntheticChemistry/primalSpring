@@ -1,11 +1,31 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Validation scenarios — absorbed experiment patterns.
+//! Validation scenarios — eukaryotic patterns evolved from absorbed experiments.
 //!
 //! Each scenario is a self-contained validation function that exercises
 //! a specific NUCLEUS composition pattern. Scenarios evolved from the
 //! prokaryotic experiment binary era (exp001–exp111) and were absorbed
 //! into the library at the interstadial transition.
+//!
+//! # Modern Pattern
+//!
+//! Every scenario follows this structure:
+//!
+//! 1. A `pub const SCENARIO: Scenario` with metadata (`id`, `track`, `tier`,
+//!    `provenance_crate`, `provenance_date`, `description`)
+//! 2. A `pub fn run(v, ctx)` that performs validation checks
+//! 3. A `#[cfg(test)] mod tests` block exercised by `cargo test --lib`
+//! 4. Shared helpers from [`super::helpers`] for graph parsing, Dark Forest
+//!    invariant checking, and capability registry cross-referencing
+//!
+//! # Tier Strategy
+//!
+//! - **`Tier::Rust`** scenarios test structural invariants; their `#[cfg(test)]`
+//!   blocks assert `v.failed == 0`.
+//! - **`Tier::Both`** scenarios have structural + live phases; tests exercise
+//!   the structural phase directly, or verify the full run completes without panic.
+//! - **`Tier::Live`** scenarios require deployed primals; tests verify the scenario
+//!   runs to completion without panic (failures are expected without primals).
 //!
 //! # Usage
 //!
@@ -25,6 +45,8 @@ pub use registry::{Scenario, ScenarioMeta, ScenarioRegistry, Tier, Track};
 // ───────────────────────────────────────────────────────────────────
 // Absorbed scenario modules (one per track representative)
 // ───────────────────────────────────────────────────────────────────
+pub mod s_agentic_tower;
+pub mod s_atomic_signals;
 pub mod s_barracuda_precision;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
@@ -44,6 +66,7 @@ pub mod s_full_nucleus;
 pub mod s_routing_consistency;
 pub mod s_gate_failure;
 pub mod s_ionic_bond;
+pub mod s_meta_tier_signals;
 pub mod s_nest_atomic;
 pub mod s_nestgate_content_pipeline;
 pub mod s_node_atomic;
@@ -88,5 +111,113 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_coralreef_shader_targets::SCENARIO);
     r.register(s_dark_forest_gate::SCENARIO);
     r.register(s_deployment_pipeline::SCENARIO);
+    r.register(s_atomic_signals::SCENARIO);
+    r.register(s_meta_tier_signals::SCENARIO);
+    r.register(s_agentic_tower::SCENARIO);
     r
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::composition::CompositionContext;
+    use crate::validation::ValidationResult;
+    use std::collections::HashSet;
+
+    const EXPECTED_SCENARIO_COUNT: usize = 32;
+
+    #[test]
+    fn registry_scenario_count() {
+        let r = build_registry();
+        assert_eq!(
+            r.len(),
+            EXPECTED_SCENARIO_COUNT,
+            "build_registry() should return {EXPECTED_SCENARIO_COUNT} scenarios, got {}",
+            r.len()
+        );
+    }
+
+    #[test]
+    fn registry_no_duplicate_ids() {
+        let r = build_registry();
+        let mut seen = HashSet::new();
+        for s in r.all() {
+            assert!(
+                seen.insert(s.meta.id),
+                "duplicate scenario id: {}",
+                s.meta.id
+            );
+        }
+    }
+
+    #[test]
+    fn registry_all_tracks_covered() {
+        let r = build_registry();
+        let tracks: HashSet<String> = r.all().iter().map(|s| s.meta.track.to_string()).collect();
+        let expected = [
+            "atomic-composition",
+            "graph-execution",
+            "cross-spring",
+            "bonding",
+            "transport",
+            "security",
+            "biomeos-deploy",
+            "infrastructure",
+            "lifecycle",
+        ];
+        for track in &expected {
+            assert!(
+                tracks.contains(*track),
+                "Track '{track}' has no registered scenario"
+            );
+        }
+    }
+
+    #[test]
+    fn registry_all_rust_tier_pass() {
+        // Pre-existing known failures in Rust-tier scenarios that predate this
+        // meta-test. Track them explicitly so we notice when they get fixed
+        // (update the list) or when new failures appear (fail loudly).
+        const KNOWN_DEBT: &[(&str, u32)] = &[
+            ("zero-port-standard", 2),
+        ];
+
+        let r = build_registry();
+        let mut ctx = CompositionContext::discover();
+        for s in r.filter_by_tier(Tier::Rust) {
+            if s.meta.tier != Tier::Rust {
+                continue;
+            }
+            let mut v = ValidationResult::new(s.meta.id);
+            (s.run)(&mut v, &mut ctx);
+
+            let expected_failures = KNOWN_DEBT
+                .iter()
+                .find(|(id, _)| *id == s.meta.id)
+                .map_or(0, |(_, n)| *n);
+            assert_eq!(
+                v.failed, expected_failures,
+                "Rust-tier scenario '{}': expected {} failures (known debt), got {}",
+                s.meta.id, expected_failures, v.failed
+            );
+        }
+    }
+
+    #[test]
+    fn registry_valid_provenance_dates() {
+        let r = build_registry();
+        for s in r.all() {
+            let date = s.meta.provenance_date;
+            assert!(
+                date.len() == 10
+                    && date.as_bytes()[4] == b'-'
+                    && date.as_bytes()[7] == b'-'
+                    && date[..4].parse::<u16>().is_ok()
+                    && date[5..7].parse::<u8>().is_ok()
+                    && date[8..10].parse::<u8>().is_ok(),
+                "scenario '{}' has invalid provenance_date: '{date}' (expected YYYY-MM-DD)",
+                s.meta.id
+            );
+        }
+    }
 }

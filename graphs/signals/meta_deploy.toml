@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: meta.deploy
+#
+# The agentic deployment signal. Squirrel plans a deployment from
+# the signal tool schema, biomeOS executes the deployment graph,
+# skunkBat audits the entire action. This is the critical signal
+# that lets the tower agent change the ecosystem — not just query it.
+#
+# Stadial goal: full agentic deployment flow where squirrel
+# autonomously deploys Node, Nest, and NUCLEUS compositions.
+
+[graph]
+id = "meta_deploy"
+name = "Meta Deploy Signal"
+description = "AI plan → graph deploy → audit. Agentic deployment via Tower agent."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "meta"
+signal_name = "deploy"
+
+[graph.metadata]
+particle = "meta"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+agentic = true
+
+[[graph.nodes]]
+name = "plan_deployment"
+binary = "squirrel"
+order = 1
+required = true
+spawn = false
+by_capability = "ai"
+capabilities = ["ai.query"]
+
+[[graph.nodes]]
+name = "execute_deployment"
+binary = "biomeos"
+order = 2
+required = true
+spawn = false
+depends_on = ["plan_deployment"]
+by_capability = "orchestration"
+capabilities = ["graph.deploy"]
+
+[[graph.nodes]]
+name = "audit_deployment"
+binary = "skunkbat"
+order = 3
+required = true
+spawn = false
+depends_on = ["execute_deployment"]
+by_capability = "defense"
+capabilities = ["security.audit_log"]
