@@ -195,21 +195,27 @@ Provenance trio **GAP-36 RESOLVED** — all wire aliases normalized upstream.
 4. **Foundation thread coverage** — Threads 5, 8, 10 need full seeding before foundation can validate them
 5. **Geo-delocalized workload dispatch** — remote gates via cellMembrane relay can run Tier 2 workloads; `liveSpore.json` provenance feeds back to sporePrint for auditable publication
 
-### CATHEDRAL Ownership (May 14, 2026)
+### CATHEDRAL Split (May 16, 2026)
 
-CATHEDRAL (lithoSpore + Foundation) now owns:
-- **benchScale** — VM provisioning CLI (`--backend libvirt` wired, `russh` 0.60)
-- **agentReagents** — VM image templates (`lithoSpore-validation.yaml` for musl-static validation)
-- Rust evolution of bash scripts is on their roadmap
+The CATHEDRAL team has split into two focused workstreams:
 
-**USB pipeline VM-validated**: 6/7 lithoSpore modules Tier 2 PASS (51/51 checks) on fresh
-VM with different `hostname_hash`, confirming geo-delocalized validation works.
+- **lithoSpore** — verification chassis. USB-deployable validation artifacts,
+  module crates, geo-delocalized Tier 2. Owns benchScale and agentReagents.
+- **projectFOUNDATION** — knowledge layer. Thread lineage, data sources/targets,
+  validation evidence capture. Owns `lineage/THREAD_INDEX.toml` and
+  `data/sources/*.toml`.
 
-**Upstream blockers for CATHEDRAL**:
-- Songbird TURN client library (geo-delocalized Tier 2 without LAN)
-- BearDog FIDO2/CTAP2 (SoloKey witness in `liveSpore.json`)
-- genomeBin Tier 3 packaging for lithoSpore USB
-- sporePrint pipeline wiring (`liveSpore.json` → `primals.eco`)
+Springs now feed both workstreams:
+- **Validation results** flow to projectFOUNDATION as thread evidence
+  (dated provenance folders in `projectFOUNDATION/validation/`)
+- **Module crates** can be wired into lithoSpore instances via `scope.toml`
+  if they expose `fn run_validation(data_dir, expected, max_tier) -> ModuleResult`
+
+**lithoSpore status**: 7/7 modules Tier 2 PASS (75/75 checks). VM-validated via
+benchScale + agentReagents. USB pipeline confirmed geo-delocalized.
+
+**Upstream blockers** (remaining — UB-2/3/4 SHIPPED):
+- Songbird TURN client library (UB-1 — geo-delocalized Tier 2 without LAN)
 
 ---
 

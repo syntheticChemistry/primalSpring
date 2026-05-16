@@ -215,9 +215,11 @@ projectNUCLEUS has driven massive sovereignty infrastructure evolution:
 petalTongue extracellular wiring, sovereign DNS (knot-dns, H2-17–H2-20),
 Forgejo Actions CI porting.
 
-### CATHEDRAL (lithoSpore + foundation)
+### lithoSpore — Verification Chassis (own IDE focus team)
 
-**lithoSpore** — First Targeted GuideStone (hypogeal cotyledon):
+The CATHEDRAL team has split into dedicated workstreams (May 16, 2026).
+lithoSpore is now its own IDE focus team building the verification chassis.
+
 - **7/7 modules PASS** at Tier 2 (75/75 checks), chaos tested, deployment-validated
 - **Bash-to-Rust elevation COMPLETE**: all 8 shell scripts replaced with pure
   Rust CLI subcommands (`litho fetch/assemble/validate/verify/chaos-test/deploy-test`).
@@ -225,24 +227,37 @@ Forgejo Actions CI porting.
 - **Cross-platform validation**: musl-static Linux (5.1 MB), Windows cross-compiled
   via `x86_64-pc-windows-gnu` (7.9 MB litho.exe tested via Wine 11). Deployment
   matrix: Ubuntu airgap, VPS, Alpine chroot, read-only FS — all PASS.
-- **USB recreation**: `litho assemble` builds portable USB artifacts (replaces
-  `assemble-usb.sh`). argv[0] symlink detection: `validate`, `verify`, `refresh`,
-  `spore` are all symlinks to `bin/litho`. `.biomeos-spore` marker for layout detection.
+- **USB recreation**: `litho assemble` builds portable USB artifacts. argv[0] symlink
+  detection for entry points. `.biomeos-spore` marker for layout detection.
 - **Discovery chain evolved**: env → UDS → TURN → standalone, with `probe_operating_mode()`
-  and `liveSpore.json` provenance recording discovery path and TURN relay.
-- **Module lib.rs pattern**: each module exposes `run_validation()` for in-process
-  dispatch — no subprocesses. Single `litho` binary replaces 7 separate binaries.
+  and `liveSpore.json` provenance recording.
+- **Module interface**: each module exposes `fn run_validation(data_dir, expected, max_tier) -> ModuleResult`
+  for in-process dispatch. Single `litho` binary replaces 7 separate binaries.
+- **Spring wiring**: module crates can be wired into lithoSpore instances via
+  `scope.toml`. Springs wanting lithoSpore integration should expose the
+  `run_validation()` interface from their validation crates.
 - Ingested primalSpring patterns: capability registry, Dark Forest graphs, `graph_checks` module
-- Needs from upstream: Songbird TURN client library, genomeBin Tier 3 USB,
-  neuralSpring ML surrogates for B3/B4/B6
+- Owns: benchScale, agentReagents
+- Needs from upstream: Songbird TURN client library (UB-1), neuralSpring ML surrogates
 
-**foundation** — Validated scientific lineage (10 domain threads):
+### projectFOUNDATION — Knowledge Layer (own IDE focus team)
+
+projectFOUNDATION is now its own IDE focus team building the knowledge layer.
+Springs feed validation results to projectFOUNDATION as thread evidence.
+
+- **10 domain threads** tracked in `lineage/THREAD_INDEX.toml`
+- **Data sources** in `data/sources/*.toml` — per-thread accessions, DOIs, BLAKE3
+- **Validation evidence** in `projectFOUNDATION/validation/` — dated provenance folders
 - Thread 2 Plasma **12/12 PASS**, Thread 6 Agricultural **36/36 PASS**,
   Thread 7 Anderson **18/18 PASS**
 - Thread 1 WCM: fetch infra ok, **RPC upstream-blocked** (0/24 pending review)
 - Data integrity: many `blake3 = ""` in source TOMLs — needs fetch + backfill
-- lithoSpore added to relationships doc, validation handback index updated
 - Needs from upstream: RPC stack for Thread 1, neuralSpring ML sources (Thread 5)
+
+**Spring → projectFOUNDATION contract**: Check which threads reference your
+spring in `projectFOUNDATION/lineage/THREAD_INDEX.toml` and `data/sources/*.toml`.
+Ensure validation results are captured in `projectFOUNDATION/validation/` with
+dated provenance folders.
 
 ### esotericWebb
 
