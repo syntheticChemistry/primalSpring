@@ -33,6 +33,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 |------|----------|----------------|
 | **INTERSTADIAL_FOSSILIZATION_HANDOFF.md** | Spring teams | Interstadial fossilization patterns: what to preserve, how to date, provenance READMEs. |
 | **handoffs/PRIMALSPRING_SOVEREIGNTY_LAYER4_EVOLUTION_MAY15_2026.md** | All teams | Sovereignty track (3 scenarios), membrane deploy graph, routing config schema, 4-layer model. |
+| **handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md** | Primal teams + springs | Downstream-evolved patterns needing upstream adoption: primal blockers (UB-1..4), canonicalization targets, spring actions, glacial horizon. |
 
 ### Archived Handoffs (`handoffs/archive/`)
 
@@ -129,9 +130,36 @@ With biomeOS v3.57 live, each primal should:
 4. **Validate membrane compositions**: Downstream membrane deployments must conform
    to `config/routing_config_reference.toml` schema (backend types, trust tiers,
    telemetry). Use `graphs/membrane/tower_membrane.toml` as canonical VPS graph.
-4. **Test with biomeOS v3.57**: Signal-tier interception in `capability.call`
+5. **Test with biomeOS v3.57**: Signal-tier interception in `capability.call`
    is now live — verify transparent composition collapse doesn't break
    existing call patterns.
+
+### Downstream-Surfaced Primal Debt (May 15, 2026)
+
+Patterns evolved by CATHEDRAL and projectNUCLEUS that require specific
+primal team action. Full details: `handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md`.
+
+| Primal | What | Priority | Downstream Requester |
+|--------|------|----------|---------------------|
+| **Songbird** | TURN client library — expose reusable crate for TURN-relayed JSON-RPC | HIGH | lithoSpore (geo-delocalized Tier 2) |
+| **BearDog** | FIDO2/CTAP2 protocol — `beardog.fido2.authenticate` for SoloKey witness | MEDIUM | lithoSpore (hardware-attested provenance) |
+| **biomeOS** | Handle `composition_model = "membrane"` in `composition.deploy(graph)` | MEDIUM | projectNUCLEUS (VPS membrane deployment) |
+| ~~**NestGate**~~ | ~~sporePrint pipeline wiring~~ — **RESOLVED**: `auto-refresh.yml` now ingests `liveSpore.json` | ~~MEDIUM~~ | lithoSpore / sporePrint |
+| ~~**plasmidBin**~~ | ~~`genomeBin stage --target usb`~~ — **RESOLVED**: `stage_usb.sh` ships USB staging | ~~MEDIUM~~ | lithoSpore (Barrick Lab delivery) |
+
+### Patterns to Absorb (from downstream evolution)
+
+These are not blockers but patterns that downstream teams evolved and
+validated that upstream primals and springs should study and adopt:
+
+| Pattern | Evolved By | What It Means Upstream |
+|---------|-----------|----------------------|
+| Bash-to-Rust elevation | lithoSpore | 8/8 scripts replaced with pure Rust CLI. Primals/springs should evaluate which scripts benefit from elevation. |
+| Discovery chain (env->UDS->TURN->standalone) | lithoSpore | Matches `CompositionContext::discover()` in consumer form. Env var names should be canonicalized. |
+| Cross-platform deployment matrix | lithoSpore | musl-static + Windows cross-compile + read-only FS. Template for all ecoBin artifacts. |
+| Module lib.rs in-process dispatch | lithoSpore | Mirrors UniBin absorbed-experiment pattern. Canonical for all Targeted GuideStones. |
+| Content-aware routing schema compliance | projectNUCLEUS | `routing_config_reference.toml` schema owned by primalSpring. All membrane deployments validate against it. |
+| Calibrate-shadow-cutover protocol | projectNUCLEUS | Sovereignty transitions with measurable gates. primalSpring validates structurally. |
 
 ### Infra Repos
 

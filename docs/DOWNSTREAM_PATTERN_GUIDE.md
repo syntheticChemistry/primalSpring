@@ -343,3 +343,18 @@ SkunkBat audit correlation.
 | **airSpring** | 36 foundation targets → Thread 6; irrigation/soil ladder → projectNUCLEUS; methods.rs drift-proofing |
 | **ludoSpring** | Composition-only niche → projectNUCLEUS; Threads 9+10 → foundation; HCI validation suite |
 | **primalSpring** | foundation_validation.toml graph; BTSP/MethodGate standards; composition coordination truth |
+
+---
+
+## Upstream Pattern Escalation
+
+Downstream products surface patterns that need upstream adoption. Full
+inventory with primal blockers (UB-1..4), canonicalization targets, spring
+adoption actions, and glacial horizon predictions:
+
+**See**: `wateringHole/handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md`
+
+Highest-leverage for glacial push:
+- **Songbird TURN client library** (UB-1) — unlocks geo-delocalized validation
+- **genomeBin USB packaging** (UB-3) — unlocks full Tier 3 offline composition
+- **Discovery chain env var standardization** — unifies spring/garden implementations

@@ -3,7 +3,35 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 15: Sovereignty Layer 4 Evolution (2026-05-15)
+## [Unreleased] — Wave 15.2: UB-3/UB-4 Resolution (2026-05-15)
+
+### Changed
+- **UB-3 RESOLVED**: `plasmidBin/stage_usb.sh` ships USB staging — exports
+  all primal binaries + metadata into self-contained directory for lithoSpore
+  Tier 3 USB assembly. Also fixed `fetch.sh` `detect_arch()` triple mismatch.
+- **UB-4 RESOLVED**: sporePrint `auto-refresh.yml` now ingests `liveSpore.json`
+  from guideStone repos, copies to `static/lab/guidestone/`, optionally runs
+  `litho verify`. New content page at `content/guidestone/live_spore_feed.md`.
+- **Escalation handoff** updated with resolution status for UB-3 and UB-4.
+- **`wateringHole/README.md`** — primal debt table updated to reflect resolved items.
+
+## Wave 15.1: Upstream Pattern Escalation (2026-05-15)
+
+### Added
+- **`wateringHole/handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md`** — full
+  inventory of downstream-evolved patterns needing upstream adoption. Three
+  tiers: primal blockers (UB-1..4 — Songbird TURN, BearDog FIDO2, genomeBin USB,
+  sporePrint pipeline), canonicalization targets (discovery chain, Bash-to-Rust,
+  lib.rs dispatch, cross-platform matrix), and spring adoption actions.
+
+### Changed
+- **`wateringHole/README.md`** — added "Downstream-Surfaced Primal Debt" table
+  (5 primal blockers with priority and requester) and "Patterns to Absorb" table
+  (6 downstream-evolved patterns). Handoff index updated.
+- **`docs/DOWNSTREAM_PATTERN_GUIDE.md`** — added "Upstream Pattern Escalation"
+  section with cross-link to handoff and glacial-push leverage assessment.
+
+## Wave 15: Sovereignty Layer 4 Evolution (2026-05-15)
 
 ### Added
 - **Sovereignty validation track** — 10th track (`Track::Sovereignty`) with 3 new
