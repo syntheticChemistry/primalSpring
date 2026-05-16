@@ -211,6 +211,13 @@ Both `dispatch()` and `announce()` include automatic fallback:
 
 Springs can adopt the new API immediately without requiring a biomeOS upgrade.
 
+**Endorsed pattern** (`announce_or_register`): Several springs (groundSpring,
+airSpring, healthSpring, wetSpring) have implemented an `announce_or_register()`
+wrapper that tries `ctx.announce()` first and falls back to the legacy 3-call
+pattern. This is the **canonical backward-compatible approach** and is endorsed
+by primalSpring. Springs that alias `primal.announce` to their existing
+`lifecycle.register` handler (as ludoSpring does) are also correctly aligned.
+
 ## Validation
 
 primalSpring includes validation scenarios that exercise the signal API:

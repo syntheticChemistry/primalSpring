@@ -2,7 +2,7 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 16, 2026 — Wave 17: Neural API Signal Elevation. Registry 451 methods, 41 scenarios. `dispatch()` + `announce()` APIs, signal dispatch parity, SIGNAL_ADOPTION_STANDARD.md. All springs pulled to HEAD. Waves 1-17 done.
+**Last updated**: May 16, 2026 — Wave 18: Local Debt Resolution + Downstream Interim. Registry 451 methods, 41 scenarios. All 8 springs pushed Wave 17 signal adoption. `dispatch()` + `announce()` APIs ecosystem-wide. Waves 1-18 done.
 **Audited by**: primalSpring composition audit
 **Method**: Pulled all 8 springs to HEAD, assessed each across 9 axes
 
@@ -16,14 +16,14 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 708 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 451 methods, sync-tested | **G** 80 deploy + 14 signal graphs | **G** 89 exp crates + 41 scenarios (10 tracks) + Waves 1-17 complete, Dark Forest gate + deployment pipeline + atomic signals + sovereignty track + signal dispatch parity | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
-| **hotSpring** | 1,042 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
-| **healthSpring** | 1,018 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 451 | **G** 7 graphs, skunkBat + Tower atomic (V64n) | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
-| **wetSpring** | 1,962 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (38/38 NUCLEUS) | **G** TOML + cross-sync 451 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
-| **neuralSpring** | 1,453 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (19 certification tests) | **G** 34 capabilities, TOML + sync test vs 451 | **G** 4 graphs (V160 Tower + coralReef routing) | **G** exp094 parity crate, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
-| **ludoSpring** | 862 | **G** optional=true, IPC-first default (`default=["ipc"]`) | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **G** 28 game.* + cross-sync 451 | **G** 12 graphs, compute trio in cells (V71) | **G** 100 exp fossilized, 8 scenarios | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
-| **groundSpring** | 1,123 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (modularized 5-layer guidestone) | **G** 16 MCP tools + 6 registry sync tests | **G** 6 graphs | **G** LTEE B2+B1+B3+B4 reproductions + compute trio IPC | **G** 34 (paper-linked) | **G** bans ring/openssl |
-| **airSpring** | 1,389 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated (guidestone) | **G** L4 (7 deploy graphs, 10 scenarios) | **G** 46 capabilities in TOML + cross-sync 451 | **G** 7 graphs | **G** 3 exp crates (exp001-003) | **G** 25 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
+| **primalSpring** | 700 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 451 methods, sync-tested | **G** 80 deploy + 14 signal graphs | **G** 89 exp crates + 41 scenarios (10 tracks) + Waves 1-18 complete, Dark Forest gate + deployment pipeline + atomic signals + sovereignty track + signal dispatch parity | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **hotSpring** | 595 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign dispatch) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
+| **healthSpring** | 1,018 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 451 | **G** 7 graphs, skunkBat + Tower atomic (V64q) | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
+| **wetSpring** | 1,962 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (guideStone primal proof, B7 Tier 2) | **G** 50 capabilities, TOML + cross-sync 451 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
+| **neuralSpring** | 910 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (7 scenarios incl. s_signal_dispatch) | **G** 35 capabilities, TOML + sync test vs 451 | **G** 4 graphs (V160 Tower + coralReef routing) | **G** exp094 parity + s_signal_dispatch, IPC in playGround | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
+| **ludoSpring** | 910 | **G** optional=true, IPC-first default (`default=["ipc"]`) | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **G** 28 game.* + cross-sync 451 | **G** 12 graphs, compute trio in cells (V74) | **G** 100 exp fossilized, 10 scenarios | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
+| **groundSpring** | 1,123 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (modularized 5-layer guidestone) | **G** 20 IPC methods + 6 registry sync tests | **G** 6 graphs | **G** LTEE B1+B2+B3+B4 reproductions + compute trio IPC + signal dispatch | **G** 34 (paper-linked) | **G** bans ring/openssl |
+| **airSpring** | 1,119 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated (guidestone) | **G** L5 (Wave 17, 10 scenarios) | **G** 51 capabilities in TOML + cross-sync 451 | **G** 7 graphs | **G** 3 exp crates (exp001-003) | **G** 25 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
 
 ## Summary by Axis
 
@@ -42,8 +42,8 @@
 |-------|---------|
 | L8 | primalSpring (absorbed) |
 | L6 | hotSpring (certified) |
-| L5 | neuralSpring, healthSpring |
-| L4 | wetSpring, groundSpring, ludoSpring, airSpring |
+| L5 | neuralSpring, healthSpring, wetSpring, airSpring |
+| L4 | groundSpring, ludoSpring |
 
 ### 4. Capability Registry
 
@@ -52,7 +52,7 @@
 
 ### 5. Deploy Graphs
 
-Total across ecosystem: **78** (primalSpring) + **5** (hotSpring) + **7** (healthSpring) + **7** (wetSpring) + **4** (neuralSpring) + **12** (ludoSpring) + **6** (groundSpring) + **4** (airSpring) = **122 deploy graphs**
+Total across ecosystem: **80** (primalSpring) + **5** (hotSpring) + **7** (healthSpring) + **7** (wetSpring) + **4** (neuralSpring) + **12** (ludoSpring) + **6** (groundSpring) + **7** (airSpring) = **128 deploy graphs**
 
 ### 6. Composition Experiments
 
@@ -164,10 +164,11 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | **neuralSpring** | B1-ML (LSTM/ESN/HMM) | 8/8 | **NO** | YES | ML surrogates |
 | **wetSpring** | B7 (Tenaillon 2016) | STARTED | **NO** | **NO** | 6: ltee-genomics |
 
-**lithoSpore integration**: **6/7 modules Tier 2 PASS (51/51 checks)** — VM-validated via
-benchScale + agentReagents on fresh libvirt VM. Module 5 (biobricks) SKIP (DOI pending).
-Modules 3+4 promoted via groundSpring B3/B4 ingestion. CATHEDRAL owns pipeline going forward.
-Upstream blockers: Songbird TURN client (UB-1), BearDog FIDO2 (UB-2), genomeBin Tier 3 (UB-3), sporePrint (UB-4).
+**lithoSpore integration**: **7/7 modules Tier 2 PASS (75/75 checks)** — VM-validated via
+benchScale + agentReagents on fresh libvirt VM. Module 5 (biobricks) promoted with metabolic
+burden validation (6/6). Modules 3+4 promoted via groundSpring B3/B4 ingestion. CATHEDRAL
+split: lithoSpore (verification chassis) + projectFOUNDATION (knowledge layer) are now
+separate IDE focus teams. Upstream blockers: Songbird TURN client (UB-1), genomeBin Tier 3 (UB-3).
 
 ### Foundation Thread Seeding Status
 
@@ -175,25 +176,25 @@ Upstream blockers: Songbird TURN client (UB-1), BearDog FIDO2 (UB-2), genomeBin 
 |--------|------|:----------:|:-------:|:-------:|--------|
 | 1 | Whole-Cell Modeling | YES | 27 | 24 | **ACTIVE** |
 | 2 | Plasma Physics / QCD | YES | YES | YES | **ACTIVE** |
-| 3 | Immunology | **NO** | YES | YES | Needs expression (healthSpring) |
+| 3 | Immunology | YES (V64) | YES | YES | **ACTIVE** (healthSpring) |
 | 4 | Environmental Genomics | **NO** | YES | **NO** | Needs expression + targets (wetSpring) |
 | 5 | LTEE / Evolution | **YES** | **12** | **18** | **ACTIVE** (seeded May 11) |
 | 6 | Agricultural Science | YES | YES | YES | **ACTIVE** |
 | 7 | Anderson Mathematics | YES | YES | YES | **ACTIVE** |
-| 8 | Human Health | **NO** | YES | YES | Needs expression (healthSpring) |
-| 9 | Gaming / Creative | **NO** | YES | YES | Needs expression (ludoSpring) |
+| 8 | Human Health | YES (V64) | YES | YES | **ACTIVE** (healthSpring) |
+| 9 | Gaming / Creative | YES (V71) | YES (13) | YES | **ACTIVE** (ludoSpring T9 seeded) |
 | 10 | Provenance / Economics | **YES** | **YES** | **YES** | **SEEDED** (primalSpring + ludoSpring) |
 
-**Foundation seeding**: 6/10 threads fully active. Thread 5 elevated from EMPTY → ACTIVE (Wave 10). Thread 10 seeded (Wave 11, May 14). Threads 3, 4, 8, 9 need expressions.
+**Foundation seeding**: 9/10 threads active. Thread 5 elevated from EMPTY → ACTIVE (Wave 10). Thread 10 seeded (Wave 11, May 14). Threads 3+8 seeded by healthSpring (V64), Thread 9 seeded by ludoSpring (V71). Thread 4 (Environmental Genomics) is the only remaining gap — needs expression + targets from wetSpring/airSpring.
 
 ### Spring → Thread Ownership for Remaining Seeding
 
 | Thread | Name | Owner Spring | Action Needed |
 |--------|------|-------------|---------------|
-| 3 | Immunology | **healthSpring** | Add expression mapping (immune pathway models → thread targets) |
+| 3 | Immunology | **healthSpring** | **SEEDED** (V64): immune pathway models → thread targets |
 | 4 | Environmental Genomics | **wetSpring** | Add expression + define targets (metagenomic diversity metrics) |
-| 8 | Human Health | **healthSpring** | Add expression mapping (PK/PD models → clinical targets) |
-| 9 | Gaming / Creative | **ludoSpring** | Add expression (game science patterns → creative economy targets) |
+| 8 | Human Health | **healthSpring** | **SEEDED** (V64): PK/PD models → clinical targets |
+| 9 | Gaming / Creative | **ludoSpring** | **SEEDED** (V71): game science patterns → creative economy targets |
 | 10 | Provenance / Economics | **ludoSpring** + **primalSpring** | **SEEDED** (May 14): provenance trio pipeline as expression, BLAKE3/CAS targets, NFT/attestation models |
 
 ### projectNUCLEUS Tier Status
@@ -217,11 +218,11 @@ Upstream blockers: Songbird TURN client (UB-1), BearDog FIDO2 (UB-2), genomeBin 
 |--------|:----------:|:----------:|:--------------:|-----------------|
 | **groundSpring** | **G** B1-B3 done | **Y** T5+T7 seeded | **G** Tier 1 | LTEE data → lithoSpore modules 1-3 |
 | **hotSpring** | **G** B2 done | **G** T2 active | **G** Tier 1 | GPU ladder → NUCLEUS workloads |
-| **healthSpring** | N/A | **Y** T3+T8 need expr | **G** Tier 1 | Thread 3+8 expressions |
+| **healthSpring** | **Y** B5 candidate | **G** T3+T8 seeded (V64) | **G** Tier 1 | B5 → lithoSpore module |
 | **wetSpring** | **Y** B7 started | **Y** T4 needs expr+tgt | **G** Tier 1 | B7 pipeline + T4 seeding |
 | **neuralSpring** | **G** Py+Rust done (S201b) | **Y** T5 seeded | **G** Tier 1 | lithoSpore ML module integration |
 | **airSpring** | N/A | **G** T6 active | **G** Tier 1 | T6 36 targets → foundation |
-| **ludoSpring** | N/A | **Y** T9+T10 need seed | **Y** Tier 1 partial | T9 expression + T10 seeding |
+| **ludoSpring** | N/A | **G** T9+T10 seeded (V71) | **Y** Tier 1 partial | petalTongue composition (V74) |
 | **primalSpring** | N/A | **Y** T10 co-owner | **G** coordination | T10 seeding + validation graphs |
 
 ## Phase 32: Composition Gap Sweep (May 12, 2026)
@@ -317,8 +318,8 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
 
 **RESOLVED**:
 - ~~airSpring aws-lc-sys ban~~: FALSE GAP — workspace deny.toml exists
-- ~~Registry cross-sync CI~~: 8/8 springs CI-validated against 418
-- ~~GAP-12~~: 28 `game.*` methods (418 total, zero drift)
+- ~~Registry cross-sync CI~~: 8/8 springs CI-validated against 451
+- ~~GAP-12~~: 28 `game.*` methods (451 total, zero drift)
 
 ## Wave 14: Dark Forest Glacial Gate + Deployment Pipeline (May 14, 2026)
 
@@ -339,8 +340,8 @@ genomebin, doctor, sign, verify, layout, systemd.
 
 | Metric | Value |
 |--------|-------|
-| Total tests across 8 springs | **13,760+** (primalSpring 651 + hotSpring 1,042 + healthSpring 1,018 + wetSpring 1,962 + neuralSpring 1,453 + ludoSpring 862 + groundSpring 1,123 + airSpring 1,389 + metalForge/integration/Python suites) |
-| Total deploy graphs | **123** (primalSpring 78 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 4 = 123) |
+| Total tests across 8 springs | **8,337+** (primalSpring 700 + hotSpring 595 + healthSpring 1,018 + wetSpring 1,962 + neuralSpring 910 + ludoSpring 910 + groundSpring 1,123 + airSpring 1,119 + metalForge/integration/Python suites) |
+| Total deploy graphs | **128** (primalSpring 80 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 7 = 128) |
 | Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |
 | Registered capability methods | **451** (primalSpring canonical, zero drift) |

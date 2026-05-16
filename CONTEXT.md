@@ -87,10 +87,14 @@ composition, parity, content sovereignty), signal dispatch parity, and primal
 announce — with shared `validation::helpers` for graph parsing and Dark Forest
 cross-ref. **Neural API Signal Elevation**: `dispatch()` and `announce()`
 convenience APIs on `CompositionContext`. `SIGNAL_ADOPTION_STANDARD.md` published.
-**Wave 18 — Local Debt Resolution**: Deprecated `probe_primal` callers fully
-migrated from handlers.rs, exp004, exp107 to `CompositionContext`. CATHEDRAL
-split documented (lithoSpore + projectFOUNDATION). Downstream interim wave
-prepared while delta springs absorb pre-split evolution.
+**Wave 18 — Local Debt Resolution + Ecosystem Convergence**: Deprecated
+`probe_primal` callers fully migrated from handlers.rs, exp004, exp107 to
+`CompositionContext`. CATHEDRAL split documented (lithoSpore + projectFOUNDATION).
+All 8 delta springs pushed Wave 17 signal adoption — `primal.announce` and
+`nest.store` dispatch ecosystem-wide. Cross-spring scorecard reconciled with
+live test counts. 9/10 foundation threads active (Thread 4 is sole remaining
+gap). Garden evolution blurbs published for projectFOUNDATION, projectNUCLEUS,
+esotericWebb. `announce_or_register` backward-compat pattern endorsed.
 **Dark Forest Glacial Gate**: 5-pillar
 security invariant standard (metadata, ports, network, BTSP, enclave).
 `LIVE_SCIENCE_API.md` formalizes Tier 2 wire contract. All 13 primals at zero debt.
@@ -206,3 +210,28 @@ standards. Per-spring exploration lanes guide convergent evolution:
 ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data visualization), neuralSpring (agentic
 composition).
+
+## Glacial Checkpoint — Current and Remaining (May 16, 2026)
+
+### Completed
+- All 8 springs at Wave 17+ signal adoption (primal.announce, nest.store)
+- 451-method registry stable, zero drift across ecosystem
+- 41 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
+- 9/10 foundation threads active (Thread 4 sole remaining)
+- lithoSpore 7/7 modules Tier 2 PASS (75/75 checks)
+- All deprecated `probe_primal` callers removed from primalSpring
+- CATHEDRAL split documented, garden evolution blurbs published
+- Zero local debt across all springs (deep audit confirmed)
+- 13/13 primals in plasmidBin, all BTSP AEAD authenticated
+
+### Remaining
+- **Thread 4** expression + targets (wetSpring/airSpring coordinate)
+- **Forgejo Actions CI** porting for projectNUCLEUS sovereignty
+- **Sovereign DNS** (knot-dns, H2-17 through H2-20)
+- **ludoSpring 6-method IPC** expansion for esotericWebb
+- **esotericWebb provenance E2E** for real storytelling sessions
+- **BLAKE3 backfill** for projectFOUNDATION source TOMLs
+- **Thread 1 WCM RPC** stack (0/24 blocked)
+- **Songbird TURN client** library (UB-1, last upstream blocker)
+- **nest.commit live** validation (healthSpring/wetSpring gated on biomeOS v3.57+)
+- **petalTongue dialogue scenes** for esotericWebb narrative UI
