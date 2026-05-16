@@ -764,6 +764,7 @@ methods = [
     "primal.announce",
     "primal.capabilities",
     "primal.info",
+    "primal.list",
 ]
 
 [primalspring_rpc]

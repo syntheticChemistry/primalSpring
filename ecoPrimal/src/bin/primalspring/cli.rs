@@ -46,6 +46,10 @@ pub enum Commands {
         /// Emit JSON output instead of human-readable text.
         #[arg(long)]
         format: Option<String>,
+        /// Write provenance artifacts (results.json, provenance.toml) to this
+        /// directory. Used by projectFOUNDATION Thread 10 workload.
+        #[arg(long)]
+        provenance_dir: Option<String>,
     },
     /// Start the JSON-RPC 2.0 IPC server (cell membrane).
     Serve,

@@ -32,12 +32,14 @@ fn main() {
             ref tier,
             list,
             ref format,
+            ref provenance_dir,
         } => cmd_validate(
             track.as_deref(),
             scenario.as_deref(),
             tier.as_deref(),
             list,
             format.as_deref() == Some("json"),
+            provenance_dir.as_deref(),
         ),
         cli::Commands::Serve => cmd_serve(),
         cli::Commands::Status => cmd_status(),
@@ -62,6 +64,7 @@ fn cmd_validate(
     tier: Option<&str>,
     list: bool,
     json: bool,
+    provenance_dir: Option<&str>,
 ) {
     use primalspring::validation::scenarios::{Tier, Track, build_registry};
 
@@ -144,6 +147,10 @@ fn cmd_validate(
         std::process::exit(1);
     }
 
+    if let Some(dir) = provenance_dir {
+        write_provenance(&v, dir, ran);
+    }
+
     if json {
         if let Ok(j) = v.to_json() {
             println!("{j}");
@@ -154,6 +161,71 @@ fn cmd_validate(
         v.finish();
     }
     std::process::exit(v.exit_code());
+}
+
+fn write_provenance(v: &primalspring::validation::ValidationResult, dir: &str, scenarios_run: usize) {
+    use std::io::Write;
+    let dir = std::path::Path::new(dir);
+    if let Err(e) = std::fs::create_dir_all(dir) {
+        eprintln!("warning: could not create provenance dir {}: {e}", dir.display());
+        return;
+    }
+
+    if let Ok(json) = v.to_json() {
+        let path = dir.join("results.json");
+        if let Ok(mut f) = std::fs::File::create(&path) {
+            let _ = f.write_all(json.as_bytes());
+            eprintln!("provenance: wrote {}", path.display());
+        }
+    }
+
+    let today = {
+        let d = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
+        let days = d / 86400;
+        let y = 1970 + (days * 400) / 146097;
+        format!("{y}-{:02}-{:02}", (days % 365) / 30 + 1, (days % 365) % 30 + 1)
+    };
+
+    let provenance_toml = format!(
+        r#"[run]
+spring = "primalSpring"
+version = "{version}"
+date = "{today}"
+threads = ["10"]
+tier = 2
+scenarios_run = {scenarios_run}
+
+[environment]
+gate = "irongate"
+nucleus_composition = "full"
+host = "{host}"
+
+[results]
+total_checks = {total}
+passed = {passed}
+failed = {failed}
+skipped = {skipped}
+"#,
+        version = env!("CARGO_PKG_VERSION"),
+        today = today,
+        scenarios_run = scenarios_run,
+        host = std::env::var("HOSTNAME")
+            .or_else(|_| std::env::var("HOST"))
+            .unwrap_or_else(|_| "irongate-local".into()),
+        total = v.evaluated(),
+        passed = v.passed,
+        failed = v.failed,
+        skipped = v.skipped,
+    );
+
+    let path = dir.join("provenance.toml");
+    if let Ok(mut f) = std::fs::File::create(&path) {
+        let _ = f.write_all(provenance_toml.as_bytes());
+        eprintln!("provenance: wrote {}", path.display());
+    }
 }
 
 fn cmd_serve() {
@@ -360,9 +432,13 @@ mod serve {
             "health.readiness" => {
                 serde_json::json!({"status": "ok", "primal": "primalspring", "ready": true})
             }
-            "capability.list" => {
+            "capabilities.list" | "capability.list" => {
                 let caps = primalspring::niche::all_capabilities();
-                serde_json::json!({"capabilities": caps})
+                serde_json::json!({
+                    "capabilities": caps,
+                    "count": caps.len(),
+                    "primal": primalspring::PRIMAL_NAME,
+                })
             }
             "coordination.status" => {
                 serde_json::json!({

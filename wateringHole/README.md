@@ -187,9 +187,9 @@ delta. Every spring has completed deep debt sweeps and is at zero debt.
 | hotSpring | 1,148 | — | Sovereign dispatch validated on Titan V, CPUCTL_ALIAS breakthrough, Blackwell gaps |
 | healthSpring | 1,019 | V64n | Tower atomic, deploy graph canonicalization, barraCuda v0.4.0 |
 | ludoSpring | 910 | V72 | health.version + health.drain, 418-method registry alignment |
-| primalSpring | 710 | — | Wave 19: pattern evolution — announce_or_register, DiscoveryPath, graph↔registry cross-tests, signal parity |
+| primalSpring | 718+ | — | Wave 20: schema-standard + nest-commit-live scenarios, primal.list canonical schema, Thread 10 provenance wiring, LTEE tracker |
 
-**Convergence state**: All springs CI-validated against canonical 451 methods. 41 scenarios across 10 tracks. NUCLEUS validation playbook artifacts 1-3 + UB-2 covered by 4 new scenarios (Wave 16). Signal dispatch parity + primal announce scenarios added (Wave 17).
+**Convergence state**: All springs CI-validated against canonical 452 methods. 43 scenarios across 10 tracks. Wave 20: schema standardization (primal.list + capability.list), nest.commit E2E validation, primal-blocked asks documented, LTEE paper queue tracked.
 All implement BYOB niche model, deploy graphs, and Tier 1/2 validation.
 Fragment-first graph composition adopted ecosystem-wide.
 

@@ -67,12 +67,14 @@ pub mod s_domain_contract_sweep;
 pub mod s_ferment_transcript;
 pub mod s_full_nucleus;
 pub mod s_routing_consistency;
+pub mod s_schema_standard;
 pub mod s_gate_failure;
 pub mod s_ionic_bond;
 pub mod s_loam_certificate_lifecycle;
 pub mod s_membrane_composition;
 pub mod s_meta_tier_signals;
 pub mod s_nest_atomic;
+pub mod s_nest_commit_live;
 pub mod s_nestgate_content_pipeline;
 pub mod s_node_atomic;
 pub mod s_primal_announce;
@@ -132,6 +134,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_beardog_fido2::SCENARIO);
     r.register(s_signal_dispatch_parity::SCENARIO);
     r.register(s_primal_announce::SCENARIO);
+    r.register(s_schema_standard::SCENARIO);
+    r.register(s_nest_commit_live::SCENARIO);
     r
 }
 
@@ -142,7 +146,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 41;
+    const EXPECTED_SCENARIO_COUNT: usize = 43;
 
     #[test]
     fn registry_scenario_count() {

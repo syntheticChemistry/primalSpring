@@ -53,7 +53,7 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 41 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 43 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
 
@@ -73,15 +73,15 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 19 (May 16, 2026) — 710 `#[test]` markers across workspace,
+v0.9.25 Wave 20 (May 16, 2026) — 718+ `#[test]` markers across workspace,
 89 experiments (20 tracks), 80 deploy graphs + 14 atomic signal graphs,
-451 registered capability methods, 44-cell deployment matrix. Phase 32 atomic
+452 registered capability methods, 44-cell deployment matrix. Phase 32 atomic
 evolution: Tower = 3 primals (bearDog + songbird + skunkBat), Node = 6
 (Tower + compute trio), Nest = 7 (Tower + nestGate + provenance trio),
 NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
-**Waves 1-18 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
-in production paths. 41 validation scenarios (10 tracks, 3 tiers) including
+**Waves 1-20 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
+in production paths. 43 validation scenarios (10 tracks, 3 tiers) including
 atomic-signal, meta-tier-signal, agentic-tower, sovereignty scenarios (membrane
 composition, parity, content sovereignty), signal dispatch parity, and primal
 announce — with shared `validation::helpers` for graph parsing and Dark Forest
@@ -211,12 +211,12 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data visualization), neuralSpring (agentic
 composition).
 
-## Glacial Checkpoint — Current and Remaining (May 16, 2026)
+## Glacial Checkpoint — Current and Remaining (May 16, 2026 PM)
 
 ### Completed
 - All 8 springs at Wave 17+ signal adoption (primal.announce, nest.store)
-- 451-method registry stable, zero drift across ecosystem
-- 41 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
+- 452-method registry stable (primal.list added Wave 20), zero drift
+- 43 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
 - 9/10 foundation threads active (Thread 4 sole remaining)
 - lithoSpore v1.0.0 released — 7/7 modules Tier 2 PASS (75/75 checks)
 - All deprecated `probe_primal` callers removed from primalSpring
@@ -224,6 +224,11 @@ composition).
 - Zero local debt across all springs (deep audit confirmed)
 - 13/13 primals in plasmidBin, all BTSP AEAD authenticated
 - All upstream blockers SHIPPED (UB-1 through UB-4)
+- **Wave 20**: `primal.list` + `capability.list` canonical schemas defined and validated
+- **Wave 20**: `nest.commit` live probe scenario (skip-tolerant for pre-v3.57 biomeOS)
+- **Wave 20**: Thread 10 workload wired (`--provenance-dir` flag, `thread10_provenance.sh`)
+- **Wave 20**: Primal-blocked gaps documented as upstream asks
+- **Wave 20**: LTEE paper queue tracker — 8 papers, 4 springs, 7 lithoSpore modules
 
 ### Garden Evolution (May 16, 2026)
 - **lithoSpore v1.0.0**: ScopeManifest, liveSpore.json provenance journal,
@@ -253,9 +258,8 @@ composition).
 - **BLAKE3 backfill** for projectFOUNDATION source TOMLs
 - **Thread 1 WCM RPC** stack (0/24 blocked)
 - **lithoSpore TURN wiring** (songbird-turn-client integration pending)
-- **nest.commit live** validation (healthSpring/wetSpring gated on biomeOS v3.57+)
 - **petalTongue dialogue scenes** for esotericWebb narrative UI
-- **primal.list canonical schema** (projectNUCLEUS ask for biomeOS)
-- **capability.list shape standardization** (arrays vs objects across primals)
-- **primalSpring Thread 10 workload** alignment with foundation validation
 - **Foundation validate elevation** to CompositionContext + Rust crates
+- **biomeOS primal.list implementation** (schema defined by primalSpring Wave 20, awaiting biomeOS)
+- **Primal-blocked gaps** (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — documented as asks, awaiting upstream teams
+- **LTEE enrichments** (B5 lithoSpore promotion, B7 Tier 3, B1-ML Rust elevation, framework parity benchmarks)

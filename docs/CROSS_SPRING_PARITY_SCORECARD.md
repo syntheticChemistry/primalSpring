@@ -2,7 +2,7 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 16, 2026 — Wave 18: Local Debt Resolution + Downstream Interim. Registry 451 methods, 41 scenarios. All 8 springs pushed Wave 17 signal adoption. `dispatch()` + `announce()` APIs ecosystem-wide. Waves 1-18 done.
+**Last updated**: May 16, 2026 PM — Wave 20: Ecosystem Status Assessment. Registry 452 methods, 43 scenarios. Schema standardization (primal.list + capability.list), nest.commit E2E, Thread 10 wired. All primal-blocked gaps documented.
 **Audited by**: primalSpring composition audit
 **Method**: Pulled all 8 springs to HEAD, assessed each across 9 axes
 
@@ -16,7 +16,7 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 710 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 451 methods, sync-tested | **G** 80 deploy + 14 signal graphs | **G** 89 exp crates + 41 scenarios (10 tracks) + Waves 1-19 complete, Dark Forest gate + deployment pipeline + atomic signals + sovereignty track + signal dispatch parity + graph↔registry cross-tests | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **primalSpring** | 718+ | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 452 methods, sync-tested | **G** 80 deploy + 14 signal graphs | **G** 89 exp crates + 43 scenarios (10 tracks) + Waves 1-20 complete, schema-standard + nest-commit-live + graph↔registry cross-tests + signal dispatch parity | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
 | **hotSpring** | 595 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** local TOML + sync test | **G** 5 graphs | **G** 189+ exp (Tier 4 + LTEE B2 + 3-GPU sovereign dispatch) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
 | **healthSpring** | 1,018 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 118 methods in TOML + CI cross-sync vs canonical 451 | **G** 7 graphs, skunkBat + Tower atomic (V64q) | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,962 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (guideStone primal proof, B7 Tier 2) | **G** 50 capabilities, TOML + cross-sync 451 | **G** 7 graphs | **G** 1 exp crate (exp400 NUCLEUS composition parity) | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
@@ -356,7 +356,7 @@ genomebin, doctor, sign, verify, layout, systemd.
 
 | Metric | Value |
 |--------|-------|
-| Total tests across 8 springs | **8,347+** (primalSpring 710 + hotSpring 595 + healthSpring 1,018 + wetSpring 1,962 + neuralSpring 910 + ludoSpring 910 + groundSpring 1,123 + airSpring 1,119 + metalForge/integration/Python suites) |
+| Total tests across 8 springs | **8,355+** (primalSpring 718 + hotSpring 595 + healthSpring 1,018 + wetSpring 1,962 + neuralSpring 910 + ludoSpring 910 + groundSpring 1,123 + airSpring 1,119 + metalForge/integration/Python suites) |
 | Total deploy graphs | **128** (primalSpring 80 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 7 = 128) |
 | Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |

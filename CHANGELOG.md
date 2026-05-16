@@ -3,7 +3,50 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 19: Pattern Evolution — Downstream Absorption (2026-05-16)
+## [Unreleased] — Wave 20: Ecosystem Status Assessment (2026-05-16 PM)
+
+### Schema Standardization (Phase A)
+- **primal.list canonical schema**: Added `primal.list` to capability_registry.toml
+  (452 methods total). Defined canonical response shape: `{ "primals": [...], "count": N }`
+  with per-entry required keys (`name`, `socket`) and optional (`pid`, `capabilities`,
+  `status`, `version`).
+- **capability.list normalization**: Fixed unibin `capability.list` handler to match both
+  `capabilities.list` and `capability.list` post-normalization. Standardized response to
+  `{ "capabilities": [...], "count": N, "primal": "..." }`.
+- **New scenario: schema-standard**: Validates registry presence, local capability.list
+  shape, live biomeOS capability.list schema, and live biomeOS primal.list schema. Probes
+  skip gracefully when biomeOS lacks primal.list.
+
+### E2E Validation (Phase A)
+- **New scenario: nest-commit-live**: Full `nest.commit` signal pipeline validation
+  (dehydrate → sign → store → commit → attribute). Graph structural validation,
+  registry alignment, capability reachability, live dispatch with pre-v3.57 skip
+  tolerance, and nest.store baseline comparison.
+
+### Thread 10 Workload (Phase A)
+- **--provenance-dir flag**: `primalspring validate --provenance-dir <path>` writes
+  `results.json` and `provenance.toml` to the specified directory, compatible with
+  projectFOUNDATION's provenance folder convention.
+- **thread10_provenance.sh**: Runner script that invokes `primalspring_unibin validate`
+  and writes provenance artifacts to `foundation/validation/primalSpring/<date>/`.
+
+### Upstream Asks (Phase B)
+- **PRIMAL_BLOCKED_ASKS_MAY16_2026.md**: Comprehensive handoff documenting 5 priority
+  tiers of primal-blocked gaps (toadStool sandbox, barraCuda/coralReef GPU, ionic bridge,
+  provenance trio usability, biomeOS schema standardization) with expected fix shapes,
+  blocked springs, and cross-references to PRIMAL_GAPS.md and the parity scorecard.
+
+### LTEE Tracking (Phase C)
+- **LTEE_PAPER_QUEUE_TRACKER.md**: Status document covering 8 papers across 4 springs.
+  All reproductions complete or at Tier 2+. 7 lithoSpore modules wired (75/75 checks).
+  Remaining work: B5 module promotion, B7 Tier 3, B1-ML Rust elevation.
+
+### Updated
+- **CONTEXT.md**: Wave 20, 452 methods, 43 scenarios. Glacial Checkpoint updated.
+- **Scenario count**: 41 → 43 (EXPECTED_SCENARIO_COUNT updated in mod.rs)
+- **Registry count**: 451 → 452 (primal.list added)
+
+## Wave 19: Pattern Evolution — Downstream Absorption (2026-05-16)
 
 ### Pattern Evolution (absorbing downstream garden patterns)
 - **tcp_fallback_table ↔ ALL_CAPS alignment**: Added `content` (NestGate) and
