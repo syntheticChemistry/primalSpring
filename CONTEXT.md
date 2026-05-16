@@ -73,17 +73,19 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Phase 32 atomic model (May 15, 2026) — 708 tests (666 lib + 42 experiment),
+v0.9.25 Wave 17 (May 16, 2026) — 708 tests (666 lib + 42 experiment),
 89 experiments (20 tracks), 80 deploy graphs + 14 atomic signal graphs,
-441 registered capability methods. Phase 32 atomic evolution: Tower = 3 primals (bearDog +
+451 registered capability methods. Phase 32 atomic evolution: Tower = 3 primals (bearDog +
 songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7 (Tower +
 nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
-**Waves 7-14 complete**, all Wave 8 upstream items DONE (W8-07/08/09 resolved May 12).
-Zero DEBT markers, zero unsafe blocks, zero panics in production paths. 35 validation
-scenarios (10 tracks, 3 tiers) including atomic-signal, meta-tier-signal, agentic-tower,
-and sovereignty scenarios (membrane composition, parity, content sovereignty) with shared
-`validation::helpers` for graph parsing and Dark Forest cross-ref.
+**Waves 1-17 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
+in production paths. 41 validation scenarios (10 tracks, 3 tiers) including
+atomic-signal, meta-tier-signal, agentic-tower, sovereignty scenarios (membrane
+composition, parity, content sovereignty), signal dispatch parity, and primal
+announce — with shared `validation::helpers` for graph parsing and Dark Forest
+cross-ref. **Neural API Signal Elevation**: `dispatch()` and `announce()`
+convenience APIs on `CompositionContext`. `SIGNAL_ADOPTION_STANDARD.md` published.
 **Dark Forest Glacial Gate**: 5-pillar
 security invariant standard (metadata, ports, network, BTSP, enclave).
 `LIVE_SCIENCE_API.md` formalizes Tier 2 wire contract. All 13 primals at zero debt.

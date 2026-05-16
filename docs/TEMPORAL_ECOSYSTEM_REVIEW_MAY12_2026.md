@@ -1,4 +1,4 @@
-> **Point-in-time snapshot** (May 12-14, 2026). For current state, see the root `README.md` and `docs/VALIDATION_TIERS.md`. Key metrics have since evolved: 441 methods (was 418-427), 32 scenarios (was 24-29), 708 tests (was 618-651).
+> **Point-in-time snapshot** (May 12-14, 2026). For current state, see the root `README.md` and `docs/VALIDATION_TIERS.md`. Key metrics have since evolved: **451** methods (was 418→441), **41** scenarios (was 24→32), 708 tests. Wave 17 (May 16): Neural API Signal Elevation — `dispatch()` + `announce()` APIs, signal dispatch parity scenario, SIGNAL_ADOPTION_STANDARD.md published.
 
 # Temporal Ecosystem Review — Debt, Horizons, and Stadial Transition
 

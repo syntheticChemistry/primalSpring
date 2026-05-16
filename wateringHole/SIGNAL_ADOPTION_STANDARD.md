@@ -3,7 +3,7 @@
 **Version**: 1.0  
 **Date**: May 16, 2026  
 **Author**: primalSpring (reference implementation)  
-**Status**: Active — primalSpring v0.9.26+
+**Status**: Active — primalSpring v0.9.25+ (Wave 17)
 
 ## Overview
 

@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Phase 60+ — Interstadial, eukaryotic validation, atomic signals)
-**Last Updated**: May 15, 2026
+**Version**: 0.9.25 (Wave 17 — Neural API Signal Elevation, eukaryotic validation, atomic signals)
+**Last Updated**: May 16, 2026
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -50,9 +50,9 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
-- **Zero open upstream gaps** — 13/13 primals at zero debt, Waves 1-12 complete, zero panics in production
-- **441 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`)
-- **35 validation scenarios** (10 tracks, 3 tiers: Rust/Live/Both) with shared `validation::helpers`; sovereignty track validates membrane composition, routing parity, content sovereignty
+- **Zero open upstream gaps** — 13/13 primals at zero debt, Waves 1-17 complete, zero panics in production
+- **451 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`, `fido2.*`, `primal.announce`)
+- **41 validation scenarios** (10 tracks, 3 tiers: Rust/Live/Both) with shared `validation::helpers`; sovereignty track validates membrane composition, routing parity, content sovereignty; signal dispatch parity + primal announce scenarios validate Neural API adoption
 - **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
 - **RootPulse commit workflow** fully executable (6/6 phases)

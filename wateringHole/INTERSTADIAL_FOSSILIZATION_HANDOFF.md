@@ -1,5 +1,7 @@
 # Interstadial Fossilization Handoff
 
+> **Errata (May 16, 2026)**: Counts in this handoff reflect the state at publication. Current: **451** methods (was 441), **41** scenarios (was 32). Wave 17: Neural API Signal Elevation — `dispatch()` + `announce()` APIs, signal dispatch parity + primal announce scenarios, SIGNAL_ADOPTION_STANDARD.md. See `CHANGELOG.md` for full evolution since publication.
+
 **Date**: May 9, 2026 — Phase 60+ INTERSTADIAL
 **From**: primalSpring
 **To**: All delta springs, projectNUCLEUS, primal teams

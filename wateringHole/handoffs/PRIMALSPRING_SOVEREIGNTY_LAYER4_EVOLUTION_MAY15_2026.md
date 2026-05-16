@@ -1,5 +1,7 @@
 # primalSpring Sovereignty Layer 4 Evolution — May 15, 2026
 
+> **Errata (May 16, 2026)**: Counts in this handoff reflect the state at publication. Current: **451** methods (was 441), **41** scenarios (was 35). Wave 17 added `dispatch()` + `announce()` APIs, signal dispatch parity, primal announce scenarios, and `SIGNAL_ADOPTION_STANDARD.md`.
+
 ## Summary
 
 primalSpring internalized the sovereignty patterns pioneered by projectNUCLEUS
