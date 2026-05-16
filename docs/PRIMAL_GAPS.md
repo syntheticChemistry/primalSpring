@@ -25,7 +25,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
 | toadStool | 22,900+ | **ADOPTED** | FULL | L3 | **CLEAN** — Phase D factory wired (S254). AMD live, NV FECS-gated. 74 JSON-RPC methods. |
 | biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.57: Neural API evolution complete. `signal.dispatch` composition collapse, `primal.announce` atomic self-registration, metrics tagging with signal namespaces, `capability.call` signal-tier interception. v3.54 `biomeos.spring_status` for Tier 2. |
-| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — Session 62: content provenance metadata (`source`, `pipeline`, `stored_by` in `content.put/get`). `artifact_query` covered by enriched `content.get`. |
+| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — S62 content provenance. UB-4 (sporePrint pipeline): backend complete, pipeline wiring is CI/lithoSpore scope. `primal.announce`: existing `discovery.announce` + `announce_self()` cover NestGate's role; no code change until biomeOS protocol standardized. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 68: 72-method coverage, TensorSession `sub`/`negate` (GAP-HS-027), registry assertion softened to `>= 70` |
 | petalTongue | varies | **ADOPTED** | FULL | L2/L3 | **CLEAN** — all `#[allow]` → `#[expect(reason)]` (P6) |
