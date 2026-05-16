@@ -73,19 +73,24 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 17 (May 16, 2026) — 708 tests (666 lib + 42 experiment),
+v0.9.25 Wave 18 (May 16, 2026) — 700 `#[test]` markers across workspace,
 89 experiments (20 tracks), 80 deploy graphs + 14 atomic signal graphs,
-451 registered capability methods. Phase 32 atomic evolution: Tower = 3 primals (bearDog +
-songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7 (Tower +
-nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
+451 registered capability methods, 44-cell deployment matrix. Phase 32 atomic
+evolution: Tower = 3 primals (bearDog + songbird + skunkBat), Node = 6
+(Tower + compute trio), Nest = 7 (Tower + nestGate + provenance trio),
+NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
-**Waves 1-17 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
+**Waves 1-18 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
 in production paths. 41 validation scenarios (10 tracks, 3 tiers) including
 atomic-signal, meta-tier-signal, agentic-tower, sovereignty scenarios (membrane
 composition, parity, content sovereignty), signal dispatch parity, and primal
 announce — with shared `validation::helpers` for graph parsing and Dark Forest
 cross-ref. **Neural API Signal Elevation**: `dispatch()` and `announce()`
 convenience APIs on `CompositionContext`. `SIGNAL_ADOPTION_STANDARD.md` published.
+**Wave 18 — Local Debt Resolution**: Deprecated `probe_primal` callers fully
+migrated from handlers.rs, exp004, exp107 to `CompositionContext`. CATHEDRAL
+split documented (lithoSpore + projectFOUNDATION). Downstream interim wave
+prepared while delta springs absorb pre-split evolution.
 **Dark Forest Glacial Gate**: 5-pillar
 security invariant standard (metadata, ports, network, BTSP, enclave).
 `LIVE_SCIENCE_API.md` formalizes Tier 2 wire contract. All 13 primals at zero debt.

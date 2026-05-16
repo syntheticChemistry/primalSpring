@@ -9,11 +9,7 @@
 //!   4. Composition parity — discovery, substrate, capability breadth, aggregate probe latency
 
 use primalspring::composition::CompositionContext;
-#[allow(
-    deprecated,
-    reason = "experiment uses deprecated probe_primal for composition parity"
-)]
-use primalspring::coordination::{AtomicType, probe_primal, probe_substrate};
+use primalspring::coordination::{AtomicType, probe_substrate};
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
@@ -68,10 +64,6 @@ fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     }
 }
 
-#[allow(
-    deprecated,
-    reason = "experiment uses deprecated probe_primal for composition parity"
-)]
 fn phase_composition_parity(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let required = AtomicType::FullNucleus.required_capabilities();
     let substrate = probe_substrate();
@@ -94,17 +86,19 @@ fn phase_composition_parity(v: &mut ValidationResult, ctx: &mut CompositionConte
     );
 
     let mut primal_health_ok = true;
+    let mut aggregate_us: u64 = 0;
     for cap in required {
         if !ctx.has_capability(cap) {
             primal_health_ok = false;
             continue;
         }
+        let start = std::time::Instant::now();
         match ctx.call(cap, "health.liveness", serde_json::json!({})) {
-            Ok(_) => {}
-            Err(e) if e.is_connection_error() => {
-                primal_health_ok = false;
+            Ok(_) => {
+                aggregate_us += start.elapsed().as_micros() as u64;
             }
             Err(_) => {
+                aggregate_us += start.elapsed().as_micros() as u64;
                 primal_health_ok = false;
             }
         }
@@ -133,11 +127,6 @@ fn phase_composition_parity(v: &mut ValidationResult, ctx: &mut CompositionConte
     }
     v.check_minimum("composition_total_caps", total_caps, 8);
 
-    let aggregate_us: u64 = AtomicType::FullNucleus
-        .required_primals()
-        .iter()
-        .map(|p| probe_primal(p).latency_us)
-        .sum();
     v.check_latency(
         "composition_aggregate_latency",
         aggregate_us,

@@ -903,7 +903,7 @@ transport = "uds_first"
 experiments = "core"
 priority = "P1"
 status = "pass"
-notes = "lithoSpore USB on fresh VM — 6/7 modules, 51/51 checks, geo-delocalized hostname_hash (May 14, 2026)"
+notes = "lithoSpore USB on fresh VM — 7/7 modules, 75/75 checks, geo-delocalized hostname_hash (May 16, 2026)"
 
 # ── Known Blockers ──────────────────────────────────────────────────────
 #

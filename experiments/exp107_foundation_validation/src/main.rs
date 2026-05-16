@@ -8,7 +8,7 @@
 //! Phases:
 //!   1. Structural — parse and validate the foundation graph
 //!   2. Discovery  — CompositionContext resolves all capabilities
-//!   3. Health     — probe primals in the foundation composition
+//!   3. Health     — CompositionContext health_check per capability
 //!   4. Provenance — DAG session lifecycle (create → event → complete)
 //!   5. Storage    — NestGate store/get roundtrip with BLAKE3 anchor
 //!   6. Compute    — toadStool workload dispatch health
@@ -21,26 +21,20 @@
 use std::path::Path;
 
 use primalspring::composition::CompositionContext;
-#[allow(
-    deprecated,
-    reason = "experiment uses deprecated probe_primal for foundation validation"
-)]
-use primalspring::coordination::probe_primal;
 use primalspring::deploy::{load_graph, validate_structure};
-use primalspring::primal_names as pn;
 use primalspring::validation::ValidationResult;
 
 const FOUNDATION_GRAPH: &str = "graphs/compositions/foundation_validation.toml";
 
-const FOUNDATION_PRIMALS: &[&str] = &[
-    pn::BEARDOG,
-    pn::SONGBIRD,
-    pn::TOADSTOOL,
-    pn::BARRACUDA,
-    pn::NESTGATE,
-    pn::RHIZOCRYPT,
-    pn::LOAMSPINE,
-    pn::SWEETGRASS,
+const FOUNDATION_CAPABILITIES: &[&str] = &[
+    "security",
+    "discovery",
+    "compute",
+    "tensor",
+    "storage",
+    "dag",
+    "ledger",
+    "attribution",
 ];
 
 fn phase_structural(v: &mut ValidationResult) {
@@ -165,25 +159,29 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
     );
 }
 
-#[allow(
-    deprecated,
-    reason = "experiment uses deprecated probe_primal for foundation validation"
-)]
-fn phase_health(v: &mut ValidationResult) {
-    for &name in FOUNDATION_PRIMALS {
-        let health = probe_primal(name);
-        if health.health_ok {
-            v.check_bool(
-                &format!("health_{name}"),
-                true,
-                &format!(
-                    "{name} healthy, {}us, {} caps",
-                    health.latency_us,
-                    health.capabilities.len()
-                ),
-            );
-        } else {
-            v.check_skip(&format!("health_{name}"), &format!("{name} not reachable"));
+fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    for &cap in FOUNDATION_CAPABILITIES {
+        if !ctx.has_capability(cap) {
+            v.check_skip(&format!("health_{cap}"), &format!("{cap} not discovered"));
+            continue;
+        }
+        match ctx.health_check(cap) {
+            Ok(true) => {
+                v.check_bool(&format!("health_{cap}"), true, &format!("{cap} healthy"));
+            }
+            Ok(false) => {
+                v.check_bool(
+                    &format!("health_{cap}"),
+                    false,
+                    &format!("{cap} health check returned false"),
+                );
+            }
+            Err(e) => {
+                v.check_skip(
+                    &format!("health_{cap}"),
+                    &format!("{cap} not reachable: {e}"),
+                );
+            }
         }
     }
 }
@@ -420,7 +418,7 @@ fn main() {
                 phase_discovery(v, &ctx);
 
                 v.section("Phase 3: Health");
-                phase_health(v);
+                phase_health(v, &mut ctx);
 
                 v.section("Phase 4: Provenance (rhizoCrypt DAG)");
                 phase_provenance(v, &mut ctx);

@@ -161,12 +161,8 @@ pub fn handle_bonding_test(params: &serde_json::Value, id: u64) -> JsonRpcRespon
     )
 }
 
-#[allow(
-    deprecated,
-    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
-)]
 pub fn handle_composition_health_by_capability(atomic: AtomicType, id: u64) -> JsonRpcResponse {
-    let result = primalspring::coordination::validate_composition_by_capability(atomic);
+    let result = validate_composition_ctx(atomic);
     match serde_json::to_value(result) {
         Ok(val) => success_response(val, id),
         Err(e) => error_response(
@@ -178,17 +174,12 @@ pub fn handle_composition_health_by_capability(atomic: AtomicType, id: u64) -> J
 }
 
 /// Tower + Squirrel overlay health — Tower capabilities plus AI bridge.
-#[allow(
-    deprecated,
-    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
-)]
 pub fn handle_tower_squirrel_health(id: u64) -> JsonRpcResponse {
-    let tower = primalspring::coordination::validate_composition_by_capability(AtomicType::Tower);
-    let ai_disc = primalspring::ipc::discover::discover_by_capability("ai");
-    let ai_ok = ai_disc.socket.as_ref().is_some_and(|sock| {
-        primalspring::ipc::client::PrimalClient::connect(sock, primalspring::primal_names::SQUIRREL)
-            .is_ok_and(|mut c| c.health_check().unwrap_or(false))
-    });
+    use primalspring::composition::CompositionContext;
+
+    let tower = validate_composition_ctx(AtomicType::Tower);
+    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let ai_ok = ctx.has_capability("ai") && ctx.health_check("ai").unwrap_or(false);
     let all_healthy = tower.all_healthy && ai_ok;
     let combined = serde_json::json!({
         "tower": tower,
@@ -198,10 +189,6 @@ pub fn handle_tower_squirrel_health(id: u64) -> JsonRpcResponse {
     success_response(combined, id)
 }
 
-#[allow(
-    deprecated,
-    reason = "handlers expose deprecated coordination RPCs for backward compatibility"
-)]
 pub fn handle_validate_composition_by_capability(
     params: &serde_json::Value,
     id: u64,
@@ -215,7 +202,7 @@ pub fn handle_validate_composition_by_capability(
         );
     };
 
-    let result = primalspring::coordination::validate_composition_by_capability(atomic);
+    let result = validate_composition_ctx(atomic);
     match serde_json::to_value(result) {
         Ok(val) => success_response(val, id),
         Err(e) => error_response(

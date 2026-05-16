@@ -3,7 +3,30 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 17: Neural API Signal Elevation (2026-05-16)
+## [Unreleased] — Wave 18: Local Debt Resolution + Downstream Interim (2026-05-16)
+
+### Changed
+- **handlers.rs**: Rewired 3 deprecated RPC handlers (`handle_composition_health_by_capability`,
+  `handle_tower_squirrel_health`, `handle_validate_composition_by_capability`) from
+  `validate_composition_by_capability` + `PrimalClient` to modern `validate_composition_ctx`
+  + `CompositionContext`. Zero `#[allow(deprecated)]` blocks remain in handlers.
+- **exp107**: `phase_health` migrated from `probe_primal(name)` to `ctx.health_check(cap)`
+  per capability domain. Removed `probe_primal` import entirely.
+- **exp004**: `phase_composition_parity` migrated from `probe_primal` aggregate latency to
+  timed `ctx.call(cap, "health.liveness")` loop. Removed `probe_primal` import.
+- **experiments/README.md**: Updated Phase 60 test counts (680→700), removed stale
+  `probe_primal` references, fixed deployment matrix cell count (43→44).
+- **deployment_matrix.toml**: lithoSpore cell notes updated (6/7→7/7 modules, 51→75 checks).
+- **README.md**: Added 13 undocumented tools to tools table (24/24 now listed), test count
+  reconciled (700 markers), deployment matrix cell count (43→44).
+- **wateringHole/README.md**: River Delta primalSpring test count reconciled (767→700).
+
+### Temporal Note
+Delta springs are still absorbing pre-CATHEDRAL-split evolution blurbs. primalSpring has
+resolved its local deprecated-API debt and prepared downstream product integration surfaces
+for lithoSpore and projectFOUNDATION in the temporal interim.
+
+## Wave 17: Neural API Signal Elevation (2026-05-16)
 
 ### Added
 - **`CompositionContext::dispatch(signal_id, params)`** — unified signal

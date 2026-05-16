@@ -50,7 +50,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
-- **Zero open upstream gaps** — 13/13 primals at zero debt, Waves 1-17 complete, zero panics in production
+- **Zero open upstream gaps** — 13/13 primals at zero debt, Waves 1-18 complete, zero panics in production
 - **451 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`, `fido2.*`, `primal.announce`)
 - **41 validation scenarios** (10 tracks, 3 tiers: Rust/Live/Both) with shared `validation::helpers`; sovereignty track validates membrane composition, routing parity, content sovereignty; signal dispatch parity + primal announce scenarios validate Neural API adoption
 - **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
@@ -187,7 +187,7 @@ delta. Every spring has completed deep debt sweeps and is at zero debt.
 | hotSpring | 1,148 | — | Sovereign dispatch validated on Titan V, CPUCTL_ALIAS breakthrough, Blackwell gaps |
 | healthSpring | 1,019 | V64n | Tower atomic, deploy graph canonicalization, barraCuda v0.4.0 |
 | ludoSpring | 910 | V72 | health.version + health.drain, 418-method registry alignment |
-| primalSpring | 767 | — | Neural API evolution, signal dispatch, primal.announce, doc reconciliation |
+| primalSpring | 700 | — | Wave 18: deprecated API migration, local debt resolution, downstream interim prep |
 
 **Convergence state**: All springs CI-validated against canonical 451 methods. 41 scenarios across 10 tracks. NUCLEUS validation playbook artifacts 1-3 + UB-2 covered by 4 new scenarios (Wave 16). Signal dispatch parity + primal announce scenarios added (Wave 17).
 All implement BYOB niche model, deploy graphs, and Tier 1/2 validation.

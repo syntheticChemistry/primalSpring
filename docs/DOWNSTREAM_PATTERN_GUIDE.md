@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 16, 2026 — Wave 17: Neural API Signal Elevation — `dispatch()` and `announce()` convenience APIs, signal dispatch parity validation (41 scenarios). Signal consumption section added. 451 methods, 41 scenarios (10 tracks, 3 tiers), 14 atomic signal graphs.
+**Last updated**: May 16, 2026 — Wave 18: Local Debt Resolution. All deprecated `probe_primal` callers migrated to `CompositionContext`. Downstream interim handoff prepared for lithoSpore, projectFOUNDATION, and projectNUCLEUS. 451 methods, 41 scenarios (10 tracks, 3 tiers), 14 atomic signal graphs.
 
 ---
 
@@ -306,7 +306,7 @@ AFTER (signal dispatch — biomeOS manages the graph):
   ctx.dispatch("nest.store", json!({ "content": data, "author": id }))
 ```
 
-### APIs Available (primalSpring v0.9.26+)
+### APIs Available (primalSpring v0.9.25+, Wave 17+)
 
 | Method | Purpose |
 |--------|---------|

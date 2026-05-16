@@ -8,7 +8,7 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 708 (666 lib + 42 experiment), 57 ignored |
+| **Tests** | 700 `#[test]` markers (lib + experiment), 57 ignored |
 | **Experiments** | 89 (20 tracks) — 41 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 80 deploy TOMLs + 14 atomic signal graphs — fragment-first composition with `resolve = true` (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 membrane + 1 federation + 1 composition + 12 cell graphs) |
 | **Coverage** | Method coverage against 451 registered capability methods; line coverage via llvm-cov |
@@ -528,7 +528,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `specs/DESKTOP_SESSION_MODEL.md` — Desktop session model (petalTongue + biomeOS)
 - `specs/LIVE_GUI_COMPOSITION_PATTERN.md` — Live GUI composition patterns
 - `specs/SHOWCASE_MINING_REPORT.md` — Showcase patterns mined from primals for substrate validation
-- `config/deployment_matrix.toml` — 43-cell deployment validation matrix
+- `config/deployment_matrix.toml` — 44-cell deployment validation matrix
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer
 
 ## Scripts and Tools
@@ -564,6 +564,19 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `tools/regenerate_checksums.sh` | Regenerate BLAKE3 checksums for local validation assets |
 | `tools/validate_compositions.py` | Live subsystem composition validator (C1-C7) |
 | `tools/ws_gateway.py` | Thin WebSocket-to-IPC bridge (no business logic) |
+| `tools/composition_template.sh` | Template generator for new composition deploy graphs |
+| `tools/composition_nucleus.sh` | Compose and validate a NUCLEUS from capability fragments |
+| `tools/ttt_composition.sh` | Tic-Tac-Toe composition demo (ludoSpring + petalTongue + Squirrel) |
+| `tools/ttt_nucleus.sh` | NUCLEUS launcher tailored for TTT game stack |
+| `tools/cell_launcher.sh` | Start a single cellular deployment from `graphs/cells/` |
+| `tools/gen_seed_fingerprints.sh` | Generate BLAKE3 fingerprints for seed genetics artifacts |
+| `tools/live_nucleus.sh` | Hot-reload NUCLEUS launcher with file-watch respawn |
+| `tools/nucleus_crypto_bootstrap.sh` | Bootstrap BearDog + BTSP crypto layer for NUCLEUS |
+| `tools/desktop_session.sh` | Launch desktop substrate session (petalTongue + agentic loop) |
+| `tools/tictactoe.sh` | Standalone TTT quick-launch (wraps ttt_composition) |
+| `tools/push_demo_scene.sh` | Push a demo scene to a running petalTongue instance |
+| `tools/godot_bridge.sh` | Launch Godot-to-primal IPC bridge process |
+| `tools/godot_bridge.gd` | GDScript client for Godot-to-primal IPC bridge |
 
 ---
 

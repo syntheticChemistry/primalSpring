@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**89 experiments across 20 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25).
+**89 experiments across 20 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25+). Zero deprecated `probe_primal` callers remain as of Wave 18.
 
 ---
 
@@ -56,7 +56,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 9 | Multi-Node Bonding | exp071–072 | **Structural** (bonding policy, data federation, graph metadata) |
 | 10 | Cross-Gate Deployment | exp073–074 | **Structural** (LAN covalent mesh, remote NUCLEUS health via TCP) |
 | 11 | gen4 Deployment Evolution | exp075–080 | **Live validated** (biomeOS substrate, cross-gate routing, Squirrel AI, petalTongue, spring sweep, cross-spring ecology) |
-| 12 | Deployment Matrix | exp081 | **Structural** (43-cell deployment matrix sweep across arch × topology × preset × transport) |
+| 12 | Deployment Matrix | exp081 | **Structural** (44-cell deployment matrix sweep across arch × topology × preset × transport) |
 | 13 | Substrate Stress | exp082–084 | **Structural** (chaos substrate, federation edge cases, provenance adversarial) |
 | 14 | E2E Composition | exp085–088 | **E2E composition** (BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition) |
 | 15 | LAN/Covalent + Mixed Composition | exp089–093 | **Structural** (deployment graph sweep, Tower Atomic LAN probe, L0 primal routing matrix, L2 dual-tower ionic, L3 covalent mesh backup) |
@@ -68,7 +68,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 
 ## Experiment Status Key
 
-- **IPC wired**: Uses `CompositionContext` for live IPC (Unix socket JSON-RPC 2.0); legacy `probe_primal()` remains available only where parity experiments still exercise deprecated APIs (see Phase 60)
+- **IPC wired**: Uses `CompositionContext` for live IPC (Unix socket JSON-RPC 2.0); all experiments use modern patterns (deprecated `probe_primal` removed Wave 18)
 - **Discovery wired**: Capability-first discovery via `CompositionContext::from_live_discovery_with_fallback()` with 5-tier escalation; skips honestly if primal unavailable
 - **Structural**: Validates graph structure, deploy patterns, or composition logic without requiring live primals
 
@@ -137,7 +137,7 @@ the experiment → scenario module mapping.
 | 57 | BTSP Phase 3 Convergence + NUCLEUS Validation | 13/13 FULL AEAD converged (loamSpine, coralReef, NestGate shipped Phase 3). Live NUCLEUS validation via plasmidBin: **157/170 guidestone** (bonding ALL PASS, cellular 69/70). Phase 3 interop gap discovered (server advertise→transport switch). `CRYPTO_CONSUMPTION_HIERARCHY.md` published. |
 | 58 | skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub | **skunkBat** wired as 13th NUCLEUS primal (meta-tier defense/recon, Tier 1 binaries). Guidestone fixes: BTSP alias routing (`resolve_btsp_socket`), flex key resolution for barraCuda, desktop cell health node, Squirrel reconnect-on-failed-probe. **plasmidBin CI hub** architecture documented (sole paid Actions repo, signing roadmap, distribution channels). 25+ files reconciled 12→13 primals. |
 | 59 | Later-Term Evolution | exp108–111 (token federation, composition lifecycle, audit pipeline, gate routing). JH-11 `TokenVerifier` trait + `BearDogVerifier`, `CompositionContext::call_authenticated`, stub primal harness, guidestone Layer 8 lifecycle. |
-| 60 | **Interstadial Rewire** | **All 89 experiments** rewired to modern `CompositionContext` pattern (v0.9.25). Old patterns (`discover_primal`, `PrimalClient`, `AtomicHarness`, `discover_by_capability`) replaced with `CompositionContext::from_live_discovery_with_fallback()` + `ctx.call()`. Pre-rewire sources fossilized in `fossilRecord/experiments_pre_interstadial_may2026/`. Zero clippy warnings, **680** workspace lib+integration tests (`664` in `primalspring` package) measured 2026-05-09. |
+| 60 | **Interstadial Rewire** | **All 89 experiments** rewired to modern `CompositionContext` pattern (v0.9.25). Old patterns (`discover_primal`, `PrimalClient`, `AtomicHarness`, `discover_by_capability`) replaced with `CompositionContext::from_live_discovery_with_fallback()` + `ctx.call()`. Pre-rewire sources fossilized in `fossilRecord/experiments_pre_interstadial_may2026/`. Last deprecated `probe_primal` calls removed from exp004/exp107 (Wave 18). Zero clippy warnings, **700** `#[test]` markers across workspace (as of 2026-05-16). |
 
 ## Frozen Results (`results/`)
 
@@ -147,7 +147,7 @@ artifacts that notebooks load without requiring live primals.
 | File | Contents |
 |------|----------|
 | `composition_validation.json` | Deploy graph stats, bond types, structural checks, discovery tiers |
-| `test_suite_report.json` | Module-level test counts (**664** `primalspring` lib+integration tests as of 2026-05-09), timings, categories |
+| `test_suite_report.json` | Module-level test counts (primalspring lib+integration tests), timings, categories |
 | `experiment_catalog.json` | All 89 experiments categorized by focus area, timeline |
 | `security_convergence.json` | BTSP Phase 3 state, PG-55–59 resolution, convergence timeline |
 | `cross_spring_matrix.json` | Spring × primal consumption, ecosystem flows, sporePrint readiness |
