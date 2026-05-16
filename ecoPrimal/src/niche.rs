@@ -274,10 +274,14 @@ pub fn coordination_semantic_mappings() -> serde_json::Value {
     })
 }
 
-/// Register this niche's capabilities with biomeOS.
+/// Register this niche's capabilities with biomeOS via `announce_or_register`.
 ///
-/// Discovers biomeOS at runtime, then sends `lifecycle.register` followed
-/// by `capability.register` for each domain and individual capability.
+/// Tries `primal.announce` (biomeOS v3.57+) first — single-call atomic
+/// registration. Falls back to the legacy 3-call pattern (`lifecycle.register`
+/// + `capability.register` per domain + per capability) when announce is
+/// unavailable. This is the canonical backward-compatible approach endorsed
+/// by the ecosystem (`wateringHole/SIGNAL_ADOPTION_STANDARD.md`).
+///
 /// Degrades gracefully if biomeOS is unreachable — coordination must not
 /// depend on registration success.
 pub fn register_with_target(our_socket: &Path) {
@@ -296,11 +300,60 @@ pub fn register_with_target(our_socket: &Path) {
 
     let sock_str = our_socket.to_string_lossy().to_string();
 
+    // ── Try primal.announce first (biomeOS v3.57+) ──
+    if try_announce(&mut client, &sock_str) {
+        return;
+    }
+
+    // ── Fallback: legacy 3-call registration ──
+    legacy_register(&mut client, &sock_str);
+}
+
+/// Atomic announce via `primal.announce` (Wave 17+ pattern).
+///
+/// Returns `true` if announce succeeded, `false` to trigger legacy fallback.
+fn try_announce(client: &mut PrimalClient, sock_str: &str) -> bool {
+    let all_methods: Vec<&str> = all_capabilities();
+    let announce_params = serde_json::json!({
+        "primal_id": NICHE_NAME,
+        "transport": sock_str,
+        "methods": all_methods,
+        "lifecycle": {
+            "state": "running",
+            "pid": std::process::id(),
+            "version": env!("CARGO_PKG_VERSION"),
+        },
+        "domain": crate::PRIMAL_DOMAIN,
+        "signal_tiers": ["tower", "node", "nest", "nucleus", "meta"],
+    });
+
+    match client.call("primal.announce", announce_params) {
+        Ok(resp) if resp.is_success() => {
+            info!(
+                target: "biomeos",
+                methods = all_methods.len(),
+                "primal.announce succeeded (atomic registration)"
+            );
+            true
+        }
+        Ok(_) => {
+            info!(target: "biomeos", "primal.announce returned error — falling back to legacy");
+            false
+        }
+        Err(_) => {
+            info!(target: "biomeos", "primal.announce unavailable — falling back to legacy");
+            false
+        }
+    }
+}
+
+/// Legacy 3-call registration (pre-v3.57 biomeOS).
+fn legacy_register(client: &mut PrimalClient, sock_str: &str) {
     let reg_result = client.call(
         "lifecycle.register",
         serde_json::json!({
             "name": NICHE_NAME,
-            "socket_path": &sock_str,
+            "socket_path": sock_str,
             "pid": std::process::id(),
             "domain": crate::PRIMAL_DOMAIN,
             "version": env!("CARGO_PKG_VERSION"),
@@ -308,7 +361,7 @@ pub fn register_with_target(our_socket: &Path) {
     );
 
     if reg_result.is_ok() {
-        info!(target: "biomeos", "registered with lifecycle manager");
+        info!(target: "biomeos", "registered with lifecycle manager (legacy)");
     } else {
         warn!(target: "biomeos", "lifecycle.register failed (non-fatal)");
     }
@@ -337,7 +390,7 @@ pub fn register_with_target(our_socket: &Path) {
         let mut payload = serde_json::json!({
             "primal": NICHE_NAME,
             "capability": domain,
-            "socket": &sock_str,
+            "socket": sock_str,
             "semantic_mappings": mappings,
         });
         if *domain == "coordination" {
@@ -355,7 +408,7 @@ pub fn register_with_target(our_socket: &Path) {
                 serde_json::json!({
                     "primal": NICHE_NAME,
                     "capability": cap,
-                    "socket": &sock_str,
+                    "socket": sock_str,
                     "served_locally": true,
                 }),
             )
@@ -373,7 +426,7 @@ pub fn register_with_target(our_socket: &Path) {
             serde_json::json!({
                 "primal": NICHE_NAME,
                 "capability": cap,
-                "socket": &sock_str,
+                "socket": sock_str,
                 "served_locally": false,
                 "canonical_provider": provider.slug(),
             }),
@@ -388,7 +441,7 @@ pub fn register_with_target(our_socket: &Path) {
         routed = ROUTED_CAPABILITIES.len(),
         total,
         domains = domains.len(),
-        "capabilities + domains registered",
+        "capabilities + domains registered (legacy)",
     );
 }
 

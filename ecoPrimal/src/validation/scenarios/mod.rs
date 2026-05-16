@@ -198,7 +198,9 @@ mod tests {
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("zero-port-standard", 2),
+            // Port collision: storage/content → NestGate:9500, commit/attribution → SweetGrass:9850.
+            // These are intentional aliases (same primal, different capability domain).
+            ("zero-port-standard", 1),
         ];
 
         let r = build_registry();

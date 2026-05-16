@@ -3,7 +3,29 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 18: Local Debt Resolution + Downstream Interim (2026-05-16)
+## [Unreleased] — Wave 19: Pattern Evolution — Downstream Absorption (2026-05-16)
+
+### Pattern Evolution (absorbing downstream garden patterns)
+- **tcp_fallback_table ↔ ALL_CAPS alignment**: Added `content` (NestGate) and
+  `orchestration` (biomeOS) to tcp_fallback_table — Tier 5 TCP discovery now
+  covers all ALL_CAPS entries. 3 new cross-tests enforce alignment.
+- **announce_or_register**: `niche::register_with_target` now tries `primal.announce`
+  (biomeOS v3.57+) first, falling back to legacy 3-call pattern. Matches the
+  ecosystem-endorsed pattern (`SIGNAL_ADOPTION_STANDARD.md`).
+- **DiscoveryPath telemetry**: `CompositionContext` now tracks how each capability
+  was discovered (Songbird, LocalDiscovery, TcpFallback, Harness, Injected).
+  New `discovery_path()` and `discovery_paths()` APIs for telemetry and
+  liveSpore-style provenance (mirrors lithoSpore v1.0.0 pattern).
+- **Graph↔registry cross-tests**: 20 new compile-time tests validate all 14 signal
+  graphs + 6 fragment graphs against capability_registry.toml (lithoSpore pattern).
+- **Signal graph structural parity**: `s_signal_dispatch_parity` now embeds all 14
+  signal graph TOMLs and validates signal_tier + signal_name match SIGNALS table,
+  plus all node capabilities are registered.
+- **Zero-port known debt reduced**: 2→1 (BIOMEOS_PORT gap resolved; remaining is
+  intentional NestGate/SweetGrass alias collisions).
+- **Test count**: 709→710 (net +26 new tests, -1 resolved known debt)
+
+## Wave 18: Local Debt Resolution + Downstream Interim (2026-05-16)
 
 ### Changed
 - **handlers.rs**: Rewired 3 deprecated RPC handlers (`handle_composition_health_by_capability`,

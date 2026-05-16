@@ -73,7 +73,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 18 (May 16, 2026) — 700 `#[test]` markers across workspace,
+v0.9.25 Wave 19 (May 16, 2026) — 710 `#[test]` markers across workspace,
 89 experiments (20 tracks), 80 deploy graphs + 14 atomic signal graphs,
 451 registered capability methods, 44-cell deployment matrix. Phase 32 atomic
 evolution: Tower = 3 primals (bearDog + songbird + skunkBat), Node = 6

@@ -41,7 +41,7 @@ mod context;
 mod parity;
 mod routing;
 
-pub use context::CompositionContext;
+pub use context::{CompositionContext, DiscoveryPath};
 pub use parity::{
     call_or_skip, is_skip_error, validate_liveness, validate_parity, validate_parity_flex,
     validate_parity_vec, validate_parity_vec_flex,

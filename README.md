@@ -8,7 +8,7 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 700 `#[test]` markers (lib + experiment), 57 ignored |
+| **Tests** | 710 `#[test]` markers (lib + experiment), 57 ignored |
 | **Experiments** | 89 (20 tracks) — 41 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 80 deploy TOMLs + 14 atomic signal graphs — fragment-first composition with `resolve = true` (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node + 5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos + 2 cross-spring + 1 membrane + 1 federation + 1 composition + 12 cell graphs) |
 | **Coverage** | Method coverage against 451 registered capability methods; line coverage via llvm-cov |

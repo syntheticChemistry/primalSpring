@@ -275,6 +275,7 @@ fn phase_response_shapes(v: &mut ValidationResult, ctx: &mut CompositionContext)
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::validation::helpers;
 
     #[test]
     fn signal_dispatch_parity_no_panic() {
@@ -290,5 +291,86 @@ mod tests {
     #[test]
     fn signal_table_matches_graph_count() {
         assert_eq!(SIGNALS.len(), 14, "SIGNALS table should match 14 signal graphs");
+    }
+
+    const SIGNAL_GRAPHS: &[(&str, &str)] = &[
+        ("tower_publish", include_str!("../../../../graphs/signals/tower_publish.toml")),
+        ("tower_authenticate", include_str!("../../../../graphs/signals/tower_authenticate.toml")),
+        ("tower_discover", include_str!("../../../../graphs/signals/tower_discover.toml")),
+        ("tower_health", include_str!("../../../../graphs/signals/tower_health.toml")),
+        ("tower_bootstrap", include_str!("../../../../graphs/signals/tower_bootstrap.toml")),
+        ("node_compute", include_str!("../../../../graphs/signals/node_compute.toml")),
+        ("nest_store", include_str!("../../../../graphs/signals/nest_store.toml")),
+        ("nest_commit", include_str!("../../../../graphs/signals/nest_commit.toml")),
+        ("nest_retrieve", include_str!("../../../../graphs/signals/nest_retrieve.toml")),
+        ("meta_observe", include_str!("../../../../graphs/signals/meta_observe.toml")),
+        ("meta_intent", include_str!("../../../../graphs/signals/meta_intent.toml")),
+        ("meta_render", include_str!("../../../../graphs/signals/meta_render.toml")),
+        ("meta_health", include_str!("../../../../graphs/signals/meta_health.toml")),
+        ("meta_deploy", include_str!("../../../../graphs/signals/meta_deploy.toml")),
+    ];
+
+    #[test]
+    fn signal_graphs_match_dispatch_table() {
+        assert_eq!(
+            SIGNAL_GRAPHS.len(),
+            SIGNALS.len(),
+            "SIGNAL_GRAPHS and SIGNALS should have same count"
+        );
+    }
+
+    #[test]
+    fn signal_graph_ids_match_dispatch_ids() {
+        for (graph_name, content) in SIGNAL_GRAPHS {
+            let parsed: toml::Value = toml::from_str(content)
+                .unwrap_or_else(|e| panic!("{graph_name}.toml parse failed: {e}"));
+
+            let graph_signal_name = parsed
+                .get("graph")
+                .and_then(|g| g.get("signal_name"))
+                .and_then(|n| n.as_str());
+            let graph_signal_tier = parsed
+                .get("graph")
+                .and_then(|g| g.get("signal_tier"))
+                .and_then(|t| t.as_str());
+
+            if let (Some(tier), Some(name)) = (graph_signal_tier, graph_signal_name) {
+                let graph_id = format!("{tier}.{name}");
+                let in_dispatch = SIGNALS.iter().any(|s| s.id == graph_id);
+                assert!(
+                    in_dispatch,
+                    "signal graph {graph_name} defines '{graph_id}' but it's not in SIGNALS table"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn signal_graph_capabilities_in_registry() {
+        let registry = helpers::load_registry_capabilities();
+        for (graph_name, content) in SIGNAL_GRAPHS {
+            let parsed: toml::Value = match toml::from_str(content) {
+                Ok(v) => v,
+                Err(_) => continue,
+            };
+            if let Some(nodes) = parsed
+                .get("graph")
+                .and_then(|g| g.get("nodes"))
+                .and_then(|n| n.as_array())
+            {
+                for node in nodes {
+                    if let Some(caps) = node.get("capabilities").and_then(|c| c.as_array()) {
+                        for cap in caps {
+                            if let Some(s) = cap.as_str() {
+                                assert!(
+                                    registry.contains(&s.to_owned()),
+                                    "{graph_name}: node capability '{s}' not in registry"
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

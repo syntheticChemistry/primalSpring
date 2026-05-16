@@ -48,12 +48,31 @@ fn tcp_tier5_enabled() -> bool {
         .unwrap_or(false)
 }
 
+/// How a capability was discovered — mirrors lithoSpore's `DiscoveryPath`.
+///
+/// Tracks provenance of each capability's connection so downstream can
+/// report discovery health and detect deployment topology changes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DiscoveryPath {
+    /// Resolved via Songbird routing (`ipc.resolve`)
+    Songbird,
+    /// Discovered via biomeOS Neural API or UDS filesystem convention
+    LocalDiscovery,
+    /// Connected via TCP port probing (tier 5)
+    TcpFallback,
+    /// Inherited from a `RunningAtomic` harness
+    Harness,
+    /// Directly injected via `from_clients`
+    Injected,
+}
+
 /// A capability-keyed set of IPC clients for a running primal composition.
 ///
 /// Abstracts socket discovery and client lifecycle so springs interact with
 /// capabilities ("tensor", "shader", "security") rather than primal names
-/// or socket paths. Tracks per-capability BTSP authentication state so
-/// guidestone can report security posture per atomic tier.
+/// or socket paths. Tracks per-capability BTSP authentication state and
+/// discovery path so guidestone can report security posture and topology.
 ///
 /// Supports optional bearer token threading for JH-11 token federation:
 /// when a bearer token is set, `call_authenticated` injects it as
@@ -62,6 +81,7 @@ fn tcp_tier5_enabled() -> bool {
 pub struct CompositionContext {
     clients: HashMap<String, PrimalClient>,
     btsp_state: BTreeMap<String, bool>,
+    discovery_paths: BTreeMap<String, DiscoveryPath>,
     bearer_token: Option<String>,
 }
 
@@ -90,9 +110,14 @@ impl CompositionContext {
             .iter()
             .map(|(cap, c)| (cap.clone(), c.is_btsp_authenticated()))
             .collect();
+        let discovery_paths = clients
+            .keys()
+            .map(|cap| (cap.clone(), DiscoveryPath::Harness))
+            .collect();
         Self {
             clients,
             btsp_state,
+            discovery_paths,
             bearer_token: None,
         }
     }
@@ -120,13 +145,12 @@ impl CompositionContext {
     #[must_use]
     pub fn discover() -> Self {
         let mut clients = HashMap::new();
+        let mut discovery_paths = BTreeMap::new();
 
         // ── Tier 1: Songbird routing ──
-        //
-        // If we can reach the "discovery" capability (Songbird), ask it to
-        // resolve every other capability. Songbird decides the transport.
         if let Ok(songbird) = crate::ipc::client::connect_by_capability("discovery") {
             clients.insert("discovery".to_owned(), songbird);
+            discovery_paths.insert("discovery".to_owned(), DiscoveryPath::Songbird);
 
             let caps_to_resolve: Vec<&str> = ALL_CAPS
                 .iter()
@@ -156,6 +180,7 @@ impl CompositionContext {
                         if let Ok(client) = PrimalClient::connect(&path, primal) {
                             tracing::debug!(cap, primal, tier = 1, "discovered via Songbird");
                             clients.insert(cap.to_owned(), client);
+                            discovery_paths.insert(cap.to_owned(), DiscoveryPath::Songbird);
                         }
                     }
                 }
@@ -163,9 +188,6 @@ impl CompositionContext {
         }
 
         // ── Tiers 2-4: Neural API, UDS convention, registry ──
-        //
-        // Fill any gaps that Songbird didn't cover (or everything if Tower
-        // isn't running). This is the same path as from_live_discovery().
         for &cap in ALL_CAPS {
             if clients.contains_key(cap) {
                 continue;
@@ -173,15 +195,11 @@ impl CompositionContext {
             if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
                 tracing::debug!(cap, tier = "2-4", "discovered via UDS/Neural API");
                 clients.insert(cap.to_owned(), client);
+                discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
             }
         }
 
         // ── Tier 5: TCP probing (opt-in) ──
-        //
-        // Well-known TCP ports are a metadata leak: an observer can infer which
-        // primals are running by probing. The zero-port Tower Atomic standard
-        // (UDS-only) avoids this. Tier 5 is gated behind PRIMALSPRING_TCP_TIER5=1
-        // for containers, cross-arch, and legacy deployments that explicitly opt in.
         if tcp_tier5_enabled() {
             let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
                 .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
@@ -197,6 +215,7 @@ impl CompositionContext {
                 if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
                     tracing::debug!(cap, primal, %addr, tier = 5, "discovered via TCP");
                     clients.insert(cap.to_owned(), client);
+                    discovery_paths.insert(cap.to_owned(), DiscoveryPath::TcpFallback);
                 }
             }
         }
@@ -206,6 +225,7 @@ impl CompositionContext {
         Self {
             clients,
             btsp_state,
+            discovery_paths,
             bearer_token: None,
         }
     }
@@ -220,9 +240,11 @@ impl CompositionContext {
     #[must_use]
     pub fn from_live_discovery() -> Self {
         let mut clients = HashMap::new();
+        let mut discovery_paths = BTreeMap::new();
         for &cap in ALL_CAPS {
             if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
                 clients.insert(cap.to_owned(), client);
+                discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
             }
         }
         let btsp_state = clients
@@ -232,6 +254,7 @@ impl CompositionContext {
         Self {
             clients,
             btsp_state,
+            discovery_paths,
             bearer_token: None,
         }
     }
@@ -254,9 +277,11 @@ impl CompositionContext {
             .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
 
         let mut clients = HashMap::new();
+        let mut discovery_paths = BTreeMap::new();
         for &(cap, primal, port_env, default_port) in &cap_to_primal {
             if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
                 clients.insert(cap.to_owned(), client);
+                discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
                 continue;
             }
             let port: u16 = std::env::var(port_env)
@@ -266,6 +291,7 @@ impl CompositionContext {
             let addr = format!("{host}:{port}");
             if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
                 clients.insert(cap.to_owned(), client);
+                discovery_paths.insert(cap.to_owned(), DiscoveryPath::TcpFallback);
             }
         }
 
@@ -273,6 +299,7 @@ impl CompositionContext {
         Self {
             clients,
             btsp_state,
+            discovery_paths,
             bearer_token: None,
         }
     }
@@ -284,9 +311,14 @@ impl CompositionContext {
             .iter()
             .map(|(cap, c)| (cap.clone(), c.is_btsp_authenticated()))
             .collect();
+        let discovery_paths = clients
+            .keys()
+            .map(|cap| (cap.clone(), DiscoveryPath::Injected))
+            .collect();
         Self {
             clients,
             btsp_state,
+            discovery_paths,
             bearer_token: None,
         }
     }
@@ -616,6 +648,8 @@ impl CompositionContext {
             if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
                 tracing::info!(cap, "rediscovered capability after topology change");
                 self.clients.insert(cap.to_owned(), client);
+                self.discovery_paths
+                    .insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
             }
         }
         self.btsp_state = upgrade_btsp_clients(&mut self.clients);
@@ -639,6 +673,23 @@ impl CompositionContext {
     #[must_use]
     pub const fn btsp_state(&self) -> &BTreeMap<String, bool> {
         &self.btsp_state
+    }
+
+    /// How a specific capability was discovered.
+    ///
+    /// Returns `None` if the capability is not in this context.
+    #[must_use]
+    pub fn discovery_path(&self, capability: &str) -> Option<DiscoveryPath> {
+        self.discovery_paths.get(capability).copied()
+    }
+
+    /// Full discovery path map (capability -> mechanism).
+    ///
+    /// Useful for telemetry, guidestone reporting, and liveSpore-style
+    /// provenance journals (mirrors lithoSpore's DiscoveryPath pattern).
+    #[must_use]
+    pub const fn discovery_paths(&self) -> &BTreeMap<String, DiscoveryPath> {
+        &self.discovery_paths
     }
 
     /// Call a method on the provider of `capability`.

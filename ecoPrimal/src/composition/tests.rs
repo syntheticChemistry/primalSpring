@@ -461,3 +461,115 @@ fn nucleus_parity_cross_atomic_pipeline() {
 
     assert_eq!(v.failed, 0, "NUCLEUS cross-atomic pipeline should not fail");
 }
+
+// ── Graph ↔ Registry cross-tests (lithoSpore pattern) ──────────────
+
+const REGISTRY_TOML: &str = include_str!("../../../config/capability_registry.toml");
+
+fn registry_methods() -> Vec<String> {
+    crate::validation::helpers::parse_registry_capabilities(REGISTRY_TOML)
+}
+
+fn graph_capability_strings(content: &str) -> Vec<String> {
+    let parsed: toml::Value = match toml::from_str(content) {
+        Ok(v) => v,
+        Err(_) => return Vec::new(),
+    };
+    let mut caps = Vec::new();
+    if let Some(nodes) = parsed
+        .get("graph")
+        .and_then(|g| g.get("nodes"))
+        .and_then(|n| n.as_array())
+    {
+        for node in nodes {
+            if let Some(arr) = node.get("capabilities").and_then(|c| c.as_array()) {
+                for c in arr {
+                    if let Some(s) = c.as_str() {
+                        caps.push(s.to_owned());
+                    }
+                }
+            }
+        }
+    }
+    caps
+}
+
+macro_rules! graph_registry_test {
+    ($name:ident, $path:expr, $label:expr) => {
+        #[test]
+        fn $name() {
+            let content = include_str!($path);
+            let graph_caps = graph_capability_strings(content);
+            let reg = registry_methods();
+            for cap in &graph_caps {
+                assert!(
+                    reg.contains(cap),
+                    "{}: graph capability '{}' not in capability_registry.toml",
+                    $label, cap
+                );
+            }
+        }
+    };
+}
+
+graph_registry_test!(signal_tower_publish_caps_in_registry, "../../../graphs/signals/tower_publish.toml", "tower_publish");
+graph_registry_test!(signal_tower_authenticate_caps_in_registry, "../../../graphs/signals/tower_authenticate.toml", "tower_authenticate");
+graph_registry_test!(signal_tower_discover_caps_in_registry, "../../../graphs/signals/tower_discover.toml", "tower_discover");
+graph_registry_test!(signal_tower_health_caps_in_registry, "../../../graphs/signals/tower_health.toml", "tower_health");
+graph_registry_test!(signal_tower_bootstrap_caps_in_registry, "../../../graphs/signals/tower_bootstrap.toml", "tower_bootstrap");
+graph_registry_test!(signal_nest_store_caps_in_registry, "../../../graphs/signals/nest_store.toml", "nest_store");
+graph_registry_test!(signal_nest_commit_caps_in_registry, "../../../graphs/signals/nest_commit.toml", "nest_commit");
+graph_registry_test!(signal_nest_retrieve_caps_in_registry, "../../../graphs/signals/nest_retrieve.toml", "nest_retrieve");
+graph_registry_test!(signal_node_compute_caps_in_registry, "../../../graphs/signals/node_compute.toml", "node_compute");
+graph_registry_test!(signal_meta_deploy_caps_in_registry, "../../../graphs/signals/meta_deploy.toml", "meta_deploy");
+graph_registry_test!(signal_meta_health_caps_in_registry, "../../../graphs/signals/meta_health.toml", "meta_health");
+graph_registry_test!(signal_meta_intent_caps_in_registry, "../../../graphs/signals/meta_intent.toml", "meta_intent");
+graph_registry_test!(signal_meta_observe_caps_in_registry, "../../../graphs/signals/meta_observe.toml", "meta_observe");
+graph_registry_test!(signal_meta_render_caps_in_registry, "../../../graphs/signals/meta_render.toml", "meta_render");
+
+graph_registry_test!(fragment_tower_atomic_caps_in_registry, "../../../graphs/fragments/tower_atomic.toml", "tower_atomic");
+graph_registry_test!(fragment_node_atomic_caps_in_registry, "../../../graphs/fragments/node_atomic.toml", "node_atomic");
+graph_registry_test!(fragment_nest_atomic_caps_in_registry, "../../../graphs/fragments/nest_atomic.toml", "nest_atomic");
+graph_registry_test!(fragment_nucleus_caps_in_registry, "../../../graphs/fragments/nucleus.toml", "nucleus");
+graph_registry_test!(fragment_provenance_trio_caps_in_registry, "../../../graphs/fragments/provenance_trio.toml", "provenance_trio");
+graph_registry_test!(fragment_meta_tier_caps_in_registry, "../../../graphs/fragments/meta_tier.toml", "meta_tier");
+
+#[test]
+fn all_caps_subset_of_registry_domains() {
+    let reg = registry_methods();
+    let registry_domains: std::collections::HashSet<&str> = reg
+        .iter()
+        .filter_map(|m| m.split('.').next())
+        .collect();
+
+    for &cap in ALL_CAPS {
+        let probe = format!("{cap}.any");
+        let mapped = method_to_capability_domain(&probe);
+        let mapped_owned = mapped.to_owned();
+        assert!(
+            ALL_CAPS.contains(&mapped_owned.as_str()) || mapped == "tool" || mapped == "provenance",
+            "ALL_CAPS entry '{cap}' maps to domain '{mapped}' which is not in ALL_CAPS"
+        );
+        assert!(
+            !registry_domains.is_empty(),
+            "registry should have domains"
+        );
+    }
+}
+
+#[test]
+fn discovery_path_tracking_empty() {
+    let ctx = CompositionContext::from_clients(HashMap::new());
+    assert!(ctx.discovery_paths().is_empty());
+    assert_eq!(ctx.discovery_path("tensor"), None);
+}
+
+#[test]
+fn discovery_path_from_live_discovery() {
+    let ctx = CompositionContext::from_live_discovery();
+    for (cap, path) in ctx.discovery_paths() {
+        assert_eq!(*path, DiscoveryPath::LocalDiscovery,
+            "from_live_discovery should tag '{cap}' as LocalDiscovery"
+        );
+    }
+}

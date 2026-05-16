@@ -271,5 +271,65 @@ pub fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u1
             ek::SKUNKBAT_PORT,
             tol::TCP_FALLBACK_SKUNKBAT_PORT,
         ),
+        (
+            "content",
+            pn::NESTGATE,
+            ek::NESTGATE_PORT,
+            tol::TCP_FALLBACK_NESTGATE_PORT,
+        ),
+        (
+            "orchestration",
+            pn::BIOMEOS,
+            ek::BIOMEOS_PORT,
+            tol::TCP_FALLBACK_BIOMEOS_PORT,
+        ),
     ]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use super::super::routing::ALL_CAPS;
+
+    #[test]
+    fn tcp_fallback_covers_all_caps() {
+        let table = tcp_fallback_table();
+        let tcp_caps: Vec<&str> = table.iter().map(|&(cap, _, _, _)| cap).collect();
+        for cap in ALL_CAPS {
+            assert!(
+                tcp_caps.contains(cap),
+                "ALL_CAPS entry '{cap}' missing from tcp_fallback_table — \
+                 Tier 5 TCP discovery will silently skip this capability"
+            );
+        }
+    }
+
+    #[test]
+    fn tcp_fallback_no_duplicates() {
+        let table = tcp_fallback_table();
+        let mut seen = std::collections::HashSet::new();
+        for &(cap, _, _, _) in &table {
+            assert!(
+                seen.insert(cap),
+                "duplicate capability '{cap}' in tcp_fallback_table"
+            );
+        }
+    }
+
+    #[test]
+    fn tcp_fallback_resolves_to_known_primals() {
+        let table = tcp_fallback_table();
+        for &(cap, primal, _, _) in &table {
+            assert!(
+                !primal.is_empty(),
+                "tcp_fallback_table entry '{cap}' has empty primal"
+            );
+            assert!(
+                super::super::routing::capability_to_primal(cap) == primal,
+                "tcp_fallback_table primal for '{cap}' ({primal}) doesn't match \
+                 capability_to_primal ({})",
+                super::super::routing::capability_to_primal(cap)
+            );
+        }
+    }
 }
