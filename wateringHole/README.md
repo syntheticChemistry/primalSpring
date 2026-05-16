@@ -195,7 +195,7 @@ Fragment-first graph composition adopted ecosystem-wide.
 
 ---
 
-## Downstream Products (Gardens) — Evolution Summary (May 15, 2026)
+## Downstream Products (Gardens) — Evolution Summary (May 16, 2026)
 
 ### projectNUCLEUS — Sovereignty Evolution
 
@@ -259,10 +259,17 @@ spring in `projectFOUNDATION/lineage/THREAD_INDEX.toml` and `data/sources/*.toml
 Ensure validation results are captured in `projectFOUNDATION/validation/` with
 dated provenance folders.
 
-### esotericWebb
+### esotericWebb — UI + Agentic Composition
 
-At V7 — self-composed via primal composition (ludoSpring decomposed).
-Neural API routing wired in PrimalBridge. Clean.
+At V7 — 342 tests, 7 primal domains via PrimalBridge, 4 degradation patterns
+(`call_or_default`, `call_fire`, `call_extract_id`, `call_passthrough`). CRPG
+substrate with narrative DAG, YAML content model, 60Hz loop. Massive upstream
+evolution available: signal dispatch in bridges, provenance trio E2E for
+sessions, Squirrel mechanical constraints, petalTongue dialogue scenes.
+Strongest test case for the agentic composition pattern. Local to ironGate
+with direct UDS access to full NUCLEUS.
+
+See `handoffs/GARDEN_EVOLUTION_BLURB_MAY16_2026.md` for full evolution guidance.
 
 ### blueFish
 
