@@ -64,7 +64,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | What | Where |
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
-| Capability registry | `config/capability_registry.toml` (441 methods, zero drift) |
+| Capability registry | `config/capability_registry.toml` (451 methods, zero drift) |
 | Routing config schema | `config/routing_config_reference.toml` (canonical membrane routing) |
 | Membrane deploy graph | `graphs/membrane/tower_membrane.toml` (VPS sovereignty boundary) |
 | Method gate CI | `tools/check_method_gate.sh` |
@@ -125,7 +125,7 @@ With biomeOS v3.57 live, each primal should:
    `primal.announce` RPC (see `PRIMAL_ANNOUNCE_PROTOCOL.md`).
 2. **Declare signal-tier membership**: Include `signal_tiers` in the announce
    payload so biomeOS can route atomic signals through the correct graphs.
-3. **Validate against 441 methods**: Ensure niche capability counts align
+3. **Validate against 451 methods**: Ensure niche capability counts align
    with `config/capability_registry.toml`.
 4. **Validate membrane compositions**: Downstream membrane deployments must conform
    to `config/routing_config_reference.toml` schema (backend types, trust tiers,
@@ -188,7 +188,7 @@ delta. Every spring has completed deep debt sweeps and is at zero debt.
 | ludoSpring | 910 | V72 | health.version + health.drain, 418-method registry alignment |
 | primalSpring | 767 | — | Neural API evolution, signal dispatch, primal.announce, doc reconciliation |
 
-**Convergence state**: All springs CI-validated against canonical 441 methods. 35 scenarios across 10 tracks.
+**Convergence state**: All springs CI-validated against canonical 451 methods. 39 scenarios across 10 tracks. NUCLEUS validation playbook artifacts 1-3 + UB-2 covered by 4 new scenarios (Wave 16).
 All implement BYOB niche model, deploy graphs, and Tier 1/2 validation.
 Fragment-first graph composition adopted ecosystem-wide.
 

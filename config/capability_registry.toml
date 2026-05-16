@@ -233,11 +233,23 @@ methods = [
     "btsp.server.status",
 ]
 
+[fido2]
+owner = "beardog"
+methods = [
+    "beardog.fido2.authenticate",
+    "beardog.fido2.discover",
+    "beardog.fido2.register",
+]
+
 [genetic]
 owner = "beardog"
 methods = [
+    "genetic.ceremony_finalize",
+    "genetic.ceremony_init",
+    "genetic.derive_key",
     "genetic.derive_lineage_beacon_key",
     "genetic.derive_lineage_key",
+    "genetic.entropy_contribute",
     "genetic.generate_lineage_proof",
     "genetic.mix_entropy",
     "genetic.verify_lineage",
@@ -407,6 +419,7 @@ methods = [
     "certificate.mint",
     "certificate.return",
     "certificate.transfer",
+    "certificate.verify",
 ]
 
 [permanence]
@@ -748,7 +761,9 @@ methods = [
 [primal]
 owner = "all"
 methods = [
+    "primal.announce",
     "primal.capabilities",
+    "primal.info",
 ]
 
 [primalspring_rpc]

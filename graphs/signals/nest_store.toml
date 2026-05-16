@@ -38,7 +38,7 @@ required = true
 spawn = false
 depends_on = ["store_content"]
 by_capability = "dag"
-capabilities = ["event.append"]
+capabilities = ["dag.event.append"]
 
 [[graph.nodes]]
 name = "commit"
@@ -47,8 +47,8 @@ order = 3
 required = true
 spawn = false
 depends_on = ["dag_append"]
-by_capability = "ledger"
-capabilities = ["session.commit"]
+by_capability = "spine"
+capabilities = ["spine.seal"]
 
 [[graph.nodes]]
 name = "attribute"

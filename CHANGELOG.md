@@ -3,7 +3,42 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 15.2: UB-3/UB-4 Resolution (2026-05-15)
+## [Unreleased] — Wave 16: Playbook Debt Resolution (2026-05-16)
+
+### Added
+- **4 new validation scenarios** (35 → 39) driven by projectNUCLEUS validation
+  playbook artifact mapping:
+  - `s_provenance_trio_pipeline` (AtomicComposition/Live): full `nest.store`
+    signal pipeline — `content.put` → `dag.event.append` → `spine.seal` →
+    `braid.create`. Validates playbook Artifact 1 (Provenance Trio).
+  - `s_ferment_transcript` (AtomicComposition/Live): NFT lifecycle —
+    `dag.session.create` → N × `dag.event.append` → `dag.dehydration.trigger`
+    → `certificate.mint` (ferment_transcript). Validates playbook Artifact 2.
+  - `s_loam_certificate_lifecycle` (AtomicComposition/Live): certificate
+    lifecycle — `spine.create` → `spine.seal` → `certificate.mint` →
+    `certificate.verify` → `certificate.get`. Validates playbook Artifact 3.
+  - `s_beardog_fido2` (Security/Both): FIDO2/CTAP2 IPC surface — registry
+    presence + live discover/register/authenticate error shapes. Validates UB-2.
+- **10 new registry methods** (441 → 451):
+  - `[fido2]`: `beardog.fido2.authenticate`, `beardog.fido2.discover`,
+    `beardog.fido2.register` (BearDog Wave 103)
+  - `[primal]`: `primal.announce`, `primal.info` (Songbird Wave 205)
+  - `[genetic]`: `genetic.ceremony_init`, `genetic.ceremony_finalize`,
+    `genetic.derive_key`, `genetic.entropy_contribute` (playbook Artifact 4/7)
+  - `[certificate]`: `certificate.verify` (playbook Artifact 3)
+
+### Changed
+- **`graphs/signals/nest_store.toml`** — aligned with playbook naming:
+  `event.append` → `dag.event.append` (fully-qualified), `session.commit` →
+  `spine.seal` (canonical provenance step per playbook).
+- **`PRIMAL_GAPS.md`** — UB-1 (Songbird TURN) and UB-2 (BearDog FIDO2) marked
+  SHIPPED. UB-3/UB-4 also marked SHIPPED. Method count 441 → 451, scenario
+  count 35 → 39. NUCLEUS validation playbook referenced as gap-discovery
+  framework.
+- **Documentation sync**: `ARCHITECTURE.md`, `README.md`, `CONTEXT.md`,
+  `wateringHole/README.md` all updated with new counts.
+
+## Wave 15.2: UB-3/UB-4 Resolution (2026-05-15)
 
 ### Changed
 - **UB-3 RESOLVED**: `plasmidBin/stage_usb.sh` ships USB staging — exports

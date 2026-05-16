@@ -53,7 +53,7 @@ primalSpring/
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)
-│   │   ├── validation/scenarios/  # 35 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
+│   │   ├── validation/scenarios/  # 39 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/

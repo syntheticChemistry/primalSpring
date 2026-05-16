@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-15 (Wave 14+: Neural API evolution — biomeOS v3.55–v3.57 signal dispatch, primal.announce, squirrel signal_plan. Wave 12 deep debt sweep complete.)
+> **Last updated**: 2026-05-16 (Wave 16: Playbook debt resolution — 10 methods added (FIDO2, announce, ceremony, verify), 4 new scenarios (provenance trio, ferment transcript, loam cert, FIDO2), nest_store graph aligned with playbook naming. UB-1/UB-2 SHIPPED.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 15, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 35 scenarios (10 tracks, 3 tiers), 441 methods, 708 tests (666 lib + 42 experiment). Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. All springs pulled to HEAD: 13,750+ total tests across 8 springs.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 39 scenarios (10 tracks, 3 tiers), 451 methods, 708 tests (666 lib + 42 experiment). Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. NUCLEUS validation playbook integration: 4 new scenarios exercise playbook artifacts 1-3 + UB-2. All springs pulled to HEAD: 13,750+ total tests across 8 springs.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — eprintln→tracing in 5 driver files (Iter 95) |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-14 complete. 35 scenarios (10 tracks), 441 methods. Zero panics in production. Dark Forest Glacial Gate: 5-pillar security invariant standard. Sovereignty track: membrane composition + parity + content sovereignty. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
+**13/13 at zero debt. Waves 1-16 complete. 39 scenarios (10 tracks), 451 methods. Zero panics in production. Dark Forest Glacial Gate: 5-pillar security invariant standard. Sovereignty track: membrane composition + parity + content sovereignty. NUCLEUS playbook artifacts: provenance trio pipeline, ferment transcript, loam certificate lifecycle, BearDog FIDO2. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
 
 ---
 
@@ -370,7 +370,7 @@ L1 (Primals — sentinel-stadial)
   │ validated against
   ▼
 L2 (primalSpring — stadial gate for primals)
-  │ 418 registry, MethodGate enforcement, deploy graph coherence,
+  │ 451 registry, MethodGate enforcement, deploy graph coherence,
   │ guidestone certification, CompositionContext contracts
   │
   │ patterns flow downstream
@@ -406,14 +406,14 @@ See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 ### Layer 2: primalSpring — The Stadial Gate
 
 **Owner**: primalSpring team
-**Scope**: Canonical capability registry (441 methods), deploy graph library,
+**Scope**: Canonical capability registry (451 methods), deploy graph library,
 composition validation, gap registry, `CompositionContext` API, two-tier
 validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification,
 atomic signal graphs, eukaryotic validation scenarios with shared helpers
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 441 methods, 708 tests (666 lib + 42 experiment), zero local debt. All waves complete:
+**Current**: 451 methods, 708 tests (666 lib + 42 experiment), zero local debt. All waves complete:
 - Wave 8: Compute trio composition — 9/9 DONE
 - Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
 - Wave 10: Phase 32 atomic model — all fragments v3.0.0
@@ -476,10 +476,10 @@ calibrate-shadow-cutover protocol, darkforest alignment
 
 | ID | Blocker | Owner | Impact |
 |----|---------|-------|--------|
-| UB-1 | Songbird TURN client library | songBird team | Blocks geo-delocalized Tier 2 (USB validates only on LAN without TURN) |
-| UB-2 | BearDog FIDO2/CTAP2 support | bearDog team | Blocks SoloKey witness in `liveSpore.json` (physical-presence authentication) |
-| UB-3 | genomeBin Tier 3 packaging for USB | plasmidBin / primalSpring | Blocks Tier 3 on USB (needs plasmidBin binaries staged on lithoSpore USB image) |
-| UB-4 | sporePrint pipeline wiring | sporePrint team | Blocks `liveSpore.json` → `primals.eco` publish path |
+| ~~UB-1~~ | ~~Songbird TURN client library~~ | songBird team | **SHIPPED** — Wave 205: `songbird-turn-client` crate, RFC 5766 TURN allocation + channel-bind + refresh. `primal.announce` wired. |
+| ~~UB-2~~ | ~~BearDog FIDO2/CTAP2 support~~ | bearDog team | **SHIPPED** — Wave 103: `fido2.rs` handler, `beardog.fido2.discover`/`register`/`authenticate`. 126 methods, ctap2 feature gate. primalSpring `s_beardog_fido2` scenario validates. |
+| ~~UB-3~~ | ~~genomeBin Tier 3 packaging for USB~~ | plasmidBin / primalSpring | **SHIPPED** — `stage_usb.sh` Tier 3 USB packaging implemented. |
+| ~~UB-4~~ | ~~sporePrint pipeline wiring~~ | primalSpring / sporePrint | **SHIPPED** — `auto-refresh.yml` extended for `liveSpore.json` pipeline. |
 | CC-2 | LTEE Guidestone handoff archived | primalSpring | File archived to `handoffs/archive/` — cross-reference added |
 
 **Composition gaps (foundation-exposed, primal ownership)**:
@@ -516,7 +516,7 @@ L1 (Primals — sentinels, stadial-first)
   │ validated against ↓
   │
 L2 (primalSpring — stadial gate)
-  │ 418 registry, MethodGate, deploy graphs, guidestone cert
+  │ 451 registry, MethodGate, deploy graphs, guidestone cert
   │
   │ patterns flow downstream ↓
   │
