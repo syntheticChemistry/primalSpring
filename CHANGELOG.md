@@ -21,6 +21,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   reconciled (700 markers), deployment matrix cell count (43→44).
 - **wateringHole/README.md**: River Delta primalSpring test count reconciled (767→700).
 
+### Reconciliation (May 16 PM)
+- **UB-1 narrative reconciled**: CONTEXT.md, UPSTREAM_PATTERN_ESCALATION, DOWNSTREAM_PATTERN_GUIDE,
+  CROSS_SPRING_PARITY_SCORECARD all now reflect UB-1 SHIPPED (was inconsistent across docs).
+- **Phase 32 airSpring AG-005** marked RESOLVED in scorecard (inference wired).
+- **Thread 3+8** status reconciled: CATHEDRAL_SPLIT_SPRING_GUIDANCE updated from
+  "Needs expression" to "SEEDED (V64)" matching scorecard.
+
+### Garden Evolution Review (May 16 PM)
+- **lithoSpore v1.0.0**: ScopeManifest, liveSpore.json provenance journal, capability-first
+  discovery, scope-driven validation, 6 THREAD_INDEX entries, sporePrint CI, CLI integration
+  tests. Absorbable: scope-driven manifest pattern, graph↔registry cross-tests, DiscoveryPath
+  telemetry, #[path = "tests.rs"] extraction pattern.
+- **projectNUCLEUS V3**: 55 Rust tests, 3-tier discovery cascade, 7 gate TOMLs with [science]
+  metadata, signal_executor.sh, tower_agent.toml (agentic graph), 4 new specs. Absorbable:
+  discovery cascade reference, gate [science] routing contract, signal_executor bridge.
+- **esotericWebb V8**: 357 tests, 24 capabilities, signal-first provenance (nest_store/
+  nest_commit with direct fallback), startup primal.announce, lifecycle handlers. Absorbable:
+  consumer signal-first bridge pattern, capability↔registry cross-test, announce_self template.
+- **projectFOUNDATION**: 184 targets (146 validated), 29 workloads, per-spring validation
+  folders, primal_ipc.sh/target_compare.sh, 6 CPU parity benchmarks, CI gates. Absorbable:
+  Thread 10 workload contract, validation export convention, CompositionContext integration
+  roadmap for foundation_validate elevation.
+
 ### Temporal Note
 Delta springs are still absorbing pre-CATHEDRAL-split evolution blurbs. primalSpring has
 resolved its local deprecated-API debt and prepared downstream product integration surfaces

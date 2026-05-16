@@ -197,77 +197,122 @@ Fragment-first graph composition adopted ecosystem-wide.
 
 ## Downstream Products (Gardens) — Evolution Summary (May 16, 2026)
 
-### projectNUCLEUS — Sovereignty Evolution
+### projectNUCLEUS V3 — Sovereignty + Validation Evolution
 
-projectNUCLEUS has driven massive sovereignty infrastructure evolution:
+projectNUCLEUS has driven massive sovereignty infrastructure and validation evolution:
 
 - **Forgejo PRIMARY**: 32 repos, 3 orgs, dual-push mirror to GitHub
 - **VPS Tower LIVE**: DigitalOcean 2GB, Songbird TURN :3478, RustDesk,
   BearDog, SkunkBat, Caddy — hardened membrane posture
-- **Channel 3 TLS**: `membrane.primals.eco` with DNS grey-cloud, ACME
-  (Let's Encrypt E8), sporePrint served from VPS cache, HTTP parity PASS
-- **Membrane telemetry**: Continuous sovereignty shadow, rolling
-  `membrane_7day.toml` baselines, `darkforest` v0.2.1 membrane audit
-- **Interstadial exit gate CLEARED**: Dark Forest PASS, 13/13 primals LIVE
-- **BearDog TLS shadow**: :8443, 11ms RPC vs 188ms Cloudflare
+- **55 Rust tests** (darkforest 34, tunnelKeeper 21) — zero before V3
+- **Discovery cascade**: biomeOS `primal.list` → per-primal env vars → compiled
+  defaults → `health.liveness` + `capability.list` per primal
+- **7 gate TOMLs** with `[science]` dispatch metadata: irongate, biomegate,
+  strandgate, northgate, westgate, flockgate, nuc-intake
+- **signal_executor.sh**: Squirrel `ai.query` signal_plan → biomeOS `signal.dispatch`;
+  --plan-only, --dry-run, --shadow (tower_agent graph)
+- **tower_agent.toml**: 5-node agentic graph (BearDog → Songbird + skunkBat →
+  biomeOS neural-api → Squirrel) with tcp_fallback_port
+- **4 new specs**: VALIDATION_PLAYBOOK (7 artifacts, cross-artifact ordering),
+  FUZZ_EVOLUTION (multi-gate, corpus sharing), SCIENCE_DISPATCH_MAP (toadStool
+  routing), TIER2_CEREMONY_DESIGN (BearDog RPC sequences)
+- **FAMILY_HPC_MODEL**: owner-priority dispatch, multi-household WAN pattern
+- **Horizon 4**: transactions, ceremony, federation, membrane fuzz — 15 items
+- 267 bash security baseline PASS, 33 Dark Forest PASS, 17 membrane PASS
+- Graphs synchronized to primalSpring v3.0.0
 
 **Still in progress**: BTSP JupyterHub cutover (dual-auth shadow active),
 petalTongue extracellular wiring, sovereign DNS (knot-dns, H2-17–H2-20),
 Forgejo Actions CI porting.
 
-### lithoSpore — Verification Chassis (own IDE focus team)
+**Asks**: canonical `primal.list` schema, `capability.list` shape standardization,
+barraCuda scipy parity, Songbird library crates for tunnelKeeper v0.3.
+
+### lithoSpore v1.0.0 — Verification Chassis (own IDE focus team)
 
 The CATHEDRAL team has split into dedicated workstreams (May 16, 2026).
 lithoSpore is now its own IDE focus team building the verification chassis.
+**v1.0.0 tagged** — first stable guidestone artifact.
 
 - **7/7 modules PASS** at Tier 2 (75/75 checks), chaos tested, deployment-validated
 - **Bash-to-Rust elevation COMPLETE**: all 8 shell scripts replaced with pure
   Rust CLI subcommands (`litho fetch/assemble/validate/verify/chaos-test/deploy-test`).
   Only `scripts/build-container.sh` remains as shell.
+- **ScopeManifest** (`scope.toml`): declarative guidestone identity — springs, modules,
+  foundation threads. Scope-driven validation replaces hardcoded module lists.
+- **liveSpore.json** provenance journal: append-only Tier-stamped entries with
+  DiscoveryPath, hostname BLAKE3, runtime metrics. Corruption-resilient (backup + continue).
+- **Capability-first discovery**: env → UDS `ipc.resolve` → TURN → standalone; `DiscoveryPath`
+  enum feeds provenance. Signal annotations (`signal = "nest.store"`) in registry.
+- **CLI integration test harness**: tempfile roots, CARGO_BIN_EXE_*, corruption/drift
+  fixtures, scope-driven + fallback validation tests.
+- **sporePrint dispatch CI**: `notify-sporeprint.yml` fires `repository-dispatch` to
+  `ecoPrimals/sporePrint` on push to main.
+- **THREAD_INDEX.toml**: 6 entries (threads 1, 2, 4, 5, 6, 7) linking modules to
+  foundation references.
 - **Cross-platform validation**: musl-static Linux (5.1 MB), Windows cross-compiled
-  via `x86_64-pc-windows-gnu` (7.9 MB litho.exe tested via Wine 11). Deployment
-  matrix: Ubuntu airgap, VPS, Alpine chroot, read-only FS — all PASS.
-- **USB recreation**: `litho assemble` builds portable USB artifacts. argv[0] symlink
-  detection for entry points. `.biomeos-spore` marker for layout detection.
-- **Discovery chain evolved**: env → UDS → TURN → standalone, with `probe_operating_mode()`
-  and `liveSpore.json` provenance recording.
-- **Module interface**: each module exposes `fn run_validation(data_dir, expected, max_tier) -> ModuleResult`
+  via `x86_64-pc-windows-gnu` (7.9 MB litho.exe tested via Wine 11).
+- **USB recreation**: `litho assemble` builds portable USB artifacts.
+- **Module interface**: `fn run_validation(data_dir, expected, max_tier) -> ModuleResult`
   for in-process dispatch. Single `litho` binary replaces 7 separate binaries.
-- **Spring wiring**: module crates can be wired into lithoSpore instances via
-  `scope.toml`. Springs wanting lithoSpore integration should expose the
-  `run_validation()` interface from their validation crates.
 - Ingested primalSpring patterns: capability registry, Dark Forest graphs, `graph_checks` module
 - Owns: benchScale, agentReagents
-- Needs from upstream: Songbird TURN client library (UB-1), neuralSpring ML surrogates
+- Needs from upstream: TURN relay wiring (UB-1 SHIPPED, integration pending), neuralSpring ML surrogates
+- **Absorbable patterns**: ScopeManifest, graph↔registry cross-tests, DiscoveryPath
+  telemetry, CLI integration harness, #[path = "tests.rs"] extraction
 
 ### projectFOUNDATION — Knowledge Layer (own IDE focus team)
 
 projectFOUNDATION is now its own IDE focus team building the knowledge layer.
 Springs feed validation results to projectFOUNDATION as thread evidence.
 
-- **10 domain threads** tracked in `lineage/THREAD_INDEX.toml`
-- **Data sources** in `data/sources/*.toml` — per-thread accessions, DOIs, BLAKE3
-- **Validation evidence** in `projectFOUNDATION/validation/` — dated provenance folders
+- **184 targets** across 10 threads, **146 validated (79.3%)**, 38 remaining
+- **29 workloads** across all 10 threads with Standard isolation + provenance trio
+- **Per-spring validation folders** with PROVENANCE_FOLDER_CONVENTION.md:
+  `validation/<spring>/<YYYY-MM-DD>/` with results.json + provenance.toml + braid.json
+- **primal_ipc.sh**: capability-first discovery for bash (env → UDS → defaults)
+- **target_compare.sh**: dual-schema tolerance comparison (expected_value vs expected)
+- **6 barraCuda CPU parity benchmarks**: matmul, linalg_solve, stats_mean, stats_variance,
+  md_velocity_verlet, spectral_eigenvalues — all in CI
+- **CI gates**: shellcheck, TOML schema, target count reconciliation, graph structural
+  validation, workload integrity, gate naming, benchmark runs
+- **ag-guidestone proposal**: Thread 6 agricultural guidestone scope (airSpring + groundSpring)
+- **FOUNDATION_VALIDATE elevation review**: targeting CompositionContext + Rust crates
+  for health, RPC, fetch, BLAKE3, workloads, provenance — bash stays interim
+- **Thread 10 workload** targets `primalspring_unibin validate` directly
 - Thread 2 Plasma **12/12 PASS**, Thread 6 Agricultural **36/36 PASS**,
   Thread 7 Anderson **18/18 PASS**
 - Thread 1 WCM: fetch infra ok, **RPC upstream-blocked** (0/24 pending review)
 - Data integrity: many `blake3 = ""` in source TOMLs — needs fetch + backfill
-- Needs from upstream: RPC stack for Thread 1, neuralSpring ML sources (Thread 5)
+- Needs from upstream: RPC response schema standardization, CompositionContext
+  for elevation, neuralSpring ML sources (Thread 5)
 
 **Spring → projectFOUNDATION contract**: Check which threads reference your
 spring in `projectFOUNDATION/lineage/THREAD_INDEX.toml` and `data/sources/*.toml`.
 Ensure validation results are captured in `projectFOUNDATION/validation/` with
-dated provenance folders.
+dated provenance folders. Thread 10 workload already targets primalspring_unibin.
 
-### esotericWebb — UI + Agentic Composition
+### esotericWebb V8 — UI + Agentic Composition
 
-At V7 — 342 tests, 7 primal domains via PrimalBridge, 4 degradation patterns
-(`call_or_default`, `call_fire`, `call_extract_id`, `call_passthrough`). CRPG
-substrate with narrative DAG, YAML content model, 60Hz loop. Massive upstream
-evolution available: signal dispatch in bridges, provenance trio E2E for
-sessions, Squirrel mechanical constraints, petalTongue dialogue scenes.
-Strongest test case for the agentic composition pattern. Local to ironGate
-with direct UDS access to full NUCLEUS.
+At V8 — **357 tests**, **24 capabilities**, 22 bridge methods. Signal-first
+provenance via `nest_store`/`nest_commit` bridge methods (Neural API preferred,
+direct fallback). Startup `primal.announce` to biomeOS. Full lifecycle
+handlers: `health.version`, `health.drain`, `primal.announce`, `primal.info`.
+
+- **Signal adoption**: enrichment collapsed from multi-RPC to bridge `nest_store`/
+  `nest_commit`; constants for `meta.observe`/`meta.intent` ready
+- **Test extraction**: `#[path = "tests.rs"]` companion modules keep production
+  files under 800 LOC cap without losing coverage (content: 23, session: 32 tests)
+- **Capability↔registry cross-test**: `capabilities_match_registry_toml` enforces
+  parity between `niche::CAPABILITIES` array and `capability_registry.toml`
+- **Consumer reference**: strongest garden-level implementation of Wave 17 signal
+  patterns — minimal bridge API as template for other gardens
+- CRPG substrate with narrative DAG, YAML content model, 60Hz loop
+- Strongest test case for the agentic composition pattern. Local to ironGate
+  with direct UDS access to full NUCLEUS.
+- **GAP-024 (open)**: signal paths not exercised live on biomeOS / ironGate
+- Needs: biomeOS E2E signal validation, ludoSpring 6 game.* methods,
+  Squirrel mechanical context, petalTongue DialogueTree
 
 See `handoffs/GARDEN_EVOLUTION_BLURB_MAY16_2026.md` for full evolution guidance.
 

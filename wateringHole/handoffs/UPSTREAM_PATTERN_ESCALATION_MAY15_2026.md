@@ -12,23 +12,19 @@ emerge that need refinement.
 These block concrete downstream deliverables. Tracked as UB-1 through UB-4
 in `docs/PRIMAL_GAPS.md`.
 
-### UB-1: Songbird TURN Client Library
+### UB-1: Songbird TURN Client Library — SHIPPED
 
 **Owner**: Songbird team
-**Blocks**: Geo-delocalized lithoSpore Tier 2 validation
+**Status**: SHIPPED (Wave 205, May 15, 2026)
 
-lithoSpore implemented a full discovery chain (env -> UDS -> TURN -> standalone)
-with `DiscoveryPath` enum and `probe_operating_mode()`. The TURN leg is a stub:
-`discover_from_turn()` resolves the endpoint from `$SONGBIRD_TURN_SERVER` but
-cannot relay RPC through TURN. Songbird has STUN/TURN wire-compliant code
-(Wave 196-197, RFC 5766) but hasn't exposed a reusable client library.
+Songbird delivered the `songbird-turn-client` crate (RFC 5766 TURN allocation +
+channel-bind + refresh). `primal.announce` wired. lithoSpore's discovery chain
+(env → UDS → TURN → standalone) can now wire the TURN leg for geo-delocalized
+validation.
 
-**What's needed**: A `songbird-turn-client` crate or library that downstream
-consumers can link to establish TURN-relayed JSON-RPC connections. lithoSpore's
-`litho_core::discovery::rpc_call()` is ready to wire it.
-
-**Impact**: Without this, lithoSpore USBs at remote gates (Barrick Lab) can only
-validate on LAN, not through the cellMembrane relay.
+**Remaining**: lithoSpore needs to wire `songbird-turn-client` into
+`litho_core::discovery::rpc_call()` for TURN-relayed JSON-RPC connections.
+This is a lithoSpore integration task, not an upstream blocker.
 
 ### UB-2: BearDog FIDO2/CTAP2 Support — SHIPPED
 

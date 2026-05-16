@@ -2,7 +2,12 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 16, 2026 — Wave 18: Local Debt Resolution. All deprecated `probe_primal` callers migrated to `CompositionContext`. Downstream interim handoff prepared for lithoSpore, projectFOUNDATION, and projectNUCLEUS. 451 methods, 41 scenarios (10 tracks, 3 tiers), 14 atomic signal graphs.
+**Last updated**: May 16, 2026 — Wave 18+: Garden evolution review. lithoSpore v1.0.0
+(ScopeManifest, liveSpore.json, CLI integration tests), projectNUCLEUS V3 (55 tests,
+discovery cascade, 7 gates, signal_executor.sh, tower_agent.toml), esotericWebb V8
+(357 tests, signal-first provenance, lifecycle handlers), projectFOUNDATION (184 targets,
+29 workloads, primal_ipc.sh, 6 CPU parity benchmarks). 451 methods, 41 scenarios
+(10 tracks, 3 tiers), 14 atomic signal graphs. All UB-1–4 SHIPPED.
 
 ---
 
@@ -73,8 +78,8 @@ the data into NestGate content storage.
   in-process dispatch — single binary replaces 7 separate module binaries.
 - **Discovery chain**: env → UDS → TURN → standalone, with mode detection
   and `liveSpore.json` provenance recording.
-- **Needs from upstream**: Songbird TURN client library, genomeBin Tier 3 USB,
-  neuralSpring ML surrogates for B3/B4/B6
+- **Needs from upstream**: neuralSpring ML surrogates for B3/B4/B6
+  (Songbird TURN client and genomeBin USB both SHIPPED — lithoSpore wiring pending)
 
 ### Geo-Delocalized lithoSpore Validation (via cellMembrane)
 
@@ -214,8 +219,8 @@ Springs now feed both workstreams:
 **lithoSpore status**: 7/7 modules Tier 2 PASS (75/75 checks). VM-validated via
 benchScale + agentReagents. USB pipeline confirmed geo-delocalized.
 
-**Upstream blockers** (remaining — UB-2/3/4 SHIPPED):
-- Songbird TURN client library (UB-1 — geo-delocalized Tier 2 without LAN)
+**Upstream blockers**: All SHIPPED (UB-1 through UB-4). Remaining work is
+lithoSpore-side wiring (TURN relay integration, FIDO2 witness path).
 
 ---
 
@@ -440,10 +445,10 @@ adoption actions, and glacial horizon predictions:
 
 **See**: `wateringHole/handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md`
 
-Highest-leverage for glacial push:
-- **Songbird TURN client library** (UB-1) — unlocks geo-delocalized validation
-- **genomeBin USB packaging** (UB-3) — unlocks full Tier 3 offline composition
+Highest-leverage for glacial push (UB-1 through UB-4 all SHIPPED):
+- **lithoSpore TURN wiring** — wire `songbird-turn-client` into `litho_core` for geo-delocalized validation
 - **Discovery chain env var standardization** — unifies spring/garden implementations
+- **neuralSpring ML surrogates** — B3/B4/B6 lithoSpore module integration
 
 ### Signal Adoption Escalation (Wave 17+)
 

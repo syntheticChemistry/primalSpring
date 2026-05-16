@@ -164,11 +164,27 @@ Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS,
 | **neuralSpring** | B1-ML (LSTM/ESN/HMM) | 8/8 | **NO** | YES | ML surrogates |
 | **wetSpring** | B7 (Tenaillon 2016) | STARTED | **NO** | **NO** | 6: ltee-genomics |
 
-**lithoSpore integration**: **7/7 modules Tier 2 PASS (75/75 checks)** — VM-validated via
+**lithoSpore v1.0.0** (tagged): **7/7 modules Tier 2 PASS (75/75 checks)** — VM-validated via
 benchScale + agentReagents on fresh libvirt VM. Module 5 (biobricks) promoted with metabolic
-burden validation (6/6). Modules 3+4 promoted via groundSpring B3/B4 ingestion. CATHEDRAL
-split: lithoSpore (verification chassis) + projectFOUNDATION (knowledge layer) are now
-separate IDE focus teams. Upstream blockers: Songbird TURN client (UB-1), genomeBin Tier 3 (UB-3).
+burden validation (6/6). Modules 3+4 promoted via groundSpring B3/B4 ingestion. New:
+ScopeManifest (scope.toml), liveSpore.json provenance journal, capability-first discovery
+(env → UDS → TURN), 6 THREAD_INDEX entries, sporePrint dispatch CI, CLI integration tests.
+CATHEDRAL split: lithoSpore (verification chassis) + projectFOUNDATION (knowledge layer) are
+separate IDE focus teams. All upstream blockers SHIPPED (UB-1 through UB-4).
+Remaining: TURN relay wiring, FIDO2 witness path.
+
+**projectNUCLEUS V3**: 55 Rust tests, discovery cascade, 7 gate TOMLs with [science] routing,
+signal_executor.sh, tower_agent.toml, VALIDATION_PLAYBOOK + 3 specs. Asks: canonical
+primal.list schema, capability.list shape standardization, barraCuda scipy parity completion.
+
+**esotericWebb V8**: 357 tests, 24 capabilities, signal-first provenance (nest_store/nest_commit
+bridge with direct fallback), startup primal.announce, lifecycle handlers. Asks: biomeOS E2E
+signal validation (GAP-024), ludoSpring 6 game.* methods, Squirrel mechanical context.
+
+**projectFOUNDATION**: 184 targets (146 validated), 29 workloads, per-spring validation folder
+convention, 6 barraCuda CPU parity benchmarks, CI gates on schemas/workloads/benchmarks.
+Thread 10 workload targets primalspring_unibin validate. Asks: primal RPC response schema
+standardization, CompositionContext for foundation_validate elevation.
 
 ### Foundation Thread Seeding Status
 
@@ -263,7 +279,7 @@ endpoints reject these connections.
 | hotSpring | GAP-HS-087 (trio rewire), GAP-HS-005 (ionic) | Trio rewire active; ionic awaits BearDog `crypto.sign_contract` |
 | wetSpring | PG-02 (trio live), ~~PG-03~~ (capability.resolve **DONE** W199-201), PG-04 (NestGate live), PG-05 (sovereignty) | Lab infra + NestGate extracellular |
 | groundSpring | GAP-GS-008 (ionic), GAP-GS-009 (BTSP/barraCuda) | Awaits upstream ionic + BTSP wire |
-| airSpring | AG-005 through AG-012 | Per-gap: Squirrel science path, coralReef compile, opaque dispatch, NestGate weather, petalTongue, TensorSession, Anderson shader, toadStool live API |
+| airSpring | ~~AG-005~~ **RESOLVED** (inference wired), AG-006–AG-012 | AG-005 resolved; remaining: coralReef compile, opaque dispatch, NestGate weather, petalTongue, TensorSession, Anderson shader, toadStool live API |
 | healthSpring | Ionic bridge, NestGate egress fence, BTSP interop | See BTSP coordination above |
 | neuralSpring | ~~Nest weight IPC~~ **WIRED** (NestGate weight persistence), BTSP session | See Nest decision above |
 | ludoSpring | GAP-01 (coralReef SM), GAP-02 (barraCuda domain), GAP-04 (TensorSession) | Awaits coralReef SM rebuild + upstream barraCuda domain methods |

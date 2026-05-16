@@ -218,20 +218,44 @@ composition).
 - 451-method registry stable, zero drift across ecosystem
 - 41 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
 - 9/10 foundation threads active (Thread 4 sole remaining)
-- lithoSpore 7/7 modules Tier 2 PASS (75/75 checks)
+- lithoSpore v1.0.0 released — 7/7 modules Tier 2 PASS (75/75 checks)
 - All deprecated `probe_primal` callers removed from primalSpring
 - CATHEDRAL split documented, garden evolution blurbs published
 - Zero local debt across all springs (deep audit confirmed)
 - 13/13 primals in plasmidBin, all BTSP AEAD authenticated
+- All upstream blockers SHIPPED (UB-1 through UB-4)
+
+### Garden Evolution (May 16, 2026)
+- **lithoSpore v1.0.0**: ScopeManifest, liveSpore.json provenance journal,
+  capability-first discovery, scope-driven validation, 6 THREAD_INDEX entries,
+  sporePrint dispatch CI, CLI integration test harness
+- **projectNUCLEUS V3**: 55 Rust tests (darkforest 34, tunnelKeeper 21),
+  discovery cascade (primal.list → env → defaults), 7 gate TOMLs with
+  [science] dispatch metadata, signal_executor.sh (Squirrel → signal.dispatch),
+  tower_agent.toml (agentic graph), VALIDATION_PLAYBOOK + FUZZ_EVOLUTION +
+  SCIENCE_DISPATCH_MAP + TIER2_CEREMONY_DESIGN specs, FAMILY_HPC_MODEL
+- **esotericWebb V8**: 357 tests, 24 capabilities, signal-first provenance
+  (nest_store/nest_commit bridge), startup primal.announce, lifecycle handlers
+  (health.version, health.drain, primal.info), test extraction pattern
+  (#[path = "tests.rs"]), capability registry ↔ niche cross-validation test
+- **projectFOUNDATION**: 184 targets (146 validated), 29 workloads across
+  all 10 threads, per-spring validation folders + provenance convention,
+  primal_ipc.sh/target_compare.sh libs, 6 barraCuda CPU parity benchmarks,
+  CI with graph/schema/workload/benchmark gates, ag-guidestone proposal,
+  FOUNDATION_VALIDATE elevation review targeting CompositionContext
 
 ### Remaining
 - **Thread 4** expression + targets (wetSpring/airSpring coordinate)
 - **Forgejo Actions CI** porting for projectNUCLEUS sovereignty
 - **Sovereign DNS** (knot-dns, H2-17 through H2-20)
 - **ludoSpring 6-method IPC** expansion for esotericWebb
-- **esotericWebb provenance E2E** for real storytelling sessions
+- **esotericWebb provenance E2E** on biomeOS (GAP-024)
 - **BLAKE3 backfill** for projectFOUNDATION source TOMLs
 - **Thread 1 WCM RPC** stack (0/24 blocked)
-- **Songbird TURN client** library (UB-1, last upstream blocker)
+- **lithoSpore TURN wiring** (songbird-turn-client integration pending)
 - **nest.commit live** validation (healthSpring/wetSpring gated on biomeOS v3.57+)
 - **petalTongue dialogue scenes** for esotericWebb narrative UI
+- **primal.list canonical schema** (projectNUCLEUS ask for biomeOS)
+- **capability.list shape standardization** (arrays vs objects across primals)
+- **primalSpring Thread 10 workload** alignment with foundation validation
+- **Foundation validate elevation** to CompositionContext + Rust crates

@@ -70,12 +70,12 @@ and `data/sources/*.toml` for threads that reference your spring.
 |--------|------|---------------|--------|
 | 1 | Whole-Cell Modeling | hotSpring, wetSpring, healthSpring | ACTIVE (RPC blocked) |
 | 2 | Plasma Physics / QCD | hotSpring | **12/12 PASS** |
-| 3 | Immunology | healthSpring | Needs expression |
+| 3 | Immunology | healthSpring | **SEEDED** (V64) — immune pathway models |
 | 4 | Environmental Genomics | wetSpring | Needs expression + targets |
 | 5 | LTEE / Evolution | groundSpring, neuralSpring, wetSpring, hotSpring | **ACTIVE** |
 | 6 | Agricultural Science | airSpring, groundSpring, wetSpring | **36/36 PASS** |
 | 7 | Anderson Mathematics | hotSpring, groundSpring, wetSpring, neuralSpring | **18/18 PASS** |
-| 8 | Human Health | healthSpring | Needs expression |
+| 8 | Human Health | healthSpring | **SEEDED** (V64) — PK/PD models, clinical targets |
 | 9 | Gaming / Creative | ludoSpring | Needs expression |
 | 10 | Provenance / Economics | ludoSpring, primalSpring, healthSpring | **SEEDED** |
 
