@@ -250,6 +250,51 @@ fn validate_live_signal_dispatch(v: &mut ValidationResult, ctx: &mut Composition
             );
         }
     }
+
+    // Tier 2b: dispatch() API — validate each signal through the unified API
+    for &(signal_name, _, _) in SIGNAL_GRAPHS {
+        let check_id = format!("live:dispatch:{signal_name}");
+        let params = serde_json::json!({
+            "_probe": true,
+            "_scenario": "s_atomic_signals",
+        });
+
+        match ctx.dispatch(signal_name, params) {
+            Ok(resp) => {
+                let has_keys = resp.is_object() || resp.is_null();
+                v.check_bool(
+                    &check_id,
+                    has_keys,
+                    &format!(
+                        "dispatch({signal_name:?}) returned valid response: {:?}",
+                        resp.as_object()
+                            .map(|o| o.keys().collect::<Vec<_>>())
+                            .unwrap_or_default()
+                    ),
+                );
+            }
+            Err(e) => {
+                let detail = format!("{e}");
+                if detail.contains("-32601") || detail.contains("not found") {
+                    v.check_skip(
+                        &check_id,
+                        &format!("signal.dispatch not available for {signal_name}: {e}"),
+                    );
+                } else if e.is_connection_error() {
+                    v.check_skip(
+                        &check_id,
+                        &format!("orchestration not reachable for {signal_name}: {e}"),
+                    );
+                } else {
+                    v.check_bool(
+                        &check_id,
+                        false,
+                        &format!("dispatch({signal_name:?}) error: {e}"),
+                    );
+                }
+            }
+        }
+    }
 }
 
 /// Run the atomic signals validation scenario.

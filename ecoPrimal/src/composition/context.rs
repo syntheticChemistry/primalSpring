@@ -381,6 +381,65 @@ impl CompositionContext {
         Self::SIGNAL_TIERS.contains(&tier)
     }
 
+    /// Dispatch an atomic signal by its unified identifier.
+    ///
+    /// Takes a `signal_id` in `"tier.name"` form (matching `signal_tools.toml`
+    /// identifiers like `"nest.store"`, `"tower.publish"`, `"node.compute"`)
+    /// and delegates to [`signal`](Self::signal).
+    ///
+    /// This is the **primary consumption API** for springs adopting the Neural
+    /// API semantic collapse pattern. Instead of calling individual primal
+    /// methods (`content.put`, `dag.event.append`, `spine.seal`, `braid.create`),
+    /// springs call `dispatch("nest.store", params)` and biomeOS executes the
+    /// full provenance graph.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// # use primalspring::composition::CompositionContext;
+    /// # fn example(ctx: &mut CompositionContext) -> Result<(), Box<dyn std::error::Error>> {
+    /// // Before (flat method surface — 4 calls, spring manages sequencing):
+    /// // ctx.call("content", "content.put", data)?;
+    /// // ctx.call("dag", "dag.event.append", event)?;
+    /// // ctx.call("spine", "spine.seal", vertex)?;
+    /// // ctx.call("braid", "braid.create", contributors)?;
+    ///
+    /// // After (semantic collapse — 1 call, biomeOS manages the graph):
+    /// let result = ctx.dispatch("nest.store", serde_json::json!({
+    ///     "content": "experiment data",
+    ///     "author": "wetSpring:ltee-b7",
+    /// }))?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the signal identifier is malformed (no `.`
+    /// separator), the tier is unrecognized, or dispatch fails.
+    pub fn dispatch(
+        &mut self,
+        signal_id: &str,
+        params: serde_json::Value,
+    ) -> Result<serde_json::Value, IpcError> {
+        let (tier, name) = signal_id.split_once('.').ok_or_else(|| IpcError::ProtocolError {
+            detail: format!(
+                "signal identifier must be 'tier.name' (e.g. 'nest.store'), got: {signal_id:?}"
+            ),
+        })?;
+
+        if !Self::is_signal_tier(tier) {
+            return Err(IpcError::ProtocolError {
+                detail: format!(
+                    "unrecognized signal tier {tier:?} in {signal_id:?} — valid tiers: {:?}",
+                    Self::SIGNAL_TIERS,
+                ),
+            });
+        }
+
+        self.signal(tier, name, params)
+    }
+
     /// Ask squirrel to plan a multi-signal workflow from user intent.
     ///
     /// Sends the intent to the `ai` capability via `ai.query` with
@@ -456,6 +515,70 @@ impl CompositionContext {
         }
 
         Ok(serde_json::Value::Array(results))
+    }
+
+    // ── Registration ──────────────────────────────────────────────────
+
+    /// Announce a spring/primal to biomeOS using the modern `primal.announce`
+    /// protocol (biomeOS v3.57+).
+    ///
+    /// Replaces the legacy 3-call registration pattern:
+    /// ```text
+    /// method.register   + capability.register   + lifecycle.register
+    /// ```
+    /// with a single atomic announcement that registers lifecycle state,
+    /// capabilities, method translations, and signal-tier membership in one
+    /// RPC call.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// # use primalspring::composition::CompositionContext;
+    /// # fn example(ctx: &mut CompositionContext) -> Result<(), Box<dyn std::error::Error>> {
+    /// // Before (3 separate calls):
+    /// // rpc::send(biomeos, "method.register", json!({"primal": "airspring", ...}));
+    /// // rpc::send(biomeos, "capability.register", json!({...}));
+    /// // rpc::send(biomeos, "lifecycle.register", json!({...}));
+    ///
+    /// // After (single announce):
+    /// ctx.announce(
+    ///     "airspring",
+    ///     &["ag.measure", "ag.calibrate", "ag.predict"],
+    ///     std::path::Path::new("/run/ecoprimals/airspring-family.sock"),
+    /// )?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] if the `orchestration` capability is absent or
+    /// biomeOS rejects the announcement. Falls back to `method.register` if
+    /// `primal.announce` is not available (pre-v3.57 biomeOS).
+    pub fn announce(
+        &mut self,
+        primal_id: &str,
+        methods: &[&str],
+        socket: &std::path::Path,
+    ) -> Result<serde_json::Value, IpcError> {
+        let announce_params = serde_json::json!({
+            "primal_id": primal_id,
+            "transport": socket.to_string_lossy(),
+            "methods": methods,
+            "lifecycle": { "state": "running" },
+        });
+
+        match self.call("orchestration", "primal.announce", announce_params) {
+            Ok(result) => Ok(result),
+            Err(_) => {
+                let register_params = serde_json::json!({
+                    "primal": primal_id,
+                    "transport": socket.to_string_lossy(),
+                    "methods": methods,
+                });
+                self.call("orchestration", "method.register", register_params)
+            }
+        }
     }
 
     // ── Composition lifecycle ───────────────────────────────────────────

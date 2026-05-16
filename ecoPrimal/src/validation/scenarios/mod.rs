@@ -75,8 +75,10 @@ pub mod s_meta_tier_signals;
 pub mod s_nest_atomic;
 pub mod s_nestgate_content_pipeline;
 pub mod s_node_atomic;
+pub mod s_primal_announce;
 pub mod s_provenance_trio_pipeline;
 pub mod s_sequential_graph;
+pub mod s_signal_dispatch_parity;
 pub mod s_socket_discovery;
 pub mod s_sovereignty_parity;
 pub mod s_startup_ordering;
@@ -128,6 +130,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_ferment_transcript::SCENARIO);
     r.register(s_loam_certificate_lifecycle::SCENARIO);
     r.register(s_beardog_fido2::SCENARIO);
+    r.register(s_signal_dispatch_parity::SCENARIO);
+    r.register(s_primal_announce::SCENARIO);
     r
 }
 
@@ -138,7 +142,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 39;
+    const EXPECTED_SCENARIO_COUNT: usize = 41;
 
     #[test]
     fn registry_scenario_count() {

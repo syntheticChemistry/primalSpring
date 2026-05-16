@@ -165,14 +165,33 @@ Patterns that springs in the river delta should absorb for glacial convergence.
 ### All Springs
 
 1. **Adopt `primal.announce`** (biomeOS v3.57) — replace separate 3-call
-   registration with single atomic RPC
+   registration with single atomic RPC. Use `ctx.announce()` convenience API
+   (primalSpring v0.9.26+) for automatic fallback.
 2. **Declare signal-tier membership** in announce payload
-3. **Validate against 441 methods** — ensure niche counts match
+3. **Validate against 451 methods** — ensure niche counts match
    `config/capability_registry.toml`
-4. **Test sovereignty track** — run `primalspring validate --track sovereignty`
+4. **Adopt `ctx.dispatch()` for composed workflows** — replace multi-call
+   sequences with signal dispatch where an atomic signal exists. See
+   `wateringHole/SIGNAL_ADOPTION_STANDARD.md` for migration guide.
+5. **Test sovereignty track** — run `primalspring validate --track sovereignty`
    against membrane deployments when applicable
-5. **Adopt routing config schema** — any spring doing membrane work must
+6. **Adopt routing config schema** — any spring doing membrane work must
    conform to `config/routing_config_reference.toml`
+
+### Signal Adoption Expectations for Primals
+
+Primals participating in signal graphs MUST respond to the capabilities
+referenced in their graph nodes. The 14 signal graphs in
+`graphs/signals/*.toml` define which primals participate in which signals.
+
+`s_signal_dispatch_parity` validates all 14 signals against live biomeOS.
+Any `-32601` response for a capability that a graph expects is flagged as
+an **UPSTREAM GAP**. Primal teams should:
+
+1. Verify their methods are registered in `config/capability_registry.toml`
+2. Verify their socket is discoverable by biomeOS
+3. Verify they respond to `primal.announce` (even if just echoing OK)
+4. Run `primalspring validate --scenario signal-dispatch-parity` to confirm
 
 ### Specific Spring Actions
 

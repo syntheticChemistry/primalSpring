@@ -26,6 +26,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | **PLASMINBIN_DEPOT_PATTERN.md** | All consumers | How to fetch primal binaries from plasmidBin GitHub Releases. |
 | **METHOD_GATE_STANDARD.md** | All primal teams | JH-0 ecosystem standard: pre-dispatch capability authorization, exempt whitelist, error codes, enforcement modes. |
 | **PRIMAL_ANNOUNCE_PROTOCOL.md** | All primal teams | `primal.announce` atomic self-registration: wire format, field reference, registration order, signal-tier membership, backward compatibility. Replaces separate `lifecycle.register` + `capability.register` + `method.register` calls (biomeOS v3.57+). |
+| **SIGNAL_ADOPTION_STANDARD.md** | All spring teams | Neural API composition collapse migration guide: `ctx.dispatch()` and `ctx.announce()` APIs, signal inventory (14 signals), spring archetype examples (compute/provenance/content-heavy), fallback behavior, validation coverage. |
 
 ### Living Handoffs
 
@@ -188,7 +189,7 @@ delta. Every spring has completed deep debt sweeps and is at zero debt.
 | ludoSpring | 910 | V72 | health.version + health.drain, 418-method registry alignment |
 | primalSpring | 767 | — | Neural API evolution, signal dispatch, primal.announce, doc reconciliation |
 
-**Convergence state**: All springs CI-validated against canonical 451 methods. 39 scenarios across 10 tracks. NUCLEUS validation playbook artifacts 1-3 + UB-2 covered by 4 new scenarios (Wave 16).
+**Convergence state**: All springs CI-validated against canonical 451 methods. 41 scenarios across 10 tracks. NUCLEUS validation playbook artifacts 1-3 + UB-2 covered by 4 new scenarios (Wave 16). Signal dispatch parity + primal announce scenarios added (Wave 17).
 All implement BYOB niche model, deploy graphs, and Tier 1/2 validation.
 Fragment-first graph composition adopted ecosystem-wide.
 

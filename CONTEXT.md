@@ -53,7 +53,7 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 39 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 41 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
 

@@ -42,6 +42,9 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     v.section("Phase 5: braid.create (sweetGrass attribution)");
     phase_braid_create(v, ctx);
+
+    v.section("Phase 6: signal dispatch — nest.store via Neural API");
+    phase_signal_dispatch(v, ctx);
 }
 
 fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
@@ -179,6 +182,52 @@ fn phase_braid_create(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }
         Err(e) => {
             v.check_bool("trio:braid_create:id", false, &format!("braid.create error: {e}"));
+        }
+    }
+}
+
+fn phase_signal_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let params = serde_json::json!({
+        "content": b"provenance-trio-pipeline scenario - signal dispatch validation".to_vec(),
+        "author": "primalSpring:s_provenance_trio_pipeline",
+    });
+
+    match ctx.dispatch("nest.store", params) {
+        Ok(resp) => {
+            let has_content_key = resp.get("content_hash").is_some()
+                || resp.get("hash").is_some()
+                || resp.get("result").is_some();
+            v.check_bool(
+                "trio:signal:nest_store:response_shape",
+                has_content_key,
+                &format!(
+                    "dispatch('nest.store') should return result keys; got: {:?}",
+                    resp.as_object()
+                        .map(|o| o.keys().collect::<Vec<_>>())
+                        .unwrap_or_default()
+                ),
+            );
+        }
+        Err(e) if e.is_connection_error() => {
+            v.check_skip(
+                "trio:signal:nest_store:response_shape",
+                &format!("biomeOS orchestration not available for signal dispatch: {e}"),
+            );
+        }
+        Err(e) => {
+            let detail = format!("{e}");
+            if detail.contains("-32601") || detail.contains("not found") {
+                v.check_skip(
+                    "trio:signal:nest_store:response_shape",
+                    &format!("signal.dispatch not available (pre-v3.56 biomeOS): {e}"),
+                );
+            } else {
+                v.check_bool(
+                    "trio:signal:nest_store:response_shape",
+                    false,
+                    &format!("nest.store signal dispatch error: {e}"),
+                );
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
 
-**Last updated**: May 15, 2026 — Wave 14+: Dark Forest Glacial Gate standard published, deployment pipeline validated, niche Phase 32 sync (skunkBat in all 7 niches). Sovereignty track added (membrane composition, parity, content sovereignty). 441 methods, 35 scenarios (10 tracks, 3 tiers), 14 atomic signal graphs.
+**Last updated**: May 16, 2026 — Wave 17: Neural API Signal Elevation — `dispatch()` and `announce()` convenience APIs, signal dispatch parity validation (41 scenarios). Signal consumption section added. 451 methods, 41 scenarios (10 tracks, 3 tiers), 14 atomic signal graphs.
 
 ---
 
@@ -232,7 +232,7 @@ through their `guidestone` feature gate.
 
 ### Adoption Pattern (via guidestone feature gate)
 
-Springs already CI-validate against the 427-method registry. Dark Forest checks
+Springs already CI-validate against the 451-method registry. Dark Forest checks
 are an additional axis in the same `#[cfg(feature = "guidestone")]` test module:
 
 ```rust
@@ -280,13 +280,93 @@ This converges with `sourdough validate composition` (v0.3.0) and the plasmidBin
 
 ---
 
+## 5. Signal Consumption — Neural API Composition Collapse
+
+The Neural API provides a **semantic collapse** layer: instead of springs
+calling individual primal methods (451 in the registry), they dispatch
+atomic signals (14 defined in `config/signal_tools.toml`) and let biomeOS
+execute the underlying graph of method calls.
+
+### The Pattern
+
+```
+BEFORE (flat method surface — spring manages sequencing):
+  ctx.call("content", "content.put", data)
+  ctx.call("dag", "dag.event.append", event)
+  ctx.call("spine", "spine.seal", vertex)
+  ctx.call("braid", "braid.create", braid)
+
+AFTER (signal dispatch — biomeOS manages the graph):
+  ctx.dispatch("nest.store", json!({ "content": data, "author": id }))
+```
+
+### APIs Available (primalSpring v0.9.26+)
+
+| Method | Purpose |
+|--------|---------|
+| `ctx.dispatch("tier.name", params)` | Unified signal dispatch (splits identifier, routes to biomeOS) |
+| `ctx.announce(primal, methods, socket)` | Atomic registration replacing 3-call pattern |
+| `ctx.signal(tier, name, params)` | Low-level signal dispatch (tier + name separate) |
+| `ctx.signal_plan(intent)` | Squirrel-powered intent → signal sequence planning |
+| `ctx.execute_plan(plan)` | Execute a squirrel signal plan |
+
+### Signal Inventory (14 signals across 4 tiers)
+
+| Tier | Signals | Composition Surface |
+|------|---------|-------------------|
+| **Tower** (electron) | `publish`, `authenticate`, `discover`, `health`, `bootstrap` | Identity, trust, mesh |
+| **Node** (proton) | `compute` | Dispatch, compile, execute |
+| **Nest** (neutron) | `store`, `commit`, `retrieve` | Provenance, storage, ledger |
+| **Meta** | `observe`, `intent`, `render`, `health`, `deploy` | AI, orchestration, UI |
+
+### Migration Path for Springs
+
+1. **Registration**: Replace `method.register` + `capability.register` +
+   `lifecycle.register` with a single `ctx.announce()` call. See
+   `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md`.
+
+2. **Capability calls**: Identify multi-call sequences that correspond to
+   atomic signals. Replace with `ctx.dispatch()`. Domain-specific math calls
+   (`stats.mean`, `gpu.matmul`) stay as `ctx.call()`.
+
+3. **Multi-signal workflows**: For complex intent, use `ctx.signal_plan()`
+   to let squirrel decompose into a signal sequence, then `ctx.execute_plan()`.
+
+### What This Means for Downstream Products
+
+**projectNUCLEUS**: Workload TOMLs can reference signals instead of
+individual method sequences. A workload that currently specifies
+`nest.store → content.put + dag.event.append + spine.seal + braid.create`
+can be simplified to `signal: "nest.store"`.
+
+**lithoSpore**: Module validation that currently exercises individual primal
+methods can add signal dispatch phases. The `dispatch()` API has automatic
+fallback to `capability.call` for pre-v3.56 biomeOS, so existing validation
+continues to work.
+
+**foundation**: Thread expression validation can use signals for the
+provenance storage leg (`nest.store` for results, `nest.commit` for session
+finalization).
+
+### Validation Coverage
+
+primalSpring validates the signal API through:
+- `s_signal_dispatch_parity` — dispatches all 14 signals, validates response shapes
+- `s_primal_announce` — validates announce wire format and live registration
+- `s_atomic_signals` — structural + live dispatch validation per signal graph
+- `s_provenance_trio_pipeline` Phase 6 — `nest.store` signal dispatch
+
+Full standard: `wateringHole/SIGNAL_ADOPTION_STANDARD.md`
+
+---
+
 ## 6. Sovereignty Validation Patterns (primalSpring ↔ projectNUCLEUS)
 
 The sovereignty track validates the 4-layer model from `PRIMAL_VS_SOVEREIGNTY_GOALS.md`:
 
 | Layer | What | primalSpring Validation |
 |-------|------|------------------------|
-| 1. Primal Capabilities | 441 methods, 13 primals | Existing: `composition-parity`, `domain-contract-sweep` |
+| 1. Primal Capabilities | 451 methods, 13 primals | Existing: `composition-parity`, `domain-contract-sweep` |
 | 2. Security Validation | BTSP, MethodGate, Dark Forest | Existing: `dark-forest-gate`, `bearer-token-auth` |
 | 3. Sovereignty Deployment | VPS membrane, content routing | **NEW**: `membrane-composition`, `sovereignty-parity` |
 | 4. Sovereign Composition | All atomics self-hosted | **NEW**: `content-sovereignty` |
@@ -358,3 +438,18 @@ Highest-leverage for glacial push:
 - **Songbird TURN client library** (UB-1) — unlocks geo-delocalized validation
 - **genomeBin USB packaging** (UB-3) — unlocks full Tier 3 offline composition
 - **Discovery chain env var standardization** — unifies spring/garden implementations
+
+### Signal Adoption Escalation (Wave 17+)
+
+The Neural API signal layer is now fully surfaced. Upstream gaps that will
+surface as springs adopt `ctx.dispatch()`:
+
+- **Primals missing from signal graphs**: any primal not responding to
+  capabilities expected by `graphs/signals/*.toml` will produce `-32601`
+  errors in `s_signal_dispatch_parity`
+- **biomeOS graph execution gaps**: signal graphs that biomeOS cannot fully
+  execute will surface via response shape validation
+- **Announce protocol adoption**: primals not implementing `primal.announce`
+  will fall back to the 3-call pattern (functional but deprecated)
+
+Signal adoption standard: `wateringHole/SIGNAL_ADOPTION_STANDARD.md`

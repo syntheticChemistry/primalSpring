@@ -3,7 +3,54 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 16: Playbook Debt Resolution (2026-05-16)
+## [Unreleased] — Wave 17: Neural API Signal Elevation (2026-05-16)
+
+### Added
+- **`CompositionContext::dispatch(signal_id, params)`** — unified signal
+  dispatch that takes `"tier.name"` identifiers matching `signal_tools.toml`
+  (e.g., `"nest.store"`, `"tower.publish"`). Splits on `.`, validates tier,
+  delegates to `signal()`. This is the primary consumption API for the
+  semantic collapse pattern.
+- **`CompositionContext::announce(primal_id, methods, socket)`** — atomic
+  registration replacing the legacy 3-call pattern (`method.register` +
+  `capability.register` + `lifecycle.register`). Falls back to
+  `method.register` for pre-v3.57 biomeOS.
+- **2 new validation scenarios** (39 → 41):
+  - `s_signal_dispatch_parity` (BiomeosDeploy/Live): dispatches all 14
+    atomic signals through `dispatch()`, validates biomeOS acceptance and
+    response shapes against `signal_tools.toml` expected keys. Surfaces
+    upstream gaps as `-32601` failures.
+  - `s_primal_announce` (BiomeosDeploy/Both): validates `primal.announce`
+    registry presence, wire format schema per `PRIMAL_ANNOUNCE_PROTOCOL.md`,
+    `ctx.announce()` API, and live biomeOS registration + `primal.info`
+    visibility.
+- **Signal dispatch phases** in existing scenarios:
+  - `s_provenance_trio_pipeline` Phase 6: validates `nest.store` via
+    `ctx.dispatch()` when biomeOS is available.
+  - `s_atomic_signals` Tier 2b: dispatches all 14 signals through `dispatch()`
+    API during live validation.
+- **`wateringHole/SIGNAL_ADOPTION_STANDARD.md`** — migration guide for
+  springs: `ctx.call()` → `ctx.dispatch()`, `method.register` →
+  `ctx.announce()`, signal inventory, spring archetype examples
+  (compute/provenance/content-heavy), fallback behavior.
+
+### Fixed
+- **GAP-GS-015**: `ALL_CAPS` and `BTSP_EXTRA_CAPS` now re-exported from
+  `composition/mod.rs`, unblocking groundSpring (and other springs) from
+  workspace-level `cargo check`.
+
+### Changed
+- `docs/DOWNSTREAM_PATTERN_GUIDE.md`: new "Signal Consumption" section (§5)
+  documenting semantic collapse pattern, available APIs, signal inventory,
+  migration path, and downstream product implications. Updated method count
+  (441 → 451).
+- `wateringHole/handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md`: added
+  signal adoption expectations for primals — must respond to capabilities
+  in signal graphs, run `s_signal_dispatch_parity` to confirm.
+- Documentation sync: 41 scenarios across ARCHITECTURE.md, README.md,
+  CONTEXT.md, wateringHole/README.md, PRIMAL_GAPS.md.
+
+## Wave 16: Playbook Debt Resolution (2026-05-16)
 
 ### Added
 - **4 new validation scenarios** (35 → 39) driven by projectNUCLEUS validation
