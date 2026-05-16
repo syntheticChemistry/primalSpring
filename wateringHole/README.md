@@ -142,9 +142,9 @@ primal team action. Full details: `handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_20
 | Primal | What | Priority | Downstream Requester |
 |--------|------|----------|---------------------|
 | **Songbird** | TURN client library — expose reusable crate for TURN-relayed JSON-RPC | HIGH | lithoSpore (geo-delocalized Tier 2) |
-| **BearDog** | FIDO2/CTAP2 protocol — `beardog.fido2.authenticate` for SoloKey witness | MEDIUM | lithoSpore (hardware-attested provenance) |
+| ~~**BearDog**~~ | ~~FIDO2/CTAP2 protocol~~ — **SHIPPED**: Wave 103 `fido2.rs` (487 lines), IPC surface live | ~~MEDIUM~~ | lithoSpore (hardware-attested provenance) |
 | **biomeOS** | Handle `composition_model = "membrane"` in `composition.deploy(graph)` | MEDIUM | projectNUCLEUS (VPS membrane deployment) |
-| ~~**NestGate**~~ | ~~sporePrint pipeline wiring~~ — **RESOLVED**: `auto-refresh.yml` now ingests `liveSpore.json` | ~~MEDIUM~~ | lithoSpore / sporePrint |
+| ~~**sporePrint**~~ | ~~sporePrint pipeline wiring~~ — **RESOLVED**: wired by primalSpring in `auto-refresh.yml` (not NestGate's ownership) | ~~MEDIUM~~ | lithoSpore / sporePrint |
 | ~~**plasmidBin**~~ | ~~`genomeBin stage --target usb`~~ — **RESOLVED**: `stage_usb.sh` ships USB staging | ~~MEDIUM~~ | lithoSpore (Barrick Lab delivery) |
 
 ### Patterns to Absorb (from downstream evolution)

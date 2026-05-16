@@ -30,19 +30,17 @@ consumers can link to establish TURN-relayed JSON-RPC connections. lithoSpore's
 **Impact**: Without this, lithoSpore USBs at remote gates (Barrick Lab) can only
 validate on LAN, not through the cellMembrane relay.
 
-### UB-2: BearDog FIDO2/CTAP2 Support
+### UB-2: BearDog FIDO2/CTAP2 Support — SHIPPED
 
 **Owner**: BearDog team
-**Blocks**: Hardware-attested provenance in `liveSpore.json`
+**Status**: SHIPPED (Wave 103, May 15, 2026)
 
-lithoSpore wants SoloKey-based physical-presence authentication for witness
-signatures in the spore chain. BearDog has the Ed25519 crypto substrate
-and ionic token infrastructure, but no FIDO2/CTAP2 protocol layer.
+BearDog delivered `fido2.rs` (487 lines) in `beardog-tunnel` providing the
+FIDO2/CTAP2 IPC surface. Wave 104 followed with a deep debt sweep aligning
+root docs and self-knowledge endpoints.
 
-**What's needed**: `beardog.fido2.authenticate` or equivalent RPC method that
-interfaces with USB security keys via CTAP2. This would enable
-`liveSpore.json` entries to carry hardware-attested signatures, completing
-the physical-presence provenance chain.
+**Remaining**: lithoSpore needs to wire `beardog.fido2.authenticate` into
+the `liveSpore.json` witness signature path. The primal-side surface is live.
 
 ### UB-3: genomeBin Tier 3 USB Packaging — RESOLVED
 
@@ -63,7 +61,7 @@ adopt the same layout contract for Tier 3 binary resolution.
 
 ### UB-4: sporePrint Pipeline Wiring — RESOLVED
 
-**Owner**: sporePrint team / infra
+**Owner**: primalSpring / sporePrint (not NestGate — downstream ownership)
 **Status**: SHIPPED (May 15, 2026)
 
 sporePrint's `auto-refresh.yml` content job now detects `liveSpore.json` at
