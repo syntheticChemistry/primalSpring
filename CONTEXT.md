@@ -274,6 +274,16 @@ composition).
 - Validation Gate Matrix in `EVOLUTION_GAPS.md` — 11 validation systems mapped to sovereignty transitions
 - cellMembrane: recommend Forgejo-only when operationally stable
 
+### wateringHole Audit and Fossilization (May 17, 2026)
+- Fossilized 6 primalSpring handoffs + 2 infra wateringHole docs (superseded by Wave 20/21)
+- Fixed numeric drift: 427/418→452 methods, 12→13 primals across 10 infra docs
+- Reconciled Forgejo/GitHub posture in SOVEREIGNTY_STANDARDS (operational reality vs aspirational)
+- GLOSSARY updated: cellMembrane entry, dual Git host framing, sporeGarden products roster
+- INFRASTRUCTURE_RECREATION_AND_OUTAGE_PLAYBOOK.md created in gen4/architecture
+- gen4 architecture indexes updated (18 docs organized into 3 clusters)
+- Glacial status evolved: ECOSYSTEM_EVOLUTION_CYCLE v1.8.0, INTERSTADIAL_EXIT_CRITERIA
+  expanded with outage simulation readiness and infrastructure sovereignty posture tables
+
 ### Remaining
 - **Thread 4** expression + targets (wetSpring/airSpring coordinate)
 - **Forgejo Actions CI** porting for projectNUCLEUS sovereignty

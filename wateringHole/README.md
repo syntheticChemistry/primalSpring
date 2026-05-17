@@ -28,16 +28,12 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | **PRIMAL_ANNOUNCE_PROTOCOL.md** | All primal teams | `primal.announce` atomic self-registration: wire format, field reference, registration order, signal-tier membership, backward compatibility. Replaces separate `lifecycle.register` + `capability.register` + `method.register` calls (biomeOS v3.57+). |
 | **SIGNAL_ADOPTION_STANDARD.md** | All spring teams | Neural API composition collapse migration guide: `ctx.dispatch()` and `ctx.announce()` APIs, signal inventory (14 signals), spring archetype examples (compute/provenance/content-heavy), fallback behavior, validation coverage. |
 
-### Living Handoffs (last 48 hours)
+### Living Handoffs
 
 | File | Audience | What It Covers |
 |------|----------|----------------|
 | **INTERSTADIAL_FOSSILIZATION_HANDOFF.md** | Spring teams | Interstadial fossilization patterns: what to preserve, how to date, provenance READMEs. |
 | **handoffs/WAVE20_LITHOSPORE_AUDIT_SPRING_EVOLUTION_MAY17_2026.md** | Delta spring teams | lithoSpore audit absorption: stability tiers, degradation behavior, cross-tier parity, trio semantics, per-spring guidance (wetSpring highest priority). |
-| **handoffs/WAVE20_DEBT_RESOLUTION_MAY17_2026.md** | Delta spring teams | Wave 20 debt resolution: per-spring fixes for canonical envelope, nest.commit, primal.list adoption. |
-| **handoffs/WAVE20_DELTA_SPRING_EVOLUTION_MAY16_2026.md** | Delta spring teams | Wave 20 patterns to absorb: schema standardization, E2E validation, Thread 10 workload. |
-| **handoffs/GARDEN_EVOLUTION_BLURB_MAY16_2026.md** | Garden teams | Downstream garden evolution guidance: projectFOUNDATION, projectNUCLEUS, esotericWebb. |
-| **handoffs/PRIMAL_BLOCKED_ASKS_MAY16_2026.md** | Primal teams | Upstream blockers and gaps surfaced by delta spring audit. |
 | **handoffs/WAVE21_GARDEN_EVOLUTION_MAY17_2026.md** | Garden teams | Wave 21 patterns: projectNUCLEUS sovereignty + cellMembrane, projectFOUNDATION thread lineage, lithoSpore cross-tier parity. |
 
 ### Ecosystem Standards (infra/wateringHole)
@@ -52,6 +48,12 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 
 | File | Date | Summary |
 |------|------|---------|
+| `WAVE20_DEBT_RESOLUTION_MAY17_2026.md` | May 17 | Per-spring debt fixes — all resolved, zero debt confirmed |
+| `WAVE20_DELTA_SPRING_EVOLUTION_MAY16_2026.md` | May 16 | Wave 20 absorption checklist — superseded by lithoSpore audit |
+| `GARDEN_EVOLUTION_BLURB_MAY16_2026.md` | May 16 | Garden evolution guidance — superseded by Wave 21 blurb |
+| `PRIMAL_BLOCKED_ASKS_MAY16_2026.md` | May 16 | Upstream blockers — partially resolved by Wave 21 |
+| `CATHEDRAL_SPLIT_SPRING_GUIDANCE_MAY16_2026.md` | May 16 | lithoSpore/projectFOUNDATION split guidance — absorbed |
+| `DOWNSTREAM_INTERIM_WAVE18_MAY16_2026.md` | May 16 | Wave 18 interim downstream prep — superseded by Wave 20/21 |
 | `PRIMALSPRING_SOVEREIGNTY_LAYER4_EVOLUTION_MAY15_2026.md` | May 15 | Sovereignty track (3 scenarios), membrane deploy graph, routing config schema |
 | `UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md` | May 15 | Downstream-evolved patterns needing upstream adoption |
 | `PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md` | May 9 | Primal consumption, upstream debt, per-spring targets |

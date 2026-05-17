@@ -5,6 +5,32 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 20: Ecosystem Status Assessment (2026-05-17 PM)
 
+### wateringHole Audit, Fossilization, and Infrastructure Playbook (May 17 PM)
+- Fossilized 6 primalSpring handoffs to archive (DOWNSTREAM_INTERIM, WAVE20_DELTA,
+  PRIMAL_BLOCKED_ASKS, CATHEDRAL_SPLIT, GARDEN_EVOLUTION, WAVE20_DEBT_RESOLUTION)
+- Fossilized 2 infra wateringHole docs (DOWNSTREAM_EVOLUTION_MAY2026,
+  SPRING_NUCLEUS_AUDIT_MAY2026) to new `archive/` folder
+- Fixed 427/418→452 method count across 5 infra wateringHole docs
+  (PRIMAL_VS_SOVEREIGNTY_GOALS, INTERSTADIAL_EXIT_CRITERIA, DARK_FOREST_GLACIAL_GATE,
+  ECOSYSTEM_EVOLUTION_CYCLE, NUCLEUS_SPRING_ALIGNMENT)
+- Fixed 12→13 primal count across 5 infra wateringHole docs (DESKTOP_NUCLEUS,
+  DEPLOYMENT_VALIDATION, PLASMIDBIN_PUSH, PRIMAL_SPRING_GARDEN_TAXONOMY,
+  NUCLEUS_SPRING_ALIGNMENT)
+- Updated SOVEREIGNTY_STANDARDS.md: added operational reality section acknowledging
+  GitHub-first ops vs declared Forgejo primary, cross-referenced REPO_MEMBRANE_BOUNDARY
+- Updated GLOSSARY.md: added cellMembrane entry, skunkBat to ecoPrimals roster,
+  sporeGarden products (projectNUCLEUS, projectFOUNDATION, lithoSpore, cellMembrane),
+  dual Git host framing
+- Created INFRASTRUCTURE_RECREATION_AND_OUTAGE_PLAYBOOK.md in gen4/architecture:
+  cold-start rebuild from bare metal, 6 outage simulation scenarios with acceptance criteria
+- Updated gen4/architecture/README.md: full 18-doc index organized into three clusters
+  (Sovereignty/Infrastructure, Validation/Lifecycle, Operations/Resilience)
+- Updated gen4/README.md: expanded architecture tree listing to include all 18 docs
+- Updated ECOSYSTEM_EVOLUTION_CYCLE.md: date May 17, v1.8.0, current state with
+  cellMembrane operational, 452 methods, interstadial exit cleared
+- Updated INTERSTADIAL_EXIT_CRITERIA.md: added outage simulation readiness table,
+  infrastructure sovereignty posture table, expanded cross-references
+
 ### projectNUCLEUS Infrastructure Review (May 17 PM)
 - Removed stale `gardens/sporeGarden/` clone (duplicate projectNUCLEUS under wrong directory name)
 - Audited all `.env` files across ecosystem (28 files in 17+ repos) — all sensitive
