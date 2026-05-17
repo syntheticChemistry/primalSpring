@@ -1,6 +1,6 @@
 # Downstream Pattern Guide — Springs to Products
 
-How the 8 river delta springs feed projectNUCLEUS, foundation, and lithoSpore.
+How the 8 river delta springs feed projectNUCLEUS, projectFOUNDATION, and lithoSpore.
 
 **Last updated**: May 16, 2026 — Wave 18+: Garden evolution review. lithoSpore v1.0.0
 (ScopeManifest, liveSpore.json, CLI integration tests), projectNUCLEUS V3 (55 tests,
@@ -27,7 +27,7 @@ Springs produce three kinds of output that downstream products consume:
                    │healthSpring│──┤  ──────────────────► lithoSpore (7 modules)
                    │ hotSpring  │──┤
                    │ ludoSpring │──┤  Foundation seeds
-                   │neuralSpring│──┤  ──────────────────► foundation (10 threads)
+                   │neuralSpring│──┤  ──────────────────► projectFOUNDATION (10 threads)
                    │primalSpring│──┤
                    │ wetSpring  │──┤  Workloads + notebooks
                    └──────────┘  └──────────────────► projectNUCLEUS (deployment)
@@ -108,7 +108,7 @@ on sporePrint (primals.eco).
 
 ---
 
-## 2. Foundation Thread Seeding (springs → foundation)
+## 2. Foundation Thread Seeding (springs → projectFOUNDATION)
 
 Foundation threads have three components: **expression** (the question), **data sources**
 (where data lives), and **data targets** (expected numerical results).
@@ -197,7 +197,7 @@ Provenance trio **GAP-36 RESOLVED** — all wire aliases normalized upstream.
 1. **Workload TOML completeness** — ensure each spring has at least one validated workload in `projectNUCLEUS/workloads/<spring>/`
 2. **`--format json` flag** — springs add structured JSON output to validation binaries (additive, doesn't break CLI)
 3. **Notebook execution** — sporePrint CI (`notify-sporeprint.yml` with `content: "true"`) runs `nbconvert --execute` on push
-4. **Foundation thread coverage** — Threads 5, 8, 10 need full seeding before foundation can validate them
+4. **Foundation thread coverage** — Threads 5, 8, 10 need full seeding before projectFOUNDATION can validate them
 5. **Geo-delocalized workload dispatch** — remote gates via cellMembrane relay can run Tier 2 workloads; `liveSpore.json` provenance feeds back to sporePrint for auditable publication
 
 ### CATHEDRAL Split (May 16, 2026)
@@ -355,7 +355,7 @@ methods can add signal dispatch phases. The `dispatch()` API has automatic
 fallback to `capability.call` for pre-v3.56 biomeOS, so existing validation
 continues to work.
 
-**foundation**: Thread expression validation can use signals for the
+**projectFOUNDATION**: Thread expression validation can use signals for the
 provenance storage leg (`nest.store` for results, `nest.commit` for session
 finalization).
 
@@ -426,13 +426,13 @@ SkunkBat audit correlation.
 
 | Spring | Highest Leverage Hand-Down |
 |--------|--------------------------|
-| **groundSpring** | LTEE B1-B3 → lithoSpore modules 1-3; Thread 5+7 → foundation; measurement science baselines |
-| **hotSpring** | L6 guideStone template; LTEE B2 → lithoSpore module 7; Thread 2 → foundation; 3-tier ladder pattern |
-| **wetSpring** | LTEE B7 genomics → lithoSpore module 6; forge workload taxonomy → projectNUCLEUS; Thread 4 → foundation |
-| **neuralSpring** | ML surrogate scaffolding → lithoSpore forecasting; Threads 5+7 → foundation; helixVision primitives |
-| **healthSpring** | PK validation → projectNUCLEUS workloads; Threads 3+8 → foundation; provenance trio IPC pattern |
-| **airSpring** | 36 foundation targets → Thread 6; irrigation/soil ladder → projectNUCLEUS; methods.rs drift-proofing |
-| **ludoSpring** | Composition-only niche → projectNUCLEUS; Threads 9+10 → foundation; HCI validation suite |
+| **groundSpring** | LTEE B1-B3 → lithoSpore modules 1-3; Thread 5+7 → projectFOUNDATION; measurement science baselines |
+| **hotSpring** | L6 guideStone template; LTEE B2 → lithoSpore module 7; Thread 2 → projectFOUNDATION; 3-tier ladder pattern |
+| **wetSpring** | LTEE B7 genomics → lithoSpore module 6; forge workload taxonomy → projectNUCLEUS; Thread 4 → projectFOUNDATION |
+| **neuralSpring** | ML surrogate scaffolding → lithoSpore forecasting; Threads 5+7 → projectFOUNDATION; helixVision primitives |
+| **healthSpring** | PK validation → projectNUCLEUS workloads; Threads 3+8 → projectFOUNDATION; provenance trio IPC pattern |
+| **airSpring** | 36 projectFOUNDATION targets → Thread 6; irrigation/soil ladder → projectNUCLEUS; methods.rs drift-proofing |
+| **ludoSpring** | Composition-only niche → projectNUCLEUS; Threads 9+10 → projectFOUNDATION; HCI validation suite |
 | **primalSpring** | foundation_validation.toml graph; BTSP/MethodGate standards; composition coordination truth |
 
 ---

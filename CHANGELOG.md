@@ -5,6 +5,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 20: Ecosystem Status Assessment (2026-05-17 PM)
 
+### Post-Absorption Delta Spring Audit (May 17 PM)
+- All 7 delta springs absorbed lithoSpore audit blurb and self-evolved:
+  - **wetSpring V177**: Exp381 breseq pipeline executing (Barrick 2009, 3/7 clones done),
+    first ferment transcript braid exported, `primals_reached` trio output, 43 niche caps
+  - **airSpring v0.10.0**: 3 new cross-tier parity validators (autocorrelation, gamma_cdf,
+    soil_moisture_topp), 57 capabilities (53 stable, 4 evolving), trio `primals_reached` bug fix
+  - **hotSpring**: 6 new experiments (199-204), VBIOS interpreter live HW validation,
+    oracle data cleaned, compute parity greenboard 10/10, 22 scenarios
+  - **healthSpring V64x**: Stability tiers (15/41/2), B5 cross-tier parity 8/8 bit-identical,
+    degradation behavior doc, 57 scenarios, 1,018 tests
+  - **neuralSpring V168**: Stability tiers on 37 caps, degradation doc, 739 tests, 10 scenarios
+  - **ludoSpring V76**: Schell Lenses + CPU/GPU parity, cross-tier parity doc, 982 tests
+  - **groundSpring V145**: Degradation behavior doc, niche metadata fix, 1,123 tests
+- Updated CROSS_SPRING_PARITY_SCORECARD.md with latest test counts and evolution highlights
+- Updated LTEE_PAPER_QUEUE_TRACKER.md with wetSpring Exp381 breseq progress
+- Updated CONTEXT.md glacial checkpoint with post-absorption status
+- **Gap identified**: hotSpring only spring missing `docs/DEGRADATION_BEHAVIOR.md`
+
 ### lithoSpore Audit Absorption (May 17 PM)
 - **R1: Degradation behavior documented** in `CompositionContext` module docs —
   per-capability table (dag, spine, braid, visualization, discovery, orchestration,

@@ -10,7 +10,7 @@
 ## Purpose
 
 The Live Science API defines the JSON-RPC methods that downstream products
-(projectNUCLEUS, lithoSpore, foundation notebooks) need to interact with
+(projectNUCLEUS, lithoSpore, projectFOUNDATION notebooks) need to interact with
 primal workloads at runtime. This is the Tier 2 interface — beyond Tier 0
 (CLI) and Tier 1 (notebook + sporePrint).
 
@@ -222,4 +222,4 @@ anchor attribution.
 3. ~~**Delta springs wire Tier 2**~~ — **DONE** (7/7 springs wired, May 13)
 4. **projectNUCLEUS wires Tier 2** notebooks to use JSON-RPC instead of CLI
 5. **lithoSpore modules** gain live validation via `toadstool.validate`
-6. **Foundation threads** can consume live provenance chains for reproducibility
+6. **projectFOUNDATION threads** can consume live provenance chains for reproducibility

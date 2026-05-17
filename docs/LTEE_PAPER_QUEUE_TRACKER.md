@@ -1,8 +1,9 @@
 # LTEE Paper Queue Tracker
 
-**Last Updated**: May 17, 2026 (Wave 20 PM — lithoSpore audit absorption)
+**Last Updated**: May 17, 2026 PM (post-absorption audit — wetSpring Exp381 breseq pipeline executing)
 **Thread**: Foundation Thread 5 (Evolutionary Biology / LTEE)
 **lithoSpore**: latest — 7/7 modules Tier 2 PASS (75/75 checks), 117 tests, cross-tier parity, Tier 3 JSON-RPC wired
+**wetSpring**: V177 — Exp381 breseq pipeline on Barrick 2009 live (3/7 clones done, first ferment transcript braid exported)
 
 ## Overview
 
@@ -65,13 +66,21 @@ LTEE reproductions but ML-based validations of the same underlying data.
 
 **Next**: Potential Rust-native ML validation elevation (currently Python-primary).
 
-### wetSpring — B7 Tenaillon (1 paper, Tier 2 COMPLETE)
+### wetSpring — B7 Tenaillon (1 paper, Tier 2 COMPLETE) + Exp381 Barrick 2009 (IN PROGRESS)
 
 264-genome LTEE analysis using breseq. Tier 2 (27/27 targets) is complete.
 Tier 3 provenance validation is pending (requires provenance trio — see
 `PRIMAL_BLOCKED_ASKS_MAY16_2026.md` Priority 4 for sweetGrass TCP gap).
 
-**Next**: Tier 3 provenance capture. Thread 4 (Environmental Genomics) expression.
+**Exp381 (V177)**: First real-data Nest Atomic composition — breseq pipeline on
+Barrick 2009 (SRP001569, 7 Ara-1 clones, ~1.3 GB). Running on 4TB NVMe at
+southGate. 3/7 clones done (REL1164M: 579 mutations, REL2179M: 608,
+REL8593M: 1108). Mutation accumulation trend confirmed (Barrick 2009 Fig. 1).
+First ferment transcript braid exported to `provenance/braids/barrick_2009_mutations.json`
+(trio fields empty in standalone mode — will populate under full NUCLEUS composition).
+
+**Next**: Complete remaining 4 Barrick clones → Tenaillon 2016 (264 genomes, ~200 GB).
+Thread 4 (Environmental Genomics) expression.
 
 ## Aggregate Metrics
 
@@ -102,8 +111,8 @@ Springs (LTEE papers)
 |------|--------|----------|------------|
 | B5 lithoSpore module promotion | healthSpring | Medium | lithoSpore team schedule |
 | B7 Tier 3 provenance | wetSpring | Low | sweetGrass TCP without BTSP |
-| Ferment transcript braids (Tenaillon 2016) | wetSpring | HIGH | breseq pipeline + trio provenance recording |
-| Ferment transcript braids (Barrick 2009) | wetSpring | HIGH | breseq pipeline + trio provenance recording |
+| Ferment transcript braids (Tenaillon 2016) | wetSpring | HIGH | breseq pipeline + trio provenance recording (after Barrick completion) |
+| Ferment transcript braids (Barrick 2009) | wetSpring | HIGH | **IN PROGRESS** — 3/7 clones done, braid exported (standalone) |
 | B1-ML Rust elevation | neuralSpring | Low | None (optional enrichment) |
 | Thread 4 expression seeding | wetSpring/airSpring | Medium | Domain expertise |
 | Framework parity benchmarks | all 4 springs | Low (stadial) | Kokkos/LAMMPS/SciPy baselines |

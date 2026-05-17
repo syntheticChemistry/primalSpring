@@ -211,7 +211,7 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data visualization), neuralSpring (agentic
 composition).
 
-## Glacial Checkpoint — Current and Remaining (May 17, 2026)
+## Glacial Checkpoint — Current and Remaining (May 17, 2026 PM)
 
 ### Completed
 - All 8 springs at Wave 20 — canonical capability.list envelope, registry 452, debt resolved
@@ -232,6 +232,12 @@ composition).
 - **Wave 20 PM**: lithoSpore audit absorption — R1 (degradation behavior documented in CompositionContext), R2 (stability tiers in capability_registry.toml), R3 (trio transaction semantics in PROVENANCE_TRIO_INTEGRATION_GUIDE), R4 (UDS socket ownership in CAPABILITY_BASED_DISCOVERY_STANDARD)
 - **Wave 20 PM**: Cross-tier parity pattern absorbed into VALIDATION_TIERS.md (Tier 3 + parity sections)
 - **Wave 20 PM**: Ferment transcript pattern cross-referenced in DOWNSTREAM_PATTERN_GUIDE.md
+- **Wave 20 PM (post-absorption)**: All 7 delta springs absorbed lithoSpore audit blurb — stability tiers annotated, degradation behavior documented, trio transaction semantics aligned, cross-tier parity pattern adopted
+- **Wave 20 PM**: wetSpring V177 Exp381 breseq pipeline executing on Barrick 2009 (3/7 clones done, first ferment transcript braid exported, mutation accumulation trend confirmed)
+- **Wave 20 PM**: airSpring v0.10.0 — 3 new cross-tier parity validators (autocorrelation, gamma_cdf, soil_moisture_topp), 57 capabilities (53 stable, 4 evolving), trio bug fix (`primals_reached`)
+- **Wave 20 PM**: hotSpring — 6 new experiments (199-204) including VBIOS interpreter live HW validation, oracle data cleaned, handoff archival
+- **Wave 20 PM**: ludoSpring V76 — Schell Lenses + CPU/GPU parity, 982 tests, cross-tier parity doc
+- **Wave 20 PM**: groundSpring V145 — degradation behavior doc, niche metadata fix
 
 ### Garden Evolution (May 17, 2026)
 - **lithoSpore** (latest): Tier 3 provenance trio wired via JSON-RPC (dag/spine/braid),
@@ -272,4 +278,5 @@ composition).
 - **biomeOS spore.instantiate** (lithoSpore R7 — atomic VM provisioning for guideStones)
 - **Primal-blocked gaps** (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — documented as asks, awaiting upstream teams
 - **LTEE enrichments** (B5 lithoSpore promotion, B7 Tier 3, B1-ML Rust elevation, framework parity benchmarks)
-- **wetSpring ferment transcripts** (Tenaillon 2016 + Barrick 2009 breseq braids for lithoSpore)
+- **wetSpring ferment transcripts** — Barrick 2009 IN PROGRESS (3/7 clones), Tenaillon 2016 next (~200 GB)
+- **hotSpring degradation behavior doc** — only spring missing `DEGRADATION_BEHAVIOR.md`

@@ -2,8 +2,8 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 17, 2026 PM — lithoSpore audit absorbed. Stability tiers in registry. Degradation behavior documented. Trio transaction semantics formalized. Cross-tier parity pattern adopted. All 7 delta springs at zero debt.
-**Audited by**: primalSpring composition audit + lithoSpore downstream audit
+**Last updated**: May 17, 2026 PM (post-absorption audit) — All 7 delta springs absorbed lithoSpore audit blurb. Stability tiers annotated, degradation behavior documented, trio transaction semantics aligned, cross-tier parity validators added. wetSpring Exp381 breseq pipeline executing (Barrick 2009, 3/7 clones done — first real-data ferment transcript braid exported). airSpring added 3 new cross-tier parity validators. groundSpring niche metadata fixed.
+**Audited by**: primalSpring composition audit + lithoSpore downstream audit + delta spring self-evolution
 **Method**: Pulled all 8 springs to HEAD, assessed each across 9 axes
 
 ## Legend
@@ -17,13 +17,13 @@
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
 | **primalSpring** | 744 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 452 methods, sync-tested | **G** 80 deploy + 14 signal graphs | **G** 89 exp crates + 43 scenarios (10 tracks) + Waves 1-20 complete, schema-standard + nest-commit-live + graph↔registry cross-tests + signal dispatch parity | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
-| **hotSpring** | 596 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** 117 methods + sync, primal.list routed, s_schema_standard | **G** 5 graphs | **G** 198 exp (Tier 4 + LTEE B2 + BootPipeline VBIOS + 18/21 scenarios) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
-| **healthSpring** | 1,018 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 176 methods in TOML + CI cross-sync 452 + canonical envelope | **G** 7 graphs, skunkBat + Tower atomic (V64r) | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
-| **wetSpring** | 1,962+ | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (guideStone primal proof, B7 Tier 2) | **G** 37 caps + cross-sync 452 + canonical envelope | **G** 7 graphs | **G** V171 composition_health + ipc_roundtrip + schema parity | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
-| **neuralSpring** | 910+ | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (9 scenarios incl. s_schema_standard + s_nest_commit) | **G** 35 caps + sync 452 + primal.list | **G** 4 graphs (V165 + execute_graph_live) | **G** exp094 parity + s_signal_dispatch + store_science_result + node.compute dispatch | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
-| **ludoSpring** | 956 | **G** optional=true, IPC-first default (`default=["ipc"]`) | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **G** canonical flat array + count + cross-sync 452 | **G** 12 graphs, compute trio in cells (V75) | **G** 5 composition scenarios + Bartle + gamification + personality dynamics | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
-| **groundSpring** | 1,123+ | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (modularized 5-layer guidestone) | **G** 20 IPC methods + registry sync 452 + canonical envelope | **G** 6 graphs | **G** LTEE B1-B4+B6 + nest.commit dispatch + signal dispatch | **G** 34+ (paper-linked, LTEE B6 BioBrick) | **G** bans ring/openssl |
-| **airSpring** | 1,119+ | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated (guidestone) | **G** L5 (Wave 20, 10 scenarios) | **G** 51 caps + cross-sync >=452 + canonical envelope + --provenance-dir | **G** 7 graphs | **G** 3 exp crates + foundation numerical parity | **G** 25 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
+| **hotSpring** | 596 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** 117 methods + sync, primal.list routed, s_schema_standard | **G** 5 graphs | **G** 204 exp (Tier 4 + LTEE B2 + BootPipeline + VBIOS interpreter live HW + 22 scenarios) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
+| **healthSpring** | 1,018 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 176 methods in TOML + CI cross-sync 452 + canonical envelope, stability tiers (15/41/2) | **G** 7 graphs, skunkBat + Tower atomic (V64r) | **G** 95 exp crates (exp123 NUCLEUS parity), 57 scenarios | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
+| **wetSpring** | 1,962+ | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (guideStone primal proof, B7 Tier 2) | **G** 43 caps (42→43 `provenance.export_braid`) + cross-sync 452 + canonical envelope, stability tiers (30/13) | **G** 7 graphs | **G** V177 Exp381 breseq pipeline (Barrick 2009, 3/7 clones done, ferment braid exported) + composition_health + ipc_roundtrip + schema parity | **G** 19 + Kachkovskiy | **G** bans ring + openssl |
+| **neuralSpring** | 739 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (10 scenarios incl. s_schema_standard + s_nest_commit) | **G** 37 caps + sync 452 + primal.list, stability tiers annotated | **G** 4 graphs (V165 + execute_graph_live) | **G** exp094 parity + s_signal_dispatch + store_science_result + node.compute dispatch, degradation doc | **G** 10 (paper-linked, DOI) | **G** bans ring/openssl/rustls |
+| **ludoSpring** | 982 | **G** optional=true, IPC-first default (`default=["ipc"]`) | **Y** feature-gated | **G** L4 (Tier 1-3, 3-tier certification) | **G** canonical flat array + count + cross-sync 452, stability tiers | **G** 12 graphs, compute trio in cells (V75) | **G** 5 composition scenarios + Bartle + gamification + Schell Lenses + CPU/GPU parity | **R** 0 .ipynb (Python baselines in baselines/) | **G** bans ring/openssl |
+| **groundSpring** | 1,123+ | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L4 (modularized 5-layer guidestone) | **G** 20 IPC methods + registry sync 452 + canonical envelope | **G** 6 graphs | **G** LTEE B1-B4+B6 + nest.commit dispatch + signal dispatch, degradation doc | **G** 34+ (paper-linked, LTEE B6 BioBrick) | **G** bans ring/openssl |
+| **airSpring** | 1,373 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated (guidestone) | **G** L5 (Wave 20, 10 scenarios) | **G** 57 caps (51→57) + cross-sync 452 + canonical envelope + --provenance-dir, stability tiers (53/4) | **G** 7 graphs | **G** 3 exp crates + 3 new cross-tier parity validators (autocorrelation, gamma_cdf, soil_moisture_topp) + 17 full parity methods | **G** 25 (paper-linked) | **G** bans ring/openssl/aws-lc-sys |
 
 ## Summary by Axis
 
@@ -151,7 +151,7 @@ or require external infrastructure — not primalSpring gate debt.
 
 ## 13. Downstream Readiness (NEW — Wave 10 Pattern Handoff, May 11, 2026)
 
-Tracks per-spring readiness to hand patterns down to foundation, projectNUCLEUS, and lithoSpore.
+Tracks per-spring readiness to hand patterns down to projectFOUNDATION, projectNUCLEUS, and lithoSpore.
 
 ### LTEE Reproduction Status → lithoSpore
 
@@ -230,14 +230,14 @@ standardization, CompositionContext for foundation_validate elevation.
 
 ### Per-Spring Downstream Readiness Summary
 
-| Spring | lithoSpore | foundation | projectNUCLEUS | Highest Leverage |
+| Spring | lithoSpore | projectFOUNDATION | projectNUCLEUS | Highest Leverage |
 |--------|:----------:|:----------:|:--------------:|-----------------|
 | **groundSpring** | **G** B1-B3 done | **Y** T5+T7 seeded | **G** Tier 1 | LTEE data → lithoSpore modules 1-3 |
 | **hotSpring** | **G** B2 done | **G** T2 active | **G** Tier 1 | GPU ladder → NUCLEUS workloads |
 | **healthSpring** | **Y** B5 candidate | **G** T3+T8 seeded (V64) | **G** Tier 1 | B5 → lithoSpore module |
 | **wetSpring** | **Y** B7 started | **Y** T4 needs expr+tgt | **G** Tier 1 | B7 pipeline + T4 seeding |
 | **neuralSpring** | **G** Py+Rust done (S201b) | **Y** T5 seeded | **G** Tier 1 | lithoSpore ML module integration |
-| **airSpring** | N/A | **G** T6 active | **G** Tier 1 | T6 36 targets → foundation |
+| **airSpring** | N/A | **G** T6 active | **G** Tier 1 | T6 36 targets → projectFOUNDATION |
 | **ludoSpring** | N/A | **G** T9+T10 seeded (V71) | **Y** Tier 1 partial | petalTongue composition (V74) |
 | **primalSpring** | N/A | **Y** T10 co-owner | **G** coordination | T10 seeding + validation graphs |
 
@@ -318,7 +318,7 @@ Interstadial exit criteria: `infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
    PG-04, PG-05 — all external/upstream). Closed PG-06, PG-10, PG-17, PG-18.
    Owner: **wetSpring (L3)** — COMPLETED May 11, 2026.
 5. ~~**Foundation seeding**~~ — `INTERSTADIAL P5`: **10/10 threads active** (EXCEEDED). Threads 9+10 seeded by ludoSpring V71 + healthSpring V64m.
-   Owner: **spring teams (L3) + foundation (L5)** — **COMPLETED** May 13, 2026.
+   Owner: **spring teams (L3) + projectFOUNDATION (L5)** — **COMPLETED** May 13, 2026.
 6. **LTEE paper queue progress** — `INTERSTADIAL P4`: **ACTIVE** — 4 springs reproducing.
    groundSpring B2+B1 **COMPLETE** (Python+Rust PASS), hotSpring B2 STARTED,
    wetSpring B7 STARTED, neuralSpring B1 STARTED. Critical path cleared.
@@ -356,7 +356,7 @@ genomebin, doctor, sign, verify, layout, systemd.
 
 | Metric | Value |
 |--------|-------|
-| Total tests across 8 springs | **9,413+** (primalSpring 718 + hotSpring 1,607 + healthSpring 1,018 + wetSpring 1,962 + neuralSpring 910 + ludoSpring 956 + groundSpring 1,123 + airSpring 1,119 + metalForge/integration/Python suites) |
+| Total tests across 8 springs | **9,539+** (primalSpring 744 + hotSpring 596 + healthSpring 1,018 + wetSpring 1,962 + neuralSpring 739 + ludoSpring 982 + groundSpring 1,123 + airSpring 1,373 + metalForge/integration/Python suites) |
 | Total deploy graphs | **128** (primalSpring 80 + hotSpring 5 + healthSpring 7 + wetSpring 7 + neuralSpring 4 + ludoSpring 12 + groundSpring 6 + airSpring 7 = 128) |
 | Total experiment crates | **293** (primalSpring 89 + ludoSpring 100 + healthSpring 95 + groundSpring 2 + airSpring 3 + wetSpring 1 + hotSpring exp bins + neuralSpring playGround) |
 | Total paper notebooks | **198+** (healthSpring 53 + groundSpring 34 + airSpring 25 + wetSpring 20 + hotSpring 17 + neuralSpring 10 + primalSpring 5 + ludoSpring baselines) |

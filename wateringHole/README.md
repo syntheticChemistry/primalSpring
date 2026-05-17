@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Wave 20 — lithoSpore Audit Absorption, Stability Tiers, Trio Transaction Semantics)
-**Last Updated**: May 17, 2026 (PM — lithoSpore R1–R4 debt resolved)
+**Version**: 0.9.25 (Wave 20 PM — All delta springs absorbed, hotSpring caught up, wetSpring breseq pipeline live)
+**Last Updated**: May 17, 2026 (PM — post-absorption audit, downstream garden prep)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -33,6 +33,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | File | Audience | What It Covers |
 |------|----------|----------------|
 | **INTERSTADIAL_FOSSILIZATION_HANDOFF.md** | Spring teams | Interstadial fossilization patterns: what to preserve, how to date, provenance READMEs. |
+| **handoffs/WAVE20_LITHOSPORE_AUDIT_SPRING_EVOLUTION_MAY17_2026.md** | Delta spring teams | lithoSpore audit absorption: stability tiers, degradation behavior, cross-tier parity, trio semantics, per-spring guidance (wetSpring highest priority). |
 | **handoffs/WAVE20_DEBT_RESOLUTION_MAY17_2026.md** | Delta spring teams | Wave 20 debt resolution: per-spring fixes for canonical envelope, nest.commit, primal.list adoption. |
 | **handoffs/WAVE20_DELTA_SPRING_EVOLUTION_MAY16_2026.md** | Delta spring teams | Wave 20 patterns to absorb: schema standardization, E2E validation, Thread 10 workload. |
 | **handoffs/GARDEN_EVOLUTION_BLURB_MAY16_2026.md** | Garden teams | Downstream garden evolution guidance: projectFOUNDATION, projectNUCLEUS, esotericWebb. |
@@ -183,30 +184,31 @@ validated that upstream primals and springs should study and adopt:
 
 ## River Delta (Springs) — Evolution Summary (May 17, 2026)
 
-All 8 springs pulled to HEAD. Combined: **9,413+ workspace tests** across the
-delta. Every spring has completed Wave 20 debt resolution and is at zero debt.
+All 8 springs pulled to HEAD. Combined: **9,539+ workspace tests** across the
+delta. Every spring has absorbed lithoSpore audit patterns and is at zero debt.
 
-| Spring | Tests | HEAD | Post-Wave 20 Status |
-|--------|------:|------|---------------------|
-| hotSpring | 1,607 | latest | 3 new scenarios (cpu_gpu_parity, mixed_hardware, toadstool_dispatch), metalForge nucleus+biome_graph, fossilized RPC fixed, nest.commit adopted, 22 scenarios |
-| healthSpring | 1,018 | V64w | **39 new scenarios** (18→57!), dataset_checksums.toml, comprehensive upstream handoff, docs swept to 452 |
-| wetSpring | 1,962+ | V174 | 3 new validation binaries (hormesis, trophic cascade, colonization resistance), ci_cross_sync >=452, primal.list in CONSUMED, 5,957+ checks |
-| neuralSpring | 739 | V167 | s_gpu_parity, typed toadStool IPC, provenance_dispatch module split, PCIe P2P detection, all 6 stages GPU-dispatchable |
-| ludoSpring | 982 | V76 | Schell 20-lens RPGPT (1,012 LOC), metalForge parity (128 checks) + NUCLEUS (9 checks), validate_tower_atomic feature-gated, 452 synced |
-| groundSpring | 1,123+ | V145 | Graphs evolved to nest.commit primary, notebook L4, primal name role constants, docs sweep |
-| airSpring | 1,119+ | latest | 57 caps (6 ecology aliases), canonical envelope + count in mocks, --provenance-dir marked done, 174/174 scenarios, 65 control scripts |
-| primalSpring | 718+ | — | Wave 20 source: schema-standard + nest-commit-live scenarios, primal.list schema, Thread 10 wiring, LTEE tracker |
+| Spring | Tests | HEAD | Post-lithoSpore Absorption Status |
+|--------|------:|------|-----------------------------------|
+| hotSpring | 596 | latest | Caught up: `CROSS_TIER_PARITY.md`, renamed degradation doc, 7 handoffs archived, 204 experiments, VBIOS interpreter live HW, 22 scenarios |
+| healthSpring | 1,018 | V64x | Stability tiers (15/41/2), B5 cross-tier parity 8/8 bit-identical, degradation doc, 57 scenarios |
+| wetSpring | 1,962+ | V177 | **Exp381 breseq pipeline live** (Barrick 2009, 3/7 clones done), first ferment braid exported, `primals_reached` trio output, 43 niche caps |
+| neuralSpring | 739 | V168 | Stability tiers on 37 caps, degradation doc, 10 scenarios, GPU parity all 6 stages |
+| ludoSpring | 982 | V76 | Schell Lenses + CPU/GPU parity, `CROSS_TIER_PARITY.md`, `DEGRADATION_BEHAVIOR.md`, 982 tests |
+| groundSpring | 1,123+ | V145 | `DEGRADATION_BEHAVIOR.md` (11 primals), niche metadata fix, 1,123 tests |
+| airSpring | 1,373 | v0.10.0 | 3 new cross-tier parity validators (autocorrelation, gamma_cdf, soil_moisture_topp), 57 caps (53 stable, 4 evolving), trio `primals_reached` bug fix, 17 methods full 3-tier coverage |
+| primalSpring | 744 | — | Wave 20 PM: lithoSpore audit absorption (R1-R4), stability tiers, degradation docs, trio semantics, cross-tier parity pattern, scorecard + LTEE tracker updated |
 
-**Convergence state (May 17, 2026)**: All 7 delta springs resolved their Wave 20
-debt (fossilized RPC, stale counts, threshold drift, feature gates, graph
-capabilities, notebook levels). Registry 452 methods. All springs have canonical
-`capability.list` envelope. 6/7 have schema or nest.commit scenarios.
-Primal-blocked gaps documented as upstream asks. Fragment-first graph composition
-adopted ecosystem-wide.
+**Convergence state (May 17, 2026 PM)**: All 7 delta springs have absorbed
+lithoSpore audit patterns. Stability tiers annotated ecosystem-wide. Degradation
+behavior documented in all springs. Cross-tier parity validated. Trio transaction
+semantics aligned. wetSpring executing the ecosystem's first real-data ferment
+transcript braid. Registry 452 methods. Fragment-first graph composition adopted.
+**Next vector**: downstream garden evolution (projectFOUNDATION + projectNUCLEUS absorb
+Wave 20 patterns), then upstream primal evolution.
 
 ---
 
-## Downstream Products (Gardens) — Evolution Summary (May 16, 2026)
+## Downstream Products (Gardens) — Evolution Summary (May 17, 2026 PM)
 
 ### projectNUCLEUS V3 — Sovereignty + Validation Evolution
 
@@ -236,8 +238,10 @@ projectNUCLEUS has driven massive sovereignty infrastructure and validation evol
 petalTongue extracellular wiring, sovereign DNS (knot-dns, H2-17–H2-20),
 Forgejo Actions CI porting.
 
-**Asks**: canonical `primal.list` schema, `capability.list` shape standardization,
-barraCuda scipy parity, Songbird library crates for tunnelKeeper v0.3.
+**Asks (status)**: ~~canonical `primal.list` schema~~ **SHIPPED** (Wave 20),
+~~`capability.list` shape standardization~~ **SHIPPED** (Wave 20),
+barraCuda scipy parity (ongoing), Songbird library crates for tunnelKeeper v0.3.
+**Needs from primalSpring**: Wave 20 patterns (stability tiers, degradation, cross-tier parity), ferment transcript awareness.
 
 ### lithoSpore v1.0.0 — Verification Chassis (own IDE focus team)
 
@@ -276,6 +280,7 @@ lithoSpore is now its own IDE focus team building the verification chassis.
 
 projectFOUNDATION is now its own IDE focus team building the knowledge layer.
 Springs feed validation results to projectFOUNDATION as thread evidence.
+Repo folder: `gardens/projectFOUNDATION` (sporeGarden org).
 
 - **184 targets** across 10 threads, **146 validated (79.3%)**, 38 remaining
 - **29 workloads** across all 10 threads with Standard isolation + provenance trio
@@ -295,8 +300,10 @@ Springs feed validation results to projectFOUNDATION as thread evidence.
   Thread 7 Anderson **18/18 PASS**
 - Thread 1 WCM: fetch infra ok, **RPC upstream-blocked** (0/24 pending review)
 - Data integrity: many `blake3 = ""` in source TOMLs — needs fetch + backfill
-- Needs from upstream: RPC response schema standardization, CompositionContext
-  for elevation, neuralSpring ML sources (Thread 5)
+- Needs from upstream: ~~RPC response schema standardization~~ **PARTIALLY SHIPPED** (Wave 20: primal.list + capability.list canonical),
+  CompositionContext for elevation, neuralSpring ML sources (Thread 5)
+- **Needs from Wave 20 PM**: Stability tier awareness, ferment transcript awareness (wetSpring → Thread 5),
+  cross-tier parity patterns
 
 **Spring → projectFOUNDATION contract**: Check which threads reference your
 spring in `projectFOUNDATION/lineage/THREAD_INDEX.toml` and `data/sources/*.toml`.
@@ -325,11 +332,18 @@ handlers: `health.version`, `health.drain`, `primal.announce`, `primal.info`.
 - Needs: biomeOS E2E signal validation, ludoSpring 6 game.* methods,
   Squirrel mechanical context, petalTongue DialogueTree
 
-See `handoffs/GARDEN_EVOLUTION_BLURB_MAY16_2026.md` for full evolution guidance.
+See `handoffs/WAVE21_DOWNSTREAM_GARDEN_EVOLUTION_MAY17_2026.md` for Wave 20 PM
+pattern absorption guidance (stability tiers, cross-tier parity, ferment
+transcript, degradation behavior, nomenclature update).
+Historical: `handoffs/GARDEN_EVOLUTION_BLURB_MAY16_2026.md` (Wave 18-era).
 
 ### blueFish
 
 Remote repo not found (`404`). Either renamed, private, or not yet created.
+
+### sporeGarden
+
+Present in `gardens/`. Status and relationship TBD.
 
 ---
 

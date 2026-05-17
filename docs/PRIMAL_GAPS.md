@@ -529,9 +529,9 @@ calibrate-shadow-cutover protocol, darkforest alignment
 | 7 | sweetGrass TCP without BTSP | sweetGrass | Open |
 | 8 | Cross-gate dispatch via songBird | songBird / biomeOS | Open (Phase 2) |
 
-### Layer 5: Foundation (sporeGarden/foundation)
+### Layer 5: projectFOUNDATION (sporeGarden/projectFOUNDATION)
 
-**Owner**: Foundation team + contributing springs
+**Owner**: projectFOUNDATION team + contributing springs
 **Scope**: Public data anchoring, provenance validation, thread coverage
 **Current**: 10 domain threads, 100+ data sources. CI thread-index validation functional.
 Validation reality: Threads 2, 6, 7 fully validated; Thread 1 WCM (0/24 validated).
@@ -565,7 +565,7 @@ L4 (Products — interstadial, pre-wiring sovereignty)
   │
   │ data anchoring ↓
   │
-L5 (Foundation — knowledge layer, thread coverage)
+L5 (projectFOUNDATION — knowledge layer, thread coverage)
 ```
 
 Gaps propagate **upward** (springs expose primal gaps → primalSpring gates them
@@ -591,7 +591,7 @@ Handoff: `infra/wateringHole/handoffs/LTEE_GUIDESTONE_SUBSYSTEM_HANDOFF_MAY11_20
 | L2 (primalSpring) | Targeted GuideStone standard, scope graph schema, validation harness pattern | **DONE** — standard defined |
 | L3 (springs) | LTEE paper queue items (36 assignments across 6 springs), binary builds, scenario implementations | **SEEDED** — queues populated, reproduction work begins |
 | L4 (projectNUCLEUS) | Integration as subsystem, workload TOMLs, deployment testing, USB packaging | **ARCHITECTURE** — handoff created, phases 2-5 pending |
-| L5 (foundation) | Thread 04 (enviro genomics) + Thread 02 (plasma physics) data anchoring for LTEE datasets | **PENDING** — awaiting spring reproductions |
+| L5 (projectFOUNDATION) | Thread 04 (enviro genomics) + Thread 02 (plasma physics) data anchoring for LTEE datasets | **PENDING** — awaiting spring reproductions |
 
 ### Wave 6 Paper-Spring Assignments
 
