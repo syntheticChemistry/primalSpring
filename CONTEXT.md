@@ -238,6 +238,11 @@ composition).
 - **Wave 20 PM**: hotSpring — 6 new experiments (199-204) including VBIOS interpreter live HW validation, oracle data cleaned, handoff archival
 - **Wave 20 PM**: ludoSpring V76 — Schell Lenses + CPU/GPU parity, 982 tests, cross-tier parity doc
 - **Wave 20 PM**: groundSpring V145 — degradation behavior doc, niche metadata fix
+- **Wave 21**: All downstream gardens absorbed Wave 20 patterns:
+  - lithoSpore: `PARITY_REPORT_SCHEMA.md` (ecosystem standard), `DEGRADATION_BEHAVIOR.md`, `provenance/braids/` for ferment ingestion, stability tiers, partial trio semantics
+  - projectFOUNDATION: `DEGRADATION_BEHAVIOR.md`, `validation/wetSpring/braids/` for Thread 5, BLAKE3 backfill documented, composition gaps marked resolved, stability tiers on workloads
+  - esotericWebb V9: canonical capability.list envelope, stability tiers, degradation doc, `primals_reached` on WorldState, GAP-026–030 resolved
+  - projectNUCLEUS: path reorganization, local hardcoding eliminated, cellMembrane owns fieldMouse Tower
 
 ### Garden Evolution (May 17, 2026)
 - **lithoSpore** (latest): Tier 3 provenance trio wired via JSON-RPC (dag/spine/braid),
@@ -279,4 +284,7 @@ composition).
 - **Primal-blocked gaps** (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — documented as asks, awaiting upstream teams
 - **LTEE enrichments** (B5 lithoSpore promotion, B7 Tier 3, B1-ML Rust elevation, framework parity benchmarks)
 - **wetSpring ferment transcripts** — Barrick 2009 IN PROGRESS (3/7 clones), Tenaillon 2016 next (~200 GB)
-- **hotSpring degradation behavior doc** — only spring missing `DEGRADATION_BEHAVIOR.md`
+- **plasmidBin convergence** — all gardens converging on plasmidBin as central deployment depot:
+  lithoSpore (Tier 3 via `stage_usb.sh`), projectNUCLEUS (gate deployments), projectFOUNDATION
+  (validation against primals), esotericWebb (genomeBin composition), cellMembrane (`deploy_membrane.sh`)
+- **BLAKE3 backfill** — projectFOUNDATION has 165 empty `blake3` fields across 11 source TOMLs (medium priority)

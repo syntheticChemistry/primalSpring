@@ -208,7 +208,7 @@ Wave 20 patterns), then upstream primal evolution.
 
 ---
 
-## Downstream Products (Gardens) — Evolution Summary (May 17, 2026 PM)
+## Downstream Products (Gardens) — Evolution Summary (May 17, 2026 PM, post-Wave 21 absorption)
 
 ### projectNUCLEUS V3 — Sovereignty + Validation Evolution
 
@@ -241,7 +241,10 @@ Forgejo Actions CI porting.
 **Asks (status)**: ~~canonical `primal.list` schema~~ **SHIPPED** (Wave 20),
 ~~`capability.list` shape standardization~~ **SHIPPED** (Wave 20),
 barraCuda scipy parity (ongoing), Songbird library crates for tunnelKeeper v0.3.
-**Needs from primalSpring**: Wave 20 patterns (stability tiers, degradation, cross-tier parity), ferment transcript awareness.
+**Wave 21 absorption**: Path reorganization (`sporeGarden` → `gardens`), local
+path hardcoding eliminated. cellMembrane owns fieldMouse Tower deployment.
+**Deployment convergence**: Consumes primals from `plasmidBin`; gate TOMLs
+route science to hardware; `deploy_membrane.sh` is the operational tooling.
 
 ### lithoSpore v1.0.0 — Verification Chassis (own IDE focus team)
 
@@ -273,8 +276,14 @@ lithoSpore is now its own IDE focus team building the verification chassis.
 - Ingested primalSpring patterns: capability registry, Dark Forest graphs, `graph_checks` module
 - Owns: benchScale, agentReagents
 - Needs from upstream: TURN relay wiring (UB-1 SHIPPED, integration pending), neuralSpring ML surrogates
+- **Wave 21 absorption**: `DEGRADATION_BEHAVIOR.md` (formalizes "science first" for
+  all 3 tiers), `PARITY_REPORT_SCHEMA.md` (ecosystem standard for cross-tier parity
+  JSON), `provenance/braids/` directory for ferment transcript ingestion, stability
+  tiers on `capability_registry.toml`, partial trio semantics in `provenance.rs`
 - **Absorbable patterns**: ScopeManifest, graph↔registry cross-tests, DiscoveryPath
-  telemetry, CLI integration harness, #[path = "tests.rs"] extraction
+  telemetry, CLI integration harness, #[path = "tests.rs"] extraction, ParityReport schema
+- **Deployment convergence**: Tier 3 requires `plasmidBin` primals via `stage_usb.sh`;
+  geo-delocalized Tier 2 routes through cellMembrane Songbird TURN
 
 ### projectFOUNDATION — Knowledge Layer (own IDE focus team)
 
@@ -299,38 +308,49 @@ Repo folder: `gardens/projectFOUNDATION` (sporeGarden org).
 - Thread 2 Plasma **12/12 PASS**, Thread 6 Agricultural **36/36 PASS**,
   Thread 7 Anderson **18/18 PASS**
 - Thread 1 WCM: fetch infra ok, **RPC upstream-blocked** (0/24 pending review)
-- Data integrity: many `blake3 = ""` in source TOMLs — needs fetch + backfill
-- Needs from upstream: ~~RPC response schema standardization~~ **PARTIALLY SHIPPED** (Wave 20: primal.list + capability.list canonical),
+- Data integrity: ~~many `blake3 = ""`~~ BLAKE3 backfill **documented** (`BLAKE3_BACKFILL_STATUS.md`),
+  165 manifest rows across 11 TOMLs still empty — medium priority, not blocking validation
+- Needs from upstream: ~~RPC response schema standardization~~ **SHIPPED** (Wave 20),
   CompositionContext for elevation, neuralSpring ML sources (Thread 5)
-- **Needs from Wave 20 PM**: Stability tier awareness, ferment transcript awareness (wetSpring → Thread 5),
-  cross-tier parity patterns
+- **Wave 21 absorption**: `DEGRADATION_BEHAVIOR.md` (phase-level degradation for
+  `foundation_validate.sh`), `validation/wetSpring/braids/` directory for ferment
+  transcript ingestion, stability tier annotations on workload TOMLs, Thread 5
+  targets updated for braid evidence, composition gaps marked resolved
+- **Deployment convergence**: Runs validation against primals from `plasmidBin`;
+  `foundation_validate.sh` discovers primals via capability-first IPC
 
 **Spring → projectFOUNDATION contract**: Check which threads reference your
 spring in `projectFOUNDATION/lineage/THREAD_INDEX.toml` and `data/sources/*.toml`.
 Ensure validation results are captured in `projectFOUNDATION/validation/` with
 dated provenance folders. Thread 10 workload already targets primalspring_unibin.
 
-### esotericWebb V8 — UI + Agentic Composition
+### esotericWebb V9 — UI + Agentic Composition (Wave 20-21 absorbed)
 
-At V8 — **357 tests**, **24 capabilities**, 22 bridge methods. Signal-first
+At V9 — **357+ tests**, **24 capabilities**, 22 bridge methods. Signal-first
 provenance via `nest_store`/`nest_commit` bridge methods (Neural API preferred,
 direct fallback). Startup `primal.announce` to biomeOS. Full lifecycle
 handlers: `health.version`, `health.drain`, `primal.announce`, `primal.info`.
 
+- **Wave 20-21 absorption**: Canonical `capability.list` envelope (`capabilities`,
+  `count`, `primal`), stability tiers on `capability_registry.toml`,
+  `DEGRADATION_BEHAVIOR.md` (gameplay never gated on primals), `primals_reached`
+  on `WorldState`, `unwrap_capabilities_envelope` client helper. GAP-026–030 resolved.
 - **Signal adoption**: enrichment collapsed from multi-RPC to bridge `nest_store`/
   `nest_commit`; constants for `meta.observe`/`meta.intent` ready
 - **Test extraction**: `#[path = "tests.rs"]` companion modules keep production
   files under 800 LOC cap without losing coverage (content: 23, session: 32 tests)
 - **Capability↔registry cross-test**: `capabilities_match_registry_toml` enforces
   parity between `niche::CAPABILITIES` array and `capability_registry.toml`
-- **Consumer reference**: strongest garden-level implementation of Wave 17 signal
-  patterns — minimal bridge API as template for other gardens
+- **Consumer reference**: strongest garden-level implementation of signal patterns
+  — minimal bridge API as template for other gardens
 - CRPG substrate with narrative DAG, YAML content model, 60Hz loop
 - Strongest test case for the agentic composition pattern. Local to ironGate
   with direct UDS access to full NUCLEUS.
 - **GAP-024 (open)**: signal paths not exercised live on biomeOS / ironGate
 - Needs: biomeOS E2E signal validation, ludoSpring 6 game.* methods,
   Squirrel mechanical context, petalTongue DialogueTree
+- **Deployment convergence**: Composes primals from `plasmidBin` genomeBins;
+  BYOB composition via `tools/nucleus_composition_lib.sh` pattern
 
 See `handoffs/WAVE21_GARDEN_EVOLUTION_MAY17_2026.md` for Wave 20 PM pattern
 absorption guidance across all three garden teams (stability tiers, cross-tier
