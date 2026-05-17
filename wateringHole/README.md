@@ -332,9 +332,9 @@ handlers: `health.version`, `health.drain`, `primal.announce`, `primal.info`.
 - Needs: biomeOS E2E signal validation, ludoSpring 6 game.* methods,
   Squirrel mechanical context, petalTongue DialogueTree
 
-See `handoffs/WAVE21_DOWNSTREAM_GARDEN_EVOLUTION_MAY17_2026.md` for Wave 20 PM
-pattern absorption guidance (stability tiers, cross-tier parity, ferment
-transcript, degradation behavior, nomenclature update).
+See `handoffs/WAVE21_GARDEN_EVOLUTION_MAY17_2026.md` for Wave 20 PM pattern
+absorption guidance across all three garden teams (stability tiers, cross-tier
+parity, ferment transcript, degradation behavior, cellMembrane integration).
 Historical: `handoffs/GARDEN_EVOLUTION_BLURB_MAY16_2026.md` (Wave 18-era).
 
 ### blueFish
