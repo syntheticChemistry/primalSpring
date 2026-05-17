@@ -1,8 +1,8 @@
 # LTEE Paper Queue Tracker
 
-**Last Updated**: May 16, 2026 (Wave 20)
+**Last Updated**: May 17, 2026 (Wave 20 PM — lithoSpore audit absorption)
 **Thread**: Foundation Thread 5 (Evolutionary Biology / LTEE)
-**lithoSpore**: v1.0.0 — 7/7 modules Tier 2 PASS (75/75 checks)
+**lithoSpore**: latest — 7/7 modules Tier 2 PASS (75/75 checks), 117 tests, cross-tier parity, Tier 3 JSON-RPC wired
 
 ## Overview
 
@@ -102,6 +102,8 @@ Springs (LTEE papers)
 |------|--------|----------|------------|
 | B5 lithoSpore module promotion | healthSpring | Medium | lithoSpore team schedule |
 | B7 Tier 3 provenance | wetSpring | Low | sweetGrass TCP without BTSP |
+| Ferment transcript braids (Tenaillon 2016) | wetSpring | HIGH | breseq pipeline + trio provenance recording |
+| Ferment transcript braids (Barrick 2009) | wetSpring | HIGH | breseq pipeline + trio provenance recording |
 | B1-ML Rust elevation | neuralSpring | Low | None (optional enrichment) |
 | Thread 4 expression seeding | wetSpring/airSpring | Medium | Domain expertise |
 | Framework parity benchmarks | all 4 springs | Low (stadial) | Kokkos/LAMMPS/SciPy baselines |

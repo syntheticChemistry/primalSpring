@@ -73,7 +73,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 20 (May 17, 2026) — 718+ `#[test]` markers across workspace,
+v0.9.25 Wave 20 (May 17, 2026 PM) — 744 `#[test]` markers across workspace,
 89 experiments (20 tracks), 80 deploy graphs + 14 atomic signal graphs,
 452 registered capability methods, 44-cell deployment matrix. Phase 32 atomic
 evolution: Tower = 3 primals (bearDog + songbird + skunkBat), Node = 6
@@ -229,8 +229,15 @@ composition).
 - **Wave 20**: Thread 10 workload wired (`--provenance-dir` flag, `thread10_provenance.sh`)
 - **Wave 20**: Primal-blocked gaps documented as upstream asks
 - **Wave 20**: LTEE paper queue tracker — 8 papers, 4 springs, 7 lithoSpore modules
+- **Wave 20 PM**: lithoSpore audit absorption — R1 (degradation behavior documented in CompositionContext), R2 (stability tiers in capability_registry.toml), R3 (trio transaction semantics in PROVENANCE_TRIO_INTEGRATION_GUIDE), R4 (UDS socket ownership in CAPABILITY_BASED_DISCOVERY_STANDARD)
+- **Wave 20 PM**: Cross-tier parity pattern absorbed into VALIDATION_TIERS.md (Tier 3 + parity sections)
+- **Wave 20 PM**: Ferment transcript pattern cross-referenced in DOWNSTREAM_PATTERN_GUIDE.md
 
-### Garden Evolution (May 16, 2026)
+### Garden Evolution (May 17, 2026)
+- **lithoSpore** (latest): Tier 3 provenance trio wired via JSON-RPC (dag/spine/braid),
+  cross-tier parity (`litho parity` — 7/7 modules MATCH), two-tier data model formalized,
+  ferment transcript upstream braid handoff, 117 tests, 15 CLI subcommands, zero clippy,
+  `#![forbid(unsafe_code)]` workspace-wide, `--provenance-dir` for Thread 10
 - **lithoSpore v1.0.0**: ScopeManifest, liveSpore.json provenance journal,
   capability-first discovery, scope-driven validation, 6 THREAD_INDEX entries,
   sporePrint dispatch CI, CLI integration test harness
@@ -261,5 +268,8 @@ composition).
 - **petalTongue dialogue scenes** for esotericWebb narrative UI
 - **Foundation validate elevation** to CompositionContext + Rust crates
 - **biomeOS primal.list implementation** (schema defined by primalSpring Wave 20, awaiting biomeOS)
+- **biomeOS nest.store signal dispatch** (lithoSpore R5 — ferment transcript handoff collapse)
+- **biomeOS spore.instantiate** (lithoSpore R7 — atomic VM provisioning for guideStones)
 - **Primal-blocked gaps** (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — documented as asks, awaiting upstream teams
 - **LTEE enrichments** (B5 lithoSpore promotion, B7 Tier 3, B1-ML Rust elevation, framework parity benchmarks)
+- **wetSpring ferment transcripts** (Tenaillon 2016 + Barrick 2009 breseq braids for lithoSpore)

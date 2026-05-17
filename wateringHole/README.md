@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Wave 20 — Schema Standardization, E2E Validation, `primal.list` canonical)
-**Last Updated**: May 17, 2026
+**Version**: 0.9.25 (Wave 20 — lithoSpore Audit Absorption, Stability Tiers, Trio Transaction Semantics)
+**Last Updated**: May 17, 2026 (PM — lithoSpore R1–R4 debt resolved)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -159,6 +159,10 @@ validated that upstream primals and springs should study and adopt:
 | Discovery chain (env->UDS->TURN->standalone) | lithoSpore | Matches `CompositionContext::discover()` in consumer form. Env var names should be canonicalized. |
 | Cross-platform deployment matrix | lithoSpore | musl-static + Windows cross-compile + read-only FS. Template for all ecoBin artifacts. |
 | Module lib.rs in-process dispatch | lithoSpore | Mirrors UniBin absorbed-experiment pattern. Canonical for all Targeted GuideStones. |
+| Cross-tier parity | lithoSpore | `litho parity` proves Python and Rust agree on all 7 modules. Pattern for any dual-language validation. |
+| Tier 3 provenance via JSON-RPC | lithoSpore | `provenance.rs` wires `dag.*` → `spine.*` → `braid.*` as JSON-RPC client. Reference implementation for trio consumers. |
+| Ferment transcript / upstream braid | lithoSpore | guideStones carry summary stats + braid reference — raw data stays upstream. Contract in `LITHOSPORE_FERMENT_TRANSCRIPT_BRAID_HANDOFF_MAY17_2026.md`. |
+| Method stability tiers | primalSpring | `capability_registry.toml` now annotates `stability = "stable/evolving/internal"`. Downstream consumers depend on stable names. |
 | Content-aware routing schema compliance | projectNUCLEUS | `routing_config_reference.toml` schema owned by primalSpring. All membrane deployments validate against it. |
 | Calibrate-shadow-cutover protocol | projectNUCLEUS | Sovereignty transitions with measurable gates. primalSpring validates structurally. |
 

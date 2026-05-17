@@ -464,3 +464,22 @@ surface as springs adopt `ctx.dispatch()`:
   will fall back to the 3-call pattern (functional but deprecated)
 
 Signal adoption standard: `wateringHole/SIGNAL_ADOPTION_STANDARD.md`
+
+### Ferment Transcript Pattern (lithoSpore, May 17 2026)
+
+Springs processing large upstream datasets (10s–100s of GB) that feed
+guideStone artifacts MUST produce **ferment transcripts**: summary statistics
+plus a provenance braid that links to the full computation chain. The
+guideStone carries the summary and the braid reference — not the raw data.
+
+**Priority datasets awaiting upstream braids:**
+
+| Dataset | Spring | Computation | Priority |
+|---------|--------|-------------|----------|
+| Tenaillon 2016 | wetSpring | breseq on 264 genomes (~200 GB) | HIGH |
+| Barrick 2009 | wetSpring | breseq on 19 genomes (~15 GB) | HIGH |
+| Good 2017 | wetSpring | metagenomic variant calling (~50 GB) | MEDIUM |
+| Blount 2012 | wetSpring | replay experiment sequencing (~30 GB) | MEDIUM |
+
+**Full contract**: `infra/wateringHole/handoffs/LITHOSPORE_FERMENT_TRANSCRIPT_BRAID_HANDOFF_MAY17_2026.md`
+**Trio transaction semantics**: `infra/wateringHole/PROVENANCE_TRIO_INTEGRATION_GUIDE.md` § Transaction Semantics

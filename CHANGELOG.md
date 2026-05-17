@@ -3,7 +3,28 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 20: Ecosystem Status Assessment (2026-05-16 PM)
+## [Unreleased] — Wave 20: Ecosystem Status Assessment (2026-05-17 PM)
+
+### lithoSpore Audit Absorption (May 17 PM)
+- **R1: Degradation behavior documented** in `CompositionContext` module docs —
+  per-capability table (dag, spine, braid, visualization, discovery, orchestration,
+  crypto, compute) with unreachable behavior and consumer impact.
+- **R2: Method stability tiers** added to `capability_registry.toml` — `stability`
+  field (`stable/evolving/internal`) on all 12 deployed-consumer domains (health,
+  capabilities, lifecycle, coordination, discovery, ipc, visualization, dag, spine,
+  event, entry, braid, primal). Downstream consumers (lithoSpore) depend on stable names.
+- **R3: Trio transaction semantics** documented in `PROVENANCE_TRIO_INTEGRATION_GUIDE.md`
+  — partial completion states table, 5 consumer rules, lithoSpore reference implementation.
+- **R4: UDS socket ownership** documented in `CAPABILITY_BASED_DISCOVERY_STANDARD.md`
+  — ownership table (primal sockets vs songBird discovery.sock vs biomeOS biomeos.sock),
+  stale socket detection, crash recovery.
+- **Cross-tier parity pattern** absorbed into `VALIDATION_TIERS.md` — new Tier 3
+  section (provenance-backed validation), parity checking section for dual-language
+  implementations.
+- **Ferment transcript pattern** cross-referenced in `DOWNSTREAM_PATTERN_GUIDE.md`
+  with priority dataset table (Tenaillon 2016, Barrick 2009 for wetSpring).
+- Updated CONTEXT.md, PRIMAL_GAPS.md, CROSS_SPRING_PARITY_SCORECARD.md,
+  LTEE_PAPER_QUEUE_TRACKER.md, wateringHole/README.md with lithoSpore audit findings.
 
 ### Schema Standardization (Phase A)
 - **primal.list canonical schema**: Added `primal.list` to capability_registry.toml

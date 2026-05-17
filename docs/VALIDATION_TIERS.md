@@ -103,6 +103,65 @@ each run.
 
 ---
 
+## Tier 3: Provenance-Backed Validation (Primal Trio)
+
+Tier 3 extends Tier 2 by recording validation results into the provenance trio
+(rhizoCrypt DAG + loamSpine ledger + sweetGrass braid). This creates an
+immutable, attributable record of every validation run — the guideStone
+standard for deployed artifacts.
+
+### What belongs in Tier 3
+
+- Everything in Tier 2 PLUS provenance recording
+- `primal.announce` self-registration with biomeOS
+- DAG session lifecycle: `dag.session.create` → `event.append` × N → `session.complete`
+- Spine anchoring: `spine.create` → `entry.append`
+- Braid attribution: `braid.create` linking validation to operator and artifact
+- Output of `Tier3Session` metadata (dag_session_id, merkle_root, spine_id, braid_id)
+
+### Reference Implementation
+
+lithoSpore's `try_record_tier3()` is the ecosystem's first Tier 3 consumer
+(see `litho-core/src/provenance.rs`). primalSpring's `--provenance-dir` flag
+writes `results.json` + `provenance.toml` to a dated folder, aligning with
+projectFOUNDATION Thread 10.
+
+### Partial Completion
+
+See `PROVENANCE_TRIO_INTEGRATION_GUIDE.md` § Transaction Semantics for the
+definitive specification of partial completion behavior.
+
+---
+
+## Cross-Tier Parity Pattern (from lithoSpore, May 17 2026)
+
+When validation runs in multiple implementation languages (e.g., Python Tier 1
+AND Rust Tier 2), **parity checking** proves the math is stable across
+implementations. lithoSpore's `litho parity` subcommand runs both tiers
+side-by-side and reports MATCH/DIVERGENCE per module.
+
+### Adopting Parity in Springs
+
+Springs with dual-language validation (notebooks + Rust scenarios) should
+implement parity checking:
+
+1. Run the Python baseline → capture expected values as JSON
+2. Run the Rust implementation → capture computed values as JSON
+3. Compare within documented tolerances (`tolerances.toml` or per-scenario)
+4. Report structured `ParityResult` with status per check
+
+### Ecosystem Value
+
+A three-layer proof becomes possible with full Tier adoption:
+- **Tier 1** confirms the science (Python baseline matches published claims)
+- **Tier 2** confirms the implementation (Rust matches Python)
+- **Tier 3** confirms the provenance chain (immutable record of who ran what)
+
+For tolerance handling, see lithoSpore's `artifact/tolerances.toml` — named
+tolerances with scientific justification per validation dimension.
+
+---
+
 ## Scenario Infrastructure (Eukaryotic)
 
 The validation infrastructure has evolved from standalone experiment binaries

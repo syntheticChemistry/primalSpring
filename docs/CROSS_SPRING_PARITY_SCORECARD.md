@@ -2,8 +2,8 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 17, 2026 — Post Wave 20 delta spring audit. All 7 delta springs adopted capability.list canonical envelope (count field). Registry 452 methods. 6/7 springs have schema or nest.commit scenarios. LTEE B6 added (groundSpring).
-**Audited by**: primalSpring composition audit
+**Last updated**: May 17, 2026 PM — lithoSpore audit absorbed. Stability tiers in registry. Degradation behavior documented. Trio transaction semantics formalized. Cross-tier parity pattern adopted. All 7 delta springs at zero debt.
+**Audited by**: primalSpring composition audit + lithoSpore downstream audit
 **Method**: Pulled all 8 springs to HEAD, assessed each across 9 axes
 
 ## Legend
@@ -16,7 +16,7 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 718+ | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 452 methods, sync-tested | **G** 80 deploy + 14 signal graphs | **G** 89 exp crates + 43 scenarios (10 tracks) + Waves 1-20 complete, schema-standard + nest-commit-live + graph↔registry cross-tests + signal dispatch parity | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **primalSpring** | 744 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 452 methods, sync-tested | **G** 80 deploy + 14 signal graphs | **G** 89 exp crates + 43 scenarios (10 tracks) + Waves 1-20 complete, schema-standard + nest-commit-live + graph↔registry cross-tests + signal dispatch parity | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
 | **hotSpring** | 596 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** 117 methods + sync, primal.list routed, s_schema_standard | **G** 5 graphs | **G** 198 exp (Tier 4 + LTEE B2 + BootPipeline VBIOS + 18/21 scenarios) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
 | **healthSpring** | 1,018 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 176 methods in TOML + CI cross-sync 452 + canonical envelope | **G** 7 graphs, skunkBat + Tower atomic (V64r) | **G** 95 exp crates (exp123 NUCLEUS parity) | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,962+ | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (guideStone primal proof, B7 Tier 2) | **G** 37 caps + cross-sync 452 + canonical envelope | **G** 7 graphs | **G** V171 composition_health + ipc_roundtrip + schema parity | **G** 19 + Kachkovskiy | **G** bans ring + openssl |

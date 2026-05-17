@@ -24,6 +24,25 @@
 //! constructors ([`CompositionContext::from_live_discovery`] = tiers 2-4,
 //! [`CompositionContext::from_live_discovery_with_fallback`] = tiers 2-5)
 //! remain valid for callers that know their deployment context.
+//!
+//! # Degradation Behavior (per lithoSpore R1, May 17 2026)
+//!
+//! When a primal is unreachable, `CompositionContext` degrades gracefully:
+//!
+//! | Capability | Unreachable Behavior | Consumer Impact |
+//! |------------|----------------------|-----------------|
+//! | `dag` (rhizoCrypt) | `call` returns `Err` | Tier 3 provenance unavailable; Tier 2 science still runs |
+//! | `spine` (loamSpine) | `call` returns `Err` | No ledger entry; DAG session valid but unbacked |
+//! | `braid` (sweetGrass) | `call` returns `Err` | No attribution braid; DAG + spine are partial provenance |
+//! | `visualization` (petalTongue) | `call` returns `Err` | No rendered figures; data still valid |
+//! | `discovery` (songBird) | `discover()` returns `None` | Falls to lower discovery tier or standalone mode |
+//! | `orchestration` (biomeOS) | `announce()` returns `Err` | Self-registration skipped; CLI still functional |
+//! | `crypto` (bearDog) | `call` returns `Err` | Optional signing skipped |
+//! | `compute` (toadStool) | `call` returns `Err` | Local compute only; no accelerated dispatch |
+//!
+//! **Invariant**: No `CompositionContext` method panics on unreachable primals.
+//! All RPC calls return `Result` — callers decide whether to skip, retry, or
+//! abort. The `has_capability` method provides pre-call reachability checks.
 
 use std::collections::{BTreeMap, HashMap};
 use std::path::PathBuf;

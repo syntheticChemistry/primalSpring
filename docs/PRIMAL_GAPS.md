@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-17 (Wave 20: Schema Standardization + E2E Validation — `primal.list` canonical schema, `capability.list` response standardization, `s_schema_standard` + `s_nest_commit_live` scenarios, Thread 10 provenance wiring. 43 scenarios, 452 methods. All delta springs resolved Wave 20 debt.)
+> **Last updated**: 2026-05-17 PM (Wave 20 + lithoSpore Audit Absorption — stability tiers in registry, degradation docs in CompositionContext, trio transaction semantics, UDS socket ownership, Tier 3 + parity pattern in VALIDATION_TIERS. All 8 lithoSpore requests triaged: R1–R4 resolved locally, R5–R8 documented as upstream asks.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
