@@ -14,7 +14,7 @@ absorb and evolve toward in the temporal interim.
 
 | Surface | State | Entry Point |
 |---------|-------|-------------|
-| 451 registered capability methods | Stable | `config/capability_registry.toml` |
+| 452 registered capability methods | Stable | `config/capability_registry.toml` (Wave 20: `primal.list` added) |
 | 14 atomic signal graphs (4 tiers) | Stable | `graphs/signals/*.toml` |
 | 41 validation scenarios (10 tracks) | Stable | `ecoPrimal/src/validation/scenarios/` |
 | `CompositionContext` API | Modern — zero deprecated callers | `ctx.dispatch()`, `ctx.announce()`, `ctx.call()` |
@@ -156,7 +156,7 @@ and completing the remaining cutover items.
 
 | Layer | Status | Evidence |
 |-------|--------|----------|
-| 1. Primal Capabilities | **PASS** | 451 methods, 13/13 primals LIVE |
+| 1. Primal Capabilities | **PASS** | 452 methods, 13/13 primals LIVE |
 | 2. Security | **PASS** | BTSP 13/13 AEAD, MethodGate 13/13, Dark Forest PASS |
 | 3. Deployment | **PASS** | VPS membrane live, BearDog TLS shadow 11ms, Channel 3 TLS |
 | 4. Composition | **ACTIVE** | Forgejo PRIMARY, shadow layer operational, DNS pending |

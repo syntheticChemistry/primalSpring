@@ -16,7 +16,7 @@ Rust library interactions — no running primals required.
 
 - Deploy graph TOML parsing and schema validation
 - Bonding policy rule checks (`BondType`, `TrustModel`)
-- Capability registry string matching against canonical 451 methods
+- Capability registry string matching against canonical 452 methods
 - BTSP protocol frame serialization round-trips
 - Tolerance constant assertions (documented thresholds)
 - `ValidationResult` harness structural tests
@@ -106,7 +106,7 @@ each run.
 ## Scenario Infrastructure (Eukaryotic)
 
 The validation infrastructure has evolved from standalone experiment binaries
-(prokaryotic era: exp001–exp111) into 41 absorbed scenarios in
+(prokaryotic era: exp001–exp111) into 43 absorbed scenarios in
 `ecoPrimal/src/validation/scenarios/`. Every scenario has:
 
 - A `pub const SCENARIO: Scenario` with metadata (id, track, tier, provenance)
@@ -118,7 +118,7 @@ Dark Forest invariant checking, and capability registry cross-referencing.
 New scenarios should use these helpers instead of reimplementing locally.
 
 **Registry meta-test** in `scenarios/mod.rs` validates:
-- `build_registry()` returns exactly 41 scenarios
+- `build_registry()` returns exactly 43 scenarios
 - No duplicate scenario IDs
 - Every `Track` variant has at least one scenario
 - All `Tier::Rust` scenarios pass structurally
@@ -126,11 +126,11 @@ New scenarios should use these helpers instead of reimplementing locally.
 
 | Tier | Count | `cargo test` strategy |
 |------|------:|----------------------|
-| Rust | 8 | Assert `v.failed == 0` (full structural pass) |
-| Both | 8 | Test structural phase or verify no panics |
-| Live | 25 | Verify scenario runs to completion (failures expected without primals) |
+| Rust | 9 | Assert `v.failed == 0` (full structural pass) |
+| Both | 10 | Test structural phase or verify no panics |
+| Live | 24 | Verify scenario runs to completion (failures expected without primals) |
 
-`cargo test --lib` exercises all 41 scenarios — the single authoritative CI gate.
+`cargo test --lib` exercises all 43 scenarios — the single authoritative CI gate.
 
 ---
 

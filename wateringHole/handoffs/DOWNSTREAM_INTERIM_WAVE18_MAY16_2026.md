@@ -43,7 +43,7 @@ delta springs to complete their evolution pass.
 
 3. **Module interface note**: primalSpring does not directly expose
    `fn run_validation(data_dir, expected, max_tier) -> ModuleResult`. Our
-   validation surfaces are graph-driven compositions (exp107, 41 scenarios)
+   validation surfaces are graph-driven compositions (exp107, 43 scenarios)
    and UniBin subcommands (`validate`, `certify`). If lithoSpore needs a
    crate-level entry point, a thin shim over `validate_composition_ctx`
    is the path — tracked as future work.
@@ -70,8 +70,8 @@ delta springs to complete their evolution pass.
    4-call pattern (`content.put` → `dag.event.append` → `spine.seal` →
    `braid.create`).
 
-2. **451 methods registry**: Canonical method surface is stable. No new
-   methods were added in Wave 18 — this is a local debt resolution wave.
+2. **452 methods registry**: Canonical method surface is stable. Wave 20
+   added `primal.list` (452nd method). Registry is the canonical source of truth.
 
 3. **Composition coordination**: `validate_composition_ctx` is the single
    entry point for all composition health checks. No legacy fallbacks remain.

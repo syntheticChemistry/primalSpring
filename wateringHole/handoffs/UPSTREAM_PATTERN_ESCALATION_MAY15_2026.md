@@ -164,8 +164,8 @@ Patterns that springs in the river delta should absorb for glacial convergence.
    registration with single atomic RPC. Use `ctx.announce()` convenience API
    (primalSpring v0.9.26+) for automatic fallback.
 2. **Declare signal-tier membership** in announce payload
-3. **Validate against 451 methods** — ensure niche counts match
-   `config/capability_registry.toml`
+3. **Validate against 452 methods** — ensure niche counts match
+   `config/capability_registry.toml` (Wave 20: `primal.list` added)
 4. **Adopt `ctx.dispatch()` for composed workflows** — replace multi-call
    sequences with signal dispatch where an atomic signal exists. See
    `wateringHole/SIGNAL_ADOPTION_STANDARD.md` for migration guide.

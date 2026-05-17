@@ -30,10 +30,8 @@ struct RegistryEntry {
     methods: Vec<String>,
 }
 
-#[allow(clippy::expect_used)]
+#[expect(clippy::expect_used, reason = "embedded TOML is compile-time constant — parse failure is a build error")]
 fn parse_registry() -> Vec<RegistryEntry> {
-    // SAFETY: capability_registry.toml is compile-time embedded — parse cannot fail
-    // unless the file itself is malformed, which is caught at build time.
     let toml_str = include_str!("../../../../config/capability_registry.toml");
     let parsed: toml::Value = toml::from_str(toml_str).expect("embedded TOML must parse");
     let table = parsed.as_table().expect("embedded TOML must be a table");

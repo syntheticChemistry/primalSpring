@@ -38,6 +38,7 @@
 
 mod btsp;
 mod context;
+mod context_helpers;
 mod parity;
 mod routing;
 

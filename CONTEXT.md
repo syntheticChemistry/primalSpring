@@ -31,7 +31,7 @@ back upstream to primals and primalSpring.
   `validate_all` (legacy runner, transitioning → `primalspring validate`)
 - **experiments/** — 89 validation binaries covering 20 tracks
 - **graphs/** — 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first
-  composition (14 root + 9 profiles + 6 fragments + 8 spring validation + 5 multi-node +
+  composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
   2 cross-spring + 1 federation + 1 composition + 12 cell graphs + `signals/` tier)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
@@ -73,7 +73,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 20 (May 16, 2026) — 718+ `#[test]` markers across workspace,
+v0.9.25 Wave 20 (May 17, 2026) — 718+ `#[test]` markers across workspace,
 89 experiments (20 tracks), 80 deploy graphs + 14 atomic signal graphs,
 452 registered capability methods, 44-cell deployment matrix. Phase 32 atomic
 evolution: Tower = 3 primals (bearDog + songbird + skunkBat), Node = 6
@@ -211,10 +211,10 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data visualization), neuralSpring (agentic
 composition).
 
-## Glacial Checkpoint — Current and Remaining (May 16, 2026 PM)
+## Glacial Checkpoint — Current and Remaining (May 17, 2026)
 
 ### Completed
-- All 8 springs at Wave 17+ signal adoption (primal.announce, nest.store)
+- All 8 springs at Wave 20 — canonical capability.list envelope, registry 452, debt resolved
 - 452-method registry stable (primal.list added Wave 20), zero drift
 - 43 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
 - 9/10 foundation threads active (Thread 4 sole remaining)

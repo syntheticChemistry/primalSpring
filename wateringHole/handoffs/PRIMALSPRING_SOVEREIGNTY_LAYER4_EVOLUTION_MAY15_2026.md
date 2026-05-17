@@ -1,6 +1,6 @@
 # primalSpring Sovereignty Layer 4 Evolution — May 15, 2026
 
-> **Errata (May 16, 2026)**: Counts in this handoff reflect the state at publication. Current: **451** methods (was 441), **41** scenarios (was 35). Wave 17 added `dispatch()` + `announce()` APIs, signal dispatch parity, primal announce scenarios, and `SIGNAL_ADOPTION_STANDARD.md`.
+> **Errata (May 17, 2026)**: Counts in this handoff reflect the state at publication. Current: **452** methods (was 441→451→452), **43** scenarios (was 35→41→43). Wave 20 added `primal.list` canonical schema, `capability.list` envelope standardization, `s_schema_standard` + `s_nest_commit_live` scenarios, Thread 10 provenance wiring.
 
 ## Summary
 

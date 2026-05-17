@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Wave 17 — Neural API Signal Elevation, eukaryotic validation, atomic signals)
-**Last Updated**: May 16, 2026
+**Version**: 0.9.25 (Wave 20 — Schema Standardization, E2E Validation, `primal.list` canonical)
+**Last Updated**: May 17, 2026
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -51,8 +51,8 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
 - **Zero open upstream gaps** — 13/13 primals at zero debt, Waves 1-18 complete, zero panics in production
-- **451 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`, `fido2.*`, `primal.announce`)
-- **41 validation scenarios** (10 tracks, 3 tiers: Rust/Live/Both) with shared `validation::helpers`; sovereignty track validates membrane composition, routing parity, content sovereignty; signal dispatch parity + primal announce scenarios validate Neural API adoption
+- **452 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`, `fido2.*`, `primal.announce`, `primal.list`)
+- **43 validation scenarios** (10 tracks, 3 tiers: Rust 9 / Both 10 / Live 24) with shared `validation::helpers`; sovereignty track validates membrane composition, routing parity, content sovereignty; schema-standard + nest-commit-live scenarios validate Wave 20 canonical shapes; signal dispatch parity + primal announce scenarios validate Neural API adoption
 - **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
 - **RootPulse commit workflow** fully executable (6/6 phases)
@@ -65,7 +65,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | What | Where |
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
-| Capability registry | `config/capability_registry.toml` (451 methods, zero drift) |
+| Capability registry | `config/capability_registry.toml` (452 methods, zero drift) |
 | Routing config schema | `config/routing_config_reference.toml` (canonical membrane routing) |
 | Membrane deploy graph | `graphs/membrane/tower_membrane.toml` (VPS sovereignty boundary) |
 | Method gate CI | `tools/check_method_gate.sh` |
@@ -126,8 +126,8 @@ With biomeOS v3.57 live, each primal should:
    `primal.announce` RPC (see `PRIMAL_ANNOUNCE_PROTOCOL.md`).
 2. **Declare signal-tier membership**: Include `signal_tiers` in the announce
    payload so biomeOS can route atomic signals through the correct graphs.
-3. **Validate against 451 methods**: Ensure niche capability counts align
-   with `config/capability_registry.toml`.
+3. **Validate against 452 methods**: Ensure niche capability counts align
+   with `config/capability_registry.toml` (Wave 20: `primal.list` added).
 4. **Validate membrane compositions**: Downstream membrane deployments must conform
    to `config/routing_config_reference.toml` schema (backend types, trust tiers,
    telemetry). Use `graphs/membrane/tower_membrane.toml` as canonical VPS graph.
@@ -173,25 +173,28 @@ validated that upstream primals and springs should study and adopt:
 
 ---
 
-## River Delta (Springs) — Evolution Summary (May 15, 2026)
+## River Delta (Springs) — Evolution Summary (May 17, 2026)
 
-All 8 springs pulled to HEAD. Combined: **10,218 `#[test]` markers** across the
-delta. Every spring has completed deep debt sweeps and is at zero debt.
+All 8 springs pulled to HEAD. Combined: **9,413+ workspace tests** across the
+delta. Every spring has completed Wave 20 debt resolution and is at zero debt.
 
-| Spring | Tests | HEAD | Wave 20 Status |
-|--------|------:|------|----------------|
-| hotSpring | 596 | — | s_schema_standard, primal.list routed, dag_provenance, BootPipeline VBIOS, 18/21 scenarios |
-| healthSpring | 1,018 | V64r | Canonical envelope (count+capabilities), primal.list consumed, zero deep debt (V64s) |
-| wetSpring | 1,962+ | V171 | Canonical envelope, composition_health module (trio/NestGate/biomeOS probes), ipc_roundtrip tests |
-| neuralSpring | 910+ | V165 | s_schema_standard + s_nest_commit, execute_graph_live, store_science_result, node.compute dispatch, 9 scenarios |
-| ludoSpring | 956 | V75 | Canonical flat array + count, signal ack routing, Bartle/gamification/personality dynamics, 5 composition scenarios |
-| groundSpring | 1,123+ | V145 | Canonical envelope (primal+count), nest.commit dispatch, LTEE B6 BioBrick Burden (34/34), lithoSpore module 5 |
-| airSpring | 1,119+ | — | Canonical envelope + count, --provenance-dir, cross-sync >=452, foundation numerical parity |
+| Spring | Tests | HEAD | Post-Wave 20 Status |
+|--------|------:|------|---------------------|
+| hotSpring | 1,607 | latest | 3 new scenarios (cpu_gpu_parity, mixed_hardware, toadstool_dispatch), metalForge nucleus+biome_graph, fossilized RPC fixed, nest.commit adopted, 22 scenarios |
+| healthSpring | 1,018 | V64w | **39 new scenarios** (18→57!), dataset_checksums.toml, comprehensive upstream handoff, docs swept to 452 |
+| wetSpring | 1,962+ | V174 | 3 new validation binaries (hormesis, trophic cascade, colonization resistance), ci_cross_sync >=452, primal.list in CONSUMED, 5,957+ checks |
+| neuralSpring | 739 | V167 | s_gpu_parity, typed toadStool IPC, provenance_dispatch module split, PCIe P2P detection, all 6 stages GPU-dispatchable |
+| ludoSpring | 982 | V76 | Schell 20-lens RPGPT (1,012 LOC), metalForge parity (128 checks) + NUCLEUS (9 checks), validate_tower_atomic feature-gated, 452 synced |
+| groundSpring | 1,123+ | V145 | Graphs evolved to nest.commit primary, notebook L4, primal name role constants, docs sweep |
+| airSpring | 1,119+ | latest | 57 caps (6 ecology aliases), canonical envelope + count in mocks, --provenance-dir marked done, 174/174 scenarios, 65 control scripts |
 | primalSpring | 718+ | — | Wave 20 source: schema-standard + nest-commit-live scenarios, primal.list schema, Thread 10 wiring, LTEE tracker |
 
-**Convergence state (May 17, 2026)**: All 8 springs adopted Wave 20 canonical capability.list envelope (capabilities + count). Registry 452 methods. 6/7 delta springs have schema or nest.commit scenarios. 9 LTEE papers across 4 springs (B6 added). Primal-blocked gaps documented as upstream asks.
-All implement BYOB niche model, deploy graphs, and Tier 1/2 validation.
-Fragment-first graph composition adopted ecosystem-wide.
+**Convergence state (May 17, 2026)**: All 7 delta springs resolved their Wave 20
+debt (fossilized RPC, stale counts, threshold drift, feature gates, graph
+capabilities, notebook levels). Registry 452 methods. All springs have canonical
+`capability.list` envelope. 6/7 have schema or nest.commit scenarios.
+Primal-blocked gaps documented as upstream asks. Fragment-first graph composition
+adopted ecosystem-wide.
 
 ---
 
