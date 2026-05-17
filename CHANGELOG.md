@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 20: Ecosystem Status Assessment (2026-05-17 PM)
 
+### projectNUCLEUS Infrastructure Review (May 17 PM)
+- Removed stale `gardens/sporeGarden/` clone (duplicate projectNUCLEUS under wrong directory name)
+- Audited all `.env` files across ecosystem (28 files in 17+ repos) — all sensitive
+  files (squirrel API keys, JWT secrets) properly gitignored, no contamination risk
+- Created `infra/wateringHole/REPO_MEMBRANE_BOUNDARY.md` — full repo classification
+  (inner-only/dual-push/outer-only) with contamination risk matrix, Forgejo migration
+  path, and push policy enforcement guidance
+- Documented cellMembrane decision: recommend Forgejo-only when operationally stable,
+  GitHub private acceptable as transitional state
+- Added Validation Gate Matrix to `projectNUCLEUS/specs/EVOLUTION_GAPS.md` — maps 11
+  validation systems to 7 sovereignty phase transitions (H2-01→H2-20, H3-03→H3-04)
+  with pre-transition, shadow, cutover, and post-cutover gates for each
+- Added validation cadence table (continuous 15-min → daily → weekly → per-cutover)
+- Confirmed no Forgejo remote conflicts in any local clone (all origin → github.com)
+- Verified cellMembrane `.gitignore` covers all sensitive patterns (.age, .pem, id_*, .key, tokens)
+
 ### Post-Absorption Delta Spring Audit (May 17 PM)
 - All 7 delta springs absorbed lithoSpore audit blurb and self-evolved:
   - **wetSpring V177**: Exp381 breseq pipeline executing (Barrick 2009, 3/7 clones done),

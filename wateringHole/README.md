@@ -38,6 +38,15 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | **handoffs/WAVE20_DELTA_SPRING_EVOLUTION_MAY16_2026.md** | Delta spring teams | Wave 20 patterns to absorb: schema standardization, E2E validation, Thread 10 workload. |
 | **handoffs/GARDEN_EVOLUTION_BLURB_MAY16_2026.md** | Garden teams | Downstream garden evolution guidance: projectFOUNDATION, projectNUCLEUS, esotericWebb. |
 | **handoffs/PRIMAL_BLOCKED_ASKS_MAY16_2026.md** | Primal teams | Upstream blockers and gaps surfaced by delta spring audit. |
+| **handoffs/WAVE21_GARDEN_EVOLUTION_MAY17_2026.md** | Garden teams | Wave 21 patterns: projectNUCLEUS sovereignty + cellMembrane, projectFOUNDATION thread lineage, lithoSpore cross-tier parity. |
+
+### Ecosystem Standards (infra/wateringHole)
+
+| File | Audience | What It Covers |
+|------|----------|----------------|
+| **REPO_MEMBRANE_BOUNDARY.md** | All teams | Inner/outer membrane repo classification: Forgejo-only, dual-push, GitHub-only. Contamination risk matrix, .env audit, push policy. |
+| **SOVEREIGNTY_STANDARDS.md** | All teams | Calibrate → shadow → cutover protocol, bonding model, membrane channels, credential management, Forgejo as primary. |
+| **MEMBRANE_CHANNEL_ARCHITECTURE.md** | projectNUCLEUS | Three membrane channels (Signal/Relay/Surface), deployment models, crypto layers, fieldMouse classification. |
 
 ### Archived Handoffs (`handoffs/archive/`)
 

@@ -267,6 +267,13 @@ composition).
   CI with graph/schema/workload/benchmark gates, ag-guidestone proposal,
   FOUNDATION_VALIDATE elevation review targeting CompositionContext
 
+### Infrastructure Review (May 17, 2026)
+- Stale `gardens/sporeGarden/` clone removed (duplicate of projectNUCLEUS)
+- `.env` audit complete — all sensitive files gitignored, zero contamination risk
+- `REPO_MEMBRANE_BOUNDARY.md` published — inner/outer repo classification standard
+- Validation Gate Matrix in `EVOLUTION_GAPS.md` — 11 validation systems mapped to sovereignty transitions
+- cellMembrane: recommend Forgejo-only when operationally stable
+
 ### Remaining
 - **Thread 4** expression + targets (wetSpring/airSpring coordinate)
 - **Forgejo Actions CI** porting for projectNUCLEUS sovereignty
