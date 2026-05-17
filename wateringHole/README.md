@@ -35,6 +35,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | **INTERSTADIAL_FOSSILIZATION_HANDOFF.md** | Spring teams | Interstadial fossilization patterns: what to preserve, how to date, provenance READMEs. |
 | **handoffs/WAVE20_LITHOSPORE_AUDIT_SPRING_EVOLUTION_MAY17_2026.md** | Delta spring teams | lithoSpore audit absorption: stability tiers, degradation behavior, cross-tier parity, trio semantics, per-spring guidance (wetSpring highest priority). |
 | **handoffs/WAVE21_GARDEN_EVOLUTION_MAY17_2026.md** | Garden teams | Wave 21 patterns: projectNUCLEUS sovereignty + cellMembrane, projectFOUNDATION thread lineage, lithoSpore cross-tier parity. |
+| **handoffs/WAVE22_UPSTREAM_PRIMAL_EVOLUTION_MAY17_2026.md** | All primal teams | Wave 22 upstream hardening: deployment-valid checklist, per-primal action items, manifest drift, stadial pairing preview. |
 
 ### Ecosystem Standards (infra/wateringHole)
 

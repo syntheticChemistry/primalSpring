@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 20: Ecosystem Status Assessment (2026-05-17 PM)
 
+### Wave 22: Upstream Primal Evolution Blurb (May 17 PM)
+- Removed duplicate `primals/beardog/` clone (kept `bearDog/` as canonical)
+- Removed `primals/nestGate/` stub directory (kept `nestgate/` as full repo)
+- Created WAVE22_UPSTREAM_PRIMAL_EVOLUTION_MAY17_2026.md: per-primal hardening
+  checklist, manifest drift summary, stadial pairing preview
+- Identified version drift: nestGate (0.1.0 vs 4.7.0-dev), sweetGrass (0.7.27 vs 0.7.35),
+  biomeOS (0.1.0 vs v3.59), sourDough (0.3.0 vs 0.1.0)
+- Identified bearDog rustls/ring feature flag audit need
+
 ### wateringHole Audit, Fossilization, and Infrastructure Playbook (May 17 PM)
 - Fossilized 6 primalSpring handoffs to archive (DOWNSTREAM_INTERIM, WAVE20_DELTA,
   PRIMAL_BLOCKED_ASKS, CATHEDRAL_SPLIT, GARDEN_EVOLUTION, WAVE20_DEBT_RESOLUTION)

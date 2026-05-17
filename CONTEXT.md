@@ -284,6 +284,13 @@ composition).
 - Glacial status evolved: ECOSYSTEM_EVOLUTION_CYCLE v1.8.0, INTERSTADIAL_EXIT_CRITERIA
   expanded with outage simulation readiness and infrastructure sovereignty posture tables
 
+### Wave 22: Upstream Primal Evolution (May 17, 2026)
+- Removed duplicate `primals/beardog/` and `primals/nestGate/` stub
+- Audited all 13 primals + sourDough + bingoCube for deployment-valid standard compliance
+- Created upstream evolution blurb with per-primal action items and stadial pairing preview
+- Key findings: version drift in nestGate/sweetGrass/biomeOS/sourDough,
+  bearDog rustls/ring audit needed, 5 primals at ecobin A+ (not A++)
+
 ### Remaining
 - **Thread 4** expression + targets (wetSpring/airSpring coordinate)
 - **Forgejo Actions CI** porting for projectNUCLEUS sovereignty
