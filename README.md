@@ -53,7 +53,7 @@ primalSpring/
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)
-│   │   ├── validation/scenarios/  # 41 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
+│   │   ├── validation/scenarios/  # 43 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/
@@ -79,7 +79,7 @@ primalSpring/
 │   ├── bonding/                  # 5 bonding model graphs: ionic, metallic, OMS, defensive, albatross
 │   ├── chaos/                    # 2 chaos engineering: partition recovery, slow start
 │   ├── multi_node/               # 5 multi-node federation graphs
-│   ├── spring_validation/        # 8 files: template + manifest + nucleus_atomics + crypto_negative + gaming_niche + domain_contract_sweep + content_pipeline_smoke + compute_trio_smoke
+│   ├── spring_validation/        # 9 files: template + manifest + nucleus_atomics + crypto_negative + gaming_niche + domain_contract_sweep + content_pipeline_smoke + compute_trio_smoke + deploy_pipeline_smoke
 │   ├── spring_deploy/            # 2 files: template + manifest (5 springs parameterized)
 │   ├── downstream/               # 3 TOML + 2 docs: template + manifest + healthspring_enclave
 │   ├── cross_spring/             # 2 cross-spring validators
@@ -202,7 +202,7 @@ The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 
 ## Deployment Matrix
 
 primalSpring includes a deployment validation matrix (`config/deployment_matrix.toml`) that
-defines **43 test cells** across architectures (x86_64, aarch64), topologies, network presets,
+defines **44 test cells** across architectures (x86_64, aarch64), topologies, network presets,
 and transport modes. Each cell validates a specific primal composition under specific conditions.
 
 ```bash
@@ -422,7 +422,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of existing barraCuda WGSL shaders (826 kernels: matmul, attention, FFT, df64) compiled by coralReef and dispatched by toadStool.
 - **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
 - **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — modeling end-to-end data flow through primal compositions.
-- **13/13 critical experiments ALL PASS** — 89 total experiments across 19 tracks.
+- **13/13 critical experiments ALL PASS** — 89 total experiments across 20 tracks.
 - **46 cross-architecture binaries** (6 target triples, Tier 1 39/39) — genomeBin v5.1, zero C dependencies.
 
 ## Fragment-First Graph Consolidation (April 16, 2026)
@@ -431,7 +431,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 708 tests (666 lib + 42 experiment), 57 ignored.
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 744 tests (716 lib + experiment + integration), 57 ignored.
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 
@@ -476,7 +476,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 | C6: Proprioception (petalTongue) | **5/5 PASS** | Subscribe, apply, poll, showing |
 | C7: Full Interactive | **10/10 PASS** | Full cross-subsystem: session→render→export, game science, Squirrel health, NestGate |
 
-**43/44 (98%)** — up from 93%. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1-12 complete).
+**43/44 (98%)** — up from 93%. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1-20 complete).
 
 ## Live Integration Status (May 14, 2026)
 
@@ -507,7 +507,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `wateringHole/README.md` — Outward-facing guidance index
 - `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` — `primal.announce` atomic self-registration wire format
 - `ARCHITECTURE.md` — UniBin cell model, two-tier validation, organelle map
-- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1-14, 13/13 zero debt)
+- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1-20, 13/13 zero debt)
 - `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` — Full ecosystem audit with Wave 12 addendum
 - `docs/CROSS_SPRING_PARITY_SCORECARD.md` — Cross-spring parity scorecard
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role
@@ -549,7 +549,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `scripts/pixel_cross_arch_lab.sh` | Cross-arch validation lab for Pixel/Android targets |
 | `scripts/lan_covalent_lab.sh` | LAN covalent bonding lab for multi-node federation |
 
-**`tools/`** (24 files) — operational tooling for NUCLEUS composition, method auditing, and desktop:
+**`tools/`** (25 files) — operational tooling for NUCLEUS composition, method auditing, and desktop:
 
 | Tool | Purpose |
 |------|---------|
@@ -577,6 +577,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `tools/push_demo_scene.sh` | Push a demo scene to a running petalTongue instance |
 | `tools/godot_bridge.sh` | Launch Godot-to-primal IPC bridge process |
 | `tools/godot_bridge.gd` | GDScript client for Godot-to-primal IPC bridge |
+| `tools/thread10_provenance.sh` | Runner for `primalspring validate --provenance-dir` (Thread 10 output) |
 
 ---
 

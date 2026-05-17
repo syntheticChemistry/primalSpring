@@ -443,7 +443,7 @@ Downstream products surface patterns that need upstream adoption. Full
 inventory with primal blockers (UB-1..4), canonicalization targets, spring
 adoption actions, and glacial horizon predictions:
 
-**See**: `wateringHole/handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md`
+**See**: `wateringHole/handoffs/archive/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md`
 
 Highest-leverage for glacial push (UB-1 through UB-4 all SHIPPED):
 - **lithoSpore TURN wiring** — wire `songbird-turn-client` into `litho_core` for geo-delocalized validation

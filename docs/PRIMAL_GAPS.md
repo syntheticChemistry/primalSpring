@@ -15,9 +15,9 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ---
 
-## Ecosystem Status (May 15, 2026)
+## Ecosystem Status (May 17, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 43 scenarios (10 tracks, 3 tiers), 452 methods, 718+ tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. Schema standardization (Wave 20): `primal.list` + `capability.list` canonical shapes, `s_schema_standard` + `s_nest_commit_live` scenarios. All springs pulled to HEAD: 9,413+ total tests across 8 springs.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 43 scenarios (10 tracks, 3 tiers), 452 methods, 744 tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. Schema standardization (Wave 20): `primal.list` + `capability.list` canonical shapes, `s_schema_standard` + `s_nest_commit_live` scenarios. All springs pulled to HEAD: 9,413+ total tests across 8 springs.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -39,6 +39,41 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ---
 
+## Debt Exposed by lithoSpore Downstream Audit (May 17, 2026)
+
+lithoSpore is the ecosystem's first deployed consumer — a USB artifact with 75/75
+science checks, 117 tests, and Tier 3 JSON-RPC provenance wiring. Their audit
+surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream action.
+
+### Resolved (primalSpring local)
+
+| # | Request | Resolution |
+|---|---------|------------|
+| R1 | Document degradation behavior | Degradation table in `CompositionContext` module docs |
+| R2 | Freeze/version method names | `stability` tiers in `capability_registry.toml` |
+| R3 | Trio transaction semantics | Partial completion rules in `PROVENANCE_TRIO_INTEGRATION_GUIDE.md` |
+| R4 | UDS socket ownership | Ownership table in `CAPABILITY_BASED_DISCOVERY_STANDARD.md` |
+
+### Upstream-Blocked (awaiting primal teams)
+
+| # | Request | Owner | Priority |
+|---|---------|-------|----------|
+| R5 | `nest.store` signal dispatch | biomeOS | MEDIUM |
+| R6 | Ferment transcript braids | wetSpring | HIGH |
+| R7 | `spore.instantiate` atomic VM provisioning | biomeOS | LOW |
+| R8 | `capability.list` complete inventory | All primals | LOW (mostly done Wave 20) |
+
+### Downstream-Blocked (awaiting spring teams)
+
+| Gap | Spring | What | Priority |
+|-----|--------|------|----------|
+| Ferment braids: Tenaillon 2016 | wetSpring | breseq on 264 genomes, trio provenance, braid handoff to lithoSpore | HIGH |
+| Ferment braids: Barrick 2009 | wetSpring | breseq on 19 genomes, trio provenance, braid handoff to lithoSpore | HIGH |
+| Cross-tier parity adoption | all springs with dual-language validation | `litho parity` pattern — Python vs Rust numerical agreement | MEDIUM |
+| Thread 4 expression seeding | wetSpring / airSpring | Environmental genomics targets for projectFOUNDATION | MEDIUM |
+
+---
+
 ## Upstream Gap Reconciliation (projectNUCLEUS May 9, 2026)
 
 Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
@@ -50,7 +85,7 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | DF-2 | toadStool `TOADSTOOL_AUTH_MODE` env | toadStool S233 — `auth.mode` env + `eprintln` → `tracing` |
 | DF-3 | songbird/squirrel silent on `auth.mode` TCP | songbird — `CallerContext` wired (TCP transport-aware) |
 | U5 | sweetGrass port 39085 vs 9850 | sweetGrass v0.7.32 — port 9850 canonical |
-| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (418 total, zero drift) |
+| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (452 total, zero drift) |
 | U1 | CHECKSUMS stale after Phase 59 refactoring | **RESOLVED** — regenerated with 25 tracked files (UniBin, certification, scenarios, registry) |
 | U2 | 5 deploy graphs missing `by_capability` | **FALSE POSITIVE** — only manifests (parameter tables, not node-bearing graphs) lack field; all actual `[[graph.nodes]]` graphs have `by_capability` |
 | U3 | 8 profile graphs missing `bonding_policy` | **RESOLVED** — 9/9 profile graphs already have `bonding_policy` |
@@ -413,7 +448,7 @@ atomic signal graphs, eukaryotic validation scenarios with shared helpers
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 452 methods, 718+ tests, zero local debt. All waves complete:
+**Current**: 452 methods, 744 tests, zero local debt. All waves complete:
 - Wave 8: Compute trio composition — 9/9 DONE
 - Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
 - Wave 10: Phase 32 atomic model — all fragments v3.0.0

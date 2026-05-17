@@ -28,18 +28,22 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | **PRIMAL_ANNOUNCE_PROTOCOL.md** | All primal teams | `primal.announce` atomic self-registration: wire format, field reference, registration order, signal-tier membership, backward compatibility. Replaces separate `lifecycle.register` + `capability.register` + `method.register` calls (biomeOS v3.57+). |
 | **SIGNAL_ADOPTION_STANDARD.md** | All spring teams | Neural API composition collapse migration guide: `ctx.dispatch()` and `ctx.announce()` APIs, signal inventory (14 signals), spring archetype examples (compute/provenance/content-heavy), fallback behavior, validation coverage. |
 
-### Living Handoffs
+### Living Handoffs (last 48 hours)
 
 | File | Audience | What It Covers |
 |------|----------|----------------|
 | **INTERSTADIAL_FOSSILIZATION_HANDOFF.md** | Spring teams | Interstadial fossilization patterns: what to preserve, how to date, provenance READMEs. |
-| **handoffs/PRIMALSPRING_SOVEREIGNTY_LAYER4_EVOLUTION_MAY15_2026.md** | All teams | Sovereignty track (3 scenarios), membrane deploy graph, routing config schema, 4-layer model. |
-| **handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md** | Primal teams + springs | Downstream-evolved patterns needing upstream adoption: primal blockers (UB-1..4), canonicalization targets, spring actions, glacial horizon. |
+| **handoffs/WAVE20_DEBT_RESOLUTION_MAY17_2026.md** | Delta spring teams | Wave 20 debt resolution: per-spring fixes for canonical envelope, nest.commit, primal.list adoption. |
+| **handoffs/WAVE20_DELTA_SPRING_EVOLUTION_MAY16_2026.md** | Delta spring teams | Wave 20 patterns to absorb: schema standardization, E2E validation, Thread 10 workload. |
+| **handoffs/GARDEN_EVOLUTION_BLURB_MAY16_2026.md** | Garden teams | Downstream garden evolution guidance: projectFOUNDATION, projectNUCLEUS, esotericWebb. |
+| **handoffs/PRIMAL_BLOCKED_ASKS_MAY16_2026.md** | Primal teams | Upstream blockers and gaps surfaced by delta spring audit. |
 
 ### Archived Handoffs (`handoffs/archive/`)
 
 | File | Date | Summary |
 |------|------|---------|
+| `PRIMALSPRING_SOVEREIGNTY_LAYER4_EVOLUTION_MAY15_2026.md` | May 15 | Sovereignty track (3 scenarios), membrane deploy graph, routing config schema |
+| `UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md` | May 15 | Downstream-evolved patterns needing upstream adoption |
 | `PRIMALSPRING_V0925_EVOLUTION_HANDOFF_MAY09_2026.md` | May 9 | Primal consumption, upstream debt, per-spring targets |
 | `PRIMALSPRING_V0925_UNIBIN_EUKARYOTIC_HANDOFF_MAY09_2026.md` | May 9 | UniBin cell model, CLI surface, two-tier validation |
 | `PHASE60_COMPLETION_HANDOFF_MAY09_2026.md` | May 9 | Phase 60 completion, 13/13 primals clean |
@@ -138,7 +142,7 @@ With biomeOS v3.57 live, each primal should:
 ### Downstream-Surfaced Primal Debt (May 15, 2026)
 
 Patterns evolved by CATHEDRAL and projectNUCLEUS that require specific
-primal team action. Full details: `handoffs/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md`.
+primal team action. Full details: `handoffs/archive/UPSTREAM_PATTERN_ESCALATION_MAY15_2026.md`.
 
 | Primal | What | Priority | Downstream Requester |
 |--------|------|----------|---------------------|
