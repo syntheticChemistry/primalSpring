@@ -178,18 +178,18 @@ validated that upstream primals and springs should study and adopt:
 All 8 springs pulled to HEAD. Combined: **10,218 `#[test]` markers** across the
 delta. Every spring has completed deep debt sweeps and is at zero debt.
 
-| Spring | Tests | HEAD | Recent Evolution |
-|--------|------:|------|------------------|
-| wetSpring | 2,064 | V168 | Live NUCLEUS guideStone 30/31, barraCuda v0.4.0 absorbed, coralReef niche |
-| neuralSpring | 1,556 | S206 | Compute trio wave, skunkBat triple-first Tower, inference pipeline |
-| airSpring | 1,468 | — | Tower triple-first, atomic deployment handoff, AG-005 inference resolved |
-| groundSpring | 1,286 | V142 | Compute trio wave, shader.compile.gemm, 3 upstream gaps |
-| hotSpring | 1,148 | — | Sovereign dispatch validated on Titan V, CPUCTL_ALIAS breakthrough, Blackwell gaps |
-| healthSpring | 1,019 | V64n | Tower atomic, deploy graph canonicalization, barraCuda v0.4.0 |
-| ludoSpring | 910 | V72 | health.version + health.drain, 418-method registry alignment |
-| primalSpring | 718+ | — | Wave 20: schema-standard + nest-commit-live scenarios, primal.list canonical schema, Thread 10 provenance wiring, LTEE tracker |
+| Spring | Tests | HEAD | Wave 20 Status |
+|--------|------:|------|----------------|
+| hotSpring | 596 | — | s_schema_standard, primal.list routed, dag_provenance, BootPipeline VBIOS, 18/21 scenarios |
+| healthSpring | 1,018 | V64r | Canonical envelope (count+capabilities), primal.list consumed, zero deep debt (V64s) |
+| wetSpring | 1,962+ | V171 | Canonical envelope, composition_health module (trio/NestGate/biomeOS probes), ipc_roundtrip tests |
+| neuralSpring | 910+ | V165 | s_schema_standard + s_nest_commit, execute_graph_live, store_science_result, node.compute dispatch, 9 scenarios |
+| ludoSpring | 956 | V75 | Canonical flat array + count, signal ack routing, Bartle/gamification/personality dynamics, 5 composition scenarios |
+| groundSpring | 1,123+ | V145 | Canonical envelope (primal+count), nest.commit dispatch, LTEE B6 BioBrick Burden (34/34), lithoSpore module 5 |
+| airSpring | 1,119+ | — | Canonical envelope + count, --provenance-dir, cross-sync >=452, foundation numerical parity |
+| primalSpring | 718+ | — | Wave 20 source: schema-standard + nest-commit-live scenarios, primal.list schema, Thread 10 wiring, LTEE tracker |
 
-**Convergence state**: All springs CI-validated against canonical 452 methods. 43 scenarios across 10 tracks. Wave 20: schema standardization (primal.list + capability.list), nest.commit E2E validation, primal-blocked asks documented, LTEE paper queue tracked.
+**Convergence state (May 17, 2026)**: All 8 springs adopted Wave 20 canonical capability.list envelope (capabilities + count). Registry 452 methods. 6/7 delta springs have schema or nest.commit scenarios. 9 LTEE papers across 4 springs (B6 added). Primal-blocked gaps documented as upstream asks.
 All implement BYOB niche model, deploy graphs, and Tier 1/2 validation.
 Fragment-first graph composition adopted ecosystem-wide.
 

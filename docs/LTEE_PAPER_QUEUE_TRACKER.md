@@ -22,18 +22,23 @@ as Thread 5 evidence.
 | B2 | Anderson/Wiser (fitness — independent) | hotSpring | N/A | Tier 1+2 | YES | Module 7: ltee-anderson | **COMPLETE** |
 | B5 | Leonard 2024 (symbiont PK/PD) | healthSpring | 8/8 | 8/8 | YES | ltee-symbiont-pk | **COMPLETE** |
 | B1-ML | Mutation accumulation (ML surrogates) | neuralSpring | 8/8 | Binary DONE | YES | ML surrogates | **COMPLETE** (Py+Rust) |
+| B6 | BioBrick Burden (Nat Comms 2024) | groundSpring | DONE | 34/34 | YES | Module 5: ltee-biobrick | **COMPLETE** (V145) |
 | B7 | Tenaillon 2016 (264 genomes) | wetSpring | Tier 2 | 27/27 PASS | YES | Module 6: ltee-breseq | **Tier 2 COMPLETE** |
 
 ## Per-Spring Progress Summary
 
-### groundSpring — B1, B2, B3, B4 (4 papers, ALL COMPLETE)
+### groundSpring — B1, B2, B3, B4, B6 (5 papers, ALL COMPLETE)
 
-The anchor spring for LTEE validation. All four reproductions are complete with
-both Python and Rust implementations passing. lithoSpore modules 1-4 are wired
+The anchor spring for LTEE validation. All five reproductions are complete with
+both Python and Rust implementations passing. lithoSpore modules 1-5 are wired
 and passing in VM-validated sporePrint CI. groundSpring also contributed the
 `expected_values.json` convention adopted by all other springs.
 
-**Next**: No LTEE work remaining. Results feed lithoSpore and Thread 5.
+**B6 (new — V145)**: BioBrick metabolic burden (Nat Comms 2024) — 301 plasmid
+log-normal fit, AIC/BIC, jackknife, KS test. Anderson disorder analogy
+(Thouless/localization length). 34/34 checks passing.
+
+**Next**: B7-B9 queued. Results feed lithoSpore modules 1-5 and Thread 5.
 
 ### hotSpring — B2 Anderson (1 paper, COMPLETE)
 
@@ -70,11 +75,11 @@ Tier 3 provenance validation is pending (requires provenance trio — see
 
 ## Aggregate Metrics
 
-- **8 papers** reproduced across **4 springs**
-- **7 lithoSpore modules** wired and passing (75/75 Tier 2 checks)
+- **9 papers** reproduced across **4 springs**
+- **8 lithoSpore modules** wired and passing (Module 5 ltee-biobrick added V145)
 - **1 module candidate** pending promotion (healthSpring B5)
 - **All `expected_values.json` files** present and BLAKE3-anchored
-- **Thread 5** fully seeded in projectFOUNDATION with 12 data sources and 18 targets
+- **Thread 5** fully seeded in projectFOUNDATION with 12 data sources and 18+ targets
 
 ## Data Flow
 
