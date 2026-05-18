@@ -19,6 +19,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Added upstream asks: R9 (biomeOS cleanup), R10 (songbird cleanup), R11 (PID files),
   R12 (plasmidBin doctor.sh)
 - Upstream blurb: `STALE_SOCKET_CLEANUP_UPSTREAM_MAY18_2026.md`
+- plasmidBin `doctor.sh`: stale socket detection section added (fuser + python3 fallback),
+  scans `$XDG_RUNTIME_DIR/biomeos/` and `/tmp/biomeos/`, reports live/stale counts,
+  JSON output includes `sockets_live`/`sockets_stale` — R12 RESOLVED locally
 - 39 IPC tests pass (16 discover + 11 capability + 12 neural_bridge)
 
 ### Next Wave Prep + wateringHole Fossilization Pass (May 18 AM)

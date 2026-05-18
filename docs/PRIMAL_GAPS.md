@@ -65,13 +65,14 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 | R9 | Stale socket cleanup on startup | biomeOS | MEDIUM |
 | R10 | Stale socket cleanup on startup | songbird | LOW |
 | R11 | PID file alongside socket | All primals | LOW |
-| R12 | `doctor.sh` stale socket checker | plasmidBin | LOW |
+| ~~R12~~ | ~~`doctor.sh` stale socket checker~~ | plasmidBin | ~~LOW~~ **RESOLVED** — stale socket detection section added to `doctor.sh` (fuser + python3 fallback) |
 
 ### Resolved Locally (primalSpring — May 18, 2026)
 
 | Issue | Resolution |
 |-------|------------|
 | Stale socket discovery (wetSpring report) | `socket_is_alive()` connect-probe replaces `path.exists()` in all discovery paths (`discover_primal`, `discover_by_capability`, `NeuralBridge::discover`). Dead socket negative cache (`DEAD_SOCKET_CACHE`) prevents repeated ~100ms probe costs. CAPABILITY_BASED_DISCOVERY_STANDARD updated to v1.3.0 (§5-6). |
+| plasmidBin `doctor.sh` stale socket check (R12) | Stale socket detection section added — scans `$XDG_RUNTIME_DIR/biomeos/` and `/tmp/biomeos/` for `.sock` files without listeners. Uses `fuser` with `python3` connect-probe fallback. Reports live/stale counts, provides cleanup tip. JSON output includes `sockets_live`/`sockets_stale`. |
 
 ### Downstream-Blocked (awaiting spring teams)
 
