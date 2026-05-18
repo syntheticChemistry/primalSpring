@@ -1,10 +1,11 @@
 # Wave 22: Stadial Gate — All Upstream Primals
 
-**Date**: May 17, 2026 (PM)
+**Date**: May 17, 2026 (PM) — **Updated May 18, 2026 AM: 13/13 primals absorbed**
 **From**: primalSpring (coordination spring)
 **To**: All 13 primal teams + sourDough + bingoCube
 **Registry**: 456 methods (canonical, `capability_registry.toml`)
 **Gate**: Interstadial exit CLEARED (9.5/10). Stadial transition ready.
+**Absorption**: **13/13 primals responded and evolved** — plasmidBin manifest v5.5.0
 
 ---
 

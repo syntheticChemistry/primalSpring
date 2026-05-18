@@ -298,7 +298,11 @@ composition).
   - All primals now: stability tiers, primal.announce, btsp.capabilities, canonical envelope
   - bearDog Wave 105: ring/rustls policy reconciled, ACME design doc authored
   - songbird Wave 207-208: btsp.capabilities, primal.announce, aws-lc-sys banned, test splits
-  - Remaining: biomeOS final push pending, sourDough version drift, 2 composition gaps open
+  - biomeOS v3.61: composition.status pipelines, enrichment module, NucleusMode::Full,
+    braid signals fully wired, spore.instantiate route
+  - plasmidBin manifest v5.5.0: toadStool 0.2.0, coralReef 0.2.0 (A++), sweetGrass 0.7.36
+  - **All 13/13 primals stadial-gate absorbed**
+  - Remaining: sourDough version drift, 2 composition gaps (GPU API alignment, cross-gate dispatch)
 
 ### Remaining
 - **Thread 4** expression + targets (wetSpring/airSpring coordinate)

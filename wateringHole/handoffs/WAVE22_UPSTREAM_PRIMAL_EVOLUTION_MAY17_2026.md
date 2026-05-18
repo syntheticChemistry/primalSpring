@@ -265,9 +265,9 @@ transcript braids), projectFOUNDATION (attribution chain)
 
 ---
 
-### biomeOS (orchestrator) — v0.1.0 (manifest) / v3.59 (README)
+### biomeOS (orchestrator) — v0.1.0 (manifest) / v3.61 (README)
 
-**Status**: Production Ready. 40 registered methods (38+2 from wetSpring ask).
+**Status**: Production Ready. 40 registered methods (38+2 from wetSpring ask). **STADIAL ABSORBED.**
 
 **Action items**:
 - [ ] **UPSTREAM ASK**: Register `braid.partial_update` and `braid.complete`
