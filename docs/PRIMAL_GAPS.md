@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 17, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 43 scenarios (10 tracks, 3 tiers), 452 methods, 744 tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. Schema standardization (Wave 20): `primal.list` + `capability.list` canonical shapes, `s_schema_standard` + `s_nest_commit_live` scenarios. All springs pulled to HEAD: 9,413+ total tests across 8 springs.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 43 scenarios (10 tracks, 3 tiers), 456 methods, 744 tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. Schema standardization (Wave 20): `primal.list` + `capability.list` canonical shapes, `s_schema_standard` + `s_nest_commit_live` scenarios. All springs pulled to HEAD: 9,413+ total tests across 8 springs.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — eprintln→tracing in 5 driver files (Iter 95) |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-20 complete. 43 scenarios (10 tracks), 452 methods. Zero panics in production. Wave 20: `primal.list` canonical schema, `capability.list` standardization, `s_schema_standard` + `s_nest_commit_live` scenarios, Thread 10 provenance wiring. All delta springs resolved Wave 20 debt (May 17). Dark Forest Glacial Gate: 5-pillar security invariant standard. Sovereignty track: membrane composition + parity + content sovereignty. Neural API Signal Elevation. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
+**13/13 at zero debt. Waves 1-20 complete. 43 scenarios (10 tracks), 456 methods. Zero panics in production. Wave 20: `primal.list` canonical schema, `capability.list` standardization, `s_schema_standard` + `s_nest_commit_live` scenarios, Thread 10 provenance wiring. All delta springs resolved Wave 20 debt (May 17). Dark Forest Glacial Gate: 5-pillar security invariant standard. Sovereignty track: membrane composition + parity + content sovereignty. Neural API Signal Elevation. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
 
 ---
 
@@ -85,7 +85,7 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | DF-2 | toadStool `TOADSTOOL_AUTH_MODE` env | toadStool S233 — `auth.mode` env + `eprintln` → `tracing` |
 | DF-3 | songbird/squirrel silent on `auth.mode` TCP | songbird — `CallerContext` wired (TCP transport-aware) |
 | U5 | sweetGrass port 39085 vs 9850 | sweetGrass v0.7.32 — port 9850 canonical |
-| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (452 total, zero drift) |
+| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (456 total, zero drift) |
 | U1 | CHECKSUMS stale after Phase 59 refactoring | **RESOLVED** — regenerated with 25 tracked files (UniBin, certification, scenarios, registry) |
 | U2 | 5 deploy graphs missing `by_capability` | **FALSE POSITIVE** — only manifests (parameter tables, not node-bearing graphs) lack field; all actual `[[graph.nodes]]` graphs have `by_capability` |
 | U3 | 8 profile graphs missing `bonding_policy` | **RESOLVED** — 9/9 profile graphs already have `bonding_policy` |
@@ -405,7 +405,7 @@ L1 (Primals — sentinel-stadial)
   │ validated against
   ▼
 L2 (primalSpring — stadial gate for primals)
-  │ 452 registry, MethodGate enforcement, deploy graph coherence,
+  │ 456 registry, MethodGate enforcement, deploy graph coherence,
   │ guidestone certification, CompositionContext contracts
   │
   │ patterns flow downstream
@@ -441,14 +441,14 @@ See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 ### Layer 2: primalSpring — The Stadial Gate
 
 **Owner**: primalSpring team
-**Scope**: Canonical capability registry (452 methods), deploy graph library,
+**Scope**: Canonical capability registry (456 methods), deploy graph library,
 composition validation, gap registry, `CompositionContext` API, two-tier
 validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification,
 atomic signal graphs, eukaryotic validation scenarios with shared helpers
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 452 methods, 744 tests, zero local debt. All waves complete:
+**Current**: 456 methods, 744 tests, zero local debt. All waves complete:
 - Wave 8: Compute trio composition — 9/9 DONE
 - Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
 - Wave 10: Phase 32 atomic model — all fragments v3.0.0
@@ -551,7 +551,7 @@ L1 (Primals — sentinels, stadial-first)
   │ validated against ↓
   │
 L2 (primalSpring — stadial gate)
-  │ 452 registry, MethodGate, deploy graphs, guidestone cert
+  │ 456 registry, MethodGate, deploy graphs, guidestone cert
   │
   │ patterns flow downstream ↓
   │

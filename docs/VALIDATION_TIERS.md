@@ -16,7 +16,7 @@ Rust library interactions — no running primals required.
 
 - Deploy graph TOML parsing and schema validation
 - Bonding policy rule checks (`BondType`, `TrustModel`)
-- Capability registry string matching against canonical 452 methods
+- Capability registry string matching against canonical 456 methods
 - BTSP protocol frame serialization round-trips
 - Tolerance constant assertions (documented thresholds)
 - `ValidationResult` harness structural tests

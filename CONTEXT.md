@@ -290,6 +290,11 @@ composition).
 - Created upstream evolution blurb with per-primal action items and stadial pairing preview
 - Key findings: version drift in nestGate/sweetGrass/biomeOS/sourDough,
   bearDog rustls/ring audit needed, 5 primals at ecobin A+ (not A++)
+- Ingested wetSpring sovereign pipeline (Exp382): live trio composition replacing
+  hand-wired provenance. First real-science pipeline using primal IPC for provenance
+- Registered 4 new methods (452→456): `dag.partial_dehydrate`, `braid.partial_update`,
+  `braid.complete`, `compute.fan_out` — from downstream-validated upstream asks
+- Updated Wave 22 blurb with concrete upstream ask references per primal team
 
 ### Remaining
 - **Thread 4** expression + targets (wetSpring/airSpring coordinate)

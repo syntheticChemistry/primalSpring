@@ -3,7 +3,7 @@
 **Date**: May 17, 2026 PM
 **From**: primalSpring (coordination spring)
 **To**: All 13 primal teams + sourDough + bingoCube
-**Status**: All primals LIVE, 452-method registry, 13/13 BTSP AEAD, Dark Forest Gate PASS
+**Status**: All primals LIVE, 456-method registry (452+4 from wetSpring asks), 13/13 BTSP AEAD, Dark Forest Gate PASS
 
 ---
 
@@ -11,13 +11,30 @@
 
 The interstadial exit gate is cleared (9.5/10). Delta springs are at zero
 Wave 20 debt. Downstream gardens have absorbed Wave 21 patterns. wetSpring
-is executing the Barrick 2009 E2E study on southGate.
+is executing the Barrick 2009 E2E study on southGate and has elevated its
+sovereign pipeline to live primal composition via the provenance trio.
 
 **This wave focuses upstream**: hardening all 13 primals to full deployment
 standard, resolving version drift between repos and plasmidBin manifest,
 and preparing each primal for the stadial shadow runs where they will
 need to operate under real external pressure — including pairing with
 downstream teams.
+
+### wetSpring Upstream Asks (May 17 PM)
+
+wetSpring's sovereign resequencing pipeline (Exp382) has been elevated from
+hand-wired provenance to live trio composition. Three concrete upstream asks
+have been filed as handoff docs in `infra/wateringHole/handoffs/`:
+
+| Ask | Team | Method | Handoff |
+|-----|------|--------|---------|
+| Partial Merkle root of sealed DAG nodes without closing session | **rhizoCrypt** | `dag.partial_dehydrate` | `WETSPRING_UPSTREAM_RHIZOCRYPT_PARTIAL_DEHYDRATE_MAY17_2026.md` |
+| Braid update/complete signals via biomeOS + RootPulse propagation | **biomeOS** | `braid.partial_update`, `braid.complete` | `WETSPRING_UPSTREAM_BIOMEOS_BRAID_SIGNAL_MAY17_2026.md` |
+| DAG-aware work-unit dispatch for clone-level parallelism | **toadStool** | `compute.fan_out` | `WETSPRING_UPSTREAM_TOADSTOOL_COMPUTE_FANOUT_MAY17_2026.md` |
+
+All three degrade gracefully — science is never gated behind provenance.
+These methods have been registered in `capability_registry.toml` as
+`stability = "evolving"`. See the per-primal guidance below for integration.
 
 ---
 
@@ -125,17 +142,19 @@ all primals (BTSP negotiation)
 
 ### toadStool (compute dispatch) — v0.1.0
 
-**Status**: Active evolution. 22 registered methods. Most recently synced.
+**Status**: Active evolution. 23 registered methods (22+1 from wetSpring ask).
 
 **Action items**:
+- [ ] **UPSTREAM ASK**: Implement `compute.fan_out` — DAG-aware dispatch of
+      clone-level work units to available substrate. See
+      `WETSPRING_UPSTREAM_TOADSTOOL_COMPUTE_FANOUT_MAY17_2026.md` for
+      proposed wire format and substrate routing table
 - [ ] Version: manifest `0.1.0` — consider tagging current state as
       `0.2.0` given S262 phase evolution
 - [ ] Review `NEXT_STEPS.md` — explicitly calls out remaining gaps
-- [ ] Stadial prep: toadStool dispatches compute across gates. DAG
-      checkpoint awareness from wetSpring gen4 pipeline applies here
 
-**Downstream pairing**: wetSpring (compute-aware scheduling), hotSpring
-(GPU dispatch), coralReef (shader compilation)
+**Downstream pairing**: wetSpring (264-clone parallelism for Tenaillon 2016),
+hotSpring (GPU dispatch), coralReef (shader compilation)
 
 ---
 
@@ -192,17 +211,19 @@ parity), coralReef (compiler pipeline)
 
 ### rhizoCrypt (working memory / DAG) — v0.14.0
 
-**Status**: Phase 2 development. 17 registered methods.
+**Status**: Phase 2 development. 18 registered methods (17+1 from wetSpring ask).
 
 **Action items**:
+- [ ] **UPSTREAM ASK**: Implement `dag.partial_dehydrate` — Merkle root of
+      sealed-only nodes without closing the session. See
+      `WETSPRING_UPSTREAM_RHIZOCRYPT_PARTIAL_DEHYDRATE_MAY17_2026.md` for
+      proposed wire format and expected response
 - [ ] Version: manifest `0.14.0`, README `0.14.0-dev` — minor `-dev` suffix
       drift, reconcile on next tag
 - [ ] ecobin_grade `A+` — review gap to `A++`
-- [ ] Critical path for wetSpring DAG checkpoint pattern — ensure
-      `dag.*` methods cover checkpoint/resume semantics
 
-**Downstream pairing**: wetSpring (DAG checkpointing), lithoSpore
-(provenance DAG), projectFOUNDATION (thread lineage)
+**Downstream pairing**: wetSpring (DAG checkpointing, partial braids),
+lithoSpore (provenance DAG), projectFOUNDATION (thread lineage)
 
 ---
 
@@ -241,9 +262,13 @@ transcript braids), projectFOUNDATION (attribution chain)
 
 ### biomeOS (orchestrator) — v0.1.0 (manifest) / v3.59 (README)
 
-**Status**: Production Ready. 38 registered methods. Neural API owner.
+**Status**: Production Ready. 40 registered methods (38+2 from wetSpring ask).
 
 **Action items**:
+- [ ] **UPSTREAM ASK**: Register `braid.partial_update` and `braid.complete`
+      as dispatchable signals. When a DAG node seals, wetSpring fires
+      `braid.partial_update`; RootPulse propagates braids to lithoSpore.
+      See `WETSPRING_UPSTREAM_BIOMEOS_BRAID_SIGNAL_MAY17_2026.md`
 - [ ] **Version schemes**: manifest uses `0.1.0` (workspace meta), README
       uses `v3.59` (release train). Document the dual scheme explicitly in
       README or align manifest to release train version
@@ -251,11 +276,10 @@ transcript braids), projectFOUNDATION (attribution chain)
       stadial-phase items
 - [ ] `is_orchestrator = true` in manifest — unique flag, verify biomeOS
       is the only primal with it
-- [ ] Stadial prep: biomeOS orchestrates all deploy graphs. Shadow runs
-      will exercise graph execution under constraint
 
 **Downstream pairing**: all springs (graph execution), all gardens
-(composition deployment), projectNUCLEUS (sovereignty orchestration)
+(composition deployment), projectNUCLEUS (sovereignty orchestration),
+wetSpring (braid signal propagation via RootPulse)
 
 ---
 

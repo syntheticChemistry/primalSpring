@@ -230,7 +230,7 @@ You're the furthest along — your patterns drove the spring evolution. Focus on
 3. **Coordinate with cellMembrane** on geo-delocalized Tier 2 — your three
    operating modes (standalone/LAN/geo-delocalized) map to cellMembrane's
    escalation phases. Phase 1 Tower composition is next for cellMembrane.
-4. **Update lithoSpore refs** in README: primalSpring registry is at 452 methods
+4. **Update lithoSpore refs** in README: primalSpring registry is at 456 methods
    (Wave 20), biomeOS is at v3.57, sweetGrass at v0.7.35.
 
 ### projectFOUNDATION
@@ -292,7 +292,7 @@ You're the sovereignty and infrastructure layer. Focus on:
 
 | Metric | Value |
 |--------|-------|
-| Registry methods | 452 (stable, zero drift) |
+| Registry methods | 456 (stable, zero drift) |
 | Delta spring tests | 9,539+ across 8 springs |
 | lithoSpore modules | 7/7 Tier 2 PASS (75/75 checks), 117 tests |
 | lithoSpore parity | 7/7 modules MATCH (Python ↔ Rust) |

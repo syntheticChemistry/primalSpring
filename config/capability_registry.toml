@@ -392,6 +392,7 @@ methods = [
     "dag.session.list",
     "dag.slice.checkout",
     "dag.slice.get",
+    "dag.partial_dehydrate",
     "dag.vertex.get",
     "dag.vertex.query",
 ]
@@ -462,8 +463,10 @@ owner = "sweetgrass"
 stability = "stable"
 methods = [
     "braid.commit",
+    "braid.complete",
     "braid.create",
     "braid.get",
+    "braid.partial_update",
     "braid.sync",
 ]
 
@@ -565,6 +568,7 @@ methods = [
     "compute.dispatch",
     "compute.dispatch.result",
     "compute.dispatch.submit",
+    "compute.fan_out",
     "compute.execute",
     "compute.gpu",
     "compute.gradient_flow",

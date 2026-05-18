@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Wave 20 PM — All delta springs absorbed, hotSpring caught up, wetSpring breseq pipeline live)
-**Last Updated**: May 17, 2026 (PM — post-absorption audit, downstream garden prep)
+**Version**: 0.9.25 (Wave 22 — upstream primal evolution, wetSpring sovereign pipeline live with trio composition)
+**Last Updated**: May 17, 2026 (PM — 456-method registry, wetSpring upstream asks ingested, primal hardening wave)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -68,7 +68,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
 - **Zero open upstream gaps** — 13/13 primals at zero debt, Waves 1-18 complete, zero panics in production
-- **452 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`, `fido2.*`, `primal.announce`, `primal.list`)
+- **456 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`, `fido2.*`, `primal.announce`, `primal.list`)
 - **43 validation scenarios** (10 tracks, 3 tiers: Rust 9 / Both 10 / Live 24) with shared `validation::helpers`; sovereignty track validates membrane composition, routing parity, content sovereignty; schema-standard + nest-commit-live scenarios validate Wave 20 canonical shapes; signal dispatch parity + primal announce scenarios validate Neural API adoption
 - **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
@@ -82,7 +82,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | What | Where |
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
-| Capability registry | `config/capability_registry.toml` (452 methods, zero drift) |
+| Capability registry | `config/capability_registry.toml` (456 methods, zero drift) |
 | Routing config schema | `config/routing_config_reference.toml` (canonical membrane routing) |
 | Membrane deploy graph | `graphs/membrane/tower_membrane.toml` (VPS sovereignty boundary) |
 | Method gate CI | `tools/check_method_gate.sh` |
@@ -143,7 +143,7 @@ With biomeOS v3.57 live, each primal should:
    `primal.announce` RPC (see `PRIMAL_ANNOUNCE_PROTOCOL.md`).
 2. **Declare signal-tier membership**: Include `signal_tiers` in the announce
    payload so biomeOS can route atomic signals through the correct graphs.
-3. **Validate against 452 methods**: Ensure niche capability counts align
+3. **Validate against 456 methods**: Ensure niche capability counts align
    with `config/capability_registry.toml` (Wave 20: `primal.list` added).
 4. **Validate membrane compositions**: Downstream membrane deployments must conform
    to `config/routing_config_reference.toml` schema (backend types, trust tiers,
@@ -214,7 +214,7 @@ delta. Every spring has absorbed lithoSpore audit patterns and is at zero debt.
 lithoSpore audit patterns. Stability tiers annotated ecosystem-wide. Degradation
 behavior documented in all springs. Cross-tier parity validated. Trio transaction
 semantics aligned. wetSpring executing the ecosystem's first real-data ferment
-transcript braid. Registry 452 methods. Fragment-first graph composition adopted.
+transcript braid. Registry 456 methods. Fragment-first graph composition adopted.
 **Next vector**: downstream garden evolution (projectFOUNDATION + projectNUCLEUS absorb
 Wave 20 patterns), then upstream primal evolution.
 

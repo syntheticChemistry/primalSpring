@@ -5,7 +5,7 @@
 **Date**: May 17, 2026 (PM)
 **Source**: primalSpring — lithoSpore downstream audit + infra/wateringHole cleanup
 **Audience**: All 7 delta spring teams
-**Registry**: 452 methods, stability tiers now annotated
+**Registry**: 456 methods, stability tiers now annotated
 **Status**: All springs at zero Wave 20 debt — this blurb is forward-looking evolution
 
 ---

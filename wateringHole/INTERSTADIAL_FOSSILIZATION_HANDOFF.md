@@ -1,6 +1,6 @@
 # Interstadial Fossilization Handoff
 
-> **Errata (May 17, 2026)**: Counts in this handoff reflect the state at publication. Current: **452** methods (was 441→451→452), **43** scenarios (was 32→41→43). Wave 20: Schema Standardization — `primal.list` canonical, `capability.list` envelope, `s_schema_standard` + `s_nest_commit_live` scenarios. See `CHANGELOG.md` for full evolution since publication.
+> **Errata (May 17, 2026)**: Counts in this handoff reflect the state at publication. Current: **456** methods (was 441→451→452→456). Wave 22: +4 from wetSpring sovereign pipeline asks (`dag.partial_dehydrate`, `braid.partial_update`, `braid.complete`, `compute.fan_out`). **43** scenarios (was 32→41→43). See `CHANGELOG.md` for full evolution since publication.
 
 **Date**: May 9, 2026 — Phase 60+ INTERSTADIAL
 **From**: primalSpring

@@ -7,7 +7,7 @@
 
 ## Overview
 
-This document defines the migration path from the flat 452-method RPC surface
+This document defines the migration path from the flat 456-method RPC surface
 to the Neural API's atomic signal dispatch model. Springs that adopt this
 standard replace explicit multi-call orchestration with single `dispatch()`
 calls that let biomeOS execute provenance graphs on behalf of the caller.
@@ -30,7 +30,7 @@ let braid = ctx.call("braid", "braid.create", braid_params)?;
 This forces every spring to:
 - Know which primals handle which capabilities
 - Manage call ordering and rollback
-- Understand the full method surface (452+ methods)
+- Understand the full method surface (456+ methods)
 - Handle partial failures across primal boundaries
 
 ## The Solution: Signal Dispatch
