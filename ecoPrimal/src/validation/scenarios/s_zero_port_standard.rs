@@ -104,7 +104,7 @@ fn phase_no_port_collisions(v: &mut ValidationResult) {
             collisions.len(),
             collisions
                 .iter()
-                .map(|(p, c)| format!("{}→{:?}", p, c))
+                .map(|(p, c)| format!("{p}→{c:?}"))
                 .collect::<Vec<_>>()
         ),
     );
@@ -145,7 +145,7 @@ fn phase_deployment_matrix_alignment(v: &mut ValidationResult) {
     {
         let deprecated = tcp_first
             .get("deprecated")
-            .and_then(|d| d.as_bool())
+            .and_then(toml::Value::as_bool)
             .unwrap_or(false);
         v.check_bool(
             "deployment_matrix:tcp_first_deprecated",
@@ -160,7 +160,7 @@ fn phase_deployment_matrix_alignment(v: &mut ValidationResult) {
     {
         let deprecated = tower_tcp
             .get("deprecated")
-            .and_then(|d| d.as_bool())
+            .and_then(toml::Value::as_bool)
             .unwrap_or(false);
         v.check_bool(
             "deployment_matrix:tower_tcp_first_deprecated",

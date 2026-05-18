@@ -67,7 +67,7 @@ fn pillar_graph_metadata(v: &mut ValidationResult, parsed: &toml::Value) {
 
     let secure = meta
         .get("secure_by_default")
-        .and_then(|v| v.as_bool())
+        .and_then(toml::Value::as_bool)
         .unwrap_or(false);
     v.check_bool(
         "metadata:secure_by_default",
@@ -97,7 +97,7 @@ fn pillar_graph_metadata(v: &mut ValidationResult, parsed: &toml::Value) {
 
     let tcp_ports = meta
         .get("tcp_ports")
-        .and_then(|v| v.as_integer())
+        .and_then(toml::Value::as_integer)
         .unwrap_or(-1);
     v.check_bool(
         "metadata:zero_tcp_ports",
@@ -122,8 +122,7 @@ fn pillar_graph_metadata(v: &mut ValidationResult, parsed: &toml::Value) {
                 .iter()
                 .all(|c| channels.contains(c)),
         &format!(
-            "channels = {:?} (expect signal, relay, surface)",
-            channels
+            "channels = {channels:?} (expect signal, relay, surface)"
         ),
     );
 }
@@ -182,13 +181,12 @@ fn pillar_tower_nodes(v: &mut ValidationResult, parsed: &toml::Value) {
 
     let biomeos = nodes.iter().find(|n| {
         n.get("name")
-            .and_then(|v| v.as_str())
-            .map_or(false, |s| s == "biomeos_neural_api")
+            .and_then(|v| v.as_str()) == Some("biomeos_neural_api")
     });
     if let Some(bio) = biomeos {
         let spawn = bio
             .get("spawn")
-            .and_then(|v| v.as_bool())
+            .and_then(toml::Value::as_bool)
             .unwrap_or(true);
         v.check_bool(
             "nodes:biomeos:spawn_false",
@@ -199,8 +197,7 @@ fn pillar_tower_nodes(v: &mut ValidationResult, parsed: &toml::Value) {
 
     let nestgate = nodes.iter().find(|n| {
         n.get("name")
-            .and_then(|v| v.as_str())
-            .map_or(false, |s| s == "nestgate")
+            .and_then(|v| v.as_str()) == Some("nestgate")
     });
     if let Some(ng) = nestgate {
         let cap = ng
@@ -291,7 +288,7 @@ fn pillar_telemetry(v: &mut ValidationResult, parsed: &toml::Value) {
 
     let enabled = telemetry
         .get("enabled")
-        .and_then(|v| v.as_bool())
+        .and_then(toml::Value::as_bool)
         .unwrap_or(false);
     v.check_bool(
         "telemetry:enabled",
@@ -311,7 +308,7 @@ fn pillar_telemetry(v: &mut ValidationResult, parsed: &toml::Value) {
 
     let cutover_days = telemetry
         .get("cutover_gate_days")
-        .and_then(|v| v.as_integer())
+        .and_then(toml::Value::as_integer)
         .unwrap_or(0);
     v.check_bool(
         "telemetry:cutover_gate_days",
@@ -321,7 +318,7 @@ fn pillar_telemetry(v: &mut ValidationResult, parsed: &toml::Value) {
 
     let skunkbat = telemetry
         .get("skunkbat_correlation")
-        .and_then(|v| v.as_bool())
+        .and_then(toml::Value::as_bool)
         .unwrap_or(false);
     v.check_bool(
         "telemetry:skunkbat_correlation",

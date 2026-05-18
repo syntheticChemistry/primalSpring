@@ -123,7 +123,7 @@ impl Primal {
     }
 
     /// All primals in canonical order.
-    pub const ALL: &'static [Primal] = &[
+    pub const ALL: &'static [Self] = &[
         Self::BearDog,
         Self::Songbird,
         Self::SkunkBat,
@@ -141,7 +141,7 @@ impl Primal {
 
     /// All primals belonging to a given atomic.
     #[must_use]
-    pub fn for_atomic(atomic: Atomic) -> &'static [Primal] {
+    pub const fn for_atomic(atomic: Atomic) -> &'static [Self] {
         match atomic {
             Atomic::Tower => &[Self::BearDog, Self::Songbird, Self::SkunkBat],
             Atomic::Node => &[
@@ -166,7 +166,7 @@ impl Primal {
     }
 
     /// The NUCLEUS atom — all 10 foundation primals (Tower + Node + Nest, deduplicated).
-    pub const NUCLEUS: &'static [Primal] = &[
+    pub const NUCLEUS: &'static [Self] = &[
         Self::BearDog,
         Self::Songbird,
         Self::SkunkBat,

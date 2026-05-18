@@ -99,7 +99,7 @@ pub const LOCAL_CAPABILITIES: &[&str] = &[
 ///
 /// Each entry names the canonical provider per `capability_registry.toml`.
 pub const ROUTED_CAPABILITIES: &[(&str, Primal)] = {
-    use Primal::*;
+    use Primal::{BiomeOS, Squirrel, Songbird, PetalTongue, BearDog, RhizoCrypt, LoamSpine, SweetGrass};
     &[
         // ── Lifecycle (biomeOS) ──
         ("lifecycle.start", BiomeOS),
@@ -277,10 +277,11 @@ pub fn coordination_semantic_mappings() -> serde_json::Value {
 /// Register this niche's capabilities with biomeOS via `announce_or_register`.
 ///
 /// Tries `primal.announce` (biomeOS v3.57+) first — single-call atomic
-/// registration. Falls back to the legacy 3-call pattern (`lifecycle.register`
-/// + `capability.register` per domain + per capability) when announce is
-/// unavailable. This is the canonical backward-compatible approach endorsed
-/// by the ecosystem (`wateringHole/SIGNAL_ADOPTION_STANDARD.md`).
+/// registration. Falls back to the legacy 3-call pattern
+/// (`lifecycle.register` then `capability.register` per domain and per
+/// capability) when announce is unavailable. This is the canonical
+/// backward-compatible approach endorsed by the ecosystem
+/// (`wateringHole/SIGNAL_ADOPTION_STANDARD.md`).
 ///
 /// Degrades gracefully if biomeOS is unreachable — coordination must not
 /// depend on registration success.

@@ -286,7 +286,6 @@ fn phase_barracuda_math(v: &mut ValidationResult, ctx: &mut CompositionContext) 
 ///
 /// Both calls SKIP on connection error (primal not running).
 /// This validates the IPC contract, not the GPU result.
-#[expect(clippy::too_many_lines, reason = "cohesive 5-check validation phase")]
 fn phase_sovereign_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let has_shader = ctx.has_capability("shader");
     let has_compute = ctx.has_capability("compute");

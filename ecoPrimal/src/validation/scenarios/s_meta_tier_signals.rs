@@ -161,7 +161,7 @@ fn validate_tool_schema_fields(v: &mut ValidationResult, parsed: &toml::Value) {
         let has_primals = tool
             .get("primals")
             .and_then(|p| p.as_array())
-            .map_or(false, |a| !a.is_empty());
+            .is_some_and(|a| !a.is_empty());
         v.check_bool(
             &format!("tools:{name}:has_primals"),
             has_primals,
@@ -254,7 +254,7 @@ fn validate_registry_meta_signals(v: &mut ValidationResult) {
         .unwrap_or_default();
 
     for &primal in META_SIGNAL_PRIMALS {
-        let present = primals.iter().any(|p| *p == primal);
+        let present = primals.contains(&primal);
         v.check_bool(
             &format!("registry:meta_primals:{primal}"),
             present,

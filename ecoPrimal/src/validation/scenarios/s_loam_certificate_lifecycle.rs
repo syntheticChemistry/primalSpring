@@ -185,11 +185,11 @@ fn phase_cert_verify(
         serde_json::json!({ "cert_id": cert_id }),
     ) {
         Ok(resp) => {
-            let valid = resp.get("valid").and_then(|v| v.as_bool()).unwrap_or(false);
+            let valid = resp.get("valid").and_then(serde_json::Value::as_bool).unwrap_or(false);
             v.check_bool(
                 "loam:cert_verify:valid",
                 valid,
-                &format!("certificate.verify({}): valid={valid}", cert_id),
+                &format!("certificate.verify({cert_id}): valid={valid}"),
             );
         }
         Err(e) if e.is_connection_error() => {
@@ -206,7 +206,7 @@ fn phase_cert_verify(
         serde_json::json!({ "cert_id": "invalid-cert-does-not-exist-00000" }),
     ) {
         Ok(resp) => {
-            let valid = resp.get("valid").and_then(|v| v.as_bool()).unwrap_or(true);
+            let valid = resp.get("valid").and_then(serde_json::Value::as_bool).unwrap_or(true);
             v.check_bool(
                 "loam:cert_verify:invalid_rejected",
                 !valid,

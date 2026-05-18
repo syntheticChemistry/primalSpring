@@ -59,7 +59,7 @@ fn validate_tower_agent_structure(v: &mut ValidationResult) {
     let metadata = parsed.get("graph").and_then(|g| g.get("metadata"));
     let is_agentic = metadata
         .and_then(|m| m.get("agentic"))
-        .and_then(|a| a.as_bool())
+        .and_then(toml::Value::as_bool)
         .unwrap_or(false);
     v.check_bool(
         "agent:agentic_flag",
@@ -69,8 +69,7 @@ fn validate_tower_agent_structure(v: &mut ValidationResult) {
 
     let uds_only = metadata
         .and_then(|m| m.get("transport"))
-        .and_then(|t| t.as_str())
-        .map_or(false, |t| t == "uds_only");
+        .and_then(|t| t.as_str()) == Some("uds_only");
     v.check_bool(
         "agent:uds_only",
         uds_only,
@@ -79,8 +78,7 @@ fn validate_tower_agent_structure(v: &mut ValidationResult) {
 
     let btsp = metadata
         .and_then(|m| m.get("security_model"))
-        .and_then(|s| s.as_str())
-        .map_or(false, |s| s == "btsp_enforced");
+        .and_then(|s| s.as_str()) == Some("btsp_enforced");
     v.check_bool(
         "agent:btsp_enforced",
         btsp,
@@ -109,7 +107,7 @@ fn validate_tower_agent_structure(v: &mut ValidationResult) {
                 .unwrap_or("unknown");
             let required = node
                 .get("required")
-                .and_then(|r| r.as_bool())
+                .and_then(toml::Value::as_bool)
                 .unwrap_or(false);
             v.check_bool(
                 &format!("agent:{name}:required"),
@@ -189,7 +187,7 @@ fn validate_meta_deploy_signal(v: &mut ValidationResult) {
     let is_agentic = graph
         .and_then(|g| g.get("metadata"))
         .and_then(|m| m.get("agentic"))
-        .and_then(|a| a.as_bool())
+        .and_then(toml::Value::as_bool)
         .unwrap_or(false);
     v.check_bool(
         "deploy:agentic_flag",
@@ -206,14 +204,12 @@ fn validate_signal_tools_deploy(v: &mut ValidationResult) {
 
     let tools = parsed.get("tools").and_then(|t| t.as_array());
     let has_deploy = tools
-        .map(|arr| {
+        .is_some_and(|arr| {
             arr.iter().any(|t| {
                 t.get("name")
-                    .and_then(|n| n.as_str())
-                    .map_or(false, |n| n == "meta.deploy")
+                    .and_then(|n| n.as_str()) == Some("meta.deploy")
             })
-        })
-        .unwrap_or(false);
+        });
 
     v.check_bool(
         "tools:meta.deploy",
@@ -329,7 +325,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
     let is_bootstrap = graph
         .and_then(|g| g.get("metadata"))
         .and_then(|m| m.get("bootstrap"))
-        .and_then(|b| b.as_bool())
+        .and_then(toml::Value::as_bool)
         .unwrap_or(false);
     v.check_bool(
         "bootstrap:metadata_flag",
@@ -351,12 +347,9 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
         .and_then(|g| g.get("nodes"))
         .and_then(|n| n.as_array());
 
-    let nodes = match nodes {
-        Some(n) => n,
-        None => {
-            v.check_bool("bootstrap:has_nodes", false, "tower_bootstrap.toml has no nodes");
-            return;
-        }
+    let nodes = if let Some(n) = nodes { n } else {
+        v.check_bool("bootstrap:has_nodes", false, "tower_bootstrap.toml has no nodes");
+        return;
     };
 
     v.check_bool(
@@ -370,8 +363,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
         .iter()
         .filter(|n| {
             n.get("phase")
-                .and_then(|p| p.as_integer())
-                .map_or(false, |p| p == 1)
+                .and_then(toml::Value::as_integer) == Some(1)
         })
         .collect();
 
@@ -406,7 +398,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
             .unwrap_or("unknown");
         let spawn = node
             .get("spawn")
-            .and_then(|s| s.as_bool())
+            .and_then(toml::Value::as_bool)
             .unwrap_or(false);
         v.check_bool(
             &format!("bootstrap:phase1:{name}:spawn"),
@@ -415,7 +407,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
         );
         let required = node
             .get("required")
-            .and_then(|r| r.as_bool())
+            .and_then(toml::Value::as_bool)
             .unwrap_or(false);
         v.check_bool(
             &format!("bootstrap:phase1:{name}:required"),
@@ -432,9 +424,8 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
         let deps = bd
             .get("depends_on")
             .and_then(|d| d.as_array())
-            .map(|a| a.len())
-            .unwrap_or(0);
-        let no_depends_on = !bd.as_table().map_or(false, |t| t.contains_key("depends_on"));
+            .map_or(0, std::vec::Vec::len);
+        let no_depends_on = !bd.as_table().is_some_and(|t| t.contains_key("depends_on"));
         v.check_bool(
             "bootstrap:beardog_root",
             no_depends_on || deps == 0,
@@ -443,7 +434,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
 
         let order = bd
             .get("order")
-            .and_then(|o| o.as_integer())
+            .and_then(toml::Value::as_integer)
             .unwrap_or(0);
         v.check_bool(
             "bootstrap:beardog_first",
@@ -485,8 +476,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
         .iter()
         .filter(|n| {
             n.get("phase")
-                .and_then(|p| p.as_integer())
-                .map_or(false, |p| p == 2)
+                .and_then(toml::Value::as_integer) == Some(2)
         })
         .collect();
 
@@ -506,7 +496,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
             .unwrap_or("unknown");
         let required = node
             .get("required")
-            .and_then(|r| r.as_bool())
+            .and_then(toml::Value::as_bool)
             .unwrap_or(true);
         v.check_bool(
             &format!("bootstrap:phase2:{name}:optional"),

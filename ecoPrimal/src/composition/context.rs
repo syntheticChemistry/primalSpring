@@ -408,18 +408,15 @@ impl CompositionContext {
             "signal": format!("{tier}.{signal_name}"),
             "params": params,
         });
-        match self.call("orchestration", "signal.dispatch", dispatch_params) {
-            Ok(result) => Ok(result),
-            Err(_) => {
-                // Fallback to capability.call for older biomeOS versions
-                // where signal.dispatch is not yet available.
-                let cap_params = serde_json::json!({
-                    "capability": tier,
-                    "operation": signal_name,
-                    "args": params,
-                });
-                self.call("orchestration", "capability.call", cap_params)
-            }
+        if let Ok(result) = self.call("orchestration", "signal.dispatch", dispatch_params) { Ok(result) } else {
+            // Fallback to capability.call for older biomeOS versions
+            // where signal.dispatch is not yet available.
+            let cap_params = serde_json::json!({
+                "capability": tier,
+                "operation": signal_name,
+                "args": params,
+            });
+            self.call("orchestration", "capability.call", cap_params)
         }
     }
 
@@ -616,16 +613,13 @@ impl CompositionContext {
             "lifecycle": { "state": "running" },
         });
 
-        match self.call("orchestration", "primal.announce", announce_params) {
-            Ok(result) => Ok(result),
-            Err(_) => {
-                let register_params = serde_json::json!({
-                    "primal": primal_id,
-                    "transport": socket.to_string_lossy(),
-                    "methods": methods,
-                });
-                self.call("orchestration", "method.register", register_params)
-            }
+        if let Ok(result) = self.call("orchestration", "primal.announce", announce_params) { Ok(result) } else {
+            let register_params = serde_json::json!({
+                "primal": primal_id,
+                "transport": socket.to_string_lossy(),
+                "methods": methods,
+            });
+            self.call("orchestration", "method.register", register_params)
         }
     }
 

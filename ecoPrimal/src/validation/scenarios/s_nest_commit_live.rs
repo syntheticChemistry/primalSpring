@@ -80,7 +80,7 @@ fn phase_graph_structure(v: &mut ValidationResult) {
         let nodes = graph
             .get("nodes")
             .and_then(|n| n.as_array())
-            .map_or(0, |a| a.len());
+            .map_or(0, std::vec::Vec::len);
         v.check_minimum("graph:node_count", nodes, 4);
 
         let mut graph_caps: Vec<String> = Vec::new();

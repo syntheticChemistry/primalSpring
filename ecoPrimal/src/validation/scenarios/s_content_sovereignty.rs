@@ -211,23 +211,17 @@ fn phase_sovereign_resolve(v: &mut ValidationResult, ctx: &mut CompositionContex
 
 fn phase_trust_alignment(v: &mut ValidationResult) {
     let routing_toml = include_str!("../../../../config/routing_config_reference.toml");
-    let parsed: toml::Value = match toml::from_str(routing_toml) {
-        Ok(p) => p,
-        Err(_) => {
-            v.check_skip(
-                "trust:covalent_all_access",
-                "routing config parse failed",
-            );
-            return;
-        }
+    let parsed: toml::Value = if let Ok(p) = toml::from_str(routing_toml) { p } else {
+        v.check_skip(
+            "trust:covalent_all_access",
+            "routing config parse failed",
+        );
+        return;
     };
 
-    let trust = match parsed.get("trust").and_then(|t| t.as_table()) {
-        Some(t) => t,
-        None => {
-            v.check_skip("trust:covalent_all_access", "no [trust] section");
-            return;
-        }
+    let trust = if let Some(t) = parsed.get("trust").and_then(|t| t.as_table()) { t } else {
+        v.check_skip("trust:covalent_all_access", "no [trust] section");
+        return;
     };
 
     let covalent_scope = trust
@@ -258,8 +252,7 @@ fn phase_trust_alignment(v: &mut ValidationResult) {
         "trust:weak_excludes_gate",
         weak_excludes_gate,
         &format!(
-            "weak allowed_backends = {:?} (must not include gate — public only)",
-            weak_backends
+            "weak allowed_backends = {weak_backends:?} (must not include gate — public only)"
         ),
     );
 
@@ -297,7 +290,7 @@ fn phase_audit_correlation(v: &mut ValidationResult, ctx: &mut CompositionContex
         Ok(resp) => {
             let active = resp
                 .get("active")
-                .and_then(|a| a.as_bool())
+                .and_then(serde_json::Value::as_bool)
                 .unwrap_or(false);
             v.check_bool(
                 "audit:skunkbat_active",
@@ -329,7 +322,7 @@ fn phase_audit_correlation(v: &mut ValidationResult, ctx: &mut CompositionContex
             let has_events = resp
                 .get("events")
                 .and_then(|e| e.as_array())
-                .map_or(false, |a| !a.is_empty());
+                .is_some_and(|a| !a.is_empty());
             v.check_bool(
                 "audit:content_events_available",
                 true,

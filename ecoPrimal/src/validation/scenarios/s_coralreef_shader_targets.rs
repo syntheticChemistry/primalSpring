@@ -73,37 +73,34 @@ fn phase_target_coverage(v: &mut ValidationResult, ctx: &mut CompositionContext)
         return;
     }
 
-    match ctx.call("shader", "shader.compile.capabilities", serde_json::json!({})) {
-        Ok(resp) => {
-            let targets_str = format!("{resp:?}").to_lowercase();
+    if let Ok(resp) = ctx.call("shader", "shader.compile.capabilities", serde_json::json!({})) {
+        let targets_str = format!("{resp:?}").to_lowercase();
 
-            let has_ptx = targets_str.contains("ptx") || targets_str.contains("nvidia");
-            let has_rdna = targets_str.contains("rdna")
-                || targets_str.contains("amd")
-                || targets_str.contains("gfx");
+        let has_ptx = targets_str.contains("ptx") || targets_str.contains("nvidia");
+        let has_rdna = targets_str.contains("rdna")
+            || targets_str.contains("amd")
+            || targets_str.contains("gfx");
 
-            if has_ptx {
-                v.check_bool("nvidia_ptx_target", true, "NVIDIA PTX target advertised");
-            } else {
-                v.check_skip(
-                    "nvidia_ptx_target",
-                    "PTX not in capabilities (may need NVIDIA hardware)",
-                );
-            }
-
-            if has_rdna {
-                v.check_bool("amd_rdna_target", true, "AMD RDNA target advertised");
-            } else {
-                v.check_skip(
-                    "amd_rdna_target",
-                    "RDNA not in capabilities (may need AMD hardware)",
-                );
-            }
+        if has_ptx {
+            v.check_bool("nvidia_ptx_target", true, "NVIDIA PTX target advertised");
+        } else {
+            v.check_skip(
+                "nvidia_ptx_target",
+                "PTX not in capabilities (may need NVIDIA hardware)",
+            );
         }
-        Err(_) => {
-            v.check_skip("nvidia_ptx_target", "capabilities not available");
-            v.check_skip("amd_rdna_target", "capabilities not available");
+
+        if has_rdna {
+            v.check_bool("amd_rdna_target", true, "AMD RDNA target advertised");
+        } else {
+            v.check_skip(
+                "amd_rdna_target",
+                "RDNA not in capabilities (may need AMD hardware)",
+            );
         }
+    } else {
+        v.check_skip("nvidia_ptx_target", "capabilities not available");
+        v.check_skip("amd_rdna_target", "capabilities not available");
     }
 }
 

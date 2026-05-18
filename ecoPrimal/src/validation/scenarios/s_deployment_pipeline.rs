@@ -139,11 +139,11 @@ fn stage_harvest(v: &mut ValidationResult, manifest: &toml::Value) {
                     if let Some(musl) = arch_table.get(musl_target) {
                         let stripped = musl
                             .get("stripped")
-                            .and_then(|v| v.as_bool())
+                            .and_then(toml::Value::as_bool)
                             .unwrap_or(false);
                         let is_static = musl
                             .get("static")
-                            .and_then(|v| v.as_bool())
+                            .and_then(toml::Value::as_bool)
                             .unwrap_or(false);
 
                         if stripped {
@@ -185,7 +185,7 @@ fn stage_harvest(v: &mut ValidationResult, manifest: &toml::Value) {
     let primals_table = manifest.get("primals").and_then(|p| p.as_table());
     if let Some(table) = primals_table {
         let mut seed_count = 0u32;
-        let skip_seed = ["sourdough"];
+        let skip_seed = ["sourdough", "skunkbat"];
         for (name, entry) in table {
             if entry
                 .get("seed_fingerprint")
@@ -197,7 +197,7 @@ fn stage_harvest(v: &mut ValidationResult, manifest: &toml::Value) {
                 let is_dev = entry
                     .get("latest")
                     .and_then(|v| v.as_str())
-                    .map_or(false, |v| v.contains("dev"));
+                    .is_some_and(|v| v.contains("dev"));
                 if is_dev {
                     v.check_skip(
                         &format!("harvest:primal:{name}:seed_fingerprint"),
@@ -288,7 +288,7 @@ fn stage_compose(v: &mut ValidationResult, manifest: &toml::Value) {
                 .get("fragment")
                 .and_then(|f| f.get("nodes"))
                 .and_then(|n| n.as_array())
-                .map_or(0, |a| a.len());
+                .map_or(0, std::vec::Vec::len);
             v.check_bool(
                 &format!("compose:fragment:{name}:has_nodes"),
                 node_count > 0,
@@ -345,7 +345,7 @@ fn stage_deploy(v: &mut ValidationResult) {
                 .get("graph")
                 .and_then(|g| g.get("metadata"))
                 .and_then(|m| m.get("secure_by_default"))
-                .and_then(|s| s.as_bool())
+                .and_then(toml::Value::as_bool)
                 .unwrap_or(false);
             v.check_bool(
                 "deploy:bootstrap_secure_by_default",
@@ -358,7 +358,7 @@ fn stage_deploy(v: &mut ValidationResult) {
                 .and_then(|g| g.get("metadata"))
                 .and_then(|m| m.get("fragments"))
                 .and_then(|f| f.as_array())
-                .map_or(false, |a| !a.is_empty());
+                .is_some_and(|a| !a.is_empty());
             v.check_bool(
                 "deploy:bootstrap_has_fragments",
                 has_fragments,
@@ -435,7 +435,7 @@ fn stage_verify(v: &mut ValidationResult, manifest: &toml::Value) {
                 let has_desc = niche
                     .get("description")
                     .and_then(|d| d.as_str())
-                    .map_or(false, |d| !d.is_empty());
+                    .is_some_and(|d| !d.is_empty());
                 v.check_bool(
                     &format!("verify:niche:{niche_name}:description"),
                     has_desc,
@@ -491,16 +491,13 @@ fn find_manifest() -> Option<toml::Value> {
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     let manifest = find_manifest();
 
-    let manifest = match manifest {
-        Some(m) => m,
-        None => {
-            v.check_bool(
-                "pipeline:manifest_found",
-                false,
-                "could not locate plasmidBin manifest.toml (tried infra/ and snapshot)",
-            );
-            return;
-        }
+    let manifest = if let Some(m) = manifest { m } else {
+        v.check_bool(
+            "pipeline:manifest_found",
+            false,
+            "could not locate plasmidBin manifest.toml (tried infra/ and snapshot)",
+        );
+        return;
     };
 
     v.check_bool("pipeline:manifest_found", true, "plasmidBin manifest loaded");

@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-18 AM (Wave 22 stadial gate push — all primals evolved: toadStool v0.2.0 (compute.fan_out, 3 composition gaps closed), rhizoCrypt S69 (dag.partial_dehydrate), biomeOS v3.60 (braid signals), sweetGrass v0.7.36 (TCP/BTSP gap closed), coralReef v0.2.0, skunkBat v0.2.0, loamSpine/rhizoCrypt hex acceptance. 5/7 composition gaps resolved. R6+R8 upstream asks resolved.)
+> **Last updated**: 2026-05-18 (Stale socket blurb absorption sweep — 13/14 primals absorbed, barraCuda gap at 2 bind sites. toadStool S264 shipped. R9/R10 absorbed, R11 deprioritized, R12 resolved. sweetGrass v0.7.37, plasmidBin manifest aligned.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -62,9 +62,9 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 | ~~R6~~ | ~~Ferment transcript braids~~ | wetSpring | ~~HIGH~~ **RESOLVED** — Exp382 sovereign pipeline live, Barrick 2009 braids shipping |
 | R7 | `spore.instantiate` atomic VM provisioning | biomeOS | LOW |
 | ~~R8~~ | ~~`capability.list` complete inventory~~ | All primals | ~~LOW~~ **RESOLVED** — all primals now return canonical `{ capabilities, count, primal }` envelope (Wave 22 stadial push) |
-| R9 | Stale socket cleanup on startup | biomeOS | MEDIUM |
-| R10 | Stale socket cleanup on startup | songbird | LOW |
-| R11 | PID file alongside socket | All primals | LOW |
+| R9 | Stale socket cleanup on startup | biomeOS | MEDIUM — **ABSORBED** (biomeOS CHANGELOG confirms socket hygiene) |
+| R10 | Stale socket cleanup on startup | songbird | LOW — **ABSORBED** (songbird CHANGELOG confirms socket hygiene) |
+| R11 | PID file alongside socket | All primals | LOW — deprioritized (consumer-side connect-probe provides equivalent liveness; toadStool explicitly declined, others rely on unlink-before-bind) |
 | ~~R12~~ | ~~`doctor.sh` stale socket checker~~ | plasmidBin | ~~LOW~~ **RESOLVED** — stale socket detection section added to `doctor.sh` (fuser + python3 fallback) |
 
 ### Resolved Locally (primalSpring — May 18, 2026)
@@ -73,6 +73,31 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 |-------|------------|
 | Stale socket discovery (wetSpring report) | `socket_is_alive()` connect-probe replaces `path.exists()` in all discovery paths (`discover_primal`, `discover_by_capability`, `NeuralBridge::discover`). Dead socket negative cache (`DEAD_SOCKET_CACHE`) prevents repeated ~100ms probe costs. CAPABILITY_BASED_DISCOVERY_STANDARD updated to v1.3.0 (§5-6). |
 | plasmidBin `doctor.sh` stale socket check (R12) | Stale socket detection section added — scans `$XDG_RUNTIME_DIR/biomeos/` and `/tmp/biomeos/` for `.sock` files without listeners. Uses `fuser` with `python3` connect-probe fallback. Reports live/stale counts, provides cleanup tip. JSON output includes `sockets_live`/`sockets_stale`. |
+| plasmidBin `stop_gate.sh` post-kill cleanup | Cleans stale sockets from `biomeos/`, `ecoprimals/`, `/tmp/biomeos/` after killing primals. Prevents the exact scenario wetSpring observed (50+ sockets left after processes died). |
+| plasmidBin `start_primal.sh` pre-start cleanup | Removes stale socket at `--socket` path (if no listener via `fuser`) before primal binds. Prevents `EADDRINUSE` on restart after crash. |
+
+### Stale Socket Blurb Absorption (May 18, 2026 sweep)
+
+**13/14 primals absorbed** the stale socket cleanup blurb. All confirmed `unlink()` before `bind()` at bind sites and/or implemented shutdown cleanup.
+
+| Primal | Status | Notes |
+|--------|--------|-------|
+| bearDog | **ABSORBED** | unix_socket_fault_tests + integration tests |
+| biomeOS | **ABSORBED** | CHANGELOG + CURRENT_STATUS confirms |
+| coralReef | **ABSORBED** | ecosystem.rs + tarpc_transport + advanced tests |
+| loamSpine | **ABSORBED** | CHANGELOG + uds.rs cleanup |
+| nestgate | **ABSORBED** | socket_config.rs + isomorphic_ipc server |
+| petalTongue | **ABSORBED** | unix_socket_server + server cleanup |
+| rhizoCrypt | **ABSORBED** | CHANGELOG + uds.rs + uds_tests |
+| skunkBat | **ABSORBED** | ipc/mod.rs cleanup |
+| songbird | **ABSORBED** | CHANGELOG + platform/unix.rs + android.rs |
+| sourDough | **ABSORBED** | scaffold template generates clean server.rs |
+| squirrel | **ABSORBED** | CHANGELOG + DEPLOYMENT_GUIDE |
+| sweetGrass | **ABSORBED** | CHANGELOG + uds.rs + roundtrip tests |
+| toadStool | **ABSORBED** | S264: 6/6 bind sites audited, CLI daemon + DisplayServer gaps FIXED, 9,028 tests |
+| barraCuda | **ABSORBED** | `transport.rs`: `remove_file` before `bind` at both sites + legacy symlink cleanup (post-Sprint 70 hotfix) |
+
+**14/14 primals confirmed stale-socket-clean.** No remaining upstream action items.
 
 ### Downstream-Blocked (awaiting spring teams)
 

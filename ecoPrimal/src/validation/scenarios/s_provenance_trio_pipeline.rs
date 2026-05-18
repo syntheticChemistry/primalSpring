@@ -142,7 +142,7 @@ fn phase_spine_seal(
         serde_json::json!({ "vertex_id": vertex_id }),
     ) {
         Ok(resp) => {
-            let sealed = resp.get("sealed").and_then(|s| s.as_bool()).unwrap_or(false)
+            let sealed = resp.get("sealed").and_then(serde_json::Value::as_bool).unwrap_or(false)
                 || resp.get("spine_id").is_some()
                 || resp.get("hash").is_some();
             v.check_bool(

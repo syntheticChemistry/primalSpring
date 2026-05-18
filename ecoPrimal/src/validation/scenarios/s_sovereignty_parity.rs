@@ -61,12 +61,9 @@ fn phase_routing_schema(v: &mut ValidationResult) {
         "routing_config_reference.toml parses as valid TOML",
     );
 
-    let routing = match parsed.get("routing") {
-        Some(r) => r,
-        None => {
-            v.check_bool("schema:routing_section", false, "missing [routing] section");
-            return;
-        }
+    let routing = if let Some(r) = parsed.get("routing") { r } else {
+        v.check_bool("schema:routing_section", false, "missing [routing] section");
+        return;
     };
 
     v.check_bool("schema:routing_section", true, "[routing] section present");
@@ -115,15 +112,14 @@ fn phase_routing_schema(v: &mut ValidationResult) {
                 &format!("schema:backend:{name}:valid_type"),
                 VALID_BACKEND_TYPES.contains(&backend_type),
                 &format!(
-                    "{name}.type = \"{backend_type}\" (valid: {:?})",
-                    VALID_BACKEND_TYPES
+                    "{name}.type = \"{backend_type}\" (valid: {VALID_BACKEND_TYPES:?})"
                 ),
             );
 
             let has_description = backend
                 .get("description")
                 .and_then(|v| v.as_str())
-                .map_or(false, |s| !s.is_empty());
+                .is_some_and(|s| !s.is_empty());
             v.check_bool(
                 &format!("schema:backend:{name}:has_description"),
                 has_description,
@@ -173,7 +169,7 @@ fn phase_routing_schema(v: &mut ValidationResult) {
         let has_backend = rule
             .get("backend")
             .and_then(|v| v.as_str())
-            .map_or(false, |s| !s.is_empty());
+            .is_some_and(|s| !s.is_empty());
         v.check_bool(
             &format!("schema:rule:{name}:has_backend"),
             has_backend,
@@ -183,7 +179,7 @@ fn phase_routing_schema(v: &mut ValidationResult) {
         let has_reason = rule
             .get("reason")
             .and_then(|v| v.as_str())
-            .map_or(false, |s| !s.is_empty());
+            .is_some_and(|s| !s.is_empty());
         v.check_bool(
             &format!("schema:rule:{name}:has_reason"),
             has_reason,
@@ -212,7 +208,7 @@ fn phase_routing_schema(v: &mut ValidationResult) {
                 let has_backends = ts
                     .get("allowed_backends")
                     .and_then(|v| v.as_array())
-                    .map_or(false, |a| !a.is_empty());
+                    .is_some_and(|a| !a.is_empty());
                 v.check_bool(
                     &format!("schema:trust:{tier}:allowed_backends"),
                     has_backends,
@@ -222,7 +218,7 @@ fn phase_routing_schema(v: &mut ValidationResult) {
                 let has_scope = ts
                     .get("content_scope")
                     .and_then(|v| v.as_str())
-                    .map_or(false, |s| !s.is_empty());
+                    .is_some_and(|s| !s.is_empty());
                 v.check_bool(
                     &format!("schema:trust:{tier}:content_scope"),
                     has_scope,
@@ -253,7 +249,7 @@ fn phase_routing_schema(v: &mut ValidationResult) {
 
         let cutover_days = telemetry
             .get("cutover_gate_days")
-            .and_then(|v| v.as_integer())
+            .and_then(toml::Value::as_integer)
             .unwrap_or(0);
         v.check_bool(
             "schema:telemetry:cutover_gate_days",

@@ -52,7 +52,7 @@ fn supports_btsp(client: &mut PrimalClient) -> bool {
             .result
             .as_ref()
             .and_then(|v| v.get("server"))
-            .and_then(|v| v.as_bool())
+            .and_then(serde_json::Value::as_bool)
             .unwrap_or(resp.is_success()),
         Err(_) => false,
     }
@@ -91,7 +91,7 @@ pub fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTre
 
             let btsp_supported = clients
                 .get_mut(cap.as_str())
-                .is_some_and(|c| supports_btsp(c));
+                .is_some_and(supports_btsp);
 
             if !btsp_supported {
                 tracing::debug!(cap, primal, "btsp.capabilities: not supported, skipping BTSP upgrade");

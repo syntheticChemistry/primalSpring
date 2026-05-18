@@ -169,12 +169,11 @@ fn pillar_songbird_network(v: &mut ValidationResult) {
         .get("fragment")
         .and_then(|f| f.get("nodes"))
         .and_then(|n| n.as_array())
-        .map_or(Vec::new(), |a| a.clone());
+        .map_or(Vec::new(), std::clone::Clone::clone);
 
     let songbird_node = nodes.iter().find(|n| {
         n.get("name")
-            .and_then(|v| v.as_str())
-            .map_or(false, |name| name == "songbird")
+            .and_then(|v| v.as_str()) == Some("songbird")
     });
 
     v.check_bool(
@@ -224,10 +223,10 @@ fn pillar_songbird_network(v: &mut ValidationResult) {
         .filter(|n| {
             n.get("capabilities")
                 .and_then(|c| c.as_array())
-                .map_or(false, |arr| {
+                .is_some_and(|arr| {
                     arr.iter().any(|v| {
                         v.as_str()
-                            .map_or(false, |s| s.starts_with("http.") || s.starts_with("tls."))
+                            .is_some_and(|s| s.starts_with("http.") || s.starts_with("tls."))
                     })
                 })
         })
@@ -280,7 +279,7 @@ fn pillar_btsp_crypto(v: &mut ValidationResult) {
         section
             .get("methods")
             .and_then(|m| m.as_array())
-            .map_or(false, |arr| {
+            .is_some_and(|arr| {
                 arr.iter()
                     .any(|v| v.as_str() == Some("btsp.negotiate"))
             })
@@ -296,7 +295,7 @@ fn pillar_btsp_crypto(v: &mut ValidationResult) {
         section
             .get("methods")
             .and_then(|m| m.as_array())
-            .map_or(false, |arr| {
+            .is_some_and(|arr| {
                 arr.iter()
                     .any(|v| v.as_str() == Some("btsp.capabilities"))
             })
@@ -397,8 +396,7 @@ fn pillar_enclave(v: &mut ValidationResult) {
     let nestgate_node = nodes.and_then(|arr| {
         arr.iter().find(|n| {
             n.get("name")
-                .and_then(|v| v.as_str())
-                .map_or(false, |s| s == "nestgate")
+                .and_then(|v| v.as_str()) == Some("nestgate")
         })
     });
 

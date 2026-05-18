@@ -43,6 +43,7 @@ pub fn graph_parses(
 
 /// Extract all `binary` field values from `[[graph.nodes]]` in a TOML
 /// graph string. Returns an empty vec on parse failure.
+#[must_use] 
 pub fn graph_binaries(content: &str) -> Vec<String> {
     let parsed: toml::Value = match toml::from_str(content) {
         Ok(v) => v,
@@ -52,6 +53,7 @@ pub fn graph_binaries(content: &str) -> Vec<String> {
 }
 
 /// Extract all `binary` field values from an already-parsed graph.
+#[must_use] 
 pub fn graph_binaries_from_parsed(parsed: &toml::Value) -> Vec<String> {
     parsed
         .get("graph")
@@ -67,6 +69,7 @@ pub fn graph_binaries_from_parsed(parsed: &toml::Value) -> Vec<String> {
 }
 
 /// Safe accessor for `graph.nodes` from a parsed TOML value.
+#[must_use] 
 pub fn graph_nodes(parsed: &toml::Value) -> Option<&Vec<toml::Value>> {
     parsed
         .get("graph")
@@ -75,6 +78,7 @@ pub fn graph_nodes(parsed: &toml::Value) -> Option<&Vec<toml::Value>> {
 }
 
 /// Safe accessor for `graph.metadata` from a parsed TOML value.
+#[must_use] 
 pub fn graph_metadata(parsed: &toml::Value) -> Option<&toml::Value> {
     parsed.get("graph").and_then(|g| g.get("metadata"))
 }
@@ -91,7 +95,7 @@ pub fn validate_dark_forest(
 
     let secure_by_default = metadata
         .and_then(|m| m.get("secure_by_default"))
-        .and_then(|s| s.as_bool())
+        .and_then(toml::Value::as_bool)
         .unwrap_or(false);
     v.check_bool(
         &format!("{label}:secure_by_default"),
@@ -101,8 +105,7 @@ pub fn validate_dark_forest(
 
     let btsp_enforced = metadata
         .and_then(|m| m.get("security_model"))
-        .and_then(|s| s.as_str())
-        .map_or(false, |s| s == "btsp_enforced");
+        .and_then(|s| s.as_str()) == Some("btsp_enforced");
     v.check_bool(
         &format!("{label}:btsp_enforced"),
         btsp_enforced,
@@ -111,8 +114,7 @@ pub fn validate_dark_forest(
 
     let uds_only = metadata
         .and_then(|m| m.get("transport"))
-        .and_then(|t| t.as_str())
-        .map_or(false, |t| t == "uds_only");
+        .and_then(|t| t.as_str()) == Some("uds_only");
     v.check_bool(
         &format!("{label}:uds_only"),
         uds_only,
@@ -170,12 +172,14 @@ pub fn validate_node_capabilities(
 /// Parse the capability registry TOML and return a flat list of all
 /// registered method strings (excluding test fixtures, false positives,
 /// and signal definitions).
+#[must_use] 
 pub fn load_registry_capabilities() -> Vec<String> {
     let registry_toml = include_str!("../../../config/capability_registry.toml");
     parse_registry_capabilities(registry_toml)
 }
 
 /// Parse capability methods from a registry TOML string.
+#[must_use] 
 pub fn parse_registry_capabilities(registry_toml: &str) -> Vec<String> {
     let parsed: toml::Value = match toml::from_str(registry_toml) {
         Ok(v) => v,

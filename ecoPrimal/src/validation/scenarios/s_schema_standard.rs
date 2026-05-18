@@ -124,10 +124,10 @@ fn phase_local_capability_list(v: &mut ValidationResult) {
         "capabilities field is an array",
     );
 
-    let count_value = response.get("count").and_then(|c| c.as_u64()).unwrap_or(0);
+    let count_value = response.get("count").and_then(serde_json::Value::as_u64).unwrap_or(0);
     v.check_bool(
         "local:capability_list:count_matches_array",
-        count_value == cap_value.as_array().map_or(0, |a| a.len()) as u64,
+        count_value == cap_value.as_array().map_or(0, std::vec::Vec::len) as u64,
         "count field matches capabilities array length",
     );
 }
@@ -159,7 +159,7 @@ fn phase_live_capability_list(v: &mut ValidationResult, ctx: &mut CompositionCon
                 );
             }
 
-            if let Some(count) = resp.get("count").and_then(|c| c.as_u64()) {
+            if let Some(count) = resp.get("count").and_then(serde_json::Value::as_u64) {
                 v.check_minimum("live:capability_list:count", count as usize, 5);
             }
         }
@@ -218,7 +218,7 @@ fn phase_live_primal_list(v: &mut ValidationResult, ctx: &mut CompositionContext
                 }
             }
 
-            if let Some(count) = resp.get("count").and_then(|c| c.as_u64()) {
+            if let Some(count) = resp.get("count").and_then(serde_json::Value::as_u64) {
                 if let Some(arr) = resp.get("primals").and_then(|p| p.as_array()) {
                     v.check_bool(
                         "live:primal_list:count_matches",

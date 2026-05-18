@@ -3,7 +3,27 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18 AM)
+## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18)
+
+### Stale Socket Blurb Absorption Sweep + plasmidBin Hardening (May 18)
+- Pulled all 14 primals and verified stale socket blurb absorption
+- **13/14 absorbed**: bearDog, biomeOS, coralReef, loamSpine, nestgate, petalTongue,
+  rhizoCrypt, skunkBat, songbird, sourDough, squirrel, sweetGrass, toadStool
+- ~~**1 gap**: barraCuda~~ **RESOLVED** — `transport.rs` `remove_file` at both bind sites +
+  legacy symlink cleanup. **14/14 primals stale-socket-clean.**
+- toadStool S264: full audit response — 6/6 bind sites clean, CLI daemon + DisplayServer
+  gaps fixed, 9,028 tests, 0 clippy warnings
+- R9 (biomeOS) + R10 (songbird) marked **ABSORBED** — CHANGELOGs confirm socket hygiene
+- R11 (PID files) **deprioritized** — consumer-side connect-probe provides equivalent liveness
+- plasmidBin manifest aligned: sweetGrass → 0.7.37
+- Version drift noted: sourDough Cargo.toml=0.1.0 vs docs=0.3.0 (their debt),
+  rhizoCrypt 0.14.0-dev (pre-release suffix)
+- **plasmidBin `stop_gate.sh`**: now cleans stale sockets from `biomeos/`, `ecoprimals/`,
+  `/tmp/biomeos/` after killing primal processes (prevents stale socket accumulation)
+- **plasmidBin `start_primal.sh`**: pre-start cleanup removes stale socket at `--socket`
+  path before primal binds (prevents `EADDRINUSE` after crashes)
+- Upstream blurbs updated: main blurb has full absorption table, barraCuda-specific
+  blurb shipped to `BARRACUDA_STALE_SOCKET_GAP_MAY18_2026.md`
 
 ### Stale Socket Detection + Consumer-Side Fix (May 18 AM)
 - **wetSpring production observation**: 50+ stale biomeOS sockets, 100+ stale songbird sockets

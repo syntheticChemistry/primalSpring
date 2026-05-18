@@ -74,7 +74,7 @@ pub fn capability_to_primal(capability: &str) -> &str {
 /// Typed version — returns `None` for non-primal targets (springs, unknown).
 #[must_use]
 pub fn capability_to_primal_typed(capability: &str) -> Option<Primal> {
-    use Primal::*;
+    use Primal::{BearDog, Songbird, ToadStool, BarraCuda, CoralReef, NestGate, Squirrel, RhizoCrypt, SweetGrass, LoamSpine, PetalTongue, SkunkBat, BiomeOS};
     match capability {
         "security" | "crypto" => Some(BearDog),
         "discovery" | "network" => Some(Songbird),

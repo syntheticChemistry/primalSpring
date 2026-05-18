@@ -227,7 +227,7 @@ pub fn verify_seed_fingerprints(
     results
 }
 
-fn current_target_triple() -> &'static str {
+const fn current_target_triple() -> &'static str {
     #[cfg(all(target_arch = "x86_64", target_os = "linux"))]
     return "x86_64-unknown-linux-musl";
     #[cfg(all(target_arch = "aarch64", target_os = "linux"))]

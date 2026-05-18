@@ -80,7 +80,7 @@ fn validate_tier_primals(
             .unwrap_or("unknown");
         let required = node
             .get("required")
-            .and_then(|r| r.as_bool())
+            .and_then(toml::Value::as_bool)
             .unwrap_or(true);
         // Optional nodes (e.g. Phase 2 bootstrap) may cross tier boundaries
         if !required {
@@ -208,7 +208,7 @@ fn validate_live_signal_dispatch(v: &mut ValidationResult, ctx: &mut Composition
         Ok(response) => {
             let count = response
                 .get("count")
-                .and_then(|c| c.as_u64())
+                .and_then(serde_json::Value::as_u64)
                 .unwrap_or(0);
             v.check_bool(
                 "live:signal.list:responds",
