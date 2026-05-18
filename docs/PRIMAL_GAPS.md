@@ -25,7 +25,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
 | toadStool | 22,900+ | **ADOPTED** | FULL | L3 | **CLEAN** — Phase D factory wired (S254). AMD live, NV FECS-gated. 74 JSON-RPC methods. |
 | biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.57: Neural API evolution complete. `signal.dispatch` composition collapse, `primal.announce` atomic self-registration, metrics tagging with signal namespaces, `capability.call` signal-tier interception. v3.54 `biomeos.spring_status` for Tier 2. |
-| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — S64 Wave 22 stadial gate: `capabilities.list` aligned to `{capabilities, count, primal}` standard, `identity.get`/`auth.*`/`btsp.capabilities` wired on SemanticRouter (transport parity), version scheme documented. 57 semantic methods, 66 UDS methods, 63 registered in capability_registry.toml. |
+| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — S65 stale socket cleanup: `SocketCleanupGuard` (RAII) + `ctrl_c` graceful shutdown + PID sidecar; `prepare_socket_path` unlink-before-bind confirmed on all paths. S64 stadial gate: wire standard alignment, stability tiers, btsp.capabilities. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 68: 72-method coverage, TensorSession `sub`/`negate` (GAP-HS-027), registry assertion softened to `>= 70` |
 | petalTongue | varies | **ADOPTED** | FULL | L2/L3 | **CLEAN** — all `#[allow]` → `#[expect(reason)]` (P6) |
