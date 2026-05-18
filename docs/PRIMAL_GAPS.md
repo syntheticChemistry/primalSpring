@@ -62,6 +62,16 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 | ~~R6~~ | ~~Ferment transcript braids~~ | wetSpring | ~~HIGH~~ **RESOLVED** — Exp382 sovereign pipeline live, Barrick 2009 braids shipping |
 | R7 | `spore.instantiate` atomic VM provisioning | biomeOS | LOW |
 | ~~R8~~ | ~~`capability.list` complete inventory~~ | All primals | ~~LOW~~ **RESOLVED** — all primals now return canonical `{ capabilities, count, primal }` envelope (Wave 22 stadial push) |
+| R9 | Stale socket cleanup on startup | biomeOS | MEDIUM |
+| R10 | Stale socket cleanup on startup | songbird | LOW |
+| R11 | PID file alongside socket | All primals | LOW |
+| R12 | `doctor.sh` stale socket checker | plasmidBin | LOW |
+
+### Resolved Locally (primalSpring — May 18, 2026)
+
+| Issue | Resolution |
+|-------|------------|
+| Stale socket discovery (wetSpring report) | `socket_is_alive()` connect-probe replaces `path.exists()` in all discovery paths (`discover_primal`, `discover_by_capability`, `NeuralBridge::discover`). Dead socket negative cache (`DEAD_SOCKET_CACHE`) prevents repeated ~100ms probe costs. CAPABILITY_BASED_DISCOVERY_STANDARD updated to v1.3.0 (§5-6). |
 
 ### Downstream-Blocked (awaiting spring teams)
 

@@ -63,16 +63,18 @@ impl NeuralBridge {
     /// the standard `{NEURAL_API_SOCKET}` → XDG → `/tmp` tiers are walked.
     #[must_use]
     pub fn discover_with(socket_hint: Option<&str>, family_hint: Option<&str>) -> Option<Self> {
+        use super::discover::socket_is_alive;
+
         if let Some(hint) = socket_hint {
             let path = PathBuf::from(hint);
-            if path.exists() {
+            if socket_is_alive(&path) {
                 return Some(Self { socket_path: path });
             }
         }
 
         if let Ok(explicit) = std::env::var(crate::env_keys::NEURAL_API_SOCKET) {
             let path = PathBuf::from(&explicit);
-            if path.exists() {
+            if socket_is_alive(&path) {
                 return Some(Self { socket_path: path });
             }
         }
@@ -88,7 +90,7 @@ impl NeuralBridge {
             let base = PathBuf::from(xdg).join(crate::primal_names::BIOMEOS);
             for name in &candidates {
                 let path = base.join(name);
-                if path.exists() {
+                if socket_is_alive(&path) {
                     return Some(Self { socket_path: path });
                 }
             }
@@ -98,7 +100,7 @@ impl NeuralBridge {
             let path = std::env::temp_dir()
                 .join(crate::primal_names::BIOMEOS)
                 .join(name);
-            if path.exists() {
+            if socket_is_alive(&path) {
                 return Some(Self { socket_path: path });
             }
         }

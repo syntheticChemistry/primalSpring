@@ -12,6 +12,7 @@
 
 use std::path::PathBuf;
 
+use super::discover::socket_is_alive;
 use super::neural_bridge::NeuralBridge;
 
 /// Result of discovering a provider by capability domain.
@@ -73,7 +74,7 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
         if let Some(raw) = endpoint_str {
             let socket_str = strip_unix_uri(raw);
             let path = PathBuf::from(socket_str);
-            if path.exists() {
+            if socket_is_alive(&path) {
                 let primal = resp
                     .get("primals")
                     .and_then(|p| p.as_array())
@@ -102,9 +103,8 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
     let biomeos_dir = base.join(crate::primal_names::BIOMEOS);
     let family = crate::env_keys::resolve_family_id();
 
-    // 2a: {capability}-{family}.sock (multi-tenant convention)
     let family_sock = biomeos_dir.join(format!("{capability}-{family}.sock"));
-    if family_sock.exists() {
+    if socket_is_alive(&family_sock) {
         return CapabilityDiscoveryResult {
             capability: capability.to_owned(),
             resolved_primal: None,
@@ -112,9 +112,8 @@ pub fn discover_by_capability(capability: &str) -> CapabilityDiscoveryResult {
             source: CapabilityDiscoverySource::CapabilitySocket,
         };
     }
-    // 2b: {capability}.sock (single-tenant fallback)
     let cap_sock = biomeos_dir.join(format!("{capability}.sock"));
-    if cap_sock.exists() {
+    if socket_is_alive(&cap_sock) {
         return CapabilityDiscoveryResult {
             capability: capability.to_owned(),
             resolved_primal: None,
@@ -202,7 +201,7 @@ fn discover_from_socket_registry_by_capability(
         if has_cap {
             if let Some(sock_str) = entry.get("socket_path").and_then(serde_json::Value::as_str) {
                 let path = PathBuf::from(sock_str);
-                if path.exists() {
+                if socket_is_alive(&path) {
                     return Some((path, Some(primal_name.clone())));
                 }
             }

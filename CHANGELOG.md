@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18 AM)
 
+### Stale Socket Detection + Consumer-Side Fix (May 18 AM)
+- **wetSpring production observation**: 50+ stale biomeOS sockets, 100+ stale songbird sockets
+  in `/run/user/1000/biomeos/` and `/tmp/` — no listener process, `ConnectionRefused` on connect
+- Added `socket_is_alive()` connect-probe (50ms timeout) replacing `path.exists()` in all
+  6 discovery tiers: `discover_primal`, `discover_by_capability`, `NeuralBridge::discover`,
+  manifest discovery, socket registry scan, capability-named socket scan
+- Added `DEAD_SOCKET_CACHE` (process-level negative cache) — dead sockets never re-probed
+  in the same session, eliminating repeated ~100ms costs for stale socket directories
+- Updated `CAPABILITY_BASED_DISCOVERY_STANDARD.md` v1.3.0 (§5-6: connect-probe liveness,
+  startup directory cleanup, PID file pattern)
+- Updated `DEPLOYMENT_VALIDATION_STANDARD.md` (stale socket hygiene section)
+- Added upstream asks: R9 (biomeOS cleanup), R10 (songbird cleanup), R11 (PID files),
+  R12 (plasmidBin doctor.sh)
+- Upstream blurb: `STALE_SOCKET_CLEANUP_UPSTREAM_MAY18_2026.md`
+- 39 IPC tests pass (16 discover + 11 capability + 12 neural_bridge)
+
 ### Next Wave Prep + wateringHole Fossilization Pass (May 18 AM)
 - Prepped Waves 23–27 in ECOSYSTEM_EVOLUTION_CYCLE:
   - Wave 23: wetSpring E2E study completion (Barrick 2009 live, Tenaillon 264 queued)

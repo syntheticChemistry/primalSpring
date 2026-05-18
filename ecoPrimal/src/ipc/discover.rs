@@ -21,14 +21,62 @@
 //! capability parsing live in [`crate::ipc::capability`] and are re-exported
 //! here for a stable [`crate::ipc::discover`] path.
 
+use std::os::unix::net::UnixStream;
 use std::path::{Path, PathBuf};
+use std::time::Duration;
 
 use super::neural_bridge::NeuralBridge;
+
+use std::collections::HashSet;
+use std::sync::{Mutex, OnceLock};
 
 pub use super::capability::{
     CapabilityDiscoveryResult, CapabilityDiscoverySource, capability_call, discover_by_capability,
     discover_capabilities, discover_capabilities_for, extract_capability_names,
 };
+
+/// Sockets confirmed dead during this process. Avoids re-probing stale
+/// sockets on every `discover_primal` / `capability_call` invocation.
+/// Cleared only on process restart (appropriate: stale sockets don't
+/// spontaneously come back to life within a session).
+static DEAD_SOCKET_CACHE: OnceLock<Mutex<HashSet<PathBuf>>> = OnceLock::new();
+
+const LIVENESS_PROBE_TIMEOUT: Duration = Duration::from_millis(50);
+
+/// Test whether a Unix domain socket has a listening process.
+///
+/// Attempts a non-blocking connect with a short timeout. Returns `false`
+/// if the file doesn't exist, if `connect()` returns `ConnectionRefused`
+/// (errno 111), or if the timeout expires. This is much cheaper than a
+/// full JSON-RPC health check (~50ms worst case vs ~5s read timeout).
+#[must_use]
+pub fn socket_is_alive(path: &Path) -> bool {
+    if !path.exists() {
+        return false;
+    }
+
+    let cache = DEAD_SOCKET_CACHE.get_or_init(|| Mutex::new(HashSet::new()));
+    if let Ok(set) = cache.lock() {
+        if set.contains(path) {
+            return false;
+        }
+    }
+
+    let alive = UnixStream::connect(path)
+        .map(|stream| {
+            let _ = stream.set_read_timeout(Some(LIVENESS_PROBE_TIMEOUT));
+            true
+        })
+        .unwrap_or(false);
+
+    if !alive {
+        if let Ok(mut set) = cache.lock() {
+            set.insert(path.to_path_buf());
+        }
+    }
+
+    alive
+}
 
 /// Result of attempting to discover a primal's socket.
 #[derive(Debug, Clone)]
@@ -122,8 +170,7 @@ pub fn discover_from_manifest(primal: &str) -> Option<PathBuf> {
     let contents = std::fs::read_to_string(manifest_path).ok()?;
     let parsed: serde_json::Value = serde_json::from_str(&contents).ok()?;
     let sock_str = parsed.get("socket_path")?.as_str()?;
-    let sock_path = PathBuf::from(sock_str);
-    sock_path.exists().then_some(sock_path)
+    Some(PathBuf::from(sock_str))
 }
 
 /// Attempt to read a socket path from the biomeOS socket registry.
@@ -142,8 +189,7 @@ pub fn discover_from_socket_registry(primal: &str) -> Option<PathBuf> {
     let parsed: serde_json::Value = serde_json::from_str(&contents).ok()?;
     let entry = parsed.get(primal)?;
     let sock_str = entry.get("socket_path")?.as_str()?;
-    let sock_path = PathBuf::from(sock_str);
-    sock_path.exists().then_some(sock_path)
+    Some(PathBuf::from(sock_str))
 }
 
 /// Discover a primal's socket at runtime.
@@ -162,7 +208,7 @@ pub fn discover_from_socket_registry(primal: &str) -> Option<PathBuf> {
 #[must_use]
 pub fn discover_primal(primal: &str) -> DiscoveryResult {
     if let Some(p) = socket_env_var(primal) {
-        if p.exists() {
+        if socket_is_alive(&p) {
             return DiscoveryResult {
                 primal: primal.to_owned(),
                 socket: Some(p),
@@ -172,7 +218,7 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
     }
 
     let conv_path = socket_path(primal);
-    if conv_path.exists() {
+    if socket_is_alive(&conv_path) {
         let source = if std::env::var(crate::env_keys::XDG_RUNTIME_DIR).is_ok() {
             DiscoverySource::XdgConvention
         } else {
@@ -185,13 +231,12 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
         };
     }
 
-    // Many primals now use plain `{name}.sock` or `{name}-ipc.sock`
     let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR)
         .map_or_else(|_| std::env::temp_dir(), PathBuf::from);
     let biomeos_dir = base.join(crate::primal_names::BIOMEOS);
     for suffix in [".sock", "-ipc.sock"] {
         let plain = biomeos_dir.join(format!("{primal}{suffix}"));
-        if plain.exists() {
+        if socket_is_alive(&plain) {
             return DiscoveryResult {
                 primal: primal.to_owned(),
                 socket: Some(plain),
@@ -201,19 +246,23 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
     }
 
     if let Some(p) = discover_from_manifest(primal) {
-        return DiscoveryResult {
-            primal: primal.to_owned(),
-            socket: Some(p),
-            source: DiscoverySource::Manifest,
-        };
+        if socket_is_alive(&p) {
+            return DiscoveryResult {
+                primal: primal.to_owned(),
+                socket: Some(p),
+                source: DiscoverySource::Manifest,
+            };
+        }
     }
 
     if let Some(p) = discover_from_socket_registry(primal) {
-        return DiscoveryResult {
-            primal: primal.to_owned(),
-            socket: Some(p),
-            source: DiscoverySource::SocketRegistry,
-        };
+        if socket_is_alive(&p) {
+            return DiscoveryResult {
+                primal: primal.to_owned(),
+                socket: Some(p),
+                source: DiscoverySource::SocketRegistry,
+            };
+        }
     }
 
     DiscoveryResult {
@@ -331,6 +380,30 @@ mod tests {
         if result.socket.is_none() {
             assert_eq!(result.source, DiscoverySource::NotFound);
         }
+    }
+
+    #[test]
+    fn socket_is_alive_false_for_nonexistent() {
+        assert!(!socket_is_alive(Path::new("/nonexistent/socket.sock")));
+    }
+
+    #[test]
+    fn socket_is_alive_false_for_regular_file() {
+        let dir = std::env::temp_dir().join("primalspring_test_alive");
+        let _ = std::fs::create_dir_all(&dir);
+        let fake = dir.join("fake.sock");
+        std::fs::write(&fake, b"not a socket").ok();
+        assert!(!socket_is_alive(&fake));
+        let _ = std::fs::remove_file(&fake);
+    }
+
+    #[test]
+    fn dead_socket_cache_prevents_reprobe() {
+        let path = PathBuf::from("/tmp/definitely_dead_test_socket_xyzzy.sock");
+        assert!(!socket_is_alive(&path));
+        let cache = DEAD_SOCKET_CACHE.get_or_init(|| Mutex::new(HashSet::new()));
+        let contains = cache.lock().map(|s| s.contains(&path)).unwrap_or(false);
+        assert!(!contains, "nonexistent path shouldn't be cached (no file to probe)");
     }
 
     #[test]
