@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-17 PM (Wave 20 + lithoSpore Audit Absorption — stability tiers in registry, degradation docs in CompositionContext, trio transaction semantics, UDS socket ownership, Tier 3 + parity pattern in VALIDATION_TIERS. All 8 lithoSpore requests triaged: R1–R4 resolved locally, R5–R8 documented as upstream asks.)
+> **Last updated**: 2026-05-18 AM (Wave 22 stadial gate push — all primals evolved: toadStool v0.2.0 (compute.fan_out, 3 composition gaps closed), rhizoCrypt S69 (dag.partial_dehydrate), biomeOS v3.60 (braid signals), sweetGrass v0.7.36 (TCP/BTSP gap closed), coralReef v0.2.0, skunkBat v0.2.0, loamSpine/rhizoCrypt hex acceptance. 5/7 composition gaps resolved. R6+R8 upstream asks resolved.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -59,9 +59,9 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 | # | Request | Owner | Priority |
 |---|---------|-------|----------|
 | R5 | `nest.store` signal dispatch | biomeOS | MEDIUM |
-| R6 | Ferment transcript braids | wetSpring | HIGH |
+| ~~R6~~ | ~~Ferment transcript braids~~ | wetSpring | ~~HIGH~~ **RESOLVED** — Exp382 sovereign pipeline live, Barrick 2009 braids shipping |
 | R7 | `spore.instantiate` atomic VM provisioning | biomeOS | LOW |
-| R8 | `capability.list` complete inventory | All primals | LOW (mostly done Wave 20) |
+| ~~R8~~ | ~~`capability.list` complete inventory~~ | All primals | ~~LOW~~ **RESOLVED** — all primals now return canonical `{ capabilities, count, primal }` envelope (Wave 22 stadial push) |
 
 ### Downstream-Blocked (awaiting spring teams)
 
@@ -521,13 +521,13 @@ calibrate-shadow-cutover protocol, darkforest alignment
 
 | Priority | Gap | Owner | Status |
 |----------|-----|-------|--------|
-| 1 | Sandbox `working_dir` passthrough | toadStool | Open |
-| 2 | Env var expansion in workload TOMLs | toadStool | Open |
-| 3 | GPU API alignment (`submit_and_map`) | barraCuda / wetSpring | Open |
-| 4 | Data dependency declaration in TOML | toadStool / nestGate | Open |
-| 6 | Hex string acceptance (loamSpine/rhizoCrypt) | loamSpine / rhizoCrypt | Open |
-| 7 | sweetGrass TCP without BTSP | sweetGrass | Open |
-| 8 | Cross-gate dispatch via songBird | songBird / biomeOS | Open (Phase 2) |
+| ~~1~~ | ~~Sandbox `working_dir` passthrough~~ | toadStool | **RESOLVED** — S263 workload spec |
+| ~~2~~ | ~~Env var expansion in workload TOMLs~~ | toadStool | **RESOLVED** — S263 documented as pre-resolved |
+| 3 | GPU API alignment (`submit_and_map`) | barraCuda / wetSpring | Open — HMMA execution path awaits coralReef codegen |
+| ~~4~~ | ~~Data dependency declaration in TOML~~ | toadStool / nestGate | **RESOLVED** — S263 `DataDependency` field |
+| ~~6~~ | ~~Hex string acceptance (loamSpine/rhizoCrypt)~~ | loamSpine / rhizoCrypt | **RESOLVED** — rhizoCrypt S69 `parse_hash32`, loamSpine `serde_content_hash` |
+| ~~7~~ | ~~sweetGrass TCP without BTSP~~ | sweetGrass | **RESOLVED** — v0.7.36 rejects raw JSON-RPC on TCP when `FAMILY_ID` set |
+| 8 | Cross-gate dispatch via songBird | songBird / biomeOS | Open (Phase 2) — songBird still evolving |
 
 ### Layer 5: projectFOUNDATION (sporeGarden/projectFOUNDATION)
 

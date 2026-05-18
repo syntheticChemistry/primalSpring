@@ -3,7 +3,27 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 20: Ecosystem Status Assessment (2026-05-17 PM)
+## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18 AM)
+
+### Wave 22: Stadial Gate Push Review (May 18 AM)
+- Pulled and reviewed all 13 primals + sourDough (bearDog/songbird still evolving)
+- All 3 wetSpring upstream asks IMPLEMENTED:
+  - rhizoCrypt S69: dag.partial_dehydrate with PartialDehydrateResponse
+  - biomeOS v3.60: braid.partial_update + braid.complete signal graphs + stability_tiers.toml
+  - toadStool S263: compute.fan_out with substrate filter + DAG session wiring
+- 5/7 composition gaps RESOLVED:
+  - toadStool: working_dir passthrough, env var expansion, data dependency declaration
+  - sweetGrass v0.7.36: TCP/BTSP gap closed (reject raw JSON-RPC when FAMILY_ID set)
+  - rhizoCrypt S69 + loamSpine: hex string acceptance
+- Major version bumps: toadStool 0.2.0, coralReef 0.2.0, skunkBat 0.2.0, sweetGrass 0.7.36,
+  biomeOS v3.60, barraCuda Sprint 70 (75 methods)
+- nestGate: version scheme documented as intentional (4.7.0-dev internal / 0.1.0 API)
+- squirrel: 38 methods registered, stadial hardened (envelope, primal.announce, TCP env)
+- petalTongue: checksums.toml created, 55 methods, health triad per mode (web + JSON-RPC)
+- loamSpine: 23/23 stadial checklist PASS, 40 methods, btsp_gate tests
+- sourDough: v0.3.0 in docs but workspace Cargo.toml still 0.1.0 (drift persists)
+- Updated PRIMAL_GAPS.md: composition gaps table, upstream-blocked items R6/R8 resolved
+- Updated stadial blurb and Wave 22 evolution doc with resolution status
 
 ### Wave 22: Stadial Gate Primal Blurb (May 17 PM)
 - Created WAVE22_STADIAL_GATE_PRIMAL_BLURB: final debt sweep for all 13 primals

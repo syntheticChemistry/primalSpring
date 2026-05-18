@@ -2,9 +2,9 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 17, 2026 PM (Wave 22 upstream primal evolution) — 456-method registry (452+4 from wetSpring sovereign pipeline asks). wetSpring Exp382 live trio composition producing ferment transcript braids. 3 upstream asks filed: `dag.partial_dehydrate` (rhizoCrypt), `braid.partial_update`+`braid.complete` (biomeOS/RootPulse), `compute.fan_out` (toadStool). All 7 delta springs at zero Wave 20 debt.
-**Audited by**: primalSpring composition audit + lithoSpore downstream audit + delta spring self-evolution
-**Method**: Pulled all 8 springs to HEAD, assessed each across 9 axes
+**Last updated**: May 18, 2026 AM (Wave 22 stadial gate push absorbed) — All 3 wetSpring upstream asks IMPLEMENTED (rhizoCrypt dag.partial_dehydrate, biomeOS braid signals, toadStool compute.fan_out). 5/7 composition gaps RESOLVED (toadStool 3, sweetGrass TCP/BTSP, rhizoCrypt+loamSpine hex). Major version bumps: toadStool 0.2.0, coralReef 0.2.0, skunkBat 0.2.0, sweetGrass 0.7.36, biomeOS v3.60. All primals stadial-gate hardened with stability tiers, primal.announce, btsp.capabilities.
+**Audited by**: primalSpring composition audit + lithoSpore downstream audit + delta spring self-evolution + primal stadial push review
+**Method**: Pulled all 13 primals + sourDough + bingoCube to HEAD, assessed against stadial checklist
 
 ## Legend
 

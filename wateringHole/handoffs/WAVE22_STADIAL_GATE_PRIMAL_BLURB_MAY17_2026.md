@@ -384,20 +384,20 @@ These are not in the 13-primal core but appear in the plasmidBin manifest.
 
 | Primal | manifest.toml | Repo/README | Action |
 |--------|--------------|-------------|--------|
-| bearDog | 0.9.0 | 0.9.0 | OK |
-| songbird | 0.2.1 | 0.2.1 | OK |
-| skunkBat | 0.2.0-dev | 0.2.0-dev | OK (update on release) |
-| toadStool | 0.1.0 | 0.1.0/S262 | **Tag `0.2.0`** |
-| barraCuda | 0.4.0 | 0.4.0 | OK |
-| coralReef | 0.1.0 | Phase 10 Sprint 12 | **Align semver** |
-| nestGate | 0.1.0 | 4.7.0-dev | **Reconcile — largest gap** |
-| rhizoCrypt | 0.14.0 | 0.14.0-dev | Drop `-dev` on release |
-| loamSpine | 0.9.16 | 0.9.16 | OK |
-| sweetGrass | 0.7.27 | 0.7.35 | **Update manifest** |
-| biomeOS | 0.1.0 | v3.59 | **Document dual scheme** |
-| squirrel | 0.1.0 | 0.1.0 | OK (consider bump) |
-| petalTongue | 1.6.6 | 1.6.6 | OK |
-| sourDough | 0.3.0 | 0.1.0 | **Reconcile** |
+| bearDog | 0.9.0 | 0.9.0 | OK — still evolving |
+| songbird | 0.2.1 | 0.2.1 | OK — still evolving |
+| skunkBat | — | 0.2.0 | **RESOLVED** — released v0.2.0 (was -dev) |
+| toadStool | — | 0.2.0 | **RESOLVED** — tagged v0.2.0 (S263) |
+| barraCuda | 0.4.0 | 0.4.0 | OK — Sprint 70, 75 methods |
+| coralReef | 0.2.0 | 0.2.0 | **RESOLVED** — aligned manifest + Cargo |
+| nestGate | 0.1.0 | 4.7.0-dev | **Documented** — dual scheme intentional, unify on first public tag |
+| rhizoCrypt | 0.14.0 | 0.14.0-dev | Minor — drop `-dev` on next tag |
+| loamSpine | 0.9.16 | 0.9.16 | OK — stadial 23/23 PASS |
+| sweetGrass | — | 0.7.36 | **RESOLVED** — v0.7.36 (was 0.7.27/0.7.35 drift) |
+| biomeOS | 0.1.0 | v3.60 | **RESOLVED** — dual scheme documented in EVOLUTION_ROADMAP |
+| squirrel | 0.1.0 | 0.1.0 | OK — 38 methods, stadial hardened |
+| petalTongue | 1.6.6 | 1.6.6 | OK — checksums.toml created, 55 methods |
+| sourDough | 0.3.0 | 0.1.0 (workspace) | **UNRESOLVED** — docs say 0.3.0, Cargo says 0.1.0 |
 
 ---
 
@@ -408,13 +408,13 @@ lithoSpore, springs). They block or degrade real deployments.
 
 | # | Gap | Owner | Priority |
 |---|-----|-------|----------|
-| 1 | Sandbox `working_dir` passthrough | toadStool | MEDIUM |
-| 2 | Env var expansion in workload TOMLs | toadStool | MEDIUM |
+| ~~1~~ | ~~Sandbox `working_dir` passthrough~~ | toadStool | **RESOLVED** (S263) |
+| ~~2~~ | ~~Env var expansion in workload TOMLs~~ | toadStool | **RESOLVED** (S263) |
 | 3 | GPU API alignment (`submit_and_map`) | barraCuda / wetSpring | MEDIUM |
-| 4 | Data dependency declaration in TOML | toadStool / nestGate | MEDIUM |
-| 6 | Hex string acceptance | loamSpine / rhizoCrypt | LOW |
-| 7 | sweetGrass TCP without BTSP | sweetGrass | HIGH |
-| 8 | Cross-gate dispatch | songBird / biomeOS | LOW (Phase 2) |
+| ~~4~~ | ~~Data dependency declaration in TOML~~ | toadStool / nestGate | **RESOLVED** (S263) |
+| ~~6~~ | ~~Hex string acceptance~~ | loamSpine / rhizoCrypt | **RESOLVED** (v0.9.16 / S69) |
+| ~~7~~ | ~~sweetGrass TCP without BTSP~~ | sweetGrass | **RESOLVED** (v0.7.36) |
+| 8 | Cross-gate dispatch | songBird / biomeOS | LOW (Phase 2) — songBird still evolving |
 
 ---
 

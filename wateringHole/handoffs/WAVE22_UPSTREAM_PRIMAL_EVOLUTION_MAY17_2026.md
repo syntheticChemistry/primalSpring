@@ -34,7 +34,12 @@ have been filed as handoff docs in `infra/wateringHole/handoffs/`:
 
 All three degrade gracefully — science is never gated behind provenance.
 These methods have been registered in `capability_registry.toml` as
-`stability = "evolving"`. See the per-primal guidance below for integration.
+`stability = "evolving"`.
+
+> **UPDATE (May 18, 2026)**: All three upstream asks have been **IMPLEMENTED**:
+> - rhizoCrypt S69: `dag.partial_dehydrate` with `PartialDehydrateResponse` type
+> - biomeOS v3.60: `braid.partial_update` + `braid.complete` signal graphs
+> - toadStool S263: `compute.fan_out` with substrate filter + DAG session wiring
 
 ---
 

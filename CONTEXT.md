@@ -284,17 +284,19 @@ composition).
 - Glacial status evolved: ECOSYSTEM_EVOLUTION_CYCLE v1.8.0, INTERSTADIAL_EXIT_CRITERIA
   expanded with outage simulation readiness and infrastructure sovereignty posture tables
 
-### Wave 22: Upstream Primal Evolution (May 17, 2026)
+### Wave 22: Upstream Primal Evolution (May 17-18, 2026)
 - Removed duplicate `primals/beardog/` and `primals/nestGate/` stub
 - Audited all 13 primals + sourDough + bingoCube for deployment-valid standard compliance
 - Created upstream evolution blurb with per-primal action items and stadial pairing preview
-- Key findings: version drift in nestGate/sweetGrass/biomeOS/sourDough,
-  bearDog rustls/ring audit needed, 5 primals at ecobin A+ (not A++)
-- Ingested wetSpring sovereign pipeline (Exp382): live trio composition replacing
-  hand-wired provenance. First real-science pipeline using primal IPC for provenance
 - Registered 4 new methods (452→456): `dag.partial_dehydrate`, `braid.partial_update`,
   `braid.complete`, `compute.fan_out` — from downstream-validated upstream asks
-- Updated Wave 22 blurb with concrete upstream ask references per primal team
+- **Stadial gate push absorbed (May 18)**: all primals responded to blurb
+  - All 3 wetSpring upstream asks IMPLEMENTED by primal teams
+  - 5/7 composition gaps RESOLVED (toadStool 3, sweetGrass TCP/BTSP, hex acceptance)
+  - Major bumps: toadStool 0.2.0, coralReef 0.2.0, skunkBat 0.2.0, sweetGrass 0.7.36,
+    biomeOS v3.60, barraCuda Sprint 70 (75 methods)
+  - All primals now: stability tiers, primal.announce, btsp.capabilities, canonical envelope
+  - Remaining: bearDog/songbird still evolving, sourDough version drift, 2 composition gaps open
 
 ### Remaining
 - **Thread 4** expression + targets (wetSpring/airSpring coordinate)
