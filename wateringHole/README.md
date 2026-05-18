@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Wave 22 — upstream primal evolution, wetSpring sovereign pipeline live with trio composition)
-**Last Updated**: May 17, 2026 (PM — 456-method registry, wetSpring upstream asks ingested, primal hardening wave)
+**Version**: 0.9.25 (Wave 22 — 13/13 primals stadial-gate absorbed, plasmidBin v5.5.0)
+**Last Updated**: May 18, 2026 (AM — 456-method registry, all upstream asks implemented, fossilization pass)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -33,10 +33,14 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | File | Audience | What It Covers |
 |------|----------|----------------|
 | **INTERSTADIAL_FOSSILIZATION_HANDOFF.md** | Spring teams | Interstadial fossilization patterns: what to preserve, how to date, provenance READMEs. |
-| **handoffs/WAVE20_LITHOSPORE_AUDIT_SPRING_EVOLUTION_MAY17_2026.md** | Delta spring teams | lithoSpore audit absorption: stability tiers, degradation behavior, cross-tier parity, trio semantics, per-spring guidance (wetSpring highest priority). |
-| **handoffs/WAVE21_GARDEN_EVOLUTION_MAY17_2026.md** | Garden teams | Wave 21 patterns: projectNUCLEUS sovereignty + cellMembrane, projectFOUNDATION thread lineage, lithoSpore cross-tier parity. |
-| **handoffs/WAVE22_UPSTREAM_PRIMAL_EVOLUTION_MAY17_2026.md** | All primal teams | Wave 22 upstream hardening: deployment-valid checklist, per-primal action items, manifest drift, stadial pairing preview. |
-| **handoffs/WAVE22_STADIAL_GATE_PRIMAL_BLURB_MAY17_2026.md** | All primal teams | Stadial gate final debt sweep: universal checklist, low-debt group (7 primals), focused sections (6 primals with higher debt), composition gaps, wetSpring upstream asks with wire formats. |
+| **handoffs/WAVE22_UPSTREAM_PRIMAL_EVOLUTION_MAY17_2026.md** | All primal teams | Wave 22 upstream hardening: per-primal action items, wetSpring upstream asks (all 3 IMPLEMENTED), stadial pairing. |
+| **handoffs/WAVE22_STADIAL_GATE_PRIMAL_BLURB_MAY17_2026.md** | All primal teams | Stadial gate final sweep: 13/13 absorbed, 5/7 composition gaps resolved, manifest drift table, universal checklist. |
+
+### Fossilized (May 18, 2026)
+
+Moved to `handoffs/archive/` — absorbed by Wave 22 stadial push:
+- Wave 20 lithoSpore audit spring evolution (all items resolved)
+- Wave 21 garden evolution (gardens absorbed patterns)
 
 ### Ecosystem Standards (infra/wateringHole)
 

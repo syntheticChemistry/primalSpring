@@ -15,7 +15,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ---
 
-## Ecosystem Status (May 17, 2026)
+## Ecosystem Status (May 18, 2026)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 43 scenarios (10 tracks, 3 tiers), 456 methods, 744 tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. Schema standardization (Wave 20): `primal.list` + `capability.list` canonical shapes, `s_schema_standard` + `s_nest_commit_live` scenarios. All springs pulled to HEAD: 9,413+ total tests across 8 springs.
 
@@ -369,20 +369,12 @@ levels, plasmidBin binary inventory, and historical resolution logs are archived
 
 `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
-Key per-primal handoffs in `infra/wateringHole/handoffs/`:
-
-| Primal | Latest Handoff |
-|--------|---------------|
-| toadStool | `TOADSTOOL_S249_DEEP_DEBT_DURATION_DEPRECATED_MAY12_2026.md` (S245-S249 Phase C cylinder) |
-| biomeOS | `BIOMEOS_V349_TEST_HELPER_ISOLATION_HANDOFF_MAY08_2026.md` |
-| bearDog | `BEARDOG_V090_WAVE97_CROSS_FAMILY_CONTRACTS_SESSION_UX_HANDOFF_MAY08_2026.md` |
-| squirrel | `SQUIRREL_V010_PRIMALSPRING_P7_CODE_QUALITY_HANDOFF_MAY08_2026.md` |
-| barraCuda | `BARRACUDA_V0313_SPRINT56_AUDIT_TRIAGE_MAY08_2026.md` |
-| rhizoCrypt | (S64 in wateringHole) |
-| sweetGrass | `SWEETGRASS_V0732_JH0_METHOD_GATE_HANDOFF_MAY08_2026.md` |
-| nestgate | `NESTGATE_V470_SESSION61_DEEP_DEBT_HYGIENE_MAY11_2026.md` |
-| petalTongue | `PETALTONGUE_V166_JH0_METHOD_GATE_HANDOFF_MAY08_2026.md` |
-| skunkBat | `SKUNKBAT_V020DEV_JH5_AUDIT_LOG_HANDOFF_MAY08_2026.md` |
+Historical per-primal handoffs are in `infra/wateringHole/handoffs/archive/`.
+All primal-specific stadial gate responses (May 17) have been fossilized after
+absorption into Wave 22 coordination docs. See `primalSpring/wateringHole/handoffs/`
+for the living coordination handoffs:
+- `WAVE22_UPSTREAM_PRIMAL_EVOLUTION_MAY17_2026.md` — per-primal action items
+- `WAVE22_STADIAL_GATE_PRIMAL_BLURB_MAY17_2026.md` — stadial gate sweep
 
 ---
 

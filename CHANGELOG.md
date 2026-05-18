@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18 AM)
 
+### Next Wave Prep + wateringHole Fossilization Pass (May 18 AM)
+- Prepped Waves 23–27 in ECOSYSTEM_EVOLUTION_CYCLE:
+  - Wave 23: wetSpring E2E study completion (Barrick 2009 live, Tenaillon 264 queued)
+  - Wave 24: Shadow run execution (TLS/NAT/content/auth parity proofs)
+  - Wave 25: Primal-spring pairing for stadial depth
+  - Wave 26: 2 remaining composition gaps + 2 biomeOS signal items
+  - Wave 27: projectFOUNDATION thread saturation
+- Fossilized 23 handoffs across primalSpring and infra wateringHole:
+  - primalSpring: Wave 20 lithoSpore audit, Wave 21 garden evolution (both absorbed)
+  - infra: 3 wetSpring upstream asks (all implemented), 8 primal stadial gate responses
+    (all absorbed), 10 pre-Wave 22 spring/garden handoffs (all superseded)
+- Living handoffs reduced to 6 (2 primalSpring coordination + 4 infra active science)
+- Updated wateringHole README with fossilization record
+- Updated INTERSTADIAL_EXIT_CRITERIA to v1.8 (plasmidBin v5.5.0, Wave 22 absorbed)
+
 ### Wave 22: Stadial Gate Push Review (May 18 AM)
 - Pulled and reviewed all 13 primals + sourDough (bearDog/songbird still evolving)
 - All 3 wetSpring upstream asks IMPLEMENTED:

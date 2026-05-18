@@ -73,9 +73,9 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 20 (May 17, 2026 PM) — 744 `#[test]` markers across workspace,
+v0.9.25 Wave 22 (May 18, 2026 AM) — 744 `#[test]` markers across workspace,
 89 experiments (20 tracks), 80 deploy graphs + 14 atomic signal graphs,
-452 registered capability methods, 44-cell deployment matrix. Phase 32 atomic
+456 registered capability methods, 44-cell deployment matrix. Phase 32 atomic
 evolution: Tower = 3 primals (bearDog + songbird + skunkBat), Node = 6
 (Tower + compute trio), Nest = 7 (Tower + nestGate + provenance trio),
 NUCLEUS = 10 core + 3 meta = 13 total.
@@ -211,11 +211,14 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data visualization), neuralSpring (agentic
 composition).
 
-## Glacial Checkpoint — Current and Remaining (May 17, 2026 PM)
+## Glacial Checkpoint — Current and Remaining (May 18, 2026 AM)
 
 ### Completed
-- All 8 springs at Wave 20 — canonical capability.list envelope, registry 452, debt resolved
-- 452-method registry stable (primal.list added Wave 20), zero drift
+- **Wave 22 stadial gate absorbed**: 13/13 primals evolved, 456 methods, plasmidBin v5.5.0
+- **Fossilization pass**: 23 handoffs archived, living handoffs reduced to 6
+- **Next waves prepped**: Waves 23–27 (E2E study, shadow runs, pairing, gaps, threads)
+- All 8 springs at Wave 20 — canonical capability.list envelope, debt resolved
+- 456-method registry stable (3 upstream asks + primal.list added), zero drift
 - 43 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
 - 9/10 foundation threads active (Thread 4 sole remaining)
 - lithoSpore v1.0.0 released — 7/7 modules Tier 2 PASS (75/75 checks)
