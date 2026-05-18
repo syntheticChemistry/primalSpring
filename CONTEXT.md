@@ -296,7 +296,9 @@ composition).
   - Major bumps: toadStool 0.2.0, coralReef 0.2.0, skunkBat 0.2.0, sweetGrass 0.7.36,
     biomeOS v3.60, barraCuda Sprint 70 (75 methods)
   - All primals now: stability tiers, primal.announce, btsp.capabilities, canonical envelope
-  - Remaining: bearDog/songbird still evolving, sourDough version drift, 2 composition gaps open
+  - bearDog Wave 105: ring/rustls policy reconciled, ACME design doc authored
+  - songbird Wave 207-208: btsp.capabilities, primal.announce, aws-lc-sys banned, test splits
+  - Remaining: biomeOS final push pending, sourDough version drift, 2 composition gaps open
 
 ### Remaining
 - **Thread 4** expression + targets (wetSpring/airSpring coordinate)

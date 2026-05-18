@@ -24,6 +24,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - sourDough: v0.3.0 in docs but workspace Cargo.toml still 0.1.0 (drift persists)
 - Updated PRIMAL_GAPS.md: composition gaps table, upstream-blocked items R6/R8 resolved
 - Updated stadial blurb and Wave 22 evolution doc with resolution status
+- bearDog Wave 105: ring/rustls deny.toml policy reconciled (ring allowed only via rustls),
+  ACME_TLS_INTEGRATION_PATH.md design doc authored, stadial checklist re-verified
+- songbird Wave 207-208: btsp.capabilities + network.btsp token, primal.announce, aws-lc-sys
+  banned, capabilities.list envelope enriched, dead feature cleanup, test file splits
+- biomeOS: final push pending
 
 ### Wave 22: Stadial Gate Primal Blurb (May 17 PM)
 - Created WAVE22_STADIAL_GATE_PRIMAL_BLURB: final debt sweep for all 13 primals

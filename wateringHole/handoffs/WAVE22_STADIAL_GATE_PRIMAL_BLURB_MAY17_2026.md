@@ -384,8 +384,8 @@ These are not in the 13-primal core but appear in the plasmidBin manifest.
 
 | Primal | manifest.toml | Repo/README | Action |
 |--------|--------------|-------------|--------|
-| bearDog | 0.9.0 | 0.9.0 | OK — still evolving |
-| songbird | 0.2.1 | 0.2.1 | OK — still evolving |
+| bearDog | 0.9.0 | 0.9.0 | OK — ring/rustls policy reconciled, ACME design doc written |
+| songbird | 0.2.1 | 0.2.1-wave208 | OK — btsp.capabilities, primal.announce, aws-lc-sys banned |
 | skunkBat | — | 0.2.0 | **RESOLVED** — released v0.2.0 (was -dev) |
 | toadStool | — | 0.2.0 | **RESOLVED** — tagged v0.2.0 (S263) |
 | barraCuda | 0.4.0 | 0.4.0 | OK — Sprint 70, 75 methods |
