@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: May 7, 2026
-**Status**: Phase 60 — v0.9.25 — 89 experiments (20 tracks), 680 workspace tests (632 passed + 48 ignored; 664 package: 616 passed + 48 ignored), 74 deploy graphs, **389 registered capability methods** across 82 domains, **Security gate (JH-0)**: 13/13 primals adopted `MethodGate` pattern. **JH-1 RESOLVED**: BearDog ionic tokens (Ed25519-signed, scoped, expiry). **GAP-11 CLOSED** (18/18): barraCuda 71 methods incl. `nautilus.*` server sessions + `ml.mlp_train`. **Zero DEBT markers / zero unsafe blocks** (`SeedConfig` + `OnceLock` replaced `env::set_var`), **All 14 upstream sovereignty gaps resolved** (PT-1→PT-5, NG-1→NG-4, RP-1→RP-5, PG-60, PG-62), **Deep debt evolution** (binary modularization, probe cache, profile registry, blake3 pure Rust, 2 experiment refactors), **Graph validator** with spring-domain exclusion (0 primal drift, 91 advisory), **Content-addressed storage** (NestGate 8 new methods), **RootPulse workflow** fully executable (6/6 phases), **Desktop NUCLEUS live** (13 primals, 13/13 healthy), **13/13 BTSP Phase 3 FULL AEAD** (ChaCha20-Poly1305), **genomeBin v5.1** (46 binaries / 6 targets), **biomeOS Neural API** (605+ capabilities, semantic routing, graph execution, standalone executor)
+**Date**: May 18, 2026
+**Status**: Phase 60+ — v0.9.25 — 89 experiments (20 tracks), 720 `#[test]` markers (719 pass, 0 clippy errors), 94 deploy graphs (80 deploy + 14 signal), **456 registered capability methods**, 43 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 22 stadial gate**: all 13 primals evolved, 14/14 stale-socket-clean. **Zero DEBT markers / zero unsafe blocks**. **genomeBin v5.5.0** (plasmidBin manifest aligned). **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, `primal.announce` atomic registration). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs. **Stale socket hygiene**: connect-probe liveness (`socket_is_alive`), negative cache (`DEAD_SOCKET_CACHE`), `CAPABILITY_BASED_DISCOVERY_STANDARD` v1.3.0
 
 ---
 
@@ -58,6 +58,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 17 | Cross-Architecture + Cellular Deployment | exp095–096, exp098 | Does biomeOS-managed Tower bootstrap on aarch64 Pixel via Neural API `--tcp-only`? **15/15 checks.** Does cellular deployment from cell graphs validate? |
 | 18 | Desktop Substrate | exp099–exp106 | Does the full desktop stack work? Agentic loop, MCP tools, AI triage, storytelling, ludoSpring IPC, provenance replay, **The Rhizome roguelike**, **micro-desktop shell** |
 | 19 | Foundation Validation | exp107 | Does the foundation sediment pipeline run through NUCLEUS via Rust IPC? 8-phase validation (structural → discovery → health → provenance → storage → compute → ledger → attribution) |
+| 20 | Security + Composition Lifecycle | exp108–exp111 | Token federation (JH-11 cross-primal Ed25519), composition reload lifecycle, audit pipeline (JH-5 skunkBat→rhizoCrypt→sweetGrass), gate-aware Neural API routing |
 
 ## Current State (v0.9.25)
 
