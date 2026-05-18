@@ -5,6 +5,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 20: Ecosystem Status Assessment (2026-05-17 PM)
 
+### Wave 22: Stadial Gate Primal Blurb (May 17 PM)
+- Created WAVE22_STADIAL_GATE_PRIMAL_BLURB: final debt sweep for all 13 primals
+  to reach stadial readiness
+- Low-debt group (7): bearDog, songbird, squirrel, petalTongue, loamSpine,
+  barraCuda, skunkBat — checklist-only
+- Focused sections (6): nestGate (version drift), sweetGrass (manifest + TCP/BTSP),
+  rhizoCrypt (dag.partial_dehydrate), biomeOS (braid signals + version scheme),
+  toadStool (compute.fan_out + 3 composition gaps), coralReef (version alignment)
+- 7 open composition gaps catalogued with owners and priorities
+- Stadial pairing preview: Tower→cellMembrane, Compute→wetSpring, Provenance→lithoSpore
+
 ### Wave 22: Upstream Primal Evolution + wetSpring Sovereign Pipeline (May 17 PM)
 - Removed duplicate `primals/beardog/` clone (kept `bearDog/` as canonical)
 - Removed `primals/nestGate/` stub directory (kept `nestgate/` as full repo)
