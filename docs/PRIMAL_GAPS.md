@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-18 (Stale socket blurb absorption sweep — 13/14 primals absorbed, barraCuda gap at 2 bind sites. toadStool S264 shipped. R9/R10 absorbed, R11 deprioritized, R12 resolved. sweetGrass v0.7.37, plasmidBin manifest aligned.)
+> **Last updated**: 2026-05-19 (Wave 24 shadow run execution issued. All primals pulled to HEAD. 14/14 stale socket clean (barraCuda fix landed). nestGate S66: content.resolve index.html normalization + timing metadata for shadow S3 TTFB. petalTongue S3: compression, security headers, trace, custom 404 for shadow parity. hotSpring 183ms warm keepalive proven. wetSpring Barrick 2009 SEALED — 7/7 clones, USB handoff to lithoSpore. projectNUCLEUS Wave 24 absorbed: sovereignty_shadow.toml, membrane telemetry pipeline operational. wetSpring GAPS ingested: #9 parity L1vsL2 documented, #11 variant caller calibration active, #8 Tenaillon 2016 queued.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -25,7 +25,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
 | toadStool | 22,900+ | **ADOPTED** | FULL | L3 | **CLEAN** — Phase D factory wired (S254). AMD live, NV FECS-gated. 74 JSON-RPC methods. |
 | biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.57: Neural API evolution complete. `signal.dispatch` composition collapse, `primal.announce` atomic self-registration, metrics tagging with signal namespaces, `capability.call` signal-tier interception. v3.54 `biomeos.spring_status` for Tier 2. |
-| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — S66 shadow run readiness: `content.resolve` index.html path normalization (trailing-slash + bare-path fallback), `resolved_in_ms` / `retrieved_in_ms` timing metadata for TTFB measurement. S65 stale socket cleanup: `SocketCleanupGuard` (RAII) + `ctrl_c` graceful shutdown + PID sidecar. S64 stadial gate: wire standard alignment, stability tiers, btsp.capabilities. |
+| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — S66 shadow S3 readiness: `content.resolve` index.html path normalization (trailing-slash + bare-path fallback), `resolved_in_ms`/`retrieved_in_ms` timing metadata for TTFB. 673 tests. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 68: 72-method coverage, TensorSession `sub`/`negate` (GAP-HS-027), registry assertion softened to `>= 70` |
 | petalTongue | varies | **ADOPTED** | FULL | L2/L3 | **CLEAN** — all `#[allow]` → `#[expect(reason)]` (P6) |
@@ -59,7 +59,7 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 | # | Request | Owner | Priority |
 |---|---------|-------|----------|
 | R5 | `nest.store` signal dispatch | biomeOS | MEDIUM |
-| ~~R6~~ | ~~Ferment transcript braids~~ | wetSpring | ~~HIGH~~ **RESOLVED** — Exp382 sovereign pipeline live, Barrick 2009 braids shipping |
+| ~~R6~~ | ~~Ferment transcript braids~~ | wetSpring | ~~HIGH~~ **RESOLVED** — Barrick 2009 SEALED (7/7 clones, 486 sovereign variants, USB to lithoSpore May 19). Tenaillon 2016 queued (264 clones, 590 GB). |
 | R7 | `spore.instantiate` atomic VM provisioning | biomeOS | LOW |
 | ~~R8~~ | ~~`capability.list` complete inventory~~ | All primals | ~~LOW~~ **RESOLVED** — all primals now return canonical `{ capabilities, count, primal }` envelope (Wave 22 stadial push) |
 | R9 | Stale socket cleanup on startup | biomeOS | MEDIUM — **ABSORBED** (biomeOS CHANGELOG confirms socket hygiene) |
@@ -78,7 +78,7 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 
 ### Stale Socket Blurb Absorption (May 18, 2026 sweep)
 
-**13/14 primals absorbed** the stale socket cleanup blurb. All confirmed `unlink()` before `bind()` at bind sites and/or implemented shutdown cleanup.
+**14/14 primals absorbed** the stale socket cleanup blurb. All confirmed `unlink()` before `bind()` at bind sites and/or implemented shutdown cleanup. barraCuda fix landed (Sprint 70 hotfix, `transport.rs`).
 
 | Primal | Status | Notes |
 |--------|--------|-------|
@@ -103,10 +103,25 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 
 | Gap | Spring | What | Priority |
 |-----|--------|------|----------|
-| Ferment braids: Tenaillon 2016 | wetSpring | breseq on 264 genomes, trio provenance, braid handoff to lithoSpore | HIGH |
-| Ferment braids: Barrick 2009 | wetSpring | breseq on 19 genomes, trio provenance, braid handoff to lithoSpore | HIGH |
+| Ferment braids: Tenaillon 2016 | wetSpring | breseq on 264 genomes, trio provenance, braid handoff to lithoSpore. 590 GB, 312 accessions, 524 FASTQs. Requires `compute.fan_out` (toadStool). | HIGH |
+| ~~Ferment braids: Barrick 2009~~ | wetSpring | ~~breseq on 7 clones~~ **SEALED** — 7/7 clones, 486 sovereign vs 569 breseq (0.85 ratio), USB handoff May 19. L1 vs L2 parity documented. | ~~HIGH~~ **DONE** |
 | Cross-tier parity adoption | all springs with dual-language validation | `litho parity` pattern — Python vs Rust numerical agreement | MEDIUM |
 | Thread 4 expression seeding | wetSpring / airSpring | Environmental genomics targets for projectFOUNDATION | MEDIUM |
+
+### wetSpring Active Gaps (ingested May 19, 2026)
+
+From `wetSpring/GAPS.md` — issues that route to primalSpring or upstream teams:
+
+| # | Gap | Owner | Priority | Status |
+|---|-----|-------|----------|--------|
+| WS-1 | Ionic contract negotiation — no automated protocol for establishing/modifying/terminating bonds | primalSpring Track 4 | HIGH | Scaffolded, no protocol |
+| WS-2 | Cross-spring data exchange via RootPulse — no remote pull protocol for provenance-wrapped subsets | RootPulse team | HIGH | Not started |
+| WS-3 | Public chain anchor — braids have no public verifiable ledger anchor | loamSpine | MEDIUM | Not started |
+| WS-4 | petalTongue client-side WASM — all grammar rendering requires live HPC | petalTongue | MEDIUM | Not started |
+| WS-9 | Cross-tier parity — L1 vs L2 documented (0 position overlap), L2 vs L3 pending, coordinate mismatch | wetSpring | MEDIUM | L1/L2 done, L3 pending |
+| WS-11 | Variant caller parity — sovereign over-calls vs breseq (v1: 15-19x, need binomial model) | wetSpring | HIGH | Active calibration |
+
+**Note**: WS-8 (ferment transcript pipeline) and WS-10 (stale socket) are RESOLVED. WS-5 (ludoSpring), WS-6 (hotSpring physics), WS-7 (radiating attribution) are Phase 3-4 future work — not tracked here.
 
 ---
 
@@ -494,7 +509,7 @@ foundation seeding, plasmidBin release readiness
 
 | Spring | Version | gS | Tier 4 | Open Gaps | LTEE | Next Target |
 |--------|---------|:--:|:------:|-----------|------|-------------|
-| wetSpring | V167 | **L5** | Done | 2 (PG-02,04 — deployment-only) | **B7 Tier 2 COMPLETE** | close PG-02/04, niche depth |
+| wetSpring | V179 | **L5** | Done | 2 (PG-02,04 — deployment-only) | **Barrick SEALED** (7/7, USB to lithoSpore) | Tenaillon 2016, variant caller parity, L3 cross-tier |
 | hotSpring | v0.6.32 | L6 | Done | Titan V FECS, K80 livepatch | **B2 DONE** | Node atomic (`s_node_atomic` added). strandGate AMD+NV, biomeGate sovereign dispatch |
 | neuralSpring | V159 | L5 | Done | Squirrel provider reg (upstream) | **B1 DONE** | NestGate weight persistence WIRED, Squirrel inference pipeline COMPLETE |
 | airSpring | v0.10.0 | L4 | Done | ~~AG-005~~ **RESOLVED**. NestGate/Squirrel IPC wired | E3 queued | LTEE E3, gS L5+ |
