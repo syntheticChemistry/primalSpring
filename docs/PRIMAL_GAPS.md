@@ -115,7 +115,7 @@ From `wetSpring/GAPS.md` — issues that route to primalSpring or upstream teams
 | # | Gap | Owner | Priority | Status |
 |---|-----|-------|----------|--------|
 | WS-1 | Ionic contract negotiation — no automated protocol for establishing/modifying/terminating bonds | primalSpring Track 4 | HIGH | Scaffolded, no protocol |
-| WS-2 | Cross-spring data exchange via RootPulse — no remote pull protocol for provenance-wrapped subsets | RootPulse team | HIGH | Not started |
+| WS-2 | Cross-spring data exchange (RootPulse semantic function) — no remote pull protocol for provenance-wrapped subsets | biomeOS + trio (rhizoCrypt, loamSpine, sweetGrass) | HIGH | Not started |
 | WS-3 | Public chain anchor — braids have no public verifiable ledger anchor | loamSpine | MEDIUM | Not started |
 | WS-4 | petalTongue client-side WASM — all grammar rendering requires live HPC | petalTongue | MEDIUM | Not started |
 | WS-9 | Cross-tier parity — L1 vs L2 documented (0 position overlap), L2 vs L3 pending, coordinate mismatch | wetSpring | MEDIUM | L1/L2 done, L3 pending |

@@ -69,18 +69,22 @@ self-service bond creation.
 contract serialization, mutual verification) in Track 4. This is
 architectural — needs a spec before implementation.
 
-### WS-2: Cross-Spring Data Exchange via RootPulse
+### WS-2: Cross-Spring Data Exchange (RootPulse semantic function)
 
-**Owner:** RootPulse team
+**Owner:** biomeOS (orchestration) + provenance trio (rhizoCrypt, loamSpine, sweetGrass)
 **Priority:** HIGH
 
 NestGate stores locally but no protocol exists for another spring's
 NUCLEUS to pull provenance-wrapped data subsets. No differential sync.
-Each spring operates as a data silo.
+Each spring operates as a data silo. RootPulse is the semantic function
+that should handle this — it's a NeuralAPI composition across the
+provenance trio, not a standalone service.
 
-**Ask:** RootPulse team defines a pull protocol for cross-spring
-provenance chain exchange. Minimum viable: one spring can request a
-braid subset from another spring's NestGate with provenance continuity.
+**Ask:** biomeOS defines a `rootpulse.sync` or equivalent NeuralAPI
+composition graph that orchestrates cross-spring provenance exchange via
+the trio. Minimum viable: one spring can request a braid subset from
+another spring's NestGate with provenance continuity through
+`signal.dispatch` → trio pipeline.
 
 ### WS-3: Public Chain Anchor
 
@@ -130,7 +134,7 @@ accessions, 524 FASTQs). These are the cross-team prerequisites:
 | # | Gap | Owner | Priority | Status |
 |---|-----|-------|----------|--------|
 | WS-1 | Ionic contract negotiation | primalSpring Track 4 | HIGH | Needs spec |
-| WS-2 | Cross-spring RootPulse exchange | RootPulse team | HIGH | Not started |
+| WS-2 | Cross-spring RootPulse exchange | biomeOS + trio (rhizoCrypt, loamSpine, sweetGrass) | HIGH | Not started |
 | WS-3 | Public chain anchor | loamSpine | MEDIUM | Not started |
 | WS-4 | Client WASM renderer | petalTongue | MEDIUM | Not started |
 | WS-9 | Cross-tier parity (L3) | wetSpring | MEDIUM | L1/L2 done |
