@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-19 (Two-wave upstream gap sweep complete. Wave 1: R5 RESOLVED (biomeOS v3.63), R7 DEFERRED, CG-3 RESOLVED (coralReef+barraCuda), CG-8 RESOLVED (songbird W211), bearDog ACME crate shipped (W107). Wave 2: WS-2 IN PROGRESS (biomeOS v3.64 nest.sync + loamSpine spine.list), WS-3 SPEC (loamSpine PUBLIC_TIMESTAMPING.md), WS-11 v2 deployed. sweetGrass deep debt cleanup. Tenaillon batch 0: 2/5 clones validated.)
+> **Last updated**: 2026-05-19 PM (Three-wave upstream gap sweep complete. All 5 primal gaps resolved/deferred. Shadow S1 LIVE + ACME shipped, S2/S3 LIVE per projectNUCLEUS, S4 spec shipped. FN-1 partial (10/25 BLAKE3). lithoSpore received Tenaillon 2016 Tier 2 braid. projectNUCLEUS: 460+ validations/0 failures, membrane 17/0, VPS shadow deployment live. wateringHole fossilized: 10 resolved handoffs archived, 8 active remain.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -577,8 +577,8 @@ calibrate-shadow-cutover protocol, darkforest alignment
 **Owner**: projectFOUNDATION team + contributing springs
 **Scope**: Public data anchoring, provenance validation, thread coverage
 **Current**: 10 domain threads, 100+ data sources. CI thread-index validation functional.
-Validation reality: Threads 2, 6, 7 fully validated; Thread 1 WCM (0/24 validated).
-FN-1 (BLAKE3 backfill) and FN-5 (Thread 1 WCM) remain open. Springs seeding:
+Validation reality: Threads 2, 6, 7 fully validated; Thread 1 WCM (10/25 hashed, FN-1 partial).
+FN-1 (BLAKE3 backfill) **IN PROGRESS** — 10/25 sources hashed (NCBI, UniProt, KEGG). FN-5 (CI validation) **UNBLOCKED** — thread_registry.sh + typed IPC parsing shipped. Springs seeding:
 - airSpring: Thread 6 (ag) — 36/36 targets validated
 - hotSpring: Thread 2 seeded
 - neuralSpring: Threads 5+7 documented, ready for contribution
