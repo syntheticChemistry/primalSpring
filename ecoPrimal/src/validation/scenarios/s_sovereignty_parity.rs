@@ -61,7 +61,7 @@ fn phase_routing_schema(v: &mut ValidationResult) {
         "routing_config_reference.toml parses as valid TOML",
     );
 
-    let routing = if let Some(r) = parsed.get("routing") { r } else {
+    let Some(routing) = parsed.get("routing") else {
         v.check_bool("schema:routing_section", false, "missing [routing] section");
         return;
     };

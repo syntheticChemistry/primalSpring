@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-19 (Wave 24 shadow run execution issued. All primals pulled to HEAD. 14/14 stale socket clean (barraCuda fix landed). nestGate S66: content.resolve index.html normalization + timing metadata for shadow S3 TTFB. petalTongue S3: compression, security headers, trace, custom 404 for shadow parity. hotSpring 183ms warm keepalive proven. wetSpring Barrick 2009 SEALED — 7/7 clones, USB handoff to lithoSpore. projectNUCLEUS Wave 24 absorbed: sovereignty_shadow.toml, membrane telemetry pipeline operational. wetSpring GAPS ingested: #9 parity L1vsL2 documented, #11 variant caller calibration active, #8 Tenaillon 2016 queued.)
+> **Last updated**: 2026-05-19 (Two-wave upstream gap sweep complete. Wave 1: R5 RESOLVED (biomeOS v3.63), R7 DEFERRED, CG-3 RESOLVED (coralReef+barraCuda), CG-8 RESOLVED (songbird W211), bearDog ACME crate shipped (W107). Wave 2: WS-2 IN PROGRESS (biomeOS v3.64 nest.sync + loamSpine spine.list), WS-3 SPEC (loamSpine PUBLIC_TIMESTAMPING.md), WS-11 v2 deployed. sweetGrass deep debt cleanup. Tenaillon batch 0: 2/5 clones validated.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -58,9 +58,9 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 
 | # | Request | Owner | Priority |
 |---|---------|-------|----------|
-| R5 | `nest.store` signal dispatch | biomeOS | MEDIUM |
+| ~~R5~~ | ~~`nest.store` signal dispatch~~ | biomeOS | ~~MEDIUM~~ **RESOLVED** — v3.63: all 16 signal methods promoted to first-class route table entries. 10 signal tests. |
 | ~~R6~~ | ~~Ferment transcript braids~~ | wetSpring | ~~HIGH~~ **RESOLVED** — Barrick 2009 SEALED (7/7 clones, 486 sovereign variants, USB to lithoSpore May 19). Tenaillon 2016 queued (264 clones, 590 GB). |
-| R7 | `spore.instantiate` atomic VM provisioning | biomeOS | LOW |
+| ~~R7~~ | ~~`spore.instantiate` atomic VM provisioning~~ | biomeOS | ~~LOW~~ **DEFERRED-TO-STADIAL** — v3.63: route/graph scaffold, handler includes `_deferred` context. Wire when lithoSpore Tier 3 ready. |
 | ~~R8~~ | ~~`capability.list` complete inventory~~ | All primals | ~~LOW~~ **RESOLVED** — all primals now return canonical `{ capabilities, count, primal }` envelope (Wave 22 stadial push) |
 | R9 | Stale socket cleanup on startup | biomeOS | MEDIUM — **ABSORBED** (biomeOS CHANGELOG confirms socket hygiene) |
 | R10 | Stale socket cleanup on startup | songbird | LOW — **ABSORBED** (songbird CHANGELOG confirms socket hygiene) |
@@ -115,11 +115,11 @@ From `wetSpring/GAPS.md` — issues that route to primalSpring or upstream teams
 | # | Gap | Owner | Priority | Status |
 |---|-----|-------|----------|--------|
 | WS-1 | Ionic contract negotiation — no automated protocol for establishing/modifying/terminating bonds | primalSpring Track 4 | HIGH | Scaffolded, no protocol |
-| WS-2 | Cross-spring data exchange (RootPulse semantic function) — no remote pull protocol for provenance-wrapped subsets | biomeOS + trio (rhizoCrypt, loamSpine, sweetGrass) | HIGH | Not started |
-| WS-3 | Public chain anchor — braids have no public verifiable ledger anchor | loamSpine | MEDIUM | Not started |
+| WS-2 | Cross-spring data exchange (RootPulse semantic function) — no remote pull protocol for provenance-wrapped subsets | biomeOS + trio | HIGH | **IN PROGRESS** — biomeOS v3.64: `nest.sync` 6-node graph shipped. loamSpine: `spine.list`/`entry.list` RPC methods (42 methods total). Live orchestration wiring pending. |
+| WS-3 | Public chain anchor — braids have no public verifiable ledger anchor | loamSpine | MEDIUM | **SPEC** — `specs/PUBLIC_TIMESTAMPING.md`: RFC 3161 TSA, Bitcoin OP_RETURN, Ethereum analyzed. `AnchorTarget::Rfc3161Tsa` variant added. Implementation timeline open. |
 | WS-4 | petalTongue client-side WASM — all grammar rendering requires live HPC | petalTongue | MEDIUM | Not started |
 | WS-9 | Cross-tier parity — L1 vs L2 documented (0 position overlap), L2 vs L3 pending, coordinate mismatch | wetSpring | MEDIUM | L1/L2 done, L3 pending |
-| WS-11 | Variant caller parity — sovereign over-calls vs breseq (v1: 15-19x, need binomial model) | wetSpring | HIGH | Active calibration |
+| WS-11 | Variant caller parity — sovereign over-calls vs breseq | wetSpring | HIGH | **v2 deployed** — GPU min_depth wired, MAPQ≥10 filtering, ±5bp window matching, duplicate removal, CPU mapping threshold 250bp. Tenaillon batch 0: 2/5 clones validated. |
 
 **Note**: WS-8 (ferment transcript pipeline) and WS-10 (stale socket) are RESOLVED. WS-5 (ludoSpring), WS-6 (hotSpring physics), WS-7 (radiating attribution) are Phase 3-4 future work — not tracked here.
 
@@ -566,11 +566,11 @@ calibrate-shadow-cutover protocol, darkforest alignment
 |----------|-----|-------|--------|
 | ~~1~~ | ~~Sandbox `working_dir` passthrough~~ | toadStool | **RESOLVED** — S263 workload spec |
 | ~~2~~ | ~~Env var expansion in workload TOMLs~~ | toadStool | **RESOLVED** — S263 documented as pre-resolved |
-| 3 | GPU API alignment (`submit_and_map`) | barraCuda / wetSpring | Open — HMMA execution path awaits coralReef codegen |
+| ~~3~~ | ~~GPU API alignment (`submit_and_map`)~~ | barraCuda / coralReef | **RESOLVED** — coralReef: `precision_advice`, `adapter`, `dispatch_hints` fields. barraCuda Sprint 71: `TENSOR_WIRE_CONTRACT.md` documenting 3-hop sovereign dispatch. |
 | ~~4~~ | ~~Data dependency declaration in TOML~~ | toadStool / nestGate | **RESOLVED** — S263 `DataDependency` field |
 | ~~6~~ | ~~Hex string acceptance (loamSpine/rhizoCrypt)~~ | loamSpine / rhizoCrypt | **RESOLVED** — rhizoCrypt S69 `parse_hash32`, loamSpine `serde_content_hash` |
 | ~~7~~ | ~~sweetGrass TCP without BTSP~~ | sweetGrass | **RESOLVED** — v0.7.36 rejects raw JSON-RPC on TCP when `FAMILY_ID` set |
-| 8 | Cross-gate dispatch via songBird | songBird / biomeOS | Open (Phase 2) — songBird still evolving |
+| ~~8~~ | ~~Cross-gate dispatch via songBird~~ | songBird / biomeOS | **RESOLVED** — songbird Wave 211: `capability.call` handler with local UDS + remote mesh TCP forwarding. routing="local" hop prevention. |
 
 ### Layer 5: projectFOUNDATION (sporeGarden/projectFOUNDATION)
 

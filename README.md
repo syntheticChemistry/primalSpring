@@ -8,7 +8,7 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 720 `#[test]` markers (719 pass, 2 ignored), 0 clippy errors |
+| **Tests** | 703 `#[test]` markers (719 pass, 2 ignored), 17 clippy nursery advisories |
 | **Experiments** | 89 (20 tracks) — 43 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 94 deploy TOMLs (80 deploy + 14 atomic signal graphs) — fragment-first composition with `resolve = true` |
 | **Coverage** | Method coverage against 456 registered capability methods; line coverage via llvm-cov |

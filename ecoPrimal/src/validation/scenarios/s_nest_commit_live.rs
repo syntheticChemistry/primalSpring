@@ -118,7 +118,7 @@ fn phase_registry_alignment(v: &mut ValidationResult) {
     }
 }
 
-fn phase_capability_reachability(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+fn phase_capability_reachability(v: &mut ValidationResult, ctx: &CompositionContext) {
     for cap in NEST_COMMIT_CAPABILITIES {
         let domain = cap.split('.').next().unwrap_or(cap);
         let reachable = ctx.has_capability(domain);

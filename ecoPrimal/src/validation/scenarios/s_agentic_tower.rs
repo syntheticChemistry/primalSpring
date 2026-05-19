@@ -347,7 +347,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
         .and_then(|g| g.get("nodes"))
         .and_then(|n| n.as_array());
 
-    let nodes = if let Some(n) = nodes { n } else {
+    let Some(nodes) = nodes else {
         v.check_bool("bootstrap:has_nodes", false, "tower_bootstrap.toml has no nodes");
         return;
     };

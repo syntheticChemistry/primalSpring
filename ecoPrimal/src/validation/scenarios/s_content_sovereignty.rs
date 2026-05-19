@@ -219,7 +219,7 @@ fn phase_trust_alignment(v: &mut ValidationResult) {
         return;
     };
 
-    let trust = if let Some(t) = parsed.get("trust").and_then(|t| t.as_table()) { t } else {
+    let Some(trust) = parsed.get("trust").and_then(|t| t.as_table()) else {
         v.check_skip("trust:covalent_all_access", "no [trust] section");
         return;
     };

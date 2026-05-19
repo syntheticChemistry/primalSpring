@@ -491,7 +491,7 @@ fn find_manifest() -> Option<toml::Value> {
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     let manifest = find_manifest();
 
-    let manifest = if let Some(m) = manifest { m } else {
+    let Some(manifest) = manifest else {
         v.check_bool(
             "pipeline:manifest_found",
             false,

@@ -113,10 +113,7 @@ fn validate_tool_coverage(v: &mut ValidationResult, parsed: &toml::Value) {
 }
 
 fn validate_tool_schema_fields(v: &mut ValidationResult, parsed: &toml::Value) {
-    let tools = match parsed.get("tools").and_then(|t| t.as_array()) {
-        Some(t) => t,
-        None => return,
-    };
+    let Some(tools) = parsed.get("tools").and_then(|t| t.as_array()) else { return };
 
     for tool in tools {
         let name = tool

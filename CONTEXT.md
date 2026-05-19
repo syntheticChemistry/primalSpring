@@ -73,7 +73,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 22 (May 18, 2026) — 720 `#[test]` markers across workspace
+v0.9.25 Wave 24 (May 19, 2026) — 703 `#[test]` markers across workspace
 (719 pass, 2 ignored, 0 clippy errors), 89 experiments (20 tracks),
 94 deploy graphs (80 deploy + 14 signal), 456 registered capability methods,
 44-cell deployment matrix. Stale socket sweep: 14/14 primals clean. Phase 32 atomic

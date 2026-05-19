@@ -41,10 +41,7 @@ fn pillar_graph_metadata(v: &mut ValidationResult, parsed: &toml::Value) {
         "top-level [graph] section exists",
     );
 
-    let graph = match graph {
-        Some(g) => g,
-        None => return,
-    };
+    let Some(graph) = graph else { return };
 
     let name = graph.get("name").and_then(|v| v.as_str()).unwrap_or("");
     v.check_bool(
@@ -60,10 +57,7 @@ fn pillar_graph_metadata(v: &mut ValidationResult, parsed: &toml::Value) {
         "[graph.metadata] section exists",
     );
 
-    let meta = match meta {
-        Some(m) => m,
-        None => return,
-    };
+    let Some(meta) = meta else { return };
 
     let secure = meta
         .get("secure_by_default")
@@ -225,10 +219,7 @@ fn pillar_bonding_policy(v: &mut ValidationResult, parsed: &toml::Value) {
         "[graph.bonding_policy] section exists",
     );
 
-    let policy = match policy {
-        Some(p) => p,
-        None => return,
-    };
+    let Some(policy) = policy else { return };
 
     let tower_internal = policy
         .get("tower_internal")
@@ -281,10 +272,7 @@ fn pillar_telemetry(v: &mut ValidationResult, parsed: &toml::Value) {
         "[graph.telemetry] section exists",
     );
 
-    let telemetry = match telemetry {
-        Some(t) => t,
-        None => return,
-    };
+    let Some(telemetry) = telemetry else { return };
 
     let enabled = telemetry
         .get("enabled")
