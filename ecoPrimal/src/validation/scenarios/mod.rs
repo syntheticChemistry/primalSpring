@@ -61,6 +61,7 @@ pub mod s_coralreef_shader_targets;
 pub mod s_dark_forest_gate;
 pub mod s_deployment_pipeline;
 pub mod s_covalent_bond;
+pub mod s_cross_gate_capability_call;
 pub mod s_cross_spring_data_flow;
 pub mod s_deployment_matrix;
 pub mod s_domain_contract_sweep;
@@ -138,6 +139,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_schema_standard::SCENARIO);
     r.register(s_nest_commit_live::SCENARIO);
     r.register(s_sporeprint_surface::SCENARIO);
+    r.register(s_cross_gate_capability_call::SCENARIO);
     r
 }
 
@@ -148,7 +150,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 44;
+    const EXPECTED_SCENARIO_COUNT: usize = 45;
 
     #[test]
     fn registry_scenario_count() {

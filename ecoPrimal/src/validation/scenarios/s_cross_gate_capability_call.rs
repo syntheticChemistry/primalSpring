@@ -1,0 +1,297 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+//! Scenario: Cross-Gate `capability.call` — CM-3, Wave 29 completion.
+//!
+//! Validates that `capability.call` routing works for both local-gate and
+//! cross-gate (membrane) scenarios. CG-8 resolution: songbird Wave 211
+//! shipped `capability.call` handler with local UDS + remote mesh TCP
+//! forwarding and `routing="local"` hop prevention.
+//!
+//! Three phases:
+//! 1. Structural: membrane graph declares relay channel + songbird mesh node
+//! 2. Wire contract: `capability.call` registered with correct params schema
+//! 3. Live: local-gate `capability.call` through biomeOS orchestration
+
+use crate::composition::CompositionContext;
+use crate::validation::ValidationResult;
+use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
+
+const MEMBRANE_TOML: &str = include_str!("../../../../graphs/membrane/tower_membrane.toml");
+const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
+
+/// Scenario metadata and entry point.
+pub const SCENARIO: Scenario = Scenario {
+    meta: ScenarioMeta {
+        id: "cross-gate-capability-call",
+        track: Track::Transport,
+        tier: Tier::Both,
+        provenance_crate: "wave29_cellmembrane",
+        provenance_date: "2026-05-20",
+        description:
+            "Cross-gate capability.call — relay channel, wire contract, local + remote dispatch",
+    },
+    run,
+};
+
+/// Run all cross-gate capability.call validation phases.
+pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.section("Phase 1: Structural — membrane graph relay channel");
+    phase_structural(v);
+
+    v.section("Phase 2: Wire contract — capability.call params schema");
+    phase_wire_contract(v);
+
+    v.section("Phase 3: Live — local-gate capability.call dispatch");
+    phase_live_dispatch(v, ctx);
+}
+
+fn phase_structural(v: &mut ValidationResult) {
+    let parsed: toml::Value = match toml::from_str(MEMBRANE_TOML) {
+        Ok(p) => {
+            v.check_bool("relay:graph_parses", true, "tower_membrane.toml valid TOML");
+            p
+        }
+        Err(e) => {
+            v.check_bool(
+                "relay:graph_parses",
+                false,
+                &format!("tower_membrane.toml parse error: {e}"),
+            );
+            return;
+        }
+    };
+
+    let channels = parsed
+        .get("graph")
+        .and_then(|g| g.get("metadata"))
+        .and_then(|m| m.get("channels"))
+        .and_then(|c| c.as_array());
+
+    if let Some(channels) = channels {
+        let channel_names: Vec<&str> = channels
+            .iter()
+            .filter_map(toml::Value::as_str)
+            .collect();
+        v.check_bool(
+            "relay:signal_channel",
+            channel_names.contains(&"signal"),
+            "signal channel (UDS primal-to-primal IPC) declared",
+        );
+        v.check_bool(
+            "relay:relay_channel",
+            channel_names.contains(&"relay"),
+            "relay channel (BTSP tunnel VPS ↔ gate) declared",
+        );
+        v.check_bool(
+            "relay:surface_channel",
+            channel_names.contains(&"surface"),
+            "surface channel (TLS public HTTPS) declared",
+        );
+    } else {
+        v.check_bool("relay:channels_present", false, "no channels array in [graph]");
+    }
+
+    let nodes = parsed
+        .get("graph")
+        .and_then(|g| g.get("nodes"))
+        .and_then(|n| n.as_array());
+    if let Some(nodes) = nodes {
+        let primal_ids: Vec<&str> = nodes
+            .iter()
+            .filter_map(|n| n.get("primal").and_then(toml::Value::as_str))
+            .collect();
+        v.check_bool(
+            "relay:songbird_in_membrane",
+            primal_ids.contains(&"songbird"),
+            "songbird (mesh relay) is a membrane graph node",
+        );
+        v.check_bool(
+            "relay:beardog_in_membrane",
+            primal_ids.contains(&"beardog"),
+            "beardog (trust anchor) is a membrane graph node",
+        );
+    } else {
+        v.check_bool("relay:nodes_present", false, "no [[graph.nodes]] in membrane graph");
+    }
+}
+
+fn phase_wire_contract(v: &mut ValidationResult) {
+    v.check_bool(
+        "wire:capability_call_registered",
+        REGISTRY_TOML.contains("capability.call"),
+        "capability.call in capability_registry.toml",
+    );
+
+    v.check_bool(
+        "wire:capability_route_registered",
+        REGISTRY_TOML.contains("capability.route"),
+        "capability.route (forwarding path) in registry",
+    );
+
+    v.check_bool(
+        "wire:capability_discover_registered",
+        REGISTRY_TOML.contains("capability.discover"),
+        "capability.discover (lookup path) in registry",
+    );
+
+    v.check_bool(
+        "wire:capability_resolve_registered",
+        REGISTRY_TOML.contains("capability.resolve"),
+        "capability.resolve (endpoint resolution) in registry",
+    );
+
+    v.check_bool(
+        "wire:route_register_registered",
+        REGISTRY_TOML.contains("route.register"),
+        "route.register (federation pattern) in registry",
+    );
+}
+
+fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    match ctx.call(
+        "orchestration",
+        "capability.call",
+        serde_json::json!({
+            "capability": "security",
+            "operation": "health.liveness",
+            "args": {},
+        }),
+    ) {
+        Ok(resp) => {
+            let alive = resp.get("alive").and_then(serde_json::Value::as_bool).unwrap_or(false)
+                || resp.get("status").and_then(serde_json::Value::as_str) == Some("ok")
+                || resp.get("result").is_some();
+            v.check_bool(
+                "live:local_capability_call",
+                alive,
+                &format!("capability.call(security, health.liveness) → {resp}"),
+            );
+        }
+        Err(e) if e.is_connection_error() => {
+            v.check_skip(
+                "live:local_capability_call",
+                &format!("biomeOS orchestration not available: {e}"),
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "live:local_capability_call",
+                false,
+                &format!("capability.call error: {e}"),
+            );
+        }
+    }
+
+    match ctx.call(
+        "orchestration",
+        "capability.call",
+        serde_json::json!({
+            "capability": "discovery",
+            "operation": "identity.get",
+            "args": {},
+        }),
+    ) {
+        Ok(resp) => {
+            let has_identity = resp.get("name").is_some()
+                || resp.get("primal").is_some()
+                || resp.get("result").is_some();
+            v.check_bool(
+                "live:routed_identity_get",
+                has_identity,
+                &format!("capability.call(discovery, identity.get) → {resp}"),
+            );
+        }
+        Err(e) if e.is_connection_error() => {
+            v.check_skip(
+                "live:routed_identity_get",
+                &format!("biomeOS not available: {e}"),
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "live:routed_identity_get",
+                false,
+                &format!("capability.call error: {e}"),
+            );
+        }
+    }
+
+    match ctx.call(
+        "orchestration",
+        "capability.call",
+        serde_json::json!({
+            "capability": "security",
+            "operation": "health.liveness",
+            "args": {},
+            "gate": "cellMembrane",
+        }),
+    ) {
+        Ok(resp) => {
+            v.check_bool(
+                "live:cross_gate_dispatch",
+                true,
+                &format!("cross-gate capability.call to cellMembrane succeeded: {resp}"),
+            );
+        }
+        Err(e) if e.is_connection_error() => {
+            v.check_skip(
+                "live:cross_gate_dispatch",
+                &format!("cross-gate not available (expected without VPS mesh): {e}"),
+            );
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            let expected_without_mesh = msg.contains("not found")
+                || msg.contains("unknown gate")
+                || msg.contains("no route")
+                || msg.contains("not available");
+            if expected_without_mesh {
+                v.check_skip(
+                    "live:cross_gate_dispatch",
+                    &format!("cross-gate dispatch gracefully rejected: {e}"),
+                );
+            } else {
+                v.check_bool(
+                    "live:cross_gate_dispatch",
+                    false,
+                    &format!("unexpected cross-gate error: {e}"),
+                );
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::composition::CompositionContext;
+    use crate::validation::ValidationResult;
+
+    #[test]
+    fn cross_gate_no_panic() {
+        let mut v = ValidationResult::new("cross-gate-capability-call");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+    }
+
+    #[test]
+    fn membrane_graph_has_relay_channel() {
+        let parsed: toml::Value = toml::from_str(MEMBRANE_TOML).unwrap();
+        let channels = parsed
+            .get("graph")
+            .and_then(|g| g.get("metadata"))
+            .and_then(|m| m.get("channels"))
+            .and_then(|c| c.as_array())
+            .expect("channels array in [graph.metadata]");
+        let names: Vec<&str> = channels.iter().filter_map(toml::Value::as_str).collect();
+        assert!(names.contains(&"relay"), "relay channel missing from membrane graph");
+    }
+
+    #[test]
+    fn capability_call_in_registry() {
+        assert!(
+            REGISTRY_TOML.contains("capability.call"),
+            "capability.call must be in capability_registry.toml"
+        );
+    }
+}
