@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18)
 
+### Wave 30: Tier 1 close-out — sporePrint 15/15, SP-1, CM-3 (May 20)
+- **sporePrint 15/15**: Zola front matter added to skunkBat, squirrel, sourDough;
+  new validation-summary.md created for bingoCube. All primals now publish to primals.eco.
+- **SP-1 RESOLVED**: sporePrint auto-refresh.yml content job auto-commits after
+  spore-validate passes (same pattern as metric refresh). Falls back to PR on failure.
+- **CM-3 RESOLVED**: `s_cross_gate_capability_call` scenario (45th) — structural
+  relay channel validation, wire contract checks (capability.call/route/discover/resolve),
+  live local-gate + cross-gate dispatch through biomeOS. 3 tests.
+- PRIMAL_GAPS: sporePrint table 15/15, SP-1 resolved, CM-3 resolved, scenario count 45
+
 ### plasmidBin validate crate: serde-typed evolution (May 20)
 - **Full refactor** of `plasmidBin/validate/` from toml::Value jelly to idiomatic Rust
 - Edition 2021 → 2024, `#![forbid(unsafe_code)]`, regex dependency removed
