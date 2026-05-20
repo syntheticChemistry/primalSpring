@@ -25,7 +25,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S265: `sovereign.pmu_investigate` RPC, VFIO PMU probe. Phase D factory wired (S254). AMD live, NV FECS-gated. 85 JSON-RPC methods. |
 | biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.57: Neural API evolution complete. `signal.dispatch` composition collapse, `primal.announce` atomic self-registration, metrics tagging with signal namespaces, `capability.call` signal-tier interception. v3.54 `biomeos.spring_status` for Tier 2. |
-| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S66 shadow S3 readiness: `content.resolve` index.html path normalization (trailing-slash + bare-path fallback), `resolved_in_ms`/`retrieved_in_ms` timing metadata for TTFB. |
+| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68 `#[expect(reason)]` hygiene (55 attrs, 42 files) + family_id env var precedence alignment. S67 sporePrint. S66 shadow S3 readiness: index.html normalization + timing metadata. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 68: 72-method coverage, TensorSession `sub`/`negate` (GAP-HS-027), registry assertion softened to `>= 70` |
 | petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — v1.6.6: 55 IPC methods, S3 shadow parity, musl targets |
