@@ -9,33 +9,33 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-20 PM (Wave 30: sporePrint **15/15** complete, SP-1 auto-merge shipped, CM-3 cross-gate scenario (45th). wetSpring V182 ingested: UniBin consolidation (349→1 binary, 345 scenarios), WS-11 v3 MAPQ calibration, Tenaillon batch 0 COMPLETE (5/5). plasmidBin `validate/` v0.2.0 serde-typed. Wave 29 CM-1/CM-2/CM-3/CM-4 all RESOLVED.)
+> **Last updated**: 2026-05-20 PM (Wave 34: Showcase fossilization — 6 primals cleaned, 47 demo dirs moved to fossilRecord. SHOWCASE_FOSSILIZATION_STANDARD.md. sporePrint catalog §4.4 refreshed. songbird Wave 214 ingested.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (May 18, 2026)
+## Ecosystem Status (May 20, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1 (MEM-14-17 added). primalSpring: 45 scenarios (10 tracks, 3 tiers), 456 methods, 747 tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. Wave 28 sporePrint: **15/15** primals contributed `sporeprint/` validation summaries. Wave 29 cellMembrane: **all gaps RESOLVED** (CM-1/CM-2/CM-3/CM-4). SP-1 auto-merge shipped. plasmidBin validate v0.2.0 serde-typed.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 45 scenarios (10 tracks, 3 tiers), 445 real methods (321 exercised = 72%), 2 binaries (UniBin + IPC server). Wave 33: 7 primals ingested (bearDog 108, biomeOS v3.65, toadStool S267, barraCuda Sprint 73, nestgate S68, loamSpine anchoring arch, coralReef Iter 96). `ANCHORING_STANDARD.md` published. sporePrint **15/15** + SP-1 auto-merge live.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
-| bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — HSM mock `#[cfg(test)]` (Wave 98) |
-| songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
-| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S265: `sovereign.pmu_investigate` RPC, VFIO PMU probe. Phase D factory wired (S254). AMD live, NV FECS-gated. 85 JSON-RPC methods. |
-| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.57: Neural API evolution complete. `signal.dispatch` composition collapse, `primal.announce` atomic self-registration, metrics tagging with signal namespaces, `capability.call` signal-tier interception. v3.54 `biomeos.spring_status` for Tier 2. |
-| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68 `#[expect(reason)]` hygiene (55 attrs, 42 files) + family_id env var precedence alignment. S67 sporePrint. S66 shadow S3 readiness: index.html normalization + timing metadata. |
+| bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 108: `content.*` scope expansion in session tokens. SP-4 unblocked. |
+| songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 213: NAT traversal data plane (TURN keepalive, cloudflared orchestration, shadow comparator). `capability.call` integration tests. |
+| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S267: sovereign driver rotation + S266: sandbox `working_dir` production (RESOLVED), data deps BLAKE3 validation. 86 JSON-RPC methods. 9,055+ lib tests. |
+| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.65: `primal.list` Wave 20 schema alignment (`name`, `socket`, `status`, `pid`, `version`). PID file reading via v3.62 convention. |
+| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68: `#[expect]` reason hygiene + `family_id` env var precedence. ZFS storage detector improvements. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
-| barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 68: 72-method coverage, TensorSession `sub`/`negate` (GAP-HS-027), registry assertion softened to `>= 70` |
+| barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 73: 87 IPC methods (12 new: `signal.*`, regression, ecology). Cross-spring absorption from ludoSpring + airSpring + healthSpring + groundSpring. 143 IPC tests. |
 | petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — v1.6.6: 55 IPC methods, S3 shadow parity, musl targets |
 | rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68: `dag.session.get` enriched with `agents`/`genesis`/`frontier` (covers `dag_summary` proposal). GAP-36 aliases shipped. 93.88% coverage. |
-| loamSpine | 1,523+ | **ADOPTED** | FULL | L3 | **CLEAN** — v0.9.16: 42 methods, chain anchoring spec (Bitcoin/Ethereum/RFC 3161) |
+| loamSpine | 1,523+ | **ADOPTED** | FULL | L3 | **CLEAN** — 43 methods: `anchor.publish_batch` + `anchor.verify` (aggregate Merkle proof). `ANCHORING_ARCHITECTURE.md` (365L). WS-3 chain anchoring architecture implemented. |
 | sweetGrass | 1,553 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.37: PID file, JH-0 gate + port 9850 canonical |
-| coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — eprintln→tracing in 5 driver files (Iter 95) |
+| coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — Iter 96: 21 idempotency tests, `CompileTarget` generalization (CPU/NPU), tarpc feature-gate. 3,202 tests. |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-29 complete. 45 scenarios (10 tracks), 456 methods. Zero panics in production. Wave 20: `primal.list` canonical schema, `capability.list` standardization, `s_schema_standard` + `s_nest_commit_live` scenarios, Thread 10 provenance wiring. All delta springs resolved Wave 20 debt (May 17). Dark Forest Glacial Gate: 5-pillar security invariant standard. Sovereignty track: membrane composition + parity + content sovereignty. Neural API Signal Elevation. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
+**13/13 at zero debt. Waves 1-33 complete. 45 scenarios (10 tracks), 445 real methods (321 exercised = 72%). 2 binaries. Zero panics in production. Wave 33: 7 primals ingested. SP-4 unblocked (bearDog `content.*`). `primal.list` aligned (biomeOS v3.65). `signal.*` + `sovereign.*` + `anchor.{publish_batch,verify}` registered. coralReef: `CompileTarget` CPU/NPU generalization, 3,202 tests. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published.**
 
 ---
 
@@ -157,7 +157,7 @@ pressure. primalSpring validates the surface structurally via `s_sporeprint_surf
 | ~~SP-1~~ | ~~Auto-merge: Tier 2 content auto-commits after `spore-validate` passes~~ | sporePrint CI | ~~MEDIUM~~ | **RESOLVED** — auto-refresh.yml content job now auto-commits when spore-validate passes; falls back to PR on validation failure |
 | SP-2 | Deploy status fields in `config.toml` (`last_push`, `shadow_status`, `deploy_locations`) | sporePrint | MEDIUM | Not started |
 | SP-3 | `liveSpore.json` auto-ingest from trio-equipped deployments | sporePrint CI | LOW | Pipeline exists, feed source pending |
-| SP-4 | Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put` | projectNUCLEUS | LOW | Script exists — **blocked on bearDog `content.*` scope** (MethodGate rejects without `content.put` in session token) |
+| ~~SP-4~~ | ~~Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put`~~ | projectNUCLEUS | ~~LOW~~ | **UNBLOCKED** — bearDog Wave 108: `content.*` added to all session token scope categories. Implementation pending. |
 
 ### cellMembrane Nest Expansion — Wave 29 (added May 20, 2026)
 

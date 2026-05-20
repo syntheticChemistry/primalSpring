@@ -137,11 +137,11 @@ cargo test --workspace
 # Run live atomic tests (requires fetched binaries)
 cargo test --ignored
 
-# Run all 89 experiments (meta-validator)
-cargo run --release --bin validate_all
+# Run scenario validation (UniBin)
+cargo run --release --bin primalspring_unibin -- validate
 
-# Run exp001 with live primals (harness auto-starts them)
-cargo run --bin exp001_tower_atomic
+# Certify ecosystem composition
+cargo run --release --bin primalspring_unibin -- certify
 
 # Start the primalSpring JSON-RPC server
 cargo run --bin primalspring_primal -- server

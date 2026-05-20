@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Generate the CHECKSUMS manifest for `primalspring_guidestone` P3 verification.
+//! Generate the CHECKSUMS manifest for `primalspring certify` P3 verification.
 //!
 //! Prefer `tools/regenerate_checksums.sh` (uses `b3sum`, no compile step).
 //! This Rust example is kept as a library-API reference for `checksums::generate_manifest`.
@@ -9,7 +9,9 @@
 
 fn main() {
     let files: &[&str] = &[
-        "ecoPrimal/src/bin/primalspring_guidestone/main.rs",
+        "ecoPrimal/src/bin/primalspring/main.rs",
+        "ecoPrimal/src/bin/primalspring/cli.rs",
+        "ecoPrimal/src/bin/primalspring_primal/main.rs",
         "ecoPrimal/src/composition/mod.rs",
         "ecoPrimal/src/validation/mod.rs",
         "ecoPrimal/src/tolerances/mod.rs",

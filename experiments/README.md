@@ -31,8 +31,8 @@ discovery and IPC.
 ## Running
 
 ```bash
-# Run all 89 experiments via meta-validator
-cargo run --release --bin validate_all
+# Run all scenarios via UniBin
+cargo run --release --bin primalspring_unibin -- validate
 
 # Run a single experiment (use -p with the package name)
 cargo run --release -p primalspring-exp001

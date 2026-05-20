@@ -596,6 +596,14 @@ methods = [
     "toadstool.version",
 ]
 
+[sovereign]
+owner = "toadstool"
+stability = "evolving"
+methods = [
+    "sovereign.pmu_investigate",
+    "sovereign.warm_handoff",
+]
+
 [barracuda]
 owner = "barracuda"
 methods = [
@@ -659,13 +667,31 @@ methods = [
 [stats]
 owner = "barracuda"
 methods = [
+    "stats.bray_curtis",
     "stats.correlation",
     "stats.entropy",
+    "stats.fit_exponential",
+    "stats.fit_logarithmic",
+    "stats.fit_quadratic",
+    "stats.gamma_cdf",
+    "stats.gamma_fit",
+    "stats.hill",
     "stats.mean",
     "stats.median",
+    "stats.rarefaction_curve",
+    "stats.simpson",
     "stats.std",
     "stats.std_dev",
     "stats.variance",
+]
+
+[signal]
+owner = "barracuda"
+stability = "evolving"
+methods = [
+    "signal.bandpass",
+    "signal.derivative",
+    "signal.detect_peaks",
 ]
 
 [linalg]

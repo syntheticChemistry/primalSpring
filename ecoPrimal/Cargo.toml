@@ -40,14 +40,6 @@ path = "src/bin/primalspring/main.rs"
 name = "primalspring_primal"
 path = "src/bin/primalspring_primal/main.rs"
 
-[[bin]]
-name = "validate_all"
-path = "src/bin/validate_all/main.rs"
-
-[[bin]]
-name = "primalspring_guidestone"
-path = "src/bin/primalspring_guidestone/main.rs"
-
 [features]
 stub-primals = []
 

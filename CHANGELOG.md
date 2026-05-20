@@ -5,6 +5,91 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18)
 
+### Wave 34: Showcase Fossilization — Ecosystem Climate Shift (May 20)
+- **SHOWCASE_FOSSILIZATION_STANDARD.md** created in wateringHole — defines
+  fossilization criteria, process, fossil naming, and keep criteria for the ecosystem.
+- **Fossilized mined/stale showcases across 6 primals**:
+  - nestgate: remnants cleaned (test logs, dashboard, generated output)
+  - toadStool: 7 stale untracked subdirs (gpu-universal, neuromorphic, results,
+    gaming-evolution, multi-primal-nestgate, nestgate-standalone, real-world)
+  - loamSpine: `03-inter-primal/` (5 demos, mined → exp053)
+  - bearDog: `01-multi-primal-workflow` (Pattern #5), `09-cross-tower-federation`
+    (→ exp056), `05-mixed-entropy` (placeholder stub)
+  - skunkBat: tiers 1-3 (15 narrative demos, mined → defensive_mesh)
+  - sweetGrass: `02-rootpulse-emergence/` (→ exp058), `07-sweetgrass-beardog-GAP/`
+  - rhizoCrypt: `05-complete-workflows/` (→ exp057)
+- **Kept live**: barraCuda (all 9), petalTongue (all 30), toadStool (8 active),
+  bearDog (26), loamSpine (16 local+RPC), skunkBat (6 local), sweetGrass (35+),
+  rhizoCrypt (67).
+- **Fixed stale cross-references**: sporePrint PRIMAL_CATALOG §4.4, loamSpine
+  cross-links to squirrel/songbird showcases, songbird RENDEZVOUS_PROTOCOL_SPEC
+  dead links, wateringHole coralReef "8 progressive demos", nestgate
+  LOCAL_INSTANCE_SETUP dead link.
+- **SHOWCASE_MINING_REPORT.md**: Added fossilization status table per pattern.
+- All fossils archived with `FOSSIL_NOTE.md` provenance headers in `fossilRecord/`.
+- songbird Wave 214 ingested: DirectConnection real UDP I/O, protocol upgrade live,
+  6 hardcoded addresses → EPHEMERAL_BIND_ADDR, lint suppressions narrowed.
+
+### Wave 33: Upstream ingestion + pattern dissemination (May 20)
+- **barraCuda Sprint 72+73**: 75→87 IPC methods. 12 new methods registered in
+  `capability_registry.toml`: `stats.{bray_curtis,fit_quadratic,fit_exponential,
+  fit_logarithmic,gamma_fit,gamma_cdf,hill,rarefaction_curve,simpson}` + new `signal.*`
+  namespace (`signal.{bandpass,derivative,detect_peaks}`). Cross-spring absorption from
+  ludoSpring (spatial shaders), airSpring (regression), healthSpring (signal processing),
+  groundSpring (ecology).
+- **biomeOS v3.65**: `primal.list` Wave 20 schema alignment — canonical fields (`name`,
+  `socket`, `status`, `pid`, `version`) alongside legacy fields for backward compat.
+  Direct response to our Wave 31 upstream blurb. PID file reading via v3.62 convention.
+- **bearDog Wave 108**: `content.*` scope expansion in session tokens — unblocks SP-4
+  sovereign publish. `auth.issue_session` now includes `content.*` in all purpose categories
+  (jupyterhub, notebook, desktop, research/default).
+- **toadStool S267**: Sovereign driver rotation — per-GPU module lifecycle via diesel engine.
+  1,662 lines: `kmod` lifecycle, binary NOP patcher (`volta_warm_handoff`, `kepler_warm_handoff`),
+  8-step `sovereign_handoff` pipeline, `sovereign.warm_handoff` RPC. 20 new tests.
+  `sovereign.*` namespace added to registry (`sovereign.pmu_investigate`, `sovereign.warm_handoff`).
+- **nestgate S68**: `#[expect]` reason hygiene + `family_id` env var precedence.
+- **wateringHole**: New `ANCHORING_STANDARD.md` — ecosystem-wide chain anchoring guidance
+  ("ledger not currency," aggregated Merkle roots, $0.001/result via community pooling).
+- **sporePrint**: SP-1 auto-merge working — 3 lab pages auto-merged (hotSpring, primalSpring, biomeOS).
+- **agentReagents**: Titan V warm handoff script for K80→Titan V sovereign GPU migration.
+- **hotSpring**: Exp 211 driver rotation documented, 3 handoffs fossilized.
+- **loamSpine**: Public chain anchoring architecture — `anchor.publish_batch` (43rd method),
+  `anchor.verify` aggregate proof checking, `AggregateInclusionProof`, compression pipeline spec.
+  `specs/ANCHORING_ARCHITECTURE.md` (365 lines). WS-3 architecture implemented.
+- **coralReef** Iter 96: compiler evolution — 21 IR-to-IR idempotency tests, `CompileTarget`
+  generalization (CPU + NPU variants), tarpc feature-gated. 3,202 tests.
+- **whitePaper**: `ANCHORING_PIPELINE.md` economics + `NOVEL_FERMENT_TRANSCRIPTS.md` updated.
+- **songbird Wave 213**: Full NAT traversal data plane — TURN keepalive loop, `TurnRelayedConnection`,
+  cloudflared tunnel orchestration, `shadow_comparator::compare_paths` for parallel TURN vs cloudflared
+  metrics. `capability.call` integration tests.
+- **toadStool S266**: Sandbox `working_dir` production **RESOLVED** (our Wave 31 horizon item).
+  `data_dependencies` pre-dispatch staging with BLAKE3 integrity. 86 JSON-RPC methods.
+  9,055+ lib tests. 90+ upstream clippy errors absorbed.
+- **wateringHole**: coralReef compiler evolution handoff (Phases A/B/C).
+- **Pattern dissemination**: `validation::shadow` module — `ShadowComparison` struct for parallel
+  A/B path execution with latency + correctness metrics. `validation::dependency` module —
+  `DependencySpec` + `validate_dependencies` for BLAKE3-verified pre-dispatch staging.
+  `SHADOW_COMPARISON_PATTERN.md` guide for ecosystem adoption.
+- **Registry**: 445 real methods (321 exercised = 72%). 16 new methods added this wave.
+
+### Wave 32: Deprecated API sunset + legacy binary removal (May 20)
+- **Deprecated coordination probes removed**: `probe_primal()`, `check_primal_health()`,
+  `check_capability_health()`, `validate_composition()`, `validate_composition_by_capability()`
+  deleted from `coordination/`. Production handlers already use `CompositionContext` /
+  `validate_composition_ctx`. The RPC endpoint `coordination.probe_primal` remains live.
+  ~180 lines removed; 6 deprecated tests replaced with 1 `validate_composition_ctx` test.
+- **Legacy binaries deleted**: `validate_all` (117 lines) and `primalspring_guidestone`
+  (~1,985 lines) removed — source directories, `[[bin]]` entries, CHECKSUMS entry.
+  Logic lives in `primalspring validate` and `primalspring certify` (UniBin).
+  ~2,100 lines of deprecated binary code removed.
+- **Doc refs updated**: README, experiments/README, `tools/regenerate_checksums.sh`,
+  `tools/gen_seed_fingerprints.sh`, `ecoPrimal/examples/gen_checksums.rs`,
+  `validation/CHECKSUMS` — all point to UniBin commands.
+- **Method coverage re-baseline**: `tools/check_method_coverage.sh` updated to exclude
+  `[test_fixtures]` and `[false_positives]` sections. New baseline: **321/429 (74%)**
+  real methods exercised (108 uncovered, mostly game/nautilus/network/genetic domains).
+- **CONTEXT.md refreshed**: 4 binaries → 2, Wave 30 → 32, coverage baseline added.
+
 ### Wave 31: Pattern absorption + local debt sweep (May 20)
 - **validation::numeric** module: `NumericValidator` with f64/count/rel checks + `bridge_into`
   (detailed) and `bridge_into_summary` (coarse) adapters for science spring migration.

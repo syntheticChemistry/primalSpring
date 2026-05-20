@@ -1,11 +1,10 @@
 # primalSpring guideStone CHECKSUMS — BLAKE3
 # Generated: 2026-05-11
-# Files: 25
+# Files: 24
 #
 # Verify: primalspring::checksums::verify_manifest()
 45995216bb383467a147403cd8b46af6fc268daaae094dc8093d442294027528  ecoPrimal/src/bin/primalspring/main.rs
 a978fcfcedb2c5e69ac64c454d13c3f67fa55e1ef78fa01ad4f13e3ba0d3f229  ecoPrimal/src/bin/primalspring/cli.rs
-c25c9a17cc37eb57dee2370ed809563923125b4703a884f2e458da970e4feb5a  ecoPrimal/src/bin/primalspring_guidestone/main.rs
 cc0e26265f6c60eece2dc4cf0232369da1db56d7ff9405674f4f670a8ba3c1a0  ecoPrimal/src/bin/primalspring_primal/main.rs
 df0901a933784918ab06fb6d2d8ac4207cf0f01cdc09712d9801db4fe6bfaa28  ecoPrimal/src/certification/mod.rs
 d04fa83bcde95036d5cd03b801a907ffefa5b8577bd41ca359e48d93998e7420  ecoPrimal/src/composition/mod.rs

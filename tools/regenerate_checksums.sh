@@ -17,7 +17,6 @@ MANIFEST="validation/CHECKSUMS"
 TRACKED_FILES=(
   ecoPrimal/src/bin/primalspring/main.rs
   ecoPrimal/src/bin/primalspring/cli.rs
-  ecoPrimal/src/bin/primalspring_guidestone/main.rs
   ecoPrimal/src/bin/primalspring_primal/main.rs
   ecoPrimal/src/certification/mod.rs
   ecoPrimal/src/composition/mod.rs

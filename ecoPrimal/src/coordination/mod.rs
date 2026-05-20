@@ -11,19 +11,13 @@ use std::time::Instant;
 use serde::{Deserialize, Serialize};
 
 use crate::cast;
-use crate::ipc::client::PrimalClient;
-use crate::ipc::discover::discover_for;
 use crate::primal_names;
 
 mod probes;
 
-#[allow(
-    deprecated,
-    reason = "re-exports deprecated probes for backward compatibility"
-)]
 pub use probes::{
-    PrimalHealth, SubstrateHealth, check_capability_health, check_primal_health, health_check,
-    health_check_within_tolerance, probe_primal, probe_primal_at_socket, probe_substrate,
+    PrimalHealth, SubstrateHealth, health_check, health_check_within_tolerance,
+    probe_primal_at_socket, probe_substrate,
 };
 
 /// Atomic composition layer — each represents a testable deployment target.
@@ -180,77 +174,6 @@ impl AtomicType {
     }
 }
 
-/// Validate an atomic composition by discovering providers for each
-/// required capability at runtime.
-///
-/// **Loose coupling**: this function doesn't hardcode primal names.
-/// It asks the Neural API (or filesystem) who provides each capability,
-/// then probes whatever primal responds.
-#[must_use]
-#[deprecated(
-    since = "0.9.25",
-    note = "use CompositionContext::from_live_discovery_with_fallback() for live NUCLEUS validation"
-)]
-#[allow(
-    deprecated,
-    reason = "deprecated validation function calls other deprecated coordination APIs"
-)]
-pub fn validate_composition_by_capability(atomic: AtomicType) -> CompositionResult {
-    let capabilities = atomic.required_capabilities();
-    let results: Vec<_> = capabilities
-        .iter()
-        .map(|cap| {
-            let disc = crate::ipc::discover::discover_by_capability(cap);
-            let primal_name = disc
-                .resolved_primal
-                .unwrap_or_else(|| format!("capability:{cap}"));
-            if let Some(ref socket) = disc.socket {
-                let start = Instant::now();
-                let (health_ok, caps) = PrimalClient::connect(socket, &primal_name).map_or_else(
-                    |_| (false, Vec::new()),
-                    |mut c: PrimalClient| {
-                        let h = c.health_check().unwrap_or(false);
-                        let caps = extract_capability_names(c.capabilities().ok());
-                        (h, caps)
-                    },
-                );
-                PrimalHealth {
-                    name: primal_name,
-                    socket_found: true,
-                    health_ok,
-                    capabilities: caps,
-                    latency_us: cast::micros_u64(start.elapsed()),
-                }
-            } else {
-                PrimalHealth {
-                    name: primal_name,
-                    socket_found: false,
-                    health_ok: false,
-                    capabilities: Vec::new(),
-                    latency_us: 0,
-                }
-            }
-        })
-        .collect();
-
-    let substrate = probe_substrate();
-
-    let primal_healthy = results.iter().all(|p| p.health_ok);
-    let substrate_healthy = substrate.as_ref().is_some_and(|s| s.health_ok);
-    let all_healthy = primal_healthy && substrate_healthy;
-    let discovery_ok = results.iter().all(|p| p.socket_found);
-    let total_capabilities: usize = results.iter().map(|p| p.capabilities.len()).sum();
-
-    CompositionResult {
-        atomic,
-        primals: results,
-        substrate,
-        all_healthy,
-        discovery_ok,
-        total_capabilities,
-    }
-}
-
 /// Result of validating an entire atomic composition.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompositionResult {
@@ -267,40 +190,6 @@ pub struct CompositionResult {
     pub discovery_ok: bool,
     /// Sum of capabilities across all primals.
     pub total_capabilities: usize,
-}
-
-/// Validate an entire atomic composition by probing all its required primals
-/// and the biomeOS Neural API substrate.
-#[must_use]
-#[deprecated(
-    since = "0.9.25",
-    note = "use CompositionContext::from_live_discovery_with_fallback() for live NUCLEUS validation"
-)]
-#[allow(
-    deprecated,
-    reason = "deprecated validation function calls other deprecated coordination APIs"
-)]
-pub fn validate_composition(atomic: AtomicType) -> CompositionResult {
-    let required = atomic.required_primals();
-    let discovery = discover_for(required);
-    let discovery_ok = discovery.iter().all(|d| d.socket.is_some());
-
-    let primals: Vec<PrimalHealth> = required.iter().map(|name| probe_primal(name)).collect();
-    let substrate = probe_substrate();
-
-    let primal_healthy = primals.iter().all(|p| p.health_ok);
-    let substrate_healthy = substrate.as_ref().is_some_and(|s| s.health_ok);
-    let all_healthy = primal_healthy && substrate_healthy;
-    let total_capabilities: usize = primals.iter().map(|p| p.capabilities.len()).sum();
-
-    CompositionResult {
-        atomic,
-        primals,
-        substrate,
-        all_healthy,
-        discovery_ok,
-        total_capabilities,
-    }
 }
 
 /// Validate an atomic composition using a [`CompositionContext`].
@@ -361,13 +250,7 @@ pub fn validate_composition_ctx(atomic: AtomicType) -> CompositionResult {
     }
 }
 
-use probes::extract_capability_names;
-
 #[cfg(test)]
-#[allow(
-    deprecated,
-    reason = "tests exercise deprecated coordination APIs for backward compatibility"
-)]
 mod tests {
     use super::*;
 
@@ -497,47 +380,10 @@ mod tests {
     }
 
     #[test]
-    fn validate_composition_graceful_when_nothing_running() {
-        let result = validate_composition(AtomicType::Tower);
+    fn validate_composition_ctx_graceful_when_nothing_running() {
+        let result = validate_composition_ctx(AtomicType::Tower);
         assert_eq!(result.atomic, AtomicType::Tower);
-        assert_eq!(result.primals.len(), 3);
-        assert!(!result.discovery_ok);
         assert!(!result.all_healthy);
-    }
-
-    #[test]
-    fn validate_composition_by_capability_graceful_when_nothing_running() {
-        let result = validate_composition_by_capability(AtomicType::Tower);
-        assert_eq!(result.atomic, AtomicType::Tower);
-        assert_eq!(result.primals.len(), 3);
-        assert!(!result.all_healthy);
-    }
-
-    #[test]
-    fn validate_composition_by_capability_full_nucleus() {
-        let result = validate_composition_by_capability(AtomicType::FullNucleus);
-        assert_eq!(result.primals.len(), 13);
-    }
-
-    #[test]
-    fn validate_composition_node() {
-        let result = validate_composition(AtomicType::Node);
-        assert_eq!(result.atomic, AtomicType::Node);
-        assert_eq!(result.primals.len(), 6);
-    }
-
-    #[test]
-    fn validate_composition_nest() {
-        let result = validate_composition(AtomicType::Nest);
-        assert_eq!(result.atomic, AtomicType::Nest);
-        assert_eq!(result.primals.len(), 7);
-    }
-
-    #[test]
-    fn validate_composition_full_nucleus() {
-        let result = validate_composition(AtomicType::FullNucleus);
-        assert_eq!(result.atomic, AtomicType::FullNucleus);
-        assert_eq!(result.primals.len(), 12);
     }
 
     #[test]

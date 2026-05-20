@@ -146,7 +146,27 @@
 
 ---
 
-## New Experiments Recommended
+## Fossilization Status (May 2026)
+
+Source showcases for mined patterns have been fossilized per
+`SHOWCASE_FOSSILIZATION_STANDARD.md`. Fossil archives in `fossilRecord/`.
+
+| Pattern | Source Primal | Fossilized? | Fossil Location |
+|---------|--------------|-------------|-----------------|
+| #1–#2 (ToadStool) | toadStool | Stale subdirs cleaned | `fossilRecord/toadStool/showcase-stale-may2026/` |
+| #3–#4 (NestGate) | nestgate | Full showcase archived Dec 2025 | `fossilRecord/wateringHole/nestgate/showcase-dec2025/` |
+| #5 (BearDog workflow) | bearDog | Yes | `fossilRecord/bearDog/showcase-mined-may2026/` |
+| #6 (BearDog federation) | bearDog | Yes | `fossilRecord/bearDog/showcase-mined-may2026/` |
+| #7 (SweetGrass RootPulse) | sweetGrass | Yes | `fossilRecord/sweetGrass/showcase-mined-may2026/` |
+| #8 (SweetGrass gaps) | sweetGrass | Source file already removed | N/A |
+| #9–#10 (biomeOS) | biomeOS | N/A (graph-based, no showcase/) | N/A |
+| #11 (petalTongue viz) | petalTongue | Deferred (still current) | Live at `primals/petalTongue/showcase/03-inter-primal/` |
+| #12 (LoamSpine lifecycle) | loamSpine | Yes | `fossilRecord/loamSpine/showcase-inter-primal-may2026/` |
+| #13 (rhizoCrypt provenance) | rhizoCrypt | Yes | `fossilRecord/rhizoCrypt/showcase-mined-may2026/` |
+
+---
+
+## Mined Experiments
 
 Based on the mined patterns, these 10 experiments (exp050–059) extended primalSpring to 38 total.
 Subsequent phases added experiments through exp084 (including cross-gate deployment in Track 10, gen4 deployment evolution in Track 11, deployment matrix in Track 12, and substrate stress in Track 13), bringing the total to **63 experiments**.

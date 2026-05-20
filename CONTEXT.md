@@ -24,11 +24,9 @@ back upstream to primals and primalSpring.
 
 ## Architecture
 
-- **ecoPrimal/** — library crate (`primalspring`) + 4 binaries:
+- **ecoPrimal/** — library crate (`primalspring`) + 2 binaries:
   `primalspring_unibin` (eukaryotic UniBin: certify + validate + serve + status + version),
-  `primalspring_primal` (legacy server, transitioning → `primalspring serve`),
-  `primalspring_guidestone` (legacy certification, transitioning → `primalspring certify`),
-  `validate_all` (legacy runner, transitioning → `primalspring validate`)
+  `primalspring_primal` (JSON-RPC IPC server / cell membrane)
 - **experiments/** — 89 validation binaries covering 20 tracks
 - **graphs/** — 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
@@ -73,20 +71,30 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 30 (May 20, 2026) — 747 `#[test]` markers across workspace
-(all pass, 2 ignored, 0 clippy errors), 89 experiments (20 tracks),
-94 deploy graphs (80 deploy + 14 signal), 456 registered capability methods,
-44-cell deployment matrix. Stale socket sweep: 14/14 primals clean. Phase 32 atomic
-evolution: Tower = 3 primals (bearDog + songbird + skunkBat), Node = 6
-(Tower + compute trio), Nest = 7 (Tower + nestGate + provenance trio),
-NUCLEUS = 10 core + 3 meta = 13 total.
+v0.9.25 Wave 34 (May 20, 2026) — 45 scenarios (10 tracks, 3 tiers),
+445 real capability methods (321 exercised, 72% coverage — Wave 33 baseline),
+89 experiments (20 tracks), 94 deploy graphs (80 deploy + 14 signal),
+44-cell deployment matrix. **Legacy binaries removed**: `validate_all` and
+`primalspring_guidestone` deleted (Wave 32); logic lives in `primalspring validate`
+and `primalspring certify`. **Deprecated probes sunset**: `probe_primal`,
+`check_primal_health`, `check_capability_health`, `validate_composition`,
+`validate_composition_by_capability` removed; production uses `CompositionContext` /
+`validate_composition_ctx`. Phase 32 atomic evolution: Tower = 3 primals
+(bearDog + songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7
+(Tower + nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
-**Waves 1-30 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
-in production paths. 45 validation scenarios (10 tracks, 3 tiers) including
-atomic-signal, meta-tier-signal, agentic-tower, sovereignty scenarios (membrane
-composition, parity, content sovereignty), signal dispatch parity, and primal
-announce — with shared `validation::helpers` for graph parsing and Dark Forest
-cross-ref. **Neural API Signal Elevation**: `dispatch()` and `announce()`
+**Pattern dissemination**: `validation::shadow` (A/B comparison from songbird W213)
+and `validation::dependency` (BLAKE3-verified pre-dispatch staging from toadStool S266)
+abstracted as reusable modules with ecosystem adoption guides.
+**Wave 34: Showcase Fossilization** — ecosystem-wide climate shift fossilizing
+mined/stale showcases across 6 primals (47 demo dirs moved to fossilRecord).
+`SHOWCASE_FOSSILIZATION_STANDARD.md` established. sporePrint catalog refreshed.
+**Waves 1-34 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
+in production paths. 738 lib tests (14 new pattern tests). 45 validation scenarios including atomic-signal,
+meta-tier-signal, agentic-tower, sovereignty scenarios (membrane composition,
+parity, content sovereignty), signal dispatch parity, cross-gate capability.call,
+and primal announce — with shared `validation::helpers` for graph parsing and
+Dark Forest cross-ref. **Neural API Signal Elevation**: `dispatch()` and `announce()`
 convenience APIs on `CompositionContext`. `SIGNAL_ADOPTION_STANDARD.md` published.
 **Wave 18 — Local Debt Resolution + Ecosystem Convergence**: Deprecated
 `probe_primal` callers fully migrated from handlers.rs, exp004, exp107 to

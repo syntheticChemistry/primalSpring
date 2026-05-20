@@ -32,7 +32,14 @@ if [[ ! -f "$REGISTRY" ]]; then
     exit 1
 fi
 
-REGISTERED=$(grep -oP '^\s+"[a-z][a-z0-9_.]+[a-z0-9]+"' "$REGISTRY" | tr -d ' "' | sort -u)
+# Extract methods, excluding [test_fixtures] and [false_positives] sections
+REGISTERED=$(awk '
+    /^\[test_fixtures\]/ { skip=1; next }
+    /^\[false_positives\]/ { skip=1; next }
+    /^\[/ { skip=0 }
+    skip { next }
+    match($0, /^\s+"([a-z][a-z0-9_.]+[a-z0-9])"/, m) { print m[1] }
+' "$REGISTRY" | sort -u)
 TOTAL_REGISTERED=$(echo "$REGISTERED" | wc -l)
 
 SEARCH_DIRS=(
