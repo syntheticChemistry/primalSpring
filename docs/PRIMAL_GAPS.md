@@ -140,7 +140,7 @@ pressure. primalSpring validates the surface structurally via `s_sporeprint_surf
 | toadStool | No | Yes | Yes | Metrics only |
 | barraCuda | No | Yes | Yes | Metrics only |
 | coralReef | No | Yes | Yes | Metrics only |
-| nestGate | No | Yes | Yes | Metrics only |
+| nestGate | **Yes** | Yes | Yes | **Done** — S67 |
 | rhizoCrypt | No | Yes | Yes | Metrics only |
 | loamSpine | No | Yes | Yes | Metrics only |
 | sweetGrass | No | Yes | Yes | Metrics only |
