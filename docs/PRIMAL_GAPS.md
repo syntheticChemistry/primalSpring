@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-20 PM (plasmidBin `validate/` crate v0.2.0: full serde-typed refactor — toml::Value jelly replaced with Deserialize structs, edition 2024, 21 tests, regex removed, cross-validation drift now FAIL. Wave 28 sporePrint absorption: 11/15 primals contributed `sporeprint/` dirs + validation summaries. Wave 29 CM-1/CM-2/CM-4 all RESOLVED. hotSpring Exp 211 Phase C: PMU software path CLOSED, Tier 2 pivoted to patched-nouveau warm handoff. toadStool S265: `sovereign.pmu_investigate` RPC + VFIO PMU probe. projectFOUNDATION: FN-1 unchanged at 10/25, FN-5 CI validation extended to 13 steps. healthSpring V64y: 1,018 tests.)
+> **Last updated**: 2026-05-20 PM (Wave 30: sporePrint **15/15** complete, SP-1 auto-merge shipped, CM-3 cross-gate scenario (45th). wetSpring V182 ingested: UniBin consolidation (349→1 binary, 345 scenarios), WS-11 v3 MAPQ calibration, Tenaillon batch 0 COMPLETE (5/5). plasmidBin `validate/` v0.2.0 serde-typed. Wave 29 CM-1/CM-2/CM-3/CM-4 all RESOLVED.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 

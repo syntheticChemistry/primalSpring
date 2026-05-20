@@ -5,6 +5,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18)
 
+### wetSpring V182 ingestion — UniBin consolidation audit (May 20)
+- **Ingested wetSpring V181+V182**: WS-11 v3 MAPQ calibration (gap-based formula,
+  min_mapq=0 for FM-index mapper). Tenaillon 2016 batch 0 **COMPLETE** (5/5 clones,
+  974 variants, BLAKE3 `623a2b3565a85b52`). Interrupt/restart braid cycle verified.
+- **V182 UniBin consolidation**: 349 prokaryotic `[[bin]]` entries → single `wetspring`
+  binary. 345 scenarios (318 validation + 23 benchmark + 4 composition). Build time
+  25min → 1m44s (14x). `Validator::bridge_into` adapter. Clap subcommands.
+- **sporePrint**: wetSpring already shipped Zola front matter, `s_sporeprint_surface` passes
+- **Audit response**: scenario count 345 acknowledged, no regressions detected,
+  evolution cycle updated (wetSpring 2→3 upgraded to **3→4**)
+
 ### Wave 30: Tier 1 close-out — sporePrint 15/15, SP-1, CM-3 (May 20)
 - **sporePrint 15/15**: Zola front matter added to skunkBat, squirrel, sourDough;
   new validation-summary.md created for bingoCube. All primals now publish to primals.eco.
