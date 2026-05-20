@@ -157,7 +157,7 @@ pressure. primalSpring validates the surface structurally via `s_sporeprint_surf
 | SP-1 | Auto-merge: Tier 2 content auto-commits after `spore-validate` passes | sporePrint CI | MEDIUM | Not started — currently PR-gated |
 | SP-2 | Deploy status fields in `config.toml` (`last_push`, `shadow_status`, `deploy_locations`) | sporePrint | MEDIUM | Not started |
 | SP-3 | `liveSpore.json` auto-ingest from trio-equipped deployments | sporePrint CI | LOW | Pipeline exists, feed source pending |
-| SP-4 | Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put` | projectNUCLEUS | LOW | Script exists, API wiring incomplete |
+| SP-4 | Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put` | projectNUCLEUS | LOW | Script exists — **blocked on bearDog `content.*` scope** (MethodGate rejects without `content.put` in session token) |
 
 ### cellMembrane Nest Expansion — Wave 29 (added May 20, 2026)
 
@@ -167,7 +167,7 @@ composition testing and trio-verified deployments.
 
 | # | Gap | Owner | Priority | Status |
 |---|-----|-------|----------|--------|
-| CM-1 | `deploy_membrane.sh --composition nest` | plasmidBin | MEDIUM | Not started — Tower composition operational |
+| ~~CM-1~~ | ~~`deploy_membrane.sh --composition nest`~~ | plasmidBin | ~~MEDIUM~~ | **RESOLVED** — `--composition nest` added: fetches nestgate/rhizocrypt/loamspine/sweetgrass, generates systemd units, opens ports, wires Tower dependency chain |
 | ~~CM-2~~ | ~~`membrane_provenance.sh` post-deploy trio hook~~ | projectNUCLEUS | ~~MEDIUM~~ | **RESOLVED** — `deploy/membrane_provenance.sh` shipped (5-phase remote trio verification, graceful degradation, report generation) |
 | CM-3 | Cross-gate `capability.call` testing | primalSpring + songbird | LOW | CG-8 resolved, needs test scenario |
 | ~~CM-4~~ | ~~darkforest MEM-14 through MEM-17 (Nest health)~~ | projectNUCLEUS | ~~LOW~~ | **RESOLVED** — MEM-14 through MEM-17 added to `darkforest_membrane.sh` (NestGate, rhizoCrypt, loamSpine, sweetGrass liveness checks, 17 PASS / 0 FAIL / 5 SKIP) |
@@ -627,7 +627,7 @@ calibrate-shadow-cutover protocol, darkforest alignment
 **Scope**: Public data anchoring, provenance validation, thread coverage
 **Current**: 10 domain threads, 100+ data sources. CI thread-index validation functional.
 Validation reality: Threads 2, 6, 7 fully validated; Thread 1 WCM (10/25 hashed, FN-1 partial).
-FN-1 (BLAKE3 backfill) **IN PROGRESS** — 10/25 sources hashed (NCBI, UniProt, KEGG). FN-5 (CI validation) **UNBLOCKED** — thread_registry.sh + typed IPC parsing shipped. Springs seeding:
+FN-1 (BLAKE3 backfill) **IN PROGRESS** — 10/25 sources hashed (NCBI, UniProt, KEGG; 15 need manual fetch). FN-5 (CI validation) **RESOLVED** — CI extended to 13 steps with hash regression gate, typed IPC, thread_registry.sh. Springs seeding:
 - airSpring: Thread 6 (ag) — 36/36 targets validated
 - hotSpring: Thread 2 seeded
 - neuralSpring: Threads 5+7 documented, ready for contribution

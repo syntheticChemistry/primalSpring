@@ -72,15 +72,12 @@ All other validatable threads (2, 6, 7) are fully validated.
 **Ask:** backfill BLAKE3 hashes for Thread 1 WCM sources. This is
 mechanical — download each source, compute hash, update thread index.
 
-### FN-5: Thread 1 WCM Validation
+### ~~FN-5: Thread 1 WCM Validation~~ RESOLVED
 
-**Priority:** MEDIUM — downstream of FN-1
-
-Once BLAKE3 hashes are backfilled, Thread 1 WCM needs the same CI
-validation pipeline that Threads 2/6/7 already pass.
-
-**Ask:** extend the thread-index CI validation to cover Thread 1 after
-FN-1 lands.
+CI extended to 13 steps with hash regression gate + typed IPC parsing +
+`thread_registry.sh`. Thread 1 WCM validation now runs automatically.
+Remaining: FN-1 BLAKE3 backfill still 10/25 (mechanical — 15 sources
+need manual fetch from BRENDA, EcoCyc, literature DOIs).
 
 ---
 
@@ -104,4 +101,4 @@ FN-1 lands.
 | S2 | Songbird relay deployment | projectNUCLEUS + songbird | HIGH | S2 shadow |
 | S3 | petalTongue asset parity test | projectNUCLEUS | MEDIUM | S3 cutover |
 | FN-1 | BLAKE3 backfill (Thread 1 WCM) | projectFOUNDATION | MEDIUM | Thread validation |
-| FN-5 | Thread 1 WCM CI validation | projectFOUNDATION | MEDIUM | Thread coverage |
+| ~~FN-5~~ | ~~Thread 1 WCM CI validation~~ | projectFOUNDATION | ~~MEDIUM~~ | **RESOLVED** — 13-step CI pipeline |
