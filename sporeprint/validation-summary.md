@@ -1,7 +1,7 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 680 workspace tests, 89 experiments, 389 capabilities, JH-0 13/13, JH-1 resolved, GAP-11 closed, zero DEBT"
-date = 2026-05-08
+description = "Meta-validation orchestrator — 736 lib tests, 89 experiments, 445 capability methods, 13/13 BTSP, zero DEBT, Wave 35"
+date = 2026-05-20
 
 [taxonomies]
 primals = ["biomeos", "barracuda", "toadstool", "nestgate", "beardog", "songbird", "squirrel", "rhizocrypt", "loamspine", "sweetgrass", "petaltongue", "skunkbat", "coralreef"]
@@ -10,20 +10,20 @@ springs = ["primalspring"]
 
 ## Status
 
-- **680 workspace tests** (632 passed + 48 ignored; **664 package tests**: 616 passed + 48 ignored), 0 failed
+- **736 lib tests** (736 passed, 2 ignored), 0 failed
 - **89 experiments** across 20 tracks (tower atomic → frontier)
-- **13 deploy graphs** validated (74 total nodes, 5 bond types)
+- **94 deploy graphs** (80 deploy + 14 signal), 45 validation scenarios (10 tracks)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`
-- **JH-0 ADOPTED** (13/13 primals), **JH-1 RESOLVED** (ionic tokens), **GAP-11 CLOSED** (18/18 methods)
-- **389 registered capability methods** (including `auth.*`, ionic tokens, `nautilus.*`)
+- **445 registered capability methods** (post-Wave 32 recount, test fixtures excluded)
 - **Zero DEBT markers**, zero unsafe blocks (`SeedConfig` + `OnceLock`)
 - **5-tier discovery hierarchy** validated across all primals
+- **Waves 1–34 complete** — showcase fossilization, pattern dissemination, glacial shift prep
 
 ## Key Validation Binaries
 
-- `primalspring_guidestone` — 4-phase validation (compile, structural, checksum, semantic)
-- `primalspring_trio` — 3-primal IPC integration (BearDog + Songbird + ToadStool)
-- `trio_operations` — live IPC operation sweep (16 operations, 30.9s)
+- `primalspring validate` — UniBin validation (45 scenarios across 10 tracks, 3 tiers)
+- `primalspring certify` — Certification engine (L0-L8, BTSP, seed provenance, cellular)
+- `primalspring serve` — RPC server (JSON-RPC 2.0 over UDS)
 
 ## Notebooks (5)
 

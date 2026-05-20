@@ -21,7 +21,7 @@
 [matrix]
 version = "3.0.0"
 description = "NUCLEUS Atomic-Aligned"
-last_updated = "2026-05-13"
+last_updated = "2026-05-20"
 
 [atomics]
 description = "NUCLEUS atomic model — Phase 32 aligned"
@@ -434,7 +434,7 @@ transport = "uds_first"
 experiments = "core"
 priority = "P0"
 status = "untested"
-notes = "Full NUCLEUS — 10 core + 3 meta primals. First nucleus cell to advance to pass (interstadial target)."
+notes = "Full NUCLEUS — 10 core + 3 meta primals. First nucleus cell to advance to pass. P0 glacial shift target: deploy on ironGate+eastGate+westGate over 1G LAN."
 
 [[cells]]
 id = "nucleus-x86-mobile-uds"
@@ -533,7 +533,7 @@ transport = "uds_first"
 experiments = "extended"
 priority = "P2"
 status = "untested"
-notes = "Friend gate scenario — moderate latency, tests federation"
+notes = "Friend gate scenario — flockGate over WAN via cellMembrane TURN relay. P2 glacial target."
 
 # ── Niche / constrained cells ──────────────────────────────────────────
 
@@ -983,3 +983,107 @@ primal = "esotericwebb"
 scope = "downstream"
 description = "DOWNSTREAM (not a primal): esotericWebb is a garden/composition. Transport negotiation is owned by esotericWebb repo."
 tracking = "specs/STORYTELLING_EVOLUTION.md"
+
+# ── Gate Readiness (Glacial Shift) ──────────────────────────────────────
+#
+# Physical gate inventory with deployment readiness for the glacial shift.
+# LAN: Cat6 1G on unmanaged switch (live). 10G: switch + NICs installed,
+# Cat6a cables pending (elevation goal, not blocker).
+
+[[gates]]
+id = "irongate"
+hardware = "i9-14900K, RTX 5070, 96GB DDR5"
+role = "Agentic dev primary, ABG"
+nucleus_status = "validated"
+lan = "1g"
+deployment_order = 0
+notes = "Primary development gate. Single-gate NUCLEUS validated. Running since interstadial."
+
+[[gates]]
+id = "eastgate"
+hardware = "i9-12900, RTX 4070 + Akida BrainChip, 32GB DDR5"
+role = "Orchestrator, neuromorphic edge"
+nucleus_status = "validated"
+lan = "1g"
+deployment_order = 0
+notes = "Orchestration + neuromorphic. Single-gate NUCLEUS validated."
+
+[[gates]]
+id = "westgate"
+hardware = "i7-4771, RTX 2070 Super, 32GB DDR3"
+role = "Cold storage — 76TB ZFS pool"
+nucleus_status = "not_deployed"
+target_atomic = "nest"
+lan = "1g"
+deployment_order = 1
+notes = "Nest Atomic deployment target. 76TB ZFS for NestGate cold storage + provenance trio."
+
+[[gates]]
+id = "northgate"
+hardware = "Ryzen 9950X3D, RTX 5090, 96GB DDR5"
+role = "Gaming primary, heavy compute"
+nucleus_status = "not_deployed"
+target_atomic = "node"
+lan = "1g"
+ten_g = "nic_ready"
+deployment_order = 2
+notes = "Node Atomic target. RTX 5090 (32GB VRAM). toadStool yield-to-owner for gaming."
+
+[[gates]]
+id = "strandgate"
+hardware = "Dual EPYC 7452 (64c/128t), 256GB ECC"
+role = "Bioinformatics hub"
+nucleus_status = "not_deployed"
+target_atomic = "nucleus"
+lan = "1g"
+deployment_order = 3
+notes = "Full NUCLEUS target. 64 cores + 256GB ECC for scientific workloads."
+
+[[gates]]
+id = "southgate"
+hardware = "5800X3D, RTX 4060 + 2x RTX 3090, 128GB"
+role = "Gaming + multi-GPU compute"
+nucleus_status = "not_deployed"
+target_atomic = "node"
+lan = "1g"
+ten_g = "nic_ready"
+deployment_order = 4
+notes = "Node Atomic expansion. Multi-GPU for distributed ML/render."
+
+[[gates]]
+id = "biomegate"
+hardware = "Threadripper 3970X (32c/64t), 256GB"
+role = "HBM2 test bench, compute expansion"
+nucleus_status = "not_deployed"
+target_atomic = "node"
+lan = "1g"
+deployment_order = 4
+notes = "Active HBM2 bench. Not yet in full mesh. Expansion tier."
+
+[[gates]]
+id = "swiftgate"
+hardware = "Ryzen 5800X, RTX 3070, 64GB"
+role = "Mobile/compact"
+nucleus_status = "not_deployed"
+lan = "1g"
+deployment_order = 5
+notes = "Compact gate, hardware ready."
+
+[[gates]]
+id = "flockgate"
+hardware = "i9-13900K, RTX 3070 Ti, 64GB DDR5"
+role = "Remote covalent (WAN via cellMembrane)"
+nucleus_status = "not_deployed"
+target_atomic = "node"
+lan = "wan"
+deployment_order = 6
+notes = "Brother's machine. Deployed via RustDesk + bootstrap_gate.sh --join-family. Requires NAT traversal via cellMembrane TURN."
+
+[[gates]]
+id = "kingate"
+hardware = "i7-6700K, RTX 3070, 32GB DDR4"
+role = "Staging"
+nucleus_status = "not_deployed"
+lan = "1g"
+deployment_order = 5
+notes = "Staging gate, hardware ready."

@@ -62,8 +62,8 @@ surfaced 8 requests. R1–R4 resolved in primalSpring, R5–R8 require upstream 
 | ~~R6~~ | ~~Ferment transcript braids~~ | wetSpring | ~~HIGH~~ **RESOLVED** — Barrick 2009 SEALED (7/7 clones, 486 sovereign variants, USB to lithoSpore May 19). Tenaillon 2016 queued (264 clones, 590 GB). |
 | ~~R7~~ | ~~`spore.instantiate` atomic VM provisioning~~ | biomeOS | ~~LOW~~ **DEFERRED-TO-STADIAL** — v3.63: route/graph scaffold, handler includes `_deferred` context. Wire when lithoSpore Tier 3 ready. |
 | ~~R8~~ | ~~`capability.list` complete inventory~~ | All primals | ~~LOW~~ **RESOLVED** — all primals now return canonical `{ capabilities, count, primal }` envelope (Wave 22 stadial push) |
-| R9 | Stale socket cleanup on startup | biomeOS | MEDIUM — **ABSORBED** (biomeOS CHANGELOG confirms socket hygiene) |
-| R10 | Stale socket cleanup on startup | songbird | LOW — **ABSORBED** (songbird CHANGELOG confirms socket hygiene) |
+| ~~R9~~ | ~~Stale socket cleanup on startup~~ | biomeOS | ~~MEDIUM~~ **RESOLVED** — 14/14 primals absorbed, biomeOS confirms socket hygiene |
+| ~~R10~~ | ~~Stale socket cleanup on startup~~ | songbird | ~~LOW~~ **RESOLVED** — 14/14 primals absorbed, songbird confirms socket hygiene |
 | R11 | PID file alongside socket | All primals | LOW — deprioritized (consumer-side connect-probe provides equivalent liveness; toadStool explicitly declined, others rely on unlink-before-bind) |
 | ~~R12~~ | ~~`doctor.sh` stale socket checker~~ | plasmidBin | ~~LOW~~ **RESOLVED** — stale socket detection section added to `doctor.sh` (fuser + python3 fallback) |
 
@@ -185,7 +185,7 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | DF-2 | toadStool `TOADSTOOL_AUTH_MODE` env | toadStool S233 — `auth.mode` env + `eprintln` → `tracing` |
 | DF-3 | songbird/squirrel silent on `auth.mode` TCP | songbird — `CallerContext` wired (TCP transport-aware) |
 | U5 | sweetGrass port 39085 vs 9850 | sweetGrass v0.7.32 — port 9850 canonical |
-| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (456 total, zero drift) |
+| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (445 real methods, zero drift) |
 | U1 | CHECKSUMS stale after Phase 59 refactoring | **RESOLVED** — regenerated with 25 tracked files (UniBin, certification, scenarios, registry) |
 | U2 | 5 deploy graphs missing `by_capability` | **FALSE POSITIVE** — only manifests (parameter tables, not node-bearing graphs) lack field; all actual `[[graph.nodes]]` graphs have `by_capability` |
 | U3 | 8 profile graphs missing `bonding_policy` | **RESOLVED** — 9/9 profile graphs already have `bonding_policy` |
@@ -497,8 +497,8 @@ L1 (Primals — sentinel-stadial)
   │ validated against
   ▼
 L2 (primalSpring — stadial gate for primals)
-  │ 456 registry, MethodGate enforcement, deploy graph coherence,
-  │ guidestone certification, CompositionContext contracts
+  │ 445 registry, MethodGate enforcement, deploy graph coherence,
+  │ UniBin certification, CompositionContext contracts
   │
   │ patterns flow downstream
   ▼
@@ -533,14 +533,14 @@ See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 ### Layer 2: primalSpring — The Stadial Gate
 
 **Owner**: primalSpring team
-**Scope**: Canonical capability registry (456 methods), deploy graph library,
+**Scope**: Canonical capability registry (445 methods), deploy graph library,
 composition validation, gap registry, `CompositionContext` API, two-tier
 validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification,
 atomic signal graphs, eukaryotic validation scenarios with shared helpers
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 456 methods, 744 tests, zero local debt. All waves complete:
+**Current**: 445 methods, 736 tests, zero local debt. All waves complete:
 - Wave 8: Compute trio composition — 9/9 DONE
 - Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
 - Wave 10: Phase 32 atomic model — all fragments v3.0.0
@@ -643,7 +643,7 @@ L1 (Primals — sentinels, stadial-first)
   │ validated against ↓
   │
 L2 (primalSpring — stadial gate)
-  │ 456 registry, MethodGate, deploy graphs, guidestone cert
+  │ 445 registry, MethodGate, deploy graphs, UniBin cert
   │
   │ patterns flow downstream ↓
   │
@@ -683,7 +683,7 @@ Handoff: `infra/wateringHole/handoffs/LTEE_GUIDESTONE_SUBSYSTEM_HANDOFF_MAY11_20
 | L2 (primalSpring) | Targeted GuideStone standard, scope graph schema, validation harness pattern | **DONE** — standard defined |
 | L3 (springs) | LTEE paper queue items (36 assignments across 6 springs), binary builds, scenario implementations | **SEEDED** — queues populated, reproduction work begins |
 | L4 (projectNUCLEUS) | Integration as subsystem, workload TOMLs, deployment testing, USB packaging | **ARCHITECTURE** — handoff created, phases 2-5 pending |
-| L5 (projectFOUNDATION) | Thread 04 (enviro genomics) + Thread 02 (plasma physics) data anchoring for LTEE datasets | **PENDING** — awaiting spring reproductions |
+| L5 (projectFOUNDATION) | Thread 04 (enviro genomics) + Thread 02 (plasma physics) data anchoring for LTEE datasets | **ACTIVE** — Thread 04 active with expression + data sources |
 
 ### Wave 6 Paper-Spring Assignments
 
@@ -832,7 +832,7 @@ dependencies (no C/FFI crates; BLAKE3 uses `pure` feature).
 | Site | Was | Now |
 |------|-----|-----|
 | `certification/entropy.rs:generate_machine_seed` | `panic!("OS entropy unavailable")` | `Option<String>`, caller handles gracefully |
-| `bin/primalspring_guidestone/entropy.rs` | Same panic | Same fix + `.unwrap_or_default()` |
+| ~~`bin/primalspring_guidestone/entropy.rs`~~ | ~~Same panic~~ | **REMOVED** — binary deleted Wave 32; logic in `certification/` |
 | `ipc/transport.rs:call_encrypted` | `.expect("Phase 3 keys required")` ×2 | `.ok_or(IpcError::ProtocolError { .. })?` |
 | `harness/mod.rs:generate_harness_mito_seed` | `.expect("HKDF expand")` | Graceful fallback (empty vec) |
 | `harness/mod.rs:generate_harness_nuclear` | `.expect("HKDF expand")` | Silent `let _ =` (zeroed OKM accepted) |

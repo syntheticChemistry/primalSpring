@@ -4,7 +4,7 @@
 # Each fingerprint = BLAKE3("primal-seed-v1" || primal_name || version || binary_blake3_checksum)
 # Binary checksums sourced from $ECOPRIMALS_PLASMID_BIN/primals/x86_64-unknown-linux-musl/
 #
-# Verify: primalspring_guidestone Layer 0.5 (Seed Provenance)
+# Verify: primalspring certify — Layer 0.5 (Seed Provenance)
 # Regenerate: tools/gen_seed_fingerprints.sh
 
 [fingerprints]

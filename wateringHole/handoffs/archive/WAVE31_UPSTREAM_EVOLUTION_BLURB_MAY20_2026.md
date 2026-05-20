@@ -81,7 +81,7 @@ and primalSpring will ingest downstream.
 
 | Item | Priority | What |
 |------|----------|------|
-| `primal.list` implementation | MEDIUM | Schema defined by primalSpring Wave 20. primalSpring scenario `s_schema_standard` validates when available. |
+| `primal.list` implementation | ~~MEDIUM~~ **RESOLVED** | Shipped in biomeOS v3.65 (May 20). Schema aligned with primalSpring Wave 20 spec. |
 | `nest.store` signal dispatch | LOW | lithoSpore R5 — ferment transcript handoff collapse via signal routing |
 | `spore.instantiate` | LOW | lithoSpore R7 — atomic VM provisioning for guideStones |
 

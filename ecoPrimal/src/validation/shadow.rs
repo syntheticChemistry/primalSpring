@@ -12,10 +12,10 @@
 //! ```rust,no_run
 //! use primalspring::validation::shadow::{ShadowComparison, ShadowResult};
 //!
-//! let result = ShadowComparison::run("tls_path", || {
+//! let result = ShadowComparison::run("tls_path", || -> Result<String, String> {
 //!     // primary: sovereign TLS termination
 //!     Ok("response_hash_abc".to_string())
-//! }, || {
+//! }, || -> Result<String, String> {
 //!     // shadow: cloudflare proxy
 //!     Ok("response_hash_abc".to_string())
 //! });

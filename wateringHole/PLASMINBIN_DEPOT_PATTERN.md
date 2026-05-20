@@ -86,7 +86,7 @@ as fallback.
 ./tools/fetch_primals.sh                          # download binaries
 export BEARDOG_FAMILY_SEED="ci-$(date +%s)"
 ./tools/composition_nucleus.sh start              # launch NUCLEUS
-FAMILY_ID=ci-run primalspring_guidestone           # pre-flight
+FAMILY_ID=ci-run primalspring certify               # pre-flight
 FAMILY_ID=ci-run myspring_guidestone               # domain validation
 ./tools/composition_nucleus.sh stop
 ```
@@ -148,7 +148,7 @@ Before running domain guideStones, validate the composition is sound:
 ```bash
 FAMILY_ID=my-spring-validation \
     cargo run --manifest-path path/to/primalSpring/ecoPrimal/Cargo.toml \
-    --bin primalspring_guidestone
+    --bin primalspring_unibin -- certify
 
 # Exit 0 → composition valid, proceed with domain guideStone
 # Exit 1 → composition broken, fix before domain validation

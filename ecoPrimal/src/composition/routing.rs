@@ -124,10 +124,10 @@ pub fn method_to_capability_domain(method: &str) -> &str {
         | "birdsong" | "lineage" => "security",
         "ipc" | "discovery" | "tor" | "relay" | "http" | "dns" | "stun" | "turn" | "network"
         | "mesh" | "onion" => "discovery",
-        "compute" | "dispatch" | "workload" => "compute",
+        "compute" | "dispatch" | "workload" | "sovereign" => "compute",
         "tensor" | "stats" | "math" | "noise" | "activation" | "rng" | "fhe" | "tolerances"
         | "validate" | "device" | "linalg" | "spectral" | "nautilus" | "ml" | "ode" | "nn"
-        | "ops" => "tensor",
+        | "ops" | "signal" => "tensor",
         "shader" => "shader",
         "storage" | "secrets" => "storage",
         "content" => "content",

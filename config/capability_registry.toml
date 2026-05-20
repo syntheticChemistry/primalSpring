@@ -456,6 +456,8 @@ methods = [
 owner = "loamspine"
 methods = [
     "anchor.publish",
+    "anchor.publish_batch",
+    "anchor.verify",
 ]
 
 [braid]

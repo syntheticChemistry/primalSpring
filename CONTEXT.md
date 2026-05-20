@@ -90,7 +90,7 @@ abstracted as reusable modules with ecosystem adoption guides.
 mined/stale showcases across 6 primals (47 demo dirs moved to fossilRecord).
 `SHOWCASE_FOSSILIZATION_STANDARD.md` established. sporePrint catalog refreshed.
 **Waves 1-34 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
-in production paths. 738 lib tests (14 new pattern tests). 45 validation scenarios including atomic-signal,
+in production paths. 736 lib tests (all passing). 45 validation scenarios including atomic-signal,
 meta-tier-signal, agentic-tower, sovereignty scenarios (membrane composition,
 parity, content sovereignty), signal dispatch parity, cross-gate capability.call,
 and primal announce — with shared `validation::helpers` for graph parsing and
@@ -101,8 +101,8 @@ convenience APIs on `CompositionContext`. `SIGNAL_ADOPTION_STANDARD.md` publishe
 `CompositionContext`. CATHEDRAL split documented (lithoSpore + projectFOUNDATION).
 All 8 delta springs pushed Wave 17 signal adoption — `primal.announce` and
 `nest.store` dispatch ecosystem-wide. Cross-spring scorecard reconciled with
-live test counts. 9/10 foundation threads active (Thread 4 is sole remaining
-gap). Garden evolution blurbs published for projectFOUNDATION, projectNUCLEUS,
+live test counts. 10/10 foundation threads active (Thread 4 now active with expression
++ data sources). Garden evolution blurbs published for projectFOUNDATION, projectNUCLEUS,
 esotericWebb. `announce_or_register` backward-compat pattern endorsed.
 **Dark Forest Glacial Gate**: 5-pillar
 security invariant standard (metadata, ports, network, BTSP, enclave).
@@ -158,7 +158,8 @@ Particle model adopted: Tower = electron, Node = proton, Nest = neutron,
 NUCLEUS = atom. Layered validation: L0 (primal routing) → L1 (atomic) →
 L2 (mixed atomics) → L3 (bonding patterns).
 
-guideStone composition certification: `primalspring_guidestone` binary validates
+guideStone composition certification: `primalspring certify` (UniBin subcommand,
+formerly standalone `primalspring_guidestone` — removed Wave 32) validates
 NUCLEUS composition correctness across 9 layers (bare properties, seed provenance,
 discovery, BTSP escalation, atomic health, capability parity, cross-atomic pipeline,
 bonding, BTSP/crypto, cellular deployment). Layer 1.5 reports per-atomic security
@@ -223,13 +224,13 @@ composition).
 ## Glacial Checkpoint — Current and Remaining (May 20, 2026)
 
 ### Completed
-- **Wave 22 stadial gate absorbed**: 13/13 primals evolved, 456 methods, plasmidBin v5.5.0
+- **Wave 22 stadial gate absorbed**: 13/13 primals evolved, plasmidBin v5.5.0
 - **Fossilization pass**: 23 handoffs archived, living handoffs reduced to 6
-- **Next waves prepped**: Waves 23–27 (E2E study, shadow runs, pairing, gaps, threads)
+- **Waves 23–34 complete**: E2E study, shadow runs, upstream ingestion, pattern dissemination, showcase fossilization
 - All 8 springs at Wave 20 — canonical capability.list envelope, debt resolved
-- 456-method registry stable (3 upstream asks + primal.list added), zero drift
+- 445-method registry (real methods, post-Wave 32 recount excluding test fixtures), zero drift
 - 45 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
-- 9/10 foundation threads active (Thread 4 sole remaining)
+- 10/10 foundation threads active (Thread 4 now active)
 - lithoSpore v1.0.0 released — 7/7 modules Tier 2 PASS (75/75 checks)
 - All deprecated `probe_primal` callers removed from primalSpring
 - CATHEDRAL split documented, garden evolution blurbs published
@@ -300,7 +301,7 @@ composition).
 - Removed duplicate `primals/beardog/` and `primals/nestGate/` stub
 - Audited all 13 primals + sourDough + bingoCube for deployment-valid standard compliance
 - Created upstream evolution blurb with per-primal action items and stadial pairing preview
-- Registered 4 new methods (452→456): `dag.partial_dehydrate`, `braid.partial_update`,
+- Registered 4 new methods: `dag.partial_dehydrate`, `braid.partial_update`,
   `braid.complete`, `compute.fan_out` — from downstream-validated upstream asks
 - **Stadial gate push absorbed (May 18)**: all primals responded to blurb
   - All 3 wetSpring upstream asks IMPLEMENTED by primal teams
@@ -317,7 +318,7 @@ composition).
   - Remaining: sourDough version drift, 2 composition gaps (GPU API alignment, cross-gate dispatch)
 
 ### Remaining
-- **Thread 4** expression + targets (wetSpring/airSpring coordinate)
+- ~~**Thread 4**~~ now active (expression + data sources in projectFOUNDATION)
 - **Forgejo Actions CI** porting for projectNUCLEUS sovereignty
 - **Sovereign DNS** (knot-dns, H2-17 through H2-20)
 - **ludoSpring 6-method IPC** expansion for esotericWebb
@@ -327,7 +328,7 @@ composition).
 - **lithoSpore TURN wiring** (songbird-turn-client integration pending)
 - **petalTongue dialogue scenes** for esotericWebb narrative UI
 - **Foundation validate elevation** to CompositionContext + Rust crates
-- **biomeOS primal.list implementation** (schema defined by primalSpring Wave 20, awaiting biomeOS)
+- ~~**biomeOS primal.list implementation**~~ **RESOLVED** — shipped in biomeOS v3.65 (Wave 33)
 - **biomeOS nest.store signal dispatch** (lithoSpore R5 — ferment transcript handoff collapse)
 - **biomeOS spore.instantiate** (lithoSpore R7 — atomic VM provisioning for guideStones)
 - **Primal-blocked gaps** (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — documented as asks, awaiting upstream teams

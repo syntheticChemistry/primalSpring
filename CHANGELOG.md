@@ -3,7 +3,31 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18)
+## [Unreleased] — Waves 22–35: Stadial Entry / Glacial Shift (2026-05-20)
+
+### Wave 35: Glacial Shift Deployment Alignment (May 20)
+- **Doc drift resolved**: INTERSTADIAL_EXIT_CRITERIA.md updated (exit gate cleared),
+  cellMembrane README advanced to Phase 1, Thread 4 status corrected (now active),
+  Wave 31 blurb `primal.list` marked RESOLVED.
+- **Routing-consistency tests fixed**: 5 misrouted methods (`signal.*` → tensor,
+  `sovereign.*` → compute) — 736/736 lib tests pass.
+- **Gap tracker reconciliation**: EVOLUTION_GAPS CM-1–CM-4 marked RESOLVED,
+  synchronized with PRIMAL_GAPS.
+- **GLACIAL_SHIFT_READINESS.md** created in wateringHole — sovereignty shadow matrix,
+  cellMembrane component status, 10-gate deployment table, deployment matrix cell
+  status, distributed covalent readiness, and 6-point glacial shift criteria.
+- **DISTRIBUTED_COVALENT_DEPLOYMENT.md** created in wateringHole — cellMembrane as
+  intra-layer architecture, trust model, compute scheduling (power/load/daylight/network),
+  pre-dispatch data staging, flockGate bootstrap sequence, NAT traversal escalation,
+  Plasmodium collective.
+- **deployment_matrix.toml** updated: gate readiness section (10 physical gates with
+  hardware, role, NUCLEUS status, LAN connectivity, deployment order), P0 cell annotations
+  for glacial shift.
+- **Root doc refresh**: README (736 tests, 45 scenarios, 445 methods, removed legacy bin
+  tree entries), CONTEXT.md (Thread 4, method counts, glacial checkpoint, primal.list
+  resolved), ARCHITECTURE.md (45 scenarios, legacy bins removed, probes wording),
+  CHANGELOG header aligned to Wave 35.
+- **shadow.rs doctest fixed**: added explicit error type annotations to compile.
 
 ### Wave 34: Showcase Fossilization — Ecosystem Climate Shift (May 20)
 - **SHOWCASE_FOSSILIZATION_STANDARD.md** created in wateringHole — defines

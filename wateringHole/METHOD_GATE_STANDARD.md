@@ -139,7 +139,7 @@ primalSpring v0.9.25+ — see:
 - `ecoPrimal/src/ipc/protocol.rs` — error codes
 - `ecoPrimal/src/ipc/error.rs` — `PermissionDenied` variant
 - `ecoPrimal/src/bin/primalspring_primal/server.rs` — wiring
-- `ecoPrimal/src/bin/primalspring_guidestone/layers/btsp.rs` — validation
+- `ecoPrimal/src/certification/` — validation (formerly `bin/primalspring_guidestone/layers/btsp.rs`)
 - `tools/check_method_gate.sh` — CI validator
 
 ## Adoption Path
