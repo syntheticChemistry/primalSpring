@@ -147,10 +147,7 @@ fn phase_multi_node_skips(v: &mut ValidationResult) {
         "mesh_auto_discover_second_gate",
         "needs live Songbird mesh with 2+ gates",
     );
-    v.check_skip(
-        "cross_gate_capability_call",
-        "needs live Plasmodium routing between gates",
-    );
+    // cross_gate_capability_call: covered by s_cross_gate_capability_call (CM-3, Wave 29)
 }
 
 #[cfg(test)]

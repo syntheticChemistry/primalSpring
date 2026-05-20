@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+//! **DEPRECATED** — use `primalspring certify` instead.
+//!
 //! primalSpring guideStone — Composition Certification.
 //!
 //! Self-validating deployable that certifies a NUCLEUS composition is

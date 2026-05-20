@@ -21,6 +21,7 @@
 //! [`StdoutSink`].
 
 pub mod helpers;
+pub mod numeric;
 pub mod or_exit;
 pub mod scenarios;
 

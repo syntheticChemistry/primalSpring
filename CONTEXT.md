@@ -53,7 +53,7 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 43 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 45 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
 
@@ -73,16 +73,16 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 24 (May 19, 2026) — 703 `#[test]` markers across workspace
-(719 pass, 2 ignored, 0 clippy errors), 89 experiments (20 tracks),
+v0.9.25 Wave 30 (May 20, 2026) — 747 `#[test]` markers across workspace
+(all pass, 2 ignored, 0 clippy errors), 89 experiments (20 tracks),
 94 deploy graphs (80 deploy + 14 signal), 456 registered capability methods,
 44-cell deployment matrix. Stale socket sweep: 14/14 primals clean. Phase 32 atomic
 evolution: Tower = 3 primals (bearDog + songbird + skunkBat), Node = 6
 (Tower + compute trio), Nest = 7 (Tower + nestGate + provenance trio),
 NUCLEUS = 10 core + 3 meta = 13 total.
 **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
-**Waves 1-20 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
-in production paths. 43 validation scenarios (10 tracks, 3 tiers) including
+**Waves 1-30 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
+in production paths. 45 validation scenarios (10 tracks, 3 tiers) including
 atomic-signal, meta-tier-signal, agentic-tower, sovereignty scenarios (membrane
 composition, parity, content sovereignty), signal dispatch parity, and primal
 announce — with shared `validation::helpers` for graph parsing and Dark Forest
@@ -212,7 +212,7 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data visualization), neuralSpring (agentic
 composition).
 
-## Glacial Checkpoint — Current and Remaining (May 18, 2026 AM)
+## Glacial Checkpoint — Current and Remaining (May 20, 2026)
 
 ### Completed
 - **Wave 22 stadial gate absorbed**: 13/13 primals evolved, 456 methods, plasmidBin v5.5.0
@@ -220,7 +220,7 @@ composition).
 - **Next waves prepped**: Waves 23–27 (E2E study, shadow runs, pairing, gaps, threads)
 - All 8 springs at Wave 20 — canonical capability.list envelope, debt resolved
 - 456-method registry stable (3 upstream asks + primal.list added), zero drift
-- 43 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
+- 45 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
 - 9/10 foundation threads active (Thread 4 sole remaining)
 - lithoSpore v1.0.0 released — 7/7 modules Tier 2 PASS (75/75 checks)
 - All deprecated `probe_primal` callers removed from primalSpring
@@ -324,7 +324,7 @@ composition).
 - **biomeOS spore.instantiate** (lithoSpore R7 — atomic VM provisioning for guideStones)
 - **Primal-blocked gaps** (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — documented as asks, awaiting upstream teams
 - **LTEE enrichments** (B5 lithoSpore promotion, B7 Tier 3, B1-ML Rust elevation, framework parity benchmarks)
-- **wetSpring ferment transcripts** — Barrick 2009 IN PROGRESS (3/7 clones), Tenaillon 2016 next (~200 GB)
+- **wetSpring ferment transcripts** — Barrick 2009 SEALED (7/7), Tenaillon 2016 batch 0 COMPLETE (5/5 clones). V182 UniBin: 345 scenarios
 - **plasmidBin convergence** — all gardens converging on plasmidBin as central deployment depot:
   lithoSpore (Tier 3 via `stage_usb.sh`), projectNUCLEUS (gate deployments), projectFOUNDATION
   (validation against primals), esotericWebb (genomeBin composition), cellMembrane (`deploy_membrane.sh`)

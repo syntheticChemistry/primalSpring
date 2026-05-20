@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18)
 
+### Wave 31: Pattern absorption + local debt sweep (May 20)
+- **validation::numeric** module: `NumericValidator` with f64/count/rel checks + `bridge_into`
+  (detailed) and `bridge_into_summary` (coarse) adapters for science spring migration.
+  6 unit tests. Formalizes the prokaryotic→eukaryotic bridge pattern from wetSpring V182.
+- **Tier::from_str_loose**: moved inline tier parsing from main.rs to `registry.rs`.
+  Accepts aliases: `structural`/`tier1` → Rust, `ipc`/`tier2` → Live, `all` → Both.
+- **OutputFormat enum**: typed clap `ValueEnum` replaces `Option<String>` format parsing
+  on both `validate` and `certify` subcommands.
+- **Stale skip removed**: `cross_gate_capability_call` skip in `s_covalent_bond.rs`
+  superseded by CM-3's `s_cross_gate_capability_call` scenario.
+- **CONTEXT.md refreshed**: 43→45 scenarios, 703→747 tests, Wave 24→30, wetSpring V182.
+- **Legacy bins deprecated**: `validate_all` + `primalspring_guidestone` marked for removal,
+  redirecting to `primalspring validate` / `primalspring certify`.
+- **EUKARYOTIC_VALIDATION_MIGRATION.md**: 8-step guide for spring UniBin adoption —
+  scenario registry, numeric bridge, bulk registration, feature gating, CLI template.
+
 ### wetSpring V182 ingestion — UniBin consolidation audit (May 20)
 - **Ingested wetSpring V181+V182**: WS-11 v3 MAPQ calibration (gap-based formula,
   min_mapq=0 for FM-index mapper). Tenaillon 2016 batch 0 **COMPLETE** (5/5 clones,

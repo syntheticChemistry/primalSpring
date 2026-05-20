@@ -25,20 +25,20 @@ fn main() {
     let parsed = cli::Cli::parse();
 
     match parsed.command {
-        cli::Commands::Certify { layer, bare } => cmd_certify(layer, bare),
+        cli::Commands::Certify { layer, bare, format: _ } => cmd_certify(layer, bare),
         cli::Commands::Validate {
             ref track,
             ref scenario,
             ref tier,
             list,
-            ref format,
+            format,
             ref provenance_dir,
         } => cmd_validate(
             track.as_deref(),
             scenario.as_deref(),
             tier.as_deref(),
             list,
-            format.as_deref() == Some("json"),
+            matches!(format, cli::OutputFormat::Json),
             provenance_dir.as_deref(),
         ),
         cli::Commands::Serve => cmd_serve(),
@@ -90,14 +90,11 @@ fn cmd_validate(
         return;
     }
 
-    let tier_filter: Option<Tier> = tier.map(|t| match t {
-        "rust" => Tier::Rust,
-        "live" => Tier::Live,
-        "both" | "all" => Tier::Both,
-        _ => {
+    let tier_filter: Option<Tier> = tier.map(|t| {
+        Tier::from_str_loose(t).unwrap_or_else(|| {
             eprintln!("unknown tier: {t} (expected: rust, live, both)");
             std::process::exit(1);
-        }
+        })
     });
 
     let track_filter: Option<Track> = track.and_then(|t| {

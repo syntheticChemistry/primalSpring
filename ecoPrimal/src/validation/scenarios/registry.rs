@@ -26,6 +26,19 @@ impl std::fmt::Display for Tier {
     }
 }
 
+impl Tier {
+    /// Parse a tier from a loose string (accepts aliases).
+    #[must_use]
+    pub fn from_str_loose(s: &str) -> Option<Self> {
+        match s {
+            "rust" | "structural" | "tier1" => Some(Self::Rust),
+            "live" | "ipc" | "tier2" => Some(Self::Live),
+            "both" | "all" => Some(Self::Both),
+            _ => None,
+        }
+    }
+}
+
 /// Track taxonomy — groups related scenarios.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Track {
