@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-19 PM (Three-wave upstream gap sweep complete. All 5 primal gaps resolved/deferred. Shadow S1 LIVE + ACME shipped, S2/S3 LIVE per projectNUCLEUS, S4 spec shipped. FN-1 partial (10/25 BLAKE3). lithoSpore received Tenaillon 2016 Tier 2 braid. projectNUCLEUS: 460+ validations/0 failures, membrane 17/0, VPS shadow deployment live. wateringHole fossilized: 10 resolved handoffs archived, 8 active remain.)
+> **Last updated**: 2026-05-20 AM (Wave 28 sporePrint absorption: 11/15 primals contributed `sporeprint/` dirs + validation summaries. Wave 29 CM-2/CM-4 RESOLVED by projectNUCLEUS (membrane_provenance.sh + MEM-14-17). hotSpring Exp 211 Phase C: PMU software path CLOSED, Tier 2 pivoted to patched-nouveau warm handoff. toadStool S265: `sovereign.pmu_investigate` RPC + VFIO PMU probe. projectFOUNDATION: FN-1 unchanged at 10/25, FN-5 CI validation extended to 13 steps. healthSpring V64y: 1,018 tests.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,25 +17,25 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 18, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 43 scenarios (10 tracks, 3 tiers), 456 methods, 744 tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. Schema standardization (Wave 20): `primal.list` + `capability.list` canonical shapes, `s_schema_standard` + `s_nest_commit_live` scenarios. All springs pulled to HEAD: 9,413+ total tests across 8 springs.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1 (MEM-14-17 added). primalSpring: 44 scenarios (10 tracks, 3 tiers), 456 methods, 744 tests. Dark Forest Glacial Gate standard formalized (5-pillar security invariants). Sovereignty track added: membrane composition, sovereignty parity, content sovereignty. 14 atomic signal graphs. Wave 28 sporePrint: 11/15 primals contributed `sporeprint/` validation summaries. All springs pulled to HEAD: 9,400+ total tests across 8 springs.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — HSM mock `#[cfg(test)]` (Wave 98) |
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — DF-3 CallerContext wired (TCP transport-aware) |
-| toadStool | 22,900+ | **ADOPTED** | FULL | L3 | **CLEAN** — Phase D factory wired (S254). AMD live, NV FECS-gated. 74 JSON-RPC methods. |
+| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S265: `sovereign.pmu_investigate` RPC, VFIO PMU probe. Phase D factory wired (S254). AMD live, NV FECS-gated. 85 JSON-RPC methods. |
 | biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.57: Neural API evolution complete. `signal.dispatch` composition collapse, `primal.announce` atomic self-registration, metrics tagging with signal namespaces, `capability.call` signal-tier interception. v3.54 `biomeos.spring_status` for Tier 2. |
-| nestgate | 8,915+ | **ADOPTED** | FULL | L3 | **CLEAN** — S66 shadow S3 readiness: `content.resolve` index.html path normalization (trailing-slash + bare-path fallback), `resolved_in_ms`/`retrieved_in_ms` timing metadata for TTFB. 673 tests. |
+| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S66 shadow S3 readiness: `content.resolve` index.html path normalization (trailing-slash + bare-path fallback), `resolved_in_ms`/`retrieved_in_ms` timing metadata for TTFB. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 68: 72-method coverage, TensorSession `sub`/`negate` (GAP-HS-027), registry assertion softened to `>= 70` |
-| petalTongue | varies | **ADOPTED** | FULL | L2/L3 | **CLEAN** — all `#[allow]` → `#[expect(reason)]` (P6) |
-| rhizoCrypt | 1,637+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68: `dag.session.get` enriched with `agents`/`genesis`/`frontier` (covers `dag_summary` proposal). GAP-36 aliases shipped. |
-| loamSpine | 1,442+ | **ADOPTED** | FULL | L3 | **CLEAN** |
-| sweetGrass | 1,522 | **ADOPTED** | FULL | L3 | **CLEAN** — JH-0 gate + port 9850 canonical |
+| petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — v1.6.6: 55 IPC methods, S3 shadow parity, musl targets |
+| rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68: `dag.session.get` enriched with `agents`/`genesis`/`frontier` (covers `dag_summary` proposal). GAP-36 aliases shipped. 93.88% coverage. |
+| loamSpine | 1,523+ | **ADOPTED** | FULL | L3 | **CLEAN** — v0.9.16: 42 methods, chain anchoring spec (Bitcoin/Ethereum/RFC 3161) |
+| sweetGrass | 1,553 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.37: PID file, JH-0 gate + port 9850 canonical |
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — eprintln→tracing in 5 driver files (Iter 95) |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-20 complete. 43 scenarios (10 tracks), 456 methods. Zero panics in production. Wave 20: `primal.list` canonical schema, `capability.list` standardization, `s_schema_standard` + `s_nest_commit_live` scenarios, Thread 10 provenance wiring. All delta springs resolved Wave 20 debt (May 17). Dark Forest Glacial Gate: 5-pillar security invariant standard. Sovereignty track: membrane composition + parity + content sovereignty. Neural API Signal Elevation. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
+**13/13 at zero debt. Waves 1-20 complete. 44 scenarios (10 tracks), 456 methods. Zero panics in production. Wave 20: `primal.list` canonical schema, `capability.list` standardization, `s_schema_standard` + `s_nest_commit_live` scenarios, Thread 10 provenance wiring. All delta springs resolved Wave 20 debt (May 17). Dark Forest Glacial Gate: 5-pillar security invariant standard. Sovereignty track: membrane composition + parity + content sovereignty. Neural API Signal Elevation. Eukaryotic validation with shared helpers, atomic signal layer, bootstrap graph.**
 
 ---
 
@@ -134,21 +134,21 @@ pressure. primalSpring validates the surface structurally via `s_sporeprint_surf
 
 | Primal | `sporeprint/` dir | `notify-sporeprint.yml` | config.toml entity | Status |
 |--------|:-----------------:|:----------------------:|:------------------:|--------|
-| bearDog | No | Yes | Yes | Metrics only |
-| songbird | No | Yes | Yes | Metrics only |
-| skunkBat | No | Yes | Yes | Metrics only |
-| toadStool | No | Yes | Yes | Metrics only |
-| barraCuda | No | Yes | Yes | Metrics only |
-| coralReef | No | Yes | Yes | Metrics only |
-| nestGate | **Yes** | Yes | Yes | **Done** — S67 |
-| rhizoCrypt | No | Yes | Yes | Metrics only |
-| loamSpine | No | Yes | Yes | Metrics only |
-| sweetGrass | No | Yes | Yes | Metrics only |
-| biomeOS | No | Yes | Yes | Metrics only |
-| squirrel | No | Yes | Yes | Metrics only |
-| petalTongue | No | Yes | Yes | Metrics only |
-| sourDough | No | Yes | Yes | Metrics only |
-| bingoCube | No | Yes | Yes | Metrics only |
+| bearDog | **Yes** | Yes | Yes | **Complete** — 248+ tests, 126 methods, S1 shadow LIVE |
+| songbird | **Yes** | Yes | Yes | **Complete** — 7,803 tests, 54 methods, VPS relay deployed |
+| skunkBat | No | Yes | Yes | Pending |
+| toadStool | **Yes** | Yes | Yes | **Complete** — 9,028+ tests, 85 methods, Node Atomic ready |
+| barraCuda | **Yes** | Yes | Yes | **Complete** — 4,393+ tests, 75 methods, precision ladder |
+| coralReef | **Yes** | Yes | Yes | **Complete** — 3,181 tests, 16 methods, A++ pure compiler |
+| nestGate | **Yes** | Yes | Yes | **Complete** — 12,393 tests, S3 shadow ready |
+| rhizoCrypt | **Yes** | Yes | Yes | **Complete** — 1,642 tests, 32 methods, 93.88% coverage |
+| loamSpine | **Yes** | Yes | Yes | **Complete** — 1,523 tests, 42 methods, chain anchoring spec |
+| sweetGrass | **Yes** | Yes | Yes | **Complete** — 1,553 tests, 37 methods, W3C PROV-O braids |
+| biomeOS | **Yes** | Yes | Yes | **Complete** — 7,924+ tests, 27 domains, v3.64 |
+| squirrel | No | Yes | Yes | Pending |
+| petalTongue | **Yes** | Yes | Yes | **Complete** — 6,297+ tests, 55 methods, S3 shadow parity |
+| sourDough | No | Yes | Yes | Pending |
+| bingoCube | No | Yes | Yes | Pending |
 
 **sporePrint infra gaps** (owned by sporePrint/primalSpring):
 
@@ -168,9 +168,9 @@ composition testing and trio-verified deployments.
 | # | Gap | Owner | Priority | Status |
 |---|-----|-------|----------|--------|
 | CM-1 | `deploy_membrane.sh --composition nest` | plasmidBin | MEDIUM | Not started — Tower composition operational |
-| CM-2 | `membrane_provenance.sh` post-deploy trio hook | projectNUCLEUS | MEDIUM | Not started — trio pipeline pattern exists on gate |
+| ~~CM-2~~ | ~~`membrane_provenance.sh` post-deploy trio hook~~ | projectNUCLEUS | ~~MEDIUM~~ | **RESOLVED** — `deploy/membrane_provenance.sh` shipped (5-phase remote trio verification, graceful degradation, report generation) |
 | CM-3 | Cross-gate `capability.call` testing | primalSpring + songbird | LOW | CG-8 resolved, needs test scenario |
-| CM-4 | darkforest MEM-14 through MEM-17 (Nest health) | projectNUCLEUS | LOW | MEM-01 through MEM-13 operational |
+| ~~CM-4~~ | ~~darkforest MEM-14 through MEM-17 (Nest health)~~ | projectNUCLEUS | ~~LOW~~ | **RESOLVED** — MEM-14 through MEM-17 added to `darkforest_membrane.sh` (NestGate, rhizoCrypt, loamSpine, sweetGrass liveness checks, 17 PASS / 0 FAIL / 5 SKIP) |
 
 ---
 

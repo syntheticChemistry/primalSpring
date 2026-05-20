@@ -2,7 +2,7 @@
 
 **Date:** May 19, 2026
 **From:** primalSpring (coordination spring)
-**To:** wetSpring, all delta springs, RootPulse team
+**To:** wetSpring, all delta springs, biomeOS + provenance trio
 **Priority:** Sweep — all remaining open spring-level gaps
 **License:** AGPL-3.0-or-later
 
@@ -123,7 +123,7 @@ accessions, 524 FASTQs). These are the cross-team prerequisites:
 |-------------|-------|--------|
 | `compute.fan_out` DAG-aware dispatch | toadStool | Shipped (S254) |
 | Consumer socket pattern (connect-probe) | wetSpring | Absorbed (Wave 23) |
-| GPU API `submit_and_map` alignment | barraCuda + coralReef | **OPEN** (CG-3, see primal blurb) |
+| GPU API `submit_and_map` alignment | barraCuda + coralReef | **RESOLVED** (CG-3 — `precision_advice`, `dispatch_hints`, `TENSOR_WIRE_CONTRACT.md`) |
 | SRA download (590 GB) | wetSpring | Workspace ready, download queued |
 | Variant caller v2 (binomial model) | wetSpring | **OPEN** (WS-11) |
 
