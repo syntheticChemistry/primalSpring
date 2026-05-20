@@ -119,7 +119,7 @@ From `wetSpring/GAPS.md` — issues that route to primalSpring or upstream teams
 | WS-3 | Public chain anchor — braids have no public verifiable ledger anchor | loamSpine | MEDIUM | **SPEC** — `specs/PUBLIC_TIMESTAMPING.md`: RFC 3161 TSA, Bitcoin OP_RETURN, Ethereum analyzed. `AnchorTarget::Rfc3161Tsa` variant added. Implementation timeline open. |
 | WS-4 | petalTongue client-side WASM — all grammar rendering requires live HPC | petalTongue | MEDIUM | Not started |
 | WS-9 | Cross-tier parity — L1 vs L2 documented (0 position overlap), L2 vs L3 pending, coordinate mismatch | wetSpring | MEDIUM | L1/L2 done, L3 pending |
-| WS-11 | Variant caller parity — sovereign over-calls vs breseq | wetSpring | HIGH | **v2 deployed** — GPU min_depth wired, MAPQ≥10 filtering, ±5bp window matching, duplicate removal, CPU mapping threshold 250bp. Tenaillon batch 0: 2/5 clones validated. |
+| WS-11 | Variant caller parity — sovereign over-calls vs breseq | wetSpring | HIGH | **v2 deployed** (V180) — GPU min_depth wired, MAPQ≥10 filtering, ±5bp window matching, duplicate removal, CPU mapping threshold 250bp. Tenaillon batch 0: 2/5 clones validated. Re-measurement pending. |
 
 **Note**: WS-8 (ferment transcript pipeline) and WS-10 (stale socket) are RESOLVED. WS-5 (ludoSpring), WS-6 (hotSpring physics), WS-7 (radiating attribution) are Phase 3-4 future work — not tracked here.
 
