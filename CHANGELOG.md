@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Wave 22: Stadial Gate Absorption (2026-05-18)
 
+### plasmidBin validate crate: serde-typed evolution (May 20)
+- **Full refactor** of `plasmidBin/validate/` from toml::Value jelly to idiomatic Rust
+- Edition 2021 → 2024, `#![forbid(unsafe_code)]`, regex dependency removed
+- Serde Deserialize structs: `ManifestFile`, `PrimalEntry`, `AtomicDef`, `SpringEntry`,
+  `ManifestMeta`, `ChecksumsFile`, `SourcesFile`, `SourceEntry`
+- Typed `ports.env` parser: port assignments, composition lists, niche definitions
+- Cross-validation drift now FAIL (was silent WARN that didn't affect exit code)
+- Atomics false-pass bug fixed (no longer counts pass when inner refs fail)
+- `types.rs` module: `Report`, `MIN_PRIMALS`, `is_valid_blake3_hex()`
+- 21 unit tests (was 1): fixture TOML/env data, bad hashes, bad repos, port conflicts
+- Cross-validation correctly catches `sourdough` drift (in manifest, no checksums/sources)
+- Version bumped to 0.2.0
+
 ### Stale Socket Blurb Absorption Sweep + plasmidBin Hardening (May 18)
 - Pulled all 14 primals and verified stale socket blurb absorption
 - **13/14 absorbed**: bearDog, biomeOS, coralReef, loamSpine, nestgate, petalTongue,
