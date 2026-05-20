@@ -83,6 +83,7 @@ pub mod s_sequential_graph;
 pub mod s_signal_dispatch_parity;
 pub mod s_socket_discovery;
 pub mod s_sovereignty_parity;
+pub mod s_sporeprint_surface;
 pub mod s_startup_ordering;
 pub mod s_tier2_science_api;
 pub mod s_token_federation;
@@ -136,6 +137,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_primal_announce::SCENARIO);
     r.register(s_schema_standard::SCENARIO);
     r.register(s_nest_commit_live::SCENARIO);
+    r.register(s_sporeprint_surface::SCENARIO);
     r
 }
 
@@ -146,7 +148,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 43;
+    const EXPECTED_SCENARIO_COUNT: usize = 44;
 
     #[test]
     fn registry_scenario_count() {

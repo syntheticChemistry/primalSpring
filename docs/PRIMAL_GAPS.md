@@ -123,6 +123,55 @@ From `wetSpring/GAPS.md` — issues that route to primalSpring or upstream teams
 
 **Note**: WS-8 (ferment transcript pipeline) and WS-10 (stale socket) are RESOLVED. WS-5 (ludoSpring), WS-6 (hotSpring physics), WS-7 (radiating attribution) are Phase 3-4 future work — not tracked here.
 
+### sporePrint External Surface — Wave 28 (added May 20, 2026)
+
+sporePrint (primals.eco) is treated as a validation target, not a separate
+maintenance artifact. Each primal contributes incrementally via existing patterns.
+Automation reaches sporePrint the same way it reached everything else — via glacial
+pressure. primalSpring validates the surface structurally via `s_sporeprint_surface`.
+
+**Per-primal contribution status**:
+
+| Primal | `sporeprint/` dir | `notify-sporeprint.yml` | config.toml entity | Status |
+|--------|:-----------------:|:----------------------:|:------------------:|--------|
+| bearDog | No | Yes | Yes | Metrics only |
+| songbird | No | Yes | Yes | Metrics only |
+| skunkBat | No | Yes | Yes | Metrics only |
+| toadStool | No | Yes | Yes | Metrics only |
+| barraCuda | No | Yes | Yes | Metrics only |
+| coralReef | No | Yes | Yes | Metrics only |
+| nestGate | No | Yes | Yes | Metrics only |
+| rhizoCrypt | No | Yes | Yes | Metrics only |
+| loamSpine | No | Yes | Yes | Metrics only |
+| sweetGrass | No | Yes | Yes | Metrics only |
+| biomeOS | No | Yes | Yes | Metrics only |
+| squirrel | No | Yes | Yes | Metrics only |
+| petalTongue | No | Yes | Yes | Metrics only |
+| sourDough | No | Yes | Yes | Metrics only |
+| bingoCube | No | Yes | Yes | Metrics only |
+
+**sporePrint infra gaps** (owned by sporePrint/primalSpring):
+
+| # | Gap | Owner | Priority | Status |
+|---|-----|-------|----------|--------|
+| SP-1 | Auto-merge: Tier 2 content auto-commits after `spore-validate` passes | sporePrint CI | MEDIUM | Not started — currently PR-gated |
+| SP-2 | Deploy status fields in `config.toml` (`last_push`, `shadow_status`, `deploy_locations`) | sporePrint | MEDIUM | Not started |
+| SP-3 | `liveSpore.json` auto-ingest from trio-equipped deployments | sporePrint CI | LOW | Pipeline exists, feed source pending |
+| SP-4 | Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put` | projectNUCLEUS | LOW | Script exists, API wiring incomplete |
+
+### cellMembrane Nest Expansion — Wave 29 (added May 20, 2026)
+
+Expand cellMembrane VPS from Tower Atomic (3 primals) to Nest Atomic
+(+ nestGate, rhizoCrypt, loamSpine, sweetGrass). Enables cross-boundary
+composition testing and trio-verified deployments.
+
+| # | Gap | Owner | Priority | Status |
+|---|-----|-------|----------|--------|
+| CM-1 | `deploy_membrane.sh --composition nest` | plasmidBin | MEDIUM | Not started — Tower composition operational |
+| CM-2 | `membrane_provenance.sh` post-deploy trio hook | projectNUCLEUS | MEDIUM | Not started — trio pipeline pattern exists on gate |
+| CM-3 | Cross-gate `capability.call` testing | primalSpring + songbird | LOW | CG-8 resolved, needs test scenario |
+| CM-4 | darkforest MEM-14 through MEM-17 (Nest health) | projectNUCLEUS | LOW | MEM-01 through MEM-13 operational |
+
 ---
 
 ## Upstream Gap Reconciliation (projectNUCLEUS May 9, 2026)
