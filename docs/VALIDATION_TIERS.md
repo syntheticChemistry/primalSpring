@@ -16,7 +16,7 @@ Rust library interactions — no running primals required.
 
 - Deploy graph TOML parsing and schema validation
 - Bonding policy rule checks (`BondType`, `TrustModel`)
-- Capability registry string matching against canonical 456 methods
+- Capability registry string matching against canonical 445 methods
 - BTSP protocol frame serialization round-trips
 - Tolerance constant assertions (documented thresholds)
 - `ValidationResult` harness structural tests
@@ -177,7 +177,7 @@ Dark Forest invariant checking, and capability registry cross-referencing.
 New scenarios should use these helpers instead of reimplementing locally.
 
 **Registry meta-test** in `scenarios/mod.rs` validates:
-- `build_registry()` returns exactly 43 scenarios
+- `build_registry()` returns exactly 45 scenarios
 - No duplicate scenario IDs
 - Every `Track` variant has at least one scenario
 - All `Tier::Rust` scenarios pass structurally
@@ -189,7 +189,7 @@ New scenarios should use these helpers instead of reimplementing locally.
 | Both | 10 | Test structural phase or verify no panics |
 | Live | 24 | Verify scenario runs to completion (failures expected without primals) |
 
-`cargo test --lib` exercises all 43 scenarios — the single authoritative CI gate.
+`cargo test --lib` exercises all 45 scenarios — the single authoritative CI gate.
 
 ---
 

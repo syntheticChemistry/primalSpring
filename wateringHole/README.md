@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
 **Version**: 0.9.25 (Wave 22 — 13/13 primals stadial-gate absorbed, plasmidBin v5.5.0)
-**Last Updated**: May 18, 2026 (AM — 456-method registry, all upstream asks implemented, fossilization pass)
+**Last Updated**: May 21, 2026 (Wave 35 — 445-method registry, glacial shift alignment, debris cleanup)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -73,8 +73,8 @@ Moved to `handoffs/archive/` — absorbed by Wave 22 stadial push:
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
 - **Zero open upstream gaps** — 13/13 primals at zero debt, Waves 1-18 complete, zero panics in production
-- **456 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`, `fido2.*`, `primal.announce`, `primal.list`)
-- **43 validation scenarios** (10 tracks, 3 tiers: Rust 9 / Both 10 / Live 24) with shared `validation::helpers`; sovereignty track validates membrane composition, routing parity, content sovereignty; schema-standard + nest-commit-live scenarios validate Wave 20 canonical shapes; signal dispatch parity + primal announce scenarios validate Neural API adoption
+- **445 registered capability methods** across 84+ domains (including `auth.*`, `nautilus.*`, `game.*`, ionic token methods, `btsp.capabilities`, `toadstool.validate`, `barracuda.precision.route`, `shader.compile.gemm`, `fido2.*`, `primal.announce`, `primal.list`)
+- **45 validation scenarios** (10 tracks, 3 tiers: Rust 9 / Both 10 / Live 24) with shared `validation::helpers`; sovereignty track validates membrane composition, routing parity, content sovereignty; schema-standard + nest-commit-live scenarios validate Wave 20 canonical shapes; signal dispatch parity + primal announce scenarios validate Neural API adoption
 - **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
 - **RootPulse commit workflow** fully executable (6/6 phases)
@@ -87,7 +87,7 @@ Moved to `handoffs/archive/` — absorbed by Wave 22 stadial push:
 | What | Where |
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
-| Capability registry | `config/capability_registry.toml` (456 methods, zero drift) |
+| Capability registry | `config/capability_registry.toml` (445 methods, zero drift) |
 | Routing config schema | `config/routing_config_reference.toml` (canonical membrane routing) |
 | Membrane deploy graph | `graphs/membrane/tower_membrane.toml` (VPS sovereignty boundary) |
 | Method gate CI | `tools/check_method_gate.sh` |
@@ -148,7 +148,7 @@ With biomeOS v3.57 live, each primal should:
    `primal.announce` RPC (see `PRIMAL_ANNOUNCE_PROTOCOL.md`).
 2. **Declare signal-tier membership**: Include `signal_tiers` in the announce
    payload so biomeOS can route atomic signals through the correct graphs.
-3. **Validate against 456 methods**: Ensure niche capability counts align
+3. **Validate against 445 methods**: Ensure niche capability counts align
    with `config/capability_registry.toml` (Wave 20: `primal.list` added).
 4. **Validate membrane compositions**: Downstream membrane deployments must conform
    to `config/routing_config_reference.toml` schema (backend types, trust tiers,
@@ -213,13 +213,13 @@ delta. Every spring has absorbed lithoSpore audit patterns and is at zero debt.
 | ludoSpring | 982 | V76 | Schell Lenses + CPU/GPU parity, `CROSS_TIER_PARITY.md`, `DEGRADATION_BEHAVIOR.md`, 982 tests |
 | groundSpring | 1,123+ | V145 | `DEGRADATION_BEHAVIOR.md` (11 primals), niche metadata fix, 1,123 tests |
 | airSpring | 1,373 | v0.10.0 | 3 new cross-tier parity validators (autocorrelation, gamma_cdf, soil_moisture_topp), 57 caps (53 stable, 4 evolving), trio `primals_reached` bug fix, 17 methods full 3-tier coverage |
-| primalSpring | 744 | — | Wave 20 PM: lithoSpore audit absorption (R1-R4), stability tiers, degradation docs, trio semantics, cross-tier parity pattern, scorecard + LTEE tracker updated |
+| primalSpring | 736 | — | Wave 35: lithoSpore audit absorption (R1-R4), stability tiers, degradation docs, trio semantics, cross-tier parity pattern, scorecard + LTEE tracker updated |
 
 **Convergence state (May 17, 2026 PM)**: All 7 delta springs have absorbed
 lithoSpore audit patterns. Stability tiers annotated ecosystem-wide. Degradation
 behavior documented in all springs. Cross-tier parity validated. Trio transaction
 semantics aligned. wetSpring executing the ecosystem's first real-data ferment
-transcript braid. Registry 456 methods. Fragment-first graph composition adopted.
+transcript braid. Registry 445 methods. Fragment-first graph composition adopted.
 **Next vector**: downstream garden evolution (projectFOUNDATION + projectNUCLEUS absorb
 Wave 20 patterns), then upstream primal evolution.
 

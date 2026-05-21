@@ -430,7 +430,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 744 tests (716 lib + experiment + integration), 57 ignored.
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 736 lib tests (736 pass, 2 ignored).
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 
@@ -507,7 +507,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` — `primal.announce` atomic self-registration wire format
 - `ARCHITECTURE.md` — UniBin cell model, two-tier validation, organelle map
 - `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1–34, 13/13 zero debt)
-- `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` — Full ecosystem audit with Wave 12 addendum
+- ~~`docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 - `docs/CROSS_SPRING_PARITY_SCORECARD.md` — Cross-spring parity scorecard
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role
 - `wateringHole/METHOD_GATE_STANDARD.md` — MethodGate pre-dispatch authorization standard (JH-0)
@@ -516,7 +516,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `specs/MIXED_COMPOSITION_PATTERNS.md` — Particle model, layered validation (L0-L3), gap inventory, spring specialization guide
 - `specs/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression
 - `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution (incl. gen4 categories 8–11)
-- `specs/GEN4_COMPOSITION_AUDIT.md` — Shortcomings audit: primalSpring vs esotericWebb gen4 needs
+- ~~`specs/GEN4_COMPOSITION_AUDIT.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 - `specs/PAPER_REVIEW_QUEUE.md` — Coordination patterns ready for validation
 - `specs/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (indirect only)
 - `specs/AGENTIC_TRIO_EVOLUTION.md` — biomeOS + Squirrel + petalTongue evolution guidance for the agentic loop
@@ -526,7 +526,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `specs/DESKTOP_NUCLEUS_DEPLOYMENT.md` — Desktop NUCLEUS deployment spec
 - `specs/DESKTOP_SESSION_MODEL.md` — Desktop session model (petalTongue + biomeOS)
 - `specs/LIVE_GUI_COMPOSITION_PATTERN.md` — Live GUI composition patterns
-- `specs/SHOWCASE_MINING_REPORT.md` — Showcase patterns mined from primals for substrate validation
+- ~~`specs/SHOWCASE_MINING_REPORT.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 - `config/deployment_matrix.toml` — 44-cell deployment validation matrix
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer
 
@@ -542,7 +542,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `scripts/validate_local_lab.sh` | Quick local lab validation for benchScale topologies |
 | `scripts/validate_remote_gate.sh` | Probe a remote gate's NUCLEUS health via TCP JSON-RPC |
 | `scripts/build_ecosystem_genomeBin.sh` | Build all primals across the full genomeBin target matrix (9 targets, 3 tiers) |
-| `scripts/build_ecosystem_musl.sh` | Legacy musl-only build (x86_64 + aarch64); superseded by genomeBin script |
+| ~~`scripts/build_ecosystem_musl.sh`~~ | **Deleted** — superseded by `build_ecosystem_genomeBin.sh` |
 | `scripts/prepare_spore_payload.sh` | Assemble USB spore deployment payload (binaries + graphs + scripts + genetics) |
 | `scripts/chaos-inject.sh` | Inject chaos conditions (partition, kill, disk-fill, slow DNS, clock drift) |
 | `scripts/pixel_cross_arch_lab.sh` | Cross-arch validation lab for Pixel/Android targets |

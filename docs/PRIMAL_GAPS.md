@@ -810,7 +810,7 @@ The temporal ecosystem review identified structural drift between the Rust
 
 ### Artifacts
 
-- `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` — full ecosystem temporal review
+- ~~`docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 - `docs/LIVE_SCIENCE_API.md` — Tier 2 wire contract (toadstool.validate, list_workloads)
 - Updated: `config/deployment_matrix.toml`, all `graphs/fragments/*.toml`
 - Updated: `ecoPrimal/src/coordination/mod.rs` (AtomicType + 689+ tests pass)

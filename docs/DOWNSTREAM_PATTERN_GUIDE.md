@@ -6,7 +6,7 @@ How the 8 river delta springs feed projectNUCLEUS, projectFOUNDATION, and lithoS
 (ScopeManifest, liveSpore.json, CLI integration tests), projectNUCLEUS V3 (55 tests,
 discovery cascade, 7 gates, signal_executor.sh, tower_agent.toml), esotericWebb V8
 (357 tests, signal-first provenance, lifecycle handlers), projectFOUNDATION (184 targets,
-29 workloads, primal_ipc.sh, 6 CPU parity benchmarks). 456 methods, 43 scenarios
+29 workloads, primal_ipc.sh, 6 CPU parity benchmarks). 445 methods, 45 scenarios
 (10 tracks, 3 tiers), 14 atomic signal graphs. All UB-1–4 SHIPPED.
 
 ---
@@ -243,7 +243,7 @@ through their `guidestone` feature gate.
 
 ### Adoption Pattern (via guidestone feature gate)
 
-Springs already CI-validate against the 456-method registry. Dark Forest checks
+Springs already CI-validate against the 445-method registry. Dark Forest checks
 are an additional axis in the same `#[cfg(feature = "guidestone")]` test module:
 
 ```rust
@@ -294,7 +294,7 @@ This converges with `sourdough validate composition` (v0.3.0) and the plasmidBin
 ## 5. Signal Consumption — Neural API Composition Collapse
 
 The Neural API provides a **semantic collapse** layer: instead of springs
-calling individual primal methods (456 in the registry), they dispatch
+calling individual primal methods (445 in the registry), they dispatch
 atomic signals (14 defined in `config/signal_tools.toml`) and let biomeOS
 execute the underlying graph of method calls.
 
@@ -377,7 +377,7 @@ The sovereignty track validates the 4-layer model from `PRIMAL_VS_SOVEREIGNTY_GO
 
 | Layer | What | primalSpring Validation |
 |-------|------|------------------------|
-| 1. Primal Capabilities | 456 methods, 13 primals | Existing: `composition-parity`, `domain-contract-sweep` |
+| 1. Primal Capabilities | 445 methods, 13 primals | Existing: `composition-parity`, `domain-contract-sweep` |
 | 2. Security Validation | BTSP, MethodGate, Dark Forest | Existing: `dark-forest-gate`, `bearer-token-auth` |
 | 3. Sovereignty Deployment | VPS membrane, content routing | **NEW**: `membrane-composition`, `sovereignty-parity` |
 | 4. Sovereign Composition | All atomics self-hosted | **NEW**: `content-sovereignty` |

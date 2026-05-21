@@ -72,7 +72,7 @@ pub struct DependencyReport {
 impl DependencyReport {
     /// Returns `true` when no required dependencies are missing or corrupt.
     #[must_use]
-    pub fn is_ok(&self) -> bool {
+    pub const fn is_ok(&self) -> bool {
         self.failed == 0
     }
 

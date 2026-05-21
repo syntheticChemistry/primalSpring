@@ -427,7 +427,7 @@ Multi-Node Bonding + Federation                  ✅ STRUCTURAL (Phase 12)
     │   303 tests, 51 experiments, 22 deploy graphs ✅
     │
     ├── Phase 13: Cross-Gate Deployment Tooling ✅
-    │   build_ecosystem_musl.sh (x86_64+aarch64 static) ✅
+    │   build_ecosystem_genomeBin.sh (9-target static) ✅
     │   prepare_spore_payload.sh (USB spore assembly) ✅
     │   validate_remote_gate.sh (TCP health probe) ✅
     │   exp073 LAN covalent mesh, exp074 cross-gate health ✅

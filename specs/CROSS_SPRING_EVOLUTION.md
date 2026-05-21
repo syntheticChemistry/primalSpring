@@ -494,7 +494,7 @@ Phase 12.2 (done): Deep Ecosystem Absorption Wave 2 (March 23, 2026)
   → 360 tests (up from 303), zero clippy, zero missing docs, zero unsafe, zero C deps
 
 Phase 13 (done): Cross-Gate Deployment Tooling (March 23, 2026)
-  → build_ecosystem_musl.sh: x86_64 + aarch64 musl static builds for all primals
+  → build_ecosystem_genomeBin.sh: 9-target static builds for all primals
   → prepare_spore_payload.sh: USB spore assembly (binaries + graphs + genetics)
   → validate_remote_gate.sh: remote gate NUCLEUS health via TCP JSON-RPC
   → exp073: LAN covalent mesh (remote Songbird mesh + BirdSong beacon exchange)

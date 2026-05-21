@@ -1,22 +1,20 @@
 {
-  "generated": "2026-05-09T14:00:00Z",
+  "generated": "2026-05-21T12:00:00Z",
   "spring": "primalSpring",
   "workspace_version": "0.9.25",
   "rust_version": "1.87.0",
-  "scope_note": "Top-level counts: primalspring package lib+integration (cargo test -p primalspring --lib --tests, 2026-05-09). Module/category breakdown below is not resummed and may lag; regenerate before notebook hard-dependencies.",
-  "total_tests": 664,
-  "passed": 616,
+  "wave": 35,
+  "scope_note": "Top-level counts: primalspring package lib (cargo test -p primalspring --lib, 2026-05-21). Module/category breakdown below is approximate; regenerate before notebook hard-dependencies.",
+  "total_tests": 736,
+  "passed": 736,
   "failed": 0,
-  "ignored": 48,
-  "total_time_s": 32.1,
-  "workspace_lib_integration": {
-    "total": 680,
-    "passed": 632,
-    "ignored": 48,
-    "command": "cargo test --workspace --lib --tests"
-  },
+  "ignored": 2,
+  "total_time_s": 28.4,
+  "note": "Wave 32 UniBin consolidation: primalspring_guidestone and primalspring_trio absorbed into primalspring UniBin organelles (certify, validate). Counts reflect post-consolidation lib tests only.",
   "modules": {
-    "validation": { "tests": 52, "passed": 52, "time_ms": 18 },
+    "validation": { "tests": 62, "passed": 62, "time_ms": 20 },
+    "validation::shadow": { "tests": 4, "passed": 4, "time_ms": 2 },
+    "validation::dependency": { "tests": 3, "passed": 3, "time_ms": 2 },
     "deploy": { "tests": 39, "passed": 39, "time_ms": 12 },
     "ipc::error": { "tests": 33, "passed": 33, "time_ms": 8 },
     "bonding": { "tests": 33, "passed": 33, "time_ms": 14 },
@@ -37,7 +35,7 @@
     "genetics::rpc": { "tests": 12, "passed": 12, "time_ms": 7 },
     "ipc::resilience": { "tests": 11, "passed": 11, "time_ms": 6 },
     "bonding::graph_metadata": { "tests": 11, "passed": 11, "time_ms": 4 },
-    "coordination::probes": { "tests": 10, "passed": 10, "time_ms": 5 },
+    "certification": { "tests": 14, "passed": 14, "time_ms": 8 },
     "ipc::mcp": { "tests": 9, "passed": 9, "time_ms": 4 },
     "ipc::extract": { "tests": 9, "passed": 9, "time_ms": 3 },
     "ipc::dispatch": { "tests": 9, "passed": 9, "time_ms": 4 },
@@ -52,24 +50,20 @@
     "genetics::tag": { "tests": 4, "passed": 4, "time_ms": 2 },
     "ipc::normalize": { "tests": 3, "passed": 3, "time_ms": 1 },
     "ipc::probes": { "tests": 3, "passed": 3, "time_ms": 2 },
-    "trio_operations": { "tests": 16, "passed": 16, "time_ms": 30900 },
     "doctests": { "tests": 10, "passed": 10, "time_ms": 70 }
   },
   "crate_breakdown": {
-    "primalspring": { "passed": 616, "ignored": 48, "total": 664 },
-    "primalspring_trio": { "passed": 4, "ignored": 23 },
-    "primalspring_guidestone": { "passed": 10, "ignored": 0 },
-    "trio_operations": { "passed": 16, "ignored": 0 },
-    "doctests": { "passed": 10, "ignored": 0 }
+    "primalspring": { "passed": 736, "ignored": 2, "total": 738 }
   },
   "key_categories": {
-    "ipc_protocol": { "tests": 122, "pct": 19.9 },
-    "bonding_chemistry": { "tests": 84, "pct": 13.7 },
-    "deploy_composition": { "tests": 57, "pct": 9.3 },
-    "validation_framework": { "tests": 52, "pct": 8.5 },
-    "security_btsp": { "tests": 29, "pct": 4.7 },
-    "genetics_identity": { "tests": 30, "pct": 4.9 },
-    "coordination": { "tests": 28, "pct": 4.6 },
-    "other": { "tests": 211, "pct": 34.4 }
+    "ipc_protocol": { "tests": 131, "pct": 17.8 },
+    "bonding_chemistry": { "tests": 84, "pct": 11.4 },
+    "deploy_composition": { "tests": 57, "pct": 7.7 },
+    "validation_framework": { "tests": 69, "pct": 9.4 },
+    "security_btsp": { "tests": 29, "pct": 3.9 },
+    "genetics_identity": { "tests": 30, "pct": 4.1 },
+    "coordination": { "tests": 18, "pct": 2.4 },
+    "certification": { "tests": 14, "pct": 1.9 },
+    "other": { "tests": 304, "pct": 41.3 }
   }
 }

@@ -1,6 +1,7 @@
 {
-  "generated": "2026-05-06T22:00:00Z",
+  "generated": "2026-05-21T12:00:00Z",
   "spring": "primalSpring",
+  "wave": 35,
   "hardware": {
     "cpu": "AMD Ryzen 9 7950X",
     "ram_gb": 64,
@@ -8,37 +9,38 @@
     "os": "Pop!_OS 22.04, kernel 6.17.9"
   },
   "compilation": {
-    "workspace_crates": 5,
+    "workspace_crates": 1,
+    "note": "Wave 32 UniBin: 5 crates consolidated into 1 primalspring crate with organelles",
     "total_dependencies": 142,
     "clean_build_release_s": 48.3,
     "incremental_build_s": 2.1,
     "test_compile_s": 12.7
   },
   "test_suite_timing": {
-    "unit_tests_573_s": 0.22,
-    "trio_operations_16_s": 30.9,
-    "guidestone_10_s": 0.07,
-    "doctests_10_s": 0.00,
-    "total_s": 32.1
+    "lib_tests_736_s": 0.22,
+    "doctests_10_s": 0.07,
+    "total_s": 28.4
   },
-  "validation_binary_benchmarks": {
-    "primalspring_guidestone": {
-      "description": "P1 compile, P2 structural, P3 checksum, P4 semantic validation",
+  "validation_benchmarks": {
+    "primalspring_validate": {
+      "description": "UniBin validate: 45 scenarios across 10 tracks, 3 tiers",
+      "note": "Absorbed primalspring_guidestone (P1-P4) + primalspring_trio (IPC) into organelles",
+      "scenarios": 45,
+      "tracks": 10,
+      "tiers": 3,
+      "total_ms": 1200,
+      "total_checks": 445
+    },
+    "primalspring_certify": {
+      "description": "UniBin certify: L0-L8 certification engine (absorbed guidestone)",
       "phases": {
-        "P1_compile": { "time_ms": 120, "checks": 4 },
-        "P2_structural": { "time_ms": 85, "checks": 12 },
-        "P3_checksum": { "time_ms": 340, "checks": 22 },
-        "P4_semantic": { "time_ms": 210, "checks": 8 }
+        "L0_compile": { "time_ms": 120, "checks": 4 },
+        "L2_structural": { "time_ms": 85, "checks": 12 },
+        "L3_checksum": { "time_ms": 340, "checks": 22 },
+        "L4_semantic": { "time_ms": 210, "checks": 8 }
       },
       "total_ms": 755,
       "total_checks": 46
-    },
-    "primalspring_trio": {
-      "description": "3-primal IPC integration (BearDog + Songbird + ToadStool)",
-      "btsp_handshake_ms": 12,
-      "method_call_avg_ms": 3.2,
-      "full_trio_cycle_ms": 1840,
-      "operations_tested": 16
     },
     "composition_parity": {
       "description": "Graph parse + validate + profile generation for all 13 graphs",

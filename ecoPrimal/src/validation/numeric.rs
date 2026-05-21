@@ -96,19 +96,19 @@ impl NumericValidator {
 
     /// Total number of checks recorded.
     #[must_use]
-    pub fn total(&self) -> u32 {
+    pub const fn total(&self) -> u32 {
         self.passed + self.failed
     }
 
     /// Number of passing checks.
     #[must_use]
-    pub fn passed(&self) -> u32 {
+    pub const fn passed(&self) -> u32 {
         self.passed
     }
 
     /// Number of failing checks.
     #[must_use]
-    pub fn failed(&self) -> u32 {
+    pub const fn failed(&self) -> u32 {
         self.failed
     }
 

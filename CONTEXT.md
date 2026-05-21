@@ -117,7 +117,7 @@ triple → `current_target_triple()` compile-time dispatch.
 **Zero-port Tower Atomic standard**: Tier 5 TCP discovery gated behind
 `PRIMALSPRING_TCP_TIER5=1` (opt-in). UDS-only is the default. NestGate/Squirrel
 port-swap bug fixed in scripts and `ports.env`.
-See `docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` for full ecosystem audit.
+See `fossilRecord/springs/primalSpring/docs_wave35_may2026/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` for the archived ecosystem audit.
 **plasmidBin decoupled** — all direct filesystem coupling to `../plasmidBin` removed (20 files).
 Binary discovery standardized: `$ECOPRIMALS_PLASMID_BIN` → `$XDG_DATA_HOME/ecoPrimals/plasmidBin`.
 `tools/fetch_primals.sh` bootstraps binaries from GitHub Releases. plasmidBin CI/CD

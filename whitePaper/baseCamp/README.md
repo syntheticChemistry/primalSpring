@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: May 18, 2026
-**Status**: Phase 60+ — v0.9.25 — 89 experiments (20 tracks), 720 `#[test]` markers (719 pass, 0 clippy errors), 94 deploy graphs (80 deploy + 14 signal), **456 registered capability methods**, 43 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 22 stadial gate**: all 13 primals evolved, 14/14 stale-socket-clean. **Zero DEBT markers / zero unsafe blocks**. **genomeBin v5.5.0** (plasmidBin manifest aligned). **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, `primal.announce` atomic registration). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs. **Stale socket hygiene**: connect-probe liveness (`socket_is_alive`), negative cache (`DEAD_SOCKET_CACHE`), `CAPABILITY_BASED_DISCOVERY_STANDARD` v1.3.0
+**Status**: Phase 60+ — v0.9.25 — 89 experiments (20 tracks), 736 `#[test]` markers (736 pass, 0 clippy errors), 94 deploy graphs (80 deploy + 14 signal), **445 registered capability methods**, 45 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 35 glacial shift**: all 13 primals evolved, 14/14 stale-socket-clean. **Zero DEBT markers / zero unsafe blocks**. **genomeBin v5.5.0** (plasmidBin manifest aligned). **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, `primal.announce` atomic registration). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs. **Stale socket hygiene**: connect-probe liveness (`socket_is_alive`), negative cache (`DEAD_SOCKET_CACHE`), `CAPABILITY_BASED_DISCOVERY_STANDARD` v1.3.0
 
 ---
 
@@ -102,7 +102,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 
 ### guideStone Level 4 — Live NUCLEUS (April 20, 2026)
 
-The `primalspring_guidestone` binary now validates against a live 13-primal NUCLEUS
+The `primalspring certify` subcommand now validates against a live 13-primal NUCLEUS
 composition deployed from `plasmidBin` ecoBin binaries. Now at **187/187 ALL PASS**
 (**13/13 BTSP authenticated**, 8 cellular graphs BTSP-enforced) after Phase 45c full convergence.
 biomeOS v3.25 absorbed graph bootstrap pre-registration and BTSP runtime escalation.
@@ -139,7 +139,7 @@ artifact: the **guideStone**. Each spring evolves from a Rust validation binary
 "primal proof"). primalSpring's own guideStone validates composition correctness
 as the base certification layer.
 
-**primalspring_guidestone binary** — 9-layer NUCLEUS composition certification:
+**primalspring certify** — 9-layer NUCLEUS composition certification (absorbed into UniBin, Wave 32):
 - **Layer 0 (Bare)**: Deploy graph parsing, fragment resolution, manifest consistency, bonding type well-formedness. Runs on any clean machine without primals.
 - **Layer 0.5 (Seed Provenance)**: Public BLAKE3 fingerprints verified against `plasmidBin/manifest.toml`. Binary authenticity before any IPC.
 - **Layer 1 (Discovery)**: All primals in the graph discoverable via capability-based scan.
@@ -548,7 +548,7 @@ benchScale (Docker topologies) and agentReagents (image provisioning) from `ecoP
 **Evolution Specs** (3 new):
 - `specs/AGENTIC_TRIO_EVOLUTION.md` — biomeOS + Squirrel + petalTongue as the agentic loop (nervous system + brain + senses)
 - `specs/STORYTELLING_EVOLUTION.md` — ludoSpring + esotericWebb AI DM storytelling stack
-- `specs/SHOWCASE_MINING_REPORT.md` — patterns mined from primal showcases
+- ~~`specs/SHOWCASE_MINING_REPORT.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 
 **Primal Integration Analysis**:
 - biomeOS: 285+ methods, 26 domains, 5 graph patterns — P0 gap: TCP-only `--port` ignored
@@ -728,7 +728,7 @@ Absorbed deeper patterns from all 7 sibling springs into primalSpring core:
 
 ### Cross-Gate Deployment Tooling (Phase 13, March 23, 2026)
 Built deployment pipeline for live multi-gate LAN covalent deployment:
-31. **`build_ecosystem_musl.sh`** — build all 6 core primals as x86_64 + aarch64 musl static binaries
+31. ~~**`build_ecosystem_musl.sh`**~~ — **deleted**; replaced by `build_ecosystem_genomeBin.sh` (9-target static builds)
 32. **`prepare_spore_payload.sh`** — assemble USB spore deployment payload (binaries + graphs + genetics)
 33. **`validate_remote_gate.sh`** — probe remote gate NUCLEUS health via TCP JSON-RPC
 34. **exp073_lan_covalent_mesh** — cross-gate Songbird mesh + BirdSong beacon exchange via TCP
@@ -872,7 +872,7 @@ primals from plasmidBin with zero C dependencies:
 - NUCLEUS = exactly 13 primals: Tower (beardog + songbird) + Node (toadstool + barracuda +
   coralreef) + Nest (nestgate + rhizocrypt + loamspine + sweetgrass) + Meta (biomeos +
   squirrel + petaltongue)
-- `primalspring_primal` and `primalspring_guidestone` are dev validation artifacts, NOT primals
+- `primalspring_primal` is a dev validation artifact, NOT a primal (guidestone absorbed into `primalspring certify`)
 - Spring binaries are Rust science validation, NOT composition nodes
 - A spring IS a composition of the 13 primals, defined by a cell graph
 
