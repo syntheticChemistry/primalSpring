@@ -12,6 +12,7 @@ pub mod content_distribution;
 pub mod graph_metadata;
 pub mod ionic;
 pub mod ionic_rpc;
+pub mod ionic_runtime;
 pub mod stun_tiers;
 
 use serde::{Deserialize, Serialize};

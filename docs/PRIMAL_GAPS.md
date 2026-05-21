@@ -114,7 +114,7 @@ From `wetSpring/GAPS.md` — issues that route to primalSpring or upstream teams
 
 | # | Gap | Owner | Priority | Status |
 |---|-----|-------|----------|--------|
-| WS-1 | Ionic contract negotiation — no automated protocol for establishing/modifying/terminating bonds | primalSpring Track 4 | HIGH | Scaffolded, no protocol |
+| WS-1 | Ionic contract negotiation — automated protocol for establishing/modifying/terminating bonds | primalSpring Track 4 | HIGH | **IMPLEMENTED** — `ionic_runtime::IonicContractRegistry` with full state machine (Proposed→Active→Modifying→Sealed/Expired), metering, TTL enforcement, policy enforcement, provenance sealing. 12 unit tests + scenario enriched (Wave 37). E2E cross-gate wiring pending flockGate deploy. |
 | WS-2 | Cross-spring data exchange (RootPulse semantic function) — no remote pull protocol for provenance-wrapped subsets | biomeOS + trio | HIGH | **IN PROGRESS** — biomeOS v3.64: `nest.sync` 6-node graph shipped. loamSpine: `spine.list`/`entry.list` RPC methods (42 methods total). Live orchestration wiring pending. |
 | WS-3 | Public chain anchor — braids have no public verifiable ledger anchor | loamSpine | MEDIUM | **SPEC** — `specs/PUBLIC_TIMESTAMPING.md`: RFC 3161 TSA, Bitcoin OP_RETURN, Ethereum analyzed. `AnchorTarget::Rfc3161Tsa` variant added. Implementation timeline open. |
 | WS-4 | petalTongue client-side WASM — all grammar rendering requires live HPC | petalTongue | MEDIUM | Not started |
@@ -157,7 +157,7 @@ pressure. primalSpring validates the surface structurally via `s_sporeprint_surf
 | ~~SP-1~~ | ~~Auto-merge: Tier 2 content auto-commits after `spore-validate` passes~~ | sporePrint CI | ~~MEDIUM~~ | **RESOLVED** — auto-refresh.yml content job now auto-commits when spore-validate passes; falls back to PR on validation failure |
 | SP-2 | Deploy status fields in `config.toml` (`last_push`, `shadow_status`, `deploy_locations`) | sporePrint | MEDIUM | Not started |
 | SP-3 | `liveSpore.json` auto-ingest from trio-equipped deployments | sporePrint CI | LOW | Pipeline exists, feed source pending |
-| ~~SP-4~~ | ~~Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put`~~ | projectNUCLEUS | ~~LOW~~ | **UNBLOCKED** — bearDog Wave 108: `content.*` added to all session token scope categories. Implementation pending. |
+| ~~SP-4~~ | ~~Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put`~~ | projectNUCLEUS | ~~LOW~~ | **IMPLEMENTED** — `tools/publish_sporeprint.sh` wires base64-encoded content + BLAKE3 hash via JSON-RPC `content.put` to NestGate UDS. Supports `--dry-run`, single-file, and batch modes. E2E requires live NestGate + bearDog session. Wave 37. |
 
 ### cellMembrane Nest Expansion — Wave 29 (added May 20, 2026)
 

@@ -8,7 +8,7 @@
 | **Version** | 0.9.25 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 736 `#[test]` markers (736 pass, 2 ignored) |
+| **Tests** | 748 `#[test]` markers (748 pass, 2 ignored) |
 | **Experiments** | 89 (20 tracks) — 45 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 94 deploy TOMLs (80 deploy + 14 atomic signal graphs) — fragment-first composition with `resolve = true` |
 | **Coverage** | Method coverage against 445 registered capability methods; line coverage via llvm-cov |
@@ -430,7 +430,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 736 lib tests (736 pass, 2 ignored).
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 748 lib tests (748 pass, 2 ignored).
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 

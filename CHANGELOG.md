@@ -3,7 +3,23 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–35: Stadial Entry / Glacial Shift (2026-05-20)
+## [Unreleased] — Waves 22–37: Stadial Entry / Glacial Shift (2026-05-21)
+
+### Wave 37: Protocol Implementation + Ecosystem Debt Sweep (May 21)
+- **WS-1 IMPLEMENTED**: `bonding::ionic_runtime` — `IonicContractRegistry` with full
+  state machine (Proposed→Active→Modifying→Sealed/Expired), metering, TTL enforcement,
+  policy enforcement, provenance sealing. 12 unit tests. `s_ionic_bond` scenario enriched
+  with 4-phase lifecycle validation. 748 lib tests pass (+12).
+- **SP-4 IMPLEMENTED**: `tools/publish_sporeprint.sh` — sovereign publish pipeline via
+  NestGate `content.put`. Base64-encoded content + BLAKE3 hash over UDS JSON-RPC.
+  Supports `--dry-run`, single-file, and batch modes.
+- **Ecosystem-wide metrics sweep (Wave 36)**: 456→445 methods, 744→736 tests, 43→45
+  scenarios across 14 repos. 452→445 in all downstream springs. `primalspring_guidestone`
+  → `primalspring certify/validate` references fixed. `build_ecosystem_musl.sh` →
+  `build_ecosystem_genomeBin.sh`. Phase 0.5→Phase 1 cellMembrane references aligned.
+  Broken fossil links marked. 6 stale JSON results regenerated. 4 clippy fixes applied.
+- **Handoff fossilization**: 22 superseded handoffs archived across healthSpring (14),
+  airSpring (3), ludoSpring (2), wetSpring (2), neuralSpring (1).
 
 ### Wave 35: Glacial Shift Deployment Alignment (May 20)
 - **Doc drift resolved**: INTERSTADIAL_EXIT_CRITERIA.md updated (exit gate cleared),
