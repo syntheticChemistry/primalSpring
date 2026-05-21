@@ -2,7 +2,7 @@
 
 How the 8 river delta springs feed projectNUCLEUS, projectFOUNDATION, and lithoSpore.
 
-**Last updated**: May 16, 2026 — Wave 18+: Garden evolution review. lithoSpore v1.0.0
+**Last updated**: May 21, 2026 — Wave 37: ionic bond runtime, sovereign publish pipeline. lithoSpore v1.0.0
 (ScopeManifest, liveSpore.json, CLI integration tests), projectNUCLEUS V3 (55 tests,
 discovery cascade, 7 gates, signal_executor.sh, tower_agent.toml), esotericWebb V8
 (357 tests, signal-first provenance, lifecycle handlers), projectFOUNDATION (184 targets,

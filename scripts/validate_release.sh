@@ -110,10 +110,12 @@ if [ -d "$PLASMID_DIR" ] && [ -f "$PLASMID_DIR/checksums.toml" ]; then
             PLASMID_OK=false
         fi
     done
-    if [ ! -f "$PLASMID_DIR/springs/primalspring_primal" ]; then
-        fail "plasmidBin missing: springs/primalspring_primal"
-        PLASMID_OK=false
-    fi
+    for spring_bin in primalspring_primal primalspring_unibin; do
+        if [ ! -f "$PLASMID_DIR/springs/$spring_bin" ]; then
+            fail "plasmidBin missing: springs/$spring_bin"
+            PLASMID_OK=false
+        fi
+    done
     if $PLASMID_OK; then
         if [ -x "$PLASMID_DIR/update.sh" ]; then
             if "$PLASMID_DIR/update.sh" --verify-only 2>/dev/null; then

@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.25 (Wave 22 — 13/13 primals stadial-gate absorbed, plasmidBin v5.5.0)
-**Last Updated**: May 21, 2026 (Wave 35 — 445-method registry, glacial shift alignment, debris cleanup)
+**Version**: 0.9.25 (Wave 37 — 748 tests, ionic bond runtime, sovereign publish pipeline)
+**Last Updated**: May 21, 2026 (Wave 37 — 445-method registry, glacial shift alignment, ecosystem debt sweep)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -23,7 +23,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | File | Audience | What It Covers |
 |------|----------|----------------|
 | **CRYPTO_CONSUMPTION_HIERARCHY.md** | Primal teams + spring teams | Crypto posture per primal role: key acquisition patterns, bonding hierarchy, Phase 3 convergence. |
-| **PLASMINBIN_DEPOT_PATTERN.md** | All consumers | How to fetch primal binaries from plasmidBin GitHub Releases. |
+| **PLASMIDBIN_DEPOT_PATTERN.md** | All consumers | How to fetch primal binaries from plasmidBin GitHub Releases. |
 | **METHOD_GATE_STANDARD.md** | All primal teams | JH-0 ecosystem standard: pre-dispatch capability authorization, exempt whitelist, error codes, enforcement modes. |
 | **PRIMAL_ANNOUNCE_PROTOCOL.md** | All primal teams | `primal.announce` atomic self-registration: wire format, field reference, registration order, signal-tier membership, backward compatibility. Replaces separate `lifecycle.register` + `capability.register` + `method.register` calls (biomeOS v3.57+). |
 | **SIGNAL_ADOPTION_STANDARD.md** | All spring teams | Neural API composition collapse migration guide: `ctx.dispatch()` and `ctx.announce()` APIs, signal inventory (14 signals), spring archetype examples (compute/provenance/content-heavy), fallback behavior, validation coverage. |
@@ -213,7 +213,7 @@ delta. Every spring has absorbed lithoSpore audit patterns and is at zero debt.
 | ludoSpring | 982 | V76 | Schell Lenses + CPU/GPU parity, `CROSS_TIER_PARITY.md`, `DEGRADATION_BEHAVIOR.md`, 982 tests |
 | groundSpring | 1,123+ | V145 | `DEGRADATION_BEHAVIOR.md` (11 primals), niche metadata fix, 1,123 tests |
 | airSpring | 1,373 | v0.10.0 | 3 new cross-tier parity validators (autocorrelation, gamma_cdf, soil_moisture_topp), 57 caps (53 stable, 4 evolving), trio `primals_reached` bug fix, 17 methods full 3-tier coverage |
-| primalSpring | 736 | — | Wave 35: lithoSpore audit absorption (R1-R4), stability tiers, degradation docs, trio semantics, cross-tier parity pattern, scorecard + LTEE tracker updated |
+| primalSpring | 748 | — | Wave 37: ionic bond runtime (WS-1, +12 tests), sovereign publish (SP-4), ecosystem debt sweep, handoff fossilization, stadial approach catalogue |
 
 **Convergence state (May 17, 2026 PM)**: All 7 delta springs have absorbed
 lithoSpore audit patterns. Stability tiers annotated ecosystem-wide. Degradation

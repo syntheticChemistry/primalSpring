@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: May 18, 2026
-**Status**: Phase 60+ — v0.9.25 — 89 experiments (20 tracks), 736 `#[test]` markers (736 pass, 0 clippy errors), 94 deploy graphs (80 deploy + 14 signal), **445 registered capability methods**, 45 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 35 glacial shift**: all 13 primals evolved, 14/14 stale-socket-clean. **Zero DEBT markers / zero unsafe blocks**. **genomeBin v5.5.0** (plasmidBin manifest aligned). **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, `primal.announce` atomic registration). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs. **Stale socket hygiene**: connect-probe liveness (`socket_is_alive`), negative cache (`DEAD_SOCKET_CACHE`), `CAPABILITY_BASED_DISCOVERY_STANDARD` v1.3.0
+**Date**: May 21, 2026
+**Status**: Phase 60+ — v0.9.25 — 89 experiments (20 tracks), 748 `#[test]` markers (748 pass, 2 ignored, 0 clippy errors), 94 deploy graphs (80 deploy + 14 signal), **445 registered capability methods**, 45 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 37**: WS-1 ionic bond runtime (IonicContractRegistry, 12 tests), SP-4 sovereign publish pipeline, ecosystem debt sweep. **Zero DEBT markers / zero unsafe blocks**. **genomeBin v5.5.0** (plasmidBin manifest aligned). **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, `primal.announce` atomic registration). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs. **Stale socket hygiene**: connect-probe liveness (`socket_is_alive`), negative cache (`DEAD_SOCKET_CACHE`), `CAPABILITY_BASED_DISCOVERY_STANDARD` v1.3.0
 
 ---
 
@@ -843,7 +843,7 @@ implementation into a generic library that any spring can source:
 - `wateringHole/DOWNSTREAM_COMPOSITION_EXPLORER_GUIDE.md` — per-spring exploration
   lanes (ludoSpring: interaction fidelity, hotSpring: async computation/DAG memoization,
   wetSpring: data visualization, neuralSpring: agentic composition). Full API reference.
-- Updated `PRIMALSPRING_COMPOSITION_GUIDANCE.md` (Section 19), `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` (convergent evolution model), `PLASMINBIN_DEPOT_PATTERN.md` (interactive composition path)
+- Updated `PRIMALSPRING_COMPOSITION_GUIDANCE.md` (Section 19), `UPSTREAM_CROSSTALK_AND_DOWNSTREAM_ABSORPTION.md` (convergent evolution model), `PLASMIDBIN_DEPOT_PATTERN.md` (interactive composition path)
 
 **The Python → Rust → Primal pipeline now has a parallel shell exploration path**:
 springs can use the bash composition library for rapid interactive prototyping against

@@ -89,8 +89,15 @@ abstracted as reusable modules with ecosystem adoption guides.
 **Wave 34: Showcase Fossilization** — ecosystem-wide climate shift fossilizing
 mined/stale showcases across 6 primals (47 demo dirs moved to fossilRecord).
 `SHOWCASE_FOSSILIZATION_STANDARD.md` established. sporePrint catalog refreshed.
-**Waves 1-34 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
-in production paths. 736 lib tests (all passing). 45 validation scenarios including atomic-signal,
+**Wave 35–36: Doc Cleanup + Ecosystem Debt Sweep** — root doc alignment, handoff
+fossilization (22 superseded handoffs archived), metric corrections (445 methods,
+748 tests, 45 scenarios), broken reference fixes across 14 repositories, clippy
+auto-fixes, stale JSON report regeneration.
+**Wave 37: Protocol Implementation** — WS-1 ionic bond runtime (`IonicContractRegistry`
+state machine, 12 new tests), SP-4 sovereign publish pipeline (`publish_sporeprint.sh`
+via NestGate `content.put`). Stadial approach catalogue published.
+**Waves 1-37 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
+in production paths. 748 lib tests (all passing). 45 validation scenarios including atomic-signal,
 meta-tier-signal, agentic-tower, sovereignty scenarios (membrane composition,
 parity, content sovereignty), signal dispatch parity, cross-gate capability.call,
 and primal announce — with shared `validation::helpers` for graph parsing and
@@ -225,8 +232,8 @@ composition).
 
 ### Completed
 - **Wave 22 stadial gate absorbed**: 13/13 primals evolved, plasmidBin v5.5.0
-- **Fossilization pass**: 23 handoffs archived, living handoffs reduced to 6
-- **Waves 23–34 complete**: E2E study, shadow runs, upstream ingestion, pattern dissemination, showcase fossilization
+- **Fossilization pass**: 45+ handoffs archived, infra handoffs 100% archived, primalSpring 3 living (1 catalogue + 2 pattern standards)
+- **Waves 23–37 complete**: E2E study, shadow runs, upstream ingestion, pattern dissemination, showcase fossilization, ionic bond runtime (WS-1), sovereign publish pipeline (SP-4), ecosystem debt sweep
 - All 8 springs at Wave 20 — canonical capability.list envelope, debt resolved
 - 445-method registry (real methods, post-Wave 32 recount excluding test fixtures), zero drift
 - 45 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs

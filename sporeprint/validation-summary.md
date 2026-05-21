@@ -1,7 +1,7 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 736 lib tests, 89 experiments, 445 capability methods, 13/13 BTSP, zero DEBT, Wave 35"
-date = 2026-05-20
+description = "Meta-validation orchestrator — 748 lib tests, 89 experiments, 445 capability methods, 13/13 BTSP, zero DEBT, Wave 37"
+date = 2026-05-21
 
 [taxonomies]
 primals = ["biomeos", "barracuda", "toadstool", "nestgate", "beardog", "songbird", "squirrel", "rhizocrypt", "loamspine", "sweetgrass", "petaltongue", "skunkbat", "coralreef"]
@@ -10,14 +10,14 @@ springs = ["primalspring"]
 
 ## Status
 
-- **736 lib tests** (736 passed, 2 ignored), 0 failed
+- **748 lib tests** (748 passed, 2 ignored), 0 failed
 - **89 experiments** across 20 tracks (tower atomic → frontier)
 - **94 deploy graphs** (80 deploy + 14 signal), 45 validation scenarios (10 tracks)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`
 - **445 registered capability methods** (post-Wave 32 recount, test fixtures excluded)
 - **Zero DEBT markers**, zero unsafe blocks (`SeedConfig` + `OnceLock`)
 - **5-tier discovery hierarchy** validated across all primals
-- **Waves 1–34 complete** — showcase fossilization, pattern dissemination, glacial shift prep
+- **Waves 1–37 complete** — ionic bond runtime (WS-1), sovereign publish (SP-4), ecosystem debt sweep, showcase fossilization, pattern dissemination, glacial shift prep
 
 ## Key Validation Binaries
 

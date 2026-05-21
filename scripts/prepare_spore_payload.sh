@@ -14,7 +14,7 @@
 #   scripts/         — deploy_to_gate.sh, start_tower.sh, validate_remote_gate.sh
 #   .family.seed     — genetics (copied from existing seed if available)
 #
-# Prerequisites: run build_ecosystem_genomeBin.sh --tier1 first (or legacy build_ecosystem_musl.sh)
+# Prerequisites: run build_ecosystem_genomeBin.sh --tier1 first
 
 set -euo pipefail
 

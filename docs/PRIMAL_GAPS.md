@@ -9,15 +9,15 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-20 PM (Wave 34: Showcase fossilization — 6 primals cleaned, 47 demo dirs moved to fossilRecord. SHOWCASE_FOSSILIZATION_STANDARD.md. sporePrint catalog §4.4 refreshed. songbird Wave 214 ingested.)
+> **Last updated**: 2026-05-21 (Wave 37: WS-1 ionic bond runtime IMPLEMENTED, SP-4 sovereign publish IMPLEMENTED, ecosystem debt sweep, handoff fossilization (22 archived). 748 tests, 45 scenarios, 445 methods.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (May 20, 2026)
+## Ecosystem Status (May 21, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 45 scenarios (10 tracks, 3 tiers), 445 real methods (321 exercised = 72%), 2 binaries (UniBin + IPC server). Wave 33: 7 primals ingested (bearDog 108, biomeOS v3.65, toadStool S267, barraCuda Sprint 73, nestgate S68, loamSpine anchoring arch, coralReef Iter 96). `ANCHORING_STANDARD.md` published. sporePrint **15/15** + SP-1 auto-merge live.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 45 scenarios (10 tracks, 3 tiers), 445 real methods (321 exercised = 72%), 748 lib tests (748 pass, 2 ignored), 2 binaries (UniBin + IPC server). Wave 37: WS-1 ionic bond runtime (IonicContractRegistry + 12 tests), SP-4 sovereign publish pipeline (publish_sporeprint.sh). Waves 35–36: ecosystem debt sweep across 14 repos, 22 handoffs archived, metric corrections applied. `ANCHORING_STANDARD.md` published. sporePrint **15/15** + SP-1 auto-merge live.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — Iter 96: 21 idempotency tests, `CompileTarget` generalization (CPU/NPU), tarpc feature-gate. 3,202 tests. |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-33 complete. 45 scenarios (10 tracks), 445 real methods (321 exercised = 72%). 2 binaries. Zero panics in production. Wave 33: 7 primals ingested. SP-4 unblocked (bearDog `content.*`). `primal.list` aligned (biomeOS v3.65). `signal.*` + `sovereign.*` + `anchor.{publish_batch,verify}` registered. coralReef: `CompileTarget` CPU/NPU generalization, 3,202 tests. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published.**
+**13/13 at zero debt. Waves 1-37 complete. 45 scenarios (10 tracks), 445 real methods (321 exercised = 72%), 748 lib tests. 2 binaries. Zero panics in production. Wave 37: WS-1 ionic bond runtime (IonicContractRegistry, 12 tests), SP-4 sovereign publish pipeline. Waves 35-36: ecosystem debt sweep (14 repos), 22 handoffs archived, metric corrections. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published.**
 
 ---
 
@@ -540,7 +540,7 @@ atomic signal graphs, eukaryotic validation scenarios with shared helpers
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 445 methods, 736 tests, zero local debt. All waves complete:
+**Current**: 445 methods, 748 tests, zero local debt. All waves (1–37) complete:
 - Wave 8: Compute trio composition — 9/9 DONE
 - Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
 - Wave 10: Phase 32 atomic model — all fragments v3.0.0

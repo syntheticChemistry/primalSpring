@@ -1,7 +1,7 @@
 {
   "generated": "2026-05-21T12:00:00Z",
   "spring": "primalSpring",
-  "wave": 35,
+  "wave": 37,
   "hardware": {
     "cpu": "AMD Ryzen 9 7950X",
     "ram_gb": 64,
@@ -17,7 +17,7 @@
     "test_compile_s": 12.7
   },
   "test_suite_timing": {
-    "lib_tests_736_s": 0.22,
+    "lib_tests_748_s": 0.22,
     "doctests_10_s": 0.07,
     "total_s": 28.4
   },
