@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Neural routing layer — semantic method resolution over the 452-method surface.
+//! Neural routing layer — semantic method resolution over the capability method surface.
 //!
 //! The Neural API in biomeOS collapses complex inter-primal interactions into
 //! emergent systems via `capability.call` and `graph.execute`. This module
@@ -122,7 +122,7 @@ pub struct CompositionPattern {
     pub tier: CompositionTier,
 }
 
-/// The neural routing table — primalSpring's model of the 452-method surface.
+/// The neural routing table — primalSpring's model of the capability method surface.
 ///
 /// Built from the capability registry, this table provides O(1) lookup by
 /// method, domain, tier, or primal. It also holds composition patterns

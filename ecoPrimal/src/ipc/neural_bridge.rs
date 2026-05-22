@@ -35,6 +35,23 @@ pub struct CapabilityCallResult {
     pub value: serde_json::Value,
 }
 
+/// Outcome of a bridge round-trip — captures latency and success for
+/// feeding back into the `NeuralDispatcher` metrics and ultimately
+/// into biomeOS's adaptive routing weights.
+#[derive(Debug, Clone)]
+pub struct BridgeOutcome {
+    /// Capability domain dispatched.
+    pub capability: String,
+    /// Operation within the domain.
+    pub operation: String,
+    /// Wall-clock latency of the round-trip (ms).
+    pub latency_ms: u64,
+    /// Whether the call succeeded.
+    pub success: bool,
+    /// Unix epoch milliseconds when dispatch occurred.
+    pub timestamp_epoch_ms: u64,
+}
+
 /// Bridge to biomeOS's neural-api mode (graph orchestration + capability routing).
 ///
 /// biomeOS is the substrate primal — the ecosystem's composition and
@@ -258,6 +275,45 @@ impl NeuralBridge {
         })
     }
 
+    // ── Instrumented dispatch (feedback loop) ─────────────────────────
+    //
+    // These methods wrap core calls with timing + success/failure
+    // recording, producing `BridgeOutcome` values that the
+    // `NeuralDispatcher` can ingest as metrics.
+
+    /// Invoke `capability.call` and record the round-trip outcome.
+    ///
+    /// Returns both the call result and a `BridgeOutcome` capturing
+    /// latency and success. The caller (typically `NeuralDispatcher`)
+    /// feeds the outcome into its metrics for adaptive routing analysis.
+    ///
+    /// # Errors
+    ///
+    /// Returns `(Err, BridgeOutcome)` on transport or application failure.
+    /// The outcome is always produced regardless of success.
+    pub fn capability_call_instrumented(
+        &self,
+        capability: &str,
+        operation: &str,
+        args: &serde_json::Value,
+    ) -> (Result<CapabilityCallResult, IpcError>, BridgeOutcome) {
+        let start = std::time::Instant::now();
+        let result = self.capability_call(capability, operation, args);
+        let latency_ms = start.elapsed().as_millis() as u64;
+        let success = result.is_ok();
+        let outcome = BridgeOutcome {
+            capability: capability.to_owned(),
+            operation: operation.to_owned(),
+            latency_ms,
+            success,
+            timestamp_epoch_ms: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis() as u64,
+        };
+        (result, outcome)
+    }
+
     // ── Observatory methods (Layer 4+) ──────────────────────────────
     //
     // primalSpring's domain IS primal coordination. These methods consume
@@ -401,6 +457,21 @@ mod tests {
         };
         let args = serde_json::json!({});
         assert!(bridge.capability_call("crypto", "sign", &args).is_err());
+    }
+
+    #[test]
+    fn capability_call_instrumented_records_outcome() {
+        let bridge = NeuralBridge {
+            socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
+        };
+        let args = serde_json::json!({});
+        let (result, outcome) = bridge.capability_call_instrumented("crypto", "sign", &args);
+        assert!(result.is_err());
+        assert!(!outcome.success);
+        assert_eq!(outcome.capability, "crypto");
+        assert_eq!(outcome.operation, "sign");
+        assert!(outcome.latency_ms < 1000);
+        assert!(outcome.timestamp_epoch_ms > 0);
     }
 
     #[test]

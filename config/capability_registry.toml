@@ -934,6 +934,7 @@ methods = [
     "neural_api.route_explain",
     "neural_api.composition_patterns",
     "neural_api.plan_tier",
+    "neural_api.utilization",
 ]
 
 # =============================================================================

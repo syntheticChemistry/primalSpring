@@ -1,6 +1,6 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 775 lib tests, 89 experiments, 456 capability methods, 13/13 BTSP, zero DEBT, Wave 41"
+description = "Meta-validation orchestrator — 779 lib tests, 89 experiments, 457 capability methods, 13/13 BTSP, zero DEBT, Wave 42"
 date = 2026-05-22
 
 [taxonomies]
@@ -10,14 +10,14 @@ springs = ["primalspring"]
 
 ## Status
 
-- **775 lib tests** (775 passed, 2 ignored), 0 failed
+- **779 lib tests** (779 passed, 2 ignored), 0 failed
 - **89 experiments** across 20 tracks (tower atomic → frontier)
 - **94 deploy graphs** (80 deploy + 14 signal), 46 validation scenarios (10 tracks)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`
-- **456 registered capability methods** (including 4 `neural_api.*` methods)
+- **457 registered capability methods** (including 5 `neural_api.*` methods)
 - **Zero DEBT markers**, zero unsafe blocks (`SeedConfig` + `OnceLock`)
 - **6-tier discovery hierarchy** validated across all primals
-- **Waves 1–41 complete** — observatory posture, biomeOS v3.68 composition intelligence, neural routing layer, adaptive routing weights, ionic bond runtime, sovereign publish pipeline
+- **Waves 1–42 complete** — feedback loop, persistent routing weights (redb), utilization tracking, biomeOS v3.69, team restructuring, Neural API deployment guide, observatory posture, composition intelligence, adaptive routing weights
 
 ## Key Validation Binaries
 

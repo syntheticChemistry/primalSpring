@@ -3,7 +3,31 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–41: Stadial Entry / Glacial Shift (2026-05-22)
+## [Unreleased] — Waves 22–42: Stadial Entry / Glacial Shift (2026-05-22)
+
+### Wave 42: Neural API Full Deployment + Team Restructuring (May 22)
+- **NeuralBridge feedback loop**: `capability_call_instrumented()` records round-trip
+  latency + success as `BridgeOutcome`. `NeuralDispatcher.record_bridge_outcome()`
+  ingests bridge outcomes into dispatch metrics. `dispatch_instrumented()` combines
+  dispatch with bridge-level timing. 4 new tests.
+- **biomeOS v3.69 — Persistent Routing Weights**: `RoutingWeightTable` backed by redb.
+  `RoutingWeightTable::open(path)` loads weights from disk on startup, flushes after
+  every mutation. `NeuralRouter::with_persistent_weights()` constructor. Weights
+  survive restarts — no more cold-start on every reboot. 2 new persistence tests.
+- **biomeOS v3.69 — Capability Utilization Tracking**: `CapabilityUtilizationTracker`
+  records every `capability.call` method invocation. `hot_methods(n)` and
+  `cold_methods(threshold)` for graph pre-staging decisions. New RPC:
+  `neural_api.utilization`. 5 new tests.
+- **WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md**: Full `primal.announce` adoption guide
+  for all 13 primal teams — v3.68 wire schema, cost/latency hints, per-primal
+  implementation notes, signal tier membership, validation steps.
+- **TEAM_OWNERSHIP_MATRIX.md**: Team restructuring documented — cellMembrane team
+  owns VPS/sporePrint/membrane interfaces, projectNUCLEUS refocused on deployment
+  pipelines + big compute, primalSpring unchanged (observatory + standards).
+- **SOVEREIGNTY_INFRASTRUCTURE_STATUS.md**: 9-layer sovereignty stack status with
+  ownership mapping, remaining work, and async evolution tracks.
+- **Registry**: 456 → **457 methods** (+1 `neural_api.utilization`).
+- **Tests**: 779 primalSpring (+4), 1311 biomeOS (+8).
 
 ### Wave 41: Observatory Posture + biomeOS Composition Abstraction (May 22)
 - **biomeOS v3.68 — Composition Intelligence**: Abstracted primalSpring's exploratory

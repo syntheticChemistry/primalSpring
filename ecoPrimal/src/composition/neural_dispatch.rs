@@ -2,7 +2,7 @@
 
 //! Neural dispatch — resolve and invoke methods through the Neural API.
 //!
-//! This module connects the `NeuralRoutingTable` (which models the 452-method
+//! This module connects the `NeuralRoutingTable` (which models the full method
 //! surface) to the `NeuralBridge` (which speaks to biomeOS). It provides:
 //!
 //! - **`NeuralDispatcher`**: a high-level dispatch surface that resolves
@@ -26,7 +26,7 @@ use super::neural_routing::{
     TierComposition,
 };
 use crate::ipc::error::IpcError;
-use crate::ipc::neural_bridge::NeuralBridge;
+use crate::ipc::neural_bridge::{BridgeOutcome, NeuralBridge};
 
 /// Outcome of a single neural dispatch.
 #[derive(Debug, Clone)]
@@ -82,7 +82,7 @@ pub struct DispatchMetric {
 /// High-level neural dispatch surface.
 ///
 /// Wraps the routing table and optional NeuralBridge to provide method
-/// dispatch across the full 452-method surface. When biomeOS is running,
+/// dispatch across the full capability method surface. When biomeOS is running,
 /// dispatches go through `capability.call`. When offline, returns structured
 /// errors that downstream can handle gracefully.
 pub struct NeuralDispatcher {
@@ -251,6 +251,84 @@ impl NeuralDispatcher {
             owner: pattern.primals.join("+"),
             tier: pattern.tier,
             route_path: RoutePath::GraphExecute,
+            result,
+            latency_ms,
+        }
+    }
+
+    /// Ingest a `BridgeOutcome` from an external `capability_call_instrumented`
+    /// round-trip. This feeds the observatory's metric collection from any
+    /// code path that uses the NeuralBridge directly (not just `dispatch()`).
+    pub fn record_bridge_outcome(&mut self, outcome: &BridgeOutcome) {
+        let method = format!("{}.{}", outcome.capability, outcome.operation);
+        let owner = self
+            .table
+            .route(&method)
+            .map_or_else(|| "unknown".to_owned(), |e| e.owner.clone());
+        let tier = self
+            .table
+            .route(&method)
+            .map_or(CompositionTier::Standalone, |e| e.tier);
+
+        self.metrics.push(DispatchMetric {
+            method,
+            owner,
+            tier,
+            latency_ms: outcome.latency_ms,
+            success: outcome.success,
+            route_path: RoutePath::CapabilityCall,
+            timestamp_epoch_ms: outcome.timestamp_epoch_ms,
+        });
+    }
+
+    /// Dispatch a method using the instrumented bridge path, recording the
+    /// round-trip outcome into metrics automatically.
+    ///
+    /// Equivalent to `dispatch()` but uses `capability_call_instrumented`
+    /// for precise bridge-level timing.
+    pub fn dispatch_instrumented(
+        &mut self,
+        method: &str,
+        params: &serde_json::Value,
+    ) -> DispatchOutcome {
+        let start = Instant::now();
+
+        let entry = match self.table.route(method) {
+            Some(e) => e.clone(),
+            None => {
+                return DispatchOutcome {
+                    method: method.to_owned(),
+                    owner: "unknown".to_owned(),
+                    tier: CompositionTier::Standalone,
+                    route_path: RoutePath::Unresolved,
+                    result: Err(format!("method {method} not in routing table")),
+                    latency_ms: start.elapsed().as_millis() as u64,
+                };
+            }
+        };
+
+        let (domain, operation) = method.split_once('.').unwrap_or((method, ""));
+
+        let (result, route_path) = match &self.bridge {
+            Some(bridge) => {
+                let (call_result, outcome) =
+                    bridge.capability_call_instrumented(domain, operation, params);
+                self.record_bridge_outcome(&outcome);
+                let result = call_result
+                    .map(|r| r.value)
+                    .map_err(|e: IpcError| format!("{e}"));
+                (result, RoutePath::CapabilityCall)
+            }
+            None => (Err("biomeOS not available".to_owned()), RoutePath::Offline),
+        };
+
+        let latency_ms = start.elapsed().as_millis() as u64;
+
+        DispatchOutcome {
+            method: method.to_owned(),
+            owner: entry.owner,
+            tier: entry.tier,
+            route_path,
             result,
             latency_ms,
         }
@@ -514,6 +592,48 @@ mod tests {
         let summary = d.primal_summary();
         assert!(summary.contains_key("beardog"));
         assert_eq!(summary["beardog"].total_dispatches, 2);
+    }
+
+    #[test]
+    fn record_bridge_outcome_creates_metric() {
+        let mut d = test_dispatcher();
+        let outcome = BridgeOutcome {
+            capability: "crypto".to_owned(),
+            operation: "hash".to_owned(),
+            latency_ms: 42,
+            success: true,
+            timestamp_epoch_ms: 1_700_000_000_000,
+        };
+        d.record_bridge_outcome(&outcome);
+        assert_eq!(d.metrics().len(), 1);
+        assert_eq!(d.metrics()[0].method, "crypto.hash");
+        assert_eq!(d.metrics()[0].owner, "beardog");
+        assert_eq!(d.metrics()[0].latency_ms, 42);
+        assert!(d.metrics()[0].success);
+    }
+
+    #[test]
+    fn record_bridge_outcome_unknown_method() {
+        let mut d = test_dispatcher();
+        let outcome = BridgeOutcome {
+            capability: "nonexistent".to_owned(),
+            operation: "thing".to_owned(),
+            latency_ms: 5,
+            success: false,
+            timestamp_epoch_ms: 1_700_000_000_000,
+        };
+        d.record_bridge_outcome(&outcome);
+        assert_eq!(d.metrics()[0].owner, "unknown");
+        assert_eq!(d.metrics()[0].tier, CompositionTier::Standalone);
+    }
+
+    #[test]
+    fn dispatch_instrumented_offline() {
+        let mut d = test_dispatcher();
+        let outcome = d.dispatch_instrumented("crypto.hash", &serde_json::json!({}));
+        assert_eq!(outcome.route_path, RoutePath::Offline);
+        assert!(outcome.result.is_err());
+        assert_eq!(outcome.owner, "beardog");
     }
 
     #[test]

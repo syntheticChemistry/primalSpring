@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Scenario: Neural Routing Surface — validates the 452-method routing table.
+//! Scenario: Neural Routing Surface — validates the capability method routing table.
 //!
 //! Verifies that the `NeuralRoutingTable` correctly maps every registered
 //! method to its owner, domain, and composition tier, and that the tier
@@ -23,7 +23,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "primalspring_neural_routing",
         provenance_date: "2026-05-22",
-        description: "Neural routing table: all 452 methods map to owners, tiers, and composition patterns",
+        description: "Neural routing table: all methods map to owners, tiers, and composition patterns",
     },
     run,
 };

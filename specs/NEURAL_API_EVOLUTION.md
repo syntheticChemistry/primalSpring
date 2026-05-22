@@ -2,7 +2,7 @@
 
 **Owner**: biomeOS (substrate primal) + primalSpring (observatory + validation)
 **Status**: Operational — evolving toward layered semantic network
-**Date**: May 22, 2026 (Wave 41)
+**Date**: May 22, 2026 (Wave 42)
 
 ---
 
@@ -108,16 +108,16 @@ The Neural API becomes a neural network whose inference IS the API.
 
 ---
 
-## Current Architecture (biomeOS v3.68)
+## Current Architecture (biomeOS v3.69)
 
 ```
 biomeos neural-api
-├── routing.rs              — 44+ neural_api.* aliases + capability.call
-├── capability_call.rs      — resolve + dispatch + try_relay_dispatch (CG-8)
+├── routing.rs              — 44+ neural_api.* aliases + capability.call + utilization
+├── capability_call.rs      — resolve + dispatch + try_relay_dispatch (CG-8) + utilization recording
 ├── signal.rs               — signal dispatch + graph env injection
 ├── execute.rs              — graph execution with env merge
 ├── neural_router/
-│   ├── weights.rs          — RoutingWeightTable (Layer 4 adaptive routing)
+│   ├── weights.rs          — RoutingWeightTable (redb-persistent) + CapabilityUtilizationTracker
 │   └── composition.rs      — CompositionTier + CompositionPatternRegistry
 └── config/capability_registry.toml — [translations.*] sections
 ```
@@ -151,8 +151,11 @@ Observatory tools:
   - `route_explain()` — study provider selection decisions
   - `composition_patterns()` — validate pattern consistency
   - `plan_tier()` — study tier deployment blueprints
+  - `capability_call_instrumented()` — bridge round-trip with `BridgeOutcome` feedback
 - `NeuralRoutingTable` — local static model for structural analysis
-- `NeuralDispatcher` — dispatch metrics collection for round-trip study
+- `NeuralDispatcher` — dispatch metrics collection + bridge outcome ingestion
+  - `record_bridge_outcome()` — ingest outcomes from external bridge calls
+  - `dispatch_instrumented()` — dispatch with bridge-level timing automatically recorded
 - `s_biomeos_neural_api` scenario — live health + graph execution
 - `s_signal_dispatch_parity` — signal routing correctness
 - `s_primal_announce` — semantic_mappings on announce
@@ -214,13 +217,22 @@ Observatory tools:
 - [x] Registry: 454 → 456 methods (+2 neural_api.composition_patterns, neural_api.plan_tier)
 - [x] 1303 biomeOS tests, 775 primalSpring tests — all passing
 
-### Wave 42-43: Operational Data Deepening
-- [ ] Wire `NeuralBridge.capability_call` to record outcomes into primalSpring's
-  local dispatch metrics (primalSpring → biomeOS round-trip)
+### Wave 42: Operational Data Deepening + Full Deployment
+- [x] Wire `NeuralBridge.capability_call_instrumented` — primalSpring bridge
+  records round-trip latency + success into `NeuralDispatcher` metrics
+- [x] `NeuralDispatcher.record_bridge_outcome()` — ingest external bridge outcomes
+- [x] `NeuralDispatcher.dispatch_instrumented()` — dispatch with bridge-level timing
+- [x] Capability utilization tracking — `CapabilityUtilizationTracker` in biomeOS:
+  hot/cold method analysis, `neural_api.utilization` RPC endpoint
+- [x] Weight table persistence — redb-backed `RoutingWeightTable` survives restarts
+  (`RoutingWeightTable::open()`, `NeuralRouter::with_persistent_weights()`)
+- [x] `WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md` — `primal.announce` adoption guide
+  for all 13 primal teams with v3.68 schema, cost/latency hints, signal tiers
+- [x] `TEAM_OWNERSHIP_MATRIX.md` — cellMembrane/projectNUCLEUS/primalSpring ownership
+- [x] Registry: 456 → 457 methods (+1 neural_api.utilization)
+- [x] 1311 biomeOS tests, 779 primalSpring tests — all passing
 - [ ] Graph execution timing per-node (PathwayLearner → weight table)
-- [ ] Capability utilization tracking (hot methods, cold methods)
 - [ ] Cross-gate latency baselines (local UDS vs remote TURN)
-- [ ] Weight table persistence (redb or SQLite) across restarts
 
 ### Wave 43-45: Provider Selection + Graph Optimization
 - [ ] Weighted provider selection in `discover_capability` (currently first-match)

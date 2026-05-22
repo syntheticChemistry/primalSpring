@@ -52,8 +52,8 @@ back upstream to primals and primalSpring.
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
 | `validation/scenarios` | 46 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
-| `composition/neural_routing` | NeuralRoutingTable — static model of 456-method routing surface |
-| `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics collection |
+| `composition/neural_routing` | NeuralRoutingTable — static model of 457-method routing surface |
+| `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
 
@@ -73,16 +73,23 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 41 (May 22, 2026) — 46 scenarios (10 tracks, 3 tiers),
-456 registered capability methods (321 exercised, 70% coverage),
+v0.9.26 Wave 42 (May 22, 2026) — 46 scenarios (10 tracks, 3 tiers),
+457 registered capability methods (321 exercised, 70% coverage),
 89 experiments (20 tracks), 94 deploy graphs (80 deploy + 14 signal),
-44-cell deployment matrix. 775 lib tests (all passing).
+44-cell deployment matrix. 779 lib tests (all passing).
+
+**Wave 42: Full Neural API Deployment** — NeuralBridge feedback loop
+(`capability_call_instrumented`, `record_bridge_outcome`, `dispatch_instrumented`).
+biomeOS v3.69: persistent routing weights (redb-backed `RoutingWeightTable`),
+capability utilization tracking (`neural_api.utilization`). Team restructuring
+documented (`TEAM_OWNERSHIP_MATRIX.md`). Sovereignty infrastructure status
+(`SOVEREIGNTY_INFRASTRUCTURE_STATUS.md`). `WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md`
+for all 13 primal teams. 1311 biomeOS tests.
 
 **Wave 41: Observatory Posture** — biomeOS v3.68 composition intelligence
 abstracted from primalSpring's exploratory work. `CompositionTier`, `CompositionPatternRegistry`,
 `plan_tier()` now live in biomeOS runtime. NeuralBridge observatory methods
-(`routing_weights`, `route_explain`, `composition_patterns`, `plan_tier`) let
-primalSpring consume biomeOS's adaptive routing intelligence. 1303 biomeOS tests.
+let primalSpring consume biomeOS's adaptive routing intelligence. 1303 biomeOS tests.
 
 **Wave 40: Neural Routing Layer** — `NeuralRoutingTable` (static model of
 454-method surface), `NeuralDispatcher` (dispatch + metrics), S46 scenario
@@ -93,7 +100,7 @@ EWMA latency/error, circuit breaker, `primal.announce` cost hints).
 TURN relay, biomeOS v3.66 cross-gate, toadStool S269, nestgate SP-4 compat,
 healthSpring V64z, neuralSpring V170. Neural API Evolution Spec published.
 
-**Waves 1-41 complete**. Zero DEBT markers, zero unsafe blocks, zero panics.
+**Waves 1-42 complete**. Zero DEBT markers, zero unsafe blocks, zero panics.
 Security gate: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
 `Vec<&String>` → `Vec<&str>`. `JsonRpcError`/`UnknownPrimal` → `thiserror` derives.
 `DeployError::Parse` now wraps `toml::de::Error` source for error chains. Deprecated
