@@ -77,6 +77,7 @@ pub mod s_meta_tier_signals;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
 pub mod s_nestgate_content_pipeline;
+pub mod s_neural_routing;
 pub mod s_node_atomic;
 pub mod s_primal_announce;
 pub mod s_provenance_trio_pipeline;
@@ -140,6 +141,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_nest_commit_live::SCENARIO);
     r.register(s_sporeprint_surface::SCENARIO);
     r.register(s_cross_gate_capability_call::SCENARIO);
+    r.register(s_neural_routing::SCENARIO);
     r
 }
 
@@ -150,7 +152,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 45;
+    const EXPECTED_SCENARIO_COUNT: usize = 46;
 
     #[test]
     fn registry_scenario_count() {

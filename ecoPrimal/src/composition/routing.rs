@@ -141,7 +141,8 @@ pub fn method_to_capability_domain(method: &str) -> &str {
         "visualization" | "viz" | "render" | "interaction" => "visualization",
         "defense" | "recon" | "threat" | "audit" => "defense",
         "graph" | "capability" | "lifecycle" | "topology" | "federation" | "route" | "system"
-        | "biomeos" | "nucleus" | "membrane" | "cell" | "proprioception" => "orchestration",
+        | "biomeos" | "nucleus" | "membrane" | "cell" | "proprioception"
+        | "neural_api" => "orchestration",
         "tool" | "tools" | "auth" | "primalspring" | "bonding" | "composition" | "context"
         | "ionic" | "mcp" | "coordination" => "tool",
         "webb" | "esotericwebb" => "webb",

@@ -1,8 +1,8 @@
 # Neural API — Subsystem Evolution Spec
 
-**Owner**: biomeOS (substrate primal) + primalSpring (validation + patterns)
+**Owner**: biomeOS (substrate primal) + primalSpring (observatory + validation)
 **Status**: Operational — evolving toward layered semantic network
-**Date**: May 22, 2026 (Wave 39)
+**Date**: May 22, 2026 (Wave 41)
 
 ---
 
@@ -108,14 +108,17 @@ The Neural API becomes a neural network whose inference IS the API.
 
 ---
 
-## Current Architecture (biomeOS v3.66)
+## Current Architecture (biomeOS v3.68)
 
 ```
 biomeos neural-api
-├── routing.rs         — 40+ neural_api.* aliases + capability.call
-├── capability_call.rs — resolve + dispatch + try_relay_dispatch (CG-8)
-├── signal.rs          — signal dispatch + graph env injection
-├── execute.rs         — graph execution with env merge
+├── routing.rs              — 44+ neural_api.* aliases + capability.call
+├── capability_call.rs      — resolve + dispatch + try_relay_dispatch (CG-8)
+├── signal.rs               — signal dispatch + graph env injection
+├── execute.rs              — graph execution with env merge
+├── neural_router/
+│   ├── weights.rs          — RoutingWeightTable (Layer 4 adaptive routing)
+│   └── composition.rs      — CompositionTier + CompositionPatternRegistry
 └── config/capability_registry.toml — [translations.*] sections
 ```
 
@@ -136,13 +139,24 @@ sections. These are the "weights" of Layer 1:
 | `ai.*` | → inference | squirrel |
 | `science.*` | → domain compute | neuralSpring (new, Wave 39) |
 
-### primalSpring Validation Surface
+### primalSpring Observatory Surface
 
-primalSpring validates the Neural API via:
+primalSpring's domain IS primal coordination. It studies biomeOS's routing
+intelligence and pushes evolution upstream — the same pattern other springs
+use for their domain science.
+
+Observatory tools:
 - `NeuralBridge` (`ipc/neural_bridge.rs`) — zero-coupling bridge
+  - `routing_weights()` — study adaptive routing convergence
+  - `route_explain()` — study provider selection decisions
+  - `composition_patterns()` — validate pattern consistency
+  - `plan_tier()` — study tier deployment blueprints
+- `NeuralRoutingTable` — local static model for structural analysis
+- `NeuralDispatcher` — dispatch metrics collection for round-trip study
 - `s_biomeos_neural_api` scenario — live health + graph execution
 - `s_signal_dispatch_parity` — signal routing correctness
 - `s_primal_announce` — semantic_mappings on announce
+- `s_neural_routing_surface` — 17-check structural validation
 - `coordination.neural_api_status` RPC method
 - `CompositionContext` — Tier 2-4 Neural API discovery
 
@@ -150,32 +164,75 @@ primalSpring validates the Neural API via:
 
 ## Evolution Track
 
-### Wave 39 (current): Absorption + Foundation
+### Wave 39: Absorption + Foundation
 - [x] Absorb bearDog Wave 109 (ionic verify), songbird (TURN relay),
   biomeOS v3.66 (cross-gate), toadStool S269 (fan_out)
 - [x] Wire `bonding.*` handlers through IonicContractRegistry
 - [x] Add `science.*` routing (neuralSpring → 6 methods)
 - [x] Registry: 445 → 452 methods
-- [ ] Document Neural API as first-class subsystem (this document)
+- [x] Document Neural API as first-class subsystem (this document)
 
-### Wave 40-42: Operational Data Collection
-- [ ] Instrument `NeuralBridge` calls with latency + error metrics
-- [ ] Add `neural_api.metrics` method to biomeOS for operational telemetry
-- [ ] Graph execution timing per-node (which primal/wave is slow)
+### Wave 40 (current): Neural Routing Layer
+- [x] `NeuralRoutingTable` — data-driven routing table from `capability_registry.toml`
+  - O(1) method → owner/domain/tier lookup across all 452 methods
+  - 7 composition tiers (Tower/Node/Nest/Nucleus/Meta/Orchestration/Standalone)
+  - Signal graph detection from `[signals.*]` sections
+  - Named composition patterns (rootpulse_commit, tower_atomic_bootstrap,
+    nest_store, ionic_bond_lifecycle)
+- [x] `NeuralDispatcher` — high-level dispatch surface
+  - `dispatch()` for single methods via `capability.call`
+  - `dispatch_pattern()` for graph-backed compositions
+  - Per-dispatch metrics (latency, success, route path) — Layer 4 training signal
+  - `status_report()` returns full routing health as JSON
+- [x] `coordination.neural_api_status` enhanced with full routing table summary
+- [x] Scenario S46 `neural-routing-surface` — 17 structural checks
+- [x] 775 tests passing (27 new: 14 routing + 12 dispatch + 1 scenario)
+
+### Wave 40 (current): Adaptive Routing Weights (biomeOS v3.67)
+- [x] `RoutingWeightTable` in `neural_router/weights.rs` — per-provider EWMA
+  latency, error rate, affinity, cost hints, circuit breaker
+- [x] `ProviderWeight::score()` — scoring function: `affinity * reliability *
+  latency_factor - cost_penalty` with exploration bonus for cold providers
+- [x] Circuit breaker: 5 consecutive failures → open, 30s cooldown → half-open
+- [x] `capability.call` feedback loop — every forward records outcome into weights
+- [x] `primal.announce` accepts `cost_hints` and `latency_estimates` for
+  self-reporting. Cooperative primals get affinity 0.6 (vs neutral 0.5)
+- [x] `neural_api.routing_weights` RPC — full weight table snapshot
+- [x] `neural_api.route_explain` RPC — routing decision explanation
+- [x] 1290 biomeOS tests, 775 primalSpring tests — all passing
+
+### Wave 41 (current): Observatory Posture + Composition Abstraction
+- [x] biomeOS v3.68 — `CompositionTier::classify()` maps domain + provider to
+  atomic tier at runtime (Tower/Node/Nest/Nucleus/Meta/Orchestration/Standalone)
+- [x] `CompositionPatternRegistry` — canonical patterns as first-class runtime
+  objects (rootpulse_commit, tower_atomic_bootstrap, nest_store, tower_publish,
+  meta_observe, ionic_bond_lifecycle). Extensible via primal.announce.
+- [x] `plan_tier()` — deployment blueprints per tier (required primals, domains,
+  available patterns)
+- [x] `NeuralBridge` observatory methods — primalSpring consumes biomeOS routing
+  intelligence: routing_weights, route_explain, composition_patterns, plan_tier
+- [x] Registry: 454 → 456 methods (+2 neural_api.composition_patterns, neural_api.plan_tier)
+- [x] 1303 biomeOS tests, 775 primalSpring tests — all passing
+
+### Wave 42-43: Operational Data Deepening
+- [ ] Wire `NeuralBridge.capability_call` to record outcomes into primalSpring's
+  local dispatch metrics (primalSpring → biomeOS round-trip)
+- [ ] Graph execution timing per-node (PathwayLearner → weight table)
 - [ ] Capability utilization tracking (hot methods, cold methods)
 - [ ] Cross-gate latency baselines (local UDS vs remote TURN)
+- [ ] Weight table persistence (redb or SQLite) across restarts
 
-### Wave 43-45: Adaptive Routing
-- [ ] Latency-aware `capability.call` routing (prefer fastest gate)
-- [ ] Circuit breaker integration with routing decisions
-- [ ] Graph pre-staging (dependency validation pattern, already prototyped)
+### Wave 43-45: Provider Selection + Graph Optimization
+- [ ] Weighted provider selection in `discover_capability` (currently first-match)
 - [ ] Co-occurrence analysis (which capabilities are called together)
+- [ ] Graph pre-staging (dependency validation pattern, already prototyped)
+- [ ] PathwayLearner suggestions → actual weight table updates
 
 ### Wave 46+: Learned Routing (horizon)
-- [ ] Routing table as weight matrix
-- [ ] Gradient-free optimization of dispatch plans from operational data
+- [ ] Weight matrix as input to gradient-free optimizer
 - [ ] A/B shadow comparison (already prototyped in `validation::shadow`)
 - [ ] Self-healing: automatic rerouting on primal failure
+- [ ] Self-announcing primals dynamically reshape routing topology
 
 ---
 

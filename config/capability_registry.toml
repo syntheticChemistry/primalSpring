@@ -926,6 +926,16 @@ methods = [
     "biomeos.spring_status",
 ]
 
+[neural_api]
+owner = "biomeos"
+stability = "evolving"
+methods = [
+    "neural_api.routing_weights",
+    "neural_api.route_explain",
+    "neural_api.composition_patterns",
+    "neural_api.plan_tier",
+]
+
 # =============================================================================
 # ATOMIC SIGNALS — Phase 32 composition collapse
 # =============================================================================

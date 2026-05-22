@@ -257,6 +257,89 @@ impl NeuralBridge {
             value: resp.result.unwrap_or(serde_json::Value::Null),
         })
     }
+
+    // ── Observatory methods (Layer 4+) ──────────────────────────────
+    //
+    // primalSpring's domain IS primal coordination. These methods consume
+    // biomeOS's runtime routing intelligence so primalSpring can study,
+    // validate, and push evolution upstream — the same pattern other
+    // springs use for their domain science.
+
+    /// Query the adaptive routing weights from biomeOS (v3.67+).
+    ///
+    /// Returns the full weight table snapshot and summary statistics.
+    /// primalSpring uses this to study routing patterns and validate
+    /// that adaptive dispatch is converging correctly.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport failure or if biomeOS < v3.67.
+    pub fn routing_weights(&self) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let resp = client.call("neural_api.routing_weights", serde_json::Value::Null)?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
+
+    /// Explain the routing decision for a method (v3.67+).
+    ///
+    /// Returns which providers exist, what translations apply, how each
+    /// candidate scores, and which would be selected. This is primalSpring's
+    /// primary tool for studying routing intelligence.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport failure or if biomeOS < v3.67.
+    pub fn route_explain(&self, method: &str) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let params = serde_json::json!({ "method": method });
+        let resp = client.call("neural_api.route_explain", params)?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
+
+    /// Query composition patterns from biomeOS (v3.67+).
+    ///
+    /// Returns all registered composition patterns — the named method
+    /// sequences that form emergent systems. primalSpring validates
+    /// pattern consistency against its own graph analysis.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport failure or if biomeOS < v3.67.
+    pub fn composition_patterns(&self) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let resp = client.call(
+            "neural_api.composition_patterns",
+            serde_json::Value::Null,
+        )?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
+
+    /// Query a tier composition plan from biomeOS (v3.67+).
+    ///
+    /// Returns which primals, domains, and patterns are needed to deploy
+    /// a specific composition tier (tower, node, nest, etc.).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport failure or if biomeOS < v3.67.
+    pub fn plan_tier(&self, tier: &str) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let params = serde_json::json!({ "tier": tier });
+        let resp = client.call("neural_api.plan_tier", params)?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
 }
 
 #[cfg(test)]

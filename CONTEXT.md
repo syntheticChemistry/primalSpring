@@ -51,7 +51,9 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 45 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 46 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `composition/neural_routing` | NeuralRoutingTable — static model of 456-method routing surface |
+| `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics collection |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
 
@@ -71,52 +73,28 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.25 Wave 34 (May 20, 2026) — 45 scenarios (10 tracks, 3 tiers),
-445 real capability methods (321 exercised, 72% coverage — Wave 33 baseline),
+v0.9.25 Wave 41 (May 22, 2026) — 46 scenarios (10 tracks, 3 tiers),
+456 registered capability methods (321 exercised, 70% coverage),
 89 experiments (20 tracks), 94 deploy graphs (80 deploy + 14 signal),
-44-cell deployment matrix. **Legacy binaries removed**: `validate_all` and
-`primalspring_guidestone` deleted (Wave 32); logic lives in `primalspring validate`
-and `primalspring certify`. **Deprecated probes sunset**: `probe_primal`,
-`check_primal_health`, `check_capability_health`, `validate_composition`,
-`validate_composition_by_capability` removed; production uses `CompositionContext` /
-`validate_composition_ctx`. Phase 32 atomic evolution: Tower = 3 primals
-(bearDog + songbird + skunkBat), Node = 6 (Tower + compute trio), Nest = 7
-(Tower + nestGate + provenance trio), NUCLEUS = 10 core + 3 meta = 13 total.
-**Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
-**Pattern dissemination**: `validation::shadow` (A/B comparison from songbird W213)
-and `validation::dependency` (BLAKE3-verified pre-dispatch staging from toadStool S266)
-abstracted as reusable modules with ecosystem adoption guides.
-**Wave 34: Showcase Fossilization** — ecosystem-wide climate shift fossilizing
-mined/stale showcases across 6 primals (47 demo dirs moved to fossilRecord).
-`SHOWCASE_FOSSILIZATION_STANDARD.md` established. sporePrint catalog refreshed.
-**Wave 35–36: Doc Cleanup + Ecosystem Debt Sweep** — root doc alignment, handoff
-fossilization (22 superseded handoffs archived), metric corrections (445 methods,
-748 tests, 45 scenarios), broken reference fixes across 14 repositories, clippy
-auto-fixes, stale JSON report regeneration.
-**Wave 37: Protocol Implementation** — WS-1 ionic bond runtime (`IonicContractRegistry`
-state machine, 12 new tests), SP-4 sovereign publish pipeline (`publish_sporeprint.sh`
-via NestGate `content.put`). Stadial approach catalogue published.
-**Waves 1-37 complete**. Zero DEBT markers, zero unsafe blocks, zero panics
-in production paths. 748 lib tests (all passing). 45 validation scenarios including atomic-signal,
-meta-tier-signal, agentic-tower, sovereignty scenarios (membrane composition,
-parity, content sovereignty), signal dispatch parity, cross-gate capability.call,
-and primal announce — with shared `validation::helpers` for graph parsing and
-Dark Forest cross-ref. **Neural API Signal Elevation**: `dispatch()` and `announce()`
-convenience APIs on `CompositionContext`. `SIGNAL_ADOPTION_STANDARD.md` published.
-**Wave 18 — Local Debt Resolution + Ecosystem Convergence**: Deprecated
-`probe_primal` callers fully migrated from handlers.rs, exp004, exp107 to
-`CompositionContext`. CATHEDRAL split documented (lithoSpore + projectFOUNDATION).
-All 8 delta springs pushed Wave 17 signal adoption — `primal.announce` and
-`nest.store` dispatch ecosystem-wide. Cross-spring scorecard reconciled with
-live test counts. 10/10 foundation threads active (Thread 4 now active with expression
-+ data sources). Garden evolution blurbs published for projectFOUNDATION, projectNUCLEUS,
-esotericWebb. `announce_or_register` backward-compat pattern endorsed.
-**Dark Forest Glacial Gate**: 5-pillar
-security invariant standard (metadata, ports, network, BTSP, enclave).
-`LIVE_SCIENCE_API.md` formalizes Tier 2 wire contract. All 13 primals at zero debt.
-**Wave 12 deep debt sweep**: All `panic!`/`expect` in production replaced with
-`Result`/`Option`. Hardcoded socket paths replaced with `resolve_socket_dir()`.
-`BearDogVerifier` upgraded to `discover_by_capability("security")` fallback chain.
+44-cell deployment matrix. 775 lib tests (all passing).
+
+**Wave 41: Observatory Posture** — biomeOS v3.68 composition intelligence
+abstracted from primalSpring's exploratory work. `CompositionTier`, `CompositionPatternRegistry`,
+`plan_tier()` now live in biomeOS runtime. NeuralBridge observatory methods
+(`routing_weights`, `route_explain`, `composition_patterns`, `plan_tier`) let
+primalSpring consume biomeOS's adaptive routing intelligence. 1303 biomeOS tests.
+
+**Wave 40: Neural Routing Layer** — `NeuralRoutingTable` (static model of
+454-method surface), `NeuralDispatcher` (dispatch + metrics), S46 scenario
+(17 structural checks). biomeOS v3.67 adaptive routing weights (`RoutingWeightTable`,
+EWMA latency/error, circuit breaker, `primal.announce` cost hints).
+
+**Wave 39: Upstream Absorption** — bearDog Wave 109, songbird capability.call
+TURN relay, biomeOS v3.66 cross-gate, toadStool S269, nestgate SP-4 compat,
+healthSpring V64z, neuralSpring V170. Neural API Evolution Spec published.
+
+**Waves 1-41 complete**. Zero DEBT markers, zero unsafe blocks, zero panics.
+Security gate: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
 `Vec<&String>` → `Vec<&str>`. `JsonRpcError`/`UnknownPrimal` → `thiserror` derives.
 `DeployError::Parse` now wraps `toml::de::Error` source for error chains. Deprecated
 `family_seed_from_env()` → `mito_beacon_from_env().key_bytes()`. Hardcoded arch

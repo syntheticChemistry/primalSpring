@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-22 (Wave 39: upstream absorption — bearDog ionic verify, songbird TURN relay, biomeOS v3.66 cross-gate, toadStool fan_out, nestgate SP-4 compat, neuralSpring 6 science methods. 748 tests, 45 scenarios, 452 methods. cellMembrane Nest LIVE on VPS.)
+> **Last updated**: 2026-05-22 (Wave 41: Observatory posture — biomeOS v3.68 composition intelligence. 456 methods, 775 tests, 46 scenarios. NeuralBridge observatory consumes biomeOS runtime routing intelligence.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,14 +17,14 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 21, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 45 scenarios (10 tracks, 3 tiers), 445 real methods (321 exercised = 72%), 748 lib tests (748 pass, 2 ignored), 2 binaries (UniBin + IPC server). Wave 37: WS-1 ionic bond runtime (IonicContractRegistry + 12 tests), SP-4 sovereign publish pipeline (publish_sporeprint.sh). Waves 35–36: ecosystem debt sweep across 14 repos, 22 handoffs archived, metric corrections applied. `ANCHORING_STANDARD.md` published. sporePrint **15/15** + SP-1 auto-merge live.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 46 scenarios (10 tracks, 3 tiers), 456 real methods (321 exercised = 70%), 775 lib tests (775 pass, 2 ignored), 2 binaries (UniBin + IPC server). Wave 41: Observatory posture — biomeOS v3.68 composition intelligence (CompositionTier, CompositionPatternRegistry, plan_tier). NeuralBridge observatory methods consume biomeOS routing intelligence. 1303 biomeOS tests. Wave 40: Neural routing layer (NeuralRoutingTable + NeuralDispatcher, 27 new tests). `ANCHORING_STANDARD.md` published. sporePrint **15/15** + SP-1 auto-merge live.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 108: `content.*` scope expansion in session tokens. SP-4 unblocked. |
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 213: NAT traversal data plane (TURN keepalive, cloudflared orchestration, shadow comparator). `capability.call` integration tests. |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S267: sovereign driver rotation + S266: sandbox `working_dir` production (RESOLVED), data deps BLAKE3 validation. 86 JSON-RPC methods. 9,055+ lib tests. |
-| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.65: `primal.list` Wave 20 schema alignment (`name`, `socket`, `status`, `pid`, `version`). PID file reading via v3.62 convention. |
+| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.68: Composition intelligence (CompositionTier, CompositionPatternRegistry, plan_tier). Adaptive routing weights (RoutingWeightTable). 1303 lib tests. |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S69 SP-4 production compat: `content.put` accepts `content_base64` alias + nested `metadata` provenance. VPS deploy audit: ZFS detector safe on non-ZFS, content.* ZFS-independent. 676 RPC tests. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 73: 87 IPC methods (12 new: `signal.*`, regression, ecology). Cross-spring absorption from ludoSpring + airSpring + healthSpring + groundSpring. 143 IPC tests. |
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — Iter 96: 21 idempotency tests, `CompileTarget` generalization (CPU/NPU), tarpc feature-gate. 3,202 tests. |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-37 complete. 45 scenarios (10 tracks), 445 real methods (321 exercised = 72%), 748 lib tests. 2 binaries. Zero panics in production. Wave 37: WS-1 ionic bond runtime (IonicContractRegistry, 12 tests), SP-4 sovereign publish pipeline. Waves 35-36: ecosystem debt sweep (14 repos), 22 handoffs archived, metric corrections. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published.**
+**13/13 at zero debt. Waves 1-40 complete. 46 scenarios (10 tracks), 452 real methods (321 exercised = 72%), 775 lib tests. 2 binaries. Zero panics in production. Wave 40: Neural routing layer (NeuralRoutingTable + NeuralDispatcher). Wave 37: WS-1 ionic bond runtime (IonicContractRegistry, 12 tests), SP-4 sovereign publish pipeline. Waves 35-36: ecosystem debt sweep (14 repos), 22 handoffs archived, metric corrections. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published.**
 
 ---
 
@@ -540,7 +540,7 @@ atomic signal graphs, eukaryotic validation scenarios with shared helpers
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 445 methods, 748 tests, zero local debt. All waves (1–37) complete:
+**Current**: 452 methods, 775 tests, zero local debt. All waves (1–40) complete:
 - Wave 8: Compute trio composition — 9/9 DONE
 - Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
 - Wave 10: Phase 32 atomic model — all fragments v3.0.0

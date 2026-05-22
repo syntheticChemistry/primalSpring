@@ -3,7 +3,49 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–39: Stadial Entry / Glacial Shift (2026-05-22)
+## [Unreleased] — Waves 22–41: Stadial Entry / Glacial Shift (2026-05-22)
+
+### Wave 41: Observatory Posture + biomeOS Composition Abstraction (May 22)
+- **biomeOS v3.68 — Composition Intelligence**: Abstracted primalSpring's exploratory
+  tier/pattern model into biomeOS runtime. `CompositionTier::classify()` maps any
+  domain + provider to its atomic tier. `CompositionPatternRegistry` owns canonical
+  patterns (rootpulse_commit, tower_atomic_bootstrap, nest_store, tower_publish,
+  meta_observe, ionic_bond_lifecycle). `plan_tier()` returns deployment blueprints.
+  New RPC: `neural_api.composition_patterns`, `neural_api.plan_tier`.
+  1303 biomeOS tests passing (+13 composition).
+- **NeuralBridge observatory methods**: `routing_weights()`, `route_explain()`,
+  `composition_patterns()`, `plan_tier()` — primalSpring now consumes biomeOS's
+  runtime routing intelligence. primalSpring studies primal interactions and pushes
+  evolution upstream, same pattern other springs use for domain science.
+- **Registry**: 454 → **456 methods** (+2 `neural_api.composition_patterns`, `neural_api.plan_tier`).
+- **Tests**: 775 primalSpring, 1303 biomeOS.
+
+### Wave 40: Neural Routing Layer + biomeOS Adaptive Routing (May 22)
+- **`composition::neural_routing`**: `NeuralRoutingTable` — data-driven routing table
+  built from `capability_registry.toml`. O(1) lookup by method, domain, tier, or primal.
+  Covers all 454 methods with composition tier classification (Tower/Node/Nest/Nucleus/
+  Meta/Orchestration/Standalone). Signal graph detection from `[signals.*]` sections.
+  Composition patterns (rootpulse_commit, tower_atomic_bootstrap, nest_store,
+  ionic_bond_lifecycle) registered as named method sequences.
+- **`composition::neural_dispatch`**: `NeuralDispatcher` — high-level dispatch surface
+  connecting the routing table to `NeuralBridge`. Tier-aware `dispatch()` for single
+  methods, `dispatch_pattern()` for graph-backed compositions. Metrics collection
+  (latency, success rate, per-primal summary) provides the raw signal for adaptive
+  routing (Layer 4). `status_report()` returns full routing table health as JSON.
+- **Scenario S46 `neural-routing-surface`**: 17-check Tier::Rust validation —
+  method population, tier coverage, owner integrity, composition plan validity,
+  pattern registration, dispatcher report structure, tier sum integrity.
+- **`coordination.neural_api_status` enhanced**: RPC handler now returns full
+  routing table summary (method count, domain count, primal count, tier distribution,
+  patterns) alongside liveness health. Replaces previous boolean-only response.
+- **biomeOS v3.67 — Adaptive Routing Weights (Layer 4)**: Took ownership of biomeOS
+  Neural API evolution. `RoutingWeightTable` with per-provider EWMA latency, error
+  rate, affinity, cost hints, and circuit breaker. `capability.call` feedback loop
+  records every dispatch outcome. `primal.announce` now accepts `cost_hints` and
+  `latency_estimates`. New RPC: `neural_api.routing_weights`, `neural_api.route_explain`.
+  1290 biomeOS tests passing.
+- **Registry**: 452 → **454 methods** (+2 `neural_api.routing_weights`, `neural_api.route_explain`).
+- **Tests**: 775 (was 748) — 14 neural_routing + 12 neural_dispatch + 1 scenario.
 
 ### Wave 39: Upstream Absorption + Neural API Evolution Spec (May 22)
 - **Upstream absorbed**: bearDog Wave 109 (`crypto.ionic_bond.verify_proposal` + ACME Phase 3),

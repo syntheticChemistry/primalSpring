@@ -129,7 +129,10 @@ pub fn dispatch_request(line: &str) -> JsonRpcResponse {
         "coordination.deploy_atomic" => handlers::handle_deploy_atomic(&req["params"], id),
         "coordination.bonding_test" => handlers::handle_bonding_test(&req["params"], id),
         "coordination.neural_api_status" => {
-            success_response(serde_json::json!({ "healthy": neural_api_healthy() }), id)
+            let dispatcher = primalspring::composition::neural_dispatch::NeuralDispatcher::discover();
+            let mut report = dispatcher.status_report();
+            report["healthy"] = serde_json::json!(neural_api_healthy());
+            success_response(report, id)
         }
 
         // ── Composition health (per-tier, capability-based) ──

@@ -1,12 +1,12 @@
 {
-  "generated": "2026-05-21T12:00:00Z",
+  "generated": "2026-05-22T12:00:00Z",
   "spring": "primalSpring",
   "workspace_version": "0.9.25",
   "rust_version": "1.87.0",
-  "wave": 37,
-  "scope_note": "Top-level counts: primalspring package lib (cargo test -p primalspring --lib, 2026-05-21). Module/category breakdown below is approximate; regenerate before notebook hard-dependencies.",
-  "total_tests": 748,
-  "passed": 748,
+  "wave": 41,
+  "scope_note": "Top-level counts: primalspring package lib (cargo test -p primalspring --lib, 2026-05-22). Module/category breakdown below is approximate; regenerate before notebook hard-dependencies.",
+  "total_tests": 775,
+  "passed": 775,
   "failed": 0,
   "ignored": 2,
   "total_time_s": 28.4,
@@ -22,6 +22,8 @@
     "niche": { "tests": 18, "passed": 18, "time_ms": 5 },
     "coordination": { "tests": 18, "passed": 18, "time_ms": 7 },
     "composition": { "tests": 18, "passed": 18, "time_ms": 9 },
+    "composition::neural_routing": { "tests": 14, "passed": 14, "time_ms": 3 },
+    "composition::neural_dispatch": { "tests": 12, "passed": 12, "time_ms": 2 },
     "harness": { "tests": 17, "passed": 17, "time_ms": 5 },
     "tolerances": { "tests": 16, "passed": 16, "time_ms": 4 },
     "cast": { "tests": 15, "passed": 15, "time_ms": 3 },
@@ -53,7 +55,7 @@
     "doctests": { "tests": 10, "passed": 10, "time_ms": 70 }
   },
   "crate_breakdown": {
-    "primalspring": { "passed": 748, "ignored": 2, "total": 750 }
+    "primalspring": { "passed": 775, "ignored": 2, "total": 777 }
   },
   "key_categories": {
     "ipc_protocol": { "tests": 131, "pct": 17.8 },
