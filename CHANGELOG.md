@@ -3,7 +3,30 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–37: Stadial Entry / Glacial Shift (2026-05-21)
+## [Unreleased] — Waves 22–39: Stadial Entry / Glacial Shift (2026-05-22)
+
+### Wave 39: Upstream Absorption + Neural API Evolution Spec (May 22)
+- **Upstream absorbed**: bearDog Wave 109 (`crypto.ionic_bond.verify_proposal` + ACME Phase 3),
+  songbird (`capability.call` TURN relay dispatch), biomeOS v3.66 (`nest.sync` cross-gate +
+  CG-8 relay fallback), toadStool S269 (`compute.fan_out` + `GuestLoadPolicy`/`YieldStrategy`),
+  nestgate Session 69 (SP-4 `content.put` compat), healthSpring V64z (ionic absorption),
+  neuralSpring V170 (6 new `science.*` methods, deep debt sprint).
+- **Registry**: 445 → **452 methods** (+1 `crypto.ionic_bond.verify_proposal`, +6 `science.*`).
+  `science` domain routes to `neuralspring`.
+- **Ionic bond handlers wired**: `bonding.propose` now uses `IonicContractRegistry` (registers
+  contract, returns `contract_id`). `bonding.accept`, `bonding.terminate`, `bonding.modify_scope`
+  dispatched through full state machine. `bonding.status` reads from registry.
+- **Neural API Evolution Spec**: `specs/NEURAL_API_EVOLUTION.md` — documents Neural API as
+  first-class biomeOS subsystem with 5-layer evolution model (direct IPC → capability routing →
+  graph composition → cross-gate → adaptive routing → learned routing). Frames operational data
+  collection as training signal for routing optimization.
+- **projectNUCLEUS**: cellMembrane Nest LIVE on VPS (10/10 membrane provenance PASS).
+
+### Wave 38: Doc Cleanup + Ecosystem Metric Alignment (May 21-22)
+- Ecosystem-wide metric alignment: 452→445→452 registry sync across wetSpring (14 files),
+  airSpring (3 files), lithoSpore (1 file). PLASMINBIN→PLASMIDBIN typo. guidestone→UniBin
+  notebook refs. `validate_release.sh` UniBin gate added.
+- Team evolution blurbs published for async team ingestion.
 
 ### Wave 37: Protocol Implementation + Ecosystem Debt Sweep (May 21)
 - **WS-1 IMPLEMENTED**: `bonding::ionic_runtime` — `IonicContractRegistry` with full

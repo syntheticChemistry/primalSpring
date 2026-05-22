@@ -66,6 +66,7 @@ pub fn capability_to_primal(capability: &str) -> &str {
             "tool" | "primalspring" => "primalspring",
             "webb" => "esotericwebb",
             "game" => "ludospring",
+            "science" => "neuralspring",
             other => other,
         },
     }

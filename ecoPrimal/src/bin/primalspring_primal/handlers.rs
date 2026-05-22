@@ -273,16 +273,25 @@ pub fn handle_bonding_propose(params: &serde_json::Value, id: u64) -> JsonRpcRes
         Ok(p) => {
             let errors = p.validate();
             if errors.is_empty() {
-                success_response(
-                    serde_json::json!({
-                        "status": "validated",
-                        "proposer": p.proposer_identity,
-                        "capabilities_requested": p.requested_capabilities,
-                        "duration_secs": p.duration_secs,
-                        "note": "proposal validated — ionic negotiation runtime pending BearDog crypto signatures",
-                    }),
-                    id,
-                )
+                let mut registry = ionic_registry();
+                match registry.propose(p.clone()) {
+                    Ok(contract_id) => success_response(
+                        serde_json::json!({
+                            "status": "proposed",
+                            "contract_id": contract_id,
+                            "proposer": p.proposer_identity,
+                            "capabilities_requested": p.requested_capabilities,
+                            "duration_secs": p.duration_secs,
+                            "note": "proposal registered — use bonding.accept with bearDog crypto.ionic_bond.verify_proposal for E2E",
+                        }),
+                        id,
+                    ),
+                    Err(e) => error_response(
+                        error_codes::INTERNAL_ERROR,
+                        &format!("registry error: {e}"),
+                        id,
+                    ),
+                }
             } else {
                 error_response(
                     error_codes::INVALID_PARAMS,
@@ -299,24 +308,141 @@ pub fn handle_bonding_propose(params: &serde_json::Value, id: u64) -> JsonRpcRes
     }
 }
 
-pub fn handle_bonding_status(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
-    let contract_id = params["contract_id"].as_str().unwrap_or("");
-    if contract_id.is_empty() {
-        return error_response(
-            error_codes::INVALID_PARAMS,
-            "missing required 'contract_id' parameter",
+pub fn handle_bonding_accept(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let contract_id = match params["contract_id"].as_str() {
+        Some(id_str) if !id_str.is_empty() => id_str,
+        _ => {
+            return error_response(
+                error_codes::INVALID_PARAMS,
+                "missing required 'contract_id' parameter",
+                id,
+            )
+        }
+    };
+    let constraints: primalspring::bonding::BondingConstraint =
+        serde_json::from_value(params["constraints"].clone()).unwrap_or_default();
+
+    let mut registry = ionic_registry();
+    match registry.accept(contract_id, constraints) {
+        Ok(response) => success_response(
+            serde_json::to_value(response).unwrap_or_default(),
             id,
-        );
+        ),
+        Err(e) => error_response(
+            error_codes::INVALID_PARAMS,
+            &format!("accept failed: {e}"),
+            id,
+        ),
     }
-    success_response(
-        serde_json::json!({
-            "contract_id": contract_id,
-            "state": "not_found",
-            "capabilities": [],
-            "bond_type": null,
-        }),
-        id,
-    )
+}
+
+pub fn handle_bonding_terminate(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let contract_id = match params["contract_id"].as_str() {
+        Some(id_str) if !id_str.is_empty() => id_str,
+        _ => {
+            return error_response(
+                error_codes::INVALID_PARAMS,
+                "missing required 'contract_id' parameter",
+                id,
+            )
+        }
+    };
+    let reason = match params["reason"].as_str().unwrap_or("complete") {
+        "policy_violation" => primalspring::bonding::ionic::TerminationReason::PolicyViolation,
+        "mutual" => primalspring::bonding::ionic::TerminationReason::MutualAgreement,
+        "expired" => primalspring::bonding::ionic::TerminationReason::Expired,
+        _ => primalspring::bonding::ionic::TerminationReason::Complete,
+    };
+    let request = primalspring::bonding::ionic::TerminationRequest {
+        contract_id: contract_id.to_owned(),
+        reason,
+    };
+
+    let mut registry = ionic_registry();
+    match registry.terminate(&request) {
+        Ok(seal) => success_response(
+            serde_json::to_value(seal).unwrap_or_default(),
+            id,
+        ),
+        Err(e) => error_response(
+            error_codes::INVALID_PARAMS,
+            &format!("terminate failed: {e}"),
+            id,
+        ),
+    }
+}
+
+pub fn handle_bonding_modify_scope(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let modification: Result<primalspring::bonding::ionic::ScopeModification, _> =
+        serde_json::from_value(params.clone());
+    match modification {
+        Ok(m) => {
+            let mut registry = ionic_registry();
+            match registry.modify_scope(&m) {
+                Ok(contract) => success_response(
+                    serde_json::json!({
+                        "contract_id": contract.contract_id,
+                        "state": format!("{:?}", contract.state),
+                        "capabilities": contract.negotiated_constraints.capability_allow,
+                    }),
+                    id,
+                ),
+                Err(e) => error_response(
+                    error_codes::INVALID_PARAMS,
+                    &format!("modify_scope failed: {e}"),
+                    id,
+                ),
+            }
+        }
+        Err(e) => error_response(
+            error_codes::INVALID_PARAMS,
+            &format!("invalid modification: {e}"),
+            id,
+        ),
+    }
+}
+
+pub fn handle_bonding_status(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    let contract_id = match params["contract_id"].as_str() {
+        Some(id_str) if !id_str.is_empty() => id_str,
+        _ => {
+            return error_response(
+                error_codes::INVALID_PARAMS,
+                "missing required 'contract_id' parameter",
+                id,
+            )
+        }
+    };
+    let registry = ionic_registry();
+    match registry.get(contract_id) {
+        Some(contract) => success_response(
+            serde_json::json!({
+                "contract_id": contract.contract_id,
+                "state": format!("{:?}", contract.state),
+                "capabilities": contract.negotiated_constraints.capability_allow,
+                "bond_type": "ionic",
+                "usage": {
+                    "total_calls": contract.usage.total_calls,
+                    "total_bytes": contract.usage.total_bytes,
+                    "distinct_methods": contract.usage.distinct_methods,
+                },
+            }),
+            id,
+        ),
+        None => success_response(
+            serde_json::json!({
+                "contract_id": contract_id,
+                "state": "not_found",
+                "capabilities": [],
+                "bond_type": null,
+            }),
+            id,
+        ),
+    }
+}
+
+fn ionic_registry() -> primalspring::bonding::ionic_runtime::IonicContractRegistry {
+    primalspring::bonding::ionic_runtime::IonicContractRegistry::new()
 }
 
 pub fn handle_graph_validate(params: &serde_json::Value, id: u64) -> JsonRpcResponse {

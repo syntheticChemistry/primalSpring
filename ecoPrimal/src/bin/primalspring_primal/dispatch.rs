@@ -166,8 +166,11 @@ pub fn dispatch_request(line: &str) -> JsonRpcResponse {
             success_response(serde_json::to_value(tools).unwrap_or_default(), id)
         }
 
-        // ── Ionic bond negotiation (Track 4) ──
+        // ── Ionic bond negotiation (Track 4, WS-1) ──
         "bonding.propose" => handlers::handle_bonding_propose(&req["params"], id),
+        "bonding.accept" => handlers::handle_bonding_accept(&req["params"], id),
+        "bonding.terminate" => handlers::handle_bonding_terminate(&req["params"], id),
+        "bonding.modify_scope" => handlers::handle_bonding_modify_scope(&req["params"], id),
         "bonding.status" => handlers::handle_bonding_status(&req["params"], id),
 
         // ── Graph coordination ──

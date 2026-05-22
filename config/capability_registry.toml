@@ -226,6 +226,7 @@ methods = [
     "crypto.hash",
     "crypto.identity",
     "crypto.ionic_bond.capabilities",
+    "crypto.ionic_bond.verify_proposal",
     "crypto.keygen",
     "crypto.sign",
     "crypto.contract.countersign",
@@ -647,6 +648,18 @@ owner = "barracuda"
 methods = [
     "ml.esn_predict",
     "ml.mlp_train",
+]
+
+[science]
+owner = "neuralspring"
+stability = "stable"
+methods = [
+    "science.attention_anderson",
+    "science.digester_anderson_coupling",
+    "science.eigensolve",
+    "science.introgression_nn",
+    "science.isomorphic_reservoir",
+    "science.wdm_ensemble_qs",
 ]
 
 [nautilus]

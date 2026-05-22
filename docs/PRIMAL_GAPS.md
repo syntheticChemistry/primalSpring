@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-21 (Wave 37: WS-1 ionic bond runtime IMPLEMENTED, SP-4 sovereign publish IMPLEMENTED, ecosystem debt sweep, handoff fossilization (22 archived). 748 tests, 45 scenarios, 445 methods.)
+> **Last updated**: 2026-05-22 (Wave 39: upstream absorption — bearDog ionic verify, songbird TURN relay, biomeOS v3.66 cross-gate, toadStool fan_out, nestgate SP-4 compat, neuralSpring 6 science methods. 748 tests, 45 scenarios, 452 methods. cellMembrane Nest LIVE on VPS.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
