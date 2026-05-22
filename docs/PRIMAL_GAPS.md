@@ -25,7 +25,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 213: NAT traversal data plane (TURN keepalive, cloudflared orchestration, shadow comparator). `capability.call` integration tests. |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S267: sovereign driver rotation + S266: sandbox `working_dir` production (RESOLVED), data deps BLAKE3 validation. 86 JSON-RPC methods. 9,055+ lib tests. |
 | biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.65: `primal.list` Wave 20 schema alignment (`name`, `socket`, `status`, `pid`, `version`). PID file reading via v3.62 convention. |
-| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68: `#[expect]` reason hygiene + `family_id` env var precedence. ZFS storage detector improvements. |
+| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S69 SP-4 production compat: `content.put` accepts `content_base64` alias + nested `metadata` provenance. VPS deploy audit: ZFS detector safe on non-ZFS, content.* ZFS-independent. 676 RPC tests. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 73: 87 IPC methods (12 new: `signal.*`, regression, ecology). Cross-spring absorption from ludoSpring + airSpring + healthSpring + groundSpring. 143 IPC tests. |
 | petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — v1.6.6: 55 IPC methods, S3 shadow parity, musl targets |
