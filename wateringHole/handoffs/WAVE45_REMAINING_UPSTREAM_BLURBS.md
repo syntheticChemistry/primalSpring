@@ -2,7 +2,7 @@
 
 > **Date**: 2026-05-23 (post-Wave 44 review)
 > **Status**: Active — only teams with remaining work
-> **Ecosystem**: 10/13 primals have working outbound announce
+> **Ecosystem**: 11/13 primals have working outbound announce (squirrel + skunkBat fixed pre-blurb)
 
 ---
 
@@ -50,43 +50,11 @@ if let Some(neural_socket) = resolve_neural_api_socket() {
 
 ---
 
-## squirrel — Neural API Socket Targeting
+## ~~squirrel — Neural API Socket Targeting~~
 
-**Priority**: MEDIUM — announce payload is correct but delivered to wrong socket
-
-**Issue**: `announce_to_neural_api()` reuses `find_biomeos_socket()` which targets
-the **orchestrator** socket (`biomeos.sock`), not the neural-api socket
-(`neural-api-{family}.sock`). In a split-socket deployment, the announce
-reaches the orchestrator but not the routing layer.
-
-squirrel's own `discovery.rs` already checks `$NEURAL_API_SOCKET` for inbound
-queries — the same logic should be used for outbound announce.
-
-**Fix**: Add `resolve_neural_api_socket()` following WAVE42 tiers and call it
-from the announce path instead of `find_biomeos_socket()`:
-
-```rust
-fn resolve_neural_api_socket() -> Option<PathBuf> {
-    // 1. Explicit override
-    if let Ok(p) = std::env::var("NEURAL_API_SOCKET") {
-        let path = PathBuf::from(&p);
-        if path.exists() { return Some(path); }
-    }
-    // 2. XDG runtime
-    let family = std::env::var("ECOPRIMALS_FAMILY_ID")
-        .unwrap_or_else(|_| "ecoPrimal".into());
-    let xdg = dirs::runtime_dir()
-        .unwrap_or_else(|| PathBuf::from("/tmp"));
-    let candidate = xdg.join("biomeos").join(format!("neural-api-{family}.sock"));
-    if candidate.exists() { return Some(candidate); }
-    // 3. /tmp fallback
-    let fallback = PathBuf::from(format!("/tmp/biomeos/neural-api-{family}.sock"));
-    if fallback.exists() { return Some(fallback); }
-    None
-}
-```
-
-Also update `CURRENT_STATUS.md` to document the outbound `primal.announce`.
+**RESOLVED** — `a7753bac` (Wave 44) shipped `resolve_neural_api_socket()` with
+5-tier lookup, connect-probe liveness, independent announce call, 4 tests,
+and `CURRENT_STATUS.md` updated. 7,093 tests passing.
 
 ---
 
@@ -109,20 +77,11 @@ No urgency until the attestation verification path is wired in biomeOS.
 
 ---
 
-## skunkBat — Expand Method Surface (Minor)
+## ~~skunkBat — Expand Method Surface~~
 
-**Priority**: LOW — announce works, but only 5 of 17 methods are listed
-
-**Issue**: `neural_announce` lists 5 `security.*` methods while dispatch exposes 17.
-Routing weights and utilization tracking only cover the announced subset.
-
-**Fix**: Pull method names from dispatch constants instead of hardcoding:
-```rust
-"methods": crate::dispatch::ALL_METHODS,  // full 17-method surface
-```
-
-Also: update `showcase/README.md` and `showcase/RUN_ALL.sh` to reflect
-tier-0-only state after the Wave 34 fossilization.
+**RESOLVED** — `c9f4146` (Wave 44) expanded to all 17 methods, fixed wire
+identity (`primal_id` → `primal`), tests verify full payload, showcase
+`README.md` and `RUN_ALL.sh` cleaned for tier-0-only state.
 
 ---
 
@@ -139,6 +98,8 @@ tier-0-only state after the Wave 34 fossilization.
 | barraCuda | Fixed in Wave 44 — full outbound 246-line module |
 | coralReef | Fixed in Wave 44 — wire identity + methods |
 | petalTongue | Fixed in Wave 44 — wire identity + 82 lines tests |
+| skunkBat | Fixed in Wave 44 — all 17 methods, showcase cleaned |
+| squirrel | Fixed in Wave 44 — neural-api socket, 4 tests, 7093 tests |
 | biomeOS | Registration authority — no announce needed |
 | sourDough | Scaffold generator — templates correct v3.68 shape |
 
@@ -146,7 +107,7 @@ tier-0-only state after the Wave 34 fossilization.
 
 ## Ecosystem Convergence
 
-After songbird (HIGH) and squirrel (MEDIUM) fix:
+After songbird (HIGH) ships outbound push:
 
 - **12/13 primals** with correct outbound `primal.announce` on startup
 - **biomeOS v3.69** persistent routing weights accumulate across restarts
