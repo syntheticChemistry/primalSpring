@@ -5,8 +5,8 @@
   "rust_version": "1.87.0",
   "wave": 42,
   "scope_note": "Top-level counts: primalspring package lib (cargo test -p primalspring --lib, 2026-05-22). Module/category breakdown below is approximate; regenerate before notebook hard-dependencies.",
-  "total_tests": 779,
-  "passed": 779,
+  "total_tests": 784,
+  "passed": 784,
   "failed": 0,
   "ignored": 2,
   "total_time_s": 28.4,
@@ -32,7 +32,7 @@
     "btsp": { "tests": 14, "passed": 14, "time_ms": 9 },
     "bonding::ionic": { "tests": 14, "passed": 14, "time_ms": 7 },
     "ipc::discover": { "tests": 13, "passed": 13, "time_ms": 5 },
-    "ipc::neural_bridge": { "tests": 12, "passed": 12, "time_ms": 8 },
+    "ipc::neural_bridge": { "tests": 14, "passed": 14, "time_ms": 8 },
     "ipc::btsp_handshake": { "tests": 12, "passed": 12, "time_ms": 10 },
     "genetics::rpc": { "tests": 12, "passed": 12, "time_ms": 7 },
     "ipc::resilience": { "tests": 11, "passed": 11, "time_ms": 6 },
@@ -55,7 +55,7 @@
     "doctests": { "tests": 10, "passed": 10, "time_ms": 70 }
   },
   "crate_breakdown": {
-    "primalspring": { "passed": 775, "ignored": 2, "total": 777 }
+    "primalspring": { "passed": 780, "ignored": 2, "total": 782 }
   },
   "key_categories": {
     "ipc_protocol": { "tests": 131, "pct": 17.8 },

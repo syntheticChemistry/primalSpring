@@ -98,7 +98,7 @@ sporePrint works but is static. Evolution toward living content
 
 | Component | Status | Owner | Notes |
 |-----------|--------|-------|-------|
-| Neural API graph execution | LIVE (biomeOS v3.69) | biomeOS team | Graph-driven deployment |
+| Neural API graph execution | LIVE (biomeOS v3.70) | biomeOS team | Graph-driven deployment |
 | deploy_membrane.sh | LIVE | cellMembrane (operational) | VPS provisioning + channel deployment |
 | deploy.sh / deploy_graph.sh | LIVE | projectNUCLEUS | Gate-level deployment |
 | Composition graphs | LIVE (80 TOMLs) | primalSpring | Deployment blueprints |
@@ -110,7 +110,7 @@ bash scripts) is an ongoing elevation in projectNUCLEUS.
 
 | Component | Status | Owner | Notes |
 |-----------|--------|-------|-------|
-| Capability routing | LIVE | biomeOS | 457 methods, 84+ domains |
+| Capability routing | LIVE | biomeOS | 458 methods, 84+ domains |
 | Adaptive routing weights | LIVE (redb-persistent) | biomeOS | EWMA latency, error rate, cost, circuit breakers |
 | Utilization tracking | LIVE (Wave 42) | biomeOS | Hot/cold method analysis |
 | Composition intelligence | LIVE | biomeOS | CompositionTier, CompositionPatternRegistry |

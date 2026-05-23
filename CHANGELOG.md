@@ -3,7 +3,26 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–42: Stadial Entry / Glacial Shift (2026-05-22)
+## [Unreleased] — Waves 22–42: Stadial Entry / Glacial Shift (2026-05-23)
+
+### Wave 42 (cont.): biomeOS v3.70 Absorption + Live Validation (May 23)
+- **biomeOS v3.70 — Weight Health Introspection**: `neural_api.weight_health` RPC
+  returns convergence diagnostics (healthy flag, persistence status, converging vs
+  cold providers, open circuit breaker details). `NeuralBridge::weight_health()` wrapper
+  added. S48 observatory parity scenario enhanced with weight health checks.
+- **biomeOS v3.70 — Attestation Verification**: `primal.announce` now verifies Ed25519
+  attestations via BearDog IPC (replacing presence-only stub). Graceful degradation
+  when BearDog unavailable.
+- **biomeOS v3.70 — Persistent Weights Wired at Startup**: `NeuralApiServer::new()`
+  now uses `NeuralRouter::with_persistent_weights()` when `SystemPaths` resolves —
+  weights actually survive restarts (previously the constructor existed but was unused).
+- **Live Validation Scenarios S47-S49**: Neural Dispatch Live (dispatch through biomeOS
+  to real primals), Observatory Parity (routing_weights, route_explain, composition_patterns,
+  plan_tier, weight_health cross-ref), Feedback Loop (dispatch_instrumented + weight
+  change verification + utilization tracking).
+- **Registry**: 457 → **458 methods** (+1 `neural_api.weight_health`).
+- **Tests**: 784 primalSpring (+5), 1311 biomeOS.
+- **Scenarios**: 46 → **49** (+3 live Neural API validation).
 
 ### Wave 42: Neural API Full Deployment + Team Restructuring (May 22)
 - **NeuralBridge feedback loop**: `capability_call_instrumented()` records round-trip
@@ -27,7 +46,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **SOVEREIGNTY_INFRASTRUCTURE_STATUS.md**: 9-layer sovereignty stack status with
   ownership mapping, remaining work, and async evolution tracks.
 - **Registry**: 456 → **457 methods** (+1 `neural_api.utilization`).
-- **Tests**: 779 primalSpring (+4), 1311 biomeOS (+8).
+- **Tests**: 783 primalSpring (+8), 1311 biomeOS (+8).
 
 ### Wave 41: Observatory Posture + biomeOS Composition Abstraction (May 22)
 - **biomeOS v3.68 — Composition Intelligence**: Abstracted primalSpring's exploratory

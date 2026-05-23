@@ -65,6 +65,7 @@ pub mod s_cross_gate_capability_call;
 pub mod s_cross_spring_data_flow;
 pub mod s_deployment_matrix;
 pub mod s_domain_contract_sweep;
+pub mod s_feedback_loop;
 pub mod s_ferment_transcript;
 pub mod s_full_nucleus;
 pub mod s_routing_consistency;
@@ -77,8 +78,10 @@ pub mod s_meta_tier_signals;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
 pub mod s_nestgate_content_pipeline;
+pub mod s_neural_dispatch_live;
 pub mod s_neural_routing;
 pub mod s_node_atomic;
+pub mod s_observatory_parity;
 pub mod s_primal_announce;
 pub mod s_provenance_trio_pipeline;
 pub mod s_sequential_graph;
@@ -142,6 +145,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_sporeprint_surface::SCENARIO);
     r.register(s_cross_gate_capability_call::SCENARIO);
     r.register(s_neural_routing::SCENARIO);
+    r.register(s_neural_dispatch_live::SCENARIO);
+    r.register(s_observatory_parity::SCENARIO);
+    r.register(s_feedback_loop::SCENARIO);
     r
 }
 
@@ -152,7 +158,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 46;
+    const EXPECTED_SCENARIO_COUNT: usize = 49;
 
     #[test]
     fn registry_scenario_count() {

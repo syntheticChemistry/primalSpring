@@ -108,7 +108,7 @@ The Neural API becomes a neural network whose inference IS the API.
 
 ---
 
-## Current Architecture (biomeOS v3.69)
+## Current Architecture (biomeOS v3.70)
 
 ```
 biomeos neural-api
@@ -229,8 +229,8 @@ Observatory tools:
 - [x] `WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md` — `primal.announce` adoption guide
   for all 13 primal teams with v3.68 schema, cost/latency hints, signal tiers
 - [x] `TEAM_OWNERSHIP_MATRIX.md` — cellMembrane/projectNUCLEUS/primalSpring ownership
-- [x] Registry: 456 → 457 methods (+1 neural_api.utilization)
-- [x] 1311 biomeOS tests, 779 primalSpring tests — all passing
+- [x] Registry: 456 → 458 methods (+1 neural_api.utilization, +1 neural_api.weight_health)
+- [x] 1311 biomeOS tests, 784 primalSpring tests — all passing
 - [ ] Graph execution timing per-node (PathwayLearner → weight table)
 - [ ] Cross-gate latency baselines (local UDS vs remote TURN)
 

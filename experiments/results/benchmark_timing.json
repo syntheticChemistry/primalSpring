@@ -17,19 +17,19 @@
     "test_compile_s": 12.7
   },
   "test_suite_timing": {
-    "lib_tests_779_s": 0.25,
+    "lib_tests_783_s": 0.25,
     "doctests_10_s": 0.07,
     "total_s": 28.4
   },
   "validation_benchmarks": {
     "primalspring_validate": {
-      "description": "UniBin validate: 46 scenarios across 10 tracks, 3 tiers",
+      "description": "UniBin validate: 49 scenarios across 10 tracks, 3 tiers",
       "note": "Absorbed primalspring_guidestone (P1-P4) + primalspring_trio (IPC) into organelles",
-      "scenarios": 46,
+      "scenarios": 49,
       "tracks": 10,
       "tiers": 3,
       "total_ms": 1200,
-      "total_checks": 457
+      "total_checks": 458
     },
     "primalspring_certify": {
       "description": "UniBin certify: L0-L8 certification engine (absorbed guidestone)",

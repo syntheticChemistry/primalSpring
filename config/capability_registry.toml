@@ -935,6 +935,7 @@ methods = [
     "neural_api.composition_patterns",
     "neural_api.plan_tier",
     "neural_api.utilization",
+    "neural_api.weight_health",
 ]
 
 # =============================================================================

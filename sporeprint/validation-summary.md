@@ -1,6 +1,6 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 779 lib tests, 89 experiments, 457 capability methods, 13/13 BTSP, zero DEBT, Wave 42"
+description = "Meta-validation orchestrator — 784 lib tests, 89 experiments, 458 capability methods, 13/13 BTSP, zero DEBT, Wave 42"
 date = 2026-05-22
 
 [taxonomies]
@@ -10,18 +10,18 @@ springs = ["primalspring"]
 
 ## Status
 
-- **779 lib tests** (779 passed, 2 ignored), 0 failed
+- **784 lib tests** (784 passed, 2 ignored), 0 failed
 - **89 experiments** across 20 tracks (tower atomic → frontier)
-- **94 deploy graphs** (80 deploy + 14 signal), 46 validation scenarios (10 tracks)
+- **94 deploy graphs** (80 deploy + 14 signal), 49 validation scenarios (10 tracks)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`
-- **457 registered capability methods** (including 5 `neural_api.*` methods)
+- **458 registered capability methods** (including 6 `neural_api.*` methods)
 - **Zero DEBT markers**, zero unsafe blocks (`SeedConfig` + `OnceLock`)
 - **6-tier discovery hierarchy** validated across all primals
-- **Waves 1–42 complete** — feedback loop, persistent routing weights (redb), utilization tracking, biomeOS v3.69, team restructuring, Neural API deployment guide, observatory posture, composition intelligence, adaptive routing weights
+- **Waves 1–42 complete** — feedback loop, persistent routing weights (redb), weight health introspection, utilization tracking, biomeOS v3.70, team restructuring, Neural API deployment guide, observatory posture, composition intelligence, adaptive routing weights
 
 ## Key Validation Binaries
 
-- `primalspring validate` — UniBin validation (46 scenarios across 10 tracks, 3 tiers)
+- `primalspring validate` — UniBin validation (49 scenarios across 10 tracks, 3 tiers)
 - `primalspring certify` — Certification engine (L0-L8, BTSP, seed provenance, cellular)
 - `primalspring serve` — RPC server (JSON-RPC 2.0 over UDS)
 

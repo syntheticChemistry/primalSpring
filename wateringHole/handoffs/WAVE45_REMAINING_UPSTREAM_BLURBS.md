@@ -1,8 +1,10 @@
 # Wave 45 — Remaining Upstream Work
 
-> **Date**: 2026-05-23 (post-Wave 44 review)
+> **Date**: 2026-05-23 (post-Wave 44 review, updated for biomeOS v3.70)
 > **Status**: Active — only teams with remaining work
 > **Ecosystem**: 11/13 primals have working outbound announce (squirrel + skunkBat fixed pre-blurb)
+> **biomeOS**: v3.70 — attestation verification via BearDog now wired (was stub), persistent weights on startup, weight_health introspection
+> **primalSpring**: v0.9.26 — 784 tests, 458 methods, 49 scenarios (S47-S49 live Neural API validation)
 
 ---
 
@@ -60,8 +62,9 @@ and `CURRENT_STATUS.md` updated. 7,093 tests passing.
 
 ## bearDog — Attestation Field Name (Minor)
 
-**Priority**: LOW — field is currently null/unused, becomes relevant when
-biomeOS wires attestation verification
+**Priority**: MEDIUM (elevated) — biomeOS v3.70 now delegates Ed25519
+attestation verification to BearDog via `auth.verify_ionic` IPC. The field
+mismatch means bearDog's own attestation won't verify when it self-announces.
 
 **Issue**: Sends `"signed_attestation"` — biomeOS expects `"attestation"`.
 
@@ -107,16 +110,27 @@ identity (`primal_id` → `primal`), tests verify full payload, showcase
 
 ## Ecosystem Convergence
 
-After songbird (HIGH) ships outbound push:
+After songbird (HIGH) and bearDog attestation rename (MEDIUM) ship:
 
 - **12/13 primals** with correct outbound `primal.announce` on startup
-- **biomeOS v3.69** persistent routing weights accumulate across restarts
+- **biomeOS v3.70** persistent routing weights survive restarts (redb-backed)
+- **Attestation verification** live via BearDog `auth.verify_ionic` IPC
 - **`neural_api.utilization`** tracks hot/cold methods ecosystem-wide
+- **`neural_api.weight_health`** provides convergence diagnostics + circuit breaker status
 - **`neural_api.routing_weights`** shows scored providers per capability
-- The Neural API becomes a **functional routing layer** — not just a registry
+- The Neural API becomes a **functional adaptive routing layer** — not just a registry
 
-Future waves can then focus on:
+### primalSpring Live Validation (S47-S49)
+
+primalSpring now validates the Neural API stack end-to-end:
+- **S47 Neural Dispatch Live**: `NeuralDispatcher.dispatch()` routes `crypto.hash` → bearDog, `storage.store` → nestgate through biomeOS
+- **S48 Observatory Parity**: routing_weights, route_explain, composition_patterns, plan_tier, weight_health cross-referenced against local model
+- **S49 Feedback Loop**: dispatch_instrumented 5x, verify metrics accumulate, utilization tracking, routing weight convergence
+
+### Future Waves
+
 - **Layer 5**: Learned routing (neural network weights from operational data)
-- **Cross-gate routing**: FlockGate distributed dispatch
+- **Cross-gate routing**: FlockGate distributed dispatch via TURN relay
 - **Primals re-announcing** on capability change at runtime
-- **Attestation verification** via bearDog signed announcements
+- **Node/Nucleus/Meta observatory elevation**: plan_tier validation for all tiers
+- **Graph execution validation**: full `graph.execute` of named patterns (rootpulse_commit)

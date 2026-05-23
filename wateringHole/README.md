@@ -1,6 +1,6 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.26 (Wave 42 — 779 tests, 457 methods, 46 scenarios, full feedback loop)
+**Version**: 0.9.26 (Wave 42 — 784 tests, 458 methods, 49 scenarios, full feedback loop + live validation)
 **Last Updated**: May 22, 2026 (Wave 42 — Neural API deployment guide, team restructuring, utilization tracking)
 **License**: AGPL-3.0-or-later  
 
@@ -38,9 +38,10 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 
 | File | Audience | What It Covers |
 |------|----------|----------------|
-| **handoffs/WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md** | All 13 primal teams | `primal.announce` v3.68 wire schema, cost/latency hints, per-primal implementation notes, utilization RPC. |
+| **handoffs/WAVE45_REMAINING_UPSTREAM_BLURBS.md** | songbird, bearDog | Remaining `primal.announce` work: outbound push + attestation field. Updated for biomeOS v3.70. |
 | **handoffs/DEPENDENCY_VALIDATION_PATTERN.md** | All primal teams | Pre-dispatch data dependency staging pattern (from toadStool S266). |
 | **handoffs/SHADOW_COMPARISON_PATTERN.md** | All primal teams | A/B shadow comparison pattern for protocol migrations (from songbird Wave 213). |
+| **handoffs/archive/** | Historical | 31 fossilized handoffs from Waves 20–44 (deployment guides, announce blurbs, stadial gate). |
 
 ### Archived Handoffs (`handoffs/archive/`)
 
@@ -91,10 +92,10 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
 - **Zero open upstream gaps** — 13/13 primals at zero debt, zero panics in production
-- **457 registered capability methods** across 84+ domains — includes `neural_api.*` (5 methods), `science.*` (6), ionic bond methods, FIDO2, `primal.announce`, `primal.list`
-- **46 validation scenarios** (10 tracks, 3 tiers: Rust / Both / Live) with shared `validation::helpers`; includes S46 neural-routing-surface (17 structural checks)
-- **779 lib tests** (779 pass, 2 ignored)
-- **biomeOS v3.69** — Neural API with adaptive routing weights (redb-persistent), composition intelligence, and capability utilization tracking (hot/cold methods)
+- **458 registered capability methods** across 84+ domains — includes `neural_api.*` (6 methods), `science.*` (6), ionic bond methods, FIDO2, `primal.announce`, `primal.list`
+- **49 validation scenarios** (10 tracks, 3 tiers: Rust / Both / Live) with shared `validation::helpers`; includes S47 neural-dispatch-live, S48 observatory-parity, S49 feedback-loop (live Neural API validation)
+- **784 lib tests** (784 pass, 2 ignored)
+- **biomeOS v3.70** — Neural API with adaptive routing weights (redb-persistent), weight health introspection, composition intelligence, and capability utilization tracking (hot/cold methods)
 - **NeuralBridge observatory + feedback loop** — primalSpring consumes biomeOS routing intelligence and feeds dispatch outcomes back through `capability_call_instrumented` + `record_bridge_outcome`
 - **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
@@ -108,7 +109,7 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 | What | Where |
 |------|-------|
 | Gap registry | `docs/PRIMAL_GAPS.md` |
-| Capability registry | `config/capability_registry.toml` (457 methods, zero drift) |
+| Capability registry | `config/capability_registry.toml` (458 methods, zero drift) |
 | Routing config schema | `config/routing_config_reference.toml` (canonical membrane routing) |
 | Membrane deploy graph | `graphs/membrane/tower_membrane.toml` (VPS sovereignty boundary) |
 | Method gate CI | `tools/check_method_gate.sh` |
@@ -133,12 +134,12 @@ to **full `primal.announce` adoption** and **sovereignty cutover**.
 
 ### Evolution Targets (all primals — Wave 42)
 
-With biomeOS v3.69 live, persistent weights, and utilization tracking:
+With biomeOS v3.70 live, persistent weights, weight health, and utilization tracking:
 
 1. **Implement `primal.announce` with v3.68 schema**: See
-   `handoffs/WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md` for the complete wire
+   `handoffs/archive/WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md` for the complete wire
    schema, per-primal notes, cost/latency hints, and validation steps.
-2. **Validate against 457 methods**: Ensure niche capability counts align
+2. **Validate against 458 methods**: Ensure niche capability counts align
    with `config/capability_registry.toml`.
 3. **Test composition patterns**: biomeOS owns `CompositionPatternRegistry`.
    Primals participating in tower/nest/meta patterns should validate via
@@ -172,10 +173,10 @@ cross-tier parity validated ecosystem-wide.
 | ludoSpring | 982 | V76: Schell Lenses + CPU/GPU parity, 982 tests |
 | groundSpring | 1,123+ | V145: `DEGRADATION_BEHAVIOR.md`, 1,123 tests |
 | airSpring | 1,373 | v0.10.0: 57 caps, 17 methods full 3-tier coverage |
-| primalSpring | 779 | Wave 42: feedback loop, 457 methods, 46 scenarios |
+| primalSpring | 784 | Wave 42: feedback loop, 458 methods, 49 scenarios, live validation |
 
 **Convergence state**: All springs at zero debt. Neural API observatory
-operational in primalSpring with full feedback loop. biomeOS v3.69 owns
+operational in primalSpring with full feedback loop. biomeOS v3.70 owns
 composition intelligence with persistent routing weights and utilization
 tracking. **Next vector**: full `primal.announce` adoption across all 13
 primals, sovereignty infrastructure layers, multi-gate expansion.

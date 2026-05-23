@@ -51,8 +51,8 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 46 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
-| `composition/neural_routing` | NeuralRoutingTable — static model of 457-method routing surface |
+| `validation/scenarios` | 49 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `composition/neural_routing` | NeuralRoutingTable — static model of 458-method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
@@ -73,26 +73,29 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.26 Wave 42 (May 22, 2026) — 46 scenarios (10 tracks, 3 tiers),
+v0.9.26 Wave 42 (May 23, 2026) — 49 scenarios (10 tracks, 3 tiers),
 457 registered capability methods (321 exercised, 70% coverage),
 89 experiments (20 tracks), 94 deploy graphs (80 deploy + 14 signal),
-44-cell deployment matrix. 779 lib tests (all passing).
+44-cell deployment matrix. 784 lib tests (all passing).
 
 **Wave 42: Full Neural API Deployment** — NeuralBridge feedback loop
 (`capability_call_instrumented`, `record_bridge_outcome`, `dispatch_instrumented`).
-biomeOS v3.69: persistent routing weights (redb-backed `RoutingWeightTable`),
+biomeOS v3.70: persistent routing weights (redb-backed `RoutingWeightTable`), weight health introspection,
 capability utilization tracking (`neural_api.utilization`). Team restructuring
 documented (`TEAM_OWNERSHIP_MATRIX.md`). Sovereignty infrastructure status
-(`SOVEREIGNTY_INFRASTRUCTURE_STATUS.md`). `WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md`
-for all 13 primal teams. 1311 biomeOS tests.
+(`SOVEREIGNTY_INFRASTRUCTURE_STATUS.md`). Neural API deployment guide
+for all 13 primal teams (fossilized to archive). biomeOS v3.70: weight health
+introspection, attestation verification via BearDog, persistent weights on startup.
+Live validation scenarios S47-S49 (neural dispatch, observatory parity, feedback loop).
+1311 biomeOS tests.
 
 **Wave 41: Observatory Posture** — biomeOS v3.68 composition intelligence
 abstracted from primalSpring's exploratory work. `CompositionTier`, `CompositionPatternRegistry`,
 `plan_tier()` now live in biomeOS runtime. NeuralBridge observatory methods
 let primalSpring consume biomeOS's adaptive routing intelligence. 1303 biomeOS tests.
 
-**Wave 40: Neural Routing Layer** — `NeuralRoutingTable` (static model of
-454-method surface), `NeuralDispatcher` (dispatch + metrics), S46 scenario
+**Wave 40: Neural Routing Layer** — `NeuralRoutingTable` (static model of the
+full method surface), `NeuralDispatcher` (dispatch + metrics), S46 scenario
 (17 structural checks). biomeOS v3.67 adaptive routing weights (`RoutingWeightTable`,
 EWMA latency/error, circuit breaker, `primal.announce` cost hints).
 
@@ -220,8 +223,8 @@ composition).
 - **Fossilization pass**: 45+ handoffs archived, infra handoffs 100% archived, primalSpring 3 living (1 catalogue + 2 pattern standards)
 - **Waves 23–37 complete**: E2E study, shadow runs, upstream ingestion, pattern dissemination, showcase fossilization, ionic bond runtime (WS-1), sovereign publish pipeline (SP-4), ecosystem debt sweep
 - All 8 springs at Wave 20 — canonical capability.list envelope, debt resolved
-- 445-method registry (real methods, post-Wave 32 recount excluding test fixtures), zero drift
-- 45 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
+- 458-method registry (real methods, post-Wave 32 recount excluding test fixtures), zero drift
+- 49 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
 - 10/10 foundation threads active (Thread 4 now active)
 - lithoSpore v1.0.0 released — 7/7 modules Tier 2 PASS (75/75 checks)
 - All deprecated `probe_primal` callers removed from primalSpring
@@ -309,24 +312,35 @@ composition).
   - **All 13/13 primals stadial-gate absorbed**
   - Remaining: sourDough version drift, 2 composition gaps (GPU API alignment, cross-gate dispatch)
 
-### Remaining
+### Remaining (updated May 23, 2026)
+
+**Resolved since last review:**
 - ~~**Thread 4**~~ now active (expression + data sources in projectFOUNDATION)
+- ~~**biomeOS primal.list implementation**~~ **RESOLVED** — shipped in biomeOS v3.65 (Wave 33)
+- ~~**biomeOS nest.store signal dispatch**~~ **RESOLVED** — R5 promoted in biomeOS v3.63
+- ~~**biomeOS spore.instantiate**~~ **DEFERRED-TO-STADIAL** — R7 in biomeOS v3.63
+- ~~**Primal-blocked gaps**~~ (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — **RESOLVED** Wave 22 stadial gate + Wave 44 fixes
+
+**Neural API (upstream, 2 items):**
+- **songbird outbound announce** — HIGH: last foundation primal without startup push + capability/hints key mismatch
+- **bearDog attestation field rename** — MEDIUM: `signed_attestation` → `attestation` (biomeOS v3.70 now verifies)
+
+**Sovereignty infrastructure (cellMembrane team):**
+- **Sovereign DNS** (knot-dns, H2-17 through H2-20) — cellMembrane owns
 - **Forgejo Actions CI** porting for projectNUCLEUS sovereignty
-- **Sovereign DNS** (knot-dns, H2-17 through H2-20)
+- **Forgejo Releases** as sovereign binary channel (S5)
+- **sporePrint living content** evolution (S6)
+
+**Downstream / cross-spring (async):**
 - **ludoSpring 6-method IPC** expansion for esotericWebb
 - **esotericWebb provenance E2E** on biomeOS (GAP-024)
-- **BLAKE3 backfill** for projectFOUNDATION source TOMLs
-- **Thread 1 WCM RPC** stack (0/24 blocked)
 - **lithoSpore TURN wiring** (songbird-turn-client integration pending)
 - **petalTongue dialogue scenes** for esotericWebb narrative UI
 - **Foundation validate elevation** to CompositionContext + Rust crates
-- ~~**biomeOS primal.list implementation**~~ **RESOLVED** — shipped in biomeOS v3.65 (Wave 33)
-- **biomeOS nest.store signal dispatch** (lithoSpore R5 — ferment transcript handoff collapse)
-- **biomeOS spore.instantiate** (lithoSpore R7 — atomic VM provisioning for guideStones)
-- **Primal-blocked gaps** (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — documented as asks, awaiting upstream teams
-- **LTEE enrichments** (B5 lithoSpore promotion, B7 Tier 3, B1-ML Rust elevation, framework parity benchmarks)
-- **wetSpring ferment transcripts** — Barrick 2009 SEALED (7/7), Tenaillon 2016 batch 0 COMPLETE (5/5 clones). V182 UniBin: 345 scenarios
-- **plasmidBin convergence** — all gardens converging on plasmidBin as central deployment depot:
-  lithoSpore (Tier 3 via `stage_usb.sh`), projectNUCLEUS (gate deployments), projectFOUNDATION
-  (validation against primals), esotericWebb (genomeBin composition), cellMembrane (`deploy_membrane.sh`)
-- **BLAKE3 backfill** — projectFOUNDATION has 165 empty `blake3` fields across 11 source TOMLs (medium priority)
+- **Thread 1 WCM RPC** stack (0/24 blocked)
+
+**Data / science (springs own):**
+- **BLAKE3 backfill** — projectFOUNDATION has 165 empty `blake3` fields across 11 source TOMLs
+- **LTEE enrichments** (B5 lithoSpore promotion, B7 Tier 3, B1-ML Rust elevation)
+- **wetSpring ferment transcripts** — Barrick 2009 SEALED (7/7), Tenaillon 2016 batch 0 COMPLETE (5/5 clones)
+- **plasmidBin convergence** — all gardens converging on plasmidBin as central deployment depot

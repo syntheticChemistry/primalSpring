@@ -396,6 +396,43 @@ impl NeuralBridge {
         }
         Ok(resp.result.unwrap_or(serde_json::Value::Null))
     }
+
+    /// Query capability utilization tracking from biomeOS (v3.69+).
+    ///
+    /// Returns hot/cold method analysis — call counts, last-called
+    /// timestamps, and summary statistics. primalSpring uses this to
+    /// verify the feedback loop is accumulating operational data.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport failure or if biomeOS < v3.69.
+    pub fn utilization(&self) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let resp = client.call("neural_api.utilization", serde_json::Value::Null)?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
+
+    /// Query routing weight health diagnostics from biomeOS (v3.70+).
+    ///
+    /// Returns convergence diagnostics: healthy flag, persistence status,
+    /// convergence stats (converging vs cold providers), and open circuit
+    /// breaker details. primalSpring uses this to validate that adaptive
+    /// routing is converging and that persistent weights survived restarts.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IpcError`] on transport failure or if biomeOS < v3.70.
+    pub fn weight_health(&self) -> Result<serde_json::Value, IpcError> {
+        let mut client = PrimalClient::connect(&self.socket_path, "neural-api")?;
+        let resp = client.call("neural_api.weight_health", serde_json::Value::Null)?;
+        if let Some(err) = resp.error {
+            return Err(IpcError::from(err));
+        }
+        Ok(resp.result.unwrap_or(serde_json::Value::Null))
+    }
 }
 
 #[cfg(test)]
@@ -505,5 +542,21 @@ mod tests {
             socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
         };
         assert!(bridge.topology_rescan().is_err());
+    }
+
+    #[test]
+    fn utilization_fails_for_nonexistent_socket() {
+        let bridge = NeuralBridge {
+            socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
+        };
+        assert!(bridge.utilization().is_err());
+    }
+
+    #[test]
+    fn weight_health_fails_for_nonexistent_socket() {
+        let bridge = NeuralBridge {
+            socket_path: PathBuf::from("/nonexistent/neural-api.sock"),
+        };
+        assert!(bridge.weight_health().is_err());
     }
 }
