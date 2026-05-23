@@ -1,5 +1,7 @@
 # sporeprint/ — Content for primals.eco
 
+**Owned by primalSpring** (Wave 46+). sporePrint repo at `infra/sporePrint`.
+
 Files in this directory are published to [primals.eco](https://primals.eco) via
 the sporePrint auto-refresh CI pipeline.
 
@@ -40,3 +42,16 @@ springs = ["yourspring"]
 
 See [CONTENT_GUIDE.md](https://github.com/ecoPrimals/wateringHole/blob/main/sporePrint/CONTENT_GUIDE.md)
 for full documentation.
+
+## Rust Evolution Roadmap
+
+sporePrint is evolving toward Rust-native tooling:
+
+- **`spore-validate`** (`infra/sporePrint/crates/spore-validate/`) — entity registry validation, link-lint, content taxonomy checks. Already Rust.
+- **`render_notebooks.sh`** — replace with Rust nbconvert equivalent
+- **`refresh-metrics.sh`** — replace with Rust metric sync (currently wraps `spore-validate refresh`)
+- **Living content (S6)** — dynamic content via NestGate `content.put` instead of static GitHub Pages
+- **Sovereign deploy** — cellMembrane VPS (`membrane.primals.eco`) instead of GitHub Pages fallback
+
+Zola itself is already a Rust binary. The evolution is Rust-native tooling around Zola
+plus dynamic content delivery off static Pages.

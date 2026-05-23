@@ -1,7 +1,7 @@
 # Team Ownership Matrix
 
-> **Version**: 1.0 (Wave 42 — May 2026)
-> **Status**: Active — restructuring in effect
+> **Version**: 1.1 (Wave 46 — May 2026)
+> **Status**: Active — sporePrint ownership transferred to primalSpring
 
 This document defines team ownership boundaries for the ecoPrimals
 ecosystem. Each team owns specific repos, systems, and evolution tracks.
@@ -19,7 +19,6 @@ operational surface that makes sovereign deployment real.
 | What | Repo / Path | Description |
 |------|-------------|-------------|
 | **cellMembrane** | `gardens/cellMembrane` | VPS state, runbooks, credentials, IP/key inventory |
-| **sporePrint** | `gardens/sporePrint` (primals.eco) | Ecosystem registry + public content; evolving from static Zola toward living content |
 | **Membrane channels** | `infra/plasmidBin/deploy_membrane.sh` | Operational execution of Signal/DNS, Relay, Surface/TLS channels |
 | **Caddy TLS** | VPS deployments | TLS termination, certificate management, reverse proxy |
 | **Sovereign DNS** | knot-dns on VPS | DNS resolution for `primals.eco` and sovereign subdomains |
@@ -32,7 +31,7 @@ operational surface that makes sovereign deployment real.
 - Membrane channel deployment and monitoring
 - TLS certificate issuance and rotation
 - Public DNS zone management
-- Interface system uptime (RustDesk, sporePrint/Zola builds)
+- Interface system uptime (RustDesk)
 - Credential rotation and security hardening
 
 ### Handoff from projectNUCLEUS
@@ -43,8 +42,6 @@ The following systems transfer from projectNUCLEUS to cellMembrane:
 2. `deploy_membrane.sh` channel management
 3. TLS shadow configuration (Caddy + Let's Encrypt)
 4. IP/key inventory in `cellMembrane/` repo
-5. sporePrint content publishing pipeline
-
 projectNUCLEUS retains gate-level *validation* (Dark Forest checks,
 membrane provenance) but cellMembrane team owns *operational execution*.
 
@@ -83,10 +80,11 @@ and gate validation. It no longer directly manages VPS interface systems.
 
 ---
 
-## primalSpring (Unchanged)
+## primalSpring (Expanded — sporePrint Ownership)
 
 primalSpring continues as the ecosystem's coordination science surface and
-pattern observatory.
+pattern observatory, and now owns **sporePrint** (primals.eco) with a Rust
+evolution mandate.
 
 ### Ownership
 
@@ -97,6 +95,8 @@ pattern observatory.
 | **Deploy graphs** | `graphs/` | 80 deploy TOMLs + 14 atomic signal graphs |
 | **Routing schema** | `config/routing_config_reference.toml` | Canonical membrane routing configuration |
 | **Neural API observatory** | `ecoPrimal/src/composition/` + `ipc/neural_bridge.rs` | Studies biomeOS routing intelligence, pushes evolution |
+| **sporePrint** | `infra/sporePrint` (primals.eco) | Ecosystem registry + public content; evolving toward Rust-native tooling and living content |
+| **spore-validate** | `infra/sporePrint/crates/spore-validate/` | Rust crate for registry schema, taxonomy, and link validation |
 | **wateringHole** | `wateringHole/` | Ecosystem standards, handoffs, team guidance |
 | **Experiment tracks** | `experiments/` | 89 experiments, 20 tracks |
 
@@ -108,6 +108,8 @@ pattern observatory.
 - Cross-spring parity assessment
 - Standards evolution (BTSP, method gate, announce protocol)
 - Handoff generation for upstream and downstream teams
+- **sporePrint Rust evolution**: extend `spore-validate`, replace bash scripts with Rust, evolve toward living content via NestGate `content.put`
+- **sporePrint content integrity**: link validation, section routing, Zola build health
 
 ---
 
@@ -150,9 +152,10 @@ cellMembrane (operates infrastructure)
 
 Teams evolve independently on orthogonal tracks:
 
-- **cellMembrane**: Infrastructure ops, multi-gate expansion, DNS
+- **cellMembrane**: Infrastructure ops, multi-gate expansion, DNS (downstream with projectNUCLEUS and projectFOUNDATION)
 - **projectNUCLEUS**: Deployment pipelines, compute orchestration, Rust-native deploy
-- **primalSpring**: Validation, observatory, standards dissemination
+- **projectFOUNDATION**: Institutional adoption, grant integration, downstream products
+- **primalSpring**: Validation, observatory, standards dissemination, sporePrint ownership + Rust evolution
 - **Upstream primals**: `primal.announce` adoption, method compliance, niche science
 
 Wave reviews (every ~20 waves) synchronize state and reassess priorities.

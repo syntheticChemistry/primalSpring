@@ -326,11 +326,16 @@ composition).
 - ~~**songbird outbound announce**~~ — **RESOLVED** commit `4a8f4cdc`: outbound push + capability alignment shipped
 - ~~**bearDog attestation field rename**~~ — **RESOLVED** commit `2a94f2d6d` (Wave 111): field renamed, verified by biomeOS v3.70
 
-**Sovereignty infrastructure (cellMembrane team):**
+**Sovereignty infrastructure (cellMembrane team — downstream with projectNUCLEUS/projectFOUNDATION):**
 - **Sovereign DNS** (knot-dns, H2-17 through H2-20) — cellMembrane owns
 - **Forgejo Actions CI** porting for projectNUCLEUS sovereignty
 - **Forgejo Releases** as sovereign binary channel (S5)
-- **sporePrint living content** evolution (S6)
+
+**sporePrint (primalSpring-owned — Rust evolution mandate):**
+- **Link integrity**: bare `.md` 404s fixed (Wave 46), `lint_internal_links` added to `spore-validate`
+- **Living content** evolution (S6) — NestGate `content.put` path prototyped
+- **Rust evolution**: extend `spore-validate`, replace `render_notebooks.sh` and `refresh-metrics.sh` with Rust
+- **Content ingest pipeline** Rust-native replacement for bash CI scripts
 
 **Downstream / cross-spring (async):**
 - **ludoSpring 6-method IPC** expansion for esotericWebb
