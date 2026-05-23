@@ -61,15 +61,15 @@ pub fn spawn_biomeos(
     cmd.arg("--graphs-dir").arg(&effective_graphs_dir);
     cmd.arg("--family-id").arg(family_id);
     cmd.current_dir(working_dir);
-    cmd.env("FAMILY_ID", family_id);
+    cmd.env(crate::env_keys::FAMILY_ID, family_id);
     if let Some(seed) = nucleation.family_seed() {
-        cmd.env("FAMILY_SEED", String::from_utf8_lossy(seed).as_ref());
+        cmd.env(crate::env_keys::FAMILY_SEED, String::from_utf8_lossy(seed).as_ref());
     }
     cmd.env(
-        "XDG_RUNTIME_DIR",
+        crate::env_keys::XDG_RUNTIME_DIR,
         nucleation.base_dir().to_string_lossy().as_ref(),
     );
-    cmd.env("BIOMEOS_MODE", "coordinated");
+    cmd.env(crate::env_keys::BIOMEOS_MODE, "coordinated");
     if let Ok(plasmid) = std::env::var(super::discovery::ENV_PLASMID_BIN) {
         cmd.env("BIOMEOS_PLASMID_BIN_DIR", &plasmid);
     }

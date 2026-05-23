@@ -31,11 +31,13 @@ use super::ionic::{
 use super::BondingConstraint;
 
 /// Errors specific to ionic protocol state machine violations.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum IonicProtocolError {
     /// Contract not found in the registry.
+    #[error("contract not found: {0}")]
     NotFound(ContractId),
     /// Invalid state transition (from, to).
+    #[error("invalid transition for {contract_id}: {from:?} → {to:?}")]
     InvalidTransition {
         /// Contract ID.
         contract_id: ContractId,
@@ -45,10 +47,13 @@ pub enum IonicProtocolError {
         to: ContractState,
     },
     /// Proposal validation failed.
+    #[error("invalid proposal: {}", .0.join("; "))]
     InvalidProposal(Vec<String>),
     /// Contract has expired (TTL reached).
+    #[error("contract expired: {0}")]
     Expired(ContractId),
     /// Capability not permitted under contract scope.
+    #[error("capability '{capability}' denied on {contract_id}")]
     CapabilityDenied {
         /// Contract ID.
         contract_id: ContractId,
@@ -56,6 +61,7 @@ pub enum IonicProtocolError {
         capability: String,
     },
     /// Rate limit exceeded.
+    #[error("rate limit exceeded on {contract_id}: {current_rps}/{limit_rps} rps")]
     RateLimitExceeded {
         /// Contract ID.
         contract_id: ContractId,
@@ -65,40 +71,6 @@ pub enum IonicProtocolError {
         limit_rps: u32,
     },
 }
-
-impl std::fmt::Display for IonicProtocolError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::NotFound(id) => write!(f, "contract not found: {id}"),
-            Self::InvalidTransition {
-                contract_id,
-                from,
-                to,
-            } => write!(
-                f,
-                "invalid transition for {contract_id}: {from:?} → {to:?}"
-            ),
-            Self::InvalidProposal(errors) => {
-                write!(f, "invalid proposal: {}", errors.join("; "))
-            }
-            Self::Expired(id) => write!(f, "contract expired: {id}"),
-            Self::CapabilityDenied {
-                contract_id,
-                capability,
-            } => write!(f, "capability '{capability}' denied on {contract_id}"),
-            Self::RateLimitExceeded {
-                contract_id,
-                current_rps,
-                limit_rps,
-            } => write!(
-                f,
-                "rate limit exceeded on {contract_id}: {current_rps}/{limit_rps} rps"
-            ),
-        }
-    }
-}
-
-impl std::error::Error for IonicProtocolError {}
 
 /// In-memory registry of active ionic bond contracts.
 ///
@@ -204,7 +176,7 @@ impl IonicContractRegistry {
         let now = iso_now();
         contract.state = ContractState::Active;
         contract.negotiated_constraints = constraints.clone();
-        contract.accepted_at = Some(now.clone());
+        contract.accepted_at = Some(now);
 
         if contract.proposal.duration_secs > 0 {
             let expires = SystemTime::now()
@@ -324,8 +296,10 @@ impl IonicContractRegistry {
         }
 
         contract.state = ContractState::Modifying;
-        contract.negotiated_constraints.capability_allow =
-            modification.new_capabilities.clone();
+        contract
+            .negotiated_constraints
+            .capability_allow
+            .clone_from(&modification.new_capabilities);
         if modification.new_rate_limit_rps > 0 {
             contract.negotiated_constraints.max_concurrent_requests =
                 modification.new_rate_limit_rps;

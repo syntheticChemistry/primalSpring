@@ -29,7 +29,7 @@ fn xdg_plasmid_bin() -> PathBuf {
         .or_else(|_| {
             std::env::var(crate::env_keys::HOME).map(|h| PathBuf::from(h).join(".local/share"))
         })
-        .unwrap_or_else(|_| PathBuf::from("/tmp"))
+        .unwrap_or_else(|_| std::env::temp_dir())
         .join("ecoPrimals/plasmidBin")
 }
 

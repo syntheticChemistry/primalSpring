@@ -28,6 +28,26 @@ use super::neural_routing::{
 use crate::ipc::error::IpcError;
 use crate::ipc::neural_bridge::{BridgeOutcome, NeuralBridge};
 
+/// Typed errors for neural dispatch operations.
+#[derive(Debug, Clone, thiserror::Error)]
+pub enum DispatchError {
+    /// Method not found in the routing table.
+    #[error("method {0} not in routing table")]
+    MethodNotFound(String),
+    /// Named composition pattern not found.
+    #[error("pattern {0} not found")]
+    PatternNotFound(String),
+    /// biomeOS Neural API is not reachable.
+    #[error("biomeOS not available")]
+    BridgeOffline,
+    /// IPC-level error during dispatch.
+    #[error("dispatch failed: {0}")]
+    Ipc(String),
+    /// Graph execution failed.
+    #[error("graph dispatch failed: {0}")]
+    GraphFailed(String),
+}
+
 /// Outcome of a single neural dispatch.
 #[derive(Debug, Clone)]
 pub struct DispatchOutcome {
@@ -40,7 +60,7 @@ pub struct DispatchOutcome {
     /// How the dispatch was routed.
     pub route_path: RoutePath,
     /// Result value from the primal (on success).
-    pub result: Result<serde_json::Value, String>,
+    pub result: Result<serde_json::Value, DispatchError>,
     /// Dispatch latency in milliseconds.
     pub latency_ms: u64,
 }
@@ -159,7 +179,7 @@ impl NeuralDispatcher {
                     owner: "unknown".to_owned(),
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
-                    result: Err(format!("method {method} not in routing table")),
+                    result: Err(DispatchError::MethodNotFound(method.to_owned())),
                     latency_ms: start.elapsed().as_millis() as u64,
                 };
             }
@@ -167,7 +187,7 @@ impl NeuralDispatcher {
 
         let (result, route_path) = match &self.bridge {
             Some(bridge) => dispatch_through_bridge(bridge, method, &entry, params),
-            None => (Err("biomeOS not available".to_owned()), RoutePath::Offline),
+            None => (Err(DispatchError::BridgeOffline), RoutePath::Offline),
         };
 
         let latency_ms = start.elapsed().as_millis() as u64;
@@ -216,7 +236,7 @@ impl NeuralDispatcher {
                     owner: "unknown".to_owned(),
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
-                    result: Err(format!("pattern {pattern_name} not found")),
+                    result: Err(DispatchError::PatternNotFound(pattern_name.to_owned())),
                     latency_ms: start.elapsed().as_millis() as u64,
                 };
             }
@@ -226,8 +246,8 @@ impl NeuralDispatcher {
         let result = match &self.bridge {
             Some(bridge) => bridge
                 .graph_deploy(&graph_request)
-                .map_err(|e| format!("graph dispatch failed: {e}")),
-            None => Err("biomeOS not available".to_owned()),
+                .map_err(|e| DispatchError::GraphFailed(e.to_string())),
+            None => Err(DispatchError::BridgeOffline),
         };
 
         let latency_ms = start.elapsed().as_millis() as u64;
@@ -301,7 +321,7 @@ impl NeuralDispatcher {
                     owner: "unknown".to_owned(),
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
-                    result: Err(format!("method {method} not in routing table")),
+                    result: Err(DispatchError::MethodNotFound(method.to_owned())),
                     latency_ms: start.elapsed().as_millis() as u64,
                 };
             }
@@ -316,10 +336,10 @@ impl NeuralDispatcher {
                 self.record_bridge_outcome(&outcome);
                 let result = call_result
                     .map(|r| r.value)
-                    .map_err(|e: IpcError| format!("{e}"));
+                    .map_err(|e: IpcError| DispatchError::Ipc(e.to_string()));
                 (result, RoutePath::CapabilityCall)
             }
-            None => (Err("biomeOS not available".to_owned()), RoutePath::Offline),
+            None => (Err(DispatchError::BridgeOffline), RoutePath::Offline),
         };
 
         let latency_ms = start.elapsed().as_millis() as u64;
@@ -448,7 +468,7 @@ fn dispatch_through_bridge(
     method: &str,
     _entry: &RouteEntry,
     params: &serde_json::Value,
-) -> (Result<serde_json::Value, String>, RoutePath) {
+) -> (Result<serde_json::Value, DispatchError>, RoutePath) {
     let (domain, operation) = match method.split_once('.') {
         Some((d, o)) => (d, o),
         None => (method, ""),
@@ -457,7 +477,7 @@ fn dispatch_through_bridge(
     let result = bridge
         .capability_call(domain, operation, params)
         .map(|r| r.value)
-        .map_err(|e: IpcError| format!("{e}"));
+        .map_err(|e: IpcError| DispatchError::Ipc(e.to_string()));
 
     (result, RoutePath::CapabilityCall)
 }

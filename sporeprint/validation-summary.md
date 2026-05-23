@@ -1,6 +1,6 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 784 lib tests, 89 experiments, 458 capability methods, 13/13 BTSP, zero DEBT, Wave 45"
+description = "Meta-validation orchestrator — 784 lib tests, 89 experiments, 458 capability methods, 13/13 BTSP, zero DEBT, Wave 46"
 date = 2026-05-23
 
 [taxonomies]
@@ -17,7 +17,7 @@ springs = ["primalspring"]
 - **458 registered capability methods** (including 6 `neural_api.*` methods)
 - **Zero DEBT markers**, zero unsafe blocks (`SeedConfig` + `OnceLock`)
 - **6-tier discovery hierarchy** validated across all primals
-- **Waves 1–45 complete** — 12/12 primal.announce compliant, all upstream Neural API blockers resolved, feedback loop, persistent routing weights (redb), weight health introspection, utilization tracking, biomeOS v3.70, observatory posture, composition intelligence, doc debt sweep, local code hygiene
+- **Waves 1–46 complete** — Wave 46: typed errors (DispatchError, IonicProtocolError, PhasedIpcError → thiserror), env centralization, deprecated API removal, clippy sweep. Wave 45: all upstream Neural API blockers resolved, 12/12 primal.announce compliant. biomeOS v3.70 persistent routing weights (redb), weight health, utilization tracking, observatory posture, composition intelligence
 
 ## Key Validation Binaries
 

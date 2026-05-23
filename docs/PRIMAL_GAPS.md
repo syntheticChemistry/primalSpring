@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-23 (Wave 45: All upstream Neural API blockers resolved. 12/12 primal.announce compliant. biomeOS v3.70 persistent weights + weight health + utilization tracking. 458 methods, 784 tests, 49 scenarios. Doc debt sweep, local code hygiene.)
+> **Last updated**: 2026-05-23 (Wave 46: Deep debt evolution — typed errors (DispatchError, IonicProtocolError, PhasedIpcError → thiserror), env centralization, deprecated API removal, clippy sweep. All upstream Neural API blockers resolved (Wave 45). 12/12 primal.announce compliant. biomeOS v3.70 persistent weights + weight health + utilization tracking. 458 methods, 784 tests, 49 scenarios.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — Iter 96: 21 idempotency tests, `CompileTarget` generalization (CPU/NPU), tarpc feature-gate. 3,202 tests. |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. 12/12 announcing primals with correct outbound `primal.announce` (biomeOS exempt). Waves 1-45 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. 2 binaries. Zero panics in production. Wave 42: NeuralBridge feedback loop, biomeOS v3.70 persistent weights + weight health + utilization tracking, team restructuring, Neural API deployment guide. Live validation S47-S49 (dispatch, observatory, feedback). Wave 40-41: Neural routing layer + observatory posture. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published. All upstream Neural API blockers RESOLVED (songbird 4a8f4cdc, bearDog Wave 111).**
+**13/13 at zero debt. 12/12 announcing primals with correct outbound `primal.announce` (biomeOS exempt). Waves 1-46 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. 2 binaries. Zero panics in production. Wave 42: NeuralBridge feedback loop, biomeOS v3.70 persistent weights + weight health + utilization tracking, team restructuring, Neural API deployment guide. Live validation S47-S49 (dispatch, observatory, feedback). Wave 40-41: Neural routing layer + observatory posture. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published. All upstream Neural API blockers RESOLVED (songbird 4a8f4cdc, bearDog Wave 111).**
 
 ---
 
@@ -540,7 +540,7 @@ atomic signal graphs, eukaryotic validation scenarios with shared helpers
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 458 methods, 784 tests, zero local debt. All waves (1–45) complete:
+**Current**: 458 methods, 784 tests, zero local debt. All waves (1–46) complete:
 - Wave 8: Compute trio composition — 9/9 DONE
 - Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
 - Wave 10: Phase 32 atomic model — all fragments v3.0.0

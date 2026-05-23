@@ -137,7 +137,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     );
 
     if let (Some(before), Some(after)) = (&weights_before, &weights_after) {
-        let changed = before.to_string() != after.to_string();
+        let changed = *before != *after;
         v.check_bool(
             "weights-changed-after-dispatch",
             changed,

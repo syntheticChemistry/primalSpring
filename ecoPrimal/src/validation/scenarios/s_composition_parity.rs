@@ -263,7 +263,7 @@ fn nest_storage_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationResult
     let test_key = "exp094_parity_roundtrip";
     let test_value = "nucleus_composition_validation_2026";
 
-    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
+    let family_id = crate::env_keys::resolve_family_id();
     let store_result = ctx
         .call(
             "storage",
@@ -354,7 +354,7 @@ fn nucleus_hash_store_retrieve(ctx: &mut CompositionContext, v: &mut ValidationR
                 &format!("BLAKE3: {}...", &hash_hex[..hash_hex.len().min(16)]),
             );
 
-            let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
+            let family_id = crate::env_keys::resolve_family_id();
             let store_key = "exp094_cross_atomic_hash";
             match ctx.call(
                 "storage",

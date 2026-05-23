@@ -454,13 +454,10 @@ except: pass
     fi
 
     log ""
-    log "  ── NestGate Upstream Evolution Needed ──"
-    log "  NestGate currently stores plaintext — composition-level encryption works"
-    log "  but native encrypt-at-rest requires NestGate to evolve:"
-    log "    1. Accept NESTGATE_ENCRYPTION_KEY env var or resolve via Tower"
-    log "    2. Auto-encrypt on storage.store, auto-decrypt on storage.retrieve"
-    log "    3. Store envelope format: {v:1, ct:<ciphertext>, n:<nonce>, alg:<algo>}"
-    log "    4. Support key rotation via secrets.retrieve from BearDog"
+    log "  ── NestGate Encrypt-at-Rest ──"
+    log "  NestGate v0.4.70+ supports native encrypt-at-rest."
+    log "  Composition-level encryption is also available as defense-in-depth."
+    log "  Verify via: NESTGATE_ENCRYPTION_KEY or Tower key resolution."
     return 1
 }
 

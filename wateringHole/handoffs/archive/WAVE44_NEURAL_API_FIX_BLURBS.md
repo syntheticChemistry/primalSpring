@@ -1,7 +1,7 @@
 # Wave 44 — Neural API Announce Fix Blurbs
 
 > **Date**: 2026-05-23 (post-Wave 43 audit)
-> **Status**: Active — per-team fixes after Wave 43 adoption review
+> **Status**: **SUPERSEDED** (May 23, 2026) — All fixes deployed. 12/12 announcing primals compliant. Resolved in Wave 45.
 > **Context**: 12/13 primals shipped `primal.announce` code in Wave 43.
 > 3 are broken at wire level, 2 are inbound-only, 7 are working.
 > sweetGrass, loamSpine, rhizoCrypt are reference-quality — use them as patterns.

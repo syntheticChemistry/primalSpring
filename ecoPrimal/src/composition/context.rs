@@ -548,7 +548,7 @@ impl CompositionContext {
             let params = step
                 .get("params")
                 .cloned()
-                .unwrap_or(serde_json::json!({}));
+                .unwrap_or_else(|| serde_json::json!({}));
 
             let result = self.signal(tier, signal_name, params)?;
             results.push(serde_json::json!({

@@ -209,9 +209,9 @@ skipped = {skipped}
         version = env!("CARGO_PKG_VERSION"),
         today = today,
         scenarios_run = scenarios_run,
-        host = std::env::var("HOSTNAME")
+        host = std::env::var(primalspring::env_keys::HOSTNAME)
             .or_else(|_| std::env::var("HOST"))
-            .unwrap_or_else(|_| "irongate-local".into()),
+            .unwrap_or_else(|_| "unknown".into()),
         total = v.evaluated(),
         passed = v.passed,
         failed = v.failed,

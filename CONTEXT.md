@@ -73,7 +73,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.26 Wave 45 (May 23, 2026) — 49 scenarios (10 tracks, 3 tiers),
+v0.9.27 Wave 46 (May 23, 2026) — 49 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (322 exercised, 70% coverage),
 89 experiments (20 tracks), 94 deploy graphs (80 deploy + 14 signal),
 44-cell deployment matrix. 784 lib tests (all passing). 12/12 primal.announce
@@ -104,7 +104,7 @@ EWMA latency/error, circuit breaker, `primal.announce` cost hints).
 TURN relay, biomeOS v3.66 cross-gate, toadStool S269, nestgate SP-4 compat,
 healthSpring V64z, neuralSpring V170. Neural API Evolution Spec published.
 
-**Waves 1-45 complete**. Zero DEBT markers, zero unsafe blocks, zero panics, zero warnings.
+**Waves 1-46 complete**. Zero DEBT markers, zero unsafe blocks, zero panics, zero warnings.
 Security gate: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
 `Vec<&String>` → `Vec<&str>`. `JsonRpcError`/`UnknownPrimal` → `thiserror` derives.
 `DeployError::Parse` now wraps `toml::de::Error` source for error chains. Deprecated

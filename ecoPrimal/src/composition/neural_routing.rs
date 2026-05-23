@@ -266,8 +266,7 @@ impl NeuralRoutingTable {
     pub fn methods_in_domain(&self, domain: &str) -> &[String] {
         self.domain_index
             .get(domain)
-            .map(Vec::as_slice)
-            .unwrap_or(&[])
+            .map_or(&[], Vec::as_slice)
     }
 
     /// All methods owned by a primal.
@@ -275,8 +274,7 @@ impl NeuralRoutingTable {
     pub fn methods_for_primal(&self, primal: &str) -> &[String] {
         self.primal_index
             .get(primal)
-            .map(Vec::as_slice)
-            .unwrap_or(&[])
+            .map_or(&[], Vec::as_slice)
     }
 
     /// All methods in a composition tier.
@@ -284,8 +282,7 @@ impl NeuralRoutingTable {
     pub fn methods_in_tier(&self, tier: CompositionTier) -> &[String] {
         self.tier_index
             .get(&tier)
-            .map(Vec::as_slice)
-            .unwrap_or(&[])
+            .map_or(&[], Vec::as_slice)
     }
 
     /// Number of distinct capability domains.

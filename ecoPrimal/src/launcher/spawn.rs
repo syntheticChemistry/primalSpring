@@ -240,12 +240,12 @@ pub fn spawn_primal(
         cmd.arg("--family-id").arg(family_id);
     }
 
-    cmd.env("FAMILY_ID", family_id);
+    cmd.env(crate::env_keys::FAMILY_ID, family_id);
     if let Some(seed) = nucleation.family_seed() {
-        cmd.env("FAMILY_SEED", String::from_utf8_lossy(seed).as_ref());
+        cmd.env(crate::env_keys::FAMILY_SEED, String::from_utf8_lossy(seed).as_ref());
     }
     cmd.env(
-        "XDG_RUNTIME_DIR",
+        crate::env_keys::XDG_RUNTIME_DIR,
         nucleation.base_dir().to_string_lossy().as_ref(),
     );
 

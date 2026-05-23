@@ -290,7 +290,7 @@ mod tests {
         });
         assert!(response["capabilities"].is_array());
         assert_eq!(
-            response["count"].as_u64().unwrap() as usize,
+            usize::try_from(response["count"].as_u64().unwrap()).unwrap(),
             caps.len(),
         );
     }

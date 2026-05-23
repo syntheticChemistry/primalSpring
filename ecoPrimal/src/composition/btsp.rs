@@ -53,7 +53,7 @@ fn supports_btsp(client: &mut PrimalClient) -> bool {
             .as_ref()
             .and_then(|v| v.get("server"))
             .and_then(serde_json::Value::as_bool)
-            .unwrap_or(resp.is_success()),
+            .unwrap_or_else(|| resp.is_success()),
         Err(_) => false,
     }
 }

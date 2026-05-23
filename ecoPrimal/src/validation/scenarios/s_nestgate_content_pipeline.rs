@@ -66,7 +66,7 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
 fn phase_content_put(v: &mut ValidationResult, ctx: &mut CompositionContext) -> Option<String> {
     let test_bytes = b"primalSpring Wave 7 contract test - content pipeline validation 2026-05-11";
     let data_b64 = base64::engine::general_purpose::STANDARD.encode(test_bytes);
-    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
+    let family_id = crate::env_keys::resolve_family_id();
 
     let result = ctx.call(
         "content",
@@ -133,7 +133,7 @@ fn phase_content_get(
         return;
     };
 
-    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
+    let family_id = crate::env_keys::resolve_family_id();
     let result = ctx.call(
         "content",
         "content.get",
@@ -183,7 +183,7 @@ fn phase_content_exists_list(
         return;
     };
 
-    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
+    let family_id = crate::env_keys::resolve_family_id();
 
     match ctx.call(
         "content",
@@ -230,7 +230,7 @@ fn phase_content_exists_list(
 }
 
 fn phase_content_resolve(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
+    let family_id = crate::env_keys::resolve_family_id();
 
     match ctx.call(
         "content",

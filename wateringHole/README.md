@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.26 (Wave 45 — 784 tests, 458 methods, 49 scenarios, 12/12 primal.announce compliant, all upstream resolved)
-**Last Updated**: May 23, 2026 (Wave 45 — all upstream Neural API blockers resolved, doc debt sweep, local code hygiene)
+**Version**: 0.9.27 (Wave 46 — 784 tests, 458 methods, 49 scenarios, 12/12 primal.announce compliant, deep debt evolution complete)
+**Last Updated**: May 23, 2026 (Wave 46 — typed errors, env centralization, deprecated API removal, clippy sweep, idiomatic Rust evolution)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -86,7 +86,7 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 
 ---
 
-## Current Ecosystem State (Wave 42)
+## Current Ecosystem State (Wave 46)
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
@@ -131,7 +131,7 @@ Post-Neural API Layer 4 evolution (biomeOS v3.69, persistent routing weights,
 utilization tracking). All primals at zero debt. Critical path has shifted
 to **full `primal.announce` adoption** and **sovereignty cutover**.
 
-### Evolution Targets (all primals — Wave 42)
+### Evolution Targets (all primals — Wave 46)
 
 With biomeOS v3.70 live, persistent weights, weight health, and utilization tracking:
 
@@ -172,7 +172,7 @@ cross-tier parity validated ecosystem-wide.
 | ludoSpring | 982 | V76: Schell Lenses + CPU/GPU parity, 982 tests |
 | groundSpring | 1,123+ | V145: `DEGRADATION_BEHAVIOR.md`, 1,123 tests |
 | airSpring | 1,373 | v0.10.0: 57 caps, 17 methods full 3-tier coverage |
-| primalSpring | 784 | Wave 42: feedback loop, 458 methods, 49 scenarios, live validation |
+| primalSpring | 784 | Wave 46: typed errors, env centralization, 458 methods, 49 scenarios, live validation |
 
 **Convergence state**: All springs at zero debt. Neural API observatory
 operational in primalSpring with full feedback loop. biomeOS v3.70 owns

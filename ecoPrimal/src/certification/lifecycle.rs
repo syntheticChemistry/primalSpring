@@ -66,15 +66,16 @@ fn validate_rediscovery(ctx: &mut CompositionContext, v: &mut ValidationResult) 
 
     ctx.rediscover();
 
-    let post_caps: Vec<String> = ctx
+    let post_set: std::collections::HashSet<&str> = ctx
         .available_capabilities()
         .iter()
-        .map(|s| (*s).to_owned())
+        .copied()
         .collect();
+    let post_len = post_set.len();
 
     let lost: Vec<&str> = pre_caps
         .iter()
-        .filter(|c| !post_caps.iter().any(|p| p == *c))
+        .filter(|c| !post_set.contains(c.as_str()))
         .map(String::as_str)
         .collect();
 
@@ -85,7 +86,7 @@ fn validate_rediscovery(ctx: &mut CompositionContext, v: &mut ValidationResult) 
             &format!(
                 "no capabilities lost ({} → {} total)",
                 pre_caps.len(),
-                post_caps.len()
+                post_len
             ),
         );
     } else {

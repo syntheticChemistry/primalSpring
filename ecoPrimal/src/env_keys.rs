@@ -87,12 +87,36 @@ pub const HOME: &str = "HOME";
 /// System hostname.
 pub const HOSTNAME: &str = "HOSTNAME";
 
+// ── Filesystem layout conventions ───────────────────────────────────
+
+/// Runtime subdirectory for ecoPrimals sockets and state.
+pub const RUNTIME_SUBDIR: &str = "ecoprimals";
+/// Runtime subdirectory for biomeOS sockets.
+pub const BIOMEOS_SUBDIR: &str = "biomeos";
+/// Subdirectory for primal manifest files.
+pub const MANIFESTS_SUBDIR: &str = "manifests";
+/// Parent directory name for manifests under XDG.
+pub const ECOPRIMALS_DIR_NAME: &str = "ecoPrimals";
+
 // ── Socket / discovery ──────────────────────────────────────────────
 
 /// Explicit override for the socket directory.
 pub const SOCKET_DIR: &str = "SOCKET_DIR";
+/// Override for the ecoPrimals runtime socket directory.
+pub const ECOPRIMALS_SOCKET_DIR: &str = "ECOPRIMALS_SOCKET_DIR";
 /// Explicit path to the biomeOS neural-api socket.
 pub const NEURAL_API_SOCKET: &str = "NEURAL_API_SOCKET";
+
+// ── Remote / deployment ─────────────────────────────────────────────
+
+/// Hostname of a remote gate for deployment matrix validation.
+pub const REMOTE_GATE_HOST: &str = "REMOTE_GATE_HOST";
+/// Target cell for deployment matrix selection.
+pub const MATRIX_CELL: &str = "MATRIX_CELL";
+/// Transport mode for primal connections (`uds`, `tcp`, `http`).
+pub const PRIMAL_TRANSPORT: &str = "PRIMAL_TRANSPORT";
+/// Target architecture for cross-arch deployment.
+pub const DEPLOY_ARCH: &str = "DEPLOY_ARCH";
 
 // ── primalSpring configuration ──────────────────────────────────────
 
@@ -102,6 +126,12 @@ pub const PRIMALSPRING_HOST: &str = "PRIMALSPRING_HOST";
 pub const PRIMALSPRING_GRAPHS_DIR: &str = "PRIMALSPRING_GRAPHS_DIR";
 /// When set, guidestone emits JSON output instead of human-readable text.
 pub const PRIMALSPRING_JSON: &str = "PRIMALSPRING_JSON";
+/// Authentication enforcement mode for the RPC server (`open`, `verify`, `strict`).
+pub const PRIMALSPRING_AUTH_MODE: &str = "PRIMALSPRING_AUTH_MODE";
+/// Socket mode for the primal server (`abstract`, `path`).
+pub const PRIMALSPRING_SOCKET_MODE: &str = "PRIMALSPRING_SOCKET_MODE";
+/// Generic socket mode (fallback for `PRIMALSPRING_SOCKET_MODE`).
+pub const PRIMAL_SOCKET_MODE: &str = "PRIMAL_SOCKET_MODE";
 
 // ── biomeOS integration ─────────────────────────────────────────────
 

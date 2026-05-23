@@ -119,9 +119,9 @@ pub fn resolve_socket_dir() -> String {
     std::env::var(crate::env_keys::XDG_RUNTIME_DIR).map_or_else(
         |_| {
             let tmp = std::env::temp_dir();
-            format!("{}/ecoprimals", tmp.display())
+            format!("{}/{}", tmp.display(), crate::env_keys::RUNTIME_SUBDIR)
         },
-        |xdg| format!("{xdg}/ecoprimals"),
+        |xdg| format!("{xdg}/{}", crate::env_keys::RUNTIME_SUBDIR),
     )
 }
 
@@ -163,8 +163,8 @@ pub fn socket_env_var(primal: &str) -> Option<PathBuf> {
 pub fn discover_from_manifest(primal: &str) -> Option<PathBuf> {
     let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR).ok()?;
     let manifest_path = PathBuf::from(base)
-        .join("ecoPrimals")
-        .join("manifests")
+        .join(crate::env_keys::ECOPRIMALS_DIR_NAME)
+        .join(crate::env_keys::MANIFESTS_SUBDIR)
         .join(format!("{primal}.json"));
 
     let contents = std::fs::read_to_string(manifest_path).ok()?;

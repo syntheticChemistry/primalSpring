@@ -69,10 +69,10 @@ fn port_for(probe: &PrimalProbe) -> u16 {
 
 /// Run this validation scenario.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    let host = std::env::var("REMOTE_GATE_HOST").unwrap_or_default();
-    let cell = std::env::var("MATRIX_CELL").unwrap_or_else(|_| "unknown".to_owned());
-    let transport = std::env::var("PRIMAL_TRANSPORT").unwrap_or_else(|_| "uds".to_owned());
-    let arch = std::env::var("DEPLOY_ARCH").unwrap_or_else(|_| "x86_64".to_owned());
+    let host = std::env::var(crate::env_keys::REMOTE_GATE_HOST).unwrap_or_default();
+    let cell = std::env::var(crate::env_keys::MATRIX_CELL).unwrap_or_else(|_| "unknown".to_owned());
+    let transport = std::env::var(crate::env_keys::PRIMAL_TRANSPORT).unwrap_or_else(|_| "uds".to_owned());
+    let arch = std::env::var(crate::env_keys::DEPLOY_ARCH).unwrap_or_else(|_| "x86_64".to_owned());
     let tcp_mode = transport == "tcp";
 
     phase_composition_discovery(v, ctx);

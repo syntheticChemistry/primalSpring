@@ -5,7 +5,7 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.26 |
+| **Version** | 0.9.27 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 784 `#[test]` markers (784 pass, 2 ignored) |
@@ -475,7 +475,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 | C6: Proprioception (petalTongue) | **5/5 PASS** | Subscribe, apply, poll, showing |
 | C7: Full Interactive | **10/10 PASS** | Full cross-subsystem: session→render→export, game science, Squirrel health, NestGate |
 
-**49/49 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–42 complete).
+**49/49 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–46 complete).
 
 ## Live Integration Status (May 14, 2026)
 
@@ -506,7 +506,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `wateringHole/README.md` — Outward-facing guidance index
 - `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` — `primal.announce` atomic self-registration wire format
 - `ARCHITECTURE.md` — UniBin cell model, two-tier validation, organelle map
-- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1–41, 13/13 zero debt)
+- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1–46, 13/13 zero debt)
 - ~~`docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 - `docs/CROSS_SPRING_PARITY_SCORECARD.md` — Cross-spring parity scorecard
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role

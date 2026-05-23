@@ -93,7 +93,7 @@ fn phase_contract_lifecycle(v: &mut ValidationResult) {
     };
 
     let resp = reg.accept(&id, compute_constraints());
-    let accepted = resp.as_ref().ok().map_or(false, |r| r.accepted);
+    let accepted = resp.as_ref().is_ok_and(|r| r.accepted);
     v.check_bool(
         "accept_transitions_to_active",
         accepted,

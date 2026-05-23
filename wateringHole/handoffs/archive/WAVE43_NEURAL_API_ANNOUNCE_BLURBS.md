@@ -1,7 +1,7 @@
 # Wave 43 — Neural API `primal.announce` Adoption Blurbs
 
 > **Date**: 2026-05-22 (post-Wave 42)
-> **Status**: Active — one blurb per team with remaining work
+> **Status**: **SUPERSEDED** (May 23, 2026) — All 12/12 announcing primals compliant. Resolved in Waves 44–45.
 > **Reference**: `WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md` for full wire schema
 > **biomeOS**: v3.69 (persistent weights, utilization tracking)
 > **primalSpring**: v0.9.26 (779 tests, 457 methods, 46 scenarios)

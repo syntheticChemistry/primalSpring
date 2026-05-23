@@ -2,7 +2,7 @@
 
 > **Audience**: All 13 primal teams
 > **Date**: 2026-05-22 (Wave 42)
-> **Status**: Active — implement `primal.announce` per this guide
+> **Status**: **SUPERSEDED** (May 23, 2026) — All 12/12 announcing primals compliant. Resolved in Wave 45. Retained as reference guide.
 
 ## Why
 

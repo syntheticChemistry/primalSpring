@@ -17,8 +17,8 @@ pub fn server_socket_path() -> PathBuf {
 /// Reads `PRIMALSPRING_SOCKET_MODE` env var (octal string, e.g. `"0660"`).
 /// Falls back to `PRIMAL_SOCKET_MODE` for generic convention (SP-01).
 fn resolve_socket_mode() -> Option<u32> {
-    let raw = std::env::var("PRIMALSPRING_SOCKET_MODE")
-        .or_else(|_| std::env::var("PRIMAL_SOCKET_MODE"))
+    let raw = std::env::var(primalspring::env_keys::PRIMALSPRING_SOCKET_MODE)
+        .or_else(|_| std::env::var(primalspring::env_keys::PRIMAL_SOCKET_MODE))
         .ok()?;
     u32::from_str_radix(raw.trim_start_matches('0'), 8).ok()
 }

@@ -46,8 +46,7 @@ fn phase_content_pipeline(
 
     let test_bytes = b"sovereignty-parity-test-content-2026-05-15";
     let data_b64 = base64::engine::general_purpose::STANDARD.encode(test_bytes);
-    let family_id =
-        std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
+    let family_id = crate::env_keys::resolve_family_id();
 
     let result = ctx.call(
         "content",
@@ -142,8 +141,7 @@ fn phase_content_pipeline(
 // ─── Phase 2: Sovereign Resolution ──────────────────────────────────────────
 
 fn phase_sovereign_resolve(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    let family_id =
-        std::env::var("FAMILY_ID").unwrap_or_else(|_| "nucleus01".to_owned());
+    let family_id = crate::env_keys::resolve_family_id();
 
     match ctx.call(
         "content",

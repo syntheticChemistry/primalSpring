@@ -359,34 +359,7 @@ pub fn negotiate_phase3(
     Ok(Some(keys))
 }
 
-/// Read the family seed from `FAMILY_SEED` environment variable (base64-encoded).
-///
-/// Returns `None` if the variable is not set.
-///
-/// # Deprecation
-///
-/// This function reads the legacy flat `FAMILY_SEED` which predates the
-/// three-tier genetics model. Use [`mito_beacon_from_env`] for new code,
-/// which wraps the same environment variable into a proper
-/// [`MitoBeacon`](crate::genetics::MitoBeacon) at the discovery tier.
-///
-/// The current BTSP handshake is mito-tier (Phase 1). Nuclear escalation
-/// (Phase 2) will use [`crate::genetics::rpc::derive_lineage_key`] to
-/// spawn a child generation within the mito tunnel.
-#[deprecated(
-    since = "0.10.0",
-    note = "Use mito_beacon_from_env() for the genetics-aware path. \
-            FAMILY_SEED is being transitioned to the mito-beacon tier."
-)]
-#[must_use]
-pub fn family_seed_from_env() -> Option<Vec<u8>> {
-    raw_family_seed_from_env()
-}
-
 /// Internal: read `FAMILY_SEED` bytes from the environment.
-///
-/// Shared implementation between the deprecated [`family_seed_from_env`]
-/// and the new [`mito_beacon_from_env`].
 ///
 /// Supports two encodings (auto-detected):
 /// - **Hex** (64 ASCII hex chars → 32 bytes): produced by `AtomicHarness`
@@ -435,7 +408,7 @@ fn is_hex_string(s: &str) -> bool {
 
 /// Read the family seed from `FAMILY_SEED` and wrap it as a mito-beacon.
 ///
-/// This is the genetics-aware replacement for [`family_seed_from_env`].
+/// Genetics-aware family seed reader.
 /// The legacy `FAMILY_SEED` environment variable is interpreted as the
 /// mito-beacon tier key material. The `FAMILY_ID` env var (if set) is
 /// used as the beacon group name.

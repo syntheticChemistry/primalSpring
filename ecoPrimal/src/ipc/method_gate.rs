@@ -128,6 +128,7 @@ impl BearDogVerifier {
         }
         let path = crate::ipc::discover::socket_path(crate::primal_names::BEARDOG);
         if path.exists() {
+            tracing::debug!("BearDogVerifier: capability discovery missed, using conventional socket");
             Some(Self::new(path))
         } else {
             None
@@ -311,7 +312,7 @@ impl EnforcementMode {
     /// Defaults to `Permissive` if unset or unrecognized.
     #[must_use]
     pub fn from_env() -> Self {
-        match std::env::var("PRIMALSPRING_AUTH_MODE")
+        match std::env::var(crate::env_keys::PRIMALSPRING_AUTH_MODE)
             .unwrap_or_default()
             .to_lowercase()
             .as_str()

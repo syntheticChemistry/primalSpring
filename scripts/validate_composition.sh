@@ -3,7 +3,7 @@
 #
 # primalSpring composition validation.
 #
-# Thin wrapper around validate_local_lab.sh that runs the Phase 22
+# Thin wrapper around validate_local_lab.sh that runs the
 # E2E composition experiments (exp085–exp088) against a benchScale lab.
 # For local-only mode (primals already running), runs experiments directly.
 #
@@ -49,7 +49,7 @@ usage() {
     cat << EOF
 Usage: $0 [options]
 
-Composition validation for primalSpring Phase 22+ E2E experiments.
+Composition validation for primalSpring E2E experiments.
 
 Modes:
   No flags              Run experiments against locally running primals

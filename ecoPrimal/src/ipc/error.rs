@@ -98,24 +98,14 @@ pub enum IpcError {
 /// `source()` delegates to the inner `IpcError`'s error source, preserving
 /// the `io::Error` chain for connection types while returning `None` for
 /// protocol/application errors.
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
+#[error("[{phase}] {error}")]
 pub struct PhasedIpcError {
     /// The phase of the IPC operation that failed.
     pub phase: IpcErrorPhase,
     /// The underlying error.
+    #[source]
     pub error: IpcError,
-}
-
-impl std::fmt::Display for PhasedIpcError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[{}] {}", self.phase, self.error)
-    }
-}
-
-impl std::error::Error for PhasedIpcError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        self.error.source()
-    }
 }
 
 impl IpcError {
@@ -511,13 +501,13 @@ mod tests {
     }
 
     #[test]
-    fn phased_error_no_source_for_protocol_error() {
+    fn phased_error_source_always_returns_inner() {
         use std::error::Error;
         let err = IpcError::ProtocolError {
             detail: "x".to_owned(),
         };
         let phased = err.in_phase(IpcErrorPhase::Connect);
-        assert!(phased.source().is_none());
+        assert!(phased.source().is_some(), "PhasedIpcError wraps IpcError as source");
     }
 
     // ── is_recoverable tests ──

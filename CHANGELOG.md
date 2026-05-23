@@ -3,7 +3,33 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–45: Stadial Entry / Glacial Shift (2026-05-23)
+## [Unreleased] — Waves 22–46: Stadial Entry / Glacial Shift (2026-05-23)
+
+### Wave 46: Deep Debt Evolution — Typed Errors, Env Centralization, Idiomatic Rust (May 23)
+- **Typed dispatch errors**: Introduced `DispatchError` enum in `neural_dispatch.rs`,
+  replacing all `Result<_, String>` with variants: `MethodNotFound`, `PatternNotFound`,
+  `BridgeOffline`, `Ipc`, `GraphFailed`. Error chains now have semantic meaning.
+- **`IonicProtocolError` → thiserror derive**: Replaced 30-line manual `Display` + `Error`
+  impl with `#[derive(thiserror::Error)]` and `#[error(...)]` format strings.
+- **`PhasedIpcError` → thiserror derive**: Replaced manual `Display`/`Error`/`source()` with
+  `#[derive(thiserror::Error)]` + `#[source]` on inner `IpcError`. Source chain now correct.
+- **Env key centralization**: Added `PRIMALSPRING_AUTH_MODE`, `PRIMALSPRING_SOCKET_MODE`,
+  `PRIMAL_SOCKET_MODE`, `REMOTE_GATE_HOST`, `MATRIX_CELL`, `PRIMAL_TRANSPORT`, `DEPLOY_ARCH`,
+  `ECOPRIMALS_SOCKET_DIR` constants. Filesystem layout constants: `RUNTIME_SUBDIR`,
+  `BIOMEOS_SUBDIR`, `MANIFESTS_SUBDIR`, `ECOPRIMALS_DIR_NAME`. Wired 20+ bare string
+  literals in bins, launcher, scenarios, and discovery to `env_keys` constants.
+- **Dead code removal**: Removed deprecated `family_seed_from_env()` (zero production callers,
+  fully replaced by `mito_beacon_from_env()`).
+- **Allocation hygiene**: `certification/lifecycle.rs` rediscovery validation now uses
+  `HashSet<&str>` instead of `Vec<String>` for O(1) capability-loss detection.
+- **Hardcoding evolution**: Replaced hardcoded `/tmp` fallbacks with `std::env::temp_dir()`.
+  Path segments (`"ecoPrimals"`, `"manifests"`) centralized to layout constants. BearDog
+  socket fallback now emits debug trace when capability discovery misses.
+- **Clippy sweep**: Fixed 6 errors (redundant clone, `map_or` simplification, `is_ok_and`,
+  `unwrap_or_else` over `unwrap_or`, `ok_or_else`, `usize::try_from`, needless borrow,
+  approximate constant) and 6 warnings. Zero clippy errors, 57 pre-existing pedantic
+  warnings remain (cast precision, function length).
+- **Version**: `0.9.26` → `0.9.27`. 784 tests pass, 0 failures, 0 warnings.
 
 ### Wave 45: Upstream Resolution + Local Debt Sweep (May 23)
 - **All upstream Neural API blockers RESOLVED**: songbird outbound push + capability

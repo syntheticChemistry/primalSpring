@@ -358,7 +358,8 @@ pub fn validate_seed_provenance(v: &mut ValidationResult, seed: &MitoSeed) {
 fn resolve_plasmin_bin() -> String {
     std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN).unwrap_or_else(|_| {
         let base = std::env::var(crate::env_keys::XDG_DATA_HOME).unwrap_or_else(|_| {
-            let home = std::env::var(crate::env_keys::HOME).unwrap_or_else(|_| "/tmp".to_owned());
+            let home = std::env::var(crate::env_keys::HOME)
+                .unwrap_or_else(|_| std::env::temp_dir().to_string_lossy().into_owned());
             format!("{home}/.local/share")
         });
         format!("{base}/ecoPrimals/plasmidBin")
