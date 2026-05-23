@@ -165,7 +165,7 @@ tolerances with scientific justification per validation dimension.
 ## Scenario Infrastructure (Eukaryotic)
 
 The validation infrastructure has evolved from standalone experiment binaries
-(prokaryotic era: exp001–exp111) into 43 absorbed scenarios in
+(prokaryotic era: exp001–exp111) into 49 absorbed scenarios in
 `ecoPrimal/src/validation/scenarios/`. Every scenario has:
 
 - A `pub const SCENARIO: Scenario` with metadata (id, track, tier, provenance)
@@ -177,7 +177,7 @@ Dark Forest invariant checking, and capability registry cross-referencing.
 New scenarios should use these helpers instead of reimplementing locally.
 
 **Registry meta-test** in `scenarios/mod.rs` validates:
-- `build_registry()` returns exactly 45 scenarios
+- `build_registry()` returns exactly 49 scenarios
 - No duplicate scenario IDs
 - Every `Track` variant has at least one scenario
 - All `Tier::Rust` scenarios pass structurally
@@ -185,11 +185,11 @@ New scenarios should use these helpers instead of reimplementing locally.
 
 | Tier | Count | `cargo test` strategy |
 |------|------:|----------------------|
-| Rust | 9 | Assert `v.failed == 0` (full structural pass) |
-| Both | 10 | Test structural phase or verify no panics |
-| Live | 24 | Verify scenario runs to completion (failures expected without primals) |
+| Rust | 11 | Assert `v.failed == 0` (full structural pass) |
+| Both | 11 | Test structural phase or verify no panics |
+| Live | 27 | Verify scenario runs to completion (failures expected without primals) |
 
-`cargo test --lib` exercises all 45 scenarios — the single authoritative CI gate.
+`cargo test --lib` exercises all 49 scenarios — the single authoritative CI gate.
 
 ---
 

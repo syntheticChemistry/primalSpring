@@ -1,13 +1,19 @@
 # NUCLEUS Validation Matrix
 
-> **Frozen artifact** — Phase 45 snapshot. Current ecosystem state is Phase 58
-> (13 primals, skunkBat wired, BTSP Phase 3 converged). This matrix remains
-> valid as a structural reference; live validation is tracked in
-> `wateringHole/PHASE58_COMPOSITION_HANDOFF_MAY03_2026.md`.
+> **Structural reference** — Originally frozen at Phase 45 (April 2026).
+> Phase 60+ delta appended below. The structural model (particle types,
+> layered validation L0–L3, bonding patterns) remains valid.
+>
+> **Current state (May 23, 2026)**: Phase 60+, 13 primals, guideStone Level 8,
+> genomeBin v5.1+, BTSP Phase 3 converged (13/13 AEAD). primalSpring v0.9.26:
+> 784 tests, 458 methods, 49 scenarios (S47–S49 live Neural API validation).
+> Neural API: biomeOS v3.70, persistent routing weights, weight health
+> introspection, 12/12 announcing primals compliant. See `CONTEXT.md`,
+> `docs/PRIMAL_GAPS.md`, and `specs/NEURAL_API_EVOLUTION.md` for live tracking.
 
-**Date**: April 20, 2026  
-**Phase**: 45 (13 primals, Tier 1 39/39 cross-arch binaries, guideStone Level 4, genomeBin v5.1)  
-**Purpose**: Define the validation matrix for NUCLEUS composition patterns across downstream springs and sporeGarden products, based on gen4 architecture (`infra/whitePaper/gen4/architecture/COMPOSITION_PATTERNS.md`) and primalSpring's Phase 45 deployment validation results.
+**Date**: April 20, 2026 (Phase 60+ delta: May 23, 2026)
+**Phase**: 45 → **60+** (13 primals, Tier 1 39/39 cross-arch binaries, guideStone Level 8, genomeBin v5.1+)
+**Purpose**: Define the validation matrix for NUCLEUS composition patterns across downstream springs and sporeGarden products, based on gen4 architecture (`infra/whitePaper/gen4/architecture/COMPOSITION_PATTERNS.md`) and primalSpring's deployment validation results.
 
 ---
 
@@ -479,3 +485,74 @@ The Secure Socket Architecture (Phase 26) defined the protocol and implemented i
 10. Implement erasure coding as barraCuda primitive for L3 sharding.
 11. Automate the full matrix (columns A-P) as a CI pipeline per spring.
 12. Run live Phase B validation on Eastgate for each spring's deploy graph.
+
+---
+
+## Phase 60+ Delta (May 23, 2026)
+
+Since the Phase 45 freeze, the ecosystem has evolved significantly. This delta
+captures changes that affect the validation matrix.
+
+### Structural Model Updates (Phase 32 — Wave 10)
+
+| Change | Phase 45 | Phase 60+ |
+|--------|----------|-----------|
+| **Tower** | bearDog + songbird (2) | bearDog + songbird + **skunkBat** (3) |
+| **Nest** | Tower + NestGate + Squirrel (4) | Tower + NestGate + **rhizoCrypt + loamSpine + sweetGrass** (7) |
+| **NUCLEUS core** | 9 primals | **10** primals |
+| **Fragment versions** | 2.0.0 | **3.0.0** |
+| **Wire Standard** | Mixed L1–L3 | **13/13 at L2+** |
+| **BTSP** | Phase 1 (10/10) | **Phase 3 AEAD (13/13)** |
+| **GuideStone** | Level 4 | **Level 8** |
+
+### Neural API Validation (Waves 40–42)
+
+New validation columns enabled by the Neural API layer:
+
+| Column | What | primalSpring Status |
+|--------|------|---------------------|
+| **Q: Neural Routing** | Method routes to correct primal via Neural API | **S46 PASS** — 17 structural checks |
+| **R: Live Dispatch** | `NeuralDispatcher.dispatch()` routes through biomeOS | **S47 PASS** — crypto.hash → bearDog, storage.store → nestgate |
+| **S: Observatory Parity** | biomeOS introspection RPCs match local model | **S48 PASS** — routing_weights, route_explain, composition_patterns, plan_tier, weight_health |
+| **T: Feedback Loop** | Instrumented dispatch updates routing weights | **S49 PASS** — 5x dispatch, metrics accumulate, utilization tracked |
+
+### Primal Announce Compliance
+
+All 12 announcing primals now implement correct outbound `primal.announce`:
+
+| Primal | Announce Status | Wave |
+|--------|----------------|------|
+| bearDog | attestation field correct | Wave 111 |
+| songbird | outbound push + capability alignment | May 23 (4a8f4cdc) |
+| skunkBat | all 17 methods | Wave 44 |
+| squirrel | neural-api socket, 4 tests | Wave 44 |
+| barraCuda | full outbound 246-line module | Wave 44 |
+| coralReef | wire identity + methods | Wave 44 |
+| petalTongue | wire identity + 82 lines tests | Wave 44 |
+| toadStool | expanded methods | S271 |
+| nestgate | 6 tests, full schema | Wave 43 |
+| sweetGrass | 7 tests, reference quality | Pre-Wave 43 |
+| loamSpine | 4+mock tests, reference quality | Pre-Wave 43 |
+| rhizoCrypt | 4 tests, semantic mappings | Pre-Wave 43 |
+
+biomeOS is the registration authority (exempt from self-announce).
+
+### Resolved Phase 45 "Next Steps"
+
+| Original Item | Status |
+|--------------|--------|
+| Run 6 live validation | **SUPERSEDED** — 49 scenarios, 94 graphs, biomeOS v3.70 |
+| BearDog socket_config family-scoped naming | **RESOLVED** — all primals use family-scoped sockets |
+| Wire Standard L2 convergence | **RESOLVED** — 13/13 at L2+ |
+| BTSP handshake clients | **RESOLVED** — 13/13 Phase 3 AEAD |
+| exp091 L0 routing matrix | **PASS** — 12/12 |
+| Dual-Tower coexistence | **RESOLVED** — Phase 32 atomic model |
+| Wire Standard audit (column P) | **RESOLVED** — 13/13 audited |
+
+### Current Evolution Targets
+
+- **Layer 5**: Learned routing (neural network weights from operational data)
+- **Cross-gate routing**: FlockGate distributed dispatch via TURN relay
+- **Graph execution validation**: full `graph.execute` of named patterns
+- **Node/Nucleus/Meta observatory elevation**: `plan_tier` validation for all tiers
+- **Downstream spring matrix completion**: Columns A–T for all 8 springs

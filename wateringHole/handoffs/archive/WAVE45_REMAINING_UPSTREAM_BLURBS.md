@@ -1,54 +1,22 @@
 # Wave 45 — Remaining Upstream Work
 
 > **Date**: 2026-05-23 (post-Wave 44 review, updated for biomeOS v3.70)
-> **Status**: Active — only teams with remaining work
-> **Ecosystem**: 11/13 primals have working outbound announce (squirrel + skunkBat fixed pre-blurb)
-> **biomeOS**: v3.70 — attestation verification via BearDog now wired (was stub), persistent weights on startup, weight_health introspection
+> **Status**: **ALL RESOLVED** — 12/13 primals with correct outbound announce (biomeOS exempt)
+> **Ecosystem**: Full `primal.announce` compliance achieved across all announcing primals
+> **biomeOS**: v3.70 — attestation verification via BearDog now wired, persistent weights on startup, weight_health introspection
 > **primalSpring**: v0.9.26 — 784 tests, 458 methods, 49 scenarios (S47-S49 live Neural API validation)
 
 ---
 
-## songbird — Outbound Push + Capability Alignment
+## ~~songbird — Outbound Push + Capability Alignment~~
 
-**Priority**: HIGH — last foundation primal without outbound startup announce
+**RESOLVED** — commit `4a8f4cdc` (May 23) shipped both fixes:
 
-**Two issues remain**:
-
-1. **No outbound startup push.** songbird has an inbound `primal.announce` handler
-   (responds when queried) but never pushes to biomeOS neural-api on startup.
-   Every other tower-tier primal (bearDog, skunkBat) now pushes on startup.
-
-2. **Capabilities/hints key mismatch.** `capabilities` array contains 15 `network.*`
-   tokens (`network.relay`, `network.discovery`, etc.) but `cost_hints` and
-   `latency_estimates` use domain keys (`relay`, `communication`, `presence`).
-   biomeOS seeds routing weights per capability domain — mismatched keys mean
-   hints never attach to the right weights.
-
-**Fix**:
-```rust
-// Option A (preferred): align capabilities to routing domains
-"capabilities": ["relay", "communication", "presence"],
-// cost_hints/latency_estimates already use these keys — done
-
-// Option B: re-key hints to match capabilities
-"cost_hints": { "network.relay": 15.0, "network.discovery": 10.0, ... }
-// more verbose, less clean for routing
-```
-
-Then add outbound push after socket bind:
-```rust
-// After server.listen():
-if let Some(neural_socket) = resolve_neural_api_socket() {
-    announce_to_neural_api(&neural_socket, &own_socket).await;
-}
-```
-
-**Socket discovery** — use the WAVE42 tiered lookup:
-1. `$NEURAL_API_SOCKET`
-2. `$XDG_RUNTIME_DIR/biomeos/neural-api-{family}.sock`
-3. `/tmp/biomeos/neural-api-{family}.sock`
-
-**Reference**: sweetGrass `neural_announce.rs` — cleanest outbound + discovery.
+1. **Outbound startup push**: `neural_announce::spawn_announce()` fires at line 118
+   of `connection.rs` after socket bind. Uses WAVE42 tiered discovery
+   (`$NEURAL_API_SOCKET` → XDG → `/tmp`).
+2. **Capabilities aligned to routing domains**: `ROUTING_CAPABILITIES = ["relay", "communication", "presence"]`
+   — matches `cost_hints` and `latency_estimates` keys. Routing weights now attach correctly.
 
 ---
 
@@ -60,23 +28,14 @@ and `CURRENT_STATUS.md` updated. 7,093 tests passing.
 
 ---
 
-## bearDog — Attestation Field Name (Minor)
+## ~~bearDog — Attestation Field Name~~
 
-**Priority**: MEDIUM (elevated) — biomeOS v3.70 now delegates Ed25519
-attestation verification to BearDog via `auth.verify_ionic` IPC. The field
-mismatch means bearDog's own attestation won't verify when it self-announces.
-
-**Issue**: Sends `"signed_attestation"` — biomeOS expects `"attestation"`.
-
-**Fix**:
-```rust
-// BEFORE:
-"signed_attestation": attestation_value,
-// AFTER:
-"attestation": attestation_value,
-```
-
-No urgency until the attestation verification path is wired in biomeOS.
+**RESOLVED** — `2a94f2d6d` (Wave 111) already renamed `signed_attestation` →
+`attestation` in `neural_registration.rs` (line 212). Verified: `primal.announce`
+path sends the correct field. bearDog appears as verified in
+`neural_api.weight_health` with biomeOS v3.70 attestation verification live.
+The `capability.register` path retains its own schema — separate concern.
+Confirmed by bearDog team: no further changes needed.
 
 ---
 
@@ -88,7 +47,7 @@ identity (`primal_id` → `primal`), tests verify full payload, showcase
 
 ---
 
-## NO ACTION REQUIRED
+## ALL PRIMALS — STATUS
 
 | Primal | Status |
 |--------|--------|
@@ -96,7 +55,8 @@ identity (`primal_id` → `primal`), tests verify full payload, showcase
 | loamSpine | Reference quality — 4+mock tests, full schema |
 | rhizoCrypt | Reference quality — 4 tests, semantic mappings |
 | nestgate | Working — 6 tests, minor cap name choice |
-| bearDog | Working — 3 tests, minor attestation field |
+| bearDog | Fixed in Wave 111 — attestation renamed, verified by biomeOS v3.70 |
+| songbird | Fixed May 23 — outbound push + capability alignment (4a8f4cdc) |
 | toadStool | Fixed in S271 — expanded methods |
 | barraCuda | Fixed in Wave 44 — full outbound 246-line module |
 | coralReef | Fixed in Wave 44 — wire identity + methods |
@@ -110,9 +70,9 @@ identity (`primal_id` → `primal`), tests verify full payload, showcase
 
 ## Ecosystem Convergence
 
-After songbird (HIGH) and bearDog attestation rename (MEDIUM) ship:
+All upstream items resolved. Current ecosystem state:
 
-- **12/13 primals** with correct outbound `primal.announce` on startup
+- **12/13 primals** with correct outbound `primal.announce` on startup (biomeOS exempt)
 - **biomeOS v3.70** persistent routing weights survive restarts (redb-backed)
 - **Attestation verification** live via BearDog `auth.verify_ionic` IPC
 - **`neural_api.utilization`** tracks hot/cold methods ecosystem-wide

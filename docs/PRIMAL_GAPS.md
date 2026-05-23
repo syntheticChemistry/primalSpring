@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-23 (Wave 42: Full Neural API deployment — biomeOS v3.70 persistent weights + weight health + utilization tracking. 458 methods, 784 tests, 49 scenarios. NeuralBridge feedback loop + observatory posture + live validation.)
+> **Last updated**: 2026-05-23 (Wave 45: All upstream Neural API blockers resolved. 12/12 primal.announce compliant. biomeOS v3.70 persistent weights + weight health + utilization tracking. 458 methods, 784 tests, 49 scenarios. Doc debt sweep, local code hygiene.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -21,8 +21,8 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
-| bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 108: `content.*` scope expansion in session tokens. SP-4 unblocked. |
-| songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 213: NAT traversal data plane (TURN keepalive, cloudflared orchestration, shadow comparator). `capability.call` integration tests. |
+| bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 111: attestation field rename (`signed_attestation` → `attestation`). Verified by biomeOS v3.70 attestation delegation. |
+| songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 213: NAT traversal data plane. `capability.call` integration tests. Outbound `primal.announce` + capability alignment shipped (4a8f4cdc). |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S267: sovereign driver rotation + S266: sandbox `working_dir` production (RESOLVED), data deps BLAKE3 validation. 86 JSON-RPC methods. 9,055+ lib tests. |
 | biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.70: Persistent routing weights (redb), weight health introspection, utilization tracking, composition intelligence. 1311 lib tests. |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S70 Wave 43 `primal.announce` wired: JSON-RPC self-registration with biomeOS Neural API (post-bind, best-effort). Tiered biomeOS socket discovery. 682 RPC tests. |
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — Iter 96: 21 idempotency tests, `CompileTarget` generalization (CPU/NPU), tarpc feature-gate. 3,202 tests. |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. Waves 1-42 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. 2 binaries. Zero panics in production. Wave 42: NeuralBridge feedback loop, biomeOS v3.70 persistent weights + weight health + utilization tracking, team restructuring, Neural API deployment guide. Live validation S47-S49 (dispatch, observatory, feedback). Wave 40-41: Neural routing layer + observatory posture. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published.**
+**13/13 at zero debt. 12/12 announcing primals with correct outbound `primal.announce` (biomeOS exempt). Waves 1-45 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. 2 binaries. Zero panics in production. Wave 42: NeuralBridge feedback loop, biomeOS v3.70 persistent weights + weight health + utilization tracking, team restructuring, Neural API deployment guide. Live validation S47-S49 (dispatch, observatory, feedback). Wave 40-41: Neural routing layer + observatory posture. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published. All upstream Neural API blockers RESOLVED (songbird 4a8f4cdc, bearDog Wave 111).**
 
 ---
 
@@ -523,7 +523,7 @@ resolved (Session 60, May 11). All downstream-surfaced debt resolved.
 See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 
 **Stadial pressure on primals** (primalSpring as gate):
-- 418-method canonical registry — drift is rejected
+- 458-method canonical registry — drift is rejected
 - MethodGate enforcement — **13/13 DONE**
 - Deploy graph coherence — all primals must compose cleanly
 - Guidestone certification — primals participate in spring gS levels
@@ -533,14 +533,14 @@ See "Downstream-Surfaced Primal Debt" section above for full audit findings.
 ### Layer 2: primalSpring — The Stadial Gate
 
 **Owner**: primalSpring team
-**Scope**: Canonical capability registry (445 methods), deploy graph library,
+**Scope**: Canonical capability registry (458 methods), deploy graph library,
 composition validation, gap registry, `CompositionContext` API, two-tier
 validation harness (Tier 1 Rust / Tier 2 Live IPC), guidestone certification,
 atomic signal graphs, eukaryotic validation scenarios with shared helpers
 **Role**: **Stadial gate for L1 primals.** The registry, MethodGate check,
 graph coherence, and guidestone layers are the validation pressure that
 primals must pass. Patterns validated here flow downstream to springs/products.
-**Current**: 452 methods, 775 tests, zero local debt. All waves (1–40) complete:
+**Current**: 458 methods, 784 tests, zero local debt. All waves (1–45) complete:
 - Wave 8: Compute trio composition — 9/9 DONE
 - Wave 9: Domain contract sweep — 24 scenarios, 77 deploy graphs
 - Wave 10: Phase 32 atomic model — all fragments v3.0.0

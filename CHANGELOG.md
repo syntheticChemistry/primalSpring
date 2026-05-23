@@ -3,7 +3,25 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–42: Stadial Entry / Glacial Shift (2026-05-23)
+## [Unreleased] — Waves 22–45: Stadial Entry / Glacial Shift (2026-05-23)
+
+### Wave 45: Upstream Resolution + Local Debt Sweep (May 23)
+- **All upstream Neural API blockers RESOLVED**: songbird outbound push + capability
+  alignment (commit 4a8f4cdc), bearDog attestation field rename (Wave 111, commit
+  2a94f2d6d). 12/12 announcing primals now compliant with `primal.announce` protocol.
+- **Local code debt sweep**: 5 production-path `unwrap()` calls replaced with graceful
+  error handling in `s_ionic_bond.rs` and `s_schema_standard.rs`. Deprecated
+  `family_seed_from_env()` test call migrated to `mito_beacon_from_env().key_bytes()`.
+  Pre-existing `TerminationReason` unused import warning resolved. Neural dispatch
+  test floor raised from 450 to 458.
+- **Doc metrics sweep**: 15+ living docs updated from stale method/test/scenario counts
+  (445/452/457→458, 748/775→784, 43/45→49). Wave references updated (42→45).
+- **NUCLEUS_VALIDATION_MATRIX.md**: Phase 60+ delta appendix with Neural API columns
+  (Q–T), primal announce compliance table, resolved Phase 45 items.
+- **Wave 45 handoff fossilized**: `WAVE45_REMAINING_UPSTREAM_BLURBS.md` → archive.
+- **Version**: `ecoPrimal/Cargo.toml` bumped 0.9.25 → 0.9.26.
+- **Zero warnings**: `cargo check` produces zero warnings (was 1 pre-existing).
+- **Tests**: 784 pass, 0 fail, 2 ignored.
 
 ### Wave 42 (cont.): biomeOS v3.70 Absorption + Live Validation (May 23)
 - **biomeOS v3.70 — Weight Health Introspection**: `neural_api.weight_health` RPC

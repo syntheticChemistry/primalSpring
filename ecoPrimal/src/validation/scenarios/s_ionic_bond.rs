@@ -93,21 +93,29 @@ fn phase_contract_lifecycle(v: &mut ValidationResult) {
     };
 
     let resp = reg.accept(&id, compute_constraints());
+    let accepted = resp.as_ref().ok().map_or(false, |r| r.accepted);
     v.check_bool(
         "accept_transitions_to_active",
-        resp.is_ok() && resp.as_ref().unwrap().accepted,
+        accepted,
         "Proposed → Active on accept",
     );
 
     let call_ok = reg.record_call(&id, "compute.submit", 2048);
     v.check_bool("metered_call_succeeds", call_ok.is_ok(), "Metered call within scope");
 
-    let usage = &reg.get(&id).unwrap().usage;
-    v.check_bool(
-        "usage_metrics_increment",
-        usage.total_calls == 1 && usage.total_bytes == 2048,
-        &format!("Usage: {} calls, {} bytes", usage.total_calls, usage.total_bytes),
-    );
+    match reg.get(&id) {
+        Some(contract) => {
+            let usage = &contract.usage;
+            v.check_bool(
+                "usage_metrics_increment",
+                usage.total_calls == 1 && usage.total_bytes == 2048,
+                &format!("Usage: {} calls, {} bytes", usage.total_calls, usage.total_bytes),
+            );
+        }
+        None => {
+            v.check_bool("usage_metrics_increment", false, "Contract not found after accept");
+        }
+    }
 
     let seal = reg.terminate(&TerminationRequest {
         contract_id: id.clone(),
@@ -135,8 +143,17 @@ fn phase_contract_lifecycle(v: &mut ValidationResult) {
 
 fn phase_policy_enforcement(v: &mut ValidationResult) {
     let mut reg = IonicContractRegistry::new();
-    let id = reg.propose(sample_proposal()).unwrap();
-    reg.accept(&id, compute_constraints()).unwrap();
+    let id = match reg.propose(sample_proposal()) {
+        Ok(id) => id,
+        Err(e) => {
+            v.check_bool("policy_propose", false, &format!("Propose failed: {e}"));
+            return;
+        }
+    };
+    if reg.accept(&id, compute_constraints()).is_err() {
+        v.check_bool("policy_accept", false, "Accept failed");
+        return;
+    }
 
     let denied = reg.record_call(&id, "storage.store", 512);
     v.check_bool(

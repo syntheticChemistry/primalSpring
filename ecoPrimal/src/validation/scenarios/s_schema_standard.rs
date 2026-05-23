@@ -117,19 +117,26 @@ fn phase_local_capability_list(v: &mut ValidationResult) {
         );
     }
 
-    let cap_value = response.get("capabilities").unwrap();
-    v.check_bool(
-        "local:capability_list:capabilities_is_array",
-        cap_value.is_array(),
-        "capabilities field is an array",
-    );
+    if let Some(cap_value) = response.get("capabilities") {
+        v.check_bool(
+            "local:capability_list:capabilities_is_array",
+            cap_value.is_array(),
+            "capabilities field is an array",
+        );
 
-    let count_value = response.get("count").and_then(serde_json::Value::as_u64).unwrap_or(0);
-    v.check_bool(
-        "local:capability_list:count_matches_array",
-        count_value == cap_value.as_array().map_or(0, std::vec::Vec::len) as u64,
-        "count field matches capabilities array length",
-    );
+        let count_value = response.get("count").and_then(serde_json::Value::as_u64).unwrap_or(0);
+        v.check_bool(
+            "local:capability_list:count_matches_array",
+            count_value == cap_value.as_array().map_or(0, std::vec::Vec::len) as u64,
+            "count field matches capabilities array length",
+        );
+    } else {
+        v.check_bool(
+            "local:capability_list:capabilities_is_array",
+            false,
+            "capabilities field missing from local response",
+        );
+    }
 }
 
 fn phase_live_capability_list(v: &mut ValidationResult, ctx: &mut CompositionContext) {

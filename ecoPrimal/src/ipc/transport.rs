@@ -428,9 +428,9 @@ mod tests {
             return;
         }
 
-        #[expect(deprecated, reason = "test uses legacy path for simplicity")]
-        let seed = crate::ipc::btsp_handshake::family_seed_from_env();
-        let seed = seed.expect("FAMILY_SEED must be set");
+        let beacon = crate::ipc::btsp_handshake::mito_beacon_from_env()
+            .expect("FAMILY_SEED must be set");
+        let seed = beacon.key_bytes();
 
         let mut transport = Transport::unix_btsp(sock, &seed).expect("BTSP connect");
         assert!(transport.is_btsp_authenticated());

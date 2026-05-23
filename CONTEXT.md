@@ -73,10 +73,11 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.26 Wave 42 (May 23, 2026) — 49 scenarios (10 tracks, 3 tiers),
-457 registered capability methods (321 exercised, 70% coverage),
+v0.9.26 Wave 45 (May 23, 2026) — 49 scenarios (10 tracks, 3 tiers),
+458 registered capability methods (322 exercised, 70% coverage),
 89 experiments (20 tracks), 94 deploy graphs (80 deploy + 14 signal),
-44-cell deployment matrix. 784 lib tests (all passing).
+44-cell deployment matrix. 784 lib tests (all passing). 12/12 primal.announce
+compliant. All upstream Neural API blockers resolved.
 
 **Wave 42: Full Neural API Deployment** — NeuralBridge feedback loop
 (`capability_call_instrumented`, `record_bridge_outcome`, `dispatch_instrumented`).
@@ -103,7 +104,7 @@ EWMA latency/error, circuit breaker, `primal.announce` cost hints).
 TURN relay, biomeOS v3.66 cross-gate, toadStool S269, nestgate SP-4 compat,
 healthSpring V64z, neuralSpring V170. Neural API Evolution Spec published.
 
-**Waves 1-42 complete**. Zero DEBT markers, zero unsafe blocks, zero panics.
+**Waves 1-45 complete**. Zero DEBT markers, zero unsafe blocks, zero panics, zero warnings.
 Security gate: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
 `Vec<&String>` → `Vec<&str>`. `JsonRpcError`/`UnknownPrimal` → `thiserror` derives.
 `DeployError::Parse` now wraps `toml::de::Error` source for error chains. Deprecated
@@ -321,9 +322,9 @@ composition).
 - ~~**biomeOS spore.instantiate**~~ **DEFERRED-TO-STADIAL** — R7 in biomeOS v3.63
 - ~~**Primal-blocked gaps**~~ (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — **RESOLVED** Wave 22 stadial gate + Wave 44 fixes
 
-**Neural API (upstream, 2 items):**
-- **songbird outbound announce** — HIGH: last foundation primal without startup push + capability/hints key mismatch
-- **bearDog attestation field rename** — MEDIUM: `signed_attestation` → `attestation` (biomeOS v3.70 now verifies)
+**Neural API (upstream — ALL RESOLVED):**
+- ~~**songbird outbound announce**~~ — **RESOLVED** commit `4a8f4cdc`: outbound push + capability alignment shipped
+- ~~**bearDog attestation field rename**~~ — **RESOLVED** commit `2a94f2d6d` (Wave 111): field renamed, verified by biomeOS v3.70
 
 **Sovereignty infrastructure (cellMembrane team):**
 - **Sovereign DNS** (knot-dns, H2-17 through H2-20) — cellMembrane owns

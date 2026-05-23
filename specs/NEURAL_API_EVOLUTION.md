@@ -175,7 +175,7 @@ Observatory tools:
 - [x] Registry: 445 → 452 methods
 - [x] Document Neural API as first-class subsystem (this document)
 
-### Wave 40 (current): Neural Routing Layer
+### Wave 40 (current — 458 methods, 784 tests): Neural Routing Layer
 - [x] `NeuralRoutingTable` — data-driven routing table from `capability_registry.toml`
   - O(1) method → owner/domain/tier lookup across all 452 methods
   - 7 composition tiers (Tower/Node/Nest/Nucleus/Meta/Orchestration/Standalone)
@@ -191,7 +191,7 @@ Observatory tools:
 - [x] Scenario S46 `neural-routing-surface` — 17 structural checks
 - [x] 775 tests passing (27 new: 14 routing + 12 dispatch + 1 scenario)
 
-### Wave 40 (current): Adaptive Routing Weights (biomeOS v3.67)
+### Wave 40 (current — 458 methods, 784 tests): Adaptive Routing Weights (biomeOS v3.67)
 - [x] `RoutingWeightTable` in `neural_router/weights.rs` — per-provider EWMA
   latency, error rate, affinity, cost hints, circuit breaker
 - [x] `ProviderWeight::score()` — scoring function: `affinity * reliability *
@@ -204,7 +204,7 @@ Observatory tools:
 - [x] `neural_api.route_explain` RPC — routing decision explanation
 - [x] 1290 biomeOS tests, 775 primalSpring tests — all passing
 
-### Wave 41 (current): Observatory Posture + Composition Abstraction
+### Wave 41 (current — 458 methods, 784 tests): Observatory Posture + Composition Abstraction
 - [x] biomeOS v3.68 — `CompositionTier::classify()` maps domain + provider to
   atomic tier at runtime (Tower/Node/Nest/Nucleus/Meta/Orchestration/Standalone)
 - [x] `CompositionPatternRegistry` — canonical patterns as first-class runtime

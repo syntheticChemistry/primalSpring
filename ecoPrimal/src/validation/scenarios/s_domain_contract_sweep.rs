@@ -2,7 +2,7 @@
 //! Scenario: Domain Contract Sweep — contract tests for remaining capability domains.
 //!
 //! Wave 9 gap closure: exercises capability domains that had registered methods
-//! in the 418-method registry but no scenario, test, or graph coverage. Covers
+//! in the 458-method registry but no scenario, test, or graph coverage. Covers
 //! secrets, bonding, defense, discovery, provenance, spine/ledger, and network.
 
 use crate::composition::CompositionContext;

@@ -7,7 +7,7 @@
 
 ## Overview
 
-This document defines the migration path from the flat 445-method RPC surface
+This document defines the migration path from the flat 458-method RPC surface
 to the Neural API's atomic signal dispatch model. Springs that adopt this
 standard replace explicit multi-call orchestration with single `dispatch()`
 calls that let biomeOS execute provenance graphs on behalf of the caller.
@@ -64,7 +64,7 @@ rpc::send(biomeos, "lifecycle.register", json!({ ... }));
 ctx.announce(
     "airspring",
     &["ag.measure", "ag.calibrate", "ag.predict"],
-    Path::new("/run/ecoprimals/airspring-family.sock"),
+    Path::new("$XDG_RUNTIME_DIR/biomeos/airspring-family.sock"),
 )?;
 ```
 
@@ -74,7 +74,7 @@ Or raw JSON-RPC per the [Primal Announce Protocol](./PRIMAL_ANNOUNCE_PROTOCOL.md
   "method": "primal.announce",
   "params": {
     "primal": "airspring",
-    "socket": "/run/ecoprimals/airspring-family.sock",
+    "socket": "$XDG_RUNTIME_DIR/biomeos/airspring-family.sock",
     "capabilities": ["agriculture"],
     "methods": ["ag.measure", "ag.calibrate", "ag.predict"],
     "signal_tiers": ["node"],

@@ -90,7 +90,7 @@ Runs with `biomeOS` orchestrating the full composition.
 | `certification/entropy.rs` | Seed provenance, fingerprint verification |
 | `validation/` | `ValidationResult` harness, check_bool/check_skip/section API |
 | `validation/helpers.rs` | Shared graph parsing, Dark Forest invariants, capability cross-ref |
-| `validation/scenarios/` | 45 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios/` | 49 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `validation/scenarios/registry.rs` | `ScenarioMeta`, `ScenarioRegistry`, `Tier`, `Track` |
 | `composition/` | `CompositionContext` — 5-tier discovery, IPC calls, BTSP |
 | `coordination/` | `AtomicType`, composition validation (legacy probes removed Wave 32) |

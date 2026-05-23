@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.26 (Wave 42 — 784 tests, 458 methods, 49 scenarios, full feedback loop + live validation)
-**Last Updated**: May 22, 2026 (Wave 42 — Neural API deployment guide, team restructuring, utilization tracking)
+**Version**: 0.9.26 (Wave 45 — 784 tests, 458 methods, 49 scenarios, 12/12 primal.announce compliant, all upstream resolved)
+**Last Updated**: May 23, 2026 (Wave 45 — all upstream Neural API blockers resolved, doc debt sweep, local code hygiene)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -38,10 +38,9 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 
 | File | Audience | What It Covers |
 |------|----------|----------------|
-| **handoffs/WAVE45_REMAINING_UPSTREAM_BLURBS.md** | songbird, bearDog | Remaining `primal.announce` work: outbound push + attestation field. Updated for biomeOS v3.70. |
 | **handoffs/DEPENDENCY_VALIDATION_PATTERN.md** | All primal teams | Pre-dispatch data dependency staging pattern (from toadStool S266). |
 | **handoffs/SHADOW_COMPARISON_PATTERN.md** | All primal teams | A/B shadow comparison pattern for protocol migrations (from songbird Wave 213). |
-| **handoffs/archive/** | Historical | 31 fossilized handoffs from Waves 20–44 (deployment guides, announce blurbs, stadial gate). |
+| **handoffs/archive/** | Historical | 32 fossilized handoffs from Waves 20–45 (deployment guides, announce blurbs, stadial gate, upstream resolution). |
 
 ### Archived Handoffs (`handoffs/archive/`)
 

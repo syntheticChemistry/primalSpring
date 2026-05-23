@@ -4,7 +4,7 @@
 //! Validates that the `content` capability domain is discoverable and that
 //! `content.put` → `content.get` produces a correct round-trip (BLAKE3 hash
 //! match, byte fidelity). This scenario catches the gap class where methods
-//! are registered in the 418-method registry but not reachable on all
+//! are registered in the 458-method registry but not reachable on all
 //! transports (Wave 7 — semantic gate evolution).
 
 use base64::Engine;

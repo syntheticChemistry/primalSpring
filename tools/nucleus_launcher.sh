@@ -440,7 +440,7 @@ cmd_start() {
     # ── Post-Tower BTSP verification ─────────────────────────────
     # Now that Tower (BearDog + Songbird) is healthy and all primals are
     # launched, verify the BTSP handshake works via a socat probe.
-    # This catches misconfigs before guidestone runs.
+    # This catches misconfigs before certify runs.
     if [[ -S "$beardog_sock" ]]; then
         log "── BTSP Verification ──"
         local btsp_probe='{"protocol":"btsp","version":1,"client_ephemeral_pub":"dGVzdA=="}'

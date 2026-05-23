@@ -60,12 +60,13 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 19 | Foundation Validation | exp107 | Does the foundation sediment pipeline run through NUCLEUS via Rust IPC? 8-phase validation (structural → discovery → health → provenance → storage → compute → ledger → attribution) |
 | 20 | Security + Composition Lifecycle | exp108–exp111 | Token federation (JH-11 cross-primal Ed25519), composition reload lifecycle, audit pipeline (JH-5 skunkBat→rhizoCrypt→sweetGrass), gate-aware Neural API routing |
 
-## Current State (v0.9.25)
+## Current State (v0.9.26)
 
 | Metric | Value |
 |--------|-------|
 | Experiments | 89 (20 tracks) |
-| Total tests | **680** workspace (632 passed + 48 ignored; unit + integration + doc-tests + proptest); **664** package (616 passed + 48 ignored) |
+| Total tests | **784** workspace (782 passed + 2 ignored; unit + integration + doc-tests + proptest) |
+| Registered capability methods | **458** |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
 | cargo doc | 0 warnings |

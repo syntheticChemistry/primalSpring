@@ -26,7 +26,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use super::ionic::{
     ContractId, ContractState, IonicContract, IonicProposal, ProposalResponse, ProvenanceSeal,
-    ScopeModification, TerminationReason, TerminationRequest, UsageMetrics,
+    ScopeModification, TerminationRequest, UsageMetrics,
 };
 use super::BondingConstraint;
 
@@ -437,7 +437,7 @@ fn system_time_to_iso(t: SystemTime) -> String {
 mod tests {
     use super::*;
     use crate::bonding::TrustModel;
-    use crate::bonding::ionic::{AttributionTerms, DataReturnPolicy};
+    use crate::bonding::ionic::{AttributionTerms, DataReturnPolicy, TerminationReason};
 
     fn sample_proposal() -> IonicProposal {
         IonicProposal {
