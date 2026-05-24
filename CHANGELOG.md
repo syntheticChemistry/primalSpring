@@ -3,7 +3,17 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–46: Stadial Entry / Glacial Shift (2026-05-23)
+## [Unreleased] — Waves 22–47: Stadial Entry / Glacial Shift (2026-05-23)
+
+### Wave 47: sporePrint Rust Evolution + Local Debt Sweep (May 23)
+- **`render-notebooks` subcommand**: Pure Rust `.ipynb` → Zola markdown renderer in `spore-validate`.
+  Parses notebook JSON, extracts titles from first `# heading`, slugifies filenames,
+  renders code cells with fences + saved outputs. Replaces `render_notebooks.sh` (154 lines bash + Python).
+- **`fetch-refresh` subcommand**: Rust-native repo clone/pull + metric drift scan in `spore-validate`.
+  Parses `sources.toml`, runs git clone/pull, then pipes into existing `refresh::scan()`.
+  Replaces `refresh-metrics.sh` (83 lines bash).
+- **SP-2 deploy status**: Added `last_push`, `shadow_status`, `deploy_locations` to `sporePrint/config.toml`.
+- **CONTEXT.md** remaining items updated — resolved Wave 22 items marked, sporePrint Rust evolution complete.
 
 ### Wave 46: Deep Debt Evolution — Typed Errors, Env Centralization, Idiomatic Rust (May 23)
 - **Typed dispatch errors**: Introduced `DispatchError` enum in `neural_dispatch.rs`,

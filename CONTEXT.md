@@ -73,11 +73,11 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.27 Wave 46 (May 23, 2026) — 49 scenarios (10 tracks, 3 tiers),
+v0.9.28 Wave 47 (May 23, 2026) — 49 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (322 exercised, 70% coverage),
 89 experiments (20 tracks), 94 deploy graphs (80 deploy + 14 signal),
 44-cell deployment matrix. 784 lib tests (all passing). 12/12 primal.announce
-compliant. All upstream Neural API blockers resolved.
+compliant. All upstream Neural API blockers resolved. sporePrint bash→Rust complete.
 
 **Wave 42: Full Neural API Deployment** — NeuralBridge feedback loop
 (`capability_call_instrumented`, `record_bridge_outcome`, `dispatch_instrumented`).
@@ -334,8 +334,8 @@ composition).
 **sporePrint (primalSpring-owned — Rust evolution mandate):**
 - **Link integrity**: bare `.md` 404s fixed (Wave 46), `lint_internal_links` added to `spore-validate`
 - **Living content** evolution (S6) — NestGate `content.put` path prototyped
-- **Rust evolution**: extend `spore-validate`, replace `render_notebooks.sh` and `refresh-metrics.sh` with Rust
-- **Content ingest pipeline** Rust-native replacement for bash CI scripts
+- ~~**Rust evolution**: replace `render_notebooks.sh` and `refresh-metrics.sh`~~ **RESOLVED** — `render-notebooks` and `fetch-refresh` subcommands in `spore-validate` (Wave 47)
+- **SP-2 deploy status**: `last_push`, `shadow_status`, `deploy_locations` added to `config.toml` (Wave 47)
 
 **Downstream / cross-spring (async):**
 - **ludoSpring 6-method IPC** expansion for esotericWebb
