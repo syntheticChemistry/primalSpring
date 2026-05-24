@@ -141,11 +141,11 @@ toadStool (S273), nestgate (S72), barraCuda, rhizoCrypt, coralReef.
 
 ### Remaining Upstream Asks
 
-| Primal | What | Priority |
-|--------|------|----------|
-| **biomeOS** | `composition.deploy(graph)` membrane model enforcement | MEDIUM |
-| **bearDog** | E2E ionic bond signing (`crypto.ionic_bond.propose`/`verify_proposal`/`seal`) | MEDIUM — covalent bonding prerequisite |
-| **bearDog** | ACME renewal daemon for sovereign TLS (Phase 3 S1 cutover) | LOW — cellMembrane dependency |
+| Primal | What | Priority | Status |
+|--------|------|----------|--------|
+| ~~**biomeOS**~~ | ~~Membrane model enforcement in `composition.deploy`~~ | ~~MEDIUM~~ | **RESOLVED** v3.74: validation gate on both live and shadow deploy paths |
+| **bearDog** | E2E ionic bond signing — IPC methods shipped (Wave 109), E2E chain validation pending | MEDIUM — primalSpring needs live RPC scenario | IPC COMPLETE, E2E pending |
+| **bearDog** | ACME renewal daemon — library complete (`beardog-acme`), not wired into server binary | LOW — operational when sovereignty cutover approaches | LIBRARY ONLY |
 
 ### Glacial Shift Horizons
 
