@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-22 (Wave 42: Full Neural API deployment — biomeOS v3.69 persistent weights + utilization tracking. 457 methods, 779 tests, 46 scenarios. NeuralBridge feedback loop + observatory posture.)
+> **Last updated**: 2026-05-24 (Wave 47: Post-primordial behavioral convergence. DEPLOYMENT_BEHAVIOR_STANDARD published. 9/9 primals responded — nestgate `--socket` + health normalized, skunkBat 4/4 items resolved, toadStool liveness fixed, barraCuda/rhizoCrypt `--socket` aliased, coralReef `--socket` + health fixed, biomeOS health normalized, petalTongue SIGTERM handler added, loamSpine Tokio crash was misdiagnosis (CLI error). 458 methods, 784 tests, 49 scenarios.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -23,19 +23,19 @@ Structured inventory of known gaps per primal that block or degrade composable d
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 108: `content.*` scope expansion in session tokens. SP-4 unblocked. |
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 213: NAT traversal data plane (TURN keepalive, cloudflared orchestration, shadow comparator). `capability.call` integration tests. |
-| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S267: sovereign driver rotation + S266: sandbox `working_dir` production (RESOLVED), data deps BLAKE3 validation. 86 JSON-RPC methods. 9,055+ lib tests. |
-| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.69: Persistent routing weights (redb), utilization tracking, composition intelligence. 1311 lib tests. |
-| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S71 Wave 47: `--socket PATH` CLI flag + `health.liveness` normalized to `{"status":"alive"}` across all 5 transports. DEPLOYMENT_BEHAVIOR_STANDARD compliant. 682 RPC + 2,611 API tests. |
+| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S273: `health.liveness` always `"alive"` (boot-phase → `health.readiness`). Deep debt: zero `.unwrap()` in prod, `dispatch/sovereign.rs` extracted (1638→839L), `warm_init/` modularized (1439→3 files), capability-based discovery. 9,131 lib tests. |
+| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.73: `health.check` → `"alive"` normalized. `weights.rs` (879L) → `weights/` submodule. Composition → capability-domain discovery (no hardcoded primal names). Port helpers renamed. 1311 lib tests. |
+| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
-| barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 73: 87 IPC methods (12 new: `signal.*`, regression, ecology). Cross-spring absorption from ludoSpring + airSpring + healthSpring + groundSpring. 143 IPC tests. |
-| petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — v1.6.6: 55 IPC methods, S3 shadow parity, musl targets |
-| rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68: `dag.session.get` enriched with `agents`/`genesis`/`frontier` (covers `dag_summary` proposal). GAP-36 aliases shipped. 93.88% coverage. |
-| loamSpine | 1,523+ | **ADOPTED** | FULL | L3 | **CLEAN** — 43 methods: `anchor.publish_batch` + `anchor.verify` (aggregate Merkle proof). `ANCHORING_ARCHITECTURE.md` (365L). WS-3 chain anchoring architecture implemented. |
+| barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `math.rs` refactored (split `signal.rs` + `stats.rs`), `pollster` eliminated, hardcoding → capability-based. 87 IPC methods. |
+| petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — SIGTERM handler added (`src/signal.rs`). Content backend → capability-based NestGate discovery. `web_mode/` refactored (split handlers, tests, content_backend). 55 IPC methods. |
+| rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `Box<dyn Error>` eliminated, test harness extracted, workspace dep hygiene, stale spec headers fixed. |
+| loamSpine | 1,527+ | **ADOPTED** | FULL | L3 | **CLEAN** — Tokio crash was misdiagnosis (CLI `serve`→`server`). All behavioral checks PASS. `lifecycle.status` gained `uptime_s`. `LOAMSPINE_DISCOVERY_ENABLED` env gate for NUCLEUS. Tests split into 3 files. |
 | sweetGrass | 1,553 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.37: PID file, JH-0 gate + port 9850 canonical |
-| coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — Iter 96: 21 idempotency tests, `CompileTarget` generalization (CPU/NPU), tarpc feature-gate. 3,202 tests. |
-| skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
+| coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
+| skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 at zero debt. Waves 1-42 complete. 46 scenarios (10 tracks), 457 real methods (321 exercised = 70%), 779 lib tests. 2 binaries. Zero panics in production. Wave 42: NeuralBridge feedback loop, biomeOS persistent weights + utilization tracking, team restructuring, Neural API deployment guide. Wave 40-41: Neural routing layer + observatory posture. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published.**
+**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-47 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. Zero panics in production. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. loamSpine "Tokio crash" was CLI mismatch (already fixed). All primals now: `--socket` CLI, `{"status":"alive"}` health, SIGTERM handlers, socket cleanup. Additionally: toadStool deep debt (zero unwrap, refactored 2 large files), biomeOS capability-domain composition, barraCuda/rhizoCrypt/coralReef deep debt sweeps, petalTongue content backend + signal handler.**
 
 ---
 

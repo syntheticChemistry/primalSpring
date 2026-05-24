@@ -117,57 +117,41 @@ The binary MUST handle both `SIGTERM` and `SIGINT` gracefully:
 
 | Primal | `--socket` | `health.liveness` shape | `lifecycle.status` | `primal.announce` | Cleanup | Signals |
 |--------|:----------:|:-----------------------:|:------------------:|:-----------------:|:-------:|:-------:|
-| bearDog | PASS | `"alive"` PASS | PASS | PASS | PASS | PASS |
-| songbird | PASS | `"alive"` PASS | PASS | PASS | PASS | PASS |
-| toadStool | PASS | `"alive"` PASS | PASS | PASS | PASS | PASS |
-| biomeOS | PASS | mixed | PASS | N/A | PASS | PASS |
-| nestgate | **FAIL** env-only | **FAIL** `{alive:true}` | PASS | PASS | PASS | PASS |
+| bearDog | PASS | PASS `"alive"` | PASS | PASS | PASS | PASS |
+| songbird | PASS | PASS `"alive"` | PASS | PASS | PASS | PASS |
+| toadStool | PASS | PASS `"alive"` (S272) | PASS | PASS | PASS | PASS |
+| biomeOS | PASS | PASS `"alive"` (v3.72) | PASS | N/A | PASS | PASS |
+| nestgate | PASS (S71) | PASS `"alive"` (S71) | PASS | PASS | PASS | PASS |
 | squirrel | PASS | PASS | PASS | PASS | PASS | PASS |
-| barraCuda | **FAIL** `--unix` | `"alive"` PASS | PASS | PASS | PASS | PASS |
-| petalTongue | PASS | mixed | PASS | PASS | PASS | partial |
-| rhizoCrypt | **FAIL** `--unix` | `"alive"` PASS | PASS | PASS | PASS | PASS |
-| loamSpine | PASS | `"alive"` PASS | PASS | PASS | PASS | PASS |
-| sweetGrass | PASS | `"alive"` PASS | PASS | PASS | PASS | PASS |
-| coralReef | **FAIL** no CLI | **FAIL** `{alive:true}` | PASS | PASS | PASS | PASS |
-| skunkBat | **FAIL** no CLI | `"alive"` PASS | **FAIL** missing | PASS | PASS | **FAIL** SIGINT only |
+| barraCuda | PASS alias (W47) | PASS `"alive"` | PASS | PASS | PASS | PASS |
+| petalTongue | PASS | PASS `"alive"` | PASS | PASS | PASS | PASS (W47) |
+| rhizoCrypt | PASS alias (W47) | PASS `"alive"` | PASS | PASS | PASS | PASS |
+| loamSpine | PASS | PASS `"alive"` | PASS (+uptime_s) | PASS | PASS | PASS |
+| sweetGrass | PASS | PASS `"alive"` | PASS | PASS | PASS | PASS |
+| coralReef | PASS (W47) | PASS `"alive"` (W47) | PASS | PASS | PASS | PASS |
+| skunkBat | PASS (W47) | PASS `"alive"` | PASS (W47) | PASS | PASS | PASS (W47) |
 
-### Summary
+### Summary (May 24, 2026)
 
-- **`--socket` flag**: 8/13 PASS, 5 need aliases or additions
-- **`health.liveness` shape**: 10/13 PASS, 3 return non-standard shape
-- **`lifecycle.status`**: 12/13 PASS, skunkBat missing
-- **`primal.announce`**: 12/13 (biomeOS exempt)
-- **Graceful shutdown**: 12/13, skunkBat SIGINT-only
+- **13/13 PASS** across all dimensions
+- All behavioral convergence items from the initial audit have been resolved
+- Standard published → 9 primals responded and fixed within hours
 
 ---
 
-## 6. Upstream Asks (Priority Order)
+## 6. Upstream Asks — ALL RESOLVED (May 24, 2026)
 
-### Critical (blocks NUCLEUS health sweeps)
+All 13 asks across 9 primals were resolved within hours of the standard being
+published. The ecosystem achieved **13/13 behavioral convergence** in a single wave.
 
-| Primal | Ask | Effort |
-|--------|-----|--------|
-| **loamSpine** | Fix Tokio double-runtime crash on NUCLEUS start | HIGH — blocks southGate entirely |
-
-### High (blocks uniform deployment)
-
-| Primal | Ask | Effort |
-|--------|-----|--------|
-| **nestgate** | Add `--socket PATH` CLI flag (alias to `NESTGATE_SOCKET` env) | LOW — clap field + env bridge |
-| **nestgate** | Normalize `health.liveness` → `{"status":"alive"}` | LOW — response shape change |
-| **barraCuda** | Alias `--socket` → `--unix` in clap | LOW — clap alias |
-| **rhizoCrypt** | Alias `--socket` → `--unix` in clap | LOW — clap alias |
-| **coralReef** | Add `--socket PATH` flag (set UDS bind path) | LOW — clap field |
-| **coralReef** | Normalize `health.liveness` → `{"status":"alive"}` | LOW — response shape |
-| **skunkBat** | Add `--socket PATH` flag | LOW — clap field |
-| **skunkBat** | Add `lifecycle.status` method | LOW — handler + route |
-| **skunkBat** | Handle SIGTERM (not just SIGINT) | LOW — `tokio::signal::unix` |
-| **skunkBat** | Align default port to 9750 (matches `ports.env`) | LOW — constant change |
-
-### Medium (improves observability)
-
-| Primal | Ask | Effort |
-|--------|-----|--------|
-| **biomeOS** | Normalize `health.liveness` on api socket → `{"status":"alive"}` | LOW |
-| **petalTongue** | Add explicit SIGTERM handler | LOW |
-| **toadStool** | Add `health.liveness` instant response (even during boot) | LOW |
+| Primal | Items | Resolution |
+|--------|------:|------------|
+| nestgate | 2 | S71: `--socket` CLI flag + `health.liveness` → `"alive"` on all 5 transports |
+| skunkBat | 4 | W47: `--socket`, `lifecycle.status`, SIGTERM, port 9750 |
+| toadStool | 1 | S272: `health.liveness` always `"alive"` (boot → `health.readiness`) |
+| barraCuda | 1 | W47: `--socket` aliased to `--unix` |
+| rhizoCrypt | 1 | W47: `--socket` aliased to `--unix` |
+| coralReef | 2 | W47: `--socket` CLI + `health.liveness` → `"alive"` |
+| biomeOS | 1 | v3.72: `health.check` → `"alive"` (was `"healthy"`) |
+| petalTongue | 1 | W47: `src/signal.rs` SIGTERM + SIGINT handler |
+| loamSpine | 0 | "Tokio crash" was CLI mismatch (`serve`→`server`), already fixed in plasmidBin |
