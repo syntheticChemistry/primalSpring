@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-23 (Wave 46: Deep debt evolution — typed errors (DispatchError, IonicProtocolError, PhasedIpcError → thiserror), env centralization, deprecated API removal, clippy sweep. All upstream Neural API blockers resolved (Wave 45). 12/12 primal.announce compliant. biomeOS v3.70 persistent weights + weight health + utilization tracking. 458 methods, 784 tests, 49 scenarios.)
+> **Last updated**: 2026-05-24 (Wave 47: sporePrint Rust evolution, gate deployment intel absorbed from 5 springs, version sweep. Wave 46: typed errors, env centralization, clippy sweep. All upstream Neural API blockers resolved (Wave 45). 12/12 primal.announce compliant. biomeOS v3.70 persistent weights + weight health + utilization tracking. 458 methods, 784 tests, 49 scenarios.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — Iter 96: 21 idempotency tests, `CompileTarget` generalization (CPU/NPU), tarpc feature-gate. 3,202 tests. |
 | skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
 
-**13/13 at zero debt. 12/12 announcing primals with correct outbound `primal.announce` (biomeOS exempt). Waves 1-46 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. 2 binaries. Zero panics in production. Wave 42: NeuralBridge feedback loop, biomeOS v3.70 persistent weights + weight health + utilization tracking, team restructuring, Neural API deployment guide. Live validation S47-S49 (dispatch, observatory, feedback). Wave 40-41: Neural routing layer + observatory posture. `ANCHORING_STANDARD.md` + `ANCHORING_ARCHITECTURE.md` published. All upstream Neural API blockers RESOLVED (songbird 4a8f4cdc, bearDog Wave 111).**
+**13/13 at zero debt. 12/12 announcing primals with correct outbound `primal.announce` (biomeOS exempt). Waves 1-47 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. 2 binaries. Zero panics in production. Wave 47: sporePrint Rust evolution (render-notebooks, fetch-refresh), gate deployment intel absorbed (5 springs deployed NUCLEUS on LAN gates). Wave 46: typed errors, env centralization, clippy sweep. All upstream Neural API blockers RESOLVED (songbird 4a8f4cdc, bearDog Wave 111).**
 
 ---
 
@@ -155,7 +155,7 @@ pressure. primalSpring validates the surface structurally via `s_sporeprint_surf
 | # | Gap | Owner | Priority | Status |
 |---|-----|-------|----------|--------|
 | ~~SP-1~~ | ~~Auto-merge: Tier 2 content auto-commits after `spore-validate` passes~~ | sporePrint CI | ~~MEDIUM~~ | **RESOLVED** — auto-refresh.yml content job now auto-commits when spore-validate passes; falls back to PR on validation failure |
-| SP-2 | Deploy status fields in `config.toml` (`last_push`, `shadow_status`, `deploy_locations`) | sporePrint | MEDIUM | Not started |
+| ~~SP-2~~ | ~~Deploy status fields in `config.toml` (`last_push`, `shadow_status`, `deploy_locations`)~~ | sporePrint | ~~MEDIUM~~ | **RESOLVED** — Wave 47: fields added to `sporePrint/config.toml` |
 | SP-3 | `liveSpore.json` auto-ingest from trio-equipped deployments | sporePrint CI | LOW | Pipeline exists, feed source pending |
 | ~~SP-4~~ | ~~Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put`~~ | projectNUCLEUS | ~~LOW~~ | **IMPLEMENTED** — `tools/publish_sporeprint.sh` wires base64-encoded content + BLAKE3 hash via JSON-RPC `content.put` to NestGate UDS. Supports `--dry-run`, single-file, and batch modes. E2E requires live NestGate + bearDog session. Wave 37. |
 

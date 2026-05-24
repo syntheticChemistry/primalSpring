@@ -92,8 +92,8 @@ domain = "life_science"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate", "squirrel", "petaltongue"]
-guidestone_binary = "wetspring_guidestone"
-guidestone_readiness = 3
+guidestone_binary = "wetspring"
+guidestone_readiness = 5
 validation_capabilities = [
     "tensor.matmul",
     "tensor.create",

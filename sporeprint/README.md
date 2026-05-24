@@ -1,6 +1,6 @@
 # sporeprint/ — Content for primals.eco
 
-**Owned by primalSpring** (Wave 46+). sporePrint repo at `infra/sporePrint`.
+**Owned by primalSpring** (Wave 46+). sporePrint repo at `infra/sporePrint`. Wave 47: bash→Rust complete (`render-notebooks`, `fetch-refresh` subcommands in `spore-validate`).
 
 Files in this directory are published to [primals.eco](https://primals.eco) via
 the sporePrint auto-refresh CI pipeline.

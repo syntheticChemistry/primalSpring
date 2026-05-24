@@ -2,7 +2,7 @@
 
 **Owner**: biomeOS (substrate primal) + primalSpring (observatory + validation)
 **Status**: Operational — evolving toward layered semantic network
-**Date**: May 23, 2026 (Wave 46)
+**Date**: May 24, 2026 (Wave 47)
 
 ---
 

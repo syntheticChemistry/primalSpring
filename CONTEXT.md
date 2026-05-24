@@ -104,7 +104,7 @@ EWMA latency/error, circuit breaker, `primal.announce` cost hints).
 TURN relay, biomeOS v3.66 cross-gate, toadStool S269, nestgate SP-4 compat,
 healthSpring V64z, neuralSpring V170. Neural API Evolution Spec published.
 
-**Waves 1-46 complete**. Zero DEBT markers, zero unsafe blocks, zero panics, zero warnings.
+**Waves 1-47 complete**. Zero DEBT markers, zero unsafe blocks, zero panics, zero clippy errors (51 pedantic advisories).
 Security gate: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
 `Vec<&String>` → `Vec<&str>`. `JsonRpcError`/`UnknownPrimal` → `thiserror` derives.
 `DeployError::Parse` now wraps `toml::de::Error` source for error chains. Deprecated
@@ -217,7 +217,7 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data visualization), neuralSpring (agentic
 composition).
 
-## Glacial Checkpoint — Current and Remaining (May 20, 2026)
+## Glacial Checkpoint — Current and Remaining (May 24, 2026)
 
 ### Completed
 - **Wave 22 stadial gate absorbed**: 13/13 primals evolved, plasmidBin v5.5.0
@@ -313,7 +313,7 @@ composition).
   - **All 13/13 primals stadial-gate absorbed**
   - ~~Remaining: sourDough version drift, 2 composition gaps (GPU API alignment, cross-gate dispatch)~~ **RESOLVED**
 
-### Remaining (updated May 23, 2026)
+### Remaining (updated May 24, 2026)
 
 **Resolved since last review:**
 - ~~**Thread 4**~~ now active (expression + data sources in projectFOUNDATION)
@@ -321,10 +321,20 @@ composition).
 - ~~**biomeOS nest.store signal dispatch**~~ **RESOLVED** — R5 promoted in biomeOS v3.63
 - ~~**biomeOS spore.instantiate**~~ **DEFERRED-TO-STADIAL** — R7 in biomeOS v3.63
 - ~~**Primal-blocked gaps**~~ (toadStool sandbox, barraCuda/coralReef, ionic bridge, sweetGrass TCP) — **RESOLVED** Wave 22 stadial gate + Wave 44 fixes
+- ~~**sporePrint bash scripts**~~ — **RESOLVED** Wave 47: `render-notebooks` + `fetch-refresh` subcommands in `spore-validate`
+- ~~**SP-2 deploy status**~~ — **RESOLVED** Wave 47: fields added to sporePrint `config.toml`
 
 **Neural API (upstream — ALL RESOLVED):**
 - ~~**songbird outbound announce**~~ — **RESOLVED** commit `4a8f4cdc`: outbound push + capability alignment shipped
 - ~~**bearDog attestation field rename**~~ — **RESOLVED** commit `2a94f2d6d` (Wave 111): field renamed, verified by biomeOS v3.70
+
+**Gate Deployment Intel (Wave 47 — absorbed from 5 springs):**
+- **southGate** (5800X3D, 128GB): neuralSpring 9/13 UDS-accessible, wetSpring 9/9 started. loamSpine Tokio crash is hard blocker.
+- **ironGate** (i9-14900K, RTX 5070, 96GB): ludoSpring 11/11 PASS after CLI fix. healthSpring dual-tower 7/7 Tower A.
+- **biomeGate** (2× Titan V HBM2): hotSpring READY, live NUCLEUS validation pending launcher run.
+- **strandGate** (EPYC, RTX 3090 + RX 6950 XT): hotSpring dev/AMD+NV parity. Remote access pending cellMembrane.
+- **Key corrections**: plasmidBin `8c8cb44` fixed `serve`→`server` CLI drift; socket placement non-uniform (BearDog/LoamSpine honor `--socket`, NestGate/Squirrel use env-only); rhizoCrypt TCP-only; skunkBat TCP-only; Squirrel abstract sockets.
+- **Upstream blockers observed**: loamSpine Tokio double-runtime crash, toadStool missing `health.liveness`, NestGate ignores `--socket` flag.
 
 **Sovereignty infrastructure (cellMembrane team — downstream with projectNUCLEUS/projectFOUNDATION):**
 - **Sovereign DNS** (knot-dns, H2-17 through H2-20) — cellMembrane owns

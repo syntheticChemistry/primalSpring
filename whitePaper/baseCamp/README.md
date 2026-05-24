@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: May 22, 2026
-**Status**: Phase 60+ — v0.9.27 — 89 experiments (20 tracks), 784 `#[test]` markers (784 pass, 2 ignored, 0 clippy errors), 94 deploy graphs (80 deploy + 14 signal), **458 registered capability methods**, 49 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 46**: Deep debt evolution — typed errors, env centralization, idiomatic Rust. biomeOS v3.70 persistent routing weights (redb), weight health introspection, attestation verification, utilization tracking. NeuralBridge feedback loop + observatory posture. Live validation S47-S49. 1311 biomeOS tests. **Zero DEBT markers / zero unsafe blocks**. **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, adaptive routing weights, composition patterns, `primal.announce` with cost hints). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs.
+**Status**: Phase 60+ — v0.9.28 — 89 experiments (20 tracks), 784 `#[test]` markers (784 pass, 2 ignored, 0 clippy errors), 94 deploy graphs (80 deploy + 14 signal), **458 registered capability methods**, 49 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 47**: sporePrint Rust evolution complete (render-notebooks, fetch-refresh subcommands in spore-validate). Gate deployment intel absorbed from 5 springs. **Wave 46**: Deep debt evolution — typed errors, env centralization, idiomatic Rust. biomeOS v3.70 persistent routing weights (redb), weight health introspection, attestation verification, utilization tracking. NeuralBridge feedback loop + observatory posture. Live validation S47-S49. 1311 biomeOS tests. **Zero DEBT markers / zero unsafe blocks**. **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, adaptive routing weights, composition patterns, `primal.announce` with cost hints). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs.
 
 ---
 
@@ -60,7 +60,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 19 | Foundation Validation | exp107 | Does the foundation sediment pipeline run through NUCLEUS via Rust IPC? 8-phase validation (structural → discovery → health → provenance → storage → compute → ledger → attribution) |
 | 20 | Security + Composition Lifecycle | exp108–exp111 | Token federation (JH-11 cross-primal Ed25519), composition reload lifecycle, audit pipeline (JH-5 skunkBat→rhizoCrypt→sweetGrass), gate-aware Neural API routing |
 
-## Current State (v0.9.27)
+## Current State (v0.9.28)
 
 | Metric | Value |
 |--------|-------|

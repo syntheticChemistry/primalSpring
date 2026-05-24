@@ -3,7 +3,7 @@
 # Atomic Signal Tool Schema — squirrel's view of the composition surface
 #
 # This file maps every atomic signal into a tool-use schema that squirrel
-# can ingest via squirrel.context.push. Instead of reasoning over 427
+# can ingest via squirrel.context.push. Instead of reasoning over 458
 # individual primal methods, squirrel sees ~12 composable signals addressed
 # to atomic tiers. biomeOS decomposes each signal into primal-level calls.
 #

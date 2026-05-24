@@ -1,7 +1,7 @@
 # Team Ownership Matrix
 
-> **Version**: 1.1 (Wave 46 — May 2026)
-> **Status**: Active — sporePrint ownership transferred to primalSpring
+> **Version**: 1.2 (Wave 47 — May 2026)
+> **Status**: Active — sporePrint ownership transferred to primalSpring, Rust evolution complete
 
 This document defines team ownership boundaries for the ecoPrimals
 ecosystem. Each team owns specific repos, systems, and evolution tracks.

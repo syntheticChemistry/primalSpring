@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.27 (Wave 46 — 784 tests, 458 methods, 49 scenarios, 12/12 primal.announce compliant, deep debt evolution complete)
-**Last Updated**: May 23, 2026 (Wave 46 — typed errors, env centralization, deprecated API removal, clippy sweep, idiomatic Rust evolution)
+**Version**: 0.9.28 (Wave 47 — 784 tests, 458 methods, 49 scenarios, 12/12 primal.announce compliant, sporePrint Rust evolution complete)
+**Last Updated**: May 24, 2026 (Wave 47 — sporePrint bash→Rust, gate deployment intel absorbed, version sweep)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -68,7 +68,7 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 | **SOVEREIGNTY_STANDARDS.md** | All teams | Calibrate → shadow → cutover protocol, bonding model, membrane channels, credential management, Forgejo as primary. |
 | **MEMBRANE_CHANNEL_ARCHITECTURE.md** | projectNUCLEUS | Three membrane channels (Signal/Relay/Surface), deployment models, crypto layers, fieldMouse classification. |
 
-### Archived Handoffs (`handoffs/archive/`)
+### Archived Handoffs — Earlier Waves (`handoffs/archive/`)
 
 | File | Date | Summary |
 |------|------|---------|
@@ -86,7 +86,7 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 
 ---
 
-## Current Ecosystem State (Wave 46)
+## Current Ecosystem State (Wave 47)
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
@@ -128,16 +128,14 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 ## Upstream Primal Evolution Status (May 22, 2026)
 
 Post-Neural API Layer 4 evolution (biomeOS v3.69, persistent routing weights,
-utilization tracking). All primals at zero debt. Critical path has shifted
-to **full `primal.announce` adoption** and **sovereignty cutover**.
+utilization tracking). All primals at zero debt. `primal.announce` 12/12 complete.
+Critical path has shifted to **gate NUCLEUS deployments** and **sovereignty cutover**.
 
-### Evolution Targets (all primals — Wave 46)
+### Evolution Targets (all primals — Wave 47)
 
 With biomeOS v3.70 live, persistent weights, weight health, and utilization tracking:
 
-1. **Implement `primal.announce` with v3.68 schema**: See
-   `handoffs/archive/WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md` for the complete wire
-   schema, per-primal notes, cost/latency hints, and validation steps.
+1. ~~**Implement `primal.announce` with v3.68 schema**~~ — **COMPLETE** 12/12 primals announcing.
 2. **Validate against 458 methods**: Ensure niche capability counts align
    with `config/capability_registry.toml`.
 3. **Test composition patterns**: biomeOS owns `CompositionPatternRegistry`.
@@ -150,7 +148,7 @@ With biomeOS v3.70 live, persistent weights, weight health, and utilization trac
 
 | Primal | What | Priority |
 |--------|------|----------|
-| **Songbird** | TURN client library crate for TURN-relayed JSON-RPC | MEDIUM |
+| ~~**Songbird**~~ | ~~TURN client library crate for TURN-relayed JSON-RPC~~ | ~~MEDIUM~~ **SHIPPED** (Wave 205: `songbird-turn-client` crate) |
 | **biomeOS** | Handle `composition_model = "membrane"` in `composition.deploy(graph)` | MEDIUM |
 | **bearDog** | E2E ionic bond signing (`crypto.ionic_bond.propose`/`verify_proposal`/`seal`) | MEDIUM |
 | **bearDog** | ACME renewal daemon for sovereign TLS (Phase 3 S1 cutover) | LOW |
@@ -172,13 +170,13 @@ cross-tier parity validated ecosystem-wide.
 | ludoSpring | 982 | V76: Schell Lenses + CPU/GPU parity, 982 tests |
 | groundSpring | 1,123+ | V145: `DEGRADATION_BEHAVIOR.md`, 1,123 tests |
 | airSpring | 1,373 | v0.10.0: 57 caps, 17 methods full 3-tier coverage |
-| primalSpring | 784 | Wave 46: typed errors, env centralization, 458 methods, 49 scenarios, live validation |
+| primalSpring | 784 | Wave 47: sporePrint Rust evolution, gate intel absorbed, 458 methods, 49 scenarios |
 
 **Convergence state**: All springs at zero debt. Neural API observatory
 operational in primalSpring with full feedback loop. biomeOS v3.70 owns
 composition intelligence with persistent routing weights and utilization
-tracking. **Next vector**: full `primal.announce` adoption across all 13
-primals, sovereignty infrastructure layers, multi-gate expansion.
+tracking. `primal.announce` 12/12 COMPLETE. **Next vector**: gate NUCLEUS
+deployments (5 springs deploying), sovereignty infrastructure layers, multi-gate covalent mesh.
 
 ---
 

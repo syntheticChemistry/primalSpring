@@ -1,9 +1,9 @@
 {
   "generated": "2026-05-23T16:00:00Z",
   "spring": "primalSpring",
-  "workspace_version": "0.9.27",
+  "workspace_version": "0.9.28",
   "rust_version": "1.87.0",
-  "wave": 46,
+  "wave": 47,
   "scope_note": "Top-level counts: primalspring package lib (cargo test -p primalspring --lib, 2026-05-23). Module/category breakdown below is approximate; regenerate before notebook hard-dependencies.",
   "total_tests": 784,
   "passed": 784,
