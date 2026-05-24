@@ -2,7 +2,7 @@
 
 **Status**: Design Spec (Phase 56)
 **Date**: April 28, 2026
-**Origin**: primalSpring v0.9.22 Phase 55c — all 13 primals resolved
+**Origin**: primalSpring v0.9.27 Phase 55c — all 13 primals resolved
 **Scope**: Evolve `biomeos nucleus` from a 5-primal coordinator to the full 13-primal desktop substrate
 
 ---
