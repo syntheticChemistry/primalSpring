@@ -299,17 +299,20 @@ impl NeuralBridge {
     ) -> (Result<CapabilityCallResult, IpcError>, BridgeOutcome) {
         let start = std::time::Instant::now();
         let result = self.capability_call(capability, operation, args);
-        let latency_ms = start.elapsed().as_millis() as u64;
+        let latency_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
         let success = result.is_ok();
         let outcome = BridgeOutcome {
             capability: capability.to_owned(),
             operation: operation.to_owned(),
             latency_ms,
             success,
-            timestamp_epoch_ms: std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_millis() as u64,
+            timestamp_epoch_ms: u64::try_from(
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_millis(),
+            )
+            .unwrap_or(u64::MAX),
         };
         (result, outcome)
     }

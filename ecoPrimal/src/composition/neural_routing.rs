@@ -55,28 +55,26 @@ impl CompositionTier {
     fn from_domain(domain: &str, owner: &str) -> Self {
         match domain {
             "crypto" | "security" | "auth" | "btsp" | "fido2" | "genetic"
-            | "beacon" | "lineage" | "tls" | "birdsong" | "identity" => Self::Tower,
-            "discovery" | "network" | "stun" | "onion" | "tor" | "mesh" => Self::Tower,
-            "defense" | "recon" | "threat" => Self::Tower,
-            "compute" | "dispatch" | "toadstool" | "sovereign" => Self::Node,
-            "tensor" | "math" | "ode" | "ml" | "nautilus" | "rng"
+            | "beacon" | "lineage" | "tls" | "birdsong" | "identity"
+            | "discovery" | "network" | "stun" | "onion" | "tor" | "mesh"
+            | "defense" | "recon" | "threat" => Self::Tower,
+            "compute" | "dispatch" | "toadstool" | "sovereign"
+            | "tensor" | "math" | "ode" | "ml" | "nautilus" | "rng"
             | "stats" | "linalg" | "spectral" | "noise" | "shader" => Self::Node,
-            "storage" | "content" | "secrets" => Self::Nest,
-            "dag" | "spine" | "event" | "entry" | "session"
-            | "certificate" | "permanence" | "proof" => Self::Nest,
-            "braid" | "anchoring" | "provenance" | "attribution"
+            "storage" | "content" | "secrets"
+            | "dag" | "spine" | "event" | "entry" | "session"
+            | "certificate" | "permanence" | "proof"
+            | "braid" | "anchoring" | "provenance" | "attribution"
             | "contribution" | "anchor" => Self::Nest,
             "visualization" | "render" | "viz" | "interaction"
-            | "proprioception" => Self::Meta,
-            "ai" | "inference" | "squirrel" | "context" => Self::Meta,
-            "science" => Self::Meta,
+            | "proprioception" | "ai" | "inference" | "squirrel" | "context"
+            | "science" => Self::Meta,
             "orchestration" | "federation" | "biomeos" | "primal"
-            | "signal" | "topology" | "route" => Self::Orchestration,
-            "health" | "capabilities" | "lifecycle" | "mcp"
-            | "tool" | "tools" | "rpc" | "system" => Self::Orchestration,
-            "coordination" | "composition" | "graph" | "nucleus" => Self::Orchestration,
-            "bonding" | "ionic" => Self::Standalone,
-            "game" | "webb" => Self::Standalone,
+            | "signal" | "topology" | "route"
+            | "health" | "capabilities" | "lifecycle" | "mcp"
+            | "tool" | "tools" | "rpc" | "system"
+            | "coordination" | "composition" | "graph" | "nucleus" => Self::Orchestration,
+            "bonding" | "ionic" | "game" | "webb" => Self::Standalone,
             _ => {
                 match owner {
                     "beardog" | "songbird" | "skunkbat" => Self::Tower,
@@ -324,6 +322,7 @@ impl NeuralRoutingTable {
     }
 
     /// Find patterns that involve a specific primal.
+    #[must_use]
     pub fn patterns_involving(&self, primal: &str) -> Vec<&CompositionPattern> {
         self.patterns
             .iter()

@@ -41,6 +41,10 @@ const REQUIRED_TRUST_TIERS: &[&str] = &["covalent", "ionic", "metallic", "weak"]
 
 // ─── Structural: Routing Config Schema ───────────────────────────────────────
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "scenario validation — sequential checks, splitting would fragment readability"
+)]
 fn phase_routing_schema(v: &mut ValidationResult) {
     let routing_toml = include_str!("../../../../config/routing_config_reference.toml");
     let parsed: toml::Value = match toml::from_str(routing_toml) {

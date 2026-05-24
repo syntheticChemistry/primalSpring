@@ -135,13 +135,13 @@ impl NeuralDispatcher {
 
     /// Whether biomeOS is reachable for live dispatch.
     #[must_use]
-    pub fn is_online(&self) -> bool {
+    pub const fn is_online(&self) -> bool {
         self.bridge.is_some()
     }
 
     /// Access the underlying routing table.
     #[must_use]
-    pub fn routing_table(&self) -> &NeuralRoutingTable {
+    pub const fn routing_table(&self) -> &NeuralRoutingTable {
         &self.table
     }
 
@@ -180,17 +180,17 @@ impl NeuralDispatcher {
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
                     result: Err(DispatchError::MethodNotFound(method.to_owned())),
-                    latency_ms: start.elapsed().as_millis() as u64,
+                    latency_ms: u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX),
                 };
             }
         };
 
-        let (result, route_path) = match &self.bridge {
-            Some(bridge) => dispatch_through_bridge(bridge, method, &entry, params),
-            None => (Err(DispatchError::BridgeOffline), RoutePath::Offline),
-        };
+        let (result, route_path) = self.bridge.as_ref().map_or(
+            (Err(DispatchError::BridgeOffline), RoutePath::Offline),
+            |bridge| dispatch_through_bridge(bridge, method, &entry, params),
+        );
 
-        let latency_ms = start.elapsed().as_millis() as u64;
+        let latency_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
         let success = result.is_ok();
 
         self.metrics.push(DispatchMetric {
@@ -200,10 +200,13 @@ impl NeuralDispatcher {
             latency_ms,
             success,
             route_path: route_path.clone(),
-            timestamp_epoch_ms: std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_millis() as u64,
+            timestamp_epoch_ms: u64::try_from(
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_millis(),
+            )
+            .unwrap_or(u64::MAX),
         });
 
         DispatchOutcome {
@@ -237,20 +240,19 @@ impl NeuralDispatcher {
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
                     result: Err(DispatchError::PatternNotFound(pattern_name.to_owned())),
-                    latency_ms: start.elapsed().as_millis() as u64,
+                    latency_ms: u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX),
                 };
             }
         };
 
         let graph_request = build_graph_request(&pattern, params);
-        let result = match &self.bridge {
-            Some(bridge) => bridge
+        let result = self.bridge.as_ref().map_or(Err(DispatchError::BridgeOffline), |bridge| {
+            bridge
                 .graph_deploy(&graph_request)
-                .map_err(|e| DispatchError::GraphFailed(e.to_string())),
-            None => Err(DispatchError::BridgeOffline),
-        };
+                .map_err(|e| DispatchError::GraphFailed(e.to_string()))
+        });
 
-        let latency_ms = start.elapsed().as_millis() as u64;
+        let latency_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
         let success = result.is_ok();
 
         self.metrics.push(DispatchMetric {
@@ -260,10 +262,13 @@ impl NeuralDispatcher {
             latency_ms,
             success,
             route_path: RoutePath::GraphExecute,
-            timestamp_epoch_ms: std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_millis() as u64,
+            timestamp_epoch_ms: u64::try_from(
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_millis(),
+            )
+            .unwrap_or(u64::MAX),
         });
 
         DispatchOutcome {
@@ -322,7 +327,7 @@ impl NeuralDispatcher {
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
                     result: Err(DispatchError::MethodNotFound(method.to_owned())),
-                    latency_ms: start.elapsed().as_millis() as u64,
+                    latency_ms: u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX),
                 };
             }
         };
@@ -342,7 +347,7 @@ impl NeuralDispatcher {
             None => (Err(DispatchError::BridgeOffline), RoutePath::Offline),
         };
 
-        let latency_ms = start.elapsed().as_millis() as u64;
+        let latency_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
 
         DispatchOutcome {
             method: method.to_owned(),
@@ -362,6 +367,10 @@ impl NeuralDispatcher {
 
     /// Average latency for a specific method across all dispatches.
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "metrics calculation — sub-unit precision not needed"
+    )]
     pub fn avg_latency_ms(&self, method: &str) -> Option<f64> {
         let relevant: Vec<_> = self
             .metrics
@@ -377,6 +386,10 @@ impl NeuralDispatcher {
 
     /// Error rate for a specific method (0.0–1.0).
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "metrics calculation — sub-unit precision not needed"
+    )]
     pub fn error_rate(&self, method: &str) -> Option<f64> {
         let relevant: Vec<_> = self
             .metrics
@@ -446,6 +459,10 @@ pub struct PrimalDispatchSummary {
 impl PrimalDispatchSummary {
     /// Average latency per dispatch to this primal.
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "metrics calculation — sub-unit precision not needed"
+    )]
     pub fn avg_latency_ms(&self) -> f64 {
         if self.total_dispatches == 0 {
             return 0.0;
@@ -455,6 +472,10 @@ impl PrimalDispatchSummary {
 
     /// Success rate (0.0–1.0) for dispatches to this primal.
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "metrics calculation — sub-unit precision not needed"
+    )]
     pub fn success_rate(&self) -> f64 {
         if self.total_dispatches == 0 {
             return 0.0;

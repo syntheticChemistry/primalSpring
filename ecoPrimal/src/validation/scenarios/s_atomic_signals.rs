@@ -259,7 +259,7 @@ fn validate_live_signal_dispatch(v: &mut ValidationResult, ctx: &mut Composition
             "_scenario": "s_atomic_signals",
         });
 
-        match ctx.dispatch(signal_name, params) {
+        match ctx.dispatch(signal_name, &params) {
             Ok(resp) => {
                 let has_keys = resp.is_object() || resp.is_null();
                 v.check_bool(

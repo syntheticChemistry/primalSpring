@@ -1,5 +1,23 @@
 target/
 **/target/
+
+# Build artifacts
 *.rlib
 *.rmeta
 *.d
+*.o
+*.so
+*.dylib
+
+# Validation ephemera
+validation_results/
+runtime_graphs/
+
+# Data & logs
+data/
+*.ndjson
+*.log
+audit.log
+
+# Generated docs
+*.html

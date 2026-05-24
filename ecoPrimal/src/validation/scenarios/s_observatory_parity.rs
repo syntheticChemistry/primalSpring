@@ -27,17 +27,18 @@ pub const SCENARIO: Scenario = Scenario {
 };
 
 /// Run the observatory parity validation.
+#[expect(
+    clippy::too_many_lines,
+    reason = "scenario validation — sequential checks, splitting would fragment readability"
+)]
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
-    let bridge = match NeuralBridge::discover() {
-        Some(b) => b,
-        None => {
-            v.check_bool(
-                "observatory-skipped",
-                true,
-                "biomeOS not available — observatory checks skipped (expected without deployment)",
-            );
-            return;
-        }
+    let Some(bridge) = NeuralBridge::discover() else {
+        v.check_bool(
+            "observatory-skipped",
+            true,
+            "biomeOS not available — observatory checks skipped (expected without deployment)",
+        );
+        return;
     };
 
     let local_table = canonical_routing_table();
@@ -179,7 +180,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
             if let Some(convergence) = health.get("convergence") {
                 let total = convergence
                     .get("total_providers")
-                    .and_then(|v| v.as_u64())
+                    .and_then(serde_json::Value::as_u64)
                     .unwrap_or(0);
                 v.check_bool(
                     "weight-health-has-providers",

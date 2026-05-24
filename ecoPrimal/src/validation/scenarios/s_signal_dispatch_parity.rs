@@ -145,7 +145,7 @@ fn phase_dispatch_parsing(v: &mut ValidationResult, ctx: &mut CompositionContext
     // Negative cases: malformed identifiers should produce ProtocolError
     let bad_ids = ["noperiod", "", "...triple", "fake.signal"];
     for bad in &bad_ids {
-        let result = ctx.dispatch(bad, serde_json::json!({}));
+        let result = ctx.dispatch(bad, &serde_json::json!({}));
         let is_err = result.is_err();
         v.check_bool(
             &format!("parse:reject:{}", bad.replace('.', "_")),
@@ -170,7 +170,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         let check_id = format!("live:dispatch:{}", spec.id);
         let params = (spec.params)();
 
-        match ctx.dispatch(spec.id, params) {
+        match ctx.dispatch(spec.id, &params) {
             Ok(_) => {
                 v.check_bool(&check_id, true, &format!("dispatch({:?}) accepted", spec.id));
             }
@@ -216,7 +216,7 @@ fn phase_response_shapes(v: &mut ValidationResult, ctx: &mut CompositionContext)
     for spec in SIGNALS {
         let params = (spec.params)();
 
-        match ctx.dispatch(spec.id, params) {
+        match ctx.dispatch(spec.id, &params) {
             Ok(resp) => {
                 if let Some(obj) = resp.as_object() {
                     let actual_keys: Vec<&String> = obj.keys().collect();

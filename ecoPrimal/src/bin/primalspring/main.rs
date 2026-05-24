@@ -182,7 +182,7 @@ fn write_provenance(v: &primalspring::validation::ValidationResult, dir: &str, s
             .unwrap_or_default()
             .as_secs();
         let days = d / 86400;
-        let y = 1970 + (days * 400) / 146097;
+        let y = 1970 + (days * 400) / 146_097;
         format!("{y}-{:02}-{:02}", (days % 365) / 30 + 1, (days % 365) % 30 + 1)
     };
 

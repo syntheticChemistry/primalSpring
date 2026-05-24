@@ -394,7 +394,7 @@ impl CompositionContext {
         &mut self,
         tier: &str,
         signal_name: &str,
-        params: serde_json::Value,
+        params: &serde_json::Value,
     ) -> Result<serde_json::Value, IpcError> {
         if !self.clients.contains_key("orchestration") {
             return Err(IpcError::SocketNotFound {
@@ -408,7 +408,7 @@ impl CompositionContext {
             "signal": format!("{tier}.{signal_name}"),
             "params": params,
         });
-        if let Ok(result) = self.call("orchestration", "signal.dispatch", dispatch_params) { Ok(result) } else {
+        self.call("orchestration", "signal.dispatch", dispatch_params).map_or_else(|_| {
             // Fallback to capability.call for older biomeOS versions
             // where signal.dispatch is not yet available.
             let cap_params = serde_json::json!({
@@ -417,7 +417,7 @@ impl CompositionContext {
                 "args": params,
             });
             self.call("orchestration", "capability.call", cap_params)
-        }
+        }, Ok)
     }
 
     /// Whether the given tier name is a recognized atomic signal tier.
@@ -465,7 +465,7 @@ impl CompositionContext {
     pub fn dispatch(
         &mut self,
         signal_id: &str,
-        params: serde_json::Value,
+        params: &serde_json::Value,
     ) -> Result<serde_json::Value, IpcError> {
         let (tier, name) = signal_id.split_once('.').ok_or_else(|| IpcError::ProtocolError {
             detail: format!(
@@ -498,7 +498,7 @@ impl CompositionContext {
     pub fn signal_plan(
         &mut self,
         intent: &str,
-        context: serde_json::Value,
+        context: &serde_json::Value,
     ) -> Result<serde_json::Value, IpcError> {
         let plan_params = serde_json::json!({
             "prompt": intent,
@@ -550,7 +550,7 @@ impl CompositionContext {
                 .cloned()
                 .unwrap_or_else(|| serde_json::json!({}));
 
-            let result = self.signal(tier, signal_name, params)?;
+            let result = self.signal(tier, signal_name, &params)?;
             results.push(serde_json::json!({
                 "step": i,
                 "tier": tier,
@@ -613,14 +613,14 @@ impl CompositionContext {
             "lifecycle": { "state": "running" },
         });
 
-        if let Ok(result) = self.call("orchestration", "primal.announce", announce_params) { Ok(result) } else {
+        self.call("orchestration", "primal.announce", announce_params).map_or_else(|_| {
             let register_params = serde_json::json!({
                 "primal": primal_id,
                 "transport": socket.to_string_lossy(),
                 "methods": methods,
             });
             self.call("orchestration", "method.register", register_params)
-        }
+        }, Ok)
     }
 
     // ── Composition lifecycle ───────────────────────────────────────────

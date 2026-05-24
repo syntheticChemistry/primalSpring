@@ -40,12 +40,9 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         return;
     }
 
-    let bridge = match NeuralBridge::discover() {
-        Some(b) => b,
-        None => {
-            v.check_bool("feedback-bridge-found", false, "NeuralBridge not available");
-            return;
-        }
+    let Some(bridge) = NeuralBridge::discover() else {
+        v.check_bool("feedback-bridge-found", false, "NeuralBridge not available");
+        return;
     };
 
     // Phase 1: Snapshot routing weights before dispatches.

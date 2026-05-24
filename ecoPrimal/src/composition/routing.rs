@@ -60,16 +60,13 @@ pub const BTSP_EXTRA_CAPS: &[&str] = &[
 /// ```
 #[must_use]
 pub fn capability_to_primal(capability: &str) -> &str {
-    match capability_to_primal_typed(capability) {
-        Some(p) => p.slug(),
-        None => match capability {
-            "tool" | "primalspring" => "primalspring",
-            "webb" => "esotericwebb",
-            "game" => "ludospring",
-            "science" => "neuralspring",
-            other => other,
-        },
-    }
+    capability_to_primal_typed(capability).map_or(match capability {
+        "tool" | "primalspring" => "primalspring",
+        "webb" => "esotericwebb",
+        "game" => "ludospring",
+        "science" => "neuralspring",
+        other => other,
+    }, |p| p.slug())
 }
 
 /// Typed version — returns `None` for non-primal targets (springs, unknown).

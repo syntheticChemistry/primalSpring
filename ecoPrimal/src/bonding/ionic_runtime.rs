@@ -110,6 +110,7 @@ impl IonicContractRegistry {
     }
 
     /// List all contracts in a given state.
+    #[must_use]
     pub fn by_state(&self, state: ContractState) -> Vec<&IonicContract> {
         self.contracts
             .values()

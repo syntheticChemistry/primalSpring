@@ -283,8 +283,10 @@ mod tests {
             .and_then(|m| m.get("channels"))
             .and_then(|c| c.as_array())
             .expect("channels array in [graph.metadata]");
-        let names: Vec<&str> = channels.iter().filter_map(toml::Value::as_str).collect();
-        assert!(names.contains(&"relay"), "relay channel missing from membrane graph");
+        assert!(
+            channels.iter().filter_map(toml::Value::as_str).any(|name| name == "relay"),
+            "relay channel missing from membrane graph"
+        );
     }
 
     #[test]

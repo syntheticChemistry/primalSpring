@@ -301,6 +301,10 @@ fn validate_squirrel_signal_context(v: &mut ValidationResult) {
     );
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "scenario validation — sequential checks, splitting would fragment readability"
+)]
 fn validate_tower_bootstrap(v: &mut ValidationResult) {
     let parsed: toml::Value = match toml::from_str(TOWER_BOOTSTRAP_TOML) {
         Ok(p) => p,

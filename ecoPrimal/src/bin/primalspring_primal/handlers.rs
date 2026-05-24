@@ -72,11 +72,12 @@ pub fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRes
 }
 
 pub fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    use primalspring::composition::CompositionContext;
+
     let name = params["primal"]
         .as_str()
         .unwrap_or(primalspring::primal_names::BEARDOG);
 
-    use primalspring::composition::CompositionContext;
     let mut ctx = CompositionContext::from_live_discovery_with_fallback();
     let has = ctx.has_capability(name);
     let health_ok = if has {
@@ -214,9 +215,9 @@ pub fn handle_validate_composition_by_capability(
 }
 
 pub fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
-    let capability = params["capability"].as_str().unwrap_or("security");
-
     use primalspring::composition::{CompositionContext, capability_to_primal};
+
+    let capability = params["capability"].as_str().unwrap_or("security");
 
     let mut ctx = CompositionContext::from_live_discovery_with_fallback();
     let resolved = capability_to_primal(capability);
@@ -414,31 +415,35 @@ pub fn handle_bonding_status(params: &serde_json::Value, id: u64) -> JsonRpcResp
         }
     };
     let registry = ionic_registry();
-    match registry.get(contract_id) {
-        Some(contract) => success_response(
-            serde_json::json!({
-                "contract_id": contract.contract_id,
-                "state": format!("{:?}", contract.state),
-                "capabilities": contract.negotiated_constraints.capability_allow,
-                "bond_type": "ionic",
-                "usage": {
-                    "total_calls": contract.usage.total_calls,
-                    "total_bytes": contract.usage.total_bytes,
-                    "distinct_methods": contract.usage.distinct_methods,
-                },
-            }),
-            id,
-        ),
-        None => success_response(
-            serde_json::json!({
-                "contract_id": contract_id,
-                "state": "not_found",
-                "capabilities": [],
-                "bond_type": null,
-            }),
-            id,
-        ),
-    }
+    registry.get(contract_id).map_or_else(
+        || {
+            success_response(
+                serde_json::json!({
+                    "contract_id": contract_id,
+                    "state": "not_found",
+                    "capabilities": [],
+                    "bond_type": null,
+                }),
+                id,
+            )
+        },
+        |contract| {
+            success_response(
+                serde_json::json!({
+                    "contract_id": contract.contract_id,
+                    "state": format!("{:?}", contract.state),
+                    "capabilities": contract.negotiated_constraints.capability_allow,
+                    "bond_type": "ionic",
+                    "usage": {
+                        "total_calls": contract.usage.total_calls,
+                        "total_bytes": contract.usage.total_bytes,
+                        "distinct_methods": contract.usage.distinct_methods,
+                    },
+                }),
+                id,
+            )
+        },
+    )
 }
 
 fn ionic_registry() -> primalspring::bonding::ionic_runtime::IonicContractRegistry {

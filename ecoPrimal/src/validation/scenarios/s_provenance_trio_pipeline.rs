@@ -192,7 +192,7 @@ fn phase_signal_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext)
         "author": "primalSpring:s_provenance_trio_pipeline",
     });
 
-    match ctx.dispatch("nest.store", params) {
+    match ctx.dispatch("nest.store", &params) {
         Ok(resp) => {
             let has_content_key = resp.get("content_hash").is_some()
                 || resp.get("hash").is_some()

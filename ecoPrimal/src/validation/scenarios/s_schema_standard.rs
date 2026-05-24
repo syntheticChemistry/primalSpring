@@ -167,7 +167,11 @@ fn phase_live_capability_list(v: &mut ValidationResult, ctx: &mut CompositionCon
             }
 
             if let Some(count) = resp.get("count").and_then(serde_json::Value::as_u64) {
-                v.check_minimum("live:capability_list:count", count as usize, 5);
+                v.check_minimum(
+                    "live:capability_list:count",
+                    usize::try_from(count).unwrap_or(usize::MAX),
+                    5,
+                );
             }
         }
         Err(e) if e.is_connection_error() => {

@@ -49,6 +49,10 @@ pub struct ShadowResult {
 impl ShadowResult {
     /// Latency ratio: shadow / primary. Values > 1.0 mean shadow is slower.
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "metrics calculation — sub-unit precision not needed"
+    )]
     pub fn latency_ratio(&self) -> f64 {
         if self.primary_latency_us == 0 {
             return f64::INFINITY;

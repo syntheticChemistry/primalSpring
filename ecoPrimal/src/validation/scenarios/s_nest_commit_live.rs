@@ -153,7 +153,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         "dry_run": true,
     });
 
-    match ctx.dispatch("nest.commit", params) {
+    match ctx.dispatch("nest.commit", &params) {
         Ok(resp) => {
             v.check_bool(
                 "live:nest_commit:dispatched",
@@ -216,7 +216,7 @@ fn phase_nest_store_baseline(v: &mut ValidationResult, ctx: &mut CompositionCont
         "dry_run": true,
     });
 
-    match ctx.dispatch("nest.store", params) {
+    match ctx.dispatch("nest.store", &params) {
         Ok(resp) => {
             v.check_bool(
                 "live:nest_store_baseline:dispatched",
