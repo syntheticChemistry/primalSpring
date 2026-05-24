@@ -73,11 +73,12 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.28 Wave 47 (May 23, 2026) — 49 scenarios (10 tracks, 3 tiers),
+v0.9.28 Wave 47 (May 24, 2026) — 49 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (322 exercised, 70% coverage),
 89 experiments (20 tracks), 94 deploy graphs (80 deploy + 14 signal),
-44-cell deployment matrix. 784 lib tests (all passing). 12/12 primal.announce
-compliant. All upstream Neural API blockers resolved. sporePrint bash→Rust complete.
+44-cell deployment matrix. 784 lib tests (all passing). 13/13 behavioral
+convergence (DEPLOYMENT_BEHAVIOR_STANDARD). 12/12 primal.announce compliant.
+All upstream blockers resolved. sporePrint bash→Rust complete.
 
 **Wave 42: Full Neural API Deployment** — NeuralBridge feedback loop
 (`capability_call_instrumented`, `record_bridge_outcome`, `dispatch_instrumented`).
@@ -328,35 +329,24 @@ composition).
 - ~~**songbird outbound announce**~~ — **RESOLVED** commit `4a8f4cdc`: outbound push + capability alignment shipped
 - ~~**bearDog attestation field rename**~~ — **RESOLVED** commit `2a94f2d6d` (Wave 111): field renamed, verified by biomeOS v3.70
 
-**Gate Deployment Intel (Wave 47 — absorbed from 5 springs):**
-- **southGate** (5800X3D, 128GB): neuralSpring 9/13 UDS-accessible, wetSpring 9/9 started. loamSpine Tokio crash is hard blocker.
-- **ironGate** (i9-14900K, RTX 5070, 96GB): ludoSpring 11/11 PASS after CLI fix. healthSpring dual-tower 7/7 Tower A.
-- **biomeGate** (2× Titan V HBM2): hotSpring READY, live NUCLEUS validation pending launcher run.
-- **strandGate** (EPYC, RTX 3090 + RX 6950 XT): hotSpring dev/AMD+NV parity. Remote access pending cellMembrane.
-- **Key corrections**: plasmidBin `8c8cb44` fixed `serve`→`server` CLI drift; socket placement non-uniform (BearDog/LoamSpine honor `--socket`, NestGate/Squirrel use env-only); rhizoCrypt TCP-only; skunkBat TCP-only; Squirrel abstract sockets.
-- **Upstream blockers observed**: loamSpine Tokio double-runtime crash, toadStool missing `health.liveness`, NestGate ignores `--socket` flag.
+**Gate Deployment Intel (Wave 47 — ALL RESOLVED):**
+- ~~loamSpine Tokio crash~~ — misdiagnosis: was `serve`→`server` CLI error, fixed in plasmidBin
+- ~~toadStool `health.liveness`~~ — S272: always returns `"alive"` now
+- ~~NestGate `--socket` flag~~ — S71: CLI flag added
+- **DEPLOYMENT_BEHAVIOR_STANDARD published** → 13/13 primals compliant
+- **5 gates deploying**: southGate, ironGate, biomeGate, strandGate, eastGate
+- plasmidBin `start_primal.sh` normalized for all 13 primals
 
-**Sovereignty infrastructure (cellMembrane team — downstream with projectNUCLEUS/projectFOUNDATION):**
-- **Sovereign DNS** (knot-dns, H2-17 through H2-20) — cellMembrane owns
-- **Forgejo Actions CI** porting for projectNUCLEUS sovereignty
-- **Forgejo Releases** as sovereign binary channel (S5)
+**Glacial shift horizons:**
+- **Covalent bonding** — multi-gate NUCLEUS mesh across 5 LAN gates (primalSpring + delta springs)
+- **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5)
+- **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring)
+- **Method coverage 80%** — push from 322/458 (70%) to ~366/458 (80%) via new scenarios
+- **plasmidBin Rust elevation** — replace bash launchers with Rust binary
+- **sporePrint living content (S6)** — NestGate `content.put` pipeline for dynamic site
 
-**sporePrint (primalSpring-owned — Rust evolution mandate):**
-- **Link integrity**: bare `.md` 404s fixed (Wave 46), `lint_internal_links` added to `spore-validate`
-- **Living content** evolution (S6) — NestGate `content.put` path prototyped
-- ~~**Rust evolution**: replace `render_notebooks.sh` and `refresh-metrics.sh`~~ **RESOLVED** — `render-notebooks` and `fetch-refresh` subcommands in `spore-validate` (Wave 47)
-- **SP-2 deploy status**: `last_push`, `shadow_status`, `deploy_locations` added to `config.toml` (Wave 47)
-
-**Downstream / cross-spring (async):**
-- **ludoSpring 6-method IPC** expansion for esotericWebb
-- **esotericWebb provenance E2E** on biomeOS (GAP-024)
-- **lithoSpore TURN wiring** (songbird-turn-client integration pending)
-- **petalTongue dialogue scenes** for esotericWebb narrative UI
-- **Foundation validate elevation** to CompositionContext + Rust crates
-- **Thread 1 WCM RPC** stack (0/24 blocked)
-
-**Data / science (springs own):**
-- **BLAKE3 backfill** — projectFOUNDATION has 165 empty `blake3` fields across 11 source TOMLs
-- **LTEE enrichments** (B5 lithoSpore promotion, B7 Tier 3, B1-ML Rust elevation)
-- **wetSpring ferment transcripts** — Barrick 2009 SEALED (7/7), Tenaillon 2016 batch 0 COMPLETE (5/5 clones)
-- **plasmidBin convergence** — all gardens converging on plasmidBin as central deployment depot
+**Downstream / cross-spring (async — springs/gardens own):**
+- ludoSpring 6-method IPC expansion for esotericWebb
+- esotericWebb provenance E2E on biomeOS (GAP-024)
+- Foundation validate elevation to CompositionContext + Rust crates
+- wetSpring ferment transcripts: Barrick 2009 SEALED (7/7), Tenaillon 2016 batch 0 COMPLETE

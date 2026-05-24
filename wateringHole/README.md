@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.28 (Wave 47 — 784 tests, 458 methods, 49 scenarios, 12/12 primal.announce compliant, sporePrint Rust evolution complete)
-**Last Updated**: May 24, 2026 (Wave 47 — sporePrint bash→Rust, gate deployment intel absorbed, version sweep)
+**Version**: 0.9.28 (Wave 47 — 784 tests, 458 methods, 49 scenarios, 13/13 behavioral convergence, 12/12 primal.announce)
+**Last Updated**: May 24, 2026 (Wave 47 — DEPLOYMENT_BEHAVIOR_STANDARD 13/13, deep debt sweep absorbed from 9 primals, plasmidBin normalized, fossilRecord consolidated)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -126,58 +126,61 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 
 ---
 
-## Upstream Primal Evolution Status (May 22, 2026)
+## Upstream Primal Evolution Status (May 24, 2026)
 
-Post-Neural API Layer 4 evolution (biomeOS v3.69, persistent routing weights,
-utilization tracking). All primals at zero debt. `primal.announce` 12/12 complete.
-Critical path has shifted to **gate NUCLEUS deployments** and **sovereignty cutover**.
+**Post-behavioral convergence.** All 13 primals at zero debt with uniform
+deployment surface (DEPLOYMENT_BEHAVIOR_STANDARD 13/13). biomeOS v3.73
+with capability-domain composition. Deep debt sweeps completed across
+toadStool (S273), nestgate (S72), barraCuda, rhizoCrypt, coralReef.
 
-### Evolution Targets (all primals — Wave 47)
+### Completed (Wave 47)
 
-With biomeOS v3.70 live, persistent weights, weight health, and utilization tracking:
-
-1. ~~**Implement `primal.announce` with v3.68 schema**~~ — **COMPLETE** 12/12 primals announcing.
-2. **Validate against 458 methods**: Ensure niche capability counts align
-   with `config/capability_registry.toml`.
-3. **Test composition patterns**: biomeOS owns `CompositionPatternRegistry`.
-   Primals participating in tower/nest/meta patterns should validate via
-   `neural_api.plan_tier`.
-4. **Review routing weights**: Use `neural_api.route_explain` to verify
-   routing correctness and `neural_api.utilization` for hot/cold analysis.
+- **DEPLOYMENT_BEHAVIOR_STANDARD** — 13/13 compliant. `--socket`, `health.liveness` → `"alive"`, `lifecycle.status`, SIGTERM, socket cleanup
+- **`primal.announce`** — 12/12 (biomeOS exempt)
+- **Deep debt** — toadStool zero unwrap, nestgate refactored unix_adapter, biomeOS capability-domain composition, barraCuda pollster eliminated, rhizoCrypt typed errors, coralReef zero across 11 categories
 
 ### Remaining Upstream Asks
 
 | Primal | What | Priority |
 |--------|------|----------|
-| ~~**Songbird**~~ | ~~TURN client library crate for TURN-relayed JSON-RPC~~ | ~~MEDIUM~~ **SHIPPED** (Wave 205: `songbird-turn-client` crate) |
-| **biomeOS** | Handle `composition_model = "membrane"` in `composition.deploy(graph)` | MEDIUM |
-| **bearDog** | E2E ionic bond signing (`crypto.ionic_bond.propose`/`verify_proposal`/`seal`) | MEDIUM |
-| **bearDog** | ACME renewal daemon for sovereign TLS (Phase 3 S1 cutover) | LOW |
+| **biomeOS** | `composition.deploy(graph)` membrane model enforcement | MEDIUM |
+| **bearDog** | E2E ionic bond signing (`crypto.ionic_bond.propose`/`verify_proposal`/`seal`) | MEDIUM — covalent bonding prerequisite |
+| **bearDog** | ACME renewal daemon for sovereign TLS (Phase 3 S1 cutover) | LOW — cellMembrane dependency |
+
+### Glacial Shift Horizons
+
+| Horizon | What | Owner |
+|---------|------|-------|
+| **Covalent bonding** | Multi-gate NUCLEUS mesh across 5 LAN gates | primalSpring + delta springs |
+| **Sovereignty cutover** | Forgejo-primary, sovereign DNS, membrane channels | cellMembrane team |
+| **Neural API as neural network** | Evolve adaptive routing weights toward learned routing | biomeOS + primalSpring |
+| **Method coverage 80%** | Push from 322/458 (70%) to ~366/458 (80%) exercised | primalSpring scenarios |
+| **plasmidBin Rust elevation** | Replace bash launcher scripts with Rust binary | primalSpring / plasmidBin |
+| **sporePrint living content** | NestGate `content.put` pipeline for dynamic site updates | primalSpring (S6) |
 
 ---
 
-## River Delta (Springs) — Evolution Summary (May 22, 2026)
+## River Delta (Springs) — Evolution Summary (May 24, 2026)
 
 All 8 springs pulled to HEAD. Combined: **9,700+ workspace tests** across the
-delta. Every spring at zero debt. Stability tiers, degradation behavior, and
-cross-tier parity validated ecosystem-wide.
+delta. Every spring at zero debt. 5 springs actively deploying NUCLEUS on LAN gates.
 
-| Spring | Tests | Latest |
-|--------|------:|--------|
-| hotSpring | 596 | 204 experiments, VBIOS interpreter live HW, 22 scenarios |
-| healthSpring | 1,018 | V64z: ionic absorption, stability tiers (15/41/2), 57 scenarios |
-| wetSpring | 1,962+ | V177+: breseq pipeline, ferment braid, 43 niche caps |
-| neuralSpring | 739 | V170: 6 new `science.*` methods, deep debt sprint, 10 scenarios |
-| ludoSpring | 982 | V76: Schell Lenses + CPU/GPU parity, 982 tests |
-| groundSpring | 1,123+ | V145: `DEGRADATION_BEHAVIOR.md`, 1,123 tests |
-| airSpring | 1,373 | v0.10.0: 57 caps, 17 methods full 3-tier coverage |
-| primalSpring | 784 | Wave 47: sporePrint Rust evolution, gate intel absorbed, 458 methods, 49 scenarios |
+| Spring | Tests | Gate | Latest |
+|--------|------:|------|--------|
+| hotSpring | 596 | biomeGate / strandGate | 204 experiments, VBIOS interpreter, 22 scenarios |
+| healthSpring | 1,018 | ironGate | V64z: ionic absorption, dual-tower 7/7 Tower A, 57 scenarios |
+| wetSpring | 1,962+ | southGate | V177+: breseq pipeline, ferment braid, 43 niche caps |
+| neuralSpring | 739 | southGate | V170: 6 `science.*` methods, 10 scenarios |
+| ludoSpring | 982 | ironGate | V77: 11/11 NUCLEUS PASS, proto-nucleate validated |
+| groundSpring | 1,123+ | ironGate | V145: degradation behavior, NestGate IPC |
+| airSpring | 1,373 | eastGate | v0.10.0: 57 caps, 17 methods full 3-tier coverage |
+| primalSpring | 784 | eastGate / ironGate | Wave 47: 13/13 behavioral convergence, 458 methods, 49 scenarios |
 
-**Convergence state**: All springs at zero debt. Neural API observatory
-operational in primalSpring with full feedback loop. biomeOS v3.70 owns
-composition intelligence with persistent routing weights and utilization
-tracking. `primal.announce` 12/12 COMPLETE. **Next vector**: gate NUCLEUS
-deployments (5 springs deploying), sovereignty infrastructure layers, multi-gate covalent mesh.
+**Convergence state**: All springs at zero debt. All primals at 13/13 behavioral
+convergence. Neural API observatory operational with full feedback loop. biomeOS v3.73
+owns composition intelligence with persistent routing weights and capability-domain
+discovery. **Next vector**: covalent bonding across gates, method coverage push,
+sovereignty cutover, plasmidBin Rust elevation.
 
 ---
 
