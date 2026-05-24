@@ -144,8 +144,10 @@ toadStool (S273), nestgate (S72), barraCuda, rhizoCrypt, coralReef.
 | Primal | What | Priority | Status |
 |--------|------|----------|--------|
 | ~~**biomeOS**~~ | ~~Membrane model enforcement in `composition.deploy`~~ | ~~MEDIUM~~ | **RESOLVED** v3.74: validation gate on both live and shadow deploy paths |
-| **bearDog** | E2E ionic bond signing — IPC methods shipped (Wave 109), E2E chain validation pending | MEDIUM — primalSpring needs live RPC scenario | IPC COMPLETE, E2E pending |
-| **bearDog** | ACME renewal daemon — library complete (`beardog-acme`), not wired into server binary | LOW — operational when sovereignty cutover approaches | LIBRARY ONLY |
+| ~~**bearDog**~~ | ~~E2E ionic bond signing~~ | ~~MEDIUM~~ | **RESOLVED** — Wave 109: `crypto.ionic_bond.verify_proposal` shipped. primalSpring `s_ionic_bond` evolved to live RPC lifecycle (`bonding.propose`→`accept`→`status`→`terminate` + `crypto.ionic_bond.verify_proposal` probe). |
+| ~~**bearDog**~~ | ~~ACME renewal daemon~~ | ~~LOW~~ | **RESOLVED** — Wave 112: `AcmeClient::run_renewal_loop()` wired into `beardog server` as background tokio task. Config via `BEARDOG_TLS_MODE=acme`. |
+
+**All upstream primal asks are RESOLVED.** No remaining blockers from L1 primals.
 
 ### Glacial Shift Horizons
 
