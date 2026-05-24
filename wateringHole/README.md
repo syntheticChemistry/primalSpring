@@ -27,6 +27,7 @@ Historical handoffs live in [fossilRecord](https://github.com/ecoPrimals/fossilR
 | **METHOD_GATE_STANDARD.md** | All primal teams | JH-0 ecosystem standard: pre-dispatch capability authorization, exempt whitelist, error codes, enforcement modes. |
 | **PRIMAL_ANNOUNCE_PROTOCOL.md** | All primal teams | `primal.announce` atomic self-registration: wire format, field reference, registration order, signal-tier membership, backward compatibility. Replaces separate `lifecycle.register` + `capability.register` + `method.register` calls (biomeOS v3.57+). |
 | **SIGNAL_ADOPTION_STANDARD.md** | All spring teams | Neural API composition collapse migration guide: `ctx.dispatch()` and `ctx.announce()` APIs, signal inventory (14 signals), spring archetype examples (compute/provenance/content-heavy), fallback behavior, validation coverage. |
+| **DEPLOYMENT_BEHAVIOR_STANDARD.md** | All primal teams | Post-primordial deployment surface contract: `--socket` CLI, `health.liveness` shape, `lifecycle.status`, socket cleanup, signal handling. Compliance matrix for all 13 primals. |
 
 ### Team Ownership
 

@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-24 (Wave 47: sporePrint Rust evolution, gate deployment intel absorbed from 5 springs, version sweep. Wave 46: typed errors, env centralization, clippy sweep. All upstream Neural API blockers resolved (Wave 45). 12/12 primal.announce compliant. biomeOS v3.70 persistent weights + weight health + utilization tracking. 458 methods, 784 tests, 49 scenarios.)
+> **Last updated**: 2026-05-24 (Wave 47: Post-primordial behavioral convergence audit. 5 plasmidBin CLI fixes shipped. DEPLOYMENT_BEHAVIOR_STANDARD published. 13 upstream asks catalogued across 9 primals. sporePrint Rust evolution complete. 12/12 primal.announce compliant. 458 methods, 784 tests, 49 scenarios.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -23,19 +23,65 @@ Structured inventory of known gaps per primal that block or degrade composable d
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 111: attestation field rename (`signed_attestation` → `attestation`). Verified by biomeOS v3.70 attestation delegation. |
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 213: NAT traversal data plane. `capability.call` integration tests. Outbound `primal.announce` + capability alignment shipped (4a8f4cdc). |
-| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S267: sovereign driver rotation + S266: sandbox `working_dir` production (RESOLVED), data deps BLAKE3 validation. 86 JSON-RPC methods. 9,055+ lib tests. |
-| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.70: Persistent routing weights (redb), weight health introspection, utilization tracking, composition intelligence. 1311 lib tests. |
-| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S70 Wave 43 `primal.announce` wired: JSON-RPC self-registration with biomeOS Neural API (post-bind, best-effort). Tiered biomeOS socket discovery. 682 RPC tests. |
+| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **BEHAV** — `health.liveness` returns `"starting"` during boot (fails probe). Minor — instant `"alive"` + separate `health.ready` preferred. |
+| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **BEHAV** — `health.liveness` on api socket returns `"healthy"` not `"alive"`. Minor. |
+| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **BEHAV** — No `--socket` CLI flag (env-only). `health.liveness` returns `{alive:true}` missing `"status"` field. See DEPLOYMENT_BEHAVIOR_STANDARD. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
-| barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — Sprint 73: 87 IPC methods (12 new: `signal.*`, regression, ecology). Cross-spring absorption from ludoSpring + airSpring + healthSpring + groundSpring. 143 IPC tests. |
-| petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — v1.6.6: 55 IPC methods, S3 shadow parity, musl targets |
-| rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — S68: `dag.session.get` enriched with `agents`/`genesis`/`frontier` (covers `dag_summary` proposal). GAP-36 aliases shipped. 93.88% coverage. |
-| loamSpine | 1,523+ | **ADOPTED** | FULL | L3 | **CLEAN** — 43 methods: `anchor.publish_batch` + `anchor.verify` (aggregate Merkle proof). `ANCHORING_ARCHITECTURE.md` (365L). WS-3 chain anchoring architecture implemented. |
+| barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **BEHAV** — Uses `--unix` not `--socket` (needs alias). 87 IPC methods. plasmidBin workaround in place. |
+| petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **BEHAV** — No explicit SIGTERM handler (relies on Drop). Minor. |
+| rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **BEHAV** — Uses `--unix` not `--socket` (needs alias). plasmidBin workaround in place. |
+| loamSpine | 1,523+ | **ADOPTED** | FULL | L3 | **BLOCKER** — Tokio double-runtime crash on NUCLEUS start. Blocks southGate entirely. |
 | sweetGrass | 1,553 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.37: PID file, JH-0 gate + port 9850 canonical |
-| coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — Iter 96: 21 idempotency tests, `CompileTarget` generalization (CPU/NPU), tarpc feature-gate. 3,202 tests. |
-| skunkBat | 363+ | **ADOPTED** | FULL | L2 | **CLEAN** — JH-5 Phase 2 event instrumentation complete |
+| coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **BEHAV** — No `--socket` CLI flag. `health.liveness` returns `{alive:true}` missing `"status"` field. |
+| skunkBat | 363+ | **ADOPTED** | FULL | L2 | **BEHAV** — No `--socket` flag, no `lifecycle.status`, SIGINT-only (no SIGTERM), port 9140 vs 9750 drift. 4 items. |
 
-**13/13 at zero debt. 12/12 announcing primals with correct outbound `primal.announce` (biomeOS exempt). Waves 1-47 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. 2 binaries. Zero panics in production. Wave 47: sporePrint Rust evolution (render-notebooks, fetch-refresh), gate deployment intel absorbed (5 springs deployed NUCLEUS on LAN gates). Wave 46: typed errors, env centralization, clippy sweep. All upstream Neural API blockers RESOLVED (songbird 4a8f4cdc, bearDog Wave 111).**
+**4/13 CLEAN, 8/13 BEHAV (deployment behavior gaps), 1/13 BLOCKER (loamSpine Tokio crash). 12/12 announcing. Waves 1-47 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. Zero panics in production. Wave 47: Post-primordial behavioral convergence audit — 13 upstream asks across 9 primals, DEPLOYMENT_BEHAVIOR_STANDARD published, 5 plasmidBin CLI workarounds shipped. Internal code debt remains zero; behavioral/deployment surface is the new debt frontier.**
+
+---
+
+## Behavioral Convergence Debt (Wave 47 — May 24, 2026)
+
+Post-primordial deployment audit. Gate deployments by 5 springs exposed
+behavioral mismatches that prevent uniform NUCLEUS deployment. Internal code
+quality is zero-debt; the deployment *surface* is the new frontier.
+
+Standard: `primalSpring/wateringHole/DEPLOYMENT_BEHAVIOR_STANDARD.md`
+
+### CRITICAL (blocks gate deployment)
+
+| Primal | Issue | Impact |
+|--------|-------|--------|
+| **loamSpine** | Tokio double-runtime crash on `nucleus_launcher.sh` start | southGate fully blocked. neuralSpring + wetSpring compositions cannot include loamSpine. |
+
+### HIGH (blocks uniform deployment — per-primal workarounds in plasmidBin)
+
+| Primal | Issue | Workaround | Fix |
+|--------|-------|------------|-----|
+| **nestgate** | No `--socket` CLI flag | `export NESTGATE_SOCKET` in launcher | Add `--socket PATH` to clap `server` |
+| **nestgate** | `health.liveness` → `{alive:true}` (no `"status"` field) | None — health sweep fails silently | Add `"status":"alive"` to response |
+| **barraCuda** | `--unix` instead of `--socket` | Launcher maps `--socket` → `--unix` | Add `--socket` as clap alias |
+| **rhizoCrypt** | `--unix` instead of `--socket` | Launcher maps `--socket` → `--unix` | Add `--socket` as clap alias |
+| **coralReef** | No `--socket` CLI flag | `export CORALREEF_SOCKET` in launcher | Add `--socket PATH` to clap `server` |
+| **coralReef** | `health.liveness` → `{alive:true}` (no `"status"`) | None | Add `"status":"alive"` |
+| **skunkBat** | No `--socket` flag | N/A (TCP only currently) | Add `--socket PATH` to clap `server` |
+| **skunkBat** | No `lifecycle.status` method | Health sweep skips | Add handler + route |
+| **skunkBat** | SIGINT only (no SIGTERM) | Stale sockets after kill | Add `signal(SignalKind::terminate())` |
+| **skunkBat** | Default port 9140 vs `ports.env` 9750 | Manual override in launcher | Align constant to 9750 |
+
+### MEDIUM (improves reliability)
+
+| Primal | Issue | Fix |
+|--------|-------|-----|
+| **biomeOS** | api socket `health.liveness` returns `"healthy"` not `"alive"` | Normalize response shape |
+| **petalTongue** | No explicit SIGTERM handler (Drop cleanup only) | Add signal handler |
+| **toadStool** | `health.liveness` returns `"starting"` during boot | Instant `"alive"` + separate `health.ready` |
+
+### Summary
+
+- **13 upstream asks** across **9 primals** (4 remain CLEAN: bearDog, songbird, squirrel, sweetGrass)
+- **5 plasmidBin workarounds** shipped (Wave 47) as interim
+- loamSpine Tokio crash is the only **hard blocker**
+- All other items are LOW effort (clap alias, response shape, signal handler)
 
 ---
 
