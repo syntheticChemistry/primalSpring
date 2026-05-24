@@ -15,7 +15,7 @@
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 89 experiments carry structured `with_provenance()` metadata |
-| **Clippy** | 0 errors, 51 pedantic/nursery advisories (cast precision, function length, style) |
+| **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`) |
 | **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 8 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` — zero unsafe blocks (SeedConfig + OnceLock replaced `env::set_var`) |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |

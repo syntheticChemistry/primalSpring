@@ -105,7 +105,7 @@ EWMA latency/error, circuit breaker, `primal.announce` cost hints).
 TURN relay, biomeOS v3.66 cross-gate, toadStool S269, nestgate SP-4 compat,
 healthSpring V64z, neuralSpring V170. Neural API Evolution Spec published.
 
-**Waves 1-47 complete**. Zero DEBT markers, zero unsafe blocks, zero panics, zero clippy errors (51 pedantic advisories).
+**Waves 1-47 complete**. Zero DEBT markers, zero unsafe blocks, zero panics, zero clippy warnings (pedantic + nursery clean).
 Security gate: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
 `Vec<&String>` → `Vec<&str>`. `JsonRpcError`/`UnknownPrimal` → `thiserror` derives.
 `DeployError::Parse` now wraps `toml::de::Error` source for error chains. Deprecated
