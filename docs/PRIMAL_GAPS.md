@@ -15,13 +15,13 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ---
 
-## Ecosystem Status (May 21, 2026)
+## Ecosystem Status (May 24, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 46 scenarios (10 tracks, 3 tiers), 457 real methods (321 exercised = 70%), 779 lib tests (779 pass, 2 ignored), 2 binaries (UniBin + IPC server). Wave 42: Full Neural API deployment — biomeOS v3.69 persistent routing weights (redb), utilization tracking, NeuralBridge feedback loop. Team restructuring documented (TEAM_OWNERSHIP_MATRIX.md). 1311 biomeOS tests. sporePrint **15/15** + SP-1 auto-merge live.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 49 scenarios (10 tracks, 3 tiers), 458 real methods (322 exercised = 70%), 784 lib tests (784 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 2 binaries (UniBin + IPC server). Wave 47: 13/13 behavioral convergence, DEPLOYMENT_BEHAVIOR_STANDARD published, `start_primal.sh` simplified (workarounds removed). bearDog Wave 112: ACME daemon, 127 methods. Ionic bond `s_ionic_bond` evolved to live RPC lifecycle. biomeOS v3.73 capability-domain composition. sporePrint **15/15** + SP-1 auto-merge live.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
-| bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 108: `content.*` scope expansion in session tokens. SP-4 unblocked. |
+| bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 112: ACME renewal daemon wired, 127 methods, `crypto.ionic_bond.verify_proposal` shipped. |
 | songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 213: NAT traversal data plane (TURN keepalive, cloudflared orchestration, shadow comparator). `capability.call` integration tests. |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S273: `health.liveness` always `"alive"` (boot-phase → `health.readiness`). Deep debt: zero `.unwrap()` in prod, `dispatch/sovereign.rs` extracted (1638→839L), `warm_init/` modularized (1439→3 files), capability-based discovery. 9,131 lib tests. |
 | biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.73: `health.check` → `"alive"` normalized. `weights.rs` (879L) → `weights/` submodule. Composition → capability-domain discovery (no hardcoded primal names). Port helpers renamed. 1311 lib tests. |
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-47 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests. Zero panics in production. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. loamSpine "Tokio crash" was CLI mismatch (already fixed). All primals now: `--socket` CLI, `{"status":"alive"}` health, SIGTERM handlers, socket cleanup. Additionally: toadStool deep debt (zero unwrap, refactored 2 large files), biomeOS capability-domain composition, barraCuda/rhizoCrypt/coralReef deep debt sweeps, petalTongue content backend + signal handler.**
+**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-47 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. `start_primal.sh` simplified — all per-primal `--socket` workarounds removed. Ionic bond scenario evolved to live RPC lifecycle. bearDog Wave 112: ACME daemon, 127 methods.**
 
 ---
 
