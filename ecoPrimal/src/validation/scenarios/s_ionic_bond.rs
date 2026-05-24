@@ -34,7 +34,7 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Phase 3: Policy Enforcement");
     phase_policy_enforcement(v);
 
-    v.section("Phase 4: Live Discovery + Health");
+    v.section("Phase 4: Live RPC Lifecycle (bonding.* + crypto.ionic_bond.*)");
     phase_live_discovery(v, ctx);
 }
 
@@ -180,35 +180,162 @@ fn phase_policy_enforcement(v: &mut ValidationResult) {
 }
 
 fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    for cap in ["security", "discovery"] {
-        if !ctx.has_capability(cap) {
-            v.check_skip(
-                &format!("health_liveness_{cap}"),
-                &format!("capability {cap} not in composition context"),
+    if !ctx.has_capability("orchestration") {
+        v.check_skip(
+            "live:propose",
+            "orchestration capability not available — cannot test live bonding RPC",
+        );
+        return;
+    }
+
+    let proposal = sample_proposal();
+    let propose_params = serde_json::json!({
+        "proposer_identity": proposal.proposer_identity,
+        "requested_capabilities": proposal.requested_capabilities,
+        "duration_secs": proposal.duration_secs,
+        "trust_model": "Contractual",
+        "attribution": {},
+        "data_return_policy": "DeleteOnTermination",
+        "rate_limit_rps": proposal.rate_limit_rps,
+    });
+
+    let contract_id = match ctx.call("orchestration", "bonding.propose", propose_params) {
+        Ok(resp) => {
+            let has_id = resp.get("contract_id").is_some();
+            v.check_bool(
+                "live:propose",
+                has_id,
+                &format!("bonding.propose → {resp}"),
             );
-            continue;
+            resp.get("contract_id")
+                .and_then(|c| c.as_str())
+                .map(String::from)
         }
-        match ctx.health_check(cap) {
-            Ok(true) => v.check_bool(
-                &format!("health_liveness_{cap}"),
-                true,
-                &format!("{cap} health.liveness ok"),
-            ),
-            Ok(false) => v.check_bool(
-                &format!("health_liveness_{cap}"),
-                false,
-                &format!("{cap} not live"),
-            ),
-            Err(e) if e.is_connection_error() => v.check_skip(
-                &format!("health_liveness_{cap}"),
-                &format!("{cap} not reachable: {e}"),
-            ),
-            Err(e) => v.check_bool(
-                &format!("health_liveness_{cap}"),
-                false,
-                &format!("error: {e}"),
-            ),
+        Err(e) if e.is_connection_error() || e.is_method_not_found() => {
+            v.check_skip("live:propose", &format!("orchestration not reachable: {e}"));
+            return;
         }
+        Err(e) => {
+            v.check_bool("live:propose", false, &format!("bonding.propose error: {e}"));
+            return;
+        }
+    };
+
+    let Some(contract_id) = contract_id else {
+        v.check_skip("live:accept", "no contract_id from propose — skipping accept");
+        return;
+    };
+
+    let accept_params = serde_json::json!({
+        "contract_id": contract_id,
+        "constraints": {
+            "capability_allow": ["compute.*"],
+            "capability_deny": ["compute.admin.*"],
+            "bandwidth_limit_mbps": 100,
+            "max_concurrent_requests": 10,
+        },
+    });
+
+    match ctx.call("orchestration", "bonding.accept", accept_params) {
+        Ok(resp) => {
+            let accepted = resp
+                .get("accepted")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
+            v.check_bool(
+                "live:accept",
+                accepted,
+                &format!("bonding.accept → accepted={accepted}"),
+            );
+        }
+        Err(e) => {
+            v.check_bool("live:accept", false, &format!("bonding.accept error: {e}"));
+            return;
+        }
+    }
+
+    match ctx.call(
+        "orchestration",
+        "bonding.status",
+        serde_json::json!({ "contract_id": contract_id }),
+    ) {
+        Ok(resp) => {
+            let state = resp.get("state").and_then(|s| s.as_str()).unwrap_or("unknown");
+            v.check_bool(
+                "live:status",
+                state == "Active" || state == "active",
+                &format!("bonding.status → state={state}"),
+            );
+        }
+        Err(e) => {
+            v.check_bool("live:status", false, &format!("bonding.status error: {e}"));
+        }
+    }
+
+    match ctx.call(
+        "orchestration",
+        "bonding.terminate",
+        serde_json::json!({ "contract_id": contract_id, "reason": "complete" }),
+    ) {
+        Ok(resp) => {
+            let has_seal = resp.get("merkle_root").is_some() || resp.get("sealed_at").is_some();
+            v.check_bool(
+                "live:terminate",
+                has_seal,
+                &format!("bonding.terminate → seal={resp}"),
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "live:terminate",
+                false,
+                &format!("bonding.terminate error: {e}"),
+            );
+        }
+    }
+
+    if ctx.has_capability("security") {
+        match ctx.call(
+            "security",
+            "crypto.ionic_bond.verify_proposal",
+            serde_json::json!({
+                "signed_payload": "test-payload",
+                "signature": "test-sig",
+                "proposer_public_key": "ed25519-test-key",
+            }),
+        ) {
+            Ok(resp) => {
+                v.check_bool(
+                    "live:crypto_verify",
+                    resp.is_object(),
+                    &format!("crypto.ionic_bond.verify_proposal responded: {resp}"),
+                );
+            }
+            Err(e) if e.is_method_not_found() => {
+                v.check_skip(
+                    "live:crypto_verify",
+                    &format!("crypto.ionic_bond.verify_proposal not yet in bearDog: {e}"),
+                );
+            }
+            Err(e) if e.is_connection_error() => {
+                v.check_skip(
+                    "live:crypto_verify",
+                    &format!("bearDog not reachable: {e}"),
+                );
+            }
+            Err(e) => {
+                v.check_bool(
+                    "live:crypto_verify",
+                    false,
+                    &format!("crypto.ionic_bond.verify_proposal error: {e}"),
+                );
+            }
+        }
+    } else {
+        v.check_skip(
+            "live:crypto_verify",
+            "security capability not available — bearDog not in composition",
+        );
     }
 }
 
