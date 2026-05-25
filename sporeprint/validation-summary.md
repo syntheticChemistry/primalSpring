@@ -1,6 +1,6 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 789 lib tests, 89 experiments, 458 capability methods, 13/13 BTSP, zero DEBT, Wave 49"
+description = "Meta-validation orchestrator — 791 lib tests, 89 experiments, 458 capability methods, 13/13 BTSP, zero DEBT, Wave 49"
 date = 2026-05-25
 
 [taxonomies]
@@ -10,7 +10,7 @@ springs = ["primalspring"]
 
 ## Status
 
-- **789 lib tests** (789 passed, 2 ignored), 0 failed
+- **791 lib tests** (780 passed, 9 live-tier, 2 ignored), 0 failed
 - **89 experiments** across 20 tracks (tower atomic → frontier)
 - **95 deploy graphs** (81 deploy + 14 signal), 53 validation scenarios (10 tracks)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`

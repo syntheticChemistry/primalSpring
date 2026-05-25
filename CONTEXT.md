@@ -78,7 +78,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 v0.9.28 Wave 49 (May 25, 2026) — 53 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (458 exercised, 100% coverage),
 89 experiments (20 tracks), 95 deploy graphs (81 deploy + 14 signal),
-44-cell deployment matrix. 789 lib tests (all passing). 13/13 behavioral
+44-cell deployment matrix. 791 lib tests (780 pass, 9 live-tier, 2 ignored). 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
 sole binary source, all primordial fallbacks cut across 4 responding springs.
 `SONGBIRD_PEERS` env + `--peers` CLI for cross-gate mesh seeding.

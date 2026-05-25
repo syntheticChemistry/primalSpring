@@ -6,7 +6,7 @@
 >
 > **Current state (May 23, 2026)**: Phase 60+, 13 primals, guideStone Level 8,
 > genomeBin v5.1+, BTSP Phase 3 converged (13/13 AEAD). primalSpring v0.9.28:
-> 789 tests, 458 methods, 53 scenarios (Wave 49 post-primordial + covalent mesh).
+> 791 tests, 458 methods, 53 scenarios (Wave 49 post-primordial + covalent mesh).
 > Neural API: biomeOS v3.70, persistent routing weights, weight health
 > introspection, 12/12 announcing primals compliant. See `CONTEXT.md`,
 > `docs/PRIMAL_GAPS.md`, and `specs/NEURAL_API_EVOLUTION.md` for live tracking.

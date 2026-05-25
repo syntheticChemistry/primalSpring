@@ -23,7 +23,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   requires subnet routing or cellMembrane TURN relay.
 - 4 springs confirmed post-primordial: wetSpring V186, ludoSpring Wave 49,
   neuralSpring V174, healthSpring V65a.
-- 789 lib tests (789 pass, 2 ignored). 53 scenarios. Zero clippy warnings.
+- 791 lib tests (780 pass, 9 live-tier, 2 ignored). 53 scenarios. Zero clippy warnings.
 
 ### Wave 48: Covalent Spring Mesh (May 25)
 - **8/8 springs sounded off**: 4 gates operational (eastGate, ironGate, southGate, biomeGate).

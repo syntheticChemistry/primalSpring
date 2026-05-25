@@ -1,7 +1,7 @@
 # primalSpring — Paper Review Queue
 
 **Date**: May 6, 2026  
-**Status**: Phase 60 — 89 experiments, 20 tracks, Desktop NUCLEUS live, 789 lib tests, 95 deploy graphs, 53 scenarios, 13/13 BTSP FULL AEAD, JH-0 MethodGate (13/13), 458 capability methods
+**Status**: Phase 60 — 89 experiments, 20 tracks, Desktop NUCLEUS live, 791 lib tests, 95 deploy graphs, 53 scenarios, 13/13 BTSP FULL AEAD, JH-0 MethodGate (13/13), 458 capability methods
 
 ---
 

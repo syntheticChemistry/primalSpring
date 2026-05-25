@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 25, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 53 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 789 lib tests (789 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 49: **post-primordial** — plasmidBin sole binary source, all primordial fallbacks cut. 4 springs responded (wetSpring V186, ludoSpring Wave 49, neuralSpring V174, healthSpring V65a) — all confirmed post-primordial. Peer seeding (`SONGBIRD_PEERS`) shipped. Cross-subnet gap documented (southGate 192.168.4.x ≠ eastGate 192.168.1.x).
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 53 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 791 lib tests (780 pass, 9 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 49: **post-primordial** — plasmidBin sole binary source, all primordial fallbacks cut. 4 springs responded (wetSpring V186, ludoSpring Wave 49, neuralSpring V174, healthSpring V65a) — all confirmed post-primordial. Peer seeding (`SONGBIRD_PEERS`) shipped. Cross-subnet gap documented (southGate 192.168.4.x ≠ eastGate 192.168.1.x).
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -52,7 +52,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-49 complete. 53 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 789 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 49: post-primordial deployment, `SONGBIRD_PEERS` peer seeding, `--security-socket` feature guard, stale socket cleanup, cell binary pattern. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. `start_primal.sh` simplified. `nucleus_launcher` Rust binary created. bearDog Wave 112: ACME daemon, 127 methods.**
+**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-49 complete. 53 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 791 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 49: post-primordial deployment, `SONGBIRD_PEERS` peer seeding, `--security-socket` feature guard, stale socket cleanup, cell binary pattern. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. `start_primal.sh` simplified. `nucleus_launcher` Rust binary created. bearDog Wave 112: ACME daemon, 127 methods.**
 
 ---
 
