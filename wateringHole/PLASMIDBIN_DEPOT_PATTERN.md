@@ -1,7 +1,7 @@
 # plasmidBin Depot Pattern — Remote NUCLEUS Deployment
 
-**Date**: April 29, 2026
-**From**: primalSpring v0.9.25
+**Date**: May 25, 2026 (updated Wave 49 — post-primordial: plasmidBin is sole binary source)
+**From**: primalSpring v0.9.28
 **License**: AGPL-3.0-or-later
 
 ---
@@ -69,15 +69,21 @@ curl -sSL https://raw.githubusercontent.com/ecoPrimals/plasmidBin/main/fetch.sh 
 
 ### Binary Discovery Order
 
-All primalSpring tools and Rust code use the same 3-tier search:
+**Post-primordial (Wave 49+)**: plasmidBin is the sole binary source.
+The `which`/PATH fallback has been removed from `nucleus_launcher.sh`.
+No primal binaries should exist in `~/.local/bin/` or other PATH locations.
 
-1. `$ECOPRIMALS_PLASMID_BIN` — explicit override (set by user or CI)
-2. `$BIOMEOS_PLASMID_BIN_DIR` — biomeOS-provided path
-3. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` — default (`~/.local/share/...`)
+Discovery search order:
+
+1. `$NUCLEUS_BIN_DIR` — explicit override (highest priority)
+2. `$ECOPRIMALS_PLASMID_BIN` — explicit base directory
+3. `$BIOMEOS_PLASMID_BIN_DIR` — biomeOS-provided path
+4. `infra/plasmidBin/primals/{target-triple}/` — git checkout (auto-detected)
+5. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` — XDG default (`~/.local/share/...`)
 
 Within each base directory, the `primals/{target-triple}/{name}` layout
-is tried first (matching `fetch.sh` output), then flat `primals/{name}`
-as fallback.
+is tried first (matching `fetch.sh` output), then flat `primals/{name}`.
+If no binary is found, the launcher exits with an error — no silent fallback.
 
 ### For CI Pipelines
 

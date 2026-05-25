@@ -130,10 +130,11 @@ cargo build --workspace
 # Run all tests (auto + ignored live tests)
 cargo test --workspace
 
-# Fetch primal binaries from plasmidBin GitHub Releases (first time only)
+# Primal binaries come from plasmidBin (auto-detected from infra/plasmidBin/)
+# First-time bootstrap (if git checkout unavailable):
 ./tools/fetch_primals.sh
 
-# Run live atomic tests (requires fetched binaries)
+# Run live atomic tests (requires plasmidBin binaries)
 cargo test --ignored
 
 # Run scenario validation (UniBin)
@@ -360,9 +361,10 @@ pure synchronous Rust (`std::process` + `std::thread`, no tokio).
 | `launcher/` | `discover_binary()`, `spawn_primal()`, `spawn_biomeos()`, `wait_for_socket()`, `SocketNucleation`, `LaunchProfile`, `LaunchError` (incl. `HealthCheckFailed`) |
 | `harness/` | `AtomicHarness::new()` / `::with_graph()`, `.start()` (topological waves), `.start_with_neural_api()`, `RunningAtomic` (capability-based `socket_for` / `client_for`, RAII lifecycle, NeuralBridge) |
 
-Run `./tools/fetch_primals.sh` to bootstrap primal binaries into
-`~/.local/share/ecoPrimals/plasmidBin/`. Override with `ECOPRIMALS_PLASMID_BIN`
-if needed. Without fetched binaries, experiments fall back to discovering
+**Post-primordial**: all primal binaries come from `plasmidBin` — the single
+source of truth. The git checkout at `infra/plasmidBin/primals/` is auto-detected
+by the launcher. Run `./tools/fetch_primals.sh` for first-time bootstrap if the
+git checkout is unavailable. Override with `NUCLEUS_BIN_DIR`. Without binaries,
 whatever is already running.
 
 ## gen4 Deployment Evolution

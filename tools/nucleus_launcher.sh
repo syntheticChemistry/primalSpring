@@ -49,14 +49,43 @@ NUCLEUS_LOG_LEVEL="${NUCLEUS_LOG_LEVEL:-info}"
 OLLAMA_ENDPOINT="${OLLAMA_ENDPOINT:-http://localhost:11434}"
 PID_DIR="/tmp/nucleus-pids"
 
+detect_host_triple() {
+    local machine kernel
+    machine=$(uname -m); kernel=$(uname -s | tr '[:upper:]' '[:lower:]')
+    case "$kernel" in
+        linux)  echo "${machine}-unknown-linux-musl" ;;
+        darwin) [[ "$machine" = "arm64" ]] && echo "aarch64-apple-darwin" || echo "${machine}-apple-darwin" ;;
+        *)      echo "${machine}-unknown-${kernel}" ;;
+    esac
+}
+
 detect_bin_dir() {
     if [[ -n "${NUCLEUS_BIN_DIR:-}" ]]; then
         echo "$NUCLEUS_BIN_DIR"
         return
     fi
-    local plasmid="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}/primals"
-    if [[ -d "$plasmid" ]]; then
-        echo "$plasmid"
+    # Post-primordial: plasmidBin is the single source of truth for primal binaries.
+    # Search order: triple subdir in git checkout, then git checkout root, then XDG fallback.
+    local triple
+    triple="$(detect_host_triple)"
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local git_plasmid="$script_dir/../../../infra/plasmidBin/primals"
+    if [[ -d "$git_plasmid/$triple" ]]; then
+        echo "$(cd "$git_plasmid/$triple" && pwd)"
+        return
+    fi
+    if [[ -d "$git_plasmid" ]]; then
+        echo "$(cd "$git_plasmid" && pwd)"
+        return
+    fi
+    local xdg_plasmid="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}/primals"
+    if [[ -d "$xdg_plasmid/$triple" ]]; then
+        echo "$xdg_plasmid/$triple"
+        return
+    fi
+    if [[ -d "$xdg_plasmid" ]]; then
+        echo "$xdg_plasmid"
         return
     fi
     echo ""
@@ -87,6 +116,12 @@ detect_graphs_dir() {
 BIN_DIR="$(detect_bin_dir)"
 FAMILY_ID="$(detect_family_id)"
 GRAPHS_DIR="$(detect_graphs_dir)"
+
+if [[ -z "$BIN_DIR" ]]; then
+    echo "[nucleus] FATAL: plasmidBin not found. Post-primordial deployments require plasmidBin." >&2
+    echo "[nucleus] Set NUCLEUS_BIN_DIR or run: git clone ecoPrimals/plasmidBin into infra/" >&2
+    exit 1
+fi
 
 resolve_family_seed() {
     if [[ -n "${BEARDOG_FAMILY_SEED:-}" ]]; then
@@ -144,16 +179,6 @@ read_pid() {
     fi
 }
 
-detect_host_triple() {
-    local machine kernel
-    machine=$(uname -m); kernel=$(uname -s | tr '[:upper:]' '[:lower:]')
-    case "$kernel" in
-        linux)  echo "${machine}-unknown-linux-musl" ;;
-        darwin) [[ "$machine" = "arm64" ]] && echo "aarch64-apple-darwin" || echo "${machine}-apple-darwin" ;;
-        *)      echo "${machine}-unknown-${kernel}" ;;
-    esac
-}
-
 find_binary() {
     local name="$1"
     if [[ -n "$BIN_DIR" && -x "$BIN_DIR/$name" ]]; then
@@ -167,7 +192,9 @@ find_binary() {
             return
         fi
     fi
-    which "$name" 2>/dev/null || true
+    # Post-primordial: no PATH/which fallback. All primals come from plasmidBin.
+    err "$name not found in plasmidBin (bin_dir=$BIN_DIR). Run tools/fetch_primals.sh or set NUCLEUS_BIN_DIR."
+    echo ""
 }
 
 start_primal() {
