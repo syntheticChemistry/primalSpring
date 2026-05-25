@@ -444,6 +444,7 @@ fn spawn_primal(
     if primal == primal_names::SONGBIRD {
         if let Some(fed_port) = config.federation_port {
             cmd.arg("--federation-port").arg(fed_port.to_string());
+            cmd.arg("--bind").arg("0.0.0.0");
         }
     }
 

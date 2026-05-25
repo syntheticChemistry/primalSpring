@@ -28,6 +28,9 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | `primal.announce` vs `discovery.register` migration path | wetSpring | **GUIDANCE NEEDED** — standard says biomeOS Neural API, springs use Songbird |
 | Songbird sled DB corruption after unclean shutdown | neuralSpring | **WORKAROUND** — clean `~/.local/share/songbird/task_lifecycle*` |
 | Spring binaries not in plasmidBin 13-primal set | healthSpring | **BY DESIGN** — springs build from source, symlink into `plasmidBin/primals/` |
+| petalTongue musl binary rejects `--family-id` | primalSpring (Wave 49) | **PIPELINE DEBT** — plasmidBin binary older than behavioral convergence; workaround: pass `FAMILY_ID` env |
+| Songbird federation bound to 127.0.0.1 (not LAN-reachable) | primalSpring (Wave 49) | **FIXED** — `nucleus_launcher.sh` now passes `--bind 0.0.0.0` when federation enabled |
+| petalTongue stale socket on restart (EADDRINUSE) | primalSpring (Wave 49) | **KNOWN** — launcher doesn't pre-clean sockets; manual `rm` workaround |
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|

@@ -36,6 +36,7 @@
 #   OLLAMA_ENDPOINT            — Ollama URL for AI narration (default: http://localhost:11434)
 #   BIOMEOS_GRAPHS_DIR         — biomeOS graphs directory (default: auto-detect)
 #   SONGBIRD_FEDERATION_PORT   — opt-in TCP port for LAN federation (unset = UDS-only)
+#   SONGBIRD_FEDERATION_BIND   — bind address for federation (default: 0.0.0.0 = all interfaces)
 
 set -euo pipefail
 
@@ -261,7 +262,8 @@ cmd_start() {
         local songbird_args=(server --socket "$songbird_sock" --security-socket "$beardog_sock")
         if [[ -n "${SONGBIRD_FEDERATION_PORT:-}" ]]; then
             songbird_args+=(--port "$SONGBIRD_FEDERATION_PORT")
-            log "  Songbird: TCP federation on port $SONGBIRD_FEDERATION_PORT"
+            songbird_args+=(--bind "${SONGBIRD_FEDERATION_BIND:-0.0.0.0}")
+            log "  Songbird: TCP federation on ${SONGBIRD_FEDERATION_BIND:-0.0.0.0}:$SONGBIRD_FEDERATION_PORT"
         fi
         SONGBIRD_SECURITY_PROVIDER="$beardog_sock" \
         SONGBIRD_DISCOVERY_MODE="disabled" \
