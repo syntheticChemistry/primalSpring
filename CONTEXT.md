@@ -169,11 +169,19 @@ implement domain hooks. `tools/composition_template.sh` is the minimal starter,
 `tools/ttt_composition.sh` is the reference implementation with branching game
 states, and `tools/composition_nucleus.sh` is the parameterized NUCLEUS launcher.
 
-## Development Systems
+## Gate Deployment
+
+| Field | Value |
+|-------|-------|
+| **Gate** | eastGate (primary) + ironGate (shared) |
+| **Composition** | Full NUCLEUS (13/13 primals) |
+| **NUCLEUS status** | operational — VALIDATED on both gates |
+| **Songbird federation** | port 7700 |
+| **LAN mesh** | ready — covalent linking via Songbird TCP |
 
 | Gate | Role | Springs/Primals |
 |------|------|-----------------|
-| **eastGate** | Primary dev — primalSpring, plasmidBin, upstream coordination | Most complex subprojects, BTSP convergence, assists all remote teams |
+| **eastGate** | Primary dev — primalSpring, plasmidBin, upstream coordination | Orchestrator, BTSP convergence, assists all remote teams |
 | **ironGate** | Sister dev — clean deployment validation, composition testing | primalSpring (shared), ludoSpring, groundSpring |
 
 primalSpring development is shared between eastGate and ironGate. ironGate
@@ -240,11 +248,11 @@ methods registered) — all detail fossilized to `fossilRecord/`.
 - plasmidBin `start_primal.sh` normalized for all 13 primals
 
 **Glacial shift horizons:**
-- **Covalent bonding** — multi-gate NUCLEUS mesh across 5 LAN gates (primalSpring + delta springs). Transport layer READY: biomeOS v3.75 Songbird mesh dispatch + toadStool S274 yield-to-owner.
+- **Covalent bonding** — **Wave 48: IN PROGRESS**. 4/8 springs on named gates (eastGate, ironGate, southGate, biomeGate) with operational NUCLEUS. Gate Deployment sections added to all 8 springs. Cell graphs ready. Songbird TCP :7700 federation is the mesh transport. Next: enable federation on all 4 gates, verify `discovery.peers`, run cross-gate `capability.call`.
 - **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5)
 - **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring). biomeOS v3.75 mesh routing is a prerequisite step.
 - ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 458/458 (100%) via 3 new scenarios + coverage graph + script regex fix
-- ~~**plasmidBin Rust elevation**~~ — **IN PROGRESS** Wave 47: `nucleus_launcher` Rust binary created (parity with `nucleus_launcher.sh`)
+- ~~**plasmidBin Rust elevation**~~ — **RESOLVED** Wave 47: `nucleus_launcher` Rust binary created (parity with `nucleus_launcher.sh`)
 - **sporePrint living content (S6)** — NestGate `content.put` pipeline for dynamic site
 
 **Downstream / cross-spring (async — springs/gardens own):**

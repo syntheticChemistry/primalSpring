@@ -15,9 +15,9 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ---
 
-## Ecosystem Status (May 24, 2026)
+## Ecosystem Status (May 25, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 52 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 787 lib tests (787 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 47: 13/13 behavioral convergence, DEPLOYMENT_BEHAVIOR_STANDARD published, `start_primal.sh` simplified. bearDog Wave 112: ACME daemon, 127 methods. Ionic bond scenario evolved to live RPC lifecycle with `bonding.modify_scope`. `nucleus_launcher` Rust binary at feature-parity with bash launcher. biomeOS v3.73 capability-domain composition. sporePrint **15/15** + SP-1 auto-merge live.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 52 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 787 lib tests (787 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 48: covalent spring mesh — 4/8 springs on named gates with operational NUCLEUS, Songbird TCP :7700 federation ready. hotSpring CAZyme FEL v0.7.0 (3 modules, GROMACS+PLUMED validated, lithoSpore handoff). loamSpine benchScale (51 validations, 43 methods).
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -390,7 +390,7 @@ ludoSpring, groundSpring, airSpring)
 |--------|---------------------|-------------|
 | healthSpring | V64k, gS L5, UniBin, 1,014+ tests, Tier 4 (`default=[]`), B5 COMPLETE, Nest atomic COMPLETE, GAP-36 RESOLVED both sides, Tier 2 wired | Nest niche depth, Nest deploy |
 | ludoSpring | V70, gS L4, UniBin, 858 tests, Tier 4 (`default=["ipc"]`), **Tower atomic LIVE** (6/6) | Tower niche depth, coralReef wiring |
-| hotSpring | v0.6.32, gS L6, UniBin, 591 tests, Tier 4 (`default=[]`), LTEE B2, 3-GPU sovereign | Node atomic deployment (strandGate + biomeGate) |
+| hotSpring | v0.7.0, gS L6, UniBin, 591+ tests, Tier 4 (`default=[]`), LTEE B2, CAZyme FEL v0.7.0 (3 modules), biomeGate LIVE | Node atomic deployment, CAZyme promotion to lithoSpore |
 | wetSpring | V166b, gS L4, UniBin, 1,962 tests, Tier 4 (`default=[]`), LTEE B7 Tier 2, PG-03/05 RESOLVED | close PG-02/04 (deployment), gS L5 |
 | airSpring | v0.10.0, gS L4, UniBin, 1,429 tests, Tier 4 (`default=[]`), NestGate+Squirrel IPC wired | LTEE E3, gS L5+ |
 | neuralSpring | S204, gS L5, UniBin, 907 tests, Tier 4 (`default=[]`), LTEE B1, ~~Gap 11~~ CLOSED | NestGate weights, Tier 2 depth |
@@ -559,7 +559,7 @@ foundation seeding, plasmidBin release readiness
 | Spring | Version | gS | Tier 4 | Open Gaps | LTEE | Next Target |
 |--------|---------|:--:|:------:|-----------|------|-------------|
 | wetSpring | V179 | **L5** | Done | 2 (PG-02,04 — deployment-only) | **Barrick SEALED** (7/7, USB to lithoSpore) | Tenaillon 2016, variant caller parity, L3 cross-tier |
-| hotSpring | v0.6.32 | L6 | Done | Titan V FECS, K80 livepatch | **B2 DONE** | Node atomic (`s_node_atomic` added). strandGate AMD+NV, biomeGate sovereign dispatch |
+| hotSpring | v0.7.0 | L6 | Done | Titan V FECS, K80 livepatch | **B2 DONE** + CAZyme FEL v0.7.0 | Node atomic, biomeGate LIVE, CAZyme lithoSpore handoff |
 | neuralSpring | V159 | L5 | Done | Squirrel provider reg (upstream) | **B1 DONE** | NestGate weight persistence WIRED, Squirrel inference pipeline COMPLETE |
 | airSpring | v0.10.0 | L4 | Done | ~~AG-005~~ **RESOLVED**. NestGate/Squirrel IPC wired | E3 queued | LTEE E3, gS L5+ |
 | ludoSpring | V71 | L4 | Done | coralReef IPC (GAP-01) | **Tower atomic LIVE** (6/6) | MDA framework + BM-004/005 implemented. Foundation T9+T10 seeded |
