@@ -5,7 +5,7 @@
 > compliance and biomeOS v3.75 mesh dispatch. Hardcoding sites below
 > are largely resolved. See `CONTEXT.md` for current state.
 
-> **Historical note (2026-03-23)**: This trace was created during the Mar 18 Tower Atomic investigation when gates were 4/24. As of v0.7.0, NUCLEUS is **87/87 STABLE** with full Tower + Nest + Node composition, graph-driven overlays, provenance trio integration, and multi-node bonding. The hardcoding sites documented below remain relevant as the ongoing evolution roadmap for achieving full Neural API semantic routing across the ecosystem. See `TOWER_STABILITY.md` for current gate status.
+> **Historical note (2026-03-23)**: This trace was created during the Mar 18 Tower Atomic investigation when gates were 4/24. As of v0.7.0, NUCLEUS is **87/87 STABLE** with full Tower + Nest + Node composition, graph-driven overlays, provenance trio integration, and multi-node bonding. The hardcoding sites documented below remain relevant as the ongoing evolution roadmap for achieving full Neural API semantic routing across the ecosystem. See `specs/archive/TOWER_STABILITY.md` for current gate status.
 
 **Status**: Historical trace with ongoing evolution relevance — primalSpring v0.8.0  
 **Date**: 2026-03-18 (updated 2026-03-28)  
@@ -174,7 +174,7 @@ Multi-Node (NUCLEUS + bonding + federation)     ← STRUCTURAL (Phase 12)
 Live Multi-Node (bonded NUCLEUS mesh)           ← FUTURE (Phase 18)
 ```
 
-See `specs/TOWER_STABILITY.md` for the full gate acceptance criteria.
+See `specs/archive/TOWER_STABILITY.md` for the full gate acceptance criteria.
 
 ### gen4 Composition Validation (Phase 17)
 

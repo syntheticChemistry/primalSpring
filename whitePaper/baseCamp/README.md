@@ -65,7 +65,7 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | Metric | Value |
 |--------|-------|
 | Experiments | 89 (20 tracks) |
-| Total tests | **784** workspace (782 passed + 2 ignored; unit + integration + doc-tests + proptest) |
+| Total tests | **789** workspace (787 passed + 2 ignored; unit + integration + doc-tests + proptest) |
 | Registered capability methods | **458** |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |
@@ -792,7 +792,7 @@ Built deployment pipeline for live multi-gate LAN covalent deployment:
 | Multi-Node Bonding | BondType, BondingPolicy, STUN, federation graphs | + Songbird, NestGate | Bonding gates | **DONE** |
 | Emergent E2E | RootPulse + coralForge live | + provenance trio running | Emergent gates | **NEXT** |
 
-See `specs/TOWER_STABILITY.md` for the full 87-gate acceptance criteria.
+See `specs/archive/TOWER_STABILITY.md` for the full 87-gate acceptance criteria (FOSSIL RECORD).
 
 ## Hardware Validation (March 22, 2026)
 

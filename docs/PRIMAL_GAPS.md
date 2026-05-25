@@ -52,7 +52,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-47 complete. 52 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 787 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. `start_primal.sh` simplified. `nucleus_launcher` Rust binary created. 3 new coverage scenarios. Coverage script regex fix. Ionic bond scenario evolved to live RPC lifecycle + `bonding.modify_scope`. bearDog Wave 112: ACME daemon, 127 methods.**
+**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-49 complete. 53 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 789 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 49: post-primordial deployment, `SONGBIRD_PEERS` peer seeding, `--security-socket` feature guard, stale socket cleanup, cell binary pattern. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. `start_primal.sh` simplified. `nucleus_launcher` Rust binary created. bearDog Wave 112: ACME daemon, 127 methods.**
 
 ---
 

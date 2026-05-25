@@ -176,16 +176,17 @@ fallback (http_proxy), scoped by bonding trust tier.
 
 ## Deprecated Patterns (Fossilized)
 
-These patterns are deprecated and will be removed in the next stadial:
+These patterns are deprecated. Removal is deferred until stadial entry to
+preserve backward compatibility for springs still referencing the harness API.
 
-| Pattern | Replacement |
-|---------|-------------|
-| `AtomicHarness` / `RunningAtomic` | plasmidBin ecoBin deployment via biomeOS |
-| `spawn_primal` / `spawn_biomeos` | plasmidBin ecoBin deployment |
-| `probe_primal` / `check_capability_health` | `CompositionContext.health_check()` |
-| `validate_composition` | `CompositionContext.call()` |
-| `PrimalClient::connect` (direct) | `CompositionContext.client_for()` |
-| `CompositionContext::from_running` | `CompositionContext::discover()` |
+| Pattern | Replacement | Retention note |
+|---------|-------------|----------------|
+| `AtomicHarness` / `RunningAtomic` | plasmidBin ecoBin deployment via biomeOS | ~600 LOC in `ecoPrimal/src/harness/`. Compiled and tested. Wave 49: retained for compat; removal deferred to stadial entry. |
+| `spawn_primal` / `spawn_biomeos` | plasmidBin ecoBin deployment | Same module — coupled to `AtomicHarness` lifecycle. |
+| `probe_primal` / `check_capability_health` | `CompositionContext.health_check()` | No callers remain. Safe to remove at stadial. |
+| `validate_composition` | `CompositionContext.call()` | No callers remain. Safe to remove at stadial. |
+| `PrimalClient::connect` (direct) | `CompositionContext.client_for()` | No callers remain. Safe to remove at stadial. |
+| `CompositionContext::from_running` | `CompositionContext::discover()` | No callers remain. Safe to remove at stadial. |
 
 ## Fossil Record
 

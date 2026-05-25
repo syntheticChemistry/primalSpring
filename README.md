@@ -518,8 +518,8 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–25+ done — live validation matrix, GAP-MATRIX items all resolved)
 - `specs/NUCLEUS_VALIDATION_MATRIX.md` — NUCLEUS capability validation matrix with particle model
 - `specs/MIXED_COMPOSITION_PATTERNS.md` — Particle model, layered validation (L0-L3), gap inventory, spring specialization guide
-- `specs/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression
-- `specs/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution (incl. gen4 categories 8–11)
+- `specs/archive/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression (FOSSIL RECORD — archived Wave 49)
+- `specs/archive/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution (FOSSIL RECORD — archived Wave 49)
 - ~~`specs/GEN4_COMPOSITION_AUDIT.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 - `specs/PAPER_REVIEW_QUEUE.md` — Coordination patterns ready for validation
 - `specs/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (indirect only)

@@ -93,8 +93,8 @@ All pre-Wave 39 handoffs have been absorbed and archived:
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
 - **Zero open upstream gaps** — 13/13 primals at zero debt, zero panics in production
 - **458 registered capability methods** across 84+ domains — includes `neural_api.*` (6 methods), `science.*` (6), ionic bond methods, FIDO2, `primal.announce`, `primal.list`
-- **49 validation scenarios** (10 tracks, 3 tiers: Rust / Both / Live) with shared `validation::helpers`; includes S47 neural-dispatch-live, S48 observatory-parity, S49 feedback-loop (live Neural API validation)
-- **784 lib tests** (784 pass, 2 ignored)
+- **53 validation scenarios** (10 tracks, 3 tiers: Rust / Both / Live) with shared `validation::helpers`; includes S47 neural-dispatch-live, S48 observatory-parity, S49 feedback-loop (live Neural API validation), S50-S53 post-primordial + covalent mesh
+- **789 lib tests** (789 pass, 2 ignored)
 - **biomeOS v3.70** — Neural API with adaptive routing weights (redb-persistent), weight health introspection, composition intelligence, and capability utilization tracking (hot/cold methods)
 - **NeuralBridge observatory + feedback loop** — primalSpring consumes biomeOS routing intelligence and feeds dispatch outcomes back through `capability_call_instrumented` + `record_bridge_outcome`
 - **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
@@ -176,7 +176,7 @@ delta. Every spring at zero debt. 5 springs actively deploying NUCLEUS on LAN ga
 | ludoSpring | 982 | ironGate | V77: 11/11 NUCLEUS PASS, proto-nucleate validated |
 | groundSpring | 1,123+ | ironGate | V145: degradation behavior, NestGate IPC |
 | airSpring | 1,373 | eastGate | v0.10.0: 57 caps, 17 methods full 3-tier coverage |
-| primalSpring | 784 | eastGate / ironGate | Wave 47: 13/13 behavioral convergence, 458 methods, 49 scenarios |
+| primalSpring | 789 | eastGate / ironGate | Wave 49: 13/13 behavioral convergence, 458 methods, 53 scenarios |
 
 **Convergence state**: All springs at zero debt. All primals at 13/13 behavioral
 convergence. Neural API observatory operational with full feedback loop. biomeOS v3.73
