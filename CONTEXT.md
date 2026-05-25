@@ -75,11 +75,11 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.28 Wave 48 (May 25, 2026) — 52 scenarios (10 tracks, 3 tiers),
+v0.9.28 Wave 49 (May 25, 2026) — 53 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (458 exercised, 100% coverage),
 89 experiments (20 tracks), 95 deploy graphs (81 deploy + 14 signal),
 44-cell deployment matrix. 787 lib tests (all passing). 13/13 behavioral
-convergence (DEPLOYMENT_BEHAVIOR_STANDARD). 8/8 delta springs sounded off —
+convergence (DEPLOYMENT_BEHAVIOR_STANDARD). 789 lib tests. 8/8 delta springs sounded off —
 4 gates operational (eastGate, ironGate, southGate, biomeGate). `nucleus_launcher`
 Rust binary: `--federation-port` for Songbird TCP mesh.
 
