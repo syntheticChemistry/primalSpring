@@ -248,7 +248,7 @@ methods registered) — all detail fossilized to `fossilRecord/`.
 - plasmidBin `start_primal.sh` normalized for all 13 primals
 
 **Glacial shift horizons:**
-- **Covalent bonding** — **Wave 48: IN PROGRESS**. 4/8 springs on named gates (eastGate, ironGate, southGate, biomeGate) with operational NUCLEUS. Gate Deployment sections added to all 8 springs. Cell graphs ready. Songbird TCP :7700 federation is the mesh transport. Next: enable federation on all 4 gates, verify `discovery.peers`, run cross-gate `capability.call`.
+- **Covalent bonding** — **Wave 48: ALL 8/8 SPRINGS SOUNDED OFF**. 4 gates operational: eastGate (primalSpring + airSpring + groundSpring), ironGate (primalSpring + ludoSpring + healthSpring), southGate (wetSpring + neuralSpring), biomeGate (hotSpring). Songbird TCP :7700 federation live on all gates. Next: verify cross-gate `discovery.peers`, run cross-gate `capability.call`, Plasmodium collective (3+ gates meshed).
 - **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5)
 - **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring). biomeOS v3.75 mesh routing is a prerequisite step.
 - ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 458/458 (100%) via 3 new scenarios + coverage graph + script regex fix

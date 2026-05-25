@@ -17,7 +17,17 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 25, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 52 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 787 lib tests (787 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 48: covalent spring mesh — 4/8 springs on named gates with operational NUCLEUS, Songbird TCP :7700 federation ready. hotSpring CAZyme FEL v0.7.0 (3 modules, GROMACS+PLUMED validated, lithoSpore handoff). loamSpine benchScale (51 validations, 43 methods).
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 52 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 787 lib tests (787 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 48: **8/8 springs sounded off** — 4 gates operational (eastGate, ironGate, southGate, biomeGate), Songbird TCP :7700 federation live. hotSpring CAZyme FEL v0.7.0 + Exp 221 UEFI sovereignty. loamSpine benchScale (51 validations, 43 methods).
+
+**Wave 48 deployment issues (from spring sound-offs):**
+
+| Issue | Reporter | Status |
+|-------|----------|--------|
+| loamSpine Tokio panic (`Cannot start a runtime from within a runtime`) on health probe | wetSpring, neuralSpring | **UPSTREAM** — loamSpine bug |
+| rhizoCrypt/sweetGrass/toadStool health probe >8s timeout | wetSpring | **KNOWN** — slow startup on cold launch |
+| `primal.announce` vs `discovery.register` migration path | wetSpring | **GUIDANCE NEEDED** — standard says biomeOS Neural API, springs use Songbird |
+| Songbird sled DB corruption after unclean shutdown | neuralSpring | **WORKAROUND** — clean `~/.local/share/songbird/task_lifecycle*` |
+| Spring binaries not in plasmidBin 13-primal set | healthSpring | **BY DESIGN** — springs build from source, symlink into `plasmidBin/primals/` |
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -386,15 +396,15 @@ ludoSpring, groundSpring, airSpring)
 5. **Fossil record**: 8/8 — `fossilRecord/` with dated provenance READMEs.
 6. **Zero debt**: 8/8 — zero TODO/FIXME/HACK, zero clippy warnings, zero test failures.
 
-| Spring | Post-Evolution State | Next Target |
-|--------|---------------------|-------------|
-| healthSpring | V64k, gS L5, UniBin, 1,014+ tests, Tier 4 (`default=[]`), B5 COMPLETE, Nest atomic COMPLETE, GAP-36 RESOLVED both sides, Tier 2 wired | Nest niche depth, Nest deploy |
-| ludoSpring | V70, gS L4, UniBin, 858 tests, Tier 4 (`default=["ipc"]`), **Tower atomic LIVE** (6/6) | Tower niche depth, coralReef wiring |
-| hotSpring | v0.7.0, gS L6, UniBin, 591+ tests, Tier 4 (`default=[]`), LTEE B2, CAZyme FEL v0.7.0 (3 modules), biomeGate LIVE | Node atomic deployment, CAZyme promotion to lithoSpore |
-| wetSpring | V166b, gS L4, UniBin, 1,962 tests, Tier 4 (`default=[]`), LTEE B7 Tier 2, PG-03/05 RESOLVED | close PG-02/04 (deployment), gS L5 |
-| airSpring | v0.10.0, gS L4, UniBin, 1,429 tests, Tier 4 (`default=[]`), NestGate+Squirrel IPC wired | LTEE E3, gS L5+ |
-| neuralSpring | S204, gS L5, UniBin, 907 tests, Tier 4 (`default=[]`), LTEE B1, ~~Gap 11~~ CLOSED | NestGate weights, Tier 2 depth |
-| groundSpring | V140, gS L4, UniBin, 1,123 tests, Tier 4 (`default=[]`), LTEE B1-B4 **DONE** | lithoSpore integration, coralReef IPC |
+| Spring | Gate | Post-Evolution State | Next Target |
+|--------|------|---------------------|-------------|
+| healthSpring | **ironGate** | V65a, gS L5, 23 UDS alive, 4 domain caps live | Nest niche depth, Nest deploy |
+| ludoSpring | **ironGate** | V78, gS L4, 982 tests, 12/12 proto-nucleate, cell deployed | Tower niche depth, coralReef wiring |
+| hotSpring | **biomeGate** | v0.7.0, gS L6, CAZyme FEL v0.7.0, Exp 221 UEFI sovereignty | CAZyme lithoSpore, PRI ring recovery |
+| wetSpring | **southGate** | V185, 1,962 tests, lifecycle.status + bonding wired, 22 domains | close PG-02/04, gS L5 |
+| neuralSpring | **southGate** | V173, 754 tests, dispatch(&Value) sync, federation live | NestGate weights, Tier 2 depth |
+| airSpring | **eastGate** | v0.10.0, gS L4, 1,429 tests, 46 niche, NUCLEUS shared | LTEE E3, gS L5+ |
+| groundSpring | **eastGate** | V140+, gS L4, 1,123 tests, NUCLEUS shared | lithoSpore integration, coralReef IPC |
 
 **Wave 3 COMPLETED** (May 9). Post-interstadial push (May 10-11) achieved:
 8/8 skunkBat Rust IPC, 8/8 `method.register`, 8/8 CI cross-sync 418,
