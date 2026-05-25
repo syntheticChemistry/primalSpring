@@ -204,7 +204,7 @@ start_primal() {
     shift 2
     local args=("$@")
 
-    if pgrep -f "$name.*(server|serve|daemon)" >/dev/null 2>&1; then
+    if pgrep -x "$name" >/dev/null 2>&1; then
         log "$name already running, skipping"
         return 0
     fi
