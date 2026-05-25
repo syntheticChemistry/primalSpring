@@ -11,7 +11,7 @@
 #   primals/         — static musl binaries
 #   graphs/          — all primalSpring deploy graphs (incl. compositions, multi-node, validation, gen4, spring_deploy)
 #   config/          — launch profiles
-#   scripts/         — deploy_to_gate.sh, start_tower.sh, validate_remote_gate.sh
+#   scripts/         — validate_remote_gate.sh
 #   .family.seed     — genetics (copied from existing seed if available)
 #
 # Prerequisites: run build_ecosystem_genomeBin.sh --tier1 first
@@ -109,4 +109,4 @@ echo "  $(find "$OUTPUT/graphs" -name '*.toml' 2>/dev/null | wc -l) deploy graph
 echo "  $(find "$OUTPUT/scripts" -name '*.sh' 2>/dev/null | wc -l) scripts"
 echo ""
 echo "To deploy to USB: cp -r $OUTPUT/* /media/<usb-mount>/"
-echo "To deploy to gate: $OUTPUT/scripts/deploy_to_gate.sh <gate-ip> <node-id>"
+echo "To deploy to gate: scp -r $OUTPUT/* <gate-ip>:/opt/ecoPrimals/"

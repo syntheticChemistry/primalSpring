@@ -521,8 +521,8 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `specs/archive/TOWER_STABILITY.md` — 87-gate acceptance criteria and progression (FOSSIL RECORD — archived Wave 49)
 - `specs/archive/CAPABILITY_ROUTING_TRACE.md` — Hardcoded → semantic routing evolution (FOSSIL RECORD — archived Wave 49)
 - ~~`specs/GEN4_COMPOSITION_AUDIT.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
-- `specs/PAPER_REVIEW_QUEUE.md` — Coordination patterns ready for validation
-- `specs/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (indirect only)
+- `specs/archive/PAPER_REVIEW_QUEUE.md` — Coordination patterns (archived Wave 49)
+- `specs/archive/BARRACUDA_REQUIREMENTS.md` — barraCuda relationship (archived Wave 49)
 - `specs/AGENTIC_TRIO_EVOLUTION.md` — biomeOS + Squirrel + petalTongue evolution guidance for the agentic loop
 - `specs/STORYTELLING_EVOLUTION.md` — ludoSpring + esotericWebb evolution for AI DM storytelling
 - `specs/RHIZOME_MICRO_GAME.md` — The Rhizome roguelike game spec: world gen, biomes, tile rendering, save format, primal usage

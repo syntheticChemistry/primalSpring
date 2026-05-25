@@ -4,12 +4,16 @@
 > Phase 60+ delta appended below. The structural model (particle types,
 > layered validation L0–L3, bonding patterns) remains valid.
 >
-> **Current state (May 23, 2026)**: Phase 60+, 13 primals, guideStone Level 8,
+> **Current state (May 25, 2026)**: Phase 60+, 13 primals, guideStone Level 8,
 > genomeBin v5.1+, BTSP Phase 3 converged (13/13 AEAD). primalSpring v0.9.28:
 > 791 tests, 458 methods, 53 scenarios (Wave 49 post-primordial + covalent mesh).
-> Neural API: biomeOS v3.70, persistent routing weights, weight health
+> Neural API: biomeOS v3.75, persistent routing weights, weight health
 > introspection, 12/12 announcing primals compliant. See `CONTEXT.md`,
 > `docs/PRIMAL_GAPS.md`, and `specs/NEURAL_API_EVOLUTION.md` for live tracking.
+>
+> **Note**: `graphs/sketches/` paths below were archived to
+> `fossilRecord/springs/primalSpring/` (April 2026). Live graphs are in
+> `graphs/deploy/`, `graphs/cells/`, `graphs/signals/`, `graphs/spring_validation/`.
 
 **Date**: April 20, 2026 (Phase 60+ delta: May 23, 2026)
 **Phase**: 45 → **60+** (13 primals, Tier 1 39/39 cross-arch binaries, guideStone Level 8, genomeBin v5.1+)
