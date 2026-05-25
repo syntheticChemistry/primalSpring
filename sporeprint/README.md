@@ -21,7 +21,7 @@ the sporePrint auto-refresh CI pipeline.
 ## Notebooks
 
 Notebooks live in `notebooks/` (sibling to this directory) and are rendered
-separately by sporePrint's `render_notebooks.sh`. See `notebooks/NOTEBOOK_PATTERN.md`
+by `spore-validate render-notebooks` (Rust). See `notebooks/NOTEBOOK_PATTERN.md`
 for the full pattern. Frozen data lives in `experiments/results/*.json`.
 
 ## Front matter requirements
@@ -43,15 +43,15 @@ springs = ["yourspring"]
 See [CONTENT_GUIDE.md](https://github.com/ecoPrimals/wateringHole/blob/main/sporePrint/CONTENT_GUIDE.md)
 for full documentation.
 
-## Rust Evolution Roadmap
+## Tooling Status
 
-sporePrint is evolving toward Rust-native tooling:
+sporePrint tooling is now Rust-native (Wave 47: bash→Rust complete):
 
-- **`spore-validate`** (`infra/sporePrint/crates/spore-validate/`) — entity registry validation, link-lint, content taxonomy checks. Already Rust.
-- **`render_notebooks.sh`** — replace with Rust nbconvert equivalent
-- **`refresh-metrics.sh`** — replace with Rust metric sync (currently wraps `spore-validate refresh`)
+- **`spore-validate`** (`infra/sporePrint/crates/spore-validate/`) — entity registry validation, link-lint, content taxonomy checks
+- **`spore-validate render-notebooks`** — notebook rendering (replaced `render_notebooks.sh`)
+- **`spore-validate fetch-refresh`** — metric sync (replaced `refresh-metrics.sh`)
 - **Living content (S6)** — dynamic content via NestGate `content.put` instead of static GitHub Pages
 - **Sovereign deploy** — cellMembrane VPS (`membrane.primals.eco`) instead of GitHub Pages fallback
 
-Zola itself is already a Rust binary. The evolution is Rust-native tooling around Zola
-plus dynamic content delivery off static Pages.
+Zola itself is already a Rust binary. The remaining evolution is
+dynamic content delivery off static Pages.

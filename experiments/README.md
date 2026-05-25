@@ -32,7 +32,7 @@ discovery and IPC.
 
 ```bash
 # Run all scenarios via UniBin
-cargo run --release --bin primalspring_unibin -- validate
+cargo run --release --bin primalspring -- validate
 
 # Run a single experiment (use -p with the package name)
 cargo run --release -p primalspring-exp001
@@ -76,7 +76,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 
 Twenty absorbed experiment crates are now **validation scenarios** under
 `ecoPrimal/src/validation/scenarios/` and are run through the UniBin binary
-`primalspring_unibin` — e.g. `cargo run -p primalspring --bin primalspring_unibin -- validate`
+`primalspring` — e.g. `cargo run -p primalspring --bin primalspring -- validate`
 (with `certify`, `serve`, `status`, `version` as sibling subcommands).
 The **prokaryotic-era** sources for those 20 experiments are preserved under
 [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/primalSpring/experiments_prokaryotic_may2026/`; the living experiment crates

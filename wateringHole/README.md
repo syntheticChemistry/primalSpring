@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.28 (Wave 47 — 784 tests, 458 methods, 49 scenarios, 13/13 behavioral convergence, 12/12 primal.announce)
-**Last Updated**: May 24, 2026 (Wave 47 — DEPLOYMENT_BEHAVIOR_STANDARD 13/13, deep debt sweep absorbed from 9 primals, plasmidBin normalized, fossilRecord consolidated)
+**Version**: 0.9.28 (Wave 48 — 787 tests, 458 methods, 52 scenarios, 13/13 behavioral convergence, 8/8 springs sounded off, 4 gates operational)
+**Last Updated**: May 25, 2026 (Wave 48 — Covalent mesh: 8 delta springs on 4 gates with Songbird TCP :7700 federation. `nucleus_launcher` Rust `--federation-port`. Deployment issues documented.)
 **License**: AGPL-3.0-or-later  
 
 ---

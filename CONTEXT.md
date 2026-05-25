@@ -25,8 +25,9 @@ back upstream to primals and primalSpring.
 ## Architecture
 
 - **ecoPrimal/** — library crate (`primalspring`) + 3 binaries:
-  `primalspring_unibin` (eukaryotic UniBin: certify + validate + serve + status + version),
+  `primalspring` (eukaryotic UniBin: certify + validate + serve + status + version),
   `primalspring_primal` (JSON-RPC IPC server / cell membrane),
+  `nucleus_launcher` (Rust NUCLEUS launcher with `--federation-port`),
   `nucleus_launcher` (Rust replacement for bash launcher — dependency-ordered startup)
 - **experiments/** — 89 validation binaries covering 20 tracks
 - **graphs/** — 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first

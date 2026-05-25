@@ -148,7 +148,7 @@ Before running domain guideStones, validate the composition is sound:
 ```bash
 FAMILY_ID=my-spring-validation \
     cargo run --manifest-path path/to/primalSpring/ecoPrimal/Cargo.toml \
-    --bin primalspring_unibin -- certify
+    --bin primalspring -- certify
 
 # Exit 0 → composition valid, proceed with domain guideStone
 # Exit 1 → composition broken, fix before domain validation

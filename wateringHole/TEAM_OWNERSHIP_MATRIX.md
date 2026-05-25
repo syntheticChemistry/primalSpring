@@ -91,8 +91,8 @@ evolution mandate.
 | What | Repo / Path | Description |
 |------|-------------|-------------|
 | **Capability registry** | `config/capability_registry.toml` | 458 methods, authoritative method surface |
-| **Validation scenarios** | `ecoPrimal/src/validation/scenarios/` | 49 scenarios, 10 tracks, 3 tiers |
-| **Deploy graphs** | `graphs/` | 80 deploy TOMLs + 14 atomic signal graphs |
+| **Validation scenarios** | `ecoPrimal/src/validation/scenarios/` | 52 scenarios, 10 tracks, 3 tiers |
+| **Deploy graphs** | `graphs/` | 81 deploy TOMLs + 14 atomic signal graphs |
 | **Routing schema** | `config/routing_config_reference.toml` | Canonical membrane routing configuration |
 | **Neural API observatory** | `ecoPrimal/src/composition/` + `ipc/neural_bridge.rs` | Studies biomeOS routing intelligence, pushes evolution |
 | **sporePrint** | `infra/sporePrint` (primals.eco) | Ecosystem registry + public content; evolving toward Rust-native tooling and living content |

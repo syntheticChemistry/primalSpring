@@ -6,7 +6,7 @@
 
 name: primalspring-coordination
 description: "Coordination and composition validation niche"
-version: "0.8.0"
+version: "0.9.28"
 
 deploy_graph: "graphs/nucleus_complete.toml"
 

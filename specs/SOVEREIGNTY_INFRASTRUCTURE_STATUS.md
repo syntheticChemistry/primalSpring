@@ -1,6 +1,6 @@
 # Sovereignty Infrastructure Status
 
-**Date**: May 22, 2026 (Wave 42)
+**Date**: May 25, 2026 (Wave 48)
 **Status**: Active — tracking sovereignty cutover progress
 **Audience**: All teams (cellMembrane, projectNUCLEUS, primalSpring)
 
@@ -115,11 +115,11 @@ bash scripts) is an ongoing elevation in projectNUCLEUS.
 | Utilization tracking | LIVE (Wave 42) | biomeOS | Hot/cold method analysis |
 | Composition intelligence | LIVE | biomeOS | CompositionTier, CompositionPatternRegistry |
 | Observatory feedback loop | LIVE (Wave 42) | primalSpring | Bridge outcome recording into dispatch metrics |
-| `primal.announce` adoption | **UNEVEN** | All primal teams | See WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md |
+| `primal.announce` adoption | **12/12** | All primal teams | Wave 47: all compliant. biomeOS v3.75 mesh dispatch live. |
 
-The Neural API infrastructure is mature. The blocker is primal adoption
-of `primal.announce` — without it, the adaptive routing layer learns
-from discovery probes only, not from self-reported cost/latency hints.
+The Neural API infrastructure is mature. `primal.announce` adoption is
+complete (12/12). Remaining evolution: learned routing weights (biomeOS)
+and cross-gate mesh dispatch validation on the 4-gate covalent mesh.
 
 ---
 
@@ -151,9 +151,9 @@ See `wateringHole/TEAM_OWNERSHIP_MATRIX.md` for full details.
 
 ### Upstream Asks (async, not blocking)
 
-1. bearDog: ACME renewal daemon for sovereign TLS
+1. ~~bearDog: ACME renewal daemon for sovereign TLS~~ **RESOLVED** (Wave 112)
 2. biomeOS: `composition_model = "membrane"` in `composition.deploy(graph)`
-3. All primals: `primal.announce` with v3.68 schema (see deployment guide)
+3. ~~All primals: `primal.announce` with v3.68 schema~~ **RESOLVED** (12/12, Wave 47)
 
 ### Multi-Gate Expansion (cellMembrane, later)
 
@@ -170,14 +170,14 @@ Each layer evolves independently:
 
 ```
 S0 ████████████████████████ COMPLETE (hardware deployed)
-S1 ████████████░░░░░░░░░░░░ IN PROGRESS (Caddy live, bearDog ACME pending)
+S1 ████████████████████████ COMPLETE (BearDog ACME renewal daemon live, Wave 112)
 S2 ████░░░░░░░░░░░░░░░░░░░░ PLANNED (knot-dns next)
 S3 ████████████████████████ COMPLETE (RustDesk + Songbird live)
 S4 ████████████████████████ COMPLETE (Forgejo primary + GitHub mirror)
 S5 ████████████████████░░░░ MOSTLY (Forgejo releases pending)
 S6 ████████████░░░░░░░░░░░░ IN PROGRESS (static Zola, living content pending)
 S7 ████████████████████████ COMPLETE (Neural API + scripts + graphs)
-S8 ████████████████████░░░░ OPERATIONAL (infra complete, primal adoption pending)
+S8 ████████████████████████ COMPLETE (12/12 primal.announce, biomeOS v3.75 mesh)
 ```
 
 No layer blocks another. Teams evolve orthogonally and synchronize at

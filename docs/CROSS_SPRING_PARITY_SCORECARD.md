@@ -183,7 +183,7 @@ signal validation (GAP-024), ludoSpring 6 game.* methods, Squirrel mechanical co
 
 **projectFOUNDATION**: 184 targets (146 validated), 29 workloads, per-spring validation folder
 convention, 6 barraCuda CPU parity benchmarks, CI gates on schemas/workloads/benchmarks.
-Thread 10 workload targets primalspring_unibin validate. Asks: primal RPC response schema
+Thread 10 workload targets `primalspring validate`. Asks: primal RPC response schema
 standardization, CompositionContext for foundation_validate elevation.
 
 ### Foundation Thread Seeding Status

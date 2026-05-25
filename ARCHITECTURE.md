@@ -16,7 +16,7 @@ contains all validation, certification, and coordination capabilities.
 │  │  Engine           │  │  Scenarios       │  │  (membrane)  │  │
 │  │  (mitochondria)   │  │  (ribosomes)     │  │              │  │
 │  │                   │  │                  │  │  JSON-RPC    │  │
-│  │  L0: Bare         │  │  45 absorbed     │  │  2.0 over    │  │
+│  │  L0: Bare         │  │  52 absorbed     │  │  2.0 over    │  │
 │  │  L0.5: Seed       │  │  experiments     │  │  Unix socket │  │
 │  │  L1: Discovery    │  │  across 10 tracks│  │              │  │
 │  │  L1.5: BTSP       │  │                  │  │  MethodGate  │  │
@@ -105,8 +105,9 @@ Runs with `biomeOS` orchestrating the full composition.
 
 | Binary | Purpose | Status |
 |--------|---------|--------|
-| `primalspring_unibin` | Eukaryotic UniBin (certify + validate + serve + status + version) | Active |
+| `primalspring` | Eukaryotic UniBin (certify + validate + serve + status + version) | Active |
 | `primalspring_primal` | Legacy RPC server | Transition (→ `primalspring serve`) |
+| `nucleus_launcher` | Rust NUCLEUS launcher (`--federation-port` for LAN mesh) | Active |
 
 ### Validation Tracks
 

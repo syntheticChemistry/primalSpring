@@ -12,7 +12,7 @@ springs = ["primalspring"]
 
 - **784 lib tests** (784 passed, 2 ignored), 0 failed
 - **89 experiments** across 20 tracks (tower atomic → frontier)
-- **94 deploy graphs** (80 deploy + 14 signal), 49 validation scenarios (10 tracks)
+- **95 deploy graphs** (81 deploy + 14 signal), 52 validation scenarios (10 tracks)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`
 - **458 registered capability methods** (including 6 `neural_api.*` methods)
 - **Zero DEBT markers**, zero unsafe blocks (`SeedConfig` + `OnceLock`)
@@ -21,7 +21,7 @@ springs = ["primalspring"]
 
 ## Key Validation Binaries
 
-- `primalspring validate` — UniBin validation (49 scenarios across 10 tracks, 3 tiers)
+- `primalspring validate` — UniBin validation (52 scenarios across 10 tracks, 3 tiers)
 - `primalspring certify` — Certification engine (L0-L8, BTSP, seed provenance, cellular)
 - `primalspring serve` — RPC server (JSON-RPC 2.0 over UDS)
 

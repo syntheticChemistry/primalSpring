@@ -10,7 +10,7 @@
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 787 `#[test]` markers (787 pass, 2 ignored) |
 | **Experiments** | 89 (20 tracks) — 52 validation scenarios (10 tracks) |
-| **Deploy Graphs** | 94 deploy TOMLs (80 deploy + 14 atomic signal graphs) — fragment-first composition with `resolve = true` |
+| **Deploy Graphs** | 95 deploy TOMLs (81 deploy + 14 atomic signal graphs) — fragment-first composition with `resolve = true` |
 | **Coverage** | Method coverage against 458 registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
@@ -59,7 +59,7 @@ primalSpring/
 │   ├── src/bin/
 │   │   ├── primalspring/          # UniBin: certify + validate + serve + status + version
 │   │   ├── primalspring_primal/   # Legacy RPC server (transitioning → primalspring serve)
-│   │   └── (legacy bins primalspring_guidestone + validate_all removed Wave 32)
+│   │   └── nucleus_launcher/   # Rust nucleus launcher (--federation-port for LAN mesh)
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests
@@ -137,10 +137,10 @@ cargo test --workspace
 cargo test --ignored
 
 # Run scenario validation (UniBin)
-cargo run --release --bin primalspring_unibin -- validate
+cargo run --release --bin primalspring -- validate
 
 # Certify ecosystem composition
-cargo run --release --bin primalspring_unibin -- certify
+cargo run --release --bin primalspring -- certify
 
 # Start the primalSpring JSON-RPC server
 cargo run --bin primalspring_primal -- server
@@ -150,20 +150,20 @@ cargo run --bin primalspring_primal -- status
 
 # === UniBin (eukaryotic) ===
 # Run certification (absorbed guidestone)
-cargo run --bin primalspring_unibin -- certify
+cargo run --bin primalspring -- certify
 
 # Run bare certification (no primals needed)
-cargo run --bin primalspring_unibin -- certify --bare
+cargo run --bin primalspring -- certify --bare
 
 # Run all validation scenarios (absorbed experiments)
-cargo run --bin primalspring_unibin -- validate
+cargo run --bin primalspring -- validate
 
 # List available scenarios
-cargo run --bin primalspring_unibin -- validate --list
+cargo run --bin primalspring -- validate --list
 
 # Filter by track or tier
-cargo run --bin primalspring_unibin -- validate --track atomic-composition
-cargo run --bin primalspring_unibin -- validate --tier rust
+cargo run --bin primalspring -- validate --track atomic-composition
+cargo run --bin primalspring -- validate --tier rust
 ```
 
 ### Code coverage ([cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov))
