@@ -28,6 +28,7 @@ getrandom = "0.4.2"
 zeroize = { version = "1.8.2", features = ["zeroize_derive"] }
 chacha20poly1305 = "0.10"
 blake3 = { version = "1", features = ["pure"] }
+hostname = "0.4"
 
 [lints]
 workspace = true
@@ -39,6 +40,10 @@ path = "src/bin/primalspring/main.rs"
 [[bin]]
 name = "primalspring_primal"
 path = "src/bin/primalspring_primal/main.rs"
+
+[[bin]]
+name = "nucleus_launcher"
+path = "src/bin/nucleus_launcher/main.rs"
 
 [features]
 stub-primals = []

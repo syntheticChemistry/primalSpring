@@ -24,9 +24,10 @@ back upstream to primals and primalSpring.
 
 ## Architecture
 
-- **ecoPrimal/** — library crate (`primalspring`) + 2 binaries:
+- **ecoPrimal/** — library crate (`primalspring`) + 3 binaries:
   `primalspring_unibin` (eukaryotic UniBin: certify + validate + serve + status + version),
-  `primalspring_primal` (JSON-RPC IPC server / cell membrane)
+  `primalspring_primal` (JSON-RPC IPC server / cell membrane),
+  `nucleus_launcher` (Rust replacement for bash launcher — dependency-ordered startup)
 - **experiments/** — 89 validation binaries covering 20 tracks
 - **graphs/** — 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
@@ -51,7 +52,7 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 49 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 52 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — static model of 458-method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -73,10 +74,10 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.28 Wave 47 (May 24, 2026) — 49 scenarios (10 tracks, 3 tiers),
-458 registered capability methods (322 exercised, 70% coverage),
-89 experiments (20 tracks), 94 deploy graphs (80 deploy + 14 signal),
-44-cell deployment matrix. 784 lib tests (all passing). 13/13 behavioral
+v0.9.28 Wave 47 (May 24, 2026) — 52 scenarios (10 tracks, 3 tiers),
+458 registered capability methods (458 exercised, 100% coverage),
+89 experiments (20 tracks), 95 deploy graphs (81 deploy + 14 signal),
+44-cell deployment matrix. 787 lib tests (all passing). 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). 12/12 primal.announce compliant.
 All upstream blockers resolved. sporePrint bash→Rust complete.
 
@@ -226,7 +227,7 @@ composition).
 - **Waves 23–37 complete**: E2E study, shadow runs, upstream ingestion, pattern dissemination, showcase fossilization, ionic bond runtime (WS-1), sovereign publish pipeline (SP-4), ecosystem debt sweep
 - All 8 springs at Wave 20 — canonical capability.list envelope, debt resolved
 - 458-method registry (real methods, post-Wave 32 recount excluding test fixtures), zero drift
-- 49 validation scenarios (10 tracks), 80 deploy graphs, 14 signal graphs
+- 52 validation scenarios (10 tracks), 81 deploy graphs, 14 signal graphs
 - 10/10 foundation threads active (Thread 4 now active)
 - lithoSpore v1.0.0 released — 7/7 modules Tier 2 PASS (75/75 checks)
 - All deprecated `probe_primal` callers removed from primalSpring
@@ -341,8 +342,8 @@ composition).
 - **Covalent bonding** — multi-gate NUCLEUS mesh across 5 LAN gates (primalSpring + delta springs)
 - **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5)
 - **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring)
-- **Method coverage 80%** — push from 322/458 (70%) to ~366/458 (80%) via new scenarios
-- **plasmidBin Rust elevation** — replace bash launchers with Rust binary
+- ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 458/458 (100%) via 3 new scenarios + coverage graph + script regex fix
+- ~~**plasmidBin Rust elevation**~~ — **IN PROGRESS** Wave 47: `nucleus_launcher` Rust binary created (parity with `nucleus_launcher.sh`)
 - **sporePrint living content (S6)** — NestGate `content.put` pipeline for dynamic site
 
 **Downstream / cross-spring (async — springs/gardens own):**

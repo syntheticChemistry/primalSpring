@@ -58,7 +58,7 @@ if [[ ${#EXISTING_DIRS[@]} -eq 0 ]]; then
     exit 1
 fi
 
-EXERCISED=$(rg -o '"[a-z]+\.[a-z_.]+[a-z]+"' "${EXISTING_DIRS[@]}" --no-filename 2>/dev/null \
+EXERCISED=$(rg -o '"[a-z][a-z0-9_.]+[a-z0-9]+"' "${EXISTING_DIRS[@]}" --no-filename 2>/dev/null \
     | tr -d '"' | sort -u)
 
 UNCOVERED=()

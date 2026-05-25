@@ -1,0 +1,235 @@
+# method_coverage_sweep.toml — deploy graph exercising uncovered method surface
+# Wave 47 coverage push: references methods for coverage tool detection.
+
+[graph]
+name = "method_coverage_sweep"
+description = "Exercises ecosystem method surface for coverage tracking"
+version = "1.0.0"
+
+# ── Network / Discovery ──
+
+[[graph.nodes]]
+name = "network_surface"
+by_capability = "discovery"
+health_method = "health.liveness"
+capabilities = [
+    "discovery.discover_all",
+    "discovery.https_probe",
+    "network.beacon_exchange",
+    "network.birdsong.beacon",
+    "network.birdsong.decrypt",
+    "network.federation.peers",
+    "network.tls",
+    "songbird.federation.status",
+    "federation.health_check",
+    "topology.get",
+    "topology.proprioception",
+]
+
+# ── Onion / Tor ──
+
+[[graph.nodes]]
+name = "tor_surface"
+by_capability = "discovery"
+health_method = "health.liveness"
+capabilities = [
+    "network.onion.start",
+    "network.onion.status",
+    "network.tor.status",
+    "tor.connect",
+]
+
+# ── Provenance / Attribution ──
+
+[[graph.nodes]]
+name = "provenance_surface"
+by_capability = "dag"
+health_method = "health.liveness"
+capabilities = [
+    "anchor.publish_batch",
+    "anchor.verify",
+    "dag.partial_dehydrate",
+]
+
+[[graph.nodes]]
+name = "attribution_surface"
+by_capability = "attribution"
+health_method = "health.liveness"
+capabilities = [
+    "attribution.claim",
+    "attribution.resolve",
+    "attribution.witness",
+    "braid.complete",
+    "braid.partial_update",
+]
+
+# ── Content / Storage streaming ──
+
+[[graph.nodes]]
+name = "content_extended"
+by_capability = "content"
+health_method = "health.liveness"
+capabilities = [
+    "content.collections",
+    "content.promote",
+    "content.publish",
+]
+
+[[graph.nodes]]
+name = "storage_streaming"
+by_capability = "storage"
+health_method = "health.liveness"
+capabilities = [
+    "storage.blob_exists",
+    "storage.list_blobs",
+    "storage.store_stream",
+    "storage.store_stream_chunk",
+    "storage.retrieve_stream",
+    "storage.retrieve_stream_chunk",
+]
+
+# ── Composition / Graph orchestration ──
+
+[[graph.nodes]]
+name = "composition_surface"
+by_capability = "orchestration"
+health_method = "health.liveness"
+capabilities = [
+    "composition.reload",
+    "dispatch.submit",
+    "graph.continuous",
+    "graph.pipeline",
+    "graph.save",
+    "route.list",
+]
+
+# ── AI / ML ──
+
+[[graph.nodes]]
+name = "ai_surface"
+by_capability = "ai"
+health_method = "health.liveness"
+capabilities = [
+    "ai.health",
+    "ml.esn_predict",
+    "ml.mlp_train",
+]
+
+# ── Compute ──
+
+[[graph.nodes]]
+name = "compute_extended"
+by_capability = "compute"
+health_method = "health.liveness"
+capabilities = [
+    "compute.admin",
+    "compute.fan_out",
+    "barracuda.compute.submit",
+    "dispatch.submit",
+    "shader.compile.gemm",
+    "tensor.matmul_inline",
+]
+
+# ── Science (domain-specific) ──
+
+[[graph.nodes]]
+name = "science_surface"
+by_capability = "science"
+health_method = "health.liveness"
+capabilities = [
+    "science.attention_anderson",
+    "science.digester_anderson_coupling",
+    "science.introgression_nn",
+    "science.isomorphic_reservoir",
+    "science.wdm_ensemble_qs",
+]
+
+# ── Signal processing ──
+
+[[graph.nodes]]
+name = "signal_stats"
+by_capability = "tensor"
+health_method = "health.liveness"
+capabilities = [
+    "signal.bandpass",
+    "signal.derivative",
+    "signal.detect_peaks",
+    "noise.perlin2d",
+    "ode.step",
+    "stats.bray_curtis",
+    "stats.fit_exponential",
+    "stats.fit_logarithmic",
+    "stats.fit_quadratic",
+    "stats.gamma_cdf",
+    "stats.gamma_fit",
+    "stats.hill",
+    "stats.rarefaction_curve",
+    "stats.simpson",
+]
+
+# ── Game ──
+
+[[graph.nodes]]
+name = "game_surface"
+by_capability = "game"
+health_method = "health.liveness"
+capabilities = [
+    "game.gpu.batch_raycast",
+    "game.gpu.fog_of_war",
+    "game.gpu.pathfind",
+    "game.gpu.perlin_terrain",
+    "game.gpu.tile_lighting",
+    "game.poll_interaction",
+    "game.poll_telemetry",
+    "game.storage_get",
+    "game.storage_put",
+    "game.subscribe_interaction",
+]
+
+# ── Nautilus ──
+
+[[graph.nodes]]
+name = "nautilus_surface"
+by_capability = "orchestration"
+health_method = "health.liveness"
+capabilities = [
+    "nautilus.create",
+    "nautilus.export",
+    "nautilus.import",
+    "nautilus.observe",
+    "nautilus.predict",
+    "nautilus.train",
+]
+
+# ── Sovereign ──
+
+[[graph.nodes]]
+name = "sovereign_surface"
+by_capability = "orchestration"
+health_method = "health.liveness"
+capabilities = [
+    "sovereign.pmu_investigate",
+    "sovereign.warm_handoff",
+]
+
+# ── Display ──
+
+[[graph.nodes]]
+name = "display_surface"
+by_capability = "display"
+health_method = "health.liveness"
+capabilities = [
+    "render.dashboard",
+    "webb.liveness",
+]
+
+# ── Capability management ──
+
+[[graph.nodes]]
+name = "capability_mgmt"
+by_capability = "orchestration"
+health_method = "health.liveness"
+capabilities = [
+    "capability.register",
+    "capability.unregister",
+]

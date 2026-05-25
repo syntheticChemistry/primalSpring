@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-24 (Wave 47: Post-primordial behavioral convergence. DEPLOYMENT_BEHAVIOR_STANDARD published. 9/9 primals responded — nestgate `--socket` + health normalized, skunkBat 4/4 items resolved, toadStool liveness fixed, barraCuda/rhizoCrypt `--socket` aliased, coralReef `--socket` + health fixed, biomeOS health normalized, petalTongue SIGTERM handler added, loamSpine Tokio crash was misdiagnosis (CLI error). 458 methods, 784 tests, 49 scenarios.)
+> **Last updated**: 2026-05-24 (Wave 47: Post-primordial behavioral convergence. DEPLOYMENT_BEHAVIOR_STANDARD published. 9/9 primals responded. 458 methods (458 exercised = 100%), 787 tests, 52 scenarios. `nucleus_launcher` Rust binary created. Coverage script regex fix. 3 new scenarios: coordination-api, health-lifecycle-surface, crypto-identity-surface.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 24, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 49 scenarios (10 tracks, 3 tiers), 458 real methods (322 exercised = 70%), 784 lib tests (784 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 2 binaries (UniBin + IPC server). Wave 47: 13/13 behavioral convergence, DEPLOYMENT_BEHAVIOR_STANDARD published, `start_primal.sh` simplified (workarounds removed). bearDog Wave 112: ACME daemon, 127 methods. Ionic bond `s_ionic_bond` evolved to live RPC lifecycle. biomeOS v3.73 capability-domain composition. sporePrint **15/15** + SP-1 auto-merge live.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 52 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 787 lib tests (787 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 47: 13/13 behavioral convergence, DEPLOYMENT_BEHAVIOR_STANDARD published, `start_primal.sh` simplified. bearDog Wave 112: ACME daemon, 127 methods. Ionic bond scenario evolved to live RPC lifecycle with `bonding.modify_scope`. `nucleus_launcher` Rust binary at feature-parity with bash launcher. biomeOS v3.73 capability-domain composition. sporePrint **15/15** + SP-1 auto-merge live.
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-47 complete. 49 scenarios (10 tracks), 458 real methods (322 exercised = 70%), 784 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. `start_primal.sh` simplified — all per-primal `--socket` workarounds removed. Ionic bond scenario evolved to live RPC lifecycle. bearDog Wave 112: ACME daemon, 127 methods.**
+**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-47 complete. 52 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 787 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. `start_primal.sh` simplified. `nucleus_launcher` Rust binary created. 3 new coverage scenarios. Coverage script regex fix. Ionic bond scenario evolved to live RPC lifecycle + `bonding.modify_scope`. bearDog Wave 112: ACME daemon, 127 methods.**
 
 ---
 

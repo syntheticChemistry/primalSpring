@@ -56,6 +56,8 @@ pub mod s_cellular_deployment;
 pub mod s_composition_lifecycle;
 pub mod s_composition_parity;
 pub mod s_compute_triangle;
+pub mod s_coordination_api;
+pub mod s_crypto_identity_surface;
 pub mod s_content_sovereignty;
 pub mod s_coralreef_shader_targets;
 pub mod s_dark_forest_gate;
@@ -71,6 +73,7 @@ pub mod s_full_nucleus;
 pub mod s_routing_consistency;
 pub mod s_schema_standard;
 pub mod s_gate_failure;
+pub mod s_health_lifecycle_surface;
 pub mod s_ionic_bond;
 pub mod s_loam_certificate_lifecycle;
 pub mod s_membrane_composition;
@@ -148,6 +151,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_neural_dispatch_live::SCENARIO);
     r.register(s_observatory_parity::SCENARIO);
     r.register(s_feedback_loop::SCENARIO);
+    r.register(s_coordination_api::SCENARIO);
+    r.register(s_health_lifecycle_surface::SCENARIO);
+    r.register(s_crypto_identity_surface::SCENARIO);
     r
 }
 
@@ -158,7 +164,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 49;
+    const EXPECTED_SCENARIO_COUNT: usize = 52;
 
     #[test]
     fn registry_scenario_count() {

@@ -179,6 +179,7 @@ fn phase_policy_enforcement(v: &mut ValidationResult) {
     );
 }
 
+#[expect(clippy::too_many_lines, reason = "live RPC lifecycle phases are sequential")]
 fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("orchestration") {
         v.check_skip(
@@ -269,6 +270,30 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
         }
         Err(e) => {
             v.check_bool("live:status", false, &format!("bonding.status error: {e}"));
+        }
+    }
+
+    match ctx.call(
+        "orchestration",
+        "bonding.modify_scope",
+        serde_json::json!({
+            "contract_id": contract_id,
+            "add_capabilities": ["storage.retrieve"],
+        }),
+    ) {
+        Ok(resp) => {
+            v.check_bool(
+                "live:modify_scope",
+                resp.is_object(),
+                &format!("bonding.modify_scope → {resp}"),
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "live:modify_scope",
+                false,
+                &format!("bonding.modify_scope error: {e}"),
+            );
         }
     }
 
