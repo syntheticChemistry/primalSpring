@@ -1,6 +1,6 @@
 # Sovereignty Infrastructure Status
 
-**Date**: May 25, 2026 (Wave 48)
+**Date**: May 25, 2026 (Wave 49)
 **Status**: Active — tracking sovereignty cutover progress
 **Audience**: All teams (cellMembrane, projectNUCLEUS, primalSpring)
 

@@ -86,7 +86,7 @@ sole binary source, all primordial fallbacks cut across 4 responding springs.
 pre-cleanup (EADDRINUSE fix). Cell binary pattern documented. 4 gates
 operational (eastGate, ironGate, southGate, biomeGate).
 
-**Waves 1-47 complete**. Key milestones: Neural API deployment (W42), observatory
+**Waves 1-49 complete**. Key milestones: post-primordial (W49), covalent mesh (W48), Neural API deployment (W42), observatory
 posture (W41), neural routing layer (W40), upstream absorption (W39), behavioral
 convergence (W47). Wave-by-wave detail fossilized to `fossilRecord/`.
 
@@ -215,7 +215,7 @@ composition).
 
 ### Completed
 - **Waves 1–47 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 458-method registry (100% exercised), 52 scenarios, 81 deploy graphs, 14 signal graphs
+- 458-method registry (100% exercised), 53 scenarios, 81 deploy graphs, 14 signal graphs
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs

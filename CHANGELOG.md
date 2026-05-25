@@ -3,7 +3,37 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–47: Stadial Entry / Glacial Shift (2026-05-23)
+## [Unreleased] — Waves 22–49: Stadial Entry / Glacial Shift (2026-05-25)
+
+### Wave 49: Post-Primordial Deployment + Covalent Mesh Evolution (May 25)
+- **Post-primordial mandate**: plasmidBin is sole binary source. `nucleus_launcher.sh`
+  auto-detects `infra/plasmidBin/primals/`, no `which`/PATH fallback, fatal error if missing.
+  `~/.local/bin` primal stubs removed.
+- **`SONGBIRD_PEERS` env**: cross-gate mesh peer seeding in both bash and Rust launchers.
+  `mesh.init` RPC post-startup. Rust launcher: `--peers` CLI flag.
+- **`--security-socket` feature guard**: launcher probes `songbird --help` before passing
+  CLI flag; falls back to `SONGBIRD_SECURITY_SOCKET` env var for older plasmidBin builds.
+- **Stale socket pre-cleanup**: launcher pre-cleans dead sockets before Phase 0 (fixes
+  petalTongue EADDRINUSE on restart).
+- **`s_covalent_mesh` scenario** (53rd): validates `discovery.peers` over Songbird TCP
+  federation and cross-gate `capability.call` dispatch.
+- **Cell binary pattern documented**: spring cells ≠ NUCLEUS primals; `plasmidBin/cells/`
+  staging area; `target/release/` permitted for spring-specific cells only.
+- **Cross-subnet mesh documented**: southGate (192.168.4.x) ≠ eastGate (192.168.1.x);
+  requires subnet routing or cellMembrane TURN relay.
+- 4 springs confirmed post-primordial: wetSpring V186, ludoSpring Wave 49,
+  neuralSpring V174, healthSpring V65a.
+- 789 lib tests (789 pass, 2 ignored). 53 scenarios. Zero clippy warnings.
+
+### Wave 48: Covalent Spring Mesh (May 25)
+- **8/8 springs sounded off**: 4 gates operational (eastGate, ironGate, southGate, biomeGate).
+- **Songbird TCP :7700 federation** live on all gates. `nucleus_launcher` Rust binary
+  with `--federation-port` for LAN mesh. `--bind 0.0.0.0` when federation enabled.
+- **ludoSpring** duplicate Gate Deployment section cleaned.
+- **5 deployment issues** documented from spring sound-offs (loamSpine Tokio panic,
+  rhizoCrypt slow startup, `primal.announce` migration, Songbird sled DB corruption,
+  spring binaries not in plasmidBin).
+- `s_covalent_mesh` scenario stub added.
 
 ### Wave 47: sporePrint Rust Evolution + Local Debt Sweep (May 23)
 - **`render-notebooks` subcommand**: Pure Rust `.ipynb` → Zola markdown renderer in `spore-validate`.

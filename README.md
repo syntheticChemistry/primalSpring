@@ -53,7 +53,7 @@ primalSpring/
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)
-│   │   ├── validation/scenarios/  # 49 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
+│   │   ├── validation/scenarios/  # 53 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/
@@ -432,7 +432,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 787 lib tests (787 pass, 2 ignored).
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 789 lib tests (789 pass, 2 ignored).
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 
@@ -477,13 +477,15 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 | C6: Proprioception (petalTongue) | **5/5 PASS** | Subscribe, apply, poll, showing |
 | C7: Full Interactive | **10/10 PASS** | Full cross-subsystem: session→render→export, game science, Squirrel health, NestGate |
 
-**49/49 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–47 complete).
+**53/53 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–49 complete).
 
-## Live Integration Status (May 14, 2026)
+## Live Integration Status (May 25, 2026)
 
-**13/13 primals ALIVE** on eastGate (plasmidBin v2026.05.03). All at zero debt,
+**13/13 primals ALIVE** on eastGate (plasmidBin-only, post-primordial). All at zero debt,
 13/13 BTSP Phase 3 FULL AEAD, 13/13 MethodGate adopted. Zero-port Tower Atomic
 standard: UDS-only default, TCP opt-in via `PRIMALSPRING_TCP_TIER5=1`.
+4-gate NUCLEUS operational (eastGate, ironGate, southGate, biomeGate) with
+Songbird TCP :7700 federation. `SONGBIRD_PEERS` env for cross-gate mesh seeding.
 
 | Primal | Status | Notes |
 |--------|--------|-------|
@@ -508,7 +510,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `wateringHole/README.md` — Outward-facing guidance index
 - `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` — `primal.announce` atomic self-registration wire format
 - `ARCHITECTURE.md` — UniBin cell model, two-tier validation, organelle map
-- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1–47, 13/13 zero debt)
+- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1–49, 13/13 zero debt)
 - ~~`docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 - `docs/CROSS_SPRING_PARITY_SCORECARD.md` — Cross-spring parity scorecard
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role

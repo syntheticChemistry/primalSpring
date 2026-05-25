@@ -90,7 +90,8 @@ find_binary() {
         echo "$triple_path"
         return
     fi
-    which "$name" 2>/dev/null || true
+    err "$name not found in plasmidBin (bin_dir=$BIN_DIR)"
+    echo ""
 }
 
 start_primal() {

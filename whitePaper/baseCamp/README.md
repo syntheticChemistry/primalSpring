@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
 **Date**: May 25, 2026
-**Status**: Phase 60+ — v0.9.28 — 89 experiments (20 tracks), 787 `#[test]` markers (787 pass, 2 ignored, 0 clippy errors), 95 deploy graphs (81 deploy + 14 signal), **458 registered capability methods**, 52 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 48**: 8/8 springs sounded off, 4 gates operational, `nucleus_launcher` Rust `--federation-port`. **Wave 47**: sporePrint Rust evolution complete. 13/13 behavioral convergence. **Zero DEBT markers / zero unsafe blocks**. **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, adaptive routing weights, composition patterns, `primal.announce` 12/12). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs.
+**Status**: Phase 60+ — v0.9.28 — 89 experiments (20 tracks), 789 `#[test]` markers (789 pass, 2 ignored, 0 clippy errors), 95 deploy graphs (81 deploy + 14 signal), **458 registered capability methods**, 53 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 49**: post-primordial (plasmidBin-only), `SONGBIRD_PEERS` peer seeding, 4 springs confirmed. **Wave 48**: 8/8 springs sounded off, 4 gates operational. **Zero DEBT markers / zero unsafe blocks**. **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, adaptive routing weights, composition patterns, `primal.announce` 12/12). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs.
 
 ---
 

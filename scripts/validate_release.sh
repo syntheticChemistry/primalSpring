@@ -110,7 +110,7 @@ if [ -d "$PLASMID_DIR" ] && [ -f "$PLASMID_DIR/checksums.toml" ]; then
             PLASMID_OK=false
         fi
     done
-    for spring_bin in primalspring_primal primalspring_unibin; do
+    for spring_bin in primalspring_primal primalspring; do
         if [ ! -f "$PLASMID_DIR/springs/$spring_bin" ]; then
             fail "plasmidBin missing: springs/$spring_bin"
             PLASMID_OK=false

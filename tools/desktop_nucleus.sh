@@ -44,7 +44,8 @@ PRIMALS="$SPAWNED_PRIMALS biomeos"
 biomeos_bin() {
     local b="$BIN_DIR/biomeos"
     [[ -x "$b" ]] && echo "$b" && return
-    which biomeos 2>/dev/null || true
+    err "biomeos not found in plasmidBin (bin_dir=$BIN_DIR)"
+    echo ""
 }
 
 biomeos_is_available() {

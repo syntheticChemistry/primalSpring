@@ -3,7 +3,7 @@
 #
 # Thread 10 Provenance Capture — primalSpring
 #
-# Runs primalspring_unibin validate and writes provenance artifacts to
+# Runs primalspring validate and writes provenance artifacts to
 # the projectFOUNDATION validation folder for Thread 10.
 #
 # Usage:
@@ -34,11 +34,17 @@ fi
 
 UNIBIN="${SPRING_ROOT}/ecoPrimal/target/release/primalspring_unibin"
 if [ ! -x "$UNIBIN" ]; then
+    UNIBIN="${SPRING_ROOT}/ecoPrimal/target/release/primalspring"
+fi
+if [ ! -x "$UNIBIN" ]; then
     UNIBIN="${SPRING_ROOT}/ecoPrimal/target/debug/primalspring_unibin"
+fi
+if [ ! -x "$UNIBIN" ]; then
+    UNIBIN="${SPRING_ROOT}/ecoPrimal/target/debug/primalspring"
 fi
 
 if [ ! -x "$UNIBIN" ]; then
-    echo "error: primalspring_unibin not found. Build with:"
+    echo "error: primalspring binary not found. Build with:"
     echo "  cd ${SPRING_ROOT}/ecoPrimal && cargo build --release"
     exit 1
 fi

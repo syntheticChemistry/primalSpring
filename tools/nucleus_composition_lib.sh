@@ -987,7 +987,7 @@ _find_biomeos() {
     local plasmid_base="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
     local plasmid="$plasmid_base/primals/x86_64-unknown-linux-musl/biomeos"
     [[ -x "$plasmid" ]] && echo "$plasmid" && return
-    which biomeos 2>/dev/null || true
+    echo ""
 }
 
 biomeos_is_available() {
