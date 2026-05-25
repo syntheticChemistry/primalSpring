@@ -22,15 +22,15 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 112: ACME renewal daemon wired, 127 methods, `crypto.ionic_bond.verify_proposal` shipped. |
-| songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 213: NAT traversal data plane (TURN keepalive, cloudflared orchestration, shadow comparator). `capability.call` integration tests. |
-| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S273: `health.liveness` always `"alive"` (boot-phase → `health.readiness`). Deep debt: zero `.unwrap()` in prod, `dispatch/sovereign.rs` extracted (1638→839L), `warm_init/` modularized (1439→3 files), capability-based discovery. 9,131 lib tests. |
-| biomeOS | 7,924+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.73: `health.check` → `"alive"` normalized. `weights.rs` (879L) → `weights/` submodule. Composition → capability-domain discovery (no hardcoded primal names). Port helpers renamed. 1311 lib tests. |
+| songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 47: zero debt gate clear. `capability.call` handler consumed by biomeOS v3.75 for cross-gate mesh dispatch. |
+| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S274: `GuestLoadPolicy` yield-to-owner enforced in `check_quota()`. `YieldStrategy` enum: Queue/Reject/DeferUntilPowerCycle. 10 new orchestration tests. 9,140+ lib tests. |
+| biomeOS | 8,026+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.75: cross-gate Songbird mesh dispatch (`try_songbird_mesh_dispatch()` replaces `relay.allocate`). Both translation + direct paths fall back to mesh. Response unwrapping. Routing contract documented. v3.74: shadow deploy membrane gate. 1315 lib tests. |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `math.rs` refactored (split `signal.rs` + `stats.rs`), `pollster` eliminated, hardcoding → capability-based. 87 IPC methods. |
-| petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — SIGTERM handler added (`src/signal.rs`). Content backend → capability-based NestGate discovery. `web_mode/` refactored (split handlers, tests, content_backend). 55 IPC methods. |
+| petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — WS-4: `petal-tongue-wasm` expanded (8 `wasm_bindgen` functions: `render_dashboard`, `render_binding`, `render_scene`, `validate_grammar`, modality dispatch). Client-side WASM rendering for offline sporePrint. |
 | rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `Box<dyn Error>` eliminated, test harness extracted, workspace dep hygiene, stale spec headers fixed. |
-| loamSpine | 1,527+ | **ADOPTED** | FULL | L3 | **CLEAN** — Tokio crash was misdiagnosis (CLI `serve`→`server`). All behavioral checks PASS. `lifecycle.status` gained `uptime_s`. `LOAMSPINE_DISCOVERY_ENABLED` env gate for NUCLEUS. Tests split into 3 files. |
+| loamSpine | 1,527+ | **ADOPTED** | FULL | L3 | **CLEAN** — RFC 3161 TSA anchor serde + service roundtrip test added. `AnchorTarget::Rfc3161Tsa` variant with `tsa_url`. |
 | sweetGrass | 1,553 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.37: PID file, JH-0 gate + port 9850 canonical |
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |

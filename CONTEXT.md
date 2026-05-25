@@ -339,9 +339,9 @@ composition).
 - plasmidBin `start_primal.sh` normalized for all 13 primals
 
 **Glacial shift horizons:**
-- **Covalent bonding** — multi-gate NUCLEUS mesh across 5 LAN gates (primalSpring + delta springs)
+- **Covalent bonding** — multi-gate NUCLEUS mesh across 5 LAN gates (primalSpring + delta springs). Transport layer READY: biomeOS v3.75 Songbird mesh dispatch + toadStool S274 yield-to-owner.
 - **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5)
-- **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring)
+- **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring). biomeOS v3.75 mesh routing is a prerequisite step.
 - ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 458/458 (100%) via 3 new scenarios + coverage graph + script regex fix
 - ~~**plasmidBin Rust elevation**~~ — **IN PROGRESS** Wave 47: `nucleus_launcher` Rust binary created (parity with `nucleus_launcher.sh`)
 - **sporePrint living content (S6)** — NestGate `content.put` pipeline for dynamic site
