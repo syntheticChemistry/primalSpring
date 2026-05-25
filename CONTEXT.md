@@ -109,7 +109,7 @@ auto-harvests on primal push via `repository_dispatch`. GAP-27 (stale biomeOS) r
 
 Live validation: **13/13 primals ALIVE** (plasmidBin v2026.05.03 on eastGate),
 **guidestone Level 8** (BTSP alias routing + flex key fixes shipped Phase 58; 13 failures resolved),
-**13/13 BTSP authenticated**, 8 cellular graphs BTSP-enforced, bonding model ALL PASS,
+**13/13 BTSP authenticated**, 9 cellular graphs BTSP-enforced, bonding model ALL PASS,
 **19/19 exp094 composition parity**, **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**
 (HSM cfg-gated). ludoSpring parity: exp068 **6/6**, exp067 **18/19**, exp072 **24/31**.
 Full NUCLEUS validated across all 3 atomics (Tower + Node + Nest) + cross-atomic pipeline.
@@ -214,8 +214,8 @@ composition).
 ## Glacial Checkpoint — Current and Remaining (May 24, 2026)
 
 ### Completed
-- **Waves 1–47 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 458-method registry (100% exercised), 53 scenarios, 81 deploy graphs, 14 signal graphs
+- **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
+- 458-method registry (100% exercised), 53 scenarios, 95 deploy graphs (81 deploy + 14 signal)
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs
@@ -249,7 +249,7 @@ methods registered) — all detail fossilized to `fossilRecord/`.
 - ~~toadStool `health.liveness`~~ — S272: always returns `"alive"` now
 - ~~NestGate `--socket` flag~~ — S71: CLI flag added
 - **DEPLOYMENT_BEHAVIOR_STANDARD published** → 13/13 primals compliant
-- **5 gates deploying**: southGate, ironGate, biomeGate, strandGate, eastGate
+- **4 gates operational**: eastGate, ironGate, southGate, biomeGate (strandGate hardware ready, not deployed)
 - plasmidBin `start_primal.sh` normalized for all 13 primals
 
 **Glacial shift horizons:**

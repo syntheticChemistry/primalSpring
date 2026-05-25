@@ -134,7 +134,7 @@ From `wetSpring/GAPS.md` — issues that route to primalSpring or upstream teams
 | WS-1 | Ionic contract negotiation — automated protocol for establishing/modifying/terminating bonds | primalSpring Track 4 | HIGH | **IMPLEMENTED** — `ionic_runtime::IonicContractRegistry` with full state machine (Proposed→Active→Modifying→Sealed/Expired), metering, TTL enforcement, policy enforcement, provenance sealing. 12 unit tests + scenario enriched (Wave 37). E2E cross-gate wiring pending flockGate deploy. |
 | WS-2 | Cross-spring data exchange (RootPulse semantic function) — no remote pull protocol for provenance-wrapped subsets | biomeOS + trio | HIGH | **IN PROGRESS** — biomeOS v3.64: `nest.sync` 6-node graph shipped. loamSpine: `spine.list`/`entry.list` RPC methods (42 methods total). Live orchestration wiring pending. |
 | WS-3 | Public chain anchor — braids have no public verifiable ledger anchor | loamSpine | MEDIUM | **SPEC** — `specs/PUBLIC_TIMESTAMPING.md`: RFC 3161 TSA, Bitcoin OP_RETURN, Ethereum analyzed. `AnchorTarget::Rfc3161Tsa` variant added. Implementation timeline open. |
-| WS-4 | petalTongue client-side WASM — all grammar rendering requires live HPC | petalTongue | MEDIUM | Not started |
+| ~~WS-4~~ | ~~petalTongue client-side WASM — all grammar rendering requires live HPC~~ | petalTongue | ~~MEDIUM~~ | **RESOLVED** — `petal-tongue-wasm` expanded (8 `wasm_bindgen` functions), client-side WASM rendering live |
 | WS-9 | Cross-tier parity — L1 vs L2 documented (0 position overlap), L2 vs L3 pending, coordinate mismatch | wetSpring | MEDIUM | L1/L2 done, L3 pending |
 | WS-11 | Variant caller parity — sovereign over-calls vs breseq | wetSpring | HIGH | **v2 deployed** (V180) — GPU min_depth wired, MAPQ≥10 filtering, ±5bp window matching, duplicate removal, CPU mapping threshold 250bp. Tenaillon batch 0: 2/5 clones validated. Re-measurement pending. |
 
@@ -172,7 +172,7 @@ pressure. primalSpring validates the surface structurally via `s_sporeprint_surf
 | # | Gap | Owner | Priority | Status |
 |---|-----|-------|----------|--------|
 | ~~SP-1~~ | ~~Auto-merge: Tier 2 content auto-commits after `spore-validate` passes~~ | sporePrint CI | ~~MEDIUM~~ | **RESOLVED** — auto-refresh.yml content job now auto-commits when spore-validate passes; falls back to PR on validation failure |
-| SP-2 | Deploy status fields in `config.toml` (`last_push`, `shadow_status`, `deploy_locations`) | sporePrint | MEDIUM | Not started |
+| ~~SP-2~~ | ~~Deploy status fields in `config.toml` (`last_push`, `shadow_status`, `deploy_locations`)~~ | sporePrint | ~~MEDIUM~~ | **RESOLVED** Wave 47 — fields added to sporePrint `config.toml` |
 | SP-3 | `liveSpore.json` auto-ingest from trio-equipped deployments | sporePrint CI | LOW | Pipeline exists, feed source pending |
 | ~~SP-4~~ | ~~Sovereign publish: `publish_sporeprint.sh` → NestGate `content.put`~~ | projectNUCLEUS | ~~LOW~~ | **IMPLEMENTED** — `tools/publish_sporeprint.sh` wires base64-encoded content + BLAKE3 hash via JSON-RPC `content.put` to NestGate UDS. Supports `--dry-run`, single-file, and batch modes. E2E requires live NestGate + bearDog session. Wave 37. |
 
@@ -202,7 +202,7 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | DF-2 | toadStool `TOADSTOOL_AUTH_MODE` env | toadStool S233 — `auth.mode` env + `eprintln` → `tracing` |
 | DF-3 | songbird/squirrel silent on `auth.mode` TCP | songbird — `CallerContext` wired (TCP transport-aware) |
 | U5 | sweetGrass port 39085 vs 9850 | sweetGrass v0.7.32 — port 9850 canonical |
-| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (445 real methods, zero drift) |
+| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (458 real methods, zero drift) |
 | U1 | CHECKSUMS stale after Phase 59 refactoring | **RESOLVED** — regenerated with 25 tracked files (UniBin, certification, scenarios, registry) |
 | U2 | 5 deploy graphs missing `by_capability` | **FALSE POSITIVE** — only manifests (parameter tables, not node-bearing graphs) lack field; all actual `[[graph.nodes]]` graphs have `by_capability` |
 | U3 | 8 profile graphs missing `bonding_policy` | **RESOLVED** — 9/9 profile graphs already have `bonding_policy` |
@@ -496,6 +496,10 @@ for the living coordination handoffs:
 ---
 
 ## Evolution Cycle Ownership Model
+
+> **Note (Wave 49)**: Historical sections below preserve method counts and test
+> numbers as they were at each Wave. Current state: 458 methods, 791 tests,
+> 53 scenarios, 95 deploy graphs, 89 experiments. See summary at top of this file.
 
 Every gap in the ecosystem belongs to exactly one layer of the evolution cycle.
 When a gap is identified, it should be tagged with its owner layer. This prevents

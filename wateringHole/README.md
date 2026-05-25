@@ -87,7 +87,7 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 
 ---
 
-## Current Ecosystem State (Wave 47)
+## Current Ecosystem State (Wave 49)
 
 - **13/13 primals** building standalone, distributed via plasmidBin genomeBin
   (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
@@ -95,7 +95,7 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 - **458 registered capability methods** across 84+ domains — includes `neural_api.*` (6 methods), `science.*` (6), ionic bond methods, FIDO2, `primal.announce`, `primal.list`
 - **53 validation scenarios** (10 tracks, 3 tiers: Rust / Both / Live) with shared `validation::helpers`; includes S47 neural-dispatch-live, S48 observatory-parity, S49 feedback-loop (live Neural API validation), S50-S53 post-primordial + covalent mesh
 - **791 lib tests** (780 pass, 9 live-tier, 2 ignored)
-- **biomeOS v3.70** — Neural API with adaptive routing weights (redb-persistent), weight health introspection, composition intelligence, and capability utilization tracking (hot/cold methods)
+- **biomeOS v3.75** — Neural API with adaptive routing weights (redb-persistent), weight health introspection, composition intelligence, mesh routing, and capability utilization tracking (hot/cold methods)
 - **NeuralBridge observatory + feedback loop** — primalSpring consumes biomeOS routing intelligence and feeds dispatch outcomes back through `capability_call_instrumented` + `record_bridge_outcome`
 - **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
 - **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
@@ -153,11 +153,11 @@ toadStool (S273), nestgate (S72), barraCuda, rhizoCrypt, coralReef.
 
 | Horizon | What | Owner |
 |---------|------|-------|
-| **Covalent bonding** | Multi-gate NUCLEUS mesh across 5 LAN gates | primalSpring + delta springs |
+| **Covalent bonding** | Multi-gate NUCLEUS mesh across 4 operational LAN gates | primalSpring + delta springs |
 | **Sovereignty cutover** | Forgejo-primary, sovereign DNS, membrane channels | cellMembrane team |
 | **Neural API as neural network** | Evolve adaptive routing weights toward learned routing | biomeOS + primalSpring |
-| **Method coverage 80%** | Push from 322/458 (70%) to ~366/458 (80%) exercised | primalSpring scenarios |
-| **plasmidBin Rust elevation** | Replace bash launcher scripts with Rust binary | primalSpring / plasmidBin |
+| ~~**Method coverage 80%**~~ | **RESOLVED** Wave 47: 458/458 (100%) registry coverage | primalSpring scenarios |
+| ~~**plasmidBin Rust elevation**~~ | **RESOLVED** Wave 47: `nucleus_launcher` Rust binary shipped | primalSpring / plasmidBin |
 | **sporePrint living content** | NestGate `content.put` pipeline for dynamic site updates | primalSpring (S6) |
 
 ---
@@ -171,18 +171,18 @@ delta. Every spring at zero debt. 5 springs actively deploying NUCLEUS on LAN ga
 |--------|------:|------|--------|
 | hotSpring | 596 | biomeGate / strandGate | 204 experiments, VBIOS interpreter, 22 scenarios |
 | healthSpring | 1,018 | ironGate | V64z: ionic absorption, dual-tower 7/7 Tower A, 57 scenarios |
-| wetSpring | 1,962+ | southGate | V177+: breseq pipeline, ferment braid, 43 niche caps |
-| neuralSpring | 739 | southGate | V170: 6 `science.*` methods, 10 scenarios |
-| ludoSpring | 982 | ironGate | V77: 11/11 NUCLEUS PASS, proto-nucleate validated |
+| wetSpring | 1,962+ | southGate | V186: breseq pipeline, ferment braid, 43 niche caps |
+| neuralSpring | 739 | southGate | V174: 6 `science.*` methods, 10 scenarios |
+| ludoSpring | 982 | ironGate | Wave 49: 11/11 NUCLEUS PASS, proto-nucleate validated |
 | groundSpring | 1,123+ | ironGate | V145: degradation behavior, NestGate IPC |
 | airSpring | 1,373 | eastGate | v0.10.0: 57 caps, 17 methods full 3-tier coverage |
 | primalSpring | 791 | eastGate / ironGate | Wave 49: 13/13 behavioral convergence, 458 methods, 53 scenarios |
 
 **Convergence state**: All springs at zero debt. All primals at 13/13 behavioral
-convergence. Neural API observatory operational with full feedback loop. biomeOS v3.73
+convergence. Neural API observatory operational with full feedback loop. biomeOS v3.75
 owns composition intelligence with persistent routing weights and capability-domain
-discovery. **Next vector**: covalent bonding across gates, method coverage push,
-sovereignty cutover, plasmidBin Rust elevation.
+discovery. **Next vector**: covalent bonding across gates, sovereignty cutover,
+cross-gate `discovery.peers` verification.
 
 ---
 

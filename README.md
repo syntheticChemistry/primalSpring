@@ -16,7 +16,7 @@
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 89 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`) |
-| **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 8 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
+| **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 9 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` — zero unsafe blocks (SeedConfig + OnceLock replaced `env::set_var`) |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -253,7 +253,7 @@ primalSpring ships 80 deploy graph TOMLs + 14 atomic signal graphs using fragmen
 | `data_federation_cross_site.toml` | NestGate cross-site replication | Covalent | GeneticLineage |
 | `three_node_covalent_cross_network.toml` | 3-node cross-network mesh | Covalent | GeneticLineage |
 
-**Spring validation graphs (8)** — `graphs/spring_validation/`: parameterized
+**Spring validation graphs (9)** — `graphs/spring_validation/`: parameterized
 `spring_validate_template.toml` + `spring_validate_manifest.toml` (9 compositions covering
 all 7 springs plus products), `nucleus_atomics_validate.toml` (all 4 NUCLEUS tiers),
 `crypto_negative_validate.toml` (negative security boundary tests),
@@ -301,7 +301,7 @@ the Neural API composition collapse layer. Each signal maps a high-level operati
 capabilities, enabling biomeOS to decompose semantic intent into concrete IPC calls.
 
 Signals are organized by tier:
-- **Tower** (4): `publish`, `authenticate`, `discover`, `health`, `bootstrap`
+- **Tower** (5): `publish`, `authenticate`, `discover`, `health`, `bootstrap`
 - **Node** (1): `compute`
 - **Nest** (3): `store`, `commit`, `retrieve`
 - **Meta** (5): `observe`, `intent`, `render`, `health`, `deploy`

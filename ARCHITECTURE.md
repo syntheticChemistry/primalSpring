@@ -183,10 +183,10 @@ preserve backward compatibility for springs still referencing the harness API.
 |---------|-------------|----------------|
 | `AtomicHarness` / `RunningAtomic` | plasmidBin ecoBin deployment via biomeOS | ~600 LOC in `ecoPrimal/src/harness/`. Compiled and tested. Wave 49: retained for compat; removal deferred to stadial entry. |
 | `spawn_primal` / `spawn_biomeos` | plasmidBin ecoBin deployment | Same module — coupled to `AtomicHarness` lifecycle. |
-| `probe_primal` / `check_capability_health` | `CompositionContext.health_check()` | No callers remain. Safe to remove at stadial. |
-| `validate_composition` | `CompositionContext.call()` | No callers remain. Safe to remove at stadial. |
-| `PrimalClient::connect` (direct) | `CompositionContext.client_for()` | No callers remain. Safe to remove at stadial. |
-| `CompositionContext::from_running` | `CompositionContext::discover()` | No callers remain. Safe to remove at stadial. |
+| `probe_primal` / `check_capability_health` | `CompositionContext.health_check()` | Still referenced in `s_coordination_api.rs` scenario + `handlers.rs`. Remove at stadial after scenario migration. |
+| `validate_composition` | `CompositionContext.call()` | No direct callers remain. Safe to remove at stadial. |
+| `PrimalClient::connect` (direct) | `CompositionContext.client_for()` | Still used in `ipc/neural_bridge.rs`, `composition/btsp.rs`, harness, tests. Migrate callers at stadial. |
+| `CompositionContext::from_running` | `CompositionContext::discover()` | Called from `harness/mod.rs`. Remove with harness at stadial. |
 
 ## Fossil Record
 
