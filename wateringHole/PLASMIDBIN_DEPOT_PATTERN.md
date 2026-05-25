@@ -191,6 +191,75 @@ COMPOSITION_NAME=myspring primalSpring/tools/composition_nucleus.sh stop
 See `tools/nucleus_composition_lib.sh` for the full composition library API.
 (`DOWNSTREAM_COMPOSITION_EXPLORER_GUIDE.md` has been consolidated into `infra/wateringHole/`.)
 
+## Spring Cell Binaries
+
+Spring-specific binaries (e.g. `healthspring_primal`, `wetspring_primal`) are
+**not** part of the 13-primal plasmidBin set. Primals compose the NUCLEUS;
+springs compose primals into domain validation. The distinction:
+
+| Binary type | Source | Distribution | Examples |
+|-------------|--------|-------------|----------|
+| **Primal** | upstream primal repos | plasmidBin (CI-harvested) | `beardog`, `songbird`, `biomeos` |
+| **Spring cell** | spring's own repo | built from source by each spring | `healthspring_primal`, `wetspring_primal` |
+| **Spring validation** | spring's own repo | never distributed | `primalspring` (UniBin), experiment binaries |
+
+### Cell binary discovery pattern
+
+Spring cell binaries follow a separate search order from primal binaries:
+
+1. `$SPRING_CELL_BIN` — explicit override (e.g. `HEALTHSPRING_CELL_BIN`)
+2. `springs/<spring>/target/release/<binary>` — local build output
+3. `plasmidBin/cells/<target-triple>/` — optional staging area for pre-built cells
+
+Springs that build cell binaries should **not** place them in `plasmidBin/primals/`.
+The `primals/` directory is reserved for the 13 NUCLEUS primals only.
+
+`cell_launcher.sh` and equivalent spring-specific launchers should search the
+spring's own `target/release/` for cell binaries. This is the one permitted
+`target/release/` path in a post-primordial deployment — it applies only to
+spring-specific cells, never to NUCLEUS primals.
+
+## Cross-Gate Mesh (LAN Federation)
+
+### Peer Bootstrapping
+
+Songbird TCP federation binds to `0.0.0.0:$SONGBIRD_FEDERATION_PORT` but does
+**not** auto-discover peers. Cross-gate mesh requires explicit peer seeding:
+
+```bash
+# Option A: env var (both launchers read this)
+export SONGBIRD_PEERS="192.168.1.144:7700,192.168.1.238:7700"
+SONGBIRD_FEDERATION_PORT=7700 ./tools/nucleus_launcher.sh start
+
+# Option B: Rust launcher CLI flag
+nucleus_launcher --family-id nucleus01 --federation-port 7700 \
+    --peers 192.168.1.144:7700,192.168.1.238:7700
+
+# Option C: post-hoc seeding via JSON-RPC
+echo '{"jsonrpc":"2.0","method":"mesh.init","params":{"node_id":"eastGate","bootstrap_peers":["192.168.1.238:7700"]},"id":1}' | \
+    socat - UNIX-CONNECT:/run/user/1000/biomeos/songbird-nucleus01.sock
+```
+
+After seeding, verify with:
+```bash
+echo '{"jsonrpc":"2.0","method":"discovery.peers","params":{},"id":1}' | \
+    socat - UNIX-CONNECT:/run/user/1000/biomeos/songbird-nucleus01.sock
+```
+
+### Cross-Subnet Mesh
+
+Gates on different subnets (e.g. `192.168.1.x` vs `192.168.4.x`) cannot reach
+each other via direct TCP. Options:
+
+1. **Subnet routing** — configure a gateway/router to route between subnets
+   (simplest if you control the network)
+2. **cellMembrane TURN relay** — Songbird's `mesh.relay` can relay through
+   the VPS at `157.230.3.183` when direct connectivity fails
+3. **VPN/WireGuard overlay** — place gates on a shared virtual subnet
+
+Same-subnet gates on a flat LAN (unmanaged switch, Cat6) work with direct
+`SONGBIRD_PEERS` seeding and no additional configuration.
+
 ## Known Issues
 
 - **BearDog** requires `BEARDOG_FAMILY_SEED` env var in production mode.

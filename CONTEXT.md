@@ -53,7 +53,7 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 52 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 53 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — static model of 458-method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -78,10 +78,13 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 v0.9.28 Wave 49 (May 25, 2026) — 53 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (458 exercised, 100% coverage),
 89 experiments (20 tracks), 95 deploy graphs (81 deploy + 14 signal),
-44-cell deployment matrix. 787 lib tests (all passing). 13/13 behavioral
-convergence (DEPLOYMENT_BEHAVIOR_STANDARD). 789 lib tests. 8/8 delta springs sounded off —
-4 gates operational (eastGate, ironGate, southGate, biomeGate). `nucleus_launcher`
-Rust binary: `--federation-port` for Songbird TCP mesh.
+44-cell deployment matrix. 789 lib tests (all passing). 13/13 behavioral
+convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
+sole binary source, all primordial fallbacks cut across 4 responding springs.
+`SONGBIRD_PEERS` env + `--peers` CLI for cross-gate mesh seeding.
+`--security-socket` feature-guarded (plasmidBin version compat). Stale socket
+pre-cleanup (EADDRINUSE fix). Cell binary pattern documented. 4 gates
+operational (eastGate, ironGate, southGate, biomeGate).
 
 **Waves 1-47 complete**. Key milestones: Neural API deployment (W42), observatory
 posture (W41), neural routing layer (W40), upstream absorption (W39), behavioral
@@ -250,7 +253,7 @@ methods registered) — all detail fossilized to `fossilRecord/`.
 - plasmidBin `start_primal.sh` normalized for all 13 primals
 
 **Glacial shift horizons:**
-- **Covalent bonding** — **Wave 48: ALL 8/8 SPRINGS SOUNDED OFF**. 4 gates operational: eastGate (primalSpring + airSpring + groundSpring), ironGate (primalSpring + ludoSpring + healthSpring), southGate (wetSpring + neuralSpring), biomeGate (hotSpring). Songbird TCP :7700 federation live on all gates. Next: verify cross-gate `discovery.peers`, run cross-gate `capability.call`, Plasmodium collective (3+ gates meshed).
+- **Covalent bonding** — **Wave 49: POST-PRIMORDIAL**. 4 responding springs confirmed plasmidBin-only. `SONGBIRD_PEERS` peer seeding shipped (both launchers). Cross-gate `discovery.peers` unblocked — healthSpring/neuralSpring asked are now answered. Cross-subnet gap documented (southGate 192.168.4.x needs routing). Next: same-subnet gates verify `discovery.peers` with seeded peers, run cross-gate `capability.call`, Plasmodium collective (3+ gates meshed).
 - **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5)
 - **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring). biomeOS v3.75 mesh routing is a prerequisite step.
 - ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 458/458 (100%) via 3 new scenarios + coverage graph + script regex fix

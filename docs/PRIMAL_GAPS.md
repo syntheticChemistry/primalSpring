@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-25 (Wave 48: Covalent mesh. 8/8 springs sounded off, 4 gates operational. `nucleus_launcher` Rust binary: `--federation-port` for Songbird TCP mesh. ludoSpring duplicate Gate Deployment cleaned. 5 deployment issues documented from spring sound-offs.)
+> **Last updated**: 2026-05-25 (Wave 49: Post-primordial. All 4 responding springs cut primordial patterns. Songbird peer seeding (`SONGBIRD_PEERS`) wired into both launchers. `--security-socket` feature-guarded. Stale socket cleanup added. Cell binary pattern documented. Cross-subnet mesh guidance added.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,20 +17,24 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 25, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 52 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 787 lib tests (787 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 48: **8/8 springs sounded off** — 4 gates operational (eastGate, ironGate, southGate, biomeGate), Songbird TCP :7700 federation live. hotSpring CAZyme FEL v0.7.0 + Exp 221 UEFI sovereignty. loamSpine benchScale (51 validations, 43 methods).
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 53 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 789 lib tests (789 pass, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 49: **post-primordial** — plasmidBin sole binary source, all primordial fallbacks cut. 4 springs responded (wetSpring V186, ludoSpring Wave 49, neuralSpring V174, healthSpring V65a) — all confirmed post-primordial. Peer seeding (`SONGBIRD_PEERS`) shipped. Cross-subnet gap documented (southGate 192.168.4.x ≠ eastGate 192.168.1.x).
 
-**Wave 48 deployment issues (from spring sound-offs):**
+**Wave 49 deployment issues (post-primordial audit + spring responses):**
 
 | Issue | Reporter | Status |
 |-------|----------|--------|
-| loamSpine Tokio panic (`Cannot start a runtime from within a runtime`) on health probe | wetSpring, neuralSpring | **UPSTREAM** — loamSpine bug |
+| loamSpine Tokio panic (`Cannot start a runtime from within a runtime`) on health probe | wetSpring, neuralSpring | **UPSTREAM** — loamSpine bug, does not block mesh |
 | rhizoCrypt/sweetGrass/toadStool health probe >8s timeout | wetSpring | **KNOWN** — slow startup on cold launch |
-| `primal.announce` vs `discovery.register` migration path | wetSpring | **GUIDANCE NEEDED** — standard says biomeOS Neural API, springs use Songbird |
+| `primal.announce` vs `discovery.register` migration path | wetSpring | **DOCUMENTED** — use `CompositionContext::announce()`, Songbird accepts both |
 | Songbird sled DB corruption after unclean shutdown | neuralSpring | **WORKAROUND** — clean `~/.local/share/songbird/task_lifecycle*` |
-| Spring binaries not in plasmidBin 13-primal set | healthSpring | **BY DESIGN** — springs build from source, symlink into `plasmidBin/primals/` |
+| Spring binaries not in plasmidBin 13-primal set | healthSpring | **DOCUMENTED** — cell binary pattern in `PLASMIDBIN_DEPOT_PATTERN.md` |
 | petalTongue musl binary rejects `--family-id` | primalSpring (Wave 49) | **PIPELINE DEBT** — plasmidBin binary older than behavioral convergence; workaround: pass `FAMILY_ID` env |
-| Songbird federation bound to 127.0.0.1 (not LAN-reachable) | primalSpring (Wave 49) | **FIXED** — `nucleus_launcher.sh` now passes `--bind 0.0.0.0` when federation enabled |
-| petalTongue stale socket on restart (EADDRINUSE) | primalSpring (Wave 49) | **KNOWN** — launcher doesn't pre-clean sockets; manual `rm` workaround |
+| Songbird federation bound to 127.0.0.1 (not LAN-reachable) | primalSpring (Wave 49) | **FIXED** — launchers pass `--bind 0.0.0.0` when federation enabled |
+| petalTongue stale socket on restart (EADDRINUSE) | primalSpring (Wave 49) | **FIXED** — launcher pre-cleans dead sockets before startup |
+| Songbird `--security-socket` flag rejected | wetSpring (Wave 49) | **FIXED** — feature-guarded in launcher; `SONGBIRD_SECURITY_SOCKET` env fallback always set |
+| `discovery.peers` returns empty (no cross-gate peers) | healthSpring (Wave 49) | **FIXED** — `SONGBIRD_PEERS` env + `--peers` CLI for explicit seed; `mesh.init` called post-startup |
+| southGate ≠ eastGate subnet (192.168.4.x vs 192.168.1.x) | neuralSpring (Wave 49) | **DOCUMENTED** — requires subnet routing or cellMembrane TURN relay |
+| hotSpring still on Wave 48 (no post-primordial blurb absorbed) | review (Wave 49) | **PENDING** — biomeGate needs blurb handoff |
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|

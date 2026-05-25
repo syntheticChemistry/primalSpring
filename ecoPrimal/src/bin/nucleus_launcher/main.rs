@@ -55,6 +55,11 @@ struct Cli {
     /// Songbird TCP federation port for LAN mesh (enables cross-gate discovery).
     #[arg(long)]
     federation_port: Option<u16>,
+
+    /// Comma-separated peer addresses for cross-gate Songbird mesh
+    /// (e.g. "192.168.1.144:7700,192.168.1.238:7700").
+    #[arg(long, value_delimiter = ',')]
+    peers: Vec<String>,
 }
 
 fn main() {
@@ -96,6 +101,7 @@ fn main() {
         dry_run: cli.dry_run,
         validate: cli.validate,
         federation_port: cli.federation_port,
+        peers: cli.peers,
     };
 
     let result = orchestrator::run(config);

@@ -26,6 +26,8 @@ pub struct LaunchConfig {
     pub dry_run: bool,
     pub validate: bool,
     pub federation_port: Option<u16>,
+    /// Peer addresses for cross-gate Songbird mesh seeding.
+    pub peers: Vec<String>,
 }
 
 /// Summary of the launch operation.
@@ -372,6 +374,31 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     println!("  Registered: {registered}");
     println!();
 
+    // Phase 5b: Peer seeding (cross-gate mesh)
+    if !config.peers.is_empty() {
+        println!("=== Phase 5b: Peer seeding (cross-gate mesh) ===");
+        let seeded = seed_songbird_peers(songbird_port, &config.peers, &config.node_id);
+        if seeded > 0 {
+            println!("  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {}", config.peers.join(", "));
+        } else {
+            println!("  \x1b[31mFailed to seed peers\x1b[0m — Songbird may not support mesh.init");
+            println!("  Peers requested: {}", config.peers.join(", "));
+        }
+        println!();
+    } else if let Ok(env_peers) = std::env::var("SONGBIRD_PEERS") {
+        if !env_peers.is_empty() {
+            println!("=== Phase 5b: Peer seeding (from SONGBIRD_PEERS env) ===");
+            let peer_list: Vec<String> = env_peers.split(',').map(|s| s.trim().to_owned()).filter(|s| !s.is_empty()).collect();
+            let seeded = seed_songbird_peers(songbird_port, &peer_list, &config.node_id);
+            if seeded > 0 {
+                println!("  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {env_peers}");
+            } else {
+                println!("  \x1b[31mFailed to seed peers\x1b[0m — Songbird may not support mesh.init");
+            }
+            println!();
+        }
+    }
+
     // Summary
     println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
     println!("\x1b[36m  NUCLEUS Ready\x1b[0m");
@@ -446,6 +473,7 @@ fn spawn_primal(
             cmd.arg("--federation-port").arg(fed_port.to_string());
             cmd.arg("--bind").arg("0.0.0.0");
         }
+        cmd.env("SONGBIRD_SECURITY_SOCKET", socket);
     }
 
     let log_path = format!("/tmp/{primal}.log");
@@ -461,6 +489,43 @@ fn spawn_primal(
 
     info!(primal, binary = %binary.display(), "spawned");
     Ok(())
+}
+
+/// Seed Songbird with known peer addresses for cross-gate mesh discovery.
+fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) -> usize {
+    use std::io::{Read, Write};
+    use std::net::{SocketAddr, TcpStream};
+
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let timeout = Duration::from_secs(5);
+    let mut seeded = 0;
+
+    let peers_json: Vec<String> = peers.iter().map(|p| format!("\"{p}\"")).collect();
+    let payload = format!(
+        r#"{{"jsonrpc":"2.0","method":"mesh.init","params":{{"node_id":"{node_id}","bootstrap_peers":[{}]}},"id":2}}"#,
+        peers_json.join(",")
+    );
+
+    let Ok(stream) = TcpStream::connect_timeout(&addr, timeout) else {
+        return 0;
+    };
+    let _ = stream.set_read_timeout(Some(timeout));
+    let _ = stream.set_write_timeout(Some(timeout));
+    let mut s = stream;
+
+    if s.write_all(payload.as_bytes()).is_ok() && s.write_all(b"\n").is_ok() {
+        let mut buf = [0u8; 4096];
+        if let Ok(n) = s.read(&mut buf) {
+            if n > 0 {
+                let resp = String::from_utf8_lossy(&buf[..n]);
+                if resp.contains("\"result\"") {
+                    seeded = peers.len();
+                }
+            }
+        }
+    }
+
+    seeded
 }
 
 /// Send a register payload to Songbird.

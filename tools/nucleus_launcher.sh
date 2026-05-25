@@ -37,6 +37,8 @@
 #   BIOMEOS_GRAPHS_DIR         — biomeOS graphs directory (default: auto-detect)
 #   SONGBIRD_FEDERATION_PORT   — opt-in TCP port for LAN federation (unset = UDS-only)
 #   SONGBIRD_FEDERATION_BIND   — bind address for federation (default: 0.0.0.0 = all interfaces)
+#   SONGBIRD_PEERS             — comma-separated peer addresses for cross-gate mesh
+#                                (e.g. "192.168.1.144:7700,192.168.1.238:7700")
 
 set -euo pipefail
 
@@ -237,6 +239,19 @@ cmd_start() {
     fi
     mkdir -p "$SOCKET_DIR"
 
+    # Pre-clean stale sockets from prior runs (prevents EADDRINUSE on restart).
+    for stale_sock in "$SOCKET_DIR"/*-"${FAMILY_ID}".sock; do
+        if [[ -e "$stale_sock" && ! -S "$stale_sock" ]]; then
+            rm -f "$stale_sock"
+            log "  cleaned stale socket: $(basename "$stale_sock")"
+        elif [[ -S "$stale_sock" ]]; then
+            if ! timeout 1 socat -u /dev/null "UNIX-CONNECT:$stale_sock" 2>/dev/null; then
+                rm -f "$stale_sock"
+                log "  cleaned dead socket: $(basename "$stale_sock")"
+            fi
+        fi
+    done
+
     echo "$FAMILY_SEED" > "$SOCKET_DIR/.family.seed"
     chmod 600 "$SOCKET_DIR/.family.seed"
     log "  seed:       persisted to $SOCKET_DIR/.family.seed"
@@ -286,13 +301,20 @@ cmd_start() {
     fi
 
     if [[ -n "$songbird_bin" ]]; then
-        local songbird_args=(server --socket "$songbird_sock" --security-socket "$beardog_sock")
+        local songbird_args=(server --socket "$songbird_sock")
+        # Feature-guard: --security-socket may not exist in older plasmidBin builds.
+        # Pass BearDog socket via env var (always works) and try CLI flag only if
+        # the binary advertises it (grep --help output).
+        if "$songbird_bin" --help 2>&1 | grep -q -- '--security-socket'; then
+            songbird_args+=(--security-socket "$beardog_sock")
+        fi
         if [[ -n "${SONGBIRD_FEDERATION_PORT:-}" ]]; then
             songbird_args+=(--port "$SONGBIRD_FEDERATION_PORT")
             songbird_args+=(--bind "${SONGBIRD_FEDERATION_BIND:-0.0.0.0}")
             log "  Songbird: TCP federation on ${SONGBIRD_FEDERATION_BIND:-0.0.0.0}:$SONGBIRD_FEDERATION_PORT"
         fi
         SONGBIRD_SECURITY_PROVIDER="$beardog_sock" \
+        SONGBIRD_SECURITY_SOCKET="$beardog_sock" \
         SONGBIRD_DISCOVERY_MODE="disabled" \
         FAMILY_ID="$FAMILY_ID" \
         FAMILY_SEED="${FAMILY_SEED:-}" \
@@ -300,6 +322,25 @@ cmd_start() {
         BTSP_PROVIDER_SOCKET="$beardog_sock" \
             start_primal songbird "$songbird_bin" "${songbird_args[@]}" || true
         wait_for_socket "$songbird_sock" 8 || log "WARN: songbird socket not ready"
+
+        # Seed cross-gate peers if SONGBIRD_PEERS is set and federation is active.
+        if [[ -n "${SONGBIRD_PEERS:-}" && -S "$songbird_sock" ]]; then
+            log "  Songbird: seeding peers from SONGBIRD_PEERS"
+            IFS=',' read -ra peer_list <<< "$SONGBIRD_PEERS"
+            local bootstrap_json=""
+            for peer_addr in "${peer_list[@]}"; do
+                peer_addr="$(echo "$peer_addr" | xargs)"
+                [[ -z "$peer_addr" ]] && continue
+                [[ -n "$bootstrap_json" ]] && bootstrap_json+=","
+                bootstrap_json+="\"$peer_addr\""
+            done
+            if [[ -n "$bootstrap_json" ]]; then
+                local seed_payload="{\"jsonrpc\":\"2.0\",\"method\":\"mesh.init\",\"params\":{\"node_id\":\"${HOSTNAME:-$(hostname)}\",\"bootstrap_peers\":[$bootstrap_json]},\"id\":2}"
+                echo "$seed_payload" | timeout 3 socat - "UNIX-CONNECT:$songbird_sock" >/dev/null 2>&1 && \
+                    log "  Songbird: seeded ${#peer_list[@]} peer(s)" || \
+                    log "  WARN: peer seeding failed (Songbird may need direct TCP seeding)"
+            fi
+        fi
     else
         log "WARN: songbird binary not found, skipping"
     fi
