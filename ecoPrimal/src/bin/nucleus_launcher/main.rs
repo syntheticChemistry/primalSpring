@@ -51,6 +51,10 @@ struct Cli {
     /// Run composition validation after startup.
     #[arg(long)]
     validate: bool,
+
+    /// Songbird TCP federation port for LAN mesh (enables cross-gate discovery).
+    #[arg(long)]
+    federation_port: Option<u16>,
 }
 
 fn main() {
@@ -91,6 +95,7 @@ fn main() {
         health_timeout_secs: cli.health_timeout,
         dry_run: cli.dry_run,
         validate: cli.validate,
+        federation_port: cli.federation_port,
     };
 
     let result = orchestrator::run(config);

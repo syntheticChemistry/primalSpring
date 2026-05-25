@@ -25,6 +25,7 @@ pub struct LaunchConfig {
     pub health_timeout_secs: u64,
     pub dry_run: bool,
     pub validate: bool,
+    pub federation_port: Option<u16>,
 }
 
 /// Summary of the launch operation.
@@ -240,6 +241,11 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         println!("=== Phase 1: Prepare runtime ===");
         println!("  Runtime: {runtime_dir}");
         println!("  Sockets: {}", socket_dir.display());
+        if let Some(fed_port) = config.federation_port {
+            println!("  Federation: Songbird TCP :{fed_port} (LAN mesh enabled)");
+        } else {
+            println!("  Federation: disabled (UDS-only, no LAN mesh)");
+        }
         println!();
 
         // Phase 2: Stop existing
@@ -433,6 +439,12 @@ fn spawn_primal(
 
     if config.dark_forest {
         cmd.arg("--dark-forest");
+    }
+
+    if primal == primal_names::SONGBIRD {
+        if let Some(fed_port) = config.federation_port {
+            cmd.arg("--federation-port").arg(fed_port.to_string());
+        }
     }
 
     let log_path = format!("/tmp/{primal}.log");

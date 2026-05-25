@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-24 (Wave 47: Post-primordial behavioral convergence. DEPLOYMENT_BEHAVIOR_STANDARD published. 9/9 primals responded. 458 methods (458 exercised = 100%), 787 tests, 52 scenarios. `nucleus_launcher` Rust binary created. Coverage script regex fix. 3 new scenarios: coordination-api, health-lifecycle-surface, crypto-identity-surface.)
+> **Last updated**: 2026-05-25 (Wave 48: Covalent mesh. 8/8 springs sounded off, 4 gates operational. `nucleus_launcher` Rust binary: `--federation-port` for Songbird TCP mesh. ludoSpring duplicate Gate Deployment cleaned. 5 deployment issues documented from spring sound-offs.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
