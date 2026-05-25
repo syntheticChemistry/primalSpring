@@ -81,32 +81,11 @@ v0.9.28 Wave 47 (May 24, 2026) — 52 scenarios (10 tracks, 3 tiers),
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). 12/12 primal.announce compliant.
 All upstream blockers resolved. sporePrint bash→Rust complete.
 
-**Wave 42: Full Neural API Deployment** — NeuralBridge feedback loop
-(`capability_call_instrumented`, `record_bridge_outcome`, `dispatch_instrumented`).
-biomeOS v3.70: persistent routing weights (redb-backed `RoutingWeightTable`), weight health introspection,
-capability utilization tracking (`neural_api.utilization`). Team restructuring
-documented (`TEAM_OWNERSHIP_MATRIX.md`). Sovereignty infrastructure status
-(`SOVEREIGNTY_INFRASTRUCTURE_STATUS.md`). Neural API deployment guide
-for all 13 primal teams (fossilized to archive). biomeOS v3.70: weight health
-introspection, attestation verification via BearDog, persistent weights on startup.
-Live validation scenarios S47-S49 (neural dispatch, observatory parity, feedback loop).
-1311 biomeOS tests.
+**Waves 1-47 complete**. Key milestones: Neural API deployment (W42), observatory
+posture (W41), neural routing layer (W40), upstream absorption (W39), behavioral
+convergence (W47). Wave-by-wave detail fossilized to `fossilRecord/`.
 
-**Wave 41: Observatory Posture** — biomeOS v3.68 composition intelligence
-abstracted from primalSpring's exploratory work. `CompositionTier`, `CompositionPatternRegistry`,
-`plan_tier()` now live in biomeOS runtime. NeuralBridge observatory methods
-let primalSpring consume biomeOS's adaptive routing intelligence. 1303 biomeOS tests.
-
-**Wave 40: Neural Routing Layer** — `NeuralRoutingTable` (static model of the
-full method surface), `NeuralDispatcher` (dispatch + metrics), S46 scenario
-(17 structural checks). biomeOS v3.67 adaptive routing weights (`RoutingWeightTable`,
-EWMA latency/error, circuit breaker, `primal.announce` cost hints).
-
-**Wave 39: Upstream Absorption** — bearDog Wave 109, songbird capability.call
-TURN relay, biomeOS v3.66 cross-gate, toadStool S269, nestgate SP-4 compat,
-healthSpring V64z, neuralSpring V170. Neural API Evolution Spec published.
-
-**Waves 1-47 complete**. Zero DEBT markers, zero unsafe blocks, zero panics, zero clippy warnings (pedantic + nursery clean).
+Zero DEBT markers, zero unsafe blocks, zero panics, zero clippy warnings (pedantic + nursery clean).
 Security gate: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.
 `Vec<&String>` → `Vec<&str>`. `JsonRpcError`/`UnknownPrimal` → `thiserror` derives.
 `DeployError::Parse` now wraps `toml::de::Error` source for error chains. Deprecated
@@ -222,98 +201,20 @@ composition).
 ## Glacial Checkpoint — Current and Remaining (May 24, 2026)
 
 ### Completed
-- **Wave 22 stadial gate absorbed**: 13/13 primals evolved, plasmidBin v5.5.0
-- **Fossilization pass**: 45+ handoffs archived, infra handoffs 100% archived, primalSpring 3 living (1 catalogue + 2 pattern standards)
-- **Waves 23–37 complete**: E2E study, shadow runs, upstream ingestion, pattern dissemination, showcase fossilization, ionic bond runtime (WS-1), sovereign publish pipeline (SP-4), ecosystem debt sweep
-- All 8 springs at Wave 20 — canonical capability.list envelope, debt resolved
-- 458-method registry (real methods, post-Wave 32 recount excluding test fixtures), zero drift
-- 52 validation scenarios (10 tracks), 81 deploy graphs, 14 signal graphs
-- 10/10 foundation threads active (Thread 4 now active)
-- lithoSpore v1.0.0 released — 7/7 modules Tier 2 PASS (75/75 checks)
-- All deprecated `probe_primal` callers removed from primalSpring
-- CATHEDRAL split documented, garden evolution blurbs published
-- Zero local debt across all springs (deep audit confirmed)
-- 13/13 primals in plasmidBin, all BTSP AEAD authenticated
-- All upstream blockers SHIPPED (UB-1 through UB-4)
-- **Wave 20**: `primal.list` + `capability.list` canonical schemas defined and validated
-- **Wave 20**: `nest.commit` live probe scenario (skip-tolerant for pre-v3.57 biomeOS)
-- **Wave 20**: Thread 10 workload wired (`--provenance-dir` flag, `thread10_provenance.sh`)
-- **Wave 20**: Primal-blocked gaps documented as upstream asks
-- **Wave 20**: LTEE paper queue tracker — 8 papers, 4 springs, 7 lithoSpore modules
-- **Wave 20 PM**: lithoSpore audit absorption — R1 (degradation behavior documented in CompositionContext), R2 (stability tiers in capability_registry.toml), R3 (trio transaction semantics in PROVENANCE_TRIO_INTEGRATION_GUIDE), R4 (UDS socket ownership in CAPABILITY_BASED_DISCOVERY_STANDARD)
-- **Wave 20 PM**: Cross-tier parity pattern absorbed into VALIDATION_TIERS.md (Tier 3 + parity sections)
-- **Wave 20 PM**: Ferment transcript pattern cross-referenced in DOWNSTREAM_PATTERN_GUIDE.md
-- **Wave 20 PM (post-absorption)**: All 7 delta springs absorbed lithoSpore audit blurb — stability tiers annotated, degradation behavior documented, trio transaction semantics aligned, cross-tier parity pattern adopted
-- **Wave 20 PM**: wetSpring V177 Exp381 breseq pipeline executing on Barrick 2009 (3/7 clones done, first ferment transcript braid exported, mutation accumulation trend confirmed)
-- **Wave 20 PM**: airSpring v0.10.0 — 3 new cross-tier parity validators (autocorrelation, gamma_cdf, soil_moisture_topp), 57 capabilities (53 stable, 4 evolving), trio bug fix (`primals_reached`)
-- **Wave 20 PM**: hotSpring — 6 new experiments (199-204) including VBIOS interpreter live HW validation, oracle data cleaned, handoff archival
-- **Wave 20 PM**: ludoSpring V76 — Schell Lenses + CPU/GPU parity, 982 tests, cross-tier parity doc
-- **Wave 20 PM**: groundSpring V145 — degradation behavior doc, niche metadata fix
-- **Wave 21**: All downstream gardens absorbed Wave 20 patterns:
-  - lithoSpore: `PARITY_REPORT_SCHEMA.md` (ecosystem standard), `DEGRADATION_BEHAVIOR.md`, `provenance/braids/` for ferment ingestion, stability tiers, partial trio semantics
-  - projectFOUNDATION: `DEGRADATION_BEHAVIOR.md`, `validation/wetSpring/braids/` for Thread 5, BLAKE3 backfill documented, composition gaps marked resolved, stability tiers on workloads
-  - esotericWebb V9: canonical capability.list envelope, stability tiers, degradation doc, `primals_reached` on WorldState, GAP-026–030 resolved
-  - projectNUCLEUS: path reorganization, local hardcoding eliminated, cellMembrane owns fieldMouse Tower
+- **Waves 1–47 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
+- 458-method registry (100% exercised), 52 scenarios, 81 deploy graphs, 14 signal graphs
+- 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
+- lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
+- 45+ handoffs fossilized, zero local debt across all springs
+- Wave 20-21 detail (per-spring PM items, garden absorption) fossilized to `fossilRecord/`
 
-### Garden Evolution (May 17, 2026)
-- **lithoSpore** (latest): Tier 3 provenance trio wired via JSON-RPC (dag/spine/braid),
-  cross-tier parity (`litho parity` — 7/7 modules MATCH), two-tier data model formalized,
-  ferment transcript upstream braid handoff, 117 tests, 15 CLI subcommands, zero clippy,
-  `#![forbid(unsafe_code)]` workspace-wide, `--provenance-dir` for Thread 10
-- **lithoSpore v1.0.0**: ScopeManifest, liveSpore.json provenance journal,
-  capability-first discovery, scope-driven validation, 6 THREAD_INDEX entries,
-  sporePrint dispatch CI, CLI integration test harness
-- **projectNUCLEUS V3**: 55 Rust tests (darkforest 34, tunnelKeeper 21),
-  discovery cascade (primal.list → env → defaults), 7 gate TOMLs with
-  [science] dispatch metadata, signal_executor.sh (Squirrel → signal.dispatch),
-  tower_agent.toml (agentic graph), VALIDATION_PLAYBOOK + FUZZ_EVOLUTION +
-  SCIENCE_DISPATCH_MAP + TIER2_CEREMONY_DESIGN specs, FAMILY_HPC_MODEL
-- **esotericWebb V8**: 357 tests, 24 capabilities, signal-first provenance
-  (nest_store/nest_commit bridge), startup primal.announce, lifecycle handlers
-  (health.version, health.drain, primal.info), test extraction pattern
-  (#[path = "tests.rs"]), capability registry ↔ niche cross-validation test
-- **projectFOUNDATION**: 184 targets (146 validated), 29 workloads across
-  all 10 threads, per-spring validation folders + provenance convention,
-  primal_ipc.sh/target_compare.sh libs, 6 barraCuda CPU parity benchmarks,
-  CI with graph/schema/workload/benchmark gates, ag-guidestone proposal,
-  FOUNDATION_VALIDATE elevation review targeting CompositionContext
+### Garden & Infrastructure Evolution (Waves 17-22, fossilized)
 
-### Infrastructure Review (May 17, 2026)
-- Stale `gardens/sporeGarden/` clone removed (duplicate of projectNUCLEUS)
-- `.env` audit complete — all sensitive files gitignored, zero contamination risk
-- `REPO_MEMBRANE_BOUNDARY.md` published — inner/outer repo classification standard
-- Validation Gate Matrix in `EVOLUTION_GAPS.md` — 11 validation systems mapped to sovereignty transitions
-- cellMembrane: recommend Forgejo-only when operationally stable
-
-### wateringHole Audit and Fossilization (May 17, 2026)
-- Fossilized 6 primalSpring handoffs + 2 infra wateringHole docs (superseded by Wave 20/21)
-- Fixed numeric drift: 427/418→452 methods, 12→13 primals across 10 infra docs
-- Reconciled Forgejo/GitHub posture in SOVEREIGNTY_STANDARDS (operational reality vs aspirational)
-- GLOSSARY updated: cellMembrane entry, dual Git host framing, sporeGarden products roster
-- INFRASTRUCTURE_RECREATION_AND_OUTAGE_PLAYBOOK.md created in gen4/architecture
-- gen4 architecture indexes updated (18 docs organized into 3 clusters)
-- Glacial status evolved: ECOSYSTEM_EVOLUTION_CYCLE v1.8.0, INTERSTADIAL_EXIT_CRITERIA
-  expanded with outage simulation readiness and infrastructure sovereignty posture tables
-
-### Wave 22: Upstream Primal Evolution (May 17-18, 2026)
-- Removed duplicate `primals/beardog/` and `primals/nestGate/` stub
-- Audited all 13 primals + sourDough + bingoCube for deployment-valid standard compliance
-- Created upstream evolution blurb with per-primal action items and stadial pairing preview
-- Registered 4 new methods: `dag.partial_dehydrate`, `braid.partial_update`,
-  `braid.complete`, `compute.fan_out` — from downstream-validated upstream asks
-- **Stadial gate push absorbed (May 18)**: all primals responded to blurb
-  - All 3 wetSpring upstream asks IMPLEMENTED by primal teams
-  - 5/7 composition gaps RESOLVED (toadStool 3, sweetGrass TCP/BTSP, hex acceptance)
-  - Major bumps: toadStool 0.2.0, coralReef 0.2.0, skunkBat 0.2.0, sweetGrass 0.7.36,
-    biomeOS v3.60, barraCuda Sprint 70 (75 methods)
-  - All primals now: stability tiers, primal.announce, btsp.capabilities, canonical envelope
-  - bearDog Wave 105: ring/rustls policy reconciled, ACME design doc authored
-  - songbird Wave 207-208: btsp.capabilities, primal.announce, aws-lc-sys banned, test splits
-  - biomeOS v3.61: composition.status pipelines, enrichment module, NucleusMode::Full,
-    braid signals fully wired, spore.instantiate route
-  - plasmidBin manifest v5.5.0: toadStool 0.2.0, coralReef 0.2.0 (A++), sweetGrass 0.7.36
-  - **All 13/13 primals stadial-gate absorbed**
-  - ~~Remaining: sourDough version drift, 2 composition gaps (GPU API alignment, cross-gate dispatch)~~ **RESOLVED**
+Garden evolution (lithoSpore v1.0.0, projectNUCLEUS V3, esotericWebb V8,
+projectFOUNDATION), infrastructure review (repo membrane boundary, env audit),
+wateringHole fossilization (numeric drift fixed, 18 gen4 docs organized),
+and Wave 22 upstream primal evolution (13/13 stadial-gate absorbed, 4 new
+methods registered) — all detail fossilized to `fossilRecord/`.
 
 ### Remaining (updated May 24, 2026)
 

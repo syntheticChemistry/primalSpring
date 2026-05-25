@@ -30,7 +30,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `math.rs` refactored (split `signal.rs` + `stats.rs`), `pollster` eliminated, hardcoding → capability-based. 87 IPC methods. |
 | petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — WS-4: `petal-tongue-wasm` expanded (8 `wasm_bindgen` functions: `render_dashboard`, `render_binding`, `render_scene`, `validate_grammar`, modality dispatch). Client-side WASM rendering for offline sporePrint. |
 | rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `Box<dyn Error>` eliminated, test harness extracted, workspace dep hygiene, stale spec headers fixed. |
-| loamSpine | 1,527+ | **ADOPTED** | FULL | L3 | **CLEAN** — RFC 3161 TSA anchor serde + service roundtrip test added. `AnchorTarget::Rfc3161Tsa` variant with `tsa_url`. |
+| loamSpine | 1,528+ | **ADOPTED** | FULL | L3 | **CLEAN** — benchScale roundtrip harness (51 validations, 43 methods). RFC 3161 TSA anchor coverage. Showcase debris cleaned. |
 | sweetGrass | 1,553 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.37: PID file, JH-0 gate + port 9850 canonical |
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
