@@ -99,7 +99,7 @@ primalSpring/
 │   └── play.html                 # Composition monitor / debug dashboard (not primary UI)
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
-└── wateringHole/                  # Docs and handoffs
+└── wateringHole/                  # Fossilized — see infra/wateringHole/
 ```
 
 ## Key Design Principles

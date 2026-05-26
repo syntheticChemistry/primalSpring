@@ -245,7 +245,7 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | — | biomeOS | Merge conflicts from upstream evolution | **RESOLVED** — v3.55: 5 conflict files resolved (capability_translation, capability handler, path_builder). `cargo check` clean. |
 | — | biomeOS | Signal dispatch not wired | **RESOLVED** — v3.56: `signal.dispatch`/`signal.list`/`signal.schema` routes + `capability.call` signal-tier interception. 7 integration tests. Composition collapse active. |
 | — | biomeOS | Metrics lack signal context | **RESOLVED** — v3.57: `GraphExecutor` tags metrics with signal namespace, extracts primal_id/operation from graph nodes. `PathwayLearner` signal-aware. |
-| — | biomeOS | No atomic self-registration | **RESOLVED** — v3.57: `primal.announce` single-RPC registration (lifecycle + capabilities + translations + signal tiers). See `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md`. |
+| — | biomeOS | No atomic self-registration | **RESOLVED** — v3.57: `primal.announce` single-RPC registration (lifecycle + capabilities + translations + signal tiers). See `infra/wateringHole/` (fossilized: `fossilRecord/wateringHole/consolidated-may2026/PRIMAL_ANNOUNCE_PROTOCOL.md`). |
 | — | squirrel | No signal planning mode | **RESOLVED** — `signal_plan` mode for `ai.query`: ingests `signal_tools.toml`, decomposes intent into structured signal step sequences. |
 
 Also resolved by upstream teams (not previously tracked as gaps):
@@ -492,10 +492,9 @@ levels, plasmidBin binary inventory, and historical resolution logs are archived
 
 Historical per-primal handoffs are in `infra/wateringHole/handoffs/archive/`.
 All primal-specific stadial gate responses (May 17) have been fossilized after
-absorption into Wave 22 coordination docs. See `primalSpring/wateringHole/handoffs/`
-for the living coordination handoffs:
-- `WAVE22_UPSTREAM_PRIMAL_EVOLUTION_MAY17_2026.md` — per-primal action items
-- `WAVE22_STADIAL_GATE_PRIMAL_BLURB_MAY17_2026.md` — stadial gate sweep
+absorption into Wave 22 coordination docs. See `infra/wateringHole/handoffs/archive/`
+for archived coordination handoffs, and `fossilRecord/springs/primalSpring/wateringHole_wave50_may2026/`
+for the full local wateringHole snapshot (fossilized Wave 51).
 
 ---
 
