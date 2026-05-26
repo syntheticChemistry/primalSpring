@@ -75,7 +75,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.28 Wave 51 (May 26, 2026) — 53 scenarios (10 tracks, 3 tiers),
+v0.9.29 Wave 52 (May 26, 2026) — 53 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (458 exercised, 100% coverage),
 89 experiments (20 tracks), 95 deploy graphs (81 deploy + 14 signal),
 44-cell deployment matrix. 791 lib tests (780 pass, 9 live-tier, 2 ignored). 13/13 behavioral
@@ -101,6 +101,10 @@ triple → `current_target_triple()` compile-time dispatch.
 `PRIMALSPRING_TCP_TIER5=1` (opt-in). UDS-only is the default. NestGate/Squirrel
 port-swap bug fixed in scripts and `ports.env`.
 See `fossilRecord/springs/primalSpring/docs_wave35_may2026/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md` for the archived ecosystem audit.
+**plasmidBin Wave 52 evolution**: `build --commit` for reproducible builds, `harvest --version-tag`
+for manifest auto-update, `fetch` skips unshipped primals on `--all` (checksums-based), `gh` CLI
+calls have 15s timeout (no more indefinite hangs). sourDough v0.3.0 first harvest. biomeOS UniBin
+naming debt resolved (`biomeos-cli` → `biomeos` primal + `biome` CLI helper).
 **plasmidBin decoupled** — all direct filesystem coupling to `../plasmidBin` removed (20 files).
 Binary discovery standardized: `$ECOPRIMALS_PLASMID_BIN` → `$XDG_DATA_HOME/ecoPrimals/plasmidBin`.
 `tools/fetch_primals.sh` bootstraps binaries from GitHub Releases. plasmidBin CI/CD

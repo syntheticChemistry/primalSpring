@@ -3,7 +3,28 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–51: Stadial Entry / Glacial Shift (2026-05-26)
+## [Unreleased] — Waves 22–52: Stadial Entry / Glacial Shift (2026-05-26)
+
+### Wave 52: plasmidBin Pipeline Evolution + Nascent Primal Infrastructure (May 26)
+- **Reproducible builds**: `plasmidbin build --commit SHA` pins source to exact commit.
+  CI wired via `auto-harvest.yml` `needs.prepare.outputs.commit`.
+- **Manifest auto-update**: `plasmidbin harvest --version-tag` updates `manifest.toml`
+  `latest` field after successful harvest. Prevents stale re-dispatch in CI.
+- **Fetch resilience**: `fetch --all` now skips primals without checksums entries
+  (`SKIP  not yet shipped`) instead of hanging or failing. Explicit `--primal NAME`
+  still attempts download for intentional fetches of nascent primals.
+- **`gh` CLI timeout**: `resolve_release_tag` and `resolve_recent_tags` use 15-second
+  timeout via spawn+try_wait loop. No more indefinite hangs on auth prompts or network.
+- **sourDough v0.3.0 first harvest**: tagged, musl-static verified (ELF statically
+  linked, stripped), harvest dispatched to plasmidBin CI.
+- **biomeOS UniBin naming resolution**: `biomeos-cli` → `biomeos` (primal) + `biome`
+  (CLI helper). `sources.toml` cleaned, `checksums.toml` orphan merged, `auto-harvest.yml`
+  rename step now resolves `binary_name` from `sources.toml`.
+- **Checksum key fix**: `harvest.rs` uses `source_id` (not `binary_name`) for checksum
+  keys — aligns with `manifest.toml` primal sections.
+- **cellMembrane handoff**: Wave 52b runner redundancy, Wave 53 Forgejo Actions,
+  Wave 54 build inversion ownership transferred via `wateringHole/handoffs/`.
+- 98/98 `plasmidbin validate` passes. Zero failures.
 
 ### Wave 51: discovery.peers RESOLVED + postPrimordial Debt Sweep (May 26)
 - **Songbird `discovery.peers` CONFIRMED LIVE** — fresh Wave 51 Songbird from plasmidBin
