@@ -3,7 +3,29 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–49: Stadial Entry / Glacial Shift (2026-05-25)
+## [Unreleased] — Waves 22–51: Stadial Entry / Glacial Shift (2026-05-26)
+
+### Wave 51: discovery.peers RESOLVED + postPrimordial Debt Sweep (May 26)
+- **Songbird `discovery.peers` CONFIRMED LIVE** — fresh Wave 51 Songbird from plasmidBin
+  mesh+registry merge, `SONGBIRD_PEERS` auto-seeding. Validated on eastGate with
+  dedicated primalSpring NUCLEUS (primalspring01, :7701).
+- **Dedicated NUCLEUS instance**: primalspring01 Tower (BearDog :9101 + Songbird :7701)
+  running alongside nucleus01 (air/groundSpring shared). Discrete primal systems on
+  one gate, meshed via `discovery.peers`.
+- **postPrimordial debt sweep**: purged all "rebuild" language from docs (deploy from
+  plasmidBin only). Removed dead `START_PRIMAL` variable from `cell_launcher.sh`.
+  Fixed `PLASMIN_BIN` typo. Reordered `nucleus_launcher.sh` discovery (env/XDG first).
+- **plasmidBin CI migration**: all 3 workflows (smoke, auto-harvest, tier23) now use
+  `plasmidbin` Rust CLI instead of bash scripts. `build.rs` passes `build_args` from
+  `sources.toml`.
+- **wateringHole standards updated**: DEPLOYMENT_VALIDATION (v1.2), GARDEN_COMPOSITION_ONRAMP,
+  PLASMIDBIN_PUSH_AUTOMATION (v2.0) — all teach `plasmidbin` CLI as primary.
+- **Bash launcher deprecation**: `nucleus_launcher.sh`, `ttt_nucleus.sh`,
+  `composition_nucleus.sh`, `live_nucleus.sh` — DEPRECATED headers added.
+- **SOURDOUGH_DEPLOYMENT_INTERNALIZATION.md** updated for `plasmidbin` CLI reality.
+- **GLACIAL_SHIFT_READINESS.md** reconciled — 8+ stale "discovery.peers is blocker"
+  references fixed to SHIPPED status.
+- 791 lib tests. 53 scenarios. Zero TODO/FIXME/HACK in .rs/.sh code.
 
 ### Wave 49: Post-Primordial Deployment + Covalent Mesh Evolution (May 25)
 - **Post-primordial mandate**: plasmidBin is sole binary source. `nucleus_launcher.sh`

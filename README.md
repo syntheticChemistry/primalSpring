@@ -557,7 +557,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | Tool | Purpose |
 |------|---------|
 | `tools/nucleus_composition_lib.sh` | Reusable NUCLEUS composition library (sourced by domain scripts) |
-| `tools/nucleus_launcher.sh` | Start/stop/restart full NUCLEUS stack |
+| `tools/nucleus_launcher.sh` | Start/stop/restart full NUCLEUS stack (DEPRECATED Wave 51 — prefer Rust `nucleus_launcher` or `plasmidbin launch`) |
 | `tools/desktop_nucleus.sh` | 13-primal NUCLEUS launcher with auto-symlink for petalTongue discovery |
 | `tools/check_method_coverage.sh` | Inverse drift: flag registry methods never exercised in scenarios/tests/graphs |
 | `tools/check_method_gate.sh` | Verify MethodGate pre-dispatch authorization compliance |
@@ -568,12 +568,12 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `tools/validate_compositions.py` | Live subsystem composition validator (C1-C7) |
 | `tools/ws_gateway.py` | Thin WebSocket-to-IPC bridge (no business logic) |
 | `tools/composition_template.sh` | Template generator for new composition deploy graphs |
-| `tools/composition_nucleus.sh` | Compose and validate a NUCLEUS from capability fragments |
+| `tools/composition_nucleus.sh` | Compose and validate a NUCLEUS from capability fragments (DEPRECATED Wave 51) |
 | `tools/ttt_composition.sh` | Tic-Tac-Toe composition demo (ludoSpring + petalTongue + Squirrel) |
-| `tools/ttt_nucleus.sh` | NUCLEUS launcher tailored for TTT game stack |
+| `tools/ttt_nucleus.sh` | NUCLEUS launcher tailored for TTT game stack (DEPRECATED Wave 51) |
 | `tools/cell_launcher.sh` | Start a single cellular deployment from `graphs/cells/` |
 | `tools/gen_seed_fingerprints.sh` | Generate BLAKE3 fingerprints for seed genetics artifacts |
-| `tools/live_nucleus.sh` | Hot-reload NUCLEUS launcher with file-watch respawn |
+| `tools/live_nucleus.sh` | Hot-reload NUCLEUS launcher with file-watch respawn (DEPRECATED Wave 51) |
 | `tools/nucleus_crypto_bootstrap.sh` | Bootstrap BearDog + BTSP crypto layer for NUCLEUS |
 | `tools/desktop_session.sh` | Launch desktop substrate session (petalTongue + agentic loop) |
 | `tools/tictactoe.sh` | Standalone TTT quick-launch (wraps ttt_composition) |

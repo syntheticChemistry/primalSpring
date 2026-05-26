@@ -75,12 +75,13 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.28 Wave 49 (May 25, 2026) — 53 scenarios (10 tracks, 3 tiers),
+v0.9.28 Wave 51 (May 26, 2026) — 53 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (458 exercised, 100% coverage),
 89 experiments (20 tracks), 95 deploy graphs (81 deploy + 14 signal),
 44-cell deployment matrix. 791 lib tests (780 pass, 9 live-tier, 2 ignored). 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
-sole binary source, all primordial fallbacks cut across 4 responding springs.
+sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
+Dedicated primalSpring NUCLEUS live on eastGate (primalspring01, :7701).
 `SONGBIRD_PEERS` env + `--peers` CLI for cross-gate mesh seeding.
 `--security-socket` feature-guarded (plasmidBin version compat). Stale socket
 pre-cleanup (EADDRINUSE fix). Cell binary pattern documented. 4 gates
@@ -229,7 +230,7 @@ wateringHole fossilization (numeric drift fixed, 18 gen4 docs organized),
 and Wave 22 upstream primal evolution (13/13 stadial-gate absorbed, 4 new
 methods registered) — all detail fossilized to `fossilRecord/`.
 
-### Remaining (updated May 24, 2026)
+### Remaining (updated May 26, 2026)
 
 **Resolved since last review:**
 - ~~**Thread 4**~~ now active (expression + data sources in projectFOUNDATION)
@@ -253,11 +254,11 @@ methods registered) — all detail fossilized to `fossilRecord/`.
 - plasmidBin `plasmidbin start` (Rust CLI) normalized for all 13 primals
 
 **Glacial shift horizons:**
-- **Covalent bonding** — **Wave 51: `discovery.peers` SHIPPED**. Songbird mesh+registry merge, `SONGBIRD_PEERS` auto-seeding on boot, `mesh_seed` module (7+ tests). plasmidBin `--peers` flag wired in `nucleus_launcher.sh`. 4 gates operational, cross-subnet routing confirmed (4ms). **NEXT**: Deploy fresh Songbird from plasmidBin + `s_covalent_mesh` + `s_cross_gate_capability_call` validation → Plasmodium collective (3+ gates meshed).
+- **Covalent bonding** — **Wave 51: `discovery.peers` VALIDATED LIVE**. Songbird mesh+registry merge, `SONGBIRD_PEERS` auto-seeding on boot, `mesh_seed` module (7+ tests). Dedicated primalSpring NUCLEUS (primalspring01 :7701) meshed with nucleus01 (:7700) on eastGate. **NEXT**: `s_covalent_mesh` + `s_cross_gate_capability_call` scenario validation → Plasmodium collective (3+ gates meshed).
 - **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5)
 - **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring). biomeOS v3.75 mesh routing is a prerequisite step.
 - ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 458/458 (100%) via 3 new scenarios + coverage graph + script regex fix
-- ~~**plasmidBin Rust elevation**~~ — **RESOLVED** Wave 47-48: `nucleus_launcher` Rust binary (parity with bash + `--federation-port` for LAN mesh)
+- ~~**plasmidBin Rust elevation**~~ — **RESOLVED** Wave 47-51: `nucleus_launcher` Rust binary + full `plasmidbin` Rust CLI (build, harvest, fetch, validate, doctor, start, launch). All CI workflows migrated.
 - **sporePrint living content (S6)** — NestGate `content.put` pipeline for dynamic site
 
 **Downstream / cross-spring (async — springs/gardens own):**
