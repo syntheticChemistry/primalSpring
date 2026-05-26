@@ -1,7 +1,7 @@
 # wateringHole — primalSpring Ecosystem Guidance
 
-**Version**: 0.9.28 (Wave 49 — 791 tests, 458 methods, 53 scenarios, post-primordial, 4 springs confirmed plasmidBin-only)
-**Last Updated**: May 25, 2026 (Wave 49 — Post-primordial: `SONGBIRD_PEERS` peer seeding, `--security-socket` feature guard, stale socket cleanup, cell binary pattern documented, cross-subnet mesh documented.)
+**Version**: 0.9.30 (Wave 50 — 791 tests, 458 methods, 53 scenarios, post-primordial, plasmidBin Rust elevation, covalent mesh)
+**Last Updated**: May 26, 2026 (Wave 50 — plasmidBin full Rust elevation, dynamic harvest from sources.toml, CI pipeline optimization, cellMembrane self-hosted runner handoff, GitHub Actions incident exposed outer-membrane dependency.)
 **License**: AGPL-3.0-or-later  
 
 ---
@@ -87,22 +87,25 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 
 ---
 
-## Current Ecosystem State (Wave 49)
+## Current Ecosystem State (Wave 50)
 
-- **13/13 primals** building standalone, distributed via plasmidBin genomeBin
-  (Tier 1: x86_64, aarch64, armv7 — 40+ release assets)
+- **14/14 primals** in manifest (13 shipped + sourdough registered), distributed via plasmidBin genomeBin
+  (Tier 1: x86_64, aarch64, armv7 — 37 release assets in v2026.05.26)
+- **plasmidBin fully Rust-elevated** — all 20 bash scripts replaced by `plasmidbin` CLI (validate, harvest, fetch, deploy, doctor, etc.). Dynamic harvest reads from `sources.toml` — adding a primal auto-includes it in the pipeline
 - **Zero open upstream gaps** — 13/13 primals at zero debt, zero panics in production
-- **458 registered capability methods** across 84+ domains — includes `neural_api.*` (6 methods), `science.*` (6), ionic bond methods, FIDO2, `primal.announce`, `primal.list`
-- **53 validation scenarios** (10 tracks, 3 tiers: Rust / Both / Live) with shared `validation::helpers`; includes S47 neural-dispatch-live, S48 observatory-parity, S49 feedback-loop (live Neural API validation), S50-S53 post-primordial + covalent mesh
+- **458 registered capability methods** across 84+ domains
+- **53 validation scenarios** (10 tracks, 3 tiers: Rust / Both / Live)
 - **791 lib tests** (780 pass, 9 live-tier, 2 ignored)
-- **biomeOS v3.75** — Neural API with adaptive routing weights (redb-persistent), weight health introspection, composition intelligence, mesh routing, and capability utilization tracking (hot/cold methods)
-- **NeuralBridge observatory + feedback loop** — primalSpring consumes biomeOS routing intelligence and feeds dispatch outcomes back through `capability_call_instrumented` + `record_bridge_outcome`
-- **14 atomic signal graphs** (`graphs/signals/`) defining Neural API composition collapse layer
-- **13/13 BTSP Phase 3 FULL AEAD**, 13/13 default `127.0.0.1`
-- **RootPulse commit workflow** fully executable (6/6 phases)
-- **NestGate content-addressed storage** live (8 `content.*` methods)
-- **sourDough v0.2.0** scaffold generates ecosystem-compliant primals
+- **biomeOS v3.75** — Neural API with adaptive routing, composition intelligence, mesh routing
+- **Songbird `discovery.peers`** shipped — TCP :7700 federation across 4 gates
+- **CI optimized** — daily full-sweep cron replaced with lightweight tag-checker (`check-updates.yml`). Estimated ~$25/month gross Actions usage (down from ~$77)
+- **cellMembrane self-hosted runner handoff** issued — 2+ LAN gates, lockout prevention, Forgejo fallback
+- **sourDough v0.3.0** registered in plasmidBin sources.toml, evolution path toward primal-factory
 - **Team restructuring**: cellMembrane team owns infrastructure/ops, projectNUCLEUS refocused on deploy pipelines + big compute (see `TEAM_OWNERSHIP_MATRIX.md`)
+
+> **Note**: The canonical ecosystem wateringHole is `infra/wateringHole/`. This local
+> wateringHole contains primalSpring-specific patterns and standards. Handoffs and
+> ecosystem-wide coordination live in `infra/wateringHole/handoffs/`.
 
 ## Key References (outside wateringHole)
 
@@ -126,12 +129,12 @@ All pre-Wave 39 handoffs have been absorbed and archived:
 
 ---
 
-## Upstream Primal Evolution Status (May 24, 2026)
+## Upstream Primal Evolution Status (May 26, 2026)
 
-**Post-behavioral convergence.** All 13 primals at zero debt with uniform
-deployment surface (DEPLOYMENT_BEHAVIOR_STANDARD 13/13). biomeOS v3.73
-with capability-domain composition. Deep debt sweeps completed across
-toadStool (S273), nestgate (S72), barraCuda, rhizoCrypt, coralReef.
+**Post-primordial, entering covalent phase.** All 13 primals at zero debt
+with uniform deployment surface (DEPLOYMENT_BEHAVIOR_STANDARD 13/13).
+plasmidBin pipeline fully Rust-elevated. biomeOS v3.75 with capability-domain
+composition. Songbird `discovery.peers` enables cross-gate mesh federation.
 
 ### Completed (Wave 47)
 
@@ -155,17 +158,20 @@ toadStool (S273), nestgate (S72), barraCuda, rhizoCrypt, coralReef.
 |---------|------|-------|
 | **Covalent bonding** | Multi-gate NUCLEUS mesh across 4 operational LAN gates | primalSpring + delta springs |
 | **Sovereignty cutover** | Forgejo-primary, sovereign DNS, membrane channels | cellMembrane team |
+| **Self-hosted CI** | 2+ LAN-linked gates running GitHub Actions runners, Forgejo fallback | cellMembrane team |
 | **Neural API as neural network** | Evolve adaptive routing weights toward learned routing | biomeOS + primalSpring |
 | ~~**Method coverage 80%**~~ | **RESOLVED** Wave 47: 458/458 (100%) registry coverage | primalSpring scenarios |
-| ~~**plasmidBin Rust elevation**~~ | **RESOLVED** Wave 47: `nucleus_launcher` Rust binary shipped | primalSpring / plasmidBin |
+| ~~**plasmidBin Rust elevation**~~ | **RESOLVED** Wave 50: full `plasmidbin` CLI replaces all 20 bash scripts | primalSpring / plasmidBin |
+| ~~**plasmidBin dynamic harvest**~~ | **RESOLVED** Wave 50: harvest reads from sources.toml, auto-onboards new primals | primalSpring / plasmidBin |
 | **sporePrint living content** | NestGate `content.put` pipeline for dynamic site updates | primalSpring (S6) |
 
 ---
 
-## River Delta (Springs) — Evolution Summary (May 24, 2026)
+## River Delta (Springs) — Evolution Summary (May 26, 2026)
 
 All 8 springs pulled to HEAD. Combined: **9,700+ workspace tests** across the
 delta. Every spring at zero debt. 5 springs actively deploying NUCLEUS on LAN gates.
+All delta springs issued Wave 50 covalent HPC absorption blurb.
 
 | Spring | Tests | Gate | Latest |
 |--------|------:|------|--------|
