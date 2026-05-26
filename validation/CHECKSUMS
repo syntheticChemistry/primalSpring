@@ -1,6 +1,6 @@
 # primalSpring guideStone CHECKSUMS — BLAKE3
 # Generated: 2026-05-26
-# Files: 24
+# Files: 27
 #
 # Verify: primalspring::checksums::verify_manifest()
 a99f788cf1a0c92d764efc1b791e02f3f1bc4d7bf804ae6e85cb6ad4a2211e77  ecoPrimal/src/bin/primalspring/main.rs
@@ -9,7 +9,10 @@ cc0e26265f6c60eece2dc4cf0232369da1db56d7ff9405674f4f670a8ba3c1a0  ecoPrimal/src/
 df0901a933784918ab06fb6d2d8ac4207cf0f01cdc09712d9801db4fe6bfaa28  ecoPrimal/src/certification/mod.rs
 b514ce9c029a4de29cc08050d2f1263e18c7850ccca099e150dcfeba8cc26352  ecoPrimal/src/composition/mod.rs
 7bcbc3bd52d3af4b72c4e3dd1dfa65538c72d56a65a0d2afb219b5d200291d50  ecoPrimal/src/validation/mod.rs
-e94a05b2e3da653c24e31740152fe60ef3fdf35f688caa1ab10375f2ae1b2a90  ecoPrimal/src/validation/scenarios/mod.rs
+0f951c89d7107e0ed0758d34b4d6e56faebc9e66cf29d7ab0d455c744b99da5b  ecoPrimal/src/validation/scenarios/mod.rs
+c7c1e886c792e750bb996cad3b822927c64733dcaaf262ddeb601f1436459a0e  ecoPrimal/src/validation/scenarios/s_cephalization.rs
+2c62d855e90c96ec2c538f77a07707ac4993bda2bf66f1380ad862e1dcb26988  ecoPrimal/src/validation/scenarios/s_tower_cns.rs
+c8b760553843ef5a64044081c0e6b3f93959bf40e01fc78a0639f8cbbb020627  ecoPrimal/src/validation/scenarios/s_kderm_boundary.rs
 f1115302d6441caed85b4d9c9d0577b36f3be2ae7b70303fdc44a13cc89a463a  ecoPrimal/src/validation/scenarios/registry.rs
 9357875b20f0054adcc8515c561cbdcfa9f01603c4e9d9e1177087f9cc32b00d  ecoPrimal/src/tolerances/mod.rs
 2be8559f813cfc70857d9f4e72f1a7ce5c9b447fdabf70c49437eb35386c2034  ecoPrimal/src/coordination/mod.rs

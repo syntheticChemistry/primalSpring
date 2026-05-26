@@ -97,6 +97,9 @@ pub mod s_startup_ordering;
 pub mod s_tier2_science_api;
 pub mod s_token_federation;
 pub mod s_tower_atomic;
+pub mod s_cephalization;
+pub mod s_kderm_boundary;
+pub mod s_tower_cns;
 pub mod s_zero_port_standard;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
@@ -156,6 +159,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_coordination_api::SCENARIO);
     r.register(s_health_lifecycle_surface::SCENARIO);
     r.register(s_crypto_identity_surface::SCENARIO);
+    r.register(s_cephalization::SCENARIO);
+    r.register(s_tower_cns::SCENARIO);
+    r.register(s_kderm_boundary::SCENARIO);
     r
 }
 
@@ -166,7 +172,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 53;
+    const EXPECTED_SCENARIO_COUNT: usize = 56;
 
     #[test]
     fn registry_scenario_count() {
@@ -225,6 +231,9 @@ mod tests {
             // Port collision: storage/content → NestGate:9500, commit/attribution → SweetGrass:9850.
             // These are intentional aliases (same primal, different capability domain).
             ("zero-port-standard", 1),
+            // Live dispatch checks against meta/nucleus/coordination — requires live Neural API
+            // with full routing table. Failures are expected without full graph deploy.
+            ("atomic-signals", 16),
         ];
 
         let r = build_registry();

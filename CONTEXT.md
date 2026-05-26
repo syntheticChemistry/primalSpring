@@ -75,12 +75,17 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.30 Wave 52 (May 26, 2026) — 53 scenarios (10 tracks, 3 tiers),
+v0.9.30 Wave 54-prep (May 26, 2026) — 56 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (458 exercised, 100% coverage),
 92 experiments (21 tracks), 95 deploy graphs (81 deploy + 14 signal),
-44-cell deployment matrix. 791 lib tests (778 pass, 11 live-tier, 2 ignored). 13/13 behavioral
+44-cell deployment matrix. 799 lib tests (787 pass, 10 live-tier, 2 ignored). 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
 sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
+
+Wave 54 prep: 3 new absorbed scenarios (cephalization, tower-cns, kderm-boundary).
+BearDog TCP drop validated (all 5 domain sockets reachable via UDS). sourDough
+manifest bumped 0.3.0→0.3.1. skunkBat seed_fingerprint backfilled. Glacial Shift
+Wave Plan published to wateringHole with per-primal/spring/garden team handoffs.
 Dedicated primalSpring NUCLEUS live on eastGate (primalspring01, :7701).
 `SONGBIRD_PEERS` env + `--peers` CLI for cross-gate mesh seeding.
 `--security-socket` feature-guarded (plasmidBin version compat). Stale socket

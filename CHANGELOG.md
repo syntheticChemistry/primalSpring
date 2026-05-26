@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Waves 22–52: Stadial Entry / Glacial Shift (2026-05-26)
 
+### Wave 54 prep: Cephalization + K-Derm + Tower CNS Scenarios (May 26)
+- **3 new absorbed scenarios**: `s_cephalization` (socket namespace readiness, ownership
+  mapping, orphan detection), `s_tower_cns` (TCP port consolidation, UDS coverage,
+  Tower relay validation), `s_kderm_boundary` (K-Derm layer placement, boundary policy,
+  monoderm/diderm topology). Registry: 56 scenarios.
+- **BearDog TCP drop validated**: all 5 domain sockets (crypto, security, btsp, ed25519,
+  x25519) respond via UDS. TCP 9900/9101 confirmed fully redundant for local access.
+- **Mountain debt resolved**: sourDough manifest bumped 0.3.0→0.3.1 in plasmidBin.
+  skunkBat seed_fingerprint backfilled (BLAKE3 of Cargo.toml).
+- **Provenance checksums updated**: 27 files (3 new scenarios added).
+- **Known debt tracking**: `atomic-signals` scenario (16 failures) added to KNOWN_DEBT
+  — pre-existing live-dispatch issue, not a regression.
+- **787/799 lib tests pass**: 10 failures are known live-tier, 2 ignored.
+- **Glacial Shift Wave Plan**: 3-phase roadmap (Waves 53–55+) published to wateringHole
+  with per-primal/spring/garden team handoffs.
+
 ### Wave 52b: Full NUCLEUS Live + Glacial Shift Readiness (May 26)
 - **Full NUCLEUS live on eastGate**: 13/13 primals running from plasmidBin deployment
   (beardog, songbird, skunkbat, toadstool, barracuda, coralreef, nestgate, rhizocrypt,
