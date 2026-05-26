@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# DEPRECATED (Wave 51): Prefer nucleus_launcher Rust binary or plasmidbin launch.
+#
 # tools/live_nucleus.sh — Start a minimal NUCLEUS + push demo scenes to petalTongue
 #
 # Launches the essential tower (beardog + songbird) plus petalTongue in live

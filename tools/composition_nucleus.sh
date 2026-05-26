@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
+# DEPRECATED (Wave 51): Prefer nucleus_launcher Rust binary or plasmidbin launch.
+#
 # composition_nucleus.sh — Launch a NUCLEUS composition for any domain
 #
 # Starts primals from plasmidBin in dependency order with correct socket

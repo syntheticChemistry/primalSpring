@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
+# DEPRECATED (Wave 51): Prefer the Rust nucleus_launcher binary:
+#   cargo run -p nucleus_launcher -- --family-id <FAMILY_ID> --composition nucleus
+# Or plasmidBin's launch command:
+#   cargo run -p plasmidbin -- launch --composition full
+#
 # NUCLEUS Launcher — Zero-Port Tower Atomic Standard
 #
 # Starts the ecoPrimals NUCLEUS composition stack in dependency order.
