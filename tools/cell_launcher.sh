@@ -116,7 +116,9 @@ echo "  Sockets:    $SOCKET_DIR"
 echo "=========================================="
 
 BIOMEOS_BIN="$PLASMIDBIN/primals/biomeos"
-[ -x "$BIOMEOS_BIN" ] || BIOMEOS_BIN="$(command -v biomeos 2>/dev/null || true)"
+if [ ! -x "$BIOMEOS_BIN" ]; then
+    BIOMEOS_BIN="$PLASMIDBIN/primals/x86_64-unknown-linux-musl/biomeos"
+fi
 
 NUCLEUS_LAUNCHER="$PRIMALSPRING_ROOT/tools/nucleus_launcher.sh"
 START_PRIMAL="$PLASMIDBIN/start_primal.sh"
@@ -140,7 +142,9 @@ case "$ACTION" in
             echo ""
             echo "Launching petalTongue in live mode..."
             PT_BIN="$PLASMIDBIN/primals/petaltongue"
-            [ -x "$PT_BIN" ] || PT_BIN="$(command -v petaltongue 2>/dev/null || true)"
+            if [ ! -x "$PT_BIN" ]; then
+                PT_BIN="$PLASMIDBIN/primals/x86_64-unknown-linux-musl/petaltongue"
+            fi
             if [ -n "$PT_BIN" ] && [ -x "$PT_BIN" ]; then
                 export AWAKENING_ENABLED=false
                 exec "$PT_BIN" live --socket "$SOCKET_DIR/petaltongue-${FAMILY_ID}.sock"
