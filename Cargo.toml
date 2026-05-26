@@ -99,6 +99,9 @@ members = [
     "experiments/exp109_composition_lifecycle",
     "experiments/exp110_audit_pipeline",
     "experiments/exp111_gate_routing",
+    "experiments/exp112_postprimordial_review",
+    "experiments/exp113_cephalization",
+    "experiments/exp114_tower_cns_convergence",
 ]
 
 [workspace.package]

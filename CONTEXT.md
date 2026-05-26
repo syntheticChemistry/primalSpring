@@ -29,7 +29,7 @@ back upstream to primals and primalSpring.
   `primalspring_primal` (JSON-RPC IPC server / cell membrane),
   `nucleus_launcher` (Rust NUCLEUS launcher with `--federation-port`),
   `nucleus_launcher` (Rust replacement for bash launcher — dependency-ordered startup)
-- **experiments/** — 89 validation binaries covering 20 tracks
+- **experiments/** — 92 validation binaries covering 21 tracks
 - **graphs/** — 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
@@ -75,10 +75,10 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.29 Wave 52 (May 26, 2026) — 53 scenarios (10 tracks, 3 tiers),
+v0.9.30 Wave 52 (May 26, 2026) — 53 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (458 exercised, 100% coverage),
-89 experiments (20 tracks), 95 deploy graphs (81 deploy + 14 signal),
-44-cell deployment matrix. 791 lib tests (780 pass, 9 live-tier, 2 ignored). 13/13 behavioral
+92 experiments (21 tracks), 95 deploy graphs (81 deploy + 14 signal),
+44-cell deployment matrix. 791 lib tests (778 pass, 11 live-tier, 2 ignored). 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
 sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
 Dedicated primalSpring NUCLEUS live on eastGate (primalspring01, :7701).
@@ -105,6 +105,12 @@ See `fossilRecord/springs/primalSpring/docs_wave35_may2026/TEMPORAL_ECOSYSTEM_RE
 for manifest auto-update, `fetch` skips unshipped primals on `--all` (checksums-based), `gh` CLI
 calls have 15s timeout (no more indefinite hangs). sourDough v0.3.0 first harvest. biomeOS UniBin
 naming debt resolved (`biomeos-cli` → `biomeos` primal + `biome` CLI helper).
+**Full NUCLEUS live on eastGate** — 13/13 primals running from plasmidBin deployment, 19/19
+sockets alive, `plasmidbin doctor` 35/35 pass, `plasmidbin validate` 100/100 pass. Certify
+175/193 (18 live-tier/BTSP config-dependent). K-Derm topology + bonding model standards
+published to wateringHole. Gen4 K-Derm reconciliation bridges gram-negative → absolute layer
+naming. Deploy graph validation: fragment-aware structural checks (profiles with `fragments`
+exempt from duplicate-order rule). Provenance checksums regenerated (24 files, BLAKE3).
 **plasmidBin decoupled** — all direct filesystem coupling to `../plasmidBin` removed (20 files).
 Binary discovery standardized: `$ECOPRIMALS_PLASMID_BIN` → `$XDG_DATA_HOME/ecoPrimals/plasmidBin`.
 `tools/fetch_primals.sh` bootstraps binaries from GitHub Releases. plasmidBin CI/CD
@@ -112,7 +118,7 @@ auto-harvests on primal push via `repository_dispatch`. GAP-27 (stale biomeOS) r
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
 
-Live validation: **13/13 primals ALIVE** (plasmidBin v2026.05.03 on eastGate),
+Live validation: **13/13 primals ALIVE** (plasmidBin v2026.05.26 on eastGate, all from plasmidBin deployment),
 **guidestone Level 8** (BTSP alias routing + flex key fixes shipped Phase 58; 13 failures resolved),
 **13/13 BTSP authenticated**, 9 cellular graphs BTSP-enforced, bonding model ALL PASS,
 **19/19 exp094 composition parity**, **12/12 exp091 routing PASS**, **14/15 exp096 cross-arch**

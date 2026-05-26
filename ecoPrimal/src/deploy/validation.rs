@@ -341,7 +341,12 @@ pub(super) fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
     }
 
     let names: Vec<&str> = graph.graph.node.iter().map(|n| n.name.as_str()).collect();
-    let is_multi_node = graph.graph.node.iter().any(|n| n.operation.is_some());
+    let has_fragments = graph
+        .graph
+        .metadata
+        .as_ref()
+        .is_some_and(|m| !m.fragments.is_empty());
+    let is_multi_node = has_fragments || graph.graph.node.iter().any(|n| n.operation.is_some());
     for node in &graph.graph.node {
         if node.name.is_empty() {
             issues.push(format!("node at order {} has empty name", node.order));

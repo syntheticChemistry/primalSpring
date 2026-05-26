@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**89 experiments across 20 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25+). Zero deprecated `probe_primal` callers remain as of Wave 18.
+**92 experiments across 21 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25+). Zero deprecated `probe_primal` callers remain as of Wave 18.
 
 ---
 
@@ -24,7 +24,7 @@ carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 89 experiments. All 89 use centralized library helpers, primal name
+across all 92 experiments. All 89 use centralized library helpers, primal name
 constants (`primal_names`), and the modern `CompositionContext` for capability
 discovery and IPC.
 
@@ -65,6 +65,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 18 | Desktop Substrate | exp099–exp106 | **Live validated** (agentic loop, MCP tools, AI triage, storytelling session, ludoSpring IPC, provenance replay, The Rhizome micro-game 8/13, micro-desktop shell 2/4 + 11/12 health bar) |
 | 19 | Foundation Validation | exp107 | **Structural + IPC** (8-phase sediment pipeline: structural → discovery → health → provenance → storage → compute → ledger → attribution; validates foundation composition through NUCLEUS primals via Rust IPC) |
 | 20 | Later-Term Evolution | exp108–111 | **IPC** (token federation, composition lifecycle, audit pipeline, gate routing — pressure-tests JH-11, JH-3, JH-5 against upstream primals) |
+| 21 | PostPrimordial + Glacial Shift | exp112–114 | **Live validated** — exp112: full NUCLEUS audit (13/13 primals, 48 sockets, 15 ecoBin, Neural API 300+ methods); exp113: cephalization plan (25 flat sockets → primal-scoped dirs, Phase A: beardog/barracuda/songbird/toadstool); exp114: Tower CNS convergence (19/19 UDS coverage, 3 TCP ports droppable → 2-port Songbird-only target) |
 
 ## Experiment Status Key
 
@@ -138,6 +139,7 @@ the experiment → scenario module mapping.
 | 58 | skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub | **skunkBat** wired as 13th NUCLEUS primal (meta-tier defense/recon, Tier 1 binaries). Guidestone fixes: BTSP alias routing (`resolve_btsp_socket`), flex key resolution for barraCuda, desktop cell health node, Squirrel reconnect-on-failed-probe. **plasmidBin CI hub** architecture documented (sole paid Actions repo, signing roadmap, distribution channels). 25+ files reconciled 12→13 primals. |
 | 59 | Later-Term Evolution | exp108–111 (token federation, composition lifecycle, audit pipeline, gate routing). JH-11 `TokenVerifier` trait + `BearDogVerifier`, `CompositionContext::call_authenticated`, stub primal harness, guidestone Layer 8 lifecycle. |
 | 60 | **Interstadial Rewire** | **All 89 experiments** rewired to modern `CompositionContext` pattern (v0.9.25). Old patterns (`discover_primal`, `PrimalClient`, `AtomicHarness`, `discover_by_capability`) replaced with `CompositionContext::from_live_discovery_with_fallback()` + `ctx.call()`. Pre-rewire sources fossilized in `fossilRecord/experiments_pre_interstadial_may2026/`. Last deprecated `probe_primal` calls removed from exp004/exp107 (Wave 18). Zero clippy warnings, **791** `#[test]` markers across workspace (as of 2026-05-25). |
+|| 61 | **PostPrimordial Glacial Shift** | exp112: full NUCLEUS audit (**40/40**); exp113: cephalization plan (**26/26**); exp114: Tower CNS convergence (**40/40**). 13/13 primals live from plasmidBin, 19/19 UDS 100% coverage, 25 flat sockets mapped for primal-scoped cephalization (Phase A: beardog/barracuda/songbird/toadstool), 3 TCP ports droppable to 2-port Songbird-only target, Neural API 300+ methods routed. |
 
 ## Frozen Results (`results/`)
 

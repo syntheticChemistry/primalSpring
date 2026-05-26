@@ -5,6 +5,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Waves 22–52: Stadial Entry / Glacial Shift (2026-05-26)
 
+### Wave 52b: Full NUCLEUS Live + Glacial Shift Readiness (May 26)
+- **Full NUCLEUS live on eastGate**: 13/13 primals running from plasmidBin deployment
+  (beardog, songbird, skunkbat, toadstool, barracuda, coralreef, nestgate, rhizocrypt,
+  loamspine, sweetgrass, biomeos, squirrel, petaltongue). 19/19 sockets ALIVE.
+- **plasmidbin doctor**: 35/35 pass, 0 warn, 0 fail. 48 live sockets, 0 stale.
+- **plasmidbin validate**: 100/100 pass.
+- **sourDough fetched**: v0.3.0 checksum-verified from plasmidBin deployment.
+- **Certify 175/193**: 18 remaining failures are all live-tier/BTSP config-dependent
+  (BTSP enforcement, crypto method routing via Neural API, composition reload coordinator).
+- **Deploy graph validation fix**: fragment-aware structural checks — profiles with
+  `fragments` metadata are now treated as multi-node (exempt from duplicate-order rule).
+  Resolves 9 false-positive graph structural failures.
+- **Provenance checksums regenerated**: 24 files, BLAKE3, `validation/CHECKSUMS` updated.
+- **Zero debt markers**: 0 TODO/FIXME/HACK/XXX across all Rust and shell sources.
+- **Clippy clean**: zero warnings on `--lib --all-targets`.
+- **778/791 lib tests pass**: 11 failures are known live-tier (require running NUCLEUS with
+  BTSP enforcement + Neural API method routing). 2 ignored.
+
 ### Wave 52: plasmidBin Pipeline Evolution + Nascent Primal Infrastructure (May 26)
 - **Reproducible builds**: `plasmidbin build --commit SHA` pins source to exact commit.
   CI wired via `auto-harvest.yml` `needs.prepare.outputs.commit`.
