@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 25, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 53 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 791 lib tests (780 pass, 9 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 49: **post-primordial** — plasmidBin sole binary source, all primordial fallbacks cut. 4 springs responded (wetSpring V186, ludoSpring Wave 49, neuralSpring V174, healthSpring V65a) — all confirmed post-primordial. Peer seeding (`SONGBIRD_PEERS`) shipped. Cross-subnet gap documented (southGate 192.168.4.x ≠ eastGate 192.168.1.x).
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 53 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 791 lib tests (780 pass, 9 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 50: **covalent HPC** — 7/7 springs responded, 4 gates operational with NUCLEUS + Songbird :7700 federation. Cross-subnet routing confirmed (southGate ↔ eastGate, 4ms, no TURN needed). neuralSpring petalTongue hardcode fixed. hotSpring caught up (pseudoSpore v1.5.0, 9 primals on biomeGate). ludoSpring GAP-01 coralReef live-validated. `discovery.peers` empty = Songbird v0.2.1 feature gap (mesh.init works, peer list not populated).
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -28,13 +28,17 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | `primal.announce` vs `discovery.register` migration path | wetSpring | **DOCUMENTED** — use `CompositionContext::announce()`, Songbird accepts both |
 | Songbird sled DB corruption after unclean shutdown | neuralSpring | **WORKAROUND** — clean `~/.local/share/songbird/task_lifecycle*` |
 | Spring binaries not in plasmidBin 13-primal set | healthSpring | **DOCUMENTED** — cell binary pattern in `PLASMIDBIN_DEPOT_PATTERN.md` |
-| petalTongue musl binary rejects `--family-id` | primalSpring (Wave 49) | **PIPELINE DEBT** — plasmidBin binary older than behavioral convergence; workaround: pass `FAMILY_ID` env |
+| ~~petalTongue musl binary rejects `--family-id`~~ | primalSpring (Wave 49) | **FIXED** Wave 49 — commit `bb5cdc9`: `--family-id` CLI now accepted |
 | Songbird federation bound to 127.0.0.1 (not LAN-reachable) | primalSpring (Wave 49) | **FIXED** — launchers pass `--bind 0.0.0.0` when federation enabled |
 | petalTongue stale socket on restart (EADDRINUSE) | primalSpring (Wave 49) | **FIXED** — launcher pre-cleans dead sockets before startup |
 | Songbird `--security-socket` flag rejected | wetSpring (Wave 49) | **FIXED** — feature-guarded in launcher; `SONGBIRD_SECURITY_SOCKET` env fallback always set |
 | `discovery.peers` returns empty (no cross-gate peers) | healthSpring (Wave 49) | **FIXED** — `SONGBIRD_PEERS` env + `--peers` CLI for explicit seed; `mesh.init` called post-startup |
-| southGate ≠ eastGate subnet (192.168.4.x vs 192.168.1.x) | neuralSpring (Wave 49) | **DOCUMENTED** — requires subnet routing or cellMembrane TURN relay |
-| hotSpring still on Wave 48 (no post-primordial blurb absorbed) | review (Wave 49) | **PENDING** — biomeGate needs blurb handoff |
+| ~~southGate ≠ eastGate subnet (192.168.4.x vs 192.168.1.x)~~ | neuralSpring (Wave 50) | **RESOLVED** — cross-subnet routing works natively (4ms latency via router). No TURN relay needed. |
+| ~~hotSpring still on Wave 48~~ | review (Wave 50) | **RESOLVED** — hotSpring absorbed Wave 50 mandate. pseudoSpore v1.5.0, 9 NUCLEUS primals on biomeGate, plasmidBin-only. |
+| `discovery.peers` returns empty after `mesh.init` | all gates (Wave 50) | **SONGBIRD v0.2.1 FEATURE GAP** — mesh initializes but peer list not populated. Bidirectional seeding works. Next Songbird evolution item. |
+| southGate primal instability (7/13 health-responding) | wetSpring (Wave 50) | **INVESTIGATING** — Songbird crashes intermittently, BearDog socket timeout, biomeOS socket not connecting on southGate |
+| Bidirectional peer seeding required | healthSpring (Wave 50) | **DOCUMENTED** — both sides must `mesh.init` with each other's address. Coordinate "seed swap" across gates. |
+| neuralSpring petalTongue `target/release/` hardcode | neuralSpring (Wave 50) | **FIXED** — V175/S219 commit `2d2e753`. `find_binary` only. |
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
@@ -52,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-49 complete. 53 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 791 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 49: post-primordial deployment, `SONGBIRD_PEERS` peer seeding, `--security-socket` feature guard, stale socket cleanup, cell binary pattern. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 9/9 primals responded within hours. `start_primal.sh` simplified. `nucleus_launcher` Rust binary created. bearDog Wave 112: ACME daemon, 127 methods.**
+**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-50 complete. 53 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 791 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 50: covalent HPC — 7/7 springs responded, 4 gates with NUCLEUS + Songbird :7700 federation, cross-subnet routing confirmed. Wave 49: post-primordial deployment, `SONGBIRD_PEERS` peer seeding, `--security-socket` feature guard, stale socket cleanup. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 13/13 primals compliant. bearDog Wave 113b: orphan purge, 127 methods.**
 
 ---
 
