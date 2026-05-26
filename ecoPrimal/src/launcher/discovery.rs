@@ -47,7 +47,7 @@ fn host_target_triple() -> String {
 /// Search for a primal binary using the 3-tier directory search.
 ///
 /// Within each base directory, patterns are tried in order:
-/// 1. `primals/{target-triple}/{primal}` (fetch.sh canonical layout)
+/// 1. `primals/{target-triple}/{primal}` (plasmidbin fetch canonical layout)
 /// 2. `primals/{primal}` (flat layout)
 /// 3. `{primal}` (bare binary in base dir)
 ///

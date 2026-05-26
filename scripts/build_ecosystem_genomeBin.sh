@@ -351,20 +351,25 @@ fi
 # ── Harvest ──────────────────────────────────────────────────────────────────
 
 if $DO_HARVEST; then
-    HARVEST_SCRIPT="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}/harvest.sh"
-    if [[ -x "$HARVEST_SCRIPT" ]]; then
+    PLASMIDBIN_ROOT="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
+    PLASMIDBIN_CLI="$PLASMIDBIN_ROOT/target/release/plasmidbin"
+    if [[ -x "$PLASMIDBIN_CLI" ]]; then
         echo ""
-        echo "=== Harvesting into plasmidBin ==="
+        echo "=== Harvesting into plasmidBin (Rust CLI) ==="
+        "$PLASMIDBIN_CLI" harvest --root "$PLASMIDBIN_ROOT"
+    elif [[ -x "$PLASMIDBIN_ROOT/harvest.sh" ]]; then
+        echo ""
+        echo "=== Harvesting into plasmidBin (legacy bash) ==="
         for target in "${TARGETS[@]}"; do
             local_dir="$STAGING/primals/$target"
             if [[ -d "$local_dir" ]] && [[ "$(ls -A "$local_dir" 2>/dev/null)" ]]; then
                 echo "Harvesting $target ..."
-                "$HARVEST_SCRIPT" --source "$local_dir" --arch "$target"
+                "$PLASMIDBIN_ROOT/harvest.sh" --source "$local_dir" --arch "$target"
             fi
         done
     else
         echo ""
-        echo "WARNING: harvest.sh not found at $HARVEST_SCRIPT"
+        echo "WARNING: plasmidbin CLI and harvest.sh not found at $PLASMIDBIN_ROOT"
         echo "  Harvest manually or check plasmidBin path."
     fi
 fi

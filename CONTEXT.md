@@ -250,7 +250,7 @@ methods registered) — all detail fossilized to `fossilRecord/`.
 - ~~NestGate `--socket` flag~~ — S71: CLI flag added
 - **DEPLOYMENT_BEHAVIOR_STANDARD published** → 13/13 primals compliant
 - **4 gates operational**: eastGate, ironGate, southGate, biomeGate (strandGate hardware ready, not deployed)
-- plasmidBin `start_primal.sh` normalized for all 13 primals
+- plasmidBin `plasmidbin start` (Rust CLI) normalized for all 13 primals
 
 **Glacial shift horizons:**
 - **Covalent bonding** — **Wave 49: POST-PRIMORDIAL**. 4 responding springs confirmed plasmidBin-only. `SONGBIRD_PEERS` peer seeding shipped (both launchers). Cross-gate `discovery.peers` unblocked — healthSpring/neuralSpring asked are now answered. Cross-subnet gap documented (southGate 192.168.4.x needs routing). Next: same-subnet gates verify `discovery.peers` with seeded peers, run cross-gate `capability.call`, Plasmodium collective (3+ gates meshed).

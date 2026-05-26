@@ -287,7 +287,7 @@ mod dark_forest {
 `sourdough validate dark-forest <graph-dir>` will wrap the 5-pillar checks for any
 spring's graph directory, providing a single CLI command for Dark Forest compliance.
 This converges with `sourdough validate composition` (v0.3.0) and the plasmidBin
-`validate_composition.sh` script.
+`plasmidbin validate` CLI.
 
 ---
 

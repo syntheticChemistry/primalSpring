@@ -121,7 +121,6 @@ if [ ! -x "$BIOMEOS_BIN" ]; then
 fi
 
 NUCLEUS_LAUNCHER="$PRIMALSPRING_ROOT/tools/nucleus_launcher.sh"
-START_PRIMAL="$PLASMIDBIN/start_primal.sh"
 
 case "$ACTION" in
     start)

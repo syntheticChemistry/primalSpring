@@ -1,17 +1,22 @@
 # sourDough Deployment Internalization Roadmap
 
 > Contract between primalSpring (validates) and sourDough (implements tooling).
-> Updated: 2026-05-14
+> Updated: 2026-05-26
+>
+> **Note (Wave 51):** plasmidBin now has a Rust CLI (`plasmidbin` — 15 subcommands)
+> that replaces the legacy bash scripts. sourDough's role evolves from "replace bash"
+> to "meta-primal tooling" — scaffolding, signing, packaging beyond what `plasmidbin`
+> covers (e.g. self-extractors, genomeBin packaging, cross-repo orchestration).
 
 ## Purpose
 
-plasmidBin currently owns deployment automation as shell scripts (`build-primal.sh`,
-`harvest.sh`, `deploy_membrane.sh`, `validate_composition.sh`, etc.). These
-patterns work but are fragile, lack type safety, and cannot be validated by
-primalSpring's Rust-tier scenarios.
+plasmidBin historically owned deployment automation as shell scripts (`build-primal.sh`,
+`harvest.sh`, `deploy_membrane.sh`, `validate_composition.sh`, etc.). As of Wave 51,
+the **`plasmidbin` Rust CLI** has replaced these scripts for core operations (fetch,
+harvest, validate, doctor, start, launch). The 20 legacy `.sh` scripts remain at
+plasmidBin's repo root as transitional.
 
-sourDough's mission is to absorb these patterns into a typed Rust CLI so that
-every primal onboarding and deployment step is:
+sourDough's mission evolves to absorb **higher-order** patterns into a typed Rust CLI:
 
 1. **Reproducible** — deterministic builds, checksums, composition graphs
 2. **Validatable** — primalSpring can import sourDough crates and test them
@@ -81,19 +86,19 @@ the current shell-exec bridge.
 
 ## Deprecation Path
 
-| plasmidBin Script | Deprecated By | Remove After |
-|---|---|---|
-| `build-primal.sh` | `sourdough harvest` | v0.5.0 |
-| `harvest.sh` | `sourdough harvest --release` | v0.5.0 |
-| `validate_composition.sh` | `sourdough validate composition` | v0.4.0 |
-| `deploy_membrane.sh` | `sourdough deploy` | v0.7.0 |
-| `doctor.sh` (ecoBin checks) | `sourdough validate ecobin` | v0.4.0 |
-| `fetch.sh` | `sourdough fetch` | v0.5.0 |
+| plasmidBin Script | `plasmidbin` CLI (shipped) | sourDough Target | Remove Script After |
+|---|---|---|---|
+| `build-primal.sh` | `plasmidbin build` | `sourdough harvest` | CLI proven in CI |
+| `harvest.sh` | `plasmidbin harvest` | `sourdough harvest --release` | CLI proven in CI |
+| `validate_composition.sh` | `plasmidbin validate` | `sourdough validate composition` | CLI proven in CI |
+| `deploy_membrane.sh` | `plasmidbin deploy` | `sourdough deploy` | CLI proven in CI |
+| `doctor.sh` | `plasmidbin doctor` | `sourdough validate ecobin` | CLI proven in CI |
+| `fetch.sh` | `plasmidbin fetch` | `sourdough fetch` | CLI proven in CI |
 
-Shell scripts remain functional until sourDough reaches parity. Both paths are
-tested in CI during the overlap window. primalSpring's `s_sourdough_*` scenarios
-gate the deprecation — a shell script is only removed when its sourDough
-replacement passes all validation.
+The `plasmidbin` Rust CLI (15 subcommands, shipped Wave 50) is the interim
+replacement for all legacy bash. Shell scripts remain at repo root during CI
+migration. sourDough inherits the meta-primal role (scaffolding, signing,
+packaging) once `plasmidbin` covers core operations.
 
 ## Open Questions
 

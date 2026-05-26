@@ -15,7 +15,7 @@
 //! 3. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` (populated by `tools/fetch_primals.sh`)
 //!
 //! Within each base directory, the `primals/{target-triple}/{name}` layout
-//! (produced by `fetch.sh`) is tried first, then flat fallbacks.
+//! (produced by `plasmidbin fetch` / `tools/fetch_primals.sh`) is tried first, then flat fallbacks.
 //!
 //! # Socket Nucleation
 //!

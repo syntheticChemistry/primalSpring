@@ -6,10 +6,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SPRING_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PLASMIN_BIN="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
-MANIFEST="$PLASMIN_BIN/manifest.toml"
+PLASMID_BIN="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
+MANIFEST="$PLASMID_BIN/manifest.toml"
 ARCH="x86_64-unknown-linux-musl"
-BIN_DIR="$PLASMIN_BIN/primals/$ARCH"
+BIN_DIR="$PLASMID_BIN/primals/$ARCH"
 OUT="$SPRING_ROOT/validation/seed_fingerprints.toml"
 DOMAIN="primal-seed-v1"
 

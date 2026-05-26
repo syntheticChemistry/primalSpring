@@ -66,10 +66,18 @@ detect_bin_dir() {
         echo "$NUCLEUS_BIN_DIR"
         return
     fi
-    # Post-primordial: plasmidBin is the single source of truth for primal binaries.
-    # Search order: triple subdir in git checkout, then git checkout root, then XDG fallback.
     local triple
     triple="$(detect_host_triple)"
+    # Post-primordial: env var / XDG path is canonical; git-relative path is dev convenience.
+    local xdg_plasmid="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}/primals"
+    if [[ -d "$xdg_plasmid/$triple" ]]; then
+        echo "$xdg_plasmid/$triple"
+        return
+    fi
+    if [[ -d "$xdg_plasmid" ]]; then
+        echo "$xdg_plasmid"
+        return
+    fi
     local script_dir
     script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     local git_plasmid="$script_dir/../../../infra/plasmidBin/primals"
@@ -79,15 +87,6 @@ detect_bin_dir() {
     fi
     if [[ -d "$git_plasmid" ]]; then
         echo "$(cd "$git_plasmid" && pwd)"
-        return
-    fi
-    local xdg_plasmid="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}/primals"
-    if [[ -d "$xdg_plasmid/$triple" ]]; then
-        echo "$xdg_plasmid/$triple"
-        return
-    fi
-    if [[ -d "$xdg_plasmid" ]]; then
-        echo "$xdg_plasmid"
         return
     fi
     echo ""
