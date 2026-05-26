@@ -253,7 +253,7 @@ methods registered) — all detail fossilized to `fossilRecord/`.
 - plasmidBin `plasmidbin start` (Rust CLI) normalized for all 13 primals
 
 **Glacial shift horizons:**
-- **Covalent bonding** — **Wave 49: POST-PRIMORDIAL**. 4 responding springs confirmed plasmidBin-only. `SONGBIRD_PEERS` peer seeding shipped (both launchers). Cross-gate `discovery.peers` unblocked — healthSpring/neuralSpring asked are now answered. Cross-subnet gap documented (southGate 192.168.4.x needs routing). Next: same-subnet gates verify `discovery.peers` with seeded peers, run cross-gate `capability.call`, Plasmodium collective (3+ gates meshed).
+- **Covalent bonding** — **Wave 51: `discovery.peers` SHIPPED**. Songbird mesh+registry merge, `SONGBIRD_PEERS` auto-seeding on boot, `mesh_seed` module (7+ tests). plasmidBin `--peers` flag wired in `nucleus_launcher.sh`. 4 gates operational, cross-subnet routing confirmed (4ms). **NEXT**: Live gate rebuild + `s_covalent_mesh` + `s_cross_gate_capability_call` validation → Plasmodium collective (3+ gates meshed).
 - **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5)
 - **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring). biomeOS v3.75 mesh routing is a prerequisite step.
 - ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 458/458 (100%) via 3 new scenarios + coverage graph + script regex fix

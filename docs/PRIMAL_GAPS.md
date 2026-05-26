@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 25, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 53 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 791 lib tests (780 pass, 9 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 50: **covalent HPC** — 7/7 springs responded, 4 gates operational with NUCLEUS + Songbird :7700 federation. Cross-subnet routing confirmed (southGate ↔ eastGate, 4ms, no TURN needed). neuralSpring petalTongue hardcode fixed. hotSpring caught up (pseudoSpore v1.5.0, 9 primals on biomeGate). ludoSpring GAP-01 coralReef live-validated. `discovery.peers` empty = Songbird v0.2.1 feature gap (mesh.init works, peer list not populated).
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 53 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 791 lib tests (780 pass, 9 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 50: **covalent HPC** — 7/7 springs responded, 4 gates operational with NUCLEUS + Songbird :7700 federation. Cross-subnet routing confirmed (southGate ↔ eastGate, 4ms, no TURN needed). neuralSpring petalTongue hardcode fixed. hotSpring caught up (pseudoSpore v1.5.0, 9 primals on biomeGate). ludoSpring GAP-01 coralReef live-validated. **`discovery.peers` RESOLVED** (Wave 51) — Songbird shipped mesh+registry merge, `SONGBIRD_PEERS` auto-seeding, `mesh_seed` module. Live gate validation NEXT.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -35,7 +35,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | `discovery.peers` returns empty (no cross-gate peers) | healthSpring (Wave 49) | **FIXED** — `SONGBIRD_PEERS` env + `--peers` CLI for explicit seed; `mesh.init` called post-startup |
 | ~~southGate ≠ eastGate subnet (192.168.4.x vs 192.168.1.x)~~ | neuralSpring (Wave 50) | **RESOLVED** — cross-subnet routing works natively (4ms latency via router). No TURN relay needed. |
 | ~~hotSpring still on Wave 48~~ | review (Wave 50) | **RESOLVED** — hotSpring absorbed Wave 50 mandate. pseudoSpore v1.5.0, 9 NUCLEUS primals on biomeGate, plasmidBin-only. |
-| `discovery.peers` returns empty after `mesh.init` | all gates (Wave 50) | **SONGBIRD v0.2.1 FEATURE GAP** — mesh initializes but peer list not populated. Bidirectional seeding works. Next Songbird evolution item. |
+| ~~`discovery.peers` returns empty after `mesh.init`~~ | all gates (Wave 50) | **RESOLVED (Wave 51)** — Songbird shipped mesh+registry merge in `DiscoveryHandler`, `SONGBIRD_PEERS` auto-seed via `mesh_seed` module, port-preserving `socket_addr()`. Live gate rebuild + `s_covalent_mesh` validation NEXT. |
 | southGate primal instability (7/13 health-responding) | wetSpring (Wave 50) | **INVESTIGATING** — Songbird crashes intermittently, BearDog socket timeout, biomeOS socket not connecting on southGate |
 | Bidirectional peer seeding required | healthSpring (Wave 50) | **DOCUMENTED** — both sides must `mesh.init` with each other's address. Coordinate "seed swap" across gates. |
 | neuralSpring petalTongue `target/release/` hardcode | neuralSpring (Wave 50) | **FIXED** — V175/S219 commit `2d2e753`. `find_binary` only. |
