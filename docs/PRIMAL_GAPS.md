@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-25 (Wave 49: Post-primordial. All 4 responding springs cut primordial patterns. Songbird peer seeding (`SONGBIRD_PEERS`) wired into both launchers. `--security-socket` feature-guarded. Stale socket cleanup added. Cell binary pattern documented. Cross-subnet mesh guidance added.)
+> **Last updated**: 2026-05-27 (Wave 54: Provenance-elevated checksums shipped. Two-layer checksum model + sweetGrass braids. Consumer tooling rewired. 56 scenarios, 799 tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 25, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 53 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 791 lib tests (780 pass, 9 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 50: **covalent HPC** — 7/7 springs responded, 4 gates operational with NUCLEUS + Songbird :7700 federation. Cross-subnet routing confirmed (southGate ↔ eastGate, 4ms, no TURN needed). neuralSpring petalTongue hardcode fixed. hotSpring caught up (pseudoSpore v1.5.0, 9 primals on biomeGate). ludoSpring GAP-01 coralReef live-validated. **`discovery.peers` RESOLVED** (Wave 51) — Songbird shipped mesh+registry merge, `SONGBIRD_PEERS` auto-seeding, `mesh_seed` module. Live gate validation NEXT.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 56 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 799 lib tests (787 pass, 10 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 54: **provenance-elevated checksums** — `provenance.toml` (Layer 2 composite fingerprint) + sweetGrass braid integration shipped in plasmidBin. Consumer tooling rewired in primalSpring (fetch, validate, build, desktop, fingerprints). 4 gates operational with NUCLEUS + Songbird :7700 federation. **`discovery.peers` RESOLVED** (Wave 51). Live gate validation NEXT.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
