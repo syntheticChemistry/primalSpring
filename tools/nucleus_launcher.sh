@@ -349,6 +349,22 @@ cmd_start() {
         log "WARN: songbird binary not found, skipping"
     fi
 
+    # ── Phase 1b: Tower Atomic — SkunkBat (defense, health auditor) ────
+    local skunkbat_bin
+    skunkbat_bin="$(find_binary skunkbat)"
+    local skunkbat_sock="$SOCKET_DIR/skunkbat-${FAMILY_ID}.sock"
+
+    if [[ -n "$skunkbat_bin" ]]; then
+        BTSP_PROVIDER_SOCKET="$beardog_sock" \
+        FAMILY_ID="$FAMILY_ID" \
+            start_primal skunkbat "$skunkbat_bin" server \
+                --socket "$skunkbat_sock" \
+                --family-id "$FAMILY_ID" || true
+        wait_for_socket "$skunkbat_sock" 8 || log "WARN: skunkbat socket not ready"
+    else
+        log "WARN: skunkbat binary not found, skipping"
+    fi
+
     # ── Phase 2: Core Services — Node Atomic + NestGate + Squirrel ────
     log "── Phase 2: Core Services (BTSP via Tower) ──"
     local toadstool_bin barracuda_bin coralreef_bin nestgate_bin squirrel_bin
@@ -743,7 +759,7 @@ cmd_status() {
 
     # TCP port audit
     local tcp_count=0
-    tcp_count=$(ss -tlnp 2>/dev/null | grep -cE "(beardog|songbird|toadstool|nestgate|squirrel|biomeos|rhizocrypt|loamspine|sweetgrass|petaltongue)" 2>/dev/null) || tcp_count=0
+    tcp_count=$(ss -tlnp 2>/dev/null | grep -cE "(beardog|songbird|skunkbat|toadstool|nestgate|squirrel|biomeos|rhizocrypt|loamspine|sweetgrass|petaltongue)" 2>/dev/null) || tcp_count=0
     if [[ "$tcp_count" -eq 0 ]]; then
         printf "%-14s %-6s \033[32m%-10s\033[0m %s\n" "TCP Ports" "--" "ZERO" "Tower Atomic: no TCP bound"
     else
