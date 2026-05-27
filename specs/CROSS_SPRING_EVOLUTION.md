@@ -849,3 +849,59 @@ checks for the ownership matrix, pseudospore-core crate, and nucleus ingest modu
 | **groundSpring** | Can emit pseudoSpore via `litho emit-pseudospore --spring groundSpring` (untested) |
 | **All springs** | Provide `domain_profile.toml` to drive `litho emit-pseudospore` |
 | **primalSpring** | exp115 + s_nest_atomic Phase 4 validate the composition pattern |
+
+---
+
+## NUCLEUS Braid Evolution — hotSpring Prep (May 27, 2026)
+
+hotSpring has evolved the pseudoSpore v1.6.1 braid to be NUCLEUS-ready. This
+section documents the contracts primalSpring picks up for pseudoSpore 2.0.
+
+### Three-Era Provenance Model
+
+| Era | Range | Description |
+|-----|-------|-------------|
+| 1. Ad-Hoc | v1.0.0–v1.6.0 | Hand-authored scope.toml, blind copy to validation.json |
+| 2. Pipeline-Derived | v1.6.1 | Metadata extracted from GRO/MDP/COLVAR/PDB/topology, cross-checked |
+| 3. NUCLEUS Nest Deploy | v2.0+ target | Provenance trio signs via `biomeos nucleus ingest` |
+
+### Provenance Trio Contract (Pending — primalSpring Validates)
+
+Slots wired in `compchem_guidestone_v1_6_1.json` and `ferment_transcript.json`:
+
+| Primal | Role | Contract | Current Status |
+|--------|------|----------|----------------|
+| rhizoCrypt | DAG merkle integrity | `dag_merkle_root` matches BLAKE3 chain | pending |
+| loamSpine | Ledger registration | `spine_id` registered with `braid_id` + parent linkage | pending |
+| sweetGrass | Attribution braid | Lineage chain + bibliography DOIs + PLUMED-NEST plum_ids | pending |
+
+### hotSpring Deploy Pipeline (What's Wired)
+
+- `--nucleus` flag on `nest-validate guidestone deploy`
+- `find_biomeos_binary()` — plasmidBin → PATH → not found
+- Step 7 three-tier: biomeos → litho → manual fallback
+- `receipts/nucleus_ingest.toml` written on success
+- `liveSpore.json` envelope includes `provenance_trio_status` and `deployment_era`
+
+### nest-validate Ownership Boundaries
+
+Per `SPORE_OWNERSHIP_MATRIX.md`, `guidestone_emit` split into:
+
+| Function | Owner | What |
+|----------|-------|------|
+| `emit_domain_validation()` | nest-validate (hotSpring) | PDB, scope cross-check, validation.json |
+| `emit_envelope()` | litho CLI (lithoSpore) | liveSpore.json, receipts, checksums |
+| `guidestone_emit()` | orchestrator | domain → envelope |
+
+### primalSpring Action Items for pseudoSpore 2.0
+
+1. **exp115 live validation**: Run `biomeos nucleus ingest` against a live Nest Atomic
+   with provenance trio services. Fill the pending slots in the braid.
+2. **Nest Atomic abstraction**: Abstract `nest-validate` shell-outs into Nest Atomic
+   Neural API calls. Clean the transitional `litho ingest-pseudospore` path.
+3. **NUCLEUS_VALIDATION_MATRIX**: Columns U/V/W — validate live gateway once biomeOS
+   southGate is healthy.
+4. **cellMembrane expansion**: Deploy NestGate + provenance trio services to VPS for
+   remote NUCLEUS access via cellMembrane network permeability.
+5. **biomeos CLI parser**: Wire `nucleus ingest` / `nucleus emit` subcommands to the
+   clap parser (currently stubbed in `nucleus_ingest.rs`).
