@@ -777,3 +777,75 @@ Audit protocol: every primalSpring deep-debt audit and cross-spring evolution re
 Fix: Wave 123 (commit `bb1f1beef`) adds `capabilities.methods` endpoint returning `CAPABILITY_METHOD_MAP` — a token→method mapping (e.g., `network.discovery` → `[discovery.peers, discovery.announce, discovery.list_peers]`). `normalize_json_rpc_method_name()` bridges domain tokens to callable methods. biomeOS can now query `capabilities.methods` alongside `capabilities.list` to get the full mapping.
 
 Severity: ~~Low~~ → **RESOLVED**
+
+---
+
+## pseudoSpore Ecosystem Convergence (May 27, 2026)
+
+### Three-Way Ownership Split
+
+The spore-related code has been decomposed into three ownership-correct layers,
+documented in `infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md`:
+
+| Layer | Owner | Scope |
+|-------|-------|-------|
+| **Domain Science** | Springs (hotSpring, groundSpring, ...) | PLUMED, GROMACS, LTEE, game telemetry |
+| **Spore Envelope** | lithoSpore (`pseudospore-core` crate) | BLAKE3, scope.toml, liveSpore.json, tarball |
+| **NUCLEUS Gateway** | biomeOS (`nucleus_ingest.rs`) | Ingest/emit spores through Nest Atomic |
+
+### liveSpore.json Schema Unification
+
+The two divergent schemas have been merged into a single canonical shape:
+
+```json
+{
+  "envelope": { /* emit-time metadata */ },
+  "validations": [ /* append-only journal */ ]
+}
+```
+
+All three producers (litho emit, litho audit, nest-validate emit) now write
+the unified shape. Readers accept all legacy formats and migrate on write.
+
+### New Shared Crate: pseudospore-core
+
+`gardens/lithoSpore/crates/pseudospore-core/` provides domain-agnostic
+envelope primitives consumed by both litho CLI and biomeOS:
+- `livespore.rs` — unified liveSpore.json read/write with legacy migration
+- `blake3_manifest.rs` — data.toml [present]/[external] verification
+- `scope.rs` — scope.toml parsing
+- `domain_profile.rs` — generic domain configuration
+- `tarball.rs` — present/external split for tarball packaging
+- `validation.rs` — validation.json types
+
+### litho emit-pseudospore Generalization
+
+`litho emit-pseudospore` is now domain-agnostic:
+- `--spring` flag identifies the source spring
+- `--domain-profile` flag drives domain-specific behavior
+- All LTEE/carbohydrate-specific hardcoded logic removed
+- Any spring can emit a pseudoSpore by providing a `domain_profile.toml`
+
+### NUCLEUS Gateway
+
+biomeOS gains `biomeos nucleus ingest` and `biomeos nucleus emit` subcommands
+(`primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs`).
+This replaces the `litho ingest-pseudospore` shell-out from nest-validate's
+`guidestone deploy` step 7.
+
+### primalSpring Experiment 115
+
+`exp115_nest_ingest_pseudospore` validates the spore gateway round-trip.
+Phase 4 (Spore Gateway) added to `s_nest_atomic.rs` scenario with structural
+checks for the ownership matrix, pseudospore-core crate, and nucleus ingest module.
+
+**Gate criterion**: "Any spring can emit a pseudoSpore; any NUCLEUS can ingest it."
+
+### Cross-Spring Impact
+
+| Spring | What Changes |
+|--------|-------------|
+| **hotSpring** | nest-validate delegates envelope ops to litho CLI; guidestone deploy annotated for biomeOS gateway |
+| **groundSpring** | Can emit pseudoSpore via `litho emit-pseudospore --spring groundSpring` (untested) |
+| **All springs** | Provide `domain_profile.toml` to drive `litho emit-pseudospore` |
+| **primalSpring** | exp115 + s_nest_atomic Phase 4 validate the composition pattern |

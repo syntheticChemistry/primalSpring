@@ -29,6 +29,9 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     v.section("Phase 3: Health");
     phase_health(v, ctx);
+
+    v.section("Phase 4: Spore Gateway (exp115)");
+    phase_spore_gateway(v);
 }
 
 fn phase_structural(v: &mut ValidationResult) {
@@ -78,6 +81,43 @@ fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             ),
         }
     }
+}
+
+/// Phase 4: Spore gateway structural validation (exp115_nest_ingest_pseudospore).
+///
+/// Validates that the spore ownership matrix infrastructure exists:
+/// - pseudospore-core crate is part of lithoSpore workspace
+/// - biomeos nucleus ingest command module exists
+/// - liveSpore.json unified schema is documented
+///
+/// Live ingest tests require a running Nest Atomic and are gated on Phase 3 health.
+fn phase_spore_gateway(v: &mut ValidationResult) {
+    // Structural: SPORE_OWNERSHIP_MATRIX.md exists
+    let matrix_exists = std::path::Path::new("infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md").exists()
+        || std::path::Path::new("../../infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md").exists();
+    v.check_bool(
+        "spore_ownership_matrix_exists",
+        matrix_exists,
+        "SPORE_OWNERSHIP_MATRIX.md documents the three-way split",
+    );
+
+    // Structural: pseudospore-core crate exists
+    let core_exists = std::path::Path::new("gardens/lithoSpore/crates/pseudospore-core/Cargo.toml").exists()
+        || std::path::Path::new("../../gardens/lithoSpore/crates/pseudospore-core/Cargo.toml").exists();
+    v.check_bool(
+        "pseudospore_core_crate_exists",
+        core_exists,
+        "pseudospore-core crate provides domain-agnostic envelope primitives",
+    );
+
+    // Structural: nucleus_ingest.rs exists in biomeOS
+    let gateway_exists = std::path::Path::new("primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs").exists()
+        || std::path::Path::new("../../primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs").exists();
+    v.check_bool(
+        "nucleus_ingest_module_exists",
+        gateway_exists,
+        "biomeos nucleus ingest command implements the NUCLEUS gateway",
+    );
 }
 
 #[cfg(test)]

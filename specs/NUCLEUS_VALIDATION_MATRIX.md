@@ -560,3 +560,47 @@ biomeOS is the registration authority (exempt from self-announce).
 - **Graph execution validation**: full `graph.execute` of named patterns
 - **Node/Nucleus/Meta observatory elevation**: `plan_tier` validation for all tiers
 - **Downstream spring matrix completion**: Columns A–T for all 8 springs
+
+---
+
+## Spore Ingest/Emit Validation (May 27, 2026)
+
+### Context
+
+The spore ownership matrix (`infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md`) defines
+a three-way split: domain science (springs), spore envelope (lithoSpore), and
+NUCLEUS gateway (biomeOS). This section validates the gateway path.
+
+### New Columns
+
+| Column | What to Validate | Method |
+|--------|-----------------|--------|
+| **U: Spore Ingest** | `biomeos nucleus ingest <pseudoSpore>` succeeds on Nest Atomic | Live ingest + NestGate verify |
+| **V: Spore Emit** | `biomeos nucleus emit` produces valid pseudoSpore from NUCLEUS state | Emit + `litho audit` round-trip |
+| **W: Domain Profile** | Spring's `domain_profile.toml` drives `litho emit-pseudospore` correctly | `litho emit-pseudospore --domain-profile` |
+
+### Rows (Springs — Spore Readiness)
+
+| Spring | U: Ingest | V: Emit | W: Domain Profile |
+|--------|-----------|---------|-------------------|
+| **hotSpring** | pending (first target — pseudoSpore v1.6.1 exists) | planned | pending |
+| **groundSpring** | pending (lithoSpore LTEE modules exist) | planned | pending |
+| **wetSpring** | planned | planned | planned |
+| **airSpring** | planned | planned | planned |
+| **neuralSpring** | planned | planned | planned |
+| **healthSpring** | planned | planned | planned |
+| **ludoSpring** | planned | planned | planned |
+
+### Planned Experiments
+
+| Experiment | Layer | Purpose |
+|-----------|-------|---------|
+| `exp_nest_ingest_pseudospore` | Nest Atomic | Validate `biomeos nucleus ingest` absorbs a pseudoSpore into NestGate + provenance trio |
+| `exp_spore_round_trip` | Full NUCLEUS | Ingest a pseudoSpore, emit it back, verify BLAKE3 integrity preserved |
+
+### Gate Criterion
+
+**"Any spring can emit a pseudoSpore; any NUCLEUS can ingest it."**
+
+This is the gen4 spore universality gate. When column U passes for 2+ springs and
+column V passes for 1+ spring, the gateway is validated.
