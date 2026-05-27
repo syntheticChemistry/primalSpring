@@ -102,7 +102,6 @@ fn validate_manifest(v: &mut ValidationResult, base: &Path) {
     }
 }
 
-#[allow(clippy::too_many_lines)]
 fn validate_cell_structure(v: &mut ValidationResult, base: &Path, cell_file: &str) {
     let path = base.join(CELLS_DIR).join(cell_file);
     let stem = cell_file.trim_end_matches("_cell.toml");

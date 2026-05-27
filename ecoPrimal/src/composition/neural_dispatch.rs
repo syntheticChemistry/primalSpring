@@ -40,9 +40,14 @@ pub enum DispatchError {
     /// biomeOS Neural API is not reachable.
     #[error("biomeOS not available")]
     BridgeOffline,
-    /// IPC-level error during dispatch.
-    #[error("dispatch failed: {0}")]
-    Ipc(String),
+    /// IPC-level error during dispatch (stringified because `IpcError` is not `Clone`).
+    #[error("dispatch ipc: {kind}: {detail}")]
+    Ipc {
+        /// IPC error discriminant (e.g. `connection_refused`, `timeout`).
+        kind: String,
+        /// Full error description from the IPC layer.
+        detail: String,
+    },
     /// Graph execution failed.
     #[error("graph dispatch failed: {0}")]
     GraphFailed(String),
@@ -341,7 +346,10 @@ impl NeuralDispatcher {
                 self.record_bridge_outcome(&outcome);
                 let result = call_result
                     .map(|r| r.value)
-                    .map_err(|e: IpcError| DispatchError::Ipc(e.to_string()));
+                    .map_err(|e: IpcError| DispatchError::Ipc {
+                        kind: e.kind().to_owned(),
+                        detail: e.to_string(),
+                    });
                 (result, RoutePath::CapabilityCall)
             }
             None => (Err(DispatchError::BridgeOffline), RoutePath::Offline),
@@ -498,7 +506,10 @@ fn dispatch_through_bridge(
     let result = bridge
         .capability_call(domain, operation, params)
         .map(|r| r.value)
-        .map_err(|e: IpcError| DispatchError::Ipc(e.to_string()));
+        .map_err(|e: IpcError| DispatchError::Ipc {
+            kind: e.kind().to_owned(),
+            detail: e.to_string(),
+        });
 
     (result, RoutePath::CapabilityCall)
 }

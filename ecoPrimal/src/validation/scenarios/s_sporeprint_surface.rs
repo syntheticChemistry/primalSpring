@@ -75,7 +75,7 @@ fn find_sporeprint_root() -> Option<PathBuf> {
         }
     }
     if let Ok(home) = std::env::var("HOME") {
-        let dev = PathBuf::from(home).join("Development/ecoPrimals/infra/sporePrint");
+        let dev = PathBuf::from(home).join("Development").join("ecoPrimals").join("infra").join("sporePrint");
         if dev.join("config.toml").exists() {
             return Some(dev);
         }

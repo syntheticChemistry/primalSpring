@@ -155,7 +155,7 @@ fn phase_announce_api(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let result = ctx.announce(
         "primalspring-scenario-probe",
         &["test.probe"],
-        std::path::Path::new("/tmp/primalspring-scenario-probe.sock"),
+        &std::path::PathBuf::from(crate::tolerances::runtime_dir()).join("primalspring-scenario-probe.sock"),
     );
 
     match result {
@@ -206,7 +206,7 @@ fn phase_live_announce(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     let full_announce = serde_json::json!({
         "primal": "primalspring-scenario-probe",
-        "socket": "/tmp/primalspring-scenario-probe.sock",
+        "socket": format!("{}/primalspring-scenario-probe.sock", crate::tolerances::runtime_dir()),
         "pid": std::process::id(),
         "capabilities": ["test"],
         "methods": ["test.probe", "test.validate"],

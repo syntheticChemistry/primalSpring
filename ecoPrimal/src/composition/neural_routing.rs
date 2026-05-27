@@ -218,22 +218,22 @@ impl NeuralRoutingTable {
 
                     let is_signal = signal_methods.iter().any(|s| s == method);
 
+                    domain_index.entry(domain.clone()).or_default().push(method.clone());
+                    tier_index.entry(tier).or_default().push(method.clone());
+                    primal_index
+                        .entry(routed_owner.clone())
+                        .or_default()
+                        .push(method.clone());
+
                     let entry = RouteEntry {
                         method: method.clone(),
-                        owner: routed_owner.clone(),
-                        domain: domain.clone(),
+                        owner: routed_owner,
+                        domain,
                         tier,
                         has_signal_graph: is_signal,
                         aliases: Vec::new(),
                     };
-
                     method_index.insert(method.clone(), entry);
-                    domain_index.entry(domain).or_default().push(method.clone());
-                    tier_index.entry(tier).or_default().push(method.clone());
-                    primal_index
-                        .entry(routed_owner)
-                        .or_default()
-                        .push(method.clone());
                 }
             }
         }

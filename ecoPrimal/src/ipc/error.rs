@@ -93,6 +93,24 @@ pub enum IpcError {
     },
 }
 
+impl IpcError {
+    /// Short discriminant label for structured error contexts.
+    #[must_use]
+    pub const fn kind(&self) -> &'static str {
+        match self {
+            Self::SocketNotFound { .. } => "socket_not_found",
+            Self::ConnectionRefused(_) => "connection_refused",
+            Self::ConnectionReset(_) => "connection_reset",
+            Self::Timeout(_) => "timeout",
+            Self::ProtocolError { .. } => "protocol_error",
+            Self::MethodNotFound { .. } => "method_not_found",
+            Self::ApplicationError { .. } => "application_error",
+            Self::SerializationError { .. } => "serialization_error",
+            Self::PermissionDenied { .. } => "permission_denied",
+        }
+    }
+}
+
 /// An [`IpcError`] annotated with the [`IpcErrorPhase`] where it occurred.
 ///
 /// `source()` delegates to the inner `IpcError`'s error source, preserving

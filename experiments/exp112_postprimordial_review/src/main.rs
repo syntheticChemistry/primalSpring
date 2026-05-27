@@ -50,9 +50,17 @@ fn biomeos_socket_dir() -> std::path::PathBuf {
 }
 
 fn plasmidbin_dir() -> std::path::PathBuf {
-    std::path::PathBuf::from(
-        "/home/eastgate/Development/ecoPrimals/infra/plasmidBin/primals/x86_64-unknown-linux-musl",
-    )
+    if let Ok(d) = std::env::var("PLASMIDBIN_DEPOT") {
+        return std::path::PathBuf::from(d);
+    }
+    let mut dir = std::path::PathBuf::from(
+        std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".into()),
+    );
+    for _ in 0..4 {
+        dir = dir.join("..");
+    }
+    dir.join("infra/plasmidBin/primals")
+        .join(std::env::consts::ARCH.to_owned() + "-unknown-linux-musl")
 }
 
 fn phase_primal_inventory(v: &mut ValidationResult) {
@@ -164,7 +172,7 @@ fn phase_socket_census(v: &mut ValidationResult) {
         &format!("{flat_count} flat domain sockets (cephalization candidates for exp113)"),
     );
 
-    #[allow(clippy::cast_precision_loss)]
+    #[expect(clippy::cast_precision_loss, reason = "count fits f64")]
     let ceph_ratio = if sock_count > 0 {
         (flat_count as f64 / sock_count as f64) * 100.0
     } else {
@@ -335,7 +343,7 @@ fn phase_unibin_composability(v: &mut ValidationResult) {
     for primal in &unibin_primals {
         let binary = pdir.join(primal);
         if binary.exists() {
-            #[allow(clippy::cast_precision_loss)]
+            #[expect(clippy::cast_precision_loss, reason = "count fits f64")]
             let size_mb = std::fs::metadata(&binary)
                 .map(|m| m.len() as f64 / 1_048_576.0)
                 .unwrap_or(0.0);

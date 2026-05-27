@@ -13,6 +13,8 @@
 use std::io::{BufRead, BufReader, Write};
 use std::net::TcpStream;
 use std::os::unix::net::UnixStream;
+
+const MAX_BTSP_FRAME_BYTES: usize = 16 * 1024 * 1024;
 use std::path::Path;
 use std::time::Duration;
 
@@ -257,7 +259,7 @@ impl Transport {
         let mut len_buf = [0u8; 4];
         self.read_exact(&mut len_buf)?;
         let len = u32::from_be_bytes(len_buf) as usize;
-        if len > 16 * 1024 * 1024 {
+        if len > MAX_BTSP_FRAME_BYTES {
             return Err(IpcError::ProtocolError {
                 detail: format!("BTSP Phase 3: frame too large ({len} bytes)"),
             });

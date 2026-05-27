@@ -261,7 +261,7 @@ pub fn phase_render_scene(v: &mut ValidationResult, world: &World, ctx: &mut Com
     }
 }
 
-#[allow(clippy::cast_precision_loss)]
+#[expect(clippy::cast_precision_loss, reason = "count fits f64")]
 fn build_scene_graph(world: &World) -> serde_json::Value {
     let mut nodes = Vec::new();
     let (br, bg, bb) = world.biome.glyph_color();

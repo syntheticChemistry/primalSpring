@@ -117,14 +117,14 @@ fn phase_stats_coverage(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             Ok(resp) => {
                 let has_result = resp.get("result").is_some() || resp.get("value").is_some();
                 v.check_bool(
-                    &method.replace('.', "_").clone(),
+                    &method.replace('.', "_"),
                     has_result,
                     &format!("{method} returns numeric result"),
                 );
             }
             Err(_) => {
                 v.check_skip(
-                    &method.replace('.', "_").clone(),
+                    &method.replace('.', "_"),
                     &format!("{method} not available"),
                 );
             }

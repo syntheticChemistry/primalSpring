@@ -360,19 +360,33 @@ impl MethodGate {
     /// Create a gate from the environment (`PRIMALSPRING_AUTH_MODE`).
     ///
     /// In enforced mode, attempts to discover BearDog for real verification.
-    /// Falls back to noop if BearDog is unreachable.
+    /// If BearDog is unreachable, downgrades to `Permissive` (fail-open with
+    /// logging) rather than silently accepting all tokens via `NoopVerifier`.
     #[must_use]
     pub fn from_env() -> Self {
         let mode = EnforcementMode::from_env();
-        let verifier: Box<dyn TokenVerifier> = if mode == EnforcementMode::Enforced {
-            match BearDogVerifier::discover() {
-                Some(v) => Box::new(v),
-                None => Box::new(NoopVerifier),
-            }
-        } else {
-            Box::new(NoopVerifier)
-        };
-        Self { mode, verifier }
+        if mode != EnforcementMode::Enforced {
+            return Self {
+                mode,
+                verifier: Box::new(NoopVerifier),
+            };
+        }
+
+        BearDogVerifier::discover().map_or_else(
+            || {
+                tracing::warn!(
+                    "BearDog unreachable — downgrading from Enforced to Permissive"
+                );
+                Self {
+                    mode: EnforcementMode::Permissive,
+                    verifier: Box::new(NoopVerifier),
+                }
+            },
+            |v| Self {
+                mode,
+                verifier: Box::new(v),
+            },
+        )
     }
 
     /// Current enforcement mode.

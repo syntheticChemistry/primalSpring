@@ -116,7 +116,15 @@ fn resolve_family_seed(socket_dir: &std::path::Path) -> Vec<u8> {
     }
     let mut buf = [0u8; 32];
     if getrandom::fill(&mut buf).is_err() {
-        return b"fallback-seed-entropy-unavailable".to_vec();
+        eprintln!("WARNING: getrandom failed — deriving seed from PID + clock");
+        let pid = std::process::id().to_le_bytes();
+        let ts = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos()
+            .to_le_bytes();
+        buf[..4].copy_from_slice(&pid);
+        buf[4..20].copy_from_slice(&ts);
     }
     let mut hex_seed = String::with_capacity(64);
     for b in buf {
@@ -272,7 +280,13 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                 println!("\x1b[32mHEALTHY\x1b[0m");
                 healthy += 1;
             } else {
-                println!("\x1b[31mUNREACHABLE\x1b[0m  (check /tmp/{primal}.log)");
+                let log_hint = std::path::PathBuf::from(tolerances::runtime_dir())
+                    .join("biomeos/logs")
+                    .join(format!("{primal}.log"));
+                println!(
+                    "\x1b[31mUNREACHABLE\x1b[0m  (check {})",
+                    log_hint.display()
+                );
             }
         }
 

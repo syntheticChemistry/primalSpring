@@ -393,7 +393,18 @@ mod serve {
                     "pid": p.pid,
                 })),
             }),
-            _ => unreachable!(),
+            other => {
+                return JsonRpcResponse {
+                    jsonrpc: JSONRPC_VERSION.to_owned(),
+                    result: None,
+                    error: Some(JsonRpcError {
+                        code: -32601,
+                        message: format!("unknown auth method: {other}"),
+                        data: None,
+                    }),
+                    id,
+                };
+            }
         };
 
         JsonRpcResponse {

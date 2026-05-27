@@ -31,7 +31,7 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     phase_health(v, ctx);
 
     v.section("Phase 4: Spore Gateway (exp115)");
-    phase_spore_gateway(v);
+    phase_spore_gateway(v, ctx);
 }
 
 fn phase_structural(v: &mut ValidationResult) {
@@ -93,7 +93,7 @@ fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 /// - Three-era provenance model documented
 ///
 /// Live ingest tests require a running Nest Atomic and are gated on Phase 3 health.
-fn phase_spore_gateway(v: &mut ValidationResult) {
+fn phase_spore_gateway(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let matrix_exists = std::path::Path::new("infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md").exists()
         || std::path::Path::new("../../infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md").exists();
     v.check_bool(
@@ -102,20 +102,20 @@ fn phase_spore_gateway(v: &mut ValidationResult) {
         "SPORE_OWNERSHIP_MATRIX.md documents the three-way split",
     );
 
-    let core_exists = std::path::Path::new("gardens/lithoSpore/crates/pseudospore-core/Cargo.toml").exists()
-        || std::path::Path::new("../../gardens/lithoSpore/crates/pseudospore-core/Cargo.toml").exists();
+    let core_discoverable = ctx.client_for("content.validate").is_some()
+        || ctx.client_for("content.put").is_some();
     v.check_bool(
-        "pseudospore_core_crate_exists",
-        core_exists,
-        "pseudospore-core crate provides domain-agnostic envelope primitives",
+        "pseudospore_core_discoverable",
+        core_discoverable,
+        "pseudospore-core capabilities discoverable at runtime (content.validate / content.put)",
     );
 
-    let gateway_exists = std::path::Path::new("primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs").exists()
-        || std::path::Path::new("../../primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs").exists();
+    let gateway_discoverable = ctx.client_for("nucleus.ingest_spore").is_some()
+        || ctx.client_for("storage.put").is_some();
     v.check_bool(
-        "nucleus_ingest_module_exists",
-        gateway_exists,
-        "biomeos nucleus ingest/emit gateway (crates/biomeos/src/modes/nucleus_ingest.rs)",
+        "nucleus_ingest_discoverable",
+        gateway_discoverable,
+        "nucleus ingest gateway discoverable at runtime (nucleus.ingest_spore / storage.put)",
     );
 
     let signal_graph_exists = std::path::Path::new("graphs/signals/nest_ingest_spore.toml").exists()
