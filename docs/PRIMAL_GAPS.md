@@ -23,10 +23,10 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 | Issue | Reporter | Status |
 |-------|----------|--------|
-| loamSpine Tokio panic (`Cannot start a runtime from within a runtime`) on health probe | wetSpring, neuralSpring | **UPSTREAM** — loamSpine bug, does not block mesh |
+| ~~loamSpine Tokio panic on health probe~~ | wetSpring, neuralSpring | **INVESTIGATED** W51b — zero runtime nesting in production. W55: BearDog coupling removed. |
 | rhizoCrypt/sweetGrass/toadStool health probe >8s timeout | wetSpring | **KNOWN** — slow startup on cold launch |
 | `primal.announce` vs `discovery.register` migration path | wetSpring | **DOCUMENTED** — use `CompositionContext::announce()`, Songbird accepts both |
-| Songbird sled DB corruption after unclean shutdown | neuralSpring | **WORKAROUND** — clean `~/.local/share/songbird/task_lifecycle*` |
+| ~~Songbird sled DB corruption after unclean shutdown~~ | neuralSpring | **RESOLVED** W51b — auto-cleanup of orphaned sled artifacts on startup |
 | Spring binaries not in plasmidBin 13-primal set | healthSpring | **DOCUMENTED** — cell binary pattern in `PLASMIDBIN_DEPOT_PATTERN.md` |
 | ~~petalTongue musl binary rejects `--family-id`~~ | primalSpring (Wave 49) | **FIXED** Wave 49 — commit `bb5cdc9`: `--family-id` CLI now accepted |
 | Songbird federation bound to 127.0.0.1 (not LAN-reachable) | primalSpring (Wave 49) | **FIXED** — launchers pass `--bind 0.0.0.0` when federation enabled |
@@ -43,20 +43,20 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 112: ACME renewal daemon wired, 127 methods, `crypto.ionic_bond.verify_proposal` shipped. |
-| songbird | 7,178+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 47: zero debt gate clear. `capability.call` handler consumed by biomeOS v3.75 for cross-gate mesh dispatch. |
-| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S274: `GuestLoadPolicy` yield-to-owner enforced in `check_quota()`. `YieldStrategy` enum: Queue/Reject/DeferUntilPowerCycle. 10 new orchestration tests. 9,140+ lib tests. |
-| biomeOS | 8,026+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.75: cross-gate Songbird mesh dispatch (`try_songbird_mesh_dispatch()` replaces `relay.allocate`). Both translation + direct paths fall back to mesh. Response unwrapping. Routing contract documented. v3.74: shadow deploy membrane gate. 1315 lib tests. |
+| songbird | 8,070+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 53b: +74 tests, deep debt zero confirmed. `forbid(unsafe_code)` all 31 crates. Zero FIXME/HACK. |
+| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S279: zero production panic paths (12 eliminated), deprecated legacy capability roundtrip. 9,156+ lib tests. 47 crates, 88 methods. |
+| biomeOS | 8,026+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.76: LiveSpore `~/.local/bin` **FIXED** (eddc3fd2). 1 tracked TODO (REST route — enhancement only). plasmidBin naming resolved. |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `math.rs` refactored (split `signal.rs` + `stats.rs`), `pollster` eliminated, hardcoding → capability-based. 87 IPC methods. |
 | petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — WS-4: `petal-tongue-wasm` expanded (8 `wasm_bindgen` functions: `render_dashboard`, `render_binding`, `render_scene`, `validate_grammar`, modality dispatch). Client-side WASM rendering for offline sporePrint. |
 | rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `Box<dyn Error>` eliminated, test harness extracted, workspace dep hygiene, stale spec headers fixed. |
-| loamSpine | 1,528+ | **ADOPTED** | FULL | L3 | **CLEAN** — benchScale roundtrip harness (51 validations, 43 methods). RFC 3161 TSA anchor coverage. Showcase debris cleaned. |
+| loamSpine | 1,528+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 55: BearDog coupling removed, placeholder DIDs replaced. Primal self-knowledge enforced. |
 | sweetGrass | 1,553 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.37: PID file, JH-0 gate + port 9850 canonical |
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-50 complete. 53 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 791 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 50: covalent HPC — 7/7 springs responded, 4 gates with NUCLEUS + Songbird :7700 federation, cross-subnet routing confirmed. Wave 49: post-primordial deployment, `SONGBIRD_PEERS` peer seeding, `--security-socket` feature guard, stale socket cleanup. Wave 47: DEPLOYMENT_BEHAVIOR_STANDARD published → 13/13 primals compliant. bearDog Wave 113b: orphan purge, 127 methods.**
+**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-54 complete. 56 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 799 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 54: provenance-elevated checksums + sweetGrass braids. 3 primals harvested with full provenance (toadStool S279, Songbird W53b, loamSpine W55). biomeOS LiveSpore fix confirmed (v3.76). toadStool: zero production panic paths (9,156+ lib tests). Songbird: +74 tests, deep debt zero (8,070+ lib tests). loamSpine: BearDog coupling removed, self-knowledge enforced.**
 
 ---
 
