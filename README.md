@@ -16,7 +16,7 @@
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 89 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`) |
-| **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 9 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)** |
+| **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 9 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)**, **provenance-elevated checksums** (Layer 2: composite fingerprint + sweetGrass braids) |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` — zero unsafe blocks (SeedConfig + OnceLock replaced `env::set_var`) |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 
@@ -540,7 +540,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/validate_release.sh` | Release quality gate: fmt + clippy + deny + test floor (400+) + docs |
+| `scripts/validate_release.sh` | Release quality gate: fmt + clippy + deny + test floor (400+) + docs + plasmidBin Layer 1+2 |
 | `scripts/validate_deployment_matrix.sh` | Run deployment matrix cells: topology × arch × preset × transport validation |
 | `scripts/validate_composition.sh` | Validate NUCLEUS composition health and binary presence |
 | `scripts/validate_local_lab.sh` | Quick local lab validation for benchScale topologies |
@@ -563,7 +563,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `tools/check_method_gate.sh` | Verify MethodGate pre-dispatch authorization compliance |
 | `tools/check_method_strings.sh` | Audit method string literals against canonical registry |
 | `tools/check_graph_methods.sh` | Verify deploy graph nodes reference valid registry methods |
-| `tools/fetch_primals.sh` | Bootstrap primal binaries from plasmidBin GitHub Releases |
+| `tools/fetch_primals.sh` | Bootstrap primal binaries from plasmidBin GitHub Releases (Layer 1+2 provenance-aware) |
 | `tools/regenerate_checksums.sh` | Regenerate BLAKE3 checksums for local validation assets |
 | `tools/validate_compositions.py` | Live subsystem composition validator (C1-C7) |
 | `tools/ws_gateway.py` | Thin WebSocket-to-IPC bridge (no business logic) |
@@ -572,7 +572,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `tools/ttt_composition.sh` | Tic-Tac-Toe composition demo (ludoSpring + petalTongue + Squirrel) |
 | `tools/ttt_nucleus.sh` | NUCLEUS launcher tailored for TTT game stack (DEPRECATED Wave 51) |
 | `tools/cell_launcher.sh` | Start a single cellular deployment from `graphs/cells/` |
-| `tools/gen_seed_fingerprints.sh` | Generate BLAKE3 fingerprints for seed genetics artifacts |
+| `tools/gen_seed_fingerprints.sh` | Generate BLAKE3 fingerprints for seed genetics artifacts (provenance-enriched) |
 | `tools/live_nucleus.sh` | Hot-reload NUCLEUS launcher with file-watch respawn (DEPRECATED Wave 51) |
 | `tools/nucleus_crypto_bootstrap.sh` | Bootstrap BearDog + BTSP crypto layer for NUCLEUS |
 | `tools/desktop_session.sh` | Launch desktop substrate session (petalTongue + agentic loop) |

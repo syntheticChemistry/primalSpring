@@ -119,12 +119,33 @@ if [ -d "$PLASMID_DIR" ] && [ -f "$PLASMID_DIR/checksums.toml" ]; then
     if $PLASMID_OK; then
         if [ -x "$PLASMID_DIR/update.sh" ]; then
             if "$PLASMID_DIR/update.sh" --verify-only 2>/dev/null; then
-                pass "plasmidBin checksums verified"
+                pass "plasmidBin checksums verified (Layer 1: content hash)"
             else
                 fail "plasmidBin checksum verification failed"
             fi
         else
             pass "plasmidBin core binaries present and static"
+        fi
+
+        # Layer 2: Provenance chain
+        if [ -f "$PLASMID_DIR/provenance.toml" ]; then
+            PLASMIDBIN_CLI=""
+            if command -v plasmidbin >/dev/null 2>&1; then
+                PLASMIDBIN_CLI="plasmidbin"
+            elif [ -x "$PLASMID_DIR/target/release/plasmidbin" ]; then
+                PLASMIDBIN_CLI="$PLASMID_DIR/target/release/plasmidbin"
+            fi
+            if [ -n "$PLASMIDBIN_CLI" ]; then
+                if "$PLASMIDBIN_CLI" verify-provenance --root "$PLASMID_DIR" 2>/dev/null; then
+                    pass "plasmidBin provenance verified (Layer 2: composite fingerprint)"
+                else
+                    fail "plasmidBin provenance verification failed"
+                fi
+            else
+                pass "plasmidBin provenance.toml present (plasmidbin CLI not available for deep verify)"
+            fi
+        else
+            printf "${YELLOW}⚠ provenance.toml not present (pre-provenance harvest) — skipping Layer 2${NC}\n"
         fi
     fi
 else

@@ -3,7 +3,35 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–52: Stadial Entry / Glacial Shift (2026-05-26)
+## [Unreleased] — Waves 22–54: Stadial Entry / Glacial Shift (2026-05-27)
+
+### Wave 54: Provenance-Elevated Checksums + Braid Integration (May 27)
+- **Two-layer checksum model**: plasmidBin checksums elevated from raw BLAKE3 content
+  hash to a provenance-aware composite fingerprint. Layer 1 (`checksums.toml`) unchanged
+  for backward compatibility. Layer 2 (`provenance.toml`) stores composite fingerprint
+  per primal×arch: `blake3(content_hash || source_commit || build_timestamp || rustc_version || target)`.
+  Temporally younger clones always produce different fingerprints, even with identical bytes.
+- **`ProvenanceFile` struct** in `plasmidbin-types` — typed parsing, composite hash computation,
+  validation, TOML serialization. Domain-separated hash (`plasmidbin-provenance-v1`).
+- **Build sidecar**: `plasmidbin build` writes `{binary}.provenance.json` next to staged
+  binaries (source_commit, source_repo, rustc_version, build_timestamp).
+- **Harvest provenance**: `plasmidbin harvest` reads sidecars, computes `provenance_hash`,
+  writes `provenance.toml`. Existing `checksums.toml` flow unchanged.
+- **sweetGrass braid integration**: post-harvest `braid.create` via UDS to sweetGrass
+  (`$SWEETGRASS_SOCKET` or XDG). Falls back to `.braid-pending.json` sidecar when
+  sweetGrass unavailable (CI hosts without NUCLEUS). Braid IDs stored in `provenance.toml`.
+- **`plasmidbin verify-provenance` subcommand**: recomputes composite hash, cross-references
+  content_hash against `checksums.toml`, optional `--check-commits` (gh API) and
+  `--check-braids` (sweetGrass UDS).
+- **auto-harvest.yml**: `provenance.toml` committed alongside `checksums.toml`, uploaded
+  as release asset. Rebase-conflict recovery includes provenance.toml.
+- **primalSpring consumer rewiring**:
+  - `fetch_primals.sh`: downloads `provenance.toml` from releases, `--verify-provenance` flag
+  - `s_deployment_pipeline.rs`: Stage 2.5 structurally validates provenance.toml fields
+  - `validate_release.sh`: Layer 2 provenance check in plasmidBin health gate
+  - `build_ecosystem_genomeBin.sh`: prefers provenance-aware Rust CLI, runs verify-provenance
+  - `desktop_nucleus.sh`: validate mode checks Layer 1+2 + deep verify via CLI
+  - `gen_seed_fingerprints.sh`: enriches fingerprints with source_commit from provenance.toml
 
 ### Wave 54 prep: Cephalization + K-Derm + Tower CNS Scenarios (May 26)
 - **3 new absorbed scenarios**: `s_cephalization` (socket namespace readiness, ownership

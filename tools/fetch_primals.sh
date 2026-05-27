@@ -44,6 +44,8 @@ FETCH_ALL=true
 FILTER=""
 RELEASE_TAG=""
 
+VERIFY_PROVENANCE=false
+
 DOWNLOADED=0
 SKIPPED=0
 VERIFIED=0
@@ -58,6 +60,7 @@ usage() {
     echo "  --force          Re-download even if binary exists"
     echo "  --dry-run        Show what would be fetched"
     echo "  --dest DIR       Override output directory"
+    echo "  --verify-provenance  Verify provenance chain after fetch (needs plasmidbin CLI)"
     echo "  --help           Show this help"
     echo ""
     echo "Default output: \${ECOPRIMALS_PLASMID_BIN:-~/.local/share/ecoPrimals/plasmidBin}"
@@ -70,6 +73,7 @@ while [[ $# -gt 0 ]]; do
         --force)     FORCE=true; shift ;;
         --dry-run)   DRY_RUN=true; shift ;;
         --dest)      ECOPRIMALS_PLASMID_BIN="$2"; shift 2 ;;
+        --verify-provenance) VERIFY_PROVENANCE=true; shift ;;
         --help)      usage; exit 0 ;;
         -*)          echo "Unknown option: $1"; usage; exit 1 ;;
         *)           FILTER="$1"; FETCH_ALL=false; shift ;;
@@ -174,6 +178,26 @@ fetch_checksum() {
     fi
 }
 
+fetch_provenance_toml() {
+    local tag="$1"
+    local provenance_url="https://github.com/$GITHUB_REPO/releases/download/$tag/provenance.toml"
+    local provenance_cache="$DEST_DIR/.provenance-${tag}.toml"
+    local canonical="$DEST_DIR/provenance.toml"
+
+    if [[ ! -f "$provenance_cache" ]] || $FORCE; then
+        if curl -sfL --max-time 30 -o "$provenance_cache" "$provenance_url" 2>/dev/null; then
+            cp "$provenance_cache" "$canonical"
+            echo "  Provenance: downloaded provenance.toml from $tag"
+        else
+            echo "  Provenance: not available in release $tag (pre-provenance harvest)"
+            return 1
+        fi
+    elif [[ -f "$provenance_cache" ]]; then
+        cp "$provenance_cache" "$canonical"
+    fi
+    return 0
+}
+
 DEST_DIR="$(resolve_plasmid_bin)"
 ARCH=$(detect_target_triple)
 BIN_DIR="$DEST_DIR/primals/$ARCH"
@@ -192,6 +216,10 @@ echo "  Release: $TAG"
 echo ""
 
 mkdir -p "$BIN_DIR"
+
+# Download provenance.toml alongside checksums.toml
+fetch_provenance_toml "$TAG" || true
+echo ""
 
 primals_to_fetch=()
 if $FETCH_ALL; then
@@ -277,6 +305,27 @@ if [[ $DOWNLOADED -gt 0 || $SKIPPED -gt 0 ]]; then
     echo "Binaries ready at: $BIN_DIR"
     echo "Set for experiments:"
     echo "  export ECOPRIMALS_PLASMID_BIN=$DEST_DIR"
+fi
+
+# Layer 2: Provenance chain verification (optional)
+if $VERIFY_PROVENANCE && [[ -f "$DEST_DIR/provenance.toml" ]]; then
+    echo ""
+    echo "=== Layer 2: Provenance chain verification ==="
+    PLASMIDBIN_CLI=""
+    if command -v plasmidbin >/dev/null 2>&1; then
+        PLASMIDBIN_CLI="plasmidbin"
+    elif [[ -x "$DEST_DIR/target/release/plasmidbin" ]]; then
+        PLASMIDBIN_CLI="$DEST_DIR/target/release/plasmidbin"
+    fi
+    if [[ -n "$PLASMIDBIN_CLI" ]]; then
+        if "$PLASMIDBIN_CLI" verify-provenance --root "$DEST_DIR"; then
+            echo "  Provenance chain verified"
+        else
+            echo "  WARNING: Provenance verification failed (non-fatal)"
+        fi
+    else
+        echo "  SKIP: plasmidbin CLI not available (install for provenance verification)"
+    fi
 fi
 
 [[ $FAILED -eq 0 ]]

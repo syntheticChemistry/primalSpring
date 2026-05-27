@@ -75,22 +75,20 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.30 Wave 54-prep (May 26, 2026) — 56 scenarios (10 tracks, 3 tiers),
+v0.9.30 Wave 54 (May 27, 2026) — 56 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (458 exercised, 100% coverage),
 92 experiments (21 tracks), 95 deploy graphs (81 deploy + 14 signal),
 44-cell deployment matrix. 799 lib tests (787 pass, 10 live-tier, 2 ignored). 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
 sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
 
+**Wave 54: Provenance-elevated checksums + sweetGrass braid integration.**
+plasmidBin now produces a two-layer checksum model:
+Layer 1 (unchanged): `checksums.toml` — `blake3(stripped_binary_bytes)` for download integrity.
+Layer 2 (new): `provenance.toml` — composite fingerprint `blake3(content_hash || source_commit || build_timestamp || rustc_version || target)` that changes whenever ANY input changes, even if binary bytes are identical. sweetGrass `braid.create` emitted post-harvest (UDS when available, `.braid-pending.json` sidecar when offline). `plasmidbin verify-provenance` subcommand validates the full provenance chain. primalSpring consumer tooling rewired: `fetch_primals.sh` downloads provenance.toml, `s_deployment_pipeline` validates it at Stage 2.5, `validate_release.sh` checks Layer 2, `build_ecosystem_genomeBin.sh` uses provenance-aware Rust CLI, `desktop_nucleus.sh` validates provenance in its `validate` mode, `gen_seed_fingerprints.sh` enriches output with source_commit from provenance.toml. Prepares for cellMembrane Forgejo sovereignty (forge identity recorded in provenance, braids cross-referenceable across forges).
+
 Wave 54 prep: 3 new absorbed scenarios (cephalization, tower-cns, kderm-boundary).
-BearDog TCP drop validated (all 5 domain sockets reachable via UDS). sourDough
-manifest bumped 0.3.0→0.3.1. skunkBat seed_fingerprint backfilled. Glacial Shift
-Wave Plan published to wateringHole with per-primal/spring/garden team handoffs.
-Dedicated primalSpring NUCLEUS live on eastGate (primalspring01, :7701).
-`SONGBIRD_PEERS` env + `--peers` CLI for cross-gate mesh seeding.
-`--security-socket` feature-guarded (plasmidBin version compat). Stale socket
-pre-cleanup (EADDRINUSE fix). Cell binary pattern documented. 4 gates
-operational (eastGate, ironGate, southGate, biomeGate).
+4 gates operational (eastGate, ironGate, southGate, biomeGate).
 
 **Waves 1-49 complete**. Key milestones: post-primordial (W49), covalent mesh (W48), Neural API deployment (W42), observatory
 posture (W41), neural routing layer (W40), upstream absorption (W39), behavioral
@@ -245,7 +243,7 @@ wateringHole fossilization (numeric drift fixed, 18 gen4 docs organized),
 and Wave 22 upstream primal evolution (13/13 stadial-gate absorbed, 4 new
 methods registered) — all detail fossilized to `fossilRecord/`.
 
-### Remaining (updated May 26, 2026)
+### Remaining (updated May 27, 2026)
 
 **Resolved since last review:**
 - ~~**Thread 4**~~ now active (expression + data sources in projectFOUNDATION)
@@ -270,10 +268,11 @@ methods registered) — all detail fossilized to `fossilRecord/`.
 
 **Glacial shift horizons:**
 - **Covalent bonding** — **Wave 51: `discovery.peers` VALIDATED LIVE**. Songbird mesh+registry merge, `SONGBIRD_PEERS` auto-seeding on boot, `mesh_seed` module (7+ tests). Dedicated primalSpring NUCLEUS (primalspring01 :7701) meshed with nucleus01 (:7700) on eastGate. **NEXT**: `s_covalent_mesh` + `s_cross_gate_capability_call` scenario validation → Plasmodium collective (3+ gates meshed).
-- **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5)
+- **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5). **Wave 54: provenance.toml + sweetGrass braids now provide the provenance chain for Forgejo migration.**
 - **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring). biomeOS v3.75 mesh routing is a prerequisite step.
 - ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 458/458 (100%) via 3 new scenarios + coverage graph + script regex fix
 - ~~**plasmidBin Rust elevation**~~ — **RESOLVED** Wave 47-51: `nucleus_launcher` Rust binary + full `plasmidbin` Rust CLI (build, harvest, fetch, validate, doctor, start, launch). All CI workflows migrated.
+- ~~**Provenance-elevated checksums**~~ — **RESOLVED** Wave 54: two-layer checksum model (content hash + composite fingerprint), sweetGrass braid integration, `verify-provenance` subcommand, primalSpring consumer tooling rewired.
 - **sporePrint living content (S6)** — NestGate `content.put` pipeline for dynamic site
 
 **Downstream / cross-spring (async — springs/gardens own):**

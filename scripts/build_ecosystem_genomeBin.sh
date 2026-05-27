@@ -352,14 +352,31 @@ fi
 
 if $DO_HARVEST; then
     PLASMIDBIN_ROOT="${ECOPRIMALS_PLASMID_BIN:-${XDG_DATA_HOME:-$HOME/.local/share}/ecoPrimals/plasmidBin}"
-    PLASMIDBIN_CLI="$PLASMIDBIN_ROOT/target/release/plasmidbin"
-    if [[ -x "$PLASMIDBIN_CLI" ]]; then
+    PLASMIDBIN_CLI=""
+    if command -v plasmidbin >/dev/null 2>&1; then
+        PLASMIDBIN_CLI="plasmidbin"
+    elif [[ -x "$PLASMIDBIN_ROOT/target/release/plasmidbin" ]]; then
+        PLASMIDBIN_CLI="$PLASMIDBIN_ROOT/target/release/plasmidbin"
+    fi
+
+    if [[ -n "$PLASMIDBIN_CLI" ]]; then
         echo ""
-        echo "=== Harvesting into plasmidBin (Rust CLI) ==="
-        "$PLASMIDBIN_CLI" harvest --root "$PLASMIDBIN_ROOT"
+        echo "=== Harvesting into plasmidBin (Rust CLI — provenance-aware) ==="
+        for target in "${TARGETS[@]}"; do
+            local_dir="$STAGING/primals/$target"
+            if [[ -d "$local_dir" ]] && [[ "$(ls -A "$local_dir" 2>/dev/null)" ]]; then
+                echo "Harvesting $target ..."
+                "$PLASMIDBIN_CLI" harvest --arch "$target" --source "$local_dir" --root "$PLASMIDBIN_ROOT"
+            fi
+        done
+        echo ""
+        echo "=== Verifying provenance chain ==="
+        "$PLASMIDBIN_CLI" verify-provenance --root "$PLASMIDBIN_ROOT" || echo "WARNING: provenance verification had issues"
     elif [[ -x "$PLASMIDBIN_ROOT/harvest.sh" ]]; then
         echo ""
-        echo "=== Harvesting into plasmidBin (legacy bash) ==="
+        echo "=== Harvesting into plasmidBin (legacy bash — no provenance) ==="
+        echo "WARNING: legacy harvest.sh does not generate provenance.toml"
+        echo "  Install plasmidbin CLI for provenance-elevated checksums."
         for target in "${TARGETS[@]}"; do
             local_dir="$STAGING/primals/$target"
             if [[ -d "$local_dir" ]] && [[ "$(ls -A "$local_dir" 2>/dev/null)" ]]; then

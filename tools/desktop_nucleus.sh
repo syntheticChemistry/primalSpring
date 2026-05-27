@@ -303,6 +303,38 @@ cmd_validate() {
     log "── Desktop NUCLEUS Deep Validation ──"
     local pass=0 fail=0
 
+    # Layer 1+2: Binary integrity and provenance
+    log "Deployment provenance"
+    if [[ -f "$PLASMID_BIN/checksums.toml" ]]; then
+        ok "  checksums.toml present (Layer 1: content hash)"
+        pass=$((pass + 1))
+    else
+        err "  checksums.toml NOT found at $PLASMID_BIN"
+        fail=$((fail + 1))
+    fi
+    if [[ -f "$PLASMID_BIN/provenance.toml" ]]; then
+        ok "  provenance.toml present (Layer 2: composite fingerprint)"
+        pass=$((pass + 1))
+        # Deep verify if plasmidbin CLI is available
+        PLASMIDBIN_CLI=""
+        if command -v plasmidbin >/dev/null 2>&1; then
+            PLASMIDBIN_CLI="plasmidbin"
+        elif [[ -x "$PLASMID_BIN/target/release/plasmidbin" ]]; then
+            PLASMIDBIN_CLI="$PLASMID_BIN/target/release/plasmidbin"
+        fi
+        if [[ -n "$PLASMIDBIN_CLI" ]]; then
+            if "$PLASMIDBIN_CLI" verify-provenance --root "$PLASMID_BIN" >/dev/null 2>&1; then
+                ok "  provenance chain verified via plasmidbin CLI"
+                pass=$((pass + 1))
+            else
+                err "  provenance chain verification FAILED"
+                fail=$((fail + 1))
+            fi
+        fi
+    else
+        warn "  provenance.toml not present (pre-provenance harvest)"
+    fi
+
     check() {
         local label="$1" sock="$2" method="$3" params="${4-"{}"}"
         local resp
