@@ -29,7 +29,7 @@ back upstream to primals and primalSpring.
   `primalspring_primal` (JSON-RPC IPC server / cell membrane),
   `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status with PID tracking + federation)
 - **experiments/** — 92 validation binaries covering 21 tracks
-- **graphs/** — 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first
+- **graphs/** — 81 deploy graph TOMLs + 15 atomic signal graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
   2 cross-spring + 1 federation + 1 composition + 12 cell graphs + `signals/` tier)
@@ -53,7 +53,7 @@ back upstream to primals and primalSpring.
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
 | `validation/scenarios` | 53 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
-| `composition/neural_routing` | NeuralRoutingTable — static model of 458-method routing surface |
+| `composition/neural_routing` | NeuralRoutingTable — static model of 460-method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
@@ -76,7 +76,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 v0.9.30 Wave 54b (May 27, 2026) — 56 scenarios (10 tracks, 3 tiers),
 460 registered capability methods (460 exercised, 100% coverage),
-93 experiments (21 tracks), 95 deploy graphs (81 deploy + 14 signal),
+93 experiments (21 tracks), 96 deploy graphs (81 deploy + 15 signal),
 44-cell deployment matrix. 813 lib tests (797 pass, 16 live-tier, 2 ignored). 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
 sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
@@ -237,7 +237,7 @@ composition).
 
 ### Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 458-method registry (100% exercised), 53 scenarios, 95 deploy graphs (81 deploy + 14 signal)
+- 460-method registry (100% exercised), 56 scenarios, 96 deploy graphs (81 deploy + 15 signal)
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs
@@ -278,7 +278,7 @@ methods registered) — all detail fossilized to `fossilRecord/`.
 - **Covalent bonding** — **Wave 51: `discovery.peers` VALIDATED LIVE**. Songbird mesh+registry merge, `SONGBIRD_PEERS` auto-seeding on boot, `mesh_seed` module (7+ tests). Dedicated primalSpring NUCLEUS (primalspring01 :7701) meshed with nucleus01 (:7700) on eastGate. **NEXT**: `s_covalent_mesh` + `s_cross_gate_capability_call` scenario validation → Plasmodium collective (3+ gates meshed).
 - **Sovereignty cutover** — cellMembrane: Forgejo-primary, sovereign DNS (knot-dns), Forgejo Releases (S5). **Wave 54: provenance.toml + sweetGrass braids now provide the provenance chain for Forgejo migration.**
 - **Neural API evolution** — adaptive routing weights → learned routing (biomeOS + primalSpring). biomeOS v3.75 mesh routing is a prerequisite step.
-- ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 458/458 (100%) via 3 new scenarios + coverage graph + script regex fix
+- ~~**Method coverage 80%**~~ — **RESOLVED** Wave 47: pushed to 460/460 (100%) via 3 new scenarios + coverage graph + script regex fix
 - ~~**plasmidBin Rust elevation**~~ — **RESOLVED** Wave 47-51: `nucleus_launcher` Rust binary + full `plasmidbin` Rust CLI (build, harvest, fetch, validate, doctor, start, launch). All CI workflows migrated.
 - ~~**Provenance-elevated checksums**~~ — **RESOLVED** Wave 54: two-layer checksum model (content hash + composite fingerprint), sweetGrass braid integration, `verify-provenance` subcommand, primalSpring consumer tooling rewired.
 - **sporePrint living content (S6)** — NestGate `content.put` pipeline for dynamic site

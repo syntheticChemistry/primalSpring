@@ -69,7 +69,7 @@ pub struct RunningAtomic {
     overlay_capabilities: HashMap<String, String>,
 }
 
-#[allow(
+#[expect(
     deprecated,
     reason = "impl block for deprecated AtomicHarness/RunningAtomic"
 )]
@@ -321,7 +321,7 @@ impl RunningAtomic {
     }
 }
 
-#[allow(
+#[expect(
     deprecated,
     reason = "impl block for deprecated AtomicHarness/RunningAtomic"
 )]
@@ -363,7 +363,7 @@ pub struct AtomicHarness {
     graph_path: Option<PathBuf>,
 }
 
-#[allow(
+#[expect(
     deprecated,
     reason = "impl block for deprecated AtomicHarness/RunningAtomic"
 )]

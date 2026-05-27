@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**92 experiments across 21 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25+). Zero deprecated `probe_primal` callers remain as of Wave 18.
+**93 experiments across 21 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25+). Zero deprecated `probe_primal` callers remain as of Wave 18.
 
 ---
 
@@ -19,12 +19,12 @@ ValidationResult::new("Experiment Title")
 ```
 
 The `.run()` method prints the banner, executes checks, prints the summary,
-and exits with the appropriate code (0 = pass, 1 = fail). All 89 experiments
+and exits with the appropriate code (0 = pass, 1 = fail). All 93 experiments
 carry structured provenance via `with_provenance()`.
 
 All experiments use **honest scaffolding**: when a primal isn't running, the
 experiment reports `check_skip` (not a fake pass). Zero dishonest scaffolding
-across all 92 experiments. All 89 use centralized library helpers, primal name
+across all 93 experiments. All 93 use centralized library helpers, primal name
 constants (`primal_names`), and the modern `CompositionContext` for capability
 discovery and IPC.
 
@@ -65,7 +65,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 18 | Desktop Substrate | exp099–exp106 | **Live validated** (agentic loop, MCP tools, AI triage, storytelling session, ludoSpring IPC, provenance replay, The Rhizome micro-game 8/13, micro-desktop shell 2/4 + 11/12 health bar) |
 | 19 | Foundation Validation | exp107 | **Structural + IPC** (8-phase sediment pipeline: structural → discovery → health → provenance → storage → compute → ledger → attribution; validates foundation composition through NUCLEUS primals via Rust IPC) |
 | 20 | Later-Term Evolution | exp108–111 | **IPC** (token federation, composition lifecycle, audit pipeline, gate routing — pressure-tests JH-11, JH-3, JH-5 against upstream primals) |
-| 21 | PostPrimordial + Glacial Shift | exp112–114 | **Live validated** — exp112: full NUCLEUS audit (13/13 primals, 48 sockets, 15 ecoBin, Neural API 300+ methods); exp113: cephalization plan (25 flat sockets → primal-scoped dirs, Phase A: beardog/barracuda/songbird/toadstool); exp114: Tower CNS convergence (19/19 UDS coverage, 3 TCP ports droppable → 2-port Songbird-only target) |
+| 21 | PostPrimordial + Glacial Shift | exp112–115 | **Live validated** — exp112: full NUCLEUS audit (13/13 primals, 48 sockets, 15 ecoBin, Neural API 300+ methods); exp113: cephalization plan (25 flat sockets → primal-scoped dirs, Phase A: beardog/barracuda/songbird/toadstool); exp114: Tower CNS convergence (19/19 UDS coverage, 3 TCP ports droppable → 2-port Songbird-only target); exp115: Nest ingest pseudoSpore gateway (ownership matrix, liveSpore schema, litho emit contract, NUCLEUS gateway, provenance trio) |
 
 ## Experiment Status Key
 
@@ -111,7 +111,7 @@ the experiment → scenario module mapping.
 | 17 | gen4 Deployment Evolution | **Done** (biomeOS substrate validation, cross-gate Pixel routing, Squirrel AI bridge, spring deploy sweep, gen4 prototype graphs, 59 experiments, 385 tests) |
 | 18 | LAN Covalent Deployment | Planned — live multi-gate NUCLEUS, biomeOS aarch64 cross-compile for Pixel substrate (blocked on GAP-MATRIX-05) |
 | 19 | Gen4 Spring Scaffolding | **Done** (5 spring primal binaries built, 7 validation graphs, launch profiles) |
-| 20 | Deployment Matrix + Substrate Validation | **Done** (44-cell matrix, benchScale topologies, chaos/federation/provenance experiments, agentic trio, storytelling stack, showcase mining, 89 experiments, 95 graphs) |
+| 20 | Deployment Matrix + Substrate Validation | **Done** (44-cell matrix, benchScale topologies, chaos/federation/provenance experiments, agentic trio, storytelling stack, showcase mining, 93 experiments, 96 graphs) |
 | 21 | Deep Ecosystem Audit + Library Consolidation | **Done** (ipc::tcp + ipc::methods library modules, launcher 4-module refactor, provenance circuit breaker half-open, tracing migration, 8 experiments consolidated to library helpers, 413 tests, zero clippy/fmt/doc warnings) |
 | 22 | Track 14 — exp085–exp088 — E2E composition: BearDog crypto lifecycle, genetic identity, Neural API routing, storytelling composition | **Done** |
 | 23 | Ecosystem debt resolution — gap map, crypto negative validation graph, exp086 generate-then-verify, per-primal handoffs, composition standards | **Done** (v0.8.0) |
@@ -138,7 +138,7 @@ the experiment → scenario module mapping.
 | 57 | BTSP Phase 3 Convergence + NUCLEUS Validation | 13/13 FULL AEAD converged (loamSpine, coralReef, NestGate shipped Phase 3). Live NUCLEUS validation via plasmidBin: **157/170 guidestone** (bonding ALL PASS, cellular 69/70). Phase 3 interop gap discovered (server advertise→transport switch). `CRYPTO_CONSUMPTION_HIERARCHY.md` published. |
 | 58 | skunkBat NUCLEUS + Guidestone Hardening + plasmidBin CI Hub | **skunkBat** wired as 13th NUCLEUS primal (meta-tier defense/recon, Tier 1 binaries). Guidestone fixes: BTSP alias routing (`resolve_btsp_socket`), flex key resolution for barraCuda, desktop cell health node, Squirrel reconnect-on-failed-probe. **plasmidBin CI hub** architecture documented (sole paid Actions repo, signing roadmap, distribution channels). 25+ files reconciled 12→13 primals. |
 | 59 | Later-Term Evolution | exp108–111 (token federation, composition lifecycle, audit pipeline, gate routing). JH-11 `TokenVerifier` trait + `BearDogVerifier`, `CompositionContext::call_authenticated`, stub primal harness, guidestone Layer 8 lifecycle. |
-| 60 | **Interstadial Rewire** | **All 89 experiments** rewired to modern `CompositionContext` pattern (v0.9.25). Old patterns (`discover_primal`, `PrimalClient`, `AtomicHarness`, `discover_by_capability`) replaced with `CompositionContext::from_live_discovery_with_fallback()` + `ctx.call()`. Pre-rewire sources fossilized in `fossilRecord/experiments_pre_interstadial_may2026/`. Last deprecated `probe_primal` calls removed from exp004/exp107 (Wave 18). Zero clippy warnings, **791** `#[test]` markers across workspace (as of 2026-05-25). |
+| 60 | **Interstadial Rewire** | **All 93 experiments** rewired to modern `CompositionContext` pattern (v0.9.25). Old patterns (`discover_primal`, `PrimalClient`, `AtomicHarness`, `discover_by_capability`) replaced with `CompositionContext::from_live_discovery_with_fallback()` + `ctx.call()`. Pre-rewire sources fossilized in `fossilRecord/experiments_pre_interstadial_may2026/`. Last deprecated `probe_primal` calls removed from exp004/exp107 (Wave 18). Zero clippy warnings, **791** `#[test]` markers across workspace (as of 2026-05-25). |
 || 61 | **PostPrimordial Glacial Shift** | exp112: full NUCLEUS audit (**40/40**); exp113: cephalization plan (**26/26**); exp114: Tower CNS convergence (**40/40**). 13/13 primals live from plasmidBin, 19/19 UDS 100% coverage, 25 flat sockets mapped for primal-scoped cephalization (Phase A: beardog/barracuda/songbird/toadstool), 3 TCP ports droppable to 2-port Songbird-only target, Neural API 300+ methods routed. |
 
 ## Frozen Results (`results/`)
@@ -150,7 +150,7 @@ artifacts that notebooks load without requiring live primals.
 |------|----------|
 | `composition_validation.json` | Deploy graph stats, bond types, structural checks, discovery tiers |
 | `test_suite_report.json` | Module-level test counts (primalspring lib+integration tests), timings, categories |
-| `experiment_catalog.json` | All 89 experiments categorized by focus area, timeline |
+| `experiment_catalog.json` | All 93 experiments categorized by focus area, timeline |
 | `security_convergence.json` | BTSP Phase 3 state, PG-55–59 resolution, convergence timeline |
 | `cross_spring_matrix.json` | Spring × primal consumption, ecosystem flows, sporePrint readiness |
 | `benchmark_timing.json` | Compilation, guidestone, trio benchmarks, Rust vs Python estimates |
@@ -161,7 +161,7 @@ Regenerate after major validation changes. Notebooks in `../notebooks/` consume 
 
 All experiments share the `ecoPrimal` library crate's validation module:
 
-**Builder API** (preferred — all 89 experiments use this):
+**Builder API** (preferred — all 93 experiments use this):
 - `ValidationResult::new(title)` — create a harness with title
 - `.with_provenance(source, date)` — attach structured provenance metadata
 - `.run(subtitle, |v| { ... })` — print banner, execute checks, print summary, exit
@@ -193,7 +193,7 @@ experiments/expNNN/
 ```
 
 All experiment crates inherit workspace lints (clippy pedantic+nursery, `deny(unsafe_code)`).
-All 89 experiments are at version 0.9.25 following the Interstadial rewire (May 9, 2026).
+All 93 experiments are at version 0.9.25 following the Interstadial rewire (May 9, 2026).
 Pre-rewire sources preserved in `fossilRecord/experiments_pre_interstadial_may2026/`.
 
 > **Numbering note**: exp097 is intentionally unassigned (reserved during Track 17 sprint,

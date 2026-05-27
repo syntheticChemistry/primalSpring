@@ -3,7 +3,28 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–54: Stadial Entry / Glacial Shift (2026-05-27)
+## [Unreleased] — Waves 22–55b: Stadial Entry / Glacial Shift (2026-05-27)
+
+### Wave 55b: PostPrimordial Checkpoint — Metrics Alignment + Dispatch Parity (May 27)
+- **Signal dispatch parity**: `s_signal_dispatch_parity` expanded from 14→15 signals.
+  `nest.ingest_spore` added to `SIGNALS` table (expected keys: `store_id`,
+  `dag_session_id`, `ledger_entry_id`, `braid_id`) and `SIGNAL_GRAPHS` test table.
+  Dispatch + structural parity now covers all 15 atomic signal graphs.
+- **Metrics alignment sweep**: Updated 15+ active docs to canonical metrics (460 methods,
+  15 signals, 56 scenarios, 93 experiments, 96 deploy graphs, 813 tests). Fixed stale
+  references to 458/14/53/89/95/791 in README, CONTEXT, PRIMAL_GAPS,
+  DOWNSTREAM_PATTERN_GUIDE, CROSS_SPRING_PARITY_SCORECARD, VALIDATION_TIERS,
+  CROSS_SPRING_EVOLUTION, NUCLEUS_VALIDATION_MATRIX, SOVEREIGNTY_INFRASTRUCTURE_STATUS,
+  COMPUTE_TRIO_EVOLUTION, experiments README.
+- **PostPrimordial path cleanup**: `biomeos-cli` → `biomeos/src/modes/` path refs updated
+  in CROSS_SPRING_EVOLUTION and exp115 README. exp114 hardcoded `/run/user/1000` replaced
+  with `tolerances::biomeos_socket_dir()`. `neural_dispatch` test threshold 458→460.
+- **Lint hygiene**: `#[allow(clippy::...)]` → `#[expect(..., reason)]` in `s_tower_cns`,
+  `harness/mod.rs` (3 deprecated impl blocks).
+- **Catalog updated**: `experiment_catalog.json` regenerated — 93 experiments, 22 categories
+  (added `postprimordial_glacial` track: exp112-115). Timeline extended.
+- **CHECKSUMS regenerated**: 27 tracked files re-hashed after code changes.
+- 813 tests passing, 0 clippy warnings.
 
 ### Wave 54b: Deep Debt Sweep + Script-to-Rust Evolution (May 27)
 - **Dependency evolution**: `hostname` crate eliminated (17→16 runtime deps). Replaced

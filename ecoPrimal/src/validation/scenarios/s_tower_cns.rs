@@ -109,7 +109,7 @@ fn phase_uds_coverage(v: &mut ValidationResult) {
         );
     }
 
-    #[allow(clippy::cast_precision_loss)]
+    #[expect(clippy::cast_precision_loss, reason = "socket count fits f64 exactly")]
     let total = caps_sockets.len() as f64;
     let coverage = (f64::from(uds_ready) / total) * 100.0;
     v.check_bool(
@@ -119,7 +119,7 @@ fn phase_uds_coverage(v: &mut ValidationResult) {
     );
 }
 
-#[allow(clippy::needless_pass_by_ref_mut)]
+#[expect(clippy::needless_pass_by_ref_mut, reason = "ctx reserved for future relay probes")]
 fn phase_tower_relay(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let caps = ctx.available_capabilities();
     let tower_caps = ["security", "crypto", "discovery"];

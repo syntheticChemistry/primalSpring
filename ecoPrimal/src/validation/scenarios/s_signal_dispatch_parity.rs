@@ -87,6 +87,11 @@ const SIGNALS: &[SignalSpec] = &[
         params: || serde_json::json!({ "content_cid": "dispatch-parity-probe", "_probe": true }),
     },
     SignalSpec {
+        id: "nest.ingest_spore",
+        expected_keys: &["store_id", "dag_session_id", "ledger_entry_id", "braid_id"],
+        params: || serde_json::json!({ "scope_id": "dispatch-parity-probe", "source_dir": "/tmp/probe", "_probe": true }),
+    },
+    SignalSpec {
         id: "meta.observe",
         expected_keys: &["session_id", "context", "graphs"],
         params: || serde_json::json!({ "domain": "storage", "_probe": true }),
@@ -128,8 +133,8 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 fn phase_dispatch_parsing(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.check_bool(
         "parse:signal_count",
-        SIGNALS.len() == 14,
-        &format!("SIGNALS table has {} entries (expected 14)", SIGNALS.len()),
+        SIGNALS.len() == 15,
+        &format!("SIGNALS table has {} entries (expected 15)", SIGNALS.len()),
     );
 
     for spec in SIGNALS {
@@ -290,7 +295,7 @@ mod tests {
 
     #[test]
     fn signal_table_matches_graph_count() {
-        assert_eq!(SIGNALS.len(), 14, "SIGNALS table should match 14 signal graphs");
+        assert_eq!(SIGNALS.len(), 15, "SIGNALS table should match 15 signal graphs");
     }
 
     const SIGNAL_GRAPHS: &[(&str, &str)] = &[
@@ -303,6 +308,7 @@ mod tests {
         ("nest_store", include_str!("../../../../graphs/signals/nest_store.toml")),
         ("nest_commit", include_str!("../../../../graphs/signals/nest_commit.toml")),
         ("nest_retrieve", include_str!("../../../../graphs/signals/nest_retrieve.toml")),
+        ("nest_ingest_spore", include_str!("../../../../graphs/signals/nest_ingest_spore.toml")),
         ("meta_observe", include_str!("../../../../graphs/signals/meta_observe.toml")),
         ("meta_intent", include_str!("../../../../graphs/signals/meta_intent.toml")),
         ("meta_render", include_str!("../../../../graphs/signals/meta_render.toml")),

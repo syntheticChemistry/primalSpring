@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 27, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 56 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), **813 lib tests** (797 pass, 16 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps** (hostname eliminated Wave 54b). Pure Rust crypto for BTSP bootstrap. Wave 54b: **deep debt zero** — 6 CI bash scripts absorbed into Rust subcommands (`primalspring checksums`, `primalspring registry`). `nucleus_launcher` now full lifecycle (start/stop/status via PID tracking). All hardcoded UID/port/path values centralized to `tolerances` module. `deploy_membrane.sh` supports full NUCLEUS composition (13 primals, 4 tiers). hotSpring pseudoSpore v1.6.1 → NUCLEUS-ready. 4 gates operational. **pseudoSpore 2.0**: lithoSpore emissions to be postPrimordial via NUCLEUS (`biomeos nucleus ingest` + `litho emit-pseudospore`). **`discovery.peers` RESOLVED** (Wave 51). Live gate validation NEXT.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 56 scenarios (10 tracks, 3 tiers), 460 real methods (460 exercised = 100%), **813 lib tests** (797 pass, 16 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps** (hostname eliminated Wave 54b). Pure Rust crypto for BTSP bootstrap. Wave 54b: **deep debt zero** — 6 CI bash scripts absorbed into Rust subcommands (`primalspring checksums`, `primalspring registry`). `nucleus_launcher` now full lifecycle (start/stop/status via PID tracking). All hardcoded UID/port/path values centralized to `tolerances` module. `deploy_membrane.sh` supports full NUCLEUS composition (13 primals, 4 tiers). hotSpring pseudoSpore v1.6.1 → NUCLEUS-ready. 4 gates operational. **pseudoSpore 2.0**: lithoSpore emissions to be postPrimordial via NUCLEUS (`biomeos nucleus ingest` + `litho emit-pseudospore`). **`discovery.peers` RESOLVED** (Wave 51). Live gate validation NEXT.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-54 complete. 56 scenarios (10 tracks), 458 real methods (458 exercised = 100%), 799 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 54: provenance-elevated checksums + sweetGrass braids. 3 primals harvested with full provenance (toadStool S279, Songbird W53b, loamSpine W55). biomeOS LiveSpore fix confirmed (v3.76). toadStool: zero production panic paths (9,156+ lib tests). Songbird: +74 tests, deep debt zero (8,070+ lib tests). loamSpine: BearDog coupling removed, self-knowledge enforced.**
+**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-54 complete. 56 scenarios (10 tracks), 460 real methods (460 exercised = 100%), 813 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 54: provenance-elevated checksums + sweetGrass braids. 3 primals harvested with full provenance (toadStool S279, Songbird W53b, loamSpine W55). biomeOS LiveSpore fix confirmed (v3.76). toadStool: zero production panic paths (9,156+ lib tests). Songbird: +74 tests, deep debt zero (8,070+ lib tests). loamSpine: BearDog coupling removed, self-knowledge enforced.**
 
 ---
 
@@ -292,7 +292,7 @@ Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
 | DF-2 | toadStool `TOADSTOOL_AUTH_MODE` env | toadStool S233 — `auth.mode` env + `eprintln` → `tracing` |
 | DF-3 | songbird/squirrel silent on `auth.mode` TCP | songbird — `CallerContext` wired (TCP transport-aware) |
 | U5 | sweetGrass port 39085 vs 9850 | sweetGrass v0.7.32 — port 9850 canonical |
-| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (458 real methods, zero drift) |
+| GAP-12 | 15 ludoSpring IPC methods need canonical registration | **RESOLVED** — 28 `game.*` methods in `config/capability_registry.toml` (460 real methods, zero drift) |
 | U1 | CHECKSUMS stale after Phase 59 refactoring | **RESOLVED** — regenerated with 25 tracked files (UniBin, certification, scenarios, registry) |
 | U2 | 5 deploy graphs missing `by_capability` | **FALSE POSITIVE** — only manifests (parameter tables, not node-bearing graphs) lack field; all actual `[[graph.nodes]]` graphs have `by_capability` |
 | U3 | 8 profile graphs missing `bonding_policy` | **RESOLVED** — 9/9 profile graphs already have `bonding_policy` |
@@ -587,8 +587,8 @@ for the full local wateringHole snapshot (fossilized Wave 51).
 ## Evolution Cycle Ownership Model
 
 > **Note (Wave 49)**: Historical sections below preserve method counts and test
-> numbers as they were at each Wave. Current state: 458 methods, 791 tests,
-> 53 scenarios, 95 deploy graphs, 89 experiments. See summary at top of this file.
+> numbers as they were at each Wave. Current state: 460 methods, 813 tests,
+> 56 scenarios, 96 deploy graphs, 93 experiments. See summary at top of this file.
 
 Every gap in the ecosystem belongs to exactly one layer of the evolution cycle.
 When a gap is identified, it should be tagged with its owner layer. This prevents

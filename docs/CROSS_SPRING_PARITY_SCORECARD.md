@@ -2,13 +2,13 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 26, 2026 (Wave 51 — plasmidBin Rust elevation, CI sovereignty, postPrimordial enforced). biomeOS v3.75, 458 methods, 791 primalSpring tests, 53 scenarios, 95 deploy graphs. 7/7 delta springs covalent HPC confirmed.
+**Last updated**: May 26, 2026 (Wave 51 — plasmidBin Rust elevation, CI sovereignty, postPrimordial enforced). biomeOS v3.79, 460 methods, 813 primalSpring tests, 56 scenarios, 96 deploy graphs. 7/7 delta springs covalent HPC confirmed.
 **Audited by**: primalSpring composition audit + ecosystem postPrimordial compliance sweep
 **Method**: Pulled all 13 primals + sourDough + bingoCube to HEAD, assessed against postPrimordial checklist
 
 > **Note**: Per-spring test counts and graph counts below are from Wave 42.
-> primalSpring metrics (791 tests, 53 scenarios, 95 graphs, 458 methods) are
-> current as of Wave 51. Other spring metrics need refresh from their teams.
+> primalSpring metrics (813 tests, 56 scenarios, 96 graphs, 460 methods) are
+> current as of Wave 55b. Other spring metrics need refresh from their teams.
 
 ## Legend
 
@@ -20,7 +20,7 @@
 
 | Spring | Tests | barraCuda Coupling | primalSpring Dep | Guidestone Level | Capability Registry | Deploy Graphs | Composition Experiments | Paper Notebooks | deny.toml |
 |--------|------:|-------------------|-----------------|-----------------|-------------------|--------------|----------------------|----------------|-----------|
-| **primalSpring** | 791 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 458 methods, sync-tested | **G** 81 deploy + 14 signal graphs | **G** 89 exp crates + 53 scenarios (10 tracks) + Waves 1-51 complete, postPrimordial enforced, wateringHole fossilized | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
+| **primalSpring** | 813 | None (validates, doesn't consume) | N/A (is primalSpring) | L8 (absorbed) | **G** 460 methods, sync-tested | **G** 81 deploy + 15 signal graphs | **G** 93 exp crates + 56 scenarios (10 tracks) + Waves 1-55b complete, postPrimordial enforced, wateringHole fossilized | **Y** 5 (frozen JSON, not live paper) | **G** bans ring/openssl |
 | **hotSpring** | 596 | **G** optional=true, IPC-first default (`default=[]`) | **G** unconditional | **G** L6 (certified) | **G** 117 methods + sync, primal.list routed, s_schema_standard | **G** 5 graphs | **G** 204 exp (Tier 4 + LTEE B2 + BootPipeline + VBIOS interpreter live HW + 22 scenarios) | **G** 17 + LTEE notebook | **G** bans ring/openssl/aws-lc-sys |
 | **healthSpring** | 1,018 | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (Tier 1-3) | **G** 176 methods in TOML + CI cross-sync 445 + canonical envelope, stability tiers (15/41/2) | **G** 7 graphs, skunkBat + Tower atomic (V64r) | **G** 95 exp crates (exp123 NUCLEUS parity), 57 scenarios | **G** 53 .ipynb (all controls converted) | **G** bans ring/openssl/aws-lc-sys |
 | **wetSpring** | 1,962+ | **G** optional=true, IPC-first default (`default=[]`) | **Y** feature-gated | **G** L5 (guideStone primal proof, B7 Tier 2) | **G** 43 caps (42→43 `provenance.export_braid`) + cross-sync 445 + canonical envelope, stability tiers (30/13) | **G** 7 graphs | **G** V177 Exp381 breseq pipeline (Barrick 2009, 3/7 clones done, ferment braid exported) + composition_health + ipc_roundtrip + schema parity | **G** 19 + Kachkovskiy | **G** bans ring + openssl |

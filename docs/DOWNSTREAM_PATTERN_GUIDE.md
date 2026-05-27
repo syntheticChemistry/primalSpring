@@ -6,8 +6,8 @@ How the 8 river delta springs feed projectNUCLEUS, projectFOUNDATION, and lithoS
 (ScopeManifest, liveSpore.json, CLI integration tests), projectNUCLEUS V3 (55 tests,
 discovery cascade, 7 gates, signal_executor.sh, tower_agent.toml), esotericWebb V8
 (357 tests, signal-first provenance, lifecycle handlers), projectFOUNDATION (184 targets,
-29 workloads, primal_ipc.sh, 6 CPU parity benchmarks). 445 methods, 45 scenarios
-(10 tracks, 3 tiers), 14 atomic signal graphs. All UB-1–4 SHIPPED.
+29 workloads, primal_ipc.sh, 6 CPU parity benchmarks). 460 methods, 56 scenarios
+(10 tracks, 3 tiers), 15 atomic signal graphs. All UB-1–4 SHIPPED.
 
 ---
 
@@ -321,13 +321,13 @@ AFTER (signal dispatch — biomeOS manages the graph):
 | `ctx.signal_plan(intent)` | Squirrel-powered intent → signal sequence planning |
 | `ctx.execute_plan(plan)` | Execute a squirrel signal plan |
 
-### Signal Inventory (14 signals across 4 tiers)
+### Signal Inventory (15 signals across 4 tiers)
 
 | Tier | Signals | Composition Surface |
 |------|---------|-------------------|
 | **Tower** (electron) | `publish`, `authenticate`, `discover`, `health`, `bootstrap` | Identity, trust, mesh |
 | **Node** (proton) | `compute` | Dispatch, compile, execute |
-| **Nest** (neutron) | `store`, `commit`, `retrieve` | Provenance, storage, ledger |
+| **Nest** (neutron) | `store`, `commit`, `retrieve`, `ingest_spore` | Provenance, storage, ledger, pseudoSpore gateway |
 | **Meta** | `observe`, `intent`, `render`, `health`, `deploy` | AI, orchestration, UI |
 
 ### Migration Path for Springs
@@ -362,7 +362,7 @@ finalization).
 ### Validation Coverage
 
 primalSpring validates the signal API through:
-- `s_signal_dispatch_parity` — dispatches all 14 signals, validates response shapes
+- `s_signal_dispatch_parity` — dispatches all 15 signals, validates response shapes
 - `s_primal_announce` — validates announce wire format and live registration
 - `s_atomic_signals` — structural + live dispatch validation per signal graph
 - `s_provenance_trio_pipeline` Phase 6 — `nest.store` signal dispatch
@@ -377,7 +377,7 @@ The sovereignty track validates the 4-layer model from `PRIMAL_VS_SOVEREIGNTY_GO
 
 | Layer | What | primalSpring Validation |
 |-------|------|------------------------|
-| 1. Primal Capabilities | 445 methods, 13 primals | Existing: `composition-parity`, `domain-contract-sweep` |
+| 1. Primal Capabilities | 460 methods, 13 primals | Existing: `composition-parity`, `domain-contract-sweep` |
 | 2. Security Validation | BTSP, MethodGate, Dark Forest | Existing: `dark-forest-gate`, `bearer-token-auth` |
 | 3. Sovereignty Deployment | VPS membrane, content routing | **NEW**: `membrane-composition`, `sovereignty-parity` |
 | 4. Sovereign Composition | All atomics self-hosted | **NEW**: `content-sovereignty` |

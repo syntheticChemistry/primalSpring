@@ -110,7 +110,7 @@ bash scripts) is an ongoing elevation in projectNUCLEUS.
 
 | Component | Status | Owner | Notes |
 |-----------|--------|-------|-------|
-| Capability routing | LIVE | biomeOS | 458 methods, 84+ domains |
+| Capability routing | LIVE | biomeOS | 460 methods, 84+ domains |
 | Adaptive routing weights | LIVE (redb-persistent) | biomeOS | EWMA latency, error rate, cost, circuit breakers |
 | Utilization tracking | LIVE (Wave 42) | biomeOS | Hot/cold method analysis |
 | Composition intelligence | LIVE | biomeOS | CompositionTier, CompositionPatternRegistry |

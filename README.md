@@ -10,11 +10,11 @@
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 813 `#[test]` markers (797 pass, 16 live-tier, 2 ignored) |
 | **Experiments** | 92 (21 tracks) — 56 validation scenarios (10 tracks) |
-| **Deploy Graphs** | 95 deploy TOMLs (81 deploy + 14 atomic signal graphs) — fragment-first composition with `resolve = true` |
-| **Coverage** | Method coverage against 458 registered capability methods; line coverage via llvm-cov |
+| **Deploy Graphs** | 96 deploy TOMLs (81 deploy + 15 atomic signal graphs) — fragment-first composition with `resolve = true` |
+| **Coverage** | Method coverage against 460 registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 89 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 93 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`) |
 | **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 9 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)**, **provenance-elevated checksums** (Layer 2: composite fingerprint + sweetGrass braids) |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]`, `#![forbid(unsafe_code)]` on lib root — zero unsafe blocks |
@@ -71,8 +71,8 @@ primalSpring/
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
 ├── experiments/                   # 89 validation experiments (20 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry, signal tools
-├── graphs/                        # 80 deploy graph TOMLs + 14 atomic signal graphs
-│   ├── signals/                  # 14 atomic signal graphs (tower/node/nest/meta tiers, incl. bootstrap)
+├── graphs/                        # 81 deploy graph TOMLs + 15 atomic signal graphs
+│   ├── signals/                  # 15 atomic signal graphs (tower/node/nest/meta tiers, incl. bootstrap)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
 │   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
 │   ├── patterns/                 # 4 coordination patterns: parallel, conditional, streaming, continuous
@@ -223,7 +223,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first composition (all nodes declare `by_capability`):
+primalSpring ships 81 deploy graph TOMLs + 15 atomic signal graphs using fragment-first composition (all nodes declare `by_capability`):
 
 **Root-level graphs (14)**:
 
@@ -296,7 +296,7 @@ and `[graph.bonding_policy]` sections validated by `graph_metadata.rs`.
 
 ## Atomic Signal Graphs
 
-primalSpring ships 14 atomic signal graphs under `graphs/signals/` that define
+primalSpring ships 15 atomic signal graphs under `graphs/signals/` that define
 the Neural API composition collapse layer. Each signal maps a high-level operation
 (e.g. `tower.publish`, `nest.store`, `meta.deploy`) to a graph of primal
 capabilities, enabling biomeOS to decompose semantic intent into concrete IPC calls.

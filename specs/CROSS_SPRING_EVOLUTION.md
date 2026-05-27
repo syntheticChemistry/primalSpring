@@ -4,7 +4,7 @@
 > and have drifted. See `README.md` and `CONTEXT.md` for current figures.
 
 **Date**: May 2026
-**Status**: Phase 60 snapshot — primalSpring v0.9.28 — 13/13 primals at zero debt, JH-0 MethodGate adopted (13/13), BTSP Phase 3 (13/13), ionic tokens live. 89 experiments (20 tracks), 95 deploy graphs. 791 lib tests, 53 scenarios. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing). 458 registered capability methods.
+**Status**: Phase 60 snapshot — primalSpring v0.9.28 — 13/13 primals at zero debt, JH-0 MethodGate adopted (13/13), BTSP Phase 3 (13/13), ionic tokens live. 93 experiments (21 tracks), 96 deploy graphs. 813 lib tests, 56 scenarios. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing). 460 registered capability methods.
 
 ---
 
@@ -152,7 +152,7 @@ Sequence/Provenance/Field/Full deploy graph tiers.
 | airSpring | v0.10.0 | 1,207+ | MCP tools, deny.toml, 58 tolerances, NUCLEUS niche TOML |
 | healthSpring | V41 | 719 | proptest IPC fuzz, circuit breaker, tracing, DOI provenance |
 | ludoSpring | V29 | 187 | with_provenance(), XDG sockets, 93.2% coverage |
-| primalSpring | v0.9.28 | 791 | Phase 60 — 89 experiments (20 tracks), 95 deploy graphs, guideStone Level 8, JH-0 MethodGate (13/13), ionic tokens, 458 capability methods, 13/13 BTSP FULL AEAD, 53 scenarios |
+| primalSpring | v0.9.28 | 813 | Phase 60 — 93 experiments (21 tracks), 96 deploy graphs, guideStone Level 8, JH-0 MethodGate (13/13), ionic tokens, 460 capability methods, 13/13 BTSP FULL AEAD, 56 scenarios |
 
 ## Modernization Sweep (April 7, 2026)
 
@@ -829,7 +829,7 @@ envelope primitives consumed by both litho CLI and biomeOS:
 ### NUCLEUS Gateway
 
 biomeOS gains `biomeos nucleus ingest` and `biomeos nucleus emit` subcommands
-(`primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs`).
+(`primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs`).
 This replaces the `litho ingest-pseudospore` shell-out from nest-validate's
 `guidestone deploy` step 7.
 

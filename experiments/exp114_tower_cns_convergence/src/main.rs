@@ -105,11 +105,7 @@ fn phase_port_census(v: &mut ValidationResult) {
 }
 
 fn phase_uds_coverage(v: &mut ValidationResult) {
-    let dir = {
-        let xdg = std::env::var("XDG_RUNTIME_DIR")
-            .unwrap_or_else(|_| "/run/user/1000".to_string());
-        std::path::PathBuf::from(xdg).join("biomeos")
-    };
+    let dir = primalspring::tolerances::biomeos_socket_dir();
 
     let caps_with_sockets: &[(&str, &str)] = &[
         ("crypto", "crypto.sock"),

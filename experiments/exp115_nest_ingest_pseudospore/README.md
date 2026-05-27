@@ -43,7 +43,7 @@ Spring (hotSpring/groundSpring/any)
 
 - `infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md` — ownership boundaries
 - `gardens/lithoSpore/crates/pseudospore-core/` — shared envelope crate
-- `primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs` — gateway
+- `primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs` — gateway
 - `gardens/lithoSpore/specs/PSEUDOSPORE_STANDARD.md` — unified schema
 
 ## Prerequisites

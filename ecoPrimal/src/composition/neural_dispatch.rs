@@ -603,7 +603,7 @@ mod tests {
         let d = test_dispatcher();
         let report = d.status_report();
         assert!(!report["online"].as_bool().unwrap());
-        assert!(report["total_methods"].as_u64().unwrap() >= 458);
+        assert!(report["total_methods"].as_u64().unwrap() >= 460);
         assert!(report["patterns_registered"].as_u64().unwrap() >= 3);
     }
 
