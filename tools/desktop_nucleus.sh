@@ -3,6 +3,21 @@
 #
 # desktop_nucleus.sh — Deploy the 13-primal NUCLEUS as a desktop system
 #
+# ┌─────────────────────────────────────────────────────────────────┐
+# │ DESKTOP-ONLY — NOT for VPS / cellMembrane deployments.         │
+# │                                                                │
+# │ VPS standard path:                                             │
+# │   plasmidBin binaries  →  deploy_membrane.sh / biomeos deploy  │
+# │   Cell graphs:  graphs/cells/{spring}_cell.toml (spawn=false)  │
+# │                                                                │
+# │ This script self-spawns a local NUCLEUS with TCP ports,        │
+# │ petalTongue live mode, and desktop-specific symlink hacks.     │
+# │ None of these are appropriate for standardized VPS deployment. │
+# │                                                                │
+# │ Target: retire once Songbird capability resolution (GAP-17/18) │
+# │ eliminates the need for socket symlinks.                       │
+# └─────────────────────────────────────────────────────────────────┘
+#
 # Primary path: biomeOS deploy (coordinator primal handles lifecycle)
 # Fallback path: composition_nucleus.sh (shell-managed)
 #

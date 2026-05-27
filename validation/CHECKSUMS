@@ -3,7 +3,7 @@
 # Files: 27
 #
 # Verify: primalspring::checksums::verify_manifest()
-81e23a72391a6ccc1eea497005b25a609dd51ffc0fa37c5196468e30d28f8871  ecoPrimal/src/bin/primalspring/main.rs
+c4bf05eefcc36316a1a623a634e46e6faffe7fd4c3a4e2b2060d74dc5074edfe  ecoPrimal/src/bin/primalspring/main.rs
 21226c6de87e058033ad2c828ee087d8709bafb66bba85fbd1fbd9817f7b9d69  ecoPrimal/src/bin/primalspring/cli.rs
 cc0e26265f6c60eece2dc4cf0232369da1db56d7ff9405674f4f670a8ba3c1a0  ecoPrimal/src/bin/primalspring_primal/main.rs
 df0901a933784918ab06fb6d2d8ac4207cf0f01cdc09712d9801db4fe6bfaa28  ecoPrimal/src/certification/mod.rs
@@ -14,7 +14,7 @@ f1115302d6441caed85b4d9c9d0577b36f3be2ae7b70303fdc44a13cc89a463a  ecoPrimal/src/
 e2e84cfffe6045c69bcfac7f3857ff74938c4ef6350433376c5e930aabfb6289  ecoPrimal/src/validation/scenarios/s_cephalization.rs
 f98545caba75a411e1cd380a5bc8d8806cffa06a882ee4ecb7eaecd59fb8e49c  ecoPrimal/src/validation/scenarios/s_tower_cns.rs
 c8b760553843ef5a64044081c0e6b3f93959bf40e01fc78a0639f8cbbb020627  ecoPrimal/src/validation/scenarios/s_kderm_boundary.rs
-3bb028f27e11ca579ac7c90f00d839500a247d5fa421945f9333775ac4f56634  ecoPrimal/src/tolerances/mod.rs
+6e478ef368ead8b069fcff4525f95ff0edbfda729549ae4a3d2d642a019e2497  ecoPrimal/src/tolerances/mod.rs
 2be8559f813cfc70857d9f4e72f1a7ce5c9b447fdabf70c49437eb35386c2034  ecoPrimal/src/coordination/mod.rs
 6656d59075f4fdde2154abb2944e8721571c01f6e2545c21b033f2ade6c034cb  ecoPrimal/src/bonding/mod.rs
 1e320571c6265a1c2cb46c8b988bd37c77fc65cd26773936c9ed8eab07f3aaf0  ecoPrimal/src/btsp/mod.rs

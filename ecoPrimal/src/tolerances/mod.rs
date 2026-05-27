@@ -277,7 +277,7 @@ pub const RUNTIME_DIR_FALLBACK: &str = "/tmp";
 /// Prefers the env var; falls back to `/run/user/{uid}` (Linux convention),
 /// then to [`RUNTIME_DIR_FALLBACK`] (`/tmp`). Avoids hardcoded UID `1000`.
 pub fn runtime_dir() -> String {
-    std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| {
+    std::env::var(crate::env_keys::XDG_RUNTIME_DIR).unwrap_or_else(|_| {
         #[cfg(target_os = "linux")]
         {
             if let Some(uid) = real_uid() {

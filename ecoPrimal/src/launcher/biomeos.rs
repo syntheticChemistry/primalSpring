@@ -70,8 +70,8 @@ pub fn spawn_biomeos(
         nucleation.base_dir().to_string_lossy().as_ref(),
     );
     cmd.env(crate::env_keys::BIOMEOS_MODE, "coordinated");
-    if let Ok(plasmid) = std::env::var(super::discovery::ENV_PLASMID_BIN) {
-        cmd.env("BIOMEOS_PLASMID_BIN_DIR", &plasmid);
+    if let Ok(plasmid) = std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN) {
+        cmd.env(crate::env_keys::BIOMEOS_PLASMID_BIN_DIR, &plasmid);
     }
 
     cmd.stdout(Stdio::piped());

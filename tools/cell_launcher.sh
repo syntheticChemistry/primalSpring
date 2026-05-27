@@ -3,6 +3,18 @@
 #
 # cell_launcher.sh — Deploy any spring as a biomeOS cell
 #
+# ┌─────────────────────────────────────────────────────────────────┐
+# │ DESKTOP-ONLY — NOT for VPS / cellMembrane deployments.         │
+# │                                                                │
+# │ VPS standard path:                                             │
+# │   biomeos deploy graphs/cells/{spring}_cell.toml               │
+# │   All spring cells use spawn=false (overlay on running NUCLEUS) │
+# │   No nucleus_launcher fallback, no DISPLAY, no symlinks.       │
+# │                                                                │
+# │ This script includes a nucleus_launcher fallback (line ~100)   │
+# │ that is incompatible with VPS standardization.                 │
+# └─────────────────────────────────────────────────────────────────┘
+#
 # A cell is a NUCLEUS + domain overlay + petalTongue live mode, deployed
 # as a single biomeOS graph. This is the standard way to "run a spring
 # as a desktop app" within ecoPrimals.

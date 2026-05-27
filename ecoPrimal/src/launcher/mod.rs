@@ -2,8 +2,18 @@
 
 //! Primal process launching and lifecycle management.
 //!
-//! Synchronous port of biomeOS `primal_spawner` / `nucleation` modules,
-//! adapted for primalSpring's coordination validation domain.
+//! # VPS Deployment Standard
+//!
+//! For cellMembrane VPS deployments, the standard path is:
+//!
+//! ```text
+//! plasmidBin binaries → deploy_membrane.sh / biomeos deploy → cell graph (spawn=false)
+//! ```
+//!
+//! Only [`discover_binary`], [`SocketNucleation`], [`LaunchProfile`], and
+//! [`LaunchError`] are needed on the VPS path. The deprecated `spawn_primal`
+//! and `spawn_biomeos` functions are **desktop-only** primordial patterns
+//! that will be removed once `harness` integration tests are migrated.
 //!
 //! # Binary Discovery
 //!
@@ -12,10 +22,10 @@
 //!
 //! 1. `$ECOPRIMALS_PLASMID_BIN`
 //! 2. `$BIOMEOS_PLASMID_BIN_DIR`
-//! 3. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` (populated by `tools/fetch_primals.sh`)
+//! 3. `$XDG_DATA_HOME/ecoPrimals/plasmidBin`
 //!
 //! Within each base directory, the `primals/{target-triple}/{name}` layout
-//! (produced by `plasmidbin fetch` / `tools/fetch_primals.sh`) is tried first, then flat fallbacks.
+//! (produced by `plasmidbin fetch`) is tried first, then flat fallbacks.
 //!
 //! # Socket Nucleation
 //!

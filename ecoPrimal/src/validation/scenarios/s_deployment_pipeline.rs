@@ -397,10 +397,10 @@ fn find_plasmidbin_file(filename: &str) -> Option<std::path::PathBuf> {
         }
     }
 
-    let xdg = std::env::var("ECOPRIMALS_PLASMID_BIN")
+    let xdg = std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN)
         .or_else(|_| {
-            std::env::var("XDG_DATA_HOME")
-                .or_else(|_| std::env::var("HOME").map(|h| format!("{h}/.local/share")))
+            std::env::var(crate::env_keys::XDG_DATA_HOME)
+                .or_else(|_| std::env::var(crate::env_keys::HOME).map(|h| format!("{h}/.local/share")))
                 .map(|base| format!("{base}/ecoPrimals/plasmidBin"))
         })
         .ok()

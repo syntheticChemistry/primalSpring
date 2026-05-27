@@ -6,9 +6,21 @@
 # overlay + petalTongue in `live` mode. Each cell is a deployable unit that
 # gardens can consume directly.
 #
+# VPS DEPLOYMENT CONTRACT
+# ────────────────────────
+# For cellMembrane / VPS standard deployments:
+#   - Use ONLY cells with `vps_standard = true` (spawn=false everywhere)
+#   - These overlay onto an already-running NUCLEUS provisioned by membrane
+#   - Deploy via: biomeos deploy graphs/cells/{spring}_cell.toml
+#   - Binaries sourced from plasmidBin depot (pre-populated on VPS image)
+#
+# Cells with `vps_standard = false` are desktop/demo-only — they self-spawn
+# primals and assume DISPLAY, TCP ports, and local plasmidBin. Never deploy
+# these to VPS.
+#
 # Usage:
-#   ./cell_launcher.sh <spring_name> start          (plasmidBin)
-#   biomeos deploy --graph graphs/cells/<spring>_cell.toml  (primalSpring)
+#   biomeos deploy graphs/cells/<spring>_cell.toml  (VPS + desktop)
+#   ./cell_launcher.sh <spring_name> start          (desktop only)
 
 [manifest]
 version = "1.1.0"
@@ -24,6 +36,7 @@ composition_model = "pure"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "squirrel", "petaltongue", "biomeos"]
 petaltongue_mode = "live"
 is_base = true
+vps_standard = false  # self-spawns all 13 primals — desktop-only
 
 [[cell]]
 spring = "hotspring"
@@ -32,6 +45,7 @@ domain = "qcd_physics"
 binary = "hotspring_primal"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "squirrel", "petaltongue"]
 petaltongue_mode = "live"
+vps_standard = true  # spawn=false overlay — VPS ready
 
 [[cell]]
 spring = "wetspring"
@@ -40,6 +54,7 @@ domain = "biology"
 binary = "wetspring"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "petaltongue"]
 petaltongue_mode = "live"
+vps_standard = true
 
 [[cell]]
 spring = "neuralspring"
@@ -48,6 +63,7 @@ domain = "inference"
 binary = "neuralspring"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "squirrel", "petaltongue"]
 petaltongue_mode = "live"
+vps_standard = true
 
 [[cell]]
 spring = "ludospring"
@@ -56,6 +72,7 @@ domain = "game_science"
 composition_model = "pure"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "squirrel", "petaltongue"]
 petaltongue_mode = "live"
+vps_standard = false  # most primals use spawn=true — desktop/demo only
 
 [[cell]]
 spring = "airspring"
@@ -64,6 +81,7 @@ domain = "weather"
 binary = "airspring_primal"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "nestgate", "squirrel", "petaltongue"]
 petaltongue_mode = "live"
+vps_standard = true
 
 [[cell]]
 spring = "groundspring"
@@ -72,6 +90,7 @@ domain = "geology"
 binary = "groundspring"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "nestgate", "petaltongue"]
 petaltongue_mode = "live"
+vps_standard = true
 
 [[cell]]
 spring = "healthspring"
@@ -80,6 +99,7 @@ domain = "health"
 binary = "healthspring_primal"
 requires = ["beardog", "songbird", "nestgate", "squirrel", "petaltongue"]
 petaltongue_mode = "live"
+vps_standard = true
 
 [[cell]]
 spring = "esotericwebb"
@@ -88,3 +108,4 @@ domain = "crpg"
 composition_model = "pure"
 requires = ["beardog", "songbird", "toadstool", "barracuda", "nestgate", "squirrel", "petaltongue", "rhizocrypt", "loamspine", "sweetgrass"]
 petaltongue_mode = "live"
+vps_standard = false  # mixed spawn flags — needs normalization

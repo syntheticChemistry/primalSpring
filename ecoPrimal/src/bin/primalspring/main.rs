@@ -212,7 +212,7 @@ skipped = {skipped}
         today = today,
         scenarios_run = scenarios_run,
         host = std::env::var(primalspring::env_keys::HOSTNAME)
-            .or_else(|_| std::env::var("HOST"))
+            .or_else(|_| std::env::var(primalspring::env_keys::HOST))
             .unwrap_or_else(|_| "unknown".into()),
         total = v.evaluated(),
         passed = v.passed,

@@ -56,6 +56,14 @@ enum NucleusCommand {
         /// Run composition validation after startup.
         #[arg(long)]
         validate: bool,
+        /// UDS-only mode: no TCP ports (VPS/cellMembrane standard).
+        ///
+        /// When set, all primals start with port 0 (UDS only).
+        /// This is the standard for VPS deployments where TCP port
+        /// exposure is a metadata leak. Desktop deployments that
+        /// need TCP should omit this flag.
+        #[arg(long)]
+        uds_only: bool,
         /// Songbird TCP federation port for LAN mesh.
         #[arg(long)]
         federation_port: Option<u16>,
@@ -71,8 +79,8 @@ enum NucleusCommand {
 
 fn resolve_node_id(cli_node_id: Option<String>) -> String {
     cli_node_id.unwrap_or_else(|| {
-        std::env::var("HOSTNAME")
-            .or_else(|_| std::env::var("HOST"))
+        std::env::var(primalspring::env_keys::HOSTNAME)
+            .or_else(|_| std::env::var(primalspring::env_keys::HOST))
             .unwrap_or_else(|_| "nucleus".to_owned())
     })
 }
@@ -112,7 +120,7 @@ fn main() {
             orchestrator::show_status(&primals);
         }
         cmd => {
-            let (dark_forest, seed_only, health_timeout, dry_run, validate, federation_port, peers) =
+            let (dark_forest, seed_only, health_timeout, dry_run, validate, uds_only, federation_port, peers) =
                 match cmd {
                     Some(NucleusCommand::Start {
                         dark_forest,
@@ -120,10 +128,11 @@ fn main() {
                         health_timeout,
                         dry_run,
                         validate,
+                        uds_only,
                         federation_port,
                         peers,
-                    }) => (dark_forest, seed_only, health_timeout, dry_run, validate, federation_port, peers),
-                    _ => (false, false, 20, false, false, None, Vec::new()),
+                    }) => (dark_forest, seed_only, health_timeout, dry_run, validate, uds_only, federation_port, peers),
+                    _ => (false, false, 20, false, false, false, None, Vec::new()),
                 };
             let family_id = cli.family_id.unwrap_or_else(|| {
                 eprintln!("error: --family-id is required for start");
@@ -138,6 +147,7 @@ fn main() {
                 health_timeout_secs: health_timeout,
                 dry_run,
                 validate,
+                uds_only,
                 federation_port,
                 peers,
             };

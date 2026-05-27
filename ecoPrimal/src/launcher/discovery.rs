@@ -17,9 +17,13 @@ use std::path::PathBuf;
 use super::LaunchError;
 
 /// Env var: override base directory for primal binaries.
+#[deprecated(since = "0.10.0", note = "Use `crate::env_keys::ECOPRIMALS_PLASMID_BIN`")]
+#[allow(dead_code, reason = "deprecated public API preserved for backward compatibility")]
 pub const ENV_PLASMID_BIN: &str = "ECOPRIMALS_PLASMID_BIN";
 
 /// Env var: biomeOS plasmid bin directory.
+#[deprecated(since = "0.10.0", note = "Use `crate::env_keys::BIOMEOS_PLASMID_BIN_DIR`")]
+#[allow(dead_code, reason = "deprecated public API preserved for backward compatibility")]
 pub const ENV_BIOMEOS_BIN_DIR: &str = "BIOMEOS_PLASMID_BIN_DIR";
 
 /// XDG-compliant default location for fetched primal binaries.
@@ -57,8 +61,8 @@ fn host_target_triple() -> String {
 /// found after exhausting all directories and patterns.
 pub fn discover_binary(primal: &str) -> Result<PathBuf, LaunchError> {
     let base_dirs: Vec<PathBuf> = [
-        std::env::var(ENV_PLASMID_BIN).ok().map(PathBuf::from),
-        std::env::var(ENV_BIOMEOS_BIN_DIR).ok().map(PathBuf::from),
+        std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN).ok().map(PathBuf::from),
+        std::env::var(crate::env_keys::BIOMEOS_PLASMID_BIN_DIR).ok().map(PathBuf::from),
         Some(xdg_plasmid_bin()),
     ]
     .into_iter()

@@ -195,7 +195,7 @@ composition testing and trio-verified deployments.
 
 ---
 
-## Primordial Pattern Evolution — NUCLEUS Standardization (Wave 55b)
+## Primordial Pattern Evolution — NUCLEUS Standardization (Wave 55b+)
 
 Remaining primordial patterns that prevent springs from fully evolving to
 standardized NUCLEUS deployments via plasmidBin from cellMembrane VPS.
@@ -205,20 +205,56 @@ standardized NUCLEUS deployments via plasmidBin from cellMembrane VPS.
 | `launcher/spawn.rs` | Library | **DEPRECATED** | `nucleus_launcher start` — PID-tracked, tolerances-aware |
 | `launcher/biomeos.rs` | Library | **DEPRECATED** | `nucleus_launcher start` with biomeOS auto-discovery |
 | `harness/mod.rs` | Library (public) | **DEPRECATED** | Experiments use `CompositionContext` + live NUCLEUS |
-| `desktop_nucleus.sh` | tools/ | **ACTIVE** | `nucleus_launcher` + plasmidBin cell deployment |
-| `cell_launcher.sh` | tools/ | **ACTIVE** | plasmidBin `deploy_membrane.sh` for VPS cells |
-| Env var scatter | launcher, experiments | **PARTIAL** | `env_keys.rs` centralization (66% complete) |
+| `desktop_nucleus.sh` | tools/ | **DESKTOP-ONLY** | Marked non-VPS; retire after Songbird GAP-17/18 |
+| `cell_launcher.sh` | tools/ | **DESKTOP-ONLY** | Marked non-VPS; VPS uses `biomeos deploy` directly |
+| Env var scatter | launcher, experiments | **RESOLVED** | `env_keys.rs` centralization complete — all env var access uses constants |
 | 11 CI/launcher scripts | ~~tools/~~ | **ARCHIVED** Wave 55b | Rust subcommands (`primalspring checksums/registry`, `nucleus_launcher`) |
 
 **What's already clean (not primordial):**
 - `discover_primal` / `probe_primal` — internal IPC layer beneath `CompositionContext` (not a deployment pattern)
 - `CompositionContext` — the modern discovery/dispatch API, used by all 93 experiments
 - `tolerances` module — centralized runtime dirs, ports, bind addresses
+- `env_keys.rs` — single source of truth for all env var names (HOST, SONGBIRD_PEERS, BIOMEOS_GRAPHS_DIR added Wave 55b+)
 - 12 deprecated scripts archived to `fossilRecord/scripts_wave55b_may2026/`
 
-**Disconnection target:** Springs should deploy exclusively via `plasmidBin deploy` to
-cellMembrane VPS with `nucleus_launcher` managing lifecycle. No shell launchers in the
-standard deployment path. Desktop-local development via `nucleus_launcher start`.
+### VPS Deployment Contract (cellMembrane)
+
+```text
+┌─────────────────────────────────────────────────────┐
+│          cellMembrane VPS Standard Path              │
+│                                                     │
+│  1. deploy_membrane.sh / plasmidbin deploy           │
+│     → provisions NUCLEUS base (13 primals)           │
+│     → binaries from plasmidBin depot                 │
+│     → systemd units, UDS-only (zero TCP ports)       │
+│                                                     │
+│  2. biomeos deploy graphs/cells/{spring}_cell.toml   │
+│     → spring overlay (spawn=false on all primals)    │
+│     → assumes running NUCLEUS from step 1            │
+│                                                     │
+│  3. CompositionContext::from_live_discovery()         │
+│     → Rust runtime discovery via UDS tiers 2-4       │
+│     → no harness, no shell scripts, no TCP probing   │
+└─────────────────────────────────────────────────────┘
+```
+
+**Cell graph VPS readiness** (`graphs/cells/cells_manifest.toml`):
+
+| Cell | `vps_standard` | Notes |
+|------|:---:|-------|
+| hotspring | **true** | spawn=false overlay |
+| wetspring | **true** | spawn=false overlay |
+| neuralspring | **true** | spawn=false overlay |
+| airspring | **true** | spawn=false overlay |
+| groundspring | **true** | spawn=false overlay |
+| healthspring | **true** | spawn=false overlay |
+| nucleus_desktop | false | self-spawns 13 primals — desktop only |
+| ludospring | false | spawn=true demo — desktop only |
+| esotericwebb | false | mixed spawn — needs normalization |
+
+**Disconnection target:** Springs deploy exclusively via `biomeos deploy` against
+cellMembrane VPS. No shell launchers on the standard deployment path. Desktop
+development uses `nucleus_launcher start` or `desktop_nucleus.sh` (local only).
 
 ---
 

@@ -187,3 +187,24 @@ pub const LOAMSPINE_PORT: &str = "LOAMSPINE_PORT";
 pub const SKUNKBAT_PORT: &str = "SKUNKBAT_PORT";
 /// TCP port override for biomeOS.
 pub const BIOMEOS_PORT: &str = "BIOMEOS_PORT";
+
+// ── Cross-primal coordination ─────────────────────────────────────
+
+/// Comma-separated Songbird peer addresses for mesh bootstrap.
+pub const SONGBIRD_PEERS: &str = "SONGBIRD_PEERS";
+
+/// Songbird security socket path override.
+pub const SONGBIRD_SECURITY_SOCKET: &str = "SONGBIRD_SECURITY_SOCKET";
+
+// ── Binary discovery ──────────────────────────────────────────────
+
+/// Override directory for biomeOS deploy graph resolution.
+pub const BIOMEOS_GRAPHS_DIR: &str = "BIOMEOS_GRAPHS_DIR";
+
+/// Override biomeOS plasmidBin binary directory (legacy; prefer `ECOPRIMALS_PLASMID_BIN`).
+pub const BIOMEOS_PLASMID_BIN_DIR: &str = "BIOMEOS_PLASMID_BIN_DIR";
+
+// ── Host / network ────────────────────────────────────────────────
+
+/// Hostname fallback (distinct from `HOSTNAME` — some systems export `HOST`).
+pub const HOST: &str = "HOST";

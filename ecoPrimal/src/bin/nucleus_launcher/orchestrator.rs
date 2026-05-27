@@ -9,6 +9,7 @@ use std::time::Duration;
 use tracing::info;
 
 use primalspring::coordination::AtomicType;
+use primalspring::env_keys;
 use primalspring::ipc::tcp::env_port;
 use primalspring::launcher::{SocketNucleation, discover_binary};
 use primalspring::primal_names;
@@ -25,6 +26,8 @@ pub struct LaunchConfig {
     pub health_timeout_secs: u64,
     pub dry_run: bool,
     pub validate: bool,
+    /// UDS-only mode: suppress TCP port allocation (VPS standard).
+    pub uds_only: bool,
     pub federation_port: Option<u16>,
     /// Peer addresses for cross-gate Songbird mesh seeding.
     pub peers: Vec<String>,
@@ -81,6 +84,16 @@ fn capability_domains(primal: &str) -> &'static [&'static str] {
 }
 
 /// Resolve the effective TCP port for a primal (env override → centralized default).
+///
+/// Returns 0 in UDS-only mode (VPS standard).
+fn effective_port_for(primal: &str, uds_only: bool) -> u16 {
+    if uds_only {
+        return 0;
+    }
+    effective_port(primal)
+}
+
+/// Resolve the effective TCP port for a primal (env override → centralized default).
 fn effective_port(primal: &str) -> u16 {
     let key = tolerances::port_env_key_for(primal);
     if key.is_empty() {
@@ -101,10 +114,10 @@ pub fn ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
 
 /// Resolve or generate a family seed.
 fn resolve_family_seed(socket_dir: &std::path::Path) -> Vec<u8> {
-    if let Ok(val) = std::env::var("BEARDOG_FAMILY_SEED") {
+    if let Ok(val) = std::env::var(env_keys::BEARDOG_FAMILY_SEED) {
         return val.into_bytes();
     }
-    if let Ok(val) = std::env::var("FAMILY_SEED") {
+    if let Ok(val) = std::env::var(env_keys::FAMILY_SEED) {
         return val.into_bytes();
     }
     let seed_file = socket_dir.join(".family.seed");
@@ -184,6 +197,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     println!("  Node:        {}", config.node_id);
     println!("  Composition: {:?}", config.atomic);
     println!("  Primals:     {}", primals.join(", "));
+    println!("  Transport:   {}", if config.uds_only { "UDS-only (VPS standard)" } else { "UDS + TCP" });
     println!("  Dark Forest: {}", config.dark_forest);
     println!();
 
@@ -233,10 +247,14 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         println!();
 
         for primal in &primals {
-            let port = effective_port(primal);
+            let port = effective_port_for(primal, config.uds_only);
             let socket = nucleation.assign(primal, &config.family_id);
 
-            print!("  {primal:<14} tcp={port:<5} ");
+            if config.uds_only {
+                print!("  {primal:<14} uds-only    ");
+            } else {
+                print!("  {primal:<14} tcp={port:<5} ");
+            }
 
             if config.dry_run {
                 println!("\x1b[33m[dry-run]\x1b[0m");
@@ -247,8 +265,10 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             match spawn_primal(primal, port, &socket, &config, &family_seed_str) {
                 Ok(()) => {
                     std::thread::sleep(Duration::from_secs(3));
-                    if health_check_tcp(port, health_timeout) {
+                    if port > 0 && health_check_tcp(port, health_timeout) {
                         println!("\x1b[32mALIVE\x1b[0m");
+                    } else if port == 0 {
+                        println!("\x1b[32mSTARTED\x1b[0m (UDS)");
                     } else {
                         println!("\x1b[33mSTARTED\x1b[0m (health probe pending)");
                     }
@@ -267,8 +287,13 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         // Phase 4: Health sweep
         println!("=== Phase 4: Health sweep ===");
         for primal in &primals {
-            let port = effective_port(primal);
-            print!("  {primal:<14} :{port}  ");
+            let port = effective_port_for(primal, config.uds_only);
+
+            if config.uds_only {
+                print!("  {primal:<14} uds  ");
+            } else {
+                print!("  {primal:<14} :{port}  ");
+            }
 
             if config.dry_run {
                 println!("\x1b[33m[dry-run]\x1b[0m");
@@ -276,9 +301,24 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                 continue;
             }
 
-            if health_check_tcp(port, health_timeout) {
+            if port > 0 && health_check_tcp(port, health_timeout) {
                 println!("\x1b[32mHEALTHY\x1b[0m");
                 healthy += 1;
+            } else if config.uds_only {
+                let socket = nucleation.get(primal, &config.family_id);
+                let alive = socket.as_ref().is_some_and(|s| s.exists());
+                if alive {
+                    println!("\x1b[32mSOCKET LIVE\x1b[0m");
+                    healthy += 1;
+                } else {
+                    let log_hint = std::path::PathBuf::from(tolerances::runtime_dir())
+                        .join("biomeos/logs")
+                        .join(format!("{primal}.log"));
+                    println!(
+                        "\x1b[31mSOCKET ABSENT\x1b[0m  (check {})",
+                        log_hint.display()
+                    );
+                }
             } else {
                 let log_hint = std::path::PathBuf::from(tolerances::runtime_dir())
                     .join("biomeos/logs")
@@ -297,7 +337,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
 
     // Phase 5: Registry seeding
     println!("=== Phase 5: Registry seeding (Songbird ipc.register) ===");
-    let songbird_port = effective_port("songbird");
+    let songbird_port = effective_port_for("songbird", config.uds_only);
     let mut registered = 0usize;
 
     for primal in &primals {
@@ -310,7 +350,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             continue;
         }
 
-        let port = effective_port(primal);
+        let port = effective_port_for(primal, config.uds_only);
         let socket = nucleation
             .get(primal, &config.family_id)
             .map(|p| p.display().to_string())
@@ -358,7 +398,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             println!("  Peers requested: {}", config.peers.join(", "));
         }
         println!();
-    } else if let Ok(env_peers) = std::env::var("SONGBIRD_PEERS") {
+    } else if let Ok(env_peers) = std::env::var(env_keys::SONGBIRD_PEERS) {
         if !env_peers.is_empty() {
             println!("=== Phase 5b: Peer seeding (from SONGBIRD_PEERS env) ===");
             let peer_list: Vec<String> = env_peers.split(',').map(|s| s.trim().to_owned()).filter(|s| !s.is_empty()).collect();
@@ -481,12 +521,14 @@ fn spawn_primal(
     let mut cmd = std::process::Command::new(&binary);
     cmd.arg("server");
     cmd.arg("--socket").arg(socket);
-    cmd.arg("--port").arg(port.to_string());
+    if port > 0 {
+        cmd.arg("--port").arg(port.to_string());
+    }
     cmd.arg("--family-id").arg(&config.family_id);
 
-    cmd.env("FAMILY_ID", &config.family_id);
-    cmd.env("FAMILY_SEED", family_seed);
-    cmd.env("BEARDOG_FAMILY_SEED", family_seed);
+    cmd.env(env_keys::FAMILY_ID, &config.family_id);
+    cmd.env(env_keys::FAMILY_SEED, family_seed);
+    cmd.env(env_keys::BEARDOG_FAMILY_SEED, family_seed);
 
     if config.dark_forest {
         cmd.arg("--dark-forest");
@@ -497,7 +539,7 @@ fn spawn_primal(
             cmd.arg("--federation-port").arg(fed_port.to_string());
             cmd.arg("--bind").arg(tolerances::LAN_BIND_ADDRESS);
         }
-        cmd.env("SONGBIRD_SECURITY_SOCKET", socket);
+        cmd.env(env_keys::SONGBIRD_SECURITY_SOCKET, socket);
     }
 
     let log_dir = std::path::PathBuf::from(tolerances::runtime_dir())
