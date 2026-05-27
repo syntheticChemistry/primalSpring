@@ -9,7 +9,7 @@
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 813 `#[test]` markers (797 pass, 16 live-tier, 2 ignored) |
-| **Experiments** | 92 (21 tracks) — 56 validation scenarios (10 tracks) |
+| **Experiments** | 93 (21 tracks) — 56 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 96 deploy TOMLs (81 deploy + 15 atomic signal graphs) — fragment-first composition with `resolve = true` |
 | **Coverage** | Method coverage against 460 registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
@@ -69,7 +69,7 @@ primalSpring/
 │       ├── server_ecosystem_genetics.rs  # Three-tier genetics (#[ignore])
 │       ├── server_ecosystem_compose.rs   # Nest/Node composition (#[ignore])
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
-├── experiments/                   # 89 validation experiments (20 tracks)
+├── experiments/                   # 93 validation experiments (21 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry, signal tools
 ├── graphs/                        # 81 deploy graph TOMLs + 15 atomic signal graphs
 │   ├── signals/                  # 15 atomic signal graphs (tower/node/nest/meta tiers, incl. bootstrap)
@@ -89,13 +89,12 @@ primalSpring/
 ├── tools/                         # Operational tooling
 │   ├── nucleus_composition_lib.sh # Reusable NUCLEUS composition library (source from domain scripts)
 │   ├── composition_template.sh   # Minimal starter skeleton for spring compositions
-│   ├── composition_nucleus.sh    # Parameterized NUCLEUS launcher (replaces ad-hoc startup)
+│   ├── desktop_nucleus.sh        # Desktop NUCLEUS launcher (wraps Rust nucleus_launcher)
 │   ├── ttt_composition.sh        # Reference implementation: Tic-Tac-Toe with full NUCLEUS
-│   ├── ttt_nucleus.sh            # TTT-specific NUCLEUS launcher (uses composition_nucleus.sh pattern)
-│   ├── nucleus_launcher.sh       # Start/stop/restart full NUCLEUS stack
+│   ├── cell_launcher.sh           # Cell deployment launcher (wraps nucleus_launcher)
 │   ├── cell_launcher.sh          # Cell-graph deployment launcher
 │   ├── ws_gateway.py             # Thin WebSocket-to-IPC bridge (no business logic)
-│   └── validate_compositions.py  # Live subsystem composition validator (C1-C7)
+│   └── ws_gateway.py             # Dev WebSocket bridge (Python, planned Rust replacement)
 ├── web/
 │   └── play.html                 # Composition monitor / debug dashboard (not primary UI)
 ├── niches/                        # BYOB niche deployment YAML
@@ -424,7 +423,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **WGSL shader composition model**: ML inference, QCD physics, and biology are compositions of existing barraCuda WGSL shaders (826 kernels: matmul, attention, FFT, df64) compiled by coralReef and dispatched by toadStool.
 - **5 proto-nucleate graphs** (`graphs/downstream/`): neuralSpring ML inference, hotSpring QCD (metallic GPU pool, df64, provenance), healthSpring dual-tower enclave (ionic bond, egress fence, clinical AI).
 - **3 pipeline graphs**: neuralSpring inference pipeline, hotSpring QCD pipeline, healthSpring clinical pipeline — modeling end-to-end data flow through primal compositions.
-- **13/13 critical experiments ALL PASS** — 89 total experiments across 20 tracks.
+- **13/13 critical experiments ALL PASS** — 93 total experiments across 21 tracks.
 - **46 cross-architecture binaries** (6 target triples, Tier 1 39/39) — genomeBin v5.1, zero C dependencies.
 
 ## Fragment-First Graph Consolidation (April 16, 2026)
@@ -433,7 +432,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 791 lib tests (780 pass, 9 live-tier, 2 ignored).
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 813 lib tests (797 pass, 16 live-tier, 2 ignored).
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 
@@ -478,7 +477,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 | C6: Proprioception (petalTongue) | **5/5 PASS** | Subscribe, apply, poll, showing |
 | C7: Full Interactive | **10/10 PASS** | Full cross-subsystem: session→render→export, game science, Squirrel health, NestGate |
 
-**53/53 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–49 complete).
+**56/56 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–55b complete).
 
 ## Live Integration Status (May 25, 2026)
 
@@ -511,7 +510,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `wateringHole/README.md` — Outward-facing guidance index
 - `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` — `primal.announce` atomic self-registration wire format
 - `ARCHITECTURE.md` — UniBin cell model, two-tier validation, organelle map
-- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1–49, 13/13 zero debt)
+- `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1–55b, 13/13 zero debt)
 - ~~`docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 - `docs/CROSS_SPRING_PARITY_SCORECARD.md` — Cross-spring parity scorecard
 - `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role
@@ -558,23 +557,20 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | Tool | Purpose |
 |------|---------|
 | `tools/nucleus_composition_lib.sh` | Reusable NUCLEUS composition library (sourced by domain scripts) |
-| `tools/nucleus_launcher.sh` | Start/stop/restart full NUCLEUS stack (DEPRECATED Wave 51 — prefer Rust `nucleus_launcher` or `plasmidbin launch`) |
+| `tools/nucleus_launcher.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use Rust `nucleus_launcher start/stop/status` |
 | `tools/desktop_nucleus.sh` | 13-primal NUCLEUS launcher with auto-symlink for petalTongue discovery |
-| `tools/check_method_coverage.sh` | Inverse drift: flag registry methods never exercised in scenarios/tests/graphs |
-| `tools/check_method_gate.sh` | Verify MethodGate pre-dispatch authorization compliance |
-| `tools/check_method_strings.sh` | Audit method string literals against canonical registry |
-| `tools/check_graph_methods.sh` | Verify deploy graph nodes reference valid registry methods |
+| `tools/check_method_*.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `primalspring registry --check {source\|graphs\|coverage\|all}` |
 | `tools/fetch_primals.sh` | Bootstrap primal binaries from plasmidBin GitHub Releases (Layer 1+2 provenance-aware) |
-| `tools/regenerate_checksums.sh` | Regenerate BLAKE3 checksums for local validation assets |
-| `tools/validate_compositions.py` | Live subsystem composition validator (C1-C7) |
+| `tools/regenerate_checksums.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `primalspring checksums` |
+| `tools/validate_compositions.py` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `primalspring validate --track composition` |
 | `tools/ws_gateway.py` | Thin WebSocket-to-IPC bridge (no business logic) |
 | `tools/composition_template.sh` | Template generator for new composition deploy graphs |
-| `tools/composition_nucleus.sh` | Compose and validate a NUCLEUS from capability fragments (DEPRECATED Wave 51) |
+| `tools/composition_nucleus.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use Rust `nucleus_launcher` |
 | `tools/ttt_composition.sh` | Tic-Tac-Toe composition demo (ludoSpring + petalTongue + Squirrel) |
-| `tools/ttt_nucleus.sh` | NUCLEUS launcher tailored for TTT game stack (DEPRECATED Wave 51) |
+| `tools/ttt_nucleus.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `nucleus_launcher --family-id ttt` |
 | `tools/cell_launcher.sh` | Start a single cellular deployment from `graphs/cells/` |
-| `tools/gen_seed_fingerprints.sh` | Generate BLAKE3 fingerprints for seed genetics artifacts (provenance-enriched) |
-| `tools/live_nucleus.sh` | Hot-reload NUCLEUS launcher with file-watch respawn (DEPRECATED Wave 51) |
+| `tools/gen_seed_fingerprints.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. See `certification/entropy.rs` |
+| `tools/live_nucleus.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use Rust `nucleus_launcher` |
 | `tools/nucleus_crypto_bootstrap.sh` | Bootstrap BearDog + BTSP crypto layer for NUCLEUS |
 | `tools/desktop_session.sh` | Launch desktop substrate session (petalTongue + agentic loop) |
 | `tools/tictactoe.sh` | Standalone TTT quick-launch (wraps ttt_composition) |

@@ -52,7 +52,7 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 53 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 56 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — static model of 460-method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -74,7 +74,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.30 Wave 54b (May 27, 2026) — 56 scenarios (10 tracks, 3 tiers),
+v0.9.30 Wave 55b (May 27, 2026) — 56 scenarios (10 tracks, 3 tiers),
 460 registered capability methods (460 exercised, 100% coverage),
 93 experiments (21 tracks), 96 deploy graphs (81 deploy + 15 signal),
 44-cell deployment matrix. 813 lib tests (797 pass, 16 live-tier, 2 ignored). 13/13 behavioral

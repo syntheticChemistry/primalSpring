@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-27 (Wave 55b: biomeOS v3.79 gateway completion — emit signal graph, content path, receipt alignment. lithoSpore `PseudoSporeEnvelope` API shipped. cellMembrane NC-3 `composition=nest`, K-Derm boundary published. projectFOUNDATION `nucleus-spore-ingest` workload. 460 methods, 15 signals. 56 scenarios, 813 tests. 13/13 CLEAN.)
+> **Last updated**: 2026-05-27 (Wave 55b deep debt: security fixes (NoopVerifier fail-closed, real timestamps, seed entropy), NeuralBridge 15→1 connect, 12 deprecated scripts archived to fossilRecord, IpcError::kind(), self-knowledge checks evolved to runtime discovery. biomeOS v3.79 gateway completion. 460 methods, 15 signals, 56 scenarios, 813 tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-54 complete. 56 scenarios (10 tracks), 460 real methods (460 exercised = 100%), 813 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 54: provenance-elevated checksums + sweetGrass braids. 3 primals harvested with full provenance (toadStool S279, Songbird W53b, loamSpine W55). biomeOS LiveSpore fix confirmed (v3.76). toadStool: zero production panic paths (9,156+ lib tests). Songbird: +74 tests, deep debt zero (8,070+ lib tests). loamSpine: BearDog coupling removed, self-knowledge enforced.**
+**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-55b complete. 56 scenarios (10 tracks), 460 real methods (460 exercised = 100%), 813 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 54: provenance-elevated checksums + sweetGrass braids. 3 primals harvested with full provenance (toadStool S279, Songbird W53b, loamSpine W55). biomeOS LiveSpore fix confirmed (v3.76). toadStool: zero production panic paths (9,156+ lib tests). Songbird: +74 tests, deep debt zero (8,070+ lib tests). loamSpine: BearDog coupling removed, self-knowledge enforced.**
 
 ---
 
@@ -192,6 +192,33 @@ composition testing and trio-verified deployments.
 | ~~CM-2~~ | ~~`membrane_provenance.sh` post-deploy trio hook~~ | projectNUCLEUS | ~~MEDIUM~~ | **RESOLVED** — `deploy/membrane_provenance.sh` shipped (5-phase remote trio verification, graceful degradation, report generation) |
 | ~~CM-3~~ | ~~Cross-gate `capability.call` testing~~ | primalSpring + songbird | ~~LOW~~ | **RESOLVED** — `s_cross_gate_capability_call` scenario (45th): membrane relay channel, wire contract, local + cross-gate dispatch |
 | ~~CM-4~~ | ~~darkforest MEM-14 through MEM-17 (Nest health)~~ | projectNUCLEUS | ~~LOW~~ | **RESOLVED** — MEM-14 through MEM-17 added to `darkforest_membrane.sh` (NestGate, rhizoCrypt, loamSpine, sweetGrass liveness checks, 17 PASS / 0 FAIL / 5 SKIP) |
+
+---
+
+## Primordial Pattern Evolution — NUCLEUS Standardization (Wave 55b)
+
+Remaining primordial patterns that prevent springs from fully evolving to
+standardized NUCLEUS deployments via plasmidBin from cellMembrane VPS.
+
+| Pattern | Location | Status | NUCLEUS Replacement |
+|---------|----------|--------|-------------------|
+| `launcher/spawn.rs` | Library | **DEPRECATED** | `nucleus_launcher start` — PID-tracked, tolerances-aware |
+| `launcher/biomeos.rs` | Library | **DEPRECATED** | `nucleus_launcher start` with biomeOS auto-discovery |
+| `harness/mod.rs` | Library (public) | **DEPRECATED** | Experiments use `CompositionContext` + live NUCLEUS |
+| `desktop_nucleus.sh` | tools/ | **ACTIVE** | `nucleus_launcher` + plasmidBin cell deployment |
+| `cell_launcher.sh` | tools/ | **ACTIVE** | plasmidBin `deploy_membrane.sh` for VPS cells |
+| Env var scatter | launcher, experiments | **PARTIAL** | `env_keys.rs` centralization (66% complete) |
+| 11 CI/launcher scripts | ~~tools/~~ | **ARCHIVED** Wave 55b | Rust subcommands (`primalspring checksums/registry`, `nucleus_launcher`) |
+
+**What's already clean (not primordial):**
+- `discover_primal` / `probe_primal` — internal IPC layer beneath `CompositionContext` (not a deployment pattern)
+- `CompositionContext` — the modern discovery/dispatch API, used by all 93 experiments
+- `tolerances` module — centralized runtime dirs, ports, bind addresses
+- 12 deprecated scripts archived to `fossilRecord/scripts_wave55b_may2026/`
+
+**Disconnection target:** Springs should deploy exclusively via `plasmidBin deploy` to
+cellMembrane VPS with `nucleus_launcher` managing lifecycle. No shell launchers in the
+standard deployment path. Desktop-local development via `nucleus_launcher start`.
 
 ---
 
