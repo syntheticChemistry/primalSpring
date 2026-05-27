@@ -286,15 +286,15 @@ evidence.
 
 | Action | Owner | Status |
 |--------|-------|--------|
-| Land `biomeos nucleus ingest/emit` subcommands | biomeOS team | **DELIVERED** v3.79 (NC-1.1/1.2 complete) |
-| Wire `pseudospore-core` as `ltee-cli` dependency | lithoSpore team | **DELIVERED** (NC-1.3 complete) |
-| Ship `PseudoSporeEnvelope` load/validate API | lithoSpore team | **DELIVERED** (`envelope.rs` + `error.rs`) |
-| biomeOS swap to `pseudospore-core` for validation | biomeOS team | **NOT DONE** (NC-1.4 — last gateway gap) |
-| Sync signal graph (ingest) | biomeOS + primalSpring | **RESOLVED** v3.79 — conventions aligned |
-| Emit signal graph | biomeOS team | **DELIVERED** v3.79 (`nest_emit_spore.toml`) |
-| Emit content materialization (full pseudoSpore dir) | biomeOS team | **PARTIAL** — `emit_manifest.json` only, no unpack |
-| hotSpring v1.6.1 ingest via NUCLEUS (Era 3) | hotSpring + biomeOS | **GATED** on deployed v3.79 + live Nest Atomic |
-| groundSpring as second data point | groundSpring + biomeOS | **GATED** on column U first pass |
+| Land `biomeos nucleus ingest/emit` subcommands | biomeOS (primal) | **DELIVERED** v3.79 (NC-1.1/1.2 complete) |
+| Wire `pseudospore-core` as `ltee-cli` dependency | lithoSpore (primal) | **DELIVERED** (NC-1.3 complete) |
+| Ship `PseudoSporeEnvelope` load/validate API | lithoSpore (primal) | **DELIVERED** (`envelope.rs` + `error.rs`) |
+| biomeOS swap to `pseudospore-core` for validation | biomeOS (primal) | **NOT DONE** (NC-1.4 — last gateway gap) |
+| Sync signal graph (ingest) | biomeOS (primal) + primalSpring | **RESOLVED** v3.79 — conventions aligned |
+| Emit signal graph | biomeOS (primal) | **DELIVERED** v3.79 (`nest_emit_spore.toml`) |
+| Emit content materialization (full pseudoSpore dir) | biomeOS (primal) | **PARTIAL** — `emit_manifest.json` only, no unpack |
+| hotSpring v1.6.1 ingest via NUCLEUS (Era 3) | hotSpring (spring) + biomeOS (primal) | **GATED** on deployed v3.79 + live Nest Atomic |
+| groundSpring as second data point | groundSpring (spring) + biomeOS (primal) | **GATED** on column U first pass |
 | exp115 live phases (4-5) | primalSpring | **GATED** on NUCLEUS availability |
 | Thread 10 spore ingest workload | projectFOUNDATION | **DELIVERED** (`nucleus-spore-ingest.toml`) |
 
