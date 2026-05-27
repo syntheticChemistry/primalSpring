@@ -110,12 +110,12 @@ fn phase_spore_gateway(v: &mut ValidationResult) {
         "pseudospore-core crate provides domain-agnostic envelope primitives",
     );
 
-    let gateway_exists = std::path::Path::new("primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs").exists()
-        || std::path::Path::new("../../primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs").exists();
+    let gateway_exists = std::path::Path::new("primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs").exists()
+        || std::path::Path::new("../../primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs").exists();
     v.check_bool(
         "nucleus_ingest_module_exists",
         gateway_exists,
-        "biomeos nucleus ingest command implements the NUCLEUS gateway",
+        "biomeos nucleus ingest/emit gateway (crates/biomeos/src/modes/nucleus_ingest.rs)",
     );
 
     let signal_graph_exists = std::path::Path::new("graphs/signals/nest_ingest_spore.toml").exists()

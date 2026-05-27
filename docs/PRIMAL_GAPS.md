@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-27 (Wave 54b: Deep debt zero. `hostname` crate eliminated (16 deps). 6 CI scripts absorbed to Rust subcommands. `nucleus_launcher` lifecycle (start/stop/status). PID tracking replaces pkill. Hardcoding centralized. 56 scenarios, 813 tests. 13/13 CLEAN.)
+> **Last updated**: 2026-05-27 (Wave 55: biomeOS v3.77 `nucleus ingest/emit` scaffolded. lithoSpore `pseudospore-core` wired (NC-1.3 complete). Songbird TCP mesh seed fix. Signal graph + 460 methods + 15 signals. 56 scenarios, 813 tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -45,7 +45,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 112: ACME renewal daemon wired, 127 methods, `crypto.ionic_bond.verify_proposal` shipped. |
 | songbird | 8,070+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 53b: +74 tests, deep debt zero confirmed. `forbid(unsafe_code)` all 31 crates. Zero FIXME/HACK. |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S279: zero production panic paths (12 eliminated), deprecated legacy capability roundtrip. 9,156+ lib tests. 47 crates, 88 methods. |
-| biomeOS | 8,026+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.76: LiveSpore `~/.local/bin` **FIXED** (eddc3fd2). 1 tracked TODO (REST route — enhancement only). plasmidBin naming resolved. |
+| biomeOS | 8,036+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.78: `nucleus ingest/emit` CLI scaffolded (v3.77), deep debt cleanup (v3.78). Neural API: `nucleus.ingest_spore`/`emit_spore` routed. Signal graph `nest_ingest_spore`. Pending: swap to `pseudospore-core`, complete emit pipeline. |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `math.rs` refactored (split `signal.rs` + `stats.rs`), `pollster` eliminated, hardcoding → capability-based. 87 IPC methods. |
@@ -202,30 +202,40 @@ composition testing and trio-verified deployments.
 The ecosystem is **interstadial**: primals are clean (13/13), but the niche climate
 (deployment topology, spore flow, cross-gate mesh) must warm before stadial gates.
 
-### NC-1: postPrimordial Spore Gateway — **BLOCKED**
+### NC-1: postPrimordial Spore Gateway — **SCAFFOLDED** (was BLOCKED)
 
-**Critical blocker**: `biomeos nucleus ingest` / `nucleus emit` CLI subcommands
-do not exist in biomeOS codebase. hotSpring `nest-validate guidestone deploy`
-step 7 already calls it and falls through to transitional `litho ingest-pseudospore`.
+biomeOS v3.77 delivered `nucleus ingest/emit` CLI subcommands + Neural API routes.
+lithoSpore delivered `pseudospore-core` wired as canonical crate (`ltee-cli` depends,
+`litho-core::pseudospore` deprecated). hotSpring v1.6.1 artifact exists with 71/71
+pipeline PASS.
+
+**Remaining gaps**: biomeOS must swap inline validation to `pseudospore-core`, emit
+pipeline incomplete (retrieve only, no braid/sign), signal graph diverged from
+primalSpring canonical, live ingest not yet tested on gate.
 
 **Signal graph**: `graphs/signals/nest_ingest_spore.toml` (6-step: validate_envelope
 → store → dag_session → ledger_entry → braid → sign_receipt).
 
 | Action | Owner | Status |
 |--------|-------|--------|
-| Land `biomeos nucleus ingest/emit` subcommands | biomeOS team | **NOT STARTED** |
-| Wire `pseudospore-core` as `ltee-cli` dependency | lithoSpore team | **NOT STARTED** |
-| hotSpring v1.6.1 ingest via NUCLEUS (Era 3) | hotSpring + biomeOS | **BLOCKED** on biomeOS |
-| groundSpring as second data point | groundSpring + biomeOS | **BLOCKED** on biomeOS |
+| Land `biomeos nucleus ingest/emit` subcommands | biomeOS team | **DELIVERED** v3.77 (NC-1.1/1.2 scaffolded) |
+| Wire `pseudospore-core` as `ltee-cli` dependency | lithoSpore team | **DELIVERED** (NC-1.3 complete) |
+| biomeOS swap to `pseudospore-core` for validation | biomeOS team | **NOT DONE** (NC-1.4 — inline reimplementation) |
+| Sync signal graph (biomeOS copy diverged from spec) | biomeOS + primalSpring | **DRIFT** — required flags, bonding policy, metadata differ |
+| Complete emit pipeline (braid + sign) | biomeOS team | **STUB** — retrieve only, no sweetGrass/BearDog |
+| hotSpring v1.6.1 ingest via NUCLEUS (Era 3) | hotSpring + biomeOS | **GATED** on deployed v3.77 + live Nest Atomic |
+| groundSpring as second data point | groundSpring + biomeOS | **GATED** on column U first pass |
 | exp115 live phases (4-5) | primalSpring | **GATED** on NUCLEUS availability |
 
-### NC-2: Multi-Gate NUCLEUS Mesh — **BLOCKED**
+### NC-2: Multi-Gate NUCLEUS Mesh — **IN PROGRESS** (was BLOCKED)
 
-**Blocker**: southGate instability (7/13 health-responding). Operational, not code.
+Songbird fixed TCP fallback mesh seed bug (UDS bind failure path now calls
+`spawn_mesh_seed`). southGate 7/13 is confirmed operational, not a code crash —
+likely env (`SONGBIRD_PEERS`), OOM, cold-start timing.
 
 | Action | Owner | Status |
 |--------|-------|--------|
-| Stabilize southGate 13/13 health | wetSpring / neuralSpring ops | **INVESTIGATING** |
+| Stabilize southGate 13/13 health | wetSpring / neuralSpring ops | **INVESTIGATING** (Songbird TCP seed fixed) |
 | Live `s_covalent_mesh` across 3+ gates | primalSpring | **BLOCKED** on NC-2.1 |
 | P0 `nucleus-x86-mixed-uds` matrix cell | primalSpring | **BLOCKED** on NC-2.2 |
 | biomeGate full NUCLEUS (9→13) | hotSpring + ops | **PLANNED** |

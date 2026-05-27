@@ -64,14 +64,14 @@ fn phase_ownership_matrix(v: &mut ValidationResult) {
     );
 
     let gateway_paths = [
-        "../../primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs",
-        "../../../primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs",
+        "../../primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs",
+        "../../../primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs",
     ];
     let gateway_exists = gateway_paths.iter().any(|p| std::path::Path::new(p).exists());
     v.check_bool(
         "ownership:nucleus_ingest_module",
         gateway_exists,
-        "biomeos nucleus ingest implements the NUCLEUS gateway",
+        "biomeos nucleus ingest/emit gateway (v3.77: NC-1.1/NC-1.2 scaffolded)",
     );
 }
 

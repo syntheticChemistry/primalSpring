@@ -591,23 +591,27 @@ validate_envelope → store → dag_session → ledger_entry → braid → sign_
 
 | Spring | U: Ingest | V: Emit | W: Domain Profile | Notes |
 |--------|-----------|---------|-------------------|-------|
-| **hotSpring** | **BLOCKED** (biomeOS gateway) | planned | pending | First target — pseudoSpore v1.6.1 artifact exists; nest-validate deploy step 7 already calls `biomeos nucleus ingest` (falls through to `litho ingest-pseudospore`) |
-| **groundSpring** | **BLOCKED** (biomeOS gateway) | planned | pending | lithoSpore LTEE modules exist; natural second data point |
+| **hotSpring** | **GATED** (biomeOS v3.77 scaffolded; live Nest deploy pending) | planned | pending | First target — pseudoSpore v1.6.1 artifact exists; nest-validate deploy step 7 calls `biomeos nucleus ingest` (v3.77 wired, falls through to `litho ingest-pseudospore` when gateway not deployed) |
+| **groundSpring** | **GATED** (biomeOS gateway + 2nd spring) | planned | pending | lithoSpore LTEE modules exist; natural second data point |
 | **wetSpring** | planned | planned | planned | Tenaillon 2016 queued (264 clones, 590 GB) |
 | **airSpring** | planned | planned | planned | |
 | **neuralSpring** | planned | planned | planned | |
 | **healthSpring** | planned | planned | planned | |
 | **ludoSpring** | planned | planned | planned | Game telemetry pseudoSpore (theoretical) |
 
-### Critical Blocker: `biomeos nucleus ingest` / `nucleus emit`
+### Gateway Status: `biomeos nucleus ingest` / `nucleus emit` — SCAFFOLDED (v3.77)
 
-These biomeOS CLI subcommands do **not exist** in biomeOS codebase yet. hotSpring's
-`nest-validate guidestone deploy` step 7 already calls `biomeos nucleus ingest` and
-falls through to the transitional `litho ingest-pseudospore` path. Until biomeOS
-lands these subcommands, column U cannot pass for any spring.
+biomeOS v3.77 shipped `nucleus ingest/emit` CLI subcommands + Neural API routes
+(`nucleus.ingest_spore`, `nucleus.emit_spore`). The CLI is wired, local envelope
+validation works, and `receipts/nucleus_ingest.toml` is written. However:
 
-**biomeOS team action**: Wire `nucleus ingest` and `nucleus emit` subcommands to the
-clap parser in `biomeos-cli`. The handler should:
+- **No `pseudospore-core` dependency** — inline reimplementation instead of canonical crate
+- **Emit is incomplete** — retrieve + manifest only, no braid/sign steps
+- **Signal graph diverged** — biomeOS copy has different required flags, missing bonding policy
+- **Metadata-only ingest** — checksums/manifest sent, not spore content/path
+- **Column U still gated** — live ingest on deployed Nest Atomic not yet tested
+
+**biomeOS team remaining action**: Complete the gateway by:
 1. Validate pseudoSpore envelope (liveSpore.json schema, BLAKE3 data manifest)
 2. Store via NestGate `storage.store` / `content.put`
 3. Create DAG session via rhizoCrypt `dag.session.create`
@@ -618,15 +622,15 @@ clap parser in `biomeos-cli`. The handler should:
 
 This flow is encoded in `graphs/signals/nest_ingest_spore.toml`.
 
-### Second Blocker: `pseudospore-core` Not Wired
+### pseudospore-core — Wired in lithoSpore, Pending in biomeOS
 
-`gardens/lithoSpore/crates/pseudospore-core/` exists as a standalone crate but has
-zero consumers. Both `ltee-cli` and future `biomeos nucleus ingest` should depend on
-it instead of reimplementing envelope logic. `litho-core::pseudospore` duplicates
-the envelope parsing that `pseudospore-core` should own.
+**lithoSpore NC-1.3 COMPLETE**: `pseudospore-core` is now the canonical envelope crate.
+`ltee-cli` depends on it directly. `litho-core::pseudospore` is a deprecated re-export
+layer. New modules added: `braid_envelope.rs` (ferment transcript), `receipts.rs`
+(environment + checksum layer). 8 modules total, `deny.toml` enforced.
 
-**lithoSpore team action**: Wire `pseudospore-core` as a dependency of `ltee-cli`,
-replacing the parallel `litho-core::pseudospore` module.
+**biomeOS NC-1.4 OPEN**: `nucleus_ingest.rs` still uses inline `validate_envelope()`.
+Swap to `pseudospore-core::PseudoSporeEnvelope::validate()` when adding path dep.
 
 ### Experiments (Wired)
 
