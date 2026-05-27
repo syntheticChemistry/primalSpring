@@ -1332,6 +1332,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "primalspring-exp115"
+version = "0.9.30"
+dependencies = [
+ "primalspring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "primalspring-trio-ops"
 version = "0.9.25"
 dependencies = [

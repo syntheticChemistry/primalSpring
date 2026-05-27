@@ -102,6 +102,7 @@ members = [
     "experiments/exp112_postprimordial_review",
     "experiments/exp113_cephalization",
     "experiments/exp114_tower_cns_convergence",
+    "experiments/exp115_nest_ingest_pseudospore",
 ]
 
 [workspace.package]
