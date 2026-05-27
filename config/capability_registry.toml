@@ -115,6 +115,8 @@ methods = [
     "nucleus.health_poll",
     "nucleus.start",
     "nucleus.stop",
+    "nucleus.ingest_spore",
+    "nucleus.emit_spore",
 ]
 
 [federation]
@@ -976,6 +978,7 @@ signals = [
     { name = "store", graph = "graphs/signals/nest_store.toml", coordination = "sequential", nodes = 4 },
     { name = "commit", graph = "graphs/signals/nest_commit.toml", coordination = "sequential", nodes = 5 },
     { name = "retrieve", graph = "graphs/signals/nest_retrieve.toml", coordination = "parallel", nodes = 3 },
+    { name = "ingest_spore", graph = "graphs/signals/nest_ingest_spore.toml", coordination = "sequential", nodes = 6 },
 ]
 
 [signals.meta]

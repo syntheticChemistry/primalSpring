@@ -29,22 +29,22 @@ signal_name = "ingest_spore"
 [graph.metadata]
 particle = "neutron"
 security_model = "btsp_enforced"
-transport = "uds_preferred"
+transport = "uds_only"
 secure_by_default = true
 fragments = ["nest_atomic"]
 pseudospore_version = "2.0"
 era = 3
 
-# Step 1: Validate the incoming spore envelope (liveSpore.json, data.toml, checksums)
-# biomeOS orchestrates — validates envelope structure before committing to storage.
+# Step 1: Validate the incoming spore envelope (liveSpore.json, data.toml, checksums).
+# NestGate validates envelope integrity (BLAKE3 manifest, schema) before storage.
 [[graph.nodes]]
 name = "validate_envelope"
-binary = "biomeos"
+binary = "nestgate"
 order = 1
 required = true
 spawn = false
-by_capability = "orchestration"
-capabilities = ["orchestration.status"]
+by_capability = "storage"
+capabilities = ["storage.exists"]
 
 # Step 2: Store spore data via NestGate content-addressed storage.
 # The tarball (or present files) become sovereign artifacts.

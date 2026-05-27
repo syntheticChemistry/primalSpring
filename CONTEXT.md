@@ -75,7 +75,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 ## Status
 
 v0.9.30 Wave 54b (May 27, 2026) — 56 scenarios (10 tracks, 3 tiers),
-458 registered capability methods (458 exercised, 100% coverage),
+460 registered capability methods (460 exercised, 100% coverage),
 93 experiments (21 tracks), 95 deploy graphs (81 deploy + 14 signal),
 44-cell deployment matrix. 813 lib tests (797 pass, 16 live-tier, 2 ignored). 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin

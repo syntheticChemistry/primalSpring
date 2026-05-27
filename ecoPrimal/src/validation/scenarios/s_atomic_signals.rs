@@ -39,6 +39,7 @@ const SIGNAL_GRAPHS: &[(&str, &str, &str)] = &[
     ("nest.store", "graphs/signals/nest_store.toml", include_str!("../../../../graphs/signals/nest_store.toml")),
     ("nest.commit", "graphs/signals/nest_commit.toml", include_str!("../../../../graphs/signals/nest_commit.toml")),
     ("nest.retrieve", "graphs/signals/nest_retrieve.toml", include_str!("../../../../graphs/signals/nest_retrieve.toml")),
+    ("nest.ingest_spore", "graphs/signals/nest_ingest_spore.toml", include_str!("../../../../graphs/signals/nest_ingest_spore.toml")),
     ("meta.observe", "graphs/signals/meta_observe.toml", include_str!("../../../../graphs/signals/meta_observe.toml")),
     ("meta.intent", "graphs/signals/meta_intent.toml", include_str!("../../../../graphs/signals/meta_intent.toml")),
     ("meta.render", "graphs/signals/meta_render.toml", include_str!("../../../../graphs/signals/meta_render.toml")),
@@ -340,7 +341,7 @@ mod tests {
 
     #[test]
     fn signal_graph_count() {
-        assert_eq!(SIGNAL_GRAPHS.len(), 14, "expected 14 signal graphs (9 foundation + 5 meta)");
+        assert_eq!(SIGNAL_GRAPHS.len(), 15, "expected 15 signal graphs (10 foundation + 5 meta)");
     }
 
     #[test]
