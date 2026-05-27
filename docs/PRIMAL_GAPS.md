@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-27 (Wave 55: biomeOS v3.77 `nucleus ingest/emit` scaffolded. lithoSpore `pseudospore-core` wired (NC-1.3 complete). Songbird TCP mesh seed fix. Signal graph + 460 methods + 15 signals. 56 scenarios, 813 tests. 13/13 CLEAN.)
+> **Last updated**: 2026-05-27 (Wave 55b: biomeOS v3.79 gateway completion — emit signal graph, content path, receipt alignment. lithoSpore `PseudoSporeEnvelope` API shipped. cellMembrane NC-3 `composition=nest`, K-Derm boundary published. projectFOUNDATION `nucleus-spore-ingest` workload. 460 methods, 15 signals. 56 scenarios, 813 tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -45,7 +45,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 112: ACME renewal daemon wired, 127 methods, `crypto.ionic_bond.verify_proposal` shipped. |
 | songbird | 8,070+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 53b: +74 tests, deep debt zero confirmed. `forbid(unsafe_code)` all 31 crates. Zero FIXME/HACK. |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S279: zero production panic paths (12 eliminated), deprecated legacy capability roundtrip. 9,156+ lib tests. 47 crates, 88 methods. |
-| biomeOS | 8,036+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.78: `nucleus ingest/emit` CLI scaffolded (v3.77), deep debt cleanup (v3.78). Neural API: `nucleus.ingest_spore`/`emit_spore` routed. Signal graph `nest_ingest_spore`. Pending: swap to `pseudospore-core`, complete emit pipeline. |
+| biomeOS | 8,038+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.79: gateway completion. `nucleus ingest/emit` CLI + 2 signal graphs (ingest 6-step, emit 3-step). Content path, async receipt, graph sync. 19 signal graphs. Pending: NC-1.4 swap to `pseudospore-core`. |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
 | squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `math.rs` refactored (split `signal.rs` + `stats.rs`), `pollster` eliminated, hardcoding → capability-based. 87 IPC methods. |
@@ -202,30 +202,38 @@ composition testing and trio-verified deployments.
 The ecosystem is **interstadial**: primals are clean (13/13), but the niche climate
 (deployment topology, spore flow, cross-gate mesh) must warm before stadial gates.
 
-### NC-1: postPrimordial Spore Gateway — **SCAFFOLDED** (was BLOCKED)
+### NC-1: postPrimordial Spore Gateway — **WIRED** (was SCAFFOLDED)
 
-biomeOS v3.77 delivered `nucleus ingest/emit` CLI subcommands + Neural API routes.
-lithoSpore delivered `pseudospore-core` wired as canonical crate (`ltee-cli` depends,
-`litho-core::pseudospore` deprecated). hotSpring v1.6.1 artifact exists with 71/71
-pipeline PASS.
+biomeOS v3.79 completed the gateway wiring loop:
+- Ingest: 6-step signal graph, content path (`source_dir`) passed, receipt alignment
+  with async-aware multi-path extraction.
+- Emit: new `nest_emit_spore.toml` (3-step: retrieve → resolve_braid → sign_emission),
+  routing switched to `signal.dispatch`. 19 signal graphs total.
+- Ingest graph synced to primalSpring conventions (graceful trio degradation,
+  bonding_policy, pseudospore_version metadata).
 
-**Remaining gaps**: biomeOS must swap inline validation to `pseudospore-core`, emit
-pipeline incomplete (retrieve only, no braid/sign), signal graph diverged from
-primalSpring canonical, live ingest not yet tested on gate.
+lithoSpore shipped `PseudoSporeEnvelope` API (`envelope.rs` + `error.rs`) — the
+canonical consumer-facing load/validate path. biomeOS still uses inline validation;
+NC-1.4 remains their sole gap.
 
-**Signal graph**: `graphs/signals/nest_ingest_spore.toml` (6-step: validate_envelope
-→ store → dag_session → ledger_entry → braid → sign_receipt).
+projectFOUNDATION added Thread 10 workload `nucleus-spore-ingest.toml` for Era 3
+evidence.
+
+**Signal graphs**: `nest_ingest_spore.toml` (6-step) + `nest_emit_spore.toml` (3-step).
 
 | Action | Owner | Status |
 |--------|-------|--------|
-| Land `biomeos nucleus ingest/emit` subcommands | biomeOS team | **DELIVERED** v3.77 (NC-1.1/1.2 scaffolded) |
+| Land `biomeos nucleus ingest/emit` subcommands | biomeOS team | **DELIVERED** v3.79 (NC-1.1/1.2 complete) |
 | Wire `pseudospore-core` as `ltee-cli` dependency | lithoSpore team | **DELIVERED** (NC-1.3 complete) |
-| biomeOS swap to `pseudospore-core` for validation | biomeOS team | **NOT DONE** (NC-1.4 — inline reimplementation) |
-| Sync signal graph (biomeOS copy diverged from spec) | biomeOS + primalSpring | **DRIFT** — required flags, bonding policy, metadata differ |
-| Complete emit pipeline (braid + sign) | biomeOS team | **STUB** — retrieve only, no sweetGrass/BearDog |
-| hotSpring v1.6.1 ingest via NUCLEUS (Era 3) | hotSpring + biomeOS | **GATED** on deployed v3.77 + live Nest Atomic |
+| Ship `PseudoSporeEnvelope` load/validate API | lithoSpore team | **DELIVERED** (`envelope.rs` + `error.rs`) |
+| biomeOS swap to `pseudospore-core` for validation | biomeOS team | **NOT DONE** (NC-1.4 — last gateway gap) |
+| Sync signal graph (ingest) | biomeOS + primalSpring | **RESOLVED** v3.79 — conventions aligned |
+| Emit signal graph | biomeOS team | **DELIVERED** v3.79 (`nest_emit_spore.toml`) |
+| Emit content materialization (full pseudoSpore dir) | biomeOS team | **PARTIAL** — `emit_manifest.json` only, no unpack |
+| hotSpring v1.6.1 ingest via NUCLEUS (Era 3) | hotSpring + biomeOS | **GATED** on deployed v3.79 + live Nest Atomic |
 | groundSpring as second data point | groundSpring + biomeOS | **GATED** on column U first pass |
 | exp115 live phases (4-5) | primalSpring | **GATED** on NUCLEUS availability |
+| Thread 10 spore ingest workload | projectFOUNDATION | **DELIVERED** (`nucleus-spore-ingest.toml`) |
 
 ### NC-2: Multi-Gate NUCLEUS Mesh — **IN PROGRESS** (was BLOCKED)
 
@@ -240,16 +248,21 @@ likely env (`SONGBIRD_PEERS`), OOM, cold-start timing.
 | P0 `nucleus-x86-mixed-uds` matrix cell | primalSpring | **BLOCKED** on NC-2.2 |
 | biomeGate full NUCLEUS (9→13) | hotSpring + ops | **PLANNED** |
 
-### NC-3: cellMembrane Sovereignty — **IN PROGRESS**
+### NC-3: cellMembrane Sovereignty — **ADVANCING** (was IN PROGRESS)
 
-CM-1 through CM-4 resolved. Next: NestGate + trio on VPS, K-Derm boundary, DNS cutover.
+cellMembrane Wave 55 sync: `membrane.toml` updated to `composition = "nest"`,
+`topology = "diderm"`, signal channel enabled. VPS_STATE.md rewritten to reflect
+Nest Atomic reality (11 services, 7 primals, 21/21 darkforest). K-Derm topology
+published. 80/80 tests, zero clippy.
 
 | Action | Owner | Status |
 |--------|-------|--------|
-| NestGate + trio on VPS | cellMembrane + ops | **PLANNED** |
-| K-Derm boundary publication | cellMembrane | **PLANNED** |
-| knot-dns shadow → primary | cellMembrane + ops | **PLANNED** |
+| NestGate + trio on VPS | cellMembrane + ops | **LIVE** (Wave 38, 10/10 trio PASS) |
+| K-Derm boundary publication | cellMembrane | **DELIVERED** (`membrane.toml` diderm, signal channel) |
+| Docs synced to Nest reality | cellMembrane | **DELIVERED** (VPS_STATE, GLACIAL_SHIFT, specs) |
+| knot-dns shadow → primary | cellMembrane + ops | **DEPLOYED** (DNSSEC, registrar NS cutover pending) |
 | Forgejo releases | cellMembrane + plasmidBin | **PLANNED** |
+| sporePrint living content | cellMembrane + petalTongue | **BLOCKED** (BearDog scope) |
 
 ### NC-4: Spring NUCLEUS Depth (per gate)
 

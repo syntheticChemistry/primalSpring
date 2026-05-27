@@ -149,11 +149,11 @@ For lithoSpore emissions to be **postPrimordial**, every pseudoSpore must:
 
 | NC | Requirement | Status | Blocks Stadial? |
 |----|------------|--------|-----------------|
-| NC-1 | postPrimordial Spore Gateway | **BLOCKED** on biomeOS CLI | **YES** |
-| NC-2 | Multi-Gate NUCLEUS Mesh | **BLOCKED** on southGate stability | **YES** |
-| NC-3 | cellMembrane Sovereignty | **IN PROGRESS** (CM-1→CM-4 done) | Partial |
+| NC-1 | postPrimordial Spore Gateway | **WIRED** — biomeOS v3.79 gateway complete, lithoSpore envelope API shipped. NC-1.4 (pseudospore-core swap) + live gate deploy remaining. | **YES** (live column U) |
+| NC-2 | Multi-Gate NUCLEUS Mesh | **IN PROGRESS** — Songbird TCP seed fixed. southGate ops stabilization. | **YES** |
+| NC-3 | cellMembrane Sovereignty | **ADVANCING** — Nest live, K-Derm published, knot-dns deployed. Forgejo releases + sporePrint remaining. | Partial |
 | NC-4 | Spring NUCLEUS Depth | **MIXED** (eastGate/ironGate OK, south/biome partial) | **YES** |
-| NC-5 | lithoSpore postPrimordial | **BLOCKED** on NC-1 | **YES** |
+| NC-5 | lithoSpore postPrimordial | **GATED** on NC-1 live deploy + 2nd spring emission | **YES** |
 
 **Stadial entry requires**: NC-1 (2+ springs), NC-2 (3+ gates), NC-4 (all 4 named gates healthy).
 NC-3 and NC-5 are progressive — partial satisfaction enables stadial entry, full
