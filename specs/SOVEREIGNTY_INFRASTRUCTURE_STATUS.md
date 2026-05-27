@@ -1,6 +1,6 @@
 # Sovereignty Infrastructure Status
 
-**Date**: May 25, 2026 (Wave 49)
+**Date**: May 27, 2026 (Wave 54)
 **Status**: Active — tracking sovereignty cutover progress
 **Audience**: All teams (cellMembrane, projectNUCLEUS, primalSpring)
 
@@ -36,11 +36,11 @@ blocker — all current compositions operate within Cat6 bandwidth.
 |-----------|--------|-------|-------|
 | Caddy TLS termination | LIVE on VPS | cellMembrane | Reverse proxy, auto-HTTPS |
 | Let's Encrypt certificates | LIVE (external) | cellMembrane | Standard ACME flow |
-| bearDog ACME daemon | NOT STARTED | bearDog team (upstream ask) | Sovereign cert issuance/renewal |
-| ACME → sovereign cutover | BLOCKED on bearDog | cellMembrane | Shadow: run bearDog ACME in parallel with LE |
+| bearDog ACME daemon | **LIVE** (Wave 112) | bearDog team | Sovereign cert issuance/renewal |
+| ACME → sovereign cutover | Shadow ready | cellMembrane | Shadow: run bearDog ACME in parallel with LE |
 
-**Priority**: LOW — Let's Encrypt is a functional external with clear
-Calibrate/Shadow path. bearDog ACME daemon can evolve independently.
+**Priority**: MEDIUM — bearDog ACME daemon is live since Wave 112. Shadow period
+(run bearDog in parallel with Let's Encrypt) can begin. Cutover when confident.
 
 ### S2: DNS (IN PROGRESS)
 
@@ -76,7 +76,7 @@ Forgejo is primary. GitHub is an observed outer membrane mirror.
 
 | Component | Status | Owner | Notes |
 |-----------|--------|-------|-------|
-| plasmidBin genomeBin v3 | LIVE | projectNUCLEUS | 13/13 primals, 40+ release assets |
+| plasmidBin genomeBin v3 | LIVE | projectNUCLEUS | 14/14 primals, 46 release assets, provenance-elevated (Wave 54) |
 | GitHub Releases | LIVE | projectNUCLEUS | Public distribution channel |
 | Forgejo releases | PLANNED | projectNUCLEUS | Sovereign binary channel |
 
@@ -154,6 +154,7 @@ See `wateringHole/TEAM_OWNERSHIP_MATRIX.md` for full details.
 1. ~~bearDog: ACME renewal daemon for sovereign TLS~~ **RESOLVED** (Wave 112)
 2. biomeOS: `composition_model = "membrane"` in `composition.deploy(graph)`
 3. ~~All primals: `primal.announce` with v3.68 schema~~ **RESOLVED** (12/12, Wave 47)
+4. ~~plasmidBin: provenance-elevated checksums~~ **RESOLVED** (Wave 54) — `provenance.toml` + sweetGrass braids
 
 ### Multi-Gate Expansion (cellMembrane, later)
 
@@ -174,10 +175,11 @@ S1 ████████████████████████ COMP
 S2 ████░░░░░░░░░░░░░░░░░░░░ PLANNED (knot-dns next)
 S3 ████████████████████████ COMPLETE (RustDesk + Songbird live)
 S4 ████████████████████████ COMPLETE (Forgejo primary + GitHub mirror)
-S5 ████████████████████░░░░ MOSTLY (Forgejo releases pending)
+S5 ████████████████████░░░░ MOSTLY (Forgejo releases pending; provenance-elevated Wave 54)
 S6 ████████████░░░░░░░░░░░░ IN PROGRESS (static Zola, living content pending)
 S7 ████████████████████████ COMPLETE (Neural API + scripts + graphs)
 S8 ████████████████████████ COMPLETE (12/12 primal.announce, biomeOS v3.75 mesh)
+S9 ████████████████████████ NEW (Wave 54: provenance chain — content hash + composite fingerprint + braids)
 ```
 
 No layer blocks another. Teams evolve orthogonally and synchronize at
