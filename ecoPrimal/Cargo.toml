@@ -28,7 +28,6 @@ getrandom = "0.4.2"
 zeroize = { version = "1.8.2", features = ["zeroize_derive"] }
 chacha20poly1305 = "0.10"
 blake3 = { version = "1", features = ["pure"] }
-hostname = "0.4"
 
 [lints]
 workspace = true

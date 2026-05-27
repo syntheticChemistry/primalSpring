@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# DEPRECATED (Wave 54): Verification is in Rust (certification/entropy.rs).
+# Generation should move to: primalspring checksums or plasmidbin.
 set -euo pipefail
 
 # Generates validation/seed_fingerprints.toml from plasmidBin manifest + binary checksums.

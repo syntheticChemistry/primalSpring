@@ -231,9 +231,9 @@ mod tests {
             // Port collision: storage/content → NestGate:9500, commit/attribution → SweetGrass:9850.
             // These are intentional aliases (same primal, different capability domain).
             ("zero-port-standard", 1),
-            // Live dispatch checks against meta/nucleus/coordination — requires live Neural API
-            // with full routing table. Failures are expected without full graph deploy.
-            ("atomic-signals", 16),
+            // atomic-signals: was 16 failures (dispatch stubs). Resolved W54 by Neural API team.
+            // Keeping zero-entry as sentinel so new regressions are caught immediately.
+            ("atomic-signals", 0),
         ];
 
         let r = build_registry();

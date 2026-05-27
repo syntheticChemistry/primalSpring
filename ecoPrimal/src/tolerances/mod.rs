@@ -265,6 +265,93 @@ pub const TCP_WRITE_TIMEOUT_SECS: u64 = 5;
 /// containers and remote compositions override via env var.
 pub const DEFAULT_HOST: &str = "127.0.0.1";
 
+/// LAN bind address for multi-gate services (Songbird federation, etc.).
+pub const LAN_BIND_ADDRESS: &str = "0.0.0.0";
+
+/// Fallback runtime directory when `XDG_RUNTIME_DIR` is not set.
+pub const RUNTIME_DIR_FALLBACK: &str = "/tmp";
+
+#[must_use]
+/// Resolve `XDG_RUNTIME_DIR` with correct fallback chain.
+///
+/// Prefers the env var; falls back to `/run/user/{uid}` (Linux convention),
+/// then to [`RUNTIME_DIR_FALLBACK`] (`/tmp`). Avoids hardcoded UID `1000`.
+pub fn runtime_dir() -> String {
+    std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| {
+        #[cfg(target_os = "linux")]
+        {
+            if let Some(uid) = real_uid() {
+                let candidate = format!("/run/user/{uid}");
+                if std::path::Path::new(&candidate).is_dir() {
+                    return candidate;
+                }
+            }
+        }
+        RUNTIME_DIR_FALLBACK.to_owned()
+    })
+}
+
+#[must_use]
+/// Resolve the biomeOS socket directory.
+pub fn biomeos_socket_dir() -> std::path::PathBuf {
+    std::path::PathBuf::from(runtime_dir()).join("biomeos")
+}
+
+/// Read the real UID from `/proc/self/status` (no libc, no unsafe).
+#[cfg(target_os = "linux")]
+fn real_uid() -> Option<u32> {
+    std::fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|s| {
+            s.lines()
+                .find(|l| l.starts_with("Uid:"))
+                .and_then(|l| l.split_whitespace().nth(1))
+                .and_then(|u| u.parse::<u32>().ok())
+        })
+}
+
+#[must_use]
+/// Resolve a primal's default TCP port from the centralized port table.
+pub fn default_port_for(primal: &str) -> u16 {
+    match primal {
+        "beardog" => TCP_FALLBACK_BEARDOG_PORT,
+        "songbird" => TCP_FALLBACK_SONGBIRD_PORT,
+        "skunkbat" => TCP_FALLBACK_SKUNKBAT_PORT,
+        "toadstool" => TCP_FALLBACK_TOADSTOOL_PORT,
+        "barracuda" => TCP_FALLBACK_BARRACUDA_PORT,
+        "coralreef" => TCP_FALLBACK_CORALREEF_PORT,
+        "nestgate" => TCP_FALLBACK_NESTGATE_PORT,
+        "rhizocrypt" => TCP_FALLBACK_RHIZOCRYPT_PORT,
+        "loamspine" => TCP_FALLBACK_LOAMSPINE_PORT,
+        "sweetgrass" => TCP_FALLBACK_SWEETGRASS_PORT,
+        "biomeos" => TCP_FALLBACK_BIOMEOS_PORT,
+        "squirrel" => TCP_FALLBACK_SQUIRREL_PORT,
+        "petaltongue" => TCP_FALLBACK_PETALTONGUE_PORT,
+        _ => 0,
+    }
+}
+
+#[must_use]
+/// Resolve the env var key for a primal's port override.
+pub fn port_env_key_for(primal: &str) -> &'static str {
+    match primal {
+        "beardog" => "BEARDOG_PORT",
+        "songbird" => "SONGBIRD_PORT",
+        "skunkbat" => "SKUNKBAT_PORT",
+        "toadstool" => "TOADSTOOL_PORT",
+        "barracuda" => "BARRACUDA_PORT",
+        "coralreef" => "CORALREEF_PORT",
+        "nestgate" => "NESTGATE_PORT",
+        "rhizocrypt" => "RHIZOCRYPT_PORT",
+        "loamspine" => "LOAMSPINE_PORT",
+        "sweetgrass" => "SWEETGRASS_PORT",
+        "biomeos" => "BIOMEOS_PORT",
+        "squirrel" => "SQUIRREL_PORT",
+        "petaltongue" => "PETALTONGUE_PORT",
+        _ => "",
+    }
+}
+
 /// TCP fallback port for remote `BearDog` (security).
 pub const TCP_FALLBACK_BEARDOG_PORT: u16 = 9100;
 /// TCP fallback port for remote Songbird (discovery/mesh).

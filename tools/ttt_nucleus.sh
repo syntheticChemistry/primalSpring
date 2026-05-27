@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# DEPRECATED (Wave 51): Prefer nucleus_launcher Rust binary or plasmidbin launch.
+# DEPRECATED (Wave 51→54): Use Rust: nucleus_launcher {start|stop|status} --family-id ttt
+# This script is retained as fossil record only.
 #
 # ttt_nucleus.sh — Launch a full NUCLEUS composition for Tic-Tac-Toe
 #

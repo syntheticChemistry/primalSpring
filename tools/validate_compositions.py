@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-or-later
+# DEPRECATED (Wave 54): Use Rust: primalspring validate --track composition --tier live
+#   The Rust validation scenarios cover the same C1-C7 subsystem checks.
 """
 Composition Subsystem Validator — tests primal-layer readiness for C1-C7.
 

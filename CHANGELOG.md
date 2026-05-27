@@ -5,6 +5,34 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased] — Waves 22–54: Stadial Entry / Glacial Shift (2026-05-27)
 
+### Wave 54b: Deep Debt Sweep + Script-to-Rust Evolution (May 27)
+- **Dependency evolution**: `hostname` crate eliminated (17→16 runtime deps). Replaced
+  with `std::env::var("HOSTNAME")` fallback chain. `clap` default-features trimmed (dropped
+  terminal styling stack). Crypto stack mapped to BTSP bootstrap boundary — irreducible
+  local surface for `hmac`/`sha2`/`hkdf`/`chacha20poly1305`/`getrandom`/`blake3`/`base64`/`zeroize`.
+- **Hardcoding centralized**: `tolerances::runtime_dir()` reads real UID from
+  `/proc/self/status` (replaces hardcoded `/run/user/1000`). `tolerances::biomeos_socket_dir()`,
+  `tolerances::default_port_for()`, `tolerances::port_env_key_for()` centralize orchestrator
+  primal→port/env maps. `LAN_BIND_ADDRESS` and `RUNTIME_DIR_FALLBACK` constants added.
+  biomeOS graph path discovery uses depth-based traversal with constant.
+- **`pkill` eliminated**: `nucleus_launcher` now writes PID files at spawn, reads them
+  at stop. Falls back to `/proc` scan on Linux. Pure Rust SIGTERM via `kill` binary.
+- **`nucleus_launcher` lifecycle**: new `start`/`stop`/`status` subcommands. `stop`
+  sends SIGTERM via PID files. `status` shows PID existence + TCP health probes.
+  Logs moved from `/tmp/{primal}.log` to `$XDG_RUNTIME_DIR/biomeos/logs/`.
+- **6 CI scripts absorbed into Rust**: `primalspring checksums` regenerates BLAKE3
+  manifest (replaces `regenerate_checksums.sh` + `b3sum`). `primalspring registry
+  --check {source|graphs|coverage|all}` detects method-string drift (replaces 4
+  `check_method_*.sh` grep scripts). `thread10_provenance.sh` deleted (was passthrough).
+- **Script triage**: 35 scripts (33 sh + 2 py) classified. 4 deprecated NUCLEUS launchers
+  updated with Rust subcommand references. `cell_launcher.sh` and `desktop_nucleus.sh`
+  rewired to Rust `nucleus_launcher`. `validate_compositions.py` deprecated (Rust
+  validation scenarios cover C1-C7). `ws_gateway.py` documented as dev bridge.
+- **Audit results**: 0 files >800 lines (max 776). Zero `unsafe` blocks (`#![forbid(unsafe_code)]`).
+  No production mocks (harness genetics is correct test infrastructure). 16 runtime
+  deps, all justified.
+- **813/813 tests passing, 0 clippy warnings.**
+
 ### Wave 54: Provenance-Elevated Checksums + Braid Integration (May 27)
 - **Two-layer checksum model**: plasmidBin checksums elevated from raw BLAKE3 content
   hash to a provenance-aware composite fingerprint. Layer 1 (`checksums.toml`) unchanged

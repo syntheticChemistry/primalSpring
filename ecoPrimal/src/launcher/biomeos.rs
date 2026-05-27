@@ -119,6 +119,8 @@ pub fn spawn_biomeos(
 /// Falls back to the caller-provided directory.
 fn discover_biomeos_graphs(fallback: &Path) -> PathBuf {
     const ENV_BIOMEOS_GRAPHS: &str = "BIOMEOS_GRAPHS_DIR";
+    const RELATIVE_GRAPHS_PATH: &str = "primals/biomeOS/graphs";
+
     if let Ok(val) = std::env::var(ENV_BIOMEOS_GRAPHS) {
         let p = PathBuf::from(&val);
         if p.is_dir() {
@@ -126,11 +128,9 @@ fn discover_biomeos_graphs(fallback: &Path) -> PathBuf {
         }
     }
 
-    let candidates = [
-        PathBuf::from("../primals/biomeOS/graphs"),
-        PathBuf::from("../../primals/biomeOS/graphs"),
-        PathBuf::from("../../../primals/biomeOS/graphs"),
-    ];
+    let candidates: Vec<PathBuf> = (1..=4)
+        .map(|depth| PathBuf::from("../".repeat(depth)).join(RELATIVE_GRAPHS_PATH))
+        .collect();
     for candidate in &candidates {
         if candidate.join("tower_atomic_bootstrap.toml").is_file()
             && candidate

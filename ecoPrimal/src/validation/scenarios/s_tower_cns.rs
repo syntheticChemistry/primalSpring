@@ -78,8 +78,7 @@ fn phase_structural(v: &mut ValidationResult) {
 }
 
 fn phase_uds_coverage(v: &mut ValidationResult) {
-    let xdg = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_string());
-    let dir = std::path::PathBuf::from(xdg).join("biomeos");
+    let dir = crate::tolerances::biomeos_socket_dir();
 
     let caps_sockets: &[(&str, &str)] = &[
         ("crypto", "crypto.sock"),
@@ -110,6 +109,7 @@ fn phase_uds_coverage(v: &mut ValidationResult) {
         );
     }
 
+    #[allow(clippy::cast_precision_loss)]
     let total = caps_sockets.len() as f64;
     let coverage = (f64::from(uds_ready) / total) * 100.0;
     v.check_bool(
@@ -172,9 +172,13 @@ mod tests {
 
     #[test]
     fn port_inventory_consistent() {
-        let droppable: Vec<_> = KNOWN_PORTS.iter().filter(|p| p.droppable).collect();
-        let keep: Vec<_> = KNOWN_PORTS.iter().filter(|p| !p.droppable).collect();
-        assert!(keep.iter().all(|p| p.primal == "songbird"), "only Songbird ports should be non-droppable");
-        assert!(!droppable.is_empty(), "should have droppable ports");
+        assert!(
+            KNOWN_PORTS.iter().filter(|p| !p.droppable).all(|p| p.primal == "songbird"),
+            "only Songbird ports should be non-droppable",
+        );
+        assert!(
+            KNOWN_PORTS.iter().any(|p| p.droppable),
+            "should have droppable ports",
+        );
     }
 }

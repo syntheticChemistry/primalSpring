@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
+# DEPRECATED (Wave 54): Use Rust: primalspring registry --check coverage
+#
 # W7-06: Inverse drift detector — "registered but never exercised"
 #
 # Complement to check_method_strings.sh which catches code using unregistered

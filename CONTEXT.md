@@ -25,17 +25,16 @@ back upstream to primals and primalSpring.
 ## Architecture
 
 - **ecoPrimal/** — library crate (`primalspring`) + 3 binaries:
-  `primalspring` (eukaryotic UniBin: certify + validate + serve + status + version),
+  `primalspring` (eukaryotic UniBin: certify + validate + serve + status + checksums + registry + version),
   `primalspring_primal` (JSON-RPC IPC server / cell membrane),
-  `nucleus_launcher` (Rust NUCLEUS launcher with `--federation-port`),
-  `nucleus_launcher` (Rust replacement for bash launcher — dependency-ordered startup)
+  `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status with PID tracking + federation)
 - **experiments/** — 92 validation binaries covering 21 tracks
 - **graphs/** — 80 deploy graph TOMLs + 14 atomic signal graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
   2 cross-spring + 1 federation + 1 composition + 12 cell graphs + `signals/` tier)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
-- **tools/** — desktop NUCLEUS launcher, nucleus launcher, composition library + template, TTT reference implementation, Godot bridge, thin WS gateway, composition validator
+- **tools/** — desktop NUCLEUS, composition library + template, TTT reference, Godot bridge, WS gateway (6 CI scripts deprecated → Rust subcommands Wave 54b, 4 NUCLEUS launchers deprecated → Rust nucleus_launcher Wave 51→54)
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -75,12 +74,17 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.30 Wave 54 (May 27, 2026) — 56 scenarios (10 tracks, 3 tiers),
+v0.9.30 Wave 54b (May 27, 2026) — 56 scenarios (10 tracks, 3 tiers),
 458 registered capability methods (458 exercised, 100% coverage),
 92 experiments (21 tracks), 95 deploy graphs (81 deploy + 14 signal),
-44-cell deployment matrix. 799 lib tests (787 pass, 10 live-tier, 2 ignored). 13/13 behavioral
+44-cell deployment matrix. 813 lib tests (797 pass, 16 live-tier, 2 ignored). 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
 sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
+`hostname` crate eliminated (17→16 runtime deps). `nucleus_launcher` now has
+full lifecycle (`start`/`stop`/`status` subcommands). 6 bash CI scripts absorbed
+into Rust subcommands (`primalspring checksums`, `primalspring registry`).
+PID-file tracking replaces `pkill`. All hardcoded UID/port/path values centralized
+to `tolerances` module. `clap` styling trimmed.
 
 **Wave 54: Provenance-elevated checksums + sweetGrass braid integration.**
 plasmidBin now produces a two-layer checksum model:
@@ -89,6 +93,10 @@ Layer 2 (new): `provenance.toml` — composite fingerprint `blake3(content_hash 
 
 Wave 54 prep: 3 new absorbed scenarios (cephalization, tower-cns, kderm-boundary).
 4 gates operational (eastGate, ironGate, southGate, biomeGate).
+hotSpring NUCLEUS braid evolution absorbed: pseudoSpore v1.6.1 braid schema evolved
+to NUCLEUS-ready (provenance trio slots, three-era deployment model, `biomeos nucleus ingest`
+three-tier fallback, ownership boundary split per SPORE_OWNERSHIP_MATRIX). pseudoSpore 2.0
+compChem target: publish on sporePrint, host via HPC LAN (biomeGate).
 
 **Waves 1-49 complete**. Key milestones: post-primordial (W49), covalent mesh (W48), Neural API deployment (W42), observatory
 posture (W41), neural routing layer (W40), upstream absorption (W39), behavioral

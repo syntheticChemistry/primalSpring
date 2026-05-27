@@ -45,6 +45,7 @@ fn main() {
 }
 
 fn phase_port_census(v: &mut ValidationResult) {
+    #[allow(clippy::struct_field_names)]
     struct Port {
         port: u16,
         primal: &'static str,
@@ -146,6 +147,7 @@ fn phase_uds_coverage(v: &mut ValidationResult) {
         v.check_bool(&format!("uds:{cap}"), exists, &msg);
     }
 
+    #[allow(clippy::cast_precision_loss)]
     let coverage = (f64::from(uds_ready) / caps_with_sockets.len() as f64) * 100.0;
     v.check_bool(
         "uds:coverage",

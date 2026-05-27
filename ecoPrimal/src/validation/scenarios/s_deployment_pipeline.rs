@@ -305,10 +305,16 @@ fn stage_provenance(v: &mut ValidationResult) {
             }
 
             if fields_ok {
-                let content_hash = entry.get("content_hash").unwrap().as_str().unwrap();
+                let content_hash = entry
+                    .get("content_hash")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
                 let is_valid_hash = content_hash.len() == 64
                     && content_hash.bytes().all(|b| b.is_ascii_hexdigit());
-                let prov_hash = entry.get("provenance_hash").unwrap().as_str().unwrap();
+                let prov_hash = entry
+                    .get("provenance_hash")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
                 let is_valid_prov = prov_hash.len() == 64
                     && prov_hash.bytes().all(|b| b.is_ascii_hexdigit());
 

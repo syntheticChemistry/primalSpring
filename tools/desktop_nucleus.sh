@@ -159,17 +159,18 @@ start_via_biomeos() {
 }
 
 start_via_composition() {
-    log "Using composition_nucleus.sh"
-    export COMPOSITION_NAME
-    export FAMILY_ID
-    export PETALTONGUE_LIVE=true
-    export ECOPRIMALS_PLASMID_BIN="$PLASMID_BIN"
-    export DISCOVERY_SOCKET="$SOCKET_DIR/songbird-${FAMILY_ID}.sock"
-    export LOCAL_AI_ENDPOINT="${LOCAL_AI_ENDPOINT:-http://127.0.0.1:11434}"
-    export OLLAMA_ENDPOINT="${OLLAMA_ENDPOINT:-http://127.0.0.1:11434}"
+    RUST_LAUNCHER="${SCRIPT_DIR}/../ecoPrimal/target/release/nucleus_launcher"
+    if [ ! -x "$RUST_LAUNCHER" ]; then
+        RUST_LAUNCHER="${SCRIPT_DIR}/../ecoPrimal/target/debug/nucleus_launcher"
+    fi
 
-    PRIMAL_LIST="beardog songbird nestgate squirrel toadstool barracuda coralreef rhizocrypt loamspine sweetgrass petaltongue" \
-        "$SCRIPT_DIR/composition_nucleus.sh" start
+    if [ -x "$RUST_LAUNCHER" ]; then
+        log "Using Rust nucleus_launcher"
+        "$RUST_LAUNCHER" start --family-id "$FAMILY_ID" --composition nucleus
+    else
+        log "WARN: Rust nucleus_launcher not found, build with: cargo build -p nucleus_launcher"
+        return 1
+    fi
 
     # petalTongue hardcodes heartbeat to discovery-service.sock — bridge it
     local songbird_sock="$SOCKET_DIR/songbird-${FAMILY_ID}.sock"

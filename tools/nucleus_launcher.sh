@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# DEPRECATED (Wave 51): Prefer the Rust nucleus_launcher binary:
-#   cargo run -p nucleus_launcher -- --family-id <FAMILY_ID> --composition nucleus
-# Or plasmidBin's launch command:
-#   cargo run -p plasmidbin -- launch --composition full
+# DEPRECATED (Wave 51→54): Use the Rust nucleus_launcher binary:
+#   nucleus_launcher start --family-id <FAMILY_ID> --composition nucleus
+#   nucleus_launcher stop  --composition nucleus
+#   nucleus_launcher status --composition nucleus
+# Or plasmidBin: plasmidbin launch --composition full
+# This script is retained as fossil record only.
 #
 # NUCLEUS Launcher — Zero-Port Tower Atomic Standard
 #

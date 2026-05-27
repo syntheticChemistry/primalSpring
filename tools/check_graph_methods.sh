@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
+# DEPRECATED (Wave 54): Use Rust: primalspring registry --check graphs
+#
 # Graph method string validator
 #
 # Extracts all capability/method strings from TOML graph files and validates

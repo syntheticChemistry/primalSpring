@@ -68,6 +68,19 @@ pub enum Commands {
     Serve,
     /// Show composition health and capability discovery status.
     Status,
+    /// Regenerate BLAKE3 checksums manifest (validation/CHECKSUMS).
+    Checksums {
+        /// Output file (default: validation/CHECKSUMS).
+        #[arg(long, default_value = "validation/CHECKSUMS")]
+        output: String,
+    },
+    /// Lint capability registry for method-string drift.
+    Registry {
+        /// Check mode: source (Rust strings vs registry), graphs (TOML methods),
+        /// coverage (registered but never used), all.
+        #[arg(long, default_value = "all")]
+        check: String,
+    },
     /// Show version information.
     Version,
 }

@@ -9,15 +9,15 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-27 (Wave 54: Provenance-elevated checksums shipped. Two-layer checksum model + sweetGrass braids. Consumer tooling rewired. 56 scenarios, 799 tests. 13/13 CLEAN.)
+> **Last updated**: 2026-05-27 (Wave 54b: Deep debt zero. `hostname` crate eliminated (16 deps). 6 CI scripts absorbed to Rust subcommands. `nucleus_launcher` lifecycle (start/stop/status). PID tracking replaces pkill. Hardcoding centralized. 56 scenarios, 813 tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (May 25, 2026)
+## Ecosystem Status (May 27, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 56 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), 799 lib tests (787 pass, 10 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). Wave 54: **provenance-elevated checksums** — `provenance.toml` (Layer 2 composite fingerprint) + sweetGrass braid integration shipped in plasmidBin. Consumer tooling rewired in primalSpring (fetch, validate, build, desktop, fingerprints). 4 gates operational with NUCLEUS + Songbird :7700 federation. **`discovery.peers` RESOLVED** (Wave 51). Live gate validation NEXT.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 56 scenarios (10 tracks, 3 tiers), 458 real methods (458 exercised = 100%), **813 lib tests** (797 pass, 16 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps** (hostname eliminated Wave 54b). Pure Rust crypto for BTSP bootstrap. Wave 54b: **deep debt zero** — 6 CI bash scripts absorbed into Rust subcommands (`primalspring checksums`, `primalspring registry`). `nucleus_launcher` now full lifecycle (start/stop/status via PID tracking). All hardcoded UID/port/path values centralized to `tolerances` module. `deploy_membrane.sh` supports full NUCLEUS composition (13 primals, 4 tiers). hotSpring pseudoSpore v1.6.1 → NUCLEUS-ready. 4 gates operational. **pseudoSpore 2.0**: lithoSpore emissions to be postPrimordial via NUCLEUS (`biomeos nucleus ingest` + `litho emit-pseudospore`). **`discovery.peers` RESOLVED** (Wave 51). Live gate validation NEXT.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 

@@ -45,7 +45,7 @@ fn main() {
 }
 
 fn biomeos_socket_dir() -> std::path::PathBuf {
-    let xdg = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_string());
+    let xdg = primalspring::tolerances::runtime_dir();
     std::path::PathBuf::from(xdg).join("biomeos")
 }
 
@@ -137,39 +137,36 @@ fn phase_socket_census(v: &mut ValidationResult) {
         .map(|e| e.file_name().to_string_lossy().to_string())
         .collect();
 
-    let sock_count = entries.iter().filter(|n| n.ends_with(".sock")).count();
-    let json_count = entries.iter().filter(|n| n.ends_with(".json")).count();
+    let sock_count = entries.iter().filter(|n| n.to_ascii_lowercase().ends_with(".sock")).count();
+    let json_count = entries.iter().filter(|n| n.to_ascii_lowercase().ends_with(".json")).count();
 
     v.check_bool("sockets:total", sock_count > 0, &format!("{sock_count} sockets"));
     v.check_bool("sockets:state_files", true, &format!("{json_count} JSON state files"));
 
-    let named: Vec<_> = entries
+    let is_sock = |n: &&String| n.to_ascii_lowercase().ends_with(".sock");
+    let named_count = entries
         .iter()
-        .filter(|n| n.ends_with(".sock") && n.contains("nucleus01"))
-        .collect();
-    let flat: Vec<_> = entries
+        .filter(|n| is_sock(n) && n.contains("nucleus01"))
+        .count();
+    let flat_count = entries
         .iter()
-        .filter(|n| {
-            n.ends_with(".sock") && !n.contains("nucleus01") && !n.contains("primalspring01")
-        })
-        .collect();
+        .filter(|n| is_sock(n) && !n.contains("nucleus01") && !n.contains("primalspring01"))
+        .count();
 
     v.check_bool(
         "sockets:named",
         true,
-        &format!("{} primal-scoped (already cephalized via naming)", named.len()),
+        &format!("{named_count} primal-scoped (already cephalized via naming)"),
     );
     v.check_bool(
         "sockets:flat_domain",
         true,
-        &format!(
-            "{} flat domain sockets (cephalization candidates for exp113)",
-            flat.len()
-        ),
+        &format!("{flat_count} flat domain sockets (cephalization candidates for exp113)"),
     );
 
+    #[allow(clippy::cast_precision_loss)]
     let ceph_ratio = if sock_count > 0 {
-        (flat.len() as f64 / sock_count as f64) * 100.0
+        (flat_count as f64 / sock_count as f64) * 100.0
     } else {
         0.0
     };
@@ -338,6 +335,7 @@ fn phase_unibin_composability(v: &mut ValidationResult) {
     for primal in &unibin_primals {
         let binary = pdir.join(primal);
         if binary.exists() {
+            #[allow(clippy::cast_precision_loss)]
             let size_mb = std::fs::metadata(&binary)
                 .map(|m| m.len() as f64 / 1_048_576.0)
                 .unwrap_or(0.0);

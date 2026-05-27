@@ -115,8 +115,7 @@ fn phase_structural(v: &mut ValidationResult) {
 }
 
 fn phase_live_census(v: &mut ValidationResult) {
-    let xdg = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_string());
-    let dir = std::path::PathBuf::from(xdg).join("biomeos");
+    let dir = crate::tolerances::biomeos_socket_dir();
 
     if !dir.exists() {
         v.check_skip("live:census", "biomeos socket directory not found");
@@ -128,7 +127,7 @@ fn phase_live_census(v: &mut ValidationResult) {
         .flatten()
         .filter_map(std::result::Result::ok)
         .map(|e| e.file_name().to_string_lossy().to_string())
-        .filter(|n| n.ends_with(".sock"))
+        .filter(|n| n.to_ascii_lowercase().ends_with(".sock"))
         .collect();
 
     let flat: Vec<&String> = all_sockets
@@ -176,7 +175,7 @@ fn phase_live_census(v: &mut ValidationResult) {
     }
 }
 
-fn phase_readiness(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+fn phase_readiness(v: &mut ValidationResult, ctx: &CompositionContext) {
     let caps = ctx.available_capabilities();
     v.check_bool(
         "ready:composition",

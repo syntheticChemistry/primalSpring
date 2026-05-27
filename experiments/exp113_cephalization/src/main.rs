@@ -102,7 +102,7 @@ const OWNERSHIP_MAP: &[SocketOwnership] = &[
 ];
 
 fn biomeos_socket_dir() -> std::path::PathBuf {
-    let xdg = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_string());
+    let xdg = primalspring::tolerances::runtime_dir();
     std::path::PathBuf::from(xdg).join("biomeos")
 }
 
@@ -120,26 +120,26 @@ fn phase_socket_census(v: &mut ValidationResult) {
         .map(|e| e.file_name().to_string_lossy().to_string())
         .collect();
 
-    let socks: Vec<_> = entries.iter().filter(|n| n.ends_with(".sock")).collect();
-    let named: Vec<_> = socks
+    let socks: Vec<_> = entries.iter().filter(|n| n.to_ascii_lowercase().ends_with(".sock")).collect();
+    let named_count = socks
         .iter()
         .filter(|n| n.contains("nucleus01") || n.contains("primalspring01"))
-        .collect();
-    let flat: Vec<_> = socks
+        .count();
+    let flat_count = socks
         .iter()
         .filter(|n| !n.contains("nucleus01") && !n.contains("primalspring01"))
-        .collect();
+        .count();
 
     v.check_bool("census:total_sockets", true, &format!("{} total sockets", socks.len()));
     v.check_bool(
         "census:primal_scoped",
         true,
-        &format!("{} already primal-scoped (naming convention)", named.len()),
+        &format!("{named_count} already primal-scoped (naming convention)"),
     );
     v.check_bool(
         "census:flat_domain",
         true,
-        &format!("{} flat domain sockets (cephalization targets)", flat.len()),
+        &format!("{flat_count} flat domain sockets (cephalization targets)"),
     );
 }
 
@@ -155,7 +155,7 @@ fn phase_ownership_mapping(v: &mut ValidationResult) {
         .flatten()
         .filter_map(std::result::Result::ok)
         .map(|e| e.file_name().to_string_lossy().to_string())
-        .filter(|n| n.ends_with(".sock"))
+        .filter(|n| n.to_ascii_lowercase().ends_with(".sock"))
         .collect();
 
     let flat_sockets: Vec<&String> = all_sockets

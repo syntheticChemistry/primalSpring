@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
+# DEPRECATED (Wave 54): Use Rust: primalspring checksums --output validation/CHECKSUMS
+#
 # Regenerate validation/CHECKSUMS from the current source tree.
 # Uses b3sum (BLAKE3) — the same algorithm as primalspring::checksums.
 #

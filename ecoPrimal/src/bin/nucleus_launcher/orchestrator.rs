@@ -33,13 +33,13 @@ pub struct LaunchConfig {
 /// Summary of the launch operation.
 pub struct LaunchResult {
     pub success: bool,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "public API for callers that display detailed launch stats")]
     pub started: usize,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "public API for callers that display detailed launch stats")]
     pub healthy: usize,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "public API for callers that display detailed launch stats")]
     pub registered: usize,
-    #[allow(dead_code)]
+    #[expect(dead_code, reason = "public API for callers that display detailed launch stats")]
     pub total: usize,
 }
 
@@ -80,57 +80,17 @@ fn capability_domains(primal: &str) -> &'static [&'static str] {
     }
 }
 
-/// Maps primal name → its default TCP port.
-fn default_port(primal: &str) -> u16 {
-    match primal {
-        "beardog" => tolerances::TCP_FALLBACK_BEARDOG_PORT,
-        "songbird" => tolerances::TCP_FALLBACK_SONGBIRD_PORT,
-        "skunkbat" => tolerances::TCP_FALLBACK_SKUNKBAT_PORT,
-        "toadstool" => tolerances::TCP_FALLBACK_TOADSTOOL_PORT,
-        "barracuda" => tolerances::TCP_FALLBACK_BARRACUDA_PORT,
-        "coralreef" => tolerances::TCP_FALLBACK_CORALREEF_PORT,
-        "nestgate" => tolerances::TCP_FALLBACK_NESTGATE_PORT,
-        "rhizocrypt" => tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT,
-        "loamspine" => tolerances::TCP_FALLBACK_LOAMSPINE_PORT,
-        "sweetgrass" => tolerances::TCP_FALLBACK_SWEETGRASS_PORT,
-        "biomeos" => tolerances::TCP_FALLBACK_BIOMEOS_PORT,
-        "squirrel" => tolerances::TCP_FALLBACK_SQUIRREL_PORT,
-        "petaltongue" => tolerances::TCP_FALLBACK_PETALTONGUE_PORT,
-        _ => 0,
-    }
-}
-
-/// Maps primal name → the env var name for its port override.
-fn port_env_key(primal: &str) -> &'static str {
-    match primal {
-        "beardog" => "BEARDOG_PORT",
-        "songbird" => "SONGBIRD_PORT",
-        "skunkbat" => "SKUNKBAT_PORT",
-        "toadstool" => "TOADSTOOL_PORT",
-        "barracuda" => "BARRACUDA_PORT",
-        "coralreef" => "CORALREEF_PORT",
-        "nestgate" => "NESTGATE_PORT",
-        "rhizocrypt" => "RHIZOCRYPT_PORT",
-        "loamspine" => "LOAMSPINE_PORT",
-        "sweetgrass" => "SWEETGRASS_PORT",
-        "biomeos" => "BIOMEOS_PORT",
-        "squirrel" => "SQUIRREL_PORT",
-        "petaltongue" => "PETALTONGUE_PORT",
-        _ => "",
-    }
-}
-
-/// Resolve the effective TCP port for a primal.
+/// Resolve the effective TCP port for a primal (env override → centralized default).
 fn effective_port(primal: &str) -> u16 {
-    let key = port_env_key(primal);
+    let key = tolerances::port_env_key_for(primal);
     if key.is_empty() {
         return 0;
     }
-    env_port(key, default_port(primal))
+    env_port(key, tolerances::default_port_for(primal))
 }
 
 /// Ordered primals for a given composition type, filtered against the startup order.
-fn ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
+pub fn ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
     let required = atomic.required_primals();
     STARTUP_ORDER
         .iter()
@@ -219,8 +179,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     println!("  Dark Forest: {}", config.dark_forest);
     println!();
 
-    let runtime_dir = std::env::var("XDG_RUNTIME_DIR")
-        .unwrap_or_else(|_| "/tmp".to_owned());
+    let runtime_dir = tolerances::runtime_dir();
     let socket_dir = PathBuf::from(&runtime_dir).join("biomeos");
     let _ = std::fs::create_dir_all(&socket_dir);
 
@@ -437,11 +396,62 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
 }
 
 /// Attempt to stop any running instance of a primal.
+///
+/// Reads the PID file written at spawn time. Falls back to scanning
+/// `/proc` on Linux when no PID file exists (replaces the old `pkill` shell-out).
 fn stop_existing(primal: &str) {
-    use std::process::Command;
-    let _ = Command::new("pkill")
-        .args(["-f", &format!("primals/.*{primal}")])
-        .output();
+    let pid_dir = std::path::PathBuf::from(tolerances::runtime_dir())
+        .join("biomeos")
+        .join(".pids");
+    let pid_file = pid_dir.join(format!("{primal}.pid"));
+
+    if let Ok(contents) = std::fs::read_to_string(&pid_file) {
+        if let Ok(pid) = contents.trim().parse::<u32>() {
+            let _ = signal_pid(pid);
+            let _ = std::fs::remove_file(&pid_file);
+            return;
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    stop_by_proc_scan(primal);
+}
+
+/// Send SIGTERM to a process by PID.
+///
+/// Uses the `kill` binary (POSIX standard, available on all Unix targets)
+/// rather than libc or inline asm to maintain `forbid(unsafe_code)`.
+fn signal_pid(pid: u32) -> std::io::Result<()> {
+    let status = std::process::Command::new("kill")
+        .args(["-15", &pid.to_string()])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()?;
+    if status.success() {
+        Ok(())
+    } else {
+        Err(std::io::Error::other(
+            format!("kill -15 {pid} exited with {status}"),
+        ))
+    }
+}
+
+/// Scan `/proc` for processes matching the primal binary pattern.
+#[cfg(target_os = "linux")]
+fn stop_by_proc_scan(primal: &str) {
+    let pattern = format!("primals/{primal}");
+    let Ok(entries) = std::fs::read_dir("/proc") else { return };
+    for entry in entries.flatten() {
+        let name = entry.file_name();
+        let Some(pid_str) = name.to_str() else { continue };
+        let Ok(pid) = pid_str.parse::<u32>() else { continue };
+        let cmdline_path = entry.path().join("cmdline");
+        if let Ok(cmdline) = std::fs::read_to_string(&cmdline_path) {
+            if cmdline.contains(&pattern) {
+                let _ = signal_pid(pid);
+            }
+        }
+    }
 }
 
 /// Spawn a primal process using its discovered binary.
@@ -471,23 +481,33 @@ fn spawn_primal(
     if primal == primal_names::SONGBIRD {
         if let Some(fed_port) = config.federation_port {
             cmd.arg("--federation-port").arg(fed_port.to_string());
-            cmd.arg("--bind").arg("0.0.0.0");
+            cmd.arg("--bind").arg(tolerances::LAN_BIND_ADDRESS);
         }
         cmd.env("SONGBIRD_SECURITY_SOCKET", socket);
     }
 
-    let log_path = format!("/tmp/{primal}.log");
+    let log_dir = std::path::PathBuf::from(tolerances::runtime_dir())
+        .join("biomeos")
+        .join("logs");
+    let _ = std::fs::create_dir_all(&log_dir);
+    let log_path = log_dir.join(format!("{primal}.log"));
     let log_file = std::fs::File::create(&log_path)
-        .map_err(|e| format!("cannot create log file {log_path}: {e}"))?;
+        .map_err(|e| format!("cannot create log file {}: {e}", log_path.display()))?;
     let log_err = log_file.try_clone()
         .map_err(|e| format!("cannot clone log file: {e}"))?;
 
     cmd.stdout(log_file);
     cmd.stderr(log_err);
 
-    cmd.spawn().map_err(|e| format!("spawn failed: {e}"))?;
+    let child = cmd.spawn().map_err(|e| format!("spawn failed: {e}"))?;
 
-    info!(primal, binary = %binary.display(), "spawned");
+    let pid_dir = std::path::PathBuf::from(tolerances::runtime_dir())
+        .join("biomeos")
+        .join(".pids");
+    let _ = std::fs::create_dir_all(&pid_dir);
+    let _ = std::fs::write(pid_dir.join(format!("{primal}.pid")), child.id().to_string());
+
+    info!(primal, binary = %binary.display(), pid = child.id(), "spawned");
     Ok(())
 }
 
@@ -561,4 +581,78 @@ fn register_with_songbird(port: u16, payload: &str) -> Result<(), String> {
         Ok(_) => Err("empty response".to_owned()),
         Err(e) => Err(format!("read: {e}")),
     }
+}
+
+/// Stop all primals in the given list (reverse dependency order).
+pub fn stop_all(primals: &[&str]) {
+    let pid_dir = std::path::PathBuf::from(tolerances::runtime_dir())
+        .join("biomeos")
+        .join(".pids");
+
+    println!("=== Stopping primals ===");
+    for primal in primals.iter().rev() {
+        let pid_file = pid_dir.join(format!("{primal}.pid"));
+        if let Ok(contents) = std::fs::read_to_string(&pid_file) {
+            if let Ok(pid) = contents.trim().parse::<u32>() {
+                print!("  {primal:<14} pid={pid:<8} ");
+                if signal_pid(pid).is_ok() {
+                    println!("\x1b[33mSIGTERM\x1b[0m");
+                } else {
+                    println!("\x1b[31mFAILED\x1b[0m");
+                }
+                let _ = std::fs::remove_file(&pid_file);
+                continue;
+            }
+        }
+        println!("  {primal:<14} \x1b[90mnot running\x1b[0m");
+    }
+
+    std::thread::sleep(Duration::from_secs(1));
+    println!("  Done.");
+}
+
+/// Show status of all primals via PID files and TCP health probes.
+pub fn show_status(primals: &[&str]) {
+    let pid_dir = std::path::PathBuf::from(tolerances::runtime_dir())
+        .join("biomeos")
+        .join(".pids");
+    let health_timeout = Duration::from_secs(3);
+
+    println!("=== NUCLEUS Status ===");
+    println!();
+
+    let mut alive = 0usize;
+    let mut total = 0usize;
+
+    for primal in primals {
+        total += 1;
+        let pid_file = pid_dir.join(format!("{primal}.pid"));
+        let port = effective_port(primal);
+
+        let pid_status = std::fs::read_to_string(&pid_file)
+            .ok()
+            .and_then(|c| c.trim().parse::<u32>().ok())
+            .filter(|pid| std::path::Path::new(&format!("/proc/{pid}")).exists());
+
+        let health_ok = port > 0 && health_check_tcp(port, health_timeout);
+
+        let status = match (pid_status, health_ok) {
+            (Some(_), true) => {
+                alive += 1;
+                "\x1b[32mALIVE\x1b[0m"
+            }
+            (Some(_), false) => "\x1b[33mSTARTED\x1b[0m",
+            (None, true) => {
+                alive += 1;
+                "\x1b[32mALIVE\x1b[0m (no PID file)"
+            }
+            (None, false) => "\x1b[31mDOWN\x1b[0m",
+        };
+
+        let pid_str = pid_status.map_or_else(|| "-".to_owned(), |p| p.to_string());
+        println!("  {primal:<14} [{status}] pid={pid_str:<8} tcp={port}");
+    }
+
+    println!();
+    println!("  {alive}/{total} primals responding to health checks");
 }

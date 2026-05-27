@@ -93,14 +93,12 @@ fn phase_composition_parity(v: &mut ValidationResult, ctx: &mut CompositionConte
             continue;
         }
         let start = std::time::Instant::now();
-        match ctx.call(cap, "health.liveness", serde_json::json!({})) {
-            Ok(_) => {
-                aggregate_us += start.elapsed().as_micros() as u64;
-            }
-            Err(_) => {
-                aggregate_us += start.elapsed().as_micros() as u64;
-                primal_health_ok = false;
-            }
+        #[allow(clippy::cast_possible_truncation)]
+        let elapsed_us = || start.elapsed().as_micros() as u64;
+        let ok = ctx.call(cap, "health.liveness", serde_json::json!({})).is_ok();
+        aggregate_us += elapsed_us();
+        if !ok {
+            primal_health_ok = false;
         }
     }
 

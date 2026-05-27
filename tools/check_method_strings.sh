@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
+# DEPRECATED (Wave 54): Use Rust: primalspring registry --check source
+#
 # PG-65: Method string drift detector
 #
 # Extracts all dotted method strings from Rust source and checks them against

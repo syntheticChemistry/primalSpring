@@ -120,7 +120,10 @@ if [ ! -x "$BIOMEOS_BIN" ]; then
     BIOMEOS_BIN="$PLASMIDBIN/primals/x86_64-unknown-linux-musl/biomeos"
 fi
 
-NUCLEUS_LAUNCHER="$PRIMALSPRING_ROOT/tools/nucleus_launcher.sh"
+NUCLEUS_LAUNCHER_RUST="$PRIMALSPRING_ROOT/ecoPrimal/target/release/nucleus_launcher"
+if [ ! -x "$NUCLEUS_LAUNCHER_RUST" ]; then
+    NUCLEUS_LAUNCHER_RUST="$PRIMALSPRING_ROOT/ecoPrimal/target/debug/nucleus_launcher"
+fi
 
 case "$ACTION" in
     start)
@@ -128,15 +131,15 @@ case "$ACTION" in
             echo ""
             echo "Deploying via biomeOS..."
             exec "$BIOMEOS_BIN" deploy "$CELL_GRAPH"
-        elif [ -x "$NUCLEUS_LAUNCHER" ]; then
+        elif [ -x "$NUCLEUS_LAUNCHER_RUST" ]; then
             echo ""
-            echo "biomeOS binary not found — falling back to nucleus_launcher + overlay"
+            echo "biomeOS binary not found — falling back to Rust nucleus_launcher + overlay"
             echo "Starting NUCLEUS base..."
-            "$NUCLEUS_LAUNCHER" --composition full start
+            "$NUCLEUS_LAUNCHER_RUST" start --family-id "$FAMILY_ID" --composition nucleus
 
             echo ""
             echo "NUCLEUS status:"
-            "$NUCLEUS_LAUNCHER" status
+            "$NUCLEUS_LAUNCHER_RUST" status --composition nucleus
 
             echo ""
             echo "Launching petalTongue in live mode..."
@@ -152,7 +155,7 @@ case "$ACTION" in
                 exit 1
             fi
         else
-            echo "ERROR: Neither biomeOS binary nor nucleus_launcher.sh found"
+            echo "ERROR: Neither biomeOS binary nor Rust nucleus_launcher found"
             echo "  Install plasmidBin or set ECOPRIMALS_PLASMID_BIN"
             exit 1
         fi

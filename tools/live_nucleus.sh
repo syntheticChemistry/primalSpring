@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# DEPRECATED (Wave 51): Prefer nucleus_launcher Rust binary or plasmidbin launch.
+# DEPRECATED (Wave 51→54): Use Rust: nucleus_launcher start --family-id <ID>
+# This script is retained as fossil record only.
 #
 # tools/live_nucleus.sh — Start a minimal NUCLEUS + push demo scenes to petalTongue
 #

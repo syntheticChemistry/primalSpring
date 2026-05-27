@@ -8,7 +8,7 @@
 | **Version** | 0.9.30 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 799 `#[test]` markers (787 pass, 10 live-tier, 2 ignored) |
+| **Tests** | 813 `#[test]` markers (797 pass, 16 live-tier, 2 ignored) |
 | **Experiments** | 92 (21 tracks) — 56 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 95 deploy TOMLs (81 deploy + 14 atomic signal graphs) — fragment-first composition with `resolve = true` |
 | **Coverage** | Method coverage against 458 registered capability methods; line coverage via llvm-cov |
@@ -17,8 +17,9 @@
 | **Provenance** | All 89 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`) |
 | **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 9 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)**, **provenance-elevated checksums** (Layer 2: composite fingerprint + sweetGrass braids) |
-| **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]` — zero unsafe blocks (SeedConfig + OnceLock replaced `env::set_var`) |
+| **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]`, `#![forbid(unsafe_code)]` on lib root — zero unsafe blocks |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
+| **Runtime deps** | 16 (was 17; `hostname` eliminated Wave 54b). Pure Rust crypto stack for BTSP bootstrap. |
 
 ---
 
@@ -57,9 +58,9 @@ primalSpring/
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/
-│   │   ├── primalspring/          # UniBin: certify + validate + serve + status + version
+│   │   ├── primalspring/          # UniBin: certify + validate + serve + status + checksums + registry + version
 │   │   ├── primalspring_primal/   # Legacy RPC server (transitioning → primalspring serve)
-│   │   └── nucleus_launcher/   # Rust nucleus launcher (--federation-port for LAN mesh)
+│   │   └── nucleus_launcher/   # Rust NUCLEUS lifecycle (start/stop/status + federation)
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
 │       ├── server_integration.rs  # 10 core auto tests

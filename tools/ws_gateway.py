@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-or-later
+# BRIDGE: Retained as dev tool; Rust gateway planned when browser integration stabilizes.
 """
 WebSocket Gateway — thin transport bridge between browser and primal IPC.
 
