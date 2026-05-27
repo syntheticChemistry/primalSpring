@@ -563,7 +563,7 @@ biomeOS is the registration authority (exempt from self-announce).
 
 ---
 
-## Spore Ingest/Emit Validation (May 27, 2026)
+## Spore Ingest/Emit Validation — pseudoSpore 2.0 (May 27, 2026)
 
 ### Context
 
@@ -571,36 +571,94 @@ The spore ownership matrix (`infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md`) defi
 a three-way split: domain science (springs), spore envelope (lithoSpore), and
 NUCLEUS gateway (biomeOS). This section validates the gateway path.
 
+**Signal graph**: `graphs/signals/nest_ingest_spore.toml` — 6-step sequential:
+validate_envelope → store → dag_session → ledger_entry → braid → sign_receipt.
+
+**Three-era provenance model**:
+- Era 1 (ad-hoc): hand-authored scope.toml, blind copy (v1.0–v1.6.0)
+- Era 2 (pipeline-derived): metadata extracted + cross-checked (v1.6.1)
+- Era 3 (NUCLEUS nest deploy): provenance trio signs via `nest_ingest_spore` signal (v2.0+)
+
 ### New Columns
 
 | Column | What to Validate | Method |
 |--------|-----------------|--------|
-| **U: Spore Ingest** | `biomeos nucleus ingest <pseudoSpore>` succeeds on Nest Atomic | Live ingest + NestGate verify |
+| **U: Spore Ingest** | `biomeos nucleus ingest <pseudoSpore>` succeeds on Nest Atomic | Live ingest via `nest_ingest_spore` signal + NestGate verify |
 | **V: Spore Emit** | `biomeos nucleus emit` produces valid pseudoSpore from NUCLEUS state | Emit + `litho audit` round-trip |
-| **W: Domain Profile** | Spring's `domain_profile.toml` drives `litho emit-pseudospore` correctly | `litho emit-pseudospore --domain-profile` |
+| **W: Domain Profile** | Spring's `domain_profile.toml` drives `litho emit-pseudospore` correctly | `litho emit-pseudospore --spring X --domain-profile Y` |
 
 ### Rows (Springs — Spore Readiness)
 
-| Spring | U: Ingest | V: Emit | W: Domain Profile |
-|--------|-----------|---------|-------------------|
-| **hotSpring** | pending (first target — pseudoSpore v1.6.1 exists) | planned | pending |
-| **groundSpring** | pending (lithoSpore LTEE modules exist) | planned | pending |
-| **wetSpring** | planned | planned | planned |
-| **airSpring** | planned | planned | planned |
-| **neuralSpring** | planned | planned | planned |
-| **healthSpring** | planned | planned | planned |
-| **ludoSpring** | planned | planned | planned |
+| Spring | U: Ingest | V: Emit | W: Domain Profile | Notes |
+|--------|-----------|---------|-------------------|-------|
+| **hotSpring** | **BLOCKED** (biomeOS gateway) | planned | pending | First target — pseudoSpore v1.6.1 artifact exists; nest-validate deploy step 7 already calls `biomeos nucleus ingest` (falls through to `litho ingest-pseudospore`) |
+| **groundSpring** | **BLOCKED** (biomeOS gateway) | planned | pending | lithoSpore LTEE modules exist; natural second data point |
+| **wetSpring** | planned | planned | planned | Tenaillon 2016 queued (264 clones, 590 GB) |
+| **airSpring** | planned | planned | planned | |
+| **neuralSpring** | planned | planned | planned | |
+| **healthSpring** | planned | planned | planned | |
+| **ludoSpring** | planned | planned | planned | Game telemetry pseudoSpore (theoretical) |
 
-### Planned Experiments
+### Critical Blocker: `biomeos nucleus ingest` / `nucleus emit`
 
-| Experiment | Layer | Purpose |
-|-----------|-------|---------|
-| `exp_nest_ingest_pseudospore` | Nest Atomic | Validate `biomeos nucleus ingest` absorbs a pseudoSpore into NestGate + provenance trio |
-| `exp_spore_round_trip` | Full NUCLEUS | Ingest a pseudoSpore, emit it back, verify BLAKE3 integrity preserved |
+These biomeOS CLI subcommands do **not exist** in biomeOS codebase yet. hotSpring's
+`nest-validate guidestone deploy` step 7 already calls `biomeos nucleus ingest` and
+falls through to the transitional `litho ingest-pseudospore` path. Until biomeOS
+lands these subcommands, column U cannot pass for any spring.
+
+**biomeOS team action**: Wire `nucleus ingest` and `nucleus emit` subcommands to the
+clap parser in `biomeos-cli`. The handler should:
+1. Validate pseudoSpore envelope (liveSpore.json schema, BLAKE3 data manifest)
+2. Store via NestGate `storage.store` / `content.put`
+3. Create DAG session via rhizoCrypt `dag.session.create`
+4. Append ledger entry via loamSpine `entry.append`
+5. Create attribution braid via sweetGrass `braid.create`
+6. Sign receipt via BearDog `crypto.sign`
+7. Return `receipts/nucleus_ingest.toml` with all trio IDs
+
+This flow is encoded in `graphs/signals/nest_ingest_spore.toml`.
+
+### Second Blocker: `pseudospore-core` Not Wired
+
+`gardens/lithoSpore/crates/pseudospore-core/` exists as a standalone crate but has
+zero consumers. Both `ltee-cli` and future `biomeos nucleus ingest` should depend on
+it instead of reimplementing envelope logic. `litho-core::pseudospore` duplicates
+the envelope parsing that `pseudospore-core` should own.
+
+**lithoSpore team action**: Wire `pseudospore-core` as a dependency of `ltee-cli`,
+replacing the parallel `litho-core::pseudospore` module.
+
+### Experiments (Wired)
+
+| Experiment | Layer | Purpose | Status |
+|-----------|-------|---------|--------|
+| `exp115_nest_ingest_pseudospore` | Nest Atomic | 5-phase: ownership matrix, schema, emit contract, gateway, trio signing | **LANDED** — structural assertions pass; live phases skip when NUCLEUS down |
+| `s_nest_atomic` Phase 4 | Scenario | Spore gateway structural (ownership matrix, pseudospore-core, nucleus_ingest) | **LANDED** — 3 structural checks |
+| `exp_spore_round_trip` | Full NUCLEUS | Ingest → emit → verify BLAKE3 integrity preserved | **PLANNED** — post column U pass |
 
 ### Gate Criterion
 
 **"Any spring can emit a pseudoSpore; any NUCLEUS can ingest it."**
 
 This is the gen4 spore universality gate. When column U passes for 2+ springs and
-column V passes for 1+ spring, the gateway is validated.
+column V passes for 1+ spring, the gateway is validated. This is a **pre-stadial**
+requirement: the niche climate must support postPrimordial spore flow before
+stadial entry gates can be evaluated.
+
+### postPrimordial Emission Chain (target state)
+
+```
+Spring (domain science)
+  → litho emit-pseudospore --spring X --domain-profile Y
+    → liveSpore.json + data.toml + checksums.blake3
+      → biomeos nucleus ingest <dir>  [nest_ingest_spore signal]
+        → NestGate storage.store (content-addressed)
+        → rhizoCrypt dag.session.create (ephemeral DAG)
+        → loamSpine entry.append (permanent ledger)
+        → sweetGrass braid.create (semantic attribution)
+        → BearDog crypto.sign (receipt)
+          → receipts/nucleus_ingest.toml
+```
+
+Every step uses existing primal capabilities via JSON-RPC. The signal graph
+composes them. No new capabilities needed — only the biomeOS CLI orchestrator.

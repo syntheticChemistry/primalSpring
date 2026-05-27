@@ -85,14 +85,15 @@ fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
 /// Phase 4: Spore gateway structural validation (exp115_nest_ingest_pseudospore).
 ///
-/// Validates that the spore ownership matrix infrastructure exists:
-/// - pseudospore-core crate is part of lithoSpore workspace
+/// Validates pseudoSpore 2.0 postPrimordial infrastructure:
+/// - Ownership matrix documented (three-way split)
+/// - pseudospore-core crate in lithoSpore workspace
 /// - biomeos nucleus ingest command module exists
-/// - liveSpore.json unified schema is documented
+/// - Signal graph `nest_ingest_spore.toml` defines the 6-step ingest flow
+/// - Three-era provenance model documented
 ///
 /// Live ingest tests require a running Nest Atomic and are gated on Phase 3 health.
 fn phase_spore_gateway(v: &mut ValidationResult) {
-    // Structural: SPORE_OWNERSHIP_MATRIX.md exists
     let matrix_exists = std::path::Path::new("infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md").exists()
         || std::path::Path::new("../../infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md").exists();
     v.check_bool(
@@ -101,7 +102,6 @@ fn phase_spore_gateway(v: &mut ValidationResult) {
         "SPORE_OWNERSHIP_MATRIX.md documents the three-way split",
     );
 
-    // Structural: pseudospore-core crate exists
     let core_exists = std::path::Path::new("gardens/lithoSpore/crates/pseudospore-core/Cargo.toml").exists()
         || std::path::Path::new("../../gardens/lithoSpore/crates/pseudospore-core/Cargo.toml").exists();
     v.check_bool(
@@ -110,13 +110,28 @@ fn phase_spore_gateway(v: &mut ValidationResult) {
         "pseudospore-core crate provides domain-agnostic envelope primitives",
     );
 
-    // Structural: nucleus_ingest.rs exists in biomeOS
     let gateway_exists = std::path::Path::new("primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs").exists()
         || std::path::Path::new("../../primals/biomeOS/crates/biomeos-cli/src/commands/nucleus_ingest.rs").exists();
     v.check_bool(
         "nucleus_ingest_module_exists",
         gateway_exists,
         "biomeos nucleus ingest command implements the NUCLEUS gateway",
+    );
+
+    let signal_graph_exists = std::path::Path::new("graphs/signals/nest_ingest_spore.toml").exists()
+        || std::path::Path::new("../../graphs/signals/nest_ingest_spore.toml").exists();
+    v.check_bool(
+        "nest_ingest_spore_signal_graph",
+        signal_graph_exists,
+        "nest_ingest_spore.toml defines 6-step sequential ingest flow",
+    );
+
+    let matrix_md = std::path::Path::new("specs/NUCLEUS_VALIDATION_MATRIX.md").exists()
+        || std::path::Path::new("../../specs/NUCLEUS_VALIDATION_MATRIX.md").exists();
+    v.check_bool(
+        "nucleus_matrix_spore_columns",
+        matrix_md,
+        "NUCLEUS_VALIDATION_MATRIX columns U/V/W define spore ingest/emit/profile",
     );
 }
 

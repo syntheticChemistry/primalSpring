@@ -195,6 +195,69 @@ composition testing and trio-verified deployments.
 
 ---
 
+## Niche Climate Evolution — Pre-Stadial (May 27, 2026)
+
+> Full spec: `specs/NICHE_CLIMATE_EVOLUTION.md`
+
+The ecosystem is **interstadial**: primals are clean (13/13), but the niche climate
+(deployment topology, spore flow, cross-gate mesh) must warm before stadial gates.
+
+### NC-1: postPrimordial Spore Gateway — **BLOCKED**
+
+**Critical blocker**: `biomeos nucleus ingest` / `nucleus emit` CLI subcommands
+do not exist in biomeOS codebase. hotSpring `nest-validate guidestone deploy`
+step 7 already calls it and falls through to transitional `litho ingest-pseudospore`.
+
+**Signal graph**: `graphs/signals/nest_ingest_spore.toml` (6-step: validate_envelope
+→ store → dag_session → ledger_entry → braid → sign_receipt).
+
+| Action | Owner | Status |
+|--------|-------|--------|
+| Land `biomeos nucleus ingest/emit` subcommands | biomeOS team | **NOT STARTED** |
+| Wire `pseudospore-core` as `ltee-cli` dependency | lithoSpore team | **NOT STARTED** |
+| hotSpring v1.6.1 ingest via NUCLEUS (Era 3) | hotSpring + biomeOS | **BLOCKED** on biomeOS |
+| groundSpring as second data point | groundSpring + biomeOS | **BLOCKED** on biomeOS |
+| exp115 live phases (4-5) | primalSpring | **GATED** on NUCLEUS availability |
+
+### NC-2: Multi-Gate NUCLEUS Mesh — **BLOCKED**
+
+**Blocker**: southGate instability (7/13 health-responding). Operational, not code.
+
+| Action | Owner | Status |
+|--------|-------|--------|
+| Stabilize southGate 13/13 health | wetSpring / neuralSpring ops | **INVESTIGATING** |
+| Live `s_covalent_mesh` across 3+ gates | primalSpring | **BLOCKED** on NC-2.1 |
+| P0 `nucleus-x86-mixed-uds` matrix cell | primalSpring | **BLOCKED** on NC-2.2 |
+| biomeGate full NUCLEUS (9→13) | hotSpring + ops | **PLANNED** |
+
+### NC-3: cellMembrane Sovereignty — **IN PROGRESS**
+
+CM-1 through CM-4 resolved. Next: NestGate + trio on VPS, K-Derm boundary, DNS cutover.
+
+| Action | Owner | Status |
+|--------|-------|--------|
+| NestGate + trio on VPS | cellMembrane + ops | **PLANNED** |
+| K-Derm boundary publication | cellMembrane | **PLANNED** |
+| knot-dns shadow → primary | cellMembrane + ops | **PLANNED** |
+| Forgejo releases | cellMembrane + plasmidBin | **PLANNED** |
+
+### NC-4: Spring NUCLEUS Depth (per gate)
+
+| Gate | Team | Required | Current | Action |
+|------|------|----------|---------|--------|
+| eastGate | airSpring, groundSpring | Full NUCLEUS | **Operational** | — |
+| ironGate | healthSpring, ludoSpring | Full NUCLEUS | **Operational** | NestComposition facade, GAP-01 |
+| southGate | wetSpring, neuralSpring | Node Atomic | **7/13 health** | Stabilize, live mesh |
+| biomeGate | hotSpring | Node → Full | **9/13 primals** | Elevate to full NUCLEUS |
+
+### Stadial Entry Requires
+
+1. NC-1 (2+ springs pass column U) — spore universality
+2. NC-2 (3+ gates meshed) — topology confidence
+3. NC-4 (all 4 named gates healthy) — spring NUCLEUS depth
+
+---
+
 ## Upstream Gap Reconciliation (projectNUCLEUS May 9, 2026)
 
 Post-deep-debt-sweep reconciliation from downstream `projectNUCLEUS`:
