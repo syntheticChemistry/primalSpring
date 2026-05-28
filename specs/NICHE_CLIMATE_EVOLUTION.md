@@ -1,6 +1,6 @@
 # Niche Climate Evolution — Pre-Stadial Requirements
 
-**Date**: 2026-05-27
+**Date**: 2026-05-28
 **Phase**: Interstadial → Stadial
 **Scope**: primalSpring-tracked requirements that must be met before stadial gates
 
@@ -153,7 +153,7 @@ For lithoSpore emissions to be **postPrimordial**, every pseudoSpore must:
 | NC-2 | Multi-Gate NUCLEUS Mesh | **IN PROGRESS** — Songbird TCP seed fixed, GAP-17/18 constants centralized. southGate ops stabilization. | **YES** |
 | NC-3 | cellMembrane Sovereignty | **CONSUMED** — Wave 57: deep debt complete (95.8% coverage, typed errors, licensing). Forgejo + NS cutover remaining. | Partial |
 | NC-4 | Spring NUCLEUS Depth | **ADVANCING** — projectNUCLEUS Wave 58: 166 tests, async-correct, wire-native discovery. east/iron OK, south/biome partial. | **YES** |
-| NC-5 | lithoSpore postPrimordial | **UNBLOCKED** — NC-1.4 resolved, `--from-dir` emission path shipped. Gated on live Nest Atomic deploy + 2nd spring emission. | **YES** |
+| NC-5 | lithoSpore postPrimordial | **UNBLOCKED** — NC-1.4 resolved, `--from-dir` shipped, dead code retired (pseudospore.rs, graph_checks.rs), `env_vars.rs` created. Gated on live Nest Atomic deploy + 2nd spring emission. | **YES** |
 
 **Stadial entry requires**: NC-1 (2+ springs), NC-2 (3+ gates), NC-4 (all 4 named gates healthy).
 NC-3 and NC-5 are progressive — partial satisfaction enables stadial entry, full

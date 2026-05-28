@@ -9,13 +9,13 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-27 (Wave 55b deep debt: security fixes (NoopVerifier fail-closed, real timestamps, seed entropy), NeuralBridge 15→1 connect, 12 deprecated scripts archived to fossilRecord, IpcError::kind(), self-knowledge checks evolved to runtime discovery. biomeOS v3.79 gateway completion. 460 methods, 15 signals, 56 scenarios, 813 tests. 13/13 CLEAN.)
+> **Last updated**: 2026-05-28 (Wave 58b ecosystem absorption: biomeOS v3.84 env centralization + test extraction. bearDog Wave 117b orphan purge + env_keys.rs (290 constants). songbird Wave 58 process-env full adoption + 146 expect migrations + 8,158 tests. squirrel Wave 58 env centralization (316 constants) + 5,417L orphan purge. projectFOUNDATION Rust elevation Phase B (5 crates). lithoSpore dead code retired + env_vars.rs. projectNUCLEUS Wave 58 async-correct + 166 tests. cellMembrane Wave 57 95.8% coverage. 797 lib tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (May 27, 2026)
+## Ecosystem Status (May 28, 2026)
 
 **267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 56 scenarios (10 tracks, 3 tiers), 460 real methods (460 exercised = 100%), **813 lib tests** (797 pass, 16 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps** (hostname eliminated Wave 54b). Pure Rust crypto for BTSP bootstrap. Wave 54b: **deep debt zero** — 6 CI bash scripts absorbed into Rust subcommands (`primalspring checksums`, `primalspring registry`). `nucleus_launcher` now full lifecycle (start/stop/status via PID tracking). All hardcoded UID/port/path values centralized to `tolerances` module. `deploy_membrane.sh` supports full NUCLEUS composition (13 primals, 4 tiers). hotSpring pseudoSpore v1.6.1 → NUCLEUS-ready. 4 gates operational. **pseudoSpore 2.0**: lithoSpore emissions to be postPrimordial via NUCLEUS (`biomeos nucleus ingest` + `litho emit-pseudospore`). **`discovery.peers` RESOLVED** (Wave 51). Live gate validation NEXT.
 
@@ -42,12 +42,12 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
-| bearDog | 14,784+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 112: ACME renewal daemon wired, 127 methods, `crypto.ionic_bond.verify_proposal` shipped. |
-| songbird | 8,070+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 53b: +74 tests, deep debt zero confirmed. `forbid(unsafe_code)` all 31 crates. Zero FIXME/HACK. |
+| bearDog | 14,987+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 117b: orphan purge (21 files, ~3,500 LOC), `env_keys.rs` (290 constants), HTTP-era config annotated. |
+| songbird | 8,158+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 58: `songbird-process-env` fully adopted (48 sites), 146 `#[expect` migrations, +67 tests. Zero hardcoded env in prod. |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S279: zero production panic paths (12 eliminated), deprecated legacy capability roundtrip. 9,156+ lib tests. 47 crates, 88 methods. |
-| biomeOS | 8,038+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.79: gateway completion. `nucleus ingest/emit` CLI + 2 signal graphs (ingest 6-step, emit 3-step). Content path, async receipt, graph sync. 19 signal graphs. Pending: NC-1.4 swap to `pseudospore-core`. |
+| biomeOS | 8,038+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.84: `env_config` module (90+ literals centralized), test extraction refactors. NC-1.4 COMPLETE (`biomeos-pseudospore`). |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
-| squirrel | 7,178 | **ADOPTED** | FULL | L2 | **CLEAN** — 1105L test split, inference dispatch (P7) |
+| squirrel | 7,095+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 58: 316 env constants (`env_vars.rs`), self-identity eliminated, 5,417L orphan purge. ~93 files remaining raw `std::env::var`. |
 | barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `math.rs` refactored (split `signal.rs` + `stats.rs`), `pollster` eliminated, hardcoding → capability-based. 87 IPC methods. |
 | petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — WS-4: `petal-tongue-wasm` expanded (8 `wasm_bindgen` functions: `render_dashboard`, `render_binding`, `render_scene`, `validate_grammar`, modality dispatch). Client-side WASM rendering for offline sporePrint. |
 | rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `Box<dyn Error>` eliminated, test harness extracted, workspace dep hygiene, stale spec headers fixed. |
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — all behavioral convergence items RESOLVED. Waves 1-55b complete. 56 scenarios (10 tracks), 460 real methods (460 exercised = 100%), 813 lib tests, zero clippy warnings (pedantic + nursery). Zero panics in production. Wave 54: provenance-elevated checksums + sweetGrass braids. 3 primals harvested with full provenance (toadStool S279, Songbird W53b, loamSpine W55). biomeOS LiveSpore fix confirmed (v3.76). toadStool: zero production panic paths (9,156+ lib tests). Songbird: +74 tests, deep debt zero (8,070+ lib tests). loamSpine: BearDog coupling removed, self-knowledge enforced.**
+**13/13 CLEAN — Waves 1-58b complete. 56 scenarios (10 tracks), 460 real methods (460 exercised = 100%), 797 lib tests, zero clippy warnings (pedantic + nursery). Wave 58 ecosystem response: bearDog created `env_keys.rs` (290 constants, 14,987 tests), songbird fully adopted `songbird-process-env` (8,158 tests), squirrel centralized 316 env constants (7,095 tests), biomeOS shipped `env_config` module (v3.84). projectFOUNDATION elevated to Rust (5 crates). projectNUCLEUS async-correct with 166 tests. cellMembrane at 95.8% coverage. Env var centralization now complete or in progress across all 13 primals. Fresh ecoBins harvested (squirrel, biomeOS).**
 
 ---
 
@@ -812,7 +812,7 @@ calibrate-shadow-cutover protocol, darkforest alignment
 **Scope**: Public data anchoring, provenance validation, thread coverage
 **Current**: 10 domain threads, 100+ data sources. CI thread-index validation functional.
 Validation reality: Threads 2, 6, 7 fully validated; Thread 1 WCM (10/25 hashed, FN-1 partial).
-FN-1 (BLAKE3 backfill) **IN PROGRESS** — 10/25 sources hashed (NCBI, UniProt, KEGG; 15 need manual fetch). FN-5 (CI validation) **RESOLVED** — CI extended to 13 steps with hash regression gate, typed IPC, thread_registry.sh. Springs seeding:
+FN-1 (BLAKE3 backfill) **IN PROGRESS** — 10/25 sources hashed (NCBI, UniProt, KEGG; 15 need manual fetch). FN-5 (CI validation + Rust elevation) **RESOLVED** — Phase B complete: full Rust workspace with 5 crates (`foundation-cli`, `foundation-core`, `foundation-fetch`, `foundation-ipc`, `foundation-validate`). Native BLAKE3 hashing, UDS IPC client, validation pipeline with comparison engine. Springs seeding:
 - airSpring: Thread 6 (ag) — 36/36 targets validated
 - hotSpring: Thread 2 seeded
 - neuralSpring: Threads 5+7 documented, ready for contribution
