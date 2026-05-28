@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-28 (Wave 58b ecosystem absorption: biomeOS v3.84 env centralization + test extraction. bearDog Wave 117b orphan purge + env_keys.rs (290 constants). songbird Wave 58 process-env full adoption + 146 expect migrations + 8,158 tests. squirrel Wave 58 env centralization (316 constants) + 5,417L orphan purge. projectFOUNDATION Rust elevation Phase B (5 crates). lithoSpore dead code retired + env_vars.rs. projectNUCLEUS Wave 58 async-correct + 166 tests. cellMembrane Wave 57 95.8% coverage. 797 lib tests. 13/13 CLEAN.)
+> **Last updated**: 2026-05-28 (Wave 60 postPrimordial: golgiBody Phase A live on VPS, WaterFall 38/38 sovereign sync validated, VPS knot-dns zone updated. Wave 59b: NUCLEUS on VPS (13/13, 57s deploy), bearDog W118 PRIMAL_CONTRACTS v4.0, lithoSpore derivation anchoring. Wave 58b: biomeOS v3.84 env centralization, bearDog orphan purge + env_keys.rs (290 constants), songbird process-env (8,158 tests), squirrel env centralization (316 constants), projectFOUNDATION Rust elevation. 802 lib tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 28, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 56 scenarios (10 tracks, 3 tiers), 460 real methods (460 exercised = 100%), **797 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 59: P0 RESOLVED** — cellMembrane deployed NUCLEUS to VPS (13/13 primals active on UDS sockets, 57s deploy, zero new firewall ports). Spring overlay validated (hotSpring cell graph 14 nodes parsed). `graph.execute` gated on biomeOS v0.2. bearDog W118: PRIMAL_CONTRACTS v4.0 (127→223 methods), NC-3.5 `auth.issue_session` scope RESOLVED. lithoSpore W59: derivation anchoring wired (GUIDESTONE-GRADE items 11-14), 192 tests. **Strategy**: wet/neuralSpring on southGate as concentrated pattern node → membrane handoff to other springs. **Critical path**: southGate 7→13/13 + biomeOS `graph.execute` → column U → stadial.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 57 scenarios (10 tracks, 3 tiers), 460 real methods (460 exercised = 100%), **802 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 60: postPrimordial** — golgiBody Phase A live (VPS Forgejo, 38 repos sovereign sync, WaterFall validated). VPS NUCLEUS 13/13 primals on UDS sockets. `graph.execute` gated on biomeOS v0.2. **Strategy**: wet/neuralSpring on southGate as concentrated pattern node → membrane handoff to other springs. **Critical path**: southGate 7→13/13 + biomeOS `graph.execute` → column U → stadial.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
