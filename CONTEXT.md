@@ -5,9 +5,16 @@
 ## What
 
 primalSpring is the coordination and composition validation spring for
-the ecoPrimals ecosystem. Its domain IS the ecosystem itself: atomic
-composition (Tower, Node, Nest, Full NUCLEUS), graph execution patterns,
-emergent systems, multi-node bonding, and cross-spring interaction.
+the ecoPrimals ecosystem. Its domain IS the ecosystem itself — exclusively:
+atomic composition (Tower, Node, Nest, Full NUCLEUS), graph execution
+patterns, emergent systems, multi-node bonding, and cross-spring interaction.
+
+primalSpring is NOT a science spring. It does not own domain-specific
+validation — that belongs to each gate's springs (hotSpring → physics,
+wetSpring → biology, etc.). primalSpring validates that compositions of
+primals work together; it is the bonding mechanics, not the atoms.
+See `wateringHole/GATE_SPRING_OWNERSHIP.md` for the canonical gate-spring
+routing SSOT.
 
 ## Role
 
@@ -209,22 +216,17 @@ states, and `tools/composition_nucleus.sh` is the parameterized NUCLEUS launcher
 
 | Field | Value |
 |-------|-------|
-| **Gate** | eastGate (primary) + ironGate (shared) |
+| **Gate** | eastGate (primary) — coordination hub |
 | **Composition** | Full NUCLEUS (13/13 primals) |
-| **NUCLEUS status** | operational — VALIDATED on both gates |
+| **NUCLEUS status** | operational — VALIDATED |
 | **Songbird federation** | port 7700 |
 | **LAN mesh** | ready — covalent linking via Songbird TCP |
 
-| Gate | Role | Springs/Primals |
-|------|------|-----------------|
-| **eastGate** | Primary dev — primalSpring, plasmidBin, upstream coordination | Orchestrator, BTSP convergence, assists all remote teams |
-| **ironGate** | Sister dev — clean deployment validation, composition testing | primalSpring (shared), ludoSpring, groundSpring |
-
-primalSpring development is shared between eastGate and ironGate. ironGate
-provides clean deployment validation — fresh NUCLEUS bootstraps via
-`fetch_primals.sh` without pre-existing state. eastGate handles the
-bottleneck work: BTSP convergence, plasmidBin CI/CD, upstream primal
-coordination, and ecosystem-wide Phase 3 rollout.
+primalSpring lives on eastGate as the ecosystem coordination spring.
+Other gates evolve their own springs independently — see
+`wateringHole/GATE_SPRING_OWNERSHIP.md` for the full routing table.
+eastGate handles BTSP convergence, plasmidBin CI/CD, upstream primal
+coordination, and ecosystem-wide rollout.
 
 See `infra/whitePaper/gen3/about/HARDWARE.md` for full cluster topology
 (11 towers, 4 HBM2 cards, 3 NPUs, ~1 TB aggregate RAM).
