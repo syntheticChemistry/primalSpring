@@ -2,8 +2,8 @@
 
 # primalSpring — Primal Proof IPC Mapping
 
-**Date**: May 15, 2026
-**Version**: v0.9.25 (Phase 32 — Tier 2 converged, GAP-36 resolved, Phase D wired, Neural API evolution v3.55–v3.57)
+**Date**: May 28, 2026
+**Version**: v0.9.30 (Wave 58b — 56 scenarios, 460 methods, Neural API telemetry persistence)
 **Role**: Coordination spring — validates compositions, does not perform domain science
 
 ---

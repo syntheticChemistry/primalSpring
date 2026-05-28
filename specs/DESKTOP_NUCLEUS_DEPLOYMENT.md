@@ -2,7 +2,7 @@
 
 **Status**: Design Spec (Phase 56)
 **Date**: April 28, 2026
-**Origin**: primalSpring v0.9.28 Phase 55c — all 13 primals resolved
+**Origin**: primalSpring v0.9.30 Wave 58b — all 13 primals resolved
 **Scope**: Evolve `biomeos nucleus` from a 5-primal coordinator to the full 13-primal desktop substrate
 
 ---
@@ -11,15 +11,15 @@
 
 Today the Desktop NUCLEUS deploys via two paths:
 
-1. **`composition_nucleus.sh`** (primary): Shell script that launches 11 primals
-   in phased dependency order, creates capability symlinks, registers primals
-   with Songbird, persists the family seed, and optionally starts petalTongue
-   in `live` mode. This is the production path — validated at 28/30 checks.
+1. **`nucleus_launcher`** (primary): Rust binary with full lifecycle management
+   (`start`/`stop`/`status` subcommands), PID-file tracking, 13-primal phased
+   dependency ordering, `--uds-only` support for zero-TCP-port deployments,
+   socket health checks, and federation capability. `desktop_nucleus.sh` wraps
+   this for convenience. (Superseded `composition_nucleus.sh` — archived Wave 55b.)
 
-2. **`biomeos nucleus --mode full`** (secondary): Rust binary that launches
-   5 primals (BearDog, Songbird, NestGate, ToadStool, Squirrel) + Neural API.
-   Has richer lifecycle management (`LifecycleManager`, health monitoring,
-   pre-existing cluster detection) but cannot deploy the full Desktop NUCLEUS.
+2. **`biomeos nucleus --mode full`** (secondary): biomeOS native binary that
+   launches primals + Neural API via graph-driven deployment. Used for VPS
+   cellular deploys via `biomeos deploy graphs/cells/*.toml`.
 
 This spec defines `biomeos nucleus --mode desktop` — a new mode that absorbs
 the composition launcher's capabilities into the biomeOS binary, making the

@@ -93,7 +93,7 @@
     "phase_40_50": { "experiments_added": 25, "period": "Feb–Mar 2026" },
     "phase_50_55": { "experiments_added": 30, "period": "Mar–Apr 2026" },
     "phase_55_59": { "experiments_added": 30, "period": "Apr–May 2026" },
-    "phase_60_interstadial": { "experiments_added": 4, "period": "May 2026", "note": "Interstadial transition: all 89 experiments rewired to CompositionContext + v0.9.25" },
+    "phase_60_interstadial": { "experiments_added": 4, "period": "May 2026", "note": "Interstadial transition: all 93 experiments rewired to CompositionContext + v0.9.30" },
     "phase_60_unibin": { "period": "May 2026", "note": "20 experiments absorbed into ecoPrimal validation scenarios; run via primalspring validate" },
     "phase_60_postprimordial": { "experiments_added": 4, "period": "May 2026", "note": "PostPrimordial glacial shift: NUCLEUS audit, cephalization, Tower CNS, pseudoSpore gateway (exp112-115)" }
   },

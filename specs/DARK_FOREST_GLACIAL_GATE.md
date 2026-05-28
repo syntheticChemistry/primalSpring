@@ -75,7 +75,7 @@ capabilities. The `tower_atomic` fragment includes songbird.
 
 **Pass condition**: The BTSP protocol constants match the standard. Deploy
 graphs declare `secure_by_default = true` in metadata. The `btsp.capabilities`
-method is registered in the 458-method capability registry. All manifest primal entries that
+method is registered in the 460-method capability registry. All manifest primal entries that
 declare `seed_fingerprint` use BLAKE3.
 
 ### Pillar 5: Enclave Computing

@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: May 25, 2026
-**Status**: Phase 60+ — v0.9.28 — 89 experiments (20 tracks), 791 `#[test]` markers (780 pass, 9 live-tier, 2 ignored, 0 clippy errors), 95 deploy graphs (81 deploy + 14 signal), **458 registered capability methods**, 53 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 49**: post-primordial (plasmidBin-only), `SONGBIRD_PEERS` peer seeding, 4 springs confirmed. **Wave 48**: 8/8 springs sounded off, 4 gates operational. **Zero DEBT markers / zero unsafe blocks**. **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, adaptive routing weights, composition patterns, `primal.announce` 12/12). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs.
+**Date**: May 28, 2026
+**Status**: Wave 58b — v0.9.30 — 93 experiments (21 tracks), 797 lib tests (797 pass, 2 ignored) + 17 doc tests, 97 deploy graphs (82 deploy + 15 signal), **460 registered capability methods**, 56 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 58b**: dispatch telemetry persistence, primal name constants, blake3 correctness, env centralization 11/13 primals. NC-1 COMPLETE (code), NC-3 CONSUMED, NC-4 ADVANCING, NC-5 UNBLOCKED. biomeOS v3.84. **Zero DEBT markers / zero unsafe / zero `#[allow]`**. **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, adaptive routing weights, composition patterns, `primal.announce` 12/12, dispatch telemetry for Layer 4/5 evolution). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs.
 
 ---
 
@@ -60,12 +60,12 @@ port" is the implementation. The "Primal composition" is the live ecosystem.
 | 19 | Foundation Validation | exp107 | Does the foundation sediment pipeline run through NUCLEUS via Rust IPC? 8-phase validation (structural → discovery → health → provenance → storage → compute → ledger → attribution) |
 | 20 | Security + Composition Lifecycle | exp108–exp111 | Token federation (JH-11 cross-primal Ed25519), composition reload lifecycle, audit pipeline (JH-5 skunkBat→rhizoCrypt→sweetGrass), gate-aware Neural API routing |
 
-## Current State (v0.9.28)
+## Current State (v0.9.30)
 
 | Metric | Value |
 |--------|-------|
 | Experiments | 89 (20 tracks) |
-| Total tests | **791** workspace (780 passed + 9 live-tier + 2 ignored; unit + integration + doc-tests + proptest) |
+| Total tests | **797** lib (797 passed + 2 ignored) + **17** doc tests (unit + integration + doc-tests + proptest) |
 | Registered capability methods | **458** |
 | Proptest fuzz tests | 22 (IPC protocol, extract, capability parsing, cross-cutting pipeline) |
 | clippy (pedantic+nursery+unwrap/expect) | 0 warnings (all-targets) |

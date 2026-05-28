@@ -1,7 +1,7 @@
 {
-  "generated": "2026-05-25T19:00:00Z",
+  "generated": "2026-05-28T14:00:00Z",
   "spring": "primalSpring",
-  "wave": 49,
+  "wave": "58b",
   "hardware": {
     "cpu": "AMD Ryzen 9 7950X",
     "ram_gb": 64,
@@ -17,19 +17,19 @@
     "test_compile_s": 12.7
   },
   "test_suite_timing": {
-    "lib_tests_791_s": 0.24,
-    "doctests_10_s": 0.07,
+    "lib_tests_797_s": 0.27,
+    "doctests_17_s": 0.07,
     "total_s": 28.4
   },
   "validation_benchmarks": {
     "primalspring_validate": {
-      "description": "UniBin validate: 53 scenarios across 10 tracks, 3 tiers",
+      "description": "UniBin validate: 56 scenarios across 10 tracks, 3 tiers",
       "note": "Absorbed primalspring_guidestone (P1-P4) + primalspring_trio (IPC) into organelles",
-      "scenarios": 53,
+      "scenarios": 56,
       "tracks": 10,
       "tiers": 3,
       "total_ms": 1200,
-      "total_checks": 458
+      "total_checks": 460
     },
     "primalspring_certify": {
       "description": "UniBin certify: L0-L8 certification engine (absorbed guidestone)",

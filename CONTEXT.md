@@ -28,7 +28,7 @@ back upstream to primals and primalSpring.
   `primalspring` (eukaryotic UniBin: certify + validate + serve + status + checksums + registry + version),
   `primalspring_primal` (JSON-RPC IPC server / cell membrane),
   `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status with PID tracking + federation)
-- **experiments/** — 92 validation binaries covering 21 tracks
+- **experiments/** — 93 validation binaries covering 21 tracks
 - **graphs/** — 81 deploy graph TOMLs + 15 atomic signal graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
@@ -74,10 +74,10 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.30 Wave 55b (May 27, 2026) — 56 scenarios (10 tracks, 3 tiers),
+v0.9.30 Wave 58b (May 28, 2026) — 56 scenarios (10 tracks, 3 tiers),
 460 registered capability methods (460 exercised, 100% coverage),
-93 experiments (21 tracks), 96 deploy graphs (81 deploy + 15 signal),
-44-cell deployment matrix. 813 lib tests (797 pass, 16 live-tier, 2 ignored). 13/13 behavioral
+93 experiments (21 tracks), 97 deploy graphs (82 deploy + 15 atomic signal graphs),
+44-cell deployment matrix. 797 lib tests pass (2 ignored) + 17 doc tests. 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
 sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
 `hostname` crate eliminated (17→16 runtime deps). `nucleus_launcher` now has
@@ -98,9 +98,18 @@ to NUCLEUS-ready (provenance trio slots, three-era deployment model, `biomeos nu
 three-tier fallback, ownership boundary split per SPORE_OWNERSHIP_MATRIX). pseudoSpore 2.0
 compChem target: publish on sporePrint, host via HPC LAN (biomeGate).
 
-**Waves 1-49 complete**. Key milestones: post-primordial (W49), covalent mesh (W48), Neural API deployment (W42), observatory
+**Wave 58b: Deep debt sprint** — dispatch telemetry persistence (`flush_metrics_to_file()`,
+`DispatchMetric` now `Serialize`), `NoopVerifier` → `PermissiveVerifier`, `blake3_hash` correctness
+fix (was SHA-256), primal name constants in orchestrator/routing, `#[expect]` everywhere (zero
+`#[allow]` remaining), env key centralization in `tolerances`, `entropy`, `orchestrator`.
+Neural API evolution: Layer 4/5 data collection foundation — JSON-lines telemetry ready for
+single-layer perceptron routing evolution. NC-1 COMPLETE (code), NC-3 CONSUMED, NC-4 ADVANCING,
+NC-5 UNBLOCKED. biomeOS v3.84, bearDog/songbird env debt RESOLVED, squirrel IN PROGRESS.
+
+**Waves 1-55b complete**. Key milestones: post-primordial (W49), covalent mesh (W48), Neural API deployment (W42), observatory
 posture (W41), neural routing layer (W40), upstream absorption (W39), behavioral
-convergence (W47). Wave-by-wave detail fossilized to `fossilRecord/`.
+convergence (W47), provenance-elevated checksums (W54), eukaryotic UniBin (W55b).
+Wave-by-wave detail fossilized to `fossilRecord/`.
 
 Zero DEBT markers, zero unsafe blocks, zero panics, zero clippy warnings (pedantic + nursery clean).
 Security gate: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13.

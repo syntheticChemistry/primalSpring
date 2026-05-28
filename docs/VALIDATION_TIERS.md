@@ -165,7 +165,7 @@ tolerances with scientific justification per validation dimension.
 ## Scenario Infrastructure (Eukaryotic)
 
 The validation infrastructure has evolved from standalone experiment binaries
-(prokaryotic era: exp001–exp111) into 49 absorbed scenarios in
+(prokaryotic era: exp001–exp111) into 56 absorbed scenarios in
 `ecoPrimal/src/validation/scenarios/`. Every scenario has:
 
 - A `pub const SCENARIO: Scenario` with metadata (id, track, tier, provenance)

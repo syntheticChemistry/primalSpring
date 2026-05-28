@@ -229,7 +229,7 @@ Observatory tools:
 - [x] `WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md` — `primal.announce` adoption guide
   for all 13 primal teams with v3.68 schema, cost/latency hints, signal tiers
 - [x] `TEAM_OWNERSHIP_MATRIX.md` — cellMembrane/projectNUCLEUS/primalSpring ownership
-- [x] Registry: 456 → 458 methods (+1 neural_api.utilization, +1 neural_api.weight_health)
+- [x] Registry: 456 → 460 methods (+1 neural_api.utilization, +1 neural_api.weight_health, +2 Wave 55b)
 - [x] 1311 biomeOS tests, 791 primalSpring tests — all passing
 - [ ] Graph execution timing per-node (PathwayLearner → weight table)
 - [ ] Cross-gate latency baselines (local UDS vs remote TURN)

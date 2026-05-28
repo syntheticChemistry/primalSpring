@@ -5,8 +5,8 @@
 > layered validation L0–L3, bonding patterns) remains valid.
 >
 > **Current state (May 25, 2026)**: Phase 60+, 13 primals, guideStone Level 8,
-> genomeBin v5.1+, BTSP Phase 3 converged (13/13 AEAD). primalSpring v0.9.28:
-> 813 tests, 460 methods, 56 scenarios (Wave 54b deep debt zero, script-to-Rust evolution).
+> genomeBin v5.1+, BTSP Phase 3 converged (13/13 AEAD). primalSpring v0.9.30:
+> 797 lib tests + 17 doc tests, 460 methods, 56 scenarios (Wave 58b: telemetry persistence, zero #[allow], blake3 correctness).
 > Neural API: biomeOS v3.75, persistent routing weights, weight health
 > introspection, 12/12 announcing primals compliant. See `CONTEXT.md`,
 > `docs/PRIMAL_GAPS.md`, and `specs/NEURAL_API_EVOLUTION.md` for live tracking.

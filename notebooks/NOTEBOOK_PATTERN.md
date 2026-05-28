@@ -50,7 +50,7 @@ available, notebooks can also call primals directly (see Tier 2 stubs).
 |------|----------|
 | `composition_validation.json` | Deploy graph stats, bond types, structural checks |
 | `test_suite_report.json` | Module-level test counts, timings, categories |
-| `experiment_catalog.json` | All 89 experiments, categorized by focus area |
+| `experiment_catalog.json` | All 93 experiments, categorized by focus area |
 | `security_convergence.json` | BTSP Phase 3 state, PG-55–59 resolution, timeline |
 | `cross_spring_matrix.json` | Spring consumption, primal roles, ecosystem flows |
 | `benchmark_timing.json` | Compilation, test suite, binary benchmarks, Rust vs Python |

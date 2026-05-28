@@ -8,7 +8,7 @@
 | **Version** | 0.9.30 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 813 `#[test]` markers (797 pass, 16 live-tier, 2 ignored) |
+| **Tests** | 797 lib tests pass (2 ignored) + 17 doc tests |
 | **Experiments** | 93 (21 tracks) — 56 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 96 deploy TOMLs (81 deploy + 15 atomic signal graphs) — fragment-first composition with `resolve = true` |
 | **Coverage** | Method coverage against 460 registered capability methods; line coverage via llvm-cov |
@@ -54,7 +54,7 @@ primalSpring/
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)
-│   │   ├── validation/scenarios/  # 53 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
+│   │   ├── validation/scenarios/  # 56 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/
@@ -92,9 +92,7 @@ primalSpring/
 │   ├── desktop_nucleus.sh        # Desktop NUCLEUS launcher (wraps Rust nucleus_launcher)
 │   ├── ttt_composition.sh        # Reference implementation: Tic-Tac-Toe with full NUCLEUS
 │   ├── cell_launcher.sh           # Cell deployment launcher (wraps nucleus_launcher)
-│   ├── cell_launcher.sh          # Cell-graph deployment launcher
-│   ├── ws_gateway.py             # Thin WebSocket-to-IPC bridge (no business logic)
-│   └── ws_gateway.py             # Dev WebSocket bridge (Python, planned Rust replacement)
+│   └── ws_gateway.py             # Dev WebSocket-to-IPC bridge (planned Rust replacement)
 ├── web/
 │   └── play.html                 # Composition monitor / debug dashboard (not primary UI)
 ├── niches/                        # BYOB niche deployment YAML
@@ -432,7 +430,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 - **Template+manifest pattern**: Spring validation (13 → 4: template + manifest + 2 unique), spring deploy (5 → 2: template + manifest), downstream proto-nucleate (7 → 3: template + manifest + healthspring enclave).
 - **Fragment resolution in `load_graph()`**: Profiles declaring `resolve = true` in `[graph.metadata]` inherit nodes from `graphs/fragments/*.toml` as a base layer, then apply only their delta nodes. Profiles trimmed from ~40 lines to ~15 lines each.
 - **Removed**: `primalspring_deploy.toml` (absorbed into `nucleus_complete.toml`), `full_overlay.toml` (absorbed into `profiles/full.toml`), `fossilRecord/graphs/` stale snapshots, 9 per-spring validation wrappers, 5 per-spring deploy files, 7 individual proto-nucleate files.
-- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 813 lib tests (797 pass, 16 live-tier, 2 ignored).
+- **Zero-regression**: All 631 tests at time of consolidation (585 passed + 46 ignored), 0 clippy warnings. Current: 797 lib tests pass (2 ignored) + 17 doc tests.
 
 ## Graph Consolidation + Composition Evolution (April 9, 2026)
 

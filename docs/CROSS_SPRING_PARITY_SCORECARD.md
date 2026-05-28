@@ -2,12 +2,12 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: May 26, 2026 (Wave 51 — plasmidBin Rust elevation, CI sovereignty, postPrimordial enforced). biomeOS v3.79, 460 methods, 813 primalSpring tests, 56 scenarios, 96 deploy graphs. 7/7 delta springs covalent HPC confirmed.
+**Last updated**: May 28, 2026 (Wave 58b — dispatch telemetry, env centralization 11/13 primals). biomeOS v3.84, 460 methods, 797+17 primalSpring tests, 56 scenarios, 97 deploy graphs. 7/7 delta springs covalent HPC confirmed.
 **Audited by**: primalSpring composition audit + ecosystem postPrimordial compliance sweep
 **Method**: Pulled all 13 primals + sourDough + bingoCube to HEAD, assessed against postPrimordial checklist
 
 > **Note**: Per-spring test counts and graph counts below are from Wave 42.
-> primalSpring metrics (813 tests, 56 scenarios, 96 graphs, 460 methods) are
+> primalSpring metrics (797+17 tests, 56 scenarios, 97 graphs, 460 methods) are
 > current as of Wave 55b. Other spring metrics need refresh from their teams.
 
 ## Legend

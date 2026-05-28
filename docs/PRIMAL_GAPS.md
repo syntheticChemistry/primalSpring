@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 28, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 56 scenarios (10 tracks, 3 tiers), 460 real methods (460 exercised = 100%), **813 lib tests** (797 pass, 16 live-tier, 2 ignored), zero clippy warnings (pedantic + nursery clean), 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps** (hostname eliminated Wave 54b). Pure Rust crypto for BTSP bootstrap. Wave 54b: **deep debt zero** — 6 CI bash scripts absorbed into Rust subcommands (`primalspring checksums`, `primalspring registry`). `nucleus_launcher` now full lifecycle (start/stop/status via PID tracking). All hardcoded UID/port/path values centralized to `tolerances` module. `deploy_membrane.sh` supports full NUCLEUS composition (13 primals, 4 tiers). hotSpring pseudoSpore v1.6.1 → NUCLEUS-ready. 4 gates operational. **pseudoSpore 2.0**: lithoSpore emissions to be postPrimordial via NUCLEUS (`biomeos nucleus ingest` + `litho emit-pseudospore`). **`discovery.peers` RESOLVED** (Wave 51). Live gate validation NEXT.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 56 scenarios (10 tracks, 3 tiers), 460 real methods (460 exercised = 100%), **797 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 58b**: dispatch telemetry persistence (DispatchMetric → JSON-lines for Layer 4/5 routing evolution), PermissiveVerifier rename, blake3 correctness fix, primal_names constants in orchestrator/routing, env key centralization in tolerances/entropy/orchestrator, NC-1 COMPLETE (code), NC-3 CONSUMED, NC-4 ADVANCING, NC-5 UNBLOCKED, biomeOS v3.84, env centralization 11/13 primals. **Critical path**: deploy v3.84 to VPS → hotSpring + groundSpring column U → stadial.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -662,7 +662,7 @@ for the full local wateringHole snapshot (fossilized Wave 51).
 ## Evolution Cycle Ownership Model
 
 > **Note (Wave 49)**: Historical sections below preserve method counts and test
-> numbers as they were at each Wave. Current state: 460 methods, 813 tests,
+> numbers as they were at each Wave. Current state: 460 methods, 797+17 tests,
 > 56 scenarios, 96 deploy graphs, 93 experiments. See summary at top of this file.
 
 Every gap in the ecosystem belongs to exactly one layer of the evolution cycle.

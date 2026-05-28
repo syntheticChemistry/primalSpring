@@ -6,9 +6,10 @@
 # guidestone, experiments) AND referenced in canonical graph TOML files
 # must appear in this registry.
 #
-# CI checks:
-#   tools/check_method_strings.sh — validates Rust source against this file
-#   tools/check_graph_methods.sh  — validates graph TOML capabilities (advisory)
+# CI checks (Rust subcommands, Wave 54b+):
+#   primalspring registry --check source  — validates Rust source against this file
+#   primalspring registry --check graphs  — validates graph TOML capabilities (advisory)
+#   primalspring registry --check all     — full drift detection
 #
 # Structure: [domain] with `methods = [...]` listing all known methods in
 # that domain. `owner` names the primal that serves them. `test_fixtures`
