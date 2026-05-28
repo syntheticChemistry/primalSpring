@@ -666,3 +666,63 @@ Spring (domain science)
 
 Every step uses existing primal capabilities via JSON-RPC. The signal graph
 composes them. No new capabilities needed — only the biomeOS CLI orchestrator.
+
+---
+
+## Derivation Anchoring Validation (May 28, 2026)
+
+### Context
+
+hotSpring v1.7.0 proved that all numeric thresholds in a pseudoSpore can be
+structurally anchored — no magic numbers, runtime-enforced, Phase 0 gated. This
+is now codified as `DERIVATION_ANCHORING_STANDARD.md` v1.0 in the ecosystem
+wateringHole. For spores to be GuideStones by principle (not by individual
+discipline), this must be wired into the emission gate.
+
+### New Column
+
+| Column | What to Validate | Method |
+|--------|-----------------|--------|
+| **X: Derivation Anchoring** | All numeric thresholds in emitted spores trace to `derivations/threshold_calibration.toml` via 5-layer empirical chain | lithoSpore Tier-0 structural + spring Phase 0 runtime |
+
+### Rows (Springs — Anchoring Readiness)
+
+| Spring | X: Derivation Anchoring | Notes |
+|--------|------------------------|-------|
+| **hotSpring** | **PASS** (23/23 constants, Phase 0 enforced, 190/190 checks) | First instance — reference implementation |
+| **groundSpring** | pending (LTEE DFE/fitness thresholds need derivation file) | Has tolerances.toml; needs derivations/ |
+| **wetSpring** | pending (diversity/OTU thresholds need calibration) | Planned |
+| **airSpring** | pending (acoustic/signal thresholds) | Planned |
+| **neuralSpring** | pending (convergence/regime thresholds) | Planned |
+| **healthSpring** | pending (physiological reference ranges) | Planned |
+| **ludoSpring** | n/a (game logic, no scientific emission) | Exempt unless emitting scientific spores |
+
+### lithoSpore Gate Integration
+
+lithoSpore `emit-pseudospore` adds a Tier-0 structural check:
+
+```
+IF tolerances.toml exists in pseudoSpore:
+  REQUIRE derivations/threshold_calibration.toml exists and parses
+  REQUIRE every [[tolerance]] entry has non-empty derivation field
+  REQUIRE zero entries with _anchoring = "NEEDS_CALIBRATION"
+  FAIL emission if any condition unmet
+```
+
+This makes derivation anchoring a structural property of all emitted spores that
+carry quantitative validation — enforced at the lithoSpore level regardless of
+which spring produced the science.
+
+### Gate Criterion
+
+**"No spore ships a magic number."**
+
+When column X passes for 2+ springs (diverse domains) and lithoSpore's Tier-0
+gate blocks unanchored emissions, the ecosystem has achieved structural rigor by
+default. Individual springs no longer need discipline — the system enforces it.
+
+### Reference
+
+- Standard: `infra/wateringHole/DERIVATION_ANCHORING_STANDARD.md` v1.0
+- Handoff: `infra/wateringHole/handoffs/HOTSPRING_DERIVATION_ANCHORING_UPSTREAM_MAY28_2026.md`
+- First instance: `springs/hotSpring/pseudoSpore_hotSpring-CompChem-GuideStone_v1.7.0/`
