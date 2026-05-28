@@ -335,19 +335,19 @@ pub fn default_port_for(primal: &str) -> u16 {
 /// Resolve the env var key for a primal's port override.
 pub fn port_env_key_for(primal: &str) -> &'static str {
     match primal {
-        "beardog" => "BEARDOG_PORT",
-        "songbird" => "SONGBIRD_PORT",
-        "skunkbat" => "SKUNKBAT_PORT",
-        "toadstool" => "TOADSTOOL_PORT",
-        "barracuda" => "BARRACUDA_PORT",
-        "coralreef" => "CORALREEF_PORT",
-        "nestgate" => "NESTGATE_PORT",
-        "rhizocrypt" => "RHIZOCRYPT_PORT",
-        "loamspine" => "LOAMSPINE_PORT",
-        "sweetgrass" => "SWEETGRASS_PORT",
-        "biomeos" => "BIOMEOS_PORT",
-        "squirrel" => "SQUIRREL_PORT",
-        "petaltongue" => "PETALTONGUE_PORT",
+        "beardog" => crate::env_keys::BEARDOG_PORT,
+        "songbird" => crate::env_keys::SONGBIRD_PORT,
+        "skunkbat" => crate::env_keys::SKUNKBAT_PORT,
+        "toadstool" => crate::env_keys::TOADSTOOL_PORT,
+        "barracuda" => crate::env_keys::BARRACUDA_PORT,
+        "coralreef" => crate::env_keys::CORALREEF_PORT,
+        "nestgate" => crate::env_keys::NESTGATE_PORT,
+        "rhizocrypt" => crate::env_keys::RHIZOCRYPT_PORT,
+        "loamspine" => crate::env_keys::LOAMSPINE_PORT,
+        "sweetgrass" => crate::env_keys::SWEETGRASS_PORT,
+        "biomeos" => crate::env_keys::BIOMEOS_PORT,
+        "squirrel" => crate::env_keys::SQUIRREL_PORT,
+        "petaltongue" => crate::env_keys::PETALTONGUE_PORT,
         _ => "",
     }
 }

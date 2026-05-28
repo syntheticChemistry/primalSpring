@@ -18,7 +18,7 @@
 //!
 //! The [`TokenVerifier`] trait abstracts ionic token verification. Two
 //! implementations are provided:
-//! - [`NoopVerifier`] — always accepts (for permissive / test deployments).
+//! - [`PermissiveVerifier`] — always accepts (for permissive / test deployments).
 //! - [`BearDogVerifier`] — delegates to BearDog's `auth.verify_ionic` via IPC.
 //!
 //! The gate performs **scope validation**: a token's scope pattern (e.g.
@@ -90,10 +90,14 @@ pub trait TokenVerifier: std::fmt::Debug + Send + Sync {
 }
 
 /// Always-accept verifier for permissive mode and tests.
+///
+/// Returns wildcard scopes for any token (including empty). This is the
+/// correct behavior when `EnforcementMode::Permissive` or `Off` — the gate
+/// logs but does not block. In `Enforced` mode, use [`BearDogVerifier`].
 #[derive(Debug)]
-pub struct NoopVerifier;
+pub struct PermissiveVerifier;
 
-impl TokenVerifier for NoopVerifier {
+impl TokenVerifier for PermissiveVerifier {
     fn verify(&self, _token: &str) -> Option<VerifiedToken> {
         Some(VerifiedToken {
             scopes: vec!["*".to_owned()],
@@ -102,6 +106,10 @@ impl TokenVerifier for NoopVerifier {
         })
     }
 }
+
+/// Alias preserved for backward compatibility.
+#[deprecated(since = "0.9.31", note = "Renamed to `PermissiveVerifier` for clarity")]
+pub type NoopVerifier = PermissiveVerifier;
 
 /// Verifier that delegates to BearDog's `auth.verify_ionic` via IPC.
 ///
@@ -342,12 +350,12 @@ pub struct MethodGate {
 }
 
 impl MethodGate {
-    /// Create a gate with the given enforcement mode and a noop verifier.
+    /// Create a gate with the given enforcement mode and a permissive verifier.
     #[must_use]
     pub fn new(mode: EnforcementMode) -> Self {
         Self {
             mode,
-            verifier: Box::new(NoopVerifier),
+            verifier: Box::new(PermissiveVerifier),
         }
     }
 
@@ -361,14 +369,14 @@ impl MethodGate {
     ///
     /// In enforced mode, attempts to discover BearDog for real verification.
     /// If BearDog is unreachable, downgrades to `Permissive` (fail-open with
-    /// logging) rather than silently accepting all tokens via `NoopVerifier`.
+    /// logging) rather than silently accepting all tokens via `PermissiveVerifier`.
     #[must_use]
     pub fn from_env() -> Self {
         let mode = EnforcementMode::from_env();
         if mode != EnforcementMode::Enforced {
             return Self {
                 mode,
-                verifier: Box::new(NoopVerifier),
+                verifier: Box::new(PermissiveVerifier),
             };
         }
 
@@ -379,7 +387,7 @@ impl MethodGate {
                 );
                 Self {
                     mode: EnforcementMode::Permissive,
-                    verifier: Box::new(NoopVerifier),
+                    verifier: Box::new(PermissiveVerifier),
                 }
             },
             |v| Self {
@@ -613,7 +621,7 @@ mod tests {
             "_bearer_token": "test-token-123",
             "values": [1, 2, 3],
         });
-        let ctx = ctx.with_params_token(&params, &NoopVerifier);
+        let ctx = ctx.with_params_token(&params, &PermissiveVerifier);
         assert_eq!(ctx.bearer_token.as_deref(), Some("test-token-123"));
         assert!(ctx.verified.is_some());
         assert_eq!(ctx.verified.as_ref().unwrap().scopes, vec!["*"]);
@@ -623,7 +631,7 @@ mod tests {
     fn with_params_token_absent_leaves_none() {
         let ctx = CallerContext::loopback();
         let params = serde_json::json!({ "values": [1, 2, 3] });
-        let ctx = ctx.with_params_token(&params, &NoopVerifier);
+        let ctx = ctx.with_params_token(&params, &PermissiveVerifier);
         assert!(ctx.bearer_token.is_none());
         assert!(ctx.verified.is_none());
     }

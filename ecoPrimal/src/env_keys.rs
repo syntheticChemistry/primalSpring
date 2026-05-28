@@ -22,6 +22,8 @@ pub const FAMILY_ID: &str = "FAMILY_ID";
 pub const FAMILY_SEED: &str = "FAMILY_SEED";
 /// BearDog-specific alias for the family seed.
 pub const BEARDOG_FAMILY_SEED: &str = "BEARDOG_FAMILY_SEED";
+/// Guidestone-level seed override (highest priority in mito-tier resolution).
+pub const GUIDESTONE_SEED: &str = "GUIDESTONE_SEED";
 
 // ── SeedConfig: thread-safe in-process identity storage ─────────────
 

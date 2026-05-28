@@ -76,12 +76,13 @@ impl CompositionTier {
             | "coordination" | "composition" | "graph" | "nucleus" => Self::Orchestration,
             "bonding" | "ionic" | "game" | "webb" => Self::Standalone,
             _ => {
+                use crate::primal_names;
                 match owner {
-                    "beardog" | "songbird" | "skunkbat" => Self::Tower,
-                    "toadstool" | "barracuda" | "coralreef" => Self::Node,
-                    "nestgate" | "rhizocrypt" | "loamspine" | "sweetgrass" => Self::Nest,
-                    "petaltongue" | "squirrel" => Self::Meta,
-                    "biomeos" => Self::Orchestration,
+                    primal_names::BEARDOG | primal_names::SONGBIRD | primal_names::SKUNKBAT => Self::Tower,
+                    primal_names::TOADSTOOL | primal_names::BARRACUDA | primal_names::CORALREEF => Self::Node,
+                    primal_names::NESTGATE | primal_names::RHIZOCRYPT | primal_names::LOAMSPINE | primal_names::SWEETGRASS => Self::Nest,
+                    primal_names::PETALTONGUE | primal_names::SQUIRREL => Self::Meta,
+                    primal_names::BIOMEOS => Self::Orchestration,
                     _ => Self::Standalone,
                 }
             }

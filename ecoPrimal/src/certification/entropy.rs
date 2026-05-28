@@ -60,14 +60,14 @@ impl std::fmt::Display for SeedSource {
 /// Returns a hex-encoded string matching BearDog's wire format.
 #[must_use]
 pub fn resolve_mito_seed() -> MitoSeed {
-    if let Some(seed) = read_env_seed("GUIDESTONE_SEED") {
+    if let Some(seed) = read_env_seed(crate::env_keys::GUIDESTONE_SEED) {
         return MitoSeed {
             hex_seed: seed,
             source: SeedSource::EnvGuidestone,
         };
     }
 
-    if let Some(seed) = read_env_seed("FAMILY_SEED") {
+    if let Some(seed) = read_env_seed(crate::env_keys::FAMILY_SEED) {
         return MitoSeed {
             hex_seed: seed,
             source: SeedSource::EnvFamily,

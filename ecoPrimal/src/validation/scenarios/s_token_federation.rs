@@ -3,7 +3,7 @@
 
 use crate::composition::CompositionContext;
 use crate::ipc::method_gate::{
-    CallerContext, ConnectionOrigin, EnforcementMode, MethodGate, NoopVerifier, VerifiedToken,
+    CallerContext, ConnectionOrigin, EnforcementMode, MethodGate, PermissiveVerifier, VerifiedToken,
     scope_permits_method,
 };
 use crate::validation::ValidationResult;
@@ -170,7 +170,7 @@ fn phase_bearer_extraction(v: &mut ValidationResult) {
         "_bearer_token": "ionic-test-abc",
         "values": [1, 2, 3],
     });
-    let enriched = ctx.with_params_token(&params, &NoopVerifier);
+    let enriched = ctx.with_params_token(&params, &PermissiveVerifier);
     v.check_bool(
         "bearer_extracted",
         enriched.bearer_token.as_deref() == Some("ionic-test-abc"),
@@ -179,12 +179,12 @@ fn phase_bearer_extraction(v: &mut ValidationResult) {
     v.check_bool(
         "noop_verifier_populates_claims",
         enriched.verified.is_some(),
-        "NoopVerifier produces VerifiedToken",
+        "PermissiveVerifier produces VerifiedToken",
     );
 
     let ctx2 = CallerContext::loopback();
     let no_bearer = serde_json::json!({ "values": [1, 2, 3] });
-    let plain = ctx2.with_params_token(&no_bearer, &NoopVerifier);
+    let plain = ctx2.with_params_token(&no_bearer, &PermissiveVerifier);
     v.check_bool(
         "absent_bearer_stays_none",
         plain.bearer_token.is_none(),

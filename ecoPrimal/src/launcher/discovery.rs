@@ -18,12 +18,12 @@ use super::LaunchError;
 
 /// Env var: override base directory for primal binaries.
 #[deprecated(since = "0.10.0", note = "Use `crate::env_keys::ECOPRIMALS_PLASMID_BIN`")]
-#[allow(dead_code, reason = "deprecated public API preserved for backward compatibility")]
+#[expect(dead_code, reason = "deprecated public API preserved for backward compatibility")]
 pub const ENV_PLASMID_BIN: &str = "ECOPRIMALS_PLASMID_BIN";
 
 /// Env var: biomeOS plasmid bin directory.
 #[deprecated(since = "0.10.0", note = "Use `crate::env_keys::BIOMEOS_PLASMID_BIN_DIR`")]
-#[allow(dead_code, reason = "deprecated public API preserved for backward compatibility")]
+#[expect(dead_code, reason = "deprecated public API preserved for backward compatibility")]
 pub const ENV_BIOMEOS_BIN_DIR: &str = "BIOMEOS_PLASMID_BIN_DIR";
 
 /// XDG-compliant default location for fetched primal binaries.

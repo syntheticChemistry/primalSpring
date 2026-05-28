@@ -66,19 +66,19 @@ const STARTUP_ORDER: &[&str] = &[
 /// Maps primal name → capability domains for Songbird registry seeding.
 fn capability_domains(primal: &str) -> &'static [&'static str] {
     match primal {
-        "beardog" => &["security", "crypto", "btsp", "birdsong", "lineage", "entropy", "jwt"],
-        "songbird" => &["discovery", "http", "tls", "mesh", "stun", "relay", "onion"],
-        "skunkbat" => &["defense", "audit", "firewall"],
-        "toadstool" => &["compute", "cpu", "gpu", "npu", "wasm", "orchestration"],
-        "barracuda" => &["tensor", "linalg", "spectral", "stats", "fhe", "wgsl"],
-        "coralreef" => &["shader", "spirv", "wgsl", "glsl", "naga", "compile", "vfio"],
-        "nestgate" => &["storage", "provenance", "compression"],
-        "rhizocrypt" => &["dag", "session", "ephemeral"],
-        "loamspine" => &["ledger", "permanent", "audit"],
-        "sweetgrass" => &["attribution", "prov-o"],
-        "biomeos" => &["orchestration", "graph", "deploy", "nucleus", "spore", "niche"],
-        "squirrel" => &["ai", "inference", "mcp"],
-        "petaltongue" => &["visualization", "ui", "interaction", "representation"],
+        primal_names::BEARDOG => &["security", "crypto", "btsp", "birdsong", "lineage", "entropy", "jwt"],
+        primal_names::SONGBIRD => &["discovery", "http", "tls", "mesh", "stun", "relay", "onion"],
+        primal_names::SKUNKBAT => &["defense", "audit", "firewall"],
+        primal_names::TOADSTOOL => &["compute", "cpu", "gpu", "npu", "wasm", "orchestration"],
+        primal_names::BARRACUDA => &["tensor", "linalg", "spectral", "stats", "fhe", "wgsl"],
+        primal_names::CORALREEF => &["shader", "spirv", "wgsl", "glsl", "naga", "compile", "vfio"],
+        primal_names::NESTGATE => &["storage", "provenance", "compression"],
+        primal_names::RHIZOCRYPT => &["dag", "session", "ephemeral"],
+        primal_names::LOAMSPINE => &["ledger", "permanent", "audit"],
+        primal_names::SWEETGRASS => &["attribution", "prov-o"],
+        primal_names::BIOMEOS => &["orchestration", "graph", "deploy", "nucleus", "spore", "niche"],
+        primal_names::SQUIRREL => &["ai", "inference", "mcp"],
+        primal_names::PETALTONGUE => &["visualization", "ui", "interaction", "representation"],
         _ => &[],
     }
 }
@@ -337,11 +337,11 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
 
     // Phase 5: Registry seeding
     println!("=== Phase 5: Registry seeding (Songbird ipc.register) ===");
-    let songbird_port = effective_port_for("songbird", config.uds_only);
+    let songbird_port = effective_port_for(primal_names::SONGBIRD, config.uds_only);
     let mut registered = 0usize;
 
     for primal in &primals {
-        if *primal == "songbird" {
+        if *primal == primal_names::SONGBIRD {
             continue;
         }
 

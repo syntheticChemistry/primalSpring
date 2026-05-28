@@ -111,7 +111,7 @@ impl CompositionContext {
         since = "0.9.25",
         note = "use CompositionContext::from_live_discovery_with_fallback() against deployed ecoBins instead"
     )]
-    #[allow(
+    #[expect(
         deprecated,
         reason = "from_running bridges deprecated RunningAtomic to CompositionContext"
     )]

@@ -176,15 +176,9 @@ impl NuclearGenetics {
     }
 }
 
-/// Blake3 hash helper (32-byte output).
+/// BLAKE3 hash helper (32-byte output).
 fn blake3_hash(data: &[u8]) -> [u8; 32] {
-    use sha2::{Digest, Sha256};
-    let mut hasher = Sha256::new();
-    hasher.update(data);
-    let result = hasher.finalize();
-    let mut out = [0u8; 32];
-    out.copy_from_slice(&result);
-    out
+    *blake3::hash(data).as_bytes()
 }
 
 #[cfg(test)]
