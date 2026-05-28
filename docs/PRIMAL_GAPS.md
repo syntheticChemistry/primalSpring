@@ -314,31 +314,32 @@ likely env (`SONGBIRD_PEERS`), OOM, cold-start timing.
 | P0 `nucleus-x86-mixed-uds` matrix cell | primalSpring | **BLOCKED** on NC-2.2 |
 | biomeGate full NUCLEUS (9→13) | hotSpring + ops | **PLANNED** |
 
-### NC-3: cellMembrane Sovereignty — **ADVANCING** (was IN PROGRESS)
+### NC-3: cellMembrane Sovereignty — **ADVANCING**
 
-cellMembrane Wave 56 delivered the full VPS deployment standard:
-- `TransportMode` enum (`UdsOnly`, `TcpDefault`, `TcpOptIn`) in `cellmembrane-types`
-- `--uds-only` wired into `deploy_membrane.sh` with `nucleus_launcher` integration
-- `spring-overlay` deploy mode for cell graph deployment
-- Port SSOT reconciled with primalSpring `tolerances/mod.rs` (5 ports corrected)
-- 93/93 tests (13 new transport tests), zero clippy warnings
-- NC-4 ready: cellMembrane can deploy spring overlays when springs are ready
+cellMembrane Wave 57 deep debt sprint:
+- Pedantic clippy clean, typed errors (`CellMembraneError` crate), 95.8% coverage
+- `deny.toml` + `rustfmt.toml` added, licensing complete (AGPL + CC-BY-SA + ORC)
+- Coverage test suite: 743-line `tests/coverage.rs` exercising all public API paths
+- Envelope validation, firewall rule builder, credential audit tests expanded
+- 174+ tests total (up from 93), zero clippy, `#![forbid(unsafe_code)]` on types crate
 
 | Action | Owner | Status |
 |--------|-------|--------|
 | NestGate + trio on VPS | cellMembrane + ops | **LIVE** (Wave 38, 10/10 trio PASS) |
 | K-Derm boundary publication | cellMembrane | **DELIVERED** (`membrane.toml` diderm, signal channel) |
-| VPS deployment standard (`--uds-only` + spring overlays) | cellMembrane | **DELIVERED** Wave 56 (TransportMode, deploy_membrane.sh, port reconciliation) |
+| VPS deployment standard (`--uds-only` + spring overlays) | cellMembrane | **DELIVERED** Wave 56 |
+| Deep debt: typed errors, coverage, licensing | cellMembrane | **DELIVERED** Wave 57 (95.8% coverage) |
 | knot-dns shadow → primary | cellMembrane + ops | **DEPLOYED** (DNSSEC, registrar NS cutover pending) |
 | Forgejo releases | cellMembrane + plasmidBin | **PLANNED** |
 | sporePrint living content | cellMembrane + petalTongue | **BLOCKED** (BearDog scope) |
 
 ### NC-4: Spring NUCLEUS Depth (per gate)
 
-projectNUCLEUS Wave 56: all 13 primal deploy cases support `--uds-only`
-with conditional port args, `socket_health_check()` for UDS mode, config
-centralization, 65 Rust tests. Cell graphs consumed (6 VPS-ready, 3 desktop).
-Deep debt: serde-saphyr pure Rust, net.rs refactor.
+projectNUCLEUS Wave 58: async-correct health checks (tokio spawn_blocking),
+wire-native newline-delimited JSON-RPC discovery (matching primal format),
+166 Rust tests (up from 65), deploy script ports fully parameterized,
+chrono dependency removed, test runtime 68s → 3s. Zero TODO/FIXME, zero clippy,
+`#![forbid(unsafe_code)]`, zero files >800 LOC.
 
 | Gate | Team | Required | Current | Action |
 |------|------|----------|---------|--------|
