@@ -74,7 +74,7 @@ fn validate_manifest(v: &mut ValidationResult, base: &Path) {
     v.check_bool(
         "cells_manifest_exists",
         exists,
-        &format!("{}", manifest_path.display()),
+        &manifest_path.display().to_string(),
     );
     if !exists {
         return;
@@ -120,7 +120,7 @@ fn validate_cell_structure(v: &mut ValidationResult, base: &Path, cell_file: &st
     v.check_bool(
         &format!("{stem}_cell_exists"),
         exists,
-        &format!("{}", path.display()),
+        &path.display().to_string(),
     );
     if !exists {
         return;

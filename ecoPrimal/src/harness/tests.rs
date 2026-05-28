@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-#![allow(deprecated, reason = "test module exercises deprecated harness APIs")]
+#![expect(deprecated, reason = "test module exercises deprecated harness APIs")]
 
 use super::*;
 

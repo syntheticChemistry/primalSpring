@@ -33,7 +33,7 @@ use std::collections::HashMap;
 use super::routing::{capability_to_primal, method_to_capability_domain};
 
 /// Composition tier — which atomic deployment a method participates in.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize)]
 pub enum CompositionTier {
     /// Tower: security + discovery + defense (bearDog, songbird, skunkBat)
     Tower,
@@ -234,7 +234,7 @@ impl NeuralRoutingTable {
                         has_signal_graph: is_signal,
                         aliases: Vec::new(),
                     };
-                    method_index.insert(method.clone(), entry);
+                    method_index.insert(entry.method.clone(), entry);
                 }
             }
         }

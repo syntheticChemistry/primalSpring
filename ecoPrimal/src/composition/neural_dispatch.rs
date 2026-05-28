@@ -71,7 +71,7 @@ pub struct DispatchOutcome {
 }
 
 /// How a method was routed to its handler.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
 pub enum RoutePath {
     /// Routed through `capability.call` semantic dispatch.
     CapabilityCall,
@@ -86,7 +86,10 @@ pub enum RoutePath {
 }
 
 /// Metrics collected per dispatch — the raw data for adaptive routing.
-#[derive(Debug, Clone)]
+///
+/// Serializable to JSON-lines for persistence and training data collection
+/// (Layer 4/5 of the Neural API evolution model).
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct DispatchMetric {
     /// JSON-RPC method or pattern name.
     pub method: String,
@@ -448,6 +451,57 @@ impl NeuralDispatcher {
             "patterns_registered": self.table.patterns().len(),
             "dispatches_recorded": self.metrics.len(),
         })
+    }
+
+    /// Flush accumulated metrics to a JSON-lines file for persistent telemetry.
+    ///
+    /// Appends each `DispatchMetric` as a single JSON line, enabling offline
+    /// analysis and training data collection for Layer 4/5 routing evolution
+    /// (single-layer perceptron on latency/success/tier features).
+    ///
+    /// Returns the number of metrics written. Clears the in-memory buffer on
+    /// success so the same metrics are never written twice.
+    ///
+    /// # Errors
+    ///
+    /// Returns `std::io::Error` if the file cannot be opened or written to.
+    pub fn flush_metrics_to_file(
+        &mut self,
+        path: &std::path::Path,
+    ) -> std::io::Result<usize> {
+        use std::io::Write;
+
+        if self.metrics.is_empty() {
+            return Ok(0);
+        }
+
+        let file = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(path)?;
+        let mut writer = std::io::BufWriter::new(file);
+
+        let count = self.metrics.len();
+        for metric in self.metrics.drain(..) {
+            if let Ok(line) = serde_json::to_string(&metric) {
+                writeln!(writer, "{line}")?;
+            }
+        }
+
+        writer.flush()?;
+        tracing::debug!(
+            path = %path.display(),
+            metrics_flushed = count,
+            "dispatch telemetry persisted"
+        );
+        Ok(count)
+    }
+
+    /// Default telemetry file path (under the socket dir).
+    #[must_use]
+    pub fn default_telemetry_path() -> std::path::PathBuf {
+        let socket_dir = crate::ipc::discover::resolve_socket_dir();
+        std::path::PathBuf::from(socket_dir).join("dispatch_telemetry.jsonl")
     }
 }
 
