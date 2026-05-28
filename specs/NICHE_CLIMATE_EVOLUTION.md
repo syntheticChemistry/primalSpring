@@ -149,11 +149,11 @@ For lithoSpore emissions to be **postPrimordial**, every pseudoSpore must:
 
 | NC | Requirement | Status | Blocks Stadial? |
 |----|------------|--------|-----------------|
-| NC-1 | postPrimordial Spore Gateway | **COMPLETE** — biomeOS v3.81 `biomeos-pseudospore` crate + full emit materialization. All code delivered. Live gate deploy remaining. | **YES** (live column U) |
-| NC-2 | Multi-Gate NUCLEUS Mesh | **IN PROGRESS** — Songbird TCP seed fixed, GAP-17/18 constants centralized. southGate ops stabilization. | **YES** |
-| NC-3 | cellMembrane Sovereignty | **CONSUMED** — Wave 57: deep debt complete (95.8% coverage, typed errors, licensing). Forgejo + NS cutover remaining. | Partial |
-| NC-4 | Spring NUCLEUS Depth | **ADVANCING** — projectNUCLEUS Wave 58: 166 tests, async-correct, wire-native discovery. east/iron OK, south/biome partial. | **YES** |
-| NC-5 | lithoSpore postPrimordial | **UNBLOCKED** — NC-1.4 resolved, `--from-dir` shipped, dead code retired (pseudospore.rs, graph_checks.rs), `env_vars.rs` created. Gated on live Nest Atomic deploy + 2nd spring emission. | **YES** |
+| NC-1 | postPrimordial Spore Gateway | **CODE COMPLETE** — biomeOS v3.84 `biomeos-pseudospore` + emit materialization. **Live column U gated on VPS deploy (P0).** | **YES** (live column U) |
+| NC-2 | Multi-Gate NUCLEUS Mesh | **IN PROGRESS** — Songbird TCP seed fixed, GAP-17/18 centralized. southGate 7/13, biomeGate 9/13. `s_covalent_mesh` live run pending. | **YES** |
+| NC-3 | cellMembrane Sovereignty | **CODE CONSUMED** — Wave 57 deep debt done (95.8% coverage). **Sovereignty cutovers open**: DNS NS registrar, Forgejo releases, CI inversion, TLS cutover. | Partial (code ok; ops not) |
+| NC-4 | Spring NUCLEUS Depth | **ADVANCING** — projectNUCLEUS Wave 58: 166 tests, async-correct, wire-native. east/iron operational, south 7/13, biome 9/13. | **YES** |
+| NC-5 | lithoSpore postPrimordial | **UNBLOCKED** — NC-1.4 resolved, `--from-dir` shipped, dead code retired, `env_vars.rs` created. **Gated on VPS deploy + live Nest Atomic + 2nd spring emission.** | **YES** |
 
 **Stadial entry requires**: NC-1 (2+ springs), NC-2 (3+ gates), NC-4 (all 4 named gates healthy).
 NC-3 and NC-5 are progressive — partial satisfaction enables stadial entry, full

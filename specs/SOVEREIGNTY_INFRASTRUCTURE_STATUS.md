@@ -1,6 +1,6 @@
 # Sovereignty Infrastructure Status
 
-**Date**: May 27, 2026 (Wave 54)
+**Date**: May 28, 2026 (Wave 58b)
 **Status**: Active — tracking sovereignty cutover progress
 **Audience**: All teams (cellMembrane, projectNUCLEUS, primalSpring)
 
@@ -46,12 +46,12 @@ blocker — all current compositions operate within Cat6 bandwidth.
 
 | Component | Status | Owner | Notes |
 |-----------|--------|-------|-------|
-| Commercial DNS (registrar) | LIVE (external) | cellMembrane | Domain registration + nameservers |
-| knot-dns on VPS | PLANNED | cellMembrane | Sovereign recursive + authoritative DNS |
-| DNS cutover | NOT STARTED | cellMembrane | Shadow: knot-dns as secondary, then primary |
+| Commercial DNS (registrar) | LIVE (external) | cellMembrane | Domain registration + NS records still at registrar |
+| knot-dns on VPS | **DEPLOYED** | cellMembrane | Running on VPS, DNSSEC enabled (cellMembrane Wave 56) |
+| Registrar NS cutover | **PENDING** | cellMembrane | NS records must point to sovereign knot-dns (NC-3.3) |
 
-**Priority**: MEDIUM — DNS is a sovereignty chokepoint. Running knot-dns
-as a secondary before cutover is low-risk.
+**Priority**: HIGH — knot-dns is deployed and serving; the remaining step is
+registrar NS record cutover to make sovereign DNS authoritative.
 
 ### S3: Remote Access (COMPLETE)
 
@@ -70,7 +70,10 @@ operators; Songbird TURN handles machine-to-machine relay.
 | Forgejo (self-hosted) | LIVE (32 repos, 3 orgs) | projectNUCLEUS | PRIMARY source of truth |
 | GitHub mirror | LIVE (dual-push) | projectNUCLEUS | Public mirror, CI offload |
 
-Forgejo is primary. GitHub is an observed outer membrane mirror.
+Forgejo is primary for **git hosting**. GitHub is an observed outer membrane mirror.
+**CI/CD**: Still runs on GitHub Actions (74 workflows). CI inversion to Forgejo
+Actions or self-hosted runner-first is a sovereignty gap — not blocking stadial
+entry but required for full S4 satisfaction.
 
 ### S5: Binary Distribution (COMPLETE)
 
@@ -145,7 +148,7 @@ See `wateringHole/TEAM_OWNERSHIP_MATRIX.md` for full details.
 
 ### Immediate (cellMembrane team)
 
-1. Stand up knot-dns as secondary DNS on VPS
+1. ~~Stand up knot-dns as secondary DNS on VPS~~ **DONE** (Wave 56) — cutover registrar NS records
 2. Add Forgejo releases as sovereign binary channel
 3. Begin sporePrint living content evolution
 
@@ -172,9 +175,9 @@ Each layer evolves independently:
 ```
 S0 ████████████████████████ COMPLETE (hardware deployed)
 S1 ████████████████████████ COMPLETE (BearDog ACME renewal daemon live, Wave 112)
-S2 ████░░░░░░░░░░░░░░░░░░░░ PLANNED (knot-dns next)
+S2 ████████████░░░░░░░░░░░░ DEPLOYED (knot-dns live on VPS; registrar NS cutover pending)
 S3 ████████████████████████ COMPLETE (RustDesk + Songbird live)
-S4 ████████████████████████ COMPLETE (Forgejo primary + GitHub mirror)
+S4 ████████████████████░░░░ GIT COMPLETE (Forgejo primary); CI still GitHub Actions
 S5 ████████████████████░░░░ MOSTLY (Forgejo releases pending; provenance-elevated Wave 54)
 S6 ████████████░░░░░░░░░░░░ IN PROGRESS (static Zola, living content pending)
 S7 ████████████████████████ COMPLETE (Neural API + scripts + graphs)
