@@ -149,11 +149,11 @@ For lithoSpore emissions to be **postPrimordial**, every pseudoSpore must:
 
 | NC | Requirement | Status | Blocks Stadial? |
 |----|------------|--------|-----------------|
-| NC-1 | postPrimordial Spore Gateway | **CODE COMPLETE** — biomeOS v3.84 `biomeos-pseudospore` + emit materialization. **Live column U gated on VPS deploy (P0).** | **YES** (live column U) |
-| NC-2 | Multi-Gate NUCLEUS Mesh | **IN PROGRESS** — Songbird TCP seed fixed, GAP-17/18 centralized. southGate 7/13, biomeGate 9/13. `s_covalent_mesh` live run pending. | **YES** |
-| NC-3 | cellMembrane Sovereignty | **CODE CONSUMED** — Wave 57 deep debt done (95.8% coverage). **Sovereignty cutovers open**: DNS NS registrar, Forgejo releases, CI inversion, TLS cutover. | Partial (code ok; ops not) |
-| NC-4 | Spring NUCLEUS Depth | **ADVANCING** — projectNUCLEUS Wave 58: 166 tests, async-correct, wire-native. east/iron operational, south 7/13, biome 9/13. | **YES** |
-| NC-5 | lithoSpore postPrimordial | **UNBLOCKED** — NC-1.4 resolved, `--from-dir` shipped, dead code retired, `env_vars.rs` created. **Gated on VPS deploy + live Nest Atomic + 2nd spring emission.** | **YES** |
+| NC-1 | postPrimordial Spore Gateway | **VPS DEPLOYED** — NUCLEUS 13/13 on VPS (Wave 59). Spring overlay graph validated. **Gated on biomeOS `graph.execute` (v0.2) for live column U.** | **YES** (column U) |
+| NC-2 | Multi-Gate NUCLEUS Mesh | **IN PROGRESS** — VPS NUCLEUS live. southGate 7/13, biomeGate 9/13. Live `s_covalent_mesh` pending. wet/neuralSpring on southGate as concentrated pattern node. | **YES** |
+| NC-3 | cellMembrane Sovereignty | **ADVANCING** — NUCLEUS deployed, 175 tests. NC-3.5 RESOLVED (bearDog `auth.issue_session` scope). **Cutovers open**: DNS NS registrar, Forgejo releases, CI inversion. | Partial |
+| NC-4 | Spring NUCLEUS Depth | **ADVANCING** — VPS NUCLEUS operational. Focus: southGate 7→13/13 (wet/neuralSpring pattern node). east/iron operational. biomeGate 9→13 pending. | **YES** |
+| NC-5 | lithoSpore postPrimordial | **UNBLOCKED** — Derivation anchoring wired (GUIDESTONE-GRADE 11-14, 192 tests). **Gated on `graph.execute` + column U.** | **YES** |
 
 **Stadial entry requires**: NC-1 (2+ springs), NC-2 (3+ gates), NC-4 (all 4 named gates healthy).
 NC-3 and NC-5 are progressive — partial satisfaction enables stadial entry, full
