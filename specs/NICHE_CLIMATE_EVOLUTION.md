@@ -151,9 +151,9 @@ For lithoSpore emissions to be **postPrimordial**, every pseudoSpore must:
 |----|------------|--------|-----------------|
 | NC-1 | postPrimordial Spore Gateway | **COMPLETE** — biomeOS v3.81 `biomeos-pseudospore` crate + full emit materialization. All code delivered. Live gate deploy remaining. | **YES** (live column U) |
 | NC-2 | Multi-Gate NUCLEUS Mesh | **IN PROGRESS** — Songbird TCP seed fixed, GAP-17/18 constants centralized. southGate ops stabilization. | **YES** |
-| NC-3 | cellMembrane Sovereignty | **ADVANCING** — Nest live, K-Derm published, knot-dns deployed. Forgejo releases + sporePrint remaining. | Partial |
-| NC-4 | Spring NUCLEUS Depth | **MIXED** (eastGate/ironGate OK, south/biome partial) | **YES** |
-| NC-5 | lithoSpore postPrimordial | **UNBLOCKED** — NC-1.4 resolved. Gated on live Nest Atomic deploy + 2nd spring emission. | **YES** |
+| NC-3 | cellMembrane Sovereignty | **CONSUMED** — Wave 56 VPS standard: TransportMode typed, `--uds-only` wired, port SSOT reconciled, spring overlays ready. Forgejo + NS cutover remaining. | Partial |
+| NC-4 | Spring NUCLEUS Depth | **ADVANCING** — projectNUCLEUS `--uds-only` deploy + socket health. east/iron OK, south/biome partial. | **YES** |
+| NC-5 | lithoSpore postPrimordial | **UNBLOCKED** — NC-1.4 resolved, `--from-dir` emission path shipped. Gated on live Nest Atomic deploy + 2nd spring emission. | **YES** |
 
 **Stadial entry requires**: NC-1 (2+ springs), NC-2 (3+ gates), NC-4 (all 4 named gates healthy).
 NC-3 and NC-5 are progressive — partial satisfaction enables stadial entry, full

@@ -277,11 +277,13 @@ Gateway code is complete — remaining work is live deployment on gates:
   bonding_policy, pseudospore_version metadata).
 
 lithoSpore shipped `PseudoSporeEnvelope` API (`envelope.rs` + `error.rs`) — the
-canonical consumer-facing load/validate path. biomeOS still uses inline validation;
-NC-1.4 remains their sole gap.
+canonical consumer-facing load/validate path. Wave 56 added `emit-pseudospore
+--from-dir` for delegation re-emission from existing pseudoSpore directories,
+7/7 tier-0 checks in CI, and parity workflow.
 
 projectFOUNDATION added Thread 10 workload `nucleus-spore-ingest.toml` for Era 3
-evidence.
+evidence. Wave 56b: centralized env bootstrap (`deploy/lib/env.sh`), graph-driven
+health checks (no hardcoded primal names/ports), BLAKE3 fail-closed semantics.
 
 **Signal graphs**: `nest_ingest_spore.toml` (6-step) + `nest_emit_spore.toml` (3-step).
 
@@ -314,26 +316,34 @@ likely env (`SONGBIRD_PEERS`), OOM, cold-start timing.
 
 ### NC-3: cellMembrane Sovereignty — **ADVANCING** (was IN PROGRESS)
 
-cellMembrane Wave 55 sync: `membrane.toml` updated to `composition = "nest"`,
-`topology = "diderm"`, signal channel enabled. VPS_STATE.md rewritten to reflect
-Nest Atomic reality (11 services, 7 primals, 21/21 darkforest). K-Derm topology
-published. 80/80 tests, zero clippy.
+cellMembrane Wave 56 delivered the full VPS deployment standard:
+- `TransportMode` enum (`UdsOnly`, `TcpDefault`, `TcpOptIn`) in `cellmembrane-types`
+- `--uds-only` wired into `deploy_membrane.sh` with `nucleus_launcher` integration
+- `spring-overlay` deploy mode for cell graph deployment
+- Port SSOT reconciled with primalSpring `tolerances/mod.rs` (5 ports corrected)
+- 93/93 tests (13 new transport tests), zero clippy warnings
+- NC-4 ready: cellMembrane can deploy spring overlays when springs are ready
 
 | Action | Owner | Status |
 |--------|-------|--------|
 | NestGate + trio on VPS | cellMembrane + ops | **LIVE** (Wave 38, 10/10 trio PASS) |
 | K-Derm boundary publication | cellMembrane | **DELIVERED** (`membrane.toml` diderm, signal channel) |
-| Docs synced to Nest reality | cellMembrane | **DELIVERED** (VPS_STATE, GLACIAL_SHIFT, specs) |
+| VPS deployment standard (`--uds-only` + spring overlays) | cellMembrane | **DELIVERED** Wave 56 (TransportMode, deploy_membrane.sh, port reconciliation) |
 | knot-dns shadow → primary | cellMembrane + ops | **DEPLOYED** (DNSSEC, registrar NS cutover pending) |
 | Forgejo releases | cellMembrane + plasmidBin | **PLANNED** |
 | sporePrint living content | cellMembrane + petalTongue | **BLOCKED** (BearDog scope) |
 
 ### NC-4: Spring NUCLEUS Depth (per gate)
 
+projectNUCLEUS Wave 56: all 13 primal deploy cases support `--uds-only`
+with conditional port args, `socket_health_check()` for UDS mode, config
+centralization, 65 Rust tests. Cell graphs consumed (6 VPS-ready, 3 desktop).
+Deep debt: serde-saphyr pure Rust, net.rs refactor.
+
 | Gate | Team | Required | Current | Action |
 |------|------|----------|---------|--------|
 | eastGate | airSpring, groundSpring | Full NUCLEUS | **Operational** | — |
-| ironGate | healthSpring, ludoSpring | Full NUCLEUS | **Operational** | NestComposition facade, GAP-01 |
+| ironGate | healthSpring, ludoSpring | Full NUCLEUS | **Operational** | VPS standard consumed |
 | southGate | wetSpring, neuralSpring | Node Atomic | **7/13 health** | Stabilize, live mesh |
 | biomeGate | hotSpring | Node → Full | **9/13 primals** | Elevate to full NUCLEUS |
 
