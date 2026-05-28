@@ -156,9 +156,59 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
                     &format!("{name}.sync_priority = \"{priority}\""),
                 );
             }
+
+            let forgejo_repo = repo
+                .get("forgejo_repo")
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
+            v.check_bool(
+                &format!("schema:repo:{name}:forgejo_repo"),
+                !forgejo_repo.is_empty() && forgejo_repo.contains('/'),
+                &format!("{name}.forgejo_repo = \"{forgejo_repo}\" (expect org/name)"),
+            );
         }
     } else {
         repo_names = Vec::new();
+    }
+
+    // WaterFall [sync] section — periplasmic Forgejo sync configuration
+    let sync = parsed.get("sync").and_then(|s| s.as_table());
+    v.check_bool(
+        "schema:sync_section",
+        sync.is_some(),
+        "[sync] section present (WaterFall config)",
+    );
+
+    if let Some(sync) = sync {
+        let base_url = sync
+            .get("forgejo_base_url")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        v.check_bool(
+            "schema:sync:forgejo_base_url",
+            base_url.starts_with("https://"),
+            &format!("sync.forgejo_base_url = \"{base_url}\""),
+        );
+
+        let ssh = sync
+            .get("forgejo_ssh")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        v.check_bool(
+            "schema:sync:forgejo_ssh",
+            ssh.starts_with("ssh://"),
+            &format!("sync.forgejo_ssh = \"{ssh}\""),
+        );
+
+        let default_source = sync
+            .get("default_source")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        v.check_bool(
+            "schema:sync:default_source",
+            ["github", "forgejo", "auto"].contains(&default_source),
+            &format!("sync.default_source = \"{default_source}\""),
+        );
     }
 
     let gates = parsed.get("gates").and_then(|g| g.as_table());
@@ -395,6 +445,25 @@ mod tests {
         assert!(parsed.get("repos").is_some(), "missing [repos] section");
         assert!(parsed.get("gates").is_some(), "missing [gates] section");
         assert!(parsed.get("meta").is_some(), "missing [meta] section");
+        assert!(parsed.get("sync").is_some(), "missing [sync] section (WaterFall)");
+    }
+
+    #[test]
+    fn all_repos_have_forgejo_repo() {
+        let toml_str = include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
+        let parsed: toml::Value = toml::from_str(toml_str).expect("valid TOML");
+
+        let repos = parsed.get("repos").and_then(|r| r.as_table()).expect("repos");
+        for (name, info) in repos {
+            let fj = info
+                .get("forgejo_repo")
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
+            assert!(
+                !fj.is_empty() && fj.contains('/'),
+                "repo '{name}' missing valid forgejo_repo (got: '{fj}')"
+            );
+        }
     }
 
     #[test]
