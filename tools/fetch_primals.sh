@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# tools/fetch_primals.sh — Bootstrap primal binaries from plasmidBin GitHub Releases
+# tools/fetch_primals.sh — Bootstrap primal binaries from sovereign or external sources
 #
 # Self-contained consumer script. No plasmidBin repo checkout needed.
 # Downloads musl-static primal binaries and verifies BLAKE3 checksums.
@@ -15,9 +15,17 @@
 #   ./tools/fetch_primals.sh --primal beardog # Fetch a single primal
 #   ./tools/fetch_primals.sh --force          # Re-download even if present
 #   ./tools/fetch_primals.sh --dry-run        # Show what would be fetched
+#   ./tools/fetch_primals.sh --source vps     # Fetch from VPS membrane depot
+#   ./tools/fetch_primals.sh --source forgejo # Fetch from Forgejo releases
+#
+# Source priority (configurable via --source or PLASMIDBIN_SOURCE):
+#   github  — GitHub Releases (default, outer membrane)
+#   vps     — VPS membrane depot via rsync/scp (sovereign, requires SSH)
+#   forgejo — Forgejo releases at git.primals.eco (sovereign, requires connectivity)
 #
 # Prerequisites:
-#   - curl
+#   - curl (github/forgejo sources)
+#   - rsync or scp (vps source)
 #   - b3sum (cargo install b3sum) — optional, skips checksum if missing
 #   - gh CLI (optional, for private repos; falls back to curl)
 #
@@ -25,10 +33,22 @@
 #   1. $ECOPRIMALS_PLASMID_BIN
 #   2. $XDG_DATA_HOME/ecoPrimals/plasmidBin
 #   3. ~/.local/share/ecoPrimals/plasmidBin
+#
+# Environment:
+#   PLASMIDBIN_SOURCE     — "github" | "vps" | "forgejo" (default: github)
+#   VPS_MEMBRANE_HOST     — SSH host for VPS source (default: root@membrane.primals.eco)
+#   VPS_MEMBRANE_BIN_DIR  — Remote binary dir on VPS (default: /opt/ecoPrimals/plasmidBin/primals)
+#   FORGEJO_BASE_URL      — Forgejo API base (default: https://git.primals.eco:3000)
+#   FORGEJO_REPO          — Forgejo repo path (default: ecoPrimals/plasmidBin)
 
 set -euo pipefail
 
 GITHUB_REPO="ecoPrimals/plasmidBin"
+SOURCE="${PLASMIDBIN_SOURCE:-github}"
+VPS_HOST="${VPS_MEMBRANE_HOST:-root@membrane.primals.eco}"
+VPS_BIN_DIR="${VPS_MEMBRANE_BIN_DIR:-/opt/ecoPrimals/plasmidBin/primals}"
+FORGEJO_BASE="${FORGEJO_BASE_URL:-https://git.primals.eco:3000}"
+FORGEJO_REPO="${FORGEJO_REPO:-ecoPrimals/plasmidBin}"
 
 NUCLEUS_PRIMALS=(
     beardog songbird toadstool barracuda coralreef
@@ -57,11 +77,17 @@ usage() {
     echo "Options:"
     echo "  --primal NAME    Fetch a single primal by name"
     echo "  --release TAG    Fetch from specific release tag (default: latest)"
+    echo "  --source SOURCE  Source: github (default), vps, forgejo"
     echo "  --force          Re-download even if binary exists"
     echo "  --dry-run        Show what would be fetched"
     echo "  --dest DIR       Override output directory"
     echo "  --verify-provenance  Verify provenance chain after fetch (needs plasmidbin CLI)"
     echo "  --help           Show this help"
+    echo ""
+    echo "Sources:"
+    echo "  github   GitHub Releases (outer membrane, default)"
+    echo "  vps      VPS membrane depot via rsync (sovereign, needs SSH)"
+    echo "  forgejo  Forgejo releases at git.primals.eco (sovereign)"
     echo ""
     echo "Default output: \${ECOPRIMALS_PLASMID_BIN:-~/.local/share/ecoPrimals/plasmidBin}"
 }
@@ -70,6 +96,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --primal)    FILTER="$2"; FETCH_ALL=false; shift 2 ;;
         --release)   RELEASE_TAG="$2"; shift 2 ;;
+        --source)    SOURCE="$2"; shift 2 ;;
         --force)     FORCE=true; shift ;;
         --dry-run)   DRY_RUN=true; shift ;;
         --dest)      ECOPRIMALS_PLASMID_BIN="$2"; shift 2 ;;
@@ -79,6 +106,11 @@ while [[ $# -gt 0 ]]; do
         *)           FILTER="$1"; FETCH_ALL=false; shift ;;
     esac
 done
+
+case "$SOURCE" in
+    github|vps|forgejo) ;;
+    *) echo "ERROR: Unknown source '$SOURCE'. Use: github, vps, forgejo"; exit 1 ;;
+esac
 
 resolve_plasmid_bin() {
     if [[ -n "${ECOPRIMALS_PLASMID_BIN:-}" ]]; then
@@ -198,18 +230,166 @@ fetch_provenance_toml() {
     return 0
 }
 
+# ─── VPS Source Functions ────────────────────────────────────────────────────
+
+vps_resolve_release_tag() {
+    echo "vps-live"
+}
+
+vps_download_asset() {
+    local _tag="$1" asset="$2" dest="$3"
+    local remote_path="$VPS_BIN_DIR/$ARCH/$asset"
+
+    if $DRY_RUN; then
+        echo "    [dry-run] rsync $VPS_HOST:$remote_path -> $dest"
+        return 0
+    fi
+
+    if command -v rsync >/dev/null 2>&1; then
+        if rsync -q --timeout=30 "$VPS_HOST:$remote_path" "$dest" 2>/dev/null; then
+            chmod +x "$dest"
+            return 0
+        fi
+    fi
+
+    if scp -o ConnectTimeout=10 "$VPS_HOST:$remote_path" "$dest" 2>/dev/null; then
+        chmod +x "$dest"
+        return 0
+    fi
+    return 1
+}
+
+vps_fetch_checksum() {
+    local _tag="$1" primal="$2" arch="$3"
+    local remote_checksums="$VPS_BIN_DIR/../checksums.toml"
+    local checksums_cache="$DEST_DIR/.checksums-vps.toml"
+
+    if [[ ! -f "$checksums_cache" ]] || $FORCE; then
+        rsync -q --timeout=10 "$VPS_HOST:$remote_checksums" "$checksums_cache" 2>/dev/null || true
+    fi
+
+    if [[ -f "$checksums_cache" ]]; then
+        local in_section=false section_header
+        section_header="primals\\.${primal}"
+        while IFS= read -r line; do
+            if [[ "$line" =~ ^\[${section_header}\] ]]; then
+                in_section=true; continue
+            fi
+            if $in_section && [[ "$line" =~ ^\[ ]]; then break; fi
+            if $in_section && [[ "$line" =~ \"${arch}\"[[:space:]]*=[[:space:]]*\"(.*)\" ]]; then
+                echo "${BASH_REMATCH[1]}"; return 0
+            fi
+        done < "$checksums_cache"
+    fi
+}
+
+# ─── Forgejo Source Functions ────────────────────────────────────────────────
+
+forgejo_resolve_release_tag() {
+    if [[ -n "$RELEASE_TAG" ]]; then
+        echo "$RELEASE_TAG"
+        return
+    fi
+    curl -sf --max-time 10 "$FORGEJO_BASE/api/v1/repos/$FORGEJO_REPO/releases/latest" 2>/dev/null \
+        | grep -oP '"tag_name"\s*:\s*"\K[^"]+' | head -1 || true
+}
+
+forgejo_download_asset() {
+    local tag="$1" asset="$2" dest="$3"
+    local url="$FORGEJO_BASE/$FORGEJO_REPO/releases/download/$tag/$asset"
+
+    if $DRY_RUN; then
+        echo "    [dry-run] $url -> $dest"
+        return 0
+    fi
+
+    if curl -sfL --max-time 300 -o "$dest" "$url" 2>/dev/null; then
+        chmod +x "$dest"
+        return 0
+    fi
+    return 1
+}
+
+forgejo_fetch_checksum() {
+    local tag="$1" primal="$2" arch="$3"
+    local checksums_url="$FORGEJO_BASE/$FORGEJO_REPO/releases/download/$tag/checksums.toml"
+    local checksums_cache="$DEST_DIR/.checksums-forgejo-${tag}.toml"
+
+    if [[ ! -f "$checksums_cache" ]] || $FORCE; then
+        curl -sfL --max-time 30 -o "$checksums_cache" "$checksums_url" 2>/dev/null || true
+    fi
+
+    if [[ -f "$checksums_cache" ]]; then
+        local in_section=false section_header
+        section_header="primals\\.${primal}"
+        while IFS= read -r line; do
+            if [[ "$line" =~ ^\[${section_header}\] ]]; then
+                in_section=true; continue
+            fi
+            if $in_section && [[ "$line" =~ ^\[ ]]; then break; fi
+            if $in_section && [[ "$line" =~ \"${arch}\"[[:space:]]*=[[:space:]]*\"(.*)\" ]]; then
+                echo "${BASH_REMATCH[1]}"; return 0
+            fi
+        done < "$checksums_cache"
+    fi
+}
+
+# ─── Source Dispatch ─────────────────────────────────────────────────────────
+
+active_resolve_tag() {
+    case "$SOURCE" in
+        github)  resolve_release_tag ;;
+        vps)     vps_resolve_release_tag ;;
+        forgejo) forgejo_resolve_release_tag ;;
+    esac
+}
+
+active_download_asset() {
+    case "$SOURCE" in
+        github)  download_asset "$@" ;;
+        vps)     vps_download_asset "$@" ;;
+        forgejo) forgejo_download_asset "$@" ;;
+    esac
+}
+
+active_fetch_checksum() {
+    case "$SOURCE" in
+        github)  fetch_checksum "$@" ;;
+        vps)     vps_fetch_checksum "$@" ;;
+        forgejo) forgejo_fetch_checksum "$@" ;;
+    esac
+}
+
+active_list_recent_releases() {
+    case "$SOURCE" in
+        github)  list_recent_releases ;;
+        vps)     echo "vps-live" ;;
+        forgejo)
+            curl -sf --max-time 10 "$FORGEJO_BASE/api/v1/repos/$FORGEJO_REPO/releases?limit=5" 2>/dev/null \
+                | grep -oP '"tag_name"\s*:\s*"\K[^"]+' || true
+            ;;
+    esac
+}
+
+# ─── Main Logic ─────────────────────────────────────────────────────────────
+
 DEST_DIR="$(resolve_plasmid_bin)"
 ARCH=$(detect_target_triple)
 BIN_DIR="$DEST_DIR/primals/$ARCH"
 
 echo "primalSpring fetch — $(date -Iseconds)"
+echo "  Source: $SOURCE"
 echo "  Arch:   $ARCH"
 echo "  Dest:   $BIN_DIR"
 
-TAG=$(resolve_release_tag)
+TAG=$(active_resolve_tag)
 if [[ -z "$TAG" ]]; then
-    echo "ERROR: Could not resolve release tag from $GITHUB_REPO"
-    echo "  Check network connectivity or pass --release TAG"
+    echo "ERROR: Could not resolve release tag from $SOURCE"
+    case "$SOURCE" in
+        github)  echo "  Check network connectivity or pass --release TAG" ;;
+        vps)     echo "  Check SSH connectivity to $VPS_HOST" ;;
+        forgejo) echo "  Check Forgejo at $FORGEJO_BASE or pass --release TAG" ;;
+    esac
     exit 1
 fi
 echo "  Release: $TAG"
@@ -217,9 +397,11 @@ echo ""
 
 mkdir -p "$BIN_DIR"
 
-# Download provenance.toml alongside checksums.toml
-fetch_provenance_toml "$TAG" || true
-echo ""
+# Download provenance.toml alongside checksums.toml (GitHub/Forgejo only)
+if [[ "$SOURCE" != "vps" ]]; then
+    fetch_provenance_toml "$TAG" || true
+    echo ""
+fi
 
 primals_to_fetch=()
 if $FETCH_ALL; then
@@ -247,10 +429,10 @@ for primal in "${primals_to_fetch[@]}"; do
     # include the triggering primal), cascade through recent releases.
     got_it=false
     got_tag=""
-    for try_tag in "$TAG" $(list_recent_releases | grep -v "^${TAG}$" | head -4); do
-        if download_asset "$try_tag" "${primal}-${ARCH}" "$local_path"; then
+    for try_tag in "$TAG" $(active_list_recent_releases | grep -v "^${TAG}$" | head -4); do
+        if active_download_asset "$try_tag" "${primal}-${ARCH}" "$local_path"; then
             got_it=true; got_tag="$try_tag"; break
-        elif download_asset "$try_tag" "$primal" "$local_path"; then
+        elif active_download_asset "$try_tag" "$primal" "$local_path"; then
             got_it=true; got_tag="$try_tag"; break
         fi
     done
@@ -267,7 +449,7 @@ for primal in "${primals_to_fetch[@]}"; do
     fi
 
     if has_b3sum; then
-        expected=$(fetch_checksum "$got_tag" "$primal" "$ARCH")
+        expected=$(active_fetch_checksum "$got_tag" "$primal" "$ARCH")
         if [[ -n "${expected:-}" ]]; then
             actual=$(b3sum --no-names "$local_path")
             if [[ "$actual" == "$expected" ]]; then

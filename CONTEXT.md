@@ -74,10 +74,10 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.30 Wave 58b (May 28, 2026) — 56 scenarios (10 tracks, 3 tiers),
+v0.9.30 Wave 59b (May 28, 2026) — 57 scenarios (10 tracks, 3 tiers),
 460 registered capability methods (460 exercised, 100% coverage),
 93 experiments (21 tracks), 97 deploy graphs (82 deploy + 15 atomic signal graphs),
-44-cell deployment matrix. 797 lib tests pass (2 ignored) + 17 doc tests. 13/13 behavioral
+44-cell deployment matrix. 801 lib tests pass (2 ignored) + 17 doc tests. 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
 sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
 `hostname` crate eliminated (17→16 runtime deps). `nucleus_launcher` now has
@@ -246,7 +246,7 @@ composition).
 
 ### Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 460-method registry (100% exercised), 56 scenarios, 96 deploy graphs (81 deploy + 15 signal)
+- 460-method registry (100% exercised), 57 scenarios, 96 deploy graphs (81 deploy + 15 signal)
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs

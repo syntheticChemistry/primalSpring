@@ -8,6 +8,11 @@ all-features = true
 
 [advisories]
 db-path = "~/.cargo/advisory-db"
+# PostPrimordial: sovereign advisory DB mirror preferred when available.
+# cargo-deny checks db-path first; db-urls is the fetch/update source.
+# When ironGate mirrors the advisory DB locally, set:
+#   db-urls = ["file:///opt/ecoPrimals/advisory-db"]
+# Until then, the upstream GitHub-hosted DB remains the update source.
 db-urls = ["https://github.com/rustsec/advisory-db"]
 ignore = []
 yanked = "deny"

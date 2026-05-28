@@ -98,6 +98,7 @@ pub mod s_tier2_science_api;
 pub mod s_token_federation;
 pub mod s_tower_atomic;
 pub mod s_cephalization;
+pub mod s_ecosystem_freshness;
 pub mod s_kderm_boundary;
 pub mod s_tower_cns;
 pub mod s_zero_port_standard;
@@ -162,6 +163,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_cephalization::SCENARIO);
     r.register(s_tower_cns::SCENARIO);
     r.register(s_kderm_boundary::SCENARIO);
+    r.register(s_ecosystem_freshness::SCENARIO);
     r
 }
 
@@ -172,7 +174,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 56;
+    const EXPECTED_SCENARIO_COUNT: usize = 57;
 
     #[test]
     fn registry_scenario_count() {

@@ -292,7 +292,7 @@ fn tower_tls_internet_reach() {
     let result = bridge.capability_call(
         "discovery",
         "https_probe",
-        &serde_json::json!({ "url": "https://github.com", "timeout_secs": 10 }),
+        &serde_json::json!({ "url": "https://primals.eco", "timeout_secs": 10 }),
     );
 
     match result {
@@ -304,7 +304,7 @@ fn tower_tls_internet_reach() {
             if let Some(code) = status {
                 assert!(
                     (200..400).contains(&code),
-                    "HTTPS probe to github.com should return 2xx/3xx, got {code}"
+                    "HTTPS probe to primals.eco should return 2xx/3xx, got {code}"
                 );
             }
         }
