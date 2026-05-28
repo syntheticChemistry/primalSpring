@@ -118,10 +118,9 @@ pub fn spawn_biomeos(
 /// (which has the full `[[nodes]]` graph and `../config/capability_registry.toml`).
 /// Falls back to the caller-provided directory.
 fn discover_biomeos_graphs(fallback: &Path) -> PathBuf {
-    const ENV_BIOMEOS_GRAPHS: &str = "BIOMEOS_GRAPHS_DIR";
     const RELATIVE_GRAPHS_PATH: &str = "primals/biomeOS/graphs";
 
-    if let Ok(val) = std::env::var(ENV_BIOMEOS_GRAPHS) {
+    if let Ok(val) = std::env::var(crate::env_keys::BIOMEOS_GRAPHS_DIR) {
         let p = PathBuf::from(&val);
         if p.is_dir() {
             return p;

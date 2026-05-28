@@ -205,7 +205,7 @@ standardized NUCLEUS deployments via plasmidBin from cellMembrane VPS.
 | `launcher/spawn.rs` | Library | **DEPRECATED** | `nucleus_launcher start` — PID-tracked, tolerances-aware |
 | `launcher/biomeos.rs` | Library | **DEPRECATED** | `nucleus_launcher start` with biomeOS auto-discovery |
 | `harness/mod.rs` | Library (public) | **DEPRECATED** | Experiments use `CompositionContext` + live NUCLEUS |
-| `desktop_nucleus.sh` | tools/ | **DESKTOP-ONLY** | Marked non-VPS; retire after Songbird GAP-17/18 |
+| `desktop_nucleus.sh` | tools/ | **DESKTOP-ONLY** | Marked non-VPS; retire after Songbird GAP-17/18 (partially resolved: constants centralized, `ipc.resolve` migration path) |
 | `cell_launcher.sh` | tools/ | **DESKTOP-ONLY** | Marked non-VPS; VPS uses `biomeos deploy` directly |
 | Env var scatter | launcher, experiments | **RESOLVED** | `env_keys.rs` centralization complete — all env var access uses constants |
 | 11 CI/launcher scripts | ~~tools/~~ | **ARCHIVED** Wave 55b | Rust subcommands (`primalspring checksums/registry`, `nucleus_launcher`) |
@@ -265,9 +265,10 @@ development uses `nucleus_launcher start` or `desktop_nucleus.sh` (local only).
 The ecosystem is **interstadial**: primals are clean (13/13), but the niche climate
 (deployment topology, spore flow, cross-gate mesh) must warm before stadial gates.
 
-### NC-1: postPrimordial Spore Gateway — **WIRED** (was SCAFFOLDED)
+### NC-1: postPrimordial Spore Gateway — **COMPLETE** (was WIRED)
 
-biomeOS v3.79 completed the gateway wiring loop:
+biomeOS v3.81 closed the final two gaps (NC-1.4 + NC-1.emit).
+Gateway code is complete — remaining work is live deployment on gates:
 - Ingest: 6-step signal graph, content path (`source_dir`) passed, receipt alignment
   with async-aware multi-path extraction.
 - Emit: new `nest_emit_spore.toml` (3-step: retrieve → resolve_braid → sign_emission),
@@ -289,11 +290,11 @@ evidence.
 | Land `biomeos nucleus ingest/emit` subcommands | biomeOS (primal) | **DELIVERED** v3.79 (NC-1.1/1.2 complete) |
 | Wire `pseudospore-core` as `ltee-cli` dependency | lithoSpore (primal) | **DELIVERED** (NC-1.3 complete) |
 | Ship `PseudoSporeEnvelope` load/validate API | lithoSpore (primal) | **DELIVERED** (`envelope.rs` + `error.rs`) |
-| biomeOS swap to `pseudospore-core` for validation | biomeOS (primal) | **NOT DONE** (NC-1.4 — last gateway gap) |
+| ~~biomeOS swap to `pseudospore-core` for validation~~ | biomeOS (primal) | **RESOLVED** v3.81 — new `biomeos-pseudospore` crate with canonical validation (`load_pseudospore`, `verify_checksums`, `check_completeness`) |
 | Sync signal graph (ingest) | biomeOS (primal) + primalSpring | **RESOLVED** v3.79 — conventions aligned |
 | Emit signal graph | biomeOS (primal) | **DELIVERED** v3.79 (`nest_emit_spore.toml`) |
-| Emit content materialization (full pseudoSpore dir) | biomeOS (primal) | **PARTIAL** — `emit_manifest.json` only, no unpack |
-| hotSpring v1.6.1 ingest via NUCLEUS (Era 3) | hotSpring (spring) + biomeOS (primal) | **GATED** on deployed v3.79 + live Nest Atomic |
+| ~~Emit content materialization (full pseudoSpore dir)~~ | biomeOS (primal) | **RESOLVED** v3.81 — full materialization pipeline: scope.toml, validation.json, checksums.blake3, ferment_transcript.json, data/, README |
+| hotSpring v1.6.1 ingest via NUCLEUS (Era 3) | hotSpring (spring) + biomeOS (primal) | **GATED** on deployed v3.81 + live Nest Atomic |
 | groundSpring as second data point | groundSpring (spring) + biomeOS (primal) | **GATED** on column U first pass |
 | exp115 live phases (4-5) | primalSpring | **GATED** on NUCLEUS availability |
 | Thread 10 spore ingest workload | projectFOUNDATION | **DELIVERED** (`nucleus-spore-ingest.toml`) |

@@ -380,7 +380,8 @@ impl CompositionContext {
     /// ```rust,no_run
     /// # use primalspring::composition::CompositionContext;
     /// # fn example(ctx: &mut CompositionContext) -> Result<(), Box<dyn std::error::Error>> {
-    /// let result = ctx.signal("tower", "publish", serde_json::json!({"data": "hello"}))?;
+    /// let params = serde_json::json!({"data": "hello"});
+    /// let result = ctx.signal("tower", "publish", &params)?;
     /// // biomeOS decomposes: bearDog.sign → songbird.announce → skunkBat.audit
     /// # Ok(())
     /// # }
@@ -450,10 +451,11 @@ impl CompositionContext {
     /// // ctx.call("braid", "braid.create", contributors)?;
     ///
     /// // After (semantic collapse — 1 call, biomeOS manages the graph):
-    /// let result = ctx.dispatch("nest.store", serde_json::json!({
+    /// let params = serde_json::json!({
     ///     "content": "experiment data",
     ///     "author": "wetSpring:ltee-b7",
-    /// }))?;
+    /// });
+    /// let result = ctx.dispatch("nest.store", &params)?;
     /// # Ok(())
     /// # }
     /// ```

@@ -150,7 +150,11 @@ impl NeuralBridge {
             *slot = Some(PrimalClient::connect(&self.socket_path, "neural-api")?);
         }
 
-        let client = slot.as_mut().unwrap_or_else(|| unreachable!());
+        let Some(client) = slot.as_mut() else {
+            return Err(IpcError::ProtocolError {
+                detail: "client slot empty after insert".into(),
+            });
+        };
 
         match client.call(method, params.clone()) {
             Ok(resp) => Self::extract(resp),

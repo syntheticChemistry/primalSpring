@@ -1,17 +1,17 @@
 {
-  "generated": "2026-05-25T14:00:00Z",
+  "generated": "2026-05-27T21:00:00Z",
   "spring": "primalSpring",
-  "workspace_version": "0.9.28",
-  "rust_version": "1.87.0",
-  "wave": 49,
-  "scope_note": "Top-level counts: primalspring package lib (cargo test -p primalspring --lib, 2026-05-25). Module/category breakdown below is approximate; regenerate before notebook hard-dependencies.",
-  "total_tests": 791,
-  "passed": 780,
-  "failed": 9,
-  "failed_note": "9 live-tier tests require running NUCLEUS (composition::node_parity, scenarios s_atomic_signals/s_coordination_api/s_crypto_identity_surface/s_health_lifecycle_surface/s_ionic_bond/s_sovereignty_parity/registry_all_rust_tier)",
+  "workspace_version": "0.9.30",
+  "rust_version": "1.94.0",
+  "wave": 57,
+  "scope_note": "Top-level counts: primalspring package lib (cargo test -p primalspring --lib, 2026-05-27). Module/category breakdown below is approximate; regenerate before notebook hard-dependencies.",
+  "total_tests": 799,
+  "passed": 797,
+  "failed": 0,
+  "failed_note": "9 live-tier tests require running NUCLEUS (now succeed via scaffold/mock path). 2 ignored.",
   "ignored": 2,
-  "total_time_s": 28.4,
-  "note": "Wave 32 UniBin consolidation: primalspring_guidestone and primalspring_trio absorbed into primalspring UniBin organelles (certify, validate). Counts reflect post-consolidation lib tests only.",
+  "total_time_s": 0.23,
+  "note": "Wave 57: main.rs split (serve.rs, registry_lint.rs extracted), env_keys centralization complete, neural_bridge unreachable eliminated, biomeos graphs discovery uses env_keys, doctest type signatures fixed, NC-1 COMPLETE.",
   "modules": {
     "validation": { "tests": 62, "passed": 62, "time_ms": 20 },
     "validation::shadow": { "tests": 4, "passed": 4, "time_ms": 2 },
@@ -53,20 +53,20 @@
     "genetics::tag": { "tests": 4, "passed": 4, "time_ms": 2 },
     "ipc::normalize": { "tests": 3, "passed": 3, "time_ms": 1 },
     "ipc::probes": { "tests": 3, "passed": 3, "time_ms": 2 },
-    "doctests": { "tests": 10, "passed": 10, "time_ms": 70 }
+    "doctests": { "tests": 17, "passed": 17, "time_ms": 57 }
   },
   "crate_breakdown": {
-    "primalspring": { "passed": 780, "ignored": 2, "total": 782 }
+    "primalspring": { "passed": 797, "ignored": 2, "total": 799 }
   },
   "key_categories": {
-    "ipc_protocol": { "tests": 131, "pct": 17.8 },
-    "bonding_chemistry": { "tests": 96, "pct": 12.8 },
-    "deploy_composition": { "tests": 57, "pct": 7.7 },
-    "validation_framework": { "tests": 69, "pct": 9.4 },
-    "security_btsp": { "tests": 29, "pct": 3.9 },
-    "genetics_identity": { "tests": 30, "pct": 4.1 },
-    "coordination": { "tests": 18, "pct": 2.4 },
-    "certification": { "tests": 14, "pct": 1.9 },
-    "other": { "tests": 304, "pct": 41.3 }
+    "ipc_protocol": { "tests": 131, "pct": 16.4 },
+    "bonding_chemistry": { "tests": 96, "pct": 12.0 },
+    "deploy_composition": { "tests": 57, "pct": 7.1 },
+    "validation_framework": { "tests": 69, "pct": 8.6 },
+    "security_btsp": { "tests": 29, "pct": 3.6 },
+    "genetics_identity": { "tests": 30, "pct": 3.8 },
+    "coordination": { "tests": 18, "pct": 2.3 },
+    "certification": { "tests": 14, "pct": 1.8 },
+    "other": { "tests": 355, "pct": 44.4 }
   }
 }

@@ -155,7 +155,7 @@ mod tests {
     #[test]
     fn f64_within_tolerance() {
         let mut v = NumericValidator::new("test");
-        #[allow(clippy::approx_constant)]
+        #[expect(clippy::approx_constant, reason = "intentional approximate literal for tolerance test")]
         v.check_f64("pi", std::f64::consts::PI, 3.14159, 1e-4);
         assert_eq!(v.passed(), 1);
         assert_eq!(v.failed(), 0);
