@@ -3,7 +3,31 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–55b: Stadial Entry / Glacial Shift (2026-05-27)
+## [Unreleased] — Waves 22–60: Stadial Entry / Glacial Shift (2026-05-29)
+
+### Wave 60: Neural API Coordination Triad — quorumSignal/rootPulse/waterFall (May 29)
+- **Coordination Triad formalized**: quorumSignal (sense), rootPulse (action), waterFall (sync)
+  as the three domains of the biomeOS Neural API. `CoordinationDomain` enum in `graphs/mod.rs`.
+  `SignalTier` enum with 5 tiers (Tower/Node/Nest/Meta/Ecosystem) + `particle()`/`primary_domain()`.
+- **8 new atomic signal graphs**: 5 rootPulse (commit/branch/merge/diff/federate) + 3 ecosystem
+  (pull/push/check). Total: 15→23 signal graphs across 4→6 dispatch tiers.
+- **Capability registry expanded**: `dag.branch/diff/merge/federate`, `session.dehydrate`,
+  `content.fetch_heads/push/replicate/sync`, `mesh.discover_remotes/mirror/publish`,
+  `manifest.gate_profile`, `braid.anchor` registered. `manifest` domain routed to biomeOS.
+  `[signals.rootpulse]` and `[signals.ecosystem]` tier sections added.
+- **Signal dispatch parity**: 15→23 signals in `SIGNALS`, `SIGNAL_GRAPHS`, `EXPECTED_TOOL_NAMES`.
+  `s_signal_dispatch_parity`, `s_atomic_signals`, `s_meta_tier_signals` all updated.
+- **Dark Forest transport**: `validate_dark_forest` now accepts `uds_and_mesh` (cross-gate signals).
+- **cascade-pull.sh manifest-driven**: Reads gate profiles from `ecosystem_manifest.toml` via
+  Python TOML parser. `.gate` identity file, `--clone-missing` flag, `ECOPRIMALS_ROOT` symlink
+  hardening, merge conflict guidance. Replaces all hardcoded bash arrays.
+- **Cross-gate graph executor spec**: `CROSS_GATE_GRAPH_EXECUTOR.md` — `gate`/`relay` hints
+  on graph nodes, MitoBeacon bilateral trust, transport resolution.
+- **test-waterfall-local.sh rewritten**: 51 tests — gate identity, manifest-driven repo counts,
+  .gate file, source routing, help output, all-gate dry-run.
+- **Documentation sweep**: 15→23 signal counts updated across README, CONTEXT, PRIMAL_GAPS,
+  DOWNSTREAM_PATTERN_GUIDE, CROSS_SPRING_PARITY_SCORECARD, NEURAL_API_EVOLUTION.
+- 807 tests passing, 0 clippy warnings.
 
 ### Wave 55b: PostPrimordial Checkpoint — Metrics Alignment + Dispatch Parity (May 27)
 - **Signal dispatch parity**: `s_signal_dispatch_parity` expanded from 14→15 signals.

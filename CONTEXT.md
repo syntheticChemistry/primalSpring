@@ -36,7 +36,7 @@ back upstream to primals and primalSpring.
   `primalspring_primal` (JSON-RPC IPC server / cell membrane),
   `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status with PID tracking + federation)
 - **experiments/** — 93 validation binaries covering 21 tracks
-- **graphs/** — 81 deploy graph TOMLs + 15 atomic signal graphs using fragment-first
+- **graphs/** — 81 deploy graph TOMLs + 23 atomic signal graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
   2 cross-spring + 1 federation + 1 composition + 12 cell graphs + `signals/` tier)
@@ -83,8 +83,8 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 v0.9.31 Wave 60 (May 29, 2026) — 57 scenarios (10 tracks, 3 tiers),
 460 registered capability methods (460 exercised, 100% coverage),
-93 experiments (21 tracks), 97 deploy graphs (82 deploy + 15 atomic signal graphs),
-44-cell deployment matrix. 802 lib tests pass (2 ignored) + 17 doc tests. 13/13 behavioral
+93 experiments (21 tracks), 105 deploy graphs (82 deploy + 23 atomic signal graphs),
+44-cell deployment matrix. 807 lib tests pass (2 ignored) + 17 doc tests. 13/13 behavioral
 convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
 sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
 golgiBody Phase A live (Forgejo sovereign at `git.primals.eco`), VPS federation
@@ -252,7 +252,7 @@ composition).
 
 ### Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 460-method registry (100% exercised), 57 scenarios, 96 deploy graphs (81 deploy + 15 signal)
+- 470+ method registry (100% exercised), 57 scenarios, 105 deploy graphs (82 deploy + 23 signal)
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs

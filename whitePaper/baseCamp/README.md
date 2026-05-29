@@ -1,7 +1,7 @@
 # primalSpring baseCamp — Coordination and Composition Validation
 
-**Date**: May 28, 2026
-**Status**: Wave 58b — v0.9.30 — 93 experiments (21 tracks), 797 lib tests (797 pass, 2 ignored) + 17 doc tests, 97 deploy graphs (82 deploy + 15 signal), **460 registered capability methods**, 56 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 58b**: dispatch telemetry persistence, primal name constants, blake3 correctness, env centralization 11/13 primals. NC-1 COMPLETE (code), NC-3 CONSUMED, NC-4 ADVANCING, NC-5 UNBLOCKED. biomeOS v3.84. **Zero DEBT markers / zero unsafe / zero `#[allow]`**. **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, adaptive routing weights, composition patterns, `primal.announce` 12/12, dispatch telemetry for Layer 4/5 evolution). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs.
+**Date**: May 29, 2026
+**Status**: Wave 60 — v0.9.31 — 93 experiments (21 tracks), 807 lib tests (807 pass, 2 ignored) + 17 doc tests, 105 deploy graphs (82 deploy + 23 signal), **470+ registered capability methods**, 57 validation scenarios (10 tracks, 3 tiers). **Security gate**: MethodGate 13/13, BTSP AEAD 13/13, Edition 2024 13/13. **Wave 60**: Neural API Coordination Triad (quorumSignal/rootPulse/waterFall), 23 atomic signal graphs across 6 tiers, cascade-pull.sh manifest-driven, cross-gate graph executor spec. NC-1 COMPLETE, NC-3 CONSUMED, NC-4 ADVANCING. biomeOS v3.84. **Zero DEBT markers / zero unsafe / zero `#[allow]`**. **biomeOS Neural API** (semantic routing, graph execution, signal dispatch, adaptive routing weights, composition patterns, `primal.announce` 12/12). **Composition patterns**: Python → Rust (UniBin/ecoBin) → Primal (NUCLEUS) validation pipeline operational across 8 springs.
 
 ---
 

@@ -46,6 +46,14 @@ const EXPECTED_TOOL_NAMES: &[&str] = &[
     "meta.render",
     "meta.health",
     "meta.deploy",
+    "rootpulse.commit",
+    "rootpulse.branch",
+    "rootpulse.merge",
+    "rootpulse.diff",
+    "rootpulse.federate",
+    "ecosystem.pull",
+    "ecosystem.push",
+    "ecosystem.check",
 ];
 
 /// Core meta-tier primals (the fragment itself).

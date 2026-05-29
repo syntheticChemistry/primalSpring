@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-29 (Wave 60 postPrimordial: VPS federation hub live (Songbird :7700, MitoBeacon seed e8b62b6e, Dark Forest). DH-1 deployment hygiene audit: 8/13 primals write to hardcoded /tmp, blocking ProtectSystem=strict on VPS. golgiBody Phase A live, WaterFall 38/38 sovereign sync, 4 gates responding. 802 lib tests. 13/13 CLEAN.)
+> **Last updated**: 2026-05-29 (Wave 60 postPrimordial: Neural API Coordination Triad (quorumSignal/rootPulse/waterFall) formalized. 23 atomic signal graphs (was 15), 6 tiers (was 4), ecosystem signal tier added. cascade-pull.sh manifest-driven (.gate identity, --clone-missing, --check parity). Cross-gate graph executor spec'd. 807 lib tests. VPS federation hub live. DH-1 /tmp audit stands. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (May 28, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 57 scenarios (10 tracks, 3 tiers), 460 real methods (460 exercised = 100%), **802 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 60: postPrimordial** — golgiBody Phase A live (VPS Forgejo, 38 repos sovereign sync, WaterFall validated). VPS NUCLEUS 13/13 primals on UDS sockets. `graph.execute` gated on biomeOS v0.2. **Strategy**: wet/neuralSpring on southGate as concentrated pattern node → membrane handoff to other springs. **Critical path**: southGate 7→13/13 + biomeOS `graph.execute` → column U → stadial.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 57 scenarios (10 tracks, 3 tiers), 470+ real methods (100% exercised), **807 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 60: postPrimordial** — Neural API Coordination Triad formalized (quorumSignal/rootPulse/waterFall). 23 atomic signal graphs across 6 tiers. cascade-pull.sh manifest-driven with .gate identity file, --clone-missing, --check parity. Cross-gate graph executor spec'd. VPS federation hub live (Songbird :7700, MitoBeacon). `graph.execute` gated on biomeOS v0.2. **Critical path**: southGate 7→13/13 + biomeOS `graph.execute` → column U → stadial.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — Waves 1-58b complete. 56 scenarios (10 tracks), 460 real methods (460 exercised = 100%), 797 lib tests, zero clippy warnings (pedantic + nursery). Wave 58 ecosystem response: bearDog created `env_keys.rs` (290 constants, 14,987 tests), songbird fully adopted `songbird-process-env` (8,158 tests), squirrel centralized 316 env constants (7,095 tests), biomeOS shipped `env_config` module (v3.84). projectFOUNDATION elevated to Rust (5 crates). projectNUCLEUS async-correct with 166 tests. cellMembrane at 95.8% coverage. Env var centralization now complete or in progress across all 13 primals. Fresh ecoBins harvested (squirrel, biomeOS).**
+**13/13 CLEAN — Waves 1-60 complete. 57 scenarios (10 tracks), 470+ real methods (100% exercised), 807 lib tests, zero clippy warnings (pedantic + nursery). Wave 60: Neural API Coordination Triad (quorumSignal/rootPulse/waterFall), 23 atomic signal graphs across 6 tiers, cascade-pull.sh manifest-driven, cross-gate graph executor spec. Wave 58 ecosystem response: bearDog `env_keys.rs` (290 constants), songbird `songbird-process-env` (8,158 tests), squirrel 316 env constants, biomeOS `env_config` (v3.84). projectFOUNDATION elevated to Rust. projectNUCLEUS async-correct. cellMembrane at 95.8% coverage.**
 
 ---
 

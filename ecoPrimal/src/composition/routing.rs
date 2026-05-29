@@ -86,7 +86,7 @@ pub fn capability_to_primal_typed(capability: &str) -> Option<Primal> {
         "ledger" | "spine" | "merkle" => Some(LoamSpine),
         "visualization" => Some(PetalTongue),
         "defense" | "recon" | "threat" | "audit" => Some(SkunkBat),
-        "orchestration" | "federation" => Some(BiomeOS),
+        "orchestration" | "federation" | "manifest" => Some(BiomeOS),
         _ => None,
     }
 }

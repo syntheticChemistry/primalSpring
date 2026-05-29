@@ -234,6 +234,17 @@ Observatory tools:
 - [ ] Graph execution timing per-node (PathwayLearner → weight table)
 - [ ] Cross-gate latency baselines (local UDS vs remote TURN)
 
+### Wave 60: Coordination Triad + Ecosystem Signal Tier
+- [x] `CoordinationDomain` enum: `Signal` / `Pulse` / `Fall` in `graphs/mod.rs`
+- [x] Triad taxonomy documented (quorumSignal / rootPulse / waterFall)
+- [x] 5 rootPulse signal graphs materialized (commit/branch/merge/diff/federate)
+- [x] `ecosystem` signal tier introduced — 5th tier for membrane-level sync
+- [x] 3 ecosystem signals: `ecosystem.pull`, `ecosystem.push`, `ecosystem.check`
+- [x] `cascade-pull.sh` evolved to manifest-driven (reads `ecosystem_manifest.toml`)
+- [x] `--source auto` (forgejo-first, origin fallback), `--check` parity, `--parallel N`
+- [ ] Signal graph registration in capability registry (23 signals total: 15 original + 5 rootPulse + 3 ecosystem)
+- [x] Cross-gate graph executor spec: `specs/CROSS_GATE_GRAPH_EXECUTOR.md` (gate/relay hints on graph nodes)
+
 ### Wave 43+: Provider Selection + Graph Optimization
 - [ ] Weighted provider selection in `discover_capability` (currently first-match)
 - [ ] Co-occurrence analysis (which capabilities are called together)
@@ -245,6 +256,75 @@ Observatory tools:
 - [ ] A/B shadow comparison (already prototyped in `validation::shadow`)
 - [ ] Self-healing: automatic rerouting on primal failure
 - [ ] Self-announcing primals dynamically reshape routing topology
+
+---
+
+## Coordination Domains: quorumSignal / rootPulse / waterFall
+
+The Neural API orchestrates three coordination domains — the ecosystem's
+nervous system. Each domain uses the 5 `CoordinationPattern` variants
+(Sequential, Parallel, ConditionalDag, Pipeline, Continuous) as execution
+strategies, but serves a distinct biological purpose.
+
+### quorumSignal — SENSE (afferent)
+
+How the ecosystem observes, discovers, and reacts. Named after bacterial
+quorum sensing: a signal only has meaning when enough primals participate
+in the composition to form consensus. The quorum is the minimum primal
+set for an atomic operation to be valid — Tower quorum is 3 (bearDog +
+songbird + skunkBat), Nest quorum is 4 (nestGate + trio), Full NUCLEUS
+quorum is 13.
+
+- 23 atomic signal graphs in `graphs/signals/` across 6 tiers (Tower/Node/Nest/Meta/rootPulse/Ecosystem)
+- `signal.dispatch` collapses N-squared primal IPC to one semantic call
+- Primarily Sequential and Parallel coordination patterns
+- `CoordinationDomain::Signal` in `graphs/mod.rs`
+
+### rootPulse — ACTION (efferent)
+
+How the ecosystem creates, mutates, and proves. Emergent VCS over the
+provenance trio — nothing in-tree implements `git`; version control
+emerges from graph-orchestrated capability calls across sovereign primals.
+
+- 6 primals compose: rhizoCrypt (DAG) + loamSpine (ledger) + sweetGrass (attribution) + bearDog (signing) + nestGate (storage) + songbird (federation)
+- 5 logical operations: commit, branch, merge, diff, federate
+- `nest.commit` signal graph + `rootpulse_commit` composition pattern
+- Sequential today; federation could use Pipeline (streaming cross-site)
+- `CoordinationDomain::Pulse` in `graphs/mod.rs`
+
+### waterFall — SYNC (autonomic)
+
+How the ecosystem maintains coherence across gates. Multi-repo alignment,
+freshness, federation through the VPS periplasm (golgiBody). Autonomic
+because gates should sync without manual intervention — like a heartbeat
+keeping code coherent.
+
+- Currently bash (`cascade-pull.sh`) + Forgejo SSH + `ecosystem_manifest.toml`
+- Gate profiles drive scoped pulls: eastGate (38 repos), ironGate (~20), etc.
+- Evolving toward Neural API `ecosystem` signal tier (ecosystem.pull/push/check)
+- Target: Parallel (concurrent repo pulls) with ConditionalDag (skip unchanged)
+- `CoordinationDomain::Fall` in `graphs/mod.rs`
+
+### Triad Relationship
+
+```
+                    quorumSignal (sense)
+                         |
+                    signal.dispatch
+                    23 atomic graphs
+                         |
+          +--------------+--------------+
+          |                             |
+    rootPulse (action)          waterFall (sync)
+    nest.commit / federate      ecosystem.pull / push
+    provenance trio             gate-profile cascade
+    within NUCLEUS              across gates
+```
+
+Layer 2 (graph composition) serves all three domains. The distinction is
+operational: quorumSignal is reactive sensing, rootPulse is creative
+mutation, waterFall is autonomous coherence. All three collapse to
+`graph.execute` at runtime.
 
 ---
 

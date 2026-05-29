@@ -364,7 +364,7 @@ impl CompositionContext {
     // ── Atomic signals ──────────────────────────────────────────────────
 
     /// Atomic tier names recognized by [`signal`](Self::signal).
-    const SIGNAL_TIERS: &[&str] = &["tower", "node", "nest", "nucleus", "meta"];
+    const SIGNAL_TIERS: &[&str] = &["tower", "node", "nest", "nucleus", "meta", "ecosystem", "rootpulse"];
 
     /// Send an atomic signal to a composition tier.
     ///

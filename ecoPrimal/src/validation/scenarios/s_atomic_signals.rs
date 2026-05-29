@@ -45,12 +45,24 @@ const SIGNAL_GRAPHS: &[(&str, &str, &str)] = &[
     ("meta.render", "graphs/signals/meta_render.toml", include_str!("../../../../graphs/signals/meta_render.toml")),
     ("meta.health", "graphs/signals/meta_health.toml", include_str!("../../../../graphs/signals/meta_health.toml")),
     ("meta.deploy", "graphs/signals/meta_deploy.toml", include_str!("../../../../graphs/signals/meta_deploy.toml")),
+    // rootPulse domain (ACTION / efferent) — Wave 60
+    ("rootpulse.commit", "graphs/signals/rootpulse_commit.toml", include_str!("../../../../graphs/signals/rootpulse_commit.toml")),
+    ("rootpulse.branch", "graphs/signals/rootpulse_branch.toml", include_str!("../../../../graphs/signals/rootpulse_branch.toml")),
+    ("rootpulse.merge", "graphs/signals/rootpulse_merge.toml", include_str!("../../../../graphs/signals/rootpulse_merge.toml")),
+    ("rootpulse.diff", "graphs/signals/rootpulse_diff.toml", include_str!("../../../../graphs/signals/rootpulse_diff.toml")),
+    ("rootpulse.federate", "graphs/signals/rootpulse_federate.toml", include_str!("../../../../graphs/signals/rootpulse_federate.toml")),
+    // ecosystem domain (SYNC / autonomic) — Wave 60
+    ("ecosystem.pull", "graphs/signals/ecosystem_pull.toml", include_str!("../../../../graphs/signals/ecosystem_pull.toml")),
+    ("ecosystem.push", "graphs/signals/ecosystem_push.toml", include_str!("../../../../graphs/signals/ecosystem_push.toml")),
+    ("ecosystem.check", "graphs/signals/ecosystem_check.toml", include_str!("../../../../graphs/signals/ecosystem_check.toml")),
 ];
 
 const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
 const NODE_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat", "toadstool", "barracuda", "coralreef"];
 const NEST_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"];
 const META_PRIMALS: &[&str] = &["biomeos", "squirrel", "petaltongue", "skunkbat"];
+const ROOTPULSE_PRIMALS: &[&str] = &["rhizocrypt", "beardog", "nestgate", "loamspine", "sweetgrass", "songbird"];
+const ECOSYSTEM_PRIMALS: &[&str] = &["biomeos", "songbird", "nestgate", "beardog"];
 
 fn tier_primals(tier: &str) -> &'static [&'static str] {
     match tier {
@@ -58,6 +70,8 @@ fn tier_primals(tier: &str) -> &'static [&'static str] {
         "node" => NODE_PRIMALS,
         "nest" => NEST_PRIMALS,
         "meta" => META_PRIMALS,
+        "rootpulse" => ROOTPULSE_PRIMALS,
+        "ecosystem" => ECOSYSTEM_PRIMALS,
         _ => &[],
     }
 }
@@ -341,7 +355,7 @@ mod tests {
 
     #[test]
     fn signal_graph_count() {
-        assert_eq!(SIGNAL_GRAPHS.len(), 15, "expected 15 signal graphs (10 foundation + 5 meta)");
+        assert_eq!(SIGNAL_GRAPHS.len(), 23, "expected 23 signal graphs (10 foundation + 5 meta + 5 rootPulse + 3 ecosystem)");
     }
 
     #[test]

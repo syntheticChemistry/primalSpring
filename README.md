@@ -5,13 +5,13 @@
 | | |
 |-|-|
 | **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
-| **Version** | 0.9.30 |
+| **Version** | 0.9.31 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 801 lib tests pass (2 ignored) + 17 doc tests |
+| **Tests** | 807 lib tests pass (2 ignored) + 17 doc tests |
 | **Experiments** | 93 (21 tracks) — 57 validation scenarios (10 tracks) |
-| **Deploy Graphs** | 96 deploy TOMLs (81 deploy + 15 atomic signal graphs) — fragment-first composition with `resolve = true` |
-| **Coverage** | Method coverage against 460 registered capability methods; line coverage via llvm-cov |
+| **Deploy Graphs** | 105 deploy TOMLs (82 deploy + 23 atomic signal graphs) — fragment-first composition with `resolve = true` |
+| **Coverage** | Method coverage against 470+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 93 experiments carry structured `with_provenance()` metadata |
@@ -71,8 +71,8 @@ primalSpring/
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
 ├── experiments/                   # 93 validation experiments (21 tracks)
 ├── config/                        # Launch profiles, deployment matrix, capability registry, signal tools
-├── graphs/                        # 81 deploy graph TOMLs + 15 atomic signal graphs
-│   ├── signals/                  # 15 atomic signal graphs (tower/node/nest/meta tiers, incl. bootstrap)
+├── graphs/                        # 82 deploy graph TOMLs + 23 atomic signal graphs
+│   ├── signals/                  # 23 atomic signal graphs (tower/node/nest/meta/rootpulse/ecosystem)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
 │   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
 │   ├── patterns/                 # 4 coordination patterns: parallel, conditional, streaming, continuous
@@ -220,7 +220,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 81 deploy graph TOMLs + 15 atomic signal graphs using fragment-first composition (all nodes declare `by_capability`):
+primalSpring ships 82 deploy graph TOMLs + 23 atomic signal graphs using fragment-first composition (all nodes declare `by_capability`):
 
 **Root-level graphs (14)**:
 
@@ -293,7 +293,7 @@ and `[graph.bonding_policy]` sections validated by `graph_metadata.rs`.
 
 ## Atomic Signal Graphs
 
-primalSpring ships 15 atomic signal graphs under `graphs/signals/` that define
+primalSpring ships 23 atomic signal graphs under `graphs/signals/` that define
 the Neural API composition collapse layer. Each signal maps a high-level operation
 (e.g. `tower.publish`, `nest.store`, `meta.deploy`) to a graph of primal
 capabilities, enabling biomeOS to decompose semantic intent into concrete IPC calls.
@@ -575,7 +575,6 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `tools/push_demo_scene.sh` | Push a demo scene to a running petalTongue instance |
 | `tools/godot_bridge.sh` | Launch Godot-to-primal IPC bridge process |
 | `tools/godot_bridge.gd` | GDScript client for Godot-to-primal IPC bridge |
-| `tools/thread10_provenance.sh` | Runner for `primalspring validate --provenance-dir` (Thread 10 output) |
 
 ---
 

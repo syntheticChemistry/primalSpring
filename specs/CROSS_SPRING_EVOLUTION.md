@@ -4,7 +4,7 @@
 > and have drifted. See `README.md` and `CONTEXT.md` for current figures.
 
 **Date**: May 2026
-**Status**: Wave 58b snapshot — primalSpring v0.9.30 — 13/13 primals at zero debt, JH-0 MethodGate adopted (13/13), BTSP Phase 3 (13/13), ionic tokens live. 93 experiments (21 tracks), 97 deploy graphs. 797 lib tests + 17 doc tests, 56 scenarios. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing). 460 registered capability methods.
+**Status**: Wave 60 snapshot — primalSpring v0.9.31 — 13/13 primals at zero debt, JH-0 MethodGate adopted (13/13), BTSP Phase 3 (13/13), ionic tokens live. 93 experiments (21 tracks), 105 deploy graphs (82 deploy + 23 signal). 807 lib tests + 17 doc tests, 57 scenarios. genomeBin v5.1 (46 binaries / 6 targets, Tier 1 39/39). biomeOS Neural API (605 capabilities, semantic routing). 470+ registered capability methods. Neural API Coordination Triad: quorumSignal / rootPulse / waterFall.
 
 ---
 

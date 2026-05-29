@@ -382,11 +382,15 @@ methods = [
 owner = "rhizocrypt"
 stability = "stable"
 methods = [
+    "dag.branch",
     "dag.dehydration.trigger",
+    "dag.diff",
     "dag.event.append",
     "dag.event.append_batch",
+    "dag.federate",
     "dag.frontier.get",
     "dag.health",
+    "dag.merge",
     "dag.merkle.proof",
     "dag.merkle.root",
     "dag.merkle.verify",
@@ -430,6 +434,7 @@ owner = "loamspine"
 methods = [
     "session.commit",
     "session.create",
+    "session.dehydrate",
     "session.state",
 ]
 
@@ -468,6 +473,7 @@ methods = [
 owner = "sweetgrass"
 stability = "stable"
 methods = [
+    "braid.anchor",
     "braid.commit",
     "braid.complete",
     "braid.create",
@@ -522,12 +528,16 @@ owner = "nestgate"
 methods = [
     "content.collections",
     "content.exists",
+    "content.fetch_heads",
     "content.get",
     "content.list",
     "content.promote",
     "content.publish",
+    "content.push",
     "content.put",
+    "content.replicate",
     "content.resolve",
+    "content.sync",
 ]
 
 [storage]
@@ -776,9 +786,12 @@ methods = [
     "mesh.announce",
     "mesh.auto_discover",
     "mesh.connect",
+    "mesh.discover_remotes",
     "mesh.find_path",
     "mesh.init",
+    "mesh.mirror",
     "mesh.peers",
+    "mesh.publish",
     "mesh.relay",
 ]
 
@@ -929,6 +942,13 @@ methods = [
     "biomeos.spring_status",
 ]
 
+[manifest]
+owner = "biomeos"
+stability = "evolving"
+methods = [
+    "manifest.gate_profile",
+]
+
 [neural_api]
 owner = "biomeos"
 stability = "evolving"
@@ -982,6 +1002,18 @@ signals = [
     { name = "ingest_spore", graph = "graphs/signals/nest_ingest_spore.toml", coordination = "sequential", nodes = 6 },
 ]
 
+[signals.rootpulse]
+tier = "rootpulse"
+primals = ["rhizocrypt", "beardog", "nestgate", "loamspine", "sweetgrass", "songbird"]
+domain = "pulse"
+signals = [
+    { name = "commit", graph = "graphs/signals/rootpulse_commit.toml", coordination = "sequential", nodes = 5 },
+    { name = "branch", graph = "graphs/signals/rootpulse_branch.toml", coordination = "sequential", nodes = 3 },
+    { name = "merge", graph = "graphs/signals/rootpulse_merge.toml", coordination = "sequential", nodes = 4 },
+    { name = "diff", graph = "graphs/signals/rootpulse_diff.toml", coordination = "sequential", nodes = 2 },
+    { name = "federate", graph = "graphs/signals/rootpulse_federate.toml", coordination = "sequential", nodes = 6 },
+]
+
 [signals.meta]
 tier = "meta"
 primals = ["biomeos", "squirrel", "petaltongue", "skunkbat"]
@@ -991,6 +1023,22 @@ signals = [
     { name = "render", graph = "graphs/signals/meta_render.toml", coordination = "sequential", nodes = 3 },
     { name = "health", graph = "graphs/signals/meta_health.toml", coordination = "parallel", nodes = 3 },
     { name = "deploy", graph = "graphs/signals/meta_deploy.toml", coordination = "sequential", nodes = 3 },
+]
+
+# ─── Ecosystem tier (waterFall domain — cross-gate sync) ─────────────
+# The 5th signal tier. Unlike particle tiers (tower/node/nest/meta) which
+# operate within a single NUCLEUS, ecosystem signals operate across gates
+# through the VPS periplasm. This is the autonomic nervous system of the
+# ecosystem — sync that runs without conscious control.
+
+[signals.ecosystem]
+tier = "ecosystem"
+primals = ["biomeos", "songbird", "nestgate", "beardog"]
+domain = "fall"
+signals = [
+    { name = "pull", graph = "graphs/signals/ecosystem_pull.toml", coordination = "parallel", nodes = 4, domain = "fall" },
+    { name = "push", graph = "graphs/signals/ecosystem_push.toml", coordination = "sequential", nodes = 4, domain = "fall" },
+    { name = "check", graph = "graphs/signals/ecosystem_check.toml", coordination = "parallel", nodes = 3, domain = "fall" },
 ]
 
 # Test fixtures — synthetic method names used in unit tests only.
@@ -1027,6 +1075,14 @@ methods = [
     "node.compute",
     "test.sock",
     "tests.rs",
+    "ecosystem.pull",
+    "ecosystem.push",
+    "ecosystem.check",
+    "rootpulse.commit",
+    "rootpulse.branch",
+    "rootpulse.merge",
+    "rootpulse.diff",
+    "rootpulse.federate",
     "tower.authenticate",
     "tower.bootstrap",
     "tower.discover",

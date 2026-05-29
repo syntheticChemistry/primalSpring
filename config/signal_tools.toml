@@ -179,6 +179,103 @@ content = "Raw content bytes"
 session_state = "loamSpine session state (if active)"
 provenance = "sweetGrass provenance attribution (if requested)"
 
+# ─── rootPulse Signals (ACTION domain — emergent VCS) ─────────────────
+
+[[tools]]
+name = "rootpulse.commit"
+tier = "nest"
+domain = "pulse"
+description = "rootPulse temporal collapse: dehydrate DAG, sign merkle root, store content, commit to ledger, create attribution braid."
+graph = "graphs/signals/rootpulse_commit.toml"
+coordination = "sequential"
+primals = ["rhizocrypt", "beardog", "nestgate", "loamspine", "sweetgrass"]
+
+[tools.parameters]
+session_id = { type = "string", required = true, description = "rhizoCrypt session to dehydrate and commit" }
+author = { type = "string", required = false, description = "Author identity for attribution braid" }
+
+[tools.returns]
+dehydrated_hash = "rhizoCrypt dehydrated DAG merkle root"
+signature = "bearDog Ed25519 signature of the merkle root"
+content_cid = "nestGate storage CID (if content stored)"
+commit_id = "loamSpine ledger commit ID"
+braid_id = "sweetGrass attribution braid ID"
+
+[[tools]]
+name = "rootpulse.branch"
+tier = "nest"
+domain = "pulse"
+description = "Create a signed branch in the ephemeral DAG. Divergence point for parallel evolution lines."
+graph = "graphs/signals/rootpulse_branch.toml"
+coordination = "sequential"
+primals = ["rhizocrypt", "beardog", "sweetgrass"]
+
+[tools.parameters]
+session_id = { type = "string", required = true, description = "rhizoCrypt session to branch from" }
+branch_name = { type = "string", required = true, description = "Name for the new branch" }
+
+[tools.returns]
+branch_id = "rhizoCrypt branch event ID"
+signature = "bearDog signature proving branch authorship"
+anchor_id = "sweetGrass anchor ID (if attribution recorded)"
+
+[[tools]]
+name = "rootpulse.merge"
+tier = "nest"
+domain = "pulse"
+description = "Merge two DAG branches, sign the merge event, commit to ledger, record attribution."
+graph = "graphs/signals/rootpulse_merge.toml"
+coordination = "sequential"
+primals = ["rhizocrypt", "beardog", "loamspine", "sweetgrass"]
+
+[tools.parameters]
+left_branch = { type = "string", required = true, description = "First branch to merge" }
+right_branch = { type = "string", required = true, description = "Second branch to merge" }
+strategy = { type = "string", required = false, description = "Merge strategy: fast_forward | three_way" }
+
+[tools.returns]
+merge_event = "rhizoCrypt merge event ID"
+signature = "bearDog signature of the merge event"
+commit_id = "loamSpine ledger commit ID"
+braid_id = "sweetGrass attribution braid ID (if recorded)"
+
+[[tools]]
+name = "rootpulse.diff"
+tier = "nest"
+domain = "pulse"
+description = "Compute the DAG difference between two points. Read-only provenance comparison."
+graph = "graphs/signals/rootpulse_diff.toml"
+coordination = "sequential"
+primals = ["rhizocrypt", "nestgate"]
+
+[tools.parameters]
+from = { type = "string", required = true, description = "Ancestor event/commit ID" }
+to = { type = "string", required = true, description = "Descendant event/commit ID" }
+include_content = { type = "bool", required = false, description = "Resolve content blobs for changed entries" }
+
+[tools.returns]
+events = "List of DAG events between from and to"
+content = "Content blobs for changed entries (if include_content)"
+
+[[tools]]
+name = "rootpulse.federate"
+tier = "nest"
+domain = "pulse"
+description = "Synchronize DAG state and attribution braids with a remote peer via songbird mesh. Cross-gate provenance federation."
+graph = "graphs/signals/rootpulse_federate.toml"
+coordination = "sequential"
+primals = ["songbird", "rhizocrypt", "nestgate", "sweetgrass", "beardog"]
+
+[tools.parameters]
+target_peer = { type = "string", required = true, description = "Remote gate node ID to federate with" }
+session_id = { type = "string", required = true, description = "rhizoCrypt session to federate" }
+
+[tools.returns]
+peer_found = "Whether the remote peer was reachable"
+events_synced = "Number of DAG events exchanged"
+braids_synced = "Number of attribution braids synchronized"
+receipt_signature = "bearDog signature of the federation receipt (if signing enabled)"
+
 # ─── Meta Signals (orchestration + AI + UI) ───────────────────────────
 
 [[tools]]
@@ -261,3 +358,61 @@ approval = { type = "string", required = false, description = "Approval mode: su
 plan = "Signal sequence squirrel planned for the deployment"
 deployment_id = "biomeOS graph deployment tracking ID"
 audit_event = "skunkBat audit event ID for the deployment action"
+
+# ─── Ecosystem Signals (waterFall domain — cross-gate sync) ──────────
+
+[[tools]]
+name = "ecosystem.pull"
+tier = "ecosystem"
+domain = "fall"
+description = "Cascade pull: resolve gate profile from manifest, discover remotes (forgejo-first), pull repos in parallel, publish freshness to mesh."
+graph = "graphs/signals/ecosystem_pull.toml"
+coordination = "parallel"
+primals = ["biomeos", "songbird", "nestgate"]
+
+[tools.parameters]
+gate = { type = "string", required = false, description = "Gate name (auto-detected if omitted)" }
+source = { type = "string", required = false, description = "Pull source: forgejo | origin | auto (default: auto)" }
+parallel = { type = "integer", required = false, description = "Number of concurrent pull workers (default: 4)" }
+
+[tools.returns]
+pulled = "Number of repos successfully pulled"
+skipped = "Number of repos skipped (not cloned)"
+failed = "Number of repos that failed to pull"
+freshness = "Freshness snapshot published to mesh"
+
+[[tools]]
+name = "ecosystem.push"
+tier = "ecosystem"
+domain = "fall"
+description = "Push local evolution to sovereign Forgejo (periplasm), optionally mirror to GitHub outer membrane. Verifies signatures before push."
+graph = "graphs/signals/ecosystem_push.toml"
+coordination = "sequential"
+primals = ["beardog", "nestgate", "songbird"]
+
+[tools.parameters]
+repos = { type = "array", required = false, description = "Specific repos to push (default: all with local changes)" }
+mirror = { type = "bool", required = false, description = "Also mirror to GitHub (default: true for trailing-mirror repos)" }
+
+[tools.returns]
+pushed_forgejo = "Number of repos pushed to Forgejo"
+mirrored_github = "Number of repos mirrored to GitHub"
+signature_failures = "Repos with unsigned commits (blocked)"
+
+[[tools]]
+name = "ecosystem.check"
+tier = "ecosystem"
+domain = "fall"
+description = "Freshness drift detection: fetch remote HEADs without pulling, compare to local, report drift. Read-only ecosystem proprioception."
+graph = "graphs/signals/ecosystem_check.toml"
+coordination = "parallel"
+primals = ["biomeos", "nestgate", "songbird"]
+
+[tools.parameters]
+gate = { type = "string", required = false, description = "Gate name (auto-detected if omitted)" }
+
+[tools.returns]
+in_sync = "Number of repos at parity"
+drifted = "Number of repos with drift (behind/ahead counts)"
+not_cloned = "Number of repos not present locally"
+drift_details = "Per-repo drift report (repo, behind, ahead)"

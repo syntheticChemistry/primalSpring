@@ -112,13 +112,15 @@ pub fn validate_dark_forest(
         &format!("{label} graph has security_model = btsp_enforced"),
     );
 
-    let uds_only = metadata
+    let transport = metadata
         .and_then(|m| m.get("transport"))
-        .and_then(|t| t.as_str()) == Some("uds_only");
+        .and_then(|t| t.as_str())
+        .unwrap_or("unknown");
+    let valid_transport = transport == "uds_only" || transport == "uds_and_mesh";
     v.check_bool(
         &format!("{label}:uds_only"),
-        uds_only,
-        &format!("{label} graph transport = uds_only"),
+        valid_transport,
+        &format!("{label} graph transport = {transport} (valid: uds_only | uds_and_mesh)"),
     );
 }
 

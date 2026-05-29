@@ -1,7 +1,7 @@
 +++
 title = "primalSpring Validation Summary"
-description = "Meta-validation orchestrator — 797 lib tests, 93 experiments, 460 capability methods, 13/13 BTSP, zero DEBT, Wave 58b"
-date = 2026-05-28
+description = "Meta-validation orchestrator — 807 lib tests, 93 experiments, 470+ capability methods, 13/13 BTSP, zero DEBT, Wave 60"
+date = 2026-05-29
 
 [taxonomies]
 primals = ["biomeos", "barracuda", "toadstool", "nestgate", "beardog", "songbird", "squirrel", "rhizocrypt", "loamspine", "sweetgrass", "petaltongue", "skunkbat", "coralreef"]
@@ -10,11 +10,11 @@ springs = ["primalspring"]
 
 ## Status
 
-- **797 lib tests** (797 passed, 2 ignored) + 17 doc tests, 0 failed
+- **807 lib tests** (807 passed, 2 ignored) + 17 doc tests, 0 failed
 - **93 experiments** across 21 tracks (tower atomic → postPrimordial glacial)
-- **97 deploy graphs** (82 deploy + 15 signal), 56 validation scenarios (10 tracks)
+- **105 deploy graphs** (82 deploy + 23 signal), 57 validation scenarios (10 tracks)
 - **13/13 primals** BTSP Phase 3 AEAD, all defaulting to `127.0.0.1`
-- **460 registered capability methods** (including 8 `neural_api.*` methods)
+- **470+ registered capability methods** (including 8 `neural_api.*` methods)
 - **Zero DEBT markers**, zero unsafe blocks, zero `#[allow]` in production
 - **6-tier discovery hierarchy** validated across all primals
 - **Dispatch telemetry persistence** — `DispatchMetric` → JSON-lines for routing evolution

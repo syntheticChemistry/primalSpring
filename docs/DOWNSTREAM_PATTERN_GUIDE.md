@@ -7,7 +7,7 @@ How the 8 river delta springs feed projectNUCLEUS, projectFOUNDATION, and lithoS
 discovery cascade, 7 gates, signal_executor.sh, tower_agent.toml), esotericWebb V8
 (357 tests, signal-first provenance, lifecycle handlers), projectFOUNDATION (184 targets,
 29 workloads, primal_ipc.sh, 6 CPU parity benchmarks). 460 methods, 56 scenarios
-(10 tracks, 3 tiers), 15 atomic signal graphs. All UB-1–4 SHIPPED.
+(10 tracks, 3 tiers), 23 atomic signal graphs (6 tiers). All UB-1–4 SHIPPED.
 
 ---
 
@@ -321,7 +321,7 @@ AFTER (signal dispatch — biomeOS manages the graph):
 | `ctx.signal_plan(intent)` | Squirrel-powered intent → signal sequence planning |
 | `ctx.execute_plan(plan)` | Execute a squirrel signal plan |
 
-### Signal Inventory (15 signals across 4 tiers)
+### Signal Inventory (23 signals across 6 tiers)
 
 | Tier | Signals | Composition Surface |
 |------|---------|-------------------|
@@ -362,7 +362,7 @@ finalization).
 ### Validation Coverage
 
 primalSpring validates the signal API through:
-- `s_signal_dispatch_parity` — dispatches all 15 signals, validates response shapes
+- `s_signal_dispatch_parity` — dispatches all 23 signals, validates response shapes
 - `s_primal_announce` — validates announce wire format and live registration
 - `s_atomic_signals` — structural + live dispatch validation per signal graph
 - `s_provenance_trio_pipeline` Phase 6 — `nest.store` signal dispatch

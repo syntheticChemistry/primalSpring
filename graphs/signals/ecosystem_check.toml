@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Ecosystem Signal: ecosystem.check
+#
+# Freshness drift detection across gates. Fetches without pulling,
+# compares local HEAD to remote HEAD for each repo in the gate's
+# profile, and reports drift. This is the ecosystem's proprioception —
+# knowing where it stands relative to the collective.
+#
+# Designed to run frequently (every 15 min via systemd timer) to
+# provide continuous freshness awareness without mutating state.
+#
+# Coordination domain: waterFall (SYNC / autonomic)
+# Signal tier: ecosystem (membrane-level, not atomic-level)
+
+[graph]
+id = "ecosystem_check"
+name = "Ecosystem Check"
+description = "Freshness drift detection: fetch → compare → report. Read-only ecosystem proprioception."
+version = "1.0.0"
+coordination = "parallel"
+signal_tier = "ecosystem"
+signal_name = "check"
+coordination_domain = "fall"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_and_mesh"
+secure_by_default = true
+cross_gate = true
+read_only = true
+manifest = "ecosystem_manifest.toml"
+
+[[graph.nodes]]
+name = "resolve_profile"
+binary = "biomeos"
+order = 1
+required = true
+spawn = false
+by_capability = "orchestration"
+capabilities = ["manifest.gate_profile"]
+description = "Read gate profile from ecosystem_manifest.toml"
+
+[[graph.nodes]]
+name = "fetch_heads"
+binary = "nestgate"
+order = 2
+required = true
+spawn = false
+depends_on = ["resolve_profile"]
+by_capability = "storage"
+capabilities = ["content.fetch_heads"]
+description = "Fetch remote HEADs without pulling (git fetch --dry-run equivalent)"
+
+[[graph.nodes]]
+name = "report_drift"
+binary = "songbird"
+order = 3
+required = true
+spawn = false
+depends_on = ["fetch_heads"]
+by_capability = "discovery"
+capabilities = ["mesh.publish"]
+description = "Publish drift report to songbird mesh for cross-gate dashboard"

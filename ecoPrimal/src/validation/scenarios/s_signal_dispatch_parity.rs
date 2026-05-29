@@ -116,6 +116,48 @@ const SIGNALS: &[SignalSpec] = &[
         expected_keys: &["plan", "deployment_id", "audit_event"],
         params: || serde_json::json!({ "target": "probe", "approval": "suggest", "_probe": true }),
     },
+    // rootPulse domain (ACTION / efferent) — Wave 60
+    SignalSpec {
+        id: "rootpulse.commit",
+        expected_keys: &["dehydrated_hash", "signature", "commit_id", "braid_id"],
+        params: || serde_json::json!({ "session_id": "dispatch-parity-probe", "_probe": true }),
+    },
+    SignalSpec {
+        id: "rootpulse.branch",
+        expected_keys: &["branch_id", "signature"],
+        params: || serde_json::json!({ "session_id": "dispatch-parity-probe", "branch_name": "probe-branch", "_probe": true }),
+    },
+    SignalSpec {
+        id: "rootpulse.merge",
+        expected_keys: &["merge_event", "signature", "commit_id"],
+        params: || serde_json::json!({ "left_branch": "probe-a", "right_branch": "probe-b", "_probe": true }),
+    },
+    SignalSpec {
+        id: "rootpulse.diff",
+        expected_keys: &["events"],
+        params: || serde_json::json!({ "from": "probe-ancestor", "to": "probe-descendant", "_probe": true }),
+    },
+    SignalSpec {
+        id: "rootpulse.federate",
+        expected_keys: &["peer_found", "events_synced", "braids_synced"],
+        params: || serde_json::json!({ "target_peer": "probe-gate", "session_id": "dispatch-parity-probe", "_probe": true }),
+    },
+    // ecosystem domain (SYNC / autonomic) — Wave 60
+    SignalSpec {
+        id: "ecosystem.pull",
+        expected_keys: &["pulled", "skipped", "failed"],
+        params: || serde_json::json!({ "gate": "probe", "source": "auto", "_probe": true }),
+    },
+    SignalSpec {
+        id: "ecosystem.push",
+        expected_keys: &["pushed_forgejo"],
+        params: || serde_json::json!({ "repos": [], "_probe": true }),
+    },
+    SignalSpec {
+        id: "ecosystem.check",
+        expected_keys: &["in_sync", "drifted"],
+        params: || serde_json::json!({ "gate": "probe", "_probe": true }),
+    },
 ];
 
 /// Run the signal dispatch parity validation scenario.
@@ -133,8 +175,8 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 fn phase_dispatch_parsing(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.check_bool(
         "parse:signal_count",
-        SIGNALS.len() == 15,
-        &format!("SIGNALS table has {} entries (expected 15)", SIGNALS.len()),
+        SIGNALS.len() == 23,
+        &format!("SIGNALS table has {} entries (expected 23)", SIGNALS.len()),
     );
 
     for spec in SIGNALS {
@@ -295,7 +337,7 @@ mod tests {
 
     #[test]
     fn signal_table_matches_graph_count() {
-        assert_eq!(SIGNALS.len(), 15, "SIGNALS table should match 15 signal graphs");
+        assert_eq!(SIGNALS.len(), 23, "SIGNALS table should match 23 signal graphs");
     }
 
     const SIGNAL_GRAPHS: &[(&str, &str)] = &[
@@ -314,6 +356,14 @@ mod tests {
         ("meta_render", include_str!("../../../../graphs/signals/meta_render.toml")),
         ("meta_health", include_str!("../../../../graphs/signals/meta_health.toml")),
         ("meta_deploy", include_str!("../../../../graphs/signals/meta_deploy.toml")),
+        ("rootpulse_commit", include_str!("../../../../graphs/signals/rootpulse_commit.toml")),
+        ("rootpulse_branch", include_str!("../../../../graphs/signals/rootpulse_branch.toml")),
+        ("rootpulse_merge", include_str!("../../../../graphs/signals/rootpulse_merge.toml")),
+        ("rootpulse_diff", include_str!("../../../../graphs/signals/rootpulse_diff.toml")),
+        ("rootpulse_federate", include_str!("../../../../graphs/signals/rootpulse_federate.toml")),
+        ("ecosystem_pull", include_str!("../../../../graphs/signals/ecosystem_pull.toml")),
+        ("ecosystem_push", include_str!("../../../../graphs/signals/ecosystem_push.toml")),
+        ("ecosystem_check", include_str!("../../../../graphs/signals/ecosystem_check.toml")),
     ];
 
     #[test]
