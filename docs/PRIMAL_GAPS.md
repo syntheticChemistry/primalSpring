@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-28 (Wave 60 postPrimordial: golgiBody Phase A live on VPS, WaterFall 38/38 sovereign sync validated, VPS knot-dns zone updated. Wave 59b: NUCLEUS on VPS (13/13, 57s deploy), bearDog W118 PRIMAL_CONTRACTS v4.0, lithoSpore derivation anchoring. Wave 58b: biomeOS v3.84 env centralization, bearDog orphan purge + env_keys.rs (290 constants), songbird process-env (8,158 tests), squirrel env centralization (316 constants), projectFOUNDATION Rust elevation. 802 lib tests. 13/13 CLEAN.)
+> **Last updated**: 2026-05-29 (Wave 60 postPrimordial: VPS federation hub live (Songbird :7700, MitoBeacon seed e8b62b6e, Dark Forest). DH-1 deployment hygiene audit: 8/13 primals write to hardcoded /tmp, blocking ProtectSystem=strict on VPS. golgiBody Phase A live, WaterFall 38/38 sovereign sync, 4 gates responding. 802 lib tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -255,6 +255,81 @@ standardized NUCLEUS deployments via plasmidBin from cellMembrane VPS.
 **Disconnection target:** Springs deploy exclusively via `biomeos deploy` against
 cellMembrane VPS. No shell launchers on the standard deployment path. Desktop
 development uses `nucleus_launcher start` or `desktop_nucleus.sh` (local only).
+
+---
+
+### DH-1: Primal /tmp Hardcoding — Deployment Hygiene Audit (May 29, 2026) — **NEW**
+
+**Discovered during:** VPS Songbird federation hub deployment (Wave 60). Songbird
+failed under `ProtectSystem=strict` because it writes to `/tmp/songbird-data/`,
+`/tmp/songbird.sock`, and `/tmp/songbird-e8b62b6e.sock`. Investigation revealed
+this is systemic — **8 of 13 primals** write to hardcoded `/tmp` paths on the VPS
+instead of using the configured `SOCKET_DIR` (`/run/membrane/`).
+
+**Root cause:** Primals fall back to `/tmp` or `/tmp/biomeos/` when no explicit
+socket/data directory is configured, even when `--socket` points to `/run/membrane/`.
+The UDS-only standard (Wave 56) assumes all I/O goes through the configured socket
+path, but primals create **additional** sockets, PID files, JSON metadata, and data
+directories in `/tmp` unconditionally.
+
+**Impact:**
+- `ProtectSystem=strict` breaks deployment (EROFS on `/tmp` writes)
+- Only 3 of 22 VPS services have full systemd hardening (BearDog, BearDog TLS, Songbird TURN)
+- 10 services run with **zero filesystem protection** because primals need `/tmp`
+- Stale sockets in `/tmp` cause EADDRINUSE on restart (Songbird, sweetGrass)
+- Security posture weaker than it should be for a periplasmic membrane
+
+**Full /tmp audit (VPS 157.230.3.183, May 29 2026):**
+
+| Primal | Offending Paths in /tmp | Expected Path |
+|--------|------------------------|---------------|
+| **Songbird** | `/tmp/songbird-data/`, `/tmp/songbird.sock`, `/tmp/songbird-{fid}.sock`, `/tmp/network-{fid}.sock` | `/run/membrane/songbird.sock` only |
+| **toadStool** | `/tmp/biomeos/compute-tarpc.sock`, `/tmp/biomeos/compute.sock`, `/tmp/toadstool-jsonrpc-port` | `/run/membrane/toadstool.sock` only |
+| **coralReef** | `/tmp/biomeos/coralreef-core-default-tarpc.sock`, `/tmp/biomeos/coralreef-core.json`, `/tmp/biomeos/coralreef-core.pid` | `/run/membrane/coralreef.sock` only |
+| **barraCuda** | `/tmp/biomeos/barracuda-core.json`, `/tmp/biomeos/barracuda.sock` (→ symlink) | `/run/membrane/barracuda.sock` only |
+| **sweetGrass** | `/tmp/sweetgrass.sock`, `/tmp/provenance.sock` (→ symlink) | `/run/membrane/sweetgrass.sock` only |
+| **squirrel** | `/tmp/ecoPrimals-manifests/squirrel.json` | `/run/membrane/` or `$XDG_DATA_HOME` |
+| BearDog | Clean | `/run/membrane/beardog.sock` ✓ |
+| skunkBat | Clean | `/run/membrane/skunkbat.sock` ✓ |
+| NestGate | Clean (uses configured :9500 + UDS) | OK |
+| rhizoCrypt | Clean (uses configured :9602 + UDS) | OK |
+| loamSpine | Clean (uses configured :9700 + UDS) | OK |
+| biomeOS | Clean (UDS only) | OK |
+| petalTongue | Clean (UDS only) | OK |
+
+**systemd hardening posture:**
+
+| Hardening | Services with it | Services without |
+|-----------|-----------------|------------------|
+| `ProtectSystem=strict` | 3 (beardog, beardog-tls, songbird-relay) | 12 |
+| `PrivateTmp=yes` | 3 (same 3 above) | 12 |
+| No filesystem protection | — | toadstool, barracuda, coralreef, nestgate, rhizocrypt, loamspine, sweetgrass, biomeos, squirrel, petaltongue, songbird-membrane, skunkbat |
+
+**Fix requirements (per primal team):**
+
+1. **Socket path:** All sockets MUST go to the configured `SOCKET_DIR` (env
+   `$XDG_RUNTIME_DIR/biomeos/` on desktop, `/run/membrane/` on VPS). No
+   fallback to `/tmp`. If socket path is passed via `--socket`, no additional
+   sockets should be created elsewhere.
+
+2. **Data directory:** Any persistent data (`.json`, `.pid`, state) should use
+   `$XDG_DATA_HOME` (desktop) or `/var/lib/<primal>/` (VPS). Never `/tmp`.
+
+3. **PID files:** Use `--pid-dir` flag or `$SOCKET_DIR`. Never `/tmp`.
+
+4. **tarpc sockets:** toadStool and coralReef create tarpc-specific sockets in
+   `/tmp/biomeos/`. These need to respect the configured socket directory.
+
+5. **Symlinks:** barraCuda and sweetGrass create symlinks in `/tmp/biomeos/`
+   back to `/run/membrane/`. These should be created IN the socket directory
+   itself, not across directories.
+
+**Acceptance criteria:** All 13 primals run cleanly under `ProtectSystem=strict`
+with ONLY `ReadWritePaths=/run/membrane` (or the configured socket dir). Zero
+writes to `/tmp` except via systemd `PrivateTmp=yes` isolation.
+
+**Priority:** P2 — doesn't block eukaryotic onboarding but blocks hardened
+membrane deployment and stadial security posture.
 
 ---
 
