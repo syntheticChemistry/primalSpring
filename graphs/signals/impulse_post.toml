@@ -1,0 +1,68 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: impulse.post — Fire action potential
+#
+# The depolarization event. A gate fires an impulse that propagates through
+# the membrane to target gates. The impulse carries a payload (subject, body,
+# project ref) and is persisted as a TOML file in impulses/active/.
+#
+# Auto-populates [from].ref with the project's HEAD SHA for rootPulse DAG
+# provenance — every impulse is traceable to the commit that prompted it.
+#
+# Coordination domain: rootPulse (ACTION / efferent)
+
+[graph]
+id = "impulse_post"
+name = "Impulse Post"
+description = "Fire an action potential — create impulse TOML, commit, push to all remotes."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "ecosystem"
+signal_name = "impulse.post"
+coordination_domain = "pulse"
+
+[graph.metadata]
+particle = "impulse"
+security_model = "gate_identity"
+transport = "git_ssh"
+secure_by_default = true
+fragments = ["impulse_potential"]
+
+[[graph.nodes]]
+name = "resolve_identity"
+binary = "membrane"
+order = 1
+required = true
+spawn = false
+by_capability = "identity"
+capabilities = ["identity.resolve"]
+
+[[graph.nodes]]
+name = "resolve_ref"
+binary = "membrane"
+order = 2
+required = false
+spawn = false
+depends_on = ["resolve_identity"]
+by_capability = "provenance"
+capabilities = ["git.rev_parse"]
+
+[[graph.nodes]]
+name = "create_impulse"
+binary = "membrane"
+order = 3
+required = true
+spawn = false
+depends_on = ["resolve_identity"]
+by_capability = "coordination"
+capabilities = ["impulse.post"]
+
+[[graph.nodes]]
+name = "propagate"
+binary = "membrane"
+order = 4
+required = true
+spawn = false
+depends_on = ["create_impulse"]
+by_capability = "sync"
+capabilities = ["git.push"]

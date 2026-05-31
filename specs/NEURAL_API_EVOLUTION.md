@@ -245,6 +245,19 @@ Observatory tools:
 - [ ] Signal graph registration in capability registry (23 signals total: 15 original + 5 rootPulse + 3 ecosystem)
 - [x] Cross-gate graph executor spec: `specs/CROSS_GATE_GRAPH_EXECUTOR.md` (gate/relay hints on graph nodes)
 
+### Wave 63: impulsePotential — Inter-Gate Coordination Substrate
+- [x] `signal.*` commands renamed to `impulse.*` / `potential.*` in membrane-shadow
+- [x] Triad mapping: `impulse.post/ack` → rootPulse (ACTION), `potential.sense/check` → quorumSignal (SENSE), `impulse.archive` + propagation → waterFall (SYNC)
+- [x] `impulse.post` auto-populates `[from].ref` with project HEAD SHA (rootPulse DAG provenance)
+- [x] `potential.sense --count` — lightweight integer output for cascade-pull integration
+- [x] `potential.check` — membrane gradient health (expired, unacked, volume per wave)
+- [x] `cascade-pull.sh` auto-triggers `potential.sense` after sync
+- [x] `signals/` directory → `impulses/` in wateringHole
+- [x] `SIGNAL_FRAGO_STANDARD.md` → `IMPULSE_POTENTIAL_STANDARD.md`
+- [x] Backward compatibility: `signal.*` aliases print deprecation notice for one wave
+- [x] TOML parser reads both `[signal]` and `[impulse]` table names (no migration required)
+- [ ] Phase 2: Forgejo webhook → peptidoglycan impulse-relay → Songbird mesh.publish
+
 ### Wave 43+: Provider Selection + Graph Optimization
 - [ ] Weighted provider selection in `discover_capability` (currently first-match)
 - [ ] Co-occurrence analysis (which capabilities are called together)
@@ -305,18 +318,39 @@ keeping code coherent.
 - Target: Parallel (concurrent repo pulls) with ConditionalDag (skip unchanged)
 - `CoordinationDomain::Fall` in `graphs/mod.rs`
 
+### impulsePotential — Cross-Domain Coordination Substrate
+
+The inter-gate coordination primitive that spans all three triad domains.
+Named after biological action potentials across cell membranes:
+
+- **Impulse** = discrete event (rootPulse fires it via `impulse.post`)
+- **Potential** = measurable state (quorumSignal senses it via `potential.sense`)
+- **Propagation** = transport through membrane (waterFall carries it via git push)
+
+```
+impulse.post (rP ACTION) → impulses/active/*.toml → git push (wF SYNC)
+                                    ↑
+potential.sense (qS SENSE) ─────────┘
+potential.check (qS SENSE) ─── gradient health across mesh
+impulse.ack (rP+wF) ──────── receptor binding + propagation
+impulse.archive (wF) ──────── discharge spent impulses
+```
+
+Detailed standard: `infra/wateringHole/IMPULSE_POTENTIAL_STANDARD.md`
+
 ### Triad Relationship
 
 ```
                     quorumSignal (sense)
                          |
-                    signal.dispatch
-                    23 atomic graphs
+                    signal.dispatch (23 atomic graphs)
+                    potential.sense / potential.check
                          |
           +--------------+--------------+
           |                             |
     rootPulse (action)          waterFall (sync)
     nest.commit / federate      ecosystem.pull / push
+    impulse.post / impulse.ack  impulse.archive / cascade-pull
     provenance trio             gate-profile cascade
     within NUCLEUS              across gates
 ```
@@ -324,7 +358,8 @@ keeping code coherent.
 Layer 2 (graph composition) serves all three domains. The distinction is
 operational: quorumSignal is reactive sensing, rootPulse is creative
 mutation, waterFall is autonomous coherence. All three collapse to
-`graph.execute` at runtime.
+`graph.execute` at runtime. impulsePotential is the cross-domain substrate
+that enables inter-gate coordination to flow through the triad.
 
 ---
 
