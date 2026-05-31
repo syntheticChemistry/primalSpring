@@ -8,13 +8,13 @@
 | **Version** | 0.9.31 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 807 lib tests pass (2 ignored) + 17 doc tests |
-| **Experiments** | 93 (21 tracks) — 57 validation scenarios (10 tracks) |
-| **Deploy Graphs** | 105 deploy TOMLs (82 deploy + 23 atomic signal graphs) — fragment-first composition with `resolve = true` |
-| **Coverage** | Method coverage against 470+ registered capability methods; line coverage via llvm-cov |
+| **Tests** | 838 total (807 lib + 10 integration + 4 binary + 17 doc) — 2 ignored |
+| **Experiments** | 96 (21 tracks) — 57 validation scenarios (10 tracks) |
+| **Deploy Graphs** | 110 deploy TOMLs — fragment-first composition with `resolve = true` |
+| **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 93 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`) |
 | **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 9 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)**, **provenance-elevated checksums** (Layer 2: composite fingerprint + sweetGrass braids) |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]`, `#![forbid(unsafe_code)]` on lib root — zero unsafe blocks |
@@ -54,7 +54,7 @@ primalSpring/
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)
-│   │   ├── validation/scenarios/  # 56 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
+│   │   ├── validation/scenarios/  # 57 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both)
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/

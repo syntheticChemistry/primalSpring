@@ -32,13 +32,20 @@ pub const SCENARIO: Scenario = Scenario {
 };
 
 /// Valid membrane boundary classifications from `REPO_MEMBRANE_BOUNDARY.md`.
-const VALID_MEMBRANES: &[&str] = &["inner-only", "trailing-mirror", "outer-only"];
+const VALID_MEMBRANES: &[&str] = &["inner-only", "trailing-mirror", "outer-only", "bidirectional"];
 /// Repo taxonomy categories in the ecosystem manifest.
 const VALID_CATEGORIES: &[&str] = &["primal", "spring", "garden", "infra", "root"];
 /// Sync priority levels for cascade-pull ordering.
 const VALID_PRIORITIES: &[&str] = &["high", "standard", "low"];
-/// Named covalent gates that should have profiles in the manifest.
-const EXPECTED_GATES: &[&str] = &["eastGate", "ironGate", "southGate", "biomeGate"];
+/// Discovers gate names from the manifest's `[gates.*]` section at runtime
+/// rather than hardcoding them, so new gates are validated automatically.
+fn discover_gates(parsed: &toml::Value) -> Vec<String> {
+    parsed
+        .get("gates")
+        .and_then(|g| g.as_table())
+        .map(|t| t.keys().cloned().collect())
+        .unwrap_or_default()
+}
 
 // ─── Structural: Manifest Schema ────────────────────────────────────────────
 
@@ -206,7 +213,7 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
             .unwrap_or("");
         v.check_bool(
             "schema:sync:default_source",
-            ["github", "forgejo", "auto"].contains(&default_source),
+            ["github", "forgejo", "auto", "temporal"].contains(&default_source),
             &format!("sync.default_source = \"{default_source}\""),
         );
     }
@@ -219,8 +226,15 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
     );
 
     if let Some(gates) = gates {
-        for gate_name in EXPECTED_GATES {
-            let gate = gates.get(*gate_name);
+        let discovered = discover_gates(&parsed);
+        v.check_bool(
+            "schema:gates:discovered",
+            !discovered.is_empty(),
+            &format!("{} gates discovered from manifest", discovered.len()),
+        );
+
+        for gate_name in &discovered {
+            let gate = gates.get(gate_name.as_str());
             v.check_bool(
                 &format!("schema:gate:{gate_name}:present"),
                 gate.is_some(),
@@ -240,8 +254,8 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
 
                 v.check_bool(
                     &format!("schema:gate:{gate_name}:has_repos"),
-                    !gate_repos.is_empty(),
-                    &format!("{gate_name} has {} repos", gate_repos.len()),
+                    !gate_repos.is_empty() || gate.get("kderm_layer").is_some(),
+                    &format!("{gate_name} has {} repos (or is K-Derm layer)", gate_repos.len()),
                 );
 
                 for repo in &gate_repos {

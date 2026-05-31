@@ -140,6 +140,7 @@ pub fn method_to_capability_domain(method: &str) -> &str {
         "graph" | "capability" | "lifecycle" | "topology" | "federation" | "route" | "system"
         | "biomeos" | "nucleus" | "membrane" | "cell" | "proprioception"
         | "neural_api" => "orchestration",
+        "impulse" | "potential" | "git" => "membrane",
         "tool" | "tools" | "auth" | "primalspring" | "bonding" | "composition" | "context"
         | "ionic" | "mcp" | "coordination" => "tool",
         "webb" | "esotericwebb" => "webb",

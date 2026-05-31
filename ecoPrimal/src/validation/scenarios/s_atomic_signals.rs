@@ -55,6 +55,11 @@ const SIGNAL_GRAPHS: &[(&str, &str, &str)] = &[
     ("ecosystem.pull", "graphs/signals/ecosystem_pull.toml", include_str!("../../../../graphs/signals/ecosystem_pull.toml")),
     ("ecosystem.push", "graphs/signals/ecosystem_push.toml", include_str!("../../../../graphs/signals/ecosystem_push.toml")),
     ("ecosystem.check", "graphs/signals/ecosystem_check.toml", include_str!("../../../../graphs/signals/ecosystem_check.toml")),
+    // impulsePotential tier (inter-gate coordination)
+    ("impulse.post", "graphs/signals/impulse_post.toml", include_str!("../../../../graphs/signals/impulse_post.toml")),
+    ("impulse.ack", "graphs/signals/impulse_ack.toml", include_str!("../../../../graphs/signals/impulse_ack.toml")),
+    ("potential.sense", "graphs/signals/potential_sense.toml", include_str!("../../../../graphs/signals/potential_sense.toml")),
+    ("potential.check", "graphs/signals/potential_check.toml", include_str!("../../../../graphs/signals/potential_check.toml")),
 ];
 
 const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
@@ -63,6 +68,8 @@ const NEST_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat", "nestgate", "
 const META_PRIMALS: &[&str] = &["biomeos", "squirrel", "petaltongue", "skunkbat"];
 const ROOTPULSE_PRIMALS: &[&str] = &["rhizocrypt", "beardog", "nestgate", "loamspine", "sweetgrass", "songbird"];
 const ECOSYSTEM_PRIMALS: &[&str] = &["biomeos", "songbird", "nestgate", "beardog"];
+const IMPULSE_PRIMALS: &[&str] = &["membrane", "beardog", "nestgate", "songbird"];
+const POTENTIAL_PRIMALS: &[&str] = &["membrane", "beardog", "nestgate", "songbird"];
 
 fn tier_primals(tier: &str) -> &'static [&'static str] {
     match tier {
@@ -72,6 +79,8 @@ fn tier_primals(tier: &str) -> &'static [&'static str] {
         "meta" => META_PRIMALS,
         "rootpulse" => ROOTPULSE_PRIMALS,
         "ecosystem" => ECOSYSTEM_PRIMALS,
+        "impulse" => IMPULSE_PRIMALS,
+        "potential" => POTENTIAL_PRIMALS,
         _ => &[],
     }
 }
@@ -355,7 +364,7 @@ mod tests {
 
     #[test]
     fn signal_graph_count() {
-        assert_eq!(SIGNAL_GRAPHS.len(), 23, "expected 23 signal graphs (10 foundation + 5 meta + 5 rootPulse + 3 ecosystem)");
+        assert_eq!(SIGNAL_GRAPHS.len(), 27, "expected 27 signal graphs (10 foundation + 5 meta + 5 rootPulse + 3 ecosystem + 4 impulse_potential)");
     }
 
     #[test]

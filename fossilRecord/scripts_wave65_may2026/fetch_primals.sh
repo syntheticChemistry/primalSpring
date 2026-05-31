@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# DEPRECATED: Use `membrane plasmid.fetch` (Rust) instead.
-# Fossilized copy: fossilRecord/scripts_wave65_may2026/fetch_primals.sh
-#
 # tools/fetch_primals.sh — Bootstrap primal binaries from sovereign or external sources
 #
 # Self-contained consumer script. No plasmidBin repo checkout needed.

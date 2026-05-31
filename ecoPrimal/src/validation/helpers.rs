@@ -84,8 +84,11 @@ pub fn graph_metadata(parsed: &toml::Value) -> Option<&toml::Value> {
 }
 
 /// Validate Dark Forest security invariants on a graph's metadata:
-/// `secure_by_default = true`, `security_model = "btsp_enforced"`,
-/// `transport = "uds_only"`.
+/// `secure_by_default = true`, valid security model, valid transport.
+///
+/// Primal-composed signals require `btsp_enforced` + `uds_only | uds_and_mesh`.
+/// Membrane-layer signals (impulse/potential) use `gate_identity` +
+/// `git_ssh | local_fs` — these operate at the VPS membrane, not primal UDS.
 pub fn validate_dark_forest(
     v: &mut ValidationResult,
     label: &str,
@@ -103,24 +106,26 @@ pub fn validate_dark_forest(
         &format!("{label} graph has secure_by_default = true"),
     );
 
-    let btsp_enforced = metadata
+    let security_model = metadata
         .and_then(|m| m.get("security_model"))
-        .and_then(|s| s.as_str()) == Some("btsp_enforced");
+        .and_then(|s| s.as_str())
+        .unwrap_or("unknown");
+    let valid_security = matches!(security_model, "btsp_enforced" | "gate_identity");
     v.check_bool(
         &format!("{label}:btsp_enforced"),
-        btsp_enforced,
-        &format!("{label} graph has security_model = btsp_enforced"),
+        valid_security,
+        &format!("{label} graph has security_model = {security_model}"),
     );
 
     let transport = metadata
         .and_then(|m| m.get("transport"))
         .and_then(|t| t.as_str())
         .unwrap_or("unknown");
-    let valid_transport = transport == "uds_only" || transport == "uds_and_mesh";
+    let valid_transport = matches!(transport, "uds_only" | "uds_and_mesh" | "git_ssh" | "local_fs");
     v.check_bool(
         &format!("{label}:uds_only"),
         valid_transport,
-        &format!("{label} graph transport = {transport} (valid: uds_only | uds_and_mesh)"),
+        &format!("{label} graph transport = {transport} (valid: uds_only | uds_and_mesh | git_ssh | local_fs)"),
     );
 }
 

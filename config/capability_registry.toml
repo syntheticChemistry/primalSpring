@@ -305,6 +305,7 @@ owner = "beardog"
 methods = [
     "identity.create",
     "identity.get",
+    "identity.resolve",
 ]
 
 [security]
@@ -1052,6 +1053,14 @@ signals = [
 # Shadow provider: membrane-shadow. Graduates to primal composition
 # via signed graphs (bearDog + rhizoCrypt + nestGate + songbird).
 
+[git]
+owner = "membrane"
+stability = "evolving"
+methods = [
+    "git.push",
+    "git.rev_parse",
+]
+
 [impulse]
 owner = "membrane"
 stability = "evolving"
@@ -1059,6 +1068,7 @@ methods = [
     "impulse.post",
     "impulse.ack",
     "impulse.archive",
+    "impulse.find",
 ]
 
 [potential]

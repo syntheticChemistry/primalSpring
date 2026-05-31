@@ -155,7 +155,18 @@ fn phase_cross_gate_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCont
         return;
     }
 
-    for target_gate in &["ironGate", "southGate", "biomeGate"] {
+    let manifest_toml = include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
+    let peer_gates: Vec<String> = toml::from_str::<toml::Value>(manifest_toml)
+        .ok()
+        .and_then(|p| p.get("gates")?.as_table().cloned())
+        .map(|t| {
+            t.keys()
+                .filter(|k| !["golgiBody", "peptidoglycan", "golgiBody-ext"].contains(&k.as_str()))
+                .cloned()
+                .collect()
+        })
+        .unwrap_or_default();
+    for target_gate in &peer_gates {
         let check_id = format!("live:mesh_call_{target_gate}");
         match ctx.call(
             "orchestration",

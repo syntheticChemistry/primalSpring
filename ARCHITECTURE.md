@@ -16,7 +16,7 @@ contains all validation, certification, and coordination capabilities.
 │  │  Engine           │  │  Scenarios       │  │  (membrane)  │  │
 │  │  (mitochondria)   │  │  (ribosomes)     │  │              │  │
 │  │                   │  │                  │  │  JSON-RPC    │  │
-│  │  L0: Bare         │  │  56 absorbed     │  │  2.0 over    │  │
+│  │  L0: Bare         │  │  57 absorbed     │  │  2.0 over    │  │
 │  │  L0.5: Seed       │  │  experiments     │  │  Unix socket │  │
 │  │  L1: Discovery    │  │  across 10 tracks│  │              │  │
 │  │  L1.5: BTSP       │  │                  │  │  MethodGate  │  │
@@ -90,7 +90,7 @@ Runs with `biomeOS` orchestrating the full composition.
 | `certification/entropy.rs` | Seed provenance, fingerprint verification |
 | `validation/` | `ValidationResult` harness, check_bool/check_skip/section API |
 | `validation/helpers.rs` | Shared graph parsing, Dark Forest invariants, capability cross-ref |
-| `validation/scenarios/` | 56 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios/` | 57 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `validation/scenarios/registry.rs` | `ScenarioMeta`, `ScenarioRegistry`, `Tier`, `Track` |
 | `composition/` | `CompositionContext` — 5-tier discovery, IPC calls, BTSP |
 | `coordination/` | `AtomicType`, composition validation (legacy probes removed Wave 32) |
