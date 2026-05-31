@@ -856,8 +856,12 @@ methods = [
 
 [context]
 owner = "primalspring"
+stability = "evolving"
 methods = [
     "context.create",
+    "context.weave",     # membrane-shadow: weave developer-state braid
+    "context.sense",     # membrane-shadow: sense mesh context
+    "context.clear",     # membrane-shadow: clear/decay expired braids
 ]
 
 [inference]
@@ -1039,6 +1043,46 @@ signals = [
     { name = "pull", graph = "graphs/signals/ecosystem_pull.toml", coordination = "parallel", nodes = 4, domain = "fall" },
     { name = "push", graph = "graphs/signals/ecosystem_push.toml", coordination = "sequential", nodes = 4, domain = "fall" },
     { name = "check", graph = "graphs/signals/ecosystem_check.toml", coordination = "parallel", nodes = 3, domain = "fall" },
+]
+
+# ─── impulsePotential (inter-gate coordination substrate) ─────────────
+# Cross-domain coordination primitive spanning the triad:
+#   impulse.* → rootPulse ACTION (fire, ack, archive)
+#   potential.* → quorumSignal SENSE (sense, check)
+# Shadow provider: membrane-shadow. Graduates to primal composition
+# via signed graphs (bearDog + rhizoCrypt + nestGate + songbird).
+
+[impulse]
+owner = "membrane"
+stability = "evolving"
+methods = [
+    "impulse.post",
+    "impulse.ack",
+    "impulse.archive",
+]
+
+[potential]
+owner = "membrane"
+stability = "evolving"
+methods = [
+    "potential.sense",
+    "potential.check",
+]
+
+# ─── impulsePotential signal tier (ecosystem coordination) ────────────
+# Extends the 5 existing signal tiers with 4 impulse/potential graphs.
+# These compose membrane, bearDog, nestGate via the same graph pattern
+# as rootPulse commit and ecosystem pull/push/check.
+
+[signals.impulse_potential]
+tier = "ecosystem"
+primals = ["membrane", "beardog", "nestgate", "songbird"]
+domain = "pulse"
+signals = [
+    { name = "impulse.post", graph = "graphs/signals/impulse_post.toml", coordination = "sequential", nodes = 4, domain = "pulse" },
+    { name = "impulse.ack", graph = "graphs/signals/impulse_ack.toml", coordination = "sequential", nodes = 4, domain = "pulse" },
+    { name = "potential.sense", graph = "graphs/signals/potential_sense.toml", coordination = "sequential", nodes = 2, domain = "signal" },
+    { name = "potential.check", graph = "graphs/signals/potential_check.toml", coordination = "sequential", nodes = 1, domain = "signal" },
 ]
 
 # Test fixtures — synthetic method names used in unit tests only.

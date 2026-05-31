@@ -170,6 +170,18 @@ pub const ROUTED_CAPABILITIES: &[(&str, Primal)] = {
         ("provenance.graph", SweetGrass),
         ("provenance.export_provo", SweetGrass),
         ("attribution.chain", SweetGrass),
+        // ── impulsePotential (membrane-shadow → primal graduation) ──
+        // Shadow provider: membrane. Routes through BiomeOS for graph composition
+        // when primals are available; membrane-shadow fallback for direct fs/git.
+        ("impulse.post", BiomeOS),
+        ("impulse.ack", BiomeOS),
+        ("impulse.archive", BiomeOS),
+        ("potential.sense", BiomeOS),
+        ("potential.check", BiomeOS),
+        // ── Context braids (membrane-shadow → sweetGrass graduation) ──
+        ("context.weave", BiomeOS),
+        ("context.sense", BiomeOS),
+        ("context.clear", BiomeOS),
     ]
 };
 
