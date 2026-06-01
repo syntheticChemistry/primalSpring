@@ -235,9 +235,10 @@ mod tests {
             // Port collision: storage/content → NestGate:9500, commit/attribution → SweetGrass:9850.
             // These are intentional aliases (same primal, different capability domain).
             ("zero-port-standard", 1),
-            // atomic-signals: was 16 failures (dispatch stubs). Resolved W54 by Neural API team.
-            // Keeping zero-entry as sentinel so new regressions are caught immediately.
-            ("atomic-signals", 0),
+            // sporePrint Phase 5 cert: deploy.yml certify step, merkle_root, schema_version
+            // not yet wired in sporeprint_composition.toml. Resolves when projectNUCLEUS
+            // ships the certification pipeline (Phase 2 content cutover).
+            ("sporeprint-pure-primal-parity", 3),
         ];
 
         let r = build_registry();

@@ -81,10 +81,10 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 67 (June 1, 2026) — 57 scenarios (10 tracks, 3 tiers),
+v0.9.31 Wave 67 (June 1, 2026) — 58 scenarios (10 tracks, 3 tiers),
 490+ registered capability methods, 93 experiments (21 tracks), 113 graph TOMLs
-(~80 deploy + 33 compositions), 44-cell deployment matrix. 835 tests passing
-(804 lib + 10 integration + 4 binary + 17 doc). 13/13 BTSP convergence.
+(~80 deploy + 33 compositions), 44-cell deployment matrix. 836 tests passing
+(805 lib + 10 integration + 4 binary + 17 doc). 13/13 BTSP convergence.
 **Wave 67 vocabulary evolution**: `signal` → `composition` across all code, configs,
 and docs. `Arc<str>` interning in `NeuralRoutingTable`. `FromStr` for `AtomicType`.
 `FEDERATION_PORTS` centralized. `DispatchError::Ipc` → `Arc<IpcError>`.
@@ -250,7 +250,7 @@ composition).
 
 ### Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 490+ method registry (100% exercised), 57 scenarios, 110 deploy graphs
+- 490+ method registry (100% exercised), 58 scenarios, 110 deploy graphs
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs
