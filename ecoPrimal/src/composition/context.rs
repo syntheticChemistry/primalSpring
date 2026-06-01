@@ -364,7 +364,7 @@ impl CompositionContext {
     // ── Atomic signals ──────────────────────────────────────────────────
 
     /// Atomic tier names recognized by [`signal`](Self::signal).
-    const SIGNAL_TIERS: &[&str] = &["tower", "node", "nest", "nucleus", "meta", "ecosystem", "rootpulse"];
+    const COMPOSITION_TIERS: &[&str] = &["tower", "node", "nest", "nucleus", "meta", "ecosystem", "rootpulse"];
 
     /// Send an atomic signal to a composition tier.
     ///
@@ -381,7 +381,7 @@ impl CompositionContext {
     /// # use primalspring::composition::CompositionContext;
     /// # fn example(ctx: &mut CompositionContext) -> Result<(), Box<dyn std::error::Error>> {
     /// let params = serde_json::json!({"data": "hello"});
-    /// let result = ctx.signal("tower", "publish", &params)?;
+    /// let result = ctx.composition("tower", "publish", &params)?;
     /// // biomeOS decomposes: bearDog.sign → songbird.announce → skunkBat.audit
     /// # Ok(())
     /// # }
@@ -391,7 +391,7 @@ impl CompositionContext {
     ///
     /// Returns [`IpcError`] if the orchestration capability is absent or the
     /// signal dispatch fails.
-    pub fn signal(
+    pub fn composition(
         &mut self,
         tier: &str,
         signal_name: &str,
@@ -423,13 +423,13 @@ impl CompositionContext {
 
     /// Whether the given tier name is a recognized atomic signal tier.
     #[must_use]
-    pub fn is_signal_tier(tier: &str) -> bool {
-        Self::SIGNAL_TIERS.contains(&tier)
+    pub fn is_composition_tier(tier: &str) -> bool {
+        Self::COMPOSITION_TIERS.contains(&tier)
     }
 
     /// Dispatch an atomic signal by its unified identifier.
     ///
-    /// Takes a `signal_id` in `"tier.name"` form (matching `signal_tools.toml`
+    /// Takes a `signal_id` in `"tier.name"` form (matching `composition_tools.toml`
     /// identifiers like `"nest.store"`, `"tower.publish"`, `"node.compute"`)
     /// and delegates to [`signal`](Self::signal).
     ///
@@ -475,16 +475,16 @@ impl CompositionContext {
             ),
         })?;
 
-        if !Self::is_signal_tier(tier) {
+        if !Self::is_composition_tier(tier) {
             return Err(IpcError::ProtocolError {
                 detail: format!(
                     "unrecognized signal tier {tier:?} in {signal_id:?} — valid tiers: {:?}",
-                    Self::SIGNAL_TIERS,
+                    Self::COMPOSITION_TIERS,
                 ),
             });
         }
 
-        self.signal(tier, name, params)
+        self.composition(tier, name, params)
     }
 
     /// Ask squirrel to plan a multi-signal workflow from user intent.
@@ -497,7 +497,7 @@ impl CompositionContext {
     ///
     /// Returns [`IpcError`] if the `ai` capability is absent or the
     /// query fails.
-    pub fn signal_plan(
+    pub fn composition_plan(
         &mut self,
         intent: &str,
         context: &serde_json::Value,
@@ -505,15 +505,15 @@ impl CompositionContext {
         let plan_params = serde_json::json!({
             "prompt": intent,
             "context": context,
-            "mode": "signal_plan",
-            "tool_schema": "config/signal_tools.toml",
+            "mode": "composition_plan",
+            "tool_schema": "config/composition_tools.toml",
         });
         self.call("ai", "ai.query", plan_params)
     }
 
     /// Execute a signal plan — an ordered sequence of atomic signals.
     ///
-    /// Takes a plan (as returned by [`signal_plan`](Self::signal_plan) or
+    /// Takes a plan (as returned by [`composition_plan`](Self::composition_plan) or
     /// constructed manually) and dispatches each step sequentially through
     /// [`signal`](Self::signal). Collects results into a JSON array.
     ///
@@ -552,7 +552,7 @@ impl CompositionContext {
                 .cloned()
                 .unwrap_or_else(|| serde_json::json!({}));
 
-            let result = self.signal(tier, signal_name, &params)?;
+            let result = self.composition(tier, signal_name, &params)?;
             results.push(serde_json::json!({
                 "step": i,
                 "tier": tier,

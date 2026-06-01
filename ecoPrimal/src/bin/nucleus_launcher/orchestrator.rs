@@ -141,16 +141,35 @@ fn effective_port(primal: &str) -> u16 {
 
 /// Ordered primals for a given composition type, filtered against the startup order.
 ///
-/// Uses `required_primals()` because the launcher must know binary names to
-/// spawn. The evolution path is deploy-graph-based ordering where primal
-/// names come from the graph TOML, not static arrays.
-#[allow(deprecated)]
+/// Resolves primals from `required_capabilities()` via the capability registry
+/// routing table (capability → primal owner). Falls back to the deprecated
+/// `required_primals()` if the routing table is empty.
 pub fn ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
-    let required = atomic.required_primals();
+    use primalspring::composition::capability_to_primal;
+
+    let caps = atomic.required_capabilities();
+    let mut resolved: Vec<&str> = caps
+        .iter()
+        .map(|cap| capability_to_primal(cap))
+        .filter(|primal| STARTUP_ORDER.contains(primal))
+        .collect();
+    resolved.sort_unstable();
+    resolved.dedup();
+
+    if resolved.is_empty() {
+        #[allow(deprecated)]
+        let required = atomic.required_primals();
+        return STARTUP_ORDER
+            .iter()
+            .copied()
+            .filter(|p| required.contains(p))
+            .collect();
+    }
+
     STARTUP_ORDER
         .iter()
         .copied()
-        .filter(|p| required.contains(p))
+        .filter(|p| resolved.contains(p))
         .collect()
 }
 

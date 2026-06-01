@@ -7,13 +7,13 @@
 > **Current state (May 29, 2026)**: Phase 60+, 13 primals, guideStone Level 8,
 > genomeBin v5.1+, BTSP Phase 3 converged (13/13 AEAD). primalSpring v0.9.31:
 > 807 lib tests + 17 doc tests, 470+ methods, 57 scenarios. Wave 60: Neural API
-> Coordination Triad (quorumSignal/rootPulse/waterFall), 23 signal graphs across
+> Coordination Triad (quorumSignal/rootPulse/waterFall), 23 composition graphs across
 > 6 tiers, cross-gate graph executor spec. See `CONTEXT.md`,
 > `docs/PRIMAL_GAPS.md`, and `specs/NEURAL_API_EVOLUTION.md` for live tracking.
 >
 > **Note**: `graphs/sketches/` paths below were archived to
 > `fossilRecord/springs/primalSpring/` (April 2026). Live graphs are in
-> `graphs/deploy/`, `graphs/cells/`, `graphs/signals/`, `graphs/spring_validation/`.
+> `graphs/deploy/`, `graphs/cells/`, `graphs/compositions/`, `graphs/spring_validation/`.
 
 **Date**: April 20, 2026 (Phase 60+ delta: May 23, 2026)
 **Phase**: 45 → **60+** (13 primals, Tier 1 39/39 cross-arch binaries, guideStone Level 8, genomeBin v5.1+)
@@ -571,7 +571,7 @@ The spore ownership matrix (`infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md`) defi
 a three-way split: domain science (springs), spore envelope (lithoSpore), and
 NUCLEUS gateway (biomeOS). This section validates the gateway path.
 
-**Signal graph**: `graphs/signals/nest_ingest_spore.toml` — 6-step sequential:
+**composition graph**: `graphs/compositions/nest_ingest_spore.toml` — 6-step sequential:
 validate_envelope → store → dag_session → ledger_entry → braid → sign_receipt.
 
 **Three-era provenance model**:
@@ -607,7 +607,7 @@ validation works, and `receipts/nucleus_ingest.toml` is written. However:
 
 - **No `pseudospore-core` dependency** — inline reimplementation instead of canonical crate
 - **Emit is incomplete** — retrieve + manifest only, no braid/sign steps
-- **Signal graph diverged** — biomeOS copy has different required flags, missing bonding policy
+- **composition graph diverged** — biomeOS copy has different required flags, missing bonding policy
 - **Metadata-only ingest** — checksums/manifest sent, not spore content/path
 - **Column U still gated** — live ingest on deployed Nest Atomic not yet tested
 
@@ -620,7 +620,7 @@ validation works, and `receipts/nucleus_ingest.toml` is written. However:
 6. Sign receipt via BearDog `crypto.sign`
 7. Return `receipts/nucleus_ingest.toml` with all trio IDs
 
-This flow is encoded in `graphs/signals/nest_ingest_spore.toml`.
+This flow is encoded in `graphs/compositions/nest_ingest_spore.toml`.
 
 ### pseudospore-core — Wired in lithoSpore, Pending in biomeOS
 
@@ -664,7 +664,7 @@ Spring (domain science)
           → receipts/nucleus_ingest.toml
 ```
 
-Every step uses existing primal capabilities via JSON-RPC. The signal graph
+Every step uses existing primal capabilities via JSON-RPC. The composition graph
 composes them. No new capabilities needed — only the biomeOS CLI orchestrator.
 
 ---

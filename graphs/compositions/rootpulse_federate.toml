@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: rootPulse federate
+#
+# Synchronizes DAG state and attribution braids with a remote peer via
+# songbird mesh. This is the cross-gate rootPulse operation — the first
+# signal that spans NUCLEUS instances.
+#
+# Flow: discover peer → diff local vs remote → replicate missing content →
+# federate DAG events → sync attribution braids.
+#
+# Coordination domain: rootPulse (ACTION / efferent)
+
+[graph]
+id = "rootpulse_federate"
+name = "rootPulse Federate"
+description = "Sync DAG + braids with remote peer via songbird mesh. Cross-gate provenance federation."
+version = "1.0.0"
+coordination = "sequential"
+composition_tier = "rootpulse"
+composition_name = "federate"
+coordination_domain = "pulse"
+
+[graph.metadata]
+particle = "neutron"
+security_model = "btsp_enforced"
+transport = "uds_and_mesh"
+secure_by_default = true
+cross_gate = true
+fragments = ["tower_atomic", "provenance_trio"]
+
+[[graph.nodes]]
+name = "discover_peer"
+binary = "songbird"
+order = 1
+required = true
+spawn = false
+by_capability = "discovery"
+capabilities = ["mesh.find_path"]
+
+[[graph.nodes]]
+name = "diff_remote"
+binary = "rhizocrypt"
+order = 2
+required = true
+spawn = false
+depends_on = ["discover_peer"]
+by_capability = "dag"
+capabilities = ["dag.diff"]
+
+[[graph.nodes]]
+name = "replicate_content"
+binary = "nestgate"
+order = 3
+required = false
+spawn = false
+depends_on = ["diff_remote"]
+by_capability = "storage"
+capabilities = ["content.replicate"]
+
+[[graph.nodes]]
+name = "federate_dag"
+binary = "rhizocrypt"
+order = 4
+required = true
+spawn = false
+depends_on = ["diff_remote"]
+by_capability = "dag"
+capabilities = ["dag.federate"]
+
+[[graph.nodes]]
+name = "sync_braids"
+binary = "sweetgrass"
+order = 5
+required = true
+spawn = false
+depends_on = ["federate_dag"]
+by_capability = "attribution"
+capabilities = ["braid.sync"]
+
+[[graph.nodes]]
+name = "sign_receipt"
+binary = "beardog"
+order = 6
+required = false
+spawn = false
+depends_on = ["sync_braids"]
+by_capability = "security"
+capabilities = ["crypto.sign_ed25519"]

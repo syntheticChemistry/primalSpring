@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: rootPulse merge
+#
+# Merges two branches in the rhizoCrypt DAG. A merge creates a new event
+# with two parent edges, converging parallel evolution lines. The merge
+# event is signed, the resulting state is committed to loamSpine, and
+# attribution records the merge provenance.
+#
+# Coordination domain: rootPulse (ACTION / efferent)
+
+[graph]
+id = "rootpulse_merge"
+name = "rootPulse Merge"
+description = "Merge two DAG branches → sign → commit → attribute. Convergence of parallel evolution."
+version = "1.0.0"
+coordination = "sequential"
+composition_tier = "rootpulse"
+composition_name = "merge"
+coordination_domain = "pulse"
+
+[graph.metadata]
+particle = "neutron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+fragments = ["tower_atomic", "provenance_trio"]
+
+[[graph.nodes]]
+name = "merge"
+binary = "rhizocrypt"
+order = 1
+required = true
+spawn = false
+by_capability = "dag"
+capabilities = ["dag.merge"]
+
+[[graph.nodes]]
+name = "sign_merge"
+binary = "beardog"
+order = 2
+required = true
+spawn = false
+depends_on = ["merge"]
+by_capability = "security"
+capabilities = ["crypto.sign_ed25519"]
+
+[[graph.nodes]]
+name = "commit_merge"
+binary = "loamspine"
+order = 3
+required = true
+spawn = false
+depends_on = ["sign_merge"]
+by_capability = "ledger"
+capabilities = ["session.commit"]
+
+[[graph.nodes]]
+name = "attribute_merge"
+binary = "sweetgrass"
+order = 4
+required = false
+spawn = false
+depends_on = ["commit_merge"]
+by_capability = "attribution"
+capabilities = ["braid.create"]

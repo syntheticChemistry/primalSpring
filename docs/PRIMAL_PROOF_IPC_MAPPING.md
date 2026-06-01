@@ -88,13 +88,13 @@ validation scenarios.
 | `network.stun` | songbird | `s_domain_contract_sweep.rs` | STUN binding request |
 | `bonding.status` | biomeOS | `s_domain_contract_sweep.rs` | Bond state query |
 
-### Orchestration Signals (Neural API v3.55+)
+### Orchestration Compositions (Neural API v3.55+)
 
 | Method | Primal | Module | Purpose |
 |--------|--------|--------|---------|
-| `signal.dispatch` | biomeOS | `s_atomic_signals.rs` | Preferred atomic signal dispatch (composition collapse) |
-| `signal.list` | biomeOS | `s_atomic_signals.rs` | Enumerate registered signal graphs — Tier 2 count validation |
-| `signal.schema` | biomeOS | `s_atomic_signals.rs` | Signal tool schema for Squirrel AI — Tier 2 structure validation |
+| `signal.dispatch` | biomeOS | `s_atomic_compositions.rs` | Preferred atomic composition dispatch (composition collapse) |
+| `signal.list` | biomeOS | `s_atomic_compositions.rs` | Enumerate registered composition graphs — Tier 2 count validation |
+| `signal.schema` | biomeOS | `s_atomic_compositions.rs` | Signal tool schema for Squirrel AI — Tier 2 structure validation |
 
 > **Wire name note (Tower live validation — ludoSpring V70, May 13)**:
 > skunkBat's primary audit method is `security.audit_log` (not `defense.audit`).

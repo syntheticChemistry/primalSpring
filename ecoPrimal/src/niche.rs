@@ -345,7 +345,7 @@ fn try_announce(client: &mut PrimalClient, sock_str: &str) -> bool {
             "version": env!("CARGO_PKG_VERSION"),
         },
         "domain": crate::PRIMAL_DOMAIN,
-        "signal_tiers": ["tower", "node", "nest", "nucleus", "meta"],
+        "composition_tiers": ["tower", "node", "nest", "nucleus", "meta"],
     });
 
     match client.call("primal.announce", announce_params) {

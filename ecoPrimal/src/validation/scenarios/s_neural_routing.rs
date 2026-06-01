@@ -53,7 +53,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 
     // Phase 3: Owner integrity — security methods → beardog, compute → toadstool.
     let security_methods = table.methods_in_domain("security");
-    let has_crypto_hash = security_methods.contains(&"crypto.hash".to_owned());
+    let has_crypto_hash = security_methods.iter().any(|m| &**m == "crypto.hash");
     v.check_bool(
         "security-domain-has-crypto-hash",
         has_crypto_hash,
@@ -63,7 +63,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     if let Some(entry) = table.route("crypto.hash") {
         v.check_bool(
             "crypto-hash-owner",
-            entry.owner == "beardog",
+            &*entry.owner == "beardog",
             &format!("crypto.hash owner: {}", entry.owner),
         );
     }
@@ -71,7 +71,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     if let Some(entry) = table.route("compute.dispatch") {
         v.check_bool(
             "compute-dispatch-owner",
-            entry.owner == "toadstool",
+            &*entry.owner == "toadstool",
             &format!("compute.dispatch owner: {}", entry.owner),
         );
     }
@@ -79,7 +79,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     if let Some(entry) = table.route("storage.store") {
         v.check_bool(
             "storage-store-owner",
-            entry.owner == "nestgate",
+            &*entry.owner == "nestgate",
             &format!("storage.store owner: {}", entry.owner),
         );
     }
@@ -87,7 +87,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     if let Some(entry) = table.route("science.eigensolve") {
         v.check_bool(
             "science-eigensolve-owner",
-            entry.owner == "neuralspring",
+            &*entry.owner == "neuralspring",
             &format!("science.eigensolve owner: {}", entry.owner),
         );
     }
@@ -131,7 +131,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         &format!("{} composition patterns", patterns.len()),
     );
 
-    let rootpulse = patterns.iter().find(|p| p.name == "rootpulse_commit");
+    let rootpulse = patterns.iter().find(|p| &*p.name == "rootpulse_commit");
     v.check_bool(
         "rootpulse-pattern-exists",
         rootpulse.is_some(),

@@ -6,6 +6,8 @@
 //! them via biomeOS graphs and validates that every primal starts, discovers
 //! peers, and responds to capability calls.
 
+use std::fmt;
+use std::str::FromStr;
 use std::time::Instant;
 
 use serde::{Deserialize, Serialize};
@@ -31,6 +33,35 @@ pub enum AtomicType {
     Nest,
     /// All 13 primals: Tower + Node + Nest + meta-tier.
     FullNucleus,
+}
+
+impl fmt::Display for AtomicType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Tower => "tower",
+            Self::Node => "node",
+            Self::Nest => "nest",
+            Self::FullNucleus => "nucleus",
+        })
+    }
+}
+
+impl FromStr for AtomicType {
+    type Err = String;
+
+    /// Accepts both lowercase CLI form (`tower`, `nucleus`, `full`) and
+    /// PascalCase JSON-RPC form (`Tower`, `FullNucleus`, `Full`).
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "tower" | "Tower" => Ok(Self::Tower),
+            "node" | "Node" => Ok(Self::Node),
+            "nest" | "Nest" => Ok(Self::Nest),
+            "nucleus" | "full" | "FullNucleus" | "Full" => Ok(Self::FullNucleus),
+            other => Err(format!(
+                "unknown composition type: {other} (valid: tower, node, nest, nucleus)"
+            )),
+        }
+    }
 }
 
 impl AtomicType {

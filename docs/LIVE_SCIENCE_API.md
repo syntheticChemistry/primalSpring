@@ -1,9 +1,9 @@
 # Live Science API — Tier 2 Wire Contract
 
 **Version**: 1.4.0
-**Date**: May 15, 2026 (Neural API evolution: biomeOS v3.57, squirrel signal_plan, primal.announce)
+**Date**: May 15, 2026 (Neural API evolution: biomeOS v3.57, squirrel composition_plan, primal.announce)
 **Owner**: primalSpring (L2) + toadStool (L1) + barraCuda (L1)
-**Status**: ACTIVE — All Tier 2 methods IMPLEMENTED. 7/7 delta springs wired. Upstream GAP-36 RESOLVED. `biomeos.spring_status` SHIPPED. Content provenance metadata SHIPPED. Signal dispatch and announce protocol SHIPPED (v3.55–v3.57).
+**Status**: ACTIVE — All Tier 2 methods IMPLEMENTED. 7/7 delta springs wired. Upstream GAP-36 RESOLVED. `biomeos.spring_status` SHIPPED. Content provenance metadata SHIPPED. composition dispatch and announce protocol SHIPPED (v3.55–v3.57).
 
 ---
 
@@ -208,10 +208,10 @@ anchor attribution.
 | `biomeos.spring_status` | biomeOS | **IMPLEMENTED** (v3.54 — binary discovery, workload counts, topology version) | — |
 | `content.get` (provenance metadata) | nestGate | **SHIPPED** (Session 62 — `source`, `pipeline`, `stored_by` fields in response) | — |
 | `dag.session.get` (enriched summary) | rhizoCrypt | **SHIPPED** (S68 — `agents`, `genesis`, `frontier` fields) | — |
-| `signal.dispatch` | biomeOS | **SHIPPED** (v3.56 — atomic signal dispatch, composition collapse) | — |
-| `signal.list` | biomeOS | **SHIPPED** (v3.56 — enumerate registered signal graphs) | — |
+| `signal.dispatch` | biomeOS | **SHIPPED** (v3.56 — atomic composition dispatch, composition collapse) | — |
+| `signal.list` | biomeOS | **SHIPPED** (v3.56 — enumerate registered composition graphs) | — |
 | `signal.schema` | biomeOS | **SHIPPED** (v3.56 — signal tool schema for Squirrel AI) | — |
-| `primal.announce` | biomeOS | **SHIPPED** (v3.57 — atomic self-registration: lifecycle + capabilities + translations + signal tiers) | — |
+| `primal.announce` | biomeOS | **SHIPPED** (v3.57 — atomic self-registration: lifecycle + capabilities + translations + composition tiers) | — |
 
 ---
 

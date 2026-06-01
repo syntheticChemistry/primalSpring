@@ -34,9 +34,9 @@ const TOWER_AGENT_TOML: &str = include_str!("../../../../graphs/tower_agent.toml
 const TOWER_AI_TOML: &str = include_str!("../../../../graphs/tower_ai.toml");
 const TOWER_AI_VIZ_TOML: &str = include_str!("../../../../graphs/tower_ai_viz.toml");
 const NODE_AI_TOML: &str = include_str!("../../../../graphs/node_ai.toml");
-const META_DEPLOY_TOML: &str = include_str!("../../../../graphs/signals/meta_deploy.toml");
-const TOWER_BOOTSTRAP_TOML: &str = include_str!("../../../../graphs/signals/tower_bootstrap.toml");
-const SIGNAL_TOOLS_TOML: &str = include_str!("../../../../config/signal_tools.toml");
+const META_DEPLOY_TOML: &str = include_str!("../../../../graphs/compositions/meta_deploy.toml");
+const TOWER_BOOTSTRAP_TOML: &str = include_str!("../../../../graphs/compositions/tower_bootstrap.toml");
+const COMPOSITION_TOOLS_TOML: &str = include_str!("../../../../config/composition_tools.toml");
 
 const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
 const AGENT_REQUIRED: &[&str] = &["beardog", "songbird", "skunkbat", "biomeos", "squirrel"];
@@ -145,7 +145,7 @@ fn validate_ai_overlays_have_skunkbat(v: &mut ValidationResult) {
     }
 }
 
-fn validate_meta_deploy_signal(v: &mut ValidationResult) {
+fn validate_meta_deploy_composition(v: &mut ValidationResult) {
     let parsed: toml::Value = match toml::from_str(META_DEPLOY_TOML) {
         Ok(p) => p,
         Err(e) => {
@@ -196,8 +196,8 @@ fn validate_meta_deploy_signal(v: &mut ValidationResult) {
     );
 }
 
-fn validate_signal_tools_deploy(v: &mut ValidationResult) {
-    let parsed: toml::Value = match toml::from_str(SIGNAL_TOOLS_TOML) {
+fn validate_composition_tools_deploy(v: &mut ValidationResult) {
+    let parsed: toml::Value = match toml::from_str(COMPOSITION_TOOLS_TOML) {
         Ok(p) => p,
         Err(_) => return,
     };
@@ -214,7 +214,7 @@ fn validate_signal_tools_deploy(v: &mut ValidationResult) {
     v.check_bool(
         "tools:meta.deploy",
         has_deploy,
-        "signal_tools.toml includes meta.deploy tool definition",
+        "composition_tools.toml includes meta.deploy tool definition",
     );
 
     if let Some(tools) = tools {
@@ -245,7 +245,7 @@ fn validate_signal_tools_deploy(v: &mut ValidationResult) {
     }
 }
 
-fn validate_squirrel_signal_context(v: &mut ValidationResult) {
+fn validate_squirrel_composition_context(v: &mut ValidationResult) {
     let parsed: toml::Value = match toml::from_str(TOWER_AGENT_TOML) {
         Ok(p) => p,
         Err(_) => return,
@@ -337,14 +337,14 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
         "tower_bootstrap.toml has bootstrap = true metadata",
     );
 
-    let signal_name = graph
-        .and_then(|g| g.get("signal_name"))
+    let composition_name = graph
+        .and_then(|g| g.get("composition_name"))
         .and_then(|s| s.as_str())
         .unwrap_or("");
     v.check_bool(
-        "bootstrap:signal_name",
-        signal_name == "bootstrap",
-        "tower_bootstrap.toml signal_name = bootstrap",
+        "bootstrap:composition_name",
+        composition_name == "bootstrap",
+        "tower_bootstrap.toml composition_name = bootstrap",
     );
 
     let nodes = graph
@@ -519,13 +519,13 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     validate_ai_overlays_have_skunkbat(v);
 
     v.section("Meta Deploy Signal");
-    validate_meta_deploy_signal(v);
+    validate_meta_deploy_composition(v);
 
     v.section("Signal Tool Schema Deploy");
-    validate_signal_tools_deploy(v);
+    validate_composition_tools_deploy(v);
 
     v.section("Squirrel Signal Context");
-    validate_squirrel_signal_context(v);
+    validate_squirrel_composition_context(v);
 
     v.section("Tower Bootstrap");
     validate_tower_bootstrap(v);

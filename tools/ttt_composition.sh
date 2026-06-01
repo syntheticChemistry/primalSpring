@@ -711,11 +711,11 @@ game_loop_round() {
 
     composition_summary
 
-    ok "Game complete. Run again or: ./tools/ttt_nucleus.sh stop"
+    ok "Game complete. Run again or: nucleus_launcher stop --composition ttt"
     composition_teardown "tictactoe" "ttt-tree"
 }
 
 # ── Main ──────────────────────────────────────────────────────────────
 
-discover_capabilities || { err "Required primals not found. Run: ./tools/ttt_nucleus.sh start"; exit 1; }
+discover_capabilities || { err "Required primals not found. Run: nucleus_launcher start --composition tower"; exit 1; }
 game_loop

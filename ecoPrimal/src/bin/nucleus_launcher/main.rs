@@ -86,14 +86,10 @@ fn resolve_node_id(cli_node_id: Option<String>) -> String {
 }
 
 fn resolve_atomic(composition: &str) -> AtomicType {
-    match composition {
-        "tower" => AtomicType::Tower,
-        "node" => AtomicType::Node,
-        "nest" => AtomicType::Nest,
-        "nucleus" | "full" => AtomicType::FullNucleus,
-        other => {
-            eprintln!("Unknown composition type: {other}");
-            eprintln!("Valid: tower, node, nest, nucleus, full");
+    match composition.parse() {
+        Ok(t) => t,
+        Err(e) => {
+            eprintln!("{e}");
             std::process::exit(1);
         }
     }

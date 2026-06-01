@@ -262,9 +262,9 @@ Evolve the bash script:
 - songbird `mesh.publish` broadcasts gate freshness to mesh
 - Other gates can check freshness without fetching (O(1) drift detection)
 
-### Phase 3: Neural API Ecosystem Signals (Wave 63+)
+### Phase 3: Neural API Ecosystem Compositions (Wave 63+)
 
-- `ecosystem.pull` signal graph calls `content.sync` with temporal source selection
+- `ecosystem.pull` composition graph calls `content.sync` with temporal source selection
 - `ecosystem.check` calls `content.fetch_heads` + temporal position matrix
 - `ecosystem.push` calls `content.push` to all follower remotes
 - biomeOS replaces bash with `signal.dispatch("ecosystem.pull")`
@@ -286,15 +286,15 @@ impulse-coordinated agentic resolution:
   `flag`, `merge-ff`, `merge-rebase`, `impulse-only`, `agentic` (Phase 3, Wave 69+)
 - **`exclude_remotes`** — filter stale/vendor remotes from temporal matrix
 - **Provenance-recorded resolution** (Phase 2, Wave 68):
-  - `sync.diverge` signal graph — detect + classify + fire impulse
-  - `sync.resolve` signal graph — compose provenance trio pipeline:
+  - `sync.diverge` composition graph — detect + classify + fire impulse
+  - `sync.resolve` composition graph — compose provenance trio pipeline:
     `dag.event.append` → `git merge` → `entry.append` → `braid.create` → `impulse.ack`
 - **Cross-gate resolution** (Phase 4, Wave 70+):
   - `signal.dispatch("sync.resolve")` composes full pipeline
   - Context braids carry divergence story to resolving agent
   - sweetGrass braids provide attribution for merge decisions
 
-Signal graphs: `graphs/signals/sync_diverge.toml`, `graphs/signals/sync_resolve.toml`
+composition graphs: `graphs/compositions/sync_diverge.toml`, `graphs/compositions/sync_resolve.toml`
 
 ---
 
@@ -305,12 +305,12 @@ Signal graphs: `graphs/signals/sync_diverge.toml`, `graphs/signals/sync_resolve.
 | `NEURAL_API_EVOLUTION.md` | waterFall is the SYNC domain of the coordination triad |
 | `CROSS_GATE_GRAPH_EXECUTOR.md` | Phase 4 temporal coordination requires cross-gate `graph.execute` |
 | `ecosystem_manifest.toml` | SSOT for repo metadata, gate profiles, and remote URLs |
-| `ecosystem_pull.toml` | Signal graph for the pull operation — needs temporal source logic |
+| `ecosystem_pull.toml` | composition graph for the pull operation — needs temporal source logic |
 | `membrane temporal.cascade` | Rust implementation (replaces bash `cascade-pull.sh`, fossilized Wave 66) |
 | `freshness.toml` | Wave snapshot — evolves to per-remote temporal state |
 | `IMPULSE_POTENTIAL_STANDARD.md` | SYNC impulse type, payload schema, policy table |
-| `sync_diverge.toml` | Signal graph for divergence detection + impulse firing |
-| `sync_resolve.toml` | Signal graph for provenance-recorded resolution pipeline |
+| `sync_diverge.toml` | composition graph for divergence detection + impulse firing |
+| `sync_resolve.toml` | composition graph for provenance-recorded resolution pipeline |
 
 ---
 

@@ -3,7 +3,49 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–66: Stadial Entry / Glacial Shift (2026-06-01)
+## [Unreleased] — Waves 22–67: Stadial Entry / Glacial Shift (2026-06-01)
+
+### Wave 67: Deep Debt Evolution II — Modern Idiomatic Rust (June 1)
+- **Dead code removal** — `ENV_PLASMID_BIN`, `ENV_BIOMEOS_BIN_DIR` deprecated constants removed
+  (zero callers). `OrExit` trait + `or_exit.rs` module removed (zero callers outside own tests).
+- **`#![forbid(unsafe_code)]`** — added to all 6 integration test crates (`server_*.rs`) that
+  relied on workspace `deny`. All compilation units now explicitly forbid unsafe.
+- **`FromStr` for `AtomicType`** — unified duplicate CLI (lowercase) and JSON-RPC (PascalCase)
+  parsers into canonical `FromStr` accepting both forms. `Display` impl added. `nucleus_launcher`
+  and `primalspring_primal/dispatch.rs` simplified to single-line `.parse()` calls.
+- **`Arc<str>` interning in `NeuralRoutingTable`** — `RouteEntry`, `CompositionPattern`, and all
+  four indexes evolved from `String` to `Arc<str>`. Table build interns each string once; dispatch
+  clones only bump reference counts. Eliminated ~450 method × 4 index `String::clone()` allocations.
+- **Silent registry failure fixed** — `canonical_routing_table()` now logs `tracing::warn!` with
+  path and error context when `capability_registry.toml` is missing, instead of silent empty table.
+- **`FEDERATION_PORTS` centralized** — CNS/federation port assignments (7700/7701/9101/9750/9900)
+  consolidated into `tolerances::FEDERATION_PORTS` with deployment profile metadata. `s_tower_cns`
+  scenario now references the centralized registry instead of local `KNOWN_PORTS` table.
+- **`DispatchError::Ipc` evolved** — from `{ kind: String, detail: String }` to `Arc<IpcError>`.
+  Preserves typed error context through the dispatch chain without stringification.
+- **`ordered_primals()` evolved** — launcher now resolves primals from `required_capabilities()` +
+  `capability_to_primal()` routing table, falling back to deprecated `required_primals()` only when
+  the routing table is empty. Identity-mode discovery sweep logs deprecation warning.
+- 835 tests passing, 0 clippy warnings (beyond pre-existing deprecation aliases).
+
+### Wave 67: Vocabulary Evolution — signal → composition (June 1)
+- **`graphs/signals/` → `graphs/compositions/`** — 32 atomic composition graphs renamed.
+  `signal_tier`/`signal_name` fields → `composition_tier`/`composition_name` in all TOMLs.
+- **`config/signal_tools.toml` → `config/composition_tools.toml`** — tool definitions path
+  updated across all referencing files.
+- **`capability_registry.toml`** — `[signals.*]` sections → `[compositions.*]` (8 tier groups).
+  Scientific `[signal]` (barraCuda DSP) preserved.
+- **Rust code rename** — `SIGNAL_GRAPHS` → `COMPOSITION_GRAPHS`, `SIGNAL_TOOLS_TOML` →
+  `COMPOSITION_TOOLS_TOML`, `SIGNAL_TIERS` → `COMPOSITION_TIERS`, `SignalTier` → `GraphTier`,
+  `SignalSpec` → `CompositionSpec`, `is_signal_tier()` → `is_composition_tier()`,
+  `signal_plan` → `composition_plan`, `signal_methods` → `composition_methods`.
+  Wire protocol strings (`signal.dispatch`, `signal.list`) preserved as biomeOS contract.
+- **Scenario files renamed**: `s_atomic_signals` → `s_atomic_compositions`,
+  `s_meta_tier_signals` → `s_meta_tier_compositions`,
+  `s_signal_dispatch_parity` → `s_composition_dispatch_parity`.
+  All scenario IDs, check IDs, and test function names updated.
+- **Specs + docs** — 11 markdown files updated for consistent vocabulary.
+  `README.md` updated with 32-composition inventory and full tier listing.
 
 ### Wave 66: Deep Debt Evolution + Sovereignty (June 1)
 - **`#![forbid(unsafe_code)]`** on all 88 crate roots (86 experiments added, 2 bins upgraded
@@ -881,7 +923,7 @@ for lithoSpore and projectFOUNDATION in the temporal interim.
 
 ### Added
 - **`CompositionContext::dispatch(signal_id, params)`** — unified signal
-  dispatch that takes `"tier.name"` identifiers matching `signal_tools.toml`
+  dispatch that takes `"tier.name"` identifiers matching `composition_tools.toml`
   (e.g., `"nest.store"`, `"tower.publish"`). Splits on `.`, validates tier,
   delegates to `signal()`. This is the primary consumption API for the
   semantic collapse pattern.
@@ -892,7 +934,7 @@ for lithoSpore and projectFOUNDATION in the temporal interim.
 - **2 new validation scenarios** (39 → 41):
   - `s_signal_dispatch_parity` (BiomeosDeploy/Live): dispatches all 14
     atomic signals through `dispatch()`, validates biomeOS acceptance and
-    response shapes against `signal_tools.toml` expected keys. Surfaces
+    response shapes against `composition_tools.toml` expected keys. Surfaces
     upstream gaps as `-32601` failures.
   - `s_primal_announce` (BiomeosDeploy/Both): validates `primal.announce`
     registry presence, wire format schema per `PRIMAL_ANNOUNCE_PROTOCOL.md`,
@@ -949,7 +991,7 @@ for lithoSpore and projectFOUNDATION in the temporal interim.
   - `[certificate]`: `certificate.verify` (playbook Artifact 3)
 
 ### Changed
-- **`graphs/signals/nest_store.toml`** — aligned with playbook naming:
+- **`graphs/compositions/nest_store.toml`** — aligned with playbook naming:
   `event.append` → `dag.event.append` (fully-qualified), `session.commit` →
   `spine.seal` (canonical provenance step per playbook).
 - **`PRIMAL_GAPS.md`** — UB-1 (Songbird TURN) and UB-2 (BearDog FIDO2) marked

@@ -34,7 +34,7 @@ const OPTIONAL_FIELDS: &[&str] = &[
     "capabilities",
     "methods",
     "semantic_mappings",
-    "signal_tiers",
+    "composition_tiers",
     "attestation",
     "version",
 ];
@@ -80,7 +80,7 @@ fn phase_wire_format(v: &mut ValidationResult) {
         "capabilities": ["test"],
         "methods": ["test.probe"],
         "semantic_mappings": { "test.alias": "test.probe" },
-        "signal_tiers": ["tower"],
+        "composition_tiers": ["tower"],
         "attestation": "0000",
         "version": "0.0.0-scenario",
     });
@@ -105,15 +105,15 @@ fn phase_wire_format(v: &mut ValidationResult) {
         );
     }
 
-    // signal_tiers must be valid tier names
-    if let Some(tiers) = well_formed.get("signal_tiers").and_then(|t| t.as_array()) {
+    // composition_tiers must be valid tier names
+    if let Some(tiers) = well_formed.get("composition_tiers").and_then(|t| t.as_array()) {
         for tier in tiers {
             if let Some(name) = tier.as_str() {
                 let valid = VALID_TIERS.contains(&name);
                 v.check_bool(
-                    &format!("wire:signal_tier:{name}"),
+                    &format!("wire:composition_tier:{name}"),
                     valid,
-                    &format!("signal_tier {name:?} is a recognized tier"),
+                    &format!("composition_tier {name:?} is a recognized tier"),
                 );
             }
         }
@@ -211,7 +211,7 @@ fn phase_live_announce(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         "capabilities": ["test"],
         "methods": ["test.probe", "test.validate"],
         "semantic_mappings": {},
-        "signal_tiers": [],
+        "composition_tiers": [],
         "version": env!("CARGO_PKG_VERSION"),
     });
 

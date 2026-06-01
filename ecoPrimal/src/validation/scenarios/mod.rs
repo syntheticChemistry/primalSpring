@@ -46,7 +46,7 @@ pub use registry::{Scenario, ScenarioMeta, ScenarioRegistry, Tier, Track};
 // Absorbed scenario modules (one per track representative)
 // ───────────────────────────────────────────────────────────────────
 pub mod s_agentic_tower;
-pub mod s_atomic_signals;
+pub mod s_atomic_compositions;
 pub mod s_barracuda_precision;
 pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
@@ -78,7 +78,7 @@ pub mod s_health_lifecycle_surface;
 pub mod s_ionic_bond;
 pub mod s_loam_certificate_lifecycle;
 pub mod s_membrane_composition;
-pub mod s_meta_tier_signals;
+pub mod s_meta_tier_compositions;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
 pub mod s_nestgate_content_pipeline;
@@ -89,7 +89,7 @@ pub mod s_observatory_parity;
 pub mod s_primal_announce;
 pub mod s_provenance_trio_pipeline;
 pub mod s_sequential_graph;
-pub mod s_signal_dispatch_parity;
+pub mod s_composition_dispatch_parity;
 pub mod s_socket_discovery;
 pub mod s_sovereignty_parity;
 pub mod s_sporeprint_surface;
@@ -137,8 +137,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_coralreef_shader_targets::SCENARIO);
     r.register(s_dark_forest_gate::SCENARIO);
     r.register(s_deployment_pipeline::SCENARIO);
-    r.register(s_atomic_signals::SCENARIO);
-    r.register(s_meta_tier_signals::SCENARIO);
+    r.register(s_atomic_compositions::SCENARIO);
+    r.register(s_meta_tier_compositions::SCENARIO);
     r.register(s_agentic_tower::SCENARIO);
     r.register(s_membrane_composition::SCENARIO);
     r.register(s_sovereignty_parity::SCENARIO);
@@ -147,7 +147,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_ferment_transcript::SCENARIO);
     r.register(s_loam_certificate_lifecycle::SCENARIO);
     r.register(s_beardog_fido2::SCENARIO);
-    r.register(s_signal_dispatch_parity::SCENARIO);
+    r.register(s_composition_dispatch_parity::SCENARIO);
     r.register(s_primal_announce::SCENARIO);
     r.register(s_schema_standard::SCENARIO);
     r.register(s_nest_commit_live::SCENARIO);

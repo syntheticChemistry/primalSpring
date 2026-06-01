@@ -10,7 +10,7 @@
 ## Problem
 
 Today, `graph.execute` runs entirely within one NUCLEUS instance. All
-nodes in a signal graph are dispatched to local primals via UDS IPC.
+nodes in a composition graph are dispatched to local primals via UDS IPC.
 Cross-gate communication exists (songbird mesh, TURN relay, Forgejo SSH)
 but is not accessible from within graph execution — it requires manual
 wiring or bash scripts.

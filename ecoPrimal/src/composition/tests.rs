@@ -512,20 +512,20 @@ macro_rules! graph_registry_test {
     };
 }
 
-graph_registry_test!(signal_tower_publish_caps_in_registry, "../../../graphs/signals/tower_publish.toml", "tower_publish");
-graph_registry_test!(signal_tower_authenticate_caps_in_registry, "../../../graphs/signals/tower_authenticate.toml", "tower_authenticate");
-graph_registry_test!(signal_tower_discover_caps_in_registry, "../../../graphs/signals/tower_discover.toml", "tower_discover");
-graph_registry_test!(signal_tower_health_caps_in_registry, "../../../graphs/signals/tower_health.toml", "tower_health");
-graph_registry_test!(signal_tower_bootstrap_caps_in_registry, "../../../graphs/signals/tower_bootstrap.toml", "tower_bootstrap");
-graph_registry_test!(signal_nest_store_caps_in_registry, "../../../graphs/signals/nest_store.toml", "nest_store");
-graph_registry_test!(signal_nest_commit_caps_in_registry, "../../../graphs/signals/nest_commit.toml", "nest_commit");
-graph_registry_test!(signal_nest_retrieve_caps_in_registry, "../../../graphs/signals/nest_retrieve.toml", "nest_retrieve");
-graph_registry_test!(signal_node_compute_caps_in_registry, "../../../graphs/signals/node_compute.toml", "node_compute");
-graph_registry_test!(signal_meta_deploy_caps_in_registry, "../../../graphs/signals/meta_deploy.toml", "meta_deploy");
-graph_registry_test!(signal_meta_health_caps_in_registry, "../../../graphs/signals/meta_health.toml", "meta_health");
-graph_registry_test!(signal_meta_intent_caps_in_registry, "../../../graphs/signals/meta_intent.toml", "meta_intent");
-graph_registry_test!(signal_meta_observe_caps_in_registry, "../../../graphs/signals/meta_observe.toml", "meta_observe");
-graph_registry_test!(signal_meta_render_caps_in_registry, "../../../graphs/signals/meta_render.toml", "meta_render");
+graph_registry_test!(composition_tower_publish_caps_in_registry, "../../../graphs/compositions/tower_publish.toml", "tower_publish");
+graph_registry_test!(signal_tower_authenticate_caps_in_registry, "../../../graphs/compositions/tower_authenticate.toml", "tower_authenticate");
+graph_registry_test!(signal_tower_discover_caps_in_registry, "../../../graphs/compositions/tower_discover.toml", "tower_discover");
+graph_registry_test!(signal_tower_health_caps_in_registry, "../../../graphs/compositions/tower_health.toml", "tower_health");
+graph_registry_test!(signal_tower_bootstrap_caps_in_registry, "../../../graphs/compositions/tower_bootstrap.toml", "tower_bootstrap");
+graph_registry_test!(composition_nest_store_caps_in_registry, "../../../graphs/compositions/nest_store.toml", "nest_store");
+graph_registry_test!(signal_nest_commit_caps_in_registry, "../../../graphs/compositions/nest_commit.toml", "nest_commit");
+graph_registry_test!(signal_nest_retrieve_caps_in_registry, "../../../graphs/compositions/nest_retrieve.toml", "nest_retrieve");
+graph_registry_test!(composition_node_compute_caps_in_registry, "../../../graphs/compositions/node_compute.toml", "node_compute");
+graph_registry_test!(signal_meta_deploy_caps_in_registry, "../../../graphs/compositions/meta_deploy.toml", "meta_deploy");
+graph_registry_test!(signal_meta_health_caps_in_registry, "../../../graphs/compositions/meta_health.toml", "meta_health");
+graph_registry_test!(signal_meta_intent_caps_in_registry, "../../../graphs/compositions/meta_intent.toml", "meta_intent");
+graph_registry_test!(composition_meta_observe_caps_in_registry, "../../../graphs/compositions/meta_observe.toml", "meta_observe");
+graph_registry_test!(signal_meta_render_caps_in_registry, "../../../graphs/compositions/meta_render.toml", "meta_render");
 
 graph_registry_test!(fragment_tower_atomic_caps_in_registry, "../../../graphs/fragments/tower_atomic.toml", "tower_atomic");
 graph_registry_test!(fragment_node_atomic_caps_in_registry, "../../../graphs/fragments/node_atomic.toml", "node_atomic");

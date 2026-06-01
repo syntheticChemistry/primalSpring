@@ -8,13 +8,13 @@
 | **Version** | 0.9.31 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 838 total (807 lib + 10 integration + 4 binary + 17 doc) — 2 ignored |
-| **Experiments** | 96 (21 tracks) — 57 validation scenarios (10 tracks) |
-| **Deploy Graphs** | 110 deploy TOMLs — fragment-first composition with `resolve = true` |
+| **Tests** | 835 total (804 lib + 10 integration + 4 binary + 17 doc) — 2 ignored |
+| **Experiments** | 93 (21 tracks) — 57 validation scenarios (10 tracks) |
+| **Deploy Graphs** | 113 graph TOMLs (~80 deploy + 33 compositions) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 93 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`) |
 | **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 9 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)**, **provenance-elevated checksums** (Layer 2: composite fingerprint + sweetGrass braids) |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]`, `#![forbid(unsafe_code)]` on all 88 crate roots — zero unsafe blocks |
@@ -70,9 +70,9 @@ primalSpring/
 │       ├── server_ecosystem_compose.rs   # Nest/Node composition (#[ignore])
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
 ├── experiments/                   # 93 validation experiments (21 tracks)
-├── config/                        # Launch profiles, deployment matrix, capability registry, signal tools
-├── graphs/                        # 82 deploy graph TOMLs + 23 atomic signal graphs
-│   ├── signals/                  # 23 atomic signal graphs (tower/node/nest/meta/rootpulse/ecosystem)
+├── config/                        # Launch profiles, deployment matrix, capability registry, composition tools
+├── graphs/                        # 82 deploy graph TOMLs + 32 atomic composition graphs
+│   ├── compositions/             # 32 atomic composition graphs (tower/node/nest/meta/rootpulse/ecosystem/impulse/sync)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
 │   ├── profiles/                 # 9 thin compositions (fragment refs + delta nodes, resolve = true)
 │   ├── patterns/                 # 4 coordination patterns: parallel, conditional, streaming, continuous
@@ -220,7 +220,7 @@ Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
 
 ## Deploy Graphs
 
-primalSpring ships 82 deploy graph TOMLs + 23 atomic signal graphs using fragment-first composition (all nodes declare `by_capability`):
+primalSpring ships 82 deploy graph TOMLs + 32 atomic composition graphs using fragment-first composition (all nodes declare `by_capability`):
 
 **Root-level graphs (14)**:
 
@@ -291,33 +291,38 @@ All graphs have `by_capability` on every node and are structurally validated +
 topologically sorted at test time. Multi-node graphs include `[graph.metadata]`
 and `[graph.bonding_policy]` sections validated by `graph_metadata.rs`.
 
-## Atomic Signal Graphs
+## Atomic Composition Graphs
 
-primalSpring ships 23 atomic signal graphs under `graphs/signals/` that define
-the Neural API composition collapse layer. Each signal maps a high-level operation
+primalSpring ships 32 atomic composition graphs under `graphs/compositions/` that define
+the Neural API composition layer. Each composition maps a high-level operation
 (e.g. `tower.publish`, `nest.store`, `meta.deploy`) to a graph of primal
 capabilities, enabling biomeOS to decompose semantic intent into concrete IPC calls.
 
-Signals are organized by tier:
+Compositions are organized by tier:
 - **Tower** (5): `publish`, `authenticate`, `discover`, `health`, `bootstrap`
 - **Node** (1): `compute`
-- **Nest** (3): `store`, `commit`, `retrieve`
+- **Nest** (4): `store`, `commit`, `retrieve`, `ingest_spore`
+- **rootPulse** (5): `commit`, `branch`, `merge`, `diff`, `federate`
 - **Meta** (5): `observe`, `intent`, `render`, `health`, `deploy`
+- **Ecosystem** (3): `pull`, `push`, `check`
+- **Impulse/Potential** (4): `impulse.post`, `impulse.ack`, `potential.sense`, `potential.check`
+- **Agentic Sync** (3): `sync.diverge`, `sync.resolve`, `sync.resolve.crossgate`
+- **Context** (2): `context.weave_anchored`, `impulse.post_signed`
 
-The `tower.bootstrap` signal defines the two-phase cold-start sequence that
+The `tower.bootstrap` composition defines the two-phase cold-start sequence that
 resolves the bootstrap paradox: Phase 1 (static, no biomeOS) brings up BearDog,
 Songbird, and SkunkBat; Phase 2 (graph-driven) lets biomeOS discover and seed
 the running Tower. See `infra/whitePaper/neuralAPI/02_ARCHITECTURE.md`.
 
-Signal tool definitions for Squirrel AI consumption live in `config/signal_tools.toml`.
+Composition tool definitions for Squirrel AI consumption live in `config/composition_tools.toml`.
 
-**Composition collapse**: `CompositionContext::signal()` dispatches atomic signals
-via `signal.dispatch` (preferred) with `capability.call` fallback for older biomeOS
-versions. biomeOS v3.55–v3.57 intercepts `capability.call` transparently when the
-target matches a signal tier, enabling seamless graph-backed execution.
+**Composition dispatch**: `CompositionContext::composition()` dispatches atomic compositions
+via `signal.dispatch` (preferred, biomeOS wire method) with `capability.call` fallback for
+older biomeOS versions. biomeOS v3.55–v3.57 intercepts `capability.call` transparently when
+the target matches a composition tier, enabling seamless graph-backed execution.
 `primal.announce` provides atomic self-registration (lifecycle + capabilities +
-translations + signal-tier membership in a single RPC). Squirrel's `signal_plan`
-mode decomposes natural-language intent into structured signal step sequences.
+translations + composition-tier membership in a single RPC). Squirrel's `composition_plan`
+mode decomposes natural-language intent into structured composition step sequences.
 See `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` for the wire format.
 
 ## IPC Resilience
@@ -475,7 +480,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 | C6: Proprioception (petalTongue) | **5/5 PASS** | Subscribe, apply, poll, showing |
 | C7: Full Interactive | **10/10 PASS** | Full cross-subsystem: session→render→export, game science, Squirrel health, NestGate |
 
-**56/56 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–55b complete).
+**57/57 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–67 complete).
 
 ## Live Integration Status (May 25, 2026)
 

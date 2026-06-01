@@ -211,8 +211,8 @@ pub fn parse_registry_capabilities(registry_toml: &str) -> Vec<String> {
     caps
 }
 
-/// Validate graph structure fields: `id`, `coordination`, `signal_tier`,
-/// `signal_name`, and at least one node.
+/// Validate graph structure fields: `id`, `coordination`, `composition_tier`,
+/// `composition_name`, and at least one node.
 pub fn validate_graph_structure(
     v: &mut ValidationResult,
     label: &str,
@@ -240,24 +240,24 @@ pub fn validate_graph_structure(
         &format!("{label} graph has coordination field"),
     );
 
-    let has_signal_tier = graph
-        .and_then(|g| g.get("signal_tier"))
+    let has_composition_tier = graph
+        .and_then(|g| g.get("composition_tier"))
         .and_then(|t| t.as_str())
         .is_some();
     v.check_bool(
-        &format!("{label}:has_signal_tier"),
-        has_signal_tier,
-        &format!("{label} graph has signal_tier field"),
+        &format!("{label}:has_composition_tier"),
+        has_composition_tier,
+        &format!("{label} graph has composition_tier field"),
     );
 
-    let has_signal_name = graph
-        .and_then(|g| g.get("signal_name"))
+    let has_composition_name = graph
+        .and_then(|g| g.get("composition_name"))
         .and_then(|n| n.as_str())
         .is_some();
     v.check_bool(
-        &format!("{label}:has_signal_name"),
-        has_signal_name,
-        &format!("{label} graph has signal_name field"),
+        &format!("{label}:has_composition_name"),
+        has_composition_name,
+        &format!("{label} graph has composition_name field"),
     );
 
     let node_count = graph_nodes(parsed).map_or(0, Vec::len);

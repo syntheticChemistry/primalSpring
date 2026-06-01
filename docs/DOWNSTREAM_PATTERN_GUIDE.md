@@ -7,7 +7,7 @@ How the 8 river delta springs feed projectNUCLEUS, projectFOUNDATION, and lithoS
 discovery cascade, 7 gates, signal_executor.sh, tower_agent.toml), esotericWebb V8
 (357 tests, signal-first provenance, lifecycle handlers), projectFOUNDATION (184 targets,
 29 workloads, primal_ipc.sh, 6 CPU parity benchmarks). 460 methods, 56 scenarios
-(10 tracks, 3 tiers), 23 atomic signal graphs (6 tiers). All UB-1–4 SHIPPED.
+(10 tracks, 3 tiers), 23 atomic composition graphs (6 tiers). All UB-1–4 SHIPPED.
 
 ---
 
@@ -295,7 +295,7 @@ This converges with `sourdough validate composition` (v0.3.0) and the plasmidBin
 
 The Neural API provides a **semantic collapse** layer: instead of springs
 calling individual primal methods (445 in the registry), they dispatch
-atomic signals (14 defined in `config/signal_tools.toml`) and let biomeOS
+atomic compositions (14 defined in `config/composition_tools.toml`) and let biomeOS
 execute the underlying graph of method calls.
 
 ### The Pattern
@@ -307,7 +307,7 @@ BEFORE (flat method surface — spring manages sequencing):
   ctx.call("spine", "spine.seal", vertex)
   ctx.call("braid", "braid.create", braid)
 
-AFTER (signal dispatch — biomeOS manages the graph):
+AFTER (composition dispatch — biomeOS manages the graph):
   ctx.dispatch("nest.store", json!({ "content": data, "author": id }))
 ```
 
@@ -315,15 +315,15 @@ AFTER (signal dispatch — biomeOS manages the graph):
 
 | Method | Purpose |
 |--------|---------|
-| `ctx.dispatch("tier.name", params)` | Unified signal dispatch (splits identifier, routes to biomeOS) |
+| `ctx.dispatch("tier.name", params)` | Unified composition dispatch (splits identifier, routes to biomeOS) |
 | `ctx.announce(primal, methods, socket)` | Atomic registration replacing 3-call pattern |
-| `ctx.signal(tier, name, params)` | Low-level signal dispatch (tier + name separate) |
-| `ctx.signal_plan(intent)` | Squirrel-powered intent → signal sequence planning |
+| `ctx.composition(tier, name, params)` | Low-level composition dispatch (tier + name separate) |
+| `ctx.composition_plan(intent)` | Squirrel-powered intent → signal sequence planning |
 | `ctx.execute_plan(plan)` | Execute a squirrel signal plan |
 
 ### Signal Inventory (23 signals across 6 tiers)
 
-| Tier | Signals | Composition Surface |
+| Tier | Compositions | Composition Surface |
 |------|---------|-------------------|
 | **Tower** (electron) | `publish`, `authenticate`, `discover`, `health`, `bootstrap` | Identity, trust, mesh |
 | **Node** (proton) | `compute` | Dispatch, compile, execute |
@@ -337,10 +337,10 @@ AFTER (signal dispatch — biomeOS manages the graph):
    `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md`.
 
 2. **Capability calls**: Identify multi-call sequences that correspond to
-   atomic signals. Replace with `ctx.dispatch()`. Domain-specific math calls
+   atomic compositions. Replace with `ctx.dispatch()`. Domain-specific math calls
    (`stats.mean`, `gpu.matmul`) stay as `ctx.call()`.
 
-3. **Multi-signal workflows**: For complex intent, use `ctx.signal_plan()`
+3. **Multi-signal workflows**: For complex intent, use `ctx.composition_plan()`
    to let squirrel decompose into a signal sequence, then `ctx.execute_plan()`.
 
 ### What This Means for Downstream Products
@@ -351,7 +351,7 @@ individual method sequences. A workload that currently specifies
 can be simplified to `signal: "nest.store"`.
 
 **lithoSpore**: Module validation that currently exercises individual primal
-methods can add signal dispatch phases. The `dispatch()` API has automatic
+methods can add composition dispatch phases. The `dispatch()` API has automatic
 fallback to `capability.call` for pre-v3.56 biomeOS, so existing validation
 continues to work.
 
@@ -362,10 +362,10 @@ finalization).
 ### Validation Coverage
 
 primalSpring validates the signal API through:
-- `s_signal_dispatch_parity` — dispatches all 23 signals, validates response shapes
+- `s_composition_dispatch_parity` — dispatches all 23 signals, validates response shapes
 - `s_primal_announce` — validates announce wire format and live registration
-- `s_atomic_signals` — structural + live dispatch validation per signal graph
-- `s_provenance_trio_pipeline` Phase 6 — `nest.store` signal dispatch
+- `s_atomic_compositions` — structural + live dispatch validation per composition graph
+- `s_provenance_trio_pipeline` Phase 6 — `nest.store` composition dispatch
 
 Full standard: `wateringHole/SIGNAL_ADOPTION_STANDARD.md`
 
@@ -455,10 +455,10 @@ Highest-leverage for glacial push (UB-1 through UB-4 all SHIPPED):
 The Neural API signal layer is now fully surfaced. Upstream gaps that will
 surface as springs adopt `ctx.dispatch()`:
 
-- **Primals missing from signal graphs**: any primal not responding to
-  capabilities expected by `graphs/signals/*.toml` will produce `-32601`
-  errors in `s_signal_dispatch_parity`
-- **biomeOS graph execution gaps**: signal graphs that biomeOS cannot fully
+- **Primals missing from composition graphs**: any primal not responding to
+  capabilities expected by `graphs/compositions/*.toml` will produce `-32601`
+  errors in `s_composition_dispatch_parity`
+- **biomeOS graph execution gaps**: composition graphs that biomeOS cannot fully
   execute will surface via response shape validation
 - **Announce protocol adoption**: primals not implementing `primal.announce`
   will fall back to the 3-call pattern (functional but deprecated)

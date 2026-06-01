@@ -10,7 +10,7 @@
 #
 # This is a stadial goal composition: once deployed, the tower agent
 # can autonomously deploy Node, Nest, and full NUCLEUS compositions
-# via the atomic signal layer. Squirrel reads signal_tools.toml to
+# via the atomic signal layer. Squirrel reads composition_tools.toml to
 # understand available signals and plans multi-signal deployments.
 #
 # AI backends: squirrel connects to whatever is available —

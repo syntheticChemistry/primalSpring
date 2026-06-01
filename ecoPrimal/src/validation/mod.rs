@@ -23,11 +23,8 @@
 pub mod dependency;
 pub mod helpers;
 pub mod numeric;
-pub mod or_exit;
 pub mod scenarios;
 pub mod shadow;
-
-pub use or_exit::OrExit;
 
 use std::fmt;
 use std::sync::Arc;

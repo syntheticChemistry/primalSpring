@@ -342,6 +342,34 @@ pub static PORT_REGISTRY: &[PortEntry] = &[
     PortEntry { slug: "petaltongue", port: TCP_FALLBACK_PETALTONGUE_PORT, env_key: crate::env_keys::PETALTONGUE_PORT },
 ];
 
+/// Federation / CNS port assignments — deployment-profile variants.
+///
+/// These are separate from the canonical PORT_REGISTRY because they are
+/// per-deployment-profile (nucleus01 vs primalspring01) rather than
+/// per-primal. Federation ports are Songbird mesh coordination endpoints;
+/// CNS ports are profile-specific crypto/defense RPC endpoints.
+pub struct FederationPort {
+    /// Deployment profile (e.g. "nucleus01", "primalspring01").
+    pub profile: &'static str,
+    /// Primal slug.
+    pub primal: &'static str,
+    /// Role description.
+    pub role: &'static str,
+    /// Port number.
+    pub port: u16,
+    /// Whether this port is droppable (UDS migration candidate).
+    pub droppable: bool,
+}
+
+/// Known federation and CNS ports across deployment profiles.
+pub static FEDERATION_PORTS: &[FederationPort] = &[
+    FederationPort { profile: "nucleus01",      primal: "songbird", role: "federation", port: 7700, droppable: false },
+    FederationPort { profile: "primalspring01", primal: "songbird", role: "federation", port: 7701, droppable: false },
+    FederationPort { profile: "nucleus01",      primal: "beardog",  role: "crypto RPC", port: 9900, droppable: true },
+    FederationPort { profile: "primalspring01", primal: "beardog",  role: "crypto RPC", port: 9101, droppable: true },
+    FederationPort { profile: "meta",           primal: "skunkbat", role: "defense",    port: 9750, droppable: true },
+];
+
 /// Look up a primal's entry in the port registry.
 #[must_use]
 pub fn port_entry_for(primal: &str) -> Option<&'static PortEntry> {

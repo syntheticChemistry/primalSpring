@@ -56,7 +56,7 @@ impl CoordinationDomain {
 /// single NUCLEUS instance. The 5th tier (`Ecosystem`) operates across
 /// gates through the VPS periplasm — the waterFall coordination domain.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SignalTier {
+pub enum GraphTier {
     /// Trust boundary: bearDog + songbird + skunkBat. Quorum = 3.
     Tower,
     /// Compute: Tower + toadStool + barraCuda. Hardware dispatch.
@@ -70,7 +70,7 @@ pub enum SignalTier {
     Ecosystem,
 }
 
-impl SignalTier {
+impl GraphTier {
     /// Particle-physics analogy (None for ecosystem tier).
     #[must_use]
     pub const fn particle(self) -> Option<&'static str> {
@@ -155,17 +155,17 @@ mod tests {
 
     #[test]
     fn all_tiers_have_particles_or_not() {
-        assert!(SignalTier::Tower.particle().is_some());
-        assert!(SignalTier::Node.particle().is_some());
-        assert!(SignalTier::Nest.particle().is_some());
-        assert!(SignalTier::Meta.particle().is_some());
-        assert!(SignalTier::Ecosystem.particle().is_none());
+        assert!(GraphTier::Tower.particle().is_some());
+        assert!(GraphTier::Node.particle().is_some());
+        assert!(GraphTier::Nest.particle().is_some());
+        assert!(GraphTier::Meta.particle().is_some());
+        assert!(GraphTier::Ecosystem.particle().is_none());
     }
 
     #[test]
     fn ecosystem_tier_maps_to_fall_domain() {
         assert_eq!(
-            SignalTier::Ecosystem.primary_domain(),
+            GraphTier::Ecosystem.primary_domain(),
             CoordinationDomain::Fall,
         );
     }
@@ -173,14 +173,14 @@ mod tests {
     #[test]
     fn tier_round_trip_json() {
         for t in [
-            SignalTier::Tower,
-            SignalTier::Node,
-            SignalTier::Nest,
-            SignalTier::Meta,
-            SignalTier::Ecosystem,
+            GraphTier::Tower,
+            GraphTier::Node,
+            GraphTier::Nest,
+            GraphTier::Meta,
+            GraphTier::Ecosystem,
         ] {
             let json = serde_json::to_string(&t).unwrap();
-            let back: SignalTier = serde_json::from_str(&json).unwrap();
+            let back: GraphTier = serde_json::from_str(&json).unwrap();
             assert_eq!(t, back);
         }
     }

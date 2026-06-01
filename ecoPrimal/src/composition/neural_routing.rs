@@ -29,6 +29,7 @@
 //! (cross-gate, adaptive, learned) build on this foundation.
 
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use super::routing::{capability_to_primal, method_to_capability_domain};
 
@@ -91,20 +92,23 @@ impl CompositionTier {
 }
 
 /// A single method's routing entry in the neural routing table.
+///
+/// Uses `Arc<str>` for method/owner/domain strings — these are interned once
+/// during table build and shared across all four indexes without allocation.
 #[derive(Debug, Clone)]
 pub struct RouteEntry {
     /// The JSON-RPC method string (e.g., "crypto.hash").
-    pub method: String,
+    pub method: Arc<str>,
     /// The primal that owns this method.
-    pub owner: String,
+    pub owner: Arc<str>,
     /// The capability domain (e.g., "crypto", "storage").
-    pub domain: String,
+    pub domain: Arc<str>,
     /// Which composition tier this method participates in.
     pub tier: CompositionTier,
-    /// Whether this method has a signal graph (e.g., "nest.store" → nest_store.toml).
-    pub has_signal_graph: bool,
+    /// Whether this method has a composition graph (e.g., "nest.store" → nest_store.toml).
+    pub has_composition_graph: bool,
     /// Semantic aliases that map to this method.
-    pub aliases: Vec<String>,
+    pub aliases: Vec<Arc<str>>,
 }
 
 /// A composition pattern — a named sequence of methods that form an
@@ -112,11 +116,11 @@ pub struct RouteEntry {
 #[derive(Debug, Clone)]
 pub struct CompositionPattern {
     /// Pattern name (e.g., "rootpulse_commit").
-    pub name: String,
+    pub name: Arc<str>,
     /// Ordered method sequence (topological).
-    pub methods: Vec<String>,
+    pub methods: Vec<Arc<str>>,
     /// Primals involved.
-    pub primals: Vec<String>,
+    pub primals: Vec<Arc<str>>,
     /// Which tier this pattern belongs to.
     pub tier: CompositionTier,
 }
@@ -124,18 +128,17 @@ pub struct CompositionPattern {
 /// The neural routing table — primalSpring's model of the capability method surface.
 ///
 /// Built from the capability registry, this table provides O(1) lookup by
-/// method, domain, tier, or primal. It also holds composition patterns
-/// extracted from deploy graphs, showing how methods combine into emergent
-/// systems.
+/// method, domain, tier, or primal. Uses `Arc<str>` interning so shared
+/// strings (method keys, owner slugs, domains) are allocated once and referenced.
 pub struct NeuralRoutingTable {
     /// method string → route entry
-    method_index: HashMap<String, RouteEntry>,
+    method_index: HashMap<Arc<str>, RouteEntry>,
     /// domain → list of method strings
-    domain_index: HashMap<String, Vec<String>>,
+    domain_index: HashMap<Arc<str>, Vec<Arc<str>>>,
     /// tier → list of method strings
-    tier_index: HashMap<CompositionTier, Vec<String>>,
+    tier_index: HashMap<CompositionTier, Vec<Arc<str>>>,
     /// primal → list of method strings
-    primal_index: HashMap<String, Vec<String>>,
+    primal_index: HashMap<Arc<str>, Vec<Arc<str>>>,
     /// named composition patterns
     patterns: Vec<CompositionPattern>,
 }
@@ -155,22 +158,22 @@ impl NeuralRoutingTable {
             },
         };
         let mut method_index = HashMap::new();
-        let mut domain_index: HashMap<String, Vec<String>> = HashMap::new();
-        let mut tier_index: HashMap<CompositionTier, Vec<String>> = HashMap::new();
-        let mut primal_index: HashMap<String, Vec<String>> = HashMap::new();
+        let mut domain_index: HashMap<Arc<str>, Vec<Arc<str>>> = HashMap::new();
+        let mut tier_index: HashMap<CompositionTier, Vec<Arc<str>>> = HashMap::new();
+        let mut primal_index: HashMap<Arc<str>, Vec<Arc<str>>> = HashMap::new();
 
         let skip_sections = ["test_fixtures", "false_positives"];
 
-        let mut signal_methods: Vec<String> = Vec::new();
+        let mut composition_methods: Vec<String> = Vec::new();
 
         if let Some(table) = parsed.as_table() {
-            // First pass: collect signal methods from [signals.*] sections.
-            if let Some(signals) = table.get("signals").and_then(|v| v.as_table()) {
-                for (tier_name, tier_val) in signals {
-                    if let Some(sigs) = tier_val.get("signals").and_then(|v| v.as_array()) {
+            // First pass: collect composition methods from [compositions.*] sections.
+            if let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) {
+                for (tier_name, tier_val) in compositions {
+                    if let Some(sigs) = tier_val.get("compositions").and_then(|v| v.as_array()) {
                         for sig in sigs {
                             if let Some(name) = sig.get("name").and_then(|v| v.as_str()) {
-                                signal_methods.push(format!("{tier_name}.{name}"));
+                                composition_methods.push(format!("{tier_name}.{name}"));
                             }
                         }
                     }
@@ -180,16 +183,15 @@ impl NeuralRoutingTable {
             // Second pass: register all methods from domain sections.
             for (section, value) in table {
                 if skip_sections.contains(&section.as_str())
-                    || section == "signals"
+                    || section == "compositions"
                 {
                     continue;
                 }
-                let owner = value
+                let owner_raw = value
                     .get("owner")
                     .and_then(|v| v.as_str())
-                    .unwrap_or("unknown")
-                    .to_owned();
-                if owner == "none" || owner == "tests" {
+                    .unwrap_or("unknown");
+                if owner_raw == "none" || owner_raw == "tests" {
                     continue;
                 }
 
@@ -198,43 +200,47 @@ impl NeuralRoutingTable {
                     .and_then(|v| v.as_array())
                     .map(|arr| {
                         arr.iter()
-                            .filter_map(|v| v.as_str().map(String::from))
+                            .filter_map(|v| v.as_str())
                             .collect::<Vec<_>>()
                     })
                     .unwrap_or_default();
 
-                for method in &methods {
-                    let domain = method_to_capability_domain(method).to_owned();
-                    let routed_owner = if owner == "all" {
-                        "all".to_owned()
+                for method_str in &methods {
+                    let domain_str = method_to_capability_domain(method_str);
+                    let routed_owner_str = if owner_raw == "all" {
+                        "all"
                     } else {
-                        let routed = capability_to_primal(&domain).to_owned();
-                        if routed == domain { owner.clone() } else { routed }
+                        let routed = capability_to_primal(domain_str);
+                        if routed == domain_str { owner_raw } else { routed }
                     };
-                    let tier = if owner == "all" {
+                    let tier = if owner_raw == "all" {
                         CompositionTier::Orchestration
                     } else {
-                        CompositionTier::from_domain(&domain, &routed_owner)
+                        CompositionTier::from_domain(domain_str, routed_owner_str)
                     };
 
-                    let is_signal = signal_methods.iter().any(|s| s == method);
+                    let is_composition = composition_methods.iter().any(|s| s == method_str);
 
-                    domain_index.entry(domain.clone()).or_default().push(method.clone());
-                    tier_index.entry(tier).or_default().push(method.clone());
+                    let method: Arc<str> = Arc::from(*method_str);
+                    let domain: Arc<str> = Arc::from(domain_str);
+                    let routed_owner: Arc<str> = Arc::from(routed_owner_str);
+
+                    domain_index.entry(Arc::clone(&domain)).or_default().push(Arc::clone(&method));
+                    tier_index.entry(tier).or_default().push(Arc::clone(&method));
                     primal_index
-                        .entry(routed_owner.clone())
+                        .entry(Arc::clone(&routed_owner))
                         .or_default()
-                        .push(method.clone());
+                        .push(Arc::clone(&method));
 
                     let entry = RouteEntry {
-                        method: method.clone(),
+                        method: Arc::clone(&method),
                         owner: routed_owner,
                         domain,
                         tier,
-                        has_signal_graph: is_signal,
+                        has_composition_graph: is_composition,
                         aliases: Vec::new(),
                     };
-                    method_index.insert(entry.method.clone(), entry);
+                    method_index.insert(Arc::clone(&entry.method), entry);
                 }
             }
         }
@@ -257,28 +263,28 @@ impl NeuralRoutingTable {
     /// Look up a method's routing entry.
     #[must_use]
     pub fn route(&self, method: &str) -> Option<&RouteEntry> {
-        self.method_index.get(method)
+        self.method_index.get(method as &str)
     }
 
     /// All methods in a capability domain.
     #[must_use]
-    pub fn methods_in_domain(&self, domain: &str) -> &[String] {
+    pub fn methods_in_domain(&self, domain: &str) -> &[Arc<str>] {
         self.domain_index
-            .get(domain)
+            .get(domain as &str)
             .map_or(&[], Vec::as_slice)
     }
 
     /// All methods owned by a primal.
     #[must_use]
-    pub fn methods_for_primal(&self, primal: &str) -> &[String] {
+    pub fn methods_for_primal(&self, primal: &str) -> &[Arc<str>] {
         self.primal_index
-            .get(primal)
+            .get(primal as &str)
             .map_or(&[], Vec::as_slice)
     }
 
     /// All methods in a composition tier.
     #[must_use]
-    pub fn methods_in_tier(&self, tier: CompositionTier) -> &[String] {
+    pub fn methods_in_tier(&self, tier: CompositionTier) -> &[Arc<str>] {
         self.tier_index
             .get(&tier)
             .map_or(&[], Vec::as_slice)
@@ -298,17 +304,17 @@ impl NeuralRoutingTable {
 
     /// All primal names in the routing table.
     pub fn primals(&self) -> impl Iterator<Item = &str> {
-        self.primal_index.keys().map(String::as_str)
+        self.primal_index.keys().map(|s| &**s)
     }
 
     /// All domain names in the routing table.
     pub fn domains(&self) -> impl Iterator<Item = &str> {
-        self.domain_index.keys().map(String::as_str)
+        self.domain_index.keys().map(|s| &**s)
     }
 
     /// Methods that have signal graph shortcuts.
-    pub fn signal_methods(&self) -> impl Iterator<Item = &RouteEntry> {
-        self.method_index.values().filter(|e| e.has_signal_graph)
+    pub fn composition_methods(&self) -> impl Iterator<Item = &RouteEntry> {
+        self.method_index.values().filter(|e| e.has_composition_graph)
     }
 
     /// Register a composition pattern.
@@ -327,7 +333,7 @@ impl NeuralRoutingTable {
     pub fn patterns_involving(&self, primal: &str) -> Vec<&CompositionPattern> {
         self.patterns
             .iter()
-            .filter(|p| p.primals.iter().any(|pr| pr == primal))
+            .filter(|p| p.primals.iter().any(|pr| &**pr == primal))
             .collect()
     }
 
@@ -355,25 +361,25 @@ impl NeuralRoutingTable {
     #[must_use]
     pub fn tier_composition(&self, tier: CompositionTier) -> TierComposition {
         let methods = self.methods_in_tier(tier);
-        let mut primals: Vec<String> = methods
+        let mut primals: Vec<&str> = methods
             .iter()
-            .filter_map(|m| self.route(m).map(|e| e.owner.clone()))
+            .filter_map(|m| self.route(m).map(|e| &*e.owner))
             .collect();
-        primals.sort();
+        primals.sort_unstable();
         primals.dedup();
 
-        let mut domains: Vec<String> = methods
+        let mut domains: Vec<&str> = methods
             .iter()
-            .filter_map(|m| self.route(m).map(|e| e.domain.clone()))
+            .filter_map(|m| self.route(m).map(|e| &*e.domain))
             .collect();
-        domains.sort();
+        domains.sort_unstable();
         domains.dedup();
 
         TierComposition {
             tier,
             method_count: methods.len(),
-            primals,
-            domains,
+            primals: primals.into_iter().map(ToOwned::to_owned).collect(),
+            domains: domains.into_iter().map(ToOwned::to_owned).collect(),
         }
     }
 }
@@ -400,71 +406,64 @@ pub struct TierComposition {
 pub fn canonical_routing_table() -> NeuralRoutingTable {
     let registry_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../config/capability_registry.toml");
-    let toml_str = std::fs::read_to_string(&registry_path).unwrap_or_default();
+    let toml_str = match std::fs::read_to_string(&registry_path) {
+        Ok(s) => s,
+        Err(e) => {
+            tracing::warn!(
+                path = %registry_path.display(),
+                error = %e,
+                "capability registry not found — routing table will be empty"
+            );
+            String::new()
+        }
+    };
     let mut table = NeuralRoutingTable::from_registry(&toml_str);
 
     table.register_pattern(CompositionPattern {
-        name: "rootpulse_commit".to_owned(),
+        name: "rootpulse_commit".into(),
         methods: vec![
-            "crypto.sign".to_owned(),
-            "dag.event.append".to_owned(),
-            "braid.anchor".to_owned(),
-            "spine.commit".to_owned(),
+            "crypto.sign".into(),
+            "dag.event.append".into(),
+            "braid.anchor".into(),
+            "spine.commit".into(),
         ],
-        primals: vec![
-            "beardog".to_owned(),
-            "rhizocrypt".to_owned(),
-            "sweetgrass".to_owned(),
-            "loamspine".to_owned(),
-        ],
+        primals: vec!["beardog".into(), "rhizocrypt".into(), "sweetgrass".into(), "loamspine".into()],
         tier: CompositionTier::Nest,
     });
 
     table.register_pattern(CompositionPattern {
-        name: "tower_atomic_bootstrap".to_owned(),
+        name: "tower_atomic_bootstrap".into(),
         methods: vec![
-            "crypto.sign_ed25519".to_owned(),
-            "discovery.announce".to_owned(),
-            "security.audit_event".to_owned(),
+            "crypto.sign_ed25519".into(),
+            "discovery.announce".into(),
+            "security.audit_event".into(),
         ],
-        primals: vec![
-            "beardog".to_owned(),
-            "songbird".to_owned(),
-            "skunkbat".to_owned(),
-        ],
+        primals: vec!["beardog".into(), "songbird".into(), "skunkbat".into()],
         tier: CompositionTier::Tower,
     });
 
     table.register_pattern(CompositionPattern {
-        name: "nest_store".to_owned(),
+        name: "nest_store".into(),
         methods: vec![
-            "content.put".to_owned(),
-            "dag.event.append".to_owned(),
-            "spine.seal".to_owned(),
-            "braid.create".to_owned(),
+            "content.put".into(),
+            "dag.event.append".into(),
+            "spine.seal".into(),
+            "braid.create".into(),
         ],
-        primals: vec![
-            "nestgate".to_owned(),
-            "rhizocrypt".to_owned(),
-            "loamspine".to_owned(),
-            "sweetgrass".to_owned(),
-        ],
+        primals: vec!["nestgate".into(), "rhizocrypt".into(), "loamspine".into(), "sweetgrass".into()],
         tier: CompositionTier::Nest,
     });
 
     table.register_pattern(CompositionPattern {
-        name: "ionic_bond_lifecycle".to_owned(),
+        name: "ionic_bond_lifecycle".into(),
         methods: vec![
-            "bonding.propose".to_owned(),
-            "crypto.ionic_bond.verify_proposal".to_owned(),
-            "bonding.accept".to_owned(),
-            "bonding.status".to_owned(),
-            "bonding.terminate".to_owned(),
+            "bonding.propose".into(),
+            "crypto.ionic_bond.verify_proposal".into(),
+            "bonding.accept".into(),
+            "bonding.status".into(),
+            "bonding.terminate".into(),
         ],
-        primals: vec![
-            "primalspring".to_owned(),
-            "beardog".to_owned(),
-        ],
+        primals: vec!["primalspring".into(), "beardog".into()],
         tier: CompositionTier::Standalone,
     });
 
@@ -493,8 +492,8 @@ mod tests {
     fn crypto_hash_routes_to_beardog() {
         let table = test_table();
         let entry = table.route("crypto.hash").expect("crypto.hash should exist");
-        assert_eq!(entry.owner, "beardog");
-        assert_eq!(entry.domain, "security");
+        assert_eq!(&*entry.owner, "beardog");
+        assert_eq!(&*entry.domain, "security");
         assert_eq!(entry.tier, CompositionTier::Tower);
     }
 
@@ -502,7 +501,7 @@ mod tests {
     fn storage_store_routes_to_nestgate() {
         let table = test_table();
         let entry = table.route("storage.store").expect("storage.store should exist");
-        assert_eq!(entry.owner, "nestgate");
+        assert_eq!(&*entry.owner, "nestgate");
         assert_eq!(entry.tier, CompositionTier::Nest);
     }
 
@@ -512,7 +511,7 @@ mod tests {
         let entry = table
             .route("compute.dispatch")
             .expect("compute.dispatch should exist");
-        assert_eq!(entry.owner, "toadstool");
+        assert_eq!(&*entry.owner, "toadstool");
         assert_eq!(entry.tier, CompositionTier::Node);
     }
 
@@ -522,7 +521,7 @@ mod tests {
         let entry = table
             .route("science.eigensolve")
             .expect("science.eigensolve should exist");
-        assert_eq!(entry.owner, "neuralspring");
+        assert_eq!(&*entry.owner, "neuralspring");
         assert_eq!(entry.tier, CompositionTier::Meta);
     }
 
@@ -535,17 +534,17 @@ mod tests {
             "Tower tier should have 50+ methods, got {}",
             tower.len()
         );
-        assert!(tower.contains(&"crypto.hash".to_owned()));
-        assert!(tower.contains(&"crypto.sign".to_owned()));
+        assert!(tower.iter().any(|s| &**s == "crypto.hash"));
+        assert!(tower.iter().any(|s| &**s == "crypto.sign"));
     }
 
     #[test]
     fn nest_tier_contains_storage_and_provenance() {
         let table = test_table();
         let nest = table.methods_in_tier(CompositionTier::Nest);
-        assert!(nest.contains(&"storage.store".to_owned()));
-        assert!(nest.contains(&"dag.event.append".to_owned()));
-        assert!(nest.contains(&"braid.create".to_owned()));
+        assert!(nest.iter().any(|s| &**s == "storage.store"));
+        assert!(nest.iter().any(|s| &**s == "dag.event.append"));
+        assert!(nest.iter().any(|s| &**s == "braid.create"));
     }
 
     #[test]
@@ -564,7 +563,7 @@ mod tests {
     fn rootpulse_pattern_registered() {
         let table = test_table();
         let patterns = table.patterns();
-        let rootpulse = patterns.iter().find(|p| p.name == "rootpulse_commit");
+        let rootpulse = patterns.iter().find(|p| &*p.name == "rootpulse_commit");
         assert!(rootpulse.is_some(), "rootpulse_commit pattern should exist");
         let rp = rootpulse.unwrap();
         assert_eq!(rp.primals.len(), 4);
@@ -577,10 +576,10 @@ mod tests {
         let ionic = table
             .patterns()
             .iter()
-            .find(|p| p.name == "ionic_bond_lifecycle")
+            .find(|p| &*p.name == "ionic_bond_lifecycle")
             .expect("ionic_bond_lifecycle should exist");
-        assert!(ionic.primals.contains(&"beardog".to_owned()));
-        assert!(ionic.primals.contains(&"primalspring".to_owned()));
+        assert!(ionic.primals.iter().any(|s| &**s == "beardog"));
+        assert!(ionic.primals.iter().any(|s| &**s == "primalspring"));
     }
 
     #[test]
@@ -588,21 +587,21 @@ mod tests {
         let table = test_table();
         let comp = table.tier_composition(CompositionTier::Tower);
         assert!(
-            comp.primals.contains(&"beardog".to_owned()),
+            comp.primals.iter().any(|s| &**s == "beardog"),
             "Tower should include beardog"
         );
         assert!(
-            comp.primals.contains(&"songbird".to_owned()),
+            comp.primals.iter().any(|s| &**s == "songbird"),
             "Tower should include songbird"
         );
         assert!(
-            comp.primals.contains(&"skunkbat".to_owned()),
+            comp.primals.iter().any(|s| &**s == "skunkbat"),
             "Tower should include skunkbat"
         );
     }
 
     #[test]
-    fn signal_tier_patterns_extracted() {
+    fn composition_tier_patterns_extracted() {
         let table = test_table();
         // Signal graphs (nest.store, tower.publish, etc.) are composition
         // patterns over methods, not individual method entries. Verify that
@@ -610,11 +609,11 @@ mod tests {
         let nest_store = table
             .patterns()
             .iter()
-            .find(|p| p.name == "nest_store");
+            .find(|p| &*p.name == "nest_store");
         assert!(nest_store.is_some(), "nest_store pattern should exist");
         let ns = nest_store.unwrap();
-        assert!(ns.methods.contains(&"content.put".to_owned()));
-        assert!(ns.methods.contains(&"dag.event.append".to_owned()));
+        assert!(ns.methods.iter().any(|s| &**s == "content.put"));
+        assert!(ns.methods.iter().any(|s| &**s == "dag.event.append"));
     }
 
     #[test]

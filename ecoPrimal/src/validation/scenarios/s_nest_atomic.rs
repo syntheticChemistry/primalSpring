@@ -118,8 +118,8 @@ fn phase_spore_gateway(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         "nucleus ingest gateway discoverable at runtime (nucleus.ingest_spore / storage.put)",
     );
 
-    let signal_graph_exists = std::path::Path::new("graphs/signals/nest_ingest_spore.toml").exists()
-        || std::path::Path::new("../../graphs/signals/nest_ingest_spore.toml").exists();
+    let signal_graph_exists = std::path::Path::new("graphs/compositions/nest_ingest_spore.toml").exists()
+        || std::path::Path::new("../../graphs/compositions/nest_ingest_spore.toml").exists();
     v.check_bool(
         "nest_ingest_spore_signal_graph",
         signal_graph_exists,

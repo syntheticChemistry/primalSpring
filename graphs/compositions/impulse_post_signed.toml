@@ -1,0 +1,102 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Graduated Signal: impulse.post (signed) — Fire signed action potential
+#
+# Phase 3 evolution of impulse_post.toml. Adds bearDog Ed25519 signing
+# and rhizoCrypt DAG event tracking to the basic fire-and-propagate flow.
+#
+# Pipeline: resolve identity → resolve ref → create impulse TOML →
+#           sign payload (bearDog) → append DAG event (rhizoCrypt) →
+#           store + push (nestGate) → relay (songbird)
+#
+# Optional nodes (required = false) degrade gracefully: unsigned impulses
+# are valid on gates without bearDog, non-DAG-tracked impulses are valid
+# without rhizoCrypt, and non-relayed impulses are valid without songbird.
+#
+# Coordination domain: rootPulse (ACTION / efferent)
+
+[graph]
+id = "impulse_post_signed"
+name = "Impulse Post (Signed)"
+description = "Fire a signed action potential — create, sign, track in DAG, store, push, relay."
+version = "2.0.0"
+coordination = "sequential"
+composition_tier = "ecosystem"
+composition_name = "impulse.post"
+coordination_domain = "pulse"
+
+[graph.metadata]
+particle = "impulse"
+security_model = "btsp_enforced"
+transport = "git_ssh"
+secure_by_default = true
+fragments = ["impulse_potential", "tower_atomic"]
+
+[[graph.nodes]]
+name = "resolve_identity"
+binary = "membrane"
+order = 1
+required = true
+spawn = false
+by_capability = "identity"
+capabilities = ["identity.resolve"]
+
+[[graph.nodes]]
+name = "resolve_ref"
+binary = "membrane"
+order = 2
+required = false
+spawn = false
+depends_on = ["resolve_identity"]
+by_capability = "provenance"
+capabilities = ["git.rev_parse"]
+
+[[graph.nodes]]
+name = "create_impulse"
+binary = "membrane"
+order = 3
+required = true
+spawn = false
+depends_on = ["resolve_identity"]
+by_capability = "coordination"
+capabilities = ["impulse.post"]
+
+[[graph.nodes]]
+name = "sign_payload"
+binary = "beardog"
+order = 4
+required = false
+spawn = false
+depends_on = ["create_impulse"]
+by_capability = "security"
+capabilities = ["crypto.sign_ed25519"]
+
+[[graph.nodes]]
+name = "dag_event"
+binary = "rhizocrypt"
+order = 5
+required = false
+spawn = false
+depends_on = ["create_impulse"]
+by_capability = "dag"
+capabilities = ["dag.event.append"]
+
+[[graph.nodes]]
+name = "store_and_push"
+binary = "nestgate"
+order = 6
+required = true
+spawn = false
+depends_on = ["create_impulse"]
+by_capability = "storage"
+capabilities = ["content.put", "content.push"]
+
+[[graph.nodes]]
+name = "relay_notify"
+binary = "songbird"
+order = 7
+required = false
+spawn = false
+depends_on = ["store_and_push"]
+by_capability = "network"
+capabilities = ["mesh.publish"]

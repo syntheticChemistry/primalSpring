@@ -975,59 +975,59 @@ methods = [
 # TOML graphs. Springs call signal("tower", "publish", ...) instead of 3
 # individual primal calls.
 #
-# Each signal maps to a graph file in graphs/signals/. The scenario
+# Each signal maps to a graph file in graphs/compositions/. The scenario
 # s_atomic_signals validates that all signal graphs parse, reference valid
 # capabilities, and respect Dark Forest invariants.
 
-[signals.tower]
+[compositions.tower]
 tier = "electron"
 primals = ["beardog", "songbird", "skunkbat"]
-signals = [
-    { name = "publish", graph = "graphs/signals/tower_publish.toml", coordination = "sequential", nodes = 3 },
-    { name = "authenticate", graph = "graphs/signals/tower_authenticate.toml", coordination = "sequential", nodes = 2 },
-    { name = "discover", graph = "graphs/signals/tower_discover.toml", coordination = "sequential", nodes = 3 },
-    { name = "health", graph = "graphs/signals/tower_health.toml", coordination = "parallel", nodes = 3 },
-    { name = "bootstrap", graph = "graphs/signals/tower_bootstrap.toml", coordination = "sequential", nodes = 6 },
+compositions = [
+    { name = "publish", graph = "graphs/compositions/tower_publish.toml", coordination = "sequential", nodes = 3 },
+    { name = "authenticate", graph = "graphs/compositions/tower_authenticate.toml", coordination = "sequential", nodes = 2 },
+    { name = "discover", graph = "graphs/compositions/tower_discover.toml", coordination = "sequential", nodes = 3 },
+    { name = "health", graph = "graphs/compositions/tower_health.toml", coordination = "parallel", nodes = 3 },
+    { name = "bootstrap", graph = "graphs/compositions/tower_bootstrap.toml", coordination = "sequential", nodes = 6 },
 ]
 
-[signals.node]
+[compositions.node]
 tier = "proton"
 primals = ["beardog", "songbird", "skunkbat", "toadstool", "barracuda", "coralreef"]
-signals = [
-    { name = "compute", graph = "graphs/signals/node_compute.toml", coordination = "sequential", nodes = 3 },
+compositions = [
+    { name = "compute", graph = "graphs/compositions/node_compute.toml", coordination = "sequential", nodes = 3 },
 ]
 
-[signals.nest]
+[compositions.nest]
 tier = "neutron"
 primals = ["beardog", "songbird", "skunkbat", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
-signals = [
-    { name = "store", graph = "graphs/signals/nest_store.toml", coordination = "sequential", nodes = 4 },
-    { name = "commit", graph = "graphs/signals/nest_commit.toml", coordination = "sequential", nodes = 5 },
-    { name = "retrieve", graph = "graphs/signals/nest_retrieve.toml", coordination = "parallel", nodes = 3 },
-    { name = "ingest_spore", graph = "graphs/signals/nest_ingest_spore.toml", coordination = "sequential", nodes = 6 },
+compositions = [
+    { name = "store", graph = "graphs/compositions/nest_store.toml", coordination = "sequential", nodes = 4 },
+    { name = "commit", graph = "graphs/compositions/nest_commit.toml", coordination = "sequential", nodes = 5 },
+    { name = "retrieve", graph = "graphs/compositions/nest_retrieve.toml", coordination = "parallel", nodes = 3 },
+    { name = "ingest_spore", graph = "graphs/compositions/nest_ingest_spore.toml", coordination = "sequential", nodes = 6 },
 ]
 
-[signals.rootpulse]
+[compositions.rootpulse]
 tier = "rootpulse"
 primals = ["rhizocrypt", "beardog", "nestgate", "loamspine", "sweetgrass", "songbird"]
 domain = "pulse"
-signals = [
-    { name = "commit", graph = "graphs/signals/rootpulse_commit.toml", coordination = "sequential", nodes = 5 },
-    { name = "branch", graph = "graphs/signals/rootpulse_branch.toml", coordination = "sequential", nodes = 3 },
-    { name = "merge", graph = "graphs/signals/rootpulse_merge.toml", coordination = "sequential", nodes = 4 },
-    { name = "diff", graph = "graphs/signals/rootpulse_diff.toml", coordination = "sequential", nodes = 2 },
-    { name = "federate", graph = "graphs/signals/rootpulse_federate.toml", coordination = "sequential", nodes = 6 },
+compositions = [
+    { name = "commit", graph = "graphs/compositions/rootpulse_commit.toml", coordination = "sequential", nodes = 5 },
+    { name = "branch", graph = "graphs/compositions/rootpulse_branch.toml", coordination = "sequential", nodes = 3 },
+    { name = "merge", graph = "graphs/compositions/rootpulse_merge.toml", coordination = "sequential", nodes = 4 },
+    { name = "diff", graph = "graphs/compositions/rootpulse_diff.toml", coordination = "sequential", nodes = 2 },
+    { name = "federate", graph = "graphs/compositions/rootpulse_federate.toml", coordination = "sequential", nodes = 6 },
 ]
 
-[signals.meta]
+[compositions.meta]
 tier = "meta"
 primals = ["biomeos", "squirrel", "petaltongue", "skunkbat"]
-signals = [
-    { name = "observe", graph = "graphs/signals/meta_observe.toml", coordination = "sequential", nodes = 3 },
-    { name = "intent", graph = "graphs/signals/meta_intent.toml", coordination = "sequential", nodes = 3 },
-    { name = "render", graph = "graphs/signals/meta_render.toml", coordination = "sequential", nodes = 3 },
-    { name = "health", graph = "graphs/signals/meta_health.toml", coordination = "parallel", nodes = 3 },
-    { name = "deploy", graph = "graphs/signals/meta_deploy.toml", coordination = "sequential", nodes = 3 },
+compositions = [
+    { name = "observe", graph = "graphs/compositions/meta_observe.toml", coordination = "sequential", nodes = 3 },
+    { name = "intent", graph = "graphs/compositions/meta_intent.toml", coordination = "sequential", nodes = 3 },
+    { name = "render", graph = "graphs/compositions/meta_render.toml", coordination = "sequential", nodes = 3 },
+    { name = "health", graph = "graphs/compositions/meta_health.toml", coordination = "parallel", nodes = 3 },
+    { name = "deploy", graph = "graphs/compositions/meta_deploy.toml", coordination = "sequential", nodes = 3 },
 ]
 
 # ─── Ecosystem tier (waterFall domain — cross-gate sync) ─────────────
@@ -1036,14 +1036,14 @@ signals = [
 # through the VPS periplasm. This is the autonomic nervous system of the
 # ecosystem — sync that runs without conscious control.
 
-[signals.ecosystem]
+[compositions.ecosystem]
 tier = "ecosystem"
 primals = ["biomeos", "songbird", "nestgate", "beardog"]
 domain = "fall"
-signals = [
-    { name = "pull", graph = "graphs/signals/ecosystem_pull.toml", coordination = "parallel", nodes = 4, domain = "fall" },
-    { name = "push", graph = "graphs/signals/ecosystem_push.toml", coordination = "sequential", nodes = 4, domain = "fall" },
-    { name = "check", graph = "graphs/signals/ecosystem_check.toml", coordination = "parallel", nodes = 3, domain = "fall" },
+compositions = [
+    { name = "pull", graph = "graphs/compositions/ecosystem_pull.toml", coordination = "parallel", nodes = 4, domain = "fall" },
+    { name = "push", graph = "graphs/compositions/ecosystem_push.toml", coordination = "sequential", nodes = 4, domain = "fall" },
+    { name = "check", graph = "graphs/compositions/ecosystem_check.toml", coordination = "parallel", nodes = 3, domain = "fall" },
 ]
 
 # ─── impulsePotential (inter-gate coordination substrate) ─────────────
@@ -1094,25 +1094,25 @@ methods = [
 # These compose membrane, bearDog, nestGate via the same graph pattern
 # as rootPulse commit and ecosystem pull/push/check.
 
-[signals.impulse_potential]
+[compositions.impulse_potential]
 tier = "ecosystem"
 primals = ["membrane", "beardog", "nestgate", "songbird"]
 domain = "pulse"
-signals = [
-    { name = "impulse.post", graph = "graphs/signals/impulse_post.toml", coordination = "sequential", nodes = 4, domain = "pulse" },
-    { name = "impulse.ack", graph = "graphs/signals/impulse_ack.toml", coordination = "sequential", nodes = 4, domain = "pulse" },
-    { name = "potential.sense", graph = "graphs/signals/potential_sense.toml", coordination = "sequential", nodes = 2, domain = "signal" },
-    { name = "potential.check", graph = "graphs/signals/potential_check.toml", coordination = "sequential", nodes = 1, domain = "signal" },
+compositions = [
+    { name = "impulse.post", graph = "graphs/compositions/impulse_post.toml", coordination = "sequential", nodes = 4, domain = "pulse" },
+    { name = "impulse.ack", graph = "graphs/compositions/impulse_ack.toml", coordination = "sequential", nodes = 4, domain = "pulse" },
+    { name = "potential.sense", graph = "graphs/compositions/potential_sense.toml", coordination = "sequential", nodes = 2, domain = "signal" },
+    { name = "potential.check", graph = "graphs/compositions/potential_check.toml", coordination = "sequential", nodes = 1, domain = "signal" },
 ]
 
-[signals.agentic_sync]
+[compositions.agentic_sync]
 tier = "ecosystem"
 primals = ["membrane", "biomeos", "nestgate", "songbird", "rhizocrypt", "loamspine", "sweetgrass", "beardog"]
 domain = "fall"
-signals = [
-    { name = "sync.diverge", graph = "graphs/signals/sync_diverge.toml", coordination = "sequential", nodes = 5, domain = "fall" },
-    { name = "sync.resolve", graph = "graphs/signals/sync_resolve.toml", coordination = "sequential", nodes = 8, domain = "fall" },
-    { name = "sync.resolve.crossgate", graph = "graphs/signals/sync_resolve_crossgate.toml", coordination = "sequential", nodes = 10, domain = "fall" },
+compositions = [
+    { name = "sync.diverge", graph = "graphs/compositions/sync_diverge.toml", coordination = "sequential", nodes = 5, domain = "fall" },
+    { name = "sync.resolve", graph = "graphs/compositions/sync_resolve.toml", coordination = "sequential", nodes = 8, domain = "fall" },
+    { name = "sync.resolve.crossgate", graph = "graphs/compositions/sync_resolve_crossgate.toml", coordination = "sequential", nodes = 10, domain = "fall" },
 ]
 
 # Test fixtures — synthetic method names used in unit tests only.

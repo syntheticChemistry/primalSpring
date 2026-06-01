@@ -19,7 +19,7 @@
 # └─────────────────────────────────────────────────────────────────┘
 #
 # Primary path: biomeOS deploy (coordinator primal handles lifecycle)
-# Fallback path: composition_nucleus.sh (shell-managed)
+# Fallback path: nucleus_launcher (Rust NUCLEUS lifecycle manager)
 #
 # All 13 primals deploy from plasmidBin. No spring binaries.
 # petalTongue runs in `live` mode (egui desktop window).
@@ -217,7 +217,7 @@ cmd_stop() {
 
     COMPOSITION_NAME="$COMPOSITION_NAME" \
     FAMILY_ID="$FAMILY_ID" \
-        "$SCRIPT_DIR/composition_nucleus.sh" stop 2>/dev/null || true
+        nucleus_launcher stop 2>/dev/null || true
 
     ok "Desktop NUCLEUS stopped"
 }

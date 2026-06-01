@@ -19,6 +19,7 @@
 //! - **Metrics**: each dispatch records latency and outcome for future
 //!   adaptive routing (Layer 4 of the Neural API evolution model).
 
+use std::sync::Arc;
 use std::time::Instant;
 
 use super::neural_routing::{
@@ -40,14 +41,10 @@ pub enum DispatchError {
     /// biomeOS Neural API is not reachable.
     #[error("biomeOS not available")]
     BridgeOffline,
-    /// IPC-level error during dispatch (stringified because `IpcError` is not `Clone`).
-    #[error("dispatch ipc: {kind}: {detail}")]
-    Ipc {
-        /// IPC error discriminant (e.g. `connection_refused`, `timeout`).
-        kind: String,
-        /// Full error description from the IPC layer.
-        detail: String,
-    },
+    /// IPC-level error during dispatch — wraps the original typed error
+    /// via `Arc` since `IpcError` is not `Clone` (contains `io::Error`).
+    #[error("dispatch ipc: {0}")]
+    Ipc(Arc<IpcError>),
     /// Graph execution failed.
     #[error("graph dispatch failed: {0}")]
     GraphFailed(String),
@@ -76,7 +73,7 @@ pub enum RoutePath {
     /// Routed through `capability.call` semantic dispatch.
     CapabilityCall,
     /// Routed through `signal.dispatch` (graph-backed signal tier).
-    SignalDispatch,
+    CompositionDispatch,
     /// Routed through `graph.execute` (composition pattern).
     GraphExecute,
     /// Method not found in routing table.
@@ -184,7 +181,7 @@ impl NeuralDispatcher {
             None => {
                 return DispatchOutcome {
                     method: method.to_owned(),
-                    owner: "unknown".to_owned(),
+                    owner: "unknown".into(),
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
                     result: Err(DispatchError::MethodNotFound(method.to_owned())),
@@ -203,7 +200,7 @@ impl NeuralDispatcher {
 
         self.metrics.push(DispatchMetric {
             method: method.to_owned(),
-            owner: entry.owner.clone(),
+            owner: entry.owner.to_string(),
             tier: entry.tier,
             latency_ms,
             success,
@@ -219,7 +216,7 @@ impl NeuralDispatcher {
 
         DispatchOutcome {
             method: method.to_owned(),
-            owner: entry.owner,
+            owner: entry.owner.to_string(),
             tier: entry.tier,
             route_path,
             result,
@@ -239,12 +236,12 @@ impl NeuralDispatcher {
     ) -> DispatchOutcome {
         let start = Instant::now();
 
-        let pattern = match self.table.patterns().iter().find(|p| p.name == pattern_name) {
+        let pattern = match self.table.patterns().iter().find(|p| &*p.name == pattern_name) {
             Some(p) => p.clone(),
             None => {
                 return DispatchOutcome {
                     method: pattern_name.to_owned(),
-                    owner: "unknown".to_owned(),
+                    owner: "unknown".into(),
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
                     result: Err(DispatchError::PatternNotFound(pattern_name.to_owned())),
@@ -297,7 +294,7 @@ impl NeuralDispatcher {
         let owner = self
             .table
             .route(&method)
-            .map_or_else(|| "unknown".to_owned(), |e| e.owner.clone());
+            .map_or_else(|| "unknown".into(), |e| e.owner.to_string());
         let tier = self
             .table
             .route(&method)
@@ -331,7 +328,7 @@ impl NeuralDispatcher {
             None => {
                 return DispatchOutcome {
                     method: method.to_owned(),
-                    owner: "unknown".to_owned(),
+                    owner: "unknown".into(),
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
                     result: Err(DispatchError::MethodNotFound(method.to_owned())),
@@ -349,10 +346,7 @@ impl NeuralDispatcher {
                 self.record_bridge_outcome(&outcome);
                 let result = call_result
                     .map(|r| r.value)
-                    .map_err(|e: IpcError| DispatchError::Ipc {
-                        kind: e.kind().to_owned(),
-                        detail: e.to_string(),
-                    });
+                    .map_err(|e: IpcError| DispatchError::Ipc(Arc::new(e)));
                 (result, RoutePath::CapabilityCall)
             }
             None => (Err(DispatchError::BridgeOffline), RoutePath::Offline),
@@ -362,7 +356,7 @@ impl NeuralDispatcher {
 
         DispatchOutcome {
             method: method.to_owned(),
-            owner: entry.owner,
+            owner: entry.owner.to_string(),
             tier: entry.tier,
             route_path,
             result,
@@ -560,10 +554,7 @@ fn dispatch_through_bridge(
     let result = bridge
         .capability_call(domain, operation, params)
         .map(|r| r.value)
-        .map_err(|e: IpcError| DispatchError::Ipc {
-            kind: e.kind().to_owned(),
-            detail: e.to_string(),
-        });
+        .map_err(|e: IpcError| DispatchError::Ipc(Arc::new(e)));
 
     (result, RoutePath::CapabilityCall)
 }
@@ -589,7 +580,7 @@ fn build_graph_request(
         .collect();
 
     serde_json::json!({
-        "graph_id": pattern.name,
+        "graph_id": &*pattern.name,
         "coordination": "sequential",
         "nodes": nodes,
         "params": params,
@@ -612,7 +603,7 @@ mod tests {
     fn resolve_crypto_hash() {
         let d = test_dispatcher();
         let entry = d.resolve("crypto.hash").expect("should resolve");
-        assert_eq!(entry.owner, "beardog");
+        assert_eq!(&*entry.owner, "beardog");
         assert_eq!(entry.tier, CompositionTier::Tower);
     }
 
@@ -676,8 +667,8 @@ mod tests {
     fn plan_tower_tier() {
         let d = test_dispatcher();
         let comp = d.plan_tier(CompositionTier::Tower);
-        assert!(comp.primals.contains(&"beardog".to_owned()));
-        assert!(comp.primals.contains(&"songbird".to_owned()));
+        assert!(comp.primals.iter().any(|s| &**s == "beardog"));
+        assert!(comp.primals.iter().any(|s| &**s == "songbird"));
         assert!(comp.method_count >= 50);
     }
 
@@ -685,8 +676,8 @@ mod tests {
     fn plan_nest_tier() {
         let d = test_dispatcher();
         let comp = d.plan_tier(CompositionTier::Nest);
-        assert!(comp.primals.contains(&"nestgate".to_owned()));
-        assert!(comp.primals.contains(&"loamspine".to_owned()));
+        assert!(comp.primals.iter().any(|s| &**s == "nestgate"));
+        assert!(comp.primals.iter().any(|s| &**s == "loamspine"));
     }
 
     #[test]
@@ -704,8 +695,8 @@ mod tests {
     fn record_bridge_outcome_creates_metric() {
         let mut d = test_dispatcher();
         let outcome = BridgeOutcome {
-            capability: "crypto".to_owned(),
-            operation: "hash".to_owned(),
+            capability: "crypto".into(),
+            operation: "hash".into(),
             latency_ms: 42,
             success: true,
             timestamp_epoch_ms: 1_700_000_000_000,
@@ -722,8 +713,8 @@ mod tests {
     fn record_bridge_outcome_unknown_method() {
         let mut d = test_dispatcher();
         let outcome = BridgeOutcome {
-            capability: "nonexistent".to_owned(),
-            operation: "thing".to_owned(),
+            capability: "nonexistent".into(),
+            operation: "thing".into(),
             latency_ms: 5,
             success: false,
             timestamp_epoch_ms: 1_700_000_000_000,
@@ -745,9 +736,9 @@ mod tests {
     #[test]
     fn build_graph_request_structure() {
         let pattern = CompositionPattern {
-            name: "test_pattern".to_owned(),
-            methods: vec!["crypto.sign".to_owned(), "dag.append".to_owned()],
-            primals: vec!["beardog".to_owned(), "rhizocrypt".to_owned()],
+            name: "test_pattern".into(),
+            methods: vec!["crypto.sign".into(), "dag.append".into()],
+            primals: vec!["beardog".into(), "rhizocrypt".into()],
             tier: CompositionTier::Nest,
         };
         let req = build_graph_request(&pattern, &serde_json::json!({"key": "val"}));

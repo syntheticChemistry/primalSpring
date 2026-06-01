@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: rootPulse branch
+#
+# Creates a new branch in the rhizoCrypt DAG. A branch is a divergence point
+# in the ephemeral workspace — multiple lines of evolution from a common
+# ancestor event. The branch is signed by bearDog to prove authorship.
+#
+# Coordination domain: rootPulse (ACTION / efferent)
+
+[graph]
+id = "rootpulse_branch"
+name = "rootPulse Branch"
+description = "Create a signed branch in the ephemeral DAG. Divergence point for parallel evolution."
+version = "1.0.0"
+coordination = "sequential"
+composition_tier = "rootpulse"
+composition_name = "branch"
+coordination_domain = "pulse"
+
+[graph.metadata]
+particle = "neutron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+fragments = ["tower_atomic"]
+
+[[graph.nodes]]
+name = "branch"
+binary = "rhizocrypt"
+order = 1
+required = true
+spawn = false
+by_capability = "dag"
+capabilities = ["dag.branch"]
+
+[[graph.nodes]]
+name = "sign_branch"
+binary = "beardog"
+order = 2
+required = true
+spawn = false
+depends_on = ["branch"]
+by_capability = "security"
+capabilities = ["crypto.sign_ed25519"]
+
+[[graph.nodes]]
+name = "record_branch"
+binary = "sweetgrass"
+order = 3
+required = false
+spawn = false
+depends_on = ["sign_branch"]
+by_capability = "attribution"
+capabilities = ["braid.anchor"]

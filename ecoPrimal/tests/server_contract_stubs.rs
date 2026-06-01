@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Contract tests using stub primals.
 //!
 //! These tests validate primalSpring's composition and IPC infrastructure

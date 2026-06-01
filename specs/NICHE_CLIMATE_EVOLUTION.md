@@ -23,7 +23,7 @@ maps to a team handoff and a validation artifact in primalSpring.
 
 **Owner**: biomeOS team + lithoSpore team
 **primalSpring validation**: exp115, s_nest_atomic Phase 4, NUCLEUS_VALIDATION_MATRIX U/V/W
-**Signal graph**: `graphs/signals/nest_ingest_spore.toml`
+**composition graph**: `graphs/compositions/nest_ingest_spore.toml`
 
 ### Requirements
 
@@ -165,7 +165,7 @@ satisfaction is the stadial target.
 
 | Artifact | Purpose | Status |
 |----------|---------|--------|
-| `graphs/signals/nest_ingest_spore.toml` | 6-step spore ingest signal | **LANDED** |
+| `graphs/compositions/nest_ingest_spore.toml` | 6-step spore ingest signal | **LANDED** |
 | `experiments/exp115_nest_ingest_pseudospore/` | 5-phase gateway validation | **LANDED** (structural) |
 | `ecoPrimal/src/validation/scenarios/s_nest_atomic.rs` Phase 4 | Spore gateway checks | **EVOLVED** (5 checks) |
 | `specs/NUCLEUS_VALIDATION_MATRIX.md` U/V/W columns | Per-spring spore readiness | **LANDED** |

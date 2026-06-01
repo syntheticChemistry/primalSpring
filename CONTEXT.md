@@ -35,11 +35,11 @@ back upstream to primals and primalSpring.
   `primalspring` (eukaryotic UniBin: certify + validate + serve + status + checksums + registry + version),
   `primalspring_primal` (JSON-RPC IPC server / cell membrane),
   `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status with PID tracking + federation)
-- **experiments/** — 96 validation binaries covering 21 tracks
-- **graphs/** — 81 deploy graph TOMLs + 23 atomic signal graphs using fragment-first
+- **experiments/** — 93 validation binaries covering 21 tracks
+- **graphs/** — ~80 deploy graph TOMLs + 33 atomic composition graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
-  2 cross-spring + 1 federation + 1 composition + 12 cell graphs + `signals/` tier)
+  2 cross-spring + 1 federation + 1 foundation + 12 cell graphs + `compositions/` tier)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
 - **tools/** — desktop NUCLEUS, composition library + template, TTT reference, Godot bridge, WS gateway (6 CI scripts deprecated → Rust subcommands Wave 54b, 4 NUCLEUS launchers deprecated → Rust nucleus_launcher Wave 51→54)
 - **config/** — capability registry, launch profiles
@@ -59,8 +59,8 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 56 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
-| `composition/neural_routing` | NeuralRoutingTable — static model of 460-method routing surface |
+| `validation/scenarios` | 57 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
 | `niche` | Capability table, semantic mappings, registration |
@@ -81,11 +81,16 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 66 (June 1, 2026) — 57 scenarios (10 tracks, 3 tiers),
-490+ registered capability methods, 96 experiments (21 tracks), 110 deploy graphs,
-44-cell deployment matrix. 838 tests passing (807 lib + 10 integration + 4 binary +
-17 doc). 13/13 BTSP convergence. **Post-primordial / deep-debt**: `#![forbid(unsafe_code)]`
-on all 88 crate roots. Centralized `PORT_REGISTRY` in tolerances. Deny-by-default
+v0.9.31 Wave 67 (June 1, 2026) — 57 scenarios (10 tracks, 3 tiers),
+490+ registered capability methods, 93 experiments (21 tracks), 113 graph TOMLs
+(~80 deploy + 33 compositions), 44-cell deployment matrix. 835 tests passing
+(804 lib + 10 integration + 4 binary + 17 doc). 13/13 BTSP convergence.
+**Wave 67 vocabulary evolution**: `signal` → `composition` across all code, configs,
+and docs. `Arc<str>` interning in `NeuralRoutingTable`. `FromStr` for `AtomicType`.
+`FEDERATION_PORTS` centralized. `DispatchError::Ipc` → `Arc<IpcError>`.
+`ordered_primals()` evolved to capability-based routing.
+**Post-primordial / deep-debt**: `#![forbid(unsafe_code)]` on all 88 crate roots +
+6 integration tests. Centralized `PORT_REGISTRY` in tolerances. Deny-by-default
 `SecurityVerifier` (capability-based, no hardcoded primal names). `required_primals()`
 deprecated → capability discovery. `membrane temporal.cascade` (Rust) replaces bash.
 S1 TLS shadow PASSED (13 days). 20/20 primal services on golgiBody.
@@ -137,7 +142,7 @@ naming. Deploy graph validation: fragment-aware structural checks (profiles with
 exempt from duplicate-order rule). Provenance checksums regenerated (24 files, BLAKE3).
 **plasmidBin decoupled** — all direct filesystem coupling to `../plasmidBin` removed (20 files).
 Binary discovery standardized: `$ECOPRIMALS_PLASMID_BIN` → `$XDG_DATA_HOME/ecoPrimals/plasmidBin`.
-`tools/fetch_primals.sh` bootstraps binaries from GitHub Releases. plasmidBin CI/CD
+`membrane plasmid.fetch` bootstraps binaries from sovereign mirrors. plasmidBin CI/CD
 auto-harvests on primal push via `repository_dispatch`. GAP-27 (stale biomeOS) resolved.
 **genomeBin v5.1** — 46 cross-architecture binaries across 6 target triples (Tier 1: 39/39),
 `build_ecosystem_genomeBin.sh` replaces musl-only script with full 9-target matrix.
@@ -153,7 +158,7 @@ biomeOS substrate: Neural API liveness and graph executor validated via guidesto
 **Neural API evolution** (biomeOS v3.55–v3.57): `signal.dispatch` as preferred atomic
 signal dispatch path (composition collapse), `capability.call` signal-tier interception,
 `primal.announce` atomic self-registration protocol, metrics tagging with signal
-namespaces, Squirrel `signal_plan` mode for intent-to-signal decomposition. Tier 2
+namespaces, Squirrel `composition_plan` mode for intent-to-composition decomposition. Tier 2
 validation dynamically checks `signal.list` counts and `signal.schema` tool definitions.
 See `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md`.
 

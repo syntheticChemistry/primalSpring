@@ -8,7 +8,7 @@
 //! signal pipeline while being skip-tolerant when biomeOS lacks the
 //! commit endpoint. Also covers esotericWebb GAP-024 (biomeOS E2E).
 //!
-//! Graph: `graphs/signals/nest_commit.toml`
+//! Graph: `graphs/compositions/nest_commit.toml`
 //! Nodes: dehydrate(event.append) -> sign(crypto.sign) -> store(content.put)
 //!        -> commit(session.commit) -> attribute(braid.create)
 
@@ -29,7 +29,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
-const NEST_COMMIT_GRAPH: &str = include_str!("../../../../graphs/signals/nest_commit.toml");
+const NEST_COMMIT_GRAPH: &str = include_str!("../../../../graphs/compositions/nest_commit.toml");
 
 const NEST_COMMIT_CAPABILITIES: &[&str] = &[
     "event.append",
@@ -66,15 +66,15 @@ fn phase_graph_structure(v: &mut ValidationResult) {
         let graph = &doc["graph"];
 
         v.check_bool(
-            "graph:signal_tier",
-            graph.get("signal_tier").and_then(|t| t.as_str()) == Some("nest"),
-            "signal_tier == nest",
+            "graph:composition_tier",
+            graph.get("composition_tier").and_then(|t| t.as_str()) == Some("nest"),
+            "composition_tier == nest",
         );
 
         v.check_bool(
-            "graph:signal_name",
-            graph.get("signal_name").and_then(|n| n.as_str()) == Some("commit"),
-            "signal_name == commit",
+            "graph:composition_name",
+            graph.get("composition_name").and_then(|n| n.as_str()) == Some("commit"),
+            "composition_name == commit",
         );
 
         let nodes = graph

@@ -114,7 +114,7 @@ The Neural API becomes a neural network whose inference IS the API.
 biomeos neural-api
 ├── routing.rs              — 44+ neural_api.* aliases + capability.call + utilization
 ├── capability_call.rs      — resolve + dispatch + try_relay_dispatch (CG-8) + utilization recording
-├── signal.rs               — signal dispatch + graph env injection
+├── signal.rs               — composition dispatch + graph env injection
 ├── execute.rs              — graph execution with env merge
 ├── neural_router/
 │   ├── weights.rs          — RoutingWeightTable (redb-persistent) + CapabilityUtilizationTracker
@@ -157,7 +157,7 @@ Observatory tools:
   - `record_bridge_outcome()` — ingest outcomes from external bridge calls
   - `dispatch_instrumented()` — dispatch with bridge-level timing automatically recorded
 - `s_biomeos_neural_api` scenario — live health + graph execution
-- `s_signal_dispatch_parity` — signal routing correctness
+- `s_composition_dispatch_parity` — signal routing correctness
 - `s_primal_announce` — semantic_mappings on announce
 - `s_neural_routing_surface` — 17-check structural validation
 - `coordination.neural_api_status` RPC method
@@ -179,7 +179,7 @@ Observatory tools:
 - [x] `NeuralRoutingTable` — data-driven routing table from `capability_registry.toml`
   - O(1) method → owner/domain/tier lookup across all 452 methods
   - 7 composition tiers (Tower/Node/Nest/Nucleus/Meta/Orchestration/Standalone)
-  - Signal graph detection from `[signals.*]` sections
+  - composition graph detection from `[signals.*]` sections
   - Named composition patterns (rootpulse_commit, tower_atomic_bootstrap,
     nest_store, ionic_bond_lifecycle)
 - [x] `NeuralDispatcher` — high-level dispatch surface
@@ -227,22 +227,22 @@ Observatory tools:
 - [x] Weight table persistence — redb-backed `RoutingWeightTable` survives restarts
   (`RoutingWeightTable::open()`, `NeuralRouter::with_persistent_weights()`)
 - [x] `WAVE42_NEURAL_API_DEPLOYMENT_GUIDE.md` — `primal.announce` adoption guide
-  for all 13 primal teams with v3.68 schema, cost/latency hints, signal tiers
+  for all 13 primal teams with v3.68 schema, cost/latency hints, composition tiers
 - [x] `TEAM_OWNERSHIP_MATRIX.md` — cellMembrane/projectNUCLEUS/primalSpring ownership
 - [x] Registry: 456 → 460 methods (+1 neural_api.utilization, +1 neural_api.weight_health, +2 Wave 55b)
 - [x] 1311 biomeOS tests, 791 primalSpring tests — all passing
 - [ ] Graph execution timing per-node (PathwayLearner → weight table)
 - [ ] Cross-gate latency baselines (local UDS vs remote TURN)
 
-### Wave 60: Coordination Triad + Ecosystem Signal Tier
+### Wave 60: Coordination Triad + Ecosystem composition tier
 - [x] `CoordinationDomain` enum: `Signal` / `Pulse` / `Fall` in `graphs/mod.rs`
 - [x] Triad taxonomy documented (quorumSignal / rootPulse / waterFall)
-- [x] 5 rootPulse signal graphs materialized (commit/branch/merge/diff/federate)
-- [x] `ecosystem` signal tier introduced — 5th tier for membrane-level sync
+- [x] 5 rootPulse composition graphs materialized (commit/branch/merge/diff/federate)
+- [x] `ecosystem` composition tier introduced — 5th tier for membrane-level sync
 - [x] 3 ecosystem signals: `ecosystem.pull`, `ecosystem.push`, `ecosystem.check`
 - [x] `cascade-pull.sh` evolved to manifest-driven (reads `ecosystem_manifest.toml`)
 - [x] `--source auto` (forgejo-first, origin fallback), `--check` parity, `--parallel N`
-- [ ] Signal graph registration in capability registry (23 signals total: 15 original + 5 rootPulse + 3 ecosystem)
+- [ ] composition graph registration in capability registry (23 signals total: 15 original + 5 rootPulse + 3 ecosystem)
 - [x] Cross-gate graph executor spec: `specs/CROSS_GATE_GRAPH_EXECUTOR.md` (gate/relay hints on graph nodes)
 
 ### Wave 63: impulsePotential — Inter-Gate Coordination Substrate
@@ -288,7 +288,7 @@ set for an atomic operation to be valid — Tower quorum is 3 (bearDog +
 songbird + skunkBat), Nest quorum is 4 (nestGate + trio), Full NUCLEUS
 quorum is 13.
 
-- 23 atomic signal graphs in `graphs/signals/` across 6 tiers (Tower/Node/Nest/Meta/rootPulse/Ecosystem)
+- 23 atomic composition graphs in `graphs/compositions/` across 6 tiers (Tower/Node/Nest/Meta/rootPulse/Ecosystem)
 - `signal.dispatch` collapses N-squared primal IPC to one semantic call
 - Primarily Sequential and Parallel coordination patterns
 - `CoordinationDomain::Signal` in `graphs/mod.rs`
@@ -301,7 +301,7 @@ emerges from graph-orchestrated capability calls across sovereign primals.
 
 - 6 primals compose: rhizoCrypt (DAG) + loamSpine (ledger) + sweetGrass (attribution) + bearDog (signing) + nestGate (storage) + songbird (federation)
 - 5 logical operations: commit, branch, merge, diff, federate
-- `nest.commit` signal graph + `rootpulse_commit` composition pattern
+- `nest.commit` composition graph + `rootpulse_commit` composition pattern
 - Sequential today; federation could use Pipeline (streaming cross-site)
 - `CoordinationDomain::Pulse` in `graphs/mod.rs`
 
@@ -314,7 +314,7 @@ keeping code coherent.
 
 - `membrane temporal.cascade` (Rust) + Forgejo SSH + `ecosystem_manifest.toml`
 - Gate profiles drive scoped pulls: eastGate (38 repos), ironGate (~20), etc.
-- Evolving toward Neural API `ecosystem` signal tier (ecosystem.pull/push/check)
+- Evolving toward Neural API `ecosystem` composition tier (ecosystem.pull/push/check)
 - Target: Parallel (concurrent repo pulls) with ConditionalDag (skip unchanged)
 - `CoordinationDomain::Fall` in `graphs/mod.rs`
 

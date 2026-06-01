@@ -11,6 +11,7 @@
 
 use crate::composition::CompositionContext;
 use crate::ipc::NeuralBridge;
+use crate::tolerances::FEDERATION_PORTS;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -27,21 +28,6 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
-struct TcpPort {
-    port: u16,
-    primal: &'static str,
-    role: &'static str,
-    droppable: bool,
-}
-
-const KNOWN_PORTS: &[TcpPort] = &[
-    TcpPort { port: 7700, primal: "songbird", role: "federation nucleus01", droppable: false },
-    TcpPort { port: 7701, primal: "songbird", role: "federation primalspring01", droppable: false },
-    TcpPort { port: 9900, primal: "beardog", role: "crypto RPC nucleus01", droppable: true },
-    TcpPort { port: 9101, primal: "beardog", role: "crypto RPC primalspring01", droppable: true },
-    TcpPort { port: 9750, primal: "skunkbat", role: "meta-tier defense", droppable: true },
-];
-
 /// Run all Tower CNS convergence validation phases.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Phase 1: Structural — port inventory");
@@ -55,15 +41,15 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 }
 
 fn phase_structural(v: &mut ValidationResult) {
-    let droppable = KNOWN_PORTS.iter().filter(|p| p.droppable).count();
-    let keep = KNOWN_PORTS.iter().filter(|p| !p.droppable).count();
+    let droppable = FEDERATION_PORTS.iter().filter(|p| p.droppable).count();
+    let keep = FEDERATION_PORTS.iter().filter(|p| !p.droppable).count();
     v.check_bool(
         "struct:port_inventory",
         true,
-        &format!("{} known ports: {keep} federation (keep), {droppable} droppable (UDS available)", KNOWN_PORTS.len()),
+        &format!("{} known ports: {keep} federation (keep), {droppable} droppable (UDS available)", FEDERATION_PORTS.len()),
     );
 
-    for p in KNOWN_PORTS {
+    for p in FEDERATION_PORTS {
         let label = if p.droppable { "DROPPABLE" } else { "KEEP" };
         let reachable = std::net::TcpStream::connect_timeout(
             &std::net::SocketAddr::from(([127, 0, 0, 1], p.port)),
@@ -72,7 +58,7 @@ fn phase_structural(v: &mut ValidationResult) {
         v.check_bool(
             &format!("port:{}:{}", p.primal, p.port),
             reachable,
-            &format!("{} — {} ({})", p.role, label, if reachable { "active" } else { "inactive" }),
+            &format!("{} {} — {} ({})", p.profile, p.role, label, if reachable { "active" } else { "inactive" }),
         );
     }
 }
@@ -173,11 +159,11 @@ mod tests {
     #[test]
     fn port_inventory_consistent() {
         assert!(
-            KNOWN_PORTS.iter().filter(|p| !p.droppable).all(|p| p.primal == "songbird"),
+            FEDERATION_PORTS.iter().filter(|p| !p.droppable).all(|p| p.primal == "songbird"),
             "only Songbird ports should be non-droppable",
         );
         assert!(
-            KNOWN_PORTS.iter().any(|p| p.droppable),
+            FEDERATION_PORTS.iter().any(|p| p.droppable),
             "should have droppable ports",
         );
     }

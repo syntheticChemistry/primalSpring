@@ -200,13 +200,7 @@ pub fn dispatch_request(line: &str) -> JsonRpcResponse {
 }
 
 pub fn parse_atomic_type(s: &str) -> Option<AtomicType> {
-    match s {
-        "Tower" => Some(AtomicType::Tower),
-        "Node" => Some(AtomicType::Node),
-        "Nest" => Some(AtomicType::Nest),
-        "FullNucleus" | "Full" => Some(AtomicType::FullNucleus),
-        _ => None,
-    }
+    s.parse().ok()
 }
 
 pub fn success_response(result: serde_json::Value, id: u64) -> JsonRpcResponse {

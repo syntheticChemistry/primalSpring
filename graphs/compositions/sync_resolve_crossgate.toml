@@ -1,0 +1,148 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Ecosystem Signal: sync.resolve.crossgate
+#
+# Cross-gate variant of sync.resolve. When the resolving gate differs from
+# the detecting gate, the divergence story must travel across the mesh via
+# context braids. Gate A (detector) fires SYNC impulse, Gate B (resolver)
+# receives it via potential.sense, composes the full provenance pipeline,
+# and federation carries the resolution back.
+#
+# Pipeline:
+#   receive impulse → load context braid → diff remote state →
+#   record pre-state (DAG) → policy-driven merge → certify (loamSpine) →
+#   attribute (sweetGrass) → federate resolution → acknowledge impulse
+#
+# This signal composes rootPulse federate + sync.resolve into a single
+# cross-gate orchestration. biomeOS dispatches it when the local gate
+# receives a SYNC impulse targeting it.
+#
+# Coordination domain: waterFall (SYNC / autonomic)
+# Signal tier: ecosystem (composes rootPulse + provenance trio + mesh)
+
+[graph]
+id = "sync_resolve_crossgate"
+name = "Sync Resolve (Cross-Gate)"
+description = "Cross-gate divergence resolution: receive SYNC impulse, load context braid, resolve with full provenance, federate result."
+version = "1.0.0"
+coordination = "sequential"
+composition_tier = "ecosystem"
+composition_name = "sync.resolve.crossgate"
+coordination_domain = "fall"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_and_mesh"
+secure_by_default = true
+cross_gate = true
+manifest = "ecosystem_manifest.toml"
+fragments = ["tower_atomic", "provenance_trio"]
+
+[[graph.nodes]]
+name = "receive_impulse"
+binary = "membrane"
+order = 1
+required = true
+spawn = false
+by_capability = "coordination"
+capabilities = ["impulse.read"]
+description = "Load the SYNC impulse from potential.sense — extract payload for resolution context"
+
+[[graph.nodes]]
+name = "load_context_braid"
+binary = "sweetgrass"
+order = 2
+required = false
+spawn = false
+depends_on = ["receive_impulse"]
+by_capability = "attribution"
+capabilities = ["braid.get"]
+description = "Load context braid from detecting gate — carries divergence story, affected repos, previous resolution attempts"
+
+[[graph.nodes]]
+name = "discover_peer"
+binary = "songbird"
+order = 3
+required = true
+spawn = false
+depends_on = ["receive_impulse"]
+by_capability = "discovery"
+capabilities = ["mesh.find_path"]
+description = "Discover the detecting gate on the mesh for federation"
+
+[[graph.nodes]]
+name = "diff_remote_state"
+binary = "rhizocrypt"
+order = 4
+required = true
+spawn = false
+depends_on = ["discover_peer"]
+by_capability = "dag"
+capabilities = ["dag.diff"]
+description = "Diff local state against remote to understand what diverged"
+
+[[graph.nodes]]
+name = "record_pre_state"
+binary = "rhizocrypt"
+order = 5
+required = true
+spawn = false
+depends_on = ["diff_remote_state"]
+by_capability = "dag"
+capabilities = ["dag.event.append"]
+description = "Record pre-merge state in local DAG: both HEADs, merge base, diff summary"
+
+[[graph.nodes]]
+name = "execute_merge"
+binary = "membrane"
+order = 6
+required = true
+spawn = false
+depends_on = ["record_pre_state"]
+by_capability = "sync"
+capabilities = ["temporal.sync"]
+description = "Execute merge per divergence_policy (merge-ff, merge-rebase, or signal for manual)"
+
+[[graph.nodes]]
+name = "certify_resolution"
+binary = "loamspine"
+order = 7
+required = true
+spawn = false
+depends_on = ["execute_merge"]
+by_capability = "spine"
+capabilities = ["entry.append"]
+description = "Append resolution certificate to ledger: resolver gate, strategy, commits preserved"
+
+[[graph.nodes]]
+name = "attribute_resolution"
+binary = "sweetgrass"
+order = 8
+required = true
+spawn = false
+depends_on = ["certify_resolution"]
+by_capability = "attribution"
+capabilities = ["braid.create"]
+description = "Create attribution braid: resolver identity, W3C PROV-O, affected content, resolution strategy"
+
+[[graph.nodes]]
+name = "federate_resolution"
+binary = "songbird"
+order = 9
+required = true
+spawn = false
+depends_on = ["attribute_resolution"]
+by_capability = "discovery"
+capabilities = ["mesh.publish"]
+description = "Publish resolution to mesh — detecting gate and all other gates see the converged state"
+
+[[graph.nodes]]
+name = "acknowledge_impulse"
+binary = "membrane"
+order = 10
+required = true
+spawn = false
+depends_on = ["federate_resolution"]
+by_capability = "coordination"
+capabilities = ["impulse.ack"]
+description = "Acknowledge SYNC impulse with resolution summary and provenance chain"
