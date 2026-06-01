@@ -92,6 +92,7 @@ pub mod s_sequential_graph;
 pub mod s_composition_dispatch_parity;
 pub mod s_socket_discovery;
 pub mod s_sovereignty_parity;
+pub mod s_sporeprint_pure_primal;
 pub mod s_sporeprint_surface;
 pub mod s_startup_ordering;
 pub mod s_tier2_science_api;
@@ -151,6 +152,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_primal_announce::SCENARIO);
     r.register(s_schema_standard::SCENARIO);
     r.register(s_nest_commit_live::SCENARIO);
+    r.register(s_sporeprint_pure_primal::SCENARIO);
     r.register(s_sporeprint_surface::SCENARIO);
     r.register(s_cross_gate_capability_call::SCENARIO);
     r.register(s_neural_routing::SCENARIO);
@@ -174,7 +176,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 57;
+    const EXPECTED_SCENARIO_COUNT: usize = 58;
 
     #[test]
     fn registry_scenario_count() {
