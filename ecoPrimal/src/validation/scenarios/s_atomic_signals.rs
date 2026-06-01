@@ -60,6 +60,9 @@ const SIGNAL_GRAPHS: &[(&str, &str, &str)] = &[
     ("impulse.ack", "graphs/signals/impulse_ack.toml", include_str!("../../../../graphs/signals/impulse_ack.toml")),
     ("potential.sense", "graphs/signals/potential_sense.toml", include_str!("../../../../graphs/signals/potential_sense.toml")),
     ("potential.check", "graphs/signals/potential_check.toml", include_str!("../../../../graphs/signals/potential_check.toml")),
+    ("sync.diverge", "graphs/signals/sync_diverge.toml", include_str!("../../../../graphs/signals/sync_diverge.toml")),
+    ("sync.resolve", "graphs/signals/sync_resolve.toml", include_str!("../../../../graphs/signals/sync_resolve.toml")),
+    ("sync.resolve.crossgate", "graphs/signals/sync_resolve_crossgate.toml", include_str!("../../../../graphs/signals/sync_resolve_crossgate.toml")),
 ];
 
 const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
@@ -70,6 +73,10 @@ const ROOTPULSE_PRIMALS: &[&str] = &["rhizocrypt", "beardog", "nestgate", "loams
 const ECOSYSTEM_PRIMALS: &[&str] = &["biomeos", "songbird", "nestgate", "beardog"];
 const IMPULSE_PRIMALS: &[&str] = &["membrane", "beardog", "nestgate", "songbird"];
 const POTENTIAL_PRIMALS: &[&str] = &["membrane", "beardog", "nestgate", "songbird"];
+const SYNC_PRIMALS: &[&str] = &[
+    "biomeos", "nestgate", "membrane", "songbird",
+    "rhizocrypt", "loamspine", "sweetgrass", "beardog",
+];
 
 fn tier_primals(tier: &str) -> &'static [&'static str] {
     match tier {
@@ -81,6 +88,7 @@ fn tier_primals(tier: &str) -> &'static [&'static str] {
         "ecosystem" => ECOSYSTEM_PRIMALS,
         "impulse" => IMPULSE_PRIMALS,
         "potential" => POTENTIAL_PRIMALS,
+        "sync" => SYNC_PRIMALS,
         _ => &[],
     }
 }
@@ -364,7 +372,7 @@ mod tests {
 
     #[test]
     fn signal_graph_count() {
-        assert_eq!(SIGNAL_GRAPHS.len(), 27, "expected 27 signal graphs (10 foundation + 5 meta + 5 rootPulse + 3 ecosystem + 4 impulse_potential)");
+        assert_eq!(SIGNAL_GRAPHS.len(), 30, "expected 30 signal graphs (10 foundation + 5 meta + 5 rootPulse + 3 ecosystem + 4 impulse_potential + 3 agentic_sync)");
     }
 
     #[test]

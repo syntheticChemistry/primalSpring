@@ -359,6 +359,68 @@ plan = "Signal sequence squirrel planned for the deployment"
 deployment_id = "biomeOS graph deployment tracking ID"
 audit_event = "skunkBat audit event ID for the deployment action"
 
+# ─── Agentic Sync Signals (waterFall domain — divergence lifecycle) ───
+
+[[tools]]
+name = "sync.diverge"
+tier = "ecosystem"
+domain = "fall"
+description = "Detect divergence across remotes, fire SYNC impulse. Reads manifest for per-repo policy, builds temporal position matrix, classifies parity/converge/diverge, and auto-fires structured SYNC impulse when diverge_impulse = true."
+graph = "graphs/signals/sync_diverge.toml"
+coordination = "sequential"
+primals = ["biomeos", "nestgate", "membrane", "songbird"]
+
+[tools.parameters]
+gate = { type = "string", required = false, description = "Gate name (auto-detected if omitted)" }
+repo = { type = "string", required = false, description = "Single repo to check (default: all in gate profile)" }
+
+[tools.returns]
+diverged = "Number of repos with non-ff divergence"
+impulses_fired = "Number of SYNC impulses created"
+position_matrix = "Per-repo temporal position matrix"
+
+[[tools]]
+name = "sync.resolve"
+tier = "ecosystem"
+domain = "fall"
+description = "Provenance-recorded divergence resolution: load SYNC impulse, record pre-state in rhizoCrypt DAG, execute merge per policy, certify via loamSpine, attribute via sweetGrass braid, acknowledge impulse, cascade push."
+graph = "graphs/signals/sync_resolve.toml"
+coordination = "sequential"
+primals = ["membrane", "rhizocrypt", "loamspine", "beardog", "sweetgrass"]
+
+[tools.parameters]
+impulse_id = { type = "string", required = true, description = "SYNC impulse ID to resolve" }
+strategy = { type = "string", required = false, description = "Override resolution strategy: ff | rebase | manual (default: from repo policy)" }
+
+[tools.returns]
+pre_state_event = "rhizoCrypt DAG event recording pre-merge state"
+merge_result = "Git merge/rebase outcome"
+certificate_id = "loamSpine resolution certificate ID"
+braid_id = "sweetGrass attribution braid ID"
+ack_status = "Impulse acknowledgment status"
+
+[[tools]]
+name = "sync.resolve.crossgate"
+tier = "ecosystem"
+domain = "fall"
+description = "Cross-gate divergence resolution: receive SYNC impulse from detecting gate via potential.sense, load context braid with divergence story, diff remote state, resolve with full provenance pipeline (DAG → ledger → attribution), federate resolution back to mesh, acknowledge impulse."
+graph = "graphs/signals/sync_resolve_crossgate.toml"
+coordination = "sequential"
+primals = ["membrane", "sweetgrass", "songbird", "rhizocrypt", "loamspine"]
+
+[tools.parameters]
+impulse_id = { type = "string", required = true, description = "SYNC impulse ID received via potential.sense" }
+strategy = { type = "string", required = false, description = "Override resolution strategy: ff | rebase | manual (default: from repo policy)" }
+context_braid = { type = "string", required = false, description = "Context braid ID from detecting gate (auto-discovered if omitted)" }
+
+[tools.returns]
+pre_state_event = "rhizoCrypt DAG event recording pre-merge state"
+merge_result = "Git merge/rebase outcome"
+certificate_id = "loamSpine resolution certificate ID"
+braid_id = "sweetGrass attribution braid ID"
+federated = "Whether resolution was published to mesh"
+ack_status = "Impulse acknowledgment status"
+
 # ─── Ecosystem Signals (waterFall domain — cross-gate sync) ──────────
 
 [[tools]]

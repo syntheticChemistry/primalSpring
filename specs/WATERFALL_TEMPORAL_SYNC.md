@@ -275,6 +275,27 @@ Evolve the bash script:
 - Fleet-wide freshness dashboard from mesh-published snapshots
 - Adaptive sync cadence: gates with high drift sync more frequently
 
+### Phase 5: Agentic Sync Evolution (Wave 66+)
+
+Evolves cascade from flag-only divergence handling to provenance-aware,
+impulse-coordinated agentic resolution:
+
+- **SYNC impulse type** — auto-fired by `temporal.cascade` on diverge when
+  `diverge_impulse = true` in manifest (Phase 1, Wave 67)
+- **Per-repo divergence_policy** — graduated policies in the manifest:
+  `flag`, `merge-ff`, `merge-rebase`, `impulse-only`, `agentic` (Phase 3, Wave 69+)
+- **`exclude_remotes`** — filter stale/vendor remotes from temporal matrix
+- **Provenance-recorded resolution** (Phase 2, Wave 68):
+  - `sync.diverge` signal graph — detect + classify + fire impulse
+  - `sync.resolve` signal graph — compose provenance trio pipeline:
+    `dag.event.append` → `git merge` → `entry.append` → `braid.create` → `impulse.ack`
+- **Cross-gate resolution** (Phase 4, Wave 70+):
+  - `signal.dispatch("sync.resolve")` composes full pipeline
+  - Context braids carry divergence story to resolving agent
+  - sweetGrass braids provide attribution for merge decisions
+
+Signal graphs: `graphs/signals/sync_diverge.toml`, `graphs/signals/sync_resolve.toml`
+
 ---
 
 ## Relationship to Existing Specs
@@ -287,9 +308,14 @@ Evolve the bash script:
 | `ecosystem_pull.toml` | Signal graph for the pull operation — needs temporal source logic |
 | `membrane temporal.cascade` | Rust implementation (replaces bash `cascade-pull.sh`, fossilized Wave 66) |
 | `freshness.toml` | Wave snapshot — evolves to per-remote temporal state |
+| `IMPULSE_POTENTIAL_STANDARD.md` | SYNC impulse type, payload schema, policy table |
+| `sync_diverge.toml` | Signal graph for divergence detection + impulse firing |
+| `sync_resolve.toml` | Signal graph for provenance-recorded resolution pipeline |
 
 ---
 
 *The ecosystem does not need a coordinator. It needs temporal awareness.
 Each gate independently discovers what changed, pulls the leader, and
-pushes to followers. The DAG is the only clock that matters.*
+pushes to followers. The DAG is the only clock that matters. And when
+the DAG diverges, the provenance trio ensures the resolution is lossless,
+traceable, and attributable.*

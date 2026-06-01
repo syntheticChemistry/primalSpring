@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Ecosystem Signal: sync.diverge
+#
+# Divergence detection and SYNC impulse firing. When temporal.cascade
+# detects that multiple remotes have unique commits (non-ff divergence),
+# this signal fires a SYNC impulse with structured payload carrying
+# remote HEADs, ahead/behind counts, and repo-level policy.
+#
+# This is the afferent (sensing) half of the agentic sync pipeline.
+# The efferent (resolution) half is sync.resolve.
+#
+# Coordination domain: waterFall (SYNC / autonomic)
+# Signal tier: ecosystem (membrane-level)
+
+[graph]
+id = "sync_diverge"
+name = "Sync Diverge"
+description = "Detect divergence across remotes, fire SYNC impulse with structured payload for agentic or human resolution."
+version = "1.0.0"
+coordination = "sequential"
+signal_tier = "ecosystem"
+signal_name = "sync.diverge"
+coordination_domain = "fall"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_and_mesh"
+secure_by_default = true
+cross_gate = true
+read_only = false
+manifest = "ecosystem_manifest.toml"
+
+[[graph.nodes]]
+name = "resolve_profile"
+binary = "biomeos"
+order = 1
+required = true
+spawn = false
+by_capability = "orchestration"
+capabilities = ["manifest.gate_profile"]
+description = "Read gate profile and per-repo divergence_policy from ecosystem_manifest.toml"
+
+[[graph.nodes]]
+name = "fetch_heads"
+binary = "nestgate"
+order = 2
+required = true
+spawn = false
+depends_on = ["resolve_profile"]
+by_capability = "storage"
+capabilities = ["content.fetch_heads"]
+description = "Fetch remote HEADs for temporal position matrix (git fetch --all)"
+
+[[graph.nodes]]
+name = "classify_divergence"
+binary = "membrane"
+order = 3
+required = true
+spawn = false
+depends_on = ["fetch_heads"]
+by_capability = "sync"
+capabilities = ["temporal.check"]
+description = "Build temporal position matrix, classify as parity/converge/diverge per repo"
+
+[[graph.nodes]]
+name = "fire_sync_impulse"
+binary = "membrane"
+order = 4
+required = false
+spawn = false
+depends_on = ["classify_divergence"]
+by_capability = "coordination"
+capabilities = ["impulse.post"]
+description = "Auto-fire SYNC impulse for diverged repos (when diverge_impulse = true)"
+
+[[graph.nodes]]
+name = "publish_drift"
+binary = "songbird"
+order = 5
+required = false
+spawn = false
+depends_on = ["classify_divergence"]
+by_capability = "discovery"
+capabilities = ["mesh.publish"]
+description = "Publish divergence report to songbird mesh for cross-gate visibility"

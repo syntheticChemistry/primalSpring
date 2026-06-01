@@ -1069,6 +1069,16 @@ methods = [
     "impulse.ack",
     "impulse.archive",
     "impulse.find",
+    "impulse.read",
+]
+
+[temporal]
+owner = "membrane"
+stability = "evolving"
+methods = [
+    "temporal.check",
+    "temporal.sync",
+    "temporal.cascade",
 ]
 
 [potential]
@@ -1093,6 +1103,16 @@ signals = [
     { name = "impulse.ack", graph = "graphs/signals/impulse_ack.toml", coordination = "sequential", nodes = 4, domain = "pulse" },
     { name = "potential.sense", graph = "graphs/signals/potential_sense.toml", coordination = "sequential", nodes = 2, domain = "signal" },
     { name = "potential.check", graph = "graphs/signals/potential_check.toml", coordination = "sequential", nodes = 1, domain = "signal" },
+]
+
+[signals.agentic_sync]
+tier = "ecosystem"
+primals = ["membrane", "biomeos", "nestgate", "songbird", "rhizocrypt", "loamspine", "sweetgrass", "beardog"]
+domain = "fall"
+signals = [
+    { name = "sync.diverge", graph = "graphs/signals/sync_diverge.toml", coordination = "sequential", nodes = 5, domain = "fall" },
+    { name = "sync.resolve", graph = "graphs/signals/sync_resolve.toml", coordination = "sequential", nodes = 8, domain = "fall" },
+    { name = "sync.resolve.crossgate", graph = "graphs/signals/sync_resolve_crossgate.toml", coordination = "sequential", nodes = 10, domain = "fall" },
 ]
 
 # Test fixtures — synthetic method names used in unit tests only.
