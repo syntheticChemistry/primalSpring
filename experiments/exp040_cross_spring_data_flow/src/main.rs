@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp040: Cross Spring Data Flow — ecology routing endpoints via `CompositionContext`.
 
 use primalspring::composition::CompositionContext;

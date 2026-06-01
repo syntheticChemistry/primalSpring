@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp081: Deployment Matrix Sweep — validate primal compositions across
 //! architecture, transport, and network conditions.
 //!

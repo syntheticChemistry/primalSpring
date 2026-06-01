@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp108: Ionic Token Federation (JH-11 Pressure Test)
 //!
 //! Validates the cross-primal token federation contract:

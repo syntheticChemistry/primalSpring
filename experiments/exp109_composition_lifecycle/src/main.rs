@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp109: Composition Lifecycle (JH-3 Hot-Reload Validation)
 //!
 //! Validates the composition lifecycle contract:

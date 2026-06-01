@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp077: Squirrel Neural API Bridge
 
 use std::io::{BufRead, BufReader, Write};

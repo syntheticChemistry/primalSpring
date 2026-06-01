@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp031: Ionic Bond — validates cross-family limited capability sharing (structural + live health).
 
 use primalspring::bonding::BondType;

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! exp085 — `BearDog` Crypto Lifecycle E2E
 //!
 //! Validates that `BearDog` performs real cryptography through both direct

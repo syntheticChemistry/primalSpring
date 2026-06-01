@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp050: Compute Triangle — coralReef → toadStool → barraCuda pipeline (shader → compute → tensor).
 
 use primalspring::composition::CompositionContext;

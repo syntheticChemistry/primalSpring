@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp034: Capability Aggregation — Plasmodium routes to best gate when multiple primals expose capabilities.
 
 use primalspring::composition::CompositionContext;

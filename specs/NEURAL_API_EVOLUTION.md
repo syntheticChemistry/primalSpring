@@ -312,7 +312,7 @@ freshness, federation through the VPS periplasm (golgiBody). Autonomic
 because gates should sync without manual intervention — like a heartbeat
 keeping code coherent.
 
-- Currently bash (`cascade-pull.sh`) + Forgejo SSH + `ecosystem_manifest.toml`
+- `membrane temporal.cascade` (Rust) + Forgejo SSH + `ecosystem_manifest.toml`
 - Gate profiles drive scoped pulls: eastGate (38 repos), ironGate (~20), etc.
 - Evolving toward Neural API `ecosystem` signal tier (ecosystem.pull/push/check)
 - Target: Parallel (concurrent repo pulls) with ConditionalDag (skip unchanged)

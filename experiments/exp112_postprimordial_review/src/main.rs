@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp112: PostPrimordial Review — Glacial Shift Readiness Audit
 //!
 //! Full NUCLEUS live review as we cross the glacial shift:

@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp056: Cross-Tower Federation — BYOB manifest, graph bonding metadata, live federation (skipped).
 
 use std::path::Path;

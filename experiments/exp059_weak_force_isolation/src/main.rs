@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp059: Weak Force Isolation — unknown primal discovery resilience and socket env contract.
 
 use primalspring::ipc::discover::{DiscoverySource, discover_primal, socket_env_var};

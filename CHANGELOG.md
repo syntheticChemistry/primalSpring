@@ -3,7 +3,33 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–60: Stadial Entry / Glacial Shift (2026-05-29)
+## [Unreleased] — Waves 22–66: Stadial Entry / Glacial Shift (2026-06-01)
+
+### Wave 66: Deep Debt Evolution + Sovereignty (June 1)
+- **`#![forbid(unsafe_code)]`** on all 88 crate roots (86 experiments added, 2 bins upgraded
+  from `deny`). Zero unsafe code enforced ecosystem-wide.
+- **PORT_REGISTRY** — single source of truth in `tolerances/mod.rs` with `PortEntry` struct.
+  `default_port_for()` / `port_env_key_for()` derive from registry scan. `deploy/profiles.rs`
+  collapsed from 80-line parallel `PRIMAL_REGISTRY` to 13-entry `BIND_FLAGS` referencing the
+  registry. `composition/btsp.rs::tcp_fallback_table()` derives port data from registry.
+- **SecurityVerifier** replaces `BearDogVerifier` — capability-based discovery only, no
+  hardcoded primal name fallback. `DenyVerifier` added for enforced-mode deny-by-default
+  when security provider is unreachable (was fail-open to `PermissiveVerifier`).
+- **`required_primals()` + `substrate_primal()`** deprecated with `#[deprecated]` attr.
+  All callers annotated with `#[allow(deprecated)]`. Path forward: `required_capabilities()`
+  + runtime capability discovery.
+- **Niche registration** discovers orchestration capability provider at runtime before
+  falling back to env/static default.
+- **Routing** — spring routing typed via `Spring` enum; raw string literals removed.
+  `capability_to_spring_owner()` extracted for non-primal routing.
+- **nucleus_launcher** — capability map now loaded from `capability_registry.toml` instead
+  of hardcoded 13-arm match. Static fallback preserved for missing registry.
+- **858L monolithic test** split into 3 domain files: `compose_nest.rs` (544L),
+  `compose_node.rs` (121L), `compose_compute.rs` (196L).
+- **`verifiers.rs`** extracted from `method_gate.rs` (743→610 lines).
+- **Workspace deps** — `toml`, `base64`, `blake3` promoted to `[workspace.dependencies]`.
+- **exp084 stale ports** (9600/9610/9620) → reference `tolerances::TCP_FALLBACK_*`.
+- 838 tests passing, 0 clippy warnings, 0 unsafe blocks.
 
 ### Wave 60: Neural API Coordination Triad — quorumSignal/rootPulse/waterFall (May 29)
 - **Coordination Triad formalized**: quorumSignal (sense), rootPulse (action), waterFall (sync)

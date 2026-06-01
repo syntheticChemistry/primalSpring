@@ -63,22 +63,59 @@ const STARTUP_ORDER: &[&str] = &[
     primal_names::PETALTONGUE,
 ];
 
-/// Maps primal name → capability domains for Songbird registry seeding.
-fn capability_domains(primal: &str) -> &'static [&'static str] {
+/// Build primal → capability domains map from `capability_registry.toml`.
+///
+/// The registry TOML has `[domain] owner = "primal"` sections. We invert
+/// this to build a primal → Vec<domain> mapping for Songbird seeding.
+///
+/// Falls back to a minimal static table if the registry file is missing.
+fn build_capability_map() -> std::collections::HashMap<String, Vec<String>> {
+    let mut map: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+
+    let registry_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../config/capability_registry.toml");
+    if let Ok(content) = std::fs::read_to_string(&registry_path) {
+        if let Ok(parsed) = content.parse::<toml::Table>() {
+            for (domain, section) in &parsed {
+                if let Some(owner) = section.get("owner").and_then(|v| v.as_str()) {
+                    if owner != "all" && owner != "none" && owner != "tests" {
+                        map.entry(owner.to_owned())
+                            .or_default()
+                            .push(domain.clone());
+                    }
+                }
+            }
+        }
+    }
+
+    if map.is_empty() {
+        tracing::warn!("capability_registry.toml not found or empty — using static fallback");
+        for entry in tolerances::PORT_REGISTRY {
+            let caps = static_fallback_caps(entry.slug);
+            if !caps.is_empty() {
+                map.insert(entry.slug.to_owned(), caps.iter().map(|s| (*s).to_owned()).collect());
+            }
+        }
+    }
+
+    map
+}
+
+fn static_fallback_caps(primal: &str) -> &'static [&'static str] {
     match primal {
-        primal_names::BEARDOG => &["security", "crypto", "btsp", "birdsong", "lineage", "entropy", "jwt"],
-        primal_names::SONGBIRD => &["discovery", "http", "tls", "mesh", "stun", "relay", "onion"],
-        primal_names::SKUNKBAT => &["defense", "audit", "firewall"],
-        primal_names::TOADSTOOL => &["compute", "cpu", "gpu", "npu", "wasm", "orchestration"],
-        primal_names::BARRACUDA => &["tensor", "linalg", "spectral", "stats", "fhe", "wgsl"],
-        primal_names::CORALREEF => &["shader", "spirv", "wgsl", "glsl", "naga", "compile", "vfio"],
-        primal_names::NESTGATE => &["storage", "provenance", "compression"],
-        primal_names::RHIZOCRYPT => &["dag", "session", "ephemeral"],
-        primal_names::LOAMSPINE => &["ledger", "permanent", "audit"],
-        primal_names::SWEETGRASS => &["attribution", "prov-o"],
-        primal_names::BIOMEOS => &["orchestration", "graph", "deploy", "nucleus", "spore", "niche"],
-        primal_names::SQUIRREL => &["ai", "inference", "mcp"],
-        primal_names::PETALTONGUE => &["visualization", "ui", "interaction", "representation"],
+        "beardog" => &["security", "crypto"],
+        "songbird" => &["discovery", "http"],
+        "skunkbat" => &["defense", "audit"],
+        "toadstool" => &["compute"],
+        "barracuda" => &["tensor", "stats"],
+        "coralreef" => &["shader"],
+        "nestgate" => &["storage", "content"],
+        "rhizocrypt" => &["dag"],
+        "loamspine" => &["ledger"],
+        "sweetgrass" => &["attribution", "commit"],
+        "biomeos" => &["orchestration", "graph"],
+        "squirrel" => &["ai", "inference"],
+        "petaltongue" => &["visualization"],
         _ => &[],
     }
 }
@@ -103,6 +140,11 @@ fn effective_port(primal: &str) -> u16 {
 }
 
 /// Ordered primals for a given composition type, filtered against the startup order.
+///
+/// Uses `required_primals()` because the launcher must know binary names to
+/// spawn. The evolution path is deploy-graph-based ordering where primal
+/// names come from the graph TOML, not static arrays.
+#[allow(deprecated)]
 pub fn ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
     let required = atomic.required_primals();
     STARTUP_ORDER
@@ -339,13 +381,16 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     println!("=== Phase 5: Registry seeding (Songbird ipc.register) ===");
     let songbird_port = effective_port_for(primal_names::SONGBIRD, config.uds_only);
     let mut registered = 0usize;
+    let capability_map = build_capability_map();
 
     for primal in &primals {
         if *primal == primal_names::SONGBIRD {
             continue;
         }
 
-        let caps = capability_domains(primal);
+        let caps = capability_map.get(*primal);
+        let empty_caps = Vec::new();
+        let caps = caps.unwrap_or(&empty_caps);
         if caps.is_empty() {
             continue;
         }

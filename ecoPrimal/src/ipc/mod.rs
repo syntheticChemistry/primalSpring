@@ -27,6 +27,7 @@ pub mod mcp;
 pub mod method_gate;
 pub mod methods;
 pub mod neural_bridge;
+pub mod verifiers;
 pub mod probes;
 #[cfg(test)]
 mod proptest_ipc;

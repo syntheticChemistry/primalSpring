@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp052: JSON-RPC Serialization — validates JSON-RPC 2.0 text serialization for IPC.
 
 use primalspring::ipc::protocol::{JsonRpcRequest, JsonRpcResponse};

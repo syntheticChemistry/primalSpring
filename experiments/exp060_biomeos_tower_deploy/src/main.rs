@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp060: biomeOS Tower Deploy — validate live Tower composition via CompositionContext.
 
 use primalspring::composition::CompositionContext;

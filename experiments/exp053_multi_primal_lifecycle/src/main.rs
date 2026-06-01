@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp053: Multi-Primal Lifecycle — FullNucleus composition discovery and health.
 
 use primalspring::composition::CompositionContext;

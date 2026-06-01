@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp083: Federation Edge Cases — probe multi-gate topologies for
 //! asymmetric latency, partial mesh, and mid-session family migration.
 //!

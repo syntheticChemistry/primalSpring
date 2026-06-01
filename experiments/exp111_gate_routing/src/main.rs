@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp111: Gate-Aware Routing (biomeOS Neural API Pressure Test)
 //!
 //! Validates that biomeOS Neural API routing respects MethodGate enforcement:

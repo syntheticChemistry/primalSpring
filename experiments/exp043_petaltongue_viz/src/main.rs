@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp043: petalTongue Viz — atomic health via `CompositionContext` and `visualization.render.*`.
 
 use primalspring::composition::{CompositionContext, capability_to_primal};

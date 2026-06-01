@@ -34,6 +34,7 @@ pub fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRes
     let mode = params["mode"].as_str().unwrap_or("capability");
 
     if mode == "identity" {
+        #[allow(deprecated)]
         let primals = atomic.required_primals();
         let results = discover_for(primals);
         let summary: Vec<serde_json::Value> = results

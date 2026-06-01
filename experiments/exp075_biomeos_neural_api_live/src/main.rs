@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp075: biomeOS Neural API Live
 
 use primalspring::composition::CompositionContext;

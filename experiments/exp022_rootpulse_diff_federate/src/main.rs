@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp022: RootPulse Merkle diff and federation via rhizoCrypt.
 
 use primalspring::composition::CompositionContext;

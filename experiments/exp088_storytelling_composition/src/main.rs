@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp088: Storytelling Composition — Tower + ludoSpring + esotericWebb via biomeOS.
 //!
 //! Uses [`CompositionContext::discover`] for full escalation (Songbird, UDS,

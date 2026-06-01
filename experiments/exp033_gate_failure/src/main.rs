@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp033: Gate Failure — bond models + graceful discovery when a gate is absent.
 
 use primalspring::bonding::BondType;

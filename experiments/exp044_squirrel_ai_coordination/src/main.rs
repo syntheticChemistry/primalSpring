@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp044: Squirrel AI Coordination — MCP tools and routing via the `ai` capability (Squirrel).
 
 use primalspring::composition::CompositionContext;

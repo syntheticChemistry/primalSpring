@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp023: RPGPT session — validates 60Hz tick budget and composition discovery.
 
 use primalspring::composition::CompositionContext;

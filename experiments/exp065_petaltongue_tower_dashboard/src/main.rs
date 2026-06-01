@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp065: petalTongue Tower Dashboard — visualization via CompositionContext.
 
 use primalspring::composition::CompositionContext;

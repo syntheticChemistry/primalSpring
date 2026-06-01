@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp084: Provenance Adversarial — test data integrity under hostile conditions.
 //!
 //! Scenarios:
@@ -25,9 +27,9 @@ const PROVENANCE_COMMIT: &str = "provenance.commit";
 const ATTRIBUTION_CLAIM: &str = "attribution.claim";
 const ATTRIBUTION_RESOLVE: &str = "attribution.resolve";
 
-const DEFAULT_RHIZOCRYPT_PORT: u16 = 9600;
-const DEFAULT_LOAMSPINE_PORT: u16 = 9610;
-const DEFAULT_SWEETGRASS_PORT: u16 = 9620;
+const DEFAULT_RHIZOCRYPT_PORT: u16 = primalspring::tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT;
+const DEFAULT_LOAMSPINE_PORT: u16 = primalspring::tolerances::TCP_FALLBACK_LOAMSPINE_PORT;
+const DEFAULT_SWEETGRASS_PORT: u16 = primalspring::tolerances::TCP_FALLBACK_SWEETGRASS_PORT;
 
 fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
     v.section("Phase 1: Composition discovery (local)");

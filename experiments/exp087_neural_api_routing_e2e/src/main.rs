@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! exp087 — Neural API Routing E2E
 //!
 //! Validates biomeOS Neural API capability routing end-to-end: every

@@ -17,7 +17,7 @@
 | **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`) |
 | **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 9 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)**, **provenance-elevated checksums** (Layer 2: composite fingerprint + sweetGrass braids) |
-| **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]`, `#![forbid(unsafe_code)]` on lib root — zero unsafe blocks |
+| **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]`, `#![forbid(unsafe_code)]` on all 88 crate roots — zero unsafe blocks |
 | **C deps** | Zero (ecoBin compliant, `deny.toml` enforced) |
 | **Runtime deps** | 16 (was 17; `hostname` eliminated Wave 54b). Pure Rust crypto stack for BTSP bootstrap. |
 
@@ -130,7 +130,7 @@ cargo test --workspace
 
 # Primal binaries come from plasmidBin (auto-detected from infra/plasmidBin/)
 # First-time bootstrap (if git checkout unavailable):
-./tools/fetch_primals.sh
+membrane plasmid.fetch
 
 # Run live atomic tests (requires plasmidBin binaries)
 cargo test --ignored
@@ -361,7 +361,7 @@ pure synchronous Rust (`std::process` + `std::thread`, no tokio).
 
 **Post-primordial**: all primal binaries come from `plasmidBin` — the single
 source of truth. The git checkout at `infra/plasmidBin/primals/` is auto-detected
-by the launcher. Run `./tools/fetch_primals.sh` for first-time bootstrap if the
+by the launcher. Run `membrane plasmid.fetch` for first-time bootstrap if the
 git checkout is unavailable. Override with `NUCLEUS_BIN_DIR`. Without binaries,
 whatever is already running.
 
@@ -558,7 +558,7 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 | `tools/nucleus_launcher.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use Rust `nucleus_launcher start/stop/status` |
 | `tools/desktop_nucleus.sh` | 13-primal NUCLEUS launcher with auto-symlink for petalTongue discovery |
 | `tools/check_method_*.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `primalspring registry --check {source\|graphs\|coverage\|all}` |
-| `tools/fetch_primals.sh` | Bootstrap primal binaries from plasmidBin GitHub Releases (Layer 1+2 provenance-aware) |
+| `tools/fetch_primals.sh` | **REMOVED** Wave 66. Use `membrane plasmid.fetch` (fossil: `fossilRecord/scripts_wave65_may2026/`) |
 | `tools/regenerate_checksums.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `primalspring checksums` |
 | `tools/validate_compositions.py` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `primalspring validate --track composition` |
 | `tools/ws_gateway.py` | Thin WebSocket-to-IPC bridge (no business logic) |

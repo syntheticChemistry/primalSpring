@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! exp089 — `BearDog` Witness Round-Trip
 //!
 //! Validates that a `BearDog` Ed25519 signature can be wrapped into the

@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp032: Plasmodium Formation — collective formation from covalent mesh (structural + songbird-cap health).
 
 use std::path::Path;

@@ -8,7 +8,7 @@
 //! 1. `$ECOPRIMALS_PLASMID_BIN` (explicit override)
 //! 2. `$BIOMEOS_PLASMID_BIN_DIR` (biomeOS override)
 //! 3. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` (XDG standard cache,
-//!    populated by `tools/fetch_primals.sh`)
+//!    populated by `membrane plasmid.fetch`)
 //!
 //! No relative filesystem traversal into sibling repos or `../../infra/`.
 

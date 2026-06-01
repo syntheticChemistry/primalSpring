@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp042: `FieldMouse` Ingestion — edge frames → NestGate → sweetGrass (capability discovery).
 
 use std::time::Instant;

@@ -19,7 +19,7 @@
 //! The [`TokenVerifier`] trait abstracts ionic token verification. Two
 //! implementations are provided:
 //! - [`PermissiveVerifier`] — always accepts (for permissive / test deployments).
-//! - [`BearDogVerifier`] — delegates to BearDog's `auth.verify_ionic` via IPC.
+//! - [`SecurityVerifier`] — discovers the security capability provider via IPC.
 //!
 //! The gate performs **scope validation**: a token's scope pattern (e.g.
 //! `"stats.*"`) is matched against the requested method. Wildcard `"*"`
@@ -64,131 +64,11 @@ pub fn classify_method(method: &str) -> MethodAccessLevel {
     MethodAccessLevel::Protected
 }
 
-// ── Token verification ─────────────────────────────────────────────────
-
-/// Result of verifying an ionic capability token.
-#[derive(Debug, Clone)]
-pub struct VerifiedToken {
-    /// Scope patterns the token grants (e.g. `["stats.*", "tensor.*"]`).
-    pub scopes: Vec<String>,
-    /// Subject / principal identifier from the token.
-    pub subject: Option<String>,
-    /// Seconds until expiry (`None` if the verifier doesn't report it).
-    pub expires_in: Option<u64>,
-}
-
-/// Abstraction over ionic token verification.
-///
-/// BearDog owns the cryptographic verification (`auth.verify_ionic`).
-/// primalSpring defines the contract so it can validate the pattern
-/// before BearDog/biomeOS fully wire cross-primal federation (JH-11).
-pub trait TokenVerifier: std::fmt::Debug + Send + Sync {
-    /// Verify a bearer token string and return its claims.
-    ///
-    /// Returns `None` if the token is invalid, expired, or tampered.
-    fn verify(&self, token: &str) -> Option<VerifiedToken>;
-}
-
-/// Always-accept verifier for permissive mode and tests.
-///
-/// Returns wildcard scopes for any token (including empty). This is the
-/// correct behavior when `EnforcementMode::Permissive` or `Off` — the gate
-/// logs but does not block. In `Enforced` mode, use [`BearDogVerifier`].
-#[derive(Debug)]
-pub struct PermissiveVerifier;
-
-impl TokenVerifier for PermissiveVerifier {
-    fn verify(&self, _token: &str) -> Option<VerifiedToken> {
-        Some(VerifiedToken {
-            scopes: vec!["*".to_owned()],
-            subject: None,
-            expires_in: None,
-        })
-    }
-}
-
-/// Alias preserved for backward compatibility.
-#[deprecated(since = "0.9.31", note = "Renamed to `PermissiveVerifier` for clarity")]
-pub type NoopVerifier = PermissiveVerifier;
-
-/// Verifier that delegates to BearDog's `auth.verify_ionic` via IPC.
-///
-/// When BearDog is unreachable, verification fails (returns `None`).
-#[derive(Debug)]
-pub struct BearDogVerifier {
-    beardog_socket: std::path::PathBuf,
-}
-
-impl BearDogVerifier {
-    /// Create a verifier targeting the given BearDog socket path.
-    #[must_use]
-    pub const fn new(beardog_socket: std::path::PathBuf) -> Self {
-        Self { beardog_socket }
-    }
-
-    /// Attempt to create a verifier by discovering the security capability
-    /// provider at runtime, falling back to the BearDog socket convention.
-    #[must_use]
-    pub fn discover() -> Option<Self> {
-        let disc = crate::ipc::discover::discover_by_capability("security");
-        if let Some(socket) = disc.socket {
-            return Some(Self::new(socket));
-        }
-        let path = crate::ipc::discover::socket_path(crate::primal_names::BEARDOG);
-        if path.exists() {
-            tracing::debug!("BearDogVerifier: capability discovery missed, using conventional socket");
-            Some(Self::new(path))
-        } else {
-            None
-        }
-    }
-}
-
-impl TokenVerifier for BearDogVerifier {
-    fn verify(&self, token: &str) -> Option<VerifiedToken> {
-        let label = crate::primal_names::BEARDOG;
-        let mut client =
-            crate::ipc::client::PrimalClient::connect(&self.beardog_socket, label).ok()?;
-        let response = client
-            .call("auth.verify_ionic", serde_json::json!({ "token": token }))
-            .ok()?;
-        let result = response.result?;
-
-        if !result
-            .get("valid")
-            .and_then(serde_json::Value::as_bool)
-            .unwrap_or(false)
-        {
-            return None;
-        }
-
-        let scopes = result
-            .get("scopes")
-            .and_then(serde_json::Value::as_array)
-            .map_or_else(
-                || vec!["*".to_owned()],
-                |arr| {
-                    arr.iter()
-                        .filter_map(serde_json::Value::as_str)
-                        .map(String::from)
-                        .collect()
-                },
-            );
-
-        let subject = result
-            .get("subject")
-            .and_then(serde_json::Value::as_str)
-            .map(String::from);
-
-        let expires_in = result.get("expires_in").and_then(serde_json::Value::as_u64);
-
-        Some(VerifiedToken {
-            scopes,
-            subject,
-            expires_in,
-        })
-    }
-}
+// Token verification types and implementations live in `super::verifiers`.
+pub use super::verifiers::{
+    BearDogVerifier, DenyVerifier, NoopVerifier, PermissiveVerifier, SecurityVerifier,
+    TokenVerifier, VerifiedToken,
+};
 
 /// Check whether a token's scopes permit access to a method.
 ///
@@ -367,9 +247,10 @@ impl MethodGate {
 
     /// Create a gate from the environment (`PRIMALSPRING_AUTH_MODE`).
     ///
-    /// In enforced mode, attempts to discover BearDog for real verification.
-    /// If BearDog is unreachable, downgrades to `Permissive` (fail-open with
-    /// logging) rather than silently accepting all tokens via `PermissiveVerifier`.
+    /// In enforced mode, discovers the security capability provider. If
+    /// unreachable, installs a [`DenyVerifier`] (deny-by-default) rather
+    /// than silently accepting all tokens. Public methods remain accessible;
+    /// protected methods require the security provider to come online.
     #[must_use]
     pub fn from_env() -> Self {
         let mode = EnforcementMode::from_env();
@@ -380,14 +261,14 @@ impl MethodGate {
             };
         }
 
-        BearDogVerifier::discover().map_or_else(
+        SecurityVerifier::discover().map_or_else(
             || {
                 tracing::warn!(
-                    "BearDog unreachable — downgrading from Enforced to Permissive"
+                    "security capability provider unreachable — enforced mode will deny all protected calls until provider comes online"
                 );
                 Self {
-                    mode: EnforcementMode::Permissive,
-                    verifier: Box::new(PermissiveVerifier),
+                    mode,
+                    verifier: Box::new(DenyVerifier),
                 }
             },
             |v| Self {

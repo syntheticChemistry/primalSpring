@@ -11,7 +11,7 @@
 //! Phase 4: Gateway — biomeos nucleus ingest/emit contract (live-tier)
 //! Phase 5: Provenance trio — rhizoCrypt session + loamSpine ledger + sweetGrass braid
 
-#![deny(unsafe_code)]
+#![forbid(unsafe_code)]
 
 use primalspring::validation::ValidationResult;
 

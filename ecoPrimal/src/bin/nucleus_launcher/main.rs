@@ -7,7 +7,7 @@
 //!
 //! Wave 47: initial Rust elevation from bash launcher.
 
-#![deny(unsafe_code)]
+#![forbid(unsafe_code)]
 
 mod orchestrator;
 

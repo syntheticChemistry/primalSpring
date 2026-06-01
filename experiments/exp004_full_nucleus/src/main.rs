@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp004: Full NUCLEUS — validate all 13 capability domains.
 //!
 //! Phases:

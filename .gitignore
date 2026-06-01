@@ -26,3 +26,4 @@ runtime_graphs/
 *.pfx
 credentials.json
 secrets.toml
+testing-secrets/

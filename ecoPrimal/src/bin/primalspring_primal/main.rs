@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! primalSpring `UniBin` — coordination and composition primal.
 //!
 //! Runs as a JSON-RPC 2.0 server over a Unix domain socket, exposing

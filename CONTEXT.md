@@ -13,8 +13,8 @@ primalSpring is NOT a science spring. It does not own domain-specific
 validation — that belongs to each gate's springs (hotSpring → physics,
 wetSpring → biology, etc.). primalSpring validates that compositions of
 primals work together; it is the bonding mechanics, not the atoms.
-See `wateringHole/GATE_SPRING_OWNERSHIP.md` for the canonical gate-spring
-routing SSOT.
+See the ecosystem `GATE_SPRING_OWNERSHIP.md` for the canonical gate-spring
+routing SSOT (published via wateringHole cascade).
 
 ## Role
 
@@ -81,21 +81,14 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 60 (May 29, 2026) — 57 scenarios (10 tracks, 3 tiers),
-460 registered capability methods (460 exercised, 100% coverage),
-96 experiments (21 tracks), 110 deploy graphs,
-44-cell deployment matrix. 807 lib tests pass (2 ignored) + 17 doc tests. 13/13 behavioral
-convergence (DEPLOYMENT_BEHAVIOR_STANDARD). **Post-primordial**: plasmidBin
-sole binary source, Rust CLI primary. `discovery.peers` SHIPPED (Wave 51).
-golgiBody Phase A live (Forgejo sovereign at `git.primals.eco`), VPS federation
-hub (:7700 + MitoBeacon + TURN relay), Common NUCLEUS Deployment converged
-(`deploy_gate.sh --systemd`, `fieldMouse`/`tower`/`depot` compositions),
-benchScale VPS depot topology validated 26/26.
-`hostname` crate eliminated (17→16 runtime deps). `nucleus_launcher` now has
-full lifecycle (`start`/`stop`/`status` subcommands). 6 bash CI scripts absorbed
-into Rust subcommands (`primalspring checksums`, `primalspring registry`).
-PID-file tracking replaces `pkill`. All hardcoded UID/port/path values centralized
-to `tolerances` module. `clap` styling trimmed.
+v0.9.31 Wave 66 (June 1, 2026) — 57 scenarios (10 tracks, 3 tiers),
+490+ registered capability methods, 96 experiments (21 tracks), 110 deploy graphs,
+44-cell deployment matrix. 838 tests passing (807 lib + 10 integration + 4 binary +
+17 doc). 13/13 BTSP convergence. **Post-primordial / deep-debt**: `#![forbid(unsafe_code)]`
+on all 88 crate roots. Centralized `PORT_REGISTRY` in tolerances. Deny-by-default
+`SecurityVerifier` (capability-based, no hardcoded primal names). `required_primals()`
+deprecated → capability discovery. `membrane temporal.cascade` (Rust) replaces bash.
+S1 TLS shadow PASSED (13 days). 20/20 primal services on golgiBody.
 
 **Wave 54: Provenance-elevated checksums + sweetGrass braid integration.**
 plasmidBin now produces a two-layer checksum model:

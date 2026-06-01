@@ -118,6 +118,9 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 clap = { version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"] }
 thiserror = "2"
+toml = "0.8"
+base64 = "0.22"
+blake3 = { version = "1", features = ["pure"] }
 
 [workspace.lints.rust]
 unsafe_code = "deny"

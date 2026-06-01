@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! exp070 — Squirrel Cross-Primal Discovery via CompositionContext.
 //!
 //! Validates graph structure and live Squirrel routing against a discovered

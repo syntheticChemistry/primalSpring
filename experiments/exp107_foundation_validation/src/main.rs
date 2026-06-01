@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp107: Foundation Validation Composition
 //!
 //! Validates that the NUCLEUS composition required by `sporeGarden/foundation`

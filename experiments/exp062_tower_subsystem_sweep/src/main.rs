@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp062: Tower Subsystem Sweep — probe songbird JSON-RPC methods via composition discovery.
 
 use std::time::{Duration, Instant};

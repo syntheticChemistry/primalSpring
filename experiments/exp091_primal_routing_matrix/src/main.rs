@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp091: Primal Routing Matrix
 
 use primalspring::ipc::NeuralBridge;

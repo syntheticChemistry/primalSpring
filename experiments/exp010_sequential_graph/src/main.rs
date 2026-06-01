@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp010: Sequential Graph — validates sequential coordination with graph structure and live capability probes.
 //!
 //! Phases:

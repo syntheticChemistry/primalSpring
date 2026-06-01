@@ -179,111 +179,41 @@ pub fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTre
 
 /// Capability → (primal slug, env var, default port) for tier 5 TCP probing.
 ///
-/// Part of the discovery escalation hierarchy (tier 5). Centralized here
-/// so the mapping is consistent across `discover`, `from_live_discovery_with_fallback`,
-/// experiments, and docs. Capabilities that alias the same primal socket
-/// (e.g. `dag` → rhizoCrypt, `provenance` → sweetGrass) appear separately so
-/// the probe covers both capability names.
-///
-/// Port assignments confirmed against ironGate live deployment (2026-05-04).
+/// Part of the discovery escalation hierarchy (tier 5). Port and env-key
+/// data is derived from [`crate::tolerances::PORT_REGISTRY`]; this table
+/// adds only the capability→primal mapping. Capabilities that alias the
+/// same primal socket (e.g. `content` → nestgate, `attribution` → sweetGrass)
+/// appear as separate entries.
 #[must_use]
 pub fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u16)> {
-    use crate::env_keys as ek;
     use crate::primal_names as pn;
-    use crate::tolerances as tol;
+    use crate::tolerances;
 
-    vec![
-        (
-            "security",
-            pn::BEARDOG,
-            ek::BEARDOG_PORT,
-            tol::TCP_FALLBACK_BEARDOG_PORT,
-        ),
-        (
-            "discovery",
-            pn::SONGBIRD,
-            ek::SONGBIRD_PORT,
-            tol::TCP_FALLBACK_SONGBIRD_PORT,
-        ),
-        (
-            "storage",
-            pn::NESTGATE,
-            ek::NESTGATE_PORT,
-            tol::TCP_FALLBACK_NESTGATE_PORT,
-        ),
-        (
-            "compute",
-            pn::TOADSTOOL,
-            ek::TOADSTOOL_PORT,
-            tol::TCP_FALLBACK_TOADSTOOL_PORT,
-        ),
-        (
-            "tensor",
-            pn::BARRACUDA,
-            ek::BARRACUDA_PORT,
-            tol::TCP_FALLBACK_BARRACUDA_PORT,
-        ),
-        (
-            "shader",
-            pn::CORALREEF,
-            ek::CORALREEF_PORT,
-            tol::TCP_FALLBACK_CORALREEF_PORT,
-        ),
-        (
-            "ai",
-            pn::SQUIRREL,
-            ek::SQUIRREL_PORT,
-            tol::TCP_FALLBACK_SQUIRREL_PORT,
-        ),
-        (
-            "dag",
-            pn::RHIZOCRYPT,
-            ek::RHIZOCRYPT_PORT,
-            tol::TCP_FALLBACK_RHIZOCRYPT_PORT,
-        ),
-        (
-            "ledger",
-            pn::LOAMSPINE,
-            ek::LOAMSPINE_PORT,
-            tol::TCP_FALLBACK_LOAMSPINE_PORT,
-        ),
-        (
-            "commit",
-            pn::SWEETGRASS,
-            ek::SWEETGRASS_PORT,
-            tol::TCP_FALLBACK_SWEETGRASS_PORT,
-        ),
-        (
-            "attribution",
-            pn::SWEETGRASS,
-            ek::SWEETGRASS_PORT,
-            tol::TCP_FALLBACK_SWEETGRASS_PORT,
-        ),
-        (
-            "visualization",
-            pn::PETALTONGUE,
-            ek::PETALTONGUE_PORT,
-            tol::TCP_FALLBACK_PETALTONGUE_PORT,
-        ),
-        (
-            "defense",
-            pn::SKUNKBAT,
-            ek::SKUNKBAT_PORT,
-            tol::TCP_FALLBACK_SKUNKBAT_PORT,
-        ),
-        (
-            "content",
-            pn::NESTGATE,
-            ek::NESTGATE_PORT,
-            tol::TCP_FALLBACK_NESTGATE_PORT,
-        ),
-        (
-            "orchestration",
-            pn::BIOMEOS,
-            ek::BIOMEOS_PORT,
-            tol::TCP_FALLBACK_BIOMEOS_PORT,
-        ),
-    ]
+    let cap_to_primal: &[(&str, &str)] = &[
+        ("security",      pn::BEARDOG),
+        ("discovery",     pn::SONGBIRD),
+        ("storage",       pn::NESTGATE),
+        ("compute",       pn::TOADSTOOL),
+        ("tensor",        pn::BARRACUDA),
+        ("shader",        pn::CORALREEF),
+        ("ai",            pn::SQUIRREL),
+        ("dag",           pn::RHIZOCRYPT),
+        ("ledger",        pn::LOAMSPINE),
+        ("commit",        pn::SWEETGRASS),
+        ("attribution",   pn::SWEETGRASS),
+        ("visualization", pn::PETALTONGUE),
+        ("defense",       pn::SKUNKBAT),
+        ("content",       pn::NESTGATE),
+        ("orchestration", pn::BIOMEOS),
+    ];
+
+    cap_to_primal
+        .iter()
+        .filter_map(|&(cap, slug)| {
+            tolerances::port_entry_for(slug)
+                .map(|e| (cap, slug, e.env_key, e.port))
+        })
+        .collect()
 }
 
 #[cfg(test)]

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp024: Cross-spring ecology — EmergentSystem graphs and composition discovery.
 
 use primalspring::composition::CompositionContext;

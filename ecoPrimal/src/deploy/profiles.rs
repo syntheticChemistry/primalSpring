@@ -11,120 +11,45 @@ use std::collections::HashMap;
 
 use super::DeployGraph;
 use crate::launcher::{LaunchProfile, load_launch_profiles};
-use crate::{env_keys, primal_names, tolerances};
+use crate::tolerances;
 
-// ── Primal profile registry ─────────────────────────────────────────
+// ── Bind-flag registry ──────────────────────────────────────────────
 //
-// Single source of truth for per-primal operational knowledge:
-// TCP fallback port, port env var, and CLI bind flag.
-// Adding a 14th primal is a single entry here.
+// Port and env-key data comes from `tolerances::PORT_REGISTRY` (single
+// source of truth). This module only extends it with per-primal CLI
+// bind flags — the one datum that is deploy-specific, not ecosystem-wide.
 
-struct PrimalProfileEntry {
-    name: &'static str,
-    tcp_port: u16,
-    port_env: &'static str,
-    bind_flag: &'static str,
+struct BindFlagEntry {
+    slug: &'static str,
+    flag: &'static str,
 }
 
-/// All 13 NUCLEUS primals with their operational metadata.
-///
-/// Port assignments confirmed against ironGate live deployment (2026-05-04).
-/// PG-55 resolved: all 13 primals default to `127.0.0.1`.
-static PRIMAL_REGISTRY: &[PrimalProfileEntry] = &[
-    PrimalProfileEntry {
-        name: primal_names::BEARDOG,
-        tcp_port: tolerances::TCP_FALLBACK_BEARDOG_PORT,
-        port_env: env_keys::BEARDOG_PORT,
-        bind_flag: "--listen",
-    },
-    PrimalProfileEntry {
-        name: primal_names::SONGBIRD,
-        tcp_port: tolerances::TCP_FALLBACK_SONGBIRD_PORT,
-        port_env: env_keys::SONGBIRD_PORT,
-        bind_flag: "--bind",
-    },
-    PrimalProfileEntry {
-        name: primal_names::SQUIRREL,
-        tcp_port: tolerances::TCP_FALLBACK_SQUIRREL_PORT,
-        port_env: env_keys::SQUIRREL_PORT,
-        bind_flag: "--bind",
-    },
-    PrimalProfileEntry {
-        name: primal_names::TOADSTOOL,
-        tcp_port: tolerances::TCP_FALLBACK_TOADSTOOL_PORT,
-        port_env: env_keys::TOADSTOOL_PORT,
-        bind_flag: "--bind",
-    },
-    PrimalProfileEntry {
-        name: primal_names::NESTGATE,
-        tcp_port: tolerances::TCP_FALLBACK_NESTGATE_PORT,
-        port_env: env_keys::NESTGATE_PORT,
-        bind_flag: "--bind",
-    },
-    PrimalProfileEntry {
-        name: primal_names::RHIZOCRYPT,
-        tcp_port: tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT,
-        port_env: env_keys::RHIZOCRYPT_PORT,
-        bind_flag: "--host",
-    },
-    PrimalProfileEntry {
-        name: primal_names::LOAMSPINE,
-        tcp_port: tolerances::TCP_FALLBACK_LOAMSPINE_PORT,
-        port_env: env_keys::LOAMSPINE_PORT,
-        bind_flag: "--bind-address",
-    },
-    PrimalProfileEntry {
-        name: primal_names::CORALREEF,
-        tcp_port: tolerances::TCP_FALLBACK_CORALREEF_PORT,
-        port_env: env_keys::CORALREEF_PORT,
-        bind_flag: "--rpc-bind",
-    },
-    PrimalProfileEntry {
-        name: primal_names::BARRACUDA,
-        tcp_port: tolerances::TCP_FALLBACK_BARRACUDA_PORT,
-        port_env: env_keys::BARRACUDA_PORT,
-        bind_flag: "--bind",
-    },
-    PrimalProfileEntry {
-        name: primal_names::SKUNKBAT,
-        tcp_port: tolerances::TCP_FALLBACK_SKUNKBAT_PORT,
-        port_env: env_keys::SKUNKBAT_PORT,
-        bind_flag: "--bind",
-    },
-    PrimalProfileEntry {
-        name: primal_names::BIOMEOS,
-        tcp_port: tolerances::TCP_FALLBACK_BIOMEOS_PORT,
-        port_env: env_keys::BIOMEOS_PORT,
-        bind_flag: "--bind",
-    },
-    PrimalProfileEntry {
-        name: primal_names::SWEETGRASS,
-        tcp_port: tolerances::TCP_FALLBACK_SWEETGRASS_PORT,
-        port_env: env_keys::SWEETGRASS_PORT,
-        bind_flag: "--http-address",
-    },
-    PrimalProfileEntry {
-        name: primal_names::PETALTONGUE,
-        tcp_port: tolerances::TCP_FALLBACK_PETALTONGUE_PORT,
-        port_env: env_keys::PETALTONGUE_PORT,
-        bind_flag: "--bind",
-    },
+static BIND_FLAGS: &[BindFlagEntry] = &[
+    BindFlagEntry { slug: "beardog",     flag: "--listen" },
+    BindFlagEntry { slug: "songbird",    flag: "--bind" },
+    BindFlagEntry { slug: "squirrel",    flag: "--bind" },
+    BindFlagEntry { slug: "toadstool",   flag: "--bind" },
+    BindFlagEntry { slug: "nestgate",    flag: "--bind" },
+    BindFlagEntry { slug: "rhizocrypt",  flag: "--host" },
+    BindFlagEntry { slug: "loamspine",   flag: "--bind-address" },
+    BindFlagEntry { slug: "coralreef",   flag: "--rpc-bind" },
+    BindFlagEntry { slug: "barracuda",   flag: "--bind" },
+    BindFlagEntry { slug: "skunkbat",    flag: "--bind" },
+    BindFlagEntry { slug: "biomeos",     flag: "--bind" },
+    BindFlagEntry { slug: "sweetgrass",  flag: "--http-address" },
+    BindFlagEntry { slug: "petaltongue", flag: "--bind" },
 ];
 
-fn lookup(name: &str) -> Option<&'static PrimalProfileEntry> {
-    PRIMAL_REGISTRY.iter().find(|e| e.name == name)
-}
-
 fn tcp_fallback_port(name: &str) -> Option<u16> {
-    lookup(name).map(|e| e.tcp_port)
+    tolerances::port_entry_for(name).map(|e| e.port)
 }
 
 fn port_env_key(name: &str) -> Option<&'static str> {
-    lookup(name).map(|e| e.port_env)
+    tolerances::port_entry_for(name).map(|e| e.env_key)
 }
 
 fn bind_flag(name: &str) -> Option<&'static str> {
-    lookup(name).map(|e| e.bind_flag)
+    BIND_FLAGS.iter().find(|e| e.slug == name).map(|e| e.flag)
 }
 
 /// Actionable deploy profile for a single primal node.

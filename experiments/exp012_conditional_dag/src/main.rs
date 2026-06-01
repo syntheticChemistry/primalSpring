@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp012: Conditional DAG — validates conditional coordination and graph spawn rules with live compute probes.
 //!
 //! Phases:

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp020: RootPulse full commit — validates the commit pipeline against live composition.
 
 use primalspring::composition::CompositionContext;

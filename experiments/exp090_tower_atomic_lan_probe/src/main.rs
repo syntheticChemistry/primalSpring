@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp090: Tower Atomic LAN Probe — discover basement HPC gates and map capabilities.
 //!
 //! Uses biomeOS neural-api + Songbird to probe the LAN via `BirdSong` UDP

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp013: Pipeline Streaming — validates `CoordinationPattern::Pipeline` and `PIPELINE_THROUGHPUT_MIN`.
 //!
 //! Phases:

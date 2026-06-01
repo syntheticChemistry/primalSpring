@@ -94,13 +94,14 @@ impl AtomicType {
 
     /// Primal names required for this composition.
     ///
-    /// **Legacy**: prefer [`required_capabilities`](Self::required_capabilities)
-    /// for loose coupling. These names are retained for backward compatibility
-    /// with deploy graphs and experiments that haven't migrated yet.
+    /// **Deprecated**: use [`required_capabilities`](Self::required_capabilities)
+    /// and resolve providers at runtime via `discover_by_capability`. Primals
+    /// should not hardcode peer identities — discover by capability domain.
     ///
     /// Does not include `biomeos` — use [`substrate_primal`](Self::substrate_primal)
     /// for the biomeOS orchestrator that every composition requires.
     #[must_use]
+    #[deprecated(since = "0.9.31", note = "Use `required_capabilities()` + runtime discovery instead of hardcoded primal names")]
     pub const fn required_primals(self) -> &'static [&'static str] {
         match self {
             Self::Tower => &[
@@ -144,9 +145,10 @@ impl AtomicType {
 
     /// The biomeOS substrate primal name.
     ///
-    /// Every NUCLEUS composition requires biomeOS running in neural-api mode
-    /// as the orchestration substrate. This is always `"biomeos"`.
+    /// **Deprecated**: use [`substrate_capabilities`](Self::substrate_capabilities)
+    /// and discover the orchestration provider at runtime.
     #[must_use]
+    #[deprecated(since = "0.9.31", note = "Use `substrate_capabilities()` + runtime discovery instead")]
     pub const fn substrate_primal() -> &'static str {
         primal_names::BIOMEOS
     }
@@ -251,6 +253,7 @@ pub fn validate_composition_ctx(atomic: AtomicType) -> CompositionResult {
 }
 
 #[cfg(test)]
+#[allow(deprecated)]
 mod tests {
     use super::*;
 

@@ -310,46 +310,54 @@ fn real_uid() -> Option<u32> {
         })
 }
 
+/// Per-primal port metadata: slug, TCP fallback, env override key.
+///
+/// Single source of truth — adding a 14th primal is one entry here.
+/// [`default_port_for`] and [`port_env_key_for`] derive from this registry.
+pub struct PortEntry {
+    /// Lowercase primal slug (e.g. `"beardog"`).
+    pub slug: &'static str,
+    /// TCP fallback port (Tier 5).
+    pub port: u16,
+    /// Env var name for port override (e.g. `"BEARDOG_PORT"`).
+    pub env_key: &'static str,
+}
+
+/// All 13 NUCLEUS primals — canonical port registry.
+///
+/// Port assignments confirmed against ironGate live deployment (2026-05-04).
+pub static PORT_REGISTRY: &[PortEntry] = &[
+    PortEntry { slug: "beardog",     port: TCP_FALLBACK_BEARDOG_PORT,     env_key: crate::env_keys::BEARDOG_PORT },
+    PortEntry { slug: "songbird",    port: TCP_FALLBACK_SONGBIRD_PORT,    env_key: crate::env_keys::SONGBIRD_PORT },
+    PortEntry { slug: "squirrel",    port: TCP_FALLBACK_SQUIRREL_PORT,    env_key: crate::env_keys::SQUIRREL_PORT },
+    PortEntry { slug: "toadstool",   port: TCP_FALLBACK_TOADSTOOL_PORT,   env_key: crate::env_keys::TOADSTOOL_PORT },
+    PortEntry { slug: "nestgate",    port: TCP_FALLBACK_NESTGATE_PORT,    env_key: crate::env_keys::NESTGATE_PORT },
+    PortEntry { slug: "rhizocrypt",  port: TCP_FALLBACK_RHIZOCRYPT_PORT,  env_key: crate::env_keys::RHIZOCRYPT_PORT },
+    PortEntry { slug: "loamspine",   port: TCP_FALLBACK_LOAMSPINE_PORT,   env_key: crate::env_keys::LOAMSPINE_PORT },
+    PortEntry { slug: "coralreef",   port: TCP_FALLBACK_CORALREEF_PORT,   env_key: crate::env_keys::CORALREEF_PORT },
+    PortEntry { slug: "barracuda",   port: TCP_FALLBACK_BARRACUDA_PORT,   env_key: crate::env_keys::BARRACUDA_PORT },
+    PortEntry { slug: "skunkbat",    port: TCP_FALLBACK_SKUNKBAT_PORT,    env_key: crate::env_keys::SKUNKBAT_PORT },
+    PortEntry { slug: "biomeos",     port: TCP_FALLBACK_BIOMEOS_PORT,     env_key: crate::env_keys::BIOMEOS_PORT },
+    PortEntry { slug: "sweetgrass",  port: TCP_FALLBACK_SWEETGRASS_PORT,  env_key: crate::env_keys::SWEETGRASS_PORT },
+    PortEntry { slug: "petaltongue", port: TCP_FALLBACK_PETALTONGUE_PORT, env_key: crate::env_keys::PETALTONGUE_PORT },
+];
+
+/// Look up a primal's entry in the port registry.
 #[must_use]
-/// Resolve a primal's default TCP port from the centralized port table.
+pub fn port_entry_for(primal: &str) -> Option<&'static PortEntry> {
+    PORT_REGISTRY.iter().find(|e| e.slug == primal)
+}
+
+#[must_use]
+/// Resolve a primal's default TCP port from the centralized port registry.
 pub fn default_port_for(primal: &str) -> u16 {
-    match primal {
-        "beardog" => TCP_FALLBACK_BEARDOG_PORT,
-        "songbird" => TCP_FALLBACK_SONGBIRD_PORT,
-        "skunkbat" => TCP_FALLBACK_SKUNKBAT_PORT,
-        "toadstool" => TCP_FALLBACK_TOADSTOOL_PORT,
-        "barracuda" => TCP_FALLBACK_BARRACUDA_PORT,
-        "coralreef" => TCP_FALLBACK_CORALREEF_PORT,
-        "nestgate" => TCP_FALLBACK_NESTGATE_PORT,
-        "rhizocrypt" => TCP_FALLBACK_RHIZOCRYPT_PORT,
-        "loamspine" => TCP_FALLBACK_LOAMSPINE_PORT,
-        "sweetgrass" => TCP_FALLBACK_SWEETGRASS_PORT,
-        "biomeos" => TCP_FALLBACK_BIOMEOS_PORT,
-        "squirrel" => TCP_FALLBACK_SQUIRREL_PORT,
-        "petaltongue" => TCP_FALLBACK_PETALTONGUE_PORT,
-        _ => 0,
-    }
+    port_entry_for(primal).map_or(0, |e| e.port)
 }
 
 #[must_use]
 /// Resolve the env var key for a primal's port override.
 pub fn port_env_key_for(primal: &str) -> &'static str {
-    match primal {
-        "beardog" => crate::env_keys::BEARDOG_PORT,
-        "songbird" => crate::env_keys::SONGBIRD_PORT,
-        "skunkbat" => crate::env_keys::SKUNKBAT_PORT,
-        "toadstool" => crate::env_keys::TOADSTOOL_PORT,
-        "barracuda" => crate::env_keys::BARRACUDA_PORT,
-        "coralreef" => crate::env_keys::CORALREEF_PORT,
-        "nestgate" => crate::env_keys::NESTGATE_PORT,
-        "rhizocrypt" => crate::env_keys::RHIZOCRYPT_PORT,
-        "loamspine" => crate::env_keys::LOAMSPINE_PORT,
-        "sweetgrass" => crate::env_keys::SWEETGRASS_PORT,
-        "biomeos" => crate::env_keys::BIOMEOS_PORT,
-        "squirrel" => crate::env_keys::SQUIRREL_PORT,
-        "petaltongue" => crate::env_keys::PETALTONGUE_PORT,
-        _ => "",
-    }
+    port_entry_for(primal).map_or("", |e| e.env_key)
 }
 
 /// TCP fallback port for remote `BearDog` (security).

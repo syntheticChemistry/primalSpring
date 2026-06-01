@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp113: Primal Cephalization — Socket Namespace Organization
 //!
 //! As primals evolved through UniBin and ecoBin, each gained the ability to

@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp055: Wait For Health — discovery latency and health probe pattern (NestGate-style).
 
 use std::time::Instant;

@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp061: Squirrel AI Composition — Tower + AI via CompositionContext.
 
 use std::path::PathBuf;

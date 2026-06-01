@@ -60,13 +60,26 @@ pub const BTSP_EXTRA_CAPS: &[&str] = &[
 /// ```
 #[must_use]
 pub fn capability_to_primal(capability: &str) -> &str {
-    capability_to_primal_typed(capability).map_or(match capability {
-        "tool" | "primalspring" => "primalspring",
-        "webb" => "esotericwebb",
-        "game" => "ludospring",
-        "science" => "neuralspring",
+    capability_to_primal_typed(capability).map_or_else(
+        || capability_to_spring_owner(capability),
+        |p| p.slug(),
+    )
+}
+
+/// Resolve non-primal capability owners (springs and apps).
+///
+/// Falls through to the capability name itself if no spring claims it.
+fn capability_to_spring_owner(capability: &str) -> &str {
+    use crate::primal_names::Spring;
+    match capability {
+        "tool" | "primalspring" | "coordination" | "bonding" | "composition" | "mcp" => {
+            Spring::PrimalSpring.slug()
+        }
+        "game" => Spring::LudoSpring.slug(),
+        "science" => Spring::NeuralSpring.slug(),
+        "webb" | "esotericwebb" => "esotericwebb",
         other => other,
-    }, |p| p.slug())
+    }
 }
 
 /// Typed version — returns `None` for non-primal targets (springs, unknown).

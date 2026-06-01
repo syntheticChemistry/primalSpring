@@ -107,7 +107,7 @@ if [ -z "$BENCHSCALE_DIR" ]; then
 fi
 
 if [ -z "$PLASMIDBIN_DIR" ]; then
-    echo -e "${RED}Cannot find plasmidBin. Run ./tools/fetch_primals.sh or set ECOPRIMALS_PLASMID_BIN.${NC}"
+    echo -e "${RED}Cannot find plasmidBin. Run 'membrane plasmid.fetch' or set ECOPRIMALS_PLASMID_BIN.${NC}"
     exit 1
 fi
 

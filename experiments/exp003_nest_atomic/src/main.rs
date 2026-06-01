@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp003: Nest Atomic — validates security, discovery, storage, and AI capabilities.
 //!
 //! Phases:

@@ -8,7 +8,7 @@
 //! Evolved from the prokaryotic era of separate binaries during the
 //! interstadial transition.
 
-#![deny(unsafe_code)]
+#![forbid(unsafe_code)]
 
 mod cli;
 mod registry_lint;

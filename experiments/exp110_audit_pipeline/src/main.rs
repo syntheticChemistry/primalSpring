@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp110: Audit Pipeline (JH-5 Phase 3 Pressure Test)
 //!
 //! Validates the cross-primal security audit pipeline:

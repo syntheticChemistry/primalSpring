@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp011: Parallel Graph — validates parallel coordination with graph structure and parallel capability health probes.
 //!
 //! Phases:

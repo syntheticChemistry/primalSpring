@@ -39,9 +39,9 @@ use crate::primal_names::Primal;
 /// Niche identity — delegates to the canonical [`crate::PRIMAL_NAME`].
 pub const NICHE_NAME: &str = crate::PRIMAL_NAME;
 
-/// Default registration target — discovered at runtime, not hardcoded.
+/// Default registration target slug (fallback when capability discovery fails).
 /// Override via `BIOMEOS_PRIMAL` env var for non-standard deployments.
-const REGISTRATION_TARGET: &str = crate::primal_names::BIOMEOS;
+const REGISTRATION_TARGET_FALLBACK: &str = crate::primal_names::BIOMEOS;
 
 /// Capabilities this binary **locally serves** via `dispatch_request`.
 ///
@@ -298,16 +298,24 @@ pub fn coordination_semantic_mappings() -> serde_json::Value {
 /// Degrades gracefully if biomeOS is unreachable — coordination must not
 /// depend on registration success.
 pub fn register_with_target(our_socket: &Path) {
-    let target = std::env::var(crate::env_keys::BIOMEOS_PRIMAL)
-        .unwrap_or_else(|_| REGISTRATION_TARGET.to_owned());
-    let discovery = discover_primal(&target);
-    let Some(biomeos_path) = discovery.socket else {
-        info!(target: "niche", primal = %target, "registration target not discovered — deferred");
-        return;
+    let orchestration = crate::ipc::discover::discover_by_capability("orchestration");
+    let (target_path, target_label) = if let Some(socket) = orchestration.socket {
+        (socket, "orchestration".to_owned())
+    } else {
+        let fallback = std::env::var(crate::env_keys::BIOMEOS_PRIMAL)
+            .unwrap_or_else(|_| REGISTRATION_TARGET_FALLBACK.to_owned());
+        let disc = discover_primal(&fallback);
+        match disc.socket {
+            Some(s) => (s, fallback),
+            None => {
+                info!(target: "niche", "registration target not discovered — deferred");
+                return;
+            }
+        }
     };
 
-    let Ok(mut client) = PrimalClient::connect(&biomeos_path, &target) else {
-        warn!(target: "niche", primal = %target, "cannot connect to registration target — skipping");
+    let Ok(mut client) = PrimalClient::connect(&target_path, &target_label) else {
+        warn!(target: "niche", target = %target_label, "cannot connect to registration target — skipping");
         return;
     };
 
@@ -644,7 +652,7 @@ mod tests {
     }
 
     #[test]
-    fn registration_target_is_biomeos() {
-        assert_eq!(REGISTRATION_TARGET, "biomeos");
+    fn registration_target_fallback_is_biomeos() {
+        assert_eq!(REGISTRATION_TARGET_FALLBACK, "biomeos");
     }
 }

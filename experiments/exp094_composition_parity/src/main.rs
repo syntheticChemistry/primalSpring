@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp094: NUCLEUS Composition Parity
 
 use primalspring::composition::{CompositionContext, validate_parity};

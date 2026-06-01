@@ -15,19 +15,19 @@ categories = ["science", "command-line-utilities"]
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
-toml = "0.8"
+toml = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 clap = { workspace = true }
 thiserror = { workspace = true }
+base64 = { workspace = true }
+blake3 = { workspace = true }
 hmac = "0.13.0"
 sha2 = "0.11.0"
 hkdf = "0.13.0"
-base64 = "0.22.1"
 getrandom = "0.4.2"
 zeroize = { version = "1.8.2", features = ["zeroize_derive"] }
 chacha20poly1305 = "0.10"
-blake3 = { version = "1", features = ["pure"] }
 
 [lints]
 workspace = true

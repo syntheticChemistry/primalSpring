@@ -12,7 +12,7 @@ name = "exp106_micro_desktop_shell"
 path = "src/main.rs"
 
 [dependencies]
-base64 = "0.22"
+base64 = { workspace = true }
 primalspring = { path = "../../ecoPrimal" }
 serde = { workspace = true }
 serde_json = { workspace = true }

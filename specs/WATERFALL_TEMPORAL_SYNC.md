@@ -247,7 +247,7 @@ repos = ["gardens/helixVision"]
 
 ## Implementation Path
 
-### Phase 1: Temporal `cascade-pull.sh` (immediate)
+### Phase 1: Temporal cascade-pull (DONE → `membrane temporal.cascade`)
 
 Evolve the bash script:
 
@@ -285,7 +285,7 @@ Evolve the bash script:
 | `CROSS_GATE_GRAPH_EXECUTOR.md` | Phase 4 temporal coordination requires cross-gate `graph.execute` |
 | `ecosystem_manifest.toml` | SSOT for repo metadata, gate profiles, and remote URLs |
 | `ecosystem_pull.toml` | Signal graph for the pull operation — needs temporal source logic |
-| `cascade-pull.sh` | Current implementation — evolves through phases above |
+| `membrane temporal.cascade` | Rust implementation (replaces bash `cascade-pull.sh`, fossilized Wave 66) |
 | `freshness.toml` | Wave snapshot — evolves to per-remote temporal state |
 
 ---

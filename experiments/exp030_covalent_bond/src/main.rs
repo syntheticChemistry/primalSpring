@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp030: Covalent Bond — validates NUCLEUS bonding structure and live Tower health.
 //!
 //! Structural: `BondType`, bonding policy, graph metadata.

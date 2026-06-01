@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Exp021: RootPulse branch and merge via rhizoCrypt DAG operations.
 
 use primalspring::composition::CompositionContext;

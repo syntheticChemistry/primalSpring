@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! exp069 — Graph-Driven Overlay Composition
 //!
 //! Validates the overlay composition model: tier-independent primals

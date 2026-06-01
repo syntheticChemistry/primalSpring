@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! Provenance trio Neural API call sites for **experiments** and integration tests.
 //!
 //! This crate holds capability routing for the provenance trio so the

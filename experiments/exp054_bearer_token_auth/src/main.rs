@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
+#![forbid(unsafe_code)]
 //! Exp054: Bearer Token Auth — structural JSON-RPC plus live security → compute flow.
 
 use primalspring::composition::CompositionContext;

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![forbid(unsafe_code)]
+
 //! exp086 — Genetic Identity E2E
 //!
 //! Validates the mito (beacon seed) vs nuclear (family/lineage seed) model

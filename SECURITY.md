@@ -20,9 +20,10 @@ vulnerability, please report it responsibly:
 
 ## Security Posture
 
-- **Zero unsafe code**: `#![deny(unsafe_code)]` at workspace level with zero
-  allow-listed exceptions. `SeedConfig` + `OnceLock` replaced `env::set_var`
-  (Rust 2024 marks it `unsafe`) — no `unsafe` blocks remain in any binary
+- **Zero unsafe code**: `#![forbid(unsafe_code)]` on all 88 crate roots
+  (lib + 3 bins + 93 experiments + 1 helper lib). `SeedConfig` + `OnceLock`
+  replaced `env::set_var` (Rust 2024 marks it `unsafe`) — no `unsafe` blocks
+  remain in any binary
 - **Zero C dependencies**: enforced by `deny.toml` (ecoBin compliant)
 - **No network listeners by default**: the JSON-RPC server binds to Unix
   domain sockets by default; TCP is available for cross-gate and mobile
@@ -43,11 +44,12 @@ vulnerability, please report it responsibly:
 - **Method gate (JH-0)**: pre-dispatch capability authorization on JSON-RPC
   dispatchers. Public methods (health, identity, capabilities) are exempt;
   all other methods require a capability token when enforcement is active.
-  Default: `Permissive` (log-only). See `wateringHole/METHOD_GATE_STANDARD.md`
+  Default: `Enforced` with deny-by-default (`DenyVerifier`) when security
+  provider is unreachable. `SecurityVerifier` discovered by capability at runtime
 
 ## Dependency Auditing
 
 Dependencies are audited via `cargo deny check` which enforces:
 - License allowlist (AGPL-compatible only)
 - Advisory database checks
-- C dependency ban list (18 crates banned for ecoBin compliance)
+- C dependency ban list (20 crates banned for ecoBin compliance)
