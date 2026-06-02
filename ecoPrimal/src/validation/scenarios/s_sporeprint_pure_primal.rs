@@ -17,7 +17,7 @@ use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -117,7 +117,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     phase_certification(v, &root);
 }
 
-fn phase_content_parsing(v: &mut ValidationResult, root: &PathBuf) {
+fn phase_content_parsing(v: &mut ValidationResult, root: &Path) {
     let content_dir = root.join("content");
 
     let md_files: Vec<_> = walkdir(&content_dir, "md");
@@ -175,7 +175,7 @@ fn phase_content_parsing(v: &mut ValidationResult, root: &PathBuf) {
     );
 }
 
-fn phase_entity_resolution(v: &mut ValidationResult, root: &PathBuf) {
+fn phase_entity_resolution(v: &mut ValidationResult, root: &Path) {
     let config_content =
         std::fs::read_to_string(root.join("config.toml")).unwrap_or_default();
 
@@ -239,7 +239,7 @@ fn phase_entity_resolution(v: &mut ValidationResult, root: &PathBuf) {
     );
 }
 
-fn phase_modality_output(v: &mut ValidationResult, root: &PathBuf) {
+fn phase_modality_output(v: &mut ValidationResult, root: &Path) {
     let content_dir = root.join("content");
     let md_files: Vec<_> = walkdir(&content_dir, "md");
 
@@ -322,7 +322,7 @@ fn phase_composition_graph(v: &mut ValidationResult) {
     );
 }
 
-fn phase_certification(v: &mut ValidationResult, root: &PathBuf) {
+fn phase_certification(v: &mut ValidationResult, root: &Path) {
     let workflow = root.join(".github/workflows/deploy.yml");
     let has_certify = if let Ok(content) = std::fs::read_to_string(&workflow) {
         content.contains("certify")

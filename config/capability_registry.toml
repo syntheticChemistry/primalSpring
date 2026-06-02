@@ -46,6 +46,7 @@ methods = [
     "capability.discover",
     "capability.list",
     "capability.register",
+    "capability.resolve",
     "capability.route",
     "capability.unregister",
 ]
