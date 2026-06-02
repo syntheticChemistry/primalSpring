@@ -47,7 +47,7 @@ All methods accept JSON-RPC 2.0 over raw TCP on UDS or TCP.
 
 | Method | Params | Response |
 |--------|--------|----------|
-| `discovery.peers` / `discovery.find_primals` | `{}` | `{ peers: [{ node_id, family_id, address, tcp_port, capabilities, last_seen }], total_count: u32 }` |
+| `discovery.peers` / `discovery.find_primals` | `{ measure_latency?: bool }` | `{ peers: [{ node_id, family_id, gate, address, tcp_port, capabilities, last_seen, latency_ms?, segment? }], total_count: u32 }` |
 | `discovery.announce` / `announce_presence` | `{ family_id?: string, capabilities?: [string] }` | `{ announced: true, family_id: string, capabilities: [string] }` |
 | `discovery.get_peer` | `{ peer_id: string }` | Peer info object (handler exists but not in main dispatch) |
 

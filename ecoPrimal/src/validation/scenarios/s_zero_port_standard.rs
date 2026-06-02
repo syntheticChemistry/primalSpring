@@ -170,6 +170,59 @@ fn phase_deployment_matrix_alignment(v: &mut ValidationResult) {
     }
 }
 
+fn phase_droppable_federation_ports(v: &mut ValidationResult) {
+    use crate::tolerances::FEDERATION_PORTS;
+
+    let droppable: Vec<_> = FEDERATION_PORTS
+        .iter()
+        .filter(|fp| fp.droppable)
+        .collect();
+
+    v.check_bool(
+        "federation:droppable_identified",
+        !droppable.is_empty(),
+        &format!(
+            "{} droppable federation ports: {}",
+            droppable.len(),
+            droppable
+                .iter()
+                .map(|fp| format!("{}:{} ({})", fp.primal, fp.port, fp.role))
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
+    );
+
+    for fp in &droppable {
+        let bound = std::net::TcpListener::bind(("127.0.0.1", fp.port)).is_err();
+        v.check_bool(
+            &format!("federation:{}_{}_not_bound", fp.primal, fp.port),
+            !bound,
+            &format!(
+                "droppable port {}:{} ({}) should not be bound in zero-port mode",
+                fp.primal, fp.port, fp.role
+            ),
+        );
+    }
+
+    let non_droppable: Vec<_> = FEDERATION_PORTS
+        .iter()
+        .filter(|fp| !fp.droppable)
+        .collect();
+    v.check_bool(
+        "federation:core_ports_retained",
+        !non_droppable.is_empty(),
+        &format!(
+            "{} non-droppable federation ports (Songbird mesh): {}",
+            non_droppable.len(),
+            non_droppable
+                .iter()
+                .map(|fp| format!("{}:{}", fp.primal, fp.port))
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
+    );
+}
+
 /// Execute zero-port standard validation.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Tier 5 TCP discovery off by default");
@@ -183,6 +236,9 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 
     v.section("Phase 4: Deployment matrix alignment (UDS-only default, TCP deprecated)");
     phase_deployment_matrix_alignment(v);
+
+    v.section("Phase 5: Droppable federation ports not bound (glacial zero-port)");
+    phase_droppable_federation_ports(v);
 }
 
 #[cfg(test)]

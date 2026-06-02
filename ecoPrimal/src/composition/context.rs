@@ -58,10 +58,20 @@ use super::routing::{ALL_CAPS, capability_to_primal};
 /// The zero-port Tower Atomic standard treats TCP port exposure as metadata
 /// leakage. Tier 5 is off by default; set `PRIMALSPRING_TCP_TIER5=1` for
 /// containers, Android, or deployments without Unix domain sockets.
+///
+/// In release builds, TCP Tier 5 is unconditionally disabled — the env var
+/// is ignored. This enforces the glacial zero-port standard at compile time.
 fn tcp_tier5_enabled() -> bool {
-    std::env::var(crate::env_keys::PRIMALSPRING_TCP_TIER5)
-        .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
-        .unwrap_or(false)
+    #[cfg(debug_assertions)]
+    {
+        std::env::var(crate::env_keys::PRIMALSPRING_TCP_TIER5)
+            .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+            .unwrap_or(false)
+    }
+    #[cfg(not(debug_assertions))]
+    {
+        false
+    }
 }
 
 /// How a capability was discovered — mirrors lithoSpore's `DiscoveryPath`.

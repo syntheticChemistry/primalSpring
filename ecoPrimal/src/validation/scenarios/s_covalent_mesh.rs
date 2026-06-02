@@ -107,6 +107,10 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
                     "live:peer_gate_ids",
                     "no peers — federation port may not be enabled",
                 );
+                v.check_skip(
+                    "live:peer_latency",
+                    "no peers for latency measurement",
+                );
             } else if let Some(peers) = resp.get("peers").and_then(serde_json::Value::as_array) {
                 let gate_ids: Vec<&str> = peers
                     .iter()
@@ -117,6 +121,30 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
                     !gate_ids.is_empty(),
                     &format!("peer gates: {gate_ids:?}"),
                 );
+                let latency_peers: Vec<(&str, f64)> = peers
+                    .iter()
+                    .filter_map(|p| {
+                        let gate = p.get("gate").and_then(serde_json::Value::as_str)?;
+                        let ms = p.get("latency_ms").and_then(serde_json::Value::as_f64)?;
+                        Some((gate, ms))
+                    })
+                    .collect();
+                if latency_peers.is_empty() {
+                    v.check_skip(
+                        "live:peer_latency",
+                        "peers present but no latency_ms field (Songbird may need update)",
+                    );
+                } else {
+                    let summary: Vec<String> = latency_peers
+                        .iter()
+                        .map(|(g, ms)| format!("{g}={ms:.1}ms"))
+                        .collect();
+                    v.check_bool(
+                        "live:peer_latency",
+                        true,
+                        &format!("peer latencies: {}", summary.join(", ")),
+                    );
+                }
             }
         }
         Err(e) if e.is_connection_error() => {
