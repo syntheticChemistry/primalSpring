@@ -47,10 +47,6 @@ impl TokenVerifier for PermissiveVerifier {
     }
 }
 
-/// Alias preserved for backward compatibility.
-#[deprecated(since = "0.9.31", note = "Renamed to `PermissiveVerifier` for clarity")]
-pub type NoopVerifier = PermissiveVerifier;
-
 /// Verifier that delegates to the security capability provider via IPC.
 ///
 /// Discovers the security provider at runtime through capability-based
@@ -80,10 +76,6 @@ impl SecurityVerifier {
         disc.socket.map(Self::new)
     }
 }
-
-/// Alias preserved for backward compatibility.
-#[deprecated(since = "0.9.31", note = "Renamed to `SecurityVerifier` — capability-based, no hardcoded primal name")]
-pub type BearDogVerifier = SecurityVerifier;
 
 impl TokenVerifier for SecurityVerifier {
     fn verify(&self, token: &str) -> Option<VerifiedToken> {

@@ -50,7 +50,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     let outcome = dispatcher.dispatch("crypto.hash", &params);
     v.check_bool(
         "dispatch-crypto-hash-owner",
-        outcome.owner == "beardog",
+        &*outcome.owner == "beardog",
         &format!("crypto.hash routed to: {}", outcome.owner),
     );
     v.check_bool(
@@ -74,7 +74,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     let store_outcome = dispatcher.dispatch("storage.store", &store_params);
     v.check_bool(
         "dispatch-storage-owner",
-        store_outcome.owner == "nestgate",
+        &*store_outcome.owner == "nestgate",
         &format!("storage.store routed to: {}", store_outcome.owner),
     );
     v.check_bool(

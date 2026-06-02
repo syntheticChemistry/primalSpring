@@ -19,7 +19,7 @@ use integration::stub_harness::{stub_beardog, stub_songbird, stub_tower};
 
 use primalspring::ipc::client::PrimalClient;
 use primalspring::ipc::method_gate::{
-    BearDogVerifier, CallerContext, EnforcementMode, MethodGate, TokenVerifier,
+    CallerContext, EnforcementMode, MethodGate, SecurityVerifier, TokenVerifier,
 };
 
 // ── BearDog contract tests ──────────────────────────────────────────────
@@ -91,7 +91,7 @@ fn stub_beardog_token_roundtrip() {
 #[test]
 fn stub_beardog_verifier_trait() {
     let bd = stub_beardog();
-    let verifier = BearDogVerifier::new(bd.socket_path.clone());
+    let verifier = SecurityVerifier::new(bd.socket_path.clone());
     let verified = verifier.verify("stub-ionic-stats.*");
     assert!(verified.is_some());
     let v = verified.unwrap();
@@ -152,7 +152,7 @@ fn stub_tower_pair_starts() {
 #[test]
 fn gate_with_stub_beardog_verifier() {
     let bd = stub_beardog();
-    let verifier = Box::new(BearDogVerifier::new(bd.socket_path.clone()));
+    let verifier = Box::new(SecurityVerifier::new(bd.socket_path.clone()));
     let gate = MethodGate::with_verifier(EnforcementMode::Enforced, verifier);
 
     let ctx = CallerContext::loopback();
@@ -168,7 +168,7 @@ fn gate_with_stub_beardog_verifier() {
 #[test]
 fn gate_rejects_wrong_scope_with_stub_verifier() {
     let bd = stub_beardog();
-    let verifier = Box::new(BearDogVerifier::new(bd.socket_path.clone()));
+    let verifier = Box::new(SecurityVerifier::new(bd.socket_path.clone()));
     let gate = MethodGate::with_verifier(EnforcementMode::Enforced, verifier);
 
     let ctx = CallerContext::loopback();

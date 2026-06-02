@@ -112,7 +112,7 @@ license = "AGPL-3.0-or-later"
 repository = "https://github.com/syntheticChemistry/primalSpring"
 
 [workspace.dependencies]
-serde = { version = "1", features = ["derive"] }
+serde = { version = "1", features = ["derive", "rc"] }
 serde_json = "1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }

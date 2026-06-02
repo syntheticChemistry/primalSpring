@@ -19,6 +19,8 @@
 //! - **Metrics**: each dispatch records latency and outcome for future
 //!   adaptive routing (Layer 4 of the Neural API evolution model).
 
+pub mod metrics;
+
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -28,6 +30,8 @@ use super::neural_routing::{
 };
 use crate::ipc::error::IpcError;
 use crate::ipc::neural_bridge::{BridgeOutcome, NeuralBridge};
+
+pub use metrics::{DispatchMetric, PrimalDispatchSummary};
 
 /// Typed errors for neural dispatch operations.
 #[derive(Debug, Clone, thiserror::Error)]
@@ -51,12 +55,15 @@ pub enum DispatchError {
 }
 
 /// Outcome of a single neural dispatch.
+///
+/// Uses `Arc<str>` for method/owner to avoid per-dispatch allocations —
+/// these are cloned from the routing table's interned `RouteEntry` strings.
 #[derive(Debug, Clone)]
 pub struct DispatchOutcome {
     /// The method that was dispatched.
-    pub method: String,
+    pub method: Arc<str>,
     /// Which primal handled it.
-    pub owner: String,
+    pub owner: Arc<str>,
     /// The composition tier used.
     pub tier: CompositionTier,
     /// How the dispatch was routed.
@@ -82,28 +89,6 @@ pub enum RoutePath {
     Offline,
 }
 
-/// Metrics collected per dispatch — the raw data for adaptive routing.
-///
-/// Serializable to JSON-lines for persistence and training data collection
-/// (Layer 4/5 of the Neural API evolution model).
-#[derive(Debug, Clone, serde::Serialize)]
-pub struct DispatchMetric {
-    /// JSON-RPC method or pattern name.
-    pub method: String,
-    /// Primal that handled the dispatch.
-    pub owner: String,
-    /// Composition tier.
-    pub tier: CompositionTier,
-    /// Wall-clock latency in milliseconds.
-    pub latency_ms: u64,
-    /// Whether the dispatch succeeded.
-    pub success: bool,
-    /// How the method was routed.
-    pub route_path: RoutePath,
-    /// Unix epoch milliseconds when dispatch occurred.
-    pub timestamp_epoch_ms: u64,
-}
-
 /// High-level neural dispatch surface.
 ///
 /// Wraps the routing table and optional NeuralBridge to provide method
@@ -113,7 +98,7 @@ pub struct DispatchMetric {
 pub struct NeuralDispatcher {
     table: NeuralRoutingTable,
     bridge: Option<NeuralBridge>,
-    metrics: Vec<DispatchMetric>,
+    pub(crate) metrics: Vec<DispatchMetric>,
 }
 
 impl NeuralDispatcher {
@@ -179,9 +164,10 @@ impl NeuralDispatcher {
         let entry = match self.table.route(method) {
             Some(e) => e.clone(),
             None => {
+                let m: Arc<str> = Arc::from(method);
                 return DispatchOutcome {
-                    method: method.to_owned(),
-                    owner: "unknown".into(),
+                    method: m,
+                    owner: Arc::from("unknown"),
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
                     result: Err(DispatchError::MethodNotFound(method.to_owned())),
@@ -197,26 +183,22 @@ impl NeuralDispatcher {
 
         let latency_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
         let success = result.is_ok();
+        let method_arc = Arc::clone(&entry.method);
+        let owner_arc = Arc::clone(&entry.owner);
 
         self.metrics.push(DispatchMetric {
-            method: method.to_owned(),
-            owner: entry.owner.to_string(),
+            method: Arc::clone(&method_arc),
+            owner: Arc::clone(&owner_arc),
             tier: entry.tier,
             latency_ms,
             success,
             route_path: route_path.clone(),
-            timestamp_epoch_ms: u64::try_from(
-                std::time::SystemTime::now()
-                    .duration_since(std::time::UNIX_EPOCH)
-                    .unwrap_or_default()
-                    .as_millis(),
-            )
-            .unwrap_or(u64::MAX),
+            timestamp_epoch_ms: epoch_ms(),
         });
 
         DispatchOutcome {
-            method: method.to_owned(),
-            owner: entry.owner.to_string(),
+            method: method_arc,
+            owner: owner_arc,
             tier: entry.tier,
             route_path,
             result,
@@ -227,8 +209,7 @@ impl NeuralDispatcher {
     /// Dispatch a composition pattern by name.
     ///
     /// If the pattern is registered, constructs a graph execution request
-    /// and dispatches via `graph.execute`. Each method in the pattern is
-    /// treated as a graph node.
+    /// and dispatches via `graph.execute`.
     pub fn dispatch_pattern(
         &mut self,
         pattern_name: &str,
@@ -240,8 +221,8 @@ impl NeuralDispatcher {
             Some(p) => p.clone(),
             None => {
                 return DispatchOutcome {
-                    method: pattern_name.to_owned(),
-                    owner: "unknown".into(),
+                    method: Arc::from(pattern_name),
+                    owner: Arc::from("unknown"),
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
                     result: Err(DispatchError::PatternNotFound(pattern_name.to_owned())),
@@ -259,26 +240,22 @@ impl NeuralDispatcher {
 
         let latency_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
         let success = result.is_ok();
+        let method_arc = Arc::clone(&pattern.name);
+        let owner_arc: Arc<str> = Arc::from(join_arc_strs(&pattern.primals, "+"));
 
         self.metrics.push(DispatchMetric {
-            method: pattern_name.to_owned(),
-            owner: pattern.primals.join("+"),
+            method: Arc::clone(&method_arc),
+            owner: Arc::clone(&owner_arc),
             tier: pattern.tier,
             latency_ms,
             success,
             route_path: RoutePath::GraphExecute,
-            timestamp_epoch_ms: u64::try_from(
-                std::time::SystemTime::now()
-                    .duration_since(std::time::UNIX_EPOCH)
-                    .unwrap_or_default()
-                    .as_millis(),
-            )
-            .unwrap_or(u64::MAX),
+            timestamp_epoch_ms: epoch_ms(),
         });
 
         DispatchOutcome {
-            method: pattern_name.to_owned(),
-            owner: pattern.primals.join("+"),
+            method: method_arc,
+            owner: owner_arc,
             tier: pattern.tier,
             route_path: RoutePath::GraphExecute,
             result,
@@ -287,22 +264,19 @@ impl NeuralDispatcher {
     }
 
     /// Ingest a `BridgeOutcome` from an external `capability_call_instrumented`
-    /// round-trip. This feeds the observatory's metric collection from any
-    /// code path that uses the NeuralBridge directly (not just `dispatch()`).
+    /// round-trip.
     pub fn record_bridge_outcome(&mut self, outcome: &BridgeOutcome) {
-        let method = format!("{}.{}", outcome.capability, outcome.operation);
-        let owner = self
-            .table
-            .route(&method)
-            .map_or_else(|| "unknown".into(), |e| e.owner.to_string());
-        let tier = self
-            .table
-            .route(&method)
-            .map_or(CompositionTier::Standalone, |e| e.tier);
+        let method_str = format!("{}.{}", outcome.capability, outcome.operation);
+        let (method_arc, owner_arc, tier) =
+            if let Some(entry) = self.table.route(&method_str) {
+                (Arc::clone(&entry.method), Arc::clone(&entry.owner), entry.tier)
+            } else {
+                (Arc::from(method_str.as_str()), Arc::from("unknown"), CompositionTier::Standalone)
+            };
 
         self.metrics.push(DispatchMetric {
-            method,
-            owner,
+            method: method_arc,
+            owner: owner_arc,
             tier,
             latency_ms: outcome.latency_ms,
             success: outcome.success,
@@ -313,9 +287,6 @@ impl NeuralDispatcher {
 
     /// Dispatch a method using the instrumented bridge path, recording the
     /// round-trip outcome into metrics automatically.
-    ///
-    /// Equivalent to `dispatch()` but uses `capability_call_instrumented`
-    /// for precise bridge-level timing.
     pub fn dispatch_instrumented(
         &mut self,
         method: &str,
@@ -327,8 +298,8 @@ impl NeuralDispatcher {
             Some(e) => e.clone(),
             None => {
                 return DispatchOutcome {
-                    method: method.to_owned(),
-                    owner: "unknown".into(),
+                    method: Arc::from(method),
+                    owner: Arc::from("unknown"),
                     tier: CompositionTier::Standalone,
                     route_path: RoutePath::Unresolved,
                     result: Err(DispatchError::MethodNotFound(method.to_owned())),
@@ -355,188 +326,13 @@ impl NeuralDispatcher {
         let latency_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
 
         DispatchOutcome {
-            method: method.to_owned(),
-            owner: entry.owner.to_string(),
+            method: Arc::clone(&entry.method),
+            owner: Arc::clone(&entry.owner),
             tier: entry.tier,
             route_path,
             result,
             latency_ms,
         }
-    }
-
-    /// All collected dispatch metrics (for adaptive routing analysis).
-    #[must_use]
-    pub fn metrics(&self) -> &[DispatchMetric] {
-        &self.metrics
-    }
-
-    /// Average latency for a specific method across all dispatches.
-    #[must_use]
-    #[expect(
-        clippy::cast_precision_loss,
-        reason = "metrics calculation — sub-unit precision not needed"
-    )]
-    pub fn avg_latency_ms(&self, method: &str) -> Option<f64> {
-        let relevant: Vec<_> = self
-            .metrics
-            .iter()
-            .filter(|m| m.method == method && m.success)
-            .collect();
-        if relevant.is_empty() {
-            return None;
-        }
-        let total: u64 = relevant.iter().map(|m| m.latency_ms).sum();
-        Some(total as f64 / relevant.len() as f64)
-    }
-
-    /// Error rate for a specific method (0.0–1.0).
-    #[must_use]
-    #[expect(
-        clippy::cast_precision_loss,
-        reason = "metrics calculation — sub-unit precision not needed"
-    )]
-    pub fn error_rate(&self, method: &str) -> Option<f64> {
-        let relevant: Vec<_> = self
-            .metrics
-            .iter()
-            .filter(|m| m.method == method)
-            .collect();
-        if relevant.is_empty() {
-            return None;
-        }
-        let failures = relevant.iter().filter(|m| !m.success).count();
-        Some(failures as f64 / relevant.len() as f64)
-    }
-
-    /// Per-primal dispatch summary.
-    #[must_use]
-    pub fn primal_summary(&self) -> std::collections::HashMap<String, PrimalDispatchSummary> {
-        let mut summaries: std::collections::HashMap<String, PrimalDispatchSummary> =
-            std::collections::HashMap::new();
-        for m in &self.metrics {
-            let entry = summaries.entry(m.owner.clone()).or_insert_with(|| {
-                PrimalDispatchSummary {
-                    primal: m.owner.clone(),
-                    total_dispatches: 0,
-                    successes: 0,
-                    total_latency_ms: 0,
-                }
-            });
-            entry.total_dispatches += 1;
-            if m.success {
-                entry.successes += 1;
-            }
-            entry.total_latency_ms += m.latency_ms;
-        }
-        summaries
-    }
-
-    /// Generate a routing status report as JSON — suitable for
-    /// `coordination.neural_api_status` responses.
-    #[must_use]
-    pub fn status_report(&self) -> serde_json::Value {
-        let summary = self.table.tier_summary();
-        serde_json::json!({
-            "online": self.is_online(),
-            "total_methods": self.table.method_count(),
-            "total_domains": self.table.domain_count(),
-            "total_primals": self.table.primal_count(),
-            "tier_distribution": summary,
-            "patterns_registered": self.table.patterns().len(),
-            "dispatches_recorded": self.metrics.len(),
-        })
-    }
-
-    /// Flush accumulated metrics to a JSON-lines file for persistent telemetry.
-    ///
-    /// Appends each `DispatchMetric` as a single JSON line, enabling offline
-    /// analysis and training data collection for Layer 4/5 routing evolution
-    /// (single-layer perceptron on latency/success/tier features).
-    ///
-    /// Returns the number of metrics written. Clears the in-memory buffer on
-    /// success so the same metrics are never written twice.
-    ///
-    /// # Errors
-    ///
-    /// Returns `std::io::Error` if the file cannot be opened or written to.
-    pub fn flush_metrics_to_file(
-        &mut self,
-        path: &std::path::Path,
-    ) -> std::io::Result<usize> {
-        use std::io::Write;
-
-        if self.metrics.is_empty() {
-            return Ok(0);
-        }
-
-        let file = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(path)?;
-        let mut writer = std::io::BufWriter::new(file);
-
-        let count = self.metrics.len();
-        for metric in self.metrics.drain(..) {
-            if let Ok(line) = serde_json::to_string(&metric) {
-                writeln!(writer, "{line}")?;
-            }
-        }
-
-        writer.flush()?;
-        tracing::debug!(
-            path = %path.display(),
-            metrics_flushed = count,
-            "dispatch telemetry persisted"
-        );
-        Ok(count)
-    }
-
-    /// Default telemetry file path (under the socket dir).
-    #[must_use]
-    pub fn default_telemetry_path() -> std::path::PathBuf {
-        let socket_dir = crate::ipc::discover::resolve_socket_dir();
-        std::path::PathBuf::from(socket_dir).join("dispatch_telemetry.jsonl")
-    }
-}
-
-/// Per-primal dispatch statistics.
-#[derive(Debug, Clone)]
-pub struct PrimalDispatchSummary {
-    /// Primal identifier.
-    pub primal: String,
-    /// Total dispatch attempts to this primal.
-    pub total_dispatches: u64,
-    /// Successful dispatches.
-    pub successes: u64,
-    /// Cumulative latency across all dispatches (ms).
-    pub total_latency_ms: u64,
-}
-
-impl PrimalDispatchSummary {
-    /// Average latency per dispatch to this primal.
-    #[must_use]
-    #[expect(
-        clippy::cast_precision_loss,
-        reason = "metrics calculation — sub-unit precision not needed"
-    )]
-    pub fn avg_latency_ms(&self) -> f64 {
-        if self.total_dispatches == 0 {
-            return 0.0;
-        }
-        self.total_latency_ms as f64 / self.total_dispatches as f64
-    }
-
-    /// Success rate (0.0–1.0) for dispatches to this primal.
-    #[must_use]
-    #[expect(
-        clippy::cast_precision_loss,
-        reason = "metrics calculation — sub-unit precision not needed"
-    )]
-    pub fn success_rate(&self) -> f64 {
-        if self.total_dispatches == 0 {
-            return 0.0;
-        }
-        self.successes as f64 / self.total_dispatches as f64
     }
 }
 
@@ -587,6 +383,21 @@ fn build_graph_request(
     })
 }
 
+fn join_arc_strs(parts: &[Arc<str>], sep: &str) -> String {
+    let strs: Vec<&str> = parts.iter().map(|s| &**s).collect();
+    strs.join(sep)
+}
+
+fn epoch_ms() -> u64 {
+    u64::try_from(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis(),
+    )
+    .unwrap_or(u64::MAX)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -619,7 +430,7 @@ mod tests {
         let outcome = d.dispatch("crypto.hash", &serde_json::json!({}));
         assert_eq!(outcome.route_path, RoutePath::Offline);
         assert!(outcome.result.is_err());
-        assert_eq!(outcome.owner, "beardog");
+        assert_eq!(&*outcome.owner, "beardog");
     }
 
     #[test]
@@ -687,8 +498,9 @@ mod tests {
         d.dispatch("crypto.sign", &serde_json::json!({}));
         d.dispatch("storage.store", &serde_json::json!({}));
         let summary = d.primal_summary();
-        assert!(summary.contains_key("beardog"));
-        assert_eq!(summary["beardog"].total_dispatches, 2);
+        let key: Arc<str> = Arc::from("beardog");
+        assert!(summary.contains_key(&key));
+        assert_eq!(summary[&key].total_dispatches, 2);
     }
 
     #[test]
@@ -703,8 +515,8 @@ mod tests {
         };
         d.record_bridge_outcome(&outcome);
         assert_eq!(d.metrics().len(), 1);
-        assert_eq!(d.metrics()[0].method, "crypto.hash");
-        assert_eq!(d.metrics()[0].owner, "beardog");
+        assert_eq!(&*d.metrics()[0].method, "crypto.hash");
+        assert_eq!(&*d.metrics()[0].owner, "beardog");
         assert_eq!(d.metrics()[0].latency_ms, 42);
         assert!(d.metrics()[0].success);
     }
@@ -720,7 +532,7 @@ mod tests {
             timestamp_epoch_ms: 1_700_000_000_000,
         };
         d.record_bridge_outcome(&outcome);
-        assert_eq!(d.metrics()[0].owner, "unknown");
+        assert_eq!(&*d.metrics()[0].owner, "unknown");
         assert_eq!(d.metrics()[0].tier, CompositionTier::Standalone);
     }
 
@@ -730,7 +542,7 @@ mod tests {
         let outcome = d.dispatch_instrumented("crypto.hash", &serde_json::json!({}));
         assert_eq!(outcome.route_path, RoutePath::Offline);
         assert!(outcome.result.is_err());
-        assert_eq!(outcome.owner, "beardog");
+        assert_eq!(&*outcome.owner, "beardog");
     }
 
     #[test]

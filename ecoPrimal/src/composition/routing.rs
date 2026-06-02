@@ -1,14 +1,47 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 //! Capability routing tables — maps capabilities to primals and methods to domains.
+//!
+//! The domain→owner mapping is derived from `config/capability_registry.toml`
+//! (parsed once at init via [`LazyLock`]). This eliminates hand-maintained
+//! duplication between code tables and the canonical TOML.
+
+use std::collections::HashMap;
+use std::sync::LazyLock;
 
 use crate::primal_names::Primal;
 
+/// Embedded canonical capability registry (single source of truth).
+const REGISTRY_TOML: &str = include_str!("../../../config/capability_registry.toml");
+
+/// Parsed domain→owner slug mapping from the capability registry.
+///
+/// Built once at first access. Each TOML section `[domain] owner = "primal"`
+/// becomes an entry. Sections with `owner = "all"`, `"none"`, or `"tests"`
+/// are excluded.
+static DOMAIN_OWNER_MAP: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
+    let mut map = HashMap::new();
+    let Ok(parsed) = REGISTRY_TOML.parse::<toml::Table>() else {
+        return map;
+    };
+    for (domain, section) in &parsed {
+        if domain.starts_with("compositions") || domain == "test_fixtures" || domain == "false_positives" {
+            continue;
+        }
+        if let Some(owner) = section.get("owner").and_then(|v| v.as_str()) {
+            if owner != "all" && owner != "none" && owner != "tests" {
+                map.insert(domain.clone(), owner.to_owned());
+            }
+        }
+    }
+    map
+});
+
 /// All NUCLEUS capabilities that primalSpring discovers and authenticates.
 ///
-/// Single source of truth for `discover`, `from_live_discovery`, `PROACTIVE_CAPS`
-/// in `upgrade_btsp_clients`, and the TCP fallback table. Each entry is
-/// the *primary* capability domain for a primal.
+/// These are the *primary* discovery domains — one per primal that
+/// `CompositionContext::discover()` iterates. Curated subset of the full
+/// registry because not every TOML section is a discovery target.
 ///
 /// Routing consistency is enforced by `s_routing_consistency` which verifies
 /// that every method in `capability_registry.toml` routes through
@@ -48,9 +81,9 @@ pub const BTSP_EXTRA_CAPS: &[&str] = &[
 
 /// Map a capability domain to its canonical primal provider.
 ///
-/// This is the ecosystem's single source of truth for "which primal owns
-/// which capability domain." Springs use this to route IPC calls without
-/// hardcoding primal names.
+/// Resolves from the parsed `capability_registry.toml` first, then falls
+/// through to spring/app owners. This is the ecosystem's single source of
+/// truth for "which primal owns which capability domain."
 ///
 /// ```
 /// assert_eq!(primalspring::composition::capability_to_primal("tensor"), "barracuda");
@@ -70,6 +103,9 @@ pub fn capability_to_primal(capability: &str) -> &str {
 ///
 /// Falls through to the capability name itself if no spring claims it.
 fn capability_to_spring_owner(capability: &str) -> &str {
+    if let Some(owner) = DOMAIN_OWNER_MAP.get(capability) {
+        return leak_or_match(owner);
+    }
     use crate::primal_names::Spring;
     match capability {
         "tool" | "primalspring" | "coordination" | "bonding" | "composition" | "mcp" => {
@@ -82,25 +118,60 @@ fn capability_to_spring_owner(capability: &str) -> &str {
     }
 }
 
-/// Typed version — returns `None` for non-primal targets (springs, unknown).
+/// Typed version — consults the TOML-derived domain→owner map first,
+/// falls back to static match for aliases not directly in the TOML.
+///
+/// Returns `None` for non-primal targets (springs, unknown).
 #[must_use]
 pub fn capability_to_primal_typed(capability: &str) -> Option<Primal> {
-    use Primal::{BearDog, Songbird, ToadStool, BarraCuda, CoralReef, NestGate, Squirrel, RhizoCrypt, SweetGrass, LoamSpine, PetalTongue, SkunkBat, BiomeOS};
+    if let Some(owner) = DOMAIN_OWNER_MAP.get(capability) {
+        return owner.parse::<Primal>().ok();
+    }
+    static_capability_fallback(capability)
+}
+
+/// Static fallback for capability aliases that aren't direct TOML sections
+/// but still map to primals (e.g. `"network"` → Songbird, `"orchestration"` → BiomeOS).
+///
+/// These arise because `ALL_CAPS` names the *primary discovery domain* per primal,
+/// which may not match any single TOML section key. The TOML has finer-grained
+/// sections (e.g. `[graph]`, `[lifecycle]`, `[topology]` all owned by BiomeOS,
+/// but the discovery domain is `"orchestration"`).
+fn static_capability_fallback(capability: &str) -> Option<Primal> {
+    use Primal::{BarraCuda, BiomeOS, LoamSpine, Songbird, SkunkBat, SweetGrass};
     match capability {
-        "security" | "crypto" => Some(BearDog),
-        "discovery" | "network" => Some(Songbird),
-        "compute" => Some(ToadStool),
-        "tensor" | "math" => Some(BarraCuda),
-        "shader" => Some(CoralReef),
-        "storage" | "content" => Some(NestGate),
-        "ai" | "inference" => Some(Squirrel),
-        "dag" => Some(RhizoCrypt),
-        "provenance" | "commit" | "attribution" | "braid" => Some(SweetGrass),
+        "orchestration" | "manifest" => Some(BiomeOS),
+        "commit" => Some(SweetGrass),
         "ledger" | "spine" | "merkle" => Some(LoamSpine),
-        "visualization" => Some(PetalTongue),
-        "defense" | "recon" | "threat" | "audit" => Some(SkunkBat),
-        "orchestration" | "federation" | "manifest" => Some(BiomeOS),
+        "network" => Some(Songbird),
+        "math" => Some(BarraCuda),
+        "recon" | "threat" | "audit" => Some(SkunkBat),
         _ => None,
+    }
+}
+
+/// Return a `&'static str` for known owner slugs (avoids leaking).
+fn leak_or_match(owner: &str) -> &'static str {
+    match owner {
+        "beardog" => "beardog",
+        "songbird" => "songbird",
+        "toadstool" => "toadstool",
+        "barracuda" => "barracuda",
+        "coralreef" => "coralreef",
+        "nestgate" => "nestgate",
+        "squirrel" => "squirrel",
+        "rhizocrypt" => "rhizocrypt",
+        "loamspine" => "loamspine",
+        "sweetgrass" => "sweetgrass",
+        "petaltongue" => "petaltongue",
+        "skunkbat" => "skunkbat",
+        "biomeos" => "biomeos",
+        "primalspring" => "primalspring",
+        "neuralspring" => "neuralspring",
+        "ludospring" => "ludospring",
+        "esotericwebb" => "esotericwebb",
+        "membrane" => "membrane",
+        _ => "unknown",
     }
 }
 

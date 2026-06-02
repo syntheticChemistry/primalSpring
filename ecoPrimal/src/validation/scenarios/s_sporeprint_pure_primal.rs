@@ -141,10 +141,14 @@ fn phase_content_parsing(v: &mut ValidationResult, root: &PathBuf) {
 
         let has_front_matter = content.trim_start().starts_with("+++");
         if has_front_matter {
-            let after = &content[content.find("+++").unwrap() + 3..];
-            let has_closing = after.contains("\n+++");
-            if has_closing {
-                parse_successes += 1;
+            if let Some(pos) = content.find("+++") {
+                let after = &content[pos + 3..];
+                let has_closing = after.contains("\n+++");
+                if has_closing {
+                    parse_successes += 1;
+                } else {
+                    parse_failures += 1;
+                }
             } else {
                 parse_failures += 1;
             }
