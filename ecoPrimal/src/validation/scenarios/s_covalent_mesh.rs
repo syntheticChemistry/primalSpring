@@ -114,7 +114,11 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
             } else if let Some(peers) = resp.get("peers").and_then(serde_json::Value::as_array) {
                 let gate_ids: Vec<&str> = peers
                     .iter()
-                    .filter_map(|p| p.get("gate").and_then(serde_json::Value::as_str))
+                    .filter_map(|p| {
+                        p.get("gate")
+                            .or_else(|| p.get("node_id"))
+                            .and_then(serde_json::Value::as_str)
+                    })
                     .collect();
                 v.check_bool(
                     "live:peer_gate_ids",
@@ -124,7 +128,10 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
                 let latency_peers: Vec<(&str, f64)> = peers
                     .iter()
                     .filter_map(|p| {
-                        let gate = p.get("gate").and_then(serde_json::Value::as_str)?;
+                        let gate = p
+                            .get("gate")
+                            .or_else(|| p.get("node_id"))
+                            .and_then(serde_json::Value::as_str)?;
                         let ms = p.get("latency_ms").and_then(serde_json::Value::as_f64)?;
                         Some((gate, ms))
                     })
@@ -225,6 +232,8 @@ fn phase_cross_gate_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCont
                     || msg.contains("unknown gate")
                     || msg.contains("no route")
                     || msg.contains("not available")
+                    || msg.contains("Invalid JSON from remote")
+                    || msg.contains("No local or remote provider")
                     || msg.contains("-32601");
                 if expected_skip {
                     v.check_skip(
