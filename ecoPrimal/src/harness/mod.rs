@@ -269,6 +269,7 @@ impl RunningAtomic {
     ///
     /// Checks the static `AtomicType` mapping first, then falls back to
     /// the dynamic overlay capabilities populated from the deploy graph.
+    #[expect(deprecated, reason = "bridges capability→primal mapping until routing table replaces zip lookup")]
     fn capability_to_primal(&self, capability: &str) -> Option<String> {
         let caps = self.atomic.required_capabilities();
         let primals = self.atomic.required_primals();

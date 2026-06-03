@@ -9,8 +9,8 @@ use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
 fn phase_structural(v: &mut ValidationResult) {
-    let primals = AtomicType::FullNucleus.required_primals();
-    v.check_minimum("nucleus_required_primals", primals.len(), 5);
+    let caps = AtomicType::FullNucleus.required_capabilities();
+    v.check_minimum("nucleus_required_capabilities", caps.len(), 5);
 }
 
 fn phase_tower_slice(v: &mut ValidationResult, ctx: &mut CompositionContext) {

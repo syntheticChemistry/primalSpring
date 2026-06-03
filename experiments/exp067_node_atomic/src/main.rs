@@ -9,11 +9,11 @@ use primalspring::coordination::AtomicType;
 use primalspring::validation::ValidationResult;
 
 fn phase_structural(v: &mut ValidationResult) {
-    let primals = AtomicType::Node.required_primals();
+    let caps = AtomicType::Node.required_capabilities();
     v.check_bool(
         "node_composition_valid",
-        primals.len() == 5,
-        "Node compute triangle (beardog + songbird + toadstool + barracuda + coralreef)",
+        caps.len() == 5,
+        "Node requires 5 capabilities (security + discovery + compute + tensor + shader)",
     );
 }
 

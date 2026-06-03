@@ -8,11 +8,11 @@ use primalspring::coordination::AtomicType;
 use primalspring::validation::ValidationResult;
 
 fn phase_structural(v: &mut ValidationResult) {
-    let primals = AtomicType::Nest.required_primals();
+    let caps = AtomicType::Nest.required_capabilities();
     v.check_bool(
         "nest_composition_valid",
-        primals.len() == 4,
-        "Nest = beardog + songbird + nestgate + squirrel",
+        caps.len() == 4,
+        "Nest requires 4 capabilities (security + discovery + storage + planning)",
     );
 }
 

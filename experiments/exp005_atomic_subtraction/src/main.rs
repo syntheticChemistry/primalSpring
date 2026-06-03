@@ -12,29 +12,29 @@ use primalspring::coordination::AtomicType;
 use primalspring::validation::ValidationResult;
 
 fn phase_type_hierarchy(v: &mut ValidationResult) {
-    let tower_primals = AtomicType::Tower.required_primals();
-    let node_primals = AtomicType::Node.required_primals();
-    let tower_in_node = tower_primals.iter().all(|p| node_primals.contains(p));
+    let tower_caps = AtomicType::Tower.required_capabilities();
+    let node_caps = AtomicType::Node.required_capabilities();
+    let tower_in_node = tower_caps.iter().all(|c| node_caps.contains(c));
     v.check_bool(
         "tower_subset_of_node",
         tower_in_node,
-        "Tower primals are subset of Node primals",
+        "Tower capabilities are subset of Node capabilities",
     );
 
-    let full_primals = AtomicType::FullNucleus.required_primals();
-    let node_in_full = node_primals.iter().all(|p| full_primals.contains(p));
+    let full_caps = AtomicType::FullNucleus.required_capabilities();
+    let node_in_full = node_caps.iter().all(|c| full_caps.contains(c));
     v.check_bool(
         "node_subset_of_full_nucleus",
         node_in_full,
-        "Node primals are subset of FullNucleus primals",
+        "Node capabilities are subset of FullNucleus capabilities",
     );
 
-    let nest_primals = AtomicType::Nest.required_primals();
-    let nest_in_full = nest_primals.iter().all(|p| full_primals.contains(p));
+    let nest_caps = AtomicType::Nest.required_capabilities();
+    let nest_in_full = nest_caps.iter().all(|c| full_caps.contains(c));
     v.check_bool(
         "nest_subset_of_full_nucleus",
         nest_in_full,
-        "Nest primals are subset of FullNucleus primals",
+        "Nest capabilities are subset of FullNucleus capabilities",
     );
 
     v.check_skip("live_degradation", "needs live primals");

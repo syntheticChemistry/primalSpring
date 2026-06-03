@@ -17,24 +17,26 @@ fn atomic_type_structural(v: &mut ValidationResult) {
         AtomicType::Nest,
         AtomicType::FullNucleus,
     ];
-    let all_have_required = variants.iter().all(|t| !t.required_primals().is_empty());
+    let all_have_required = variants
+        .iter()
+        .all(|t| !t.required_capabilities().is_empty());
     v.check_bool(
-        "all_atomic_types_have_required_primals",
+        "all_atomic_types_have_required_capabilities",
         all_have_required,
-        "all AtomicType variants have required_primals",
+        "all AtomicType variants have required_capabilities",
     );
 
-    let full_primals: std::collections::HashSet<&str> = AtomicType::FullNucleus
-        .required_primals()
+    let full_caps: std::collections::HashSet<&str> = AtomicType::FullNucleus
+        .required_capabilities()
         .iter()
         .copied()
         .collect();
-    let tower_primals = AtomicType::Tower.required_primals();
-    let full_is_superset = tower_primals.iter().all(|p| full_primals.contains(p));
+    let tower_caps = AtomicType::Tower.required_capabilities();
+    let full_is_superset = tower_caps.iter().all(|c| full_caps.contains(c));
     v.check_bool(
         "full_nucleus_superset_of_tower",
         full_is_superset,
-        "FullNucleus primals is superset of Tower primals",
+        "FullNucleus capabilities is superset of Tower capabilities",
     );
 }
 
