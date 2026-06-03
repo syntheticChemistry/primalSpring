@@ -21,6 +21,7 @@
 
 pub mod metrics;
 pub mod perceptron;
+pub mod pipeline;
 
 use std::sync::Arc;
 use std::time::Instant;

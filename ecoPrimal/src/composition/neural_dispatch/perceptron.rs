@@ -240,6 +240,7 @@ fn method_hash(method: &str) -> [u8; 4] {
 }
 
 #[cfg(test)]
+#[expect(clippy::float_cmp, reason = "exact float equality is correct for one-hot encoding tests")]
 mod tests {
     use super::*;
     use std::sync::Arc;

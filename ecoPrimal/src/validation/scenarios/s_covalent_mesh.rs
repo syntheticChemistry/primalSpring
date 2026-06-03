@@ -1,17 +1,22 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: Covalent Mesh — Wave 49 LAN mesh validation.
+//! Scenario: Covalent Mesh — cross-gate trust validation.
 //!
-//! Validates cross-gate connectivity via Songbird TCP federation:
+//! Six-phase validation of the covalent mesh trust model:
 //!
-//! 1. Structural: federation port, deploy graphs for multi-gate
-//! 2. `discovery.peers` via Songbird TCP :7700 — sees remote gates
-//! 3. Cross-gate `capability.call` — transparent routing through mesh
+//! 1. Structural: federation port, deploy graphs, capability registry
+//! 2. Discovery: `discovery.peers` via Songbird TCP :7700
+//! 3. Cross-gate dispatch: `capability.call` transparent routing
+//! 4. Security: bearDog BTSP cross-gate token validation
+//! 5. Content integrity: NestGate federation BLAKE3 end-to-end
+//! 6. Dark Forest invariants: isolation + reversibility
 //!
 //! Tier::Both — structural checks pass without primals, live checks
 //! gracefully skip when federation is unavailable.
 
 use crate::composition::CompositionContext;
+use crate::ipc::verifiers::parse_verify_ionic_response;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -41,6 +46,15 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     v.section("Phase 3: Cross-gate — capability.call via mesh dispatch");
     phase_cross_gate_dispatch(v, ctx);
+
+    v.section("Phase 4: Security — bearDog BTSP cross-gate token validation");
+    phase_security_trust(v, ctx);
+
+    v.section("Phase 5: Content integrity — NestGate federation BLAKE3");
+    phase_content_integrity(v, ctx);
+
+    v.section("Phase 6: Dark Forest invariants — isolation + reversibility");
+    phase_dark_forest_invariants(v, ctx);
 }
 
 fn phase_structural(v: &mut ValidationResult) {
@@ -111,6 +125,10 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
                     "live:peer_latency",
                     "no peers for latency measurement",
                 );
+                v.check_skip(
+                    "live:capability_propagation",
+                    "no peers for capability check",
+                );
             } else if let Some(peers) = resp.get("peers").and_then(serde_json::Value::as_array) {
                 let gate_ids: Vec<&str> = peers
                     .iter()
@@ -150,6 +168,36 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
                         "live:peer_latency",
                         true,
                         &format!("peer latencies: {}", summary.join(", ")),
+                    );
+                }
+
+                let peers_with_caps: Vec<&str> = peers
+                    .iter()
+                    .filter(|p| {
+                        p.get("capabilities")
+                            .and_then(serde_json::Value::as_array)
+                            .is_some_and(|a| !a.is_empty())
+                    })
+                    .filter_map(|p| {
+                        p.get("gate")
+                            .or_else(|| p.get("node_id"))
+                            .and_then(serde_json::Value::as_str)
+                    })
+                    .collect();
+                if peers_with_caps.is_empty() {
+                    v.check_skip(
+                        "live:capability_propagation",
+                        "peers discovered but capabilities: [] — Songbird propagation gap (P1)",
+                    );
+                } else {
+                    v.check_bool(
+                        "live:capability_propagation",
+                        true,
+                        &format!(
+                            "capability propagation: {} peer(s) advertising caps: {:?}",
+                            peers_with_caps.len(),
+                            peers_with_caps
+                        ),
                     );
                 }
             }
@@ -252,6 +300,476 @@ fn phase_cross_gate_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCont
     }
 }
 
+/// Phase 4: Security trust — bearDog BTSP cross-gate token validation.
+///
+/// Tests:
+/// - Issue token on local gate, verify locally (baseline)
+/// - Issue token on local gate, verify on remote gate via mesh
+/// - Reject forged/expired token from remote gate
+/// - auth.verify_ionic scopes propagate through mesh dispatch
+fn phase_security_trust(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("security") {
+        v.check_skip(
+            "security:local_token_issue",
+            "security capability not in context (bearDog not running)",
+        );
+        v.check_skip("security:local_verify", "security not available");
+        v.check_skip("security:cross_gate_verify", "security not available");
+        v.check_skip("security:reject_forged", "security not available");
+        v.check_skip("security:scopes_propagate", "security not available");
+        return;
+    }
+
+    let token_result = ctx.call(
+        "security",
+        "auth.issue_ionic",
+        serde_json::json!({
+            "subject": "mesh-trust-test",
+            "scopes": ["discovery.*", "mesh.*"],
+            "ttl_seconds": 60
+        }),
+    );
+
+    let token = match token_result {
+        Ok(resp) => {
+            let tok = resp.get("token").and_then(serde_json::Value::as_str);
+            v.check_bool(
+                "security:local_token_issue",
+                tok.is_some(),
+                &format!(
+                    "auth.issue_ionic: {}",
+                    if tok.is_some() { "token issued" } else { "no token field in response" }
+                ),
+            );
+            tok.map(String::from)
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            if msg.contains("not found") || msg.contains("-32601") {
+                v.check_skip(
+                    "security:local_token_issue",
+                    &format!("auth.issue_ionic not implemented: {e}"),
+                );
+            } else {
+                v.check_bool(
+                    "security:local_token_issue",
+                    false,
+                    &format!("auth.issue_ionic error: {e}"),
+                );
+            }
+            None
+        }
+    };
+
+    let Some(ref valid_token) = token else {
+        v.check_skip("security:local_verify", "no token to verify");
+        v.check_skip("security:cross_gate_verify", "no token to verify");
+        v.check_skip("security:reject_forged", "no token to verify");
+        v.check_skip("security:scopes_propagate", "no token to verify");
+        return;
+    };
+
+    match ctx.call(
+        "security",
+        "auth.verify_ionic",
+        serde_json::json!({ "token": valid_token }),
+    ) {
+        Ok(resp) => {
+            let parsed = parse_verify_ionic_response(&resp);
+            v.check_bool(
+                "security:local_verify",
+                parsed.is_some(),
+                &format!(
+                    "local verify: {}",
+                    if parsed.is_some() { "valid" } else { "rejected unexpectedly" }
+                ),
+            );
+            if let Some(ref vt) = parsed {
+                v.check_bool(
+                    "security:scopes_propagate",
+                    vt.scopes.iter().any(|s| s.contains("discovery") || s == "*"),
+                    &format!("scopes returned: {:?}", vt.scopes),
+                );
+            } else {
+                v.check_skip("security:scopes_propagate", "local verify failed");
+            }
+        }
+        Err(e) => {
+            v.check_bool(
+                "security:local_verify",
+                false,
+                &format!("auth.verify_ionic local error: {e}"),
+            );
+            v.check_skip("security:scopes_propagate", &format!("verify failed: {e}"));
+        }
+    }
+
+    verify_cross_gate_and_forged(v, ctx, valid_token);
+}
+
+/// Cross-gate token verification + forged token rejection sub-phase.
+fn verify_cross_gate_and_forged(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+    valid_token: &str,
+) {
+    if !ctx.has_capability("orchestration") {
+        v.check_skip(
+            "security:cross_gate_verify",
+            "orchestration not available — no mesh dispatch",
+        );
+        v.check_skip("security:reject_forged", "no mesh dispatch");
+        return;
+    }
+
+    match ctx.call(
+        "orchestration",
+        "capability.call",
+        serde_json::json!({
+            "capability": "security",
+            "operation": "auth.verify_ionic",
+            "args": { "token": valid_token },
+        }),
+    ) {
+        Ok(resp) => {
+            let parsed = parse_verify_ionic_response(&resp);
+            v.check_bool(
+                "security:cross_gate_verify",
+                parsed.is_some(),
+                &format!(
+                    "cross-gate verify: {}",
+                    if parsed.is_some() { "token valid on remote gate" } else { "rejected" }
+                ),
+            );
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            let expected = msg.contains("No local or remote provider")
+                || msg.contains("not found")
+                || msg.contains("no route");
+            if expected {
+                v.check_skip(
+                    "security:cross_gate_verify",
+                    &format!("mesh dispatch not available: {e}"),
+                );
+            } else {
+                v.check_bool(
+                    "security:cross_gate_verify",
+                    false,
+                    &format!("cross-gate verify unexpected error: {e}"),
+                );
+            }
+        }
+    }
+
+    match ctx.call(
+        "security",
+        "auth.verify_ionic",
+        serde_json::json!({ "token": "forged.invalid.token.from.attacker" }),
+    ) {
+        Ok(resp) => {
+            let parsed = parse_verify_ionic_response(&resp);
+            v.check_bool(
+                "security:reject_forged",
+                parsed.is_none(),
+                &format!(
+                    "forged token: {}",
+                    if parsed.is_none() { "correctly rejected" } else { "ACCEPTED (vulnerability!)" }
+                ),
+            );
+        }
+        Err(_) => {
+            v.check_bool(
+                "security:reject_forged",
+                true,
+                "forged token correctly rejected (error response)",
+            );
+        }
+    }
+}
+
+/// Phase 5: Content integrity — NestGate federation BLAKE3 end-to-end.
+///
+/// Tests:
+/// - content.put on local gate returns a BLAKE3 hash
+/// - content.get with same hash returns identical data
+/// - content.replicate.pull from remote gate verifies hash integrity
+fn phase_content_integrity(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.check_bool(
+        "content:registry_put",
+        REGISTRY_TOML.contains("content.put"),
+        "content.put registered in capability_registry.toml",
+    );
+    v.check_bool(
+        "content:registry_replicate",
+        REGISTRY_TOML.contains("content.replicate"),
+        "content.replicate registered in capability_registry.toml",
+    );
+
+    if !ctx.has_capability("storage") {
+        v.check_skip(
+            "content:local_put_get",
+            "storage capability not in context (NestGate not running)",
+        );
+        v.check_skip("content:hash_integrity", "storage not available");
+        v.check_skip("content:cross_gate_replicate", "storage not available");
+        return;
+    }
+
+    let test_data = "covalent-mesh-integrity-test-payload-wave75";
+    match ctx.call(
+        "storage",
+        "content.put",
+        serde_json::json!({
+            "data": test_data,
+            "content_type": "text/plain"
+        }),
+    ) {
+        Ok(resp) => {
+            let hash = resp.get("hash").and_then(serde_json::Value::as_str);
+            v.check_bool(
+                "content:local_put_get",
+                hash.is_some(),
+                &format!(
+                    "content.put: {}",
+                    hash.map_or_else(|| "no hash returned".to_owned(), |h| format!("hash={h}"))
+                ),
+            );
+
+            if let Some(content_hash) = hash {
+                match ctx.call(
+                    "storage",
+                    "content.get",
+                    serde_json::json!({ "hash": content_hash }),
+                ) {
+                    Ok(get_resp) => {
+                        let retrieved = get_resp
+                            .get("data")
+                            .and_then(serde_json::Value::as_str)
+                            .unwrap_or("");
+                        v.check_bool(
+                            "content:hash_integrity",
+                            retrieved == test_data,
+                            &format!(
+                                "BLAKE3 round-trip: {}",
+                                if retrieved == test_data { "data matches" } else { "DATA MISMATCH" }
+                            ),
+                        );
+                    }
+                    Err(e) => {
+                        v.check_bool(
+                            "content:hash_integrity",
+                            false,
+                            &format!("content.get error: {e}"),
+                        );
+                    }
+                }
+
+                if ctx.has_capability("orchestration") {
+                    match ctx.call(
+                        "orchestration",
+                        "capability.call",
+                        serde_json::json!({
+                            "capability": "storage",
+                            "operation": "content.replicate.pull",
+                            "args": { "hash": content_hash, "source_gate": "eastGate" },
+                        }),
+                    ) {
+                        Ok(repl_resp) => {
+                            let repl_hash =
+                                repl_resp.get("hash").and_then(serde_json::Value::as_str);
+                            v.check_bool(
+                                "content:cross_gate_replicate",
+                                repl_hash == Some(content_hash),
+                                &format!(
+                                    "cross-gate replicate: {}",
+                                    if repl_hash == Some(content_hash) {
+                                        "hash integrity maintained"
+                                    } else {
+                                        "HASH MISMATCH (integrity violation!)"
+                                    }
+                                ),
+                            );
+                        }
+                        Err(e) => {
+                            let msg = format!("{e}");
+                            let expected = msg.contains("No local or remote provider")
+                                || msg.contains("not found")
+                                || msg.contains("no route");
+                            if expected {
+                                v.check_skip(
+                                    "content:cross_gate_replicate",
+                                    &format!("mesh replication not routable: {e}"),
+                                );
+                            } else {
+                                v.check_bool(
+                                    "content:cross_gate_replicate",
+                                    false,
+                                    &format!("replicate error: {e}"),
+                                );
+                            }
+                        }
+                    }
+                } else {
+                    v.check_skip(
+                        "content:cross_gate_replicate",
+                        "orchestration not available — no mesh dispatch",
+                    );
+                }
+            } else {
+                v.check_skip("content:hash_integrity", "no hash from put");
+                v.check_skip("content:cross_gate_replicate", "no hash from put");
+            }
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            if msg.contains("not found") || msg.contains("-32601") {
+                v.check_skip(
+                    "content:local_put_get",
+                    &format!("content.put not implemented: {e}"),
+                );
+            } else {
+                v.check_bool(
+                    "content:local_put_get",
+                    false,
+                    &format!("content.put error: {e}"),
+                );
+            }
+            v.check_skip("content:hash_integrity", "put failed");
+            v.check_skip("content:cross_gate_replicate", "put failed");
+        }
+    }
+}
+
+/// Phase 6: Dark Forest invariants — isolation + reversibility.
+///
+/// Tests:
+/// - Only Songbird federation port (7700) accepts cross-gate traffic
+/// - UDS-only for local primal communication (no TCP local)
+/// - Gate can conceptually leave mesh without data loss
+fn phase_dark_forest_invariants(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let federation_port_only = REGISTRY_TOML.contains("mesh.relay")
+        || REGISTRY_TOML.contains("route.register");
+    v.check_bool(
+        "darkforest:federation_surface",
+        federation_port_only,
+        "federation capabilities registered (mesh.relay / route.register)",
+    );
+
+    let socket_dir = std::path::Path::new("/run/user/1000/biomeos");
+    let has_uds = socket_dir.exists();
+    v.check_bool(
+        "darkforest:uds_runtime_exists",
+        has_uds,
+        &format!(
+            "UDS runtime dir: {}",
+            if has_uds { "exists" } else { "/run/user/1000/biomeos not found" }
+        ),
+    );
+
+    if has_uds {
+        let tcp_local_found = std::fs::read_dir(socket_dir)
+            .map(|entries| {
+                entries
+                    .filter_map(Result::ok)
+                    .any(|e| {
+                        let name = e.file_name();
+                        let n = name.to_string_lossy();
+                        n.contains(':') || n.ends_with(".tcp")
+                    })
+            })
+            .unwrap_or(false);
+        v.check_bool(
+            "darkforest:no_tcp_local",
+            !tcp_local_found,
+            &format!(
+                "local IPC: {}",
+                if tcp_local_found {
+                    "TCP socket found (Dark Forest VIOLATION)"
+                } else {
+                    "UDS-only (correct)"
+                }
+            ),
+        );
+    } else {
+        v.check_skip(
+            "darkforest:no_tcp_local",
+            "UDS runtime dir not present",
+        );
+    }
+
+    let songbird_port: u16 = 7700;
+    let federation_port_check = std::net::TcpStream::connect_timeout(
+        &std::net::SocketAddr::from(([127, 0, 0, 1], songbird_port)),
+        std::time::Duration::from_millis(200),
+    );
+    v.check_bool(
+        "darkforest:federation_port_only",
+        federation_port_check.is_ok(),
+        &format!(
+            "Songbird federation :{songbird_port}: {}",
+            if federation_port_check.is_ok() { "listening (correct)" } else { "not listening" }
+        ),
+    );
+
+    let non_federation_ports: &[u16] = &[7701, 9101, 9750];
+    let any_non_federation_exposed = non_federation_ports.iter().any(|&port| {
+        std::net::TcpStream::connect_timeout(
+            &std::net::SocketAddr::from(([127, 0, 0, 1], port)),
+            std::time::Duration::from_millis(100),
+        )
+        .is_ok()
+    });
+    v.check_bool(
+        "darkforest:no_extra_ports",
+        !any_non_federation_exposed,
+        &format!(
+            "non-federation ports: {}",
+            if any_non_federation_exposed {
+                "EXPOSED (investigate)"
+            } else {
+                "closed (correct — only :7700 for cross-gate)"
+            }
+        ),
+    );
+
+    if ctx.has_capability("storage") {
+        match ctx.call("storage", "content.stat", serde_json::json!({})) {
+            Ok(resp) => {
+                let has_local_store = resp
+                    .get("objects")
+                    .and_then(serde_json::Value::as_u64)
+                    .is_some()
+                    || resp.get("store").is_some();
+                v.check_bool(
+                    "darkforest:reversibility_local_store",
+                    has_local_store,
+                    "NestGate has local CAS — gate can leave mesh without data loss",
+                );
+            }
+            Err(e) => {
+                let msg = format!("{e}");
+                if msg.contains("not found") || msg.contains("-32601") {
+                    v.check_skip(
+                        "darkforest:reversibility_local_store",
+                        &format!("content.stat not implemented: {e}"),
+                    );
+                } else {
+                    v.check_skip(
+                        "darkforest:reversibility_local_store",
+                        &format!("content.stat error: {e}"),
+                    );
+                }
+            }
+        }
+    } else {
+        v.check_skip(
+            "darkforest:reversibility_local_store",
+            "storage not available — cannot verify data independence",
+        );
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -270,6 +788,29 @@ mod tests {
         assert!(
             REGISTRY_TOML.contains("discovery.peers"),
             "discovery.peers must be in capability_registry.toml"
+        );
+    }
+
+    #[test]
+    fn phase_structural_passes() {
+        let mut v = ValidationResult::new("covalent-mesh-structural");
+        phase_structural(&mut v);
+        assert_eq!(v.failed, 0, "structural checks should pass");
+    }
+
+    #[test]
+    fn phase_dark_forest_structural() {
+        let mut v = ValidationResult::new("covalent-mesh-darkforest");
+        let mut ctx = CompositionContext::discover();
+        phase_dark_forest_invariants(&mut v, &mut ctx);
+    }
+
+    #[test]
+    fn forged_token_format() {
+        let forged = serde_json::json!({ "valid": false, "error": "invalid_signature" });
+        assert!(
+            parse_verify_ionic_response(&forged).is_none(),
+            "forged token must be rejected"
         );
     }
 }

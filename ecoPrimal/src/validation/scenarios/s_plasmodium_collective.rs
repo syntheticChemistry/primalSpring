@@ -41,6 +41,9 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     v.section("Phase 3: Live — cross-gate capability.call via HTTP dispatch");
     phase_cross_gate_call(v, ctx);
+
+    v.section("Phase 4: Composition — cross-gate routing via MeshTopology");
+    phase_composition_routing(v, ctx);
 }
 
 fn phase_structural(v: &mut ValidationResult) {
@@ -199,6 +202,7 @@ fn phase_cross_gate_call(v: &mut ValidationResult, ctx: &mut CompositionContext)
     let targets = [
         ("strand-gate", "security", "health.liveness"),
         ("strand-gate", "compute", "health.liveness"),
+        ("iron-gate", "defense", "health.liveness"),
     ];
 
     for (gate, capability, operation) in &targets {
@@ -249,6 +253,83 @@ fn phase_cross_gate_call(v: &mut ValidationResult, ctx: &mut CompositionContext)
             }
         }
     }
+}
+
+/// Phase 4: Composition routing — validate MeshTopology-driven cross-gate resolution.
+fn phase_composition_routing(v: &mut ValidationResult, ctx: &CompositionContext) {
+    let mut topo = MeshTopology::new();
+    let local_gate = ctx.gate_id().unwrap_or("east-gate");
+    topo.set_local_gate(local_gate);
+
+    topo.register_gate(
+        "east-gate",
+        Some("192.168.1.144:7700".to_owned()),
+        ["beardog", "songbird", "nestgate"],
+        ["security", "discovery", "storage"],
+    );
+    topo.register_gate(
+        "strand-gate",
+        Some("192.168.1.132:7700".to_owned()),
+        ["toadstool", "barracuda"],
+        ["compute", "tensor"],
+    );
+    topo.register_gate(
+        "iron-gate",
+        Some("192.168.1.238:7700".to_owned()),
+        ["skunkbat", "coralreef"],
+        ["defense", "shader"],
+    );
+
+    topo.mark_healthy("east-gate", true);
+    topo.mark_healthy("strand-gate", true);
+    topo.mark_healthy("iron-gate", true);
+
+    let local_resolve = topo.resolve_capability("security");
+    v.check_bool(
+        "composition:local_resolves_first",
+        local_resolve.is_some_and(|g| g.gate_id == local_gate),
+        &format!(
+            "local capability resolution: security → {}",
+            local_resolve.map_or("none", |g| &g.gate_id)
+        ),
+    );
+
+    let remote_resolve = topo.resolve_capability("compute");
+    v.check_bool(
+        "composition:remote_resolves",
+        remote_resolve.is_some_and(|g| g.gate_id == "strand-gate"),
+        &format!(
+            "remote capability resolution: compute → {}",
+            remote_resolve.map_or("none", |g| &g.gate_id)
+        ),
+    );
+
+    let reachable = topo.reachable_capabilities();
+    v.check_bool(
+        "composition:all_caps_reachable",
+        reachable.len() >= 6,
+        &format!("{} capabilities reachable across 3 gates", reachable.len()),
+    );
+
+    topo.mark_healthy("iron-gate", false);
+    let unreachable = topo.unreachable_capabilities();
+    v.check_bool(
+        "composition:degradation_detected",
+        unreachable.contains("defense") && unreachable.contains("shader"),
+        &format!("degradation: unreachable caps = {unreachable:?}"),
+    );
+
+    let routes = topo.routes_for_capability("compute");
+    let healthy_routes: Vec<_> = routes.iter().filter(|r| r.healthy).collect();
+    v.check_bool(
+        "composition:cross_gate_routes_computed",
+        !healthy_routes.is_empty(),
+        &format!(
+            "{} healthy routes for compute (total {})",
+            healthy_routes.len(),
+            routes.len()
+        ),
+    );
 }
 
 #[cfg(test)]
