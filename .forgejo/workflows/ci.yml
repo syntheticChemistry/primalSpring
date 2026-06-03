@@ -1,0 +1,39 @@
+# Forgejo Actions CI — primalSpring
+#
+# Sovereign CI on git.primals.eco. First cross-repo Forgejo pipeline.
+# Runs fmt, clippy, test on the main ecoPrimal crate.
+# Toolchain pinned via rust-toolchain.toml at workspace root.
+#
+# Wave 74: activated (was template in projectNUCLEUS infra/ci/).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rust-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pinned Rust toolchain
+        run: |
+          if [ -f rust-toolchain.toml ]; then
+            channel=$(grep 'channel' rust-toolchain.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+            rustup toolchain install "$channel" --profile minimal --component rustfmt,clippy
+            rustup default "$channel"
+          else
+            rustup default stable
+            rustup component add rustfmt clippy
+          fi
+          rustc --version
+          cargo --version
+
+      - name: ecoPrimal — fmt + clippy + test
+        run: |
+          cargo fmt -p primalspring --check
+          cargo clippy -p primalspring -- -D warnings
+          cargo test -p primalspring
