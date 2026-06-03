@@ -132,3 +132,118 @@ impl TokenVerifier for DenyVerifier {
         None
     }
 }
+
+/// Parse a `VerifiedToken` from bearDog's `auth.verify_ionic` JSON response.
+///
+/// bearDog w131+ returns scopes as a top-level array in the result:
+/// ```json
+/// { "valid": true, "scopes": ["crypto.*", "security.*"], "subject": "east-gate", "expires_in": 3600 }
+/// ```
+///
+/// Returns `None` if the response indicates an invalid token or is malformed.
+#[must_use]
+pub fn parse_verify_ionic_response(result: &serde_json::Value) -> Option<VerifiedToken> {
+    if !result
+        .get("valid")
+        .and_then(serde_json::Value::as_bool)
+        .unwrap_or(false)
+    {
+        return None;
+    }
+
+    let scopes = result
+        .get("scopes")
+        .and_then(serde_json::Value::as_array)
+        .map(|arr| {
+            arr.iter()
+                .filter_map(serde_json::Value::as_str)
+                .map(String::from)
+                .collect::<Vec<_>>()
+        })
+        .filter(|s| !s.is_empty())?;
+
+    let subject = result
+        .get("subject")
+        .and_then(serde_json::Value::as_str)
+        .map(String::from);
+
+    let expires_in = result.get("expires_in").and_then(serde_json::Value::as_u64);
+
+    Some(VerifiedToken {
+        scopes,
+        subject,
+        expires_in,
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn permissive_verifier_always_accepts() {
+        let v = PermissiveVerifier;
+        let result = v.verify("anything");
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().scopes, vec!["*"]);
+    }
+
+    #[test]
+    fn deny_verifier_always_rejects() {
+        let v = DenyVerifier;
+        assert!(v.verify("anything").is_none());
+    }
+
+    #[test]
+    fn parse_beardog_w131_valid_response() {
+        let response = serde_json::json!({
+            "valid": true,
+            "scopes": ["crypto.*", "security.*"],
+            "subject": "east-gate",
+            "expires_in": 3600
+        });
+        let token = parse_verify_ionic_response(&response).unwrap();
+        assert_eq!(token.scopes, vec!["crypto.*", "security.*"]);
+        assert_eq!(token.subject.as_deref(), Some("east-gate"));
+        assert_eq!(token.expires_in, Some(3600));
+    }
+
+    #[test]
+    fn parse_beardog_invalid_token_response() {
+        let response = serde_json::json!({
+            "valid": false,
+            "error": "token_expired"
+        });
+        assert!(parse_verify_ionic_response(&response).is_none());
+    }
+
+    #[test]
+    fn parse_beardog_missing_scopes_rejects() {
+        let response = serde_json::json!({
+            "valid": true,
+            "subject": "east-gate"
+        });
+        assert!(parse_verify_ionic_response(&response).is_none());
+    }
+
+    #[test]
+    fn parse_beardog_empty_scopes_rejects() {
+        let response = serde_json::json!({
+            "valid": true,
+            "scopes": [],
+            "subject": "east-gate"
+        });
+        assert!(parse_verify_ionic_response(&response).is_none());
+    }
+
+    #[test]
+    fn parse_beardog_wildcard_scope() {
+        let response = serde_json::json!({
+            "valid": true,
+            "scopes": ["*"],
+            "subject": "admin"
+        });
+        let token = parse_verify_ionic_response(&response).unwrap();
+        assert_eq!(token.scopes, vec!["*"]);
+    }
+}

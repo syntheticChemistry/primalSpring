@@ -67,6 +67,7 @@ pub fn classify_method(method: &str) -> MethodAccessLevel {
 // Token verification types and implementations live in `super::verifiers`.
 pub use super::verifiers::{
     DenyVerifier, PermissiveVerifier, SecurityVerifier, TokenVerifier, VerifiedToken,
+    parse_verify_ionic_response,
 };
 
 /// Check whether a token's scopes permit access to a method.

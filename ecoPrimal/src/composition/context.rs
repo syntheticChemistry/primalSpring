@@ -109,6 +109,8 @@ pub struct CompositionContext {
     btsp_state: BTreeMap<String, bool>,
     discovery_paths: BTreeMap<String, DiscoveryPath>,
     pub(super) bearer_token: Option<String>,
+    /// Gate identity for multi-gate mesh awareness.
+    gate_id: Option<String>,
 }
 
 impl CompositionContext {
@@ -145,6 +147,7 @@ impl CompositionContext {
             btsp_state,
             discovery_paths,
             bearer_token: None,
+            gate_id: None,
         }
     }
 
@@ -253,6 +256,7 @@ impl CompositionContext {
             btsp_state,
             discovery_paths,
             bearer_token: None,
+            gate_id: None,
         }
     }
 
@@ -282,6 +286,7 @@ impl CompositionContext {
             btsp_state,
             discovery_paths,
             bearer_token: None,
+            gate_id: None,
         }
     }
 
@@ -327,6 +332,7 @@ impl CompositionContext {
             btsp_state,
             discovery_paths,
             bearer_token: None,
+            gate_id: None,
         }
     }
 
@@ -346,6 +352,7 @@ impl CompositionContext {
             btsp_state,
             discovery_paths,
             bearer_token: None,
+            gate_id: None,
         }
     }
 
@@ -369,6 +376,22 @@ impl CompositionContext {
     #[must_use]
     pub const fn has_bearer_token(&self) -> bool {
         self.bearer_token.is_some()
+    }
+
+    // ── Gate identity (multi-gate mesh awareness) ───────────────────────
+
+    /// Set the gate identity for this composition context.
+    ///
+    /// Enables mesh-aware validation — the context knows which gate it
+    /// belongs to, enabling cross-gate capability routing analysis.
+    pub fn set_gate_id(&mut self, gate_id: impl Into<String>) {
+        self.gate_id = Some(gate_id.into());
+    }
+
+    /// The gate identity, if set.
+    #[must_use]
+    pub fn gate_id(&self) -> Option<&str> {
+        self.gate_id.as_deref()
     }
 
     // ── Atomic signals ──────────────────────────────────────────────────
