@@ -34,7 +34,7 @@ use std::sync::Arc;
 use super::routing::{capability_to_primal, method_to_capability_domain};
 
 /// Composition tier — which atomic deployment a method participates in.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 pub enum CompositionTier {
     /// Tower: security + discovery + defense (bearDog, songbird, skunkBat)
     Tower,

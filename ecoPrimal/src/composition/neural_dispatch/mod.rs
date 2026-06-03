@@ -20,6 +20,7 @@
 //!   adaptive routing (Layer 4 of the Neural API evolution model).
 
 pub mod metrics;
+pub mod perceptron;
 
 use std::sync::Arc;
 use std::time::Instant;
@@ -75,7 +76,7 @@ pub struct DispatchOutcome {
 }
 
 /// How a method was routed to its handler.
-#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RoutePath {
     /// Routed through `capability.call` semantic dispatch.
     CapabilityCall,

@@ -15,7 +15,7 @@ use crate::composition::neural_routing::CompositionTier;
 use super::RoutePath;
 
 /// Metrics collected per dispatch.
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct DispatchMetric {
     /// JSON-RPC method or pattern name.
     pub method: Arc<str>,
