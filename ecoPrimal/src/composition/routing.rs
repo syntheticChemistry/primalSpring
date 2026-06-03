@@ -103,10 +103,10 @@ pub fn capability_to_primal(capability: &str) -> &str {
 ///
 /// Falls through to the capability name itself if no spring claims it.
 fn capability_to_spring_owner(capability: &str) -> &str {
+    use crate::primal_names::Spring;
     if let Some(owner) = DOMAIN_OWNER_MAP.get(capability) {
         return leak_or_match(owner);
     }
-    use crate::primal_names::Spring;
     match capability {
         "tool" | "primalspring" | "coordination" | "bonding" | "composition" | "mcp" => {
             Spring::PrimalSpring.slug()
@@ -150,25 +150,20 @@ fn static_capability_fallback(capability: &str) -> Option<Primal> {
     }
 }
 
-/// Return a `&'static str` for known owner slugs (avoids leaking).
+/// Return a `&'static str` for known owner slugs via enum-driven resolution.
+///
+/// Avoids leaking heap strings by resolving through [`Primal`] and [`Spring`]
+/// enums — adding a new primal/spring forces a compiler error rather than
+/// silently falling through to `"unknown"`.
 fn leak_or_match(owner: &str) -> &'static str {
+    use crate::primal_names::Spring;
+    if let Ok(p) = owner.parse::<Primal>() {
+        return p.slug();
+    }
+    if let Ok(s) = owner.parse::<Spring>() {
+        return s.slug();
+    }
     match owner {
-        "beardog" => "beardog",
-        "songbird" => "songbird",
-        "toadstool" => "toadstool",
-        "barracuda" => "barracuda",
-        "coralreef" => "coralreef",
-        "nestgate" => "nestgate",
-        "squirrel" => "squirrel",
-        "rhizocrypt" => "rhizocrypt",
-        "loamspine" => "loamspine",
-        "sweetgrass" => "sweetgrass",
-        "petaltongue" => "petaltongue",
-        "skunkbat" => "skunkbat",
-        "biomeos" => "biomeos",
-        "primalspring" => "primalspring",
-        "neuralspring" => "neuralspring",
-        "ludospring" => "ludospring",
         "esotericwebb" => "esotericwebb",
         "membrane" => "membrane",
         _ => "unknown",

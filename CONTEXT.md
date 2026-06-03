@@ -81,14 +81,19 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 67 (June 1, 2026) — 58 scenarios (10 tracks, 3 tiers),
+v0.9.31 Wave 70 (June 2, 2026) — 58 scenarios (10 tracks, 3 tiers),
 490+ registered capability methods, 93 experiments (21 tracks), 113 graph TOMLs
 (~80 deploy + 33 compositions), 44-cell deployment matrix. 836 tests passing
 (805 lib + 10 integration + 4 binary + 17 doc). 13/13 BTSP convergence.
-**Wave 67 vocabulary evolution**: `signal` → `composition` across all code, configs,
-and docs. `Arc<str>` interning in `NeuralRoutingTable`. `FromStr` for `AtomicType`.
-`FEDERATION_PORTS` centralized. `DispatchError::Ipc` → `Arc<IpcError>`.
-`ordered_primals()` evolved to capability-based routing.
+**Wave 70 deep debt evolution**: `SecurityVerifier` denies on missing scopes (was
+wildcard fallback). `MethodGate::new(Enforced)` discovers or denies (was permissive).
+Real latency measurement in probe handlers. Per-primal capability reporting in
+`validate_composition_ctx`. `STARTUP_ORDER` derived from `Primal::ALL`. `leak_or_match`
+enum-driven (compiler-enforced). `static_fallback_caps` derives from routing table via
+`LazyLock`. All `#[allow(deprecated)]` → `#[expect(deprecated, reason)]`.
+12 pre-existing clippy violations fixed (zero warnings: pedantic + nursery).
+`ProvenanceResult::unavailable` uses `"degraded:"` prefix with structured data.
+Large function split in `s_ecosystem_freshness`. fossilRecord scripts cleaned.
 **Post-primordial / deep-debt**: `#![forbid(unsafe_code)]` on all 88 crate roots +
 6 integration tests. Centralized `PORT_REGISTRY` in tolerances. Deny-by-default
 `SecurityVerifier` (capability-based, no hardcoded primal names). `required_primals()`

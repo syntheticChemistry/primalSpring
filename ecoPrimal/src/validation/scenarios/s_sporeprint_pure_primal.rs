@@ -131,12 +131,9 @@ fn phase_content_parsing(v: &mut ValidationResult, root: &Path) {
     let mut parse_failures = 0u32;
 
     for path in md_files.iter().take(20) {
-        let content = match std::fs::read_to_string(path) {
-            Ok(c) => c,
-            Err(_) => {
-                parse_failures += 1;
-                continue;
-            }
+        let Ok(content) = std::fs::read_to_string(path) else {
+            parse_failures += 1;
+            continue;
         };
 
         let has_front_matter = content.trim_start().starts_with("+++");
@@ -199,7 +196,7 @@ fn phase_entity_resolution(v: &mut ValidationResult, root: &Path) {
         .filter_map(|l| {
             l.strip_prefix("[extra.entity_registry.")
                 .and_then(|r| r.strip_suffix(']'))
-                .map(|s| s.to_lowercase())
+                .map(str::to_lowercase)
         })
         .collect();
 
@@ -226,7 +223,7 @@ fn phase_entity_resolution(v: &mut ValidationResult, root: &Path) {
     );
 
     let resolution_rate = if shortcode_count > 0 {
-        (resolvable_count as f64 / shortcode_count as f64) * 100.0
+        (f64::from(resolvable_count) / f64::from(shortcode_count)) * 100.0
     } else {
         100.0
     };
@@ -324,11 +321,8 @@ fn phase_composition_graph(v: &mut ValidationResult) {
 
 fn phase_certification(v: &mut ValidationResult, root: &Path) {
     let workflow = root.join(".github/workflows/deploy.yml");
-    let has_certify = if let Ok(content) = std::fs::read_to_string(&workflow) {
-        content.contains("certify")
-    } else {
-        false
-    };
+    let has_certify = std::fs::read_to_string(&workflow)
+        .is_ok_and(|content| content.contains("certify"));
     v.check_bool(
         "cert:deploy_workflow_certifies",
         has_certify,

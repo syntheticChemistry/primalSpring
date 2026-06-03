@@ -35,7 +35,7 @@ pub fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRes
 
     if mode == "identity" {
         tracing::warn!("identity mode is deprecated — use capability mode for runtime discovery");
-        #[allow(deprecated)]
+        #[expect(deprecated, reason = "legacy identity-mode sweep for backward compatibility until all callers migrate")]
         let primals = atomic.required_primals();
         let results = discover_for(primals);
         let summary: Vec<serde_json::Value> = results
@@ -80,6 +80,7 @@ pub fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcRespon
         .as_str()
         .unwrap_or(primalspring::primal_names::BEARDOG);
 
+    let start = std::time::Instant::now();
     let mut ctx = CompositionContext::from_live_discovery_with_fallback();
     let has = ctx.has_capability(name);
     let health_ok = if has {
@@ -87,12 +88,13 @@ pub fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcRespon
     } else {
         false
     };
+    let latency = primalspring::cast::micros_u64(start.elapsed());
     let result = serde_json::json!({
         "name": name,
         "socket_found": has,
         "health_ok": health_ok,
         "capabilities": ctx.available_capabilities(),
-        "latency_us": 0,
+        "latency_us": latency,
     });
     success_response(result, id)
 }
@@ -221,6 +223,7 @@ pub fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcRe
 
     let capability = params["capability"].as_str().unwrap_or("security");
 
+    let start = std::time::Instant::now();
     let mut ctx = CompositionContext::from_live_discovery_with_fallback();
     let resolved = capability_to_primal(capability);
     let has = ctx.has_capability(capability);
@@ -229,6 +232,7 @@ pub fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcRe
     } else {
         false
     };
+    let latency = primalspring::cast::micros_u64(start.elapsed());
 
     success_response(
         serde_json::json!({
@@ -238,7 +242,7 @@ pub fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcRe
             "source": "CompositionContext",
             "health_ok": health_ok,
             "capabilities": ctx.available_capabilities(),
-            "latency_us": 0,
+            "latency_us": latency,
         }),
         id,
     )

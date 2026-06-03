@@ -105,78 +105,8 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
         "[repos] section present",
     );
 
-    let repo_names: Vec<String>;
-    if let Some(repos) = repos {
-        repo_names = repos.keys().cloned().collect();
-
-        v.check_bool(
-            "schema:repo_count",
-            repos.len() >= 20,
-            &format!("{} repos defined (expect >= 20)", repos.len()),
-        );
-
-        for (name, repo) in repos {
-            let org = repo
-                .get("org")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
-            v.check_bool(
-                &format!("schema:repo:{name}:org"),
-                !org.is_empty(),
-                &format!("{name}.org = \"{org}\""),
-            );
-
-            let local_path = repo
-                .get("local_path")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
-            v.check_bool(
-                &format!("schema:repo:{name}:local_path"),
-                !local_path.is_empty(),
-                &format!("{name}.local_path = \"{local_path}\""),
-            );
-
-            let membrane = repo
-                .get("membrane")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
-            v.check_bool(
-                &format!("schema:repo:{name}:membrane"),
-                VALID_MEMBRANES.contains(&membrane),
-                &format!("{name}.membrane = \"{membrane}\" (valid: {VALID_MEMBRANES:?})"),
-            );
-
-            let category = repo
-                .get("category")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
-            v.check_bool(
-                &format!("schema:repo:{name}:category"),
-                VALID_CATEGORIES.contains(&category),
-                &format!("{name}.category = \"{category}\""),
-            );
-
-            if let Some(priority) = repo.get("sync_priority").and_then(|v| v.as_str()) {
-                v.check_bool(
-                    &format!("schema:repo:{name}:sync_priority"),
-                    VALID_PRIORITIES.contains(&priority),
-                    &format!("{name}.sync_priority = \"{priority}\""),
-                );
-            }
-
-            let forgejo_repo = repo
-                .get("forgejo_repo")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
-            v.check_bool(
-                &format!("schema:repo:{name}:forgejo_repo"),
-                !forgejo_repo.is_empty() && forgejo_repo.contains('/'),
-                &format!("{name}.forgejo_repo = \"{forgejo_repo}\" (expect org/name)"),
-            );
-        }
-    } else {
-        repo_names = Vec::new();
-    }
+    let repo_names: Vec<String> =
+        repos.map_or_else(Vec::new, |repos| validate_repo_entries(v, repos));
 
     // WaterFall [sync] section — periplasmic Forgejo sync configuration
     let sync = parsed.get("sync").and_then(|s| s.as_table());
@@ -268,6 +198,78 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
             }
         }
     }
+}
+
+fn validate_repo_entries(v: &mut ValidationResult, repos: &toml::map::Map<String, toml::Value>) -> Vec<String> {
+    let repo_names: Vec<String> = repos.keys().cloned().collect();
+
+    v.check_bool(
+        "schema:repo_count",
+        repos.len() >= 20,
+        &format!("{} repos defined (expect >= 20)", repos.len()),
+    );
+
+    for (name, repo) in repos {
+        let org = repo
+            .get("org")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        v.check_bool(
+            &format!("schema:repo:{name}:org"),
+            !org.is_empty(),
+            &format!("{name}.org = \"{org}\""),
+        );
+
+        let local_path = repo
+            .get("local_path")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        v.check_bool(
+            &format!("schema:repo:{name}:local_path"),
+            !local_path.is_empty(),
+            &format!("{name}.local_path = \"{local_path}\""),
+        );
+
+        let membrane = repo
+            .get("membrane")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        v.check_bool(
+            &format!("schema:repo:{name}:membrane"),
+            VALID_MEMBRANES.contains(&membrane),
+            &format!("{name}.membrane = \"{membrane}\" (valid: {VALID_MEMBRANES:?})"),
+        );
+
+        let category = repo
+            .get("category")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        v.check_bool(
+            &format!("schema:repo:{name}:category"),
+            VALID_CATEGORIES.contains(&category),
+            &format!("{name}.category = \"{category}\""),
+        );
+
+        if let Some(priority) = repo.get("sync_priority").and_then(|v| v.as_str()) {
+            v.check_bool(
+                &format!("schema:repo:{name}:sync_priority"),
+                VALID_PRIORITIES.contains(&priority),
+                &format!("{name}.sync_priority = \"{priority}\""),
+            );
+        }
+
+        let forgejo_repo = repo
+            .get("forgejo_repo")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        v.check_bool(
+            &format!("schema:repo:{name}:forgejo_repo"),
+            !forgejo_repo.is_empty() && forgejo_repo.contains('/'),
+            &format!("{name}.forgejo_repo = \"{forgejo_repo}\" (expect org/name)"),
+        );
+    }
+
+    repo_names
 }
 
 // ─── Structural: Freshness Schema ───────────────────────────────────────────
@@ -389,9 +391,8 @@ fn phase_workspace_drift(v: &mut ValidationResult, _ctx: &mut CompositionContext
         Err(_) => return,
     };
 
-    let repos = match manifest.get("repos").and_then(|r| r.as_table()) {
-        Some(r) => r,
-        None => return,
+    let Some(repos) = manifest.get("repos").and_then(|r| r.as_table()) else {
+        return;
     };
 
     let high_priority_repos: Vec<(&String, &toml::Value)> = repos

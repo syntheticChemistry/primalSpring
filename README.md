@@ -93,11 +93,10 @@ primalSpring/
 │   ├── ttt_composition.sh        # Reference implementation: Tic-Tac-Toe with full NUCLEUS
 │   ├── cell_launcher.sh           # Cell deployment launcher (wraps nucleus_launcher)
 │   └── ws_gateway.py             # Dev WebSocket-to-IPC bridge (planned Rust replacement)
-├── web/
-│   └── play.html                 # Composition monitor / debug dashboard (not primary UI)
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
-└── wateringHole/                  # Fossilized — see infra/wateringHole/
+├── wateringHole/                  # Fossilized — see infra/wateringHole/
+└── fossilRecord/                  # Pointer to external fossilRecord repo
 ```
 
 ## Key Design Principles
@@ -510,14 +509,12 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 
 ## Docs
 
-- `wateringHole/README.md` — Outward-facing guidance index
-- `wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` — `primal.announce` atomic self-registration wire format
-- `ARCHITECTURE.md` — UniBin cell model, two-tier validation, organelle map
 - `docs/PRIMAL_GAPS.md` — Structured gap registry (Waves 1–55b, 13/13 zero debt)
-- ~~`docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
 - `docs/CROSS_SPRING_PARITY_SCORECARD.md` — Cross-spring parity scorecard
-- `wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role
-- `wateringHole/METHOD_GATE_STANDARD.md` — MethodGate pre-dispatch authorization standard (JH-0)
+- `docs/DISCOVERY_WIRE_CONTRACT.md` — Songbird + biomeOS discovery wire format
+- `infra/wateringHole/PRIMAL_ANNOUNCE_PROTOCOL.md` — `primal.announce` wire format (canonical, external)
+- `infra/wateringHole/CRYPTO_CONSUMPTION_HIERARCHY.md` — Crypto posture per primal role (canonical, external)
+- `infra/wateringHole/METHOD_GATE_STANDARD.md` — MethodGate authorization standard (canonical, external)
 - `specs/CROSS_SPRING_EVOLUTION.md` — Evolution path (Phase 0–25+ done — live validation matrix, GAP-MATRIX items all resolved)
 - `specs/NUCLEUS_VALIDATION_MATRIX.md` — NUCLEUS capability validation matrix with particle model
 - `specs/MIXED_COMPOSITION_PATTERNS.md` — Particle model, layered validation (L0-L3), gap inventory, spring specialization guide

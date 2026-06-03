@@ -305,13 +305,11 @@ pub fn register_with_target(our_socket: &Path) {
         let fallback = std::env::var(crate::env_keys::BIOMEOS_PRIMAL)
             .unwrap_or_else(|_| REGISTRATION_TARGET_FALLBACK.to_owned());
         let disc = discover_primal(&fallback);
-        match disc.socket {
-            Some(s) => (s, fallback),
-            None => {
-                info!(target: "niche", "registration target not discovered — deferred");
-                return;
-            }
-        }
+        let Some(s) = disc.socket else {
+            info!(target: "niche", "registration target not discovered — deferred");
+            return;
+        };
+        (s, fallback)
     };
 
     let Ok(mut client) = PrimalClient::connect(&target_path, &target_label) else {

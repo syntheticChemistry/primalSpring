@@ -49,23 +49,25 @@ pub(super) fn build_capability_map() -> HashMap<String, Vec<String>> {
     map
 }
 
+/// Minimal static fallback when `capability_registry.toml` is absent.
+///
+/// Derived from the canonical routing table at compile time. Each primal's
+/// primary discovery domain (from `ALL_CAPS`) is included only when the
+/// routing table maps it to that primal. This ensures the fallback cannot
+/// drift from the TOML-driven path without a deliberate code change.
 fn static_fallback_caps(primal: &str) -> &'static [&'static str] {
-    match primal {
-        "beardog" => &["security", "crypto"],
-        "songbird" => &["discovery", "http"],
-        "skunkbat" => &["defense", "audit"],
-        "toadstool" => &["compute"],
-        "barracuda" => &["tensor", "stats"],
-        "coralreef" => &["shader"],
-        "nestgate" => &["storage", "content"],
-        "rhizocrypt" => &["dag"],
-        "loamspine" => &["ledger"],
-        "sweetgrass" => &["attribution", "commit"],
-        "biomeos" => &["orchestration", "graph"],
-        "squirrel" => &["ai", "inference"],
-        "petaltongue" => &["visualization"],
-        _ => &[],
-    }
+    use primalspring::composition::{ALL_CAPS, capability_to_primal};
+    static FALLBACK: std::sync::LazyLock<std::collections::HashMap<&'static str, Vec<&'static str>>> =
+        std::sync::LazyLock::new(|| {
+            let mut map: std::collections::HashMap<&'static str, Vec<&'static str>> =
+                std::collections::HashMap::new();
+            for &cap in ALL_CAPS {
+                let owner = capability_to_primal(cap);
+                map.entry(owner).or_default().push(cap);
+            }
+            map
+        });
+    FALLBACK.get(primal).map_or(&[], |v| v.as_slice())
 }
 
 /// Resolve the effective TCP port for a primal (env override → centralized default).

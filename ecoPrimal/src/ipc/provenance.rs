@@ -35,13 +35,21 @@ pub struct ProvenanceResult {
 }
 
 impl ProvenanceResult {
-    /// Placeholder result when provenance is not available.
+    /// Degradation marker when provenance backends are unreachable.
+    ///
+    /// Carries the degradation context for observability without fabricating
+    /// a synthetic provenance ID that could be confused with a real vertex.
+    /// Callers should propagate this status to dashboards so operators can
+    /// see which compositions ran without provenance coverage.
     #[must_use]
     pub fn unavailable(context: &str) -> Self {
         Self {
-            id: format!("local-{context}"),
+            id: format!("degraded:{context}"),
             status: ProvenanceStatus::Unavailable,
-            data: serde_json::json!({ "provenance": "unavailable" }),
+            data: serde_json::json!({
+                "degradation": "provenance_backends_unreachable",
+                "context": context,
+            }),
         }
     }
 }
@@ -69,7 +77,8 @@ mod tests {
     fn provenance_result_unavailable_has_correct_status() {
         let r = ProvenanceResult::unavailable("test");
         assert_eq!(r.status, ProvenanceStatus::Unavailable);
-        assert!(r.id.starts_with("local-"));
+        assert!(r.id.starts_with("degraded:"));
+        assert!(r.data["degradation"].as_str().is_some());
     }
 
     #[test]

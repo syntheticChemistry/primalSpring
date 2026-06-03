@@ -229,9 +229,25 @@ pub struct MethodGate {
 }
 
 impl MethodGate {
-    /// Create a gate with the given enforcement mode and a permissive verifier.
+    /// Create a gate with the given enforcement mode and mode-appropriate verifier.
+    ///
+    /// In `Enforced` mode, discovers the security provider via capability-based
+    /// IPC. Falls back to [`DenyVerifier`] when unreachable — secure by default.
+    /// In `Permissive` or `Off` mode, uses [`PermissiveVerifier`].
     #[must_use]
     pub fn new(mode: EnforcementMode) -> Self {
+        if mode == EnforcementMode::Enforced {
+            return SecurityVerifier::discover().map_or_else(
+                || Self {
+                    mode,
+                    verifier: Box::new(DenyVerifier),
+                },
+                |v| Self {
+                    mode,
+                    verifier: Box::new(v),
+                },
+            );
+        }
         Self {
             mode,
             verifier: Box::new(PermissiveVerifier),

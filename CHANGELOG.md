@@ -3,7 +3,34 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–67: Stadial Entry / Glacial Shift (2026-06-01)
+## [Unreleased] — Waves 22–70: Stadial Entry / Glacial Shift (2026-06-02)
+
+### Wave 70: Deep Debt Evolution III — Security + Capability Purity (June 2)
+- **SecurityVerifier wildcard scope eliminated** — missing scopes from `auth.verify_ionic`
+  now cause denial (was wildcard `["*"]` grant). Enforced mode secure by default.
+- **`MethodGate::new(Enforced)` mode-aware** — discovers SecurityProvider via IPC or
+  falls back to DenyVerifier. No longer unconditionally permissive regardless of mode.
+- **Real latency measurement** — `handle_probe_primal` and `handle_probe_capability` use
+  `Instant::now()` round-trip measurement instead of hardcoded `latency_us: 0`.
+- **Per-primal capabilities** — `validate_composition_ctx` reports only capabilities owned
+  by each specific primal (was broadcasting all composition caps to every entry).
+- **`STARTUP_ORDER` derived from `Primal::ALL`** — single source of truth; cannot drift.
+- **`leak_or_match` enum-driven** — uses `Primal`/`Spring` `FromStr` parsing; adding a new
+  primal/spring forces compiler errors instead of silent fallthrough to `"unknown"`.
+- **`static_fallback_caps` `LazyLock`-derived** — derives from `ALL_CAPS` routing table
+  via `capability_to_primal()`; cannot diverge from TOML-driven capability map.
+- **`ProvenanceResult::unavailable` evolved** — uses `"degraded:{context}"` prefix with
+  structured `{ degradation, context }` data instead of synthetic `"local-"` IDs.
+- **`#[allow(deprecated)]` → `#[expect(deprecated, reason)]`** in all production code
+  (orchestrator + handlers). Zero `#[allow]` remaining in non-test paths.
+- **12 pre-existing clippy violations fixed** — `single_match_else` → `let...else`,
+  `option_if_let_else` → `map_or_else`, `manual_let_else`, `redundant_closure`,
+  `cast_lossless` → `f64::from()`, `too_many_lines` split, `unnecessary_map_or` →
+  `is_ok_and`, `items_after_statements`.
+- **Large function refactored** — `phase_manifest_schema` (194 lines) split via
+  `validate_repo_entries` extraction (now under 150-line clippy limit).
+- **fossilRecord cleaned** — in-tree script copies removed (external repo canonical).
+- 836 tests passing, 0 clippy warnings (pedantic + nursery clean), 0 unsafe blocks.
 
 ### Wave 67: Deep Debt Evolution II — Modern Idiomatic Rust (June 1)
 - **Dead code removal** — `ENV_PLASMID_BIN`, `ENV_BIOMEOS_BIN_DIR` deprecated constants removed

@@ -48,21 +48,25 @@ pub struct LaunchResult {
     pub total: usize,
 }
 
-/// Dependency-ordered startup sequence (crypto spine first, orchestrator last).
+/// Dependency-ordered startup sequence derived from [`Primal::ALL`].
+///
+/// `Primal::ALL` already defines canonical ordering (crypto spine first,
+/// orchestrator last). This eliminates a second maintained list that could
+/// drift from the enum definition.
 const STARTUP_ORDER: &[&str] = &[
-    primal_names::BEARDOG,
-    primal_names::SONGBIRD,
-    primal_names::SKUNKBAT,
-    primal_names::TOADSTOOL,
-    primal_names::BARRACUDA,
-    primal_names::CORALREEF,
-    primal_names::NESTGATE,
-    primal_names::RHIZOCRYPT,
-    primal_names::LOAMSPINE,
-    primal_names::SWEETGRASS,
-    primal_names::BIOMEOS,
-    primal_names::SQUIRREL,
-    primal_names::PETALTONGUE,
+    primal_names::Primal::ALL[0].slug(),
+    primal_names::Primal::ALL[1].slug(),
+    primal_names::Primal::ALL[2].slug(),
+    primal_names::Primal::ALL[3].slug(),
+    primal_names::Primal::ALL[4].slug(),
+    primal_names::Primal::ALL[5].slug(),
+    primal_names::Primal::ALL[6].slug(),
+    primal_names::Primal::ALL[7].slug(),
+    primal_names::Primal::ALL[8].slug(),
+    primal_names::Primal::ALL[9].slug(),
+    primal_names::Primal::ALL[10].slug(),
+    primal_names::Primal::ALL[11].slug(),
+    primal_names::Primal::ALL[12].slug(),
 ];
 
 /// Ordered primals for a given composition type, filtered against the startup order.
@@ -83,7 +87,7 @@ pub fn ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
     resolved.dedup();
 
     if resolved.is_empty() {
-        #[allow(deprecated)]
+        #[expect(deprecated, reason = "fallback for compositions whose capabilities don't resolve via TOML yet")]
         let required = atomic.required_primals();
         return STARTUP_ORDER
             .iter()

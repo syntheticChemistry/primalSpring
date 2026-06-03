@@ -161,19 +161,16 @@ impl NeuralDispatcher {
     ) -> DispatchOutcome {
         let start = Instant::now();
 
-        let entry = match self.table.route(method) {
-            Some(e) => e.clone(),
-            None => {
-                let m: Arc<str> = Arc::from(method);
-                return DispatchOutcome {
-                    method: m,
-                    owner: Arc::from("unknown"),
-                    tier: CompositionTier::Standalone,
-                    route_path: RoutePath::Unresolved,
-                    result: Err(DispatchError::MethodNotFound(method.to_owned())),
-                    latency_ms: u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX),
-                };
-            }
+        let Some(entry) = self.table.route(method).cloned() else {
+            let m: Arc<str> = Arc::from(method);
+            return DispatchOutcome {
+                method: m,
+                owner: Arc::from("unknown"),
+                tier: CompositionTier::Standalone,
+                route_path: RoutePath::Unresolved,
+                result: Err(DispatchError::MethodNotFound(method.to_owned())),
+                latency_ms: u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX),
+            };
         };
 
         let (result, route_path) = self.bridge.as_ref().map_or(
@@ -267,12 +264,10 @@ impl NeuralDispatcher {
     /// round-trip.
     pub fn record_bridge_outcome(&mut self, outcome: &BridgeOutcome) {
         let method_str = format!("{}.{}", outcome.capability, outcome.operation);
-        let (method_arc, owner_arc, tier) =
-            if let Some(entry) = self.table.route(&method_str) {
-                (Arc::clone(&entry.method), Arc::clone(&entry.owner), entry.tier)
-            } else {
-                (Arc::from(method_str.as_str()), Arc::from("unknown"), CompositionTier::Standalone)
-            };
+        let (method_arc, owner_arc, tier) = self.table.route(&method_str).map_or_else(
+            || (Arc::from(method_str.as_str()), Arc::from("unknown"), CompositionTier::Standalone),
+            |entry| (Arc::clone(&entry.method), Arc::clone(&entry.owner), entry.tier),
+        );
 
         self.metrics.push(DispatchMetric {
             method: method_arc,

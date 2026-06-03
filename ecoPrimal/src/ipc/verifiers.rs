@@ -98,15 +98,13 @@ impl TokenVerifier for SecurityVerifier {
         let scopes = result
             .get("scopes")
             .and_then(serde_json::Value::as_array)
-            .map_or_else(
-                || vec!["*".to_owned()],
-                |arr| {
-                    arr.iter()
-                        .filter_map(serde_json::Value::as_str)
-                        .map(String::from)
-                        .collect()
-                },
-            );
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(serde_json::Value::as_str)
+                    .map(String::from)
+                    .collect::<Vec<_>>()
+            })
+            .filter(|s| !s.is_empty())?;
 
         let subject = result
             .get("subject")

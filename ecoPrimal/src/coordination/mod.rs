@@ -249,18 +249,22 @@ pub fn validate_composition_ctx(atomic: AtomicType) -> CompositionResult {
             } else {
                 false
             };
+            let primal_caps: Vec<String> = if has_client {
+                caps.iter()
+                    .filter(|other_cap| {
+                        capability_to_primal(other_cap) == primal_name
+                            && ctx.has_capability(other_cap)
+                    })
+                    .map(|s| (*s).to_owned())
+                    .collect()
+            } else {
+                Vec::new()
+            };
             PrimalHealth {
                 name: primal_name,
                 socket_found: has_client,
                 health_ok,
-                capabilities: if has_client {
-                    ctx.available_capabilities()
-                        .iter()
-                        .map(|s| (*s).to_owned())
-                        .collect()
-                } else {
-                    Vec::new()
-                },
+                capabilities: primal_caps,
                 latency_us: cast::micros_u64(start.elapsed()),
             }
         })
