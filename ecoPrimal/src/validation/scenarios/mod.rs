@@ -65,6 +65,7 @@ pub mod s_deployment_pipeline;
 pub mod s_covalent_bond;
 pub mod s_covalent_mesh;
 pub mod s_cross_gate_capability_call;
+pub mod s_dual_membrane_path;
 pub mod s_plasmodium_collective;
 pub mod s_cross_spring_data_flow;
 pub mod s_deployment_matrix;
@@ -117,6 +118,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_sequential_graph::SCENARIO);
     r.register(s_covalent_bond::SCENARIO);
     r.register(s_covalent_mesh::SCENARIO);
+    r.register(s_dual_membrane_path::SCENARIO);
     r.register(s_plasmodium_collective::SCENARIO);
     r.register(s_ionic_bond::SCENARIO);
     r.register(s_gate_failure::SCENARIO);
@@ -178,7 +180,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 59;
+    const EXPECTED_SCENARIO_COUNT: usize = 60;
 
     #[test]
     fn registry_scenario_count() {
