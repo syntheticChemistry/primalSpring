@@ -3,7 +3,30 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–70: Stadial Entry / Glacial Shift (2026-06-02)
+## [Unreleased] — Waves 22–74: Stadial Entry / Glacial Shift (2026-06-03)
+
+### Wave 74: Live Mesh Validation + Dual Membrane (June 3)
+- **Songbird d6a6f714 HTTP dispatch validated** — rebuilt, deployed to eastGate + strandGate.
+  Protocol layer works (no more "Invalid JSON from remote"). Capability advertisement
+  propagation via mesh is remaining P1 gap (FRAGO filed).
+- **Perceptron feature extraction** — 36-dim feature vector pipeline for `ml.mlp_train`.
+  Cyclical time encoding, FNV-1a method hash, tier/route/owner one-hot, reward label.
+- **MeshTopology model** — multi-gate composition awareness. Gate nodes, capability
+  resolution (local-first), cross-gate route computation, unreachable gap analysis.
+- **Plasmodium collective scenario** — 3-gate mesh validation (60th scenario).
+- **Dual membrane path scenario** — Cloudflare shadow vs BTSP sovereign verification.
+  Validates sovereign DNS, BTSP prerequisites, BirdSong lineage, TLS reachability.
+- **SecurityVerifier integration** — `parse_verify_ionic_response()` for bearDog w131
+  top-level scopes format. 7 tests for response parsing.
+- **CompositionContext gate_id** — multi-gate mesh awareness field.
+- **westGate/skunkBat enrollment FRAGO** — 9-step onboarding protocol filed.
+- 836 tests passing, 60 scenarios, zero clippy.
+
+### Wave 72: First Live 2-Gate Mesh Validation (June 3)
+- **discovery.peers LIVE** — eastGate ↔ strandGate, quality 1.0, bidirectional healthy.
+- **s_covalent_mesh wire format fix** — accept `node_id` field (Songbird actual format).
+- **Graceful Phase 3 skip** — known protocol mismatch (pre-HTTP-fix) causes skip not fail.
+- AAR + operational runbook published. 4 Songbird P1/P2 gaps identified and FRAGO filed.
 
 ### Wave 70: Deep Debt Evolution III — Security + Capability Purity (June 2)
 - **SecurityVerifier wildcard scope eliminated** — missing scopes from `auth.verify_ionic`
