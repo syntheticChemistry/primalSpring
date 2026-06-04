@@ -106,6 +106,7 @@ pub mod s_cephalization;
 pub mod s_ecosystem_freshness;
 pub mod s_kderm_boundary;
 pub mod s_tower_cns;
+pub mod s_cross_membrane_integrity;
 pub mod s_zero_port_standard;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
@@ -172,6 +173,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_tower_cns::SCENARIO);
     r.register(s_kderm_boundary::SCENARIO);
     r.register(s_ecosystem_freshness::SCENARIO);
+    r.register(s_cross_membrane_integrity::SCENARIO);
     r
 }
 
@@ -182,7 +184,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 60;
+    const EXPECTED_SCENARIO_COUNT: usize = 61;
 
     #[test]
     fn registry_scenario_count() {

@@ -81,16 +81,12 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 70 (June 2, 2026) — 58 scenarios (10 tracks, 3 tiers),
+v0.9.31 Wave 77b (June 4, 2026) — 61 scenarios (10 tracks, 3 tiers),
 490+ registered capability methods, 93 experiments (21 tracks), 113 graph TOMLs
-(~80 deploy + 33 compositions), 44-cell deployment matrix. 836 tests passing
-(805 lib + 10 integration + 4 binary + 17 doc). 13/13 BTSP convergence.
-**Wave 70 deep debt evolution**: `SecurityVerifier` denies on missing scopes (was
-wildcard fallback). `MethodGate::new(Enforced)` discovers or denies (was permissive).
-Real latency measurement in probe handlers. Per-primal capability reporting in
-`validate_composition_ctx`. `STARTUP_ORDER` derived from `Primal::ALL`. `leak_or_match`
-enum-driven (compiler-enforced). `static_fallback_caps` derives from routing table via
-`LazyLock`. All `#[allow(deprecated)]` → `#[expect(deprecated, reason)]`.
+(~80 deploy + 33 compositions), 44-cell deployment matrix. 858 tests passing.
+13/13 BTSP convergence. Diderm membrane architecture formalized. Cross-membrane
+integrity validation scenario shipped (`s_cross_membrane_integrity`). DNS zones
+for `primal.eco` + `nestgate.io` live on sovereign knot-dns.
 12 pre-existing clippy violations fixed (zero warnings: pedantic + nursery).
 `ProvenanceResult::unavailable` uses `"degraded:"` prefix with structured data.
 Large function split in `s_ecosystem_freshness`. fossilRecord scripts cleaned.
@@ -255,7 +251,7 @@ composition).
 
 ### Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 490+ method registry (100% exercised), 58 scenarios, 110 deploy graphs
+- 490+ method registry (100% exercised), 61 scenarios, 113 deploy graphs
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs
