@@ -33,12 +33,13 @@ impl CompositionContext {
                 primal: format!("capability:{capability}"),
             })?;
         let response = client.call(method, params)?;
-        response.result.ok_or_else(|| IpcError::ProtocolError {
-            detail: response
-                .error
-                .as_ref()
-                .map_or_else(|| "no result".to_owned(), |e| e.message.clone()),
-        })
+        match (response.result, response.error) {
+            (Some(result), _) => Ok(result),
+            (None, Some(err)) => Err(IpcError::from(err)),
+            (None, None) => Err(IpcError::ProtocolError {
+                detail: "no result and no error in response".to_owned(),
+            }),
+        }
     }
 
     /// Call a method with the context's bearer token injected.

@@ -532,6 +532,7 @@ methods = [
     "content.exists",
     "content.fetch_heads",
     "content.get",
+    "content.hash",
     "content.list",
     "content.promote",
     "content.publish",

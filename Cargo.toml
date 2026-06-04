@@ -121,6 +121,7 @@ thiserror = "2"
 toml = "0.8"
 base64 = "0.22"
 blake3 = { version = "1", features = ["pure"] }
+ureq = { version = "3", default-features = false, features = ["rustls"] }
 
 [workspace.lints.rust]
 unsafe_code = "deny"

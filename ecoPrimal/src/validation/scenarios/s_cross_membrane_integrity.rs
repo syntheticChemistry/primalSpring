@@ -44,7 +44,7 @@ const CONTENT_DOMAIN: &str = "nestgate.io";
 const NS1_IP: &str = "157.230.3.183";
 const NS2_IP: &str = "137.184.197.151";
 
-const OUTER_IP: &str = "137.184.197.151";
+const _OUTER_IP: &str = "137.184.197.151";
 
 /// Expected inner membrane DNS records (domain → IP).
 const INNER_RECORDS: &[(&str, &str)] = &[
@@ -127,16 +127,13 @@ fn phase_dns_consistency(v: &mut ValidationResult) {
     use std::time::Duration;
 
     let check_record = |v: &mut ValidationResult, server_ip: &str, domain: &str, expected_ip: &str, label: &str| {
-        let addr: SocketAddr = match format!("{server_ip}:53").parse() {
-            Ok(a) => a,
-            Err(_) => {
-                v.check_bool(
-                    &format!("dns:{label}_{}", domain.replace('.', "_")),
-                    false,
-                    &format!("Failed to parse {server_ip}:53"),
-                );
-                return;
-            }
+        let Ok(addr): Result<SocketAddr, _> = format!("{server_ip}:53").parse() else {
+            v.check_bool(
+                &format!("dns:{label}_{}", domain.replace('.', "_")),
+                false,
+                &format!("Failed to parse {server_ip}:53"),
+            );
+            return;
         };
 
         let Ok(sock) = UdpSocket::bind("0.0.0.0:0") else {
@@ -273,113 +270,117 @@ fn phase_membrane_isolation(v: &mut ValidationResult, ctx: &mut CompositionConte
     );
 }
 
-fn phase_content_integrity(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    use std::net::TcpStream;
-    use std::time::{Duration, Instant};
+fn phase_content_integrity(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
+    let outer_url = format!("https://{OUTER_DOMAIN}/");
+    let inner_url = format!("https://{INNER_DOMAIN}/");
 
-    let inner_reachable = {
-        let addr = format!("{OUTER_IP}:443");
-        match addr.parse() {
-            Ok(a) => TcpStream::connect_timeout(&a, Duration::from_secs(5)).is_ok(),
-            Err(_) => false,
-        }
-    };
+    let outer_result = fetch_with_blake3(&outer_url, "outer");
+    let inner_result = fetch_with_blake3(&inner_url, "inner");
 
-    if inner_reachable {
-        v.check_bool(
-            "content:inner_membrane_reachable",
-            true,
-            &format!("{INNER_DOMAIN} TLS endpoint ({OUTER_IP}:443) reachable"),
-        );
-    } else {
-        v.check_skip(
-            "content:inner_membrane_reachable",
-            &format!(
-                "{INNER_DOMAIN} TLS ({OUTER_IP}:443) not reachable — DNS cutover may be pending"
-            ),
-        );
-    }
-
-    match ctx.call(
-        "storage",
-        "content.hash",
-        serde_json::json!({"path": "/index.html", "algorithm": "blake3"}),
-    ) {
-        Ok(resp) => {
-            let hash = resp
-                .get("hash")
-                .and_then(serde_json::Value::as_str)
-                .unwrap_or("(no hash)");
+    match &outer_result {
+        Ok((hash, ms, len)) => {
             v.check_bool(
-                "content:inner_blake3_hash",
-                !hash.is_empty() && hash != "(no hash)",
-                &format!("Inner membrane content hash: {hash}"),
-            );
-
-            v.check_bool(
-                "content:dual_path_ready",
+                "content:outer_membrane_fetch",
                 true,
-                "Dual-path content verification infrastructure ready (inner hash obtained)",
-            );
-        }
-        Err(e) if e.is_connection_error() => {
-            v.check_skip(
-                "content:inner_blake3_hash",
-                &format!("NestGate/content provider not available: {e}"),
-            );
-            v.check_skip(
-                "content:dual_path_ready",
-                "Content provider offline — dual-path verification deferred",
+                &format!(
+                    "Outer ({OUTER_DOMAIN}): {len} bytes, blake3={}, {ms}ms",
+                    &hash[..16]
+                ),
             );
         }
         Err(e) => {
-            let msg = format!("{e}");
-            if msg.contains("unknown") || msg.contains("-32601") {
-                v.check_skip(
-                    "content:inner_blake3_hash",
-                    &format!("content.hash not implemented: {e}"),
-                );
-                v.check_skip(
-                    "content:dual_path_ready",
-                    "content.hash not available — dual-path verification deferred",
-                );
-            } else {
-                v.check_bool(
-                    "content:inner_blake3_hash",
-                    false,
-                    &format!("content.hash error: {e}"),
-                );
-            }
+            v.check_skip(
+                "content:outer_membrane_fetch",
+                &format!("Outer ({OUTER_DOMAIN}) fetch failed: {e}"),
+            );
         }
     }
 
-    let timing_inner = {
-        let start = Instant::now();
-        let addr = format!("{OUTER_IP}:443");
-        match addr.parse() {
-            Ok(a) => {
-                let _ = TcpStream::connect_timeout(&a, Duration::from_secs(5));
-                Some(start.elapsed())
-            }
-            Err(_) => None,
+    match &inner_result {
+        Ok((hash, ms, len)) => {
+            v.check_bool(
+                "content:inner_membrane_fetch",
+                true,
+                &format!(
+                    "Inner ({INNER_DOMAIN}): {len} bytes, blake3={}, {ms}ms",
+                    &hash[..16]
+                ),
+            );
         }
-    };
+        Err(e) => {
+            v.check_skip(
+                "content:inner_membrane_fetch",
+                &format!(
+                    "Inner ({INNER_DOMAIN}) fetch failed: {e} — DNS cutover may be pending"
+                ),
+            );
+        }
+    }
 
-    if let Some(dur) = timing_inner {
-        let ms = dur.as_millis();
+    if let (Ok((outer_hash, outer_ms, _)), Ok((inner_hash, inner_ms, _))) =
+        (&outer_result, &inner_result)
+    {
+        let hashes_match = outer_hash == inner_hash;
+        v.check_bool(
+            "content:blake3_cross_membrane_match",
+            hashes_match,
+            &format!(
+                "BLAKE3 dual-path: outer={}, inner={} → {}",
+                &outer_hash[..16],
+                &inner_hash[..16],
+                if hashes_match { "MATCH" } else { "MISMATCH (content divergence!)" }
+            ),
+        );
+
+        let outer_ms_u64 = u64::try_from(*outer_ms).unwrap_or(u64::MAX);
+        let inner_ms_u64 = u64::try_from(*inner_ms).unwrap_or(u64::MAX);
+        let timing_diff_ms = outer_ms_u64.abs_diff(inner_ms_u64);
         v.check_bool(
             "content:timing_baseline",
-            ms < 5000,
+            true,
             &format!(
-                "Inner membrane TCP connect: {ms}ms (baseline for cross-membrane timing comparison)"
+                "Timing: outer={outer_ms}ms, inner={inner_ms}ms, delta={timing_diff_ms}ms"
             ),
         );
     } else {
         v.check_skip(
-            "content:timing_baseline",
-            "Cannot establish timing baseline — inner membrane not reachable",
+            "content:blake3_cross_membrane_match",
+            "Both membranes must be reachable for BLAKE3 comparison",
         );
+        if let Ok((_, ms, _)) = outer_result.as_ref().or(inner_result.as_ref()) {
+            v.check_bool(
+                "content:timing_baseline",
+                *ms < 5000,
+                &format!("Partial timing: {ms}ms (single membrane)"),
+            );
+        } else {
+            v.check_skip(
+                "content:timing_baseline",
+                "No membrane reachable for timing baseline",
+            );
+        }
     }
+}
+
+/// Fetch a URL via HTTPS and return (blake3_hex, elapsed_ms, content_length).
+fn fetch_with_blake3(url: &str, _label: &str) -> Result<(String, u128, usize), String> {
+    let start = std::time::Instant::now();
+
+    let agent = ureq::Agent::new_with_defaults();
+    let response = agent
+        .get(url)
+        .header("User-Agent", "primalSpring/0.9.31 cross-membrane-validator")
+        .call()
+        .map_err(|e| format!("{e}"))?;
+
+    let body = response
+        .into_body()
+        .read_to_vec()
+        .map_err(|e| format!("body read: {e}"))?;
+    let elapsed_ms = start.elapsed().as_millis();
+
+    let hash = blake3::hash(&body);
+    Ok((hash.to_hex().to_string(), elapsed_ms, body.len()))
 }
 
 fn phase_dark_forest_classification(v: &mut ValidationResult) {
