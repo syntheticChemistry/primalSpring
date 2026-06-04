@@ -22,6 +22,7 @@
 
 pub mod dependency;
 pub mod helpers;
+pub mod live_mesh;
 pub mod numeric;
 pub mod scenarios;
 pub mod shadow;

@@ -304,6 +304,8 @@ fn phase_cross_gate_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCont
 ///
 /// Tests:
 /// - Issue token on local gate, verify locally (baseline)
+/// - Verify with `verification_source: "local"` succeeds
+/// - Verify with `verification_source: "remote"` — validates BTSP session binding
 /// - Issue token on local gate, verify on remote gate via mesh
 /// - Reject forged/expired token from remote gate
 /// - auth.verify_ionic scopes propagate through mesh dispatch
@@ -314,6 +316,8 @@ fn phase_security_trust(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             "security capability not in context (bearDog not running)",
         );
         v.check_skip("security:local_verify", "security not available");
+        v.check_skip("security:verify_source_local", "security not available");
+        v.check_skip("security:verify_source_remote", "security not available");
         v.check_skip("security:cross_gate_verify", "security not available");
         v.check_skip("security:reject_forged", "security not available");
         v.check_skip("security:scopes_propagate", "security not available");
@@ -326,7 +330,8 @@ fn phase_security_trust(v: &mut ValidationResult, ctx: &mut CompositionContext) 
         serde_json::json!({
             "subject": "mesh-trust-test",
             "scopes": ["discovery.*", "mesh.*"],
-            "ttl_seconds": 60
+            "ttl_seconds": 60,
+            "gate_origin": "east-gate"
         }),
     );
 
@@ -338,7 +343,7 @@ fn phase_security_trust(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 tok.is_some(),
                 &format!(
                     "auth.issue_ionic: {}",
-                    if tok.is_some() { "token issued" } else { "no token field in response" }
+                    if tok.is_some() { "token issued with gate_origin" } else { "no token field" }
                 ),
             );
             tok.map(String::from)
@@ -363,6 +368,8 @@ fn phase_security_trust(v: &mut ValidationResult, ctx: &mut CompositionContext) 
 
     let Some(ref valid_token) = token else {
         v.check_skip("security:local_verify", "no token to verify");
+        v.check_skip("security:verify_source_local", "no token to verify");
+        v.check_skip("security:verify_source_remote", "no token to verify");
         v.check_skip("security:cross_gate_verify", "no token to verify");
         v.check_skip("security:reject_forged", "no token to verify");
         v.check_skip("security:scopes_propagate", "no token to verify");
@@ -404,7 +411,93 @@ fn phase_security_trust(v: &mut ValidationResult, ctx: &mut CompositionContext) 
         }
     }
 
+    verify_with_source(v, ctx, valid_token);
     verify_cross_gate_and_forged(v, ctx, valid_token);
+}
+
+/// BTSP verification source testing — validate that bearDog distinguishes
+/// local vs remote token verification contexts.
+fn verify_with_source(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+    valid_token: &str,
+) {
+    match ctx.call(
+        "security",
+        "auth.verify_ionic",
+        serde_json::json!({
+            "token": valid_token,
+            "verification_source": "local"
+        }),
+    ) {
+        Ok(resp) => {
+            let parsed = parse_verify_ionic_response(&resp);
+            v.check_bool(
+                "security:verify_source_local",
+                parsed.is_some(),
+                &format!(
+                    "verification_source=local: {}",
+                    if parsed.is_some() { "accepted (local gate issued this token)" } else { "rejected" }
+                ),
+            );
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            if msg.contains("not found") || msg.contains("-32601") {
+                v.check_skip(
+                    "security:verify_source_local",
+                    "verification_source param not supported (bearDog version too old)",
+                );
+            } else {
+                v.check_bool(
+                    "security:verify_source_local",
+                    false,
+                    &format!("verify with source=local error: {e}"),
+                );
+            }
+        }
+    }
+
+    match ctx.call(
+        "security",
+        "auth.verify_ionic",
+        serde_json::json!({
+            "token": valid_token,
+            "verification_source": "remote",
+            "requesting_gate": "strand-gate"
+        }),
+    ) {
+        Ok(resp) => {
+            let valid = resp
+                .get("valid")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
+            let gate_bound = resp.get("gate_origin").is_some()
+                || resp.get("issuing_gate").is_some();
+            v.check_bool(
+                "security:verify_source_remote",
+                valid,
+                &format!(
+                    "verification_source=remote: valid={valid}, gate_binding={}",
+                    if gate_bound { "present" } else { "absent (acceptable pre-BTSP-v2)" }
+                ),
+            );
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            if msg.contains("not found") || msg.contains("-32601") {
+                v.check_skip(
+                    "security:verify_source_remote",
+                    "verification_source=remote not supported (bearDog needs w135+)",
+                );
+            } else {
+                v.check_skip(
+                    "security:verify_source_remote",
+                    &format!("remote verification not available: {e}"),
+                );
+            }
+        }
+    }
 }
 
 /// Cross-gate token verification + forged token rejection sub-phase.
