@@ -3,7 +3,35 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–74: Stadial Entry / Glacial Shift (2026-06-03)
+## [Unreleased] — Waves 22–75: Stadial Entry / Glacial Shift (2026-06-03)
+
+### Wave 75: Cross-Gate Trust + Evolution Sprint (June 3)
+- **s_covalent_mesh 6-phase trust validation** — Phase 4: bearDog BTSP cross-gate token
+  validation (issue, verify local/remote, cross-gate dispatch, forged rejection, scope
+  propagation). Phase 5: NestGate content integrity (BLAKE3 put/get round-trip, cross-gate
+  replicate.pull hash verification). Phase 6: Dark Forest invariants (federation port
+  isolation, UDS-only local IPC, gate reversibility).
+- **s_covalent_mesh refactored** — 909L→346L via smart domain split. Trust phases extracted
+  to `covalent_mesh_trust.rs` sub-module (Phases 4-6). Zero files >800 lines.
+- **Identity-mode discovery retired** — last production use of deprecated `required_primals()`
+  removed. All callers redirect to capability mode.
+- **Orchestrator fallback removed** — `ordered_primals()` no longer falls back to deprecated
+  primal-name resolution. Every `ALL_CAPS` entry proven to resolve via new enforcement test.
+- **MeshTopology wired into CompositionContext** — `set_mesh()`, `mesh()`,
+  `resolve_cross_gate()` enable Layer 3 cross-gate capability resolution.
+- **Handlers elevated to Tier 1** — `CompositionContext::discover()` (full Songbird
+  escalation) replaces `from_live_discovery_with_fallback()` in handlers, coordination,
+  and deploy validation.
+- **Handler consolidation** — duplicate `validate_composition_by_capability` delegates
+  to `validate_composition`. `handle_probe_primal` evolved to accept `capability` param.
+- **Perceptron pipeline** — end-to-end telemetry→feature extraction→ml.mlp_train→weights
+  pipeline module. Integrates with barraCuda ml.perceptron_train.
+- **LiveMeshConfig** — new validation infrastructure for live cross-gate testing with BTSP
+  readiness, environment parsing, connectivity checks, authenticated call builders.
+- **Gen5 paper updated** — COVALENT_MESH_TRUST_VALIDATION.md Phases 3-6 marked IMPLEMENTED.
+- **Plasmodium collective evolved** — 3-gate routing (ironGate defense) + MeshTopology
+  composition routing validation.
+- 851 tests passing, 60 scenarios, zero clippy.
 
 ### Wave 74: Live Mesh Validation + Dual Membrane (June 3)
 - **Songbird d6a6f714 HTTP dispatch validated** — rebuilt, deployed to eastGate + strandGate.
