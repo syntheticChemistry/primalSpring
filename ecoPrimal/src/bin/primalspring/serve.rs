@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! JSON-RPC 2.0 IPC server — the cell membrane of the eukaryotic UniBin.
 

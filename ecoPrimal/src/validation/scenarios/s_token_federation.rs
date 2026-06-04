@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: Ionic Token Federation — absorbed from exp108.
 
 use crate::composition::CompositionContext;

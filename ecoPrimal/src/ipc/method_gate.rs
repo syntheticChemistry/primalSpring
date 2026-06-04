@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Pre-dispatch capability gate for JSON-RPC methods (JH-0 + JH-11 prep).
 //!

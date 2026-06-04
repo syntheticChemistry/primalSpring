@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: Health & lifecycle surface — exercises health.version,
 //! health.readiness, health.drain, lifecycle.*, system.status, and
 //! per-primal version/status methods (Wave 47 method coverage push).

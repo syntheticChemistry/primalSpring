@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: BearDog FIDO2 — IPC surface validation for UB-2.
 //!
 //! Validates the three FIDO2/CTAP2 methods shipped in BearDog Wave 103:

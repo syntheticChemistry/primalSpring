@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Feedback Loop — validates the Wave 42 instrumented dispatch path
 //! and verifies biomeOS routing weights update in response to dispatches.

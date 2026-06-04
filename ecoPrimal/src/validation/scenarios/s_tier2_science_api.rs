@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: Tier 2 Science API — live wire contract validation.
 //!
 //! Validates that the Tier 2 Science API methods documented in

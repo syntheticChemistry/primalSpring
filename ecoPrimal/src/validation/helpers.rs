@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Shared validation helpers for graph TOML, Dark Forest invariants,
 //! and capability registry cross-referencing.

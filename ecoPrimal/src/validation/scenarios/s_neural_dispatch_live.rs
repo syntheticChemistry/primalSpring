@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Neural Dispatch Live — validates `NeuralDispatcher.dispatch()` routes
 //! through biomeOS to real primals via `capability.call`.

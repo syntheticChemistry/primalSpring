@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Runtime primal discovery via environment, filesystem probing, and biomeOS.
 //!
@@ -274,8 +275,8 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
 
 /// Discover sockets for a caller-provided set of primal names.
 ///
-/// Use this when you already know which primals a composition requires
-/// (e.g. from [`crate::coordination::AtomicType::required_primals()`]).
+/// Prefer capability-based discovery via [`CompositionContext::discover()`](crate::composition::CompositionContext::discover)
+/// which resolves by advertised capability rather than hardcoded names.
 #[must_use]
 pub fn discover_for(primals: &[&str]) -> Vec<DiscoveryResult> {
     primals.iter().map(|name| discover_primal(name)).collect()

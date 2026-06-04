@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Layer 1.5 + Layer 6: BTSP escalation, cipher policy, and crypto validation.
 

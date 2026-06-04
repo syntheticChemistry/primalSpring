@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Nest Commit Live — validate `nest.commit` signal dispatch
 //! end-to-end through biomeOS, with graceful skip for pre-v3.57 biomeOS.

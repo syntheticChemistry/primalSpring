@@ -1,0 +1,87 @@
+# Cross-Gate Trust Validation Topology
+# eastGate ↔ strandGate — reproducible 2-gate mesh for P0 trust validation.
+#
+# This topology defines the minimum mesh for proving BTSP cross-gate trust:
+# - Token issued on one gate, verified on another via Songbird federation.
+# - capability.call routes through Songbird with BTSP credentials.
+# - Dark Forest constraints hold (federation port only, UDS local).
+#
+# Usage:
+#   BENCHSCALE_TOPOLOGY=cross_gate_trust cargo test --lib -- s_covalent_mesh
+#   BENCHSCALE_TOPOLOGY=cross_gate_trust cargo test --lib -- s_cross_gate_capability_call
+
+[topology]
+name = "cross_gate_trust"
+description = "2-gate mesh proving end-to-end BTSP trust chain"
+gates = ["east-gate", "strand-gate"]
+federation = "songbird"
+federation_port = 7700
+protocol = "btsp"
+
+[gates.east-gate]
+role = "initiator"
+address = "192.168.1.161"
+songbird_port = 7700
+primals = ["biomeOS", "bearDog", "nestGate", "songbird", "primalSpring"]
+capabilities = ["orchestration", "security", "storage", "discovery", "composition"]
+
+[gates.east-gate.env]
+GATE_ID = "east-gate"
+HOSTNAME = "eastGate"
+SONGBIRD_PEERS = "strand-gate=192.168.1.132:7700"
+FAMILY_ID = "${FAMILY_ID}"
+FAMILY_SEED = "${FAMILY_SEED}"
+
+[gates.strand-gate]
+role = "responder"
+address = "192.168.1.132"
+songbird_port = 7700
+primals = ["biomeOS", "bearDog", "nestGate", "songbird", "coralReef", "barraCuda"]
+capabilities = ["orchestration", "security", "storage", "discovery", "compute"]
+
+[gates.strand-gate.env]
+GATE_ID = "strand-gate"
+HOSTNAME = "strandGate"
+SONGBIRD_PEERS = "east-gate=192.168.1.161:7700"
+FAMILY_ID = "${FAMILY_ID}"
+FAMILY_SEED = "${FAMILY_SEED}"
+
+[validation]
+scenarios = [
+    "s_covalent_mesh",
+    "s_cross_gate_capability_call",
+    "s_plasmodium_collective",
+]
+
+[validation.pass_criteria]
+# These checks must PASS (not skip) for the topology to be considered validated.
+required_passes = [
+    "security:verify_source_remote",
+    "security:btsp_trust_chain",
+    "live:btsp_cross_gate_call",
+    "live:btsp_cross_gate_auth",
+]
+
+[validation.trust_chain]
+# The end-to-end trust validation sequence:
+# 1. east-gate bearDog issues token with gate_origin=east-gate
+# 2. east-gate calls capability.call(security, auth.verify_ionic, gate=strand-gate)
+# 3. Songbird routes via TCP :7700 federation
+# 4. strand-gate bearDog receives with verification_source=remote, requesting_gate=east-gate
+# 5. Response: valid=true, gate_origin=east-gate
+issuer_gate = "east-gate"
+verifier_gate = "strand-gate"
+token_scopes = ["security.*", "health.*"]
+verification_source = "remote"
+
+[network]
+# Dark Forest constraints that must hold during validation:
+federation_only = true
+local_ipc = "uds"
+tcp_local_forbidden = true
+subnet = "192.168.1.0/24"
+
+[network.ports]
+songbird_federation = 7700
+# No other TCP ports should be exposed between gates.
+# UDS sockets under /run/ecoPrimals/ for local primal IPC.

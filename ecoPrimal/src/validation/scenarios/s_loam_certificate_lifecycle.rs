@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: Loam Certificate Lifecycle — mint, verify, and retrieve.
 //!
 //! Exercises the certificate lifecycle (playbook Artifact 3):

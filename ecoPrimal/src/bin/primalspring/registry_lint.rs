@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Registry drift detection — verifies capability method strings across
 //! Rust source, TOML graphs, and the canonical `capability_registry.toml`.

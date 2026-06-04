@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Ecosystem Freshness — validates the wateringHole ecosystem
 //! manifest and freshness protocol against the local workspace state.

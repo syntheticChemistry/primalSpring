@@ -51,14 +51,30 @@ pub struct GateReadiness {
 }
 
 impl LiveMeshConfig {
-    /// Build configuration from environment variables and well-known defaults.
+    /// Build from environment, optionally loading a benchScale topology.
+    ///
+    /// Checks `BENCHSCALE_TOPOLOGY` env var first. If set, loads the named
+    /// topology from `benchScale/topologies/{name}.toml` and uses its gate
+    /// definitions to seed remote peers and BTSP configuration. Falls back
+    /// to pure environment-based config.
+    #[must_use]
+    pub fn from_env() -> Self {
+        if let Ok(topo_name) = std::env::var("BENCHSCALE_TOPOLOGY") {
+            if let Some(cfg) = Self::from_topology_file(&topo_name) {
+                return cfg;
+            }
+        }
+        Self::from_env_only()
+    }
+
+    /// Build configuration purely from environment variables.
     ///
     /// Reads:
     /// - `HOSTNAME` or `GATE_ID` for local gate identity
     /// - `SONGBIRD_PEERS` for remote gate addresses
     /// - `FAMILY_ID` / `FAMILY_SEED` for BTSP readiness
     #[must_use]
-    pub fn from_env() -> Self {
+    pub fn from_env_only() -> Self {
         let local_gate = std::env::var("GATE_ID")
             .or_else(|_| std::env::var("HOSTNAME"))
             .unwrap_or_else(|_| "east-gate".to_owned());
@@ -79,6 +95,64 @@ impl LiveMeshConfig {
             family_id,
             connect_timeout: Duration::from_secs(3),
         }
+    }
+
+    /// Load configuration from a benchScale topology TOML file.
+    ///
+    /// Looks for `benchScale/topologies/{name}.toml` relative to the workspace
+    /// root. Parses the local gate's env overrides and populates remote peers
+    /// from other gates in the topology.
+    #[must_use]
+    pub fn from_topology_file(name: &str) -> Option<Self> {
+        let candidates = [
+            format!("benchScale/topologies/{name}.toml"),
+            format!("../benchScale/topologies/{name}.toml"),
+        ];
+
+        let content = candidates.iter().find_map(|p| std::fs::read_to_string(p).ok())?;
+        let parsed: toml::Value = toml::from_str(&content).ok()?;
+
+        let gates_table = parsed.get("gates")?.as_table()?;
+        let local_gate = std::env::var("GATE_ID")
+            .or_else(|_| std::env::var("HOSTNAME"))
+            .unwrap_or_else(|_| "east-gate".to_owned());
+
+        let local_key = gates_table
+            .keys()
+            .find(|k| k.replace('-', "") == local_gate.replace('-', ""))
+            .or_else(|| gates_table.keys().find(|k| k.contains("east")))
+            .cloned()
+            .unwrap_or_else(|| local_gate.clone());
+
+        let mut remote_gates = BTreeMap::new();
+        for (gate_id, gate_val) in gates_table {
+            if gate_id == &local_key {
+                continue;
+            }
+            let addr = gate_val
+                .get("address")
+                .and_then(toml::Value::as_str)
+                .unwrap_or("127.0.0.1");
+            let port = gate_val
+                .get("songbird_port")
+                .and_then(toml::Value::as_integer)
+                .unwrap_or(7700);
+            remote_gates.insert(gate_id.clone(), format!("{addr}:{port}"));
+        }
+
+        let family_id = std::env::var(crate::env_keys::FAMILY_ID)
+            .ok()
+            .filter(|s| !s.is_empty() && s != "default");
+        let btsp_available =
+            family_id.is_some() && crate::env_keys::resolve_family_seed().is_some();
+
+        Some(Self {
+            local_gate: local_key,
+            remote_gates,
+            btsp_available,
+            family_id,
+            connect_timeout: Duration::from_secs(3),
+        })
     }
 
     /// Whether the minimum requirements for live cross-gate testing are met.
@@ -309,5 +383,16 @@ mod tests {
             "192.168.99.99:7700",
             Duration::from_millis(100)
         ));
+    }
+
+    #[test]
+    fn topology_file_loads_when_present() {
+        if let Some(cfg) = LiveMeshConfig::from_topology_file("cross_gate_trust") {
+            assert!(
+                cfg.remote_gates.contains_key("strand-gate")
+                    || cfg.remote_gates.contains_key("east-gate"),
+                "topology should populate remote gates"
+            );
+        }
     }
 }

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Numeric validation bridge — adapter for science springs migrating
 //! from prokaryotic validation binaries to eukaryotic scenario registries.

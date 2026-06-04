@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: sporePrint Pure Primal Parity — validates that the petalTongue
 //! content rendering pipeline can produce equivalent output to the Zola

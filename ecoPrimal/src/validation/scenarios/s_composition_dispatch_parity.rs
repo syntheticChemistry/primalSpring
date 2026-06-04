@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Signal Dispatch Parity — validate all 14 atomic signals
 //! through `CompositionContext::dispatch()` against live biomeOS.

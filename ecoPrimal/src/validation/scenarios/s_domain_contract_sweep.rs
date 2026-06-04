@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: Domain Contract Sweep — contract tests for remaining capability domains.
 //!
 //! Wave 9 gap closure: exercises capability domains that had registered methods

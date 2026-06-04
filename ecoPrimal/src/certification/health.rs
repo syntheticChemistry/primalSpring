@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Layer 2 + 3 + 4: Atomic health, capability parity, and cross-atomic pipeline.
 

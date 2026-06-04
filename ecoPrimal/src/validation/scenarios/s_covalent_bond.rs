@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: Covalent Bond — absorbed from exp030.
 
 use crate::bonding::graph_metadata::validate_graph_bonding;

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: barraCuda Precision Routing — deep tensor and dispatch validation.
 //!
 //! Exercises barraCuda's precision routing, TensorSession lifecycle, and

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! [`CompositionContext`] — capability-keyed client management for NUCLEUS compositions.
 //!
@@ -123,7 +124,7 @@ impl CompositionContext {
     #[must_use]
     #[deprecated(
         since = "0.9.25",
-        note = "use CompositionContext::from_live_discovery_with_fallback() against deployed ecoBins instead"
+        note = "use CompositionContext::discover() for full Songbird escalation instead"
     )]
     #[expect(
         deprecated,

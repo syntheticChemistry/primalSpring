@@ -23,6 +23,8 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
         v.check_skip("security:local_verify", "security not available");
         v.check_skip("security:verify_source_local", "security not available");
         v.check_skip("security:verify_source_remote", "security not available");
+        v.check_skip("security:btsp_gate_binding", "security not available");
+        v.check_skip("security:btsp_trust_chain", "security not available");
         v.check_skip("security:cross_gate_verify", "security not available");
         v.check_skip("security:reject_forged", "security not available");
         v.check_skip("security:scopes_propagate", "security not available");
@@ -75,6 +77,8 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
         v.check_skip("security:local_verify", "no token to verify");
         v.check_skip("security:verify_source_local", "no token to verify");
         v.check_skip("security:verify_source_remote", "no token to verify");
+        v.check_skip("security:btsp_gate_binding", "no token to verify");
+        v.check_skip("security:btsp_trust_chain", "no token to verify");
         v.check_skip("security:cross_gate_verify", "no token to verify");
         v.check_skip("security:reject_forged", "no token to verify");
         v.check_skip("security:scopes_propagate", "no token to verify");
@@ -125,16 +129,18 @@ fn verify_with_source(
     ctx: &mut CompositionContext,
     valid_token: &str,
 ) {
-    match ctx.call(
+    let local_result = ctx.call(
         "security",
         "auth.verify_ionic",
         serde_json::json!({
             "token": valid_token,
             "verification_source": "local"
         }),
-    ) {
+    );
+
+    let source_supported = match &local_result {
         Ok(resp) => {
-            let parsed = parse_verify_ionic_response(&resp);
+            let parsed = parse_verify_ionic_response(resp);
             v.check_bool(
                 "security:verify_source_local",
                 parsed.is_some(),
@@ -143,13 +149,14 @@ fn verify_with_source(
                     if parsed.is_some() { "accepted (local gate issued this token)" } else { "rejected" }
                 ),
             );
+            true
         }
         Err(e) => {
             let msg = format!("{e}");
             if msg.contains("not found") || msg.contains("-32601") {
                 v.check_skip(
                     "security:verify_source_local",
-                    "verification_source param not supported (bearDog version too old)",
+                    "verification_source param not supported (bearDog needs w137+)",
                 );
             } else {
                 v.check_bool(
@@ -158,8 +165,30 @@ fn verify_with_source(
                     &format!("verify with source=local error: {e}"),
                 );
             }
+            false
         }
-    }
+    };
+
+    verify_remote_source(v, ctx, valid_token, source_supported);
+}
+
+/// Remote verification source — the P0 trust criterion.
+///
+/// With bearDog w137+, `verification_source="remote"` must:
+/// 1. Return `valid: true` (the token is recognized despite remote origin)
+/// 2. Include gate binding (`gate_origin` or `issuing_gate`) proving provenance
+/// 3. Return `requesting_gate` echo confirming the trust context
+///
+/// This is the pass criterion for cross-gate BTSP trust: a token issued on
+/// eastGate and verified with `verification_source="remote"` by strandGate's
+/// bearDog proves the trust chain works end-to-end.
+fn verify_remote_source(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+    valid_token: &str,
+    source_supported: bool,
+) {
+    let local_gate = ctx.gate_id().unwrap_or("east-gate").to_owned();
 
     match ctx.call(
         "security",
@@ -175,29 +204,78 @@ fn verify_with_source(
                 .get("valid")
                 .and_then(serde_json::Value::as_bool)
                 .unwrap_or(false);
-            let gate_bound = resp.get("gate_origin").is_some()
-                || resp.get("issuing_gate").is_some();
+            let gate_origin = resp
+                .get("gate_origin")
+                .or_else(|| resp.get("issuing_gate"))
+                .and_then(serde_json::Value::as_str);
+            let requesting_echo = resp
+                .get("requesting_gate")
+                .and_then(serde_json::Value::as_str);
+
             v.check_bool(
                 "security:verify_source_remote",
                 valid,
                 &format!(
-                    "verification_source=remote: valid={valid}, gate_binding={}",
-                    if gate_bound { "present" } else { "absent (acceptable pre-BTSP-v2)" }
+                    "verification_source=remote: valid={valid}, gate_origin={gate_origin:?}"
                 ),
             );
+
+            if source_supported {
+                let gate_bound = gate_origin.is_some();
+                v.check_bool(
+                    "security:btsp_gate_binding",
+                    gate_bound,
+                    &format!(
+                        "BTSP gate binding: {}",
+                        if gate_bound {
+                            format!("gate_origin={}", gate_origin.unwrap_or("?"))
+                        } else {
+                            "MISSING — token provenance not tracked (w137+ required)".to_owned()
+                        }
+                    ),
+                );
+
+                let trust_chain_valid = valid
+                    && gate_origin == Some(&local_gate)
+                        || gate_origin == Some("east-gate");
+                v.check_bool(
+                    "security:btsp_trust_chain",
+                    trust_chain_valid,
+                    &format!(
+                        "BTSP trust chain: issued_by={:?}, verified_for={:?}, result={}",
+                        gate_origin,
+                        requesting_echo,
+                        if trust_chain_valid { "TRUSTED" } else { "BROKEN" }
+                    ),
+                );
+            } else {
+                v.check_skip(
+                    "security:btsp_gate_binding",
+                    "verification_source not supported — pre-w137 bearDog",
+                );
+                v.check_skip(
+                    "security:btsp_trust_chain",
+                    "verification_source not supported — pre-w137 bearDog",
+                );
+            }
         }
         Err(e) => {
             let msg = format!("{e}");
             if msg.contains("not found") || msg.contains("-32601") {
                 v.check_skip(
                     "security:verify_source_remote",
-                    "verification_source=remote not supported (bearDog needs w135+)",
+                    "verification_source=remote not supported (bearDog needs w137+)",
                 );
+                v.check_skip("security:btsp_gate_binding", "not supported");
+                v.check_skip("security:btsp_trust_chain", "not supported");
             } else {
-                v.check_skip(
+                v.check_bool(
                     "security:verify_source_remote",
-                    &format!("remote verification not available: {e}"),
+                    false,
+                    &format!("remote verification error: {e}"),
                 );
+                v.check_skip("security:btsp_gate_binding", &format!("error: {e}"));
+                v.check_skip("security:btsp_trust_chain", &format!("error: {e}"));
             }
         }
     }

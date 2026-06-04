@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: Nest Atomic — absorbed from exp003.
 
 use crate::composition::CompositionContext;
