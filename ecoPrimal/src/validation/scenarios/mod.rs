@@ -63,6 +63,7 @@ pub mod s_coralreef_shader_targets;
 pub mod s_dark_forest_gate;
 pub mod s_deployment_pipeline;
 pub mod s_covalent_bond;
+mod covalent_mesh_trust;
 pub mod s_covalent_mesh;
 pub mod s_cross_gate_capability_call;
 pub mod s_dual_membrane_path;

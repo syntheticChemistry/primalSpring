@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 use primalspring::coordination::{AtomicType, validate_composition_ctx};
-use primalspring::ipc::discover::{discover_capabilities_for, discover_for};
+use primalspring::ipc::discover::discover_capabilities_for;
 use primalspring::ipc::protocol::{JsonRpcResponse, error_codes};
 
 use crate::dispatch::{error_response, parse_atomic_type, success_response};
@@ -34,69 +34,59 @@ pub fn handle_discovery_sweep(params: &serde_json::Value, id: u64) -> JsonRpcRes
     let mode = params["mode"].as_str().unwrap_or("capability");
 
     if mode == "identity" {
-        tracing::warn!("identity mode is deprecated — use capability mode for runtime discovery");
-        #[expect(deprecated, reason = "legacy identity-mode sweep for backward compatibility until all callers migrate")]
-        let primals = atomic.required_primals();
-        let results = discover_for(primals);
-        let summary: Vec<serde_json::Value> = results
-            .iter()
-            .map(|r| {
-                serde_json::json!({
-                    "primal": r.primal,
-                    "socket": r.socket.as_ref().map(|p| p.display().to_string()),
-                    "source": format!("{:?}", r.source),
-                })
-            })
-            .collect();
-        success_response(
-            serde_json::json!({ "primals": summary, "mode": "identity" }),
-            id,
-        )
-    } else {
-        let capabilities = atomic.required_capabilities();
-        let results = discover_capabilities_for(capabilities);
-        let summary: Vec<serde_json::Value> = results
-            .iter()
-            .map(|r| {
-                serde_json::json!({
-                    "capability": r.capability,
-                    "resolved_primal": r.resolved_primal,
-                    "socket": r.socket.as_ref().map(|p| p.display().to_string()),
-                    "source": format!("{:?}", r.source),
-                })
-            })
-            .collect();
-        success_response(
-            serde_json::json!({ "capabilities": summary, "mode": "capability" }),
-            id,
-        )
+        tracing::warn!(
+            "identity mode removed — redirecting to capability mode for runtime discovery"
+        );
     }
+
+    let capabilities = atomic.required_capabilities();
+    let results = discover_capabilities_for(capabilities);
+    let summary: Vec<serde_json::Value> = results
+        .iter()
+        .map(|r| {
+            serde_json::json!({
+                "capability": r.capability,
+                "resolved_primal": r.resolved_primal,
+                "socket": r.socket.as_ref().map(|p| p.display().to_string()),
+                "source": format!("{:?}", r.source),
+            })
+        })
+        .collect();
+    success_response(
+        serde_json::json!({ "capabilities": summary, "mode": "capability" }),
+        id,
+    )
 }
 
 pub fn handle_probe_primal(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
-    use primalspring::composition::CompositionContext;
+    use primalspring::composition::{CompositionContext, capability_to_primal};
 
-    let name = params["primal"]
+    let capability = params["capability"]
         .as_str()
-        .unwrap_or(primalspring::primal_names::BEARDOG);
+        .or_else(|| params["primal"].as_str())
+        .unwrap_or("security");
 
     let start = std::time::Instant::now();
-    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
-    let has = ctx.has_capability(name);
+    let mut ctx = CompositionContext::discover();
+    let resolved = capability_to_primal(capability);
+    let has = ctx.has_capability(capability);
     let health_ok = if has {
-        ctx.health_check(name).unwrap_or(false)
+        ctx.health_check(capability).unwrap_or(false)
     } else {
         false
     };
     let latency = primalspring::cast::micros_u64(start.elapsed());
-    let result = serde_json::json!({
-        "name": name,
-        "socket_found": has,
-        "health_ok": health_ok,
-        "capabilities": ctx.available_capabilities(),
-        "latency_us": latency,
-    });
-    success_response(result, id)
+    success_response(
+        serde_json::json!({
+            "capability": capability,
+            "resolved_primal": resolved,
+            "socket_found": has,
+            "health_ok": health_ok,
+            "capabilities": ctx.available_capabilities(),
+            "latency_us": latency,
+        }),
+        id,
+    )
 }
 
 pub fn handle_deploy_atomic(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
@@ -183,7 +173,7 @@ pub fn handle_tower_squirrel_health(id: u64) -> JsonRpcResponse {
     use primalspring::composition::CompositionContext;
 
     let tower = validate_composition_ctx(AtomicType::Tower);
-    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let mut ctx = CompositionContext::discover();
     let ai_ok = ctx.has_capability("ai") && ctx.health_check("ai").unwrap_or(false);
     let all_healthy = tower.all_healthy && ai_ok;
     let combined = serde_json::json!({
@@ -198,24 +188,7 @@ pub fn handle_validate_composition_by_capability(
     params: &serde_json::Value,
     id: u64,
 ) -> JsonRpcResponse {
-    let atomic_str = params["atomic"].as_str().unwrap_or("Tower");
-    let Some(atomic) = parse_atomic_type(atomic_str) else {
-        return error_response(
-            error_codes::INVALID_PARAMS,
-            &format!("Unknown atomic type: {atomic_str}"),
-            id,
-        );
-    };
-
-    let result = validate_composition_ctx(atomic);
-    match serde_json::to_value(result) {
-        Ok(val) => success_response(val, id),
-        Err(e) => error_response(
-            error_codes::INTERNAL_ERROR,
-            &format!("serialization: {e}"),
-            id,
-        ),
-    }
+    handle_validate_composition(params, id)
 }
 
 pub fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
@@ -224,7 +197,7 @@ pub fn handle_probe_capability(params: &serde_json::Value, id: u64) -> JsonRpcRe
     let capability = params["capability"].as_str().unwrap_or("security");
 
     let start = std::time::Instant::now();
-    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let mut ctx = CompositionContext::discover();
     let resolved = capability_to_primal(capability);
     let has = ctx.has_capability(capability);
     let health_ok = if has {

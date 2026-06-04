@@ -107,7 +107,7 @@ pub struct DeploymentReadiness {
 /// socket discovery.
 #[must_use]
 pub fn validate_live_by_capability(path: &Path) -> LiveGraphValidation {
-    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let mut ctx = CompositionContext::discover();
     validate_live_with_context(path, &mut ctx)
 }
 

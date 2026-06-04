@@ -558,6 +558,18 @@ fn all_caps_subset_of_registry_domains() {
 }
 
 #[test]
+fn all_caps_resolve_to_primals() {
+    for &cap in ALL_CAPS {
+        let resolves = capability_to_primal_typed(cap).is_some();
+        assert!(
+            resolves,
+            "ALL_CAPS entry '{cap}' does not resolve to any Primal variant — \
+             add it to capability_registry.toml or static_capability_fallback()"
+        );
+    }
+}
+
+#[test]
 fn discovery_path_tracking_empty() {
     let ctx = CompositionContext::from_clients(HashMap::new());
     assert!(ctx.discovery_paths().is_empty());

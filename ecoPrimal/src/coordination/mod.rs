@@ -235,7 +235,7 @@ pub struct CompositionResult {
 pub fn validate_composition_ctx(atomic: AtomicType) -> CompositionResult {
     use crate::composition::{CompositionContext, capability_to_primal};
 
-    let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+    let mut ctx = CompositionContext::discover();
     let caps = atomic.required_capabilities();
 
     let primals: Vec<PrimalHealth> = caps

@@ -139,7 +139,7 @@ fn discovery_sweep_returns_capabilities() {
 }
 
 #[test]
-fn discovery_sweep_identity_mode_returns_primals() {
+fn discovery_sweep_identity_mode_redirects_to_capability() {
     let (_guard, socket_path) = setup_server();
     let stream = connect(&socket_path);
 
@@ -149,12 +149,9 @@ fn discovery_sweep_identity_mode_returns_primals() {
         &serde_json::json!({"atomic": "Tower", "mode": "identity"}),
     );
     assert!(resp["error"].is_null());
-    assert_eq!(resp["result"]["mode"], "identity");
-    let primals = resp["result"]["primals"].as_array().unwrap();
-    assert_eq!(primals.len(), 3);
-    assert_eq!(primals[0]["primal"], "beardog");
-    assert_eq!(primals[1]["primal"], "songbird");
-    assert_eq!(primals[2]["primal"], "skunkbat");
+    assert_eq!(resp["result"]["mode"], "capability");
+    let caps = resp["result"]["capabilities"].as_array().unwrap();
+    assert!(!caps.is_empty(), "identity mode should redirect to capability mode");
 }
 
 #[test]

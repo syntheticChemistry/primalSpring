@@ -40,12 +40,13 @@ static DOMAIN_OWNER_MAP: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
 /// All NUCLEUS capabilities that primalSpring discovers and authenticates.
 ///
 /// These are the *primary* discovery domains — one per primal that
-/// `CompositionContext::discover()` iterates. Curated subset of the full
-/// registry because not every TOML section is a discovery target.
+/// `CompositionContext::discover()` iterates. Every entry must resolve to a
+/// primal provider via `capability_to_primal()`.
 ///
-/// Routing consistency is enforced by `s_routing_consistency` which verifies
-/// that every method in `capability_registry.toml` routes through
-/// `method_to_capability_domain` + `capability_to_primal` to its declared owner.
+/// Consistency with `capability_registry.toml` is enforced by
+/// `s_routing_consistency` (every registered method routes through
+/// `method_to_capability_domain` + `capability_to_primal` to its declared owner)
+/// and by `all_caps_resolve_to_primals` (every entry here resolves to a Primal).
 pub const ALL_CAPS: &[&str] = &[
     "security",
     "discovery",

@@ -111,6 +111,8 @@ pub struct CompositionContext {
     pub(super) bearer_token: Option<String>,
     /// Gate identity for multi-gate mesh awareness.
     gate_id: Option<String>,
+    /// Optional mesh topology for cross-gate capability resolution.
+    mesh: Option<super::mesh::MeshTopology>,
 }
 
 impl CompositionContext {
@@ -148,6 +150,7 @@ impl CompositionContext {
             discovery_paths,
             bearer_token: None,
             gate_id: None,
+            mesh: None,
         }
     }
 
@@ -257,6 +260,7 @@ impl CompositionContext {
             discovery_paths,
             bearer_token: None,
             gate_id: None,
+            mesh: None,
         }
     }
 
@@ -287,6 +291,7 @@ impl CompositionContext {
             discovery_paths,
             bearer_token: None,
             gate_id: None,
+            mesh: None,
         }
     }
 
@@ -333,6 +338,7 @@ impl CompositionContext {
             discovery_paths,
             bearer_token: None,
             gate_id: None,
+            mesh: None,
         }
     }
 
@@ -353,6 +359,7 @@ impl CompositionContext {
             discovery_paths,
             bearer_token: None,
             gate_id: None,
+            mesh: None,
         }
     }
 
@@ -392,6 +399,33 @@ impl CompositionContext {
     #[must_use]
     pub fn gate_id(&self) -> Option<&str> {
         self.gate_id.as_deref()
+    }
+
+    // ── Mesh topology (cross-gate resolution) ───────────────────────────
+
+    /// Attach a mesh topology for cross-gate capability resolution.
+    ///
+    /// When set, `resolve_cross_gate` can determine which remote gate hosts
+    /// a capability not available locally, enabling transparent routing.
+    pub fn set_mesh(&mut self, topology: super::mesh::MeshTopology) {
+        self.mesh = Some(topology);
+    }
+
+    /// Access the mesh topology, if attached.
+    #[must_use]
+    pub const fn mesh(&self) -> Option<&super::mesh::MeshTopology> {
+        self.mesh.as_ref()
+    }
+
+    /// Resolve a capability to its hosting gate via mesh topology.
+    ///
+    /// Returns `None` if no mesh is attached or the capability is not reachable.
+    #[must_use]
+    pub fn resolve_cross_gate(&self, capability: &str) -> Option<&str> {
+        self.mesh
+            .as_ref()
+            .and_then(|m| m.resolve_capability(capability))
+            .map(|node| node.gate_id.as_str())
     }
 
     // ── Atomic signals ──────────────────────────────────────────────────

@@ -72,8 +72,9 @@ const STARTUP_ORDER: &[&str] = &[
 /// Ordered primals for a given composition type, filtered against the startup order.
 ///
 /// Resolves primals from `required_capabilities()` via the capability registry
-/// routing table (capability → primal owner). Falls back to the deprecated
-/// `required_primals()` if the routing table is empty.
+/// routing table (capability → primal owner). Every `ALL_CAPS` entry resolves
+/// to a `Primal` variant, so this always returns a non-empty result for valid
+/// compositions.
 pub fn ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
     use primalspring::composition::capability_to_primal;
 
@@ -85,22 +86,7 @@ pub fn ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
         .collect();
     resolved.sort_unstable();
     resolved.dedup();
-
-    if resolved.is_empty() {
-        #[expect(deprecated, reason = "fallback for compositions whose capabilities don't resolve via TOML yet")]
-        let required = atomic.required_primals();
-        return STARTUP_ORDER
-            .iter()
-            .copied()
-            .filter(|p| required.contains(p))
-            .collect();
-    }
-
-    STARTUP_ORDER
-        .iter()
-        .copied()
-        .filter(|p| resolved.contains(p))
-        .collect()
+    resolved
 }
 
 /// Execute the full NUCLEUS launch sequence.
