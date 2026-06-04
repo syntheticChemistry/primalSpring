@@ -3,7 +3,28 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–75: Stadial Entry / Glacial Shift (2026-06-03)
+## [Unreleased] — Waves 22–75: Stadial Entry / Glacial Shift (2026-06-04)
+
+### Wave 75b: Deep Debt + Live Validation Prep (June 4)
+- **Copyright headers added** — 154 `.rs` files gain `// Copyright (c) 2025-2026 ecoPrimals Collective`
+  (ecosystem standard: SPDX + copyright on every crate file).
+- **`#![warn(missing_docs)]`** — added to library crate root (zero new warnings — fully documented).
+- **BTSP trust chain as pass criterion** — `security:btsp_gate_binding` and
+  `security:btsp_trust_chain` checks added to `covalent_mesh_trust.rs`. With bearDog w137+,
+  `verification_source="remote"` becomes a hard PASS/FAIL (not skip). Gate binding proves
+  token provenance end-to-end.
+- **Phase 4: Live BTSP cross-gate** — `s_cross_gate_capability_call` gains Phase 4
+  (eastGate→strandGate via Songbird with BTSP auth). Issues local token, dispatches
+  authenticated `auth.verify_ionic` cross-gate, validates trust chain.
+- **benchScale topology** — `benchScale/topologies/cross_gate_trust.toml` defines the
+  reproducible 2-gate mesh (eastGate ↔ strandGate) with pass criteria and Dark Forest
+  constraints. `LiveMeshConfig::from_topology_file()` loads topology when
+  `BENCHSCALE_TOPOLOGY` env var is set.
+- **Deprecated doc pointers updated** — `from_running()` now points to `discover()`.
+  `discover_for()` docs recommend capability-based discovery.
+- **Deep debt audit confirmed clean** — zero unsafe, zero prod unwrap, zero prod mocks,
+  zero native deps, all files <800L, all deps pure Rust, `let...else` throughout.
+- 884 tests, zero clippy, `forbid(unsafe_code)`, `warn(missing_docs)`.
 
 ### Wave 75: Cross-Gate Trust + Evolution Sprint (June 3)
 - **s_covalent_mesh 6-phase trust validation** — Phase 4: bearDog BTSP cross-gate token
