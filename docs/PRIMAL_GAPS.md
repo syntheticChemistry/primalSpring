@@ -269,7 +269,14 @@ development uses `nucleus_launcher start` or `desktop_nucleus.sh` (local only).
 
 ---
 
-### DH-1: Primal /tmp Hardcoding — Deployment Hygiene Audit (May 29, 2026) — **NEW**
+### DH-1: Primal /tmp Hardcoding — Deployment Hygiene Audit (May 29, 2026) — **PARTIAL FIX**
+
+> **Wave 78 update (Jun 5)**: systemd units updated for loamSpine (`--socket`),
+> sweetGrass (`--socket`), and rhizoCrypt (`--unix`). Symlinks created in
+> `/run/membrane/` for nestgate (→ `/tmp`) and toadstool (→ `/tmp/biomeos/`).
+> **13/13 primals now reachable** via `/run/membrane/*.sock` (12 real, 2 symlinks,
+> skunkbat TCP-only). 3 binaries still need `--socket` flag: nestgate, skunkbat,
+> toadstool — requires plasmidBin binary rebuild + redeploy.
 
 **Discovered during:** VPS Songbird federation hub deployment (Wave 60). Songbird
 failed under `ProtectSystem=strict` because it writes to `/tmp/songbird-data/`,
