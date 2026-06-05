@@ -56,7 +56,18 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — Waves 1-60 complete. 57 scenarios (10 tracks), 470+ real methods (100% exercised), 807 lib tests, zero clippy warnings (pedantic + nursery). Wave 60: Neural API Coordination Triad (quorumSignal/rootPulse/waterFall), 23 atomic composition graphs across 6 tiers, cascade-pull.sh manifest-driven, cross-gate graph executor spec. Wave 58 ecosystem response: bearDog `env_keys.rs` (290 constants), songbird `songbird-process-env` (8,158 tests), squirrel 316 env constants, biomeOS `env_config` (v3.84). projectFOUNDATION elevated to Rust. projectNUCLEUS async-correct. cellMembrane at 95.8% coverage.**
+**13/13 CLEAN — Waves 1-77c. 61 scenarios (10 tracks), 490+ methods (100% exercised), 889 lib tests, zero clippy. Wave 77c: TOML-driven routing, zero C deps, profile-driven launcher, certification tests, hardcoded cleanup.**
+
+---
+
+## Active Upstream Gaps (June 4, 2026)
+
+| Gap | Owner | Severity | Description |
+|-----|-------|----------|-------------|
+| **SB-TLS-01**: Songbird TLS crypto calls `capability.call` on BearDog socket | **Songbird** | P0 | Songbird's TLS client routes through `capability.call` (a biomeOS orchestration method). When `BEARDOG_MODE=direct`, this fails with `-32601` because BearDog only exposes semantic methods (`crypto.sign_ed25519`, `tls.derive_secrets`). **Blocks**: eastGate Songbird TLS startup, symmetric mesh origination. **Fix**: Replace `capability.call` with direct `crypto.sign_ed25519` / `tls.derive_secrets` / `tls.sign_handshake` calls in Songbird's `BeardogCryptoClient`. Pattern: `nucleus_crypto_bootstrap.sh` already uses direct methods. Wave 169 fixed BTSP security (`SecurityRpcClient::new_direct()`); TLS crypto was missed. |
+| **SB-TLS-02**: `NoopSignatureVerifier` fallback in Phase 3.5 | **Songbird** | P1 | Ed25519 relay signing scaffolded with noop verifier. Needs bearDog `crypto.verify.ed25519` integration. |
+| **BD-TRUST-01**: Manual trust seeding | **bearDog + Songbird** | P1 | `auth.trust_issuer` was manually called for Wave 77d proof. Mesh join handshake must auto-register issuers. |
+| **RC-POLL-01**: rhizoCrypt mesh event polling | **rhizoCrypt** | P2 | bearDog delivered `auth.events.poll`; rhizoCrypt `MeshEventListener` not yet polling. |
 
 ---
 

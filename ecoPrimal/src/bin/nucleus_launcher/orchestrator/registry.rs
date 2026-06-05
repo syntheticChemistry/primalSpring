@@ -163,7 +163,7 @@ pub(super) fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) ->
     seeded
 }
 
-/// Send a register payload to Songbird.
+/// Send a register payload to Songbird via TCP.
 pub(super) fn register_with_songbird(port: u16, payload: &str) -> Result<(), String> {
     use std::io::{Read, Write};
     use std::net::{SocketAddr, TcpStream};
@@ -198,5 +198,69 @@ pub(super) fn register_with_songbird(port: u16, payload: &str) -> Result<(), Str
         }
         Ok(_) => Err("empty response".to_owned()),
         Err(e) => Err(format!("read: {e}")),
+    }
+}
+
+/// Send a JSON-RPC payload over a Unix domain socket.
+fn send_uds_rpc(socket: &std::path::Path, payload: &str) -> Result<String, String> {
+    use std::io::{Read, Write};
+    use std::os::unix::net::UnixStream;
+
+    let timeout = Duration::from_secs(5);
+    let mut stream = UnixStream::connect(socket)
+        .map_err(|e| format!("Songbird UDS {} unreachable: {e}", socket.display()))?;
+
+    let _ = stream.set_read_timeout(Some(timeout));
+    let _ = stream.set_write_timeout(Some(timeout));
+
+    stream
+        .write_all(payload.as_bytes())
+        .map_err(|e| format!("write: {e}"))?;
+    stream
+        .write_all(b"\n")
+        .map_err(|e| format!("write newline: {e}"))?;
+
+    let mut buf = [0u8; 4096];
+    match stream.read(&mut buf) {
+        Ok(n) if n > 0 => {
+            let resp = String::from_utf8_lossy(&buf[..n]).to_string();
+            Ok(resp)
+        }
+        Ok(_) => Err("empty response".to_owned()),
+        Err(e) => Err(format!("read: {e}")),
+    }
+}
+
+/// Send a register payload to Songbird via UDS.
+pub(super) fn register_with_songbird_uds(
+    socket: &std::path::Path,
+    payload: &str,
+) -> Result<(), String> {
+    let resp = send_uds_rpc(socket, payload)?;
+    if resp.contains("\"result\"") {
+        Ok(())
+    } else {
+        Err(format!(
+            "non-standard response: {}",
+            &resp[..resp.len().min(80)]
+        ))
+    }
+}
+
+/// Seed Songbird with known peer addresses via UDS.
+pub(super) fn seed_songbird_peers_uds(
+    socket: &std::path::Path,
+    peers: &[String],
+    node_id: &str,
+) -> usize {
+    let peers_json: Vec<String> = peers.iter().map(|p| format!("\"{p}\"")).collect();
+    let payload = format!(
+        r#"{{"jsonrpc":"2.0","method":"mesh.init","params":{{"node_id":"{node_id}","bootstrap_peers":[{}]}},"id":2}}"#,
+        peers_json.join(",")
+    );
+
+    match send_uds_rpc(socket, &payload) {
+        Ok(resp) if resp.contains("\"result\"") => peers.len(),
+        _ => 0,
     }
 }

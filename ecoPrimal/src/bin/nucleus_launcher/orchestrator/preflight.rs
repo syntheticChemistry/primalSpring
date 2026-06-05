@@ -101,7 +101,10 @@ pub fn run_preflight(primals: &[&str], uds_only: bool) -> PreflightResult {
     }
 
     // 3. Port conflict detection
-    let port_conflicts = if !uds_only {
+    let port_conflicts = if uds_only {
+        println!("  Port conflicts:    \x1b[90mSKIP\x1b[0m (UDS-only mode)");
+        Vec::new()
+    } else {
         print!("  Port conflicts:    ");
         let conflicts = detect_port_conflicts(primals);
         if conflicts.is_empty() {
@@ -112,9 +115,6 @@ pub fn run_preflight(primals: &[&str], uds_only: bool) -> PreflightResult {
             }
         }
         conflicts
-    } else {
-        println!("  Port conflicts:    \x1b[90mSKIP\x1b[0m (UDS-only mode)");
-        Vec::new()
     };
 
     // 4. Stale socket cleanup

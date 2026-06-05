@@ -181,7 +181,7 @@ pub(super) fn spawn_primal(
         cmd.arg(flag).arg(&resolved);
     }
 
-    for (env_key, _) in &profile.passthrough_env {
+    for env_key in profile.passthrough_env.keys() {
         if let Ok(val) = std::env::var(env_key) {
             cmd.env(env_key, val);
         }

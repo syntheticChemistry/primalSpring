@@ -153,6 +153,7 @@ pub const BIOMEOS_FAMILY_ID: &str = "BIOMEOS_FAMILY_ID";
 pub const ECOPRIMALS_PLASMID_BIN: &str = "ECOPRIMALS_PLASMID_BIN";
 
 /// Root of the ecoPrimals workspace (e.g. `/home/user/Development/ecoPrimals`).
+///
 /// When set, `discover_binary` also searches `$ECOPRIMALS_ROOT/infra/plasmidBin`
 /// for harvested binaries, bridging the workspace checkout to the runtime consumer.
 pub const ECOPRIMALS_ROOT: &str = "ECOPRIMALS_ROOT";

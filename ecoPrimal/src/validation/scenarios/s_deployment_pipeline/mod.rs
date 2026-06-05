@@ -9,12 +9,13 @@
 //! is needed — all checks are Tier::Rust.
 //!
 //! Six stages, each in its own submodule:
-//!   1. Build      — manifest lists all 13 primals with valid metadata
-//!   2. Harvest    — manifest declares checksum algorithm and binary matrix
-//!   2.5 Provenance — composite fingerprint validation
-//!   3. Compose    — atomic compositions are structurally consistent
-//!   4. Deploy     — deploy graphs reference valid primals and fragments
-//!   5. Verify     — niche compositions cover expected primal sets
+//!
+//! - Build — manifest lists all 13 primals with valid metadata
+//! - Harvest — manifest declares checksum algorithm and binary matrix
+//! - Provenance — composite fingerprint validation
+//! - Compose — atomic compositions are structurally consistent
+//! - Deploy — deploy graphs reference valid primals and fragments
+//! - Verify — niche compositions cover expected primal sets
 
 mod stage_build;
 mod stage_compose;

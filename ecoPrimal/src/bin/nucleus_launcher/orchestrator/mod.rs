@@ -4,7 +4,7 @@
 //! NUCLEUS orchestrator — dependency-ordered primal startup, health checks,
 //! and Songbird registry seeding.
 
-pub(crate) mod preflight;
+pub mod preflight;
 mod registry;
 mod spawn;
 
@@ -292,6 +292,20 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     println!("=== Phase 5: Registry seeding (Songbird ipc.register) ===");
     let discovery_owner = primalspring::composition::capability_to_primal("discovery");
     let songbird_port = registry::effective_port_for(discovery_owner, config.uds_only);
+    let songbird_uds: Option<&std::path::Path> = if config.uds_only {
+        nucleation
+            .get(discovery_owner, &config.family_id)
+            .filter(|s| s.exists())
+            .map(std::path::PathBuf::as_path)
+    } else {
+        None
+    };
+    if config.uds_only {
+        match songbird_uds {
+            Some(path) => println!("  transport: UDS ({})", path.display()),
+            None => println!("  transport: UDS requested but socket not found — falling back to TCP :{songbird_port}"),
+        }
+    }
     let mut registered = 0usize;
     let capability_map = registry::build_capability_map();
 
@@ -331,7 +345,11 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             config.family_id, config.node_id
         );
 
-        match registry::register_with_songbird(songbird_port, &payload) {
+        let result = songbird_uds.map_or_else(
+            || registry::register_with_songbird(songbird_port, &payload),
+            |uds| registry::register_with_songbird_uds(uds, &payload),
+        );
+        match result {
             Ok(()) => {
                 println!("\x1b[32mOK\x1b[0m");
                 registered += 1;
@@ -348,7 +366,10 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
 
     if !config.peers.is_empty() {
         println!("=== Phase 5b: Peer seeding (cross-gate mesh) ===");
-        let seeded = registry::seed_songbird_peers(songbird_port, &config.peers, &config.node_id);
+        let seeded = match songbird_uds {
+            Some(uds) => registry::seed_songbird_peers_uds(uds, &config.peers, &config.node_id),
+            None => registry::seed_songbird_peers(songbird_port, &config.peers, &config.node_id),
+        };
         if seeded > 0 {
             println!("  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {}", config.peers.join(", "));
         } else {
@@ -360,7 +381,10 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         if !env_peers.is_empty() {
             println!("=== Phase 5b: Peer seeding (from SONGBIRD_PEERS env) ===");
             let peer_list: Vec<String> = env_peers.split(',').map(|s| s.trim().to_owned()).filter(|s| !s.is_empty()).collect();
-            let seeded = registry::seed_songbird_peers(songbird_port, &peer_list, &config.node_id);
+            let seeded = match songbird_uds {
+                Some(uds) => registry::seed_songbird_peers_uds(uds, &peer_list, &config.node_id),
+                None => registry::seed_songbird_peers(songbird_port, &peer_list, &config.node_id),
+            };
             if seeded > 0 {
                 println!("  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {env_peers}");
             } else {
