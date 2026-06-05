@@ -9,15 +9,15 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-05-29 (Wave 60 postPrimordial: Neural API Coordination Triad (quorumSignal/rootPulse/waterFall) formalized. 23 atomic composition graphs (was 15), 6 tiers (was 4), ecosystem composition tier added. cascade-pull.sh manifest-driven (.gate identity, --clone-missing, --check parity). Cross-gate graph executor spec'd. 807 lib tests. VPS federation hub live. DH-1 /tmp audit stands. 13/13 CLEAN.)
+> **Last updated**: 2026-06-05 (Wave 78: SB-TLS-01/02 RESOLVED (Songbird direct-mode TLS crypto + Ed25519 relay verification shipped). BD-TRUST-01 delivered by bearDog (auth.exchange_trust), awaiting Songbird mesh.init integration. RC-POLL-01 RESOLVED (rhizoCrypt MeshEventListener polling wired). Diderm membrane live — 3 layers sovereign TLS. 889 lib tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (May 28, 2026)
+## Ecosystem Status (June 5, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 57 scenarios (10 tracks, 3 tiers), 470+ real methods (100% exercised), **807 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 60: postPrimordial** — Neural API Coordination Triad formalized (quorumSignal/rootPulse/waterFall). 23 atomic composition graphs across 6 tiers. cascade-pull.sh manifest-driven with .gate identity file, --clone-missing, --check parity. Cross-gate graph executor spec'd. VPS federation hub live (Songbird :7700, MitoBeacon). `graph.execute` gated on biomeOS v0.2. **Critical path**: southGate 7→13/13 + biomeOS `graph.execute` → column U → stadial.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 61 scenarios (10 tracks, 3 tiers), 490+ real methods (100% exercised), **889 lib tests pass** (2 ignored) + **18 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 78: Diderm Membrane Live** — 3-layer sovereign TLS (primals.eco/Cloudflare, primal.eco/LE, nestgate.io/LE). TOML-driven routing, profile-driven launcher, zero C deps in default build. SB-TLS-01/02 resolved upstream. Live cross-gate trust chain proven. VPS federation hub live (Songbird :7700, MitoBeacon). **Critical path**: BD-TRUST-01 mesh.init integration → symmetric auto-join → 3+ gate Plasmodium collective → stadial.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -56,18 +56,18 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — Waves 1-77c. 61 scenarios (10 tracks), 490+ methods (100% exercised), 889 lib tests, zero clippy. Wave 77c: TOML-driven routing, zero C deps, profile-driven launcher, certification tests, hardcoded cleanup.**
+**13/13 CLEAN — Waves 1-78. 61 scenarios (10 tracks), 490+ methods (100% exercised), 889 lib tests, zero clippy. Wave 77c: TOML-driven routing, zero C deps, profile-driven launcher, certification tests, hardcoded cleanup. Wave 78: SB-TLS-01/02 resolved, diderm membrane live (3 layers, sovereign TLS).**
 
 ---
 
-## Active Upstream Gaps (June 4, 2026)
+## Active Upstream Gaps (June 5, 2026)
 
 | Gap | Owner | Severity | Description |
 |-----|-------|----------|-------------|
-| **SB-TLS-01**: Songbird TLS crypto calls `capability.call` on BearDog socket | **Songbird** | P0 | Songbird's TLS client routes through `capability.call` (a biomeOS orchestration method). When `BEARDOG_MODE=direct`, this fails with `-32601` because BearDog only exposes semantic methods (`crypto.sign_ed25519`, `tls.derive_secrets`). **Blocks**: eastGate Songbird TLS startup, symmetric mesh origination. **Fix**: Replace `capability.call` with direct `crypto.sign_ed25519` / `tls.derive_secrets` / `tls.sign_handshake` calls in Songbird's `BeardogCryptoClient`. Pattern: `nucleus_crypto_bootstrap.sh` already uses direct methods. Wave 169 fixed BTSP security (`SecurityRpcClient::new_direct()`); TLS crypto was missed. |
-| **SB-TLS-02**: `NoopSignatureVerifier` fallback in Phase 3.5 | **Songbird** | P1 | Ed25519 relay signing scaffolded with noop verifier. Needs bearDog `crypto.verify.ed25519` integration. |
-| **BD-TRUST-01**: Manual trust seeding | **bearDog + Songbird** | P1 | `auth.trust_issuer` was manually called for Wave 77d proof. Mesh join handshake must auto-register issuers. |
-| **RC-POLL-01**: rhizoCrypt mesh event polling | **rhizoCrypt** | P2 | bearDog delivered `auth.events.poll`; rhizoCrypt `MeshEventListener` not yet polling. |
+| ~~**SB-TLS-01**: Songbird TLS crypto calls `capability.call` on BearDog socket~~ | **Songbird** | ~~P0~~ | **RESOLVED** — Songbird commit `2621ad02`: `SecurityTlsCryptoClient` now uses direct semantic methods (`crypto.sign_ed25519`, `crypto.x25519_generate_ephemeral`, etc.) when `BEARDOG_MODE=direct`. Symmetric 2-gate mesh TLS origination unblocked. |
+| ~~**SB-TLS-02**: `NoopSignatureVerifier` fallback in Phase 3.5~~ | **Songbird** | ~~P1~~ | **RESOLVED** — Songbird commit `6cc3118d`: Phase 3.5 Ed25519 signature verification on relay path. Full `crypto.verify.ed25519` integration shipped. |
+| **BD-TRUST-01**: Auto trust seeding not yet wired into mesh.init | **Songbird** (integration) | P1 | bearDog Wave 140 delivered `auth.exchange_trust` (zero-operator bidirectional trust via BTSP family verification). **Needs Songbird to call `auth.exchange_trust` after BTSP handshake in `mesh.init` flow.** |
+| ~~**RC-POLL-01**: rhizoCrypt mesh event polling~~ | **rhizoCrypt** | ~~P2~~ | **RESOLVED** — rhizoCrypt Wave 77e: `MeshEventListener.poll_events()` wired to `auth.events.poll`, 30s incremental polling via `spawn_poller()`. Remaining local work: mesh-trust session auto-provision + DAG append integration + lifecycle wiring. |
 
 ---
 
@@ -387,17 +387,22 @@ health checks (no hardcoded primal names/ports), BLAKE3 fail-closed semantics.
 | exp115 live phases (4-5) | primalSpring | **GATED** on NUCLEUS availability |
 | Thread 10 spore ingest workload | projectFOUNDATION | **DELIVERED** (`nucleus-spore-ingest.toml`) |
 
-### NC-2: Multi-Gate NUCLEUS Mesh — **IN PROGRESS** (was BLOCKED)
+### NC-2: Multi-Gate NUCLEUS Mesh — **ADVANCING** (was IN PROGRESS)
 
-Songbird fixed TCP fallback mesh seed bug (UDS bind failure path now calls
-`spawn_mesh_seed`). southGate 7/13 is confirmed operational, not a code crash —
-likely env (`SONGBIRD_PEERS`), OOM, cold-start timing.
+SB-TLS-01/02 **RESOLVED** (Songbird ships direct-mode TLS crypto + Ed25519
+relay verification). BD-TRUST-01 `auth.exchange_trust` **DELIVERED** by bearDog
+(zero-operator bidirectional trust). Songbird needs to wire `auth.exchange_trust`
+into `mesh.init` flow to close the auto-join loop.
+
+Live cross-gate trust chain **PROVEN** (Wave 77d): eastGate ↔ strandGate via
+Songbird mesh + BearDog ionic tokens + rhizoCrypt DAG provenance.
 
 | Action | Owner | Status |
 |--------|-------|--------|
-| Stabilize southGate 13/13 health | wetSpring / neuralSpring ops | **INVESTIGATING** (Songbird TCP seed fixed) |
-| Live `s_covalent_mesh` across 3+ gates | primalSpring | **BLOCKED** on NC-2.1 |
-| P0 `nucleus-x86-mixed-uds` matrix cell | primalSpring | **BLOCKED** on NC-2.2 |
+| Stabilize southGate 13/13 health | wetSpring / neuralSpring ops | **INVESTIGATING** |
+| Wire `auth.exchange_trust` in Songbird `mesh.init` | Songbird | **READY** (bearDog W140 delivered, SB-TLS fixed) |
+| Live `s_covalent_mesh` across 3+ gates | primalSpring | **UNBLOCKED** (2-gate proven, needs 3rd gate) |
+| P0 `nucleus-x86-mixed-uds` matrix cell | primalSpring | **UNBLOCKED** |
 | biomeGate full NUCLEUS (9→13) | hotSpring + ops | **PLANNED** |
 
 ### NC-3: cellMembrane Sovereignty — **ADVANCING**
