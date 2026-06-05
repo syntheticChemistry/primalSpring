@@ -39,6 +39,7 @@
 
 mod btsp;
 mod context;
+mod context_discovery;
 mod context_helpers;
 pub mod mesh;
 pub mod neural_dispatch;

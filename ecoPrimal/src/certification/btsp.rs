@@ -576,3 +576,62 @@ pub fn validate_method_gate(v: &mut ValidationResult) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn btsp_cipher_policy_resolves() {
+        let mut v = crate::validation::ValidationResult::new("test");
+        validate_btsp_cipher_policy(&mut v);
+        assert!(v.passed > 0, "cipher policy should produce passing checks");
+    }
+
+    #[test]
+    fn min_cipher_for_all_bond_types() {
+        for &bond in BondType::all() {
+            let cipher = btsp::min_cipher_for_bond(bond);
+            assert!(btsp::cipher_allowed(bond, cipher),
+                "min cipher for {bond:?} should be allowed");
+        }
+    }
+
+    #[test]
+    fn btsp_enforcer_covalent_nuclear_trust_allowed() {
+        let policy = BondingPolicy::covalent_default();
+        let cipher = btsp::min_cipher_for_bond(BondType::Covalent);
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &policy,
+            cipher,
+            Some(TrustModel::NuclearLineage),
+        );
+        assert!(decision.allowed, "covalent + nuclear trust should be allowed: {}", decision.reason);
+    }
+
+    #[test]
+    fn btsp_enforcer_metallic_mito_trust_allowed() {
+        let policy = BondingPolicy {
+            bond_type: BondType::Metallic,
+            ..BondingPolicy::covalent_default()
+        };
+        let cipher = btsp::min_cipher_for_bond(BondType::Metallic);
+        let decision = BtspEnforcer::evaluate_connection_with_trust(
+            &policy,
+            cipher,
+            Some(TrustModel::MitoBeaconFamily),
+        );
+        assert!(decision.allowed, "metallic + mito trust should be allowed: {}", decision.reason);
+    }
+
+    #[test]
+    fn security_mode_from_env_resolves() {
+        let mode = btsp::security_mode_from_env();
+        assert!(!format!("{mode:?}").is_empty(), "security mode should have debug output");
+    }
+
+    #[test]
+    fn insecure_guard_runs_without_panic() {
+        let _ = btsp::validate_insecure_guard();
+    }
+}

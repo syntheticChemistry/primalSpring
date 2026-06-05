@@ -46,34 +46,10 @@
 //! abort. The `has_capability` method provides pre-call reachability checks.
 
 use std::collections::{BTreeMap, HashMap};
-use std::path::PathBuf;
 
 use crate::ipc::IpcError;
 use crate::ipc::client::PrimalClient;
 
-use super::btsp::{tcp_fallback_table, upgrade_btsp_clients};
-use super::routing::{ALL_CAPS, capability_to_primal};
-
-/// Returns `true` when Tier 5 TCP port probing is explicitly enabled.
-///
-/// The zero-port Tower Atomic standard treats TCP port exposure as metadata
-/// leakage. Tier 5 is off by default; set `PRIMALSPRING_TCP_TIER5=1` for
-/// containers, Android, or deployments without Unix domain sockets.
-///
-/// In release builds, TCP Tier 5 is unconditionally disabled — the env var
-/// is ignored. This enforces the glacial zero-port standard at compile time.
-fn tcp_tier5_enabled() -> bool {
-    #[cfg(debug_assertions)]
-    {
-        std::env::var(crate::env_keys::PRIMALSPRING_TCP_TIER5)
-            .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
-            .unwrap_or(false)
-    }
-    #[cfg(not(debug_assertions))]
-    {
-        false
-    }
-}
 
 /// How a capability was discovered — mirrors lithoSpore's `DiscoveryPath`.
 ///
@@ -177,92 +153,8 @@ impl CompositionContext {
     /// (tiers 2-5) directly.
     #[must_use]
     pub fn discover() -> Self {
-        let mut clients = HashMap::new();
-        let mut discovery_paths = BTreeMap::new();
-
-        // ── Tier 1: Songbird routing ──
-        if let Ok(songbird) = crate::ipc::client::connect_by_capability("discovery") {
-            clients.insert("discovery".to_owned(), songbird);
-            discovery_paths.insert("discovery".to_owned(), DiscoveryPath::Songbird);
-
-            let caps_to_resolve: Vec<&str> = ALL_CAPS
-                .iter()
-                .copied()
-                .filter(|&c| c != "discovery")
-                .collect();
-
-            for cap in caps_to_resolve {
-                let primal = capability_to_primal(cap);
-                let resolve_result = clients
-                    .get_mut("discovery")
-                    .and_then(|sb| {
-                        sb.call("ipc.resolve", serde_json::json!({"primal_id": primal}))
-                            .ok()
-                    })
-                    .and_then(|resp| resp.result);
-
-                if let Some(result) = resolve_result {
-                    let socket_path = result
-                        .get("socket")
-                        .or_else(|| result.get("native_endpoint"))
-                        .or_else(|| result.get("endpoint"))
-                        .and_then(serde_json::Value::as_str)
-                        .map(PathBuf::from);
-
-                    if let Some(path) = socket_path {
-                        if let Ok(client) = PrimalClient::connect(&path, primal) {
-                            tracing::debug!(cap, primal, tier = 1, "discovered via Songbird");
-                            clients.insert(cap.to_owned(), client);
-                            discovery_paths.insert(cap.to_owned(), DiscoveryPath::Songbird);
-                        }
-                    }
-                }
-            }
-        }
-
-        // ── Tiers 2-4: Neural API, UDS convention, registry ──
-        for &cap in ALL_CAPS {
-            if clients.contains_key(cap) {
-                continue;
-            }
-            if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
-                tracing::debug!(cap, tier = "2-4", "discovered via UDS/Neural API");
-                clients.insert(cap.to_owned(), client);
-                discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
-            }
-        }
-
-        // ── Tier 5: TCP probing (opt-in) ──
-        if tcp_tier5_enabled() {
-            let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
-                .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
-            for &(cap, primal, port_env, default_port) in &tcp_fallback_table() {
-                if clients.contains_key(cap) {
-                    continue;
-                }
-                let port: u16 = std::env::var(port_env)
-                    .ok()
-                    .and_then(|v| v.parse().ok())
-                    .unwrap_or(default_port);
-                let addr = format!("{host}:{port}");
-                if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
-                    tracing::debug!(cap, primal, %addr, tier = 5, "discovered via TCP");
-                    clients.insert(cap.to_owned(), client);
-                    discovery_paths.insert(cap.to_owned(), DiscoveryPath::TcpFallback);
-                }
-            }
-        }
-
-        // ── BTSP escalation ──
-        let btsp_state = upgrade_btsp_clients(&mut clients);
-        Self {
-            clients,
-            btsp_state,
-            discovery_paths,
-            bearer_token: None,
-            gate_id: None,
-            mesh: None,
-        }
+        let d = super::context_discovery::discover_full();
+        Self { clients: d.clients, btsp_state: d.btsp_state, discovery_paths: d.discovery_paths, bearer_token: None, gate_id: None, mesh: None }
     }
 
     /// Build a context by live-discovering all primals on the local system
@@ -274,26 +166,8 @@ impl CompositionContext {
     /// the test harness.
     #[must_use]
     pub fn from_live_discovery() -> Self {
-        let mut clients = HashMap::new();
-        let mut discovery_paths = BTreeMap::new();
-        for &cap in ALL_CAPS {
-            if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
-                clients.insert(cap.to_owned(), client);
-                discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
-            }
-        }
-        let btsp_state = clients
-            .iter()
-            .map(|(cap, c)| (cap.clone(), c.is_btsp_authenticated()))
-            .collect();
-        Self {
-            clients,
-            btsp_state,
-            discovery_paths,
-            bearer_token: None,
-            gate_id: None,
-            mesh: None,
-        }
+        let d = super::context_discovery::discover_live();
+        Self { clients: d.clients, btsp_state: d.btsp_state, discovery_paths: d.discovery_paths, bearer_token: None, gate_id: None, mesh: None }
     }
 
     /// Build a context using tiers 2-5 (Neural API, UDS, registry, TCP).
@@ -308,39 +182,8 @@ impl CompositionContext {
     /// cross-arch, benchScale) deployments.
     #[must_use]
     pub fn from_live_discovery_with_fallback() -> Self {
-        let cap_to_primal = tcp_fallback_table();
-
-        let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
-            .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
-
-        let mut clients = HashMap::new();
-        let mut discovery_paths = BTreeMap::new();
-        for &(cap, primal, port_env, default_port) in &cap_to_primal {
-            if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
-                clients.insert(cap.to_owned(), client);
-                discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
-                continue;
-            }
-            let port: u16 = std::env::var(port_env)
-                .ok()
-                .and_then(|v| v.parse().ok())
-                .unwrap_or(default_port);
-            let addr = format!("{host}:{port}");
-            if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
-                clients.insert(cap.to_owned(), client);
-                discovery_paths.insert(cap.to_owned(), DiscoveryPath::TcpFallback);
-            }
-        }
-
-        let btsp_state = upgrade_btsp_clients(&mut clients);
-        Self {
-            clients,
-            btsp_state,
-            discovery_paths,
-            bearer_token: None,
-            gate_id: None,
-            mesh: None,
-        }
+        let d = super::context_discovery::discover_with_fallback();
+        Self { clients: d.clients, btsp_state: d.btsp_state, discovery_paths: d.discovery_paths, bearer_token: None, gate_id: None, mesh: None }
     }
 
     /// Build from an explicit set of capability-to-client mappings.
@@ -717,22 +560,10 @@ impl CompositionContext {
     /// Preserves existing live connections and adds newly discoverable
     /// capabilities. Updates BTSP state for all clients.
     pub fn rediscover(&mut self) {
-        for &cap in ALL_CAPS {
-            if self.clients.contains_key(cap) {
-                if let Some(client) = self.clients.get_mut(cap) {
-                    if client.health_check().unwrap_or(false) {
-                        continue;
-                    }
-                }
-            }
-            if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
-                tracing::info!(cap, "rediscovered capability after topology change");
-                self.clients.insert(cap.to_owned(), client);
-                self.discovery_paths
-                    .insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
-            }
-        }
-        self.btsp_state = upgrade_btsp_clients(&mut self.clients);
+        self.btsp_state = super::context_discovery::rediscover_clients(
+            &mut self.clients,
+            &mut self.discovery_paths,
+        );
     }
 
     /// Get a mutable reference to the client for a given capability.

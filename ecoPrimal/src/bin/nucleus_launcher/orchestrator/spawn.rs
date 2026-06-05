@@ -7,7 +7,6 @@ use std::path::PathBuf;
 
 use primalspring::env_keys;
 use primalspring::launcher::discover_binary;
-use primalspring::primal_names;
 use primalspring::tolerances;
 
 use super::LaunchConfig;
@@ -113,6 +112,10 @@ fn stop_by_proc_scan(primal: &str) {
 }
 
 /// Spawn a primal process using its discovered binary.
+///
+/// CLI args, env vars, and socket wiring are driven by the primal's
+/// launch profile (`config/primal_launch_profiles.toml`) rather than
+/// hardcoded per-primal if-blocks.
 pub(super) fn spawn_primal(
     primal: &str,
     port: u16,
@@ -121,29 +124,80 @@ pub(super) fn spawn_primal(
     family_seed: &str,
 ) -> Result<(), String> {
     let binary = discover_binary(primal).map_err(|e| e.to_string())?;
+    let (defaults, profiles) = primalspring::launcher::load_launch_profiles()
+        .map_err(|e| format!("profile load: {e}"))?;
+    let empty = primalspring::launcher::LaunchProfile::default();
+    let profile = profiles.get(primal).unwrap_or(&empty);
 
     let mut cmd = std::process::Command::new(&binary);
-    cmd.arg("server");
-    cmd.arg("--socket").arg(socket);
+
+    let subcommand = profile.subcommand.as_deref()
+        .or(defaults.subcommand.as_deref())
+        .unwrap_or("server");
+    if !subcommand.is_empty() {
+        cmd.arg(subcommand);
+    }
+
+    let socket_flag = profile.socket_flag.as_deref()
+        .or(defaults.socket_flag.as_deref())
+        .unwrap_or("--socket");
+    if socket_flag != "__skip__" {
+        cmd.arg(socket_flag).arg(socket);
+    }
+
     if port > 0 {
         cmd.arg("--port").arg(port.to_string());
     }
-    cmd.arg("--family-id").arg(&config.family_id);
+
+    let pass_fid = profile.pass_family_id
+        .or(defaults.pass_family_id)
+        .unwrap_or(true);
+    if pass_fid {
+        cmd.arg("--family-id").arg(&config.family_id);
+    }
+
+    for arg in &profile.extra_args {
+        cmd.arg(arg);
+    }
 
     cmd.env(env_keys::FAMILY_ID, &config.family_id);
     cmd.env(env_keys::FAMILY_SEED, family_seed);
     cmd.env(env_keys::BEARDOG_FAMILY_SEED, family_seed);
 
+    for (key, val) in &defaults.extra_env {
+        cmd.env(key, val);
+    }
+    for (key, val) in &profile.extra_env {
+        cmd.env(key, val);
+    }
+
+    for (env_key, target_primal) in &profile.env_sockets {
+        let resolved = resolve_profile_var(target_primal, socket, config);
+        cmd.env(env_key, &resolved);
+    }
+
+    for (flag, target_primal) in &profile.cli_sockets {
+        let resolved = resolve_profile_var(target_primal, socket, config);
+        cmd.arg(flag).arg(&resolved);
+    }
+
+    for (env_key, _) in &profile.passthrough_env {
+        if let Ok(val) = std::env::var(env_key) {
+            cmd.env(env_key, val);
+        }
+    }
+
     if config.dark_forest {
         cmd.arg("--dark-forest");
     }
 
-    if primal == primal_names::SONGBIRD {
-        if let Some(fed_port) = config.federation_port {
+    if let Some(fed_port) = config.federation_port {
+        if profile.extra_env.contains_key("SONGBIRD_SECURITY_PROVIDER")
+            || profile.extra_env.contains_key("SONGBIRD_DISCOVERY_MODE")
+        {
             cmd.arg("--federation-port").arg(fed_port.to_string());
             cmd.arg("--bind").arg(tolerances::LAN_BIND_ADDRESS);
         }
-        cmd.env(env_keys::SONGBIRD_SECURITY_SOCKET, socket);
     }
 
     let log_dir = PathBuf::from(tolerances::runtime_dir())
@@ -173,4 +227,28 @@ pub(super) fn spawn_primal(
 
     tracing::info!(primal, binary = %binary.display(), pid = child.id(), "spawned");
     Ok(())
+}
+
+/// Resolve profile variable placeholders.
+///
+/// `$family_id` → config.family_id, `$base_dir` / `$biomeos_dir` → socket parent,
+/// primal names → their socket path via standard nucleation.
+fn resolve_profile_var(val: &str, own_socket: &std::path::Path, config: &LaunchConfig) -> String {
+    match val {
+        "$family_id" => config.family_id.clone(),
+        "$base_dir" | "$biomeos_dir" => own_socket
+            .parent()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default(),
+        primal_ref => {
+            let socket_dir = own_socket
+                .parent()
+                .unwrap_or_else(|| std::path::Path::new("/tmp"));
+            let family = &config.family_id;
+            socket_dir
+                .join(format!("{primal_ref}-{family}.sock"))
+                .display()
+                .to_string()
+        }
+    }
 }

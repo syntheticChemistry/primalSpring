@@ -210,13 +210,6 @@ fn parse_songbird_peers() -> BTreeMap<String, String> {
     let val = match std::env::var("SONGBIRD_PEERS") {
         Ok(v) if !v.trim().is_empty() => v,
         _ => {
-            let well_known = [
-                ("strand-gate", "192.168.1.132:7700"),
-                ("iron-gate", "192.168.1.238:7700"),
-            ];
-            for (gate, addr) in well_known {
-                peers.insert(gate.to_owned(), addr.to_owned());
-            }
             return peers;
         }
     };
@@ -333,12 +326,12 @@ mod tests {
     }
 
     #[test]
-    fn well_known_peers_fallback() {
+    fn no_hardcoded_peers_when_env_unset() {
         let peers = parse_songbird_peers();
         if std::env::var("SONGBIRD_PEERS").is_err() {
             assert!(
-                peers.contains_key("strand-gate"),
-                "should fall back to well-known peers when env unset"
+                peers.is_empty(),
+                "should return empty peers when SONGBIRD_PEERS env unset (no hardcoded fallback)"
             );
         }
     }

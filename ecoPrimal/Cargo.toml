@@ -22,7 +22,7 @@ clap = { workspace = true }
 thiserror = { workspace = true }
 base64 = { workspace = true }
 blake3 = { workspace = true }
-ureq = { workspace = true }
+ureq = { workspace = true, optional = true }
 hmac = "0.13.0"
 sha2 = "0.11.0"
 hkdf = "0.13.0"
@@ -47,6 +47,7 @@ path = "src/bin/nucleus_launcher/main.rs"
 
 [features]
 stub-primals = []
+cross-membrane = ["ureq"]
 
 [dev-dependencies]
 proptest = "1.10.0"

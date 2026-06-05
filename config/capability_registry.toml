@@ -1117,6 +1117,51 @@ compositions = [
     { name = "sync.resolve.crossgate", graph = "graphs/compositions/sync_resolve_crossgate.toml", coordination = "sequential", nodes = 10, domain = "fall" },
 ]
 
+# =============================================================================
+# CAPABILITY ALIASES — aggregate discovery domains
+# =============================================================================
+#
+# Aliases map umbrella domain names (used in ALL_CAPS, BTSP probes, and
+# tcp_fallback) to their canonical owning primal. These carry no methods
+# of their own — they unify finer-grained TOML sections under a single
+# discovery key so that the DOMAIN_OWNER_MAP resolves them without any
+# hardcoded static fallback tables in routing.rs.
+
+[orchestration]
+owner = "biomeos"
+stability = "stable"
+methods = []
+
+[commit]
+owner = "sweetgrass"
+stability = "stable"
+methods = []
+
+[ledger]
+owner = "loamspine"
+stability = "stable"
+methods = []
+
+[merkle]
+owner = "loamspine"
+stability = "stable"
+methods = []
+
+[recon]
+owner = "skunkbat"
+stability = "stable"
+methods = []
+
+[threat]
+owner = "skunkbat"
+stability = "stable"
+methods = []
+
+[audit]
+owner = "skunkbat"
+stability = "stable"
+methods = []
+
 # Test fixtures — synthetic method names used in unit tests only.
 # These are excluded from drift checking.
 [test_fixtures]

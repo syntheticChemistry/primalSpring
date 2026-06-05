@@ -237,3 +237,26 @@ pub fn validate_cross_atomic_pipeline(ctx: &mut CompositionContext, v: &mut Vali
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tier_capabilities_nonempty() {
+        let tiers: &[(&str, &[&str])] = &[
+            ("Tower", AtomicType::Tower.required_capabilities()),
+            ("Node", AtomicType::Node.required_capabilities()),
+            ("Nest", AtomicType::Nest.required_capabilities()),
+        ];
+        for &(name, caps) in tiers {
+            assert!(!caps.is_empty(), "{name} tier should have at least one capability");
+        }
+    }
+
+    #[test]
+    fn ipc_round_trip_tolerance_positive() {
+        assert!(tolerances::IPC_ROUND_TRIP_TOL > 0.0,
+            "tolerance should be positive: {}", tolerances::IPC_ROUND_TRIP_TOL);
+    }
+}

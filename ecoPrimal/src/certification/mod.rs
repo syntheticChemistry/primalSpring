@@ -171,3 +171,27 @@ pub fn certify(max_layer: u8) -> ValidationResult {
     v.finish();
     v
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn max_layer_is_eight() {
+        assert_eq!(MAX_LAYER, 8);
+    }
+
+    #[test]
+    fn certify_layer_zero_produces_checks() {
+        let v = certify(0);
+        let total = v.passed + v.failed + v.skipped;
+        assert!(total > 0, "certify(0) should produce structural bare checks");
+    }
+
+    #[test]
+    fn certify_layer_zero_exit_code() {
+        let v = certify(0);
+        let code = v.exit_code();
+        assert!(code == 0 || code == 1, "exit code should be 0 (pass) or 1 (fail), got {code}");
+    }
+}

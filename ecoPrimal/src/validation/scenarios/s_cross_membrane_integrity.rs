@@ -363,6 +363,11 @@ fn phase_content_integrity(v: &mut ValidationResult, _ctx: &mut CompositionConte
 }
 
 /// Fetch a URL via HTTPS and return (blake3_hex, elapsed_ms, content_length).
+///
+/// Requires the `cross-membrane` feature (which enables `ureq` + `rustls`).
+/// Without it, returns an error indicating the feature is needed — callers
+/// degrade gracefully (skip live HTTPS phases).
+#[cfg(feature = "cross-membrane")]
 fn fetch_with_blake3(url: &str, _label: &str) -> Result<(String, u128, usize), String> {
     let start = std::time::Instant::now();
 
@@ -381,6 +386,11 @@ fn fetch_with_blake3(url: &str, _label: &str) -> Result<(String, u128, usize), S
 
     let hash = blake3::hash(&body);
     Ok((hash.to_hex().to_string(), elapsed_ms, body.len()))
+}
+
+#[cfg(not(feature = "cross-membrane"))]
+fn fetch_with_blake3(_url: &str, _label: &str) -> Result<(String, u128, usize), String> {
+    Err("HTTPS fetch requires the 'cross-membrane' feature (ureq + rustls)".to_owned())
 }
 
 fn phase_dark_forest_classification(v: &mut ValidationResult) {

@@ -3,7 +3,32 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–75: Stadial Entry / Glacial Shift (2026-06-04)
+## [Unreleased] — Waves 22–77: Stadial Entry / Glacial Shift (2026-06-04)
+
+### Wave 77c: NUCLEUS Deep Debt Evolution (June 4)
+- **`ring` C dependency eliminated** — `ureq` (HTTPS client) feature-gated behind
+  `cross-membrane` feature. Default builds have zero C dependencies. The single
+  callsite in `s_cross_membrane_integrity` gracefully degrades when the feature is off.
+- **Routing table consolidation** — 6+ duplicated capability-to-primal mapping tables
+  consolidated into the single TOML-driven `DOMAIN_OWNER_MAP`. Added 7 alias sections
+  to `capability_registry.toml`, deleted `static_capability_fallback()`, made
+  `tcp_fallback_table()` dynamic, derived `CompositionTier` from TOML compositions.
+- **Profile-driven `nucleus_launcher`** — removed Songbird-specific `if`-block from
+  `orchestrator/spawn.rs`, replaced with generic profile loading from
+  `primal_launch_profiles.toml`. Registry seeding uses dynamic discovery owner.
+  Startup ordering prefers graph-driven topological waves with capability-based fallback.
+- **File refactoring** — split 3 near-threshold files to stay under 800 lines:
+  `s_deployment_pipeline.rs` → 6 stage modules, `context.rs` discovery → `context_discovery.rs`,
+  `exp096 phases.rs` → 3 per-concern modules.
+- **Certification test coverage** — 33 new unit tests across all 8 `certification/` modules
+  (was zero coverage). Tests cover bonding policies, BTSP cipher minima, enforcer decisions,
+  cell graph validation, entropy/seed resolution, hex encoding, and fingerprinting.
+- **Hardcoded values cleanup** — fixed `127.0.0.1` in registry seeding (uses `PRIMALSPRING_HOST`),
+  removed hardcoded gate IPs from `live_mesh.rs`, replaced `/run/user/1000/biomeos` with
+  `tolerances::runtime_dir()`, derived `PRIMAL_SLUGS` from `Primal::ALL`.
+- **Deprecation cleanup** — `leak_or_match` no longer returns `"unknown"` (warns + leaks),
+  harness zip-lookup replaced with TOML-driven routing table delegation.
+- 889 lib tests (up from 837), zero clippy warnings, full workspace clean.
 
 ### Wave 75b: Deep Debt + Live Validation Prep (June 4)
 - **Copyright headers added** — 154 `.rs` files gain `// Copyright (c) 2025-2026 ecoPrimals Collective`

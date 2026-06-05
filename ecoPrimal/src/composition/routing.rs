@@ -120,43 +120,26 @@ fn capability_to_spring_owner(capability: &str) -> &str {
     }
 }
 
-/// Typed version — consults the TOML-derived domain→owner map first,
-/// falls back to static match for aliases not directly in the TOML.
+/// Typed version — consults the TOML-derived domain→owner map.
+///
+/// All aliases (`orchestration`, `commit`, `ledger`, `merkle`, etc.) are
+/// resolved from `capability_registry.toml` alias sections — no static
+/// fallback table needed.
 ///
 /// Returns `None` for non-primal targets (springs, unknown).
 #[must_use]
 pub fn capability_to_primal_typed(capability: &str) -> Option<Primal> {
-    if let Some(owner) = DOMAIN_OWNER_MAP.get(capability) {
-        return owner.parse::<Primal>().ok();
-    }
-    static_capability_fallback(capability)
-}
-
-/// Static fallback for capability aliases that aren't direct TOML sections
-/// but still map to primals (e.g. `"network"` → Songbird, `"orchestration"` → BiomeOS).
-///
-/// These arise because `ALL_CAPS` names the *primary discovery domain* per primal,
-/// which may not match any single TOML section key. The TOML has finer-grained
-/// sections (e.g. `[graph]`, `[lifecycle]`, `[topology]` all owned by BiomeOS,
-/// but the discovery domain is `"orchestration"`).
-fn static_capability_fallback(capability: &str) -> Option<Primal> {
-    use Primal::{BarraCuda, BiomeOS, LoamSpine, Songbird, SkunkBat, SweetGrass};
-    match capability {
-        "orchestration" | "manifest" => Some(BiomeOS),
-        "commit" => Some(SweetGrass),
-        "ledger" | "spine" | "merkle" => Some(LoamSpine),
-        "network" => Some(Songbird),
-        "math" => Some(BarraCuda),
-        "recon" | "threat" | "audit" => Some(SkunkBat),
-        _ => None,
-    }
+    DOMAIN_OWNER_MAP
+        .get(capability)
+        .and_then(|owner| owner.parse::<Primal>().ok())
 }
 
 /// Return a `&'static str` for known owner slugs via enum-driven resolution.
 ///
-/// Avoids leaking heap strings by resolving through [`Primal`] and [`Spring`]
-/// enums — adding a new primal/spring forces a compiler error rather than
-/// silently falling through to `"unknown"`.
+/// Resolves through [`Primal`] and [`Spring`] enums first. For non-enum
+/// owners (apps, membranes), falls back to a static match table. Truly
+/// unknown owners are leaked once with a tracing warning so callers never
+/// silently receive `"unknown"`.
 fn leak_or_match(owner: &str) -> &'static str {
     use crate::primal_names::Spring;
     if let Ok(p) = owner.parse::<Primal>() {
@@ -168,8 +151,63 @@ fn leak_or_match(owner: &str) -> &'static str {
     match owner {
         "esotericwebb" => "esotericwebb",
         "membrane" => "membrane",
-        _ => "unknown",
+        other => {
+            tracing::warn!(owner = other, "TOML owner not matched by Primal or Spring enum — leaking");
+            Box::leak(other.to_owned().into_boxed_str())
+        }
     }
+}
+
+/// Primal→home composition tier, derived from `[compositions.*].primals`
+/// in `capability_registry.toml`.
+///
+/// For each composition, the primals list is mapped to the tier. When a
+/// primal appears in multiple compositions, it gets the *smallest* tier
+/// (Tower < Node < Nest < Meta < Orchestration). This replaces the
+/// hardcoded primal-name match arms in `neural_routing::CompositionTier::from_domain`.
+static PRIMAL_HOME_TIER: LazyLock<HashMap<String, u8>> = LazyLock::new(|| {
+    let Ok(parsed) = REGISTRY_TOML.parse::<toml::Table>() else {
+        return HashMap::new();
+    };
+    let Some(compositions) = parsed.get("compositions").and_then(|v| v.as_table()) else {
+        return HashMap::new();
+    };
+    let tier_priority = |name: &str| -> u8 {
+        match name {
+            "tower" => 0,
+            "node" => 1,
+            "nest" | "rootpulse" => 2,
+            "meta" => 3,
+            _ => 4,
+        }
+    };
+    let mut map: HashMap<String, u8> = HashMap::new();
+    for (comp_name, comp_val) in compositions {
+        let priority = tier_priority(comp_name);
+        if let Some(primals) = comp_val.get("primals").and_then(|v| v.as_array()) {
+            for p in primals {
+                if let Some(slug) = p.as_str() {
+                    map.entry(slug.to_owned())
+                        .and_modify(|existing| {
+                            if priority < *existing {
+                                *existing = priority;
+                            }
+                        })
+                        .or_insert(priority);
+                }
+            }
+        }
+    }
+    map
+});
+
+/// Look up a primal's home composition tier from the TOML-derived map.
+///
+/// Returns the tier priority (0=Tower, 1=Node, 2=Nest, 3=Meta, 4=Orchestration).
+/// Returns `None` for primals not listed in any composition.
+#[must_use]
+pub fn primal_home_tier_priority(primal: &str) -> Option<u8> {
+    PRIMAL_HOME_TIER.get(primal).copied()
 }
 
 /// Map a JSON-RPC method name to the capability domain that owns it.

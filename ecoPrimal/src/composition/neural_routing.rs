@@ -77,17 +77,20 @@ impl CompositionTier {
             | "tool" | "tools" | "rpc" | "system"
             | "coordination" | "composition" | "graph" | "nucleus" => Self::Orchestration,
             "bonding" | "ionic" | "game" | "webb" => Self::Standalone,
-            _ => {
-                use crate::primal_names;
-                match owner {
-                    primal_names::BEARDOG | primal_names::SONGBIRD | primal_names::SKUNKBAT => Self::Tower,
-                    primal_names::TOADSTOOL | primal_names::BARRACUDA | primal_names::CORALREEF => Self::Node,
-                    primal_names::NESTGATE | primal_names::RHIZOCRYPT | primal_names::LOAMSPINE | primal_names::SWEETGRASS => Self::Nest,
-                    primal_names::PETALTONGUE | primal_names::SQUIRREL => Self::Meta,
-                    primal_names::BIOMEOS => Self::Orchestration,
-                    _ => Self::Standalone,
-                }
-            }
+            _ => Self::from_owner_tier(owner),
+        }
+    }
+
+    /// Derive tier from the primal owner using the TOML-derived
+    /// `[compositions.*].primals` map (0=Tower..4=Orchestration).
+    fn from_owner_tier(owner: &str) -> Self {
+        match super::routing::primal_home_tier_priority(owner) {
+            Some(0) => Self::Tower,
+            Some(1) => Self::Node,
+            Some(2) => Self::Nest,
+            Some(3) => Self::Meta,
+            Some(_) => Self::Orchestration,
+            None => Self::Standalone,
         }
     }
 }

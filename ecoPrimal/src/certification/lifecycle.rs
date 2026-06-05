@@ -123,3 +123,24 @@ fn validate_post_reload_liveness(ctx: &mut CompositionContext, v: &mut Validatio
         ),
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tower_capabilities_for_post_reload_exist() {
+        let caps = AtomicType::Tower.required_capabilities();
+        assert!(!caps.is_empty(), "Tower should define required capabilities for lifecycle check");
+    }
+
+    #[test]
+    fn full_nucleus_capabilities_superset_of_tower() {
+        let tower = AtomicType::Tower.required_capabilities();
+        let full = AtomicType::FullNucleus.required_capabilities();
+        for &cap in tower {
+            assert!(full.contains(&cap),
+                "FullNucleus should contain Tower cap '{cap}'");
+        }
+    }
+}

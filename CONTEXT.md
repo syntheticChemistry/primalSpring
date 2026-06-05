@@ -59,7 +59,7 @@ back upstream to primals and primalSpring.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 57 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 61 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -81,14 +81,18 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 77b (June 4, 2026) — 61 scenarios (10 tracks, 3 tiers),
+v0.9.31 Wave 77c (June 4, 2026) — 61 scenarios (10 tracks, 3 tiers),
 490+ registered capability methods, 93 experiments (21 tracks), 113 graph TOMLs
-(~80 deploy + 33 compositions), 44-cell deployment matrix. 858 tests passing.
+(~80 deploy + 33 compositions), 44-cell deployment matrix. 889 tests passing.
 13/13 BTSP convergence. Diderm membrane architecture formalized. Cross-membrane
 integrity validation scenario shipped (`s_cross_membrane_integrity`). DNS zones
 for `primal.eco` + `nestgate.io` live on sovereign knot-dns.
 12 pre-existing clippy violations fixed (zero warnings: pedantic + nursery).
 `ProvenanceResult::unavailable` uses `"degraded:"` prefix with structured data.
+**Wave 77c deep debt**: `ring` C dependency eliminated (feature-gated behind `cross-membrane`),
+6+ routing tables consolidated into single TOML-driven source, `nucleus_launcher` profile-driven
+(no primal special-casing), 3 near-threshold files split, 33 certification unit tests added,
+4 hardcoded values cleaned for gate-agnostic deployment, deprecated APIs cleaned up.
 Large function split in `s_ecosystem_freshness`. fossilRecord scripts cleaned.
 **Post-primordial / deep-debt**: `#![forbid(unsafe_code)]` on all 88 crate roots +
 6 integration tests. Centralized `PORT_REGISTRY` in tolerances. Deny-by-default
@@ -247,7 +251,7 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data visualization), neuralSpring (agentic
 composition).
 
-## Glacial Checkpoint — Current and Remaining (May 24, 2026)
+## Glacial Checkpoint — Current and Remaining (June 4, 2026)
 
 ### Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
@@ -265,7 +269,7 @@ wateringHole fossilization (numeric drift fixed, 18 gen4 docs organized),
 and Wave 22 upstream primal evolution (13/13 stadial-gate absorbed, 4 new
 methods registered) — all detail fossilized to `fossilRecord/`.
 
-### Remaining (updated May 27, 2026)
+### Remaining (updated June 4, 2026)
 
 **Resolved since last review:**
 - ~~**Thread 4**~~ now active (expression + data sources in projectFOUNDATION)

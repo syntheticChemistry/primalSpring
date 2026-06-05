@@ -381,3 +381,69 @@ mod hex {
         s
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn hex_encode_roundtrip() {
+        assert_eq!(hex::encode(&[]), "");
+        assert_eq!(hex::encode(&[0x00]), "00");
+        assert_eq!(hex::encode(&[0xff]), "ff");
+        assert_eq!(hex::encode(&[0xde, 0xad, 0xbe, 0xef]), "deadbeef");
+        assert_eq!(hex::encode(&[0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]), "0123456789abcdef");
+    }
+
+    #[test]
+    fn seed_source_display() {
+        assert_eq!(format!("{}", SeedSource::EnvGuidestone), "GUIDESTONE_SEED env");
+        assert_eq!(format!("{}", SeedSource::EnvFamily), "FAMILY_SEED env");
+        assert_eq!(format!("{}", SeedSource::SeedFile), ".family.seed file");
+        assert_eq!(format!("{}", SeedSource::Generated), "generated (machine entropy)");
+    }
+
+    #[test]
+    fn resolve_mito_seed_returns_nonempty() {
+        let seed = resolve_mito_seed();
+        assert!(!seed.hex_seed.is_empty(), "seed should always resolve to something");
+        assert!(seed.hex_seed.chars().all(|c| c.is_ascii_hexdigit()),
+            "seed should be hex: {}", seed.hex_seed);
+    }
+
+    #[test]
+    fn compute_seed_fingerprint_deterministic() {
+        let fp1 = compute_seed_fingerprint("beardog", "0.9.31", "abc123");
+        let fp2 = compute_seed_fingerprint("beardog", "0.9.31", "abc123");
+        assert_eq!(fp1, fp2, "same inputs must produce same fingerprint");
+        assert!(!fp1.is_empty());
+        assert_eq!(fp1.len(), 64, "BLAKE3 hex should be 64 chars");
+    }
+
+    #[test]
+    fn compute_seed_fingerprint_varies_with_input() {
+        let fp_a = compute_seed_fingerprint("beardog", "0.9.31", "abc123");
+        let fp_b = compute_seed_fingerprint("songbird", "0.9.31", "abc123");
+        let fp_c = compute_seed_fingerprint("beardog", "0.9.32", "abc123");
+        let fp_d = compute_seed_fingerprint("beardog", "0.9.31", "def456");
+        assert_ne!(fp_a, fp_b, "different names must differ");
+        assert_ne!(fp_a, fp_c, "different versions must differ");
+        assert_ne!(fp_a, fp_d, "different checksums must differ");
+    }
+
+    #[test]
+    fn verify_seed_fingerprints_missing_path() {
+        let results = verify_seed_fingerprints(
+            Path::new("/nonexistent/fingerprints.toml"),
+            Path::new("/nonexistent/plasmin"),
+        );
+        assert!(results.is_empty(), "missing path should yield empty results");
+    }
+
+    #[test]
+    fn validate_seed_provenance_runs_without_panic() {
+        let seed = resolve_mito_seed();
+        let mut v = crate::validation::ValidationResult::new("test");
+        validate_seed_provenance(&mut v, &seed);
+    }
+}

@@ -4,6 +4,7 @@
 //! NUCLEUS orchestrator — dependency-ordered primal startup, health checks,
 //! and Songbird registry seeding.
 
+pub(crate) mod preflight;
 mod registry;
 mod spawn;
 
@@ -34,6 +35,12 @@ pub struct LaunchConfig {
     pub federation_port: Option<u16>,
     /// Peer addresses for cross-gate Songbird mesh seeding.
     pub peers: Vec<String>,
+    /// Skip Phase 0 pre-flight validation (degraded-mode escape hatch).
+    pub skip_preflight: bool,
+    /// Allow startup with < 100% healthy primals (50% threshold).
+    pub allow_degraded: bool,
+    /// Don't stop already-started primals on failure.
+    pub no_rollback: bool,
 }
 
 /// Summary of the launch operation.
@@ -49,43 +56,62 @@ pub struct LaunchResult {
     pub total: usize,
 }
 
-/// Dependency-ordered startup sequence derived from [`Primal::ALL`].
+/// Ordered primals for a given composition type.
 ///
-/// `Primal::ALL` already defines canonical ordering (crypto spine first,
-/// orchestrator last). This eliminates a second maintained list that could
-/// drift from the enum definition.
-const STARTUP_ORDER: &[&str] = &[
-    primal_names::Primal::ALL[0].slug(),
-    primal_names::Primal::ALL[1].slug(),
-    primal_names::Primal::ALL[2].slug(),
-    primal_names::Primal::ALL[3].slug(),
-    primal_names::Primal::ALL[4].slug(),
-    primal_names::Primal::ALL[5].slug(),
-    primal_names::Primal::ALL[6].slug(),
-    primal_names::Primal::ALL[7].slug(),
-    primal_names::Primal::ALL[8].slug(),
-    primal_names::Primal::ALL[9].slug(),
-    primal_names::Primal::ALL[10].slug(),
-    primal_names::Primal::ALL[11].slug(),
-    primal_names::Primal::ALL[12].slug(),
-];
-
-/// Ordered primals for a given composition type, filtered against the startup order.
-///
-/// Resolves primals from `required_capabilities()` via the capability registry
-/// routing table (capability → primal owner). Every `ALL_CAPS` entry resolves
-/// to a `Primal` variant, so this always returns a non-empty result for valid
-/// compositions.
+/// Attempts graph-driven topological ordering first (from the composition's
+/// deploy graph). Falls back to capability-based resolution with `Primal::ALL`
+/// ordering when no graph is available or parsing fails.
 pub fn ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
+    if let Some(ordered) = graph_ordered_primals(atomic) {
+        return ordered;
+    }
+    capability_ordered_primals(atomic)
+}
+
+/// Try to resolve startup order from the composition's deploy graph.
+///
+/// Uses `topological_waves()` to get dependency-ordered waves, then
+/// flattens them while retaining only primals that are `Primal::ALL` members.
+fn graph_ordered_primals(atomic: AtomicType) -> Option<Vec<&'static str>> {
+    let graph_name = atomic.graph_name();
+    let graph_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join(format!("../graphs/{graph_name}.toml"));
+
+    let graph = primalspring::deploy::load_graph(&graph_path).ok()?;
+    let waves = primalspring::deploy::topological_waves(&graph).ok()?;
+
+    let valid_primals: std::collections::HashSet<&str> =
+        primal_names::Primal::ALL.iter().map(|p| p.slug()).collect();
+
+    let mut ordered = Vec::new();
+    for wave in &waves {
+        for name in wave {
+            if let Some(&slug) = valid_primals.get(name.as_str()) {
+                if !ordered.contains(&slug) {
+                    ordered.push(slug);
+                }
+            }
+        }
+    }
+
+    if ordered.is_empty() {
+        return None;
+    }
+    Some(ordered)
+}
+
+/// Fallback: resolve primals from capabilities, ordered by `Primal::ALL`.
+fn capability_ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
     use primalspring::composition::capability_to_primal;
 
+    let all_slugs: Vec<&str> = primal_names::Primal::ALL.iter().map(|p| p.slug()).collect();
     let caps = atomic.required_capabilities();
     let mut resolved: Vec<&str> = caps
         .iter()
         .map(|cap| capability_to_primal(cap))
-        .filter(|primal| STARTUP_ORDER.contains(primal))
+        .filter(|primal| all_slugs.contains(primal))
         .collect();
-    resolved.sort_unstable();
+    resolved.sort_by_key(|p| all_slugs.iter().position(|s| s == p).unwrap_or(usize::MAX));
     resolved.dedup();
     resolved
 }
@@ -109,6 +135,29 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     println!("  Transport:   {}", if config.uds_only { "UDS-only (VPS standard)" } else { "UDS + TCP" });
     println!("  Dark Forest: {}", config.dark_forest);
     println!();
+
+    // Phase 0: Pre-flight validation
+    if !config.skip_preflight && !config.dry_run {
+        let pf = preflight::run_preflight(&primals, config.uds_only);
+        if !pf.passed {
+            println!("\x1b[31mPre-flight FAILED — aborting launch.\x1b[0m");
+            if !pf.binary_missing.is_empty() {
+                println!("  Missing binaries: {}", pf.binary_missing.join(", "));
+                println!("  Run: plasmidbin sync   (or set ECOPRIMALS_ROOT)");
+            }
+            if !pf.port_conflicts.is_empty() {
+                println!("  Port conflicts detected — fix ports.env");
+            }
+            println!();
+            return LaunchResult {
+                success: false,
+                started: 0,
+                healthy: 0,
+                registered: 0,
+                total,
+            };
+        }
+    }
 
     let runtime_dir = tolerances::runtime_dir();
     let socket_dir = PathBuf::from(&runtime_dir).join("biomeos");
@@ -241,12 +290,13 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     }
 
     println!("=== Phase 5: Registry seeding (Songbird ipc.register) ===");
-    let songbird_port = registry::effective_port_for(primal_names::SONGBIRD, config.uds_only);
+    let discovery_owner = primalspring::composition::capability_to_primal("discovery");
+    let songbird_port = registry::effective_port_for(discovery_owner, config.uds_only);
     let mut registered = 0usize;
     let capability_map = registry::build_capability_map();
 
     for primal in &primals {
-        if *primal == primal_names::SONGBIRD {
+        if *primal == discovery_owner {
             continue;
         }
 
@@ -274,8 +324,10 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             continue;
         }
 
+        let bind_host = std::env::var(primalspring::env_keys::PRIMALSPRING_HOST)
+            .unwrap_or_else(|_| primalspring::tolerances::DEFAULT_HOST.to_owned());
         let payload = format!(
-            r#"{{"jsonrpc":"2.0","method":"ipc.register","params":{{"name":"{primal}","capabilities":[{caps_str}],"endpoint":"unix://{socket}","tcp_endpoint":"tcp://127.0.0.1:{port}","family_id":"{}","node_id":"{}"}},"id":99}}"#,
+            r#"{{"jsonrpc":"2.0","method":"ipc.register","params":{{"name":"{primal}","capabilities":[{caps_str}],"endpoint":"unix://{socket}","tcp_endpoint":"tcp://{bind_host}:{port}","family_id":"{}","node_id":"{}"}},"id":99}}"#,
             config.family_id, config.node_id
         );
 
@@ -342,7 +394,19 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         println!();
     }
 
-    let success = config.dry_run || (started == total && healthy >= total / 2);
+    let success = if config.dry_run {
+        true
+    } else if config.allow_degraded {
+        started == total && healthy >= total / 2
+    } else {
+        started == total && healthy == total
+    };
+
+    if !success && !config.dry_run && !config.no_rollback {
+        println!("\x1b[31m=== Launch FAILED — rolling back ===\x1b[0m");
+        stop_all(&primals);
+        println!();
+    }
 
     LaunchResult {
         success,

@@ -126,3 +126,55 @@ pub fn validate_live_ionic_bond(ctx: &mut CompositionContext, v: &mut Validation
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bonding_policies_pass_validation() {
+        let mut v = crate::validation::ValidationResult::new("test");
+        validate_bonding_policies(&mut v);
+        assert!(v.passed > 0, "should produce at least one check");
+        assert_eq!(v.failed, 0, "no bonding policy checks should fail");
+    }
+
+    #[test]
+    fn bond_type_trust_ordering() {
+        assert!(BondType::Covalent.shares_electrons());
+        assert!(BondType::Metallic.shares_electrons());
+        assert!(!BondType::Ionic.shares_electrons());
+        assert!(!BondType::Weak.shares_electrons());
+    }
+
+    #[test]
+    fn ionic_metering() {
+        assert!(BondType::Ionic.is_metered());
+        assert!(!BondType::Covalent.is_metered());
+    }
+
+    #[test]
+    fn cipher_minima_well_ordered() {
+        for &bond in BondType::all() {
+            let min = btsp::min_cipher_for_bond(bond);
+            assert!(btsp::cipher_allowed(bond, min),
+                "min cipher for {bond:?} must be allowed for its own bond type");
+        }
+        let ionic_min = btsp::min_cipher_for_bond(BondType::Ionic);
+        assert!(ionic_min.is_encrypted(), "ionic bond must require encrypted cipher");
+    }
+
+    #[test]
+    fn covalent_default_policy_valid() {
+        let policy = BondingPolicy::covalent_default();
+        let errors = policy.validate();
+        assert!(errors.is_empty(), "covalent default policy should be valid: {errors:?}");
+    }
+
+    #[test]
+    fn ionic_contract_policy_valid() {
+        let policy = BondingPolicy::ionic_contract(vec!["compute".to_owned()]);
+        let errors = policy.validate();
+        assert!(errors.is_empty(), "ionic contract policy should be valid: {errors:?}");
+    }
+}

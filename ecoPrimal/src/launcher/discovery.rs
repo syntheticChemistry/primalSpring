@@ -3,15 +3,18 @@
 
 //! Binary discovery and resolution for primal executables.
 //!
-//! Binaries are resolved via the standard consumer pattern — the same
-//! one used by downstream springs, compositions, and deployments:
+//! Binaries are resolved via a 4-tier directory search:
 //!
 //! 1. `$ECOPRIMALS_PLASMID_BIN` (explicit override)
 //! 2. `$BIOMEOS_PLASMID_BIN_DIR` (biomeOS override)
-//! 3. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` (XDG standard cache,
-//!    populated by `membrane plasmid.fetch`)
+//! 3. `$ECOPRIMALS_ROOT/infra/plasmidBin` (workspace harvest directory —
+//!    bridges CI-harvested binaries to the runtime consumer on dev machines)
+//! 4. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` (XDG standard cache,
+//!    populated by `plasmidbin sync` or `membrane plasmid.fetch`)
 //!
-//! No relative filesystem traversal into sibling repos or `../../infra/`.
+//! No blind relative filesystem traversal — only explicit env-var-directed
+//! paths. On production gates where `ECOPRIMALS_ROOT` is unset, tier 3 is
+//! skipped and binaries come from the XDG cache (populated by `plasmidbin sync`).
 
 use std::path::PathBuf;
 
@@ -39,7 +42,7 @@ fn host_target_triple() -> String {
     }
 }
 
-/// Search for a primal binary using the 3-tier directory search.
+/// Search for a primal binary using the 4-tier directory search.
 ///
 /// Within each base directory, patterns are tried in order:
 /// 1. `primals/{target-triple}/{primal}` (plasmidbin fetch canonical layout)
@@ -54,6 +57,9 @@ pub fn discover_binary(primal: &str) -> Result<PathBuf, LaunchError> {
     let base_dirs: Vec<PathBuf> = [
         std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN).ok().map(PathBuf::from),
         std::env::var(crate::env_keys::BIOMEOS_PLASMID_BIN_DIR).ok().map(PathBuf::from),
+        std::env::var(crate::env_keys::ECOPRIMALS_ROOT)
+            .ok()
+            .map(|r| PathBuf::from(r).join("infra/plasmidBin")),
         Some(xdg_plasmid_bin()),
     ]
     .into_iter()

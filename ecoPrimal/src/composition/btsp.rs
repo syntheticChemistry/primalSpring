@@ -180,37 +180,18 @@ pub fn upgrade_btsp_clients(clients: &mut HashMap<String, PrimalClient>) -> BTre
 
 /// Capability → (primal slug, env var, default port) for tier 5 TCP probing.
 ///
-/// Part of the discovery escalation hierarchy (tier 5). Port and env-key
-/// data is derived from [`crate::tolerances::PORT_REGISTRY`]; this table
-/// adds only the capability→primal mapping. Capabilities that alias the
-/// same primal socket (e.g. `content` → nestgate, `attribution` → sweetGrass)
-/// appear as separate entries.
+/// Derived from `ALL_CAPS` + `capability_to_primal()` + `PORT_REGISTRY` —
+/// no hand-maintained mapping needed. Each capability in `ALL_CAPS` is
+/// resolved to its owning primal via the TOML-derived routing table, then
+/// the port registry provides the env key and default port.
 #[must_use]
 pub fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u16)> {
-    use crate::primal_names as pn;
     use crate::tolerances;
 
-    let cap_to_primal: &[(&str, &str)] = &[
-        ("security",      pn::BEARDOG),
-        ("discovery",     pn::SONGBIRD),
-        ("storage",       pn::NESTGATE),
-        ("compute",       pn::TOADSTOOL),
-        ("tensor",        pn::BARRACUDA),
-        ("shader",        pn::CORALREEF),
-        ("ai",            pn::SQUIRREL),
-        ("dag",           pn::RHIZOCRYPT),
-        ("ledger",        pn::LOAMSPINE),
-        ("commit",        pn::SWEETGRASS),
-        ("attribution",   pn::SWEETGRASS),
-        ("visualization", pn::PETALTONGUE),
-        ("defense",       pn::SKUNKBAT),
-        ("content",       pn::NESTGATE),
-        ("orchestration", pn::BIOMEOS),
-    ];
-
-    cap_to_primal
+    ALL_CAPS
         .iter()
-        .filter_map(|&(cap, slug)| {
+        .filter_map(|&cap| {
+            let slug = capability_to_primal(cap);
             tolerances::port_entry_for(slug)
                 .map(|e| (cap, slug, e.env_key, e.port))
         })

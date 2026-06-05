@@ -273,3 +273,32 @@ fn validate_bonding_type_wellformed(v: &mut ValidationResult) {
         &detail,
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bonding_type_descriptions_nonempty() {
+        for &bond in BondType::all() {
+            let desc = bond.description();
+            assert!(!desc.is_empty(), "{bond:?} has empty description");
+        }
+    }
+
+    #[test]
+    fn bonding_type_wellformed_checks_pass() {
+        let mut v = crate::validation::ValidationResult::new("test");
+        validate_bonding_type_wellformed(&mut v);
+        assert!(v.passed > 0);
+        assert_eq!(v.failed, 0, "bond type checks should all pass");
+    }
+
+    #[test]
+    fn validate_bare_properties_produces_checks() {
+        let mut v = crate::validation::ValidationResult::new("test");
+        validate_bare_properties(&mut v);
+        let total = v.passed + v.failed + v.skipped;
+        assert!(total > 0, "bare properties should produce at least one check");
+    }
+}

@@ -564,15 +564,18 @@ pub(super) fn phase_dark_forest_invariants(
         "federation capabilities registered (mesh.relay / route.register)",
     );
 
-    let socket_dir = std::path::Path::new("/run/user/1000/biomeos");
+    let socket_dir_str = format!("{}/biomeos", crate::tolerances::runtime_dir());
+    let socket_dir = std::path::Path::new(&socket_dir_str);
     let has_uds = socket_dir.exists();
+    let uds_detail = if has_uds {
+        "exists".to_owned()
+    } else {
+        format!("{socket_dir_str} not found")
+    };
     v.check_bool(
         "darkforest:uds_runtime_exists",
         has_uds,
-        &format!(
-            "UDS runtime dir: {}",
-            if has_uds { "exists" } else { "/run/user/1000/biomeos not found" }
-        ),
+        &format!("UDS runtime dir: {uds_detail}"),
     );
 
     if has_uds {

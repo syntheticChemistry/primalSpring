@@ -163,3 +163,86 @@ fn validate_cell_graph_toml(v: &mut ValidationResult, stem: &str, val: &toml::Va
         ),
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_cell_toml(live: bool, nodes: &[(&str, Option<&str>)]) -> toml::Value {
+        let node_arr: Vec<toml::Value> = nodes
+            .iter()
+            .map(|(name, sec)| {
+                let mut map = toml::map::Map::new();
+                map.insert("name".into(), toml::Value::String(name.to_string()));
+                if let Some(s) = sec {
+                    map.insert("security_model".into(), toml::Value::String(s.to_string()));
+                }
+                toml::Value::Table(map)
+            })
+            .collect();
+
+        let mut metadata = toml::map::Map::new();
+        if live {
+            metadata.insert("petaltongue_mode".into(), toml::Value::String("live".into()));
+        }
+
+        let mut graph = toml::map::Map::new();
+        graph.insert("nodes".into(), toml::Value::Array(node_arr));
+        graph.insert("metadata".into(), toml::Value::Table(metadata));
+
+        let mut root = toml::map::Map::new();
+        root.insert("graph".into(), toml::Value::Table(graph));
+        toml::Value::Table(root)
+    }
+
+    #[test]
+    fn valid_cell_graph_passes() {
+        let val = make_cell_toml(true, &[
+            (primal_names::BEARDOG, Some("btsp")),
+            (primal_names::SONGBIRD, Some("btsp")),
+            (primal_names::PETALTONGUE, Some("btsp")),
+            ("validate-health", Some("btsp")),
+        ]);
+        let mut v = crate::validation::ValidationResult::new("test");
+        validate_cell_graph_toml(&mut v, "test_cell", &val);
+        assert!(v.passed > 0);
+        assert_eq!(v.failed, 0, "valid cell should pass all checks");
+    }
+
+    #[test]
+    fn missing_tower_primals_detected() {
+        let val = make_cell_toml(true, &[
+            (primal_names::PETALTONGUE, Some("btsp")),
+            ("validate-health", Some("btsp")),
+        ]);
+        let mut v = crate::validation::ValidationResult::new("test");
+        validate_cell_graph_toml(&mut v, "incomplete_cell", &val);
+        assert!(v.failed > 0, "missing Tower primals should fail");
+    }
+
+    #[test]
+    fn non_live_mode_detected() {
+        let val = make_cell_toml(false, &[
+            (primal_names::BEARDOG, Some("btsp")),
+            (primal_names::SONGBIRD, Some("btsp")),
+            (primal_names::PETALTONGUE, Some("btsp")),
+            ("validate-health", Some("btsp")),
+        ]);
+        let mut v = crate::validation::ValidationResult::new("test");
+        validate_cell_graph_toml(&mut v, "nonlive_cell", &val);
+        assert!(v.failed > 0, "non-live mode should fail");
+    }
+
+    #[test]
+    fn missing_btsp_security_model_detected() {
+        let val = make_cell_toml(true, &[
+            (primal_names::BEARDOG, None),
+            (primal_names::SONGBIRD, None),
+            (primal_names::PETALTONGUE, None),
+            ("validate-health", None),
+        ]);
+        let mut v = crate::validation::ValidationResult::new("test");
+        validate_cell_graph_toml(&mut v, "no_btsp_cell", &val);
+        assert!(v.failed > 0, "missing security_model should fail btsp_default");
+    }
+}

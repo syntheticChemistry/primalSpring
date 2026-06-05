@@ -71,6 +71,15 @@ enum NucleusCommand {
         /// Comma-separated peer addresses for cross-gate mesh.
         #[arg(long, value_delimiter = ',')]
         peers: Vec<String>,
+        /// Skip Phase 0 pre-flight validation (degraded-mode escape hatch).
+        #[arg(long)]
+        skip_preflight: bool,
+        /// Allow startup with degraded health (50% threshold instead of 100%).
+        #[arg(long)]
+        allow_degraded: bool,
+        /// Don't stop already-started primals on failure.
+        #[arg(long)]
+        no_rollback: bool,
     },
     /// Stop running primals via PID files (graceful SIGTERM).
     Stop,
@@ -117,7 +126,7 @@ fn main() {
             orchestrator::show_status(&primals);
         }
         cmd => {
-            let (dark_forest, seed_only, health_timeout, dry_run, validate, uds_only, federation_port, peers) =
+            let (dark_forest, seed_only, health_timeout, dry_run, validate, uds_only, federation_port, peers, skip_preflight, allow_degraded, no_rollback) =
                 match cmd {
                     Some(NucleusCommand::Start {
                         dark_forest,
@@ -128,8 +137,11 @@ fn main() {
                         uds_only,
                         federation_port,
                         peers,
-                    }) => (dark_forest, seed_only, health_timeout, dry_run, validate, uds_only, federation_port, peers),
-                    _ => (false, false, 20, false, false, false, None, Vec::new()),
+                        skip_preflight,
+                        allow_degraded,
+                        no_rollback,
+                    }) => (dark_forest, seed_only, health_timeout, dry_run, validate, uds_only, federation_port, peers, skip_preflight, allow_degraded, no_rollback),
+                    _ => (false, false, 20, false, false, false, None, Vec::new(), false, false, false),
                 };
             let family_id = cli.family_id.unwrap_or_else(|| {
                 eprintln!("error: --family-id is required for start");
@@ -147,6 +159,9 @@ fn main() {
                 uds_only,
                 federation_port,
                 peers,
+                skip_preflight,
+                allow_degraded,
+                no_rollback,
             };
             let result = orchestrator::run(config);
             std::process::exit(i32::from(!result.success));

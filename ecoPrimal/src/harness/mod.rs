@@ -268,19 +268,11 @@ impl RunningAtomic {
 
     /// Map a capability name to the primal that provides it in this composition.
     ///
-    /// Checks the static `AtomicType` mapping first, then falls back to
+    /// Uses the canonical TOML-driven routing table, then falls back to
     /// the dynamic overlay capabilities populated from the deploy graph.
-    #[expect(deprecated, reason = "bridges capability→primal mapping until routing table replaces zip lookup")]
     fn capability_to_primal(&self, capability: &str) -> Option<String> {
-        let caps = self.atomic.required_capabilities();
-        let primals = self.atomic.required_primals();
-        if let Some(primal) = caps
-            .iter()
-            .zip(primals.iter())
-            .find(|&(cap, _)| *cap == capability)
-            .map(|(_, &primal)| primal.to_owned())
-        {
-            return Some(primal);
+        if let Some(p) = crate::composition::capability_to_primal_typed(capability) {
+            return Some(p.slug().to_owned());
         }
         self.overlay_capabilities.get(capability).cloned()
     }

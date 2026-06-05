@@ -46,21 +46,12 @@ const MAX_LATENCY_MS: f64 = 10_000.0;
 const MAX_DEPTH: f64 = 4.0;
 
 /// Ordered primal slugs for one-hot encoding (dims 14–26).
-const PRIMAL_SLUGS: &[&str] = &[
-    "beardog",
-    "songbird",
-    "skunkbat",
-    "toadstool",
-    "barracuda",
-    "coralreef",
-    "nestgate",
-    "rhizocrypt",
-    "loamspine",
-    "sweetgrass",
-    "petaltongue",
-    "squirrel",
-    "sourdough",
-];
+///
+/// Derived from `Primal::ALL` at runtime to stay in sync with
+/// the canonical primal list — no hardcoded slug array.
+fn primal_slugs() -> Vec<&'static str> {
+    crate::primal_names::Primal::ALL.iter().map(|p| p.slug()).collect()
+}
 
 /// A 36-dimensional feature vector extracted from a dispatch metric.
 #[derive(Debug, Clone)]
@@ -206,7 +197,7 @@ const fn route_index(route: &RoutePath) -> usize {
 }
 
 fn primal_index(owner: &str) -> Option<usize> {
-    PRIMAL_SLUGS.iter().position(|&s| s == owner)
+    primal_slugs().iter().position(|&s| s == owner)
 }
 
 #[expect(
