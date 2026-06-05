@@ -8,7 +8,7 @@
 | **Version** | 0.9.31 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 889+ total (lib + integration + binary + doc) — 2 ignored |
+| **Tests** | 893+ total (lib + integration + binary + doc) — 2 ignored |
 | **Experiments** | 93 (21 tracks) — 61 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 113 graph TOMLs (~80 deploy + 33 compositions) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |

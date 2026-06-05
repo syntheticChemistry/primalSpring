@@ -126,6 +126,20 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
     }
 }
 
+/// Perform a JSON-RPC health check on a primal via UDS socket.
+pub(super) fn health_check_uds(socket: &std::path::Path) -> bool {
+    let payload = r#"{"jsonrpc":"2.0","method":"health.check","params":{},"id":1}"#;
+    send_uds_rpc(socket, payload)
+        .is_ok_and(|resp| resp.contains("\"jsonrpc\""))
+}
+
+/// Resolve the UDS socket path for a primal.
+pub(super) fn socket_path_for(primal: &str) -> std::path::PathBuf {
+    std::path::PathBuf::from(tolerances::runtime_dir())
+        .join("biomeos")
+        .join(format!("{primal}.sock"))
+}
+
 /// Seed Songbird with known peer addresses for cross-gate mesh discovery.
 pub(super) fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) -> usize {
     use std::io::{Read, Write};

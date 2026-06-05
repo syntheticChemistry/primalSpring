@@ -81,14 +81,16 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 77c (June 4, 2026) — 61 scenarios (10 tracks, 3 tiers),
+v0.9.31 Wave 79 (June 5, 2026) — 61 scenarios (10 tracks, 3 tiers),
 490+ registered capability methods, 93 experiments (21 tracks), 113 graph TOMLs
-(~80 deploy + 33 compositions), 44-cell deployment matrix. 889 tests passing.
-13/13 BTSP convergence. Diderm membrane architecture formalized. Cross-membrane
-integrity validation scenario shipped (`s_cross_membrane_integrity`). DNS zones
-for `primal.eco` + `nestgate.io` live on sovereign knot-dns.
-12 pre-existing clippy violations fixed (zero warnings: pedantic + nursery).
-`ProvenanceResult::unavailable` uses `"degraded:"` prefix with structured data.
+(~80 deploy + 33 compositions), 44-cell deployment matrix. 893 tests passing.
+13/13 BTSP convergence. All 4 upstream gaps RESOLVED.
+**Wave 79 UDS-only stadial gate**: `nucleus_launcher` defaults port-free (`--tcp`
+opt-in), `discover_with_fallback()` TCP gated behind `tcp_tier5_enabled()`, all 6
+legacy graphs migrated `uds_only`, deploy profiles suppress port env for UDS graphs,
+`show_status` UDS-first probing, config reference endpoint UDS. 3 new stadial gate
+validation phases. BD-TRUST-01 resolved (Songbird auto trust in mesh.init).
+Songbird Wave 81 deep debt absorbed (hardcoded ports → constants, prod stubs hardened).
 **Wave 77c deep debt**: `ring` C dependency eliminated (feature-gated behind `cross-membrane`),
 6+ routing tables consolidated into single TOML-driven source, `nucleus_launcher` profile-driven
 (no primal special-casing), 3 near-threshold files split, 33 certification unit tests added,

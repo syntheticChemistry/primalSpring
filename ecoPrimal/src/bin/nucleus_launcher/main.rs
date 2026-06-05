@@ -57,14 +57,14 @@ enum NucleusCommand {
         /// Run composition validation after startup.
         #[arg(long)]
         validate: bool,
-        /// UDS-only mode: no TCP ports (VPS/cellMembrane standard).
+        /// Allow TCP ports (standalone/desktop mode).
         ///
-        /// When set, all primals start with port 0 (UDS only).
-        /// This is the standard for VPS deployments where TCP port
-        /// exposure is a metadata leak. Desktop deployments that
-        /// need TCP should omit this flag.
+        /// By default, all primals start UDS-only (port 0).
+        /// Songbird handles cross-gate routing via federation.
+        /// Pass `--tcp` to allocate TCP ports from the port
+        /// registry (standalone debugging, desktop dev only).
         #[arg(long)]
-        uds_only: bool,
+        tcp: bool,
         /// Songbird TCP federation port for LAN mesh.
         #[arg(long)]
         federation_port: Option<u16>,
@@ -134,14 +134,14 @@ fn main() {
                         health_timeout,
                         dry_run,
                         validate,
-                        uds_only,
+                        tcp,
                         federation_port,
                         peers,
                         skip_preflight,
                         allow_degraded,
                         no_rollback,
-                    }) => (dark_forest, seed_only, health_timeout, dry_run, validate, uds_only, federation_port, peers, skip_preflight, allow_degraded, no_rollback),
-                    _ => (false, false, 20, false, false, false, None, Vec::new(), false, false, false),
+                    }) => (dark_forest, seed_only, health_timeout, dry_run, validate, !tcp, federation_port, peers, skip_preflight, allow_degraded, no_rollback),
+                    _ => (false, false, 20, false, false, true, None, Vec::new(), false, false, false),
                 };
             let family_id = cli.family_id.unwrap_or_else(|| {
                 eprintln!("error: --family-id is required for start");

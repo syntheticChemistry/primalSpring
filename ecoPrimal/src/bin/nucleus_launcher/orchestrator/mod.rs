@@ -469,7 +469,10 @@ pub fn stop_all(primals: &[&str]) {
     println!("  Done.");
 }
 
-/// Show status of all primals via PID files and TCP health probes.
+/// Show status of all primals via PID files and UDS/TCP health probes.
+///
+/// Prefers UDS socket liveness (Tower Atomic default). Falls back to TCP
+/// only when a socket is unavailable and a port is configured.
 pub fn show_status(primals: &[&str]) {
     let pid_dir = PathBuf::from(tolerances::runtime_dir())
         .join("biomeos")
@@ -485,14 +488,23 @@ pub fn show_status(primals: &[&str]) {
     for primal in primals {
         total += 1;
         let pid_file = pid_dir.join(format!("{primal}.pid"));
-        let port = registry::effective_port(primal);
+        let socket = registry::socket_path_for(primal);
 
         let pid_status = std::fs::read_to_string(&pid_file)
             .ok()
             .and_then(|c| c.trim().parse::<u32>().ok())
             .filter(|pid| std::path::Path::new(&format!("/proc/{pid}")).exists());
 
-        let health_ok = port > 0 && registry::health_check_tcp(port, health_timeout);
+        let (health_ok, transport) = if socket.exists() && registry::health_check_uds(&socket) {
+            (true, "uds")
+        } else {
+            let port = registry::effective_port(primal);
+            if port > 0 && registry::health_check_tcp(port, health_timeout) {
+                (true, "tcp")
+            } else {
+                (false, "---")
+            }
+        };
 
         let status = match (pid_status, health_ok) {
             (Some(_), true) => {
@@ -508,7 +520,7 @@ pub fn show_status(primals: &[&str]) {
         };
 
         let pid_str = pid_status.map_or_else(|| "-".to_owned(), |p| p.to_string());
-        println!("  {primal:<14} [{status}] pid={pid_str:<8} tcp={port}");
+        println!("  {primal:<14} [{status}] pid={pid_str:<8} via={transport}");
     }
 
     println!();

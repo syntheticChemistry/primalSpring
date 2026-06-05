@@ -21,8 +21,8 @@ default_backend = "gate"
 
 [routing.backends.gate]
 type = "btsp_tunnel"
-endpoint = "127.0.0.1:9100"
-description = "Gate hardware via BearDog BTSP tunnel"
+endpoint = "uds:///run/membrane/beardog.sock"
+description = "Gate hardware via BearDog BTSP tunnel (UDS-only)"
 auth_required = true
 latency_class = "variable"
 

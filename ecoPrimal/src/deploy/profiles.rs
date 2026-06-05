@@ -102,7 +102,6 @@ pub struct PrimalDeployProfile {
 
 /// Merge a graph node with its launch profile.
 fn merge_profile_env(
-    name: &str,
     profile: &LaunchProfile,
     defaults: &LaunchProfile,
 ) -> HashMap<String, String> {
@@ -115,10 +114,25 @@ fn merge_profile_env(
         env.insert(k.clone(), v.clone());
     }
 
-    if let Some(port_key) = port_env_key(name) {
-        if let Some(port) = tcp_fallback_port(name) {
-            env.entry(port_key.to_owned())
-                .or_insert_with(|| port.to_string());
+    env
+}
+
+/// Merge environment, conditionally including port env for non-UDS-only graphs.
+fn merge_profile_env_with_transport(
+    name: &str,
+    profile: &LaunchProfile,
+    defaults: &LaunchProfile,
+    transport: Option<&str>,
+) -> HashMap<String, String> {
+    let mut env = merge_profile_env(profile, defaults);
+
+    let is_uds_only = transport.is_some_and(|t| t == "uds_only");
+    if !is_uds_only {
+        if let Some(port_key) = port_env_key(name) {
+            if let Some(port) = tcp_fallback_port(name) {
+                env.entry(port_key.to_owned())
+                    .or_insert_with(|| port.to_string());
+            }
         }
     }
 
@@ -192,12 +206,24 @@ pub fn deploy_profiles(graph: &DeployGraph) -> Vec<PrimalDeployProfile> {
                 .as_ref()
                 .and_then(|m| m.transport.clone());
 
+            let is_uds_only = discovery_tier.as_deref() == Some("uds_only");
+            let port = if is_uds_only {
+                None
+            } else {
+                tcp_fallback_port(&node.name)
+            };
+
             PrimalDeployProfile {
                 name: node.name.clone(),
                 binary: node.binary.clone(),
                 args: build_args(&node.args, profile, &defaults),
-                env: merge_profile_env(&node.name, profile, &defaults),
-                port: tcp_fallback_port(&node.name),
+                env: merge_profile_env_with_transport(
+                    &node.name,
+                    profile,
+                    &defaults,
+                    discovery_tier.as_deref(),
+                ),
+                port,
                 health_method: node.health_method.clone(),
                 security_model: security.to_owned(),
                 depends_on: node.depends_on.clone(),
@@ -229,13 +255,13 @@ mod tests {
         assert!(!profiles.is_empty());
 
         let beardog = profiles.iter().find(|p| p.name == "beardog").unwrap();
-        assert_eq!(beardog.port, Some(tolerances::TCP_FALLBACK_BEARDOG_PORT));
+        assert_eq!(beardog.port, None, "UDS-only graph → port must be None");
         assert_eq!(beardog.security_model, "btsp");
         assert_eq!(beardog.health_method, "health.liveness");
         assert!(beardog.required);
 
         let songbird = profiles.iter().find(|p| p.name == "songbird").unwrap();
-        assert_eq!(songbird.port, Some(tolerances::TCP_FALLBACK_SONGBIRD_PORT));
+        assert_eq!(songbird.port, None, "UDS-only graph → port must be None");
         assert!(!songbird.depends_on.is_empty());
     }
 
@@ -273,5 +299,27 @@ mod tests {
         assert!(profiles.len() >= 2);
         assert!(profiles.iter().any(|p| p.name == "beardog"));
         assert!(profiles.iter().any(|p| p.name == "songbird"));
+    }
+
+    #[test]
+    fn uds_only_graph_has_no_port_env() {
+        let graph = load_graph(&graphs_path("nucleus_complete.toml")).unwrap();
+        let profiles = deploy_profiles(&graph);
+
+        for profile in &profiles {
+            assert_eq!(
+                profile.port, None,
+                "{}: UDS-only graph should have no port",
+                profile.name
+            );
+            let port_key = port_env_key(&profile.name);
+            if let Some(key) = port_key {
+                assert!(
+                    !profile.env.contains_key(key),
+                    "{}: UDS-only graph should not inject {key}",
+                    profile.name
+                );
+            }
+        }
     }
 }

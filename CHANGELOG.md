@@ -3,7 +3,33 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–77: Stadial Entry / Glacial Shift (2026-06-04)
+## [Unreleased] — Waves 22–79: Stadial Entry / Glacial Shift (2026-06-05)
+
+### Wave 79: UDS-Only Stadial Gate (June 5)
+- **Launcher defaults UDS-only** — `nucleus_launcher` now requires `--tcp` to allocate
+  TCP ports (was `--uds-only` to suppress). Default posture is port-free. Inversion
+  enforced by stadial gate validation tests.
+- **TCP discovery gated in `discover_with_fallback()`** — TCP Tier 5 probing now gated
+  behind `tcp_tier5_enabled()` in all discovery paths (was ungated). Release builds
+  unconditionally reject TCP fallback.
+- **6 legacy graphs migrated** — `tower_atomic_bootstrap`, `node_atomic_compute`,
+  `node_ai`, `tower_ai`, `tower_ai_viz`, `nest_viz` changed from
+  `transport = "uds_preferred"` + `tcp_fallback = "tower_routed"` to
+  `transport = "uds_only"` + `tcp_ports = 0`.
+- **Deploy profiles port-free for UDS graphs** — `deploy_profiles()` suppresses
+  `{PRIMAL}_PORT` env injection and sets `port = None` when graph metadata declares
+  `transport = "uds_only"`.
+- **UDS health checks in `show_status`** — launcher status command probes UDS sockets
+  first, TCP only as fallback. Reports transport type (`uds`/`tcp`).
+- **Config reference updated** — `routing_config_reference.toml` gate backend endpoint
+  changed from `127.0.0.1:9100` to `uds:///run/membrane/beardog.sock`.
+- **3 new stadial gate validation phases** (Phases 6-8) added to `s_zero_port_standard`:
+  graph UDS-only enforcement, launcher default check, discovery fallback gate audit.
+- **BD-TRUST-01 RESOLVED** — Songbird `ec978b86` wires `auth.exchange_trust` into
+  `mesh.init` (zero-operator cross-gate trust seeding). All 4 upstream gaps now resolved.
+- **Songbird deep debt absorbed** — Wave 81: hardcoded ports → `songbird_types::defaults`
+  constants, production stubs hardened (NFC, lineage, TLS), `dirs` 5→6.
+- 893 lib tests (up from 889), zero clippy, zero C deps.
 
 ### Wave 77c: NUCLEUS Deep Debt Evolution (June 4)
 - **`ring` C dependency eliminated** — `ureq` (HTTPS client) feature-gated behind

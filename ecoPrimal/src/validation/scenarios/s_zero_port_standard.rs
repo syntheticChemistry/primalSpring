@@ -224,6 +224,78 @@ fn phase_droppable_federation_ports(v: &mut ValidationResult) {
     );
 }
 
+fn phase_graph_uds_only_gate(v: &mut ValidationResult) {
+    let graph_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../graphs");
+    let entries = match std::fs::read_dir(graph_dir) {
+        Ok(e) => e,
+        Err(e) => {
+            v.check_bool(
+                "graph_gate:read_dir",
+                false,
+                &format!("Cannot read graphs/: {e}"),
+            );
+            return;
+        }
+    };
+
+    let mut legacy = Vec::new();
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.extension().is_some_and(|e| e == "toml") {
+            if let Ok(content) = std::fs::read_to_string(&path) {
+                if content.contains("uds_preferred") || content.contains("tcp_fallback") {
+                    legacy.push(
+                        path.file_name()
+                            .unwrap_or_default()
+                            .to_string_lossy()
+                            .to_string(),
+                    );
+                }
+            }
+        }
+    }
+
+    v.check_bool(
+        "graph_gate:no_legacy_tcp_fallback",
+        legacy.is_empty(),
+        &format!(
+            "Stadial gate: {} graphs still use uds_preferred/tcp_fallback (should be uds_only): {}",
+            legacy.len(),
+            legacy.join(", ")
+        ),
+    );
+}
+
+fn phase_launcher_uds_default(v: &mut ValidationResult) {
+    let main_src = include_str!("../../bin/nucleus_launcher/main.rs");
+
+    let has_tcp_flag = main_src.contains("--tcp") || main_src.contains("tcp: bool");
+    let no_uds_only_flag = !main_src.contains("uds_only: bool");
+
+    v.check_bool(
+        "launcher_gate:uds_default",
+        has_tcp_flag && no_uds_only_flag,
+        "nucleus_launcher must default to UDS-only (--tcp opt-in, not --uds-only opt-out)",
+    );
+}
+
+fn phase_discover_fallback_gated(v: &mut ValidationResult) {
+    let discovery_src = include_str!("../../composition/context_discovery.rs");
+
+    let fallback_uses_gate = discovery_src.contains("tcp_tier5_enabled()");
+    let no_ungated_tcp = !discovery_src.contains("connect_tcp")
+        || discovery_src
+            .split("discover_with_fallback")
+            .nth(1)
+            .is_some_and(|body| body.contains("tcp_tier5_enabled"));
+
+    v.check_bool(
+        "discovery_gate:fallback_gated",
+        fallback_uses_gate && no_ungated_tcp,
+        "discover_with_fallback() must gate TCP behind tcp_tier5_enabled()",
+    );
+}
+
 /// Execute zero-port standard validation.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Tier 5 TCP discovery off by default");
@@ -240,6 +312,15 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 
     v.section("Phase 5: Droppable federation ports not bound (glacial zero-port)");
     phase_droppable_federation_ports(v);
+
+    v.section("Phase 6: Stadial gate — all graphs transport=uds_only");
+    phase_graph_uds_only_gate(v);
+
+    v.section("Phase 7: Stadial gate — launcher defaults UDS-only");
+    phase_launcher_uds_default(v);
+
+    v.section("Phase 8: Stadial gate — discover_with_fallback() TCP gated");
+    phase_discover_fallback_gated(v);
 }
 
 #[cfg(test)]
@@ -271,6 +352,59 @@ mod tests {
 
         let compute = table.iter().find(|t| t.0 == "compute").unwrap();
         assert_eq!(compute.3, tol::TCP_FALLBACK_TOADSTOOL_PORT);
+    }
+
+    #[test]
+    fn all_graphs_transport_uds_only() {
+        let graph_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../graphs");
+        let mut legacy = Vec::new();
+        if let Ok(entries) = std::fs::read_dir(graph_dir) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                if path.extension().is_some_and(|e| e == "toml") {
+                    if let Ok(content) = std::fs::read_to_string(&path) {
+                        if content.contains("uds_preferred") || content.contains("tcp_fallback") {
+                            legacy.push(
+                                path.file_name()
+                                    .unwrap_or_default()
+                                    .to_string_lossy()
+                                    .to_string(),
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        assert!(
+            legacy.is_empty(),
+            "Graphs still using legacy tcp_fallback: {legacy:?}"
+        );
+    }
+
+    #[test]
+    fn launcher_defaults_uds_only() {
+        let main_src = include_str!("../../bin/nucleus_launcher/main.rs");
+        assert!(
+            main_src.contains("tcp: bool"),
+            "launcher should use --tcp opt-in flag"
+        );
+        assert!(
+            !main_src.contains("uds_only: bool"),
+            "launcher should NOT have --uds-only opt-out flag"
+        );
+    }
+
+    #[test]
+    fn discover_with_fallback_is_tcp_gated() {
+        let src = include_str!("../../composition/context_discovery.rs");
+        let fallback_body = src
+            .split("fn discover_with_fallback")
+            .nth(1)
+            .expect("discover_with_fallback must exist");
+        assert!(
+            fallback_body.contains("tcp_tier5_enabled"),
+            "discover_with_fallback must gate TCP behind tcp_tier5_enabled()"
+        );
     }
 
     #[test]

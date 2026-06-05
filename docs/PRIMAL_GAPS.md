@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-05 (Wave 78: SB-TLS-01/02 RESOLVED (Songbird direct-mode TLS crypto + Ed25519 relay verification shipped). BD-TRUST-01 delivered by bearDog (auth.exchange_trust), awaiting Songbird mesh.init integration. RC-POLL-01 RESOLVED (rhizoCrypt MeshEventListener polling wired). Diderm membrane live — 3 layers sovereign TLS. 889 lib tests. 13/13 CLEAN.)
+> **Last updated**: 2026-06-05 (Wave 79: ALL 4 UPSTREAM GAPS RESOLVED. BD-TRUST-01 wired (Songbird mesh.init auto trust exchange, zero-operator). SB-TLS-01/02 RESOLVED. RC-POLL-01 RESOLVED. Songbird deep debt pass (hardcoded ports → constants, prod stubs hardened). UDS-only hard stadial gate: launcher defaults `--tcp` opt-in, `discover_with_fallback` TCP-gated, all graphs `uds_only`. 893 lib tests. 13/13 CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (June 5, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 61 scenarios (10 tracks, 3 tiers), 490+ real methods (100% exercised), **889 lib tests pass** (2 ignored) + **18 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 78: Diderm Membrane Live** — 3-layer sovereign TLS (primals.eco/Cloudflare, primal.eco/LE, nestgate.io/LE). TOML-driven routing, profile-driven launcher, zero C deps in default build. SB-TLS-01/02 resolved upstream. Live cross-gate trust chain proven. VPS federation hub live (Songbird :7700, MitoBeacon). **Critical path**: BD-TRUST-01 mesh.init integration → symmetric auto-join → 3+ gate Plasmodium collective → stadial.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 61 scenarios (10 tracks, 3 tiers), 490+ real methods (100% exercised), **893 lib tests pass** (2 ignored) + **18 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 79: UDS-Only Stadial Gate** — launcher defaults UDS-only (`--tcp` opt-in), `discover_with_fallback` TCP-gated behind `tcp_tier5_enabled()`, all 6 legacy graphs migrated `uds_only`, deploy profiles suppress port env for UDS graphs. All 4 upstream gaps RESOLVED (BD-TRUST-01 auto trust exchange shipped in Songbird). VPS federation hub live (Songbird :7700 only TCP port). **Critical path**: VPS binary refresh (nestgate/toadstool/skunkbat UDS native) → 3+ gate Plasmodium collective → stadial.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -56,17 +56,17 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — Waves 1-78. 61 scenarios (10 tracks), 490+ methods (100% exercised), 889 lib tests, zero clippy. Wave 77c: TOML-driven routing, zero C deps, profile-driven launcher, certification tests, hardcoded cleanup. Wave 78: SB-TLS-01/02 resolved, diderm membrane live (3 layers, sovereign TLS).**
+**13/13 CLEAN — Waves 1-79. 61 scenarios (10 tracks), 490+ methods (100% exercised), 893 lib tests, zero clippy. Wave 79: UDS-only stadial gate (launcher `--tcp` opt-in, TCP discovery gated, all graphs `uds_only`, deploy profiles port-free). BD-TRUST-01 resolved upstream (Songbird auto trust in mesh.init). Songbird deep debt: hardcoded ports → constants, prod stubs hardened.**
 
 ---
 
-## Active Upstream Gaps (June 5, 2026)
+## Upstream Gaps — ALL RESOLVED (June 5, 2026)
 
 | Gap | Owner | Severity | Description |
 |-----|-------|----------|-------------|
 | ~~**SB-TLS-01**: Songbird TLS crypto calls `capability.call` on BearDog socket~~ | **Songbird** | ~~P0~~ | **RESOLVED** — Songbird commit `2621ad02`: `SecurityTlsCryptoClient` now uses direct semantic methods (`crypto.sign_ed25519`, `crypto.x25519_generate_ephemeral`, etc.) when `BEARDOG_MODE=direct`. Symmetric 2-gate mesh TLS origination unblocked. |
 | ~~**SB-TLS-02**: `NoopSignatureVerifier` fallback in Phase 3.5~~ | **Songbird** | ~~P1~~ | **RESOLVED** — Songbird commit `6cc3118d`: Phase 3.5 Ed25519 signature verification on relay path. Full `crypto.verify.ed25519` integration shipped. |
-| **BD-TRUST-01**: Auto trust seeding not yet wired into mesh.init | **Songbird** (integration) | P1 | bearDog Wave 140 delivered `auth.exchange_trust` (zero-operator bidirectional trust via BTSP family verification). **Needs Songbird to call `auth.exchange_trust` after BTSP handshake in `mesh.init` flow.** |
+| ~~**BD-TRUST-01**: Auto trust seeding not yet wired into mesh.init~~ | **Songbird** (integration) | ~~P1~~ | **RESOLVED** — Songbird commit `ec978b86`: `auth.exchange_trust` wired into `mesh.init` flow. After BTSP handshake, Songbird calls remote bearDog for bidirectional Ed25519 key exchange, then registers on local bearDog. Zero operator intervention for cross-gate trust seeding. |
 | ~~**RC-POLL-01**: rhizoCrypt mesh event polling~~ | **rhizoCrypt** | ~~P2~~ | **RESOLVED** — rhizoCrypt Wave 77e: `MeshEventListener.poll_events()` wired to `auth.events.poll`, 30s incremental polling via `spawn_poller()`. Remaining local work: mesh-trust session auto-provision + DAG append integration + lifecycle wiring. |
 
 ---
@@ -271,11 +271,12 @@ development uses `nucleus_launcher start` or `desktop_nucleus.sh` (local only).
 
 ### DH-1: Primal /tmp Hardcoding — Deployment Hygiene Audit (May 29, 2026) — **PARTIAL FIX**
 
-> **Wave 78 update (Jun 5)**: systemd units updated for loamSpine (`--socket`),
-> sweetGrass (`--socket`), and rhizoCrypt (`--unix`). Symlinks created in
-> `/run/membrane/` for nestgate (→ `/tmp`) and toadstool (→ `/tmp/biomeos/`).
-> **13/13 primals now reachable** via `/run/membrane/*.sock` (12 real, 2 symlinks,
-> skunkbat TCP-only). 3 binaries still need `--socket` flag: nestgate, skunkbat,
+> **Wave 79 update (Jun 5)**: Tower Atomic UDS-only posture enforced in primalSpring:
+> `nucleus_launcher` defaults UDS-only (`--tcp` opt-in), `discover_with_fallback()`
+> TCP-gated behind `tcp_tier5_enabled()`, all graphs `transport = "uds_only"`,
+> deploy profiles suppress port env for UDS-only graphs. VPS systemd units strip
+> standalone `--port` flags. Songbird :7700 is the only primal TCP port. ufw closes
+> 9500/9601/9700/9850. 3 binaries still need native `--socket`: nestgate, skunkbat,
 > toadstool — requires plasmidBin binary rebuild + redeploy.
 
 **Discovered during:** VPS Songbird federation hub deployment (Wave 60). Songbird

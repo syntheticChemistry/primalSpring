@@ -114,29 +114,40 @@ pub(super) fn discover_live() -> DiscoveryResult {
     DiscoveryResult { clients, btsp_state, discovery_paths }
 }
 
-/// Tiers 2-5 (Neural API + UDS + registry + TCP fallback).
+/// Tiers 2-5 (Neural API + UDS + registry + gated TCP fallback).
+///
+/// TCP Tier 5 is only attempted when `tcp_tier5_enabled()` returns true
+/// (debug builds + `PRIMALSPRING_TCP_TIER5=1`). In Tower Atomic posture,
+/// Songbird handles cross-gate routing — direct TCP is standalone debris.
 pub(super) fn discover_with_fallback() -> DiscoveryResult {
     let mut clients = HashMap::new();
     let mut discovery_paths = BTreeMap::new();
 
     let cap_to_primal = tcp_fallback_table();
-    let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
-        .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
 
-    for &(cap, primal, port_env, default_port) in &cap_to_primal {
+    for &(cap, _primal, _port_env, _default_port) in &cap_to_primal {
         if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
             clients.insert(cap.to_owned(), client);
             discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
-            continue;
         }
-        let port: u16 = std::env::var(port_env)
-            .ok()
-            .and_then(|v| v.parse().ok())
-            .unwrap_or(default_port);
-        let addr = format!("{host}:{port}");
-        if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
-            clients.insert(cap.to_owned(), client);
-            discovery_paths.insert(cap.to_owned(), DiscoveryPath::TcpFallback);
+    }
+
+    if tcp_tier5_enabled() {
+        let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
+            .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
+        for &(cap, primal, port_env, default_port) in &cap_to_primal {
+            if clients.contains_key(cap) {
+                continue;
+            }
+            let port: u16 = std::env::var(port_env)
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(default_port);
+            let addr = format!("{host}:{port}");
+            if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
+                clients.insert(cap.to_owned(), client);
+                discovery_paths.insert(cap.to_owned(), DiscoveryPath::TcpFallback);
+            }
         }
     }
 
