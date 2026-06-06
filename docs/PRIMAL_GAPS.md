@@ -9,15 +9,15 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-05 (Wave 79: ALL 4 UPSTREAM GAPS RESOLVED. BD-TRUST-01 wired (Songbird mesh.init auto trust exchange, zero-operator). SB-TLS-01/02 RESOLVED. RC-POLL-01 RESOLVED. Songbird deep debt pass (hardcoded ports → constants, prod stubs hardened). UDS-only hard stadial gate: launcher defaults `--tcp` opt-in, `discover_with_fallback` TCP-gated, all graphs `uds_only`. 893 lib tests. 13/13 CLEAN.)
+> **Last updated**: 2026-06-06 (Wave 83: plasmidBin ownership transferred to cellMembrane. Zero-touch pipeline deployed to VPS (plasmid-pipeline.timer, 30-min cycle). 13/13 primals ACTIVE, 12/13 health.liveness on UDS. barracuda/squirrel force-rebuilt (UDS fixed). FRAGO wave80c-peptidoglycan-self-awareness RESOLVED. All upstream P0/P1 gaps closed. Critical path: mesh enrollment from other gates → 3+ gate Plasmodium collective → stadial.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (June 5, 2026)
+## Ecosystem Status (June 6, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 61 scenarios (10 tracks, 3 tiers), 490+ real methods (100% exercised), **893 lib tests pass** (2 ignored) + **18 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 79: UDS-Only Stadial Gate** — launcher defaults UDS-only (`--tcp` opt-in), `discover_with_fallback` TCP-gated behind `tcp_tier5_enabled()`, all 6 legacy graphs migrated `uds_only`, deploy profiles suppress port env for UDS graphs. All 4 upstream gaps RESOLVED (BD-TRUST-01 auto trust exchange shipped in Songbird). VPS federation hub live (Songbird :7700 only TCP port). **Critical path**: VPS binary refresh (nestgate/toadstool/skunkbat UDS native) → 3+ gate Plasmodium collective → stadial.
+**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 61 scenarios (10 tracks, 3 tiers), 490+ real methods (100% exercised), **893 lib tests pass** (2 ignored) + **18 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 83: plasmidBin Takeover Complete** — cellMembrane owns rebuild-verify-deploy cycle. `plasmid.harvest` (build from source), `plasmid.refresh` (atomic push), `plasmid.pipeline` (end-to-end), `plasmid.status` (drift detection). VPS: plasmid-pipeline.timer (30-min zero-touch cycle) replaces manual refresh. 13/13 primals ACTIVE. barracuda/squirrel rebuilt with UDS support. **Critical path**: mesh enrollment from other gates → 3+ gate Plasmodium collective → stadial.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
