@@ -121,12 +121,6 @@ thiserror = "2"
 toml = "0.8"
 base64 = "0.22"
 blake3 = { version = "1", features = ["pure"] }
-# Pinned: ureq v3.3 pulls ring v0.17 via rustls default crypto provider.
-# cross-membrane feature only — not compiled by default. ring is acceptable
-# for the outer membrane HTTPS surface; inner membrane uses UDS (no TLS).
-# To switch to aws-lc-rs: use features = ["rustls-no-provider", "rustls-webpki-roots"]
-# and add rustls = { features = ["aws-lc-rs"] } + aws-lc-rs dependency.
-ureq = { version = "=3.3.0", default-features = false, features = ["rustls"] }
 
 [workspace.lints.rust]
 unsafe_code = "deny"

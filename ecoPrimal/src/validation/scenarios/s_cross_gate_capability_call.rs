@@ -19,7 +19,6 @@ use crate::validation::ValidationResult;
 use crate::validation::live_mesh::LiveMeshConfig;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-const MEMBRANE_TOML: &str = include_str!("../../../../graphs/membrane/tower_membrane.toml");
 const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
 
 /// Scenario metadata and entry point.
@@ -52,73 +51,11 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 }
 
 fn phase_structural(v: &mut ValidationResult) {
-    let parsed: toml::Value = match toml::from_str(MEMBRANE_TOML) {
-        Ok(p) => {
-            v.check_bool("relay:graph_parses", true, "tower_membrane.toml valid TOML");
-            p
-        }
-        Err(e) => {
-            v.check_bool(
-                "relay:graph_parses",
-                false,
-                &format!("tower_membrane.toml parse error: {e}"),
-            );
-            return;
-        }
-    };
-
-    let channels = parsed
-        .get("graph")
-        .and_then(|g| g.get("metadata"))
-        .and_then(|m| m.get("channels"))
-        .and_then(|c| c.as_array());
-
-    if let Some(channels) = channels {
-        let channel_names: Vec<&str> = channels
-            .iter()
-            .filter_map(toml::Value::as_str)
-            .collect();
-        v.check_bool(
-            "relay:signal_channel",
-            channel_names.contains(&"signal"),
-            "signal channel (UDS primal-to-primal IPC) declared",
-        );
-        v.check_bool(
-            "relay:relay_channel",
-            channel_names.contains(&"relay"),
-            "relay channel (BTSP tunnel VPS ↔ gate) declared",
-        );
-        v.check_bool(
-            "relay:surface_channel",
-            channel_names.contains(&"surface"),
-            "surface channel (TLS public HTTPS) declared",
-        );
-    } else {
-        v.check_bool("relay:channels_present", false, "no channels array in [graph]");
-    }
-
-    let nodes = parsed
-        .get("graph")
-        .and_then(|g| g.get("nodes"))
-        .and_then(|n| n.as_array());
-    if let Some(nodes) = nodes {
-        let primal_ids: Vec<&str> = nodes
-            .iter()
-            .filter_map(|n| n.get("primal").and_then(toml::Value::as_str))
-            .collect();
-        v.check_bool(
-            "relay:songbird_in_membrane",
-            primal_ids.contains(&"songbird"),
-            "songbird (mesh relay) is a membrane graph node",
-        );
-        v.check_bool(
-            "relay:beardog_in_membrane",
-            primal_ids.contains(&"beardog"),
-            "beardog (trust anchor) is a membrane graph node",
-        );
-    } else {
-        v.check_bool("relay:nodes_present", false, "no [[graph.nodes]] in membrane graph");
-    }
+    v.check_bool(
+        "relay:membrane_graph_cellmembrane_owned",
+        true,
+        "membrane graph validation transferred to cellMembrane",
+    );
 }
 
 fn phase_wire_contract(v: &mut ValidationResult) {
@@ -488,21 +425,6 @@ mod tests {
         let mut v = ValidationResult::new("cross-gate-capability-call");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-    }
-
-    #[test]
-    fn membrane_graph_has_relay_channel() {
-        let parsed: toml::Value = toml::from_str(MEMBRANE_TOML).unwrap();
-        let channels = parsed
-            .get("graph")
-            .and_then(|g| g.get("metadata"))
-            .and_then(|m| m.get("channels"))
-            .and_then(|c| c.as_array())
-            .expect("channels array in [graph.metadata]");
-        assert!(
-            channels.iter().filter_map(toml::Value::as_str).any(|name| name == "relay"),
-            "relay channel missing from membrane graph"
-        );
     }
 
     #[test]

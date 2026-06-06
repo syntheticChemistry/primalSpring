@@ -52,25 +52,19 @@ pub mod s_barracuda_precision;
 pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
-pub mod s_biomeos_tower_deploy;
-pub mod s_cellular_deployment;
 pub mod s_composition_lifecycle;
 pub mod s_composition_parity;
 pub mod s_compute_triangle;
 pub mod s_coordination_api;
 pub mod s_crypto_identity_surface;
-pub mod s_content_sovereignty;
 pub mod s_coralreef_shader_targets;
 pub mod s_dark_forest_gate;
-pub mod s_deployment_pipeline;
 pub mod s_covalent_bond;
 mod covalent_mesh_trust;
 pub mod s_covalent_mesh;
 pub mod s_cross_gate_capability_call;
-pub mod s_dual_membrane_path;
 pub mod s_plasmodium_collective;
 pub mod s_cross_spring_data_flow;
-pub mod s_deployment_matrix;
 pub mod s_domain_contract_sweep;
 pub mod s_feedback_loop;
 pub mod s_ferment_transcript;
@@ -81,7 +75,6 @@ pub mod s_gate_failure;
 pub mod s_health_lifecycle_surface;
 pub mod s_ionic_bond;
 pub mod s_loam_certificate_lifecycle;
-pub mod s_membrane_composition;
 pub mod s_meta_tier_compositions;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
@@ -95,7 +88,6 @@ pub mod s_provenance_trio_pipeline;
 pub mod s_sequential_graph;
 pub mod s_composition_dispatch_parity;
 pub mod s_socket_discovery;
-pub mod s_sovereignty_parity;
 pub mod s_sporeprint_pure_primal;
 pub mod s_sporeprint_surface;
 pub mod s_startup_ordering;
@@ -104,11 +96,8 @@ pub mod s_token_federation;
 pub mod s_tower_atomic;
 pub mod s_cephalization;
 pub mod s_ecosystem_freshness;
-pub mod s_kderm_boundary;
 pub mod s_tower_cns;
-pub mod s_cross_membrane_integrity;
 pub mod s_zero_port_standard;
-pub(crate) mod membrane_hosts;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
 #[must_use]
@@ -122,7 +111,6 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_sequential_graph::SCENARIO);
     r.register(s_covalent_bond::SCENARIO);
     r.register(s_covalent_mesh::SCENARIO);
-    r.register(s_dual_membrane_path::SCENARIO);
     r.register(s_plasmodium_collective::SCENARIO);
     r.register(s_ionic_bond::SCENARIO);
     r.register(s_gate_failure::SCENARIO);
@@ -130,12 +118,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_compute_triangle::SCENARIO);
     r.register(s_socket_discovery::SCENARIO);
     r.register(s_bearer_token_auth::SCENARIO);
-    r.register(s_biomeos_tower_deploy::SCENARIO);
     r.register(s_biomeos_neural_api::SCENARIO);
-    r.register(s_deployment_matrix::SCENARIO);
     r.register(s_composition_parity::SCENARIO);
     r.register(s_nestgate_content_pipeline::SCENARIO);
-    r.register(s_cellular_deployment::SCENARIO);
     r.register(s_token_federation::SCENARIO);
     r.register(s_composition_lifecycle::SCENARIO);
     r.register(s_domain_contract_sweep::SCENARIO);
@@ -145,13 +130,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_barracuda_precision::SCENARIO);
     r.register(s_coralreef_shader_targets::SCENARIO);
     r.register(s_dark_forest_gate::SCENARIO);
-    r.register(s_deployment_pipeline::SCENARIO);
     r.register(s_atomic_compositions::SCENARIO);
     r.register(s_meta_tier_compositions::SCENARIO);
     r.register(s_agentic_tower::SCENARIO);
-    r.register(s_membrane_composition::SCENARIO);
-    r.register(s_sovereignty_parity::SCENARIO);
-    r.register(s_content_sovereignty::SCENARIO);
     r.register(s_provenance_trio_pipeline::SCENARIO);
     r.register(s_ferment_transcript::SCENARIO);
     r.register(s_loam_certificate_lifecycle::SCENARIO);
@@ -172,9 +153,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_crypto_identity_surface::SCENARIO);
     r.register(s_cephalization::SCENARIO);
     r.register(s_tower_cns::SCENARIO);
-    r.register(s_kderm_boundary::SCENARIO);
     r.register(s_ecosystem_freshness::SCENARIO);
-    r.register(s_cross_membrane_integrity::SCENARIO);
     r
 }
 
@@ -185,7 +164,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 61;
+    const EXPECTED_SCENARIO_COUNT: usize = 51;
 
     #[test]
     fn registry_scenario_count() {
@@ -225,7 +204,6 @@ mod tests {
             "biomeos-deploy",
             "infrastructure",
             "lifecycle",
-            "sovereignty",
         ];
         for track in &expected {
             assert!(

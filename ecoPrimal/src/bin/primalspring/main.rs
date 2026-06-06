@@ -245,7 +245,6 @@ fn cmd_checksums(output: &str) {
         "ecoPrimal/src/validation/scenarios/registry.rs",
         "ecoPrimal/src/validation/scenarios/s_cephalization.rs",
         "ecoPrimal/src/validation/scenarios/s_tower_cns.rs",
-        "ecoPrimal/src/validation/scenarios/s_kderm_boundary.rs",
         "ecoPrimal/src/tolerances/mod.rs",
         "ecoPrimal/src/coordination/mod.rs",
         "ecoPrimal/src/bonding/mod.rs",

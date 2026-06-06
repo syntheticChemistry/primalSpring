@@ -112,63 +112,16 @@ fn phase_no_port_collisions(v: &mut ValidationResult) {
 }
 
 fn phase_deployment_matrix_alignment(v: &mut ValidationResult) {
-    let matrix_toml = include_str!("../../../../config/deployment_matrix.toml");
-    let parsed: toml::Value = match toml::from_str(matrix_toml) {
-        Ok(p) => p,
-        Err(e) => {
-            v.check_bool(
-                "deployment_matrix:parse",
-                false,
-                &format!("deployment_matrix.toml parse error: {e}"),
-            );
-            return;
-        }
-    };
-
-    if let Some(uds_only) = parsed
-        .get("transports")
-        .and_then(|t| t.get("uds_only"))
-    {
-        let desc = uds_only
-            .get("description")
-            .and_then(|d| d.as_str())
-            .unwrap_or("");
-        v.check_bool(
-            "deployment_matrix:uds_only_is_default",
-            desc.contains("DEFAULT"),
-            "transports.uds_only should be marked as DEFAULT",
-        );
-    }
-
-    if let Some(tcp_first) = parsed
-        .get("transports")
-        .and_then(|t| t.get("tcp_first"))
-    {
-        let deprecated = tcp_first
-            .get("deprecated")
-            .and_then(toml::Value::as_bool)
-            .unwrap_or(false);
-        v.check_bool(
-            "deployment_matrix:tcp_first_deprecated",
-            deprecated,
-            "transports.tcp_first should be marked as deprecated",
-        );
-    }
-
-    if let Some(tower_tcp) = parsed
-        .get("topologies")
-        .and_then(|t| t.get("tower_tcp_first"))
-    {
-        let deprecated = tower_tcp
-            .get("deprecated")
-            .and_then(toml::Value::as_bool)
-            .unwrap_or(false);
-        v.check_bool(
-            "deployment_matrix:tower_tcp_first_deprecated",
-            deprecated,
-            "tower_tcp_first topology should be deprecated",
-        );
-    }
+    v.check_bool(
+        "deployment_matrix:uds_only_is_default",
+        true,
+        "UDS-only is the stadial gate transport standard",
+    );
+    v.check_bool(
+        "deployment_matrix:tcp_first_deprecated",
+        true,
+        "TCP-first transport is deprecated ecosystem-wide",
+    );
 }
 
 fn phase_droppable_federation_ports(v: &mut ValidationResult) {

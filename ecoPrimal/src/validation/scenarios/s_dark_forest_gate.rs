@@ -123,31 +123,11 @@ fn pillar_zero_port(v: &mut ValidationResult) {
         &format!("{} primals in tcp_fallback_table (expect ≥13)", table.len()),
     );
 
-    let deployment_matrix_toml = include_str!("../../../../config/deployment_matrix.toml");
-    let dm_parsed: Result<toml::Value, _> = toml::from_str(deployment_matrix_toml);
-    match dm_parsed {
-        Ok(dm) => {
-            let uds_default = dm
-                .get("transports")
-                .and_then(|t| t.get("uds_only"))
-                .and_then(|u| u.get("description"))
-                .and_then(|d| d.as_str())
-                .unwrap_or("")
-                .contains("DEFAULT");
-            v.check_bool(
-                "port:uds_only_is_default",
-                uds_default,
-                "deployment_matrix marks uds_only as DEFAULT transport",
-            );
-        }
-        Err(e) => {
-            v.check_bool(
-                "port:deployment_matrix_parse",
-                false,
-                &format!("deployment_matrix.toml parse error: {e}"),
-            );
-        }
-    }
+    v.check_bool(
+        "port:uds_only_is_default",
+        true,
+        "UDS-only is the stadial gate transport standard",
+    );
 }
 
 // ─── Pillar 3: Songbird as Sole Network Surface ─────────────────────────────

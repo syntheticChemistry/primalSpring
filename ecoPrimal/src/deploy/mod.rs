@@ -251,7 +251,6 @@ const fn default_spawn() -> bool {
     true
 }
 
-pub mod self_refresh;
 mod validation;
 
 #[cfg(test)]
@@ -553,10 +552,6 @@ pub fn merge_graphs(base: &DeployGraph, overlay: &DeployGraph) -> DeployGraph {
         nodes: Vec::new(),
     }
 }
-
-mod profiles;
-
-pub use profiles::{PrimalDeployProfile, deploy_profiles};
 
 #[cfg(test)]
 mod tests;

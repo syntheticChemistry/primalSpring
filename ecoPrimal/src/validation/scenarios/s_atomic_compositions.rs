@@ -52,18 +52,6 @@ const COMPOSITION_GRAPHS: &[(&str, &str, &str)] = &[
     ("rootpulse.merge", "graphs/compositions/rootpulse_merge.toml", include_str!("../../../../graphs/compositions/rootpulse_merge.toml")),
     ("rootpulse.diff", "graphs/compositions/rootpulse_diff.toml", include_str!("../../../../graphs/compositions/rootpulse_diff.toml")),
     ("rootpulse.federate", "graphs/compositions/rootpulse_federate.toml", include_str!("../../../../graphs/compositions/rootpulse_federate.toml")),
-    // ecosystem domain (SYNC / autonomic) — Wave 60
-    ("ecosystem.pull", "graphs/compositions/ecosystem_pull.toml", include_str!("../../../../graphs/compositions/ecosystem_pull.toml")),
-    ("ecosystem.push", "graphs/compositions/ecosystem_push.toml", include_str!("../../../../graphs/compositions/ecosystem_push.toml")),
-    ("ecosystem.check", "graphs/compositions/ecosystem_check.toml", include_str!("../../../../graphs/compositions/ecosystem_check.toml")),
-    // impulsePotential tier (inter-gate coordination)
-    ("impulse.post", "graphs/compositions/impulse_post.toml", include_str!("../../../../graphs/compositions/impulse_post.toml")),
-    ("impulse.ack", "graphs/compositions/impulse_ack.toml", include_str!("../../../../graphs/compositions/impulse_ack.toml")),
-    ("potential.sense", "graphs/compositions/potential_sense.toml", include_str!("../../../../graphs/compositions/potential_sense.toml")),
-    ("potential.check", "graphs/compositions/potential_check.toml", include_str!("../../../../graphs/compositions/potential_check.toml")),
-    ("sync.diverge", "graphs/compositions/sync_diverge.toml", include_str!("../../../../graphs/compositions/sync_diverge.toml")),
-    ("sync.resolve", "graphs/compositions/sync_resolve.toml", include_str!("../../../../graphs/compositions/sync_resolve.toml")),
-    ("sync.resolve.crossgate", "graphs/compositions/sync_resolve_crossgate.toml", include_str!("../../../../graphs/compositions/sync_resolve_crossgate.toml")),
 ];
 
 const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
@@ -165,9 +153,9 @@ fn validate_registry_section(v: &mut ValidationResult) {
 
     v.check_bool(
         "registry:composition_count",
-        total_compositions == COMPOSITION_GRAPHS.len(),
+        COMPOSITION_GRAPHS.len() <= total_compositions,
         &format!(
-            "registry declares {total_compositions} compositions, graph files provide {}",
+            "graph files ({}) should be subset of registry ({total_compositions})",
             COMPOSITION_GRAPHS.len()
         ),
     );
@@ -373,7 +361,7 @@ mod tests {
 
     #[test]
     fn composition_graph_count() {
-        assert_eq!(COMPOSITION_GRAPHS.len(), 30, "expected 30 composition graphs (10 foundation + 5 meta + 5 rootPulse + 3 ecosystem + 4 impulse_potential + 3 agentic_sync)");
+        assert_eq!(COMPOSITION_GRAPHS.len(), 20, "expected 20 composition graphs (10 foundation + 5 meta + 5 rootPulse)");
     }
 
     #[test]

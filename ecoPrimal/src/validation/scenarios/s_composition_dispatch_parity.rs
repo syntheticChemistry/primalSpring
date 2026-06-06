@@ -143,22 +143,6 @@ const COMPOSITIONS: &[CompositionSpec] = &[
         expected_keys: &["peer_found", "events_synced", "braids_synced"],
         params: || serde_json::json!({ "target_peer": "probe-gate", "session_id": "dispatch-parity-probe", "_probe": true }),
     },
-    // ecosystem domain (SYNC / autonomic) — Wave 60
-    CompositionSpec {
-        id: "ecosystem.pull",
-        expected_keys: &["pulled", "skipped", "failed"],
-        params: || serde_json::json!({ "gate": "probe", "source": "auto", "_probe": true }),
-    },
-    CompositionSpec {
-        id: "ecosystem.push",
-        expected_keys: &["pushed_forgejo"],
-        params: || serde_json::json!({ "repos": [], "_probe": true }),
-    },
-    CompositionSpec {
-        id: "ecosystem.check",
-        expected_keys: &["in_sync", "drifted"],
-        params: || serde_json::json!({ "gate": "probe", "_probe": true }),
-    },
 ];
 
 /// Run the signal dispatch parity validation scenario.
@@ -176,8 +160,8 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 fn phase_dispatch_parsing(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.check_bool(
         "parse:composition_count",
-        COMPOSITIONS.len() == 23,
-        &format!("COMPOSITIONS table has {} entries (expected 23)", COMPOSITIONS.len()),
+        COMPOSITIONS.len() == 20,
+        &format!("COMPOSITIONS table has {} entries (expected 20)", COMPOSITIONS.len()),
     );
 
     for spec in COMPOSITIONS {
@@ -338,7 +322,7 @@ mod tests {
 
     #[test]
     fn composition_table_matches_graph_count() {
-        assert_eq!(COMPOSITIONS.len(), 23, "COMPOSITIONS table should match 23 composition graphs");
+        assert_eq!(COMPOSITIONS.len(), 20, "COMPOSITIONS table should match 20 composition graphs");
     }
 
     const COMPOSITION_GRAPHS: &[(&str, &str)] = &[
@@ -362,9 +346,6 @@ mod tests {
         ("rootpulse_merge", include_str!("../../../../graphs/compositions/rootpulse_merge.toml")),
         ("rootpulse_diff", include_str!("../../../../graphs/compositions/rootpulse_diff.toml")),
         ("rootpulse_federate", include_str!("../../../../graphs/compositions/rootpulse_federate.toml")),
-        ("ecosystem_pull", include_str!("../../../../graphs/compositions/ecosystem_pull.toml")),
-        ("ecosystem_push", include_str!("../../../../graphs/compositions/ecosystem_push.toml")),
-        ("ecosystem_check", include_str!("../../../../graphs/compositions/ecosystem_check.toml")),
     ];
 
     #[test]
