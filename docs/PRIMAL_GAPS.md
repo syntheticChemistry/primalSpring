@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-06 (Wave 83: plasmidBin ownership transferred to cellMembrane. Zero-touch pipeline deployed to VPS (plasmid-pipeline.timer, 30-min cycle). 13/13 primals ACTIVE, 12/13 health.liveness on UDS. barracuda/squirrel force-rebuilt (UDS fixed). FRAGO wave80c-peptidoglycan-self-awareness RESOLVED. All upstream P0/P1 gaps closed. Critical path: mesh enrollment from other gates → 3+ gate Plasmodium collective → stadial.)
+> **Last updated**: 2026-06-06 (Wave 85: Cascade evolution complete. Parallel sync (tokio::JoinSet) — 22 repos in 6.9s (was 59s). Freshness auto-publishes. CM-CASCADE-01, CM-FRESHNESS-01, CM-FORGEJO-01 all RESOLVED. Transport injection (PRIMAL-TRANSPORT-01) next P2 evolution target for all primals. Critical path: mesh enrollment from other gates → 3+ gate Plasmodium collective → stadial.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
