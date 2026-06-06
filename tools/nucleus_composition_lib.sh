@@ -1,6 +1,57 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
+# ┌──────────────────────────────────────────────────────────────────┐
+# │  DEPRECATED — Wave 82 (2026-06-06)                              │
+# │  All business logic has been absorbed into idiomatic Rust.       │
+# │  This file is retained as a fossil record. New compositions      │
+# │  should use CompositionContext + nucleus_launcher instead.       │
+# │                                                                  │
+# │  Rust replacements by function group:                            │
+# │                                                                  │
+# │  DISCOVERY / TRANSPORT:                                          │
+# │    resolve_capability()    → ipc::discover::socket_path()        │
+# │    discover_capabilities() → CompositionContext::discover()      │
+# │    cap_socket()            → CompositionContext::socket_for()    │
+# │    cap_available()         → CompositionContext::has_capability() │
+# │    _uds_send() / send_rpc()→ ipc::client::PrimalClient::call()  │
+# │                                                                  │
+# │  PETALTONUGE MOTOR / VIZ:                                        │
+# │    motor_set_panel()       → PrimalClient::call("motor.*", ..)   │
+# │    motor_continuous()      → PrimalClient::call("motor.*", ..)   │
+# │    push_scene()            → PrimalClient::call("scene.*", ..)   │
+# │    poll_proprioception()   → PrimalClient::call("proprio.*",..)  │
+# │                                                                  │
+# │  CRYPTO / BTSP:                                                  │
+# │    sign_payload()          → certification::btsp module           │
+# │    tower_encrypt/decrypt() → certification::btsp module           │
+# │    storage_init_encryption()→ certification::btsp module          │
+# │                                                                  │
+# │  DAG / LEDGER / BRAID:                                           │
+# │    dag_create_session()    → PrimalClient::call("dag.*", ..)     │
+# │    ledger_create_spine()   → PrimalClient::call("ledger.*", ..)  │
+# │    braid_init_session()    → PrimalClient::call("braid.*", ..)   │
+# │                                                                  │
+# │  COMPOSITION LIFECYCLE:                                          │
+# │    composition_startup()   → nucleus_launcher binary             │
+# │    composition_teardown()  → RunningAtomic::drop()               │
+# │    composition_summary()   → validation::ValidationResult        │
+# │                                                                  │
+# │  BIOMEOS INTEGRATION:                                            │
+# │    biomeos_register_graph()→ deploy::DeployGraph + biomeOS API   │
+# │    biomeos_deploy()        → deploy::deploy_profiles()           │
+# │    biomeos_nucleus_start() → nucleus_launcher binary             │
+# │                                                                  │
+# │  AI:                                                             │
+# │    ai_complete()           → PrimalClient::call("ai.*", ..)      │
+# │    ai_available()          → ipc::discover + "ai" capability     │
+# │                                                                  │
+# │  TICK / SENSOR:                                                  │
+# │    tick_sleep() / adaptive → Rust async runtime (tokio interval) │
+# │    subscribe_sensor_stream → PrimalClient::call("sensor.*",..)   │
+# │    process_sensor_batch()  → composition::neural_dispatch        │
+# └──────────────────────────────────────────────────────────────────┘
+#
 # nucleus_composition_lib.sh — Reusable NUCLEUS composition wiring
 #
 # Source this library from a domain-specific composition script to get:

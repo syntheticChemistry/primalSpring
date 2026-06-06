@@ -207,3 +207,104 @@ impl super::NeuralDispatcher {
         std::path::PathBuf::from(socket_dir).join("dispatch_telemetry.jsonl")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_metric(method: &str, owner: &str, latency: u64, success: bool) -> DispatchMetric {
+        DispatchMetric {
+            method: Arc::from(method),
+            owner: Arc::from(owner),
+            tier: CompositionTier::Tower,
+            latency_ms: latency,
+            success,
+            route_path: RoutePath::CapabilityCall,
+            timestamp_epoch_ms: 1_000_000,
+        }
+    }
+
+    #[test]
+    fn primal_dispatch_summary_avg_latency() {
+        let summary = PrimalDispatchSummary {
+            primal: Arc::from("beardog"),
+            total_dispatches: 4,
+            successes: 3,
+            total_latency_ms: 400,
+        };
+        assert!((summary.avg_latency_ms() - 100.0).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn primal_dispatch_summary_zero_dispatches() {
+        let summary = PrimalDispatchSummary {
+            primal: Arc::from("beardog"),
+            total_dispatches: 0,
+            successes: 0,
+            total_latency_ms: 0,
+        };
+        assert!((summary.avg_latency_ms() - 0.0).abs() < f64::EPSILON);
+        assert!((summary.success_rate() - 0.0).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn primal_dispatch_summary_success_rate() {
+        let summary = PrimalDispatchSummary {
+            primal: Arc::from("beardog"),
+            total_dispatches: 10,
+            successes: 7,
+            total_latency_ms: 1000,
+        };
+        assert!((summary.success_rate() - 0.7).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn dispatch_metric_serializes() {
+        let metric = make_metric("health.check", "beardog", 42, true);
+        let json = serde_json::to_string(&metric).unwrap();
+        assert!(json.contains("health.check"));
+        assert!(json.contains("beardog"));
+    }
+
+    #[test]
+    fn dispatch_metric_round_trip() {
+        let metric = make_metric("compute.submit", "toadstool", 100, false);
+        let json = serde_json::to_string(&metric).unwrap();
+        let back: DispatchMetric = serde_json::from_str(&json).unwrap();
+        assert_eq!(&*back.method, "compute.submit");
+        assert_eq!(&*back.owner, "toadstool");
+        assert!(!back.success);
+    }
+
+    #[test]
+    fn neural_dispatcher_metrics_start_empty() {
+        let dispatcher = super::super::NeuralDispatcher::discover();
+        assert!(dispatcher.metrics().is_empty());
+    }
+
+    #[test]
+    fn neural_dispatcher_avg_latency_none_when_empty() {
+        let dispatcher = super::super::NeuralDispatcher::discover();
+        assert!(dispatcher.avg_latency_ms("nonexistent").is_none());
+    }
+
+    #[test]
+    fn neural_dispatcher_error_rate_none_when_empty() {
+        let dispatcher = super::super::NeuralDispatcher::discover();
+        assert!(dispatcher.error_rate("nonexistent").is_none());
+    }
+
+    #[test]
+    fn neural_dispatcher_primal_summary_empty() {
+        let dispatcher = super::super::NeuralDispatcher::discover();
+        assert!(dispatcher.primal_summary().is_empty());
+    }
+
+    #[test]
+    fn neural_dispatcher_status_report_has_fields() {
+        let dispatcher = super::super::NeuralDispatcher::discover();
+        let report = dispatcher.status_report();
+        assert!(report.get("total_methods").is_some());
+        assert!(report.get("dispatches_recorded").is_some());
+    }
+}

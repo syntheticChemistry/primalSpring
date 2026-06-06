@@ -81,10 +81,18 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 79 (June 5, 2026) — 61 scenarios (10 tracks, 3 tiers),
+v0.9.31 Wave 82 (June 6, 2026) — 61 scenarios (10 tracks, 3 tiers),
 490+ registered capability methods, 93 experiments (21 tracks), 113 graph TOMLs
-(~80 deploy + 33 compositions), 44-cell deployment matrix. 893 tests passing.
+(~80 deploy + 33 compositions), 44-cell deployment matrix. 929 tests passing.
 13/13 BTSP convergence. All 4 upstream gaps RESOLVED.
+**Wave 82 Deep Debt Sprint COMPLETE (16/16 tasks)**: Type-safe dispatch (CapabilityDomain
+newtypes, table-driven handlers), TOML-driven config (ports, bind flags, VPS IPs, env keys),
+real health checks (AtomicU64 drain, capability discovery readiness), tracing migration
+(TracingSink), deprecation cleanup (required_primals → required_primal_slugs, LEGACY_PREFIXES
+→ enum-derived), shell absorption (nucleus_composition_lib.sh + crypto_bootstrap.sh deprecated
+with Rust replacement guides), pure-Rust crypto bootstrap (3-tier HMAC-SHA256), 36 new tests,
+deploy pipeline hardened (multi-binary overrides, self_refresh.rs), ureq/rustls pinned
+(ring wrapper-allowed for cross-membrane only). plasmidBin ownership: cellMembrane → projectNUCLEUS.
 **Wave 79 UDS-only stadial gate**: `nucleus_launcher` defaults port-free (`--tcp`
 opt-in), `discover_with_fallback()` TCP gated behind `tcp_tier5_enabled()`, all 6
 legacy graphs migrated `uds_only`, deploy profiles suppress port env for UDS graphs,

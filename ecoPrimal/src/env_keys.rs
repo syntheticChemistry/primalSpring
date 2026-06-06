@@ -169,32 +169,66 @@ pub const ECOPRIMALS_ROOT: &str = "ECOPRIMALS_ROOT";
 pub const PRIMALSPRING_TCP_TIER5: &str = "PRIMALSPRING_TCP_TIER5";
 
 // ── Per-primal TCP port overrides ───────────────────────────────────
+//
+// These follow the generic `{SLUG_UPPER}_PORT` pattern and are derived
+// from `config/ports.toml` at the authoritative level. New code should
+// prefer `port_env_key(slug)` over referencing these constants directly.
 
-/// TCP port override for BearDog.
+/// Derive the env var name for a primal's TCP port override from its slug.
+///
+/// Follows the pattern `{SLUG_UPPER}_PORT` (e.g. `beardog` → `BEARDOG_PORT`).
+/// Returns a `&'static str` via a lazily-built intern table.
+pub fn port_env_key(slug: &str) -> &'static str {
+    use std::collections::HashMap;
+    use std::sync::LazyLock;
+
+    static INTERN: LazyLock<HashMap<String, &'static str>> = LazyLock::new(|| {
+        let mut map = HashMap::new();
+        let ports_toml: &str = include_str!("../../config/ports.toml");
+        if let Ok(parsed) = ports_toml.parse::<toml::Table>() {
+            for (slug, section) in &parsed {
+                if slug == "federation" {
+                    continue;
+                }
+                if let Some(key) = section
+                    .as_table()
+                    .and_then(|t| t.get("env_key"))
+                    .and_then(|v| v.as_str())
+                {
+                    map.insert(slug.clone(), &*Box::leak(key.to_owned().into_boxed_str()));
+                }
+            }
+        }
+        map
+    });
+
+    INTERN
+        .get(slug)
+        .copied()
+        .unwrap_or_else(|| {
+            static FALLBACK: LazyLock<std::sync::Mutex<Vec<&'static str>>> =
+                LazyLock::new(|| std::sync::Mutex::new(Vec::new()));
+            let key = format!("{}_PORT", slug.to_uppercase());
+            let leaked: &'static str = &*Box::leak(key.into_boxed_str());
+            if let Ok(mut guard) = FALLBACK.lock() {
+                guard.push(leaked);
+            }
+            leaked
+        })
+}
+
 pub const BEARDOG_PORT: &str = "BEARDOG_PORT";
-/// TCP port override for Songbird.
 pub const SONGBIRD_PORT: &str = "SONGBIRD_PORT";
-/// TCP port override for NestGate.
 pub const NESTGATE_PORT: &str = "NESTGATE_PORT";
-/// TCP port override for toadStool.
 pub const TOADSTOOL_PORT: &str = "TOADSTOOL_PORT";
-/// TCP port override for barraCuda.
 pub const BARRACUDA_PORT: &str = "BARRACUDA_PORT";
-/// TCP port override for coralReef.
 pub const CORALREEF_PORT: &str = "CORALREEF_PORT";
-/// TCP port override for Squirrel.
 pub const SQUIRREL_PORT: &str = "SQUIRREL_PORT";
-/// TCP port override for rhizoCrypt.
 pub const RHIZOCRYPT_PORT: &str = "RHIZOCRYPT_PORT";
-/// TCP port override for sweetGrass.
 pub const SWEETGRASS_PORT: &str = "SWEETGRASS_PORT";
-/// TCP port override for petalTongue.
 pub const PETALTONGUE_PORT: &str = "PETALTONGUE_PORT";
-/// TCP port override for loamSpine.
 pub const LOAMSPINE_PORT: &str = "LOAMSPINE_PORT";
-/// TCP port override for skunkBat.
 pub const SKUNKBAT_PORT: &str = "SKUNKBAT_PORT";
-/// TCP port override for biomeOS.
 pub const BIOMEOS_PORT: &str = "BIOMEOS_PORT";
 
 // ── Cross-primal coordination ─────────────────────────────────────
@@ -217,3 +251,59 @@ pub const BIOMEOS_PLASMID_BIN_DIR: &str = "BIOMEOS_PLASMID_BIN_DIR";
 
 /// Hostname fallback (distinct from `HOSTNAME` — some systems export `HOST`).
 pub const HOST: &str = "HOST";
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn resolve_family_id_defaults_to_default() {
+        let id = resolve_family_id();
+        assert!(!id.is_empty(), "family ID should never be empty");
+    }
+
+    #[test]
+    fn resolve_family_seed_returns_none_without_env() {
+        let seed = resolve_family_seed();
+        assert!(
+            seed.is_none() || !seed.as_deref().unwrap_or("").is_empty(),
+            "seed should be None or non-empty"
+        );
+    }
+
+    #[test]
+    fn port_env_key_known_primals() {
+        assert_eq!(port_env_key("beardog"), "BEARDOG_PORT");
+        assert_eq!(port_env_key("songbird"), "SONGBIRD_PORT");
+        assert_eq!(port_env_key("nestgate"), "NESTGATE_PORT");
+        assert_eq!(port_env_key("squirrel"), "SQUIRREL_PORT");
+    }
+
+    #[test]
+    fn port_env_key_unknown_primal_follows_pattern() {
+        let key = port_env_key("newprimal");
+        assert_eq!(key, "NEWPRIMAL_PORT");
+    }
+
+    #[test]
+    fn constants_match_derived() {
+        assert_eq!(port_env_key("beardog"), BEARDOG_PORT);
+        assert_eq!(port_env_key("songbird"), SONGBIRD_PORT);
+        assert_eq!(port_env_key("toadstool"), TOADSTOOL_PORT);
+        assert_eq!(port_env_key("biomeos"), BIOMEOS_PORT);
+    }
+
+    #[test]
+    fn all_constants_are_uppercase_port_pattern() {
+        let consts = [
+            BEARDOG_PORT, SONGBIRD_PORT, NESTGATE_PORT, TOADSTOOL_PORT,
+            BARRACUDA_PORT, CORALREEF_PORT, SQUIRREL_PORT, RHIZOCRYPT_PORT,
+            SWEETGRASS_PORT, PETALTONGUE_PORT, LOAMSPINE_PORT, SKUNKBAT_PORT,
+            BIOMEOS_PORT,
+        ];
+        for c in &consts {
+            assert!(c.ends_with("_PORT"), "{c} should end with _PORT");
+            assert_eq!(*c, c.to_uppercase(), "{c} should be uppercase");
+        }
+    }
+}

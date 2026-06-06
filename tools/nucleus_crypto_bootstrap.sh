@@ -1,6 +1,40 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
+# ┌──────────────────────────────────────────────────────────────────┐
+# │  DEPRECATED — Wave 82 (2026-06-06)                              │
+# │  Core crypto bootstrap logic absorbed into idiomatic Rust.       │
+# │  This file is retained as a fossil record.                       │
+# │                                                                  │
+# │  Rust replacements:                                              │
+# │                                                                  │
+# │  KEY DERIVATION:                                                 │
+# │    derive_base_key()     → btsp::phase3 HKDF key derivation     │
+# │    derive_family_key()   → genetics::MitoBeacon + env_keys       │
+# │    derive_purpose_key()  → PrimalClient::call("crypto.hmac*")    │
+# │                                                                  │
+# │  SECRETS STORE:                                                  │
+# │    store_purpose_key()   → PrimalClient::call("secrets.store")   │
+# │    retrieve_purpose_key()→ PrimalClient::call("secrets.retrieve")│
+# │                                                                  │
+# │  CRYPTO VERIFICATION:                                            │
+# │    test_sign_verify()    → certification::btsp validation        │
+# │    test_encrypt_decrypt()→ certification::btsp validation        │
+# │    test_btsp_session()   → certification::btsp validation        │
+# │    test_nestgate_encrypt → certification::btsp validation        │
+# │                                                                  │
+# │  SEED FINGERPRINTS:                                              │
+# │    load_fingerprints()   → validation/seed_fingerprints.toml     │
+# │                            loaded via include_str! in Rust       │
+# │                                                                  │
+# │  BOOTSTRAP ORCHESTRATION:                                        │
+# │    bootstrap()           → nucleus_launcher + harness startup    │
+# │    verify()              → certification::certify()              │
+# │                                                                  │
+# │  IPC TRANSPORT:                                                  │
+# │    ipc_call()            → ipc::client::PrimalClient::call()     │
+# └──────────────────────────────────────────────────────────────────┘
+#
 # nucleus_crypto_bootstrap.sh — Two-tier crypto key derivation and wiring
 #
 # Run after NUCLEUS is up. Derives base encryption keys from published

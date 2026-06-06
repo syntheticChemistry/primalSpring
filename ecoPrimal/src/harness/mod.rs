@@ -67,7 +67,7 @@ pub struct RunningAtomic {
     /// Dynamic capability-to-primal mapping from graph overlay nodes.
     ///
     /// Populated when a deploy graph adds primals beyond the base tier's
-    /// `required_primals()`. Falls back to the static `AtomicType` mapping
+    /// `required_primal_slugs()`. Falls back to the static `AtomicType` mapping
     /// when empty.
     overlay_capabilities: HashMap<String, String>,
 }
@@ -79,8 +79,7 @@ pub struct RunningAtomic {
 impl RunningAtomic {
     /// Get the socket path for a capability (e.g. `"security"` → beardog's socket).
     ///
-    /// Maps capability to primal using the composition's parallel
-    /// `required_capabilities()` / `required_primals()` arrays.
+    /// Maps capability to primal using the TOML-driven routing table.
     #[must_use]
     pub fn socket_for(&self, capability: &str) -> Option<&PathBuf> {
         let primal = self.capability_to_primal(capability)?;
@@ -308,7 +307,9 @@ impl RunningAtomic {
     /// Names of overlay primals (those beyond the base tier).
     #[must_use]
     pub fn overlay_primals(&self) -> Vec<String> {
-        let base: HashSet<&str> = self.atomic.required_primals().iter().copied().collect();
+        let base: HashSet<&str> = self.atomic.required_primal_slugs()
+            .into_iter()
+            .collect();
         self.processes
             .iter()
             .filter(|p| !base.contains(p.name.as_str()))
@@ -348,8 +349,8 @@ impl Drop for RunningAtomic {
 /// Constructed with an [`AtomicType`] and an optional deploy graph path.
 /// When a graph path is provided, [`start`](Self::start) uses
 /// [`topological_waves`](crate::deploy::topological_waves) to determine
-/// startup ordering. Without a graph, primals start in the static order
-/// from [`AtomicType::required_primals`].
+/// startup ordering. Without a graph, primals start in the order derived
+/// from [`AtomicType::required_primal_slugs`].
 #[deprecated(
     since = "0.9.25",
     note = "use plasmidBin ecoBin deployment via biomeOS + CompositionContext instead of direct primal spawning"
@@ -377,8 +378,8 @@ impl AtomicHarness {
     ///
     /// `graph_path` should point to a deploy graph TOML (e.g.
     /// `graphs/tower_atomic_bootstrap.toml`). The graph's
-    /// `topological_waves()` determines startup order; only primals in
-    /// [`AtomicType::required_primals`] are actually spawned.
+    /// `topological_waves()` determines startup order; only primals from
+    /// [`AtomicType::required_primal_slugs`] are actually spawned.
     #[must_use]
     pub fn with_graph(atomic: AtomicType, graph_path: impl AsRef<Path>) -> Self {
         Self {
@@ -391,8 +392,8 @@ impl AtomicHarness {
     ///
     /// Creates an isolated runtime directory, assigns sockets via
     /// nucleation, and spawns primals in dependency order — either from
-    /// topological waves (when a graph was provided) or from the static
-    /// [`AtomicType::required_primals`] ordering.
+    /// topological waves (when a graph was provided) or from the capability-
+    /// derived [`AtomicType::required_primal_slugs`] ordering.
     ///
     /// Generates a BTSP family seed so `BearDog` can start in Production
     /// mode and clients can authenticate via the BTSP handshake.
@@ -529,20 +530,20 @@ impl AtomicHarness {
     }
 
     /// Determine spawn order: graph-driven topological waves when a graph
-    /// path was provided, otherwise the static `required_primals()` order.
+    /// path was provided, otherwise the capability-derived primal slug order.
     ///
     /// **Graph-driven overlay model**: when a graph is provided, **all**
     /// nodes with `spawn = true` are included in the spawn order. This
     /// allows deploy graphs to compose tier-independent primals (Squirrel,
     /// petalTongue, biomeOS) with any base tier. The base tier's
-    /// `required_primals()` are the minimum guarantee — appended if absent
-    /// from the graph.
+    /// `required_primal_slugs()` are the minimum guarantee — appended if
+    /// absent from the graph.
     ///
     /// Returns `(spawn_order, overlay_capability_map)` where the overlay
     /// map contains capability->primal entries for graph nodes beyond the
     /// base tier.
     fn compute_spawn_order(&self) -> Result<(Vec<String>, HashMap<String, String>), LaunchError> {
-        let required: Vec<&str> = self.atomic.required_primals().to_vec();
+        let required: Vec<&str> = self.atomic.required_primal_slugs();
 
         let Some(ref graph_path) = self.graph_path else {
             return Ok((

@@ -26,6 +26,7 @@ pub mod bare;
 pub mod bonding;
 pub mod btsp;
 pub mod cellular;
+pub mod crypto_bootstrap;
 pub mod entropy;
 pub mod health;
 pub mod lifecycle;
@@ -87,8 +88,7 @@ pub fn certify(max_layer: u8) -> ValidationResult {
     let alive = validate_liveness(&mut ctx, &mut v, full_caps);
 
     if alive == 0 {
-        eprintln!("[certify] No NUCLEUS primals discovered — bare certification only.");
-        eprintln!("  Deploy from plasmidBin and rerun for full certification.");
+        tracing::warn!("No NUCLEUS primals discovered — bare certification only. Deploy from plasmidBin and rerun for full certification.");
         v.finish();
         return v;
     }

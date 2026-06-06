@@ -93,6 +93,15 @@ PRIMALS=(
 
 PRIMAL_NAMES=(beardog songbird nestgate toadstool squirrel biomeos barracuda coralreef rhizocrypt loamspine sweetgrass petaltongue skunkbat)
 
+# Multi-binary workspace overrides: map directory basename to the
+# primary binary name to harvest. Without this, workspaces that produce
+# multiple executables (e.g., toadStool, Squirrel) cause the build
+# script to stage helper binaries alongside the primal binary.
+declare -A BINARY_OVERRIDES=(
+    [toadStool]="toadstool"
+    [Squirrel]="squirrel"
+)
+
 # ── Argument parsing ─────────────────────────────────────────────────────────
 
 BUILD_TIER1=false
@@ -253,6 +262,10 @@ build_target() {
         ext=$(binary_ext "$target")
         local copied=0
 
+        local override_bin="${BINARY_OVERRIDES[$name]:-}"
+        local ext_val
+        ext_val=$(binary_ext "$target")
+
         for bin in "$bin_dir"/*; do
             [[ -f "$bin" ]] && [[ -x "$bin" ]] || continue
             local bn
@@ -260,6 +273,11 @@ build_target() {
             case "$bn" in
                 *.d|*.rlib|*.rmeta|*.so|*.dll|*.dylib|*.a|build-script-*) continue ;;
             esac
+            # If this workspace has a binary override, only copy the specified binary
+            if [[ -n "$override_bin" ]]; then
+                local expected="${override_bin}${ext_val}"
+                [[ "$bn" != "$expected" ]] && continue
+            fi
             # Verify it's a real binary (ELF, PE, or Mach-O)
             local file_type
             file_type=$(file "$bin" 2>/dev/null) || true

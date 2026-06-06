@@ -37,29 +37,11 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
+use super::membrane_hosts;
+
 const OUTER_DOMAIN: &str = "primals.eco";
 const INNER_DOMAIN: &str = "primal.eco";
 const CONTENT_DOMAIN: &str = "nestgate.io";
-
-const NS1_IP: &str = "157.230.3.183";
-const NS2_IP: &str = "137.184.197.151";
-
-const _OUTER_IP: &str = "137.184.197.151";
-
-/// Expected inner membrane DNS records (domain → IP).
-const INNER_RECORDS: &[(&str, &str)] = &[
-    ("primal.eco", "137.184.197.151"),
-    ("mesh.primal.eco", "157.230.3.183"),
-    ("relay.primal.eco", "157.230.209.218"),
-    ("auth.primal.eco", "157.230.3.183"),
-    ("api.primal.eco", "157.230.3.183"),
-    ("dns.primal.eco", "157.230.3.183"),
-];
-
-/// Expected content layer DNS records.
-const CONTENT_RECORDS: &[(&str, &str)] = &[
-    ("nestgate.io", "137.184.197.151"),
-];
 
 /// Run all cross-membrane integrity validation phases.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
@@ -175,22 +157,25 @@ fn phase_dns_consistency(v: &mut ValidationResult) {
         }
     };
 
-    for (domain, expected_ip) in INNER_RECORDS {
-        check_record(v, NS1_IP, domain, expected_ip, "ns1");
+    let ns1 = membrane_hosts::ns1_ip();
+    let ns2 = membrane_hosts::ns2_ip();
+
+    for (domain, expected_ip) in membrane_hosts::inner_records() {
+        check_record(v, ns1, domain, expected_ip, "ns1");
     }
 
-    for (domain, expected_ip) in CONTENT_RECORDS {
-        check_record(v, NS1_IP, domain, expected_ip, "ns1");
+    for (domain, expected_ip) in membrane_hosts::content_records() {
+        check_record(v, ns1, domain, expected_ip, "ns1");
     }
 
-    check_record(v, NS2_IP, "primal.eco", "137.184.197.151", "ns2");
-    check_record(v, NS2_IP, "nestgate.io", "137.184.197.151", "ns2");
+    check_record(v, ns2, "primal.eco", ns2, "ns2");
+    check_record(v, ns2, "nestgate.io", ns2, "ns2");
 
     v.check_bool(
         "dns:inner_uses_sovereign_ns",
         true,
         &format!(
-            "Inner membrane ({INNER_DOMAIN}) served by sovereign NS (ns1={NS1_IP}, ns2={NS2_IP})"
+            "Inner membrane ({INNER_DOMAIN}) served by sovereign NS (ns1={ns1}, ns2={ns2})"
         ),
     );
 }

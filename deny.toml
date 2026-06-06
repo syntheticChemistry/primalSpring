@@ -45,7 +45,12 @@ deny = [
     { crate = "native-tls", wrappers = [] },
     { crate = "aws-lc-sys", wrappers = [] },
     { crate = "aws-lc-rs", wrappers = [] },
-    { crate = "ring", wrappers = [] },
+    # ring enters only via cross-membrane feature (ureq → rustls → ring).
+    # Allowed when wrapped by ureq since cross-membrane is opt-in and only
+    # used for outer membrane HTTPS validation — inner membrane is UDS-only.
+    # If sovereign TLS is needed without ring, switch ureq to
+    # "rustls-no-provider" + a pure Rust crypto provider.
+    { crate = "ring", wrappers = ["ureq"] },
     { crate = "libz-sys", wrappers = [] },
     { crate = "zlib-ng-sys", wrappers = [] },
     { crate = "bzip2-sys", wrappers = [] },

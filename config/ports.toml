@@ -1,0 +1,96 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# TCP Fallback Port Registry — Tier 5 (debug-only since Wave 79)
+#
+# These ports are ONLY used when PRIMALSPRING_TCP_TIER5=1 in debug builds.
+# Tower Atomic posture uses UDS exclusively; Songbird handles cross-gate
+# routing. Direct TCP is standalone debris.
+#
+# Port assignments confirmed against ironGate live deployment (2026-05-04).
+# Adding a new primal: add one entry here. PORT_REGISTRY derives from this.
+
+[beardog]
+port = 9100
+env_key = "BEARDOG_PORT"
+
+[songbird]
+port = 9200
+env_key = "SONGBIRD_PORT"
+
+[squirrel]
+port = 9300
+env_key = "SQUIRREL_PORT"
+
+[toadstool]
+port = 9400
+env_key = "TOADSTOOL_PORT"
+
+[nestgate]
+port = 9500
+env_key = "NESTGATE_PORT"
+
+[rhizocrypt]
+port = 9601
+env_key = "RHIZOCRYPT_PORT"
+
+[loamspine]
+port = 9700
+env_key = "LOAMSPINE_PORT"
+
+[coralreef]
+port = 9730
+env_key = "CORALREEF_PORT"
+
+[barracuda]
+port = 9740
+env_key = "BARRACUDA_PORT"
+
+[skunkbat]
+port = 9140
+env_key = "SKUNKBAT_PORT"
+
+[biomeos]
+port = 9800
+env_key = "BIOMEOS_PORT"
+
+[sweetgrass]
+port = 9850
+env_key = "SWEETGRASS_PORT"
+
+[petaltongue]
+port = 9900
+env_key = "PETALTONGUE_PORT"
+
+# Federation / CNS ports — per-deployment-profile, not per-primal.
+# These are Songbird mesh coordination endpoints and profile-specific
+# crypto/defense RPC endpoints.
+
+[federation.nucleus01_songbird]
+primal = "songbird"
+role = "federation"
+port = 7700
+droppable = false
+
+[federation.primalspring01_songbird]
+primal = "songbird"
+role = "federation"
+port = 7701
+droppable = false
+
+[federation.nucleus01_beardog]
+primal = "beardog"
+role = "crypto_rpc"
+port = 9900
+droppable = true
+
+[federation.primalspring01_beardog]
+primal = "beardog"
+role = "crypto_rpc"
+port = 9101
+droppable = true
+
+[federation.meta_skunkbat]
+primal = "skunkbat"
+role = "defense"
+port = 9750
+droppable = true

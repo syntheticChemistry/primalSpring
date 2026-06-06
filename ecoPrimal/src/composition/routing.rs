@@ -12,6 +12,66 @@ use std::sync::LazyLock;
 
 use crate::primal_names::Primal;
 
+/// A validated capability domain key used for routing and client lookup.
+///
+/// Wraps a `String` to provide type safety for capability domain names
+/// (e.g. "security", "tensor", "ai"). Implements `Borrow<str>` so
+/// `HashMap<CapabilityDomain, V>` supports `.get("str")` lookups without
+/// allocating.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, serde::Serialize)]
+#[serde(transparent)]
+pub struct CapabilityDomain(String);
+
+impl CapabilityDomain {
+    /// Create a new `CapabilityDomain` from any string-like value.
+    pub fn new(s: impl Into<String>) -> Self {
+        Self(s.into())
+    }
+
+    /// View the inner string as a `&str`.
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::fmt::Display for CapabilityDomain {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl std::ops::Deref for CapabilityDomain {
+    type Target = str;
+    fn deref(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::borrow::Borrow<str> for CapabilityDomain {
+    fn borrow(&self) -> &str {
+        &self.0
+    }
+}
+
+impl From<&str> for CapabilityDomain {
+    fn from(s: &str) -> Self {
+        Self(s.to_owned())
+    }
+}
+
+impl From<String> for CapabilityDomain {
+    fn from(s: String) -> Self {
+        Self(s)
+    }
+}
+
+impl AsRef<str> for CapabilityDomain {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Embedded canonical capability registry (single source of truth).
 const REGISTRY_TOML: &str = include_str!("../../../config/capability_registry.toml");
 
@@ -210,12 +270,117 @@ pub fn primal_home_tier_priority(primal: &str) -> Option<u8> {
     PRIMAL_HOME_TIER.get(primal).copied()
 }
 
+/// Prefix→routing-domain map derived from `capability_registry.toml`.
+///
+/// For each TOML section with methods:
+/// 1. If `routes_to` is specified, use it (explicit routing override).
+/// 2. If the section name is already an ALL_CAPS discovery domain, route to itself.
+/// 3. Otherwise, find the owner primal's primary ALL_CAPS domain by inverting
+///    the capability→owner map.
+///
+/// This replaces 30+ hand-maintained match arms with a single TOML-derived table.
+static PREFIX_ROUTING: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
+    let all_caps_set: std::collections::HashSet<&str> = ALL_CAPS.iter().copied().collect();
+
+    // Build owner → primary ALL_CAPS domain (inverted from DOMAIN_OWNER_MAP)
+    let mut owner_primary: HashMap<String, String> = HashMap::new();
+    for &cap in ALL_CAPS {
+        if let Some(owner) = DOMAIN_OWNER_MAP.get(cap) {
+            owner_primary.entry(owner.clone()).or_insert_with(|| cap.to_owned());
+        }
+    }
+
+    let Ok(parsed) = REGISTRY_TOML.parse::<toml::Table>() else {
+        return HashMap::new();
+    };
+
+    let mut map = HashMap::new();
+    for (section, val) in &parsed {
+        if section.starts_with("compositions")
+            || section == "test_fixtures"
+            || section == "false_positives"
+        {
+            continue;
+        }
+        let Some(table) = val.as_table() else { continue };
+
+        // Explicit routes_to takes highest priority
+        if let Some(rt) = table.get("routes_to").and_then(|v| v.as_str()) {
+            map.insert(section.clone(), rt.to_owned());
+            continue;
+        }
+
+        // Section name is already a discovery domain — routes to itself
+        if all_caps_set.contains(section.as_str()) {
+            map.insert(section.clone(), section.clone());
+            continue;
+        }
+
+        // Derive from owner's primary ALL_CAPS domain
+        if let Some(owner) = table.get("owner").and_then(|v| v.as_str()) {
+            if owner == "all" || owner == "none" || owner == "tests" {
+                continue;
+            }
+            if let Some(primary) = owner_primary.get(owner) {
+                map.insert(section.clone(), primary.clone());
+            }
+        }
+    }
+    map
+});
+
+/// Full-method overrides derived from `capability_registry.toml`.
+///
+/// For methods listed under a TOML section whose name differs from the method
+/// prefix (e.g. `security.audit_log` listed under `[defense]`), we build an
+/// exact-method → routing-domain map so cross-domain methods route correctly.
+static METHOD_OVERRIDES: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
+    let Ok(parsed) = REGISTRY_TOML.parse::<toml::Table>() else {
+        return HashMap::new();
+    };
+
+    let mut overrides = HashMap::new();
+    for (section, val) in &parsed {
+        if section.starts_with("compositions")
+            || section == "test_fixtures"
+            || section == "false_positives"
+        {
+            continue;
+        }
+        let Some(table) = val.as_table() else { continue };
+        let Some(methods) = table.get("methods").and_then(|v| v.as_array()) else {
+            continue;
+        };
+
+        // Get routing domain for this section
+        let routing_domain = PREFIX_ROUTING.get(section.as_str());
+
+        for m in methods {
+            let Some(method) = m.as_str() else { continue };
+            let prefix = method.split('.').next().unwrap_or(method);
+            // If the method's prefix differs from the section name, this method
+            // needs a full-method override to route to the correct domain
+            if prefix != section {
+                if let Some(domain) = routing_domain {
+                    overrides.insert(method.to_owned(), domain.clone());
+                }
+            }
+        }
+    }
+    overrides
+});
+
 /// Map a JSON-RPC method name to the capability domain that owns it.
 ///
 /// Given a method like `"tensor.matmul"` or `"stats.mean"`, returns the
 /// capability domain string that [`super::CompositionContext`] uses for routing.
 /// Springs use this to determine which `call()` domain to use for a given
 /// method from their `validation_capabilities` manifest entry.
+///
+/// The routing is derived entirely from `config/capability_registry.toml`:
+/// - Full-method overrides for cross-domain methods (e.g. `security.audit_log` → defense)
+/// - Prefix-based routing from TOML section → owner → ALL_CAPS domain
+/// - Fallback: the prefix itself (for springs, apps, and unknown domains)
 ///
 /// ```
 /// assert_eq!(primalspring::composition::method_to_capability_domain("tensor.matmul"), "tensor");
@@ -229,42 +394,18 @@ pub fn primal_home_tier_priority(primal: &str) -> Option<u8> {
 /// ```
 #[must_use]
 pub fn method_to_capability_domain(method: &str) -> &str {
-    // Full-method overrides for cross-domain methods where the prefix
-    // doesn't match the owning primal's domain.
-    match method {
-        "security.audit_log" | "security.audit_event" => return "defense",
-        _ => {}
+    // Check full-method overrides first (cross-domain methods like security.audit_log → defense)
+    if let Some(domain) = METHOD_OVERRIDES.get(method) {
+        return domain.as_str();
     }
+
     let prefix = method.split('.').next().unwrap_or(method);
-    match prefix {
-        "crypto" | "health" | "identity" | "primal" | "tls" | "btsp" | "beacon" | "genetic"
-        | "birdsong" | "lineage" => "security",
-        "ipc" | "discovery" | "tor" | "relay" | "http" | "dns" | "stun" | "turn" | "network"
-        | "mesh" | "onion" => "discovery",
-        "compute" | "dispatch" | "workload" | "sovereign" => "compute",
-        "tensor" | "stats" | "math" | "noise" | "activation" | "rng" | "fhe" | "tolerances"
-        | "validate" | "device" | "linalg" | "spectral" | "nautilus" | "ml" | "ode" | "nn"
-        | "ops" | "signal" => "tensor",
-        "shader" => "shader",
-        "storage" | "secrets" => "storage",
-        "content" => "content",
-        "inference" | "ai" | "squirrel" => "ai",
-        "dag" | "event" | "merkle" | "vertex" | "dehydration" | "slice" => "dag",
-        "spine" | "entry" | "certificate" | "session" | "permanence" | "anchor" | "proof" => {
-            "ledger"
-        }
-        "braid" | "anchoring" | "contribution" => "commit",
-        "visualization" | "viz" | "render" | "interaction" => "visualization",
-        "defense" | "recon" | "threat" | "audit" => "defense",
-        "graph" | "capability" | "lifecycle" | "topology" | "federation" | "route" | "system"
-        | "biomeos" | "nucleus" | "membrane" | "cell" | "proprioception"
-        | "neural_api" => "orchestration",
-        "impulse" | "potential" | "git" | "temporal" => "membrane",
-        "tool" | "tools" | "auth" | "primalspring" | "bonding" | "composition" | "context"
-        | "ionic" | "mcp" | "coordination" => "tool",
-        "webb" | "esotericwebb" => "webb",
-        "game" => "game",
-        "provenance" => "provenance",
-        _ => prefix,
+
+    // Check TOML-derived prefix → routing domain map
+    if let Some(domain) = PREFIX_ROUTING.get(prefix) {
+        return domain.as_str();
     }
+
+    // Fallback: the prefix itself (springs, apps, unknown domains)
+    prefix
 }

@@ -85,6 +85,39 @@ impl ValidationSink for StdoutSink {
     }
 }
 
+/// Sink that routes check results through `tracing` instead of stdout.
+///
+/// PASS and SKIP results are logged at `info` level; failures at `warn`.
+/// Section headers use `debug`. Useful for structured log pipelines and
+/// embedded deployments where stdout is not a primary output channel.
+#[derive(Debug)]
+pub struct TracingSink;
+
+impl ValidationSink for TracingSink {
+    fn on_check(&self, outcome: CheckOutcome, name: &str, detail: &str) {
+        match outcome {
+            CheckOutcome::Pass => tracing::info!(check = name, outcome = "PASS", "{detail}"),
+            CheckOutcome::Fail => tracing::warn!(check = name, outcome = "FAIL", "{detail}"),
+            CheckOutcome::Skip => tracing::info!(check = name, outcome = "SKIP", "{detail}"),
+        }
+    }
+
+    fn section(&self, name: &str) {
+        tracing::debug!(section = name, "validation section");
+    }
+
+    fn write_summary(&self, passed: u32, failed: u32, skipped: u32) {
+        let total = passed + failed;
+        tracing::info!(
+            passed,
+            failed,
+            skipped,
+            total,
+            "validation summary"
+        );
+    }
+}
+
 /// Sink that discards all output (useful for tests that only inspect counts).
 #[derive(Debug)]
 pub struct NullSink;
@@ -546,27 +579,41 @@ impl ValidationResult {
         self.passed + self.failed
     }
 
-    /// Print human-readable summary to stdout and delegate to the sink.
+    /// Print human-readable summary to stdout and emit via tracing, then
+    /// delegate to the sink.
     pub fn summary(&self) {
         use crate::tolerances::VALIDATION_SUMMARY_WIDTH;
-        println!("\n{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+        let banner = "=".repeat(VALIDATION_SUMMARY_WIDTH);
+        let result_str = if self.all_passed() {
+            "ALL PASS".to_owned()
+        } else {
+            format!("{} FAILURES", self.failed)
+        };
+        let skip_str = if self.skipped > 0 {
+            format!(" ({} skipped)", self.skipped)
+        } else {
+            String::new()
+        };
+
+        println!("\n{banner}");
         println!(
-            "{}: {}/{} checks passed{}",
+            "{}: {}/{} checks passed{skip_str}",
             self.experiment,
             self.passed,
             self.evaluated(),
-            if self.skipped > 0 {
-                format!(" ({} skipped)", self.skipped)
-            } else {
-                String::new()
-            }
         );
-        if self.all_passed() {
-            println!("Result: ALL PASS");
-        } else {
-            println!("Result: {} FAILURES", self.failed);
-        }
-        println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+        println!("Result: {result_str}");
+        println!("{banner}");
+
+        tracing::info!(
+            experiment = %self.experiment,
+            passed = self.passed,
+            failed = self.failed,
+            skipped = self.skipped,
+            result = %result_str,
+            "validation complete"
+        );
+
         self.sink
             .write_summary(self.passed, self.failed, self.skipped);
     }
@@ -585,6 +632,7 @@ impl ValidationResult {
         if std::env::var(crate::env_keys::PRIMALSPRING_JSON).is_ok() {
             if let Ok(json) = self.to_json() {
                 println!("{json}");
+                tracing::debug!(format = "json", "validation result emitted");
             } else {
                 self.summary();
             }
@@ -632,9 +680,11 @@ impl ValidationResult {
     /// across all experiments.
     pub fn print_banner(title: &str) {
         use crate::tolerances::VALIDATION_SUMMARY_WIDTH;
-        println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+        let banner = "=".repeat(VALIDATION_SUMMARY_WIDTH);
+        println!("{banner}");
         println!("{title}");
-        println!("{}", "=".repeat(VALIDATION_SUMMARY_WIDTH));
+        println!("{banner}");
+        tracing::info!(experiment = title, "validation started");
     }
 
     /// Run an experiment body, print summary, and exit.

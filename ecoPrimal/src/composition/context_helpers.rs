@@ -137,7 +137,7 @@ impl CompositionContext {
     /// All capability names that have live clients in this context.
     #[must_use]
     pub fn available_capabilities(&self) -> Vec<&str> {
-        self.clients.keys().map(String::as_str).collect()
+        self.clients.keys().map(super::routing::CapabilityDomain::as_str).collect()
     }
 
     /// Whether this context has a live client for the given capability.

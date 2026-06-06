@@ -36,16 +36,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
-/// Sovereign nameserver IPs for validation.
-const NS1_IP: &str = "157.230.3.183";
-const NS2_IP: &str = "137.184.197.151";
-
-/// Expected sovereign DNS records.
-const SOVEREIGN_RECORDS: &[(&str, &str)] = &[
-    ("membrane.primals.eco", "157.230.3.183"),
-    ("git.primals.eco", "157.230.3.183"),
-    ("lab.primals.eco", "157.230.3.183"),
-];
+use super::membrane_hosts;
 
 /// Run all dual-path validation phases.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
@@ -156,8 +147,11 @@ fn phase_sovereign_dns(v: &mut ValidationResult) {
         false
     };
 
-    let ns1_ok = check_ns(NS1_IP, "ns1");
-    let ns2_ok = check_ns(NS2_IP, "ns2");
+    let ns1 = membrane_hosts::ns1_ip();
+    let ns2 = membrane_hosts::ns2_ip();
+
+    let ns1_ok = check_ns(ns1, "ns1");
+    let ns2_ok = check_ns(ns2, "ns2");
 
     v.check_bool(
         "dns:both_ns_live",
@@ -165,7 +159,7 @@ fn phase_sovereign_dns(v: &mut ValidationResult) {
         &format!("ns1={ns1_ok}, ns2={ns2_ok} — sovereign DNS operational"),
     );
 
-    for (domain, expected_ip) in SOVEREIGN_RECORDS {
+    for (domain, expected_ip) in membrane_hosts::sovereign_records() {
         let check_id = format!("dns:record_{}", domain.split('.').next().unwrap_or("unknown"));
         v.check_bool(
             &check_id,
@@ -257,7 +251,8 @@ fn phase_btsp_tunnel(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }
     }
 
-    let Ok(membrane_addr) = format!("{NS1_IP}:443").parse() else {
+    let ns1 = membrane_hosts::ns1_ip();
+    let Ok(membrane_addr) = format!("{ns1}:443").parse() else {
         v.check_skip("live:membrane_tls_reachable", "failed to parse membrane address");
         return;
     };
@@ -271,12 +266,12 @@ fn phase_btsp_tunnel(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         v.check_bool(
             "live:membrane_tls_reachable",
             true,
-            &format!("membrane.primals.eco:443 ({NS1_IP}) — TLS port open"),
+            &format!("membrane.primals.eco:443 ({ns1}) — TLS port open"),
         );
     } else {
         v.check_skip(
             "live:membrane_tls_reachable",
-            &format!("membrane.primals.eco:443 ({NS1_IP}) — port closed or unreachable"),
+            &format!("membrane.primals.eco:443 ({ns1}) — port closed or unreachable"),
         );
     }
 }

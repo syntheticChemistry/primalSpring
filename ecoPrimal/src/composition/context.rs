@@ -49,6 +49,7 @@ use std::collections::{BTreeMap, HashMap};
 
 use crate::ipc::IpcError;
 use crate::ipc::client::PrimalClient;
+use super::routing::CapabilityDomain;
 
 
 /// How a capability was discovered — mirrors lithoSpore's `DiscoveryPath`.
@@ -82,9 +83,9 @@ pub enum DiscoveryPath {
 /// `_bearer_token` in JSON-RPC params for scope-checked dispatch.
 #[derive(Debug)]
 pub struct CompositionContext {
-    pub(super) clients: HashMap<String, PrimalClient>,
-    btsp_state: BTreeMap<String, bool>,
-    discovery_paths: BTreeMap<String, DiscoveryPath>,
+    pub(super) clients: HashMap<CapabilityDomain, PrimalClient>,
+    btsp_state: BTreeMap<CapabilityDomain, bool>,
+    discovery_paths: BTreeMap<CapabilityDomain, DiscoveryPath>,
     pub(super) bearer_token: Option<String>,
     /// Gate identity for multi-gate mesh awareness.
     gate_id: Option<String>,
@@ -110,7 +111,7 @@ impl CompositionContext {
         let mut clients = HashMap::new();
         for cap in running.all_capabilities() {
             if let Some(client) = running.client_for(&cap) {
-                clients.insert(cap, client);
+                clients.insert(CapabilityDomain::new(cap), client);
             }
         }
         let btsp_state = clients
@@ -188,7 +189,7 @@ impl CompositionContext {
 
     /// Build from an explicit set of capability-to-client mappings.
     #[must_use]
-    pub fn from_clients(clients: HashMap<String, PrimalClient>) -> Self {
+    pub fn from_clients(clients: HashMap<CapabilityDomain, PrimalClient>) -> Self {
         let btsp_state = clients
             .iter()
             .map(|(cap, c)| (cap.clone(), c.is_btsp_authenticated()))
@@ -582,7 +583,7 @@ impl CompositionContext {
 
     /// Full BTSP state map (capability -> authenticated).
     #[must_use]
-    pub const fn btsp_state(&self) -> &BTreeMap<String, bool> {
+    pub const fn btsp_state(&self) -> &BTreeMap<CapabilityDomain, bool> {
         &self.btsp_state
     }
 
@@ -599,7 +600,7 @@ impl CompositionContext {
     /// Useful for telemetry, guidestone reporting, and liveSpore-style
     /// provenance journals (mirrors lithoSpore's DiscoveryPath pattern).
     #[must_use]
-    pub const fn discovery_paths(&self) -> &BTreeMap<String, DiscoveryPath> {
+    pub const fn discovery_paths(&self) -> &BTreeMap<CapabilityDomain, DiscoveryPath> {
         &self.discovery_paths
     }
 

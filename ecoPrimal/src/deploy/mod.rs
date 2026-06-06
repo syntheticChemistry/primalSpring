@@ -251,6 +251,7 @@ const fn default_spawn() -> bool {
     true
 }
 
+pub mod self_refresh;
 mod validation;
 
 #[cfg(test)]

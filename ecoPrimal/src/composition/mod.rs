@@ -54,8 +54,8 @@ pub use parity::{
 };
 pub use btsp::tcp_fallback_table;
 pub use routing::{
-    ALL_CAPS, BTSP_EXTRA_CAPS, capability_to_primal, capability_to_primal_typed,
-    method_to_capability_domain,
+    ALL_CAPS, BTSP_EXTRA_CAPS, CapabilityDomain, capability_to_primal,
+    capability_to_primal_typed, method_to_capability_domain,
 };
 
 #[cfg(test)]

@@ -108,6 +108,7 @@ pub mod s_kderm_boundary;
 pub mod s_tower_cns;
 pub mod s_cross_membrane_integrity;
 pub mod s_zero_port_standard;
+pub(crate) mod membrane_hosts;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
 #[must_use]

@@ -14,13 +14,13 @@ use crate::ipc::client::PrimalClient;
 
 use super::btsp::{tcp_fallback_table, upgrade_btsp_clients};
 use super::context::DiscoveryPath;
-use super::routing::{ALL_CAPS, capability_to_primal};
+use super::routing::{ALL_CAPS, CapabilityDomain, capability_to_primal};
 
 /// Intermediate result from a discovery pass — consumed by `CompositionContext` constructors.
 pub(super) struct DiscoveryResult {
-    pub clients: HashMap<String, PrimalClient>,
-    pub btsp_state: BTreeMap<String, bool>,
-    pub discovery_paths: BTreeMap<String, DiscoveryPath>,
+    pub clients: HashMap<CapabilityDomain, PrimalClient>,
+    pub btsp_state: BTreeMap<CapabilityDomain, bool>,
+    pub discovery_paths: BTreeMap<CapabilityDomain, DiscoveryPath>,
 }
 
 /// Returns `true` when Tier 5 TCP port probing is explicitly enabled.
@@ -51,8 +51,8 @@ pub(super) fn discover_full() -> DiscoveryResult {
 
     // Tier 1: Songbird routing
     if let Ok(songbird) = crate::ipc::client::connect_by_capability("discovery") {
-        clients.insert("discovery".to_owned(), songbird);
-        discovery_paths.insert("discovery".to_owned(), DiscoveryPath::Songbird);
+        clients.insert(CapabilityDomain::from("discovery"), songbird);
+        discovery_paths.insert(CapabilityDomain::from("discovery"), DiscoveryPath::Songbird);
 
         let caps_to_resolve: Vec<&str> = ALL_CAPS
             .iter()
@@ -81,8 +81,8 @@ pub(super) fn discover_full() -> DiscoveryResult {
                 if let Some(path) = socket_path {
                     if let Ok(client) = PrimalClient::connect(&path, primal) {
                         tracing::debug!(cap, primal, tier = 1, "discovered via Songbird");
-                        clients.insert(cap.to_owned(), client);
-                        discovery_paths.insert(cap.to_owned(), DiscoveryPath::Songbird);
+                        clients.insert(CapabilityDomain::from(cap), client);
+                        discovery_paths.insert(CapabilityDomain::from(cap), DiscoveryPath::Songbird);
                     }
                 }
             }
@@ -107,7 +107,7 @@ pub(super) fn discover_live() -> DiscoveryResult {
     let mut clients = HashMap::new();
     let mut discovery_paths = BTreeMap::new();
     discover_tiers_2_4(&mut clients, &mut discovery_paths);
-    let btsp_state = clients
+    let btsp_state: BTreeMap<CapabilityDomain, bool> = clients
         .iter()
         .map(|(cap, c)| (cap.clone(), c.is_btsp_authenticated()))
         .collect();
@@ -127,8 +127,8 @@ pub(super) fn discover_with_fallback() -> DiscoveryResult {
 
     for &(cap, _primal, _port_env, _default_port) in &cap_to_primal {
         if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
-            clients.insert(cap.to_owned(), client);
-            discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
+            clients.insert(CapabilityDomain::from(cap), client);
+            discovery_paths.insert(CapabilityDomain::from(cap), DiscoveryPath::LocalDiscovery);
         }
     }
 
@@ -145,8 +145,8 @@ pub(super) fn discover_with_fallback() -> DiscoveryResult {
                 .unwrap_or(default_port);
             let addr = format!("{host}:{port}");
             if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
-                clients.insert(cap.to_owned(), client);
-                discovery_paths.insert(cap.to_owned(), DiscoveryPath::TcpFallback);
+                clients.insert(CapabilityDomain::from(cap), client);
+                discovery_paths.insert(CapabilityDomain::from(cap), DiscoveryPath::TcpFallback);
             }
         }
     }
@@ -157,9 +157,9 @@ pub(super) fn discover_with_fallback() -> DiscoveryResult {
 
 /// Re-discover capabilities, keeping existing live connections.
 pub(super) fn rediscover_clients(
-    clients: &mut HashMap<String, PrimalClient>,
-    discovery_paths: &mut BTreeMap<String, DiscoveryPath>,
-) -> BTreeMap<String, bool> {
+    clients: &mut HashMap<CapabilityDomain, PrimalClient>,
+    discovery_paths: &mut BTreeMap<CapabilityDomain, DiscoveryPath>,
+) -> BTreeMap<CapabilityDomain, bool> {
     for &cap in ALL_CAPS {
         if clients.contains_key(cap) {
             if let Some(client) = clients.get_mut(cap) {
@@ -170,8 +170,8 @@ pub(super) fn rediscover_clients(
         }
         if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
             tracing::info!(cap, "rediscovered capability after topology change");
-            clients.insert(cap.to_owned(), client);
-            discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
+            clients.insert(CapabilityDomain::from(cap), client);
+            discovery_paths.insert(CapabilityDomain::from(cap), DiscoveryPath::LocalDiscovery);
         }
     }
     upgrade_btsp_clients(clients)
@@ -179,8 +179,8 @@ pub(super) fn rediscover_clients(
 
 /// Tiers 2-4: connect by capability for each ALL_CAPS entry.
 fn discover_tiers_2_4(
-    clients: &mut HashMap<String, PrimalClient>,
-    discovery_paths: &mut BTreeMap<String, DiscoveryPath>,
+    clients: &mut HashMap<CapabilityDomain, PrimalClient>,
+    discovery_paths: &mut BTreeMap<CapabilityDomain, DiscoveryPath>,
 ) {
     for &cap in ALL_CAPS {
         if clients.contains_key(cap) {
@@ -188,16 +188,16 @@ fn discover_tiers_2_4(
         }
         if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
             tracing::debug!(cap, tier = "2-4", "discovered via UDS/Neural API");
-            clients.insert(cap.to_owned(), client);
-            discovery_paths.insert(cap.to_owned(), DiscoveryPath::LocalDiscovery);
+            clients.insert(CapabilityDomain::from(cap), client);
+            discovery_paths.insert(CapabilityDomain::from(cap), DiscoveryPath::LocalDiscovery);
         }
     }
 }
 
 /// Tier 5: TCP port probing on well-known ports.
 fn discover_tier5_tcp(
-    clients: &mut HashMap<String, PrimalClient>,
-    discovery_paths: &mut BTreeMap<String, DiscoveryPath>,
+    clients: &mut HashMap<CapabilityDomain, PrimalClient>,
+    discovery_paths: &mut BTreeMap<CapabilityDomain, DiscoveryPath>,
 ) {
     let host = std::env::var(crate::env_keys::PRIMALSPRING_HOST)
         .unwrap_or_else(|_| crate::tolerances::DEFAULT_HOST.to_owned());
@@ -212,8 +212,8 @@ fn discover_tier5_tcp(
         let addr = format!("{host}:{port}");
         if let Ok(client) = PrimalClient::connect_tcp(&addr, primal) {
             tracing::debug!(cap, primal, %addr, tier = 5, "discovered via TCP");
-            clients.insert(cap.to_owned(), client);
-            discovery_paths.insert(cap.to_owned(), DiscoveryPath::TcpFallback);
+            clients.insert(CapabilityDomain::from(cap), client);
+            discovery_paths.insert(CapabilityDomain::from(cap), DiscoveryPath::TcpFallback);
         }
     }
 }

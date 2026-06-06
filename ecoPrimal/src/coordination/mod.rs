@@ -124,65 +124,24 @@ impl AtomicType {
         ]
     }
 
-    /// Primal names required for this composition.
+    /// Derive unique primal slugs from [`required_capabilities`](Self::required_capabilities)
+    /// via the capability registry.
     ///
-    /// **Deprecated**: use [`required_capabilities`](Self::required_capabilities)
-    /// and resolve providers at runtime via `discover_by_capability`. Primals
-    /// should not hardcode peer identities — discover by capability domain.
-    ///
-    /// Does not include `biomeos` — use [`substrate_primal`](Self::substrate_primal)
-    /// for the biomeOS orchestrator that every composition requires.
+    /// This is the capability-based replacement for the removed `required_primals()`.
+    /// Returns slugs in deterministic order (sorted, deduplicated).
     #[must_use]
-    #[deprecated(since = "0.9.31", note = "Use `required_capabilities()` + runtime discovery instead of hardcoded primal names")]
-    pub const fn required_primals(self) -> &'static [&'static str] {
-        match self {
-            Self::Tower => &[
-                primal_names::BEARDOG,
-                primal_names::SONGBIRD,
-                primal_names::SKUNKBAT,
-            ],
-            Self::Node => &[
-                primal_names::BEARDOG,
-                primal_names::SONGBIRD,
-                primal_names::SKUNKBAT,
-                primal_names::TOADSTOOL,
-                primal_names::BARRACUDA,
-                primal_names::CORALREEF,
-            ],
-            Self::Nest => &[
-                primal_names::BEARDOG,
-                primal_names::SONGBIRD,
-                primal_names::SKUNKBAT,
-                primal_names::NESTGATE,
-                primal_names::RHIZOCRYPT,
-                primal_names::LOAMSPINE,
-                primal_names::SWEETGRASS,
-            ],
-            Self::FullNucleus => &[
-                primal_names::BEARDOG,
-                primal_names::SONGBIRD,
-                primal_names::SKUNKBAT,
-                primal_names::TOADSTOOL,
-                primal_names::BARRACUDA,
-                primal_names::CORALREEF,
-                primal_names::NESTGATE,
-                primal_names::SQUIRREL,
-                primal_names::RHIZOCRYPT,
-                primal_names::LOAMSPINE,
-                primal_names::SWEETGRASS,
-                primal_names::PETALTONGUE,
-            ],
-        }
-    }
-
-    /// The biomeOS substrate primal name.
-    ///
-    /// **Deprecated**: use [`substrate_capabilities`](Self::substrate_capabilities)
-    /// and discover the orchestration provider at runtime.
-    #[must_use]
-    #[deprecated(since = "0.9.31", note = "Use `substrate_capabilities()` + runtime discovery instead")]
-    pub const fn substrate_primal() -> &'static str {
-        primal_names::BIOMEOS
+    pub fn required_primal_slugs(self) -> Vec<&'static str> {
+        let mut slugs: Vec<&str> = self
+            .required_capabilities()
+            .iter()
+            .filter_map(|cap| {
+                crate::composition::capability_to_primal_typed(cap)
+                    .map(|p| p.slug())
+            })
+            .collect();
+        slugs.sort_unstable();
+        slugs.dedup();
+        slugs
     }
 
     /// biomeOS deploy graph name for this composition.
@@ -289,52 +248,51 @@ pub fn validate_composition_ctx(atomic: AtomicType) -> CompositionResult {
 }
 
 #[cfg(test)]
-#[allow(deprecated)]
 mod tests {
     use super::*;
 
     #[test]
-    fn tower_requires_three_primals() {
-        let primals = AtomicType::Tower.required_primals();
-        assert_eq!(primals.len(), 3);
-        assert!(primals.contains(&primal_names::BEARDOG));
-        assert!(primals.contains(&primal_names::SONGBIRD));
-        assert!(primals.contains(&primal_names::SKUNKBAT));
+    fn tower_derives_three_primal_slugs() {
+        let slugs = AtomicType::Tower.required_primal_slugs();
+        assert_eq!(slugs.len(), 3);
+        assert!(slugs.contains(&primal_names::BEARDOG));
+        assert!(slugs.contains(&primal_names::SONGBIRD));
+        assert!(slugs.contains(&primal_names::SKUNKBAT));
     }
 
     #[test]
-    fn node_extends_tower_with_compute_trio() {
-        let primals = AtomicType::Node.required_primals();
-        assert_eq!(primals.len(), 6);
-        assert!(primals.contains(&primal_names::BEARDOG));
-        assert!(primals.contains(&primal_names::SONGBIRD));
-        assert!(primals.contains(&primal_names::SKUNKBAT));
-        assert!(primals.contains(&primal_names::TOADSTOOL));
-        assert!(primals.contains(&primal_names::BARRACUDA));
-        assert!(primals.contains(&primal_names::CORALREEF));
+    fn node_derives_six_primal_slugs() {
+        let slugs = AtomicType::Node.required_primal_slugs();
+        assert_eq!(slugs.len(), 6);
+        assert!(slugs.contains(&primal_names::BEARDOG));
+        assert!(slugs.contains(&primal_names::SONGBIRD));
+        assert!(slugs.contains(&primal_names::SKUNKBAT));
+        assert!(slugs.contains(&primal_names::TOADSTOOL));
+        assert!(slugs.contains(&primal_names::BARRACUDA));
+        assert!(slugs.contains(&primal_names::CORALREEF));
     }
 
     #[test]
-    fn nest_extends_tower_with_nestgate_and_provenance_trio() {
-        let primals = AtomicType::Nest.required_primals();
-        assert_eq!(primals.len(), 7);
-        assert!(primals.contains(&primal_names::BEARDOG));
-        assert!(primals.contains(&primal_names::SONGBIRD));
-        assert!(primals.contains(&primal_names::SKUNKBAT));
-        assert!(primals.contains(&primal_names::NESTGATE));
-        assert!(primals.contains(&primal_names::RHIZOCRYPT));
-        assert!(primals.contains(&primal_names::LOAMSPINE));
-        assert!(primals.contains(&primal_names::SWEETGRASS));
+    fn nest_derives_seven_primal_slugs() {
+        let slugs = AtomicType::Nest.required_primal_slugs();
+        assert_eq!(slugs.len(), 7);
+        assert!(slugs.contains(&primal_names::BEARDOG));
+        assert!(slugs.contains(&primal_names::SONGBIRD));
+        assert!(slugs.contains(&primal_names::SKUNKBAT));
+        assert!(slugs.contains(&primal_names::NESTGATE));
+        assert!(slugs.contains(&primal_names::RHIZOCRYPT));
+        assert!(slugs.contains(&primal_names::LOAMSPINE));
+        assert!(slugs.contains(&primal_names::SWEETGRASS));
     }
 
     #[test]
-    fn full_nucleus_requires_twelve_primals() {
-        let primals = AtomicType::FullNucleus.required_primals();
-        assert_eq!(primals.len(), 12);
-        assert!(primals.contains(&primal_names::SKUNKBAT));
-        assert!(primals.contains(&primal_names::BARRACUDA));
-        assert!(primals.contains(&primal_names::CORALREEF));
-        assert!(primals.contains(&primal_names::PETALTONGUE));
+    fn full_nucleus_derives_twelve_primal_slugs() {
+        let slugs = AtomicType::FullNucleus.required_primal_slugs();
+        assert_eq!(slugs.len(), 12);
+        assert!(slugs.contains(&primal_names::SKUNKBAT));
+        assert!(slugs.contains(&primal_names::BARRACUDA));
+        assert!(slugs.contains(&primal_names::CORALREEF));
+        assert!(slugs.contains(&primal_names::PETALTONGUE));
     }
 
     #[test]
@@ -411,11 +369,6 @@ mod tests {
         assert!(!caps.is_empty());
         assert!(caps.contains(&"orchestration"));
         assert!(caps.contains(&"graph.deploy"));
-    }
-
-    #[test]
-    fn substrate_primal_is_biomeos() {
-        assert_eq!(AtomicType::substrate_primal(), "biomeos");
     }
 
     #[test]

@@ -211,7 +211,19 @@ fn dispatch_request(raw_request: &str) -> JsonRpcResponse {
             serde_json::json!({"status": "ok", "primal": "primalspring"})
         }
         "health.readiness" => {
-            serde_json::json!({"status": "ok", "primal": "primalspring", "ready": true})
+            let caps = primalspring::coordination::AtomicType::FullNucleus
+                .required_capabilities();
+            let results =
+                primalspring::ipc::discover::discover_capabilities_for(caps);
+            let reachable = results.iter().filter(|r| r.socket.is_some()).count();
+            let ready = reachable > 0;
+            serde_json::json!({
+                "status": if ready { "ok" } else { "degraded" },
+                "primal": "primalspring",
+                "ready": ready,
+                "capabilities_discovered": reachable,
+                "capabilities_total": caps.len(),
+            })
         }
         "capabilities.list" | "capability.list" => {
             let caps = primalspring::niche::all_capabilities();

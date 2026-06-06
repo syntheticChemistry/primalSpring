@@ -47,6 +47,10 @@ pub struct LaunchProfile {
     /// Env vars to forward from the parent process when set.
     #[serde(default)]
     pub passthrough_env: HashMap<String, bool>,
+    /// CLI flag this primal accepts for TCP bind address (e.g. `"--bind"`).
+    /// Tier 5 debug-only; UDS-only compositions ignore this.
+    #[serde(default)]
+    pub bind_flag: Option<String>,
 }
 
 #[derive(Debug, serde::Deserialize)]

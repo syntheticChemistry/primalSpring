@@ -1,0 +1,35 @@
+# Membrane Host Registry — Sovereign DNS/VPS infrastructure
+#
+# Authoritative source for VPS IPs used in validation scenarios.
+# Override with env vars MEMBRANE_NS1, MEMBRANE_NS2, MEMBRANE_RELAY
+# for local testing or infrastructure changes.
+#
+# Updated: 2026-05-04 (ironGate live confirmation)
+
+[nameservers]
+ns1 = "157.230.3.183"
+ns2 = "137.184.197.151"
+
+[hosts]
+relay = "157.230.209.218"
+
+[domains]
+outer = "primals.eco"
+inner = "primal.eco"
+content = "nestgate.io"
+
+[inner_records]
+"primal.eco" = "137.184.197.151"
+"mesh.primal.eco" = "157.230.3.183"
+"relay.primal.eco" = "157.230.209.218"
+"auth.primal.eco" = "157.230.3.183"
+"api.primal.eco" = "157.230.3.183"
+"dns.primal.eco" = "157.230.3.183"
+
+[content_records]
+"nestgate.io" = "137.184.197.151"
+
+[sovereign_records]
+"membrane.primals.eco" = "157.230.3.183"
+"git.primals.eco" = "157.230.3.183"
+"lab.primals.eco" = "157.230.3.183"

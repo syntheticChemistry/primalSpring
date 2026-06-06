@@ -3,7 +3,36 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–79: Stadial Entry / Glacial Shift (2026-06-05)
+## [Unreleased] — Waves 22–82: Stadial Entry / Glacial Shift (2026-06-06)
+
+### Wave 82: Deep Debt Evolution Sprint — Complete (June 6)
+- **Type-safe dispatch** — `primalspring_primal` dispatch table and `CompositionContext` now use
+  `CapabilityDomain` newtypes and table-driven handler registries instead of string matching.
+  `method_to_capability_domain()` derived from `capability_registry.toml` (t1a-t1d).
+- **TOML-driven configuration** — TCP fallback ports (`config/ports.toml`), bind flags
+  (`primal_launch_profiles.toml`), VPS IPs (`config/membrane_hosts.toml`), and env key
+  generation all derived from TOML with `LazyLock`. Zero hardcoded metadata (t3a-t3d).
+- **Real health checks** — `health.drain` uses `AtomicU64` in-flight counter instead of
+  stub `0`. `health.readiness` performs actual capability discovery (t4a).
+- **Tracing migration** — `TracingSink` routes validation output through `tracing` crate.
+  `eprintln!` replaced with `tracing::warn!` in certification (t4b).
+- **Deprecation cleanup** — Removed `required_primals()`, `substrate_primal()`. Added
+  capability-derived `required_primal_slugs()`. `LEGACY_PREFIXES` now derived from
+  `Primal`/`Spring` enum slugs via `LazyLock` (t4c).
+- **Shell absorption** — `nucleus_composition_lib.sh` (1120 lines) and
+  `nucleus_crypto_bootstrap.sh` (647 lines) deprecated with comprehensive Rust replacement
+  guides. New `certification/crypto_bootstrap.rs` provides pure-Rust three-tier HMAC-SHA256
+  key derivation (t2a-t2b).
+- **Test coverage** — 36 new tests across `env_keys.rs`, `validation/helpers.rs`,
+  `neural_dispatch/metrics.rs`, `certification/crypto_bootstrap.rs`. 929 total (up from 893).
+- **Deploy pipeline** — `build_ecosystem_genomeBin.sh` gains `BINARY_OVERRIDES` for multi-binary
+  workspaces. New `deploy/self_refresh.rs` module for Rust-native binary fetching from
+  GitHub/Forgejo/VPS Releases with BLAKE3 verification (t5b).
+- **ureq/rustls audit** — `ureq` pinned to `=3.3.0`, `ring` enters only via optional
+  `cross-membrane` feature. `deny.toml` updated with wrapper allowance and documentation (t5c).
+- **plasmidBin ownership model formalized** — cellMembrane team owns binary distribution
+  evolution; projectNUCLEUS owns deployment consumption. primalSpring retains the library
+  surface (`deploy/self_refresh.rs`, capability registry, deploy graphs).
 
 ### Wave 79: UDS-Only Stadial Gate (June 5)
 - **Launcher defaults UDS-only** — `nucleus_launcher` now requires `--tcp` to allocate

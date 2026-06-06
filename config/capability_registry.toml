@@ -27,6 +27,7 @@
 [health]
 owner = "all"
 stability = "stable"
+routes_to = "security"
 methods = [
     "health.check",
     "health.drain",
@@ -474,6 +475,7 @@ methods = [
 [braid]
 owner = "sweetgrass"
 stability = "stable"
+routes_to = "commit"
 methods = [
     "braid.anchor",
     "braid.commit",
@@ -486,6 +488,7 @@ methods = [
 
 [anchoring]
 owner = "sweetgrass"
+routes_to = "commit"
 methods = [
     "anchoring.anchor",
     "anchoring.verify",
@@ -521,6 +524,7 @@ methods = [
 
 [contribution]
 owner = "sweetgrass"
+routes_to = "commit"
 methods = [
     "contribution.record",
 ]
@@ -572,6 +576,7 @@ methods = [
 
 [secrets]
 owner = "nestgate"
+routes_to = "storage"
 methods = [
     "secrets.retrieve",
     "secrets.store",
@@ -843,6 +848,7 @@ methods = [
 [primal]
 owner = "all"
 stability = "stable"
+routes_to = "security"
 methods = [
     "primal.announce",
     "primal.capabilities",

@@ -16,30 +16,9 @@ use crate::tolerances;
 
 // ── Bind-flag registry ──────────────────────────────────────────────
 //
-// Port and env-key data comes from `tolerances::PORT_REGISTRY` (single
-// source of truth). This module only extends it with per-primal CLI
-// bind flags — the one datum that is deploy-specific, not ecosystem-wide.
-
-struct BindFlagEntry {
-    slug: &'static str,
-    flag: &'static str,
-}
-
-static BIND_FLAGS: &[BindFlagEntry] = &[
-    BindFlagEntry { slug: "beardog",     flag: "--listen" },
-    BindFlagEntry { slug: "songbird",    flag: "--bind" },
-    BindFlagEntry { slug: "squirrel",    flag: "--bind" },
-    BindFlagEntry { slug: "toadstool",   flag: "--bind" },
-    BindFlagEntry { slug: "nestgate",    flag: "--bind" },
-    BindFlagEntry { slug: "rhizocrypt",  flag: "--host" },
-    BindFlagEntry { slug: "loamspine",   flag: "--bind-address" },
-    BindFlagEntry { slug: "coralreef",   flag: "--rpc-bind" },
-    BindFlagEntry { slug: "barracuda",   flag: "--bind" },
-    BindFlagEntry { slug: "skunkbat",    flag: "--bind" },
-    BindFlagEntry { slug: "biomeos",     flag: "--bind" },
-    BindFlagEntry { slug: "sweetgrass",  flag: "--http-address" },
-    BindFlagEntry { slug: "petaltongue", flag: "--bind" },
-];
+// Bind flags are now declared per-profile in `primal_launch_profiles.toml`
+// (`bind_flag = "--listen"` etc.) and loaded via `LaunchProfile`.
+// The hardcoded table has been removed — see t3b-bind-flags.
 
 fn tcp_fallback_port(name: &str) -> Option<u16> {
     tolerances::port_entry_for(name).map(|e| e.port)
@@ -49,8 +28,24 @@ fn port_env_key(name: &str) -> Option<&'static str> {
     tolerances::port_entry_for(name).map(|e| e.env_key)
 }
 
+/// Bind-flag lookup from TOML-derived `LazyLock` cache.
+/// First access parses `primal_launch_profiles.toml` once.
 fn bind_flag(name: &str) -> Option<&'static str> {
-    BIND_FLAGS.iter().find(|e| e.slug == name).map(|e| e.flag)
+    static BIND_FLAG_MAP: std::sync::LazyLock<HashMap<String, &'static str>> =
+        std::sync::LazyLock::new(|| {
+            let Ok((_defaults, profiles)) = load_launch_profiles() else {
+                return HashMap::new();
+            };
+            profiles
+                .into_iter()
+                .filter_map(|(slug, profile)| {
+                    profile.bind_flag.map(|flag| {
+                        (slug, &*Box::leak(flag.into_boxed_str()))
+                    })
+                })
+                .collect()
+        });
+    BIND_FLAG_MAP.get(name).copied()
 }
 
 /// Actionable deploy profile for a single primal node.

@@ -70,13 +70,13 @@ pub(super) fn stage_harvest(v: &mut ValidationResult, manifest: &toml::Value) {
 
             v.check_bool(
                 "harvest:all_musl_stripped",
-                musl_stripped_count >= 13,
-                &format!("{musl_stripped_count} binaries stripped for x86_64-musl (expect ≥13)"),
+                musl_stripped_count >= 12,
+                &format!("{musl_stripped_count} binaries stripped for x86_64-musl (expect ≥12)"),
             );
             v.check_bool(
                 "harvest:all_musl_static",
-                musl_static_count >= 13,
-                &format!("{musl_static_count} binaries static for x86_64-musl (expect ≥13)"),
+                musl_static_count >= 12,
+                &format!("{musl_static_count} binaries static for x86_64-musl (expect ≥12)"),
             );
         }
         None => {

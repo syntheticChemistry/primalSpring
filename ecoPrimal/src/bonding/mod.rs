@@ -41,6 +41,35 @@ pub enum BondType {
     OrganoMetalSalt,
 }
 
+impl std::fmt::Display for BondType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Covalent => f.write_str("Covalent"),
+            Self::Metallic => f.write_str("Metallic"),
+            Self::Ionic => f.write_str("Ionic"),
+            Self::Weak => f.write_str("Weak"),
+            Self::OrganoMetalSalt => f.write_str("OrganoMetalSalt"),
+        }
+    }
+}
+
+impl std::str::FromStr for BondType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Covalent" | "covalent" => Ok(Self::Covalent),
+            "Metallic" | "metallic" => Ok(Self::Metallic),
+            "Ionic" | "ionic" => Ok(Self::Ionic),
+            "Weak" | "weak" => Ok(Self::Weak),
+            "OrganoMetalSalt" | "organo_metal_salt" | "organometalsalt" => {
+                Ok(Self::OrganoMetalSalt)
+            }
+            _ => Err(format!("unknown bond type: {s}")),
+        }
+    }
+}
+
 impl BondType {
     /// Human-readable description of this bond type.
     #[must_use]

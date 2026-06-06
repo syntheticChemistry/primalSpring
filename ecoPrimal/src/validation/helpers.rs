@@ -268,3 +268,100 @@ pub fn validate_graph_structure(
         &format!("{label} graph has {node_count} nodes"),
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::validation::ValidationResult;
+
+    const MINIMAL_GRAPH: &str = r#"
+[graph]
+id = "test"
+coordination = "primalspring"
+composition_tier = "Tower"
+composition_name = "test-tower"
+
+[graph.metadata]
+secure_by_default = true
+security_model = "btsp_enforced"
+transport = "uds_only"
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+by_capability = "security"
+capabilities = ["security", "crypto"]
+spawn = true
+"#;
+
+    #[test]
+    fn graph_parses_valid_toml() {
+        let mut v = ValidationResult::new("test");
+        let parsed = graph_parses(&mut v, "test", MINIMAL_GRAPH);
+        assert!(parsed.is_some());
+        assert!(v.all_passed());
+    }
+
+    #[test]
+    fn graph_parses_invalid_toml() {
+        let mut v = ValidationResult::new("test");
+        let parsed = graph_parses(&mut v, "test", "not valid toml {{{");
+        assert!(parsed.is_none());
+        assert!(!v.all_passed());
+    }
+
+    #[test]
+    fn graph_binaries_extracts_names() {
+        let binaries = graph_binaries(MINIMAL_GRAPH);
+        assert_eq!(binaries, vec!["beardog"]);
+    }
+
+    #[test]
+    fn graph_binaries_empty_on_bad_toml() {
+        let binaries = graph_binaries("not valid");
+        assert!(binaries.is_empty());
+    }
+
+    #[test]
+    fn graph_nodes_returns_some() {
+        let parsed: toml::Value = toml::from_str(MINIMAL_GRAPH).unwrap();
+        let nodes = graph_nodes(&parsed);
+        assert!(nodes.is_some());
+        assert_eq!(nodes.unwrap().len(), 1);
+    }
+
+    #[test]
+    fn graph_metadata_returns_some() {
+        let parsed: toml::Value = toml::from_str(MINIMAL_GRAPH).unwrap();
+        let meta = graph_metadata(&parsed);
+        assert!(meta.is_some());
+    }
+
+    #[test]
+    fn validate_dark_forest_passes_on_valid_graph() {
+        let mut v = ValidationResult::new("test");
+        let parsed: toml::Value = toml::from_str(MINIMAL_GRAPH).unwrap();
+        validate_dark_forest(&mut v, "test", &parsed);
+        assert!(v.all_passed());
+    }
+
+    #[test]
+    fn load_registry_capabilities_non_empty() {
+        let caps = load_registry_capabilities();
+        assert!(!caps.is_empty(), "capability registry should have methods");
+    }
+
+    #[test]
+    fn parse_registry_capabilities_empty_on_bad_toml() {
+        let caps = parse_registry_capabilities("not toml");
+        assert!(caps.is_empty());
+    }
+
+    #[test]
+    fn validate_graph_structure_passes() {
+        let mut v = ValidationResult::new("test");
+        let parsed: toml::Value = toml::from_str(MINIMAL_GRAPH).unwrap();
+        validate_graph_structure(&mut v, "test", &parsed);
+        assert!(v.all_passed());
+    }
+}

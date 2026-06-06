@@ -41,37 +41,47 @@ pub mod transport;
 pub use error::IpcError;
 pub use neural_bridge::NeuralBridge;
 
-/// Known legacy method prefixes that callers may prepend.
+/// Dynamically-built set of known primal and spring slug prefixes
+/// (e.g. `"primalspring."`, `"beardog."`) derived from `primal_names`.
 ///
-/// Ecosystem convention (groundSpring V121, neuralSpring V122, wetSpring V133,
-/// healthSpring V42, `BearDog` Waves 9-12, Songbird v0.2.1): strip any of these
-/// dotted prefixes before dispatch so `primalspring.health.check` resolves
-/// identically to `health.check`.
-const LEGACY_PREFIXES: &[&str] = &[
-    "primalspring.",
-    "barracuda.",
-    "biomeos.",
-    "groundspring.",
-    "neuralspring.",
-    "wetspring.",
-    "airspring.",
-    "healthspring.",
-    "ludospring.",
-];
+/// Replaces the former hardcoded `LEGACY_PREFIXES` list. Adding a new
+/// primal or spring variant to the `Primal`/`Spring` enums automatically
+/// extends prefix normalization with zero manual maintenance.
+static SLUG_PREFIXES: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::new(|| {
+    use crate::primal_names::{Primal, Spring};
+    let primals = [
+        Primal::BearDog, Primal::Songbird, Primal::ToadStool,
+        Primal::NestGate, Primal::Squirrel, Primal::BarraCuda,
+        Primal::CoralReef, Primal::BiomeOS, Primal::PetalTongue,
+        Primal::RhizoCrypt, Primal::LoamSpine, Primal::SweetGrass,
+        Primal::SkunkBat,
+    ];
+    let springs = [
+        Spring::PrimalSpring, Spring::HotSpring, Spring::GroundSpring,
+        Spring::NeuralSpring, Spring::WetSpring, Spring::AirSpring,
+        Spring::HealthSpring, Spring::LudoSpring,
+    ];
+    let mut prefixes: Vec<String> = primals
+        .iter()
+        .map(|p| format!("{}.", p.slug()))
+        .chain(springs.iter().map(|s| format!("{}.", s.slug())))
+        .collect();
+    prefixes.sort_unstable_by(|a, b| b.len().cmp(&a.len()));
+    prefixes
+});
 
-/// Normalize a JSON-RPC method name by stripping known legacy prefixes.
+/// Normalize a JSON-RPC method name by stripping known primal/spring prefixes.
 ///
-/// Ecosystem-wide standard absorbed from groundSpring V121, neuralSpring V122,
-/// wetSpring V133, healthSpring V42, `BearDog`, and Songbird. Callers may send
-/// `primalspring.health.check` or `health.check` — both resolve identically.
+/// Ecosystem-wide standard: callers may send `primalspring.health.check`
+/// or `health.check` — both resolve identically. Prefixes are derived from
+/// the `Primal` and `Spring` enums so new additions are automatic.
 ///
-/// Also handles the `capabilities.list` → `capabilities.list` plural alias
-/// that some ecosystem callers send.
+/// Also normalizes the `capabilities.list` / `capability.list` alias.
 #[must_use]
 pub fn normalize_method(method: &str) -> &str {
-    let stripped = LEGACY_PREFIXES
+    let stripped = SLUG_PREFIXES
         .iter()
-        .find_map(|prefix| method.strip_prefix(prefix))
+        .find_map(|prefix| method.strip_prefix(prefix.as_str()))
         .unwrap_or(method);
 
     match stripped {

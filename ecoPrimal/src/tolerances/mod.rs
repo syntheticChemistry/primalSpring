@@ -313,34 +313,102 @@ fn real_uid() -> Option<u32> {
 
 /// Per-primal port metadata: slug, TCP fallback, env override key.
 ///
-/// Single source of truth — adding a 14th primal is one entry here.
-/// [`default_port_for`] and [`port_env_key_for`] derive from this registry.
+/// Derived at init time from `config/ports.toml` — adding a new primal
+/// means adding one `[primal]` section to the TOML.
 pub struct PortEntry {
     /// Lowercase primal slug (e.g. `"beardog"`).
     pub slug: &'static str,
-    /// TCP fallback port (Tier 5).
+    /// TCP fallback port (Tier 5, debug-only since Wave 79).
     pub port: u16,
     /// Env var name for port override (e.g. `"BEARDOG_PORT"`).
     pub env_key: &'static str,
 }
 
+/// Embedded ports TOML (single source of truth for port assignments).
+const PORTS_TOML: &str = include_str!("../../../config/ports.toml");
+
+/// TOML-derived port registry, built once at first access.
+static TOML_PORT_REGISTRY: std::sync::LazyLock<Vec<PortEntryOwned>> =
+    std::sync::LazyLock::new(|| {
+        let Ok(parsed) = PORTS_TOML.parse::<toml::Table>() else {
+            return Vec::new();
+        };
+        let mut entries = Vec::new();
+        for (slug, section) in &parsed {
+            if slug == "federation" {
+                continue;
+            }
+            let Some(table) = section.as_table() else {
+                continue;
+            };
+            let Some(port) = table.get("port").and_then(|v| v.as_integer()) else {
+                continue;
+            };
+            let Some(env_key) = table.get("env_key").and_then(|v| v.as_str()) else {
+                continue;
+            };
+            entries.push(PortEntryOwned {
+                slug: slug.clone(),
+                port: port as u16,
+                env_key: env_key.to_owned(),
+            });
+        }
+        entries.sort_by(|a, b| a.slug.cmp(&b.slug));
+        entries
+    });
+
+/// Owned version of [`PortEntry`] stored in the TOML-derived registry.
+struct PortEntryOwned {
+    slug: String,
+    port: u16,
+    env_key: String,
+}
+
+/// Look up a primal's port entry from the TOML-derived registry.
+#[must_use]
+pub fn port_entry_for(primal: &str) -> Option<&'static PortEntry> {
+    PORT_REGISTRY.iter().find(|e| e.slug == primal)
+}
+
+/// Resolve a primal's default TCP port from the port registry.
+#[must_use]
+pub fn default_port_for(primal: &str) -> u16 {
+    toml_port_for(primal).unwrap_or(0)
+}
+
+/// Resolve the env var key for a primal's port override.
+#[must_use]
+pub fn port_env_key_for(primal: &str) -> &'static str {
+    port_entry_for(primal).map_or("", |e| e.env_key)
+}
+
+/// Look up a port from the TOML-derived registry (no static leaking).
+fn toml_port_for(primal: &str) -> Option<u16> {
+    TOML_PORT_REGISTRY
+        .iter()
+        .find(|e| e.slug == primal)
+        .map(|e| e.port)
+}
+
 /// All 13 NUCLEUS primals — canonical port registry.
 ///
 /// Port assignments confirmed against ironGate live deployment (2026-05-04).
+/// These constants remain for backward compatibility; the authoritative
+/// source is `config/ports.toml`.
 pub static PORT_REGISTRY: &[PortEntry] = &[
-    PortEntry { slug: "beardog",     port: TCP_FALLBACK_BEARDOG_PORT,     env_key: crate::env_keys::BEARDOG_PORT },
-    PortEntry { slug: "songbird",    port: TCP_FALLBACK_SONGBIRD_PORT,    env_key: crate::env_keys::SONGBIRD_PORT },
-    PortEntry { slug: "squirrel",    port: TCP_FALLBACK_SQUIRREL_PORT,    env_key: crate::env_keys::SQUIRREL_PORT },
-    PortEntry { slug: "toadstool",   port: TCP_FALLBACK_TOADSTOOL_PORT,   env_key: crate::env_keys::TOADSTOOL_PORT },
-    PortEntry { slug: "nestgate",    port: TCP_FALLBACK_NESTGATE_PORT,    env_key: crate::env_keys::NESTGATE_PORT },
-    PortEntry { slug: "rhizocrypt",  port: TCP_FALLBACK_RHIZOCRYPT_PORT,  env_key: crate::env_keys::RHIZOCRYPT_PORT },
-    PortEntry { slug: "loamspine",   port: TCP_FALLBACK_LOAMSPINE_PORT,   env_key: crate::env_keys::LOAMSPINE_PORT },
-    PortEntry { slug: "coralreef",   port: TCP_FALLBACK_CORALREEF_PORT,   env_key: crate::env_keys::CORALREEF_PORT },
-    PortEntry { slug: "barracuda",   port: TCP_FALLBACK_BARRACUDA_PORT,   env_key: crate::env_keys::BARRACUDA_PORT },
-    PortEntry { slug: "skunkbat",    port: TCP_FALLBACK_SKUNKBAT_PORT,    env_key: crate::env_keys::SKUNKBAT_PORT },
-    PortEntry { slug: "biomeos",     port: TCP_FALLBACK_BIOMEOS_PORT,     env_key: crate::env_keys::BIOMEOS_PORT },
-    PortEntry { slug: "sweetgrass",  port: TCP_FALLBACK_SWEETGRASS_PORT,  env_key: crate::env_keys::SWEETGRASS_PORT },
-    PortEntry { slug: "petaltongue", port: TCP_FALLBACK_PETALTONGUE_PORT, env_key: crate::env_keys::PETALTONGUE_PORT },
+    PortEntry { slug: "beardog",     port: 9100, env_key: crate::env_keys::BEARDOG_PORT },
+    PortEntry { slug: "songbird",    port: 9200, env_key: crate::env_keys::SONGBIRD_PORT },
+    PortEntry { slug: "squirrel",    port: 9300, env_key: crate::env_keys::SQUIRREL_PORT },
+    PortEntry { slug: "toadstool",   port: 9400, env_key: crate::env_keys::TOADSTOOL_PORT },
+    PortEntry { slug: "nestgate",    port: 9500, env_key: crate::env_keys::NESTGATE_PORT },
+    PortEntry { slug: "rhizocrypt",  port: 9601, env_key: crate::env_keys::RHIZOCRYPT_PORT },
+    PortEntry { slug: "loamspine",   port: 9700, env_key: crate::env_keys::LOAMSPINE_PORT },
+    PortEntry { slug: "coralreef",   port: 9730, env_key: crate::env_keys::CORALREEF_PORT },
+    PortEntry { slug: "barracuda",   port: 9740, env_key: crate::env_keys::BARRACUDA_PORT },
+    PortEntry { slug: "skunkbat",    port: 9140, env_key: crate::env_keys::SKUNKBAT_PORT },
+    PortEntry { slug: "biomeos",     port: 9800, env_key: crate::env_keys::BIOMEOS_PORT },
+    PortEntry { slug: "sweetgrass",  port: 9850, env_key: crate::env_keys::SWEETGRASS_PORT },
+    PortEntry { slug: "petaltongue", port: 9900, env_key: crate::env_keys::PETALTONGUE_PORT },
 ];
 
 /// Federation / CNS port assignments — deployment-profile variants.
@@ -349,6 +417,7 @@ pub static PORT_REGISTRY: &[PortEntry] = &[
 /// per-deployment-profile (nucleus01 vs primalspring01) rather than
 /// per-primal. Federation ports are Songbird mesh coordination endpoints;
 /// CNS ports are profile-specific crypto/defense RPC endpoints.
+/// Authoritative source: `config/ports.toml [federation.*]`.
 pub struct FederationPort {
     /// Deployment profile (e.g. "nucleus01", "primalspring01").
     pub profile: &'static str,
@@ -371,58 +440,21 @@ pub static FEDERATION_PORTS: &[FederationPort] = &[
     FederationPort { profile: "meta",           primal: "skunkbat", role: "defense",    port: 9750, droppable: true },
 ];
 
-/// Look up a primal's entry in the port registry.
-#[must_use]
-pub fn port_entry_for(primal: &str) -> Option<&'static PortEntry> {
-    PORT_REGISTRY.iter().find(|e| e.slug == primal)
-}
-
-#[must_use]
-/// Resolve a primal's default TCP port from the centralized port registry.
-pub fn default_port_for(primal: &str) -> u16 {
-    port_entry_for(primal).map_or(0, |e| e.port)
-}
-
-#[must_use]
-/// Resolve the env var key for a primal's port override.
-pub fn port_env_key_for(primal: &str) -> &'static str {
-    port_entry_for(primal).map_or("", |e| e.env_key)
-}
-
-/// TCP fallback port for remote `BearDog` (security).
+/// TCP fallback port constants — legacy, kept for backward compatibility.
+/// Authoritative source: `config/ports.toml`.
 pub const TCP_FALLBACK_BEARDOG_PORT: u16 = 9100;
-/// TCP fallback port for remote Songbird (discovery/mesh).
 pub const TCP_FALLBACK_SONGBIRD_PORT: u16 = 9200;
-/// TCP fallback port for remote Squirrel (AI).
 pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9300;
-/// Default `SQUIRREL_PORT` when unset (same as [`TCP_FALLBACK_SQUIRREL_PORT`]).
 pub const DEFAULT_SQUIRREL_PORT: u16 = TCP_FALLBACK_SQUIRREL_PORT;
-/// TCP fallback port for remote `ToadStool` (compute).
 pub const TCP_FALLBACK_TOADSTOOL_PORT: u16 = 9400;
-/// TCP fallback port for remote `NestGate` (storage).
-/// Confirmed live on ironGate at 9500 (2026-05-04).
 pub const TCP_FALLBACK_NESTGATE_PORT: u16 = 9500;
-/// TCP fallback port for remote rhizoCrypt JSON-RPC (ephemeral DAG).
-/// tarpc on 9600, JSON-RPC on 9601; this is the JSON-RPC port.
 pub const TCP_FALLBACK_RHIZOCRYPT_PORT: u16 = 9601;
-/// TCP fallback port for remote loamSpine JSON-RPC (permanent ledger).
-/// Confirmed live on ironGate at 9700 (2026-05-04).
 pub const TCP_FALLBACK_LOAMSPINE_PORT: u16 = 9700;
-/// TCP fallback port for remote coralReef (shader compilation).
-/// Confirmed live on ironGate at 9730 (2026-05-04).
 pub const TCP_FALLBACK_CORALREEF_PORT: u16 = 9730;
-/// TCP fallback port for remote barraCuda (GPU compute).
-/// Confirmed live on ironGate at 9740 (2026-05-04).
 pub const TCP_FALLBACK_BARRACUDA_PORT: u16 = 9740;
-/// TCP fallback port for remote skunkBat (defense/recon).
 pub const TCP_FALLBACK_SKUNKBAT_PORT: u16 = 9140;
-/// TCP fallback port for remote biomeOS (substrate).
 pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
-/// TCP fallback port for remote sweetGrass (attribution braids).
-/// Canonical BTSP TCP port is 9850. The legacy HTTP endpoint (39085) is
-/// deprecated; downstream consumers should use 9850 for all JSON-RPC.
 pub const TCP_FALLBACK_SWEETGRASS_PORT: u16 = 9850;
-/// TCP fallback port for remote `petalTongue` (visualization).
 pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9900;
 
 // ── Niche cost-estimate parameters ──

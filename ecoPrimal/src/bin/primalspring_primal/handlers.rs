@@ -126,18 +126,10 @@ pub fn handle_deploy_atomic(params: &serde_json::Value, id: u64) -> JsonRpcRespo
 
 pub fn handle_bonding_test(params: &serde_json::Value, id: u64) -> JsonRpcResponse {
     let bond_str = params["bond_type"].as_str().unwrap_or("Covalent");
-    let bond = match bond_str {
-        "Covalent" => primalspring::bonding::BondType::Covalent,
-        "Metallic" => primalspring::bonding::BondType::Metallic,
-        "Ionic" => primalspring::bonding::BondType::Ionic,
-        "Weak" => primalspring::bonding::BondType::Weak,
-        "OrganoMetalSalt" => primalspring::bonding::BondType::OrganoMetalSalt,
-        _ => {
-            return error_response(
-                error_codes::INVALID_PARAMS,
-                &format!("Unknown bond type: {bond_str}"),
-                id,
-            );
+    let bond: primalspring::bonding::BondType = match bond_str.parse() {
+        Ok(b) => b,
+        Err(e) => {
+            return error_response(error_codes::INVALID_PARAMS, &e, id);
         }
     };
 
@@ -147,7 +139,7 @@ pub fn handle_bonding_test(params: &serde_json::Value, id: u64) -> JsonRpcRespon
 
     success_response(
         serde_json::json!({
-            "bond_type": bond_str,
+            "bond_type": bond.to_string(),
             "description": bond.description(),
             "gates_discovered": gates,
             "total_capabilities": capabilities.len(),
