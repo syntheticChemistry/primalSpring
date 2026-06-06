@@ -14,7 +14,6 @@ use std::time::Instant;
 use serde::{Deserialize, Serialize};
 
 use crate::cast;
-use crate::primal_names;
 
 mod probes;
 
@@ -136,7 +135,7 @@ impl AtomicType {
             .iter()
             .filter_map(|cap| {
                 crate::composition::capability_to_primal_typed(cap)
-                    .map(|p| p.slug())
+                    .map(crate::primal_names::Primal::slug)
             })
             .collect();
         slugs.sort_unstable();
@@ -250,6 +249,7 @@ pub fn validate_composition_ctx(atomic: AtomicType) -> CompositionResult {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::primal_names;
 
     #[test]
     fn tower_derives_three_primal_slugs() {

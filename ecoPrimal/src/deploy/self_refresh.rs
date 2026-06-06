@@ -35,6 +35,7 @@ pub enum RefreshSource {
 
 impl RefreshSource {
     /// Parse from env var or string.
+    #[must_use]
     pub fn from_str_or_default(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "github" | "gh" => Self::GitHub,
@@ -45,6 +46,7 @@ impl RefreshSource {
     }
 
     /// Read the configured source from `PLASMIDBIN_SOURCE` env var.
+    #[must_use]
     pub fn from_env() -> Self {
         std::env::var("PLASMIDBIN_SOURCE")
             .map(|s| Self::from_str_or_default(&s))
@@ -117,6 +119,7 @@ pub fn github_release_url(org: &str, repo: &str, slug: &str, triple: &str) -> St
 ///
 /// Returns `true` if the checksum matches, `false` if it doesn't or
 /// if the file cannot be read.
+#[must_use]
 pub fn verify_blake3(path: &Path, expected_hex: &str) -> bool {
     let Ok(data) = std::fs::read(path) else {
         return false;

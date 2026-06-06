@@ -11,6 +11,7 @@ use std::sync::LazyLock;
 
 static HOSTS_TOML: &str = include_str!("../../../../config/membrane_hosts.toml");
 
+#[allow(dead_code)]
 struct MembraneHosts {
     ns1: String,
     ns2: String,
@@ -76,6 +77,7 @@ pub fn ns2_ip() -> &'static str {
 }
 
 /// Relay VPS IP.
+#[allow(dead_code)]
 pub fn relay_ip() -> &'static str {
     &HOSTS.relay
 }

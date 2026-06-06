@@ -78,13 +78,15 @@ pub fn validate_crypto_bootstrap(ctx: &mut CompositionContext, v: &mut Validatio
 ///
 /// Uses HMAC-SHA256 with the info string `primal-nucleus-v1:{primal}`.
 /// This is a pure-Rust equivalent of the shell script's `derive_base_key()`.
+#[must_use]
 pub fn derive_base_key(primal: &str, fingerprint: &[u8]) -> [u8; 32] {
     use hmac::{Hmac, KeyInit, Mac};
     use sha2::Sha256;
 
     let info = format!("primal-nucleus-v1:{primal}");
-    let mut mac = <Hmac<Sha256> as KeyInit>::new_from_slice(fingerprint)
-        .expect("HMAC accepts any key length");
+    let Ok(mut mac) = <Hmac<Sha256> as KeyInit>::new_from_slice(fingerprint) else {
+        return [0u8; 32];
+    };
     mac.update(info.as_bytes());
     mac.finalize().into_bytes().into()
 }
@@ -93,6 +95,7 @@ pub fn derive_base_key(primal: &str, fingerprint: &[u8]) -> [u8; 32] {
 ///
 /// Uses HMAC-SHA256 of `base_key || family_seed` with the info string
 /// `family-v1:{family_id}:{primal}`.
+#[must_use]
 pub fn derive_family_key(
     base_key: &[u8; 32],
     family_seed: &[u8],
@@ -107,8 +110,9 @@ pub fn derive_family_key(
     combined.extend_from_slice(family_seed);
 
     let info = format!("family-v1:{family_id}:{primal}");
-    let mut mac = <Hmac<Sha256> as KeyInit>::new_from_slice(&combined)
-        .expect("HMAC accepts any key length");
+    let Ok(mut mac) = <Hmac<Sha256> as KeyInit>::new_from_slice(&combined) else {
+        return [0u8; 32];
+    };
     mac.update(info.as_bytes());
     mac.finalize().into_bytes().into()
 }
@@ -116,13 +120,15 @@ pub fn derive_family_key(
 /// Derive a Tier 2 purpose key from the family key.
 ///
 /// Uses HMAC-SHA256 with the info string `purpose-v1:{purpose}`.
+#[must_use]
 pub fn derive_purpose_key(family_key: &[u8; 32], purpose: &str) -> [u8; 32] {
     use hmac::{Hmac, KeyInit, Mac};
     use sha2::Sha256;
 
     let info = format!("purpose-v1:{purpose}");
-    let mut mac = <Hmac<Sha256> as KeyInit>::new_from_slice(family_key)
-        .expect("HMAC accepts any key length");
+    let Ok(mut mac) = <Hmac<Sha256> as KeyInit>::new_from_slice(family_key) else {
+        return [0u8; 32];
+    };
     mac.update(info.as_bytes());
     mac.finalize().into_bytes().into()
 }
