@@ -66,7 +66,7 @@ static SLUG_PREFIXES: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::ne
         .map(|p| format!("{}.", p.slug()))
         .chain(springs.iter().map(|s| format!("{}.", s.slug())))
         .collect();
-    prefixes.sort_unstable_by(|a, b| b.len().cmp(&a.len()));
+    prefixes.sort_unstable_by_key(|b| std::cmp::Reverse(b.len()));
     prefixes
 });
 
