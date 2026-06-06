@@ -1,10 +1,10 @@
 # primalSpring
 
-**Coordination and composition validation spring for the ecoPrimals ecosystem.**
+**Experimentation spring for primals and their compositions in the ecoPrimals ecosystem.**
 
 | | |
 |-|-|
-| **Domain** | Primal coordination, atomic composition, graph execution, emergent systems, multi-node bonding + federation |
+| **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.31 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
@@ -26,14 +26,17 @@
 
 ## What Is primalSpring?
 
-primalSpring is the spring whose domain IS coordination. Where other springs
-validate domain science (hotSpring validates physics, wetSpring validates
-biology), primalSpring validates the ecosystem itself — the coordination,
-composition, and emergent behavior that biomeOS and the Neural API produce
-when primals work together.
+primalSpring is the spring that experiments with primals. Where hotSpring
+validates physics and wetSpring validates biology, primalSpring validates
+how primals compose — the atomic patterns, bonding models, mesh behaviors,
+and emergent properties that arise when primals work together.
 
 Its "papers" are the atomics. Its "experiments" are composition patterns.
-Its validation target is biomeOS itself.
+Its validation targets are the compositions themselves.
+
+Deployment pipelines, VPS ops, and upstream team coordination have been
+handed off to cellMembrane and the wateringHole overwatch (Wave 82c).
+primalSpring focuses on what springs do: run experiments.
 
 ## Architecture
 

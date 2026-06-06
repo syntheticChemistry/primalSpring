@@ -3,7 +3,27 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–82: Stadial Entry / Glacial Shift (2026-06-06)
+## [Unreleased] — Waves 22–82c: Stadial Entry / Glacial Shift (2026-06-06)
+
+### Wave 82c: Overwatch Shift — primalSpring Role Evolution (June 6)
+- **Role redefined**: primalSpring is now the experimentation spring for primals
+  and their compositions — like hotSpring experiments with physics. No longer the
+  ecosystem coordination hub or VPS ops center.
+- **plasmidBin ownership transferred to cellMembrane**: Binary harvesting, CI/CD,
+  `sources.toml`, `deploy_membrane.sh`, VPS refresh cycle — all owned by cellMembrane.
+  projectNUCLEUS is the long-term deployment consumer.
+- **VPS ops transferred to cellMembrane**: Systemd units, Caddy endpoints, firewall,
+  peptidoglycan self-refresh, cross-node bridges.
+- **Upstream coordination transferred to wateringHole overwatch**: Team blurbs,
+  ecosystem freshness tracking, FRAGO generation, handoff fossilization.
+- **3 active FRAGOs reassigned**: westGate enrollment → overwatch (hardware-gated),
+  transport evolution → songBird + biomeOS, peptidoglycan self-awareness → cellMembrane.
+- **CONTEXT.md + README.md rewritten** to reflect experimentation focus.
+- **ecoPrimals workspace dewired from NestGate legacy**: Root `.git` removed
+  (NestGate was first ecoPrimal, became workspace root). `primals/nestGate/` is
+  canonical. All 39 repos verified with correct independent remotes.
+- **tideGlass seeded**: `protoKarya/tideGlass` — first gen5-native product (GPS
+  sovereign rebuild for NF drug repurposing). Glacial goals updated.
 
 ### Wave 82: Deep Debt Evolution Sprint — Complete (June 6)
 - **Type-safe dispatch** — `primalspring_primal` dispatch table and `CompositionContext` now use

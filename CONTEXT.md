@@ -4,30 +4,34 @@
 
 ## What
 
-primalSpring is the coordination and composition validation spring for
-the ecoPrimals ecosystem. Its domain IS the ecosystem itself — exclusively:
-atomic composition (Tower, Node, Nest, Full NUCLEUS), graph execution
-patterns, emergent systems, multi-node bonding, and cross-spring interaction.
+primalSpring is the experimentation spring for primals and their
+compositions. Its domain is discovering, validating, and evolving
+how primals work together — atomic compositions (Tower, Node, Nest,
+Full NUCLEUS), graph execution patterns, emergent systems, multi-node
+bonding, mesh behavior, and cross-gate interaction.
 
-primalSpring is NOT a science spring. It does not own domain-specific
-validation — that belongs to each gate's springs (hotSpring → physics,
-wetSpring → biology, etc.). primalSpring validates that compositions of
-primals work together; it is the bonding mechanics, not the atoms.
-See the ecosystem `GATE_SPRING_OWNERSHIP.md` for the canonical gate-spring
-routing SSOT (published via wateringHole cascade).
+Like every other spring, primalSpring runs experiments. Where hotSpring
+experiments with physics and wetSpring experiments with biology,
+primalSpring experiments with primals. The compositions are the
+experiments. The deploy graphs are the protocols. The bonding models
+are the hypotheses.
+
+primalSpring does NOT own deployment pipelines, VPS ops, binary
+harvesting, or upstream team coordination. Those responsibilities
+belong to cellMembrane (deployment), projectNUCLEUS (composition
+consumption), and the wateringHole overwatch (coordination).
+See `WAVE82C_OVERWATCH_SHIFT_PLASMIDIN_HANDOFF_JUN06_2026.md`.
 
 ## Role
 
-primalSpring sits upstream of all springs and gardens but downstream of
-primals. Where other springs validate domain science (hotSpring → physics,
-wetSpring → biology), primalSpring validates the coordination layer
-that biomeOS and the Neural API produce when primals work together.
-It has self-knowledge of coordination patterns and discovers other
-primals at runtime via capability-based discovery.
+primalSpring sits alongside other springs, downstream of primals.
+It consumes primal capabilities via NUCLEUS compositions and validates
+that those compositions produce correct emergent behavior.
 
-Downstream tributaries (springs, gardens) consume our patterns from
-`wateringHole/`. As they validate, they expose new gaps that flow
-back upstream to primals and primalSpring.
+Other springs consume primalSpring's patterns (composition types,
+bonding models, IPC client) from `wateringHole/`. As they validate
+their own domains, they expose new composition gaps that flow back
+to primalSpring as experiment targets.
 
 ## Architecture
 
@@ -218,48 +222,41 @@ Bonding models validated (structural): Covalent, Ionic, Metallic, Weak,
 OrganoMetalSalt. Content distribution federation graph with 4 bonding tiers.
 Ionic bond protocol RPC wiring for cross-family capability sharing.
 
-## Shell Composition Library
+## Shell Composition Library (DEPRECATED — Wave 82)
 
-`tools/nucleus_composition_lib.sh` — 41 reusable bash functions for interactive
-NUCLEUS composition via IPC. Covers capability discovery, JSON-RPC transport,
-petalTongue motor/scene/interaction/proprioception, rhizoCrypt DAG, loamSpine
-ledger, sweetGrass braids, discrete sensor event isolation (click vs hover vs
-keypress), and startup/teardown lifecycle. Springs source this library and
-implement domain hooks. `tools/composition_template.sh` is the minimal starter,
-`tools/ttt_composition.sh` is the reference implementation with branching game
-states, and `tools/composition_nucleus.sh` is the parameterized NUCLEUS launcher.
+`tools/nucleus_composition_lib.sh` — 41 reusable bash functions, now deprecated.
+All business logic absorbed into Rust (ecoPrimal crate). See deprecation headers
+in each script for Rust replacement mappings. The shell library remains as fossil
+record for pattern reference only.
 
 ## Gate Deployment
 
 | Field | Value |
 |-------|-------|
-| **Gate** | eastGate (primary) — coordination hub |
+| **Gate** | eastGate (primary) — experimentation |
 | **Composition** | Full NUCLEUS (13/13 primals) |
 | **NUCLEUS status** | operational — VALIDATED |
 | **Songbird federation** | port 7700 |
 | **LAN mesh** | ready — covalent linking via Songbird TCP |
 
-primalSpring lives on eastGate as the ecosystem coordination spring.
-Other gates evolve their own springs independently — see
+primalSpring lives on eastGate. VPS deployment, binary refresh, and
+membrane ops are owned by cellMembrane. See
 `wateringHole/GATE_SPRING_OWNERSHIP.md` for the full routing table.
-eastGate handles BTSP convergence, plasmidBin CI/CD, upstream primal
-coordination, and ecosystem-wide rollout.
-
-See `infra/whitePaper/gen3/about/HARDWARE.md` for full cluster topology
-(11 towers, 4 HBM2 cards, 3 NPUs, ~1 TB aggregate RAM).
 
 ## Ecosystem Position
 
-primalSpring validates biomeOS composition patterns so that other
-springs and gen4 products can trust the coordination layer. It
-contributes ValidationSink, deploy graphs, overlays, MCP tools,
-bonding metadata, STUN tier definitions, pure-primal proto-nucleate
-graphs, and the shell composition library back to the ecosystem.
-Downstream tributaries reference `wateringHole/` for patterns and
-standards. Per-spring exploration lanes guide convergent evolution:
+primalSpring contributes validated composition patterns, bonding models,
+and IPC abstractions to the ecosystem via `wateringHole/`. Other springs
+and gardens consume these to build their domain-specific compositions.
+
+Contributions: ValidationSink, deploy graphs, overlays, MCP tools,
+bonding metadata, STUN tier definitions, proto-nucleate graphs,
+certification engine (guideStone).
+
+Downstream experiment lanes that exercise compositions:
 ludoSpring (interaction fidelity), hotSpring (async compute/DAG
-memoization), wetSpring (data visualization), neuralSpring (agentic
-composition).
+memoization), wetSpring (data fetch + visualization), neuralSpring
+(agentic composition), tideGlass (gen5 drug repurposing via NUCLEUS).
 
 ## Glacial Checkpoint — Current and Remaining (June 4, 2026)
 
