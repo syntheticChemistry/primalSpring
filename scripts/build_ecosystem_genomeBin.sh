@@ -76,9 +76,9 @@ configure_linkers() {
 # ── Primal source directories ────────────────────────────────────────────────
 
 PRIMALS=(
-    "primals/beardog"
-    "primals/songbird"
-    "primals/nestgate"
+    "primals/bearDog"
+    "primals/songBird"
+    "primals/nestGate"
     "primals/toadStool"
     "primals/squirrel"
     "primals/biomeOS"
@@ -97,9 +97,11 @@ PRIMAL_NAMES=(beardog songbird nestgate toadstool squirrel biomeos barracuda cor
 # primary binary name to harvest. Without this, workspaces that produce
 # multiple executables (e.g., toadStool, Squirrel) cause the build
 # script to stage helper binaries alongside the primal binary.
+# Format: "package:binary" — cargo build -p <package> --bin <binary>
+# Only needed for workspace primals whose binary is in a nested crate.
 declare -A BINARY_OVERRIDES=(
-    [toadStool]="toadstool"
-    [Squirrel]="squirrel"
+    [biomeOS]="biomeos-unibin:biomeos"
+    [skunkBat]="skunk-bat-server:skunkbat"
 )
 
 # ── Argument parsing ─────────────────────────────────────────────────────────
@@ -256,13 +258,21 @@ build_target() {
     # Phase 3: full build
     mkdir -p "$out_dir"
 
-    if cargo build --release --target "$target" --manifest-path "$src_dir/Cargo.toml" 2>"${log_base}_build.log"; then
+    local build_args=(--release --target "$target" --manifest-path "$src_dir/Cargo.toml")
+    local override="${BINARY_OVERRIDES[$name]:-}"
+    local override_bin=""
+    if [[ -n "$override" ]]; then
+        local pkg="${override%%:*}"
+        override_bin="${override##*:}"
+        build_args+=(-p "$pkg" --bin "$override_bin")
+    fi
+
+    if cargo build "${build_args[@]}" 2>"${log_base}_build.log"; then
         local bin_dir="$src_dir/target/$target/release"
         local ext
         ext=$(binary_ext "$target")
         local copied=0
 
-        local override_bin="${BINARY_OVERRIDES[$name]:-}"
         local ext_val
         ext_val=$(binary_ext "$target")
 
