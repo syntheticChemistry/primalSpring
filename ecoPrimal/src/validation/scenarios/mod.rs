@@ -59,6 +59,7 @@ pub mod s_coordination_api;
 pub mod s_crypto_identity_surface;
 pub mod s_coralreef_shader_targets;
 pub mod s_dark_forest_gate;
+pub mod s_deployment_pipeline;
 pub mod s_covalent_bond;
 mod covalent_mesh_trust;
 pub mod s_covalent_mesh;
@@ -154,6 +155,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_cephalization::SCENARIO);
     r.register(s_tower_cns::SCENARIO);
     r.register(s_ecosystem_freshness::SCENARIO);
+    r.register(s_deployment_pipeline::SCENARIO);
     r
 }
 
@@ -164,7 +166,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 51;
+    const EXPECTED_SCENARIO_COUNT: usize = 52;
 
     #[test]
     fn registry_scenario_count() {
@@ -219,9 +221,6 @@ mod tests {
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            // Port collision: storage/content → NestGate:9500, commit/attribution → SweetGrass:9850.
-            // These are intentional aliases (same primal, different capability domain).
-            ("zero-port-standard", 1),
         ];
 
         let r = build_registry();

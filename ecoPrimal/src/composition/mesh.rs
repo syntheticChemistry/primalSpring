@@ -204,19 +204,19 @@ mod tests {
         topo.set_local_gate("east-gate");
         topo.register_gate(
             "east-gate",
-            Some("192.168.1.144:7700".to_owned()),
+            Some("10.0.0.1:7700".to_owned()),
             ["beardog", "songbird", "nestgate"],
             ["security", "discovery", "storage"],
         );
         topo.register_gate(
             "strand-gate",
-            Some("192.168.1.132:7700".to_owned()),
+            Some("10.0.0.2:7700".to_owned()),
             ["toadstool", "barracuda", "coralreef"],
             ["compute", "tensor", "shader"],
         );
         topo.register_gate(
             "west-gate",
-            Some("192.168.1.200:7700".to_owned()),
+            Some("10.0.0.3:7700".to_owned()),
             ["skunkbat"],
             ["defense"],
         );

@@ -83,17 +83,22 @@ fn phase_port_ssot_consistency(v: &mut ValidationResult) {
 
 fn phase_no_port_collisions(v: &mut ValidationResult) {
     let table = tcp_fallback_table();
-    let mut seen: std::collections::HashMap<u16, Vec<&str>> = std::collections::HashMap::new();
+    let mut seen: std::collections::HashMap<u16, Vec<(&str, &str)>> =
+        std::collections::HashMap::new();
 
-    for &(cap, _, _, port) in &table {
-        seen.entry(port).or_default().push(cap);
+    for &(cap, primal, _, port) in &table {
+        seen.entry(port).or_default().push((cap, primal));
     }
 
+    // Multiple capabilities on the same port is fine when they map to the
+    // same primal (intentional aliases, e.g. storage+content → NestGate).
+    // Only flag truly distinct primals sharing a port.
     let collisions: Vec<_> = seen
         .iter()
-        .filter(|(_, caps)| {
-            let unique_caps: std::collections::HashSet<&&str> = caps.iter().collect();
-            unique_caps.len() > 1
+        .filter(|(_, entries)| {
+            let unique_primals: std::collections::HashSet<&str> =
+                entries.iter().map(|(_, p)| *p).collect();
+            unique_primals.len() > 1
         })
         .collect();
 
@@ -101,11 +106,18 @@ fn phase_no_port_collisions(v: &mut ValidationResult) {
         "port_collisions:none",
         collisions.is_empty(),
         &format!(
-            "{} ports with multiple distinct capabilities: {:?}",
+            "{} ports with multiple distinct primals: {:?}",
             collisions.len(),
             collisions
                 .iter()
-                .map(|(p, c)| format!("{p}→{c:?}"))
+                .map(|(p, entries)| format!(
+                    "{p}→[{}]",
+                    entries
+                        .iter()
+                        .map(|(cap, primal)| format!("{cap}({primal})"))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                ))
                 .collect::<Vec<_>>()
         ),
     );
@@ -361,7 +373,7 @@ mod tests {
     }
 
     #[test]
-    fn no_port_collisions_between_primals() {
+    fn no_port_collisions_between_distinct_primals() {
         let table = tcp_fallback_table();
         let mut port_to_primal: std::collections::HashMap<u16, &str> =
             std::collections::HashMap::new();
@@ -379,7 +391,7 @@ mod tests {
 
         assert!(
             collisions.is_empty(),
-            "port collisions: {}",
+            "port collisions between distinct primals: {}",
             collisions.join(", ")
         );
     }

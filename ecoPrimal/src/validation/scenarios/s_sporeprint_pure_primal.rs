@@ -45,6 +45,12 @@ fn find_sporeprint_root() -> Option<PathBuf> {
             return Some(c.clone());
         }
     }
+    if let Ok(root) = std::env::var(crate::env_keys::ECOPRIMALS_ROOT) {
+        let dev = PathBuf::from(root).join("infra").join("sporePrint");
+        if dev.join("config.toml").exists() {
+            return Some(dev);
+        }
+    }
     if let Ok(home) = std::env::var(crate::env_keys::HOME) {
         let dev = PathBuf::from(home)
             .join("Development")

@@ -4,13 +4,18 @@
 # across the NUCLEUS composition. Each phase targets a specific primal and its
 # domain, matching the s_domain_contract_sweep scenario.
 
-[metadata]
+[graph]
 name = "domain-contract-sweep"
 description = "Contract sweep for secrets, bonding, defense, discovery, provenance, spine, network"
 version = "1.0.0"
-wave = "9"
+coordination = "sequential"
 
-[bonding]
+[graph.metadata]
+wave = "9"
+security_model = "btsp_enforced"
+transport = "uds_only"
+
+[graph.bonding_policy]
 policy = "best_effort"
 family_id_prefix = "sweep"
 

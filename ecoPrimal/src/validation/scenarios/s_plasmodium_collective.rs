@@ -267,21 +267,33 @@ fn phase_composition_routing(v: &mut ValidationResult, ctx: &CompositionContext)
     let local_gate = ctx.gate_id().unwrap_or("east-gate");
     topo.set_local_gate(local_gate);
 
+    let mesh_peers = std::env::var("MESH_PEERS").unwrap_or_else(|_| {
+        "east-gate=127.0.0.1:7700,strand-gate=127.0.0.2:7700,iron-gate=127.0.0.3:7700".to_owned()
+    });
+    let peer_addr = |gate: &str| -> Option<String> {
+        mesh_peers
+            .split(',')
+            .find_map(|pair| {
+                let (k, v) = pair.split_once('=')?;
+                (k.trim() == gate).then(|| v.trim().to_owned())
+            })
+    };
+
     topo.register_gate(
         "east-gate",
-        Some("192.168.1.144:7700".to_owned()),
+        peer_addr("east-gate"),
         ["beardog", "songbird", "nestgate"],
         ["security", "discovery", "storage"],
     );
     topo.register_gate(
         "strand-gate",
-        Some("192.168.1.132:7700".to_owned()),
+        peer_addr("strand-gate"),
         ["toadstool", "barracuda"],
         ["compute", "tensor"],
     );
     topo.register_gate(
         "iron-gate",
-        Some("192.168.1.238:7700".to_owned()),
+        peer_addr("iron-gate"),
         ["skunkbat", "coralreef"],
         ["defense", "shader"],
     );

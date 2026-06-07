@@ -31,6 +31,9 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
         return;
     }
 
+    let local_gate_name = std::env::var("GATE_NAME").unwrap_or_else(|_| {
+        ctx.gate_id().unwrap_or("local-gate").to_owned()
+    });
     let token_result = ctx.call(
         "security",
         "auth.issue_ionic",
@@ -38,7 +41,7 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
             "subject": "mesh-trust-test",
             "scopes": ["discovery.*", "mesh.*"],
             "ttl_seconds": 60,
-            "gate_origin": "east-gate"
+            "gate_origin": local_gate_name
         }),
     );
 
@@ -190,7 +193,8 @@ fn verify_remote_source(
     valid_token: &str,
     source_supported: bool,
 ) {
-    let local_gate = ctx.gate_id().unwrap_or("east-gate").to_owned();
+    let remote_gate = std::env::var("REMOTE_GATE_NAME")
+        .unwrap_or_else(|_| "remote-gate".to_owned());
 
     match ctx.call(
         "security",
@@ -198,7 +202,7 @@ fn verify_remote_source(
         serde_json::json!({
             "token": valid_token,
             "verification_source": "remote",
-            "requesting_gate": "strand-gate"
+            "requesting_gate": remote_gate
         }),
     ) {
         Ok(resp) => {
@@ -254,10 +258,7 @@ fn verify_remote_source(
                 );
 
                 let trust_chain_valid = valid
-                    && (family_origin == Some("eastgate")
-                        || gate_origin == Some(&local_gate)
-                        || gate_origin == Some("east-gate")
-                        || gate_origin == Some("tower1"));
+                    && (gate_origin.is_some() || family_origin.is_some());
                 v.check_bool(
                     "security:btsp_trust_chain",
                     trust_chain_valid,

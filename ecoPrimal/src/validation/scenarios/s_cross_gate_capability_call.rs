@@ -12,7 +12,7 @@
 //! 1. Structural: membrane graph declares relay channel + songbird mesh node
 //! 2. Wire contract: `capability.call` registered with correct params schema
 //! 3. Live: local-gate `capability.call` through biomeOS orchestration
-//! 4. Live BTSP: cross-gate `capability.call` eastGate→strandGate with BTSP auth
+//! 4. Live BTSP: cross-gate `capability.call` local→remote with BTSP auth
 
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
@@ -207,8 +207,8 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 /// Phase 4: Live BTSP cross-gate `capability.call` via Songbird federation.
 ///
 /// P0 validation that proves end-to-end trust:
-/// eastGate issues BTSP token → calls capability on strandGate via Songbird →
-/// strandGate verifies token with `verification_source: "remote"` → returns valid result.
+/// local gate issues BTSP token → calls capability on remote gate via Songbird →
+/// remote gate verifies token with `verification_source: "remote"` → returns valid result.
 fn phase_live_btsp_cross_gate(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let mesh = LiveMeshConfig::from_env();
 

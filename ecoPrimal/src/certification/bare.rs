@@ -9,13 +9,15 @@ use crate::bonding::{BondType, BondingPolicy};
 use crate::deploy;
 use crate::validation::ValidationResult;
 
-/// Layer 0: validate deploy graphs, fragments, downstream manifest, bonding types, and checksums.
+/// Layer 0: validate deploy graphs, fragments, downstream manifest, bonding types,
+/// checksums, and deployment readiness of cell graphs.
 pub fn validate_bare_properties(v: &mut ValidationResult) {
     validate_graph_parsing(v);
     validate_fragment_resolution(v);
     validate_manifest_consistency(v);
     validate_bonding_type_wellformed(v);
     validate_checksums(v);
+    validate_deployment_readiness_cells(v);
 }
 
 fn validate_checksums(v: &mut ValidationResult) {
@@ -23,7 +25,7 @@ fn validate_checksums(v: &mut ValidationResult) {
 }
 
 fn validate_graph_parsing(v: &mut ValidationResult) {
-    let graph_dirs: &[&str] = &["graphs/profiles", "graphs/multi_node"];
+    let graph_dirs: &[&str] = &["graphs/profiles", "graphs/multi_node", "graphs/compositions"];
 
     let skip_suffixes: &[&str] = &["_manifest.toml", "_template.toml"];
 
@@ -84,28 +86,30 @@ fn validate_graph_parsing(v: &mut ValidationResult) {
         }
     }
 
-    let validation_dir = Path::new("graphs/spring_validation");
-    if validation_dir.exists() {
-        for result in &deploy::validate_all_graphs(validation_dir) {
-            if skip_suffixes.iter().any(|s| result.path.ends_with(s)) {
-                continue;
-            }
-            total += 1;
-            if result.parsed && result.issues.is_empty() {
-                clean += 1;
-            }
+    for extra_dir in ["graphs/spring_validation", "graphs/spring_deploy"] {
+        let dir = Path::new(extra_dir);
+        if !dir.exists() {
+            continue;
         }
-    }
-
-    let deploy_dir = Path::new("graphs/spring_deploy");
-    if deploy_dir.exists() {
-        for result in &deploy::validate_all_graphs(deploy_dir) {
+        for result in &deploy::validate_all_graphs(dir) {
             if skip_suffixes.iter().any(|s| result.path.ends_with(s)) {
                 continue;
             }
             total += 1;
             if result.parsed && result.issues.is_empty() {
                 clean += 1;
+            } else if !result.parsed {
+                v.check_bool(
+                    &format!("graph_parse:{}", result.path),
+                    false,
+                    "failed to parse",
+                );
+            } else {
+                v.check_bool(
+                    &format!("graph_structural:{}", result.path),
+                    false,
+                    &result.issues.join("; "),
+                );
             }
         }
     }
@@ -271,6 +275,82 @@ fn validate_bonding_type_wellformed(v: &mut ValidationResult) {
         "bare:bondpolicy:ionic_contract_valid",
         errors.is_empty(),
         &detail,
+    );
+}
+
+fn validate_deployment_readiness_cells(v: &mut ValidationResult) {
+    let cells_dir = Path::new("graphs/cells");
+    if !cells_dir.exists() {
+        v.check_skip(
+            "bare:deployment_readiness",
+            "graphs/cells/ not found",
+        );
+        return;
+    }
+
+    let skip_suffixes: &[&str] = &["_manifest.toml", "_template.toml"];
+    let mut checked = 0u32;
+    let mut ready = 0u32;
+
+    let Ok(entries) = std::fs::read_dir(cells_dir) else {
+        v.check_bool("bare:deployment_readiness:read_dir", false, "cannot read graphs/cells/");
+        return;
+    };
+
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if !path.extension().is_some_and(|e| e == "toml") {
+            continue;
+        }
+        let name = path.file_name().unwrap_or_default().to_string_lossy().to_string();
+        if skip_suffixes.iter().any(|s| name.ends_with(s)) {
+            continue;
+        }
+
+        checked += 1;
+        match deploy::validate_deployment_readiness(&path) {
+            Ok(result) => {
+                // Bare certification only flags structural and bonding issues.
+                // Binary/env checks require deployment context.
+                let blocking: Vec<&crate::deploy::ReadinessIssue> = result
+                    .issues
+                    .iter()
+                    .filter(|i| matches!(
+                        i.category,
+                        crate::deploy::ReadinessCategory::Structure
+                            | crate::deploy::ReadinessCategory::BondingInconsistent
+                    ))
+                    .collect();
+
+                if blocking.is_empty() {
+                    ready += 1;
+                } else {
+                    let issue_summary: Vec<String> = blocking
+                        .iter()
+                        .take(3)
+                        .map(|i| i.detail.clone())
+                        .collect();
+                    v.check_bool(
+                        &format!("bare:cell_readiness:{}", result.graph_name),
+                        false,
+                        &issue_summary.join("; "),
+                    );
+                }
+            }
+            Err(e) => {
+                v.check_bool(
+                    &format!("bare:cell_parse:{name}"),
+                    false,
+                    &format!("failed to load: {e}"),
+                );
+            }
+        }
+    }
+
+    v.check_bool(
+        "bare:deployment_readiness:cells_checked",
+        checked > 0,
+        &format!("{ready}/{checked} cell graphs deployment-ready (structural)"),
     );
 }
 

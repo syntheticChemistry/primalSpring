@@ -52,6 +52,7 @@ const COMPOSITION_GRAPHS: &[(&str, &str, &str)] = &[
     ("rootpulse.merge", "graphs/compositions/rootpulse_merge.toml", include_str!("../../../../graphs/compositions/rootpulse_merge.toml")),
     ("rootpulse.diff", "graphs/compositions/rootpulse_diff.toml", include_str!("../../../../graphs/compositions/rootpulse_diff.toml")),
     ("rootpulse.federate", "graphs/compositions/rootpulse_federate.toml", include_str!("../../../../graphs/compositions/rootpulse_federate.toml")),
+    ("foundation.validation", "graphs/compositions/foundation_validation.toml", include_str!("../../../../graphs/compositions/foundation_validation.toml")),
 ];
 
 const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
@@ -66,6 +67,11 @@ const SYNC_PRIMALS: &[&str] = &[
     "biomeos", "nestgate", "membrane", "songbird",
     "rhizocrypt", "loamspine", "sweetgrass", "beardog",
 ];
+const FOUNDATION_PRIMALS: &[&str] = &[
+    "biomeos", "beardog_primal", "songbird_primal", "toadstool",
+    "barracuda", "coralreef", "nestgate", "rhizocrypt",
+    "loamspine", "sweetgrass", "petaltongue", "squirrel",
+];
 
 fn tier_primals(tier: &str) -> &'static [&'static str] {
     match tier {
@@ -78,6 +84,7 @@ fn tier_primals(tier: &str) -> &'static [&'static str] {
         "impulse" => IMPULSE_PRIMALS,
         "potential" => POTENTIAL_PRIMALS,
         "sync" => SYNC_PRIMALS,
+        "foundation" => FOUNDATION_PRIMALS,
         _ => &[],
     }
 }
@@ -361,7 +368,7 @@ mod tests {
 
     #[test]
     fn composition_graph_count() {
-        assert_eq!(COMPOSITION_GRAPHS.len(), 20, "expected 20 composition graphs (10 foundation + 5 meta + 5 rootPulse)");
+        assert_eq!(COMPOSITION_GRAPHS.len(), 21, "expected 21 composition graphs (10 foundation + 5 meta + 5 rootPulse + 1 foundation_validation)");
     }
 
     #[test]

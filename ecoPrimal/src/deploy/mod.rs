@@ -102,6 +102,12 @@ pub struct GraphMeta {
     /// Graph metadata sub-table (fragments, `security_model`, etc.).
     #[serde(default)]
     pub metadata: Option<GraphMetadata>,
+    /// Composition tier (e.g. `"tower"`, `"node"`, `"nest"`, `"meta"`).
+    #[serde(default)]
+    pub composition_tier: Option<String>,
+    /// Composition name within the tier (e.g. `"publish"`, `"compute"`).
+    #[serde(default)]
+    pub composition_name: Option<String>,
     /// Bonding policy sub-table (`[graph.bonding_policy]`).
     ///
     /// Preserved as opaque TOML so consumers (biomeOS, deploy tooling,
@@ -546,6 +552,16 @@ pub fn merge_graphs(base: &DeployGraph, overlay: &DeployGraph) -> DeployGraph {
                 .metadata
                 .clone()
                 .or_else(|| base.graph.metadata.clone()),
+            composition_tier: overlay
+                .graph
+                .composition_tier
+                .clone()
+                .or_else(|| base.graph.composition_tier.clone()),
+            composition_name: overlay
+                .graph
+                .composition_name
+                .clone()
+                .or_else(|| base.graph.composition_name.clone()),
             bonding_policy: overlay
                 .graph
                 .bonding_policy

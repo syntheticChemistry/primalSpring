@@ -16,15 +16,19 @@
 #   cargo run -p primalspring --bin primalspring_unibin -- certify --graph graphs/compositions/foundation_validation.toml
 
 [graph]
+id = "foundation_validation"
 name = "foundation_validation"
 description = "Scientific validation composition: NUCLEUS + provenance trio for sediment deposition"
 version = "1.0.0"
 coordination = "sequential"
+composition_tier = "foundation"
+composition_name = "validation"
 
 [graph.metadata]
 security_model = "btsp_enforced"
 transport = "uds_only"
 tcp_ports = 0
+secure_by_default = true
 composition_model = "nucleated"
 purpose = "foundation"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
@@ -151,7 +155,7 @@ depends_on = ["beardog", "loamspine"]
 health_method = "health.liveness"
 by_capability = "attribution"
 security_model = "tower_delegated"
-capabilities = ["braid.create", "braid.get", "pipeline.attribute"]
+capabilities = ["braid.create", "braid.get", "provenance.attribute"]
 
 # ── Phase 10–11: Meta-Tier (optional) ───────────────────────────────────────
 
