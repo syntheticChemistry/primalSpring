@@ -163,21 +163,14 @@ pub fn capability_to_primal(capability: &str) -> &str {
 
 /// Resolve non-primal capability owners (springs and apps).
 ///
-/// Falls through to the capability name itself if no spring claims it.
+/// TOML-driven: every domain section in `capability_registry.toml` with an
+/// `owner` field is indexed in `DOMAIN_OWNER_MAP`. Returns the capability
+/// name itself if no owner is registered (identity pass-through).
 fn capability_to_spring_owner(capability: &str) -> &str {
-    use crate::primal_names::Spring;
     if let Some(owner) = DOMAIN_OWNER_MAP.get(capability) {
         return leak_or_match(owner);
     }
-    match capability {
-        "tool" | "primalspring" | "coordination" | "bonding" | "composition" | "mcp" => {
-            Spring::PrimalSpring.slug()
-        }
-        "game" => Spring::LudoSpring.slug(),
-        "science" => Spring::NeuralSpring.slug(),
-        "webb" | "esotericwebb" => "esotericwebb",
-        other => other,
-    }
+    capability
 }
 
 /// Typed version — consults the TOML-derived domain→owner map.

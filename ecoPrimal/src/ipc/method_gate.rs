@@ -10,10 +10,9 @@
 //! (require a valid capability token once enforcement is activated).
 //!
 //! Two enforcement modes control behavior:
-//! - **Permissive** (default): protected methods are logged but allowed,
-//!   preserving backward compatibility during ecosystem rollout.
-//! - **Enforced**: protected methods without a valid token are rejected
-//!   with `PERMISSION_DENIED` (-32001).
+//! - **Permissive**: protected methods are logged but allowed (dev/test only).
+//! - **Enforced** (default): protected methods without a valid token are
+//!   rejected with `PERMISSION_DENIED` (-32001).
 //!
 //! ## Token Verification (JH-11 preparation)
 //!
@@ -190,15 +189,17 @@ impl CallerContext {
 /// Enforcement mode for the method gate.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EnforcementMode {
-    /// Log violations but allow all calls (backward-compatible default).
+    /// Log violations but allow all calls (dev/test only).
     Permissive,
-    /// Reject unauthenticated calls to protected methods.
+    /// Reject unauthenticated calls to protected methods (production default).
     Enforced,
 }
 
 impl EnforcementMode {
     /// Resolve from `PRIMALSPRING_AUTH_MODE` env var.
-    /// Defaults to `Permissive` if unset or unrecognized.
+    ///
+    /// Defaults to `Enforced` (fail-closed). Set `PRIMALSPRING_AUTH_MODE=permissive`
+    /// in dev/test launch profiles for backward-compatible permissive behavior.
     #[must_use]
     pub fn from_env() -> Self {
         match std::env::var(crate::env_keys::PRIMALSPRING_AUTH_MODE)
@@ -206,8 +207,8 @@ impl EnforcementMode {
             .to_lowercase()
             .as_str()
         {
-            "enforced" | "enforce" | "strict" => Self::Enforced,
-            _ => Self::Permissive,
+            "permissive" | "dev" | "test" => Self::Permissive,
+            _ => Self::Enforced,
         }
     }
 

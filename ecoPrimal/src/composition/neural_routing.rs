@@ -249,12 +249,54 @@ impl NeuralRoutingTable {
             }
         }
 
+        let mut patterns = Vec::new();
+        if let Some(table) = parsed.as_table() {
+            if let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) {
+                for (group_name, group_val) in compositions {
+                    let tier_str = group_val
+                        .get("tier")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("standalone");
+                    let tier = match tier_str {
+                        "electron" => CompositionTier::Tower,
+                        "proton" => CompositionTier::Node,
+                        "neutron" => CompositionTier::Nest,
+                        "rootpulse" | "pulse" => CompositionTier::Nest,
+                        "meta" => CompositionTier::Meta,
+                        "orchestration" | "ecosystem" | "fall" => CompositionTier::Orchestration,
+                        _ => CompositionTier::Standalone,
+                    };
+                    let primals: Vec<String> = group_val
+                        .get("primals")
+                        .and_then(|v| v.as_array())
+                        .map(|a| a.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                        .unwrap_or_default();
+
+                    let arc_primals: Vec<Arc<str>> = primals.iter().map(|s| Arc::from(s.as_str())).collect();
+
+                    if let Some(sigs) = group_val.get("compositions").and_then(|v| v.as_array()) {
+                        for sig in sigs {
+                            let name = sig.get("name").and_then(|v| v.as_str()).unwrap_or("");
+                            let full_name: Arc<str> = Arc::from(format!("{group_name}_{name}").as_str());
+                            let method: Arc<str> = Arc::from(format!("{group_name}.{name}").as_str());
+                            patterns.push(CompositionPattern {
+                                name: full_name,
+                                methods: vec![method],
+                                primals: arc_primals.clone(),
+                                tier,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
         Self {
             method_index,
             domain_index,
             tier_index,
             primal_index,
-            patterns: Vec::new(),
+            patterns,
         }
     }
 
@@ -421,57 +463,7 @@ pub fn canonical_routing_table() -> NeuralRoutingTable {
             String::new()
         }
     };
-    let mut table = NeuralRoutingTable::from_registry(&toml_str);
-
-    table.register_pattern(CompositionPattern {
-        name: "rootpulse_commit".into(),
-        methods: vec![
-            "crypto.sign".into(),
-            "dag.event.append".into(),
-            "braid.anchor".into(),
-            "spine.commit".into(),
-        ],
-        primals: vec!["beardog".into(), "rhizocrypt".into(), "sweetgrass".into(), "loamspine".into()],
-        tier: CompositionTier::Nest,
-    });
-
-    table.register_pattern(CompositionPattern {
-        name: "tower_atomic_bootstrap".into(),
-        methods: vec![
-            "crypto.sign_ed25519".into(),
-            "discovery.announce".into(),
-            "security.audit_event".into(),
-        ],
-        primals: vec!["beardog".into(), "songbird".into(), "skunkbat".into()],
-        tier: CompositionTier::Tower,
-    });
-
-    table.register_pattern(CompositionPattern {
-        name: "nest_store".into(),
-        methods: vec![
-            "content.put".into(),
-            "dag.event.append".into(),
-            "spine.seal".into(),
-            "braid.create".into(),
-        ],
-        primals: vec!["nestgate".into(), "rhizocrypt".into(), "loamspine".into(), "sweetgrass".into()],
-        tier: CompositionTier::Nest,
-    });
-
-    table.register_pattern(CompositionPattern {
-        name: "ionic_bond_lifecycle".into(),
-        methods: vec![
-            "bonding.propose".into(),
-            "crypto.ionic_bond.verify_proposal".into(),
-            "bonding.accept".into(),
-            "bonding.status".into(),
-            "bonding.terminate".into(),
-        ],
-        primals: vec!["primalspring".into(), "beardog".into()],
-        tier: CompositionTier::Standalone,
-    });
-
-    table
+    NeuralRoutingTable::from_registry(&toml_str)
 }
 
 #[cfg(test)]
@@ -570,20 +562,8 @@ mod tests {
         let rootpulse = patterns.iter().find(|p| &*p.name == "rootpulse_commit");
         assert!(rootpulse.is_some(), "rootpulse_commit pattern should exist");
         let rp = rootpulse.unwrap();
-        assert_eq!(rp.primals.len(), 4);
+        assert_eq!(rp.primals.len(), 6, "TOML rootpulse has 6 primals");
         assert_eq!(rp.tier, CompositionTier::Nest);
-    }
-
-    #[test]
-    fn ionic_bond_pattern_spans_beardog_and_primalspring() {
-        let table = test_table();
-        let ionic = table
-            .patterns()
-            .iter()
-            .find(|p| &*p.name == "ionic_bond_lifecycle")
-            .expect("ionic_bond_lifecycle should exist");
-        assert!(ionic.primals.iter().any(|s| &**s == "beardog"));
-        assert!(ionic.primals.iter().any(|s| &**s == "primalspring"));
     }
 
     #[test]
@@ -607,17 +587,14 @@ mod tests {
     #[test]
     fn composition_tier_patterns_extracted() {
         let table = test_table();
-        // Signal graphs (nest.store, tower.publish, etc.) are composition
-        // patterns over methods, not individual method entries. Verify that
-        // our composition patterns cover the signal-tier methods.
         let nest_store = table
             .patterns()
             .iter()
             .find(|p| &*p.name == "nest_store");
         assert!(nest_store.is_some(), "nest_store pattern should exist");
         let ns = nest_store.unwrap();
-        assert!(ns.methods.iter().any(|s| &**s == "content.put"));
-        assert!(ns.methods.iter().any(|s| &**s == "dag.event.append"));
+        assert!(ns.methods.iter().any(|s| &**s == "nest.store"),
+            "TOML-driven pattern references signal method nest.store");
     }
 
     #[test]

@@ -5,6 +5,10 @@
 
 //! Atomic test orchestration harness.
 //!
+//! **Ownership**: Local experimentation only. Production orchestration is
+//! biomeOS `nucleus start` via the cellMembrane pipeline. This module
+//! remains for backward compatibility with existing integration tests.
+//!
 //! [`AtomicHarness`] spawns a set of primals for an atomic composition,
 //! respecting topological startup ordering from a deploy graph, and
 //! tears them down on drop.

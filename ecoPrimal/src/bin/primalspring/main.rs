@@ -14,6 +14,8 @@
 mod cli;
 mod registry_lint;
 mod serve;
+mod validate_nucleus;
+mod validate_release;
 
 use clap::Parser;
 
@@ -48,6 +50,12 @@ fn main() {
         cli::Commands::Status => cmd_status(),
         cli::Commands::Checksums { ref output } => cmd_checksums(output),
         cli::Commands::Registry { ref check } => registry_lint::run(check),
+        cli::Commands::Release { skip_coverage, skip_nucleus, json } => {
+            validate_release::run(validate_release::ReleaseArgs { skip_coverage, skip_nucleus, json });
+        }
+        cli::Commands::Nucleus { full, skip_launch, json } => {
+            validate_nucleus::run(validate_nucleus::GateArgs { full, skip_launch, json });
+        }
         cli::Commands::Version => cmd_version(),
     }
 }

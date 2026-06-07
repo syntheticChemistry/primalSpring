@@ -140,9 +140,9 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     );
     if let Some(rp) = rootpulse {
         v.check_bool(
-            "rootpulse-4-primals",
-            rp.primals.len() == 4,
-            &format!("rootpulse involves {} primals", rp.primals.len()),
+            "rootpulse-6-primals",
+            rp.primals.len() == 6,
+            &format!("rootpulse involves {} primals (TOML-driven)", rp.primals.len()),
         );
     }
 

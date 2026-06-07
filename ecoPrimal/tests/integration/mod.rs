@@ -50,6 +50,7 @@ pub fn setup_server() -> (ServerGuard, PathBuf) {
         .arg("server")
         .env("XDG_RUNTIME_DIR", &runtime_dir)
         .env("FAMILY_ID", "default")
+        .env("PRIMALSPRING_AUTH_MODE", "permissive")
         .spawn()
         .expect("spawn primalspring_primal server");
 

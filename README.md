@@ -8,8 +8,8 @@
 | **Version** | 0.9.31 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 929+ total (lib + integration + binary + doc) — 2 ignored |
-| **Experiments** | 93 (21 tracks) — 61 validation scenarios (10 tracks) |
+| **Tests** | 931 total (884 lib + 10 integration + 4 ecosystem + 16 experiment + 17 doc) — 2 ignored |
+| **Experiments** | 96 (21 tracks) — 51 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 113 graph TOMLs (~80 deploy + 33 compositions) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
@@ -36,7 +36,9 @@ Its validation targets are the compositions themselves.
 
 Deployment pipelines, VPS ops, and upstream team coordination have been
 handed off to cellMembrane and the wateringHole overwatch (Wave 82c).
-primalSpring focuses on what springs do: run experiments.
+primalSpring focuses on what springs do: run experiments. Validated
+patterns flow downstream to **cellMembrane** (binary evolution + VPS ops)
+and **projectNUCLEUS** (polished agnostic deployment product).
 
 ## Architecture
 
@@ -51,7 +53,7 @@ primalSpring/
 │   │   ├── graphs/                # Graph execution pattern types (5 patterns)
 │   │   ├── emergent/              # Emergent system validation (RootPulse, RPGPT, CoralForge)
 │   │   ├── bonding/               # Multi-gate bonding models (Covalent, Metallic, Ionic, Weak, OMS) + graph metadata + STUN tiers
-│   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, capability, error, dispatch, extract, resilience, transport, tcp, methods, probes, provenance, proptest, btsp_handshake
+│   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, capability, error, dispatch, extract, resilience, transport, tcp, methods, provenance, proptest, btsp_handshake
 │   │   ├── launcher/              # Primal binary discovery, spawn, profiles, socket nucleation (sync biomeOS port)
 │   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
 │   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
@@ -74,7 +76,7 @@ primalSpring/
 │       ├── server_ecosystem_compose.rs   # Nest/Node composition (#[ignore])
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
 ├── experiments/                   # 93 validation experiments (21 tracks)
-├── config/                        # Launch profiles, deployment matrix, capability registry, composition tools
+├── config/                        # Launch profiles, capability registry, composition tools
 ├── graphs/                        # 82 deploy graph TOMLs + 32 atomic composition graphs
 │   ├── compositions/             # 32 atomic composition graphs (tower/node/nest/meta/rootpulse/ecosystem/impulse/sync)
 │   ├── fragments/                # 6 atomic building blocks (tower, node, nest, nucleus, meta, provenance)
@@ -90,13 +92,8 @@ primalSpring/
 │   └── federation/               # 1 content distribution
 ├── docs/                          # Structured gap registry and subsystem documentation
 │   └── PRIMAL_GAPS.md            # Per-primal gap inventory with severity and fix paths
-├── tools/                         # Operational tooling
-│   ├── nucleus_composition_lib.sh # Reusable NUCLEUS composition library (source from domain scripts)
-│   ├── composition_template.sh   # Minimal starter skeleton for spring compositions
-│   ├── desktop_nucleus.sh        # Desktop NUCLEUS launcher (wraps Rust nucleus_launcher)
-│   ├── ttt_composition.sh        # Reference implementation: Tic-Tac-Toe with full NUCLEUS
-│   ├── cell_launcher.sh           # Cell deployment launcher (wraps nucleus_launcher)
-│   └── ws_gateway.py             # Dev WebSocket-to-IPC bridge (planned Rust replacement)
+├── tools/                         # Deprecated — all tooling absorbed into Rust
+│   └── ws_gateway.py             # Dev WebSocket-to-IPC bridge (deprecated, Rust axum planned)
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
 ├── wateringHole/                  # Fossilized — see infra/wateringHole/
@@ -176,7 +173,7 @@ Install the tool (`cargo install cargo-llvm-cov --locked` or a release binary) a
 cargo coverage
 ```
 
-This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report. Release gate (`scripts/validate_release.sh`) enforces a **70%** floor. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
+This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report. Release gate (`primalspring release`) enforces a **70%** floor. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
 
 ## Server Mode
 
@@ -200,26 +197,23 @@ The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 
 | `lifecycle.status` | Primal status report |
 | `mcp.tools.list` | MCP tool definitions for Squirrel AI |
 
-## Deployment Matrix
+## Validation Gates
 
-primalSpring includes a deployment validation matrix (`config/deployment_matrix.toml`) that
-defines **44 test cells** across architectures (x86_64, aarch64), topologies, network presets,
-and transport modes. Each cell validates a specific primal composition under specific conditions.
+primalSpring provides two Rust-native validation gates (Wave 82c, replacing
+the former bash scripts):
 
 ```bash
-# Run all cells (dry-run to see what would execute)
-scripts/validate_deployment_matrix.sh --dry-run --all
+# Release quality gate (fmt, clippy, deny, tests, docs, depot health)
+cargo run --bin primalspring -- release
 
-# Run a specific cell
-scripts/validate_deployment_matrix.sh --cell tower-x86-homelan
-
-# Run all cells in an experiment group
-scripts/validate_deployment_matrix.sh --tier docker
+# NUCLEUS deployment validation (pre-flight, launch, health, federation)
+cargo run --bin primalspring -- nucleus
+cargo run --bin primalspring -- nucleus --full   # includes lifecycle (Tier 4)
 ```
 
-Topology categories: Tower (2-node), NUCLEUS (3-node), Federation (10-node), Bonding (ionic, metallic, OMS),
-Showcase (fieldMouse, Albatross, skunkBat, neuromorphic, gaming), Agentic (biomeOS+Squirrel+petalTongue),
-Storytelling (esotericWebb+ludoSpring+Squirrel+petalTongue).
+Both gates output human-readable text by default and machine-readable JSON
+with `--json`. The `release` gate calls `nucleus` automatically unless
+`--skip-nucleus` is passed.
 
 ## Deploy Graphs
 
@@ -535,52 +529,34 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 - `specs/DESKTOP_SESSION_MODEL.md` — Desktop session model (petalTongue + biomeOS)
 - `specs/LIVE_GUI_COMPOSITION_PATTERN.md` — Live GUI composition patterns
 - ~~`specs/SHOWCASE_MINING_REPORT.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
-- `config/deployment_matrix.toml` — 44-cell deployment validation matrix
 - `whitePaper/baseCamp/README.md` — baseCamp paper pointer
 
 ## Scripts and Tools
 
-**`scripts/`** (11 files) — build, validation, and deployment:
+**`scripts/`** (5 lab scripts) — experimentation execution layer:
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/validate_release.sh` | Release quality gate: fmt + clippy + deny + test floor (400+) + docs + plasmidBin Layer 1+2 |
-| `scripts/validate_deployment_matrix.sh` | Run deployment matrix cells: topology × arch × preset × transport validation |
 | `scripts/validate_composition.sh` | Validate NUCLEUS composition health and binary presence |
 | `scripts/validate_local_lab.sh` | Quick local lab validation for benchScale topologies |
-| `scripts/validate_remote_gate.sh` | Probe a remote gate's NUCLEUS health via TCP JSON-RPC |
-| `scripts/build_ecosystem_genomeBin.sh` | Build all primals across the full genomeBin target matrix (9 targets, 3 tiers) |
-| ~~`scripts/build_ecosystem_musl.sh`~~ | **Deleted** — superseded by `build_ecosystem_genomeBin.sh` |
-| `scripts/prepare_spore_payload.sh` | Assemble USB spore deployment payload (binaries + graphs + scripts + genetics) |
 | `scripts/chaos-inject.sh` | Inject chaos conditions (partition, kill, disk-fill, slow DNS, clock drift) |
 | `scripts/pixel_cross_arch_lab.sh` | Cross-arch validation lab for Pixel/Android targets |
 | `scripts/lan_covalent_lab.sh` | LAN covalent bonding lab for multi-node federation |
 
-**`tools/`** (25 files) — operational tooling for NUCLEUS composition, method auditing, and desktop:
+Former CI/validation scripts (`validate_release.sh`, `validate_nucleus_deployment.sh`,
+`validate_deployment_matrix.sh`, etc.) have been replaced by the `primalspring release`
+and `primalspring nucleus` Rust subcommands (Wave 82c deep debt sprint).
+
+**`tools/`** (1 file) — deprecated, pending Rust replacement:
 
 | Tool | Purpose |
 |------|---------|
-| `tools/nucleus_composition_lib.sh` | Reusable NUCLEUS composition library (sourced by domain scripts) |
-| `tools/nucleus_launcher.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use Rust `nucleus_launcher start/stop/status` |
-| `tools/desktop_nucleus.sh` | 13-primal NUCLEUS launcher with auto-symlink for petalTongue discovery |
-| `tools/check_method_*.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `primalspring registry --check {source\|graphs\|coverage\|all}` |
-| `tools/fetch_primals.sh` | **REMOVED** Wave 66. Use `membrane plasmid.fetch` (fossil: `fossilRecord/scripts_wave65_may2026/`) |
-| `tools/regenerate_checksums.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `primalspring checksums` |
-| `tools/validate_compositions.py` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `primalspring validate --track composition` |
-| `tools/ws_gateway.py` | Thin WebSocket-to-IPC bridge (no business logic) |
-| `tools/composition_template.sh` | Template generator for new composition deploy graphs |
-| `tools/composition_nucleus.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use Rust `nucleus_launcher` |
-| `tools/ttt_composition.sh` | Tic-Tac-Toe composition demo (ludoSpring + petalTongue + Squirrel) |
-| `tools/ttt_nucleus.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use `nucleus_launcher --family-id ttt` |
-| `tools/cell_launcher.sh` | Start a single cellular deployment from `graphs/cells/` |
-| `tools/gen_seed_fingerprints.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. See `certification/entropy.rs` |
-| `tools/live_nucleus.sh` | **ARCHIVED** Wave 55b → `fossilRecord/`. Use Rust `nucleus_launcher` |
-| `tools/nucleus_crypto_bootstrap.sh` | Bootstrap BearDog + BTSP crypto layer for NUCLEUS |
-| `tools/desktop_session.sh` | Launch desktop substrate session (petalTongue + agentic loop) |
-| `tools/tictactoe.sh` | Standalone TTT quick-launch (wraps ttt_composition) |
-| `tools/push_demo_scene.sh` | Push a demo scene to a running petalTongue instance |
-| `tools/godot_bridge.sh` | Launch Godot-to-primal IPC bridge process |
-| `tools/godot_bridge.gd` | GDScript client for Godot-to-primal IPC bridge |
+| `tools/ws_gateway.py` | Dev WebSocket-to-IPC bridge (deprecated — Rust axum gateway planned) |
+
+All other tools (25+ shell scripts, GDScript, Python) have been deleted or fossilized
+to `fossilRecord/` as part of the Wave 82c deep debt sprint. Shell composition library,
+NUCLEUS launchers, method audit tools, and desktop launchers are all absorbed into
+idiomatic Rust (`nucleus_launcher`, `primalspring` subcommands).
 
 ---
 

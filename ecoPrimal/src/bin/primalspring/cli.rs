@@ -82,6 +82,30 @@ pub enum Commands {
         #[arg(long, default_value = "all")]
         check: String,
     },
+    /// Run release validation pipeline (fmt, clippy, tests, docs, depot).
+    Release {
+        /// Skip code coverage check.
+        #[arg(long, default_value_t = false)]
+        skip_coverage: bool,
+        /// Skip NUCLEUS deployment gate.
+        #[arg(long, default_value_t = false)]
+        skip_nucleus: bool,
+        /// Output JSON summary.
+        #[arg(long, default_value_t = false)]
+        json: bool,
+    },
+    /// Validate NUCLEUS deployment from plasmidBin depot (replaces bash gate).
+    Nucleus {
+        /// Run Tier 0-4 including lifecycle (shutdown + restart).
+        #[arg(long, default_value_t = false)]
+        full: bool,
+        /// Skip NUCLEUS launch — validate against running instance.
+        #[arg(long, default_value_t = false)]
+        skip_launch: bool,
+        /// Output JSON summary.
+        #[arg(long, default_value_t = false)]
+        json: bool,
+    },
     /// Show version information.
     Version,
 }

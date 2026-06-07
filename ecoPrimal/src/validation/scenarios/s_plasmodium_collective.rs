@@ -65,26 +65,32 @@ fn phase_structural(v: &mut ValidationResult) {
         "discovery.peers in registry",
     );
 
+    let mesh_peers = std::env::var("MESH_PEERS").unwrap_or_else(|_| {
+        "east-gate=127.0.0.1:7700,strand-gate=127.0.0.2:7700,iron-gate=127.0.0.3:7700".to_owned()
+    });
     let mut topo = MeshTopology::new();
     topo.set_local_gate("east-gate");
-    topo.register_gate(
-        "east-gate",
-        Some("192.168.1.144:7700".to_owned()),
-        ["beardog", "songbird", "nestgate"],
-        ["security", "discovery", "storage"],
-    );
-    topo.register_gate(
-        "strand-gate",
-        Some("192.168.1.132:7700".to_owned()),
-        ["toadstool", "barracuda"],
-        ["compute", "tensor"],
-    );
-    topo.register_gate(
-        "iron-gate",
-        Some("192.168.1.238:7700".to_owned()),
-        ["skunkbat", "coralreef"],
-        ["defense", "shader"],
-    );
+
+    let gate_configs: &[(&str, &[&str], &[&str])] = &[
+        ("east-gate",   &["beardog", "songbird", "nestgate"], &["security", "discovery", "storage"]),
+        ("strand-gate", &["toadstool", "barracuda"],          &["compute", "tensor"]),
+        ("iron-gate",   &["skunkbat", "coralreef"],           &["defense", "shader"]),
+    ];
+
+    for (gate, primals, caps) in gate_configs {
+        let addr = mesh_peers
+            .split(',')
+            .find_map(|pair| {
+                let (k, v) = pair.split_once('=')?;
+                (k.trim() == *gate).then(|| v.trim().to_owned())
+            });
+        topo.register_gate(
+            *gate,
+            addr,
+            primals.iter().map(|s| s.to_string()),
+            caps.iter().map(|s| s.to_string()),
+        );
+    }
 
     v.check_bool(
         "structure:topology_3_gates",

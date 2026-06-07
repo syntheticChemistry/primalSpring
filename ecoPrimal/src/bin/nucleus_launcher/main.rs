@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! `nucleus_launcher` — Rust replacement for `plasmidBin/nucleus_launcher.sh`.
+//! `nucleus_launcher` — local experimentation NUCLEUS lifecycle manager.
+//!
+//! **Ownership**: Local experimentation launcher for eastGate lab only.
+//! Production NUCLEUS lifecycle is biomeOS via the cellMembrane pipeline
+//! (`biomeos nucleus start`). This binary validates composition startup
+//! patterns that are then consumed by projectNUCLEUS.
 //!
 //! Orchestrates primal startup in dependency order, performs health checks,
 //! and seeds Songbird's registry with capability domains.
-//!
-//! Wave 47: initial Rust elevation from bash launcher.
 
 #![forbid(unsafe_code)]
 

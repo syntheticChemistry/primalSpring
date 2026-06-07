@@ -2,25 +2,61 @@
 
 # primalSpring — Context
 
-## What
+## Identity
 
-primalSpring is the experimentation spring for primals and their
-compositions. Its domain is discovering, validating, and evolving
-how primals work together — atomic compositions (Tower, Node, Nest,
-Full NUCLEUS), graph execution patterns, emergent systems, multi-node
-bonding, mesh behavior, and cross-gate interaction.
+**primalSpring is the composition experimentation laboratory.**
 
 Like every other spring, primalSpring runs experiments. Where hotSpring
 experiments with physics and wetSpring experiments with biology,
-primalSpring experiments with primals. The compositions are the
-experiments. The deploy graphs are the protocols. The bonding models
-are the hypotheses.
+primalSpring experiments with primals — atomic compositions (Tower,
+Node, Nest, Full NUCLEUS), graph execution patterns, emergent systems,
+multi-node bonding, mesh behavior, and cross-gate interaction.
 
-primalSpring does NOT own deployment pipelines, VPS ops, binary
-harvesting, or upstream team coordination. Those responsibilities
-belong to cellMembrane (deployment), projectNUCLEUS (composition
-consumption), and the wateringHole overwatch (coordination).
-See `WAVE82C_OVERWATCH_SHIFT_PLASMIDIN_HANDOFF_JUN06_2026.md`.
+The compositions are the experiments. The deploy graphs are the
+protocols. The bonding models are the hypotheses.
+
+## Ownership Boundaries
+
+### What primalSpring Owns
+
+- **Composition validation library** — `CompositionContext`, routing,
+  mesh topology, parity checks, liveness probing
+- **Certification engine** — guideStone L0-L8 (51 scenarios, 9-layer
+  certification), `primalspring certify`
+- **Bonding proofs** — multi-gate bonding models, STUN tiers, ionic
+  RPC, content distribution federation
+- **Graph authorship** — deploy graph structural validation, fragment
+  composition, topological sorting
+- **Gap discovery loop** — experiment failures drive upstream primal
+  evolution via structured gap reports
+
+### What primalSpring Does NOT Own
+
+| Responsibility | Owner |
+|----------------|-------|
+| Deployment pipelines, VPS ops, binary harvesting | **cellMembrane** |
+| Workload packaging, user-facing deployment polish | **projectNUCLEUS** |
+| Team coordination, evolution blurbs, FRAGOs | **wateringHole overwatch** |
+| Upstream primal code | **Individual primal teams** |
+
+## Three-Tier Consumption Model
+
+```
+primalSpring ──validated patterns──▶ wateringHole/ ──▶ cellMembrane (deploys)
+      │                                                     │
+      │──composition library + certification──▶ projectNUCLEUS (packages)
+      │                                                     │
+      ◀──revalidation after downstream integration──────────┘
+```
+
+1. **primalSpring** publishes validated composition patterns, library
+   APIs, and certification gates to `wateringHole/`
+2. **cellMembrane** consumes those patterns for VPS deployment, binary
+   evolution, and membrane ops
+3. **projectNUCLEUS** consumes the composition library and certification
+   engine as a polished, agnostic deployment product
+4. **primalSpring** revalidates patterns after downstream integration,
+   closing the feedback loop
 
 ## Role
 
@@ -45,7 +81,7 @@ to primalSpring as experiment targets.
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
   2 cross-spring + 1 federation + 1 foundation + 12 cell graphs + `compositions/` tier)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
-- **tools/** — desktop NUCLEUS, composition library + template, TTT reference, Godot bridge, WS gateway (6 CI scripts deprecated → Rust subcommands Wave 54b, 4 NUCLEUS launchers deprecated → Rust nucleus_launcher Wave 51→54)
+- **tools/** — `ws_gateway.py` (deprecated, Rust axum replacement planned). All other tools fossilized or absorbed into Rust subcommands (Wave 82c deep debt sprint)
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -63,7 +99,7 @@ to primalSpring as experiment targets.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 61 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 51 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -85,9 +121,19 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 82 (June 6, 2026) — 61 scenarios (10 tracks, 3 tiers),
-490+ registered capability methods, 93 experiments (21 tracks), 113 graph TOMLs
-(~80 deploy + 33 compositions), 44-cell deployment matrix. 929 tests passing.
+v0.9.31 Wave 82c (June 7, 2026) — 51 scenarios (10 tracks, 3 tiers),
+490+ registered capability methods, 96 experiments (21 tracks), 113 graph TOMLs
+(~80 deploy + 33 compositions). 931 tests passing (884 lib + 10 integration +
+4 ecosystem + 16 experiment + 17 doc). Role formalized: composition
+experimentation laboratory. Deployment ops handed to cellMembrane, workload
+packaging to projectNUCLEUS.
+**Wave 82c Deep Debt Sprint COMPLETE**: 3 fossil tool scripts deleted,
+`validate_nucleus_deployment.sh` and `validate_release.sh` replaced by
+`primalspring nucleus` and `primalspring release` Rust subcommands,
+hardcoded routing patterns eliminated (TOML-driven), `Command::new("kill")`
+replaced with `nix` crate safe signals, default auth mode evolved from
+Permissive to Enforced (fail-closed). 5 lab scripts remain, 1 deprecated
+tool (`ws_gateway.py`). Zero bash in production path.
 13/13 BTSP convergence. All 4 upstream gaps RESOLVED.
 **Wave 82 Deep Debt Sprint COMPLETE (16/16 tasks)**: Type-safe dispatch (CapabilityDomain
 newtypes, table-driven handlers), TOML-driven config (ports, bind flags, VPS IPs, env keys),

@@ -70,21 +70,18 @@ pub(super) fn stop_existing(primal: &str) {
 
 /// Send SIGTERM to a process by PID.
 ///
-/// Uses the `kill` binary (POSIX standard) rather than libc to maintain
-/// `forbid(unsafe_code)`.
+/// Uses the `nix` crate's safe wrapper around `kill(2)` — no unsafe code,
+/// no external process spawn, typed `Errno` for ESRCH (process already gone).
 pub(super) fn signal_pid(pid: u32) -> std::io::Result<()> {
-    let status = std::process::Command::new("kill")
-        .args(["-15", &pid.to_string()])
-        .stdout(std::process::Stdio::null())
-        .stderr(std::process::Stdio::null())
-        .status()?;
-    if status.success() {
-        Ok(())
-    } else {
-        Err(std::io::Error::other(format!(
-            "kill -15 {pid} exited with {status}"
-        )))
-    }
+    use nix::sys::signal::{Signal, kill};
+    use nix::unistd::Pid;
+
+    let nix_pid = Pid::from_raw(i32::try_from(pid).map_err(|e| {
+        std::io::Error::other(format!("PID {pid} out of i32 range: {e}"))
+    })?);
+    kill(nix_pid, Signal::SIGTERM).map_err(|e| {
+        std::io::Error::other(format!("kill({pid}, SIGTERM): {e}"))
+    })
 }
 
 /// Scan `/proc` for processes matching the primal binary pattern.

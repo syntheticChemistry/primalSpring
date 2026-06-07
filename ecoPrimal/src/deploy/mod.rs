@@ -3,6 +3,10 @@
 
 //! Deploy graph parsing and structural validation.
 //!
+//! **Ownership**: Graph parsing and structural validation only. Production
+//! deploy execution is cellMembrane's `membrane deploy`. primalSpring
+//! authors and validates graph structure; cellMembrane executes them.
+//!
 //! Loads biomeOS BYOB deploy graphs from TOML, validates their structure,
 //! and optionally probes whether each node's primal is actually running.
 //! This bridges the gap between static graph specs and live deployments.

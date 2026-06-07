@@ -3,12 +3,16 @@
 
 //! Primal process launching and lifecycle management.
 //!
+//! **Ownership**: Validation tooling only. The production launcher path is
+//! biomeOS `nucleus start` via the cellMembrane pipeline. primalSpring uses
+//! this module for local experimentation on eastGate.
+//!
 //! # VPS Deployment Standard
 //!
 //! For cellMembrane VPS deployments, the standard path is:
 //!
 //! ```text
-//! plasmidBin binaries → deploy_membrane.sh / biomeos deploy → cell graph (spawn=false)
+//! plasmidBin binaries → membrane deploy / biomeos deploy → cell graph (spawn=false)
 //! ```
 //!
 //! Only [`discover_binary`], [`SocketNucleation`], [`LaunchProfile`], and
