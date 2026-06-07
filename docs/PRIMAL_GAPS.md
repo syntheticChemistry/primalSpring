@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-06 (Wave 85: Cascade evolution complete. Parallel sync (tokio::JoinSet) — 22 repos in 6.9s (was 59s). Freshness auto-publishes. CM-CASCADE-01, CM-FRESHNESS-01, CM-FORGEJO-01 all RESOLVED. Transport injection (PRIMAL-TRANSPORT-01) next P2 evolution target for all primals. Critical path: mesh enrollment from other gates → 3+ gate Plasmodium collective → stadial.)
+> **Last updated**: 2026-06-06 (Wave 86: skunkBat UDS deployed — 13/13 primals on UDS, zero standalone TCP. 12/13 health.liveness responding (petaltongue BTSP-gated, P2 upstream). Cascade parallel (6.9s). Transport injection next. Critical path: mesh.init 2-gate proof (eastGate ↔ strandGate) → 3-gate stadial.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
