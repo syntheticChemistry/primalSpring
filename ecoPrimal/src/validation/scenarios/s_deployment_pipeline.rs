@@ -111,52 +111,49 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     phase_cell_readiness(v);
 
     v.section("Phase 5: Live — depot binary resolution");
-    phase_live_binary_resolution(v, ctx, &depot_root);
+    phase_live_binary_resolution(v, ctx, depot_root.as_ref());
 }
 
 fn phase_depot_layout(v: &mut ValidationResult) -> Option<PathBuf> {
     let depot_root = resolve_depot_root();
 
-    match &depot_root {
-        Some(root) => {
-            v.check_bool(
-                "depot:directory_exists",
-                true,
-                &format!("depot at {}", root.display()),
-            );
+    if let Some(root) = &depot_root {
+        v.check_bool(
+            "depot:directory_exists",
+            true,
+            &format!("depot at {}", root.display()),
+        );
 
-            let mut found = 0u32;
-            let mut missing = Vec::new();
-            for &primal in EXPECTED_PRIMALS {
-                let bin = root.join(primal);
-                if bin.exists() {
-                    found += 1;
-                } else {
-                    missing.push(primal);
-                }
+        let mut found = 0u32;
+        let mut missing = Vec::new();
+        for &primal in EXPECTED_PRIMALS {
+            let bin = root.join(primal);
+            if bin.exists() {
+                found += 1;
+            } else {
+                missing.push(primal);
             }
+        }
 
-            v.check_bool(
-                "depot:primal_count",
-                found as usize == EXPECTED_PRIMALS.len(),
-                &format!(
-                    "{found}/{} primals in depot{}",
-                    EXPECTED_PRIMALS.len(),
-                    if missing.is_empty() {
-                        String::new()
-                    } else {
-                        format!(" (missing: {})", missing.join(", "))
-                    }
-                ),
-            );
-        }
-        None => {
-            v.check_skip(
-                "depot:directory_exists",
-                "no depot found ($ECOPRIMALS_PLASMID_BIN or $ECOPRIMALS_ROOT/infra/plasmidBin)",
-            );
-            v.check_skip("depot:primal_count", "no depot");
-        }
+        v.check_bool(
+            "depot:primal_count",
+            found as usize == EXPECTED_PRIMALS.len(),
+            &format!(
+                "{found}/{} primals in depot{}",
+                EXPECTED_PRIMALS.len(),
+                if missing.is_empty() {
+                    String::new()
+                } else {
+                    format!(" (missing: {})", missing.join(", "))
+                }
+            ),
+        );
+    } else {
+        v.check_skip(
+            "depot:directory_exists",
+            "no depot found ($ECOPRIMALS_PLASMID_BIN or $ECOPRIMALS_ROOT/infra/plasmidBin)",
+        );
+        v.check_skip("depot:primal_count", "no depot");
     }
 
     depot_root
@@ -182,7 +179,7 @@ fn phase_checksums(v: &mut ValidationResult) {
                     let entries = table
                         .get(&triple)
                         .and_then(|t| t.as_table())
-                        .map_or(0, |t| t.len());
+                        .map_or(0, toml::value::Table::len);
 
                     v.check_bool(
                         "checksums:entry_count",
@@ -292,7 +289,7 @@ fn phase_cell_readiness(v: &mut ValidationResult) {
                     arr.iter()
                         .filter(|c| {
                             c.get("vps_standard")
-                                .and_then(|v| v.as_bool())
+                                .and_then(toml::Value::as_bool)
                                 .unwrap_or(false)
                         })
                         .filter_map(|c| c.get("file").and_then(|f| f.as_str()).map(String::from))
@@ -348,12 +345,12 @@ fn phase_cell_readiness(v: &mut ValidationResult) {
 fn phase_live_binary_resolution(
     v: &mut ValidationResult,
     _ctx: &mut CompositionContext,
-    depot_root: &Option<PathBuf>,
+    depot_root: Option<&PathBuf>,
 ) {
-    if depot_root.is_none() {
+    let Some(_root) = depot_root else {
         v.check_skip("live:binary_resolution", "no depot — skipping live phase");
         return;
-    }
+    };
 
     let mut resolved = 0u32;
     let mut unresolved = Vec::new();

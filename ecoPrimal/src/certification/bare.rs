@@ -299,7 +299,7 @@ fn validate_deployment_readiness_cells(v: &mut ValidationResult) {
 
     for entry in entries.flatten() {
         let path = entry.path();
-        if !path.extension().is_some_and(|e| e == "toml") {
+        if path.extension().is_none_or(|e| e != "toml") {
             continue;
         }
         let name = path.file_name().unwrap_or_default().to_string_lossy().to_string();

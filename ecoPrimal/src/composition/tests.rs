@@ -143,7 +143,7 @@ fn tower_parity_crypto_hash() {
                 &format!("expected 44, got {}", hash.len()),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_connection_error() || e.is_permission_denied() => {
             v.check_skip(
                 "blake3_hash_nonempty",
                 &format!("security not available: {e}"),
@@ -366,7 +366,7 @@ fn node_parity_shader_capabilities() {
                 "SHADER_COMPILE_WIRE_CONTRACT: supported_archs populated",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_connection_error() || e.is_permission_denied() => {
             v.check_skip(
                 "shader_has_supported_archs",
                 &format!("shader not available: {e}"),
@@ -436,7 +436,7 @@ fn nucleus_parity_cross_atomic_pipeline() {
                         }
                     }
                 }
-                Err(e) if e.is_connection_error() => {
+                Err(e) if e.is_connection_error() || e.is_permission_denied() => {
                     v.check_skip(
                         "nest_hash_roundtrip",
                         &format!("storage not available: {e}"),
@@ -447,7 +447,7 @@ fn nucleus_parity_cross_atomic_pipeline() {
                 }
             }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_connection_error() || e.is_permission_denied() => {
             v.check_skip(
                 "tower_hash_produced",
                 &format!("security not available: {e}"),

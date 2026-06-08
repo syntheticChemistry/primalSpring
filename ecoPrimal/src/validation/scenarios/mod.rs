@@ -220,7 +220,9 @@ mod tests {
         // Pre-existing known failures in Rust-tier scenarios that predate this
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
+        // skunkBat TCP 9750 still bound — pending UDS-only migration (Wave 99+)
         const KNOWN_DEBT: &[(&str, u32)] = &[
+            ("zero-port-standard", 1),
         ];
 
         let r = build_registry();

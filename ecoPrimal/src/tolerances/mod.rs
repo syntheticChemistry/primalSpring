@@ -350,7 +350,7 @@ static TOML_PORT_REGISTRY: std::sync::LazyLock<Vec<PortEntryOwned>> =
             entries.push(PortEntryOwned {
                 slug: slug.clone(),
                 port: port as u16,
-                env_key: env_key.to_owned(),
+                _env_key: env_key.to_owned(),
             });
         }
         entries.sort_by(|a, b| a.slug.cmp(&b.slug));
@@ -361,7 +361,7 @@ static TOML_PORT_REGISTRY: std::sync::LazyLock<Vec<PortEntryOwned>> =
 struct PortEntryOwned {
     slug: String,
     port: u16,
-    env_key: String,
+    _env_key: String,
 }
 
 /// Look up a primal's port entry from the TOML-derived registry.

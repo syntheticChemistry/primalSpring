@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-06 (Wave 86: skunkBat UDS deployed — 13/13 primals on UDS, zero standalone TCP. 12/13 health.liveness responding (petaltongue BTSP-gated, P2 upstream). Cascade parallel (6.9s). Transport injection next. Critical path: mesh.init 2-gate proof (eastGate ↔ strandGate) → 3-gate stadial.)
+> **Last updated**: 2026-06-08 (Wave 99: Full NUCLEUS 13/13 IPC-live on eastGate, 12/12 liveness PASS, 11/12 capabilities PASS (coralReef missing capabilities.list). benchScale labs operational (ubuntu:24.04). biomeOS --graph-deploy wired. Pixel 8 handlers for all 13 primals. 3-gate mesh BLOCKED on SB-TLS-LAN-01 + SB-SECURITY-URL-01. skunkBat TCP 9750 still bound (zero-port known debt). songBird ipc.resolve returns TransportEndpoint JSON (Phase 2 M1).)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (June 6, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_GAP** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 61 scenarios (10 tracks, 3 tiers), 490+ real methods (100% exercised), **893 lib tests pass** (2 ignored) + **18 doc tests**, zero clippy warnings (pedantic + nursery clean), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 83: plasmidBin Takeover Complete** — cellMembrane owns rebuild-verify-deploy cycle. `plasmid.harvest` (build from source), `plasmid.refresh` (atomic push), `plasmid.pipeline` (end-to-end), `plasmid.status` (drift detection). VPS: plasmid-pipeline.timer (30-min zero-touch cycle) replaces manual refresh. 13/13 primals ACTIVE. barracuda/squirrel rebuilt with UDS support. **Critical path**: mesh enrollment from other gates → 3+ gate Plasmodium collective → stadial.
+**267+ PASS, 0 FAIL, 1 KNOWN_DEBT** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 61 scenarios (10 tracks, 3 tiers), 490+ real methods (100% exercised), **887 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy errors, zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 99: Full NUCLEUS 13/13 deployed and IPC-live on eastGate**. benchScale labs operational (Docker image tags fixed). biomeOS `--graph-deploy` orchestration wired. Pixel 8 deploy handlers for all 13 primals. songBird shipped `ipc.resolve` with TransportEndpoint JSON (Phase 2 M1). **Known debt**: skunkBat TCP 9750 bound (zero-port standard violation, pending UDS-only migration). **Critical path**: resolve SB-TLS-LAN-01 + SB-SECURITY-URL-01 → 3-gate mesh → stadial.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -56,11 +56,20 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — Waves 1-79. 61 scenarios (10 tracks), 490+ methods (100% exercised), 893 lib tests, zero clippy. Wave 79: UDS-only stadial gate (launcher `--tcp` opt-in, TCP discovery gated, all graphs `uds_only`, deploy profiles port-free). BD-TRUST-01 resolved upstream (Songbird auto trust in mesh.init). Songbird deep debt: hardcoded ports → constants, prod stubs hardened.**
+**13/13 CLEAN — Waves 1-99. 61 scenarios (10 tracks), 490+ methods (100% exercised), 887 lib tests, 1 known debt (skunkBat TCP 9750). Wave 99: Full NUCLEUS 13/13 IPC-live, biomeOS graph-deploy wired, benchScale labs operational, Pixel 8 deploy handlers complete, songBird ipc.resolve Phase 2 M1 shipped. 2 active mesh blockers (SB-TLS-LAN-01, SB-SECURITY-URL-01). Critical path: resolve mesh blockers → 3-gate stadial.**
 
 ---
 
-## Upstream Gaps — ALL RESOLVED (June 5, 2026)
+## Upstream Gaps — Wave 99 Status (June 8, 2026)
+
+### ACTIVE (2 mesh blockers)
+
+| Gap | Owner | Severity | Description |
+|-----|-------|----------|-------------|
+| **SB-TLS-LAN-01**: songbird TLS handshake fails — beardog rejects `crypto.x25519_generate_ephemeral` (requires capability token songbird lacks during mesh bootstrap) | **songBird + bearDog** | **P1** | Peer probe pipeline fails: TLS ClientHello → beardog crypto denial → probe fails silently → `mesh.init` reports `bootstrap_peers_added:0`. **Action**: acquire BTSP capability token before mesh.init, or fall back to plain HTTP for LAN peers. |
+| **SB-SECURITY-URL-01**: songbird formats beardog trust URL as relative path `beardog/api/v1/trust/evaluate` → "Invalid URL: invalid format" | **songBird** | **P1** | Repeats every 10s per peer. Should resolve to UDS socket path via `SECURITY_PROVIDER_SOCKET` or XDG runtime dir. |
+
+### RESOLVED (prior waves)
 
 | Gap | Owner | Severity | Description |
 |-----|-------|----------|-------------|

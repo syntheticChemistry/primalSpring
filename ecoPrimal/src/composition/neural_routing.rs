@@ -260,8 +260,7 @@ impl NeuralRoutingTable {
                     let tier = match tier_str {
                         "electron" => CompositionTier::Tower,
                         "proton" => CompositionTier::Node,
-                        "neutron" => CompositionTier::Nest,
-                        "rootpulse" | "pulse" => CompositionTier::Nest,
+                        "neutron" | "rootpulse" | "pulse" => CompositionTier::Nest,
                         "meta" => CompositionTier::Meta,
                         "orchestration" | "ecosystem" | "fall" => CompositionTier::Orchestration,
                         _ => CompositionTier::Standalone,

@@ -87,8 +87,8 @@ fn phase_structural(v: &mut ValidationResult) {
         topo.register_gate(
             *gate,
             addr,
-            primals.iter().map(|s| s.to_string()),
-            caps.iter().map(|s| s.to_string()),
+            primals.iter().copied().map(ToString::to_string),
+            caps.iter().copied().map(ToString::to_string),
         );
     }
 
