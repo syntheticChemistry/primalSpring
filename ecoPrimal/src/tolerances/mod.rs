@@ -295,7 +295,7 @@ pub fn runtime_dir() -> String {
 #[must_use]
 /// Resolve the biomeOS socket directory.
 pub fn biomeos_socket_dir() -> std::path::PathBuf {
-    std::path::PathBuf::from(runtime_dir()).join("biomeos")
+    std::path::PathBuf::from(runtime_dir()).join(crate::env_keys::BIOMEOS_SUBDIR)
 }
 
 /// Read the real UID from `/proc/self/status` (no libc, no unsafe).

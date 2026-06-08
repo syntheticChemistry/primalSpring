@@ -75,5 +75,5 @@ by_capability = "coordination"
 security_model = "tower_delegated"
 capabilities = [
     "composition.tower_health",
-    "composition.tower_squirrel_health",
+    "composition.tower_ai_health",
 ]

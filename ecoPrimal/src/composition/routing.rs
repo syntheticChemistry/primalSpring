@@ -100,46 +100,54 @@ static DOMAIN_OWNER_MAP: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
 
 /// All NUCLEUS capabilities that primalSpring discovers and authenticates.
 ///
-/// These are the *primary* discovery domains — one per primal that
-/// `CompositionContext::discover()` iterates. Every entry must resolve to a
-/// primal provider via `capability_to_primal()`.
+/// Derived from `capability_registry.toml` sections marked `primary = true`.
+/// These are the discovery domains that `CompositionContext::discover()` iterates.
 ///
-/// Consistency with `capability_registry.toml` is enforced by
-/// `s_routing_consistency` (every registered method routes through
-/// `method_to_capability_domain` + `capability_to_primal` to its declared owner)
-/// and by `all_caps_resolve_to_primals` (every entry here resolves to a Primal).
-pub const ALL_CAPS: &[&str] = &[
-    "security",
-    "discovery",
-    "compute",
-    "tensor",
-    "shader",
-    "storage",
-    "content",
-    "ai",
-    "dag",
-    "commit",
-    "visualization",
-    "ledger",
-    "attribution",
-    "defense",
-    "orchestration",
-];
+/// Consistency is enforced by `s_routing_consistency` and `all_caps_resolve_to_primals`.
+pub static ALL_CAPS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
+    let Ok(parsed) = REGISTRY_TOML.parse::<toml::Table>() else {
+        return Vec::new();
+    };
+    let mut caps: Vec<&'static str> = parsed
+        .iter()
+        .filter(|(_, section)| {
+            section
+                .get("primary")
+                .and_then(toml::Value::as_bool)
+                .unwrap_or(false)
+        })
+        .map(|(domain, _)| leak_domain(domain))
+        .collect();
+    caps.sort_unstable();
+    caps
+});
 
 /// Extended capability aliases for BTSP proactive escalation.
 ///
-/// Includes names that map to the same primal sockets as [`ALL_CAPS`]
-/// (e.g. `inference` → Squirrel, `spine`/`merkle` → loamSpine) to ensure
-/// BTSP coverage even when a client was connected under an alias name.
-pub const BTSP_EXTRA_CAPS: &[&str] = &[
-    "inference",
-    "spine",
-    "merkle",
-    "braid",
-    "recon",
-    "threat",
-    "lineage",
-];
+/// Derived from `capability_registry.toml` sections marked `btsp_escalation = true`.
+/// Includes aliases that map to the same primal sockets as [`ALL_CAPS`]
+/// to ensure BTSP coverage even under alias names.
+pub static BTSP_EXTRA_CAPS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
+    let Ok(parsed) = REGISTRY_TOML.parse::<toml::Table>() else {
+        return Vec::new();
+    };
+    let mut caps: Vec<&'static str> = parsed
+        .iter()
+        .filter(|(_, section)| {
+            section
+                .get("btsp_escalation")
+                .and_then(toml::Value::as_bool)
+                .unwrap_or(false)
+        })
+        .map(|(domain, _)| leak_domain(domain))
+        .collect();
+    caps.sort_unstable();
+    caps
+});
+
+fn leak_domain(domain: &str) -> &'static str {
+    Box::leak(domain.to_owned().into_boxed_str())
+}
 
 /// Map a capability domain to its canonical primal provider.
 ///
@@ -277,7 +285,7 @@ static PREFIX_ROUTING: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
 
     // Build owner → primary ALL_CAPS domain (inverted from DOMAIN_OWNER_MAP)
     let mut owner_primary: HashMap<String, String> = HashMap::new();
-    for &cap in ALL_CAPS {
+    for &cap in ALL_CAPS.iter() {
         if let Some(owner) = DOMAIN_OWNER_MAP.get(cap) {
             owner_primary.entry(owner.clone()).or_insert_with(|| cap.to_owned());
         }

@@ -389,7 +389,7 @@ fn tower_tls_routing_audit() {
 
 #[test]
 #[ignore = "requires plasmidBin binaries + ANTHROPIC_API_KEY (run with --ignored)"]
-fn tower_squirrel_ai_query() {
+fn tower_ai_query() {
     use primalspring::coordination::AtomicType;
     use primalspring::harness::AtomicHarness;
     use primalspring::launcher::SocketNucleation;
@@ -449,7 +449,7 @@ fn tower_squirrel_ai_query() {
 
 #[test]
 #[ignore = "requires plasmidBin binaries + ANTHROPIC_API_KEY (run with --ignored)"]
-fn tower_squirrel_composition_health() {
+fn tower_ai_composition_health() {
     use primalspring::coordination::AtomicType;
     use primalspring::harness::AtomicHarness;
     use primalspring::launcher::SocketNucleation;

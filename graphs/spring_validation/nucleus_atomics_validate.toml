@@ -127,17 +127,17 @@ expect = "healthy"
 # --- Phase 7: Tower + Squirrel overlay ---
 
 [[graph.nodes]]
-name = "validate_tower_squirrel"
+name = "validate_tower_ai"
 binary = "primalspring_primal"
 order = 7
 required = false
 spawn = false
 depends_on = ["validate_tower"]
 by_capability = "coordination"
-capabilities = ["composition.tower_squirrel_health"]
+capabilities = ["composition.tower_ai_health"]
 
 [graph.nodes.operation]
-method = "composition.tower_squirrel_health"
+method = "composition.tower_ai_health"
 
 # --- Phase 8: Graph structural validation ---
 

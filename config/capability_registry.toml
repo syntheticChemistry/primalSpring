@@ -92,7 +92,6 @@ methods = [
     "composition.provenance_health",
     "composition.tower_ai_health",
     "composition.tower_health",
-    "composition.tower_squirrel_health",
 ]
 
 [graph]
@@ -148,6 +147,7 @@ methods = [
 ]
 
 [discovery]
+primary = true
 owner = "songbird"
 stability = "stable"
 methods = [
@@ -205,6 +205,7 @@ methods = [
 ]
 
 [ai]
+primary = true
 owner = "squirrel"
 methods = [
     "ai.chat",
@@ -281,6 +282,7 @@ methods = [
 ]
 
 [lineage]
+btsp_escalation = true
 owner = "beardog"
 methods = [
     "lineage.challenge",
@@ -311,6 +313,7 @@ methods = [
 ]
 
 [security]
+primary = true
 owner = "beardog"
 methods = [
     "security.authenticate",
@@ -344,6 +347,7 @@ methods = [
 ]
 
 [visualization]
+primary = true
 owner = "petaltongue"
 stability = "stable"
 methods = [
@@ -382,6 +386,7 @@ methods = [
 ]
 
 [dag]
+primary = true
 owner = "rhizocrypt"
 stability = "stable"
 methods = [
@@ -409,6 +414,7 @@ methods = [
 ]
 
 [spine]
+btsp_escalation = true
 owner = "loamspine"
 stability = "stable"
 methods = [
@@ -473,6 +479,7 @@ methods = [
 ]
 
 [braid]
+btsp_escalation = true
 owner = "sweetgrass"
 stability = "stable"
 routes_to = "commit"
@@ -513,6 +520,7 @@ methods = [
 ]
 
 [attribution]
+primary = true
 owner = "sweetgrass"
 methods = [
     "attribution.calculate_rewards",
@@ -530,6 +538,7 @@ methods = [
 ]
 
 [content]
+primary = true
 owner = "nestgate"
 methods = [
     "content.collections",
@@ -548,6 +557,7 @@ methods = [
 ]
 
 [storage]
+primary = true
 owner = "nestgate"
 methods = [
     "storage.blob_exists",
@@ -583,6 +593,7 @@ methods = [
 ]
 
 [compute]
+primary = true
 owner = "toadstool"
 methods = [
     "compute.admin",
@@ -636,6 +647,7 @@ methods = [
 ]
 
 [tensor]
+primary = true
 owner = "barracuda"
 methods = [
     "tensor.add",
@@ -752,6 +764,7 @@ methods = [
 ]
 
 [shader]
+primary = true
 owner = "coralreef"
 methods = [
     "shader.bio",
@@ -874,6 +887,7 @@ methods = [
 ]
 
 [inference]
+btsp_escalation = true
 owner = "squirrel"
 methods = [
     "inference.complete",
@@ -934,6 +948,7 @@ methods = [
 ]
 
 [defense]
+primary = true
 owner = "skunkbat"
 methods = [
     "defense.audit",
@@ -1134,31 +1149,37 @@ compositions = [
 # hardcoded static fallback tables in routing.rs.
 
 [orchestration]
+primary = true
 owner = "biomeos"
 stability = "stable"
 methods = []
 
 [commit]
+primary = true
 owner = "sweetgrass"
 stability = "stable"
 methods = []
 
 [ledger]
+primary = true
 owner = "loamspine"
 stability = "stable"
 methods = []
 
 [merkle]
+btsp_escalation = true
 owner = "loamspine"
 stability = "stable"
 methods = []
 
 [recon]
+btsp_escalation = true
 owner = "skunkbat"
 stability = "stable"
 methods = []
 
 [threat]
+btsp_escalation = true
 owner = "skunkbat"
 stability = "stable"
 methods = []

@@ -160,7 +160,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     }
 
     let runtime_dir = tolerances::runtime_dir();
-    let socket_dir = PathBuf::from(&runtime_dir).join("biomeos");
+    let socket_dir = PathBuf::from(&runtime_dir).join(primalspring::env_keys::BIOMEOS_SUBDIR);
     let _ = std::fs::create_dir_all(&socket_dir);
 
     let family_seed = spawn::resolve_family_seed(&socket_dir);
@@ -444,7 +444,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
 /// Stop all primals in the given list (reverse dependency order).
 pub fn stop_all(primals: &[&str]) {
     let pid_dir = PathBuf::from(tolerances::runtime_dir())
-        .join("biomeos")
+        .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(".pids");
 
     println!("=== Stopping primals ===");
@@ -475,7 +475,7 @@ pub fn stop_all(primals: &[&str]) {
 /// only when a socket is unavailable and a port is configured.
 pub fn show_status(primals: &[&str]) {
     let pid_dir = PathBuf::from(tolerances::runtime_dir())
-        .join("biomeos")
+        .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(".pids");
     let health_timeout = Duration::from_secs(3);
 

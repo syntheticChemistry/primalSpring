@@ -151,7 +151,7 @@ pub fn upgrade_btsp_clients(clients: &mut HashMap<CapabilityDomain, PrimalClient
         }
     }
 
-    for &cap in ALL_CAPS {
+    for &cap in ALL_CAPS.iter() {
         if clients.contains_key(cap) {
             continue;
         }
@@ -208,9 +208,9 @@ mod tests {
     fn tcp_fallback_covers_all_caps() {
         let table = tcp_fallback_table();
         let tcp_caps: Vec<&str> = table.iter().map(|&(cap, _, _, _)| cap).collect();
-        for cap in ALL_CAPS {
+        for &cap in ALL_CAPS.iter() {
             assert!(
-                tcp_caps.contains(cap),
+                tcp_caps.contains(&cap),
                 "ALL_CAPS entry '{cap}' missing from tcp_fallback_table — \
                  Tier 5 TCP discovery will silently skip this capability"
             );

@@ -64,7 +64,7 @@ pub const LOCAL_CAPABILITIES: &[&str] = &[
     "composition.tower_health",
     "composition.node_health",
     "composition.nest_health",
-    "composition.tower_squirrel_health",
+    "composition.tower_ai_health",
     // ── Lifecycle management ──
     "nucleus.start",
     "nucleus.stop",

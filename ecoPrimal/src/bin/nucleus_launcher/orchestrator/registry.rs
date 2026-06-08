@@ -62,7 +62,7 @@ fn static_fallback_caps(primal: &str) -> &'static [&'static str] {
         std::sync::LazyLock::new(|| {
             let mut map: std::collections::HashMap<&'static str, Vec<&'static str>> =
                 std::collections::HashMap::new();
-            for &cap in ALL_CAPS {
+            for &cap in ALL_CAPS.iter() {
                 let owner = capability_to_primal(cap);
                 map.entry(owner).or_default().push(cap);
             }
@@ -136,7 +136,7 @@ pub(super) fn health_check_uds(socket: &std::path::Path) -> bool {
 /// Resolve the UDS socket path for a primal.
 pub(super) fn socket_path_for(primal: &str) -> std::path::PathBuf {
     std::path::PathBuf::from(tolerances::runtime_dir())
-        .join("biomeos")
+        .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(format!("{primal}.sock"))
 }
 

@@ -442,7 +442,7 @@ fn resolve_socket_dir() -> PathBuf {
     }
     #[cfg(not(unix))]
     {
-        std::env::temp_dir().join("biomeos")
+        std::env::temp_dir().join(primalspring::env_keys::BIOMEOS_SUBDIR)
     }
 }
 

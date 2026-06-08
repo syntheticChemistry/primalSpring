@@ -52,7 +52,7 @@ pub(super) fn resolve_family_seed(socket_dir: &std::path::Path) -> Vec<u8> {
 /// `/proc` on Linux when no PID file exists.
 pub(super) fn stop_existing(primal: &str) {
     let pid_dir = PathBuf::from(tolerances::runtime_dir())
-        .join("biomeos")
+        .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(".pids");
     let pid_file = pid_dir.join(format!("{primal}.pid"));
 
@@ -198,7 +198,7 @@ pub(super) fn spawn_primal(
     }
 
     let log_dir = PathBuf::from(tolerances::runtime_dir())
-        .join("biomeos")
+        .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join("logs");
     let _ = std::fs::create_dir_all(&log_dir);
     let log_path = log_dir.join(format!("{primal}.log"));
@@ -214,7 +214,7 @@ pub(super) fn spawn_primal(
     let child = cmd.spawn().map_err(|e| format!("spawn failed: {e}"))?;
 
     let pid_dir = PathBuf::from(tolerances::runtime_dir())
-        .join("biomeos")
+        .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(".pids");
     let _ = std::fs::create_dir_all(&pid_dir);
     let _ = std::fs::write(

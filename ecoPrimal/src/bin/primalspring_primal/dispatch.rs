@@ -53,7 +53,7 @@ static DISPATCH_TABLE: LazyLock<HashMap<&'static str, Handler>> = LazyLock::new(
 
         // ── Composition health (per-tier) ──
         ("composition.tower_health", handle_tower_health),
-        ("composition.tower_squirrel_health", handle_tower_squirrel_health),
+        ("composition.tower_ai_health", handle_tower_ai_health),
         ("composition.node_health", handle_node_health),
         ("composition.nest_health", handle_nest_health),
         ("composition.nucleus_health", handle_nucleus_health),
@@ -226,8 +226,8 @@ fn handle_tower_health(_params: &serde_json::Value, id: u64) -> JsonRpcResponse 
     handlers::handle_composition_health_by_capability(AtomicType::Tower, id)
 }
 
-fn handle_tower_squirrel_health(_params: &serde_json::Value, id: u64) -> JsonRpcResponse {
-    handlers::handle_tower_squirrel_health(id)
+fn handle_tower_ai_health(_params: &serde_json::Value, id: u64) -> JsonRpcResponse {
+    handlers::handle_tower_ai_health(id)
 }
 
 fn handle_node_health(_params: &serde_json::Value, id: u64) -> JsonRpcResponse {

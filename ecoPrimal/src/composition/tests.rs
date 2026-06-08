@@ -543,7 +543,7 @@ fn all_caps_subset_of_registry_domains() {
         .filter_map(|m| m.split('.').next())
         .collect();
 
-    for &cap in ALL_CAPS {
+    for &cap in ALL_CAPS.iter() {
         let probe = format!("{cap}.any");
         let mapped = method_to_capability_domain(&probe);
         let mapped_owned = mapped.to_owned();
@@ -560,7 +560,7 @@ fn all_caps_subset_of_registry_domains() {
 
 #[test]
 fn all_caps_resolve_to_primals() {
-    for &cap in ALL_CAPS {
+    for &cap in ALL_CAPS.iter() {
         let resolves = capability_to_primal_typed(cap).is_some();
         assert!(
             resolves,

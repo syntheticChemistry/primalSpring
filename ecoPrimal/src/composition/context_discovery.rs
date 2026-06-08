@@ -160,7 +160,7 @@ pub(super) fn rediscover_clients(
     clients: &mut HashMap<CapabilityDomain, PrimalClient>,
     discovery_paths: &mut BTreeMap<CapabilityDomain, DiscoveryPath>,
 ) -> BTreeMap<CapabilityDomain, bool> {
-    for &cap in ALL_CAPS {
+    for &cap in ALL_CAPS.iter() {
         if clients.contains_key(cap) {
             if let Some(client) = clients.get_mut(cap) {
                 if client.health_check().unwrap_or(false) {
@@ -182,7 +182,7 @@ fn discover_tiers_2_4(
     clients: &mut HashMap<CapabilityDomain, PrimalClient>,
     discovery_paths: &mut BTreeMap<CapabilityDomain, DiscoveryPath>,
 ) {
-    for &cap in ALL_CAPS {
+    for &cap in ALL_CAPS.iter() {
         if clients.contains_key(cap) {
             continue;
         }

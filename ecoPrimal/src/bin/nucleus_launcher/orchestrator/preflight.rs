@@ -183,7 +183,7 @@ fn detect_port_conflicts(primals: &[&str]) -> Vec<(u16, Vec<String>)> {
 }
 
 fn clean_stale_sockets() -> u32 {
-    let socket_dir = PathBuf::from(tolerances::runtime_dir()).join("biomeos");
+    let socket_dir = PathBuf::from(tolerances::runtime_dir()).join(primalspring::env_keys::BIOMEOS_SUBDIR);
     let Ok(entries) = std::fs::read_dir(&socket_dir) else {
         return 0;
     };
