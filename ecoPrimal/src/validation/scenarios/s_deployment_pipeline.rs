@@ -280,28 +280,22 @@ fn phase_cell_readiness(v: &mut ValidationResult) {
     }
 
     let manifest_path = cells_dir.join("cells_manifest.toml");
-    let vps_cells: Vec<String> = if let Ok(content) = std::fs::read_to_string(&manifest_path) {
-        if let Ok(table) = content.parse::<toml::Value>() {
-            table
-                .get("cells")
-                .and_then(|c| c.as_array())
-                .map(|arr| {
-                    arr.iter()
-                        .filter(|c| {
-                            c.get("vps_standard")
-                                .and_then(toml::Value::as_bool)
-                                .unwrap_or(false)
-                        })
-                        .filter_map(|c| c.get("file").and_then(|f| f.as_str()).map(String::from))
-                        .collect()
-                })
-                .unwrap_or_default()
-        } else {
-            Vec::new()
-        }
-    } else {
-        Vec::new()
-    };
+    let vps_cells: Vec<String> = std::fs::read_to_string(&manifest_path)
+        .ok()
+        .and_then(|content| content.parse::<toml::Value>().ok())
+        .and_then(|table| {
+            table.get("cells").and_then(|c| c.as_array()).map(|arr| {
+                arr.iter()
+                    .filter(|c| {
+                        c.get("vps_standard")
+                            .and_then(toml::Value::as_bool)
+                            .unwrap_or(false)
+                    })
+                    .filter_map(|c| c.get("file").and_then(|f| f.as_str()).map(String::from))
+                    .collect()
+            })
+        })
+        .unwrap_or_default();
 
     v.check_bool(
         "cells:vps_standard_count",
@@ -310,7 +304,7 @@ fn phase_cell_readiness(v: &mut ValidationResult) {
     );
 
     let mut structurally_clean = 0u32;
-    let total = vps_cells.len() as u32;
+    let total = u32::try_from(vps_cells.len()).unwrap_or(u32::MAX);
 
     for cell_file in &vps_cells {
         let cell_path = cells_dir.join(cell_file);

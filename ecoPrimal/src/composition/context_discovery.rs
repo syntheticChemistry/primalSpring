@@ -31,6 +31,7 @@ pub(super) struct DiscoveryResult {
 ///
 /// In release builds, TCP Tier 5 is unconditionally disabled — the env var
 /// is ignored. This enforces the glacial zero-port standard at compile time.
+#[allow(clippy::missing_const_for_fn)]
 pub(super) fn tcp_tier5_enabled() -> bool {
     #[cfg(debug_assertions)]
     {

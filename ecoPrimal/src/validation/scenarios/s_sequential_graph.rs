@@ -204,6 +204,9 @@ fn phase_sequential_ordering(v: &mut ValidationResult, ctx: &mut CompositionCont
                 alive,
                 &format!("ordered probe {cap}"),
             ),
+            Err(e) if e.is_skippable() => {
+                v.check_skip(&format!("ordered_{cap}_liveness"), &format!("skipped: {e}"));
+            }
             Err(e) => {
                 v.check_bool(
                     &format!("ordered_{cap}_liveness"),
