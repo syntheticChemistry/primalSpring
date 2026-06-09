@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-09 (Wave 105b: grapheneGate aarch64-musl 13/13 BUILT locally on eastGate, 6 primals RUNNING on Pixel 8 (beardog + songbird + rhizocrypt + loamspine + sweetgrass + squirrel). bearDog BTSP production mode LIVE on Pixel. NDK (aarch64-linux-android) blocked by bearDog StrongBox compilation errors (16 errors in android_strongbox module). 7 primals need Android UDS path adaptation. deploy_pixel.sh FAMILY_SEED fix shipped. primalSpring: cast-safety fixes, sequential_graph flake fix, 887 tests 0 failures.)
+> **Last updated**: 2026-06-09 (Wave 105c: **POST-PRIMORDIAL DEPOT STANDARD ENFORCED** — VPS (peptidoglycan) is the sole depot authority. eastGate local depot re-fetched from VPS, 13/13 BLAKE3 verified. All direct/local depot deployment DEPRECATED. grapheneGate: 6/13 running on Pixel 8. primalSpring: cast-safety fixes, 887 tests 0 failures.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
