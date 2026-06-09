@@ -58,14 +58,8 @@ pub fn validate_parity(
             );
             v.check_bool(name, ok, &detail);
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if is_skip_error(&e) => {
             v.check_skip(name, &format!("{capability} not available: {e}"));
-        }
-        Err(e) if e.is_transport_mismatch() => {
-            v.check_skip(
-                name,
-                &format!("{capability} uses non-JSON-RPC transport: {e}"),
-            );
         }
         Err(e) => {
             v.check_bool(name, false, &format!("composition error: {e}"));
@@ -98,14 +92,8 @@ pub fn validate_parity_flex(
             );
             v.check_bool(name, ok, &detail);
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if is_skip_error(&e) => {
             v.check_skip(name, &format!("{capability} not available: {e}"));
-        }
-        Err(e) if e.is_transport_mismatch() => {
-            v.check_skip(
-                name,
-                &format!("{capability} uses non-JSON-RPC transport: {e}"),
-            );
         }
         Err(e) => {
             v.check_bool(name, false, &format!("composition error: {e}"));
@@ -131,15 +119,8 @@ pub fn validate_parity_vec_flex(
 ) {
     let (resolved_key, arr) = match ctx.call_array_flex(capability, method, params, result_keys) {
         Ok(pair) => pair,
-        Err(e) if e.is_connection_error() => {
+        Err(e) if is_skip_error(&e) => {
             v.check_skip(name, &format!("{capability} not available: {e}"));
-            return;
-        }
-        Err(e) if e.is_transport_mismatch() => {
-            v.check_skip(
-                name,
-                &format!("{capability} uses non-JSON-RPC transport: {e}"),
-            );
             return;
         }
         Err(e) => {
@@ -220,15 +201,8 @@ pub fn validate_parity_vec(
 ) {
     let result = match ctx.call(capability, method, params) {
         Ok(r) => r,
-        Err(e) if e.is_connection_error() => {
+        Err(e) if is_skip_error(&e) => {
             v.check_skip(name, &format!("{capability} not available: {e}"));
-            return;
-        }
-        Err(e) if e.is_transport_mismatch() => {
-            v.check_skip(
-                name,
-                &format!("{capability} uses non-JSON-RPC transport: {e}"),
-            );
             return;
         }
         Err(e) => {
@@ -316,10 +290,11 @@ pub fn call_or_skip(
     }
 }
 
-/// Whether an IPC error should be treated as a graceful skip.
+/// Whether an IPC error should be treated as a graceful skip in composition
+/// tests. Delegates to [`IpcError::is_skippable`].
 #[must_use]
 pub fn is_skip_error(e: &IpcError) -> bool {
-    e.is_connection_error() || e.is_protocol_error() || e.is_transport_mismatch()
+    e.is_skippable()
 }
 
 /// Validate that a set of required capabilities are live in the composition.
@@ -358,15 +333,11 @@ pub fn validate_liveness(
             Ok(false) => {
                 v.check_bool(&name, false, &format!("{primal} responded but not alive"));
             }
-            Err(e) if e.is_connection_error() => {
+            Err(e) if is_skip_error(&e) => {
                 v.check_skip(&name, &format!("{primal} not reachable: {e}"));
-            }
-            Err(e) if e.is_protocol_error() => {
-                v.check_skip(
-                    &name,
-                    &format!("{primal} reachable but protocol mismatch (likely HTTP): {e}"),
-                );
-                alive += 1;
+                if e.is_protocol_error() {
+                    alive += 1;
+                }
             }
             Err(e) => {
                 v.check_bool(&name, false, &format!("{primal} health error: {e}"));

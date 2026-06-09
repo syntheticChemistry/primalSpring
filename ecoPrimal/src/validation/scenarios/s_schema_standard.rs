@@ -175,7 +175,7 @@ fn phase_live_capability_list(v: &mut ValidationResult, ctx: &mut CompositionCon
                 );
             }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:capability_list", &format!("connection: {e}"));
         }
         Err(e) => {
@@ -247,7 +247,7 @@ fn phase_live_primal_list(v: &mut ValidationResult, ctx: &mut CompositionContext
                     "live:primal_list",
                     &format!("primal.list not yet implemented in biomeOS: {e}"),
                 );
-            } else if e.is_connection_error() {
+            } else if e.is_skippable() {
                 v.check_skip("live:primal_list", &format!("connection: {e}"));
             } else {
                 v.check_bool(

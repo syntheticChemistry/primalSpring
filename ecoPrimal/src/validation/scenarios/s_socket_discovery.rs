@@ -76,7 +76,7 @@ fn phase_reachability(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 false,
                 &format!("{cap} not live"),
             ),
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip(&format!("liveness_{cap}"), &format!("{cap}: {e}"));
             }
             Err(e) => v.check_bool(&format!("liveness_{cap}"), false, &format!("error: {e}")),

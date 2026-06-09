@@ -90,7 +90,7 @@ fn phase_live_coordination(v: &mut ValidationResult, ctx: &mut CompositionContex
                 &format!("coordination.neural_api_status → total_methods present: {has_total}"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:neural_api_status", &format!("not reachable: {e}"));
         }
         Err(e) => {
@@ -114,7 +114,7 @@ fn phase_live_coordination(v: &mut ValidationResult, ctx: &mut CompositionContex
                 "coordination.probe_capability(security) responded",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:probe_capability", &format!("not reachable: {e}"));
         }
         Err(e) => {
@@ -138,7 +138,7 @@ fn phase_live_coordination(v: &mut ValidationResult, ctx: &mut CompositionContex
                 "coordination.probe_primal(beardog) responded",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:probe_primal", &format!("not reachable: {e}"));
         }
         Err(e) => {
@@ -162,7 +162,7 @@ fn phase_live_coordination(v: &mut ValidationResult, ctx: &mut CompositionContex
                 "coordination.validate_composition_by_capability(Tower) responded",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:validate_by_capability", &format!("not reachable: {e}"));
         }
         Err(e) => {
@@ -186,7 +186,7 @@ fn phase_live_coordination(v: &mut ValidationResult, ctx: &mut CompositionContex
                 "coordination.bonding_test(covalent) responded",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:bonding_test", &format!("not reachable: {e}"));
         }
         Err(e) => {

@@ -110,7 +110,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("capability.call(security, health.liveness) → {resp}"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "live:local_capability_call",
                 &format!("biomeOS orchestration not available: {e}"),
@@ -144,7 +144,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("capability.call(discovery, identity.get) → {resp}"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "live:routed_identity_get",
                 &format!("biomeOS not available: {e}"),
@@ -176,7 +176,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("cross-gate capability.call to cellMembrane succeeded: {resp}"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "live:cross_gate_dispatch",
                 &format!("cross-gate not available (expected without VPS mesh): {e}"),

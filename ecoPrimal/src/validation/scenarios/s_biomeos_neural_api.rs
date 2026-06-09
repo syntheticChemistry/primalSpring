@@ -72,7 +72,7 @@ fn phase_capability_list(v: &mut ValidationResult, ctx: &mut CompositionContext)
                 .unwrap_or(0);
             v.check_minimum("capability_domains", usize::try_from(count).unwrap_or(0), 5);
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("capability_list", &format!("{e}"));
         }
         Err(e) => v.check_bool("capability_list", false, &format!("error: {e}")),
@@ -143,7 +143,7 @@ fn validate_birdsong_beacon(v: &mut ValidationResult, ctx: &mut CompositionConte
                 "Songbird birdsong.generate_encrypted_beacon",
             );
         }
-        Err(e) if e.is_connection_error() => v.check_skip("birdsong_beacon", &format!("{e}")),
+        Err(e) if e.is_skippable() => v.check_skip("birdsong_beacon", &format!("{e}")),
         Err(e) => v.check_bool("birdsong_beacon", false, &format!("error: {e}")),
     }
 }
@@ -158,7 +158,7 @@ fn validate_graph_list(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             let count = graphs.len();
             v.check_minimum("graph_count", count, 10);
         }
-        Err(e) if e.is_connection_error() => v.check_skip("graph_list", &format!("{e}")),
+        Err(e) if e.is_skippable() => v.check_skip("graph_list", &format!("{e}")),
         Err(e) => v.check_bool("graph_list", false, &format!("error: {e}")),
     }
 }

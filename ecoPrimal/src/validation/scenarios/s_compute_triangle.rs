@@ -82,7 +82,7 @@ fn phase_coralreef_capabilities(v: &mut ValidationResult, ctx: &mut CompositionC
             v.check_skip("shader_compile_capabilities", "coralReef not live");
             return;
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("coralreef_health", &format!("coralReef: {e}"));
             v.check_skip("shader_compile_capabilities", "coralReef not reachable");
             return;
@@ -111,7 +111,7 @@ fn phase_coralreef_capabilities(v: &mut ValidationResult, ctx: &mut CompositionC
                 },
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("shader_compile_capabilities", &format!("coralReef: {e}"));
         }
         Err(e) => {
@@ -138,7 +138,7 @@ fn phase_toadstool_capabilities(v: &mut ValidationResult, ctx: &mut CompositionC
             v.check_skip("compute_capabilities", "toadStool not live");
             return;
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("toadstool_health", &format!("toadStool: {e}"));
             v.check_skip("compute_capabilities", "toadStool not reachable");
             return;
@@ -169,7 +169,7 @@ fn phase_toadstool_capabilities(v: &mut ValidationResult, ctx: &mut CompositionC
                 },
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("compute_capabilities", &format!("toadStool: {e}"));
         }
         Err(e) => {
@@ -198,7 +198,7 @@ fn phase_barracuda_math(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             v.check_skip("stats_mean_roundtrip", "barraCuda not live");
             return;
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("barracuda_health", &format!("barraCuda: {e}"));
             v.check_skip("tensor_create_shape", "barraCuda not reachable");
             v.check_skip("stats_mean_roundtrip", "barraCuda not reachable");
@@ -233,7 +233,7 @@ fn phase_barracuda_math(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 },
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("tensor_create_shape", &format!("barraCuda: {e}"));
         }
         Err(e) => {
@@ -265,7 +265,7 @@ fn phase_barracuda_math(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 ),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("stats_mean_roundtrip", &format!("barraCuda: {e}"));
         }
         Err(e) => {
@@ -340,7 +340,7 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
                 None
             }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("sovereign_compile_response_shape", &format!("coralReef: {e}"));
             v.check_skip("sovereign_dispatch_response_shape", "compile not reachable");
             v.check_skip("sovereign_e2e_pipeline_viable", "compile not reachable");
@@ -394,7 +394,7 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
                 ),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "sovereign_dispatch_response_shape",
                 &format!("toadStool: {e}"),

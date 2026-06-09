@@ -107,7 +107,7 @@ fn phase_content_put(v: &mut ValidationResult, ctx: &mut CompositionContext) -> 
                 Some(hash.to_owned())
             }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("content_put_returns_hash", &format!("content not available: {e}"));
             v.check_skip("content_put_hash_length", "content not available");
             v.check_skip("content_put_stored_or_dedup", "content not available");
@@ -162,7 +162,7 @@ fn phase_content_get(
                 },
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("content_get_returns_data", &format!("content not available: {e}"));
             v.check_skip("content_get_roundtrip_match", "content not available");
         }
@@ -199,7 +199,7 @@ fn phase_content_exists_list(
                 &format!("hash {hash} exists={exists}"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("content_exists_confirms_hash", &format!("content not available: {e}"));
         }
         Err(e) => {
@@ -221,7 +221,7 @@ fn phase_content_exists_list(
                 &format!("{count} content items listed"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("content_list_nonempty", &format!("content not available: {e}"));
         }
         Err(e) => {
@@ -250,7 +250,7 @@ fn phase_content_resolve(v: &mut ValidationResult, ctx: &mut CompositionContext)
                 },
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("content_resolve_responds", &format!("content not available: {e}"));
         }
         Err(e) => {

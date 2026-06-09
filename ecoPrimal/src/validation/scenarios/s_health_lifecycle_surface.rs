@@ -93,7 +93,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("health.version → {resp}"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:health.version", &format!("not reachable: {e}"));
         }
         Err(e) => {
@@ -110,7 +110,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("health.readiness → {resp}"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:health.readiness", &format!("not reachable: {e}"));
         }
         Err(e) => {
@@ -130,7 +130,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 "graph.waves responded",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:graph.waves", &format!("not reachable: {e}"));
         }
         Err(e) => {
@@ -150,7 +150,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 "graph.capabilities responded",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:graph.capabilities", &format!("not reachable: {e}"));
         }
         Err(e) => {
@@ -174,7 +174,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                     &format!("{method} responded"),
                 );
             }
-            Err(e) if e.is_connection_error() || e.is_method_not_found() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip(&format!("live:{method}"), &format!("{method}: {e}"));
             }
             Err(e) => {

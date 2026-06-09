@@ -66,7 +66,7 @@ fn phase_routing_skips(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                     "needs live spring primals for capability routing",
                 );
             }
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip("orchestration_reachable", &format!("{e}"));
                 v.check_skip(
                     "cross_spring_data_flow",

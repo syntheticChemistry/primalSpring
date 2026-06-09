@@ -65,7 +65,7 @@ fn phase_secrets(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         Ok(_resp) => {
             v.check_bool("secrets_store_responds", true, "secrets.store accepted request");
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("secrets_store_responds", &format!("bearDog not reachable: {e}"));
         }
         Err(e) => {
@@ -90,7 +90,7 @@ fn phase_secrets(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         Ok(_resp) => {
             v.check_bool("secrets_retrieve_responds", true, "secrets.retrieve returned response");
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("secrets_retrieve_responds", &format!("bearDog not reachable: {e}"));
         }
         Err(e) => {
@@ -131,7 +131,7 @@ fn phase_bonding(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 "bonding.status returned bond state",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("bonding_status_responds", &format!("biomeOS not reachable: {e}"));
         }
         Err(e) => {
@@ -157,7 +157,7 @@ fn phase_defense(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             let valid = resp.is_object();
             v.check_bool("defense_status_responds", valid, "defense.status returned policy state");
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("defense_status_responds", &format!("skunkBat not reachable: {e}"));
         }
         Err(e) => {
@@ -178,7 +178,7 @@ fn phase_defense(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 "defense.events returned recent audit events",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("defense_events_responds", &format!("skunkBat not reachable: {e}"));
         }
         Err(e) => {
@@ -209,7 +209,7 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 "discovery.discover returned endpoint info",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("discovery_discover_responds", &format!("songbird not reachable: {e}"));
         }
         Err(e) => {
@@ -230,7 +230,7 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 "discovery.protocols returned supported protocol list",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("discovery_protocols_responds", &format!("songbird not reachable: {e}"));
         }
         Err(e) => {
@@ -271,7 +271,7 @@ fn phase_provenance(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 .map(String::from)
                 .or_else(|| (!sid.is_empty()).then_some(sid))
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("provenance_session_create_responds", &format!("rhizoCrypt not reachable: {e}"));
             None
         }
@@ -311,7 +311,7 @@ fn phase_provenance(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                     "provenance.event.append created vertex",
                 );
             }
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip("provenance_event_append_responds", &format!("rhizoCrypt not reachable: {e}"));
             }
             Err(e) => {
@@ -343,7 +343,7 @@ fn phase_spine(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             let valid = resp.is_object() || resp.is_string();
             v.check_bool("session_create_responds", valid, "session.create returned session info");
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("session_create_responds", &format!("loamSpine not reachable: {e}"));
         }
         Err(e) => {
@@ -368,7 +368,7 @@ fn phase_spine(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             let valid = resp.is_object();
             v.check_bool("session_state_responds", valid, "session.state returned state info");
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("session_state_responds", &format!("loamSpine not reachable: {e}"));
         }
         Err(e) => {
@@ -400,7 +400,7 @@ fn phase_network(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 "network.nat_type returned NAT classification",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("network_nat_type_responds", &format!("songbird not reachable: {e}"));
         }
         Err(e) => {
@@ -429,7 +429,7 @@ fn phase_network(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             let valid = resp.is_object();
             v.check_bool("network_stun_responds", valid, "network.stun returned STUN binding");
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("network_stun_responds", &format!("songbird not reachable: {e}"));
         }
         Err(e) => {

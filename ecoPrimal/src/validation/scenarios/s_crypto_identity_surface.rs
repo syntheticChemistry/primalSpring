@@ -105,7 +105,7 @@ fn phase_live_crypto(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("crypto.ionic_bond.capabilities → {resp}"),
             );
         }
-        Err(e) if e.is_connection_error() || e.is_method_not_found() || e.is_permission_denied() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "live:ionic_bond_capabilities",
                 &format!("crypto.ionic_bond.capabilities: {e}"),
@@ -133,7 +133,7 @@ fn phase_live_crypto(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("crypto.did_from_key → {resp}"),
             );
         }
-        Err(e) if e.is_connection_error() || e.is_method_not_found() || e.is_permission_denied() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:did_from_key", &format!("crypto.did_from_key: {e}"));
         }
         Err(e) => {
@@ -153,7 +153,7 @@ fn phase_live_crypto(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("auth.peer_info → {resp}"),
             );
         }
-        Err(e) if e.is_connection_error() || e.is_method_not_found() || e.is_permission_denied() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:peer_info", &format!("auth.peer_info: {e}"));
         }
         Err(e) => {

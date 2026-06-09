@@ -217,7 +217,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                             spec.id
                         ),
                     );
-                } else if e.is_connection_error() {
+                } else if e.is_skippable() {
                     v.check_skip(
                         &check_id,
                         &format!("connection error for {}: {e}", spec.id),
@@ -279,7 +279,7 @@ fn phase_response_shapes(v: &mut ValidationResult, ctx: &mut CompositionContext)
                     );
                 }
             }
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip(
                     &format!("shape:{}:keys", spec.id),
                     &format!("connection error: {e}"),

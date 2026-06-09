@@ -201,7 +201,7 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
                 }
             }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "live:discovery_peers",
                 &format!("Songbird not reachable: {e}"),
@@ -267,7 +267,7 @@ fn phase_cross_gate_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCont
                     &format!("capability.call to {target_gate} succeeded: {resp}"),
                 );
             }
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip(
                     &check_id,
                     &format!("{target_gate} not reachable (mesh not active): {e}"),

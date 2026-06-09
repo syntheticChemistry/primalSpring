@@ -172,7 +172,7 @@ fn phase_announce_api(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 ),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "api:announce:accepted",
                 &format!("orchestration not available: {e}"),

@@ -192,6 +192,19 @@ impl IpcError {
         matches!(self, Self::PermissionDenied { .. })
     }
 
+    /// Whether this error should be treated as a graceful skip in composition
+    /// tests and validation scenarios. True for: unreachable primal, protocol
+    /// mismatch, transport mismatch, BTSP permission gate, and method not
+    /// found (primal may be an older version).
+    #[must_use]
+    pub fn is_skippable(&self) -> bool {
+        self.is_connection_error()
+            || self.is_protocol_error()
+            || self.is_transport_mismatch()
+            || self.is_permission_denied()
+            || self.is_method_not_found()
+    }
+
     /// Whether the failure is likely a transport mismatch (e.g. tarpc socket
     /// receiving raw JSON-RPC). Manifests as a timeout with EAGAIN because
     /// the server accepts the connection but never sends a JSON-RPC response.

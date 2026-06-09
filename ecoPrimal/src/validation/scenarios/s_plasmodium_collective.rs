@@ -188,7 +188,7 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 v.check_bool("live:peer_count", false, "no peers array in response");
             }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "live:peer_count",
                 &format!("discovery capability not available: {e}"),
@@ -231,7 +231,7 @@ fn phase_cross_gate_call(v: &mut ValidationResult, ctx: &mut CompositionContext)
                     &format!("capability.call({capability}, {operation}) → {gate}: {resp}"),
                 );
             }
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip(
                     &check_id,
                     &format!("orchestration not available: {e}"),

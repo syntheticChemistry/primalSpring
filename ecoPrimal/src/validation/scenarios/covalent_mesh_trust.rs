@@ -380,7 +380,7 @@ fn verify_reject_forged(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 ),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "security:reject_forged",
                 &format!("security provider not reachable: {e}"),

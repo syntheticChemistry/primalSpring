@@ -104,7 +104,7 @@ fn phase_token_issuance(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 );
             }
         }
-        Err(e) if e.is_connection_error() => v.check_skip("security_authenticate", &format!("{e}")),
+        Err(e) if e.is_skippable() => v.check_skip("security_authenticate", &format!("{e}")),
         Err(e) => v.check_bool("security_authenticate", false, &format!("error: {e}")),
     }
 }
@@ -134,7 +134,7 @@ fn phase_authenticated_call(v: &mut ValidationResult, ctx: &mut CompositionConte
             true,
             "compute.submit with bearer succeeded",
         ),
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("authenticated_compute_submit", &format!("{e}"));
         }
         Err(e) => v.check_bool(

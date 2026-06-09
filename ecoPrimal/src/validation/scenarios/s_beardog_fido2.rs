@@ -92,7 +92,7 @@ fn phase_discover(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("beardog.fido2.discover returned {count} device(s) (0 is valid without hardware)"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("fido2:discover:responds", &format!("BearDog not available: {e}"));
         }
         Err(e) => {
@@ -131,7 +131,7 @@ fn phase_register_error(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 "register succeeded (hardware present or mock mode)",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("fido2:register:error_shape", &format!("BearDog not available: {e}"));
         }
         Err(e) => {
@@ -171,7 +171,7 @@ fn phase_authenticate_error(v: &mut ValidationResult, ctx: &mut CompositionConte
                 "authenticate succeeded (unexpected without prior registration, but valid)",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("fido2:authenticate:error_shape", &format!("BearDog not available: {e}"));
         }
         Err(e) => {

@@ -80,7 +80,7 @@ fn phase_content_put(v: &mut ValidationResult, ctx: &mut CompositionContext) -> 
             );
             if hash.is_empty() { None } else { Some(hash.to_owned()) }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("trio:content_put:hash", &format!("NestGate not available: {e}"));
             None
         }
@@ -116,7 +116,7 @@ fn phase_dag_append(
             );
             if vertex_id.is_empty() { None } else { Some(vertex_id.to_owned()) }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("trio:dag_append:vertex", &format!("rhizoCrypt not available: {e}"));
             None
         }
@@ -152,7 +152,7 @@ fn phase_spine_seal(
                 &format!("spine.seal response: {}", serde_json::to_string(&resp).unwrap_or_default()),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("trio:spine_seal:sealed", &format!("loamSpine not available: {e}"));
         }
         Err(e) => {
@@ -178,7 +178,7 @@ fn phase_braid_create(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 &format!("braid response keys: {:?}", resp.as_object().map(|o| o.keys().collect::<Vec<_>>()).unwrap_or_default()),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("trio:braid_create:id", &format!("sweetGrass not available: {e}"));
         }
         Err(e) => {
@@ -209,7 +209,7 @@ fn phase_composition_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCon
                 ),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "trio:composition:nest_store:response_shape",
                 &format!("biomeOS orchestration not available for composition dispatch: {e}"),

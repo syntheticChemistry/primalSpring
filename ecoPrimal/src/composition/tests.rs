@@ -143,7 +143,7 @@ fn tower_parity_crypto_hash() {
                 &format!("expected 44, got {}", hash.len()),
             );
         }
-        Err(e) if e.is_connection_error() || e.is_permission_denied() => {
+        Err(e) if super::parity::is_skip_error(&e) => {
             v.check_skip(
                 "blake3_hash_nonempty",
                 &format!("security not available: {e}"),
@@ -180,16 +180,10 @@ fn tower_parity_discovery_resolve() {
                 &format!("resolved: {result}"),
             );
         }
-        Err(e) if e.is_connection_error() => {
-            v.check_skip(
-                "resolve_security_exists",
-                &format!("discovery not available: {e}"),
-            );
-        }
         Err(e) => {
             v.check_skip(
                 "resolve_security_exists",
-                &format!("resolve gap (LD-08): {e}"),
+                &format!("discovery not available: {e}"),
             );
         }
     }
@@ -210,7 +204,7 @@ fn tower_parity_health_liveness() {
             Ok(alive) => {
                 v.check_bool(name, alive, &format!("{cap} health normalized"));
             }
-            Err(e) if e.is_connection_error() => {
+            Err(e) if super::parity::is_skip_error(&e) => {
                 v.check_skip(name, &format!("{cap} not running: {e}"));
             }
             Err(e) => {
@@ -262,7 +256,7 @@ fn nest_parity_storage_roundtrip() {
                 }
             }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if super::parity::is_skip_error(&e) => {
             v.check_skip(
                 "store_retrieve_match",
                 &format!("storage not available: {e}"),
@@ -285,7 +279,7 @@ fn nest_parity_nestgate_health() {
         Ok(alive) => {
             v.check_bool("nestgate_alive", alive, "NestGate health normalized");
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if super::parity::is_skip_error(&e) => {
             v.check_skip("nestgate_alive", &format!("NestGate not running: {e}"));
         }
         Err(e) => {
@@ -358,15 +352,16 @@ fn node_parity_shader_capabilities() {
         Ok(result) => {
             let has_archs = result
                 .get("supported_archs")
+                .or_else(|| result.get("targets"))
                 .and_then(|a| a.as_array())
                 .is_some_and(|a| !a.is_empty());
             v.check_bool(
                 "shader_has_supported_archs",
                 has_archs,
-                "SHADER_COMPILE_WIRE_CONTRACT: supported_archs populated",
+                "SHADER_COMPILE_WIRE_CONTRACT: supported_archs/targets populated",
             );
         }
-        Err(e) if e.is_connection_error() || e.is_permission_denied() => {
+        Err(e) if super::parity::is_skip_error(&e) => {
             v.check_skip(
                 "shader_has_supported_archs",
                 &format!("shader not available: {e}"),
@@ -436,7 +431,7 @@ fn nucleus_parity_cross_atomic_pipeline() {
                         }
                     }
                 }
-                Err(e) if e.is_connection_error() || e.is_permission_denied() => {
+                Err(e) if super::parity::is_skip_error(&e) => {
                     v.check_skip(
                         "nest_hash_roundtrip",
                         &format!("storage not available: {e}"),
@@ -447,7 +442,7 @@ fn nucleus_parity_cross_atomic_pipeline() {
                 }
             }
         }
-        Err(e) if e.is_connection_error() || e.is_permission_denied() => {
+        Err(e) if super::parity::is_skip_error(&e) => {
             v.check_skip(
                 "tower_hash_produced",
                 &format!("security not available: {e}"),

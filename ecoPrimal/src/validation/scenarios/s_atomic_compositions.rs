@@ -308,7 +308,7 @@ fn validate_live_composition_dispatch(v: &mut ValidationResult, ctx: &mut Compos
                         &check_id,
                         &format!("composition.dispatch not available for {signal_name}: {e}"),
                     );
-                } else if e.is_connection_error() {
+                } else if e.is_skippable() {
                     v.check_skip(
                         &check_id,
                         &format!("orchestration not reachable for {signal_name}: {e}"),

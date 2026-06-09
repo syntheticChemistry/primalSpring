@@ -186,7 +186,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                         "nest.commit not available (pre-v3.57 biomeOS or missing session.commit): {e}"
                     ),
                 );
-            } else if e.is_connection_error() {
+            } else if e.is_skippable() {
                 v.check_skip(
                     "live:nest_commit:dispatched",
                     &format!("biomeOS connection: {e}"),
@@ -232,7 +232,7 @@ fn phase_nest_store_baseline(v: &mut ValidationResult, ctx: &mut CompositionCont
                 "nest.store returns an object response",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "live:nest_store_baseline",
                 &format!("connection: {e}"),

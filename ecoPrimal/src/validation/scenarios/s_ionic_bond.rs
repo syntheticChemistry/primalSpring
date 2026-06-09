@@ -213,7 +213,7 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 .and_then(|c| c.as_str())
                 .map(String::from)
         }
-        Err(e) if e.is_connection_error() || e.is_method_not_found() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("live:propose", &format!("orchestration not reachable: {e}"));
             return;
         }
@@ -343,7 +343,7 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                     &format!("crypto.ionic_bond.verify_proposal not yet in bearDog: {e}"),
                 );
             }
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip(
                     "live:crypto_verify",
                     &format!("bearDog not reachable: {e}"),

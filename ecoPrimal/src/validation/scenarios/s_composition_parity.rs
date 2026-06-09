@@ -64,7 +64,7 @@ fn tower_health(ctx: &mut CompositionContext, v: &mut ValidationResult) {
     ] {
         match ctx.health_check(cap) {
             Ok(alive) => v.check_bool(name, alive, &format!("{cap} health normalized")),
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip(name, &format!("{cap} not running: {e}"));
             }
             Err(e) => {
@@ -102,7 +102,7 @@ fn tower_crypto_hash(ctx: &mut CompositionContext, v: &mut ValidationResult) {
                 "same input produces same hash",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "crypto_hash_nonempty",
                 &format!("security not available: {e}"),
@@ -133,7 +133,7 @@ fn tower_discovery_resolve(ctx: &mut CompositionContext, v: &mut ValidationResul
                     || result.get("virtual_endpoint").is_some();
                 v.check_bool(&name, found, &format!("resolved {cap}: {result}"));
             }
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip(&name, &format!("discovery not available: {e}"));
             }
             Err(e) => {
@@ -152,7 +152,7 @@ fn tower_discovery_resolve(ctx: &mut CompositionContext, v: &mut ValidationResul
                 &format!("Songbird exposes {count} methods"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "songbird_method_catalog",
                 &format!("discovery not available: {e}"),
@@ -219,7 +219,7 @@ fn node_shader_capabilities(ctx: &mut CompositionContext, v: &mut ValidationResu
                 "WGSL arch present",
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "shader_supported_archs",
                 &format!("shader not available: {e}"),
@@ -244,7 +244,7 @@ fn node_compute_dispatch_health(ctx: &mut CompositionContext, v: &mut Validation
             alive,
             "toadStool health normalized",
         ),
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "compute_dispatch_alive",
                 &format!("compute not available: {e}"),
@@ -312,7 +312,7 @@ fn nest_storage_roundtrip(ctx: &mut CompositionContext, v: &mut ValidationResult
                 }
             }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip(
                 "storage_roundtrip_match",
                 &format!("storage not available: {e}"),
@@ -332,7 +332,7 @@ fn nest_provenance_health(ctx: &mut CompositionContext, v: &mut ValidationResult
     for (name, cap) in [("sweetgrass_alive", "commit"), ("rhizocrypt_alive", "dag")] {
         match ctx.health_check(cap) {
             Ok(alive) => v.check_bool(name, alive, &format!("{cap} health normalized")),
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip(name, &format!("{cap} not available: {e}"));
             }
             Err(e) => {
@@ -388,7 +388,7 @@ fn nucleus_hash_store_retrieve(ctx: &mut CompositionContext, v: &mut ValidationR
                         }
                     }
                 }
-                Err(e) if e.is_connection_error() => {
+                Err(e) if e.is_skippable() => {
                     v.check_skip(
                         "cross_nest_roundtrip",
                         &format!("storage not available: {e}"),
@@ -399,7 +399,7 @@ fn nucleus_hash_store_retrieve(ctx: &mut CompositionContext, v: &mut ValidationR
                 }
             }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("cross_tower_hash", &format!("security not available: {e}"));
             v.check_skip("cross_nest_roundtrip", "tower unavailable");
         }

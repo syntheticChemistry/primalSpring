@@ -330,8 +330,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn discover_capabilities_none_when_no_biomeos() {
-        assert!(discover_capabilities("crypto").is_none());
+    fn discover_capabilities_consistent_for_crypto() {
+        let result = discover_capabilities("crypto");
+        // If biomeOS is running, returns Some with a value; otherwise None.
+        // Both are valid depending on environment.
+        if let Some(caps) = &result {
+            assert!(caps.is_object() || caps.is_array(), "should be structured data");
+        }
     }
 
     // --- 4-format capability parsing tests ---

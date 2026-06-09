@@ -76,7 +76,7 @@ fn phase_spine_create(v: &mut ValidationResult, ctx: &mut CompositionContext) ->
             );
             if spine_id.is_empty() { None } else { Some(spine_id.to_owned()) }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("loam:spine_create:id", &format!("loamSpine not available: {e}"));
             None
         }
@@ -115,7 +115,7 @@ fn phase_spine_seal(
             );
             if sealed.is_empty() { None } else { Some(sealed.to_owned()) }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("loam:spine_seal:sealed", &format!("loamSpine not available: {e}"));
             None
         }
@@ -158,7 +158,7 @@ fn phase_cert_mint(
             );
             if cert_id.is_empty() { None } else { Some(cert_id.to_owned()) }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("loam:cert_mint:id", &format!("loamSpine not available: {e}"));
             None
         }
@@ -193,7 +193,7 @@ fn phase_cert_verify(
                 &format!("certificate.verify({cert_id}): valid={valid}"),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("loam:cert_verify:valid", &format!("loamSpine not available: {e}"));
         }
         Err(e) => {
@@ -249,7 +249,7 @@ fn phase_cert_get(
                 &format!("certificate.get response keys: {:?}", resp.as_object().map(|o| o.keys().collect::<Vec<_>>()).unwrap_or_default()),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("loam:cert_get:retrieved", &format!("loamSpine not available: {e}"));
         }
         Err(e) => {

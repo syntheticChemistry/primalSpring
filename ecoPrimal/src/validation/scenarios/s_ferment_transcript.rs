@@ -71,7 +71,7 @@ fn phase_session_create(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             );
             if session_id.is_empty() { None } else { Some(session_id.to_owned()) }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("ferment:session_create:id", &format!("rhizoCrypt not available: {e}"));
             None
         }
@@ -107,7 +107,7 @@ fn phase_append_events(
             }),
         ) {
             Ok(_) => appended += 1,
-            Err(e) if e.is_connection_error() => {
+            Err(e) if e.is_skippable() => {
                 v.check_skip("ferment:append:count", &format!("rhizoCrypt not available: {e}"));
                 return;
             }
@@ -152,7 +152,7 @@ fn phase_dehydrate(
             );
             if hash.is_empty() { None } else { Some(hash.to_owned()) }
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("ferment:dehydrate:hash", &format!("rhizoCrypt not available: {e}"));
             None
         }
@@ -191,7 +191,7 @@ fn phase_mint_cert(
                 &format!("cert response keys: {:?}", resp.as_object().map(|o| o.keys().collect::<Vec<_>>()).unwrap_or_default()),
             );
         }
-        Err(e) if e.is_connection_error() => {
+        Err(e) if e.is_skippable() => {
             v.check_skip("ferment:cert_mint:id", &format!("loamSpine not available: {e}"));
         }
         Err(e) => {
