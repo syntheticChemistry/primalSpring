@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-10 (Wave 107 ecosystem: **ZERO P1. ZERO KNOWN DEBT.** skunkBat TCP 9750 RESOLVED upstream — `zero-port-standard` scenario now 0 failures. 4-gate mesh collective LIVE (eastGate↔golgiBody↔ironGate+southGate). songBird topology-aware routing SHIPPED (ff86204c). barraCuda `method.describe` (v0.4.0). Socket cleanup 4/5. grapheneGate 13/13 code complete. S1-S4 GRADUATED. 898 tests 0 failures. 54 scenarios. grapheneGate readiness scenario + aarch64 rebuild for coralReef/nestGate/petalTongue.)
+> **Last updated**: 2026-06-10 (Wave 107 ecosystem: **ZERO P1. ZERO KNOWN DEBT.** grapheneGate **11/13 LIVE** on Pixel 8a via TCP-only (bearDog, songBird, skunkBat, toadStool, barraCuda, nestGate, rhizoCrypt, loamSpine, sweetGrass, squirrel, petalTongue). **2 blocked**: coralReef (tarpc UDS bind fatal), biomeOS (Neural API UDS bind fatal). `PRIMAL_BIND_MODE=tcp_only` adopted 10/13, workaround 1/13 (nestGate), blocked 2/13. 4-gate mesh + grapheneGate = 5-gate ecosystem. 898 tests, 54 scenarios. deploy_pixel.sh hardened for TCP-only substrate.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (June 10, 2026)
 
-**267+ PASS, 0 FAIL, 0 KNOWN_DEBT** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: **54 scenarios** (10 tracks, 3 tiers), 490+ real methods (100% exercised), **898 lib tests pass** (2 ignored) + **17 doc tests**, **5 clippy warnings** (borderline function-length only), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 107: ZERO P1. ZERO KNOWN DEBT.** skunkBat TCP 9750 resolved upstream — `zero-port-standard` scenario now fully clean. songBird M1 SHIPPED (ff86204c): `ipc.resolve` topology-aware mesh routing — 4-gate collective is a transparent distributed capability mesh. barraCuda `method.describe` SHIPPED (v0.4.0): 97 methods, runtime introspection. **Socket cleanup 4/5 DONE**: sweetGrass v0.7.55, barraCuda v0.4.0, coralReef Wave 107, squirrel Wave 107 — all zero `/tmp` artifacts. **toadStool still pending**. **NUCLEUS supervision SHIPPED** (biomeOS v4.17). **4-gate mesh collective LIVE** (eastGate↔golgiBody↔ironGate+southGate). southGate cross-subnet VALIDATED (13/13, 12-step distributed science pipeline). gate.bootstrap **SHIPPED + HARDENED** (gate.status, --dry-run, atomic publish). Transport 11/11 COMPLETE. Depot 13/13 BLAKE3 VERIFIED. WAN depot 13/13 serving. grapheneGate 13/13 code complete (all primals TCP-only fallback adopted). S1-S4 GRADUATED. **Remaining P2**: biomeOS auto-registration (NUCLEUS→songBird), toadStool `/tmp` socket cleanup, grapheneGate aarch64 rebuild + Pixel redeploy, flockGate WAN e2e 5/5.
+**267+ PASS, 0 FAIL, 0 KNOWN_DEBT** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: **54 scenarios** (10 tracks, 3 tiers), 490+ real methods (100% exercised), **898 lib tests pass** (2 ignored) + **17 doc tests**, **5 clippy warnings** (borderline function-length only), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 107: ZERO P1. ZERO KNOWN DEBT.** grapheneGate **11/13 LIVE** on Pixel 8a (bearDog, songBird, skunkBat, toadStool, barraCuda, nestGate, rhizoCrypt, loamSpine, sweetGrass, squirrel, petalTongue). `PRIMAL_BIND_MODE=tcp_only` validated on real Android SELinux substrate. 2 blocked: coralReef (tarpc UDS fatal on `bind()`), biomeOS (Neural API UDS fatal on `bind()`). songBird M1 SHIPPED (ff86204c): `ipc.resolve` topology-aware mesh routing — 4-gate collective is a transparent distributed capability mesh. barraCuda `method.describe` SHIPPED (v0.4.0): 97 methods, runtime introspection. **Socket cleanup 4/5 DONE**: sweetGrass v0.7.55, barraCuda v0.4.0, coralReef Wave 107, squirrel Wave 107 — all zero `/tmp` artifacts. **toadStool still pending**. **NUCLEUS supervision SHIPPED** (biomeOS v4.17). **5-gate ecosystem** (eastGate↔golgiBody↔ironGate+southGate + grapheneGate standalone). southGate cross-subnet VALIDATED (13/13, 12-step distributed science pipeline). gate.bootstrap **SHIPPED + HARDENED** (gate.status, --dry-run, atomic publish). Transport 11/11 COMPLETE. Depot 13/13 BLAKE3 VERIFIED. WAN depot 13/13 serving. S1-S4 GRADUATED. **Remaining P2**: coralReef tarpc tcp_only gate, biomeOS Neural API tcp_only gate, biomeOS auto-registration (NUCLEUS→songBird), toadStool `/tmp` socket cleanup, flockGate WAN e2e 5/5.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -45,7 +45,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | bearDog | 14,987+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 117b: orphan purge (21 files, ~3,500 LOC), `env_keys.rs` (290 constants), HTTP-era config annotated. |
 | songbird | 8,158+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 58: `songbird-process-env` fully adopted (48 sites), 146 `#[expect` migrations, +67 tests. Zero hardcoded env in prod. |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S279: zero production panic paths (12 eliminated), deprecated legacy capability roundtrip. 9,156+ lib tests. 47 crates, 88 methods. |
-| biomeOS | 8,038+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.84: `env_config` module (90+ literals centralized), test extraction refactors. NC-1.4 COMPLETE (`biomeos-pseudospore`). |
+| biomeOS | 8,038+ | **ADOPTED** | FULL | consumer | **P2** — v3.84: `env_config` module (90+ literals centralized), NC-1.4 COMPLETE. **grapheneGate blocker**: Neural API server UDS `bind()` fatal — doesn't check `PRIMAL_BIND_MODE` before attempting UDS. Must skip UDS when `tcp_only`. |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
 | squirrel | 7,095+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 58: 316 env constants (`env_vars.rs`), self-identity eliminated, 5,417L orphan purge. ~93 files remaining raw `std::env::var`. |
 | barraCuda | 4,600+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: `method.describe` SHIPPED (97 methods), socket cleanup DONE (state co-locates with socket path, ProtectSystem=strict compatible), zero debt. |
@@ -53,10 +53,23 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `Box<dyn Error>` eliminated, test harness extracted, workspace dep hygiene, stale spec headers fixed. |
 | loamSpine | 1,528+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 55: BearDog coupling removed, placeholder DIDs replaced. Primal self-knowledge enforced. |
 | sweetGrass | 1,634 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.55: Wave 107 socket cleanup DONE (Tier 5 fallback fixed, zero /tmp artifacts). Doc sync to v0.7.55. |
-| coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: socket cleanup DONE (3-tier resolution via `config::socket_base_dir()`), transport evolution (TRANSPORT_ENDPOINT), deep debt zero. |
+| coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **P2** — Wave 107: socket cleanup DONE, TRANSPORT_ENDPOINT works for JSON-RPC TCP. **grapheneGate blocker**: tarpc server `bind()` fatal when UDS denied — tarpc must be skipped when `PRIMAL_BIND_MODE=tcp_only`. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 ELIMINATED — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-107. 54 scenarios (10 tracks), 490+ methods (100% exercised), 898 lib tests, 0 known debt (skunkBat TCP 9750 RESOLVED). Wave 107: ZERO P1. ZERO KNOWN DEBT. songBird topology-aware routing (ff86204c). barraCuda method.describe (v0.4.0). Socket cleanup 4/5 (toadStool pending). 4-gate mesh collective LIVE. S1-S4 GRADUATED. Remaining: biomeOS auto-register, toadStool /tmp, grapheneGate rebuild, flockGate WAN.**
+**11/13 CLEAN, 2/13 P2 — Waves 1-107. 54 scenarios (10 tracks), 490+ methods (100% exercised), 898 lib tests, 0 known debt. Wave 107: ZERO P1. grapheneGate 11/13 LIVE on Pixel 8a. coralReef P2 (tarpc fatal on tcp_only), biomeOS P2 (Neural API UDS fatal on tcp_only). songBird topology-aware routing (ff86204c). barraCuda method.describe (v0.4.0). Socket cleanup 4/5 (toadStool pending). 5-gate ecosystem (4-gate mesh + grapheneGate standalone). S1-S4 GRADUATED. Remaining P2: coralReef tarpc gate, biomeOS UDS gate, biomeOS auto-register, toadStool /tmp, flockGate WAN.**
+
+---
+
+## grapheneGate Gaps — Wave 107 Deployment (June 10, 2026)
+
+Exposed by live `--composition full` deploy to Pixel 8a (aarch64-musl, TCP-only).
+
+| Gap | Owner | Severity | Description |
+|-----|-------|----------|-------------|
+| **CR-TARPC-01**: coralReef tarpc fatal on tcp_only | **coralReef** | **P2** | tarpc server `bind()` at UDS path fails with EACCES (Android SELinux), crashes entire process. JSON-RPC TCP on :9730 works. tarpc must be skipped when `PRIMAL_BIND_MODE=tcp_only`. |
+| **BM-UDS-01**: biomeOS Neural API UDS fatal | **biomeOS** | **P2** | Neural API server unconditionally binds UDS before TCP. `PRIMAL_BIND_MODE` not checked at bind time. v4.18 "native fallback" not wired into actual bind path. Must skip UDS when `tcp_only`. |
+| **NG-DOWNCAST-01**: nestGate `is_platform_constraint()` downcast | **nestGate** | **P3** | `io::Error` buried in custom error chain, `downcast_ref` fails, `is_platform_constraint()` returns false. **Workaround deployed**: `NESTGATE_SOCKET=""`. Proper fix: check `PRIMAL_BIND_MODE` directly before downcast. |
+| **PB-FORWARD-01**: deploy_pixel.sh port conflict | **cellMembrane** | **P3** | Phase 5 ADB port forwarding fails silently if local port is in use. Should pre-check or warn. |
 
 ---
 
