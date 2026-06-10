@@ -98,6 +98,7 @@ pub mod s_tower_atomic;
 pub mod s_cephalization;
 pub mod s_ecosystem_freshness;
 pub mod s_tower_cns;
+pub mod s_tcp_fallback;
 pub mod s_zero_port_standard;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
@@ -156,6 +157,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_tower_cns::SCENARIO);
     r.register(s_ecosystem_freshness::SCENARIO);
     r.register(s_deployment_pipeline::SCENARIO);
+    r.register(s_tcp_fallback::SCENARIO);
     r
 }
 
@@ -166,7 +168,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 52;
+    const EXPECTED_SCENARIO_COUNT: usize = 53;
 
     #[test]
     fn registry_scenario_count() {

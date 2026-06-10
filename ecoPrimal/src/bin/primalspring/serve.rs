@@ -10,44 +10,47 @@ use primalspring::ipc::method_gate::{CallerContext, MethodGate};
 use primalspring::ipc::protocol::{
     JSONRPC_VERSION, JsonRpcError, JsonRpcRequest, JsonRpcResponse,
 };
+use primalspring::ipc::server_bind::{BindMode, BoundTransport, bind_transport};
 use primalspring::{PRIMAL_DOMAIN, PRIMAL_NAME};
 
 pub fn run() {
-    let sock_path = primalspring::ipc::discover::socket_path(PRIMAL_NAME);
+    let mode = BindMode::from_env();
     let gate = MethodGate::from_env();
 
     tracing::info!("{PRIMAL_NAME} server starting...");
     tracing::info!(domain = PRIMAL_DOMAIN);
-    tracing::info!(socket = %sock_path.display());
+    tracing::info!(bind_mode = ?mode, "transport bind mode");
     tracing::info!(auth_mode = gate.mode().as_str(), "method gate initialized");
 
-    if let Some(parent) = sock_path.parent() {
-        if let Err(e) = std::fs::create_dir_all(parent) {
-            tracing::error!(error = %e, "failed to create socket directory");
-            std::process::exit(1);
-        }
-    }
-
-    let _ = std::fs::remove_file(&sock_path);
-    let listener = match UnixListener::bind(&sock_path) {
-        Ok(l) => l,
+    let bound = match bind_transport(PRIMAL_NAME, mode) {
+        Ok(b) => b,
         Err(e) => {
-            tracing::error!(error = %e, "failed to bind Unix socket");
+            tracing::error!(error = %e, "failed to bind transport");
             std::process::exit(1);
         }
     };
 
-    tracing::info!("listening for JSON-RPC 2.0 connections");
+    tracing::info!(endpoint = bound.endpoint_display(), "listening for JSON-RPC 2.0 connections");
 
-    std::thread::spawn(move || {
-        primalspring::niche::register_with_target(&sock_path);
-    });
+    match bound {
+        BoundTransport::Unix(listener, sock_path) => {
+            std::thread::spawn(move || {
+                primalspring::niche::register_with_target(&sock_path);
+            });
+            serve_unix(listener, &gate);
+        }
+        BoundTransport::Tcp(listener, _addr) => {
+            serve_tcp(listener, &gate);
+        }
+    }
+}
 
+fn serve_unix(listener: UnixListener, gate: &MethodGate) {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
-                tracing::debug!("client connected");
-                if let Err(e) = handle_connection(&stream, &gate) {
+                tracing::debug!("client connected (unix)");
+                if let Err(e) = handle_unix_connection(&stream, gate) {
                     tracing::warn!(error = %e, "connection error");
                 }
             }
@@ -58,17 +61,52 @@ pub fn run() {
     }
 }
 
-fn handle_connection(
+fn serve_tcp(listener: std::net::TcpListener, gate: &MethodGate) {
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => {
+                tracing::debug!("client connected (tcp)");
+                if let Err(e) = handle_tcp_connection(&stream, gate) {
+                    tracing::warn!(error = %e, "connection error");
+                }
+            }
+            Err(e) => {
+                tracing::warn!(error = %e, "accept failed");
+            }
+        }
+    }
+}
+
+fn handle_unix_connection(
     stream: &std::os::unix::net::UnixStream,
     gate: &MethodGate,
 ) -> std::io::Result<()> {
     let caller = CallerContext::from_unix_stream(stream);
     let mut writer = stream;
     let mut reader = BufReader::new(stream);
+    serve_rpc_lines(&mut reader, &mut writer, &caller, gate)
+}
+
+fn handle_tcp_connection(
+    stream: &std::net::TcpStream,
+    gate: &MethodGate,
+) -> std::io::Result<()> {
+    let caller = CallerContext::loopback();
+    let mut writer = stream;
+    let mut reader = BufReader::new(stream);
+    serve_rpc_lines(&mut reader, &mut writer, &caller, gate)
+}
+
+fn serve_rpc_lines(
+    reader: &mut impl BufRead,
+    writer: &mut impl Write,
+    caller: &CallerContext,
+    gate: &MethodGate,
+) -> std::io::Result<()> {
     let mut line = String::new();
 
     while reader.read_line(&mut line)? > 0 {
-        let response = dispatch_gated(&line, &caller, gate);
+        let response = dispatch_gated(&line, caller, gate);
         let response_json = match serde_json::to_string(&response) {
             Ok(json) => json,
             Err(e) => {

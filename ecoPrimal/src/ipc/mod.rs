@@ -34,6 +34,7 @@ mod proptest_ipc;
 pub mod protocol;
 pub mod provenance;
 pub mod resilience;
+pub mod server_bind;
 pub mod tcp;
 pub mod transport;
 
