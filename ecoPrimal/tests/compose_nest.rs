@@ -104,8 +104,7 @@ fn nest_storage_round_trip() {
         .expect("nestgate socket");
 
     let key = format!("itest-key-{}", std::process::id());
-    let value =
-        base64::engine::general_purpose::STANDARD.encode(b"nest storage round trip value");
+    let value = base64::engine::general_purpose::STANDARD.encode(b"nest storage round trip value");
 
     let store = direct_rpc_call(
         nestgate_socket,
@@ -166,20 +165,13 @@ fn nest_storage_list_exists() {
         .or_else(|| running.socket_for_primal("nestgate"))
         .expect("nestgate socket (second call)");
 
-    let list = direct_rpc_call(
-        nestgate_socket2,
-        "storage.list",
-        &serde_json::json!({}),
-    );
+    let list = direct_rpc_call(nestgate_socket2, "storage.list", &serde_json::json!({}));
     assert!(list.is_ok(), "storage.list should succeed: {list:?}");
     let result = list.unwrap();
     let keys = result["keys"]
         .as_array()
         .or_else(|| result["items"].as_array());
-    assert!(
-        keys.is_some(),
-        "storage.list should return keys or items"
-    );
+    assert!(keys.is_some(), "storage.list should return keys or items");
 
     let nestgate_socket3 = running
         .socket_for("storage")
@@ -191,10 +183,7 @@ fn nest_storage_list_exists() {
         "storage.exists",
         &serde_json::json!({ "key": key }),
     );
-    assert!(
-        exists.is_ok(),
-        "storage.exists should succeed: {exists:?}"
-    );
+    assert!(exists.is_ok(), "storage.exists should succeed: {exists:?}");
     let exists_result = exists.unwrap();
     let found = exists_result["exists"]
         .as_bool()
@@ -220,9 +209,8 @@ fn nest_model_cache() {
         .expect("nestgate socket");
 
     let model_key = format!("model-cache-{}", std::process::id());
-    let model_data = base64::engine::general_purpose::STANDARD.encode(
-        b"fake model weights for caching test - not a real model",
-    );
+    let model_data = base64::engine::general_purpose::STANDARD
+        .encode(b"fake model weights for caching test - not a real model");
 
     let store = direct_rpc_call(
         nestgate_socket,
@@ -269,11 +257,7 @@ fn nest_direct_health() {
         .or_else(|| running.socket_for_primal("nestgate"))
         .expect("nestgate socket");
 
-    let health = direct_rpc_call(
-        nestgate_socket,
-        "health.liveness",
-        &serde_json::json!({}),
-    );
+    let health = direct_rpc_call(nestgate_socket, "health.liveness", &serde_json::json!({}));
     assert!(
         health.is_ok(),
         "nestgate health.liveness should respond: {health:?}"
@@ -296,15 +280,8 @@ fn nest_discover_capabilities() {
         .or_else(|| running.socket_for_primal("nestgate"))
         .expect("nestgate socket");
 
-    let caps = direct_rpc_call(
-        nestgate_socket,
-        "capabilities.list",
-        &serde_json::json!({}),
-    );
-    assert!(
-        caps.is_ok(),
-        "capabilities.list should succeed: {caps:?}"
-    );
+    let caps = direct_rpc_call(nestgate_socket, "capabilities.list", &serde_json::json!({}));
+    assert!(caps.is_ok(), "capabilities.list should succeed: {caps:?}");
     let result = caps.unwrap();
     let cap_list = result["capabilities"]
         .as_array()
@@ -342,8 +319,8 @@ fn nestgate_content_put_returns_hash() {
         .or_else(|| running.socket_for_primal("nestgate"))
         .expect("nestgate socket");
 
-    let data_b64 = base64::engine::general_purpose::STANDARD
-        .encode(b"primalSpring content gate test");
+    let data_b64 =
+        base64::engine::general_purpose::STANDARD.encode(b"primalSpring content gate test");
     let put = direct_rpc_call(
         nestgate_socket,
         "content.put",
@@ -422,8 +399,7 @@ fn nestgate_content_list_includes_stored() {
         .or_else(|| running.socket_for_primal("nestgate"))
         .expect("nestgate socket");
 
-    let data_b64 = base64::engine::general_purpose::STANDARD
-        .encode(b"content list gate test");
+    let data_b64 = base64::engine::general_purpose::STANDARD.encode(b"content list gate test");
     let put = direct_rpc_call(
         nestgate_socket,
         "content.put",
@@ -484,17 +460,14 @@ fn nestgate_storage_list_returns_opaque_hashes() {
     );
     assert!(store.is_ok(), "storage.store should succeed: {store:?}");
 
-    let list = direct_rpc_call(
-        nestgate_socket,
-        "storage.list",
-        &serde_json::json!({}),
-    )
-    .expect("storage.list should succeed");
+    let list = direct_rpc_call(nestgate_socket, "storage.list", &serde_json::json!({}))
+        .expect("storage.list should succeed");
 
-    let keys = list["keys"]
-        .as_array()
-        .or_else(|| list["items"].as_array());
-    assert!(keys.is_some(), "storage.list should return keys or items array");
+    let keys = list["keys"].as_array().or_else(|| list["items"].as_array());
+    assert!(
+        keys.is_some(),
+        "storage.list should return keys or items array"
+    );
 
     let keys = keys.unwrap();
     for key in keys {
@@ -523,8 +496,8 @@ fn nestgate_storage_list_content_addressed() {
         .or_else(|| running.socket_for_primal("nestgate"))
         .expect("nestgate socket");
 
-    let data_b64 = base64::engine::general_purpose::STANDARD
-        .encode(b"blake3 content addressing test");
+    let data_b64 =
+        base64::engine::general_purpose::STANDARD.encode(b"blake3 content addressing test");
     let put = direct_rpc_call(
         nestgate_socket,
         "content.put",

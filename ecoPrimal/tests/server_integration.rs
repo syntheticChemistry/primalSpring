@@ -151,7 +151,10 @@ fn discovery_sweep_identity_mode_redirects_to_capability() {
     assert!(resp["error"].is_null());
     assert_eq!(resp["result"]["mode"], "capability");
     let caps = resp["result"]["capabilities"].as_array().unwrap();
-    assert!(!caps.is_empty(), "identity mode should redirect to capability mode");
+    assert!(
+        !caps.is_empty(),
+        "identity mode should redirect to capability mode"
+    );
 }
 
 #[test]

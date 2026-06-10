@@ -17,7 +17,10 @@ use primalspring::tolerances;
 use super::registry;
 
 /// Pre-flight result with pass/fail details.
-#[expect(dead_code, reason = "fields used for diagnostic output; callers check .passed")]
+#[expect(
+    dead_code,
+    reason = "fields used for diagnostic output; callers check .passed"
+)]
 pub struct PreflightResult {
     pub passed: bool,
     pub binary_missing: Vec<String>,
@@ -27,6 +30,7 @@ pub struct PreflightResult {
 }
 
 /// Run Phase 0 pre-flight checks for the given primal list.
+#[expect(clippy::too_many_lines, reason = "preflight validation check sequence")]
 pub fn run_preflight(primals: &[&str], uds_only: bool) -> PreflightResult {
     println!("=== Phase 0: Pre-flight validation ===");
     println!();
@@ -48,7 +52,11 @@ pub fn run_preflight(primals: &[&str], uds_only: bool) -> PreflightResult {
         }
     }
     if binary_missing.is_empty() {
-        println!("\x1b[32mOK\x1b[0m ({} / {} found)", primals.len(), primals.len());
+        println!(
+            "\x1b[32mOK\x1b[0m ({} / {} found)",
+            primals.len(),
+            primals.len()
+        );
     } else {
         println!(
             "\x1b[31mFAIL\x1b[0m ({} missing: {})",
@@ -111,7 +119,10 @@ pub fn run_preflight(primals: &[&str], uds_only: bool) -> PreflightResult {
             println!("\x1b[32mOK\x1b[0m (no conflicts)");
         } else {
             for (port, names) in &conflicts {
-                println!("\x1b[31mFAIL\x1b[0m port {port} claimed by: {}", names.join(", "));
+                println!(
+                    "\x1b[31mFAIL\x1b[0m port {port} claimed by: {}",
+                    names.join(", ")
+                );
             }
         }
         conflicts
@@ -170,10 +181,7 @@ fn detect_port_conflicts(primals: &[&str]) -> Vec<(u16, Vec<String>)> {
     for primal in primals {
         let port = registry::effective_port(primal);
         if port > 0 {
-            port_map
-                .entry(port)
-                .or_default()
-                .push((*primal).to_owned());
+            port_map.entry(port).or_default().push((*primal).to_owned());
         }
     }
     port_map
@@ -183,7 +191,8 @@ fn detect_port_conflicts(primals: &[&str]) -> Vec<(u16, Vec<String>)> {
 }
 
 fn clean_stale_sockets() -> u32 {
-    let socket_dir = PathBuf::from(tolerances::runtime_dir()).join(primalspring::env_keys::BIOMEOS_SUBDIR);
+    let socket_dir =
+        PathBuf::from(tolerances::runtime_dir()).join(primalspring::env_keys::BIOMEOS_SUBDIR);
     let Ok(entries) = std::fs::read_dir(&socket_dir) else {
         return 0;
     };

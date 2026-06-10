@@ -76,12 +76,12 @@ pub(super) fn signal_pid(pid: u32) -> std::io::Result<()> {
     use nix::sys::signal::{Signal, kill};
     use nix::unistd::Pid;
 
-    let nix_pid = Pid::from_raw(i32::try_from(pid).map_err(|e| {
-        std::io::Error::other(format!("PID {pid} out of i32 range: {e}"))
-    })?);
-    kill(nix_pid, Signal::SIGTERM).map_err(|e| {
-        std::io::Error::other(format!("kill({pid}, SIGTERM): {e}"))
-    })
+    let nix_pid = Pid::from_raw(
+        i32::try_from(pid)
+            .map_err(|e| std::io::Error::other(format!("PID {pid} out of i32 range: {e}")))?,
+    );
+    kill(nix_pid, Signal::SIGTERM)
+        .map_err(|e| std::io::Error::other(format!("kill({pid}, SIGTERM): {e}")))
 }
 
 /// Scan `/proc` for processes matching the primal binary pattern.
@@ -121,21 +121,25 @@ pub(super) fn spawn_primal(
     family_seed: &str,
 ) -> Result<(), String> {
     let binary = discover_binary(primal).map_err(|e| e.to_string())?;
-    let (defaults, profiles) = primalspring::launcher::load_launch_profiles()
-        .map_err(|e| format!("profile load: {e}"))?;
+    let (defaults, profiles) =
+        primalspring::launcher::load_launch_profiles().map_err(|e| format!("profile load: {e}"))?;
     let empty = primalspring::launcher::LaunchProfile::default();
     let profile = profiles.get(primal).unwrap_or(&empty);
 
     let mut cmd = std::process::Command::new(&binary);
 
-    let subcommand = profile.subcommand.as_deref()
+    let subcommand = profile
+        .subcommand
+        .as_deref()
         .or(defaults.subcommand.as_deref())
         .unwrap_or("server");
     if !subcommand.is_empty() {
         cmd.arg(subcommand);
     }
 
-    let socket_flag = profile.socket_flag.as_deref()
+    let socket_flag = profile
+        .socket_flag
+        .as_deref()
         .or(defaults.socket_flag.as_deref())
         .unwrap_or("--socket");
     if socket_flag != "__skip__" {
@@ -146,7 +150,8 @@ pub(super) fn spawn_primal(
         cmd.arg("--port").arg(port.to_string());
     }
 
-    let pass_fid = profile.pass_family_id
+    let pass_fid = profile
+        .pass_family_id
         .or(defaults.pass_family_id)
         .unwrap_or(true);
     if pass_fid {

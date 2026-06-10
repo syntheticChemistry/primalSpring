@@ -97,7 +97,9 @@ fn phase_composition_parity(v: &mut ValidationResult, ctx: &mut CompositionConte
         let start = std::time::Instant::now();
         #[expect(clippy::cast_possible_truncation, reason = "primal count fits u32")]
         let elapsed_us = || start.elapsed().as_micros() as u64;
-        let ok = ctx.call(cap, "health.liveness", serde_json::json!({})).is_ok();
+        let ok = ctx
+            .call(cap, "health.liveness", serde_json::json!({}))
+            .is_ok();
         aggregate_us += elapsed_us();
         if !ok {
             primal_health_ok = false;

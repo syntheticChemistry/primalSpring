@@ -4,8 +4,8 @@
 
 use crate::composition::CompositionContext;
 use crate::ipc::method_gate::{
-    CallerContext, ConnectionOrigin, EnforcementMode, MethodGate, PermissiveVerifier, VerifiedToken,
-    scope_permits_method,
+    CallerContext, ConnectionOrigin, EnforcementMode, MethodGate, PermissiveVerifier,
+    VerifiedToken, scope_permits_method,
 };
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -310,6 +310,9 @@ mod tests {
         let mut v = ValidationResult::new("token-federation");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce at least one check"
+        );
     }
 }

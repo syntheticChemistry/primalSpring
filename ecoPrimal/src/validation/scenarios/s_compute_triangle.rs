@@ -150,11 +150,7 @@ fn phase_toadstool_capabilities(v: &mut ValidationResult, ctx: &mut CompositionC
         }
     }
 
-    match ctx.call(
-        "compute",
-        "compute.capabilities",
-        serde_json::json!({}),
-    ) {
+    match ctx.call("compute", "compute.capabilities", serde_json::json!({})) {
         Ok(resp) => {
             let has_backends = resp.get("backends").and_then(|b| b.as_array()).is_some()
                 || resp.get("devices").and_then(|d| d.as_array()).is_some()
@@ -289,10 +285,7 @@ fn phase_barracuda_math(v: &mut ValidationResult, ctx: &mut CompositionContext) 
 /// This validates the IPC contract, not the GPU result.
 /// Attempt shader compilation and return the base64 binary on success.
 /// Returns `None` and emits appropriate checks on skip/failure.
-fn try_compile_shader(
-    v: &mut ValidationResult,
-    ctx: &mut CompositionContext,
-) -> Option<String> {
+fn try_compile_shader(v: &mut ValidationResult, ctx: &mut CompositionContext) -> Option<String> {
     let trivial_wgsl = r"@compute @workgroup_size(1)
 fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
 }";
@@ -329,7 +322,10 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
             }
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("sovereign_compile_response_shape", &format!("coralReef: {e}"));
+            v.check_skip(
+                "sovereign_compile_response_shape",
+                &format!("coralReef: {e}"),
+            );
             None
         }
         Err(e) => {
@@ -350,9 +346,7 @@ fn phase_sovereign_dispatch(v: &mut ValidationResult, ctx: &mut CompositionConte
     if !has_shader || !has_compute {
         v.check_skip(
             "sovereign_compile_response_shape",
-            &format!(
-                "sovereign dispatch requires shader ({has_shader}) + compute ({has_compute})"
-            ),
+            &format!("sovereign dispatch requires shader ({has_shader}) + compute ({has_compute})"),
         );
         v.check_skip("sovereign_dispatch_response_shape", "compile skipped");
         v.check_skip("sovereign_e2e_pipeline_viable", "compile skipped");
@@ -360,7 +354,10 @@ fn phase_sovereign_dispatch(v: &mut ValidationResult, ctx: &mut CompositionConte
     }
 
     let Some(binary_b64) = try_compile_shader(v, ctx) else {
-        v.check_skip("sovereign_dispatch_response_shape", "no binary from compile step");
+        v.check_skip(
+            "sovereign_dispatch_response_shape",
+            "no binary from compile step",
+        );
         v.check_skip("sovereign_e2e_pipeline_viable", "no binary from compile");
         return;
     };
@@ -384,9 +381,7 @@ fn phase_sovereign_dispatch(v: &mut ValidationResult, ctx: &mut CompositionConte
             v.check_bool(
                 "sovereign_dispatch_response_shape",
                 has_id || has_status,
-                &format!(
-                    "compute.dispatch.submit: dispatch_id={has_id}, status={has_status}"
-                ),
+                &format!("compute.dispatch.submit: dispatch_id={has_id}, status={has_status}"),
             );
         }
         Err(e) if e.is_skippable() => {
@@ -430,6 +425,9 @@ mod tests {
         let mut v = ValidationResult::new("compute-triangle");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce at least one check"
+        );
     }
 }

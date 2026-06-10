@@ -212,9 +212,12 @@ impl Transport {
     }
 
     fn call_encrypted(&mut self, json_line: &str) -> Result<JsonRpcResponse, IpcError> {
-        let keys = self.session_keys.as_ref().ok_or_else(|| IpcError::ProtocolError {
-            detail: "BTSP Phase 3: no session keys established".to_owned(),
-        })?;
+        let keys = self
+            .session_keys
+            .as_ref()
+            .ok_or_else(|| IpcError::ProtocolError {
+                detail: "BTSP Phase 3: no session keys established".to_owned(),
+            })?;
         let encrypted = keys.encrypt(json_line.trim_end().as_bytes())?;
         let len = u32::try_from(encrypted.len()).map_err(|_| IpcError::ProtocolError {
             detail: "BTSP Phase 3: frame too large".to_owned(),
@@ -224,9 +227,12 @@ impl Transport {
         self.write_all(&encrypted)?;
         let resp_frame = self.read_encrypted_frame()?;
 
-        let keys = self.session_keys.as_ref().ok_or_else(|| IpcError::ProtocolError {
-            detail: "BTSP Phase 3: session keys lost during call".to_owned(),
-        })?;
+        let keys = self
+            .session_keys
+            .as_ref()
+            .ok_or_else(|| IpcError::ProtocolError {
+                detail: "BTSP Phase 3: session keys lost during call".to_owned(),
+            })?;
         let decrypted = keys.decrypt(&resp_frame)?;
         let response_str = String::from_utf8(decrypted).map_err(|e| IpcError::ProtocolError {
             detail: format!("BTSP Phase 3 decrypted response not UTF-8: {e}"),
@@ -431,8 +437,8 @@ mod tests {
             return;
         }
 
-        let beacon = crate::ipc::btsp_handshake::mito_beacon_from_env()
-            .expect("FAMILY_SEED must be set");
+        let beacon =
+            crate::ipc::btsp_handshake::mito_beacon_from_env().expect("FAMILY_SEED must be set");
         let seed = beacon.key_bytes();
 
         let mut transport = Transport::unix_btsp(sock, seed).expect("BTSP connect");

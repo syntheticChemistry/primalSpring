@@ -305,10 +305,7 @@ pub fn validate_deployment_readiness(path: &Path) -> Result<DeploymentReadiness,
 /// already holds discovered clients, so this avoids redundant socket
 /// probing across nodes that share the same provider.
 fn probe_graph_node_with_context(node: &GraphNode, ctx: &mut CompositionContext) -> NodeHealth {
-    let cap_key = node
-        .by_capability
-        .as_deref()
-        .unwrap_or_else(|| &node.name);
+    let cap_key = node.by_capability.as_deref().unwrap_or_else(|| &node.name);
 
     let has_client = ctx.has_capability(cap_key);
     let health_ok = if has_client {
@@ -333,6 +330,10 @@ fn probe_graph_node_with_context(node: &GraphNode, ctx: &mut CompositionContext)
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "comprehensive deploy graph structural validation"
+)]
 pub(super) fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
     if graph.graph.name.is_empty() {
         issues.push("graph.name is empty".to_owned());

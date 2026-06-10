@@ -47,10 +47,9 @@
 
 use std::collections::{BTreeMap, HashMap};
 
+use super::routing::CapabilityDomain;
 use crate::ipc::IpcError;
 use crate::ipc::client::PrimalClient;
-use super::routing::CapabilityDomain;
-
 
 /// How a capability was discovered — mirrors lithoSpore's `DiscoveryPath`.
 ///
@@ -155,7 +154,14 @@ impl CompositionContext {
     #[must_use]
     pub fn discover() -> Self {
         let d = super::context_discovery::discover_full();
-        Self { clients: d.clients, btsp_state: d.btsp_state, discovery_paths: d.discovery_paths, bearer_token: None, gate_id: None, mesh: None }
+        Self {
+            clients: d.clients,
+            btsp_state: d.btsp_state,
+            discovery_paths: d.discovery_paths,
+            bearer_token: None,
+            gate_id: None,
+            mesh: None,
+        }
     }
 
     /// Build a context by live-discovering all primals on the local system
@@ -168,7 +174,14 @@ impl CompositionContext {
     #[must_use]
     pub fn from_live_discovery() -> Self {
         let d = super::context_discovery::discover_live();
-        Self { clients: d.clients, btsp_state: d.btsp_state, discovery_paths: d.discovery_paths, bearer_token: None, gate_id: None, mesh: None }
+        Self {
+            clients: d.clients,
+            btsp_state: d.btsp_state,
+            discovery_paths: d.discovery_paths,
+            bearer_token: None,
+            gate_id: None,
+            mesh: None,
+        }
     }
 
     /// Build a context using tiers 2-5 (Neural API, UDS, registry, TCP).
@@ -184,7 +197,14 @@ impl CompositionContext {
     #[must_use]
     pub fn from_live_discovery_with_fallback() -> Self {
         let d = super::context_discovery::discover_with_fallback();
-        Self { clients: d.clients, btsp_state: d.btsp_state, discovery_paths: d.discovery_paths, bearer_token: None, gate_id: None, mesh: None }
+        Self {
+            clients: d.clients,
+            btsp_state: d.btsp_state,
+            discovery_paths: d.discovery_paths,
+            bearer_token: None,
+            gate_id: None,
+            mesh: None,
+        }
     }
 
     /// Build from an explicit set of capability-to-client mappings.
@@ -276,7 +296,15 @@ impl CompositionContext {
     // ── Atomic signals ──────────────────────────────────────────────────
 
     /// Atomic tier names recognized by [`signal`](Self::signal).
-    const COMPOSITION_TIERS: &[&str] = &["tower", "node", "nest", "nucleus", "meta", "ecosystem", "rootpulse"];
+    const COMPOSITION_TIERS: &[&str] = &[
+        "tower",
+        "node",
+        "nest",
+        "nucleus",
+        "meta",
+        "ecosystem",
+        "rootpulse",
+    ];
 
     /// Send an atomic signal to a composition tier.
     ///
@@ -321,16 +349,20 @@ impl CompositionContext {
             "signal": format!("{tier}.{signal_name}"),
             "params": params,
         });
-        self.call("orchestration", "signal.dispatch", dispatch_params).map_or_else(|_| {
-            // Fallback to capability.call for older biomeOS versions
-            // where signal.dispatch is not yet available.
-            let cap_params = serde_json::json!({
-                "capability": tier,
-                "operation": signal_name,
-                "args": params,
-            });
-            self.call("orchestration", "capability.call", cap_params)
-        }, Ok)
+        self.call("orchestration", "signal.dispatch", dispatch_params)
+            .map_or_else(
+                |_| {
+                    // Fallback to capability.call for older biomeOS versions
+                    // where signal.dispatch is not yet available.
+                    let cap_params = serde_json::json!({
+                        "capability": tier,
+                        "operation": signal_name,
+                        "args": params,
+                    });
+                    self.call("orchestration", "capability.call", cap_params)
+                },
+                Ok,
+            )
     }
 
     /// Whether the given tier name is a recognized atomic signal tier.
@@ -381,11 +413,13 @@ impl CompositionContext {
         signal_id: &str,
         params: &serde_json::Value,
     ) -> Result<serde_json::Value, IpcError> {
-        let (tier, name) = signal_id.split_once('.').ok_or_else(|| IpcError::ProtocolError {
-            detail: format!(
-                "signal identifier must be 'tier.name' (e.g. 'nest.store'), got: {signal_id:?}"
-            ),
-        })?;
+        let (tier, name) = signal_id
+            .split_once('.')
+            .ok_or_else(|| IpcError::ProtocolError {
+                detail: format!(
+                    "signal identifier must be 'tier.name' (e.g. 'nest.store'), got: {signal_id:?}"
+                ),
+            })?;
 
         if !Self::is_composition_tier(tier) {
             return Err(IpcError::ProtocolError {
@@ -527,14 +561,18 @@ impl CompositionContext {
             "lifecycle": { "state": "running" },
         });
 
-        self.call("orchestration", "primal.announce", announce_params).map_or_else(|_| {
-            let register_params = serde_json::json!({
-                "primal": primal_id,
-                "transport": socket.to_string_lossy(),
-                "methods": methods,
-            });
-            self.call("orchestration", "method.register", register_params)
-        }, Ok)
+        self.call("orchestration", "primal.announce", announce_params)
+            .map_or_else(
+                |_| {
+                    let register_params = serde_json::json!({
+                        "primal": primal_id,
+                        "transport": socket.to_string_lossy(),
+                        "methods": methods,
+                    });
+                    self.call("orchestration", "method.register", register_params)
+                },
+                Ok,
+            )
     }
 
     // ── Composition lifecycle ───────────────────────────────────────────
@@ -603,5 +641,4 @@ impl CompositionContext {
     pub const fn discovery_paths(&self) -> &BTreeMap<CapabilityDomain, DiscoveryPath> {
         &self.discovery_paths
     }
-
 }

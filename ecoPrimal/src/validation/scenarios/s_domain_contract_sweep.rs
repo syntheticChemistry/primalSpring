@@ -49,8 +49,14 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
 fn phase_secrets(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("security") {
-        v.check_skip("secrets_store_responds", "security capability not available");
-        v.check_skip("secrets_retrieve_responds", "security capability not available");
+        v.check_skip(
+            "secrets_store_responds",
+            "security capability not available",
+        );
+        v.check_skip(
+            "secrets_retrieve_responds",
+            "security capability not available",
+        );
         return;
     }
 
@@ -63,10 +69,17 @@ fn phase_secrets(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }),
     ) {
         Ok(_resp) => {
-            v.check_bool("secrets_store_responds", true, "secrets.store accepted request");
+            v.check_bool(
+                "secrets_store_responds",
+                true,
+                "secrets.store accepted request",
+            );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("secrets_store_responds", &format!("bearDog not reachable: {e}"));
+            v.check_skip(
+                "secrets_store_responds",
+                &format!("bearDog not reachable: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
@@ -77,7 +90,11 @@ fn phase_secrets(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                     "secrets.store method exists (permission/scope rejection is valid)",
                 );
             } else {
-                v.check_bool("secrets_store_responds", false, &format!("secrets.store error: {e}"));
+                v.check_bool(
+                    "secrets_store_responds",
+                    false,
+                    &format!("secrets.store error: {e}"),
+                );
             }
         }
     }
@@ -88,10 +105,17 @@ fn phase_secrets(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         serde_json::json!({ "id": "primalspring:sweep:test-key" }),
     ) {
         Ok(_resp) => {
-            v.check_bool("secrets_retrieve_responds", true, "secrets.retrieve returned response");
+            v.check_bool(
+                "secrets_retrieve_responds",
+                true,
+                "secrets.retrieve returned response",
+            );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("secrets_retrieve_responds", &format!("bearDog not reachable: {e}"));
+            v.check_skip(
+                "secrets_retrieve_responds",
+                &format!("bearDog not reachable: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
@@ -114,17 +138,17 @@ fn phase_secrets(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
 fn phase_bonding(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("orchestration") {
-        v.check_skip("bonding_status_responds", "orchestration capability not available");
+        v.check_skip(
+            "bonding_status_responds",
+            "orchestration capability not available",
+        );
         return;
     }
 
-    match ctx.call(
-        "orchestration",
-        "bonding.status",
-        serde_json::json!({}),
-    ) {
+    match ctx.call("orchestration", "bonding.status", serde_json::json!({})) {
         Ok(resp) => {
-            let has_bonds = resp.get("bonds").is_some() || resp.get("active").is_some() || resp.is_object();
+            let has_bonds =
+                resp.get("bonds").is_some() || resp.get("active").is_some() || resp.is_object();
             v.check_bool(
                 "bonding_status_responds",
                 has_bonds,
@@ -132,14 +156,24 @@ fn phase_bonding(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("bonding_status_responds", &format!("biomeOS not reachable: {e}"));
+            v.check_skip(
+                "bonding_status_responds",
+                &format!("biomeOS not reachable: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
             if msg.contains("not found") {
-                v.check_skip("bonding_status_responds", "bonding.status not yet routed on this biomeOS version");
+                v.check_skip(
+                    "bonding_status_responds",
+                    "bonding.status not yet routed on this biomeOS version",
+                );
             } else {
-                v.check_bool("bonding_status_responds", false, &format!("bonding.status error: {e}"));
+                v.check_bool(
+                    "bonding_status_responds",
+                    false,
+                    &format!("bonding.status error: {e}"),
+                );
             }
         }
     }
@@ -147,21 +181,38 @@ fn phase_bonding(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
 fn phase_defense(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("defense") {
-        v.check_skip("defense_status_responds", "defense capability not available");
-        v.check_skip("defense_events_responds", "defense capability not available");
+        v.check_skip(
+            "defense_status_responds",
+            "defense capability not available",
+        );
+        v.check_skip(
+            "defense_events_responds",
+            "defense capability not available",
+        );
         return;
     }
 
     match ctx.call("defense", "defense.status", serde_json::json!({})) {
         Ok(resp) => {
             let valid = resp.is_object();
-            v.check_bool("defense_status_responds", valid, "defense.status returned policy state");
+            v.check_bool(
+                "defense_status_responds",
+                valid,
+                "defense.status returned policy state",
+            );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("defense_status_responds", &format!("skunkBat not reachable: {e}"));
+            v.check_skip(
+                "defense_status_responds",
+                &format!("skunkBat not reachable: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("defense_status_responds", false, &format!("defense.status error: {e}"));
+            v.check_bool(
+                "defense_status_responds",
+                false,
+                &format!("defense.status error: {e}"),
+            );
         }
     }
 
@@ -179,18 +230,31 @@ fn phase_defense(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("defense_events_responds", &format!("skunkBat not reachable: {e}"));
+            v.check_skip(
+                "defense_events_responds",
+                &format!("skunkBat not reachable: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("defense_events_responds", false, &format!("defense.events error: {e}"));
+            v.check_bool(
+                "defense_events_responds",
+                false,
+                &format!("defense.events error: {e}"),
+            );
         }
     }
 }
 
 fn phase_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("discovery") {
-        v.check_skip("discovery_discover_responds", "discovery capability not available");
-        v.check_skip("discovery_protocols_responds", "discovery capability not available");
+        v.check_skip(
+            "discovery_discover_responds",
+            "discovery capability not available",
+        );
+        v.check_skip(
+            "discovery_protocols_responds",
+            "discovery capability not available",
+        );
         return;
     }
 
@@ -200,9 +264,8 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         serde_json::json!({ "capability": "storage" }),
     ) {
         Ok(resp) => {
-            let has_result = resp.get("socket").is_some()
-                || resp.get("endpoint").is_some()
-                || resp.is_object();
+            let has_result =
+                resp.get("socket").is_some() || resp.get("endpoint").is_some() || resp.is_object();
             v.check_bool(
                 "discovery_discover_responds",
                 has_result,
@@ -210,7 +273,10 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("discovery_discover_responds", &format!("songbird not reachable: {e}"));
+            v.check_skip(
+                "discovery_discover_responds",
+                &format!("songbird not reachable: {e}"),
+            );
         }
         Err(e) => {
             v.check_bool(
@@ -231,7 +297,10 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("discovery_protocols_responds", &format!("songbird not reachable: {e}"));
+            v.check_skip(
+                "discovery_protocols_responds",
+                &format!("songbird not reachable: {e}"),
+            );
         }
         Err(e) => {
             v.check_bool(
@@ -245,8 +314,14 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
 fn phase_provenance(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("dag") {
-        v.check_skip("provenance_session_create_responds", "dag capability not available");
-        v.check_skip("provenance_event_append_responds", "dag capability not available");
+        v.check_skip(
+            "provenance_session_create_responds",
+            "dag capability not available",
+        );
+        v.check_skip(
+            "provenance_event_append_responds",
+            "dag capability not available",
+        );
         return;
     }
 
@@ -257,9 +332,8 @@ fn phase_provenance(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     ) {
         Ok(resp) => {
             let sid = resp.as_str().unwrap_or_default().to_owned();
-            let has_id = !sid.is_empty()
-                || resp.get("session_id").is_some()
-                || resp.get("result").is_some();
+            let has_id =
+                !sid.is_empty() || resp.get("session_id").is_some() || resp.get("result").is_some();
             v.check_bool(
                 "provenance_session_create_responds",
                 has_id,
@@ -272,7 +346,10 @@ fn phase_provenance(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 .or_else(|| (!sid.is_empty()).then_some(sid))
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("provenance_session_create_responds", &format!("rhizoCrypt not reachable: {e}"));
+            v.check_skip(
+                "provenance_session_create_responds",
+                &format!("rhizoCrypt not reachable: {e}"),
+            );
             None
         }
         Err(e) => {
@@ -312,7 +389,10 @@ fn phase_provenance(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 );
             }
             Err(e) if e.is_skippable() => {
-                v.check_skip("provenance_event_append_responds", &format!("rhizoCrypt not reachable: {e}"));
+                v.check_skip(
+                    "provenance_event_append_responds",
+                    &format!("rhizoCrypt not reachable: {e}"),
+                );
             }
             Err(e) => {
                 v.check_bool(
@@ -323,7 +403,10 @@ fn phase_provenance(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             }
         }
     } else {
-        v.check_skip("provenance_event_append_responds", "no session from provenance.session.create");
+        v.check_skip(
+            "provenance_event_append_responds",
+            "no session from provenance.session.create",
+        );
     }
 }
 
@@ -341,10 +424,17 @@ fn phase_spine(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     ) {
         Ok(resp) => {
             let valid = resp.is_object() || resp.is_string();
-            v.check_bool("session_create_responds", valid, "session.create returned session info");
+            v.check_bool(
+                "session_create_responds",
+                valid,
+                "session.create returned session info",
+            );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("session_create_responds", &format!("loamSpine not reachable: {e}"));
+            v.check_skip(
+                "session_create_responds",
+                &format!("loamSpine not reachable: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
@@ -354,29 +444,43 @@ fn phase_spine(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                     "session.create alias may map to spine.create on this loamSpine version",
                 );
             } else {
-                v.check_bool("session_create_responds", false, &format!("session.create error: {e}"));
+                v.check_bool(
+                    "session_create_responds",
+                    false,
+                    &format!("session.create error: {e}"),
+                );
             }
         }
     }
 
-    match ctx.call(
-        "ledger",
-        "session.state",
-        serde_json::json!({}),
-    ) {
+    match ctx.call("ledger", "session.state", serde_json::json!({})) {
         Ok(resp) => {
             let valid = resp.is_object();
-            v.check_bool("session_state_responds", valid, "session.state returned state info");
+            v.check_bool(
+                "session_state_responds",
+                valid,
+                "session.state returned state info",
+            );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("session_state_responds", &format!("loamSpine not reachable: {e}"));
+            v.check_skip(
+                "session_state_responds",
+                &format!("loamSpine not reachable: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
             if msg.contains("not found") {
-                v.check_skip("session_state_responds", "session.state not yet exposed on this loamSpine version");
+                v.check_skip(
+                    "session_state_responds",
+                    "session.state not yet exposed on this loamSpine version",
+                );
             } else {
-                v.check_bool("session_state_responds", false, &format!("session.state error: {e}"));
+                v.check_bool(
+                    "session_state_responds",
+                    false,
+                    &format!("session.state error: {e}"),
+                );
             }
         }
     }
@@ -384,16 +488,21 @@ fn phase_spine(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
 fn phase_network(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("discovery") {
-        v.check_skip("network_nat_type_responds", "discovery capability not available");
-        v.check_skip("network_stun_responds", "discovery capability not available");
+        v.check_skip(
+            "network_nat_type_responds",
+            "discovery capability not available",
+        );
+        v.check_skip(
+            "network_stun_responds",
+            "discovery capability not available",
+        );
         return;
     }
 
     match ctx.call("discovery", "network.nat_type", serde_json::json!({})) {
         Ok(resp) => {
-            let has_type = resp.get("nat_type").is_some()
-                || resp.get("type").is_some()
-                || resp.is_object();
+            let has_type =
+                resp.get("nat_type").is_some() || resp.get("type").is_some() || resp.is_object();
             v.check_bool(
                 "network_nat_type_responds",
                 has_type,
@@ -401,7 +510,10 @@ fn phase_network(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("network_nat_type_responds", &format!("songbird not reachable: {e}"));
+            v.check_skip(
+                "network_nat_type_responds",
+                &format!("songbird not reachable: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
@@ -427,20 +539,34 @@ fn phase_network(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     ) {
         Ok(resp) => {
             let valid = resp.is_object();
-            v.check_bool("network_stun_responds", valid, "network.stun returned STUN binding");
+            v.check_bool(
+                "network_stun_responds",
+                valid,
+                "network.stun returned STUN binding",
+            );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("network_stun_responds", &format!("songbird not reachable: {e}"));
+            v.check_skip(
+                "network_stun_responds",
+                &format!("songbird not reachable: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
-            if msg.contains("not found") || msg.contains("not implemented") || msg.contains("timeout") {
+            if msg.contains("not found")
+                || msg.contains("not implemented")
+                || msg.contains("timeout")
+            {
                 v.check_skip(
                     "network_stun_responds",
                     "network.stun requires external STUN server (may not be available)",
                 );
             } else {
-                v.check_bool("network_stun_responds", false, &format!("network.stun error: {e}"));
+                v.check_bool(
+                    "network_stun_responds",
+                    false,
+                    &format!("network.stun error: {e}"),
+                );
             }
         }
     }
@@ -455,6 +581,9 @@ mod tests {
         let mut v = ValidationResult::new("domain-contract-sweep");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce at least one check"
+        );
     }
 }

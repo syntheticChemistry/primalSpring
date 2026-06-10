@@ -125,7 +125,10 @@ fn phase_local_capability_list(v: &mut ValidationResult) {
             "capabilities field is an array",
         );
 
-        let count_value = response.get("count").and_then(serde_json::Value::as_u64).unwrap_or(0);
+        let count_value = response
+            .get("count")
+            .and_then(serde_json::Value::as_u64)
+            .unwrap_or(0);
         v.check_bool(
             "local:capability_list:count_matches_array",
             count_value == cap_value.as_array().map_or(0, std::vec::Vec::len) as u64,
@@ -286,7 +289,10 @@ mod tests {
     #[test]
     fn local_capability_list_shape() {
         let caps = crate::niche::all_capabilities();
-        assert!(caps.len() >= 20, "primalSpring should have 20+ capabilities");
+        assert!(
+            caps.len() >= 20,
+            "primalSpring should have 20+ capabilities"
+        );
 
         let response = serde_json::json!({
             "capabilities": caps,

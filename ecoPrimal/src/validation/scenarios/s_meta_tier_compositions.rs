@@ -22,8 +22,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "primalspring_meta_tier_compositions",
         provenance_date: "2026-05-15",
-        description:
-            "Meta-tier agentic signals — tool schema, routing, intent loop, composition collapse",
+        description: "Meta-tier agentic signals — tool schema, routing, intent loop, composition collapse",
     },
     run,
 };
@@ -125,7 +124,9 @@ fn validate_tool_coverage(v: &mut ValidationResult, parsed: &toml::Value) {
 }
 
 fn validate_tool_schema_fields(v: &mut ValidationResult, parsed: &toml::Value) {
-    let Some(tools) = parsed.get("tools").and_then(|t| t.as_array()) else { return };
+    let Some(tools) = parsed.get("tools").and_then(|t| t.as_array()) else {
+        return;
+    };
 
     for tool in tools {
         let name = tool
@@ -140,10 +141,7 @@ fn validate_tool_schema_fields(v: &mut ValidationResult, parsed: &toml::Value) {
             &format!("{name} has tier field"),
         );
 
-        let has_description = tool
-            .get("description")
-            .and_then(|d| d.as_str())
-            .is_some();
+        let has_description = tool.get("description").and_then(|d| d.as_str()).is_some();
         v.check_bool(
             &format!("tools:{name}:has_description"),
             has_description,
@@ -157,10 +155,7 @@ fn validate_tool_schema_fields(v: &mut ValidationResult, parsed: &toml::Value) {
             &format!("{name} references a graph file"),
         );
 
-        let has_coordination = tool
-            .get("coordination")
-            .and_then(|c| c.as_str())
-            .is_some();
+        let has_coordination = tool.get("coordination").and_then(|c| c.as_str()).is_some();
         v.check_bool(
             &format!("tools:{name}:has_coordination"),
             has_coordination,
@@ -237,9 +232,7 @@ fn validate_registry_meta_compositions(v: &mut ValidationResult) {
         Err(_) => return,
     };
 
-    let meta_compositions = parsed
-        .get("compositions")
-        .and_then(|s| s.get("meta"));
+    let meta_compositions = parsed.get("compositions").and_then(|s| s.get("meta"));
 
     v.check_bool(
         "registry:compositions.meta",
@@ -247,7 +240,9 @@ fn validate_registry_meta_compositions(v: &mut ValidationResult) {
         "capability_registry.toml has [compositions.meta] section",
     );
 
-    let Some(meta) = meta_compositions else { return };
+    let Some(meta) = meta_compositions else {
+        return;
+    };
 
     let tier = meta.get("tier").and_then(|t| t.as_str());
     v.check_bool(
@@ -308,9 +303,9 @@ fn validate_capability_routing(v: &mut ValidationResult) {
 }
 
 fn validate_intent_loop_structure(v: &mut ValidationResult) {
-    let intent_graph: toml::Value = match toml::from_str(
-        include_str!("../../../../graphs/compositions/meta_intent.toml"),
-    ) {
+    let intent_graph: toml::Value = match toml::from_str(include_str!(
+        "../../../../graphs/compositions/meta_intent.toml"
+    )) {
         Ok(p) => p,
         Err(_) => return,
     };
@@ -345,9 +340,9 @@ fn validate_intent_loop_structure(v: &mut ValidationResult) {
         "meta.intent graph ends with biomeOS (orchestration dispatch)",
     );
 
-    let render_graph: toml::Value = match toml::from_str(
-        include_str!("../../../../graphs/compositions/meta_render.toml"),
-    ) {
+    let render_graph: toml::Value = match toml::from_str(include_str!(
+        "../../../../graphs/compositions/meta_render.toml"
+    )) {
         Ok(p) => p,
         Err(_) => return,
     };

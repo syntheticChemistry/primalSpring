@@ -86,7 +86,10 @@ static DOMAIN_OWNER_MAP: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
         return map;
     };
     for (domain, section) in &parsed {
-        if domain.starts_with("compositions") || domain == "test_fixtures" || domain == "false_positives" {
+        if domain.starts_with("compositions")
+            || domain == "test_fixtures"
+            || domain == "false_positives"
+        {
             continue;
         }
         if let Some(owner) = section.get("owner").and_then(|v| v.as_str()) {
@@ -163,10 +166,8 @@ fn leak_domain(domain: &str) -> &'static str {
 /// ```
 #[must_use]
 pub fn capability_to_primal(capability: &str) -> &str {
-    capability_to_primal_typed(capability).map_or_else(
-        || capability_to_spring_owner(capability),
-        |p| p.slug(),
-    )
+    capability_to_primal_typed(capability)
+        .map_or_else(|| capability_to_spring_owner(capability), |p| p.slug())
 }
 
 /// Resolve non-primal capability owners (springs and apps).
@@ -213,7 +214,10 @@ fn leak_or_match(owner: &str) -> &'static str {
         "esotericwebb" => "esotericwebb",
         "membrane" => "membrane",
         other => {
-            tracing::warn!(owner = other, "TOML owner not matched by Primal or Spring enum — leaking");
+            tracing::warn!(
+                owner = other,
+                "TOML owner not matched by Primal or Spring enum — leaking"
+            );
             Box::leak(other.to_owned().into_boxed_str())
         }
     }
@@ -287,7 +291,9 @@ static PREFIX_ROUTING: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
     let mut owner_primary: HashMap<String, String> = HashMap::new();
     for &cap in ALL_CAPS.iter() {
         if let Some(owner) = DOMAIN_OWNER_MAP.get(cap) {
-            owner_primary.entry(owner.clone()).or_insert_with(|| cap.to_owned());
+            owner_primary
+                .entry(owner.clone())
+                .or_insert_with(|| cap.to_owned());
         }
     }
 
@@ -303,7 +309,9 @@ static PREFIX_ROUTING: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
         {
             continue;
         }
-        let Some(table) = val.as_table() else { continue };
+        let Some(table) = val.as_table() else {
+            continue;
+        };
 
         // Explicit routes_to takes highest priority
         if let Some(rt) = table.get("routes_to").and_then(|v| v.as_str()) {
@@ -348,7 +356,9 @@ static METHOD_OVERRIDES: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
         {
             continue;
         }
-        let Some(table) = val.as_table() else { continue };
+        let Some(table) = val.as_table() else {
+            continue;
+        };
         let Some(methods) = table.get("methods").and_then(|v| v.as_array()) else {
             continue;
         };

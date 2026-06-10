@@ -25,8 +25,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "primalspring_agentic_tower",
         provenance_date: "2026-05-15",
-        description:
-            "Agentic tower — Tower+squirrel deployment unit, meta.deploy signal, AI overlay audit",
+        description: "Agentic tower — Tower+squirrel deployment unit, meta.deploy signal, AI overlay audit",
     },
     run,
 };
@@ -36,7 +35,8 @@ const TOWER_AI_TOML: &str = include_str!("../../../../graphs/tower_ai.toml");
 const TOWER_AI_VIZ_TOML: &str = include_str!("../../../../graphs/tower_ai_viz.toml");
 const NODE_AI_TOML: &str = include_str!("../../../../graphs/node_ai.toml");
 const META_DEPLOY_TOML: &str = include_str!("../../../../graphs/compositions/meta_deploy.toml");
-const TOWER_BOOTSTRAP_TOML: &str = include_str!("../../../../graphs/compositions/tower_bootstrap.toml");
+const TOWER_BOOTSTRAP_TOML: &str =
+    include_str!("../../../../graphs/compositions/tower_bootstrap.toml");
 const COMPOSITION_TOOLS_TOML: &str = include_str!("../../../../config/composition_tools.toml");
 
 const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
@@ -70,7 +70,8 @@ fn validate_tower_agent_structure(v: &mut ValidationResult) {
 
     let uds_only = metadata
         .and_then(|m| m.get("transport"))
-        .and_then(|t| t.as_str()) == Some("uds_only");
+        .and_then(|t| t.as_str())
+        == Some("uds_only");
     v.check_bool(
         "agent:uds_only",
         uds_only,
@@ -79,7 +80,8 @@ fn validate_tower_agent_structure(v: &mut ValidationResult) {
 
     let btsp = metadata
         .and_then(|m| m.get("security_model"))
-        .and_then(|s| s.as_str()) == Some("btsp_enforced");
+        .and_then(|s| s.as_str())
+        == Some("btsp_enforced");
     v.check_bool(
         "agent:btsp_enforced",
         btsp,
@@ -204,13 +206,10 @@ fn validate_composition_tools_deploy(v: &mut ValidationResult) {
     };
 
     let tools = parsed.get("tools").and_then(|t| t.as_array());
-    let has_deploy = tools
-        .is_some_and(|arr| {
-            arr.iter().any(|t| {
-                t.get("name")
-                    .and_then(|n| n.as_str()) == Some("meta.deploy")
-            })
-        });
+    let has_deploy = tools.is_some_and(|arr| {
+        arr.iter()
+            .any(|t| t.get("name").and_then(|n| n.as_str()) == Some("meta.deploy"))
+    });
 
     v.check_bool(
         "tools:meta.deploy",
@@ -260,9 +259,7 @@ fn validate_squirrel_composition_context(v: &mut ValidationResult) {
     let squirrel_caps: Vec<&str> = nodes
         .map(|arr| {
             arr.iter()
-                .filter(|n| {
-                    n.get("binary").and_then(|b| b.as_str()) == Some("squirrel")
-                })
+                .filter(|n| n.get("binary").and_then(|b| b.as_str()) == Some("squirrel"))
                 .flat_map(|n| {
                     n.get("capabilities")
                         .and_then(|c| c.as_array())
@@ -353,7 +350,11 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
         .and_then(|n| n.as_array());
 
     let Some(nodes) = nodes else {
-        v.check_bool("bootstrap:has_nodes", false, "tower_bootstrap.toml has no nodes");
+        v.check_bool(
+            "bootstrap:has_nodes",
+            false,
+            "tower_bootstrap.toml has no nodes",
+        );
         return;
     };
 
@@ -366,10 +367,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
     // Phase 1 nodes: beardog, songbird, skunkbat (spawned, required)
     let phase1_nodes: Vec<&toml::Value> = nodes
         .iter()
-        .filter(|n| {
-            n.get("phase")
-                .and_then(toml::Value::as_integer) == Some(1)
-        })
+        .filter(|n| n.get("phase").and_then(toml::Value::as_integer) == Some(1))
         .collect();
 
     v.check_bool(
@@ -454,10 +452,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
             .get("name")
             .and_then(|n| n.as_str())
             .unwrap_or("unknown");
-        let binary = node
-            .get("binary")
-            .and_then(|b| b.as_str())
-            .unwrap_or("");
+        let binary = node.get("binary").and_then(|b| b.as_str()).unwrap_or("");
         let deps: Vec<&str> = node
             .get("depends_on")
             .and_then(|d| d.as_array())
@@ -479,10 +474,7 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
     // Phase 2 nodes must be required = false (Tower can run without biomeOS)
     let phase2_nodes: Vec<&toml::Value> = nodes
         .iter()
-        .filter(|n| {
-            n.get("phase")
-                .and_then(toml::Value::as_integer) == Some(2)
-        })
+        .filter(|n| n.get("phase").and_then(toml::Value::as_integer) == Some(2))
         .collect();
 
     v.check_bool(
@@ -551,7 +543,11 @@ mod tests {
     #[test]
     fn tower_agent_parses() {
         let result: Result<toml::Value, _> = toml::from_str(TOWER_AGENT_TOML);
-        assert!(result.is_ok(), "tower_agent.toml parse failed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "tower_agent.toml parse failed: {:?}",
+            result.err()
+        );
     }
 
     #[test]
@@ -567,10 +563,7 @@ mod tests {
             .find(|n| n.get("binary").and_then(|b| b.as_str()) == Some("beardog"))
             .expect("beardog node should exist");
         assert!(
-            !beardog
-                .as_table()
-                .unwrap()
-                .contains_key("depends_on"),
+            !beardog.as_table().unwrap().contains_key("depends_on"),
             "beardog must have no depends_on (it is the bootstrap root)"
         );
         assert_eq!(

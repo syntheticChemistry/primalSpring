@@ -161,7 +161,10 @@ fn phase_dispatch_parsing(v: &mut ValidationResult, ctx: &mut CompositionContext
     v.check_bool(
         "parse:composition_count",
         COMPOSITIONS.len() == 20,
-        &format!("COMPOSITIONS table has {} entries (expected 20)", COMPOSITIONS.len()),
+        &format!(
+            "COMPOSITIONS table has {} entries (expected 20)",
+            COMPOSITIONS.len()
+        ),
     );
 
     for spec in COMPOSITIONS {
@@ -204,7 +207,11 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
         match ctx.dispatch(spec.id, &params) {
             Ok(_) => {
-                v.check_bool(&check_id, true, &format!("dispatch({:?}) accepted", spec.id));
+                v.check_bool(
+                    &check_id,
+                    true,
+                    &format!("dispatch({:?}) accepted", spec.id),
+                );
             }
             Err(e) => {
                 let detail = format!("{e}");
@@ -218,10 +225,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                         ),
                     );
                 } else if e.is_skippable() {
-                    v.check_skip(
-                        &check_id,
-                        &format!("connection error for {}: {e}", spec.id),
-                    );
+                    v.check_skip(&check_id, &format!("connection error for {}: {e}", spec.id));
                 } else {
                     v.check_bool(
                         &check_id,
@@ -322,30 +326,94 @@ mod tests {
 
     #[test]
     fn composition_table_matches_graph_count() {
-        assert_eq!(COMPOSITIONS.len(), 20, "COMPOSITIONS table should match 20 composition graphs");
+        assert_eq!(
+            COMPOSITIONS.len(),
+            20,
+            "COMPOSITIONS table should match 20 composition graphs"
+        );
     }
 
     const COMPOSITION_GRAPHS: &[(&str, &str)] = &[
-        ("tower_publish", include_str!("../../../../graphs/compositions/tower_publish.toml")),
-        ("tower_authenticate", include_str!("../../../../graphs/compositions/tower_authenticate.toml")),
-        ("tower_discover", include_str!("../../../../graphs/compositions/tower_discover.toml")),
-        ("tower_health", include_str!("../../../../graphs/compositions/tower_health.toml")),
-        ("tower_bootstrap", include_str!("../../../../graphs/compositions/tower_bootstrap.toml")),
-        ("node_compute", include_str!("../../../../graphs/compositions/node_compute.toml")),
-        ("nest_store", include_str!("../../../../graphs/compositions/nest_store.toml")),
-        ("nest_commit", include_str!("../../../../graphs/compositions/nest_commit.toml")),
-        ("nest_retrieve", include_str!("../../../../graphs/compositions/nest_retrieve.toml")),
-        ("nest_ingest_spore", include_str!("../../../../graphs/compositions/nest_ingest_spore.toml")),
-        ("meta_observe", include_str!("../../../../graphs/compositions/meta_observe.toml")),
-        ("meta_intent", include_str!("../../../../graphs/compositions/meta_intent.toml")),
-        ("meta_render", include_str!("../../../../graphs/compositions/meta_render.toml")),
-        ("meta_health", include_str!("../../../../graphs/compositions/meta_health.toml")),
-        ("meta_deploy", include_str!("../../../../graphs/compositions/meta_deploy.toml")),
-        ("rootpulse_commit", include_str!("../../../../graphs/compositions/rootpulse_commit.toml")),
-        ("rootpulse_branch", include_str!("../../../../graphs/compositions/rootpulse_branch.toml")),
-        ("rootpulse_merge", include_str!("../../../../graphs/compositions/rootpulse_merge.toml")),
-        ("rootpulse_diff", include_str!("../../../../graphs/compositions/rootpulse_diff.toml")),
-        ("rootpulse_federate", include_str!("../../../../graphs/compositions/rootpulse_federate.toml")),
+        (
+            "tower_publish",
+            include_str!("../../../../graphs/compositions/tower_publish.toml"),
+        ),
+        (
+            "tower_authenticate",
+            include_str!("../../../../graphs/compositions/tower_authenticate.toml"),
+        ),
+        (
+            "tower_discover",
+            include_str!("../../../../graphs/compositions/tower_discover.toml"),
+        ),
+        (
+            "tower_health",
+            include_str!("../../../../graphs/compositions/tower_health.toml"),
+        ),
+        (
+            "tower_bootstrap",
+            include_str!("../../../../graphs/compositions/tower_bootstrap.toml"),
+        ),
+        (
+            "node_compute",
+            include_str!("../../../../graphs/compositions/node_compute.toml"),
+        ),
+        (
+            "nest_store",
+            include_str!("../../../../graphs/compositions/nest_store.toml"),
+        ),
+        (
+            "nest_commit",
+            include_str!("../../../../graphs/compositions/nest_commit.toml"),
+        ),
+        (
+            "nest_retrieve",
+            include_str!("../../../../graphs/compositions/nest_retrieve.toml"),
+        ),
+        (
+            "nest_ingest_spore",
+            include_str!("../../../../graphs/compositions/nest_ingest_spore.toml"),
+        ),
+        (
+            "meta_observe",
+            include_str!("../../../../graphs/compositions/meta_observe.toml"),
+        ),
+        (
+            "meta_intent",
+            include_str!("../../../../graphs/compositions/meta_intent.toml"),
+        ),
+        (
+            "meta_render",
+            include_str!("../../../../graphs/compositions/meta_render.toml"),
+        ),
+        (
+            "meta_health",
+            include_str!("../../../../graphs/compositions/meta_health.toml"),
+        ),
+        (
+            "meta_deploy",
+            include_str!("../../../../graphs/compositions/meta_deploy.toml"),
+        ),
+        (
+            "rootpulse_commit",
+            include_str!("../../../../graphs/compositions/rootpulse_commit.toml"),
+        ),
+        (
+            "rootpulse_branch",
+            include_str!("../../../../graphs/compositions/rootpulse_branch.toml"),
+        ),
+        (
+            "rootpulse_merge",
+            include_str!("../../../../graphs/compositions/rootpulse_merge.toml"),
+        ),
+        (
+            "rootpulse_diff",
+            include_str!("../../../../graphs/compositions/rootpulse_diff.toml"),
+        ),
+        (
+            "rootpulse_federate",
+            include_str!("../../../../graphs/compositions/rootpulse_federate.toml"),
+        ),
     ];
 
     #[test]

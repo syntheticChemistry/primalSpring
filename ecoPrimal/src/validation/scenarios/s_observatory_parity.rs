@@ -8,8 +8,8 @@
 //! composition_patterns, plan_tier. Cross-references against the local
 //! NeuralRoutingTable to verify parity.
 
-use crate::composition::neural_routing::{canonical_routing_table, CompositionTier};
 use crate::composition::CompositionContext;
+use crate::composition::neural_routing::{CompositionTier, canonical_routing_table};
 use crate::ipc::neural_bridge::NeuralBridge;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};

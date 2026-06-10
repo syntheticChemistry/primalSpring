@@ -107,7 +107,10 @@ fn phase_wire_format(v: &mut ValidationResult) {
     }
 
     // composition_tiers must be valid tier names
-    if let Some(tiers) = well_formed.get("composition_tiers").and_then(|t| t.as_array()) {
+    if let Some(tiers) = well_formed
+        .get("composition_tiers")
+        .and_then(|t| t.as_array())
+    {
         for tier in tiers {
             if let Some(name) = tier.as_str() {
                 let valid = VALID_TIERS.contains(&name);
@@ -156,7 +159,8 @@ fn phase_announce_api(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let result = ctx.announce(
         "primalspring-scenario-probe",
         &["test.probe"],
-        &std::path::PathBuf::from(crate::tolerances::runtime_dir()).join("primalspring-scenario-probe.sock"),
+        &std::path::PathBuf::from(crate::tolerances::runtime_dir())
+            .join("primalspring-scenario-probe.sock"),
     );
 
     match result {

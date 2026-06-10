@@ -9,7 +9,7 @@
 
 #![forbid(unsafe_code)]
 
-use std::net::TcpStream;
+use std::net::{Ipv4Addr, SocketAddr, TcpStream};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::time::{Duration, Instant};
@@ -54,7 +54,7 @@ pub struct GateArgs {
     pub json: bool,
 }
 
-pub fn run(args: GateArgs) {
+pub fn run(args: &GateArgs) {
     let mut gate = NucleusGate::new(args);
     gate.tier0_preflight();
     gate.tier1_launch();
@@ -67,17 +67,17 @@ pub fn run(args: GateArgs) {
 }
 
 impl NucleusGate {
-    fn new(args: GateArgs) -> Self {
+    fn new(args: &GateArgs) -> Self {
         let depot_dir = resolve_depot_dir();
         let socket_dir = resolve_socket_dir();
-        let gate_name = std::env::var("GATE_NAME")
-            .unwrap_or_else(|_| {
-                Command::new("hostname").arg("-s").output()
-                    .ok()
-                    .and_then(|o| String::from_utf8(o.stdout).ok())
-                    .map(|s| s.trim().to_owned())
-                    .unwrap_or_else(|| "unknown".into())
-            });
+        let gate_name = std::env::var("GATE_NAME").unwrap_or_else(|_| {
+            Command::new("hostname")
+                .arg("-s")
+                .output()
+                .ok()
+                .and_then(|o| String::from_utf8(o.stdout).ok())
+                .map_or_else(|| "unknown".into(), |s| s.trim().to_owned())
+        });
 
         let v = ValidationResult::new("NUCLEUS Deployment Validation Gate");
 
@@ -115,10 +115,12 @@ impl NucleusGate {
                 missing.push(p);
             }
         }
+        #[expect(clippy::cast_possible_truncation, reason = "primal count fits in u32")]
+        let expected_count = EXPECTED_PRIMALS.len() as u32;
         self.v.check_bool(
             "depot-binary-count",
-            present >= EXPECTED_PRIMALS.len() as u32,
-            &format!("{present}/{} primals in depot", EXPECTED_PRIMALS.len()),
+            present >= expected_count,
+            &format!("{present}/{expected_count} primals in depot"),
         );
         if !missing.is_empty() {
             self.v.check_bool(
@@ -135,10 +137,14 @@ impl NucleusGate {
             "biomeos binary executable",
         );
 
-        let checksums = self.depot_dir.parent()
+        let checksums = self
+            .depot_dir
+            .parent()
             .and_then(|p| p.parent())
-            .map(|root| root.join("checksums.toml"))
-            .unwrap_or_else(|| self.depot_dir.join("../../checksums.toml"));
+            .map_or_else(
+                || self.depot_dir.join("../../checksums.toml"),
+                |root| root.join("checksums.toml"),
+            );
         self.v.check_bool(
             "checksums-present",
             checksums.is_file(),
@@ -155,11 +161,16 @@ impl NucleusGate {
         );
     }
 
+    #[expect(
+        clippy::too_many_lines,
+        reason = "NUCLEUS launch and startup polling sequence"
+    )]
     fn tier1_launch(&mut self) {
         self.v.section("Tier 1: NUCLEUS Launch");
 
         if self.skip_launch {
-            self.v.check_bool("launch-skipped", true, "skipped (--skip-launch)");
+            self.v
+                .check_bool("launch-skipped", true, "skipped (--skip-launch)");
             return;
         }
 
@@ -169,20 +180,30 @@ impl NucleusGate {
         let biomeos_path = match discover_binary(primal_names::BIOMEOS) {
             Ok(p) => p,
             Err(e) => {
-                self.v.check_bool("biomeos-discovered", false, &format!("{e}"));
+                self.v
+                    .check_bool("biomeos-discovered", false, &format!("{e}"));
                 return;
             }
         };
 
         let family_seed = std::env::var("FAMILY_SEED").unwrap_or_else(|_| {
             let seed_path = dirs_home().join(".family.seed");
-            std::fs::read_to_string(&seed_path).unwrap_or_default().trim().to_owned()
+            std::fs::read_to_string(&seed_path)
+                .unwrap_or_default()
+                .trim()
+                .to_owned()
         });
 
         let mut cmd = Command::new(&biomeos_path);
         cmd.args(["nucleus", "start", "--node-id", &self.gate_name])
-            .env("ECOPRIMALS_ROOT", std::env::var("ECOPRIMALS_ROOT").unwrap_or_default())
-            .env("ECOPRIMALS_PLASMID_BIN", self.depot_dir.to_str().unwrap_or(""))
+            .env(
+                "ECOPRIMALS_ROOT",
+                std::env::var("ECOPRIMALS_ROOT").unwrap_or_default(),
+            )
+            .env(
+                "ECOPRIMALS_PLASMID_BIN",
+                self.depot_dir.to_str().unwrap_or(""),
+            )
             .env("GATE_NAME", &self.gate_name)
             .env("FAMILY_SEED", &family_seed)
             .stdout(Stdio::piped())
@@ -191,13 +212,15 @@ impl NucleusGate {
         let child = match cmd.spawn() {
             Ok(c) => c,
             Err(e) => {
-                self.v.check_bool("nucleus-spawn", false, &format!("spawn failed: {e}"));
+                self.v
+                    .check_bool("nucleus-spawn", false, &format!("spawn failed: {e}"));
                 return;
             }
         };
 
         let pid = child.id();
-        self.v.check_bool("nucleus-spawn", true, &format!("PID {pid}"));
+        self.v
+            .check_bool("nucleus-spawn", true, &format!("PID {pid}"));
 
         self.nucleus_child = Some(child);
 
@@ -226,7 +249,10 @@ impl NucleusGate {
         self.v.check_bool(
             "neural-api-startup",
             neural_up,
-            &format!("Neural API socket appeared in {:.0}s", start.elapsed().as_secs_f64()),
+            &format!(
+                "Neural API socket appeared in {:.0}s",
+                start.elapsed().as_secs_f64()
+            ),
         );
 
         std::thread::sleep(Duration::from_secs(5));
@@ -242,7 +268,11 @@ impl NucleusGate {
                     self.nucleus_child = None;
                 }
                 Ok(None) => {
-                    self.v.check_bool("nucleus-stable-after-startup", true, &format!("PID {pid} alive"));
+                    self.v.check_bool(
+                        "nucleus-stable-after-startup",
+                        true,
+                        &format!("PID {pid} alive"),
+                    );
                 }
                 Err(e) => {
                     self.v.check_bool(
@@ -262,7 +292,11 @@ impl NucleusGate {
         self.v.check_bool(
             "socket-count",
             !sockets.is_empty(),
-            &format!("{} socket(s) in {}", sockets.len(), self.socket_dir.display()),
+            &format!(
+                "{} socket(s) in {}",
+                sockets.len(),
+                self.socket_dir.display()
+            ),
         );
 
         let mut health_pass = 0u32;
@@ -308,21 +342,22 @@ impl NucleusGate {
     fn tier3_federation(&mut self) {
         self.v.section("Tier 3: Federation & Mesh Readiness");
 
-        let fed_live = TcpStream::connect_timeout(
-            &format!("127.0.0.1:{FEDERATION_PORT}").parse().unwrap(),
-            Duration::from_secs(3),
-        )
-        .is_ok();
+        let addr = SocketAddr::from((Ipv4Addr::LOCALHOST, FEDERATION_PORT));
+        let fed_live = TcpStream::connect_timeout(&addr, Duration::from_secs(3)).is_ok();
 
         self.v.check_bool(
             "federation-port",
             fed_live,
-            &format!("songbird :{FEDERATION_PORT} {}", if fed_live { "LIVE" } else { "NOT listening" }),
+            &format!(
+                "songbird :{FEDERATION_PORT} {}",
+                if fed_live { "LIVE" } else { "NOT listening" }
+            ),
         );
     }
 
     fn tier4_lifecycle(&mut self) {
-        self.v.section("Tier 4: Lifecycle (graceful shutdown + restart)");
+        self.v
+            .section("Tier 4: Lifecycle (graceful shutdown + restart)");
 
         if let Some(ref mut child) = self.nucleus_child.take() {
             let pid = child.id();
@@ -331,7 +366,10 @@ impl NucleusGate {
             {
                 use nix::sys::signal::{Signal, kill};
                 use nix::unistd::Pid;
-                let _ = kill(Pid::from_raw(pid as i32), Signal::SIGTERM);
+                let _ = kill(
+                    Pid::from_raw(i32::try_from(pid).unwrap_or(i32::MAX)),
+                    Signal::SIGTERM,
+                );
             }
             #[cfg(not(unix))]
             {
@@ -354,7 +392,11 @@ impl NucleusGate {
                 clean_exit,
                 &format!(
                     "NUCLEUS PID {pid} {} in {:.0}s",
-                    if clean_exit { "exited cleanly" } else { "did NOT exit" },
+                    if clean_exit {
+                        "exited cleanly"
+                    } else {
+                        "did NOT exit"
+                    },
                     start.elapsed().as_secs_f64()
                 ),
             );
@@ -377,7 +419,11 @@ impl NucleusGate {
                 kill_depot_processes(&self.depot_dir);
             }
         } else {
-            self.v.check_bool("lifecycle-skipped", true, "no NUCLEUS to test (not launched by us)");
+            self.v.check_bool(
+                "lifecycle-skipped",
+                true,
+                "no NUCLEUS to test (not launched by us)",
+            );
         }
     }
 
@@ -419,7 +465,9 @@ fn resolve_depot_dir() -> PathBuf {
     }
     if let Ok(root) = std::env::var("ECOPRIMALS_ROOT") {
         let triple = host_triple();
-        let depot = PathBuf::from(&root).join("infra/plasmidBin/primals").join(&triple);
+        let depot = PathBuf::from(&root)
+            .join("infra/plasmidBin/primals")
+            .join(&triple);
         if depot.is_dir() {
             return depot;
         }
@@ -438,7 +486,7 @@ fn resolve_socket_dir() -> PathBuf {
     #[cfg(unix)]
     {
         let uid = nix::unistd::getuid();
-        PathBuf::from(format!("/run/user/{}/biomeos", uid))
+        PathBuf::from(format!("/run/user/{uid}/biomeos"))
     }
     #[cfg(not(unix))]
     {
@@ -457,17 +505,14 @@ fn host_triple() -> String {
 }
 
 fn dirs_home() -> PathBuf {
-    std::env::var("HOME")
-        .map(PathBuf::from)
-        .unwrap_or_else(|_| PathBuf::from("/root"))
+    std::env::var("HOME").map_or_else(|_| PathBuf::from("/root"), PathBuf::from)
 }
 
 #[cfg(unix)]
 fn is_executable(path: &Path) -> bool {
     use std::os::unix::fs::PermissionsExt;
     path.metadata()
-        .map(|m| m.permissions().mode() & 0o111 != 0)
-        .unwrap_or(false)
+        .is_ok_and(|m| m.permissions().mode() & 0o111 != 0)
 }
 
 #[cfg(not(unix))]
@@ -482,8 +527,7 @@ fn list_sockets(dir: &Path) -> Vec<PathBuf> {
     entries
         .flatten()
         .filter(|e| {
-            e.path().extension().and_then(|s| s.to_str()) == Some("sock")
-                && e.path().exists()
+            e.path().extension().and_then(|s| s.to_str()) == Some("sock") && e.path().exists()
         })
         .map(|e| e.path())
         .collect()
@@ -503,7 +547,7 @@ fn kill_existing_nucleus() {
             let had_pids = !pids.is_empty();
             for pid in pids {
                 let _ = nix::sys::signal::kill(
-                    nix::unistd::Pid::from_raw(pid as i32),
+                    nix::unistd::Pid::from_raw(i32::try_from(pid).unwrap_or(i32::MAX)),
                     nix::sys::signal::Signal::SIGTERM,
                 );
             }
@@ -532,13 +576,14 @@ fn count_depot_processes(depot: &Path) -> usize {
     Command::new("pgrep")
         .args(["-f", &depot_str])
         .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).lines().count())
-        .unwrap_or(0)
+        .map_or(0, |o| String::from_utf8_lossy(&o.stdout).lines().count())
 }
 
 fn kill_depot_processes(depot: &Path) {
     let depot_str = depot.to_string_lossy();
     let _ = Command::new("pkill").args(["-f", &*depot_str]).status();
     std::thread::sleep(Duration::from_secs(2));
-    let _ = Command::new("pkill").args(["-9", "-f", &*depot_str]).status();
+    let _ = Command::new("pkill")
+        .args(["-9", "-f", &*depot_str])
+        .status();
 }

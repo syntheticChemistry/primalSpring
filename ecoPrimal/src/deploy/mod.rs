@@ -286,10 +286,11 @@ pub use validation::{
 /// Returns [`DeployError`] if reading or parsing fails.
 pub fn load_graph(path: &Path) -> Result<DeployGraph, DeployError> {
     let contents = std::fs::read_to_string(path)?;
-    let mut graph: DeployGraph = toml::from_str(&contents).map_err(|source| DeployError::Parse {
-        context: path.display().to_string(),
-        source,
-    })?;
+    let mut graph: DeployGraph =
+        toml::from_str(&contents).map_err(|source| DeployError::Parse {
+            context: path.display().to_string(),
+            source,
+        })?;
 
     if !graph.nodes.is_empty() {
         graph.graph.node.append(&mut graph.nodes);

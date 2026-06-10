@@ -26,14 +26,18 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "primalspring_postprimordial",
         provenance_date: "2026-05-28",
-        description:
-            "Ecosystem freshness — manifest schema + freshness drift detection",
+        description: "Ecosystem freshness — manifest schema + freshness drift detection",
     },
     run,
 };
 
 /// Valid membrane boundary classifications from `REPO_MEMBRANE_BOUNDARY.md`.
-const VALID_MEMBRANES: &[&str] = &["inner-only", "trailing-mirror", "outer-only", "bidirectional"];
+const VALID_MEMBRANES: &[&str] = &[
+    "inner-only",
+    "trailing-mirror",
+    "outer-only",
+    "bidirectional",
+];
 /// Repo taxonomy categories in the ecosystem manifest.
 const VALID_CATEGORIES: &[&str] = &["primal", "spring", "garden", "infra", "root"];
 /// Sync priority levels for cascade-pull ordering.
@@ -51,7 +55,8 @@ fn discover_gates(parsed: &toml::Value) -> Vec<String> {
 // ─── Structural: Manifest Schema ────────────────────────────────────────────
 
 fn phase_manifest_schema(v: &mut ValidationResult) {
-    let manifest_toml = include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
+    let manifest_toml =
+        include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
     let parsed: toml::Value = match toml::from_str(manifest_toml) {
         Ok(p) => p,
         Err(e) => {
@@ -78,10 +83,7 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
     );
 
     if let Some(meta) = meta {
-        let version = meta
-            .get("version")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
+        let version = meta.get("version").and_then(|v| v.as_str()).unwrap_or("");
         v.check_bool(
             "schema:meta:version",
             !version.is_empty(),
@@ -193,7 +195,10 @@ fn validate_gate_profiles(v: &mut ValidationResult, parsed: &toml::Value, repo_n
             v.check_bool(
                 &format!("schema:gate:{gate_name}:has_repos"),
                 !gate_repos.is_empty() || gate.get("kderm_layer").is_some(),
-                &format!("{gate_name} has {} repos (or is K-Derm layer)", gate_repos.len()),
+                &format!(
+                    "{gate_name} has {} repos (or is K-Derm layer)",
+                    gate_repos.len()
+                ),
             );
 
             for repo in &gate_repos {
@@ -207,7 +212,10 @@ fn validate_gate_profiles(v: &mut ValidationResult, parsed: &toml::Value, repo_n
     }
 }
 
-fn validate_repo_entries(v: &mut ValidationResult, repos: &toml::map::Map<String, toml::Value>) -> Vec<String> {
+fn validate_repo_entries(
+    v: &mut ValidationResult,
+    repos: &toml::map::Map<String, toml::Value>,
+) -> Vec<String> {
     let repo_names: Vec<String> = repos.keys().cloned().collect();
 
     v.check_bool(
@@ -217,10 +225,7 @@ fn validate_repo_entries(v: &mut ValidationResult, repos: &toml::map::Map<String
     );
 
     for (name, repo) in repos {
-        let org = repo
-            .get("org")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
+        let org = repo.get("org").and_then(|v| v.as_str()).unwrap_or("");
         v.check_bool(
             &format!("schema:repo:{name}:org"),
             !org.is_empty(),
@@ -237,20 +242,14 @@ fn validate_repo_entries(v: &mut ValidationResult, repos: &toml::map::Map<String
             &format!("{name}.local_path = \"{local_path}\""),
         );
 
-        let membrane = repo
-            .get("membrane")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
+        let membrane = repo.get("membrane").and_then(|v| v.as_str()).unwrap_or("");
         v.check_bool(
             &format!("schema:repo:{name}:membrane"),
             VALID_MEMBRANES.contains(&membrane),
             &format!("{name}.membrane = \"{membrane}\" (valid: {VALID_MEMBRANES:?})"),
         );
 
-        let category = repo
-            .get("category")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
+        let category = repo.get("category").and_then(|v| v.as_str()).unwrap_or("");
         v.check_bool(
             &format!("schema:repo:{name}:category"),
             VALID_CATEGORIES.contains(&category),
@@ -319,10 +318,7 @@ fn phase_freshness_schema(v: &mut ValidationResult) {
             &format!("wave.id = {id}"),
         );
 
-        let date = wave
-            .get("date")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
+        let date = wave.get("date").and_then(|v| v.as_str()).unwrap_or("");
         v.check_bool(
             "schema:freshness:wave_date",
             date.len() == 10,
@@ -392,7 +388,8 @@ fn phase_workspace_drift(v: &mut ValidationResult, _ctx: &mut CompositionContext
         &format!("ecoPrimals root: {eco_root}"),
     );
 
-    let manifest_toml = include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
+    let manifest_toml =
+        include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
     let manifest: toml::Value = match toml::from_str(manifest_toml) {
         Ok(p) => p,
         Err(_) => return,
@@ -456,7 +453,9 @@ mod tests {
         assert!(
             v.failed == 0,
             "Ecosystem freshness has {} failures (passed={}, skipped={})",
-            v.failed, v.passed, v.skipped,
+            v.failed,
+            v.passed,
+            v.skipped,
         );
     }
 
@@ -467,7 +466,10 @@ mod tests {
         assert!(parsed.get("repos").is_some(), "missing [repos] section");
         assert!(parsed.get("gates").is_some(), "missing [gates] section");
         assert!(parsed.get("meta").is_some(), "missing [meta] section");
-        assert!(parsed.get("sync").is_some(), "missing [sync] section (WaterFall)");
+        assert!(
+            parsed.get("sync").is_some(),
+            "missing [sync] section (WaterFall)"
+        );
     }
 
     #[test]
@@ -475,7 +477,10 @@ mod tests {
         let toml_str = include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
         let parsed: toml::Value = toml::from_str(toml_str).expect("valid TOML");
 
-        let repos = parsed.get("repos").and_then(|r| r.as_table()).expect("repos");
+        let repos = parsed
+            .get("repos")
+            .and_then(|r| r.as_table())
+            .expect("repos");
         for (name, info) in repos {
             let fj = info
                 .get("forgejo_repo")
@@ -507,7 +512,10 @@ mod tests {
             .map(|t| t.keys().cloned().collect())
             .unwrap_or_default();
 
-        let gates = parsed.get("gates").and_then(|g| g.as_table()).expect("gates");
+        let gates = parsed
+            .get("gates")
+            .and_then(|g| g.as_table())
+            .expect("gates");
         for (gate_name, gate) in gates {
             let gate_repos = gate
                 .get("repos")

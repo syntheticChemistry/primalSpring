@@ -305,7 +305,10 @@ pub const SKUNKBAT: &str = "skunkbat";
 
 /// Lowercase discovery slug → mixed-case display name (legacy wrapper).
 #[must_use]
-#[expect(clippy::option_if_let_else, reason = "map_or_else breaks lifetime inference on &str returns")]
+#[expect(
+    clippy::option_if_let_else,
+    reason = "map_or_else breaks lifetime inference on &str returns"
+)]
 pub fn display_name(slug: &str) -> &str {
     if let Ok(p) = slug.parse::<Primal>() {
         p.display()
@@ -318,7 +321,10 @@ pub fn display_name(slug: &str) -> &str {
 
 /// Mixed-case display name → lowercase discovery slug (legacy wrapper).
 #[must_use]
-#[expect(clippy::option_if_let_else, reason = "map_or_else breaks lifetime inference on &str returns")]
+#[expect(
+    clippy::option_if_let_else,
+    reason = "map_or_else breaks lifetime inference on &str returns"
+)]
 pub fn discovery_slug(display: &str) -> &str {
     if let Ok(p) = display.parse::<Primal>() {
         p.slug()

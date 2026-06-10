@@ -539,7 +539,10 @@ mod tests {
             detail: "x".to_owned(),
         };
         let phased = err.in_phase(IpcErrorPhase::Connect);
-        assert!(phased.source().is_some(), "PhasedIpcError wraps IpcError as source");
+        assert!(
+            phased.source().is_some(),
+            "PhasedIpcError wraps IpcError as source"
+        );
     }
 
     // ── is_recoverable tests ──

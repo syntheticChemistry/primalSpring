@@ -129,23 +129,58 @@ fn main() {
             orchestrator::show_status(&primals);
         }
         cmd => {
-            let (dark_forest, seed_only, health_timeout, dry_run, validate, uds_only, federation_port, peers, skip_preflight, allow_degraded, no_rollback) =
-                match cmd {
-                    Some(NucleusCommand::Start {
-                        dark_forest,
-                        seed_only,
-                        health_timeout,
-                        dry_run,
-                        validate,
-                        tcp,
-                        federation_port,
-                        peers,
-                        skip_preflight,
-                        allow_degraded,
-                        no_rollback,
-                    }) => (dark_forest, seed_only, health_timeout, dry_run, validate, !tcp, federation_port, peers, skip_preflight, allow_degraded, no_rollback),
-                    _ => (false, false, 20, false, false, true, None, Vec::new(), false, false, false),
-                };
+            let (
+                dark_forest,
+                seed_only,
+                health_timeout,
+                dry_run,
+                validate,
+                uds_only,
+                federation_port,
+                peers,
+                skip_preflight,
+                allow_degraded,
+                no_rollback,
+            ) = match cmd {
+                Some(NucleusCommand::Start {
+                    dark_forest,
+                    seed_only,
+                    health_timeout,
+                    dry_run,
+                    validate,
+                    tcp,
+                    federation_port,
+                    peers,
+                    skip_preflight,
+                    allow_degraded,
+                    no_rollback,
+                }) => (
+                    dark_forest,
+                    seed_only,
+                    health_timeout,
+                    dry_run,
+                    validate,
+                    !tcp,
+                    federation_port,
+                    peers,
+                    skip_preflight,
+                    allow_degraded,
+                    no_rollback,
+                ),
+                _ => (
+                    false,
+                    false,
+                    20,
+                    false,
+                    false,
+                    true,
+                    None,
+                    Vec::new(),
+                    false,
+                    false,
+                    false,
+                ),
+            };
             let family_id = cli.family_id.unwrap_or_else(|| {
                 eprintln!("error: --family-id is required for start");
                 std::process::exit(1);

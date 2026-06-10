@@ -10,7 +10,7 @@
 //!
 //! See `specs/DARK_FOREST_GLACIAL_GATE.md` for the full standard.
 
-use crate::composition::{capability_to_primal, tcp_fallback_table, CompositionContext};
+use crate::composition::{CompositionContext, capability_to_primal, tcp_fallback_table};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -22,8 +22,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "primalspring_dark_forest_gate",
         provenance_date: "2026-05-14",
-        description:
-            "Dark Forest glacial gate — metadata, ports, network surface, BTSP, enclave",
+        description: "Dark Forest glacial gate — metadata, ports, network surface, BTSP, enclave",
     },
     run,
 };
@@ -94,8 +93,7 @@ fn pillar_zero_port(v: &mut ValidationResult) {
     );
 
     let table = tcp_fallback_table();
-    let mut port_to_primal: std::collections::HashMap<u16, &str> =
-        std::collections::HashMap::new();
+    let mut port_to_primal: std::collections::HashMap<u16, &str> = std::collections::HashMap::new();
     let mut real_collisions = Vec::new();
     for &(_, primal, _, port) in &table {
         if let Some(&existing) = port_to_primal.get(&port) {
@@ -152,10 +150,9 @@ fn pillar_songbird_network(v: &mut ValidationResult) {
         .and_then(|n| n.as_array())
         .map_or(Vec::new(), std::clone::Clone::clone);
 
-    let songbird_node = nodes.iter().find(|n| {
-        n.get("name")
-            .and_then(|v| v.as_str()) == Some("songbird")
-    });
+    let songbird_node = nodes
+        .iter()
+        .find(|n| n.get("name").and_then(|v| v.as_str()) == Some("songbird"));
 
     v.check_bool(
         "network:songbird_in_tower",
@@ -167,11 +164,7 @@ fn pillar_songbird_network(v: &mut ValidationResult) {
         let caps = sb
             .get("capabilities")
             .and_then(|c| c.as_array())
-            .map(|arr| {
-                arr.iter()
-                    .filter_map(|v| v.as_str())
-                    .collect::<Vec<_>>()
-            })
+            .map(|arr| arr.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>())
             .unwrap_or_default();
 
         let has_http = caps.iter().any(|c| c.starts_with("http."));
@@ -260,10 +253,7 @@ fn pillar_btsp_crypto(v: &mut ValidationResult) {
         section
             .get("methods")
             .and_then(|m| m.as_array())
-            .is_some_and(|arr| {
-                arr.iter()
-                    .any(|v| v.as_str() == Some("btsp.negotiate"))
-            })
+            .is_some_and(|arr| arr.iter().any(|v| v.as_str() == Some("btsp.negotiate")))
     });
 
     v.check_bool(
@@ -276,10 +266,7 @@ fn pillar_btsp_crypto(v: &mut ValidationResult) {
         section
             .get("methods")
             .and_then(|m| m.as_array())
-            .is_some_and(|arr| {
-                arr.iter()
-                    .any(|v| v.as_str() == Some("btsp.capabilities"))
-            })
+            .is_some_and(|arr| arr.iter().any(|v| v.as_str() == Some("btsp.capabilities")))
     });
 
     v.check_bool(
@@ -355,6 +342,10 @@ fn pillar_btsp_crypto(v: &mut ValidationResult) {
 
 // ─── Pillar 5: Enclave Computing ────────────────────────────────────────────
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "multi-check enclave computing validation"
+)]
 fn pillar_enclave(v: &mut ValidationResult) {
     let nest_toml = include_str!("../../../../graphs/fragments/nest_atomic.toml");
     let parsed: toml::Value = match toml::from_str(nest_toml) {
@@ -375,10 +366,8 @@ fn pillar_enclave(v: &mut ValidationResult) {
         .and_then(|n| n.as_array());
 
     let nestgate_node = nodes.and_then(|arr| {
-        arr.iter().find(|n| {
-            n.get("name")
-                .and_then(|v| v.as_str()) == Some("nestgate")
-        })
+        arr.iter()
+            .find(|n| n.get("name").and_then(|v| v.as_str()) == Some("nestgate"))
     });
 
     v.check_bool(
@@ -457,10 +446,7 @@ fn pillar_enclave(v: &mut ValidationResult) {
 
     let bonding_policy = parsed.get("graph").and_then(|g| g.get("bonding_policy"));
     if let Some(bp) = bonding_policy {
-        let trust = bp
-            .get("trust_model")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
+        let trust = bp.get("trust_model").and_then(|v| v.as_str()).unwrap_or("");
         v.check_bool(
             "enclave:nest_trust_model",
             trust == "MethodGate",

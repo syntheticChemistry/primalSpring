@@ -86,6 +86,9 @@ mod tests {
         let mut v = ValidationResult::new("gate-failure");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce at least one check"
+        );
     }
 }

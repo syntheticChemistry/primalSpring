@@ -88,7 +88,9 @@ pub fn certify(max_layer: u8) -> ValidationResult {
     let alive = validate_liveness(&mut ctx, &mut v, full_caps);
 
     if alive == 0 {
-        tracing::warn!("No NUCLEUS primals discovered — bare certification only. Deploy from plasmidBin and rerun for full certification.");
+        tracing::warn!(
+            "No NUCLEUS primals discovered — bare certification only. Deploy from plasmidBin and rerun for full certification."
+        );
         v.finish();
         return v;
     }
@@ -185,13 +187,19 @@ mod tests {
     fn certify_layer_zero_produces_checks() {
         let v = certify(0);
         let total = v.passed + v.failed + v.skipped;
-        assert!(total > 0, "certify(0) should produce structural bare checks");
+        assert!(
+            total > 0,
+            "certify(0) should produce structural bare checks"
+        );
     }
 
     #[test]
     fn certify_layer_zero_exit_code() {
         let v = certify(0);
         let code = v.exit_code();
-        assert!(code == 0 || code == 1, "exit code should be 0 (pass) or 1 (fail), got {code}");
+        assert!(
+            code == 0 || code == 1,
+            "exit code should be 0 (pass) or 1 (fail), got {code}"
+        );
     }
 }

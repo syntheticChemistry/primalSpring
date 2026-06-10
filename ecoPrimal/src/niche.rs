@@ -100,7 +100,9 @@ pub const LOCAL_CAPABILITIES: &[&str] = &[
 ///
 /// Each entry names the canonical provider per `capability_registry.toml`.
 pub const ROUTED_CAPABILITIES: &[(&str, Primal)] = {
-    use Primal::{BiomeOS, Squirrel, Songbird, PetalTongue, BearDog, RhizoCrypt, LoamSpine, SweetGrass};
+    use Primal::{
+        BearDog, BiomeOS, LoamSpine, PetalTongue, RhizoCrypt, Songbird, Squirrel, SweetGrass,
+    };
     &[
         // ── Lifecycle (biomeOS) ──
         ("lifecycle.start", BiomeOS),

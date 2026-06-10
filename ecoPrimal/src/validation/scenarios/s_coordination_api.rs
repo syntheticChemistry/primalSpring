@@ -100,41 +100,74 @@ fn phase_live_coordination(v: &mut ValidationResult, ctx: &mut CompositionContex
     }
 
     probe_coordination_method(
-        v, ctx, "live:neural_api_status",
+        v,
+        ctx,
+        "live:neural_api_status",
         "coordination.neural_api_status",
         serde_json::json!({}),
         |resp| {
             let has_total = resp.get("total_methods").is_some();
-            (has_total, format!("coordination.neural_api_status → total_methods present: {has_total}"))
+            (
+                has_total,
+                format!("coordination.neural_api_status → total_methods present: {has_total}"),
+            )
         },
     );
 
     probe_coordination_method(
-        v, ctx, "live:probe_capability",
+        v,
+        ctx,
+        "live:probe_capability",
         "coordination.probe_capability",
         serde_json::json!({ "capability": "security" }),
-        |resp| (resp.is_object(), "coordination.probe_capability(security) responded".into()),
+        |resp| {
+            (
+                resp.is_object(),
+                "coordination.probe_capability(security) responded".into(),
+            )
+        },
     );
 
     probe_coordination_method(
-        v, ctx, "live:probe_primal",
+        v,
+        ctx,
+        "live:probe_primal",
         "coordination.probe_primal",
         serde_json::json!({ "primal": "beardog" }),
-        |resp| (resp.is_object(), "coordination.probe_primal(beardog) responded".into()),
+        |resp| {
+            (
+                resp.is_object(),
+                "coordination.probe_primal(beardog) responded".into(),
+            )
+        },
     );
 
     probe_coordination_method(
-        v, ctx, "live:validate_by_capability",
+        v,
+        ctx,
+        "live:validate_by_capability",
         "coordination.validate_composition_by_capability",
         serde_json::json!({ "atomic": "Tower" }),
-        |resp| (resp.is_object(), "coordination.validate_composition_by_capability(Tower) responded".into()),
+        |resp| {
+            (
+                resp.is_object(),
+                "coordination.validate_composition_by_capability(Tower) responded".into(),
+            )
+        },
     );
 
     probe_coordination_method(
-        v, ctx, "live:bonding_test",
+        v,
+        ctx,
+        "live:bonding_test",
         "coordination.bonding_test",
         serde_json::json!({ "bond_type": "covalent" }),
-        |resp| (resp.is_object(), "coordination.bonding_test(covalent) responded".into()),
+        |resp| {
+            (
+                resp.is_object(),
+                "coordination.bonding_test(covalent) responded".into(),
+            )
+        },
     );
 }
 

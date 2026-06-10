@@ -10,9 +10,9 @@
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64;
 
-use crate::ipc::IpcError;
-use super::routing::capability_to_primal;
 use super::CompositionContext;
+use super::routing::capability_to_primal;
+use crate::ipc::IpcError;
 
 impl CompositionContext {
     /// Call a method on the provider of `capability`.
@@ -137,7 +137,10 @@ impl CompositionContext {
     /// All capability names that have live clients in this context.
     #[must_use]
     pub fn available_capabilities(&self) -> Vec<&str> {
-        self.clients.keys().map(super::routing::CapabilityDomain::as_str).collect()
+        self.clients
+            .keys()
+            .map(super::routing::CapabilityDomain::as_str)
+            .collect()
     }
 
     /// Whether this context has a live client for the given capability.

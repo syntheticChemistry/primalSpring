@@ -19,7 +19,9 @@ fn main() {
     let mut v = ValidationResult::new("exp115: Nest Ingest pseudoSpore")
         .with_provenance("primalspring-exp115", "pseudospore-gateway");
 
-    ValidationResult::print_banner("exp115: Nest Ingest pseudoSpore — postPrimordial Spore Gateway");
+    ValidationResult::print_banner(
+        "exp115: Nest Ingest pseudoSpore — postPrimordial Spore Gateway",
+    );
 
     v.section("Phase 1: Ownership Matrix");
     phase_ownership_matrix(&mut v);
@@ -45,7 +47,9 @@ fn phase_ownership_matrix(v: &mut ValidationResult) {
         "../../infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md",
         "../../../infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md",
     ];
-    let matrix_exists = matrix_paths.iter().any(|p| std::path::Path::new(p).exists());
+    let matrix_exists = matrix_paths
+        .iter()
+        .any(|p| std::path::Path::new(p).exists());
     v.check_bool(
         "ownership:matrix_documented",
         matrix_exists,
@@ -67,7 +71,9 @@ fn phase_ownership_matrix(v: &mut ValidationResult) {
         "../../primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs",
         "../../../primals/biomeOS/crates/biomeos/src/modes/nucleus_ingest.rs",
     ];
-    let gateway_exists = gateway_paths.iter().any(|p| std::path::Path::new(p).exists());
+    let gateway_exists = gateway_paths
+        .iter()
+        .any(|p| std::path::Path::new(p).exists());
     v.check_bool(
         "ownership:nucleus_ingest_module",
         gateway_exists,
@@ -94,7 +100,10 @@ fn phase_livespore_schema(v: &mut ValidationResult) {
     v.check_bool(
         "schema:required_fields",
         true,
-        &format!("{} required top-level fields defined", REQUIRED_FIELDS.len()),
+        &format!(
+            "{} required top-level fields defined",
+            REQUIRED_FIELDS.len()
+        ),
     );
 
     v.check_bool(

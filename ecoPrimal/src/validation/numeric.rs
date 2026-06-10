@@ -66,7 +66,11 @@ impl NumericValidator {
     pub fn check_f64(&mut self, name: &str, actual: f64, expected: f64, tolerance: f64) {
         let diff = (actual - expected).abs();
         let ok = diff <= tolerance;
-        self.record(name, ok, format!("actual={actual}, expected={expected}, diff={diff}, tol={tolerance}"));
+        self.record(
+            name,
+            ok,
+            format!("actual={actual}, expected={expected}, diff={diff}, tol={tolerance}"),
+        );
     }
 
     /// Check that two f64 values are within relative tolerance.
@@ -75,7 +79,13 @@ impl NumericValidator {
         let denom = expected.abs().max(f64::EPSILON);
         let rel = diff / denom;
         let ok = rel <= rel_tolerance;
-        self.record(name, ok, format!("actual={actual}, expected={expected}, rel_diff={rel:.2e}, tol={rel_tolerance}"));
+        self.record(
+            name,
+            ok,
+            format!(
+                "actual={actual}, expected={expected}, rel_diff={rel:.2e}, tol={rel_tolerance}"
+            ),
+        );
     }
 
     /// Check that a count matches exactly.
@@ -131,7 +141,11 @@ impl NumericValidator {
         result.check_bool(
             &format!("{} ({}/{})", self.name, self.passed, self.total()),
             self.passed == self.total() && self.total() > 0,
-            &format!("passed={}, total={}, provenance=numeric-bridge", self.passed, self.total()),
+            &format!(
+                "passed={}, total={}, provenance=numeric-bridge",
+                self.passed,
+                self.total()
+            ),
         );
     }
 
@@ -156,7 +170,10 @@ mod tests {
     #[test]
     fn f64_within_tolerance() {
         let mut v = NumericValidator::new("test");
-        #[expect(clippy::approx_constant, reason = "intentional approximate literal for tolerance test")]
+        #[expect(
+            clippy::approx_constant,
+            reason = "intentional approximate literal for tolerance test"
+        )]
         v.check_f64("pi", std::f64::consts::PI, 3.14159, 1e-4);
         assert_eq!(v.passed(), 1);
         assert_eq!(v.failed(), 0);

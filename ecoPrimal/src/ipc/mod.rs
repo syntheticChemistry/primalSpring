@@ -28,7 +28,6 @@ pub mod mcp;
 pub mod method_gate;
 pub mod methods;
 pub mod neural_bridge;
-pub mod verifiers;
 #[cfg(test)]
 mod proptest_ipc;
 pub mod protocol;
@@ -37,6 +36,7 @@ pub mod resilience;
 pub mod server_bind;
 pub mod tcp;
 pub mod transport;
+pub mod verifiers;
 
 pub use error::IpcError;
 pub use neural_bridge::NeuralBridge;
@@ -50,16 +50,29 @@ pub use neural_bridge::NeuralBridge;
 static SLUG_PREFIXES: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::new(|| {
     use crate::primal_names::{Primal, Spring};
     let primals = [
-        Primal::BearDog, Primal::Songbird, Primal::ToadStool,
-        Primal::NestGate, Primal::Squirrel, Primal::BarraCuda,
-        Primal::CoralReef, Primal::BiomeOS, Primal::PetalTongue,
-        Primal::RhizoCrypt, Primal::LoamSpine, Primal::SweetGrass,
+        Primal::BearDog,
+        Primal::Songbird,
+        Primal::ToadStool,
+        Primal::NestGate,
+        Primal::Squirrel,
+        Primal::BarraCuda,
+        Primal::CoralReef,
+        Primal::BiomeOS,
+        Primal::PetalTongue,
+        Primal::RhizoCrypt,
+        Primal::LoamSpine,
+        Primal::SweetGrass,
         Primal::SkunkBat,
     ];
     let springs = [
-        Spring::PrimalSpring, Spring::HotSpring, Spring::GroundSpring,
-        Spring::NeuralSpring, Spring::WetSpring, Spring::AirSpring,
-        Spring::HealthSpring, Spring::LudoSpring,
+        Spring::PrimalSpring,
+        Spring::HotSpring,
+        Spring::GroundSpring,
+        Spring::NeuralSpring,
+        Spring::WetSpring,
+        Spring::AirSpring,
+        Spring::HealthSpring,
+        Spring::LudoSpring,
     ];
     let mut prefixes: Vec<String> = primals
         .iter()

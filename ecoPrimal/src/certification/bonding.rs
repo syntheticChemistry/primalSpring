@@ -157,24 +157,35 @@ mod tests {
     fn cipher_minima_well_ordered() {
         for &bond in BondType::all() {
             let min = btsp::min_cipher_for_bond(bond);
-            assert!(btsp::cipher_allowed(bond, min),
-                "min cipher for {bond:?} must be allowed for its own bond type");
+            assert!(
+                btsp::cipher_allowed(bond, min),
+                "min cipher for {bond:?} must be allowed for its own bond type"
+            );
         }
         let ionic_min = btsp::min_cipher_for_bond(BondType::Ionic);
-        assert!(ionic_min.is_encrypted(), "ionic bond must require encrypted cipher");
+        assert!(
+            ionic_min.is_encrypted(),
+            "ionic bond must require encrypted cipher"
+        );
     }
 
     #[test]
     fn covalent_default_policy_valid() {
         let policy = BondingPolicy::covalent_default();
         let errors = policy.validate();
-        assert!(errors.is_empty(), "covalent default policy should be valid: {errors:?}");
+        assert!(
+            errors.is_empty(),
+            "covalent default policy should be valid: {errors:?}"
+        );
     }
 
     #[test]
     fn ionic_contract_policy_valid() {
         let policy = BondingPolicy::ionic_contract(vec!["compute".to_owned()]);
         let errors = policy.validate();
-        assert!(errors.is_empty(), "ionic contract policy should be valid: {errors:?}");
+        assert!(
+            errors.is_empty(),
+            "ionic contract policy should be valid: {errors:?}"
+        );
     }
 }

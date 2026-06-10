@@ -59,7 +59,10 @@ fn phase_registry(v: &mut ValidationResult, _ctx: &CompositionContext) {
         v.check_bool(
             &format!("fido2:registry:{method}"),
             present,
-            &format!("{method} {} in capability_registry.toml", if present { "present" } else { "MISSING" }),
+            &format!(
+                "{method} {} in capability_registry.toml",
+                if present { "present" } else { "MISSING" }
+            ),
         );
     }
 
@@ -67,22 +70,28 @@ fn phase_registry(v: &mut ValidationResult, _ctx: &CompositionContext) {
     v.check_bool(
         "fido2:registry:section",
         has_fido2_section,
-        &format!("[fido2] section {} in registry", if has_fido2_section { "present" } else { "MISSING" }),
+        &format!(
+            "[fido2] section {} in registry",
+            if has_fido2_section {
+                "present"
+            } else {
+                "MISSING"
+            }
+        ),
     );
 }
 
 fn phase_discover(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let has_security = ctx.has_capability("security");
     if !has_security {
-        v.check_skip("fido2:discover:responds", "BearDog security capability not discoverable");
+        v.check_skip(
+            "fido2:discover:responds",
+            "BearDog security capability not discoverable",
+        );
         return;
     }
 
-    match ctx.call(
-        "security",
-        "beardog.fido2.discover",
-        serde_json::json!({}),
-    ) {
+    match ctx.call("security", "beardog.fido2.discover", serde_json::json!({})) {
         Ok(resp) => {
             let devices = resp.get("devices").and_then(|d| d.as_array());
             let count = devices.map_or(0, Vec::len);
@@ -93,7 +102,10 @@ fn phase_discover(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("fido2:discover:responds", &format!("BearDog not available: {e}"));
+            v.check_skip(
+                "fido2:discover:responds",
+                &format!("BearDog not available: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
@@ -132,7 +144,10 @@ fn phase_register_error(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("fido2:register:error_shape", &format!("BearDog not available: {e}"));
+            v.check_skip(
+                "fido2:register:error_shape",
+                &format!("BearDog not available: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
@@ -172,7 +187,10 @@ fn phase_authenticate_error(v: &mut ValidationResult, ctx: &mut CompositionConte
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("fido2:authenticate:error_shape", &format!("BearDog not available: {e}"));
+            v.check_skip(
+                "fido2:authenticate:error_shape",
+                &format!("BearDog not available: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
@@ -200,6 +218,9 @@ mod tests {
         let mut v = ValidationResult::new("beardog-fido2");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce checks");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce checks"
+        );
     }
 }

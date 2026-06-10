@@ -67,9 +67,19 @@ fn plasmidbin_dir() -> std::path::PathBuf {
 
 fn phase_primal_inventory(v: &mut ValidationResult) {
     let primals = [
-        "beardog", "songbird", "toadstool", "barracuda", "coralreef",
-        "nestgate", "rhizocrypt", "loamspine", "sweetgrass", "biomeos",
-        "squirrel", "petaltongue", "skunkbat",
+        "beardog",
+        "songbird",
+        "toadstool",
+        "barracuda",
+        "coralreef",
+        "nestgate",
+        "rhizocrypt",
+        "loamspine",
+        "sweetgrass",
+        "biomeos",
+        "squirrel",
+        "petaltongue",
+        "skunkbat",
     ];
 
     let dir = biomeos_socket_dir();
@@ -83,7 +93,11 @@ fn phase_primal_inventory(v: &mut ValidationResult) {
         v.check_bool(
             &format!("inventory:{primal}"),
             has_socket,
-            if has_socket { "socket present" } else { "MISSING" },
+            if has_socket {
+                "socket present"
+            } else {
+                "MISSING"
+            },
         );
     }
 
@@ -113,7 +127,10 @@ fn phase_primal_inventory(v: &mut ValidationResult) {
             },
         );
     } else {
-        v.check_skip("inventory:plasmidbin_binaries", "plasmidBin directory not found");
+        v.check_skip(
+            "inventory:plasmidbin_binaries",
+            "plasmidBin directory not found",
+        );
     }
 }
 
@@ -147,11 +164,25 @@ fn phase_socket_census(v: &mut ValidationResult) {
         .map(|e| e.file_name().to_string_lossy().to_string())
         .collect();
 
-    let sock_count = entries.iter().filter(|n| n.to_ascii_lowercase().ends_with(".sock")).count();
-    let json_count = entries.iter().filter(|n| n.to_ascii_lowercase().ends_with(".json")).count();
+    let sock_count = entries
+        .iter()
+        .filter(|n| n.to_ascii_lowercase().ends_with(".sock"))
+        .count();
+    let json_count = entries
+        .iter()
+        .filter(|n| n.to_ascii_lowercase().ends_with(".json"))
+        .count();
 
-    v.check_bool("sockets:total", sock_count > 0, &format!("{sock_count} sockets"));
-    v.check_bool("sockets:state_files", true, &format!("{json_count} JSON state files"));
+    v.check_bool(
+        "sockets:total",
+        sock_count > 0,
+        &format!("{sock_count} sockets"),
+    );
+    v.check_bool(
+        "sockets:state_files",
+        true,
+        &format!("{json_count} JSON state files"),
+    );
 
     let is_sock = |n: &&String| n.to_ascii_lowercase().ends_with(".sock");
     let named_count = entries
@@ -196,11 +227,36 @@ fn phase_tcp_port_audit(v: &mut ValidationResult) {
     }
 
     let ports = [
-        PortEntry { port: 7700, primal: "songbird", purpose: "federation (nucleus01)", cns_eligible: false },
-        PortEntry { port: 7701, primal: "songbird", purpose: "federation (primalspring01)", cns_eligible: false },
-        PortEntry { port: 9101, primal: "beardog", purpose: "primalspring01 crypto", cns_eligible: true },
-        PortEntry { port: 9900, primal: "beardog", purpose: "nucleus01 crypto", cns_eligible: true },
-        PortEntry { port: 9750, primal: "skunkbat", purpose: "meta-tier defense", cns_eligible: true },
+        PortEntry {
+            port: 7700,
+            primal: "songbird",
+            purpose: "federation (nucleus01)",
+            cns_eligible: false,
+        },
+        PortEntry {
+            port: 7701,
+            primal: "songbird",
+            purpose: "federation (primalspring01)",
+            cns_eligible: false,
+        },
+        PortEntry {
+            port: 9101,
+            primal: "beardog",
+            purpose: "primalspring01 crypto",
+            cns_eligible: true,
+        },
+        PortEntry {
+            port: 9900,
+            primal: "beardog",
+            purpose: "nucleus01 crypto",
+            cns_eligible: true,
+        },
+        PortEntry {
+            port: 9750,
+            primal: "skunkbat",
+            purpose: "meta-tier defense",
+            cns_eligible: true,
+        },
     ];
 
     let mut cns_eligible = 0;
@@ -248,10 +304,7 @@ fn phase_atomic_composition(v: &mut ValidationResult) {
     );
 
     let tower_caps = ["security", "crypto", "discovery"];
-    let tower_alive = tower_caps
-        .iter()
-        .filter(|c| caps.contains(c))
-        .count();
+    let tower_alive = tower_caps.iter().filter(|c| caps.contains(c)).count();
     v.check_bool(
         "atomic:tower",
         tower_alive > 0,
@@ -284,8 +337,8 @@ fn phase_atomic_composition(v: &mut ValidationResult) {
 }
 
 fn phase_neural_api_health(v: &mut ValidationResult) {
-    let bridge = NeuralBridge::discover()
-        .or_else(|| NeuralBridge::discover_with(None, Some("nucleus01")));
+    let bridge =
+        NeuralBridge::discover().or_else(|| NeuralBridge::discover_with(None, Some("nucleus01")));
     let Some(bridge) = bridge else {
         v.check_skip("neural:health", "biomeOS Neural API not running");
         return;
@@ -303,10 +356,17 @@ fn phase_neural_api_health(v: &mut ValidationResult) {
 
     match bridge.discover_capability("security") {
         Ok(resp) => {
-            v.check_bool("neural:capability_discovery", true, &format!("security: {resp}"));
+            v.check_bool(
+                "neural:capability_discovery",
+                true,
+                &format!("security: {resp}"),
+            );
         }
         Err(e) => {
-            v.check_skip("neural:capability_discovery", &format!("discover failed: {e}"));
+            v.check_skip(
+                "neural:capability_discovery",
+                &format!("discover failed: {e}"),
+            );
         }
     }
 
@@ -316,7 +376,10 @@ fn phase_neural_api_health(v: &mut ValidationResult) {
             let _ = weights;
         }
         Err(e) => {
-            v.check_skip("neural:routing_weights", &format!("weights unavailable: {e}"));
+            v.check_skip(
+                "neural:routing_weights",
+                &format!("weights unavailable: {e}"),
+            );
         }
     }
 }

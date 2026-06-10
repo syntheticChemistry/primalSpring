@@ -12,8 +12,8 @@
 
 use std::sync::Arc;
 
-use crate::composition::neural_routing::CompositionTier;
 use super::RoutePath;
+use crate::composition::neural_routing::CompositionTier;
 
 /// Metrics collected per dispatch.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -127,14 +127,15 @@ impl super::NeuralDispatcher {
         let mut summaries: std::collections::HashMap<Arc<str>, PrimalDispatchSummary> =
             std::collections::HashMap::new();
         for m in &self.metrics {
-            let entry = summaries.entry(Arc::clone(&m.owner)).or_insert_with(|| {
-                PrimalDispatchSummary {
-                    primal: Arc::clone(&m.owner),
-                    total_dispatches: 0,
-                    successes: 0,
-                    total_latency_ms: 0,
-                }
-            });
+            let entry =
+                summaries
+                    .entry(Arc::clone(&m.owner))
+                    .or_insert_with(|| PrimalDispatchSummary {
+                        primal: Arc::clone(&m.owner),
+                        total_dispatches: 0,
+                        successes: 0,
+                        total_latency_ms: 0,
+                    });
             entry.total_dispatches += 1;
             if m.success {
                 entry.successes += 1;

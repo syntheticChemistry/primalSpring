@@ -46,32 +46,32 @@ pub use registry::{Scenario, ScenarioMeta, ScenarioRegistry, Tier, Track};
 // ───────────────────────────────────────────────────────────────────
 // Absorbed scenario modules (one per track representative)
 // ───────────────────────────────────────────────────────────────────
+mod covalent_mesh_trust;
 pub mod s_agentic_tower;
 pub mod s_atomic_compositions;
 pub mod s_barracuda_precision;
 pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
+pub mod s_cephalization;
+pub mod s_composition_dispatch_parity;
 pub mod s_composition_lifecycle;
 pub mod s_composition_parity;
 pub mod s_compute_triangle;
 pub mod s_coordination_api;
-pub mod s_crypto_identity_surface;
 pub mod s_coralreef_shader_targets;
-pub mod s_dark_forest_gate;
-pub mod s_deployment_pipeline;
 pub mod s_covalent_bond;
-mod covalent_mesh_trust;
 pub mod s_covalent_mesh;
 pub mod s_cross_gate_capability_call;
-pub mod s_plasmodium_collective;
 pub mod s_cross_spring_data_flow;
+pub mod s_crypto_identity_surface;
+pub mod s_dark_forest_gate;
+pub mod s_deployment_pipeline;
 pub mod s_domain_contract_sweep;
+pub mod s_ecosystem_freshness;
 pub mod s_feedback_loop;
 pub mod s_ferment_transcript;
 pub mod s_full_nucleus;
-pub mod s_routing_consistency;
-pub mod s_schema_standard;
 pub mod s_gate_failure;
 pub mod s_health_lifecycle_surface;
 pub mod s_ionic_bond;
@@ -84,21 +84,21 @@ pub mod s_neural_dispatch_live;
 pub mod s_neural_routing;
 pub mod s_node_atomic;
 pub mod s_observatory_parity;
+pub mod s_plasmodium_collective;
 pub mod s_primal_announce;
 pub mod s_provenance_trio_pipeline;
+pub mod s_routing_consistency;
+pub mod s_schema_standard;
 pub mod s_sequential_graph;
-pub mod s_composition_dispatch_parity;
 pub mod s_socket_discovery;
 pub mod s_sporeprint_pure_primal;
 pub mod s_sporeprint_surface;
 pub mod s_startup_ordering;
+pub mod s_tcp_fallback;
 pub mod s_tier2_science_api;
 pub mod s_token_federation;
 pub mod s_tower_atomic;
-pub mod s_cephalization;
-pub mod s_ecosystem_freshness;
 pub mod s_tower_cns;
-pub mod s_tcp_fallback;
 pub mod s_zero_port_standard;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
@@ -222,10 +222,8 @@ mod tests {
         // Pre-existing known failures in Rust-tier scenarios that predate this
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
-        // skunkBat TCP 9750 still bound — pending UDS-only migration (Wave 99+)
-        const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("zero-port-standard", 1),
-        ];
+        // sporePrint cert pipeline: deploy.yml certification step + manifest.json
+        const KNOWN_DEBT: &[(&str, u32)] = &[("sporeprint-pure-primal-parity", 2)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();

@@ -71,7 +71,11 @@ fn phase_toadstool_validate(v: &mut ValidationResult, ctx: &mut CompositionConte
                     "toadstool.validate not implemented on this build",
                 );
             } else {
-                v.check_bool("toadstool_validate_shape", false, &format!("call failed: {e}"));
+                v.check_bool(
+                    "toadstool_validate_shape",
+                    false,
+                    &format!("call failed: {e}"),
+                );
             }
         }
     }
@@ -124,7 +128,8 @@ fn phase_precision_route(v: &mut ValidationResult, ctx: &mut CompositionContext)
     });
     match ctx.call("tensor", "barracuda.precision.route", params) {
         Ok(resp) => {
-            let has_strategy = resp.get("strategy").is_some() || resp.get("precision_tier").is_some();
+            let has_strategy =
+                resp.get("strategy").is_some() || resp.get("precision_tier").is_some();
             v.check_bool(
                 "precision_route_shape",
                 has_strategy,
@@ -151,7 +156,11 @@ fn phase_spring_status(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         return;
     }
 
-    match ctx.call("orchestration", "biomeos.spring_status", serde_json::json!({})) {
+    match ctx.call(
+        "orchestration",
+        "biomeos.spring_status",
+        serde_json::json!({}),
+    ) {
         Ok(resp) => {
             let is_object = resp.is_object();
             v.check_bool(
@@ -183,6 +192,9 @@ mod tests {
         let mut v = ValidationResult::new("tier2-science-api");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce at least one check"
+        );
     }
 }

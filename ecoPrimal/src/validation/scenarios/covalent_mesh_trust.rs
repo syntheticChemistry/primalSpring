@@ -14,6 +14,10 @@ use crate::validation::ValidationResult;
 use super::s_covalent_mesh::REGISTRY_TOML;
 
 /// Phase 4: Security trust — bearDog BTSP cross-gate token validation.
+#[expect(
+    clippy::too_many_lines,
+    reason = "multi-phase security trust validation"
+)]
 pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("security") {
         v.check_skip(
@@ -31,9 +35,8 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
         return;
     }
 
-    let local_gate_name = std::env::var("GATE_NAME").unwrap_or_else(|_| {
-        ctx.gate_id().unwrap_or("local-gate").to_owned()
-    });
+    let local_gate_name = std::env::var("GATE_NAME")
+        .unwrap_or_else(|_| ctx.gate_id().unwrap_or("local-gate").to_owned());
     let token_result = ctx.call(
         "security",
         "auth.issue_ionic",
@@ -53,7 +56,11 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
                 tok.is_some(),
                 &format!(
                     "auth.issue_ionic: {}",
-                    if tok.is_some() { "token issued with gate_origin" } else { "no token field" }
+                    if tok.is_some() {
+                        "token issued with gate_origin"
+                    } else {
+                        "no token field"
+                    }
                 ),
             );
             tok.map(String::from)
@@ -100,13 +107,19 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
                 parsed.is_some(),
                 &format!(
                     "local verify: {}",
-                    if parsed.is_some() { "valid" } else { "rejected unexpectedly" }
+                    if parsed.is_some() {
+                        "valid"
+                    } else {
+                        "rejected unexpectedly"
+                    }
                 ),
             );
             if let Some(ref vt) = parsed {
                 v.check_bool(
                     "security:scopes_propagate",
-                    vt.scopes.iter().any(|s| s.contains("discovery") || s == "*"),
+                    vt.scopes
+                        .iter()
+                        .any(|s| s.contains("discovery") || s == "*"),
                     &format!("scopes returned: {:?}", vt.scopes),
                 );
             } else {
@@ -127,11 +140,7 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
     verify_cross_gate_and_forged(v, ctx, valid_token);
 }
 
-fn verify_with_source(
-    v: &mut ValidationResult,
-    ctx: &mut CompositionContext,
-    valid_token: &str,
-) {
+fn verify_with_source(v: &mut ValidationResult, ctx: &mut CompositionContext, valid_token: &str) {
     let local_result = ctx.call(
         "security",
         "auth.verify_ionic",
@@ -149,7 +158,11 @@ fn verify_with_source(
                 parsed.is_some(),
                 &format!(
                     "verification_source=local: {}",
-                    if parsed.is_some() { "accepted (local gate issued this token)" } else { "rejected" }
+                    if parsed.is_some() {
+                        "accepted (local gate issued this token)"
+                    } else {
+                        "rejected"
+                    }
                 ),
             );
             true
@@ -193,8 +206,8 @@ fn verify_remote_source(
     valid_token: &str,
     source_supported: bool,
 ) {
-    let remote_gate = std::env::var("REMOTE_GATE_NAME")
-        .unwrap_or_else(|_| "remote-gate".to_owned());
+    let remote_gate =
+        std::env::var("REMOTE_GATE_NAME").unwrap_or_else(|_| "remote-gate".to_owned());
 
     match ctx.call(
         "security",
@@ -257,8 +270,7 @@ fn verify_remote_source(
                     ),
                 );
 
-                let trust_chain_valid = valid
-                    && (gate_origin.is_some() || family_origin.is_some());
+                let trust_chain_valid = valid && (gate_origin.is_some() || family_origin.is_some());
                 v.check_bool(
                     "security:btsp_trust_chain",
                     trust_chain_valid,
@@ -338,7 +350,11 @@ fn verify_cross_gate_dispatch(
                 parsed.is_some(),
                 &format!(
                     "cross-gate verify: {}",
-                    if parsed.is_some() { "token valid on remote gate" } else { "rejected" }
+                    if parsed.is_some() {
+                        "token valid on remote gate"
+                    } else {
+                        "rejected"
+                    }
                 ),
             );
         }
@@ -376,7 +392,11 @@ fn verify_reject_forged(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 parsed.is_none(),
                 &format!(
                     "forged token: {}",
-                    if parsed.is_none() { "correctly rejected" } else { "ACCEPTED (vulnerability!)" }
+                    if parsed.is_none() {
+                        "correctly rejected"
+                    } else {
+                        "ACCEPTED (vulnerability!)"
+                    }
                 ),
             );
         }
@@ -487,7 +507,11 @@ fn validate_content_round_trip(
                 retrieved == expected_data,
                 &format!(
                     "BLAKE3 round-trip: {}",
-                    if retrieved == expected_data { "data matches" } else { "DATA MISMATCH" }
+                    if retrieved == expected_data {
+                        "data matches"
+                    } else {
+                        "DATA MISMATCH"
+                    }
                 ),
             );
         }
@@ -553,12 +577,9 @@ fn validate_content_round_trip(
 }
 
 /// Phase 6: Dark Forest invariants — isolation + reversibility.
-pub(super) fn phase_dark_forest_invariants(
-    v: &mut ValidationResult,
-    ctx: &mut CompositionContext,
-) {
-    let federation_port_only = REGISTRY_TOML.contains("mesh.relay")
-        || REGISTRY_TOML.contains("route.register");
+pub(super) fn phase_dark_forest_invariants(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let federation_port_only =
+        REGISTRY_TOML.contains("mesh.relay") || REGISTRY_TOML.contains("route.register");
     v.check_bool(
         "darkforest:federation_surface",
         federation_port_only,
@@ -580,17 +601,13 @@ pub(super) fn phase_dark_forest_invariants(
     );
 
     if has_uds {
-        let tcp_local_found = std::fs::read_dir(socket_dir)
-            .map(|entries| {
-                entries
-                    .filter_map(Result::ok)
-                    .any(|e| {
-                        let name = e.file_name();
-                        let n = name.to_string_lossy();
-                        n.contains(':') || n.ends_with(".tcp")
-                    })
+        let tcp_local_found = std::fs::read_dir(socket_dir).is_ok_and(|entries| {
+            entries.filter_map(Result::ok).any(|e| {
+                let name = e.file_name();
+                let n = name.to_string_lossy();
+                n.contains(':') || n.ends_with(".tcp")
             })
-            .unwrap_or(false);
+        });
         v.check_bool(
             "darkforest:no_tcp_local",
             !tcp_local_found,
@@ -604,10 +621,7 @@ pub(super) fn phase_dark_forest_invariants(
             ),
         );
     } else {
-        v.check_skip(
-            "darkforest:no_tcp_local",
-            "UDS runtime dir not present",
-        );
+        v.check_skip("darkforest:no_tcp_local", "UDS runtime dir not present");
     }
 
     check_port_isolation(v);
@@ -625,7 +639,11 @@ fn check_port_isolation(v: &mut ValidationResult) {
         federation_port_check.is_ok(),
         &format!(
             "Songbird federation :{songbird_port}: {}",
-            if federation_port_check.is_ok() { "listening (correct)" } else { "not listening" }
+            if federation_port_check.is_ok() {
+                "listening (correct)"
+            } else {
+                "not listening"
+            }
         ),
     );
 

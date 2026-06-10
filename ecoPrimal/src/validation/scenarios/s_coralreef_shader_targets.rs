@@ -51,7 +51,11 @@ fn phase_capabilities(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         return;
     }
 
-    match ctx.call("shader", "shader.compile.capabilities", serde_json::json!({})) {
+    match ctx.call(
+        "shader",
+        "shader.compile.capabilities",
+        serde_json::json!({}),
+    ) {
         Ok(resp) => {
             let has_targets = resp.get("targets").is_some()
                 || resp.get("backends").is_some()
@@ -74,7 +78,11 @@ fn phase_target_coverage(v: &mut ValidationResult, ctx: &mut CompositionContext)
         return;
     }
 
-    if let Ok(resp) = ctx.call("shader", "shader.compile.capabilities", serde_json::json!({})) {
+    if let Ok(resp) = ctx.call(
+        "shader",
+        "shader.compile.capabilities",
+        serde_json::json!({}),
+    ) {
         let targets_str = format!("{resp:?}").to_lowercase();
 
         let has_ptx = targets_str.contains("ptx") || targets_str.contains("nvidia");
@@ -167,10 +175,7 @@ fn phase_naga_ingest(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             if is_method_missing {
                 v.check_skip("naga_module_ingest", "compile.module not available");
             } else {
-                v.check_skip(
-                    "naga_module_ingest",
-                    &format!("compile.module error: {e}"),
-                );
+                v.check_skip("naga_module_ingest", &format!("compile.module error: {e}"));
             }
         }
     }
@@ -185,6 +190,9 @@ mod tests {
         let mut v = ValidationResult::new("coralreef-shader-targets");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce at least one check"
+        );
     }
 }

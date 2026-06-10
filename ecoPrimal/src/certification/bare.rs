@@ -25,7 +25,11 @@ fn validate_checksums(v: &mut ValidationResult) {
 }
 
 fn validate_graph_parsing(v: &mut ValidationResult) {
-    let graph_dirs: &[&str] = &["graphs/profiles", "graphs/multi_node", "graphs/compositions"];
+    let graph_dirs: &[&str] = &[
+        "graphs/profiles",
+        "graphs/multi_node",
+        "graphs/compositions",
+    ];
 
     let skip_suffixes: &[&str] = &["_manifest.toml", "_template.toml"];
 
@@ -281,10 +285,7 @@ fn validate_bonding_type_wellformed(v: &mut ValidationResult) {
 fn validate_deployment_readiness_cells(v: &mut ValidationResult) {
     let cells_dir = Path::new("graphs/cells");
     if !cells_dir.exists() {
-        v.check_skip(
-            "bare:deployment_readiness",
-            "graphs/cells/ not found",
-        );
+        v.check_skip("bare:deployment_readiness", "graphs/cells/ not found");
         return;
     }
 
@@ -293,7 +294,11 @@ fn validate_deployment_readiness_cells(v: &mut ValidationResult) {
     let mut ready = 0u32;
 
     let Ok(entries) = std::fs::read_dir(cells_dir) else {
-        v.check_bool("bare:deployment_readiness:read_dir", false, "cannot read graphs/cells/");
+        v.check_bool(
+            "bare:deployment_readiness:read_dir",
+            false,
+            "cannot read graphs/cells/",
+        );
         return;
     };
 
@@ -302,7 +307,11 @@ fn validate_deployment_readiness_cells(v: &mut ValidationResult) {
         if path.extension().is_none_or(|e| e != "toml") {
             continue;
         }
-        let name = path.file_name().unwrap_or_default().to_string_lossy().to_string();
+        let name = path
+            .file_name()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .to_string();
         if skip_suffixes.iter().any(|s| name.ends_with(s)) {
             continue;
         }
@@ -315,21 +324,20 @@ fn validate_deployment_readiness_cells(v: &mut ValidationResult) {
                 let blocking: Vec<&crate::deploy::ReadinessIssue> = result
                     .issues
                     .iter()
-                    .filter(|i| matches!(
-                        i.category,
-                        crate::deploy::ReadinessCategory::Structure
-                            | crate::deploy::ReadinessCategory::BondingInconsistent
-                    ))
+                    .filter(|i| {
+                        matches!(
+                            i.category,
+                            crate::deploy::ReadinessCategory::Structure
+                                | crate::deploy::ReadinessCategory::BondingInconsistent
+                        )
+                    })
                     .collect();
 
                 if blocking.is_empty() {
                     ready += 1;
                 } else {
-                    let issue_summary: Vec<String> = blocking
-                        .iter()
-                        .take(3)
-                        .map(|i| i.detail.clone())
-                        .collect();
+                    let issue_summary: Vec<String> =
+                        blocking.iter().take(3).map(|i| i.detail.clone()).collect();
                     v.check_bool(
                         &format!("bare:cell_readiness:{}", result.graph_name),
                         false,
@@ -379,6 +387,9 @@ mod tests {
         let mut v = crate::validation::ValidationResult::new("test");
         validate_bare_properties(&mut v);
         let total = v.passed + v.failed + v.skipped;
-        assert!(total > 0, "bare properties should produce at least one check");
+        assert!(
+            total > 0,
+            "bare properties should produce at least one check"
+        );
     }
 }

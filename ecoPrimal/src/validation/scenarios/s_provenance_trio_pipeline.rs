@@ -59,7 +59,14 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
         v.check_bool(
             &format!("trio:discover:{cap}"),
             found,
-            &format!("{label} — {}", if found { "resolved" } else { "not discoverable" }),
+            &format!(
+                "{label} — {}",
+                if found {
+                    "resolved"
+                } else {
+                    "not discoverable"
+                }
+            ),
         );
     }
 }
@@ -70,22 +77,41 @@ fn phase_content_put(v: &mut ValidationResult, ctx: &mut CompositionContext) -> 
         b"provenance-trio-pipeline scenario - primalSpring playbook validation",
     );
 
-    match ctx.call("content", "content.put", serde_json::json!({ "data": data })) {
+    match ctx.call(
+        "content",
+        "content.put",
+        serde_json::json!({ "data": data }),
+    ) {
         Ok(resp) => {
             let hash = resp.get("hash").and_then(|h| h.as_str()).unwrap_or("");
             v.check_bool(
                 "trio:content_put:hash",
                 hash.len() == 64,
-                &format!("BLAKE3 hash: {}... ({})", &hash[..hash.len().min(16)], hash.len()),
+                &format!(
+                    "BLAKE3 hash: {}... ({})",
+                    &hash[..hash.len().min(16)],
+                    hash.len()
+                ),
             );
-            if hash.is_empty() { None } else { Some(hash.to_owned()) }
+            if hash.is_empty() {
+                None
+            } else {
+                Some(hash.to_owned())
+            }
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("trio:content_put:hash", &format!("NestGate not available: {e}"));
+            v.check_skip(
+                "trio:content_put:hash",
+                &format!("NestGate not available: {e}"),
+            );
             None
         }
         Err(e) => {
-            v.check_bool("trio:content_put:hash", false, &format!("content.put error: {e}"));
+            v.check_bool(
+                "trio:content_put:hash",
+                false,
+                &format!("content.put error: {e}"),
+            );
             None
         }
     }
@@ -114,14 +140,25 @@ fn phase_dag_append(
                 !vertex_id.is_empty(),
                 &format!("vertex_id: {vertex_id}, merkle_root present: {has_root}"),
             );
-            if vertex_id.is_empty() { None } else { Some(vertex_id.to_owned()) }
+            if vertex_id.is_empty() {
+                None
+            } else {
+                Some(vertex_id.to_owned())
+            }
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("trio:dag_append:vertex", &format!("rhizoCrypt not available: {e}"));
+            v.check_skip(
+                "trio:dag_append:vertex",
+                &format!("rhizoCrypt not available: {e}"),
+            );
             None
         }
         Err(e) => {
-            v.check_bool("trio:dag_append:vertex", false, &format!("dag.event.append error: {e}"));
+            v.check_bool(
+                "trio:dag_append:vertex",
+                false,
+                &format!("dag.event.append error: {e}"),
+            );
             None
         }
     }
@@ -143,20 +180,33 @@ fn phase_spine_seal(
         serde_json::json!({ "vertex_id": vertex_id }),
     ) {
         Ok(resp) => {
-            let sealed = resp.get("sealed").and_then(serde_json::Value::as_bool).unwrap_or(false)
+            let sealed = resp
+                .get("sealed")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false)
                 || resp.get("spine_id").is_some()
                 || resp.get("hash").is_some();
             v.check_bool(
                 "trio:spine_seal:sealed",
                 sealed,
-                &format!("spine.seal response: {}", serde_json::to_string(&resp).unwrap_or_default()),
+                &format!(
+                    "spine.seal response: {}",
+                    serde_json::to_string(&resp).unwrap_or_default()
+                ),
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("trio:spine_seal:sealed", &format!("loamSpine not available: {e}"));
+            v.check_skip(
+                "trio:spine_seal:sealed",
+                &format!("loamSpine not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("trio:spine_seal:sealed", false, &format!("spine.seal error: {e}"));
+            v.check_bool(
+                "trio:spine_seal:sealed",
+                false,
+                &format!("spine.seal error: {e}"),
+            );
         }
     }
 }
@@ -175,14 +225,26 @@ fn phase_braid_create(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             v.check_bool(
                 "trio:braid_create:id",
                 !braid_id.is_empty() || resp.get("id").is_some(),
-                &format!("braid response keys: {:?}", resp.as_object().map(|o| o.keys().collect::<Vec<_>>()).unwrap_or_default()),
+                &format!(
+                    "braid response keys: {:?}",
+                    resp.as_object()
+                        .map(|o| o.keys().collect::<Vec<_>>())
+                        .unwrap_or_default()
+                ),
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("trio:braid_create:id", &format!("sweetGrass not available: {e}"));
+            v.check_skip(
+                "trio:braid_create:id",
+                &format!("sweetGrass not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("trio:braid_create:id", false, &format!("braid.create error: {e}"));
+            v.check_bool(
+                "trio:braid_create:id",
+                false,
+                &format!("braid.create error: {e}"),
+            );
         }
     }
 }
@@ -242,6 +304,9 @@ mod tests {
         let mut v = ValidationResult::new("provenance-trio-pipeline");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce checks");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce checks"
+        );
     }
 }

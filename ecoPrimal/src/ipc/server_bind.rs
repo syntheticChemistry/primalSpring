@@ -282,11 +282,8 @@ mod tests {
     fn bound_transport_display() {
         let path = PathBuf::from("/tmp/primalspring_bind_test.sock");
         let _ = std::fs::remove_file(&path);
-        let display = BoundTransport::Unix(
-            UnixListener::bind(&path).unwrap(),
-            path.clone(),
-        )
-        .endpoint_display();
+        let display = BoundTransport::Unix(UnixListener::bind(&path).unwrap(), path.clone())
+            .endpoint_display();
         let _ = std::fs::remove_file(&path);
         assert!(display.starts_with("unix:"));
     }
@@ -295,10 +292,7 @@ mod tests {
     fn bound_transport_is_tcp() {
         let path = PathBuf::from("/tmp/primalspring_tcp_test.sock");
         let _ = std::fs::remove_file(&path);
-        let uds = BoundTransport::Unix(
-            UnixListener::bind(&path).unwrap(),
-            path.clone(),
-        );
+        let uds = BoundTransport::Unix(UnixListener::bind(&path).unwrap(), path.clone());
         assert!(!uds.is_tcp());
         let _ = std::fs::remove_file(&path);
     }

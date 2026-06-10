@@ -29,8 +29,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "primalspring_sporeprint_surface",
         provenance_date: "2026-05-20",
-        description:
-            "sporePrint external surface — entity coverage, source consistency, content contribution",
+        description: "sporePrint external surface — entity coverage, source consistency, content contribution",
     },
     run,
 };
@@ -76,7 +75,11 @@ fn find_sporeprint_root() -> Option<PathBuf> {
         }
     }
     if let Ok(home) = std::env::var(crate::env_keys::HOME) {
-        let dev = PathBuf::from(home).join("Development").join("ecoPrimals").join("infra").join("sporePrint");
+        let dev = PathBuf::from(home)
+            .join("Development")
+            .join("ecoPrimals")
+            .join("infra")
+            .join("sporePrint");
         if dev.join("config.toml").exists() {
             return Some(dev);
         }
@@ -231,18 +234,26 @@ fn phase_content_contribution(v: &mut ValidationResult, base: &Path) {
     v.check_bool(
         "content:source_primals",
         primals >= EXPECTED_PRIMALS.len(),
-        &format!("{primals} primal sources (expect >= {})", EXPECTED_PRIMALS.len()),
+        &format!(
+            "{primals} primal sources (expect >= {})",
+            EXPECTED_PRIMALS.len()
+        ),
     );
     v.check_bool(
         "content:source_springs",
         springs >= EXPECTED_SPRINGS.len(),
-        &format!("{springs} spring sources (expect >= {})", EXPECTED_SPRINGS.len()),
+        &format!(
+            "{springs} spring sources (expect >= {})",
+            EXPECTED_SPRINGS.len()
+        ),
     );
     let expected_min = EXPECTED_PRIMALS.len() + EXPECTED_SPRINGS.len();
     v.check_bool(
         "content:source_total",
         total >= expected_min,
-        &format!("{total} total sources (primals: {primals}, springs: {springs}, products: {products})"),
+        &format!(
+            "{total} total sources (primals: {primals}, springs: {springs}, products: {products})"
+        ),
     );
 
     let config_content = std::fs::read_to_string(base.join("config.toml")).unwrap_or_default();
@@ -257,8 +268,10 @@ fn phase_content_contribution(v: &mut ValidationResult, base: &Path) {
     v.check_bool(
         "content:entity_count",
         entity_count >= (EXPECTED_PRIMALS.len() + EXPECTED_SPRINGS.len()),
-        &format!("entity_registry has {entity_count} entities (expect >= {})",
-            EXPECTED_PRIMALS.len() + EXPECTED_SPRINGS.len()),
+        &format!(
+            "entity_registry has {entity_count} entities (expect >= {})",
+            EXPECTED_PRIMALS.len() + EXPECTED_SPRINGS.len()
+        ),
     );
 }
 
@@ -275,13 +288,25 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         return;
     };
 
-    v.check_bool("surface:sporeprint_found", true, &format!("sporePrint at {}", root.display()));
+    v.check_bool(
+        "surface:sporeprint_found",
+        true,
+        &format!("sporePrint at {}", root.display()),
+    );
 
     let config = std::fs::read_to_string(root.join("config.toml")).unwrap_or_default();
     let sources = std::fs::read_to_string(root.join("sources.toml")).unwrap_or_default();
 
-    v.check_bool("surface:config_readable", !config.is_empty(), "config.toml is readable and non-empty");
-    v.check_bool("surface:sources_readable", !sources.is_empty(), "sources.toml is readable and non-empty");
+    v.check_bool(
+        "surface:config_readable",
+        !config.is_empty(),
+        "config.toml is readable and non-empty",
+    );
+    v.check_bool(
+        "surface:sources_readable",
+        !sources.is_empty(),
+        "sources.toml is readable and non-empty",
+    );
 
     if config.is_empty() || sources.is_empty() {
         return;

@@ -85,8 +85,8 @@ impl LiveMeshConfig {
             .ok()
             .filter(|s| !s.is_empty() && s != "default");
 
-        let btsp_available = family_id.is_some()
-            && crate::env_keys::resolve_family_seed().is_some();
+        let btsp_available =
+            family_id.is_some() && crate::env_keys::resolve_family_seed().is_some();
 
         Self {
             local_gate,
@@ -109,7 +109,9 @@ impl LiveMeshConfig {
             format!("../benchScale/topologies/{name}.toml"),
         ];
 
-        let content = candidates.iter().find_map(|p| std::fs::read_to_string(p).ok())?;
+        let content = candidates
+            .iter()
+            .find_map(|p| std::fs::read_to_string(p).ok())?;
         let parsed: toml::Value = toml::from_str(&content).ok()?;
 
         let gates_table = parsed.get("gates")?.as_table()?;
@@ -233,9 +235,7 @@ fn check_tcp_reachable(address: &str, timeout: Duration) -> bool {
     address
         .parse::<std::net::SocketAddr>()
         .ok()
-        .is_some_and(|addr| {
-            std::net::TcpStream::connect_timeout(&addr, timeout).is_ok()
-        })
+        .is_some_and(|addr| std::net::TcpStream::connect_timeout(&addr, timeout).is_ok())
 }
 
 fn check_songbird_http(address: &str) -> bool {
@@ -308,7 +308,10 @@ pub fn build_authenticated_call(
 ) -> serde_json::Value {
     let mut payload = build_cross_gate_call(capability, operation, args, target_gate);
 
-    if let Some(obj) = payload.get_mut("args").and_then(serde_json::Value::as_object_mut) {
+    if let Some(obj) = payload
+        .get_mut("args")
+        .and_then(serde_json::Value::as_object_mut)
+    {
         obj.insert("_bearer_token".to_owned(), serde_json::json!(bearer_token));
     }
 
@@ -345,8 +348,12 @@ mod tests {
 
     #[test]
     fn build_call_with_gate() {
-        let payload =
-            build_cross_gate_call("compute", "dispatch", &serde_json::json!({}), Some("strand-gate"));
+        let payload = build_cross_gate_call(
+            "compute",
+            "dispatch",
+            &serde_json::json!({}),
+            Some("strand-gate"),
+        );
         assert_eq!(payload["gate"], "strand-gate");
     }
 

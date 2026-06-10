@@ -63,12 +63,10 @@ pub fn socket_is_alive(path: &Path) -> bool {
         }
     }
 
-    let alive = UnixStream::connect(path)
-        .map(|stream| {
-            let _ = stream.set_read_timeout(Some(LIVENESS_PROBE_TIMEOUT));
-            true
-        })
-        .unwrap_or(false);
+    let alive = UnixStream::connect(path).is_ok_and(|stream| {
+        let _ = stream.set_read_timeout(Some(LIVENESS_PROBE_TIMEOUT));
+        true
+    });
 
     if !alive {
         if let Ok(mut set) = cache.lock() {
@@ -413,7 +411,10 @@ mod tests {
         assert!(!socket_is_alive(&path));
         let cache = DEAD_SOCKET_CACHE.get_or_init(|| Mutex::new(HashSet::new()));
         let contains = cache.lock().map(|s| s.contains(&path)).unwrap_or(false);
-        assert!(!contains, "nonexistent path shouldn't be cached (no file to probe)");
+        assert!(
+            !contains,
+            "nonexistent path shouldn't be cached (no file to probe)"
+        );
     }
 
     #[test]

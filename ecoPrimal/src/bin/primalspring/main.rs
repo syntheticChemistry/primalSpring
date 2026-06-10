@@ -30,7 +30,11 @@ fn main() {
     let parsed = cli::Cli::parse();
 
     match parsed.command {
-        cli::Commands::Certify { layer, bare, format: _ } => cmd_certify(layer, bare),
+        cli::Commands::Certify {
+            layer,
+            bare,
+            format: _,
+        } => cmd_certify(layer, bare),
         cli::Commands::Validate {
             ref track,
             ref scenario,
@@ -50,11 +54,27 @@ fn main() {
         cli::Commands::Status => cmd_status(),
         cli::Commands::Checksums { ref output } => cmd_checksums(output),
         cli::Commands::Registry { ref check } => registry_lint::run(check),
-        cli::Commands::Release { skip_coverage, skip_nucleus, json } => {
-            validate_release::run(validate_release::ReleaseArgs { skip_coverage, skip_nucleus, json });
+        cli::Commands::Release {
+            skip_coverage,
+            skip_nucleus,
+            json,
+        } => {
+            validate_release::run(&validate_release::ReleaseArgs {
+                skip_coverage,
+                skip_nucleus,
+                json,
+            });
         }
-        cli::Commands::Nucleus { full, skip_launch, json } => {
-            validate_nucleus::run(validate_nucleus::GateArgs { full, skip_launch, json });
+        cli::Commands::Nucleus {
+            full,
+            skip_launch,
+            json,
+        } => {
+            validate_nucleus::run(&validate_nucleus::GateArgs {
+                full,
+                skip_launch,
+                json,
+            });
         }
         cli::Commands::Version => cmd_version(),
     }
@@ -173,11 +193,18 @@ fn cmd_validate(
     std::process::exit(v.exit_code());
 }
 
-fn write_provenance(v: &primalspring::validation::ValidationResult, dir: &str, scenarios_run: usize) {
+fn write_provenance(
+    v: &primalspring::validation::ValidationResult,
+    dir: &str,
+    scenarios_run: usize,
+) {
     use std::io::Write;
     let dir = std::path::Path::new(dir);
     if let Err(e) = std::fs::create_dir_all(dir) {
-        eprintln!("warning: could not create provenance dir {}: {e}", dir.display());
+        eprintln!(
+            "warning: could not create provenance dir {}: {e}",
+            dir.display()
+        );
         return;
     }
 
@@ -298,8 +325,14 @@ fn chrono_free_today() -> String {
     let mut y = 1970i64;
     let mut remaining = days;
     loop {
-        let year_days: u64 = if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) { 366 } else { 365 };
-        if remaining < year_days { break; }
+        let year_days: u64 = if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) {
+            366
+        } else {
+            365
+        };
+        if remaining < year_days {
+            break;
+        }
         remaining -= year_days;
         y += 1;
     }
@@ -311,7 +344,10 @@ fn chrono_free_today() -> String {
     };
     let mut m = 0;
     for (i, &md) in month_days.iter().enumerate() {
-        if remaining < md { m = i; break; }
+        if remaining < md {
+            m = i;
+            break;
+        }
         remaining -= md;
     }
     format!("{y}-{:02}-{:02}", m + 1, remaining + 1)

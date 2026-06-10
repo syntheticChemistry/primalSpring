@@ -8,7 +8,7 @@
 //! by default, and the deployment matrix treats UDS-only as the canonical
 //! transport. Catches port drift, swap bugs, and accidental TCP exposure.
 
-use crate::composition::{tcp_fallback_table, CompositionContext};
+use crate::composition::{CompositionContext, tcp_fallback_table};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -20,8 +20,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "primalspring_port_metadata_audit",
         provenance_date: "2026-05-14",
-        description:
-            "Zero-port standard: Tier 5 opt-in, port SSOT consistency, no metadata leak by default",
+        description: "Zero-port standard: Tier 5 opt-in, port SSOT consistency, no metadata leak by default",
     },
     run,
 };
@@ -139,10 +138,7 @@ fn phase_deployment_matrix_alignment(v: &mut ValidationResult) {
 fn phase_droppable_federation_ports(v: &mut ValidationResult) {
     use crate::tolerances::FEDERATION_PORTS;
 
-    let droppable: Vec<_> = FEDERATION_PORTS
-        .iter()
-        .filter(|fp| fp.droppable)
-        .collect();
+    let droppable: Vec<_> = FEDERATION_PORTS.iter().filter(|fp| fp.droppable).collect();
 
     v.check_bool(
         "federation:droppable_identified",
@@ -170,10 +166,7 @@ fn phase_droppable_federation_ports(v: &mut ValidationResult) {
         );
     }
 
-    let non_droppable: Vec<_> = FEDERATION_PORTS
-        .iter()
-        .filter(|fp| !fp.droppable)
-        .collect();
+    let non_droppable: Vec<_> = FEDERATION_PORTS.iter().filter(|fp| !fp.droppable).collect();
     v.check_bool(
         "federation:core_ports_retained",
         !non_droppable.is_empty(),

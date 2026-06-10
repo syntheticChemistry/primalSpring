@@ -181,9 +181,8 @@ pub struct BtspGuardError(pub String);
 pub fn validate_insecure_guard() -> Result<(), BtspGuardError> {
     let family = crate::env_keys::resolve_family_id();
     let has_family = !family.is_empty() && family != "default";
-    let insecure = std::env::var(crate::env_keys::BIOMEOS_INSECURE)
-        .map(|v| v == "1" || v == "true")
-        .unwrap_or(false);
+    let insecure =
+        std::env::var(crate::env_keys::BIOMEOS_INSECURE).is_ok_and(|v| v == "1" || v == "true");
 
     if has_family && insecure {
         return Err(BtspGuardError(

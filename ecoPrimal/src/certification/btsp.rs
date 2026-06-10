@@ -592,8 +592,10 @@ mod tests {
     fn min_cipher_for_all_bond_types() {
         for &bond in BondType::all() {
             let cipher = btsp::min_cipher_for_bond(bond);
-            assert!(btsp::cipher_allowed(bond, cipher),
-                "min cipher for {bond:?} should be allowed");
+            assert!(
+                btsp::cipher_allowed(bond, cipher),
+                "min cipher for {bond:?} should be allowed"
+            );
         }
     }
 
@@ -606,7 +608,11 @@ mod tests {
             cipher,
             Some(TrustModel::NuclearLineage),
         );
-        assert!(decision.allowed, "covalent + nuclear trust should be allowed: {}", decision.reason);
+        assert!(
+            decision.allowed,
+            "covalent + nuclear trust should be allowed: {}",
+            decision.reason
+        );
     }
 
     #[test]
@@ -621,13 +627,20 @@ mod tests {
             cipher,
             Some(TrustModel::MitoBeaconFamily),
         );
-        assert!(decision.allowed, "metallic + mito trust should be allowed: {}", decision.reason);
+        assert!(
+            decision.allowed,
+            "metallic + mito trust should be allowed: {}",
+            decision.reason
+        );
     }
 
     #[test]
     fn security_mode_from_env_resolves() {
         let mode = btsp::security_mode_from_env();
-        assert!(!format!("{mode:?}").is_empty(), "security mode should have debug output");
+        assert!(
+            !format!("{mode:?}").is_empty(),
+            "security mode should have debug output"
+        );
     }
 
     #[test]

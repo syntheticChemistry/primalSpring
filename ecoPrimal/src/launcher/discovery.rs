@@ -55,8 +55,12 @@ fn host_target_triple() -> String {
 /// found after exhausting all directories and patterns.
 pub fn discover_binary(primal: &str) -> Result<PathBuf, LaunchError> {
     let base_dirs: Vec<PathBuf> = [
-        std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN).ok().map(PathBuf::from),
-        std::env::var(crate::env_keys::BIOMEOS_PLASMID_BIN_DIR).ok().map(PathBuf::from),
+        std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN)
+            .ok()
+            .map(PathBuf::from),
+        std::env::var(crate::env_keys::BIOMEOS_PLASMID_BIN_DIR)
+            .ok()
+            .map(PathBuf::from),
         std::env::var(crate::env_keys::ECOPRIMALS_ROOT)
             .ok()
             .map(|r| PathBuf::from(r).join("infra/plasmidBin")),

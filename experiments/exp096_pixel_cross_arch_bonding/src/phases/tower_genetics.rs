@@ -2,7 +2,9 @@
 
 //! Phases 1-2: Cross-Architecture Tower Health + Three-Tier Genetics.
 
-use crate::config::{pixel_beardog_port, pixel_host, pixel_nestgate_port, pixel_songbird_port, tcp_rpc_value};
+use crate::config::{
+    pixel_beardog_port, pixel_host, pixel_nestgate_port, pixel_songbird_port, tcp_rpc_value,
+};
 use primalspring::ipc::methods;
 use primalspring::validation::ValidationResult;
 

@@ -8,7 +8,7 @@
 //! are mutually consistent. Catches bugs where a method's wire prefix does not
 //! match its owning primal's domain.
 
-use crate::composition::{capability_to_primal, method_to_capability_domain, CompositionContext};
+use crate::composition::{CompositionContext, capability_to_primal, method_to_capability_domain};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -31,7 +31,10 @@ struct RegistryEntry {
     methods: Vec<String>,
 }
 
-#[expect(clippy::expect_used, reason = "embedded TOML is compile-time constant — parse failure is a build error")]
+#[expect(
+    clippy::expect_used,
+    reason = "embedded TOML is compile-time constant — parse failure is a build error"
+)]
 fn parse_registry() -> Vec<RegistryEntry> {
     let toml_str = include_str!("../../../../config/capability_registry.toml");
     let parsed: toml::Value = toml::from_str(toml_str).expect("embedded TOML must parse");
@@ -102,7 +105,10 @@ fn phase_method_routing(v: &mut ValidationResult) {
 
 fn phase_graph_methods(v: &mut ValidationResult) {
     let entries = parse_registry();
-    let all_methods: Vec<&str> = entries.iter().flat_map(|e| e.methods.iter().map(String::as_str)).collect();
+    let all_methods: Vec<&str> = entries
+        .iter()
+        .flat_map(|e| e.methods.iter().map(String::as_str))
+        .collect();
 
     let tower_toml = include_str!("../../../../graphs/fragments/tower_atomic.toml");
     check_graph_capabilities(v, "tower_atomic", tower_toml, &all_methods);
@@ -297,27 +303,33 @@ mod tests {
         let mut missing = Vec::new();
         missing.extend(check_fragment(
             include_str!("../../../../graphs/fragments/tower_atomic.toml"),
-            "tower_atomic", &all_methods,
+            "tower_atomic",
+            &all_methods,
         ));
         missing.extend(check_fragment(
             include_str!("../../../../graphs/fragments/node_atomic.toml"),
-            "node_atomic", &all_methods,
+            "node_atomic",
+            &all_methods,
         ));
         missing.extend(check_fragment(
             include_str!("../../../../graphs/fragments/nest_atomic.toml"),
-            "nest_atomic", &all_methods,
+            "nest_atomic",
+            &all_methods,
         ));
         missing.extend(check_fragment(
             include_str!("../../../../graphs/fragments/nucleus.toml"),
-            "nucleus", &all_methods,
+            "nucleus",
+            &all_methods,
         ));
         missing.extend(check_fragment(
             include_str!("../../../../graphs/fragments/meta_tier.toml"),
-            "meta_tier", &all_methods,
+            "meta_tier",
+            &all_methods,
         ));
         missing.extend(check_fragment(
             include_str!("../../../../graphs/fragments/provenance_trio.toml"),
-            "provenance_trio", &all_methods,
+            "provenance_trio",
+            &all_methods,
         ));
 
         assert!(

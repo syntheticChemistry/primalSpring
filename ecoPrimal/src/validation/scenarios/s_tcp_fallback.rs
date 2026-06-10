@@ -27,8 +27,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "wave106_graphenegate_fallback",
         provenance_date: "2026-06-10",
-        description:
-            "TCP-only fallback — server_bind infrastructure for UDS→TCP graceful degradation",
+        description: "TCP-only fallback — server_bind infrastructure for UDS→TCP graceful degradation",
     },
     run,
 };
@@ -43,9 +42,19 @@ const GRAPHENEGATE_BLOCKED: &[(&str, u16)] = &[
 
 /// All 13 NUCLEUS primals should have port entries.
 const ALL_PRIMALS: &[&str] = &[
-    "beardog", "songbird", "squirrel", "toadstool", "nestgate",
-    "rhizocrypt", "loamspine", "coralreef", "barracuda", "skunkbat",
-    "biomeos", "sweetgrass", "petaltongue",
+    "beardog",
+    "songbird",
+    "squirrel",
+    "toadstool",
+    "nestgate",
+    "rhizocrypt",
+    "loamspine",
+    "coralreef",
+    "barracuda",
+    "skunkbat",
+    "biomeos",
+    "sweetgrass",
+    "petaltongue",
 ];
 
 /// Run the TCP-only fallback validation.

@@ -67,7 +67,10 @@ fn supports_btsp(client: &mut PrimalClient) -> bool {
 /// where unconditional negotiation broke peers without BTSP listeners).
 ///
 /// Returns a `BTreeMap<capability, btsp_authenticated>` for guidestone reporting.
-pub fn upgrade_btsp_clients(clients: &mut HashMap<CapabilityDomain, PrimalClient>) -> BTreeMap<CapabilityDomain, bool> {
+#[expect(clippy::too_many_lines, reason = "multi-primal BTSP upgrade sequence")]
+pub fn upgrade_btsp_clients(
+    clients: &mut HashMap<CapabilityDomain, PrimalClient>,
+) -> BTreeMap<CapabilityDomain, bool> {
     let mut state: BTreeMap<CapabilityDomain, bool> =
         clients.keys().map(|cap| (cap.clone(), false)).collect();
 
@@ -91,12 +94,14 @@ pub fn upgrade_btsp_clients(clients: &mut HashMap<CapabilityDomain, PrimalClient
         if let Some(discovered_path) = result.socket {
             let path = resolve_btsp_socket(&discovered_path, primal);
 
-            let btsp_supported = clients
-                .get_mut(cap_str)
-                .is_some_and(supports_btsp);
+            let btsp_supported = clients.get_mut(cap_str).is_some_and(supports_btsp);
 
             if !btsp_supported {
-                tracing::debug!(cap = cap_str, primal, "btsp.capabilities: not supported, skipping BTSP upgrade");
+                tracing::debug!(
+                    cap = cap_str,
+                    primal,
+                    "btsp.capabilities: not supported, skipping BTSP upgrade"
+                );
                 continue;
             }
 
@@ -193,16 +198,15 @@ pub fn tcp_fallback_table() -> Vec<(&'static str, &'static str, &'static str, u1
         .iter()
         .filter_map(|&cap| {
             let slug = capability_to_primal(cap);
-            tolerances::port_entry_for(slug)
-                .map(|e| (cap, slug, e.env_key, e.port))
+            tolerances::port_entry_for(slug).map(|e| (cap, slug, e.env_key, e.port))
         })
         .collect()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::routing::ALL_CAPS;
+    use super::*;
 
     #[test]
     fn tcp_fallback_covers_all_caps() {

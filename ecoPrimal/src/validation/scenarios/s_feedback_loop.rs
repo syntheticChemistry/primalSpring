@@ -7,8 +7,8 @@
 //! Exercises the full feedback cycle: dispatch_instrumented → BridgeOutcome →
 //! record_bridge_outcome → routing_weights change → utilization tracking.
 
-use crate::composition::neural_dispatch::NeuralDispatcher;
 use crate::composition::CompositionContext;
+use crate::composition::neural_dispatch::NeuralDispatcher;
 use crate::ipc::neural_bridge::NeuralBridge;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -70,7 +70,11 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         v.check_bool(
             &format!("instrumented-dispatch-{i}-latency"),
             outcome.latency_ms > 0 || outcome.result.is_err(),
-            &format!("round {i}: {}ms, success={}", outcome.latency_ms, outcome.result.is_ok()),
+            &format!(
+                "round {i}: {}ms, success={}",
+                outcome.latency_ms,
+                outcome.result.is_ok()
+            ),
         );
     }
 

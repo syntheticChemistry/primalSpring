@@ -7,9 +7,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::os::unix::net::UnixListener;
 
 use primalspring::ipc::method_gate::{CallerContext, MethodGate};
-use primalspring::ipc::protocol::{
-    JSONRPC_VERSION, JsonRpcError, JsonRpcRequest, JsonRpcResponse,
-};
+use primalspring::ipc::protocol::{JSONRPC_VERSION, JsonRpcError, JsonRpcRequest, JsonRpcResponse};
 use primalspring::ipc::server_bind::{BindMode, BoundTransport, bind_transport};
 use primalspring::{PRIMAL_DOMAIN, PRIMAL_NAME};
 
@@ -30,22 +28,25 @@ pub fn run() {
         }
     };
 
-    tracing::info!(endpoint = bound.endpoint_display(), "listening for JSON-RPC 2.0 connections");
+    tracing::info!(
+        endpoint = bound.endpoint_display(),
+        "listening for JSON-RPC 2.0 connections"
+    );
 
     match bound {
         BoundTransport::Unix(listener, sock_path) => {
             std::thread::spawn(move || {
                 primalspring::niche::register_with_target(&sock_path);
             });
-            serve_unix(listener, &gate);
+            serve_unix(&listener, &gate);
         }
         BoundTransport::Tcp(listener, _addr) => {
-            serve_tcp(listener, &gate);
+            serve_tcp(&listener, &gate);
         }
     }
 }
 
-fn serve_unix(listener: UnixListener, gate: &MethodGate) {
+fn serve_unix(listener: &UnixListener, gate: &MethodGate) {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
@@ -61,7 +62,7 @@ fn serve_unix(listener: UnixListener, gate: &MethodGate) {
     }
 }
 
-fn serve_tcp(listener: std::net::TcpListener, gate: &MethodGate) {
+fn serve_tcp(listener: &std::net::TcpListener, gate: &MethodGate) {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
@@ -87,10 +88,7 @@ fn handle_unix_connection(
     serve_rpc_lines(&mut reader, &mut writer, &caller, gate)
 }
 
-fn handle_tcp_connection(
-    stream: &std::net::TcpStream,
-    gate: &MethodGate,
-) -> std::io::Result<()> {
+fn handle_tcp_connection(stream: &std::net::TcpStream, gate: &MethodGate) -> std::io::Result<()> {
     let caller = CallerContext::loopback();
     let mut writer = stream;
     let mut reader = BufReader::new(stream);
@@ -122,11 +120,7 @@ fn serve_rpc_lines(
     Ok(())
 }
 
-fn dispatch_gated(
-    line: &str,
-    base_caller: &CallerContext,
-    gate: &MethodGate,
-) -> JsonRpcResponse {
+fn dispatch_gated(line: &str, base_caller: &CallerContext, gate: &MethodGate) -> JsonRpcResponse {
     let parsed: Result<serde_json::Value, _> = serde_json::from_str(line.trim());
     let method = parsed
         .as_ref()
@@ -249,10 +243,8 @@ fn dispatch_request(raw_request: &str) -> JsonRpcResponse {
             serde_json::json!({"status": "ok", "primal": "primalspring"})
         }
         "health.readiness" => {
-            let caps = primalspring::coordination::AtomicType::FullNucleus
-                .required_capabilities();
-            let results =
-                primalspring::ipc::discover::discover_capabilities_for(caps);
+            let caps = primalspring::coordination::AtomicType::FullNucleus.required_capabilities();
+            let results = primalspring::ipc::discover::discover_capabilities_for(caps);
             let reachable = results.iter().filter(|r| r.socket.is_some()).count();
             let ready = reachable > 0;
             serde_json::json!({

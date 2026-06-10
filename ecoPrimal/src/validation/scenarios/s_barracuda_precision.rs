@@ -61,8 +61,8 @@ fn phase_precision_multi(v: &mut ValidationResult, ctx: &mut CompositionContext)
         });
         match ctx.call("tensor", "barracuda.precision.route", params) {
             Ok(resp) => {
-                let has_tier = resp.get("precision_tier").is_some()
-                    || resp.get("strategy").is_some();
+                let has_tier =
+                    resp.get("precision_tier").is_some() || resp.get("strategy").is_some();
                 v.check_bool(
                     &format!("precision_route_{}", op.replace('.', "_")),
                     has_tier,
@@ -142,6 +142,9 @@ mod tests {
         let mut v = ValidationResult::new("barracuda-precision");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce at least one check"
+        );
     }
 }

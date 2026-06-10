@@ -58,16 +58,17 @@ pub(super) fn build_capability_map() -> HashMap<String, Vec<String>> {
 /// drift from the TOML-driven path without a deliberate code change.
 fn static_fallback_caps(primal: &str) -> &'static [&'static str] {
     use primalspring::composition::{ALL_CAPS, capability_to_primal};
-    static FALLBACK: std::sync::LazyLock<std::collections::HashMap<&'static str, Vec<&'static str>>> =
-        std::sync::LazyLock::new(|| {
-            let mut map: std::collections::HashMap<&'static str, Vec<&'static str>> =
-                std::collections::HashMap::new();
-            for &cap in ALL_CAPS.iter() {
-                let owner = capability_to_primal(cap);
-                map.entry(owner).or_default().push(cap);
-            }
-            map
-        });
+    static FALLBACK: std::sync::LazyLock<
+        std::collections::HashMap<&'static str, Vec<&'static str>>,
+    > = std::sync::LazyLock::new(|| {
+        let mut map: std::collections::HashMap<&'static str, Vec<&'static str>> =
+            std::collections::HashMap::new();
+        for &cap in ALL_CAPS.iter() {
+            let owner = capability_to_primal(cap);
+            map.entry(owner).or_default().push(cap);
+        }
+        map
+    });
     FALLBACK.get(primal).map_or(&[], |v| v.as_slice())
 }
 
@@ -129,8 +130,7 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
 /// Perform a JSON-RPC health check on a primal via UDS socket.
 pub(super) fn health_check_uds(socket: &std::path::Path) -> bool {
     let payload = r#"{"jsonrpc":"2.0","method":"health.check","params":{},"id":1}"#;
-    send_uds_rpc(socket, payload)
-        .is_ok_and(|resp| resp.contains("\"jsonrpc\""))
+    send_uds_rpc(socket, payload).is_ok_and(|resp| resp.contains("\"jsonrpc\""))
 }
 
 /// Resolve the UDS socket path for a primal.

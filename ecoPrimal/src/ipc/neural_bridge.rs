@@ -127,7 +127,10 @@ impl NeuralBridge {
         None
     }
 
-    #[expect(clippy::missing_const_for_fn, reason = "RefCell::new is not const-stable")]
+    #[expect(
+        clippy::missing_const_for_fn,
+        reason = "RefCell::new is not const-stable"
+    )]
     fn with_path(socket_path: PathBuf) -> Self {
         Self {
             socket_path,
@@ -161,8 +164,8 @@ impl NeuralBridge {
             Ok(resp) => Self::extract(resp),
             Err(e) => {
                 *slot = None;
-                let mut fresh = PrimalClient::connect(&self.socket_path, "neural-api")
-                    .map_err(|_| e)?;
+                let mut fresh =
+                    PrimalClient::connect(&self.socket_path, "neural-api").map_err(|_| e)?;
                 let resp = fresh.call(method, params)?;
                 *slot = Some(fresh);
                 Self::extract(resp)
@@ -205,7 +208,10 @@ impl NeuralBridge {
     ///
     /// Returns [`IpcError`] on transport or application failure.
     pub fn discover_capability(&self, capability: &str) -> Result<serde_json::Value, IpcError> {
-        self.rpc("capability.discover", serde_json::json!({ "capability": capability }))
+        self.rpc(
+            "capability.discover",
+            serde_json::json!({ "capability": capability }),
+        )
     }
 
     /// Discover what capabilities are registered for a domain.
@@ -217,7 +223,10 @@ impl NeuralBridge {
     ///
     /// Returns [`IpcError`] on transport or application failure.
     pub fn discover_domain(&self, domain: &str) -> Result<serde_json::Value, IpcError> {
-        self.rpc("capability.discover", serde_json::json!({ "domain": domain }))
+        self.rpc(
+            "capability.discover",
+            serde_json::json!({ "domain": domain }),
+        )
     }
 
     /// Deploy a graph via the biomeOS graph executor.
@@ -244,7 +253,10 @@ impl NeuralBridge {
     ///
     /// Returns [`IpcError`] on transport or application failure.
     pub fn graph_rollback(&self, graph_id: &str) -> Result<serde_json::Value, IpcError> {
-        self.rpc("graph.rollback", serde_json::json!({ "graph_id": graph_id }))
+        self.rpc(
+            "graph.rollback",
+            serde_json::json!({ "graph_id": graph_id }),
+        )
     }
 
     /// Trigger a topology rescan so biomeOS re-discovers late-registering primals.
@@ -353,7 +365,10 @@ impl NeuralBridge {
     ///
     /// Returns [`IpcError`] on transport failure or if biomeOS < v3.67.
     pub fn route_explain(&self, method: &str) -> Result<serde_json::Value, IpcError> {
-        self.rpc("neural_api.route_explain", serde_json::json!({ "method": method }))
+        self.rpc(
+            "neural_api.route_explain",
+            serde_json::json!({ "method": method }),
+        )
     }
 
     /// Query composition patterns from biomeOS (v3.67+).

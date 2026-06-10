@@ -41,11 +41,7 @@ const GENETIC_METHODS: &[&str] = &[
     "genetic.mix_entropy",
 ];
 
-const AUTH_IDENTITY_METHODS: &[&str] = &[
-    "auth.issue_session",
-    "auth.peer_info",
-    "identity.create",
-];
+const AUTH_IDENTITY_METHODS: &[&str] = &["auth.issue_session", "auth.peer_info", "identity.create"];
 
 /// Run this validation scenario.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
@@ -141,11 +137,7 @@ fn phase_live_crypto(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }
     }
 
-    match ctx.call(
-        "security",
-        "auth.peer_info",
-        serde_json::json!({}),
-    ) {
+    match ctx.call("security", "auth.peer_info", serde_json::json!({})) {
         Ok(resp) => {
             v.check_bool(
                 "live:peer_info",

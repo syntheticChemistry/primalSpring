@@ -67,11 +67,8 @@ fn validate_rediscovery(ctx: &mut CompositionContext, v: &mut ValidationResult) 
 
     ctx.rediscover();
 
-    let post_set: std::collections::HashSet<&str> = ctx
-        .available_capabilities()
-        .iter()
-        .copied()
-        .collect();
+    let post_set: std::collections::HashSet<&str> =
+        ctx.available_capabilities().iter().copied().collect();
     let post_len = post_set.len();
 
     let lost: Vec<&str> = pre_caps
@@ -131,7 +128,10 @@ mod tests {
     #[test]
     fn tower_capabilities_for_post_reload_exist() {
         let caps = AtomicType::Tower.required_capabilities();
-        assert!(!caps.is_empty(), "Tower should define required capabilities for lifecycle check");
+        assert!(
+            !caps.is_empty(),
+            "Tower should define required capabilities for lifecycle check"
+        );
     }
 
     #[test]
@@ -139,8 +139,10 @@ mod tests {
         let tower = AtomicType::Tower.required_capabilities();
         let full = AtomicType::FullNucleus.required_capabilities();
         for &cap in tower {
-            assert!(full.contains(&cap),
-                "FullNucleus should contain Tower cap '{cap}'");
+            assert!(
+                full.contains(&cap),
+                "FullNucleus should contain Tower cap '{cap}'"
+            );
         }
     }
 }

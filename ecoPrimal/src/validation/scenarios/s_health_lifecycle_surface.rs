@@ -28,11 +28,7 @@ const HEALTH_METHODS: &[&str] = &[
     "system.status",
 ];
 
-const LIFECYCLE_METHODS: &[&str] = &[
-    "lifecycle.register",
-    "lifecycle.start",
-    "lifecycle.stop",
-];
+const LIFECYCLE_METHODS: &[&str] = &["lifecycle.register", "lifecycle.start", "lifecycle.stop"];
 
 const PRIMAL_SPECIFIC: &[(&str, &str)] = &[
     ("orchestration", "biomeos.lifecycle.status"),
@@ -118,11 +114,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }
     }
 
-    match ctx.call(
-        "orchestration",
-        "graph.waves",
-        serde_json::json!({}),
-    ) {
+    match ctx.call("orchestration", "graph.waves", serde_json::json!({})) {
         Ok(resp) => {
             v.check_bool(
                 "live:graph.waves",
@@ -138,11 +130,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }
     }
 
-    match ctx.call(
-        "orchestration",
-        "graph.capabilities",
-        serde_json::json!({}),
-    ) {
+    match ctx.call("orchestration", "graph.capabilities", serde_json::json!({})) {
         Ok(resp) => {
             v.check_bool(
                 "live:graph.capabilities",
@@ -160,10 +148,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     for (cap, method) in PRIMAL_SPECIFIC {
         if !ctx.has_capability(cap) {
-            v.check_skip(
-                &format!("live:{method}"),
-                &format!("{cap} not available"),
-            );
+            v.check_skip(&format!("live:{method}"), &format!("{cap} not available"));
             continue;
         }
         match ctx.call(cap, method, serde_json::json!({})) {

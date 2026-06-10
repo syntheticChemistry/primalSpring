@@ -46,13 +46,25 @@ pub struct LaunchConfig {
 /// Summary of the launch operation.
 pub struct LaunchResult {
     pub success: bool,
-    #[expect(dead_code, reason = "public API for callers that display detailed launch stats")]
+    #[expect(
+        dead_code,
+        reason = "public API for callers that display detailed launch stats"
+    )]
     pub started: usize,
-    #[expect(dead_code, reason = "public API for callers that display detailed launch stats")]
+    #[expect(
+        dead_code,
+        reason = "public API for callers that display detailed launch stats"
+    )]
     pub healthy: usize,
-    #[expect(dead_code, reason = "public API for callers that display detailed launch stats")]
+    #[expect(
+        dead_code,
+        reason = "public API for callers that display detailed launch stats"
+    )]
     pub registered: usize,
-    #[expect(dead_code, reason = "public API for callers that display detailed launch stats")]
+    #[expect(
+        dead_code,
+        reason = "public API for callers that display detailed launch stats"
+    )]
     pub total: usize,
 }
 
@@ -117,8 +129,14 @@ fn capability_ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
 }
 
 /// Execute the full NUCLEUS launch sequence.
-#[expect(clippy::too_many_lines, reason = "orchestration phases are sequential; splitting loses readability")]
-#[expect(clippy::needless_pass_by_value, reason = "config is consumed; caller never reuses it")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "orchestration phases are sequential; splitting loses readability"
+)]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "config is consumed; caller never reuses it"
+)]
 pub fn run(config: LaunchConfig) -> LaunchResult {
     let primals = ordered_primals(config.atomic);
     let total = primals.len();
@@ -132,7 +150,14 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     println!("  Node:        {}", config.node_id);
     println!("  Composition: {:?}", config.atomic);
     println!("  Primals:     {}", primals.join(", "));
-    println!("  Transport:   {}", if config.uds_only { "UDS-only (VPS standard)" } else { "UDS + TCP" });
+    println!(
+        "  Transport:   {}",
+        if config.uds_only {
+            "UDS-only (VPS standard)"
+        } else {
+            "UDS + TCP"
+        }
+    );
     println!("  Dark Forest: {}", config.dark_forest);
     println!();
 
@@ -277,10 +302,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                 let log_hint = PathBuf::from(tolerances::runtime_dir())
                     .join("biomeos/logs")
                     .join(format!("{primal}.log"));
-                println!(
-                    "\x1b[31mUNREACHABLE\x1b[0m  (check {})",
-                    log_hint.display()
-                );
+                println!("\x1b[31mUNREACHABLE\x1b[0m  (check {})", log_hint.display());
             }
         }
 
@@ -303,7 +325,9 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     if config.uds_only {
         match songbird_uds {
             Some(path) => println!("  transport: UDS ({})", path.display()),
-            None => println!("  transport: UDS requested but socket not found — falling back to TCP :{songbird_port}"),
+            None => println!(
+                "  transport: UDS requested but socket not found — falling back to TCP :{songbird_port}"
+            ),
         }
     }
     let mut registered = 0usize;
@@ -371,7 +395,10 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             None => registry::seed_songbird_peers(songbird_port, &config.peers, &config.node_id),
         };
         if seeded > 0 {
-            println!("  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {}", config.peers.join(", "));
+            println!(
+                "  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {}",
+                config.peers.join(", ")
+            );
         } else {
             println!("  \x1b[31mFailed to seed peers\x1b[0m — Songbird may not support mesh.init");
             println!("  Peers requested: {}", config.peers.join(", "));
@@ -380,7 +407,11 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     } else if let Ok(env_peers) = std::env::var(env_keys::SONGBIRD_PEERS) {
         if !env_peers.is_empty() {
             println!("=== Phase 5b: Peer seeding (from SONGBIRD_PEERS env) ===");
-            let peer_list: Vec<String> = env_peers.split(',').map(|s| s.trim().to_owned()).filter(|s| !s.is_empty()).collect();
+            let peer_list: Vec<String> = env_peers
+                .split(',')
+                .map(|s| s.trim().to_owned())
+                .filter(|s| !s.is_empty())
+                .collect();
             let seeded = match songbird_uds {
                 Some(uds) => registry::seed_songbird_peers_uds(uds, &peer_list, &config.node_id),
                 None => registry::seed_songbird_peers(songbird_port, &peer_list, &config.node_id),
@@ -388,7 +419,9 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             if seeded > 0 {
                 println!("  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {env_peers}");
             } else {
-                println!("  \x1b[31mFailed to seed peers\x1b[0m — Songbird may not support mesh.init");
+                println!(
+                    "  \x1b[31mFailed to seed peers\x1b[0m — Songbird may not support mesh.init"
+                );
             }
             println!();
         }

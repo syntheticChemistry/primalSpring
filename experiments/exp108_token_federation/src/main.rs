@@ -15,8 +15,8 @@
 
 use primalspring::composition::CompositionContext;
 use primalspring::ipc::method_gate::{
-    CallerContext, ConnectionOrigin, EnforcementMode, MethodGate, PermissiveVerifier, VerifiedToken,
-    scope_permits_method,
+    CallerContext, ConnectionOrigin, EnforcementMode, MethodGate, PermissiveVerifier,
+    VerifiedToken, scope_permits_method,
 };
 use primalspring::validation::ValidationResult;
 

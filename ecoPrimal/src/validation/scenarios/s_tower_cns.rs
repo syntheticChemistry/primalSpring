@@ -47,7 +47,10 @@ fn phase_structural(v: &mut ValidationResult) {
     v.check_bool(
         "struct:port_inventory",
         true,
-        &format!("{} known ports: {keep} federation (keep), {droppable} droppable (UDS available)", FEDERATION_PORTS.len()),
+        &format!(
+            "{} known ports: {keep} federation (keep), {droppable} droppable (UDS available)",
+            FEDERATION_PORTS.len()
+        ),
     );
 
     for p in FEDERATION_PORTS {
@@ -55,11 +58,18 @@ fn phase_structural(v: &mut ValidationResult) {
         let reachable = std::net::TcpStream::connect_timeout(
             &std::net::SocketAddr::from(([127, 0, 0, 1], p.port)),
             std::time::Duration::from_millis(300),
-        ).is_ok();
+        )
+        .is_ok();
         v.check_bool(
             &format!("port:{}:{}", p.primal, p.port),
             reachable,
-            &format!("{} {} — {} ({})", p.profile, p.role, label, if reachable { "active" } else { "inactive" }),
+            &format!(
+                "{} {} — {} ({})",
+                p.profile,
+                p.role,
+                label,
+                if reachable { "active" } else { "inactive" }
+            ),
         );
     }
 }
@@ -92,7 +102,14 @@ fn phase_uds_coverage(v: &mut ValidationResult) {
         v.check_bool(
             &format!("uds:{cap}"),
             exists,
-            &format!("{sock} — {}", if exists { "TCP unnecessary for local" } else { "needs Tower relay for remote" }),
+            &format!(
+                "{sock} — {}",
+                if exists {
+                    "TCP unnecessary for local"
+                } else {
+                    "needs Tower relay for remote"
+                }
+            ),
         );
     }
 
@@ -102,11 +119,17 @@ fn phase_uds_coverage(v: &mut ValidationResult) {
     v.check_bool(
         "uds:coverage",
         coverage > 80.0,
-        &format!("{uds_ready}/{} via UDS ({coverage:.0}%)", caps_sockets.len()),
+        &format!(
+            "{uds_ready}/{} via UDS ({coverage:.0}%)",
+            caps_sockets.len()
+        ),
     );
 }
 
-#[expect(clippy::needless_pass_by_ref_mut, reason = "ctx reserved for future relay probes")]
+#[expect(
+    clippy::needless_pass_by_ref_mut,
+    reason = "ctx reserved for future relay probes"
+)]
 fn phase_tower_relay(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let caps = ctx.available_capabilities();
     let tower_caps = ["security", "crypto", "discovery"];
@@ -114,18 +137,25 @@ fn phase_tower_relay(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.check_bool(
         "tower:capabilities",
         tower_alive > 0,
-        &format!("{tower_alive}/{} Tower capabilities discovered", tower_caps.len()),
+        &format!(
+            "{tower_alive}/{} Tower capabilities discovered",
+            tower_caps.len()
+        ),
     );
 
-    let bridge = NeuralBridge::discover()
-        .or_else(|| NeuralBridge::discover_with(None, Some("nucleus01")));
+    let bridge =
+        NeuralBridge::discover().or_else(|| NeuralBridge::discover_with(None, Some("nucleus01")));
     let Some(bridge) = bridge else {
         v.check_skip("tower:neural_api", "Neural API not running");
         return;
     };
 
     match bridge.health_check() {
-        Ok(healthy) => v.check_bool("tower:neural_api", healthy, "Neural API healthy — relay pathway available"),
+        Ok(healthy) => v.check_bool(
+            "tower:neural_api",
+            healthy,
+            "Neural API healthy — relay pathway available",
+        ),
         Err(e) => v.check_skip("tower:neural_api", &format!("health: {e}")),
     }
 
@@ -136,10 +166,7 @@ fn phase_tower_relay(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 true,
                 &format!("{cap} reachable via Neural API relay"),
             ),
-            Err(e) => v.check_skip(
-                &format!("tower:relay:{cap}"),
-                &format!("{cap}: {e}"),
-            ),
+            Err(e) => v.check_skip(&format!("tower:relay:{cap}"), &format!("{cap}: {e}")),
         }
     }
 }
@@ -160,7 +187,10 @@ mod tests {
     #[test]
     fn port_inventory_consistent() {
         assert!(
-            FEDERATION_PORTS.iter().filter(|p| !p.droppable).all(|p| p.primal == "songbird"),
+            FEDERATION_PORTS
+                .iter()
+                .filter(|p| !p.droppable)
+                .all(|p| p.primal == "songbird"),
             "only Songbird ports should be non-droppable",
         );
         assert!(

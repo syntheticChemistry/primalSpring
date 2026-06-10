@@ -108,13 +108,7 @@ impl ValidationSink for TracingSink {
 
     fn write_summary(&self, passed: u32, failed: u32, skipped: u32) {
         let total = passed + failed;
-        tracing::info!(
-            passed,
-            failed,
-            skipped,
-            total,
-            "validation summary"
-        );
+        tracing::info!(passed, failed, skipped, total, "validation summary");
     }
 }
 

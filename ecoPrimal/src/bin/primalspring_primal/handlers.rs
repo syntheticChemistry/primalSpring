@@ -289,7 +289,7 @@ pub fn handle_bonding_accept(params: &serde_json::Value, id: u64) -> JsonRpcResp
                 error_codes::INVALID_PARAMS,
                 "missing required 'contract_id' parameter",
                 id,
-            )
+            );
         }
     };
     let constraints: primalspring::bonding::BondingConstraint =
@@ -297,10 +297,7 @@ pub fn handle_bonding_accept(params: &serde_json::Value, id: u64) -> JsonRpcResp
 
     let mut registry = ionic_registry();
     match registry.accept(contract_id, constraints) {
-        Ok(response) => success_response(
-            serde_json::to_value(response).unwrap_or_default(),
-            id,
-        ),
+        Ok(response) => success_response(serde_json::to_value(response).unwrap_or_default(), id),
         Err(e) => error_response(
             error_codes::INVALID_PARAMS,
             &format!("accept failed: {e}"),
@@ -317,7 +314,7 @@ pub fn handle_bonding_terminate(params: &serde_json::Value, id: u64) -> JsonRpcR
                 error_codes::INVALID_PARAMS,
                 "missing required 'contract_id' parameter",
                 id,
-            )
+            );
         }
     };
     let reason = match params["reason"].as_str().unwrap_or("complete") {
@@ -333,10 +330,7 @@ pub fn handle_bonding_terminate(params: &serde_json::Value, id: u64) -> JsonRpcR
 
     let mut registry = ionic_registry();
     match registry.terminate(&request) {
-        Ok(seal) => success_response(
-            serde_json::to_value(seal).unwrap_or_default(),
-            id,
-        ),
+        Ok(seal) => success_response(serde_json::to_value(seal).unwrap_or_default(), id),
         Err(e) => error_response(
             error_codes::INVALID_PARAMS,
             &format!("terminate failed: {e}"),
@@ -383,7 +377,7 @@ pub fn handle_bonding_status(params: &serde_json::Value, id: u64) -> JsonRpcResp
                 error_codes::INVALID_PARAMS,
                 "missing required 'contract_id' parameter",
                 id,
-            )
+            );
         }
     };
     let registry = ionic_registry();

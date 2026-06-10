@@ -400,19 +400,71 @@ fn toml_port_for(primal: &str) -> Option<u16> {
 /// These constants remain for backward compatibility; the authoritative
 /// source is `config/ports.toml`.
 pub static PORT_REGISTRY: &[PortEntry] = &[
-    PortEntry { slug: "beardog",     port: 9100, env_key: crate::env_keys::BEARDOG_PORT },
-    PortEntry { slug: "songbird",    port: 9200, env_key: crate::env_keys::SONGBIRD_PORT },
-    PortEntry { slug: "squirrel",    port: 9300, env_key: crate::env_keys::SQUIRREL_PORT },
-    PortEntry { slug: "toadstool",   port: 9400, env_key: crate::env_keys::TOADSTOOL_PORT },
-    PortEntry { slug: "nestgate",    port: 9500, env_key: crate::env_keys::NESTGATE_PORT },
-    PortEntry { slug: "rhizocrypt",  port: 9601, env_key: crate::env_keys::RHIZOCRYPT_PORT },
-    PortEntry { slug: "loamspine",   port: 9700, env_key: crate::env_keys::LOAMSPINE_PORT },
-    PortEntry { slug: "coralreef",   port: 9730, env_key: crate::env_keys::CORALREEF_PORT },
-    PortEntry { slug: "barracuda",   port: 9740, env_key: crate::env_keys::BARRACUDA_PORT },
-    PortEntry { slug: "skunkbat",    port: 9140, env_key: crate::env_keys::SKUNKBAT_PORT },
-    PortEntry { slug: "biomeos",     port: 9800, env_key: crate::env_keys::BIOMEOS_PORT },
-    PortEntry { slug: "sweetgrass",  port: 9850, env_key: crate::env_keys::SWEETGRASS_PORT },
-    PortEntry { slug: "petaltongue", port: 9900, env_key: crate::env_keys::PETALTONGUE_PORT },
+    PortEntry {
+        slug: "beardog",
+        port: 9100,
+        env_key: crate::env_keys::BEARDOG_PORT,
+    },
+    PortEntry {
+        slug: "songbird",
+        port: 9200,
+        env_key: crate::env_keys::SONGBIRD_PORT,
+    },
+    PortEntry {
+        slug: "squirrel",
+        port: 9300,
+        env_key: crate::env_keys::SQUIRREL_PORT,
+    },
+    PortEntry {
+        slug: "toadstool",
+        port: 9400,
+        env_key: crate::env_keys::TOADSTOOL_PORT,
+    },
+    PortEntry {
+        slug: "nestgate",
+        port: 9500,
+        env_key: crate::env_keys::NESTGATE_PORT,
+    },
+    PortEntry {
+        slug: "rhizocrypt",
+        port: 9601,
+        env_key: crate::env_keys::RHIZOCRYPT_PORT,
+    },
+    PortEntry {
+        slug: "loamspine",
+        port: 9700,
+        env_key: crate::env_keys::LOAMSPINE_PORT,
+    },
+    PortEntry {
+        slug: "coralreef",
+        port: 9730,
+        env_key: crate::env_keys::CORALREEF_PORT,
+    },
+    PortEntry {
+        slug: "barracuda",
+        port: 9740,
+        env_key: crate::env_keys::BARRACUDA_PORT,
+    },
+    PortEntry {
+        slug: "skunkbat",
+        port: 9140,
+        env_key: crate::env_keys::SKUNKBAT_PORT,
+    },
+    PortEntry {
+        slug: "biomeos",
+        port: 9800,
+        env_key: crate::env_keys::BIOMEOS_PORT,
+    },
+    PortEntry {
+        slug: "sweetgrass",
+        port: 9850,
+        env_key: crate::env_keys::SWEETGRASS_PORT,
+    },
+    PortEntry {
+        slug: "petaltongue",
+        port: 9900,
+        env_key: crate::env_keys::PETALTONGUE_PORT,
+    },
 ];
 
 /// Federation / CNS port assignments — deployment-profile variants.
@@ -437,18 +489,47 @@ pub struct FederationPort {
 
 /// Known federation and CNS ports across deployment profiles.
 pub static FEDERATION_PORTS: &[FederationPort] = &[
-    FederationPort { profile: "nucleus01",      primal: "songbird", role: "federation", port: 7700, droppable: false },
-    FederationPort { profile: "primalspring01", primal: "songbird", role: "federation", port: 7701, droppable: false },
-    FederationPort { profile: "nucleus01",      primal: "beardog",  role: "crypto RPC", port: 9900, droppable: true },
-    FederationPort { profile: "primalspring01", primal: "beardog",  role: "crypto RPC", port: 9101, droppable: true },
-    FederationPort { profile: "meta",           primal: "skunkbat", role: "defense",    port: 9750, droppable: true },
+    FederationPort {
+        profile: "nucleus01",
+        primal: "songbird",
+        role: "federation",
+        port: 7700,
+        droppable: false,
+    },
+    FederationPort {
+        profile: "primalspring01",
+        primal: "songbird",
+        role: "federation",
+        port: 7701,
+        droppable: false,
+    },
+    FederationPort {
+        profile: "nucleus01",
+        primal: "beardog",
+        role: "crypto RPC",
+        port: 9900,
+        droppable: true,
+    },
+    FederationPort {
+        profile: "primalspring01",
+        primal: "beardog",
+        role: "crypto RPC",
+        port: 9101,
+        droppable: true,
+    },
+    FederationPort {
+        profile: "meta",
+        primal: "skunkbat",
+        role: "defense",
+        port: 9750,
+        droppable: true,
+    },
 ];
 
-/// TCP fallback port constants — legacy, kept for backward compatibility.
-/// Authoritative source: `config/ports.toml`.
-///
-/// These are used when UDS is unavailable (e.g. Android SELinux denial)
-/// and the primal falls back to TCP-only transport.
+// TCP fallback port constants — legacy, kept for backward compatibility.
+// Authoritative source: `config/ports.toml`.
+// Used when UDS is unavailable (e.g. Android SELinux denial)
+// and the primal falls back to TCP-only transport.
 
 /// TCP fallback for bearDog (identity / BTSP).
 pub const TCP_FALLBACK_BEARDOG_PORT: u16 = 9100;

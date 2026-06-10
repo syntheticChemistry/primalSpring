@@ -8,10 +8,10 @@
 //! are registered in the 458-method registry but not reachable on all
 //! transports (Wave 7 — semantic gate evolution).
 
-use base64::Engine;
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
+use base64::Engine;
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -93,8 +93,14 @@ fn phase_content_put(v: &mut ValidationResult, ctx: &mut CompositionContext) -> 
                 &format!("expected 64 hex chars, got {}", hash.len()),
             );
 
-            let stored = resp.get("stored").and_then(serde_json::Value::as_bool).unwrap_or(false);
-            let dedup = resp.get("deduplicated").and_then(serde_json::Value::as_bool).unwrap_or(false);
+            let stored = resp
+                .get("stored")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
+            let dedup = resp
+                .get("deduplicated")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
             v.check_bool(
                 "content_put_stored_or_dedup",
                 stored || dedup,
@@ -108,7 +114,10 @@ fn phase_content_put(v: &mut ValidationResult, ctx: &mut CompositionContext) -> 
             }
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("content_put_returns_hash", &format!("content not available: {e}"));
+            v.check_skip(
+                "content_put_returns_hash",
+                &format!("content not available: {e}"),
+            );
             v.check_skip("content_put_hash_length", "content not available");
             v.check_skip("content_put_stored_or_dedup", "content not available");
             None
@@ -123,11 +132,7 @@ fn phase_content_put(v: &mut ValidationResult, ctx: &mut CompositionContext) -> 
     }
 }
 
-fn phase_content_get(
-    v: &mut ValidationResult,
-    ctx: &mut CompositionContext,
-    hash: Option<&str>,
-) {
+fn phase_content_get(v: &mut ValidationResult, ctx: &mut CompositionContext, hash: Option<&str>) {
     let Some(hash) = hash else {
         v.check_skip("content_get_returns_data", "no hash from content.put");
         v.check_skip("content_get_roundtrip_match", "no hash from content.put");
@@ -150,7 +155,8 @@ fn phase_content_get(
                 &format!("retrieved {} base64 chars", data_b64.len()),
             );
 
-            let expected = b"primalSpring Wave 7 contract test - content pipeline validation 2026-05-11";
+            let expected =
+                b"primalSpring Wave 7 contract test - content pipeline validation 2026-05-11";
             let expected_b64 = base64::engine::general_purpose::STANDARD.encode(expected);
             v.check_bool(
                 "content_get_roundtrip_match",
@@ -163,11 +169,18 @@ fn phase_content_get(
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("content_get_returns_data", &format!("content not available: {e}"));
+            v.check_skip(
+                "content_get_returns_data",
+                &format!("content not available: {e}"),
+            );
             v.check_skip("content_get_roundtrip_match", "content not available");
         }
         Err(e) => {
-            v.check_bool("content_get_returns_data", false, &format!("content.get error: {e}"));
+            v.check_bool(
+                "content_get_returns_data",
+                false,
+                &format!("content.get error: {e}"),
+            );
             v.check_skip("content_get_roundtrip_match", "prior call failed");
         }
     }
@@ -192,7 +205,10 @@ fn phase_content_exists_list(
         serde_json::json!({ "hash": hash, "family_id": family_id }),
     ) {
         Ok(resp) => {
-            let exists = resp.get("exists").and_then(serde_json::Value::as_bool).unwrap_or(false);
+            let exists = resp
+                .get("exists")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
             v.check_bool(
                 "content_exists_confirms_hash",
                 exists,
@@ -200,10 +216,17 @@ fn phase_content_exists_list(
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("content_exists_confirms_hash", &format!("content not available: {e}"));
+            v.check_skip(
+                "content_exists_confirms_hash",
+                &format!("content not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("content_exists_confirms_hash", false, &format!("content.exists error: {e}"));
+            v.check_bool(
+                "content_exists_confirms_hash",
+                false,
+                &format!("content.exists error: {e}"),
+            );
         }
     }
 
@@ -222,10 +245,17 @@ fn phase_content_exists_list(
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("content_list_nonempty", &format!("content not available: {e}"));
+            v.check_skip(
+                "content_list_nonempty",
+                &format!("content not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("content_list_nonempty", false, &format!("content.list error: {e}"));
+            v.check_bool(
+                "content_list_nonempty",
+                false,
+                &format!("content.list error: {e}"),
+            );
         }
     }
 }
@@ -251,7 +281,10 @@ fn phase_content_resolve(v: &mut ValidationResult, ctx: &mut CompositionContext)
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("content_resolve_responds", &format!("content not available: {e}"));
+            v.check_skip(
+                "content_resolve_responds",
+                &format!("content not available: {e}"),
+            );
         }
         Err(e) => {
             let msg = e.to_string();
@@ -261,7 +294,11 @@ fn phase_content_resolve(v: &mut ValidationResult, ctx: &mut CompositionContext)
                     "content.resolve: no manifest published (expected for fresh NestGate)",
                 );
             } else {
-                v.check_bool("content_resolve_responds", false, &format!("content.resolve error: {e}"));
+                v.check_bool(
+                    "content_resolve_responds",
+                    false,
+                    &format!("content.resolve error: {e}"),
+                );
             }
         }
     }
@@ -276,6 +313,9 @@ mod tests {
         let mut v = ValidationResult::new("nestgate-content-pipeline");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce at least one check"
+        );
     }
 }

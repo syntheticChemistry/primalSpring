@@ -34,7 +34,13 @@ struct SocketOwnership {
 const OWNERSHIP_MAP: &[SocketOwnership] = &[
     SocketOwnership {
         primal: "beardog",
-        domain_sockets: &["crypto.sock", "security.sock", "btsp.sock", "ed25519.sock", "x25519.sock"],
+        domain_sockets: &[
+            "crypto.sock",
+            "security.sock",
+            "btsp.sock",
+            "ed25519.sock",
+            "x25519.sock",
+        ],
     },
     SocketOwnership {
         primal: "songbird",
@@ -50,7 +56,13 @@ const OWNERSHIP_MAP: &[SocketOwnership] = &[
     },
     SocketOwnership {
         primal: "barracuda",
-        domain_sockets: &["dag.sock", "commit.sock", "merkle.sock", "provenance.sock", "attribution.sock"],
+        domain_sockets: &[
+            "dag.sock",
+            "commit.sock",
+            "merkle.sock",
+            "provenance.sock",
+            "attribution.sock",
+        ],
     },
     SocketOwnership {
         primal: "sweetgrass",
@@ -95,16 +107,26 @@ fn phase_structural(v: &mut ValidationResult) {
     v.check_bool(
         "struct:ownership_map",
         total_sockets > 20,
-        &format!("{total_sockets} domain sockets mapped across {} primals", OWNERSHIP_MAP.len()),
+        &format!(
+            "{total_sockets} domain sockets mapped across {} primals",
+            OWNERSHIP_MAP.len()
+        ),
     );
 
-    let multi_socket: Vec<_> = OWNERSHIP_MAP.iter().filter(|o| o.domain_sockets.len() >= 3).collect();
+    let multi_socket: Vec<_> = OWNERSHIP_MAP
+        .iter()
+        .filter(|o| o.domain_sockets.len() >= 3)
+        .collect();
     v.check_bool(
         "struct:phase_a_candidates",
         !multi_socket.is_empty(),
         &format!(
             "Phase A candidates (3+ sockets): {}",
-            multi_socket.iter().map(|o| format!("{}({})", o.primal, o.domain_sockets.len())).collect::<Vec<_>>().join(", ")
+            multi_socket
+                .iter()
+                .map(|o| format!("{}({})", o.primal, o.domain_sockets.len()))
+                .collect::<Vec<_>>()
+                .join(", ")
         ),
     );
 
@@ -136,12 +158,19 @@ fn phase_live_census(v: &mut ValidationResult) {
         .filter(|n| !n.contains("nucleus01") && !n.contains("primalspring01"))
         .collect();
 
-    v.check_bool("live:total", true, &format!("{} sockets total", all_sockets.len()));
+    v.check_bool(
+        "live:total",
+        true,
+        &format!("{} sockets total", all_sockets.len()),
+    );
 
     let mut mapped = 0usize;
     let mut orphans: Vec<String> = Vec::new();
     for sock in &flat {
-        if OWNERSHIP_MAP.iter().any(|o| o.domain_sockets.contains(&sock.as_str())) {
+        if OWNERSHIP_MAP
+            .iter()
+            .any(|o| o.domain_sockets.contains(&sock.as_str()))
+        {
             mapped += 1;
         } else {
             orphans.push((*sock).clone());
@@ -165,12 +194,20 @@ fn phase_live_census(v: &mut ValidationResult) {
     }
 
     for entry in OWNERSHIP_MAP {
-        let live = entry.domain_sockets.iter().filter(|s| dir.join(s).exists()).count();
+        let live = entry
+            .domain_sockets
+            .iter()
+            .filter(|s| dir.join(s).exists())
+            .count();
         if live > 0 {
             v.check_bool(
                 &format!("live:{}", entry.primal),
                 true,
-                &format!("{live}/{} sockets → {}/", entry.domain_sockets.len(), entry.primal),
+                &format!(
+                    "{live}/{} sockets → {}/",
+                    entry.domain_sockets.len(),
+                    entry.primal
+                ),
             );
         }
     }
@@ -181,7 +218,10 @@ fn phase_readiness(v: &mut ValidationResult, ctx: &CompositionContext) {
     v.check_bool(
         "ready:composition",
         !caps.is_empty(),
-        &format!("{} capabilities — routing is capability-first, cephalization adds primal provenance", caps.len()),
+        &format!(
+            "{} capabilities — routing is capability-first, cephalization adds primal provenance",
+            caps.len()
+        ),
     );
 
     v.check_bool(

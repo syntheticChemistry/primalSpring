@@ -6,9 +6,9 @@
 //!
 //! Requires plasmidBin-deployed primals and biomeOS neural-api running.
 
+use crate::composition::CompositionContext;
 use crate::composition::neural_dispatch::{NeuralDispatcher, RoutePath};
 use crate::composition::neural_routing::CompositionTier;
-use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -71,7 +71,8 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     );
 
     // Phase 3: Dispatch storage.store → nestgate.
-    let store_params = serde_json::json!({ "key": "validation-probe", "value": "neural-dispatch-live" });
+    let store_params =
+        serde_json::json!({ "key": "validation-probe", "value": "neural-dispatch-live" });
     let store_outcome = dispatcher.dispatch("storage.store", &store_params);
     v.check_bool(
         "dispatch-storage-owner",

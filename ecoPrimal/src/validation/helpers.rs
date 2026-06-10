@@ -17,11 +17,7 @@ use super::ValidationResult;
 ///
 /// Returns `Some(parsed)` on success, `None` on parse error (with
 /// a failure check recorded).
-pub fn graph_parses(
-    v: &mut ValidationResult,
-    label: &str,
-    content: &str,
-) -> Option<toml::Value> {
+pub fn graph_parses(v: &mut ValidationResult, label: &str, content: &str) -> Option<toml::Value> {
     match toml::from_str::<toml::Value>(content) {
         Ok(parsed) => {
             v.check_bool(
@@ -44,7 +40,7 @@ pub fn graph_parses(
 
 /// Extract all `binary` field values from `[[graph.nodes]]` in a TOML
 /// graph string. Returns an empty vec on parse failure.
-#[must_use] 
+#[must_use]
 pub fn graph_binaries(content: &str) -> Vec<String> {
     let parsed: toml::Value = match toml::from_str(content) {
         Ok(v) => v,
@@ -54,7 +50,7 @@ pub fn graph_binaries(content: &str) -> Vec<String> {
 }
 
 /// Extract all `binary` field values from an already-parsed graph.
-#[must_use] 
+#[must_use]
 pub fn graph_binaries_from_parsed(parsed: &toml::Value) -> Vec<String> {
     parsed
         .get("graph")
@@ -70,7 +66,7 @@ pub fn graph_binaries_from_parsed(parsed: &toml::Value) -> Vec<String> {
 }
 
 /// Safe accessor for `graph.nodes` from a parsed TOML value.
-#[must_use] 
+#[must_use]
 pub fn graph_nodes(parsed: &toml::Value) -> Option<&Vec<toml::Value>> {
     parsed
         .get("graph")
@@ -79,7 +75,7 @@ pub fn graph_nodes(parsed: &toml::Value) -> Option<&Vec<toml::Value>> {
 }
 
 /// Safe accessor for `graph.metadata` from a parsed TOML value.
-#[must_use] 
+#[must_use]
 pub fn graph_metadata(parsed: &toml::Value) -> Option<&toml::Value> {
     parsed.get("graph").and_then(|g| g.get("metadata"))
 }
@@ -90,11 +86,7 @@ pub fn graph_metadata(parsed: &toml::Value) -> Option<&toml::Value> {
 /// Primal-composed signals require `btsp_enforced` + `uds_only | uds_and_mesh`.
 /// Membrane-layer signals (impulse/potential) use `gate_identity` +
 /// `git_ssh | local_fs` — these operate at the VPS membrane, not primal UDS.
-pub fn validate_dark_forest(
-    v: &mut ValidationResult,
-    label: &str,
-    parsed: &toml::Value,
-) {
+pub fn validate_dark_forest(v: &mut ValidationResult, label: &str, parsed: &toml::Value) {
     let metadata = graph_metadata(parsed);
 
     let secure_by_default = metadata
@@ -122,7 +114,10 @@ pub fn validate_dark_forest(
         .and_then(|m| m.get("transport"))
         .and_then(|t| t.as_str())
         .unwrap_or("unknown");
-    let valid_transport = matches!(transport, "uds_only" | "uds_and_mesh" | "git_ssh" | "local_fs");
+    let valid_transport = matches!(
+        transport,
+        "uds_only" | "uds_and_mesh" | "git_ssh" | "local_fs"
+    );
     v.check_bool(
         &format!("{label}:uds_only"),
         valid_transport,
@@ -165,10 +160,7 @@ pub fn validate_node_capabilities(
             }
         }
 
-        let has_by_capability = node
-            .get("by_capability")
-            .and_then(|b| b.as_str())
-            .is_some();
+        let has_by_capability = node.get("by_capability").and_then(|b| b.as_str()).is_some();
         v.check_bool(
             &format!("{label}:{node_name}:by_capability"),
             has_by_capability,
@@ -180,14 +172,14 @@ pub fn validate_node_capabilities(
 /// Parse the capability registry TOML and return a flat list of all
 /// registered method strings (excluding test fixtures, false positives,
 /// and signal definitions).
-#[must_use] 
+#[must_use]
 pub fn load_registry_capabilities() -> Vec<String> {
     let registry_toml = include_str!("../../../config/capability_registry.toml");
     parse_registry_capabilities(registry_toml)
 }
 
 /// Parse capability methods from a registry TOML string.
-#[must_use] 
+#[must_use]
 pub fn parse_registry_capabilities(registry_toml: &str) -> Vec<String> {
     let parsed: toml::Value = match toml::from_str(registry_toml) {
         Ok(v) => v,
@@ -214,11 +206,7 @@ pub fn parse_registry_capabilities(registry_toml: &str) -> Vec<String> {
 
 /// Validate graph structure fields: `id`, `coordination`, `composition_tier`,
 /// `composition_name`, and at least one node.
-pub fn validate_graph_structure(
-    v: &mut ValidationResult,
-    label: &str,
-    parsed: &toml::Value,
-) {
+pub fn validate_graph_structure(v: &mut ValidationResult, label: &str, parsed: &toml::Value) {
     let graph = parsed.get("graph");
 
     let has_id = graph

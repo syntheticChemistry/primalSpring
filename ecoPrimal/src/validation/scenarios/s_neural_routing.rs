@@ -8,11 +8,9 @@
 //! composition plans are structurally valid. This is the foundation for
 //! adaptive routing (Layer 4) and learned routing (Layer 5).
 
-use crate::composition::neural_dispatch::NeuralDispatcher;
-use crate::composition::neural_routing::{
-    canonical_routing_table, CompositionTier,
-};
 use crate::composition::CompositionContext;
+use crate::composition::neural_dispatch::NeuralDispatcher;
+use crate::composition::neural_routing::{CompositionTier, canonical_routing_table};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -86,7 +84,11 @@ fn phase_owner_integrity(
         ("crypto.hash", "beardog", "crypto-hash-owner"),
         ("compute.dispatch", "toadstool", "compute-dispatch-owner"),
         ("storage.store", "nestgate", "storage-store-owner"),
-        ("science.eigensolve", "neuralspring", "science-eigensolve-owner"),
+        (
+            "science.eigensolve",
+            "neuralspring",
+            "science-eigensolve-owner",
+        ),
     ];
     for &(method, expected_owner, check_id) in owner_checks {
         if let Some(entry) = table.route(method) {
@@ -151,7 +153,10 @@ fn phase_composition_patterns(
         v.check_bool(
             "rootpulse-6-primals",
             rp.primals.len() == 6,
-            &format!("rootpulse involves {} primals (TOML-driven)", rp.primals.len()),
+            &format!(
+                "rootpulse involves {} primals (TOML-driven)",
+                rp.primals.len()
+            ),
         );
     }
 }
@@ -166,9 +171,12 @@ mod tests {
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
         assert_eq!(
-            v.failed, 0,
+            v.failed,
+            0,
             "neural routing surface: {}/{} checks passed ({} failed)",
-            v.passed, v.passed + v.failed, v.failed
+            v.passed,
+            v.passed + v.failed,
+            v.failed
         );
     }
 }

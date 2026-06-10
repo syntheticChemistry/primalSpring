@@ -95,7 +95,8 @@ fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 ///
 /// Live ingest tests require a running Nest Atomic and are gated on Phase 3 health.
 fn phase_spore_gateway(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    let matrix_exists = std::path::Path::new("infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md").exists()
+    let matrix_exists = std::path::Path::new("infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md")
+        .exists()
         || std::path::Path::new("../../infra/wateringHole/SPORE_OWNERSHIP_MATRIX.md").exists();
     v.check_bool(
         "spore_ownership_matrix_exists",
@@ -103,23 +104,24 @@ fn phase_spore_gateway(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         "SPORE_OWNERSHIP_MATRIX.md documents the three-way split",
     );
 
-    let core_discoverable = ctx.client_for("content.validate").is_some()
-        || ctx.client_for("content.put").is_some();
+    let core_discoverable =
+        ctx.client_for("content.validate").is_some() || ctx.client_for("content.put").is_some();
     v.check_bool(
         "pseudospore_core_discoverable",
         core_discoverable,
         "pseudospore-core capabilities discoverable at runtime (content.validate / content.put)",
     );
 
-    let gateway_discoverable = ctx.client_for("nucleus.ingest_spore").is_some()
-        || ctx.client_for("storage.put").is_some();
+    let gateway_discoverable =
+        ctx.client_for("nucleus.ingest_spore").is_some() || ctx.client_for("storage.put").is_some();
     v.check_bool(
         "nucleus_ingest_discoverable",
         gateway_discoverable,
         "nucleus ingest gateway discoverable at runtime (nucleus.ingest_spore / storage.put)",
     );
 
-    let signal_graph_exists = std::path::Path::new("graphs/compositions/nest_ingest_spore.toml").exists()
+    let signal_graph_exists = std::path::Path::new("graphs/compositions/nest_ingest_spore.toml")
+        .exists()
         || std::path::Path::new("../../graphs/compositions/nest_ingest_spore.toml").exists();
     v.check_bool(
         "nest_ingest_spore_signal_graph",
@@ -145,6 +147,9 @@ mod tests {
         let mut v = ValidationResult::new("nest-atomic");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce at least one check");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce at least one check"
+        );
     }
 }

@@ -335,7 +335,10 @@ mod tests {
         // If biomeOS is running, returns Some with a value; otherwise None.
         // Both are valid depending on environment.
         if let Some(caps) = &result {
-            assert!(caps.is_object() || caps.is_array(), "should be structured data");
+            assert!(
+                caps.is_object() || caps.is_array(),
+                "should be structured data"
+            );
         }
     }
 

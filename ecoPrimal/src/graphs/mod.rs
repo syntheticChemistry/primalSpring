@@ -34,7 +34,9 @@ impl CoordinationDomain {
     #[must_use]
     pub const fn description(self) -> &'static str {
         match self {
-            Self::Signal => "Sense: observe, discover, react (atomic signal graphs across particle tiers)",
+            Self::Signal => {
+                "Sense: observe, discover, react (atomic signal graphs across particle tiers)"
+            }
             Self::Pulse => "Action: create, mutate, prove (RootPulse emergent VCS)",
             Self::Fall => "Sync: ecosystem coherence across gates (WaterFall cascade)",
         }

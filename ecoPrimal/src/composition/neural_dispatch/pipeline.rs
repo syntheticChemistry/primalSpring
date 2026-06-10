@@ -123,9 +123,7 @@ pub enum PipelineError {
     Training(String),
 }
 
-fn read_telemetry(
-    path: &Path,
-) -> Result<Vec<super::metrics::DispatchMetric>, std::io::Error> {
+fn read_telemetry(path: &Path) -> Result<Vec<super::metrics::DispatchMetric>, std::io::Error> {
     use std::io::{BufRead, BufReader};
 
     let file = std::fs::File::open(path)?;
@@ -204,7 +202,11 @@ mod tests {
         assert!(telemetry.to_string_lossy().contains("dispatch_telemetry"));
 
         let weights = default_weights_path();
-        assert!(weights.to_string_lossy().contains("neural_routing_perceptron"));
+        assert!(
+            weights
+                .to_string_lossy()
+                .contains("neural_routing_perceptron")
+        );
     }
 
     #[test]

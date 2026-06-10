@@ -31,46 +31,167 @@ pub const SCENARIO: Scenario = Scenario {
 };
 
 const COMPOSITION_GRAPHS: &[(&str, &str, &str)] = &[
-    ("tower.publish", "graphs/compositions/tower_publish.toml", include_str!("../../../../graphs/compositions/tower_publish.toml")),
-    ("tower.authenticate", "graphs/compositions/tower_authenticate.toml", include_str!("../../../../graphs/compositions/tower_authenticate.toml")),
-    ("tower.discover", "graphs/compositions/tower_discover.toml", include_str!("../../../../graphs/compositions/tower_discover.toml")),
-    ("tower.health", "graphs/compositions/tower_health.toml", include_str!("../../../../graphs/compositions/tower_health.toml")),
-    ("tower.bootstrap", "graphs/compositions/tower_bootstrap.toml", include_str!("../../../../graphs/compositions/tower_bootstrap.toml")),
-    ("node.compute", "graphs/compositions/node_compute.toml", include_str!("../../../../graphs/compositions/node_compute.toml")),
-    ("nest.store", "graphs/compositions/nest_store.toml", include_str!("../../../../graphs/compositions/nest_store.toml")),
-    ("nest.commit", "graphs/compositions/nest_commit.toml", include_str!("../../../../graphs/compositions/nest_commit.toml")),
-    ("nest.retrieve", "graphs/compositions/nest_retrieve.toml", include_str!("../../../../graphs/compositions/nest_retrieve.toml")),
-    ("nest.ingest_spore", "graphs/compositions/nest_ingest_spore.toml", include_str!("../../../../graphs/compositions/nest_ingest_spore.toml")),
-    ("meta.observe", "graphs/compositions/meta_observe.toml", include_str!("../../../../graphs/compositions/meta_observe.toml")),
-    ("meta.intent", "graphs/compositions/meta_intent.toml", include_str!("../../../../graphs/compositions/meta_intent.toml")),
-    ("meta.render", "graphs/compositions/meta_render.toml", include_str!("../../../../graphs/compositions/meta_render.toml")),
-    ("meta.health", "graphs/compositions/meta_health.toml", include_str!("../../../../graphs/compositions/meta_health.toml")),
-    ("meta.deploy", "graphs/compositions/meta_deploy.toml", include_str!("../../../../graphs/compositions/meta_deploy.toml")),
+    (
+        "tower.publish",
+        "graphs/compositions/tower_publish.toml",
+        include_str!("../../../../graphs/compositions/tower_publish.toml"),
+    ),
+    (
+        "tower.authenticate",
+        "graphs/compositions/tower_authenticate.toml",
+        include_str!("../../../../graphs/compositions/tower_authenticate.toml"),
+    ),
+    (
+        "tower.discover",
+        "graphs/compositions/tower_discover.toml",
+        include_str!("../../../../graphs/compositions/tower_discover.toml"),
+    ),
+    (
+        "tower.health",
+        "graphs/compositions/tower_health.toml",
+        include_str!("../../../../graphs/compositions/tower_health.toml"),
+    ),
+    (
+        "tower.bootstrap",
+        "graphs/compositions/tower_bootstrap.toml",
+        include_str!("../../../../graphs/compositions/tower_bootstrap.toml"),
+    ),
+    (
+        "node.compute",
+        "graphs/compositions/node_compute.toml",
+        include_str!("../../../../graphs/compositions/node_compute.toml"),
+    ),
+    (
+        "nest.store",
+        "graphs/compositions/nest_store.toml",
+        include_str!("../../../../graphs/compositions/nest_store.toml"),
+    ),
+    (
+        "nest.commit",
+        "graphs/compositions/nest_commit.toml",
+        include_str!("../../../../graphs/compositions/nest_commit.toml"),
+    ),
+    (
+        "nest.retrieve",
+        "graphs/compositions/nest_retrieve.toml",
+        include_str!("../../../../graphs/compositions/nest_retrieve.toml"),
+    ),
+    (
+        "nest.ingest_spore",
+        "graphs/compositions/nest_ingest_spore.toml",
+        include_str!("../../../../graphs/compositions/nest_ingest_spore.toml"),
+    ),
+    (
+        "meta.observe",
+        "graphs/compositions/meta_observe.toml",
+        include_str!("../../../../graphs/compositions/meta_observe.toml"),
+    ),
+    (
+        "meta.intent",
+        "graphs/compositions/meta_intent.toml",
+        include_str!("../../../../graphs/compositions/meta_intent.toml"),
+    ),
+    (
+        "meta.render",
+        "graphs/compositions/meta_render.toml",
+        include_str!("../../../../graphs/compositions/meta_render.toml"),
+    ),
+    (
+        "meta.health",
+        "graphs/compositions/meta_health.toml",
+        include_str!("../../../../graphs/compositions/meta_health.toml"),
+    ),
+    (
+        "meta.deploy",
+        "graphs/compositions/meta_deploy.toml",
+        include_str!("../../../../graphs/compositions/meta_deploy.toml"),
+    ),
     // rootPulse domain (ACTION / efferent) — Wave 60
-    ("rootpulse.commit", "graphs/compositions/rootpulse_commit.toml", include_str!("../../../../graphs/compositions/rootpulse_commit.toml")),
-    ("rootpulse.branch", "graphs/compositions/rootpulse_branch.toml", include_str!("../../../../graphs/compositions/rootpulse_branch.toml")),
-    ("rootpulse.merge", "graphs/compositions/rootpulse_merge.toml", include_str!("../../../../graphs/compositions/rootpulse_merge.toml")),
-    ("rootpulse.diff", "graphs/compositions/rootpulse_diff.toml", include_str!("../../../../graphs/compositions/rootpulse_diff.toml")),
-    ("rootpulse.federate", "graphs/compositions/rootpulse_federate.toml", include_str!("../../../../graphs/compositions/rootpulse_federate.toml")),
-    ("foundation.validation", "graphs/compositions/foundation_validation.toml", include_str!("../../../../graphs/compositions/foundation_validation.toml")),
+    (
+        "rootpulse.commit",
+        "graphs/compositions/rootpulse_commit.toml",
+        include_str!("../../../../graphs/compositions/rootpulse_commit.toml"),
+    ),
+    (
+        "rootpulse.branch",
+        "graphs/compositions/rootpulse_branch.toml",
+        include_str!("../../../../graphs/compositions/rootpulse_branch.toml"),
+    ),
+    (
+        "rootpulse.merge",
+        "graphs/compositions/rootpulse_merge.toml",
+        include_str!("../../../../graphs/compositions/rootpulse_merge.toml"),
+    ),
+    (
+        "rootpulse.diff",
+        "graphs/compositions/rootpulse_diff.toml",
+        include_str!("../../../../graphs/compositions/rootpulse_diff.toml"),
+    ),
+    (
+        "rootpulse.federate",
+        "graphs/compositions/rootpulse_federate.toml",
+        include_str!("../../../../graphs/compositions/rootpulse_federate.toml"),
+    ),
+    (
+        "foundation.validation",
+        "graphs/compositions/foundation_validation.toml",
+        include_str!("../../../../graphs/compositions/foundation_validation.toml"),
+    ),
 ];
 
 const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
-const NODE_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat", "toadstool", "barracuda", "coralreef"];
-const NEST_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"];
+const NODE_PRIMALS: &[&str] = &[
+    "beardog",
+    "songbird",
+    "skunkbat",
+    "toadstool",
+    "barracuda",
+    "coralreef",
+];
+const NEST_PRIMALS: &[&str] = &[
+    "beardog",
+    "songbird",
+    "skunkbat",
+    "nestgate",
+    "rhizocrypt",
+    "loamspine",
+    "sweetgrass",
+];
 const META_PRIMALS: &[&str] = &["biomeos", "squirrel", "petaltongue", "skunkbat"];
-const ROOTPULSE_PRIMALS: &[&str] = &["rhizocrypt", "beardog", "nestgate", "loamspine", "sweetgrass", "songbird"];
+const ROOTPULSE_PRIMALS: &[&str] = &[
+    "rhizocrypt",
+    "beardog",
+    "nestgate",
+    "loamspine",
+    "sweetgrass",
+    "songbird",
+];
 const ECOSYSTEM_PRIMALS: &[&str] = &["biomeos", "songbird", "nestgate", "beardog"];
 const IMPULSE_PRIMALS: &[&str] = &["membrane", "beardog", "nestgate", "songbird"];
 const POTENTIAL_PRIMALS: &[&str] = &["membrane", "beardog", "nestgate", "songbird"];
 const SYNC_PRIMALS: &[&str] = &[
-    "biomeos", "nestgate", "membrane", "songbird",
-    "rhizocrypt", "loamspine", "sweetgrass", "beardog",
+    "biomeos",
+    "nestgate",
+    "membrane",
+    "songbird",
+    "rhizocrypt",
+    "loamspine",
+    "sweetgrass",
+    "beardog",
 ];
 const FOUNDATION_PRIMALS: &[&str] = &[
-    "biomeos", "beardog_primal", "songbird_primal", "toadstool",
-    "barracuda", "coralreef", "nestgate", "rhizocrypt",
-    "loamspine", "sweetgrass", "petaltongue", "squirrel",
+    "biomeos",
+    "beardog_primal",
+    "songbird_primal",
+    "toadstool",
+    "barracuda",
+    "coralreef",
+    "nestgate",
+    "rhizocrypt",
+    "loamspine",
+    "sweetgrass",
+    "petaltongue",
+    "squirrel",
 ];
 
 fn tier_primals(tier: &str) -> &'static [&'static str] {
@@ -88,7 +209,6 @@ fn tier_primals(tier: &str) -> &'static [&'static str] {
         _ => &[],
     }
 }
-
 
 fn validate_tier_primals(
     v: &mut ValidationResult,
@@ -214,6 +334,10 @@ fn validate_context_composition_method(v: &mut ValidationResult) {
 
 /// Tier 2 (Live) validation: if a biomeOS/orchestration capability is
 /// reachable, verify that `composition.list` and `composition.schema` respond correctly.
+#[expect(
+    clippy::too_many_lines,
+    reason = "live composition dispatch validation with multi-phase checks"
+)]
 fn validate_live_composition_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let biomeos_available = ctx.has_capability("orchestration");
 
@@ -222,7 +346,11 @@ fn validate_live_composition_dispatch(v: &mut ValidationResult, ctx: &mut Compos
         true,
         &format!(
             "biomeOS availability check ({})",
-            if biomeos_available { "live" } else { "offline — skipping Tier 2" }
+            if biomeos_available {
+                "live"
+            } else {
+                "offline — skipping Tier 2"
+            }
         ),
     );
 
@@ -368,7 +496,11 @@ mod tests {
 
     #[test]
     fn composition_graph_count() {
-        assert_eq!(COMPOSITION_GRAPHS.len(), 21, "expected 21 composition graphs (10 foundation + 5 meta + 5 rootPulse + 1 foundation_validation)");
+        assert_eq!(
+            COMPOSITION_GRAPHS.len(),
+            21,
+            "expected 21 composition graphs (10 foundation + 5 meta + 5 rootPulse + 1 foundation_validation)"
+        );
     }
 
     #[test]

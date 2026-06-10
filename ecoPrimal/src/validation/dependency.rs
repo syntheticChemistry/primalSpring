@@ -151,9 +151,7 @@ pub fn validate_dependencies_at(deps: &[DependencySpec], base: &Path) -> Depende
             }
         } else {
             report.passed += 1;
-            report
-                .messages
-                .push(format!("PASS: {} (exists)", dep.path));
+            report.messages.push(format!("PASS: {} (exists)", dep.path));
         }
     }
 
@@ -194,10 +192,7 @@ mod tests {
         let file_path = dir.path().join("test.txt");
         std::fs::write(&file_path, b"hello").unwrap();
 
-        let deps = vec![DependencySpec::required(
-            file_path.to_str().unwrap(),
-            None,
-        )];
+        let deps = vec![DependencySpec::required(file_path.to_str().unwrap(), None)];
         let report = validate_dependencies(&deps);
         assert_eq!(report.passed, 1);
         assert!(report.is_ok());

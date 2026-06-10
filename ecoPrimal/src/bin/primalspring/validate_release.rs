@@ -40,7 +40,7 @@ pub struct ReleaseArgs {
     pub json: bool,
 }
 
-pub fn run(args: ReleaseArgs) {
+pub fn run(args: &ReleaseArgs) {
     let mut v = ValidationResult::new("primalSpring Release Validation Gate");
 
     check_fmt(&mut v);
@@ -71,8 +71,7 @@ fn check_fmt(v: &mut ValidationResult) {
     let ok = Command::new("cargo")
         .args(["fmt", "--all", "--check"])
         .output()
-        .map(|o| o.status.success())
-        .unwrap_or(false);
+        .is_ok_and(|o| o.status.success());
     v.check_bool("fmt-clean", ok, "formatting clean");
 }
 
@@ -81,8 +80,7 @@ fn check_clippy(v: &mut ValidationResult) {
     let ok = Command::new("cargo")
         .args(["clippy", "--workspace", "--", "-D", "warnings"])
         .output()
-        .map(|o| o.status.success())
-        .unwrap_or(false);
+        .is_ok_and(|o| o.status.success());
     v.check_bool("clippy-clean", ok, "clippy clean");
 }
 
@@ -91,8 +89,7 @@ fn check_deny(v: &mut ValidationResult) {
     let has_deny = Command::new("cargo-deny")
         .arg("--version")
         .output()
-        .map(|o| o.status.success())
-        .unwrap_or(false);
+        .is_ok_and(|o| o.status.success());
     if !has_deny {
         v.check_bool("deny-skip", true, "cargo-deny not installed — skipped");
         return;
@@ -100,16 +97,13 @@ fn check_deny(v: &mut ValidationResult) {
     let ok = Command::new("cargo")
         .args(["deny", "check"])
         .output()
-        .map(|o| o.status.success())
-        .unwrap_or(false);
+        .is_ok_and(|o| o.status.success());
     v.check_bool("deny-clean", ok, "dependency audit clean");
 }
 
 fn check_tests(v: &mut ValidationResult) {
     v.section("cargo test --workspace");
-    let output = Command::new("cargo")
-        .args(["test", "--workspace"])
-        .output();
+    let output = Command::new("cargo").args(["test", "--workspace"]).output();
     match output {
         Ok(o) => {
             let stdout = String::from_utf8_lossy(&o.stdout);
@@ -117,7 +111,11 @@ fn check_tests(v: &mut ValidationResult) {
             let combined = format!("{stdout}\n{stderr}");
 
             let has_failures = combined.contains("FAILED");
-            v.check_bool("tests-pass", !has_failures && o.status.success(), "all tests passed");
+            v.check_bool(
+                "tests-pass",
+                !has_failures && o.status.success(),
+                "all tests passed",
+            );
 
             let test_count: u32 = combined
                 .lines()
@@ -135,7 +133,11 @@ fn check_tests(v: &mut ValidationResult) {
             );
         }
         Err(e) => {
-            v.check_bool("tests-run", false, &format!("cargo test failed to spawn: {e}"));
+            v.check_bool(
+                "tests-run",
+                false,
+                &format!("cargo test failed to spawn: {e}"),
+            );
         }
     }
 }
@@ -145,10 +147,13 @@ fn check_coverage(v: &mut ValidationResult) {
     let has_cov = Command::new("cargo-llvm-cov")
         .arg("--version")
         .output()
-        .map(|o| o.status.success())
-        .unwrap_or(false);
+        .is_ok_and(|o| o.status.success());
     if !has_cov {
-        v.check_bool("coverage-skip", true, "cargo-llvm-cov not installed — skipped");
+        v.check_bool(
+            "coverage-skip",
+            true,
+            "cargo-llvm-cov not installed — skipped",
+        );
         return;
     }
     let output = Command::new("cargo")
@@ -170,6 +175,11 @@ fn check_coverage(v: &mut ValidationResult) {
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "bounded by 100.0"
+)]
 fn parse_line_coverage(json: &str) -> Option<u32> {
     let count_marker = "\"lines\":{\"count\":";
     let pos = json.find(count_marker)?;
@@ -191,8 +201,7 @@ fn check_docs(v: &mut ValidationResult) {
     let ok = Command::new("cargo")
         .args(["doc", "--workspace", "--no-deps"])
         .output()
-        .map(|o| o.status.success())
-        .unwrap_or(false);
+        .is_ok_and(|o| o.status.success());
     v.check_bool("docs-clean", ok, "docs build clean");
 }
 
@@ -200,7 +209,11 @@ fn check_plasmidbin(v: &mut ValidationResult) {
     v.section("plasmidBin health check");
     let depot_dir = resolve_depot_dir();
     if !depot_dir.is_dir() {
-        v.check_bool("plasmidbin-skip", true, &format!("depot not found at {} — skipped", depot_dir.display()));
+        v.check_bool(
+            "plasmidbin-skip",
+            true,
+            &format!("depot not found at {} — skipped", depot_dir.display()),
+        );
         return;
     }
 
@@ -208,7 +221,11 @@ fn check_plasmidbin(v: &mut ValidationResult) {
     for &primal in EXPECTED_PRIMALS {
         let bin = depot_dir.join(primal);
         if !bin.is_file() {
-            v.check_bool(&format!("depot-{primal}"), false, &format!("missing: {primal}"));
+            v.check_bool(
+                &format!("depot-{primal}"),
+                false,
+                &format!("missing: {primal}"),
+            );
             all_ok = false;
         }
     }
@@ -220,20 +237,30 @@ fn check_plasmidbin(v: &mut ValidationResult) {
         );
     }
 
-    let depot_root = depot_dir.parent()
+    let depot_root = depot_dir
+        .parent()
         .and_then(|p| p.parent())
         .unwrap_or(&depot_dir);
     let checksums = depot_root.join("checksums.toml");
-    v.check_bool("checksums-present", checksums.is_file(), "checksums.toml present");
+    v.check_bool(
+        "checksums-present",
+        checksums.is_file(),
+        "checksums.toml present",
+    );
 
     let provenance = depot_root.join("provenance.toml");
-    v.check_bool("provenance-present", provenance.is_file(), "provenance.toml present");
+    v.check_bool(
+        "provenance-present",
+        provenance.is_file(),
+        "provenance.toml present",
+    );
 }
 
 fn check_nucleus(v: &mut ValidationResult) {
     v.section("NUCLEUS deployment gate");
 
-    if std::env::var("ECOPRIMALS_ROOT").is_err() && std::env::var("ECOPRIMALS_PLASMID_BIN").is_err() {
+    if std::env::var("ECOPRIMALS_ROOT").is_err() && std::env::var("ECOPRIMALS_PLASMID_BIN").is_err()
+    {
         v.check_bool("nucleus-skip", true, "ECOPRIMALS_ROOT not set — skipped");
         return;
     }
@@ -255,7 +282,11 @@ fn check_nucleus(v: &mut ValidationResult) {
             );
         }
         Err(e) => {
-            v.check_bool("nucleus-gate", false, &format!("nucleus subcommand failed: {e}"));
+            v.check_bool(
+                "nucleus-gate",
+                false,
+                &format!("nucleus subcommand failed: {e}"),
+            );
         }
     }
 }
@@ -266,15 +297,16 @@ fn resolve_depot_dir() -> PathBuf {
     }
     let triple = host_triple();
     if let Ok(root) = std::env::var("ECOPRIMALS_ROOT") {
-        return PathBuf::from(root).join("infra/plasmidBin/primals").join(&triple);
+        return PathBuf::from(root)
+            .join("infra/plasmidBin/primals")
+            .join(&triple);
     }
-    let xdg = std::env::var("XDG_DATA_HOME")
-        .unwrap_or_else(|_| {
-            std::env::var("HOME")
-                .map(|h| format!("{h}/.local/share"))
-                .unwrap_or_else(|_| "/tmp".into())
-        });
-    PathBuf::from(xdg).join("ecoPrimals/plasmidBin/primals").join(&triple)
+    let xdg = std::env::var("XDG_DATA_HOME").unwrap_or_else(|_| {
+        std::env::var("HOME").map_or_else(|_| "/tmp".into(), |h| format!("{h}/.local/share"))
+    });
+    PathBuf::from(xdg)
+        .join("ecoPrimals/plasmidBin/primals")
+        .join(&triple)
 }
 
 fn host_triple() -> String {

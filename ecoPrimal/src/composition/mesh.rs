@@ -157,14 +157,8 @@ impl MeshTopology {
         let mut routes = Vec::new();
         for from in &requesters {
             for to in &providers {
-                let from_healthy = self
-                    .gates
-                    .get(*from)
-                    .is_some_and(|g| g.healthy);
-                let to_healthy = self
-                    .gates
-                    .get(*to)
-                    .is_some_and(|g| g.healthy);
+                let from_healthy = self.gates.get(*from).is_some_and(|g| g.healthy);
+                let to_healthy = self.gates.get(*to).is_some_and(|g| g.healthy);
                 routes.push(MeshRoute {
                     capability: capability.to_owned(),
                     from_gate: (*from).to_owned(),

@@ -311,9 +311,7 @@ impl RunningAtomic {
     /// Names of overlay primals (those beyond the base tier).
     #[must_use]
     pub fn overlay_primals(&self) -> Vec<String> {
-        let base: HashSet<&str> = self.atomic.required_primal_slugs()
-            .into_iter()
-            .collect();
+        let base: HashSet<&str> = self.atomic.required_primal_slugs().into_iter().collect();
         self.processes
             .iter()
             .filter(|p| !base.contains(p.name.as_str()))

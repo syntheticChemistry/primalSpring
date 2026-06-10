@@ -59,7 +59,13 @@ struct SocketOwnership {
 const OWNERSHIP_MAP: &[SocketOwnership] = &[
     SocketOwnership {
         primal: "beardog",
-        domain_sockets: &["crypto.sock", "security.sock", "btsp.sock", "ed25519.sock", "x25519.sock"],
+        domain_sockets: &[
+            "crypto.sock",
+            "security.sock",
+            "btsp.sock",
+            "ed25519.sock",
+            "x25519.sock",
+        ],
     },
     SocketOwnership {
         primal: "songbird",
@@ -75,7 +81,13 @@ const OWNERSHIP_MAP: &[SocketOwnership] = &[
     },
     SocketOwnership {
         primal: "barracuda",
-        domain_sockets: &["dag.sock", "commit.sock", "merkle.sock", "provenance.sock", "attribution.sock"],
+        domain_sockets: &[
+            "dag.sock",
+            "commit.sock",
+            "merkle.sock",
+            "provenance.sock",
+            "attribution.sock",
+        ],
     },
     SocketOwnership {
         primal: "sweetgrass",
@@ -122,7 +134,10 @@ fn phase_socket_census(v: &mut ValidationResult) {
         .map(|e| e.file_name().to_string_lossy().to_string())
         .collect();
 
-    let socks: Vec<_> = entries.iter().filter(|n| n.to_ascii_lowercase().ends_with(".sock")).collect();
+    let socks: Vec<_> = entries
+        .iter()
+        .filter(|n| n.to_ascii_lowercase().ends_with(".sock"))
+        .collect();
     let named_count = socks
         .iter()
         .filter(|n| n.contains("nucleus01") || n.contains("primalspring01"))
@@ -132,7 +147,11 @@ fn phase_socket_census(v: &mut ValidationResult) {
         .filter(|n| !n.contains("nucleus01") && !n.contains("primalspring01"))
         .count();
 
-    v.check_bool("census:total_sockets", true, &format!("{} total sockets", socks.len()));
+    v.check_bool(
+        "census:total_sockets",
+        true,
+        &format!("{} total sockets", socks.len()),
+    );
     v.check_bool(
         "census:primal_scoped",
         true,
@@ -182,7 +201,10 @@ fn phase_ownership_mapping(v: &mut ValidationResult) {
     v.check_bool(
         "ownership:mapped",
         mapped > 0,
-        &format!("{mapped}/{} flat sockets have known primal owner", flat_sockets.len()),
+        &format!(
+            "{mapped}/{} flat sockets have known primal owner",
+            flat_sockets.len()
+        ),
     );
 
     if unmapped.is_empty() {

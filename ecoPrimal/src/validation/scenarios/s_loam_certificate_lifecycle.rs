@@ -57,7 +57,14 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
         v.check_bool(
             &format!("loam:discover:{cap}"),
             found,
-            &format!("{label} — {}", if found { "resolved" } else { "not discoverable" }),
+            &format!(
+                "{label} — {}",
+                if found {
+                    "resolved"
+                } else {
+                    "not discoverable"
+                }
+            ),
         );
     }
 }
@@ -65,7 +72,8 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
 fn phase_spine_create(v: &mut ValidationResult, ctx: &mut CompositionContext) -> Option<String> {
     match ctx.call("spine", "spine.create", serde_json::json!({})) {
         Ok(resp) => {
-            let spine_id = resp.get("spine_id")
+            let spine_id = resp
+                .get("spine_id")
                 .or_else(|| resp.get("id"))
                 .and_then(|s| s.as_str())
                 .unwrap_or("");
@@ -74,14 +82,25 @@ fn phase_spine_create(v: &mut ValidationResult, ctx: &mut CompositionContext) ->
                 !spine_id.is_empty(),
                 &format!("spine_id: {spine_id}"),
             );
-            if spine_id.is_empty() { None } else { Some(spine_id.to_owned()) }
+            if spine_id.is_empty() {
+                None
+            } else {
+                Some(spine_id.to_owned())
+            }
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("loam:spine_create:id", &format!("loamSpine not available: {e}"));
+            v.check_skip(
+                "loam:spine_create:id",
+                &format!("loamSpine not available: {e}"),
+            );
             None
         }
         Err(e) => {
-            v.check_bool("loam:spine_create:id", false, &format!("spine.create error: {e}"));
+            v.check_bool(
+                "loam:spine_create:id",
+                false,
+                &format!("spine.create error: {e}"),
+            );
             None
         }
     }
@@ -103,7 +122,8 @@ fn phase_spine_seal(
         serde_json::json!({ "spine_id": spine_id }),
     ) {
         Ok(resp) => {
-            let sealed = resp.get("sealed_id")
+            let sealed = resp
+                .get("sealed_id")
                 .or_else(|| resp.get("spine_id"))
                 .or_else(|| resp.get("hash"))
                 .and_then(|s| s.as_str())
@@ -113,14 +133,25 @@ fn phase_spine_seal(
                 !sealed.is_empty(),
                 &format!("sealed: {sealed}"),
             );
-            if sealed.is_empty() { None } else { Some(sealed.to_owned()) }
+            if sealed.is_empty() {
+                None
+            } else {
+                Some(sealed.to_owned())
+            }
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("loam:spine_seal:sealed", &format!("loamSpine not available: {e}"));
+            v.check_skip(
+                "loam:spine_seal:sealed",
+                &format!("loamSpine not available: {e}"),
+            );
             None
         }
         Err(e) => {
-            v.check_bool("loam:spine_seal:sealed", false, &format!("spine.seal error: {e}"));
+            v.check_bool(
+                "loam:spine_seal:sealed",
+                false,
+                &format!("spine.seal error: {e}"),
+            );
             None
         }
     }
@@ -146,7 +177,8 @@ fn phase_cert_mint(
         }),
     ) {
         Ok(resp) => {
-            let cert_id = resp.get("cert_id")
+            let cert_id = resp
+                .get("cert_id")
                 .or_else(|| resp.get("id"))
                 .and_then(|c| c.as_str())
                 .unwrap_or("");
@@ -156,14 +188,25 @@ fn phase_cert_mint(
                 !cert_id.is_empty(),
                 &format!("cert_id: {cert_id}, hash_chain present: {has_chain}"),
             );
-            if cert_id.is_empty() { None } else { Some(cert_id.to_owned()) }
+            if cert_id.is_empty() {
+                None
+            } else {
+                Some(cert_id.to_owned())
+            }
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("loam:cert_mint:id", &format!("loamSpine not available: {e}"));
+            v.check_skip(
+                "loam:cert_mint:id",
+                &format!("loamSpine not available: {e}"),
+            );
             None
         }
         Err(e) => {
-            v.check_bool("loam:cert_mint:id", false, &format!("certificate.mint error: {e}"));
+            v.check_bool(
+                "loam:cert_mint:id",
+                false,
+                &format!("certificate.mint error: {e}"),
+            );
             None
         }
     }
@@ -186,7 +229,10 @@ fn phase_cert_verify(
         serde_json::json!({ "cert_id": cert_id }),
     ) {
         Ok(resp) => {
-            let valid = resp.get("valid").and_then(serde_json::Value::as_bool).unwrap_or(false);
+            let valid = resp
+                .get("valid")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
             v.check_bool(
                 "loam:cert_verify:valid",
                 valid,
@@ -194,10 +240,17 @@ fn phase_cert_verify(
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("loam:cert_verify:valid", &format!("loamSpine not available: {e}"));
+            v.check_skip(
+                "loam:cert_verify:valid",
+                &format!("loamSpine not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("loam:cert_verify:valid", false, &format!("certificate.verify error: {e}"));
+            v.check_bool(
+                "loam:cert_verify:valid",
+                false,
+                &format!("certificate.verify error: {e}"),
+            );
         }
     }
 
@@ -207,7 +260,10 @@ fn phase_cert_verify(
         serde_json::json!({ "cert_id": "invalid-cert-does-not-exist-00000" }),
     ) {
         Ok(resp) => {
-            let valid = resp.get("valid").and_then(serde_json::Value::as_bool).unwrap_or(true);
+            let valid = resp
+                .get("valid")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(true);
             v.check_bool(
                 "loam:cert_verify:invalid_rejected",
                 !valid,
@@ -224,11 +280,7 @@ fn phase_cert_verify(
     }
 }
 
-fn phase_cert_get(
-    v: &mut ValidationResult,
-    ctx: &mut CompositionContext,
-    cert_id: Option<&str>,
-) {
+fn phase_cert_get(v: &mut ValidationResult, ctx: &mut CompositionContext, cert_id: Option<&str>) {
     let Some(cert_id) = cert_id else {
         v.check_skip("loam:cert_get:retrieved", "no cert from certificate.mint");
         return;
@@ -246,14 +298,26 @@ fn phase_cert_get(
             v.check_bool(
                 "loam:cert_get:retrieved",
                 has_data,
-                &format!("certificate.get response keys: {:?}", resp.as_object().map(|o| o.keys().collect::<Vec<_>>()).unwrap_or_default()),
+                &format!(
+                    "certificate.get response keys: {:?}",
+                    resp.as_object()
+                        .map(|o| o.keys().collect::<Vec<_>>())
+                        .unwrap_or_default()
+                ),
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("loam:cert_get:retrieved", &format!("loamSpine not available: {e}"));
+            v.check_skip(
+                "loam:cert_get:retrieved",
+                &format!("loamSpine not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("loam:cert_get:retrieved", false, &format!("certificate.get error: {e}"));
+            v.check_bool(
+                "loam:cert_get:retrieved",
+                false,
+                &format!("certificate.get error: {e}"),
+            );
         }
     }
 }
@@ -267,6 +331,9 @@ mod tests {
         let mut v = ValidationResult::new("loam-certificate-lifecycle");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce checks");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce checks"
+        );
     }
 }

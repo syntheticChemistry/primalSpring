@@ -233,10 +233,7 @@ fn phase_nest_store_baseline(v: &mut ValidationResult, ctx: &mut CompositionCont
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip(
-                "live:nest_store_baseline",
-                &format!("connection: {e}"),
-            );
+            v.check_skip("live:nest_store_baseline", &format!("connection: {e}"));
         }
         Err(e) => {
             let detail = format!("{e}");

@@ -71,7 +71,11 @@ fn phase_bond_type_properties(v: &mut ValidationResult) {
         !bond.description().is_empty(),
         &format!("BondType::Ionic.description() — {}", bond.description()),
     );
-    v.check_bool("ionic_is_metered", bond.is_metered(), "Ionic bonds are metered");
+    v.check_bool(
+        "ionic_is_metered",
+        bond.is_metered(),
+        "Ionic bonds are metered",
+    );
     v.check_bool(
         "ionic_no_shared_electrons",
         !bond.shares_electrons(),
@@ -84,7 +88,11 @@ fn phase_contract_lifecycle(v: &mut ValidationResult) {
 
     let id = match reg.propose(sample_proposal()) {
         Ok(id) => {
-            v.check_bool("propose_succeeds", true, &format!("Contract proposed: {id}"));
+            v.check_bool(
+                "propose_succeeds",
+                true,
+                &format!("Contract proposed: {id}"),
+            );
             id
         }
         Err(e) => {
@@ -102,7 +110,11 @@ fn phase_contract_lifecycle(v: &mut ValidationResult) {
     );
 
     let call_ok = reg.record_call(&id, "compute.submit", 2048);
-    v.check_bool("metered_call_succeeds", call_ok.is_ok(), "Metered call within scope");
+    v.check_bool(
+        "metered_call_succeeds",
+        call_ok.is_ok(),
+        "Metered call within scope",
+    );
 
     match reg.get(&id) {
         Some(contract) => {
@@ -110,11 +122,18 @@ fn phase_contract_lifecycle(v: &mut ValidationResult) {
             v.check_bool(
                 "usage_metrics_increment",
                 usage.total_calls == 1 && usage.total_bytes == 2048,
-                &format!("Usage: {} calls, {} bytes", usage.total_calls, usage.total_bytes),
+                &format!(
+                    "Usage: {} calls, {} bytes",
+                    usage.total_calls, usage.total_bytes
+                ),
             );
         }
         None => {
-            v.check_bool("usage_metrics_increment", false, "Contract not found after accept");
+            v.check_bool(
+                "usage_metrics_increment",
+                false,
+                "Contract not found after accept",
+            );
         }
     }
 
@@ -180,7 +199,10 @@ fn phase_policy_enforcement(v: &mut ValidationResult) {
     );
 }
 
-#[expect(clippy::too_many_lines, reason = "live RPC lifecycle phases are sequential")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "live RPC lifecycle phases are sequential"
+)]
 fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("orchestration") {
         v.check_skip(
@@ -204,11 +226,7 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
     let contract_id = match ctx.call("orchestration", "bonding.propose", propose_params) {
         Ok(resp) => {
             let has_id = resp.get("contract_id").is_some();
-            v.check_bool(
-                "live:propose",
-                has_id,
-                &format!("bonding.propose → {resp}"),
-            );
+            v.check_bool("live:propose", has_id, &format!("bonding.propose → {resp}"));
             resp.get("contract_id")
                 .and_then(|c| c.as_str())
                 .map(String::from)
@@ -218,13 +236,20 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             return;
         }
         Err(e) => {
-            v.check_bool("live:propose", false, &format!("bonding.propose error: {e}"));
+            v.check_bool(
+                "live:propose",
+                false,
+                &format!("bonding.propose error: {e}"),
+            );
             return;
         }
     };
 
     let Some(contract_id) = contract_id else {
-        v.check_skip("live:accept", "no contract_id from propose — skipping accept");
+        v.check_skip(
+            "live:accept",
+            "no contract_id from propose — skipping accept",
+        );
         return;
     };
 
@@ -262,7 +287,10 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
         serde_json::json!({ "contract_id": contract_id }),
     ) {
         Ok(resp) => {
-            let state = resp.get("state").and_then(|s| s.as_str()).unwrap_or("unknown");
+            let state = resp
+                .get("state")
+                .and_then(|s| s.as_str())
+                .unwrap_or("unknown");
             v.check_bool(
                 "live:status",
                 state == "Active" || state == "active",
@@ -344,10 +372,7 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 );
             }
             Err(e) if e.is_skippable() => {
-                v.check_skip(
-                    "live:crypto_verify",
-                    &format!("bearDog not reachable: {e}"),
-                );
+                v.check_skip("live:crypto_verify", &format!("bearDog not reachable: {e}"));
             }
             Err(e) => {
                 v.check_bool(

@@ -55,7 +55,14 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
         v.check_bool(
             &format!("ferment:discover:{cap}"),
             found,
-            &format!("{label} — {}", if found { "resolved" } else { "not discoverable" }),
+            &format!(
+                "{label} — {}",
+                if found {
+                    "resolved"
+                } else {
+                    "not discoverable"
+                }
+            ),
         );
     }
 }
@@ -63,20 +70,34 @@ fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
 fn phase_session_create(v: &mut ValidationResult, ctx: &mut CompositionContext) -> Option<String> {
     match ctx.call("dag", "dag.session.create", serde_json::json!({})) {
         Ok(resp) => {
-            let session_id = resp.get("session_id").and_then(|s| s.as_str()).unwrap_or("");
+            let session_id = resp
+                .get("session_id")
+                .and_then(|s| s.as_str())
+                .unwrap_or("");
             v.check_bool(
                 "ferment:session_create:id",
                 !session_id.is_empty(),
                 &format!("session_id: {session_id}"),
             );
-            if session_id.is_empty() { None } else { Some(session_id.to_owned()) }
+            if session_id.is_empty() {
+                None
+            } else {
+                Some(session_id.to_owned())
+            }
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("ferment:session_create:id", &format!("rhizoCrypt not available: {e}"));
+            v.check_skip(
+                "ferment:session_create:id",
+                &format!("rhizoCrypt not available: {e}"),
+            );
             None
         }
         Err(e) => {
-            v.check_bool("ferment:session_create:id", false, &format!("dag.session.create error: {e}"));
+            v.check_bool(
+                "ferment:session_create:id",
+                false,
+                &format!("dag.session.create error: {e}"),
+            );
             None
         }
     }
@@ -94,10 +115,13 @@ fn phase_append_events(
 
     let mut appended = 0;
     for i in 0..3 {
-        let payload = format!("ferment-event-{i}-{}", std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs());
+        let payload = format!(
+            "ferment-event-{i}-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs()
+        );
         match ctx.call(
             "dag",
             "dag.event.append",
@@ -108,11 +132,18 @@ fn phase_append_events(
         ) {
             Ok(_) => appended += 1,
             Err(e) if e.is_skippable() => {
-                v.check_skip("ferment:append:count", &format!("rhizoCrypt not available: {e}"));
+                v.check_skip(
+                    "ferment:append:count",
+                    &format!("rhizoCrypt not available: {e}"),
+                );
                 return;
             }
             Err(e) => {
-                v.check_bool("ferment:append:count", false, &format!("event {i} error: {e}"));
+                v.check_bool(
+                    "ferment:append:count",
+                    false,
+                    &format!("event {i} error: {e}"),
+                );
                 return;
             }
         }
@@ -131,7 +162,10 @@ fn phase_dehydrate(
     session_id: Option<&str>,
 ) -> Option<String> {
     let Some(session_id) = session_id else {
-        v.check_skip("ferment:dehydrate:hash", "no session from dag.session.create");
+        v.check_skip(
+            "ferment:dehydrate:hash",
+            "no session from dag.session.create",
+        );
         return None;
     };
 
@@ -141,7 +175,8 @@ fn phase_dehydrate(
         serde_json::json!({ "session_id": session_id }),
     ) {
         Ok(resp) => {
-            let hash = resp.get("dehydrated_hash")
+            let hash = resp
+                .get("dehydrated_hash")
                 .or_else(|| resp.get("hash"))
                 .and_then(|h| h.as_str())
                 .unwrap_or("");
@@ -150,14 +185,25 @@ fn phase_dehydrate(
                 !hash.is_empty(),
                 &format!("dehydrated hash: {}...", &hash[..hash.len().min(16)]),
             );
-            if hash.is_empty() { None } else { Some(hash.to_owned()) }
+            if hash.is_empty() {
+                None
+            } else {
+                Some(hash.to_owned())
+            }
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("ferment:dehydrate:hash", &format!("rhizoCrypt not available: {e}"));
+            v.check_skip(
+                "ferment:dehydrate:hash",
+                &format!("rhizoCrypt not available: {e}"),
+            );
             None
         }
         Err(e) => {
-            v.check_bool("ferment:dehydrate:hash", false, &format!("dehydration.trigger error: {e}"));
+            v.check_bool(
+                "ferment:dehydrate:hash",
+                false,
+                &format!("dehydration.trigger error: {e}"),
+            );
             None
         }
     }
@@ -188,14 +234,26 @@ fn phase_mint_cert(
             v.check_bool(
                 "ferment:cert_mint:id",
                 !cert_id.is_empty() || resp.get("id").is_some(),
-                &format!("cert response keys: {:?}", resp.as_object().map(|o| o.keys().collect::<Vec<_>>()).unwrap_or_default()),
+                &format!(
+                    "cert response keys: {:?}",
+                    resp.as_object()
+                        .map(|o| o.keys().collect::<Vec<_>>())
+                        .unwrap_or_default()
+                ),
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("ferment:cert_mint:id", &format!("loamSpine not available: {e}"));
+            v.check_skip(
+                "ferment:cert_mint:id",
+                &format!("loamSpine not available: {e}"),
+            );
         }
         Err(e) => {
-            v.check_bool("ferment:cert_mint:id", false, &format!("certificate.mint error: {e}"));
+            v.check_bool(
+                "ferment:cert_mint:id",
+                false,
+                &format!("certificate.mint error: {e}"),
+            );
         }
     }
 }
@@ -209,6 +267,9 @@ mod tests {
         let mut v = ValidationResult::new("ferment-transcript");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.evaluated() > 0 || v.skipped > 0, "scenario should produce checks");
+        assert!(
+            v.evaluated() > 0 || v.skipped > 0,
+            "scenario should produce checks"
+        );
     }
 }

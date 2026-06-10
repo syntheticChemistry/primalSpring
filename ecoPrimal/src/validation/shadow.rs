@@ -90,11 +90,7 @@ pub struct ShadowComparison;
 impl ShadowComparison {
     /// Run a shadow comparison. Both paths return `Result<String, E>` where
     /// the string is a comparable output (hash, status, etc).
-    pub fn run<F1, F2, E1, E2>(
-        label: &str,
-        primary: F1,
-        shadow: F2,
-    ) -> ShadowResult
+    pub fn run<F1, F2, E1, E2>(label: &str, primary: F1, shadow: F2) -> ShadowResult
     where
         F1: FnOnce() -> Result<String, E1>,
         F2: FnOnce() -> Result<String, E2>,

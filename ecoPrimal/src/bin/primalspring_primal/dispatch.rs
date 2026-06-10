@@ -32,47 +32,53 @@ static DISPATCH_TABLE: LazyLock<HashMap<&'static str, Handler>> = LazyLock::new(
         ("health.version", handle_health_version),
         ("health.drain", handle_health_drain),
         ("health.readiness", handle_health_readiness),
-
         // ── Identity ──
         ("identity.get", handle_identity_get),
-
         // ── Capability advertisement ──
         ("capabilities.list", handle_capabilities_list),
         ("capability.list", handle_capabilities_list),
-
         // ── Coordination domain ──
-        ("coordination.validate_composition", handlers::handle_validate_composition),
-        ("coordination.validate_composition_by_capability",
-            handlers::handle_validate_composition_by_capability),
-        ("coordination.discovery_sweep", handlers::handle_discovery_sweep),
+        (
+            "coordination.validate_composition",
+            handlers::handle_validate_composition,
+        ),
+        (
+            "coordination.validate_composition_by_capability",
+            handlers::handle_validate_composition_by_capability,
+        ),
+        (
+            "coordination.discovery_sweep",
+            handlers::handle_discovery_sweep,
+        ),
         ("coordination.probe_primal", handlers::handle_probe_primal),
-        ("coordination.probe_capability", handlers::handle_probe_capability),
+        (
+            "coordination.probe_capability",
+            handlers::handle_probe_capability,
+        ),
         ("coordination.deploy_atomic", handlers::handle_deploy_atomic),
         ("coordination.bonding_test", handlers::handle_bonding_test),
         ("coordination.neural_api_status", handle_neural_api_status),
-
         // ── Composition health (per-tier) ──
         ("composition.tower_health", handle_tower_health),
         ("composition.tower_ai_health", handle_tower_ai_health),
         ("composition.node_health", handle_node_health),
         ("composition.nest_health", handle_nest_health),
         ("composition.nucleus_health", handle_nucleus_health),
-
         // ── Lifecycle management ──
         ("nucleus.start", handle_nucleus_start),
         ("nucleus.stop", handle_nucleus_stop),
         ("lifecycle.status", handle_lifecycle_status),
-
         // ── MCP tool discovery ──
         ("mcp.tools.list", handle_mcp_tools_list),
-
         // ── Ionic bond negotiation ──
         ("bonding.propose", handlers::handle_bonding_propose),
         ("bonding.accept", handlers::handle_bonding_accept),
         ("bonding.terminate", handlers::handle_bonding_terminate),
-        ("bonding.modify_scope", handlers::handle_bonding_modify_scope),
+        (
+            "bonding.modify_scope",
+            handlers::handle_bonding_modify_scope,
+        ),
         ("bonding.status", handlers::handle_bonding_status),
-
         // ── Graph coordination ──
         ("graph.list", handle_graph_list),
         ("graph.validate", handlers::handle_graph_validate),
@@ -105,10 +111,8 @@ pub fn dispatch_request(line: &str) -> JsonRpcResponse {
     let method = primalspring::ipc::normalize_method(raw_method);
 
     IN_FLIGHT.fetch_add(1, Ordering::Relaxed);
-    let response = if let Some(handler) = DISPATCH_TABLE.get(method) {
-        handler(&req["params"], id)
-    } else {
-        JsonRpcResponse {
+    let response = DISPATCH_TABLE.get(method).map_or_else(
+        || JsonRpcResponse {
             jsonrpc: JSONRPC_VERSION.to_owned(),
             result: None,
             error: Some(JsonRpcError {
@@ -117,8 +121,9 @@ pub fn dispatch_request(line: &str) -> JsonRpcResponse {
                 data: None,
             }),
             id,
-        }
-    };
+        },
+        |handler| handler(&req["params"], id),
+    );
     IN_FLIGHT.fetch_sub(1, Ordering::Relaxed);
     response
 }

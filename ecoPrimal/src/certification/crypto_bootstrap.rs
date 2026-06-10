@@ -49,16 +49,9 @@ pub fn validate_crypto_bootstrap(ctx: &mut CompositionContext, v: &mut Validatio
             Err(e) => {
                 let msg = format!("{e}");
                 if msg.contains("-32601") || msg.contains("unknown") {
-                    v.check_skip(
-                        &check_name,
-                        &format!("{method}: not yet implemented"),
-                    );
+                    v.check_skip(&check_name, &format!("{method}: not yet implemented"));
                 } else {
-                    v.check_bool(
-                        &check_name,
-                        false,
-                        &format!("{method}: error — {e}"),
-                    );
+                    v.check_bool(&check_name, false, &format!("{method}: error — {e}"));
                 }
             }
         }
@@ -158,7 +151,10 @@ mod tests {
         let fp = b"test-fingerprint-0123456789abcdef";
         let base = derive_base_key("beardog", fp);
         let family = derive_family_key(&base, b"", "test-family", "beardog");
-        assert_ne!(base, family, "family key should differ even with empty seed");
+        assert_ne!(
+            base, family,
+            "family key should differ even with empty seed"
+        );
     }
 
     #[test]

@@ -56,26 +56,23 @@ pub enum CompositionTier {
 impl CompositionTier {
     fn from_domain(domain: &str, owner: &str) -> Self {
         match domain {
-            "crypto" | "security" | "auth" | "btsp" | "fido2" | "genetic"
-            | "beacon" | "lineage" | "tls" | "birdsong" | "identity"
-            | "discovery" | "network" | "stun" | "onion" | "tor" | "mesh"
-            | "defense" | "recon" | "threat" => Self::Tower,
-            "compute" | "dispatch" | "toadstool" | "sovereign"
-            | "tensor" | "math" | "ode" | "ml" | "nautilus" | "rng"
-            | "stats" | "linalg" | "spectral" | "noise" | "shader" => Self::Node,
-            "storage" | "content" | "secrets"
-            | "dag" | "spine" | "event" | "entry" | "session"
-            | "certificate" | "permanence" | "proof"
-            | "braid" | "anchoring" | "provenance" | "attribution"
-            | "contribution" | "anchor" => Self::Nest,
-            "visualization" | "render" | "viz" | "interaction"
-            | "proprioception" | "ai" | "inference" | "squirrel" | "context"
-            | "science" => Self::Meta,
-            "orchestration" | "federation" | "biomeos" | "primal"
-            | "signal" | "topology" | "route"
-            | "health" | "capabilities" | "lifecycle" | "mcp"
-            | "tool" | "tools" | "rpc" | "system"
-            | "coordination" | "composition" | "graph" | "nucleus" => Self::Orchestration,
+            "crypto" | "security" | "auth" | "btsp" | "fido2" | "genetic" | "beacon"
+            | "lineage" | "tls" | "birdsong" | "identity" | "discovery" | "network" | "stun"
+            | "onion" | "tor" | "mesh" | "defense" | "recon" | "threat" => Self::Tower,
+            "compute" | "dispatch" | "toadstool" | "sovereign" | "tensor" | "math" | "ode"
+            | "ml" | "nautilus" | "rng" | "stats" | "linalg" | "spectral" | "noise" | "shader" => {
+                Self::Node
+            }
+            "storage" | "content" | "secrets" | "dag" | "spine" | "event" | "entry" | "session"
+            | "certificate" | "permanence" | "proof" | "braid" | "anchoring" | "provenance"
+            | "attribution" | "contribution" | "anchor" => Self::Nest,
+            "visualization" | "render" | "viz" | "interaction" | "proprioception" | "ai"
+            | "inference" | "squirrel" | "context" | "science" => Self::Meta,
+            "orchestration" | "federation" | "biomeos" | "primal" | "signal" | "topology"
+            | "route" | "health" | "capabilities" | "lifecycle" | "mcp" | "tool" | "tools"
+            | "rpc" | "system" | "coordination" | "composition" | "graph" | "nucleus" => {
+                Self::Orchestration
+            }
             "bonding" | "ionic" | "game" | "webb" => Self::Standalone,
             _ => Self::from_owner_tier(owner),
         }
@@ -149,7 +146,9 @@ pub struct NeuralRoutingTable {
 
 fn collect_composition_methods(parsed: &toml::Value) -> Vec<String> {
     let mut methods = Vec::new();
-    let Some(table) = parsed.as_table() else { return methods };
+    let Some(table) = parsed.as_table() else {
+        return methods;
+    };
     let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) else {
         return methods;
     };
@@ -208,7 +207,11 @@ fn register_domain_methods(parsed: &toml::Value, composition_methods: &[String])
                 "all"
             } else {
                 let routed = capability_to_primal(domain_str);
-                if routed == domain_str { owner_raw } else { routed }
+                if routed == domain_str {
+                    owner_raw
+                } else {
+                    routed
+                }
             };
             let tier = if owner_raw == "all" {
                 CompositionTier::Orchestration
@@ -222,8 +225,14 @@ fn register_domain_methods(parsed: &toml::Value, composition_methods: &[String])
             let domain: Arc<str> = Arc::from(domain_str);
             let routed_owner: Arc<str> = Arc::from(routed_owner_str);
 
-            domain_index.entry(Arc::clone(&domain)).or_default().push(Arc::clone(&method));
-            tier_index.entry(tier).or_default().push(Arc::clone(&method));
+            domain_index
+                .entry(Arc::clone(&domain))
+                .or_default()
+                .push(Arc::clone(&method));
+            tier_index
+                .entry(tier)
+                .or_default()
+                .push(Arc::clone(&method));
             primal_index
                 .entry(Arc::clone(&routed_owner))
                 .or_default()
@@ -246,7 +255,9 @@ fn register_domain_methods(parsed: &toml::Value, composition_methods: &[String])
 
 fn collect_composition_patterns(parsed: &toml::Value) -> Vec<CompositionPattern> {
     let mut patterns = Vec::new();
-    let Some(table) = parsed.as_table() else { return patterns };
+    let Some(table) = parsed.as_table() else {
+        return patterns;
+    };
     let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) else {
         return patterns;
     };
@@ -266,7 +277,11 @@ fn collect_composition_patterns(parsed: &toml::Value) -> Vec<CompositionPattern>
         let primals: Vec<String> = group_val
             .get("primals")
             .and_then(|v| v.as_array())
-            .map(|a| a.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .map(|a| {
+                a.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
             .unwrap_or_default();
 
         let arc_primals: Vec<Arc<str>> = primals.iter().map(|s| Arc::from(s.as_str())).collect();
@@ -294,13 +309,15 @@ impl NeuralRoutingTable {
     pub fn from_registry(registry_toml: &str) -> Self {
         let parsed: toml::Value = match toml::from_str(registry_toml) {
             Ok(v) => v,
-            Err(_) => return Self {
-                method_index: HashMap::new(),
-                domain_index: HashMap::new(),
-                tier_index: HashMap::new(),
-                primal_index: HashMap::new(),
-                patterns: Vec::new(),
-            },
+            Err(_) => {
+                return Self {
+                    method_index: HashMap::new(),
+                    domain_index: HashMap::new(),
+                    tier_index: HashMap::new(),
+                    primal_index: HashMap::new(),
+                    patterns: Vec::new(),
+                };
+            }
         };
 
         let composition_methods = collect_composition_methods(&parsed);
@@ -350,9 +367,7 @@ impl NeuralRoutingTable {
     /// All methods in a composition tier.
     #[must_use]
     pub fn methods_in_tier(&self, tier: CompositionTier) -> &[Arc<str>] {
-        self.tier_index
-            .get(&tier)
-            .map_or(&[], Vec::as_slice)
+        self.tier_index.get(&tier).map_or(&[], Vec::as_slice)
     }
 
     /// Number of distinct capability domains.
@@ -379,7 +394,9 @@ impl NeuralRoutingTable {
 
     /// Methods that have signal graph shortcuts.
     pub fn composition_methods(&self) -> impl Iterator<Item = &RouteEntry> {
-        self.method_index.values().filter(|e| e.has_composition_graph)
+        self.method_index
+            .values()
+            .filter(|e| e.has_composition_graph)
     }
 
     /// Register a composition pattern.
@@ -469,8 +486,8 @@ pub struct TierComposition {
 /// Reads `config/capability_registry.toml` relative to the workspace root.
 #[must_use]
 pub fn canonical_routing_table() -> NeuralRoutingTable {
-    let registry_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../config/capability_registry.toml");
+    let registry_path =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/capability_registry.toml");
     let toml_str = match std::fs::read_to_string(&registry_path) {
         Ok(s) => s,
         Err(e) => {
@@ -506,7 +523,9 @@ mod tests {
     #[test]
     fn crypto_hash_routes_to_beardog() {
         let table = test_table();
-        let entry = table.route("crypto.hash").expect("crypto.hash should exist");
+        let entry = table
+            .route("crypto.hash")
+            .expect("crypto.hash should exist");
         assert_eq!(&*entry.owner, "beardog");
         assert_eq!(&*entry.domain, "security");
         assert_eq!(entry.tier, CompositionTier::Tower);
@@ -515,7 +534,9 @@ mod tests {
     #[test]
     fn storage_store_routes_to_nestgate() {
         let table = test_table();
-        let entry = table.route("storage.store").expect("storage.store should exist");
+        let entry = table
+            .route("storage.store")
+            .expect("storage.store should exist");
         assert_eq!(&*entry.owner, "nestgate");
         assert_eq!(entry.tier, CompositionTier::Nest);
     }
@@ -606,14 +627,13 @@ mod tests {
     #[test]
     fn composition_tier_patterns_extracted() {
         let table = test_table();
-        let nest_store = table
-            .patterns()
-            .iter()
-            .find(|p| &*p.name == "nest_store");
+        let nest_store = table.patterns().iter().find(|p| &*p.name == "nest_store");
         assert!(nest_store.is_some(), "nest_store pattern should exist");
         let ns = nest_store.unwrap();
-        assert!(ns.methods.iter().any(|s| &**s == "nest.store"),
-            "TOML-driven pattern references signal method nest.store");
+        assert!(
+            ns.methods.iter().any(|s| &**s == "nest.store"),
+            "TOML-driven pattern references signal method nest.store"
+        );
     }
 
     #[test]

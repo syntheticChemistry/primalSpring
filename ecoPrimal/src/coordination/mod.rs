@@ -77,7 +77,14 @@ impl AtomicType {
     pub const fn required_capabilities(self) -> &'static [&'static str] {
         match self {
             Self::Tower => &["security", "discovery", "defense"],
-            Self::Node => &["security", "discovery", "defense", "compute", "tensor", "shader"],
+            Self::Node => &[
+                "security",
+                "discovery",
+                "defense",
+                "compute",
+                "tensor",
+                "shader",
+            ],
             Self::Nest => &[
                 "security",
                 "discovery",
@@ -160,7 +167,9 @@ impl AtomicType {
         match self {
             Self::Tower => "Security + Discovery + Defense (crypto + mesh + audit)",
             Self::Node => "Tower + Compute trio (dispatch + math + shaders)",
-            Self::Nest => "Tower + Storage + Provenance trio (content + DAG + ledger + attribution)",
+            Self::Nest => {
+                "Tower + Storage + Provenance trio (content + DAG + ledger + attribution)"
+            }
             Self::FullNucleus => "All 13 primals: Tower + Node + Nest + meta-tier",
         }
     }

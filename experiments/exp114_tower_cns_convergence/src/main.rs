@@ -56,11 +56,36 @@ fn phase_port_census(v: &mut ValidationResult) {
     }
 
     let ports = [
-        Port { port: 7700, primal: "songbird", role: "federation nucleus01", can_drop: false },
-        Port { port: 7701, primal: "songbird", role: "federation primalspring01", can_drop: false },
-        Port { port: 9900, primal: "beardog", role: "crypto RPC nucleus01", can_drop: true },
-        Port { port: 9101, primal: "beardog", role: "crypto RPC primalspring01", can_drop: true },
-        Port { port: 9750, primal: "skunkbat", role: "meta-tier defense", can_drop: true },
+        Port {
+            port: 7700,
+            primal: "songbird",
+            role: "federation nucleus01",
+            can_drop: false,
+        },
+        Port {
+            port: 7701,
+            primal: "songbird",
+            role: "federation primalspring01",
+            can_drop: false,
+        },
+        Port {
+            port: 9900,
+            primal: "beardog",
+            role: "crypto RPC nucleus01",
+            can_drop: true,
+        },
+        Port {
+            port: 9101,
+            primal: "beardog",
+            role: "crypto RPC primalspring01",
+            can_drop: true,
+        },
+        Port {
+            port: 9750,
+            primal: "skunkbat",
+            role: "meta-tier defense",
+            can_drop: true,
+        },
     ];
 
     let mut reachable_count = 0;
@@ -167,11 +192,14 @@ fn phase_tower_relay(v: &mut ValidationResult) {
     v.check_bool(
         "tower:capabilities",
         tower_alive > 0,
-        &format!("{tower_alive}/{} Tower capabilities discovered", tower_caps.len()),
+        &format!(
+            "{tower_alive}/{} Tower capabilities discovered",
+            tower_caps.len()
+        ),
     );
 
-    let bridge = NeuralBridge::discover()
-        .or_else(|| NeuralBridge::discover_with(None, Some("nucleus01")));
+    let bridge =
+        NeuralBridge::discover().or_else(|| NeuralBridge::discover_with(None, Some("nucleus01")));
     let Some(bridge) = bridge else {
         v.check_skip("tower:neural_api", "biomeOS Neural API not running");
         return;
@@ -195,7 +223,10 @@ fn phase_tower_relay(v: &mut ValidationResult) {
             );
         }
         Err(e) => {
-            v.check_skip("tower:songbird_via_neural", &format!("songbird discover: {e}"));
+            v.check_skip(
+                "tower:songbird_via_neural",
+                &format!("songbird discover: {e}"),
+            );
         }
     }
 
@@ -208,7 +239,10 @@ fn phase_tower_relay(v: &mut ValidationResult) {
             );
         }
         Err(e) => {
-            v.check_skip("tower:beardog_via_neural", &format!("beardog discover: {e}"));
+            v.check_skip(
+                "tower:beardog_via_neural",
+                &format!("beardog discover: {e}"),
+            );
         }
     }
 

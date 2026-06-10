@@ -36,8 +36,7 @@ pub(super) fn tcp_tier5_enabled() -> bool {
     #[cfg(debug_assertions)]
     {
         std::env::var(crate::env_keys::PRIMALSPRING_TCP_TIER5)
-            .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
-            .unwrap_or(false)
+            .is_ok_and(|v| v == "1" || v.eq_ignore_ascii_case("true"))
     }
     #[cfg(not(debug_assertions))]
     {
@@ -83,7 +82,8 @@ pub(super) fn discover_full() -> DiscoveryResult {
                     if let Ok(client) = PrimalClient::connect(&path, primal) {
                         tracing::debug!(cap, primal, tier = 1, "discovered via Songbird");
                         clients.insert(CapabilityDomain::from(cap), client);
-                        discovery_paths.insert(CapabilityDomain::from(cap), DiscoveryPath::Songbird);
+                        discovery_paths
+                            .insert(CapabilityDomain::from(cap), DiscoveryPath::Songbird);
                     }
                 }
             }
@@ -100,7 +100,11 @@ pub(super) fn discover_full() -> DiscoveryResult {
 
     // BTSP escalation
     let btsp_state = upgrade_btsp_clients(&mut clients);
-    DiscoveryResult { clients, btsp_state, discovery_paths }
+    DiscoveryResult {
+        clients,
+        btsp_state,
+        discovery_paths,
+    }
 }
 
 /// Tiers 2-4 only (Neural API, UDS convention, socket registry).
@@ -112,7 +116,11 @@ pub(super) fn discover_live() -> DiscoveryResult {
         .iter()
         .map(|(cap, c)| (cap.clone(), c.is_btsp_authenticated()))
         .collect();
-    DiscoveryResult { clients, btsp_state, discovery_paths }
+    DiscoveryResult {
+        clients,
+        btsp_state,
+        discovery_paths,
+    }
 }
 
 /// Tiers 2-5 (Neural API + UDS + registry + gated TCP fallback).
@@ -153,7 +161,11 @@ pub(super) fn discover_with_fallback() -> DiscoveryResult {
     }
 
     let btsp_state = upgrade_btsp_clients(&mut clients);
-    DiscoveryResult { clients, btsp_state, discovery_paths }
+    DiscoveryResult {
+        clients,
+        btsp_state,
+        discovery_paths,
+    }
 }
 
 /// Re-discover capabilities, keeping existing live connections.

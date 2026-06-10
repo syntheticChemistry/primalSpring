@@ -22,8 +22,13 @@ pub fn run(check: &str) {
         .filter_map(|line| {
             let trimmed = line.trim();
             if trimmed.starts_with('"') && trimmed.contains('.') {
-                let method = trimmed.trim_matches(|c: char| c == '"' || c == ',' || c.is_whitespace());
-                if method.contains('.') && method.chars().all(|c| c.is_ascii_lowercase() || c == '.' || c == '_' || c.is_ascii_digit()) {
+                let method =
+                    trimmed.trim_matches(|c: char| c == '"' || c == ',' || c.is_whitespace());
+                if method.contains('.')
+                    && method.chars().all(|c| {
+                        c.is_ascii_lowercase() || c == '.' || c == '_' || c.is_ascii_digit()
+                    })
+                {
                     return Some(method.to_owned());
                 }
             }
@@ -51,7 +56,10 @@ pub fn run(check: &str) {
         eprintln!("\n{errors} registry drift issue(s) found");
         std::process::exit(1);
     }
-    println!("\nRegistry lint: PASS ({} methods registered)", registered.len());
+    println!(
+        "\nRegistry lint: PASS ({} methods registered)",
+        registered.len()
+    );
 }
 
 fn check_source_methods(registered: &HashSet<String>) -> u32 {
@@ -60,9 +68,13 @@ fn check_source_methods(registered: &HashSet<String>) -> u32 {
     let src_dirs = ["ecoPrimal/src", "experiments"];
 
     for dir in &src_dirs {
-        let Ok(walker) = walk_files_ext(dir, "rs") else { continue };
+        let Ok(walker) = walk_files_ext(dir, "rs") else {
+            continue;
+        };
         for path in walker {
-            let Ok(content) = std::fs::read_to_string(&path) else { continue };
+            let Ok(content) = std::fs::read_to_string(&path) else {
+                continue;
+            };
             for (line_no, line) in content.lines().enumerate() {
                 for method in extract_method_strings(line) {
                     if !registered.contains(&method) && !is_known_non_method(&method) {
@@ -89,9 +101,13 @@ fn check_graph_methods(registered: &HashSet<String>) -> u32 {
     let graph_dirs = ["graphs/fragments", "graphs/cells", "graphs/downstream"];
 
     for dir in &graph_dirs {
-        let Ok(walker) = walk_files_ext(dir, "toml") else { continue };
+        let Ok(walker) = walk_files_ext(dir, "toml") else {
+            continue;
+        };
         for path in walker {
-            let Ok(content) = std::fs::read_to_string(&path) else { continue };
+            let Ok(content) = std::fs::read_to_string(&path) else {
+                continue;
+            };
             for (line_no, line) in content.lines().enumerate() {
                 for method in extract_method_strings(line) {
                     if !registered.contains(&method) && !is_known_non_method(&method) {
@@ -135,7 +151,10 @@ fn check_coverage(registered: &HashSet<String>) {
     }
 
     if unused == 0 {
-        println!("  OK: all {} registered methods are referenced in source", registered.len());
+        println!(
+            "  OK: all {} registered methods are referenced in source",
+            registered.len()
+        );
     } else {
         println!("  {unused} registered method(s) have no source references (advisory)");
     }
@@ -164,8 +183,13 @@ fn extract_method_strings(line: &str) -> Vec<String> {
             let candidate = &rest[..end];
             if candidate.contains('.')
                 && candidate.len() >= 3
-                && candidate.chars().all(|c| c.is_ascii_lowercase() || c == '.' || c == '_' || c.is_ascii_digit())
-                && candidate.chars().next().is_some_and(|c| c.is_ascii_lowercase())
+                && candidate
+                    .chars()
+                    .all(|c| c.is_ascii_lowercase() || c == '.' || c == '_' || c.is_ascii_digit())
+                && candidate
+                    .chars()
+                    .next()
+                    .is_some_and(|c| c.is_ascii_lowercase())
             {
                 methods.push(candidate.to_owned());
             }
@@ -178,13 +202,26 @@ fn extract_method_strings(line: &str) -> Vec<String> {
 }
 
 fn is_known_non_method(s: &str) -> bool {
-    s.contains("..") || s.starts_with('.') || s.ends_with('.')
-        || s == "prov.o" || s == "json.ld"
-        || s.starts_with("v0.") || s.starts_with("v1.") || s.starts_with("v2.")
-        || s.contains("_test.") || s.contains(".toml") || s.contains(".json")
-        || s.contains(".rs") || s.contains(".sh") || s.contains(".py")
-        || s.contains(".sock") || s.contains(".log") || s.contains(".pid")
-        || s.contains(".seed") || s.contains(".txt") || s.contains(".md")
+    s.contains("..")
+        || s.starts_with('.')
+        || s.ends_with('.')
+        || s == "prov.o"
+        || s == "json.ld"
+        || s.starts_with("v0.")
+        || s.starts_with("v1.")
+        || s.starts_with("v2.")
+        || s.contains("_test.")
+        || s.contains(".toml")
+        || s.contains(".json")
+        || s.contains(".rs")
+        || s.contains(".sh")
+        || s.contains(".py")
+        || s.contains(".sock")
+        || s.contains(".log")
+        || s.contains(".pid")
+        || s.contains(".seed")
+        || s.contains(".txt")
+        || s.contains(".md")
 }
 
 fn walk_files_ext(dir: &str, ext: &str) -> std::io::Result<Vec<PathBuf>> {

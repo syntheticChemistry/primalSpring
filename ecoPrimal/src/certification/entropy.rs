@@ -392,23 +392,38 @@ mod tests {
         assert_eq!(hex::encode(&[0x00]), "00");
         assert_eq!(hex::encode(&[0xff]), "ff");
         assert_eq!(hex::encode(&[0xde, 0xad, 0xbe, 0xef]), "deadbeef");
-        assert_eq!(hex::encode(&[0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]), "0123456789abcdef");
+        assert_eq!(
+            hex::encode(&[0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
+            "0123456789abcdef"
+        );
     }
 
     #[test]
     fn seed_source_display() {
-        assert_eq!(format!("{}", SeedSource::EnvGuidestone), "GUIDESTONE_SEED env");
+        assert_eq!(
+            format!("{}", SeedSource::EnvGuidestone),
+            "GUIDESTONE_SEED env"
+        );
         assert_eq!(format!("{}", SeedSource::EnvFamily), "FAMILY_SEED env");
         assert_eq!(format!("{}", SeedSource::SeedFile), ".family.seed file");
-        assert_eq!(format!("{}", SeedSource::Generated), "generated (machine entropy)");
+        assert_eq!(
+            format!("{}", SeedSource::Generated),
+            "generated (machine entropy)"
+        );
     }
 
     #[test]
     fn resolve_mito_seed_returns_nonempty() {
         let seed = resolve_mito_seed();
-        assert!(!seed.hex_seed.is_empty(), "seed should always resolve to something");
-        assert!(seed.hex_seed.chars().all(|c| c.is_ascii_hexdigit()),
-            "seed should be hex: {}", seed.hex_seed);
+        assert!(
+            !seed.hex_seed.is_empty(),
+            "seed should always resolve to something"
+        );
+        assert!(
+            seed.hex_seed.chars().all(|c| c.is_ascii_hexdigit()),
+            "seed should be hex: {}",
+            seed.hex_seed
+        );
     }
 
     #[test]
@@ -437,7 +452,10 @@ mod tests {
             Path::new("/nonexistent/fingerprints.toml"),
             Path::new("/nonexistent/plasmin"),
         );
-        assert!(results.is_empty(), "missing path should yield empty results");
+        assert!(
+            results.is_empty(),
+            "missing path should yield empty results"
+        );
     }
 
     #[test]

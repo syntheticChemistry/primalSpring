@@ -29,8 +29,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave49_covalent_mesh",
         provenance_date: "2026-05-25",
-        description:
-            "Covalent mesh — discovery.peers, cross-gate capability.call via Songbird TCP federation",
+        description: "Covalent mesh — discovery.peers, cross-gate capability.call via Songbird TCP federation",
     },
     run,
 };
@@ -95,11 +94,7 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
         return;
     }
 
-    match ctx.call(
-        "discovery",
-        "discovery.peers",
-        serde_json::json!({}),
-    ) {
+    match ctx.call("discovery", "discovery.peers", serde_json::json!({})) {
         Ok(resp) => {
             v.check_bool(
                 "live:discovery_peers",
@@ -149,13 +144,22 @@ fn validate_peer_response(v: &mut ValidationResult, resp: &serde_json::Value) {
     let Some(peers) = resp.get("peers").and_then(serde_json::Value::as_array) else {
         v.check_skip("live:peer_gate_ids", "no peers array in response");
         v.check_skip("live:peer_latency", "no peers for latency measurement");
-        v.check_skip("live:capability_propagation", "no peers for capability check");
+        v.check_skip(
+            "live:capability_propagation",
+            "no peers for capability check",
+        );
         return;
     };
     if peers.is_empty() {
-        v.check_skip("live:peer_gate_ids", "no peers — federation port may not be enabled");
+        v.check_skip(
+            "live:peer_gate_ids",
+            "no peers — federation port may not be enabled",
+        );
         v.check_skip("live:peer_latency", "no peers for latency measurement");
-        v.check_skip("live:capability_propagation", "no peers for capability check");
+        v.check_skip(
+            "live:capability_propagation",
+            "no peers for capability check",
+        );
         return;
     }
 
@@ -243,7 +247,8 @@ fn phase_cross_gate_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCont
         return;
     }
 
-    let manifest_toml = include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
+    let manifest_toml =
+        include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
     let peer_gates: Vec<String> = toml::from_str::<toml::Value>(manifest_toml)
         .ok()
         .and_then(|p| p.get("gates")?.as_table().cloned())
@@ -289,10 +294,7 @@ fn phase_cross_gate_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCont
                     || msg.contains("No local or remote provider")
                     || msg.contains("-32601");
                 if expected_skip {
-                    v.check_skip(
-                        &check_id,
-                        &format!("{target_gate} mesh not available: {e}"),
-                    );
+                    v.check_skip(&check_id, &format!("{target_gate} mesh not available: {e}"));
                 } else {
                     v.check_bool(
                         &check_id,

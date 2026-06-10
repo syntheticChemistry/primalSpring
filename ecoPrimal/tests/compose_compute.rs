@@ -169,7 +169,10 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
     let binary_b64 = compile_resp["binary_b64"]
         .as_str()
         .expect("should return binary_b64");
-    assert!(!binary_b64.is_empty(), "compiled binary should be non-empty");
+    assert!(
+        !binary_b64.is_empty(),
+        "compiled binary should be non-empty"
+    );
 
     let default_shader_info = serde_json::json!({
         "gprs": 32, "shared_memory": 0, "barriers": 0,
@@ -190,7 +193,10 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
         "compute.dispatch.submit should succeed: {dispatch:?}"
     );
     let dispatch_resp = dispatch.unwrap();
-    let has_result = dispatch_resp.get("dispatch_id").is_some()
-        || dispatch_resp.get("status").is_some();
-    assert!(has_result, "dispatch should return id or status: {dispatch_resp}");
+    let has_result =
+        dispatch_resp.get("dispatch_id").is_some() || dispatch_resp.get("status").is_some();
+    assert!(
+        has_result,
+        "dispatch should return id or status: {dispatch_resp}"
+    );
 }

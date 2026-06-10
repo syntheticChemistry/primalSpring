@@ -208,19 +208,16 @@ pub fn port_env_key(slug: &str) -> &'static str {
         map
     });
 
-    INTERN
-        .get(slug)
-        .copied()
-        .unwrap_or_else(|| {
-            static FALLBACK: LazyLock<std::sync::Mutex<Vec<&'static str>>> =
-                LazyLock::new(|| std::sync::Mutex::new(Vec::new()));
-            let key = format!("{}_PORT", slug.to_uppercase());
-            let leaked: &'static str = &*Box::leak(key.into_boxed_str());
-            if let Ok(mut guard) = FALLBACK.lock() {
-                guard.push(leaked);
-            }
-            leaked
-        })
+    INTERN.get(slug).copied().unwrap_or_else(|| {
+        static FALLBACK: LazyLock<std::sync::Mutex<Vec<&'static str>>> =
+            LazyLock::new(|| std::sync::Mutex::new(Vec::new()));
+        let key = format!("{}_PORT", slug.to_uppercase());
+        let leaked: &'static str = &*Box::leak(key.into_boxed_str());
+        if let Ok(mut guard) = FALLBACK.lock() {
+            guard.push(leaked);
+        }
+        leaked
+    })
 }
 
 /// Override TCP port for bearDog (identity / BTSP token authority).
@@ -315,9 +312,18 @@ mod tests {
     #[test]
     fn all_constants_are_uppercase_port_pattern() {
         let consts = [
-            BEARDOG_PORT, SONGBIRD_PORT, NESTGATE_PORT, TOADSTOOL_PORT,
-            BARRACUDA_PORT, CORALREEF_PORT, SQUIRREL_PORT, RHIZOCRYPT_PORT,
-            SWEETGRASS_PORT, PETALTONGUE_PORT, LOAMSPINE_PORT, SKUNKBAT_PORT,
+            BEARDOG_PORT,
+            SONGBIRD_PORT,
+            NESTGATE_PORT,
+            TOADSTOOL_PORT,
+            BARRACUDA_PORT,
+            CORALREEF_PORT,
+            SQUIRREL_PORT,
+            RHIZOCRYPT_PORT,
+            SWEETGRASS_PORT,
+            PETALTONGUE_PORT,
+            LOAMSPINE_PORT,
+            SKUNKBAT_PORT,
             BIOMEOS_PORT,
         ];
         for c in &consts {

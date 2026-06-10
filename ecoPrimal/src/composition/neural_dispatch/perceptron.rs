@@ -31,8 +31,8 @@
 //! For routing optimization, the label is the **normalized reward**:
 //! `reward = success * (1.0 - latency_norm)` — faster successes score higher.
 
-use super::metrics::DispatchMetric;
 use super::RoutePath;
+use super::metrics::DispatchMetric;
 use crate::composition::neural_routing::CompositionTier;
 
 /// Feature vector dimensionality.
@@ -50,7 +50,10 @@ const MAX_DEPTH: f64 = 4.0;
 /// Derived from `Primal::ALL` at runtime to stay in sync with
 /// the canonical primal list — no hardcoded slug array.
 fn primal_slugs() -> Vec<&'static str> {
-    crate::primal_names::Primal::ALL.iter().map(|p| p.slug()).collect()
+    crate::primal_names::Primal::ALL
+        .iter()
+        .map(|p| p.slug())
+        .collect()
 }
 
 /// A 36-dimensional feature vector extracted from a dispatch metric.
@@ -231,7 +234,10 @@ fn method_hash(method: &str) -> [u8; 4] {
 }
 
 #[cfg(test)]
-#[expect(clippy::float_cmp, reason = "exact float equality is correct for one-hot encoding tests")]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact float equality is correct for one-hot encoding tests"
+)]
 mod tests {
     use super::*;
     use std::sync::Arc;

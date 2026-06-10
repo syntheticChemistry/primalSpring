@@ -72,18 +72,28 @@ fn phase_structural(v: &mut ValidationResult) {
     topo.set_local_gate("east-gate");
 
     let gate_configs: &[(&str, &[&str], &[&str])] = &[
-        ("east-gate",   &["beardog", "songbird", "nestgate"], &["security", "discovery", "storage"]),
-        ("strand-gate", &["toadstool", "barracuda"],          &["compute", "tensor"]),
-        ("iron-gate",   &["skunkbat", "coralreef"],           &["defense", "shader"]),
+        (
+            "east-gate",
+            &["beardog", "songbird", "nestgate"],
+            &["security", "discovery", "storage"],
+        ),
+        (
+            "strand-gate",
+            &["toadstool", "barracuda"],
+            &["compute", "tensor"],
+        ),
+        (
+            "iron-gate",
+            &["skunkbat", "coralreef"],
+            &["defense", "shader"],
+        ),
     ];
 
     for (gate, primals, caps) in gate_configs {
-        let addr = mesh_peers
-            .split(',')
-            .find_map(|pair| {
-                let (k, v) = pair.split_once('=')?;
-                (k.trim() == *gate).then(|| v.trim().to_owned())
-            });
+        let addr = mesh_peers.split(',').find_map(|pair| {
+            let (k, v) = pair.split_once('=')?;
+            (k.trim() == *gate).then(|| v.trim().to_owned())
+        });
         topo.register_gate(
             *gate,
             addr,
@@ -116,17 +126,11 @@ fn phase_structural(v: &mut ValidationResult) {
 }
 
 fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    let peers_result = ctx.call(
-        "discovery",
-        "discovery.peers",
-        serde_json::json!({}),
-    );
+    let peers_result = ctx.call("discovery", "discovery.peers", serde_json::json!({}));
 
     match peers_result {
         Ok(resp) => {
-            let peers = resp
-                .get("peers")
-                .and_then(serde_json::Value::as_array);
+            let peers = resp.get("peers").and_then(serde_json::Value::as_array);
 
             if let Some(peers) = peers {
                 let peer_count = peers.len();
@@ -199,7 +203,11 @@ fn phase_live_discovery(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             v.check_skip("live:plasmodium_quorum", "skipped — no discovery");
         }
         Err(e) => {
-            v.check_bool("live:peer_count", false, &format!("discovery.peers error: {e}"));
+            v.check_bool(
+                "live:peer_count",
+                false,
+                &format!("discovery.peers error: {e}"),
+            );
         }
     }
 }
@@ -232,10 +240,7 @@ fn phase_cross_gate_call(v: &mut ValidationResult, ctx: &mut CompositionContext)
                 );
             }
             Err(e) if e.is_skippable() => {
-                v.check_skip(
-                    &check_id,
-                    &format!("orchestration not available: {e}"),
-                );
+                v.check_skip(&check_id, &format!("orchestration not available: {e}"));
             }
             Err(e) => {
                 let msg = format!("{e}");
@@ -250,11 +255,7 @@ fn phase_cross_gate_call(v: &mut ValidationResult, ctx: &mut CompositionContext)
                         &format!("cross-gate dispatch gap (may need Songbird rebuild): {e}"),
                     );
                 } else {
-                    v.check_bool(
-                        &check_id,
-                        false,
-                        &format!("unexpected error: {e}"),
-                    );
+                    v.check_bool(&check_id, false, &format!("unexpected error: {e}"));
                 }
             }
         }
@@ -271,12 +272,10 @@ fn phase_composition_routing(v: &mut ValidationResult, ctx: &CompositionContext)
         "east-gate=127.0.0.1:7700,strand-gate=127.0.0.2:7700,iron-gate=127.0.0.3:7700".to_owned()
     });
     let peer_addr = |gate: &str| -> Option<String> {
-        mesh_peers
-            .split(',')
-            .find_map(|pair| {
-                let (k, v) = pair.split_once('=')?;
-                (k.trim() == gate).then(|| v.trim().to_owned())
-            })
+        mesh_peers.split(',').find_map(|pair| {
+            let (k, v) = pair.split_once('=')?;
+            (k.trim() == gate).then(|| v.trim().to_owned())
+        })
     };
 
     topo.register_gate(
@@ -371,18 +370,8 @@ mod tests {
             ["beardog", "songbird"],
             ["security", "discovery"],
         );
-        topo.register_gate(
-            "strand-gate",
-            None,
-            ["barracuda"],
-            ["compute"],
-        );
-        topo.register_gate(
-            "iron-gate",
-            None,
-            ["skunkbat"],
-            ["defense"],
-        );
+        topo.register_gate("strand-gate", None, ["barracuda"], ["compute"]);
+        topo.register_gate("iron-gate", None, ["skunkbat"], ["defense"]);
         topo.mark_healthy("east-gate", true);
         topo.mark_healthy("strand-gate", true);
         topo.mark_healthy("iron-gate", true);

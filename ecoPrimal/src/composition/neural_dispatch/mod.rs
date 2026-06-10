@@ -28,8 +28,8 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use super::neural_routing::{
-    canonical_routing_table, CompositionPattern, CompositionTier, NeuralRoutingTable, RouteEntry,
-    TierComposition,
+    CompositionPattern, CompositionTier, NeuralRoutingTable, RouteEntry, TierComposition,
+    canonical_routing_table,
 };
 use crate::ipc::error::IpcError;
 use crate::ipc::neural_bridge::{BridgeOutcome, NeuralBridge};
@@ -157,11 +157,7 @@ impl NeuralDispatcher {
     /// 1. Look up method in routing table → get owner, domain, tier
     /// 2. If NeuralBridge available, dispatch via `capability.call`
     /// 3. Record metrics for adaptive routing
-    pub fn dispatch(
-        &mut self,
-        method: &str,
-        params: &serde_json::Value,
-    ) -> DispatchOutcome {
+    pub fn dispatch(&mut self, method: &str, params: &serde_json::Value) -> DispatchOutcome {
         let start = Instant::now();
 
         let Some(entry) = self.table.route(method).cloned() else {
@@ -217,7 +213,12 @@ impl NeuralDispatcher {
     ) -> DispatchOutcome {
         let start = Instant::now();
 
-        let pattern = match self.table.patterns().iter().find(|p| &*p.name == pattern_name) {
+        let pattern = match self
+            .table
+            .patterns()
+            .iter()
+            .find(|p| &*p.name == pattern_name)
+        {
             Some(p) => p.clone(),
             None => {
                 return DispatchOutcome {
@@ -232,11 +233,14 @@ impl NeuralDispatcher {
         };
 
         let graph_request = build_graph_request(&pattern, params);
-        let result = self.bridge.as_ref().map_or(Err(DispatchError::BridgeOffline), |bridge| {
-            bridge
-                .graph_deploy(&graph_request)
-                .map_err(|e| DispatchError::GraphFailed(e.to_string()))
-        });
+        let result = self
+            .bridge
+            .as_ref()
+            .map_or(Err(DispatchError::BridgeOffline), |bridge| {
+                bridge
+                    .graph_deploy(&graph_request)
+                    .map_err(|e| DispatchError::GraphFailed(e.to_string()))
+            });
 
         let latency_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
         let success = result.is_ok();
@@ -268,8 +272,20 @@ impl NeuralDispatcher {
     pub fn record_bridge_outcome(&mut self, outcome: &BridgeOutcome) {
         let method_str = format!("{}.{}", outcome.capability, outcome.operation);
         let (method_arc, owner_arc, tier) = self.table.route(&method_str).map_or_else(
-            || (Arc::from(method_str.as_str()), Arc::from("unknown"), CompositionTier::Standalone),
-            |entry| (Arc::clone(&entry.method), Arc::clone(&entry.owner), entry.tier),
+            || {
+                (
+                    Arc::from(method_str.as_str()),
+                    Arc::from("unknown"),
+                    CompositionTier::Standalone,
+                )
+            },
+            |entry| {
+                (
+                    Arc::clone(&entry.method),
+                    Arc::clone(&entry.owner),
+                    entry.tier,
+                )
+            },
         );
 
         self.metrics.push(DispatchMetric {

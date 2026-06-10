@@ -28,8 +28,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "primalspring_sporeprint_pure_primal",
         provenance_date: "2026-06-01",
-        description:
-            "sporePrint pure-primal parity — content rendering via petalTongue vs Zola reference",
+        description: "sporePrint pure-primal parity — content rendering via petalTongue vs Zola reference",
     },
     run,
 };
@@ -180,8 +179,7 @@ fn phase_content_parsing(v: &mut ValidationResult, root: &Path) {
 }
 
 fn phase_entity_resolution(v: &mut ValidationResult, root: &Path) {
-    let config_content =
-        std::fs::read_to_string(root.join("config.toml")).unwrap_or_default();
+    let config_content = std::fs::read_to_string(root.join("config.toml")).unwrap_or_default();
 
     let entity_count = config_content
         .lines()
@@ -253,18 +251,30 @@ fn phase_modality_output(v: &mut ValidationResult, root: &Path) {
     });
 
     let Some(sample_path) = sample else {
-        v.check_bool("modality:sample_found", false, "no non-index content file found");
+        v.check_bool(
+            "modality:sample_found",
+            false,
+            "no non-index content file found",
+        );
         return;
     };
 
     let content = std::fs::read_to_string(sample_path).unwrap_or_default();
     let has_heading = content.lines().any(|l| l.starts_with('#'));
-    let has_body = content.lines().any(|l| !l.trim().is_empty() && !l.starts_with("+++") && !l.starts_with('#'));
+    let has_body = content
+        .lines()
+        .any(|l| !l.trim().is_empty() && !l.starts_with("+++") && !l.starts_with('#'));
 
     v.check_bool(
         "modality:sample_has_heading",
         has_heading,
-        &format!("sample {} has heading", sample_path.file_name().unwrap_or_default().to_string_lossy()),
+        &format!(
+            "sample {} has heading",
+            sample_path
+                .file_name()
+                .unwrap_or_default()
+                .to_string_lossy()
+        ),
     );
     v.check_bool(
         "modality:sample_has_body",
@@ -297,7 +307,11 @@ fn phase_composition_graph(v: &mut ValidationResult) {
     };
 
     let content = std::fs::read_to_string(&path).unwrap_or_default();
-    v.check_bool("graph:found", true, &format!("deploy graph at {}", path.display()));
+    v.check_bool(
+        "graph:found",
+        true,
+        &format!("deploy graph at {}", path.display()),
+    );
 
     v.check_bool(
         "graph:includes_nest_atomic",
@@ -328,8 +342,8 @@ fn phase_composition_graph(v: &mut ValidationResult) {
 
 fn phase_certification(v: &mut ValidationResult, root: &Path) {
     let workflow = root.join(".github/workflows/deploy.yml");
-    let has_certify = std::fs::read_to_string(&workflow)
-        .is_ok_and(|content| content.contains("certify"));
+    let has_certify =
+        std::fs::read_to_string(&workflow).is_ok_and(|content| content.contains("certify"));
     v.check_bool(
         "cert:deploy_workflow_certifies",
         has_certify,

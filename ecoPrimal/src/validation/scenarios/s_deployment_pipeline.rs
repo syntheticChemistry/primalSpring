@@ -27,8 +27,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave93_primalspring",
         provenance_date: "2026-06-07",
-        description:
-            "Deployment pipeline — depot layout, checksums, provenance, cell readiness, live deploy",
+        description: "Deployment pipeline — depot layout, checksums, provenance, cell readiness, live deploy",
     },
     run,
 };
@@ -202,7 +201,11 @@ fn phase_checksums(v: &mut ValidationResult) {
                             v.check_bool(
                                 &format!("checksums:{primal}"),
                                 has_hash,
-                                if has_hash { "blake3 present" } else { "missing blake3 hash" },
+                                if has_hash {
+                                    "blake3 present"
+                                } else {
+                                    "missing blake3 hash"
+                                },
                             );
                         }
                     }
@@ -402,7 +405,8 @@ mod tests {
         let mut sorted = EXPECTED_PRIMALS.to_vec();
         sorted.sort();
         assert_eq!(
-            EXPECTED_PRIMALS, &sorted[..],
+            EXPECTED_PRIMALS,
+            &sorted[..],
             "EXPECTED_PRIMALS should be alphabetically sorted"
         );
     }

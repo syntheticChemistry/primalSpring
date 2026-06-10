@@ -25,11 +25,11 @@
 use std::collections::HashMap;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+use super::BondingConstraint;
 use super::ionic::{
     ContractId, ContractState, IonicContract, IonicProposal, ProposalResponse, ProvenanceSeal,
     ScopeModification, TerminationRequest, UsageMetrics,
 };
-use super::BondingConstraint;
 
 /// Errors specific to ionic protocol state machine violations.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -181,8 +181,7 @@ impl IonicContractRegistry {
         contract.accepted_at = Some(now);
 
         if contract.proposal.duration_secs > 0 {
-            let expires = SystemTime::now()
-                + Duration::from_secs(contract.proposal.duration_secs);
+            let expires = SystemTime::now() + Duration::from_secs(contract.proposal.duration_secs);
             contract.expires_at = Some(system_time_to_iso(expires));
         }
 
@@ -266,7 +265,11 @@ impl IonicContractRegistry {
 
         contract.usage.total_calls += 1;
         contract.usage.total_bytes += bytes;
-        if !contract.usage.distinct_methods.contains(&capability.to_owned()) {
+        if !contract
+            .usage
+            .distinct_methods
+            .contains(&capability.to_owned())
+        {
             contract.usage.distinct_methods.push(capability.to_owned());
         }
 
@@ -498,10 +501,7 @@ mod tests {
 
         let resp = reg.reject(&id, "policy mismatch").unwrap();
         assert!(!resp.accepted);
-        assert_eq!(
-            resp.rejection_reason.as_deref(),
-            Some("policy mismatch")
-        );
+        assert_eq!(resp.rejection_reason.as_deref(), Some("policy mismatch"));
         assert_eq!(reg.get(&id).unwrap().state, ContractState::Rejected);
     }
 
@@ -628,10 +628,7 @@ mod tests {
     fn not_found_error() {
         let mut reg = IonicContractRegistry::new();
         let result = reg.accept("nonexistent", compute_only_constraints());
-        assert!(matches!(
-            result,
-            Err(IonicProtocolError::NotFound(_))
-        ));
+        assert!(matches!(result, Err(IonicProtocolError::NotFound(_))));
     }
 
     #[test]

@@ -250,13 +250,19 @@ mod tests {
             ("Nest", AtomicType::Nest.required_capabilities()),
         ];
         for &(name, caps) in tiers {
-            assert!(!caps.is_empty(), "{name} tier should have at least one capability");
+            assert!(
+                !caps.is_empty(),
+                "{name} tier should have at least one capability"
+            );
         }
     }
 
     #[test]
     fn ipc_round_trip_tolerance_positive() {
-        assert!(tolerances::IPC_ROUND_TRIP_TOL > 0.0,
-            "tolerance should be positive: {}", tolerances::IPC_ROUND_TRIP_TOL);
+        assert!(
+            tolerances::IPC_ROUND_TRIP_TOL > 0.0,
+            "tolerance should be positive: {}",
+            tolerances::IPC_ROUND_TRIP_TOL
+        );
     }
 }

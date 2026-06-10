@@ -29,8 +29,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave29_cellmembrane",
         provenance_date: "2026-05-20",
-        description:
-            "Cross-gate capability.call — relay channel, wire contract, local + remote dispatch",
+        description: "Cross-gate capability.call — relay channel, wire contract, local + remote dispatch",
     },
     run,
 };
@@ -90,6 +89,10 @@ fn phase_wire_contract(v: &mut ValidationResult) {
     );
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "cross-gate dispatch validation with IPC probing"
+)]
 fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     match ctx.call(
         "orchestration",
@@ -101,7 +104,10 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         }),
     ) {
         Ok(resp) => {
-            let alive = resp.get("alive").and_then(serde_json::Value::as_bool).unwrap_or(false)
+            let alive = resp
+                .get("alive")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false)
                 || resp.get("status").and_then(serde_json::Value::as_str) == Some("ok")
                 || resp.get("result").is_some();
             v.check_bool(
@@ -358,7 +364,11 @@ fn attempt_cross_gate_auth(
             }),
         )
         .ok()
-        .and_then(|r| r.get("token").and_then(serde_json::Value::as_str).map(String::from));
+        .and_then(|r| {
+            r.get("token")
+                .and_then(serde_json::Value::as_str)
+                .map(String::from)
+        });
 
     let Some(bearer) = token else {
         v.check_skip(
