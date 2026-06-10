@@ -77,6 +77,121 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 
     v.section("Phase 6: Deployment matrix cell coverage");
     phase_matrix_cell(v);
+
+    v.section("Phase 7: Upstream blocker status (13/13 gate)");
+    phase_upstream_blockers(v);
+}
+
+/// Tracks upstream primal blockers that prevent 13/13 grapheneGate deployment.
+/// Each blocker becomes a check that passes once the fix is absorbed.
+fn phase_upstream_blockers(v: &mut ValidationResult) {
+    let cr_tarpc_fixed = check_primal_bind_mode_adoption("coralReef", "tarpc");
+    v.check_bool(
+        "blocker:cr_tarpc_01",
+        cr_tarpc_fixed,
+        "CR-TARPC-01: coralReef tarpc respects PRIMAL_BIND_MODE=tcp_only",
+    );
+
+    let bm_uds_fixed = check_primal_bind_mode_adoption("biomeOS", "neural_api");
+    v.check_bool(
+        "blocker:bm_uds_01",
+        bm_uds_fixed,
+        "BM-UDS-01: biomeOS Neural API respects PRIMAL_BIND_MODE=tcp_only",
+    );
+
+    let toadstool_socket = check_toadstool_socket_cleanup();
+    v.check_bool(
+        "blocker:toadstool_socket",
+        toadstool_socket,
+        "TOADSTOOL-SOCKET-CLEANUP: toadStool 3-tier socket resolution (no /tmp hardcode)",
+    );
+
+    let live_count: u32 = 11 + u32::from(cr_tarpc_fixed) + u32::from(bm_uds_fixed);
+    v.check_bool(
+        "deployment:live_count",
+        live_count >= 13,
+        &format!("{live_count}/13 primals deployable on grapheneGate TCP-only"),
+    );
+}
+
+/// Checks whether a primal's bind-mode-specific subsystem respects tcp_only.
+/// Returns true only when we can structurally verify the fix has landed.
+/// For now, checks if the primal's codebase contains the guard pattern.
+fn check_primal_bind_mode_adoption(primal: &str, subsystem: &str) -> bool {
+    let primal_dir_name = match primal {
+        "coralReef" => "coralReef",
+        "biomeOS" => "biomeOS",
+        _ => return false,
+    };
+    let Some(root) = ecoprimals_root() else {
+        return false;
+    };
+    let primal_root = root.join("primals").join(primal_dir_name);
+    if !primal_root.is_dir() {
+        return false;
+    }
+    // Structural check: search for PRIMAL_BIND_MODE guard near the subsystem's bind site.
+    // This is a heuristic — true validation requires the rebuilt binary on grapheneGate.
+    scan_for_bind_mode_guard(&primal_root, subsystem)
+}
+
+fn scan_for_bind_mode_guard(primal_root: &std::path::Path, subsystem: &str) -> bool {
+    let src_dir = primal_root.join("src");
+    let crates_dir = primal_root.join("crates");
+    let search_root = if crates_dir.is_dir() {
+        crates_dir
+    } else if src_dir.is_dir() {
+        src_dir
+    } else {
+        return false;
+    };
+
+    let target_patterns: &[&str] = match subsystem {
+        "tarpc" => &["PRIMAL_BIND_MODE", "tcp_only", "tarpc"],
+        "neural_api" => &["PRIMAL_BIND_MODE", "tcp_only"],
+        _ => return false,
+    };
+
+    walk_rs_files_for_patterns(&search_root, target_patterns)
+}
+
+fn walk_rs_files_for_patterns(dir: &std::path::Path, patterns: &[&str]) -> bool {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return false;
+    };
+    for entry in entries.filter_map(Result::ok) {
+        let path = entry.path();
+        if path.is_dir() {
+            if walk_rs_files_for_patterns(&path, patterns) {
+                return true;
+            }
+        } else if path.extension().is_some_and(|ext| ext == "rs") {
+            if let Ok(content) = std::fs::read_to_string(&path) {
+                if patterns.iter().all(|p| content.contains(p)) {
+                    return true;
+                }
+            }
+        }
+    }
+    false
+}
+
+/// Checks toadStool socket cleanup status — verifies 3-tier resolution adoption.
+fn check_toadstool_socket_cleanup() -> bool {
+    let Some(root) = ecoprimals_root() else {
+        return false;
+    };
+    let toadstool_root = root.join("primals/toadStool");
+    if !toadstool_root.is_dir() {
+        return false;
+    }
+    // toadStool uses BIOMEOS_SOCKET_DIR as its env override (not TOADSTOOL_SOCKET_DIR).
+    // Check that the server's socket resolution references BIOMEOS_SOCKET_DIR.
+    let crates_dir = toadstool_root.join("crates");
+    if !crates_dir.is_dir() {
+        return false;
+    }
+    walk_rs_files_for_patterns(&crates_dir, &["BIOMEOS_SOCKET_DIR", "XDG_RUNTIME_DIR"])
 }
 
 fn phase_port_coverage(v: &mut ValidationResult) {

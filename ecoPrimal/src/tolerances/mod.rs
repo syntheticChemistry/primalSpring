@@ -548,27 +548,10 @@ pub static FEDERATION_PORTS: &[FederationPort] = &[
         port: 7701,
         droppable: false,
     },
-    FederationPort {
-        profile: "nucleus01",
-        primal: "beardog",
-        role: "crypto RPC",
-        port: 9900,
-        droppable: true,
-    },
-    FederationPort {
-        profile: "primalspring01",
-        primal: "beardog",
-        role: "crypto RPC",
-        port: 9101,
-        droppable: true,
-    },
-    FederationPort {
-        profile: "meta",
-        primal: "skunkbat",
-        role: "defense",
-        port: 9750,
-        droppable: true,
-    },
+    // Wave 107: beardog crypto RPC 9900 DROPPED — port 9900 reassigned to
+    // petalTongue TCP fallback. beardog crypto operates over UDS (BTSP) only.
+    // beardog 9101 (primalspring01 profile) also DROPPED — same rationale.
+    // skunkBat 9750 DROPPED — Wave 107: zero-port standard compliant (port 9140).
 ];
 
 // TCP fallback port constants — legacy, kept for backward compatibility.

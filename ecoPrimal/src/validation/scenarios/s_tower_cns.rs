@@ -194,8 +194,8 @@ mod tests {
             "only Songbird ports should be non-droppable",
         );
         assert!(
-            FEDERATION_PORTS.iter().any(|p| p.droppable),
-            "should have droppable ports",
+            !FEDERATION_PORTS.iter().any(|p| p.droppable),
+            "all droppable ports should be eliminated (Wave 107: beardog 9900/9101, skunkBat 9750)",
         );
     }
 }

@@ -224,10 +224,10 @@ mod tests {
         // Pre-existing known failures in Rust-tier scenarios that predate this
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
-        // Wave 107: beardog 9900 false positive when ADB port forwards active
-        // (petalTongue :9900 forward collides with beardog droppable port check).
-        // Resolves when ADB forwards are cleared.
-        const KNOWN_DEBT: &[(&str, u32)] = &[("zero-port-standard", 1)];
+        // Wave 107: federation ports clean. grapheneGate blocker checks are
+        // structural upstream trackers — they pass once CR-TARPC-01 + BM-UDS-01
+        // fixes land in coralReef/biomeOS source trees.
+        const KNOWN_DEBT: &[(&str, u32)] = &[("graphenegate-readiness", 3)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
