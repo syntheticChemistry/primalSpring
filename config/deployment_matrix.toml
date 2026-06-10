@@ -1,0 +1,172 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Deployment Matrix — arch × topology × transport × gate
+#
+# Each [[cell]] represents a validated (or pending) deployment configuration.
+# Status: "validated" = tested live, "pending" = infrastructure ready, "blocked" = dependency unmet.
+#
+# The deployment matrix sweep (exp081) probes these cells. A cell is "tested"
+# when exp081 has run against a live gate matching its parameters with ≥2 live primals.
+
+[matrix]
+architectures = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+transports = ["uds_only", "tcp_fallback", "tcp_only"]
+topologies = ["standalone", "mesh_peer", "mesh_hub"]
+
+# ── eastGate (x86_64, hub, UDS-only) ────────────────────────────────────────
+
+[[cell]]
+id = "eastgate-x86-uds-hub"
+gate = "eastGate"
+arch = "x86_64-unknown-linux-musl"
+transport = "uds_only"
+topology = "mesh_hub"
+primals = 13
+status = "validated"
+wave = 107
+notes = "Primary development gate. 13/13 FULL NUCLEUS. Hub for 4-gate mesh."
+
+[[cell]]
+id = "eastgate-x86-tcp-hub"
+gate = "eastGate"
+arch = "x86_64-unknown-linux-musl"
+transport = "tcp_fallback"
+topology = "mesh_hub"
+primals = 13
+status = "validated"
+wave = 106
+notes = "TCP fallback tested via exp081 + s_tcp_fallback scenario."
+
+# ── golgiBody VPS (x86_64, mesh peer, UDS-only) ─────────────────────────────
+
+[[cell]]
+id = "golgibody-x86-uds-peer"
+gate = "golgiBody"
+arch = "x86_64-unknown-linux-musl"
+transport = "uds_only"
+topology = "mesh_peer"
+primals = 13
+status = "validated"
+wave = 107
+notes = "VPS build authority. 13/13 via systemd. Mesh API relay."
+
+[[cell]]
+id = "golgibody-x86-tcp-peer"
+gate = "golgiBody"
+arch = "x86_64-unknown-linux-musl"
+transport = "tcp_fallback"
+topology = "mesh_peer"
+primals = 13
+status = "validated"
+wave = 105
+notes = "TCP probed via cross-gate health checks."
+
+# ── ironGate (x86_64, mesh peer via VPS relay) ──────────────────────────────
+
+[[cell]]
+id = "irongate-x86-uds-peer"
+gate = "ironGate"
+arch = "x86_64-unknown-linux-musl"
+transport = "uds_only"
+topology = "mesh_peer"
+primals = 12
+status = "validated"
+wave = 107
+notes = "12/13 — healthSpring gate. VPS relay for mesh."
+
+# ── southGate (x86_64, mesh peer, cross-subnet) ─────────────────────────────
+
+[[cell]]
+id = "southgate-x86-uds-peer"
+gate = "southGate"
+arch = "x86_64-unknown-linux-musl"
+transport = "uds_only"
+topology = "mesh_peer"
+primals = 13
+status = "validated"
+wave = 107
+notes = "Cross-subnet validated. 13/13, 4.7ms latency. 12-step science pipeline."
+
+# ── grapheneGate (aarch64, standalone, TCP-only) ─────────────────────────────
+
+[[cell]]
+id = "graphenegate-aarch64-tcp-standalone"
+gate = "grapheneGate"
+arch = "aarch64-unknown-linux-musl"
+transport = "tcp_only"
+topology = "standalone"
+primals = 9
+status = "pending"
+wave = 107
+notes = "9/13 running pre-rebuild. All 13 TCP fallback code ADOPTED. Needs aarch64 rebuild + redeploy."
+
+[[cell]]
+id = "graphenegate-aarch64-fallback-standalone"
+gate = "grapheneGate"
+arch = "aarch64-unknown-linux-musl"
+transport = "tcp_fallback"
+topology = "standalone"
+primals = 0
+status = "pending"
+wave = 107
+notes = "deploy_pixel.sh exports PRIMAL_BIND_MODE=fallback. Validate after rebuild."
+
+# ── strandGate (x86_64, mesh peer, limited) ──────────────────────────────────
+
+[[cell]]
+id = "strandgate-x86-uds-peer"
+gate = "strandGate"
+arch = "x86_64-unknown-linux-musl"
+transport = "uds_only"
+topology = "mesh_peer"
+primals = 2
+status = "validated"
+wave = 106
+notes = "barraCuda + coralReef only. Mesh peer via direct path."
+
+# ── flockGate (x86_64, WAN relay, pending power-on) ─────────────────────────
+
+[[cell]]
+id = "flockgate-x86-uds-peer"
+gate = "flockGate"
+arch = "x86_64-unknown-linux-musl"
+transport = "uds_only"
+topology = "mesh_peer"
+primals = 4
+status = "blocked"
+wave = 107
+notes = "4/5 e2e. Blocked on power-on + mesh.init."
+
+# ── biomeGate (x86_64, offline, kernel recovery) ─────────────────────────────
+
+[[cell]]
+id = "biomegate-x86-uds-standalone"
+gate = "biomeGate"
+arch = "x86_64-unknown-linux-musl"
+transport = "uds_only"
+topology = "standalone"
+primals = 9
+status = "blocked"
+wave = 107
+notes = "Kernel recovery needed. 9/13 when operational."
+
+# ── northGate / westGate (future) ────────────────────────────────────────────
+
+[[cell]]
+id = "northgate-x86-uds-standalone"
+gate = "northGate"
+arch = "x86_64-unknown-linux-musl"
+transport = "uds_only"
+topology = "standalone"
+primals = 0
+status = "blocked"
+notes = "Hardware ready (RTX 5090). Not deployed."
+
+[[cell]]
+id = "westgate-x86-uds-standalone"
+gate = "westGate"
+arch = "x86_64-unknown-linux-musl"
+transport = "uds_only"
+topology = "standalone"
+primals = 0
+status = "blocked"
+notes = "Hardware ready (76TB ZFS). Not deployed."

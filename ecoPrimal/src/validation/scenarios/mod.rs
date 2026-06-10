@@ -99,6 +99,7 @@ pub mod s_tier2_science_api;
 pub mod s_token_federation;
 pub mod s_tower_atomic;
 pub mod s_tower_cns;
+pub mod s_graphenegate_readiness;
 pub mod s_zero_port_standard;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
@@ -158,6 +159,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_ecosystem_freshness::SCENARIO);
     r.register(s_deployment_pipeline::SCENARIO);
     r.register(s_tcp_fallback::SCENARIO);
+    r.register(s_graphenegate_readiness::SCENARIO);
     r
 }
 
@@ -168,7 +170,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 53;
+    const EXPECTED_SCENARIO_COUNT: usize = 54;
 
     #[test]
     fn registry_scenario_count() {
@@ -222,8 +224,8 @@ mod tests {
         // Pre-existing known failures in Rust-tier scenarios that predate this
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
-        // sporePrint cert pipeline: deploy.yml certification step + manifest.json
-        const KNOWN_DEBT: &[(&str, u32)] = &[("sporeprint-pure-primal-parity", 2)];
+        // Wave 107: all known debt resolved (skunkBat TCP 9750 + sporePrint cert).
+        const KNOWN_DEBT: &[(&str, u32)] = &[];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();

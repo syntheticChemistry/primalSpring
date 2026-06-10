@@ -63,6 +63,54 @@ const ALL_PRIMALS: &[PrimalProbe] = &[
         default_port: tolerances::TCP_FALLBACK_SQUIRREL_PORT,
         required_for_tcp: false,
     },
+    PrimalProbe {
+        name: primal_names::RHIZOCRYPT,
+        port_env: "RHIZOCRYPT_PORT",
+        default_port: tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT,
+        required_for_tcp: false,
+    },
+    PrimalProbe {
+        name: primal_names::LOAMSPINE,
+        port_env: "LOAMSPINE_PORT",
+        default_port: tolerances::TCP_FALLBACK_LOAMSPINE_PORT,
+        required_for_tcp: false,
+    },
+    PrimalProbe {
+        name: primal_names::CORALREEF,
+        port_env: "CORALREEF_PORT",
+        default_port: tolerances::TCP_FALLBACK_CORALREEF_PORT,
+        required_for_tcp: false,
+    },
+    PrimalProbe {
+        name: primal_names::BARRACUDA,
+        port_env: "BARRACUDA_PORT",
+        default_port: tolerances::TCP_FALLBACK_BARRACUDA_PORT,
+        required_for_tcp: false,
+    },
+    PrimalProbe {
+        name: primal_names::SKUNKBAT,
+        port_env: "SKUNKBAT_PORT",
+        default_port: tolerances::TCP_FALLBACK_SKUNKBAT_PORT,
+        required_for_tcp: false,
+    },
+    PrimalProbe {
+        name: primal_names::BIOMEOS,
+        port_env: "BIOMEOS_PORT",
+        default_port: tolerances::TCP_FALLBACK_BIOMEOS_PORT,
+        required_for_tcp: false,
+    },
+    PrimalProbe {
+        name: primal_names::SWEETGRASS,
+        port_env: "SWEETGRASS_PORT",
+        default_port: tolerances::TCP_FALLBACK_SWEETGRASS_PORT,
+        required_for_tcp: false,
+    },
+    PrimalProbe {
+        name: primal_names::PETALTONGUE,
+        port_env: "PETALTONGUE_PORT",
+        default_port: tolerances::TCP_FALLBACK_PETALTONGUE_PORT,
+        required_for_tcp: false,
+    },
 ];
 
 fn port_for(probe: &PrimalProbe) -> u16 {
@@ -257,13 +305,14 @@ fn phase_composition_assessment(
     let composition = match live {
         0 => "NO NUCLEUS",
         1 => "SINGLE PRIMAL",
-        2 => "TOWER ATOMIC (partial)",
-        3 => "TOWER + one layer",
-        4 => "NUCLEUS (near-complete)",
-        _ => "FULL NUCLEUS",
+        2 => "TOWER ATOMIC (minimal)",
+        3..=4 => "NODE COMPOSITION (partial)",
+        5..=7 => "NEST COMPOSITION (partial)",
+        8..=12 => "FULL NUCLEUS (near-complete)",
+        _ => "FULL NUCLEUS (13/13)",
     };
     println!("  Composition:  {composition}");
-    println!("  Live primals: {live}/5");
+    println!("  Live primals: {live}/13");
     println!("  Capabilities: {total_capabilities}");
     println!("  Architecture: {arch}");
     println!("  Transport:    {transport}");
@@ -272,7 +321,7 @@ fn phase_composition_assessment(
     v.check_bool(
         "composition_viable",
         live >= 2,
-        &format!("{composition}: {live}/5 primals, {total_capabilities} capabilities"),
+        &format!("{composition}: {live}/13 primals, {total_capabilities} capabilities"),
     );
 }
 
