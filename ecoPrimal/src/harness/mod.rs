@@ -602,9 +602,10 @@ impl AtomicHarness {
 fn generate_harness_mito_seed(family_id: &str) -> Result<Vec<u8>, LaunchError> {
     let hk = Hkdf::<Sha256>::new(Some(b"primalspring-harness-btsp"), family_id.as_bytes());
     let mut okm = [0u8; 32];
-    hk.expand(b"family-seed", &mut okm).map_err(|e| LaunchError::SeedGenerationFailed {
-        detail: format!("harness mito seed HKDF expand failed for family '{family_id}': {e}"),
-    })?;
+    hk.expand(b"family-seed", &mut okm)
+        .map_err(|e| LaunchError::SeedGenerationFailed {
+            detail: format!("harness mito seed HKDF expand failed for family '{family_id}': {e}"),
+        })?;
     let mut hex = String::with_capacity(64);
     for b in &okm {
         use std::fmt::Write;
@@ -627,11 +628,7 @@ fn generate_harness_nuclear(family_id: &str) -> crate::genetics::NuclearGenetics
     let proof = blake3::hash(format!("harness-nuclear-genesis:{family_id}").as_bytes())
         .as_bytes()
         .to_vec();
-    crate::genetics::NuclearGenetics::genesis(
-        okm.to_vec(),
-        proof,
-        format!("harness-{family_id}"),
-    )
+    crate::genetics::NuclearGenetics::genesis(okm.to_vec(), proof, format!("harness-{family_id}"))
 }
 
 #[cfg(test)]

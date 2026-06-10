@@ -319,8 +319,7 @@ pub fn xdg_data_home() -> String {
 pub fn plasmidbin_depot_root() -> String {
     std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN)
         .or_else(|_| {
-            std::env::var(crate::env_keys::ECOPRIMALS_ROOT)
-                .map(|r| format!("{r}/infra/plasmidBin"))
+            std::env::var(crate::env_keys::ECOPRIMALS_ROOT).map(|r| format!("{r}/infra/plasmidBin"))
         })
         .unwrap_or_else(|_| {
             format!(

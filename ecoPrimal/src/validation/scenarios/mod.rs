@@ -73,6 +73,7 @@ pub mod s_feedback_loop;
 pub mod s_ferment_transcript;
 pub mod s_full_nucleus;
 pub mod s_gate_failure;
+pub mod s_graphenegate_readiness;
 pub mod s_health_lifecycle_surface;
 pub mod s_ionic_bond;
 pub mod s_loam_certificate_lifecycle;
@@ -99,7 +100,6 @@ pub mod s_tier2_science_api;
 pub mod s_token_federation;
 pub mod s_tower_atomic;
 pub mod s_tower_cns;
-pub mod s_graphenegate_readiness;
 pub mod s_zero_port_standard;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
@@ -224,10 +224,13 @@ mod tests {
         // Pre-existing known failures in Rust-tier scenarios that predate this
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
-        // Wave 107: federation ports clean. grapheneGate blocker checks are
-        // structural upstream trackers — they pass once CR-TARPC-01 + BM-UDS-01
-        // fixes land in coralReef/biomeOS source trees.
-        const KNOWN_DEBT: &[(&str, u32)] = &[("graphenegate-readiness", 3)];
+        // Wave 107: CR-TARPC-01 resolved (coralReef tarpc tcp_only).
+        // grapheneGate 12/13 — BM-UDS-01 (biomeOS UDS bind) remains.
+        // sporePrint cert pipeline: deploy.yml certification + manifest.json.
+        const KNOWN_DEBT: &[(&str, u32)] = &[
+            ("graphenegate-readiness", 2),
+            ("sporeprint-pure-primal-parity", 2),
+        ];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();

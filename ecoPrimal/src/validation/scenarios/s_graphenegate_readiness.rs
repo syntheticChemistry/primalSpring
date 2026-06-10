@@ -25,16 +25,25 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "wave107_graphenegate_readiness",
         provenance_date: "2026-06-10",
-        description:
-            "grapheneGate readiness — validates aarch64 deployment prerequisites for Pixel 8",
+        description: "grapheneGate readiness — validates aarch64 deployment prerequisites for Pixel 8",
     },
     run,
 };
 
 const ALL_13_PRIMALS: &[&str] = &[
-    "beardog", "songbird", "squirrel", "toadstool", "nestgate",
-    "rhizocrypt", "loamspine", "coralreef", "barracuda", "skunkbat",
-    "biomeos", "sweetgrass", "petaltongue",
+    "beardog",
+    "songbird",
+    "squirrel",
+    "toadstool",
+    "nestgate",
+    "rhizocrypt",
+    "loamspine",
+    "coralreef",
+    "barracuda",
+    "skunkbat",
+    "biomeos",
+    "sweetgrass",
+    "petaltongue",
 ];
 
 /// Resolve the ecoPrimals workspace root from CARGO_MANIFEST_DIR.
@@ -244,7 +253,10 @@ fn phase_env_key(v: &mut ValidationResult) {
 
 fn phase_binary_depot(v: &mut ValidationResult) {
     let Some(depot_path) = aarch64_depot_path() else {
-        v.check_skip("depot:aarch64_dir_exists", "ecoPrimals workspace root not found");
+        v.check_skip(
+            "depot:aarch64_dir_exists",
+            "ecoPrimals workspace root not found",
+        );
         for primal in ALL_13_PRIMALS {
             v.check_skip(&format!("depot:{primal}"), "depot not locatable");
         }
@@ -256,7 +268,10 @@ fn phase_binary_depot(v: &mut ValidationResult) {
     v.check_bool(
         "depot:aarch64_dir_exists",
         depot_exists,
-        &format!("aarch64-unknown-linux-musl depot at {}", depot_path.display()),
+        &format!(
+            "aarch64-unknown-linux-musl depot at {}",
+            depot_path.display()
+        ),
     );
 
     if !depot_exists {
@@ -328,16 +343,15 @@ fn phase_binary_depot(v: &mut ValidationResult) {
 
 fn phase_deploy_script(v: &mut ValidationResult) {
     let Some(script_path) = deploy_pixel_path() else {
-        v.check_skip("deploy:script_exists", "ecoPrimals workspace root not found");
+        v.check_skip(
+            "deploy:script_exists",
+            "ecoPrimals workspace root not found",
+        );
         v.check_skip("deploy:bind_mode_export", "deploy_pixel.sh not locatable");
         return;
     };
     let exists = script_path.is_file();
-    v.check_bool(
-        "deploy:script_exists",
-        exists,
-        "deploy_pixel.sh exists",
-    );
+    v.check_bool("deploy:script_exists", exists, "deploy_pixel.sh exists");
 
     if !exists {
         v.check_skip("deploy:bind_mode_export", "deploy_pixel.sh not found");
@@ -353,8 +367,7 @@ fn phase_deploy_script(v: &mut ValidationResult) {
                 "deploy_pixel.sh exports PRIMAL_BIND_MODE",
             );
 
-            let has_fallback = content.contains("PRIMAL_BIND_MODE")
-                && content.contains("fallback");
+            let has_fallback = content.contains("PRIMAL_BIND_MODE") && content.contains("fallback");
             v.check_bool(
                 "deploy:bind_mode_fallback",
                 has_fallback,
@@ -379,21 +392,14 @@ fn phase_matrix_cell(v: &mut ValidationResult) {
 
     let graphs_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs");
     let graphs_path = graphs_dir.as_path();
-    let has_graphenegate_graph = if graphs_path.is_dir() {
-        std::fs::read_dir(graphs_path)
-            .map(|entries| {
-                entries
-                    .filter_map(Result::ok)
-                    .any(|e| {
-                        let name = e.file_name();
-                        let name = name.to_string_lossy();
-                        name.contains("graphene") || name.contains("pixel") || name.contains("aarch64")
-                    })
+    let has_graphenegate_graph = graphs_path.is_dir()
+        && std::fs::read_dir(graphs_path).is_ok_and(|entries| {
+            entries.filter_map(Result::ok).any(|e| {
+                let name = e.file_name();
+                let name = name.to_string_lossy();
+                name.contains("graphene") || name.contains("pixel") || name.contains("aarch64")
             })
-            .unwrap_or(false)
-    } else {
-        false
-    };
+        });
 
     if has_graphenegate_graph {
         v.check_bool(

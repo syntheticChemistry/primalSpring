@@ -357,15 +357,15 @@ fn phase_workspace_drift(v: &mut ValidationResult, _ctx: &mut CompositionContext
     let eco_root = std::env::var(crate::env_keys::ECOPRIMALS_ROOT)
         .ok()
         .or_else(|| {
-        // CARGO_MANIFEST_DIR = .../ecoPrimals/springs/primalSpring/ecoPrimal
-        // We need .../ecoPrimals (3 levels up)
-        let manifest_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
-        manifest_dir
+            // CARGO_MANIFEST_DIR = .../ecoPrimals/springs/primalSpring/ecoPrimal
+            // We need .../ecoPrimals (3 levels up)
+            let manifest_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+            manifest_dir
             .parent()?  // .../springs/primalSpring
             .parent()?  // .../springs
             .parent()   // .../ecoPrimals
             .map(|p| p.to_string_lossy().into_owned())
-    });
+        });
 
     let Some(eco_root) = eco_root else {
         v.check_skip(

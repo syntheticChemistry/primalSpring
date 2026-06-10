@@ -206,8 +206,8 @@ fn verify_remote_source(
     valid_token: &str,
     source_supported: bool,
 ) {
-    let remote_gate =
-        std::env::var(crate::env_keys::REMOTE_GATE_NAME).unwrap_or_else(|_| "remote-gate".to_owned());
+    let remote_gate = std::env::var(crate::env_keys::REMOTE_GATE_NAME)
+        .unwrap_or_else(|_| "remote-gate".to_owned());
 
     match ctx.call(
         "security",

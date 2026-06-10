@@ -376,7 +376,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             },
             "id": 99
         });
-        let payload = serde_json::to_string(&request).expect("JSON serialization");
+        let payload = serde_json::to_string(&request).unwrap_or_default();
 
         let result = songbird_uds.map_or_else(
             || registry::register_with_songbird(songbird_port, &payload),

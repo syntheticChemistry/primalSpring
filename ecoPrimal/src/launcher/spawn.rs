@@ -64,10 +64,7 @@ impl SocketNucleation {
         if let Some(existing) = self.assignments.get(&key) {
             return existing.clone();
         }
-        let socket = self
-            .base_dir
-            .join(crate::primal_names::BIOMEOS)
-            .join(&key);
+        let socket = self.base_dir.join(crate::primal_names::BIOMEOS).join(&key);
         self.assignments.insert(key, socket.clone());
         socket
     }

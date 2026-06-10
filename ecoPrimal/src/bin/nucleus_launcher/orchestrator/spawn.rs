@@ -248,7 +248,9 @@ fn resolve_profile_var(val: &str, own_socket: &std::path::Path, config: &LaunchC
                 .unwrap_or_else(|| std::path::Path::new("/tmp"));
             let family = &config.family_id;
             socket_dir
-                .join(primalspring::ipc::discover::socket_filename(primal_ref, family))
+                .join(primalspring::ipc::discover::socket_filename(
+                    primal_ref, family,
+                ))
                 .display()
                 .to_string()
         }

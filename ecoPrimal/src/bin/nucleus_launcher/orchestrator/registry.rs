@@ -9,22 +9,19 @@ use std::time::Duration;
 use primalspring::ipc::tcp::env_port;
 use primalspring::tolerances;
 
-fn jsonrpc_payload(method: &str, params: serde_json::Value, id: u64) -> String {
+fn jsonrpc_payload(method: &str, params: &serde_json::Value, id: u64) -> String {
     let request = serde_json::json!({
         "jsonrpc": "2.0",
         "method": method,
         "params": params,
         "id": id
     });
-    serde_json::to_string(&request).expect("JSON serialization")
+    serde_json::to_string(&request).unwrap_or_default()
 }
 
 fn jsonrpc_response_has_field(response: &str, field: &str) -> bool {
-    if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(response) {
-        parsed.get(field).is_some()
-    } else {
-        false
-    }
+    serde_json::from_str::<serde_json::Value>(response)
+        .is_ok_and(|parsed| parsed.get(field).is_some())
 }
 
 /// Build primal → capability domains map from `capability_registry.toml`.
@@ -115,7 +112,7 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
     use std::net::{SocketAddr, TcpStream};
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
-    let payload = jsonrpc_payload("health.check", serde_json::json!({}), 1);
+    let payload = jsonrpc_payload("health.check", &serde_json::json!({}), 1);
 
     let Ok(stream) = TcpStream::connect_timeout(&addr, timeout) else {
         return false;
@@ -147,9 +144,8 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
 
 /// Perform a JSON-RPC health check on a primal via UDS socket.
 pub(super) fn health_check_uds(socket: &std::path::Path) -> bool {
-    let payload = jsonrpc_payload("health.check", serde_json::json!({}), 1);
-    send_uds_rpc(socket, &payload)
-        .is_ok_and(|resp| jsonrpc_response_has_field(&resp, "jsonrpc"))
+    let payload = jsonrpc_payload("health.check", &serde_json::json!({}), 1);
+    send_uds_rpc(socket, &payload).is_ok_and(|resp| jsonrpc_response_has_field(&resp, "jsonrpc"))
 }
 
 /// Resolve the UDS socket path for a primal.
@@ -170,7 +166,7 @@ pub(super) fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) ->
 
     let payload = jsonrpc_payload(
         "mesh.init",
-        serde_json::json!({
+        &serde_json::json!({
             "node_id": node_id,
             "bootstrap_peers": peers,
         }),
@@ -291,7 +287,7 @@ pub(super) fn seed_songbird_peers_uds(
 ) -> usize {
     let payload = jsonrpc_payload(
         "mesh.init",
-        serde_json::json!({
+        &serde_json::json!({
             "node_id": node_id,
             "bootstrap_peers": peers,
         }),
