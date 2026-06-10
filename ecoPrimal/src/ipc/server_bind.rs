@@ -64,7 +64,7 @@ impl BindMode {
     /// Values: `uds_only` (default), `tcp_only`, `fallback`.
     #[must_use]
     pub fn from_env() -> Self {
-        match std::env::var("PRIMAL_BIND_MODE")
+        match std::env::var(crate::env_keys::PRIMAL_BIND_MODE)
             .unwrap_or_default()
             .to_lowercase()
             .as_str()
@@ -179,7 +179,8 @@ pub fn bind_transport(primal_slug: &str, mode: BindMode) -> Result<BoundTranspor
 }
 
 fn bind_uds(primal_slug: &str) -> Result<BoundTransport, BindError> {
-    let sock_path = crate::ipc::discover::socket_path(primal_slug);
+    let family_id = crate::env_keys::resolve_family_id();
+    let sock_path = crate::ipc::discover::socket_path(primal_slug, &family_id);
 
     if let Some(parent) = sock_path.parent() {
         let _ = std::fs::create_dir_all(parent);

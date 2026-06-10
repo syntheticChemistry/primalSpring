@@ -26,18 +26,18 @@ use super::protocol::JsonRpcResponse;
 ///   response contains a JSON-RPC error.
 /// - `IpcError::ProtocolError` if the response has no result and no error.
 /// - `IpcError::SerializationError` if the result cannot be deserialized into `T`.
-pub fn extract_rpc_result<T: DeserializeOwned>(response: &JsonRpcResponse) -> Result<T, IpcError> {
-    if let Some(ref err) = response.error {
-        return Err(IpcError::from(err.clone()));
+pub fn extract_rpc_result<T: DeserializeOwned>(response: JsonRpcResponse) -> Result<T, IpcError> {
+    if let Some(err) = response.error {
+        return Err(IpcError::from(err));
     }
 
-    let Some(ref result) = response.result else {
+    let Some(result) = response.result else {
         return Err(IpcError::ProtocolError {
             detail: "response has neither result nor error".to_owned(),
         });
     };
 
-    serde_json::from_value(result.clone()).map_err(|e| IpcError::SerializationError {
+    serde_json::from_value(result).map_err(|e| IpcError::SerializationError {
         detail: e.to_string(),
     })
 }
@@ -47,22 +47,22 @@ pub fn extract_rpc_result<T: DeserializeOwned>(response: &JsonRpcResponse) -> Re
 /// Unlike `extract_rpc_result`, this preserves the distinction between
 /// protocol errors and application errors for use with `should_retry()`.
 #[must_use]
-pub fn extract_rpc_dispatch<T: DeserializeOwned>(response: &JsonRpcResponse) -> DispatchOutcome<T> {
-    if let Some(ref err) = response.error {
+pub fn extract_rpc_dispatch<T: DeserializeOwned>(response: JsonRpcResponse) -> DispatchOutcome<T> {
+    if let Some(err) = response.error {
         return DispatchOutcome::ApplicationError {
             code: err.code,
-            message: err.message.clone(),
-            data: err.data.clone(),
+            message: err.message,
+            data: err.data,
         };
     }
 
-    let Some(ref result) = response.result else {
+    let Some(result) = response.result else {
         return DispatchOutcome::ProtocolError(IpcError::ProtocolError {
             detail: "response has neither result nor error".to_owned(),
         });
     };
 
-    match serde_json::from_value(result.clone()) {
+    match serde_json::from_value(result) {
         Ok(val) => DispatchOutcome::Success(val),
         Err(e) => DispatchOutcome::ProtocolError(IpcError::SerializationError {
             detail: e.to_string(),
@@ -109,7 +109,7 @@ mod tests {
     #[test]
     fn extract_success_string() {
         let resp = success_response(serde_json::json!("hello"));
-        let val: String = extract_rpc_result(&resp).unwrap();
+        let val: String = extract_rpc_result(resp).unwrap();
         assert_eq!(val, "hello");
     }
 
@@ -120,21 +120,21 @@ mod tests {
             ok: bool,
         }
         let resp = success_response(serde_json::json!({"ok": true}));
-        let val: Status = extract_rpc_result(&resp).unwrap();
+        let val: Status = extract_rpc_result(resp).unwrap();
         assert!(val.ok);
     }
 
     #[test]
     fn extract_method_not_found() {
         let resp = error_response(error_codes::METHOD_NOT_FOUND, "no such method");
-        let err = extract_rpc_result::<String>(&resp).unwrap_err();
+        let err = extract_rpc_result::<String>(resp).unwrap_err();
         assert!(err.is_method_not_found());
     }
 
     #[test]
     fn extract_application_error() {
         let resp = error_response(error_codes::INTERNAL_ERROR, "boom");
-        let err = extract_rpc_result::<String>(&resp).unwrap_err();
+        let err = extract_rpc_result::<String>(resp).unwrap_err();
         assert!(!err.is_method_not_found());
         assert!(matches!(err, IpcError::ApplicationError { .. }));
     }
@@ -142,21 +142,21 @@ mod tests {
     #[test]
     fn extract_empty_response() {
         let resp = empty_response();
-        let err = extract_rpc_result::<String>(&resp).unwrap_err();
+        let err = extract_rpc_result::<String>(resp).unwrap_err();
         assert!(matches!(err, IpcError::ProtocolError { .. }));
     }
 
     #[test]
     fn extract_type_mismatch() {
         let resp = success_response(serde_json::json!("not a number"));
-        let err = extract_rpc_result::<u64>(&resp).unwrap_err();
+        let err = extract_rpc_result::<u64>(resp).unwrap_err();
         assert!(matches!(err, IpcError::SerializationError { .. }));
     }
 
     #[test]
     fn dispatch_success() {
         let resp = success_response(serde_json::json!(42));
-        let outcome: DispatchOutcome<i32> = extract_rpc_dispatch(&resp);
+        let outcome: DispatchOutcome<i32> = extract_rpc_dispatch(resp);
         assert!(outcome.is_success());
         assert_eq!(outcome.into_result().unwrap(), 42);
     }
@@ -164,7 +164,7 @@ mod tests {
     #[test]
     fn dispatch_application_error() {
         let resp = error_response(error_codes::INTERNAL_ERROR, "boom");
-        let outcome: DispatchOutcome<i32> = extract_rpc_dispatch(&resp);
+        let outcome: DispatchOutcome<i32> = extract_rpc_dispatch(resp);
         assert!(!outcome.should_retry());
         assert!(!outcome.is_success());
     }
@@ -172,7 +172,7 @@ mod tests {
     #[test]
     fn dispatch_empty_is_protocol_error() {
         let resp = empty_response();
-        let outcome: DispatchOutcome<i32> = extract_rpc_dispatch(&resp);
+        let outcome: DispatchOutcome<i32> = extract_rpc_dispatch(resp);
         assert!(!outcome.is_success());
     }
 
@@ -197,7 +197,7 @@ mod tests {
                 val in "[a-zA-Z0-9]{0,50}",
             ) {
                 let resp = success_response(serde_json::Value::String(val));
-                let _ = extract_rpc_result::<String>(&resp);
+                let _ = extract_rpc_result::<String>(resp);
             }
 
             #[test]
@@ -206,7 +206,7 @@ mod tests {
                 msg in "[a-zA-Z ]{1,50}",
             ) {
                 let resp = error_response(code, &msg);
-                let err = extract_rpc_result::<String>(&resp).unwrap_err();
+                let err = extract_rpc_result::<String>(resp).unwrap_err();
                 if code == error_codes::METHOD_NOT_FOUND {
                     prop_assert!(err.is_method_not_found());
                 }
@@ -218,7 +218,7 @@ mod tests {
                 msg in "[a-zA-Z ]{1,50}",
             ) {
                 let resp = error_response(code, &msg);
-                let outcome: DispatchOutcome<String> = extract_rpc_dispatch(&resp);
+                let outcome: DispatchOutcome<String> = extract_rpc_dispatch(resp);
                 prop_assert!(!outcome.is_success());
             }
 
@@ -227,7 +227,7 @@ mod tests {
                 val in 0i64..1_000_000,
             ) {
                 let resp = success_response(serde_json::json!(val));
-                let outcome: DispatchOutcome<i64> = extract_rpc_dispatch(&resp);
+                let outcome: DispatchOutcome<i64> = extract_rpc_dispatch(resp);
                 prop_assert!(outcome.is_success());
                 prop_assert_eq!(outcome.into_result().unwrap(), val);
             }

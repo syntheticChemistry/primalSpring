@@ -378,7 +378,8 @@ pub fn validate_method_gate(v: &mut ValidationResult) {
     use crate::ipc::client::PrimalClient;
     use crate::ipc::discover;
 
-    let sock = discover::socket_path("primalspring");
+    let family_id = crate::env_keys::resolve_family_id();
+    let sock = discover::socket_path("primalspring", &family_id);
     if !sock.exists() {
         v.check_skip(
             "security:method_gate:wired",

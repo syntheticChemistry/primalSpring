@@ -105,6 +105,20 @@ pub enum DiscoverySource {
     NotFound,
 }
 
+/// Construct the canonical socket filename for a primal.
+///
+/// Format: `{primal}-{family_id}.sock` (NUCLEUS standard since Wave 32).
+#[must_use]
+pub fn socket_filename(primal: &str, family_id: &str) -> String {
+    format!("{primal}-{family_id}.sock")
+}
+
+/// Construct the canonical socket path for a primal under the socket dir.
+#[must_use]
+pub fn socket_path(primal: &str, family_id: &str) -> PathBuf {
+    PathBuf::from(resolve_socket_dir()).join(socket_filename(primal, family_id))
+}
+
 /// Resolve the base socket directory for the ecoPrimals runtime.
 ///
 /// Priority: `$ECOPRIMALS_SOCKET_DIR` → `$XDG_RUNTIME_DIR/ecoprimals` →
@@ -131,7 +145,7 @@ pub fn resolve_socket_dir() -> String {
 pub fn build_socket_path(base_dir: &Path, primal: &str, family: &str) -> PathBuf {
     base_dir
         .join(crate::primal_names::BIOMEOS)
-        .join(format!("{primal}-{family}.sock"))
+        .join(socket_filename(primal, family))
 }
 
 /// Compute the conventional socket path for a primal.
@@ -139,7 +153,7 @@ pub fn build_socket_path(base_dir: &Path, primal: &str, family: &str) -> PathBuf
 /// Uses `$XDG_RUNTIME_DIR` if set, otherwise `std::env::temp_dir()`.
 /// Respects `$FAMILY_ID` for multi-tenant socket paths.
 #[must_use]
-pub fn socket_path(primal: &str) -> PathBuf {
+pub fn conventional_socket_path(primal: &str) -> PathBuf {
     let base = std::env::var(crate::env_keys::XDG_RUNTIME_DIR)
         .map_or_else(|_| std::env::temp_dir(), PathBuf::from);
     let family = crate::env_keys::resolve_family_id();
@@ -216,7 +230,7 @@ pub fn discover_primal(primal: &str) -> DiscoveryResult {
         }
     }
 
-    let conv_path = socket_path(primal);
+    let conv_path = conventional_socket_path(primal);
     if socket_is_alive(&conv_path) {
         let source = if std::env::var(crate::env_keys::XDG_RUNTIME_DIR).is_ok() {
             DiscoverySource::XdgConvention
@@ -327,8 +341,8 @@ mod tests {
     }
 
     #[test]
-    fn socket_path_returns_a_path() {
-        let path = socket_path("beardog");
+    fn conventional_socket_path_returns_a_path() {
+        let path = conventional_socket_path("beardog");
         assert!(path.to_string_lossy().contains("beardog"));
         assert!(path.to_string_lossy().contains(".sock"));
         assert!(path.to_string_lossy().contains("biomeos"));

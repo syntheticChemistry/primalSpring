@@ -351,8 +351,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             .map(|p| p.display().to_string())
             .unwrap_or_default();
 
-        let caps_json: Vec<String> = caps.iter().map(|c| format!("\"{c}\"")).collect();
-        let caps_str = caps_json.join(",");
+        let caps_str = caps.join(",");
 
         print!("  {primal:<14} [{caps_str}]  ");
 
@@ -364,10 +363,20 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
 
         let bind_host = std::env::var(primalspring::env_keys::PRIMALSPRING_HOST)
             .unwrap_or_else(|_| primalspring::tolerances::DEFAULT_HOST.to_owned());
-        let payload = format!(
-            r#"{{"jsonrpc":"2.0","method":"ipc.register","params":{{"name":"{primal}","capabilities":[{caps_str}],"endpoint":"unix://{socket}","tcp_endpoint":"tcp://{bind_host}:{port}","family_id":"{}","node_id":"{}"}},"id":99}}"#,
-            config.family_id, config.node_id
-        );
+        let request = serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "ipc.register",
+            "params": {
+                "name": primal,
+                "capabilities": caps,
+                "endpoint": format!("unix://{socket}"),
+                "tcp_endpoint": format!("tcp://{bind_host}:{port}"),
+                "family_id": config.family_id,
+                "node_id": config.node_id,
+            },
+            "id": 99
+        });
+        let payload = serde_json::to_string(&request).expect("JSON serialization");
 
         let result = songbird_uds.map_or_else(
             || registry::register_with_songbird(songbird_port, &payload),

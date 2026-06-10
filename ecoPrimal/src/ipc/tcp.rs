@@ -90,12 +90,13 @@ pub fn tcp_rpc_with_timeout(
 
     let reader = BufReader::new(&stream);
     for line in reader.lines().map_while(Result::ok) {
-        if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
+        if let Ok(mut parsed) = serde_json::from_str::<serde_json::Value>(&line) {
             let elapsed = start.elapsed();
-            if let Some(result) = parsed.get("result") {
-                return Ok((result.clone(), elapsed));
+            if let Some(result) = parsed.get_mut("result") {
+                return Ok((result.take(), elapsed));
             }
-            if let Some(err_val) = parsed.get("error") {
+            if let Some(err_val) = parsed.get_mut("error") {
+                let err_val = err_val.take();
                 if let Ok(rpc_err) = serde_json::from_value::<JsonRpcError>(err_val.clone()) {
                     return Err(IpcError::from(rpc_err));
                 }
@@ -180,12 +181,13 @@ pub fn http_json_rpc(
             continue;
         }
         if in_body {
-            if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&line) {
+            if let Ok(mut parsed) = serde_json::from_str::<serde_json::Value>(&line) {
                 let elapsed = start.elapsed();
-                if let Some(result) = parsed.get("result") {
-                    return Ok((result.clone(), elapsed));
+                if let Some(result) = parsed.get_mut("result") {
+                    return Ok((result.take(), elapsed));
                 }
-                if let Some(err_val) = parsed.get("error") {
+                if let Some(err_val) = parsed.get_mut("error") {
+                    let err_val = err_val.take();
                     if let Ok(rpc_err) = serde_json::from_value::<JsonRpcError>(err_val.clone()) {
                         return Err(IpcError::from(rpc_err));
                     }

@@ -152,6 +152,8 @@ pub const BIOMEOS_INSECURE: &str = "BIOMEOS_INSECURE";
 pub const BIOMEOS_PRIMAL: &str = "BIOMEOS_PRIMAL";
 /// biomeOS-provided family ID (alternative to [`FAMILY_ID`]).
 pub const BIOMEOS_FAMILY_ID: &str = "BIOMEOS_FAMILY_ID";
+/// Override directory for biomeOS UDS sockets.
+pub const BIOMEOS_SOCKET_DIR: &str = "BIOMEOS_SOCKET_DIR";
 
 // ── plasmidBin / distribution ───────────────────────────────────────
 
@@ -251,6 +253,8 @@ pub const BIOMEOS_PORT: &str = "BIOMEOS_PORT";
 
 /// Comma-separated Songbird peer addresses for mesh bootstrap.
 pub const SONGBIRD_PEERS: &str = "SONGBIRD_PEERS";
+/// Comma-separated mesh peer addresses for plasmodium collective scenarios.
+pub const MESH_PEERS: &str = "MESH_PEERS";
 
 /// Songbird security socket path override.
 pub const SONGBIRD_SECURITY_SOCKET: &str = "SONGBIRD_SECURITY_SOCKET";
@@ -264,6 +268,15 @@ pub const BIOMEOS_GRAPHS_DIR: &str = "BIOMEOS_GRAPHS_DIR";
 pub const BIOMEOS_PLASMID_BIN_DIR: &str = "BIOMEOS_PLASMID_BIN_DIR";
 
 // ── Host / network ────────────────────────────────────────────────
+
+/// Human-readable gate name for multi-gate deployments.
+pub const GATE_NAME: &str = "GATE_NAME";
+/// Gate identifier for mesh topology and BTSP binding.
+pub const GATE_ID: &str = "GATE_ID";
+/// Remote gate name for cross-gate verification scenarios.
+pub const REMOTE_GATE_NAME: &str = "REMOTE_GATE_NAME";
+/// benchScale topology name for live mesh configuration.
+pub const BENCHSCALE_TOPOLOGY: &str = "BENCHSCALE_TOPOLOGY";
 
 /// Hostname fallback (distinct from `HOSTNAME` — some systems export `HOST`).
 pub const HOST: &str = "HOST";

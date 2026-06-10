@@ -259,7 +259,8 @@ fn check_plasmidbin(v: &mut ValidationResult) {
 fn check_nucleus(v: &mut ValidationResult) {
     v.section("NUCLEUS deployment gate");
 
-    if std::env::var("ECOPRIMALS_ROOT").is_err() && std::env::var("ECOPRIMALS_PLASMID_BIN").is_err()
+    if std::env::var(primalspring::env_keys::ECOPRIMALS_ROOT).is_err()
+        && std::env::var(primalspring::env_keys::ECOPRIMALS_PLASMID_BIN).is_err()
     {
         v.check_bool("nucleus-skip", true, "ECOPRIMALS_ROOT not set — skipped");
         return;
@@ -292,29 +293,11 @@ fn check_nucleus(v: &mut ValidationResult) {
 }
 
 fn resolve_depot_dir() -> PathBuf {
-    if let Ok(bin) = std::env::var("ECOPRIMALS_PLASMID_BIN") {
+    if let Ok(bin) = std::env::var(primalspring::env_keys::ECOPRIMALS_PLASMID_BIN) {
         return PathBuf::from(bin);
     }
-    let triple = host_triple();
-    if let Ok(root) = std::env::var("ECOPRIMALS_ROOT") {
-        return PathBuf::from(root)
-            .join("infra/plasmidBin/primals")
-            .join(&triple);
-    }
-    let xdg = std::env::var("XDG_DATA_HOME").unwrap_or_else(|_| {
-        std::env::var("HOME").map_or_else(|_| "/tmp".into(), |h| format!("{h}/.local/share"))
-    });
-    PathBuf::from(xdg)
-        .join("ecoPrimals/plasmidBin/primals")
+    let triple = primalspring::tolerances::current_target_triple();
+    PathBuf::from(primalspring::tolerances::plasmidbin_depot_root())
+        .join("primals")
         .join(&triple)
-}
-
-fn host_triple() -> String {
-    let arch = std::env::consts::ARCH;
-    let os = std::env::consts::OS;
-    match os {
-        "linux" => format!("{arch}-unknown-linux-musl"),
-        "macos" => format!("{arch}-apple-darwin"),
-        _ => format!("{arch}-unknown-{os}"),
-    }
 }

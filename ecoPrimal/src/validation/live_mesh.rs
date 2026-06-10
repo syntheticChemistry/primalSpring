@@ -59,7 +59,7 @@ impl LiveMeshConfig {
     /// to pure environment-based config.
     #[must_use]
     pub fn from_env() -> Self {
-        if let Ok(topo_name) = std::env::var("BENCHSCALE_TOPOLOGY") {
+        if let Ok(topo_name) = std::env::var(crate::env_keys::BENCHSCALE_TOPOLOGY) {
             if let Some(cfg) = Self::from_topology_file(&topo_name) {
                 return cfg;
             }
@@ -75,8 +75,8 @@ impl LiveMeshConfig {
     /// - `FAMILY_ID` / `FAMILY_SEED` for BTSP readiness
     #[must_use]
     pub fn from_env_only() -> Self {
-        let local_gate = std::env::var("GATE_ID")
-            .or_else(|_| std::env::var("HOSTNAME"))
+        let local_gate = std::env::var(crate::env_keys::GATE_ID)
+            .or_else(|_| std::env::var(crate::env_keys::HOSTNAME))
             .unwrap_or_else(|_| "east-gate".to_owned());
 
         let remote_gates = parse_songbird_peers();
@@ -115,8 +115,8 @@ impl LiveMeshConfig {
         let parsed: toml::Value = toml::from_str(&content).ok()?;
 
         let gates_table = parsed.get("gates")?.as_table()?;
-        let local_gate = std::env::var("GATE_ID")
-            .or_else(|_| std::env::var("HOSTNAME"))
+        let local_gate = std::env::var(crate::env_keys::GATE_ID)
+            .or_else(|_| std::env::var(crate::env_keys::HOSTNAME))
             .unwrap_or_else(|_| "east-gate".to_owned());
 
         let local_key = gates_table
@@ -209,7 +209,7 @@ impl LiveMeshConfig {
 fn parse_songbird_peers() -> BTreeMap<String, String> {
     let mut peers = BTreeMap::new();
 
-    let val = match std::env::var("SONGBIRD_PEERS") {
+    let val = match std::env::var(crate::env_keys::SONGBIRD_PEERS) {
         Ok(v) if !v.trim().is_empty() => v,
         _ => {
             return peers;

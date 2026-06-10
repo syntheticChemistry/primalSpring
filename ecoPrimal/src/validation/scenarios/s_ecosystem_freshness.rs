@@ -354,7 +354,9 @@ fn phase_freshness_schema(v: &mut ValidationResult) {
 // ─── Live: Workspace Drift Detection ────────────────────────────────────────
 
 fn phase_workspace_drift(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
-    let eco_root = std::env::var("ECOPRIMALS_ROOT").ok().or_else(|| {
+    let eco_root = std::env::var(crate::env_keys::ECOPRIMALS_ROOT)
+        .ok()
+        .or_else(|| {
         // CARGO_MANIFEST_DIR = .../ecoPrimals/springs/primalSpring/ecoPrimal
         // We need .../ecoPrimals (3 levels up)
         let manifest_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));

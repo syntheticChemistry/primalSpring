@@ -177,7 +177,7 @@ impl PrimalClient {
         params: serde_json::Value,
     ) -> Result<T, IpcError> {
         let response = self.call(method, params)?;
-        super::extract::extract_rpc_result(&response)
+        super::extract::extract_rpc_result(response)
     }
 
     /// Call a method and extract a single `f64` from the result by key.

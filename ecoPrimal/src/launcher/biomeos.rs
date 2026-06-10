@@ -48,7 +48,7 @@ pub fn spawn_biomeos(
 
     let biomeos_dir = nucleation.base_dir().join(crate::primal_names::BIOMEOS);
     let _ = std::fs::create_dir_all(&biomeos_dir);
-    let socket_path = biomeos_dir.join(format!("neural-api-{family_id}.sock"));
+    let socket_path = biomeos_dir.join(crate::ipc::discover::socket_filename("neural-api", family_id));
     let _ = std::fs::remove_file(&socket_path);
 
     let effective_graphs_dir = discover_biomeos_graphs(graphs_dir);

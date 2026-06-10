@@ -60,14 +60,14 @@ impl SocketNucleation {
     ///
     /// Idempotent — returns the same path on repeated calls.
     pub fn assign(&mut self, primal: &str, family_id: &str) -> PathBuf {
-        let key = format!("{primal}-{family_id}");
+        let key = crate::ipc::discover::socket_filename(primal, family_id);
         if let Some(existing) = self.assignments.get(&key) {
             return existing.clone();
         }
         let socket = self
             .base_dir
             .join(crate::primal_names::BIOMEOS)
-            .join(format!("{key}.sock"));
+            .join(&key);
         self.assignments.insert(key, socket.clone());
         socket
     }
@@ -83,13 +83,13 @@ impl SocketNucleation {
     /// Look up a previously assigned socket (returns `None` if unassigned).
     #[must_use]
     pub fn get(&self, primal: &str, family_id: &str) -> Option<&PathBuf> {
-        let key = format!("{primal}-{family_id}");
+        let key = crate::ipc::discover::socket_filename(primal, family_id);
         self.assignments.get(&key)
     }
 
     /// Remap a primal's socket path (e.g. to point to a JSON-RPC suffix).
     pub fn remap(&mut self, primal: &str, family_id: &str, new_path: PathBuf) {
-        let key = format!("{primal}-{family_id}");
+        let key = crate::ipc::discover::socket_filename(primal, family_id);
         self.assignments.insert(key, new_path);
     }
 

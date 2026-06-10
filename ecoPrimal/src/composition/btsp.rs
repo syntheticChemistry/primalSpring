@@ -20,13 +20,13 @@ pub fn resolve_btsp_socket(discovered: &std::path::Path, primal: &str) -> std::p
         .and_then(|n| n.to_str())
         .unwrap_or("");
     let family = crate::env_keys::resolve_family_id();
-    let family_marker = format!("{primal}-{family}");
+    let family_marker = crate::ipc::discover::socket_filename(primal, &family);
 
     if name.contains(&family_marker) {
         return discovered.to_path_buf();
     }
 
-    let family_path = crate::ipc::discover::socket_path(primal);
+    let family_path = crate::ipc::discover::conventional_socket_path(primal);
     if family_path.exists() {
         tracing::debug!(
             %primal,

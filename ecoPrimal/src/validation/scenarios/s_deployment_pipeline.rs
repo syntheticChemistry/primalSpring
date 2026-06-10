@@ -16,6 +16,7 @@ use std::path::{Path, PathBuf};
 
 use crate::composition::CompositionContext;
 use crate::deploy;
+use crate::tolerances::current_target_triple;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -56,10 +57,10 @@ fn resolve_depot_root() -> Option<PathBuf> {
         }
     }
 
-    if let Ok(root) = std::env::var(crate::env_keys::ECOPRIMALS_ROOT) {
-        let triple = current_target_triple();
-        let p = PathBuf::from(root)
-            .join("infra/plasmidBin/primals")
+    if std::env::var(crate::env_keys::ECOPRIMALS_ROOT).is_ok() {
+        let triple = crate::tolerances::current_target_triple();
+        let p = PathBuf::from(crate::tolerances::plasmidbin_depot_root())
+            .join("primals")
             .join(&triple);
         if p.is_dir() {
             return Some(p);
@@ -70,11 +71,9 @@ fn resolve_depot_root() -> Option<PathBuf> {
 }
 
 fn resolve_plasmidbin_root() -> Option<PathBuf> {
-    if let Ok(root) = std::env::var(crate::env_keys::ECOPRIMALS_ROOT) {
-        let p = PathBuf::from(root).join("infra/plasmidBin");
-        if p.join("checksums.toml").exists() {
-            return Some(p);
-        }
+    let p = PathBuf::from(crate::tolerances::plasmidbin_depot_root());
+    if p.join("checksums.toml").exists() {
+        return Some(p);
     }
 
     let relative = Path::new("../../infra/plasmidBin");
@@ -83,18 +82,6 @@ fn resolve_plasmidbin_root() -> Option<PathBuf> {
     }
 
     None
-}
-
-fn current_target_triple() -> String {
-    let arch = std::env::consts::ARCH;
-    let os = std::env::consts::OS;
-    match (arch, os) {
-        ("x86_64", "linux") => "x86_64-unknown-linux-musl".to_owned(),
-        ("aarch64", "linux") => "aarch64-unknown-linux-musl".to_owned(),
-        ("x86_64", "macos") => "x86_64-apple-darwin".to_owned(),
-        ("aarch64", "macos") => "aarch64-apple-darwin".to_owned(),
-        _ => format!("{arch}-unknown-{os}"),
-    }
 }
 
 /// Execute the full deployment-pipeline validation across five phases.

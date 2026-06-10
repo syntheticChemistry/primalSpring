@@ -65,7 +65,7 @@ fn phase_structural(v: &mut ValidationResult) {
         "discovery.peers in registry",
     );
 
-    let mesh_peers = std::env::var("MESH_PEERS").unwrap_or_else(|_| {
+    let mesh_peers = std::env::var(crate::env_keys::MESH_PEERS).unwrap_or_else(|_| {
         "east-gate=127.0.0.1:7700,strand-gate=127.0.0.2:7700,iron-gate=127.0.0.3:7700".to_owned()
     });
     let mut topo = MeshTopology::new();
@@ -268,7 +268,7 @@ fn phase_composition_routing(v: &mut ValidationResult, ctx: &CompositionContext)
     let local_gate = ctx.gate_id().unwrap_or("east-gate");
     topo.set_local_gate(local_gate);
 
-    let mesh_peers = std::env::var("MESH_PEERS").unwrap_or_else(|_| {
+    let mesh_peers = std::env::var(crate::env_keys::MESH_PEERS).unwrap_or_else(|_| {
         "east-gate=127.0.0.1:7700,strand-gate=127.0.0.2:7700,iron-gate=127.0.0.3:7700".to_owned()
     });
     let peer_addr = |gate: &str| -> Option<String> {

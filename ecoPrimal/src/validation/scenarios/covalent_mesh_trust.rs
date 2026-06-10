@@ -35,7 +35,7 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
         return;
     }
 
-    let local_gate_name = std::env::var("GATE_NAME")
+    let local_gate_name = std::env::var(crate::env_keys::GATE_NAME)
         .unwrap_or_else(|_| ctx.gate_id().unwrap_or("local-gate").to_owned());
     let token_result = ctx.call(
         "security",
@@ -207,7 +207,7 @@ fn verify_remote_source(
     source_supported: bool,
 ) {
     let remote_gate =
-        std::env::var("REMOTE_GATE_NAME").unwrap_or_else(|_| "remote-gate".to_owned());
+        std::env::var(crate::env_keys::REMOTE_GATE_NAME).unwrap_or_else(|_| "remote-gate".to_owned());
 
     match ctx.call(
         "security",

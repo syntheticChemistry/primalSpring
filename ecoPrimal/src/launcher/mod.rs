@@ -112,6 +112,12 @@ pub enum LaunchError {
         /// Parse error detail.
         String,
     ),
+    /// Deterministic seed generation failed (harness HKDF, etc.).
+    #[error("seed generation failed: {detail}")]
+    SeedGenerationFailed {
+        /// Failure detail.
+        detail: String,
+    },
 }
 
 #[cfg(test)]

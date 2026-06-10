@@ -414,7 +414,7 @@ impl AtomicHarness {
         ));
         let _ = std::fs::create_dir_all(&runtime_dir);
 
-        let mito_seed = generate_harness_mito_seed(family_id);
+        let mito_seed = generate_harness_mito_seed(family_id)?;
         let nuclear_generation = generate_harness_nuclear(family_id);
 
         let mut nucleation = SocketNucleation::new(runtime_dir.clone());
@@ -483,7 +483,7 @@ impl AtomicHarness {
         ));
         let _ = std::fs::create_dir_all(&runtime_dir);
 
-        let mito_seed = generate_harness_mito_seed(family_id);
+        let mito_seed = generate_harness_mito_seed(family_id)?;
         let nuclear_generation = generate_harness_nuclear(family_id);
 
         let mut nucleation = SocketNucleation::new(runtime_dir.clone());
@@ -599,35 +599,37 @@ impl AtomicHarness {
 /// `FAMILY_SEED` as raw UTF-8 bytes).
 ///
 /// This is the **Phase 1 (mito-beacon)** seed for tunnel establishment.
-fn generate_harness_mito_seed(family_id: &str) -> Vec<u8> {
+fn generate_harness_mito_seed(family_id: &str) -> Result<Vec<u8>, LaunchError> {
     let hk = Hkdf::<Sha256>::new(Some(b"primalspring-harness-btsp"), family_id.as_bytes());
     let mut okm = [0u8; 32];
-    if hk.expand(b"family-seed", &mut okm).is_err() {
-        return Vec::new();
-    }
+    hk.expand(b"family-seed", &mut okm).map_err(|e| LaunchError::SeedGenerationFailed {
+        detail: format!("harness mito seed HKDF expand failed for family '{family_id}': {e}"),
+    })?;
     let mut hex = String::with_capacity(64);
     for b in &okm {
         use std::fmt::Write;
         let _ = write!(hex, "{b:02x}");
     }
-    hex.into_bytes()
+    Ok(hex.into_bytes())
 }
 
 /// Generate test nuclear genetics (Phase 2) for permission-tier validation.
 ///
 /// Creates a genesis `NuclearGenetics` with a deterministic key derived
 /// from the `family_id` using a harness-specific HKDF domain. The proof
-/// is a placeholder (harness-only) since `BearDog` is not available for
-/// real lineage proof generation during local tests.
+/// is a deterministic BLAKE3 hash (harness-only) since `BearDog` is not
+/// available for real lineage proof generation during local tests.
 fn generate_harness_nuclear(family_id: &str) -> crate::genetics::NuclearGenetics {
     let hk = Hkdf::<Sha256>::new(Some(b"primalspring-harness-nuclear"), family_id.as_bytes());
     let mut okm = [0u8; 32];
     let _ = hk.expand(b"nuclear-genesis", &mut okm);
 
-    let proof_domain = format!("harness-genesis-{family_id}");
+    let proof = blake3::hash(format!("harness-nuclear-genesis:{family_id}").as_bytes())
+        .as_bytes()
+        .to_vec();
     crate::genetics::NuclearGenetics::genesis(
         okm.to_vec(),
-        proof_domain.into_bytes(),
+        proof,
         format!("harness-{family_id}"),
     )
 }

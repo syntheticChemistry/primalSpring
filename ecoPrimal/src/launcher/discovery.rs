@@ -22,24 +22,9 @@ use super::LaunchError;
 
 /// XDG-compliant default location for fetched primal binaries.
 fn xdg_plasmid_bin() -> PathBuf {
-    std::env::var(crate::env_keys::XDG_DATA_HOME)
-        .map(PathBuf::from)
-        .or_else(|_| {
-            std::env::var(crate::env_keys::HOME).map(|h| PathBuf::from(h).join(".local/share"))
-        })
-        .unwrap_or_else(|_| std::env::temp_dir())
-        .join("ecoPrimals/plasmidBin")
-}
-
-/// Detect the Rust-style target triple for the current host.
-fn host_target_triple() -> String {
-    let arch = std::env::consts::ARCH;
-    let os = std::env::consts::OS;
-    match os {
-        "linux" => format!("{arch}-unknown-linux-musl"),
-        "macos" => format!("{arch}-apple-darwin"),
-        _ => format!("{arch}-unknown-{os}"),
-    }
+    PathBuf::from(crate::tolerances::xdg_data_home())
+        .join(crate::env_keys::ECOPRIMALS_DIR_NAME)
+        .join("plasmidBin")
 }
 
 /// Search for a primal binary using the 4-tier directory search.
@@ -70,7 +55,7 @@ pub fn discover_binary(primal: &str) -> Result<PathBuf, LaunchError> {
     .flatten()
     .collect();
 
-    let triple = host_target_triple();
+    let triple = crate::tolerances::current_target_triple();
 
     let patterns = [
         format!("primals/{triple}/{primal}"),

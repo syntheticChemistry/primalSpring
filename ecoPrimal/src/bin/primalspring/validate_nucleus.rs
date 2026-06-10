@@ -70,7 +70,7 @@ impl NucleusGate {
     fn new(args: &GateArgs) -> Self {
         let depot_dir = resolve_depot_dir();
         let socket_dir = resolve_socket_dir();
-        let gate_name = std::env::var("GATE_NAME").unwrap_or_else(|_| {
+        let gate_name = std::env::var(primalspring::env_keys::GATE_NAME).unwrap_or_else(|_| {
             Command::new("hostname")
                 .arg("-s")
                 .output()
@@ -186,7 +186,7 @@ impl NucleusGate {
             }
         };
 
-        let family_seed = std::env::var("FAMILY_SEED").unwrap_or_else(|_| {
+        let family_seed = std::env::var(primalspring::env_keys::FAMILY_SEED).unwrap_or_else(|_| {
             let seed_path = dirs_home().join(".family.seed");
             std::fs::read_to_string(&seed_path)
                 .unwrap_or_default()
@@ -198,7 +198,7 @@ impl NucleusGate {
         cmd.args(["nucleus", "start", "--node-id", &self.gate_name])
             .env(
                 "ECOPRIMALS_ROOT",
-                std::env::var("ECOPRIMALS_ROOT").unwrap_or_default(),
+                std::env::var(primalspring::env_keys::ECOPRIMALS_ROOT).unwrap_or_default(),
             )
             .env(
                 "ECOPRIMALS_PLASMID_BIN",
@@ -460,18 +460,17 @@ impl Drop for NucleusGate {
 }
 
 fn resolve_depot_dir() -> PathBuf {
-    if let Ok(bin) = std::env::var("ECOPRIMALS_PLASMID_BIN") {
+    if let Ok(bin) = std::env::var(primalspring::env_keys::ECOPRIMALS_PLASMID_BIN) {
         return PathBuf::from(bin);
     }
-    if let Ok(root) = std::env::var("ECOPRIMALS_ROOT") {
-        let triple = host_triple();
-        let depot = PathBuf::from(&root)
-            .join("infra/plasmidBin/primals")
-            .join(&triple);
+    if std::env::var(primalspring::env_keys::ECOPRIMALS_ROOT).is_ok() {
+        let triple = primalspring::tolerances::current_target_triple();
+        let depot_root = PathBuf::from(primalspring::tolerances::plasmidbin_depot_root());
+        let depot = depot_root.join("primals").join(&triple);
         if depot.is_dir() {
             return depot;
         }
-        let flat = PathBuf::from(&root).join("infra/plasmidBin/primals");
+        let flat = depot_root.join("primals");
         if flat.is_dir() {
             return flat;
         }
@@ -480,7 +479,7 @@ fn resolve_depot_dir() -> PathBuf {
 }
 
 fn resolve_socket_dir() -> PathBuf {
-    if let Ok(dir) = std::env::var("BIOMEOS_SOCKET_DIR") {
+    if let Ok(dir) = std::env::var(primalspring::env_keys::BIOMEOS_SOCKET_DIR) {
         return PathBuf::from(dir);
     }
     #[cfg(unix)]
@@ -494,18 +493,9 @@ fn resolve_socket_dir() -> PathBuf {
     }
 }
 
-fn host_triple() -> String {
-    let arch = std::env::consts::ARCH;
-    let os = std::env::consts::OS;
-    match os {
-        "linux" => format!("{arch}-unknown-linux-musl"),
-        "macos" => format!("{arch}-apple-darwin"),
-        _ => format!("{arch}-unknown-{os}"),
-    }
-}
-
 fn dirs_home() -> PathBuf {
-    std::env::var("HOME").map_or_else(|_| PathBuf::from("/root"), PathBuf::from)
+    std::env::var(primalspring::env_keys::HOME)
+        .map_or_else(|_| PathBuf::from("/root"), PathBuf::from)
 }
 
 #[cfg(unix)]

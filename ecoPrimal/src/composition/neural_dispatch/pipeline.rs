@@ -31,19 +31,19 @@ pub struct PipelineResult {
 }
 
 /// Default telemetry source path.
+///
+/// Delegates to [`super::NeuralDispatcher::default_telemetry_path`] (defined in `metrics.rs`)
+/// so that the writer and reader agree on location: `{socket_dir}/dispatch_telemetry.jsonl`.
 #[must_use]
 pub fn default_telemetry_path() -> PathBuf {
-    let xdg_data = std::env::var("XDG_DATA_HOME")
-        .unwrap_or_else(|_| format!("{}/.local/share", std::env::var("HOME").unwrap_or_default()));
-    PathBuf::from(xdg_data).join("biomeos/dispatch_telemetry.jsonl")
+    super::NeuralDispatcher::default_telemetry_path()
 }
 
-/// Default weights output path.
+/// Default weights output path (co-located with telemetry).
 #[must_use]
 pub fn default_weights_path() -> PathBuf {
-    let xdg_data = std::env::var("XDG_DATA_HOME")
-        .unwrap_or_else(|_| format!("{}/.local/share", std::env::var("HOME").unwrap_or_default()));
-    PathBuf::from(xdg_data).join("biomeos/neural_routing_perceptron.bin")
+    let socket_dir = crate::ipc::discover::resolve_socket_dir();
+    PathBuf::from(socket_dir).join("neural_routing_perceptron.bin")
 }
 
 /// Run the full perceptron training pipeline.

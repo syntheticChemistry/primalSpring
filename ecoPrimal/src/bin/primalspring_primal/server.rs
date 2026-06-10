@@ -12,7 +12,8 @@ use primalspring::{PRIMAL_DOMAIN, PRIMAL_NAME};
 use crate::dispatch::dispatch_request;
 
 pub fn server_socket_path() -> PathBuf {
-    primalspring::ipc::discover::socket_path(PRIMAL_NAME)
+    let family_id = primalspring::env_keys::resolve_family_id();
+    primalspring::ipc::discover::socket_path(PRIMAL_NAME, &family_id)
 }
 
 /// Reads `PRIMALSPRING_SOCKET_MODE` env var (octal string, e.g. `"0660"`).

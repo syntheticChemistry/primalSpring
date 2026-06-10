@@ -185,21 +185,21 @@ fn harness_with_graph_stores_path() {
 
 #[test]
 fn generate_harness_mito_seed_deterministic() {
-    let s1 = generate_harness_mito_seed("test-family-1");
-    let s2 = generate_harness_mito_seed("test-family-1");
+    let s1 = generate_harness_mito_seed("test-family-1").expect("seed");
+    let s2 = generate_harness_mito_seed("test-family-1").expect("seed");
     assert_eq!(s1, s2, "same family_id → same seed");
 }
 
 #[test]
 fn generate_harness_mito_seed_unique_per_family() {
-    let s1 = generate_harness_mito_seed("family-alpha");
-    let s2 = generate_harness_mito_seed("family-bravo");
+    let s1 = generate_harness_mito_seed("family-alpha").expect("seed");
+    let s2 = generate_harness_mito_seed("family-bravo").expect("seed");
     assert_ne!(s1, s2, "different family_ids → different seeds");
 }
 
 #[test]
 fn generate_harness_mito_seed_is_hex_ascii() {
-    let seed = generate_harness_mito_seed("exp061-12345");
+    let seed = generate_harness_mito_seed("exp061-12345").expect("seed");
     assert_eq!(seed.len(), 64, "32 bytes hex-encoded = 64 chars");
     assert!(
         seed.iter().all(|&b| b.is_ascii_hexdigit()),

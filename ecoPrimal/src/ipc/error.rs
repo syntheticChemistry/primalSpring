@@ -164,10 +164,29 @@ impl IpcError {
         matches!(self, Self::Timeout(_))
     }
 
-    /// Whether the server reported the method does not exist.
+    /// Returns true if this error indicates the remote method was not found
+    /// (JSON-RPC error code -32601).
+    ///
+    /// Checks the dedicated [`Self::MethodNotFound`] variant and structured
+    /// JSON-RPC error codes first, then falls back to string matching for
+    /// errors that lost structure through serialization.
     #[must_use]
-    pub const fn is_method_not_found(&self) -> bool {
-        matches!(self, Self::MethodNotFound { .. })
+    pub fn is_method_not_found(&self) -> bool {
+        match self {
+            Self::MethodNotFound { .. } => true,
+            Self::ApplicationError { code, message, .. } => {
+                *code == error_codes::METHOD_NOT_FOUND
+                    || message.contains("-32601")
+                    || message.contains("method not found")
+                    || message.contains("Method not found")
+            }
+            Self::ProtocolError { detail } | Self::SerializationError { detail } => {
+                detail.contains("-32601")
+                    || detail.contains("method not found")
+                    || detail.contains("Method not found")
+            }
+            _ => false,
+        }
     }
 
     /// Whether this is a connection-level failure (socket, refused, reset).
@@ -311,6 +330,32 @@ mod tests {
         assert!(err.is_method_not_found());
         assert!(!err.is_retriable());
         assert!(!err.is_connection_error());
+    }
+
+    #[test]
+    fn application_error_with_method_not_found_code() {
+        let err = IpcError::ApplicationError {
+            code: error_codes::METHOD_NOT_FOUND,
+            message: "compute.submit".to_owned(),
+            data: None,
+        };
+        assert!(err.is_method_not_found());
+    }
+
+    #[test]
+    fn protocol_error_with_serialized_method_not_found() {
+        let err = IpcError::ProtocolError {
+            detail: r#"{"code":-32601,"message":"no such method"}"#.to_owned(),
+        };
+        assert!(err.is_method_not_found());
+    }
+
+    #[test]
+    fn socket_not_found_is_not_method_not_found() {
+        let err = IpcError::SocketNotFound {
+            primal: "beardog".to_owned(),
+        };
+        assert!(!err.is_method_not_found());
     }
 
     #[test]

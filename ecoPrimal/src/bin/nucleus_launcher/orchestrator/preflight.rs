@@ -71,7 +71,7 @@ pub fn run_preflight(primals: &[&str], uds_only: bool) -> PreflightResult {
         print!("  Checksum verify:   ");
         if let Ok(content) = std::fs::read_to_string(cpath) {
             if let Ok(parsed) = content.parse::<toml::Table>() {
-                let triple = host_target_triple();
+                let triple = tolerances::current_target_triple();
                 let primals_table = parsed.get("primals").and_then(|v| v.as_table());
 
                 for (name, path) in &binary_paths {
@@ -151,29 +151,8 @@ pub fn run_preflight(primals: &[&str], uds_only: bool) -> PreflightResult {
 }
 
 fn find_checksums_toml() -> Option<PathBuf> {
-    if let Ok(root) = std::env::var("ECOPRIMALS_ROOT") {
-        let p = PathBuf::from(&root).join("infra/plasmidBin/checksums.toml");
-        if p.exists() {
-            return Some(p);
-        }
-    }
-
-    let xdg = std::env::var("XDG_DATA_HOME")
-        .map(PathBuf::from)
-        .or_else(|_| std::env::var("HOME").map(|h| PathBuf::from(h).join(".local/share")))
-        .ok()?;
-    let p = xdg.join("ecoPrimals/plasmidBin/checksums.toml");
+    let p = PathBuf::from(tolerances::plasmidbin_depot_root()).join("checksums.toml");
     if p.exists() { Some(p) } else { None }
-}
-
-fn host_target_triple() -> String {
-    let arch = std::env::consts::ARCH;
-    let os = std::env::consts::OS;
-    match os {
-        "linux" => format!("{arch}-unknown-linux-musl"),
-        "macos" => format!("{arch}-apple-darwin"),
-        _ => format!("{arch}-unknown-{os}"),
-    }
 }
 
 fn detect_port_conflicts(primals: &[&str]) -> Vec<(u16, Vec<String>)> {

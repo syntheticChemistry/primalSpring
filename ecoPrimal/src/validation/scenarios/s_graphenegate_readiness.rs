@@ -168,7 +168,7 @@ fn phase_binary_depot(v: &mut ValidationResult) {
         let fresh = exists
             && std::fs::metadata(&bin_path)
                 .and_then(|m| m.modified())
-                .map_or(false, |mtime| {
+                .is_ok_and(|mtime| {
                     let is_fresh = mtime >= adoption_cutoff;
                     if !is_fresh {
                         stale_count += 1;

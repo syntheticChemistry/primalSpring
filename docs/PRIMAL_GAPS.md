@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **P2** — Wave 107: socket cleanup DONE, TRANSPORT_ENDPOINT works for JSON-RPC TCP. **grapheneGate blocker**: tarpc server `bind()` fatal when UDS denied — tarpc must be skipped when `PRIMAL_BIND_MODE=tcp_only`. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 ELIMINATED — zero-port standard fully compliant. 18 methods. |
 
-**11/13 CLEAN, 2/13 P2 — Waves 1-107. 54 scenarios (10 tracks), 490+ methods (100% exercised), 898 lib tests, 0 known debt. Wave 107: ZERO P1. grapheneGate 11/13 LIVE on Pixel 8a. coralReef P2 (tarpc fatal on tcp_only), biomeOS P2 (Neural API UDS fatal on tcp_only). songBird topology-aware routing (ff86204c). barraCuda method.describe (v0.4.0). Socket cleanup 4/5 (toadStool pending). 5-gate ecosystem (4-gate mesh + grapheneGate standalone). S1-S4 GRADUATED. Remaining P2: coralReef tarpc gate, biomeOS UDS gate, biomeOS auto-register, toadStool /tmp, flockGate WAN.**
+**11/13 CLEAN, 2/13 P2 — Waves 1-107. 54 scenarios (10 tracks), 490+ methods (100% exercised), 898 lib tests, 0 known debt. Wave 107: ZERO P1. grapheneGate 11/13 LIVE on Pixel 8a. coralReef P2 (tarpc fatal on tcp_only), biomeOS P2 (Neural API UDS fatal on tcp_only). songBird topology-aware routing (ff86204c). barraCuda method.describe (v0.4.0). Socket cleanup 4/5 (toadStool pending). 5-gate ecosystem (4-gate mesh + grapheneGate standalone). S1-S4 GRADUATED. biomeOS auto-register SHIPPED (v4.19). Remaining P2: coralReef tarpc gate, biomeOS UDS gate, toadStool /tmp, flockGate WAN.**
 
 ---
 

@@ -298,6 +298,51 @@ pub fn biomeos_socket_dir() -> std::path::PathBuf {
     std::path::PathBuf::from(runtime_dir()).join(crate::env_keys::BIOMEOS_SUBDIR)
 }
 
+/// Resolve the XDG data home directory.
+///
+/// Checks `XDG_DATA_HOME` then falls back to `$HOME/.local/share`.
+#[must_use]
+pub fn xdg_data_home() -> String {
+    std::env::var(crate::env_keys::XDG_DATA_HOME).unwrap_or_else(|_| {
+        format!(
+            "{}/.local/share",
+            std::env::var(crate::env_keys::HOME).unwrap_or_default()
+        )
+    })
+}
+
+/// Resolve the plasmidBin depot root directory.
+///
+/// Checks `ECOPRIMALS_PLASMID_BIN`, then `$ECOPRIMALS_ROOT/infra/plasmidBin`,
+/// then `$XDG_DATA_HOME/ecoPrimals/plasmidBin`.
+#[must_use]
+pub fn plasmidbin_depot_root() -> String {
+    std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN)
+        .or_else(|_| {
+            std::env::var(crate::env_keys::ECOPRIMALS_ROOT)
+                .map(|r| format!("{r}/infra/plasmidBin"))
+        })
+        .unwrap_or_else(|_| {
+            format!(
+                "{}/{}/plasmidBin",
+                xdg_data_home(),
+                crate::env_keys::ECOPRIMALS_DIR_NAME
+            )
+        })
+}
+
+/// Detect the Rust-style target triple for the current host.
+#[must_use]
+pub fn current_target_triple() -> String {
+    let arch = std::env::consts::ARCH;
+    let os = std::env::consts::OS;
+    match os {
+        "linux" => format!("{arch}-unknown-linux-musl"),
+        "macos" => format!("{arch}-apple-darwin"),
+        _ => format!("{arch}-unknown-{os}"),
+    }
+}
+
 /// Read the real UID from `/proc/self/status` (no libc, no unsafe).
 #[cfg(target_os = "linux")]
 fn real_uid() -> Option<u32> {

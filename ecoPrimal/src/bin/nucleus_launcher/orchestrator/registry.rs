@@ -9,6 +9,24 @@ use std::time::Duration;
 use primalspring::ipc::tcp::env_port;
 use primalspring::tolerances;
 
+fn jsonrpc_payload(method: &str, params: serde_json::Value, id: u64) -> String {
+    let request = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": params,
+        "id": id
+    });
+    serde_json::to_string(&request).expect("JSON serialization")
+}
+
+fn jsonrpc_response_has_field(response: &str, field: &str) -> bool {
+    if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(response) {
+        parsed.get(field).is_some()
+    } else {
+        false
+    }
+}
+
 /// Build primal → capability domains map from `capability_registry.toml`.
 ///
 /// The registry TOML has `[domain] owner = "primal"` sections. We invert
@@ -97,7 +115,7 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
     use std::net::{SocketAddr, TcpStream};
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
-    let payload = r#"{"jsonrpc":"2.0","method":"health.check","params":{},"id":1}"#;
+    let payload = jsonrpc_payload("health.check", serde_json::json!({}), 1);
 
     let Ok(stream) = TcpStream::connect_timeout(&addr, timeout) else {
         return false;
@@ -121,7 +139,7 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
     match s.read(&mut buf) {
         Ok(n) if n > 0 => {
             let response = String::from_utf8_lossy(&buf[..n]);
-            response.contains("\"jsonrpc\"")
+            jsonrpc_response_has_field(&response, "jsonrpc")
         }
         _ => false,
     }
@@ -129,8 +147,9 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
 
 /// Perform a JSON-RPC health check on a primal via UDS socket.
 pub(super) fn health_check_uds(socket: &std::path::Path) -> bool {
-    let payload = r#"{"jsonrpc":"2.0","method":"health.check","params":{},"id":1}"#;
-    send_uds_rpc(socket, payload).is_ok_and(|resp| resp.contains("\"jsonrpc\""))
+    let payload = jsonrpc_payload("health.check", serde_json::json!({}), 1);
+    send_uds_rpc(socket, &payload)
+        .is_ok_and(|resp| jsonrpc_response_has_field(&resp, "jsonrpc"))
 }
 
 /// Resolve the UDS socket path for a primal.
@@ -149,10 +168,13 @@ pub(super) fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) ->
     let timeout = Duration::from_secs(5);
     let mut seeded = 0;
 
-    let peers_json: Vec<String> = peers.iter().map(|p| format!("\"{p}\"")).collect();
-    let payload = format!(
-        r#"{{"jsonrpc":"2.0","method":"mesh.init","params":{{"node_id":"{node_id}","bootstrap_peers":[{}]}},"id":2}}"#,
-        peers_json.join(",")
+    let payload = jsonrpc_payload(
+        "mesh.init",
+        serde_json::json!({
+            "node_id": node_id,
+            "bootstrap_peers": peers,
+        }),
+        2,
     );
 
     let Ok(stream) = TcpStream::connect_timeout(&addr, timeout) else {
@@ -167,7 +189,7 @@ pub(super) fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) ->
         if let Ok(n) = s.read(&mut buf) {
             if n > 0 {
                 let resp = String::from_utf8_lossy(&buf[..n]);
-                if resp.contains("\"result\"") {
+                if jsonrpc_response_has_field(&resp, "result") {
                     seeded = peers.len();
                 }
             }
@@ -201,7 +223,7 @@ pub(super) fn register_with_songbird(port: u16, payload: &str) -> Result<(), Str
     match s.read(&mut buf) {
         Ok(n) if n > 0 => {
             let resp = String::from_utf8_lossy(&buf[..n]);
-            if resp.contains("\"result\"") {
+            if jsonrpc_response_has_field(&resp, "result") {
                 Ok(())
             } else {
                 Err(format!(
@@ -251,7 +273,7 @@ pub(super) fn register_with_songbird_uds(
     payload: &str,
 ) -> Result<(), String> {
     let resp = send_uds_rpc(socket, payload)?;
-    if resp.contains("\"result\"") {
+    if jsonrpc_response_has_field(&resp, "result") {
         Ok(())
     } else {
         Err(format!(
@@ -267,14 +289,17 @@ pub(super) fn seed_songbird_peers_uds(
     peers: &[String],
     node_id: &str,
 ) -> usize {
-    let peers_json: Vec<String> = peers.iter().map(|p| format!("\"{p}\"")).collect();
-    let payload = format!(
-        r#"{{"jsonrpc":"2.0","method":"mesh.init","params":{{"node_id":"{node_id}","bootstrap_peers":[{}]}},"id":2}}"#,
-        peers_json.join(",")
+    let payload = jsonrpc_payload(
+        "mesh.init",
+        serde_json::json!({
+            "node_id": node_id,
+            "bootstrap_peers": peers,
+        }),
+        2,
     );
 
     match send_uds_rpc(socket, &payload) {
-        Ok(resp) if resp.contains("\"result\"") => peers.len(),
+        Ok(resp) if jsonrpc_response_has_field(&resp, "result") => peers.len(),
         _ => 0,
     }
 }

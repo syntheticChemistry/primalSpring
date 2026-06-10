@@ -101,8 +101,8 @@ impl NeuralBridge {
         let family = family_hint.map_or_else(crate::env_keys::resolve_family_id, String::from);
 
         let candidates = [
-            format!("neural-api-{family}.sock"),
-            format!("biomeos-{family}.sock"),
+            super::discover::socket_filename("neural-api", &family),
+            super::discover::socket_filename("biomeos", &family),
         ];
 
         if let Ok(xdg) = std::env::var(crate::env_keys::XDG_RUNTIME_DIR) {

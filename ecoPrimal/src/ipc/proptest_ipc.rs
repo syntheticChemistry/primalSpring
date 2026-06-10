@@ -73,8 +73,8 @@ mod tests {
         #[test]
         fn extract_result_dispatch_consistency(val in arb_json_value()) {
             let resp = success_response(val);
-            let result_ok = extract_rpc_result::<serde_json::Value>(&resp).is_ok();
-            let dispatch_ok: DispatchOutcome<serde_json::Value> = extract_rpc_dispatch(&resp);
+            let result_ok = extract_rpc_result::<serde_json::Value>(resp.clone()).is_ok();
+            let dispatch_ok: DispatchOutcome<serde_json::Value> = extract_rpc_dispatch(resp);
             prop_assert_eq!(result_ok, dispatch_ok.is_success());
         }
 
@@ -85,8 +85,8 @@ mod tests {
             msg in "[a-zA-Z ]{1,30}",
         ) {
             let resp = error_response(code, &msg);
-            let result_err = extract_rpc_result::<serde_json::Value>(&resp).is_err();
-            let dispatch: DispatchOutcome<serde_json::Value> = extract_rpc_dispatch(&resp);
+            let result_err = extract_rpc_result::<serde_json::Value>(resp.clone()).is_err();
+            let dispatch: DispatchOutcome<serde_json::Value> = extract_rpc_dispatch(resp);
             prop_assert!(result_err);
             prop_assert!(!dispatch.is_success());
         }
