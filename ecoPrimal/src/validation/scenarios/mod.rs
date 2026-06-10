@@ -224,10 +224,10 @@ mod tests {
         // Pre-existing known failures in Rust-tier scenarios that predate this
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
-        // Wave 107: federation ports clean. grapheneGate blocker checks are
-        // structural upstream trackers — they pass once CR-TARPC-01 + BM-UDS-01
-        // fixes land in coralReef/biomeOS source trees.
-        const KNOWN_DEBT: &[(&str, u32)] = &[("graphenegate-readiness", 3)];
+        // Wave 107: all upstream blockers resolved. CR-TARPC-01 (coralReef b1ec1f4),
+        // BM-UDS-01 (biomeOS v4.20 d35c943e), NG-DOWNCAST-01 (nestGate 7c3fe9a6).
+        // Federation ports clean. grapheneGate 13/13 structurally ready.
+        const KNOWN_DEBT: &[(&str, u32)] = &[];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();

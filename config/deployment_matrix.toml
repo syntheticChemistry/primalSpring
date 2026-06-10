@@ -94,10 +94,10 @@ gate = "grapheneGate"
 arch = "aarch64-unknown-linux-musl"
 transport = "tcp_only"
 topology = "standalone"
-primals = 11
-status = "validated"
+primals = 13
+status = "ready"
 wave = 107
-notes = "11/13 LIVE via TCP-only. 9 respond to health, 2 BTSP-gated (correct). Blocked: coralReef (tarpc fatal), biomeOS (UDS fatal). deploy_pixel.sh workarounds for nestGate (NESTGATE_SOCKET=\"\")."
+notes = "13/13 structurally ready. CR-TARPC-01 (coralReef b1ec1f4), BM-UDS-01 (biomeOS v4.20), NG-DOWNCAST-01 (nestGate 7c3fe9a6) all RESOLVED. Awaiting aarch64 rebuild + deploy to validate on Pixel 8."
 
 [[cell]]
 id = "graphenegate-aarch64-fallback-standalone"
@@ -105,10 +105,10 @@ gate = "grapheneGate"
 arch = "aarch64-unknown-linux-musl"
 transport = "tcp_fallback"
 topology = "standalone"
-primals = 11
-status = "validated"
+primals = 13
+status = "ready"
 wave = 107
-notes = "deploy_pixel.sh exports PRIMAL_BIND_MODE=fallback. Same 11/13 as tcp_only — fallback triggers for primals whose UDS bind fails, tcp_only env override for nestgate/coralreef/biomeos."
+notes = "deploy_pixel.sh exports PRIMAL_BIND_MODE=fallback. All 13 primals have bind-mode guards. Rebuild + deploy needed."
 
 # ── strandGate (x86_64, mesh peer, limited) ──────────────────────────────────
 
