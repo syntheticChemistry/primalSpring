@@ -224,13 +224,9 @@ mod tests {
         // Pre-existing known failures in Rust-tier scenarios that predate this
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
-        // Wave 107: CR-TARPC-01 resolved (coralReef tarpc tcp_only).
-        // grapheneGate 12/13 — BM-UDS-01 (biomeOS UDS bind) remains.
+        // Wave 107: upstream blockers resolved. CR-TARPC-01, BM-UDS-01, NG-DOWNCAST-01.
         // sporePrint cert pipeline: deploy.yml certification + manifest.json.
-        const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 2),
-            ("sporeprint-pure-primal-parity", 2),
-        ];
+        const KNOWN_DEBT: &[(&str, u32)] = &[("sporeprint-pure-primal-parity", 2)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
