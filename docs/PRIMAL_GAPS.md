@@ -9,15 +9,15 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-10 (Wave 107: **grapheneGate 13/13 — ALL primals TCP-only fallback ADOPTED**. coralReef (`27b4bb3`): `PRIMAL_BIND_MODE` in `resolve_bind()` upgrades UdsOnly→Both. nestGate (`9f15143a`): `is_platform_constraint()` honors `PRIMAL_BIND_MODE=fallback`. petalTongue (`e5a65e0`): `UnixSocketServer::start()` detects EACCES, falls back to TCP 9900. biomeOS v4.18 already adopted. Infrastructure: `ipc::server_bind` module + `s_tcp_fallback` scenario + `deploy_pixel.sh` exports `PRIMAL_BIND_MODE=fallback`. ZERO P1. 897 tests 0 failures.)
+> **Last updated**: 2026-06-10 (Wave 107 ecosystem: **ZERO P1. ZERO KNOWN DEBT.** skunkBat TCP 9750 RESOLVED upstream — `zero-port-standard` scenario now 0 failures. 4-gate mesh collective LIVE (eastGate↔golgiBody↔ironGate+southGate). songBird topology-aware routing SHIPPED (ff86204c). barraCuda `method.describe` (v0.4.0). Socket cleanup 4/5. grapheneGate 13/13 code complete. S1-S4 GRADUATED. 897 tests 0 failures.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (June 9, 2026)
+## Ecosystem Status (June 10, 2026)
 
-**267+ PASS, 0 FAIL, 1 KNOWN_DEBT** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: **62 scenarios** (10 tracks, 3 tiers), 490+ real methods (100% exercised), **897 lib tests pass** (2 ignored) + **17 doc tests**, **5 clippy warnings** (borderline function-length only), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 107: ZERO P1. grapheneGate 13/13 — ALL primals TCP-only fallback ADOPTED.** coralReef: `PRIMAL_BIND_MODE` in `resolve_bind()`. nestGate: `is_platform_constraint()` + `PRIMAL_BIND_MODE`. petalTongue: EACCES→TCP 9900 fallback. biomeOS v4.18: native fallback. **NUCLEUS supervision SHIPPED** (biomeOS v4.17). **4-gate mesh collective LIVE** (eastGate↔golgiBody↔ironGate+southGate). southGate cross-subnet VALIDATED (13/13, 12-step distributed science pipeline). gate.bootstrap **SHIPPED + HARDENED** (gate.status, --dry-run, WAN checksums, atomic publish). Transport 11/11 COMPLETE. Depot 13/13 BLAKE3 VERIFIED. WAN depot 13/13 serving. VPS depot refreshed (songbird+biomeOS rebuilt). Cascade **38/38 clean**. aarch64-musl 14/14 BUILT. **Known debt**: skunkBat TCP 9750 (zero-port standard violation). **Remaining P2**: grapheneGate aarch64 rebuild + redeploy (13/13 adopted, needs binary refresh). flockGate WAN e2e 5/5 (awaiting power-on).
+**267+ PASS, 0 FAIL, 0 KNOWN_DEBT** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: **53 scenarios** (10 tracks, 3 tiers), 490+ real methods (100% exercised), **897 lib tests pass** (2 ignored) + **17 doc tests**, **5 clippy warnings** (borderline function-length only), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 107: ZERO P1. ZERO KNOWN DEBT.** skunkBat TCP 9750 resolved upstream — `zero-port-standard` scenario now fully clean. songBird M1 SHIPPED (ff86204c): `ipc.resolve` topology-aware mesh routing — 4-gate collective is a transparent distributed capability mesh. barraCuda `method.describe` SHIPPED (v0.4.0): 97 methods, runtime introspection. **Socket cleanup 4/5 DONE**: sweetGrass v0.7.55, barraCuda v0.4.0, coralReef Wave 107, squirrel Wave 107 — all zero `/tmp` artifacts. **toadStool still pending**. **NUCLEUS supervision SHIPPED** (biomeOS v4.17). **4-gate mesh collective LIVE** (eastGate↔golgiBody↔ironGate+southGate). southGate cross-subnet VALIDATED (13/13, 12-step distributed science pipeline). gate.bootstrap **SHIPPED + HARDENED** (gate.status, --dry-run, atomic publish). Transport 11/11 COMPLETE. Depot 13/13 BLAKE3 VERIFIED. WAN depot 13/13 serving. grapheneGate 13/13 code complete (all primals TCP-only fallback adopted). S1-S4 GRADUATED. **Remaining P2**: biomeOS auto-registration (NUCLEUS→songBird), toadStool `/tmp` socket cleanup, grapheneGate aarch64 rebuild + Pixel redeploy, flockGate WAN e2e 5/5.
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -48,19 +48,19 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | biomeOS | 8,038+ | **ADOPTED** | FULL | consumer | **CLEAN** — v3.84: `env_config` module (90+ literals centralized), test extraction refactors. NC-1.4 COMPLETE (`biomeos-pseudospore`). |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
 | squirrel | 7,095+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 58: 316 env constants (`env_vars.rs`), self-identity eliminated, 5,417L orphan purge. ~93 files remaining raw `std::env::var`. |
-| barraCuda | 4,422+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `math.rs` refactored (split `signal.rs` + `stats.rs`), `pollster` eliminated, hardcoding → capability-based. 87 IPC methods. |
+| barraCuda | 4,600+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: `method.describe` SHIPPED (97 methods), socket cleanup DONE (state co-locates with socket path, ProtectSystem=strict compatible), zero debt. |
 | petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — WS-4: `petal-tongue-wasm` expanded (8 `wasm_bindgen` functions: `render_dashboard`, `render_binding`, `render_scene`, `validate_grammar`, modality dispatch). Client-side WASM rendering for offline sporePrint. |
 | rhizoCrypt | 1,642+ | **ADOPTED** | FULL | L3 | **CLEAN** — `--socket` aliased to `--unix`. Deep debt: `Box<dyn Error>` eliminated, test harness extracted, workspace dep hygiene, stale spec headers fixed. |
 | loamSpine | 1,528+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 55: BearDog coupling removed, placeholder DIDs replaced. Primal self-knowledge enforced. |
-| sweetGrass | 1,553 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.37: PID file, JH-0 gate + port 9850 canonical |
-| coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
-| skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
+| sweetGrass | 1,634 | **ADOPTED** | FULL | L3 | **CLEAN** — v0.7.55: Wave 107 socket cleanup DONE (Tier 5 fallback fixed, zero /tmp artifacts). Doc sync to v0.7.55. |
+| coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: socket cleanup DONE (3-tier resolution via `config::socket_base_dir()`), transport evolution (TRANSPORT_ENDPOINT), deep debt zero. |
+| skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 ELIMINATED — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-106. 62 scenarios (10 tracks), 490+ methods (100% exercised), 897 lib tests, 1 known debt (skunkBat TCP 9750). Wave 106: 1 P1 remaining (NUCLEUS supervision). 3-gate mesh collective LIVE. TCP-only fallback infrastructure SHIPPED. grapheneGate 9/13 (4 can now adopt `bind_transport`). Critical path: biomeOS NUCLEUS supervision (sole P1).**
+**13/13 CLEAN — Waves 1-107. 53 scenarios (10 tracks), 490+ methods (100% exercised), 897 lib tests, 0 known debt (skunkBat TCP 9750 RESOLVED). Wave 107: ZERO P1. ZERO KNOWN DEBT. songBird topology-aware routing (ff86204c). barraCuda method.describe (v0.4.0). Socket cleanup 4/5 (toadStool pending). 4-gate mesh collective LIVE. S1-S4 GRADUATED. Remaining: biomeOS auto-register, toadStool /tmp, grapheneGate rebuild, flockGate WAN.**
 
 ---
 
-## Upstream Gaps — Wave 106 Status (June 10, 2026)
+## Upstream Gaps — Wave 107 Status (June 10, 2026)
 
 ### RESOLVED (Wave 105 — both P1 mesh blockers cleared)
 
@@ -278,7 +278,7 @@ development uses `nucleus_launcher start` or `desktop_nucleus.sh` (local only).
 
 ---
 
-### DH-1: Primal /tmp Hardcoding — Deployment Hygiene Audit (May 29, 2026) — **PARTIAL FIX**
+### DH-1: Primal /tmp Hardcoding — Deployment Hygiene Audit (May 29, 2026) — **4/5 RESOLVED (Wave 107)**
 
 > **Wave 79 update (Jun 5)**: Tower Atomic UDS-only posture enforced in primalSpring:
 > `nucleus_launcher` defaults UDS-only (`--tcp` opt-in), `discover_with_fallback()`
@@ -312,11 +312,11 @@ directories in `/tmp` unconditionally.
 | Primal | Offending Paths in /tmp | Expected Path |
 |--------|------------------------|---------------|
 | **Songbird** | `/tmp/songbird-data/`, `/tmp/songbird.sock`, `/tmp/songbird-{fid}.sock`, `/tmp/network-{fid}.sock` | `/run/membrane/songbird.sock` only |
-| **toadStool** | `/tmp/biomeos/compute-tarpc.sock`, `/tmp/biomeos/compute.sock`, `/tmp/toadstool-jsonrpc-port` | `/run/membrane/toadstool.sock` only |
-| **coralReef** | `/tmp/biomeos/coralreef-core-default-tarpc.sock`, `/tmp/biomeos/coralreef-core.json`, `/tmp/biomeos/coralreef-core.pid` | `/run/membrane/coralreef.sock` only |
-| **barraCuda** | `/tmp/biomeos/barracuda-core.json`, `/tmp/biomeos/barracuda.sock` (→ symlink) | `/run/membrane/barracuda.sock` only |
-| **sweetGrass** | `/tmp/sweetgrass.sock`, `/tmp/provenance.sock` (→ symlink) | `/run/membrane/sweetgrass.sock` only |
-| **squirrel** | `/tmp/ecoPrimals-manifests/squirrel.json` | `/run/membrane/` or `$XDG_DATA_HOME` |
+| **toadStool** | `/tmp/biomeos/compute-tarpc.sock`, `/tmp/biomeos/compute.sock`, `/tmp/toadstool-jsonrpc-port` | `/run/membrane/toadstool.sock` only — **STILL PENDING** |
+| ~~**coralReef**~~ | ~~`/tmp/biomeos/coralreef-core-*.sock`, `.json`, `.pid`~~ | **RESOLVED Wave 107** — 3-tier `config::socket_base_dir()` |
+| ~~**barraCuda**~~ | ~~`/tmp/biomeos/barracuda-core.json`, symlink~~ | **RESOLVED Wave 107** — state co-locates with socket path |
+| ~~**sweetGrass**~~ | ~~`/tmp/sweetgrass.sock`, `/tmp/provenance.sock`~~ | **RESOLVED v0.7.55** — Tier 5 fallback fixed |
+| ~~**squirrel**~~ | ~~`/tmp/ecoPrimals-manifests/squirrel.json`~~ | **RESOLVED Wave 107** — manifest write eliminated |
 | BearDog | Clean | `/run/membrane/beardog.sock` ✓ |
 | skunkBat | Clean | `/run/membrane/skunkbat.sock` ✓ |
 | NestGate | Clean (uses configured :9500 + UDS) | OK |
