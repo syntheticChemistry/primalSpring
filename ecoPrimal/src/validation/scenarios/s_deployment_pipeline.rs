@@ -19,6 +19,7 @@ use crate::deploy;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
+/// Deployment-pipeline validation: depot layout, checksums, provenance, cell readiness, live deploy.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "deployment-pipeline",
@@ -97,6 +98,7 @@ fn current_target_triple() -> String {
     }
 }
 
+/// Execute the full deployment-pipeline validation across five phases.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Phase 1: Depot layout");
     let depot_root = phase_depot_layout(v);

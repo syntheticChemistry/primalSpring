@@ -147,6 +147,147 @@ pub struct NeuralRoutingTable {
     patterns: Vec<CompositionPattern>,
 }
 
+fn collect_composition_methods(parsed: &toml::Value) -> Vec<String> {
+    let mut methods = Vec::new();
+    let Some(table) = parsed.as_table() else { return methods };
+    let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) else {
+        return methods;
+    };
+    for (tier_name, tier_val) in compositions {
+        if let Some(sigs) = tier_val.get("compositions").and_then(|v| v.as_array()) {
+            for sig in sigs {
+                if let Some(name) = sig.get("name").and_then(|v| v.as_str()) {
+                    methods.push(format!("{tier_name}.{name}"));
+                }
+            }
+        }
+    }
+    methods
+}
+
+type RouteIndices = (
+    HashMap<Arc<str>, RouteEntry>,
+    HashMap<Arc<str>, Vec<Arc<str>>>,
+    HashMap<CompositionTier, Vec<Arc<str>>>,
+    HashMap<Arc<str>, Vec<Arc<str>>>,
+);
+
+fn register_domain_methods(parsed: &toml::Value, composition_methods: &[String]) -> RouteIndices {
+    let mut method_index = HashMap::new();
+    let mut domain_index: HashMap<Arc<str>, Vec<Arc<str>>> = HashMap::new();
+    let mut tier_index: HashMap<CompositionTier, Vec<Arc<str>>> = HashMap::new();
+    let mut primal_index: HashMap<Arc<str>, Vec<Arc<str>>> = HashMap::new();
+
+    let skip_sections = ["test_fixtures", "false_positives"];
+
+    let Some(table) = parsed.as_table() else {
+        return (method_index, domain_index, tier_index, primal_index);
+    };
+
+    for (section, value) in table {
+        if skip_sections.contains(&section.as_str()) || section == "compositions" {
+            continue;
+        }
+        let owner_raw = value
+            .get("owner")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        if owner_raw == "none" || owner_raw == "tests" {
+            continue;
+        }
+
+        let methods = value
+            .get("methods")
+            .and_then(|v| v.as_array())
+            .map(|arr| arr.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>())
+            .unwrap_or_default();
+
+        for method_str in &methods {
+            let domain_str = method_to_capability_domain(method_str);
+            let routed_owner_str = if owner_raw == "all" {
+                "all"
+            } else {
+                let routed = capability_to_primal(domain_str);
+                if routed == domain_str { owner_raw } else { routed }
+            };
+            let tier = if owner_raw == "all" {
+                CompositionTier::Orchestration
+            } else {
+                CompositionTier::from_domain(domain_str, routed_owner_str)
+            };
+
+            let is_composition = composition_methods.iter().any(|s| s == method_str);
+
+            let method: Arc<str> = Arc::from(*method_str);
+            let domain: Arc<str> = Arc::from(domain_str);
+            let routed_owner: Arc<str> = Arc::from(routed_owner_str);
+
+            domain_index.entry(Arc::clone(&domain)).or_default().push(Arc::clone(&method));
+            tier_index.entry(tier).or_default().push(Arc::clone(&method));
+            primal_index
+                .entry(Arc::clone(&routed_owner))
+                .or_default()
+                .push(Arc::clone(&method));
+
+            let entry = RouteEntry {
+                method: Arc::clone(&method),
+                owner: routed_owner,
+                domain,
+                tier,
+                has_composition_graph: is_composition,
+                aliases: Vec::new(),
+            };
+            method_index.insert(Arc::clone(&entry.method), entry);
+        }
+    }
+
+    (method_index, domain_index, tier_index, primal_index)
+}
+
+fn collect_composition_patterns(parsed: &toml::Value) -> Vec<CompositionPattern> {
+    let mut patterns = Vec::new();
+    let Some(table) = parsed.as_table() else { return patterns };
+    let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) else {
+        return patterns;
+    };
+    for (group_name, group_val) in compositions {
+        let tier_str = group_val
+            .get("tier")
+            .and_then(|v| v.as_str())
+            .unwrap_or("standalone");
+        let tier = match tier_str {
+            "electron" => CompositionTier::Tower,
+            "proton" => CompositionTier::Node,
+            "neutron" | "rootpulse" | "pulse" => CompositionTier::Nest,
+            "meta" => CompositionTier::Meta,
+            "orchestration" | "ecosystem" | "fall" => CompositionTier::Orchestration,
+            _ => CompositionTier::Standalone,
+        };
+        let primals: Vec<String> = group_val
+            .get("primals")
+            .and_then(|v| v.as_array())
+            .map(|a| a.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+
+        let arc_primals: Vec<Arc<str>> = primals.iter().map(|s| Arc::from(s.as_str())).collect();
+
+        if let Some(sigs) = group_val.get("compositions").and_then(|v| v.as_array()) {
+            for sig in sigs {
+                let name = sig.get("name").and_then(|v| v.as_str()).unwrap_or("");
+                let full_name: Arc<str> = Arc::from(format!("{group_name}_{name}").as_str());
+                let method: Arc<str> = Arc::from(format!("{group_name}.{name}").as_str());
+                patterns.push(CompositionPattern {
+                    name: full_name,
+                    methods: vec![method],
+                    primals: arc_primals.clone(),
+                    tier,
+                });
+            }
+        }
+    }
+    patterns
+}
+
 impl NeuralRoutingTable {
     /// Build the routing table from the capability registry TOML.
     #[must_use]
@@ -161,134 +302,13 @@ impl NeuralRoutingTable {
                 patterns: Vec::new(),
             },
         };
-        let mut method_index = HashMap::new();
-        let mut domain_index: HashMap<Arc<str>, Vec<Arc<str>>> = HashMap::new();
-        let mut tier_index: HashMap<CompositionTier, Vec<Arc<str>>> = HashMap::new();
-        let mut primal_index: HashMap<Arc<str>, Vec<Arc<str>>> = HashMap::new();
 
-        let skip_sections = ["test_fixtures", "false_positives"];
+        let composition_methods = collect_composition_methods(&parsed);
 
-        let mut composition_methods: Vec<String> = Vec::new();
+        let (method_index, domain_index, tier_index, primal_index) =
+            register_domain_methods(&parsed, &composition_methods);
 
-        if let Some(table) = parsed.as_table() {
-            // First pass: collect composition methods from [compositions.*] sections.
-            if let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) {
-                for (tier_name, tier_val) in compositions {
-                    if let Some(sigs) = tier_val.get("compositions").and_then(|v| v.as_array()) {
-                        for sig in sigs {
-                            if let Some(name) = sig.get("name").and_then(|v| v.as_str()) {
-                                composition_methods.push(format!("{tier_name}.{name}"));
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Second pass: register all methods from domain sections.
-            for (section, value) in table {
-                if skip_sections.contains(&section.as_str())
-                    || section == "compositions"
-                {
-                    continue;
-                }
-                let owner_raw = value
-                    .get("owner")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("unknown");
-                if owner_raw == "none" || owner_raw == "tests" {
-                    continue;
-                }
-
-                let methods = value
-                    .get("methods")
-                    .and_then(|v| v.as_array())
-                    .map(|arr| {
-                        arr.iter()
-                            .filter_map(|v| v.as_str())
-                            .collect::<Vec<_>>()
-                    })
-                    .unwrap_or_default();
-
-                for method_str in &methods {
-                    let domain_str = method_to_capability_domain(method_str);
-                    let routed_owner_str = if owner_raw == "all" {
-                        "all"
-                    } else {
-                        let routed = capability_to_primal(domain_str);
-                        if routed == domain_str { owner_raw } else { routed }
-                    };
-                    let tier = if owner_raw == "all" {
-                        CompositionTier::Orchestration
-                    } else {
-                        CompositionTier::from_domain(domain_str, routed_owner_str)
-                    };
-
-                    let is_composition = composition_methods.iter().any(|s| s == method_str);
-
-                    let method: Arc<str> = Arc::from(*method_str);
-                    let domain: Arc<str> = Arc::from(domain_str);
-                    let routed_owner: Arc<str> = Arc::from(routed_owner_str);
-
-                    domain_index.entry(Arc::clone(&domain)).or_default().push(Arc::clone(&method));
-                    tier_index.entry(tier).or_default().push(Arc::clone(&method));
-                    primal_index
-                        .entry(Arc::clone(&routed_owner))
-                        .or_default()
-                        .push(Arc::clone(&method));
-
-                    let entry = RouteEntry {
-                        method: Arc::clone(&method),
-                        owner: routed_owner,
-                        domain,
-                        tier,
-                        has_composition_graph: is_composition,
-                        aliases: Vec::new(),
-                    };
-                    method_index.insert(Arc::clone(&entry.method), entry);
-                }
-            }
-        }
-
-        let mut patterns = Vec::new();
-        if let Some(table) = parsed.as_table() {
-            if let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) {
-                for (group_name, group_val) in compositions {
-                    let tier_str = group_val
-                        .get("tier")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("standalone");
-                    let tier = match tier_str {
-                        "electron" => CompositionTier::Tower,
-                        "proton" => CompositionTier::Node,
-                        "neutron" | "rootpulse" | "pulse" => CompositionTier::Nest,
-                        "meta" => CompositionTier::Meta,
-                        "orchestration" | "ecosystem" | "fall" => CompositionTier::Orchestration,
-                        _ => CompositionTier::Standalone,
-                    };
-                    let primals: Vec<String> = group_val
-                        .get("primals")
-                        .and_then(|v| v.as_array())
-                        .map(|a| a.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-                        .unwrap_or_default();
-
-                    let arc_primals: Vec<Arc<str>> = primals.iter().map(|s| Arc::from(s.as_str())).collect();
-
-                    if let Some(sigs) = group_val.get("compositions").and_then(|v| v.as_array()) {
-                        for sig in sigs {
-                            let name = sig.get("name").and_then(|v| v.as_str()).unwrap_or("");
-                            let full_name: Arc<str> = Arc::from(format!("{group_name}_{name}").as_str());
-                            let method: Arc<str> = Arc::from(format!("{group_name}.{name}").as_str());
-                            patterns.push(CompositionPattern {
-                                name: full_name,
-                                methods: vec![method],
-                                primals: arc_primals.clone(),
-                                tier,
-                            });
-                        }
-                    }
-                }
-            }
-        }
+        let patterns = collect_composition_patterns(&parsed);
 
         Self {
             method_index,

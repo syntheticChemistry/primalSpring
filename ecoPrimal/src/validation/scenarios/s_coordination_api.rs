@@ -68,6 +68,28 @@ fn phase_structural(v: &mut ValidationResult) {
     }
 }
 
+fn probe_coordination_method(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+    check_id: &str,
+    method: &str,
+    params: serde_json::Value,
+    validate: fn(&serde_json::Value) -> (bool, String),
+) {
+    match ctx.call("orchestration", method, params) {
+        Ok(resp) => {
+            let (ok, msg) = validate(&resp);
+            v.check_bool(check_id, ok, &msg);
+        }
+        Err(e) if e.is_skippable() => {
+            v.check_skip(check_id, &format!("not reachable: {e}"));
+        }
+        Err(e) => {
+            v.check_bool(check_id, false, &format!("{method} error: {e}"));
+        }
+    }
+}
+
 fn phase_live_coordination(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("orchestration") {
         v.check_skip(
@@ -77,126 +99,43 @@ fn phase_live_coordination(v: &mut ValidationResult, ctx: &mut CompositionContex
         return;
     }
 
-    match ctx.call(
-        "orchestration",
+    probe_coordination_method(
+        v, ctx, "live:neural_api_status",
         "coordination.neural_api_status",
         serde_json::json!({}),
-    ) {
-        Ok(resp) => {
+        |resp| {
             let has_total = resp.get("total_methods").is_some();
-            v.check_bool(
-                "live:neural_api_status",
-                has_total,
-                &format!("coordination.neural_api_status → total_methods present: {has_total}"),
-            );
-        }
-        Err(e) if e.is_skippable() => {
-            v.check_skip("live:neural_api_status", &format!("not reachable: {e}"));
-        }
-        Err(e) => {
-            v.check_bool(
-                "live:neural_api_status",
-                false,
-                &format!("coordination.neural_api_status error: {e}"),
-            );
-        }
-    }
+            (has_total, format!("coordination.neural_api_status → total_methods present: {has_total}"))
+        },
+    );
 
-    match ctx.call(
-        "orchestration",
+    probe_coordination_method(
+        v, ctx, "live:probe_capability",
         "coordination.probe_capability",
         serde_json::json!({ "capability": "security" }),
-    ) {
-        Ok(resp) => {
-            v.check_bool(
-                "live:probe_capability",
-                resp.is_object(),
-                "coordination.probe_capability(security) responded",
-            );
-        }
-        Err(e) if e.is_skippable() => {
-            v.check_skip("live:probe_capability", &format!("not reachable: {e}"));
-        }
-        Err(e) => {
-            v.check_bool(
-                "live:probe_capability",
-                false,
-                &format!("coordination.probe_capability error: {e}"),
-            );
-        }
-    }
+        |resp| (resp.is_object(), "coordination.probe_capability(security) responded".into()),
+    );
 
-    match ctx.call(
-        "orchestration",
+    probe_coordination_method(
+        v, ctx, "live:probe_primal",
         "coordination.probe_primal",
         serde_json::json!({ "primal": "beardog" }),
-    ) {
-        Ok(resp) => {
-            v.check_bool(
-                "live:probe_primal",
-                resp.is_object(),
-                "coordination.probe_primal(beardog) responded",
-            );
-        }
-        Err(e) if e.is_skippable() => {
-            v.check_skip("live:probe_primal", &format!("not reachable: {e}"));
-        }
-        Err(e) => {
-            v.check_bool(
-                "live:probe_primal",
-                false,
-                &format!("coordination.probe_primal error: {e}"),
-            );
-        }
-    }
+        |resp| (resp.is_object(), "coordination.probe_primal(beardog) responded".into()),
+    );
 
-    match ctx.call(
-        "orchestration",
+    probe_coordination_method(
+        v, ctx, "live:validate_by_capability",
         "coordination.validate_composition_by_capability",
         serde_json::json!({ "atomic": "Tower" }),
-    ) {
-        Ok(resp) => {
-            v.check_bool(
-                "live:validate_by_capability",
-                resp.is_object(),
-                "coordination.validate_composition_by_capability(Tower) responded",
-            );
-        }
-        Err(e) if e.is_skippable() => {
-            v.check_skip("live:validate_by_capability", &format!("not reachable: {e}"));
-        }
-        Err(e) => {
-            v.check_bool(
-                "live:validate_by_capability",
-                false,
-                &format!("error: {e}"),
-            );
-        }
-    }
+        |resp| (resp.is_object(), "coordination.validate_composition_by_capability(Tower) responded".into()),
+    );
 
-    match ctx.call(
-        "orchestration",
+    probe_coordination_method(
+        v, ctx, "live:bonding_test",
         "coordination.bonding_test",
         serde_json::json!({ "bond_type": "covalent" }),
-    ) {
-        Ok(resp) => {
-            v.check_bool(
-                "live:bonding_test",
-                resp.is_object(),
-                "coordination.bonding_test(covalent) responded",
-            );
-        }
-        Err(e) if e.is_skippable() => {
-            v.check_skip("live:bonding_test", &format!("not reachable: {e}"));
-        }
-        Err(e) => {
-            v.check_bool(
-                "live:bonding_test",
-                false,
-                &format!("coordination.bonding_test error: {e}"),
-            );
-        }
-    }
+        |resp| (resp.is_object(), "coordination.bonding_test(covalent) responded".into()),
+    );
 }
 
 #[cfg(test)]

@@ -109,7 +109,11 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
     let repo_names: Vec<String> =
         repos.map_or_else(Vec::new, |repos| validate_repo_entries(v, repos));
 
-    // WaterFall [sync] section — periplasmic Forgejo sync configuration
+    validate_sync_section(v, &parsed);
+    validate_gate_profiles(v, &parsed, &repo_names);
+}
+
+fn validate_sync_section(v: &mut ValidationResult, parsed: &toml::Value) {
     let sync = parsed.get("sync").and_then(|s| s.as_table());
     v.check_bool(
         "schema:sync_section",
@@ -117,38 +121,40 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
         "[sync] section present (WaterFall config)",
     );
 
-    if let Some(sync) = sync {
-        let base_url = sync
-            .get("forgejo_base_url")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
-        v.check_bool(
-            "schema:sync:forgejo_base_url",
-            base_url.starts_with("https://"),
-            &format!("sync.forgejo_base_url = \"{base_url}\""),
-        );
+    let Some(sync) = sync else { return };
 
-        let ssh = sync
-            .get("forgejo_ssh")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
-        v.check_bool(
-            "schema:sync:forgejo_ssh",
-            ssh.starts_with("ssh://"),
-            &format!("sync.forgejo_ssh = \"{ssh}\""),
-        );
+    let base_url = sync
+        .get("forgejo_base_url")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+    v.check_bool(
+        "schema:sync:forgejo_base_url",
+        base_url.starts_with("https://"),
+        &format!("sync.forgejo_base_url = \"{base_url}\""),
+    );
 
-        let default_source = sync
-            .get("default_source")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
-        v.check_bool(
-            "schema:sync:default_source",
-            ["github", "forgejo", "auto", "temporal"].contains(&default_source),
-            &format!("sync.default_source = \"{default_source}\""),
-        );
-    }
+    let ssh = sync
+        .get("forgejo_ssh")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+    v.check_bool(
+        "schema:sync:forgejo_ssh",
+        ssh.starts_with("ssh://"),
+        &format!("sync.forgejo_ssh = \"{ssh}\""),
+    );
 
+    let default_source = sync
+        .get("default_source")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+    v.check_bool(
+        "schema:sync:default_source",
+        ["github", "forgejo", "auto", "temporal"].contains(&default_source),
+        &format!("sync.default_source = \"{default_source}\""),
+    );
+}
+
+fn validate_gate_profiles(v: &mut ValidationResult, parsed: &toml::Value, repo_names: &[String]) {
     let gates = parsed.get("gates").and_then(|g| g.as_table());
     v.check_bool(
         "schema:gates_section",
@@ -156,46 +162,46 @@ fn phase_manifest_schema(v: &mut ValidationResult) {
         "[gates] section present",
     );
 
-    if let Some(gates) = gates {
-        let discovered = discover_gates(&parsed);
+    let Some(gates) = gates else { return };
+
+    let discovered = discover_gates(parsed);
+    v.check_bool(
+        "schema:gates:discovered",
+        !discovered.is_empty(),
+        &format!("{} gates discovered from manifest", discovered.len()),
+    );
+
+    for gate_name in &discovered {
+        let gate = gates.get(gate_name.as_str());
         v.check_bool(
-            "schema:gates:discovered",
-            !discovered.is_empty(),
-            &format!("{} gates discovered from manifest", discovered.len()),
+            &format!("schema:gate:{gate_name}:present"),
+            gate.is_some(),
+            &format!("gate profile \"{gate_name}\" defined"),
         );
 
-        for gate_name in &discovered {
-            let gate = gates.get(gate_name.as_str());
+        if let Some(gate) = gate {
+            let gate_repos = gate
+                .get("repos")
+                .and_then(|r| r.as_array())
+                .map(|a| {
+                    a.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect::<Vec<_>>()
+                })
+                .unwrap_or_default();
+
             v.check_bool(
-                &format!("schema:gate:{gate_name}:present"),
-                gate.is_some(),
-                &format!("gate profile \"{gate_name}\" defined"),
+                &format!("schema:gate:{gate_name}:has_repos"),
+                !gate_repos.is_empty() || gate.get("kderm_layer").is_some(),
+                &format!("{gate_name} has {} repos (or is K-Derm layer)", gate_repos.len()),
             );
 
-            if let Some(gate) = gate {
-                let gate_repos = gate
-                    .get("repos")
-                    .and_then(|r| r.as_array())
-                    .map(|a| {
-                        a.iter()
-                            .filter_map(|v| v.as_str().map(String::from))
-                            .collect::<Vec<_>>()
-                    })
-                    .unwrap_or_default();
-
+            for repo in &gate_repos {
                 v.check_bool(
-                    &format!("schema:gate:{gate_name}:has_repos"),
-                    !gate_repos.is_empty() || gate.get("kderm_layer").is_some(),
-                    &format!("{gate_name} has {} repos (or is K-Derm layer)", gate_repos.len()),
+                    &format!("schema:gate:{gate_name}:ref:{repo}"),
+                    repo_names.contains(repo),
+                    &format!("{gate_name} references \"{repo}\" — exists in [repos]"),
                 );
-
-                for repo in &gate_repos {
-                    v.check_bool(
-                        &format!("schema:gate:{gate_name}:ref:{repo}"),
-                        repo_names.contains(repo),
-                        &format!("{gate_name} references \"{repo}\" — exists in [repos]"),
-                    );
-                }
             }
         }
     }

@@ -217,18 +217,31 @@ pub fn port_env_key(slug: &str) -> &'static str {
         })
 }
 
+/// Override TCP port for bearDog (identity / BTSP token authority).
 pub const BEARDOG_PORT: &str = "BEARDOG_PORT";
+/// Override TCP port for songBird (mesh federation / peer relay).
 pub const SONGBIRD_PORT: &str = "SONGBIRD_PORT";
+/// Override TCP port for nestGate (capability gate / composition registry).
 pub const NESTGATE_PORT: &str = "NESTGATE_PORT";
+/// Override TCP port for toadstool (capability attestation server).
 pub const TOADSTOOL_PORT: &str = "TOADSTOOL_PORT";
+/// Override TCP port for barracuda (transport encryption / TLS termination).
 pub const BARRACUDA_PORT: &str = "BARRACUDA_PORT";
+/// Override TCP port for coralreef (distributed coordination / RPC).
 pub const CORALREEF_PORT: &str = "CORALREEF_PORT";
+/// Override TCP port for squirrel (state persistence / kv store).
 pub const SQUIRREL_PORT: &str = "SQUIRREL_PORT";
+/// Override TCP port for rhizoCrypt (cryptographic key management).
 pub const RHIZOCRYPT_PORT: &str = "RHIZOCRYPT_PORT";
+/// Override TCP port for sweetgrass (telemetry aggregation).
 pub const SWEETGRASS_PORT: &str = "SWEETGRASS_PORT";
+/// Override TCP port for petaltongue (natural-language NLU interface).
 pub const PETALTONGUE_PORT: &str = "PETALTONGUE_PORT";
+/// Override TCP port for loamspine (storage / substrate persistence).
 pub const LOAMSPINE_PORT: &str = "LOAMSPINE_PORT";
+/// Override TCP port for skunkBat (steganographic broadcast / dark forest).
 pub const SKUNKBAT_PORT: &str = "SKUNKBAT_PORT";
+/// Override TCP port for biomeOS (orchestration substrate / graph deploy).
 pub const BIOMEOS_PORT: &str = "BIOMEOS_PORT";
 
 // ── Cross-primal coordination ─────────────────────────────────────

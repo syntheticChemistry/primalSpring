@@ -33,7 +33,6 @@ pub const SCENARIO: Scenario = Scenario {
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     let table = canonical_routing_table();
 
-    // Phase 1: Method coverage — all registry methods are in the routing table.
     let method_count = table.method_count();
     v.check_bool(
         "routing-table-population",
@@ -41,7 +40,6 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         &format!("{method_count} methods loaded (expect 450+)"),
     );
 
-    // Phase 2: Tier coverage — every tier has methods.
     let summary = table.tier_summary();
     for tier_name in &["tower", "node", "nest", "meta", "orchestration"] {
         let count = summary.get(tier_name).copied().unwrap_or(0);
@@ -52,7 +50,30 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         );
     }
 
-    // Phase 3: Owner integrity — security methods → beardog, compute → toadstool.
+    phase_owner_integrity(v, &table);
+    phase_tier_composition(v, &table);
+    phase_composition_patterns(v, &table);
+
+    let dispatcher = NeuralDispatcher::with_table(table);
+    let report = dispatcher.status_report();
+    v.check_bool(
+        "dispatcher-report-methods",
+        report["total_methods"].as_u64().unwrap_or(0) >= 450,
+        &format!("dispatcher reports {} methods", report["total_methods"]),
+    );
+
+    let total_in_tiers: usize = summary.values().sum();
+    v.check_bool(
+        "tier-sum-equals-total",
+        total_in_tiers == method_count,
+        &format!("tier sum {total_in_tiers} == total {method_count}"),
+    );
+}
+
+fn phase_owner_integrity(
+    v: &mut ValidationResult,
+    table: &crate::composition::neural_routing::NeuralRoutingTable,
+) {
     let security_methods = table.methods_in_domain("security");
     let has_crypto_hash = security_methods.iter().any(|m| &**m == "crypto.hash");
     v.check_bool(
@@ -61,55 +82,39 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         "crypto.hash present in security domain",
     );
 
-    if let Some(entry) = table.route("crypto.hash") {
-        v.check_bool(
-            "crypto-hash-owner",
-            &*entry.owner == "beardog",
-            &format!("crypto.hash owner: {}", entry.owner),
-        );
+    let owner_checks: &[(&str, &str, &str)] = &[
+        ("crypto.hash", "beardog", "crypto-hash-owner"),
+        ("compute.dispatch", "toadstool", "compute-dispatch-owner"),
+        ("storage.store", "nestgate", "storage-store-owner"),
+        ("science.eigensolve", "neuralspring", "science-eigensolve-owner"),
+    ];
+    for &(method, expected_owner, check_id) in owner_checks {
+        if let Some(entry) = table.route(method) {
+            v.check_bool(
+                check_id,
+                &*entry.owner == expected_owner,
+                &format!("{method} owner: {}", entry.owner),
+            );
+        }
     }
+}
 
-    if let Some(entry) = table.route("compute.dispatch") {
-        v.check_bool(
-            "compute-dispatch-owner",
-            &*entry.owner == "toadstool",
-            &format!("compute.dispatch owner: {}", entry.owner),
-        );
-    }
-
-    if let Some(entry) = table.route("storage.store") {
-        v.check_bool(
-            "storage-store-owner",
-            &*entry.owner == "nestgate",
-            &format!("storage.store owner: {}", entry.owner),
-        );
-    }
-
-    if let Some(entry) = table.route("science.eigensolve") {
-        v.check_bool(
-            "science-eigensolve-owner",
-            &*entry.owner == "neuralspring",
-            &format!("science.eigensolve owner: {}", entry.owner),
-        );
-    }
-
-    // Phase 4: Tier composition plans.
+fn phase_tier_composition(
+    v: &mut ValidationResult,
+    table: &crate::composition::neural_routing::NeuralRoutingTable,
+) {
     let tower = table.tier_composition(CompositionTier::Tower);
-    v.check_bool(
-        "tower-has-beardog",
-        tower.primals.contains(&"beardog".to_owned()),
-        "Tower composition includes beardog",
-    );
-    v.check_bool(
-        "tower-has-songbird",
-        tower.primals.contains(&"songbird".to_owned()),
-        "Tower composition includes songbird",
-    );
-    v.check_bool(
-        "tower-has-skunkbat",
-        tower.primals.contains(&"skunkbat".to_owned()),
-        "Tower composition includes skunkbat",
-    );
+    for (primal, check_id) in &[
+        ("beardog", "tower-has-beardog"),
+        ("songbird", "tower-has-songbird"),
+        ("skunkbat", "tower-has-skunkbat"),
+    ] {
+        v.check_bool(
+            check_id,
+            tower.primals.contains(&(*primal).to_owned()),
+            &format!("Tower composition includes {primal}"),
+        );
+    }
 
     let nest = table.tier_composition(CompositionTier::Nest);
     v.check_bool(
@@ -123,8 +128,12 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
             || nest.primals.contains(&"loamspine".to_owned()),
         "Nest composition includes provenance primals",
     );
+}
 
-    // Phase 5: Composition patterns.
+fn phase_composition_patterns(
+    v: &mut ValidationResult,
+    table: &crate::composition::neural_routing::NeuralRoutingTable,
+) {
     let patterns = table.patterns();
     v.check_bool(
         "patterns-registered",
@@ -145,23 +154,6 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
             &format!("rootpulse involves {} primals (TOML-driven)", rp.primals.len()),
         );
     }
-
-    // Phase 6: NeuralDispatcher status report.
-    let dispatcher = NeuralDispatcher::with_table(table);
-    let report = dispatcher.status_report();
-    v.check_bool(
-        "dispatcher-report-methods",
-        report["total_methods"].as_u64().unwrap_or(0) >= 450,
-        &format!("dispatcher reports {} methods", report["total_methods"]),
-    );
-
-    // Phase 7: Tier sum integrity — all methods accounted for.
-    let total_in_tiers: usize = summary.values().sum();
-    v.check_bool(
-        "tier-sum-equals-total",
-        total_in_tiers == method_count,
-        &format!("tier sum {total_in_tiers} == total {method_count}"),
-    );
 }
 
 #[cfg(test)]

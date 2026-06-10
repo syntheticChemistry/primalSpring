@@ -106,100 +106,7 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
                 true,
                 &format!("discovery.peers responded: {resp}"),
             );
-            let peer_count = resp
-                .get("peers")
-                .and_then(serde_json::Value::as_array)
-                .map_or(0, Vec::len);
-            v.check_bool(
-                "live:peer_count",
-                peer_count > 0,
-                &format!("discovery.peers found {peer_count} remote peer(s)"),
-            );
-            if peer_count == 0 {
-                v.check_skip(
-                    "live:peer_gate_ids",
-                    "no peers — federation port may not be enabled",
-                );
-                v.check_skip(
-                    "live:peer_latency",
-                    "no peers for latency measurement",
-                );
-                v.check_skip(
-                    "live:capability_propagation",
-                    "no peers for capability check",
-                );
-            } else if let Some(peers) = resp.get("peers").and_then(serde_json::Value::as_array) {
-                let gate_ids: Vec<&str> = peers
-                    .iter()
-                    .filter_map(|p| {
-                        p.get("gate")
-                            .or_else(|| p.get("node_id"))
-                            .and_then(serde_json::Value::as_str)
-                    })
-                    .collect();
-                v.check_bool(
-                    "live:peer_gate_ids",
-                    !gate_ids.is_empty(),
-                    &format!("peer gates: {gate_ids:?}"),
-                );
-                let latency_peers: Vec<(&str, f64)> = peers
-                    .iter()
-                    .filter_map(|p| {
-                        let gate = p
-                            .get("gate")
-                            .or_else(|| p.get("node_id"))
-                            .and_then(serde_json::Value::as_str)?;
-                        let ms = p.get("latency_ms").and_then(serde_json::Value::as_f64)?;
-                        Some((gate, ms))
-                    })
-                    .collect();
-                if latency_peers.is_empty() {
-                    v.check_skip(
-                        "live:peer_latency",
-                        "peers present but no latency_ms field (Songbird may need update)",
-                    );
-                } else {
-                    let summary: Vec<String> = latency_peers
-                        .iter()
-                        .map(|(g, ms)| format!("{g}={ms:.1}ms"))
-                        .collect();
-                    v.check_bool(
-                        "live:peer_latency",
-                        true,
-                        &format!("peer latencies: {}", summary.join(", ")),
-                    );
-                }
-
-                let peers_with_caps: Vec<&str> = peers
-                    .iter()
-                    .filter(|p| {
-                        p.get("capabilities")
-                            .and_then(serde_json::Value::as_array)
-                            .is_some_and(|a| !a.is_empty())
-                    })
-                    .filter_map(|p| {
-                        p.get("gate")
-                            .or_else(|| p.get("node_id"))
-                            .and_then(serde_json::Value::as_str)
-                    })
-                    .collect();
-                if peers_with_caps.is_empty() {
-                    v.check_skip(
-                        "live:capability_propagation",
-                        "peers discovered but capabilities: [] — Songbird propagation gap (P1)",
-                    );
-                } else {
-                    v.check_bool(
-                        "live:capability_propagation",
-                        true,
-                        &format!(
-                            "capability propagation: {} peer(s) advertising caps: {:?}",
-                            peers_with_caps.len(),
-                            peers_with_caps
-                        ),
-                    );
-                }
-            }
+            validate_peer_response(v, &resp);
         }
         Err(e) if e.is_skippable() => {
             v.check_skip(
@@ -225,6 +132,105 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
                 v.check_skip("live:peer_count", &format!("error: {e}"));
             }
         }
+    }
+}
+
+fn validate_peer_response(v: &mut ValidationResult, resp: &serde_json::Value) {
+    let peer_count = resp
+        .get("peers")
+        .and_then(serde_json::Value::as_array)
+        .map_or(0, Vec::len);
+    v.check_bool(
+        "live:peer_count",
+        peer_count > 0,
+        &format!("discovery.peers found {peer_count} remote peer(s)"),
+    );
+
+    let Some(peers) = resp.get("peers").and_then(serde_json::Value::as_array) else {
+        v.check_skip("live:peer_gate_ids", "no peers array in response");
+        v.check_skip("live:peer_latency", "no peers for latency measurement");
+        v.check_skip("live:capability_propagation", "no peers for capability check");
+        return;
+    };
+    if peers.is_empty() {
+        v.check_skip("live:peer_gate_ids", "no peers — federation port may not be enabled");
+        v.check_skip("live:peer_latency", "no peers for latency measurement");
+        v.check_skip("live:capability_propagation", "no peers for capability check");
+        return;
+    }
+
+    validate_peer_gate_ids(v, peers);
+    validate_peer_latency(v, peers);
+    validate_peer_capabilities(v, peers);
+}
+
+fn peer_gate_id(p: &serde_json::Value) -> Option<&str> {
+    p.get("gate")
+        .or_else(|| p.get("node_id"))
+        .and_then(serde_json::Value::as_str)
+}
+
+fn validate_peer_gate_ids(v: &mut ValidationResult, peers: &[serde_json::Value]) {
+    let gate_ids: Vec<&str> = peers.iter().filter_map(peer_gate_id).collect();
+    v.check_bool(
+        "live:peer_gate_ids",
+        !gate_ids.is_empty(),
+        &format!("peer gates: {gate_ids:?}"),
+    );
+}
+
+fn validate_peer_latency(v: &mut ValidationResult, peers: &[serde_json::Value]) {
+    let latency_peers: Vec<(&str, f64)> = peers
+        .iter()
+        .filter_map(|p| {
+            let gate = peer_gate_id(p)?;
+            let ms = p.get("latency_ms").and_then(serde_json::Value::as_f64)?;
+            Some((gate, ms))
+        })
+        .collect();
+    if latency_peers.is_empty() {
+        v.check_skip(
+            "live:peer_latency",
+            "peers present but no latency_ms field (Songbird may need update)",
+        );
+    } else {
+        let summary: Vec<String> = latency_peers
+            .iter()
+            .map(|(g, ms)| format!("{g}={ms:.1}ms"))
+            .collect();
+        v.check_bool(
+            "live:peer_latency",
+            true,
+            &format!("peer latencies: {}", summary.join(", ")),
+        );
+    }
+}
+
+fn validate_peer_capabilities(v: &mut ValidationResult, peers: &[serde_json::Value]) {
+    let peers_with_caps: Vec<&str> = peers
+        .iter()
+        .filter(|p| {
+            p.get("capabilities")
+                .and_then(serde_json::Value::as_array)
+                .is_some_and(|a| !a.is_empty())
+        })
+        .filter_map(peer_gate_id)
+        .collect();
+    if peers_with_caps.is_empty() {
+        v.check_skip(
+            "live:capability_propagation",
+            "peers discovered but capabilities: [] — Songbird propagation gap (P1)",
+        );
+    } else {
+        v.check_bool(
+            "live:capability_propagation",
+            true,
+            &format!(
+                "capability propagation: {} peer(s) advertising caps: {:?}",
+                peers_with_caps.len(),
+                peers_with_caps
+            ),
+        );
     }
 }
 

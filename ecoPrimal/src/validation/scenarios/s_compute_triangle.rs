@@ -287,6 +287,62 @@ fn phase_barracuda_math(v: &mut ValidationResult, ctx: &mut CompositionContext) 
 ///
 /// Both calls SKIP on connection error (primal not running).
 /// This validates the IPC contract, not the GPU result.
+/// Attempt shader compilation and return the base64 binary on success.
+/// Returns `None` and emits appropriate checks on skip/failure.
+fn try_compile_shader(
+    v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
+) -> Option<String> {
+    let trivial_wgsl = r"@compute @workgroup_size(1)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+}";
+
+    let compile_result = ctx.call(
+        "shader",
+        "shader.compile.wgsl",
+        serde_json::json!({
+            "source": trivial_wgsl,
+            "target": "sm70",
+            "entry_point": "main",
+            "workgroup_size": [1, 1, 1]
+        }),
+    );
+
+    match compile_result {
+        Ok(resp) => {
+            let has_binary = resp.get("binary_b64").and_then(|b| b.as_str()).is_some()
+                || resp.get("binary").is_some();
+            let has_info = resp.get("shader_info").is_some() || resp.get("info").is_some();
+
+            v.check_bool(
+                "sovereign_compile_response_shape",
+                has_binary && has_info,
+                &format!("shader.compile.wgsl: binary={has_binary}, shader_info={has_info}"),
+            );
+
+            if has_binary {
+                resp.get("binary_b64")
+                    .and_then(|b| b.as_str())
+                    .map(String::from)
+            } else {
+                None
+            }
+        }
+        Err(e) if e.is_skippable() => {
+            v.check_skip("sovereign_compile_response_shape", &format!("coralReef: {e}"));
+            None
+        }
+        Err(e) => {
+            v.check_bool(
+                "sovereign_compile_response_shape",
+                false,
+                &format!("shader.compile.wgsl error: {e}"),
+            );
+            None
+        }
+    }
+}
+
 fn phase_sovereign_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let has_shader = ctx.has_capability("shader");
     let has_compute = ctx.has_capability("compute");
@@ -303,69 +359,8 @@ fn phase_sovereign_dispatch(v: &mut ValidationResult, ctx: &mut CompositionConte
         return;
     }
 
-    let trivial_wgsl = r"@compute @workgroup_size(1)
-fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
-}";
-
-    let compile_result = ctx.call(
-        "shader",
-        "shader.compile.wgsl",
-        serde_json::json!({
-            "source": trivial_wgsl,
-            "target": "sm70",
-            "entry_point": "main",
-            "workgroup_size": [1, 1, 1]
-        }),
-    );
-
-    let compiled_binary = match compile_result {
-        Ok(resp) => {
-            let has_binary = resp.get("binary_b64").and_then(|b| b.as_str()).is_some()
-                || resp.get("binary").is_some();
-            let has_info = resp.get("shader_info").is_some() || resp.get("info").is_some();
-
-            v.check_bool(
-                "sovereign_compile_response_shape",
-                has_binary && has_info,
-                &format!(
-                    "shader.compile.wgsl: binary={has_binary}, shader_info={has_info}"
-                ),
-            );
-
-            if has_binary {
-                resp.get("binary_b64")
-                    .and_then(|b| b.as_str())
-                    .map(String::from)
-            } else {
-                None
-            }
-        }
-        Err(e) if e.is_skippable() => {
-            v.check_skip("sovereign_compile_response_shape", &format!("coralReef: {e}"));
-            v.check_skip("sovereign_dispatch_response_shape", "compile not reachable");
-            v.check_skip("sovereign_e2e_pipeline_viable", "compile not reachable");
-            return;
-        }
-        Err(e) => {
-            v.check_bool(
-                "sovereign_compile_response_shape",
-                false,
-                &format!("shader.compile.wgsl error: {e}"),
-            );
-            v.check_skip(
-                "sovereign_dispatch_response_shape",
-                "compile failed",
-            );
-            v.check_skip("sovereign_e2e_pipeline_viable", "compile failed");
-            return;
-        }
-    };
-
-    let Some(binary_b64) = compiled_binary else {
-        v.check_skip(
-            "sovereign_dispatch_response_shape",
-            "no binary from compile step",
-        );
+    let Some(binary_b64) = try_compile_shader(v, ctx) else {
+        v.check_skip("sovereign_dispatch_response_shape", "no binary from compile step");
         v.check_skip("sovereign_e2e_pipeline_viable", "no binary from compile");
         return;
     };

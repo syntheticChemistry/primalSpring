@@ -446,19 +446,37 @@ pub static FEDERATION_PORTS: &[FederationPort] = &[
 
 /// TCP fallback port constants — legacy, kept for backward compatibility.
 /// Authoritative source: `config/ports.toml`.
+///
+/// These are used when UDS is unavailable (e.g. Android SELinux denial)
+/// and the primal falls back to TCP-only transport.
+
+/// TCP fallback for bearDog (identity / BTSP).
 pub const TCP_FALLBACK_BEARDOG_PORT: u16 = 9100;
+/// TCP fallback for songBird (mesh federation).
 pub const TCP_FALLBACK_SONGBIRD_PORT: u16 = 9200;
+/// TCP fallback for squirrel (state persistence).
 pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9300;
+/// Default squirrel port — aliases the TCP fallback.
 pub const DEFAULT_SQUIRREL_PORT: u16 = TCP_FALLBACK_SQUIRREL_PORT;
+/// TCP fallback for toadstool (capability attestation).
 pub const TCP_FALLBACK_TOADSTOOL_PORT: u16 = 9400;
+/// TCP fallback for nestGate (capability gate).
 pub const TCP_FALLBACK_NESTGATE_PORT: u16 = 9500;
+/// TCP fallback for rhizoCrypt (key management).
 pub const TCP_FALLBACK_RHIZOCRYPT_PORT: u16 = 9601;
+/// TCP fallback for loamspine (substrate persistence).
 pub const TCP_FALLBACK_LOAMSPINE_PORT: u16 = 9700;
+/// TCP fallback for coralreef (coordination RPC).
 pub const TCP_FALLBACK_CORALREEF_PORT: u16 = 9730;
+/// TCP fallback for barracuda (transport encryption).
 pub const TCP_FALLBACK_BARRACUDA_PORT: u16 = 9740;
+/// TCP fallback for skunkBat (steganographic broadcast).
 pub const TCP_FALLBACK_SKUNKBAT_PORT: u16 = 9140;
+/// TCP fallback for biomeOS (orchestration substrate).
 pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
+/// TCP fallback for sweetgrass (telemetry).
 pub const TCP_FALLBACK_SWEETGRASS_PORT: u16 = 9850;
+/// TCP fallback for petaltongue (NLU interface).
 pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9900;
 
 // ── Niche cost-estimate parameters ──

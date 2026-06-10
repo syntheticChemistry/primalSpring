@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-09 (Wave 106: grapheneGate **9/13 primals RUNNING** on Pixel 8 — skunkbat, toadstool, barracuda now up via --no-uds/--no-unix SELinux adaptation. 4 remaining (coralreef, nestgate, biomeOS, petaltongue) exit fatally on UDS bind SELinux denial — need upstream primal TCP-only graceful degradation. deploy_pixel.sh: BIOMEOS_SOCKET_DIR, XDG_RUNTIME_DIR, per-primal socket overrides shipped. 887 tests 0 failures.)
+> **Last updated**: 2026-06-10 (Wave 106 final: grapheneGate **9/13 primals RUNNING** on Pixel 8 — 4 remaining (coralreef, nestgate, biomeOS, petaltongue) need upstream TCP-only graceful degradation. Mesh LIVE with **persistence SHIPPED** (peers.toml + auto-reconnect). Federation port 7700 **LISTENING** (bound *, LAN+WAN). gate.bootstrap **SHIPPED** (strandGate validated). cellMembrane: cascade auto-fetch + plasmid.fetch VPS path fix shipped. primalSpring deep-debt: clippy 39→5 warnings (28 constants documented, 6 functions refactored). 887 tests 0 failures.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -17,7 +17,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 ## Ecosystem Status (June 9, 2026)
 
-**267+ PASS, 0 FAIL, 1 KNOWN_DEBT** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 61 scenarios (10 tracks, 3 tiers), 490+ real methods (100% exercised), **887 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy errors, zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 105: Zero P1 blockers. Mesh LIVE (eastGate↔strandGate, 17h+ stable)**. biomeOS v4.16 `graph.deploy` VALIDATED with `LocalTrusted` — `composition.deploy` accepted, `graph.status` reports 13 phases, zero BTSP ceremony for local operator. bearDog v0.9.0 pure Rust. Transport 11/11 COMPLETE. Depot 14/14 BLAKE3 VERIFIED. WAN depot SHIPPED. Cascade 38/38 with auto-resolve. S4 auth gate ending. aarch64-musl 13/13 BUILT (eastGate local), grapheneGate 6/13 RUNNING on Pixel 8. **Known debt**: skunkBat TCP 9750 bound (zero-port standard violation, pending UDS-only migration). bearDog `aarch64-linux-android` StrongBox module: 16 compilation errors (missing type imports, unimplemented HSM methods). 7 primals (skunkbat, toadstool, barracuda, coralreef, nestgate, biomeos, petaltongue) need Android UDS path adaptation (`/run/user/` and `/tmp/biomeos/` not accessible under ADB shell user). **Critical path**: ironGate 3rd mesh node → 3-gate plasmodium collective → stadial. grapheneGate Role 1 partially validated (beardog BTSP live on Pixel, songbird responding).
+**267+ PASS, 0 FAIL, 1 KNOWN_DEBT** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: 61 scenarios (10 tracks, 3 tiers), 490+ real methods (100% exercised), **887 lib tests pass** (2 ignored) + **17 doc tests**, **5 clippy warnings** (borderline function-length only), zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 106: 1 P1 remaining (NUCLEUS supervision — biomeOS). Mesh LIVE with persistence** (peers.toml + auto-reconnect, songBird `1df7ef90`). **Federation port 7700 LISTENING** (bound *, LAN+WAN). gate.bootstrap **SHIPPED** (strandGate re-enrollment VALIDATED). cellMembrane: cascade auto-fetch + plasmid.fetch VPS path fix (`b6c9fa0`). biomeOS v4.16 `graph.deploy` VALIDATED with `LocalTrusted`. bearDog v0.9.0 pure Rust. Transport 11/11 COMPLETE. Depot 14/14 BLAKE3 VERIFIED. WAN depot 13/13 serving. Cascade **38/38 clean**. aarch64-musl 13/13 BUILT, grapheneGate **9/13 RUNNING** on Pixel 8 (beardog, songbird, skunkbat, toadstool, barracuda, rhizocrypt, loamspine, sweetgrass, squirrel). **Known debt**: skunkBat TCP 9750 bound (zero-port standard violation, pending UDS-only migration). 4 primals (coralreef, nestgate, biomeOS, petaltongue) exit fatally on UDS bind SELinux denial — need upstream TCP-only graceful degradation. **Critical path**: ironGate 3rd mesh node (eastGate:7700 NOW ACCEPTING) → 3-gate plasmodium collective → stadial. biomeOS NUCLEUS supervision (sole P1).
 
 **Wave 49 deployment issues (post-primordial audit + spring responses):**
 
@@ -56,11 +56,11 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 4,506+ | **ADOPTED** | FULL | L2 | **CLEAN** — `--socket` CLI added, `health.liveness` → `{"status":"alive"}`. Deep debt: zero across all 11 audit categories. `ptx_emit/ray_query.rs` extracted. 3,204 tests. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: all 4 behavioral items resolved (`--socket`, `lifecycle.status`, SIGTERM handler, port 9750). 18 methods. |
 
-**13/13 CLEAN — Waves 1-105. 61 scenarios (10 tracks), 490+ methods (100% exercised), 887 lib tests, 1 known debt (skunkBat TCP 9750). Wave 105: Zero P1 blockers. Mesh LIVE. biomeOS v4.16 graph.deploy VALIDATED (LocalTrusted, 13-phase composition). bearDog v0.9.0 pure Rust. Transport 11/11. Depot 14/14. WAN depot shipped. S4 auth ending. aarch64 UNBLOCKED. Critical path: ironGate 3rd mesh node → plasmodium collective → stadial.**
+**13/13 CLEAN — Waves 1-106. 61 scenarios (10 tracks), 490+ methods (100% exercised), 887 lib tests, 1 known debt (skunkBat TCP 9750). Wave 106: 1 P1 remaining (NUCLEUS supervision). Mesh LIVE + persistence shipped. Federation port 7700 LISTENING. gate.bootstrap SHIPPED (strandGate validated). grapheneGate 9/13. 5 clippy warnings (borderline function-length). Critical path: ironGate 3rd mesh node (eastGate:7700 ACCEPTING) → plasmodium collective → stadial.**
 
 ---
 
-## Upstream Gaps — Wave 99 Status (June 8, 2026)
+## Upstream Gaps — Wave 106 Status (June 10, 2026)
 
 ### RESOLVED (Wave 105 — both P1 mesh blockers cleared)
 
@@ -404,20 +404,27 @@ health checks (no hardcoded primal names/ports), BLAKE3 fail-closed semantics.
 | exp115 live phases (4-5) | primalSpring | **GATED** on NUCLEUS availability |
 | Thread 10 spore ingest workload | projectFOUNDATION | **DELIVERED** (`nucleus-spore-ingest.toml`) |
 
-### NC-2: Multi-Gate NUCLEUS Mesh — **LIVE** (was ADVANCING)
+### NC-2: Multi-Gate NUCLEUS Mesh — **LIVE + PERSISTENT** (was ADVANCING)
 
 SB-TLS-LAN-01 + SB-SECURITY-URL-01 **RESOLVED** (Wave 104-105). Mesh **LIVE**:
-eastGate↔strandGate direct path, 17h+ stable. bearDog v0.9.0 pure Rust crypto.
-songBird Wave 104 env-race fixes. Federation port 7700 active.
+eastGate↔golgiBody, 123min+, quality 1.0. bearDog v0.9.0 pure Rust crypto.
+**Mesh persistence SHIPPED** (songBird `1df7ef90`): peers persist to `~/.local/share/songbird/peers.toml`,
+auto-reconnect on startup via `spawn_mesh_seed`. **Federation port 7700 LISTENING** (bound *, LAN+WAN;
+`SONGBIRD_FEDERATION_PORT` auto-promotes to `0.0.0.0`). gate.bootstrap **SHIPPED** (cellMembrane `b6c9fa0`):
+strandGate LAN re-enrollment **VALIDATED**.
 
 | Action | Owner | Status |
 |--------|-------|--------|
 | Stabilize southGate 13/13 health | wetSpring / neuralSpring ops | **INVESTIGATING** |
 | Wire `auth.exchange_trust` in Songbird `mesh.init` | Songbird | **SHIPPED** |
-| Live `s_covalent_mesh` across 2 gates | primalSpring | **PROVEN** (eastGate↔strandGate, 17h+ stable) |
-| 3rd gate mesh enrollment (ironGate) | ironGate ops | **READY** (23 UDS sockets, needs `--port 7700`) |
+| Live `s_covalent_mesh` across 2 gates | primalSpring | **PROVEN** (eastGate↔golgiBody, 123min+ stable) |
+| 3rd gate mesh enrollment (ironGate) | ironGate ops | **READY** (eastGate:7700 NOW ACCEPTING — should just work) |
 | P0 `nucleus-x86-mixed-uds` matrix cell | primalSpring | **ACHIEVED** |
 | biomeGate full NUCLEUS (9→13) | hotSpring + ops | **PLANNED** |
+| Mesh persistence (peers.toml) | songBird | **SHIPPED** (commit `1df7ef90`) |
+| Federation port fix (auto-promote *.0.0.0) | songBird | **SHIPPED** (commit `1df7ef90`) |
+| gate.bootstrap (one-command enrollment) | cellMembrane | **SHIPPED** (commit `b6c9fa0`) |
+| strandGate LAN re-enrollment | strandGate | **VALIDATED** (Wave 106 ACK) |
 
 ### NC-3: cellMembrane Sovereignty — **ADVANCING**
 
