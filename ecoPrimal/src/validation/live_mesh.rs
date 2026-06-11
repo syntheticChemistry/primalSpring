@@ -93,7 +93,7 @@ impl LiveMeshConfig {
             remote_gates,
             btsp_available,
             family_id,
-            connect_timeout: Duration::from_secs(3),
+            connect_timeout: Duration::from_secs(crate::tolerances::TCP_CONNECT_TIMEOUT_SECS),
         }
     }
 
@@ -153,7 +153,7 @@ impl LiveMeshConfig {
             remote_gates,
             btsp_available,
             family_id,
-            connect_timeout: Duration::from_secs(3),
+            connect_timeout: Duration::from_secs(crate::tolerances::TCP_CONNECT_TIMEOUT_SECS),
         })
     }
 
@@ -252,10 +252,10 @@ fn check_songbird_http(address: &str) -> bool {
         let handle = s.spawn(|| {
             let stream = std::net::TcpStream::connect_timeout(
                 &address.parse().ok()?,
-                Duration::from_secs(2),
+                Duration::from_secs(crate::tolerances::TCP_CONNECT_TIMEOUT_SECS),
             ).ok()?;
-            stream.set_write_timeout(Some(Duration::from_secs(2))).ok()?;
-            stream.set_read_timeout(Some(Duration::from_secs(2))).ok()?;
+            stream.set_write_timeout(Some(Duration::from_secs(crate::tolerances::TCP_WRITE_TIMEOUT_SECS))).ok()?;
+            stream.set_read_timeout(Some(Duration::from_secs(crate::tolerances::TCP_READ_TIMEOUT_SECS))).ok()?;
 
             let body_str = body.to_string();
             let request = format!(

@@ -424,7 +424,7 @@ mod tests {
         let path = PathBuf::from("/tmp/definitely_dead_test_socket_xyzzy.sock");
         assert!(!socket_is_alive(&path));
         let cache = DEAD_SOCKET_CACHE.get_or_init(|| Mutex::new(HashSet::new()));
-        let contains = cache.lock().map(|s| s.contains(&path)).unwrap_or(false);
+        let contains = cache.lock().is_ok_and(|s| s.contains(&path));
         assert!(
             !contains,
             "nonexistent path shouldn't be cached (no file to probe)"

@@ -587,6 +587,34 @@ pub const TCP_FALLBACK_SWEETGRASS_PORT: u16 = 9850;
 /// TCP fallback for petaltongue (NLU interface).
 pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9900;
 
+// ── Scenario probe parameters ──
+//
+// Used by validation scenarios for quick TCP reachability probes.
+// Distinct from IPC transport timeouts — these are intentionally short
+// (sub-second) because they test "is the port open right now?" not
+// "can we complete a full RPC exchange?"
+
+/// TCP probe timeout for scenario port-reachability checks (milliseconds).
+///
+/// Source: 200ms is generous for local loopback port checks.
+/// Validated: covalent_mesh_trust, s_tower_cns use loopback probes.
+pub const SCENARIO_TCP_PROBE_TIMEOUT_MS: u64 = 200;
+
+/// Minimum compliance percentage for health-standard convergence checks.
+///
+/// Source: 80% allows partial progress while fleet is converging.
+/// Used by: s_health_standard, s_tower_cns coverage checks.
+pub const HEALTH_COMPLIANCE_MIN_PCT: f64 = 80.0;
+
+/// Dispatch latency ceiling for scenario round-trip validation (milliseconds).
+///
+/// Source: 500ms per-call budget matches GRAPH_NODE_MAX_US (500_000 µs).
+/// Validated: neural_dispatch_live and feedback_loop scenarios use this bound.
+pub const SCENARIO_DISPATCH_LATENCY_MAX_MS: u64 = 500;
+
+/// Same ceiling as f64 for floating-point latency comparisons.
+pub const SCENARIO_DISPATCH_LATENCY_MAX_MS_F64: f64 = 500.0;
+
 // ── Niche cost-estimate parameters ──
 //
 // Used by `niche::cost_estimates()` to provide biomeOS scheduling hints.
@@ -787,5 +815,20 @@ mod tests {
         assert!(IPC_ROUND_TRIP_TOL >= 0.0);
         assert!(WGSL_SHADER_TOL >= 0.0);
         assert!(STOCHASTIC_SEED_TOL >= 0.0);
+    }
+
+    #[test]
+    fn scenario_probe_params_are_reasonable() {
+        assert!(SCENARIO_TCP_PROBE_TIMEOUT_MS >= 50);
+        assert!(SCENARIO_TCP_PROBE_TIMEOUT_MS <= 1000);
+        assert!(HEALTH_COMPLIANCE_MIN_PCT >= 50.0);
+        assert!(HEALTH_COMPLIANCE_MIN_PCT <= 100.0);
+        assert!(SCENARIO_DISPATCH_LATENCY_MAX_MS >= 100);
+        assert!(SCENARIO_DISPATCH_LATENCY_MAX_MS <= 5000);
+        assert!(
+            (SCENARIO_DISPATCH_LATENCY_MAX_MS_F64 - 500.0).abs() < f64::EPSILON,
+            "f64 dispatch latency constant must equal 500.0"
+        );
+        assert_eq!(SCENARIO_DISPATCH_LATENCY_MAX_MS, 500);
     }
 }

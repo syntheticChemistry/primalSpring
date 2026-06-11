@@ -66,8 +66,12 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     );
     v.check_bool(
         "dispatch-crypto-hash-latency",
-        outcome.latency_ms < 500,
-        &format!("crypto.hash latency: {}ms (< 500ms)", outcome.latency_ms),
+        outcome.latency_ms < crate::tolerances::SCENARIO_DISPATCH_LATENCY_MAX_MS,
+        &format!(
+            "crypto.hash latency: {}ms (< {}ms)",
+            outcome.latency_ms,
+            crate::tolerances::SCENARIO_DISPATCH_LATENCY_MAX_MS,
+        ),
     );
 
     // Phase 3: Dispatch storage.store → nestgate.

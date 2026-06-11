@@ -31,7 +31,9 @@ fn main() {
     let parsed = cli::Cli::parse();
 
     match parsed.command {
-        cli::Commands::Server => server::run_server(),
+        cli::Commands::Server { bind_mode, port } => {
+            server::run_server(bind_mode.as_deref(), port);
+        }
         cli::Commands::Status => print_status(),
         cli::Commands::Version => {
             println!("primalspring {}", env!("CARGO_PKG_VERSION"));

@@ -91,7 +91,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     if let Some(avg) = dispatcher.avg_latency_ms("crypto.hash") {
         v.check_bool(
             "avg-latency-reasonable",
-            avg < 500.0,
+            avg < crate::tolerances::SCENARIO_DISPATCH_LATENCY_MAX_MS_F64,
             &format!("avg crypto.hash latency: {avg:.1}ms"),
         );
     }

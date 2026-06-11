@@ -390,7 +390,7 @@ mod tests {
     #[test]
     fn expected_primals_sorted() {
         let mut sorted = EXPECTED_PRIMALS.to_vec();
-        sorted.sort();
+        sorted.sort_unstable();
         assert_eq!(
             EXPECTED_PRIMALS,
             &sorted[..],

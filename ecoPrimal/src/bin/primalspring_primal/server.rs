@@ -2,19 +2,15 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 use std::io::{BufRead, BufReader, Write};
-use std::os::unix::net::UnixListener;
 use std::path::PathBuf;
 
 use primalspring::ipc::method_gate::{CallerContext, MethodGate};
+use primalspring::ipc::platform::PlatformCapabilities;
 use primalspring::ipc::protocol::{JSONRPC_VERSION, JsonRpcResponse};
+use primalspring::ipc::server_bind::{BindMode, BoundTransport};
 use primalspring::{PRIMAL_DOMAIN, PRIMAL_NAME};
 
-use crate::dispatch::dispatch_request;
-
-pub fn server_socket_path() -> PathBuf {
-    let family_id = primalspring::env_keys::resolve_family_id();
-    primalspring::ipc::discover::socket_path(PRIMAL_NAME, &family_id)
-}
+use crate::dispatch::{self, dispatch_request};
 
 /// Reads `PRIMALSPRING_SOCKET_MODE` env var (octal string, e.g. `"0660"`).
 /// Falls back to `PRIMAL_SOCKET_MODE` for generic convention (SP-01).
@@ -44,52 +40,72 @@ pub fn resolve_graphs_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../graphs")
 }
 
-pub fn run_server() {
-    let sock_path = server_socket_path();
+/// Resolve `BindMode` from CLI flag, env var, or platform detection.
+fn resolve_bind_mode(cli_mode: Option<&str>) -> BindMode {
+    if let Some(mode_str) = cli_mode {
+        return match mode_str.to_lowercase().as_str() {
+            "tcp_only" | "tcp" => BindMode::TcpOnly,
+            "fallback" | "auto" => BindMode::Fallback,
+            _ => BindMode::UdsOnly,
+        };
+    }
+    let caps = PlatformCapabilities::detect();
+    caps.log_summary();
+    caps.recommended_bind_mode()
+}
+
+pub fn run_server(cli_bind_mode: Option<&str>, _cli_port: Option<u16>) {
+    dispatch::init_startup_time();
+
     let gate = MethodGate::from_env();
+    let mode = resolve_bind_mode(cli_bind_mode);
 
     tracing::info!("{PRIMAL_NAME} server starting...");
     tracing::info!(domain = PRIMAL_DOMAIN);
-    tracing::info!(socket = %sock_path.display());
+    tracing::info!(bind_mode = ?mode, "transport selection");
     tracing::info!(auth_mode = gate.mode().as_str(), "method gate initialized");
 
-    if let Some(parent) = sock_path.parent() {
-        if let Err(e) = std::fs::create_dir_all(parent) {
-            tracing::error!(error = %e, "failed to create socket directory");
-            std::process::exit(1);
-        }
-    }
-
-    let _ = std::fs::remove_file(&sock_path);
-    let listener = match UnixListener::bind(&sock_path) {
-        Ok(l) => l,
+    let bound = match primalspring::ipc::server_bind::bind_transport(PRIMAL_NAME, mode) {
+        Ok(b) => b,
         Err(e) => {
-            tracing::error!(error = %e, "failed to bind Unix socket");
+            tracing::error!(error = %e, "failed to bind transport");
             std::process::exit(1);
         }
     };
 
-    if let Some(mode) = resolve_socket_mode() {
-        use std::os::unix::fs::PermissionsExt;
-        if let Err(e) = std::fs::set_permissions(&sock_path, std::fs::Permissions::from_mode(mode))
-        {
-            tracing::warn!(error = %e, mode = format!("{mode:04o}"), "failed to set socket permissions");
-        } else {
-            tracing::info!(mode = format!("{mode:04o}"), "socket permissions set");
+    tracing::info!(
+        endpoint = bound.endpoint_display(),
+        "listening for JSON-RPC 2.0 connections"
+    );
+
+    if let BoundTransport::Unix(_, ref path) = bound {
+        if let Some(mode) = resolve_socket_mode() {
+            use std::os::unix::fs::PermissionsExt;
+            if let Err(e) = std::fs::set_permissions(path, std::fs::Permissions::from_mode(mode)) {
+                tracing::warn!(error = %e, mode = format!("{mode:04o}"), "failed to set socket permissions");
+            } else {
+                tracing::info!(mode = format!("{mode:04o}"), "socket permissions set");
+            }
         }
+
+        let register_path = path.clone();
+        std::thread::spawn(move || {
+            primalspring::niche::register_with_target(&register_path);
+        });
     }
 
-    tracing::info!("listening for JSON-RPC 2.0 connections");
+    match &bound {
+        BoundTransport::Unix(listener, _) => serve_unix(listener, &gate),
+        BoundTransport::Tcp(listener, _) => serve_tcp(listener, &gate),
+    }
+}
 
-    std::thread::spawn(move || {
-        primalspring::niche::register_with_target(&sock_path);
-    });
-
+fn serve_unix(listener: &std::os::unix::net::UnixListener, gate: &MethodGate) {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
-                tracing::debug!("client connected");
-                if let Err(e) = handle_connection(&stream, &gate) {
+                tracing::debug!("client connected (UDS)");
+                if let Err(e) = handle_unix_connection(&stream, gate) {
                     tracing::warn!(error = %e, "connection error");
                 }
             }
@@ -100,17 +116,48 @@ pub fn run_server() {
     }
 }
 
-fn handle_connection(
+fn serve_tcp(listener: &std::net::TcpListener, gate: &MethodGate) {
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => {
+                tracing::debug!("client connected (TCP)");
+                if let Err(e) = handle_tcp_connection(&stream, gate) {
+                    tracing::warn!(error = %e, "connection error");
+                }
+            }
+            Err(e) => {
+                tracing::warn!(error = %e, "accept failed");
+            }
+        }
+    }
+}
+
+fn handle_unix_connection(
     stream: &std::os::unix::net::UnixStream,
     gate: &MethodGate,
 ) -> std::io::Result<()> {
     let caller = CallerContext::from_unix_stream(stream);
     let mut writer = stream;
-    let mut reader = BufReader::new(stream);
-    let mut line = String::new();
+    let reader = BufReader::new(stream);
+    process_lines(reader, &mut writer, &caller, gate)
+}
 
+fn handle_tcp_connection(stream: &std::net::TcpStream, gate: &MethodGate) -> std::io::Result<()> {
+    let caller = CallerContext::loopback();
+    let mut writer = stream;
+    let reader = BufReader::new(stream);
+    process_lines(reader, &mut writer, &caller, gate)
+}
+
+fn process_lines<R: BufRead, W: Write>(
+    mut reader: R,
+    writer: &mut W,
+    caller: &CallerContext,
+    gate: &MethodGate,
+) -> std::io::Result<()> {
+    let mut line = String::new();
     while reader.read_line(&mut line)? > 0 {
-        let response = dispatch_request_gated(&line, &caller, gate);
+        let response = dispatch_request_gated(&line, caller, gate);
         let response_json = match serde_json::to_string(&response) {
             Ok(json) => json,
             Err(e) => {
@@ -122,7 +169,6 @@ fn handle_connection(
         writer.write_all(b"\n")?;
         line.clear();
     }
-
     Ok(())
 }
 

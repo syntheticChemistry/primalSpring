@@ -251,7 +251,8 @@ fn phase_barracuda_math(v: &mut ValidationResult, ctx: &mut CompositionContext) 
                 .get("mean")
                 .or_else(|| resp.get("result"))
                 .and_then(serde_json::Value::as_f64);
-            let correct = mean.is_some_and(|m| (m - 5.0).abs() < 1e-9);
+            let correct =
+                mean.is_some_and(|m| (m - 5.0).abs() < crate::tolerances::CPU_GPU_PARITY_TOL);
             v.check_bool(
                 "stats_mean_roundtrip",
                 correct,

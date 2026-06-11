@@ -98,7 +98,7 @@ fn compute_spawn_order_without_graph() {
     let (order, overlay) = harness.compute_spawn_order().unwrap();
     let mut expected = vec!["beardog", "skunkbat", "songbird"];
     expected.sort_unstable();
-    let mut got = order.clone();
+    let mut got = order;
     got.sort_unstable();
     assert_eq!(got, expected);
     assert!(overlay.is_empty(), "no overlay without graph");

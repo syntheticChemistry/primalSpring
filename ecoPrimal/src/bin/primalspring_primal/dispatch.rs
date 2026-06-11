@@ -4,6 +4,7 @@
 use std::collections::HashMap;
 use std::sync::LazyLock;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::Instant;
 
 use primalspring::coordination::AtomicType;
 use primalspring::ipc::discover::neural_api_healthy;
@@ -16,6 +17,19 @@ use crate::server::resolve_graphs_dir;
 /// Tracks the number of JSON-RPC requests currently being processed.
 static IN_FLIGHT: AtomicU64 = AtomicU64::new(0);
 
+/// Server startup time — initialized once in `init_startup_time()`.
+static STARTUP_TIME: std::sync::OnceLock<Instant> = std::sync::OnceLock::new();
+
+/// Initialize the server startup timestamp. Call once at server start.
+pub fn init_startup_time() {
+    STARTUP_TIME.get_or_init(Instant::now);
+}
+
+/// Seconds since server startup.
+fn uptime_seconds() -> u64 {
+    STARTUP_TIME.get().map_or(0, |t| t.elapsed().as_secs())
+}
+
 /// Uniform handler signature: `(params, request_id) -> response`.
 type Handler = fn(&serde_json::Value, u64) -> JsonRpcResponse;
 
@@ -26,7 +40,8 @@ type Handler = fn(&serde_json::Value, u64) -> JsonRpcResponse;
 /// `capability_registry.toml` exactly.
 static DISPATCH_TABLE: LazyLock<HashMap<&'static str, Handler>> = LazyLock::new(|| {
     let entries: &[(&str, Handler)] = &[
-        // ── Health probes ──
+        // ── Health probes (HEALTH-01: bare "health" aliases to check) ──
+        ("health", handle_health_check),
         ("health.check", handle_health_check),
         ("health.liveness", handle_health_check),
         ("health.version", handle_health_version),
@@ -135,8 +150,9 @@ fn handle_health_check(_params: &serde_json::Value, id: u64) -> JsonRpcResponse 
         serde_json::json!({
             "status": "healthy",
             "primal": PRIMAL_NAME,
-            "domain": PRIMAL_DOMAIN,
             "version": env!("CARGO_PKG_VERSION"),
+            "uptime_s": uptime_seconds(),
+            "domain": PRIMAL_DOMAIN,
         }),
         id,
     )
