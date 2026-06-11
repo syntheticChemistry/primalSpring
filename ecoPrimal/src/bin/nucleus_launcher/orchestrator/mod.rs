@@ -213,10 +213,10 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         }
         println!();
 
-        println!("=== Phase 2: Stop existing primals ===");
+        println!("=== Phase 2: Stop existing primals (family: {}) ===", config.family_id);
         if !config.dry_run {
             for primal in &primals {
-                spawn::stop_existing(primal);
+                spawn::stop_existing_family(primal, &config.family_id);
             }
             std::thread::sleep(Duration::from_secs(1));
         }
@@ -484,31 +484,61 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
 }
 
 /// Stop all primals in the given list (reverse dependency order).
+///
+/// Uses the environment `FAMILY_ID` to locate family-scoped PID files.
+/// Falls back to unscoped PID files for backward compatibility.
 pub fn stop_all(primals: &[&str]) {
+    let family_id = std::env::var(env_keys::FAMILY_ID).unwrap_or_default();
+    stop_all_family(primals, &family_id);
+}
+
+/// Stop all primals scoped to a specific family.
+pub fn stop_all_family(primals: &[&str], family_id: &str) {
     let pid_dir = PathBuf::from(tolerances::runtime_dir())
         .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(".pids");
 
-    println!("=== Stopping primals ===");
+    let label = if family_id.is_empty() { "default" } else { family_id };
+    println!("=== Stopping primals (family: {label}) ===");
     for primal in primals.iter().rev() {
-        let pid_file = pid_dir.join(format!("{primal}.pid"));
-        if let Ok(contents) = std::fs::read_to_string(&pid_file) {
-            if let Ok(pid) = contents.trim().parse::<u32>() {
-                print!("  {primal:<14} pid={pid:<8} ");
-                if spawn::signal_pid(pid).is_ok() {
-                    println!("\x1b[33mSIGTERM\x1b[0m");
-                } else {
-                    println!("\x1b[31mFAILED\x1b[0m");
-                }
-                let _ = std::fs::remove_file(&pid_file);
-                continue;
-            }
+        let pid_file = if family_id.is_empty() {
+            pid_dir.join(format!("{primal}.pid"))
+        } else {
+            pid_dir.join(format!("{primal}-{family_id}.pid"))
+        };
+
+        if try_stop_pid_file(primal, &pid_file, "") {
+            continue;
         }
+
+        let legacy = pid_dir.join(format!("{primal}.pid"));
+        if legacy != pid_file && try_stop_pid_file(primal, &legacy, " (legacy)") {
+            continue;
+        }
+
         println!("  {primal:<14} \x1b[90mnot running\x1b[0m");
     }
 
     std::thread::sleep(Duration::from_secs(1));
     println!("  Done.");
+}
+
+/// Read a PID file, signal the process, and remove the file. Returns `true` if stopped.
+fn try_stop_pid_file(primal: &str, pid_file: &std::path::Path, suffix: &str) -> bool {
+    let Ok(contents) = std::fs::read_to_string(pid_file) else {
+        return false;
+    };
+    let Ok(pid) = contents.trim().parse::<u32>() else {
+        return false;
+    };
+    print!("  {primal:<14} pid={pid:<8}{suffix} ");
+    if spawn::signal_pid(pid).is_ok() {
+        println!("\x1b[33mSIGTERM\x1b[0m");
+    } else {
+        println!("\x1b[31mFAILED\x1b[0m");
+    }
+    let _ = std::fs::remove_file(pid_file);
+    true
 }
 
 /// Show status of all primals via PID files and UDS/TCP health probes.

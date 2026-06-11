@@ -35,6 +35,9 @@ domain = "ecology_agriculture"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
+guidestone_binary = "airspring"
+guidestone_readiness = 5
+guidestone_properties = { deterministic = true, traceable = true, self_verifying = true, env_agnostic = true, tolerance_documented = true }
 validation_capabilities = [
     "tensor.matmul",
     "stats.mean",
@@ -51,6 +54,9 @@ domain = "geoscience"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
 depends_on = ["beardog", "songbird", "coralreef", "toadstool", "barracuda", "nestgate"]
+guidestone_binary = "groundspring"
+guidestone_readiness = 5
+guidestone_properties = { deterministic = true, traceable = true, self_verifying = true, env_agnostic = true, tolerance_documented = true }
 validation_capabilities = [
     "tensor.matmul",
     "stats.mean",
@@ -181,6 +187,9 @@ domain = "crpg"
 particle_profile = "balanced"
 fragments = ["tower_atomic", "node_atomic", "nest_atomic", "meta_tier"]
 depends_on = ["beardog", "songbird", "squirrel", "nestgate", "petaltongue", "toadstool", "barracuda", "rhizocrypt", "loamspine", "sweetgrass"]
+guidestone_binary = "esotericwebb"
+guidestone_readiness = 4
+guidestone_properties = { deterministic = true, traceable = true, self_verifying = true, env_agnostic = true, tolerance_documented = true }
 guidestone_validation = "composition"
 cell_graph = "graphs/cells/esotericwebb_cell.toml"
 composition_model = "pure"

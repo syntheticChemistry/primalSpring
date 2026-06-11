@@ -53,6 +53,7 @@ pub mod s_barracuda_precision;
 pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
+pub mod s_btsp_cross_primal;
 pub mod s_cephalization;
 pub mod s_composition_dispatch_parity;
 pub mod s_composition_lifecycle;
@@ -161,6 +162,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_ecosystem_freshness::SCENARIO);
     r.register(s_deployment_pipeline::SCENARIO);
     r.register(s_tcp_fallback::SCENARIO);
+    r.register(s_btsp_cross_primal::SCENARIO);
     r.register(s_graphenegate_readiness::SCENARIO);
     r
 }

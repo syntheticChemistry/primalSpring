@@ -66,21 +66,34 @@ pub(super) fn resolve_family_seed(socket_dir: &std::path::Path) -> Vec<u8> {
     hex_seed.into_bytes()
 }
 
-/// Attempt to stop any running instance of a primal.
-///
-/// Reads the PID file written at spawn time. Falls back to scanning
-/// `/proc` on Linux when no PID file exists.
-pub(super) fn stop_existing(primal: &str) {
+/// Stop a primal by its family-scoped PID file.
+pub(super) fn stop_existing_family(primal: &str, family_id: &str) {
     let pid_dir = PathBuf::from(tolerances::runtime_dir())
         .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(".pids");
-    let pid_file = pid_dir.join(format!("{primal}.pid"));
+
+    let pid_file = if family_id.is_empty() {
+        pid_dir.join(format!("{primal}.pid"))
+    } else {
+        pid_dir.join(format!("{primal}-{family_id}.pid"))
+    };
 
     if let Ok(contents) = std::fs::read_to_string(&pid_file) {
         if let Ok(pid) = contents.trim().parse::<u32>() {
             let _ = signal_pid(pid);
             let _ = std::fs::remove_file(&pid_file);
             return;
+        }
+    }
+
+    let legacy_pid_file = pid_dir.join(format!("{primal}.pid"));
+    if legacy_pid_file != pid_file {
+        if let Ok(contents) = std::fs::read_to_string(&legacy_pid_file) {
+            if let Ok(pid) = contents.trim().parse::<u32>() {
+                let _ = signal_pid(pid);
+                let _ = std::fs::remove_file(&legacy_pid_file);
+                return;
+            }
         }
     }
 
@@ -239,10 +252,12 @@ pub(super) fn spawn_primal(
         .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(".pids");
     let _ = std::fs::create_dir_all(&pid_dir);
-    let _ = std::fs::write(
-        pid_dir.join(format!("{primal}.pid")),
-        child.id().to_string(),
-    );
+    let pid_filename = if config.family_id.is_empty() {
+        format!("{primal}.pid")
+    } else {
+        format!("{primal}-{}.pid", config.family_id)
+    };
+    let _ = std::fs::write(pid_dir.join(pid_filename), child.id().to_string());
 
     tracing::info!(primal, binary = %binary.display(), pid = child.id(), "spawned");
     Ok(())

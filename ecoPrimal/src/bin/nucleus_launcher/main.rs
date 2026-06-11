@@ -122,7 +122,8 @@ fn main() {
     match cli.command {
         Some(NucleusCommand::Stop) => {
             let primals = orchestrator::ordered_primals(atomic);
-            orchestrator::stop_all(&primals);
+            let family_id = cli.family_id.as_deref().unwrap_or("");
+            orchestrator::stop_all_family(&primals, family_id);
         }
         Some(NucleusCommand::Status) => {
             let primals = orchestrator::ordered_primals(atomic);

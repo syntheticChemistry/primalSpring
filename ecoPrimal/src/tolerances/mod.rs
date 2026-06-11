@@ -617,6 +617,13 @@ pub const IPC_METHOD_AVG_LATENCY_MAX_MS: f64 = 500.0;
 /// Used by: `s_feedback_loop` error rate assertions.
 pub const IPC_METHOD_ERROR_RATE_MAX: f64 = 0.5;
 
+/// Maximum acceptable dispatch latency for scenario validation (ms).
+///
+/// Source: 1000ms generous ceiling for neural dispatch round-trip (includes
+/// biomeOS routing + primal execution + response serialization).
+/// Used by: `s_neural_dispatch_live` latency checks.
+pub const SCENARIO_DISPATCH_LATENCY_MAX_MS: u64 = 1000;
+
 /// Default Songbird federation port.
 ///
 /// Source: Songbird mesh coordination port, standard across all gates.
