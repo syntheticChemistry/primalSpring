@@ -47,7 +47,7 @@ pub fn validate_crypto_bootstrap(ctx: &mut CompositionContext, v: &mut Validatio
                 );
             }
             Err(e) => {
-                let msg = format!("{e}");
+                let msg = e.to_string();
                 if msg.contains("-32601") || msg.contains("unknown") {
                     v.check_skip(&check_name, &format!("{method}: not yet implemented"));
                 } else {

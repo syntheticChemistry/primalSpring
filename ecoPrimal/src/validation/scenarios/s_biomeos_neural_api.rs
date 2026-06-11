@@ -73,7 +73,7 @@ fn phase_capability_list(v: &mut ValidationResult, ctx: &mut CompositionContext)
             v.check_minimum("capability_domains", usize::try_from(count).unwrap_or(0), 5);
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip("capability_list", &format!("{e}"));
+            v.check_skip("capability_list", &e.to_string());
         }
         Err(e) => v.check_bool("capability_list", false, &format!("error: {e}")),
     }
@@ -90,7 +90,7 @@ fn validate_crypto_routing(bridge: &NeuralBridge, v: &mut ValidationResult) {
                 "biomeOS -> BearDog crypto.generate_keypair routing",
             );
         }
-        Err(e) => v.check_bool("crypto_generate_keypair", false, &format!("{e}")),
+        Err(e) => v.check_bool("crypto_generate_keypair", false, &e.to_string()),
     }
 }
 
@@ -105,7 +105,7 @@ fn validate_beacon_routing(bridge: &NeuralBridge, v: &mut ValidationResult) {
                 "biomeOS -> BearDog beacon.generate routing",
             );
         }
-        Err(e) => v.check_bool("beacon_generate", false, &format!("{e}")),
+        Err(e) => v.check_bool("beacon_generate", false, &e.to_string()),
     }
 }
 
@@ -119,7 +119,7 @@ fn validate_capability_discover(bridge: &NeuralBridge, v: &mut ValidationResult)
                     val.get("primary_endpoint").is_some() || val.get("primary_socket").is_some();
                 v.check_bool(&key, has_socket, &format!("{domain} domain discoverable"));
             }
-            Err(e) => v.check_bool(&key, false, &format!("{e}")),
+            Err(e) => v.check_bool(&key, false, &e.to_string()),
         }
     }
 }
@@ -143,7 +143,7 @@ fn validate_birdsong_beacon(v: &mut ValidationResult, ctx: &mut CompositionConte
                 "Songbird birdsong.generate_encrypted_beacon",
             );
         }
-        Err(e) if e.is_skippable() => v.check_skip("birdsong_beacon", &format!("{e}")),
+        Err(e) if e.is_skippable() => v.check_skip("birdsong_beacon", &e.to_string()),
         Err(e) => v.check_bool("birdsong_beacon", false, &format!("error: {e}")),
     }
 }
@@ -158,7 +158,7 @@ fn validate_graph_list(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             let count = graphs.len();
             v.check_minimum("graph_count", count, 10);
         }
-        Err(e) if e.is_skippable() => v.check_skip("graph_list", &format!("{e}")),
+        Err(e) if e.is_skippable() => v.check_skip("graph_list", &e.to_string()),
         Err(e) => v.check_bool("graph_list", false, &format!("error: {e}")),
     }
 }

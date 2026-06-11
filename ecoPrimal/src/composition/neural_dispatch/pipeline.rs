@@ -98,7 +98,7 @@ pub fn run_pipeline(
             weights_path: Some(weights_path.to_owned()),
             final_loss: loss,
         }),
-        Err(e) => Err(PipelineError::Training(format!("{e}"))),
+        Err(e) => Err(PipelineError::Training(e.to_string())),
     }
 }
 

@@ -183,7 +183,7 @@ fn phase_announce_api(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) => {
-            let detail = format!("{e}");
+            let detail = e.to_string();
             if detail.contains("-32601") || detail.contains("not found") {
                 v.check_skip(
                     "api:announce:accepted",
@@ -243,7 +243,7 @@ fn phase_live_announce(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) => {
-            let detail = format!("{e}");
+            let detail = e.to_string();
             if detail.contains("-32601") {
                 v.check_bool(
                     "live:announce:full_payload",
@@ -282,7 +282,7 @@ fn phase_live_announce(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) => {
-            let detail = format!("{e}");
+            let detail = e.to_string();
             if detail.contains("-32601") {
                 v.check_skip(
                     "live:info:probe_visible",

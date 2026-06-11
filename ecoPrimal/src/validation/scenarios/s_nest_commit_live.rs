@@ -178,7 +178,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) => {
-            let detail = format!("{e}");
+            let detail = e.to_string();
             if detail.contains("-32601") || detail.contains("session.commit") {
                 v.check_skip(
                     "live:nest_commit:dispatched",
@@ -236,7 +236,7 @@ fn phase_nest_store_baseline(v: &mut ValidationResult, ctx: &mut CompositionCont
             v.check_skip("live:nest_store_baseline", &format!("connection: {e}"));
         }
         Err(e) => {
-            let detail = format!("{e}");
+            let detail = e.to_string();
             if detail.contains("-32601") {
                 v.check_skip(
                     "live:nest_store_baseline",

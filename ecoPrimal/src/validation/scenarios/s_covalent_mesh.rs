@@ -111,7 +111,7 @@ fn phase_discovery_peers(v: &mut ValidationResult, ctx: &mut CompositionContext)
             v.check_skip("live:peer_count", "Songbird not reachable");
         }
         Err(e) => {
-            let msg = format!("{e}");
+            let msg = e.to_string();
             if msg.contains("not found") || msg.contains("-32601") {
                 v.check_skip(
                     "live:discovery_peers",
@@ -285,7 +285,7 @@ fn phase_cross_gate_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCont
                 );
             }
             Err(e) => {
-                let msg = format!("{e}");
+                let msg = e.to_string();
                 let expected_skip = msg.contains("not found")
                     || msg.contains("unknown gate")
                     || msg.contains("no route")

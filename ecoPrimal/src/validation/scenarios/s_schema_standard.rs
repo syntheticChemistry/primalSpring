@@ -244,7 +244,7 @@ fn phase_live_primal_list(v: &mut ValidationResult, ctx: &mut CompositionContext
             }
         }
         Err(e) => {
-            let detail = format!("{e}");
+            let detail = e.to_string();
             if detail.contains("-32601") || detail.contains("not found") {
                 v.check_skip(
                     "live:primal_list",

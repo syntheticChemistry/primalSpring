@@ -430,7 +430,7 @@ fn validate_live_composition_dispatch(v: &mut ValidationResult, ctx: &mut Compos
                 );
             }
             Err(e) => {
-                let detail = format!("{e}");
+                let detail = e.to_string();
                 if detail.contains("-32601") || detail.contains("not found") {
                     v.check_skip(
                         &check_id,

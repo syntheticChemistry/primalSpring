@@ -214,7 +214,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 );
             }
             Err(e) => {
-                let detail = format!("{e}");
+                let detail = e.to_string();
                 if detail.contains("-32601") {
                     v.check_bool(
                         &check_id,
@@ -290,7 +290,7 @@ fn phase_response_shapes(v: &mut ValidationResult, ctx: &mut CompositionContext)
                 );
             }
             Err(e) => {
-                let detail = format!("{e}");
+                let detail = e.to_string();
                 if detail.contains("-32601") || detail.contains("not found") {
                     v.check_skip(
                         &format!("shape:{}:keys", spec.id),

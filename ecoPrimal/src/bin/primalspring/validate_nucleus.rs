@@ -181,7 +181,7 @@ impl NucleusGate {
             Ok(p) => p,
             Err(e) => {
                 self.v
-                    .check_bool("biomeos-discovered", false, &format!("{e}"));
+                    .check_bool("biomeos-discovered", false, &e.to_string());
                 return;
             }
         };

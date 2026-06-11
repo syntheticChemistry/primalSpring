@@ -280,11 +280,11 @@ pub fn call_or_skip(
             Some(result)
         }
         Err(e) if is_skip_error(&e) => {
-            v.check_skip(check_name, &format!("{e}"));
+            v.check_skip(check_name, &e.to_string());
             None
         }
         Err(e) => {
-            v.check_bool(check_name, false, &format!("{e}"));
+            v.check_bool(check_name, false, &e.to_string());
             None
         }
     }

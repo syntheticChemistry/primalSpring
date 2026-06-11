@@ -189,7 +189,7 @@ fn phase_live_dispatch(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) => {
-            let msg = format!("{e}");
+            let msg = e.to_string();
             let expected_without_mesh = msg.contains("not found")
                 || msg.contains("unknown gate")
                 || msg.contains("no route")
@@ -313,7 +313,7 @@ fn attempt_cross_gate_call(
             has_result
         }
         Err(e) => {
-            let msg = format!("{e}");
+            let msg = e.to_string();
             let mesh_gap = msg.contains("No local or remote provider")
                 || msg.contains("no route")
                 || msg.contains("not found");
@@ -407,7 +407,7 @@ fn attempt_cross_gate_auth(
             );
         }
         Err(e) => {
-            let msg = format!("{e}");
+            let msg = e.to_string();
             if msg.contains("No local or remote provider") || msg.contains("no route") {
                 v.check_skip(
                     "live:btsp_cross_gate_auth",

@@ -64,7 +64,7 @@ fn phase_toadstool_validate(v: &mut ValidationResult, ctx: &mut CompositionConte
             );
         }
         Err(e) => {
-            let is_method_missing = format!("{e}").contains("-32601");
+            let is_method_missing = e.to_string().contains("-32601");
             if is_method_missing {
                 v.check_skip(
                     "toadstool_validate_shape",
@@ -98,7 +98,7 @@ fn phase_toadstool_list(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             );
         }
         Err(e) => {
-            let is_method_missing = format!("{e}").contains("-32601");
+            let is_method_missing = e.to_string().contains("-32601");
             if is_method_missing {
                 v.check_skip(
                     "toadstool_list_workloads_shape",
@@ -137,7 +137,7 @@ fn phase_precision_route(v: &mut ValidationResult, ctx: &mut CompositionContext)
             );
         }
         Err(e) => {
-            let is_method_missing = format!("{e}").contains("-32601");
+            let is_method_missing = e.to_string().contains("-32601");
             if is_method_missing {
                 v.check_skip(
                     "precision_route_shape",
@@ -170,7 +170,7 @@ fn phase_spring_status(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) => {
-            let is_method_missing = format!("{e}").contains("-32601");
+            let is_method_missing = e.to_string().contains("-32601");
             if is_method_missing {
                 v.check_skip(
                     "spring_status_shape",

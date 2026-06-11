@@ -243,7 +243,7 @@ fn phase_cross_gate_call(v: &mut ValidationResult, ctx: &mut CompositionContext)
                 v.check_skip(&check_id, &format!("orchestration not available: {e}"));
             }
             Err(e) => {
-                let msg = format!("{e}");
+                let msg = e.to_string();
                 let known_gap = msg.contains("Invalid JSON from remote")
                     || msg.contains("No local or remote provider")
                     || msg.contains("not found")

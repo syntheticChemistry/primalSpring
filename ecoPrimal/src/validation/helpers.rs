@@ -146,8 +146,8 @@ pub fn validate_node_capabilities(
         let caps = node
             .get("capabilities")
             .and_then(|c| c.as_array())
-            .unwrap_or(&Vec::new())
-            .clone();
+            .cloned()
+            .unwrap_or_default();
 
         for cap in &caps {
             if let Some(cap_str) = cap.as_str() {

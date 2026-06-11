@@ -452,7 +452,7 @@ pub fn handle_graph_waves(params: &serde_json::Value, id: u64) -> JsonRpcRespons
     let path = std::path::Path::new(path_str);
     let graph = match primalspring::deploy::load_graph(path) {
         Ok(g) => g,
-        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &format!("{e}"), id),
+        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &e.to_string(), id),
     };
     match primalspring::deploy::topological_waves(&graph) {
         Ok(waves) => success_response(
@@ -463,7 +463,7 @@ pub fn handle_graph_waves(params: &serde_json::Value, id: u64) -> JsonRpcRespons
             }),
             id,
         ),
-        Err(e) => error_response(error_codes::INTERNAL_ERROR, &format!("{e}"), id),
+        Err(e) => error_response(error_codes::INTERNAL_ERROR, &e.to_string(), id),
     }
 }
 
@@ -478,7 +478,7 @@ pub fn handle_graph_capabilities(params: &serde_json::Value, id: u64) -> JsonRpc
     let path = std::path::Path::new(path_str);
     let graph = match primalspring::deploy::load_graph(path) {
         Ok(g) => g,
-        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &format!("{e}"), id),
+        Err(e) => return error_response(error_codes::INTERNAL_ERROR, &e.to_string(), id),
     };
     let caps = primalspring::deploy::graph_required_capabilities(&graph);
     success_response(

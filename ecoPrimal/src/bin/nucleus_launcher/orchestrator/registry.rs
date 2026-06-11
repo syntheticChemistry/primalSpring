@@ -4,10 +4,30 @@
 //! Songbird registry seeding, capability mapping, health probes, and port resolution.
 
 use std::collections::HashMap;
+use std::fmt;
 use std::time::Duration;
 
 use primalspring::ipc::tcp::env_port;
 use primalspring::tolerances;
+
+#[derive(Debug)]
+pub(super) enum RegistryError {
+    Unreachable(std::io::Error),
+    Io(std::io::Error),
+    EmptyResponse,
+    BadResponse(String),
+}
+
+impl fmt::Display for RegistryError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Unreachable(e) => write!(f, "songbird unreachable: {e}"),
+            Self::Io(e) => write!(f, "I/O: {e}"),
+            Self::EmptyResponse => f.write_str("empty response"),
+            Self::BadResponse(s) => write!(f, "non-standard response: {s}"),
+        }
+    }
+}
 
 fn jsonrpc_payload(method: &str, params: &serde_json::Value, id: u64) -> String {
     let request = serde_json::json!({
@@ -196,24 +216,21 @@ pub(super) fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) ->
 }
 
 /// Send a register payload to Songbird via TCP.
-pub(super) fn register_with_songbird(port: u16, payload: &str) -> Result<(), String> {
+pub(super) fn register_with_songbird(port: u16, payload: &str) -> Result<(), RegistryError> {
     use std::io::{Read, Write};
     use std::net::{SocketAddr, TcpStream};
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
     let timeout = Duration::from_secs(5);
 
-    let stream = TcpStream::connect_timeout(&addr, timeout)
-        .map_err(|e| format!("Songbird :{port} unreachable: {e}"))?;
+    let stream = TcpStream::connect_timeout(&addr, timeout).map_err(RegistryError::Unreachable)?;
 
     let _ = stream.set_read_timeout(Some(timeout));
     let _ = stream.set_write_timeout(Some(timeout));
 
     let mut s = stream;
-    s.write_all(payload.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    s.write_all(b"\n")
-        .map_err(|e| format!("write newline: {e}"))?;
+    s.write_all(payload.as_bytes()).map_err(RegistryError::Io)?;
+    s.write_all(b"\n").map_err(RegistryError::Io)?;
 
     let mut buf = [0u8; 4096];
     match s.read(&mut buf) {
@@ -222,35 +239,30 @@ pub(super) fn register_with_songbird(port: u16, payload: &str) -> Result<(), Str
             if jsonrpc_response_has_field(&resp, "result") {
                 Ok(())
             } else {
-                Err(format!(
-                    "non-standard response: {}",
-                    &resp[..resp.len().min(80)]
-                ))
+                let truncated = &resp[..resp.len().min(80)];
+                Err(RegistryError::BadResponse(truncated.to_string()))
             }
         }
-        Ok(_) => Err("empty response".to_owned()),
-        Err(e) => Err(format!("read: {e}")),
+        Ok(_) => Err(RegistryError::EmptyResponse),
+        Err(e) => Err(RegistryError::Io(e)),
     }
 }
 
 /// Send a JSON-RPC payload over a Unix domain socket.
-fn send_uds_rpc(socket: &std::path::Path, payload: &str) -> Result<String, String> {
+fn send_uds_rpc(socket: &std::path::Path, payload: &str) -> Result<String, RegistryError> {
     use std::io::{Read, Write};
     use std::os::unix::net::UnixStream;
 
     let timeout = Duration::from_secs(5);
-    let mut stream = UnixStream::connect(socket)
-        .map_err(|e| format!("Songbird UDS {} unreachable: {e}", socket.display()))?;
+    let mut stream = UnixStream::connect(socket).map_err(RegistryError::Unreachable)?;
 
     let _ = stream.set_read_timeout(Some(timeout));
     let _ = stream.set_write_timeout(Some(timeout));
 
     stream
         .write_all(payload.as_bytes())
-        .map_err(|e| format!("write: {e}"))?;
-    stream
-        .write_all(b"\n")
-        .map_err(|e| format!("write newline: {e}"))?;
+        .map_err(RegistryError::Io)?;
+    stream.write_all(b"\n").map_err(RegistryError::Io)?;
 
     let mut buf = [0u8; 4096];
     match stream.read(&mut buf) {
@@ -258,8 +270,8 @@ fn send_uds_rpc(socket: &std::path::Path, payload: &str) -> Result<String, Strin
             let resp = String::from_utf8_lossy(&buf[..n]).to_string();
             Ok(resp)
         }
-        Ok(_) => Err("empty response".to_owned()),
-        Err(e) => Err(format!("read: {e}")),
+        Ok(_) => Err(RegistryError::EmptyResponse),
+        Err(e) => Err(RegistryError::Io(e)),
     }
 }
 
@@ -267,15 +279,13 @@ fn send_uds_rpc(socket: &std::path::Path, payload: &str) -> Result<String, Strin
 pub(super) fn register_with_songbird_uds(
     socket: &std::path::Path,
     payload: &str,
-) -> Result<(), String> {
+) -> Result<(), RegistryError> {
     let resp = send_uds_rpc(socket, payload)?;
     if jsonrpc_response_has_field(&resp, "result") {
         Ok(())
     } else {
-        Err(format!(
-            "non-standard response: {}",
-            &resp[..resp.len().min(80)]
-        ))
+        let truncated = &resp[..resp.len().min(80)];
+        Err(RegistryError::BadResponse(truncated.to_string()))
     }
 }
 

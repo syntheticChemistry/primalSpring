@@ -66,7 +66,7 @@ pub(super) fn phase_security_trust(v: &mut ValidationResult, ctx: &mut Compositi
             tok.map(String::from)
         }
         Err(e) => {
-            let msg = format!("{e}");
+            let msg = e.to_string();
             if msg.contains("not found") || msg.contains("-32601") {
                 v.check_skip(
                     "security:local_token_issue",
@@ -168,7 +168,7 @@ fn verify_with_source(v: &mut ValidationResult, ctx: &mut CompositionContext, va
             true
         }
         Err(e) => {
-            let msg = format!("{e}");
+            let msg = e.to_string();
             if msg.contains("not found") || msg.contains("-32601") {
                 v.check_skip(
                     "security:verify_source_local",
@@ -291,7 +291,7 @@ fn verify_remote_source(
             }
         }
         Err(e) => {
-            let msg = format!("{e}");
+            let msg = e.to_string();
             if msg.contains("not found") || msg.contains("-32601") {
                 v.check_skip(
                     "security:verify_source_remote",
@@ -359,7 +359,7 @@ fn verify_cross_gate_dispatch(
             );
         }
         Err(e) => {
-            let msg = format!("{e}");
+            let msg = e.to_string();
             let expected = msg.contains("No local or remote provider")
                 || msg.contains("not found")
                 || msg.contains("no route");
@@ -467,7 +467,7 @@ pub(super) fn phase_content_integrity(v: &mut ValidationResult, ctx: &mut Compos
             }
         }
         Err(e) => {
-            let msg = format!("{e}");
+            let msg = e.to_string();
             if msg.contains("not found") || msg.contains("-32601") {
                 v.check_skip(
                     "content:local_put_get",
@@ -550,7 +550,7 @@ fn validate_content_round_trip(
                 );
             }
             Err(e) => {
-                let msg = format!("{e}");
+                let msg = e.to_string();
                 let expected = msg.contains("No local or remote provider")
                     || msg.contains("not found")
                     || msg.contains("no route");
@@ -685,7 +685,7 @@ fn check_reversibility(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 );
             }
             Err(e) => {
-                let msg = format!("{e}");
+                let msg = e.to_string();
                 if msg.contains("not found") || msg.contains("-32601") {
                     v.check_skip(
                         "darkforest:reversibility_local_store",

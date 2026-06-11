@@ -314,8 +314,8 @@ fn validate_intent_loop_structure(v: &mut ValidationResult) {
         .get("graph")
         .and_then(|g| g.get("nodes"))
         .and_then(|n| n.as_array())
-        .unwrap_or(&Vec::new())
-        .clone();
+        .cloned()
+        .unwrap_or_default();
 
     let node_binaries: Vec<&str> = nodes
         .iter()
@@ -351,8 +351,8 @@ fn validate_intent_loop_structure(v: &mut ValidationResult) {
         .get("graph")
         .and_then(|g| g.get("nodes"))
         .and_then(|n| n.as_array())
-        .unwrap_or(&Vec::new())
-        .clone();
+        .cloned()
+        .unwrap_or_default();
 
     let render_binaries: Vec<&str> = render_nodes
         .iter()

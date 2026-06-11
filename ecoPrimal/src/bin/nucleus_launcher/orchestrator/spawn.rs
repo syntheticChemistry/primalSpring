@@ -3,6 +3,7 @@
 
 //! Process lifecycle — spawn, stop, seed resolution for NUCLEUS primals.
 
+use std::fmt;
 use std::path::PathBuf;
 
 use primalspring::env_keys;
@@ -10,6 +11,25 @@ use primalspring::launcher::discover_binary;
 use primalspring::tolerances;
 
 use super::LaunchConfig;
+
+#[derive(Debug)]
+pub(super) enum SpawnError {
+    Discovery(primalspring::launcher::LaunchError),
+    ProfileLoad(primalspring::launcher::LaunchError),
+    Io(std::io::Error),
+    Spawn(std::io::Error),
+}
+
+impl fmt::Display for SpawnError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Discovery(e) => write!(f, "{e}"),
+            Self::ProfileLoad(e) => write!(f, "profile load: {e}"),
+            Self::Io(e) => write!(f, "{e}"),
+            Self::Spawn(e) => write!(f, "spawn failed: {e}"),
+        }
+    }
+}
 
 /// Resolve or generate a family seed.
 pub(super) fn resolve_family_seed(socket_dir: &std::path::Path) -> Vec<u8> {
@@ -119,10 +139,10 @@ pub(super) fn spawn_primal(
     socket: &std::path::Path,
     config: &LaunchConfig,
     family_seed: &str,
-) -> Result<(), String> {
-    let binary = discover_binary(primal).map_err(|e| e.to_string())?;
+) -> Result<(), SpawnError> {
+    let binary = discover_binary(primal).map_err(SpawnError::Discovery)?;
     let (defaults, profiles) =
-        primalspring::launcher::load_launch_profiles().map_err(|e| format!("profile load: {e}"))?;
+        primalspring::launcher::load_launch_profiles().map_err(SpawnError::ProfileLoad)?;
     let empty = primalspring::launcher::LaunchProfile::default();
     let profile = profiles.get(primal).unwrap_or(&empty);
 
@@ -207,16 +227,13 @@ pub(super) fn spawn_primal(
         .join("logs");
     let _ = std::fs::create_dir_all(&log_dir);
     let log_path = log_dir.join(format!("{primal}.log"));
-    let log_file = std::fs::File::create(&log_path)
-        .map_err(|e| format!("cannot create log file {}: {e}", log_path.display()))?;
-    let log_err = log_file
-        .try_clone()
-        .map_err(|e| format!("cannot clone log file: {e}"))?;
+    let log_file = std::fs::File::create(&log_path).map_err(SpawnError::Io)?;
+    let log_err = log_file.try_clone().map_err(SpawnError::Io)?;
 
     cmd.stdout(log_file);
     cmd.stderr(log_err);
 
-    let child = cmd.spawn().map_err(|e| format!("spawn failed: {e}"))?;
+    let child = cmd.spawn().map_err(SpawnError::Spawn)?;
 
     let pid_dir = PathBuf::from(tolerances::runtime_dir())
         .join(primalspring::env_keys::BIOMEOS_SUBDIR)

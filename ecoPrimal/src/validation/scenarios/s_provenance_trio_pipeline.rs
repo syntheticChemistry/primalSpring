@@ -278,7 +278,7 @@ fn phase_composition_dispatch(v: &mut ValidationResult, ctx: &mut CompositionCon
             );
         }
         Err(e) => {
-            let detail = format!("{e}");
+            let detail = e.to_string();
             if detail.contains("-32601") || detail.contains("not found") {
                 v.check_skip(
                     "trio:composition:nest_store:response_shape",
