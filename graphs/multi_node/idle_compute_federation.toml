@@ -119,7 +119,6 @@ by_capability = "dag"
 name = "dag.session.create"
 
 [graph.nodes.operation.params]
-source_primal = "primalspring"
 niche = "idle_compute_federation"
 
 [graph.nodes.constraints]

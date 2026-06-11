@@ -65,8 +65,9 @@ fn phase_structural(v: &mut ValidationResult) {
         "discovery.peers in registry",
     );
 
+    let fed_port = crate::tolerances::SONGBIRD_FEDERATION_PORT;
     let mesh_peers = std::env::var(crate::env_keys::MESH_PEERS).unwrap_or_else(|_| {
-        "east-gate=127.0.0.1:7700,strand-gate=127.0.0.2:7700,iron-gate=127.0.0.3:7700".to_owned()
+        format!("east-gate=127.0.0.1:{fed_port},strand-gate=127.0.0.2:{fed_port},iron-gate=127.0.0.3:{fed_port}")
     });
     let mut topo = MeshTopology::new();
     topo.set_local_gate("east-gate");
@@ -268,8 +269,9 @@ fn phase_composition_routing(v: &mut ValidationResult, ctx: &CompositionContext)
     let local_gate = ctx.gate_id().unwrap_or("east-gate");
     topo.set_local_gate(local_gate);
 
+    let fed_port = crate::tolerances::SONGBIRD_FEDERATION_PORT;
     let mesh_peers = std::env::var(crate::env_keys::MESH_PEERS).unwrap_or_else(|_| {
-        "east-gate=127.0.0.1:7700,strand-gate=127.0.0.2:7700,iron-gate=127.0.0.3:7700".to_owned()
+        format!("east-gate=127.0.0.1:{fed_port},strand-gate=127.0.0.2:{fed_port},iron-gate=127.0.0.3:{fed_port}")
     });
     let peer_addr = |gate: &str| -> Option<String> {
         mesh_peers.split(',').find_map(|pair| {

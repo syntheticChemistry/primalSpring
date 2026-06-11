@@ -44,7 +44,6 @@ fragments = ["tower_atomic", "provenance_trio"]
 
 # ── Phase 1: Tower base ──
 
-
 [graph.bonding_policy]
 bond_type = "Ionic"
 trust_model = "MethodGate"
@@ -124,13 +123,3 @@ capabilities = [
 
 # ── Validation (not spawned) ──
 
-[[graph.nodes]]
-name = "validate_provenance"
-binary = "primalspring_primal"
-order = 99
-required = false
-spawn = false
-depends_on = ["beardog", "songbird", "rhizocrypt", "loamspine", "sweetgrass"]
-health_method = "health.liveness"
-by_capability = "coordination"
-capabilities = ["composition.provenance_health"]

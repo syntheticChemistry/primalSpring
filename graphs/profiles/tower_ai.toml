@@ -49,14 +49,3 @@ capabilities = [
     "ai.query", "ai.complete",
 ]
 
-[[graph.nodes]]
-name = "validate_tower_ai"
-binary = "primalspring_primal"
-order = 99
-required = false
-spawn = false
-depends_on = ["beardog", "songbird", "squirrel"]
-health_method = "health.liveness"
-by_capability = "coordination"
-security_model = "tower_delegated"
-capabilities = ["composition.tower_ai_health"]

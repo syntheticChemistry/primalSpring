@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! UniBin CLI — clap subcommands for the eukaryotic primalspring binary.
+//! UniBin CLI — clap subcommands for the primalspring arena binary.
 
 use clap::{Parser, Subcommand, ValueEnum};
 
@@ -10,7 +10,7 @@ use clap::{Parser, Subcommand, ValueEnum};
 #[command(
     name = "primalspring",
     version,
-    about = "Eukaryotic coordination primal — certification, validation, and IPC server"
+    about = "NUCLEUS evolution arena — certification, validation, and composition probing"
 )]
 pub struct Cli {
     /// Subcommand to execute.
@@ -65,8 +65,6 @@ pub enum Commands {
         #[arg(long)]
         provenance_dir: Option<String>,
     },
-    /// Start the JSON-RPC 2.0 IPC server (cell membrane).
-    Serve,
     /// Show composition health and capability discovery status.
     Status,
     /// Regenerate BLAKE3 checksums manifest (validation/CHECKSUMS).

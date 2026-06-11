@@ -100,13 +100,3 @@ by_capability = "compute"
 capabilities = ["compute.health"]
 
 # ── Node 8: Tick aggregator (SensorEventBus reporter) ──────────────────
-[[graph.nodes]]
-name = "tick_aggregator"
-binary = "primalspring_primal"
-order = 8
-required = true
-spawn = false
-depends_on = ["beardog", "songbird", "rhizocrypt", "loamspine", "sweetgrass", "nestgate", "toadstool"]
-health_method = "health.check"
-by_capability = "coordination"
-capabilities = ["sensor.tick", "sensor.event_bus", "nucleus.health_poll"]

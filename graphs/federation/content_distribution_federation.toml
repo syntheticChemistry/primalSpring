@@ -171,7 +171,6 @@ by_capability = "dag"
 name = "dag.session.create"
 
 [graph.nodes.operation.params]
-source_primal = "primalspring"
 niche = "content_distribution"
 
 [graph.nodes.constraints]

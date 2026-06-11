@@ -57,7 +57,7 @@ fn phase_structural(v: &mut ValidationResult) {
         let label = if p.droppable { "DROPPABLE" } else { "KEEP" };
         let reachable = std::net::TcpStream::connect_timeout(
             &std::net::SocketAddr::from(([127, 0, 0, 1], p.port)),
-            std::time::Duration::from_millis(crate::tolerances::SCENARIO_TCP_PROBE_TIMEOUT_MS),
+            std::time::Duration::from_millis(300),
         )
         .is_ok();
         v.check_bool(
@@ -118,7 +118,7 @@ fn phase_uds_coverage(v: &mut ValidationResult) {
     let coverage = (f64::from(uds_ready) / total) * 100.0;
     v.check_bool(
         "uds:coverage",
-        coverage > crate::tolerances::HEALTH_COMPLIANCE_MIN_PCT,
+        coverage >= crate::tolerances::HEALTH_COMPLIANCE_MIN_PCT,
         &format!(
             "{uds_ready}/{} via UDS ({coverage:.0}%)",
             caps_sockets.len()

@@ -12,17 +12,21 @@
     )
 )]
 
-//! primalSpring — the ecosystem intermediary.
+//! primalSpring — NUCLEUS evolution arena.
 //!
-//! primalSpring starts and validates all shared NUCLEUS compositions (atomics,
-//! bonding, chimeras). It is the bridge between upstream primals and downstream
-//! springs: primals expose capabilities, primalSpring proves they compose
-//! correctly, springs validate their domain science through those compositions.
+//! primalSpring validates primal compositions (atomics, bonding, chimeras).
+//! It is the bridge between upstream primals and downstream springs: primals
+//! expose capabilities, primalSpring proves they compose correctly, springs
+//! validate their domain science through those compositions.
+//!
+//! primalSpring is NOT a primal. It does not serve on a socket, register with
+//! biomeOS, or appear in NUCLEUS compositions. It is a pure CLI + IPC client
+//! that validates compositions from the outside.
 //!
 //! # Core Role
 //!
-//! - **Start** NUCLEUS compositions (Tower, Node, Nest, `FullNucleus`) via biomeOS
 //! - **Validate** that primal compositions produce correct results (parity with baselines)
+//! - **Launch** NUCLEUS compositions (Tower, Node, Nest, `FullNucleus`) for testing
 //! - **Surface** upstream gaps so primal teams know what to evolve
 //! - **Provide** the composition validation library for downstream springs
 //!
@@ -44,15 +48,11 @@
 //! - [`btsp`] — BTSP wire types and cipher policy
 //! - [`graphs`] — coordination pattern types (Sequential, Parallel, DAG, Pipeline, Continuous)
 //! - [`emergent`] — emergent system types (`RootPulse`, RPGPT, `CoralForge`)
-//! - [`niche`] — BYOB capability registration for the primalSpring server
 //! - [`primal_names`] — canonical display names and discovery slug mapping
 //! - [`cast`] — safe numeric casts for metrics
 
-/// Canonical primal name — single source of truth for self-knowledge.
-pub const PRIMAL_NAME: &str = "primalspring";
-
-/// Capability domain this primal serves.
-pub const PRIMAL_DOMAIN: &str = "coordination";
+/// Arena name — used in logging, provenance, and IPC client identity.
+pub const NAME: &str = "primalspring";
 
 pub mod bonding;
 pub mod btsp;
@@ -69,7 +69,6 @@ pub mod graphs;
 pub mod harness;
 pub mod ipc;
 pub mod launcher;
-pub mod niche;
 pub mod primal_names;
 pub mod tolerances;
 pub mod validation;

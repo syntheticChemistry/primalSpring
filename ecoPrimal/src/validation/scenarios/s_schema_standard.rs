@@ -99,49 +99,12 @@ fn phase_registry(v: &mut ValidationResult) {
 }
 
 fn phase_local_capability_list(v: &mut ValidationResult) {
-    let caps = crate::niche::all_capabilities();
-    let count = caps.len();
-
-    v.check_minimum("local:capability_count", count, 20);
-
-    let response = serde_json::json!({
-        "capabilities": caps,
-        "count": count,
-        "primal": crate::PRIMAL_NAME,
-    });
-
-    for key in CAPABILITY_LIST_REQUIRED_KEYS {
-        v.check_bool(
-            &format!("local:capability_list:has_{key}"),
-            response.get(key).is_some(),
-            &format!("local capability.list has required key: {key}"),
-        );
-    }
-
-    if let Some(cap_value) = response.get("capabilities") {
-        v.check_bool(
-            "local:capability_list:capabilities_is_array",
-            cap_value.is_array(),
-            "capabilities field is an array",
-        );
-
-        let count_value = response
-            .get("count")
-            .and_then(serde_json::Value::as_u64)
-            .unwrap_or(0);
-        v.check_bool(
-            "local:capability_list:count_matches_array",
-            count_value == cap_value.as_array().map_or(0, std::vec::Vec::len) as u64,
-            "count field matches capabilities array length",
-        );
-    } else {
-        v.check_bool(
-            "local:capability_list:capabilities_is_array",
-            false,
-            "capabilities field missing from local response",
-        );
-    }
+    v.check_skip(
+        "local:capability_count",
+        "primalSpring is not a primal — no local capability list (post-primordial)",
+    );
 }
+
 
 fn phase_live_capability_list(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("orchestration") {
@@ -287,22 +250,9 @@ mod tests {
     }
 
     #[test]
-    fn local_capability_list_shape() {
-        let caps = crate::niche::all_capabilities();
-        assert!(
-            caps.len() >= 20,
-            "primalSpring should have 20+ capabilities"
-        );
-
-        let response = serde_json::json!({
-            "capabilities": caps,
-            "count": caps.len(),
-            "primal": crate::PRIMAL_NAME,
-        });
-        assert!(response["capabilities"].is_array());
-        assert_eq!(
-            usize::try_from(response["count"].as_u64().unwrap()).unwrap(),
-            caps.len(),
-        );
+    fn local_capability_list_skips_post_primordial() {
+        let mut v = crate::validation::ValidationResult::new("test");
+        phase_local_capability_list(&mut v);
+        assert_eq!(v.skipped, 1);
     }
 }

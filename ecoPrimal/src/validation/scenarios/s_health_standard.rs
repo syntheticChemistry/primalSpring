@@ -177,11 +177,12 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     if probed > 0 {
         let compliance_rate = (f64::from(compliant) / f64::from(probed)) * 100.0;
+        let min = crate::tolerances::HEALTH_COMPLIANCE_MIN_PCT;
         v.check_bool(
             "live:compliance_rate",
-            compliance_rate >= crate::tolerances::HEALTH_COMPLIANCE_MIN_PCT,
+            compliance_rate >= min,
             &format!(
-                "HEALTH-01 compliance: {compliant}/{probed} ({compliance_rate:.0}%, target >= 80%)"
+                "HEALTH-01 compliance: {compliant}/{probed} ({compliance_rate:.0}%, target >= {min:.0}%)"
             ),
         );
     }

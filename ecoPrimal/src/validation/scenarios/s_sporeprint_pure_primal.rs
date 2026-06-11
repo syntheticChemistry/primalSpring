@@ -232,11 +232,12 @@ fn phase_entity_resolution(v: &mut ValidationResult, root: &Path) {
     } else {
         100.0
     };
+    let min_resolution = crate::tolerances::ENTITY_RESOLUTION_MIN_PCT;
     v.check_bool(
         "entity:resolution_rate",
-        resolution_rate >= 90.0,
+        resolution_rate >= min_resolution,
         &format!(
-            "entity resolution: {resolvable_count}/{shortcode_count} ({resolution_rate:.1}%, need >= 90%)"
+            "entity resolution: {resolvable_count}/{shortcode_count} ({resolution_rate:.1}%, need >= {min_resolution:.0}%)"
         ),
     );
 }

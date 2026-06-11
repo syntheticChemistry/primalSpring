@@ -16,6 +16,8 @@
 
 use crate::composition::CompositionContext;
 use crate::ipc::server_bind::{BindError, BindMode, BoundTransport, bind_transport};
+use crate::primal_names;
+use crate::tolerances;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -34,28 +36,16 @@ pub const SCENARIO: Scenario = Scenario {
 
 /// The 4 primals that need TCP-only fallback for grapheneGate 13/13.
 const GRAPHENEGATE_BLOCKED: &[(&str, u16)] = &[
-    ("coralreef", 9730),
-    ("nestgate", 9500),
-    ("biomeos", 9800),
-    ("petaltongue", 9900),
+    (primal_names::CORALREEF, tolerances::TCP_FALLBACK_CORALREEF_PORT),
+    (primal_names::NESTGATE, tolerances::TCP_FALLBACK_NESTGATE_PORT),
+    (primal_names::BIOMEOS, tolerances::TCP_FALLBACK_BIOMEOS_PORT),
+    (primal_names::PETALTONGUE, tolerances::TCP_FALLBACK_PETALTONGUE_PORT),
 ];
 
-/// All 13 NUCLEUS primals should have port entries.
-const ALL_PRIMALS: &[&str] = &[
-    "beardog",
-    "songbird",
-    "squirrel",
-    "toadstool",
-    "nestgate",
-    "rhizocrypt",
-    "loamspine",
-    "coralreef",
-    "barracuda",
-    "skunkbat",
-    "biomeos",
-    "sweetgrass",
-    "petaltongue",
-];
+/// All 13 NUCLEUS primals should have port entries — derived from canonical roster.
+fn all_primals() -> Vec<&'static str> {
+    primal_names::Primal::ALL.iter().map(|p| p.slug()).collect()
+}
 
 /// Run the TCP-only fallback validation.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
@@ -99,7 +89,7 @@ fn phase_bind_mode(v: &mut ValidationResult) {
 }
 
 fn phase_port_resolution(v: &mut ValidationResult) {
-    for primal in ALL_PRIMALS {
+    for primal in all_primals() {
         let port = crate::tolerances::default_port_for(primal);
         v.check_bool(
             &format!("port:{primal}"),

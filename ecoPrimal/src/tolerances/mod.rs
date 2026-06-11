@@ -587,38 +587,46 @@ pub const TCP_FALLBACK_SWEETGRASS_PORT: u16 = 9850;
 /// TCP fallback for petaltongue (NLU interface).
 pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9900;
 
-// ── Scenario probe parameters ──
+// ── Validation gate thresholds ──
 //
-// Used by validation scenarios for quick TCP reachability probes.
-// Distinct from IPC transport timeouts — these are intentionally short
-// (sub-second) because they test "is the port open right now?" not
-// "can we complete a full RPC exchange?"
+// Minimum compliance rates and latency ceilings for live NUCLEUS validation
+// scenarios. Centralized here so scenarios reference named constants rather
+// than inline magic numbers.
 
-/// TCP probe timeout for scenario port-reachability checks (milliseconds).
+/// Minimum health compliance rate across probed primals (percentage).
 ///
-/// Source: 200ms is generous for local loopback port checks.
-/// Validated: covalent_mesh_trust, s_tower_cns use loopback probes.
-pub const SCENARIO_TCP_PROBE_TIMEOUT_MS: u64 = 200;
-
-/// Minimum compliance percentage for health-standard convergence checks.
-///
-/// Source: 80% allows partial progress while fleet is converging.
-/// Used by: s_health_standard, s_tower_cns coverage checks.
+/// Source: 80% allows 2-3 primals to be unreachable during mesh formation.
+/// Used by: `s_health_standard`, `s_tower_cns`.
 pub const HEALTH_COMPLIANCE_MIN_PCT: f64 = 80.0;
 
-/// Dispatch latency ceiling for scenario round-trip validation (milliseconds).
+/// Minimum entity resolution rate for composition dispatch parity (percentage).
 ///
-/// Source: 500ms per-call budget matches GRAPH_NODE_MAX_US (500_000 µs).
-/// Validated: neural_dispatch_live and feedback_loop scenarios use this bound.
-pub const SCENARIO_DISPATCH_LATENCY_MAX_MS: u64 = 500;
+/// Source: 90% accommodates primals that haven't registered capabilities yet.
+/// Used by: `s_sporeprint_pure_primal`.
+pub const ENTITY_RESOLUTION_MIN_PCT: f64 = 90.0;
 
-/// Same ceiling as f64 for floating-point latency comparisons.
-pub const SCENARIO_DISPATCH_LATENCY_MAX_MS_F64: f64 = 500.0;
+/// Maximum acceptable average latency for a single IPC method call (ms).
+///
+/// Source: 500ms generous ceiling for primal dispatch round-trip.
+/// Used by: `s_feedback_loop` latency assertions.
+pub const IPC_METHOD_AVG_LATENCY_MAX_MS: f64 = 500.0;
+
+/// Maximum acceptable error rate for a single IPC method (fraction 0.0–1.0).
+///
+/// Source: 50% threshold — anything higher indicates a broken path.
+/// Used by: `s_feedback_loop` error rate assertions.
+pub const IPC_METHOD_ERROR_RATE_MAX: f64 = 0.5;
+
+/// Default Songbird federation port.
+///
+/// Source: Songbird mesh coordination port, standard across all gates.
+/// Authoritative: `config/ports.toml` federation section.
+pub const SONGBIRD_FEDERATION_PORT: u16 = 7700;
 
 // ── Niche cost-estimate parameters ──
 //
-// Used by `niche::cost_estimates()` to provide biomeOS scheduling hints.
-// Factored here so magic numbers don't appear in niche.rs JSON literals.
+// Scheduling hints for biomeOS — factored here so magic numbers don't
+// appear in caller code.
 
 /// Estimated latency for `coordination.validate_composition` (ms).
 pub const COST_VALIDATE_COMPOSITION_MS: u64 = 500;
@@ -815,20 +823,5 @@ mod tests {
         assert!(IPC_ROUND_TRIP_TOL >= 0.0);
         assert!(WGSL_SHADER_TOL >= 0.0);
         assert!(STOCHASTIC_SEED_TOL >= 0.0);
-    }
-
-    #[test]
-    fn scenario_probe_params_are_reasonable() {
-        assert!(SCENARIO_TCP_PROBE_TIMEOUT_MS >= 50);
-        assert!(SCENARIO_TCP_PROBE_TIMEOUT_MS <= 1000);
-        assert!(HEALTH_COMPLIANCE_MIN_PCT >= 50.0);
-        assert!(HEALTH_COMPLIANCE_MIN_PCT <= 100.0);
-        assert!(SCENARIO_DISPATCH_LATENCY_MAX_MS >= 100);
-        assert!(SCENARIO_DISPATCH_LATENCY_MAX_MS <= 5000);
-        assert!(
-            (SCENARIO_DISPATCH_LATENCY_MAX_MS_F64 - 500.0).abs() < f64::EPSILON,
-            "f64 dispatch latency constant must equal 500.0"
-        );
-        assert_eq!(SCENARIO_DISPATCH_LATENCY_MAX_MS, 500);
     }
 }

@@ -629,13 +629,10 @@ pub(super) fn phase_dark_forest_invariants(v: &mut ValidationResult, ctx: &mut C
 }
 
 fn check_port_isolation(v: &mut ValidationResult) {
-    let songbird_port: u16 = crate::tolerances::FEDERATION_PORTS
-        .iter()
-        .find(|f| f.primal == "songbird" && f.profile == "nucleus01")
-        .map_or(7700, |f| f.port);
+    let songbird_port: u16 = crate::tolerances::SONGBIRD_FEDERATION_PORT;
     let federation_port_check = std::net::TcpStream::connect_timeout(
         &std::net::SocketAddr::from(([127, 0, 0, 1], songbird_port)),
-        std::time::Duration::from_millis(crate::tolerances::SCENARIO_TCP_PROBE_TIMEOUT_MS),
+        std::time::Duration::from_millis(200),
     );
     v.check_bool(
         "darkforest:federation_port_only",
@@ -654,7 +651,7 @@ fn check_port_isolation(v: &mut ValidationResult) {
     let any_non_federation_exposed = non_federation_ports.iter().any(|&port| {
         std::net::TcpStream::connect_timeout(
             &std::net::SocketAddr::from(([127, 0, 0, 1], port)),
-            std::time::Duration::from_millis(crate::tolerances::SCENARIO_TCP_PROBE_TIMEOUT_MS / 2),
+            std::time::Duration::from_millis(100),
         )
         .is_ok()
     });

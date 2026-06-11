@@ -1,19 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! primalSpring UniBin — the eukaryotic cell.
+//! primalSpring UniBin — NUCLEUS evolution arena.
 //!
-//! Single binary consolidating certification (guidestone organelle),
-//! validation scenarios (experiment ribosomes), and IPC server (cell membrane).
-//!
-//! Evolved from the prokaryotic era of separate binaries during the
-//! interstadial transition.
+//! Single binary consolidating certification, validation scenarios,
+//! and composition probing against live NUCLEUS deployments.
 
 #![forbid(unsafe_code)]
 
 mod cli;
 mod registry_lint;
-mod serve;
 mod validate_nucleus;
 mod validate_release;
 
@@ -50,7 +46,6 @@ fn main() {
             matches!(format, cli::OutputFormat::Json),
             provenance_dir.as_deref(),
         ),
-        cli::Commands::Serve => serve::run(),
         cli::Commands::Status => cmd_status(),
         cli::Commands::Checksums { ref output } => cmd_checksums(output),
         cli::Commands::Registry { ref check } => registry_lint::run(check),
@@ -218,7 +213,7 @@ fn write_provenance(
 
     let today = chrono_free_today();
     let provenance = format!(
-        "[provenance]\nprimal = \"primalspring\"\nversion = \"{}\"\ndate = \"{today}\"\nscenarios = {scenarios_run}\npassed = {}\nfailed = {}\nskipped = {}\n",
+        "[provenance]\narena = \"primalspring\"\nversion = \"{}\"\ndate = \"{today}\"\nscenarios = {scenarios_run}\npassed = {}\nfailed = {}\nskipped = {}\n",
         env!("CARGO_PKG_VERSION"),
         v.passed,
         v.failed,
@@ -235,15 +230,9 @@ fn write_provenance(
 fn cmd_status() {
     use primalspring::coordination::AtomicType;
     use primalspring::ipc::discover::{discover_capabilities_for, neural_api_healthy};
-    use primalspring::{PRIMAL_DOMAIN, PRIMAL_NAME};
 
-    println!("{PRIMAL_NAME} v{}", env!("CARGO_PKG_VERSION"));
-    println!("domain: {PRIMAL_DOMAIN}");
-    println!(
-        "local methods: {} | routed: {}",
-        primalspring::niche::LOCAL_CAPABILITIES.len(),
-        primalspring::niche::ROUTED_CAPABILITIES.len(),
-    );
+    println!("{} v{}", primalspring::NAME, env!("CARGO_PKG_VERSION"));
+    println!("role: NUCLEUS evolution arena");
 
     let neural_ok = neural_api_healthy();
     println!(
@@ -270,9 +259,7 @@ fn cmd_checksums(output: &str) {
     const TRACKED_FILES: &[&str] = &[
         "ecoPrimal/src/bin/primalspring/main.rs",
         "ecoPrimal/src/bin/primalspring/cli.rs",
-        "ecoPrimal/src/bin/primalspring/serve.rs",
         "ecoPrimal/src/bin/primalspring/registry_lint.rs",
-        "ecoPrimal/src/bin/primalspring_primal/main.rs",
         "ecoPrimal/src/certification/mod.rs",
         "ecoPrimal/src/composition/mod.rs",
         "ecoPrimal/src/validation/mod.rs",

@@ -33,7 +33,6 @@ fragments = ["tower_atomic", "node_atomic", "nest_atomic", "nucleus", "meta_tier
 
 # --- Phase 1: Verify biomeOS Neural API substrate ---
 
-
 [graph.bonding_policy]
 bond_type = "Ionic"
 trust_model = "MethodGate"
@@ -49,44 +48,11 @@ capabilities = ["graph.deploy", "graph.status", "graph.rollback", "capability.di
 
 # --- Phase 2: Verify primalSpring is running ---
 
-[[graph.nodes]]
-name = "verify_primalspring"
-binary = "primalspring_primal"
-order = 2
-required = true
-spawn = false
-depends_on = ["verify_biomeos"]
-health_method = "health.liveness"
-by_capability = "coordination"
-capabilities = ["composition.tower_health", "composition.node_health", "composition.nest_health", "composition.nucleus_health"]
-
-# --- Phase 3: Tower Atomic (security + discovery) ---
-
-[[graph.nodes]]
-name = "validate_tower"
-binary = "primalspring_primal"
-order = 3
-required = true
-spawn = false
-depends_on = ["verify_primalspring"]
-by_capability = "coordination"
-capabilities = ["composition.tower_health"]
-
 [graph.nodes.operation]
 method = "composition.tower_health"
 expect = "healthy"
 
 # --- Phase 4: Node Atomic (Tower + compute) ---
-
-[[graph.nodes]]
-name = "validate_node"
-binary = "primalspring_primal"
-order = 4
-required = true
-spawn = false
-depends_on = ["validate_tower"]
-by_capability = "coordination"
-capabilities = ["composition.node_health"]
 
 [graph.nodes.operation]
 method = "composition.node_health"
@@ -94,31 +60,11 @@ expect = "healthy"
 
 # --- Phase 5: Nest Atomic (Tower + NestGate + provenance trio) ---
 
-[[graph.nodes]]
-name = "validate_nest"
-binary = "primalspring_primal"
-order = 5
-required = true
-spawn = false
-depends_on = ["validate_tower"]
-by_capability = "coordination"
-capabilities = ["composition.nest_health"]
-
 [graph.nodes.operation]
 method = "composition.nest_health"
 expect = "healthy"
 
 # --- Phase 6: Full NUCLEUS (all capabilities) ---
-
-[[graph.nodes]]
-name = "validate_full_nucleus"
-binary = "primalspring_primal"
-order = 6
-required = true
-spawn = false
-depends_on = ["validate_node", "validate_nest"]
-by_capability = "coordination"
-capabilities = ["composition.nucleus_health"]
 
 [graph.nodes.operation]
 method = "composition.nucleus_health"
@@ -126,30 +72,10 @@ expect = "healthy"
 
 # --- Phase 7: Tower + Squirrel overlay ---
 
-[[graph.nodes]]
-name = "validate_tower_ai"
-binary = "primalspring_primal"
-order = 7
-required = false
-spawn = false
-depends_on = ["validate_tower"]
-by_capability = "coordination"
-capabilities = ["composition.tower_ai_health"]
-
 [graph.nodes.operation]
 method = "composition.tower_ai_health"
 
 # --- Phase 8: Graph structural validation ---
-
-[[graph.nodes]]
-name = "validate_atomic_graphs"
-binary = "primalspring_primal"
-order = 8
-required = true
-spawn = false
-depends_on = ["verify_primalspring"]
-by_capability = "coordination"
-capabilities = ["graph.validate"]
 
 [graph.nodes.operation]
 method = "graph.validate"

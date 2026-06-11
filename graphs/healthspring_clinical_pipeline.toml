@@ -102,21 +102,6 @@ bond_role = "enclave_storage"
 # Mediated by primalSpring bonding.propose + BearDog contract.
 # Metered and auditable — every crossing is logged.
 [[graph.nodes]]
-name = "ionic_bridge"
-binary = "primalspring_primal"
-order = 5
-required = true
-depends_on = ["nestgate_enclave"]
-health_method = "health"
-by_capability = "coordination"
-capabilities = ["bonding.propose", "bonding.accept"]
-
-# ── Node 6: Squirrel (clinical AI inference — Tower B) ────────────────
-# Receives de-identified aggregates from the ionic bridge.
-# Routes to clinical AI models for diagnostic suggestions,
-# pharmacology analysis, and genomic variant interpretation.
-# Input is NEVER raw patient data.
-[[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
 order = 6

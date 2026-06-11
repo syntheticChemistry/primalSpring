@@ -1,30 +1,31 @@
 # primalSpring Architecture
 
-## The Eukaryotic Cell Model
+## NUCLEUS Evolution Arena
 
-primalSpring has evolved from a prokaryotic ecosystem of individual
-experiment binaries into a eukaryotic UniBin — a single executable that
-contains all validation, certification, and coordination capabilities.
+primalSpring is a **NUCLEUS evolution arena** — it validates how primals
+compose, not domain science. It is NOT a primal: it does not serve on a
+socket, does not register with biomeOS, and does not appear in NUCLEUS
+compositions. It is a pure CLI tool + IPC client that probes live
+NUCLEUS deployments from the outside.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    primalspring UniBin                           │
-│                     (the eukaryotic cell)                        │
+│                     (NUCLEUS evolution arena)                    │
 │                                                                 │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐  │
-│  │  Certification    │  │  Validation      │  │  IPC Server  │  │
-│  │  Engine           │  │  Scenarios       │  │  (membrane)  │  │
-│  │  (mitochondria)   │  │  (ribosomes)     │  │              │  │
-│  │                   │  │                  │  │  JSON-RPC    │  │
-│  │  L0: Bare         │  │  57 absorbed     │  │  2.0 over    │  │
-│  │  L0.5: Seed       │  │  experiments     │  │  Unix socket │  │
+│  │  Certification    │  │  Validation      │  │  IPC Client  │  │
+│  │  Engine           │  │  Scenarios       │  │  (probing)   │  │
+│  │                   │  │                  │  │              │  │
+│  │  L0: Bare         │  │  57 absorbed     │  │  JSON-RPC    │  │
+│  │  L0.5: Seed       │  │  experiments     │  │  2.0 client  │  │
 │  │  L1: Discovery    │  │  across 10 tracks│  │              │  │
-│  │  L1.5: BTSP       │  │                  │  │  MethodGate  │  │
-│  │  L2: Health       │  │  Tier 1: Rust    │  │  (JH-0)      │  │
-│  │  L3: Parity       │  │  Tier 2: Live/   │  │              │  │
+│  │  L1.5: BTSP       │  │                  │  │  Composition │  │
+│  │  L2: Health       │  │  Tier 1: Rust    │  │  Context     │  │
+│  │  L3: Parity       │  │  Tier 2: Live    │  │              │  │
 │  │  L4: Pipeline     │  │                  │  │  capability  │  │
 │  │  L5: Bonding      │  │  ScenarioMeta    │  │  discovery   │  │
-│  │  L6: Crypto       │  │  + provenance    │  │  + routing   │  │
+│  │  L6: Crypto       │  │  + provenance    │  │  + probing   │  │
 │  │  L7: Cellular     │  │  + track/tier    │  │              │  │
 │  │  L8: Lifecycle    │  │  classification  │  │              │  │
 │  └──────────────────┘  └──────────────────┘  └──────────────┘  │
@@ -32,7 +33,7 @@ contains all validation, certification, and coordination capabilities.
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │                    primalspring library                    │   │
 │  │  composition · coordination · bonding · deploy · ipc      │   │
-│  │  validation · certification · niche · tolerances          │   │
+│  │  validation · certification · tolerances                  │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -51,7 +52,6 @@ primalspring validate --tier rust  # Tier 1 only (no IPC)
 primalspring validate --tier live  # Tier 2 only (requires primals)
 primalspring validate --list      # list all scenarios
 
-primalspring serve                # JSON-RPC 2.0 IPC server
 primalspring status               # composition health summary
 primalspring version              # version info
 ```
@@ -97,16 +97,14 @@ Runs with `biomeOS` orchestrating the full composition.
 | `bonding/` | `BondType`, `BondingPolicy`, `BtspEnforcer`, `TrustModel` |
 | `deploy/` | Graph parsing, validation, structure |
 | `ipc/` | JSON-RPC protocol, `PrimalClient`, `NeuralBridge`, discovery |
-| `ipc/method_gate.rs` | MethodGate (JH-0) pre-dispatch authorization |
-| `niche.rs` | Capability registration with biomeOS |
+| `ipc/method_gate.rs` | MethodGate (JH-0) validation (validates primals have auth wired) |
 | `tolerances.rs` | Named, centralized tolerance constants |
 
 ### Binaries
 
 | Binary | Purpose | Status |
 |--------|---------|--------|
-| `primalspring` | Eukaryotic UniBin (certify + validate + serve + status + version) | Active |
-| `primalspring_primal` | Legacy RPC server | Transition (→ `primalspring serve`) |
+| `primalspring_unibin` | Arena CLI (certify + validate + status + version + checksums + registry + release + nucleus) | Active |
 | `nucleus_launcher` | Rust NUCLEUS launcher (`--federation-port` for LAN mesh) | Active |
 
 ### Validation Tracks

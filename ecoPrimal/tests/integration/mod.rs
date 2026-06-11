@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//! Shared integration test infrastructure for the `primalspring_primal` server.
+//! Shared integration test infrastructure for primalSpring composition tests.
 
 #[cfg(feature = "stub-primals")]
 pub mod stub_harness;
@@ -8,7 +8,6 @@ pub mod stub_harness;
 use std::io::{BufRead, BufReader, Write};
 use std::os::unix::net::UnixStream;
 use std::path::{Path, PathBuf};
-use std::process::{Child, Command};
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
 
@@ -22,59 +21,6 @@ pub fn unique_socket_dir() -> PathBuf {
         .join("biomeos");
     std::fs::create_dir_all(&dir).expect("create temp biomeos dir");
     dir
-}
-
-pub struct ServerGuard {
-    pub child: Child,
-    pub socket_path: PathBuf,
-    pub runtime_dir: PathBuf,
-}
-
-impl Drop for ServerGuard {
-    fn drop(&mut self) {
-        let _ = self.child.kill();
-        let _ = self.child.wait();
-        let _ = std::fs::remove_file(&self.socket_path);
-        let _ = std::fs::remove_dir_all(&self.runtime_dir);
-    }
-}
-
-pub fn setup_server() -> (ServerGuard, PathBuf) {
-    let dir = unique_socket_dir();
-    let runtime_dir = dir.parent().expect("parent").to_owned();
-    let socket_path = dir.join("primalspring-default.sock");
-    let _ = std::fs::remove_file(&socket_path);
-
-    let binary = env!("CARGO_BIN_EXE_primalspring_primal");
-    let child = Command::new(binary)
-        .arg("server")
-        .env("XDG_RUNTIME_DIR", &runtime_dir)
-        .env("FAMILY_ID", "default")
-        .env("PRIMALSPRING_AUTH_MODE", "permissive")
-        .spawn()
-        .expect("spawn primalspring_primal server");
-
-    let start = std::time::Instant::now();
-    let timeout = Duration::from_secs(5);
-    while start.elapsed() < timeout {
-        if socket_path.exists() {
-            std::thread::sleep(Duration::from_millis(50));
-            break;
-        }
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    assert!(
-        socket_path.exists(),
-        "server socket did not appear at {}",
-        socket_path.display()
-    );
-
-    let guard = ServerGuard {
-        child,
-        socket_path: socket_path.clone(),
-        runtime_dir,
-    };
-    (guard, socket_path)
 }
 
 pub fn send_rpc(

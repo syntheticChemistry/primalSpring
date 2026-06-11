@@ -95,12 +95,11 @@ fn capability_to_primal_overlay_fallback() {
 #[test]
 fn compute_spawn_order_without_graph() {
     let harness = AtomicHarness::new(AtomicType::Tower);
-    let (order, overlay) = harness.compute_spawn_order().unwrap();
+    let (mut order, overlay) = harness.compute_spawn_order().unwrap();
     let mut expected = vec!["beardog", "skunkbat", "songbird"];
     expected.sort_unstable();
-    let mut got = order;
-    got.sort_unstable();
-    assert_eq!(got, expected);
+    order.sort_unstable();
+    assert_eq!(order, expected);
     assert!(overlay.is_empty(), "no overlay without graph");
 }
 

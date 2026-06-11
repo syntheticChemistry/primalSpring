@@ -34,7 +34,6 @@ proven_by = "ludoSpring (exp033, exp067, exp072)"
 
 # --- Phase 1: Tower Atomic ---
 
-
 [graph.bonding_policy]
 bond_type = "Ionic"
 trust_model = "MethodGate"
@@ -118,16 +117,6 @@ by_capability = "compute"
 capabilities = ["compute.health", "compute.execute"]
 
 # --- Phase 4: Validate gaming niche composition ---
-
-[[graph.nodes]]
-name = "validate_gaming_niche"
-binary = "primalspring_primal"
-order = 4
-required = true
-spawn = false
-depends_on = ["verify_ludospring", "verify_petaltongue"]
-by_capability = "coordination"
-capabilities = ["composition.gaming_niche_health"]
 
 [graph.nodes.operation]
 method = "composition.gaming_niche_health"

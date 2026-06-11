@@ -102,7 +102,7 @@ impl NeuralBridge {
 
         let candidates = [
             super::discover::socket_filename("neural-api", &family),
-            super::discover::socket_filename("biomeos", &family),
+            super::discover::socket_filename(crate::primal_names::BIOMEOS, &family),
         ];
 
         if let Ok(xdg) = std::env::var(crate::env_keys::XDG_RUNTIME_DIR) {

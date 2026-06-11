@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-10 (Wave 108: **grapheneGate 13/13 DEPLOYED AND ALIVE on Pixel 8a.** aarch64-unknown-linux-musl depot rebuilt on eastGate. coralReef required local rebuild from `b1ec1f4` (build-primal.sh shallow clone missed CR-TARPC-01 fix). All 13 processes confirmed running via ADB. JSON-RPC health probes: 11/13 direct response, 2/13 TCP alive (rhizocrypt, petaltongue use different protocols). `PRIMAL_BIND_MODE=tcp_only` adopted **13/13**. 5-gate ecosystem live: eastGate↔golgiBody↔ironGate+southGate + grapheneGate. 901 tests, 55 scenarios, zero clippy, zero debt.)
+> **Last updated**: 2026-06-11 (Wave 109: **guideStone deployment convergence.** grapheneGate 13/13 deployed (Wave 108). Cross-topology validation COMPLETE. Strategic shift to guideStone-grade identical deployments across all gates. 5 work streams: startup contract, build pipeline + gate profiles, health + orchestration, BTSP e2e, cascade + quorumSignal + rootPulse. FRAGO `wave109-guidestone-deployment-convergence`. 10 new convergence items tracked below.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -71,6 +71,70 @@ Exposed by live `--composition full` deploy to Pixel 8a (aarch64-musl, TCP-only)
 | ~~**BM-UDS-01**: biomeOS Neural API UDS fatal~~ | **biomeOS** | ~~**P2**~~ | **RESOLVED** (v4.20 d35c943e). All server bind paths check `PRIMAL_BIND_MODE=tcp_only` before UDS bind, skip entirely. grapheneGate → 13/13. |
 | ~~**NG-DOWNCAST-01**: nestGate `is_platform_constraint()` downcast~~ | **nestGate** | ~~**P3**~~ | **RESOLVED** (7c3fe9a6). `find_io_error()` walks full error chain. `NESTGATE_SOCKET=""` workaround removed. |
 | **PB-FORWARD-01**: deploy_pixel.sh port conflict | **cellMembrane** | **P3** | Phase 5 ADB port forwarding fails silently if local port is in use. Should pre-check or warn. |
+
+---
+
+## guideStone Deployment Convergence — Wave 109 (June 11, 2026)
+
+Exposed by grapheneGate 13/13 deploy (Wave 108 AAR). Deployment works but requires per-primal operator knowledge. The goal is functionally identical, guideStone-grade deployment on every gate.
+
+**FRAGO**: `wave109-guidestone-deployment-convergence`
+
+### Stream 1: Standard Primal Startup Contract — 5/6 RESOLVED
+
+Every primal converges on `$PRIMAL server --bind-mode $PRIMAL_BIND_MODE --port $PORT`. No per-primal case blocks. `PlatformCapabilities::detect()` lives in primalSpring's ipc crate (consumed by primals, not a primal itself).
+
+| ID | Primal | Severity | Description |
+|----|--------|----------|-------------|
+| **STARTUP-BD-01** | bearDog | **P2** | Auto-detect abstract socket from bind mode. Remove `--abstract` flag dependency. |
+| ~~STARTUP-NG-01~~ | nestGate | ~~P2~~ | **RESOLVED** `66126899` — HTTP default in server mode. |
+| ~~STARTUP-BM-01~~ | biomeOS | ~~P2~~ | **RESOLVED** `5311dd3f` — guideStone startup contract v4.22. |
+| ~~STARTUP-CR-01~~ | coralReef | ~~P2~~ | **RESOLVED** `7bc90e5` — `--port`, `--bind-mode` standard envelope. |
+| ~~STARTUP-BC-01~~ | barraCuda | ~~P2~~ | **RESOLVED** `5f0e55e5` — `--bind-mode / PRIMAL_BIND_MODE`. |
+| ~~STARTUP-SB-01~~ | skunkBat | ~~P2~~ | **RESOLVED** `00b3436` — `--bind-mode` v0.2.10. |
+
+> ~~**PLATFORM-DETECT-01**~~ (primalSpring ipc crate, not a primal): **RESOLVED** `b487dad` — `PlatformCapabilities::detect()` — SELinux, UDS, abstract socket probing.
+
+### Stream 3: Standard Health Endpoint — 4 resolved, 3 primals + launcher remaining
+
+| ID | Primal | Severity | Description |
+|----|--------|----------|-------------|
+| **HEALTH-RC-01** | rhizoCrypt | **P2** | Converge on JSON-RPC `{"method":"health"}`. Currently uses different protocol. |
+| **HEALTH-PT-01** | petalTongue | **P2** | Converge on JSON-RPC `{"method":"health"}`. Currently uses different protocol. |
+| **HEALTH-SB-01** | songBird | **P2** | Standard health endpoint + federation.enabled protocol gap (see flockGate impulse). |
+| ~~HEALTH-01 sweetGrass~~ | sweetGrass | ~~P2~~ | **RESOLVED** `a675425` — bare `health` alias + enriched response. |
+| ~~HEALTH-01 biomeOS~~ | biomeOS | ~~P2~~ | **RESOLVED** `5311dd3f` — converged in v4.22. |
+| ~~HEALTH-01 schema~~ | primalSpring | ~~P2~~ | **RESOLVED** `b487dad` — schema + `s_health_standard` validation scenario. |
+| ~~HEALTH-01 healthSpring~~ | healthSpring | ~~P2~~ | **RESOLVED** `c65f89a` — convergence + 12 unit tests. |
+
+> **LAUNCHER-01** (primalSpring infrastructure): `nucleus_launcher` cross-compiled for aarch64. **REMAINING.**
+
+### Stream 4: BTSP End-to-End — server-side ready, validation remaining
+
+| ID | Primal | Severity | Description |
+|----|--------|----------|-------------|
+| **BTSP-E2E-01** | bearDog (client) | **P2** | Validate full BTSP handshake from bearDog bootstrap keys through sweetGrass/petalTongue auth. |
+| ~~BTSP sweetGrass~~ | sweetGrass | ~~P2~~ | **RESOLVED** `a675425` — BEARDOG_SOCKET resolution, 88 BTSP tests. Server-side ready. |
+
+### Blurb Routing — Updated Primal Status (mid-wave)
+
+| Primal | Remaining Work | Status |
+|--------|---------------|--------|
+| **bearDog** | STARTUP-BD-01 + BTSP-E2E-01 | **ACTIVE** |
+| **rhizoCrypt** | HEALTH-RC-01 | **ACTIVE** |
+| **petalTongue** | HEALTH-PT-01 | **ACTIVE** |
+| **songBird** | HEALTH-SB-01 + federation gap | **ACTIVE** |
+| ~~nestGate~~ | Stream 1 resolved | **STANDBY** |
+| ~~biomeOS~~ | Stream 1 + HEALTH resolved | **STANDBY** |
+| ~~coralReef~~ | Stream 1 resolved | **STANDBY** |
+| ~~barraCuda~~ | Stream 1 resolved | **STANDBY** |
+| ~~skunkBat~~ | Stream 1 resolved | **STANDBY** |
+| ~~sweetGrass~~ | Stream 3 + 4 server-side resolved | **STANDBY** |
+| toadStool | — | **STANDBY** |
+| squirrel | — | **STANDBY** |
+| loamSpine | — | **STANDBY** |
+
+> **4 ACTIVE, 9 STANDBY.** Wave 109 evolution moved 6 primals from active to standby.
 
 ---
 

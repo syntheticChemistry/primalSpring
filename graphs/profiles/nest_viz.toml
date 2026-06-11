@@ -52,14 +52,3 @@ capabilities = [
     "viz.stream", "viz.query",
 ]
 
-[[graph.nodes]]
-name = "validate_nest_viz"
-binary = "primalspring_primal"
-order = 99
-required = false
-spawn = false
-depends_on = ["beardog", "songbird", "nestgate", "petaltongue"]
-health_method = "health.liveness"
-by_capability = "coordination"
-security_model = "tower_delegated"
-capabilities = ["composition.nest_viz_health"]

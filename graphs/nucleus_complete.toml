@@ -232,20 +232,3 @@ capabilities = [
 # Phase 5: Coordination validator
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.nodes]]
-name = "primalspring"
-binary = "primalspring_primal"
-order = 12
-required = true
-spawn = false
-depends_on = ["biomeos_neural_api", "beardog", "songbird", "nestgate", "toadstool", "squirrel"]
-health_method = "health.liveness"
-by_capability = "coordination"
-security_model = "tower_delegated"
-args = ["server"]
-capabilities = [
-    "coordination.validate_composition",
-    "coordination.deploy_atomic",
-    "composition.nucleus_health",
-    "nucleus.start", "nucleus.stop",
-]

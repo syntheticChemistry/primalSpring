@@ -7,7 +7,7 @@
 # skeleton and spring_validate_manifest.toml lists the parameters.
 #
 # Skeleton:
-#   1. verify_tower        — primalspring_primal checks Tower Atomic health
+#   1. verify_tower        — biomeOS checks Tower Atomic health
 #   2. verify_biomeos      — biomeOS orchestration alive
 #   3. start_{spring}      — spring binary launched, liveness checked
 #   4. validate_provenance — provenance chain integrity
@@ -39,21 +39,9 @@ encoding_standard = "wateringHole/ATTESTATION_ENCODING_STANDARD.md"
 composition_model = "validation"
 fragments = ["tower_atomic"]
 
-
 [graph.bonding_policy]
 bond_type = "Ionic"
 trust_model = "MethodGate"
-[[graph.nodes]]
-name = "verify_tower"
-binary = "primalspring_primal"
-order = 1
-required = true
-spawn = false
-health_method = "health.liveness"
-by_capability = "coordination"
-args = ["server"]
-capabilities = ["composition.tower_health"]
-
 [[graph.nodes]]
 name = "verify_biomeos"
 binary = "biomeos"
@@ -74,24 +62,3 @@ health_method = "health.liveness"
 by_capability = "{{domain}}"
 capabilities = "{{capabilities}}"
 
-[[graph.nodes]]
-name = "validate_provenance"
-binary = "primalspring_primal"
-order = 4
-required = true
-spawn = false
-depends_on = ["start_{{spring_name}}"]
-health_method = "health.liveness"
-by_capability = "coordination"
-capabilities = ["composition.provenance_health"]
-
-[[graph.nodes]]
-name = "validate_{{spring_name}}"
-binary = "primalspring_primal"
-order = 5
-required = true
-spawn = false
-depends_on = ["validate_provenance"]
-health_method = "health.liveness"
-by_capability = "coordination"
-capabilities = ["coordination.validate_composition"]

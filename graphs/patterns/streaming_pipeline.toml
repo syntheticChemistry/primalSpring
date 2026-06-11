@@ -46,23 +46,10 @@ capabilities = ["storage.retrieve", "storage.fetch"]
 
 # ── Node 3: primalSpring (transform) ───────────────────────────────────
 [[graph.nodes]]
-name = "primalspring"
-binary = "primalspring_primal"
-order = 3
-required = true
-spawn = false
-depends_on = ["nestgate"]
-health_method = "health.check"
-by_capability = "coordination"
-capabilities = ["coordination.transform", "pipeline.transform"]
-
-# ── Node 4: sweetGrass (attribute) ─────────────────────────────────────
-[[graph.nodes]]
 name = "sweetgrass"
 binary = "sweetgrass"
 order = 4
 required = false
-depends_on = ["primalspring"]
 health_method = "provenance.health"
 by_capability = "dag"
 capabilities = ["braid.create", "provenance.attribute"]

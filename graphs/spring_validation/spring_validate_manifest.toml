@@ -7,8 +7,8 @@
 #
 # Part 2: [[composition]] — composition subsystem validators (C1–C7 + infra).
 #   Each was formerly a separate TOML; now consolidated here as metadata.
-#   All share the same primal set {biomeos, primalspring_primal} with subsystem-
-#   specific check targets. biomeOS instantiates from template + this manifest.
+#   All share biomeOS as orchestration target with subsystem-specific check
+#   targets. biomeOS instantiates from template + this manifest.
 #
 # Genuinely unique validators kept as standalone files:
 #   - crypto_negative_validate.toml (rejection path / negative testing)
@@ -145,7 +145,7 @@ check_methods = [
 id = "C3"
 name = "composition_session_readiness_validate"
 description = "Validates C3: primal-layer readiness for session — substrate, Tower, capability routing"
-target_primal = "primalspring_primal"
+target_primal = "biomeos"
 check_methods = [
     "capability.discover",
     "capability.route",
@@ -155,7 +155,7 @@ check_methods = [
 id = "C4"
 name = "composition_game_science_readiness_validate"
 description = "Validates C4: primal-layer readiness for game science — substrate, Tower, capability routing"
-target_primal = "primalspring_primal"
+target_primal = "biomeos"
 check_methods = [
     "capability.discover",
     "capability.route",
@@ -188,7 +188,7 @@ check_methods = [
 id = "C7"
 name = "composition_product_readiness_validate"
 description = "Validates C7: full primal-layer readiness — substrate, Tower, owned overlays, capability routing"
-target_primal = "primalspring_primal"
+target_primal = "biomeos"
 check_methods = [
     "capability.discover",
     "capability.route",

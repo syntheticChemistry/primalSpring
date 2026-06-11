@@ -483,6 +483,71 @@ pub struct BondingResult {
     pub degradation_graceful: bool,
 }
 
+/// Gate specialization — the atomic composition a gate is optimized for.
+///
+/// Gates in the mesh have different hardware profiles and serve different
+/// roles. The specialization determines which bonding patterns are natural:
+///
+/// - A cold-storage NAS (Nest Atomic) serves data via ionic bonds to compute gates.
+/// - A GPU workstation (Node Atomic) accepts compute dispatch from bonded peers.
+/// - A full NUCLEUS runs everything and can serve as a coordination hub.
+///
+/// The Tower electron shell is present in all specializations, ensuring
+/// BTSP encryption is the default state regardless of gate role.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum GateSpecialization {
+    /// Full NUCLEUS (13/13 primals). Can serve any role.
+    FullNucleus,
+    /// Nest Atomic — optimized for storage + provenance.
+    /// Natural bond: serves `storage.*` capabilities to compute peers.
+    /// Example: westGate (76TB ZFS cold NAS).
+    ColdStorage,
+    /// Node Atomic — optimized for compute dispatch.
+    /// Natural bond: accepts `compute.*` workloads from bonded peers.
+    /// Example: northGate (RTX 5090, 96GB RAM).
+    ComputeHeavy,
+    /// Tower-only — minimal footprint, relay and crypto services only.
+    /// Natural bond: provides trust establishment and NAT traversal.
+    /// Example: lightweight cloud relays, mobile gates.
+    RelayOnly,
+}
+
+impl GateSpecialization {
+    /// Capabilities this specialization naturally exports to bonded peers.
+    #[must_use]
+    pub const fn natural_exports(self) -> &'static [&'static str] {
+        match self {
+            Self::FullNucleus => &["storage.*", "compute.*", "ai.*"],
+            Self::ColdStorage => &["storage.*", "content.*", "provenance.*"],
+            Self::ComputeHeavy => &["compute.*", "tensor.*", "shader.*"],
+            Self::RelayOnly => &["discovery.*", "relay.*", "crypto.*"],
+        }
+    }
+
+    /// Capabilities this specialization naturally consumes from bonded peers.
+    #[must_use]
+    pub const fn natural_imports(self) -> &'static [&'static str] {
+        match self {
+            Self::FullNucleus => &[],
+            Self::ColdStorage => &["compute.*", "ai.*"],
+            Self::ComputeHeavy => &["storage.*", "content.*"],
+            Self::RelayOnly => &["storage.*", "compute.*"],
+        }
+    }
+
+    /// Default bond type for cross-gate interactions with this specialization.
+    ///
+    /// Within a family (shared seed), covalent is default. Between families,
+    /// ionic provides metered contract-based access.
+    #[must_use]
+    pub const fn default_intra_family_bond(self) -> BondType {
+        match self {
+            Self::FullNucleus | Self::ComputeHeavy | Self::ColdStorage => BondType::Covalent,
+            Self::RelayOnly => BondType::Metallic,
+        }
+    }
+}
+
 /// Simple glob matching: supports trailing `*` wildcard (e.g. `"compute.*"` matches `"compute.submit"`).
 fn glob_match(pattern: &str, value: &str) -> bool {
     pattern

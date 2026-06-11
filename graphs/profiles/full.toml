@@ -38,14 +38,3 @@ encryption_tiers.meta = "tower_delegated"
 # Fragment meta_tier provides biomeos_neural_api, squirrel, petaltongue.
 # Delta: validation scaffold only.
 
-[[graph.nodes]]
-name = "validate_full"
-binary = "primalspring_primal"
-order = 99
-required = true
-spawn = false
-depends_on = ["beardog", "songbird", "toadstool", "barracuda", "coralreef", "nestgate"]
-health_method = "health.liveness"
-by_capability = "coordination"
-security_model = "tower_delegated"
-capabilities = ["composition.full_health"]

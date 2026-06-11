@@ -1,6 +1,6 @@
 # primalSpring
 
-**Experimentation spring for primals and their compositions in the ecoPrimals ecosystem.**
+**NUCLEUS evolution arena — validates primal compositions in the ecoPrimals ecosystem.**
 
 | | |
 |-|-|
@@ -8,7 +8,7 @@
 | **Version** | 0.9.31 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 931 total (884 lib + 10 integration + 4 ecosystem + 16 experiment + 17 doc) — 2 ignored |
+| **Tests** | 921 total (884 lib + 4 ecosystem + 16 experiment + 17 doc) — 2 ignored |
 | **Experiments** | 96 (21 tracks) — 52 validation scenarios (10 tracks) |
 | **Deploy Graphs** | 113 graph TOMLs (~80 deploy + 33 compositions) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
@@ -26,10 +26,14 @@
 
 ## What Is primalSpring?
 
-primalSpring is the spring that experiments with primals. Where hotSpring
-validates physics and wetSpring validates biology, primalSpring validates
-how primals compose — the atomic patterns, bonding models, mesh behaviors,
-and emergent properties that arise when primals work together.
+primalSpring is the **NUCLEUS evolution arena**. Where hotSpring validates
+physics and wetSpring validates biology, primalSpring validates how primals
+compose — the atomic patterns, bonding models, mesh behaviors, and emergent
+properties that arise when primals work together.
+
+**primalSpring is NOT a primal.** It does not serve on a socket, does not
+register with biomeOS, and does not appear in NUCLEUS compositions. It is
+a pure CLI tool + IPC client that validates compositions from the outside.
 
 Its "papers" are the atomics. Its "experiments" are composition patterns.
 Its validation targets are the compositions themselves.
@@ -56,7 +60,6 @@ primalSpring/
 │   │   ├── ipc/                   # JSON-RPC 2.0 client, discovery, capability, error, dispatch, extract, resilience, transport, tcp, methods, provenance, proptest, btsp_handshake
 │   │   ├── launcher/              # Primal binary discovery, spawn, profiles, socket nucleation (sync biomeOS port)
 │   │   ├── harness/               # Atomic test orchestration: spawn compositions, validate, RAII teardown
-│   │   ├── niche.rs               # BYOB niche self-knowledge (capabilities, semantic mappings, registration)
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)

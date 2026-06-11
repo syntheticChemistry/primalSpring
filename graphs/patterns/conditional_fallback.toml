@@ -58,14 +58,3 @@ condition = "toadstool_available"
 skip_if = "toadstool_unavailable"
 
 # ── Node 4: CPU fallback (when toadstool unavailable) ──────────────────
-[[graph.nodes]]
-name = "cpu_fallback"
-binary = "primalspring_primal"
-order = 4
-required = false
-spawn = false
-depends_on = ["beardog", "songbird"]
-health_method = "health.check"
-by_capability = "compute"
-capabilities = ["compute.cpu_fallback"]
-condition = "toadstool_unavailable"

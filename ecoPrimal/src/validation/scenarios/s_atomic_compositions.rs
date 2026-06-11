@@ -139,74 +139,78 @@ const COMPOSITION_GRAPHS: &[(&str, &str, &str)] = &[
     ),
 ];
 
-const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
-const NODE_PRIMALS: &[&str] = &[
-    "beardog",
-    "songbird",
-    "skunkbat",
-    "toadstool",
-    "barracuda",
-    "coralreef",
+use crate::primal_names::{self, Atomic, Primal};
+
+fn tower_primals() -> Vec<&'static str> {
+    Primal::for_atomic(Atomic::Tower).iter().map(|p| p.slug()).collect()
+}
+fn node_primals() -> Vec<&'static str> {
+    Primal::for_atomic(Atomic::Node).iter().map(|p| p.slug()).collect()
+}
+fn nest_primals() -> Vec<&'static str> {
+    Primal::for_atomic(Atomic::Nest).iter().map(|p| p.slug()).collect()
+}
+
+const META_PRIMALS: &[&str] = &[
+    primal_names::BIOMEOS,
+    primal_names::SQUIRREL,
+    primal_names::PETALTONGUE,
+    primal_names::SKUNKBAT,
 ];
-const NEST_PRIMALS: &[&str] = &[
-    "beardog",
-    "songbird",
-    "skunkbat",
-    "nestgate",
-    "rhizocrypt",
-    "loamspine",
-    "sweetgrass",
-];
-const META_PRIMALS: &[&str] = &["biomeos", "squirrel", "petaltongue", "skunkbat"];
 const ROOTPULSE_PRIMALS: &[&str] = &[
-    "rhizocrypt",
-    "beardog",
-    "nestgate",
-    "loamspine",
-    "sweetgrass",
-    "songbird",
+    primal_names::RHIZOCRYPT,
+    primal_names::BEARDOG,
+    primal_names::NESTGATE,
+    primal_names::LOAMSPINE,
+    primal_names::SWEETGRASS,
+    primal_names::SONGBIRD,
 ];
-const ECOSYSTEM_PRIMALS: &[&str] = &["biomeos", "songbird", "nestgate", "beardog"];
-const IMPULSE_PRIMALS: &[&str] = &["membrane", "beardog", "nestgate", "songbird"];
-const POTENTIAL_PRIMALS: &[&str] = &["membrane", "beardog", "nestgate", "songbird"];
+const ECOSYSTEM_PRIMALS: &[&str] = &[
+    primal_names::BIOMEOS,
+    primal_names::SONGBIRD,
+    primal_names::NESTGATE,
+    primal_names::BEARDOG,
+];
+const IMPULSE_PRIMALS: &[&str] = &["membrane", primal_names::BEARDOG, primal_names::NESTGATE, primal_names::SONGBIRD];
+const POTENTIAL_PRIMALS: &[&str] = &["membrane", primal_names::BEARDOG, primal_names::NESTGATE, primal_names::SONGBIRD];
 const SYNC_PRIMALS: &[&str] = &[
-    "biomeos",
-    "nestgate",
+    primal_names::BIOMEOS,
+    primal_names::NESTGATE,
     "membrane",
-    "songbird",
-    "rhizocrypt",
-    "loamspine",
-    "sweetgrass",
-    "beardog",
+    primal_names::SONGBIRD,
+    primal_names::RHIZOCRYPT,
+    primal_names::LOAMSPINE,
+    primal_names::SWEETGRASS,
+    primal_names::BEARDOG,
 ];
 const FOUNDATION_PRIMALS: &[&str] = &[
-    "biomeos",
+    primal_names::BIOMEOS,
     "beardog_primal",
     "songbird_primal",
-    "toadstool",
-    "barracuda",
-    "coralreef",
-    "nestgate",
-    "rhizocrypt",
-    "loamspine",
-    "sweetgrass",
-    "petaltongue",
-    "squirrel",
+    primal_names::TOADSTOOL,
+    primal_names::BARRACUDA,
+    primal_names::CORALREEF,
+    primal_names::NESTGATE,
+    primal_names::RHIZOCRYPT,
+    primal_names::LOAMSPINE,
+    primal_names::SWEETGRASS,
+    primal_names::PETALTONGUE,
+    primal_names::SQUIRREL,
 ];
 
-fn tier_primals(tier: &str) -> &'static [&'static str] {
+fn tier_primals(tier: &str) -> Vec<&'static str> {
     match tier {
-        "tower" => TOWER_PRIMALS,
-        "node" => NODE_PRIMALS,
-        "nest" => NEST_PRIMALS,
-        "meta" => META_PRIMALS,
-        "rootpulse" => ROOTPULSE_PRIMALS,
-        "ecosystem" => ECOSYSTEM_PRIMALS,
-        "impulse" => IMPULSE_PRIMALS,
-        "potential" => POTENTIAL_PRIMALS,
-        "sync" => SYNC_PRIMALS,
-        "foundation" => FOUNDATION_PRIMALS,
-        _ => &[],
+        "tower" => tower_primals(),
+        "node" => node_primals(),
+        "nest" => nest_primals(),
+        "meta" => META_PRIMALS.to_vec(),
+        "rootpulse" => ROOTPULSE_PRIMALS.to_vec(),
+        "ecosystem" => ECOSYSTEM_PRIMALS.to_vec(),
+        "impulse" => IMPULSE_PRIMALS.to_vec(),
+        "potential" => POTENTIAL_PRIMALS.to_vec(),
+        "sync" => SYNC_PRIMALS.to_vec(),
+        "foundation" => FOUNDATION_PRIMALS.to_vec(),
+        _ => vec![],
     }
 }
 

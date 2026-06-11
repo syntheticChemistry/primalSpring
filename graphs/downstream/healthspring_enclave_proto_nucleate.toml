@@ -294,18 +294,6 @@ capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
 # BearDog crypto.sign_contract (ionic bond acceptance).
 # ═══════════════════════════════════════════════════════════════
 
-[[graph.nodes]]
-name = "ionic_bridge"
-binary = "primalspring_primal"
-order = 20
-required = true
-spawn = false
-depends_on = ["songbird_a", "songbird_b"]
-health_method = "health.liveness"
-by_capability = "discovery"
-security_model = "tower_delegated"
-capabilities = ["bonding.propose", "bonding.accept"]
-
 [graph.nodes.ionic_policy]
 from_family = "${FAMILY_B}"
 to_family = "${FAMILY_A}"

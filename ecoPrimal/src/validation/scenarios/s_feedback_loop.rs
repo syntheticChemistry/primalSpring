@@ -91,7 +91,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     if let Some(avg) = dispatcher.avg_latency_ms("crypto.hash") {
         v.check_bool(
             "avg-latency-reasonable",
-            avg < crate::tolerances::SCENARIO_DISPATCH_LATENCY_MAX_MS_F64,
+            avg < crate::tolerances::IPC_METHOD_AVG_LATENCY_MAX_MS,
             &format!("avg crypto.hash latency: {avg:.1}ms"),
         );
     }
@@ -99,7 +99,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     if let Some(err_rate) = dispatcher.error_rate("crypto.hash") {
         v.check_bool(
             "error-rate-low",
-            err_rate < 0.5,
+            err_rate < crate::tolerances::IPC_METHOD_ERROR_RATE_MAX,
             &format!("crypto.hash error rate: {err_rate:.2}"),
         );
     }

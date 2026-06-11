@@ -70,16 +70,86 @@ pub enum Spring {
 }
 
 /// NUCLEUS atomic compositions — typed membership.
+///
+/// The atomic model mirrors subatomic structure:
+///
+/// - **Tower (electron shell)**: Present in every composition. Provides the
+///   BTSP encryption layer that makes all IPC encrypted-by-default. No data
+///   moves between primals — or between gates — without Tower authentication.
+///   This is what makes encryption the default state for both enclaved
+///   workloads and data at rest.
+///
+/// - **Node (proton)**: Compute capacity. Tower + compute trio. Processes
+///   workloads dispatched through bonded channels.
+///
+/// - **Nest (neutron)**: Storage + provenance. Tower + storage quartet.
+///   Serves content across bonded gates (e.g. westGate cold NAS serving
+///   data for cross-NUCLEUS workloads via ionic bonds).
+///
+/// - **Meta**: Orchestration + intelligence. Coordinates compositions,
+///   manages gate lifecycle, provides AI inference.
+///
+/// Because Tower is embedded in Node, Nest, and full NUCLEUS, the BearDog
+/// genetic encryption model propagates to every cross-gate bond. Covalent
+/// bonds share the family seed (full trust); ionic bonds provide metered,
+/// contract-based access — enabling gates like a cold-storage NAS to serve
+/// data securely to compute-heavy gates without shared secrets.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Atomic {
-    /// Electron: BearDog + Songbird + SkunkBat (trust boundary).
+    /// Electron shell: BearDog + Songbird + SkunkBat.
+    /// The trust boundary — BTSP encryption, mesh discovery, threat assessment.
+    /// Present in every other atomic as the encryption substrate.
     Tower,
-    /// Proton: Tower + ToadStool + BarraCuda + CoralReef (compute).
+    /// Proton: Tower + ToadStool + BarraCuda + CoralReef.
+    /// Compute capacity — dispatch, tensor math, shader compilation.
     Node,
-    /// Neutron: Tower + NestGate + RhizoCrypt + LoamSpine + SweetGrass (storage + lineage).
+    /// Neutron: Tower + NestGate + RhizoCrypt + LoamSpine + SweetGrass.
+    /// Storage + lineage — content persistence, DAG provenance, attribution.
+    /// Enables cross-gate data serving (e.g. cold NAS via ionic bonds).
     Nest,
-    /// Meta-tier: BiomeOS + Squirrel + PetalTongue (orchestration + AI + viz).
+    /// Meta-tier: BiomeOS + Squirrel + PetalTongue.
+    /// Orchestration, AI inference, visualization.
     Meta,
+}
+
+impl Atomic {
+    /// Whether this composition includes the Tower electron shell.
+    ///
+    /// Tower presence guarantees BTSP encryption on all IPC — this is what
+    /// makes encryption the default state rather than an opt-in.
+    #[must_use]
+    pub const fn has_tower(self) -> bool {
+        matches!(self, Self::Tower | Self::Node | Self::Nest)
+    }
+
+    /// Whether this composition can serve data to bonded peers.
+    ///
+    /// Nest and full NUCLEUS compositions carry storage primals that can
+    /// serve content-addressed blobs across ionic or covalent bonds.
+    #[must_use]
+    pub const fn can_serve_storage(self) -> bool {
+        matches!(self, Self::Nest)
+    }
+
+    /// Whether this composition carries compute dispatch capability.
+    #[must_use]
+    pub const fn can_dispatch_compute(self) -> bool {
+        matches!(self, Self::Node)
+    }
+
+    /// Minimum BTSP cipher guaranteed by this composition.
+    ///
+    /// Any composition with Tower enforces at minimum `ChaCha20Poly1305`
+    /// for cross-gate bonds. Meta-tier (without embedded Tower) relies on
+    /// the enclosing NUCLEUS for transport security.
+    #[must_use]
+    pub const fn min_encryption_guarantee(self) -> &'static str {
+        if self.has_tower() {
+            "ChaCha20Poly1305 (BTSP-enforced)"
+        } else {
+            "delegated to enclosing NUCLEUS Tower"
+        }
+    }
 }
 
 impl Primal {
@@ -454,5 +524,35 @@ mod tests {
         assert_eq!(LOAMSPINE, Primal::LoamSpine.slug());
         assert_eq!(SWEETGRASS, Primal::SweetGrass.slug());
         assert_eq!(SKUNKBAT, Primal::SkunkBat.slug());
+    }
+
+    #[test]
+    fn tower_is_embedded_in_node_and_nest() {
+        assert!(Atomic::Tower.has_tower());
+        assert!(Atomic::Node.has_tower());
+        assert!(Atomic::Nest.has_tower());
+        assert!(!Atomic::Meta.has_tower());
+    }
+
+    #[test]
+    fn nest_can_serve_storage() {
+        assert!(Atomic::Nest.can_serve_storage());
+        assert!(!Atomic::Node.can_serve_storage());
+        assert!(!Atomic::Tower.can_serve_storage());
+    }
+
+    #[test]
+    fn node_can_dispatch_compute() {
+        assert!(Atomic::Node.can_dispatch_compute());
+        assert!(!Atomic::Nest.can_dispatch_compute());
+        assert!(!Atomic::Tower.can_dispatch_compute());
+    }
+
+    #[test]
+    fn tower_guarantees_encryption() {
+        assert!(Atomic::Tower.min_encryption_guarantee().contains("ChaCha20"));
+        assert!(Atomic::Node.min_encryption_guarantee().contains("ChaCha20"));
+        assert!(Atomic::Nest.min_encryption_guarantee().contains("ChaCha20"));
+        assert!(Atomic::Meta.min_encryption_guarantee().contains("delegated"));
     }
 }
