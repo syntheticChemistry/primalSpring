@@ -75,6 +75,7 @@ pub mod s_full_nucleus;
 pub mod s_gate_failure;
 pub mod s_graphenegate_readiness;
 pub mod s_health_lifecycle_surface;
+pub mod s_health_standard;
 pub mod s_ionic_bond;
 pub mod s_loam_certificate_lifecycle;
 pub mod s_meta_tier_compositions;
@@ -153,6 +154,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_feedback_loop::SCENARIO);
     r.register(s_coordination_api::SCENARIO);
     r.register(s_health_lifecycle_surface::SCENARIO);
+    r.register(s_health_standard::SCENARIO);
     r.register(s_crypto_identity_surface::SCENARIO);
     r.register(s_cephalization::SCENARIO);
     r.register(s_tower_cns::SCENARIO);
@@ -170,7 +172,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 54;
+    const EXPECTED_SCENARIO_COUNT: usize = 55;
 
     #[test]
     fn registry_scenario_count() {
@@ -224,8 +226,8 @@ mod tests {
         // Pre-existing known failures in Rust-tier scenarios that predate this
         // meta-test. Track them explicitly so we notice when they get fixed
         // (update the list) or when new failures appear (fail loudly).
-        // Wave 108: all upstream blockers resolved + sporePrint cert pipeline fixed.
-        // Zero known debt across all 55 scenarios.
+        // Wave 109: all upstream blockers resolved. sporePrint cert pipeline
+        // shipped. grapheneGate 13/13 alive. Zero known debt.
         const KNOWN_DEBT: &[(&str, u32)] = &[];
 
         let r = build_registry();

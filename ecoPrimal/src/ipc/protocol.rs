@@ -141,6 +141,84 @@ pub mod error_codes {
     pub const NOT_READY: i64 = -32_002;
 }
 
+// ── HEALTH-01: Standard health response schema ─────────────────────────
+//
+// Target: all 13 NUCLEUS primals respond to `{"method":"health","id":1}`
+// with a response matching `HealthResponse`. The triad (liveness,
+// readiness, check) remains valid; HEALTH-01 adds a **plain `"health"`
+// alias** that returns the check-level response.
+//
+// Primals that already return `health.check` with these fields only need
+// to alias `"health"` → their existing check handler.
+
+/// Standard health response fields (HEALTH-01).
+///
+/// Every NUCLEUS primal's `"health"` and `"health.check"` response must
+/// include at minimum these four fields. Additional primal-specific fields
+/// (e.g. `services`, `active_sessions`) are allowed but not required.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HealthResponse {
+    /// Health status string: `"ok"`, `"healthy"`, `"degraded"`, or `"unhealthy"`.
+    pub status: String,
+    /// Primal slug (lowercase, e.g. `"beardog"`, `"biomeos"`).
+    pub primal: String,
+    /// Semantic version (from `CARGO_PKG_VERSION`).
+    pub version: String,
+    /// Seconds since primal startup.
+    pub uptime_s: u64,
+}
+
+impl HealthResponse {
+    /// Validate that a JSON value conforms to HEALTH-01 minimum fields.
+    ///
+    /// Returns a list of missing or invalid field names. Empty = compliant.
+    #[must_use]
+    pub fn validate(value: &serde_json::Value) -> Vec<&'static str> {
+        let mut missing = Vec::new();
+        if value
+            .get("status")
+            .and_then(serde_json::Value::as_str)
+            .is_none()
+        {
+            missing.push("status");
+        }
+        if value
+            .get("primal")
+            .and_then(serde_json::Value::as_str)
+            .is_none()
+        {
+            missing.push("primal");
+        }
+        if value
+            .get("version")
+            .and_then(serde_json::Value::as_str)
+            .is_none()
+        {
+            missing.push("version");
+        }
+        let has_uptime = value
+            .get("uptime_s")
+            .and_then(serde_json::Value::as_u64)
+            .is_some()
+            || value
+                .get("uptime_seconds")
+                .and_then(serde_json::Value::as_u64)
+                .is_some()
+            || value
+                .get("uptime_secs")
+                .and_then(serde_json::Value::as_u64)
+                .is_some();
+        if !has_uptime {
+            missing.push("uptime_s");
+        }
+        missing
+    }
+
+    /// Accepted status values for HEALTH-01.
+    pub const VALID_STATUSES: &[&str] =
+        &["ok", "healthy", "alive", "ready", "degraded", "unhealthy"];
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -199,6 +277,49 @@ mod tests {
         assert!(!resp.is_success());
         let err = resp.error.unwrap();
         assert_eq!(err.code, error_codes::METHOD_NOT_FOUND);
+    }
+
+    #[test]
+    fn health_response_validate_valid() {
+        let value = serde_json::json!({
+            "status": "healthy",
+            "primal": "beardog",
+            "version": "0.9.0",
+            "uptime_s": 42
+        });
+        assert!(HealthResponse::validate(&value).is_empty());
+    }
+
+    #[test]
+    fn health_response_validate_accepts_uptime_variants() {
+        let v1 = serde_json::json!({
+            "status": "ok", "primal": "biomeos", "version": "1.0.0",
+            "uptime_seconds": 120
+        });
+        assert!(HealthResponse::validate(&v1).is_empty());
+
+        let v2 = serde_json::json!({
+            "status": "ok", "primal": "nestgate", "version": "1.0.0",
+            "uptime_secs": 60
+        });
+        assert!(HealthResponse::validate(&v2).is_empty());
+    }
+
+    #[test]
+    fn health_response_validate_missing_fields() {
+        let value = serde_json::json!({ "status": "ok" });
+        let missing = HealthResponse::validate(&value);
+        assert!(missing.contains(&"primal"));
+        assert!(missing.contains(&"version"));
+        assert!(missing.contains(&"uptime_s"));
+        assert!(!missing.contains(&"status"));
+    }
+
+    #[test]
+    fn health_response_validate_empty() {
+        let value = serde_json::json!({});
+        let missing = HealthResponse::validate(&value);
+        assert_eq!(missing.len(), 4);
     }
 
     #[test]
