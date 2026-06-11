@@ -95,9 +95,9 @@ arch = "aarch64-unknown-linux-musl"
 transport = "tcp_only"
 topology = "standalone"
 primals = 13
-status = "ready"
-wave = 107
-notes = "13/13 structurally ready. CR-TARPC-01 (coralReef b1ec1f4), BM-UDS-01 (biomeOS v4.20), NG-DOWNCAST-01 (nestGate 7c3fe9a6) all RESOLVED. Awaiting aarch64 rebuild + deploy to validate on Pixel 8."
+status = "validated"
+wave = 108
+notes = "13/13 DEPLOYED AND ALIVE on Pixel 8a (Wave 108). aarch64 depot rebuilt on eastGate. coralReef required local rebuild (build-primal.sh shallow clone missed b1ec1f4). All 13 procs confirmed via pgrep + TCP probe + JSON-RPC health."
 
 [[cell]]
 id = "graphenegate-aarch64-fallback-standalone"
@@ -106,9 +106,9 @@ arch = "aarch64-unknown-linux-musl"
 transport = "tcp_fallback"
 topology = "standalone"
 primals = 13
-status = "ready"
-wave = 107
-notes = "deploy_pixel.sh exports PRIMAL_BIND_MODE=fallback. All 13 primals have bind-mode guards. Rebuild + deploy needed."
+status = "validated"
+wave = 108
+notes = "deploy_pixel.sh uses PRIMAL_BIND_MODE=tcp_only for constrained primals (nestgate, biomeos, coralreef) and fallback for others. Validated alongside tcp_only cell."
 
 # ── strandGate (x86_64, mesh peer, limited) ──────────────────────────────────
 
