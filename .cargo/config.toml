@@ -13,5 +13,13 @@ inherits = "release"
 strip = false
 debug = true
 
+# Cross-compile targets — aarch64 uses musl-cross linker.
+# Install: `apt install gcc-aarch64-linux-gnu` or musl-cross-make.
+# Build:   `cargo build --release --target aarch64-unknown-linux-musl`
+[target.aarch64-unknown-linux-musl]
+linker = "aarch64-linux-gnu-gcc"
+rustflags = ["-C", "target-feature=+crt-static"]
+
 [alias]
 coverage = "llvm-cov --workspace --ignore-filename-regex tests/"
+cross-aarch64 = "build --release --target aarch64-unknown-linux-musl --bin nucleus_launcher"

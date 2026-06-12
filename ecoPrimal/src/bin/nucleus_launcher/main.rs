@@ -39,6 +39,11 @@ struct Cli {
     /// Composition type: tower, node, nest, nucleus (full).
     #[arg(long, global = true, default_value = "nucleus")]
     composition: String,
+
+    /// Proto-nucleate manifest (TOML) — overrides family_id, composition, and
+    /// mesh parameters from a structured deployment template.
+    #[arg(long, global = true)]
+    manifest: Option<std::path::PathBuf>,
 }
 
 #[derive(Subcommand, Debug)]
@@ -108,6 +113,71 @@ fn resolve_atomic(composition: &str) -> AtomicType {
     }
 }
 
+/// Load proto-nucleate manifest and extract overridable fields.
+struct ManifestOverrides {
+    family_id: Option<String>,
+    composition: Option<String>,
+    federation_port: Option<u16>,
+    peers: Vec<String>,
+}
+
+fn load_manifest(path: &std::path::Path) -> ManifestOverrides {
+    let contents = match std::fs::read_to_string(path) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("error: cannot read manifest {}: {e}", path.display());
+            std::process::exit(1);
+        }
+    };
+    let parsed: toml::Value = match toml::from_str(&contents) {
+        Ok(v) => v,
+        Err(e) => {
+            eprintln!("error: cannot parse manifest {}: {e}", path.display());
+            std::process::exit(1);
+        }
+    };
+
+    let family_id = parsed
+        .get("gate")
+        .and_then(|g| g.get("family_id"))
+        .and_then(toml::Value::as_str)
+        .filter(|s| !s.is_empty())
+        .map(str::to_owned);
+
+    let composition = parsed
+        .get("composition")
+        .and_then(|c| c.get("atomic_type"))
+        .and_then(toml::Value::as_str)
+        .filter(|s| !s.is_empty())
+        .map(str::to_owned);
+
+    let federation_port = parsed
+        .get("mesh")
+        .and_then(|m| m.get("federation_port"))
+        .and_then(toml::Value::as_integer)
+        .and_then(|p| u16::try_from(p).ok());
+
+    let peers = parsed
+        .get("mesh")
+        .and_then(|m| m.get("peers"))
+        .and_then(toml::Value::as_array)
+        .map(|arr| {
+            arr.iter()
+                .filter_map(toml::Value::as_str)
+                .map(str::to_owned)
+                .collect()
+        })
+        .unwrap_or_default();
+
+    ManifestOverrides {
+        family_id,
+        composition,
+        federation_port,
+        peers,
+    }
+}
+
+#[expect(clippy::too_many_lines, reason = "CLI dispatch — single entry point")]
 fn main() {
     tracing_subscriber::fmt()
         .with_env_filter(
@@ -117,7 +187,14 @@ fn main() {
         .init();
 
     let cli = Cli::parse();
-    let atomic = resolve_atomic(&cli.composition);
+
+    let manifest_overrides = cli.manifest.as_deref().map(load_manifest);
+
+    let composition_str = manifest_overrides
+        .as_ref()
+        .and_then(|m| m.composition.as_deref())
+        .unwrap_or(&cli.composition);
+    let atomic = resolve_atomic(composition_str);
 
     match cli.command {
         Some(NucleusCommand::Stop) => {
@@ -182,10 +259,33 @@ fn main() {
                     false,
                 ),
             };
-            let family_id = cli.family_id.unwrap_or_else(|| {
-                eprintln!("error: --family-id is required for start");
-                std::process::exit(1);
+            let family_id = cli
+                .family_id
+                .or_else(|| {
+                    manifest_overrides
+                        .as_ref()
+                        .and_then(|m| m.family_id.clone())
+                })
+                .unwrap_or_else(|| {
+                    eprintln!("error: --family-id is required for start (or set in manifest)");
+                    std::process::exit(1);
+                });
+
+            let federation_port = federation_port.or_else(|| {
+                manifest_overrides
+                    .as_ref()
+                    .and_then(|m| m.federation_port)
             });
+
+            let mut merged_peers = peers;
+            if let Some(ref m) = manifest_overrides {
+                for p in &m.peers {
+                    if !merged_peers.contains(p) {
+                        merged_peers.push(p.clone());
+                    }
+                }
+            }
+
             let config = orchestrator::LaunchConfig {
                 family_id,
                 node_id: resolve_node_id(cli.node_id),
@@ -197,7 +297,7 @@ fn main() {
                 validate,
                 uds_only,
                 federation_port,
-                peers,
+                peers: merged_peers,
                 skip_preflight,
                 allow_degraded,
                 no_rollback,

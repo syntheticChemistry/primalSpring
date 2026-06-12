@@ -1,0 +1,153 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Proto-Nucleate Manifest — Template for Downstream NUCLEUS Compositions
+#
+# This manifest defines the parameters for instantiating a NUCLEUS deployment
+# on a new gate. Fill in gate-specific values and pass to:
+#   `nucleus_launcher start --manifest config/proto_nucleate.toml`
+#   `membrane gate.bootstrap --manifest config/proto_nucleate.toml`
+#
+# The manifest captures:
+#   1. Gate identity and hardware profile
+#   2. Composition selection (which atomic type)
+#   3. guideStone validation parameters (what must pass before promotion)
+#   4. Depot source and checksum verification
+#   5. Mesh enrollment parameters
+#
+# Copy this template, fill in [gate] values, and execute.
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+# ═══════════════════════════════════════════════════════════════
+# Gate Identity
+# ═══════════════════════════════════════════════════════════════
+
+[gate]
+# Unique gate identifier (required).
+name = ""
+# Hardware architecture (auto-detected if empty).
+# Valid: "x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"
+target_triple = ""
+# Gate specialization from GateSpecialization enum.
+# Valid: "FullNucleus", "ColdStorage", "ComputeHeavy", "EdgeLight", "WanRelay"
+specialization = "FullNucleus"
+# Human-readable hardware description.
+hardware = ""
+# Family identifier for socket/seed isolation.
+family_id = ""
+
+# ═══════════════════════════════════════════════════════════════
+# Composition Selection
+# ═══════════════════════════════════════════════════════════════
+
+[composition]
+# Atomic type: "nucleus" (13/13), "tower" (3), "nest" (7), "node" (4)
+atomic_type = "nucleus"
+# Deploy graph to execute (relative to graphs/).
+graph = "nucleus_complete.toml"
+# Transport mode: "uds_only" (default), "tcp_enabled" (standalone/debug)
+transport = "uds_only"
+
+# ═══════════════════════════════════════════════════════════════
+# Depot Source — Where to Fetch Binaries
+# ═══════════════════════════════════════════════════════════════
+
+[depot]
+# Primary source: "wan" (HTTPS from membrane.primals.eco), "lan" (git clone)
+source = "wan"
+# WAN depot URL (used when source = "wan").
+wan_url = "https://membrane.primals.eco/depot/"
+# Git remote for git-based fetch (used when source = "lan").
+git_remote = "ssh://git.primals.eco:2222/syntheticChemistry/plasmidBin.git"
+# Require BLAKE3 checksum verification before install.
+verify_checksums = true
+# Require provenance.toml match (commit + rustc version).
+verify_provenance = true
+
+# ═══════════════════════════════════════════════════════════════
+# guideStone Validation Gates — What Must Pass Before Promotion
+# ═══════════════════════════════════════════════════════════════
+
+[validation]
+# Minimum health responses before considering deployment successful.
+# Set to composition size: 13 for nucleus, 7 for nest, 3 for tower.
+required_health_count = 13
+# Maximum seconds to wait for all primals to report healthy.
+health_timeout_secs = 60
+# Run primalSpring validation scenario after startup.
+run_scenario = "s_gate_expansion_readiness"
+# guideStone properties that must hold (P1-P5).
+required_properties = ["P1", "P2", "P3", "P4"]
+# Allow degraded mode (partial health accepted at 50% threshold).
+allow_degraded = false
+
+[validation.checksums]
+# BLAKE3 dual-verify: git depot + WAN fetch must produce identical hashes.
+dual_verify = true
+# Path to checksums.toml (relative to depot root, per target triple).
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+# Run binaries in sandbox isolation before promoting to installed.
+enabled = true
+# Sandbox timeout per primal (seconds).
+timeout_secs = 30
+
+# ═══════════════════════════════════════════════════════════════
+# Mesh Enrollment — Songbird Federation Parameters
+# ═══════════════════════════════════════════════════════════════
+
+[mesh]
+# Whether to enroll this gate in the songBird federation mesh.
+enroll = true
+# Federation port (songBird listens on this for cross-gate mesh).
+federation_port = 7700
+# Known peers for initial mesh.init handshake.
+# Format: ["<host>:<port>", ...]
+peers = []
+# Auto-reconnect on peer loss (requires songBird f18aeb6b+).
+auto_reconnect = true
+# Backoff range for reconnect attempts (seconds).
+reconnect_backoff_min = 30
+reconnect_backoff_max = 300
+
+# ═══════════════════════════════════════════════════════════════
+# Examples — Fill for Common Gate Types
+# ═══════════════════════════════════════════════════════════════
+
+# westGate (Nest Atomic, cold storage):
+#   [gate]
+#   name = "westGate"
+#   specialization = "ColdStorage"
+#   hardware = "i7-4771, RTX 2070 Super, 76TB ZFS"
+#   family_id = "west-family"
+#   [composition]
+#   atomic_type = "nest"
+#   graph = "nest_atomic.toml"
+#   [validation]
+#   required_health_count = 7
+
+# northGate (Full NUCLEUS, compute heavy):
+#   [gate]
+#   name = "northGate"
+#   specialization = "ComputeHeavy"
+#   hardware = "Ryzen 9950X3D, RTX 5090 (32GB), 96GB DDR5"
+#   family_id = "north-family"
+#   [composition]
+#   atomic_type = "nucleus"
+#   graph = "nucleus_complete.toml"
+#   [validation]
+#   required_health_count = 13
+
+# grapheneGate (aarch64, edge):
+#   [gate]
+#   name = "grapheneGate"
+#   target_triple = "aarch64-unknown-linux-musl"
+#   specialization = "EdgeLight"
+#   hardware = "Pixel 7 Pro, Titan M2, GrapheneOS"
+#   family_id = "graphene-family"
+#   [composition]
+#   atomic_type = "nucleus"
+#   graph = "nucleus_complete.toml"
