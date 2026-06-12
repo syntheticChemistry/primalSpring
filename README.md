@@ -8,14 +8,14 @@
 | **Version** | 0.9.31 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 921 total (884 lib + 4 ecosystem + 16 experiment + 17 doc) — 2 ignored |
-| **Experiments** | 96 (21 tracks) — 52 validation scenarios (10 tracks) |
-| **Deploy Graphs** | 113 graph TOMLs (~80 deploy + 33 compositions) — fragment-first with `resolve = true` |
+| **Tests** | 1005 total (910 lib + 20 ecosystem + 16 experiment + 59 doc) |
+| **Experiments** | 96 (21 tracks) — 60 validation scenarios (11 tracks) |
+| **Deploy Graphs** | 100 graph TOMLs (~67 deploy + 33 compositions) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
-| **Mesh** | Live 2-gate (eastGate ↔ strandGate), 3-gate forming (ironGate). MeshTopology wired into CompositionContext. Cross-gate trust validated (6-phase). benchScale topology defined. BTSP trust chain as pass criterion (bearDog w137+). Live cross-gate capability.call Phase 4 wired. |
+| **Mesh** | Live 2-gate (eastGate ↔ strandGate), 5-gate forming (ironGate + northGate + westGate). MeshTopology wired into CompositionContext. Cross-gate trust validated (6-phase). benchScale topology defined. BTSP trust chain as pass criterion (bearDog w137+). Live cross-gate capability.call Phase 4 wired. grapheneGate BTSP TCP validated (Wave 110). |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
-| **Provenance** | All 93 experiments carry structured `with_provenance()` metadata |
+| **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`). `#![warn(missing_docs)]` enforced. |
 | **guideStone** | Level 8 — **live NUCLEUS** (certification engine absorbed as UniBin organelle) (13/13 BTSP authenticated), 41/41 bare, P3 CHECKSUMS (BLAKE3), seed provenance (Layer 0.5), BTSP default everywhere (Layer 1.5), cellular deployment (Layer 7, 9 cells BTSP-enforced), **46 cross-arch binaries (6 targets, Tier 1 39/39)**, **provenance-elevated checksums** (Layer 2: composite fingerprint + sweetGrass braids) |
 | **Unsafe** | Workspace-level `deny` via `[workspace.lints.rust]`, `#![forbid(unsafe_code)]` on all 88 crate roots — zero unsafe blocks |

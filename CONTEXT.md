@@ -21,7 +21,7 @@ protocols. The bonding models are the hypotheses.
 
 - **Composition validation library** — `CompositionContext`, routing,
   mesh topology, parity checks, liveness probing
-- **Certification engine** — guideStone L0-L8 (51 scenarios, 9-layer
+- **Certification engine** — guideStone L0-L8 (60 scenarios, 9-layer
   certification), `primalspring certify`
 - **Bonding proofs** — multi-gate bonding models, STUN tiers, ionic
   RPC, content distribution federation

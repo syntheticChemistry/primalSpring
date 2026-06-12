@@ -10,11 +10,11 @@ been consolidated upstream.
 
 | Item | Current |
 |------|---------|
-| **Wave** | 67 |
-| **Tests** | 835 (804 lib + 10 integration + 4 binary + 17 doc) |
-| **Experiments** | 93 (21 tracks) |
-| **Scenarios** | 57 (10 tracks, 3 tiers) |
-| **Compositions** | 33 graph TOMLs (32 Neural-API atomics + foundation_validation) |
+| **Wave** | 111 |
+| **Tests** | 1005 (910 lib + 20 ecosystem + 16 experiment + 59 doc) |
+| **Experiments** | 96 (21 tracks) |
+| **Scenarios** | 60 (11 tracks, 3 tiers) |
+| **Compositions** | 100 graph TOMLs (~67 deploy + 33 compositions) |
 | **Methods** | 490+ registered capability methods |
 
 ## See Also

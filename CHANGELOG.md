@@ -3,7 +3,47 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 22–82c: Stadial Entry / Glacial Shift (2026-06-06)
+## [Unreleased] — Waves 109–111: guideStone Convergence + Gate Expansion (2026-06-11)
+
+### Wave 111: Deep Debt Evolution + Divergence Pressure (June 11)
+- **Error modernization** — `RegistryError`, `SpawnError` (nucleus_launcher) evolved to
+  `#[derive(thiserror::Error)]` with `#[source]` chains. `DeployError` gained structured
+  variants: `FragmentDirNotFound`, `MissingDependency`, `DependencyCycle` (replaces String).
+  `StunConfigError::Parse` now wraps `#[source] toml::de::Error` with path context.
+- **Validation sink extraction** — `validation/mod.rs` (731 → 578 lines) with
+  `ValidationSink` trait + 4 implementations moved to `validation/sink.rs`.
+- **Iterator modernization** — `collect_composition_methods` rewritten as idiomatic
+  `flat_map`/`filter_map`/`collect` chain (zero mutable accumulators).
+- **Hardcoding elimination** — `ionic_rpc.rs` port fallback evolved from slug `"beardog"`
+  to `capability_to_primal("security")` lookup. `validate_nucleus.rs` socket resolution
+  deduplicated via `tolerances::biomeos_socket_dir()`. Launcher log paths use
+  `env_keys::BIOMEOS_SUBDIR`. pgrep patterns use `primal_names` constants.
+- **Tolerances refactored** — 834-line `tolerances/mod.rs` split into 6 focused
+  sub-modules (latency, parity, ipc, ports, platform, validation) with re-export facade.
+- **Gate expansion infrastructure** — `s_gate_expansion_readiness` validation scenario,
+  `graphs/nest_atomic.toml` deploy graph, `exports_satisfy()` glob-aware bonding.
+- **Wave 111 divergence pressure** — 3 new validation scenarios: `s_version_skew_detection`,
+  `s_cascade_provenance_match`, `s_wan_ipc_tolerance`.
+- **Test drift repair** — Fixed 4 pre-existing deploy test failures from post-primordial
+  reversal. Fixed `healthspring_clinical_pipeline.toml` invalid dependency.
+- **Codebase health** — 60 validation scenarios, 1005 tests, zero unsafe, zero production
+  mocks, zero TODO/FIXME, all deps pure Rust, no file > 720L, `-D warnings` clean.
+
+### Wave 110: guideStone Deployment Convergence (June 11)
+- **HEALTH-01 13/13 GRADUATED** — all NUCLEUS primals respond to standardized health schema.
+- **BTSP TCP E2E validated** — bearDog TCP handshake + encrypted JSON-RPC + grapheneGate
+  cross-arch scenario documented.
+- **Post-primordial reversal** — primalSpring is exclusively a NUCLEUS arena (not a primal).
+- **Federation root cause found + deployed** — songBird `enabled` semantics fix.
+- **Membrane parity achieved** — inner (Forgejo) = outer (GitHub) across all repos.
+
+### Wave 109: Startup Contract + BTSP Bootstrap (June 11)
+- **6/6 startup contract COMPLETE** — bearDog shipped `--bind-mode`, all 13 primals
+  standardized.
+- **BTSP cross-primal E2E** — real TCP handshake + encrypted JSON-RPC roundtrip.
+- **biomeOS v4.23** — Duration consolidation across 12 crates.
+
+## [0.9.31] — Waves 22–82c: Stadial Entry / Glacial Shift (2026-06-06)
 
 ### Wave 82c: Overwatch Shift — primalSpring Role Evolution (June 6)
 - **Role redefined**: primalSpring is now the experimentation spring for primals
