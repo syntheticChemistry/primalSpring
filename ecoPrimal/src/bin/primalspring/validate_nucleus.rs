@@ -33,7 +33,7 @@ const EXPECTED_PRIMALS: &[&str] = &[
     primal_names::PETALTONGUE,
 ];
 
-const FEDERATION_PORT: u16 = 7700;
+const FEDERATION_PORT: u16 = primalspring::tolerances::SONGBIRD_FEDERATION_PORT;
 const LAUNCH_TIMEOUT: Duration = Duration::from_secs(90);
 const SHUTDOWN_TIMEOUT: Duration = Duration::from_secs(15);
 

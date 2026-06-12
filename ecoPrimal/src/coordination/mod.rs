@@ -46,8 +46,13 @@ impl fmt::Display for AtomicType {
     }
 }
 
+/// Error returned when parsing an unknown atomic composition type.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[error("unknown composition type: {0} (valid: tower, node, nest, nucleus)")]
+pub struct UnknownAtomicType(pub String);
+
 impl FromStr for AtomicType {
-    type Err = String;
+    type Err = UnknownAtomicType;
 
     /// Accepts both lowercase CLI form (`tower`, `nucleus`, `full`) and
     /// PascalCase JSON-RPC form (`Tower`, `FullNucleus`, `Full`).
@@ -57,9 +62,7 @@ impl FromStr for AtomicType {
             "node" | "Node" => Ok(Self::Node),
             "nest" | "Nest" => Ok(Self::Nest),
             "nucleus" | "full" | "FullNucleus" | "Full" => Ok(Self::FullNucleus),
-            other => Err(format!(
-                "unknown composition type: {other} (valid: tower, node, nest, nucleus)"
-            )),
+            other => Err(UnknownAtomicType(other.to_owned())),
         }
     }
 }

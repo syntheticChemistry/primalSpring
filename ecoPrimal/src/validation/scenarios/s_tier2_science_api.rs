@@ -64,8 +64,7 @@ fn phase_toadstool_validate(v: &mut ValidationResult, ctx: &mut CompositionConte
             );
         }
         Err(e) => {
-            let is_method_missing = e.to_string().contains("-32601");
-            if is_method_missing {
+            if e.is_method_not_found() {
                 v.check_skip(
                     "toadstool_validate_shape",
                     "toadstool.validate not implemented on this build",
@@ -98,8 +97,7 @@ fn phase_toadstool_list(v: &mut ValidationResult, ctx: &mut CompositionContext) 
             );
         }
         Err(e) => {
-            let is_method_missing = e.to_string().contains("-32601");
-            if is_method_missing {
+            if e.is_method_not_found() {
                 v.check_skip(
                     "toadstool_list_workloads_shape",
                     "toadstool.list_workloads not implemented on this build",
@@ -137,8 +135,7 @@ fn phase_precision_route(v: &mut ValidationResult, ctx: &mut CompositionContext)
             );
         }
         Err(e) => {
-            let is_method_missing = e.to_string().contains("-32601");
-            if is_method_missing {
+            if e.is_method_not_found() {
                 v.check_skip(
                     "precision_route_shape",
                     "barracuda.precision.route not implemented on this build",
@@ -170,8 +167,7 @@ fn phase_spring_status(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) => {
-            let is_method_missing = e.to_string().contains("-32601");
-            if is_method_missing {
+            if e.is_method_not_found() {
                 v.check_skip(
                     "spring_status_shape",
                     "biomeos.spring_status not implemented on this build",

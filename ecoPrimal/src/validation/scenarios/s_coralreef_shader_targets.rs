@@ -142,8 +142,7 @@ fn phase_wgsl_compile(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) => {
-            let is_method_missing = e.to_string().contains("-32601");
-            if is_method_missing {
+            if e.is_method_not_found() {
                 v.check_skip("wgsl_compile_shape", "shader.compile.wgsl not implemented");
             } else {
                 v.check_skip(
@@ -171,8 +170,7 @@ fn phase_naga_ingest(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) => {
-            let is_method_missing = e.to_string().contains("-32601");
-            if is_method_missing {
+            if e.is_method_not_found() {
                 v.check_skip("naga_module_ingest", "compile.module not available");
             } else {
                 v.check_skip("naga_module_ingest", &format!("compile.module error: {e}"));

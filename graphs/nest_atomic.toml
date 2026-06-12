@@ -1,0 +1,167 @@
+# Source of truth: primalSpring/graphs/ (validation/structural format with metadata/fragments/bonding)
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Nest Atomic — 7-Primal Storage + Provenance Composition
+#
+# Tower (3) + Provenance Trio (3) + NestGate = 7 primals.
+# Zero TCP ports bound. All IPC over Unix domain sockets.
+#
+# Security model:
+#   All primals: BTSP authenticated (7/7 converged)
+#   Tower boundary (BearDog + Songbird + SkunkBat): BTSP enforced, full encryption
+#   Nest internal (same-host UDS): BTSP authenticated, HMAC-plain cipher
+#
+# Target hardware: westGate (i7-4771, RTX 2070 Super, 76TB ZFS cold storage)
+#
+# Usage:
+#   biomeos deploy --graph graphs/nest_atomic.toml
+
+[graph]
+name = "nest_atomic"
+description = "Nest Atomic: Tower + NestGate + Provenance Trio (7 primals, cold storage specialization)"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+tcp_ports = 0
+composition_model = "nest_atomic"
+fragments = ["tower_atomic", "nest_atomic"]
+target_specialization = "ColdStorage"
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+tower_to_nest = "metallic"
+nest_internal = "metallic"
+tower_to_external = "ionic"
+encryption_tiers.tower = "full"
+encryption_tiers.nest = "btsp_authenticated"
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 0: biomeOS Neural API — orchestration substrate
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "health.liveness"
+by_capability = "orchestration"
+security_model = "tower_delegated"
+capabilities = [
+    "graph.deploy",
+    "graph.status",
+    "capability.discover",
+    "capability.route",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 1: Tower Atomic — BTSP enforced security perimeter
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt", "crypto.sign",
+    "crypto.verify", "crypto.keygen", "crypto.identity",
+]
+
+[[graph.nodes]]
+name = "songbird"
+binary = "songbird"
+order = 2
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "discovery"
+security_model = "btsp"
+capabilities = [
+    "discovery.find_primals", "discovery.announce",
+    "network.tls_connect", "network.http_request",
+]
+
+[[graph.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+capabilities = [
+    "defense.anomaly_detect", "defense.rate_limit",
+    "defense.quarantine",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 2: NestGate — storage gateway
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "nestgate"
+binary = "nestgate"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "storage"
+security_model = "btsp"
+capabilities = [
+    "storage.store", "storage.retrieve",
+    "storage.store_blob", "storage.retrieve_blob",
+    "storage.retrieve_range", "storage.object.size",
+    "storage.namespaces.list",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Phase 3: Provenance Trio — DAG + Ledger + Attribution
+# ═══════════════════════════════════════════════════════════════
+
+[[graph.nodes]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 5
+required = true
+depends_on = ["beardog", "nestgate"]
+health_method = "health.liveness"
+by_capability = "dag"
+security_model = "btsp"
+capabilities = [
+    "dag.session.create", "dag.event.append",
+    "dag.dehydration.trigger", "dag.merkle.root",
+]
+
+[[graph.nodes]]
+name = "loamspine"
+binary = "loamspine"
+order = 6
+required = true
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+security_model = "btsp"
+capabilities = ["session.commit", "entry.append"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 7
+required = true
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+security_model = "btsp"
+capabilities = [
+    "braid.create", "provenance.lineage",
+    "provenance.graph",
+]

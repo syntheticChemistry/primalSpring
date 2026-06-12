@@ -53,8 +53,13 @@ impl std::fmt::Display for BondType {
     }
 }
 
+/// Error returned when parsing an unknown bond type string.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[error("unknown bond type: {0} (valid: covalent, metallic, ionic, weak, organo_metal_salt)")]
+pub struct UnknownBondType(pub String);
+
 impl std::str::FromStr for BondType {
-    type Err = String;
+    type Err = UnknownBondType;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -65,7 +70,7 @@ impl std::str::FromStr for BondType {
             "OrganoMetalSalt" | "organo_metal_salt" | "organometalsalt" => {
                 Ok(Self::OrganoMetalSalt)
             }
-            _ => Err(format!("unknown bond type: {s}")),
+            _ => Err(UnknownBondType(s.to_owned())),
         }
     }
 }
@@ -553,6 +558,20 @@ fn glob_match(pattern: &str, value: &str) -> bool {
     pattern
         .strip_suffix('*')
         .map_or_else(|| pattern == value, |prefix| value.starts_with(prefix))
+}
+
+/// Check if an export pattern satisfies an import requirement.
+///
+/// Both may use trailing `*` wildcards. Returns `true` if the domains overlap
+/// (e.g. export `"compute.*"` satisfies import `"compute.*"`).
+#[must_use]
+pub fn exports_satisfy(export: &str, import: &str) -> bool {
+    if export == import {
+        return true;
+    }
+    let export_prefix = export.strip_suffix('*').unwrap_or(export);
+    let import_prefix = import.strip_suffix('*').unwrap_or(import);
+    export_prefix.starts_with(import_prefix) || import_prefix.starts_with(export_prefix)
 }
 
 #[cfg(test)]

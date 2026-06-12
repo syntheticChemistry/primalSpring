@@ -59,15 +59,15 @@ impl CompositionTier {
             "crypto" | "security" | "auth" | "btsp" | "fido2" | "genetic" | "beacon"
             | "lineage" | "tls" | "birdsong" | "identity" | "discovery" | "network" | "stun"
             | "onion" | "tor" | "mesh" | "defense" | "recon" | "threat" => Self::Tower,
-            "compute" | "dispatch" | "toadstool" | "sovereign" | "tensor" | "math" | "ode"
-            | "ml" | "nautilus" | "rng" | "stats" | "linalg" | "spectral" | "noise" | "shader" => {
+            "compute" | "dispatch" | "sovereign" | "tensor" | "math" | "ode" | "ml"
+            | "nautilus" | "rng" | "stats" | "linalg" | "spectral" | "noise" | "shader" => {
                 Self::Node
             }
             "storage" | "content" | "secrets" | "dag" | "spine" | "event" | "entry" | "session"
             | "certificate" | "permanence" | "proof" | "braid" | "anchoring" | "provenance"
             | "attribution" | "contribution" | "anchor" => Self::Nest,
             "visualization" | "render" | "viz" | "interaction" | "proprioception" | "ai"
-            | "inference" | "squirrel" | "context" | "science" => Self::Meta,
+            | "inference" | "context" | "science" => Self::Meta,
             "orchestration" | "federation" | "biomeos" | "primal" | "signal" | "topology"
             | "route" | "health" | "capabilities" | "lifecycle" | "mcp" | "tool" | "tools"
             | "rpc" | "system" | "coordination" | "composition" | "graph" | "nucleus" => {

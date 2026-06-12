@@ -73,6 +73,7 @@ pub mod s_ecosystem_freshness;
 pub mod s_feedback_loop;
 pub mod s_ferment_transcript;
 pub mod s_full_nucleus;
+pub mod s_gate_expansion_readiness;
 pub mod s_gate_failure;
 pub mod s_graphenegate_readiness;
 pub mod s_health_lifecycle_surface;
@@ -163,6 +164,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_deployment_pipeline::SCENARIO);
     r.register(s_tcp_fallback::SCENARIO);
     r.register(s_btsp_cross_primal::SCENARIO);
+    r.register(s_gate_expansion_readiness::SCENARIO);
     r.register(s_graphenegate_readiness::SCENARIO);
     r
 }

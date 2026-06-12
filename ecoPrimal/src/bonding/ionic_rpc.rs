@@ -178,7 +178,7 @@ impl IonicBondClient {
         });
 
         let signed = crate::ipc::tcp::tcp_rpc(
-            &extract_host(&self.remote_peer.tcp_address),
+            extract_host(&self.remote_peer.tcp_address),
             extract_port(&self.remote_peer.tcp_address),
             "bonding.propose",
             &propose_params,
@@ -201,7 +201,7 @@ impl IonicBondClient {
         })?;
 
         let result = crate::ipc::tcp::tcp_rpc(
-            &extract_host(&self.remote_peer.tcp_address),
+            extract_host(&self.remote_peer.tcp_address),
             extract_port(&self.remote_peer.tcp_address),
             "bonding.terminate",
             &params,
@@ -228,7 +228,7 @@ impl IonicBondClient {
             })?;
 
         let result = crate::ipc::tcp::tcp_rpc(
-            &extract_host(&self.remote_peer.tcp_address),
+            extract_host(&self.remote_peer.tcp_address),
             extract_port(&self.remote_peer.tcp_address),
             "bonding.modify_scope",
             &params,
@@ -240,17 +240,17 @@ impl IonicBondClient {
     }
 }
 
-fn extract_host(addr: &str) -> String {
-    addr.rsplit_once(':')
-        .map_or_else(|| addr.to_owned(), |(host, _)| host.to_owned())
+fn extract_host(addr: &str) -> &str {
+    addr.rsplit_once(':').map_or(addr, |(host, _)| host)
 }
 
-/// Ionic bonds negotiate through BearDog on the remote gate, so the
-/// default port is BearDog's TCP fallback when the address has no port.
+/// Ionic bonds negotiate through the security provider on the remote gate,
+/// so the default port is the security provider's TCP fallback when the
+/// address has no explicit port.
 fn extract_port(addr: &str) -> u16 {
     addr.rsplit_once(':')
         .and_then(|(_, port)| port.parse().ok())
-        .unwrap_or(crate::tolerances::TCP_FALLBACK_BEARDOG_PORT)
+        .unwrap_or_else(|| crate::tolerances::default_port_for("beardog"))
 }
 
 #[cfg(test)]

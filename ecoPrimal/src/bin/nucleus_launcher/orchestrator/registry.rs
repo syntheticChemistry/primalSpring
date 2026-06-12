@@ -71,11 +71,11 @@ pub(super) fn build_capability_map() -> HashMap<String, Vec<String>> {
 
     if map.is_empty() {
         tracing::warn!("capability_registry.toml not found or empty — using static fallback");
-        for entry in tolerances::PORT_REGISTRY {
-            let caps = static_fallback_caps(entry.slug);
+        for slug in tolerances::all_primal_slugs() {
+            let caps = static_fallback_caps(slug);
             if !caps.is_empty() {
                 map.insert(
-                    entry.slug.to_owned(),
+                    slug.to_owned(),
                     caps.iter().map(|s| (*s).to_owned()).collect(),
                 );
             }
