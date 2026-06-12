@@ -54,6 +54,7 @@ pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
 pub mod s_btsp_cross_primal;
+pub mod s_cascade_provenance_match;
 pub mod s_cephalization;
 pub mod s_composition_dispatch_parity;
 pub mod s_composition_lifecycle;
@@ -103,6 +104,8 @@ pub mod s_tier2_science_api;
 pub mod s_token_federation;
 pub mod s_tower_atomic;
 pub mod s_tower_cns;
+pub mod s_version_skew_detection;
+pub mod s_wan_ipc_tolerance;
 pub mod s_zero_port_standard;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
@@ -166,6 +169,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_btsp_cross_primal::SCENARIO);
     r.register(s_gate_expansion_readiness::SCENARIO);
     r.register(s_graphenegate_readiness::SCENARIO);
+    r.register(s_version_skew_detection::SCENARIO);
+    r.register(s_cascade_provenance_match::SCENARIO);
+    r.register(s_wan_ipc_tolerance::SCENARIO);
     r
 }
 
@@ -176,7 +182,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 55;
+    const EXPECTED_SCENARIO_COUNT: usize = 60;
 
     #[test]
     fn registry_scenario_count() {
