@@ -482,15 +482,7 @@ fn resolve_socket_dir() -> PathBuf {
     if let Ok(dir) = std::env::var(primalspring::env_keys::BIOMEOS_SOCKET_DIR) {
         return PathBuf::from(dir);
     }
-    #[cfg(unix)]
-    {
-        let uid = nix::unistd::getuid();
-        PathBuf::from(format!("/run/user/{uid}/biomeos"))
-    }
-    #[cfg(not(unix))]
-    {
-        std::env::temp_dir().join(primalspring::env_keys::BIOMEOS_SUBDIR)
-    }
+    primalspring::tolerances::biomeos_socket_dir()
 }
 
 fn dirs_home() -> PathBuf {
@@ -526,8 +518,9 @@ fn list_sockets(dir: &Path) -> Vec<PathBuf> {
 fn kill_existing_nucleus() {
     #[cfg(unix)]
     {
+        let pattern = format!("{} nucleus", primalspring::primal_names::BIOMEOS);
         let output = Command::new("pgrep")
-            .args(["-f", "biomeos nucleus"])
+            .args(["-f", &pattern])
             .output();
         if let Ok(out) = output {
             let pids: Vec<u32> = String::from_utf8_lossy(&out.stdout)

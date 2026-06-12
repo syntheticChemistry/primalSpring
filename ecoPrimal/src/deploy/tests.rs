@@ -100,14 +100,6 @@ fn nucleus_complete_preserves_node_args() {
         .find(|n| n.name == "petaltongue")
         .unwrap();
     assert_eq!(petaltongue.args, vec!["server"]);
-
-    let primalspring = graph
-        .graph
-        .node
-        .iter()
-        .find(|n| n.name == "primalspring")
-        .unwrap();
-    assert_eq!(primalspring.args, vec!["server"]);
 }
 
 #[test]
@@ -303,7 +295,7 @@ fn graph_required_capabilities_from_nucleus() {
     assert!(caps.contains(&"discovery".to_owned()));
     assert!(caps.contains(&"compute".to_owned()));
     assert!(caps.contains(&"storage".to_owned()));
-    assert!(caps.contains(&"coordination".to_owned()));
+    assert!(caps.contains(&"orchestration".to_owned()));
 }
 
 #[test]

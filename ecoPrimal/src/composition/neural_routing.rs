@@ -145,23 +145,23 @@ pub struct NeuralRoutingTable {
 }
 
 fn collect_composition_methods(parsed: &toml::Value) -> Vec<String> {
-    let mut methods = Vec::new();
-    let Some(table) = parsed.as_table() else {
-        return methods;
-    };
-    let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) else {
-        return methods;
-    };
-    for (tier_name, tier_val) in compositions {
-        if let Some(sigs) = tier_val.get("compositions").and_then(|v| v.as_array()) {
-            for sig in sigs {
-                if let Some(name) = sig.get("name").and_then(|v| v.as_str()) {
-                    methods.push(format!("{tier_name}.{name}"));
-                }
-            }
-        }
-    }
-    methods
+    parsed
+        .as_table()
+        .and_then(|t| t.get("compositions"))
+        .and_then(toml::Value::as_table)
+        .into_iter()
+        .flat_map(|compositions| {
+            compositions.iter().flat_map(|(tier_name, tier_val)| {
+                tier_val
+                    .get("compositions")
+                    .and_then(toml::Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .filter_map(|sig| sig.get("name").and_then(toml::Value::as_str))
+                    .map(move |name| format!("{tier_name}.{name}"))
+            })
+        })
+        .collect()
 }
 
 type RouteIndices = (

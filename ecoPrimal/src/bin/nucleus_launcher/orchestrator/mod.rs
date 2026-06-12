@@ -291,7 +291,8 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                     healthy += 1;
                 } else {
                     let log_hint = PathBuf::from(tolerances::runtime_dir())
-                        .join("biomeos/logs")
+                        .join(primalspring::env_keys::BIOMEOS_SUBDIR)
+                        .join("logs")
                         .join(format!("{primal}.log"));
                     println!(
                         "\x1b[31mSOCKET ABSENT\x1b[0m  (check {})",
@@ -300,7 +301,8 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                 }
             } else {
                 let log_hint = PathBuf::from(tolerances::runtime_dir())
-                    .join("biomeos/logs")
+                    .join(primalspring::env_keys::BIOMEOS_SUBDIR)
+                    .join("logs")
                     .join(format!("{primal}.log"));
                 println!("\x1b[31mUNREACHABLE\x1b[0m  (check {})", log_hint.display());
             }

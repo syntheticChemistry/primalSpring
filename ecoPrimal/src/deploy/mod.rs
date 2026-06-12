@@ -55,12 +55,23 @@ pub enum DeployError {
         /// Underlying TOML deserialization error.
         source: toml::de::Error,
     },
-    /// Fragment resolution failed.
-    #[error("fragment resolution: {0}")]
-    FragmentResolution(String),
-    /// Topological ordering is impossible (cycle or missing node).
-    #[error("topological sort: {0}")]
-    TopologicalSort(String),
+    /// Fragment directory not found for a graph that declares fragments.
+    #[error("fragment resolution: graph {graph} declares fragments but no fragments/ directory found")]
+    FragmentDirNotFound {
+        /// Path to the graph that declares fragments.
+        graph: std::path::PathBuf,
+    },
+    /// Topological dependency missing — a node depends on a node not in the graph.
+    #[error("topological sort: node '{node}' depends on '{dependency}' which is not in the graph")]
+    MissingDependency {
+        /// The node with the unresolved dependency.
+        node: String,
+        /// The dependency that doesn't exist.
+        dependency: String,
+    },
+    /// Topological ordering detected a dependency cycle.
+    #[error("topological sort: graph contains a dependency cycle")]
+    DependencyCycle,
 }
 
 /// A parsed biomeOS deploy graph.
@@ -315,10 +326,9 @@ fn resolve_fragments(graph: &mut DeployGraph, graph_path: &Path) -> Result<(), D
     };
 
     let fragments_dir = find_fragments_dir(graph_path).ok_or_else(|| {
-        DeployError::FragmentResolution(format!(
-            "graph {} declares fragments but no fragments/ directory found",
-            graph_path.display()
-        ))
+        DeployError::FragmentDirNotFound {
+            graph: graph_path.to_owned(),
+        }
     })?;
 
     let mut base_nodes: Vec<GraphNode> = Vec::new();
@@ -416,10 +426,10 @@ pub fn topological_waves(graph: &DeployGraph) -> Result<Vec<Vec<String>>, Deploy
     for (i, node) in nodes.iter().enumerate() {
         for dep in &node.depends_on {
             let Some(&dep_idx) = name_set.get(dep.as_str()) else {
-                return Err(DeployError::TopologicalSort(format!(
-                    "node '{}' depends on '{}' which is not in the graph",
-                    node.name, dep
-                )));
+                return Err(DeployError::MissingDependency {
+                    node: node.name.clone(),
+                    dependency: dep.clone(),
+                });
             };
             in_degree[i] += 1;
             dependents[dep_idx].push(i);
@@ -456,9 +466,7 @@ pub fn topological_waves(graph: &DeployGraph) -> Result<Vec<Vec<String>>, Deploy
     }
 
     if processed != nodes.len() {
-        return Err(DeployError::TopologicalSort(
-            "graph contains a dependency cycle".to_owned(),
-        ));
+        return Err(DeployError::DependencyCycle);
     }
 
     Ok(waves)

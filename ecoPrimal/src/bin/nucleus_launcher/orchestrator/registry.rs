@@ -4,29 +4,21 @@
 //! Songbird registry seeding, capability mapping, health probes, and port resolution.
 
 use std::collections::HashMap;
-use std::fmt;
 use std::time::Duration;
 
 use primalspring::ipc::tcp::env_port;
 use primalspring::tolerances;
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub(super) enum RegistryError {
-    Unreachable(std::io::Error),
-    Io(std::io::Error),
+    #[error("songbird unreachable: {0}")]
+    Unreachable(#[source] std::io::Error),
+    #[error("I/O: {0}")]
+    Io(#[source] std::io::Error),
+    #[error("empty response")]
     EmptyResponse,
+    #[error("non-standard response: {0}")]
     BadResponse(String),
-}
-
-impl fmt::Display for RegistryError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Unreachable(e) => write!(f, "songbird unreachable: {e}"),
-            Self::Io(e) => write!(f, "I/O: {e}"),
-            Self::EmptyResponse => f.write_str("empty response"),
-            Self::BadResponse(s) => write!(f, "non-standard response: {s}"),
-        }
-    }
 }
 
 fn jsonrpc_payload(method: &str, params: &serde_json::Value, id: u64) -> String {

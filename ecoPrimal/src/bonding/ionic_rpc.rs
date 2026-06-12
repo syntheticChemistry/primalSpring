@@ -250,7 +250,10 @@ fn extract_host(addr: &str) -> &str {
 fn extract_port(addr: &str) -> u16 {
     addr.rsplit_once(':')
         .and_then(|(_, port)| port.parse().ok())
-        .unwrap_or_else(|| crate::tolerances::default_port_for("beardog"))
+        .unwrap_or_else(|| {
+            let slug = crate::composition::capability_to_primal("security");
+            crate::tolerances::default_port_for(slug)
+        })
 }
 
 #[cfg(test)]

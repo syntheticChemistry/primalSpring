@@ -222,8 +222,14 @@ pub enum StunConfigError {
     #[error("IO: {0}")]
     Io(#[from] std::io::Error),
     /// TOML parsing failed.
-    #[error("parse: {0}")]
-    Parse(String),
+    #[error("parse {path}: {source}")]
+    Parse {
+        /// Path that failed to parse.
+        path: std::path::PathBuf,
+        /// Underlying TOML deserialization error.
+        #[source]
+        source: toml::de::Error,
+    },
 }
 
 /// Load and parse the STUN multi-tier config from a TOML file.
@@ -233,8 +239,10 @@ pub enum StunConfigError {
 /// Returns [`StunConfigError`] if reading or parsing fails.
 pub fn load_stun_config(path: &Path) -> Result<StunTierConfig, StunConfigError> {
     let contents = std::fs::read_to_string(path)?;
-    let raw: RawStunConfig = toml::from_str(&contents)
-        .map_err(|e| StunConfigError::Parse(format!("{}: {e}", path.display())))?;
+    let raw: RawStunConfig = toml::from_str(&contents).map_err(|source| StunConfigError::Parse {
+        path: path.to_owned(),
+        source,
+    })?;
 
     Ok(StunTierConfig {
         enabled: raw.general.enabled,

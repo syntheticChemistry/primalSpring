@@ -3,7 +3,6 @@
 
 //! Process lifecycle — spawn, stop, seed resolution for NUCLEUS primals.
 
-use std::fmt;
 use std::path::PathBuf;
 
 use primalspring::env_keys;
@@ -12,23 +11,16 @@ use primalspring::tolerances;
 
 use super::LaunchConfig;
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub(super) enum SpawnError {
-    Discovery(primalspring::launcher::LaunchError),
+    #[error("{0}")]
+    Discovery(#[from] primalspring::launcher::LaunchError),
+    #[error("profile load: {0}")]
     ProfileLoad(primalspring::launcher::LaunchError),
-    Io(std::io::Error),
-    Spawn(std::io::Error),
-}
-
-impl fmt::Display for SpawnError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Discovery(e) => write!(f, "{e}"),
-            Self::ProfileLoad(e) => write!(f, "profile load: {e}"),
-            Self::Io(e) => write!(f, "{e}"),
-            Self::Spawn(e) => write!(f, "spawn failed: {e}"),
-        }
-    }
+    #[error("{0}")]
+    Io(#[source] std::io::Error),
+    #[error("spawn failed: {0}")]
+    Spawn(#[source] std::io::Error),
 }
 
 /// Resolve or generate a family seed.
