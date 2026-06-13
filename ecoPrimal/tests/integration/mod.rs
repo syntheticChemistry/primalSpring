@@ -2,6 +2,8 @@
 
 //! Shared integration test infrastructure for primalSpring composition tests.
 
+#![allow(dead_code)]
+
 #[cfg(feature = "stub-primals")]
 pub mod stub_harness;
 

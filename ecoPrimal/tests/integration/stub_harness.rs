@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#![allow(dead_code)]
+
 //! Stub primal harness — minimal JSON-RPC responders for contract testing.
 //!
 //! Provides lightweight in-process servers that speak the wire contract

@@ -15,10 +15,6 @@
 //!
 //! Run with `cargo test --ignored`.
 
-#[expect(
-    dead_code,
-    reason = "shared helpers — each test file uses a different subset"
-)]
 mod integration;
 
 use base64::Engine;

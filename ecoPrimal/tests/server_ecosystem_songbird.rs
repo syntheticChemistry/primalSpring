@@ -12,10 +12,6 @@
 
 //! Songbird IPC surface integration tests. Run with `cargo test --ignored`.
 
-#[expect(
-    dead_code,
-    reason = "shared helpers — each test file uses a different subset"
-)]
 mod integration;
 
 use integration::direct_rpc_call;
