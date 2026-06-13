@@ -593,11 +593,11 @@ fn main() {
     let songbird_port: u16 = std::env::var("REMOTE_SONGBIRD_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(tolerances::default_port_for("songbird"));
+        .unwrap_or_else(|| tolerances::default_port_for("songbird"));
     let beardog_port: u16 = std::env::var("REMOTE_BEARDOG_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(tolerances::default_port_for("beardog"));
+        .unwrap_or_else(|| tolerances::default_port_for("beardog"));
     let family_id = std::env::var("FAMILY_ID").unwrap_or_else(|_| "8ff3b864a4bc589a".to_owned());
 
     ValidationResult::new("primalSpring Exp073 — LAN Covalent Mesh")

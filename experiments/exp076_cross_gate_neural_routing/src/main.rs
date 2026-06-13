@@ -28,7 +28,7 @@ fn local_songbird_port() -> u16 {
     std::env::var("SONGBIRD_PORT")
         .ok()
         .and_then(|s| s.parse().ok())
-        .unwrap_or(primalspring::tolerances::default_port_for("songbird"))
+        .unwrap_or_else(|| primalspring::tolerances::default_port_for("songbird"))
 }
 
 fn phase_pixel_tower(v: &mut ValidationResult) {

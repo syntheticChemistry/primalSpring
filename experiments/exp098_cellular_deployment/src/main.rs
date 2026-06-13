@@ -22,6 +22,21 @@ const EXPECTED_CELLS: &[&str] = &[
 
 const NUCLEUS_REQUIRED: &[&str] = &["beardog", "songbird"];
 
+const BASE_PRIMALS: &[&str] = &[
+    "biomeos_neural_api",
+    "beardog",
+    "songbird",
+    "toadstool",
+    "barracuda",
+    "coralreef",
+    "nestgate",
+    "rhizocrypt",
+    "loamspine",
+    "sweetgrass",
+    "squirrel",
+    "petaltongue",
+];
+
 fn main() {
     ValidationResult::new("primalSpring Exp098 — Cellular Deployment")
         .with_provenance("exp098_cellular_deployment", "2026-05-09")
@@ -184,23 +199,9 @@ fn validate_cell_structure(v: &mut ValidationResult, base: &Path, cell_file: &st
         "validation health_check node present",
     );
 
-    let base_primals = [
-        "biomeos_neural_api",
-        "beardog",
-        "songbird",
-        "toadstool",
-        "barracuda",
-        "coralreef",
-        "nestgate",
-        "rhizocrypt",
-        "loamspine",
-        "sweetgrass",
-        "squirrel",
-        "petaltongue",
-    ];
     let domain_nodes: Vec<&String> = node_names
         .iter()
-        .filter(|n| !base_primals.contains(&n.as_str()) && !n.starts_with("validate"))
+        .filter(|n| !BASE_PRIMALS.contains(&n.as_str()) && !n.starts_with("validate"))
         .collect();
     v.check_bool(
         &format!("{stem}_has_domain_overlay"),

@@ -208,6 +208,85 @@ fn phase_biomeos_family_registry(v: &mut ValidationResult, host: &str, port: u16
     }
 }
 
+fn verify_lineage_correct_seed(
+    v: &mut ValidationResult,
+    host: &str,
+    port: u16,
+    our_family: &str,
+    peer_family: &str,
+    proof: &str,
+    lineage_seed: &str,
+) {
+    let verify_ok = tcp::tcp_rpc(
+        host,
+        port,
+        GENETIC_VERIFY_LINEAGE,
+        &serde_json::json!({
+            "our_family_id": our_family,
+            "peer_family_id": peer_family,
+            "lineage_proof": proof,
+            "lineage_seed": lineage_seed,
+        }),
+    );
+    match verify_ok {
+        Ok((result, _)) => {
+            let valid = result
+                .get("valid")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
+            v.check_bool(
+                "lineage chain valid",
+                valid,
+                "genetic.verify_lineage confirms chain integrity with correct seed",
+            );
+        }
+        Err(e) => v.check_skip(
+            "lineage verification",
+            &format!("genetic.verify_lineage failed: {e}"),
+        ),
+    }
+}
+
+fn verify_lineage_wrong_seed(
+    v: &mut ValidationResult,
+    host: &str,
+    port: u16,
+    our_family: &str,
+    peer_family: &str,
+    proof: &str,
+    wrong_seed: &str,
+) {
+    let verify_bad = tcp::tcp_rpc(
+        host,
+        port,
+        GENETIC_VERIFY_LINEAGE,
+        &serde_json::json!({
+            "our_family_id": our_family,
+            "peer_family_id": peer_family,
+            "lineage_proof": proof,
+            "lineage_seed": wrong_seed,
+        }),
+    );
+    match verify_bad {
+        Ok((result, _)) => {
+            let valid = result
+                .get("valid")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(true);
+            v.check_bool(
+                "wrong-seed rejected",
+                !valid,
+                "genetic.verify_lineage rejects proof with wrong lineage seed",
+            );
+        }
+        Err(_) => v.check_bool(
+            "wrong-seed rejected",
+            true,
+            "RPC error on wrong seed is acceptable rejection",
+        ),
+    }
+}
+
 /// Verify lineage chain integrity via generate-then-verify round-trip.
 fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port: u16) {
     use base64::Engine;
@@ -256,65 +335,10 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
         return;
     };
 
-    let verify_ok = tcp::tcp_rpc(
-        host,
-        port,
-        GENETIC_VERIFY_LINEAGE,
-        &serde_json::json!({
-            "our_family_id": our_family,
-            "peer_family_id": peer_family,
-            "lineage_proof": proof,
-            "lineage_seed": lineage_seed,
-        }),
-    );
-    match verify_ok {
-        Ok((result, _)) => {
-            let valid = result
-                .get("valid")
-                .and_then(serde_json::Value::as_bool)
-                .unwrap_or(false);
-            v.check_bool(
-                "lineage chain valid",
-                valid,
-                "genetic.verify_lineage confirms chain integrity with correct seed",
-            );
-        }
-        Err(e) => v.check_skip(
-            "lineage verification",
-            &format!("genetic.verify_lineage failed: {e}"),
-        ),
-    }
+    verify_lineage_correct_seed(v, host, port, our_family, peer_family, &proof, &lineage_seed);
 
     let wrong_seed = b64.encode(b"WRONG_seed_not_the_real_one!!!!");
-    let verify_bad = tcp::tcp_rpc(
-        host,
-        port,
-        GENETIC_VERIFY_LINEAGE,
-        &serde_json::json!({
-            "our_family_id": our_family,
-            "peer_family_id": peer_family,
-            "lineage_proof": proof,
-            "lineage_seed": wrong_seed,
-        }),
-    );
-    match verify_bad {
-        Ok((result, _)) => {
-            let valid = result
-                .get("valid")
-                .and_then(serde_json::Value::as_bool)
-                .unwrap_or(true);
-            v.check_bool(
-                "wrong-seed rejected",
-                !valid,
-                "genetic.verify_lineage rejects proof with wrong lineage seed",
-            );
-        }
-        Err(_) => v.check_bool(
-            "wrong-seed rejected",
-            true,
-            "RPC error on wrong seed is acceptable rejection",
-        ),
-    }
+    verify_lineage_wrong_seed(v, host, port, our_family, peer_family, &proof, &wrong_seed);
 
     let birdsong_lineage = tcp::tcp_rpc(
         host,

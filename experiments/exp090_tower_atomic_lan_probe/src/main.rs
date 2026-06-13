@@ -36,14 +36,14 @@ fn songbird_port() -> u16 {
     std::env::var("SONGBIRD_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(tolerances::default_port_for("songbird"))
+        .unwrap_or_else(|| tolerances::default_port_for("songbird"))
 }
 
 fn beardog_port() -> u16 {
     std::env::var("BEARDOG_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(tolerances::default_port_for("beardog"))
+        .unwrap_or_else(|| tolerances::default_port_for("beardog"))
 }
 
 fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {

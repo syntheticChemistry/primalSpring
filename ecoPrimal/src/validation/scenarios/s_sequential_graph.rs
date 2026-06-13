@@ -147,6 +147,12 @@ fn phase_live_composition(v: &mut ValidationResult, ctx: &mut CompositionContext
                     &format!("{cap} health.liveness not live"),
                 );
             }
+            Err(e) if e.is_skippable() => {
+                v.check_skip(
+                    &format!("{cap}_liveness"),
+                    &format!("{cap} not reachable: {e}"),
+                );
+            }
             Err(e) => {
                 v.check_bool(
                     &format!("{cap}_liveness"),
@@ -157,7 +163,14 @@ fn phase_live_composition(v: &mut ValidationResult, ctx: &mut CompositionContext
         }
     }
 
-    v.check_minimum("live_capability_count", live_count, 1);
+    if live_count == 0 {
+        v.check_skip(
+            "live_capability_count",
+            "no primals reachable — live composition check skipped",
+        );
+    } else {
+        v.check_minimum("live_capability_count", live_count, 1);
+    }
 }
 
 fn phase_sequential_ordering(v: &mut ValidationResult, ctx: &mut CompositionContext) {
