@@ -85,6 +85,28 @@ pub const TRIO_RETRY_ATTEMPTS: u32 = 2;
 /// spikes during session creation or DAG dehydration.
 pub const TRIO_RETRY_BASE_DELAY_MS: u64 = 100;
 
+// ── riboCipher Transport Signal ──
+
+/// riboCipher signal byte — clear tier (0xEC).
+///
+/// Sent as the first byte on every new IPC connection. Signals the accept
+/// loop that this connection speaks cleartext JSON-RPC. Part of the
+/// three-tier riboCipher transport signal standard (clear/mito/nuclear).
+pub const RIBOCIPHER_CLEAR: u8 = 0xEC;
+
+/// riboCipher protocol version byte.
+///
+/// Second byte after the signal tier byte. Version 0x01 indicates the
+/// initial riboCipher standard (Wave 111+).
+pub const RIBOCIPHER_VERSION: u8 = 0x01;
+
+/// Complete riboCipher clear-tier signal frame.
+///
+/// Sent immediately after connect, before any JSON-RPC or BTSP handshake.
+/// Servers that do not yet understand riboCipher will treat these as
+/// unknown bytes and either ignore or WARN (graceful degradation per spec).
+pub const RIBOCIPHER_CLEAR_SIGNAL: [u8; 2] = [RIBOCIPHER_CLEAR, RIBOCIPHER_VERSION];
+
 // ── TCP cross-gate transport timeouts ──
 
 /// TCP connect timeout for remote gate probing (seconds).

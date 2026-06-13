@@ -385,8 +385,13 @@ mod tests {
 
         let sock_path_clone = sock_path.clone();
         let server = std::thread::spawn(move || {
+            use std::io::Read;
             let (stream, _) = listener.accept().unwrap();
             let mut reader = BufReader::new(&stream);
+            let mut signal = [0u8; 2];
+            reader.read_exact(&mut signal).unwrap();
+            assert_eq!(signal, crate::tolerances::RIBOCIPHER_CLEAR_SIGNAL);
+
             let mut line = String::new();
             reader.read_line(&mut line).unwrap();
 

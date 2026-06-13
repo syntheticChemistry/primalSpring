@@ -76,6 +76,10 @@ pub fn tcp_rpc_with_timeout(
         )))
         .ok();
 
+    stream
+        .write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL)
+        .map_err(classify_io_error)?;
+
     let req = serde_json::json!({
         "jsonrpc": "2.0",
         "method": method,
@@ -150,6 +154,10 @@ pub fn http_json_rpc(
             tolerances::TCP_WRITE_TIMEOUT_SECS,
         )))
         .ok();
+
+    stream
+        .write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL)
+        .map_err(classify_io_error)?;
 
     let body = serde_json::json!({
         "jsonrpc": "2.0",

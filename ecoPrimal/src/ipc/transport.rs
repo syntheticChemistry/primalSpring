@@ -81,12 +81,15 @@ impl Transport {
     /// Returns [`IpcError`] on connection failure.
     pub fn unix(path: &Path) -> Result<Self, IpcError> {
         let timeout = Duration::from_secs(tolerances::IPC_SOCKET_TIMEOUT_SECS);
-        let stream = UnixStream::connect(path).map_err(classify_io_error)?;
+        let mut stream = UnixStream::connect(path).map_err(classify_io_error)?;
         stream
             .set_read_timeout(Some(timeout))
             .map_err(classify_io_error)?;
         stream
             .set_write_timeout(Some(timeout))
+            .map_err(classify_io_error)?;
+        stream
+            .write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL)
             .map_err(classify_io_error)?;
         Ok(Self {
             inner: TransportInner::Unix(BufReader::new(stream)),
@@ -109,6 +112,9 @@ impl Transport {
             .map_err(classify_io_error)?;
         stream
             .set_write_timeout(Some(handshake_timeout))
+            .map_err(classify_io_error)?;
+        stream
+            .write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL)
             .map_err(classify_io_error)?;
 
         let handshake = super::btsp_handshake::client_handshake(&mut stream, family_seed)?;
@@ -155,12 +161,15 @@ impl Transport {
     /// Returns [`IpcError`] on connection failure.
     pub fn tcp(addr: &str) -> Result<Self, IpcError> {
         let timeout = Duration::from_secs(tolerances::IPC_SOCKET_TIMEOUT_SECS);
-        let stream = TcpStream::connect(addr).map_err(classify_io_error)?;
+        let mut stream = TcpStream::connect(addr).map_err(classify_io_error)?;
         stream
             .set_read_timeout(Some(timeout))
             .map_err(classify_io_error)?;
         stream
             .set_write_timeout(Some(timeout))
+            .map_err(classify_io_error)?;
+        stream
+            .write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL)
             .map_err(classify_io_error)?;
         Ok(Self {
             inner: TransportInner::Tcp(BufReader::new(stream)),
@@ -374,8 +383,14 @@ mod tests {
         let sock_clone = sock.clone();
 
         let server = std::thread::spawn(move || {
+            use std::io::Read;
             let (stream, _) = listener.accept().unwrap();
             let mut reader = std::io::BufReader::new(&stream);
+            // Consume riboCipher signal prefix (2 bytes).
+            let mut signal = [0u8; 2];
+            reader.read_exact(&mut signal).unwrap();
+            assert_eq!(signal, crate::tolerances::RIBOCIPHER_CLEAR_SIGNAL);
+
             let mut line = String::new();
             reader.read_line(&mut line).unwrap();
 

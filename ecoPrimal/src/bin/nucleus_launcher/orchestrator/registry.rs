@@ -137,6 +137,9 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
     }
 
     let mut s = stream;
+    if s.write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL).is_err() {
+        return false;
+    }
     if s.write_all(payload.as_bytes()).is_err() {
         return false;
     }
@@ -192,7 +195,10 @@ pub(super) fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) ->
     let _ = stream.set_write_timeout(Some(timeout));
     let mut s = stream;
 
-    if s.write_all(payload.as_bytes()).is_ok() && s.write_all(b"\n").is_ok() {
+    if s.write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL).is_ok()
+        && s.write_all(payload.as_bytes()).is_ok()
+        && s.write_all(b"\n").is_ok()
+    {
         let mut buf = [0u8; 4096];
         if let Ok(n) = s.read(&mut buf) {
             if n > 0 {
@@ -221,6 +227,8 @@ pub(super) fn register_with_songbird(port: u16, payload: &str) -> Result<(), Reg
     let _ = stream.set_write_timeout(Some(timeout));
 
     let mut s = stream;
+    s.write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL)
+        .map_err(RegistryError::Io)?;
     s.write_all(payload.as_bytes()).map_err(RegistryError::Io)?;
     s.write_all(b"\n").map_err(RegistryError::Io)?;
 
@@ -251,6 +259,9 @@ fn send_uds_rpc(socket: &std::path::Path, payload: &str) -> Result<String, Regis
     let _ = stream.set_read_timeout(Some(timeout));
     let _ = stream.set_write_timeout(Some(timeout));
 
+    stream
+        .write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL)
+        .map_err(RegistryError::Io)?;
     stream
         .write_all(payload.as_bytes())
         .map_err(RegistryError::Io)?;
