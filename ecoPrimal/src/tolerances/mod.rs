@@ -116,51 +116,33 @@ mod tests {
     }
 
     #[test]
-    fn tcp_fallback_ports_are_in_valid_range() {
-        for port in [
-            TCP_FALLBACK_BEARDOG_PORT,
-            TCP_FALLBACK_SONGBIRD_PORT,
-            TCP_FALLBACK_SQUIRREL_PORT,
-            TCP_FALLBACK_TOADSTOOL_PORT,
-            TCP_FALLBACK_NESTGATE_PORT,
-            TCP_FALLBACK_RHIZOCRYPT_PORT,
-            TCP_FALLBACK_LOAMSPINE_PORT,
-            TCP_FALLBACK_CORALREEF_PORT,
-            TCP_FALLBACK_BARRACUDA_PORT,
-            TCP_FALLBACK_SKUNKBAT_PORT,
-            TCP_FALLBACK_BIOMEOS_PORT,
-            TCP_FALLBACK_SWEETGRASS_PORT,
-            TCP_FALLBACK_PETALTONGUE_PORT,
-        ] {
-            assert!(port >= 1024, "port {port} below unprivileged range");
-            assert!(port <= 49151, "port {port} above registered range");
+    fn port_registry_entries_are_in_valid_range() {
+        for entry in PORT_REGISTRY {
+            assert!(
+                entry.port >= 1024,
+                "{}: port {} below unprivileged range",
+                entry.slug,
+                entry.port
+            );
+            assert!(
+                entry.port <= 49151,
+                "{}: port {} above registered range",
+                entry.slug,
+                entry.port
+            );
         }
     }
 
     #[test]
-    fn tcp_fallback_ports_are_unique() {
-        let ports = [
-            TCP_FALLBACK_BEARDOG_PORT,
-            TCP_FALLBACK_SONGBIRD_PORT,
-            TCP_FALLBACK_SQUIRREL_PORT,
-            TCP_FALLBACK_TOADSTOOL_PORT,
-            TCP_FALLBACK_NESTGATE_PORT,
-            TCP_FALLBACK_RHIZOCRYPT_PORT,
-            TCP_FALLBACK_LOAMSPINE_PORT,
-            TCP_FALLBACK_CORALREEF_PORT,
-            TCP_FALLBACK_BARRACUDA_PORT,
-            TCP_FALLBACK_SKUNKBAT_PORT,
-            TCP_FALLBACK_BIOMEOS_PORT,
-            TCP_FALLBACK_SWEETGRASS_PORT,
-            TCP_FALLBACK_PETALTONGUE_PORT,
-        ];
-        let mut sorted = ports.to_vec();
+    fn port_registry_entries_are_unique() {
+        let ports: Vec<u16> = PORT_REGISTRY.iter().map(|e| e.port).collect();
+        let mut sorted = ports.clone();
         sorted.sort_unstable();
         sorted.dedup();
         assert_eq!(
             ports.len(),
             sorted.len(),
-            "TCP fallback ports must be unique"
+            "PORT_REGISTRY ports must be unique"
         );
     }
 

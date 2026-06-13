@@ -20,8 +20,8 @@ use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
 fn probe_gate(host: &str) -> (bool, bool, Duration) {
-    let beardog_port = env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
-    let songbird_port = env_port("SONGBIRD_PORT", tolerances::TCP_FALLBACK_SONGBIRD_PORT);
+    let beardog_port = env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
+    let songbird_port = env_port("SONGBIRD_PORT", tolerances::default_port_for("songbird"));
 
     let bd = tcp_rpc(
         host,
@@ -50,7 +50,7 @@ fn probe_gate(host: &str) -> (bool, bool, Duration) {
 }
 
 fn measure_latency_pair(host_a: &str, host_b: &str) -> (Duration, Duration) {
-    let beardog_port = env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
+    let beardog_port = env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
 
     let a_to_b = tcp_rpc(
         host_b,
@@ -157,8 +157,8 @@ fn run_partial_mesh_scenario(v: &mut ValidationResult, live_gates: &[&str], enab
         return;
     }
     v.section("Phase 4: Partial mesh reachability");
-    let biomeos_port = env_port("BIOMEOS_PORT", tolerances::TCP_FALLBACK_BIOMEOS_PORT);
-    let nestgate_port = env_port("NESTGATE_PORT", tolerances::TCP_FALLBACK_NESTGATE_PORT);
+    let biomeos_port = env_port("BIOMEOS_PORT", tolerances::default_port_for("biomeos"));
+    let nestgate_port = env_port("NESTGATE_PORT", tolerances::default_port_for("nestgate"));
 
     for gate in live_gates {
         let biomeos_ok = tcp_rpc(
@@ -177,7 +177,7 @@ fn run_partial_mesh_scenario(v: &mut ValidationResult, live_gates: &[&str], enab
         .is_ok();
         let beardog_ok = tcp_rpc(
             gate,
-            env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT),
+            env_port("BEARDOG_PORT", tolerances::default_port_for("beardog")),
             methods::health::LIVENESS,
             &serde_json::json!({}),
         )
@@ -218,7 +218,7 @@ fn run_cross_gate_capabilities(
         return;
     }
     v.section("Phase 5: Cross-gate capabilities");
-    let biomeos_port = env_port("BIOMEOS_PORT", tolerances::TCP_FALLBACK_BIOMEOS_PORT);
+    let biomeos_port = env_port("BIOMEOS_PORT", tolerances::default_port_for("biomeos"));
     let mut total_caps = 0usize;
     for gate in live_gates {
         match tcp_rpc(

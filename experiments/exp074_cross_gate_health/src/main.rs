@@ -6,7 +6,6 @@
 use primalspring::composition::CompositionContext;
 use primalspring::ipc::methods;
 use primalspring::ipc::tcp::tcp_rpc;
-use primalspring::primal_names;
 use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
@@ -16,33 +15,18 @@ struct PrimalProbe {
     default_port: u16,
 }
 
-const PRIMALS: &[PrimalProbe] = &[
-    PrimalProbe {
-        name: primal_names::BEARDOG,
-        port_env: "BEARDOG_PORT",
-        default_port: tolerances::TCP_FALLBACK_BEARDOG_PORT,
-    },
-    PrimalProbe {
-        name: primal_names::SONGBIRD,
-        port_env: "SONGBIRD_PORT",
-        default_port: tolerances::TCP_FALLBACK_SONGBIRD_PORT,
-    },
-    PrimalProbe {
-        name: primal_names::NESTGATE,
-        port_env: "NESTGATE_PORT",
-        default_port: tolerances::TCP_FALLBACK_NESTGATE_PORT,
-    },
-    PrimalProbe {
-        name: primal_names::TOADSTOOL,
-        port_env: "TOADSTOOL_PORT",
-        default_port: tolerances::TCP_FALLBACK_TOADSTOOL_PORT,
-    },
-    PrimalProbe {
-        name: primal_names::SQUIRREL,
-        port_env: "SQUIRREL_PORT",
-        default_port: tolerances::TCP_FALLBACK_SQUIRREL_PORT,
-    },
-];
+fn primals() -> Vec<PrimalProbe> {
+    ["beardog", "songbird", "nestgate", "toadstool", "squirrel"]
+        .iter()
+        .filter_map(|&slug| {
+            tolerances::port_entry_for(slug).map(|e| PrimalProbe {
+                name: e.slug,
+                port_env: e.env_key,
+                default_port: e.port,
+            })
+        })
+        .collect()
+}
 
 fn port_for(probe: &PrimalProbe) -> u16 {
     std::env::var(probe.port_env)
@@ -164,7 +148,7 @@ fn main() {
 
             v.section("Phase 1: Health probes");
             let mut live_count: u32 = 0;
-            for primal in PRIMALS {
+            for primal in &primals() {
                 let port = port_for(primal);
                 if tcp_rpc(
                     &host,
@@ -180,7 +164,7 @@ fn main() {
             }
 
             v.section("Phase 2: Capability enumeration");
-            for primal in PRIMALS {
+            for primal in &primals() {
                 probe_primal_capabilities(v, &host, primal);
             }
 

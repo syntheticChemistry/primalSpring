@@ -327,8 +327,8 @@ fn main() {
             let ctx = CompositionContext::from_live_discovery_with_fallback();
             phase_composition_discovery(v, &ctx);
 
-            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
-            let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::TCP_FALLBACK_SONGBIRD_PORT);
+            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
+            let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::default_port_for("songbird"));
             let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
 
             let keys = phase_ed25519_generate(v, &host, bd_port);

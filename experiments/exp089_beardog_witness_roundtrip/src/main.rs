@@ -284,7 +284,7 @@ fn main() {
             phase_offline_witness_roundtrip(v);
             phase_non_crypto_witness(v);
 
-            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT);
+            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
             let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
 
             phase_live_sign_to_witness(v, &host, bd_port);

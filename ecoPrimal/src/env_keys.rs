@@ -222,32 +222,9 @@ pub fn port_env_key(slug: &str) -> &'static str {
     })
 }
 
-/// Override TCP port for bearDog (identity / BTSP token authority).
-pub const BEARDOG_PORT: &str = "BEARDOG_PORT";
-/// Override TCP port for songBird (mesh federation / peer relay).
-pub const SONGBIRD_PORT: &str = "SONGBIRD_PORT";
-/// Override TCP port for nestGate (capability gate / composition registry).
-pub const NESTGATE_PORT: &str = "NESTGATE_PORT";
-/// Override TCP port for toadstool (capability attestation server).
-pub const TOADSTOOL_PORT: &str = "TOADSTOOL_PORT";
-/// Override TCP port for barracuda (transport encryption / TLS termination).
-pub const BARRACUDA_PORT: &str = "BARRACUDA_PORT";
-/// Override TCP port for coralreef (distributed coordination / RPC).
-pub const CORALREEF_PORT: &str = "CORALREEF_PORT";
-/// Override TCP port for squirrel (state persistence / kv store).
-pub const SQUIRREL_PORT: &str = "SQUIRREL_PORT";
-/// Override TCP port for rhizoCrypt (cryptographic key management).
-pub const RHIZOCRYPT_PORT: &str = "RHIZOCRYPT_PORT";
-/// Override TCP port for sweetgrass (telemetry aggregation).
-pub const SWEETGRASS_PORT: &str = "SWEETGRASS_PORT";
-/// Override TCP port for petaltongue (natural-language NLU interface).
-pub const PETALTONGUE_PORT: &str = "PETALTONGUE_PORT";
-/// Override TCP port for loamspine (storage / substrate persistence).
-pub const LOAMSPINE_PORT: &str = "LOAMSPINE_PORT";
-/// Override TCP port for skunkBat (steganographic broadcast / dark forest).
-pub const SKUNKBAT_PORT: &str = "SKUNKBAT_PORT";
-/// Override TCP port for biomeOS (orchestration substrate / graph deploy).
-pub const BIOMEOS_PORT: &str = "BIOMEOS_PORT";
+// Per-primal TCP port env var names are derived dynamically from
+// `config/ports.toml` via `port_env_key(slug)`. No static constants
+// needed — the pattern is `{SLUG_UPPER}_PORT` (e.g. "BEARDOG_PORT").
 
 // ── Cross-primal coordination ─────────────────────────────────────
 
@@ -315,33 +292,24 @@ mod tests {
     }
 
     #[test]
-    fn constants_match_derived() {
-        assert_eq!(port_env_key("beardog"), BEARDOG_PORT);
-        assert_eq!(port_env_key("songbird"), SONGBIRD_PORT);
-        assert_eq!(port_env_key("toadstool"), TOADSTOOL_PORT);
-        assert_eq!(port_env_key("biomeos"), BIOMEOS_PORT);
+    fn port_env_keys_match_expected_pattern() {
+        assert_eq!(port_env_key("beardog"), "BEARDOG_PORT");
+        assert_eq!(port_env_key("songbird"), "SONGBIRD_PORT");
+        assert_eq!(port_env_key("toadstool"), "TOADSTOOL_PORT");
+        assert_eq!(port_env_key("biomeos"), "BIOMEOS_PORT");
     }
 
     #[test]
-    fn all_constants_are_uppercase_port_pattern() {
-        let consts = [
-            BEARDOG_PORT,
-            SONGBIRD_PORT,
-            NESTGATE_PORT,
-            TOADSTOOL_PORT,
-            BARRACUDA_PORT,
-            CORALREEF_PORT,
-            SQUIRREL_PORT,
-            RHIZOCRYPT_PORT,
-            SWEETGRASS_PORT,
-            PETALTONGUE_PORT,
-            LOAMSPINE_PORT,
-            SKUNKBAT_PORT,
-            BIOMEOS_PORT,
+    fn all_registry_env_keys_are_uppercase_port_pattern() {
+        let slugs = [
+            "beardog", "songbird", "nestgate", "toadstool", "barracuda",
+            "coralreef", "squirrel", "rhizocrypt", "sweetgrass",
+            "petaltongue", "loamspine", "skunkbat", "biomeos",
         ];
-        for c in &consts {
-            assert!(c.ends_with("_PORT"), "{c} should end with _PORT");
-            assert_eq!(*c, c.to_uppercase(), "{c} should be uppercase");
+        for slug in &slugs {
+            let key = port_env_key(slug);
+            assert!(key.ends_with("_PORT"), "{key} should end with _PORT");
+            assert_eq!(key, key.to_uppercase(), "{key} should be uppercase");
         }
     }
 }

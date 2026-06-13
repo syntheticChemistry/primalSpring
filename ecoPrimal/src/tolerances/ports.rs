@@ -116,71 +116,19 @@ fn toml_port_for(primal: &str) -> Option<u16> {
 /// These constants remain for backward compatibility; the authoritative
 /// source is `config/ports.toml`.
 pub static PORT_REGISTRY: &[PortEntry] = &[
-    PortEntry {
-        slug: "beardog",
-        port: 9100,
-        env_key: crate::env_keys::BEARDOG_PORT,
-    },
-    PortEntry {
-        slug: "songbird",
-        port: 9200,
-        env_key: crate::env_keys::SONGBIRD_PORT,
-    },
-    PortEntry {
-        slug: "squirrel",
-        port: 9300,
-        env_key: crate::env_keys::SQUIRREL_PORT,
-    },
-    PortEntry {
-        slug: "toadstool",
-        port: 9400,
-        env_key: crate::env_keys::TOADSTOOL_PORT,
-    },
-    PortEntry {
-        slug: "nestgate",
-        port: 9500,
-        env_key: crate::env_keys::NESTGATE_PORT,
-    },
-    PortEntry {
-        slug: "rhizocrypt",
-        port: 9601,
-        env_key: crate::env_keys::RHIZOCRYPT_PORT,
-    },
-    PortEntry {
-        slug: "loamspine",
-        port: 9700,
-        env_key: crate::env_keys::LOAMSPINE_PORT,
-    },
-    PortEntry {
-        slug: "coralreef",
-        port: 9730,
-        env_key: crate::env_keys::CORALREEF_PORT,
-    },
-    PortEntry {
-        slug: "barracuda",
-        port: 9740,
-        env_key: crate::env_keys::BARRACUDA_PORT,
-    },
-    PortEntry {
-        slug: "skunkbat",
-        port: 9140,
-        env_key: crate::env_keys::SKUNKBAT_PORT,
-    },
-    PortEntry {
-        slug: "biomeos",
-        port: 9800,
-        env_key: crate::env_keys::BIOMEOS_PORT,
-    },
-    PortEntry {
-        slug: "sweetgrass",
-        port: 9850,
-        env_key: crate::env_keys::SWEETGRASS_PORT,
-    },
-    PortEntry {
-        slug: "petaltongue",
-        port: 9900,
-        env_key: crate::env_keys::PETALTONGUE_PORT,
-    },
+    PortEntry { slug: "beardog",     port: 9100, env_key: "BEARDOG_PORT" },
+    PortEntry { slug: "songbird",    port: 9200, env_key: "SONGBIRD_PORT" },
+    PortEntry { slug: "squirrel",    port: 9300, env_key: "SQUIRREL_PORT" },
+    PortEntry { slug: "toadstool",   port: 9400, env_key: "TOADSTOOL_PORT" },
+    PortEntry { slug: "nestgate",    port: 9500, env_key: "NESTGATE_PORT" },
+    PortEntry { slug: "rhizocrypt",  port: 9601, env_key: "RHIZOCRYPT_PORT" },
+    PortEntry { slug: "loamspine",   port: 9700, env_key: "LOAMSPINE_PORT" },
+    PortEntry { slug: "coralreef",   port: 9730, env_key: "CORALREEF_PORT" },
+    PortEntry { slug: "barracuda",   port: 9740, env_key: "BARRACUDA_PORT" },
+    PortEntry { slug: "skunkbat",    port: 9140, env_key: "SKUNKBAT_PORT" },
+    PortEntry { slug: "biomeos",     port: 9800, env_key: "BIOMEOS_PORT" },
+    PortEntry { slug: "sweetgrass",  port: 9850, env_key: "SWEETGRASS_PORT" },
+    PortEntry { slug: "petaltongue", port: 9900, env_key: "PETALTONGUE_PORT" },
 ];
 
 /// Federation / CNS port assignments — deployment-profile variants.
@@ -221,40 +169,10 @@ pub static FEDERATION_PORTS: &[FederationPort] = &[
     },
 ];
 
-// TCP fallback port constants — legacy, kept for backward compatibility.
-// Authoritative source: `config/ports.toml`.
-
-/// TCP fallback for bearDog (identity / BTSP).
-pub const TCP_FALLBACK_BEARDOG_PORT: u16 = 9100;
-/// TCP fallback for songBird (mesh federation).
-pub const TCP_FALLBACK_SONGBIRD_PORT: u16 = 9200;
-/// TCP fallback for squirrel (state persistence).
-pub const TCP_FALLBACK_SQUIRREL_PORT: u16 = 9300;
-/// Default squirrel port — aliases the TCP fallback.
-pub const DEFAULT_SQUIRREL_PORT: u16 = TCP_FALLBACK_SQUIRREL_PORT;
-/// TCP fallback for toadstool (capability attestation).
-pub const TCP_FALLBACK_TOADSTOOL_PORT: u16 = 9400;
-/// TCP fallback for nestGate (capability gate).
-pub const TCP_FALLBACK_NESTGATE_PORT: u16 = 9500;
-/// TCP fallback for rhizoCrypt (key management).
-pub const TCP_FALLBACK_RHIZOCRYPT_PORT: u16 = 9601;
-/// TCP fallback for loamspine (substrate persistence).
-pub const TCP_FALLBACK_LOAMSPINE_PORT: u16 = 9700;
-/// TCP fallback for coralreef (coordination RPC).
-pub const TCP_FALLBACK_CORALREEF_PORT: u16 = 9730;
-/// TCP fallback for barracuda (transport encryption).
-pub const TCP_FALLBACK_BARRACUDA_PORT: u16 = 9740;
-/// TCP fallback for skunkBat (steganographic broadcast).
-pub const TCP_FALLBACK_SKUNKBAT_PORT: u16 = 9140;
-/// TCP fallback for biomeOS (orchestration substrate).
-pub const TCP_FALLBACK_BIOMEOS_PORT: u16 = 9800;
-/// TCP fallback for sweetgrass (telemetry).
-pub const TCP_FALLBACK_SWEETGRASS_PORT: u16 = 9850;
-/// TCP fallback for petaltongue (NLU interface).
-pub const TCP_FALLBACK_PETALTONGUE_PORT: u16 = 9900;
-
 /// Default Songbird federation port.
 ///
-/// Source: Songbird mesh coordination port, standard across all gates.
+/// Protocol-level constant: Songbird mesh coordination port, standard
+/// across all gates. This is a protocol contract, not a primal-specific
+/// port assignment.
 /// Authoritative: `config/ports.toml` federation section.
 pub const SONGBIRD_FEDERATION_PORT: u16 = 7700;

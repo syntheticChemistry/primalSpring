@@ -41,29 +41,18 @@ fn phase_port_ssot_consistency(v: &mut ValidationResult) {
 
     let table = tcp_fallback_table();
 
-    let expected: &[(&str, u16)] = &[
-        ("BEARDOG_PORT", tol::TCP_FALLBACK_BEARDOG_PORT),
-        ("SONGBIRD_PORT", tol::TCP_FALLBACK_SONGBIRD_PORT),
-        ("NESTGATE_PORT", tol::TCP_FALLBACK_NESTGATE_PORT),
-        ("TOADSTOOL_PORT", tol::TCP_FALLBACK_TOADSTOOL_PORT),
-        ("BARRACUDA_PORT", tol::TCP_FALLBACK_BARRACUDA_PORT),
-        ("CORALREEF_PORT", tol::TCP_FALLBACK_CORALREEF_PORT),
-        ("SQUIRREL_PORT", tol::TCP_FALLBACK_SQUIRREL_PORT),
-        ("RHIZOCRYPT_PORT", tol::TCP_FALLBACK_RHIZOCRYPT_PORT),
-        ("LOAMSPINE_PORT", tol::TCP_FALLBACK_LOAMSPINE_PORT),
-        ("SWEETGRASS_PORT", tol::TCP_FALLBACK_SWEETGRASS_PORT),
-        ("PETALTONGUE_PORT", tol::TCP_FALLBACK_PETALTONGUE_PORT),
-        ("SKUNKBAT_PORT", tol::TCP_FALLBACK_SKUNKBAT_PORT),
-        ("BIOMEOS_PORT", tol::TCP_FALLBACK_BIOMEOS_PORT),
-    ];
+    let expected: Vec<(String, u16)> = tol::PORT_REGISTRY
+        .iter()
+        .map(|e| (e.env_key.to_owned(), e.port))
+        .collect();
 
-    for &(env_key, expected_port) in expected {
-        let table_entry = table.iter().find(|&&(_, _, k, _)| k == env_key);
+    for (env_key, expected_port) in &expected {
+        let table_entry = table.iter().find(|&&(_, _, k, _)| k == env_key.as_str());
         match table_entry {
             Some(&(_, _, _, actual_port)) => {
                 v.check_bool(
                     &format!("port_ssot:{env_key}"),
-                    actual_port == expected_port,
+                    actual_port == *expected_port,
                     &format!(
                         "{env_key}: tolerances={expected_port}, tcp_fallback_table={actual_port}"
                     ),
@@ -279,20 +268,20 @@ mod tests {
 
     #[test]
     fn port_assignments_match_tolerances() {
-        use crate::tolerances as tol;
+        use crate::tolerances;
         let table = tcp_fallback_table();
 
         let security = table.iter().find(|t| t.0 == "security").unwrap();
-        assert_eq!(security.3, tol::TCP_FALLBACK_BEARDOG_PORT);
+        assert_eq!(security.3, tolerances::default_port_for("beardog"));
 
         let discovery = table.iter().find(|t| t.0 == "discovery").unwrap();
-        assert_eq!(discovery.3, tol::TCP_FALLBACK_SONGBIRD_PORT);
+        assert_eq!(discovery.3, tolerances::default_port_for("songbird"));
 
         let storage = table.iter().find(|t| t.0 == "storage").unwrap();
-        assert_eq!(storage.3, tol::TCP_FALLBACK_NESTGATE_PORT);
+        assert_eq!(storage.3, tolerances::default_port_for("nestgate"));
 
         let compute = table.iter().find(|t| t.0 == "compute").unwrap();
-        assert_eq!(compute.3, tol::TCP_FALLBACK_TOADSTOOL_PORT);
+        assert_eq!(compute.3, tolerances::default_port_for("toadstool"));
     }
 
     #[test]

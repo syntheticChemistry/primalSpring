@@ -36,14 +36,14 @@ fn songbird_port() -> u16 {
     std::env::var("SONGBIRD_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(tolerances::TCP_FALLBACK_SONGBIRD_PORT)
+        .unwrap_or(tolerances::default_port_for("songbird"))
 }
 
 fn beardog_port() -> u16 {
     std::env::var("BEARDOG_PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(tolerances::TCP_FALLBACK_BEARDOG_PORT)
+        .unwrap_or(tolerances::default_port_for("beardog"))
 }
 
 fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
@@ -232,7 +232,7 @@ fn validate_peer_capabilities(v: &mut ValidationResult, peers: &[serde_json::Val
             .and_then(|a| a.as_str())
             .unwrap_or("127.0.0.1");
 
-        let (host, port) = parse_host_port(addr, tolerances::TCP_FALLBACK_SONGBIRD_PORT);
+        let (host, port) = parse_host_port(addr, tolerances::default_port_for("songbird"));
         let check_name = format!("peer_{i}_capabilities");
 
         match tcp_rpc(

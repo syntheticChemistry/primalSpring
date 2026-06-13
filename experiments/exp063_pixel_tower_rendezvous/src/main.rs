@@ -219,7 +219,7 @@ fn main() {
                 let pixel_host = std::env::var("PIXEL_SONGBIRD_HOST").ok();
                 let pixel_port = tcp::env_port(
                     "PIXEL_SONGBIRD_PORT",
-                    primalspring::tolerances::TCP_FALLBACK_SONGBIRD_PORT,
+                    primalspring::tolerances::default_port_for("songbird"),
                 );
 
                 if let Some(ref host) = pixel_host {

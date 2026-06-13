@@ -27,9 +27,15 @@ const PROVENANCE_COMMIT: &str = "provenance.commit";
 const ATTRIBUTION_CLAIM: &str = "attribution.claim";
 const ATTRIBUTION_RESOLVE: &str = "attribution.resolve";
 
-const DEFAULT_RHIZOCRYPT_PORT: u16 = primalspring::tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT;
-const DEFAULT_LOAMSPINE_PORT: u16 = primalspring::tolerances::TCP_FALLBACK_LOAMSPINE_PORT;
-const DEFAULT_SWEETGRASS_PORT: u16 = primalspring::tolerances::TCP_FALLBACK_SWEETGRASS_PORT;
+fn default_rhizocrypt_port() -> u16 {
+    primalspring::tolerances::default_port_for("rhizocrypt")
+}
+fn default_loamspine_port() -> u16 {
+    primalspring::tolerances::default_port_for("loamspine")
+}
+fn default_sweetgrass_port() -> u16 {
+    primalspring::tolerances::default_port_for("sweetgrass")
+}
 
 fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
     v.section("Phase 1: Composition discovery (local)");
@@ -299,9 +305,9 @@ fn main() {
     let host = std::env::var("REMOTE_GATE_HOST").unwrap_or_default();
     let scenario = std::env::var("PROVENANCE_SCENARIO").unwrap_or_else(|_| "all".to_owned());
 
-    let rhizo_port = env_port("RHIZOCRYPT_PORT", DEFAULT_RHIZOCRYPT_PORT);
-    let loam_port = env_port("LOAMSPINE_PORT", DEFAULT_LOAMSPINE_PORT);
-    let sweet_port = env_port("SWEETGRASS_PORT", DEFAULT_SWEETGRASS_PORT);
+    let rhizo_port = env_port("RHIZOCRYPT_PORT", default_rhizocrypt_port());
+    let loam_port = env_port("LOAMSPINE_PORT", default_loamspine_port());
+    let sweet_port = env_port("SWEETGRASS_PORT", default_sweetgrass_port());
 
     ValidationResult::new("primalSpring Exp084 — Provenance Adversarial")
         .with_provenance("exp084_provenance_adversarial", "2026-05-09")
@@ -343,7 +349,12 @@ fn structural_checks(v: &mut ValidationResult) {
     v.check_bool(
         "trio_ports_defined",
         true,
-        &format!("rhizoCrypt:{DEFAULT_RHIZOCRYPT_PORT}, LoamSpine:{DEFAULT_LOAMSPINE_PORT}, sweetGrass:{DEFAULT_SWEETGRASS_PORT}"),
+        &format!(
+            "rhizoCrypt:{}, LoamSpine:{}, sweetGrass:{}",
+            default_rhizocrypt_port(),
+            default_loamspine_port(),
+            default_sweetgrass_port()
+        ),
     );
 
     v.check_bool(

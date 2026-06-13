@@ -88,19 +88,19 @@ fn targets(host: &str) -> Vec<ChaosTarget> {
     vec![
         ChaosTarget {
             name: primal_names::BEARDOG,
-            port: env_port("BEARDOG_PORT", tolerances::TCP_FALLBACK_BEARDOG_PORT),
+            port: env_port("BEARDOG_PORT", tolerances::default_port_for("beardog")),
         },
         ChaosTarget {
             name: primal_names::SONGBIRD,
-            port: env_port("SONGBIRD_PORT", tolerances::TCP_FALLBACK_SONGBIRD_PORT),
+            port: env_port("SONGBIRD_PORT", tolerances::default_port_for("songbird")),
         },
         ChaosTarget {
             name: primal_names::NESTGATE,
-            port: env_port("NESTGATE_PORT", tolerances::TCP_FALLBACK_NESTGATE_PORT),
+            port: env_port("NESTGATE_PORT", tolerances::default_port_for("nestgate")),
         },
         ChaosTarget {
             name: primal_names::TOADSTOOL,
-            port: env_port("TOADSTOOL_PORT", tolerances::TCP_FALLBACK_TOADSTOOL_PORT),
+            port: env_port("TOADSTOOL_PORT", tolerances::default_port_for("toadstool")),
         },
     ]
 }

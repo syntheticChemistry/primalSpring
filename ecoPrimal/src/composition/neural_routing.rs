@@ -68,9 +68,9 @@ impl CompositionTier {
             | "attribution" | "contribution" | "anchor" => Self::Nest,
             "visualization" | "render" | "viz" | "interaction" | "proprioception" | "ai"
             | "inference" | "context" | "science" => Self::Meta,
-            "orchestration" | "federation" | "biomeos" | "primal" | "signal" | "topology"
-            | "route" | "health" | "capabilities" | "lifecycle" | "mcp" | "tool" | "tools"
-            | "rpc" | "system" | "coordination" | "composition" | "graph" | "nucleus" => {
+            "orchestration" | "federation" | "primal" | "signal" | "topology" | "route"
+            | "health" | "capabilities" | "lifecycle" | "mcp" | "tool" | "tools" | "rpc"
+            | "system" | "coordination" | "composition" | "graph" | "nucleus" => {
                 Self::Orchestration
             }
             "bonding" | "ionic" | "game" | "webb" => Self::Standalone,

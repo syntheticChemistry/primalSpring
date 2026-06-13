@@ -32,86 +32,17 @@ struct PrimalProbe {
     required_for_tcp: bool,
 }
 
-const ALL_PRIMALS: &[PrimalProbe] = &[
-    PrimalProbe {
-        name: primal_names::BEARDOG,
-        port_env: "BEARDOG_PORT",
-        default_port: tolerances::TCP_FALLBACK_BEARDOG_PORT,
-        required_for_tcp: true,
-    },
-    PrimalProbe {
-        name: primal_names::SONGBIRD,
-        port_env: "SONGBIRD_PORT",
-        default_port: tolerances::TCP_FALLBACK_SONGBIRD_PORT,
-        required_for_tcp: true,
-    },
-    PrimalProbe {
-        name: primal_names::NESTGATE,
-        port_env: "NESTGATE_PORT",
-        default_port: tolerances::TCP_FALLBACK_NESTGATE_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::TOADSTOOL,
-        port_env: "TOADSTOOL_PORT",
-        default_port: tolerances::TCP_FALLBACK_TOADSTOOL_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::SQUIRREL,
-        port_env: "SQUIRREL_PORT",
-        default_port: tolerances::TCP_FALLBACK_SQUIRREL_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::RHIZOCRYPT,
-        port_env: "RHIZOCRYPT_PORT",
-        default_port: tolerances::TCP_FALLBACK_RHIZOCRYPT_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::LOAMSPINE,
-        port_env: "LOAMSPINE_PORT",
-        default_port: tolerances::TCP_FALLBACK_LOAMSPINE_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::CORALREEF,
-        port_env: "CORALREEF_PORT",
-        default_port: tolerances::TCP_FALLBACK_CORALREEF_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::BARRACUDA,
-        port_env: "BARRACUDA_PORT",
-        default_port: tolerances::TCP_FALLBACK_BARRACUDA_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::SKUNKBAT,
-        port_env: "SKUNKBAT_PORT",
-        default_port: tolerances::TCP_FALLBACK_SKUNKBAT_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::BIOMEOS,
-        port_env: "BIOMEOS_PORT",
-        default_port: tolerances::TCP_FALLBACK_BIOMEOS_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::SWEETGRASS,
-        port_env: "SWEETGRASS_PORT",
-        default_port: tolerances::TCP_FALLBACK_SWEETGRASS_PORT,
-        required_for_tcp: false,
-    },
-    PrimalProbe {
-        name: primal_names::PETALTONGUE,
-        port_env: "PETALTONGUE_PORT",
-        default_port: tolerances::TCP_FALLBACK_PETALTONGUE_PORT,
-        required_for_tcp: false,
-    },
-];
+fn all_primals() -> Vec<PrimalProbe> {
+    tolerances::PORT_REGISTRY
+        .iter()
+        .map(|e| PrimalProbe {
+            name: e.slug,
+            port_env: e.env_key,
+            default_port: e.port,
+            required_for_tcp: matches!(e.slug, "beardog" | "songbird"),
+        })
+        .collect()
+}
 
 fn port_for(probe: &PrimalProbe) -> u16 {
     env_port(probe.port_env, probe.default_port)
@@ -146,7 +77,7 @@ fn phase_tcp_connectivity(
     let mut live_primals: Vec<&'static str> = Vec::new();
     let mut response_times: Vec<(&'static str, Duration)> = Vec::new();
 
-    for primal in ALL_PRIMALS {
+    for primal in &all_primals() {
         let port = port_for(primal);
         let check_name = format!("{}_health", primal.name);
 
@@ -251,7 +182,7 @@ fn phase_capability_enumeration(
 ) -> usize {
     v.section("Phase 5: Capabilities");
     let mut total_capabilities: usize = 0;
-    for primal in ALL_PRIMALS {
+    for primal in &all_primals() {
         if !live_primals.contains(&primal.name) {
             continue;
         }
