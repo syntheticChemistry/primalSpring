@@ -3,7 +3,24 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 109–111: guideStone Convergence + Gate Expansion (2026-06-11)
+## [Unreleased] — Waves 109–111: guideStone Convergence + Gate Expansion (2026-06-11–13)
+
+### Wave 111: riboCipher + Port Registry + Deep Debt (June 11–13)
+- **riboCipher transport signal** — All outbound IPC connections now prepend `[0xEC, 0x01]`
+  (clear tier, v1) before any JSON-RPC or BTSP handshake bytes. Wired into
+  `Transport::unix/tcp/unix_btsp`, `tcp_rpc_with_timeout`, `http_json_rpc`, and
+  nucleus_launcher inline registry. Constants: `RIBOCIPHER_CLEAR_SIGNAL` in tolerances/ipc.
+- **Port registry consolidation** — Removed 13 `TCP_FALLBACK_*` constants and 13 per-primal
+  `*_PORT` env-key constants. `config/ports.toml` is now the single source of truth.
+  All consumers migrated to `default_port_for("slug")` / `port_env_key("slug")`. -217 net
+  lines of port duplication eliminated.
+- **Neural routing agnosticism** — Removed hardcoded `"biomeos"` from
+  `CompositionTier::from_domain` match arm; routing is now pure capability domain keywords.
+- **LAUNCHER-01** — aarch64 cross-compile support: `.cargo/config.toml` target + linker,
+  `rust-toolchain.toml` targets, `cargo cross-aarch64` alias. 1.8MB static ELF verified.
+- **Proto-nucleate manifest** — `config/proto_nucleate.toml` deployment template +
+  `nucleus_launcher --manifest` flag. Gate identity, composition, depot, validation,
+  and mesh enrollment parameters.
 
 ### Wave 111: Deep Debt Evolution + Divergence Pressure (June 11)
 - **Error modernization** — `RegistryError`, `SpawnError` (nucleus_launcher) evolved to
