@@ -245,12 +245,14 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
             match spawn::spawn_primal(primal, port, &socket, &config, &family_seed_str) {
                 Ok(()) => {
                     std::thread::sleep(Duration::from_secs(3));
-                    if port > 0 && registry::health_check_tcp(port, health_timeout) {
-                        println!("\x1b[32mALIVE\x1b[0m");
-                    } else if port == 0 {
-                        println!("\x1b[32mSTARTED\x1b[0m (UDS)");
+                    if port > 0 {
+                        match registry::health_check_tcp(port, health_timeout) {
+                            registry::ProbeResult::Healthy => println!("\x1b[32mALIVE\x1b[0m"),
+                            registry::ProbeResult::Reachable => println!("\x1b[32mALIVE\x1b[0m (no health method)"),
+                            registry::ProbeResult::Unreachable => println!("\x1b[33mSTARTED\x1b[0m (health probe pending)"),
+                        }
                     } else {
-                        println!("\x1b[33mSTARTED\x1b[0m (health probe pending)");
+                        println!("\x1b[32mSTARTED\x1b[0m (UDS)");
                     }
                     started += 1;
                 }
@@ -280,9 +282,24 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                 continue;
             }
 
-            if port > 0 && registry::health_check_tcp(port, health_timeout) {
-                println!("\x1b[32mHEALTHY\x1b[0m");
-                healthy += 1;
+            if port > 0 {
+                match registry::health_check_tcp(port, health_timeout) {
+                    registry::ProbeResult::Healthy => {
+                        println!("\x1b[32mHEALTHY\x1b[0m");
+                        healthy += 1;
+                    }
+                    registry::ProbeResult::Reachable => {
+                        println!("\x1b[32mALIVE\x1b[0m (no health method)");
+                        healthy += 1;
+                    }
+                    registry::ProbeResult::Unreachable => {
+                        let log_hint = PathBuf::from(tolerances::runtime_dir())
+                            .join(primalspring::env_keys::BIOMEOS_SUBDIR)
+                            .join("logs")
+                            .join(format!("{primal}.log"));
+                        println!("\x1b[31mUNREACHABLE\x1b[0m  (check {})", log_hint.display());
+                    }
+                }
             } else if config.uds_only {
                 let socket = nucleation.get(primal, &config.family_id);
                 let alive = socket.as_ref().is_some_and(|s| s.exists());
@@ -299,12 +316,6 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                         log_hint.display()
                     );
                 }
-            } else {
-                let log_hint = PathBuf::from(tolerances::runtime_dir())
-                    .join(primalspring::env_keys::BIOMEOS_SUBDIR)
-                    .join("logs")
-                    .join(format!("{primal}.log"));
-                println!("\x1b[31mUNREACHABLE\x1b[0m  (check {})", log_hint.display());
             }
         }
 
@@ -582,11 +593,11 @@ pub fn show_status(primals: &[&str]) {
 
         let (health_ok, transport) = if registry::capability_probe(primal) {
             (true, "cap")
-        } else if socket.exists() && registry::health_check_uds(&socket) {
+        } else if socket.exists() && registry::health_check_uds(&socket).is_alive() {
             (true, "uds")
         } else {
             let port = registry::effective_port(primal);
-            if port > 0 && registry::health_check_tcp(port, health_timeout) {
+            if port > 0 && registry::health_check_tcp(port, health_timeout).is_alive() {
                 (true, "tcp")
             } else {
                 (false, "---")

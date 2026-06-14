@@ -106,6 +106,7 @@ pub mod s_tower_atomic;
 pub mod s_tower_cns;
 pub mod s_version_skew_detection;
 pub mod s_wan_ipc_tolerance;
+pub mod s_ribocipher_acceptance;
 pub mod s_zero_port_standard;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
@@ -172,6 +173,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_version_skew_detection::SCENARIO);
     r.register(s_cascade_provenance_match::SCENARIO);
     r.register(s_wan_ipc_tolerance::SCENARIO);
+    r.register(s_ribocipher_acceptance::SCENARIO);
     r
 }
 
@@ -182,7 +184,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 60;
+    const EXPECTED_SCENARIO_COUNT: usize = 61;
 
     #[test]
     fn registry_scenario_count() {

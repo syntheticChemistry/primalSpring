@@ -21,7 +21,7 @@ protocols. The bonding models are the hypotheses.
 
 - **Composition validation library** — `CompositionContext`, routing,
   mesh topology, parity checks, liveness probing
-- **Certification engine** — guideStone L0-L8 (60 scenarios, 9-layer
+- **Certification engine** — guideStone L0-L8 (61 scenarios, 9-layer
   certification), `primalspring certify`
 - **Bonding proofs** — multi-gate bonding models, STUN tiers, ionic
   RPC, content distribution federation
@@ -99,7 +99,7 @@ to primalSpring as experiment targets.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 60 absorbed experiment scenarios (11 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 61 absorbed experiment scenarios (11 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -121,7 +121,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.31 Wave 111 (June 13, 2026) — 60 scenarios (11 tracks, 3 tiers),
+v0.9.31 Wave 113 (June 14, 2026) — 61 scenarios (11 tracks, 3 tiers),
 490+ registered capability methods, 96 experiments (21 tracks), 113 graph TOMLs
 (~80 deploy + 33 compositions). 931 tests passing (884 lib + 10 integration +
 4 ecosystem + 16 experiment + 17 doc). Role formalized: composition

@@ -4,6 +4,7 @@
 
 use crate::composition::CompositionContext;
 use crate::coordination::AtomicType;
+use crate::tolerances;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -27,6 +28,9 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     v.section("Phase 2: Reachability Analysis");
     phase_reachability(v, ctx);
+
+    v.section("Phase 3: Socket Manifest Compliance");
+    phase_socket_manifest(v);
 }
 
 fn phase_capability_sweep(v: &mut ValidationResult, ctx: &CompositionContext) {
@@ -84,6 +88,70 @@ fn phase_reachability(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     }
 }
 
+/// Validate socket naming convention and manifest presence.
+///
+/// Each primal should expose sockets following the pattern `{slug}.sock` or
+/// `{slug}-{family}.sock` in the biomeOS runtime directory. This phase checks:
+/// 1. Runtime directory exists
+/// 2. Socket files follow naming convention
+/// 3. No orphan sockets from unknown primals
+fn phase_socket_manifest(v: &mut ValidationResult) {
+    let runtime_dir = std::path::PathBuf::from(tolerances::runtime_dir())
+        .join(crate::env_keys::BIOMEOS_SUBDIR);
+
+    let exists = runtime_dir.is_dir();
+    v.check_bool(
+        "manifest:runtime_dir_exists",
+        exists,
+        &format!("runtime directory: {}", runtime_dir.display()),
+    );
+
+    if !exists {
+        v.check_skip("manifest:socket_naming", "runtime dir absent");
+        return;
+    }
+
+    let valid_slugs: std::collections::HashSet<&str> =
+        tolerances::all_primal_slugs().into_iter().collect();
+
+    let mut total_sockets = 0u32;
+    let mut valid_names = 0u32;
+    let mut orphans: Vec<String> = Vec::new();
+
+    if let Ok(entries) = std::fs::read_dir(&runtime_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.extension().is_some_and(|ext| ext == "sock") {
+                total_sockets += 1;
+                let stem = path
+                    .file_stem()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("");
+                // Accept {slug}.sock or {slug}-{family}.sock
+                let base_slug = stem.split('-').next().unwrap_or(stem);
+                if valid_slugs.contains(base_slug) || base_slug == "neural-api" {
+                    valid_names += 1;
+                } else {
+                    orphans.push(stem.to_owned());
+                }
+            }
+        }
+    }
+
+    v.check_bool(
+        "manifest:socket_naming",
+        orphans.is_empty(),
+        &format!(
+            "{valid_names}/{total_sockets} sockets follow naming convention{}",
+            if orphans.is_empty() {
+                String::new()
+            } else {
+                format!(" — orphans: {}", orphans.join(", "))
+            }
+        ),
+    );
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -97,5 +165,11 @@ mod tests {
             v.evaluated() > 0 || v.skipped > 0,
             "scenario should produce at least one check"
         );
+    }
+
+    #[test]
+    fn socket_manifest_structural() {
+        let mut v = ValidationResult::new("socket-discovery");
+        phase_socket_manifest(&mut v);
     }
 }

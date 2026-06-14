@@ -135,8 +135,40 @@ pub(super) fn capability_probe(primal: &str) -> bool {
     capability_call(primary_cap, "health.liveness", &serde_json::json!({})).is_some()
 }
 
+/// Health probe result with distinction between full health and reachable-only.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ProbeResult {
+    Healthy,
+    Reachable,
+    Unreachable,
+}
+
+impl ProbeResult {
+    pub(super) const fn is_alive(self) -> bool {
+        matches!(self, Self::Healthy | Self::Reachable)
+    }
+}
+
+fn classify_jsonrpc_response(response: &str) -> ProbeResult {
+    let Ok(parsed) = serde_json::from_str::<serde_json::Value>(response) else {
+        return ProbeResult::Unreachable;
+    };
+    if parsed.get("jsonrpc").is_none() {
+        return ProbeResult::Unreachable;
+    }
+    if parsed.get("result").is_some() {
+        return ProbeResult::Healthy;
+    }
+    // -32601 (method_not_found) means reachable but no health method implemented
+    ProbeResult::Reachable
+}
+
 /// Perform a JSON-RPC health check on a primal via TCP.
-pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
+///
+/// Returns [`ProbeResult::Healthy`] if the primal responds with a valid `result`,
+/// [`ProbeResult::Reachable`] if it responds with any JSON-RPC (including `-32601`
+/// method_not_found), or [`ProbeResult::Unreachable`] on connection/timeout failure.
+pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> ProbeResult {
     use std::io::{Read, Write};
     use std::net::{SocketAddr, TcpStream};
 
@@ -144,40 +176,41 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
     let payload = jsonrpc_payload("health.check", &serde_json::json!({}), 1);
 
     let Ok(stream) = TcpStream::connect_timeout(&addr, timeout) else {
-        return false;
+        return ProbeResult::Unreachable;
     };
 
     if stream.set_read_timeout(Some(timeout)).is_err()
         || stream.set_write_timeout(Some(timeout)).is_err()
     {
-        return false;
+        return ProbeResult::Unreachable;
     }
 
     let mut s = stream;
     if s.write_all(&tolerances::RIBOCIPHER_CLEAR_SIGNAL).is_err() {
-        return false;
+        return ProbeResult::Unreachable;
     }
     if s.write_all(payload.as_bytes()).is_err() {
-        return false;
+        return ProbeResult::Unreachable;
     }
     if s.write_all(b"\n").is_err() {
-        return false;
+        return ProbeResult::Unreachable;
     }
 
     let mut buf = [0u8; 4096];
     match s.read(&mut buf) {
         Ok(n) if n > 0 => {
             let response = String::from_utf8_lossy(&buf[..n]);
-            jsonrpc_response_has_field(&response, "jsonrpc")
+            classify_jsonrpc_response(&response)
         }
-        _ => false,
+        _ => ProbeResult::Unreachable,
     }
 }
 
 /// Perform a JSON-RPC health check on a primal via UDS socket.
-pub(super) fn health_check_uds(socket: &std::path::Path) -> bool {
+pub(super) fn health_check_uds(socket: &std::path::Path) -> ProbeResult {
     let payload = jsonrpc_payload("health.check", &serde_json::json!({}), 1);
-    send_uds_rpc(socket, &payload).is_ok_and(|resp| jsonrpc_response_has_field(&resp, "jsonrpc"))
+    send_uds_rpc(socket, &payload)
+        .map_or(ProbeResult::Unreachable, |resp| classify_jsonrpc_response(&resp))
 }
 
 /// Resolve the UDS socket path for a primal.
