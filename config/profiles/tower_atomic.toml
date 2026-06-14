@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Tower Atomic Profile — Minimal trust boundary (3 primals)
+#
+# Usage: nucleus_launcher start --manifest config/profiles/tower_atomic.toml
+#
+# Deploys: bearDog + songBird + skunkBat
+# Use case: Lightweight gates, relay nodes, canary deployments, NUCs
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+[gate]
+name = ""
+specialization = "WanRelay"
+family_id = ""
+
+[composition]
+atomic_type = "tower"
+graph = "tower_atomic_bootstrap.toml"
+transport = "uds_only"
+
+[composition.primals]
+required = ["beardog", "songbird", "skunkbat"]
+optional = []
+
+[depot]
+source = "wan"
+wan_url = "https://membrane.primals.eco/depot/"
+git_remote = "ssh://git.primals.eco:2222/syntheticChemistry/plasmidBin.git"
+verify_checksums = true
+verify_provenance = true
+
+[validation]
+required_health_count = 3
+health_timeout_secs = 30
+run_scenario = "s_sequential_graph"
+required_properties = ["P1", "P2"]
+allow_degraded = false
+
+[validation.checksums]
+dual_verify = true
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+enabled = true
+timeout_secs = 15
+
+[mesh]
+enroll = true
+federation_port = 7700
+peers = []
+auto_reconnect = true
+reconnect_backoff_min = 30
+reconnect_backoff_max = 300

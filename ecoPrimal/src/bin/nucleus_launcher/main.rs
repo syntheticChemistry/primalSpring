@@ -44,6 +44,11 @@ struct Cli {
     /// mesh parameters from a structured deployment template.
     #[arg(long, global = true)]
     manifest: Option<std::path::PathBuf>,
+
+    /// Named profile: tower, nest, compute, edge, full.
+    /// Resolves to config/profiles/{name}.toml (convenience for --manifest).
+    #[arg(long, global = true)]
+    profile: Option<String>,
 }
 
 #[derive(Subcommand, Debug)]
@@ -188,7 +193,20 @@ fn main() {
 
     let cli = Cli::parse();
 
-    let manifest_overrides = cli.manifest.as_deref().map(load_manifest);
+    let manifest_path = cli.manifest.clone().or_else(|| {
+        cli.profile.as_ref().map(|name| {
+            let profile_name = match name.as_str() {
+                "tower" => "tower_atomic",
+                "nest" => "nest_atomic",
+                "compute" => "compute_heavy",
+                "edge" => "edge_light",
+                "full" => "full_nucleus",
+                other => other,
+            };
+            std::path::PathBuf::from(format!("config/profiles/{profile_name}.toml"))
+        })
+    });
+    let manifest_overrides = manifest_path.as_deref().map(load_manifest);
 
     let composition_str = manifest_overrides
         .as_ref()

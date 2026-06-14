@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Nest Atomic Profile — Data persistence tier (7 primals)
+#
+# Usage: nucleus_launcher start --manifest config/profiles/nest_atomic.toml
+#
+# Deploys: Tower (3) + nestGate + rhizoCrypt + loamSpine + sweetGrass
+# Use case: Cold storage gates, archival nodes, provenance-heavy deployments
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+[gate]
+name = ""
+specialization = "ColdStorage"
+family_id = ""
+
+[composition]
+atomic_type = "nest"
+graph = "nest_atomic.toml"
+transport = "uds_only"
+
+[composition.primals]
+required = ["beardog", "songbird", "skunkbat", "nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+optional = []
+
+[depot]
+source = "wan"
+wan_url = "https://membrane.primals.eco/depot/"
+git_remote = "ssh://git.primals.eco:2222/syntheticChemistry/plasmidBin.git"
+verify_checksums = true
+verify_provenance = true
+
+[validation]
+required_health_count = 7
+health_timeout_secs = 45
+run_scenario = "s_gate_expansion_readiness"
+required_properties = ["P1", "P2", "P3"]
+allow_degraded = false
+
+[validation.checksums]
+dual_verify = true
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+enabled = true
+timeout_secs = 20
+
+[mesh]
+enroll = true
+federation_port = 7700
+peers = []
+auto_reconnect = true
+reconnect_backoff_min = 30
+reconnect_backoff_max = 300

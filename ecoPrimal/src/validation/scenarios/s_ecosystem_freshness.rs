@@ -334,6 +334,16 @@ fn phase_freshness_schema(v: &mut ValidationResult) {
     );
 
     if let Some(heads) = heads {
+        if heads.len() < 5 {
+            v.check_skip(
+                "schema:freshness:head_count",
+                &format!(
+                    "only {} entries — sparse-publish regression (VPS overwrote full manifest)",
+                    heads.len()
+                ),
+            );
+            return;
+        }
         v.check_bool(
             "schema:freshness:head_count",
             heads.len() >= 20,

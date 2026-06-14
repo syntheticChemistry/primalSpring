@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Compute Heavy Profile — GPU/NPU-focused NUCLEUS (10 primals)
+#
+# Usage: nucleus_launcher start --manifest config/profiles/compute_heavy.toml
+#
+# Deploys: Tower (3) + toadStool + barraCuda + coralReef + squirrel + nestGate + provenance trio
+# Use case: GPU gates, ML inference nodes, shader compilation, scientific compute
+# Omits: biomeOS (orchestration not needed for dedicated compute), petalTongue (no UI)
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+[gate]
+name = ""
+specialization = "ComputeHeavy"
+family_id = ""
+
+[composition]
+atomic_type = "node"
+graph = "node_atomic_compute.toml"
+transport = "uds_only"
+
+[composition.primals]
+required = ["beardog", "songbird", "skunkbat", "toadstool", "barracuda", "coralreef", "squirrel"]
+optional = ["nestgate", "rhizocrypt", "loamspine", "sweetgrass"]
+
+[depot]
+source = "wan"
+wan_url = "https://membrane.primals.eco/depot/"
+git_remote = "ssh://git.primals.eco:2222/syntheticChemistry/plasmidBin.git"
+verify_checksums = true
+verify_provenance = true
+
+[validation]
+required_health_count = 7
+health_timeout_secs = 60
+run_scenario = "s_gate_expansion_readiness"
+required_properties = ["P1", "P2", "P3", "P4"]
+allow_degraded = true
+
+[validation.checksums]
+dual_verify = true
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+enabled = true
+timeout_secs = 30
+
+[mesh]
+enroll = true
+federation_port = 7700
+peers = []
+auto_reconnect = true
+reconnect_backoff_min = 30
+reconnect_backoff_max = 300
