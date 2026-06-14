@@ -118,6 +118,23 @@ pub(super) fn effective_port(primal: &str) -> u16 {
     env_port(key, tolerances::default_port_for(primal))
 }
 
+/// Perform a NUCLEUS-aware capability probe via the neural API.
+///
+/// Preferred over raw TCP health checks: routes through biomeOS `capability.call`
+/// to verify the primal can actually serve its registered capabilities (not just
+/// liveness). Falls back to `false` if the neural bridge is unavailable.
+pub(super) fn capability_probe(primal: &str) -> bool {
+    use primalspring::ipc::discover::capability_call;
+
+    let cap_map = build_capability_map();
+    let Some(caps) = cap_map.get(primal) else {
+        return false;
+    };
+    let primary_cap = caps.first().map_or("health", String::as_str);
+
+    capability_call(primary_cap, "health.liveness", &serde_json::json!({})).is_some()
+}
+
 /// Perform a JSON-RPC health check on a primal via TCP.
 pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> bool {
     use std::io::{Read, Write};

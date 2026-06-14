@@ -547,13 +547,24 @@ fn try_stop_pid_file(primal: &str, pid_file: &std::path::Path, suffix: &str) -> 
 ///
 /// Prefers UDS socket liveness (Tower Atomic default). Falls back to TCP
 /// only when a socket is unavailable and a port is configured.
+///
+/// Reports results relative to the active composition profile (e.g.
+/// Tower = 3 primals, not 13). A full green sweep means PASS for that profile.
 pub fn show_status(primals: &[&str]) {
     let pid_dir = PathBuf::from(tolerances::runtime_dir())
         .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(".pids");
     let health_timeout = Duration::from_secs(3);
 
-    println!("=== NUCLEUS Status ===");
+    let profile_label = match primals.len() {
+        n if n >= 13 => "Full NUCLEUS",
+        n if n >= 10 => "Compute Heavy",
+        n if n >= 7 => "Nest",
+        n if n >= 5 => "Node",
+        _ => "Tower Atomic",
+    };
+
+    println!("=== NUCLEUS Status ({profile_label}: {}/{} primals) ===", primals.len(), primals.len());
     println!();
 
     let mut alive = 0usize;
@@ -569,7 +580,9 @@ pub fn show_status(primals: &[&str]) {
             .and_then(|c| c.trim().parse::<u32>().ok())
             .filter(|pid| std::path::Path::new(&format!("/proc/{pid}")).exists());
 
-        let (health_ok, transport) = if socket.exists() && registry::health_check_uds(&socket) {
+        let (health_ok, transport) = if registry::capability_probe(primal) {
+            (true, "cap")
+        } else if socket.exists() && registry::health_check_uds(&socket) {
             (true, "uds")
         } else {
             let port = registry::effective_port(primal);
@@ -598,5 +611,9 @@ pub fn show_status(primals: &[&str]) {
     }
 
     println!();
-    println!("  {alive}/{total} primals responding to health checks");
+    if alive == total {
+        println!("  \x1b[32mPASS\x1b[0m {alive}/{total} primals healthy ({profile_label})");
+    } else {
+        println!("  \x1b[33m{alive}/{total}\x1b[0m primals responding ({profile_label})");
+    }
 }
