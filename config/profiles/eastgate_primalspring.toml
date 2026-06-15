@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# eastGate primalSpring Testing NUCLEUS — Interaction testing composition
+#
+# Usage: nucleus_launcher --profile eastgate-primalspring start --tcp
+#
+# Dedicated NUCLEUS for primalSpring team to run interaction tests, scenario
+# validation, and riboCipher acceptance sweeps against live primals. Runs with
+# TCP enabled so validation scenarios can probe ports directly. Separate
+# family isolation from the shared NUCLEUS.
+#
+# Key differences from eastgate_shared:
+#   - family_id: "primalspring-test" (isolated PID/socket namespace)
+#   - transport: TCP + UDS (scenarios need direct port probes)
+#   - federation: separate port 7701 (no cross-contamination with shared mesh)
+#   - allow_degraded: true (testing tolerates partial compositions)
+#   - validation: runs full interaction quality sweep
+#
+# Pair with: eastgate_shared.toml (production NUCLEUS, UDS-only)
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+[gate]
+name = "eastGate"
+specialization = "InteractionTesting"
+family_id = "primalspring-test"
+
+[composition]
+atomic_type = "nucleus"
+graph = "nucleus_complete.toml"
+transport = "tcp_enabled"
+
+[composition.primals]
+required = [
+    "beardog", "songbird", "skunkbat",
+    "biomeos",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "squirrel", "petaltongue",
+]
+optional = []
+
+[depot]
+source = "local"
+local_path = "$ECOPRIMALS_PLASMID_BIN"
+verify_checksums = true
+verify_provenance = false
+
+[validation]
+required_health_count = 7
+health_timeout_secs = 60
+run_scenario = "s_ribocipher_acceptance"
+required_properties = ["P1", "P2", "P3"]
+allow_degraded = true
+
+[validation.checksums]
+dual_verify = false
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+enabled = true
+timeout_secs = 20
+
+[mesh]
+enroll = true
+federation_port = 7701
+peers = []
+auto_reconnect = false
+reconnect_backoff_min = 30
+reconnect_backoff_max = 300

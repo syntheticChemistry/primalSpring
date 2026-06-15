@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# grapheneGate Profile — Pixel 7 Pro (aarch64, GrapheneOS)
+#
+# Usage: nucleus_launcher --profile graphenegate start
+#
+# Concrete instantiation of edge_light for our owned Pixel device.
+# TCP-only (SELinux blocks UDS for shell context), Tower Atomic composition.
+# Depot source: pulled from eastGate via ADB or pepti WAN.
+#
+# Constraints:
+#   - No UDS (SELinux sock_file denied for shell context)
+#   - /data/local/tmp is writable, /var/run is not
+#   - State directory must be explicitly set (SONGBIRD_STATE_DIR)
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+[gate]
+name = "grapheneGate"
+target_triple = "aarch64-unknown-linux-musl"
+specialization = "EdgeLight"
+family_id = "graphene-family"
+
+[composition]
+atomic_type = "tower"
+graph = "tower_atomic_bootstrap.toml"
+transport = "tcp_enabled"
+
+[composition.primals]
+required = ["beardog", "songbird", "skunkbat"]
+optional = []
+
+[depot]
+source = "local"
+local_path = "/data/local/tmp"
+verify_checksums = true
+verify_provenance = false
+
+[validation]
+required_health_count = 3
+health_timeout_secs = 30
+run_scenario = "s_sequential_graph"
+required_properties = ["P1", "P2"]
+allow_degraded = true
+
+[validation.checksums]
+dual_verify = false
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+enabled = false
+timeout_secs = 0
+
+[mesh]
+enroll = true
+federation_port = 7700
+peers = ["eastgate.local:7700"]
+auto_reconnect = true
+reconnect_backoff_min = 60
+reconnect_backoff_max = 600
+
+[environment]
+SONGBIRD_STATE_DIR = "/data/local/tmp/songbird"
+RUST_LOG = "info"

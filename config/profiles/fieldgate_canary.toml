@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# fieldGate Canary Profile — NUC onboarding (x86_64, LAN direct)
+#
+# Usage: nucleus_launcher --profile fieldgate-canary start
+#
+# First deployment to the NUC hardware gate. Starts with full 13-primal
+# composition but in degraded-tolerant mode for initial bootstrap. Once
+# all 13 pass health, upgrade to strict validation.
+#
+# Network: P2P hardwire via eno1 /30 subnet (no switch, no internet required
+# for initial bootstrap — depot pulled from eastGate LAN).
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+[gate]
+name = "fieldGate"
+specialization = "CanaryFieldmouse"
+family_id = "fieldgate-canary"
+
+[composition]
+atomic_type = "nucleus"
+graph = "nucleus_complete.toml"
+transport = "uds_only"
+
+[composition.primals]
+required = [
+    "beardog", "songbird", "skunkbat",
+    "biomeos",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "squirrel", "petaltongue",
+]
+optional = []
+
+[depot]
+source = "lan"
+lan_host = "eastgate.local"
+lan_path = "/home/eastgate/Development/ecoPrimals/plasmidBin"
+verify_checksums = true
+verify_provenance = true
+
+[validation]
+required_health_count = 13
+health_timeout_secs = 120
+run_scenario = "s_gate_expansion_readiness"
+required_properties = ["P1", "P2", "P3"]
+allow_degraded = true
+
+[validation.checksums]
+dual_verify = true
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+enabled = true
+timeout_secs = 30
+
+[mesh]
+enroll = true
+federation_port = 7700
+peers = ["eastgate.local:7700"]
+auto_reconnect = true
+reconnect_backoff_min = 10
+reconnect_backoff_max = 60

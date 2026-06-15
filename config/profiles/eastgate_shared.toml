@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# eastGate Shared NUCLEUS — Full 13-primal composition for general gate use
+#
+# Usage: nucleus_launcher --profile eastgate-shared start
+#
+# This is the "production" NUCLEUS on eastGate that airSpring, groundSpring,
+# and other teams can consume via standard IPC (UDS sockets). Runs in UDS-only
+# mode with mesh federation enabled for cross-gate connectivity.
+#
+# Pair with: eastgate_primalspring.toml (testing NUCLEUS, different family)
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+[gate]
+name = "eastGate"
+specialization = "SharedGate"
+family_id = "eastgate-shared"
+
+[composition]
+atomic_type = "nucleus"
+graph = "nucleus_complete.toml"
+transport = "uds_only"
+
+[composition.primals]
+required = [
+    "beardog", "songbird", "skunkbat",
+    "biomeos",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "squirrel", "petaltongue",
+]
+optional = []
+
+[depot]
+source = "local"
+local_path = "$ECOPRIMALS_PLASMID_BIN"
+verify_checksums = true
+verify_provenance = true
+
+[validation]
+required_health_count = 13
+health_timeout_secs = 90
+run_scenario = "s_full_nucleus"
+required_properties = ["P1", "P2", "P3", "P4", "P5"]
+allow_degraded = false
+
+[validation.checksums]
+dual_verify = true
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+enabled = true
+timeout_secs = 30
+
+[mesh]
+enroll = true
+federation_port = 7700
+peers = ["golgi.primals.eco:7700"]
+auto_reconnect = true
+reconnect_backoff_min = 30
+reconnect_backoff_max = 300

@@ -124,6 +124,10 @@ struct ManifestOverrides {
     composition: Option<String>,
     federation_port: Option<u16>,
     peers: Vec<String>,
+    /// If `true`, manifest explicitly requests TCP transport.
+    tcp_enabled: bool,
+    /// If `true`, allow degraded startup (50% health threshold).
+    allow_degraded: bool,
 }
 
 fn load_manifest(path: &std::path::Path) -> ManifestOverrides {
@@ -174,11 +178,25 @@ fn load_manifest(path: &std::path::Path) -> ManifestOverrides {
         })
         .unwrap_or_default();
 
+    let tcp_enabled = parsed
+        .get("composition")
+        .and_then(|c| c.get("transport"))
+        .and_then(toml::Value::as_str)
+        .is_some_and(|t| t == "tcp_enabled" || t == "tcp");
+
+    let allow_degraded = parsed
+        .get("validation")
+        .and_then(|v| v.get("allow_degraded"))
+        .and_then(toml::Value::as_bool)
+        .unwrap_or(false);
+
     ManifestOverrides {
         family_id,
         composition,
         federation_port,
         peers,
+        tcp_enabled,
+        allow_degraded,
     }
 }
 
@@ -201,6 +219,10 @@ fn main() {
                 "compute" => "compute_heavy",
                 "edge" => "edge_light",
                 "full" => "full_nucleus",
+                "eastgate-shared" | "shared" => "eastgate_shared",
+                "eastgate-primalspring" | "primalspring" => "eastgate_primalspring",
+                "fieldgate-canary" | "fieldgate" => "fieldgate_canary",
+                "graphenegate" | "graphene" | "pixel" => "graphenegate",
                 other => other,
             };
             std::path::PathBuf::from(format!("config/profiles/{profile_name}.toml"))
@@ -217,7 +239,15 @@ fn main() {
     match cli.command {
         Some(NucleusCommand::Stop) => {
             let primals = orchestrator::ordered_primals(atomic);
-            let family_id = cli.family_id.as_deref().unwrap_or("");
+            let family_id = cli
+                .family_id
+                .as_deref()
+                .or_else(|| {
+                    manifest_overrides
+                        .as_ref()
+                        .and_then(|m| m.family_id.as_deref())
+                })
+                .unwrap_or("");
             orchestrator::stop_all_family(&primals, family_id);
         }
         Some(NucleusCommand::Status) => {
@@ -289,6 +319,12 @@ fn main() {
                     std::process::exit(1);
                 });
 
+            let uds_only = if manifest_overrides.as_ref().is_some_and(|m| m.tcp_enabled) {
+                false
+            } else {
+                uds_only
+            };
+
             let federation_port = federation_port.or_else(|| {
                 manifest_overrides
                     .as_ref()
@@ -303,6 +339,11 @@ fn main() {
                     }
                 }
             }
+
+            let allow_degraded = allow_degraded
+                || manifest_overrides
+                    .as_ref()
+                    .is_some_and(|m| m.allow_degraded);
 
             let config = orchestrator::LaunchConfig {
                 family_id,
