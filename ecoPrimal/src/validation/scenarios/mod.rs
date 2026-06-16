@@ -53,6 +53,7 @@ pub mod s_barracuda_precision;
 pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
+pub mod s_bootstrap_readiness;
 pub mod s_btsp_cross_primal;
 pub mod s_cascade_provenance_match;
 pub mod s_cephalization;
@@ -174,6 +175,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_cascade_provenance_match::SCENARIO);
     r.register(s_wan_ipc_tolerance::SCENARIO);
     r.register(s_ribocipher_acceptance::SCENARIO);
+    r.register(s_bootstrap_readiness::SCENARIO);
     r
 }
 
@@ -184,7 +186,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 61;
+    const EXPECTED_SCENARIO_COUNT: usize = 62;
 
     #[test]
     fn registry_scenario_count() {

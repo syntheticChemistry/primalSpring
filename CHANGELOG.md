@@ -3,7 +3,17 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 109–111: guideStone Convergence + Gate Expansion (2026-06-11–13)
+## [Unreleased] — Waves 109–114: guideStone Convergence + Sovereign Compute (2026-06-11–15)
+
+### Wave 114: Validation Tooling + Bootstrap Readiness (June 15)
+- **`nucleus_launcher validate` subcommand** — Run validation scenarios against a live NUCLEUS
+  from the launcher CLI. Supports `--scenario <id>` for single-scenario runs and
+  `--structural-only` for Tier::Rust-only checks without requiring live primals.
+- **`s_bootstrap_readiness` scenario** (62nd) — Pre-deployment infrastructure validation
+  capturing the 8 fieldGate first-ant hurdles: binary discovery (4-tier search), runtime
+  directory structure (biomeOS socket dir, PID dir), port registry sanity (collision detection),
+  and environment configuration (FAMILY_ID, depot path, NESTGATE_JWT_SECRET). Gracefully
+  skips infrastructure-absent checks on dev machines.
 
 ### Wave 111: riboCipher + Port Registry + Deep Debt (June 11–13)
 - **riboCipher transport signal** — All outbound IPC connections now prepend `[0xEC, 0x01]`

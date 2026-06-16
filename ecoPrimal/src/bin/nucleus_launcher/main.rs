@@ -98,6 +98,19 @@ enum NucleusCommand {
     Stop,
     /// Show status of running primals (PID files + health probes).
     Status,
+    /// Run validation scenarios against a live NUCLEUS instance.
+    ///
+    /// Discovers the composition via standard IPC, then runs the scenario
+    /// suite appropriate for the active composition type. Useful for
+    /// post-deployment verification and interaction testing.
+    Validate {
+        /// Run only a specific scenario by ID (default: run all for composition).
+        #[arg(long)]
+        scenario: Option<String>,
+        /// Only run Tier::Rust (structural) checks, skip live probes.
+        #[arg(long)]
+        structural_only: bool,
+    },
 }
 
 fn resolve_node_id(cli_node_id: Option<String>) -> String {
@@ -253,6 +266,12 @@ fn main() {
         Some(NucleusCommand::Status) => {
             let primals = orchestrator::ordered_primals(atomic);
             orchestrator::show_status(&primals);
+        }
+        Some(NucleusCommand::Validate {
+            scenario,
+            structural_only,
+        }) => {
+            orchestrator::run_validation(atomic, scenario.as_deref(), structural_only);
         }
         cmd => {
             let (
