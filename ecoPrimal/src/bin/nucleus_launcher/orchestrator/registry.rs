@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Songbird registry seeding, capability mapping, health probes, and port resolution.
+//! Discovery-provider registry seeding, capability mapping, health probes, and port resolution.
+//!
+//! The discovery provider (currently Songbird) is resolved via capability routing,
+//! not hardcoded. Functions use generic names (`register_with_discovery`, etc.) to
+//! decouple from any specific primal's identity.
 
 use std::collections::HashMap;
 use std::time::Duration;
@@ -11,7 +15,7 @@ use primalspring::tolerances;
 
 #[derive(Debug, thiserror::Error)]
 pub(super) enum RegistryError {
-    #[error("songbird unreachable: {0}")]
+    #[error("discovery provider unreachable: {0}")]
     Unreachable(#[source] std::io::Error),
     #[error("I/O: {0}")]
     Io(#[source] std::io::Error),
@@ -19,6 +23,15 @@ pub(super) enum RegistryError {
     EmptyResponse,
     #[error("non-standard response: {0}")]
     BadResponse(String),
+}
+
+/// Resolve the loopback address for local IPC connections.
+fn local_addr(port: u16) -> std::net::SocketAddr {
+    use std::net::SocketAddr;
+    let host: std::net::IpAddr = tolerances::platform::DEFAULT_HOST
+        .parse()
+        .unwrap_or(std::net::IpAddr::V4(std::net::Ipv4Addr::LOCALHOST));
+    SocketAddr::new(host, port)
 }
 
 fn jsonrpc_payload(method: &str, params: &serde_json::Value, id: u64) -> String {
@@ -39,7 +52,7 @@ fn jsonrpc_response_has_field(response: &str, field: &str) -> bool {
 /// Build primal → capability domains map from `capability_registry.toml`.
 ///
 /// The registry TOML has `[domain] owner = "primal"` sections. We invert
-/// this to build a primal → Vec<domain> mapping for Songbird seeding.
+/// this to build a primal → Vec<domain> mapping for discovery-provider seeding.
 ///
 /// Falls back to a minimal static table if the registry file is missing.
 pub(super) fn build_capability_map() -> HashMap<String, Vec<String>> {
@@ -170,9 +183,9 @@ fn classify_jsonrpc_response(response: &str) -> ProbeResult {
 /// method_not_found), or [`ProbeResult::Unreachable`] on connection/timeout failure.
 pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> ProbeResult {
     use std::io::{Read, Write};
-    use std::net::{SocketAddr, TcpStream};
+    use std::net::TcpStream;
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = local_addr(port);
     let payload = jsonrpc_payload("health.check", &serde_json::json!({}), 1);
 
     let Ok(stream) = TcpStream::connect_timeout(&addr, timeout) else {
@@ -220,12 +233,12 @@ pub(super) fn socket_path_for(primal: &str) -> std::path::PathBuf {
         .join(format!("{primal}.sock"))
 }
 
-/// Seed Songbird with known peer addresses for cross-gate mesh discovery.
-pub(super) fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) -> usize {
+/// Seed the discovery provider with known peer addresses for cross-gate mesh.
+pub(super) fn seed_discovery_peers(port: u16, peers: &[String], node_id: &str) -> usize {
     use std::io::{Read, Write};
-    use std::net::{SocketAddr, TcpStream};
+    use std::net::TcpStream;
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = local_addr(port);
     let timeout = Duration::from_secs(5);
     let mut seeded = 0;
 
@@ -263,12 +276,12 @@ pub(super) fn seed_songbird_peers(port: u16, peers: &[String], node_id: &str) ->
     seeded
 }
 
-/// Send a register payload to Songbird via TCP.
-pub(super) fn register_with_songbird(port: u16, payload: &str) -> Result<(), RegistryError> {
+/// Send a register payload to the discovery provider via TCP.
+pub(super) fn register_with_discovery(port: u16, payload: &str) -> Result<(), RegistryError> {
     use std::io::{Read, Write};
-    use std::net::{SocketAddr, TcpStream};
+    use std::net::TcpStream;
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = local_addr(port);
     let timeout = Duration::from_secs(5);
 
     let stream = TcpStream::connect_timeout(&addr, timeout).map_err(RegistryError::Unreachable)?;
@@ -328,8 +341,8 @@ fn send_uds_rpc(socket: &std::path::Path, payload: &str) -> Result<String, Regis
     }
 }
 
-/// Send a register payload to Songbird via UDS.
-pub(super) fn register_with_songbird_uds(
+/// Send a register payload to the discovery provider via UDS.
+pub(super) fn register_with_discovery_uds(
     socket: &std::path::Path,
     payload: &str,
 ) -> Result<(), RegistryError> {
@@ -342,8 +355,8 @@ pub(super) fn register_with_songbird_uds(
     }
 }
 
-/// Seed Songbird with known peer addresses via UDS.
-pub(super) fn seed_songbird_peers_uds(
+/// Seed the discovery provider with known peer addresses via UDS.
+pub(super) fn seed_discovery_peers_uds(
     socket: &std::path::Path,
     peers: &[String],
     node_id: &str,

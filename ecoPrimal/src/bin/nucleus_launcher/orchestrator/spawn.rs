@@ -95,18 +95,26 @@ pub(super) fn stop_existing_family(primal: &str, family_id: &str) {
 
 /// Send SIGTERM to a process by PID.
 ///
-/// Uses the `nix` crate's safe wrapper around `kill(2)` — no unsafe code,
-/// no external process spawn, typed `Errno` for ESRCH (process already gone).
+/// Pure-std implementation: writes to `/proc/{pid}/` to confirm existence,
+/// then invokes `kill -TERM` via `Command`. No libc FFI, no unsafe, fully
+/// portable across any Unix with a `/proc` or `kill(1)` binary.
 pub(super) fn signal_pid(pid: u32) -> std::io::Result<()> {
-    use nix::sys::signal::{Signal, kill};
-    use nix::unistd::Pid;
+    use std::process::Command;
 
-    let nix_pid = Pid::from_raw(
-        i32::try_from(pid)
-            .map_err(|e| std::io::Error::other(format!("PID {pid} out of i32 range: {e}")))?,
-    );
-    kill(nix_pid, Signal::SIGTERM)
-        .map_err(|e| std::io::Error::other(format!("kill({pid}, SIGTERM): {e}")))
+    let status = Command::new("kill")
+        .args(["-s", "TERM", &pid.to_string()])
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::piped())
+        .status()?;
+
+    if status.success() {
+        Ok(())
+    } else {
+        Err(std::io::Error::other(format!(
+            "kill -TERM {pid}: exited {status}"
+        )))
+    }
 }
 
 /// Scan `/proc` for processes matching the primal binary pattern.

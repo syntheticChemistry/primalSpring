@@ -18,20 +18,15 @@ use primalspring::launcher::discover_binary;
 use primalspring::primal_names;
 use primalspring::validation::ValidationResult;
 
-const EXPECTED_PRIMALS: &[&str] = &[
-    primal_names::BEARDOG,
-    primal_names::SONGBIRD,
-    primal_names::SKUNKBAT,
-    primal_names::TOADSTOOL,
-    primal_names::BARRACUDA,
-    primal_names::CORALREEF,
-    primal_names::NESTGATE,
-    primal_names::RHIZOCRYPT,
-    primal_names::LOAMSPINE,
-    primal_names::SWEETGRASS,
-    primal_names::SQUIRREL,
-    primal_names::PETALTONGUE,
-];
+/// Deployable primals — derived from canonical roster, excluding orchestrator-only
+/// entries (biomeos). Stays in sync with `Primal::ALL` without manual maintenance.
+fn expected_primals() -> Vec<&'static str> {
+    primal_names::Primal::ALL
+        .iter()
+        .map(|p| p.slug())
+        .filter(|&s| s != primal_names::BIOMEOS)
+        .collect()
+}
 
 const FEDERATION_PORT: u16 = primalspring::tolerances::SONGBIRD_FEDERATION_PORT;
 const LAUNCH_TIMEOUT: Duration = Duration::from_secs(90);
@@ -105,9 +100,10 @@ impl NucleusGate {
             return;
         }
 
+        let primals = expected_primals();
         let mut present = 0u32;
         let mut missing = Vec::new();
-        for &p in EXPECTED_PRIMALS {
+        for &p in &primals {
             let bin = self.depot_dir.join(p);
             if bin.is_file() {
                 present += 1;
@@ -116,7 +112,7 @@ impl NucleusGate {
             }
         }
         #[expect(clippy::cast_possible_truncation, reason = "primal count fits in u32")]
-        let expected_count = EXPECTED_PRIMALS.len() as u32;
+        let expected_count = primals.len() as u32;
         self.v.check_bool(
             "depot-binary-count",
             present >= expected_count,
@@ -364,12 +360,12 @@ impl NucleusGate {
 
             #[cfg(unix)]
             {
-                use nix::sys::signal::{Signal, kill};
-                use nix::unistd::Pid;
-                let _ = kill(
-                    Pid::from_raw(i32::try_from(pid).unwrap_or(i32::MAX)),
-                    Signal::SIGTERM,
-                );
+                let _ = std::process::Command::new("kill")
+                    .args(["-s", "TERM", &pid.to_string()])
+                    .stdin(std::process::Stdio::null())
+                    .stdout(std::process::Stdio::null())
+                    .stderr(std::process::Stdio::null())
+                    .status();
             }
             #[cfg(not(unix))]
             {
@@ -475,7 +471,15 @@ fn resolve_depot_dir() -> PathBuf {
             return flat;
         }
     }
-    PathBuf::from("/opt/ecoPrimals/plasmidBin/primals")
+    let xdg_cache = PathBuf::from(primalspring::tolerances::platform::xdg_data_home())
+        .join("ecoPrimals")
+        .join("plasmidBin")
+        .join("primals");
+    if xdg_cache.is_dir() {
+        return xdg_cache;
+    }
+    PathBuf::from(primalspring::tolerances::plasmidbin_depot_root())
+        .join("primals")
 }
 
 fn resolve_socket_dir() -> PathBuf {
@@ -487,7 +491,7 @@ fn resolve_socket_dir() -> PathBuf {
 
 fn dirs_home() -> PathBuf {
     std::env::var(primalspring::env_keys::HOME)
-        .map_or_else(|_| PathBuf::from("/root"), PathBuf::from)
+        .map_or_else(|_| std::env::temp_dir(), PathBuf::from)
 }
 
 #[cfg(unix)]
@@ -529,10 +533,12 @@ fn kill_existing_nucleus() {
                 .collect();
             let had_pids = !pids.is_empty();
             for pid in pids {
-                let _ = nix::sys::signal::kill(
-                    nix::unistd::Pid::from_raw(i32::try_from(pid).unwrap_or(i32::MAX)),
-                    nix::sys::signal::Signal::SIGTERM,
-                );
+                let _ = std::process::Command::new("kill")
+                    .args(["-s", "TERM", &pid.to_string()])
+                    .stdin(std::process::Stdio::null())
+                    .stdout(std::process::Stdio::null())
+                    .stderr(std::process::Stdio::null())
+                    .status();
             }
             if had_pids {
                 std::thread::sleep(Duration::from_secs(2));

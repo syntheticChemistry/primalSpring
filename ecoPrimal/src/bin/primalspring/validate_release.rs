@@ -18,21 +18,10 @@ use primalspring::validation::ValidationResult;
 const MIN_TESTS: u32 = 750;
 const MIN_COVERAGE: u32 = 70;
 
-const EXPECTED_PRIMALS: &[&str] = &[
-    primal_names::BEARDOG,
-    primal_names::SONGBIRD,
-    primal_names::SKUNKBAT,
-    primal_names::TOADSTOOL,
-    primal_names::BARRACUDA,
-    primal_names::CORALREEF,
-    primal_names::NESTGATE,
-    primal_names::RHIZOCRYPT,
-    primal_names::LOAMSPINE,
-    primal_names::SWEETGRASS,
-    primal_names::SQUIRREL,
-    primal_names::PETALTONGUE,
-    primal_names::BIOMEOS,
-];
+/// Full roster including orchestrator — derived from canonical `Primal::ALL`.
+fn expected_primals() -> Vec<&'static str> {
+    primal_names::Primal::ALL.iter().map(|p| p.slug()).collect()
+}
 
 pub struct ReleaseArgs {
     pub skip_coverage: bool,
@@ -217,8 +206,9 @@ fn check_plasmidbin(v: &mut ValidationResult) {
         return;
     }
 
+    let primals = expected_primals();
     let mut all_ok = true;
-    for &primal in EXPECTED_PRIMALS {
+    for &primal in &primals {
         let bin = depot_dir.join(primal);
         if !bin.is_file() {
             v.check_bool(
@@ -233,7 +223,7 @@ fn check_plasmidbin(v: &mut ValidationResult) {
         v.check_bool(
             "depot-binaries",
             true,
-            &format!("{} primals present in depot", EXPECTED_PRIMALS.len()),
+            &format!("{} primals present in depot", primals.len()),
         );
     }
 

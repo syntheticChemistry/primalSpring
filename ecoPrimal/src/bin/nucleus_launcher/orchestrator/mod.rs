@@ -2,11 +2,14 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! NUCLEUS orchestrator — dependency-ordered primal startup, health checks,
-//! and Songbird registry seeding.
+//! and discovery-provider registry seeding.
 
 pub mod preflight;
 mod registry;
 mod spawn;
+mod validate;
+
+pub use validate::run_validation;
 
 use std::path::PathBuf;
 use std::time::Duration;
@@ -33,7 +36,7 @@ pub struct LaunchConfig {
     /// UDS-only mode: suppress TCP port allocation (VPS standard).
     pub uds_only: bool,
     pub federation_port: Option<u16>,
-    /// Peer addresses for cross-gate Songbird mesh seeding.
+    /// Peer addresses for cross-gate mesh seeding (via discovery provider).
     pub peers: Vec<String>,
     /// Skip Phase 0 pre-flight validation (degraded-mode escape hatch).
     pub skip_preflight: bool,
@@ -324,7 +327,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         println!();
     }
 
-    println!("=== Phase 5: Registry seeding (Songbird ipc.register) ===");
+    println!("=== Phase 5: Registry seeding (discovery ipc.register) ===");
     let discovery_owner = primalspring::composition::capability_to_primal("discovery");
     let songbird_port = registry::effective_port_for(discovery_owner, config.uds_only);
     let songbird_uds: Option<&std::path::Path> = if config.uds_only {
@@ -392,8 +395,8 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         let payload = serde_json::to_string(&request).unwrap_or_default();
 
         let result = songbird_uds.map_or_else(
-            || registry::register_with_songbird(songbird_port, &payload),
-            |uds| registry::register_with_songbird_uds(uds, &payload),
+            || registry::register_with_discovery(songbird_port, &payload),
+            |uds| registry::register_with_discovery_uds(uds, &payload),
         );
         match result {
             Ok(()) => {
@@ -413,8 +416,8 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     if !config.peers.is_empty() {
         println!("=== Phase 5b: Peer seeding (cross-gate mesh) ===");
         let seeded = match songbird_uds {
-            Some(uds) => registry::seed_songbird_peers_uds(uds, &config.peers, &config.node_id),
-            None => registry::seed_songbird_peers(songbird_port, &config.peers, &config.node_id),
+            Some(uds) => registry::seed_discovery_peers_uds(uds, &config.peers, &config.node_id),
+            None => registry::seed_discovery_peers(songbird_port, &config.peers, &config.node_id),
         };
         if seeded > 0 {
             println!(
@@ -422,7 +425,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                 config.peers.join(", ")
             );
         } else {
-            println!("  \x1b[31mFailed to seed peers\x1b[0m — Songbird may not support mesh.init");
+            println!("  \x1b[31mFailed to seed peers\x1b[0m — discovery provider may not support mesh.init");
             println!("  Peers requested: {}", config.peers.join(", "));
         }
         println!();
@@ -435,14 +438,14 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                 .filter(|s| !s.is_empty())
                 .collect();
             let seeded = match songbird_uds {
-                Some(uds) => registry::seed_songbird_peers_uds(uds, &peer_list, &config.node_id),
-                None => registry::seed_songbird_peers(songbird_port, &peer_list, &config.node_id),
+                Some(uds) => registry::seed_discovery_peers_uds(uds, &peer_list, &config.node_id),
+                None => registry::seed_discovery_peers(songbird_port, &peer_list, &config.node_id),
             };
             if seeded > 0 {
                 println!("  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {env_peers}");
             } else {
                 println!(
-                    "  \x1b[31mFailed to seed peers\x1b[0m — Songbird may not support mesh.init"
+                    "  \x1b[31mFailed to seed peers\x1b[0m — discovery provider may not support mesh.init"
                 );
             }
             println!();
@@ -629,110 +632,3 @@ pub fn show_status(primals: &[&str]) {
     }
 }
 
-/// Run validation scenarios against a live NUCLEUS.
-///
-/// Discovers composition via standard IPC, then runs either a specific
-/// scenario or the default suite for the active composition type.
-pub fn run_validation(
-    atomic: primalspring::coordination::AtomicType,
-    scenario_id: Option<&str>,
-    structural_only: bool,
-) {
-    use primalspring::composition::CompositionContext;
-    use primalspring::validation::scenarios::{Tier, build_registry};
-    use primalspring::validation::ValidationResult;
-
-    println!();
-    println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
-    println!("\x1b[36m  NUCLEUS Validation\x1b[0m");
-    println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
-    println!();
-    println!("  Composition: {atomic:?}");
-    println!(
-        "  Mode:        {}",
-        if structural_only {
-            "structural only (Tier::Rust)"
-        } else {
-            "full (structural + live)"
-        }
-    );
-    println!();
-
-    let registry = build_registry();
-    let mut ctx = CompositionContext::discover();
-
-    let scenarios: Vec<&_> = scenario_id.map_or_else(
-        || {
-            if structural_only {
-                registry.filter_by_tier(Tier::Rust).collect()
-            } else {
-                registry.all().iter().collect()
-            }
-        },
-        |id| {
-            let Some(s) = registry.all().iter().find(|s| s.meta.id == id) else {
-                eprintln!("error: scenario '{id}' not found in registry");
-                eprintln!(
-                    "  available: {}",
-                    registry
-                        .all()
-                        .iter()
-                        .map(|s| s.meta.id)
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                );
-                std::process::exit(1);
-            };
-            vec![s]
-        },
-    );
-
-    let total = scenarios.len();
-    let mut passed = 0usize;
-    let mut failed = 0usize;
-    let mut skipped_count = 0usize;
-
-    for (i, scenario) in scenarios.iter().enumerate() {
-        let mut v = ValidationResult::new(scenario.meta.id);
-        println!("  [{}/{}] {} ...", i + 1, total, scenario.meta.id);
-        (scenario.run)(&mut v, &mut ctx);
-
-        if v.failed == 0 {
-            passed += 1;
-            println!(
-                "    \x1b[32mPASS\x1b[0m ({} checks, {} skipped)",
-                v.evaluated(),
-                v.skipped
-            );
-        } else {
-            failed += 1;
-            println!(
-                "    \x1b[31mFAIL\x1b[0m ({} failures, {} passed, {} skipped)",
-                v.failed,
-                v.evaluated().saturating_sub(v.failed),
-                v.skipped
-            );
-        }
-        if v.evaluated() == 0 && v.skipped > 0 {
-            skipped_count += 1;
-        }
-    }
-
-    println!();
-    println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
-    if failed == 0 {
-        println!(
-            "  \x1b[32mALL PASS\x1b[0m — {passed}/{total} scenarios green ({skipped_count} fully skipped)"
-        );
-    } else {
-        println!(
-            "  \x1b[31m{failed} FAILED\x1b[0m — {passed} passed, {failed} failed, {skipped_count} skipped"
-        );
-    }
-    println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
-    println!();
-
-    if failed > 0 {
-        std::process::exit(1);
-    }
-}
