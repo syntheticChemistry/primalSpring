@@ -1,32 +1,21 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Synchronous riboCipher signal acceptance for primalSpring's inline probes.
+//! Synchronous riboCipher signal classification (transitional — pre-primordial debt).
 //!
-//! This is a **sync adapter** for primalSpring's launcher health probes and
-//! validation scenarios. Primals should use the canonical async implementation
-//! in `sourdough_core::transport::ribocipher_server::RiboCipherAcceptLoop`.
+//! # Deprecation Notice (Wave 114)
 //!
-//! # When to Use This vs sourdough
+//! This module is pre-primordial debt. Post-primordial primalSpring validates
+//! against fully deployed NUCLEUS instances from the plasmidBin depot on VPS —
+//! it does not implement or provide server accept patterns.
 //!
-//! | Context | Use |
-//! |---------|-----|
-//! | Primal accept loop (async/tokio) | `sourdough_core::transport::ribocipher_server` |
-//! | primalSpring launcher probes (sync) | This module |
-//! | Validation scenarios (sync) | This module |
+//! Primals converge independently on `sourdough_core::transport::ribocipher`.
+//! This is more robust than shared code: convergence means each primal evolves
+//! its own accept loop to match the sourdough-defined standard.
 //!
-//! # Eukaryotic Model (Wave 114)
-//!
-//! Two genetics streams coexist on every connection:
-//!
-//! | Tier Byte | Stream | Meaning |
-//! |-----------|--------|---------|
-//! | `0xEC` | MitoBeacon (clear) | Group membership, plaintext JSON-RPC |
-//! | `0xED` | MitoBeacon (obfuscated) | Group membership, obfuscated tunnel |
-//! | `0xEE` | Nuclear (sealed) | Per-user lineage, encrypted session |
-//!
-//! The sync API mirrors sourdough's async `detect_signal` but operates on
-//! `std::io::Read` instead of `tokio::io::AsyncRead`.
+//! Retained for `detect_signal_buffered` (used by validation probes to
+//! classify responses). Scheduled for removal once all validation runs
+//! against live deployed NUCLEUS exclusively.
 
 use std::io::{self, Read};
 
