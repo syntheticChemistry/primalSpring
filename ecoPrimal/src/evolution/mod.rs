@@ -25,10 +25,12 @@
 
 pub mod fitness;
 pub mod pressure;
+pub mod report;
 pub mod target;
 
 pub use fitness::{ArchFitness, FitnessScore};
 pub use pressure::PressureCategory;
+pub use report::TargetReport;
 pub use target::{CompositionTier, DeploymentTier, Target};
 
 use crate::primal_names::Primal;
