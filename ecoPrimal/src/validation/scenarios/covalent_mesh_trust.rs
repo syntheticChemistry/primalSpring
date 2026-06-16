@@ -629,16 +629,20 @@ pub(super) fn phase_dark_forest_invariants(v: &mut ValidationResult, ctx: &mut C
 }
 
 fn check_port_isolation(v: &mut ValidationResult) {
+    let host: std::net::IpAddr = crate::tolerances::platform::DEFAULT_HOST
+        .parse()
+        .unwrap_or(std::net::IpAddr::V4(std::net::Ipv4Addr::LOCALHOST));
+
     let songbird_port: u16 = crate::tolerances::SONGBIRD_FEDERATION_PORT;
     let federation_port_check = std::net::TcpStream::connect_timeout(
-        &std::net::SocketAddr::from(([127, 0, 0, 1], songbird_port)),
+        &std::net::SocketAddr::new(host, songbird_port),
         std::time::Duration::from_millis(200),
     );
     v.check_bool(
         "darkforest:federation_port_only",
         federation_port_check.is_ok(),
         &format!(
-            "Songbird federation :{songbird_port}: {}",
+            "federation :{songbird_port}: {}",
             if federation_port_check.is_ok() {
                 "listening (correct)"
             } else {
@@ -650,7 +654,7 @@ fn check_port_isolation(v: &mut ValidationResult) {
     let non_federation_ports: &[u16] = &[7701, 9101, 9750];
     let any_non_federation_exposed = non_federation_ports.iter().any(|&port| {
         std::net::TcpStream::connect_timeout(
-            &std::net::SocketAddr::from(([127, 0, 0, 1], port)),
+            &std::net::SocketAddr::new(host, port),
             std::time::Duration::from_millis(100),
         )
         .is_ok()

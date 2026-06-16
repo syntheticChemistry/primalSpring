@@ -176,3 +176,50 @@ pub static FEDERATION_PORTS: &[FederationPort] = &[
 /// port assignment.
 /// Authoritative: `config/ports.toml` federation section.
 pub const SONGBIRD_FEDERATION_PORT: u16 = 7700;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn static_registry_matches_toml() {
+        for entry in PORT_REGISTRY {
+            let toml_port = toml_port_for(entry.slug);
+            assert_eq!(
+                toml_port,
+                Some(entry.port),
+                "DRIFT: static PORT_REGISTRY says {}={} but ports.toml says {:?}",
+                entry.slug,
+                entry.port,
+                toml_port
+            );
+        }
+    }
+
+    #[test]
+    fn toml_registry_covers_all_primals() {
+        assert!(
+            !TOML_PORT_REGISTRY.is_empty(),
+            "ports.toml failed to parse — TOML registry is empty"
+        );
+        assert!(
+            TOML_PORT_REGISTRY.len() >= PORT_REGISTRY.len(),
+            "TOML has fewer entries ({}) than static ({})",
+            TOML_PORT_REGISTRY.len(),
+            PORT_REGISTRY.len()
+        );
+    }
+
+    #[test]
+    fn no_port_collisions() {
+        let mut seen: std::collections::HashMap<u16, &str> = std::collections::HashMap::new();
+        for entry in PORT_REGISTRY {
+            if let Some(existing) = seen.insert(entry.port, entry.slug) {
+                panic!(
+                    "PORT COLLISION: {} and {} both claim port {}",
+                    existing, entry.slug, entry.port
+                );
+            }
+        }
+    }
+}

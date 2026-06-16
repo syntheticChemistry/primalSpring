@@ -55,8 +55,11 @@ fn phase_structural(v: &mut ValidationResult) {
 
     for p in FEDERATION_PORTS {
         let label = if p.droppable { "DROPPABLE" } else { "KEEP" };
+        let host: std::net::IpAddr = crate::tolerances::platform::DEFAULT_HOST
+            .parse()
+            .unwrap_or(std::net::IpAddr::V4(std::net::Ipv4Addr::LOCALHOST));
         let reachable = std::net::TcpStream::connect_timeout(
-            &std::net::SocketAddr::from(([127, 0, 0, 1], p.port)),
+            &std::net::SocketAddr::new(host, p.port),
             std::time::Duration::from_millis(300),
         )
         .is_ok();

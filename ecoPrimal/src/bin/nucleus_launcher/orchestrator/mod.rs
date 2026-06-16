@@ -210,7 +210,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         println!("  Runtime: {runtime_dir}");
         println!("  Sockets: {}", socket_dir.display());
         if let Some(fed_port) = config.federation_port {
-            println!("  Federation: Songbird TCP :{fed_port} (LAN mesh enabled)");
+            println!("  Federation: TCP :{fed_port} (LAN mesh enabled)");
         } else {
             println!("  Federation: disabled (UDS-only, no LAN mesh)");
         }
