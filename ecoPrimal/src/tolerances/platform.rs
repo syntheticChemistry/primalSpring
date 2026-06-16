@@ -88,6 +88,20 @@ pub fn current_target_triple() -> String {
     }
 }
 
+/// Resolve the system hostname without libc.
+///
+/// Reads `/etc/hostname` (Linux) or falls back to `HOSTNAME`/`HOST` env vars.
+/// Returns `None` only if no hostname source is available.
+#[must_use]
+pub fn hostname() -> Option<String> {
+    std::fs::read_to_string("/etc/hostname")
+        .ok()
+        .map(|s| s.trim().to_owned())
+        .filter(|s| !s.is_empty())
+        .or_else(|| std::env::var("HOSTNAME").ok())
+        .or_else(|| std::env::var("HOST").ok())
+}
+
 /// Read the real UID from `/proc/self/status` (no libc, no unsafe).
 #[cfg(target_os = "linux")]
 fn real_uid() -> Option<u32> {

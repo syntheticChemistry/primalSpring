@@ -77,7 +77,9 @@ impl LiveMeshConfig {
     pub fn from_env_only() -> Self {
         let local_gate = std::env::var(crate::env_keys::GATE_ID)
             .or_else(|_| std::env::var(crate::env_keys::HOSTNAME))
-            .unwrap_or_else(|_| "east-gate".to_owned());
+            .unwrap_or_else(|_| {
+                crate::tolerances::platform::hostname().unwrap_or_else(|| "unknown-gate".to_owned())
+            });
 
         let remote_gates = parse_songbird_peers();
 
@@ -117,7 +119,9 @@ impl LiveMeshConfig {
         let gates_table = parsed.get("gates")?.as_table()?;
         let local_gate = std::env::var(crate::env_keys::GATE_ID)
             .or_else(|_| std::env::var(crate::env_keys::HOSTNAME))
-            .unwrap_or_else(|_| "east-gate".to_owned());
+            .unwrap_or_else(|_| {
+                crate::tolerances::platform::hostname().unwrap_or_else(|| "unknown-gate".to_owned())
+            });
 
         let local_key = gates_table
             .keys()
@@ -134,7 +138,7 @@ impl LiveMeshConfig {
             let addr = gate_val
                 .get("address")
                 .and_then(toml::Value::as_str)
-                .unwrap_or("127.0.0.1");
+                .unwrap_or(crate::tolerances::platform::DEFAULT_HOST);
             let port = gate_val
                 .get("songbird_port")
                 .and_then(toml::Value::as_integer)
