@@ -48,6 +48,7 @@ pub use registry::{Scenario, ScenarioMeta, ScenarioRegistry, Tier, Track};
 // ───────────────────────────────────────────────────────────────────
 mod covalent_mesh_trust;
 pub mod s_agentic_tower;
+pub mod s_arch_fitness;
 pub mod s_atomic_compositions;
 pub mod s_barracuda_precision;
 pub mod s_beardog_fido2;
@@ -176,6 +177,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_wan_ipc_tolerance::SCENARIO);
     r.register(s_ribocipher_acceptance::SCENARIO);
     r.register(s_bootstrap_readiness::SCENARIO);
+    r.register(s_arch_fitness::SCENARIO);
     r
 }
 
@@ -186,7 +188,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 62;
+    const EXPECTED_SCENARIO_COUNT: usize = 63;
 
     #[test]
     fn registry_scenario_count() {

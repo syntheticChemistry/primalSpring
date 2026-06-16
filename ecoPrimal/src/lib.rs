@@ -36,6 +36,7 @@
 //! - [`coordination`] — atomic definitions (Tower, Node, Nest, Full NUCLEUS) and live probing
 //! - [`composition`] — composition parity: call math through primals, compare against baselines
 //! - [`validation`] — experiment harness with structured pass/fail/skip output
+//! - [`evolution`] — cross-architecture fitness testing (silicon-atheist playground)
 //! - [`tolerances`] — named bounds for parity, latency, and coordination
 //! - [`deploy`] — deploy graph parsing, structural validation, and live probing
 //! - [`harness`] — spawn compositions, validate, tear down
@@ -64,6 +65,7 @@ pub mod coordination;
 pub mod deploy;
 pub mod emergent;
 pub mod env_keys;
+pub mod evolution;
 pub mod genetics;
 pub mod graphs;
 pub mod harness;

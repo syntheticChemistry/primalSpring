@@ -63,6 +63,8 @@ pub enum Track {
     Lifecycle,
     /// Sovereignty: membrane composition, content routing, parity protocol.
     Sovereignty,
+    /// Evolution: cross-architecture fitness, silicon-atheist validation.
+    Evolution,
 }
 
 impl std::fmt::Display for Track {
@@ -78,6 +80,7 @@ impl std::fmt::Display for Track {
             Self::Infrastructure => write!(f, "infrastructure"),
             Self::Lifecycle => write!(f, "lifecycle"),
             Self::Sovereignty => write!(f, "sovereignty"),
+            Self::Evolution => write!(f, "evolution"),
         }
     }
 }
@@ -97,6 +100,7 @@ impl Track {
             "infrastructure" | "infra" => Some(Self::Infrastructure),
             "lifecycle" => Some(Self::Lifecycle),
             "sovereignty" | "sovereign" => Some(Self::Sovereignty),
+            "evolution" | "evo" | "fitness" => Some(Self::Evolution),
             _ => None,
         }
     }
