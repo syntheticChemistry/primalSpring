@@ -33,21 +33,9 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
-const EXPECTED_PRIMALS: &[&str] = &[
-    "barracuda",
-    "beardog",
-    "biomeos",
-    "coralreef",
-    "loamspine",
-    "nestgate",
-    "petaltongue",
-    "rhizocrypt",
-    "skunkbat",
-    "songbird",
-    "squirrel",
-    "sweetgrass",
-    "toadstool",
-];
+use crate::primal_names::Primal;
+
+const EXPECTED_PRIMALS: &[&str] = Primal::ALL_SLUGS;
 
 fn resolve_depot_root() -> Option<PathBuf> {
     if let Ok(bin) = std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN) {

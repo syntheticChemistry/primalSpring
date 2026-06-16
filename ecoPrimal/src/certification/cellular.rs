@@ -116,12 +116,12 @@ fn validate_cell_graph_toml(v: &mut ValidationResult, stem: &str, val: &toml::Va
         })
         .collect();
 
-    let has_tower =
-        node_names.contains(&primal_names::BEARDOG) && node_names.contains(&primal_names::SONGBIRD);
+    let tower_slugs = primal_names::Primal::TOWER_SLUGS;
+    let has_tower = tower_slugs.iter().any(|slug| node_names.contains(slug));
     v.check_bool(
         &format!("cellular:{stem}:tower"),
         has_tower,
-        "Tower primals (beardog + songbird) present",
+        "At least one Tower primal present in cellular graph",
     );
 
     let has_petaltongue = node_names.contains(&primal_names::PETALTONGUE);

@@ -19,9 +19,11 @@ use std::sync::OnceLock;
 
 /// Family group identifier for multi-tenant socket paths and BTSP genetics.
 pub const FAMILY_ID: &str = "FAMILY_ID";
-/// Hex-encoded family seed used as BTSP key material.
+/// Hex-encoded family seed used as BTSP key material (primary).
 pub const FAMILY_SEED: &str = "FAMILY_SEED";
-/// BearDog-specific alias for the family seed.
+/// Legacy alias — prefer [`FAMILY_SEED`]. Retained for backward compatibility
+/// with deployments that set `BEARDOG_FAMILY_SEED` directly.
+#[deprecated(since = "0.9.31", note = "use FAMILY_SEED instead")]
 pub const BEARDOG_FAMILY_SEED: &str = "BEARDOG_FAMILY_SEED";
 /// Guidestone-level seed override (highest priority in mito-tier resolution).
 pub const GUIDESTONE_SEED: &str = "GUIDESTONE_SEED";
@@ -228,12 +230,17 @@ pub fn port_env_key(slug: &str) -> &'static str {
 
 // ── Cross-primal coordination ─────────────────────────────────────
 
-/// Comma-separated Songbird peer addresses for mesh bootstrap.
+/// Comma-separated discovery provider peer addresses for mesh bootstrap.
+///
+/// Legacy name references Songbird (the discovery primal), but the concept
+/// is generic: any discovery provider reads this for initial peer seeding.
 pub const SONGBIRD_PEERS: &str = "SONGBIRD_PEERS";
-/// Comma-separated mesh peer addresses for plasmodium collective scenarios.
+/// Generic mesh peer addresses (preferred over `SONGBIRD_PEERS` for new code).
 pub const MESH_PEERS: &str = "MESH_PEERS";
 
-/// Songbird security socket path override.
+/// Discovery provider security socket path override.
+/// Legacy name references Songbird; new deployments should use the generic
+/// discovery socket resolution via capability routing.
 pub const SONGBIRD_SECURITY_SOCKET: &str = "SONGBIRD_SECURITY_SOCKET";
 
 // ── Binary discovery ──────────────────────────────────────────────

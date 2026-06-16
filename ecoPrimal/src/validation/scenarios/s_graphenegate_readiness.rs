@@ -30,21 +30,9 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
-const ALL_13_PRIMALS: &[&str] = &[
-    "beardog",
-    "songbird",
-    "squirrel",
-    "toadstool",
-    "nestgate",
-    "rhizocrypt",
-    "loamspine",
-    "coralreef",
-    "barracuda",
-    "skunkbat",
-    "biomeos",
-    "sweetgrass",
-    "petaltongue",
-];
+use crate::primal_names::Primal;
+
+const ALL_13_PRIMALS: &[&str] = Primal::ALL_SLUGS;
 
 /// Resolve the ecoPrimals workspace root from CARGO_MANIFEST_DIR.
 /// primalSpring lives at `springs/primalSpring/ecoPrimal` within the workspace,

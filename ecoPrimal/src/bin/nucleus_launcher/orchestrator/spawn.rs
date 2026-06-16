@@ -24,11 +24,15 @@ pub(super) enum SpawnError {
 }
 
 /// Resolve or generate a family seed.
+///
+/// Resolution order: `FAMILY_SEED` (preferred) → `BEARDOG_FAMILY_SEED` (legacy)
+/// → `.family.seed` file → generate random.
+#[expect(deprecated, reason = "reads legacy env var for backward compat")]
 pub(super) fn resolve_family_seed(socket_dir: &std::path::Path) -> Vec<u8> {
-    if let Ok(val) = std::env::var(env_keys::BEARDOG_FAMILY_SEED) {
+    if let Ok(val) = std::env::var(env_keys::FAMILY_SEED) {
         return val.into_bytes();
     }
-    if let Ok(val) = std::env::var(env_keys::FAMILY_SEED) {
+    if let Ok(val) = std::env::var(env_keys::BEARDOG_FAMILY_SEED) {
         return val.into_bytes();
     }
     let seed_file = socket_dir.join(".family.seed");
@@ -197,6 +201,7 @@ pub(super) fn spawn_primal(
 
     cmd.env(env_keys::FAMILY_ID, &config.family_id);
     cmd.env(env_keys::FAMILY_SEED, family_seed);
+    #[expect(deprecated, reason = "backward compat — old BearDog reads this")]
     cmd.env(env_keys::BEARDOG_FAMILY_SEED, family_seed);
 
     for (key, val) in &defaults.extra_env {

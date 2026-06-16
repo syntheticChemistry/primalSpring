@@ -35,21 +35,21 @@ pub const SCENARIO: Scenario = Scenario {
 };
 
 const EXPECTED_PRIMALS: &[&str] = &[
-    "beardog",
-    "songbird",
-    "skunkbat",
-    "toadstool",
     "barracuda",
-    "coralreef",
-    "nestgate",
-    "rhizocrypt",
-    "loamspine",
-    "sweetgrass",
+    "beardog",
     "biomeos",
-    "squirrel",
-    "petaltongue",
-    "sourdough",
     "bingocube",
+    "coralreef",
+    "loamspine",
+    "nestgate",
+    "petaltongue",
+    "rhizocrypt",
+    "skunkbat",
+    "songbird",
+    "sourdough",
+    "squirrel",
+    "sweetgrass",
+    "toadstool",
 ];
 
 const EXPECTED_SPRINGS: &[&str] = &[

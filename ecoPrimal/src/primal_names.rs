@@ -249,6 +249,42 @@ impl Primal {
         Self::LoamSpine,
         Self::SweetGrass,
     ];
+
+    /// Tower primals as slugs (sorted).
+    pub const TOWER_SLUGS: &'static [&'static str] = &["beardog", "skunkbat", "songbird"];
+
+    /// All 13 primal slugs (sorted alphabetically).
+    pub const ALL_SLUGS: &'static [&'static str] = &[
+        "barracuda",
+        "beardog",
+        "biomeos",
+        "coralreef",
+        "loamspine",
+        "nestgate",
+        "petaltongue",
+        "rhizocrypt",
+        "skunkbat",
+        "songbird",
+        "squirrel",
+        "sweetgrass",
+        "toadstool",
+    ];
+
+    /// All 13 primal slugs excluding biomeOS (the substrate, not a spawned primal).
+    pub const ALL_SLUGS_NO_BIOMEOS: &'static [&'static str] = &[
+        "barracuda",
+        "beardog",
+        "coralreef",
+        "loamspine",
+        "nestgate",
+        "petaltongue",
+        "rhizocrypt",
+        "skunkbat",
+        "songbird",
+        "squirrel",
+        "sweetgrass",
+        "toadstool",
+    ];
 }
 
 impl fmt::Display for Primal {

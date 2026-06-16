@@ -39,7 +39,7 @@ const TOWER_BOOTSTRAP_TOML: &str =
     include_str!("../../../../graphs/compositions/tower_bootstrap.toml");
 const COMPOSITION_TOOLS_TOML: &str = include_str!("../../../../config/composition_tools.toml");
 
-const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
+const TOWER_PRIMALS: &[&str] = crate::primal_names::Primal::TOWER_SLUGS;
 const AGENT_REQUIRED: &[&str] = &["beardog", "songbird", "skunkbat", "biomeos", "squirrel"];
 
 fn validate_tower_agent_structure(v: &mut ValidationResult) {
