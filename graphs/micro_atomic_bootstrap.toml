@@ -1,0 +1,86 @@
+# Source of truth: primalSpring/graphs/ (validation/structural format with metadata/fragments/bonding)
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Micro Atomic Bootstrap — Minimal single-primal composition
+#
+# BearDog only. The absolute minimum viable deployment: crypto identity
+# without network discovery. Used on fieldMouse-class embedded devices
+# where resources are too limited for a full Tower.
+#
+# This is NOT a production composition — it's a survival test. A primal
+# that can boot, respond to health checks, and perform crypto operations
+# on micro hardware proves it has no platform theology.
+#
+# Optionally, SkunkBat can be added for defense audit (micro-defense variant).
+#
+# Selection pressures survived:
+#   - TCP-only (no UDS)
+#   - Read-only rootfs (no PID files)
+#   - ≤256MB RAM
+#   - Single-core (no parallel spawn)
+#   - Intermittent network (no mesh dependency)
+#
+# Usage:
+#   nucleus_launcher --profile fieldmouse start
+
+[graph]
+name = "micro_atomic_bootstrap"
+description = "Micro Atomic: BearDog only — minimal crypto identity on embedded hardware"
+version = "1.0.0"
+coordination = "sequential"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "tcp_only"
+tcp_ports = 1
+composition_model = "micro_atomic"
+fragments = ["micro_atomic"]
+secure_by_default = true
+max_memory_mb = 256
+max_primals = 2
+single_core = true
+
+[graph.bonding_policy]
+tower_internal = "covalent"
+encryption_tiers.tower = "full"
+
+# ── Phase 1: BearDog — crypto authority (mandatory) ───────────────────
+[[graph.nodes]]
+name = "beardog"
+binary = "beardog"
+order = 1
+required = true
+health_method = "health.liveness"
+by_capability = "security"
+security_model = "btsp"
+capabilities = [
+    "crypto.encrypt", "crypto.decrypt",
+    "crypto.sign", "crypto.sign_ed25519",
+    "crypto.verify", "crypto.verify_ed25519",
+    "crypto.keygen", "crypto.identity",
+    "crypto.hash", "crypto.blake3_hash",
+    "crypto.sha256", "crypto.sha384",
+    "crypto.hmac_sha256",
+    "crypto.chacha20_poly1305_encrypt", "crypto.chacha20_poly1305_decrypt",
+    "crypto.aes256_gcm_encrypt",
+    "crypto.x25519_generate_ephemeral", "crypto.ed25519_generate_keypair",
+    "tls.derive_handshake_secrets", "tls.derive_secrets", "tls.sign_handshake",
+    "genetic.verify_lineage", "genetic.generate_lineage_proof",
+    "beacon.generate", "beacon.try_decrypt",
+    "btsp.handshake",
+]
+
+# ── Phase 2: SkunkBat — defense audit (optional, micro-defense) ───────
+[[graph.nodes]]
+name = "skunkbat"
+binary = "skunkbat"
+order = 2
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "defense"
+security_model = "btsp"
+capabilities = [
+    "defense.threat_assessment", "defense.audit",
+    "defense.rate_limit", "defense.blocklist",
+]

@@ -93,6 +93,7 @@ pub mod s_neural_routing;
 pub mod s_node_atomic;
 pub mod s_observatory_parity;
 pub mod s_plasmodium_collective;
+pub mod s_pressure_surface;
 pub mod s_primal_announce;
 pub mod s_provenance_trio_pipeline;
 pub mod s_routing_consistency;
@@ -180,6 +181,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_bootstrap_readiness::SCENARIO);
     r.register(s_arch_fitness::SCENARIO);
     r.register(s_cross_target_parity::SCENARIO);
+    r.register(s_pressure_surface::SCENARIO);
     r
 }
 
@@ -190,7 +192,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 64;
+    const EXPECTED_SCENARIO_COUNT: usize = 65;
 
     #[test]
     fn registry_scenario_count() {
