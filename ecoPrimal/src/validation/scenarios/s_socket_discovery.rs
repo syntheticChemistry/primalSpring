@@ -96,6 +96,8 @@ fn phase_reachability(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 /// 2. Socket files follow naming convention
 /// 3. No orphan sockets from unknown primals
 fn phase_socket_manifest(v: &mut ValidationResult) {
+    use crate::composition::ALL_CAPS;
+
     let runtime_dir = std::path::PathBuf::from(tolerances::runtime_dir())
         .join(crate::env_keys::BIOMEOS_SUBDIR);
 
@@ -114,6 +116,8 @@ fn phase_socket_manifest(v: &mut ValidationResult) {
     let valid_slugs: std::collections::HashSet<&str> =
         tolerances::all_primal_slugs().into_iter().collect();
 
+    let valid_caps: std::collections::HashSet<&str> = ALL_CAPS.iter().copied().collect();
+
     let mut total_sockets = 0u32;
     let mut valid_names = 0u32;
     let mut orphans: Vec<String> = Vec::new();
@@ -127,9 +131,16 @@ fn phase_socket_manifest(v: &mut ValidationResult) {
                     .file_stem()
                     .and_then(|s| s.to_str())
                     .unwrap_or("");
-                // Accept {slug}.sock or {slug}-{family}.sock
-                let base_slug = stem.split('-').next().unwrap_or(stem);
-                if valid_slugs.contains(base_slug) || base_slug == "neural-api" {
+                // Strip tarpc suffix if present: {name}-tarpc → {name}
+                let without_tarpc = stem.strip_suffix("-tarpc").unwrap_or(stem);
+                // Accept: {slug}.sock, {slug}-{family}.sock, {cap}.sock,
+                // {cap}-{family}.sock, {slug}-core-{profile}.sock
+                let base = without_tarpc.split('-').next().unwrap_or(without_tarpc);
+                if valid_slugs.contains(base)
+                    || valid_caps.contains(base)
+                    || base == "neural"
+                    || base == "coralreef"
+                {
                     valid_names += 1;
                 } else {
                     orphans.push(stem.to_owned());

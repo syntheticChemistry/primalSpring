@@ -107,6 +107,18 @@ pub const RIBOCIPHER_VERSION: u8 = 0x01;
 /// unknown bytes and either ignore or WARN (graceful degradation per spec).
 pub const RIBOCIPHER_CLEAR_SIGNAL: [u8; 2] = [RIBOCIPHER_CLEAR, RIBOCIPHER_VERSION];
 
+/// MitoBeacon obfuscated tier byte (Wave 114 genetics architecture).
+///
+/// `0xED` signals a mito-beacon obfuscated connection: group membership proven,
+/// tunnel obfuscation negotiated. Not yet active — defined for forward compat.
+pub const RIBOCIPHER_MITO_OBFUSCATED: u8 = 0xED;
+
+/// Nuclear sealed tier byte (Wave 114 genetics architecture).
+///
+/// `0xEE` signals a nuclear-lineage sealed connection: per-user identity,
+/// BearDog-derived session key. Not yet active — defined for forward compat.
+pub const RIBOCIPHER_NUCLEAR_SEALED: u8 = 0xEE;
+
 // ── TCP cross-gate transport timeouts ──
 
 /// TCP connect timeout for remote gate probing (seconds).

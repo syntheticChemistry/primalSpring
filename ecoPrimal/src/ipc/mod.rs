@@ -35,6 +35,7 @@ pub mod protocol;
 pub mod provenance;
 pub mod resilience;
 pub mod server_bind;
+pub mod signal_accept;
 pub mod tcp;
 pub mod transport;
 pub mod verifiers;
