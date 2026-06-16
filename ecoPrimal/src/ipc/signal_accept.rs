@@ -1,11 +1,19 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Server-side riboCipher/mito-beacon signal acceptance.
+//! Synchronous riboCipher signal acceptance for primalSpring's inline probes.
 //!
-//! Provides [`accept_signal`] — the canonical pattern for primals to consume
-//! the 2-byte transport signal prefix at connection accept. This is the
-//! centralized implementation that all primal teams should adopt.
+//! This is a **sync adapter** for primalSpring's launcher health probes and
+//! validation scenarios. Primals should use the canonical async implementation
+//! in `sourdough_core::transport::ribocipher_server::RiboCipherAcceptLoop`.
+//!
+//! # When to Use This vs sourdough
+//!
+//! | Context | Use |
+//! |---------|-----|
+//! | Primal accept loop (async/tokio) | `sourdough_core::transport::ribocipher_server` |
+//! | primalSpring launcher probes (sync) | This module |
+//! | Validation scenarios (sync) | This module |
 //!
 //! # Eukaryotic Model (Wave 114)
 //!
@@ -17,40 +25,8 @@
 //! | `0xED` | MitoBeacon (obfuscated) | Group membership, obfuscated tunnel |
 //! | `0xEE` | Nuclear (sealed) | Per-user lineage, encrypted session |
 //!
-//! Currently only `0xEC` (clear) is active. The accept pattern is forward-
-//! compatible: when `0xED`/`0xEE` connections arrive, they'll be classified
-//! correctly and the caller can route to the appropriate handler.
-//!
-//! # Adoption
-//!
-//! Replace raw socket accept:
-//! ```ignore
-//! // Before (breaks on riboCipher clients):
-//! let mut buf = String::new();
-//! reader.read_line(&mut buf)?;  // fails — first 2 bytes aren't UTF-8
-//! ```
-//!
-//! With:
-//! ```ignore
-//! use primalspring::ipc::signal_accept::{accept_signal, SignalTier};
-//! let tier = accept_signal(&mut stream)?;
-//! match tier {
-//!     SignalTier::Clear => { /* proceed with JSON-RPC */ }
-//!     SignalTier::MitoObfuscated => { /* future: mito tunnel */ }
-//!     SignalTier::NuclearSealed => { /* future: per-user encrypted */ }
-//!     SignalTier::Legacy(first_byte) => { /* no signal prefix — legacy client */ }
-//! }
-//! ```
-//!
-//! # Legacy Compatibility
-//!
-//! If the first byte is NOT a recognized signal tier (`0xEC`/`0xED`/`0xEE`),
-//! the function returns `SignalTier::Legacy(byte)` without consuming the
-//! second byte. The caller should prepend that byte back to the stream
-//! (or use a `BufReader` with `fill_buf`/`consume` for zero-copy).
-//!
-//! For the common case where legacy means "raw JSON-RPC starting with `{`",
-//! use [`accept_signal_or_json`] which handles the prepend automatically.
+//! The sync API mirrors sourdough's async `detect_signal` but operates on
+//! `std::io::Read` instead of `tokio::io::AsyncRead`.
 
 use std::io::{self, Read};
 
