@@ -25,6 +25,9 @@ pub use probes::{
 /// Atomic composition layer — each represents a testable deployment target.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AtomicType {
+    /// `BearDog` only (optional `SkunkBat`). The micro-atomic: minimal crypto identity.
+    /// Used on fieldMouse-class embedded devices (≤256MB, single-core, TCP-only).
+    Micro,
     /// `BearDog` + Songbird + skunkBat (crypto + mesh + defense). The electron shell.
     Tower,
     /// Tower + compute trio (`ToadStool` + `barraCuda` + `coralReef`). 6 primals.
@@ -38,6 +41,7 @@ pub enum AtomicType {
 impl fmt::Display for AtomicType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(match self {
+            Self::Micro => "micro",
             Self::Tower => "tower",
             Self::Node => "node",
             Self::Nest => "nest",
@@ -48,7 +52,7 @@ impl fmt::Display for AtomicType {
 
 /// Error returned when parsing an unknown atomic composition type.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("unknown composition type: {0} (valid: tower, node, nest, nucleus)")]
+#[error("unknown composition type: {0} (valid: micro, tower, node, nest, nucleus)")]
 pub struct UnknownAtomicType(pub String);
 
 impl FromStr for AtomicType {
@@ -58,6 +62,7 @@ impl FromStr for AtomicType {
     /// PascalCase JSON-RPC form (`Tower`, `FullNucleus`, `Full`).
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
+            "micro" | "Micro" => Ok(Self::Micro),
             "tower" | "Tower" => Ok(Self::Tower),
             "node" | "Node" => Ok(Self::Node),
             "nest" | "Nest" => Ok(Self::Nest),
@@ -79,6 +84,7 @@ impl AtomicType {
     #[must_use]
     pub const fn required_capabilities(self) -> &'static [&'static str] {
         match self {
+            Self::Micro => &["security"],
             Self::Tower => &["security", "discovery", "defense"],
             Self::Node => &[
                 "security",
@@ -157,6 +163,7 @@ impl AtomicType {
     #[must_use]
     pub const fn graph_name(self) -> &'static str {
         match self {
+            Self::Micro => "micro_atomic_bootstrap",
             Self::Tower => "tower_atomic_bootstrap",
             Self::Node => "node_atomic_compute",
             Self::Nest => "nest_deploy",
@@ -168,6 +175,7 @@ impl AtomicType {
     #[must_use]
     pub const fn description(self) -> &'static str {
         match self {
+            Self::Micro => "BearDog only — minimal crypto identity (embedded/fieldMouse)",
             Self::Tower => "Security + Discovery + Defense (crypto + mesh + audit)",
             Self::Node => "Tower + Compute trio (dispatch + math + shaders)",
             Self::Nest => {
