@@ -25,11 +25,13 @@
 
 pub mod fitness;
 pub mod pressure;
+pub mod profile;
 pub mod report;
 pub mod target;
 
 pub use fitness::{ArchFitness, FitnessScore};
 pub use pressure::PressureCategory;
+pub use profile::ProfileConstraints;
 pub use report::TargetReport;
 pub use target::{CompositionTier, DeploymentTier, Target};
 
