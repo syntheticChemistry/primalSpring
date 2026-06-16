@@ -5,6 +5,7 @@
 
 use primalspring::composition::CompositionContext;
 use primalspring::coordination::AtomicType;
+use primalspring::evolution::{self, Target};
 use primalspring::validation::scenarios::{Tier, build_registry};
 use primalspring::validation::ValidationResult;
 
@@ -103,7 +104,39 @@ pub fn run_validation(atomic: AtomicType, scenario_id: Option<&str>, structural_
     println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
     println!();
 
+    print_fitness_summary(passed, failed, total);
+
     if failed > 0 {
         std::process::exit(1);
     }
+}
+
+/// Print a fitness report summarizing the current target's evolution posture.
+fn print_fitness_summary(passed: usize, _failed: usize, total: usize) {
+    let target = Target::current();
+    let pressures = evolution::PressureCategory::active_for(target);
+
+    println!("  \x1b[36mFitness\x1b[0m: {target} | {} pressures active", pressures.len());
+
+    #[expect(clippy::cast_precision_loss, reason = "scenario counts are tiny")]
+    let score = if total > 0 {
+        passed as f64 / total as f64
+    } else {
+        0.0
+    };
+    let bar_len = 20;
+    #[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_precision_loss, reason = "bar rendering")]
+    let filled = (score * bar_len as f64) as usize;
+    let empty = bar_len - filled;
+    let bar = format!("{}{}", "█".repeat(filled), "░".repeat(empty));
+
+    let color = if score >= 0.95 {
+        "\x1b[32m"
+    } else if score >= 0.7 {
+        "\x1b[33m"
+    } else {
+        "\x1b[31m"
+    };
+    println!("  {color}{bar}\x1b[0m {:.0}% ({passed}/{total} scenarios)", score * 100.0);
+    println!();
 }

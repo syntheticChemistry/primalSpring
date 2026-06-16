@@ -1,0 +1,83 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# fieldMouse Profile — Micro-atomic embedded composition
+#
+# Usage: nucleus_launcher --profile fieldmouse start
+#
+# The most constrained deployment tier: 1-2 primals on severely
+# resource-limited hardware (≤256MB RAM, single-core ARM/RISC-V,
+# potentially intermittent network, read-only rootfs).
+#
+# Selection pressures:
+#   - Memory: ≤256MB total, primals must coexist with system
+#   - Filesystem: read-only root, single writable partition
+#   - IPC: TCP-only (no UDS, no filesystem sockets)
+#   - Network: intermittent, may be relay-only via parent gate
+#   - Concurrency: single-core, cooperative scheduling preferred
+#
+# Use cases:
+#   - IoT sensor nodes with crypto identity (BearDog only)
+#   - Mesh relay nodes (BearDog + SkunkBat defense)
+#   - Edge inference micro-nodes (BearDog + Squirrel)
+#
+# Evolution target: Wave 115+ (from SILICON_ATHEIST_EVOLUTION_PLAYGROUND.md)
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+[gate]
+name = ""
+target_triple = ""
+specialization = "Micro"
+family_id = "fieldmouse-family"
+
+[composition]
+atomic_type = "micro"
+graph = "micro_atomic_bootstrap.toml"
+transport = "tcp_only"
+
+[composition.primals]
+required = ["beardog"]
+optional = ["skunkbat"]
+
+[composition.constraints]
+max_memory_mb = 256
+max_primals = 2
+single_core = true
+read_only_root = true
+
+[depot]
+source = "wan"
+wan_url = "https://membrane.primals.eco/depot/"
+git_remote = ""
+verify_checksums = true
+verify_provenance = false
+
+[validation]
+required_health_count = 1
+health_timeout_secs = 60
+run_scenario = "s_arch_fitness"
+required_properties = ["P1"]
+allow_degraded = true
+
+[validation.checksums]
+dual_verify = false
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+enabled = false
+timeout_secs = 0
+
+[mesh]
+enroll = false
+federation_port = 0
+peers = []
+auto_reconnect = false
+reconnect_backoff_min = 120
+reconnect_backoff_max = 1800
+
+[environment]
+RUST_LOG = "warn"
+ECOP_TRANSPORT = "tcp_only"
+ECOP_MAX_MEMORY_MB = "256"

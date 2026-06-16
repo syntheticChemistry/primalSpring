@@ -67,6 +67,7 @@ pub mod s_coralreef_shader_targets;
 pub mod s_covalent_bond;
 pub mod s_covalent_mesh;
 pub mod s_cross_gate_capability_call;
+pub mod s_cross_target_parity;
 pub mod s_cross_spring_data_flow;
 pub mod s_crypto_identity_surface;
 pub mod s_dark_forest_gate;
@@ -178,6 +179,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_ribocipher_acceptance::SCENARIO);
     r.register(s_bootstrap_readiness::SCENARIO);
     r.register(s_arch_fitness::SCENARIO);
+    r.register(s_cross_target_parity::SCENARIO);
     r
 }
 
@@ -188,7 +190,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 63;
+    const EXPECTED_SCENARIO_COUNT: usize = 64;
 
     #[test]
     fn registry_scenario_count() {

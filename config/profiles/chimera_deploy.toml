@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# chimeraDeploy Profile — Mixed-architecture NUCLEUS composition
+#
+# Usage: nucleus_launcher --profile chimera_deploy start
+#
+# A chimeric deployment where different primals run on different
+# architectures, connected via TCP federation. This is the acid test
+# for silicon-atheism: if computation is universal math, a Tower split
+# across x86_64 and aarch64 must produce identical results.
+#
+# Selection pressures:
+#   - Endianness: mixed little-endian (both x86 and ARM are LE, but
+#     validates serialization round-trips across different word sizes)
+#   - Alignment: struct packing differences across architectures
+#   - Network: cross-host latency (not loopback)
+#   - IPC: TCP-only (no UDS across hosts)
+#   - Time: clock skew between heterogeneous machines
+#
+# Example deployment:
+#   - eastGate (x86_64): songbird, toadstool, barracuda, coralreef
+#   - grapheneGate (aarch64): beardog, skunkbat
+#   - toadStool-gateway (riscv64): future — compute dispatch
+#
+# Evolution target: Wave 116+ (from SILICON_ATHEIST_EVOLUTION_PLAYGROUND.md)
+
+[manifest]
+version = "1.0.0"
+schema = "proto-nucleate-v1"
+
+[gate]
+name = ""
+target_triple = ""
+specialization = "Chimera"
+family_id = "chimera-family"
+
+[composition]
+atomic_type = "tower"
+graph = "tower_atomic_bootstrap.toml"
+transport = "tcp_enabled"
+
+[composition.primals]
+required = ["beardog", "songbird", "skunkbat"]
+optional = ["toadstool", "barracuda"]
+
+[composition.constraints]
+mixed_arch = true
+cross_host = true
+require_tcp_federation = true
+
+[depot]
+source = "wan"
+wan_url = "https://membrane.primals.eco/depot/"
+git_remote = "ssh://git.primals.eco:2222/syntheticChemistry/plasmidBin.git"
+verify_checksums = true
+verify_provenance = true
+
+[validation]
+required_health_count = 3
+health_timeout_secs = 60
+run_scenario = "s_arch_fitness"
+required_properties = ["P1", "P2"]
+allow_degraded = true
+
+[validation.checksums]
+dual_verify = true
+checksums_path = "checksums.toml"
+
+[validation.sandbox]
+enabled = false
+timeout_secs = 0
+
+[mesh]
+enroll = true
+federation_port = 7700
+peers = []
+auto_reconnect = true
+reconnect_backoff_min = 30
+reconnect_backoff_max = 300
+
+[environment]
+RUST_LOG = "info"
+ECOP_TRANSPORT = "tcp_enabled"
+ECOP_CHIMERA_MODE = "true"
