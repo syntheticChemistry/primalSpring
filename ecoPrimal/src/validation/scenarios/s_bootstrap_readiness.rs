@@ -51,20 +51,26 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 fn phase_binary_discovery(v: &mut ValidationResult) {
     use crate::launcher::discover_binary;
 
-    let has_any_dir = std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN).is_ok()
-        || std::env::var(crate::env_keys::BIOMEOS_PLASMID_BIN_DIR).is_ok()
-        || std::env::var(crate::env_keys::ECOPRIMALS_ROOT).is_ok();
+    let has_depot = std::env::var(crate::env_keys::ECOPRIMALS_PLASMID_BIN).is_ok()
+        || std::env::var(crate::env_keys::BIOMEOS_PLASMID_BIN_DIR).is_ok();
+    let has_workspace_local = std::env::var(crate::env_keys::ECOPRIMALS_ROOT).is_ok();
 
-    if has_any_dir {
+    if has_depot {
         v.check_bool(
-            "binary:search_path_configured",
+            "binary:depot_path_configured",
             true,
-            "at least one binary search path configured",
+            "depot binary path set (post-primordial: fetched from VPS)",
+        );
+    } else if has_workspace_local {
+        v.check_bool(
+            "binary:depot_path_configured",
+            false,
+            "ECOPRIMALS_ROOT only (pre-primordial local workspace — use plasmidbin sync from VPS depot)",
         );
     } else {
         v.check_skip(
-            "binary:search_path_configured",
-            "no bin dir env vars set (XDG fallback only)",
+            "binary:depot_path_configured",
+            "no depot path set (XDG fallback only — run plasmidbin sync)",
         );
         v.check_skip(
             "binary:discovery_complete",

@@ -5,16 +5,20 @@
 //!
 //! Binaries are resolved via a 4-tier directory search:
 //!
-//! 1. `$ECOPRIMALS_PLASMID_BIN` (explicit override)
+//! 1. `$ECOPRIMALS_PLASMID_BIN` (explicit override — post-primordial production)
 //! 2. `$BIOMEOS_PLASMID_BIN_DIR` (biomeOS override)
-//! 3. `$ECOPRIMALS_ROOT/infra/plasmidBin` (workspace harvest directory —
-//!    bridges CI-harvested binaries to the runtime consumer on dev machines)
+//! 3. `$ECOPRIMALS_ROOT/infra/plasmidBin` (**pre-primordial debt** — local workspace
+//!    copy, violates depot-from-VPS principle. Retained for backward compat only.)
 //! 4. `$XDG_DATA_HOME/ecoPrimals/plasmidBin` (XDG standard cache,
 //!    populated by `plasmidbin sync` or `membrane plasmid.fetch`)
 //!
-//! No blind relative filesystem traversal — only explicit env-var-directed
-//! paths. On production gates where `ECOPRIMALS_ROOT` is unset, tier 3 is
-//! skipped and binaries come from the XDG cache (populated by `plasmidbin sync`).
+//! # Post-Primordial (Wave 114+)
+//!
+//! Production gates fetch binaries from cellMembrane's VPS depot via
+//! `plasmidbin sync` into the XDG cache (tier 4) or an explicit
+//! `ECOPRIMALS_PLASMID_BIN` path (tier 1). Tier 3 (workspace-local) is
+//! pre-primordial scaffolding — it works but the bootstrap-readiness
+//! scenario will flag it as a deployment hygiene failure.
 
 use std::path::PathBuf;
 
