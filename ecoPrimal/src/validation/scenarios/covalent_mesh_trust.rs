@@ -633,7 +633,7 @@ fn check_port_isolation(v: &mut ValidationResult) {
         .parse()
         .unwrap_or(std::net::IpAddr::V4(std::net::Ipv4Addr::LOCALHOST));
 
-    let songbird_port: u16 = crate::tolerances::SONGBIRD_FEDERATION_PORT;
+    let songbird_port: u16 = crate::tolerances::FEDERATION_PORT;
     let federation_port_check = std::net::TcpStream::connect_timeout(
         &std::net::SocketAddr::new(host, songbird_port),
         std::time::Duration::from_millis(200),

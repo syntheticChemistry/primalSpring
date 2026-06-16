@@ -142,7 +142,7 @@ impl LiveMeshConfig {
             let port = gate_val
                 .get("songbird_port")
                 .and_then(toml::Value::as_integer)
-                .unwrap_or_else(|| i64::from(crate::tolerances::SONGBIRD_FEDERATION_PORT));
+                .unwrap_or_else(|| i64::from(crate::tolerances::FEDERATION_PORT));
             remote_gates.insert(gate_id.clone(), format!("{addr}:{port}"));
         }
 

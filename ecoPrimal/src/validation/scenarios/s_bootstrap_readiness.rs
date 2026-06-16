@@ -187,12 +187,9 @@ fn phase_port_sanity(v: &mut ValidationResult) {
     );
 
     v.check_bool(
-        "port:songbird_federation_defined",
-        tolerances::SONGBIRD_FEDERATION_PORT > 0,
-        &format!(
-            "songbird federation port: {}",
-            tolerances::SONGBIRD_FEDERATION_PORT
-        ),
+        "port:federation_defined",
+        tolerances::FEDERATION_PORT > 0,
+        &format!("federation port: {}", tolerances::FEDERATION_PORT),
     );
 }
 

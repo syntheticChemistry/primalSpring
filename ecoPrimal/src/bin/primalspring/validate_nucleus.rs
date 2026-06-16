@@ -28,7 +28,7 @@ fn expected_primals() -> Vec<&'static str> {
         .collect()
 }
 
-const FEDERATION_PORT: u16 = primalspring::tolerances::SONGBIRD_FEDERATION_PORT;
+const FEDERATION_PORT: u16 = primalspring::tolerances::FEDERATION_PORT;
 const LAUNCH_TIMEOUT: Duration = Duration::from_secs(90);
 const SHUTDOWN_TIMEOUT: Duration = Duration::from_secs(15);
 

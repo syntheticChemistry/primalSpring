@@ -65,6 +65,9 @@ struct PortEntryOwned {
 }
 
 /// Look up a primal's port entry from the static registry.
+///
+/// Static registry is the primary lookup path for callers needing
+/// `&'static PortEntry`. TOML drift is caught by compile-time tests.
 #[must_use]
 pub fn port_entry_for(primal: &str) -> Option<&'static PortEntry> {
     PORT_REGISTRY.iter().find(|e| e.slug == primal)
@@ -169,13 +172,18 @@ pub static FEDERATION_PORTS: &[FederationPort] = &[
     },
 ];
 
-/// Default Songbird federation port.
+/// Default federation port for discovery provider mesh coordination.
 ///
-/// Protocol-level constant: Songbird mesh coordination port, standard
-/// across all gates. This is a protocol contract, not a primal-specific
-/// port assignment.
+/// Protocol-level constant — standard across all gates. This is a protocol
+/// contract, not a primal-specific port assignment. Currently implemented
+/// by Songbird, but any discovery provider uses this port.
+///
 /// Authoritative: `config/ports.toml` federation section.
-pub const SONGBIRD_FEDERATION_PORT: u16 = 7700;
+pub const FEDERATION_PORT: u16 = 7700;
+
+/// Legacy alias — prefer [`FEDERATION_PORT`].
+#[deprecated(since = "0.9.31", note = "use FEDERATION_PORT instead")]
+pub const SONGBIRD_FEDERATION_PORT: u16 = FEDERATION_PORT;
 
 #[cfg(test)]
 mod tests {
