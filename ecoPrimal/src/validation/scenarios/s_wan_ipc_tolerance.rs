@@ -85,7 +85,7 @@ fn phase_structural(v: &mut ValidationResult) {
         &format!("WAN health RPC budget: {WAN_HEALTH_MAX_MS}ms"),
     );
 
-    #[allow(clippy::cast_precision_loss)]
+    #[expect(clippy::cast_precision_loss, reason = "tolerance constants are small")]
     let ratio = WAN_HEALTH_MAX_MS as f64 / (tolerances::HEALTH_CHECK_MAX_US as f64 / 1000.0);
     v.check_bool(
         "tol:wan_to_lan_ratio",

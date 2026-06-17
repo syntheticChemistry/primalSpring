@@ -21,7 +21,7 @@ protocols. The bonding models are the hypotheses.
 
 - **Composition validation library** — `CompositionContext`, routing,
   mesh topology, parity checks, liveness probing
-- **Certification engine** — guideStone L0-L8 (71 scenarios, 9-layer
+- **Certification engine** — guideStone L0-L8 (72 scenarios, 9-layer
   certification), `primalspring certify`
 - **Bonding proofs** — multi-gate bonding models, STUN tiers, ionic
   RPC, content distribution federation
@@ -99,7 +99,7 @@ to primalSpring as experiment targets.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 71 absorbed experiment scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 72 absorbed experiment scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -121,7 +121,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.32 Wave 115 (June 17, 2026) — 71 scenarios (12 tracks, 3 tiers),
+v0.9.32 Wave 115 (June 17, 2026) — 72 scenarios (12 tracks, 3 tiers),
 490+ registered capability methods, 96 experiments (21 tracks), 114 graph TOMLs
 (~80 deploy + 34 compositions). 933 tests passing. All SONGBIRD_* env vars
 deprecated in favor of generic equivalents (MESH_PEERS, DISCOVERY_SECURITY_SOCKET).
@@ -312,7 +312,7 @@ memoization), wetSpring (data fetch + visualization), neuralSpring
 
 ### Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 490+ method registry (100% exercised), 71 scenarios, 114 deploy graphs
+- 490+ method registry (100% exercised), 72 scenarios, 114 deploy graphs
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs
