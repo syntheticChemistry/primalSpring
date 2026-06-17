@@ -131,6 +131,19 @@ impl GateMatrix {
         m
     }
 
+    /// Build the local gate assessment and add it to the ecosystem matrix.
+    #[must_use]
+    pub fn with_local_assessment() -> Self {
+        let mut m = Self::ecosystem_snapshot();
+        let local = local_assessment();
+        if let Some(existing) = m.gates.iter_mut().find(|g| g.name == local.name) {
+            *existing = local;
+        } else {
+            m.gates.push(local);
+        }
+        m
+    }
+
     /// Count of gates at or above a given readiness level.
     #[must_use]
     pub fn count_at_level(&self, minimum: ReadinessLevel) -> usize {
@@ -190,6 +203,71 @@ fn gate_from_env(name: &str) -> GateStatus {
     };
 
     GateStatus::new(name, readiness)
+}
+
+/// Probe the local machine and build a self-assessment `GateStatus`.
+///
+/// Checks:
+/// - Gate name from `GATE_NAME` env var (fallback: hostname)
+/// - Socket presence in biomeos runtime dir (primal liveness)
+/// - Git workspace cleanliness (VCS sync proxy)
+/// - Mesh peers from env configuration
+#[must_use]
+pub fn local_assessment() -> GateStatus {
+    let name = std::env::var("GATE_NAME")
+        .or_else(|_| crate::tolerances::platform::hostname().ok_or(()))
+        .unwrap_or_else(|()| "local".to_owned());
+
+    let runtime_dir = crate::tolerances::platform::runtime_dir();
+    let biomeos_dir = std::path::Path::new(&runtime_dir)
+        .join(crate::env_keys::BIOMEOS_SUBDIR);
+
+    let primals_alive = if biomeos_dir.is_dir() {
+        std::fs::read_dir(&biomeos_dir)
+            .map(|rd| {
+                rd.filter_map(Result::ok)
+                    .filter(|e| e.path().extension().is_some_and(|ext| ext == "sock"))
+                    .count()
+            })
+            .unwrap_or(0)
+    } else {
+        0
+    };
+
+    let vcs_synced = std::process::Command::new("git")
+        .args(["status", "--porcelain"])
+        .output()
+        .map(|o| o.status.success() && o.stdout.is_empty())
+        .unwrap_or(false);
+
+    let mesh_peers = std::env::var(crate::env_keys::MESH_PEERS)
+        .or_else(|_| {
+            #[expect(deprecated, reason = "fallback for backward compatibility")]
+            Ok::<_, std::env::VarError>(std::env::var(crate::env_keys::SONGBIRD_PEERS)?)
+        })
+        .map(|p| p.split(',').filter(|s| !s.is_empty()).count())
+        .unwrap_or(0);
+
+    #[expect(clippy::cast_possible_truncation, reason = "primal/peer counts fit in u8")]
+    let mut status = GateStatus {
+        name,
+        readiness: ReadinessLevel::Offline,
+        primals_alive: primals_alive as u8,
+        primals_expected: 13,
+        depot_fresh: true,
+        vcs_synced,
+        mesh_peers: mesh_peers as u8,
+        last_seen: Some(
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs(),
+        ),
+        notes: "local self-assessment".to_owned(),
+    };
+
+    status.reconcile();
+    status
 }
 
 #[cfg(test)]
