@@ -23,6 +23,7 @@
 //! It does NOT replace the boolean pass/fail semantics of validation — it adds
 //! a fitness dimension on top.
 
+pub mod convergence;
 pub mod fitness;
 pub mod gate;
 pub mod pressure;
@@ -30,6 +31,7 @@ pub mod profile;
 pub mod report;
 pub mod target;
 
+pub use convergence::EcosystemConvergence;
 pub use fitness::{ArchFitness, FitnessScore};
 pub use gate::{GateMatrix, GateStatus, ReadinessLevel};
 pub use pressure::PressureCategory;

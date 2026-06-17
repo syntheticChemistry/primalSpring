@@ -86,8 +86,10 @@ pub mod s_health_standard;
 pub mod s_ionic_bond;
 pub mod s_loam_certificate_lifecycle;
 pub mod s_gate_readiness;
+pub mod s_convergence_monitor;
 pub mod s_kderm_boundary;
 pub mod s_mesh_topology;
+pub mod s_nucleus_orchestration;
 pub mod s_meta_tier_compositions;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
@@ -190,6 +192,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_mesh_topology::SCENARIO);
     r.register(s_gate_readiness::SCENARIO);
     r.register(s_kderm_boundary::SCENARIO);
+    r.register(s_nucleus_orchestration::SCENARIO);
+    r.register(s_convergence_monitor::SCENARIO);
     r
 }
 
@@ -200,7 +204,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 69;
+    const EXPECTED_SCENARIO_COUNT: usize = 71;
 
     #[test]
     fn registry_scenario_count() {
