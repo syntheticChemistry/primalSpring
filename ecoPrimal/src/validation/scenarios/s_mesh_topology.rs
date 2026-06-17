@@ -104,6 +104,7 @@ fn phase_gate_identity(v: &mut ValidationResult) {
     }
 }
 
+#[expect(deprecated, reason = "SONGBIRD_PEERS fallback for backward compatibility")]
 fn phase_peer_connectivity(v: &mut ValidationResult) {
     let mesh_peers = std::env::var(crate::env_keys::MESH_PEERS)
         .or_else(|_| std::env::var(crate::env_keys::SONGBIRD_PEERS))

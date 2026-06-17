@@ -140,6 +140,7 @@ fn capability_ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
     clippy::needless_pass_by_value,
     reason = "config is consumed; caller never reuses it"
 )]
+#[expect(deprecated, reason = "SONGBIRD_PEERS fallback for backward compatibility")]
 pub fn run(config: LaunchConfig) -> LaunchResult {
     let primals = ordered_primals(config.atomic);
     let total = primals.len();
@@ -413,43 +414,34 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     println!("  Registered: {registered}");
     println!();
 
-    if !config.peers.is_empty() {
+    let peer_list: Vec<String> = if config.peers.is_empty() {
+        std::env::var(env_keys::MESH_PEERS)
+            .or_else(|_| std::env::var(env_keys::SONGBIRD_PEERS))
+            .unwrap_or_default()
+            .split(',')
+            .map(|s| s.trim().to_owned())
+            .filter(|s| !s.is_empty())
+            .collect()
+    } else {
+        config.peers.clone()
+    };
+
+    if !peer_list.is_empty() {
         println!("=== Phase 5b: Peer seeding (cross-gate mesh) ===");
         let seeded = match songbird_uds {
-            Some(uds) => registry::seed_discovery_peers_uds(uds, &config.peers, &config.node_id),
-            None => registry::seed_discovery_peers(songbird_port, &config.peers, &config.node_id),
+            Some(uds) => registry::seed_discovery_peers_uds(uds, &peer_list, &config.node_id),
+            None => registry::seed_discovery_peers(songbird_port, &peer_list, &config.node_id),
         };
         if seeded > 0 {
             println!(
                 "  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {}",
-                config.peers.join(", ")
+                peer_list.join(", ")
             );
         } else {
             println!("  \x1b[31mFailed to seed peers\x1b[0m — discovery provider may not support mesh.init");
-            println!("  Peers requested: {}", config.peers.join(", "));
+            println!("  Peers requested: {}", peer_list.join(", "));
         }
         println!();
-    } else if let Ok(env_peers) = std::env::var(env_keys::SONGBIRD_PEERS) {
-        if !env_peers.is_empty() {
-            println!("=== Phase 5b: Peer seeding (from SONGBIRD_PEERS env) ===");
-            let peer_list: Vec<String> = env_peers
-                .split(',')
-                .map(|s| s.trim().to_owned())
-                .filter(|s| !s.is_empty())
-                .collect();
-            let seeded = match songbird_uds {
-                Some(uds) => registry::seed_discovery_peers_uds(uds, &peer_list, &config.node_id),
-                None => registry::seed_discovery_peers(songbird_port, &peer_list, &config.node_id),
-            };
-            if seeded > 0 {
-                println!("  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {env_peers}");
-            } else {
-                println!(
-                    "  \x1b[31mFailed to seed peers\x1b[0m — discovery provider may not support mesh.init"
-                );
-            }
-            println!();
-        }
     }
 
     println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
@@ -570,13 +562,7 @@ pub fn show_status(primals: &[&str]) {
         .join(".pids");
     let health_timeout = Duration::from_secs(3);
 
-    let profile_label = match primals.len() {
-        n if n >= 13 => "Full NUCLEUS",
-        n if n >= 10 => "Compute Heavy",
-        n if n >= 7 => "Nest",
-        n if n >= 5 => "Node",
-        _ => "Tower Atomic",
-    };
+    let profile_label = AtomicType::from_primal_count(primals.len());
 
     println!("=== NUCLEUS Status ({profile_label}: {}/{} primals) ===", primals.len(), primals.len());
     println!();

@@ -234,14 +234,21 @@ pub fn port_env_key(slug: &str) -> &'static str {
 ///
 /// Legacy name references Songbird (the discovery primal), but the concept
 /// is generic: any discovery provider reads this for initial peer seeding.
+/// New code should use [`MESH_PEERS`] instead.
+#[deprecated(since = "0.9.32", note = "use MESH_PEERS instead")]
 pub const SONGBIRD_PEERS: &str = "SONGBIRD_PEERS";
-/// Generic mesh peer addresses (preferred over `SONGBIRD_PEERS` for new code).
+/// Generic mesh peer addresses for cross-gate federation bootstrap.
 pub const MESH_PEERS: &str = "MESH_PEERS";
 
 /// Discovery provider security socket path override.
-/// Legacy name references Songbird; new deployments should use the generic
-/// discovery socket resolution via capability routing.
+///
+/// New deployments should use capability routing via
+/// [`crate::ipc::discover::discover_by_capability("security")`] instead.
+#[deprecated(since = "0.9.32", note = "use capability-based discovery for the security socket")]
 pub const SONGBIRD_SECURITY_SOCKET: &str = "SONGBIRD_SECURITY_SOCKET";
+
+/// Generic discovery socket override (preferred over `SONGBIRD_SECURITY_SOCKET`).
+pub const DISCOVERY_SECURITY_SOCKET: &str = "DISCOVERY_SECURITY_SOCKET";
 
 // ── Binary discovery ──────────────────────────────────────────────
 

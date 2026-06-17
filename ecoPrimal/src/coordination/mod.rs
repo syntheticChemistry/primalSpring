@@ -171,6 +171,21 @@ impl AtomicType {
         }
     }
 
+    /// Infer the closest atomic type from a primal count.
+    ///
+    /// Used for status display when the exact composition type is unknown
+    /// but the number of running primals is observable.
+    #[must_use]
+    pub const fn from_primal_count(count: usize) -> &'static str {
+        match count {
+            0..=2 => "Micro",
+            3..=4 => "Tower Atomic",
+            5..=6 => "Node Atomic",
+            7..=12 => "Nest",
+            _ => "Full NUCLEUS",
+        }
+    }
+
     /// Human-readable description of this composition.
     #[must_use]
     pub const fn description(self) -> &'static str {

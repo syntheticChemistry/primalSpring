@@ -71,7 +71,7 @@ impl LiveMeshConfig {
     ///
     /// Reads:
     /// - `HOSTNAME` or `GATE_ID` for local gate identity
-    /// - `SONGBIRD_PEERS` for remote gate addresses
+    /// - `MESH_PEERS` (or deprecated `SONGBIRD_PEERS`) for remote gate addresses
     /// - `FAMILY_ID` / `FAMILY_SEED` for BTSP readiness
     #[must_use]
     pub fn from_env_only() -> Self {
@@ -207,13 +207,17 @@ impl LiveMeshConfig {
     }
 }
 
-/// Parse `SONGBIRD_PEERS` env var into gate_id → address map.
+/// Parse mesh peer env vars into gate_id → address map.
 ///
+/// Reads `MESH_PEERS` first, falling back to deprecated `SONGBIRD_PEERS`.
 /// Format: `gate_id=host:port,gate_id=host:port` or `host:port,host:port`
+#[expect(deprecated, reason = "SONGBIRD_PEERS fallback for backward compatibility")]
 fn parse_songbird_peers() -> BTreeMap<String, String> {
     let mut peers = BTreeMap::new();
 
-    let val = match std::env::var(crate::env_keys::SONGBIRD_PEERS) {
+    let val = match std::env::var(crate::env_keys::MESH_PEERS)
+        .or_else(|_| std::env::var(crate::env_keys::SONGBIRD_PEERS))
+    {
         Ok(v) if !v.trim().is_empty() => v,
         _ => {
             return peers;
