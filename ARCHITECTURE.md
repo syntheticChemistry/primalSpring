@@ -17,9 +17,9 @@ NUCLEUS deployments from the outside.
 │  │  Certification    │  │  Validation      │  │  IPC Client  │  │
 │  │  Engine           │  │  Scenarios       │  │  (probing)   │  │
 │  │                   │  │                  │  │              │  │
-│  │  L0: Bare         │  │  57 absorbed     │  │  JSON-RPC    │  │
+│  │  L0: Bare         │  │  72 absorbed     │  │  JSON-RPC    │  │
 │  │  L0.5: Seed       │  │  experiments     │  │  2.0 client  │  │
-│  │  L1: Discovery    │  │  across 10 tracks│  │              │  │
+│  │  L1: Discovery    │  │  across 12 tracks│  │              │  │
 │  │  L1.5: BTSP       │  │                  │  │  Composition │  │
 │  │  L2: Health       │  │  Tier 1: Rust    │  │  Context     │  │
 │  │  L3: Parity       │  │  Tier 2: Live    │  │              │  │

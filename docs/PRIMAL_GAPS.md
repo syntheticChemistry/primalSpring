@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-11 (Wave 109: **guideStone deployment convergence.** grapheneGate 13/13 deployed (Wave 108). Cross-topology validation COMPLETE. Strategic shift to guideStone-grade identical deployments across all gates. 5 work streams: startup contract, build pipeline + gate profiles, health + orchestration, BTSP e2e, cascade + quorumSignal + rootPulse. FRAGO `wave109-guidestone-deployment-convergence`. 10 new convergence items tracked below.)
+> **Last updated**: 2026-06-17 (Wave 115: **Sovereign Mesh & Gate Hardening.** 72 scenarios, 942 lib tests, 12 tracks. sporeGate 13/13 alive + systemd persisted. golgi HEALTHY 13/13. VCS 17/17 zero drift. Evolution module: convergence monitor + gate readiness matrix + K-Derm envelope validation. Deep debt CLEAN: zero unsafe, zero production unwraps, all deps pure-Rust, all `#[allow]` → `#[expect]`.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: CR-TARPC-01 **RESOLVED** (b1ec1f4). tarpc skips `bind()` when `PRIMAL_BIND_MODE=tcp_only`. Socket cleanup DONE. TRANSPORT_ENDPOINT works for JSON-RPC TCP. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 DROPPED (federation port eliminated) — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-107. 55 scenarios (10 tracks), 490+ methods (100% exercised), 901 lib tests, 0 known debt. Wave 107: ZERO P1. ZERO UPSTREAM BLOCKERS. grapheneGate 13/13 structurally ready (aarch64 rebuild pending). CR-TARPC-01 RESOLVED (coralReef b1ec1f4). BM-UDS-01 RESOLVED (biomeOS v4.20 d35c943e). NG-DOWNCAST-01 RESOLVED (nestGate 7c3fe9a6). Federation ports CLEAN. Socket cleanup 5/5 VERIFIED. PRIMAL_BIND_MODE=tcp_only adopted 13/13. songBird topology-aware routing (ff86204c). barraCuda method.describe (v0.4.0). 5-gate ecosystem. S1-S4 GRADUATED. Next: aarch64 rebuild → deploy → validate 13/13 alive.**
+**13/13 CLEAN — Waves 1-115. 72 scenarios (12 tracks), 490+ methods (100% exercised), 942 lib tests, 0 known debt. Wave 115: ZERO P1. ZERO UPSTREAM BLOCKERS. sporeGate 13/13 ALIVE + systemd persisted. golgi 13/13 ALIVE + relay. VCS 17/17 zero drift. Depot 13/13 both arches. K-Derm envelope model. Convergence monitoring. Evolution playground. Deep debt CLEAN.**
 
 ---
 

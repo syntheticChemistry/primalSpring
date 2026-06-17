@@ -11,7 +11,7 @@ zero-unsafe, zero-C-dependency standard.
 - **Lints**: clippy pedantic + nursery, zero warnings required
 - **Docs**: `deny(missing_docs)` — all public items documented
 - **Dependencies**: pure Rust only, enforced by `deny.toml`
-- **Files**: all under 1000 LOC, single-responsibility modules
+- **Files**: all under 800 LOC, single-responsibility modules
 - **Tests**: extracted to sibling `tests.rs` files when modules grow large
 
 ## Validation Experiments

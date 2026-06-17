@@ -5,15 +5,15 @@
 | | |
 |-|-|
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
-| **Version** | 0.9.31 |
+| **Version** | 0.9.32 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 1005 total (910 lib + 20 ecosystem + 16 experiment + 59 doc) |
-| **Experiments** | 96 (21 tracks) — 60 validation scenarios (11 tracks) |
+| **Tests** | 942 lib (+ experiment + doc) |
+| **Experiments** | 96 (21 tracks) — 72 validation scenarios (12 tracks, 3 tiers) |
 | **Deploy Graphs** | 100 graph TOMLs (~67 deploy + 33 compositions) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
-| **Mesh** | Live 5-gate (eastGate + ironGate + southGate + strandGate + flockGate WAN), forming (westGate + NUCs). MeshTopology wired into CompositionContext. Cross-gate trust validated (6-phase). benchScale topology defined. BTSP trust chain as pass criterion (bearDog w137+). Live cross-gate capability.call Phase 4 wired. grapheneGate BTSP TCP validated (Wave 110). flockGate WAN federation validated (64ms RTT, Wave 111). |
+| **Mesh** | Live gates: eastGate (10G SFP+), sporeGate (13/13 systemd), golgi (relay+Forgejo), pepti (depot). Forming: northGate, flockGate (WAN). MeshTopology wired into CompositionContext. K-Derm envelope model. BTSP trust chain. Convergence monitoring + drift detection. |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`). `#![warn(missing_docs)]` enforced. |
