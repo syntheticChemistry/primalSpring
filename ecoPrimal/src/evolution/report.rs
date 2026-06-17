@@ -199,6 +199,44 @@ impl Divergence {
     }
 }
 
+/// Build a lightweight report from gate matrix status (no full fitness eval).
+///
+/// When a full fitness evaluation hasn't been run (e.g. remote gates reporting
+/// via status probes only), this produces a partial report based on liveness
+/// and readiness metrics. Used by convergence monitoring.
+#[must_use]
+pub fn report_from_gate_status(status: &super::gate::GateStatus) -> TargetReport {
+    let primal_score = if status.primals_expected == 0 {
+        0.0
+    } else {
+        f64::from(status.primals_alive) / f64::from(status.primals_expected)
+    };
+
+    let ecosystem_score = [
+        primal_score,
+        if status.vcs_synced { 1.0 } else { 0.0 },
+        if status.depot_fresh { 1.0 } else { 0.0 },
+    ]
+    .iter()
+    .sum::<f64>()
+        / 3.0;
+
+    TargetReport {
+        gate: status.name.clone(),
+        target_triple: Target::current().triple().to_owned(),
+        timestamp: now_iso8601(),
+        scenarios_run: 0,
+        primals: Vec::new(),
+        ecosystem_score,
+        active_pressures: Vec::new(),
+        debt_summary: DebtSummary {
+            blocking: usize::from(status.readiness < super::gate::ReadinessLevel::Partial),
+            degraded: usize::from(status.readiness < super::gate::ReadinessLevel::Full),
+            unverified: usize::from(status.readiness < super::gate::ReadinessLevel::Verified),
+        },
+    }
+}
+
 fn confidence_label(c: Confidence) -> String {
     match c {
         Confidence::Low => "low".to_owned(),
