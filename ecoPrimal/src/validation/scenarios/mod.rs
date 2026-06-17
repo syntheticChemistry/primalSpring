@@ -90,6 +90,7 @@ pub mod s_convergence_monitor;
 pub mod s_kderm_boundary;
 pub mod s_mesh_topology;
 pub mod s_nucleus_orchestration;
+pub mod s_protocol_escalation;
 pub mod s_meta_tier_compositions;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
@@ -194,6 +195,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_kderm_boundary::SCENARIO);
     r.register(s_nucleus_orchestration::SCENARIO);
     r.register(s_convergence_monitor::SCENARIO);
+    r.register(s_protocol_escalation::SCENARIO);
     r
 }
 
@@ -204,7 +206,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 71;
+    const EXPECTED_SCENARIO_COUNT: usize = 72;
 
     #[test]
     fn registry_scenario_count() {

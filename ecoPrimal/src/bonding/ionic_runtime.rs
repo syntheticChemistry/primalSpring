@@ -25,6 +25,8 @@
 use std::collections::HashMap;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+use crate::tolerances::platform;
+
 use super::BondingConstraint;
 use super::ionic::{
     ContractId, ContractState, IonicContract, IonicProposal, ProposalResponse, ProvenanceSeal,
@@ -393,46 +395,16 @@ impl Default for IonicContractRegistry {
 }
 
 fn timestamp_suffix() -> String {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_millis()
-        .to_string()
-}
-
-fn unix_secs_to_iso(total_secs: u64) -> String {
-    const SECS_PER_DAY: u64 = 86_400;
-    let days = total_secs / SECS_PER_DAY;
-    let day_secs = total_secs % SECS_PER_DAY;
-    let hours = day_secs / 3600;
-    let mins = (day_secs % 3600) / 60;
-    let secs = day_secs % 60;
-
-    // Civil date from Unix day count (Euclidean affine algorithm).
-    let z = days + 719_468;
-    let era = z / 146_097;
-    let doe = z - era * 146_097;
-    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146_096) / 365;
-    let y = yoe + era * 400;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let d = doy - (153 * mp + 2) / 5 + 1;
-    let m = if mp < 10 { mp + 3 } else { mp - 9 };
-    let y = if m <= 2 { y + 1 } else { y };
-
-    format!("{y:04}-{m:02}-{d:02}T{hours:02}:{mins:02}:{secs:02}Z")
+    platform::epoch_millis().to_string()
 }
 
 fn iso_now() -> String {
-    let d = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default();
-    unix_secs_to_iso(d.as_secs())
+    platform::iso_now()
 }
 
 fn system_time_to_iso(t: SystemTime) -> String {
     let d = t.duration_since(UNIX_EPOCH).unwrap_or_default();
-    unix_secs_to_iso(d.as_secs())
+    platform::unix_secs_to_iso(d.as_secs())
 }
 
 #[cfg(test)]

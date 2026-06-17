@@ -102,6 +102,57 @@ pub fn hostname() -> Option<String> {
         .or_else(|| std::env::var("HOST").ok())
 }
 
+/// Current Unix epoch seconds (safe fallback to 0 on pre-epoch systems).
+#[must_use]
+pub fn epoch_secs() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+}
+
+/// Current Unix epoch milliseconds.
+#[must_use]
+pub fn epoch_millis() -> u128 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis()
+}
+
+/// Convert Unix epoch seconds to ISO 8601 UTC string.
+///
+/// Pure arithmetic — no allocator dependencies, no libc. Uses the
+/// Euclidean affine civil date algorithm.
+#[must_use]
+pub fn unix_secs_to_iso(total_secs: u64) -> String {
+    const SECS_PER_DAY: u64 = 86_400;
+    let days = total_secs / SECS_PER_DAY;
+    let day_secs = total_secs % SECS_PER_DAY;
+    let hours = day_secs / 3600;
+    let mins = (day_secs % 3600) / 60;
+    let secs = day_secs % 60;
+
+    let z = days + 719_468;
+    let era = z / 146_097;
+    let doe = z - era * 146_097;
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146_096) / 365;
+    let y = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    let y = if m <= 2 { y + 1 } else { y };
+
+    format!("{y:04}-{m:02}-{d:02}T{hours:02}:{mins:02}:{secs:02}Z")
+}
+
+/// Current time as ISO 8601 UTC string.
+#[must_use]
+pub fn iso_now() -> String {
+    unix_secs_to_iso(epoch_secs())
+}
+
 /// Read the real UID from `/proc/self/status` (no libc, no unsafe).
 #[cfg(target_os = "linux")]
 fn real_uid() -> Option<u32> {

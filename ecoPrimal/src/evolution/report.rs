@@ -246,13 +246,7 @@ fn confidence_label(c: Confidence) -> String {
 }
 
 fn now_iso8601() -> String {
-    let since_epoch = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default();
-    let secs = since_epoch.as_secs();
-    let days = secs / 86400;
-    let years = 1970 + days / 365;
-    format!("{years}-xx-xxT00:00:00Z (epoch: {secs})")
+    crate::tolerances::platform::iso_now()
 }
 
 /// Compare two reports and produce a parity verdict.
