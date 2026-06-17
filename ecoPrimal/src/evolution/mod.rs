@@ -24,12 +24,14 @@
 //! a fitness dimension on top.
 
 pub mod fitness;
+pub mod gate;
 pub mod pressure;
 pub mod profile;
 pub mod report;
 pub mod target;
 
 pub use fitness::{ArchFitness, FitnessScore};
+pub use gate::{GateMatrix, GateStatus, ReadinessLevel};
 pub use pressure::PressureCategory;
 pub use profile::ProfileConstraints;
 pub use report::TargetReport;

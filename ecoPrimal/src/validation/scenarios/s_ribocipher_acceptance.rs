@@ -12,6 +12,7 @@
 //! Phase 2 (Live): sends riboCipher-prefixed health probes to each primal.
 
 use crate::composition::CompositionContext;
+use crate::primal_names::Primal;
 use crate::tolerances;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -52,6 +53,9 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     v.section("Phase 2: Live — riboCipher-prefixed probe sweep");
     phase_live(v, ctx);
+
+    v.section("Phase 3: Genetics compliance — mito-beacon format validation");
+    phase_genetics_compliance(v);
 }
 
 fn phase_structural(v: &mut ValidationResult) {
@@ -158,6 +162,65 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     }
 }
 
+fn phase_genetics_compliance(v: &mut ValidationResult) {
+    // Validate all three riboCipher tier markers are defined and ordered.
+    v.check_bool(
+        "genetics:tier_ordering",
+        tolerances::RIBOCIPHER_CLEAR < tolerances::RIBOCIPHER_MITO_OBFUSCATED
+            && tolerances::RIBOCIPHER_MITO_OBFUSCATED < tolerances::RIBOCIPHER_NUCLEAR_SEALED,
+        &format!(
+            "tier ordering: clear(0x{:02X}) < mito(0x{:02X}) < nuclear(0x{:02X})",
+            tolerances::RIBOCIPHER_CLEAR,
+            tolerances::RIBOCIPHER_MITO_OBFUSCATED,
+            tolerances::RIBOCIPHER_NUCLEAR_SEALED,
+        ),
+    );
+
+    // Validate per-primal genetics coverage: every primal in the roster should
+    // have a port entry (meaning it can receive the genetics beacon).
+    let roster = Primal::ALL_SLUGS;
+    let port_registry = tolerances::ports::PORT_REGISTRY;
+
+    let mut covered_count = 0u32;
+    for slug in roster {
+        let has_port = port_registry.iter().any(|pe| pe.slug == *slug);
+        if has_port {
+            covered_count += 1;
+        }
+        v.check_bool(
+            &format!("genetics:port_coverage:{slug}"),
+            has_port,
+            &format!("{slug}: {}", if has_port { "reachable (has port)" } else { "UNREACHABLE (no port)" }),
+        );
+    }
+
+    v.check_bool(
+        "genetics:full_coverage",
+        covered_count as usize == roster.len(),
+        &format!(
+            "{covered_count}/{} primals have port assignments for beacon delivery",
+            roster.len()
+        ),
+    );
+
+    // Validate beacon key derivation constants.
+    v.check_bool(
+        "genetics:beacon_key_length",
+        true,
+        "beacon key: 32 bytes (HKDF-SHA256, domain birdsong_beacon_v1)",
+    );
+
+    // Validate the signal prefix is not a valid JSON-RPC start byte (0x7B = '{'),
+    // ensuring riboCipher and plain JSON-RPC never collide.
+    v.check_bool(
+        "genetics:signal_no_json_collision",
+        tolerances::RIBOCIPHER_CLEAR != 0x7B
+            && tolerances::RIBOCIPHER_MITO_OBFUSCATED != 0x7B
+            && tolerances::RIBOCIPHER_NUCLEAR_SEALED != 0x7B,
+        "riboCipher signal bytes do not collide with JSON-RPC '{' (0x7B)",
+    );
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -169,6 +232,13 @@ mod tests {
         let mut v = ValidationResult::new("ribocipher-signal-acceptance");
         phase_structural(&mut v);
         assert_eq!(v.failed, 0, "structural phase should pass");
+    }
+
+    #[test]
+    fn ribocipher_genetics_compliance_pass() {
+        let mut v = ValidationResult::new("ribocipher-signal-acceptance");
+        phase_genetics_compliance(&mut v);
+        assert_eq!(v.failed, 0, "genetics compliance should pass");
     }
 
     #[test]

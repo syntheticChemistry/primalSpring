@@ -56,6 +56,7 @@ pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
 pub mod s_bootstrap_readiness;
 pub mod s_btsp_cross_primal;
+pub mod s_cascade_drift;
 pub mod s_cascade_provenance_match;
 pub mod s_cephalization;
 pub mod s_composition_dispatch_parity;
@@ -84,6 +85,7 @@ pub mod s_health_lifecycle_surface;
 pub mod s_health_standard;
 pub mod s_ionic_bond;
 pub mod s_loam_certificate_lifecycle;
+pub mod s_mesh_topology;
 pub mod s_meta_tier_compositions;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
@@ -182,6 +184,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_arch_fitness::SCENARIO);
     r.register(s_cross_target_parity::SCENARIO);
     r.register(s_pressure_surface::SCENARIO);
+    r.register(s_cascade_drift::SCENARIO);
+    r.register(s_mesh_topology::SCENARIO);
     r
 }
 
@@ -192,7 +196,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 65;
+    const EXPECTED_SCENARIO_COUNT: usize = 67;
 
     #[test]
     fn registry_scenario_count() {
