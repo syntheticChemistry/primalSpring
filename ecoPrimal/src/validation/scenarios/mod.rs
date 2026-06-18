@@ -122,6 +122,7 @@ pub mod s_ribocipher_acceptance;
 pub mod s_zero_port_standard;
 pub mod s_gate_parity;
 pub mod s_mesh_overlay;
+pub mod s_mesh_reachability;
 pub mod s_nucleus_integration;
 pub mod s_nucleus_user_deploy;
 pub mod s_primal_debt;
@@ -208,6 +209,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_zone_topology::SCENARIO);
     r.register(s_mesh_overlay::SCENARIO);
     r.register(s_gate_parity::SCENARIO);
+    r.register(s_mesh_reachability::SCENARIO);
     r.register(s_nucleus_integration::SCENARIO);
     r.register(s_nucleus_user_deploy::SCENARIO);
     r.register(s_primal_debt::SCENARIO);
@@ -222,7 +224,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 80;
+    const EXPECTED_SCENARIO_COUNT: usize = 81;
 
     #[test]
     fn registry_scenario_count() {

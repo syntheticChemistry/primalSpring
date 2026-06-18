@@ -156,9 +156,9 @@ fn phase_socket_alignment(v: &mut ValidationResult) {
     let entries: Vec<String> = std::fs::read_dir(&socket_dir)
         .into_iter()
         .flatten()
-        .filter_map(|e| e.ok())
+        .filter_map(std::result::Result::ok)
         .filter(|e| {
-            e.path().extension().map_or(false, |ext| ext == "sock")
+            e.path().extension().is_some_and(|ext| ext == "sock")
         })
         .map(|e| e.file_name().to_string_lossy().into_owned())
         .collect();
@@ -189,7 +189,7 @@ fn phase_socket_alignment(v: &mut ValidationResult) {
         &format!("{matched}/{} expected primal sockets present", expected_primals.len()),
     );
 
-    let template_socket_pattern = format!("{}/biomeos/", runtime_dir);
+    let template_socket_pattern = format!("{runtime_dir}/biomeos/");
     let systemd_output = std::process::Command::new("systemctl")
         .args(["--user", "show", "membrane-nucleus@barracuda.service", "--property=ExecStart"])
         .output();
@@ -237,11 +237,10 @@ fn phase_graceful_degradation(v: &mut ValidationResult, ctx: &mut CompositionCon
     let core_caps = ["security", "ledger", "ai", "visualization", "shader"];
     let mut core_alive = 0u32;
     for cap in &core_caps {
-        if ctx.has_capability(cap) {
-            match ctx.call(cap, "health.liveness", serde_json::json!({})) {
-                Ok(_) => core_alive += 1,
-                Err(_) => {}
-            }
+        if ctx.has_capability(cap)
+            && ctx.call(cap, "health.liveness", serde_json::json!({})).is_ok()
+        {
+            core_alive += 1;
         }
     }
 
