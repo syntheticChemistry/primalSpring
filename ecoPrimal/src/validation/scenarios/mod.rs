@@ -120,7 +120,9 @@ pub mod s_version_skew_detection;
 pub mod s_wan_ipc_tolerance;
 pub mod s_ribocipher_acceptance;
 pub mod s_zero_port_standard;
+pub mod s_composition_live_state;
 pub mod s_gate_parity;
+pub mod s_genetics_compliance;
 pub mod s_kderm_live_layers;
 pub mod s_mesh_overlay;
 pub mod s_mesh_reachability;
@@ -209,7 +211,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_gate_enrollment::SCENARIO);
     r.register(s_zone_topology::SCENARIO);
     r.register(s_mesh_overlay::SCENARIO);
+    r.register(s_composition_live_state::SCENARIO);
     r.register(s_gate_parity::SCENARIO);
+    r.register(s_genetics_compliance::SCENARIO);
     r.register(s_kderm_live_layers::SCENARIO);
     r.register(s_mesh_reachability::SCENARIO);
     r.register(s_nucleus_integration::SCENARIO);
@@ -226,7 +230,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 82;
+    const EXPECTED_SCENARIO_COUNT: usize = 84;
 
     #[test]
     fn registry_scenario_count() {
