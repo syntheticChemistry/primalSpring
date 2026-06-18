@@ -188,9 +188,9 @@ fn wave116_sovereign_gates() -> Vec<GateStatus> {
             primals_expected: 13,
             depot_fresh: true,
             vcs_synced: true,
-            mesh_peers: 0,
-            last_seen: Some(1_718_700_000),
-            notes: "SSH+preflight done, enroll.sh staged, WG .5 assigned".to_owned(),
+            mesh_peers: 3,
+            last_seen: Some(1_718_714_000),
+            notes: "ENROLLED: WG .5 live, 3 peers, NUCLEUS pending".to_owned(),
         },
         GateStatus {
             name: "sporeGate".to_owned(),
