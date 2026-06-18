@@ -85,6 +85,7 @@ pub mod s_health_lifecycle_surface;
 pub mod s_health_standard;
 pub mod s_ionic_bond;
 pub mod s_loam_certificate_lifecycle;
+pub mod s_gate_enrollment;
 pub mod s_gate_readiness;
 pub mod s_convergence_monitor;
 pub mod s_kderm_boundary;
@@ -196,6 +197,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_nucleus_orchestration::SCENARIO);
     r.register(s_convergence_monitor::SCENARIO);
     r.register(s_protocol_escalation::SCENARIO);
+    r.register(s_gate_enrollment::SCENARIO);
     r
 }
 
@@ -206,7 +208,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 72;
+    const EXPECTED_SCENARIO_COUNT: usize = 73;
 
     #[test]
     fn registry_scenario_count() {

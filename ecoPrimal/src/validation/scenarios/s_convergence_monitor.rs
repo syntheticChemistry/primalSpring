@@ -240,6 +240,28 @@ fn wave115_matrix() -> GateMatrix {
                 last_seen: None,
                 notes: "OFFLINE — dead CMOS".to_owned(),
             },
+            GateStatus {
+                name: "ironGate".to_owned(),
+                readiness: ReadinessLevel::Reachable,
+                primals_alive: 0,
+                primals_expected: 13,
+                depot_fresh: false,
+                vcs_synced: false,
+                mesh_peers: 0,
+                last_seen: None,
+                notes: "on sovereign relay, SSH pending".to_owned(),
+            },
+            GateStatus {
+                name: "flockGate".to_owned(),
+                readiness: ReadinessLevel::Reachable,
+                primals_alive: 0,
+                primals_expected: 13,
+                depot_fresh: false,
+                vcs_synced: false,
+                mesh_peers: 0,
+                last_seen: None,
+                notes: "WAN, WireGuard via golgi".to_owned(),
+            },
         ],
     }
 }

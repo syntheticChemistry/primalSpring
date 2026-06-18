@@ -128,6 +128,10 @@ impl GateMatrix {
         m.gates.push(gate_from_env("northGate"));
         m.gates.push(gate_from_env("fieldGate"));
         m.gates.push(gate_from_env("flockGate"));
+        m.gates.push(gate_from_env("ironGate"));
+        m.gates.push(gate_from_env("strandGate"));
+        m.gates.push(gate_from_env("southGate"));
+        m.gates.push(gate_from_env("swiftGate"));
         m
     }
 
@@ -304,15 +308,17 @@ mod tests {
     #[test]
     fn matrix_snapshot_structure() {
         let m = GateMatrix::ecosystem_snapshot();
-        assert_eq!(m.gates.len(), 7);
+        assert_eq!(m.gates.len(), 11);
         assert!(m.gates.iter().any(|g| g.name == "eastGate"));
         assert!(m.gates.iter().any(|g| g.name == "golgi"));
+        assert!(m.gates.iter().any(|g| g.name == "ironGate"));
+        assert!(m.gates.iter().any(|g| g.name == "swiftGate"));
     }
 
     #[test]
     fn matrix_summary_format() {
         let m = GateMatrix::ecosystem_snapshot();
         let s = m.summary();
-        assert!(s.contains("7 gates"));
+        assert!(s.contains("11 gates"));
     }
 }
