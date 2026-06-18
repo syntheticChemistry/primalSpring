@@ -17,7 +17,7 @@ NUCLEUS deployments from the outside.
 │  │  Certification    │  │  Validation      │  │  IPC Client  │  │
 │  │  Engine           │  │  Scenarios       │  │  (probing)   │  │
 │  │                   │  │                  │  │              │  │
-│  │  L0: Bare         │  │  72 absorbed     │  │  JSON-RPC    │  │
+│  │  L0: Bare         │  │  74 absorbed     │  │  JSON-RPC    │  │
 │  │  L0.5: Seed       │  │  experiments     │  │  2.0 client  │  │
 │  │  L1: Discovery    │  │  across 12 tracks│  │              │  │
 │  │  L1.5: BTSP       │  │                  │  │  Composition │  │
@@ -90,7 +90,7 @@ Runs with `biomeOS` orchestrating the full composition.
 | `certification/entropy.rs` | Seed provenance, fingerprint verification |
 | `validation/` | `ValidationResult` harness, check_bool/check_skip/section API |
 | `validation/helpers.rs` | Shared graph parsing, Dark Forest invariants, capability cross-ref |
-| `validation/scenarios/` | 57 absorbed experiment scenarios (10 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios/` | 74 absorbed experiment scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
 | `validation/scenarios/registry.rs` | `ScenarioMeta`, `ScenarioRegistry`, `Tier`, `Track` |
 | `composition/` | `CompositionContext` — 5-tier discovery, IPC calls, BTSP |
 | `coordination/` | `AtomicType`, composition validation (legacy probes removed Wave 32) |
@@ -99,6 +99,9 @@ Runs with `biomeOS` orchestrating the full composition.
 | `ipc/` | JSON-RPC protocol, `PrimalClient`, `NeuralBridge`, discovery |
 | `ipc/method_gate.rs` | MethodGate (JH-0) validation (validates primals have auth wired) |
 | `tolerances.rs` | Named, centralized tolerance constants |
+| `evolution/` | Silicon-agnostic evolution: `Target`, `ArchFitness`, `GateMatrix`, `CytoplasmZone`, `EcosystemConvergence` |
+| `evolution/gate.rs` | Gate readiness tracking, zone model, enrollment status, `local_assessment()` |
+| `evolution/convergence.rs` | Drift detection (`DriftSignal`), severity, ecosystem convergence scoring |
 
 ### Binaries
 
@@ -171,6 +174,35 @@ Channel 1 (Signal)  │  UDS ─── primal-to-primal IPC           │
 Content-aware routing (`config/routing_config_reference.toml`) decides per-request:
 gate (btsp_tunnel) vs VPS cache (local_filesystem) vs peer (songbird_p2p) vs
 fallback (http_proxy), scoped by bonding trust tier.
+
+## Cytoplasm Zone Model (K-Derm Topology)
+
+The K-Derm cytoplasm is segmented into physical zones by switching fabric.
+Gates in the same zone share L2 connectivity; cross-zone traffic traverses
+backbone links or WireGuard overlay.
+
+```
+         Hub 1 (Backbone)            Target: three-hub triangle
+        CRS310 + sporeGate           with redundant paths.
+       eastGate, northGate,          Any single leg failure
+       ironGate (10G fabric)         routes through other two.
+          /           \
+    leg A/             \leg B (LIVE, 80m AOC 10G)
+        /               \
+   Hub 3 (Garage)----Hub 2 (House2)
+   planned          leg C    Omada SX3008F (standalone L2)
+                    planned  + GL.iNet Flint 2 (OpenWrt WiFi)
+                             strandGate, southGate, swiftGate, fieldGate
+```
+
+| Zone | Hub | Fabric | Gates |
+|------|-----|--------|-------|
+| `Backbone` | 1 | CRS310 (10G) | sporeGate, eastGate, northGate, ironGate |
+| `House2` | 2 | Omada SX3008F | strandGate, southGate, swiftGate, fieldGate |
+| `Garage` | 3 | planned | (future compute) |
+| `Wan` | — | Internet/VPS | golgi, pepti, flockGate |
+
+`CytoplasmZone::for_gate()` auto-derives zone from gate name.
 
 ## Deprecated Patterns (Fossilized)
 

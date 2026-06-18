@@ -120,6 +120,7 @@ pub mod s_version_skew_detection;
 pub mod s_wan_ipc_tolerance;
 pub mod s_ribocipher_acceptance;
 pub mod s_zero_port_standard;
+pub mod s_zone_topology;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
 #[must_use]
@@ -198,6 +199,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_convergence_monitor::SCENARIO);
     r.register(s_protocol_escalation::SCENARIO);
     r.register(s_gate_enrollment::SCENARIO);
+    r.register(s_zone_topology::SCENARIO);
     r
 }
 
@@ -208,7 +210,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 73;
+    const EXPECTED_SCENARIO_COUNT: usize = 74;
 
     #[test]
     fn registry_scenario_count() {

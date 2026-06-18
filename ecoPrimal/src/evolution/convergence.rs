@@ -220,11 +220,13 @@ fn check_gate_convergence(gate: &GateStatus) -> Vec<DriftSignal> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use super::super::gate::CytoplasmZone;
 
     fn healthy_gate(name: &str) -> GateStatus {
         GateStatus {
             name: name.to_owned(),
             readiness: ReadinessLevel::Full,
+            zone: CytoplasmZone::for_gate(name),
             primals_alive: 13,
             primals_expected: 13,
             depot_fresh: true,

@@ -8,12 +8,12 @@
 | **Version** | 0.9.32 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 942 lib (+ experiment + doc) |
-| **Experiments** | 96 (21 tracks) — 72 validation scenarios (12 tracks, 3 tiers) |
+| **Tests** | 943 lib (+ experiment + doc) |
+| **Experiments** | 96 (21 tracks) — 74 validation scenarios (12 tracks, 3 tiers) |
 | **Deploy Graphs** | 100 graph TOMLs (~67 deploy + 33 compositions) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
-| **Mesh** | Live gates: eastGate (10G SFP+), sporeGate (13/13 systemd), golgi (relay+Forgejo), pepti (depot). Forming: northGate, flockGate (WAN). MeshTopology wired into CompositionContext. K-Derm envelope model. BTSP trust chain. Convergence monitoring + drift detection. |
+| **Mesh** | 5/9 sovereign relay, 1/9 fully enrolled. WG mesh: golgi, sporeGate, pepti (3 nodes). Enrollment pipeline: eastGate (SSH done, NUCLEUS next), ironGate, flockGate (WAN). K-Derm cytoplasm zones: backbone/house2/garage/wan. Three-hub triangle topology. Convergence monitoring + drift detection. |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`). `#![warn(missing_docs)]` enforced. |

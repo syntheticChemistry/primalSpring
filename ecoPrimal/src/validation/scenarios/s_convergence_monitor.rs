@@ -13,7 +13,7 @@
 
 use crate::composition::CompositionContext;
 use crate::evolution::convergence::{DriftDimension, DriftSeverity, EcosystemConvergence};
-use crate::evolution::gate::{GateMatrix, GateStatus, ReadinessLevel};
+use crate::evolution::gate::{CytoplasmZone, GateMatrix, GateStatus, ReadinessLevel};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -141,8 +141,8 @@ fn phase_severity_escalation(v: &mut ValidationResult) {
 }
 
 fn phase_real_assessment(v: &mut ValidationResult) {
-    // Build a matrix approximating our actual ecosystem from the Wave 115 FRAGO
-    let matrix = wave115_matrix();
+    // Build a matrix approximating our actual ecosystem from Wave 116 FRAGO
+    let matrix = wave116_matrix();
     let conv = EcosystemConvergence::from_matrix(&matrix);
 
     v.check_bool(
@@ -170,106 +170,162 @@ fn phase_real_assessment(v: &mut ValidationResult) {
     );
 }
 
-/// Approximate Wave 115 ecosystem state.
-fn wave115_matrix() -> GateMatrix {
-    GateMatrix {
-        gates: vec![
-            GateStatus {
-                name: "eastGate".to_owned(),
-                readiness: ReadinessLevel::Verified,
-                primals_alive: 0,
-                primals_expected: 0,
-                depot_fresh: true,
-                vcs_synced: true,
-                mesh_peers: 1,
-                last_seen: Some(1_718_650_000),
-                notes: "validation node + overwatch".to_owned(),
-            },
-            GateStatus {
-                name: "sporeGate".to_owned(),
-                readiness: ReadinessLevel::Full,
-                primals_alive: 13,
-                primals_expected: 13,
-                depot_fresh: true,
-                vcs_synced: true,
-                mesh_peers: 1,
-                last_seen: Some(1_718_650_000),
-                notes: "13/13 systemd persisted".to_owned(),
-            },
-            GateStatus {
-                name: "golgi".to_owned(),
-                readiness: ReadinessLevel::Full,
-                primals_alive: 13,
-                primals_expected: 13,
-                depot_fresh: true,
-                vcs_synced: true,
-                mesh_peers: 2,
-                last_seen: Some(1_718_650_000),
-                notes: "relay + Forgejo".to_owned(),
-            },
-            GateStatus {
-                name: "pepti".to_owned(),
-                readiness: ReadinessLevel::Partial,
-                primals_alive: 0,
-                primals_expected: 13,
-                depot_fresh: true,
-                vcs_synced: true,
-                mesh_peers: 1,
-                last_seen: Some(1_718_600_000),
-                notes: "build authority only".to_owned(),
-            },
-            GateStatus {
-                name: "northGate".to_owned(),
-                readiness: ReadinessLevel::Reachable,
-                primals_alive: 0,
-                primals_expected: 13,
-                depot_fresh: false,
-                vcs_synced: false,
-                mesh_peers: 0,
-                last_seen: None,
-                notes: "NUCLEUS deploy pending".to_owned(),
-            },
-            GateStatus {
-                name: "fieldGate".to_owned(),
-                readiness: ReadinessLevel::Offline,
-                primals_alive: 0,
-                primals_expected: 0,
-                depot_fresh: false,
-                vcs_synced: false,
-                mesh_peers: 0,
-                last_seen: None,
-                notes: "OFFLINE — dead CMOS".to_owned(),
-            },
-            GateStatus {
-                name: "ironGate".to_owned(),
-                readiness: ReadinessLevel::Reachable,
-                primals_alive: 0,
-                primals_expected: 13,
-                depot_fresh: false,
-                vcs_synced: false,
-                mesh_peers: 0,
-                last_seen: None,
-                notes: "on sovereign relay, SSH pending".to_owned(),
-            },
-            GateStatus {
-                name: "flockGate".to_owned(),
-                readiness: ReadinessLevel::Reachable,
-                primals_alive: 0,
-                primals_expected: 13,
-                depot_fresh: false,
-                vcs_synced: false,
-                mesh_peers: 0,
-                last_seen: None,
-                notes: "WAN, WireGuard via golgi".to_owned(),
-            },
-        ],
-    }
+/// Approximate Wave 116 ecosystem state (5/9 sovereign, 3 pending, 1 offline).
+fn wave116_matrix() -> GateMatrix {
+    let mut gates = wave116_sovereign_gates();
+    gates.extend(wave116_pending_gates());
+    GateMatrix { gates }
+}
+
+/// Gates on sovereign relay (5) + backbone reachable (2).
+fn wave116_sovereign_gates() -> Vec<GateStatus> {
+    vec![
+        GateStatus {
+            name: "eastGate".to_owned(),
+            readiness: ReadinessLevel::Verified,
+            zone: CytoplasmZone::Backbone,
+            primals_alive: 0,
+            primals_expected: 13,
+            depot_fresh: true,
+            vcs_synced: true,
+            mesh_peers: 0,
+            last_seen: Some(1_718_700_000),
+            notes: "SSH done, NUCLEUS deploy next".to_owned(),
+        },
+        GateStatus {
+            name: "sporeGate".to_owned(),
+            readiness: ReadinessLevel::Full,
+            zone: CytoplasmZone::Backbone,
+            primals_alive: 13,
+            primals_expected: 13,
+            depot_fresh: true,
+            vcs_synced: true,
+            mesh_peers: 2,
+            last_seen: Some(1_718_700_000),
+            notes: "reference gate — fully enrolled".to_owned(),
+        },
+        GateStatus {
+            name: "golgi".to_owned(),
+            readiness: ReadinessLevel::Full,
+            zone: CytoplasmZone::Wan,
+            primals_alive: 13,
+            primals_expected: 13,
+            depot_fresh: true,
+            vcs_synced: true,
+            mesh_peers: 2,
+            last_seen: Some(1_718_700_000),
+            notes: "relay + Forgejo + WG hub".to_owned(),
+        },
+        GateStatus {
+            name: "pepti".to_owned(),
+            readiness: ReadinessLevel::Partial,
+            zone: CytoplasmZone::Wan,
+            primals_alive: 0,
+            primals_expected: 13,
+            depot_fresh: true,
+            vcs_synced: true,
+            mesh_peers: 1,
+            last_seen: Some(1_718_650_000),
+            notes: "build + depot, WG peer".to_owned(),
+        },
+        GateStatus {
+            name: "northGate".to_owned(),
+            readiness: ReadinessLevel::Reachable,
+            zone: CytoplasmZone::Backbone,
+            primals_alive: 0,
+            primals_expected: 13,
+            depot_fresh: false,
+            vcs_synced: false,
+            mesh_peers: 0,
+            last_seen: None,
+            notes: "P3: hobby, SSH+NUCLEUS after Linux proven".to_owned(),
+        },
+        GateStatus {
+            name: "ironGate".to_owned(),
+            readiness: ReadinessLevel::Reachable,
+            zone: CytoplasmZone::Backbone,
+            primals_alive: 0,
+            primals_expected: 13,
+            depot_fresh: false,
+            vcs_synced: false,
+            mesh_peers: 0,
+            last_seen: None,
+            notes: "sovereign relay, SSH pending".to_owned(),
+        },
+        GateStatus {
+            name: "flockGate".to_owned(),
+            readiness: ReadinessLevel::Reachable,
+            zone: CytoplasmZone::Wan,
+            primals_alive: 0,
+            primals_expected: 13,
+            depot_fresh: false,
+            vcs_synced: false,
+            mesh_peers: 0,
+            last_seen: None,
+            notes: "WAN site-to-site, WG via golgi".to_owned(),
+        },
+    ]
+}
+
+/// Gates still on public relay or offline (4).
+fn wave116_pending_gates() -> Vec<GateStatus> {
+    vec![
+        GateStatus {
+            name: "strandGate".to_owned(),
+            readiness: ReadinessLevel::Offline,
+            zone: CytoplasmZone::House2,
+            primals_alive: 0,
+            primals_expected: 13,
+            depot_fresh: false,
+            vcs_synced: false,
+            mesh_peers: 0,
+            last_seen: None,
+            notes: "still on public relay, sovereign pending".to_owned(),
+        },
+        GateStatus {
+            name: "southGate".to_owned(),
+            readiness: ReadinessLevel::Offline,
+            zone: CytoplasmZone::House2,
+            primals_alive: 0,
+            primals_expected: 13,
+            depot_fresh: false,
+            vcs_synced: false,
+            mesh_peers: 0,
+            last_seen: None,
+            notes: "still on public relay, sovereign pending".to_owned(),
+        },
+        GateStatus {
+            name: "swiftGate".to_owned(),
+            readiness: ReadinessLevel::Offline,
+            zone: CytoplasmZone::House2,
+            primals_alive: 0,
+            primals_expected: 13,
+            depot_fresh: false,
+            vcs_synced: false,
+            mesh_peers: 0,
+            last_seen: None,
+            notes: "WiFi (Eero retiring), Flint 2 ordered".to_owned(),
+        },
+        GateStatus {
+            name: "fieldGate".to_owned(),
+            readiness: ReadinessLevel::Offline,
+            zone: CytoplasmZone::House2,
+            primals_alive: 0,
+            primals_expected: 0,
+            depot_fresh: false,
+            vcs_synced: false,
+            mesh_peers: 0,
+            last_seen: None,
+            notes: "dead CMOS, hardware repair".to_owned(),
+        },
+    ]
 }
 
 fn healthy_gate(name: &str) -> GateStatus {
     GateStatus {
         name: name.to_owned(),
         readiness: ReadinessLevel::Full,
+        zone: CytoplasmZone::for_gate(name),
         primals_alive: 13,
         primals_expected: 13,
         depot_fresh: true,

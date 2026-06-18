@@ -21,7 +21,7 @@
 //! logic — live enrollment is cellMembrane's responsibility.
 
 use crate::composition::CompositionContext;
-use crate::evolution::gate::{GateMatrix, GateStatus, ReadinessLevel};
+use crate::evolution::gate::{CytoplasmZone, GateMatrix, GateStatus, ReadinessLevel};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -148,6 +148,7 @@ fn phase_stage_derivation(v: &mut ValidationResult) {
     let ssh = GateStatus {
         name: "test-ssh".to_owned(),
         readiness: ReadinessLevel::Reachable,
+        zone: CytoplasmZone::Unassigned,
         primals_alive: 0,
         primals_expected: 13,
         depot_fresh: false,
@@ -166,6 +167,7 @@ fn phase_stage_derivation(v: &mut ValidationResult) {
     let enrolled = GateStatus {
         name: "sporeGate".to_owned(),
         readiness: ReadinessLevel::Verified,
+        zone: CytoplasmZone::Backbone,
         primals_alive: 13,
         primals_expected: 13,
         depot_fresh: true,
@@ -184,6 +186,7 @@ fn phase_stage_derivation(v: &mut ValidationResult) {
     let nucleus_only = GateStatus {
         name: "test-nucleus".to_owned(),
         readiness: ReadinessLevel::Full,
+        zone: CytoplasmZone::Unassigned,
         primals_alive: 13,
         primals_expected: 13,
         depot_fresh: false,
@@ -271,6 +274,70 @@ fn phase_enrollment_targets(v: &mut ValidationResult) {
             "targets:reference_gate_enrolled",
             "sporeGate not in matrix (unexpected)",
         );
+    }
+
+    // Wave 116 immediate targets: eastGate (SSH done), ironGate, flockGate
+    validate_wave116_targets(v, &matrix);
+}
+
+/// Wave 116 immediate enrollment targets and their expected minimum stages.
+fn validate_wave116_targets(v: &mut ValidationResult, matrix: &GateMatrix) {
+    use CytoplasmZone as Z;
+
+    struct Target {
+        name: &'static str,
+        min_stage: EnrollmentStage,
+        zone: Z,
+    }
+
+    let wave116 = [
+        Target { name: "eastGate", min_stage: EnrollmentStage::SshEnabled, zone: Z::Backbone },
+        Target { name: "ironGate", min_stage: EnrollmentStage::Bare, zone: Z::Backbone },
+        Target { name: "flockGate", min_stage: EnrollmentStage::Bare, zone: Z::Wan },
+    ];
+
+    for target in &wave116 {
+        let gate = matrix.gates.iter().find(|g| g.name == target.name);
+        match gate {
+            Some(g) => {
+                let stage = EnrollmentStage::from_gate_status(g);
+                v.check_bool(
+                    &format!("w116:{}:zone", target.name),
+                    g.zone == target.zone,
+                    &format!("expected {}, got {}", target.zone.label(), g.zone.label()),
+                );
+                if target.min_stage == EnrollmentStage::Bare {
+                    v.check_bool(
+                        &format!("w116:{}:tracked", target.name),
+                        true,
+                        &format!("stage: {} (enrollment pending SSH)", stage.label()),
+                    );
+                } else if g.readiness == ReadinessLevel::Offline
+                    && std::env::var(format!("GATE_{}_STATUS", target.name.to_uppercase())).is_err()
+                {
+                    v.check_skip(
+                        &format!("w116:{}:min_stage", target.name),
+                        &format!("env absent, stage: {}", stage.label()),
+                    );
+                } else {
+                    v.check_bool(
+                        &format!("w116:{}:min_stage", target.name),
+                        stage >= target.min_stage,
+                        &format!(
+                            "expected >= {}, got {}",
+                            target.min_stage.label(),
+                            stage.label()
+                        ),
+                    );
+                }
+            }
+            None => {
+                v.check_skip(
+                    &format!("w116:{}:absent", target.name),
+                    &format!("{} not in matrix", target.name),
+                );
+            }
+        }
     }
 }
 

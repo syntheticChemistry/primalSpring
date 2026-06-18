@@ -39,6 +39,50 @@ impl fmt::Display for ReadinessLevel {
     }
 }
 
+/// Cytoplasm zone — physical topology grouping within the plasma membrane.
+///
+/// Maps to the K-Derm model where the cytoplasm is segmented into zones
+/// by physical location and switching fabric. Gates in the same zone share
+/// L2 connectivity; cross-zone traffic traverses backbone links.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum CytoplasmZone {
+    /// Hub 1: CRS310 backbone, sporeGate plasma membrane, 10G fabric.
+    Backbone,
+    /// Hub 2: Omada SX3008F (standalone L2), Flint 2 WiFi, house 2 gates.
+    House2,
+    /// Hub 3: Garage, planned compute + outdoor WiFi.
+    Garage,
+    /// WAN: gates outside the plasma membrane (VPS, offsite, public internet).
+    Wan,
+    /// Unknown or unassigned zone.
+    Unassigned,
+}
+
+impl CytoplasmZone {
+    /// Derive zone from gate name using known topology assignments.
+    #[must_use]
+    pub fn for_gate(gate_name: &str) -> Self {
+        match gate_name {
+            "eastGate" | "sporeGate" | "northGate" | "ironGate" => Self::Backbone,
+            "strandGate" | "southGate" | "swiftGate" | "fieldGate" => Self::House2,
+            "golgi" | "pepti" | "flockGate" => Self::Wan,
+            _ => Self::Unassigned,
+        }
+    }
+
+    /// Short label.
+    #[must_use]
+    pub const fn label(self) -> &'static str {
+        match self {
+            Self::Backbone => "backbone",
+            Self::House2 => "house2",
+            Self::Garage => "garage",
+            Self::Wan => "wan",
+            Self::Unassigned => "unassigned",
+        }
+    }
+}
+
 /// Status snapshot for a single gate in the ecosystem.
 #[derive(Debug, Clone)]
 pub struct GateStatus {
@@ -46,6 +90,8 @@ pub struct GateStatus {
     pub name: String,
     /// Readiness classification.
     pub readiness: ReadinessLevel,
+    /// Cytoplasm zone (physical topology grouping).
+    pub zone: CytoplasmZone,
     /// Number of primals alive.
     pub primals_alive: u8,
     /// Total primals expected.
@@ -66,9 +112,12 @@ impl GateStatus {
     /// Create a new gate status with minimal information.
     #[must_use]
     pub fn new(name: impl Into<String>, readiness: ReadinessLevel) -> Self {
+        let n: String = name.into();
+        let zone = CytoplasmZone::for_gate(&n);
         Self {
-            name: name.into(),
+            name: n,
             readiness,
+            zone,
             primals_alive: 0,
             primals_expected: 13,
             depot_fresh: false,
@@ -247,13 +296,14 @@ pub fn local_assessment() -> GateStatus {
     let mesh_peers = std::env::var(crate::env_keys::MESH_PEERS)
         .or_else(|_| {
             #[expect(deprecated, reason = "fallback for backward compatibility")]
-            Ok::<_, std::env::VarError>(std::env::var(crate::env_keys::SONGBIRD_PEERS)?)
+            std::env::var(crate::env_keys::SONGBIRD_PEERS)
         })
         .map(|p| p.split(',').filter(|s| !s.is_empty()).count())
         .unwrap_or(0);
 
     #[expect(clippy::cast_possible_truncation, reason = "primal/peer counts fit in u8")]
     let mut status = GateStatus {
+        zone: CytoplasmZone::for_gate(&name),
         name,
         readiness: ReadinessLevel::Offline,
         primals_alive: primals_alive as u8,
