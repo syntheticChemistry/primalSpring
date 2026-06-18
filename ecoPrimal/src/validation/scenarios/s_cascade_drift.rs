@@ -231,10 +231,16 @@ fn phase_depot_freshness(v: &mut ValidationResult) {
             .unwrap_or_default();
         let hours = age.as_secs() / 3600;
 
+        // Build authorities (pepti) use tight 72h threshold.
+        // Consumer gates use relaxed 168h (7 day) since they depend on
+        // upstream push which may lag during enrollment waves.
+        let is_build_authority = std::env::var("DEPOT_BUILD_AUTHORITY").is_ok();
+        let threshold_h = if is_build_authority { 72 } else { 168 };
+
         v.check_bool(
             &format!("depot:{target_triple}:fresh"),
-            hours < 72,
-            &format!("newest binary is {hours}h old (threshold: <72h)"),
+            hours < threshold_h,
+            &format!("newest binary is {hours}h old (threshold: <{threshold_h}h)"),
         );
     } else {
         v.check_skip(

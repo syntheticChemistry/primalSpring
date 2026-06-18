@@ -152,6 +152,22 @@ impl GateStatus {
     }
 }
 
+/// WireGuard mesh address assignments (10.13.37.0/24 overlay).
+///
+/// Static registry of assigned mesh IPs. Once assigned, an address is permanent.
+/// Gates without an entry have not yet been peered.
+#[must_use]
+pub fn mesh_address(gate_name: &str) -> Option<&'static str> {
+    match gate_name {
+        "golgi" => Some("10.13.37.1"),
+        "sporeGate" => Some("10.13.37.2"),
+        "pepti" => Some("10.13.37.4"),
+        "eastGate" => Some("10.13.37.5"),
+        "flockGate" => Some("10.13.37.6"),
+        _ => None,
+    }
+}
+
 /// The full ecosystem gate readiness matrix.
 #[derive(Debug, Clone, Default)]
 pub struct GateMatrix {

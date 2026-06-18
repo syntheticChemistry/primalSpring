@@ -30,7 +30,7 @@
 //! 5. Zone isolation: gates in same zone share L2, cross-zone is L3/WG
 
 use crate::composition::CompositionContext;
-use crate::evolution::gate::{CytoplasmZone, GateMatrix};
+use crate::evolution::gate::{CytoplasmZone, GateMatrix, mesh_address};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -53,6 +53,7 @@ fn run_zone_topology(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     validate_triangle_legs(v);
     validate_zone_isolation(v);
     validate_enrollment_zones(v);
+    validate_mesh_addresses(v);
 }
 
 fn validate_zone_assignments(v: &mut ValidationResult) {
@@ -237,4 +238,51 @@ fn validate_enrollment_zones(v: &mut ValidationResult) {
             ),
         );
     }
+}
+
+/// Validate WireGuard mesh overlay address assignments (10.13.37.0/24).
+fn validate_mesh_addresses(v: &mut ValidationResult) {
+    let expected: &[(&str, &str)] = &[
+        ("golgi", "10.13.37.1"),
+        ("sporeGate", "10.13.37.2"),
+        ("pepti", "10.13.37.4"),
+        ("eastGate", "10.13.37.5"),
+        ("flockGate", "10.13.37.6"),
+    ];
+
+    for (gate, ip) in expected {
+        let actual = mesh_address(gate);
+        v.check_bool(
+            &format!("mesh:{gate}:assigned"),
+            actual == Some(*ip),
+            &format!("expected {ip}, got {actual:?}"),
+        );
+    }
+
+    // Unassigned gates should return None
+    let unpeered = ["northGate", "ironGate", "strandGate", "southGate", "swiftGate"];
+    for gate in &unpeered {
+        v.check_bool(
+            &format!("mesh:{gate}:unassigned"),
+            mesh_address(gate).is_none(),
+            "unpeered gate should have no mesh address",
+        );
+    }
+
+    // All assigned addresses must be unique and in 10.13.37.0/24
+    let assigned: Vec<_> = expected.iter().map(|(_, ip)| *ip).collect();
+    let mut seen = std::collections::HashSet::new();
+    let all_unique = assigned.iter().all(|ip| seen.insert(*ip));
+    v.check_bool(
+        "mesh:addresses_unique",
+        all_unique,
+        &format!("{} addresses, all unique", assigned.len()),
+    );
+
+    let all_in_subnet = assigned.iter().all(|ip| ip.starts_with("10.13.37."));
+    v.check_bool(
+        "mesh:subnet_consistent",
+        all_in_subnet,
+        "all mesh addresses in 10.13.37.0/24",
+    );
 }
