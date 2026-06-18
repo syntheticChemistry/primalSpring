@@ -188,9 +188,9 @@ fn wave116_sovereign_gates() -> Vec<GateStatus> {
             primals_expected: 13,
             depot_fresh: true,
             vcs_synced: true,
-            mesh_peers: 3,
+            mesh_peers: 4,
             last_seen: Some(1_718_714_000),
-            notes: "ENROLLED: WG .5 live, 3 peers, NUCLEUS pending".to_owned(),
+            notes: "WG .5 live, 4 peers, NUCLEUS pending".to_owned(),
         },
         GateStatus {
             name: "sporeGate".to_owned(),
@@ -260,9 +260,9 @@ fn wave116_sovereign_gates() -> Vec<GateStatus> {
             primals_expected: 13,
             depot_fresh: false,
             vcs_synced: false,
-            mesh_peers: 0,
-            last_seen: None,
-            notes: "SSH done, WG .6 configured, awaiting golgi peer add".to_owned(),
+            mesh_peers: 2,
+            last_seen: Some(1_718_714_000),
+            notes: "WG .6 LIVE, 32ms golgi, NUCLEUS pending".to_owned(),
         },
     ]
 }

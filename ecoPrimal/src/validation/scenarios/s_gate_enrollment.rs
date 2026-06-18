@@ -293,7 +293,7 @@ fn validate_wave116_targets(v: &mut ValidationResult, matrix: &GateMatrix) {
     let wave116 = [
         Target { name: "eastGate", min_stage: EnrollmentStage::WireGuardPeered, zone: Z::Backbone },
         Target { name: "ironGate", min_stage: EnrollmentStage::Bare, zone: Z::Backbone },
-        Target { name: "flockGate", min_stage: EnrollmentStage::Bare, zone: Z::Wan },
+        Target { name: "flockGate", min_stage: EnrollmentStage::WireGuardPeered, zone: Z::Wan },
     ];
 
     for target in &wave116 {
