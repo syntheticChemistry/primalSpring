@@ -13,8 +13,8 @@
 //! The fitness evaluator uses these constraints to classify targets
 //! and determine whether a primal composition fits within the profile.
 
-use super::target::{CompositionTier, Target};
 use super::pressure::PressureCategory;
+use super::target::{CompositionTier, Target};
 
 /// Parsed constraints from a deployment profile TOML.
 #[derive(Debug, Clone)]
@@ -73,9 +73,7 @@ impl ProfileConstraints {
             .unwrap_or("tcp_enabled")
             .to_owned();
 
-        let constraints = composition
-            .get("constraints")
-            .and_then(|v| v.as_table());
+        let constraints = composition.get("constraints").and_then(|v| v.as_table());
 
         let max_primals = constraints
             .and_then(|c| c.get("max_primals"))
@@ -140,7 +138,10 @@ impl ProfileConstraints {
 
     /// Derive the composition tier from these constraints.
     #[must_use]
-    #[expect(clippy::missing_const_for_fn, reason = "match on Option<usize> not const-stable")]
+    #[expect(
+        clippy::missing_const_for_fn,
+        reason = "match on Option<usize> not const-stable"
+    )]
     pub fn composition_tier(&self) -> CompositionTier {
         match self.max_primals {
             Some(1..=2) => CompositionTier::Micro,
@@ -201,8 +202,8 @@ mod tests {
 
     #[test]
     fn parse_fieldmouse_profile() {
-        let constraints = ProfileConstraints::from_toml(FIELDMOUSE_TOML)
-            .expect("fieldmouse.toml should parse");
+        let constraints =
+            ProfileConstraints::from_toml(FIELDMOUSE_TOML).expect("fieldmouse.toml should parse");
         assert_eq!(constraints.atomic_type, "micro");
         assert_eq!(constraints.transport, "tcp_only");
         assert_eq!(constraints.max_primals, Some(2));
@@ -220,7 +221,13 @@ mod tests {
             .expect("graphenegate.toml should parse");
         assert_eq!(constraints.atomic_type, "tower");
         assert_eq!(constraints.transport, "tcp_enabled");
-        assert!(constraints.target_triple.as_deref().unwrap().contains("aarch64"));
+        assert!(
+            constraints
+                .target_triple
+                .as_deref()
+                .unwrap()
+                .contains("aarch64")
+        );
         assert!(constraints.mesh_enabled);
         assert_eq!(constraints.target(), Target::Aarch64Musl);
     }

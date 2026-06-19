@@ -84,7 +84,10 @@ fn phase_addressing(v: &mut ValidationResult) {
     v.check_bool(
         "addressing:all_live_assigned",
         assigned_count as usize == live_nodes.len(),
-        &format!("{assigned_count}/{} live nodes have mesh addresses", live_nodes.len()),
+        &format!(
+            "{assigned_count}/{} live nodes have mesh addresses",
+            live_nodes.len()
+        ),
     );
 
     v.check_minimum("addressing:total_nodes", assigned_count as usize, 5);
@@ -92,7 +95,10 @@ fn phase_addressing(v: &mut ValidationResult) {
 
 fn phase_live_reachability(v: &mut ValidationResult) {
     if !std::path::Path::new("/sys/class/net/wg0").exists() {
-        v.check_skip("reachability:wg0_absent", "wg0 not present, skipping live probe");
+        v.check_skip(
+            "reachability:wg0_absent",
+            "wg0 not present, skipping live probe",
+        );
         return;
     }
 
@@ -113,7 +119,10 @@ fn phase_live_reachability(v: &mut ValidationResult) {
         v.check_bool(
             &format!("reach:{name}"),
             alive,
-            &format!("{name} ({ip}): {}", if alive { "ALIVE" } else { "UNREACHABLE" }),
+            &format!(
+                "{name} ({ip}): {}",
+                if alive { "ALIVE" } else { "UNREACHABLE" }
+            ),
         );
     }
 
@@ -151,8 +160,7 @@ fn icmp_reachable(ip: &str) -> bool {
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())
         .status()
-        .map(|s| s.success())
-        .unwrap_or(false)
+        .is_ok_and(|s| s.success())
 }
 
 #[cfg(test)]

@@ -140,7 +140,10 @@ fn capability_ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
     clippy::needless_pass_by_value,
     reason = "config is consumed; caller never reuses it"
 )]
-#[expect(deprecated, reason = "SONGBIRD_PEERS fallback for backward compatibility")]
+#[expect(
+    deprecated,
+    reason = "SONGBIRD_PEERS fallback for backward compatibility"
+)]
 pub fn run(config: LaunchConfig) -> LaunchResult {
     let primals = ordered_primals(config.atomic);
     let total = primals.len();
@@ -217,7 +220,10 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         }
         println!();
 
-        println!("=== Phase 2: Stop existing primals (family: {}) ===", config.family_id);
+        println!(
+            "=== Phase 2: Stop existing primals (family: {}) ===",
+            config.family_id
+        );
         if !config.dry_run {
             for primal in &primals {
                 spawn::stop_existing_family(primal, &config.family_id);
@@ -252,8 +258,12 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                     if port > 0 {
                         match registry::health_check_tcp(port, health_timeout) {
                             registry::ProbeResult::Healthy => println!("\x1b[32mALIVE\x1b[0m"),
-                            registry::ProbeResult::Reachable => println!("\x1b[32mALIVE\x1b[0m (no health method)"),
-                            registry::ProbeResult::Unreachable => println!("\x1b[33mSTARTED\x1b[0m (health probe pending)"),
+                            registry::ProbeResult::Reachable => {
+                                println!("\x1b[32mALIVE\x1b[0m (no health method)");
+                            }
+                            registry::ProbeResult::Unreachable => {
+                                println!("\x1b[33mSTARTED\x1b[0m (health probe pending)");
+                            }
                         }
                     } else {
                         println!("\x1b[32mSTARTED\x1b[0m (UDS)");
@@ -438,7 +448,9 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
                 peer_list.join(", ")
             );
         } else {
-            println!("  \x1b[31mFailed to seed peers\x1b[0m — discovery provider may not support mesh.init");
+            println!(
+                "  \x1b[31mFailed to seed peers\x1b[0m — discovery provider may not support mesh.init"
+            );
             println!("  Peers requested: {}", peer_list.join(", "));
         }
         println!();
@@ -506,7 +518,11 @@ pub fn stop_all_family(primals: &[&str], family_id: &str) {
         .join(primalspring::env_keys::BIOMEOS_SUBDIR)
         .join(".pids");
 
-    let label = if family_id.is_empty() { "default" } else { family_id };
+    let label = if family_id.is_empty() {
+        "default"
+    } else {
+        family_id
+    };
     println!("=== Stopping primals (family: {label}) ===");
     for primal in primals.iter().rev() {
         let pid_file = if family_id.is_empty() {
@@ -564,7 +580,11 @@ pub fn show_status(primals: &[&str]) {
 
     let profile_label = AtomicType::from_primal_count(primals.len());
 
-    println!("=== NUCLEUS Status ({profile_label}: {}/{} primals) ===", primals.len(), primals.len());
+    println!(
+        "=== NUCLEUS Status ({profile_label}: {}/{} primals) ===",
+        primals.len(),
+        primals.len()
+    );
     println!();
 
     let mut alive = 0usize;
@@ -617,4 +637,3 @@ pub fn show_status(primals: &[&str]) {
         println!("  \x1b[33m{alive}/{total}\x1b[0m primals responding ({profile_label})");
     }
 }
-

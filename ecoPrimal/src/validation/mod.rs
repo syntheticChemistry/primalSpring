@@ -34,8 +34,8 @@ use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
 
-pub use sink::{NdjsonSink, NullSink, StdoutSink, TracingSink, ValidationSink};
 use sink::default_sink;
+pub use sink::{NdjsonSink, NullSink, StdoutSink, TracingSink, ValidationSink};
 
 /// Outcome of a single validation check.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

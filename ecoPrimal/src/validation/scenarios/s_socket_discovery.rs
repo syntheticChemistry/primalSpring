@@ -98,8 +98,8 @@ fn phase_reachability(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 fn phase_socket_manifest(v: &mut ValidationResult) {
     use crate::composition::ALL_CAPS;
 
-    let runtime_dir = std::path::PathBuf::from(tolerances::runtime_dir())
-        .join(crate::env_keys::BIOMEOS_SUBDIR);
+    let runtime_dir =
+        std::path::PathBuf::from(tolerances::runtime_dir()).join(crate::env_keys::BIOMEOS_SUBDIR);
 
     let exists = runtime_dir.is_dir();
     v.check_bool(
@@ -127,10 +127,7 @@ fn phase_socket_manifest(v: &mut ValidationResult) {
             let path = entry.path();
             if path.extension().is_some_and(|ext| ext == "sock") {
                 total_sockets += 1;
-                let stem = path
-                    .file_stem()
-                    .and_then(|s| s.to_str())
-                    .unwrap_or("");
+                let stem = path.file_stem().and_then(|s| s.to_str()).unwrap_or("");
                 // Strip tarpc suffix if present: {name}-tarpc → {name}
                 let without_tarpc = stem.strip_suffix("-tarpc").unwrap_or(stem);
                 // Accept: {slug}.sock, {slug}-{family}.sock, {cap}.sock,

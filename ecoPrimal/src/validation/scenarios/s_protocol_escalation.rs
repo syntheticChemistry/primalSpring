@@ -113,7 +113,8 @@ fn phase_response_deserialization(v: &mut ValidationResult) {
         );
     }
 
-    let error_json = r#"{"jsonrpc":"2.0","error":{"code":-32601,"message":"method not found"},"id":2}"#;
+    let error_json =
+        r#"{"jsonrpc":"2.0","error":{"code":-32601,"message":"method not found"},"id":2}"#;
     let err_resp = JsonRpcResponse::from_line(error_json);
 
     v.check_bool(
@@ -125,7 +126,9 @@ fn phase_response_deserialization(v: &mut ValidationResult) {
     if let Ok(ref r) = err_resp {
         v.check_bool(
             "proto:response:error_has_code",
-            r.error.as_ref().is_some_and(|e| e.code == error_codes::METHOD_NOT_FOUND),
+            r.error
+                .as_ref()
+                .is_some_and(|e| e.code == error_codes::METHOD_NOT_FOUND),
             "error code is -32601 (METHOD_NOT_FOUND)",
         );
     }
@@ -152,7 +155,10 @@ fn phase_error_codes(v: &mut ValidationResult) {
     v.check_bool(
         "proto:codes:permission_denied_app_range",
         error_codes::PERMISSION_DENIED < 0,
-        &format!("PERMISSION_DENIED = {} (negative = server-defined)", error_codes::PERMISSION_DENIED),
+        &format!(
+            "PERMISSION_DENIED = {} (negative = server-defined)",
+            error_codes::PERMISSION_DENIED
+        ),
     );
 }
 

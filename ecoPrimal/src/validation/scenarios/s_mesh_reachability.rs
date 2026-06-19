@@ -42,10 +42,26 @@ struct PeerProfile {
 }
 
 const PEER_PROFILES: &[PeerProfile] = &[
-    PeerProfile { name: "golgi", zone: CytoplasmZone::Wan, max_rtt_ms: 100 },
-    PeerProfile { name: "sporeGate", zone: CytoplasmZone::Wan, max_rtt_ms: 150 },
-    PeerProfile { name: "pepti", zone: CytoplasmZone::Wan, max_rtt_ms: 100 },
-    PeerProfile { name: "flockGate", zone: CytoplasmZone::Garage, max_rtt_ms: 150 },
+    PeerProfile {
+        name: "golgi",
+        zone: CytoplasmZone::Wan,
+        max_rtt_ms: 100,
+    },
+    PeerProfile {
+        name: "sporeGate",
+        zone: CytoplasmZone::Wan,
+        max_rtt_ms: 150,
+    },
+    PeerProfile {
+        name: "pepti",
+        zone: CytoplasmZone::Wan,
+        max_rtt_ms: 100,
+    },
+    PeerProfile {
+        name: "flockGate",
+        zone: CytoplasmZone::Garage,
+        max_rtt_ms: 150,
+    },
 ];
 
 fn run_mesh_reachability(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
@@ -145,8 +161,7 @@ fn phase_handshake_freshness(v: &mut ValidationResult) {
             let text = String::from_utf8_lossy(&out.stdout);
             let now = std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
-                .map(|d| d.as_secs())
-                .unwrap_or(0);
+                .map_or(0, |d| d.as_secs());
 
             let mut stale_count = 0u32;
             let mut total_handshakes = 0u32;
@@ -178,7 +193,10 @@ fn phase_handshake_freshness(v: &mut ValidationResult) {
             }
         }
         Ok(_) => {
-            v.check_skip("handshake:freshness", "wg show requires elevated privileges (skip in CI)");
+            v.check_skip(
+                "handshake:freshness",
+                "wg show requires elevated privileges (skip in CI)",
+            );
         }
         Err(_) => {
             v.check_skip("handshake:freshness", "sudo/wg not available");
@@ -204,7 +222,10 @@ fn measure_rtt(ip: &str) -> Option<u64> {
                 let values: Vec<&str> = stats.split('/').collect();
                 if values.len() >= 2 {
                     if let Ok(avg) = values[1].trim().parse::<f64>() {
-                        #[expect(clippy::cast_possible_truncation, reason = "RTT ms always small")]
+                        #[expect(
+                            clippy::cast_possible_truncation,
+                            reason = "RTT ms always small"
+                        )]
                         #[expect(clippy::cast_sign_loss, reason = "RTT always positive")]
                         return Some(avg as u64);
                     }

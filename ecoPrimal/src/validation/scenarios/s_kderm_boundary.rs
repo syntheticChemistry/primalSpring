@@ -25,8 +25,8 @@ use crate::bonding::BondType;
 use crate::composition::CompositionContext;
 use crate::ipc::server_bind::BindMode;
 use crate::tolerances;
-use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 use crate::validation::ValidationResult;
+use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 
 /// K-Derm boundary validation scenario.
 pub const SCENARIO: Scenario = Scenario {
@@ -109,11 +109,11 @@ fn phase_cytoplasm_posture(v: &mut ValidationResult) {
             &format!("biomeos socket dir: {}", biomeos_dir.display()),
         );
 
-        let socket_count = std::fs::read_dir(&biomeos_dir)
-            .map(|rd| rd.filter_map(Result::ok).filter(|e| {
-                e.path().extension().is_some_and(|ext| ext == "sock")
-            }).count())
-            .unwrap_or(0);
+        let socket_count = std::fs::read_dir(&biomeos_dir).map_or(0, |rd| {
+            rd.filter_map(Result::ok)
+                .filter(|e| e.path().extension().is_some_and(|ext| ext == "sock"))
+                .count()
+        });
 
         if socket_count > 0 {
             v.check_bool(
@@ -130,7 +130,10 @@ fn phase_cytoplasm_posture(v: &mut ValidationResult) {
     } else {
         v.check_skip(
             "cytoplasm:socket_dir_exists",
-            &format!("no biomeos dir at {} (primals not running)", biomeos_dir.display()),
+            &format!(
+                "no biomeos dir at {} (primals not running)",
+                biomeos_dir.display()
+            ),
         );
     }
 
@@ -151,7 +154,11 @@ fn phase_cytoplasm_posture(v: &mut ValidationResult) {
             !tcp_tier5_explicitly_enabled,
             &format!(
                 "TCP Tier 5: {} (debug build — env gate)",
-                if tcp_tier5_explicitly_enabled { "ENABLED (membrane open)" } else { "disabled (sealed)" }
+                if tcp_tier5_explicitly_enabled {
+                    "ENABLED (membrane open)"
+                } else {
+                    "disabled (sealed)"
+                }
             ),
         );
     }
@@ -163,7 +170,10 @@ fn phase_plasma_membrane(v: &mut ValidationResult) {
     v.check_bool(
         "membrane:port_registry_exists",
         !port_registry.is_empty(),
-        &format!("{} port entries in registry (channel protein slots)", port_registry.len()),
+        &format!(
+            "{} port entries in registry (channel protein slots)",
+            port_registry.len()
+        ),
     );
 
     // In UDS-only mode, ports should not be actively bound
@@ -202,7 +212,9 @@ fn phase_plasma_membrane(v: &mut ValidationResult) {
     );
 
     // Port range validation: all should be in user/dynamic range (>1024)
-    let all_valid = port_registry.iter().all(|e| e.port > 1024 && e.port < 65535);
+    let all_valid = port_registry
+        .iter()
+        .all(|e| e.port > 1024 && e.port < 65535);
     v.check_bool(
         "membrane:ports_valid_range",
         all_valid,
@@ -297,7 +309,8 @@ mod tests {
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
         assert_eq!(
-            v.failed, 0,
+            v.failed,
+            0,
             "K-Derm boundary: {failed} failures (all structural checks should pass)",
             failed = v.failed
         );

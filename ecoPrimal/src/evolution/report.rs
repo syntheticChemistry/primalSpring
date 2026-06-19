@@ -9,10 +9,10 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::Severity;
 use super::fitness::Confidence;
 use super::pressure::PressureCategory;
 use super::target::Target;
-use super::Severity;
 
 /// A serializable fitness report for a single target evaluation.
 ///
@@ -71,7 +71,11 @@ pub struct DebtSummary {
 impl TargetReport {
     /// Build a report from a set of fitness evaluations.
     #[must_use]
-    #[expect(clippy::cast_precision_loss, clippy::cast_possible_truncation, reason = "primal/scenario counts are tiny")]
+    #[expect(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        reason = "primal/scenario counts are tiny"
+    )]
     pub fn build(gate: &str, fitness_results: &[super::ArchFitness]) -> Self {
         let target = fitness_results
             .first()

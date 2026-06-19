@@ -142,13 +142,22 @@ const COMPOSITION_GRAPHS: &[(&str, &str, &str)] = &[
 use crate::primal_names::{self, Atomic, Primal};
 
 fn tower_primals() -> Vec<&'static str> {
-    Primal::for_atomic(Atomic::Tower).iter().map(|p| p.slug()).collect()
+    Primal::for_atomic(Atomic::Tower)
+        .iter()
+        .map(|p| p.slug())
+        .collect()
 }
 fn node_primals() -> Vec<&'static str> {
-    Primal::for_atomic(Atomic::Node).iter().map(|p| p.slug()).collect()
+    Primal::for_atomic(Atomic::Node)
+        .iter()
+        .map(|p| p.slug())
+        .collect()
 }
 fn nest_primals() -> Vec<&'static str> {
-    Primal::for_atomic(Atomic::Nest).iter().map(|p| p.slug()).collect()
+    Primal::for_atomic(Atomic::Nest)
+        .iter()
+        .map(|p| p.slug())
+        .collect()
 }
 
 const META_PRIMALS: &[&str] = &[
@@ -171,8 +180,18 @@ const ECOSYSTEM_PRIMALS: &[&str] = &[
     primal_names::NESTGATE,
     primal_names::BEARDOG,
 ];
-const IMPULSE_PRIMALS: &[&str] = &["membrane", primal_names::BEARDOG, primal_names::NESTGATE, primal_names::SONGBIRD];
-const POTENTIAL_PRIMALS: &[&str] = &["membrane", primal_names::BEARDOG, primal_names::NESTGATE, primal_names::SONGBIRD];
+const IMPULSE_PRIMALS: &[&str] = &[
+    "membrane",
+    primal_names::BEARDOG,
+    primal_names::NESTGATE,
+    primal_names::SONGBIRD,
+];
+const POTENTIAL_PRIMALS: &[&str] = &[
+    "membrane",
+    primal_names::BEARDOG,
+    primal_names::NESTGATE,
+    primal_names::SONGBIRD,
+];
 const SYNC_PRIMALS: &[&str] = &[
     primal_names::BIOMEOS,
     primal_names::NESTGATE,

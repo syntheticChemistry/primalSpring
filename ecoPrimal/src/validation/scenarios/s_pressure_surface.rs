@@ -13,8 +13,8 @@ use crate::composition::CompositionContext;
 use crate::evolution::pressure::PressureCategory;
 use crate::evolution::target::{DeploymentTier, Target};
 use crate::tolerances;
-use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 use crate::validation::ValidationResult;
+use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 
 /// Pressure surface validation scenario.
 pub const SCENARIO: Scenario = Scenario {
@@ -92,9 +92,13 @@ fn phase_classification(v: &mut ValidationResult) {
 
     // Verify permissive target (x86) is subset of restricted targets
     let x86_pressures: std::collections::HashSet<_> =
-        PressureCategory::active_for(Target::X86_64Musl).into_iter().collect();
+        PressureCategory::active_for(Target::X86_64Musl)
+            .into_iter()
+            .collect();
     let arm_pressures: std::collections::HashSet<_> =
-        PressureCategory::active_for(Target::Aarch64Musl).into_iter().collect();
+        PressureCategory::active_for(Target::Aarch64Musl)
+            .into_iter()
+            .collect();
 
     v.check_bool(
         "pressure:hierarchy:x86-subset-arm",
@@ -113,7 +117,8 @@ fn phase_platform_alignment(v: &mut ValidationResult) {
 
     v.check_bool(
         "platform:triple-matches-target",
-        triple_detected.contains("x86_64") || triple_detected.contains("aarch64")
+        triple_detected.contains("x86_64")
+            || triple_detected.contains("aarch64")
             || triple_detected.contains("riscv"),
         &format!("detected triple '{triple_detected}' resolves to {current}"),
     );
@@ -142,10 +147,22 @@ fn phase_platform_alignment(v: &mut ValidationResult) {
 
 fn phase_degradation_paths(v: &mut ValidationResult) {
     let pressures_to_validate = [
-        (PressureCategory::Filesystem, "read-only root", "configurable state dir"),
+        (
+            PressureCategory::Filesystem,
+            "read-only root",
+            "configurable state dir",
+        ),
         (PressureCategory::IpcTransport, "no UDS", "TCP fallback"),
-        (PressureCategory::SecurityPolicy, "SELinux restrictions", "capability-based discovery"),
-        (PressureCategory::Network, "intermittent connectivity", "offline-capable crypto"),
+        (
+            PressureCategory::SecurityPolicy,
+            "SELinux restrictions",
+            "capability-based discovery",
+        ),
+        (
+            PressureCategory::Network,
+            "intermittent connectivity",
+            "offline-capable crypto",
+        ),
     ];
 
     for (pressure, threat, mitigation) in &pressures_to_validate {
@@ -213,10 +230,6 @@ mod tests {
         let mut v = ValidationResult::new("pressure-surface");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert_eq!(
-            v.failed, 0,
-            "Pressure surface has {} failures",
-            v.failed
-        );
+        assert_eq!(v.failed, 0, "Pressure surface has {} failures", v.failed);
     }
 }

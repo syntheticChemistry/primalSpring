@@ -11,8 +11,8 @@
 use crate::composition::CompositionContext;
 use crate::evolution::{self, Target, TargetDeclaration};
 use crate::primal_names::Primal;
-use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 use crate::validation::ValidationResult;
+use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 
 /// Architecture fitness scenario — cross-arch evolution posture validation.
 pub const SCENARIO: Scenario = Scenario {
@@ -75,10 +75,7 @@ fn phase_target_detection(v: &mut ValidationResult) {
     v.check_bool(
         "target:pressures_defined",
         !pressures.is_empty() || current == Target::X86_64Musl,
-        &format!(
-            "{} active pressures for {triple}",
-            pressures.len()
-        ),
+        &format!("{} active pressures for {triple}", pressures.len()),
     );
 }
 
@@ -136,9 +133,8 @@ fn phase_depot_coverage(v: &mut ValidationResult) {
             .join(triple);
 
         if depot_path.is_dir() {
-            let count = std::fs::read_dir(&depot_path)
-                .map(|rd| rd.filter_map(Result::ok).count())
-                .unwrap_or(0);
+            let count =
+                std::fs::read_dir(&depot_path).map_or(0, |rd| rd.filter_map(Result::ok).count());
 
             v.check_bool(
                 &format!("depot:{triple}:present"),
@@ -156,7 +152,11 @@ fn phase_depot_coverage(v: &mut ValidationResult) {
         v.check_bool(
             &format!("depot:{triple}:composition_tier"),
             true,
-            &format!("{triple} supports up to {:?} ({} primals)", composition_tier, composition_tier.max_primals()),
+            &format!(
+                "{triple} supports up to {:?} ({} primals)",
+                composition_tier,
+                composition_tier.max_primals()
+            ),
         );
     }
 }
@@ -168,16 +168,15 @@ fn phase_fitness_scoring(v: &mut ValidationResult) {
     }
     test_result.check_bool("test-fail", false, "intentional failure");
 
-    let fitness = evolution::evaluate_fitness(
-        "test-primal",
-        Target::current(),
-        &test_result,
-    );
+    let fitness = evolution::evaluate_fitness("test-primal", Target::current(), &test_result);
 
     v.check_bool(
         "fitness:scoring_works",
         (fitness.survival_ratio - (10.0 / 11.0)).abs() < 0.01,
-        &format!("survival ratio: {:.3} (expected ~0.909)", fitness.survival_ratio),
+        &format!(
+            "survival ratio: {:.3} (expected ~0.909)",
+            fitness.survival_ratio
+        ),
     );
 
     v.check_bool(
@@ -189,7 +188,10 @@ fn phase_fitness_scoring(v: &mut ValidationResult) {
     v.check_bool(
         "fitness:confidence_medium",
         fitness.score.confidence == evolution::fitness::Confidence::Medium,
-        &format!("confidence: {:?} (11 checks → Medium)", fitness.score.confidence),
+        &format!(
+            "confidence: {:?} (11 checks → Medium)",
+            fitness.score.confidence
+        ),
     );
 
     let perfect_result = ValidationResult::new("perfect");
@@ -197,7 +199,8 @@ fn phase_fitness_scoring(v: &mut ValidationResult) {
     for i in 0..25 {
         perfect.check_bool(&format!("p-{i}"), true, "pass");
     }
-    let perfect_fitness = evolution::evaluate_fitness("perfect-primal", Target::current(), &perfect);
+    let perfect_fitness =
+        evolution::evaluate_fitness("perfect-primal", Target::current(), &perfect);
 
     v.check_bool(
         "fitness:perfect_score",
@@ -220,7 +223,8 @@ mod tests {
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
         assert_eq!(
-            v.failed, 0,
+            v.failed,
+            0,
             "Arch fitness has {0} failures (passed={1}, skipped={2})",
             v.failed,
             v.evaluated().saturating_sub(v.failed),

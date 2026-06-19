@@ -586,9 +586,17 @@ mod tests {
 
     #[test]
     fn tower_guarantees_encryption() {
-        assert!(Atomic::Tower.min_encryption_guarantee().contains("ChaCha20"));
+        assert!(
+            Atomic::Tower
+                .min_encryption_guarantee()
+                .contains("ChaCha20")
+        );
         assert!(Atomic::Node.min_encryption_guarantee().contains("ChaCha20"));
         assert!(Atomic::Nest.min_encryption_guarantee().contains("ChaCha20"));
-        assert!(Atomic::Meta.min_encryption_guarantee().contains("delegated"));
+        assert!(
+            Atomic::Meta
+                .min_encryption_guarantee()
+                .contains("delegated")
+        );
     }
 }

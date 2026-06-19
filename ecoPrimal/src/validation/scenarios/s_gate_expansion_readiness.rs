@@ -92,7 +92,9 @@ fn phase_specialization_model(v: &mut ValidationResult) {
             let n_exports = north.natural_exports();
             let w_imports = west.natural_imports();
             w_imports.iter().any(|imp| {
-                n_exports.iter().any(|exp| crate::bonding::exports_satisfy(exp, imp))
+                n_exports
+                    .iter()
+                    .any(|exp| crate::bonding::exports_satisfy(exp, imp))
             })
         },
         "northGate exports satisfy westGate imports (complementary bond)",
@@ -121,9 +123,8 @@ fn phase_specialization_model(v: &mut ValidationResult) {
 }
 
 fn phase_depot_readiness(v: &mut ValidationResult) {
-    let depot_root = ecoprimals_root().map(|r| {
-        r.join("infra/plasmidBin/primals/x86_64-unknown-linux-musl")
-    });
+    let depot_root =
+        ecoprimals_root().map(|r| r.join("infra/plasmidBin/primals/x86_64-unknown-linux-musl"));
 
     let Some(depot_path) = depot_root else {
         v.check_skip(
@@ -137,7 +138,10 @@ fn phase_depot_readiness(v: &mut ValidationResult) {
     v.check_bool(
         "depot:x86_64_exists",
         depot_exists,
-        &format!("x86_64-unknown-linux-musl depot exists at {}", depot_path.display()),
+        &format!(
+            "x86_64-unknown-linux-musl depot exists at {}",
+            depot_path.display()
+        ),
     );
 
     if !depot_exists {
@@ -188,16 +192,16 @@ fn phase_depot_readiness(v: &mut ValidationResult) {
         "provenance.toml exists for build traceability",
     );
 
-    let nucleus_graph = ecoprimals_root()
-        .map(|r| r.join("springs/primalSpring/graphs/nucleus_complete.toml"));
+    let nucleus_graph =
+        ecoprimals_root().map(|r| r.join("springs/primalSpring/graphs/nucleus_complete.toml"));
     v.check_bool(
         "depot:nucleus_graph_exists",
         nucleus_graph.as_ref().is_some_and(|p| p.exists()),
         "nucleus_complete.toml deploy graph exists (northGate target)",
     );
 
-    let nest_graph = ecoprimals_root()
-        .map(|r| r.join("springs/primalSpring/graphs/nest_atomic.toml"));
+    let nest_graph =
+        ecoprimals_root().map(|r| r.join("springs/primalSpring/graphs/nest_atomic.toml"));
     v.check_bool(
         "depot:nest_graph_exists",
         nest_graph.as_ref().is_some_and(|p| p.exists()),
@@ -223,7 +227,10 @@ fn phase_seed_gate_health(v: &mut ValidationResult, ctx: &mut CompositionContext
     let mesh_status = ctx.call("discovery", "federation.status", serde_json::json!({}));
     match mesh_status {
         Ok(resp) => {
-            let enabled = resp.get("enabled").and_then(serde_json::Value::as_bool).unwrap_or(false);
+            let enabled = resp
+                .get("enabled")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
             v.check_bool(
                 "seed:federation_enabled",
                 enabled,

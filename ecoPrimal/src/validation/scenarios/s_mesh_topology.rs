@@ -17,8 +17,8 @@
 
 use crate::composition::CompositionContext;
 use crate::tolerances;
-use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 use crate::validation::ValidationResult;
+use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 
 /// Mesh topology scenario.
 pub const SCENARIO: Scenario = Scenario {
@@ -64,7 +64,10 @@ fn phase_federation_config(v: &mut ValidationResult) {
     v.check_bool(
         "federation:profiles_defined",
         !federation_ports.is_empty(),
-        &format!("{} federation port profiles defined", federation_ports.len()),
+        &format!(
+            "{} federation port profiles defined",
+            federation_ports.len()
+        ),
     );
 
     for fp in federation_ports {
@@ -104,7 +107,10 @@ fn phase_gate_identity(v: &mut ValidationResult) {
     }
 }
 
-#[expect(deprecated, reason = "SONGBIRD_PEERS fallback for backward compatibility")]
+#[expect(
+    deprecated,
+    reason = "SONGBIRD_PEERS fallback for backward compatibility"
+)]
 fn phase_peer_connectivity(v: &mut ValidationResult) {
     let mesh_peers = std::env::var(crate::env_keys::MESH_PEERS)
         .or_else(|_| std::env::var(crate::env_keys::SONGBIRD_PEERS))
@@ -118,7 +124,11 @@ fn phase_peer_connectivity(v: &mut ValidationResult) {
         return;
     }
 
-    let peers: Vec<&str> = mesh_peers.split(',').map(str::trim).filter(|s| !s.is_empty()).collect();
+    let peers: Vec<&str> = mesh_peers
+        .split(',')
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .collect();
     v.check_bool(
         "peers:configured",
         !peers.is_empty(),
@@ -136,7 +146,10 @@ fn phase_peer_connectivity(v: &mut ValidationResult) {
         v.check_bool(
             &format!("peers:{label}:reachable"),
             reachable,
-            &format!("{label} @ {addr}: {}", if reachable { "ALIVE" } else { "UNREACHABLE" }),
+            &format!(
+                "{label} @ {addr}: {}",
+                if reachable { "ALIVE" } else { "UNREACHABLE" }
+            ),
         );
     }
 }

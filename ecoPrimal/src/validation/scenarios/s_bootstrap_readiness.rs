@@ -155,14 +155,10 @@ fn phase_runtime_dirs(v: &mut ValidationResult) {
 
 fn phase_port_sanity(v: &mut ValidationResult) {
     let registry = tolerances::PORT_REGISTRY;
-    let mut port_map: std::collections::HashMap<u16, Vec<&str>> =
-        std::collections::HashMap::new();
+    let mut port_map: std::collections::HashMap<u16, Vec<&str>> = std::collections::HashMap::new();
 
     for entry in registry {
-        port_map
-            .entry(entry.port)
-            .or_default()
-            .push(entry.slug);
+        port_map.entry(entry.port).or_default().push(entry.slug);
     }
 
     let collisions: Vec<_> = port_map
@@ -222,10 +218,7 @@ fn phase_env_config(v: &mut ValidationResult) {
         v.check_bool(
             "env:nestgate_jwt_secret_length",
             val.len() >= 32,
-            &format!(
-                "NESTGATE_JWT_SECRET: {} chars (minimum 32)",
-                val.len()
-            ),
+            &format!("NESTGATE_JWT_SECRET: {} chars (minimum 32)", val.len()),
         );
     } else {
         v.check_skip(

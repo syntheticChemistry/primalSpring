@@ -90,9 +90,7 @@ fn phase_structural(v: &mut ValidationResult) {
     v.check_bool(
         "tol:wan_to_lan_ratio",
         (10.0..=200.0).contains(&ratio),
-        &format!(
-            "WAN/LAN ratio: {ratio:.1}x (WAN budget is {ratio:.0}x the LAN budget)"
-        ),
+        &format!("WAN/LAN ratio: {ratio:.1}x (WAN budget is {ratio:.0}x the LAN budget)"),
     );
 }
 

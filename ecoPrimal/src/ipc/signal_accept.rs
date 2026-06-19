@@ -45,7 +45,10 @@ impl SignalTier {
     /// Whether this is a riboCipher-aware client (any signal tier).
     #[must_use]
     pub const fn is_ribocipher_client(&self) -> bool {
-        matches!(self, Self::Clear | Self::MitoObfuscated | Self::NuclearSealed)
+        matches!(
+            self,
+            Self::Clear | Self::MitoObfuscated | Self::NuclearSealed
+        )
     }
 }
 
@@ -136,9 +139,7 @@ pub fn detect_signal_buffered(buf: &[u8]) -> (SignalTier, usize) {
         match buf[0] {
             tolerances::RIBOCIPHER_CLEAR
             | RIBOCIPHER_MITO_OBFUSCATED
-            | RIBOCIPHER_NUCLEAR_SEALED => {
-                (SignalTier::Legacy(buf[0]), 0)
-            }
+            | RIBOCIPHER_NUCLEAR_SEALED => (SignalTier::Legacy(buf[0]), 0),
             byte => (SignalTier::Legacy(byte), 0),
         }
     } else {

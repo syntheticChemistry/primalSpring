@@ -41,7 +41,6 @@ const GRAPHENEGATE_BLOCKED: &[&str] = &[
     primal_names::PETALTONGUE,
 ];
 
-
 /// All 13 NUCLEUS primals should have port entries — derived from canonical roster.
 fn all_primals() -> Vec<&'static str> {
     primal_names::Primal::ALL.iter().map(|p| p.slug()).collect()

@@ -65,7 +65,11 @@ fn phase_full_convergence(v: &mut ValidationResult) {
         conv.critical_signals().is_empty(),
         "no critical signals in healthy ecosystem",
     );
-    v.check_count("convergence:full:gates_converged", conv.gates_converged as usize, 3);
+    v.check_count(
+        "convergence:full:gates_converged",
+        conv.gates_converged as usize,
+        3,
+    );
 }
 
 fn phase_drift_signals(v: &mut ValidationResult) {
@@ -82,12 +86,16 @@ fn phase_drift_signals(v: &mut ValidationResult) {
 
     v.check_bool(
         "drift:vcs:detected",
-        conv.signals.iter().any(|s| s.dimension == DriftDimension::Vcs && s.gate == "golgi"),
+        conv.signals
+            .iter()
+            .any(|s| s.dimension == DriftDimension::Vcs && s.gate == "golgi"),
         "VCS drift detected on golgi",
     );
     v.check_bool(
         "drift:depot:detected",
-        conv.signals.iter().any(|s| s.dimension == DriftDimension::Depot && s.gate == "pepti"),
+        conv.signals
+            .iter()
+            .any(|s| s.dimension == DriftDimension::Depot && s.gate == "pepti"),
         "depot staleness detected on pepti",
     );
     v.check_bool(
@@ -120,14 +128,22 @@ fn phase_severity_escalation(v: &mut ValidationResult) {
     let critical_signals = conv.critical_signals();
     v.check_bool(
         "severity:critical_liveness",
-        critical_signals.iter().any(|s| s.severity == DriftSeverity::Critical),
+        critical_signals
+            .iter()
+            .any(|s| s.severity == DriftSeverity::Critical),
         &format!("{} critical signal(s) detected", critical_signals.len()),
     );
 
-    let warnings: Vec<_> = conv.signals.iter().filter(|s| s.severity == DriftSeverity::Warning).collect();
+    let warnings: Vec<_> = conv
+        .signals
+        .iter()
+        .filter(|s| s.severity == DriftSeverity::Warning)
+        .collect();
     v.check_bool(
         "severity:warning_liveness",
-        warnings.iter().any(|s| s.dimension == DriftDimension::Liveness),
+        warnings
+            .iter()
+            .any(|s| s.dimension == DriftDimension::Liveness),
         "warning-level liveness drift for partial degradation",
     );
 

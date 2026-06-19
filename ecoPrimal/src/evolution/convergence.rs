@@ -85,7 +85,10 @@ pub struct EcosystemConvergence {
 impl EcosystemConvergence {
     /// Compute convergence from a gate matrix.
     #[must_use]
-    #[expect(clippy::cast_possible_truncation, reason = "gate count is always < 256")]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "gate count is always < 256"
+    )]
     pub fn from_matrix(matrix: &GateMatrix) -> Self {
         let mut signals = Vec::new();
         let mut converged = 0u32;
@@ -116,7 +119,9 @@ impl EcosystemConvergence {
     /// Whether the ecosystem is fully converged (no drift signals above Nominal).
     #[must_use]
     pub fn is_converged(&self) -> bool {
-        self.signals.iter().all(|s| s.severity == DriftSeverity::Nominal)
+        self.signals
+            .iter()
+            .all(|s| s.severity == DriftSeverity::Nominal)
     }
 
     /// Critical signals requiring immediate attention.
@@ -131,8 +136,16 @@ impl EcosystemConvergence {
     /// Human-readable one-line summary.
     #[must_use]
     pub fn summary(&self) -> String {
-        let critical = self.signals.iter().filter(|s| s.severity == DriftSeverity::Critical).count();
-        let warnings = self.signals.iter().filter(|s| s.severity == DriftSeverity::Warning).count();
+        let critical = self
+            .signals
+            .iter()
+            .filter(|s| s.severity == DriftSeverity::Critical)
+            .count();
+        let warnings = self
+            .signals
+            .iter()
+            .filter(|s| s.severity == DriftSeverity::Warning)
+            .count();
 
         if critical > 0 {
             format!(
@@ -219,8 +232,8 @@ fn check_gate_convergence(gate: &GateStatus) -> Vec<DriftSignal> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::gate::CytoplasmZone;
+    use super::*;
 
     fn healthy_gate(name: &str) -> GateStatus {
         GateStatus {
@@ -260,8 +273,16 @@ mod tests {
         let conv = EcosystemConvergence::from_matrix(&matrix);
         assert!(!conv.is_converged());
         assert_eq!(conv.gates_converged, 1);
-        assert!(conv.signals.iter().any(|s| s.dimension == DriftDimension::Vcs));
-        assert!(conv.signals.iter().any(|s| s.dimension == DriftDimension::Liveness));
+        assert!(
+            conv.signals
+                .iter()
+                .any(|s| s.dimension == DriftDimension::Vcs)
+        );
+        assert!(
+            conv.signals
+                .iter()
+                .any(|s| s.dimension == DriftDimension::Liveness)
+        );
     }
 
     #[test]

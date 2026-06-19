@@ -222,8 +222,9 @@ pub(super) fn health_check_tcp(port: u16, timeout: Duration) -> ProbeResult {
 /// Perform a JSON-RPC health check on a primal via UDS socket.
 pub(super) fn health_check_uds(socket: &std::path::Path) -> ProbeResult {
     let payload = jsonrpc_payload("health.check", &serde_json::json!({}), 1);
-    send_uds_rpc(socket, &payload)
-        .map_or(ProbeResult::Unreachable, |resp| classify_jsonrpc_response(&resp))
+    send_uds_rpc(socket, &payload).map_or(ProbeResult::Unreachable, |resp| {
+        classify_jsonrpc_response(&resp)
+    })
 }
 
 /// Resolve the UDS socket path for a primal.

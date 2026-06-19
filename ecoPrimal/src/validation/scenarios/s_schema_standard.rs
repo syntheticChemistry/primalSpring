@@ -105,7 +105,6 @@ fn phase_local_capability_list(v: &mut ValidationResult) {
     );
 }
 
-
 fn phase_live_capability_list(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("orchestration") {
         v.check_skip(

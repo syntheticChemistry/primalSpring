@@ -335,7 +335,15 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
         return;
     };
 
-    verify_lineage_correct_seed(v, host, port, our_family, peer_family, &proof, &lineage_seed);
+    verify_lineage_correct_seed(
+        v,
+        host,
+        port,
+        our_family,
+        peer_family,
+        &proof,
+        &lineage_seed,
+    );
 
     let wrong_seed = b64.encode(b"WRONG_seed_not_the_real_one!!!!");
     verify_lineage_wrong_seed(v, host, port, our_family, peer_family, &proof, &wrong_seed);

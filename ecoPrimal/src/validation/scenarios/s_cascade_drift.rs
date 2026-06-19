@@ -18,8 +18,8 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use crate::composition::CompositionContext;
-use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 use crate::validation::ValidationResult;
+use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 
 /// Cascade drift detection scenario.
 pub const SCENARIO: Scenario = Scenario {
@@ -66,10 +66,7 @@ fn phase_workspace_clean(v: &mut ValidationResult) {
     let status = git_command(root, &["status", "--porcelain"]);
     match status {
         Some(output) => {
-            let dirty_lines: Vec<&str> = output
-                .lines()
-                .filter(|l| !l.trim().is_empty())
-                .collect();
+            let dirty_lines: Vec<&str> = output.lines().filter(|l| !l.trim().is_empty()).collect();
             if dirty_lines.is_empty() {
                 v.check_bool("workspace:clean", true, "workspace is clean");
             } else {
@@ -131,7 +128,11 @@ fn phase_remote_parity(v: &mut ValidationResult) {
     v.check_bool(
         "remote:count",
         !remote_names.is_empty(),
-        &format!("{} remotes configured: {}", remote_names.len(), remote_names.join(", ")),
+        &format!(
+            "{} remotes configured: {}",
+            remote_names.len(),
+            remote_names.join(", ")
+        ),
     );
 
     let mut synced_count = 0u32;
@@ -191,7 +192,10 @@ fn phase_depot_freshness(v: &mut ValidationResult) {
     };
 
     if !depot.is_dir() {
-        v.check_skip("depot:root", &format!("depot not found: {}", depot.display()));
+        v.check_skip(
+            "depot:root",
+            &format!("depot not found: {}", depot.display()),
+        );
         return;
     }
 
@@ -206,9 +210,8 @@ fn phase_depot_freshness(v: &mut ValidationResult) {
         return;
     }
 
-    let binary_count = std::fs::read_dir(&arch_depot)
-        .map(|rd| rd.filter_map(Result::ok).count())
-        .unwrap_or(0);
+    let binary_count =
+        std::fs::read_dir(&arch_depot).map_or(0, |rd| rd.filter_map(Result::ok).count());
 
     v.check_bool(
         &format!("depot:{target_triple}:populated"),
@@ -216,14 +219,12 @@ fn phase_depot_freshness(v: &mut ValidationResult) {
         &format!("{binary_count} binaries in {target_triple} depot (expect ≥10)"),
     );
 
-    let newest_mtime = std::fs::read_dir(&arch_depot)
-        .ok()
-        .and_then(|rd| {
-            rd.filter_map(Result::ok)
-                .filter_map(|e| e.metadata().ok())
-                .filter_map(|m| m.modified().ok())
-                .max()
-        });
+    let newest_mtime = std::fs::read_dir(&arch_depot).ok().and_then(|rd| {
+        rd.filter_map(Result::ok)
+            .filter_map(|e| e.metadata().ok())
+            .filter_map(|m| m.modified().ok())
+            .max()
+    });
 
     if let Some(newest) = newest_mtime {
         let age = std::time::SystemTime::now()

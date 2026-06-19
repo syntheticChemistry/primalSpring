@@ -86,13 +86,12 @@ fn phase_structural(v: &mut ValidationResult) {
     let challenge = b"test-challenge-bytes";
     let client_pub = [1u8; 32];
     let server_pub = [2u8; 32];
-    let hmac_result = HmacSha256::new_from_slice(&handshake_key)
-        .map(|mut mac| {
-            mac.update(challenge);
-            mac.update(&client_pub);
-            mac.update(&server_pub);
-            mac.finalize().into_bytes()
-        });
+    let hmac_result = HmacSha256::new_from_slice(&handshake_key).map(|mut mac| {
+        mac.update(challenge);
+        mac.update(&client_pub);
+        mac.update(&server_pub);
+        mac.finalize().into_bytes()
+    });
     v.check_bool(
         "hmac:computation",
         hmac_result.is_ok(),
@@ -123,7 +122,9 @@ fn phase_structural(v: &mut ValidationResult) {
         Some(&[client_pub.as_slice(), server_pub.as_slice()].concat()),
         &handshake_key,
     );
-    let phase3_ok = session_hk.expand(b"btsp-session-v1", &mut session_ikm).is_ok();
+    let phase3_ok = session_hk
+        .expand(b"btsp-session-v1", &mut session_ikm)
+        .is_ok();
     v.check_bool(
         "phase3:key_derivation",
         phase3_ok,
@@ -173,7 +174,10 @@ fn phase_live_handshake(v: &mut ValidationResult, ctx: &CompositionContext) {
     );
 
     let Some(beacon_val) = beacon else {
-        v.check_skip("live:handshake_attempt", "no mito-beacon — cannot attempt handshake");
+        v.check_skip(
+            "live:handshake_attempt",
+            "no mito-beacon — cannot attempt handshake",
+        );
         return;
     };
 
@@ -194,8 +198,12 @@ fn phase_live_handshake(v: &mut ValidationResult, ctx: &CompositionContext) {
     let handshake_result = std::os::unix::net::UnixStream::connect(&security_socket)
         .map_err(|e| format!("connect: {e}"))
         .and_then(|mut stream| {
-            stream.set_read_timeout(Some(std::time::Duration::from_secs(5))).ok();
-            stream.set_write_timeout(Some(std::time::Duration::from_secs(5))).ok();
+            stream
+                .set_read_timeout(Some(std::time::Duration::from_secs(5)))
+                .ok();
+            stream
+                .set_write_timeout(Some(std::time::Duration::from_secs(5)))
+                .ok();
             crate::ipc::btsp_handshake::client_handshake(&mut stream, &seed)
                 .map_err(|e| format!("handshake: {e}"))
         });
@@ -236,17 +244,18 @@ fn phase_live_cross_primal(v: &mut ValidationResult, ctx: &mut CompositionContex
     }
 
     let btsp_state = ctx.btsp_state().clone();
-    let discovery_authenticated = btsp_state
-        .get("discovery")
-        .copied()
-        .unwrap_or(false);
+    let discovery_authenticated = btsp_state.get("discovery").copied().unwrap_or(false);
 
     v.check_bool(
         "cross:discovery_btsp_authenticated",
         discovery_authenticated,
         &format!(
             "discovery channel is BTSP-authenticated (required for cross-primal trust): {}",
-            if discovery_authenticated { "yes" } else { "no — plaintext fallback" }
+            if discovery_authenticated {
+                "yes"
+            } else {
+                "no — plaintext fallback"
+            }
         ),
     );
 
@@ -271,25 +280,22 @@ fn phase_live_cross_primal(v: &mut ValidationResult, ctx: &mut CompositionContex
         return;
     }
 
-    let sweetgrass_authenticated = btsp_state
-        .get("attribution")
-        .copied()
-        .unwrap_or(false);
+    let sweetgrass_authenticated = btsp_state.get("attribution").copied().unwrap_or(false);
 
     v.check_bool(
         "cross:sweetgrass_btsp_authenticated",
         sweetgrass_authenticated,
         &format!(
             "sweetGrass attribution channel BTSP-authenticated: {}",
-            if sweetgrass_authenticated { "yes" } else { "no — plaintext fallback" }
+            if sweetgrass_authenticated {
+                "yes"
+            } else {
+                "no — plaintext fallback"
+            }
         ),
     );
 
-    let sg_health = ctx.call(
-        "attribution",
-        "health.liveness",
-        serde_json::json!({}),
-    );
+    let sg_health = ctx.call("attribution", "health.liveness", serde_json::json!({}));
 
     match sg_health {
         Ok(resp) => {
@@ -304,9 +310,7 @@ fn phase_live_cross_primal(v: &mut ValidationResult, ctx: &mut CompositionContex
                 v.check_bool(
                     "cross:sweetgrass_health_schema",
                     has_health_field,
-                    &format!(
-                        "sweetGrass health response has 'status' or 'alive' field: {obj:?}"
-                    ),
+                    &format!("sweetGrass health response has 'status' or 'alive' field: {obj:?}"),
                 );
             }
         }

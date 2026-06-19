@@ -89,7 +89,10 @@ fn phase_family_identity(v: &mut ValidationResult) {
 
 fn phase_genetic_rpc_surface(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     if !ctx.has_capability("security") {
-        v.check_skip("genetics:rpc_reachable", "security capability not discovered");
+        v.check_skip(
+            "genetics:rpc_reachable",
+            "security capability not discovered",
+        );
         return;
     }
 
@@ -150,7 +153,10 @@ fn phase_genetic_rpc_surface(v: &mut ValidationResult, ctx: &mut CompositionCont
         v.check_bool(
             "genetics:rpc_methods_routed",
             true,
-            &format!("{available}/{} genetic.* methods routed via security capability", genetic_methods.len()),
+            &format!(
+                "{available}/{} genetic.* methods routed via security capability",
+                genetic_methods.len()
+            ),
         );
     } else {
         v.check_skip(

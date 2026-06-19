@@ -211,7 +211,10 @@ impl LiveMeshConfig {
 ///
 /// Reads `MESH_PEERS` first, falling back to deprecated `SONGBIRD_PEERS`.
 /// Format: `gate_id=host:port,gate_id=host:port` or `host:port,host:port`
-#[expect(deprecated, reason = "SONGBIRD_PEERS fallback for backward compatibility")]
+#[expect(
+    deprecated,
+    reason = "SONGBIRD_PEERS fallback for backward compatibility"
+)]
 fn parse_songbird_peers() -> BTreeMap<String, String> {
     let mut peers = BTreeMap::new();
 

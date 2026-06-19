@@ -71,10 +71,16 @@ fn phase_atomic_types(v: &mut ValidationResult) {
     v.check_count("atomic:full_nucleus:cap_count", full_caps.len(), 13);
 
     // Micro must be subset of Tower must be subset of Full
-    let micro_caps: std::collections::HashSet<&str> =
-        AtomicType::Micro.required_capabilities().iter().copied().collect();
-    let tower_caps: std::collections::HashSet<&str> =
-        AtomicType::Tower.required_capabilities().iter().copied().collect();
+    let micro_caps: std::collections::HashSet<&str> = AtomicType::Micro
+        .required_capabilities()
+        .iter()
+        .copied()
+        .collect();
+    let tower_caps: std::collections::HashSet<&str> = AtomicType::Tower
+        .required_capabilities()
+        .iter()
+        .copied()
+        .collect();
     let full_set: std::collections::HashSet<&str> = full_caps.iter().copied().collect();
 
     v.check_bool(
@@ -94,8 +100,8 @@ fn phase_atomic_types(v: &mut ValidationResult) {
 }
 
 fn phase_graph_ordering(v: &mut ValidationResult) {
-    let graph_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../graphs/nucleus_complete.toml");
+    let graph_path =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../graphs/nucleus_complete.toml");
 
     if !graph_path.exists() {
         v.check_skip(
@@ -162,7 +168,10 @@ fn phase_graph_ordering(v: &mut ValidationResult) {
     v.check_bool(
         "graph:total_coverage",
         total_in_graph >= 12,
-        &format!("{total_in_graph} primals across {len} waves (12 spawnable)", len = waves.len()),
+        &format!(
+            "{total_in_graph} primals across {len} waves (12 spawnable)",
+            len = waves.len()
+        ),
     );
 }
 
@@ -203,13 +212,18 @@ fn phase_capability_resolution(v: &mut ValidationResult) {
     v.check_bool(
         "caps:unique_primals",
         resolved_primals.len() >= 12,
-        &format!("{} unique primals resolved from capabilities", resolved_primals.len()),
+        &format!(
+            "{} unique primals resolved from capabilities",
+            resolved_primals.len()
+        ),
     );
 
     // Every spawnable primal (ALL except biomeOS) should provide at least one capability
     let spawnable: Vec<&str> = primal_names::Primal::ALL_SLUGS_NO_BIOMEOS.to_vec();
     for primal in &spawnable {
-        let provides_cap = all_caps.iter().any(|cap| capability_to_primal(cap) == *primal);
+        let provides_cap = all_caps
+            .iter()
+            .any(|cap| capability_to_primal(cap) == *primal);
         v.check_bool(
             &format!("caps:{primal}:has_capability"),
             provides_cap,
@@ -265,7 +279,12 @@ fn phase_graph_integrity(v: &mut ValidationResult) {
         &format!("{}", graphs_dir.display()),
     );
 
-    let expected_graphs = ["nucleus_complete", "nest_atomic", "tower_atomic_bootstrap", "node_atomic_compute"];
+    let expected_graphs = [
+        "nucleus_complete",
+        "nest_atomic",
+        "tower_atomic_bootstrap",
+        "node_atomic_compute",
+    ];
     let mut found = 0u32;
 
     for name in &expected_graphs {
@@ -302,9 +321,7 @@ mod tests {
         assert_eq!(
             v.failed, 0,
             "NUCLEUS orchestration: {} failures ({} passed, {} skipped)",
-            v.failed,
-            v.passed,
-            v.skipped
+            v.failed, v.passed, v.skipped
         );
     }
 }

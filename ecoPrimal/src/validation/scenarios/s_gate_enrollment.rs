@@ -84,7 +84,10 @@ impl EnrollmentStage {
             }
             return Self::NucleusAlive;
         }
-        if status.primals_alive == status.primals_expected && status.mesh_peers > 0 && status.vcs_synced {
+        if status.primals_alive == status.primals_expected
+            && status.mesh_peers > 0
+            && status.vcs_synced
+        {
             return Self::CascadeConnected;
         }
         if status.primals_alive == status.primals_expected && status.mesh_peers > 0 {
@@ -141,7 +144,10 @@ fn phase_stage_derivation(v: &mut ValidationResult) {
     v.check_bool(
         "derive:offline_is_bare",
         EnrollmentStage::from_gate_status(&bare) == EnrollmentStage::Bare,
-        &format!("offline → {}", EnrollmentStage::from_gate_status(&bare).label()),
+        &format!(
+            "offline → {}",
+            EnrollmentStage::from_gate_status(&bare).label()
+        ),
     );
 
     // SSH-enabled (reachable, no primals)
@@ -160,7 +166,10 @@ fn phase_stage_derivation(v: &mut ValidationResult) {
     v.check_bool(
         "derive:reachable_no_primals_is_ssh",
         EnrollmentStage::from_gate_status(&ssh) == EnrollmentStage::SshEnabled,
-        &format!("reachable, 0 primals → {}", EnrollmentStage::from_gate_status(&ssh).label()),
+        &format!(
+            "reachable, 0 primals → {}",
+            EnrollmentStage::from_gate_status(&ssh).label()
+        ),
     );
 
     // Fully enrolled (sporeGate reference)
@@ -179,7 +188,10 @@ fn phase_stage_derivation(v: &mut ValidationResult) {
     v.check_bool(
         "derive:full_enrolled_is_cascade",
         EnrollmentStage::from_gate_status(&enrolled) == EnrollmentStage::CascadeConnected,
-        &format!("13/13 + WG + VCS → {}", EnrollmentStage::from_gate_status(&enrolled).label()),
+        &format!(
+            "13/13 + WG + VCS → {}",
+            EnrollmentStage::from_gate_status(&enrolled).label()
+        ),
     );
 
     // Partial: NUCLEUS alive but no WG or cascade
@@ -198,7 +210,10 @@ fn phase_stage_derivation(v: &mut ValidationResult) {
     v.check_bool(
         "derive:nucleus_no_wg_is_alive",
         EnrollmentStage::from_gate_status(&nucleus_only) == EnrollmentStage::NucleusAlive,
-        &format!("13/13, no WG → {}", EnrollmentStage::from_gate_status(&nucleus_only).label()),
+        &format!(
+            "13/13, no WG → {}",
+            EnrollmentStage::from_gate_status(&nucleus_only).label()
+        ),
     );
 }
 
@@ -218,7 +233,9 @@ fn phase_ecosystem_posture(v: &mut ValidationResult) {
         *stage_counts.entry(stage.label()).or_insert(0u32) += 1;
     }
 
-    let enrolled_count = matrix.gates.iter()
+    let enrolled_count = matrix
+        .gates
+        .iter()
         .filter(|g| EnrollmentStage::from_gate_status(g) >= EnrollmentStage::NucleusAlive)
         .count();
 
@@ -237,7 +254,9 @@ fn phase_ecosystem_posture(v: &mut ValidationResult) {
 fn phase_enrollment_targets(v: &mut ValidationResult) {
     let matrix = GateMatrix::ecosystem_snapshot();
 
-    let targets: Vec<&GateStatus> = matrix.gates.iter()
+    let targets: Vec<&GateStatus> = matrix
+        .gates
+        .iter()
         .filter(|g| EnrollmentStage::from_gate_status(g) < EnrollmentStage::NucleusAlive)
         .collect();
 
@@ -247,7 +266,11 @@ fn phase_enrollment_targets(v: &mut ValidationResult) {
         &format!(
             "{} gates pending enrollment: [{}]",
             targets.len(),
-            targets.iter().map(|g| g.name.as_str()).collect::<Vec<_>>().join(", ")
+            targets
+                .iter()
+                .map(|g| g.name.as_str())
+                .collect::<Vec<_>>()
+                .join(", ")
         ),
     );
 
@@ -260,7 +283,10 @@ fn phase_enrollment_targets(v: &mut ValidationResult) {
         {
             v.check_skip(
                 "targets:reference_gate_enrolled",
-                &format!("sporeGate status not configured (env absent), stage: {}", ref_stage.label()),
+                &format!(
+                    "sporeGate status not configured (env absent), stage: {}",
+                    ref_stage.label()
+                ),
             );
         } else {
             v.check_bool(
@@ -291,9 +317,21 @@ fn validate_wave116_targets(v: &mut ValidationResult, matrix: &GateMatrix) {
     }
 
     let wave116 = [
-        Target { name: "eastGate", min_stage: EnrollmentStage::WireGuardPeered, zone: Z::Backbone },
-        Target { name: "ironGate", min_stage: EnrollmentStage::Bare, zone: Z::Backbone },
-        Target { name: "flockGate", min_stage: EnrollmentStage::WireGuardPeered, zone: Z::Wan },
+        Target {
+            name: "eastGate",
+            min_stage: EnrollmentStage::WireGuardPeered,
+            zone: Z::Backbone,
+        },
+        Target {
+            name: "ironGate",
+            min_stage: EnrollmentStage::Bare,
+            zone: Z::Backbone,
+        },
+        Target {
+            name: "flockGate",
+            min_stage: EnrollmentStage::WireGuardPeered,
+            zone: Z::Wan,
+        },
     ];
 
     for target in &wave116 {

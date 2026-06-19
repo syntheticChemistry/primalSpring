@@ -244,7 +244,10 @@ pub const MESH_PEERS: &str = "MESH_PEERS";
 ///
 /// New deployments should use capability routing via
 /// [`crate::ipc::discover::discover_by_capability("security")`] instead.
-#[deprecated(since = "0.9.32", note = "use capability-based discovery for the security socket")]
+#[deprecated(
+    since = "0.9.32",
+    note = "use capability-based discovery for the security socket"
+)]
 pub const SONGBIRD_SECURITY_SOCKET: &str = "SONGBIRD_SECURITY_SOCKET";
 
 /// Generic discovery socket override (preferred over `SONGBIRD_SECURITY_SOCKET`).
@@ -316,9 +319,19 @@ mod tests {
     #[test]
     fn all_registry_env_keys_are_uppercase_port_pattern() {
         let slugs = [
-            "beardog", "songbird", "nestgate", "toadstool", "barracuda",
-            "coralreef", "squirrel", "rhizocrypt", "sweetgrass",
-            "petaltongue", "loamspine", "skunkbat", "biomeos",
+            "beardog",
+            "songbird",
+            "nestgate",
+            "toadstool",
+            "barracuda",
+            "coralreef",
+            "squirrel",
+            "rhizocrypt",
+            "sweetgrass",
+            "petaltongue",
+            "loamspine",
+            "skunkbat",
+            "biomeos",
         ];
         for slug in &slugs {
             let key = port_env_key(slug);

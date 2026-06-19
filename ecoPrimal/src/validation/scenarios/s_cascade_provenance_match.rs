@@ -68,21 +68,39 @@ fn phase_infrastructure(v: &mut ValidationResult) {
         );
         return;
     }
-    v.check_bool("infra:arch_dir", true, &format!("architecture depot {triple} exists"));
+    v.check_bool(
+        "infra:arch_dir",
+        true,
+        &format!("architecture depot {triple} exists"),
+    );
 
     let checksums_path = depot.join("checksums.toml");
     if !checksums_path.exists() {
-        v.check_skip("infra:checksums_toml", "checksums.toml not present — cascade pending");
+        v.check_skip(
+            "infra:checksums_toml",
+            "checksums.toml not present — cascade pending",
+        );
         return;
     }
-    v.check_bool("infra:checksums_toml", true, "checksums.toml present for integrity verification");
+    v.check_bool(
+        "infra:checksums_toml",
+        true,
+        "checksums.toml present for integrity verification",
+    );
 
     let provenance_path = depot.join("provenance.toml");
     if !provenance_path.exists() {
-        v.check_skip("infra:provenance_toml", "provenance.toml not present — cascade pending");
+        v.check_skip(
+            "infra:provenance_toml",
+            "provenance.toml not present — cascade pending",
+        );
         return;
     }
-    v.check_bool("infra:provenance_toml", true, "provenance.toml present for build traceability");
+    v.check_bool(
+        "infra:provenance_toml",
+        true,
+        "provenance.toml present for build traceability",
+    );
 }
 
 fn phase_cross_reference(v: &mut ValidationResult) {
@@ -96,7 +114,10 @@ fn phase_cross_reference(v: &mut ValidationResult) {
     let Some(provenance) = load_provenance(&provenance_path) else {
         v.check_skip(
             "xref:provenance_loaded",
-            &format!("provenance.toml not loadable at {}", provenance_path.display()),
+            &format!(
+                "provenance.toml not loadable at {}",
+                provenance_path.display()
+            ),
         );
         return;
     };
@@ -183,11 +204,7 @@ fn phase_cross_reference(v: &mut ValidationResult) {
 fn resolve_depot_root() -> Option<PathBuf> {
     let root_str = tolerances::plasmidbin_depot_root();
     let path = PathBuf::from(&root_str);
-    if path.is_dir() {
-        Some(path)
-    } else {
-        None
-    }
+    if path.is_dir() { Some(path) } else { None }
 }
 
 #[derive(Debug)]

@@ -478,8 +478,7 @@ fn resolve_depot_dir() -> PathBuf {
     if xdg_cache.is_dir() {
         return xdg_cache;
     }
-    PathBuf::from(primalspring::tolerances::plasmidbin_depot_root())
-        .join("primals")
+    PathBuf::from(primalspring::tolerances::plasmidbin_depot_root()).join("primals")
 }
 
 fn resolve_socket_dir() -> PathBuf {
@@ -490,8 +489,7 @@ fn resolve_socket_dir() -> PathBuf {
 }
 
 fn dirs_home() -> PathBuf {
-    std::env::var(primalspring::env_keys::HOME)
-        .map_or_else(|_| std::env::temp_dir(), PathBuf::from)
+    std::env::var(primalspring::env_keys::HOME).map_or_else(|_| std::env::temp_dir(), PathBuf::from)
 }
 
 #[cfg(unix)]
@@ -523,9 +521,7 @@ fn kill_existing_nucleus() {
     #[cfg(unix)]
     {
         let pattern = format!("{} nucleus", primalspring::primal_names::BIOMEOS);
-        let output = Command::new("pgrep")
-            .args(["-f", &pattern])
-            .output();
+        let output = Command::new("pgrep").args(["-f", &pattern]).output();
         if let Ok(out) = output {
             let pids: Vec<u32> = String::from_utf8_lossy(&out.stdout)
                 .lines()

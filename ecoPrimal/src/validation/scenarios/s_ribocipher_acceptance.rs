@@ -125,10 +125,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             }
             Err(e) if e.is_skippable() => {
                 skipped += 1;
-                v.check_skip(
-                    &check_id,
-                    &format!("{capability}: not reachable ({e})"),
-                );
+                v.check_skip(&check_id, &format!("{capability}: not reachable ({e})"));
             }
             Err(e) => {
                 probed += 1;
@@ -145,9 +142,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.check_bool(
         "live:probed_count",
         probed > 0 || skipped as usize == CAPABILITIES_TO_PROBE.len(),
-        &format!(
-            "probed {probed}: {accepted} accept, {rejected} reject, {skipped} skipped"
-        ),
+        &format!("probed {probed}: {accepted} accept, {rejected} reject, {skipped} skipped"),
     );
 
     if probed > 0 {
@@ -190,7 +185,14 @@ fn phase_genetics_compliance(v: &mut ValidationResult) {
         v.check_bool(
             &format!("genetics:port_coverage:{slug}"),
             has_port,
-            &format!("{slug}: {}", if has_port { "reachable (has port)" } else { "UNREACHABLE (no port)" }),
+            &format!(
+                "{slug}: {}",
+                if has_port {
+                    "reachable (has port)"
+                } else {
+                    "UNREACHABLE (no port)"
+                }
+            ),
         );
     }
 

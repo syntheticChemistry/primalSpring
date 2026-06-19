@@ -221,9 +221,21 @@ mod tests {
     #[test]
     fn skew_severity_assessment() {
         assert_eq!(assess_skew_severity(&["0.9.31"]), SkewSeverity::None);
-        assert_eq!(assess_skew_severity(&["0.9.31", "0.9.30"]), SkewSeverity::None);
-        assert_eq!(assess_skew_severity(&["0.9.31", "0.8.0"]), SkewSeverity::Minor);
-        assert_eq!(assess_skew_severity(&["0.9.31", "0.7.0"]), SkewSeverity::Major);
-        assert_eq!(assess_skew_severity(&["1.0.0", "0.9.0"]), SkewSeverity::Major);
+        assert_eq!(
+            assess_skew_severity(&["0.9.31", "0.9.30"]),
+            SkewSeverity::None
+        );
+        assert_eq!(
+            assess_skew_severity(&["0.9.31", "0.8.0"]),
+            SkewSeverity::Minor
+        );
+        assert_eq!(
+            assess_skew_severity(&["0.9.31", "0.7.0"]),
+            SkewSeverity::Major
+        );
+        assert_eq!(
+            assess_skew_severity(&["1.0.0", "0.9.0"]),
+            SkewSeverity::Major
+        );
     }
 }

@@ -40,7 +40,9 @@ impl ArchFitness {
     /// Whether this primal is blocked from deploying on this target.
     #[must_use]
     pub fn is_blocked(&self) -> bool {
-        self.debt.iter().any(|d| d.severity == Severity::BlocksDeployment)
+        self.debt
+            .iter()
+            .any(|d| d.severity == Severity::BlocksDeployment)
     }
 
     /// Whether this primal has any unverified targets.
@@ -52,7 +54,10 @@ impl ArchFitness {
     /// Count of blocking debt items.
     #[must_use]
     pub fn blocking_count(&self) -> usize {
-        self.debt.iter().filter(|d| d.severity == Severity::BlocksDeployment).count()
+        self.debt
+            .iter()
+            .filter(|d| d.severity == Severity::BlocksDeployment)
+            .count()
     }
 }
 
@@ -90,7 +95,10 @@ pub enum Confidence {
 impl FitnessScore {
     /// Compute a fitness score from survival ratio and check count.
     #[must_use]
-    #[expect(clippy::missing_const_for_fn, reason = "Vec::new() is not const-stable")]
+    #[expect(
+        clippy::missing_const_for_fn,
+        reason = "Vec::new() is not const-stable"
+    )]
     pub fn from_survival(survival_ratio: f64, checks_total: u32) -> Self {
         let confidence = Self::confidence_for(checks_total);
         Self {

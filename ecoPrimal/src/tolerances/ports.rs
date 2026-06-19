@@ -119,19 +119,71 @@ fn toml_port_for(primal: &str) -> Option<u16> {
 /// These constants remain for backward compatibility; the authoritative
 /// source is `config/ports.toml`.
 pub static PORT_REGISTRY: &[PortEntry] = &[
-    PortEntry { slug: "beardog",     port: 9100, env_key: "BEARDOG_PORT" },
-    PortEntry { slug: "songbird",    port: 9200, env_key: "SONGBIRD_PORT" },
-    PortEntry { slug: "squirrel",    port: 9300, env_key: "SQUIRREL_PORT" },
-    PortEntry { slug: "toadstool",   port: 9400, env_key: "TOADSTOOL_PORT" },
-    PortEntry { slug: "nestgate",    port: 9500, env_key: "NESTGATE_PORT" },
-    PortEntry { slug: "rhizocrypt",  port: 9601, env_key: "RHIZOCRYPT_PORT" },
-    PortEntry { slug: "loamspine",   port: 9700, env_key: "LOAMSPINE_PORT" },
-    PortEntry { slug: "coralreef",   port: 9730, env_key: "CORALREEF_PORT" },
-    PortEntry { slug: "barracuda",   port: 9740, env_key: "BARRACUDA_PORT" },
-    PortEntry { slug: "skunkbat",    port: 9140, env_key: "SKUNKBAT_PORT" },
-    PortEntry { slug: "biomeos",     port: 9800, env_key: "BIOMEOS_PORT" },
-    PortEntry { slug: "sweetgrass",  port: 9850, env_key: "SWEETGRASS_PORT" },
-    PortEntry { slug: "petaltongue", port: 9900, env_key: "PETALTONGUE_PORT" },
+    PortEntry {
+        slug: "beardog",
+        port: 9100,
+        env_key: "BEARDOG_PORT",
+    },
+    PortEntry {
+        slug: "songbird",
+        port: 9200,
+        env_key: "SONGBIRD_PORT",
+    },
+    PortEntry {
+        slug: "squirrel",
+        port: 9300,
+        env_key: "SQUIRREL_PORT",
+    },
+    PortEntry {
+        slug: "toadstool",
+        port: 9400,
+        env_key: "TOADSTOOL_PORT",
+    },
+    PortEntry {
+        slug: "nestgate",
+        port: 9500,
+        env_key: "NESTGATE_PORT",
+    },
+    PortEntry {
+        slug: "rhizocrypt",
+        port: 9601,
+        env_key: "RHIZOCRYPT_PORT",
+    },
+    PortEntry {
+        slug: "loamspine",
+        port: 9700,
+        env_key: "LOAMSPINE_PORT",
+    },
+    PortEntry {
+        slug: "coralreef",
+        port: 9730,
+        env_key: "CORALREEF_PORT",
+    },
+    PortEntry {
+        slug: "barracuda",
+        port: 9740,
+        env_key: "BARRACUDA_PORT",
+    },
+    PortEntry {
+        slug: "skunkbat",
+        port: 9140,
+        env_key: "SKUNKBAT_PORT",
+    },
+    PortEntry {
+        slug: "biomeos",
+        port: 9800,
+        env_key: "BIOMEOS_PORT",
+    },
+    PortEntry {
+        slug: "sweetgrass",
+        port: 9850,
+        env_key: "SWEETGRASS_PORT",
+    },
+    PortEntry {
+        slug: "petaltongue",
+        port: 9900,
+        env_key: "PETALTONGUE_PORT",
+    },
 ];
 
 /// Federation / CNS port assignments — deployment-profile variants.

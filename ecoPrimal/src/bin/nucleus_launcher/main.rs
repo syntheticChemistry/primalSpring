@@ -344,11 +344,8 @@ fn main() {
                 uds_only
             };
 
-            let federation_port = federation_port.or_else(|| {
-                manifest_overrides
-                    .as_ref()
-                    .and_then(|m| m.federation_port)
-            });
+            let federation_port = federation_port
+                .or_else(|| manifest_overrides.as_ref().and_then(|m| m.federation_port));
 
             let mut merged_peers = peers;
             if let Some(ref m) = manifest_overrides {

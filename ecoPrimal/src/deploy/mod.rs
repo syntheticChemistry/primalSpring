@@ -56,7 +56,9 @@ pub enum DeployError {
         source: toml::de::Error,
     },
     /// Fragment directory not found for a graph that declares fragments.
-    #[error("fragment resolution: graph {graph} declares fragments but no fragments/ directory found")]
+    #[error(
+        "fragment resolution: graph {graph} declares fragments but no fragments/ directory found"
+    )]
     FragmentDirNotFound {
         /// Path to the graph that declares fragments.
         graph: std::path::PathBuf,
@@ -325,11 +327,10 @@ fn resolve_fragments(graph: &mut DeployGraph, graph_path: &Path) -> Result<(), D
         _ => return Ok(()),
     };
 
-    let fragments_dir = find_fragments_dir(graph_path).ok_or_else(|| {
-        DeployError::FragmentDirNotFound {
+    let fragments_dir =
+        find_fragments_dir(graph_path).ok_or_else(|| DeployError::FragmentDirNotFound {
             graph: graph_path.to_owned(),
-        }
-    })?;
+        })?;
 
     let mut base_nodes: Vec<GraphNode> = Vec::new();
     for frag_name in &fragment_names {

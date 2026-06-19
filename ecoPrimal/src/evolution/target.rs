@@ -72,10 +72,7 @@ impl Target {
     /// Whether this target supports Unix domain sockets.
     #[must_use]
     pub const fn has_uds(self) -> bool {
-        matches!(
-            self,
-            Self::X86_64Musl | Self::Riscv64Musl
-        )
+        matches!(self, Self::X86_64Musl | Self::Riscv64Musl)
     }
 
     /// Whether TCP networking is available.

@@ -17,8 +17,8 @@
 use crate::composition::CompositionContext;
 use crate::evolution::target::{CompositionTier, Target};
 use crate::tolerances;
-use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 use crate::validation::ValidationResult;
+use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 
 /// Cross-target parity scenario.
 pub const SCENARIO: Scenario = Scenario {
@@ -105,9 +105,7 @@ fn phase_capability_invariance(v: &mut ValidationResult) {
     v.check_bool(
         "cap-routing:deterministic",
         total > 0,
-        &format!(
-            "capability routing is compile-time deterministic ({total} routes defined)"
-        ),
+        &format!("capability routing is compile-time deterministic ({total} routes defined)"),
     );
 }
 
@@ -126,12 +124,7 @@ fn phase_profile_constraints(v: &mut ValidationResult) {
         v.check_bool(
             &format!("tier:{}:classified", target.triple()),
             max > 0,
-            &format!(
-                "{}: {:?} (max {} primals)",
-                target.triple(),
-                tier,
-                max
-            ),
+            &format!("{}: {:?} (max {} primals)", target.triple(), tier, max),
         );
     }
 
@@ -183,7 +176,9 @@ fn phase_capability_matrix(v: &mut ValidationResult) {
 
     v.check_bool(
         "matrix:at-least-one-permissive",
-        targets.iter().any(|t| t.has_filesystem() && t.has_uds() && t.has_tcp()),
+        targets
+            .iter()
+            .any(|t| t.has_filesystem() && t.has_uds() && t.has_tcp()),
         "at least one fully-permissive target exists (development baseline)",
     );
 }
@@ -197,10 +192,6 @@ mod tests {
         let mut v = ValidationResult::new("cross-target-parity");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert_eq!(
-            v.failed, 0,
-            "Cross-target parity has {} failures",
-            v.failed
-        );
+        assert_eq!(v.failed, 0, "Cross-target parity has {} failures", v.failed);
     }
 }

@@ -239,10 +239,11 @@ pub enum StunConfigError {
 /// Returns [`StunConfigError`] if reading or parsing fails.
 pub fn load_stun_config(path: &Path) -> Result<StunTierConfig, StunConfigError> {
     let contents = std::fs::read_to_string(path)?;
-    let raw: RawStunConfig = toml::from_str(&contents).map_err(|source| StunConfigError::Parse {
-        path: path.to_owned(),
-        source,
-    })?;
+    let raw: RawStunConfig =
+        toml::from_str(&contents).map_err(|source| StunConfigError::Parse {
+            path: path.to_owned(),
+            source,
+        })?;
 
     Ok(StunTierConfig {
         enabled: raw.general.enabled,

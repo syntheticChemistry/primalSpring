@@ -18,8 +18,8 @@
 
 use crate::composition::CompositionContext;
 use crate::evolution::{GateMatrix, GateStatus, ReadinessLevel};
-use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 use crate::validation::ValidationResult;
+use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 
 /// Gate readiness matrix scenario.
 pub const SCENARIO: Scenario = Scenario {
@@ -52,7 +52,15 @@ fn phase_structural(v: &mut ValidationResult) {
         &format!("{} gates tracked (expect 11)", matrix.gates.len()),
     );
 
-    let expected_gates = ["eastGate", "sporeGate", "golgi", "pepti", "northGate", "fieldGate", "flockGate"];
+    let expected_gates = [
+        "eastGate",
+        "sporeGate",
+        "golgi",
+        "pepti",
+        "northGate",
+        "fieldGate",
+        "flockGate",
+    ];
     for name in &expected_gates {
         let found = matrix.gates.iter().any(|g| g.name == *name);
         v.check_bool(
@@ -136,9 +144,10 @@ fn phase_local_gate(v: &mut ValidationResult) {
     );
 
     let matrix = GateMatrix::ecosystem_snapshot();
-    let local_in_matrix = matrix.gates.iter().any(|g| {
-        g.name.to_lowercase() == local_identity.to_lowercase()
-    });
+    let local_in_matrix = matrix
+        .gates
+        .iter()
+        .any(|g| g.name.to_lowercase() == local_identity.to_lowercase());
 
     if local_in_matrix {
         v.check_bool(
@@ -163,6 +172,9 @@ mod tests {
         let mut v = ValidationResult::new("gate-readiness");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert_eq!(v.failed, 0, "gate readiness structural checks should all pass");
+        assert_eq!(
+            v.failed, 0,
+            "gate readiness structural checks should all pass"
+        );
     }
 }

@@ -288,17 +288,14 @@ pub fn local_assessment() -> GateStatus {
         .unwrap_or_else(|()| "local".to_owned());
 
     let runtime_dir = crate::tolerances::platform::runtime_dir();
-    let biomeos_dir = std::path::Path::new(&runtime_dir)
-        .join(crate::env_keys::BIOMEOS_SUBDIR);
+    let biomeos_dir = std::path::Path::new(&runtime_dir).join(crate::env_keys::BIOMEOS_SUBDIR);
 
     let primals_alive = if biomeos_dir.is_dir() {
-        std::fs::read_dir(&biomeos_dir)
-            .map(|rd| {
-                rd.filter_map(Result::ok)
-                    .filter(|e| e.path().extension().is_some_and(|ext| ext == "sock"))
-                    .count()
-            })
-            .unwrap_or(0)
+        std::fs::read_dir(&biomeos_dir).map_or(0, |rd| {
+            rd.filter_map(Result::ok)
+                .filter(|e| e.path().extension().is_some_and(|ext| ext == "sock"))
+                .count()
+        })
     } else {
         0
     };
@@ -306,18 +303,19 @@ pub fn local_assessment() -> GateStatus {
     let vcs_synced = std::process::Command::new("git")
         .args(["status", "--porcelain"])
         .output()
-        .map(|o| o.status.success() && o.stdout.is_empty())
-        .unwrap_or(false);
+        .is_ok_and(|o| o.status.success() && o.stdout.is_empty());
 
     let mesh_peers = std::env::var(crate::env_keys::MESH_PEERS)
         .or_else(|_| {
             #[expect(deprecated, reason = "fallback for backward compatibility")]
             std::env::var(crate::env_keys::SONGBIRD_PEERS)
         })
-        .map(|p| p.split(',').filter(|s| !s.is_empty()).count())
-        .unwrap_or(0);
+        .map_or(0, |p| p.split(',').filter(|s| !s.is_empty()).count());
 
-    #[expect(clippy::cast_possible_truncation, reason = "primal/peer counts fit in u8")]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "primal/peer counts fit in u8"
+    )]
     let mut status = GateStatus {
         zone: CytoplasmZone::for_gate(&name),
         name,

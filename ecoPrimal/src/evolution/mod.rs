@@ -200,7 +200,10 @@ impl TargetDeclaration {
 
     /// Total targets this primal aims to support (proven + in_progress + endgame).
     #[must_use]
-    #[expect(clippy::missing_const_for_fn, reason = "Vec::len() is not const-stable")]
+    #[expect(
+        clippy::missing_const_for_fn,
+        reason = "Vec::len() is not const-stable"
+    )]
     pub fn total_targets(&self) -> usize {
         self.proven.len() + self.in_progress.len() + self.endgame.len()
     }
