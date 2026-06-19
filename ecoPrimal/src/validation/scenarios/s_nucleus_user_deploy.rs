@@ -37,8 +37,10 @@ pub const SCENARIO: Scenario = Scenario {
 const EXPECTED_PRIMALS: &[&str] = &[
     "barracuda",
     "beardog",
+    "biomeos",
     "coralreef",
     "loamspine",
+    "nestgate",
     "petaltongue",
     "rhizocrypt",
     "skunkbat",
@@ -48,8 +50,6 @@ const EXPECTED_PRIMALS: &[&str] = &[
 ];
 
 const KNOWN_MISSING: &[(&str, &str)] = &[
-    ("biomeos", "needs different CLI entrypoint"),
-    ("nestgate", "needs NESTGATE_JWT_SECRET"),
     ("songbird", "runs as songbird-federation.service, not nucleus template"),
 ];
 
@@ -123,15 +123,16 @@ fn phase_socket_presence(v: &mut ValidationResult) {
 
     let socket_names = [
         "barracuda.sock",
+        "beardog.sock",
+        "coralreef.sock",
+        "loamspine.sock",
+        "petaltongue.sock",
+        "rhizocrypt.sock",
         "skunkbat.sock",
+        "songbird.sock",
         "squirrel.sock",
         "sweetgrass.sock",
-        "loamspine.sock",
-        "rhizocrypt.sock",
-        "petaltongue.sock",
         "toadstool.sock",
-        "coralreef.sock",
-        "songbird.sock",
     ];
 
     let mut found = 0u32;

@@ -129,6 +129,7 @@ pub mod s_mesh_reachability;
 pub mod s_nucleus_integration;
 pub mod s_nucleus_user_deploy;
 pub mod s_primal_debt;
+pub mod s_primal_utilization;
 pub mod s_sovereignty_ledger;
 pub mod s_zone_topology;
 
@@ -219,6 +220,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_nucleus_integration::SCENARIO);
     r.register(s_nucleus_user_deploy::SCENARIO);
     r.register(s_primal_debt::SCENARIO);
+    r.register(s_primal_utilization::SCENARIO);
     r.register(s_sovereignty_ledger::SCENARIO);
     r
 }
@@ -230,7 +232,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 84;
+    const EXPECTED_SCENARIO_COUNT: usize = 85;
 
     #[test]
     fn registry_scenario_count() {
