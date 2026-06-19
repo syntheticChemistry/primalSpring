@@ -44,7 +44,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,987+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 117b: orphan purge (21 files, ~3,500 LOC), `env_keys.rs` (290 constants), HTTP-era config annotated. |
 | songbird | 8,158+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 58: `songbird-process-env` fully adopted (48 sites), 146 `#[expect` migrations, +67 tests. Zero hardcoded env in prod. |
-| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S279: zero production panic paths (12 eliminated), deprecated legacy capability roundtrip. 9,156+ lib tests. 47 crates, 88 methods. |
+| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S320+: 112 methods (17 groups), zero-copy dispatch, riboCipher CLEAR+MITO, gRPC/OpenCL deleted (S319), 100% SPDX, zero files >750L, zero hardcoded cross-primal names. 9,069+ lib tests. |
 | biomeOS | 8,038+ | **ADOPTED** | FULL | consumer | **CLEAN** — v4.20: BM-UDS-01 **RESOLVED** (d35c943e). All server bind paths (Neural API, API server, NUCLEUS) check `PRIMAL_BIND_MODE=tcp_only` before UDS bind, skip entirely on SELinux/Android. Discovery provider decoupled. NUCLEUS timeouts extracted to constants. |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
 | squirrel | 7,095+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 58: 316 env constants (`env_vars.rs`), self-identity eliminated, 5,417L orphan purge. ~93 files remaining raw `std::env::var`. |
@@ -256,7 +256,7 @@ pressure. primalSpring validates the surface structurally via `s_sporeprint_surf
 | bearDog | **Yes** | Yes | Yes | **Complete** — 248+ tests, 126 methods, S1 shadow LIVE |
 | songbird | **Yes** | Yes | Yes | **Complete** — 7,803 tests, 54 methods, VPS relay deployed |
 | skunkBat | **Yes** | Yes | Yes | **Complete** — 382 tests, 17 methods, defense meta-primal |
-| toadStool | **Yes** | Yes | Yes | **Complete** — 9,028+ tests, 85 methods, Node Atomic ready |
+| toadStool | **Yes** | Yes | Yes | **Complete** — 23,000+ tests, 112 methods, Node Atomic ready, MitoBeacon accepted |
 | barraCuda | **Yes** | Yes | Yes | **Complete** — 4,393+ tests, 75 methods, precision ladder |
 | coralReef | **Yes** | Yes | Yes | **Complete** — 3,181 tests, 16 methods, A++ pure compiler |
 | nestGate | **Yes** | Yes | Yes | **Complete** — 12,393 tests, S3 shadow ready |
