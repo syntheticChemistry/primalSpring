@@ -72,7 +72,7 @@ fn phase_primal_count(v: &mut ValidationResult, gate: &str) {
     let count = text.lines().filter(|l| l.contains("running")).count();
 
     let min_expected: usize = match gate {
-        "eastGate" => 8,
+        "eastGate" => 10,
         "sporeGate" => 10,
         "golgi" | "pepti" => 5,
         _ => 1,
