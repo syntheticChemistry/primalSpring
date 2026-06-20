@@ -96,6 +96,7 @@ pub mod s_loam_certificate_lifecycle;
 pub mod s_mesh_overlay;
 pub mod s_mesh_reachability;
 pub mod s_mesh_topology;
+pub mod s_multi_gate_nucleus;
 pub mod s_meta_tier_compositions;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
@@ -114,6 +115,7 @@ pub mod s_primal_debt;
 pub mod s_primal_utilization;
 pub mod s_protocol_escalation;
 pub mod s_provenance_trio_pipeline;
+pub mod s_provenance_chain_integrity;
 pub mod s_ribocipher_acceptance;
 pub mod s_routing_consistency;
 pub mod s_schema_standard;
@@ -130,6 +132,7 @@ pub mod s_tower_atomic;
 pub mod s_tower_cns;
 pub mod s_version_skew_detection;
 pub mod s_wan_ipc_tolerance;
+pub mod s_wireguard_mesh;
 pub mod s_zero_port_standard;
 pub mod s_zone_topology;
 
@@ -168,6 +171,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_meta_tier_compositions::SCENARIO);
     r.register(s_agentic_tower::SCENARIO);
     r.register(s_provenance_trio_pipeline::SCENARIO);
+    r.register(s_provenance_chain_integrity::SCENARIO);
     r.register(s_ferment_transcript::SCENARIO);
     r.register(s_loam_certificate_lifecycle::SCENARIO);
     r.register(s_beardog_fido2::SCENARIO);
@@ -214,6 +218,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_mesh_overlay::SCENARIO);
     r.register(s_composition_live_state::SCENARIO);
     r.register(s_gate_parity::SCENARIO);
+    r.register(s_multi_gate_nucleus::SCENARIO);
     r.register(s_genetics_compliance::SCENARIO);
     r.register(s_kderm_live_layers::SCENARIO);
     r.register(s_mesh_reachability::SCENARIO);
@@ -222,6 +227,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_primal_debt::SCENARIO);
     r.register(s_primal_utilization::SCENARIO);
     r.register(s_sovereignty_ledger::SCENARIO);
+    r.register(s_wireguard_mesh::SCENARIO);
     r
 }
 
@@ -232,7 +238,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 85;
+    const EXPECTED_SCENARIO_COUNT: usize = 88;
 
     #[test]
     fn registry_scenario_count() {
@@ -288,9 +294,8 @@ mod tests {
         // (update the list) or when new failures appear (fail loudly).
         // Wave 109: all upstream blockers resolved. sporePrint cert pipeline
         // shipped. grapheneGate 13/13 alive. Zero known debt.
-        // Wave 119: cascade-drift probes workspace git cleanliness + depot
-        // state — expected failures on dev workstations with uncommitted changes.
-        const KNOWN_DEBT: &[(&str, u32)] = &[("cascade-drift", 3)];
+        // Wave 119: cascade-drift resolved — all repos committed and in parity.
+        const KNOWN_DEBT: &[(&str, u32)] = &[];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
