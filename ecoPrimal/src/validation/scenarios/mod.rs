@@ -302,7 +302,7 @@ mod tests {
         // shipped. grapheneGate 13/13 alive. Zero known debt.
         // Wave 119: cascade-drift depot freshness check fails when depot
         // binaries are older than 7 days (pepti build cadence).
-        const KNOWN_DEBT: &[(&str, u32)] = &[("cascade-drift", 4)];
+        const KNOWN_DEBT: &[(&str, u32)] = &[("cascade-drift", 1)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
