@@ -409,6 +409,11 @@ Endpoint = 157.230.3.183:51820
         assert_eq!(parsed.peer_count, 1);
         assert_eq!(parsed.listen_port, Some(51820));
         assert_eq!(parsed.mesh_allowed_ips.len(), 2);
-        assert!(parsed.mesh_allowed_ips.iter().all(|ip| ip.starts_with(MESH_PREFIX)));
+        assert!(
+            parsed
+                .mesh_allowed_ips
+                .iter()
+                .all(|ip| ip.starts_with(MESH_PREFIX))
+        );
     }
 }

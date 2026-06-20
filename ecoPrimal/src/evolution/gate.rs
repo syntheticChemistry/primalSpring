@@ -182,6 +182,15 @@ impl GateMatrix {
         Self { gates: Vec::new() }
     }
 
+    /// Enumerate all known gates in the ecosystem readiness matrix.
+    ///
+    /// Alias for [`Self::ecosystem_snapshot`] — used by validation scenarios
+    /// that iterate gates for cross-gate capability checks.
+    #[must_use]
+    pub fn enumerate() -> Self {
+        Self::ecosystem_snapshot()
+    }
+
     /// Build the current ecosystem matrix from known gates.
     #[must_use]
     pub fn ecosystem_snapshot() -> Self {

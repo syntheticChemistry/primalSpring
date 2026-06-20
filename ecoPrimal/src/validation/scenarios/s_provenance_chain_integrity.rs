@@ -15,13 +15,13 @@
 
 use std::path::PathBuf;
 
+use crate::composition::CompositionContext;
 use crate::composition::{capability_to_primal, method_to_capability_domain};
 use crate::coordination::probe_primal_at_socket;
 use crate::primal_names::{self, Primal};
 use crate::validation::ValidationResult;
 use crate::validation::helpers;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
-use crate::composition::CompositionContext;
 
 /// Provenance chain integrity — RhizoCrypt DAG → LoamSpine ledger → SweetGrass witness.
 pub const SCENARIO: Scenario = Scenario {
@@ -50,7 +50,11 @@ const SWEETGRASS_LIVE_METHODS: &[&str] = &["witness.attest", "witness.verify"];
 /// Capability domain → owning primal, with accepted method prefixes on the fragment.
 const TRIO_CAPABILITY_PREFIXES: &[(&str, &str, &[&str])] = &[
     ("rhizocrypt", "dag", &["provenance.", "dag.", "event."]),
-    ("loamspine", "ledger", &["ledger.", "spine.", "entry.", "session."]),
+    (
+        "loamspine",
+        "ledger",
+        &["ledger.", "spine.", "entry.", "session."],
+    ),
     (
         "sweetgrass",
         "attribution",
@@ -79,8 +83,18 @@ const PROVENANCE_WORKFLOW_GRAPHS: &[(&str, &str)] = &[
 
 /// Chain stages in order: hash(content) → DAG node → merkle root → ledger commit → witness.
 const CHAIN_STAGE_KEYWORDS: &[&str] = &[
-    "hash", "content", "store", "dag", "merkle", "ledger", "spine", "commit", "witness",
-    "braid", "attest", "attribute",
+    "hash",
+    "content",
+    "store",
+    "dag",
+    "merkle",
+    "ledger",
+    "spine",
+    "commit",
+    "witness",
+    "braid",
+    "attest",
+    "attribute",
 ];
 
 /// Run the provenance chain integrity validation.
@@ -215,11 +229,7 @@ fn phase_structural_capability_domains(v: &mut ValidationResult) {
         let caps: Vec<&str> = node
             .get("capabilities")
             .and_then(|c| c.as_array())
-            .map(|arr| {
-                arr.iter()
-                    .filter_map(|v| v.as_str())
-                    .collect::<Vec<_>>()
-            })
+            .map(|arr| arr.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>())
             .unwrap_or_default();
 
         let declares_prefix = caps.iter().any(|cap| {
@@ -296,10 +306,7 @@ fn phase_structural_chain_flow(v: &mut ValidationResult) {
 
     let mut stage_hits = 0u32;
     for node in nodes {
-        let name = node
-            .get("name")
-            .and_then(|n| n.as_str())
-            .unwrap_or("");
+        let name = node.get("name").and_then(|n| n.as_str()).unwrap_or("");
         let caps_text = node
             .get("capabilities")
             .and_then(|c| c.as_array())
@@ -311,10 +318,7 @@ fn phase_structural_chain_flow(v: &mut ValidationResult) {
             })
             .unwrap_or_default();
         let haystack = format!("{name} {caps_text}").to_lowercase();
-        if CHAIN_STAGE_KEYWORDS
-            .iter()
-            .any(|kw| haystack.contains(kw))
-        {
+        if CHAIN_STAGE_KEYWORDS.iter().any(|kw| haystack.contains(kw)) {
             stage_hits += 1;
         }
     }
@@ -365,11 +369,7 @@ fn phase_live_capabilities(v: &mut ValidationResult) {
     probe_primal_capabilities(v, "sweetgrass", SWEETGRASS_LIVE_METHODS);
 }
 
-fn probe_primal_capabilities(
-    v: &mut ValidationResult,
-    primal: &str,
-    required_methods: &[&str],
-) {
+fn probe_primal_capabilities(v: &mut ValidationResult, primal: &str, required_methods: &[&str]) {
     let Some(sock) = trio_socket_path(primal) else {
         v.check_skip(
             &format!("live:{primal}:socket"),
@@ -411,7 +411,10 @@ fn probe_primal_capabilities(
 fn phase_live_startup_order(v: &mut ValidationResult) {
     let nest_atomic = include_str!("../../../../graphs/fragments/nest_atomic.toml");
     let Ok(parsed) = toml::from_str::<toml::Value>(nest_atomic) else {
-        v.check_skip("live:startup_order:graph", "nest_atomic fragment parse failed");
+        v.check_skip(
+            "live:startup_order:graph",
+            "nest_atomic fragment parse failed",
+        );
         return;
     };
 
@@ -570,11 +573,7 @@ fn trio_systemd_enter_monotonic() -> Vec<(u64, String)> {
 fn trio_socket_path(primal: &str) -> Option<PathBuf> {
     let base = socket_base_dir()?;
     let sock = base.join(format!("{primal}.sock"));
-    if sock.exists() {
-        Some(sock)
-    } else {
-        None
-    }
+    if sock.exists() { Some(sock) } else { None }
 }
 
 fn socket_base_dir() -> Option<PathBuf> {

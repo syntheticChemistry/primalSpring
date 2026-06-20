@@ -110,10 +110,7 @@ fn phase_genetic_rpc_surface(v: &mut ValidationResult, ctx: &mut CompositionCont
         }
     }
 
-    let beardog_sock = std::path::PathBuf::from(
-        std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_owned()),
-    )
-    .join("biomeos/beardog.sock");
+    let beardog_sock = crate::tolerances::platform::biomeos_socket_dir().join("beardog.sock");
 
     if beardog_sock.exists() {
         v.check_bool(

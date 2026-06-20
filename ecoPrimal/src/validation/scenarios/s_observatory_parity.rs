@@ -204,7 +204,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     let local_tower = local_table.tier_composition(CompositionTier::Tower);
     v.check_bool(
         "local-table-populated",
-        local_count >= 450,
+        local_count >= crate::tolerances::MIN_REGISTERED_METHODS,
         &format!("local routing table: {local_count} methods"),
     );
     v.check_bool(

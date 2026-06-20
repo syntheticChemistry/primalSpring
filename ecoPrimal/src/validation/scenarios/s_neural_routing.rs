@@ -34,8 +34,11 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     let method_count = table.method_count();
     v.check_bool(
         "routing-table-population",
-        method_count >= 450,
-        &format!("{method_count} methods loaded (expect 450+)"),
+        method_count >= crate::tolerances::MIN_REGISTERED_METHODS,
+        &format!(
+            "{method_count} methods loaded (expect {}+)",
+            crate::tolerances::MIN_REGISTERED_METHODS
+        ),
     );
 
     let summary = table.tier_summary();
@@ -56,7 +59,8 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     let report = dispatcher.status_report();
     v.check_bool(
         "dispatcher-report-methods",
-        report["total_methods"].as_u64().unwrap_or(0) >= 450,
+        report["total_methods"].as_u64().unwrap_or(0)
+            >= crate::tolerances::MIN_REGISTERED_METHODS as u64,
         &format!("dispatcher reports {} methods", report["total_methods"]),
     );
 

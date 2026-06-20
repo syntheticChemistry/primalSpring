@@ -15,8 +15,6 @@
 //!
 //! This scenario is tier Both (structural assertions + live probes).
 
-use std::path::PathBuf;
-
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -42,9 +40,7 @@ fn run_kderm_live_layers(v: &mut ValidationResult, ctx: &mut CompositionContext)
 }
 
 fn phase_cytoplasm(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    let runtime_dir =
-        std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_owned());
-    let socket_dir = PathBuf::from(&runtime_dir).join("biomeos");
+    let socket_dir = crate::tolerances::platform::biomeos_socket_dir();
 
     v.check_bool(
         "cytoplasm:socket_dir",

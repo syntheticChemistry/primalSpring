@@ -151,9 +151,7 @@ fn phase_songbird_relay(v: &mut ValidationResult) {
 }
 
 fn phase_socket_alignment(v: &mut ValidationResult) {
-    let runtime_dir =
-        std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_owned());
-    let socket_dir = PathBuf::from(&runtime_dir).join("biomeos");
+    let socket_dir = crate::tolerances::platform::biomeos_socket_dir();
 
     v.check_bool(
         "sockets:dir_exists",
@@ -210,7 +208,7 @@ fn phase_socket_alignment(v: &mut ValidationResult) {
         ),
     );
 
-    let template_socket_pattern = format!("{runtime_dir}/biomeos/");
+    let template_socket_pattern = format!("{}/", socket_dir.display());
     let systemd_output = std::process::Command::new("systemctl")
         .args([
             "--user",

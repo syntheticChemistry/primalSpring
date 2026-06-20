@@ -79,6 +79,7 @@ pub mod s_domain_contract_sweep;
 pub mod s_ecosystem_freshness;
 pub mod s_feedback_loop;
 pub mod s_ferment_transcript;
+pub mod s_flockgate_tower_wan;
 pub mod s_full_nucleus;
 pub mod s_gate_enrollment;
 pub mod s_gate_expansion_readiness;
@@ -96,8 +97,8 @@ pub mod s_loam_certificate_lifecycle;
 pub mod s_mesh_overlay;
 pub mod s_mesh_reachability;
 pub mod s_mesh_topology;
-pub mod s_multi_gate_nucleus;
 pub mod s_meta_tier_compositions;
+pub mod s_multi_gate_nucleus;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
 pub mod s_nestgate_content_pipeline;
@@ -114,8 +115,9 @@ pub mod s_primal_announce;
 pub mod s_primal_debt;
 pub mod s_primal_utilization;
 pub mod s_protocol_escalation;
-pub mod s_provenance_trio_pipeline;
 pub mod s_provenance_chain_integrity;
+pub mod s_provenance_cross_gate;
+pub mod s_provenance_trio_pipeline;
 pub mod s_ribocipher_acceptance;
 pub mod s_routing_consistency;
 pub mod s_schema_standard;
@@ -186,6 +188,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_neural_dispatch_live::SCENARIO);
     r.register(s_observatory_parity::SCENARIO);
     r.register(s_feedback_loop::SCENARIO);
+    r.register(s_flockgate_tower_wan::SCENARIO);
     r.register(s_coordination_api::SCENARIO);
     r.register(s_health_lifecycle_surface::SCENARIO);
     r.register(s_health_standard::SCENARIO);
@@ -228,6 +231,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_primal_utilization::SCENARIO);
     r.register(s_sovereignty_ledger::SCENARIO);
     r.register(s_wireguard_mesh::SCENARIO);
+    r.register(s_provenance_cross_gate::SCENARIO);
     r
 }
 
@@ -238,7 +242,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 88;
+    const EXPECTED_SCENARIO_COUNT: usize = 90;
 
     #[test]
     fn registry_scenario_count() {
@@ -278,6 +282,8 @@ mod tests {
             "biomeos-deploy",
             "infrastructure",
             "lifecycle",
+            "sovereignty",
+            "evolution",
         ];
         for track in &expected {
             assert!(
@@ -294,8 +300,9 @@ mod tests {
         // (update the list) or when new failures appear (fail loudly).
         // Wave 109: all upstream blockers resolved. sporePrint cert pipeline
         // shipped. grapheneGate 13/13 alive. Zero known debt.
-        // Wave 119: cascade-drift resolved — all repos committed and in parity.
-        const KNOWN_DEBT: &[(&str, u32)] = &[];
+        // Wave 119: cascade-drift depot freshness check fails when depot
+        // binaries are older than 7 days (pepti build cadence).
+        const KNOWN_DEBT: &[(&str, u32)] = &[("cascade-drift", 4)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();

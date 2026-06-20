@@ -37,10 +37,9 @@ pub const SCENARIO: Scenario = Scenario {
 /// On LAN, health checks complete in <10ms. For WAN links (flockGate,
 /// ionic bonds), we accept up to 2000ms for a full RPC round-trip including
 /// TLS negotiation, TCP RTT, and primal processing.
-const WAN_HEALTH_MAX_MS: u64 = 2000;
+const WAN_HEALTH_MAX_MS: u64 = crate::tolerances::WAN_HEALTH_MAX_MS;
 
-/// Number of samples to collect for statistical confidence.
-const SAMPLE_COUNT: usize = 3;
+const SAMPLE_COUNT: usize = crate::tolerances::WAN_HEALTH_SAMPLE_COUNT;
 
 /// Execute WAN IPC tolerance validation.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {

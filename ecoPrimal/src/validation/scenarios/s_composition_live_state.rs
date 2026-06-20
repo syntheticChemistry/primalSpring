@@ -12,8 +12,6 @@
 //!
 //! This is the "are we running what we think we're running?" check.
 
-use std::path::PathBuf;
-
 use crate::composition::CompositionContext;
 use crate::coordination::AtomicType;
 use crate::validation::ValidationResult;
@@ -112,9 +110,7 @@ fn phase_expected_vs_running(v: &mut ValidationResult) {
 }
 
 fn phase_socket_vs_graph(v: &mut ValidationResult) {
-    let runtime_dir =
-        std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_owned());
-    let socket_dir = PathBuf::from(&runtime_dir).join("biomeos");
+    let socket_dir = crate::tolerances::platform::biomeos_socket_dir();
 
     if !socket_dir.is_dir() {
         v.check_skip("live:socket_graph_match", "biomeos socket dir not found");

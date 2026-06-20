@@ -40,6 +40,46 @@ pub const IPC_METHOD_ERROR_RATE_MAX: f64 = 0.5;
 /// Used by: `s_neural_dispatch_live` latency checks.
 pub const SCENARIO_DISPATCH_LATENCY_MAX_MS: u64 = 1000;
 
+/// Minimum total registered methods expected across the ecosystem.
+///
+/// Source: 450 reflects 13 primals × ~35 methods average. Used by
+/// `s_neural_routing`, `s_observatory_parity`.
+pub const MIN_REGISTERED_METHODS: usize = 450;
+
+/// Maximum WAN IPC health-check latency (ms).
+///
+/// Source: 2000ms generous ceiling for cross-WAN health probes over WireGuard.
+/// Used by: `s_wan_ipc_tolerance`.
+pub const WAN_HEALTH_MAX_MS: u64 = 2000;
+
+/// Sample count for WAN latency averaging.
+///
+/// Source: 3 samples gives median-like stability without excessive delay.
+/// Used by: `s_wan_ipc_tolerance`.
+pub const WAN_HEALTH_SAMPLE_COUNT: usize = 3;
+
+/// TCP connect timeout for validation scenario port probes (milliseconds).
+///
+/// Source: 3000ms covers WAN WireGuard RTT plus TCP handshake for cross-gate
+/// primal port probes. Used by: `s_flockgate_tower_wan`, `s_mesh_topology`.
+pub const SCENARIO_TCP_PROBE_TIMEOUT_MS: u64 = 3000;
+
+/// Minimum primals probed before utilization score is meaningful.
+///
+/// Source: 4 primals ensures Tower + at least 1 other atomic is present.
+/// Used by: `s_primal_utilization`.
+pub const MIN_PROBED_FOR_UTILIZATION: u32 = 4;
+
+/// Depot binary freshness threshold for VPS builds (hours).
+///
+/// Source: 168h = 7 days, matching pepti weekly build cadence.
+pub const DEPOT_FRESHNESS_THRESHOLD_H: u64 = 168;
+
+/// Depot binary freshness threshold for LAN builds (hours).
+///
+/// Source: 72h = 3 days, tighter cadence for local builds.
+pub const DEPOT_FRESHNESS_LAN_H: u64 = 72;
+
 /// Summary output width for validation result formatting.
 ///
 /// Source: 72 columns matches standard terminal width conventions.

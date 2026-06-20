@@ -87,7 +87,9 @@ fn phase_systemd_unit_naming(v: &mut ValidationResult) {
     }
 
     let home = std::env::var("HOME").unwrap_or_else(|_| "/home/eastgate".to_owned());
-    let template_path = PathBuf::from(&home).join(".config/systemd/user").join(NUCLEUS_UNIT_TEMPLATE);
+    let template_path = PathBuf::from(&home)
+        .join(".config/systemd/user")
+        .join(NUCLEUS_UNIT_TEMPLATE);
 
     if !template_path.exists() {
         v.check_skip(
@@ -252,7 +254,10 @@ fn phase_socket_presence(v: &mut ValidationResult) {
     v.check_bool(
         "live:socket_count",
         found >= FULL_NUCLEUS_COUNT,
-        &format!("{found}/{FULL_NUCLEUS_COUNT} primal sockets in {}", base.display()),
+        &format!(
+            "{found}/{FULL_NUCLEUS_COUNT} primal sockets in {}",
+            base.display()
+        ),
     );
 }
 

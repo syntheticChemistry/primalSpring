@@ -236,7 +236,11 @@ fn phase_depot_freshness(v: &mut ValidationResult) {
         // Consumer gates use relaxed 168h (7 day) since they depend on
         // upstream push which may lag during enrollment waves.
         let is_build_authority = std::env::var("DEPOT_BUILD_AUTHORITY").is_ok();
-        let threshold_h = if is_build_authority { 72 } else { 168 };
+        let threshold_h = if is_build_authority {
+            crate::tolerances::DEPOT_FRESHNESS_LAN_H
+        } else {
+            crate::tolerances::DEPOT_FRESHNESS_THRESHOLD_H
+        };
 
         v.check_bool(
             &format!("depot:{target_triple}:fresh"),

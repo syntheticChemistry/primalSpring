@@ -134,9 +134,7 @@ fn phase_capability_probes(v: &mut ValidationResult, ctx: &mut CompositionContex
 }
 
 fn phase_socket_responsiveness(v: &mut ValidationResult) {
-    let runtime_dir =
-        std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_owned());
-    let socket_dir = std::path::PathBuf::from(&runtime_dir).join("biomeos");
+    let socket_dir = crate::tolerances::platform::biomeos_socket_dir();
 
     if !socket_dir.is_dir() {
         v.check_skip("util:sockets_responsive", "biomeos dir not found");
@@ -218,7 +216,7 @@ fn phase_utilization_score(v: &mut ValidationResult, ctx: &mut CompositionContex
 
     v.check_bool(
         "util:utilization_score",
-        score >= 80.0,
+        score >= crate::tolerances::HEALTH_COMPLIANCE_MIN_PCT,
         &format!("utilization: {alive}/{total_probed} responding ({score:.0}%)"),
     );
 
@@ -248,7 +246,7 @@ fn phase_utilization_score(v: &mut ValidationResult, ctx: &mut CompositionContex
 
     v.check_bool(
         "util:routing_coverage",
-        total_probed >= 4,
+        total_probed >= crate::tolerances::MIN_PROBED_FOR_UTILIZATION,
         &format!(
             "routing: {total_probed} capabilities routed from {systemd_count} running primals ({coverage:.0}%)",
         ),
