@@ -64,12 +64,10 @@ fn phase_port_invariance(v: &mut ValidationResult) {
     }
 
     let port_values: Vec<u16> = registry.iter().map(|e| e.port).collect();
-    let unique_count = {
-        let mut sorted = port_values.clone();
-        sorted.sort_unstable();
-        sorted.dedup();
-        sorted.len()
-    };
+    let unique_count = port_values
+        .iter()
+        .collect::<std::collections::HashSet<_>>()
+        .len();
     v.check_bool(
         "port-invariance:no-collisions",
         unique_count == port_values.len(),

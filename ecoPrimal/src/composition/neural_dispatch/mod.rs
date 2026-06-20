@@ -52,9 +52,9 @@ pub enum DispatchError {
     /// via `Arc` since `IpcError` is not `Clone` (contains `io::Error`).
     #[error("dispatch ipc: {0}")]
     Ipc(Arc<IpcError>),
-    /// Graph execution failed.
+    /// Graph execution failed (wraps IPC error from biomeOS graph deploy).
     #[error("graph dispatch failed: {0}")]
-    GraphFailed(String),
+    GraphFailed(Arc<IpcError>),
 }
 
 /// Outcome of a single neural dispatch.
@@ -239,7 +239,7 @@ impl NeuralDispatcher {
             .map_or(Err(DispatchError::BridgeOffline), |bridge| {
                 bridge
                     .graph_deploy(&graph_request)
-                    .map_err(|e| DispatchError::GraphFailed(e.to_string()))
+                    .map_err(|e| DispatchError::GraphFailed(Arc::new(e)))
             });
 
         let latency_ms = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);

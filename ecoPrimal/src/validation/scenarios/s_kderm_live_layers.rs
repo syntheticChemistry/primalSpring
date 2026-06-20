@@ -188,8 +188,7 @@ fn phase_outer_membrane(v: &mut ValidationResult) {
         .filter(|l| !l.contains("127.0.0.1"))
         .collect();
 
-    let is_dev_gate = std::env::var("ECOPRIMALS_ROOT").is_ok()
-        || std::path::Path::new("/home/eastgate/Development").exists();
+    let is_dev_gate = std::env::var("ECOPRIMALS_ROOT").is_ok();
 
     let max_listeners: usize = if is_dev_gate { 30 } else { 5 };
 

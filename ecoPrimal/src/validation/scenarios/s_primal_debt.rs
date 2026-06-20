@@ -138,10 +138,10 @@ fn phase_debt_ratio(v: &mut ValidationResult, discovered: u32, live: u32, total:
         .unwrap_or_else(|_| "unknown".to_owned());
 
     let max_debt_pct = match gate.as_str() {
-        "eastgate" | "eastGate" => 70.0,
-        "sporegate" | "sporeGate" => 30.0,
-        "golgi" | "pepti" => 50.0,
-        _ => 80.0,
+        "eastgate" | "eastGate" => crate::tolerances::DEBT_CAP_REFERENCE_PCT,
+        "sporegate" | "sporeGate" => crate::tolerances::DEBT_CAP_NEST_PCT,
+        "golgi" | "pepti" => crate::tolerances::DEBT_CAP_VPS_PCT,
+        _ => crate::tolerances::DEBT_CAP_DEFAULT_PCT,
     };
 
     v.check_bool(

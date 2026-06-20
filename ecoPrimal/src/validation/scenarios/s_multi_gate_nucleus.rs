@@ -86,7 +86,7 @@ fn phase_systemd_unit_naming(v: &mut ValidationResult) {
         );
     }
 
-    let home = std::env::var("HOME").unwrap_or_else(|_| "/home/eastgate".to_owned());
+    let home = std::env::var("HOME").unwrap_or_default();
     let template_path = PathBuf::from(&home)
         .join(".config/systemd/user")
         .join(NUCLEUS_UNIT_TEMPLATE);

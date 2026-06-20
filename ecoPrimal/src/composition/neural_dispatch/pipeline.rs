@@ -98,7 +98,7 @@ pub fn run_pipeline(
             weights_path: Some(weights_path.to_owned()),
             final_loss: loss,
         }),
-        Err(e) => Err(PipelineError::Training(e.to_string())),
+        Err(e) => Err(PipelineError::Training(e)),
     }
 }
 
@@ -120,7 +120,7 @@ pub enum PipelineError {
     TelemetryRead(#[from] std::io::Error),
     /// Training RPC failed.
     #[error("training: {0}")]
-    Training(String),
+    Training(#[from] crate::ipc::error::IpcError),
 }
 
 fn read_telemetry(path: &Path) -> Result<Vec<super::metrics::DispatchMetric>, std::io::Error> {

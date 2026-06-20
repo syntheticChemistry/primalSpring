@@ -101,14 +101,17 @@ pub fn tcp_rpc_with_timeout(
             }
             if let Some(err_val) = parsed.get_mut("error") {
                 let err_val = err_val.take();
-                if let Ok(rpc_err) = serde_json::from_value::<JsonRpcError>(err_val.clone()) {
-                    return Err(IpcError::from(rpc_err));
+                let fallback_msg = err_val.to_string();
+                match serde_json::from_value::<JsonRpcError>(err_val) {
+                    Ok(rpc_err) => return Err(IpcError::from(rpc_err)),
+                    Err(_) => {
+                        return Err(IpcError::ApplicationError {
+                            code: -1,
+                            message: fallback_msg,
+                            data: None,
+                        });
+                    }
                 }
-                return Err(IpcError::ApplicationError {
-                    code: -1,
-                    message: err_val.to_string(),
-                    data: None,
-                });
             }
         }
     }
@@ -196,14 +199,17 @@ pub fn http_json_rpc(
                 }
                 if let Some(err_val) = parsed.get_mut("error") {
                     let err_val = err_val.take();
-                    if let Ok(rpc_err) = serde_json::from_value::<JsonRpcError>(err_val.clone()) {
-                        return Err(IpcError::from(rpc_err));
+                    let fallback_msg = err_val.to_string();
+                    match serde_json::from_value::<JsonRpcError>(err_val) {
+                        Ok(rpc_err) => return Err(IpcError::from(rpc_err)),
+                        Err(_) => {
+                            return Err(IpcError::ApplicationError {
+                                code: -1,
+                                message: fallback_msg,
+                                data: None,
+                            });
+                        }
                     }
-                    return Err(IpcError::ApplicationError {
-                        code: -1,
-                        message: err_val.to_string(),
-                        data: None,
-                    });
                 }
             }
         }

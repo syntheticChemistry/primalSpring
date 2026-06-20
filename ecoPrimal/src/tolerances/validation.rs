@@ -80,6 +80,22 @@ pub const DEPOT_FRESHNESS_THRESHOLD_H: u64 = 168;
 /// Source: 72h = 3 days, tighter cadence for local builds.
 pub const DEPOT_FRESHNESS_LAN_H: u64 = 72;
 
+/// Maximum acceptable debt percentage for reference gates.
+///
+/// eastGate has the tightest ceiling as the overwatch node.
+pub const DEBT_CAP_REFERENCE_PCT: f64 = 70.0;
+
+/// Maximum acceptable debt percentage for Nest/depot gates.
+///
+/// sporeGate is the provenance authority with the lowest tolerance.
+pub const DEBT_CAP_NEST_PCT: f64 = 30.0;
+
+/// Maximum acceptable debt percentage for VPS infrastructure.
+pub const DEBT_CAP_VPS_PCT: f64 = 50.0;
+
+/// Maximum acceptable debt percentage for general/unknown gates.
+pub const DEBT_CAP_DEFAULT_PCT: f64 = 80.0;
+
 /// Summary output width for validation result formatting.
 ///
 /// Source: 72 columns matches standard terminal width conventions.

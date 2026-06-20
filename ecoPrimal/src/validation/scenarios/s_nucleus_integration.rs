@@ -44,7 +44,7 @@ fn run_nucleus_integration(v: &mut ValidationResult, ctx: &mut CompositionContex
 }
 
 fn phase_template_pattern(v: &mut ValidationResult) {
-    let home = std::env::var("HOME").unwrap_or_else(|_| "/home/eastgate".to_owned());
+    let home = std::env::var("HOME").unwrap_or_default();
     let template_path = PathBuf::from(&home).join(".config/systemd/user/membrane-nucleus@.service");
 
     if !template_path.exists() {
@@ -103,7 +103,7 @@ fn phase_template_pattern(v: &mut ValidationResult) {
 }
 
 fn phase_songbird_relay(v: &mut ValidationResult) {
-    let home = std::env::var("HOME").unwrap_or_else(|_| "/home/eastgate".to_owned());
+    let home = std::env::var("HOME").unwrap_or_default();
     let songbird_path =
         PathBuf::from(&home).join(".config/systemd/user/songbird-federation.service");
 
