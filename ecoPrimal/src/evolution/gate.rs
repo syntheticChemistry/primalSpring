@@ -59,13 +59,24 @@ pub enum CytoplasmZone {
 }
 
 impl CytoplasmZone {
-    /// Derive zone from gate name using known topology assignments.
+    /// Derive zone from gate name using `config/mesh_topology.toml`.
+    ///
+    /// Falls back to `Unassigned` for gates not in the topology config.
     #[must_use]
     pub fn for_gate(gate_name: &str) -> Self {
-        match gate_name {
-            "eastGate" | "sporeGate" | "northGate" | "ironGate" => Self::Backbone,
-            "strandGate" | "southGate" | "swiftGate" | "fieldGate" => Self::House2,
-            "golgi" | "pepti" | "flockGate" => Self::Wan,
+        MESH_REGISTRY
+            .iter()
+            .find(|e| e.name == gate_name)
+            .map_or(Self::Unassigned, |e| Self::parse_zone(&e.zone))
+    }
+
+    /// Parse a zone string from TOML config.
+    fn parse_zone(s: &str) -> Self {
+        match s {
+            "Backbone" => Self::Backbone,
+            "House2" => Self::House2,
+            "Garage" => Self::Garage,
+            "Wan" => Self::Wan,
             _ => Self::Unassigned,
         }
     }
@@ -152,20 +163,61 @@ impl GateStatus {
     }
 }
 
+/// Embedded mesh topology TOML (single source of truth for address assignments).
+const MESH_TOML: &str = include_str!("../../../config/mesh_topology.toml");
+
+/// TOML-derived mesh address registry, built once at first access.
+static MESH_REGISTRY: std::sync::LazyLock<Vec<MeshEntry>> = std::sync::LazyLock::new(|| {
+    let Ok(parsed) = MESH_TOML.parse::<toml::Table>() else {
+        return Vec::new();
+    };
+    let Some(gates) = parsed.get("gate").and_then(toml::Value::as_array) else {
+        return Vec::new();
+    };
+    gates
+        .iter()
+        .filter_map(|g| {
+            let t = g.as_table()?;
+            let name = t.get("name")?.as_str()?.to_owned();
+            let address = t.get("address").and_then(|v| v.as_str()).unwrap_or("").to_owned();
+            let role = t.get("role").and_then(|v| v.as_str()).unwrap_or("").to_owned();
+            let zone = t.get("zone").and_then(|v| v.as_str()).unwrap_or("").to_owned();
+            Some(MeshEntry { name, address, role, zone })
+        })
+        .collect()
+});
+
+/// A single gate's mesh topology entry.
+#[derive(Debug, Clone)]
+pub struct MeshEntry {
+    /// Gate name (e.g. `"eastGate"`).
+    pub name: String,
+    /// WireGuard overlay address (e.g. `"10.13.37.5"`).
+    pub address: String,
+    /// Gate role (e.g. `"meta"`, `"hub"`, `"tower"`).
+    pub role: String,
+    /// K-Derm zone (e.g. `"Backbone"`, `"Wan"`).
+    pub zone: String,
+}
+
 /// WireGuard mesh address assignments (10.13.37.0/24 overlay).
 ///
-/// Static registry of assigned mesh IPs. Once assigned, an address is permanent.
-/// Gates without an entry have not yet been peered.
+/// Reads from `config/mesh_topology.toml` (SSOT). Adding a gate means adding
+/// one `[[gate]]` entry to the TOML — no code changes required.
+/// Returns `None` for gates that haven't been peered yet (no address field).
 #[must_use]
 pub fn mesh_address(gate_name: &str) -> Option<&'static str> {
-    match gate_name {
-        "golgi" => Some("10.13.37.1"),
-        "sporeGate" => Some("10.13.37.2"),
-        "pepti" => Some("10.13.37.4"),
-        "eastGate" => Some("10.13.37.5"),
-        "flockGate" => Some("10.13.37.6"),
-        _ => None,
-    }
+    MESH_REGISTRY
+        .iter()
+        .find(|e| e.name == gate_name)
+        .map(|e| e.address.as_str())
+        .filter(|addr| !addr.is_empty())
+}
+
+/// All gates with assigned mesh addresses.
+#[must_use]
+pub fn all_mesh_gates() -> &'static [MeshEntry] {
+    &MESH_REGISTRY
 }
 
 /// The full ecosystem gate readiness matrix.
@@ -191,21 +243,15 @@ impl GateMatrix {
         Self::ecosystem_snapshot()
     }
 
-    /// Build the current ecosystem matrix from known gates.
+    /// Build the current ecosystem matrix from `config/mesh_topology.toml`.
+    ///
+    /// All gates in the topology config are included regardless of mesh status.
     #[must_use]
     pub fn ecosystem_snapshot() -> Self {
         let mut m = Self::new();
-        m.gates.push(gate_from_env("eastGate"));
-        m.gates.push(gate_from_env("sporeGate"));
-        m.gates.push(gate_from_env("golgi"));
-        m.gates.push(gate_from_env("pepti"));
-        m.gates.push(gate_from_env("northGate"));
-        m.gates.push(gate_from_env("fieldGate"));
-        m.gates.push(gate_from_env("flockGate"));
-        m.gates.push(gate_from_env("ironGate"));
-        m.gates.push(gate_from_env("strandGate"));
-        m.gates.push(gate_from_env("southGate"));
-        m.gates.push(gate_from_env("swiftGate"));
+        for entry in MESH_REGISTRY.iter() {
+            m.gates.push(gate_from_env(&entry.name));
+        }
         m
     }
 

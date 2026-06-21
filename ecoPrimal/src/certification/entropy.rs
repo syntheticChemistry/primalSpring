@@ -192,31 +192,33 @@ pub fn verify_seed_fingerprints(
             continue;
         };
 
+        let key = name.clone();
+
         let version = if let Some(v) = versions.get(name.as_str()) {
             v.clone()
         } else {
-            results.insert(name.clone(), FingerprintStatus::NoPublished);
+            results.insert(key, FingerprintStatus::NoPublished);
             continue;
         };
 
-        let bin_path = bin_dir.join(name);
+        let bin_path = bin_dir.join(name.as_str());
         if !bin_path.exists() {
-            results.insert(name.clone(), FingerprintStatus::NoBinary);
+            results.insert(key, FingerprintStatus::NoBinary);
             continue;
         }
 
         let Some(binary_checksum) = compute_binary_blake3(&bin_path) else {
-            results.insert(name.clone(), FingerprintStatus::NoBinary);
+            results.insert(key, FingerprintStatus::NoBinary);
             continue;
         };
 
         let computed = compute_seed_fingerprint(name, &version, &binary_checksum);
 
         if computed == expected {
-            results.insert(name.clone(), FingerprintStatus::Match);
+            results.insert(key, FingerprintStatus::Match);
         } else {
             results.insert(
-                name.clone(),
+                key,
                 FingerprintStatus::Mismatch {
                     expected: expected.to_owned(),
                     computed,

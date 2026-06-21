@@ -73,6 +73,15 @@ pub fn port_entry_for(primal: &str) -> Option<&'static PortEntry> {
     PORT_REGISTRY.iter().find(|e| e.slug == primal)
 }
 
+/// Stable slug list derived once from TOML (no per-call leaking).
+static SLUG_LIST: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::new(|| {
+    if TOML_PORT_REGISTRY.is_empty() {
+        PORT_REGISTRY.iter().map(|e| e.slug.to_owned()).collect()
+    } else {
+        TOML_PORT_REGISTRY.iter().map(|e| e.slug.clone()).collect()
+    }
+});
+
 /// Return all primal slugs known to the TOML-derived port registry.
 ///
 /// Prefers the runtime TOML data; falls back to the static `PORT_REGISTRY`
@@ -80,17 +89,7 @@ pub fn port_entry_for(primal: &str) -> Option<&'static PortEntry> {
 /// without hardcoding the 13-primal list at each call site.
 #[must_use]
 pub fn all_primal_slugs() -> Vec<&'static str> {
-    if TOML_PORT_REGISTRY.is_empty() {
-        PORT_REGISTRY.iter().map(|e| e.slug).collect()
-    } else {
-        TOML_PORT_REGISTRY
-            .iter()
-            .map(|e| {
-                let leaked: &'static str = &*Box::leak(e.slug.clone().into_boxed_str());
-                leaked
-            })
-            .collect()
-    }
+    SLUG_LIST.iter().map(String::as_str).collect()
 }
 
 /// Resolve a primal's default TCP port from the port registry.

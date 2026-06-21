@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Mesh Topology — WireGuard overlay address assignments + gate roster
+#
+# Single source of truth for the 10.13.37.0/24 sovereign mesh.
+# Adding a gate means adding one [[gate]] entry here.
+# Gates without an `address` field have not yet been peered.
+
+[mesh]
+subnet = "10.13.37.0/24"
+interface = "wg0"
+
+# ── Meshed gates (address assigned) ──────────────────────────────────────────
+
+[[gate]]
+name = "golgi"
+address = "10.13.37.1"
+role = "hub"
+zone = "Wan"
+
+[[gate]]
+name = "sporeGate"
+address = "10.13.37.2"
+role = "build_authority"
+zone = "Backbone"
+
+[[gate]]
+name = "pepti"
+address = "10.13.37.4"
+role = "relay"
+zone = "Wan"
+
+[[gate]]
+name = "eastGate"
+address = "10.13.37.5"
+role = "meta"
+zone = "Backbone"
+
+[[gate]]
+name = "flockGate"
+address = "10.13.37.6"
+role = "tower"
+zone = "Wan"
+
+# ── Pending enrollment (no address yet) ──────────────────────────────────────
+
+[[gate]]
+name = "ironGate"
+role = "node"
+zone = "Backbone"
+
+[[gate]]
+name = "northGate"
+role = "workstation"
+zone = "Backbone"
+
+[[gate]]
+name = "strandGate"
+role = "node"
+zone = "House2"
+
+[[gate]]
+name = "southGate"
+role = "node"
+zone = "House2"
+
+[[gate]]
+name = "swiftGate"
+role = "ap_bridge"
+zone = "House2"
+
+[[gate]]
+name = "fieldGate"
+role = "edge"
+zone = "House2"
