@@ -56,6 +56,7 @@ pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
 pub mod s_bootstrap_readiness;
 pub mod s_btsp_cross_primal;
+pub mod s_capability_convergence;
 pub mod s_cascade_drift;
 pub mod s_cascade_provenance_match;
 pub mod s_cephalization;
@@ -70,10 +71,12 @@ pub mod s_coralreef_shader_targets;
 pub mod s_covalent_bond;
 pub mod s_covalent_mesh;
 pub mod s_cross_gate_capability_call;
+pub mod s_cross_primal_interaction;
 pub mod s_cross_spring_data_flow;
 pub mod s_cross_target_parity;
 pub mod s_crypto_identity_surface;
 pub mod s_dark_forest_gate;
+pub mod s_defense_attestation;
 pub mod s_deployment_pipeline;
 pub mod s_domain_contract_sweep;
 pub mod s_ecosystem_freshness;
@@ -87,6 +90,7 @@ pub mod s_gate_failure;
 pub mod s_gate_parity;
 pub mod s_gate_readiness;
 pub mod s_genetics_compliance;
+pub mod s_graph_pipeline_depth;
 pub mod s_graphenegate_readiness;
 pub mod s_health_lifecycle_surface;
 pub mod s_health_standard;
@@ -125,7 +129,9 @@ pub mod s_sequential_graph;
 pub mod s_socket_discovery;
 pub mod s_sovereignty_ledger;
 pub mod s_sporeprint_pure_primal;
+pub mod s_sovereignty_audit_chain;
 pub mod s_sporeprint_surface;
+pub mod s_squirrel_ai_pipeline;
 pub mod s_startup_ordering;
 pub mod s_tcp_fallback;
 pub mod s_tier2_science_api;
@@ -184,6 +190,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_sporeprint_pure_primal::SCENARIO);
     r.register(s_sporeprint_surface::SCENARIO);
     r.register(s_cross_gate_capability_call::SCENARIO);
+    r.register(s_cross_primal_interaction::SCENARIO);
     r.register(s_neural_routing::SCENARIO);
     r.register(s_neural_dispatch_live::SCENARIO);
     r.register(s_observatory_parity::SCENARIO);
@@ -232,6 +239,10 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_sovereignty_ledger::SCENARIO);
     r.register(s_wireguard_mesh::SCENARIO);
     r.register(s_provenance_cross_gate::SCENARIO);
+    r.register(s_graph_pipeline_depth::SCENARIO);
+    r.register(s_defense_attestation::SCENARIO);
+    r.register(s_sovereignty_audit_chain::SCENARIO);
+    r.register(s_capability_convergence::SCENARIO);
     r
 }
 
@@ -242,7 +253,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 90;
+    const EXPECTED_SCENARIO_COUNT: usize = 95;
 
     #[test]
     fn registry_scenario_count() {
@@ -300,9 +311,9 @@ mod tests {
         // (update the list) or when new failures appear (fail loudly).
         // Wave 109: all upstream blockers resolved. sporePrint cert pipeline
         // shipped. grapheneGate 13/13 alive. Zero known debt.
-        // Wave 119: cascade-drift depot freshness check fails when depot
-        // binaries are older than 7 days (pepti build cadence).
-        const KNOWN_DEBT: &[(&str, u32)] = &[("cascade-drift", 1)];
+        // Wave 120: cascade-drift resolved. mesh-overlay has 3 live-probe
+        // failures (pepti offline, flockGate WAN relay intermittent).
+        const KNOWN_DEBT: &[(&str, u32)] = &[("mesh-overlay", 3)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
