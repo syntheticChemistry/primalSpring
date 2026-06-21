@@ -11,7 +11,7 @@
 //! 4. Lineage chain cryptographic properties (BLAKE3 + Ed25519)
 //! 5. Live sovereignty probe (when primals reachable)
 
-use crate::composition::{capability_to_primal, CompositionContext};
+use crate::composition::{CompositionContext, capability_to_primal};
 use crate::primal_names;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -88,11 +88,7 @@ fn phase_sovereignty_methods(v: &mut ValidationResult) {
     for domain in &sovereignty_domains {
         let methods = table.methods_in_domain(domain);
         total_methods += methods.len();
-        v.check_minimum(
-            &format!("{domain}_method_count"),
-            methods.len(),
-            2,
-        );
+        v.check_minimum(&format!("{domain}_method_count"), methods.len(), 2);
     }
 
     v.check_minimum("total_sovereignty_methods", total_methods, 8);
@@ -114,9 +110,8 @@ fn phase_license_compliance(v: &mut ValidationResult) {
     let cargo_toml = workspace_root.join("Cargo.toml");
     if cargo_toml.exists() {
         let content = std::fs::read_to_string(&cargo_toml).unwrap_or_default();
-        let has_agpl = content.contains("AGPL-3.0")
-            || content.contains("agpl")
-            || content.contains("scyBorg");
+        let has_agpl =
+            content.contains("AGPL-3.0") || content.contains("agpl") || content.contains("scyBorg");
         v.check_bool(
             "cargo_toml_license_field",
             has_agpl,

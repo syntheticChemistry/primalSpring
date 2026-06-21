@@ -171,7 +171,10 @@ fn phase_beardog_genetics(v: &mut ValidationResult, dir: &Path) {
 
     match result {
         Ok(resp) => {
-            let has_key = resp.result.as_ref().is_some_and(|r| r.get("beacon_key").is_some());
+            let has_key = resp
+                .result
+                .as_ref()
+                .is_some_and(|r| r.get("beacon_key").is_some());
             v.check_bool(
                 "interaction:beardog_genetics",
                 has_key,
@@ -192,7 +195,10 @@ fn phase_beardog_genetics(v: &mut ValidationResult, dir: &Path) {
 fn phase_biomeos_neural(v: &mut ValidationResult, dir: &Path) {
     let neural_sock = dir.join("biomeos-neural.sock");
     if !neural_sock.exists() {
-        v.check_skip("interaction:biomeos_neural", "biomeos-neural.sock not present");
+        v.check_skip(
+            "interaction:biomeos_neural",
+            "biomeos-neural.sock not present",
+        );
         return;
     }
 
@@ -251,8 +257,7 @@ fn probe_health(sock: &Path, label: &str) -> ProbeResult {
 }
 
 fn socket_dir() -> Option<PathBuf> {
-    let runtime = std::env::var("XDG_RUNTIME_DIR")
-        .unwrap_or_else(|_| "/run/user/1000".to_owned());
+    let runtime = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_owned());
     let dir = PathBuf::from(runtime).join("biomeos");
     dir.is_dir().then_some(dir)
 }

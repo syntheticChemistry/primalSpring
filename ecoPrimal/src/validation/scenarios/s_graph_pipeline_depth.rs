@@ -61,11 +61,7 @@ fn phase_all_graphs_parse(v: &mut ValidationResult) {
         .into_iter()
         .flatten()
         .filter_map(Result::ok)
-        .filter(|e| {
-            e.path()
-                .extension()
-                .is_some_and(|ext| ext == "toml")
-        })
+        .filter(|e| e.path().extension().is_some_and(|ext| ext == "toml"))
         .collect();
 
     v.check_minimum("graph_count", entries.len(), 10);

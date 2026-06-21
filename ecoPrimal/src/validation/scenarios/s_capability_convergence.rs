@@ -11,10 +11,10 @@
 //! 4. Domain-to-primal mapping is bijective (no orphan domains)
 //! 5. Discovery convergence properties (tier composition completeness)
 
-use crate::composition::neural_routing::{canonical_routing_table, NeuralRoutingTable};
-use crate::composition::primal_home_tier_priority;
 use crate::composition::CompositionContext;
 use crate::composition::mesh::MeshTopology;
+use crate::composition::neural_routing::{NeuralRoutingTable, canonical_routing_table};
+use crate::composition::primal_home_tier_priority;
 use crate::primal_names;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -86,8 +86,16 @@ fn phase_domain_coverage(v: &mut ValidationResult) {
     v.check_minimum("domain_count", domain_count, 20);
 
     let critical_domains = [
-        "security", "discovery", "health", "lifecycle", "compute",
-        "storage", "crypto", "ai", "network", "provenance",
+        "security",
+        "discovery",
+        "health",
+        "lifecycle",
+        "compute",
+        "storage",
+        "crypto",
+        "ai",
+        "network",
+        "provenance",
     ];
 
     for domain in &critical_domains {
@@ -149,7 +157,12 @@ fn phase_mesh_convergence(v: &mut ValidationResult, ctx: &CompositionContext) {
 
     for (gate_id, caps) in &gates {
         let cap_strs: Vec<&str> = caps.to_vec();
-        mesh.register_gate(*gate_id, None::<String>, std::iter::empty::<&str>(), cap_strs);
+        mesh.register_gate(
+            *gate_id,
+            None::<String>,
+            std::iter::empty::<&str>(),
+            cap_strs,
+        );
         mesh.mark_healthy(gate_id, true);
     }
 

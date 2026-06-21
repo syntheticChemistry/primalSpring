@@ -418,7 +418,7 @@ fn merge_graphs_combines_nodes() {
         nodes: Vec::new(),
     };
 
-    let merged = merge_graphs(&base, &overlay);
+    let merged = merge_graphs(base, overlay);
     assert_eq!(merged.graph.name, "base+ai_overlay");
     assert_eq!(merged.graph.node.len(), 2);
     assert_eq!(merged.graph.node[0].name, "beardog");
@@ -452,7 +452,7 @@ fn merge_graphs_overlay_overrides_existing() {
         nodes: Vec::new(),
     };
 
-    let merged = merge_graphs(&base, &overlay);
+    let merged = merge_graphs(base, overlay);
     assert_eq!(merged.graph.node.len(), 1);
     assert_eq!(merged.graph.node[0].binary, "beardog_v2");
 }

@@ -11,7 +11,7 @@
 //! 4. Threat classification taxonomy covers known categories
 //! 5. Live defense attestation responds (when SkunkBat reachable)
 
-use crate::composition::{capability_to_primal, method_to_capability_domain, CompositionContext};
+use crate::composition::{CompositionContext, capability_to_primal, method_to_capability_domain};
 use crate::primal_names;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -50,7 +50,10 @@ fn phase_security_routing(v: &mut ValidationResult) {
     v.check_bool(
         "security_routes_to_beardog",
         security_primal == primal_names::BEARDOG,
-        &format!("security.attest → {security_primal} (expected {})", primal_names::BEARDOG),
+        &format!(
+            "security.attest → {security_primal} (expected {})",
+            primal_names::BEARDOG
+        ),
     );
 
     let def_domain = method_to_capability_domain("defense.classify");
@@ -58,7 +61,10 @@ fn phase_security_routing(v: &mut ValidationResult) {
     v.check_bool(
         "defense_routes_to_skunkbat",
         defense_primal == primal_names::SKUNKBAT,
-        &format!("defense.classify → {defense_primal} (expected {})", primal_names::SKUNKBAT),
+        &format!(
+            "defense.classify → {defense_primal} (expected {})",
+            primal_names::SKUNKBAT
+        ),
     );
 
     let crypto_domain = method_to_capability_domain("crypto.sign");
@@ -66,7 +72,10 @@ fn phase_security_routing(v: &mut ValidationResult) {
     v.check_bool(
         "crypto_routes_to_beardog",
         crypto_primal == primal_names::BEARDOG,
-        &format!("crypto.sign → {crypto_primal} (expected {})", primal_names::BEARDOG),
+        &format!(
+            "crypto.sign → {crypto_primal} (expected {})",
+            primal_names::BEARDOG
+        ),
     );
 }
 

@@ -528,55 +528,43 @@ pub fn graph_capability_map(graph: &DeployGraph) -> std::collections::HashMap<St
 /// All nodes from the overlay are appended to the base graph. If a node
 /// with the same name exists in both, the overlay version wins. The
 /// resulting graph's name is `"{base_name}+{overlay_name}"`.
+///
+/// Consumes both inputs to avoid cloning graph nodes.
 #[must_use]
-pub fn merge_graphs(base: &DeployGraph, overlay: &DeployGraph) -> DeployGraph {
-    let mut merged_nodes = base.graph.node.clone();
-    for overlay_node in &overlay.graph.node {
+pub fn merge_graphs(base: DeployGraph, overlay: DeployGraph) -> DeployGraph {
+    let mut merged_nodes = base.graph.node;
+    for overlay_node in overlay.graph.node {
         if let Some(existing) = merged_nodes
             .iter_mut()
             .find(|n| n.name == overlay_node.name)
         {
-            *existing = overlay_node.clone();
+            *existing = overlay_node;
         } else {
-            merged_nodes.push(overlay_node.clone());
+            merged_nodes.push(overlay_node);
         }
     }
     merged_nodes.sort_by_key(|n| n.order);
 
     DeployGraph {
         graph: GraphMeta {
-            id: overlay.graph.id.clone().or_else(|| base.graph.id.clone()),
+            id: overlay.graph.id.or(base.graph.id),
             name: format!("{}+{}", base.graph.name, overlay.graph.name),
             description: format!(
                 "{} merged with {}",
                 base.graph.description, overlay.graph.description
             ),
-            version: overlay.graph.version.clone(),
-            coordination: overlay
-                .graph
-                .coordination
-                .clone()
-                .or_else(|| base.graph.coordination.clone()),
-            metadata: overlay
-                .graph
-                .metadata
-                .clone()
-                .or_else(|| base.graph.metadata.clone()),
+            version: overlay.graph.version,
+            coordination: overlay.graph.coordination.or(base.graph.coordination),
+            metadata: overlay.graph.metadata.or(base.graph.metadata),
             composition_tier: overlay
                 .graph
                 .composition_tier
-                .clone()
-                .or_else(|| base.graph.composition_tier.clone()),
+                .or(base.graph.composition_tier),
             composition_name: overlay
                 .graph
                 .composition_name
-                .clone()
-                .or_else(|| base.graph.composition_name.clone()),
-            bonding_policy: overlay
-                .graph
-                .bonding_policy
-                .clone()
-                .or_else(|| base.graph.bonding_policy.clone()),
+                .or(base.graph.composition_name),
+            bonding_policy: overlay.graph.bonding_policy.or(base.graph.bonding_policy),
             node: merged_nodes,
         },
         nodes: Vec::new(),

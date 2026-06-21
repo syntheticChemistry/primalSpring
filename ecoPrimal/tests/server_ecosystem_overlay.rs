@@ -277,7 +277,7 @@ fn overlay_graph_merge_base_plus_ai() {
     let base = load_graph(&graphs_dir.join("nucleus_complete.toml")).unwrap();
     let overlay = load_graph(&graphs_dir.join("provenance_overlay.toml")).unwrap();
 
-    let merged = merge_graphs(&base, &overlay);
+    let merged = merge_graphs(base, overlay);
     assert!(merged.graph.name.contains('+'));
 
     let waves = topological_waves(&merged).unwrap();

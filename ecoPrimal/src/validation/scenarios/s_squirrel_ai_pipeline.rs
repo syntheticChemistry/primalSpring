@@ -65,12 +65,21 @@ fn phase_squirrel_liveness(v: &mut ValidationResult, dir: &Path) {
     match client.call("health.liveness", serde_json::json!({})) {
         Ok(resp) => {
             let alive = resp.result.as_ref().is_some_and(|r| {
-                r.get("alive").and_then(serde_json::Value::as_bool).unwrap_or(false)
+                r.get("alive")
+                    .and_then(serde_json::Value::as_bool)
+                    .unwrap_or(false)
             });
-            v.check_bool("ai:squirrel:liveness", alive, "squirrel health.liveness: alive");
+            v.check_bool(
+                "ai:squirrel:liveness",
+                alive,
+                "squirrel health.liveness: alive",
+            );
         }
         Err(e) => {
-            v.check_skip("ai:squirrel:liveness", &format!("squirrel liveness error: {e}"));
+            v.check_skip(
+                "ai:squirrel:liveness",
+                &format!("squirrel liveness error: {e}"),
+            );
         }
     }
 }
@@ -163,10 +172,7 @@ fn phase_inference_surface(v: &mut ValidationResult, dir: &Path) {
         "inference.embed method recognized by AI pipeline",
     );
 
-    let complete_result = client.call(
-        "inference.complete",
-        serde_json::json!({"prompt": "echo"}),
-    );
+    let complete_result = client.call("inference.complete", serde_json::json!({"prompt": "echo"}));
     let complete_recognized = match &complete_result {
         Ok(_) => true,
         Err(e) => !e.to_string().contains("Method not found"),
@@ -186,7 +192,11 @@ fn phase_inference_surface(v: &mut ValidationResult, dir: &Path) {
         Err(e) => !e.to_string().contains("Method not found"),
     };
     if chat_recognized {
-        v.check_bool("ai:inference:chat_method", true, "inference.chat recognized");
+        v.check_bool(
+            "ai:inference:chat_method",
+            true,
+            "inference.chat recognized",
+        );
     } else {
         v.check_skip(
             "ai:inference:chat_method",
@@ -225,34 +235,32 @@ fn phase_provenance_socket(v: &mut ValidationResult, dir: &Path) {
 
     let connect_result = PrimalClient::connect(&provenance_sock, "provenance");
     match connect_result {
-        Ok(mut client) => {
-            match client.call("health.liveness", serde_json::json!({})) {
-                Ok(resp) => {
-                    let alive = resp.result.is_some();
+        Ok(mut client) => match client.call("health.liveness", serde_json::json!({})) {
+            Ok(resp) => {
+                let alive = resp.result.is_some();
+                v.check_bool(
+                    "ai:provenance:responds",
+                    alive,
+                    "provenance socket responds to JSON-RPC",
+                );
+            }
+            Err(e) => {
+                let msg = e.to_string();
+                let ribocipher = msg.contains("riboCipher") || msg.contains("signal required");
+                if ribocipher {
                     v.check_bool(
                         "ai:provenance:responds",
-                        alive,
-                        "provenance socket responds to JSON-RPC",
+                        true,
+                        "provenance socket alive — requires riboCipher transport signal",
+                    );
+                } else {
+                    v.check_skip(
+                        "ai:provenance:responds",
+                        &format!("provenance error: {msg}"),
                     );
                 }
-                Err(e) => {
-                    let msg = e.to_string();
-                    let ribocipher = msg.contains("riboCipher") || msg.contains("signal required");
-                    if ribocipher {
-                        v.check_bool(
-                            "ai:provenance:responds",
-                            true,
-                            "provenance socket alive — requires riboCipher transport signal",
-                        );
-                    } else {
-                        v.check_skip(
-                            "ai:provenance:responds",
-                            &format!("provenance error: {msg}"),
-                        );
-                    }
-                }
             }
-        }
+        },
         Err(e) => {
             v.check_skip(
                 "ai:provenance:responds",
@@ -263,8 +271,7 @@ fn phase_provenance_socket(v: &mut ValidationResult, dir: &Path) {
 }
 
 fn socket_dir() -> Option<PathBuf> {
-    let runtime = std::env::var("XDG_RUNTIME_DIR")
-        .unwrap_or_else(|_| "/run/user/1000".to_owned());
+    let runtime = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_owned());
     let dir = PathBuf::from(runtime).join("biomeos");
     dir.is_dir().then_some(dir)
 }
