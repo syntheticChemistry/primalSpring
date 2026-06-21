@@ -55,7 +55,7 @@ pub use parity::{
 };
 pub use routing::{
     ALL_CAPS, BTSP_EXTRA_CAPS, CapabilityDomain, capability_to_primal, capability_to_primal_typed,
-    method_to_capability_domain,
+    method_to_capability_domain, primal_home_tier_priority,
 };
 
 #[cfg(test)]
