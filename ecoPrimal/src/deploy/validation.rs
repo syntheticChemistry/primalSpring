@@ -330,35 +330,47 @@ fn probe_graph_node_with_context(node: &GraphNode, ctx: &mut CompositionContext)
     }
 }
 
-#[expect(
-    clippy::too_many_lines,
-    reason = "comprehensive deploy graph structural validation"
-)]
 pub(super) fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
+    check_graph_identity(graph, issues);
+    check_node_integrity(graph, issues);
+    check_order_uniqueness(graph, issues);
+    check_btsp_policy(graph, issues);
+    check_uds_discovery(graph, issues);
+    check_fallback_consistency(graph, issues);
+    check_provenance_coverage(graph, issues);
+}
+
+fn check_graph_identity(graph: &DeployGraph, issues: &mut Vec<String>) {
     if graph.graph.name.is_empty() {
         issues.push("graph.name is empty".to_owned());
     }
     if graph.graph.node.is_empty() {
         issues.push("graph has no nodes".to_owned());
     }
+}
 
-    let names: Vec<&str> = graph.graph.node.iter().map(|n| n.name.as_str()).collect();
+fn is_multi_node_graph(graph: &DeployGraph) -> bool {
     let has_fragments = graph
         .graph
         .metadata
         .as_ref()
         .is_some_and(|m| !m.fragments.is_empty());
     let is_composition = graph.graph.composition_tier.is_some();
-    let is_multi_node =
-        has_fragments || is_composition || graph.graph.node.iter().any(|n| n.operation.is_some());
+    has_fragments || is_composition || graph.graph.node.iter().any(|n| n.operation.is_some())
+}
+
+fn check_node_integrity(graph: &DeployGraph, issues: &mut Vec<String>) {
+    let names: Vec<&str> = graph.graph.node.iter().map(|n| n.name.as_str()).collect();
+    let multi = is_multi_node_graph(graph);
+
     for node in &graph.graph.node {
         if node.name.is_empty() {
             issues.push(format!("node at order {} has empty name", node.order));
         }
-        if !is_multi_node && node.binary.is_empty() {
+        if !multi && node.binary.is_empty() {
             issues.push(format!("node '{}' has empty binary", node.name));
         }
-        if !is_multi_node && node.health_method.is_empty() {
+        if !multi && node.health_method.is_empty() {
             issues.push(format!("node '{}' has no health_method", node.name));
         }
         for dep in &node.depends_on {
@@ -370,53 +382,64 @@ pub(super) fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
             }
         }
     }
+}
 
+fn check_order_uniqueness(graph: &DeployGraph, issues: &mut Vec<String>) {
+    if is_multi_node_graph(graph) {
+        return;
+    }
     let mut orders: Vec<u32> = graph.graph.node.iter().map(|n| n.order).collect();
     orders.sort_unstable();
     orders.dedup();
-    if !is_multi_node && orders.len() != graph.graph.node.len() {
+    if orders.len() != graph.graph.node.len() {
         issues.push("duplicate order values in graph nodes".to_owned());
     }
+}
 
-    let has_bonding_policy = graph.graph.bonding_policy.is_some();
+fn check_btsp_policy(graph: &DeployGraph, issues: &mut Vec<String>) {
     let has_btsp_nodes = graph
         .graph
         .node
         .iter()
         .any(|n| n.security_model.as_deref() == Some("btsp"));
-    if has_btsp_nodes && !has_bonding_policy {
+    if has_btsp_nodes && graph.graph.bonding_policy.is_none() {
         issues.push(
             "nodes declare security_model=\"btsp\" but graph has no [graph.bonding_policy]"
                 .to_owned(),
         );
     }
+}
 
+fn check_uds_discovery(graph: &DeployGraph, issues: &mut Vec<String>) {
     let transport = graph
         .graph
         .metadata
         .as_ref()
         .and_then(|m| m.transport.as_deref());
-    if transport == Some("uds_only") {
-        for node in &graph.graph.node {
-            let is_operation_only = node.operation.is_some() && node.primal.is_none();
-            if is_operation_only {
-                continue;
-            }
-            let has_by_capability = node.by_capability.is_some()
-                || node
-                    .primal
-                    .as_ref()
-                    .and_then(|p| p.get("by_capability"))
-                    .is_some();
-            if !has_by_capability && !node.name.is_empty() && node.spawn {
-                issues.push(format!(
-                    "transport=uds_only but node '{}' has no by_capability (needed for UDS discovery)",
-                    node.name
-                ));
-            }
+    if transport != Some("uds_only") {
+        return;
+    }
+    for node in &graph.graph.node {
+        let is_operation_only = node.operation.is_some() && node.primal.is_none();
+        if is_operation_only {
+            continue;
+        }
+        let has_by_capability = node.by_capability.is_some()
+            || node
+                .primal
+                .as_ref()
+                .and_then(|p| p.get("by_capability"))
+                .is_some();
+        if !has_by_capability && !node.name.is_empty() && node.spawn {
+            issues.push(format!(
+                "transport=uds_only but node '{}' has no by_capability (needed for UDS discovery)",
+                node.name
+            ));
         }
     }
+}
 
+fn check_fallback_consistency(graph: &DeployGraph, issues: &mut Vec<String>) {
     for node in &graph.graph.node {
         if node.fallback.as_deref() == Some("skip") && node.required {
             issues.push(format!(
@@ -425,26 +448,29 @@ pub(super) fn structural_checks(graph: &DeployGraph, issues: &mut Vec<String>) {
             ));
         }
     }
+}
 
+fn check_provenance_coverage(graph: &DeployGraph, issues: &mut Vec<String>) {
     let purpose = graph
         .graph
         .metadata
         .as_ref()
         .and_then(|m| m.purpose.as_deref());
-    if matches!(purpose, Some("validation" | "foundation")) {
-        let node_caps: Vec<&str> = graph
-            .graph
-            .node
-            .iter()
-            .filter_map(|n| n.by_capability.as_deref())
-            .collect();
-        for required_cap in ["dag", "ledger", "attribution"] {
-            if !node_caps.contains(&required_cap) {
-                issues.push(format!(
-                    "purpose={} graph missing provenance capability '{required_cap}'",
-                    purpose.unwrap_or("validation"),
-                ));
-            }
+    if !matches!(purpose, Some("validation" | "foundation")) {
+        return;
+    }
+    let node_caps: Vec<&str> = graph
+        .graph
+        .node
+        .iter()
+        .filter_map(|n| n.by_capability.as_deref())
+        .collect();
+    for required_cap in ["dag", "ledger", "attribution"] {
+        if !node_caps.contains(&required_cap) {
+            issues.push(format!(
+                "purpose={} graph missing provenance capability '{required_cap}'",
+                purpose.unwrap_or("validation"),
+            ));
         }
     }
 }
