@@ -8,12 +8,12 @@
 | **Version** | 0.9.32 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 944 lib (+ experiment + doc) |
-| **Experiments** | 96 (21 tracks) — 84 validation scenarios (12 tracks, 3 tiers) |
+| **Tests** | 976 lib (+ experiment + doc) |
+| **Experiments** | 96 (21 tracks) — 92 validation scenarios (12 tracks, 3 tiers) |
 | **Deploy Graphs** | 100 graph TOMLs (~67 deploy + 33 compositions) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
-| **Mesh** | 5/9 sovereign relay, 1/9 fully enrolled. WG mesh: **5 nodes live** — golgi(.1), sporeGate(.2), pepti(.4), eastGate(.5), flockGate(.6). All peers reachable. NUCLEUS deploy pending on eastGate + flockGate. K-Derm cytoplasm zones: backbone/house2/garage/wan. Three-hub triangle topology. Live overlay validation (s_mesh_overlay). |
+| **Mesh** | 4-node sovereign relay (golgi ↔ sporeGate ↔ eastGate ↔ flockGate). WG overlay 10.13.37.0/24. TOML-driven topology (`config/mesh_topology.toml`). K-Derm cytoplasm zones: backbone/house2/garage/wan. Three-hub triangle topology. Live overlay validation (s_mesh_overlay). |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`). `#![warn(missing_docs)]` enforced. |
@@ -67,8 +67,7 @@ primalSpring/
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/
-│   │   ├── primalspring/          # UniBin: certify + validate + serve + status + checksums + registry + version
-│   │   ├── primalspring_primal/   # Legacy RPC server (transitioning → primalspring serve)
+│   │   ├── primalspring/          # UniBin: certify + validate + status + checksums + registry + version
 │   │   └── nucleus_launcher/   # Rust NUCLEUS lifecycle (start/stop/status + federation)
 │   └── tests/
 │       ├── integration/           # Shared test helpers (guards, spawn, RPC)
@@ -95,8 +94,7 @@ primalSpring/
 │   └── federation/               # 1 content distribution
 ├── docs/                          # Structured gap registry and subsystem documentation
 │   └── PRIMAL_GAPS.md            # Per-primal gap inventory with severity and fix paths
-├── tools/                         # Deprecated — all tooling absorbed into Rust
-│   └── ws_gateway.py             # Dev WebSocket-to-IPC bridge (deprecated, Rust axum planned)
+├── tools/                         # Fossilized — all tooling absorbed into Rust
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
 ├── wateringHole/                  # Fossilized — see infra/wateringHole/
@@ -144,12 +142,6 @@ cargo run --release --bin primalspring -- validate
 # Certify ecosystem composition
 cargo run --release --bin primalspring -- certify
 
-# Start the primalSpring JSON-RPC server
-cargo run --bin primalspring_primal -- server
-
-# Show ecosystem status
-cargo run --bin primalspring_primal -- status
-
 # === UniBin (eukaryotic) ===
 # Run certification (absorbed guidestone)
 cargo run --bin primalspring -- certify
@@ -178,27 +170,24 @@ cargo coverage
 
 This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report. Release gate (`primalspring release`) enforces a **70%** floor. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
 
-## Server Mode
+## Validation Scenarios (92 across 12 tracks)
 
-The `primalspring_primal` binary exposes coordination capabilities via JSON-RPC 2.0:
+primalSpring ships 92 validation scenarios organized into 12 tracks:
 
-| Method | Description |
-|--------|-------------|
-| `health.check` | Self health status |
-| `health.liveness` | Kubernetes-style liveness probe |
-| `health.readiness` | Readiness probe (Neural API + discovered primals) |
-| `capabilities.list` | Niche capabilities + semantic mappings + cost estimates |
-| `coordination.validate_composition` | Validate an atomic composition (capability-based by default) |
-| `coordination.validate_composition_by_capability` | Explicitly capability-based validation |
-| `coordination.discovery_sweep` | Enumerate capabilities in a composition |
-| `coordination.probe_capability` | Probe a single capability provider |
-| `coordination.neural_api_status` | Neural API reachability |
-| `graph.list` | Structurally validate all deploy graphs |
-| `graph.validate` | Validate a specific graph (structural or live) |
-| `graph.waves` | Compute topological startup waves from a deploy graph |
-| `graph.capabilities` | Extract required capabilities from a deploy graph |
-| `lifecycle.status` | Primal status report |
-| `mcp.tools.list` | MCP tool definitions for Squirrel AI |
+| Track | Scenarios | Tier |
+|-------|-----------|------|
+| atomic-composition | Tower, Node, Nest, NUCLEUS atomics | Rust/Live |
+| mesh-topology | WireGuard overlay, zone topology, cross-gate calls | Live |
+| bonding-models | Covalent, ionic, metallic bond validation | Rust |
+| certification | GuideStone L0-L8, BTSP enforcement | Rust/Live |
+| deployment | Deploy graph structural validation, pipeline depth | Rust |
+| cross-primal | Direct socket probing (11 primals + 9 sub-caps) | Live |
+| ai-pipeline | Squirrel AI + provenance tracking | Live |
+| defense | SkunkBat threat detection, attestation | Rust/Live |
+| sovereignty | Audit chain, genetics, ledger verification | Rust |
+| convergence | Capability convergence, ecosystem drift | Rust |
+| observatory | Parity, freshness, routing consistency | Rust |
+| emergent | RootPulse, RPGPT, CoralForge, agentic tower | Rust |
 
 ## Validation Gates
 
@@ -482,13 +471,13 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
 **57/57 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–67 complete).
 
-## Live Integration Status (May 25, 2026)
+## Live Integration Status (June 21, 2026)
 
-**13/13 primals ALIVE** on eastGate (plasmidBin-only, post-primordial). All at zero debt,
-13/13 BTSP Phase 3 FULL AEAD, 13/13 MethodGate adopted. Zero-port Tower Atomic
-standard: UDS-only default, TCP opt-in via `PRIMALSPRING_TCP_TIER5=1`.
-4-gate NUCLEUS operational (eastGate, ironGate, southGate, biomeGate) with
-Songbird TCP :7700 federation. `SONGBIRD_PEERS` env for cross-gate mesh seeding.
+**13/13 primals ALIVE** on eastGate + flockGate (plasmidBin-only, post-primordial).
+Zero debt, 13/13 BTSP Phase 3 FULL AEAD, 13/13 MethodGate adopted.
+Zero-port Tower Atomic standard: UDS-only default, TCP opt-in via `PRIMALSPRING_TCP_TIER5=1`.
+4-node WireGuard mesh (golgi ↔ sporeGate ↔ eastGate ↔ flockGate).
+Songbird TCP :7700 federation. Config-driven topology (`config/mesh_topology.toml`).
 
 | Primal | Status | Notes |
 |--------|--------|-------|
@@ -550,16 +539,12 @@ Former CI/validation scripts (`validate_release.sh`, `validate_nucleus_deploymen
 `validate_deployment_matrix.sh`, etc.) have been replaced by the `primalspring release`
 and `primalspring nucleus` Rust subcommands (Wave 82c deep debt sprint).
 
-**`tools/`** (1 file) — deprecated, pending Rust replacement:
+**`tools/`** — empty (all tooling absorbed into Rust as of Wave 120).
 
-| Tool | Purpose |
-|------|---------|
-| `tools/ws_gateway.py` | Dev WebSocket-to-IPC bridge (deprecated — Rust axum gateway planned) |
-
-All other tools (25+ shell scripts, GDScript, Python) have been deleted or fossilized
-to `fossilRecord/` as part of the Wave 82c deep debt sprint. Shell composition library,
-NUCLEUS launchers, method audit tools, and desktop launchers are all absorbed into
-idiomatic Rust (`nucleus_launcher`, `primalspring` subcommands).
+All tools (25+ shell scripts, GDScript, Python) have been deleted or fossilized
+to `fossilRecord/` as part of deep debt sprints (Waves 82c, 120). Shell composition
+library, NUCLEUS launchers, method audit tools, and desktop launchers are all absorbed
+into idiomatic Rust (`nucleus_launcher`, `primalspring` subcommands).
 
 ---
 

@@ -71,9 +71,8 @@ to primalSpring as experiment targets.
 
 ## Architecture
 
-- **ecoPrimal/** — library crate (`primalspring`) + 3 binaries:
-  `primalspring` (eukaryotic UniBin: certify + validate + serve + status + checksums + registry + version),
-  `primalspring_primal` (JSON-RPC IPC server / cell membrane),
+- **ecoPrimal/** — library crate (`primalspring`) + 2 binaries:
+  `primalspring` (eukaryotic UniBin: certify + validate + status + checksums + registry + version),
   `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status with PID tracking + federation)
 - **experiments/** — 93 validation binaries covering 21 tracks
 - **graphs/** — ~80 deploy graph TOMLs + 33 atomic composition graphs using fragment-first
@@ -81,7 +80,7 @@ to primalSpring as experiment targets.
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
   2 cross-spring + 1 federation + 1 foundation + 12 cell graphs + `compositions/` tier)
 - **docs/** — structured gap registry (`PRIMAL_GAPS.md`), wire contracts (discovery, storage, crypto), migration guides
-- **tools/** — `ws_gateway.py` (deprecated, Rust axum replacement planned). All other tools fossilized or absorbed into Rust subcommands (Wave 82c deep debt sprint)
+- **tools/** — empty (all tooling absorbed into Rust subcommands, Wave 82c–120 deep debt sprints)
 - **config/** — capability registry, launch profiles
 - **niches/** — BYOB niche YAML for biomeOS scheduling
 - **specs/** — architecture and evolution specs
@@ -99,7 +98,7 @@ to primalSpring as experiment targets.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 74 absorbed experiment scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 92 absorbed experiment scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -121,17 +120,16 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.32 Wave 116 (June 18, 2026) — 74 scenarios (12 tracks, 3 tiers),
+v0.9.32 Wave 120 (June 21, 2026) — 92 scenarios (12 tracks, 3 tiers),
 490+ registered capability methods, 96 experiments (21 tracks), 114 graph TOMLs
-(~80 deploy + 34 compositions). 943 tests passing. All SONGBIRD_* env vars
-deprecated in favor of generic equivalents (MESH_PEERS, DISCOVERY_SECURITY_SOCKET).
+(~80 deploy + 34 compositions). 976 tests passing. Config-driven topology
+(`config/mesh_topology.toml` — SSOT for gate roster, zones, mesh addresses).
 Evolution module: CytoplasmZone model (backbone/house2/garage/wan), three-hub
 triangle topology, gate enrollment pipeline, convergence monitoring.
 Zero clippy warnings, zero unsafe blocks, zero hardcoded primal assumptions in
-production paths. Previous test count (884 lib + 10 integration +
-4 ecosystem + 16 experiment + 17 doc). Role formalized: composition
-experimentation laboratory. Deployment ops handed to cellMembrane, workload
-packaging to projectNUCLEUS.
+production paths (mesh addresses, zones, ports all TOML-driven).
+Role formalized: composition experimentation laboratory. Deployment ops handed
+to cellMembrane, workload packaging to projectNUCLEUS.
 **Wave 82c Deep Debt Sprint COMPLETE**: 3 fossil tool scripts deleted,
 `validate_nucleus_deployment.sh` and `validate_release.sh` replaced by
 `primalspring nucleus` and `primalspring release` Rust subcommands,
